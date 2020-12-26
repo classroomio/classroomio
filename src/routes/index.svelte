@@ -115,7 +115,7 @@
 <svelte:head>
 	<title>Unidiscuss - Help students in your university</title>
 </svelte:head>
-<div class="root">
+<div class="w-1/2 mx-auto mb-20">
   <div class="flex justify-end mb-5">
     <NewQuestion />
   </div>
@@ -136,11 +136,6 @@
 </div>
 
 <style>
-	.root {
-    margin: 0 auto 20px;
-    width: 600px;
-	}
-
 	.discussion-box {
 		border-top: 1px solid #eaecef;
 		display: flex;
@@ -166,11 +161,5 @@
 
   .discussion-comments {
     display: flex;
-  }
-
-  @media only screen and (max-width : 768px) {
-    .root {
-      width: 100%;
-    }
   }
 </style>

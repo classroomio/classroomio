@@ -21,49 +21,25 @@
 
 <style>
   .sidebar-root {
-    padding: 16px;
-    border: 1px solid #e1e4e8;
-    border-radius: 6px;
-    width: 200px;
+    width: 250px;
     height: fit-content;
   }
 
-  h4 {
-    font-size: 14px;
-    font-weight: 600;
-    border-bottom: 1px solid #e1e4e8;
-    padding-bottom: 10px;
-  }
-
-  .avatar {
-    border-radius: 50%;
-    display: inline-block;
-    overflow: hidden;
-    line-height: 1;
-    vertical-align: middle;
-    border-radius: 6px;
-    margin-right: 10px;
-  }
-
-  .contributer-link {
-    display: flex;
-    padding: 8px 0;
-  }
 </style>
 
 <!-- markup (zero or more items) goes here -->
-<div class="sidebar-root">
-  <h4>Most helpful</h4>
+<div class="sidebar-root p-5 w-100 border border-1 border-gray rounded-md mt-12">
+  <h4 class="border-b border-gray text-base font-bold pb-1">Most helpful</h4>
   {#each contributors as contributor}
-    <a class="contributer-link" href="/{contributor.name}">
+    <a class="flex pt-3" href="/{contributor.name}">
       <img
-        class="avatar"
+        class="inline-block overflow-hidden rounded-full mr-1 leading-none align-middle"
         src="https://avatars0.githubusercontent.com/u/2854919?s=40&amp;v=4"
-        width="20"
+        width="23"
         height="20"
         alt="@jamesmosier"
       >
-      <span>{contributor.name}</span>
+      <span class="hover:text-blue-600 hover:underline">{contributor.name}</span>
     </a>
 	{/each}
 </div>

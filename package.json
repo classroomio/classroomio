@@ -1,6 +1,6 @@
 {
-  "name": "Unidiscuss",
-  "description": "Unidiscuss",
+  "name": "unidiscuss",
+  "description": "unidiscuss",
   "version": "0.0.1",
   "scripts": {
     "dev": "sapper dev",
@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "compression": "^1.7.1",
+    "marked": "^1.2.7",
     "polka": "next",
     "sirv": "^1.0.0"
   },
@@ -32,6 +33,7 @@
     "sapper": "^0.28.0",
     "svelte": "^3.17.3",
     "svelte-preprocess": "^4.3.0",
-    "tailwindcss": "^1.8.10"
+    "tailwindcss": "^1.8.10",
+    "typescript": "^4.1.3"
   }
 }
