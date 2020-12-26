@@ -16,6 +16,7 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		min-width: 56px;
 		width: 56px;
 		justify-content: center;
 		margin-right: 10px;
