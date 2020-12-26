@@ -52,11 +52,11 @@
 
 <nav>
 	<ul>
-		<li><a aria-current="{segment === undefined ? 'page' : undefined}" href=".">UniDiscuss</a></li>
+		<li><a aria-current="{(segment === undefined || segment === 'discussion') ? 'page' : undefined}" href=".">UniDiscuss</a></li>
 	</ul>
 	<Space/>
 	<ul>
 		<!-- <li><a aria-current="{segment === 'ask' ? 'page' : undefined}" href="ask">Ask</a></li> -->
-		<li><a aria-current="{segment === 'profile' ? 'page' : undefined}" href="profile">Profile</a></li>
+		<li><a aria-current="{segment === 'profile' ? 'page' : undefined}" href="profile">Профиль</a></li>
 	</ul>
 </nav>
