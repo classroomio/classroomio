@@ -8,7 +8,6 @@
 
 <style>
 	main {
-    display: flex;
 		background-color: white;
 		padding: 15px 2em;
 		margin: 0 auto;
@@ -28,7 +27,7 @@
 
 <Nav {segment}/>
 
-<main>
+<main class="flex justify-evenly">
   <slot></slot>
 	<SideBar />
 </main>

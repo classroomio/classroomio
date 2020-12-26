@@ -16,10 +16,6 @@ h1 {
 	font-size: 2em;
 }
 
-a {
-	color: inherit;
-}
-
 code {
 	font-family: menlo, inconsolata, monospace;
 	font-size: calc(1em - 2px);

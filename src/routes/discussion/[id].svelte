@@ -1,4 +1,7 @@
 <script context="module">
+    import marked from 'marked'
+    import Vote from "../../components/Vote.svelte";
+
 	export async function preload({ params }) {
 		// the `id` parameter is available because
 		// this file is called [id].svelte
@@ -25,42 +28,51 @@
 	<title>{discussion.title}</title>
 </svelte:head>
 
-<h1>{discussion.title}</h1>
-
-<div class="my-1 px-1 w-full md:w-1/2 lg:my-4 lg:px-4 lg:w-1/3">
-  <!-- Article -->
-  <article class="overflow-hidden rounded-lg shadow-lg">
-
-      <a href="#">
-          <img alt="Placeholder" class="block h-auto w-full" src="https://picsum.photos/600/400/?random">
-      </a>
-
-      <header class="flex items-center justify-between leading-tight p-2 md:p-4">
-          <h1 class="text-lg">
-              <a class="no-underline hover:underline text-black" href="#">
-                  Article Title
-              </a>
-          </h1>
-        <p class="text-grey-darker text-sm">
-            14/4/19
-          </p>
-        </header>
-
-        <footer class="flex items-center justify-between leading-none p-2 md:p-4">
-            <a class="flex items-center no-underline hover:underline text-black" href="#">
+<div class="lg:w-3/5 mx-auto md:mx-10 lg:mb-20">
+    <div class="flex items-start">
+        <Vote value="{discussion.votes}" />
+        <h1 class="text-4xl mb-8">{discussion.title}</h1>
+    </div>
+    <div class="my-1 px-1 rounded-lg border border-1 border-gray">
+        <header class="flex items-center justify-between leading-none p-2">
+            <a class="flex items-center no-underline hover:underline text-black" href="/">
                 <img alt="Placeholder" class="block rounded-full" src="https://picsum.photos/32/32/?random">
                 <p class="ml-2 text-sm">
-                    Author Name
+                    {discussion.author.name}
+                </p>
+                <p class="ml-2 text-sm text-gray-500">
+                    12h ago
                 </p>
             </a>
-            <a class="no-underline text-grey-darker hover:text-red-dark" href="#">
-                <span class="hidden">Like</span>
-                <i class="fa fa-heart"></i>
-            </a>
-        </footer>
+        </header>
+        <section class="p-2">
+            {@html marked(discussion.question)}
+        </section>
+    </div>
 
-    </article>
-    <!-- END Article -->
+    <div class="my-8">
+        <strong>{discussion.comments.length} ответы</strong>
+    </div>
 
+    {#each discussion.comments as comment}
+        <div class="my-5 px-1 flex items-start">
+            <Vote value="{comment.votes}" />
+            <div class="w-full rounded-lg border border-1 border-gray">
+                <header class="flex items-center justify-between leading-none p-2">
+                    <a class="flex items-center no-underline hover:underline text-black" href="/">
+                    <img alt="Placeholder" class="block rounded-full" width="24" height="20" src="{comment.avatar}">
+                        <p class="ml-2 text-sm">
+                            {comment.name}
+                        </p>
+                        <p class="ml-2 text-sm text-gray-500">
+                            12h ago
+                        </p>
+                    </a>
+                </header>
+                <section class="p-2">
+                    {@html marked(comment.comment)}
+                </section>
+            </div>
+        </div>
+    {/each}
 </div>
-<!-- END Column -->
