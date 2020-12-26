@@ -20,7 +20,7 @@
 		},
 		{
 			id: 2,
-			title: 'Where do I find the nearest restaurant?',
+			title: 'Where do I find the nearest restaurant. Where do I find the nearest restaurant?. Where do I find the nearest restaurant? Where do I find the nearest restaurant?',
 			author: {
 				name: 'attronaldo',
 			},
@@ -115,7 +115,7 @@
 <svelte:head>
 	<title>Unidiscuss - Help students in your university</title>
 </svelte:head>
-<div class="md:w-1/2 mx-auto md:mb-20">
+<div class="md:w-3/4 mx-auto md:mb-20 md:pr-5">
   <div class="flex justify-end mb-5">
     <NewQuestion />
   </div>
@@ -127,7 +127,7 @@
 				<span>{discussion.author.name} asked 1 day ago</span>
       </div>
       <Space />
-      <div class="discussion-comments">
+      <div class="flex items-center">
         <AddComment20 />
         <span>{discussion.comments}</span>
       </div>
@@ -157,9 +157,5 @@
 	.discussion-topic-author span{
 		color: #586069;
 		font-size: 12px;;
-  }
-
-  .discussion-comments {
-    display: flex;
   }
 </style>
