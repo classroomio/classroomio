@@ -115,7 +115,7 @@
 <svelte:head>
 	<title>Unidiscuss - Help students in your university</title>
 </svelte:head>
-<div class="w-1/2 mx-auto mb-20">
+<div class="md:w-1/2 mx-auto md:mb-20">
   <div class="flex justify-end mb-5">
     <NewQuestion />
   </div>
