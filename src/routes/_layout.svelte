@@ -27,7 +27,7 @@
 
 <Nav {segment}/>
 
-<main class="flex justify-evenly">
+<main class="flex max-w-screen-xl">
   <slot></slot>
 	<SideBar />
 </main>
