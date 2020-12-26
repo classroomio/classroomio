@@ -17,5 +17,6 @@
     background-color: #d1d5da80;
     border: 1px solid transparent;
     border-radius: 2em;
+    margin: 6px 0 0;
   }
 </style>

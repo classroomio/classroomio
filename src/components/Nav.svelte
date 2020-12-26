@@ -1,4 +1,5 @@
 <script>
+	import Space from "./Space.svelte";
 	export let segment;
 </script>
 
@@ -37,7 +38,7 @@
 		content: '';
 		width: calc(100% - 1em);
 		height: 2px;
-		background-color: rgb(255,62,0);
+		background-color: #3182ce;
 		display: block;
 		bottom: -1px;
 	}
@@ -47,19 +48,15 @@
 		padding: 1em 0.5em;
 		display: block;
 	}
-
-	.actions {
-		flex-grow: 1;
-	}
 </style>
 
 <nav>
 	<ul>
 		<li><a aria-current="{segment === undefined ? 'page' : undefined}" href=".">UniDiscuss</a></li>
 	</ul>
-	<div class="actions"></div>
+	<Space/>
 	<ul>
-		<li><a aria-current="{segment === 'ask' ? 'page' : undefined}" href="ask">Ask</a></li>
+		<!-- <li><a aria-current="{segment === 'ask' ? 'page' : undefined}" href="ask">Ask</a></li> -->
 		<li><a aria-current="{segment === 'profile' ? 'page' : undefined}" href="profile">Profile</a></li>
 	</ul>
 </nav>

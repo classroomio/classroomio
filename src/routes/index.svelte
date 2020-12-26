@@ -1,6 +1,9 @@
 <script>
-	import ArrowUp16 from "carbon-icons-svelte/lib/ArrowUp16";
-	import Chip from "../components/Chip.svelte";
+  import AddComment20 from "carbon-icons-svelte/lib/AddComment20";
+	import Vote from "../components/Vote.svelte";
+	import Space from "../components/Space.svelte";
+	import NewQuestion from "../components/NewQuestion.svelte";
+
 	const discussions = [
 		{
 			id: 1,
@@ -12,7 +15,8 @@
 				'ибэит', 'икс'
 			],
 			answered: false,
-			comments: 10
+			comments: 10,
+			votes: 10,
 		},
 		{
 			id: 2,
@@ -24,7 +28,8 @@
 				'иибрт', 'иее'
 			],
 			answered: false,
-			comments: 2
+			comments: 2,
+			votes: 2,
 		},
 		{
 			id: 3,
@@ -36,7 +41,8 @@
 				'ибэит', 'иее', 'иибрт', 'ИПИГ'
 			],
 			answered: false,
-			comments: 10
+			comments: 10,
+			votes: 10,
 		},
 		{
 			id: 4,
@@ -48,38 +54,97 @@
 				'ИЭКСУ', 'ИМБТ', 'ИМИ', 'ИПТДМ', 'ИИИР', 'ГФ', 'ХТФ', 'ИДЗО', 'УИИ', 'УНИ'
 			],
 			answered: false,
-			comments: 10
+			comments: 15,
+			votes: 15,
+    },
+    {
+			id: 1,
+			title: 'How do I pass Anicimov?',
+			author: {
+				name: 'rotimibest',
+			},
+			tags: [
+				'ибэит', 'икс'
+			],
+			answered: false,
+			comments: 7,
+			votes: 7,
+		},
+		{
+			id: 2,
+			title: 'Where do I find the nearest restaurant?',
+			author: {
+				name: 'attronaldo',
+			},
+			tags: [
+				'иибрт', 'иее'
+			],
+			answered: false,
+			comments: 4,
+			votes: 4,
+		},
+		{
+			id: 3,
+			title: 'Who is Nikolenko?',
+			author: {
+				name: 'donald',
+			},
+			tags: [
+				'ибэит', 'иее', 'иибрт', 'ИПИГ'
+			],
+			answered: false,
+			comments: 100,
+			votes: 100,
+		},
+		{
+			id: 4,
+			title: 'Archive discussion button',
+			author: {
+				name: 'acharlesvv',
+			},
+			tags: [
+				'ИЭКСУ', 'ИМБТ', 'ИМИ', 'ИПТДМ', 'ИИИР', 'ГФ', 'ХТФ', 'ИДЗО', 'УИИ', 'УНИ'
+			],
+			answered: false,
+			comments: 5,
+			votes: 5,
 		}
-	]
+	];
 </script>
 
 <svelte:head>
 	<title>Unidiscuss - Help students in your university</title>
 </svelte:head>
 <div class="root">
+  <div class="flex justify-end mb-5">
+    <NewQuestion />
+  </div>
 	{#each discussions as discussion}
 		<div class="discussion-box">
-			<div class="discussion-vote">
-				<ArrowUp16 />
-				<Chip value="{discussion.comments}" />
-			</div>
+      <Vote value="{discussion.votes}" />
 			<div class="discussion-topic-author">
-				<h4><a rel="prefetch" href="blog/{discussion.id}">{discussion.title}</a></h4>
+				<h4><a rel="prefetch" href="discussion/{discussion.id}">{discussion.title}</a></h4>
 				<span>{discussion.author.name} asked 1 day ago</span>
-			</div>
+      </div>
+      <Space />
+      <div class="discussion-comments">
+        <AddComment20 />
+        <span>{discussion.comments}</span>
+      </div>
 		</div>
 	{/each}
 </div>
 
 <style>
 	.root {
-		margin: 0 auto;
+    margin: 0 auto 20px;
+    width: 600px;
 	}
 
 	.discussion-box {
-		border-bottom: 1px solid #eaecef;
+		border-top: 1px solid #eaecef;
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
 		padding: 16px;
 	}
 
@@ -91,17 +156,21 @@
 		margin: 0;
 	}
 
-	.discussion-vote {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		width: 56px;
-		justify-content: center;
-		margin-right: 10px;
-	}
-
+  .discussion-topic-author {
+    margin-right: 20px;
+  }
 	.discussion-topic-author span{
 		color: #586069;
 		font-size: 12px;;
-	}
+  }
+
+  .discussion-comments {
+    display: flex;
+  }
+
+  @media only screen and (max-width : 768px) {
+    .root {
+      width: 100%;
+    }
+  }
 </style>
