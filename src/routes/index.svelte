@@ -3,6 +3,7 @@
 	import Vote from "../components/Vote.svelte";
 	import Space from "../components/Space.svelte";
 	import NewQuestion from "../components/NewQuestion.svelte";
+	import HashTags from "../components/HashTags.svelte";
 
 	const discussions = [
 		{
@@ -125,6 +126,7 @@
 			<div class="discussion-topic-author">
 				<h4><a rel="prefetch" href="discussion/{discussion.id}">{discussion.title}</a></h4>
 				<span>{discussion.author.name} asked 1 day ago</span>
+				<HashTags tags={discussion.tags}/>
       </div>
       <Space />
       <div class="flex items-center">

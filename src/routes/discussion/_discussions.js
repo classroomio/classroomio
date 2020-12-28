@@ -16,6 +16,9 @@ export default [
       name: "babdraa",
       avatar: "https://avatars3.githubusercontent.com/u/24832873?s=60&v=4"
     },
+    tags: [
+      'ИЭКСУ', 'ИМБТ', 'ИМИ', 'ИПТДМ', 'ИИИР', 'ГФ', 'ХТФ', 'ИДЗО', 'УИИ', 'УНИ'
+    ],
     question,
       createdAt: Date.now(),
     comments: [
@@ -52,6 +55,9 @@ export default [
       name: "babdraa",
       avatar: "https://avatars3.githubusercontent.com/u/24832873?s=60&v=4"
     },
+    tags: [
+      'ИЭКСУ', 'ИМБТ', 'ИМИ', 'ИПТДМ', 'ИИИР', 'ГФ', 'ХТФ', 'ИДЗО', 'УИИ', 'УНИ'
+    ],
       question:
         question,
       createdAt: Date.now(),
@@ -81,6 +87,9 @@ export default [
       name: "babdraa",
       avatar: "https://avatars3.githubusercontent.com/u/24832873?s=60&v=4"
     },
+    tags: [
+      'ИЭКСУ', 'ИМБТ', 'ИМИ', 'ИПТДМ', 'ИИИР', 'ГФ', 'ХТФ', 'ИДЗО', 'УИИ', 'УНИ'
+    ],
     question:
         question,
       createdAt: Date.now(),
@@ -117,6 +126,9 @@ export default [
       name: "babdraa",
       avatar: "https://avatars3.githubusercontent.com/u/24832873?s=60&v=4"
     },
+    tags: [
+      'ИЭКСУ', 'ИМБТ', 'ИМИ', 'ИПТДМ', 'ИИИР', 'ГФ', 'ХТФ', 'ИДЗО', 'УИИ', 'УНИ'
+    ],
     question: question,
       createdAt: Date.now(),
     comments: [
@@ -147,6 +159,9 @@ export default [
     title: "How can I get involved?",
     id: 5,
     votes: 7,
+    tags: [
+      'ИЭКСУ', 'ИМБТ', 'ИМИ', 'ИПТДМ', 'ИИИР', 'ГФ', 'ХТФ', 'ИДЗО', 'УИИ', 'УНИ'
+    ],
     author: {
       name: "living",
       avatar: "https://avatars3.githubusercontent.com/u/24832873?s=60&v=4"

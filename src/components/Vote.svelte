@@ -16,8 +16,8 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		min-width: 56px;
-		width: 56px;
+		min-width: 25px;
+		width: 25px;
 		justify-content: center;
 		margin-right: 10px;
 	}
