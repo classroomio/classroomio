@@ -1,6 +1,7 @@
 <script context="module">
     import marked from 'marked'
     import Vote from "../../components/Vote.svelte";
+	import HashTags from "../../components/HashTags.svelte";
 
 	export async function preload({ params }) {
 		// the `id` parameter is available because
@@ -47,6 +48,9 @@
         </header>
         <section class="p-2">
             {@html marked(discussion.question)}
+        </section>
+        <section class="p-2">
+            <HashTags tags={discussion.tags}/>
         </section>
     </div>
 

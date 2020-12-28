@@ -22,6 +22,7 @@
 <style>
   .sidebar-root {
     width: 250px;
+    min-width: 250px;
     height: fit-content;
   }
 
@@ -39,7 +40,7 @@
         height="20"
         alt="@jamesmosier"
       >
-      <span class="hover:text-blue-600 hover:underline">{contributor.name}</span>
+      <span class="hover:text-blue-700 hover:underline">{contributor.name}</span>
     </a>
 	{/each}
 </div>
