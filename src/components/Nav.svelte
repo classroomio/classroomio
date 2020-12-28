@@ -46,17 +46,31 @@
 	a {
 		text-decoration: none;
 		padding: 1em 0.5em;
-		display: block;
 	}
 </style>
 
 <nav>
+  <ul>
+    <li><a class="block" aria-current="{(segment === undefined || segment === 'discussion') ? 'page' : undefined}" href=".">UniDiscuss</a></li>
+  </ul>
+  <Space/>
 	<ul>
-		<li><a aria-current="{(segment === undefined || segment === 'discussion') ? 'page' : undefined}" href=".">UniDiscuss</a></li>
-	</ul>
-	<Space/>
-	<ul>
-		<!-- <li><a aria-current="{segment === 'ask' ? 'page' : undefined}" href="ask">Ask</a></li> -->
-		<li><a aria-current="{segment === 'profile' ? 'page' : undefined}" href="profile">Профиль</a></li>
-	</ul>
+    <li>
+      <a class="flex items-center" href="https://t.me/unidiscuss" target="_blank">
+        <img
+          alt="File:Telegram logo.svg"
+          class="mr-1"
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Telegram_alternative_logo.svg/50px-Telegram_alternative_logo.svg.png"
+          decoding="async"
+          width="25"
+          height="25"
+          srcset="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Telegram_alternative_logo.svg/50px-Telegram_alternative_logo.svg.png 1.5x, https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Telegram_logo.svg/1024px-Telegram_logo.svg.png 2x"
+          data-file-width="25"
+          data-file-height="25"
+        >
+        <span>Канал</span>
+      </a>
+    </li>
+    <li><a class="block" aria-current="{segment === 'profile' ? 'page' : undefined}" href="profile">Войти</a></li>
+  </ul>
 </nav>
