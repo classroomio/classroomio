@@ -19,7 +19,7 @@ export default [
     tags: [
       'ИЭКСУ', 'ИМБТ', 'ИМИ', 'ИПТДМ', 'ИИИР', 'ГФ', 'ХТФ', 'ИДЗО', 'УИИ', 'УНИ'
     ],
-    question,
+    question: '# Problem\n\nThere is a problem with my code please help me check it out.\n\n```js\nconst name = "dfdf";\n```',
       createdAt: Date.now(),
     comments: [
       {
