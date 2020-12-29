@@ -48,7 +48,7 @@
                 </p>
             </a>
         </header>
-        <section class="prose prose-sm sm:prose lg:prose-lg xl:prose-2xl p-2">
+        <section class="prose prose-sm sm:prose p-2">
             {@html marked(discussion.question)}
         </section>
         <section class="p-2">

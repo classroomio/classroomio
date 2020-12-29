@@ -56,7 +56,7 @@
         class="border border-gray rounded-md p-2"
       ></textarea>
     {:else}
-      <article class="preview prose prose-sm sm:prose lg:prose-lg xl:prose-2xl p-2">
+      <article class="preview prose prose-sm sm:prose p-2">
         {@html marked(value)}
       </article>
     {/if}
