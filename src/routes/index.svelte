@@ -158,6 +158,6 @@
   }
 	.discussion-topic-author span{
 		color: #586069;
-		font-size: 12px;;
+		font-size: 12px;
   }
 </style>
