@@ -2,6 +2,7 @@
 	import Tailwindcss from '../components/Tailwindcss.svelte';
 	import Nav from '../components/Nav.svelte';
   import SideBar from "../components/SideBar.svelte";
+  import Footer from "../components/Footer.svelte";
 
 	export let segment;
 </script>
@@ -32,3 +33,4 @@
 	<SideBar />
 </main>
 
+<Footer />
