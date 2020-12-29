@@ -1,16 +1,16 @@
 module.exports = {
   purge: {
-    mode: 'all',
-    content: ['./**/**/*.html', './**/**/*.svelte'],
+    mode: "all",
+    content: ["./**/**/*.html", "./**/**/*.svelte"],
 
     options: {
-      whitelistPatterns: [/svelte-/],
-    },
+      whitelistPatterns: [/svelte-/]
+    }
   },
 
   theme: {
-    extend: {},
+    extend: {}
   },
   variants: {},
-  plugins: [],
+  plugins: [require("@tailwindcss/typography")]
 };

@@ -1,7 +1,9 @@
 <script context="module">
     import marked from 'marked'
     import Vote from "../../components/Vote.svelte";
-	import HashTags from "../../components/HashTags.svelte";
+    import HashTags from "../../components/HashTags.svelte";
+    import TextEditor from "../../components/TextEditor.svelte";
+    import CheckmarkOutline20 from "carbon-icons-svelte/lib/CheckmarkOutline20";
 
 	export async function preload({ params }) {
 		// the `id` parameter is available because
@@ -46,7 +48,7 @@
                 </p>
             </a>
         </header>
-        <section class="p-2">
+        <section class="prose prose-sm sm:prose lg:prose-lg xl:prose-2xl p-2">
             {@html marked(discussion.question)}
         </section>
         <section class="p-2">
@@ -62,21 +64,32 @@
         <div class="my-5 px-1 flex items-start">
             <Vote value="{comment.votes}" />
             <div class="w-full rounded-lg border border-1 border-gray">
-                <header class="flex items-center justify-between leading-none p-2">
-                    <a class="flex items-center no-underline hover:underline text-black" href="/">
-                    <img alt="Placeholder" class="block rounded-full" width="24" height="20" src="{comment.avatar}">
-                        <p class="ml-2 text-sm">
-                            {comment.name}
-                        </p>
-                        <p class="ml-2 text-sm text-gray-500">
-                            12h ago
-                        </p>
-                    </a>
-                </header>
-                <section class="p-2">
-                    {@html marked(comment.comment)}
-                </section>
+              <header class="flex items-center justify-between leading-none p-2">
+                <a class="flex items-center no-underline hover:underline text-black" href="/">
+                  <img
+                    alt="Placeholder"
+                    class="block rounded-full"
+                    width="24"
+                    height="20"
+                    src="{comment.avatar}"
+                  >
+                  <p class="ml-2 text-sm">
+                    {comment.name}
+                  </p>
+                  <p class="ml-2 text-sm text-gray-500">
+                    12h ago
+                  </p>
+                </a>
+
+                <CheckmarkOutline20 />
+              </header>
+              <article class="prose prose-sm sm:prose p-2">
+                  {@html marked(comment.comment)}
+              </article>
             </div>
         </div>
     {/each}
+
+    <hr>
+    <TextEditor />
 </div>
