@@ -2,7 +2,8 @@
   import marked from 'marked';
 
   let isWriteMode = true;
-  let value = ``;
+  export let value = ``;
+  export let placeholder = ``;
   const activeClassName = 'border-b-2 border-blue-700';;
 
   const handleTabClick = tab => event => {
@@ -52,7 +53,7 @@
     {#if isWriteMode}
       <textarea
         bind:value
-        placeholder="Предлогайте ваш ответ"
+        placeholder="{placeholder}"
         class="border border-gray rounded-md p-2"
       ></textarea>
     {:else}
