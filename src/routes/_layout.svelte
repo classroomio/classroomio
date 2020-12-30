@@ -8,12 +8,12 @@
 </script>
 
 <style>
-	main {
-		background-color: white;
-		padding: 15px 2em;
-		margin: 0 auto;
-		box-sizing: border-box;
-	}
+  main {
+    background-color: white;
+    padding: 15px 2em;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
 
   @media only screen and (max-width : 768px) {
     main {

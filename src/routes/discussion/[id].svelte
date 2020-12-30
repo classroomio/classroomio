@@ -1,31 +1,29 @@
 <script context="module">
-    import marked from 'marked'
-    import Vote from "../../components/Vote.svelte";
-    import HashTags from "../../components/HashTags.svelte";
-    import TextEditor from "../../components/TextEditor.svelte";
-    import CheckmarkOutline20 from "carbon-icons-svelte/lib/CheckmarkOutline20";
+  import marked from 'marked'
+  import Vote from "../../components/Vote.svelte";
+  import HashTags from "../../components/HashTags.svelte";
+  import TextEditor from "../../components/TextEditor.svelte";
+  import CheckmarkOutline20 from "carbon-icons-svelte/lib/CheckmarkOutline20";
+
+  let userComment = '';
 
 	export async function preload({ params }) {
-		// the `id` parameter is available because
-		// this file is called [id].svelte
+    // the `id` parameter is available because
+    // this file is called [id].svelte
     const res = await this.fetch(`discussion/${params.id}.json`);
-		const data = await res.json();
+    const data = await res.json();
 
-		if (res.status === 200) {
-			return { discussion: data };
-		} else {
-			this.error(res.status, data.message);
-		}
-	}
+    if (res.status === 200) {
+      return { discussion: data };
+    } else {
+      this.error(res.status, data.message);
+    }
+  }
 </script>
 
 <script>
 	export let discussion;
 </script>
-
-<style>
-
-</style>
 
 <svelte:head>
 	<title>{discussion.title}</title>
@@ -37,27 +35,27 @@
         <h1 class="text-4xl mb-8">{discussion.title}</h1>
     </div>
     <div class="my-1 px-1 rounded-lg border border-1 border-gray">
-        <header class="flex items-center justify-between leading-none p-2">
-            <a class="flex items-center no-underline hover:underline text-black" href="/">
-                <img alt="Placeholder" class="block rounded-full" src="https://picsum.photos/32/32/?random">
-                <p class="ml-2 text-sm">
-                    {discussion.author.name}
-                </p>
-                <p class="ml-2 text-sm text-gray-500">
-                    12h ago
-                </p>
-            </a>
-        </header>
-        <section class="prose prose-sm sm:prose p-2">
-            {@html marked(discussion.question)}
-        </section>
-        <section class="p-2">
-            <HashTags tags={discussion.tags}/>
-        </section>
+      <header class="flex items-center justify-between leading-none p-2">
+        <a class="flex items-center no-underline hover:underline text-black" href="/">
+          <img alt="Placeholder" class="block rounded-full" src="https://picsum.photos/32/32/?random">
+          <p class="ml-2 text-sm">
+            {discussion.author.name}
+          </p>
+          <p class="ml-2 text-sm text-gray-500">
+            12h ago
+          </p>
+        </a>
+      </header>
+      <section class="prose prose-sm sm:prose p-2">
+        {@html marked(discussion.question)}
+      </section>
+      <section class="p-2">
+        <HashTags tags={discussion.tags}/>
+      </section>
     </div>
 
     <div class="my-8">
-        <strong>{discussion.comments.length} ответы</strong>
+      <strong>{discussion.comments.length} ответы</strong>
     </div>
 
     {#each discussion.comments as comment}
@@ -91,5 +89,8 @@
     {/each}
 
     <hr>
-    <TextEditor />
+    <TextEditor
+      value="{userComment}"
+      placeholder="Предлогайте ваш ответ"
+    />
 </div>
