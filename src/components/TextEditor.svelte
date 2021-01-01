@@ -37,13 +37,13 @@
   <div class="p-2 pb-0">
     <button
       on:click={handleTabClick(1)}
-      class="p-2 {isWriteMode && `${activeClassName}`}"
+      class="focus:outline-none p-2 {isWriteMode && `${activeClassName}`}"
     >
       Write
     </button>
     <button
       on:click={handleTabClick(2)}
-      class="p-2 {!isWriteMode && `${activeClassName}`}"
+      class="focus:outline-none p-2 {!isWriteMode && `${activeClassName}`}"
     >
       Preview
     </button>
