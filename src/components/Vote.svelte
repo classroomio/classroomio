@@ -3,10 +3,17 @@
 	import Chip from "./Chip.svelte";
 
 	export let value = 0;
+
+	function upVote() {
+		value = value + 1;
+	}
 </script>
 
 
-<div class="vote">
+<div
+	class="vote border-none cursor-pointer"
+	on:click={upVote}
+>
   <ArrowUp16 />
   <Chip value="{value}" />
 </div>
