@@ -1,8 +1,8 @@
 
 <svelte:head>
-	<title>Profile</title>
+	<title>Login</title>
 </svelte:head>
 
 <div class="">
-  <h2>Profile page here</h2>
+  <h2>Login page here</h2>
 </div>
