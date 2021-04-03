@@ -1,10 +1,30 @@
 <script>
+	import { stores } from "@sapper/app";
 	import AddComment20 from "carbon-icons-svelte/lib/AddComment20";
 	import Vote from "../components/Vote.svelte";
 	import Space from "../components/Space.svelte";
 	import HashTags from "../components/HashTags.svelte";
 
-	const discussions = [
+	function getDiscussion(filterBy, allDiscussions) {
+		switch (filterBy) {
+			case "popular":
+				return allDiscussions.filter((a, i) => i >= 0 && i < 2);
+			case "recent":
+				return allDiscussions.filter((a, i) => i >= 2 && i < 5);
+			case "upvoted":
+				return allDiscussions.filter((a, i) => i > 4 && i < 8);
+			default:
+				return allDiscussions;
+		}
+	}
+
+	const { page } = stores();
+	let filterBy = "";
+	let discussions = [];
+
+	$: filterBy = $page.query.filter || "popular";
+
+	const allDiscussions = [
 		{
 			id: 1,
 			title: "How do I pass Anicimov?",
@@ -117,16 +137,18 @@
 			votes: 5,
 		},
 	];
+
+	$: discussions = getDiscussion(filterBy, allDiscussions);
 </script>
 
 <style>
 	.root {
 		max-width: 600px;
+		margin: 0 auto;
 	}
 
 	.root .title {
 		font-size: 20px;
-		margin-left: 10px;
 	}
 	.discussion-box {
 		border: 1px solid #eaecef;
@@ -134,7 +156,7 @@
 		align-items: flex-start;
 		padding: 16px;
 		border-radius: 10px;
-		margin: 20px auto;
+		margin: 10px auto 20px;
 	}
 
 	h4 {
@@ -152,13 +174,46 @@
 		color: #586069;
 		font-size: 12px;
 	}
+
+	.active {
+		position: relative;
+		display: inline-block;
+	}
+
+	.active::after {
+		position: absolute;
+		content: "";
+		width: 100%;
+		height: 3px;
+		background-color: #3182ce;
+		display: block;
+	}
 </style>
 
 <svelte:head>
 	<title>Unidiscuss - Help students in your university</title>
 </svelte:head>
 <div class="root md:w-3/4 mx-auto md:mb-20 md:pr-5">
-	<h4 class="title">Разговоры</h4>
+	<div class="flex justify-between">
+		<h4 class="title">Разговоры</h4>
+		<div class="flex justify-evenly">
+			<a
+				class="mr-5 text-sm {filterBy === 'popular' && 'active'}"
+				href="?filter=popular">
+				Popular
+			</a>
+			<a
+				class="mr-5 text-sm {filterBy === 'recent' && 'active'}"
+				href="?filter=recent">
+				Recent
+			</a>
+			<a
+				class="mr-5 text-sm {filterBy === 'upvoted' && 'active'}"
+				href="?filter=upvoted">
+				Upvoted
+			</a>
+		</div>
+	</div>
 	{#each discussions as discussion}
 		<div class="discussion-box">
 			<Vote value={discussion.votes} />
