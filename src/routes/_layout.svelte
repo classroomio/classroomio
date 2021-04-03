@@ -1,10 +1,10 @@
 <script>
-	import Tailwindcss from '../components/Tailwindcss.svelte';
-	import Nav from '../components/Nav.svelte';
+  import Tailwindcss from "../components/Tailwindcss.svelte";
+  import Nav from "../components/Nav.svelte";
   import SideBar from "../components/SideBar.svelte";
   import Footer from "../components/Footer.svelte";
 
-	export let segment;
+  export let segment;
 </script>
 
 <style>
@@ -13,9 +13,14 @@
     padding: 15px 2em;
     margin: 0 auto;
     box-sizing: border-box;
+    /* max-width: 900px; */
   }
 
-  @media only screen and (max-width : 768px) {
+  :global(a:hover) {
+    text-decoration: underline;
+  }
+
+  @media only screen and (max-width: 768px) {
     main {
       flex-direction: column;
       align-items: center;
@@ -26,11 +31,11 @@
 
 <Tailwindcss />
 
-<Nav {segment}/>
+<Nav {segment} />
 
 <main class="flex max-w-screen-xl">
-  <slot></slot>
-	<SideBar />
+  <slot />
+  <SideBar />
 </main>
 
 <Footer />
