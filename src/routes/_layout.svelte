@@ -10,7 +10,7 @@
 <style>
   main {
     background-color: white;
-    padding: 15px 2em;
+    /* padding: 15px 2em; */
     margin: 0 auto;
     box-sizing: border-box;
     /* max-width: 900px; */
@@ -24,7 +24,7 @@
     main {
       flex-direction: column;
       align-items: center;
-      padding: 10px;
+      /* padding: 10px; */
     }
   }
 </style>

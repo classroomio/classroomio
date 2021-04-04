@@ -145,18 +145,25 @@
 	.root {
 		max-width: 600px;
 		margin: 0 auto;
+		border-left: 1px solid #eaecef;
+		border-right: 1px solid #eaecef;
+	}
+
+	.root .header {
+		border-bottom: 1px solid #eaecef;
+		padding: 15px;
 	}
 
 	.root .title {
 		font-size: 20px;
 	}
 	.discussion-box {
-		border: 1px solid #eaecef;
+		/* border: 1px solid #eaecef; */
 		display: flex;
 		align-items: flex-start;
-		padding: 16px;
+		padding: 10px 15px;
 		border-radius: 10px;
-		margin: 10px auto 20px;
+		margin: 0px auto;
 	}
 
 	h4 {
@@ -193,10 +200,10 @@
 <svelte:head>
 	<title>Unidiscuss - Help students in your university</title>
 </svelte:head>
-<div class="root md:w-3/4 mx-auto md:mb-20 md:pr-5">
-	<div class="flex justify-between">
-		<h4 class="title">Разговоры</h4>
-		<div class="flex justify-evenly">
+<div class="root md:w-3/4 mx-auto md:mb-20">
+	<div class="header flex justify-between mb-2">
+		<h4 class="title">Разговоры 😉😁</h4>
+		<div class="flex justify-evenly items-center">
 			<a
 				class="mr-5 text-sm {filterBy === 'popular' && 'active'}"
 				href="?filter=popular">
