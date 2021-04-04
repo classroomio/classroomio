@@ -160,10 +160,11 @@
 	.discussion-box {
 		/* border: 1px solid #eaecef; */
 		display: flex;
-		align-items: flex-start;
-		padding: 10px 15px;
-		border-radius: 10px;
-		margin: 0px auto;
+    align-items: flex-start;
+    padding: 10px 15px;
+    /* border-radius: 10px; */
+    margin: 0px auto;
+    border-bottom: 1px solid #e2e8f0;
 	}
 
 	h4 {
