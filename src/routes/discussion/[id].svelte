@@ -25,11 +25,17 @@
   export let discussion;
 </script>
 
+<style>
+  .root {
+    margin-top: 15px;
+  }
+</style>
+
 <svelte:head>
   <title>{discussion.title}</title>
 </svelte:head>
 
-<div class="lg:w-3/5 mx-auto md:mx-10 lg:mb-20">
+<div class="root lg:w-3/5 mx-auto md:mx-10 lg:mb-20">
   <div class="flex items-start">
     <Vote value={discussion.votes} />
     <h2 class="text-3xl mb-8">{discussion.title}</h2>
