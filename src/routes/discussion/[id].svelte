@@ -25,12 +25,6 @@
   export let discussion;
 </script>
 
-<style>
-  .root {
-    margin-top: 15px;
-  }
-</style>
-
 <svelte:head>
   <title>{discussion.title}</title>
 </svelte:head>
@@ -44,11 +38,13 @@
     <header class="flex items-center justify-between leading-none p-2">
       <a
         class="flex items-center no-underline hover:underline text-black"
-        href="/">
+        href="/"
+      >
         <img
           alt="Placeholder"
           class="block rounded-full"
-          src="https://picsum.photos/32/32/?random" />
+          src="https://picsum.photos/32/32/?random"
+        />
         <p class="ml-2 text-sm">{discussion.author.name}</p>
         <p class="ml-2 text-sm text-gray-500">12h ago</p>
       </a>
@@ -70,13 +66,15 @@
         <header class="flex items-center justify-between leading-none p-2">
           <a
             class="flex items-center no-underline hover:underline text-black"
-            href="/">
+            href="/"
+          >
             <img
               alt="Placeholder"
               class="block rounded-full"
               width="24"
               height="20"
-              src={comment.avatar} />
+              src={comment.avatar}
+            />
             <p class="ml-2 text-sm">{comment.name}</p>
             <p class="ml-2 text-sm text-gray-500">12h ago</p>
           </a>
@@ -93,3 +91,9 @@
   <hr />
   <TextEditor value={userComment} placeholder="Предлогайте ваш ответ" />
 </div>
+
+<style>
+  .root {
+    margin: 15px 5px;
+  }
+</style>
