@@ -3,6 +3,7 @@
   import Home32 from "carbon-icons-svelte/lib/Home32";
   import SendAlt32 from "carbon-icons-svelte/lib/SendAlt32";
   import UserAvatar32 from "carbon-icons-svelte/lib/UserAvatar32";
+  import Calendar32 from "carbon-icons-svelte/lib/Calendar32";
   export let segment;
   let navClass = "";
 
@@ -37,6 +38,14 @@
         aria-current={segment === "profile" ? "page" : undefined}
         href="profile"
         ><UserAvatar32 class="carbon-icon" /> <span>Профиль</span></a
+      >
+    </li>
+    <li>
+      <a
+        class="block"
+        aria-current={segment === "timetable" ? "page" : undefined}
+        href="timetable"
+        ><Calendar32 class="carbon-icon" /> <span>Расписание</span></a
       >
     </li>
     <li>
