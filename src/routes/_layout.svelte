@@ -1,9 +1,9 @@
 <script>
   import Tailwindcss from "../components/Tailwindcss.svelte";
   // import Nav from "../components/Nav.svelte";
-  import LeftNav from "../components/LeftNav.svelte";
-  import SideBar from "../components/SideBar.svelte";
-  import Footer from "../components/Footer.svelte";
+  import LeftNav from "../components/LeftNav/index.svelte";
+  import SideBar from "../components/SideBar/index.svelte";
+  import Footer from "../components/Footer/index.svelte";
 
   export let segment;
 </script>

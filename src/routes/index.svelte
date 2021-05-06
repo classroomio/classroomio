@@ -1,9 +1,9 @@
 <script>
   import { stores } from "@sapper/app";
   import AddComment20 from "carbon-icons-svelte/lib/AddComment20";
-  import Vote from "../components/Vote.svelte";
-  import Space from "../components/Space.svelte";
-  import HashTags from "../components/HashTags.svelte";
+  import Vote from "../components/Vote/index.svelte";
+  import Space from "../components/Space/index.svelte";
+  import HashTags from "../components/HashTags/index.svelte";
 
   function getDiscussion(filterBy, allDiscussions) {
     switch (filterBy) {
