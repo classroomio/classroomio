@@ -1,8 +1,8 @@
 <script context="module">
   import marked from "marked";
-  import Vote from "../../components/Vote.svelte";
-  import HashTags from "../../components/HashTags.svelte";
-  import TextEditor from "../../components/TextEditor.svelte";
+  import Vote from "../../components/Vote/index.svelte";
+  import HashTags from "../../components/HashTags/index.svelte";
+  import TextEditor from "../../components/TextEditor/index.svelte";
   import CheckmarkOutline20 from "carbon-icons-svelte/lib/CheckmarkOutline20";
 
   let userComment = "";
