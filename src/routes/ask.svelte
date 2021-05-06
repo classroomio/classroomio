@@ -1,6 +1,6 @@
 <script>
   import ChevronDown24 from "carbon-icons-svelte/lib/ChevronDown24";
-  import TextEditor from "../components/TextEditor.svelte";
+  import TextEditor from "../components/TextEditor/index.svelte";
 
   let questionTitle = "";
   let questionDescription = "";
