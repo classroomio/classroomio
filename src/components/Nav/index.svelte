@@ -90,7 +90,7 @@
     content: "";
     width: calc(100% - 1em);
     height: 2px;
-    background-color: #3182ce;
+    background-color: var(--main-primary-color);
     display: block;
     bottom: -1px;
   }

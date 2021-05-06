@@ -4,6 +4,7 @@
   import Vote from "../components/Vote/index.svelte";
   import Space from "../components/Space/index.svelte";
   import HashTags from "../components/HashTags/index.svelte";
+  import PageNav from "../components/PageNav/index.svelte";
 
   function getDiscussion(filterBy, allDiscussions) {
     switch (filterBy) {
@@ -150,29 +151,26 @@
   <title>Unidiscuss - Help students in your university</title>
 </svelte:head>
 <div class="root md:w-3/4 mx-auto md:mb-20">
-  <div class="header flex justify-between mb-2">
-    <h4 class="title">Разговоры 😉😁</h4>
-    <div class="flex justify-evenly items-center">
-      <a
-        class="mr-5 text-sm {filterBy === 'popular' && 'active'}"
-        href="?filter=popular"
-      >
-        Popular
-      </a>
-      <a
-        class="mr-5 text-sm {filterBy === 'recent' && 'active'}"
-        href="?filter=recent"
-      >
-        Recent
-      </a>
-      <a
-        class="mr-5 text-sm {filterBy === 'upvoted' && 'active'}"
-        href="?filter=upvoted"
-      >
-        Upvoted
-      </a>
-    </div>
-  </div>
+  <PageNav
+    title="Разговоры 😉😁"
+    navItems={[
+      {
+        label: "Popular",
+        isActive: filterBy === "popular",
+        href: "?filter=popular",
+      },
+      {
+        label: "Recent",
+        isActive: filterBy === "recent",
+        href: "?filter=recent",
+      },
+      {
+        label: "Upvoted",
+        isActive: filterBy === "upvoted",
+        href: "?filter=upvoted",
+      },
+    ]}
+  />
   {#each discussions as discussion}
     <div class="discussion-box">
       <Vote value={discussion.votes} />
@@ -198,20 +196,11 @@
   .root {
     max-width: 600px;
     margin: 0 auto;
-    border-left: 1px solid #eaecef;
-    border-right: 1px solid #eaecef;
-  }
-
-  .root .header {
-    border-bottom: 1px solid #eaecef;
-    padding: 15px;
-  }
-
-  .root .title {
-    font-size: 20px;
+    border-left: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
   }
   .discussion-box {
-    /* border: 1px solid #eaecef; */
+    /* border: 1px solid var(--border-color); */
     display: flex;
     align-items: flex-start;
     padding: 10px 15px;
@@ -234,26 +223,5 @@
   .discussion-topic-author span {
     color: #586069;
     font-size: 12px;
-  }
-
-  .active {
-    position: relative;
-    display: inline-block;
-  }
-
-  .active::after {
-    position: absolute;
-    content: "";
-    width: 100%;
-    height: 3px;
-    background-color: #3182ce;
-    display: block;
-  }
-
-  @media only screen and (max-width: 1002px) {
-    .header {
-      flex-direction: column;
-      align-items: flex-start;
-    }
   }
 </style>
