@@ -5,11 +5,11 @@
 
   export let classes = [
     {
-      chipClassName: "bg-green-400 text-gray-100",
+      chipClassName: "bg-green-600 text-white",
       chipLabel: "In progress",
     },
     {
-      chipClassName: "bg-red-500 text-gray-100",
+      chipClassName: "bg-red-600 text-white",
       chipLabel: "Completed",
     },
   ];
