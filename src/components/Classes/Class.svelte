@@ -34,7 +34,7 @@
   .lecture-title {
     width: fit-content;
     font-size: 18px;
-    color: var(--main-primary-color);
+    /* color: var(--main-primary-color); */
   }
 
   span {
@@ -48,7 +48,7 @@
   {#each lectures as lecture, key}
     <p class="lesson-date">{lecture}</p>
     <div class="lecture">
-      <h4 class="lecture-title">
+      <h4 class="lecture-title text-blue-700">
         <a rel="prefetch" href="classes/1">Lecture {lectures.length - key}</a>
       </h4>
       <p>
