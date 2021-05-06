@@ -8,6 +8,18 @@
   export let segment;
 </script>
 
+<Tailwindcss />
+
+<!-- <Nav {segment} /> -->
+
+<main class="flex max-w-screen-xl">
+  <LeftNav {segment} />
+  <slot />
+  <SideBar />
+</main>
+
+<Footer />
+
 <style>
   main {
     background-color: white;
@@ -20,16 +32,8 @@
   :global(a:hover) {
     text-decoration: underline;
   }
+  :global(:root) {
+    --main-primary-color: #3182ce;
+    --border-color: #eaecef;
+  }
 </style>
-
-<Tailwindcss />
-
-<!-- <Nav {segment} /> -->
-
-<main class="flex max-w-screen-xl">
-  <LeftNav {segment} />
-  <slot />
-  <SideBar />
-</main>
-
-<Footer />

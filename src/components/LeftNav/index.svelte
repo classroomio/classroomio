@@ -1,6 +1,6 @@
 <script>
   import NewQuestion from "../NewQuestion/index.svelte";
-  import Home32 from "carbon-icons-svelte/lib/Home32";
+  import Forum32 from "carbon-icons-svelte/lib/Forum32";
   import SendAlt32 from "carbon-icons-svelte/lib/SendAlt32";
   import UserAvatar32 from "carbon-icons-svelte/lib/UserAvatar32";
   import Calendar32 from "carbon-icons-svelte/lib/Calendar32";
@@ -26,10 +26,18 @@
     <li>
       <a
         class="block"
+        aria-current={segment === "classes" ? "page" : undefined}
+        href="classes"
+        ><Calendar32 class="carbon-icon" /> <span>Classes</span></a
+      >
+    </li>
+    <li>
+      <a
+        class="block"
         aria-current={segment === undefined || segment === "discussion"
           ? "page"
           : undefined}
-        href="."><Home32 class="carbon-icon" /><span>Home</span></a
+        href="."><Forum32 class="carbon-icon" /><span>Discussion</span></a
       >
     </li>
     <li>
@@ -38,14 +46,6 @@
         aria-current={segment === "profile" ? "page" : undefined}
         href="profile"
         ><UserAvatar32 class="carbon-icon" /> <span>Профиль</span></a
-      >
-    </li>
-    <li>
-      <a
-        class="block"
-        aria-current={segment === "timetable" ? "page" : undefined}
-        href="timetable"
-        ><Calendar32 class="carbon-icon" /> <span>Расписание</span></a
       >
     </li>
     <li>
@@ -115,11 +115,11 @@
   }
 
   [aria-current] :global(svg.carbon-icon) {
-    fill: #3182ce;
+    fill: var(--main-primary-color);
   }
 
   [aria-current] {
-    color: #3182ce;
+    color: var(--main-primary-color);
   }
 
   @media only screen and (max-width: 1002px) {
