@@ -1,8 +1,7 @@
 <script>
   export let value;
+  export let className;
 </script>
-
-<p>{value}</p>
 
 <style>
   p {
@@ -12,11 +11,16 @@
     font-size: 12px;
     font-weight: 500;
     line-height: 18px;
-    color: #586069;
     text-align: center;
-    background-color: #d1d5da80;
     border: 1px solid transparent;
     border-radius: 2em;
     margin: 6px 0 0;
   }
+
+  .bg-set {
+    /* color: #586069;
+    background-color: #d1d5da80; */
+  }
 </style>
+
+<p class="{className} bg-set">{value}</p>
