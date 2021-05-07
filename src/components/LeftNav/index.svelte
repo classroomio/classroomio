@@ -2,6 +2,7 @@
   import NewQuestion from "../NewQuestion/index.svelte";
   import Forum32 from "carbon-icons-svelte/lib/Forum32";
   import SendAlt32 from "carbon-icons-svelte/lib/SendAlt32";
+  import Catalog32 from "carbon-icons-svelte/lib/Catalog32";
   import UserAvatar32 from "carbon-icons-svelte/lib/UserAvatar32";
   import Calendar32 from "carbon-icons-svelte/lib/Calendar32";
   export let segment;
@@ -11,7 +12,7 @@
 </script>
 
 <nav class={navClass}>
-  <ul class="flex items-start flex-col justify-evenly">
+  <ul class="flex items-center flex-col justify-evenly">
     <div class="logo">
       <a href="/" title="Go to univapros Home" id="logo" data-hveid="8"
         ><img
@@ -26,9 +27,8 @@
     <li>
       <a
         class="block"
-        aria-current={segment === "classes" ? "page" : undefined}
-        href="classes"
-        ><Calendar32 class="carbon-icon" /> <span>Classes</span></a
+        aria-current={segment === "courses" ? "page" : undefined}
+        href="courses"><Catalog32 class="carbon-icon" /> <span>Courses</span></a
       >
     </li>
     <li>
@@ -69,21 +69,23 @@
         <SendAlt32 class="carbon-icon" /> <span>Канал</span>
       </a>
     </li>
-    <li class="new-question">
+    <!-- <li class="new-question">
       <NewQuestion />
-    </li>
+    </li> -->
   </ul>
 </nav>
 
 <style>
   nav {
-    height: 100vh;
+    height: 95vh;
     display: flex;
     flex-direction: column;
-    width: 20%;
+    width: fit-content;
     padding-top: 10px;
     position: sticky;
     top: 0;
+    border-right: 1px solid var(--border-color);
+    overflow: auto;
   }
 
   ul {
@@ -98,9 +100,9 @@
     clear: both;
   }
 
-  li.new-question {
+  /* li.new-question {
     margin-top: 10px;
-  }
+  } */
 
   a {
     text-decoration: none;
@@ -108,6 +110,7 @@
     font-weight: 700;
     display: flex;
     align-items: center;
+    flex-direction: column;
   }
 
   :global(svg.carbon-icon) {
