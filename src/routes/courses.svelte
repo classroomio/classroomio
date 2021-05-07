@@ -1,7 +1,7 @@
 <script>
-  import PageNav from "../components/PageNav/index.svelte";
-  import Classes from "../components/Classes/index.svelte";
   import { stores } from "@sapper/app";
+  import PageNav from "../components/PageNav/index.svelte";
+  import Courses from "../components/Courses/index.svelte";
 
   const { page } = stores();
   let tab = "";
@@ -10,12 +10,12 @@
 </script>
 
 <svelte:head>
-  <title>Classes</title>
+  <title>Courses</title>
 </svelte:head>
 
 <div class="root">
-  <PageNav title="Classes" />
-  <Classes />
+  <PageNav title="Courses" />
+  <Courses />
 </div>
 
 <style>

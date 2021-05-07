@@ -1,10 +1,16 @@
 <script>
   export let title = "";
   export let navItems = [];
+  let dynamicRootClass = "";
+
+  $: dynamicRootClass =
+    Array.isArray(navItems) && navItems.length > 4 ? "bring-down" : "";
 </script>
 
-<div class="header flex justify-between mb-2">
-  <h4 class="title">{title}</h4>
+<div class="header flex justify-between mb-2 {dynamicRootClass}">
+  {#if !!title}
+    <h4 class="title">{title}</h4>
+  {/if}
   {#if Array.isArray(navItems) && navItems.length}
     <div class="flex justify-evenly items-center">
       {#each navItems as item}
@@ -20,6 +26,10 @@
   .header {
     border-bottom: 1px solid var(--border-color);
     padding: 15px;
+    min-height: 61px;
+    position: sticky;
+    top: 0;
+    background-color: #fff;
   }
 
   .title {
@@ -46,6 +56,11 @@
     height: 3px;
     background-color: var(--main-primary-color);
     display: block;
+  }
+
+  .header.bring-down {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   @media only screen and (max-width: 1002px) {
