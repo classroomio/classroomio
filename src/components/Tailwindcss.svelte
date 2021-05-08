@@ -13,4 +13,8 @@
     font-weight: revert;
     margin: 0.8em 0;
   }
+
+  code {
+    white-space: pre-wrap;
+  }
 </style>
