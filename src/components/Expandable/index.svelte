@@ -4,6 +4,9 @@
   let isExpanded = true;
   export let handleClick = () => {};
   export let label = "";
+  export let hideSortIcon = false;
+  export let isGroupActive = false;
+  // export let subMenuItems = [];
 
   function onClick() {
     isExpanded = !isExpanded;
@@ -13,18 +16,25 @@
 
 <div>
   <div
-    class="relative flex items-center"
+    class="item relative flex items-center {isGroupActive && 'active'}"
     role="button"
     tabindex="0"
     on:click={onClick}
   >
-    <CaretSortDown20
-      class="carbon-icon-sort {isExpanded ? '' : 'carbon-icon-minimize'}"
-    />
-    <span class="ml-6 mb-2 {isExpanded ? 'font-bold' : ''}">{label}</span>
+    {#if !hideSortIcon}
+      <CaretSortDown20
+        class="carbon-icon-sort {isExpanded ? '' : 'carbon-icon-minimize'}"
+      />
+    {/if}
+    <span class="pl-6 py-2 font-bold">{label}</span>
   </div>
   {#if isExpanded}
     <div class="flex flex-col">
+      <!-- {#each subMenuItems as item}
+        <a class="item {item.isActive && 'active'} pl-6 py-2" href={item.link}>
+          # <span>{item.title}</span>
+        </a>
+      {/each} -->
       <slot />
     </div>
   {/if}
@@ -33,12 +43,25 @@
 <style>
   :global(svg.carbon-icon-sort) {
     position: absolute;
-    top: -5px;
+    top: 3px;
     left: 0;
   }
   :global(svg.carbon-icon-minimize) {
     transform: rotate(270deg);
-    top: 2px;
+    top: 10px;
     left: -6px;
+  }
+
+  .active {
+    background-color: #cae2f9;
+    border-left: 3px solid var(--main-primary-color);
+  }
+
+  .active span {
+    padding-left: 1.3rem;
+  }
+
+  .item:hover {
+    background-color: #cae2f9;
   }
 </style>

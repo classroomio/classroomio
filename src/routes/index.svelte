@@ -152,7 +152,9 @@
 </svelte:head>
 <div class="root md:w-3/4 mx-auto md:mb-20">
   <PageNav
-    title="Разговоры 😉😁"
+    title="Talks"
+    addButtonHref="/ask"
+    addButtonLabel="New"
     navItems={[
       {
         label: "Popular",

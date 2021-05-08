@@ -1,13 +1,16 @@
 <script>
+  import NewButton from "../NewButton/index.svelte";
   export let title = "";
   export let navItems = [];
+  export let addButtonHref;
+  export let addButtonLabel;
   let dynamicRootClass = "";
 
   $: dynamicRootClass =
     Array.isArray(navItems) && navItems.length > 4 ? "bring-down" : "";
 </script>
 
-<div class="header flex justify-between mb-2 {dynamicRootClass}">
+<div class="header flex items-center justify-between mb-2 {dynamicRootClass}">
   {#if !!title}
     <h4 class="title">{title}</h4>
   {/if}
@@ -18,6 +21,9 @@
           {item.label}
         </a>
       {/each}
+      {#if addButtonHref}
+        <NewButton href={addButtonHref} label={addButtonLabel} />
+      {/if}
     </div>
   {/if}
 </div>
