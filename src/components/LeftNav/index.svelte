@@ -1,5 +1,4 @@
 <script>
-  import NewQuestion from "../NewQuestion/index.svelte";
   import Forum32 from "carbon-icons-svelte/lib/Forum32";
   import SendAlt32 from "carbon-icons-svelte/lib/SendAlt32";
   import Catalog32 from "carbon-icons-svelte/lib/Catalog32";

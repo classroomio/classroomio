@@ -33,7 +33,7 @@
   <title>Спросить собшество вопрос</title>
 </svelte:head>
 
-<div class="lg:w-3/5 mx-auto md:mx-10 lg:mb-20">
+<div class="root lg:w-3/5 mx-auto md:mx-10 lg:mb-20">
   <h2 class="pb-2">Спросить собшество вопрос</h2>
   <div class="main-title my-1 flex">
     <div class="faculty-filter mr-1">
@@ -85,6 +85,10 @@
 </div>
 
 <style>
+  .root {
+    max-width: 600px;
+    margin: 10px auto 0;
+  }
   @media only screen and (max-width: 1002px) {
     .faculty-filter {
       margin-bottom: 10px;

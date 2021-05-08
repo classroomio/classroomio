@@ -94,6 +94,7 @@
 
 <style>
   .root {
-    margin: 15px 5px;
+    margin: 15px auto 5px;
+    max-width: 800px;
   }
 </style>
