@@ -3,6 +3,8 @@
   export let className;
 </script>
 
+<p class={className ? className : "bg-set"}>{value}</p>
+
 <style>
   p {
     display: inline-block;
@@ -18,9 +20,7 @@
   }
 
   .bg-set {
-    /* color: #586069;
-    background-color: #d1d5da80; */
+    color: #586069;
+    background-color: #d1d5da80;
   }
 </style>
-
-<p class="{className} bg-set">{value}</p>
