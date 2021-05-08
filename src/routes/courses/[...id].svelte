@@ -19,9 +19,6 @@
   export let slug;
   export let courseNavItem;
   export let lectureId;
-  console.log("slug", slug);
-  console.log("courseNavItem", courseNavItem);
-  console.log("lectureId", lectureId);
 
   const { page } = stores();
   let tab = "";
@@ -29,31 +26,37 @@
   $: tab = $page.query.tab || "lectures";
 </script>
 
+<style>
+  .root {
+    display: flex;
+    border-right: 1px solid var(--border-color);
+    width: 100%;
+  }
+
+  .rightBar {
+    width: 80%;
+  }
+</style>
+
 <svelte:head>
   <title>ReactJS</title>
 </svelte:head>
 
 <div class="root">
   <CourseNav />
-  {#if !courseNavItem}
-    <Overview />
-  {:else if courseNavItem === "score"}
-    <Scoreboard />
-  {:else if courseNavItem === "timetable"}
-    <TimeTable />
-  {:else if courseNavItem === "hometasks"}
-    <HomeTask />
-  {:else if courseNavItem === "lecture"}
-    <Lecture path={$page.path} {tab} />
-  {:else if courseNavItem === "people"}
-    <People />
-  {/if}
+  <div class="rightBar">
+    {#if !courseNavItem}
+      <Overview />
+    {:else if courseNavItem === 'score'}
+      <Scoreboard />
+    {:else if courseNavItem === 'timetable'}
+      <TimeTable />
+    {:else if courseNavItem === 'hometasks'}
+      <HomeTask />
+    {:else if courseNavItem === 'lecture'}
+      <Lecture path={$page.path} {tab} />
+    {:else if courseNavItem === 'people'}
+      <People />
+    {/if}
+  </div>
 </div>
-
-<style>
-  .root {
-    flex-grow: 1;
-    display: flex;
-    border-right: 1px solid var(--border-color);
-  }
-</style>

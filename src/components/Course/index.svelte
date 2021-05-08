@@ -15,24 +15,15 @@
 `;
 </script>
 
-<div class="root">
-  <PageNav title="Overview" />
-
-  <div class="body">
-    {@html marked(readme, {
-      breaks: true,
-      gfm: true,
-    })}
-  </div>
-</div>
-
 <style>
-  .root {
-    width: 100%;
-  }
-
   .body {
-    max-width: 600px;
+    max-width: 1000px;
     margin: 10px;
   }
 </style>
+
+<PageNav title="Overview" disableSticky={true} />
+
+<div class="body">
+  {@html marked(readme, { breaks: true, gfm: true })}
+</div>

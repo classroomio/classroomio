@@ -4,13 +4,14 @@
   export let navItems = [];
   export let addButtonHref;
   export let addButtonLabel;
+  export let disableSticky = false;
   let dynamicRootClass = "";
 
   $: dynamicRootClass =
     Array.isArray(navItems) && navItems.length > 4 ? "bring-down" : "";
 </script>
 
-<div class="header flex items-center justify-between mb-2 {dynamicRootClass}">
+<div class="header flex items-center justify-between mb-2 {!disableSticky && 'sticky'} {dynamicRootClass}">
   {#if !!title}
     <h4 class="title">{title}</h4>
   {/if}
@@ -33,9 +34,12 @@
     border-bottom: 1px solid var(--border-color);
     padding: 15px;
     min-height: 61px;
+    background-color: #fff;
+  }
+
+  .header.sticky {
     position: sticky;
     top: 0;
-    background-color: #fff;
   }
 
   .title {
