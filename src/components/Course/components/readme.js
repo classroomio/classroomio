@@ -1,22 +1,27 @@
-export default `
-<p align="center">
-  <a href="https://nextjs.org">
-    <img src="https://assets.vercel.com/image/upload/v1607554385/repositories/next-js/next-logo.png" height="128">
-    <h1 align="center">React.js</h1>
-  </a>
-</p>
+export default `# 1. Soft Skills
 
-## Getting Started
+## Notes
+Here I can write some notes to my students
 
-Visit <a aria-label="next.js learn" href="https://nextjs.org/learn">https://nextjs.org/learn</a> to get started with Next.js.
+## Slide
+<iframe
+  title="Lecture"
+  src="https://docs.google.com/presentation/d/e/2PACX-1vTi_ATSrNBL-FMP7oDSi2DtXU7L8yzL0KAocNc-k7EqXaMM-oCbnbVmQjHYP0QKAw3r-QZayNfx5EpM/embed?start=false&loop=false&delayms=3000"
+  frameborder="0"
+  width="100%"
+  height="569"
+  allowfullscreen="true"
+  mozallowfullscreen="true"
+  webkitallowfullscreen="true"></iframe>
 
-## Documentation
-
-Visit [https://nextjs.org/docs](https://nextjs.org/docs) to view the full documentation.
-
-## Who is using Next.js?
-
-Next.js is used by the world's leading companies. Check out the [Next.js Showcase](https://nextjs.org/showcase) to learn more.
+## Video
+<iframe
+  width="100%"
+  height="315"
+  src="https://www.youtube.com/embed/8pLZkbN9h_s"
+  title="YouTube video player"
+  frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  webkitallowfullscreen="true"></iframe>
 
 ## Community
 

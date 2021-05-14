@@ -1,7 +1,7 @@
 <script>
   import marked from "marked";
-  import PrimaryButton from "../../../PrimaryButton/index.svelte";
-  import readme from "../readme.js";
+  import PrimaryButton from "../../../../PrimaryButton/index.svelte";
+  import readme from "../../readme.js";
 
   let isWriteMode = true;
   export let value = readme;
