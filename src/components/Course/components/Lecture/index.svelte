@@ -2,7 +2,9 @@
   import PageNav from "../../../PageNav/index.svelte";
   import Classwork from "./Classwork.svelte";
   import Homework from "./Homework.svelte";
-  import Readme from "./Readme.svelte";
+  // import Readme from "./Readme.svelte";
+  import ReadmeInEditMode from "./Readme/EditMode.svelte";
+  import Switcher from "../../../Switcher/index.svelte";
 
   export let path;
   export let tab;
@@ -29,11 +31,15 @@
         href: `${path}?tab=hometasks`,
       },
     ]}
-  />
+  >
+    <div slot="widget">
+      <Switcher />
+    </div>
+  </PageNav>
 
   <div class="course">
     {#if tab === "lectures"}
-      <Readme />
+      <ReadmeInEditMode />
     {:else if tab === "classwork"}
       <Classwork />
     {:else if tab === "hometasks"}
