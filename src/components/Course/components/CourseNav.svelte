@@ -13,35 +13,42 @@
 
   const lectures = [
     {
-      title: "Lecture 1",
+      title: "Вводный урок. Soft skills",
       link: "/courses/1/lecture/1",
     },
     {
-      title: "Lecture 2",
+      title: "Введение в ReactJS",
       link: "/courses/1/lecture/2",
     },
     {
-      title: "Lecture 3",
+      title: "Компоненты",
       link: "/courses/1/lecture/3",
     },
     {
-      title: "Lecture 4",
+      title: "Состояние компонентов и пропсы",
       link: "/courses/1/lecture/4",
     },
     {
-      title: "Lecture 5",
+      title: "Жизненный цикл",
       link: "/courses/1/lecture/5",
     },
   ];
+
+  function getLectureNo(index) {
+    if (index < 9) {
+      return `00${index}`;
+    }
+
+    return `0${index}`;
+  }
 </script>
 
-<style>
+<style lang="scss">
   .root {
     height: 90vh;
     display: flex;
     flex-direction: column;
-    width: 20%;
-    max-width: 250px;
+    width: 360px;
     position: sticky;
     top: 0;
     border-right: 1px solid var(--border-color);
@@ -53,9 +60,19 @@
     border-left: 3px solid var(--main-primary-color);
     padding-left: 1.5rem;
   }
+  .course-counter {
+    font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+    background-color: inherit;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    line-height: 1.5;
+    margin-right: 1.5rem;
+  }
 
-  .item:hover {
-    background-color: #cae2f9;
+  .item {
+    &:hover {
+      background-color: #cae2f9;
+    }
   }
 </style>
 
@@ -68,11 +85,11 @@
       isGroupActive={$page.path === '/courses/1'}
       hideSortIcon />
     <Expandable label="Lectures">
-      {#each lectures as lecture}
+      {#each lectures as lecture, index}
         <a
           class="item {(lecture.link === $page.path || !$page.path.length > 3) && 'active'} pl-7 py-2"
           href={lecture.link}>
-          #
+          <span class="course-counter"> {getLectureNo(index)} </span>
           <span>{lecture.title}</span>
         </a>
       {/each}
