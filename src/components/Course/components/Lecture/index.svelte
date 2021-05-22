@@ -2,14 +2,23 @@
   import PageNav from "../../../PageNav/index.svelte";
   import Classwork from "./Classwork.svelte";
   import Homework from "./Homework.svelte";
-  // import Readme from "./Readme.svelte";
-  import ReadmeInEditMode from "./Readme/EditMode.svelte";
-  import Switcher from "../../../Switcher/index.svelte";
+  import Readme from "./Readme/index.svelte";
+  import PrimaryContainedButton from "../../../PrimaryContainedButton/index.svelte";
+
+  import MODES from "../../../../utils/constants/mode.js";
 
   export let path;
   export let tab;
+  export let mode;
 
-  $: console.log("path", path);
+  let modeLabel = "Edit";
+
+  $: modeLabel = mode === MODES.edit ? "Save" : "Edit";
+
+  function handleModeChange(e) {
+    e.preventDefault();
+    mode = mode === MODES.edit ? MODES.view : MODES.edit;
+  }
 </script>
 
 <div>
@@ -33,13 +42,16 @@
     ]}
   >
     <div slot="widget">
-      <Switcher />
+      <PrimaryContainedButton
+        label={modeLabel}
+        handleClick={handleModeChange}
+      />
     </div>
   </PageNav>
 
   <div class="course">
     {#if tab === "lectures"}
-      <ReadmeInEditMode />
+      <Readme {mode} />
     {:else if tab === "classwork"}
       <Classwork />
     {:else if tab === "hometasks"}
