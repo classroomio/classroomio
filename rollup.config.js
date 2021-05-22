@@ -28,7 +28,8 @@ export default {
     plugins: [
       replace({
         "process.browser": true,
-        "process.env.NODE_ENV": JSON.stringify(mode)
+        "process.env.NODE_ENV": JSON.stringify(mode),
+        preventAssignment: true
       }),
       svelte({
         preprocess,
@@ -82,7 +83,8 @@ export default {
     plugins: [
       replace({
         "process.browser": false,
-        "process.env.NODE_ENV": JSON.stringify(mode)
+        "process.env.NODE_ENV": JSON.stringify(mode),
+        preventAssignment: true
       }),
       svelte({
         preprocess,

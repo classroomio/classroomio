@@ -117,6 +117,8 @@
   }
 </script>
 
+<div class="bg-gray-100 rounded-xl p-8" />
+
 {#if currentQuestionIndex === 0}
   <div>
     <h2>Home task 1</h2>

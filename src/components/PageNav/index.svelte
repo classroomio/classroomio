@@ -1,5 +1,5 @@
 <script>
-  import NewButton from "../NewButton/index.svelte";
+  import NewButton from "../PrimaryContainedButton/index.svelte";
   export let title = "";
   export let navItems = [];
   export let addButtonHref;
@@ -11,7 +11,10 @@
     Array.isArray(navItems) && navItems.length > 4 ? "bring-down" : "";
 </script>
 
-<div class="header flex items-center justify-between mb-2 {!disableSticky && 'sticky'} {dynamicRootClass}">
+<div
+  class="header flex items-center justify-between mb-2 {!disableSticky &&
+    'sticky'} {dynamicRootClass}"
+>
   {#if !!title}
     <h4 class="title">{title}</h4>
   {/if}
@@ -27,6 +30,7 @@
       {/if}
     </div>
   {/if}
+  <slot name="widget" />
 </div>
 
 <style>
@@ -71,6 +75,9 @@
   .header.bring-down {
     flex-direction: column;
     align-items: flex-start;
+  }
+  .spacing {
+    flex-grow: 1;
   }
 
   @media only screen and (max-width: 1002px) {

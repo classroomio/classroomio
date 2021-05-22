@@ -1,6 +1,5 @@
 <script>
   import marked from "marked";
-  import PageNav from "../../PageNav/index.svelte";
 
   const readme = `
 # Introduction
@@ -15,15 +14,4 @@
 `;
 </script>
 
-<PageNav title="Overview" disableSticky={true} />
-
-<div class="body">
-  {@html marked(readme, { breaks: true, gfm: true })}
-</div>
-
-<style>
-  .body {
-    max-width: 1000px;
-    margin: 10px;
-  }
-</style>
+{@html marked(readme, { breaks: true, gfm: true })}
