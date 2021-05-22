@@ -15,13 +15,6 @@
 `;
 </script>
 
-<style>
-  .body {
-    max-width: 1000px;
-    margin: 10px;
-  }
-</style>
-
 <PageNav title="Overview" disableSticky={true} />
 
 <div class="body">
