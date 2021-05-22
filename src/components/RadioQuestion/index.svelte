@@ -1,5 +1,6 @@
 <script>
   import PrimaryButton from "../PrimaryButton/index.svelte";
+  import RadioItem from "../Form/RadioItem.svelte";
 
   export let title = "";
   export let name = "";
@@ -24,7 +25,6 @@
   }
 
   function handleFormSubmit(event) {
-    event.preventDefault();
     const value = getRadioVal(event.target, name);
     onSubmit(name, value);
     event.target.reset();
@@ -36,19 +36,18 @@
   }
 </script>
 
-<form on:submit={handleFormSubmit}>
+<form on:submit|preventDefault={handleFormSubmit}>
   <h2>{title}</h2>
 
   <div class="ml-4">
     {#each options as option}
       <div>
-        <input
-          type="radio"
+        <RadioItem
           {name}
           value={option.value}
           checked={option.value === defaultValue}
+          label={option.label}
         />
-        <label for={option.value}>{option.label}</label>
       </div>
     {/each}
   </div>
