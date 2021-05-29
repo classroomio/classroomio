@@ -3,6 +3,30 @@
   @tailwind components;
   @tailwind utilities;
 
+  /** Global scrollbar styles */
+  html {
+    --scrollbarBG: #fff;
+    --thumbBG: #ccc;
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--thumbBG) var(--scrollbarBG);
+  }
+
+  *::-webkit-scrollbar {
+    width: 11px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: var(--scrollbarBG);
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: var(--thumbBG);
+    border-radius: 10px;
+    border: 2px solid var(--scrollbarBG);
+  }
+
   h1,
   h2,
   h3,

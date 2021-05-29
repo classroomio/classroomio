@@ -48,6 +48,7 @@
     & .app {
       width: 300px;
       transition: all 1s ease-out;
+      position: relative;
     }
   }
 </style>
