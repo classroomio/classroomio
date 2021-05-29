@@ -3,8 +3,6 @@
   export let placeholder;
   export let value;
   export let options = [];
-
-  let answer = "Work on ";
 </script>
 
 <label class="block">
