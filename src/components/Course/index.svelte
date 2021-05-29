@@ -17,6 +17,6 @@
 
 <PageNav title="Overview" disableSticky={true} />
 
-<div class="body">
+<div class="px-3">
   {@html marked(readme, { breaks: true, gfm: true })}
 </div>
