@@ -3,7 +3,7 @@
   "description": "unidiscuss",
   "version": "0.0.1",
   "scripts": {
-    "dev": "nvm use 11.0.0 && sapper dev",
+    "dev": "sapper dev",
     "build": "sapper build --legacy",
     "export": "sapper export --legacy",
     "start": "node __sapper__/build"
