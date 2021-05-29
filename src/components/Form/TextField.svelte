@@ -2,14 +2,15 @@
   export let label;
   export let placeholder;
   export let value;
+  export let onKeyDown;
 </script>
 
 <label class="block">
-  <span class="text-gray-700">{label}</span>
+  {#if label}<span class="text-gray-700">{label}</span>{/if}
   <input
-    class="form-input mt-1 block w-full"
+    class="form-input mt-1 block w-full rounded-lg"
     type="text"
+    on:keydown={onKeyDown}
     {placeholder}
-    bind:value
-  />
+    bind:value />
 </label>

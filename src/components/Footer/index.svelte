@@ -1,5 +1,4 @@
 <script>
-
 </script>
 
 <style>
@@ -7,9 +6,13 @@
 </style>
 
 <!-- markup (zero or more items) goes here -->
-<div class="mx-auto my-1 lg:w-4/5 sm:w-full">
+<div class="my-1">
   <hr />
   <div class="flex justify-center w-full">
-    <span class="text-gray-700 text-sm py-2">Created with love by <a class="underline text-blue-700" href="https://twitter.com/rotimi_best" target="_blank">Rotimi Best</a></span>
+    <span class="text-gray-700 text-sm py-2">Created with love by
+      <a
+        class="underline text-blue-700"
+        href="https://twitter.com/rotimi_best"
+        target="_blank">Rotimi Best</a></span>
   </div>
 </div>
