@@ -15,6 +15,7 @@
   import Scoreboard from "../../components/Course/components/Scoreboard.svelte";
   import TimeTable from "../../components/Course/components/TimeTable.svelte";
   import CourseNav from "../../components/Course/components/CourseNav.svelte";
+  import Apps from "../../components/Apps/index.svelte";
 
   // export let slug;
   export let courseNavItem;
@@ -28,29 +29,6 @@
   $: mode = $page.query.mode;
 </script>
 
-<svelte:head>
-  <title>ReactJS</title>
-</svelte:head>
-
-<div class="root">
-  <CourseNav />
-  <div class="rightBar">
-    {#if !courseNavItem}
-      <Overview />
-    {:else if courseNavItem === "score"}
-      <Scoreboard />
-    {:else if courseNavItem === "timetable"}
-      <TimeTable />
-    {:else if courseNavItem === "hometasks"}
-      <HomeTask />
-    {:else if courseNavItem === "lecture"}
-      <Lecture path={$page.path} {tab} {mode} />
-    {:else if courseNavItem === "people"}
-      <People />
-    {/if}
-  </div>
-</div>
-
 <style>
   .root {
     display: flex;
@@ -62,3 +40,28 @@
     width: 80%;
   }
 </style>
+
+<svelte:head>
+  <title>ReactJS</title>
+</svelte:head>
+
+<div class="root">
+  <CourseNav />
+  <div class="rightBar">
+    {#if !courseNavItem}
+      <Overview />
+    {:else if courseNavItem === 'score'}
+      <Scoreboard />
+    {:else if courseNavItem === 'timetable'}
+      <TimeTable />
+    {:else if courseNavItem === 'hometasks'}
+      <HomeTask />
+    {:else if courseNavItem === 'lecture'}
+      <Lecture path={$page.path} {tab} {mode} />
+    {:else if courseNavItem === 'people'}
+      <People />
+    {/if}
+  </div>
+
+  <Apps />
+</div>

@@ -31,4 +31,9 @@
   code {
     white-space: pre-wrap;
   }
+
+  [aria-current] :global(svg.carbon-icon),
+  button.active :global(svg.carbon-icon) {
+    fill: var(--main-primary-color);
+  }
 </style>

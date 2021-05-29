@@ -1,6 +1,7 @@
 <script>
   import NewButton from "../PrimaryContainedButton/index.svelte";
   export let title = "";
+  export let overidableStyle = "";
   export let navItems = [];
   export let addButtonHref;
   export let addButtonLabel;
@@ -10,28 +11,6 @@
   $: dynamicRootClass =
     Array.isArray(navItems) && navItems.length > 4 ? "bring-down" : "";
 </script>
-
-<div
-  class="header flex items-center justify-between mb-2 {!disableSticky &&
-    'sticky'} {dynamicRootClass}"
->
-  {#if !!title}
-    <h4 class="title">{title}</h4>
-  {/if}
-  {#if Array.isArray(navItems) && navItems.length}
-    <div class="flex justify-evenly items-center">
-      {#each navItems as item}
-        <a class="mr-5 text-sm {item.isActive && 'active'}" href={item.href}>
-          {item.label}
-        </a>
-      {/each}
-      {#if addButtonHref}
-        <NewButton href={addButtonHref} label={addButtonLabel} />
-      {/if}
-    </div>
-  {/if}
-  <slot name="widget" />
-</div>
 
 <style>
   .header {
@@ -87,3 +66,24 @@
     }
   }
 </style>
+
+<div
+  class="header flex items-center justify-between mb-2 {!disableSticky && 'sticky'} {dynamicRootClass}"
+  style={overidableStyle}>
+  {#if !!title}
+    <h4 class="title">{title}</h4>
+  {/if}
+  {#if Array.isArray(navItems) && navItems.length}
+    <div class="flex justify-evenly items-center">
+      {#each navItems as item}
+        <a class="mr-5 text-sm {item.isActive && 'active'}" href={item.href}>
+          {item.label}
+        </a>
+      {/each}
+      {#if addButtonHref}
+        <NewButton href={addButtonHref} label={addButtonLabel} />
+      {/if}
+    </div>
+  {/if}
+  <slot name="widget" />
+</div>
