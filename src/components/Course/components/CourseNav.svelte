@@ -43,6 +43,55 @@
   }
 </script>
 
+<div class="root">
+  <PageNav title="React.JS" />
+  <div>
+    <Expandable
+      label="Overview"
+      handleClick={handleMainGroupClick("/courses/1")}
+      isGroupActive={$page.path === "/courses/1"}
+      hideSortIcon
+    />
+    <Expandable label="Lectures">
+      {#each lectures as lecture, index}
+        <a
+          class="item {(lecture.link === $page.path ||
+            !$page.path.length > 3) &&
+            'active'} pl-7 py-2"
+          href={lecture.link}
+        >
+          <span class="course-counter"> {getLectureNo(index)} </span>
+          <span>{lecture.title}</span>
+        </a>
+      {/each}
+    </Expandable>
+    <Expandable
+      label="People"
+      handleClick={handleMainGroupClick("/courses/1/people")}
+      isGroupActive={$page.path === "/courses/1/people"}
+      hideSortIcon
+    />
+    <Expandable
+      label="Timetable"
+      handleClick={handleMainGroupClick("/courses/1/timetable")}
+      isGroupActive={$page.path === "/courses/1/timetable"}
+      hideSortIcon
+    />
+    <Expandable
+      label="Scoreboard"
+      handleClick={handleMainGroupClick("/courses/1/score")}
+      isGroupActive={$page.path === "/courses/1/score"}
+      hideSortIcon
+    />
+    <Expandable
+      label="Home tasks"
+      handleClick={handleMainGroupClick("/courses/1/hometasks")}
+      isGroupActive={$page.path === "/courses/1/hometasks"}
+      hideSortIcon
+    />
+  </div>
+</div>
+
 <style lang="scss">
   .root {
     height: 90vh;
@@ -70,49 +119,9 @@
   }
 
   .item {
+    font-size: 0.875rem;
     &:hover {
       background-color: #cae2f9;
     }
   }
 </style>
-
-<div class="root">
-  <PageNav title="React.JS" />
-  <div>
-    <Expandable
-      label="Overview"
-      handleClick={handleMainGroupClick('/courses/1')}
-      isGroupActive={$page.path === '/courses/1'}
-      hideSortIcon />
-    <Expandable label="Lectures">
-      {#each lectures as lecture, index}
-        <a
-          class="item {(lecture.link === $page.path || !$page.path.length > 3) && 'active'} pl-7 py-2"
-          href={lecture.link}>
-          <span class="course-counter"> {getLectureNo(index)} </span>
-          <span>{lecture.title}</span>
-        </a>
-      {/each}
-    </Expandable>
-    <Expandable
-      label="People"
-      handleClick={handleMainGroupClick('/courses/1/people')}
-      isGroupActive={$page.path === '/courses/1/people'}
-      hideSortIcon />
-    <Expandable
-      label="Timetable"
-      handleClick={handleMainGroupClick('/courses/1/timetable')}
-      isGroupActive={$page.path === '/courses/1/timetable'}
-      hideSortIcon />
-    <Expandable
-      label="Scoreboard"
-      handleClick={handleMainGroupClick('/courses/1/score')}
-      isGroupActive={$page.path === '/courses/1/score'}
-      hideSortIcon />
-    <Expandable
-      label="Home tasks"
-      handleClick={handleMainGroupClick('/courses/1/hometasks')}
-      isGroupActive={$page.path === '/courses/1/hometasks'}
-      hideSortIcon />
-  </div>
-</div>
