@@ -3,7 +3,7 @@
   import SendAlt32 from "carbon-icons-svelte/lib/SendAlt32";
   import Catalog32 from "carbon-icons-svelte/lib/Catalog32";
   import UserAvatar32 from "carbon-icons-svelte/lib/UserAvatar32";
-  import Calendar32 from "carbon-icons-svelte/lib/Calendar32";
+  // import Calendar32 from "carbon-icons-svelte/lib/Calendar32";
   export let segment;
   let navClass = "";
 
@@ -45,14 +45,6 @@
     display: flex;
     align-items: center;
     flex-direction: column;
-  }
-
-  :global(svg.carbon-icon) {
-    margin-right: 10px;
-  }
-
-  [aria-current] :global(svg.carbon-icon) {
-    fill: var(--main-primary-color);
   }
 
   [aria-current] {
