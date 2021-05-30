@@ -3,7 +3,7 @@
   import PageNav from "../../../PageNav/index.svelte";
   import CloseButton from "../../../Buttons/Close/index.svelte";
   import TextField from "../../../Form/TextField.svelte";
-  import SendButton from "../../../Buttons/Send/index.svelte";
+  // import SendButton from "../../../Buttons/Send/index.svelte";
 
   export let handleClose;
 
@@ -63,17 +63,6 @@
   }
 </script>
 
-<style>
-  .body {
-    overflow: auto;
-    height: 88%;
-  }
-  .footer {
-    position: absolute;
-    bottom: 0px;
-  }
-</style>
-
 <PageNav title="LiveChat" overidableStyle="padding: 0 10px">
   <div slot="widget">
     <CloseButton onClick={handleClose} />
@@ -83,17 +72,16 @@
 <div bind:this={bodyRef} class="body">
   {#each chats as chat}
     <div class="pl-2 pb-4">
-      <a
-        class="flex items-center no-underline hover:underline text-black"
-        href="#">
+      <div class="flex items-center no-underline hover:underline text-black">
         <img
           alt="Placeholder"
           class="block rounded-full"
           width="24"
           height="20"
-          src={chat.avatar} />
+          src={chat.avatar}
+        />
         <p class="ml-2 text-sm font-bold">{chat.name}</p>
-      </a>
+      </div>
       <article class="prose prose-sm sm:prose pt-2 pl-8">
         {@html marked(chat.message)}
       </article>
@@ -102,11 +90,24 @@
 </div>
 
 <div class="footer">
-  <div class="flex items-center justify-between leading-none pl-2">
-    <TextField
-      placeholder="Say something"
-      bind:value={message}
-      onKeyDown={handleKeyDown} />
-    <SendButton onClick={handleSend} />
-  </div>
+  <!-- <div class="flex items-center justify-between leading-none pl-2"> -->
+  <TextField
+    placeholder="Say something"
+    bind:value={message}
+    onKeyDown={handleKeyDown}
+  />
+  <!-- <SendButton onClick={handleSend} /> -->
+  <!-- </div> -->
 </div>
+
+<style>
+  .body {
+    overflow: auto;
+    height: 80%;
+  }
+  .footer {
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+  }
+</style>

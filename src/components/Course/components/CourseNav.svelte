@@ -60,7 +60,7 @@
             'active'} pl-7 py-2"
           href={lecture.link}
         >
-          <span class="course-counter"> {getLectureNo(index)} </span>
+          <span class="course-counter"> {getLectureNo(index + 1)} </span>
           <span>{lecture.title}</span>
         </a>
       {/each}

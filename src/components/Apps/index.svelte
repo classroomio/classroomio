@@ -26,6 +26,60 @@
   }
 </script>
 
+<div class="root">
+  <div class="apps">
+    <IconButton
+      title="Live Chat"
+      value={APPS_CONSTANTS.APPS.LIVE_CHAT}
+      onClick={handleAppClick}
+      selected={APPS_CONSTANTS.APPS.LIVE_CHAT === selectedApp}
+    >
+      <SendAlt24 class="carbon-icon" />
+    </IconButton>
+
+    <IconButton
+      title="QandA"
+      value={APPS_CONSTANTS.APPS.QANDA}
+      onClick={handleAppClick}
+      selected={APPS_CONSTANTS.APPS.QANDA === selectedApp}
+    >
+      <Forum24 class="carbon-icon" />
+    </IconButton>
+
+    <IconButton
+      title="Notes"
+      value={APPS_CONSTANTS.APPS.NOTES}
+      onClick={handleAppClick}
+      selected={APPS_CONSTANTS.APPS.NOTES === selectedApp}
+    >
+      <AlignBoxTopLeft24 class="carbon-icon" />
+    </IconButton>
+
+    <IconButton
+      title="Poll"
+      value={APPS_CONSTANTS.APPS.POLL}
+      onClick={handleAppClick}
+      selected={APPS_CONSTANTS.APPS.POLL === selectedApp}
+    >
+      <ChartPie24 class="carbon-icon" />
+    </IconButton>
+  </div>
+
+  {#if !!selectedApp}
+    <div class="app">
+      {#if selectedApp === APPS_CONSTANTS.APPS.QANDA}
+        <QandA {handleClose} />
+      {:else if selectedApp === APPS_CONSTANTS.APPS.LIVE_CHAT}
+        <LiveChat {handleClose} />
+      {:else if selectedApp === APPS_CONSTANTS.APPS.POLL}
+        <Poll {handleClose} />
+      {:else if selectedApp === APPS_CONSTANTS.APPS.NOTES}
+        <Notes {handleClose} />
+      {/if}
+    </div>
+  {/if}
+</div>
+
 <style lang="scss">
   .root {
     height: 95vh;
@@ -52,53 +106,3 @@
     }
   }
 </style>
-
-<div class="root">
-  <div class="apps">
-    <IconButton
-      title="Live Chat"
-      value={APPS_CONSTANTS.APPS.LIVE_CHAT}
-      onClick={handleAppClick}
-      selected={APPS_CONSTANTS.APPS.LIVE_CHAT === selectedApp}>
-      <SendAlt24 class="carbon-icon" />
-    </IconButton>
-
-    <IconButton
-      title="QandA"
-      value={APPS_CONSTANTS.APPS.QANDA}
-      onClick={handleAppClick}
-      selected={APPS_CONSTANTS.APPS.QANDA === selectedApp}>
-      <Forum24 class="carbon-icon" />
-    </IconButton>
-
-    <IconButton
-      title="Notes"
-      value={APPS_CONSTANTS.APPS.NOTES}
-      onClick={handleAppClick}
-      selected={APPS_CONSTANTS.APPS.NOTES === selectedApp}>
-      <AlignBoxTopLeft24 class="carbon-icon" />
-    </IconButton>
-
-    <IconButton
-      title="Poll"
-      value={APPS_CONSTANTS.APPS.POLL}
-      onClick={handleAppClick}
-      selected={APPS_CONSTANTS.APPS.POLL === selectedApp}>
-      <ChartPie24 class="carbon-icon" />
-    </IconButton>
-  </div>
-
-  {#if !!selectedApp}
-    <div class="app">
-      {#if selectedApp === APPS_CONSTANTS.APPS.QANDA}
-        <QandA {handleClose} />
-      {:else if selectedApp === APPS_CONSTANTS.APPS.LIVE_CHAT}
-        <LiveChat {handleClose} />
-      {:else if selectedApp === APPS_CONSTANTS.APPS.POLL}
-        <Poll {handleClose} />
-      {:else if selectedApp === APPS_CONSTANTS.APPS.NOTES}
-        <Notes {handleClose} />
-      {/if}
-    </div>
-  {/if}
-</div>
