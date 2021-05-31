@@ -11,14 +11,12 @@
 
   .tooltip .tooltiptext {
     color: #fff;
-    padding: 6px 8px;
+    padding: 8px;
     font-size: 0.625rem;
-    /* max-width: 300px; */
-    /* word-wrap: break-word; */
     font-family: "Roboto", "Helvetica", "Arial", sans-serif;
     font-weight: 500;
     line-height: 1.4em;
-    border-radius: 4px;
+    border-radius: 8px;
     background-color: #000;
     visibility: hidden;
     text-align: center;
