@@ -4,11 +4,15 @@
   export let disabled = false;
   export let selected = false;
   export let value;
-  export let title;
+  export let toolTipProps = {
+    title: "",
+    hotkeys: [],
+  };
 
   function handleClick() {
     onClick(value);
   }
+  console.log("toolTipProps", toolTipProps);
 </script>
 
 <style lang="scss">
@@ -38,12 +42,11 @@
   }
 </style>
 
-<ToolTip title={title}>
+<ToolTip title={toolTipProps.title} hotkeys={toolTipProps.hotkeys}>
   <button
     class={`root ${selected && 'active'}`}
     {disabled}
     on:click={handleClick}>
     <slot />
   </button>
-
 </ToolTip>

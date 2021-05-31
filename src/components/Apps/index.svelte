@@ -1,4 +1,6 @@
 <script>
+  import { onMount } from "svelte";
+  import hotkeys from "hotkeys-js";
   import Forum24 from "carbon-icons-svelte/lib/Forum24";
   import AlignBoxTopLeft24 from "carbon-icons-svelte/lib/AlignBoxTopLeft24";
   import SendAlt24 from "carbon-icons-svelte/lib/SendAlt24";
@@ -24,61 +26,27 @@
       selectedApp = appName;
     }
   }
+
+  onMount(() => {
+    hotkeys("ctrl+1,ctrl+2,ctrl+3,ctrl+4", function (event, handler) {
+      event.preventDefault();
+      switch (handler.key) {
+        case "ctrl+1":
+          handleAppClick(APPS_CONSTANTS.APPS.LIVE_CHAT);
+          break;
+        case "ctrl+2":
+          handleAppClick(APPS_CONSTANTS.APPS.QANDA);
+          break;
+        case "ctrl+3":
+          handleAppClick(APPS_CONSTANTS.APPS.NOTES);
+          break;
+        case "ctrl+4":
+          handleAppClick(APPS_CONSTANTS.APPS.POLL);
+          break;
+      }
+    });
+  });
 </script>
-
-<div class="root">
-  <div class="apps">
-    <IconButton
-      title="Live Chat"
-      value={APPS_CONSTANTS.APPS.LIVE_CHAT}
-      onClick={handleAppClick}
-      selected={APPS_CONSTANTS.APPS.LIVE_CHAT === selectedApp}
-    >
-      <SendAlt24 class="carbon-icon" />
-    </IconButton>
-
-    <IconButton
-      title="QandA"
-      value={APPS_CONSTANTS.APPS.QANDA}
-      onClick={handleAppClick}
-      selected={APPS_CONSTANTS.APPS.QANDA === selectedApp}
-    >
-      <Forum24 class="carbon-icon" />
-    </IconButton>
-
-    <IconButton
-      title="Notes"
-      value={APPS_CONSTANTS.APPS.NOTES}
-      onClick={handleAppClick}
-      selected={APPS_CONSTANTS.APPS.NOTES === selectedApp}
-    >
-      <AlignBoxTopLeft24 class="carbon-icon" />
-    </IconButton>
-
-    <IconButton
-      title="Poll"
-      value={APPS_CONSTANTS.APPS.POLL}
-      onClick={handleAppClick}
-      selected={APPS_CONSTANTS.APPS.POLL === selectedApp}
-    >
-      <ChartPie24 class="carbon-icon" />
-    </IconButton>
-  </div>
-
-  {#if !!selectedApp}
-    <div class="app">
-      {#if selectedApp === APPS_CONSTANTS.APPS.QANDA}
-        <QandA {handleClose} />
-      {:else if selectedApp === APPS_CONSTANTS.APPS.LIVE_CHAT}
-        <LiveChat {handleClose} />
-      {:else if selectedApp === APPS_CONSTANTS.APPS.POLL}
-        <Poll {handleClose} />
-      {:else if selectedApp === APPS_CONSTANTS.APPS.NOTES}
-        <Notes {handleClose} />
-      {/if}
-    </div>
-  {/if}
-</div>
 
 <style lang="scss">
   .root {
@@ -106,3 +74,53 @@
     }
   }
 </style>
+
+<div class="root">
+  <div class="apps">
+    <IconButton
+      toolTipProps={{ title: 'Live Chat', hotkeys: ['Ctrl', '1'] }}
+      value={APPS_CONSTANTS.APPS.LIVE_CHAT}
+      onClick={handleAppClick}
+      selected={APPS_CONSTANTS.APPS.LIVE_CHAT === selectedApp}>
+      <SendAlt24 class="carbon-icon" />
+    </IconButton>
+
+    <IconButton
+      toolTipProps={{ title: 'QandA', hotkeys: ['Ctrl', '2'] }}
+      value={APPS_CONSTANTS.APPS.QANDA}
+      onClick={handleAppClick}
+      selected={APPS_CONSTANTS.APPS.QANDA === selectedApp}>
+      <Forum24 class="carbon-icon" />
+    </IconButton>
+
+    <IconButton
+      toolTipProps={{ title: 'Notes', hotkeys: ['Ctrl', '3'] }}
+      value={APPS_CONSTANTS.APPS.NOTES}
+      onClick={handleAppClick}
+      selected={APPS_CONSTANTS.APPS.NOTES === selectedApp}>
+      <AlignBoxTopLeft24 class="carbon-icon" />
+    </IconButton>
+
+    <IconButton
+      toolTipProps={{ title: 'Poll', hotkeys: ['Ctrl', '4'] }}
+      value={APPS_CONSTANTS.APPS.POLL}
+      onClick={handleAppClick}
+      selected={APPS_CONSTANTS.APPS.POLL === selectedApp}>
+      <ChartPie24 class="carbon-icon" />
+    </IconButton>
+  </div>
+
+  {#if !!selectedApp}
+    <div class="app">
+      {#if selectedApp === APPS_CONSTANTS.APPS.QANDA}
+        <QandA {handleClose} />
+      {:else if selectedApp === APPS_CONSTANTS.APPS.LIVE_CHAT}
+        <LiveChat {handleClose} />
+      {:else if selectedApp === APPS_CONSTANTS.APPS.POLL}
+        <Poll {handleClose} />
+      {:else if selectedApp === APPS_CONSTANTS.APPS.NOTES}
+        <Notes {handleClose} />
+      {/if}
+    </div>
+  {/if}
+</div>
