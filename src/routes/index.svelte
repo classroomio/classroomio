@@ -147,6 +147,53 @@
   $: discussions = getDiscussion(filterBy, allDiscussions);
 </script>
 
+<svelte:head>
+  <title>ClassroomIO - Help students in your university</title>
+</svelte:head>
+<div class="root md:w-3/4 mx-auto md:mb-20">
+  <PageNav
+    title="Talks"
+    addButtonHref="/ask"
+    addButtonLabel="Ask"
+    navItems={[
+      {
+        label: "Popular",
+        isActive: filterBy === "popular",
+        href: "?filter=popular",
+      },
+      {
+        label: "Recent",
+        isActive: filterBy === "recent",
+        href: "?filter=recent",
+      },
+      {
+        label: "Upvoted",
+        isActive: filterBy === "upvoted",
+        href: "?filter=upvoted",
+      },
+    ]}
+  />
+  {#each discussions as discussion}
+    <div class="discussion-box">
+      <Vote value={discussion.votes} />
+      <div class="discussion-topic-author">
+        <h4>
+          <a rel="prefetch" href="discussion/{discussion.id}"
+            >{discussion.title}</a
+          >
+        </h4>
+        <span>{discussion.author.name} asked 1 day ago</span>
+        <HashTags tags={discussion.tags} />
+      </div>
+      <Space />
+      <div class="flex items-center">
+        <AddComment20 />
+        <span>{discussion.comments}</span>
+      </div>
+    </div>
+  {/each}
+</div>
+
 <style>
   .root {
     max-width: 600px;
@@ -180,33 +227,3 @@
     font-size: 12px;
   }
 </style>
-
-<svelte:head>
-  <title>Unidiscuss - Help students in your university</title>
-</svelte:head>
-<div class="root md:w-3/4 mx-auto md:mb-20">
-  <PageNav
-    title="Talks"
-    addButtonHref="/ask"
-    addButtonLabel="Ask"
-    navItems={[{ label: 'Popular', isActive: filterBy === 'popular', href: '?filter=popular' }, { label: 'Recent', isActive: filterBy === 'recent', href: '?filter=recent' }, { label: 'Upvoted', isActive: filterBy === 'upvoted', href: '?filter=upvoted' }]} />
-  {#each discussions as discussion}
-    <div class="discussion-box">
-      <Vote value={discussion.votes} />
-      <div class="discussion-topic-author">
-        <h4>
-          <a
-            rel="prefetch"
-            href="discussion/{discussion.id}">{discussion.title}</a>
-        </h4>
-        <span>{discussion.author.name} asked 1 day ago</span>
-        <HashTags tags={discussion.tags} />
-      </div>
-      <Space />
-      <div class="flex items-center">
-        <AddComment20 />
-        <span>{discussion.comments}</span>
-      </div>
-    </div>
-  {/each}
-</div>

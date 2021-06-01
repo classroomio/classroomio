@@ -12,8 +12,17 @@
   function handleClick() {
     onClick(value);
   }
-  console.log("toolTipProps", toolTipProps);
 </script>
+
+<ToolTip title={toolTipProps.title} hotkeys={toolTipProps.hotkeys}>
+  <button
+    class={`root ${selected && "active"}`}
+    {disabled}
+    on:click={handleClick}
+  >
+    <slot />
+  </button>
+</ToolTip>
 
 <style lang="scss">
   .root {
@@ -41,12 +50,3 @@
     }
   }
 </style>
-
-<ToolTip title={toolTipProps.title} hotkeys={toolTipProps.hotkeys}>
-  <button
-    class={`root ${selected && 'active'}`}
-    {disabled}
-    on:click={handleClick}>
-    <slot />
-  </button>
-</ToolTip>
