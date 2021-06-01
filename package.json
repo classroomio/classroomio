@@ -1,6 +1,6 @@
 {
-  "name": "unidiscuss",
-  "description": "unidiscuss",
+  "name": "classroomio",
+  "description": "classroomio",
   "version": "0.0.1",
   "scripts": {
     "dev": "sapper dev",

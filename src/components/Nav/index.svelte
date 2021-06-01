@@ -12,7 +12,7 @@
         aria-current={segment === undefined || segment === "discussion"
           ? "page"
           : undefined}
-        href=".">UniDiscuss</a
+        href=".">ClassroomIO</a
       >
     </li>
   </ul>
@@ -24,7 +24,7 @@
     <li>
       <a
         class="flex items-center"
-        href="https://t.me/unidiscuss"
+        href="https://t.me/classroomio"
         target="_blank"
       >
         <img

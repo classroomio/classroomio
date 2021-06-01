@@ -10,13 +10,80 @@
   $: navClass = ["discussion"].includes(segment) ? "hide" : "";
 </script>
 
+<nav class={navClass}>
+  <ul class="flex items-center flex-col justify-evenly">
+    <div class="logo">
+      <a href="/" title="Go to ClassroomIO Home" id="logo" data-hveid="8"
+        ><img
+          src="/logo-192.png"
+          alt="ClassroomIO logo"
+          height="70"
+          width="70"
+          data-atf="1"
+        /></a
+      >
+    </div>
+    <li>
+      <a
+        class="block"
+        aria-current={segment === undefined || segment === "discussion"
+          ? "page"
+          : undefined}
+        href="."><Forum32 class="carbon-icon" /><span>Discussion</span></a
+      >
+    </li>
+    <li>
+      <a
+        class="block"
+        aria-current={segment === "courses" ? "page" : undefined}
+        href="courses"
+        ><Catalog32 class="carbon-icon" />
+        <span>Courses</span></a
+      >
+    </li>
+    <li>
+      <a
+        class="block"
+        aria-current={segment === "profile" ? "page" : undefined}
+        href="profile"
+        ><UserAvatar32 class="carbon-icon" />
+        <span>Профиль</span></a
+      >
+    </li>
+    <li>
+      <a
+        class="flex items-center"
+        href="https://t.me/classroomio"
+        target="_blank"
+      >
+        <!-- <img
+          alt="File:Telegram logo.svg"
+          class="mr-1"
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Telegram_alternative_logo.svg/50px-Telegram_alternative_logo.svg.png"
+          decoding="async"
+          width="25"
+          height="25"
+          srcset="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Telegram_alternative_logo.svg/50px-Telegram_alternative_logo.svg.png 1.5x, https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Telegram_logo.svg/1024px-Telegram_logo.svg.png 2x"
+          data-file-width="25"
+          data-file-height="25"
+        /> -->
+        <!-- <span><SendAlt32 class="carbon-icon" /> Канал</span> -->
+        <SendAlt32 class="carbon-icon" />
+        <span>Канал</span>
+      </a>
+    </li>
+    <!-- <li class="new-question">
+      <NewQuestion />
+    </li> -->
+  </ul>
+</nav>
+
 <style>
   nav {
     height: 95vh;
     display: flex;
     flex-direction: column;
     width: 100px;
-    padding-top: 10px;
     position: sticky;
     top: 0;
     border-right: 1px solid var(--border-color);
@@ -63,60 +130,3 @@
     }
   }
 </style>
-
-<nav class={navClass}>
-  <ul class="flex items-center flex-col justify-evenly">
-    <div class="logo">
-      <a href="/" title="Go to univapros Home" id="logo" data-hveid="8"><img
-          src="/logo-192.png"
-          alt="Univapros logo"
-          height="48"
-          width="48"
-          data-atf="1" /></a>
-    </div>
-    <li>
-      <a
-        class="block"
-        aria-current={segment === undefined || segment === 'discussion' ? 'page' : undefined}
-        href="."><Forum32 class="carbon-icon" /><span>Discussion</span></a>
-    </li>
-    <li>
-      <a
-        class="block"
-        aria-current={segment === 'courses' ? 'page' : undefined}
-        href="courses"><Catalog32 class="carbon-icon" />
-        <span>Courses</span></a>
-    </li>
-    <li>
-      <a
-        class="block"
-        aria-current={segment === 'profile' ? 'page' : undefined}
-        href="profile"><UserAvatar32 class="carbon-icon" />
-        <span>Профиль</span></a>
-    </li>
-    <li>
-      <a
-        class="flex items-center"
-        href="https://t.me/unidiscuss"
-        target="_blank">
-        <!-- <img
-          alt="File:Telegram logo.svg"
-          class="mr-1"
-          src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Telegram_alternative_logo.svg/50px-Telegram_alternative_logo.svg.png"
-          decoding="async"
-          width="25"
-          height="25"
-          srcset="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Telegram_alternative_logo.svg/50px-Telegram_alternative_logo.svg.png 1.5x, https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Telegram_logo.svg/1024px-Telegram_logo.svg.png 2x"
-          data-file-width="25"
-          data-file-height="25"
-        /> -->
-        <!-- <span><SendAlt32 class="carbon-icon" /> Канал</span> -->
-        <SendAlt32 class="carbon-icon" />
-        <span>Канал</span>
-      </a>
-    </li>
-    <!-- <li class="new-question">
-      <NewQuestion />
-    </li> -->
-  </ul>
-</nav>
