@@ -1,6 +1,6 @@
 # classroomio
 
-The tool every classroom will use in collaborting. 
+The tool every classroom use in collaborting in and outside the class. 
 
 ## Why build another LMS.
 
