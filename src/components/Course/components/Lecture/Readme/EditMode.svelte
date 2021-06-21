@@ -1,8 +1,16 @@
 <script>
-  import EditContent from "../../../../EditContent/index.svelte";
-  import readme from "../../readme.js";
+  // import EditContent from "../../../../EditContent/index.svelte";
+  import TextField from "../../../../Form/TextField.svelte";
+  // import readme from "../../readme.js";
 
-  let value = readme;
+  // let value = readme;
 </script>
 
-<EditContent {value} placeholder="Start typing your lesson" />
+
+<TextField label="Slide link" />
+<TextField label="Youtube link" />
+<!-- <EditContent
+  writeLabel="Lecture Note"
+  {value}
+  placeholder="Start typing your lesson"
+/> -->
