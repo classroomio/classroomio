@@ -1,6 +1,6 @@
 <script>
-  import PrimaryButton from "../PrimaryButton/index.svelte";
-  import RadioItem from "../Form/RadioItem.svelte";
+  import PrimaryButton from "../../PrimaryButton/index.svelte";
+  import RadioItem from "../../Form/RadioItem.svelte";
 
   export let title = "";
   export let name = "";

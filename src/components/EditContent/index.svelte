@@ -1,8 +1,8 @@
 <script>
   import marked from "marked";
-  import PrimaryButton from "../PrimaryButton/index.svelte";
 
   let isWriteMode = true;
+  export let writeLabel = 'Write';
   export let value;
   export let placeholder = ``;
   const activeClassName = "border-b-2 border-blue-700";
@@ -13,12 +13,12 @@
 </script>
 
 <div class="root">
-  <div class="flex justify-center">
+  <div class="flex">
     <button
       on:click={handleTabClick(1)}
       class="focus:outline-none p-2 {isWriteMode && `${activeClassName}`}"
     >
-      Write
+      {writeLabel}
     </button>
     <button
       on:click={handleTabClick(2)}
@@ -27,46 +27,6 @@
       Preview
     </button>
   </div>
-  <div class="block">
-    <span class="text-gray-700">Radio Buttons</span>
-    <div class="mt-2">
-      <div>
-        <label class="inline-flex items-center">
-          <input
-            class="form-radio"
-            type="radio"
-            checked
-            name="radio-direct"
-            value="1"
-          />
-          <span class="ml-2">Option 1</span>
-        </label>
-      </div>
-      <div>
-        <label class="inline-flex items-center">
-          <input
-            class="form-radio"
-            type="radio"
-            name="radio-direct"
-            value="2"
-          />
-          <span class="ml-2">Option 2</span>
-        </label>
-      </div>
-      <div>
-        <label class="inline-flex items-center">
-          <input
-            class="form-radio"
-            type="radio"
-            name="radio-direct"
-            value="3"
-          />
-          <span class="ml-2">Option 3</span>
-        </label>
-      </div>
-    </div>
-  </div>
-
   <div class="m-2 mb-0 p-0">
     {#if isWriteMode}
       <textarea
@@ -111,6 +71,11 @@
   .root {
     width: 100%;
     min-height: 200px;
+  }
+
+  .form-item {
+    display: flex;
+    align-items: flex-end;
   }
 
   textarea {
