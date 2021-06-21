@@ -1,6 +1,7 @@
 <script>
-  import RadioQuestion from "../../../RadioQuestion/index.svelte";
-  import PrimaryButton from "../../../PrimaryButton/index.svelte";
+  import RadioQuestion from "../../../../Question/RadioQuestion/index.svelte";
+  import CheckboxQuestion from "../../../../Question/CheckboxQuestion/index.svelte";
+  import PrimaryButton from "../../../../PrimaryButton/index.svelte";
 
   let answers = {};
   let currentQuestionIndex = 0;
@@ -110,6 +111,17 @@
     currentQuestionIndex += 1;
   }
 
+  function onCheckboxSubmit(name, value) {
+    if (!value) return;
+
+    answers = {
+      ...answers,
+      [name]: value,
+    };
+
+    currentQuestionIndex += 1;
+  }
+
   $: currentQuestion = questions[currentQuestionIndex - 1];
 
   function onPrevious() {
@@ -138,12 +150,22 @@
     <code>{JSON.stringify(answers)}</code>
   </pre>
 {:else}
-  <RadioQuestion
+  <!-- <RadioQuestion
     title={currentQuestionIndex + ". " + currentQuestion.title}
     name={currentQuestion.name}
     options={currentQuestion.options}
     defaultValue={answers[currentQuestion.name] || false}
     {onSubmit}
+    {onPrevious}
+    disablePreviousButton={currentQuestionIndex === 1}
+    isLast={currentQuestionIndex === questions.length}
+  /> -->
+  <CheckboxQuestion
+    title={currentQuestionIndex + ". " + currentQuestion.title}
+    name={currentQuestion.name}
+    options={currentQuestion.options}
+    defaultValue={answers[currentQuestion.name] || []}
+    onSubmit={onCheckboxSubmit}
     {onPrevious}
     disablePreviousButton={currentQuestionIndex === 1}
     isLast={currentQuestionIndex === questions.length}
