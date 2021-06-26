@@ -46,7 +46,7 @@
           {name}
           value={option.value}
           checked={defaultValue.includes(option.value)}
-          label={option.label}
+          label={option.label || option.value}
         />
       </div>
     {/each}

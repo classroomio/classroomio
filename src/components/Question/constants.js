@@ -26,7 +26,7 @@ export const QUESTION_TEMPLATE = {
   options: [
     {
       id: 1,
-      value: "",
+      value: null,
     },
   ],
 };
