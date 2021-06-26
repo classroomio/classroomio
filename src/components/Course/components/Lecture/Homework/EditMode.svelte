@@ -1,4 +1,11 @@
 <script>
+  import {
+    questionnaire,
+    handleAddOption,
+    handleAddQuestion,
+    handleRemoveOption,
+    handleRemoveQuestion,
+  } from "./store/index";
   import Delete24 from "carbon-icons-svelte/lib/Delete24";
   import AddFilled24 from "carbon-icons-svelte/lib/AddFilled24";
 
@@ -14,72 +21,11 @@
   import {
     QUESTION_TYPE,
     QUESTION_TYPES,
-    QUESTION_TEMPLATE,
   } from "../../../../Question/constants";
   // import EditContent from "../../../../EditContent/index.svelte";
   // import readme from "../../readme.js";
 
   // let value = readme;
-
-  let task = {
-    title: "",
-    description: null,
-  };
-  let questions = [];
-
-  function handleAddOption(questionId) {
-    return () => {
-      questions = questions.map((question) => {
-        if (question.id === questionId) {
-          return {
-            ...question,
-            options: [
-              ...question.options,
-              {
-                id: question.options.length + 1,
-                value: "",
-              },
-            ],
-          };
-        }
-
-        return question;
-      });
-    };
-  }
-
-  function handleOptionRemove(questionId, optionId) {
-    return () => {
-      questions = questions.map((question) => {
-        if (question.id === questionId) {
-          return {
-            ...question,
-            options: [
-              ...question.options.filter((option) => option.id !== optionId),
-            ],
-          };
-        }
-
-        return question;
-      });
-    };
-  }
-
-  function handleAddQuestion() {
-    questions = [
-      ...questions,
-      {
-        ...QUESTION_TEMPLATE,
-        id: questions.length + 1,
-      },
-    ];
-  }
-
-  function handleRemoveQuestion(questionId) {
-    return () => {
-      questions = questions.filter((q) => q.id !== questionId);
-    };
-  }
 </script>
 
 <div class="root relative">
@@ -93,15 +39,15 @@
   </div>
 
   <QuestionContainer isTitle={true}>
-    <TextField placeholder="Title" bind:value={task.title} />
+    <TextField placeholder="Title" bind:value={$questionnaire.title} />
 
     <TextArea
       placeholder="Description and Rules"
-      bind:value={task.description}
+      bind:value={$questionnaire.description}
     />
   </QuestionContainer>
 
-  {#each questions as question}
+  {#each $questionnaire.questions as question}
     <QuestionContainer onClose={handleRemoveQuestion(question.id)}>
       <div class="flex justify-between">
         <div class="mr-2 w-3/5">
@@ -121,7 +67,7 @@
               <div slot="iconbutton">
                 <IconButton
                   value={option.id}
-                  onClick={handleOptionRemove(question.id, option.id)}
+                  onClick={handleRemoveOption(question.id, option.id)}
                 >
                   <Delete24 class="carbon-icon" />
                 </IconButton>
@@ -138,7 +84,7 @@
               <div slot="iconbutton">
                 <IconButton
                   value={option.id}
-                  onClick={handleOptionRemove(question.id)}
+                  onClick={handleRemoveOption(question.id)}
                 >
                   <Delete24 class="carbon-icon" />
                 </IconButton>
