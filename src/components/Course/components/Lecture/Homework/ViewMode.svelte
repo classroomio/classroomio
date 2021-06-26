@@ -1,4 +1,5 @@
 <script>
+  import { questionnaire } from "./store/index";
   import RadioQuestion from "../../../../Question/RadioQuestion/index.svelte";
   import CheckboxQuestion from "../../../../Question/CheckboxQuestion/index.svelte";
   import PrimaryButton from "../../../../PrimaryButton/index.svelte";
@@ -7,96 +8,7 @@
   let currentQuestionIndex = 0;
   let currentQuestion = {};
 
-  const questions = [
-    {
-      name: "react-founder",
-      type: "radio",
-      title: "Who is the creator of React.js",
-      options: [
-        {
-          label: "Dan Abrahmov",
-          value: "danabrahmov",
-        },
-        {
-          label: "Google",
-          value: "google",
-        },
-        {
-          label: "Facebook",
-          value: "Facebook",
-        },
-        {
-          label: "Traversy Media",
-          value: "traversymedia",
-        },
-      ],
-    },
-    {
-      name: "vue-founder",
-      type: "radio",
-      title: "Who is the creator of Vue.js",
-      options: [
-        {
-          label: "Evan Vue",
-          value: "evan-vue",
-        },
-        {
-          label: "Mark Zukerberg",
-          value: "mark",
-        },
-        {
-          label: "Prince Charles",
-          value: "prince-charles",
-        },
-        {
-          label: "Bill Gates",
-          value: "gates-bill",
-        },
-      ],
-    },
-    {
-      name: "svelte-founder",
-      type: "radio",
-      title: "Who is the creator of Svelte.js",
-      options: [
-        {
-          label: "Hillary Svelte",
-          value: "danabrahmov",
-        },
-        {
-          label: "Mircosoft",
-          value: "microsoft",
-        },
-        {
-          label: "Elevate",
-          value: "elevate",
-        },
-        {
-          label: "Coding Train",
-          value: "coding-train",
-        },
-      ],
-    },
-    {
-      name: "angular-founder",
-      type: "radio",
-      title: "Who is the creator of Angular.js",
-      options: [
-        {
-          label: "Laryy page",
-          value: "larry-page",
-        },
-        {
-          label: "Google",
-          value: "google",
-        },
-        {
-          label: "Sales Force",
-          value: "sales-force",
-        },
-      ],
-    },
-  ];
+  const { questions, title, description } = $questionnaire;
 
   function handleStart() {
     currentQuestionIndex += 1;
@@ -131,12 +43,8 @@
 
 {#if currentQuestionIndex === 0}
   <div>
-    <h2>Home task 1</h2>
-    <p>
-      You will be to answer 10 questions, it isn't timed so you can take your
-      time to answer. You can also continue from where you left off, you don't
-      need to worry cause everything is automatically syncronized in the cloud.
-    </p>
+    <h2>{title}</h2>
+    <p>{description}</p>
 
     <PrimaryButton
       onClick={handleStart}
@@ -162,9 +70,9 @@
   /> -->
   <CheckboxQuestion
     title={currentQuestionIndex + ". " + currentQuestion.title}
-    name={currentQuestion.name}
+    name={`${currentQuestion.id}`}
     options={currentQuestion.options}
-    defaultValue={answers[currentQuestion.name] || []}
+    defaultValue={answers[currentQuestion.id] || []}
     onSubmit={onCheckboxSubmit}
     {onPrevious}
     disablePreviousButton={currentQuestionIndex === 1}
