@@ -3,6 +3,22 @@
   export let hotkeys = [];
 </script>
 
+{#if !!title}
+  <div class="tooltip">
+    <span class="tooltiptext z-20">
+      {title}
+      {#if Array.isArray(hotkeys) && hotkeys.length}
+        <span class="shortcut">
+          {#each hotkeys as hotkey}<span>{hotkey}</span>{/each}
+        </span>
+      {/if}
+    </span>
+    <slot />
+  </div>
+{:else}
+  <slot />
+{/if}
+
 <style>
   .tooltip {
     position: relative;
@@ -26,7 +42,7 @@
 
     /* Position the tooltip */
     position: absolute;
-    z-index: 1;
+    z-index: 2;
     /* top: 100%;
     left: 0; */
     top: 20%;
@@ -46,19 +62,3 @@
     margin-left: 5px;
   }
 </style>
-
-{#if !!title}
-  <div class="tooltip">
-    <span class="tooltiptext">
-      {title}
-      {#if Array.isArray(hotkeys) && hotkeys.length}
-        <span class="shortcut">
-          {#each hotkeys as hotkey}<span>{hotkey}</span>{/each}
-        </span>
-      {/if}
-    </span>
-    <slot />
-  </div>
-{:else}
-  <slot />
-{/if}

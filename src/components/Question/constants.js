@@ -18,3 +18,15 @@ export const QUESTION_TYPES = [
     text: "Paragraph",
   },
 ];
+
+export const QUESTION_TEMPLATE = {
+  id: 1,
+  title: "",
+  type: QUESTION_TYPE.RADIO,
+  options: [
+    {
+      id: 1,
+      value: "",
+    },
+  ],
+};

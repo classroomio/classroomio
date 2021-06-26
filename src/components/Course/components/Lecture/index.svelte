@@ -49,7 +49,7 @@
     </div>
   </PageNav>
 
-  <div class="course">
+  <div class="course relative">
     {#if tab === "lectures"}
       <Readme {mode} />
     {:else if tab === "classwork"}
