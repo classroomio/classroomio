@@ -3,6 +3,7 @@
   export let onClick;
   export let disabled = false;
   export let selected = false;
+  export let contained = false;
   export let value;
   export let toolTipProps = {
     title: "",
@@ -16,7 +17,7 @@
 
 <ToolTip title={toolTipProps.title} hotkeys={toolTipProps.hotkeys}>
   <button
-    class={`root ${selected && "active"}`}
+    class="root {selected && 'active'} {contained && 'contained'}"
     {disabled}
     on:click={handleClick}
   >
@@ -48,5 +49,9 @@
     &:hover {
       background-color: rgba(0, 0, 0, 0.04);
     }
+  }
+
+  .contained {
+    background-color: rgba(0, 0, 0, 0.04);
   }
 </style>
