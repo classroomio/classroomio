@@ -3,38 +3,34 @@
   import AddFilled24 from "carbon-icons-svelte/lib/AddFilled24";
 
   import TextField from "../../../../Form/TextField.svelte";
+  import TextArea from "../../../../Form/TextArea.svelte";
   import Checkbox from "../../../../Form/Checkbox.svelte";
   import RadioItem from "../../../../Form/RadioItem.svelte";
   import IconButton from "../../../../IconButton/index.svelte";
   import Select from "../../../../Form/Select.svelte";
   import PrimaryButton from "../../../../PrimaryButton/index.svelte";
+  import { VARIANTS } from "../../../../PrimaryButton/constants";
+  import QuestionContainer from "../../../../QuestionContainer/index.svelte";
   import {
     QUESTION_TYPE,
     QUESTION_TYPES,
+    QUESTION_TEMPLATE,
   } from "../../../../Question/constants";
   // import EditContent from "../../../../EditContent/index.svelte";
   // import readme from "../../readme.js";
 
   // let value = readme;
 
-  let questions = [
-    {
-      id: 1,
-      title: "",
-      type: QUESTION_TYPE.RADIO,
-      options: [
-        {
-          id: 1,
-          value: "",
-        },
-      ],
-    },
-  ];
+  let task = {
+    title: "",
+    description: null,
+  };
+  let questions = [];
 
-  function handleAddOption(id) {
+  function handleAddOption(questionId) {
     return () => {
       questions = questions.map((question) => {
-        if (question.id === id) {
+        if (question.id === questionId) {
           return {
             ...question,
             options: [
@@ -73,78 +69,108 @@
     questions = [
       ...questions,
       {
+        ...QUESTION_TEMPLATE,
         id: questions.length + 1,
-        title: "",
-        type: QUESTION_TYPE.RADIO,
-        options: [
-          {
-            id: 1,
-            value: "",
-          },
-        ],
       },
     ];
   }
+
+  function handleRemoveQuestion(questionId) {
+    return () => {
+      questions = questions.filter((q) => q.id !== questionId);
+    };
+  }
 </script>
 
-{#each questions as question}
-  <div
-    class="border-2 border-gray border-r-2 rounded-md px-4 py-2 mb-4 w-3/5 inline-block"
-  >
-    <div class="flex">
-      <div class="mr-2">
-        <TextField placeholder="Question" bind:value={question.title} />
-      </div>
-      <Select bind:value={question.type} options={QUESTION_TYPES} />
-    </div>
-
-    <div class="flex flex-col">
-      {#each question.options as option}
-        {#if QUESTION_TYPE.RADIO === question.type}
-          <RadioItem
-            isEditable={true}
-            name={question.title || "radio-name"}
-            bind:label={option.value}
-          >
-            <div slot="iconbutton">
-              <IconButton
-                value={option.id}
-                onClick={handleOptionRemove(question.id, option.id)}
-              >
-                <Delete24 class="carbon-icon" />
-              </IconButton>
-            </div>
-          </RadioItem>
-        {/if}
-
-        {#if QUESTION_TYPE.CHECKBOX === question.type}
-          <Checkbox
-            isEditable={true}
-            name={question || "checkbox-name"}
-            bind:label={option.value}
-          >
-            <div slot="iconbutton">
-              <IconButton
-                value={option.id}
-                onClick={handleOptionRemove(question.id)}
-              >
-                <Delete24 class="carbon-icon" />
-              </IconButton>
-            </div>
-          </Checkbox>
-        {/if}
-      {/each}
-    </div>
-
-    <div class="flex items-center">
-      <IconButton onClick={handleAddOption(question.id)}>
-        <AddFilled24 class="carbon-icon" />
-      </IconButton>
-      <p class="italic">Add option</p>
-    </div>
+<div class="root relative">
+  <div class="head flex bg-white items-center justify-between sticky right-0">
+    <h3>Home task</h3>
+    <PrimaryButton
+      variant={VARIANTS.OUTLINED}
+      onClick={handleAddQuestion}
+      label="Add Question"
+    />
   </div>
-{/each}
 
-<div class="flex justify-end mt-2">
-  <PrimaryButton onClick={handleAddQuestion} label="Add Question" />
+  <QuestionContainer isTitle={true}>
+    <TextField placeholder="Title" bind:value={task.title} />
+
+    <TextArea
+      placeholder="Description and Rules"
+      bind:value={task.description}
+    />
+  </QuestionContainer>
+
+  {#each questions as question}
+    <QuestionContainer onClose={handleRemoveQuestion(question.id)}>
+      <div class="flex justify-between">
+        <div class="mr-2 w-3/5">
+          <TextField placeholder="Question" bind:value={question.title} />
+        </div>
+        <Select bind:value={question.type} options={QUESTION_TYPES} />
+      </div>
+
+      <div class="flex flex-col">
+        {#each question.options as option}
+          {#if QUESTION_TYPE.RADIO === question.type}
+            <RadioItem
+              isEditable={true}
+              name={question.title || "radio-name"}
+              bind:label={option.value}
+            >
+              <div slot="iconbutton">
+                <IconButton
+                  value={option.id}
+                  onClick={handleOptionRemove(question.id, option.id)}
+                >
+                  <Delete24 class="carbon-icon" />
+                </IconButton>
+              </div>
+            </RadioItem>
+          {/if}
+
+          {#if QUESTION_TYPE.CHECKBOX === question.type}
+            <Checkbox
+              isEditable={true}
+              name={question || "checkbox-name"}
+              bind:label={option.value}
+            >
+              <div slot="iconbutton">
+                <IconButton
+                  value={option.id}
+                  onClick={handleOptionRemove(question.id)}
+                >
+                  <Delete24 class="carbon-icon" />
+                </IconButton>
+              </div>
+            </Checkbox>
+          {/if}
+
+          {#if QUESTION_TYPE.TEXTAREA === question.type}
+            <TextArea bind:value={option.value} />
+          {/if}
+        {/each}
+      </div>
+
+      {#if QUESTION_TYPE.TEXTAREA !== question.type}
+        <div class="flex items-center">
+          <IconButton onClick={handleAddOption(question.id)}>
+            <AddFilled24 class="carbon-icon" />
+          </IconButton>
+          <p class="italic">Add option</p>
+        </div>
+      {/if}
+    </QuestionContainer>
+  {/each}
 </div>
+
+<style>
+  .root {
+    max-width: 700px;
+  }
+
+  .head {
+    top: 63px;
+    z-index: 2;
+  }
+</style>

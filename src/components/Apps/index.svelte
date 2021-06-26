@@ -48,64 +48,41 @@
   });
 </script>
 
-<style lang="scss">
-  .root {
-    height: 95vh;
-    position: sticky;
-    top: 0;
-    border-left: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: row;
-
-    & .apps {
-      padding-top: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 60px;
-      border-right: 1px solid var(--border-color);
-      height: 100%;
-    }
-
-    & .app {
-      width: 300px;
-      transition: all 1s ease-out;
-      position: relative;
-    }
-  }
-</style>
-
 <div class="root">
   <div class="apps">
     <IconButton
-      toolTipProps={{ title: 'Live Chat', hotkeys: ['Ctrl', '1'] }}
+      toolTipProps={{ title: "Live Chat", hotkeys: ["Ctrl", "1"] }}
       value={APPS_CONSTANTS.APPS.LIVE_CHAT}
       onClick={handleAppClick}
-      selected={APPS_CONSTANTS.APPS.LIVE_CHAT === selectedApp}>
+      selected={APPS_CONSTANTS.APPS.LIVE_CHAT === selectedApp}
+    >
       <SendAlt24 class="carbon-icon" />
     </IconButton>
 
     <IconButton
-      toolTipProps={{ title: 'QandA', hotkeys: ['Ctrl', '2'] }}
+      toolTipProps={{ title: "QandA", hotkeys: ["Ctrl", "2"] }}
       value={APPS_CONSTANTS.APPS.QANDA}
       onClick={handleAppClick}
-      selected={APPS_CONSTANTS.APPS.QANDA === selectedApp}>
+      selected={APPS_CONSTANTS.APPS.QANDA === selectedApp}
+    >
       <Forum24 class="carbon-icon" />
     </IconButton>
 
     <IconButton
-      toolTipProps={{ title: 'Notes', hotkeys: ['Ctrl', '3'] }}
+      toolTipProps={{ title: "Notes", hotkeys: ["Ctrl", "3"] }}
       value={APPS_CONSTANTS.APPS.NOTES}
       onClick={handleAppClick}
-      selected={APPS_CONSTANTS.APPS.NOTES === selectedApp}>
+      selected={APPS_CONSTANTS.APPS.NOTES === selectedApp}
+    >
       <AlignBoxTopLeft24 class="carbon-icon" />
     </IconButton>
 
     <IconButton
-      toolTipProps={{ title: 'Poll', hotkeys: ['Ctrl', '4'] }}
+      toolTipProps={{ title: "Poll", hotkeys: ["Ctrl", "4"] }}
       value={APPS_CONSTANTS.APPS.POLL}
       onClick={handleAppClick}
-      selected={APPS_CONSTANTS.APPS.POLL === selectedApp}>
+      selected={APPS_CONSTANTS.APPS.POLL === selectedApp}
+    >
       <ChartPie24 class="carbon-icon" />
     </IconButton>
   </div>
@@ -124,3 +101,31 @@
     </div>
   {/if}
 </div>
+
+<style lang="scss">
+  .root {
+    height: 95vh;
+    position: sticky;
+    top: 0;
+    border-left: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: row;
+    z-index: 1;
+
+    & .apps {
+      padding-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 60px;
+      border-right: 1px solid var(--border-color);
+      height: 100%;
+    }
+
+    & .app {
+      width: 300px;
+      transition: all 1s ease-out;
+      position: relative;
+    }
+  }
+</style>
