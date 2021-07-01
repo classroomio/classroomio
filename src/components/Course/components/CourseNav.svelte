@@ -2,7 +2,11 @@
   import { stores, goto } from "@sapper/app";
   import Expandable from "../../Expandable/index.svelte";
   import PageNav from "../../PageNav/index.svelte";
+  import { getNavItemRoute, getLectureRoute, getLectureNo } from "../function";
+
   // export let lectureId;
+  export let courseId;
+
   const { page } = stores();
 
   function handleMainGroupClick(href) {
@@ -11,84 +15,92 @@
     };
   }
 
-  const lectures = [
+  const navItems = [
     {
-      title: "Вводный урок. Soft skills",
-      link: "/courses/1/lecture/1",
+      label: "Overview",
+      to: getNavItemRoute(courseId),
+      hideSortIcon: true,
     },
     {
-      title: "Введение в ReactJS",
-      link: "/courses/1/lecture/2",
+      label: "Lectures",
+      to: getLectureRoute(courseId),
+      hideSortIcon: false,
+      items: [
+        {
+          id: 1,
+          title: "Вводный урок. Soft skills",
+          to: getLectureRoute(courseId, 1),
+        },
+        {
+          id: 2,
+          title: "Введение в ReactJS",
+          to: getLectureRoute(courseId, 2),
+        },
+        {
+          id: 3,
+          title: "Компоненты",
+          to: getLectureRoute(courseId, 3),
+        },
+        {
+          id: 4,
+          title: "Состояние компонентов и пропсы",
+          to: getLectureRoute(courseId, 4),
+        },
+        {
+          id: 5,
+          title: "Жизненный цикл",
+          to: getLectureRoute(courseId, 5),
+        },
+      ],
     },
     {
-      title: "Компоненты",
-      link: "/courses/1/lecture/3",
+      label: "People",
+      to: getNavItemRoute(courseId, "people"),
+      hideSortIcon: true,
     },
     {
-      title: "Состояние компонентов и пропсы",
-      link: "/courses/1/lecture/4",
+      label: "Timetable",
+      to: getNavItemRoute(courseId, "timetable"),
+      hideSortIcon: true,
     },
     {
-      title: "Жизненный цикл",
-      link: "/courses/1/lecture/5",
+      label: "Scoreboard",
+      to: getNavItemRoute(courseId, "scoreboard"),
+      hideSortIcon: true,
+    },
+    {
+      label: "Hometasks",
+      to: getNavItemRoute(courseId, "hometasks"),
+      hideSortIcon: true,
     },
   ];
-
-  function getLectureNo(index) {
-    if (index < 9) {
-      return `00${index}`;
-    }
-
-    return `0${index}`;
-  }
 </script>
 
 <div class="root">
   <PageNav title="React.JS" />
   <div>
-    <Expandable
-      label="Overview"
-      handleClick={handleMainGroupClick("/courses/1")}
-      isGroupActive={$page.path === "/courses/1"}
-      hideSortIcon
-    />
-    <Expandable label="Lectures">
-      {#each lectures as lecture, index}
-        <a
-          class="item {(lecture.link === $page.path ||
-            !$page.path.length > 3) &&
-            'active'} pl-7 py-2"
-          href={lecture.link}
-        >
-          <span class="course-counter"> {getLectureNo(index + 1)} </span>
-          <span>{lecture.title}</span>
-        </a>
-      {/each}
-    </Expandable>
-    <Expandable
-      label="People"
-      handleClick={handleMainGroupClick("/courses/1/people")}
-      isGroupActive={$page.path === "/courses/1/people"}
-      hideSortIcon
-    />
-    <Expandable
-      label="Timetable"
-      handleClick={handleMainGroupClick("/courses/1/timetable")}
-      isGroupActive={$page.path === "/courses/1/timetable"}
-      hideSortIcon
-    />
-    <Expandable
-      label="Scoreboard"
-      handleClick={handleMainGroupClick("/courses/1/score")}
-      isGroupActive={$page.path === "/courses/1/score"}
-      hideSortIcon
-    />
-    <Expandable
-      label="Home tasks"
-      handleClick={handleMainGroupClick("/courses/1/hometasks")}
-      isGroupActive={$page.path === "/courses/1/hometasks"}
-      hideSortIcon
-    />
+    {#each navItems as navItem}
+      <Expandable
+        label={navItem.label}
+        handleClick={handleMainGroupClick(navItem.to)}
+        isGroupActive={$page.path === navItem.to}
+        hideSortIcon={navItem.hideSortIcon}
+      >
+        {#if Array.isArray(navItem.items)}
+          {#each navItem.items as item, index}
+            <a
+              class="item flex items-center {(item.to === $page.path ||
+                !$page.path.length > 3) &&
+                'active'} pl-7 py-2"
+              href={item.to}
+            >
+              <span class="course-counter"> {getLectureNo(index + 1)} </span>
+              <span>{item.title}</span>
+            </a>
+          {/each}
+        {/if}
+      </Expandable>
+    {/each}
   </div>
 </div>
 

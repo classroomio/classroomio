@@ -1,6 +1,6 @@
 <script>
   import { questionnaire } from "./store/index";
-  import RadioQuestion from "../../../../Question/RadioQuestion/index.svelte";
+  // import RadioQuestion from "../../../../Question/RadioQuestion/index.svelte";
   import CheckboxQuestion from "../../../../Question/CheckboxQuestion/index.svelte";
   import PrimaryButton from "../../../../PrimaryButton/index.svelte";
 

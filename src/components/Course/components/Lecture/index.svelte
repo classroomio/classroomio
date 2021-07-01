@@ -1,64 +1,55 @@
 <script>
+  import { onMount } from "svelte";
   import PageNav from "../../../PageNav/index.svelte";
   import Classwork from "./Classwork.svelte";
   import Homework from "./Homework/index.svelte";
   import Readme from "./Readme/index.svelte";
-  import PrimaryContainedButton from "../../../PrimaryContainedButton/index.svelte";
-
-  import MODES from "../../../../utils/constants/mode.js";
+  import Home from "./Home/index.svelte";
 
   export let path;
   export let tab;
-  export let mode;
+  export let showLectureHome;
 
-  let modeLabel = "Edit";
-
-  $: modeLabel = mode === MODES.edit ? "Save" : "Edit";
-
-  function handleModeChange(e) {
-    e.preventDefault();
-    mode = mode === MODES.edit ? MODES.view : MODES.edit;
-  }
+  onMount(() => {
+    console.log("mounted");
+  });
 </script>
 
-<div>
-  <PageNav
-    navItems={[
-      {
-        label: "README.md",
-        isActive: tab === "lectures",
-        href: `${path}?tab=lectures`,
-      },
-      {
-        label: "Class work",
-        isActive: tab === "classwork",
-        href: `${path}?tab=classwork`,
-      },
-      {
-        label: "Hometasks",
-        isActive: tab === "hometasks",
-        href: `${path}?tab=hometasks`,
-      },
-    ]}
-  >
-    <div slot="widget">
-      <PrimaryContainedButton
-        label={modeLabel}
-        handleClick={handleModeChange}
-      />
-    </div>
-  </PageNav>
+{#if showLectureHome}
+  <Home />
+{:else}
+  <div>
+    <PageNav
+      navItems={[
+        {
+          label: "README.md",
+          isActive: tab === "lectures",
+          href: `${path}?tab=lectures`,
+        },
+        {
+          label: "Class work",
+          isActive: tab === "classwork",
+          href: `${path}?tab=classwork`,
+        },
+        {
+          label: "Hometasks",
+          isActive: tab === "hometasks",
+          href: `${path}?tab=hometasks`,
+        },
+      ]}
+    />
 
-  <div class="course relative">
-    {#if tab === "lectures"}
-      <Readme {mode} />
-    {:else if tab === "classwork"}
-      <Classwork />
-    {:else if tab === "hometasks"}
-      <Homework {mode} />
-    {/if}
+    <div class="course relative">
+      {#if tab === "lectures"}
+        <Readme />
+      {:else if tab === "classwork"}
+        <Classwork />
+      {:else if tab === "hometasks"}
+        <Homework />
+      {/if}
+    </div>
   </div>
-</div>
+{/if}
 
 <style>
   .course {

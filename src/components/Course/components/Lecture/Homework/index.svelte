@@ -1,13 +1,25 @@
 <script>
-  import MODES from "../../../../../utils/constants/mode.js";
+  import PrimaryContainedButton from "../../../../PrimaryContainedButton/index.svelte";
+  import PageBody from "../../../../PageBody/index.svelte";
   import EditMode from "./EditMode.svelte";
   import ViewMode from "./ViewMode.svelte";
+  import MODES from "../../../../../utils/constants/mode.js";
 
-  export let mode = "";
+  let mode = MODES.view;
 </script>
 
-{#if mode === MODES.edit}
-  <EditMode />
-{:else}
-  <ViewMode />
-{/if}
+<PageBody>
+  <svelte:fragment slot="header">
+    <h3>Lesson 2 home exercises</h3>
+    <PrimaryContainedButton
+      label={mode === MODES.edit ? "Save" : "Edit"}
+      handleClick={() => (mode = mode === MODES.edit ? MODES.view : MODES.edit)}
+    />
+  </svelte:fragment>
+
+  {#if mode === MODES.edit}
+    <EditMode />
+  {:else}
+    <ViewMode />
+  {/if}
+</PageBody>
