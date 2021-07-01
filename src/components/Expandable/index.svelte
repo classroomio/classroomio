@@ -14,6 +14,27 @@
   }
 </script>
 
+<div>
+  <div
+    class="item relative flex items-center {isGroupActive && 'active'}"
+    role="button"
+    tabindex="0"
+    on:click={onClick}
+  >
+    {#if !hideSortIcon}
+      <CaretSortDown20
+        class="carbon-icon-sort {isExpanded ? '' : 'carbon-icon-minimize'}"
+      />
+    {/if}
+    <span class="font-bold">{label}</span>
+  </div>
+  {#if isExpanded}
+    <div class="flex flex-col">
+      <slot />
+    </div>
+  {/if}
+</div>
+
 <style>
   :global(svg.carbon-icon-sort) {
     position: absolute;
@@ -43,22 +64,3 @@
     background-color: #cae2f9;
   }
 </style>
-
-<div>
-  <div
-    class="item relative flex items-center {isGroupActive && 'active'}"
-    role="button"
-    tabindex="0"
-    on:click={onClick}>
-    {#if !hideSortIcon}
-      <CaretSortDown20
-        class="carbon-icon-sort {isExpanded ? '' : 'carbon-icon-minimize'}" />
-    {/if}
-    <span class="font-bold">{label}</span>
-  </div>
-  {#if isExpanded}
-    <div class="flex flex-col">
-      <slot />
-    </div>
-  {/if}
-</div>
