@@ -35,6 +35,8 @@
       variant={VARIANTS.OUTLINED}
       onClick={handleAddQuestion}
       label="Add Question"
+      mnb
+      v
     />
   </div>
 
