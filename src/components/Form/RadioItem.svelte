@@ -6,7 +6,7 @@
   export let isEditable = false;
 </script>
 
-<label class="inline-flex items-center">
+<label class="inline-flex items-center w-full">
   <input
     class="form-radio"
     type="radio"

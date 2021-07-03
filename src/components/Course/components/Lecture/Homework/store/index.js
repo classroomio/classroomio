@@ -11,19 +11,23 @@ export const questionnaire = writable({
   questions: [
     {
       id: "react-founder",
-      type: QUESTION_TYPE.CHECKBOX,
+      type: QUESTION_TYPE.RADIO,
       title: "Who is the creator of React.js",
       options: [
         {
+          id: 1,
           value: "Dan Abrahmov",
         },
         {
+          id: 2,
           value: "Google",
         },
         {
+          id: 3,
           value: "Facebook",
         },
         {
+          id: 4,
           value: "Traversy Media",
         },
       ],
@@ -32,17 +36,26 @@ export const questionnaire = writable({
       id: "vue-founder",
       type: QUESTION_TYPE.CHECKBOX,
       title: "Who is the creator of Vue.js",
+      code: `const name = 'Josh Perez';\nconst element = <h1>Hello, {name}</h1>;\n\nReactDOM.render(\n 
+    element,\,
+    document.getElementById('root')
+  )
+      `,
       options: [
         {
+          id: 1,
           value: "Evan Vue",
         },
         {
+          id: 2,
           value: "Mark Zukerberg",
         },
         {
+          id: 3,
           value: "Prince Charles",
         },
         {
+          id: 4,
           value: "Bill Gates",
         },
       ],
@@ -53,34 +66,28 @@ export const questionnaire = writable({
       title: "Who is the creator of Svelte.js",
       options: [
         {
+          id: 1,
           value: "Hillary Svelte",
         },
         {
+          id: 2,
           value: "Mircosoft",
         },
         {
+          id: 3,
           value: "Elevate",
         },
         {
+          id: 4,
           value: "Coding Train",
         },
       ],
     },
     {
       id: "angular-founder",
-      type: QUESTION_TYPE.CHECKBOX,
+      type: QUESTION_TYPE.TEXTAREA,
       title: "Who is the creator of Angular.js",
-      options: [
-        {
-          value: "Laryy page",
-        },
-        {
-          value: "Google",
-        },
-        {
-          value: "Sales Force",
-        },
-      ],
+      value: "",
     },
   ],
 });
@@ -95,6 +102,7 @@ export function handleAddQuestion() {
         {
           ...QUESTION_TEMPLATE,
           id: questions.length + 1,
+          value: "",
           options: [
             {
               id: 1,
@@ -120,7 +128,7 @@ export function handleAddOption(questionId) {
               options: [
                 ...question.options,
                 {
-                  id: question.options.length + 1,
+                  id: question.options[question.options.length - 1].id + 1,
                   value: "",
                 },
               ],
@@ -143,6 +151,11 @@ export function handleRemoveOption(questionId, optionId) {
         ...q,
         questions: questions.map((question) => {
           if (question.id === questionId) {
+            console.log(
+              "filter",
+              optionId,
+              question.options.filter((option) => option.id !== optionId)
+            );
             return {
               ...question,
               options: [
@@ -169,4 +182,24 @@ export function handleRemoveQuestion(questionId) {
       };
     });
   };
+}
+
+export function handleCode(questionId, shouldAdd = true) {
+  questionnaire.update((q) => {
+    const { questions } = q;
+
+    return {
+      ...q,
+      questions: questions.map((question) => {
+        if (question.id === questionId) {
+          return {
+            ...question,
+            code: shouldAdd ? "" : undefined,
+          };
+        }
+
+        return question;
+      }),
+    };
+  });
 }

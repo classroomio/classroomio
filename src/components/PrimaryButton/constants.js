@@ -6,5 +6,5 @@ export const VARIANTS = {
 export const VARIANTS_CLASS = {
   [VARIANTS.CONTAINED]: "bg-blue-700 hover:bg-blue-900 text-white font-bold",
   [VARIANTS.OUTLINED]:
-    "border border-blue-700 hover:border-blue-700 hover:bg-blue-200 text-black",
+    "border border-gray-700 hover:border-black-300 hover:bg-gray-200 text-black",
 };
