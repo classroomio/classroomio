@@ -1,25 +1,48 @@
 <script>
-  import PrimaryContainedButton from "../../../../PrimaryContainedButton/index.svelte";
+  import { handleAddQuestion } from "./store/index";
+  import PrimaryButton from "../../../../PrimaryButton/index.svelte";
   import PageBody from "../../../../PageBody/index.svelte";
   import EditMode from "./EditMode.svelte";
   import ViewMode from "./ViewMode.svelte";
   import MODES from "../../../../../utils/constants/mode.js";
+  import { VARIANTS } from "../../../../PrimaryButton/constants";
 
   let mode = MODES.view;
+  let preview = false;
 </script>
 
 <PageBody>
   <svelte:fragment slot="header">
-    <h3>Lesson 2 home exercises</h3>
-    <PrimaryContainedButton
-      label={mode === MODES.edit ? "Save" : "Edit"}
-      handleClick={() => (mode = mode === MODES.edit ? MODES.view : MODES.edit)}
-    />
+    <div class="flex items-center">
+      <PrimaryButton
+        className="mr-2"
+        variant={VARIANTS.OUTLINED}
+        label={mode === MODES.edit ? "Save" : "Edit"}
+        onClick={() => (mode = mode === MODES.edit ? MODES.view : MODES.edit)}
+      />
+      {#if mode === MODES.edit}
+        <PrimaryButton
+          variant={VARIANTS.OUTLINED}
+          label={preview ? "Edit" : "Preview"}
+          onClick={() => (preview = !preview)}
+        />
+      {/if}
+    </div>
+
+    {#if mode === MODES.edit}
+      <div class="flex items-center">
+        <PrimaryButton
+          variant={VARIANTS.OUTLINED}
+          onClick={handleAddQuestion}
+          label="Add Question"
+        />
+      </div>
+    {/if}
   </svelte:fragment>
 
   {#if mode === MODES.edit}
     <EditMode />
   {:else}
-    <ViewMode />
+    <ViewMode {preview} />
   {/if}
 </PageBody>

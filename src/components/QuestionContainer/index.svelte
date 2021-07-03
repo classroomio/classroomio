@@ -1,13 +1,30 @@
 <script>
+  // import { onMount } from "svelte";
   import CloseButton from "../Buttons/Close/index.svelte";
   export let isTitle = false;
   export let onClose;
+  export let scrollToQuestion = false;
+
+  let ref;
+
+  // onMount(() => {
+  //   if (scrollToQuestion) {
+  //     ref.scrollIntoView({ block: "end", behavior: "smooth" });
+  //   }
+  // });
+
+  $: {
+    if (ref && scrollToQuestion) {
+      ref.scrollIntoView({ block: "end", behavior: "smooth" });
+    }
+  }
 </script>
 
 <div
+  bind:this={ref}
   class="{isTitle
     ? 'border'
-    : 'border-2'} border-gray border-r-2 rounded-md mb-6 relative root"
+    : 'border-2'} border-gray border-r-2 rounded-md mb-6 relative root hover:border-blue-700"
 >
   {#if isTitle}
     <div class="title absolute bg-blue-700" />

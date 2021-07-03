@@ -1,9 +1,14 @@
 <script>
   import { questionnaire } from "./store/index";
-  // import RadioQuestion from "../../../../Question/RadioQuestion/index.svelte";
+  import RadioQuestion from "../../../../Question/RadioQuestion/index.svelte";
   import CheckboxQuestion from "../../../../Question/CheckboxQuestion/index.svelte";
   import PrimaryButton from "../../../../PrimaryButton/index.svelte";
 
+  import {
+    QUESTION_TYPE,
+    QUESTION_TYPES,
+  } from "../../../../Question/constants";
+  import Checkbox from "../../../../Form/Checkbox.svelte";
   let answers = {};
   let currentQuestionIndex = 0;
   let currentQuestion = {};
@@ -34,7 +39,10 @@
     currentQuestionIndex += 1;
   }
 
-  $: currentQuestion = questions[currentQuestionIndex - 1];
+  $: {
+    currentQuestion = questions[currentQuestionIndex - 1];
+    console.log("currentQuestion", currentQuestion);
+  }
 
   function onPrevious() {
     currentQuestionIndex -= 1;
@@ -43,7 +51,7 @@
 
 {#if currentQuestionIndex === 0}
   <div>
-    <h2>{title}</h2>
+    <h2 class="my-1">{title}</h2>
     <p>{description}</p>
 
     <PrimaryButton
@@ -57,21 +65,24 @@
   <pre>
     <code>{JSON.stringify(answers)}</code>
   </pre>
-{:else}
-  <!-- <RadioQuestion
+{:else if QUESTION_TYPE.RADIO === currentQuestion.type}
+  <RadioQuestion
     title={currentQuestionIndex + ". " + currentQuestion.title}
-    name={currentQuestion.name}
+    name={`${currentQuestion.id}`}
     options={currentQuestion.options}
-    defaultValue={answers[currentQuestion.name] || false}
+    code={currentQuestion.code}
+    defaultValue={answers[`${currentQuestion.id}`] || false}
     {onSubmit}
     {onPrevious}
     disablePreviousButton={currentQuestionIndex === 1}
     isLast={currentQuestionIndex === questions.length}
-  /> -->
+  />
+{:else if QUESTION_TYPE.CHECKBOX === currentQuestion.type}
   <CheckboxQuestion
     title={currentQuestionIndex + ". " + currentQuestion.title}
     name={`${currentQuestion.id}`}
     options={currentQuestion.options}
+    code={currentQuestion.code}
     defaultValue={answers[currentQuestion.id] || []}
     onSubmit={onCheckboxSubmit}
     {onPrevious}
