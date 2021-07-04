@@ -61,6 +61,6 @@
   }
 
   .rightBar {
-    width: 80%;
+    flex-grow: 1;
   }
 </style>

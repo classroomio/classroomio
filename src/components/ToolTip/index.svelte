@@ -1,11 +1,12 @@
 <script>
   export let title;
   export let hotkeys = [];
+  export let direction;
 </script>
 
 {#if !!title}
   <div class="tooltip">
-    <span class="tooltiptext z-20">
+    <span class="tooltiptext z-20 {direction === 'right' && 'right'}">
       {title}
       {#if Array.isArray(hotkeys) && hotkeys.length}
         <span class="shortcut">
@@ -24,7 +25,10 @@
     position: relative;
     display: inline-block;
   }
-
+  .right {
+    left: 100%;
+    right: unset !important;
+  }
   .tooltip .tooltiptext {
     color: #fff;
     padding: 8px;

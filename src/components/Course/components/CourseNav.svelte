@@ -1,11 +1,18 @@
 <script>
+  import { onMount } from "svelte";
+  import hotkeys from "hotkeys-js";
+  import ChevronLeft32 from "carbon-icons-svelte/lib/ChevronLeft32";
+  import ChevronRight32 from "carbon-icons-svelte/lib/ChevronRight32";
   import { stores, goto } from "@sapper/app";
   import Expandable from "../../Expandable/index.svelte";
   import PageNav from "../../PageNav/index.svelte";
+  import IconButton from "../../IconButton/index.svelte";
   import { getNavItemRoute, getLectureRoute, getLectureNo } from "../function";
 
   // export let lectureId;
   export let courseId;
+
+  let show = true;
 
   const { page } = stores();
 
@@ -74,33 +81,63 @@
       hideSortIcon: true,
     },
   ];
+
+  onMount(() => {
+    hotkeys("ctrl+b", function (event, handler) {
+      event.preventDefault();
+      switch (handler.key) {
+        case "ctrl+b":
+          show = !show;
+          break;
+      }
+    });
+  });
 </script>
 
-<div class="root">
-  <PageNav title="React.JS" />
-  <div>
-    {#each navItems as navItem}
-      <Expandable
-        label={navItem.label}
-        handleClick={handleMainGroupClick(navItem.to)}
-        isGroupActive={$page.path === navItem.to}
-        hideSortIcon={navItem.hideSortIcon}
-      >
-        {#if Array.isArray(navItem.items)}
-          {#each navItem.items as item, index}
-            <a
-              class="item flex items-center {(item.to === $page.path ||
-                !$page.path.length > 3) &&
-                'active'} pl-7 py-2"
-              href={item.to}
-            >
-              <span class="course-counter"> {getLectureNo(index + 1)} </span>
-              <span>{item.title}</span>
-            </a>
-          {/each}
-        {/if}
-      </Expandable>
-    {/each}
+<div class="root z-10 {!show && 'hide'}">
+  {#if show}
+    <PageNav title="React.JS" />
+    <div>
+      {#each navItems as navItem}
+        <Expandable
+          label={navItem.label}
+          handleClick={handleMainGroupClick(navItem.to)}
+          isGroupActive={$page.path === navItem.to}
+          hideSortIcon={navItem.hideSortIcon}
+        >
+          {#if Array.isArray(navItem.items)}
+            {#each navItem.items as item, index}
+              <a
+                class="item flex items-center {(item.to === $page.path ||
+                  !$page.path.length > 3) &&
+                  'active'} pl-7 py-2"
+                href={item.to}
+              >
+                <span class="course-counter"> {getLectureNo(index + 1)} </span>
+                <span>{item.title}</span>
+              </a>
+            {/each}
+          {/if}
+        </Expandable>
+      {/each}
+    </div>
+  {/if}
+  <div class="toggler absolute bottom-0 -right-0.5">
+    <IconButton
+      value="toggle"
+      onClick={() => (show = !show)}
+      toolTipProps={{
+        title: "Toggle sidebar",
+        hotkeys: ["Ctrl", "B"],
+        direction: "right",
+      }}
+    >
+      {#if show}
+        <ChevronLeft32 class="carbon-icon" />
+      {:else}
+        <ChevronRight32 class="carbon-icon" />
+      {/if}
+    </IconButton>
   </div>
 </div>
 
@@ -113,7 +150,10 @@
     position: sticky;
     top: 0;
     border-right: 1px solid var(--border-color);
-    overflow: auto;
+
+    &.hide {
+      width: 0px;
+    }
   }
 
   .active {
@@ -135,5 +175,13 @@
     &:hover {
       background-color: #cae2f9;
     }
+  }
+
+  .toggler {
+    right: -58px;
+    z-index: 10;
+    border: 1px solid var(--border-color);
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
   }
 </style>
