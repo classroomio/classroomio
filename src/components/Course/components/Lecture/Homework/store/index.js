@@ -31,6 +31,7 @@ export const questionnaire = writable({
           value: "Traversy Media",
         },
       ],
+      answers: [],
     },
     {
       id: "vue-founder",
@@ -59,6 +60,7 @@ export const questionnaire = writable({
           value: "Bill Gates",
         },
       ],
+      answers: [],
     },
     {
       id: "svelte-founder",
@@ -82,6 +84,7 @@ export const questionnaire = writable({
           value: "Coding Train",
         },
       ],
+      answers: [2],
     },
     {
       id: "angular-founder",
@@ -103,6 +106,7 @@ export function handleAddQuestion() {
           ...QUESTION_TEMPLATE,
           id: questions.length + 1,
           value: "",
+          answers: [],
           options: [
             {
               id: 1,
@@ -151,11 +155,6 @@ export function handleRemoveOption(questionId, optionId) {
         ...q,
         questions: questions.map((question) => {
           if (question.id === questionId) {
-            console.log(
-              "filter",
-              optionId,
-              question.options.filter((option) => option.id !== optionId)
-            );
             return {
               ...question,
               options: [
@@ -194,7 +193,7 @@ export function handleCode(questionId, shouldAdd = true) {
         if (question.id === questionId) {
           return {
             ...question,
-            code: shouldAdd ? "" : undefined,
+            code: shouldAdd ? (question.code || "") : undefined,
           };
         }
 
@@ -202,4 +201,41 @@ export function handleCode(questionId, shouldAdd = true) {
       }),
     };
   });
+}
+
+export function handleAnswerSelect(questionId, optionId) {
+  return () => {
+    questionnaire.update((q) => {
+      const { questions } = q;
+
+      return {
+        ...q,
+        questions: questions.map((question) => {
+          if (question.id === questionId) {
+            const selectOption = question.options.find(option => option.id === optionId);
+            const newAnswers = [];
+
+            if (question.answers.includes(selectOption.id)) {
+              newAnswers.push(
+                ...question.answers.filter(answer => answer !== selectOption.id)
+              )
+            } else {
+              newAnswers.push(
+                ...question.answers,
+                selectOption.id
+              )
+            }
+
+            return {
+              ...question,
+              answers: newAnswers
+            };
+          }
+
+          return question;
+        }),
+      };
+    });
+
+  }
 }
