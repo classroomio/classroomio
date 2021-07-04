@@ -3,7 +3,7 @@
   //   border border-gray-300 rounded-md p-3 bg-blue-200 bg-opacity-25
 </script>
 
-<div class="root mt-4 mx-auto max-w-3xl relative">
+<div class="root mt-4 mx-auto max-w-3xl relative pb-5">
   {#if $$slots.header}
     <div
       class="head flex bg-white items-center justify-between sticky right-0 w-full py-3"

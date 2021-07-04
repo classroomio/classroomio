@@ -20,7 +20,7 @@
         label={mode === MODES.edit ? "Save" : "Edit"}
         onClick={() => (mode = mode === MODES.edit ? MODES.view : MODES.edit)}
       />
-      {#if mode === MODES.edit}
+      {#if mode === MODES.edit || preview}
         <PrimaryButton
           variant={VARIANTS.OUTLINED}
           label={preview ? "Edit" : "Preview"}
@@ -40,7 +40,7 @@
     {/if}
   </svelte:fragment>
 
-  {#if mode === MODES.edit}
+  {#if mode === MODES.edit && !preview}
     <EditMode />
   {:else}
     <ViewMode {preview} />

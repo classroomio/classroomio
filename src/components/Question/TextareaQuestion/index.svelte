@@ -1,13 +1,12 @@
 <script>
   import PrimaryButton from "../../PrimaryButton/index.svelte";
   import { VARIANTS } from "../../PrimaryButton/constants";
-  import RadioItem from "../../Form/RadioItem.svelte";
   import CodeSnippet from "../../CodeSnippet/index.svelte";
+  import TextArea from "../../Form/TextArea.svelte";
 
   export let title = "";
   export let code;
   export let name = "";
-  export let options = [];
   export let onSubmit = () => {};
   export let onPrevious = () => {};
   export let defaultValue = "";
@@ -15,23 +14,10 @@
   export let isLast = false;
   export let isPreview = false;
 
-  function getRadioVal(form, name) {
-    let val;
-    const radios = form.elements[name];
-
-    for (let i = 0, len = radios.length; i < len; i++) {
-      if (radios[i].checked) {
-        val = radios[i].value;
-        break;
-      }
-    }
-    return val;
-  }
-
   function handleFormSubmit(event) {
     if (isPreview) return;
-    const value = getRadioVal(event.target, name);
-    onSubmit(name, value);
+
+    onSubmit(name, defaultValue);
     event.target.reset();
   }
 
@@ -49,28 +35,20 @@
   {/if}
 
   <div class="ml-4">
-    {#each options as option}
-      <button
-        class="cursor-pointer text-left my-2 border border-gray-300 p-2 rounded-md cursor-pointer hover:bg-gray-200 w-full"
-        type="button"
-      >
-        <RadioItem
-          {name}
-          value={option.value}
-          checked={option.value === defaultValue}
-          label={option.label || option.value}
-        />
-      </button>
-    {/each}
+    <TextArea
+      bind:value={defaultValue}
+      rows="5"
+      placeholder="Write your answer here"
+    />
   </div>
 
   {#if !isPreview}
     <div class="mt-3 flex items-center justify-between w-full">
       <PrimaryButton
+        variant={VARIANTS.OUTLINED}
         onClick={handlePrevious}
         label="Previous"
         isDisabled={disablePreviousButton}
-        variant={VARIANTS.OUTLINED}
       />
       <PrimaryButton
         variant={VARIANTS.OUTLINED}
