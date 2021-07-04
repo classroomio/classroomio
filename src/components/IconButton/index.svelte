@@ -3,11 +3,13 @@
   export let onClick;
   export let disabled = false;
   export let selected = false;
+  export let buttonClassName = "";
   export let contained = false;
   export let value;
   export let toolTipProps = {
     title: "",
     hotkeys: [],
+    direction: "",
   };
 
   function handleClick() {
@@ -15,9 +17,14 @@
   }
 </script>
 
-<ToolTip title={toolTipProps.title} hotkeys={toolTipProps.hotkeys}>
+<ToolTip
+  title={toolTipProps.title}
+  hotkeys={toolTipProps.hotkeys}
+  direction={toolTipProps.direction}
+>
   <button
-    class="root {selected && 'active'} {contained && 'contained'}"
+    class="root {selected && 'active'} {contained &&
+      'contained'} {buttonClassName}"
     {disabled}
     on:click={handleClick}
   >
