@@ -5,9 +5,13 @@
     handleRemoveOption,
     handleRemoveQuestion,
     handleCode,
+    handleAnswerSelect,
   } from "./store/index";
   import Delete24 from "carbon-icons-svelte/lib/Delete24";
   import AddFilled24 from "carbon-icons-svelte/lib/AddFilled24";
+  import CheckmarkFilled24 from "carbon-icons-svelte/lib/CheckmarkFilled24";
+  import CheckmarkOutline24 from "carbon-icons-svelte/lib/CheckmarkOutline24";
+  // import Subtract24 from "carbon-icons-svelte/lib/Subtract24";
 
   import TextField from "../../../../Form/TextField.svelte";
   import TextArea from "../../../../Form/TextArea.svelte";
@@ -104,45 +108,71 @@
       {/if}
 
       <div class="flex flex-col mt-2">
-        {#each question.options as option}
-          {#if QUESTION_TYPE.RADIO === question.type}
+        {#if QUESTION_TYPE.RADIO === question.type}
+          {#each question.options as option}
             <RadioItem
               isEditable={true}
               name={question.title || "radio-name"}
               bind:label={option.value}
             >
-              <div slot="iconbutton">
+              <div slot="iconbutton" class="flex items-center">
                 <IconButton
                   value={option.id}
                   onClick={handleRemoveOption(question.id, option.id)}
                 >
                   <Delete24 class="carbon-icon" />
                 </IconButton>
+                <IconButton
+                  value={option.id}
+                  onClick={handleAnswerSelect(question.id, option.id)}
+                  buttonClassName={question.answers.includes(option.id) &&
+                    "success"}
+                >
+                  {#if question.answers.includes(option.id)}
+                    <CheckmarkFilled24 class="carbon-icon" />
+                  {:else}
+                    <CheckmarkOutline24 class="carbon-icon" />
+                  {/if}
+                </IconButton>
               </div>
             </RadioItem>
-          {/if}
+          {/each}
+        {/if}
 
-          {#if QUESTION_TYPE.CHECKBOX === question.type}
+        {#if QUESTION_TYPE.CHECKBOX === question.type}
+          {#each question.options as option}
             <Checkbox
               isEditable={true}
               name={question || "checkbox-name"}
               bind:label={option.value}
             >
-              <div slot="iconbutton">
+              <div slot="iconbutton" class="flex items-center">
                 <IconButton
                   value={option.id}
                   onClick={handleRemoveOption(question.id, option.id)}
                 >
                   <Delete24 class="carbon-icon" />
                 </IconButton>
+                <IconButton
+                  value={option.id}
+                  onClick={handleAnswerSelect(question.id, option.id)}
+                  buttonClassName={question.answers.includes(option.id) &&
+                    "success"}
+                >
+                  {#if question.answers.includes(option.id)}
+                    <CheckmarkFilled24 class="carbon-icon" />
+                  {:else}
+                    <CheckmarkOutline24 class="carbon-icon" />
+                  {/if}
+                </IconButton>
               </div>
             </Checkbox>
-          {/if}
+          {/each}
+        {/if}
 
-          {#if QUESTION_TYPE.TEXTAREA === question.type}
-            <TextArea bind:value={option.value} />
-          {/if}
-        {/each}
+        {#if QUESTION_TYPE.TEXTAREA === question.type}
+          <TextArea bind:value={question.value} />
+        {/if}
       </div>
 
       {#if QUESTION_TYPE.TEXTAREA !== question.type}

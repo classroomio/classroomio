@@ -1,5 +1,6 @@
 <script>
   import PrimaryButton from "../../PrimaryButton/index.svelte";
+  import { VARIANTS } from "../../PrimaryButton/constants";
   import CodeSnippet from "../../CodeSnippet/index.svelte";
   import Checkbox from "../../Form/Checkbox.svelte";
 
@@ -12,6 +13,7 @@
   export let defaultValue = [];
   export let disablePreviousButton = false;
   export let isLast = false;
+  export let isPreview = false;
 
   function getRadioVal(form, name) {
     let values = [];
@@ -27,6 +29,7 @@
   }
 
   function handleFormSubmit(event) {
+    if (isPreview) return;
     const values = getRadioVal(event.target, name);
     onSubmit(name, values);
     event.target.reset();
@@ -48,7 +51,7 @@
   <div class="ml-4">
     {#each options as option}
       <button
-        class="text-left my-2 border border-gray-300 p-2 rounded-md cursor-pointer hover:bg-gray-200 w-full"
+        class="cursor-pointer text-left my-2 border border-gray-300 p-2 rounded-md cursor-pointer hover:bg-gray-200 w-full"
         type="button"
       >
         <Checkbox
@@ -60,12 +63,20 @@
       </button>
     {/each}
   </div>
-  <div class="mt-3 flex items-center justify-between w-full">
-    <PrimaryButton
-      onClick={handlePrevious}
-      label="Previous"
-      isDisabled={disablePreviousButton}
-    />
-    <PrimaryButton type="submit" label={isLast ? "Finish" : "Next"} {name} />
-  </div>
+  {#if !isPreview}
+    <div class="mt-3 flex items-center justify-between w-full">
+      <PrimaryButton
+        onClick={handlePrevious}
+        label="Previous"
+        isDisabled={disablePreviousButton}
+        variant={VARIANTS.OUTLINED}
+      />
+      <PrimaryButton
+        variant={VARIANTS.OUTLINED}
+        type="submit"
+        label={isLast ? "Finish" : "Next"}
+        {name}
+      />
+    </div>
+  {/if}
 </form>
