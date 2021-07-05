@@ -123,9 +123,10 @@
     }
 
     & .app {
-      width: 300px;
+      width: 400px;
       transition: all 1s ease-out;
       position: relative;
+      overflow: auto;
     }
   }
 </style>
