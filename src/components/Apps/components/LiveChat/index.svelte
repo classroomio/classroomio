@@ -69,7 +69,7 @@
   </div>
 </PageNav>
 
-<div bind:this={bodyRef} class="body">
+<div bind:this={bodyRef} class="overflow-auto body">
   {#each chats as chat}
     <div class="pl-2 pb-4">
       <div class="flex items-center no-underline hover:underline text-black">
@@ -102,8 +102,7 @@
 
 <style>
   .body {
-    overflow: auto;
-    height: 80%;
+    height: 90%;
   }
   .footer {
     position: absolute;
