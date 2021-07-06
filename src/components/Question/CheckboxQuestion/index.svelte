@@ -8,20 +8,21 @@
   export let code;
   export let name = "";
   export let options = [];
+  export let answers = [];
   export let onSubmit = () => {};
   export let onPrevious = () => {};
   export let defaultValue = [];
   export let disablePreviousButton = false;
-  export let isLast = false;
   export let isPreview = false;
+  export let nextButtonProps = {};
 
-  function getRadioVal(form, name) {
+  function getVal(form, name) {
     let values = [];
-    const radios = form.elements[name];
+    const checkboxEl = form.elements[name];
 
-    for (let i = 0, len = radios.length; i < len; i++) {
-      if (radios[i].checked) {
-        values.push(radios[i].value);
+    for (let i = 0, len = checkboxEl.length; i < len; i++) {
+      if (checkboxEl[i].checked) {
+        values.push(checkboxEl[i].value);
       }
     }
 
@@ -30,14 +31,26 @@
 
   function handleFormSubmit(event) {
     if (isPreview) return;
-    const values = getRadioVal(event.target, name);
+    const values = getVal(event.target, name);
     onSubmit(name, values);
-    event.target.reset();
+    // event.target.reset();
   }
 
   function handlePrevious(event) {
     event.preventDefault();
     onPrevious();
+  }
+
+  function getValidationClassName(option) {
+    if (defaultValue.includes(option.id)) {
+      if (answers.includes(option.id)) {
+        return "border-green-700";
+      } else {
+        return "border-red-700";
+      }
+    }
+
+    return "";
   }
 </script>
 
@@ -51,14 +64,17 @@
   <div class="ml-4">
     {#each options as option}
       <button
-        class="cursor-pointer text-left my-2 border border-gray-300 p-2 rounded-md cursor-pointer hover:bg-gray-200 w-full"
+        class="cursor-pointer text-left my-2 border-2 border-gray-300 p-2 rounded-md cursor-pointer hover:bg-gray-200 w-full {getValidationClassName(
+          option
+        )}"
         type="button"
       >
         <Checkbox
           {name}
-          value={option.value}
-          checked={defaultValue.includes(option.value)}
+          value={option.id}
+          checked={defaultValue.includes(option.id)}
           label={option.label || option.value}
+          disabled={nextButtonProps.disableOptionSelect}
         />
       </button>
     {/each}
@@ -72,9 +88,11 @@
         variant={VARIANTS.OUTLINED}
       />
       <PrimaryButton
-        variant={VARIANTS.OUTLINED}
+        variant={nextButtonProps.isActive
+          ? VARIANTS.CONTAINED
+          : VARIANTS.OUTLINED}
         type="submit"
-        label={isLast ? "Finish" : "Next"}
+        label={nextButtonProps.label}
         {name}
       />
     </div>
