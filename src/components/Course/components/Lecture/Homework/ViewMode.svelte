@@ -60,7 +60,8 @@
       formattedAnswers &&
       formattedAnswers.some((answer) => {
         if (
-          !currentQuestion.answers?.length ||
+          !currentQuestion.answers ||
+          !currentQuestion.answers.length ||
           currentQuestion.answers.includes(answer)
         ) {
           return true;
