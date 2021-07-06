@@ -9,6 +9,11 @@
 
   let mode = MODES.view;
   let preview = false;
+
+  function handleMode() {
+    mode = mode === MODES.edit ? MODES.view : MODES.edit;
+    preview = false;
+  }
 </script>
 
 <PageBody>
@@ -18,7 +23,7 @@
         className="mr-2"
         variant={VARIANTS.OUTLINED}
         label={mode === MODES.edit ? "Save" : "Edit"}
-        onClick={() => (mode = mode === MODES.edit ? MODES.view : MODES.edit)}
+        onClick={handleMode}
       />
       {#if mode === MODES.edit || preview}
         <PrimaryButton
