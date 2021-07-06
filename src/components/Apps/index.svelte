@@ -28,19 +28,19 @@
   }
 
   onMount(() => {
-    hotkeys("ctrl+1,ctrl+2,ctrl+3,ctrl+4", function (event, handler) {
+    hotkeys("A+1,A+2,A+3,A+4", function (event, handler) {
       event.preventDefault();
       switch (handler.key) {
-        case "ctrl+1":
+        case "A+1":
           handleAppClick(APPS_CONSTANTS.APPS.LIVE_CHAT);
           break;
-        case "ctrl+2":
+        case "A+2":
           handleAppClick(APPS_CONSTANTS.APPS.QANDA);
           break;
-        case "ctrl+3":
+        case "A+3":
           handleAppClick(APPS_CONSTANTS.APPS.NOTES);
           break;
-        case "ctrl+4":
+        case "A+4":
           handleAppClick(APPS_CONSTANTS.APPS.POLL);
           break;
       }
@@ -51,7 +51,7 @@
 <div class="root">
   <div class="apps">
     <IconButton
-      toolTipProps={{ title: "Live Chat", hotkeys: ["Ctrl", "1"] }}
+      toolTipProps={{ title: "Live Chat", hotkeys: ["A", "1"] }}
       value={APPS_CONSTANTS.APPS.LIVE_CHAT}
       onClick={handleAppClick}
       selected={APPS_CONSTANTS.APPS.LIVE_CHAT === selectedApp}
@@ -60,7 +60,7 @@
     </IconButton>
 
     <IconButton
-      toolTipProps={{ title: "QandA", hotkeys: ["Ctrl", "2"] }}
+      toolTipProps={{ title: "QandA", hotkeys: ["A", "2"] }}
       value={APPS_CONSTANTS.APPS.QANDA}
       onClick={handleAppClick}
       selected={APPS_CONSTANTS.APPS.QANDA === selectedApp}
@@ -69,7 +69,7 @@
     </IconButton>
 
     <IconButton
-      toolTipProps={{ title: "Notes", hotkeys: ["Ctrl", "3"] }}
+      toolTipProps={{ title: "Notes", hotkeys: ["A", "3"] }}
       value={APPS_CONSTANTS.APPS.NOTES}
       onClick={handleAppClick}
       selected={APPS_CONSTANTS.APPS.NOTES === selectedApp}
@@ -78,7 +78,7 @@
     </IconButton>
 
     <IconButton
-      toolTipProps={{ title: "Poll", hotkeys: ["Ctrl", "4"] }}
+      toolTipProps={{ title: "Poll", hotkeys: ["A", "4"] }}
       value={APPS_CONSTANTS.APPS.POLL}
       onClick={handleAppClick}
       selected={APPS_CONSTANTS.APPS.POLL === selectedApp}

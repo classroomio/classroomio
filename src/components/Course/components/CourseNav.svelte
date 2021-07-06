@@ -83,10 +83,10 @@
   ];
 
   onMount(() => {
-    hotkeys("ctrl+b", function (event, handler) {
+    hotkeys("b", function (event, handler) {
       event.preventDefault();
       switch (handler.key) {
-        case "ctrl+b":
+        case "b":
           show = !show;
           break;
       }
@@ -128,7 +128,7 @@
       onClick={() => (show = !show)}
       toolTipProps={{
         title: "Toggle sidebar",
-        hotkeys: ["Ctrl", "B"],
+        hotkeys: ["B"],
         direction: "right",
       }}
     >

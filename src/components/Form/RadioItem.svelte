@@ -4,16 +4,21 @@
   export let checked;
   export let name;
   export let isEditable = false;
+  export let disabled = false;
 </script>
 
-<label class="inline-flex items-center w-full">
+<label
+  class="inline-flex items-center w-full {disabled
+    ? 'cursor-not-allowed'
+    : 'cursor-pointer'}"
+>
   <input
     class="form-radio"
     type="radio"
     {checked}
     {name}
     {value}
-    disabled={isEditable}
+    disabled={disabled || isEditable}
   />
   {#if isEditable}
     <input

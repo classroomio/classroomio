@@ -13,12 +13,13 @@
   export let disablePreviousButton = false;
   export let isLast = false;
   export let isPreview = false;
+  export let disabled = false;
 
   function handleFormSubmit(event) {
     if (isPreview) return;
 
     onSubmit(name, defaultValue);
-    event.target.reset();
+    // event.target.reset();
   }
 
   function handlePrevious(event) {
@@ -35,11 +36,15 @@
   {/if}
 
   <div class="ml-4">
-    <TextArea
-      bind:value={defaultValue}
-      rows="5"
-      placeholder="Write your answer here"
-    />
+    {#if disabled}
+      <CodeSnippet code={defaultValue} />
+    {:else}
+      <TextArea
+        bind:value={defaultValue}
+        rows="5"
+        placeholder="Write your answer here"
+      />
+    {/if}
   </div>
 
   {#if !isPreview}

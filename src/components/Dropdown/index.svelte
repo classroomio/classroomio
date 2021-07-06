@@ -9,7 +9,6 @@
   function onClick(optionIndex) {
     return () => {
       open = !open;
-      console.log("onClick", optionIndex);
       handleOptionClick(optionIndex);
     };
   }

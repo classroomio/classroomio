@@ -45,7 +45,6 @@
     hasUserVoted = poll.options.some((option) =>
       option.selectedBy.find((u) => u.value === currentUserId)
     );
-    console.log("hasUserVoted", hasUserVoted, currentUserId);
   }
 </script>
 
