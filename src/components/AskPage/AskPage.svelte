@@ -21,7 +21,6 @@
   ];
 
   function handleFacultyFilters() {
-    console.log("clicking");
     facultyFilterOpened = facultyFilterOpened ? false : true;
   }
   let things = [
@@ -34,7 +33,6 @@
 
   function handleClick() {
     things = things.slice(1);
-    console.log("things", things);
   }
 </script>
 

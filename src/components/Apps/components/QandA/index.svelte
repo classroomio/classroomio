@@ -69,7 +69,6 @@
 
   function handleMarkAnswered(id) {
     return () => {
-      console.log(`id`, id);
       questions = questions
         .map((question) => {
           if (question.id === id) {

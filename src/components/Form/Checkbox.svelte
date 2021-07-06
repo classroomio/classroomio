@@ -4,15 +4,20 @@
   export let checked;
   export let name;
   export let isEditable = false;
+  export let disabled = false;
 </script>
 
-<label class="inline-flex items-center w-full">
+<label
+  class="inline-flex items-center w-full {disabled
+    ? 'cursor-not-allowed'
+    : 'cursor-pointer'}"
+>
   <input
     type="checkbox"
     class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
     {name}
     {value}
-    disabled={isEditable}
+    disabled={disabled || isEditable}
     bind:checked
   />
   {#if isEditable}

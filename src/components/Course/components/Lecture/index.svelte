@@ -1,5 +1,4 @@
 <script>
-  import { onMount } from "svelte";
   import PageNav from "../../../PageNav/index.svelte";
   import Classwork from "./Classwork.svelte";
   import Homework from "./Homework/index.svelte";
@@ -9,10 +8,6 @@
   export let path;
   export let tab;
   export let showLectureHome;
-
-  onMount(() => {
-    console.log("mounted");
-  });
 </script>
 
 {#if showLectureHome}

@@ -11,27 +11,27 @@ export const questionnaire = writable({
   questions: [
     {
       id: "react-founder",
-      type: QUESTION_TYPE.RADIO,
+      type: QUESTION_TYPE.CHECKBOX,
       title: "Who is the creator of React.js",
       options: [
         {
-          id: 1,
+          id: "1",
           value: "Dan Abrahmov",
         },
         {
-          id: 2,
+          id: "2",
           value: "Google",
         },
         {
-          id: 3,
+          id: "3",
           value: "Facebook",
         },
         {
-          id: 4,
+          id: "4",
           value: "Traversy Media",
         },
       ],
-      answers: [],
+      answers: ['3'],
     },
     {
       id: "vue-founder",
@@ -44,47 +44,47 @@ export const questionnaire = writable({
       `,
       options: [
         {
-          id: 1,
+          id: "1",
           value: "Evan Vue",
         },
         {
-          id: 2,
+          id: "2",
           value: "Mark Zukerberg",
         },
         {
-          id: 3,
+          id: "3",
           value: "Prince Charles",
         },
         {
-          id: 4,
+          id: "4",
           value: "Bill Gates",
         },
       ],
-      answers: [],
+      answers: ['3'],
     },
     {
       id: "svelte-founder",
-      type: QUESTION_TYPE.CHECKBOX,
+      type: QUESTION_TYPE.RADIO,
       title: "Who is the creator of Svelte.js",
       options: [
         {
-          id: 1,
+          id: "1",
           value: "Hillary Svelte",
         },
         {
-          id: 2,
+          id: "2",
           value: "Mircosoft",
         },
         {
-          id: 3,
+          id: "3",
           value: "Elevate",
         },
         {
-          id: 4,
+          id: "4",
           value: "Coding Train",
         },
       ],
-      answers: [2],
+      answers: ["2"],
     },
     {
       id: "angular-founder",
@@ -109,7 +109,7 @@ export function handleAddQuestion() {
           answers: [],
           options: [
             {
-              id: 1,
+              id: "1",
               value: null,
             },
           ],
@@ -215,7 +215,9 @@ export function handleAnswerSelect(questionId, optionId) {
             const selectOption = question.options.find(option => option.id === optionId);
             const newAnswers = [];
 
-            if (question.answers.includes(selectOption.id)) {
+            if (question.type === QUESTION_TYPE.RADIO) {
+              newAnswers.push(optionId)
+            } else if (question.answers.includes(selectOption.id)) {
               newAnswers.push(
                 ...question.answers.filter(answer => answer !== selectOption.id)
               )
