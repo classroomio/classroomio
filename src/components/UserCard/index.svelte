@@ -11,27 +11,14 @@
   export let telegramLink;
 </script>
 
-<style>
-  .profile {
-    width: 200px;
-  }
-
-  .profile img {
-    width: 104px;
-    height: 104px;
-  }
-  .description {
-    min-height: 70px;
-  }
-</style>
-
-<figure class="profile bg-gray-100 rounded-xl px-4 py-7 mr-4 mb-4">
+<figure class="w-52 bg-gray-100 px-4 py-7 mr-4 mb-4">
   <img
     class="w-32 h-32 rounded-full mx-auto"
     src={avatarUrl}
     alt=""
     width="384"
-    height="512" />
+    height="512"
+  />
   <div class="pt-6 text-center space-y-4">
     <div class="description font-medium flex flex-col justify-around">
       <div class="text-cyan-600">{name}</div>
@@ -45,15 +32,27 @@
           data={faTelegram}
           scale="1"
           class="social-icon"
-          style="color:#4dabf7;margin:0 5px;" />
+          style="color:#4dabf7;margin:0 5px;"
+        />
       </a>
       <a href={mailLink} target="_blank">
         <Icon
           data={faEnvelope}
           scale="1"
           class="social-icon"
-          style="color:#d44c3d;margin:0 5px;" />
+          style="color:#d44c3d;margin:0 5px;"
+        />
       </a>
     </div>
   {/if}
 </figure>
+
+<style>
+  img {
+    width: 104px;
+    height: 104px;
+  }
+  .description {
+    min-height: 70px;
+  }
+</style>

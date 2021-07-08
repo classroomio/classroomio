@@ -7,11 +7,12 @@
 
   export let path;
   export let tab;
+  // export let lectureId;
   export let showLectureHome;
 </script>
 
 {#if showLectureHome}
-  <Home />
+  <Home {path} />
 {:else}
   <div>
     <PageNav
