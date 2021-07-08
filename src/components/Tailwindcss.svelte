@@ -57,11 +57,11 @@
   }
 
   [aria-current] :global(svg.carbon-icon),
-  button.active :global(svg.carbon-icon) {
+  .active :global(svg.carbon-icon) {
     fill: var(--main-primary-color);
   }
 
-  button.success :global(svg.carbon-icon) {
+  .success :global(svg.carbon-icon) {
     fill: green;
   }
 </style>

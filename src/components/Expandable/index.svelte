@@ -9,7 +9,7 @@
   // export let subMenuItems = [];
 
   function onClick() {
-    isExpanded = !isExpanded;
+    // isExpanded = !isExpanded;
     handleClick();
   }
 </script>

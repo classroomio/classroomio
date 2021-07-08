@@ -4,6 +4,7 @@
   export let value;
   export let onKeyDown;
   export let className = "";
+  export let autofocus = false;
 </script>
 
 <label class="block {className}">
@@ -14,5 +15,6 @@
     on:keydown={onKeyDown}
     {placeholder}
     bind:value
+    autofocus
   />
 </label>

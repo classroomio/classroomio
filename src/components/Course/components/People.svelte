@@ -54,7 +54,8 @@
         avatarUrl={teacher.avatar}
         title={teacher.title}
         telegramLink={teacher.telegramLink}
-        mailLink={teacher.mailLink} />
+        mailLink={teacher.mailLink}
+      />
     {/each}
   </div>
 </div>
@@ -68,7 +69,8 @@
       <UserCard
         name={student.name}
         avatarUrl={student.avatar}
-        title={student.title} />
+        title={student.title}
+      />
     {/each}
   </div>
 </div>

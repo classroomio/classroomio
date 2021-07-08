@@ -44,7 +44,12 @@
     {:else if courseNavItem === "hometasks"}
       <HomeTask />
     {:else if courseNavItem === "lecture"}
-      <Lecture path={$page.path} {tab} showLectureHome={!lectureId} />
+      <Lecture
+        path={$page.path}
+        {tab}
+        {lectureId}
+        showLectureHome={!lectureId}
+      />
     {:else if courseNavItem === "people"}
       <People />
     {/if}
