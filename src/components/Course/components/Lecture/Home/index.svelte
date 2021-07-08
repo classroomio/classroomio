@@ -52,7 +52,7 @@
         class="group relative m-auto rounded-md border-2 border-gray-100 py-3 px-5 mr-4 mb-4 flex items-center hover:shadow-2xl shadow-md transition delay-150 duration-300 ease-in-out"
       >
         <!-- Complete or Not complete icon -->
-        <div class="absolute -left-5 -top-5 success">
+        <div class="absolute -left-6 -top-6 success">
           <IconButton
             onClick={() => (lecture.isComplete = !lecture.isComplete)}
           >
