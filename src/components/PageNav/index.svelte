@@ -6,6 +6,7 @@
   export let addButtonHref;
   export let addButtonLabel;
   export let disableSticky = false;
+
   let dynamicRootClass = "";
 
   $: dynamicRootClass =

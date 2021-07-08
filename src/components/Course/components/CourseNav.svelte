@@ -1,5 +1,6 @@
 <script>
   import { onMount } from "svelte";
+  import CheckmarkFilled20 from "carbon-icons-svelte/lib/CheckmarkFilled20";
   import hotkeys from "hotkeys-js";
   import ChevronLeft32 from "carbon-icons-svelte/lib/ChevronLeft32";
   import ChevronRight32 from "carbon-icons-svelte/lib/ChevronRight32";
@@ -8,6 +9,8 @@
   import PageNav from "../../PageNav/index.svelte";
   import IconButton from "../../IconButton/index.svelte";
   import { getNavItemRoute, getLectureRoute, getLectureNo } from "../function";
+
+  import { lessons } from "./Lecture/store/lessons";
 
   // export let lectureId;
   export let courseId;
@@ -32,33 +35,7 @@
       label: "Lectures",
       to: getLectureRoute(courseId),
       hideSortIcon: false,
-      items: [
-        {
-          id: 1,
-          title: "Вводный урок. Soft skills",
-          to: getLectureRoute(courseId, 1),
-        },
-        {
-          id: 2,
-          title: "Введение в ReactJS",
-          to: getLectureRoute(courseId, 2),
-        },
-        {
-          id: 3,
-          title: "Компоненты",
-          to: getLectureRoute(courseId, 3),
-        },
-        {
-          id: 4,
-          title: "Состояние компонентов и пропсы",
-          to: getLectureRoute(courseId, 4),
-        },
-        {
-          id: 5,
-          title: "Жизненный цикл",
-          to: getLectureRoute(courseId, 5),
-        },
-      ],
+      isLecture: true,
     },
     {
       label: "People",
@@ -92,6 +69,8 @@
       }
     });
   });
+
+  $: console.log("lessons", $lessons);
 </script>
 
 <div class="root z-10 {!show && 'hide'}">
@@ -105,16 +84,24 @@
           isGroupActive={$page.path === navItem.to}
           hideSortIcon={navItem.hideSortIcon}
         >
-          {#if Array.isArray(navItem.items)}
-            {#each navItem.items as item, index}
+          {#if navItem.isLecture}
+            {#each $lessons as item, index}
               <a
                 class="item flex items-center {(item.to === $page.path ||
                   !$page.path.length > 3) &&
-                  'active'} pl-7 py-2"
-                href={item.to}
+                  'active'} pl-7 py-2 {!item.isComplete &&
+                  'cursor-not-allowed'}"
+                href={item.isComplete ? item.to : $page.path}
               >
                 <span class="course-counter"> {getLectureNo(index + 1)} </span>
                 <span>{item.title}</span>
+                {#if item.isComplete}
+                  <span class="ml-2 success">
+                    <CheckmarkFilled20 class="carbon-icon" />
+                  </span>
+                {:else}
+                  <span class="text-md ml-2">🔒</span>
+                {/if}
               </a>
             {/each}
           {/if}
@@ -146,13 +133,15 @@
     height: 90vh;
     display: flex;
     flex-direction: column;
-    width: 360px;
+    min-width: 360px;
+    max-width: 360px;
     position: sticky;
     top: 0;
     border-right: 1px solid var(--border-color);
 
     &.hide {
-      width: 0px;
+      min-width: 0px;
+      max-width: 0px;
     }
   }
 
