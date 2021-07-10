@@ -5,12 +5,16 @@
   import ChevronLeft32 from "carbon-icons-svelte/lib/ChevronLeft32";
   import ChevronRight32 from "carbon-icons-svelte/lib/ChevronRight32";
   import { stores, goto } from "@sapper/app";
-  import Expandable from "../../Expandable/index.svelte";
-  import PageNav from "../../PageNav/index.svelte";
-  import IconButton from "../../IconButton/index.svelte";
-  import { getNavItemRoute, getLectureRoute, getLectureNo } from "../function";
+  import Expandable from "../../../Expandable/index.svelte";
+  import PageNav from "../../../PageNav/index.svelte";
+  import IconButton from "../../../IconButton/index.svelte";
+  import {
+    getNavItemRoute,
+    getLectureRoute,
+    getLectureNo,
+  } from "../../function";
 
-  import { lessons } from "./Lecture/store/lessons";
+  import { lessons } from "../Lecture/store/lessons";
 
   // export let lectureId;
   export let courseId;
@@ -38,13 +42,8 @@
       isLecture: true,
     },
     {
-      label: "People",
-      to: getNavItemRoute(courseId, "people"),
-      hideSortIcon: true,
-    },
-    {
-      label: "Timetable",
-      to: getNavItemRoute(courseId, "timetable"),
+      label: "Exercises",
+      to: getNavItemRoute(courseId, "exercises"),
       hideSortIcon: true,
     },
     {
@@ -53,8 +52,13 @@
       hideSortIcon: true,
     },
     {
-      label: "Hometasks",
-      to: getNavItemRoute(courseId, "hometasks"),
+      label: "People",
+      to: getNavItemRoute(courseId, "people"),
+      hideSortIcon: true,
+    },
+    {
+      label: "Timetable",
+      to: getNavItemRoute(courseId, "timetable"),
       hideSortIcon: true,
     },
   ];

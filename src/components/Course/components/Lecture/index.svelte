@@ -1,51 +1,37 @@
 <script>
   import PageNav from "../../../PageNav/index.svelte";
-  import Classwork from "./Classwork.svelte";
-  import Homework from "./Homework/index.svelte";
+  import Exercises from "./Exercises/index.svelte";
   import Readme from "./Readme/index.svelte";
-  import Home from "./Home/index.svelte";
 
   export let path;
   export let tab;
-  // export let lectureId;
-  export let showLectureHome;
+  export let exerciseId;
 </script>
 
-{#if showLectureHome}
-  <Home {path} />
-{:else}
-  <div>
-    <PageNav
-      navItems={[
-        {
-          label: "README.md",
-          isActive: tab === "lectures",
-          href: `${path}?tab=lectures`,
-        },
-        {
-          label: "Class work",
-          isActive: tab === "classwork",
-          href: `${path}?tab=classwork`,
-        },
-        {
-          label: "Hometasks",
-          isActive: tab === "hometasks",
-          href: `${path}?tab=hometasks`,
-        },
-      ]}
-    />
+<div>
+  <PageNav
+    navItems={[
+      {
+        label: "README.md",
+        isActive: tab === "lectures",
+        href: `${path}?tab=lectures`,
+      },
+      {
+        label: "Exercises",
+        isActive: tab === "exercises",
+        href: `${path}?tab=exercises`,
+      },
+    ]}
+  />
 
-    <div class="course relative">
-      {#if tab === "lectures"}
-        <Readme />
-      {:else if tab === "classwork"}
-        <Classwork />
-      {:else if tab === "hometasks"}
-        <Homework />
-      {/if}
-    </div>
+  <div class="course relative">
+    {#if tab === "lectures"}
+      <Readme />
+    {:else if tab === "exercises"}
+      <Exercises {exerciseId} path={`${path}?tab=exercises`} />
+    {/if}
   </div>
-{/if}
+</div>
 
 <style>
   .course {

@@ -8,6 +8,7 @@
   import Progress from "../../../../Progress/index.svelte";
   import { removeDuplicate } from "../../../../../utils/functions/removeDuplicate";
   import { QUESTION_TYPE } from "../../../../Question/constants";
+  import { STATUS } from "./constants";
 
   export let preview;
 
@@ -113,10 +114,10 @@
     };
   }
 
-  function getTotalScores(scoresObject) {
+  function getTotalScores() {
     let total = 0;
-    for (const score in scoresObject) {
-      total += score;
+    for (const score in $userQuestionniareAnswers.scores) {
+      total += parseInt($userQuestionniareAnswers.scores[score]);
     }
 
     return total;
@@ -206,19 +207,28 @@
   <div class="flex items-center justify-between">
     <div class="flex flex-col justify-between">
       <h2 class="text-xl mb-2 mt-0">{title}</h2>
-      <span
-        class="bg-green-700 text-white rounded-full py-2 px-6 text-center"
-        title="Status: Pending Review"
-      >
-        Pending Review
-      </span>
+      {#if STATUS.IN_PROGRESS === $userQuestionniareAnswers.status}
+        <span
+          class="bg-yellow-600 text-white rounded-full py-2 px-6 text-center"
+          title="Status: Pending Review"
+        >
+          Pending
+        </span>
+      {:else if STATUS.REVIEWED === $userQuestionniareAnswers.status && getTotalScores() > 0}
+        <span
+          class="bg-green-700 text-white rounded-full py-2 px-6 text-center"
+          title="Status: Pending Review"
+        >
+          Reviewed
+        </span>
+      {/if}
     </div>
 
     <span
       class="border-2 border-gray-700 rounded-full h-24 w-24 flex items-center justify-center text-2xl"
       title="Status: Pending Review"
     >
-      {getTotalScores($userQuestionniareAnswers.scores)}/100
+      {getTotalScores()}/100
     </span>
   </div>
   {#each questions as currentQuestion, currentQuestionIndex}

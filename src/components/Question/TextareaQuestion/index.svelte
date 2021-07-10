@@ -1,7 +1,8 @@
 <script>
+  import { CodeSnippet } from "carbon-components-svelte";
+  import marked from "marked";
   import PrimaryButton from "../../PrimaryButton/index.svelte";
   import { VARIANTS } from "../../PrimaryButton/constants";
-  import CodeSnippet from "../../CodeSnippet/index.svelte";
   import TextArea from "../../Form/TextArea.svelte";
 
   export let title = "";
@@ -32,12 +33,14 @@
   <h2>{title}</h2>
 
   {#if code}
-    <CodeSnippet {code} />
+    <CodeSnippet {code} type="multi" />
   {/if}
 
   <div class="ml-4">
     {#if disabled}
-      <CodeSnippet code={defaultValue} />
+      <div class="bg-gray-200 p-5 rounded-md mb-3">
+        {@html marked(defaultValue)}
+      </div>
     {:else}
       <TextArea
         bind:value={defaultValue}

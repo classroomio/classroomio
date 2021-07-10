@@ -31,6 +31,7 @@
     "@rollup/plugin-node-resolve": "^8.0.0",
     "@rollup/plugin-replace": "^2.2.0",
     "@tailwindcss/typography": "^0.3.1",
+    "carbon-components-svelte": "^0.39.0",
     "carbon-icons-svelte": "^10.21.0",
     "postcss": "^8.0.9",
     "postcss-load-config": "^2.1.0",
