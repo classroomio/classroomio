@@ -2,10 +2,12 @@
   import { handleAddQuestion } from "./store/index";
   import PrimaryButton from "../../../../PrimaryButton/index.svelte";
   import PageBody from "../../../../PageBody/index.svelte";
-  import EditMode from "./EditMode.svelte";
   import ViewMode from "./ViewMode.svelte";
+  import EditMode from "./EditMode.svelte";
   import MODES from "../../../../../utils/constants/mode.js";
   import { VARIANTS } from "../../../../PrimaryButton/constants";
+
+  export let exerciseId;
 
   let mode = MODES.view;
   let preview = false;

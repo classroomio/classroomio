@@ -4,6 +4,7 @@
   import LeftNav from "../components/LeftNav/index.svelte";
   // import SideBar from "../components/SideBar/index.svelte";
   import Footer from "../components/Footer/index.svelte";
+  import Apps from "../components/Apps/index.svelte";
 
   export let segment;
 </script>
@@ -15,7 +16,7 @@
 <main class="flex">
   <LeftNav {segment} />
   <slot />
-  <!-- <SideBar /> -->
+  <Apps />
 </main>
 
 <Footer />

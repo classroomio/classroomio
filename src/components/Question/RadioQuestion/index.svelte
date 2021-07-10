@@ -1,8 +1,8 @@
 <script>
+  import { CodeSnippet } from "carbon-components-svelte";
   import PrimaryButton from "../../PrimaryButton/index.svelte";
   import { VARIANTS } from "../../PrimaryButton/constants";
   import RadioItem from "../../Form/RadioItem.svelte";
-  import CodeSnippet from "../../CodeSnippet/index.svelte";
 
   export let title = "";
   export let code;
@@ -59,7 +59,7 @@
   <h2>{title}</h2>
 
   {#if code}
-    <CodeSnippet {code} />
+    <CodeSnippet {code} type="multi" />
   {/if}
 
   <div class="ml-4">

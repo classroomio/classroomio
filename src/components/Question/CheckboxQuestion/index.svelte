@@ -1,7 +1,7 @@
 <script>
+  import { CodeSnippet } from "carbon-components-svelte";
   import PrimaryButton from "../../PrimaryButton/index.svelte";
   import { VARIANTS } from "../../PrimaryButton/constants";
-  import CodeSnippet from "../../CodeSnippet/index.svelte";
   import Checkbox from "../../Form/Checkbox.svelte";
 
   export let title = "";
@@ -59,7 +59,7 @@
   <h2>{title}</h2>
 
   {#if code}
-    <CodeSnippet {code} />
+    <CodeSnippet {code} type="multi" />
   {/if}
 
   <div class="ml-4">
