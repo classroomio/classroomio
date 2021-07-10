@@ -9,3 +9,11 @@ The main goal of all LMS (Learning Managment System) is to provide learning mate
 The reason why during the pandemic programmers could comfortably work remotely is because all our actual work in the office happens on a computer, NOTHING is done outside the computer - except chatting with colleagues and attending meetings (which we replaced with Zoom, Meet, Teams or Slack while working from home). This means that we can work wherever our laptops and internet can go. Classroomio is supposed to be that tool that helps give the educational system that same leverage.
 
 I personally believe that in the future (as already exists in most countries), the same way books and writing materials (pen, pencils etc) are required by students to have when coming to class, laptops would be required and a tool that integrates deeply into and outside a classroom would be needed for this.
+
+## Main Themes
+
+1. Data driven
+2. Focus and optimize for learning
+3. All in one place
+4. Empower hybrid form of learning
+5. We Automate routine tasks and you focus on the health of your classroom.
