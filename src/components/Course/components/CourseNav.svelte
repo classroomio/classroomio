@@ -69,8 +69,6 @@
       }
     });
   });
-
-  $: console.log("lessons", $lessons);
 </script>
 
 <div class="root z-10 {!show && 'hide'}">
