@@ -1,5 +1,6 @@
 <script>
   import { questionnaire } from "./store/index";
+  import { userQuestionniareAnswers } from "./store/answers";
   import RadioQuestion from "../../../../Question/RadioQuestion/index.svelte";
   import CheckboxQuestion from "../../../../Question/CheckboxQuestion/index.svelte";
   import TextareaQuestion from "../../../../Question/TextareaQuestion/index.svelte";
@@ -10,51 +11,45 @@
 
   export let preview;
 
-  let answers = {};
-  let currentQuestionIndex = 0;
   let currentQuestion = {};
   let renderProps = {};
-  let progressValue = 0;
   let isAnswerCorrect;
-  let isFinished;
 
   const { questions, title, description } = $questionnaire;
 
   function handleStart() {
-    currentQuestionIndex += 1;
+    $userQuestionniareAnswers.currentQuestionIndex += 1;
   }
 
   function onSubmit(id, value) {
-    const prevAnswer = answers[id] || [];
+    const prevAnswer = $userQuestionniareAnswers.answers[id] || [];
     const formattedAnswer =
       typeof value === "string"
         ? value
         : removeDuplicate([...prevAnswer, ...(value || [])]);
 
-    answers = {
-      ...answers,
+    $userQuestionniareAnswers.answers = {
+      ...$userQuestionniareAnswers.answers,
       [id]: formattedAnswer,
     };
 
     if (isAnswerCorrect) {
-      currentQuestionIndex += 1;
+      $userQuestionniareAnswers.currentQuestionIndex += 1;
     }
   }
 
   function onPrevious() {
-    currentQuestionIndex -= 1;
+    $userQuestionniareAnswers.currentQuestionIndex -= 1;
   }
 
   function wasCorrectAnswerSelected(currentQuestion) {
     const isOpenQuesiton = currentQuestion.type === QUESTION_TYPE.TEXTAREA;
 
     if (isOpenQuesiton) {
-      isAnswerCorrect = true;
       return true;
     }
-    const answer = answers[currentQuestion.id];
+    const answer = $userQuestionniareAnswers.answers[currentQuestion.id];
     const formattedAnswers = typeof answer === "string" ? [answer] : answer;
-    const options = currentQuestion.options;
 
     isAnswerCorrect =
       formattedAnswers &&
@@ -90,8 +85,11 @@
       onPrevious,
       disablePreviousButton: questionIndex === 1,
       isLast,
-      isPreview: preview || isFinished,
-      disabled: wasCorrectAnswerSelected(question) && isFinished,
+      isPreview: preview || $userQuestionniareAnswers.isFinished,
+      disabled:
+        ($userQuestionniareAnswers.isFinished &&
+          wasCorrectAnswerSelected(question)) ||
+        $userQuestionniareAnswers.isFinished,
       nextButtonProps: isLast
         ? {
             label: "Finish",
@@ -115,8 +113,17 @@
     };
   }
 
+  function getTotalScores(scoresObject) {
+    let total = 0;
+    for (const score in scoresObject) {
+      total += score;
+    }
+
+    return total;
+  }
+
   function getProgressValue(currentQuestionIndex) {
-    if (isFinished) {
+    if ($userQuestionniareAnswers.isFinished) {
       return 100;
     }
 
@@ -126,46 +133,64 @@
   }
 
   $: {
-    currentQuestion = questions[currentQuestionIndex - 1];
-    if (currentQuestionIndex > 0 && !currentQuestion) {
-      isFinished = true;
+    currentQuestion =
+      questions[$userQuestionniareAnswers.currentQuestionIndex - 1];
+    if (
+      $userQuestionniareAnswers.currentQuestionIndex > 0 &&
+      !currentQuestion
+    ) {
+      $userQuestionniareAnswers.isFinished = true;
     }
 
     if (currentQuestion) {
       renderProps = getRenderProps(
         currentQuestion,
-        currentQuestionIndex,
-        answers
+        $userQuestionniareAnswers.currentQuestionIndex,
+        $userQuestionniareAnswers.answers
       );
     }
   }
 
-  $: progressValue = getProgressValue(currentQuestionIndex);
+  $: $userQuestionniareAnswers.progressValue = getProgressValue(
+    $userQuestionniareAnswers.currentQuestionIndex
+  );
 </script>
 
 <!-- <svelte:window on:keydown={handleKeydown} /> -->
 
-{#if !preview && currentQuestionIndex > 0}
-  <Progress value={progressValue} />
+{#if !preview && !$userQuestionniareAnswers.isFinished}
+  <Progress value={$userQuestionniareAnswers.progressValue} />
 {/if}
 
 {#if preview}
   {#each questions as currentQuestion, currentQuestionIndex}
     {#if QUESTION_TYPE.RADIO === currentQuestion.type}
       <RadioQuestion
-        {...getRenderProps(currentQuestion, currentQuestionIndex + 1, answers)}
+        {...getRenderProps(
+          currentQuestion,
+          currentQuestionIndex + 1,
+          $userQuestionniareAnswers.answers
+        )}
       />
     {:else if QUESTION_TYPE.CHECKBOX === currentQuestion.type}
       <CheckboxQuestion
-        {...getRenderProps(currentQuestion, currentQuestionIndex + 1, answers)}
+        {...getRenderProps(
+          currentQuestion,
+          currentQuestionIndex + 1,
+          $userQuestionniareAnswers.answers
+        )}
       />
     {:else if QUESTION_TYPE.TEXTAREA === currentQuestion.type}
       <TextareaQuestion
-        {...getRenderProps(currentQuestion, currentQuestionIndex + 1, answers)}
+        {...getRenderProps(
+          currentQuestion,
+          currentQuestionIndex + 1,
+          $userQuestionniareAnswers.answers
+        )}
       />
     {/if}
   {/each}
-{:else if currentQuestionIndex === 0}
+{:else if $userQuestionniareAnswers.currentQuestionIndex === 0}
   <div>
     <h2 class="my-1">{title}</h2>
     <p>{description}</p>
@@ -177,20 +202,49 @@
       type="button"
     />
   </div>
-{:else if isFinished}
-  <h2 class="text-lg">Congratulations you have completed your task</h2>
+{:else if $userQuestionniareAnswers.isFinished}
+  <div class="flex items-center justify-between">
+    <div class="flex flex-col justify-between">
+      <h2 class="text-xl mb-2 mt-0">{title}</h2>
+      <span
+        class="bg-green-700 text-white rounded-full py-2 px-6 text-center"
+        title="Status: Pending Review"
+      >
+        Pending Review
+      </span>
+    </div>
+
+    <span
+      class="border-2 border-gray-700 rounded-full h-24 w-24 flex items-center justify-center text-2xl"
+      title="Status: Pending Review"
+    >
+      {getTotalScores($userQuestionniareAnswers.scores)}/100
+    </span>
+  </div>
   {#each questions as currentQuestion, currentQuestionIndex}
     {#if QUESTION_TYPE.RADIO === currentQuestion.type}
       <RadioQuestion
-        {...getRenderProps(currentQuestion, currentQuestionIndex + 1, answers)}
+        {...getRenderProps(
+          currentQuestion,
+          currentQuestionIndex + 1,
+          $userQuestionniareAnswers.answers
+        )}
       />
     {:else if QUESTION_TYPE.CHECKBOX === currentQuestion.type}
       <CheckboxQuestion
-        {...getRenderProps(currentQuestion, currentQuestionIndex + 1, answers)}
+        {...getRenderProps(
+          currentQuestion,
+          currentQuestionIndex + 1,
+          $userQuestionniareAnswers.answers
+        )}
       />
     {:else if QUESTION_TYPE.TEXTAREA === currentQuestion.type}
       <TextareaQuestion
-        {...getRenderProps(currentQuestion, currentQuestionIndex + 1, answers)}
+        {...getRenderProps(
+          currentQuestion,
+          currentQuestionIndex + 1,
+          $userQuestionniareAnswers.answers
+        )}
       />
     {/if}
   {/each}
