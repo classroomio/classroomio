@@ -7,12 +7,12 @@
 </script>
 
 <script>
-  import Overview from "../../../components/Course/index.svelte";
   import CourseContainer from "../../../components/CourseContainer/index.svelte";
+  import PageNav from "../../../components/PageNav/index.svelte";
 
   export let courseId;
 </script>
 
 <CourseContainer title="ReactJS" {courseId}>
-  <Overview />
+  <PageNav title="Timetable" />
 </CourseContainer>
