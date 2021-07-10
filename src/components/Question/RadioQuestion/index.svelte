@@ -13,6 +13,7 @@
   export let onPrevious = () => {};
   export let defaultValue = "";
   export let disablePreviousButton = false;
+  export let disabled = false;
   export let isPreview = false;
   export let nextButtonProps = {};
 
@@ -75,7 +76,7 @@
           checked={defaultValue.includes(option.id) &&
             answers.includes(option.id)}
           label={option.label || option.value}
-          disabled={nextButtonProps.disableOptionSelect}
+          {disabled}
         />
       </button>
     {/each}
