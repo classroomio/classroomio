@@ -1,6 +1,6 @@
 const ROUTES = {
-  COURSES: "courses",
-  LECTURES: "lecture",
+  COURSES: 'courses',
+  LESSONS: 'lessons',
 };
 
 export function getNavItemRoute(courseId, routeId) {
@@ -13,14 +13,14 @@ export function getNavItemRoute(courseId, routeId) {
   return `${path}/${routeId}`;
 }
 
-export function getLectureRoute(courseId, lectureId) {
-  const path = getNavItemRoute(courseId, ROUTES.LECTURES);
+export function getLessonsRoute(courseId, lessonId) {
+  const path = getNavItemRoute(courseId, ROUTES.LESSONS);
 
-  if (!lectureId) {
+  if (!lessonId) {
     return path;
   }
 
-  return `${path}/${lectureId}`;
+  return `${path}/${lessonId}`;
 }
 
 export function getLectureNo(index) {

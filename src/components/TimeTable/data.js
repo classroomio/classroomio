@@ -1,38 +1,39 @@
 export default [
-    {
+  {
+    lessonType: '1-9 leture',
+    lessonHall: '402F',
+    subject: 'Mathematics',
+    tutorOne: 'Peter Pitrovich',
+    tutorTwo: 'Pragma James',
+  },
+  {
+    lessonType: '1-9 Pra.',
+    lessonHall: '202F',
+    subject: 'Physics',
+    tutorOne: 'Anicimov',
+    tutorTwo: '',
+  },
+  {
+    lessonType: '1-9 leture',
+    lessonHall: '301F',
+    subject: 'Algorithm',
+    tutorOne: 'Babilunga Sharon',
+    tutorTwo: 'Alex Jonard',
+  },
+  {
+    lessonType: '1-9 leture',
+    lessonHall: '222F',
+    subject: 'Computer Aided system',
+    tutorOne: 'Godovichecko Heroku',
+    tutorTwo: '',
+  },
+  ...Array(4 * 4)
+    .fill(0)
+    .map((a, i) => ({
       lessonType: '1-9 leture',
-      lectureHall: '402F',
-      subject: 'Mathematics',
-      lecturerOne: 'Peter Pitrovich',
-      lecturerTwo: 'Pragma James',
-    },
-    {
-      lessonType: '1-9 Pra.',
-      lectureHall: '202F',
-      subject: 'Physics',
-      lecturerOne: 'Anicimov',
-      lecturerTwo: '',
-    },
-    {
-      lessonType: '1-9 leture',
-      lectureHall: '301F',
-      subject: 'Algorithm',
-      lecturerOne: 'Babilunga Sharon',
-      lecturerTwo: 'Alex Jonard',
-    },
-    {
-      lessonType: '1-9 leture',
-      lectureHall: '222F',
+      lessonHall: '222F',
       subject: 'Computer Aided system',
-      lecturerOne: 'Godovichecko Heroku',
-      lecturerTwo: '',
-      
-    },
-    ...Array(4 * 4).fill(0).map((a, i) => ({
-      lessonType: '1-9 leture',
-      lectureHall: '222F',
-      subject: 'Computer Aided system',
-      lecturerOne: 'Godovichecko Heroku',
-      lecturerTwo: '',
-    }))
-  ];
+      tutorOne: 'Godovichecko Heroku',
+      tutorTwo: '',
+    })),
+];
