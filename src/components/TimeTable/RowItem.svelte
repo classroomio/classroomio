@@ -1,7 +1,7 @@
 <script>
-  import Edit24 from "carbon-icons-svelte/lib/Edit24";
-  import Save24 from "carbon-icons-svelte/lib/Save24";
-  import Input from "./Input.svelte";
+  import Edit24 from 'carbon-icons-svelte/lib/Edit24';
+  import Save24 from 'carbon-icons-svelte/lib/Save24';
+  import Input from './Input.svelte';
 
   export let item, current;
   let editing = false;
@@ -10,6 +10,35 @@
     editing = !editing;
   }
 </script>
+
+<div class="rowItem">
+  <div class="rowItemHeader">
+    <Input className="small" value={item.lessonType} {editing} />
+    <Input className="small alignRight" value={item.lessonHall} {editing} />
+  </div>
+
+  <div class="rowItemHeader">
+    <Input
+      className={`large ${current && 'current'}`}
+      value={item.subject}
+      {editing}
+    />
+  </div>
+
+  <div class="rowItemHeader">
+    <div class="rowItemFooter" style="width: 70%">
+      <Input className="small" value={item.tutorOne} {editing} />
+      <Input className="small" value={item.tutorTwo} {editing} />
+    </div>
+    <button on:click={toggle}>
+      {#if editing}
+        <Save24 class="icon" />
+      {:else}
+        <Edit24 class="icon" />
+      {/if}
+    </button>
+  </div>
+</div>
 
 <style>
   .rowItem {
@@ -46,31 +75,3 @@
     fill: red;
   }
 </style>
-
-<div class="rowItem">
-  <div class="rowItemHeader">
-    <Input className="small" value={item.lessonType} {editing} />
-    <Input className="small alignRight" value={item.lectureHall} {editing} />
-  </div>
-
-  <div class="rowItemHeader">
-    <Input
-      className={`large ${current && 'current'}`}
-      value={item.subject}
-      {editing} />
-  </div>
-
-  <div class="rowItemHeader">
-    <div class="rowItemFooter" style="width: 70%">
-      <Input className="small" value={item.lecturerOne} {editing} />
-      <Input className="small" value={item.lecturerTwo} {editing} />
-    </div>
-    <button on:click={toggle}>
-      {#if editing}
-        <Save24 class="icon" />
-      {:else}
-        <Edit24 class="icon" />
-      {/if}
-    </button>
-  </div>
-</div>

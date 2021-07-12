@@ -1,7 +1,7 @@
 <script>
-  import PageNav from "../../../PageNav/index.svelte";
-  import Exercises from "./Exercises/index.svelte";
-  import Readme from "./Readme/index.svelte";
+  import PageNav from '../../../PageNav/index.svelte';
+  import Exercises from './Exercises/index.svelte';
+  import Readme from './Readme/index.svelte';
 
   export let path;
   export let tab;
@@ -12,22 +12,22 @@
   <PageNav
     navItems={[
       {
-        label: "README.md",
-        isActive: tab === "lectures",
-        href: `${path}?tab=lectures`,
+        label: 'README.md',
+        isActive: tab === 'lessons',
+        href: `${path}?tab=lessons`,
       },
       {
-        label: "Exercises",
-        isActive: tab === "exercises",
+        label: 'Exercises',
+        isActive: tab === 'exercises',
         href: `${path}?tab=exercises`,
       },
     ]}
   />
 
   <div class="course relative">
-    {#if tab === "lectures"}
+    {#if tab === 'lessons'}
       <Readme />
-    {:else if tab === "exercises"}
+    {:else if tab === 'exercises'}
       <Exercises {exerciseId} path={`${path}?tab=exercises`} />
     {/if}
   </div>

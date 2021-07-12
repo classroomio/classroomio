@@ -1,22 +1,22 @@
 <script>
-  import { onMount } from "svelte";
-  import CheckmarkFilled20 from "carbon-icons-svelte/lib/CheckmarkFilled20";
-  import hotkeys from "hotkeys-js";
-  import ChevronLeft32 from "carbon-icons-svelte/lib/ChevronLeft32";
-  import ChevronRight32 from "carbon-icons-svelte/lib/ChevronRight32";
-  import { stores, goto } from "@sapper/app";
-  import Expandable from "../../../Expandable/index.svelte";
-  import PageNav from "../../../PageNav/index.svelte";
-  import IconButton from "../../../IconButton/index.svelte";
+  import { onMount } from 'svelte';
+  import CheckmarkFilled20 from 'carbon-icons-svelte/lib/CheckmarkFilled20';
+  import hotkeys from 'hotkeys-js';
+  import ChevronLeft32 from 'carbon-icons-svelte/lib/ChevronLeft32';
+  import ChevronRight32 from 'carbon-icons-svelte/lib/ChevronRight32';
+  import { stores, goto } from '@sapper/app';
+  import Expandable from '../../../Expandable/index.svelte';
+  import PageNav from '../../../PageNav/index.svelte';
+  import IconButton from '../../../IconButton/index.svelte';
   import {
     getNavItemRoute,
-    getLectureRoute,
+    getLessonsRoute,
     getLectureNo,
-  } from "../../function";
+  } from '../../function';
 
-  import { lessons } from "../Lecture/store/lessons";
+  import { lessons } from '../Lesson/store/lessons';
 
-  // export let lectureId;
+  // export let lessonId;
   export let courseId;
 
   let show = true;
@@ -31,43 +31,43 @@
 
   const navItems = [
     {
-      label: "Overview",
+      label: 'Overview',
       to: getNavItemRoute(courseId),
       hideSortIcon: true,
     },
     {
-      label: "Lectures",
-      to: getLectureRoute(courseId),
+      label: 'Lessons',
+      to: getLessonsRoute(courseId),
       hideSortIcon: false,
       isLecture: true,
     },
     {
-      label: "Exercises",
-      to: getNavItemRoute(courseId, "exercises"),
+      label: 'All Exercises',
+      to: getNavItemRoute(courseId, 'allexercises'),
       hideSortIcon: true,
     },
     {
-      label: "Scoreboard",
-      to: getNavItemRoute(courseId, "scoreboard"),
+      label: 'Scoreboard',
+      to: getNavItemRoute(courseId, 'scoreboard'),
       hideSortIcon: true,
     },
     {
-      label: "People",
-      to: getNavItemRoute(courseId, "people"),
+      label: 'People',
+      to: getNavItemRoute(courseId, 'people'),
       hideSortIcon: true,
     },
     {
-      label: "Timetable",
-      to: getNavItemRoute(courseId, "timetable"),
+      label: 'Timetable',
+      to: getNavItemRoute(courseId, 'timetable'),
       hideSortIcon: true,
     },
   ];
 
   onMount(() => {
-    hotkeys("b", function (event, handler) {
+    hotkeys('b', function (event, handler) {
       event.preventDefault();
       switch (handler.key) {
-        case "b":
+        case 'b':
           show = !show;
           break;
       }
@@ -116,9 +116,9 @@
       value="toggle"
       onClick={() => (show = !show)}
       toolTipProps={{
-        title: "Toggle sidebar",
-        hotkeys: ["B"],
-        direction: "right",
+        title: 'Toggle sidebar',
+        hotkeys: ['B'],
+        direction: 'right',
       }}
     >
       {#if show}
