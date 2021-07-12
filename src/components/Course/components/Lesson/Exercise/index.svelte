@@ -1,13 +1,13 @@
 <script>
-  import { handleAddQuestion } from "./store/index";
-  import PrimaryButton from "../../../../PrimaryButton/index.svelte";
-  import PageBody from "../../../../PageBody/index.svelte";
-  import ViewMode from "./ViewMode.svelte";
-  import EditMode from "./EditMode.svelte";
-  import MODES from "../../../../../utils/constants/mode.js";
-  import { VARIANTS } from "../../../../PrimaryButton/constants";
+  import { handleAddQuestion } from './store/index';
+  import PrimaryButton from '../../../../PrimaryButton/index.svelte';
+  import PageBody from '../../../../PageBody/index.svelte';
+  import ViewMode from './ViewMode.svelte';
+  import EditMode from './EditMode.svelte';
+  import MODES from '../../../../../utils/constants/mode.js';
+  import { VARIANTS } from '../../../../PrimaryButton/constants';
 
-  export let exerciseId;
+  // export let exerciseId;
 
   let mode = MODES.view;
   let preview = false;
@@ -24,13 +24,13 @@
       <PrimaryButton
         className="mr-2"
         variant={VARIANTS.OUTLINED}
-        label={mode === MODES.edit ? "Save" : "Edit"}
+        label={mode === MODES.edit ? 'Save' : 'Edit'}
         onClick={handleMode}
       />
       {#if mode === MODES.edit || preview}
         <PrimaryButton
           variant={VARIANTS.OUTLINED}
-          label={preview ? "Edit" : "Preview"}
+          label={preview ? 'Edit' : 'Preview'}
           onClick={() => (preview = !preview)}
         />
       {/if}

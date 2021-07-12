@@ -1,4 +1,5 @@
 <script>
+  import { stores } from "@sapper/app";
   import Tailwindcss from "../components/Tailwindcss.svelte";
   // import Nav from "../components/Nav.svelte";
   import LeftNav from "../components/LeftNav/index.svelte";
@@ -7,6 +8,8 @@
   import Apps from "../components/Apps/index.svelte";
 
   export let segment;
+
+  let { page } = stores();
 </script>
 
 <Tailwindcss />
@@ -16,7 +19,9 @@
 <main class="flex">
   <LeftNav {segment} />
   <slot />
-  <Apps />
+  {#if $page.path.includes("courses")}
+    <Apps />
+  {/if}
 </main>
 
 <Footer />
