@@ -1,5 +1,5 @@
-import { STATUS } from '../../utils/constants/answers';
-import { QUESTION_TYPE } from '../../components/Question/constants';
+import { STATUS } from "../../utils/constants/answers";
+import { QUESTION_TYPE } from "../../components/Question/constants";
 
 const ROLE = {
   ADMIN: 0,
@@ -10,66 +10,66 @@ const ROLE = {
 const tutors = [
   {
     id: 1,
-    text: 'Sergey Semko',
+    text: "Sergey Semko",
   },
   {
     id: 3,
-    text: 'Jonathan Nelson',
+    text: "Jonathan Nelson",
   },
   {
     id: 4,
-    text: 'Sasha Pokidin',
+    text: "Sasha Pokidin",
   },
   {
     id: 5,
-    text: 'Natasha Rudenko',
+    text: "Natasha Rudenko",
   },
   {
     id: 6,
-    text: 'Yulia Marushko',
+    text: "Yulia Marushko",
   },
 ];
 
 const people = [
   {
-    name: 'Alexander Pokidin',
-    title: 'Senior Software Engineer',
-    avatar: 'https://i.pravatar.cc/150?img=1',
+    name: "Alexander Pokidin",
+    title: "Senior Software Engineer",
+    avatar: "https://i.pravatar.cc/150?img=1",
     role: ROLE.TUTOR,
-    telegramLink: 'https://t.me/seed_of_abraham',
-    mailLink: 'mailto:irb.ossystem@gmail.com',
+    telegramLink: "https://t.me/seed_of_abraham",
+    mailLink: "mailto:irb.ossystem@gmail.com",
   },
   {
-    name: 'Andrey Filatov',
-    title: 'Fullstack Software Engineer',
-    avatar: 'https://i.pravatar.cc/150?img=2',
+    name: "Andrey Filatov",
+    title: "Fullstack Software Engineer",
+    avatar: "https://i.pravatar.cc/150?img=2",
     role: ROLE.TUTOR,
-    telegramLink: 'https://t.me/seed_of_abraham',
-    mailLink: 'mailto:irb.ossystem@gmail.com',
+    telegramLink: "https://t.me/seed_of_abraham",
+    mailLink: "mailto:irb.ossystem@gmail.com",
   },
   {
-    name: 'Sergey Semko',
-    title: 'Senior Software Engineer',
-    avatar: 'https://i.pravatar.cc/150?img=3',
+    name: "Sergey Semko",
+    title: "Senior Software Engineer",
+    avatar: "https://i.pravatar.cc/150?img=3",
     role: ROLE.TUTOR,
-    telegramLink: 'https://t.me/seed_of_abraham',
-    mailLink: 'mailto:irb.ossystem@gmail.com',
+    telegramLink: "https://t.me/seed_of_abraham",
+    mailLink: "mailto:irb.ossystem@gmail.com",
   },
   {
-    name: 'Natalia Fedii',
-    title: 'Project Manager',
-    avatar: 'https://i.pravatar.cc/150?img=4',
+    name: "Natalia Fedii",
+    title: "Project Manager",
+    avatar: "https://i.pravatar.cc/150?img=4",
     role: ROLE.TUTOR,
-    telegramLink: 'https://t.me/seed_of_abraham',
-    mailLink: 'mailto:irb.ossystem@gmail.com',
+    telegramLink: "https://t.me/seed_of_abraham",
+    mailLink: "mailto:irb.ossystem@gmail.com",
   },
 ];
 
 const courses = [
   {
     id: 1,
-    title: 'React.js Fundamentals',
-    status: '',
+    title: "React.js Fundamentals",
+    status: "",
   },
 ];
 
@@ -87,24 +87,24 @@ const lessons = [
   {
     id: 1,
     course_id: 1,
-    title: 'Вступительное слово. Софт скилы',
-    to: '/courses/1/lessons/1',
+    title: "Вступительное слово. Софт скилы",
+    to: "/courses/1/lessons/1",
     tutor: {
       userId: 1,
-      avatar: 'https://picsum.photos/32/32/?random',
-      name: 'Sergey Semko',
+      avatar: "https://picsum.photos/32/32/?random",
+      name: "Sergey Semko",
     },
     resources: [
       {
-        label: 'lesson',
+        label: "lesson",
         value: 1,
       },
       {
-        label: 'quiz',
+        label: "quiz",
         value: 1,
       },
       {
-        label: 'home task',
+        label: "home task",
         value: 2,
       },
     ],
@@ -114,24 +114,24 @@ const lessons = [
   {
     id: 2,
     course_id: 1,
-    title: 'Введение в ReactJS',
-    to: '/courses/1/lessons/2',
+    title: "Введение в ReactJS",
+    to: "/courses/1/lessons/2",
     tutor: {
       userId: 1,
-      avatar: 'https://picsum.photos/32/32/?random',
-      name: 'Sergey Semko',
+      avatar: "https://picsum.photos/32/32/?random",
+      name: "Sergey Semko",
     },
     resources: [
       {
-        label: 'lesson',
+        label: "lesson",
         value: 1,
       },
       {
-        label: 'quiz',
+        label: "quiz",
         value: 1,
       },
       {
-        label: 'home task',
+        label: "home task",
         value: 2,
       },
     ],
@@ -141,24 +141,24 @@ const lessons = [
   {
     id: 3,
     course_id: 1,
-    title: 'Компоненты',
-    to: '/courses/1/lessons/3',
+    title: "Компоненты",
+    to: "/courses/1/lessons/3",
     tutor: {
       userId: 1,
-      avatar: 'https://picsum.photos/32/32/?random',
-      name: 'Sergey Semko',
+      avatar: "https://picsum.photos/32/32/?random",
+      name: "Sergey Semko",
     },
     resources: [
       {
-        label: 'lesson',
+        label: "lesson",
         value: 1,
       },
       {
-        label: 'quiz',
+        label: "quiz",
         value: 1,
       },
       {
-        label: 'home task',
+        label: "home task",
         value: 2,
       },
     ],
@@ -168,24 +168,24 @@ const lessons = [
   {
     id: 4,
     course_id: 1,
-    title: 'Состояние компонентов и пропсы',
-    to: '/courses/1/lessons/4',
+    title: "Состояние компонентов и пропсы",
+    to: "/courses/1/lessons/4",
     tutor: {
       userId: 1,
-      avatar: 'https://picsum.photos/32/32/?random',
-      name: 'Sergey Semko',
+      avatar: "https://picsum.photos/32/32/?random",
+      name: "Sergey Semko",
     },
     resources: [
       {
-        label: 'lesson',
+        label: "lesson",
         value: 1,
       },
       {
-        label: 'quiz',
+        label: "quiz",
         value: 1,
       },
       {
-        label: 'home task',
+        label: "home task",
         value: 2,
       },
     ],
@@ -195,24 +195,24 @@ const lessons = [
   {
     id: 5,
     course_id: 1,
-    title: 'Жизненный цикл',
-    to: '/courses/1/lessons/5',
+    title: "Жизненный цикл",
+    to: "/courses/1/lessons/5",
     tutor: {
       userId: 1,
-      avatar: 'https://picsum.photos/32/32/?random',
-      name: 'Sergey Semko',
+      avatar: "https://picsum.photos/32/32/?random",
+      name: "Sergey Semko",
     },
     resources: [
       {
-        label: 'lesson',
+        label: "lesson",
         value: 1,
       },
       {
-        label: 'quiz',
+        label: "quiz",
         value: 1,
       },
       {
-        label: 'home task',
+        label: "home task",
         value: 2,
       },
     ],
@@ -226,38 +226,38 @@ const exercises = [
   {
     id: 1,
     lesson_id: 1,
-    title: 'Home task 1',
+    title: "Home task 1",
     description:
       "You will be to answer 10 questions, it isn't timed so you can take your time to answer. You can also continue from where you left off, you don't need to worry cause everything is automatically syncronized in the cloud.",
     questions: [
       {
-        id: 'react-founder',
+        id: "react-founder",
         type: QUESTION_TYPE.CHECKBOX,
-        title: 'Who is the creator of React.js',
+        title: "Who is the creator of React.js",
         options: [
           {
-            id: '1',
-            value: 'Dan Abrahmov',
+            id: "1",
+            value: "Dan Abrahmov",
           },
           {
-            id: '2',
-            value: 'Google',
+            id: "2",
+            value: "Google",
           },
           {
-            id: '3',
-            value: 'Facebook',
+            id: "3",
+            value: "Facebook",
           },
           {
-            id: '4',
-            value: 'Traversy Media',
+            id: "4",
+            value: "Traversy Media",
           },
         ],
-        answers: ['3'],
+        answers: ["3"],
       },
       {
-        id: 'vue-founder',
+        id: "vue-founder",
         type: QUESTION_TYPE.CHECKBOX,
-        title: 'Who is the creator of Vue.js',
+        title: "Who is the creator of Vue.js",
         code: `const name = 'Josh Perez';\nconst element = <h1>Hello, {name}</h1>;\n\nReactDOM.render(\n 
       element,\,
       document.getElementById('root')
@@ -265,53 +265,53 @@ const exercises = [
         `,
         options: [
           {
-            id: '1',
-            value: 'Evan Vue',
+            id: "1",
+            value: "Evan Vue",
           },
           {
-            id: '2',
-            value: 'Mark Zukerberg',
+            id: "2",
+            value: "Mark Zukerberg",
           },
           {
-            id: '3',
-            value: 'Prince Charles',
+            id: "3",
+            value: "Prince Charles",
           },
           {
-            id: '4',
-            value: 'Bill Gates',
+            id: "4",
+            value: "Bill Gates",
           },
         ],
-        answers: ['3'],
+        answers: ["3"],
       },
       {
-        id: 'svelte-founder',
+        id: "svelte-founder",
         type: QUESTION_TYPE.RADIO,
-        title: 'Who is the creator of Svelte.js',
+        title: "Who is the creator of Svelte.js",
         options: [
           {
-            id: '1',
-            value: 'Hillary Svelte',
+            id: "1",
+            value: "Hillary Svelte",
           },
           {
-            id: '2',
-            value: 'Mircosoft',
+            id: "2",
+            value: "Mircosoft",
           },
           {
-            id: '3',
-            value: 'Elevate',
+            id: "3",
+            value: "Elevate",
           },
           {
-            id: '4',
-            value: 'Coding Train',
+            id: "4",
+            value: "Coding Train",
           },
         ],
-        answers: ['2'],
+        answers: ["2"],
       },
       {
-        id: 'angular-founder',
+        id: "angular-founder",
         type: QUESTION_TYPE.TEXTAREA,
-        title: 'Who is the creator of Angular.js',
-        value: '',
+        title: "Who is the creator of Angular.js",
+        value: "",
       },
     ],
   },
@@ -336,9 +336,11 @@ lessons.forEach((lesson) => {
 });
 
 export function getCourse(id) {
-  const people = [];
   return {
+    id,
+    name: "React.js",
     people,
+    roles: ROLE,
     lessons: getLessons(id),
   };
 }

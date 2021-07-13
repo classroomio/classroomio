@@ -1,7 +1,4 @@
-const ROUTES = {
-  COURSES: 'courses',
-  LESSONS: 'lessons',
-};
+import { ROUTES } from "./constants";
 
 export function getNavItemRoute(courseId, routeId) {
   const path = `/${ROUTES.COURSES}/${courseId}`;

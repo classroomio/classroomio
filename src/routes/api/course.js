@@ -1,8 +1,8 @@
-import { getCourse } from './_db';
+import { getCourse } from "./_db";
 
 function writeJsonHead(res, statusCode) {
   res.writeHead(statusCode, {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   });
 }
 
@@ -11,5 +11,5 @@ export function get(req, res, next) {
 
   writeJsonHead(res, 200);
 
-  return res.end(JSON.stringify(getCourse(id)));
+  return res.end(JSON.stringify(getCourse(parseInt(id, 2))));
 }
