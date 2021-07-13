@@ -1,12 +1,4 @@
 <script context="module">
-  import marked from "marked";
-  import Vote from "../../components/Vote/index.svelte";
-  import HashTags from "../../components/HashTags/index.svelte";
-  import TextEditor from "../../components/TextEditor/index.svelte";
-  import CheckmarkOutline20 from "carbon-icons-svelte/lib/CheckmarkOutline20";
-
-  let userComment = "";
-
   export async function preload({ params }) {
     // the `id` parameter is available because
     // this file is called [id].svelte
@@ -22,7 +14,15 @@
 </script>
 
 <script>
+  import marked from 'marked';
+  import Vote from '../../components/Vote/index.svelte';
+  import HashTags from '../../components/HashTags/index.svelte';
+  import TextEditor from '../../components/TextEditor/index.svelte';
+  import CheckmarkOutline20 from 'carbon-icons-svelte/lib/CheckmarkOutline20';
+
   export let discussion;
+
+  let userComment = '';
 </script>
 
 <svelte:head>
