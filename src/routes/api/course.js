@@ -1,4 +1,4 @@
-import { getLessons } from './_db';
+import { getCourse } from './_db';
 
 function writeJsonHead(res, statusCode) {
   res.writeHead(statusCode, {
@@ -11,9 +11,5 @@ export function get(req, res, next) {
 
   writeJsonHead(res, 200);
 
-  if (id) {
-    return res.end(JSON.stringify(getLesson(id)));
-  }
-
-  return res.end(JSON.stringify(getLessons()));
+  return res.end(JSON.stringify(getCourse(id)));
 }
