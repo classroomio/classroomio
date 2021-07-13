@@ -1,58 +1,33 @@
 <script context="module">
   export async function preload({ params }) {
-    let [courseId, courseNavItem, lessonId] = params.id;
+    let [courseId] = params.id;
 
-    return { courseId, courseNavItem, lessonId };
+    const res = await this.fetch(`api/course?id=${courseId}`);
+    const data = await res.json();
+
+    if (res.status === 200) {
+      return { courseId, courseData: data };
+    } else {
+      this.error(res.status, data.message);
+    }
   }
 </script>
 
 <script>
-  import { stores } from '@sapper/app';
-  import CourseContainer from '../../../components/CourseContainer/index.svelte';
-  import PageNav from '../../../components/PageNav/index.svelte';
-  import UserCard from '../../../components/UserCard/index.svelte';
+  import { stores } from "@sapper/app";
+  import CourseContainer from "../../../components/CourseContainer/index.svelte";
+  import PageNav from "../../../components/PageNav/index.svelte";
+  import UserCard from "../../../components/UserCard/index.svelte";
+
+  export let courseData = {};
 
   const { page } = stores();
 
-  const teachers = [
-    {
-      name: 'Alexander Pokidin',
-      title: 'Senior Software Engineer',
-      avatar: 'https://i.pravatar.cc/150?img=1',
-
-      telegramLink: 'https://t.me/seed_of_abraham',
-      mailLink: 'mailto:irb.ossystem@gmail.com',
-    },
-    {
-      name: 'Andrey Filatov',
-      title: 'Fullstack Software Engineer',
-      avatar: 'https://i.pravatar.cc/150?img=2',
-
-      telegramLink: 'https://t.me/seed_of_abraham',
-      mailLink: 'mailto:irb.ossystem@gmail.com',
-    },
-    {
-      name: 'Sergey Semko',
-      title: 'Senior Software Engineer',
-      avatar: 'https://i.pravatar.cc/150?img=3',
-
-      telegramLink: 'https://t.me/seed_of_abraham',
-      mailLink: 'mailto:irb.ossystem@gmail.com',
-    },
-    {
-      name: 'Natalia Fedii',
-      title: 'Project Manager',
-      avatar: 'https://i.pravatar.cc/150?img=4',
-
-      telegramLink: 'https://t.me/seed_of_abraham',
-      mailLink: 'mailto:irb.ossystem@gmail.com',
-    },
-  ];
+  const teachers = courseData.people;
   const students = [...teachers, ...teachers, ...teachers];
-  export let courseId;
 </script>
 
-<CourseContainer title="ReactJS" {courseId}>
+<CourseContainer {courseData}>
   <PageNav title="People" disableSticky={true} />
   <div class="m-3">
     <h3>

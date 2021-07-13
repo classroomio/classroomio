@@ -1,18 +1,25 @@
 <script context="module">
   export async function preload({ params }) {
-    let [courseId, courseNavItem, lessonId] = params.id;
-    console.log(`course id`, params);
-    return { courseId, courseNavItem, lessonId };
+    let [courseId] = params.id;
+
+    const res = await this.fetch(`api/course?id=${courseId}`);
+    const data = await res.json();
+
+    if (res.status === 200) {
+      return { courseId, courseData: data };
+    } else {
+      this.error(res.status, data.message);
+    }
   }
 </script>
 
 <script>
-  import Overview from '../../../components/Course/index.svelte';
-  import CourseContainer from '../../../components/CourseContainer/index.svelte';
+  import Overview from "../../../components/Course/index.svelte";
+  import CourseContainer from "../../../components/CourseContainer/index.svelte";
 
-  export let courseId;
+  export let courseData = {};
 </script>
 
-<CourseContainer title="ReactJS" {courseId}>
+<CourseContainer {courseData}>
   <Overview />
 </CourseContainer>

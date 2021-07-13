@@ -1,29 +1,37 @@
 <script context="module">
   export async function preload({ params }) {
+    console.log("params", params);
     let [courseId, courseNavItem, lessonId] = params.id;
-    return { courseId, courseNavItem, lessonId };
+    const res = await this.fetch(`api/course?id=${courseId}`);
+    const data = await res.json();
+
+    if (res.status === 200) {
+      return { courseId, courseData: data };
+    } else {
+      this.error(res.status, data.message);
+    }
   }
 </script>
 
 <script>
-  import Time24 from 'carbon-icons-svelte/lib/Time24';
-  import Edit24 from 'carbon-icons-svelte/lib/Edit24';
-  import Save24 from 'carbon-icons-svelte/lib/Save24';
-  import CheckmarkFilled24 from 'carbon-icons-svelte/lib/CheckmarkFilled24';
-  import PageNav from '../../../../components/PageNav/index.svelte';
-  import PageBody from '../../../../components/PageBody/index.svelte';
-  import PrimaryButton from '../../../../components/PrimaryButton/index.svelte';
-  import TextField from '../../../../components/Form/TextField.svelte';
-  import IconButton from '../../../../components/IconButton/index.svelte';
-  import Select from '../../../../components/Form/Select.svelte';
-  import CourseContainer from '../../../../components/CourseContainer/index.svelte';
+  import Time24 from "carbon-icons-svelte/lib/Time24";
+  import Edit24 from "carbon-icons-svelte/lib/Edit24";
+  import Save24 from "carbon-icons-svelte/lib/Save24";
+  import CheckmarkFilled24 from "carbon-icons-svelte/lib/CheckmarkFilled24";
+  import PageNav from "../../../../components/PageNav/index.svelte";
+  import PageBody from "../../../../components/PageBody/index.svelte";
+  import PrimaryButton from "../../../../components/PrimaryButton/index.svelte";
+  import TextField from "../../../../components/Form/TextField.svelte";
+  import IconButton from "../../../../components/IconButton/index.svelte";
+  import Select from "../../../../components/Form/Select.svelte";
+  import CourseContainer from "../../../../components/CourseContainer/index.svelte";
   import {
     lessons,
     tutors,
     handleAddLesson,
-  } from '../../../../components/Course/components/Lesson/store/lessons';
+  } from "../../../../components/Course/components/Lesson/store/lessons";
 
-  export let courseId;
+  export let courseData;
 
   let lessonEditing;
   let ref;
@@ -31,9 +39,9 @@
   function formatDate(date) {
     const d = new Date(date);
 
-    const ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(d);
-    const mo = new Intl.DateTimeFormat('en', { month: '2-digit' }).format(d);
-    const da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(d);
+    const ye = new Intl.DateTimeFormat("en", { year: "numeric" }).format(d);
+    const mo = new Intl.DateTimeFormat("en", { month: "2-digit" }).format(d);
+    const da = new Intl.DateTimeFormat("en", { day: "2-digit" }).format(d);
 
     return `${ye}-${mo}-${da}`;
   }
@@ -43,13 +51,13 @@
     setTimeout(() => {
       lessonEditing = $lessons.length - 1;
       if (ref) {
-        ref.scrollIntoView({ block: 'end', behavior: 'smooth' });
+        ref.scrollIntoView({ block: "end", behavior: "smooth" });
       }
     }, 100);
   }
 </script>
 
-<CourseContainer title="ReactJS" {courseId}>
+<CourseContainer {courseData}>
   <PageNav title="Lessons">
     <div slot="widget">
       <PrimaryButton label="Add" onClick={addLesson} />
@@ -68,8 +76,8 @@
             <IconButton
               onClick={() => (lesson.isComplete = !lesson.isComplete)}
               toolTipProps={{
-                title: `Click to ${lesson.isComplete ? 'lock' : 'unlock'}`,
-                direction: 'right',
+                title: `Click to ${lesson.isComplete ? "lock" : "unlock"}`,
+                direction: "right",
               }}
             >
               {#if lesson.isComplete}
@@ -110,7 +118,7 @@
               <div class="flex items-center mr-2">
                 {lesson.resources
                   .map((r) => `${r.value} ${r.label}`)
-                  .join(', ')}
+                  .join(", ")}
               </div>
             </div>
 
