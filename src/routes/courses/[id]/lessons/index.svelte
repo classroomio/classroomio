@@ -1,7 +1,6 @@
 <script context="module">
   export async function preload({ params }) {
     let [courseId, courseNavItem, lessonId] = params.id;
-
     return { courseId, courseNavItem, lessonId };
   }
 </script>
@@ -68,6 +67,10 @@
           <div class="absolute -left-6 -top-6 success">
             <IconButton
               onClick={() => (lesson.isComplete = !lesson.isComplete)}
+              toolTipProps={{
+                title: `Click to ${lesson.isComplete ? 'lock' : 'unlock'}`,
+                direction: 'right',
+              }}
             >
               {#if lesson.isComplete}
                 <CheckmarkFilled24 class="carbon-icon" />
