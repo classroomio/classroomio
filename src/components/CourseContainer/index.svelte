@@ -1,15 +1,25 @@
 <script>
+  import { onMount } from "svelte";
+
   import Navigation from "../Course/components/Navigation/index.svelte";
-  export let courseTitle = "";
-  export let courseId = "";
+  import { lessons } from "../Course/components/Lesson/store/lessons";
+
+  export let courseData = {};
+  export let path;
+
+  onMount(() => {
+    if (!$lessons.length) {
+      lessons.set(courseData.lessons);
+    }
+  });
 </script>
 
 <svelte:head>
-  <title>{courseTitle}</title>
+  <title>{courseData.name}</title>
 </svelte:head>
 
 <div class="root">
-  <Navigation {courseId} />
+  <Navigation courseId={courseData.id} {path} />
   <div class="rightBar">
     <slot />
   </div>
