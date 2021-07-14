@@ -1,20 +1,20 @@
 <script>
-  import { onMount } from "svelte";
-  import CheckmarkFilled20 from "carbon-icons-svelte/lib/CheckmarkFilled20";
-  import hotkeys from "hotkeys-js";
-  import ChevronLeft32 from "carbon-icons-svelte/lib/ChevronLeft32";
-  import ChevronRight32 from "carbon-icons-svelte/lib/ChevronRight32";
-  import { stores, goto } from "@sapper/app";
-  import Expandable from "../../../Expandable/index.svelte";
-  import PageNav from "../../../PageNav/index.svelte";
-  import IconButton from "../../../IconButton/index.svelte";
+  import { onMount } from 'svelte';
+  import CheckmarkFilled20 from 'carbon-icons-svelte/lib/CheckmarkFilled20';
+  import hotkeys from 'hotkeys-js';
+  import ChevronLeft32 from 'carbon-icons-svelte/lib/ChevronLeft32';
+  import ChevronRight32 from 'carbon-icons-svelte/lib/ChevronRight32';
+  import { stores, goto } from '@sapper/app';
+  import Expandable from '../../../Expandable/index.svelte';
+  import PageNav from '../../../PageNav/index.svelte';
+  import IconButton from '../../../IconButton/index.svelte';
   import {
     getNavItemRoute,
     getLessonsRoute,
     getLectureNo,
-  } from "../../function";
+  } from '../../function';
 
-  import { lessons } from "../Lesson/store/lessons";
+  import { lessons } from '../Lesson/store/lessons';
 
   // export let lessonId;
   export let courseId;
@@ -32,43 +32,48 @@
 
   const navItems = [
     {
-      label: "Overview",
+      label: 'Overview',
       to: getNavItemRoute(courseId),
       hideSortIcon: true,
     },
     {
-      label: "Lessons",
+      label: 'Lessons',
       to: getLessonsRoute(courseId),
       hideSortIcon: false,
       isLecture: true,
     },
     {
-      label: "All Exercises",
-      to: getNavItemRoute(courseId, "allexercises"),
+      label: 'All Exercises',
+      to: getNavItemRoute(courseId, 'allexercises'),
       hideSortIcon: true,
     },
     {
-      label: "Scoreboard",
-      to: getNavItemRoute(courseId, "scoreboard"),
+      label: 'Scoreboard',
+      to: getNavItemRoute(courseId, 'scoreboard'),
       hideSortIcon: true,
     },
     {
-      label: "People",
-      to: getNavItemRoute(courseId, "people"),
+      label: 'People',
+      to: getNavItemRoute(courseId, 'people'),
       hideSortIcon: true,
     },
     {
-      label: "Timetable",
-      to: getNavItemRoute(courseId, "timetable"),
+      label: 'Timetable',
+      to: getNavItemRoute(courseId, 'timetable'),
       hideSortIcon: true,
     },
   ];
 
+  function getHref(item) {
+    return item.to;
+    // return item.isComplete ? item.to : path || $page.path
+  }
+
   onMount(() => {
-    hotkeys("b", function (event, handler) {
+    hotkeys('b', function (event, handler) {
       event.preventDefault();
       switch (handler.key) {
-        case "b":
+        case 'b':
           show = !show;
           break;
       }
@@ -95,7 +100,7 @@
                   !(path || $page.path).length > 3) &&
                   'active'} pl-7 py-2 {!item.isComplete &&
                   'cursor-not-allowed'}"
-                href={item.isComplete ? item.to : path || $page.path}
+                href={getHref(item)}
               >
                 <span class="course-counter"> {getLectureNo(index + 1)} </span>
                 <span>{item.title}</span>
@@ -118,9 +123,9 @@
       value="toggle"
       onClick={() => (show = !show)}
       toolTipProps={{
-        title: "Toggle sidebar",
-        hotkeys: ["B"],
-        direction: "right",
+        title: 'Toggle sidebar',
+        hotkeys: ['B'],
+        direction: 'right',
       }}
     >
       {#if show}
