@@ -1,42 +1,51 @@
-import { writable } from "svelte/store";
+import { writable } from 'svelte/store';
 
 export const lessons = writable([]);
+export const lesson = writable({
+  lesson_id: null,
+  materials: {
+    note: '',
+    slide: '',
+    video: '',
+  },
+  exercises: [],
+});
 
 export const tutors = writable([
   {
     id: 1,
-    text: "Sergey Semko",
+    text: 'Sergey Semko',
   },
   {
     id: 3,
-    text: "Jonathan Nelson",
+    text: 'Jonathan Nelson',
   },
   {
     id: 4,
-    text: "Sasha Pokidin",
+    text: 'Sasha Pokidin',
   },
   {
     id: 5,
-    text: "Natasha Rudenko",
+    text: 'Natasha Rudenko',
   },
   {
     id: 6,
-    text: "Yulia Marushko",
+    text: 'Yulia Marushko',
   },
 ]);
 
 export function handleAddLesson() {
   const resources = [
     {
-      label: "lesson",
+      label: 'lesson',
       value: 0,
     },
     {
-      label: "quiz",
+      label: 'quiz',
       value: 0,
     },
     {
-      label: "home task",
+      label: 'home task',
       value: 0,
     },
   ];
@@ -45,13 +54,13 @@ export function handleAddLesson() {
     return [
       ..._lessons,
       {
-        title: "Untitled lesson",
-        to: "/courses/1/lessons/" + (_lessons.length + 1),
+        title: 'Untitled lesson',
+        to: '/courses/1/lessons/' + (_lessons.length + 1),
         resources,
         tutor: {
           userId: 1,
-          avatar: "https://picsum.photos/32/32/?random",
-          name: "",
+          avatar: 'https://picsum.photos/32/32/?random',
+          name: '',
         },
         date: new Date(),
       },
