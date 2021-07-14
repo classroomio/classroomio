@@ -5,21 +5,11 @@
   import TextField from '../../../../Form/TextField.svelte';
   import Exercise from '../Exercise/index.svelte';
 
+  import { lesson } from '../store/lessons';
+
   export let path;
   export let exerciseId;
 
-  let exercises = [
-    {
-      id: 1,
-      title: 'Practice Exercise',
-      link: `${path}/1`,
-    },
-    {
-      id: 2,
-      title: 'Home task',
-      link: `${path}/2`,
-    },
-  ];
   let open = false;
   let newExercise = {
     id: 1,
@@ -28,13 +18,16 @@
   };
 
   function handleAddExercise() {
-    exercises = [
-      ...exercises,
-      {
-        ...newExercise,
-        link: `${path}/${exercises.length + 1}`,
-      },
-    ];
+    lesson.update((_lesson) => ({
+      ..._lesson,
+      exercises: [
+        ..._lesson.exercises,
+        {
+          ...newExercise,
+          link: `${path}/${_lesson.exercises.length + 1}`,
+        },
+      ],
+    }));
 
     handleCancelAddExercise();
   }
@@ -42,7 +35,7 @@
   function handleCancelAddExercise() {
     open = false;
     newExercise = {
-      id: exercises.length + 1,
+      id: $lesson.exercises.length + 1,
       title: '',
       link: '',
     };
@@ -81,7 +74,7 @@
     </slot:fragment>
 
     <div class="flex flex-wrap">
-      {#each exercises as exercise, index}
+      {#each $lesson.exercises as exercise}
         <a class="w-52 bg-gray-100 px-4 py-7 mr-4 mb-4" href={exercise.link}>
           <h3 class="text-xl">{exercise.title}</h3>
           <p class="mt-4 text-sm">Created Jul 3, 2021</p>

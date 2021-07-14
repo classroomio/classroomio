@@ -1,15 +1,24 @@
 <script>
-  import { onMount } from "svelte";
+  import { onMount, afterUpdate } from 'svelte';
 
-  import Navigation from "../Course/components/Navigation/index.svelte";
-  import { lessons } from "../Course/components/Lesson/store/lessons";
+  import Navigation from '../Course/components/Navigation/index.svelte';
+  import { lessons, lesson } from '../Course/components/Lesson/store/lessons';
 
   export let courseData = {};
   export let path;
 
   onMount(() => {
-    if (!$lessons.length) {
-      lessons.set(courseData.lessons);
+    lessons.set(courseData.lessons);
+    if (courseData.lesson) {
+      lesson.set(courseData.lesson);
+    }
+  });
+
+  afterUpdate(() => {
+    lessons.set(courseData.lessons);
+
+    if (courseData.lesson) {
+      lesson.set(courseData.lesson);
     }
   });
 </script>
