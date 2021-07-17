@@ -1,7 +1,7 @@
 <script>
-  import { Modal } from 'carbon-components-svelte';
   import PrimaryButton from '../../../../PrimaryButton/index.svelte';
   import PageBody from '../../../../PageBody/index.svelte';
+  import Modal from '../../../../Modal/index.svelte';
   import TextField from '../../../../Form/TextField.svelte';
   import Exercise from '../Exercise/index.svelte';
 
@@ -46,22 +46,23 @@
   <Exercise {exerciseId} />
 {:else}
   <Modal
-    size="xs"
+    onClose={handleCancelAddExercise}
     bind:open
     modalHeading="Create an Exercise"
-    primaryButtonText="Confirm"
-    secondaryButtonText="Cancel"
-    on:click:button--primary={handleAddExercise}
-    on:click:button--secondary={handleCancelAddExercise}
-    on:open
-    on:close
-    on:submit
   >
     <TextField
       bind:value={newExercise.title}
       autofocus={true}
       placeholder="Exercise name"
     />
+
+    <div class="mt-5 flex items-center">
+      <PrimaryButton
+        className="px-6 py-2"
+        label="Submit"
+        onClick={handleAddExercise}
+      />
+    </div>
   </Modal>
 
   <PageBody width="w-11/12 m-auto">
