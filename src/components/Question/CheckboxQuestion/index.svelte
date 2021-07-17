@@ -1,12 +1,12 @@
 <script>
-  import { CodeSnippet } from "carbon-components-svelte";
-  import PrimaryButton from "../../PrimaryButton/index.svelte";
-  import { VARIANTS } from "../../PrimaryButton/constants";
-  import Checkbox from "../../Form/Checkbox.svelte";
+  import CodeSnippet from '../../CodeSnippet/index.svelte';
+  import PrimaryButton from '../../PrimaryButton/index.svelte';
+  import { VARIANTS } from '../../PrimaryButton/constants';
+  import Checkbox from '../../Form/Checkbox.svelte';
 
-  export let title = "";
+  export let title = '';
   export let code;
-  export let name = "";
+  export let name = '';
   export let options = [];
   export let answers = [];
   export let onSubmit = () => {};
@@ -45,13 +45,13 @@
   function getValidationClassName(option) {
     if (defaultValue.includes(option.id)) {
       if (answers.includes(option.id)) {
-        return "border-green-700";
+        return 'border-green-700';
       } else {
-        return "border-red-700";
+        return 'border-red-700';
       }
     }
 
-    return "";
+    return '';
   }
 </script>
 
@@ -59,7 +59,7 @@
   <h2>{title}</h2>
 
   {#if code}
-    <CodeSnippet {code} type="multi" />
+    <CodeSnippet {code} />
   {/if}
 
   <div class="ml-4">
