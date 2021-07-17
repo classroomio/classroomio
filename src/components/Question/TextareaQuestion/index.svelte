@@ -1,16 +1,16 @@
 <script>
-  import { CodeSnippet } from "carbon-components-svelte";
-  import marked from "marked";
-  import PrimaryButton from "../../PrimaryButton/index.svelte";
-  import { VARIANTS } from "../../PrimaryButton/constants";
-  import TextArea from "../../Form/TextArea.svelte";
+  import CodeSnippet from '../../CodeSnippet/index.svelte';
+  import marked from 'marked';
+  import PrimaryButton from '../../PrimaryButton/index.svelte';
+  import { VARIANTS } from '../../PrimaryButton/constants';
+  import TextArea from '../../Form/TextArea.svelte';
 
-  export let title = "";
+  export let title = '';
   export let code;
-  export let name = "";
+  export let name = '';
   export let onSubmit = () => {};
   export let onPrevious = () => {};
-  export let defaultValue = "";
+  export let defaultValue = '';
   export let disablePreviousButton = false;
   export let isLast = false;
   export let isPreview = false;
@@ -33,7 +33,7 @@
   <h2>{title}</h2>
 
   {#if code}
-    <CodeSnippet {code} type="multi" />
+    <CodeSnippet {code} />
   {/if}
 
   <div class="ml-4">
@@ -61,7 +61,7 @@
       <PrimaryButton
         variant={VARIANTS.OUTLINED}
         type="submit"
-        label={isLast ? "Finish" : "Next"}
+        label={isLast ? 'Finish' : 'Next'}
         {name}
       />
     </div>
