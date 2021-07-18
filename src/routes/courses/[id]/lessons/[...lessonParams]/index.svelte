@@ -61,13 +61,16 @@
     ]}
   >
     <svelte:fragment slot="widget">
-      <div class="flex items-center">
-        <PrimaryButton
-          className="mr-2"
-          label={mode === MODES.edit ? 'Save' : 'Edit'}
-          onClick={() => (mode = mode === MODES.edit ? MODES.view : MODES.edit)}
-        />
-      </div>
+      {#if isMaterialsTabActive}
+        <div class="flex items-center">
+          <PrimaryButton
+            className="mr-2"
+            label={mode === MODES.edit ? 'Save' : 'Edit'}
+            onClick={() =>
+              (mode = mode === MODES.edit ? MODES.view : MODES.edit)}
+          />
+        </div>
+      {/if}
     </svelte:fragment>
   </PageNav>
 

@@ -1,14 +1,14 @@
 <script>
-  import { questionnaire } from "./store/index";
-  import { userQuestionniareAnswers } from "./store/answers";
-  import RadioQuestion from "../../../../Question/RadioQuestion/index.svelte";
-  import CheckboxQuestion from "../../../../Question/CheckboxQuestion/index.svelte";
-  import TextareaQuestion from "../../../../Question/TextareaQuestion/index.svelte";
-  import PrimaryButton from "../../../../PrimaryButton/index.svelte";
-  import Progress from "../../../../Progress/index.svelte";
-  import { removeDuplicate } from "../../../../../utils/functions/removeDuplicate";
-  import { QUESTION_TYPE } from "../../../../Question/constants";
-  import { STATUS } from "./constants";
+  import { questionnaire } from './store/index';
+  import { userQuestionniareAnswers } from './store/answers';
+  import RadioQuestion from '../../../../Question/RadioQuestion/index.svelte';
+  import CheckboxQuestion from '../../../../Question/CheckboxQuestion/index.svelte';
+  import TextareaQuestion from '../../../../Question/TextareaQuestion/index.svelte';
+  import PrimaryButton from '../../../../PrimaryButton/index.svelte';
+  import Progress from '../../../../Progress/index.svelte';
+  import { removeDuplicate } from '../../../../../utils/functions/removeDuplicate';
+  import { QUESTION_TYPE } from '../../../../Question/constants';
+  import { STATUS } from './constants';
 
   export let preview;
 
@@ -25,7 +25,7 @@
   function onSubmit(id, value) {
     const prevAnswer = $userQuestionniareAnswers.answers[id] || [];
     const formattedAnswer =
-      typeof value === "string"
+      typeof value === 'string'
         ? value
         : removeDuplicate([...prevAnswer, ...(value || [])]);
 
@@ -50,7 +50,7 @@
       return true;
     }
     const answer = $userQuestionniareAnswers.answers[currentQuestion.id];
-    const formattedAnswers = typeof answer === "string" ? [answer] : answer;
+    const formattedAnswers = typeof answer === 'string' ? [answer] : answer;
 
     isAnswerCorrect =
       formattedAnswers &&
@@ -74,13 +74,13 @@
     const isOpenQuesiton = question.type === QUESTION_TYPE.TEXTAREA;
 
     return {
-      title: questionIndex + ". " + question.title,
+      title: questionIndex + '. ' + question.title,
       name: `${question.id}`,
       options: question.options,
       answers: question.answers,
       code: question.code,
       defaultValue: isOpenQuesiton
-        ? answers[question.id] || ""
+        ? answers[question.id] || ''
         : answers[question.id] || [],
       onSubmit,
       onPrevious,
@@ -93,22 +93,22 @@
         $userQuestionniareAnswers.isFinished,
       nextButtonProps: isLast
         ? {
-            label: "Finish",
+            label: 'Finish',
             isActive: true,
           }
         : isOpenQuesiton
         ? {
-            label: "Next",
+            label: 'Next',
             isActive: true,
           }
         : wasCorrectAnswerSelected(question)
         ? {
-            label: "Next",
+            label: 'Next',
             isActive: true,
             disableOptionSelect: true,
           }
         : {
-            label: "Check",
+            label: 'Check',
             isActive: false,
           },
     };
@@ -159,7 +159,7 @@
 
 <!-- <svelte:window on:keydown={handleKeydown} /> -->
 
-{#if !preview && !$userQuestionniareAnswers.isFinished}
+{#if !preview && questions.length && !$userQuestionniareAnswers.isFinished}
   <Progress value={$userQuestionniareAnswers.progressValue} />
 {/if}
 
@@ -191,6 +191,15 @@
       />
     {/if}
   {/each}
+{:else if !questions.length}
+  <div
+    class="w-4/5 h-40 m-auto flex items-center justify-center text-center border-2 border-gray-200 rounded-md"
+  >
+    <h3 class="text-2xl">
+      No questions added. <br /> Click the
+      <span class="text-blue-700">Edit</span> button to add.
+    </h3>
+  </div>
 {:else if $userQuestionniareAnswers.currentQuestionIndex === 0}
   <div>
     <h2 class="my-1">{title}</h2>

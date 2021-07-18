@@ -24,7 +24,7 @@
         ..._lesson.exercises,
         {
           ...newExercise,
-          link: `${path}/${_lesson.exercises.length + 1}`,
+          id: _lesson.exercises.length + 1,
         },
       ],
     }));
@@ -76,7 +76,10 @@
 
     <div class="flex flex-wrap">
       {#each $lesson.exercises as exercise}
-        <a class="w-52 bg-gray-100 px-4 py-7 mr-4 mb-4" href={exercise.link}>
+        <a
+          class="w-52 bg-gray-100 px-4 py-7 mr-4 mb-4"
+          href="{path}/{exercise.id}"
+        >
           <h3 class="text-xl">{exercise.title}</h3>
           <p class="mt-4 text-sm">Created Jul 3, 2021</p>
         </a>

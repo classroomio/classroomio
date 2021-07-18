@@ -1,17 +1,17 @@
 <script>
-  import { onMount } from "svelte";
-  import hotkeys from "hotkeys-js";
-  import Forum24 from "carbon-icons-svelte/lib/Forum24";
-  import AlignBoxTopLeft24 from "carbon-icons-svelte/lib/AlignBoxTopLeft24";
-  import SendAlt24 from "carbon-icons-svelte/lib/SendAlt24";
-  import ChartPie24 from "carbon-icons-svelte/lib/ChartPie24";
-  import IconButton from "../IconButton/index.svelte";
+  import { onMount } from 'svelte';
+  import hotkeys from 'hotkeys-js';
+  import Forum24 from 'carbon-icons-svelte/lib/Forum24';
+  import AlignBoxTopLeft24 from 'carbon-icons-svelte/lib/AlignBoxTopLeft24';
+  import SendAlt24 from 'carbon-icons-svelte/lib/SendAlt24';
+  import ChartPie24 from 'carbon-icons-svelte/lib/ChartPie24';
+  import IconButton from '../IconButton/index.svelte';
 
-  import QandA from "./components/QandA/index.svelte";
-  import LiveChat from "./components/LiveChat/index.svelte";
-  import Notes from "./components/Notes/index.svelte";
-  import Poll from "./components/Poll/index.svelte";
-  import APPS_CONSTANTS from "./constants";
+  import QandA from './components/QandA/index.svelte';
+  import LiveChat from './components/LiveChat/index.svelte';
+  import Notes from './components/Notes/index.svelte';
+  import Poll from './components/Poll/index.svelte';
+  import APPS_CONSTANTS from './constants';
 
   let selectedApp;
 
@@ -28,19 +28,19 @@
   }
 
   onMount(() => {
-    hotkeys("A+1,A+2,A+3,A+4", function (event, handler) {
+    hotkeys('A+1,A+2,A+3,A+4', function (event, handler) {
       event.preventDefault();
       switch (handler.key) {
-        case "A+1":
+        case 'A+1':
           handleAppClick(APPS_CONSTANTS.APPS.LIVE_CHAT);
           break;
-        case "A+2":
+        case 'A+2':
           handleAppClick(APPS_CONSTANTS.APPS.QANDA);
           break;
-        case "A+3":
+        case 'A+3':
           handleAppClick(APPS_CONSTANTS.APPS.NOTES);
           break;
-        case "A+4":
+        case 'A+4':
           handleAppClick(APPS_CONSTANTS.APPS.POLL);
           break;
       }
@@ -51,7 +51,7 @@
 <div class="root">
   <div class="apps">
     <IconButton
-      toolTipProps={{ title: "Live Chat", hotkeys: ["A", "1"] }}
+      toolTipProps={{ title: 'Live Chat', hotkeys: ['A', '1'] }}
       value={APPS_CONSTANTS.APPS.LIVE_CHAT}
       onClick={handleAppClick}
       selected={APPS_CONSTANTS.APPS.LIVE_CHAT === selectedApp}
@@ -60,7 +60,7 @@
     </IconButton>
 
     <IconButton
-      toolTipProps={{ title: "QandA", hotkeys: ["A", "2"] }}
+      toolTipProps={{ title: 'QandA', hotkeys: ['A', '2'] }}
       value={APPS_CONSTANTS.APPS.QANDA}
       onClick={handleAppClick}
       selected={APPS_CONSTANTS.APPS.QANDA === selectedApp}
@@ -69,7 +69,7 @@
     </IconButton>
 
     <IconButton
-      toolTipProps={{ title: "Notes", hotkeys: ["A", "3"] }}
+      toolTipProps={{ title: 'Notes', hotkeys: ['A', '3'] }}
       value={APPS_CONSTANTS.APPS.NOTES}
       onClick={handleAppClick}
       selected={APPS_CONSTANTS.APPS.NOTES === selectedApp}
@@ -78,7 +78,7 @@
     </IconButton>
 
     <IconButton
-      toolTipProps={{ title: "Poll", hotkeys: ["A", "4"] }}
+      toolTipProps={{ title: 'Poll', hotkeys: ['A', '4'] }}
       value={APPS_CONSTANTS.APPS.POLL}
       onClick={handleAppClick}
       selected={APPS_CONSTANTS.APPS.POLL === selectedApp}
@@ -104,7 +104,7 @@
 
 <style lang="scss">
   .root {
-    height: 95vh;
+    height: 90vh;
     position: sticky;
     top: 0;
     border-left: 1px solid var(--border-color);
