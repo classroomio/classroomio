@@ -76,13 +76,13 @@
 
   <PageBody width="w-11/12 overflow-x-auto overflow-y-hidden h-3/4">
     <div class="flex items-center justify-between h-full w-full">
-      {#each sections as { id, title, value, items }, idx (id)}
+      {#each sections as { id, title, items }, idx (id)}
         <div
           class="section rounded-md bg-gray-100 border border-gray-50 p-3 h-full mr-3 overflow-hidden"
           animate:flip={{ duration: flipDurationMs }}
         >
           <div class="flex items-center mb-2">
-            <Chip {value} />
+            <Chip value={items.length} />
             <p class="ml-2 font-bold">{title}</p>
           </div>
           <div
@@ -97,10 +97,27 @@
           >
             {#each items as item (item.id)}
               <div
-                class="w-full h-16 my-2 mx-0 rounded-md bg-white p-2"
+                class="border border-grey-700 w-full my-2 mx-0 rounded-md bg-white py-2 px-3"
                 animate:flip={{ duration: flipDurationMs }}
               >
-                {item.name}
+                <a class="text-blue-700 text-md font-bold" href="courses/1"
+                  >{item.name}</a
+                >
+                <p class="text-grey text-sm mb-2">#2 created by sergey-semko</p>
+
+                <a
+                  class="flex items-center no-underline hover:underline text-black"
+                  href="/"
+                >
+                  <img
+                    alt="Placeholder"
+                    class="block rounded-full"
+                    width="24"
+                    height="20"
+                    src="https://picsum.photos/32/32/?random"
+                  />
+                  <p class="ml-2 text-sm">rotimi-best</p>
+                </a>
               </div>
             {/each}
           </div>

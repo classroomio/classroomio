@@ -1,98 +1,13 @@
-import { writable } from "svelte/store";
+import { writable } from 'svelte/store';
 import {
   QUESTION_TEMPLATE,
   QUESTION_TYPE,
-} from "../../../../../Question/constants";
+} from '../../../../../Question/constants';
 
 export const questionnaire = writable({
-  title: "Home task 1",
-  description:
-    "You will be to answer 10 questions, it isn't timed so you can take your time to answer. You can also continue from where you left off, you don't need to worry cause everything is automatically syncronized in the cloud.",
-  questions: [
-    {
-      id: "react-founder",
-      type: QUESTION_TYPE.CHECKBOX,
-      title: "Who is the creator of React.js",
-      options: [
-        {
-          id: "1",
-          value: "Dan Abrahmov",
-        },
-        {
-          id: "2",
-          value: "Google",
-        },
-        {
-          id: "3",
-          value: "Facebook",
-        },
-        {
-          id: "4",
-          value: "Traversy Media",
-        },
-      ],
-      answers: ['3'],
-    },
-    {
-      id: "vue-founder",
-      type: QUESTION_TYPE.CHECKBOX,
-      title: "Who is the creator of Vue.js",
-      code: `const name = 'Josh Perez';\nconst element = <h1>Hello, {name}</h1>;\n\nReactDOM.render(\n 
-    element,\,
-    document.getElementById('root')
-  )
-      `,
-      options: [
-        {
-          id: "1",
-          value: "Evan Vue",
-        },
-        {
-          id: "2",
-          value: "Mark Zukerberg",
-        },
-        {
-          id: "3",
-          value: "Prince Charles",
-        },
-        {
-          id: "4",
-          value: "Bill Gates",
-        },
-      ],
-      answers: ['3'],
-    },
-    {
-      id: "svelte-founder",
-      type: QUESTION_TYPE.RADIO,
-      title: "Who is the creator of Svelte.js",
-      options: [
-        {
-          id: "1",
-          value: "Hillary Svelte",
-        },
-        {
-          id: "2",
-          value: "Mircosoft",
-        },
-        {
-          id: "3",
-          value: "Elevate",
-        },
-        {
-          id: "4",
-          value: "Coding Train",
-        },
-      ],
-      answers: ["2"],
-    },
-    {
-      id: "angular-founder",
-      type: QUESTION_TYPE.TEXTAREA,
-      title: "Who is the creator of Angular.js",
-      value: "",
-    },
-  ],
+  title: '',
+  description: '',
+  questions: [],
 });
 
 export function handleAddQuestion() {
@@ -105,11 +20,11 @@ export function handleAddQuestion() {
         {
           ...QUESTION_TEMPLATE,
           id: questions.length + 1,
-          value: "",
+          value: '',
           answers: [],
           options: [
             {
-              id: "1",
+              id: '1',
               value: null,
             },
           ],
@@ -133,7 +48,7 @@ export function handleAddOption(questionId) {
                 ...question.options,
                 {
                   id: question.options[question.options.length - 1].id + 1,
-                  value: "",
+                  value: '',
                 },
               ],
             };
@@ -193,7 +108,7 @@ export function handleCode(questionId, shouldAdd = true) {
         if (question.id === questionId) {
           return {
             ...question,
-            code: shouldAdd ? (question.code || "") : undefined,
+            code: shouldAdd ? question.code || '' : undefined,
           };
         }
 
@@ -212,25 +127,26 @@ export function handleAnswerSelect(questionId, optionId) {
         ...q,
         questions: questions.map((question) => {
           if (question.id === questionId) {
-            const selectOption = question.options.find(option => option.id === optionId);
+            const selectOption = question.options.find(
+              (option) => option.id === optionId
+            );
             const newAnswers = [];
 
             if (question.type === QUESTION_TYPE.RADIO) {
-              newAnswers.push(optionId)
+              newAnswers.push(optionId);
             } else if (question.answers.includes(selectOption.id)) {
               newAnswers.push(
-                ...question.answers.filter(answer => answer !== selectOption.id)
-              )
+                ...question.answers.filter(
+                  (answer) => answer !== selectOption.id
+                )
+              );
             } else {
-              newAnswers.push(
-                ...question.answers,
-                selectOption.id
-              )
+              newAnswers.push(...question.answers, selectOption.id);
             }
 
             return {
               ...question,
-              answers: newAnswers
+              answers: newAnswers,
             };
           }
 
@@ -238,6 +154,5 @@ export function handleAnswerSelect(questionId, optionId) {
         }),
       };
     });
-
-  }
+  };
 }
