@@ -1,6 +1,6 @@
-import { writable } from "svelte/store";
+import { writable } from 'svelte/store';
 
-import { STATUS } from "../constants";
+import { STATUS } from '../constants';
 
 // export const userQuestionniareAnswers = writable({
 //   answers: {},
@@ -10,12 +10,13 @@ import { STATUS } from "../constants";
 //   progressValue: 100,
 //   status: STATUS.REVIEWED,
 // });
-
-export const userQuestionniareAnswers = writable({
+const initAnswerState = {
   answers: {},
   scores: {},
   currentQuestionIndex: 0,
   isFinished: false,
   progressValue: 100,
   status: STATUS.IN_PROGRESS,
-});
+};
+
+export const userQuestionniareAnswers = writable(initAnswerState);

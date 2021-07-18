@@ -1,13 +1,13 @@
 <script>
-  import Forum32 from "carbon-icons-svelte/lib/Forum32";
-  import SendAlt32 from "carbon-icons-svelte/lib/SendAlt32";
-  import Catalog32 from "carbon-icons-svelte/lib/Catalog32";
-  import UserAvatar32 from "carbon-icons-svelte/lib/UserAvatar32";
+  import Forum32 from 'carbon-icons-svelte/lib/Forum32';
+  import SendAlt32 from 'carbon-icons-svelte/lib/SendAlt32';
+  import Catalog32 from 'carbon-icons-svelte/lib/Catalog32';
+  import UserAvatar32 from 'carbon-icons-svelte/lib/UserAvatar32';
   // import Calendar32 from "carbon-icons-svelte/lib/Calendar32";
   export let segment;
-  let navClass = "";
+  let navClass = '';
 
-  $: navClass = ["discussion"].includes(segment) ? "hide" : "";
+  $: navClass = ['discussion'].includes(segment) ? 'hide' : '';
 </script>
 
 <nav class={navClass}>
@@ -26,8 +26,8 @@
     <li>
       <a
         class="block"
-        aria-current={segment === undefined || segment === "discussion"
-          ? "page"
+        aria-current={segment === undefined || segment === 'discussion'
+          ? 'page'
           : undefined}
         href="."><Forum32 class="carbon-icon" /><span>Discussion</span></a
       >
@@ -35,7 +35,7 @@
     <li>
       <a
         class="block"
-        aria-current={segment === "courses" ? "page" : undefined}
+        aria-current={segment === 'courses' ? 'page' : undefined}
         href="courses"
         ><Catalog32 class="carbon-icon" />
         <span>Courses</span></a
@@ -44,7 +44,7 @@
     <li>
       <a
         class="block"
-        aria-current={segment === "profile" ? "page" : undefined}
+        aria-current={segment === 'profile' ? 'page' : undefined}
         href="profile"
         ><UserAvatar32 class="carbon-icon" />
         <span>Профиль</span></a
@@ -80,7 +80,7 @@
 
 <style>
   nav {
-    height: 95vh;
+    height: 90vh;
     display: flex;
     flex-direction: column;
     width: 100px;
@@ -96,7 +96,7 @@
 
   /* clearfix */
   ul::after {
-    content: "";
+    content: '';
     display: block;
     clear: both;
   }
