@@ -1,6 +1,6 @@
 <script>
-  import ArrowUp16 from "carbon-icons-svelte/lib/ArrowUp16";
-  import Chip from "../Chip/index.svelte";
+  import ArrowUp16 from 'carbon-icons-svelte/lib/ArrowUp16';
+  import Chip from '../Chip/index.svelte';
 
   export let value = 0;
 
