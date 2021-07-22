@@ -34,7 +34,7 @@
     if (isPreview) return;
     const value = getRadioVal(event.target, name);
     onSubmit(name, [value]);
-    // event.target.reset();
+    event.target.reset();
   }
 
   function handlePrevious(event) {
@@ -65,12 +65,13 @@
   <div class="ml-4">
     {#each options as option}
       <button
-        class="cursor-pointer text-left my-2 border-2 border-gray-300 p-2 rounded-md cursor-pointer hover:bg-gray-200 w-full {getValidationClassName(
+        class="cursor-pointer text-left my-2 border-2 border-gray-300 rounded-md cursor-pointer hover:bg-gray-200 w-full {getValidationClassName(
           option
         )}"
         type="button"
       >
         <RadioItem
+          className="p-2"
           {name}
           value={option.id}
           checked={defaultValue.includes(option.id) &&

@@ -20,7 +20,7 @@
   export let courseId;
   export let path;
 
-  let show = true;
+  let show = null;
 
   const { page } = stores();
 
@@ -70,6 +70,8 @@
   }
 
   onMount(() => {
+    show = localStorage.getItem('hideCourseNav') === 'false';
+
     hotkeys('b', function (event, handler) {
       event.preventDefault();
       switch (handler.key) {
@@ -79,6 +81,12 @@
       }
     });
   });
+
+  $: {
+    if (process.browser && show !== null) {
+      localStorage.setItem('hideCourseNav', `${!show}`);
+    }
+  }
 </script>
 
 <div class="root z-10 {!show && 'hide'}">

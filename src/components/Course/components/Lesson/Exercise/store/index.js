@@ -19,7 +19,7 @@ export function handleAddQuestion() {
         ...questions,
         {
           ...QUESTION_TEMPLATE,
-          id: questions.length + 1,
+          id: `${questions.length + 1}-form`,
           value: '',
           answers: [],
           options: [
