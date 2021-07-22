@@ -34,7 +34,7 @@
     if (isPreview) return;
     const values = getVal(event.target, name);
     onSubmit(name, values);
-    // event.target.reset();
+    event.target.reset();
   }
 
   function handlePrevious(event) {
@@ -65,13 +65,14 @@
   <div class="ml-4">
     {#each options as option}
       <button
-        class="cursor-pointer text-left my-2 border-2 border-gray-300 p-2 rounded-md cursor-pointer hover:bg-gray-200 w-full {getValidationClassName(
+        class="cursor-pointer text-left my-2 border-2 border-gray-300 rounded-md cursor-pointer hover:bg-gray-200 w-full {getValidationClassName(
           option
         )}"
         type="button"
       >
         <Checkbox
           {name}
+          className="p-2"
           value={option.id}
           checked={defaultValue.includes(option.id)}
           label={option.label || option.value}

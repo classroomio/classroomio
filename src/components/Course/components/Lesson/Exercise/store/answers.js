@@ -2,7 +2,7 @@ import { writable } from 'svelte/store';
 
 import { STATUS } from '../constants';
 
-// export const userQuestionniareAnswers = writable({
+// export const questionnaireMetaData = writable({
 //   answers: {},
 //   scores: { gates: 60 },
 //   currentQuestionIndex: 5,
@@ -19,4 +19,4 @@ const initAnswerState = {
   status: STATUS.IN_PROGRESS,
 };
 
-export const userQuestionniareAnswers = writable(initAnswerState);
+export const questionnaireMetaData = writable(initAnswerState);

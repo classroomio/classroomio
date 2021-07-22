@@ -5,10 +5,11 @@
   export let name;
   export let isEditable = false;
   export let disabled = false;
+  export let className = '';
 </script>
 
 <label
-  class="inline-flex items-center w-full {disabled
+  class="{className} inline-flex items-center w-full {disabled
     ? 'cursor-not-allowed'
     : 'cursor-pointer'}"
 >

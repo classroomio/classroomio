@@ -1,5 +1,6 @@
 <script>
   import { handleAddQuestion } from './store/index';
+  import { questionnaireMetaData } from './store/answers';
   import PrimaryButton from '../../../../PrimaryButton/index.svelte';
   import PageBody from '../../../../PageBody/index.svelte';
   import ViewMode from './ViewMode.svelte';
@@ -15,6 +16,15 @@
   function handleMode() {
     mode = mode === MODES.edit ? MODES.view : MODES.edit;
     preview = false;
+
+    if (mode === MODES.view) {
+      questionnaireMetaData.update((metaData) => {
+        metaData.answers = {};
+        metaData.currentQuestionIndex = 0;
+        metaData.isFinished = false;
+        return metaData;
+      });
+    }
   }
 </script>
 
