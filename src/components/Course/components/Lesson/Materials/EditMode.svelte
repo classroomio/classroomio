@@ -1,6 +1,6 @@
 <script>
   import Tabs from '../../../../Tabs/index.svelte';
-  import TabContent from '../../../../Tabs/index.svelte';
+  import TabContent from '../../../../TabContent/index.svelte';
   import EditContent from '../../../../EditContent/index.svelte';
   import TextField from '../../../../Form/TextField.svelte';
   import { lesson } from '../store/lessons';
@@ -22,6 +22,7 @@
   let currentTab = tabs[0].value;
 
   function onChange(tabValue) {
+    console.log(`$lesson`, $lesson);
     return () => {
       currentTab = tabValue;
     };

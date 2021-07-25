@@ -3,24 +3,28 @@
 
   import Navigation from '../Course/components/Navigation/index.svelte';
   import { lessons, lesson } from '../Course/components/Lesson/store/lessons';
+  import { questionnaire } from '../Course/components/Lesson/Exercise/store';
+  import { questionnaireMetaData } from '../Course/components/Lesson/Exercise/store/answers';
 
   export let courseData = {};
   export let path;
 
-  onMount(() => {
+  function setStoreWithData() {
     lessons.set(courseData.lessons);
+    console.log(`courseData`, courseData);
     if (courseData.lesson) {
       lesson.set(courseData.lesson);
     }
-  });
 
-  afterUpdate(() => {
-    lessons.set(courseData.lessons);
-
-    if (courseData.lesson) {
-      lesson.set(courseData.lesson);
+    if (courseData.exercise && courseData.exercise.data) {
+      questionnaire.set(courseData.exercise.data);
+      questionnaireMetaData.set(courseData.exercise.answers);
     }
-  });
+  }
+
+  onMount(setStoreWithData);
+
+  afterUpdate(setStoreWithData);
 </script>
 
 <svelte:head>

@@ -87,7 +87,7 @@ const lessons = [
   {
     id: 1,
     course_id: 1,
-    title: 'Вступительное слово. Софт скилы',
+    title: 'Introduction to soft skills',
     to: '/courses/1/lessons/1',
     tutor: {
       userId: 1,
@@ -114,7 +114,7 @@ const lessons = [
   {
     id: 2,
     course_id: 1,
-    title: 'Введение в ReactJS',
+    title: 'Introduction to ReactJS',
     to: '/courses/1/lessons/2',
     tutor: {
       userId: 1,
@@ -141,7 +141,7 @@ const lessons = [
   {
     id: 3,
     course_id: 1,
-    title: 'Компоненты',
+    title: 'Components - Functional and Class',
     to: '/courses/1/lessons/3',
     tutor: {
       userId: 1,
@@ -168,7 +168,7 @@ const lessons = [
   {
     id: 4,
     course_id: 1,
-    title: 'Состояние компонентов и пропсы',
+    title: 'State and Props in components',
     to: '/courses/1/lessons/4',
     tutor: {
       userId: 1,
@@ -195,7 +195,7 @@ const lessons = [
   {
     id: 5,
     course_id: 1,
-    title: 'Жизненный цикл',
+    title: 'Life cycle methods',
     to: '/courses/1/lessons/5',
     tutor: {
       userId: 1,
@@ -381,7 +381,7 @@ export function getLesson(id) {
         slide: '',
         video: '',
       },
-      exercises: [],
+      exercises: getExercises(id),
     }
   );
 }
@@ -392,7 +392,7 @@ export function getExercises(lessonId) {
 
 export function getExercise(exerciseId) {
   return {
-    exercise: lesson_exercise.find((exercise) => exercise.id === exerciseId),
+    data: lesson_exercise.find((exercise) => exercise.id === exerciseId),
     answers: exercise_answers.find(
       (answer) => answer.exercise_id === exerciseId
     ),

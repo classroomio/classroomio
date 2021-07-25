@@ -9,8 +9,10 @@
     "start": "node __sapper__/build"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^1.20.0",
     "@tailwindcss/forms": "^0.3.2",
     "compression": "^1.7.1",
+    "dotenv": "^10.0.0",
     "hotkeys-js": "^3.8.5",
     "js-yaml": "^4.1.0",
     "marked": "^1.2.7",

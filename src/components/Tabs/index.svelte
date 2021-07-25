@@ -4,7 +4,7 @@
   export let onChange;
 </script>
 
-<div class="w-full flex justify-center">
+<div class="w-full flex justify-center flex-col">
   <div class="flex items-center">
     {#each tabs as tab}
       <button
@@ -23,5 +23,7 @@
     {/each}
   </div>
 
-  <slot name="content" />
+  <div class="mt-4">
+    <slot name="content" />
+  </div>
 </div>
