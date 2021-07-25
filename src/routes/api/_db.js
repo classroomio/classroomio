@@ -87,7 +87,7 @@ const lessons = [
   {
     id: 1,
     course_id: 1,
-    title: 'Introduction to soft skills',
+    title: 'Soft skills - Team work',
     to: '/courses/1/lessons/1',
     tutor: {
       userId: 1,
