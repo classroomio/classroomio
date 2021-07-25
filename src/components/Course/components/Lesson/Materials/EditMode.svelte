@@ -22,7 +22,6 @@
   let currentTab = tabs[0].value;
 
   function onChange(tabValue) {
-    console.log(`$lesson`, $lesson);
     return () => {
       currentTab = tabValue;
     };

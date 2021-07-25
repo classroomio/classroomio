@@ -11,7 +11,7 @@
 
   function setStoreWithData() {
     lessons.set(courseData.lessons);
-    console.log(`courseData`, courseData);
+
     if (courseData.lesson) {
       lesson.set(courseData.lesson);
     }

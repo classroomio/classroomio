@@ -87,8 +87,6 @@
   $: $questionnaireMetaData.progressValue = getProgressValue(
     $questionnaireMetaData.currentQuestionIndex
   );
-
-  $: console.log('$questionnaire', $questionnaire);
 </script>
 
 {#if !preview && $questionnaire.questions.length && !$questionnaireMetaData.isFinished}
