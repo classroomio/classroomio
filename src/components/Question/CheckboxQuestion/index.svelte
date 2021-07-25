@@ -65,7 +65,7 @@
   <div class="ml-4">
     {#each options as option}
       <button
-        class="cursor-pointer text-left my-2 border-2 border-gray-300 rounded-md cursor-pointer hover:bg-gray-200 w-full {getValidationClassName(
+        class="cursor-pointer text-left my-2 border-2 border-gray-300 rounded-md hover:bg-gray-200 w-full {getValidationClassName(
           option
         )}"
         type="button"
