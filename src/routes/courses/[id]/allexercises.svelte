@@ -172,15 +172,13 @@
   }
 
   function handleModalClose() {
-    console.log('closing', page.path);
-
     goto($page.path);
   }
 
   $: openExercise = !!$page.query.submissionId;
 </script>
 
-<MarkExerciseModal bind:open={openExercise} onClose={handleModalClose} />
+<MarkExerciseModal bind:open={openExercise} onClose={handleModalClose} submissionId={$page.query.submissionId}/>
 
 <CourseContainer {courseData}>
   <PageNav title="All Exercises" />

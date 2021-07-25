@@ -1,7 +1,15 @@
 <script>
-  import Modal from '../../../../Modal/index.svelte';
+  import Modal from "../../../../Modal/index.svelte";
+  import Preview from "./Preview.svelte";
+  import { questionnaire } from "./store";
+  import { questionnaireMetaData } from "./store/answers";
   export let open;
   export let onClose;
+  export let submissionId;
+
+  // get submission data by submissionId;
+
+  $: console.log("questionnaireMetaData", $questionnaireMetaData);
 </script>
 
 <Modal
@@ -10,44 +18,8 @@
   {onClose}
   width="w-3/5"
 >
-  <p class="p-2 mb-2">
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellendus debitis
-    quos porro doloremque amet alias modi ducimus delectus cum dolor sunt
-    laborum provident, deserunt magni facilis non nobis illum ipsum. Lorem ipsum
-    dolor sit amet, consectetur adipisicing elit. Deleniti rem aliquid, saepe
-    fuga reiciendis ullam officiis soluta cum, vitae aut eum expedita cumque
-    perspiciatis pariatur necessitatibus, praesentium ea laudantium ut?
-  </p>
-  <p class="p-2 mb-2">
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellendus debitis
-    quos porro doloremque amet alias modi ducimus delectus cum dolor sunt
-    laborum provident, deserunt magni facilis non nobis illum ipsum. Lorem ipsum
-    dolor sit amet, consectetur adipisicing elit. Deleniti rem aliquid, saepe
-    fuga reiciendis ullam officiis soluta cum, vitae aut eum expedita cumque
-    perspiciatis pariatur necessitatibus, praesentium ea laudantium ut?
-  </p>
-  <p class="p-2 mb-2">
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellendus debitis
-    quos porro doloremque amet alias modi ducimus delectus cum dolor sunt
-    laborum provident, deserunt magni facilis non nobis illum ipsum. Lorem ipsum
-    dolor sit amet, consectetur adipisicing elit. Deleniti rem aliquid, saepe
-    fuga reiciendis ullam officiis soluta cum, vitae aut eum expedita cumque
-    perspiciatis pariatur necessitatibus, praesentium ea laudantium ut?
-  </p>
-  <p class="p-2 mb-2">
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellendus debitis
-    quos porro doloremque amet alias modi ducimus delectus cum dolor sunt
-    laborum provident, deserunt magni facilis non nobis illum ipsum. Lorem ipsum
-    dolor sit amet, consectetur adipisicing elit. Deleniti rem aliquid, saepe
-    fuga reiciendis ullam officiis soluta cum, vitae aut eum expedita cumque
-    perspiciatis pariatur necessitatibus, praesentium ea laudantium ut?
-  </p>
-  <p class="p-2 mb-2">
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellendus debitis
-    quos porro doloremque amet alias modi ducimus delectus cum dolor sunt
-    laborum provident, deserunt magni facilis non nobis illum ipsum. Lorem ipsum
-    dolor sit amet, consectetur adipisicing elit. Deleniti rem aliquid, saepe
-    fuga reiciendis ullam officiis soluta cum, vitae aut eum expedita cumque
-    perspiciatis pariatur necessitatibus, praesentium ea laudantium ut?
-  </p>
+  <Preview
+    questions={$questionnaire.questions}
+    questionnaireMetaData={$questionnaireMetaData}
+  />
 </Modal>
