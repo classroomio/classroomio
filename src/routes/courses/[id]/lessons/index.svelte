@@ -1,6 +1,5 @@
 <script context="module">
   export async function preload({ params }) {
-    console.log("params", params);
     let [courseId, courseNavItem, lessonId] = params.id;
     const res = await this.fetch(`api/course?id=${courseId}`);
     const data = await res.json();
