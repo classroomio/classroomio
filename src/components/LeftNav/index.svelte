@@ -26,15 +26,6 @@
     <li>
       <a
         class="block"
-        aria-current={segment === undefined || segment === 'discussion'
-          ? 'page'
-          : undefined}
-        href="."><Forum32 class="carbon-icon" /><span>Discussion</span></a
-      >
-    </li>
-    <li>
-      <a
-        class="block"
         aria-current={segment === 'courses' ? 'page' : undefined}
         href="courses"
         ><Catalog32 class="carbon-icon" />
@@ -44,13 +35,22 @@
     <li>
       <a
         class="block"
-        aria-current={segment === 'profile' ? 'page' : undefined}
-        href="profile"
-        ><UserAvatar32 class="carbon-icon" />
-        <span>Профиль</span></a
+        aria-current={segment === undefined || segment === 'discussion'
+          ? 'page'
+          : undefined}
+        href="."><Forum32 class="carbon-icon" /><span>Discussion</span></a
       >
     </li>
     <li>
+      <a
+        class="block"
+        aria-current={segment === 'profile' ? 'page' : undefined}
+        href="profile"
+        ><UserAvatar32 class="carbon-icon" />
+        <span>People</span></a
+      >
+    </li>
+    <li class="hidden">
       <a
         class="flex items-center"
         href="https://t.me/classroomio"
