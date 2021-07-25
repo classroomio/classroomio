@@ -1,6 +1,6 @@
 <script>
   import Tabs from '../../../../Tabs/index.svelte';
-  import TabContent from '../../../../Tabs/index.svelte';
+  import TabContent from '../../../../TabContent/index.svelte';
   import MarkdownRender from '../../../../MarkdownRender/index.svelte';
   import { lesson } from '../store/lessons';
 

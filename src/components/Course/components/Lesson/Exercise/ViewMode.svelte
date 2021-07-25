@@ -17,8 +17,6 @@
   let currentQuestion = {};
   let renderProps = {};
 
-  const { questions, title, description } = $questionnaire;
-
   function handleStart() {
     $questionnaireMetaData.currentQuestionIndex += 1;
   }
@@ -60,20 +58,22 @@
     }
 
     return (
-      Math.round(((currentQuestionIndex - 1) / questions.length) * 100) || 0
+      Math.round(
+        ((currentQuestionIndex - 1) / $questionnaire.questions.length) * 100
+      ) || 0
     );
   }
 
   $: {
     currentQuestion =
-      questions[$questionnaireMetaData.currentQuestionIndex - 1];
+      $questionnaire.questions[$questionnaireMetaData.currentQuestionIndex - 1];
     if ($questionnaireMetaData.currentQuestionIndex > 0 && !currentQuestion) {
       $questionnaireMetaData.isFinished = true;
     }
 
     if (currentQuestion) {
       renderProps = getPropsForQuestion(
-        questions,
+        $questionnaire.questions,
         currentQuestion,
         $questionnaireMetaData,
         $questionnaireMetaData.currentQuestionIndex,
@@ -87,15 +87,20 @@
   $: $questionnaireMetaData.progressValue = getProgressValue(
     $questionnaireMetaData.currentQuestionIndex
   );
+
+  $: console.log('$questionnaire', $questionnaire);
 </script>
 
-{#if !preview && questions.length && !$questionnaireMetaData.isFinished}
+{#if !preview && $questionnaire.questions.length && !$questionnaireMetaData.isFinished}
   <Progress value={$questionnaireMetaData.progressValue} />
 {/if}
 
 {#if preview}
-  <Preview {questions} questionnaireMetaData={$questionnaireMetaData} />
-{:else if !questions.length}
+  <Preview
+    questions={$questionnaire.questions}
+    questionnaireMetaData={$questionnaireMetaData}
+  />
+{:else if !$questionnaire.questions.length}
   <div
     class="w-4/5 h-40 m-auto flex items-center justify-center text-center border-2 border-gray-200 rounded-md"
   >
@@ -106,8 +111,8 @@
   </div>
 {:else if $questionnaireMetaData.currentQuestionIndex === 0}
   <div>
-    <h2 class="my-1">{title}</h2>
-    <p>{description}</p>
+    <h2 class="my-1">{$questionnaire.title}</h2>
+    <p>{$questionnaire.description}</p>
 
     <PrimaryButton
       onClick={handleStart}
@@ -119,7 +124,7 @@
 {:else if $questionnaireMetaData.isFinished}
   <div class="flex items-center justify-between">
     <div class="flex flex-col justify-between">
-      <h2 class="text-xl mb-2 mt-0">{title}</h2>
+      <h2 class="text-xl mb-2 mt-0">{$questionnaire.title}</h2>
       {#if STATUS.IN_PROGRESS === $questionnaireMetaData.status}
         <span
           class="bg-yellow-600 text-white rounded-full py-2 px-6 text-center"
@@ -144,7 +149,10 @@
       {getTotalScores()}/100
     </span>
   </div>
-  <Preview {questions} questionnaireMetaData={$questionnaireMetaData} />
+  <Preview
+    questions={$questionnaire.questions}
+    questionnaireMetaData={$questionnaireMetaData}
+  />
 {:else if QUESTION_TYPE.RADIO === currentQuestion.type}
   <RadioQuestion {...renderProps} />
 {:else if QUESTION_TYPE.CHECKBOX === currentQuestion.type}

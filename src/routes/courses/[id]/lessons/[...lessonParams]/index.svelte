@@ -7,6 +7,7 @@
       `api/course?id=${courseId}&lessonId=${lessonId}&exerciseId=${exerciseId}`
     );
     const data = await res.json();
+    console.log(`data`, data);
 
     if (res.status === 200) {
       return {
