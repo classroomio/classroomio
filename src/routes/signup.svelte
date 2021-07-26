@@ -2,6 +2,7 @@
   import TextField from '../components/Form/TextField.svelte';
   import Select from '../components/Form/Select.svelte';
   import PrimaryButton from '../components/PrimaryButton/index.svelte';
+  import { supabase } from '../utils/functions/supabase';
 
   let email;
   let userType = 0;
@@ -20,9 +21,17 @@
       value: 2,
     },
   ];
-
-  function handleSubmit() {
-    console.log(`email`, email);
+  async function handleSubmit() {
+    try {
+      loading = true;
+      const { error } = await supabase.auth.signIn({ email });
+      if (error) throw error;
+      alert('Check your email for the login link!');
+    } catch (error) {
+      alert(error.error_description || error.message);
+    } finally {
+      loading = false;
+    }
   }
 </script>
 
@@ -52,6 +61,7 @@
           bind:value={userType}
           options={userTypes}
           valueKey="value"
+          isRequired={true}
         />
       </div>
 
@@ -64,6 +74,7 @@
           placeholder="Enter your email"
           onKeyDown={handleSubmit}
           inputClassName="rounded-md w-full px-2 py-4"
+          isRequired={true}
         />
         <p class="py-3 text-sm">
           A magic link will be sent to your email, please open the link

@@ -8,11 +8,16 @@
   export let inputClassName = '';
   export let type = 'text';
   export let autoFocus = false;
+  export let isRequired = false;
 
-  let ref = null;
+  let ref;
 
   function typeAction(node) {
     node.type = type;
+
+    if (isRequired) {
+      node.required = '';
+    }
   }
 
   afterUpdate(() => {
@@ -31,5 +36,6 @@
     {placeholder}
     bind:value
     bind:this={ref}
+    required={true}
   />
 </label>
