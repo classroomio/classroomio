@@ -5,7 +5,7 @@
   import { questionnaireMetaData } from "./store/answers";
   export let open;
   export let onClose;
-  export let submissionId;
+  // export let submissionId;
 
   // get submission data by submissionId;
 
