@@ -1,62 +1,77 @@
 <script>
-  import Forum32 from 'carbon-icons-svelte/lib/Forum32';
-  import SendAlt32 from 'carbon-icons-svelte/lib/SendAlt32';
-  import Catalog32 from 'carbon-icons-svelte/lib/Catalog32';
-  import UserAvatar32 from 'carbon-icons-svelte/lib/UserAvatar32';
-  // import Calendar32 from "carbon-icons-svelte/lib/Calendar32";
+  import Avatar from '../Avatar/index.svelte';
   export let segment;
   let navClass = '';
+
+  let user = {
+    avatar:
+      'https://pbs.twimg.com/profile_images/1416443682157473795/dGtFbtht_normal.jpg',
+    label: 'Elon',
+  };
 
   $: navClass = ['discussion'].includes(segment) ? 'hide' : '';
 </script>
 
-<nav class={navClass}>
-  <ul class="flex items-center flex-col justify-evenly">
+<nav
+  class="{navClass} flex w-full p-2 border-t-0 border-r-0 border-b border-l-0 border-gray-300"
+>
+  <ul class="flex w-full items-center">
     <div class="logo">
-      <a href="/" title="Go to ClassroomIO Home" id="logo" data-hveid="8"
-        ><img
+      <a href="/" title="Go to ClassroomIO Home" id="logo" data-hveid="8">
+        <img
           src="/logo-192.png"
           alt="ClassroomIO logo"
-          height="70"
-          width="70"
+          class="rounded h-10 w-10 inline-block mx-auto"
           data-atf="1"
-        /></a
-      >
+        />
+      </a>
     </div>
+    <li>
+      <a
+        class="block"
+        aria-current={segment === undefined ? 'page' : undefined}
+        href="."
+      >
+        Dashboard
+      </a>
+    </li>
     <li>
       <a
         class="block"
         aria-current={segment === 'courses' ? 'page' : undefined}
         href="courses"
-        ><Catalog32 class="carbon-icon" />
-        <span>Courses</span></a
       >
+        Courses
+      </a>
     </li>
     <li>
       <a
         class="block"
-        aria-current={segment === undefined || segment === 'discussion'
+        aria-current={segment === 'discussions' || segment === 'discussion'
           ? 'page'
           : undefined}
-        href="."><Forum32 class="carbon-icon" /><span>Discussion</span></a
+        href="discussions"
       >
+        Discussion
+      </a>
     </li>
     <li>
       <a
         class="block"
         aria-current={segment === 'profile' ? 'page' : undefined}
         href="profile"
-        ><UserAvatar32 class="carbon-icon" />
-        <span>People</span></a
-      >
+        >People
+      </a>
     </li>
-    <li class="hidden">
+    <span class="flex-grow" />
+    <Avatar src={user.avatar} name={user.label} className="mr-2" />
+    <!-- <li class="hidden">
       <a
         class="flex items-center"
         href="https://t.me/classroomio"
         target="_blank"
       >
-        <!-- <img
+        <img
           alt="File:Telegram logo.svg"
           class="mr-1"
           src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Telegram_alternative_logo.svg/50px-Telegram_alternative_logo.svg.png"
@@ -66,12 +81,12 @@
           srcset="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Telegram_alternative_logo.svg/50px-Telegram_alternative_logo.svg.png 1.5x, https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Telegram_logo.svg/1024px-Telegram_logo.svg.png 2x"
           data-file-width="25"
           data-file-height="25"
-        /> -->
-        <!-- <span><SendAlt32 class="carbon-icon" /> Канал</span> -->
+        />
+        <span><SendAlt32 class="carbon-icon" /> Канал</span>
         <SendAlt32 class="carbon-icon" />
         <span>Канал</span>
       </a>
-    </li>
+    </li> -->
     <!-- <li class="new-question">
       <NewQuestion />
     </li> -->
@@ -79,16 +94,6 @@
 </nav>
 
 <style>
-  nav {
-    height: 90vh;
-    display: flex;
-    flex-direction: column;
-    width: 100px;
-    position: sticky;
-    top: 0;
-    border-right: 1px solid var(--border-color);
-  }
-
   ul {
     margin: 0 auto;
     padding: 0;
@@ -107,7 +112,7 @@
 
   a {
     text-decoration: none;
-    padding: 1em 0.5em;
+    padding: 0 1.5em;
     font-weight: 700;
     display: flex;
     align-items: center;
@@ -116,6 +121,17 @@
 
   [aria-current] {
     color: var(--main-primary-color);
+    position: relative;
+    display: inline-block;
+  }
+  [aria-current]::after {
+    position: absolute;
+    content: '';
+    width: calc(100% - 3em);
+    height: 2px;
+    background-color: var(--main-primary-color);
+    display: block;
+    bottom: -17px;
   }
 
   @media only screen and (max-width: 1002px) {
@@ -125,7 +141,7 @@
     ul {
       align-items: center;
     }
-    li a span {
+    li a {
       display: none;
     }
   }
