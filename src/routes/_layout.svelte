@@ -1,8 +1,7 @@
 <script>
   import { stores } from '@sapper/app';
   import Tailwindcss from '../components/Tailwindcss.svelte';
-  // import Nav from "../components/Nav.svelte";
-  import LeftNav from '../components/LeftNav/index.svelte';
+  import Navigation from '../components/Navigation/index.svelte';
   // import SideBar from "../components/SideBar/index.svelte";
   import Footer from '../components/Footer/index.svelte';
   import Apps from '../components/Apps/index.svelte';
@@ -16,9 +15,9 @@
 
 <!-- <Nav {segment} /> -->
 
-<main class="flex">
+<main>
   {#if !['login', 'signup'].includes($page.path.replace('/', ''))}
-    <LeftNav {segment} />
+    <Navigation {segment} />
   {/if}
   <slot />
   {#if $page.path.includes('courses')}
