@@ -19,10 +19,12 @@
   {#if !['login', 'signup'].includes($page.path.replace('/', ''))}
     <Navigation {segment} />
   {/if}
-  <slot />
-  {#if $page.path.includes('courses')}
-    <Apps />
-  {/if}
+  <div class="flex justify-between">
+    <slot />
+    {#if $page.path.includes('courses')}
+      <Apps />
+    {/if}
+  </div>
 </main>
 
 <Footer />
