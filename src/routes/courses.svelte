@@ -1,12 +1,12 @@
 <script>
-  import { stores } from "@sapper/app";
-  import PageNav from "../components/PageNav/index.svelte";
-  import Courses from "../components/Courses/index.svelte";
+  import { stores } from '@sapper/app';
+  import PageNav from '../components/PageNav/index.svelte';
+  import Courses from '../components/Courses/index.svelte';
 
   const { page } = stores();
-  let tab = "";
+  let tab = '';
 
-  $: tab = $page.query.tab || "mine";
+  $: tab = $page.query.tab || 'mine';
 </script>
 
 <svelte:head>
