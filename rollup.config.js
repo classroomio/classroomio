@@ -5,7 +5,9 @@ import svelte from 'rollup-plugin-svelte';
 import babel from '@rollup/plugin-babel';
 import { terser } from 'rollup-plugin-terser';
 import config from 'sapper/config/rollup.js';
+import dotenv from 'dotenv';
 import sveltePreprocess from 'svelte-preprocess';
+import json from '@rollup/plugin-json';
 
 import pkg from './package.json';
 
@@ -13,11 +15,16 @@ const mode = process.env.NODE_ENV;
 const dev = mode === 'development';
 const legacy = !!process.env.SAPPER_LEGACY_BUILD;
 
-const onwarn = (warning, onwarn) =>
-  (warning.code === 'MISSING_EXPORT' && /'preload'/.test(warning.message)) ||
-  (warning.code === 'CIRCULAR_DEPENDENCY' &&
-    /[/\\]@sapper[/\\]/.test(warning.message)) ||
-  onwarn(warning);
+const onwarn = (warning, onwarn) => {
+  if (warning.code === 'THIS_IS_UNDEFINED') return;
+
+  return (
+    (warning.code === 'MISSING_EXPORT' && /'preload'/.test(warning.message)) ||
+    (warning.code === 'CIRCULAR_DEPENDENCY' &&
+      /[/\\]@sapper[/\\]/.test(warning.message)) ||
+    onwarn(warning)
+  );
+};
 
 const preprocess = sveltePreprocess({ postcss: true });
 
@@ -30,7 +37,14 @@ export default {
         'process.browser': true,
         'process.env.NODE_ENV': JSON.stringify(mode),
         preventAssignment: true,
+        __api: JSON.stringify({
+          env: {
+            isProd: !dev,
+            ...dotenv.config().parsed, // attached the .env config
+          },
+        }),
       }),
+      json(),
       svelte({
         preprocess,
         dev,

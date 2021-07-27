@@ -5,9 +5,7 @@ import polka from 'polka';
 import compression from 'compression';
 import * as sapper from '@sapper/server';
 
-import { getConfig } from './config';
-
-const config = getConfig(dotenv.config().parsed);
+import config from './config';
 
 polka() // You can also use Express
   .use(
