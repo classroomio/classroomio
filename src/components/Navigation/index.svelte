@@ -58,8 +58,8 @@
     <li>
       <a
         class="block"
-        aria-current={segment === 'profile' ? 'page' : undefined}
-        href="profile"
+        aria-current={segment === 'people' ? 'page' : undefined}
+        href="people"
         >People
       </a>
     </li>
