@@ -1,18 +1,18 @@
 <script>
-  import { stores } from "@sapper/app";
-  import AddComment20 from "carbon-icons-svelte/lib/AddComment20";
-  import Vote from "../components/Vote/index.svelte";
-  import Space from "../components/Space/index.svelte";
-  import HashTags from "../components/HashTags/index.svelte";
-  import PageNav from "../components/PageNav/index.svelte";
+  import { stores } from '@sapper/app';
+  import AddComment20 from 'carbon-icons-svelte/lib/AddComment20';
+  import Vote from '../components/Vote/index.svelte';
+  import Space from '../components/Space/index.svelte';
+  import HashTags from '../components/HashTags/index.svelte';
+  import PageNav from '../components/PageNav/index.svelte';
 
   function getDiscussion(filterBy, allDiscussions) {
     switch (filterBy) {
-      case "popular":
-        return allDiscussions.filter((a, i) => i >= 0 && i < 2);
-      case "recent":
+      // case 'popular':
+      //   return allDiscussions.filter((a, i) => i >= 0 && i < 2);
+      case 'recent':
         return allDiscussions.filter((a, i) => i >= 2 && i < 5);
-      case "upvoted":
+      case 'upvoted':
         return allDiscussions.filter((a, i) => i > 4 && i < 8);
       default:
         return allDiscussions;
@@ -20,19 +20,19 @@
   }
 
   const { page } = stores();
-  let filterBy = "";
+  let filterBy = '';
   let discussions = [];
 
-  $: filterBy = $page.query.filter || "popular";
+  $: filterBy = $page.query.filter || 'popular';
 
   const _allDiscussions = [
     {
       id: 1,
-      title: "How do I pass Anicimov?",
+      title: 'How do I pass Anicimov?',
       author: {
-        name: "rotimibest",
+        name: 'rotimibest',
       },
-      tags: ["ибэит", "икс"],
+      tags: ['ибэит', 'икс'],
       answered: false,
       comments: 10,
       votes: 10,
@@ -40,43 +40,43 @@
     {
       id: 2,
       title:
-        "Where do I find the nearest restaurant. Where do I find the nearest restaurant?. Where do I find the nearest restaurant? Where do I find the nearest restaurant?",
+        'Where do I find the nearest restaurant. Where do I find the nearest restaurant?. Where do I find the nearest restaurant? Where do I find the nearest restaurant?',
       author: {
-        name: "attronaldo",
+        name: 'attronaldo',
       },
-      tags: ["иибрт", "иее"],
+      tags: ['иибрт', 'иее'],
       answered: false,
       comments: 2,
       votes: 2,
     },
     {
       id: 3,
-      title: "Who is Nikolenko?",
+      title: 'Who is Nikolenko?',
       author: {
-        name: "donald",
+        name: 'donald',
       },
-      tags: ["ибэит", "иее", "иибрт", "ИПИГ"],
+      tags: ['ибэит', 'иее', 'иибрт', 'ИПИГ'],
       answered: false,
       comments: 10,
       votes: 10,
     },
     {
       id: 4,
-      title: "Archive discussion button",
+      title: 'Archive discussion button',
       author: {
-        name: "acharlesvv",
+        name: 'acharlesvv',
       },
       tags: [
-        "ИЭКСУ",
-        "ИМБТ",
-        "ИМИ",
-        "ИПТДМ",
-        "ИИИР",
-        "ГФ",
-        "ХТФ",
-        "ИДЗО",
-        "УИИ",
-        "УНИ",
+        'ИЭКСУ',
+        'ИМБТ',
+        'ИМИ',
+        'ИПТДМ',
+        'ИИИР',
+        'ГФ',
+        'ХТФ',
+        'ИДЗО',
+        'УИИ',
+        'УНИ',
       ],
       answered: false,
       comments: 15,
@@ -84,54 +84,54 @@
     },
     {
       id: 1,
-      title: "How do I pass Anicimov?",
+      title: 'How do I pass Anicimov?',
       author: {
-        name: "rotimibest",
+        name: 'rotimibest',
       },
-      tags: ["ибэит", "икс"],
+      tags: ['ибэит', 'икс'],
       answered: false,
       comments: 7,
       votes: 7,
     },
     {
       id: 2,
-      title: "Where do I find the nearest restaurant?",
+      title: 'Where do I find the nearest restaurant?',
       author: {
-        name: "attronaldo",
+        name: 'attronaldo',
       },
-      tags: ["иибрт", "иее"],
+      tags: ['иибрт', 'иее'],
       answered: false,
       comments: 4,
       votes: 4,
     },
     {
       id: 3,
-      title: "Who is Nikolenko?",
+      title: 'Who is Nikolenko?',
       author: {
-        name: "donald",
+        name: 'donald',
       },
-      tags: ["ибэит", "иее", "иибрт", "ИПИГ"],
+      tags: ['ибэит', 'иее', 'иибрт', 'ИПИГ'],
       answered: false,
       comments: 100,
       votes: 100,
     },
     {
       id: 4,
-      title: "Archive discussion button",
+      title: 'Archive discussion button',
       author: {
-        name: "acharlesvv",
+        name: 'acharlesvv',
       },
       tags: [
-        "ИЭКСУ",
-        "ИМБТ",
-        "ИМИ",
-        "ИПТДМ",
-        "ИИИР",
-        "ГФ",
-        "ХТФ",
-        "ИДЗО",
-        "УИИ",
-        "УНИ",
+        'ИЭКСУ',
+        'ИМБТ',
+        'ИМИ',
+        'ИПТДМ',
+        'ИИИР',
+        'ГФ',
+        'ХТФ',
+        'ИДЗО',
+        'УИИ',
+        'УНИ',
       ],
       answered: false,
       comments: 5,
@@ -157,19 +157,19 @@
     addButtonLabel="Ask"
     navItems={[
       {
-        label: "Popular",
-        isActive: filterBy === "popular",
-        href: "?filter=popular",
+        label: 'Popular',
+        isActive: filterBy === 'popular',
+        href: '/discussions?filter=popular',
       },
       {
-        label: "Recent",
-        isActive: filterBy === "recent",
-        href: "?filter=recent",
+        label: 'Recent',
+        isActive: filterBy === 'recent',
+        href: '/discussions?filter=recent',
       },
       {
-        label: "Upvoted",
-        isActive: filterBy === "upvoted",
-        href: "?filter=upvoted",
+        label: 'Upvoted',
+        isActive: filterBy === 'upvoted',
+        href: '/discussions?filter=upvoted',
       },
     ]}
   />
@@ -178,7 +178,7 @@
       <Vote value={discussion.votes} />
       <div class="discussion-topic-author">
         <h4>
-          <a rel="prefetch" href="discussion/{discussion.id}"
+          <a rel="prefetch" href="discussions/{discussion.id}"
             >{discussion.title}</a
           >
         </h4>
