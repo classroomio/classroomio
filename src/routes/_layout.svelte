@@ -42,7 +42,7 @@
     text-decoration: underline;
   }
   :global(:root) {
-    --main-primary-color: #3182ce;
+    --main-primary-color: rgba(29, 78, 216, 1);
     --border-color: #eaecef;
   }
 </style>

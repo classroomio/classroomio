@@ -28,8 +28,9 @@
 </script>
 
 <label class="block {className}">
-  {#if label}<label class="m-0">{label}</label>{/if}
+  {#if label}<label for="text-field" class="m-0">{label}</label>{/if}
   <input
+    id="text-field"
     use:typeAction
     class="form-input {inputClassName} p-2 mt-1 block w-full bg-white border border-gray-300"
     on:keydown={onKeyDown}
