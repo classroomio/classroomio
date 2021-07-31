@@ -1,4 +1,7 @@
 <script>
+  import FlowStreamReference32 from 'carbon-icons-svelte/lib/FlowStreamReference32';
+  import ChartClusterBar32 from 'carbon-icons-svelte/lib/ChartClusterBar32';
+  import MachineLearningModel32 from 'carbon-icons-svelte/lib/MachineLearningModel32';
   import { BarLoader } from 'svelte-loading-spinners';
   import TextField from '../components/Form/TextField.svelte';
   import PrimaryButton from '../components/PrimaryButton/index.svelte';
@@ -46,6 +49,10 @@
   }
 </script>
 
+<svelte:head>
+  <title>ClassroomIO - The classroom software</title>
+</svelte:head>
+
 <div
   class="w-screen flex items-center justify-center flex-col m-2 sm:h-screen sm:m-0"
 >
@@ -61,7 +68,7 @@
       Classroom<span class="text-blue-700">IO</span>
     </h3>
     <p class="text-lg text-center">
-      The operating system for classroooms of the future.
+      The operating system for classroooms of the future 🚀🚀🚀.
     </p>
   </div>
 
@@ -97,11 +104,20 @@
   </form>
 
   <div class="flex flex-col md:flex-row">
-    {#each areas as area}
+    {#each areas as area, index}
       <div
         class="box m-3 bg-white rounded-md py-4 px-12 active shadow-xl border-2 hover:border-blue-700 {animate}"
       >
-        <h3 class="text-3xl">{area.title}</h3>
+        <h3 class="text-3xl">
+          {#if index === 0}
+            <FlowStreamReference32 class="carbon-icon" />
+          {:else if index === 1}
+            <ChartClusterBar32 class="carbon-icon" />
+          {:else if index === 2}
+            <MachineLearningModel32 class="carbon-icon" />
+          {/if}
+          {area.title}
+        </h3>
         <p>{area.description}</p>
       </div>
     {/each}
