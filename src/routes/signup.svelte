@@ -1,8 +1,17 @@
+<script context="module">
+  export function preload(page, { config }) {
+    return { config };
+  }
+</script>
+
 <script>
   import TextField from '../components/Form/TextField.svelte';
   import Select from '../components/Form/Select.svelte';
   import PrimaryButton from '../components/PrimaryButton/index.svelte';
-  import { supabase } from '../utils/functions/supabase';
+  import { getSupabase } from '../utils/functions/supabase';
+  export let config;
+
+  let supabase = getSupabase(config);
 
   let email;
   let userType = 0;
@@ -55,7 +64,7 @@
       <h4 class="text-lg m-0 mt-3">Signup</h4>
       <p class="text-sm">for ClassroomIO</p>
 
-      <div class="my-4 w-full">
+      <!-- <div class="my-4 w-full">
         <Select
           label="Who are you?"
           bind:value={userType}
@@ -63,7 +72,7 @@
           valueKey="value"
           isRequired={true}
         />
-      </div>
+      </div> -->
 
       <div class="my-4 w-full">
         <TextField
@@ -72,7 +81,6 @@
           label="Email"
           type="email"
           placeholder="Enter your email"
-          onKeyDown={handleSubmit}
           inputClassName="rounded-md w-full px-2 py-4"
           isRequired={true}
         />

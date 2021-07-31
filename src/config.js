@@ -1,7 +1,5 @@
 export default {
-  port: process.env.PORT,
-  nodeEnv: process.env.NODE_ENV,
-  isProd: process.env.NODE_ENV === 'development',
+  // isProd: process.env.NODE_ENV === 'development',
   supabaseConfig: {
     url: process.env.SVELTE_APP_SUPABASE_URL,
     anonKey: process.env.SVELTE_APP_SUPABASE_ANON_KEY,

@@ -5,9 +5,9 @@ import svelte from 'rollup-plugin-svelte';
 import babel from '@rollup/plugin-babel';
 import { terser } from 'rollup-plugin-terser';
 import config from 'sapper/config/rollup.js';
-import dotenv from 'dotenv';
 import sveltePreprocess from 'svelte-preprocess';
 import json from '@rollup/plugin-json';
+import sapperEnv from 'sapper-environment';
 
 import pkg from './package.json';
 
@@ -34,15 +34,10 @@ export default {
     output: config.client.output(),
     plugins: [
       replace({
+        ...sapperEnv(),
         'process.browser': true,
         'process.env.NODE_ENV': JSON.stringify(mode),
         preventAssignment: true,
-        __api: JSON.stringify({
-          env: {
-            isProd: !dev,
-            ...dotenv.config().parsed, // attached the .env config
-          },
-        }),
       }),
       json(),
       svelte({

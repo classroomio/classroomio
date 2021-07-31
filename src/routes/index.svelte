@@ -1,142 +1,115 @@
 <script>
-  import GroupPresentation32 from 'carbon-icons-svelte/lib/GroupPresentation32';
-  import UserSpeaker32 from 'carbon-icons-svelte/lib/UserSpeaker32';
-  import Book32 from 'carbon-icons-svelte/lib/Book32';
+  import { BarLoader } from 'svelte-loading-spinners';
+  import TextField from '../components/Form/TextField.svelte';
+  import PrimaryButton from '../components/PrimaryButton/index.svelte';
+  import { VARIANTS } from '../components/PrimaryButton/constants';
+  import { getSupabase } from '../utils/functions/supabase';
 
-  let borderBottomGrey = 'border-r-0 border-b border-l-0 border-gray-300';
-  let animate = 'transition delay-75 duration-300 ease-in-out';
-  let boxes = [
+  let email;
+  let isAdding = false;
+  let success = false;
+
+  const supabase = getSupabase();
+  const animate = 'transition delay-75 duration-300 ease-in-out';
+  const areas = [
     {
-      label: 'Students',
-      value: 50,
-      icon: 'students',
+      title: 'Access',
+      description:
+        'Quickly find any material you need to get your job done. ClassroomIO offers the All-in-on-platform',
     },
     {
-      label: 'Tutors',
-      value: 10,
-      icon: 'tutor',
+      title: 'Analytics',
+      description:
+        'Avoid assumptions, better understand the needs of your classrooms and give students a personlized experience',
     },
     {
-      label: 'Courses',
-      value: 20,
-      icon: 'courses',
+      title: 'Automation',
+      description:
+        'Lesson reminders, deadline reminders and many other automated alerts to help everyone in the learning process be proactive',
     },
   ];
 
-  let topStudents = [
-    {
-      id: 1,
-      name: 'Brad Traversy',
-      score: 97.8,
-    },
-    {
-      id: 2,
-      name: 'Ebuka Jacobs',
-      score: 96,
-    },
-    {
-      id: 3,
-      name: 'Ngozi Okonjo Iwuala',
-      score: 95,
-    },
-    {
-      id: 4,
-      name: 'Nathaniel Bassey',
-      score: 80,
-    },
-    {
-      id: 5,
-      name: 'Barack Obama',
-      score: 79,
-    },
-  ];
+  async function handleSubmit() {
+    isAdding = true;
 
-  let topCourses = [
-    {
-      title: 'CityBIM Basic Module',
-      rating: 5,
-    },
-    {
-      title: 'CityBIM Advanced Module',
-      rating: 4.5,
-    },
-    {
-      title: 'Introduction to ClasroomIO',
-      rating: 4.2,
-    },
-    {
-      title: 'Advanced Builders Module',
-      rating: 4.1,
-    },
-    {
-      title: 'Artificial Intelligence - Basics',
-      rating: 4,
-    },
-  ];
+    await supabase
+      .from('waitinglist')
+      .insert([{ email }], { returning: 'minimal' });
+
+    success = true;
+
+    setTimeout(() => {
+      isAdding = false;
+      success = false;
+      email = null;
+    }, 5000);
+  }
 </script>
 
-<div class="root w-full py-10 bg-gray-100">
-  <div class="flex items-center justify-evenly max-w-6xl m-auto">
-    {#each boxes as box}
-      <div
-        class="bg-white rounded-md py-4 px-16 active shadow-md hover:shadow-2xl border-2 hover:border-blue-700 cursor-pointer {animate}"
-      >
-        {#if box.icon === 'students'}
-          <UserSpeaker32 class="carbon-icon" />
-        {:else if box.icon === 'tutor'}
-          <GroupPresentation32 class="carbon-icon" />
-        {:else if box.icon === 'courses'}
-          <Book32 class="carbon-icon" />
-        {/if}
-        <p class="text-xl">{box.label}</p>
-        <h3 class="text-3xl m-0 my-2">{box.value}</h3>
-      </div>
-    {/each}
+<div
+  class="w-screen flex items-center justify-center flex-col m-2 sm:h-screen sm:m-0"
+>
+  <img
+    src="/logo-192.png"
+    alt="ClassroomIO logo"
+    class="rounded inline-block mx-auto w-20 h-20 sm:w-auto sm:h-auto"
+    data-atf="1"
+  />
+
+  <div>
+    <h3 class="text-4xl text-center">
+      Classroom<span class="text-blue-700">IO</span>
+    </h3>
+    <p class="text-lg text-center">
+      The operating system for classroooms of the future.
+    </p>
   </div>
 
-  <div class="flex items-center justify-evenly mt-16">
-    <div class="table rounded-md bg-white shadow-md">
-      <div class="flex border-t-0 {borderBottomGrey} p-3">
-        <h3 class="m-0 py-2 pl-2 text-lg">Outstanding students</h3>
-      </div>
-
-      {#each topStudents as topStudent, index}
-        <div
-          class="flex items-center p-3 cursor-pointer {borderBottomGrey} hover:bg-gray-100"
+  <form on:submit|preventDefault={handleSubmit} class="my-4">
+    <div class="flex items-center flex-col sm:flex-row">
+      {#if success}
+        <p>You have been added successfully. Thanks for joining.</p>
+      {:else}
+        <TextField
+          bind:value={email}
+          type="email"
+          placeholder="Enter your email.."
+          className="mr-3 my-2"
+          inputClassName="rounded-md"
+          isRequired={true}
+          isDisabled={isAdding}
+        />
+        <PrimaryButton
+          type="submit"
+          variant={isAdding ? VARIANTS.OUTLINED : VARIANTS.CONTAINED}
+          className="py-2 w-full justify-center sm:w-auto {isAdding &&
+            'py-4 border-blue-700'}"
+          isDisabled={isAdding}
         >
-          <span class="mr-2">{index + 1}</span>
-          <p class="text-lg">{topStudent.name}</p>
-          <span class="flex-grow" />
-          <p class="text-lg">{topStudent.score}</p>
-        </div>
-      {/each}
+          {#if isAdding}
+            <BarLoader size="30" color="#1d4ed8" unit="px" duration="1s" />
+          {:else}
+            Join waiting list
+          {/if}
+        </PrimaryButton>
+      {/if}
     </div>
+  </form>
 
-    <div class="table rounded-md bg-white shadow-md">
-      <div class="flex border-t-0 {borderBottomGrey} p-3">
-        <h3 class="m-0 py-2 pl-2 text-lg">Top rated courses</h3>
+  <div class="flex flex-col md:flex-row">
+    {#each areas as area}
+      <div
+        class="box m-3 bg-white rounded-md py-4 px-12 active shadow-xl border-2 hover:border-blue-700 {animate}"
+      >
+        <h3 class="text-3xl">{area.title}</h3>
+        <p>{area.description}</p>
       </div>
-
-      {#each topCourses as topCourse, index}
-        <div
-          class="flex items-center p-3 cursor-pointer {borderBottomGrey} hover:bg-gray-100"
-        >
-          <span class="mr-2">{index + 1}</span>
-          <p class="text-lg">{topCourse.title}</p>
-          <span class="flex-grow" />
-          <p class="text-lg">{topCourse.rating}</p>
-        </div>
-      {/each}
-    </div>
+    {/each}
   </div>
 </div>
 
 <style>
-  .root {
-    min-height: 90vh;
-  }
-
-  .table {
-    width: 564px;
+  .box {
+    max-width: 350px;
   }
 </style>
