@@ -29,8 +29,10 @@
     <li>
       <a
         class="block"
-        aria-current={segment === undefined ? 'page' : undefined}
-        href="."
+        aria-current={segment === undefined || segment === 'dashbboard'
+          ? 'page'
+          : undefined}
+        href="dashbboard"
       >
         Dashboard
       </a>
@@ -64,7 +66,15 @@
       </a>
     </li>
     <span class="flex-grow" />
-    <Avatar src={user.avatar} name={user.label} className="mr-2" />
+    <li>
+      <a
+        class="block"
+        aria-current={segment === 'profile' ? 'page' : undefined}
+        href="profile"
+      >
+        <Avatar src={user.avatar} name={user.label} className="mr-2" />
+      </a>
+    </li>
     <!-- <li class="hidden">
       <a
         class="flex items-center"

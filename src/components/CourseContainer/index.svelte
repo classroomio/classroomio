@@ -41,9 +41,7 @@
 <style>
   .root {
     display: flex;
-    border-right: 1px solid var(--border-color);
     width: 100%;
-    max-width: calc(100% - 100px);
   }
 
   .rightBar {

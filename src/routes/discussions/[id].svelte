@@ -2,7 +2,7 @@
   export async function preload({ params }) {
     // the `id` parameter is available because
     // this file is called [id].svelte
-    const res = await this.fetch(`discussion/${params.id}.json`);
+    const res = await this.fetch(`discussions/${params.id}.json`);
     const data = await res.json();
 
     if (res.status === 200) {

@@ -82,11 +82,11 @@
     });
   });
 
-  $: {
-    if (process.browser && show !== null) {
-      localStorage.setItem('hideCourseNav', `${!show}`);
-    }
-  }
+  // $: {
+  //   if (process.browser && show !== null) {
+  //     localStorage.setItem('hideCourseNav', `${!show}`);
+  //   }
+  // }
 </script>
 
 <div class="root z-10 {!show && 'hide'}">
