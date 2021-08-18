@@ -3,12 +3,12 @@
   import PrimaryButton from '../../PrimaryButton/index.svelte';
   import { VARIANTS } from '../../PrimaryButton/constants';
   import Checkbox from '../../Form/Checkbox.svelte';
+  import TextField from '../../Form/TextField.svelte';
 
   export let title = '';
   export let code;
   export let name = '';
   export let options = [];
-  export let answers = [];
   export let onSubmit = () => {};
   export let onPrevious = () => {};
   export let defaultValue = [];
@@ -16,6 +16,8 @@
   export let disabled = false;
   export let isPreview = false;
   export let nextButtonProps = {};
+  export let grade;
+  export let gradeMax = 0;
 
   function getVal(form, name) {
     let values = [];
@@ -33,7 +35,7 @@
   function handleFormSubmit(event) {
     if (isPreview) return;
     const values = getVal(event.target, name);
-    onSubmit(name, values);
+    onSubmit(name, values, nextButtonProps.isActive);
     event.target.reset();
   }
 
@@ -43,8 +45,8 @@
   }
 
   function getValidationClassName(option) {
-    if (defaultValue.includes(option.id)) {
-      if (answers.includes(option.id)) {
+    if (defaultValue.includes(option.value)) {
+      if (option.is_correct) {
         return 'border-green-700';
       } else {
         return 'border-red-700';
@@ -56,7 +58,20 @@
 </script>
 
 <form on:submit|preventDefault={handleFormSubmit}>
-  <h2>{title}</h2>
+  <div class="flex items-center justify-between">
+    <h2 class={!isNaN(grade) && 'w-3/4'}>{title}</h2>
+    {#if !isNaN(grade)}
+      <div class="flex items-center">
+        <TextField
+          placeholder="Points"
+          bind:value={grade}
+          type="number"
+          className="w-20"
+        />
+        <p class="ml-2 text-lg">/ {gradeMax}</p>
+      </div>
+    {/if}
+  </div>
 
   {#if code}
     <CodeSnippet {code} />
@@ -73,8 +88,8 @@
         <Checkbox
           {name}
           className="p-2"
-          value={option.id}
-          checked={defaultValue.includes(option.id)}
+          value={option.value}
+          checked={defaultValue.includes(option.value)}
           label={option.label || option.value}
           {disabled}
         />

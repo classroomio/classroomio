@@ -10,7 +10,7 @@
   import Tailwindcss from '../components/Tailwindcss.svelte';
   import Navigation from '../components/Navigation/index.svelte';
   // import SideBar from "../components/SideBar/index.svelte";
-  import Footer from '../components/Footer/index.svelte';
+  // import Footer from '../components/Footer/index.svelte';
   import Apps from '../components/Apps/index.svelte';
   import { handleAuthChange } from '../utils/functions/api';
   import { user, profile } from '../utils/store/user';
@@ -24,6 +24,7 @@
   let path = $page.path.replace('/', '');
 
   async function getProfile() {
+    console.log('Get user profile');
     // Get user profile
     const authUser = supabase.auth.user();
 
@@ -34,39 +35,61 @@
       status,
     } = await supabase
       .from('profile')
-      .select(`*`)
-      .eq('user_id', authUser.id)
+      .select(`*, org:organizationmember(*)`)
+      .eq('id', authUser.id)
       .single();
 
     if (error && !profileData && status === 406) {
       // User wasn't found, create profile
+      console.log(`User wasn't found, create profile`);
 
-      const { data, error } = await supabase
-        .from('profile')
-        .insert([{ user_id: authUser.id }]);
+      const [regexUsernameMatch] = [...authUser.email.matchAll(/(.*)@/g)];
+
+      const { data, error } = await supabase.from('profile').insert({
+        id: authUser.id,
+        username: regexUsernameMatch[1],
+        fullname: regexUsernameMatch[1],
+      });
 
       // Profile created, go to profile page
       if (!error && data) {
-        user.set(authUser);
-        profile.set(data);
-        return goto('/');
+        $user.fetchingUser = false;
+        $user.isLoggedIn = true;
+        $user.currentSession = authUser;
+
+        profile.set(data[0]);
+
+        // If user coming to login page, then
+        if (path.includes('login') || path.includes('signup')) {
+          goto('/dashboard');
+        }
       }
     } else if (profileData) {
       // Profile exists, go to profile page
-      user.set(authUser);
+      $user.fetchingUser = false;
+      $user.isLoggedIn = true;
+      $user.currentSession = authUser;
+      console.log(`profileData`, profileData);
       profile.set(profileData);
-      return goto('/');
+
+      // If user coming to login page, then
+      if (path.includes('login') || path.includes('signup')) {
+        goto('/dashboard');
+      }
     }
   }
 
   onMount(() => {
+    console.log('mounting layout');
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
         handleAuthChange(event, session);
 
         if (event === 'SIGNED_IN') {
+          $user.fetchingUser = true;
           getProfile();
         } else {
+          console.log('not logged in, go to login');
           return goto('/');
         }
       }
@@ -85,21 +108,21 @@
 <!-- <Nav {segment} /> -->
 
 <main>
-  {#if !['login', 'signup', ''].includes(path)}
+  {#if !['login', 'signup'].includes(path)}
     <Navigation {segment} />
   {/if}
 
   <div class="flex justify-between">
     <slot />
 
-    {#if path.includes('courses')}
+    <!-- {#if path.includes('courses')}
       <Apps />
-    {/if}
+    {/if} -->
   </div>
 </main>
 
 {#if !['about', ''].includes(path)}
-  <Footer {segment} />
+  <!-- <Footer {segment} /> -->
 {/if}
 
 <style>

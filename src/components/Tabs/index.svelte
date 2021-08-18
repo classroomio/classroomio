@@ -4,8 +4,8 @@
   export let onChange;
 </script>
 
-<div class="w-full flex justify-center flex-col">
-  <div class="flex items-center">
+<div class="w-full flex flex-col">
+  <div class="flex items-center justify-center">
     {#each tabs as tab}
       <button
         class="relative border-r-1 border-t-0 border-b-0 border-l-0 rounded-none {currentTab ===

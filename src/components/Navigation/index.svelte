@@ -1,13 +1,12 @@
 <script>
+  import { goto } from '@sapper/app';
   import Avatar from '../Avatar/index.svelte';
-  export let segment;
-  let navClass = '';
+  import { user, profile } from '../../utils/store/user';
+  import PrimaryButton from '../PrimaryButton/index.svelte';
 
-  let user = {
-    avatar:
-      'https://pbs.twimg.com/profile_images/1416443682157473795/dGtFbtht_normal.jpg',
-    label: 'Elon',
-  };
+  export let segment;
+
+  let navClass = '';
 
   $: navClass = ['discussion'].includes(segment) ? 'hide' : '';
 </script>
@@ -26,54 +25,74 @@
         />
       </a>
     </div>
-    <li>
-      <a
-        class="block"
-        aria-current={segment === undefined || segment === 'dashbboard'
-          ? 'page'
-          : undefined}
-        href="dashbboard"
-      >
-        Dashboard
-      </a>
-    </li>
-    <li>
-      <a
-        class="block"
-        aria-current={segment === 'courses' ? 'page' : undefined}
-        href="courses"
-      >
-        Courses
-      </a>
-    </li>
-    <li>
-      <a
-        class="block"
-        aria-current={segment === 'discussions' || segment === 'discussion'
-          ? 'page'
-          : undefined}
-        href="discussions"
-      >
-        Discussion
-      </a>
-    </li>
-    <li>
-      <a
-        class="block"
-        aria-current={segment === 'people' ? 'page' : undefined}
-        href="people"
-        >People
-      </a>
-    </li>
+
+    {#if $user.isLoggedIn}
+      <li>
+        <a
+          class="block"
+          aria-current={segment === undefined || segment === 'dashboard'
+            ? 'page'
+            : undefined}
+          href="dashboard"
+        >
+          Dashboard
+        </a>
+      </li>
+
+      <li>
+        <a
+          class="block"
+          aria-current={segment === 'courses' ? 'page' : undefined}
+          href="courses"
+        >
+          Courses
+        </a>
+      </li>
+
+      <li>
+        <a
+          class="block"
+          aria-current={segment === 'discussions' || segment === 'discussion'
+            ? 'page'
+            : undefined}
+          href="discussions"
+        >
+          Discussion
+        </a>
+      </li>
+
+      <li>
+        <a
+          class="block"
+          aria-current={segment === 'people' ? 'page' : undefined}
+          href="people"
+          >People
+        </a>
+      </li>
+    {/if}
+
     <span class="flex-grow" />
+
     <li>
-      <a
-        class="block"
-        aria-current={segment === 'profile' ? 'page' : undefined}
-        href="profile"
-      >
-        <Avatar src={user.avatar} name={user.label} className="mr-2" />
-      </a>
+      {#if $user.isLoggedIn}
+        <a
+          class="block"
+          aria-current={segment === 'profile' ? 'page' : undefined}
+          href={`/profile/${$profile.id}`}
+        >
+          <Avatar
+            src={$profile.avatar_url}
+            name={$profile.username}
+            className="mr-2"
+          />
+        </a>
+      {:else}
+        <PrimaryButton
+          label="Login"
+          className="py-2 px-4"
+          onClick={() => goto('/login')}
+        />
+      {/if}
     </li>
     <!-- <li class="hidden">
       <a

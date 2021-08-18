@@ -1,31 +1,53 @@
 <script>
-  import { handleAddQuestion } from './store/index';
-  import { questionnaireMetaData } from './store/answers';
+  import { onDestroy } from 'svelte';
+  import AddAlt16 from 'carbon-icons-svelte/lib/AddAlt16';
+  import {
+    handleAddQuestion,
+    questionnaire,
+    validateQuestionnaire,
+    reset,
+  } from '../store/exercise';
   import PrimaryButton from '../../../../PrimaryButton/index.svelte';
   import PageBody from '../../../../PageBody/index.svelte';
   import ViewMode from './ViewMode.svelte';
   import EditMode from './EditMode.svelte';
   import MODES from '../../../../../utils/constants/mode.js';
   import { VARIANTS } from '../../../../PrimaryButton/constants';
+  import { upsertExercise } from '../../../../../utils/services/courses';
 
-  // export let exerciseId;
+  export let exerciseId;
 
   let mode = MODES.view;
   let preview = false;
 
-  function handleMode() {
-    mode = mode === MODES.edit ? MODES.view : MODES.edit;
-    preview = false;
+  async function handleMode() {
+    if (mode === MODES.edit) {
+      const errors = validateQuestionnaire($questionnaire.questions);
+      if (Object.values(errors).length > 0) {
+        return;
+      }
 
-    if (mode === MODES.view) {
-      questionnaireMetaData.update((metaData) => {
-        metaData.answers = {};
-        metaData.currentQuestionIndex = 0;
-        metaData.isFinished = false;
-        return metaData;
-      });
+      mode = MODES.view;
+
+      reset();
+
+      const updatedQuestions = await upsertExercise($questionnaire, exerciseId);
+
+      questionnaire.update((q) => ({
+        ...q,
+        is_title_dirty: false,
+        is_description_dirty: false,
+        questions: updatedQuestions,
+      }));
+    } else {
+      mode = MODES.edit;
+      preview = false;
     }
   }
+
+  onDestroy(() => {
+    reset();
+  });
 </script>
 
 <PageBody>
@@ -48,11 +70,9 @@
 
     {#if mode === MODES.edit}
       <div class="flex items-center">
-        <PrimaryButton
-          variant={VARIANTS.OUTLINED}
-          onClick={handleAddQuestion}
-          label="Add Question"
-        />
+        <PrimaryButton variant={VARIANTS.OUTLINED} onClick={handleAddQuestion}>
+          Add Question <AddAlt16 class="carbon-icon" />
+        </PrimaryButton>
       </div>
     {/if}
   </svelte:fragment>
@@ -60,6 +80,6 @@
   {#if mode === MODES.edit && !preview}
     <EditMode />
   {:else}
-    <ViewMode {preview} />
+    <ViewMode {preview} {exerciseId} />
   {/if}
 </PageBody>

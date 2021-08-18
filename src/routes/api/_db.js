@@ -378,8 +378,8 @@ export function getLesson(id) {
       lesson_id: null,
       materials: {
         note: '',
-        slide: '',
-        video: '',
+        slide_url: '',
+        video_url: '',
       },
       exercises: getExercises(id),
     }

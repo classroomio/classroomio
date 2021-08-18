@@ -1,9 +1,14 @@
 <script>
+  import { onMount, onDestroy } from 'svelte';
   import Tabs from '../../../../Tabs/index.svelte';
   import TabContent from '../../../../TabContent/index.svelte';
   import EditContent from '../../../../EditContent/index.svelte';
   import TextField from '../../../../Form/TextField.svelte';
-  import { lesson } from '../store/lessons';
+  import {
+    lesson,
+    handleUpdateLessonMaterials,
+    isLessonDirty,
+  } from '../store/lessons';
 
   const tabs = [
     {
@@ -26,6 +31,19 @@
       currentTab = tabValue;
     };
   }
+
+  onMount(() => {
+    isLessonDirty.set(false);
+  });
+
+  onDestroy(() => {
+    if (!$isLessonDirty) {
+      return;
+    }
+    handleUpdateLessonMaterials($lesson);
+  });
+
+  $: console.log(`isLessonDirty`, $isLessonDirty);
 </script>
 
 <Tabs {tabs} {currentTab} {onChange}>
@@ -35,13 +53,22 @@
         writeLabel="Note"
         bind:value={$lesson.materials.note}
         placeholder="Start typing your lesson"
+        onInputChange={() => ($isLessonDirty = true)}
       />
     </TabContent>
     <TabContent value={tabs[1].value} index={currentTab}>
-      <TextField label="Slide link" bind:value={$lesson.materials.slide} />
+      <TextField
+        label="Slide link"
+        bind:value={$lesson.materials.slide_url}
+        onChange={() => ($isLessonDirty = true)}
+      />
     </TabContent>
     <TabContent value={tabs[2].value} index={currentTab}>
-      <TextField label="Youtube link" bind:value={$lesson.materials.video} />
+      <TextField
+        label="Youtube link"
+        bind:value={$lesson.materials.video_url}
+        onChange={() => ($isLessonDirty = true)}
+      />
     </TabContent>
   </slot:fragment>
 </Tabs>

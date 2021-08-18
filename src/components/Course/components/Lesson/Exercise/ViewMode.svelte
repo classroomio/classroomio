@@ -1,6 +1,8 @@
 <script>
-  import { questionnaire } from './store/index';
-  import { questionnaireMetaData } from './store/answers';
+  import { fade, fly, slide } from 'svelte/transition';
+  import { group, course } from '../../../store';
+  import { questionnaire } from '../store/exercise';
+  import { questionnaireMetaData } from '../store/answers';
   import Preview from './Preview.svelte';
   import RadioQuestion from '../../../../Question/RadioQuestion/index.svelte';
   import CheckboxQuestion from '../../../../Question/CheckboxQuestion/index.svelte';
@@ -10,9 +12,12 @@
   import { removeDuplicate } from '../../../../../utils/functions/removeDuplicate';
   import { QUESTION_TYPE } from '../../../../Question/constants';
   import { STATUS } from './constants';
-  import { wasCorrectAnswerSelected, getPropsForQuestion } from './functions';
-
+  import { getPropsForQuestion, filterOutDeleted } from './functions';
+  import { submitExercise } from '../../../../../utils/services/courses';
+  import { profile } from '../../../../../utils/store/user';
   export let preview;
+
+  export let exerciseId;
 
   let currentQuestion = {};
   let renderProps = {};
@@ -21,21 +26,43 @@
     $questionnaireMetaData.currentQuestionIndex += 1;
   }
 
-  function onSubmit(id, value) {
-    const prevAnswer = $questionnaireMetaData.answers[id] || [];
+  function onSubmit(id, value, moveToNextQuestion = false) {
+    const { answers } = $questionnaireMetaData;
+    const { questions } = $questionnaire;
+
+    const prevAnswer = answers[id] || [];
     const formattedAnswer =
       typeof value === 'string'
         ? value
         : removeDuplicate([...prevAnswer, ...(value || [])]);
 
     $questionnaireMetaData.answers = {
-      ...$questionnaireMetaData.answers,
+      ...answers,
       [id]: formattedAnswer,
     };
-    if (
-      wasCorrectAnswerSelected(currentQuestion, $questionnaireMetaData.answers)
-    ) {
+
+    if (moveToNextQuestion) {
       $questionnaireMetaData.currentQuestionIndex += 1;
+    }
+
+    const isFinished =
+      !questions[$questionnaireMetaData.currentQuestionIndex - 1];
+    console.log(`isFinished`, isFinished);
+    console.log(
+      `$questionnaireMetaData.currentQuestionIndex`,
+      $questionnaireMetaData.currentQuestionIndex
+    );
+
+    // If last question send to server
+    if (isFinished) {
+      submitExercise(
+        $questionnaireMetaData.answers,
+        questions,
+        exerciseId,
+        $course.id,
+        $group,
+        $profile
+      );
     }
   }
 
@@ -95,7 +122,7 @@
 
 {#if preview}
   <Preview
-    questions={$questionnaire.questions}
+    questions={filterOutDeleted($questionnaire.questions)}
     questionnaireMetaData={$questionnaireMetaData}
   />
 {:else if !$questionnaire.questions.length}
@@ -151,10 +178,42 @@
     questions={$questionnaire.questions}
     questionnaireMetaData={$questionnaireMetaData}
   />
-{:else if QUESTION_TYPE.RADIO === currentQuestion.type}
-  <RadioQuestion {...renderProps} />
-{:else if QUESTION_TYPE.CHECKBOX === currentQuestion.type}
-  <CheckboxQuestion {...renderProps} />
-{:else if QUESTION_TYPE.TEXTAREA === currentQuestion.type}
-  <TextareaQuestion {...renderProps} />
+{:else if currentQuestion}
+  {#key currentQuestion.id}
+    <!-- <div transition:fade id="question"> -->
+    <div in:fly={{ x: 500, duration: 1000 }} id="question">
+      {#if QUESTION_TYPE.RADIO === currentQuestion.question_type.id}
+        <RadioQuestion {...renderProps} key={currentQuestion.id} />
+      {:else if QUESTION_TYPE.CHECKBOX === currentQuestion.question_type.id}
+        <CheckboxQuestion {...renderProps} key={currentQuestion.id} />
+      {:else if QUESTION_TYPE.TEXTAREA === currentQuestion.question_type.id}
+        <TextareaQuestion {...renderProps} key={currentQuestion.id} />
+      {/if}
+    </div>
+  {/key}
 {/if}
+
+<style>
+  :global(.shake) {
+    animation: shake 0.85s;
+  }
+  @keyframes shake {
+    10%,
+    90% {
+      transform: translate3d(-15px, 0, 0);
+    }
+    20%,
+    80% {
+      transform: translate3d(15px, 0, 0);
+    }
+    30%,
+    50%,
+    70% {
+      transform: translate3d(-15px, 0, 0);
+    }
+    40%,
+    60% {
+      transform: translate3d(15px, 0, 0);
+    }
+  }
+</style>

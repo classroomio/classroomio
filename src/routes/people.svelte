@@ -87,6 +87,6 @@
 
 <style>
   .root {
-    min-height: 90vh;
+    min-height: 93vh;
   }
 </style>

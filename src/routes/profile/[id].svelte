@@ -1,0 +1,199 @@
+<script context="module">
+  export function preload({ params }) {
+    console.log(`params`, params);
+    return { profileId: params.id };
+  }
+</script>
+
+<script>
+  // import { goto } from '$app/navigation';
+  import { onMount } from 'svelte';
+  import { Chasing } from 'svelte-loading-spinners';
+  import Search32 from 'carbon-icons-svelte/lib/Search32';
+  import UserAvatar16 from 'carbon-icons-svelte/lib/UserAvatar16';
+  import Book16 from 'carbon-icons-svelte/lib/Book16';
+  import TextField from '../../components/Form/TextField.svelte';
+  import PrimaryButton from '../../components/PrimaryButton/index.svelte';
+  import { supabase } from '../../utils/functions/supabase';
+  import { user, profile } from '../../utils/store/user';
+
+  export let profileId;
+
+  let loading = false;
+  let currentProfile = {};
+  let isOwner = false;
+  let docs = [];
+  let initialValueOfUserName;
+  let initialValueOfFullName;
+
+  async function getProfile(profileId) {
+    loading = true;
+    // Get user profile
+
+    // Check if user has profile
+    let {
+      data: profileData,
+      error,
+      status,
+    } = await supabase.from('profile').select(`*`).eq('id', profileId).single();
+
+    if (error && !profileData && status === 406 && $user.currentSession) {
+      // Not found
+    } else if (profileData) {
+      // Profile exists, go to profile page
+      currentProfile = profileData;
+      initialValueOfUserName = currentProfile.username;
+      initialValueOfFullName = currentProfile.fullname;
+    }
+
+    loading = false;
+  }
+
+  async function updateProfile() {
+    try {
+      loading = true;
+
+      const updates = {
+        fullname: currentProfile.fullname,
+        username: currentProfile.username,
+        avatar_url: currentProfile.avatar_url,
+      };
+
+      let { error } = await supabase
+        .from('profile')
+        .update(updates, {
+          returning: 'minimal', // Don't return the value after inserting
+        })
+        .match({ id: profileId });
+
+      if (error) throw error;
+    } catch (error) {
+      alert(error.message);
+      loading = false;
+    } finally {
+      loading = false;
+
+      initialValueOfUserName = currentProfile.username;
+      initialValueOfFullName = currentProfile.fullname;
+    }
+  }
+
+  onMount(() => {});
+
+  $: isOwner = $profile.id === profileId;
+  $: {
+    getProfile(profileId);
+  }
+</script>
+
+<svelte:head>
+  <title>Profile of {currentProfile.username}</title>
+</svelte:head>
+
+<section class="root w-11/12 mt-3 m-auto flex items-start justify-between">
+  {#if currentProfile.id}
+    <div class="w-1/4 flex items-center flex-col">
+      <img
+        alt={currentProfile.username}
+        src={currentProfile.avatar_url}
+        height="260"
+        width="260"
+        class="rounded-full bg-light-blue-100 mb-4"
+      />
+
+      {#if isOwner}
+        <TextField
+          label="Full name"
+          bind:value={currentProfile.fullname}
+          className="w-60 mb-4"
+          inputClassName="rounded-md"
+        />
+        <TextField
+          label="Username"
+          bind:value={currentProfile.username}
+          className="w-60 mb-4"
+          inputClassName="rounded-md"
+        />
+
+        {#if initialValueOfUserName !== currentProfile.username || initialValueOfFullName !== currentProfile.fullname}
+          <PrimaryButton
+            label={loading ? 'Updating...' : 'Update profile'}
+            onClick={updateProfile}
+            isDisabled={loading}
+          />
+        {/if}
+      {:else}
+        <h3 class="text-xl">{currentProfile.username}</h3>
+      {/if}
+    </div>
+
+    <div class="flex-grow" />
+    <div class="flex-grow flex flex-wrap mx-3 w-3/5">
+      <div class="mb-3 w-full">
+        <h3 class="font-bold text-md m-0">Organizations</h3>
+        <p class="text-gray-500 text-sm">
+          This are the organizations you work at
+        </p>
+
+        <div class="my-3 py-2 px-4 border shadow-sm rounded-md">
+          <h4 class="m-0 font-normal">
+            <a class="text-blue-700 font-bold" href="/courses"> CitiBim </a>
+          </h4>
+          <p class="text-gray-500">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Non aliquam
+            tenetur magnam. Alias cumque quaerat expedita dolores placeat
+            laboriosam culpa, suscipit veritatis adipisci eius magni obcaecati.
+            Sequi doloremque blanditiis earum.
+          </p>
+          <div class="mt-2 flex items-center">
+            <span class="flex mr-2 items-center">
+              <UserAvatar16 class="mr-2" /> 5
+            </span>
+
+            <span class="flex mr-2 items-center">
+              <Book16 class="mr-2" /> 5
+            </span>
+          </div>
+        </div>
+
+        <div class="my-2 py-2 px-4 border shadow-sm rounded-md">
+          <h4 class="m-0 font-normal">
+            <a class="text-blue-700 font-bold" href="/courses">
+              Climate Change Group
+            </a>
+          </h4>
+          <p class="text-gray-500">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo quasi
+            autem quo possimus illum consequuntur repudiandae nobis error, porro
+          </p>
+          <div class="mt-2 flex items-center">
+            <span class="flex mr-2 items-center">
+              <UserAvatar16 class="mr-2" /> 30
+            </span>
+
+            <span class="flex mr-2 items-center">
+              <Book16 class="mr-2" /> 3
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- {:else if loading}
+    <Box>
+      <Chasing size="60" color="#ff3e00" unit="px" duration="1s" />
+    </Box>
+  {:else}
+    <Box>
+      <div>
+        <Search32 />
+      </div>
+      <h3 class="text-xxl">Profile not found</h3>
+    </Box> -->
+  {/if}
+</section>
+
+<style>
+  .root {
+    max-width: 1204px;
+  }
+</style>

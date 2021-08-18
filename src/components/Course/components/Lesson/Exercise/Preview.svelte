@@ -5,14 +5,16 @@
   import { QUESTION_TYPE } from '../../../../Question/constants';
   import { getPropsForQuestion } from './functions';
 
-  export let questions;
-  export let questionnaireMetaData;
+  export let questions = [];
+  export let questionnaireMetaData = {};
+  export let grades = {};
   export let onSubmit = () => {};
   export let onPrevious = () => {};
+  export let handleGrade = () => {};
 </script>
 
 {#each questions as currentQuestion, currentQuestionIndex}
-  {#if QUESTION_TYPE.RADIO === currentQuestion.type}
+  {#if QUESTION_TYPE.RADIO === currentQuestion.question_type.id}
     <RadioQuestion
       {...getPropsForQuestion(
         questions,
@@ -23,8 +25,11 @@
         onPrevious,
         true
       )}
+      bind:grade={grades[currentQuestion.name]}
+      gradeMax={currentQuestion.points}
+      handleGrade={handleGrade(currentQuestion.name)}
     />
-  {:else if QUESTION_TYPE.CHECKBOX === currentQuestion.type}
+  {:else if QUESTION_TYPE.CHECKBOX === currentQuestion.question_type.id}
     <CheckboxQuestion
       {...getPropsForQuestion(
         questions,
@@ -35,8 +40,11 @@
         onPrevious,
         true
       )}
+      bind:grade={grades[currentQuestion.name]}
+      gradeMax={currentQuestion.points}
+      handleGrade={handleGrade(currentQuestion.name)}
     />
-  {:else if QUESTION_TYPE.TEXTAREA === currentQuestion.type}
+  {:else if QUESTION_TYPE.TEXTAREA === currentQuestion.question_type.id}
     <TextareaQuestion
       {...getPropsForQuestion(
         questions,
@@ -47,6 +55,9 @@
         onPrevious,
         true
       )}
+      bind:grade={grades[currentQuestion.name]}
+      gradeMax={currentQuestion.points}
+      handleGrade={handleGrade(currentQuestion.name)}
     />
   {/if}
 {/each}

@@ -1,22 +1,54 @@
 <script>
-  import marked from "marked";
-  import PageNav from "../PageNav/index.svelte";
+  import marked from 'marked';
+  import PageNav from '../PageNav/index.svelte';
+  import MODES from '../../utils/constants/mode';
+  import PrimaryButton from '../PrimaryButton/index.svelte';
+  import EditContent from '../EditContent/index.svelte';
+  import { course } from '../Course/store';
+  import { updateCourse } from '../../utils/services/courses';
 
-  const readme = `
-# Introduction
- Welcome to this course, we are glad you made it here
+  let mode = MODES.view;
+  let isDirty = false;
 
- ## What you'l learn
-
-      1. Build powerful, fast, user-friendly and reactive web apps.
-      2. Provide amazing user experiences by leveraging the power of JavaScript with ease.
-      3. Apply for high-paid jobs or work as a freelancer in one the most-demanded sectors you can find in web dev right now.
-      4. Learn all about React Hooks and React Components.
-`;
+  async function handleModeChange() {
+    if (mode === MODES.edit) {
+      mode = MODES.view;
+      if (isDirty) {
+        const { overview, id } = $course;
+        const { data, error } = await updateCourse(id, { overview });
+        console.log(`data`, data);
+        console.log(`error`, error);
+      }
+    } else {
+      mode = MODES.edit;
+    }
+  }
 </script>
 
-<PageNav title="Overview" disableSticky={true} />
+<PageNav title="Overview" disableSticky={true}>
+  <svelte:fragment slot="widget">
+    <div class="flex items-center">
+      <PrimaryButton
+        className="mr-2"
+        label={mode === MODES.edit ? 'Save' : 'Edit'}
+        onClick={handleModeChange}
+      />
+    </div>
+  </svelte:fragment>
+</PageNav>
 
 <div class="px-3">
-  {@html marked(readme, { breaks: true, gfm: true })}
+  {#if mode === MODES.edit}
+    <EditContent
+      writeLabel="Note"
+      bind:value={$course.overview}
+      placeholder="Start typing your lesson"
+      onInputChange={() => {
+        isDirty = true;
+        console.log('input change');
+      }}
+    />
+  {:else}
+    {@html marked($course.overview || '', { breaks: true, gfm: true })}
+  {/if}
 </div>

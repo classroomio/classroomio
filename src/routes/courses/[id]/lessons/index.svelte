@@ -1,70 +1,113 @@
 <script context="module">
-  export async function preload({ params }) {
-    let [courseId, courseNavItem, lessonId] = params.id;
-    const res = await this.fetch(`api/course?id=${courseId}`);
-    const data = await res.json();
+  import { fetchCourse } from '../../../../utils/services/courses';
 
-    if (res.status === 200) {
-      return { courseId, courseData: data };
-    } else {
-      this.error(res.status, data.message);
+  export async function preload({ params }, session) {
+    if (process.browser) {
+      return {};
     }
+
+    const {
+      data,
+      // error
+    } = await fetchCourse(params.id, session);
+
+    return { courseData: data };
   }
 </script>
 
 <script>
-  import Time24 from "carbon-icons-svelte/lib/Time24";
-  import Edit24 from "carbon-icons-svelte/lib/Edit24";
-  import Save24 from "carbon-icons-svelte/lib/Save24";
-  import CheckmarkFilled24 from "carbon-icons-svelte/lib/CheckmarkFilled24";
-  import PageNav from "../../../../components/PageNav/index.svelte";
-  import PageBody from "../../../../components/PageBody/index.svelte";
-  import PrimaryButton from "../../../../components/PrimaryButton/index.svelte";
-  import TextField from "../../../../components/Form/TextField.svelte";
-  import IconButton from "../../../../components/IconButton/index.svelte";
-  import Select from "../../../../components/Form/Select.svelte";
-  import CourseContainer from "../../../../components/CourseContainer/index.svelte";
+  import { onMount } from 'svelte';
+  import Time24 from 'carbon-icons-svelte/lib/Time24';
+  import Edit24 from 'carbon-icons-svelte/lib/Edit24';
+  import Save24 from 'carbon-icons-svelte/lib/Save24';
+  import Phone24 from 'carbon-icons-svelte/lib/Phone24';
+  import Delete24 from 'carbon-icons-svelte/lib/Delete24';
+  import CheckmarkFilled24 from 'carbon-icons-svelte/lib/CheckmarkFilled24';
+  import PageNav from '../../../../components/PageNav/index.svelte';
+  import Box from '../../../../components/Box/index.svelte';
+  import PageBody from '../../../../components/PageBody/index.svelte';
+  import PrimaryButton from '../../../../components/PrimaryButton/index.svelte';
+  import TextField from '../../../../components/Form/TextField.svelte';
+  import IconButton from '../../../../components/IconButton/index.svelte';
+  import Select from '../../../../components/Form/Select.svelte';
+  import CourseContainer from '../../../../components/CourseContainer/index.svelte';
   import {
     lessons,
-    tutors,
     handleAddLesson,
-  } from "../../../../components/Course/components/Lesson/store/lessons";
+    handleSaveLesson,
+    handleDelete,
+  } from '../../../../components/Course/components/Lesson/store/lessons';
+  import {
+    course,
+    setCourseData,
+    group,
+  } from '../../../../components/Course/store';
 
   export let courseData;
 
   let lessonEditing;
   let ref;
 
+  const resources = [
+    {
+      label: 'lesson',
+      value: 1,
+    },
+    {
+      label: 'quiz',
+      value: 1,
+    },
+    {
+      label: 'home task',
+      value: 2,
+    },
+  ];
+
   function formatDate(date) {
     const d = new Date(date);
 
-    const ye = new Intl.DateTimeFormat("en", { year: "numeric" }).format(d);
-    const mo = new Intl.DateTimeFormat("en", { month: "2-digit" }).format(d);
-    const da = new Intl.DateTimeFormat("en", { day: "2-digit" }).format(d);
+    const ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(d);
+    const mo = new Intl.DateTimeFormat('en', { month: '2-digit' }).format(d);
+    const da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(d);
 
     return `${ye}-${mo}-${da}`;
   }
 
+  // TODO: CRUD of lessons
   function addLesson() {
     handleAddLesson();
     setTimeout(() => {
       lessonEditing = $lessons.length - 1;
       if (ref) {
-        ref.scrollIntoView({ block: "end", behavior: "smooth" });
+        ref.scrollIntoView({
+          block: 'start',
+          behavior: 'smooth',
+          inline: 'nearest',
+        });
       }
     }, 100);
   }
+
+  onMount(() => {
+    setCourseData(courseData);
+  });
+
+  $: console.log(`$lessons`, $lessons);
 </script>
 
-<CourseContainer {courseData}>
+<CourseContainer>
   <PageNav title="Lessons">
     <div slot="widget">
-      <PrimaryButton label="Add" onClick={addLesson} />
+      <PrimaryButton
+        label="Add"
+        onClick={addLesson}
+        isDisabled={!!lessonEditing}
+      />
     </div>
   </PageNav>
 
   <PageBody width="w-11/12 m-auto">
-    <div class="w-4/5 m-auto">
+    <div class="w-4/5 mt-4 m-auto">
       {#each $lessons as lesson, index}
         <div
           bind:this={ref}
@@ -73,13 +116,16 @@
           <!-- Complete or Not complete icon -->
           <div class="absolute -left-6 -top-6 success">
             <IconButton
-              onClick={() => (lesson.isComplete = !lesson.isComplete)}
+              onClick={() => {
+                lesson.is_complete = !lesson.is_complete;
+                handleSaveLesson(lesson, $course.id);
+              }}
               toolTipProps={{
-                title: `Click to ${lesson.isComplete ? "lock" : "unlock"}`,
-                direction: "right",
+                title: `Click to ${lesson.is_complete ? 'lock' : 'unlock'}`,
+                direction: 'right',
               }}
             >
-              {#if lesson.isComplete}
+              {#if lesson.is_complete}
                 <CheckmarkFilled24 class="carbon-icon" />
               {:else}
                 <span class="text-2xl">🔒</span>
@@ -90,7 +136,12 @@
           <!-- Edit/Save -->
           <div class="absolute top-2 right-0">
             {#if lessonEditing === index}
-              <IconButton onClick={() => (lessonEditing = null)}>
+              <IconButton
+                onClick={() => {
+                  lessonEditing = null;
+                  handleSaveLesson(lesson, $course.id);
+                }}
+              >
                 <Save24 class="carbon-icon" />
               </IconButton>
             {:else}
@@ -107,62 +158,98 @@
             {#if lessonEditing === index}
               <TextField bind:value={lesson.title} autofocus={true} />
             {:else}
-              <h3 class="text-3xl font-semibold m-0 flex items-center">
-                <a href={lesson.to} class="hover:underline text-black">
+              <h3 class="text-2xl m-0 flex items-center">
+                <a
+                  href="/courses/{$course.id}/lessons/{lesson.id}"
+                  class="hover:underline text-black"
+                >
                   {lesson.title}
                 </a>
               </h3>
             {/if}
-            <div class="flex items-center mb-2">
+            <!-- <div class="flex items-center mb-2">
               <div class="flex items-center mr-2">
-                {lesson.resources
-                  .map((r) => `${r.value} ${r.label}`)
-                  .join(", ")}
+                {resources.map((r) => `${r.value} ${r.label}`).join(', ')}
               </div>
-            </div>
+            </div> -->
 
-            <div class="flex items-center justify-between mt-3 w-full">
+            <div class="flex items-center justify-between mt-6 w-full">
               {#if lessonEditing === index}
                 <Select
-                  bind:value={lesson.tutor.name}
-                  options={$tutors}
-                  valueKey="text"
+                  bind:value={lesson.profile}
+                  options={$group.tutors}
+                  labelKey="fullname"
                 />
+              {:else if !lesson.profile}
+                <p class="ml-2 text-sm">No tutor added</p>
               {:else}
                 <a
                   href="courses/1/people"
-                  class="flex items-center hover:underline text-black"
+                  class="flex items-center hover:underline"
                 >
                   <img
                     alt="Placeholder"
                     class="block rounded-full"
                     width="24"
                     height="20"
-                    src={lesson.tutor.avatar}
+                    src={lesson.profile.avatar_url}
                   />
-                  <p class="ml-2 text-sm font-bold">{lesson.tutor.name}</p>
+                  <p class="ml-2 text-sm">
+                    {lesson.profile.fullname}
+                  </p>
                 </a>
               {/if}
 
-              <div class="flex items-center">
+              <div class="flex items-cente">
                 {#if lessonEditing === index}
                   <input
                     type="date"
                     name="lesson-date-picker"
                     class="p-2 rounded-md w-40"
-                    value={formatDate(lesson.date)}
-                    on:input={(e) => (lesson.date = e.target.value)}
+                    value={formatDate(lesson.lesson_at)}
+                    on:input={(e) => (lesson.lesson_at = e.target.value)}
                   />
                 {:else}
                   <Time24 class="carbon-icon" />
-                  <p class="text-md font-semibold ml-2">
-                    {new Date(lesson.date).toDateString()}
+                  <p class="text-md ml-2">
+                    {new Date(lesson.lesson_at).toDateString()}
                   </p>
+                {/if}
+              </div>
+
+              <div class="flex items-center">
+                {#if lessonEditing === index}
+                  <TextField
+                    bind:value={lesson.call_url}
+                    autofocus={true}
+                    className="w-40"
+                    placeholder="https://meet.google.com/mga-dsjs-fmb"
+                  />
+                {:else}
+                  <Phone24 class="carbon-icon" />
+                  <a
+                    class="text-md ml-2"
+                    href={lesson.call_url || '#'}
+                    target="_blank"
+                  >
+                    {lesson.call_url ? 'Join lesson' : 'No link'}
+                  </a>
                 {/if}
               </div>
             </div>
           </div>
+
+          <div class="absolute bottom-2 right-0">
+            <IconButton onClick={handleDelete(lesson.id)}>
+              <Delete24 class="carbon-icon" />
+            </IconButton>
+          </div>
         </div>
+      {:else}
+        <Box>
+          <h3 class="text-3xl text-gray-500">No lesson added</h3>
+          <img alt="No lesson added" src="/notfound2.gif" class="w-80" />
+        </Box>
       {/each}
     </div>
   </PageBody>
