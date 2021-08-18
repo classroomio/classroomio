@@ -83,9 +83,10 @@
   }
 
   onMount(() => {
-    console.log('mounting layout', isMvpUser, path);
     const _isMvpUser = localStorage.getItem('mvp');
-    if (isMvpUser) {
+
+    console.log('mounting layout', isMvpUser, path, _isMvpUser);
+    if (isMvpUser || window.location.search.includes('mvp')) {
       localStorage.setItem('mvp', 'true');
       allowUser = true;
     } else if (!_isMvpUser) {
