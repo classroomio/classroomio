@@ -5,6 +5,7 @@
   import PrimaryButton from '../PrimaryButton/index.svelte';
 
   export let segment;
+  export let disableLogin;
 
   let navClass = '';
 
@@ -86,7 +87,7 @@
             className="mr-2"
           />
         </a>
-      {:else}
+      {:else if !disableLogin}
         <PrimaryButton
           label="Login"
           className="py-2 px-4"

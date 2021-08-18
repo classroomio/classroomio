@@ -1,6 +1,7 @@
 <script context="module">
   export function preload(page, { config }) {
-    return { config };
+    console.log(`page`, page);
+    return { config, isMvpUser: !!page.query.mvp };
   }
 </script>
 
@@ -18,10 +19,12 @@
 
   export let segment;
   export let config;
+  export let isMvpUser;
 
   let supabase = getSupabase(config);
   let { page } = stores();
   let path = $page.path.replace('/', '');
+  let allowUser = false;
 
   async function getProfile() {
     console.log('Get user profile');
@@ -80,7 +83,19 @@
   }
 
   onMount(() => {
-    console.log('mounting layout');
+    console.log('mounting layout', isMvpUser, path);
+    const _isMvpUser = localStorage.getItem('mvp');
+    if (isMvpUser) {
+      localStorage.setItem('mvp', 'true');
+      allowUser = true;
+    } else if (!_isMvpUser) {
+      if (!!path) {
+        goto('/');
+      }
+
+      return;
+    }
+
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
         handleAuthChange(event, session);
@@ -109,7 +124,7 @@
 
 <main>
   {#if !['login', 'signup'].includes(path)}
-    <Navigation {segment} />
+    <Navigation {segment} disableLogin={!allowUser} />
   {/if}
 
   <div class="flex justify-between">
