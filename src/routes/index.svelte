@@ -7,6 +7,7 @@
   import PrimaryButton from '../components/PrimaryButton/index.svelte';
   import { VARIANTS } from '../components/PrimaryButton/constants';
   import { getSupabase } from '../utils/functions/supabase';
+  import { validateEmail } from '../utils/functions/validateEmail';
 
   let email;
   let isAdding = false;
@@ -33,6 +34,7 @@
   ];
 
   async function handleSubmit() {
+    if (!email || !validateEmail(email)) return;
     isAdding = true;
 
     await supabase
