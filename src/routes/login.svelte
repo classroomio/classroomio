@@ -5,9 +5,11 @@
 </script>
 
 <script>
+  import { Chasing } from 'svelte-loading-spinners';
   import TextField from '../components/Form/TextField.svelte';
   import PrimaryButton from '../components/PrimaryButton/index.svelte';
   import { getSupabase } from '../utils/functions/supabase';
+  import { user } from '../utils/store/user';
 
   export let config;
 
@@ -37,7 +39,6 @@
 
       success = true;
       email = {};
-      alert('Check your email for the login link!');
     } catch (error) {
       errors = {
         email: error.error_description || error.message,
@@ -69,33 +70,49 @@
       <p class="text-sm">into ClassroomIO</p>
 
       <div class="my-4 w-full">
-        {#if success}
-          <p class="text-xl text-center">Please check your email to signin</p>
+        {#if $user.fetchingUser}
+          <div class="h-40 text-md flex items-center justify-center">
+            <Chasing size="60" color="#ff3e00" unit="px" duration="1s" />
+          </div>
+        {:else if success}
+          <div class="h-40 text-md flex items-center justify-center flex-col">
+            <p class="">
+              A link has been sent to your email. Please check both your
+              <strong>spam</strong>and your<strong>inbox</strong>.
+            </p>
+            <p class="mt-2 underline">
+              If our email is in your spam, do make sure you mark our email
+              address as safe, then move it from your spam to your inbox.
+            </p>
+          </div>
         {:else}
           <TextField
+            label="Email address"
             bind:value={email}
             type="email"
             autoFocus={true}
-            placeholder="Enter your email"
+            placeholder="you@domain.com"
             inputClassName="rounded-md w-full px-2 py-4"
             isDisabled={loading}
             errorMessage={errors.email}
           />
-          <p class="py-3 text-sm">
+          <p class="py-3 text-md">
             A magic link will be sent to your email, please open the link
           </p>
         {/if}
       </div>
 
-      <div class="my-4 w-full flex justify-between items-center">
-        <a href="/signup" class="text-blue-700 text-sm">Create an account</a>
-        <PrimaryButton
-          label={loading ? 'Creating...' : 'Next'}
-          type="submit"
-          className="py-2 px-4"
-          isDisabled={loading}
-        />
-      </div>
+      {#if !success}
+        <div class="my-4 w-full flex justify-between items-center">
+          <a href="/signup" class="text-blue-700 text-sm">Create an account</a>
+          <PrimaryButton
+            label={loading ? 'Creating...' : 'Next'}
+            type="submit"
+            className="py-2 px-4"
+            isDisabled={loading}
+          />
+        </div>
+      {/if}
     </form>
   </div>
 </div>

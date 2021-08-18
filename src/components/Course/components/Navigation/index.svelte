@@ -15,11 +15,11 @@
   } from '../../function';
 
   import { lessons } from '../Lesson/store/lessons';
+  import { course } from '../../store';
+  import { updateCourse } from '../../../../utils/services/courses';
 
   // export let lessonId;
-  export let courseId;
   export let path;
-
   let show = null;
 
   const { page } = stores();
@@ -30,43 +30,15 @@
     };
   }
 
-  const navItems = [
-    {
-      label: 'Overview',
-      to: getNavItemRoute(courseId),
-      hideSortIcon: true,
-    },
-    {
-      label: 'Lessons',
-      to: getLessonsRoute(courseId),
-      hideSortIcon: false,
-      isLecture: true,
-    },
-    {
-      label: 'All Exercises',
-      to: getNavItemRoute(courseId, 'allexercises'),
-      hideSortIcon: true,
-    },
-    {
-      label: 'Scoreboard',
-      to: getNavItemRoute(courseId, 'scoreboard'),
-      hideSortIcon: true,
-    },
-    {
-      label: 'People',
-      to: getNavItemRoute(courseId, 'people'),
-      hideSortIcon: true,
-    },
-    {
-      label: 'Timetable',
-      to: getNavItemRoute(courseId, 'timetable'),
-      hideSortIcon: true,
-    },
-  ];
+  let navItems = [];
 
   function getHref(item) {
     return item.to;
-    // return item.isComplete ? item.to : path || $page.path
+    // return item.is_complete ? item.to : path || $page.path
+  }
+
+  function handleSaveTitle() {
+    updateCourse($course.id, { title: $course.title });
   }
 
   onMount(() => {
@@ -87,11 +59,51 @@
   //     localStorage.setItem('hideCourseNav', `${!show}`);
   //   }
   // }
+
+  $: {
+    navItems = [
+      {
+        label: 'Overview',
+        to: getNavItemRoute($course.id),
+        hideSortIcon: true,
+      },
+      {
+        label: 'Lessons',
+        to: getLessonsRoute($course.id),
+        hideSortIcon: false,
+        isLecture: true,
+      },
+      {
+        label: 'Submissions',
+        to: getNavItemRoute($course.id, 'submissions'),
+        hideSortIcon: true,
+      },
+      {
+        label: 'Scoreboard',
+        to: getNavItemRoute($course.id, 'scoreboard'),
+        hideSortIcon: true,
+      },
+      {
+        label: 'People',
+        to: getNavItemRoute($course.id, 'people'),
+        hideSortIcon: true,
+      },
+      {
+        label: 'Timetable',
+        to: getNavItemRoute($course.id, 'timetable'),
+        hideSortIcon: true,
+      },
+    ];
+  }
 </script>
 
 <div class="root z-10 {!show && 'hide'}">
   {#if show}
-    <PageNav title="React.JS" />
+    <PageNav
+      bind:title={$course.title}
+      onEditComplete={handleSaveTitle}
+      isTitleEditable={true}
+    />
     <div>
       {#each navItems as navItem}
         <Expandable
@@ -103,16 +115,15 @@
           {#if navItem.isLecture}
             {#each $lessons as item, index}
               <a
-                class="item flex items-center {(item.to ===
-                  (path || $page.path) ||
-                  !(path || $page.path).length > 3) &&
-                  'active'} pl-7 py-2 {!item.isComplete &&
+                class="item flex items-center {(path || $page.path).includes(
+                  item.id
+                ) && 'active'} pl-7 py-2 {!item.is_complete &&
                   'cursor-not-allowed'}"
-                href={getHref(item)}
+                href={getLessonsRoute($course.id, item.id)}
               >
                 <span class="course-counter"> {getLectureNo(index + 1)} </span>
                 <span>{item.title}</span>
-                {#if item.isComplete}
+                {#if item.is_complete}
                   <span class="ml-2 success">
                     <CheckmarkFilled20 class="carbon-icon" />
                   </span>
@@ -147,7 +158,7 @@
 
 <style lang="scss">
   .root {
-    height: 90vh;
+    height: 93vh;
     display: flex;
     flex-direction: column;
     min-width: 360px;

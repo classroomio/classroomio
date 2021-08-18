@@ -11,6 +11,6 @@
 
 <style>
   .progress {
-    transition: width 0.5s linear;
+    transition: width 1s linear;
   }
 </style>

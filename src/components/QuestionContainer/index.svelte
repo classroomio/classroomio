@@ -1,10 +1,13 @@
 <script>
   // import { onMount } from "svelte";
-  import CloseButton from "../Buttons/Close/index.svelte";
+  import TextField from '../Form/TextField.svelte';
+  import CloseButton from '../Buttons/Close/index.svelte';
   export let isTitle = false;
-  export let onClose;
+  export let onClose = () => {};
   export let scrollToQuestion = false;
-
+  export let points = undefined;
+  export let hasError = false;
+  export let onPointsChange = () => {};
   let ref;
 
   // onMount(() => {
@@ -15,16 +18,20 @@
 
   $: {
     if (ref && scrollToQuestion) {
-      ref.scrollIntoView({ block: "end", behavior: "smooth" });
+      ref.scrollIntoView({
+        block: 'start',
+        behavior: 'smooth',
+        inline: 'nearest',
+      });
     }
   }
 </script>
 
 <div
   bind:this={ref}
-  class="{isTitle
-    ? 'border'
-    : 'border-2'} border-gray border-r-2 rounded-md mb-6 relative root hover:border-blue-700"
+  class="{isTitle ? 'border' : 'border-2'} {hasError
+    ? 'border-red-700'
+    : 'border-gray hover:border-blue-700'} border-r-2 rounded-md mb-6 relative root"
 >
   {#if isTitle}
     <div class="title absolute bg-blue-700" />
@@ -38,6 +45,20 @@
   <div class="px-4 {isTitle ? 'pt-4' : 'pt-2'} pb-3">
     <slot />
   </div>
+
+  {#if typeof points !== 'undefined'}
+    <div class="border-gray border-t-2 border-r-0 border-b-0 border-l-0 p-2">
+      <div class="flex items-center w-40">
+        <p class="text-sm mr-2">Points:</p>
+        <TextField
+          placeholder="Points"
+          bind:value={points}
+          type="number"
+          onChange={onPointsChange}
+        />
+      </div>
+    </div>
+  {/if}
 </div>
 
 <style>

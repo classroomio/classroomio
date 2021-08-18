@@ -4,6 +4,7 @@
   import PrimaryButton from '../../PrimaryButton/index.svelte';
   import { VARIANTS } from '../../PrimaryButton/constants';
   import TextArea from '../../Form/TextArea.svelte';
+  import TextField from '../../Form/TextField.svelte';
 
   export let title = '';
   export let code;
@@ -15,11 +16,13 @@
   export let isLast = false;
   export let isPreview = false;
   export let disabled = false;
+  export let grade;
+  export let gradeMax = 0;
 
   function handleFormSubmit(event) {
     if (isPreview) return;
 
-    onSubmit(name, defaultValue);
+    onSubmit(name, defaultValue, true);
     // event.target.reset();
   }
 
@@ -30,7 +33,20 @@
 </script>
 
 <form on:submit|preventDefault={handleFormSubmit}>
-  <h2>{title}</h2>
+  <div class="flex items-center justify-between">
+    <h2 class={!isNaN(grade) && 'w-3/4'}>{title}</h2>
+    {#if !isNaN(grade)}
+      <div class="flex items-center">
+        <TextField
+          placeholder="Points"
+          bind:value={grade}
+          type="number"
+          className="w-20"
+        />
+        <p class="ml-2 text-lg">/ {gradeMax}</p>
+      </div>
+    {/if}
+  </div>
 
   {#if code}
     <CodeSnippet {code} />

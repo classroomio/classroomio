@@ -1,10 +1,10 @@
 <script>
-  import { VARIANTS, VARIANTS_CLASS } from "./constants";
-  export let label;
-  export let className = "";
+  import { VARIANTS, VARIANTS_CLASS } from './constants';
+  export let label = '';
+  export let className = '';
   export let onClick = () => {};
-  export let name = "";
-  export let type;
+  export let name = '';
+  export let type = 'text';
   export let variant = VARIANTS.CONTAINED;
   export let disablePadding = false;
   export let isDisabled = false;
@@ -21,7 +21,7 @@
   {type}
   disabled={isDisabled}
 >
-  {#if label}
+  {#if !!label}
     {label}
   {:else}
     <slot />

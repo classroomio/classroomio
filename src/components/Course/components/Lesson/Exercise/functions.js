@@ -1,26 +1,35 @@
 import { QUESTION_TYPE } from '../../../../Question/constants';
+import { toggleConfetti } from '../../../../Confetti/store';
 
-export function wasCorrectAnswerSelected(currentQuestion, answers) {
-  if (currentQuestion.type === QUESTION_TYPE.TEXTAREA) {
+export const isAnswerCorrect = (options, answer) => {
+  return options.some((option) => option.is_correct && option.value === answer);
+};
+
+export function wasCorrectAnswerSelected(currentQuestion, answers, isFinished) {
+  if (currentQuestion.question_type.id === QUESTION_TYPE.TEXTAREA) {
     return true;
   }
 
-  const answer = answers[currentQuestion.id];
+  const answer = answers[currentQuestion.name];
+
   const formattedAnswers = typeof answer === 'string' ? [answer] : answer;
-  return (
+  const isCorrect =
     formattedAnswers &&
     formattedAnswers.some((answer) => {
-      if (
-        !currentQuestion.answers ||
-        !currentQuestion.answers.length ||
-        currentQuestion.answers.includes(answer)
-      ) {
+      if (isAnswerCorrect(currentQuestion.options, answer)) {
         return true;
       }
 
       return false;
-    })
-  );
+    });
+
+  if (isCorrect && !isFinished) {
+    toggleConfetti();
+
+    setTimeout(toggleConfetti, 1500);
+  }
+
+  return isCorrect;
 }
 
 export function getPropsForQuestion(
@@ -33,32 +42,42 @@ export function getPropsForQuestion(
   preview
 ) {
   const { answers, isFinished } = questionnaireMetaData;
-
   const isLast = questionIndex === questions.length;
-  const isOpenQuesiton = question.type === QUESTION_TYPE.TEXTAREA;
+  const isOpenQuesiton = question.question_type.id === QUESTION_TYPE.TEXTAREA;
+  const isCorrect = wasCorrectAnswerSelected(question, answers, isFinished);
+
+  if (!isCorrect && document && document.getElementById('question')) {
+    const questionElement = document.getElementById('question');
+    // Shake if wrong answer was selected
+    questionElement.classList.toggle('shake');
+
+    setTimeout(() => {
+      // Remove so we can trigger animation again
+      questionElement.classList.toggle('shake');
+    }, 200);
+  }
 
   return {
     title: questionIndex + '. ' + question.title,
-    name: `${question.id}`,
+    name: `${question.name}`,
     options: question.options,
-    answers: question.answers,
     code: question.code,
     defaultValue: isOpenQuesiton
-      ? answers[question.id] || ''
-      : answers[question.id] || [],
+      ? answers[question.name] || ''
+      : answers[question.name] || [],
     onSubmit,
     onPrevious,
     disablePreviousButton: questionIndex === 1,
     isLast,
     isPreview: preview || isFinished,
-    disabled:
-      (isFinished && wasCorrectAnswerSelected(question, answers)) || isFinished,
+    isCorrect,
+    disabled: (isFinished && isCorrect) || isFinished,
     nextButtonProps: isOpenQuesiton
       ? {
           label: 'Next',
           isActive: true,
         }
-      : wasCorrectAnswerSelected(question, answers)
+      : isCorrect
       ? {
           label: isLast ? 'Finish' : 'Next',
           isActive: true,
@@ -69,4 +88,8 @@ export function getPropsForQuestion(
           isActive: false,
         },
   };
+}
+
+export function filterOutDeleted(array) {
+  return array.filter((item) => !item.deleted_at);
 }

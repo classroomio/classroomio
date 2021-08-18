@@ -2,24 +2,24 @@
   import { onMount, afterUpdate } from 'svelte';
 
   import Navigation from '../Course/components/Navigation/index.svelte';
-  import { lessons, lesson } from '../Course/components/Lesson/store/lessons';
-  import { questionnaire } from '../Course/components/Lesson/Exercise/store';
-  import { questionnaireMetaData } from '../Course/components/Lesson/Exercise/store/answers';
+  // import { lessons, lesson } from '../Course/components/Lesson/store/lessons';
+  // import { questionnaire } from '../Course/components/Lesson/Exercise/store/exercise';
+  // import { questionnaireMetaData } from '../Course/components/Lesson/store/answers';
+  import { course } from '../Course/store';
+  import Confetti from '../Confetti/index.svelte';
 
-  export let courseData = {};
   export let path;
+  export let isExercisePage = false;
 
   function setStoreWithData() {
-    lessons.set(courseData.lessons);
-
-    if (courseData.lesson) {
-      lesson.set(courseData.lesson);
-    }
-
-    if (courseData.exercise && courseData.exercise.data) {
-      questionnaire.set(courseData.exercise.data);
-      questionnaireMetaData.set(courseData.exercise.answers);
-    }
+    // lessons.set(courseData.lessons);
+    // if (courseData.lesson) {
+    //   lesson.set(courseData.lesson);
+    // }
+    // if (courseData.exercise && courseData.exercise.data) {
+    //   questionnaire.set(courseData.exercise.data);
+    //   questionnaireMetaData.set(courseData.exercise.answers);
+    // }
   }
 
   onMount(setStoreWithData);
@@ -28,12 +28,15 @@
 </script>
 
 <svelte:head>
-  <title>{courseData.name}</title>
+  <title>{$course.title || 'ClassroomIO Course'}</title>
 </svelte:head>
 
 <div class="root">
-  <Navigation courseId={courseData.id} {path} />
+  <Navigation {path} />
   <div class="rightBar">
+    {#if isExercisePage}
+      <Confetti />
+    {/if}
     <slot />
   </div>
 </div>
@@ -46,6 +49,6 @@
 
   .rightBar {
     flex-grow: 1;
-    width: calc(100% - 350px);
+    width: calc(100% - 360px);
   }
 </style>
