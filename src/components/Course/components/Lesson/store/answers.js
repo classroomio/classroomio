@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 
-import { STATUS } from '../constants';
+import { STATUS } from '../Exercise/constants';
 
 // export const questionnaireMetaData = writable({
 //   answers: {},

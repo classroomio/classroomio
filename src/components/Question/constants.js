@@ -1,27 +1,27 @@
 export const QUESTION_TYPE = {
-  RADIO: "RADIO",
-  CHECKBOX: "CHECKBOX",
-  TEXTAREA: "TEXTAREA",
+  RADIO: 1,
+  CHECKBOX: 2,
+  TEXTAREA: 3,
 };
 
 export const QUESTION_TYPES = [
   {
     id: QUESTION_TYPE.RADIO,
-    text: "Single answer",
+    label: 'Single answer',
   },
   {
     id: QUESTION_TYPE.CHECKBOX,
-    text: "Multiple answers",
+    label: 'Multiple answers',
   },
   {
     id: QUESTION_TYPE.TEXTAREA,
-    text: "Paragraph",
+    label: 'Paragraph',
   },
 ];
 
 export const QUESTION_TEMPLATE = {
   id: 1,
-  title: "",
+  title: '',
   type: QUESTION_TYPE.RADIO,
   answers: [],
   options: [

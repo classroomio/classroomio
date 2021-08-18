@@ -6,6 +6,7 @@
   export let isEditable = false;
   export let disabled = false;
   export let className = '';
+  export let onChange;
 </script>
 
 <label
@@ -27,6 +28,7 @@
       type="text"
       placeholder="Your option"
       bind:value={label}
+      on:change={onChange}
     />
   {:else}
     <span class="ml-2">{label}</span>

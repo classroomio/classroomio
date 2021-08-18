@@ -29,7 +29,7 @@ express() // You can also use Express
     sapper.middleware({
       session: async (req) => {
         const { user } = await supabase.auth.api.getUserByCookie(req);
-
+        console.log('cookie calling');
         return {
           user: JSON.stringify(user),
           config,

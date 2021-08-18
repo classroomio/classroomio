@@ -104,7 +104,7 @@
 
 <style lang="scss">
   .root {
-    height: 90vh;
+    height: 93vh;
     position: sticky;
     top: 0;
     border-left: 1px solid var(--border-color);

@@ -1,16 +1,20 @@
 <script>
-  import NewButton from "../PrimaryContainedButton/index.svelte";
-  export let title = "";
-  export let overidableStyle = "";
+  import NewButton from '../PrimaryContainedButton/index.svelte';
+  import TextField from '../Form/TextField.svelte';
+  export let title = '';
+  export let overidableStyle = '';
   export let navItems = [];
   export let addButtonHref;
   export let addButtonLabel;
   export let disableSticky = false;
+  export let isTitleEditable = false;
+  export let onEditComplete = () => {};
 
-  let dynamicRootClass = "";
+  let dynamicRootClass = '';
+  let enterEditTitleMode = false;
 
   $: dynamicRootClass =
-    Array.isArray(navItems) && navItems.length > 4 ? "bring-down" : "";
+    Array.isArray(navItems) && navItems.length > 4 ? 'bring-down' : '';
 </script>
 
 <div
@@ -19,7 +23,30 @@
   style={overidableStyle}
 >
   {#if !!title}
-    <h4 class="title">{title}</h4>
+    {#if isTitleEditable}
+      {#if !enterEditTitleMode}
+        <h4
+          class="title editable-title hover:bg-gray-100 px-3 rounded-md overflow-ellipsis"
+          on:click={() => (enterEditTitleMode = true)}
+        >
+          {title}
+        </h4>
+      {:else}
+        <TextField
+          bind:value={title}
+          placeholder="Course title"
+          onChange={() => {
+            enterEditTitleMode = false;
+
+            if (typeof onEditComplete === 'function') {
+              onEditComplete();
+            }
+          }}
+        />
+      {/if}
+    {:else}
+      <h4 class="title">{title}</h4>
+    {/if}
   {/if}
   {#if Array.isArray(navItems) && navItems.length}
     <div class="flex justify-evenly items-center">
@@ -39,7 +66,7 @@
 <style>
   .header {
     border-bottom: 1px solid var(--border-color);
-    padding: 15px;
+    padding: 0 15px;
     min-height: 61px;
     background-color: #fff;
     z-index: 1;
@@ -69,7 +96,7 @@
 
   .active::after {
     position: absolute;
-    content: "";
+    content: '';
     width: 100%;
     height: 3px;
     background-color: var(--main-primary-color);
@@ -82,6 +109,17 @@
   }
   .spacing {
     flex-grow: 1;
+  }
+
+  .editable-title {
+    font-size: 16px;
+    display: flex;
+    /* justify-content: center; */
+    align-items: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 10px;
   }
 
   @media only screen and (max-width: 1002px) {

@@ -1,9 +1,10 @@
 <script>
-  export let label;
-  export let value;
+  export let label = '';
+  export let value = '';
   export let options = [];
-  export let valueKey = 'id';
+  export let labelKey = 'label';
   export let isRequired = false;
+  export let onChange = () => {}; // This is to know if element is 'dirty'
 </script>
 
 <label class="block">
@@ -12,10 +13,11 @@
     bind:value
     class="form-select block w-full mt-1"
     required={isRequired}
+    on:blur={onChange}
   >
     {#each options as option}
-      <option value={option[valueKey]}>
-        {option.text}
+      <option value={option}>
+        {option[labelKey]}
       </option>
     {/each}
   </select>

@@ -1,34 +1,34 @@
 <script context="module">
-  import ChevronDown24 from "carbon-icons-svelte/lib/ChevronDown24";
-  import TextEditor from "../TextEditor/index.svelte";
+  import ChevronDown24 from 'carbon-icons-svelte/lib/ChevronDown24';
+  import TextEditor from '../TextEditor/index.svelte';
 
-  let questionTitle = "";
+  let questionTitle = '';
   let questionTags = [];
-  let questionDescription = "";
+  let questionDescription = '';
   let facultyFilterOpened = true;
 
   const faculties = [
-    "ИЭКСУ",
-    "ИМБТ",
-    "ИМИ",
-    "ИПТДМ",
-    "ИИИР",
-    "ГФ",
-    "ХТФ",
-    "ИДЗО",
-    "УИИ",
-    "УНИ",
+    'ИЭКСУ',
+    'ИМБТ',
+    'ИМИ',
+    'ИПТДМ',
+    'ИИИР',
+    'ГФ',
+    'ХТФ',
+    'ИДЗО',
+    'УИИ',
+    'УНИ',
   ];
 
   function handleFacultyFilters() {
     facultyFilterOpened = facultyFilterOpened ? false : true;
   }
   let things = [
-    { id: 1, color: "darkblue" },
-    { id: 2, color: "indigo" },
-    { id: 3, color: "deeppink" },
-    { id: 4, color: "salmon" },
-    { id: 5, color: "gold" },
+    { id: 1, color: 'darkblue' },
+    { id: 2, color: 'indigo' },
+    { id: 3, color: 'deeppink' },
+    { id: 4, color: 'salmon' },
+    { id: 5, color: 'gold' },
   ];
 
   function handleClick() {
@@ -37,11 +37,11 @@
 </script>
 
 <svelte:head>
-  <title>Спросить собшество вопрос</title>
+  <title>Ask a question.</title>
 </svelte:head>
 
 <div class="lg:w-3/5 mx-auto md:mx-10 lg:mb-20">
-  <h2 class="pb-2">Спросить собшество вопрос</h2>
+  <h2 class="pb-2">Ask a question.</h2>
   <div class="my-1 px-1">
     <div class="mb-5">
       <button on:click={handleClick}> Remove first thing </button>

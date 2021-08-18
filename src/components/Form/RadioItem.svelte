@@ -1,11 +1,12 @@
 <script>
-  export let label;
-  export let value;
-  export let checked;
-  export let name;
+  export let label = '';
+  export let value = '';
+  export let checked = false;
+  export let name = '';
   export let isEditable = false;
   export let disabled = false;
   export let className = '';
+  export let onChange = () => {}; // This is to know if element is 'dirty'
 </script>
 
 <label
@@ -27,6 +28,7 @@
       type="text"
       placeholder="Your option"
       bind:value={label}
+      on:change={onChange}
     />
   {:else}
     <span class="ml-2">{label}</span>

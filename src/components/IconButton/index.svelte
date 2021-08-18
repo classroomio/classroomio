@@ -1,15 +1,15 @@
 <script>
-  import ToolTip from "../ToolTip/index.svelte";
-  export let onClick;
+  import ToolTip from '../ToolTip/index.svelte';
+  export let onClick = () => {};
   export let disabled = false;
   export let selected = false;
-  export let buttonClassName = "";
+  export let buttonClassName = '';
   export let contained = false;
-  export let value;
+  export let value = '';
   export let toolTipProps = {
-    title: "",
+    title: '',
     hotkeys: [],
-    direction: "",
+    direction: '',
   };
 
   function handleClick() {

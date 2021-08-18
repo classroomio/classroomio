@@ -53,9 +53,7 @@
   <title>ClassroomIO - The classroom software</title>
 </svelte:head>
 
-<div
-  class="w-screen flex items-center justify-center flex-col m-2 sm:h-screen sm:m-0"
->
+<div class="root w-screen flex items-center justify-center flex-col m-2 sm:m-0">
   <img
     src="/logo-192.png"
     alt="ClassroomIO logo"
@@ -127,5 +125,11 @@
 <style>
   .box {
     max-width: 350px;
+  }
+
+  @media (min-width: 640px) {
+    .root {
+      height: 93vh;
+    }
   }
 </style>

@@ -80,6 +80,10 @@
   ];
 </script>
 
+<svelte:head>
+  <title>Dashboard - ClassroomIO</title>
+</svelte:head>
+
 <div class="root w-full py-10 bg-gray-100">
   <div class="flex items-center justify-evenly max-w-6xl m-auto">
     {#each boxes as box}
@@ -138,7 +142,7 @@
 
 <style>
   .root {
-    min-height: 90vh;
+    min-height: 93vh;
   }
 
   .table {

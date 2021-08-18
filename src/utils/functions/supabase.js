@@ -1,9 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 
-let _supabase;
+export let supabase;
 
 export const getSupabase = (config) => {
-  if (_supabase) return _supabase;
+  if (supabase) return supabase;
 
   if (!config && process && process.env) {
     config = {
@@ -15,10 +15,10 @@ export const getSupabase = (config) => {
     };
   }
 
-  _supabase = createClient(
+  supabase = createClient(
     config.supabaseConfig.url,
     config.supabaseConfig.anonKey
   );
 
-  return _supabase;
+  return supabase;
 };

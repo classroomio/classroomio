@@ -1,38 +1,44 @@
 <script>
   import {
     questionnaire,
+    questionnaireValidation,
     handleAddOption,
     handleRemoveOption,
     handleRemoveQuestion,
     handleCode,
     handleAnswerSelect,
-  } from "./store/index";
-  import Delete24 from "carbon-icons-svelte/lib/Delete24";
-  import AddFilled24 from "carbon-icons-svelte/lib/AddFilled24";
-  import CheckmarkFilled24 from "carbon-icons-svelte/lib/CheckmarkFilled24";
-  import CheckmarkOutline24 from "carbon-icons-svelte/lib/CheckmarkOutline24";
+    addDynamicValue,
+  } from '../store/exercise';
+  import Delete24 from 'carbon-icons-svelte/lib/Delete24';
+  import AddFilled24 from 'carbon-icons-svelte/lib/AddFilled24';
+  import CheckmarkFilled24 from 'carbon-icons-svelte/lib/CheckmarkFilled24';
+  import CheckmarkOutline24 from 'carbon-icons-svelte/lib/CheckmarkOutline24';
   // import Subtract24 from "carbon-icons-svelte/lib/Subtract24";
 
-  import TextField from "../../../../Form/TextField.svelte";
-  import TextArea from "../../../../Form/TextArea.svelte";
-  import Checkbox from "../../../../Form/Checkbox.svelte";
-  import RadioItem from "../../../../Form/RadioItem.svelte";
-  import IconButton from "../../../../IconButton/index.svelte";
-  import PrimaryButton from "../../../../PrimaryButton/index.svelte";
-  import Dropdown from "../../../../Dropdown/index.svelte";
-  import { VARIANTS } from "../../../../PrimaryButton/constants";
-  import Select from "../../../../Form/Select.svelte";
-  import QuestionContainer from "../../../../QuestionContainer/index.svelte";
+  import TextField from '../../../../Form/TextField.svelte';
+  import TextArea from '../../../../Form/TextArea.svelte';
+  import Checkbox from '../../../../Form/Checkbox.svelte';
+  import RadioItem from '../../../../Form/RadioItem.svelte';
+  import IconButton from '../../../../IconButton/index.svelte';
+  import ErrorMessage from '../../../../ErrorMessage/index.svelte';
+  import PrimaryButton from '../../../../PrimaryButton/index.svelte';
+  import Dropdown from '../../../../Dropdown/index.svelte';
+  import { VARIANTS } from '../../../../PrimaryButton/constants';
+  import Select from '../../../../Form/Select.svelte';
+  import QuestionContainer from '../../../../QuestionContainer/index.svelte';
   import {
     QUESTION_TYPE,
     QUESTION_TYPES,
-  } from "../../../../Question/constants";
+  } from '../../../../Question/constants';
+  import { filterOutDeleted } from './functions';
   // import EditContent from "../../../../EditContent/index.svelte";
   // import readme from "../../readme.js";
 
   // let value = readme;
-  const extraActions = ["Code Snippets", "Upload image"];
+  const extraActions = ['Code Snippets', 'Upload image'];
   const initialQuestionsLength = $questionnaire.questions.length;
+
+  let errors = {};
 
   function shouldScrollToLast(index, questions) {
     const currentQuestionsLength = questions.length;
@@ -51,47 +57,85 @@
           // uploadImage(questionIndex);
           break;
         default:
-          console.log("No option");
+          console.log('No option');
       }
     };
   }
+
+  function getQuestionErrorMsg(errors, question, errorKey) {
+    return errors[question.id] ? errors[question.id][errorKey] : null;
+  }
+
+  $: errors = $questionnaireValidation;
 </script>
 
-<div class="w-auto m-auto">
+<div class="w-11/12 m-auto">
   <QuestionContainer isTitle={true}>
     <TextField
       placeholder="Title"
       bind:value={$questionnaire.title}
       className="mb-2"
+      onChange={() => {
+        console.log('title dirty');
+        $questionnaire.is_title_dirty = true;
+      }}
     />
     <TextArea
       placeholder="Description and Rules"
       bind:value={$questionnaire.description}
+      onChange={() => {
+        $questionnaire.is_description_dirty = true;
+      }}
     />
   </QuestionContainer>
 
-  {#each $questionnaire.questions as question, index}
+  {#if Object.values(errors).length}
+    <div class="w-full flex justify-center mb-4">
+      <ErrorMessage message="You have some errors" />
+    </div>
+  {/if}
+
+  {#each filterOutDeleted($questionnaire.questions) as question, index}
     <QuestionContainer
       onClose={handleRemoveQuestion(question.id)}
       scrollToQuestion={shouldScrollToLast(index, $questionnaire.questions)}
+      bind:points={question.points}
+      hasError={!!errors[question.id]}
+      onPointsChange={() => {
+        question.is_dirty = true;
+      }}
     >
       <div class="flex justify-between items-center">
         <div class="mr-2 w-3/5">
-          <TextField placeholder="Question" bind:value={question.title} />
+          <TextField
+            placeholder="Question"
+            bind:value={question.title}
+            isRequired={true}
+            onChange={() => {
+              console.log('title changed', question.title);
+              question.is_dirty = true;
+            }}
+          />
         </div>
 
-        <Dropdown
+        <!-- <Dropdown
           options={extraActions}
           handleOptionClick={handleOptionClick(question.id)}
         >
           <AddFilled24 class="carbon-icon" />
           <p class="ml-2 text-gray-600">Add</p>
-        </Dropdown>
+        </Dropdown> -->
 
-        <Select bind:value={question.type} options={QUESTION_TYPES} />
+        <Select
+          bind:value={question.question_type}
+          options={QUESTION_TYPES}
+          onChange={() => {
+            question.is_dirty = true;
+          }}
+        />
       </div>
 
-      {#if typeof question.code === "string"}
+      {#if typeof question.code === 'string'}
         <div class="flex justify-between items-center my-3 w-3/5">
           <TextArea
             bind:value={question.code}
@@ -108,12 +152,13 @@
       {/if}
 
       <div class="flex flex-col mt-2">
-        {#if QUESTION_TYPE.RADIO === question.type}
-          {#each question.options as option}
+        {#if QUESTION_TYPE.RADIO === question.question_type.id}
+          {#each filterOutDeleted(question.options) as option}
             <RadioItem
               isEditable={true}
-              name={question.title || "radio-name"}
-              bind:label={option.value}
+              name={question.title || 'radio-name'}
+              bind:label={option.label}
+              onChange={addDynamicValue(question.id, option.id)}
             >
               <div slot="iconbutton" class="flex items-center">
                 <IconButton
@@ -125,10 +170,9 @@
                 <IconButton
                   value={option.id}
                   onClick={handleAnswerSelect(question.id, option.id)}
-                  buttonClassName={question.answers.includes(option.id) &&
-                    "success"}
+                  buttonClassName={option.is_correct && 'success'}
                 >
-                  {#if question.answers.includes(option.id)}
+                  {#if option.is_correct}
                     <CheckmarkFilled24 class="carbon-icon" />
                   {:else}
                     <CheckmarkOutline24 class="carbon-icon" />
@@ -139,12 +183,13 @@
           {/each}
         {/if}
 
-        {#if QUESTION_TYPE.CHECKBOX === question.type}
-          {#each question.options as option}
+        {#if QUESTION_TYPE.CHECKBOX === question.question_type.id}
+          {#each filterOutDeleted(question.options) as option}
             <Checkbox
               isEditable={true}
-              name={question || "checkbox-name"}
-              bind:label={option.value}
+              name={question || 'checkbox-name'}
+              bind:label={option.label}
+              onChange={addDynamicValue(question.id, option.id)}
             >
               <div slot="iconbutton" class="flex items-center">
                 <IconButton
@@ -156,10 +201,9 @@
                 <IconButton
                   value={option.id}
                   onClick={handleAnswerSelect(question.id, option.id)}
-                  buttonClassName={question.answers.includes(option.id) &&
-                    "success"}
+                  buttonClassName={option.is_correct && 'success'}
                 >
-                  {#if question.answers.includes(option.id)}
+                  {#if option.is_correct}
                     <CheckmarkFilled24 class="carbon-icon" />
                   {:else}
                     <CheckmarkOutline24 class="carbon-icon" />
@@ -170,12 +214,18 @@
           {/each}
         {/if}
 
-        {#if QUESTION_TYPE.TEXTAREA === question.type}
+        {#if QUESTION_TYPE.TEXTAREA === question.question_type.id}
           <TextArea bind:value={question.value} />
+        {/if}
+
+        {#if getQuestionErrorMsg(errors, question, 'option')}
+          <ErrorMessage
+            message={getQuestionErrorMsg(errors, question, 'option')}
+          />
         {/if}
       </div>
 
-      {#if QUESTION_TYPE.TEXTAREA !== question.type}
+      {#if QUESTION_TYPE.TEXTAREA !== question.question_type.id}
         <div class="flex items-center mt-3">
           <PrimaryButton
             disablePadding={true}
