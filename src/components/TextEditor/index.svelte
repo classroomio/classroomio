@@ -1,11 +1,11 @@
 <script>
-  import marked from "marked";
-  import PrimaryButton from "../PrimaryButton/index.svelte";
+  import marked from 'marked';
+  import PrimaryButton from '../PrimaryButton/index.svelte';
 
   let isWriteMode = true;
   export let value = ``;
   export let placeholder = ``;
-  const activeClassName = "border-b-2 border-blue-700";
+  const activeClassName = 'border-b-2 border-blue-700';
 
   const handleTabClick = (tab) => (event) => {
     isWriteMode = tab === 1;
@@ -36,7 +36,7 @@
         class="border border-gray rounded-md p-2"
       />
     {:else}
-      <article class="preview prose prose-sm sm:prose p-2">
+      <article class="m-auto preview prose prose-sm sm:prose p-2">
         {@html marked(value)}
       </article>
     {/if}
