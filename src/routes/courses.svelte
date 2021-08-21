@@ -1,35 +1,18 @@
 <script context="module">
   import { profile, user } from '../utils/store/user';
-  import { supabase } from '../utils/functions/supabase';
+  import { fetchCourses } from '../components/Courses/api';
 
   export async function preload(page, params) {
-    console.log('process.browser', process.browser);
-    console.log(`user`, user);
-
-    if (process.browser) {
-      console.log('localstorage', localStorage.getItem('supabase.auth.token'));
-    }
-    console.log(`params`, params);
     const parsedUser = JSON.parse(params.user);
-    console.log(`parsedUser`, parsedUser);
+
     if (parsedUser && parsedUser.id) {
-      const { data: orgMember } = await supabase
-        .from('organizationmember')
-        .select(`organization_id`)
-        .eq('profile_id', parsedUser.id)
-        .single();
-
-      const { data: allCourses } = await supabase
-        .from('course')
-        .select(`id, title, description`)
-        .eq('organization_id', orgMember.organization_id);
-
-      return { allCourses, organizationId: orgMember.organization_id };
+      return fetchCourses(parsedUser.id);
     }
 
     return {
       allCourses: [],
       organizationId: null,
+      cantFetch: !parsedUser,
     };
   }
 </script>
@@ -51,6 +34,7 @@
 
   export let allCourses;
   export let organizationId;
+  export let cantFetch;
 
   let errors = {
     emails: '',
@@ -119,10 +103,25 @@
     });
   }
 
-  onMount(() => {
+  async function getCourses(userId) {
+    console.log(`getCourses process.browser`, process.browser);
+    if (process.browser) {
+      if (!cantFetch && typeof cantFetch === 'boolean' && !allCourses.length) {
+        const coursesResult = await fetchCourses(userId);
+        console.log(`coursesResult`, coursesResult);
+
+        organizationId = coursesResult.organizationId;
+        courses.set(coursesResult.allCourses);
+      }
+    }
+  }
+
+  onMount(async () => {
+    console.log(`onMount cantFetch`, cantFetch);
     courses.set(allCourses);
   });
-  // $: tab = $page.query.tab || 'mine';
+
+  $: getCourses($profile.id);
 </script>
 
 <svelte:head>
