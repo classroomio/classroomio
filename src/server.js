@@ -11,6 +11,7 @@ import { getSupabase } from './utils/functions/supabase';
 dotenv.config();
 
 const config = {
+  isDev: process.env.NODE_ENV === 'development',
   telegramToken: process.env.SVELTE_APP_TELEGRAM_API_TOKEN,
   supabaseConfig: {
     url: process.env.SVELTE_APP_SUPABASE_URL,

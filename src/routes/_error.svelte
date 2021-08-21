@@ -2,25 +2,50 @@
   export let status;
   export let error;
 
-  const dev = process.env.NODE_ENV === 'development';
+  // const dev = process.env.NODE_ENV === 'development';
+  let errorContent;
+
+  // function report() {}
+
+  $: {
+    try {
+      errorContent = !!error ? JSON.stringify(error) : '';
+    } catch (error) {}
+  }
 </script>
 
 <svelte:head>
   <title>{status}</title>
 </svelte:head>
 
-<h1>{status}</h1>
+<div class="w-3/5 h-3/5 m-auto flex flex-col items-center justify-center">
+  <h1>Opps 😢</h1>
+  <h2>Something wen't wrong and it's our fault.</h2>
+  <p>Please screenshot this page and send to me.</p>
+  <pre>
+    {errorContent}
+  </pre>
+</div>
 
-<p>{error.message}</p>
+<!-- {#if dev && error.stack}
+  <h1>{status}</h1>
 
-{#if dev && error.stack}
+  <p>{error.message}</p>
   <pre>{error.stack}</pre>
-{/if}
-
+{/if} -->
 <style>
   h1,
   p {
     margin: 0 auto;
+  }
+
+  pre {
+    width: 500px;
+    white-space: pre-wrap; /* css-3 */
+    white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+    white-space: -pre-wrap; /* Opera 4-6 */
+    white-space: -o-pre-wrap; /* Opera 7 */
+    word-wrap: break-word;
   }
 
   h1 {
