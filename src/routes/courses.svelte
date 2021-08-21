@@ -1,13 +1,20 @@
 <script context="module">
+  import { profile, user } from '../utils/store/user';
   import { supabase } from '../utils/functions/supabase';
 
   export async function preload(page, params) {
-    const user = JSON.parse(params.user);
+    console.log('process.browser', process.browser);
+    console.log(`user`, user);
+
+    if (process.browser) {
+      console.log('localstorage', localStorage.getItem('supabase.auth.token'));
+    }
+    const parsedUser = JSON.parse(params.user);
 
     const { data: orgMember } = await supabase
       .from('organizationmember')
       .select(`organization_id`)
-      .eq('profile_id', user.id)
+      .eq('profile_id', parsedUser.id)
       .single();
 
     const { data: allCourses } = await supabase
@@ -30,7 +37,6 @@
   import TextArea from '../components/Form/TextArea.svelte';
   import { courses, createCourseModal } from '../components/Courses/store';
   import { validateForm } from '../components/Courses/functions';
-  import { profile } from '../utils/store/user';
   import { ROLE } from '../utils/constants/roles';
 
   // const { page } = stores();
