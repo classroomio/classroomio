@@ -80,6 +80,12 @@
   afterUpdate(setLesson);
 
   $: path = $page.path.replace(/\/exercises[\/ 0-9 a-z -]*/, '');
+
+  $: {
+    if (lessonId) {
+      mode = MODES.view;
+    }
+  }
 </script>
 
 <CourseContainer {path} isExercisePage={!isMaterialsTabActive && exerciseId}>
