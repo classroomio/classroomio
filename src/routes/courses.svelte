@@ -106,7 +106,7 @@
   async function getCourses(userId) {
     console.log(`getCourses process.browser`, process.browser);
     if (process.browser) {
-      if (!cantFetch && typeof cantFetch === 'boolean' && !allCourses.length) {
+      if (cantFetch && typeof cantFetch === 'boolean' && !allCourses.length) {
         const coursesResult = await fetchCourses(userId);
         console.log(`coursesResult`, coursesResult);
 
