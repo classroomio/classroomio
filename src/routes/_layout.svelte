@@ -99,7 +99,9 @@
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        handleAuthChange(event, session);
+        if (config.isDev) {
+          handleAuthChange(event, session);
+        }
 
         if (event === 'SIGNED_IN') {
           $user.fetchingUser = true;
