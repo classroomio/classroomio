@@ -16,11 +16,11 @@
       value: 1,
     },
     {
-      label: 'Slide',
+      label: 'Video',
       value: 2,
     },
     {
-      label: 'Video',
+      label: 'Slide',
       value: 3,
     },
   ];
@@ -58,15 +58,15 @@
     </TabContent>
     <TabContent value={tabs[1].value} index={currentTab}>
       <TextField
-        label="Slide link"
-        bind:value={$lesson.materials.slide_url}
+        label="Youtube link"
+        bind:value={$lesson.materials.video_url}
         onChange={() => ($isLessonDirty = true)}
       />
     </TabContent>
     <TabContent value={tabs[2].value} index={currentTab}>
       <TextField
-        label="Youtube link"
-        bind:value={$lesson.materials.video_url}
+        label="Slide link"
+        bind:value={$lesson.materials.slide_url}
         onChange={() => ($isLessonDirty = true)}
       />
     </TabContent>
