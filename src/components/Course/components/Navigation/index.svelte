@@ -57,11 +57,11 @@
     });
   });
 
-  // $: {
-  //   if (process.browser && show !== null) {
-  //     localStorage.setItem('hideCourseNav', `${!show}`);
-  //   }
-  // }
+  $: {
+    if (process.browser && show !== null) {
+      localStorage.setItem('hideCourseNav', `${!show}`);
+    }
+  }
 
   $: {
     navItems = [
