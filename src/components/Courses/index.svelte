@@ -16,7 +16,7 @@
         /> -->
       </h4>
       <p>{courseData.description}</p>
-      <div class="flex mt-3 mb-2">
+      <!-- <div class="flex mt-3 mb-2">
         <span class="flex mr-2"
           ><Education16 class="mr-2" />
           5</span
@@ -25,7 +25,7 @@
           ><Catalog16 class="mr-2" />
           20</span
         >
-      </div>
+      </div> -->
     </div>
   {/each}
 </div>
