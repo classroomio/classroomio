@@ -75,6 +75,7 @@ export function handleDelete(lessonId) {
 }
 
 export async function handleSaveLesson(lesson, course_id) {
+  console.log(`lesson`, lesson);
   const newLesson = {
     title: lesson.title,
     lesson_at: lesson.lesson_at,
