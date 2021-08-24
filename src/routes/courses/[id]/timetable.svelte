@@ -19,6 +19,7 @@
   import { onMount } from 'svelte';
   import CourseContainer from '../../../components/CourseContainer/index.svelte';
   import PageNav from '../../../components/PageNav/index.svelte';
+  import PageBody from '../../../components/PageBody/index.svelte';
   import { setCourseData } from '../../../components/Course/store';
 
   export let courseData = {};
@@ -30,4 +31,5 @@
 
 <CourseContainer>
   <PageNav title="Timetable" />
+  <PageBody />
 </CourseContainer>

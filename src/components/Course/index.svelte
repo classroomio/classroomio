@@ -3,6 +3,7 @@
   import PageNav from '../PageNav/index.svelte';
   import MODES from '../../utils/constants/mode';
   import PrimaryButton from '../PrimaryButton/index.svelte';
+  import PageBody from '../PageBody/index.svelte';
   import EditContent from '../EditContent/index.svelte';
   import { course } from '../Course/store';
   import { updateCourse } from '../../utils/services/courses';
@@ -37,7 +38,7 @@
   </svelte:fragment>
 </PageNav>
 
-<div class="px-3">
+<PageBody>
   {#if mode === MODES.edit}
     <EditContent
       writeLabel="Note"
@@ -51,4 +52,4 @@
   {:else}
     {@html marked($course.overview || '', { breaks: true, gfm: true })}
   {/if}
-</div>
+</PageBody>

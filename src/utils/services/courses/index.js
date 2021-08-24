@@ -5,11 +5,17 @@ import { QUESTION_TYPE } from '../../../components/Question/constants';
 export async function fetchCourse(courseId, session) {
   let jsonUser;
 
-  try {
-    jsonUser = JSON.parse(session.user);
-  } catch (error) {
-    console.log('Token is expired probably cause user not found');
-    return this.redirect(301, '/login');
+  if (!process.browser) {
+    try {
+      jsonUser = JSON.parse(session.user);
+    } catch (error) {
+      console.log('Token is expired probably cause user not found');
+      return {
+        data: [],
+        cantFetch: true,
+      };
+      // return this.redirect(301, '/login');
+    }
   }
 
   const { data, error } = await supabase
@@ -18,6 +24,7 @@ export async function fetchCourse(courseId, session) {
       `
       id,
       title,
+      description,
       overview,
       group(*,
         members:groupmember(*,
@@ -45,11 +52,49 @@ export async function fetchCourse(courseId, session) {
   };
 }
 
+export async function fetchGroup(groupId) {
+  const { data, error } = await supabase
+    .from('group')
+    .select(`*,members:groupmember(*,profile(*))`)
+    .match({ id: groupId })
+    .single();
+
+  return {
+    data,
+    error,
+  };
+}
+
+export async function setProfileIdOfGroupMember(email, profileId) {
+  const { data, error } = await supabase
+    .from('groupmember')
+    .update({
+      email: null,
+      profile_id: profileId,
+    })
+    .match({ email: email });
+
+  return {
+    data,
+    error,
+  };
+}
+
 export async function updateCourse(courseId, course) {
   return await supabase
     .from('course')
     .update(course, { returning: 'minimal' })
     .match({ id: courseId });
+}
+
+export async function deleteCourse(courseId, course) {
+  return await supabase.from('course').delete(course).match({ id: courseId });
+}
+
+export function addGroupMember(member) {
+  return supabase.from('groupmember').insert(member, {
+    returning: 'minimal',
+  });
 }
 
 export function fetchLesson(lessonId) {
@@ -117,14 +162,21 @@ export async function upsertExercise(questionnaire, exerciseId) {
       is_dirty,
     } = question;
 
-    // DELETE /delete/:questionId
+    // DELETE /delete/:questionId - Don't delete if answer already given
     if (deleted_at) {
       // Delete from server only if this question exists in the database
       if (!isNew(id)) {
-        Promise.all([
-          supabase.from('option').delete().match({ question_id: id }),
-          supabase.from('question').delete().match({ id }),
-        ]);
+        const { error } = await supabase
+          .from('question')
+          .delete()
+          .match({ id });
+
+        if (error) {
+          console.error('Cannot delete this question', error);
+          continue;
+        }
+
+        await supabase.from('option').delete().match({ question_id: id });
       }
 
       // Skip the remaining operation so we filter out this question from the new questions array

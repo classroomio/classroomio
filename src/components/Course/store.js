@@ -26,9 +26,9 @@ export const group = writable({
   students: [],
 });
 
-export async function setCourseData(data) {
+export async function setCourseData(data, setLesson = true) {
   if (!data || !(Object.values(data) && Object.values(data).length)) return;
-  console.log(`data`, data);
+  console.log(`setCourseData`, data);
 
   if (data.group) {
     const groupData = Object.assign(data.group, { tutors: [], students: [] });
@@ -37,7 +37,8 @@ export async function setCourseData(data) {
       for (const member of groupData.members) {
         if (member.role_id === ROLE.STUDENT) {
           groupData.students.push(member);
-        } else if (member.profile) {
+          // } else if (member.profile) {
+        } else {
           groupData.tutors.push({
             ...member,
             ...member.profile,
@@ -51,12 +52,13 @@ export async function setCourseData(data) {
     group.set(groupData);
   }
 
-  const orderedLessons = (data.lessons || []).sort(
-    (a, b) => new Date(a.created_at) - new Date(b.created_at)
-  );
-  // .map();
-
-  lessons.set(orderedLessons);
+  if (setLesson) {
+    const orderedLessons = (data.lessons || []).sort(
+      (a, b) => new Date(a.created_at) - new Date(b.created_at)
+    );
+    // .map();
+    lessons.set(orderedLessons);
+  }
 
   delete data.lessons;
   course.set(data);
