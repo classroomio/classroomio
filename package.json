@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "sapper dev",
     "build": "sapper build --legacy",
-    "export": "sapper export --legacy --entry \"/ api auth login signup courses dashboard discussions people timetable profile discussions\"",
+    "export": "sapper export --legacy --entry \"/ login signup courses dashboard discussions people timetable profile discussions\"",
     "start": "node __sapper__/build"
   },
   "dependencies": {

@@ -1,16 +1,13 @@
 import { supabase } from '../../utils/functions/supabase';
 
-export async function fetchCourses(userId) {
-  const { data: orgMember } = await supabase
-    .from('organizationmember')
-    .select(`organization_id`)
-    .eq('profile_id', userId)
-    .single();
+export async function fetchCourses(profileId) {
+  if (!profileId) return;
 
   const { data: allCourses } = await supabase
-    .from('course')
-    .select(`id, title, description`)
-    .eq('organization_id', orgMember.organization_id);
+    .rpc('get_courses')
+    .eq('profile_id', profileId);
 
-  return { allCourses, organizationId: orgMember.organization_id };
+  console.log(`allCourses`, allCourses);
+
+  return { allCourses };
 }

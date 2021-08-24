@@ -75,10 +75,15 @@
             <p
               class="bg-yellow-500 w-1/4 text-sm text-center rounded-xl text-white"
             >
-              Pending confirmation
+              Pending Invite
             </p>
           {/if}
-          <p class="text-lg w-1/4 break-all">{person.email}</p>
+          <a
+            href="mailto:{person.email}"
+            class="text-md w-1/4 mx-2 text-blue-600"
+          >
+            {person.email}
+          </a>
           <p class="text-lg w-1/4 ">{ROLE_LABEL[person.role_id]}</p>
         </div>
       {/each}
