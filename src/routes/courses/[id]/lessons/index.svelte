@@ -169,7 +169,7 @@
               {#if lessonEditing === index}
                 <Select
                   bind:value={lesson.profile}
-                  options={$group.tutors}
+                  options={[...$group.tutors.filter((t) => !!t.profile)]}
                   labelKey="fullname"
                 />
               {:else if !lesson.profile}
