@@ -30,11 +30,11 @@
   import { validateForm } from '../components/Courses/functions';
   import { ROLE } from '../utils/constants/roles';
   import { addGroupMember } from '../utils/services/courses';
+  import { supabase } from '../utils/functions/supabase';
 
   // const { page } = stores();
 
-  export let allCourses;
-  export let organizationId;
+  export let allCourses = [];
   export let cantFetch;
 
   let errors = {
@@ -64,13 +64,15 @@
       title,
       description,
       group_id,
-      // organization_id: organizationId,
     });
+    console.log(`newCourse`, newCourse);
+
+    courses.update((_courses) => [..._courses, newCourse[0]]);
 
     // Get profile of author and add as member
-    const admin = await addGroupMember({
+    await addGroupMember({
       profile_id: $profile.id,
-      email: student,
+      email: $profile.email,
       group_id,
       role_id: ROLE.TUTOR,
     });
@@ -96,6 +98,7 @@
 
     addGroupMember(membersStack).then((membersAdded) => {
       console.log(`membersAdded`, membersAdded);
+      $createCourseModal.open = false;
     });
   }
 
@@ -106,7 +109,9 @@
         const coursesResult = await fetchCourses(userId);
         console.log(`coursesResult`, coursesResult);
 
-        organizationId = coursesResult.organizationId;
+        if (!coursesResult) return;
+
+        // organizationId = coursesResult.organizationId;
         courses.set(coursesResult.allCourses);
       }
     }
