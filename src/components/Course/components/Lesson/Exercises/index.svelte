@@ -47,6 +47,7 @@
   }
 
   async function getExercises() {
+    if (!lessonId) return;
     const exercisesData = await supabase
       .from('exercise')
       .select(`id, title, created_at`)
@@ -125,7 +126,7 @@
     </div>
   </Modal>
 
-  <PageBody width="w-11/12 m-auto">
+  <PageBody>
     <slot:fragment slot="header">
       <PrimaryButton
         className="mr-2"

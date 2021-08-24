@@ -4,11 +4,12 @@
   export let title = '';
   export let overidableStyle = '';
   export let navItems = [];
-  export let addButtonHref;
-  export let addButtonLabel;
+  export let addButtonHref = '';
+  export let addButtonLabel = '';
   export let disableSticky = false;
   export let isTitleEditable = false;
   export let onEditComplete = () => {};
+  export let paddingClass = 'px-2';
 
   let dynamicRootClass = '';
   let enterEditTitleMode = false;
@@ -19,7 +20,7 @@
 
 <div
   class="header flex items-center justify-between {!disableSticky &&
-    'sticky'} {dynamicRootClass}"
+    'sticky'} {paddingClass} {dynamicRootClass}"
   style={overidableStyle}
 >
   {#if !!title}
@@ -66,7 +67,6 @@
 <style>
   .header {
     border-bottom: 1px solid var(--border-color);
-    padding: 0 15px;
     min-height: 61px;
     background-color: #fff;
     z-index: 1;

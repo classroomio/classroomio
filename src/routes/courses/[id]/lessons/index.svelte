@@ -1,17 +1,6 @@
 <script context="module">
-  import { fetchCourse } from '../../../../utils/services/courses';
-
-  export async function preload({ params }, session) {
-    if (process.browser) {
-      return {};
-    }
-
-    const {
-      data,
-      // error
-    } = await fetchCourse(params.id, session);
-
-    return { courseData: data };
+  export async function preload({ params }) {
+    return { courseId: params.id };
   }
 </script>
 
@@ -30,6 +19,7 @@
   import TextField from '../../../../components/Form/TextField.svelte';
   import IconButton from '../../../../components/IconButton/index.svelte';
   import Select from '../../../../components/Form/Select.svelte';
+  import { fetchCourse } from '../../../../utils/services/courses';
   import CourseContainer from '../../../../components/CourseContainer/index.svelte';
   import {
     lessons,
@@ -43,7 +33,7 @@
     group,
   } from '../../../../components/Course/store';
 
-  export let courseData;
+  export let courseId;
 
   let lessonEditing;
   let ref;
@@ -88,8 +78,10 @@
     }, 100);
   }
 
-  onMount(() => {
-    setCourseData(courseData);
+  onMount(async () => {
+    if ($course.id) return;
+    const { data } = await fetchCourse(courseId);
+    setCourseData(data);
   });
 
   $: console.log(`$lessons`, $lessons);
@@ -106,12 +98,12 @@
     </div>
   </PageNav>
 
-  <PageBody width="w-11/12 m-auto">
-    <div class="w-4/5 mt-4 m-auto">
+  <PageBody>
+    <div class="w-11/12 mt-4 m-auto">
       {#each $lessons as lesson, index}
         <div
           bind:this={ref}
-          class="group relative m-auto rounded-md border-2 border-gray-100 py-3 px-5 mr-4 mb-4 flex items-center hover:shadow-2xl shadow-md transition delay-150 duration-300 ease-in-out"
+          class="group relative m-auto rounded-md border-2 border-gray-100 py-3 px-5 mb-4 flex items-center hover:shadow-2xl shadow-md transition delay-150 duration-300 ease-in-out"
         >
           <!-- Complete or Not complete icon -->
           <div class="absolute -left-6 -top-6 success">

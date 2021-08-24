@@ -8,7 +8,7 @@
   import { course } from '../Course/store';
   import Confetti from '../Confetti/index.svelte';
 
-  export let path;
+  export let path = '';
   export let isExercisePage = false;
 
   function setStoreWithData() {

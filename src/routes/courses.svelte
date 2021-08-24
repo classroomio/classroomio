@@ -1,5 +1,5 @@
 <script context="module">
-  import { profile, user } from '../utils/store/user';
+  import { profile } from '../utils/store/user';
   import { fetchCourses } from '../components/Courses/api';
 
   export async function preload(page, params) {
@@ -29,6 +29,7 @@
   import { courses, createCourseModal } from '../components/Courses/store';
   import { validateForm } from '../components/Courses/functions';
   import { ROLE } from '../utils/constants/roles';
+  import { addGroupMember } from '../utils/services/courses';
 
   // const { page } = stores();
 
@@ -69,8 +70,9 @@
     // Get profile of author and add as member
     const admin = await addGroupMember({
       profile_id: $profile.id,
+      email: student,
       group_id,
-      role_id: ROLE.ADMIN,
+      role_id: ROLE.TUTOR,
     });
 
     let membersStack = [];
@@ -94,12 +96,6 @@
 
     addGroupMember(membersStack).then((membersAdded) => {
       console.log(`membersAdded`, membersAdded);
-    });
-  }
-
-  function addGroupMember(member) {
-    return supabase.from('groupmember').insert(member, {
-      returning: 'minimal',
     });
   }
 
