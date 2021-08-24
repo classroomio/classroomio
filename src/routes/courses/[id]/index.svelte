@@ -5,21 +5,23 @@
 </script>
 
 <script>
-  import { onMount } from 'svelte';
   import Overview from '../../../components/Course/index.svelte';
   import CourseContainer from '../../../components/CourseContainer/index.svelte';
-  import { setCourseData, course } from '../../../components/Course/store';
+  import { setCourseData } from '../../../components/Course/store';
   import { fetchCourse } from '../../../utils/services/courses';
 
   export let courseId;
 
-  onMount(async () => {
+  async function onCourseIdChange(courseId) {
+    if (!courseId) return;
     console.log(`overview courseId`, courseId);
-    if ($course.id) return;
 
     const { data } = await fetchCourse(courseId);
+
     setCourseData(data);
-  });
+  }
+
+  $: onCourseIdChange(courseId);
 </script>
 
 <CourseContainer>

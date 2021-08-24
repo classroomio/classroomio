@@ -1,6 +1,5 @@
 <script context="module">
   export function preload(page, { config }) {
-    console.log(`page`, page);
     return { config, isMvpUser: !!page.query.mvp };
   }
 </script>

@@ -3,6 +3,7 @@ import { isUUID } from '../../functions/isUUID';
 import { QUESTION_TYPE } from '../../../components/Question/constants';
 
 export async function fetchCourse(courseId, session) {
+  console.log(`courseId`, courseId);
   let jsonUser;
 
   if (!process.browser) {

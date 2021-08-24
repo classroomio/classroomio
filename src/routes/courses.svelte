@@ -5,14 +5,14 @@
   export async function preload(page, params) {
     const parsedUser = JSON.parse(params.user);
 
-    if (parsedUser && parsedUser.id) {
-      return fetchCourses(parsedUser.id);
-    }
+    // if (parsedUser && parsedUser.id) {
+    //   return fetchCourses(parsedUser.id);
+    // }
 
     return {
       allCourses: [],
       organizationId: null,
-      cantFetch: !parsedUser,
+      cantFetch: true,
     };
   }
 </script>
@@ -64,7 +64,7 @@
       title,
       description,
       group_id,
-      organization_id: organizationId,
+      // organization_id: organizationId,
     });
 
     // Get profile of author and add as member
@@ -100,7 +100,7 @@
   }
 
   async function getCourses(userId) {
-    console.log(`getCourses process.browser`, process.browser);
+    console.log(`getCourses process.browser`, process.browser, cantFetch);
     if (process.browser) {
       if (cantFetch && typeof cantFetch === 'boolean' && !allCourses.length) {
         const coursesResult = await fetchCourses(userId);
@@ -113,7 +113,6 @@
   }
 
   onMount(async () => {
-    console.log(`onMount cantFetch`, cantFetch);
     courses.set(allCourses);
   });
 
