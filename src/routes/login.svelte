@@ -78,7 +78,7 @@
           <div class="h-40 text-md flex items-center justify-center flex-col">
             <p class="">
               A link has been sent to your email. Please check both your
-              <strong>spam</strong>and your<strong>inbox</strong>.
+              <strong>spam </strong>and your<strong> inbox</strong>.
             </p>
             <p class="mt-2 underline">
               If our email is in your spam, do make sure you mark our email
