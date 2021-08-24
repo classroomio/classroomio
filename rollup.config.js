@@ -6,6 +6,7 @@ import babel from '@rollup/plugin-babel';
 import { terser } from 'rollup-plugin-terser';
 import config from 'sapper/config/rollup.js';
 import sveltePreprocess from 'svelte-preprocess';
+import typescript from '@rollup/plugin-typescript';
 import json from '@rollup/plugin-json';
 import sapperEnv from 'sapper-environment';
 
@@ -13,6 +14,7 @@ import pkg from './package.json';
 
 const mode = process.env.NODE_ENV;
 const dev = mode === 'development';
+const sourcemap = dev ? 'inline' : false;
 const legacy = !!process.env.SAPPER_LEGACY_BUILD;
 
 const onwarn = (warning, onwarn) => {
@@ -26,7 +28,7 @@ const onwarn = (warning, onwarn) => {
   );
 };
 
-const preprocess = sveltePreprocess({ postcss: true });
+const preprocess = sveltePreprocess({ postcss: true, sourceMap: !!sourcemap });
 
 export default {
   client: {
@@ -39,6 +41,10 @@ export default {
         'process.env.NODE_ENV': JSON.stringify(mode),
         preventAssignment: true,
       }),
+      typescript({
+        noEmitOnError: !dev,
+        sourceMap: !!sourcemap,
+      }),
       json(),
       svelte({
         preprocess,
@@ -50,7 +56,9 @@ export default {
         browser: true,
         dedupe: ['svelte'],
       }),
-      commonjs(),
+      commonjs({
+        sourceMap: !!sourcemap,
+      }),
 
       legacy &&
         babel({
@@ -88,12 +96,16 @@ export default {
 
   server: {
     input: config.server.input(),
-    output: config.server.output(),
+    output: { ...config.server.output(), sourcemap },
     plugins: [
       replace({
         'process.browser': false,
         'process.env.NODE_ENV': JSON.stringify(mode),
         preventAssignment: true,
+      }),
+      typescript({
+        noEmitOnError: !dev,
+        sourceMap: !!sourcemap,
       }),
       svelte({
         preprocess,
@@ -104,7 +116,9 @@ export default {
       resolve({
         dedupe: ['svelte'],
       }),
-      commonjs(),
+      commonjs({
+        sourceMap: !!sourcemap,
+      }),
     ],
     external: Object.keys(pkg.dependencies).concat(
       require('module').builtinModules

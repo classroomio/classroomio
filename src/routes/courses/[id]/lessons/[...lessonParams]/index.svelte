@@ -3,35 +3,10 @@
     fetchCourse,
     fetchLesson,
   } from '../../../../../utils/services/courses';
-  let prevLessonId;
 
   export async function preload({ params }, session) {
-    const { id: courseId, lessonParams = [] } = params;
-    const [lessonId, exerciseRouteName, exerciseId] = lessonParams;
-    let courseData;
-    let lessonData;
-
-    if (!process.browser) {
-      const [course, lesson] = await Promise.all([
-        fetchCourse(courseId, session),
-        fetchLesson(lessonId),
-      ]);
-
-      courseData = course.data;
-      lessonData = lesson.data;
-    } else if (prevLessonId && prevLessonId !== lessonId) {
-      const lesson = await fetchLesson(lessonId);
-
-      lessonData = lesson.data;
-    }
-
-    prevLessonId = lessonId;
     return {
-      courseData,
-      lessonData,
-      isMaterialsTabActive: !exerciseRouteName,
-      lessonId,
-      exerciseId,
+      params,
     };
   }
 </script>
@@ -47,21 +22,54 @@
   import Materials from '../../../../../components/Course/components/Lesson/Materials/index.svelte';
   import Exercises from '../../../../../components/Course/components/Lesson/Exercises/index.svelte';
   import MODES from '../../../../../utils/constants/mode.js';
-  import { setCourseData } from '../../../../../components/Course/store';
+  import {
+    setCourseData,
+    course,
+  } from '../../../../../components/Course/store';
   import { lesson } from '../../../../../components/Course/components/Lesson/store/lessons';
 
-  export let courseData;
-  export let lessonData;
+  export let params;
   export let lessonId;
   export let exerciseId;
   export let isMaterialsTabActive;
 
   let path;
   let mode = MODES.view;
+  let prevLessonId;
 
   const { page } = stores();
 
-  function setLesson() {
+  async function fetchReqData() {
+    const { id: courseId, lessonParams = [] } = params;
+    const [_lessonId, exerciseRouteName, _exerciseId] = lessonParams;
+
+    let courseData;
+    let lessonData;
+
+    if (!$course.id) {
+      const [_course, lesson] = await Promise.all([
+        fetchCourse(courseId),
+        fetchLesson(_lessonId),
+      ]);
+
+      courseData = _course.data;
+      lessonData = lesson.data;
+    } else if (prevLessonId && prevLessonId !== _lessonId) {
+      const lesson = await fetchLesson(_lessonId);
+
+      lessonData = lesson.data;
+    }
+
+    prevLessonId = _lessonId;
+    lessonId = _lessonId;
+    exerciseId = _exerciseId;
+    isMaterialsTabActive = !exerciseRouteName;
+
+    setCourseData(courseData);
+    setLesson(lessonData);
+  }
+
+  function setLesson(lessonData) {
     if (!lessonData) return;
 
     lesson.update((l) => ({
@@ -71,19 +79,13 @@
     }));
   }
 
-  onMount(() => {
-    setCourseData(courseData);
-
-    setLesson();
-  });
-
-  afterUpdate(setLesson);
-
   $: path = $page.path.replace(/\/exercises[\/ 0-9 a-z -]*/, '');
 
   $: {
-    if (lessonId) {
+    console.log(`params`, params);
+    if (params) {
       mode = MODES.view;
+      fetchReqData();
     }
   }
 </script>
@@ -119,8 +121,8 @@
 
   {#if !isMaterialsTabActive}
     <Exercises {lessonId} {exerciseId} path={`${path}/exercises`} />
-  {:else}
-    <PageBody width="w-11/12 m-auto">
+  {:else if !!lessonId}
+    <PageBody>
       <Materials {lessonId} {mode} />
     </PageBody>
   {/if}

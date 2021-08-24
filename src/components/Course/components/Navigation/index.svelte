@@ -1,10 +1,11 @@
 <script>
   import { onMount } from 'svelte';
-  import CheckmarkFilled20 from 'carbon-icons-svelte/lib/CheckmarkFilled20';
+  import { stores, goto } from '@sapper/app';
   import hotkeys from 'hotkeys-js';
+  import CheckmarkFilled20 from 'carbon-icons-svelte/lib/CheckmarkFilled20';
+  import Settings20 from 'carbon-icons-svelte/lib/Settings20';
   import ChevronLeft32 from 'carbon-icons-svelte/lib/ChevronLeft32';
   import ChevronRight32 from 'carbon-icons-svelte/lib/ChevronRight32';
-  import { stores, goto } from '@sapper/app';
   import Expandable from '../../../Expandable/index.svelte';
   import PageNav from '../../../PageNav/index.svelte';
   import IconButton from '../../../IconButton/index.svelte';
@@ -14,6 +15,8 @@
     getLectureNo,
   } from '../../function';
 
+  import Settings from '../Settings/index.svelte';
+  import { settingsDialog } from '../Settings/store';
   import { lessons } from '../Lesson/store/lessons';
   import { course } from '../../store';
   import { updateCourse } from '../../../../utils/services/courses';
@@ -78,32 +81,42 @@
         to: getNavItemRoute($course.id, 'submissions'),
         hideSortIcon: true,
       },
-      {
-        label: 'Scoreboard',
-        to: getNavItemRoute($course.id, 'scoreboard'),
-        hideSortIcon: true,
-      },
+      // {
+      //   label: 'Scoreboard',
+      //   to: getNavItemRoute($course.id, 'scoreboard'),
+      //   hideSortIcon: true,
+      // },
       {
         label: 'People',
         to: getNavItemRoute($course.id, 'people'),
         hideSortIcon: true,
       },
-      {
-        label: 'Timetable',
-        to: getNavItemRoute($course.id, 'timetable'),
-        hideSortIcon: true,
-      },
+      // {
+      //   label: 'Timetable',
+      //   to: getNavItemRoute($course.id, 'timetable'),
+      //   hideSortIcon: true,
+      // },
     ];
   }
 </script>
 
+<Settings />
 <div class="root z-10 {!show && 'hide'}">
   {#if show}
     <PageNav
       bind:title={$course.title}
       onEditComplete={handleSaveTitle}
       isTitleEditable={true}
-    />
+      paddingClass="pl-2"
+    >
+      <slot:fragment slot="widget">
+        <IconButton
+          onClick={() => ($settingsDialog.open = !$settingsDialog.open)}
+        >
+          <Settings20 class="carbon-icon" />
+        </IconButton>
+      </slot:fragment>
+    </PageNav>
     <div>
       {#each navItems as navItem}
         <Expandable

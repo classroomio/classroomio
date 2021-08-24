@@ -16,6 +16,7 @@
   import { handleAuthChange } from '../utils/functions/api';
   import { user, profile } from '../utils/store/user';
   import { getSupabase } from '../utils/functions/supabase';
+  import { setProfileIdOfGroupMember } from '../utils/services/courses';
 
   export let segment;
   export let config;
@@ -52,6 +53,7 @@
         id: authUser.id,
         username: regexUsernameMatch[1],
         fullname: regexUsernameMatch[1],
+        email: authUser.email,
       });
 
       // Profile created, go to profile page
@@ -61,6 +63,7 @@
         $user.currentSession = authUser;
 
         profile.set(data[0]);
+        await setProfileIdOfGroupMember(authUser.email, data[0].id);
 
         // If user coming to login page, then
         if (path.includes('login') || path.includes('signup')) {
@@ -74,6 +77,8 @@
       $user.currentSession = authUser;
       console.log(`profileData`, profileData);
       profile.set(profileData);
+
+      setProfileIdOfGroupMember(authUser.email, profileData.id);
 
       // If user coming to login page, then
       if (path.includes('login') || path.includes('signup')) {
