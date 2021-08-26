@@ -14,6 +14,8 @@ const config = {
   isDev: process.env.NODE_ENV === 'development',
   telegramToken: process.env.SVELTE_APP_TELEGRAM_API_TOKEN,
   supabaseConfig: {
+    bucketPath:
+      'https://koxqonvbkeakwvmdegcf.supabase.in/storage/v1/object/sign',
     url: process.env.SVELTE_APP_SUPABASE_URL,
     anonKey: process.env.SVELTE_APP_SUPABASE_ANON_KEY,
   },

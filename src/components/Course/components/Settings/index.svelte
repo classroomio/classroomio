@@ -1,7 +1,9 @@
 <script>
   import Modal from '../../../Modal/index.svelte';
+  import TextField from '../../../Form/TextField.svelte';
   import TextArea from '../../../Form/TextArea.svelte';
   import PrimaryButton from '../../../PrimaryButton/index.svelte';
+  import UploadImage from '../../../UploadImage/index.svelte';
 
   import { VARIANTS } from '../../../PrimaryButton/constants';
   import { settingsDialog } from './store';
@@ -12,22 +14,43 @@
   } from '../../../../utils/services/courses';
 
   let shouldDelete = false;
+  let avatar;
+  let errors = {};
 
   async function updateDescription() {
-    console.log('update');
+    if (!$course.title) {
+      errors.title = 'Title cannot be empty';
+      return;
+    }
+    if (!$course.description) {
+      errors.description = 'Description cannot be empty';
+      return;
+    }
 
     $settingsDialog.open = false;
-    await updateCourse($course.id, {
+    const logo = await updateCourse($course.id, {
+      avatar,
+      title: $course.title,
       description: $course.description,
     });
+
+    if (logo) {
+      $course.logo = logo;
+    }
+
+    avatar = undefined;
   }
 
   async function handleDelete() {
-    console.log('delete');
-
     $settingsDialog.open = false;
     await deleteCourse($course.id);
   }
+
+  function setAvatar(logo) {
+    avatar = logo;
+  }
+
+  $: setAvatar($course.logo);
 </script>
 
 <Modal
@@ -57,6 +80,14 @@
     </form>
   {:else}
     <form on:submit|preventDefault={updateDescription}>
+      <UploadImage bind:avatar />
+      <TextField
+        bind:value={$course.title}
+        placeholder="Course title"
+        className="mb-4"
+        isRequired={true}
+        errorMessage={errors.title}
+      />
       <TextArea
         label="Short description"
         bind:value={$course.description}
@@ -65,6 +96,7 @@
         placeholder="A little description about this course"
         className="mb-4"
         isRequired={true}
+        errorMessage={errors.description}
       />
 
       <div class="mt-5 flex items-center justify-between">

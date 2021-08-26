@@ -7,16 +7,16 @@ export async function fetchCourse(courseId, session) {
   let jsonUser;
 
   if (!process.browser) {
-    try {
-      jsonUser = JSON.parse(session.user);
-    } catch (error) {
-      console.log('Token is expired probably cause user not found');
-      return {
-        data: [],
-        cantFetch: true,
-      };
-      // return this.redirect(301, '/login');
-    }
+    // try {
+    //   jsonUser = JSON.parse(session.user);
+    // } catch (error) {
+    //   console.log('Token is expired probably cause user not found');
+    //   return {
+    //     data: [],
+    //     cantFetch: true,
+    //   };
+    //   // return this.redirect(301, '/login');
+    // }
   }
 
   const { data, error } = await supabase
@@ -27,6 +27,7 @@ export async function fetchCourse(courseId, session) {
       title,
       description,
       overview,
+      logo,
       group(*,
         members:groupmember(*,
           profile(*)
@@ -40,7 +41,7 @@ export async function fetchCourse(courseId, session) {
     )
     .match({ id: courseId })
     .single();
-
+  console.log(`error`, error);
   if (!data || error) {
     console.log(`data`, data);
     console.log(`fetchCourse => error`, error);
@@ -82,10 +83,33 @@ export async function setProfileIdOfGroupMember(email, profileId) {
 }
 
 export async function updateCourse(courseId, course) {
-  return await supabase
+  if (course.avatar) {
+    const filename = `course/${courseId + Date.now()}.webp`;
+
+    const { data } = await supabase.storage
+      .from('avatars')
+      .upload(filename, course.avatar, {
+        cacheControl: '3600',
+        upsert: false,
+      });
+
+    if (data && data.Key) {
+      const { publicURL } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filename);
+
+      course.logo = publicURL;
+    }
+  }
+
+  delete course.avatar;
+
+  await supabase
     .from('course')
     .update(course, { returning: 'minimal' })
     .match({ id: courseId });
+
+  return course.logo;
 }
 
 export async function deleteCourse(courseId, course) {

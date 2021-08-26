@@ -6,6 +6,7 @@
   export let onClose = () => {};
   export let modalHeading = '';
   export let width = '';
+  export let maxWidth = '';
   export let containerClass = '';
 
   afterUpdate(() => {
@@ -23,7 +24,8 @@
   >
     <div aria-hidden="true" class="backdrop" />
     <div
-      class="container bg-white mx-auto {width} shadow-lg p-5 pt-2 rounded-md"
+      class="{maxWidth ||
+        'container'} bg-white mx-auto {width} shadow-lg p-5 pt-2 rounded-md"
     >
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-xl m-0">
