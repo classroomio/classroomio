@@ -65,6 +65,7 @@
   onClose={resetForm}
   bind:open={$invitationModal.open}
   width="w-2/5"
+  maxWidth="max-w-lg"
   modalHeading="Invite people"
 >
   <form on:submit|preventDefault={addPerson}>

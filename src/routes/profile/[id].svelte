@@ -14,17 +14,17 @@
   import Book16 from 'carbon-icons-svelte/lib/Book16';
   import TextField from '../../components/Form/TextField.svelte';
   import PrimaryButton from '../../components/PrimaryButton/index.svelte';
+  import UploadImage from '../../components/UploadImage/index.svelte';
   import { supabase } from '../../utils/functions/supabase';
   import { user, profile } from '../../utils/store/user';
 
   export let profileId;
 
+  let avatar;
   let loading = false;
   let currentProfile = {};
   let isOwner = false;
-  let docs = [];
-  let initialValueOfUserName;
-  let initialValueOfFullName;
+  let initialValueOfUserName, initialValueOfFullName, initialValueOfAvatar;
 
   async function getProfile(profileId) {
     loading = true;
@@ -56,8 +56,27 @@
       const updates = {
         fullname: currentProfile.fullname,
         username: currentProfile.username,
-        avatar_url: currentProfile.avatar_url,
       };
+
+      if (avatar) {
+        const filename = `user/${currentProfile.username + Date.now()}.webp`;
+
+        const { data } = await supabase.storage
+          .from('avatars')
+          .upload(filename, avatar, {
+            cacheControl: '3600',
+            upsert: false,
+          });
+
+        if (data && data.Key) {
+          const { publicURL } = supabase.storage
+            .from('avatars')
+            .getPublicUrl(filename);
+
+          updates.avatar_url = publicURL;
+        }
+        avatar = undefined;
+      }
 
       let { error } = await supabase
         .from('profile')
@@ -65,6 +84,13 @@
           returning: 'minimal', // Don't return the value after inserting
         })
         .match({ id: profileId });
+
+      if (isOwner) {
+        profile.update((_profile) => ({
+          ..._profile,
+          ...updates,
+        }));
+      }
 
       if (error) throw error;
     } catch (error) {
@@ -78,12 +104,8 @@
     }
   }
 
-  onMount(() => {});
-
   $: isOwner = $profile.id === profileId;
-  $: {
-    getProfile(profileId);
-  }
+  $: getProfile(profileId);
 </script>
 
 <svelte:head>
@@ -93,12 +115,17 @@
 <section class="root w-11/12 mt-3 m-auto flex items-start justify-between">
   {#if currentProfile.id}
     <div class="w-1/4 flex items-center flex-col">
-      <img
+      <!-- <img
         alt={currentProfile.username}
         src={currentProfile.avatar_url}
         height="260"
         width="260"
         class="rounded-full bg-light-blue-100 mb-4"
+      /> -->
+      <UploadImage
+        bind:avatar
+        src={currentProfile.avatar_url}
+        widthHeight="w-60 h-60"
       />
 
       {#if isOwner}
@@ -115,7 +142,7 @@
           inputClassName="rounded-md"
         />
 
-        {#if initialValueOfUserName !== currentProfile.username || initialValueOfFullName !== currentProfile.fullname}
+        {#if avatar || initialValueOfUserName !== currentProfile.username || initialValueOfFullName !== currentProfile.fullname}
           <PrimaryButton
             label={loading ? 'Updating...' : 'Update profile'}
             onClick={updateProfile}

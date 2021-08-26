@@ -248,5 +248,6 @@
 <style>
   .group {
     min-height: 170px;
+    background-color: #fafafa;
   }
 </style>

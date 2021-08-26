@@ -38,7 +38,7 @@
   </svelte:fragment>
 </PageNav>
 
-<PageBody>
+<PageBody width="max-w-3xl px-3">
   {#if mode === MODES.edit}
     <EditContent
       writeLabel="Note"
@@ -50,6 +50,8 @@
       }}
     />
   {:else}
-    {@html marked($course.overview || '', { breaks: true, gfm: true })}
+    <article class="preview prose prose-sm sm:prose p-2">
+      {@html marked($course.overview || '')}
+    </article>
   {/if}
 </PageBody>

@@ -62,7 +62,7 @@
         $user.currentSession = authUser;
 
         profile.set(data[0]);
-        await setProfileIdOfGroupMember(authUser.email, data[0].id);
+        // await setProfileIdOfGroupMember(authUser.email, data[0].id);
 
         // If user coming to login page, then
         if (path.includes('login') || path.includes('signup')) {
@@ -77,13 +77,17 @@
       console.log(`profileData`, profileData);
       profile.set(profileData);
 
-      setProfileIdOfGroupMember(authUser.email, profileData.id);
+      // setProfileIdOfGroupMember(authUser.email, profileData.id);
 
       // If user coming to login page, then
       if (path.includes('login') || path.includes('signup')) {
         goto('/dashboard');
       }
     }
+  }
+
+  function isCoursePage(path) {
+    return /courses\/[a-z 0-9 -]/.test(path);
   }
 
   onMount(() => {
@@ -130,7 +134,7 @@
 <!-- <Nav {segment} /> -->
 
 <main>
-  {#if !['login', 'signup'].includes(path)}
+  {#if !['login', 'signup'].includes(path) && !isCoursePage(path)}
     <Navigation {segment} disableLogin={!allowUser} />
   {/if}
 

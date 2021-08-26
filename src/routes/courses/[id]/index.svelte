@@ -12,13 +12,15 @@
 
   export let courseId;
 
+  let prevCourseId;
+
   async function onCourseIdChange(courseId) {
-    if (!courseId) return;
-    console.log(`overview courseId`, courseId);
+    if (!courseId || prevCourseId === courseId) return;
 
     const { data } = await fetchCourse(courseId);
 
     setCourseData(data);
+    prevCourseId = courseId;
   }
 
   $: onCourseIdChange(courseId);
