@@ -25,8 +25,7 @@
 
   function setPeople(group) {
     if (!group) return;
-    const { students, tutors } = group;
-    people = [...students, ...tutors].sort((a, b) => a.role_id - b.role_id);
+    people = (group.people || []).sort((a, b) => a.role_id - b.role_id);
     console.log(`group changed`, group);
   }
 
@@ -71,19 +70,25 @@
           <!-- <span class="flex-grow" /> -->
           {#if person.profile}
             <p class="text-lg w-1/4 break-all">{person.profile.fullname}</p>
+            <a
+              href="mailto:{person.profile.email}"
+              class="text-md w-1/4 mx-2 text-blue-600"
+            >
+              {person.profile.email}
+            </a>
           {:else}
             <p
               class="bg-yellow-500 w-1/4 text-sm text-center rounded-xl text-white"
             >
               Pending Invite
             </p>
+            <a
+              href="mailto:{person.email}"
+              class="text-md w-1/4 mx-2 text-blue-600"
+            >
+              {person.email}
+            </a>
           {/if}
-          <a
-            href="mailto:{person.email}"
-            class="text-md w-1/4 mx-2 text-blue-600"
-          >
-            {person.email}
-          </a>
           <p class="text-lg w-1/4 ">{ROLE_LABEL[person.role_id]}</p>
         </div>
       {/each}

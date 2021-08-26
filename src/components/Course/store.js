@@ -28,24 +28,27 @@ export const group = writable({
 
 export async function setCourseData(data, setLesson = true) {
   if (!data || !(Object.values(data) && Object.values(data).length)) return;
-  console.log(`setCourseData`, data);
+  // const tutorsById = {};
 
   if (data.group) {
-    const groupData = Object.assign(data.group, { tutors: [], students: [] });
+    const groupData = Object.assign(data.group, {
+      tutors: [],
+      students: [],
+      people: [],
+    });
 
     if (Array.isArray(groupData.members)) {
       for (const member of groupData.members) {
         if (member.role_id === ROLE.STUDENT) {
           groupData.students.push(member);
-          // } else if (member.profile) {
-        } else {
-          groupData.tutors.push({
-            ...member,
-            ...member.profile,
-            id: member.id,
-          });
+        } else if (member.profile) {
+          groupData.tutors.push(member.profile);
+
+          // tutorsById[member.profile.id] = member.profile;
         }
       }
+
+      groupData.people = groupData.members;
     }
 
     delete groupData.members;
@@ -56,7 +59,10 @@ export async function setCourseData(data, setLesson = true) {
     const orderedLessons = (data.lessons || []).sort(
       (a, b) => new Date(a.created_at) - new Date(b.created_at)
     );
-    // .map();
+    // .map((lesson) => ({
+    //   ...lesson,
+    //   profile: lesson.profile && tutorsById[lesson.profile.id],
+    // }));
     lessons.set(orderedLessons);
   }
 

@@ -179,6 +179,7 @@
     position: sticky;
     top: 0;
     border-right: 1px solid var(--border-color);
+    background-color: rgb(250, 251, 252);
 
     &.hide {
       min-width: 0px;
