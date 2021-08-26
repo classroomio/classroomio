@@ -5,3 +5,10 @@ export const invitationModal = writable({
   tutors: '',
   students: '',
 });
+
+export const resetForm = () =>
+  invitationModal.update(() => ({
+    open: false,
+    tutors: '',
+    students: '',
+  }));

@@ -17,29 +17,6 @@ export const lesson = writable({
 });
 export const isLessonDirty = writable(false);
 
-export const tutors = writable([
-  {
-    id: 1,
-    text: 'Sergey Semko',
-  },
-  {
-    id: 3,
-    text: 'Jonathan Nelson',
-  },
-  {
-    id: 4,
-    text: 'Sasha Pokidin',
-  },
-  {
-    id: 5,
-    text: 'Natasha Rudenko',
-  },
-  {
-    id: 6,
-    text: 'Yulia Marushko',
-  },
-]);
-
 export function handleAddLesson() {
   lessons.update((_lessons) => {
     return [
@@ -47,7 +24,7 @@ export function handleAddLesson() {
       {
         id: null,
         title: 'Untitled lesson',
-        profile: undefined,
+        // profile: undefined,
         call_url: undefined,
         lesson_at: new Date(),
         is_complete: false,

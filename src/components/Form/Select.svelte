@@ -1,10 +1,16 @@
 <script>
+  import { onMount } from 'svelte';
+
   export let label = '';
-  export let value = '';
+  export let value;
   export let options = [];
   export let labelKey = 'label';
   export let isRequired = false;
   export let onChange = () => {}; // This is to know if element is 'dirty'
+
+  // onMount(() => {
+  //   value = options[0];
+  // });
 </script>
 
 <label class="block">
