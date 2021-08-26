@@ -62,7 +62,7 @@
         $user.currentSession = authUser;
 
         profile.set(data[0]);
-        // await setProfileIdOfGroupMember(authUser.email, data[0].id);
+        await setProfileIdOfGroupMember(authUser.email, data[0].id);
 
         // If user coming to login page, then
         if (path.includes('login') || path.includes('signup')) {
@@ -77,7 +77,7 @@
       console.log(`profileData`, profileData);
       profile.set(profileData);
 
-      // setProfileIdOfGroupMember(authUser.email, profileData.id);
+      setProfileIdOfGroupMember(authUser.email, profileData.id);
 
       // If user coming to login page, then
       if (path.includes('login') || path.includes('signup')) {
