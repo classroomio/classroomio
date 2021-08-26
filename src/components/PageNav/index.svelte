@@ -46,7 +46,10 @@
         />
       {/if}
     {:else}
-      <h4 class="title">{title}</h4>
+      <div class="flex items-center" {title}>
+        <slot name="image" />
+        <h4 class="title">{title}</h4>
+      </div>
     {/if}
   {/if}
   {#if Array.isArray(navItems) && navItems.length}
@@ -78,7 +81,12 @@
   }
 
   .title {
-    font-size: 20px;
+    font-size: 18px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 250px;
+    margin-left: 5px;
   }
 
   h4 {
@@ -120,12 +128,5 @@
     overflow: hidden;
     text-overflow: ellipsis;
     padding: 10px;
-  }
-
-  @media only screen and (max-width: 1002px) {
-    .header {
-      flex-direction: column;
-      align-items: flex-start;
-    }
   }
 </style>

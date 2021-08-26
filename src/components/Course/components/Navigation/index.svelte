@@ -1,14 +1,17 @@
 <script>
   import { onMount } from 'svelte';
+  import { fly } from 'svelte/transition';
   import { stores, goto } from '@sapper/app';
   import hotkeys from 'hotkeys-js';
+  import Home32 from 'carbon-icons-svelte/lib/Home32';
   import CheckmarkFilled20 from 'carbon-icons-svelte/lib/CheckmarkFilled20';
   import Settings20 from 'carbon-icons-svelte/lib/Settings20';
-  import ChevronLeft32 from 'carbon-icons-svelte/lib/ChevronLeft32';
-  import ChevronRight32 from 'carbon-icons-svelte/lib/ChevronRight32';
+  import ChevronLeft16 from 'carbon-icons-svelte/lib/ChevronLeft16';
+  import ChevronRight16 from 'carbon-icons-svelte/lib/ChevronRight16';
   import Expandable from '../../../Expandable/index.svelte';
   import PageNav from '../../../PageNav/index.svelte';
   import IconButton from '../../../IconButton/index.svelte';
+  import Avatar from '../../../Avatar/index.svelte';
   import {
     getNavItemRoute,
     getLessonsRoute,
@@ -20,10 +23,11 @@
   import { lessons } from '../Lesson/store/lessons';
   import { course } from '../../store';
   import { updateCourse } from '../../../../utils/services/courses';
+  import { profile } from '../../../../utils/store/user';
 
   // export let lessonId;
   export let path;
-  let show = null;
+  let show = true;
 
   const { page } = stores();
 
@@ -45,7 +49,11 @@
   }
 
   onMount(() => {
-    show = localStorage.getItem('hideCourseNav') === 'false';
+    if (localStorage.getItem('hideCourseNav')) {
+      show = localStorage.getItem('hideCourseNav') === 'false';
+    } else {
+      show = true;
+    }
 
     hotkeys('b', function (event, handler) {
       event.preventDefault();
@@ -101,23 +109,22 @@
 </script>
 
 <Settings />
+
 <div class="root z-10 {!show && 'hide'}">
   {#if show}
-    <PageNav
-      bind:title={$course.title}
-      onEditComplete={handleSaveTitle}
-      isTitleEditable={true}
-      paddingClass="pl-2"
-    >
-      <slot:fragment slot="widget">
-        <IconButton
-          onClick={() => ($settingsDialog.open = !$settingsDialog.open)}
-        >
-          <Settings20 class="carbon-icon" />
-        </IconButton>
-      </slot:fragment>
-    </PageNav>
-    <div>
+    <div class="relative h-full">
+      <PageNav bind:title={$course.title} paddingClass="pl-2">
+        <slot:fragment slot="image">
+          <Avatar src={$course.logo} />
+        </slot:fragment>
+        <slot:fragment slot="widget">
+          <IconButton
+            onClick={() => ($settingsDialog.open = !$settingsDialog.open)}
+          >
+            <Settings20 class="carbon-icon" />
+          </IconButton>
+        </slot:fragment>
+      </PageNav>
       {#each navItems as navItem}
         <Expandable
           label={navItem.label}
@@ -134,7 +141,9 @@
                   'cursor-not-allowed'}"
                 href={getLessonsRoute($course.id, item.id)}
               >
-                <span class="course-counter"> {getLectureNo(index + 1)} </span>
+                <span class="course-counter">
+                  {getLectureNo(index + 1)}
+                </span>
                 <span>{item.title}</span>
                 {#if item.is_complete}
                   <span class="ml-2 success">
@@ -148,12 +157,28 @@
           {/if}
         </Expandable>
       {/each}
+
+      <div
+        class="w-full footer p-3 absolute bottom-2 flex items-center justify-between"
+      >
+        <IconButton
+          value="toggle"
+          onClick={() => goto('/courses')}
+          buttonClassName="mx-3"
+        >
+          <Home32 class="carbon-icon" />
+        </IconButton>
+        <a class="block mx-3" href={`/profile/${$profile.id}`}>
+          <Avatar src={$profile.avatar_url} name={$profile.username} />
+        </a>
+      </div>
     </div>
   {/if}
-  <div class="toggler absolute bottom-0 -right-0.5">
+  <div class="toggler rounded-full shadow-lg absolute bottom-0">
     <IconButton
       value="toggle"
       onClick={() => (show = !show)}
+      size="small"
       toolTipProps={{
         title: 'Toggle sidebar',
         hotkeys: ['B'],
@@ -161,9 +186,9 @@
       }}
     >
       {#if show}
-        <ChevronLeft32 class="carbon-icon" />
+        <ChevronLeft16 class="carbon-icon" />
       {:else}
-        <ChevronRight32 class="carbon-icon" />
+        <ChevronRight16 class="carbon-icon" />
       {/if}
     </IconButton>
   </div>
@@ -171,7 +196,7 @@
 
 <style lang="scss">
   .root {
-    height: 93vh;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     min-width: 360px;
@@ -182,9 +207,14 @@
     background-color: rgb(250, 251, 252);
 
     &.hide {
-      min-width: 0px;
-      max-width: 0px;
+      min-width: 15px;
+      max-width: 15px;
     }
+  }
+
+  .footer {
+    border-top: 1px solid var(--border-color);
+    height: 50px;
   }
 
   .active {
@@ -209,10 +239,11 @@
   }
 
   .toggler {
-    right: -58px;
+    right: -15px;
     z-index: 10;
     border: 1px solid var(--border-color);
-    border-top-right-radius: 20px;
-    border-bottom-right-radius: 20px;
+    top: 50px;
+    height: fit-content;
+    background: var(--border-color);
   }
 </style>

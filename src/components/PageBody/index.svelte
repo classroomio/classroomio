@@ -19,7 +19,7 @@
 
 <style>
   .root {
-    overflow-y: scroll;
+    overflow-y: auto;
     height: 85vh;
   }
   .head {

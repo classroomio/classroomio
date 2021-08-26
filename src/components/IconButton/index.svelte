@@ -6,6 +6,7 @@
   export let buttonClassName = '';
   export let contained = false;
   export let value = '';
+  export let size = 'large';
   export let toolTipProps = {
     title: '',
     hotkeys: [],
@@ -23,7 +24,7 @@
   direction={toolTipProps.direction}
 >
   <button
-    class="root {selected && 'active'} {contained &&
+    class="root {selected && 'active'} {size} {contained &&
       'contained'} {buttonClassName}"
     {disabled}
     on:click={handleClick}
@@ -56,6 +57,10 @@
     &:hover {
       background-color: rgba(0, 0, 0, 0.04);
     }
+  }
+
+  .root.small {
+    padding: 5px;
   }
 
   .contained {
