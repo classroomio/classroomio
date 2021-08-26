@@ -83,8 +83,6 @@
     const { data } = await fetchCourse(courseId);
     setCourseData(data);
   });
-
-  $: console.log(`$lessons`, $lessons);
 </script>
 
 <CourseContainer>
@@ -169,7 +167,7 @@
               {#if lessonEditing === index}
                 <Select
                   bind:value={lesson.profile}
-                  options={[...$group.tutors.filter((t) => !!t.profile)]}
+                  options={$group.tutors}
                   labelKey="fullname"
                 />
               {:else if !lesson.profile}

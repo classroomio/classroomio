@@ -7,7 +7,7 @@
     addGroupMember,
     fetchGroup,
   } from '../../../../utils/services/courses';
-  import { invitationModal } from './store';
+  import { invitationModal, resetForm } from './store';
   import { validateForm } from '../../../Courses/functions';
   import { course, setCourseData } from '../../../Course/store';
 
@@ -56,16 +56,16 @@
         false
       );
 
-      $invitationModal.open = false;
+      resetForm();
     });
   }
 </script>
 
 <Modal
-  onClose={() => ($invitationModal.open = false)}
+  onClose={resetForm}
   bind:open={$invitationModal.open}
   width="w-2/5"
-  modalHeading="Create a Course"
+  modalHeading="Invite people"
 >
   <form on:submit|preventDefault={addPerson}>
     <TextArea
