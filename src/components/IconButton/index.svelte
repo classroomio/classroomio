@@ -7,6 +7,7 @@
   export let contained = false;
   export let value = '';
   export let size = 'large';
+  export let color = '';
   export let toolTipProps = {
     title: '',
     hotkeys: [],
@@ -24,7 +25,7 @@
   direction={toolTipProps.direction}
 >
   <button
-    class="root {selected && 'active'} {size} {contained &&
+    class="root {color} {selected && 'active'} {size} {contained &&
       'contained'} {buttonClassName}"
     {disabled}
     on:click={handleClick}
@@ -36,7 +37,6 @@
 <style lang="scss">
   .root {
     flex: 0 0 auto;
-    color: rgba(0, 0, 0, 0.54);
     padding: 12px;
     font-size: 1.5rem;
     text-align: center;

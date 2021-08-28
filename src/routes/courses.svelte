@@ -31,6 +31,7 @@
   import { ROLE } from '../utils/constants/roles';
   import { addGroupMember } from '../utils/services/courses';
   import { supabase } from '../utils/functions/supabase';
+  import { setProfileIdOfGroupMember } from '../utils/services/courses';
 
   // const { page } = stores();
 
@@ -106,6 +107,11 @@
     console.log(`getCourses process.browser`, process.browser, cantFetch);
     if (process.browser) {
       if (cantFetch && typeof cantFetch === 'boolean' && !allCourses.length) {
+        const updatedProfile = await setProfileIdOfGroupMember(
+          $profile.email,
+          userId
+        );
+        console.log(`updatedProfile`, updatedProfile);
         const coursesResult = await fetchCourses(userId);
         console.log(`coursesResult`, coursesResult);
 
