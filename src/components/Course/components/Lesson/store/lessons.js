@@ -9,9 +9,9 @@ export const lessons = writable([]);
 export const lesson = writable({
   id: null,
   materials: {
-    note: '',
-    slide: '',
-    video: '',
+    note: null,
+    slide_url: null,
+    video_url: null,
   },
   exercises: [],
 });
@@ -52,7 +52,7 @@ export function handleDelete(lessonId) {
 }
 
 export async function handleSaveLesson(lesson, course_id) {
-  console.log(`lesson`, lesson);
+  console.log(`handleSaveLesson lesson`, lesson);
   const newLesson = {
     title: lesson.title,
     lesson_at: lesson.lesson_at,
@@ -84,6 +84,6 @@ export async function handleSaveLesson(lesson, course_id) {
   );
 }
 
-export async function handleUpdateLessonMaterials(lesson) {
-  return await updateLesson(lesson.materials, lesson.id);
+export async function handleUpdateLessonMaterials(lesson, lessonId) {
+  return await updateLesson(lesson.materials, lessonId);
 }

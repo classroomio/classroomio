@@ -4,8 +4,9 @@
 
   export let onClick;
   export let contained;
+  export let color = '';
 </script>
 
-<IconButton {onClick} {contained}>
+<IconButton {onClick} {color} {contained}>
   <Close24 class="carbon-icon" title="Close" />
 </IconButton>
