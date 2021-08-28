@@ -137,7 +137,7 @@ export function createLesson(lesson) {
 export function updateLesson(lesson, lessonId) {
   return supabase
     .from('lesson')
-    .update(lesson, { returning: 'minimal' })
+    .update({ ...lesson, id: undefined }, { returning: 'minimal' })
     .match({ id: lessonId });
 }
 

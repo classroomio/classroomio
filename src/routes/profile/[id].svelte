@@ -141,6 +141,13 @@
           className="w-60 mb-4"
           inputClassName="rounded-md"
         />
+        <TextField
+          label="Email"
+          bind:value={currentProfile.email}
+          className="w-60 mb-4"
+          inputClassName="rounded-md"
+          isDisabled={true}
+        />
 
         {#if avatar || initialValueOfUserName !== currentProfile.username || initialValueOfFullName !== currentProfile.fullname}
           <PrimaryButton

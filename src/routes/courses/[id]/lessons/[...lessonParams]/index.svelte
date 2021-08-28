@@ -4,15 +4,21 @@
     fetchLesson,
   } from '../../../../../utils/services/courses';
 
-  export async function preload({ params }, session) {
+  export async function preload({ params }) {
+    const { id: courseId, lessonParams = [] } = params;
+    const [lessonId, exerciseRouteName, exerciseId] = lessonParams;
+
     return {
-      params,
+      courseId,
+      lessonId,
+      exerciseRouteName,
+      exerciseId,
+      isMaterialsTabActive: !exerciseRouteName,
     };
   }
 </script>
 
 <script>
-  import { onMount, afterUpdate } from 'svelte';
   import { stores } from '@sapper/app';
   import CourseContainer from '../../../../../components/CourseContainer/index.svelte';
 
@@ -28,44 +34,36 @@
   } from '../../../../../components/Course/store';
   import { lesson } from '../../../../../components/Course/components/Lesson/store/lessons';
 
-  export let params;
+  export let courseId;
   export let lessonId;
   export let exerciseId;
   export let isMaterialsTabActive;
 
   let path;
   let mode = MODES.view;
+  let prevMode;
   let prevLessonId;
 
   const { page } = stores();
 
-  async function fetchReqData() {
-    const { id: courseId, lessonParams = [] } = params;
-    const [_lessonId, exerciseRouteName, _exerciseId] = lessonParams;
-
-    let courseData;
+  async function fetchReqData(lessonId) {
     let lessonData;
 
     if (!$course.id) {
       const [_course, lesson] = await Promise.all([
         fetchCourse(courseId),
-        fetchLesson(_lessonId),
+        fetchLesson(lessonId),
       ]);
 
-      courseData = _course.data;
       lessonData = lesson.data;
-    } else if (prevLessonId && prevLessonId !== _lessonId) {
-      const lesson = await fetchLesson(_lessonId);
 
+      setCourseData(_course.data);
+    } else if (prevLessonId !== lessonId) {
+      const lesson = await fetchLesson(lessonId);
       lessonData = lesson.data;
     }
 
-    prevLessonId = _lessonId;
-    lessonId = _lessonId;
-    exerciseId = _exerciseId;
-    isMaterialsTabActive = !exerciseRouteName;
-
-    setCourseData(courseData);
+    prevLessonId = lessonId;
     setLesson(lessonData);
   }
 
@@ -82,10 +80,9 @@
   $: path = $page.path.replace(/\/exercises[\/ 0-9 a-z -]*/, '');
 
   $: {
-    console.log(`params`, params);
-    if (params) {
+    if (courseId) {
       mode = MODES.view;
-      fetchReqData();
+      fetchReqData(lessonId);
     }
   }
 </script>
@@ -111,8 +108,10 @@
           <PrimaryButton
             className="mr-2"
             label={mode === MODES.edit ? 'Save' : 'Edit'}
-            onClick={() =>
-              (mode = mode === MODES.edit ? MODES.view : MODES.edit)}
+            onClick={() => {
+              prevMode = mode;
+              mode = mode === MODES.edit ? MODES.view : MODES.edit;
+            }}
           />
         </div>
       {/if}
@@ -123,7 +122,7 @@
     <Exercises {lessonId} {exerciseId} path={`${path}/exercises`} />
   {:else if !!lessonId}
     <PageBody>
-      <Materials {lessonId} {mode} />
+      <Materials {lessonId} {mode} {prevMode} />
     </PageBody>
   {/if}
 </CourseContainer>

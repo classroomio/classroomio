@@ -9,13 +9,13 @@
   import { stores, goto } from '@sapper/app';
   import Tailwindcss from '../components/Tailwindcss.svelte';
   import Navigation from '../components/Navigation/index.svelte';
+  import Snackbar from '../components/Snackbar/index.svelte';
   // import SideBar from "../components/SideBar/index.svelte";
   // import Footer from '../components/Footer/index.svelte';
   // import Apps from '../components/Apps/index.svelte';
   import { handleAuthChange } from '../utils/functions/api';
   import { user, profile } from '../utils/store/user';
   import { getSupabase } from '../utils/functions/supabase';
-  import { setProfileIdOfGroupMember } from '../utils/services/courses';
 
   export let segment;
   export let config;
@@ -62,11 +62,10 @@
         $user.currentSession = authUser;
 
         profile.set(data[0]);
-        await setProfileIdOfGroupMember(authUser.email, data[0].id);
 
         // If user coming to login page, then
         if (path.includes('login') || path.includes('signup')) {
-          goto('/dashboard');
+          goto('/profile/' + $profile.id);
         }
       }
     } else if (profileData) {
@@ -77,11 +76,9 @@
       console.log(`profileData`, profileData);
       profile.set(profileData);
 
-      setProfileIdOfGroupMember(authUser.email, profileData.id);
-
       // If user coming to login page, then
       if (path.includes('login') || path.includes('signup')) {
-        goto('/dashboard');
+        goto('/profile/' + $profile.id);
       }
     }
   }
@@ -132,6 +129,7 @@
 <Tailwindcss />
 
 <!-- <Nav {segment} /> -->
+<Snackbar />
 
 <main>
   {#if !['login', 'signup'].includes(path) && !isCoursePage(path)}
