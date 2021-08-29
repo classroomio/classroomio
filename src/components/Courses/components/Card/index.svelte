@@ -7,7 +7,7 @@
 
 <a
   rel="prefetch"
-  class="root w-72 border bg-gray-100 px-2 py-7 mr-4 mb-4 rounded-md hover:shadow-2xl transition ease-in-out"
+  class="root w-72 border bg-white px-2 py-2 mr-4 mb-4 rounded-md hover:shadow-2xl transition ease-in-out"
   href="/courses/{id}"
 >
   <img

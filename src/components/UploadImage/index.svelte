@@ -25,9 +25,9 @@
     }}
   >
     {#if src}
-      <img class="w-full h-full rounded-full" {src} alt="d" />
+      <img class="w-full h-full rounded-full" {src} alt="Avatar" />
     {:else if avatar}
-      <img class="w-full h-full rounded-full" src={avatar} alt="d" />
+      <img class="w-full h-full rounded-full" src={avatar} alt="Avatar" />
     {:else}
       <img
         class="w-full h-full rounded-full"
