@@ -151,7 +151,7 @@
 
 <style>
   main {
-    background-color: white;
+    background-color: #fafbfc;
     box-sizing: border-box;
   }
 

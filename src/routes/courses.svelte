@@ -134,7 +134,7 @@
   <title>Courses</title>
 </svelte:head>
 
-<section class="w-11/12 m-auto">
+<section class="root">
   <!-- <PageNav title="Courses">
     <div slot="widget">
       <PrimaryButton
@@ -201,10 +201,13 @@
 </section>
 
 <style>
-  /* .root {
-    min-width: 600px;
+  .root {
+    width: 100%;
+    padding: 0 10px;
+    min-height: 90vh;
+    /* min-width: 600px;
     margin: 0 auto;
     border-left: 1px solid var(--border-color);
-    border-right: 1px solid var(--border-color);
-  } */
+    border-right: 1px solid var(--border-color); */
+  }
 </style>
