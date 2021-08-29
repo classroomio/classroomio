@@ -24,6 +24,7 @@ export const group = writable({
   id: null,
   tutors: [],
   students: [],
+  people: [],
 });
 
 export async function setCourseData(data, setLesson = true) {

@@ -1,5 +1,7 @@
 <script>
   import { onMount } from 'svelte';
+  import AudioConsole32 from 'carbon-icons-svelte/lib/AudioConsole32';
+  import Box from '../../../../Box/index.svelte';
   import PrimaryButton from '../../../../PrimaryButton/index.svelte';
   import PageBody from '../../../../PageBody/index.svelte';
   import Modal from '../../../../Modal/index.svelte';
@@ -144,6 +146,11 @@
           <h3 class="text-xl">{exercise.title}</h3>
           <p class="mt-4 text-sm">Created Jul 3, 2021</p>
         </a>
+      {:else}
+        <Box>
+          <AudioConsole32 class="carbon-icon w-80" />
+          <h3 class="text-3xl text-gray-500">No Exercise Added</h3>
+        </Box>
       {/each}
     </div>
   </PageBody>

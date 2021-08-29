@@ -45,7 +45,6 @@
     }
 
     addGroupMember(membersStack).then(async (membersAdded) => {
-      console.log(`membersAdded`, membersAdded);
       const group = await fetchGroup($course.group.id);
 
       setCourseData(

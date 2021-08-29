@@ -25,7 +25,8 @@
     "node-sass": "^6.0.0",
     "polka": "next",
     "sapper-environment": "^1.0.1",
-    "sirv": "^1.0.0"
+    "sirv": "^1.0.0",
+    "svelte-easy-crop": "^1.0.4"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
