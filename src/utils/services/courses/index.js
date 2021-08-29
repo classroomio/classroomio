@@ -122,6 +122,10 @@ export function addGroupMember(member) {
   });
 }
 
+export function deleteGroupMember(groupMemberId) {
+  return supabase.from('groupmember').delete().match({ id: groupMemberId });
+}
+
 export function fetchLesson(lessonId) {
   return supabase
     .from('lesson')

@@ -134,15 +134,15 @@
   <title>Courses</title>
 </svelte:head>
 
-<div class="root">
-  <PageNav title="Courses">
+<section class="w-11/12 m-auto">
+  <!-- <PageNav title="Courses">
     <div slot="widget">
       <PrimaryButton
         label="New"
         onClick={() => ($createCourseModal.open = true)}
       />
     </div>
-  </PageNav>
+  </PageNav> -->
 
   <Modal
     onClose={() => ($createCourseModal.open = false)}
@@ -198,13 +198,13 @@
   </Modal>
 
   <Courses />
-</div>
+</section>
 
 <style>
-  .root {
+  /* .root {
     min-width: 600px;
     margin: 0 auto;
     border-left: 1px solid var(--border-color);
     border-right: 1px solid var(--border-color);
-  }
+  } */
 </style>
