@@ -13,7 +13,6 @@
     isLessonDirty,
   } from '../store/lessons';
   import { tabs } from './constants';
-  import { onMount } from 'svelte';
 
   export let mode = MODES.view;
   export let prevMode = null;
@@ -65,6 +64,32 @@
   <slot:fragment slot="content">
     <TabContent value={tabs[0].value} index={currentTab}>
       {#if mode === MODES.edit}
+        <TextField
+          label="Slide link"
+          bind:value={$lesson.materials.slide_url}
+          onChange={() => ($isLessonDirty = true)}
+        />
+      {:else if $lesson.materials.slide_url}
+        <iframe
+          title="Embeded Slides"
+          src={$lesson.materials.slide_url}
+          frameborder="0"
+          width="100%"
+          height="569"
+          allowfullscreen="true"
+          mozallowfullscreen="true"
+          webkitallowfullscreen="true"
+        />
+      {:else}
+        <Box>
+          <h3 class="text-3xl text-gray-500">No slide added</h3>
+          <img alt="Slide not found" src="/notfound.webp" class="w-80" />
+        </Box>
+      {/if}
+    </TabContent>
+
+    <TabContent value={tabs[1].value} index={currentTab}>
+      {#if mode === MODES.edit}
         <EditContent
           writeLabel="Note"
           bind:value={$lesson.materials.note}
@@ -80,7 +105,8 @@
         </Box>
       {/if}
     </TabContent>
-    <TabContent value={tabs[1].value} index={currentTab}>
+
+    <TabContent value={tabs[2].value} index={currentTab}>
       {#if mode === MODES.edit}
         <TextField
           label="Youtube link"
@@ -105,31 +131,6 @@
         <Box>
           <h3 class="text-3xl text-gray-500">No youtube video added</h3>
           <img alt="Video not found" src="/notfound.webp" class="w-80" />
-        </Box>
-      {/if}
-    </TabContent>
-    <TabContent value={tabs[2].value} index={currentTab}>
-      {#if mode === MODES.edit}
-        <TextField
-          label="Slide link"
-          bind:value={$lesson.materials.slide_url}
-          onChange={() => ($isLessonDirty = true)}
-        />
-      {:else if $lesson.materials.slide_url}
-        <iframe
-          title="Embeded Slides"
-          src={$lesson.materials.slide_url}
-          frameborder="0"
-          width="100%"
-          height="569"
-          allowfullscreen="true"
-          mozallowfullscreen="true"
-          webkitallowfullscreen="true"
-        />
-      {:else}
-        <Box>
-          <h3 class="text-3xl text-gray-500">No slide added</h3>
-          <img alt="Slide not found" src="/notfound.webp" class="w-80" />
         </Box>
       {/if}
     </TabContent>

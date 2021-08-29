@@ -1,14 +1,14 @@
 export const tabs = [
   {
-    label: 'Note',
+    label: 'Slide',
     value: 1,
   },
   {
-    label: 'Video',
+    label: 'Note',
     value: 2,
   },
   {
-    label: 'Slide',
+    label: 'Video',
     value: 3,
   },
 ];
