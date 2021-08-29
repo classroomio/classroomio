@@ -46,11 +46,11 @@
     await deleteCourse($course.id);
   }
 
-  function setAvatar(logo) {
-    avatar = logo;
-  }
+  // function setAvatar(logo) {
+  //   avatar = logo;
+  // }
 
-  $: setAvatar($course.logo);
+  // $: setAvatar($course.logo);
 </script>
 
 <Modal
@@ -80,7 +80,7 @@
     </form>
   {:else}
     <form on:submit|preventDefault={updateDescription}>
-      <UploadImage bind:avatar />
+      <UploadImage bind:avatar src={$course.logo} />
       <TextField
         bind:value={$course.title}
         placeholder="Course title"

@@ -16,9 +16,7 @@
       mode = MODES.view;
       if (isDirty) {
         const { overview, id } = $course;
-        const { data, error } = await updateCourse(id, { overview });
-        console.log(`data`, data);
-        console.log(`error`, error);
+        await updateCourse(id, { overview });
       }
     } else {
       mode = MODES.edit;
