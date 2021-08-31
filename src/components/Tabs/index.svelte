@@ -1,4 +1,5 @@
 <script>
+  import Chip from '../Chip/index.svelte';
   export let tabs = [];
   export let currentTab;
   export let onChange;
@@ -15,6 +16,9 @@
         on:click={onChange(tab.value)}
       >
         {tab.label}
+        {#if typeof tab.badgeValue === 'number'}
+          <Chip value={tab.badgeValue} className="ml-1 bg-gray-300" />
+        {/if}
 
         {#if currentTab === tab.value}
           <span class="absolute w-full top-0 left-0 h-1 bg-blue-500" />

@@ -12,12 +12,13 @@
     handleUpdateLessonMaterials,
     isLessonDirty,
   } from '../store/lessons';
-  import { tabs } from './constants';
+  import * as CONSTANTS from './constants';
 
   export let mode = MODES.view;
   export let prevMode = null;
   export let lessonId;
 
+  let tabs = CONSTANTS.tabs;
   let currentTab = tabs[0].value;
   let errors = {};
 
@@ -57,7 +58,31 @@
     }
   }
 
+  function addBadgeValueToTab(materials) {
+    const { slide_url, video_url, note } = materials;
+
+    tabs = tabs.map((tab) => {
+      let badgeValue;
+
+      if (tab.value === 1) {
+        badgeValue = !!slide_url ? 1 : 0;
+      } else if (tab.value === 2) {
+        badgeValue = !!note ? 1 : 0;
+      } else {
+        badgeValue =
+          typeof video_url === 'string' ? video_url.split(',').length : 0;
+      }
+
+      tab.badgeValue = badgeValue;
+      return tab;
+    });
+
+    console.log(`tabs`, tabs);
+  }
+
   $: handleSave(prevMode);
+
+  $: addBadgeValueToTab($lesson.materials);
 </script>
 
 <Tabs {tabs} {currentTab} {onChange}>

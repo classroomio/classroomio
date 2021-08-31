@@ -8,6 +8,7 @@ import {
 export const lessons = writable([]);
 export const lesson = writable({
   id: null,
+  totalExercises: 0,
   materials: {
     note: null,
     slide_url: null,
