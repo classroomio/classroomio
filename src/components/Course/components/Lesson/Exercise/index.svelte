@@ -59,13 +59,13 @@
         label={mode === MODES.edit ? 'Save' : 'Edit'}
         onClick={handleMode}
       />
-      {#if mode === MODES.edit || preview}
-        <PrimaryButton
-          variant={preview ? VARIANTS.CONTAINED : VARIANTS.OUTLINED}
-          label={'Toggle Preview'}
-          onClick={() => (preview = !preview)}
-        />
-      {/if}
+      <!-- {#if mode === MODES.edit || preview} -->
+      <PrimaryButton
+        variant={preview ? VARIANTS.CONTAINED : VARIANTS.OUTLINED}
+        label={'Toggle Preview'}
+        onClick={() => (preview = !preview)}
+      />
+      <!-- {/if} -->
     </div>
 
     {#if mode === MODES.edit}
