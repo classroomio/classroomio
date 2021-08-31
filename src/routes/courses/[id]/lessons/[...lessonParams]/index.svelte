@@ -64,15 +64,19 @@
     }
 
     prevLessonId = lessonId;
-    setLesson(lessonData);
+
+    const totalExercises =
+      lessonData.totalExercises[0] && lessonData.totalExercises[0].count;
+    setLesson(lessonData, totalExercises);
   }
 
-  function setLesson(lessonData) {
+  function setLesson(lessonData, totalExercises) {
     if (!lessonData) return;
 
     lesson.update((l) => ({
       ...l,
       id: lessonId,
+      totalExercises,
       materials: lessonData,
     }));
   }
@@ -97,6 +101,7 @@
       },
       {
         label: 'Exercises',
+        badgeValue: $lesson.totalExercises,
         isActive: !isMaterialsTabActive,
         href: `${path}/exercises`,
       },

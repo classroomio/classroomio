@@ -61,8 +61,8 @@
       />
       {#if mode === MODES.edit || preview}
         <PrimaryButton
-          variant={VARIANTS.OUTLINED}
-          label={preview ? 'Edit' : 'Preview'}
+          variant={preview ? VARIANTS.CONTAINED : VARIANTS.OUTLINED}
+          label={'Toggle Preview'}
           onClick={() => (preview = !preview)}
         />
       {/if}
