@@ -10,4 +10,11 @@ export interface Person {
   email?: string;
   role_id: number;
   profile?: Profile;
+  profile_id?: string;
+  assigned_student_id: string;
+}
+
+export interface ProfileRole {
+  label: string;
+  value: string | number;
 }

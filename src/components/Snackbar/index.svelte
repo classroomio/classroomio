@@ -36,8 +36,8 @@
 
 {#if $snackbarStore.open}
   <div
-    transition:fly={{ y: 200, duration: 1000 }}
-    class="root text-white rounded-md flex justify-between items-center z-50 absolute {severityColor}"
+    transition:fly={{ y: 200, duration: 500 }}
+    class="root text-white rounded-md flex justify-between items-center absolute {severityColor}"
   >
     <div class="flex items-center">
       {#if $snackbarStore.severity === SNACKBAR_SEVERITY.SUCCESS}
@@ -64,5 +64,6 @@
     min-width: 288px;
     padding: 6px 16px;
     flex-wrap: wrap;
+    z-index: 51;
   }
 </style>

@@ -2,7 +2,7 @@ import { writable } from 'svelte/store';
 import { lessons } from './components/Lesson/store/lessons';
 import { ROLE } from '../../utils/constants/roles';
 
-export const course = writable({});
+export const course = writable({ id: '' });
 
 export const mockGroupMember = {
   id: '434534534535',
