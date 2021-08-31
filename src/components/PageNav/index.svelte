@@ -117,6 +117,7 @@
     height: 3px;
     background-color: var(--main-primary-color);
     display: block;
+    bottom: -8px;
   }
 
   .header.bring-down {
