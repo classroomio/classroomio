@@ -137,7 +137,7 @@
               class="mr-2 w-20 text-center hover:bg-gray-100 p-3"
               on:click={() => (shouldEditMemberId = true)}
             >
-              {person.assigned_student_id || index + 1}
+              {person.assigned_student_id || '-'}
             </p>
           {:else}
             <TextField
