@@ -3,7 +3,7 @@
   export let className;
 </script>
 
-<p class={className ? className : "bg-set"}>{value}</p>
+<p class={className ? className : 'bg-set mt-2'}>{value}</p>
 
 <style>
   p {
@@ -16,7 +16,6 @@
     text-align: center;
     border: 1px solid transparent;
     border-radius: 2em;
-    margin: 6px 0 0;
   }
 
   .bg-set {

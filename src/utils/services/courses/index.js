@@ -136,7 +136,9 @@ export function deleteGroupMember(groupMemberId) {
 export function fetchLesson(lessonId) {
   return supabase
     .from('lesson')
-    .select(`id, note, video_url, slide_url, call_url`)
+    .select(
+      `id, note, video_url, slide_url, call_url, totalExercises:exercise(count)`
+    )
     .eq('id', lessonId)
     .single();
 }

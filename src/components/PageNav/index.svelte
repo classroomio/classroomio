@@ -1,6 +1,7 @@
 <script>
   import NewButton from '../PrimaryContainedButton/index.svelte';
   import TextField from '../Form/TextField.svelte';
+  import Chip from '../Chip/index.svelte';
   export let title = '';
   export let overidableStyle = '';
   export let navItems = [];
@@ -55,8 +56,15 @@
   {#if Array.isArray(navItems) && navItems.length}
     <div class="flex justify-evenly items-center">
       {#each navItems as item}
-        <a class="mr-5 text-sm {item.isActive && 'active'}" href={item.href}>
+        <a
+          class="mr-5 text-sm flex items-center {item.isActive && 'active'}"
+          href={item.href}
+        >
           {item.label}
+
+          {#if typeof item.badgeValue === 'number'}
+            <Chip value={item.badgeValue} className="ml-1 bg-gray-300" />
+          {/if}
         </a>
       {/each}
       {#if addButtonHref}
