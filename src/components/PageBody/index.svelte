@@ -25,5 +25,6 @@
   .head {
     top: 0px;
     z-index: 1;
+    background-color: #fafbfc;
   }
 </style>
