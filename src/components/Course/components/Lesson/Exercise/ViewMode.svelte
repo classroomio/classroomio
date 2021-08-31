@@ -1,5 +1,5 @@
 <script>
-  import { fade, fly, slide } from 'svelte/transition';
+  import { fly } from 'svelte/transition';
   import { group, course } from '../../../store';
   import { questionnaire } from '../store/exercise';
   import { questionnaireMetaData } from '../store/answers';
@@ -150,19 +150,19 @@
   <div class="flex items-center justify-between">
     <div class="flex flex-col justify-between">
       <h2 class="text-xl mb-2 mt-0">{$questionnaire.title}</h2>
-      {#if STATUS.IN_PROGRESS === $questionnaireMetaData.status}
+      {#if STATUS.PENDING === $questionnaireMetaData.status}
         <span
           class="bg-yellow-600 text-white rounded-full py-2 px-6 text-center"
           title="Status: Pending Review"
         >
           Pending
         </span>
-      {:else if STATUS.REVIEWED === $questionnaireMetaData.status && getTotalScores() > 0}
+      {:else if STATUS.GRADED === $questionnaireMetaData.status && getTotalScores() > 0}
         <span
           class="bg-green-700 text-white rounded-full py-2 px-6 text-center"
           title="Status: Pending Review"
         >
-          Reviewed
+          Graded
         </span>
       {/if}
     </div>

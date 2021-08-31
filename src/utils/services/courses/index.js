@@ -122,6 +122,13 @@ export function addGroupMember(member) {
   });
 }
 
+export function updatedGroupMember(update, match) {
+  return supabase
+    .from('groupmember')
+    .update(update, { returning: 'minimal' })
+    .match(match);
+}
+
 export function deleteGroupMember(groupMemberId) {
   return supabase.from('groupmember').delete().match({ id: groupMemberId });
 }
@@ -296,13 +303,9 @@ export async function submitExercise(
   group,
   profile
 ) {
-  let groupMember;
-
-  if (Array.isArray(group.tutors)) {
-    groupMember = group.tutors.find(
-      (student) => student.profile_id === profile.id
-    );
-  }
+  const groupMember = group.people.find(
+    (person) => person.profile_id === profile.id
+  );
   console.log(`groupMember`, groupMember);
   if (!groupMember) {
     return;

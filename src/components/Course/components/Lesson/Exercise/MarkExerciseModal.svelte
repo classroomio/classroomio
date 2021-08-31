@@ -1,11 +1,17 @@
 <script>
   import Modal from '../../../../Modal/index.svelte';
+  import Select from '../../../../Form/Select.svelte';
   import Preview from './Preview.svelte';
+  import { SELECTABLE_STATUS } from './constants';
+  import { snackbarStore } from '../../../../Snackbar/store';
+  import { onMount } from 'svelte';
+
   export let open;
   export let onClose;
 
-  export let submissionId;
+  // export let submissionId;
   export let data = {};
+  export let status = SELECTABLE_STATUS[0];
 
   let grades = {};
   let total = 0;
@@ -26,6 +32,16 @@
       0
     );
   }
+
+  function handleStatusChange() {
+    console.log(`status`, status);
+    $snackbarStore.open = true;
+    $snackbarStore.message = `Submission updated to '${status.label}'`;
+  }
+
+  onMount(() => {
+    console.log('mounting');
+  });
 
   $: setGrades(data);
   $: total = calculateTotal(grades);
@@ -49,7 +65,13 @@
     />
   </div>
   <div class="ml-10 w-1/3">
-    <div class="border border-gray-300 rounded-md">
+    <Select
+      bind:value={status}
+      options={SELECTABLE_STATUS}
+      color="primary"
+      onChange={handleStatusChange}
+    />
+    <div class="border border-gray-300 rounded-md mt-2">
       <div
         class="hover:bg-gray-100 border-b border-t-0 border-l-0 border-r-0 border-gray-300 p-3"
       >

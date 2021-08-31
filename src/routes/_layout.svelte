@@ -96,7 +96,7 @@
       allowUser = true;
     } else if (!_isMvpUser) {
       if (!!path) {
-        goto('/');
+        goto('/courses');
       }
 
       return;
@@ -113,7 +113,7 @@
           getProfile();
         } else {
           console.log('not logged in, go to login');
-          return goto('/');
+          return goto('/courses');
         }
       }
     );

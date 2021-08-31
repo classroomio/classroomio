@@ -8,7 +8,7 @@ import { STATUS } from '../Exercise/constants';
 //   currentQuestionIndex: 5,
 //   isFinished: true,
 //   progressValue: 100,
-//   status: STATUS.REVIEWED,
+//   status: STATUS.GRADED,
 // });
 const initAnswerState = {
   answers: {},
@@ -16,7 +16,7 @@ const initAnswerState = {
   currentQuestionIndex: 0,
   isFinished: false,
   progressValue: 100,
-  status: STATUS.IN_PROGRESS,
+  status: STATUS.PENDING,
 };
 
 export const questionnaireMetaData = writable(initAnswerState);

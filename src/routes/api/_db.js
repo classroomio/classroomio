@@ -1,4 +1,3 @@
-import { STATUS } from '../../utils/constants/answers';
 import { QUESTION_TYPE } from '../../components/Question/constants';
 
 const ROLE = {
@@ -349,7 +348,7 @@ const exercise_answers = [
     currentQuestionIndex: 0,
     isFinished: false,
     progressValue: 100,
-    status: STATUS.PENDING,
+    status: 'STATUS.PENDING',
   },
 ];
 
