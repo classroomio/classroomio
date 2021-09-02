@@ -135,14 +135,16 @@
 </svelte:head>
 
 <section class="root">
-  <!-- <PageNav title="Courses">
+  <PageNav title="All courses">
     <div slot="widget">
-      <PrimaryButton
-        label="New"
-        onClick={() => ($createCourseModal.open = true)}
-      />
+      {#if $profile.can_add_course}
+        <PrimaryButton
+          label="New"
+          onClick={() => ($createCourseModal.open = true)}
+        />
+      {/if}
     </div>
-  </PageNav> -->
+  </PageNav>
 
   <Modal
     onClose={() => ($createCourseModal.open = false)}
