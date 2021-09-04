@@ -1,4 +1,4 @@
-import { ROUTES } from "./constants";
+import { ROUTES } from './constants';
 
 export function getNavItemRoute(courseId, routeId) {
   const path = `/${ROUTES.COURSES}/${courseId}`;
@@ -26,4 +26,24 @@ export function getLectureNo(index) {
   }
 
   return `0${index}`;
+}
+
+export function formatAnswers(data) {
+  const answers = {};
+  const questionByIdAndName = {};
+
+  for (const question of data.questions) {
+    questionByIdAndName[question.id] = question.name;
+  }
+
+  for (const answer of data.answers) {
+    const questionName = questionByIdAndName[answer.question_id];
+
+    answers[questionName] =
+      Array.isArray(answer.answers) && answer.answers.length
+        ? answer.answers
+        : answer.open_answer;
+  }
+
+  return answers;
 }

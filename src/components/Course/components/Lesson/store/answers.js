@@ -13,6 +13,9 @@ import { STATUS } from '../Exercise/constants';
 const initAnswerState = {
   answers: {},
   scores: {},
+  grades: {},
+  totalPossibleGrade: 0,
+  finalTotalGrade: 0,
   currentQuestionIndex: 0,
   isFinished: false,
   progressValue: 100,

@@ -18,6 +18,7 @@
   export let nextButtonProps = {};
   export let grade;
   export let gradeMax = 0;
+  export let disableGrading = false;
 
   function getRadioVal(form, name) {
     let val;
@@ -67,6 +68,7 @@
           bind:value={grade}
           type="number"
           className="w-20"
+          isDisabled={disableGrading}
         />
         <p class="ml-2 text-lg">/ {gradeMax}</p>
       </div>
