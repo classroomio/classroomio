@@ -302,14 +302,9 @@ export async function submitExercise(
   questions,
   exerciseId,
   courseId,
-  group,
-  profile
+  groupMemberId
 ) {
-  const groupMember = group.people.find(
-    (person) => person.profile_id === profile.id
-  );
-  console.log(`groupMember`, groupMember);
-  if (!groupMember) {
+  if (!groupMemberId) {
     return;
   }
 
@@ -320,7 +315,7 @@ export async function submitExercise(
   const questionAnswers = [];
 
   const { data: submission } = await supabase.from('submission').insert({
-    submitted_by: groupMember.id,
+    submitted_by: groupMemberId,
     exercise_id: exerciseId,
     course_id: courseId,
   });
@@ -329,7 +324,7 @@ export async function submitExercise(
     const value = answers[questionName];
 
     const questionAnswer = {
-      group_member_id: groupMember.id,
+      group_member_id: groupMemberId,
       question_id: questionsByName[questionName],
       open_answer: '',
       answers: [],

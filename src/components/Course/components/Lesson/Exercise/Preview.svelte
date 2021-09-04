@@ -11,6 +11,7 @@
   export let onSubmit = () => {};
   export let onPrevious = () => {};
   export let handleGrade = () => {};
+  export let disableGrading = false;
 </script>
 
 {#each questions as currentQuestion, currentQuestionIndex}
@@ -25,9 +26,10 @@
         onPrevious,
         true
       )}
-      bind:grade={grades[currentQuestion.name]}
+      bind:grade={grades[currentQuestion.id]}
       gradeMax={currentQuestion.points}
-      handleGrade={handleGrade(currentQuestion.name)}
+      handleGrade={handleGrade(currentQuestion.id)}
+      {disableGrading}
     />
   {:else if QUESTION_TYPE.CHECKBOX === currentQuestion.question_type.id}
     <CheckboxQuestion
@@ -40,9 +42,10 @@
         onPrevious,
         true
       )}
-      bind:grade={grades[currentQuestion.name]}
+      bind:grade={grades[currentQuestion.id]}
       gradeMax={currentQuestion.points}
-      handleGrade={handleGrade(currentQuestion.name)}
+      handleGrade={handleGrade(currentQuestion.id)}
+      {disableGrading}
     />
   {:else if QUESTION_TYPE.TEXTAREA === currentQuestion.question_type.id}
     <TextareaQuestion
@@ -55,9 +58,10 @@
         onPrevious,
         true
       )}
-      bind:grade={grades[currentQuestion.name]}
+      bind:grade={grades[currentQuestion.id]}
       gradeMax={currentQuestion.points}
-      handleGrade={handleGrade(currentQuestion.name)}
+      handleGrade={handleGrade(currentQuestion.id)}
+      {disableGrading}
     />
   {/if}
 {/each}
