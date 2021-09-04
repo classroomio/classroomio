@@ -5,7 +5,7 @@
   export let className = '';
 </script>
 
-<div class="root mt-4 mx-auto {width} {className} relative pb-5">
+<div class="root mt-4 mx-auto {width} {className} relative pb-5 px-4">
   {#if $$slots.header}
     <div
       class="head flex items-center justify-between sticky right-0 w-full py-3"

@@ -31,3 +31,36 @@ export function fetchSubmissions(course_id) {
       course_id,
     });
 }
+
+export async function fetchSubmission({ courseId, exerciseId, submittedBy }) {
+  return supabase
+    .from('submission')
+    .select(
+      `
+      id,
+      answers:question_answer(*),
+      status_id
+    `
+    )
+    .match({
+      submitted_by: submittedBy,
+      exercise_id: exerciseId,
+      course_id: courseId,
+    });
+}
+
+export async function updateSubmission({ id, status_id, total }) {
+  const toUpdate = {
+    status_id,
+  };
+
+  if (typeof total === 'number') {
+    toUpdate.total = total;
+  }
+
+  return supabase.from('submission').update(toUpdate).match({ id });
+}
+
+export async function updateQuestionAnswer(update, match) {
+  return supabase.from('question_answer').update(update).match(match);
+}

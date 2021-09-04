@@ -26,7 +26,14 @@
   import PageBody from '../../../components/PageBody/index.svelte';
   import CourseContainer from '../../../components/CourseContainer/index.svelte';
   import { setCourseData, course } from '../../../components/Course/store';
-  import { fetchSubmissions } from '../../../utils/services/submissions';
+  import {
+    fetchSubmissions,
+    updateSubmission,
+    updateQuestionAnswer,
+  } from '../../../utils/services/submissions';
+  import { formatAnswers } from '../../../components/Course/function';
+  import { snackbarStore } from '../../../components/Snackbar/store';
+
   const flipDurationMs = 300;
 
   export let courseData = {};
@@ -59,18 +66,41 @@
   const { page } = stores();
 
   function handleItemFinalize(columnIdx, newItems) {
-    console.log('handleItemFinalize columnIdx=>', columnIdx, newItems);
-    sections[columnIdx].items = newItems;
-    // onFinalUpdate([...sections]);
+    let itemToWithNewStatus;
+
+    const { id } = sections[columnIdx];
+
+    // Set column in the UI
+    sections[columnIdx].items = newItems.map((item) => {
+      if (item.statusId !== id) {
+        itemToWithNewStatus = item;
+        item.statusId = id;
+      }
+
+      return item;
+    });
+
+    // Update backend
+    if (itemToWithNewStatus) {
+      // Update key mapping for each submission also
+      submissionIdData[itemToWithNewStatus.id] = {
+        ...submissionIdData[itemToWithNewStatus.id],
+        status_id: itemToWithNewStatus.statusId,
+      };
+      console.log(
+        `submissionIdData[itemToWithNewStatus.id]`,
+        submissionIdData[itemToWithNewStatus.id]
+      );
+
+      updateSubmission({
+        id: itemToWithNewStatus.id,
+        status_id: itemToWithNewStatus.statusId,
+      }).then((res) => console.log('Updated submission', res));
+    }
   }
 
   function handleDndConsiderCards(columnIdx) {
-    return (e) => {
-      console.warn(
-        'handleDndConsiderCards columnIdx',
-        columnIdx,
-        e.detail.items
-      );
+    return function (e) {
       sections[columnIdx].items = e.detail.items;
     };
   }
@@ -83,30 +113,66 @@
     goto($page.path);
   }
 
-  function formatAnswers(data) {
-    const answers = {};
-    const questionByIdAndName = {};
+  // Via dialog
+  function updateStatus({ submissionId, prevStatusId, nextStatusId, total }) {
+    let itemToWithNewStatus;
 
-    for (const question of data.questions) {
-      questionByIdAndName[question.id] = question.name;
+    // Remove from current column
+    const { items } = sections[prevStatusId - 1];
+    sections[prevStatusId - 1].items = items.filter((item) => {
+      if (item.id === submissionId) {
+        itemToWithNewStatus = Object.assign(item);
+        itemToWithNewStatus.statusId = nextStatusId;
+        return false;
+      }
+
+      return true;
+    });
+    console.log(`itemToWithNewStatus`, itemToWithNewStatus);
+    // Move to right column
+    sections[nextStatusId - 1].items = [
+      ...sections[nextStatusId - 1].items,
+      itemToWithNewStatus,
+    ];
+
+    // If something changed
+    if (itemToWithNewStatus) {
+      // Update key mapping for each submission also
+      submissionIdData[itemToWithNewStatus.id] = {
+        ...submissionIdData[itemToWithNewStatus.id],
+        status_id: itemToWithNewStatus.statusId,
+      };
+
+      // Update backend
+      updateSubmission({
+        id: itemToWithNewStatus.id,
+        status_id: itemToWithNewStatus.statusId,
+        total,
+      }).then((res) => console.log('Updated submission', res));
     }
+  }
 
-    for (const answer of data.answers) {
-      const questionName = questionByIdAndName[answer.question_id];
+  async function handleSave(submission) {
+    const { questionAnswerByPoint, questionAnswers } = submission;
 
-      answers[questionName] =
-        Array.isArray(answer.answers) && answer.answers.length
-          ? answer.answers
-          : answer.open_answer;
-    }
+    const updates = Object.keys(questionAnswerByPoint).map((questionId) => {
+      const questionAnswer = questionAnswers.find(
+        (answer) => answer.question_id == questionId
+      );
 
-    return answers;
+      const point = questionAnswerByPoint[questionId];
+
+      return updateQuestionAnswer({ point }, { id: questionAnswer.id });
+    });
+
+    await Promise.all(updates);
+    $snackbarStore.open = true;
+    $snackbarStore.message = `Saved successfully`;
   }
 
   onMount(async () => {
     setCourseData(courseData);
-    console.log(`courseData`, courseData);
-    console.log(`$course`, $course);
+
     const { data: submissions } = await fetchSubmissions(
       courseData.id || $course.id
     );
@@ -118,6 +184,7 @@
 
       const submissionItem = {
         id,
+        statusId: status_id,
         exercise: {
           id: exercise.id,
           title: exercise.title,
@@ -129,10 +196,20 @@
           title: exercise.lesson.title,
         },
       };
-
+      console.log(`answers`, answers);
       submissionIdData[id] = {
+        id,
+        status_id,
+        title: exercise.title,
+        student: submissionItem.student,
         questions: exercise.questions,
         answers: formatAnswers({ questions: exercise.questions, answers }),
+        questionAnswers: answers,
+        questionAnswerByPoint: answers.reduce((acc, answer) => {
+          acc[answer.question_id] = answer.point;
+
+          return acc;
+        }, {}),
       };
 
       if (Array.isArray(sectionById[status_id])) {
@@ -151,13 +228,11 @@
         ? sectionById[index + 1]
         : [],
     }));
-
-    console.log(`submissionIdData`, submissionIdData);
   });
 
   $: {
     submissionId = $page.query.submissionId;
-    openExercise = !!submissionId;
+    openExercise = !!submissionId && submissionIdData[submissionId];
   }
 </script>
 
@@ -165,6 +240,8 @@
   bind:open={openExercise}
   onClose={handleModalClose}
   data={submissionIdData[submissionId] || {}}
+  {handleSave}
+  {updateStatus}
   {submissionId}
 />
 
@@ -172,14 +249,14 @@
   <PageNav title="Submitted Exercises" />
 
   <PageBody width="w-11/12 overflow-x-auto overflow-y-hidden">
-    <div class="flex items-center justify-between w-full">
+    <div class="flex items-center w-full">
       {#each sections as { id, title, items }, idx (id)}
         <div
           class="section rounded-md bg-gray-100 border border-gray-50 p-3 h-80 mr-3 overflow-hidden"
           animate:flip={{ duration: flipDurationMs }}
         >
           <div class="flex items-center mb-2">
-            <Chip value={items.length} />
+            <Chip value={items.length} class="bg-set" />
             <p class="ml-2 font-bold">{title}</p>
           </div>
           <div
@@ -197,19 +274,16 @@
                 class="border border-grey-700 w-full my-2 mx-0 rounded-md bg-white py-2 px-3"
                 animate:flip={{ duration: flipDurationMs }}
               >
-                <a
+                <div
                   class="flex items-center no-underline hover:underline text-black mb-2"
-                  href="{$page.path}?submissionId={item.student.id}"
                 >
                   <img
-                    alt="Placeholder"
-                    class="block rounded-full"
-                    width="24"
-                    height="20"
+                    alt="Student avatar"
+                    class="block rounded-full h-6 w-6"
                     src={item.student.avatar_url}
                   />
                   <p class="ml-2 text-sm">{item.student.username}</p>
-                </a>
+                </div>
                 <a
                   class="text-blue-700 text-md font-bold"
                   href="{$page.path}?submissionId={item.id}"
@@ -219,7 +293,7 @@
                 <a
                   class="flex items-center no-underline hover:underline text-black my-2"
                   href="{$page.path.replace('submissions', 'lessons')}/{item
-                    .lesson.id}/exercises"
+                    .lesson.id}/exercises/{item.exercise.id}"
                 >
                   <p class="text-grey text-sm">
                     #{item.lesson.title}

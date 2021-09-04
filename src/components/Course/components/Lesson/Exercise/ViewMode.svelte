@@ -13,7 +13,9 @@
   import { QUESTION_TYPE } from '../../../../Question/constants';
   import { STATUS } from './constants';
   import { getPropsForQuestion, filterOutDeleted } from './functions';
+  import { formatAnswers } from '../../../function';
   import { submitExercise } from '../../../../../utils/services/courses';
+  import { fetchSubmission } from '../../../../../utils/services/submissions';
   import { profile } from '../../../../../utils/store/user';
   export let preview;
 
@@ -21,6 +23,15 @@
 
   let currentQuestion = {};
   let renderProps = {};
+  let submission;
+
+  function getGroupMemberId(people, profileId) {
+    const groupMember = people.find(
+      (person) => person.profile_id === profileId
+    );
+
+    return groupMember ? groupMember.id : null;
+  }
 
   function handleStart() {
     $questionnaireMetaData.currentQuestionIndex += 1;
@@ -55,28 +66,19 @@
 
     // If last question send to server
     if (isFinished) {
+      $questionnaireMetaData.status = 1;
       submitExercise(
         $questionnaireMetaData.answers,
         questions,
         exerciseId,
         $course.id,
-        $group,
-        $profile
+        getGroupMemberId($group.people, $profile.id)
       );
     }
   }
 
   function onPrevious() {
     $questionnaireMetaData.currentQuestionIndex -= 1;
-  }
-
-  function getTotalScores() {
-    let total = 0;
-    for (const score in $questionnaireMetaData.scores) {
-      total += parseInt($questionnaireMetaData.scores[score]);
-    }
-
-    return total;
   }
 
   function getProgressValue(currentQuestionIndex) {
@@ -89,6 +91,55 @@
         ((currentQuestionIndex - 1) / $questionnaire.questions.length) * 100
       ) || 0
     );
+  }
+
+  function getTotalPossibleGrade() {
+    return $questionnaire.questions.reduce((acc, question) => {
+      acc += question.points;
+      return acc;
+    }, 0);
+  }
+
+  async function checkForSubmission(people, profileId, courseId) {
+    console.log('checkForSubmission');
+
+    if (!Array.isArray(people) || !profileId || !courseId || !!submission) {
+      return;
+    }
+
+    const args = {
+      exerciseId,
+      courseId,
+      submittedBy: getGroupMemberId(people, profileId),
+    };
+    const { data } = await fetchSubmission(args);
+
+    if (Array.isArray(data) && data.length) {
+      console.log(`submissions`, data);
+      submission = data[0];
+
+      $questionnaireMetaData.answers = formatAnswers({
+        questions: $questionnaire.questions,
+        answers: submission.answers,
+      });
+
+      $questionnaireMetaData.totalPossibleGrade = getTotalPossibleGrade();
+
+      $questionnaireMetaData.currentQuestionIndex =
+        $questionnaire.questions.length;
+      $questionnaireMetaData.isFinished = true;
+      $questionnaireMetaData.status = submission.status_id;
+      $questionnaireMetaData.finalTotalGrade = 0;
+      $questionnaireMetaData.grades = submission.answers.reduce(
+        (acc, answer) => {
+          acc[answer.question_id] = answer.point;
+          $questionnaireMetaData.finalTotalGrade += answer.point;
+
+          return acc;
+        },
+        {}
+      );
+    }
   }
 
   $: {
@@ -114,6 +165,8 @@
   $: $questionnaireMetaData.progressValue = getProgressValue(
     $questionnaireMetaData.currentQuestionIndex
   );
+
+  $: checkForSubmission($group.people, $profile.id, $course.id);
 </script>
 
 {#if !preview && $questionnaire.questions.length && !$questionnaireMetaData.isFinished}
@@ -137,7 +190,20 @@
 {:else if $questionnaireMetaData.currentQuestionIndex === 0}
   <div>
     <h2 class="my-1">{$questionnaire.title}</h2>
-    <p>{$questionnaire.description}</p>
+
+    <div class="flex items-center">
+      <p class="mx-2">
+        <strong>{$questionnaire.questions.length}</strong> questions
+      </p>
+      |
+      <p class="mx-2">
+        <strong>{getTotalPossibleGrade()}</strong> points.
+      </p>
+      |
+      <p class="mx-2">All required</p>
+    </div>
+
+    <p class="text-lg mt-3">{$questionnaire.description}</p>
 
     <PrimaryButton
       onClick={handleStart}
@@ -150,19 +216,19 @@
   <div class="flex items-center justify-between">
     <div class="flex flex-col justify-between">
       <h2 class="text-xl mb-2 mt-0">{$questionnaire.title}</h2>
-      {#if STATUS.PENDING === $questionnaireMetaData.status}
-        <span
-          class="bg-yellow-600 text-white rounded-full py-2 px-6 text-center"
-          title="Status: Pending Review"
-        >
-          Pending
-        </span>
-      {:else if STATUS.GRADED === $questionnaireMetaData.status && getTotalScores() > 0}
+      {#if STATUS.GRADED === $questionnaireMetaData.status}
         <span
           class="bg-green-700 text-white rounded-full py-2 px-6 text-center"
           title="Status: Pending Review"
         >
           Graded
+        </span>
+      {:else}
+        <span
+          class="bg-yellow-600 text-white rounded-full py-2 px-6 text-center"
+          title="Status: Pending Review"
+        >
+          Pending
         </span>
       {/if}
     </div>
@@ -171,12 +237,14 @@
       class="border-2 border-gray-700 rounded-full h-24 w-24 flex items-center justify-center text-2xl"
       title="Status: Pending Review"
     >
-      {getTotalScores()}/100
+      {$questionnaireMetaData.finalTotalGrade}/{$questionnaireMetaData.totalPossibleGrade}
     </span>
   </div>
   <Preview
     questions={$questionnaire.questions}
     questionnaireMetaData={$questionnaireMetaData}
+    grades={$questionnaireMetaData.grades}
+    disableGrading={true}
   />
 {:else if currentQuestion}
   {#key currentQuestion.id}

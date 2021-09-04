@@ -1,13 +1,13 @@
 export const STATUS = {
-  PENDING: 0,
-  IN_PROGRESS: 1,
-  GRADED: 2,
+  SUBMITTED: 1,
+  IN_PROGRESS: 2,
+  GRADED: 3,
 };
 
 export const SELECTABLE_STATUS = [
   {
     label: 'Submitted',
-    value: STATUS.PENDING,
+    value: STATUS.SUBMITTED,
   },
   {
     label: 'In progress',
