@@ -89,6 +89,11 @@
         to: getNavItemRoute($course.id, 'submissions'),
         hideSortIcon: true,
       },
+      {
+        label: 'Marks',
+        to: getNavItemRoute($course.id, 'marks'),
+        hideSortIcon: true,
+      },
       // {
       //   label: 'Scoreboard',
       //   to: getNavItemRoute($course.id, 'scoreboard'),
@@ -99,11 +104,11 @@
         to: getNavItemRoute($course.id, 'people'),
         hideSortIcon: true,
       },
-      // {
-      //   label: 'Timetable',
-      //   to: getNavItemRoute($course.id, 'timetable'),
-      //   hideSortIcon: true,
-      // },
+      {
+        label: 'Attendance',
+        to: getNavItemRoute($course.id, 'attendance'),
+        hideSortIcon: true,
+      },
     ];
   }
 </script>
