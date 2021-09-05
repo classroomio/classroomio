@@ -8,7 +8,7 @@
   import { SNACKBAR_SEVERITY, SNACKBAR_SEVERITY_COLOR } from './constants';
   import { snackbarStore } from './store';
 
-  let severityColor = SNACKBAR_SEVERITY_COLOR[$snackbarStore.severity];
+  let severityColor;
 
   function handleClose() {
     if (typeof $snackbarStore.handleClose === 'number') {
@@ -32,6 +32,7 @@
   }
 
   $: handleOpen($snackbarStore.open);
+  $: severityColor = SNACKBAR_SEVERITY_COLOR[$snackbarStore.severity];
 </script>
 
 {#if $snackbarStore.open}
