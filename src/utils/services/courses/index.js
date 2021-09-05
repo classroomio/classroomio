@@ -36,7 +36,8 @@ export async function fetchCourse(courseId, session) {
       lessons:lesson(
         id, title,public, lesson_at, call_url, is_complete,created_at,
         profile:teacher_id(id, avatar_url, fullname)
-      )
+      ),
+      attendance:group_attendance(*)
     `
     )
     .match({ id: courseId })
@@ -45,7 +46,8 @@ export async function fetchCourse(courseId, session) {
   if (!data || error) {
     console.log(`data`, data);
     console.log(`fetchCourse => error`, error);
-    return this.redirect(301, '/courses');
+    // return this.redirect(301, '/courses');
+    return;
   }
 
   return {
