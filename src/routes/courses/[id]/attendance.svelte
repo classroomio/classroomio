@@ -52,7 +52,12 @@
   }
 
   onMount(async () => {
-    if ($course.id) return;
+    if ($course.id) {
+      if (!Object.keys($attendance).length) {
+        setAttendance($course);
+      }
+      return;
+    }
 
     const { data } = await fetchCourse(courseId);
     setCourseData(data);
