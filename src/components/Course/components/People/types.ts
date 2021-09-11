@@ -3,6 +3,7 @@ export interface Profile {
   fullname: string;
   username: string;
   email: string;
+  avatar_url?: string;
 }
 
 export interface Person {
