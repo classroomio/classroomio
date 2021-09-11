@@ -165,6 +165,10 @@ export function createExercise(exercise) {
   return supabase.from('exercise').insert(exercise);
 }
 
+export function fetchExercises(courseId) {
+  return supabase.rpc('get_exercises').eq('course_id', courseId);
+}
+
 function isNew(item) {
   return isNaN(item);
 }

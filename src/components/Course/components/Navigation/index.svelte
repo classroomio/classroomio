@@ -1,6 +1,5 @@
 <script>
   import { onMount } from 'svelte';
-  import { fly } from 'svelte/transition';
   import { stores, goto } from '@sapper/app';
   import hotkeys from 'hotkeys-js';
   import Home32 from 'carbon-icons-svelte/lib/Home32';
@@ -85,6 +84,11 @@
         isLecture: true,
       },
       {
+        label: 'Attendance',
+        to: getNavItemRoute($course.id, 'attendance'),
+        hideSortIcon: true,
+      },
+      {
         label: 'Submissions',
         to: getNavItemRoute($course.id, 'submissions'),
         hideSortIcon: true,
@@ -102,11 +106,6 @@
       {
         label: 'People',
         to: getNavItemRoute($course.id, 'people'),
-        hideSortIcon: true,
-      },
-      {
-        label: 'Attendance',
-        to: getNavItemRoute($course.id, 'attendance'),
         hideSortIcon: true,
       },
     ];

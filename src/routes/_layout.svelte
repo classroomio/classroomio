@@ -6,10 +6,13 @@
 
 <script>
   import { onMount } from 'svelte';
+  import { derived } from 'svelte/store';
   import { stores, goto } from '@sapper/app';
+  import { Firework } from 'svelte-loading-spinners';
   import Tailwindcss from '../components/Tailwindcss.svelte';
   import Navigation from '../components/Navigation/index.svelte';
   import Snackbar from '../components/Snackbar/index.svelte';
+  import Backdrop from '../components/Backdrop/index.svelte';
   // import SideBar from "../components/SideBar/index.svelte";
   // import Footer from '../components/Footer/index.svelte';
   // import Apps from '../components/Apps/index.svelte';
@@ -21,10 +24,15 @@
   export let config;
   export let isMvpUser;
 
+  let { page, preloading } = stores();
+
   let supabase = getSupabase(config);
-  let { page } = stores();
   let path = $page.path.replace('/', '');
   let allowUser = false;
+
+  const delayedPreloading = derived(preloading, (currentPreloading, set) => {
+    setTimeout(() => set(currentPreloading), 250);
+  });
 
   async function getProfile() {
     console.log('Get user profile');
@@ -132,6 +140,11 @@
 <Snackbar />
 
 <main>
+  {#if $preloading && $delayedPreloading}
+    <Backdrop>
+      <Firework size="60" color="#fff" unit="px" duration="1s" />
+    </Backdrop>
+  {/if}
   {#if !['login', 'signup'].includes(path) && !isCoursePage(path)}
     <Navigation {segment} disableLogin={!allowUser} />
   {/if}

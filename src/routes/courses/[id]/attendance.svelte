@@ -6,9 +6,11 @@
 
 <script>
   import { onMount } from 'svelte';
+  import AudioConsole32 from 'carbon-icons-svelte/lib/AudioConsole32';
   import CourseContainer from '../../../components/CourseContainer/index.svelte';
   import PageNav from '../../../components/PageNav/index.svelte';
   import PageBody from '../../../components/PageBody/index.svelte';
+  import Box from '../../../components/Box/index.svelte';
   import {
     course,
     group,
@@ -141,6 +143,11 @@
             </p>
           {/each}
         </div>
+      {:else}
+        <Box>
+          <AudioConsole32 class="carbon-icon w-80" />
+          <h3 class="text-3xl text-gray-500">No Student Added</h3>
+        </Box>
       {/each}
     </div>
   </PageBody>
