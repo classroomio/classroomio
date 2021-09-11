@@ -17,12 +17,14 @@
     getLectureNo,
   } from '../../function';
 
+  import RoleBasedSecurity from '../../../RoleBasedSecurity/index.svelte';
   import Settings from '../Settings/index.svelte';
   import { settingsDialog } from '../Settings/store';
   import { lessons } from '../Lesson/store/lessons';
-  import { course } from '../../store';
+  import { course, group } from '../../store';
   import { updateCourse } from '../../../../utils/services/courses';
   import { profile } from '../../../../utils/store/user';
+  import People from '../../../../routes/people.svelte';
 
   // export let lessonId;
   export let path;
@@ -92,6 +94,13 @@
         label: 'Submissions',
         to: getNavItemRoute($course.id, 'submissions'),
         hideSortIcon: true,
+        show(groupMembers = [], profileId) {
+          const user = groupMembers.find(
+            (member) => member.profile_id === profileId
+          );
+
+          return user ? user.role_id !== 3 : false;
+        },
       },
       {
         label: 'Marks',
@@ -122,44 +131,48 @@
           <Avatar src={$course.logo} />
         </slot:fragment>
         <slot:fragment slot="widget">
-          <IconButton
-            onClick={() => ($settingsDialog.open = !$settingsDialog.open)}
-          >
-            <Settings20 class="carbon-icon" />
-          </IconButton>
+          <RoleBasedSecurity allowedRoles="[1,2]">
+            <IconButton
+              onClick={() => ($settingsDialog.open = !$settingsDialog.open)}
+            >
+              <Settings20 class="carbon-icon" />
+            </IconButton>
+          </RoleBasedSecurity>
         </slot:fragment>
       </PageNav>
       {#each navItems as navItem}
-        <Expandable
-          label={navItem.label}
-          handleClick={handleMainGroupClick(navItem.to)}
-          isGroupActive={(path || $page.path) === navItem.to}
-          hideSortIcon={navItem.hideSortIcon}
-        >
-          {#if navItem.isLecture}
-            {#each $lessons as item, index}
-              <a
-                class="item flex items-center {(path || $page.path).includes(
-                  item.id
-                ) && 'active'} pl-7 py-2 {!item.is_complete &&
-                  'cursor-not-allowed'}"
-                href={getLessonsRoute($course.id, item.id)}
-              >
-                <span class="course-counter">
-                  {getLectureNo(index + 1)}
-                </span>
-                <span>{item.title}</span>
-                {#if item.is_complete}
-                  <span class="ml-2 success">
-                    <CheckmarkFilled20 class="carbon-icon" />
+        {#if !navItem.show || (typeof navItem.show === 'function' && navItem.show($group.people, $profile.id))}
+          <Expandable
+            label={navItem.label}
+            handleClick={handleMainGroupClick(navItem.to)}
+            isGroupActive={(path || $page.path) === navItem.to}
+            hideSortIcon={navItem.hideSortIcon}
+          >
+            {#if navItem.isLecture}
+              {#each $lessons as item, index}
+                <a
+                  class="item flex items-center {(path || $page.path).includes(
+                    item.id
+                  ) && 'active'} pl-7 py-2 {!item.is_complete &&
+                    'cursor-not-allowed'}"
+                  href={getLessonsRoute($course.id, item.id)}
+                >
+                  <span class="course-counter">
+                    {getLectureNo(index + 1)}
                   </span>
-                {:else}
-                  <span class="text-md ml-2">🔒</span>
-                {/if}
-              </a>
-            {/each}
-          {/if}
-        </Expandable>
+                  <span>{item.title}</span>
+                  {#if item.is_complete}
+                    <span class="ml-2 success">
+                      <CheckmarkFilled20 class="carbon-icon" />
+                    </span>
+                  {:else}
+                    <span class="text-md ml-2">🔒</span>
+                  {/if}
+                </a>
+              {/each}
+            {/if}
+          </Expandable>
+        {/if}
       {/each}
 
       <div

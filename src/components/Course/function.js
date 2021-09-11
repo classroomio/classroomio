@@ -1,5 +1,11 @@
 import { ROUTES } from './constants';
 
+export function getGroupMemberId(people, profileId) {
+  const groupMember = people.find((person) => person.profile_id === profileId);
+
+  return groupMember ? groupMember.id : null;
+}
+
 export function getNavItemRoute(courseId, routeId) {
   const path = `/${ROUTES.COURSES}/${courseId}`;
 

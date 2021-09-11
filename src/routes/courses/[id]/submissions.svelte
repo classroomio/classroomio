@@ -10,6 +10,7 @@
   import { dndzone } from 'svelte-dnd-action';
   import { stores, goto } from '@sapper/app';
   import PageNav from '../../../components/PageNav/index.svelte';
+  import RoleBasedSecurity from '../../../components/RoleBasedSecurity/index.svelte';
   import MarkExerciseModal from '../../../components/Course/components/Lesson/Exercise/MarkExerciseModal.svelte';
   import Chip from '../../../components/Chip/index.svelte';
   import PageBody from '../../../components/PageBody/index.svelte';
@@ -250,69 +251,71 @@
   {submissionId}
 />
 
-<CourseContainer>
-  <PageNav title="Submitted Exercises" />
+<RoleBasedSecurity allowedRoles="[1,2]">
+  <CourseContainer>
+    <PageNav title="Submitted Exercises" />
 
-  <PageBody width="w-11/12 overflow-x-auto overflow-y-hidden">
-    <div class="flex items-center w-full">
-      {#each sections as { id, title, items }, idx (id)}
-        <div
-          class="section rounded-md bg-gray-100 border border-gray-50 p-3 h-80 mr-3 overflow-hidden"
-          animate:flip={{ duration: flipDurationMs }}
-        >
-          <div class="flex items-center mb-2">
-            <Chip value={items.length} class="bg-set" />
-            <p class="ml-2 font-bold">{title}</p>
-          </div>
+    <PageBody width="w-11/12 overflow-x-auto overflow-y-hidden">
+      <div class="flex items-center w-full">
+        {#each sections as { id, title, items }, idx (id)}
           <div
-            class="content pr-2 overflow-y-auto mb-3"
-            use:dndzone={{
-              items,
-              flipDurationMs,
-              dropTargetStyle: { outline: 'blue' },
-            }}
-            on:consider={handleDndConsiderCards(idx)}
-            on:finalize={handleDndFinalizeCards(idx)}
+            class="section rounded-md bg-gray-100 border border-gray-50 p-3 h-80 mr-3 overflow-hidden"
+            animate:flip={{ duration: flipDurationMs }}
           >
-            {#each items as item (item.id)}
-              <div
-                class="border border-grey-700 w-full my-2 mx-0 rounded-md bg-white py-2 px-3"
-                animate:flip={{ duration: flipDurationMs }}
-              >
+            <div class="flex items-center mb-2">
+              <Chip value={items.length} class="bg-set" />
+              <p class="ml-2 font-bold">{title}</p>
+            </div>
+            <div
+              class="content pr-2 overflow-y-auto mb-3"
+              use:dndzone={{
+                items,
+                flipDurationMs,
+                dropTargetStyle: { outline: 'blue' },
+              }}
+              on:consider={handleDndConsiderCards(idx)}
+              on:finalize={handleDndFinalizeCards(idx)}
+            >
+              {#each items as item (item.id)}
                 <div
-                  class="flex items-center no-underline hover:underline text-black mb-2"
+                  class="border border-grey-700 w-full my-2 mx-0 rounded-md bg-white py-2 px-3"
+                  animate:flip={{ duration: flipDurationMs }}
                 >
-                  <img
-                    alt="Student avatar"
-                    class="block rounded-full h-6 w-6"
-                    src={item.student.avatar_url}
-                  />
-                  <p class="ml-2 text-sm">{item.student.username}</p>
+                  <div
+                    class="flex items-center no-underline hover:underline text-black mb-2"
+                  >
+                    <img
+                      alt="Student avatar"
+                      class="block rounded-full h-6 w-6"
+                      src={item.student.avatar_url}
+                    />
+                    <p class="ml-2 text-sm">{item.student.username}</p>
+                  </div>
+                  <a
+                    class="text-blue-700 text-md font-bold"
+                    href="{$page.path}?submissionId={item.id}"
+                  >
+                    {item.exercise.title}
+                  </a>
+                  <a
+                    class="flex items-center no-underline hover:underline text-black my-2"
+                    href="{$page.path.replace('submissions', 'lessons')}/{item
+                      .lesson.id}/exercises/{item.exercise.id}"
+                  >
+                    <p class="text-grey text-sm">
+                      #{item.lesson.title}
+                      {`${item.tutor ? 'created by' + item.tutor.name : ''}`}
+                    </p>
+                  </a>
                 </div>
-                <a
-                  class="text-blue-700 text-md font-bold"
-                  href="{$page.path}?submissionId={item.id}"
-                >
-                  {item.exercise.title}
-                </a>
-                <a
-                  class="flex items-center no-underline hover:underline text-black my-2"
-                  href="{$page.path.replace('submissions', 'lessons')}/{item
-                    .lesson.id}/exercises/{item.exercise.id}"
-                >
-                  <p class="text-grey text-sm">
-                    #{item.lesson.title}
-                    {`${item.tutor ? 'created by' + item.tutor.name : ''}`}
-                  </p>
-                </a>
-              </div>
-            {/each}
+              {/each}
+            </div>
           </div>
-        </div>
-      {/each}
-    </div>
-  </PageBody>
-</CourseContainer>
+        {/each}
+      </div>
+    </PageBody>
+  </CourseContainer>
+</RoleBasedSecurity>
 
 <style>
   .section {
