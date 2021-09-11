@@ -14,6 +14,7 @@
   import { onMount } from 'svelte';
   import CourseContainer from '../../../components/CourseContainer/index.svelte';
   import Delete24 from 'carbon-icons-svelte/lib/Delete24';
+  import Avatar from '../../../components/Avatar/index.svelte';
   import PageNav from '../../../components/PageNav/index.svelte';
   import PrimaryButton from '../../../components/PrimaryButton/index.svelte';
   import TextField from '../../../components/Form/TextField.svelte';
@@ -165,14 +166,22 @@
           {/if}
           <!-- <span class="flex-grow" /> -->
           {#if person.profile}
-            <div class="break-all w-2/4 mx-2">
-              <p class="text-lg">{person.profile.fullname}</p>
-              <a
-                href="mailto:{person.profile.email}"
-                class="text-md text-blue-600"
-              >
-                {person.profile.email}
-              </a>
+            <div class="w-2/4 mx-2 flex items-center">
+              <Avatar
+                src={person.profile.avatar_url}
+                name={person.profile.fullname}
+              />
+              <div class="ml-2 break-all">
+                <p class="text-lg">{person.profile.fullname}</p>
+                {#if !isStudent}
+                  <a
+                    href="mailto:{person.profile.email}"
+                    class="text-md text-blue-600"
+                  >
+                    {person.profile.email}
+                  </a>
+                {/if}
+              </div>
             </div>
           {:else}
             <div class="break-all w-2/4 mx-2">
