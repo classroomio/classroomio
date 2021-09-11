@@ -23,6 +23,7 @@
   import CourseContainer from '../../../../../components/CourseContainer/index.svelte';
 
   import PrimaryButton from '../../../../../components/PrimaryButton/index.svelte';
+  import RoleBasedSecurity from '../../../../../components/RoleBasedSecurity/index.svelte';
   import PageNav from '../../../../../components/PageNav/index.svelte';
   import PageBody from '../../../../../components/PageBody/index.svelte';
   import Materials from '../../../../../components/Course/components/Lesson/Materials/index.svelte';
@@ -108,18 +109,20 @@
     ]}
   >
     <svelte:fragment slot="widget">
-      {#if isMaterialsTabActive}
-        <div class="flex items-center">
-          <PrimaryButton
-            className="mr-2"
-            label={mode === MODES.edit ? 'Save' : 'Edit'}
-            onClick={() => {
-              prevMode = mode;
-              mode = mode === MODES.edit ? MODES.view : MODES.edit;
-            }}
-          />
-        </div>
-      {/if}
+      <RoleBasedSecurity allowedRoles="[1,2]">
+        {#if isMaterialsTabActive}
+          <div class="flex items-center">
+            <PrimaryButton
+              className="mr-2"
+              label={mode === MODES.edit ? 'Save' : 'Edit'}
+              onClick={() => {
+                prevMode = mode;
+                mode = mode === MODES.edit ? MODES.view : MODES.edit;
+              }}
+            />
+          </div>
+        {/if}
+      </RoleBasedSecurity>
     </svelte:fragment>
   </PageNav>
 

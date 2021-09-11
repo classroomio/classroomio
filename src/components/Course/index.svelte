@@ -1,5 +1,6 @@
 <script>
   import marked from 'marked';
+  import RoleBasedSecurity from '../RoleBasedSecurity/index.svelte';
   import PageNav from '../PageNav/index.svelte';
   import MODES from '../../utils/constants/mode';
   import PrimaryButton from '../PrimaryButton/index.svelte';
@@ -26,13 +27,15 @@
 
 <PageNav title="Overview" disableSticky={true}>
   <svelte:fragment slot="widget">
-    <div class="flex items-center">
-      <PrimaryButton
-        className="mr-2"
-        label={mode === MODES.edit ? 'Save' : 'Edit'}
-        onClick={handleModeChange}
-      />
-    </div>
+    <RoleBasedSecurity allowedRoles="[1,2]">
+      <div class="flex items-center">
+        <PrimaryButton
+          className="mr-2"
+          label={mode === MODES.edit ? 'Save' : 'Edit'}
+          onClick={handleModeChange}
+        />
+      </div>
+    </RoleBasedSecurity>
   </svelte:fragment>
 </PageNav>
 

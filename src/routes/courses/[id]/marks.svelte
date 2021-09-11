@@ -85,11 +85,9 @@
   });
 
   $: {
-    // students = $group.people.filter((person) => !!person.profile);
     students = $group.people.filter(
       (person) => !!person.profile && person.role_id === ROLE.STUDENT
     );
-    console.log(`students`, students);
   }
 </script>
 

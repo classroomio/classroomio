@@ -8,12 +8,13 @@
   import CheckboxQuestion from '../../../../Question/CheckboxQuestion/index.svelte';
   import TextareaQuestion from '../../../../Question/TextareaQuestion/index.svelte';
   import PrimaryButton from '../../../../PrimaryButton/index.svelte';
+  import RoleBasedSecurity from '../../../../RoleBasedSecurity/index.svelte';
   import Progress from '../../../../Progress/index.svelte';
   import { removeDuplicate } from '../../../../../utils/functions/removeDuplicate';
   import { QUESTION_TYPE } from '../../../../Question/constants';
   import { STATUS } from './constants';
   import { getPropsForQuestion, filterOutDeleted } from './functions';
-  import { formatAnswers } from '../../../function';
+  import { formatAnswers, getGroupMemberId } from '../../../function';
   import { submitExercise } from '../../../../../utils/services/courses';
   import { fetchSubmission } from '../../../../../utils/services/submissions';
   import { profile } from '../../../../../utils/store/user';
@@ -24,14 +25,6 @@
   let currentQuestion = {};
   let renderProps = {};
   let submission;
-
-  function getGroupMemberId(people, profileId) {
-    const groupMember = people.find(
-      (person) => person.profile_id === profileId
-    );
-
-    return groupMember ? groupMember.id : null;
-  }
 
   function handleStart() {
     $questionnaireMetaData.currentQuestionIndex += 1;
@@ -185,8 +178,10 @@
     class="w-4/5 h-40 m-auto flex items-center justify-center text-center border-2 border-gray-200 rounded-md"
   >
     <h3 class="text-2xl">
-      No questions added. <br /> Click the
-      <span class="text-blue-700">Edit</span> button to add.
+      No questions added. <br />
+      <RoleBasedSecurity allowedRoles="[1,2]">
+        Click the <span class="text-blue-700">Edit</span> button to add.
+      </RoleBasedSecurity>
     </h3>
   </div>
 {:else if $questionnaireMetaData.currentQuestionIndex === 0}

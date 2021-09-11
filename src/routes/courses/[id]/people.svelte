@@ -20,6 +20,7 @@
   import Select from '../../../components/Form/Select.svelte';
   import IconButton from '../../../components/IconButton/index.svelte';
   import PageBody from '../../../components/PageBody/index.svelte';
+  import RoleBasedSecurity from '../../../components/RoleBasedSecurity/index.svelte';
   import {
     setCourseData,
     course,
@@ -45,6 +46,7 @@
   let member: { id?: string; email?: string; profile?: { email: string } } = {};
   let shouldEditMemberId = false;
   let filterBy: ProfileRole = ROLES[0];
+  let isStudent = false;
 
   // function setPeople(people: Array<Person>) {
   //   if (!Array.isArray(people)) return;
@@ -54,8 +56,6 @@
   // }
 
   async function deletePerson() {
-    console.log(`member`, member);
-    console.log(`$group.people`, $group.people);
     $group.people = $group.people.filter(
       (person: { id: string }) => person.id !== member.id
     );
@@ -64,7 +64,6 @@
   }
 
   async function editMemberId(person: Person) {
-    console.log(`person`, person);
     await updatedGroupMember(
       { assigned_student_id: person.assigned_student_id },
       { id: person.id }
@@ -82,6 +81,10 @@
       .sort((a: Person, b: Person) => a.role_id - b.role_id);
   }
 
+  function handleEditStudentIdMode() {
+    shouldEditMemberId = true;
+  }
+
   onMount(async () => {
     if ($course.id) return;
     const { data } = await fetchCourse(courseId);
@@ -89,6 +92,15 @@
   });
 
   $: sortAndFilterPeople($group.people, filterBy);
+  $: {
+    const user: Person = $group.people.find(
+      (person: { profile_id: number }) => person.profile_id === $profile.id
+    )!;
+
+    if (user) {
+      isStudent = user.role_id === 3;
+    }
+  }
 </script>
 
 <InviationModal />
@@ -100,11 +112,13 @@
 <CourseContainer>
   <PageNav title="People" disableSticky={true}>
     <slot:fragment slot="widget">
-      <PrimaryButton
-        className="mr-2"
-        label="Add"
-        onClick={() => ($invitationModal.open = true)}
-      />
+      <RoleBasedSecurity allowedRoles={[1, 2]}>
+        <PrimaryButton
+          className="mr-2"
+          label="Add"
+          onClick={() => ($invitationModal.open = true)}
+        />
+      </RoleBasedSecurity>
     </slot:fragment>
   </PageNav>
   <PageBody className="">
@@ -125,17 +139,18 @@
         <!-- <span class="flex-grow" /> -->
         <p class="text-lg w-2/4">Name</p>
         <p class="text-lg w-1/4 ">Role</p>
-        <p class="text-lg w-20" />
+        <RoleBasedSecurity allowedRoles={[1, 2]}>
+          <p class="text-lg w-20" />
+        </RoleBasedSecurity>
       </div>
 
       {#each people as person, index}
-        <div
-          class="flex relative items-center p-3 cursor-pointer {borderBottomGrey}"
-        >
+        <div class="flex relative items-center p-3 {borderBottomGrey}">
           {#if !shouldEditMemberId}
             <p
-              class="mr-2 w-20 text-center hover:bg-gray-100 p-3"
-              on:click={() => (shouldEditMemberId = true)}
+              class="mr-2 w-20 text-center {!isStudent &&
+                'hover:bg-gray-100 cursor-pointer'} p-3"
+              on:click={() => !isStudent && handleEditStudentIdMode()}
             >
               {person.assigned_student_id || '-'}
             </p>
@@ -174,18 +189,20 @@
 
           <p class="text-lg w-1/4 ">{ROLE_LABEL[person.role_id]}</p>
 
-          <div class="w-20">
-            {#if person.profile_id !== $profile.id}
-              <IconButton
-                onClick={() => {
-                  member = person;
-                  $deleteMemberModal.open = true;
-                }}
-              >
-                <Delete24 class="carbon-icon" />
-              </IconButton>
-            {/if}
-          </div>
+          <RoleBasedSecurity allowedRoles={[1, 2]}>
+            <div class="w-20">
+              {#if person.profile_id !== $profile.id}
+                <IconButton
+                  onClick={() => {
+                    member = person;
+                    $deleteMemberModal.open = true;
+                  }}
+                >
+                  <Delete24 class="carbon-icon" />
+                </IconButton>
+              {/if}
+            </div>
+          </RoleBasedSecurity>
         </div>
       {/each}
     </div>

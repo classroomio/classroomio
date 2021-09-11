@@ -18,6 +18,7 @@
   } from '../../../components/Course/store';
   import { getLectureNo } from '../../../components/Course/function';
   import { fetchCourse } from '../../../utils/services/courses';
+  import { profile } from '../../../utils/store/user';
   import { lessons } from '../../../components/Course/components/Lesson/store/lessons';
   import { ROLE } from '../../../utils/constants/roles';
   import { takeAttendance } from '../../../utils/services/attendance';
@@ -29,6 +30,7 @@
 
   let borderBottomGrey = 'border-r-0 border-b border-l-0 border-gray-300';
   let students = [];
+  let isStudent;
 
   function setAttendance(courseData) {
     for (const attendanceItem of courseData.attendance) {
@@ -69,6 +71,16 @@
   $: students = $group.people.filter(
     (person) => !!person.profile && person.role_id === ROLE.STUDENT
   );
+
+  $: {
+    const user = $group.people.find(
+      (person) => person.profile_id === $profile.id
+    );
+
+    if (user) {
+      isStudent = user.role_id === 3;
+    }
+  }
 </script>
 
 <CourseContainer>
@@ -104,14 +116,17 @@
           {#each $lessons as lesson}
             <p class="col">
               <input
-                class="form-radio"
+                class="form-radio {isStudent && 'cursor-not-allowed'}"
                 type="checkbox"
+                disabled={isStudent}
                 checked={$attendance[student.id]
                   ? $attendance[student.id][lesson.id]
                     ? $attendance[student.id][lesson.id].is_present
                     : false
                   : false}
                 on:change={(e) => {
+                  if (isStudent) return;
+
                   const attendanceItem = $attendance[student.id]
                     ? $attendance[student.id][lesson.id] || {}
                     : {};

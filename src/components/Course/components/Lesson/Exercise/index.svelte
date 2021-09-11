@@ -9,6 +9,7 @@
   } from '../store/exercise';
   import PrimaryButton from '../../../../PrimaryButton/index.svelte';
   import PageBody from '../../../../PageBody/index.svelte';
+  import RoleBasedSecurity from '../../../../RoleBasedSecurity/index.svelte';
   import ViewMode from './ViewMode.svelte';
   import EditMode from './EditMode.svelte';
   import MODES from '../../../../../utils/constants/mode.js';
@@ -53,12 +54,15 @@
 <PageBody>
   <svelte:fragment slot="header">
     <div class="flex items-center">
-      <PrimaryButton
-        className="mr-2"
-        variant={VARIANTS.OUTLINED}
-        label={mode === MODES.edit ? 'Save' : 'Edit'}
-        onClick={handleMode}
-      />
+      <RoleBasedSecurity allowedRoles="[1,2]">
+        <PrimaryButton
+          className="mr-2"
+          variant={VARIANTS.OUTLINED}
+          label={mode === MODES.edit ? 'Save' : 'Edit'}
+          onClick={handleMode}
+        />
+      </RoleBasedSecurity>
+
       <!-- {#if mode === MODES.edit || preview} -->
       <PrimaryButton
         variant={preview ? VARIANTS.CONTAINED : VARIANTS.OUTLINED}

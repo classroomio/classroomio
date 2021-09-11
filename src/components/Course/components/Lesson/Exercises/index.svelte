@@ -3,6 +3,7 @@
   import AudioConsole32 from 'carbon-icons-svelte/lib/AudioConsole32';
   import Box from '../../../../Box/index.svelte';
   import PrimaryButton from '../../../../PrimaryButton/index.svelte';
+  import RoleBasedSecurity from '../../../../RoleBasedSecurity/index.svelte';
   import PageBody from '../../../../PageBody/index.svelte';
   import Modal from '../../../../Modal/index.svelte';
   import TextField from '../../../../Form/TextField.svelte';
@@ -59,8 +60,6 @@
   }
 
   async function getExercise(exerciseId) {
-    console.log('getExercise', exerciseId);
-
     if (!exerciseId) return;
 
     isQuestionnaireFetching.update(() => true);
@@ -130,11 +129,13 @@
 
   <PageBody>
     <slot:fragment slot="header">
-      <PrimaryButton
-        className="mr-2"
-        label="Add"
-        onClick={() => (open = !open)}
-      />
+      <RoleBasedSecurity allowedRoles="[1,2]">
+        <PrimaryButton
+          className="mr-2"
+          label="Add"
+          onClick={() => (open = !open)}
+        />
+      </RoleBasedSecurity>
     </slot:fragment>
 
     <div class="flex flex-wrap">
