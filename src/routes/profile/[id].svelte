@@ -74,6 +74,7 @@
             .getPublicUrl(filename);
 
           updates.avatar_url = publicURL;
+          currentProfile.avatar_url = publicURL;
         }
         avatar = undefined;
       }
@@ -104,8 +105,16 @@
     }
   }
 
+  $: isDirty =
+    avatar ||
+    initialValueOfUserName !== currentProfile.username ||
+    initialValueOfFullName !== currentProfile.fullname;
   $: isOwner = $profile.id === profileId;
   $: getProfile(profileId);
+
+  $: if (avatar) {
+    updateProfile();
+  }
 </script>
 
 <svelte:head>
@@ -149,7 +158,7 @@
           isDisabled={true}
         />
 
-        {#if avatar || initialValueOfUserName !== currentProfile.username || initialValueOfFullName !== currentProfile.fullname}
+        {#if isDirty}
           <PrimaryButton
             label={loading ? 'Updating...' : 'Update profile'}
             onClick={updateProfile}
