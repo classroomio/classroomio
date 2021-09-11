@@ -49,7 +49,7 @@ export async function fetchSubmission({ courseId, exerciseId, submittedBy }) {
     });
 }
 
-export async function updateSubmission({ id, status_id, total }) {
+export async function updateSubmission({ id, status_id, total }, otherArgs) {
   const toUpdate = {
     status_id,
   };
@@ -58,7 +58,7 @@ export async function updateSubmission({ id, status_id, total }) {
     toUpdate.total = total;
   }
 
-  return supabase.from('submission').update(toUpdate).match({ id });
+  return supabase.from('submission').update(toUpdate, otherArgs).match({ id });
 }
 
 export async function updateQuestionAnswer(update, match) {

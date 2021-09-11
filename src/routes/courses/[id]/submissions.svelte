@@ -1,17 +1,6 @@
 <script context="module">
-  import { fetchCourse } from '../../../utils/services/courses';
-
-  export async function preload({ params }, session) {
-    if (process.browser) {
-      return {};
-    }
-
-    const {
-      data,
-      // error
-    } = await fetchCourse(params.id, session);
-
-    return { courseData: data };
+  export async function preload({ params }) {
+    return { courseId: params.id };
   }
 </script>
 
@@ -25,6 +14,7 @@
   import Chip from '../../../components/Chip/index.svelte';
   import PageBody from '../../../components/PageBody/index.svelte';
   import CourseContainer from '../../../components/CourseContainer/index.svelte';
+  import { fetchCourse } from '../../../utils/services/courses';
   import { setCourseData, course } from '../../../components/Course/store';
   import {
     fetchSubmissions,
@@ -36,7 +26,7 @@
 
   const flipDurationMs = 300;
 
-  export let courseData = {};
+  export let courseId;
 
   let sections = [
     {
@@ -155,6 +145,8 @@
   async function handleSave(submission) {
     const { questionAnswerByPoint, questionAnswers } = submission;
 
+    let totalPoints = 0;
+
     const updates = Object.keys(questionAnswerByPoint).map((questionId) => {
       const questionAnswer = questionAnswers.find(
         (answer) => answer.question_id == questionId
@@ -162,8 +154,18 @@
 
       const point = questionAnswerByPoint[questionId];
 
+      totalPoints += parseInt(point, 10);
+
       return updateQuestionAnswer({ point }, { id: questionAnswer.id });
     });
+
+    updateSubmission(
+      {
+        id: submissionId,
+        total: totalPoints,
+      },
+      { returning: 'minimal' }
+    ).then((res) => console.log('Updated submission', res));
 
     await Promise.all(updates);
     $snackbarStore.open = true;
@@ -171,10 +173,13 @@
   }
 
   onMount(async () => {
-    setCourseData(courseData);
+    if (!$course.id) {
+      const { data } = await fetchCourse(courseId);
+      setCourseData(data);
+    }
 
     const { data: submissions } = await fetchSubmissions(
-      courseData.id || $course.id
+      courseId || $course.id
     );
     const sectionById = {};
 
