@@ -26,7 +26,7 @@
 
   // export let lessonId;
   export let path;
-  let show = true;
+  let show = null;
 
   const { page } = stores();
 
