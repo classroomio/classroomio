@@ -13,6 +13,7 @@
   import Delete24 from 'carbon-icons-svelte/lib/Delete24';
   import CheckmarkFilled24 from 'carbon-icons-svelte/lib/CheckmarkFilled24';
   import PageNav from '../../../../components/PageNav/index.svelte';
+  import RoleBasedSecurity from '../../../../components/RoleBasedSecurity/index.svelte';
   import Box from '../../../../components/Box/index.svelte';
   import PageBody from '../../../../components/PageBody/index.svelte';
   import PrimaryButton from '../../../../components/PrimaryButton/index.svelte';
@@ -37,21 +38,6 @@
 
   let lessonEditing;
   let ref;
-
-  const resources = [
-    {
-      label: 'lesson',
-      value: 1,
-    },
-    {
-      label: 'quiz',
-      value: 1,
-    },
-    {
-      label: 'home task',
-      value: 2,
-    },
-  ];
 
   function formatDate(date) {
     const d = new Date(date);
@@ -87,13 +73,15 @@
 
 <CourseContainer>
   <PageNav title="Lessons">
-    <div slot="widget">
-      <PrimaryButton
-        label="Add"
-        onClick={addLesson}
-        isDisabled={!!lessonEditing}
-      />
-    </div>
+    <RoleBasedSecurity allowedRoles="[1,2]">
+      <div slot="widget">
+        <PrimaryButton
+          label="Add"
+          onClick={addLesson}
+          isDisabled={!!lessonEditing}
+        />
+      </div>
+    </RoleBasedSecurity>
   </PageNav>
 
   <PageBody>
@@ -104,42 +92,44 @@
           class="group relative m-auto rounded-md border-2 border-gray-100 py-3 px-5 mb-4 flex items-center hover:shadow-2xl shadow-md transition delay-150 duration-300 ease-in-out"
         >
           <!-- Complete or Not complete icon -->
-          <div class="absolute -left-6 -top-6 success">
-            <IconButton
-              onClick={() => {
-                lesson.is_complete = !lesson.is_complete;
-                handleSaveLesson(lesson, $course.id);
-              }}
-              toolTipProps={{
-                title: `Click to ${lesson.is_complete ? 'lock' : 'unlock'}`,
-                direction: 'right',
-              }}
-            >
-              {#if lesson.is_complete}
-                <CheckmarkFilled24 class="carbon-icon" />
-              {:else}
-                <span class="text-2xl">🔒</span>
-              {/if}
-            </IconButton>
-          </div>
-
-          <!-- Edit/Save -->
-          <div class="absolute top-2 right-0">
-            {#if lessonEditing === index}
+          <RoleBasedSecurity allowedRoles="[1,2]">
+            <div class="absolute -left-6 -top-6 success">
               <IconButton
                 onClick={() => {
-                  lessonEditing = null;
+                  lesson.is_complete = !lesson.is_complete;
                   handleSaveLesson(lesson, $course.id);
                 }}
+                toolTipProps={{
+                  title: `Click to ${lesson.is_complete ? 'lock' : 'unlock'}`,
+                  direction: 'right',
+                }}
               >
-                <Save24 class="carbon-icon" />
+                {#if lesson.is_complete}
+                  <CheckmarkFilled24 class="carbon-icon" />
+                {:else}
+                  <span class="text-2xl">🔒</span>
+                {/if}
               </IconButton>
-            {:else}
-              <IconButton onClick={() => (lessonEditing = index)}>
-                <Edit24 class="carbon-icon" />
-              </IconButton>
-            {/if}
-          </div>
+            </div>
+
+            <!-- Edit/Save -->
+            <div class="absolute top-2 right-0">
+              {#if lessonEditing === index}
+                <IconButton
+                  onClick={() => {
+                    lessonEditing = null;
+                    handleSaveLesson(lesson, $course.id);
+                  }}
+                >
+                  <Save24 class="carbon-icon" />
+                </IconButton>
+              {:else}
+                <IconButton onClick={() => (lessonEditing = index)}>
+                  <Edit24 class="carbon-icon" />
+                </IconButton>
+              {/if}
+            </div>
+          </RoleBasedSecurity>
 
           <div class="">
             <h3 class="text-3xl font-bold">{index + 1}.</h3>
@@ -173,10 +163,7 @@
               {:else if !lesson.profile}
                 <p class="ml-2 text-sm">No tutor added</p>
               {:else}
-                <a
-                  href="courses/1/people"
-                  class="flex items-center hover:underline"
-                >
+                <a href="." class="flex items-center hover:underline">
                   <img
                     alt="Placeholder"
                     class="block rounded-full"
@@ -229,11 +216,13 @@
             </div>
           </div>
 
-          <div class="absolute bottom-2 right-0">
-            <IconButton onClick={handleDelete(lesson.id)}>
-              <Delete24 class="carbon-icon" />
-            </IconButton>
-          </div>
+          <RoleBasedSecurity allowedRoles="[1,2]">
+            <div class="absolute bottom-2 right-0">
+              <IconButton onClick={handleDelete(lesson.id)}>
+                <Delete24 class="carbon-icon" />
+              </IconButton>
+            </div>
+          </RoleBasedSecurity>
         </div>
       {:else}
         <Box>
