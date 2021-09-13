@@ -160,7 +160,7 @@
                 <a
                   href={isStudent && !lesson.is_complete
                     ? $page.path
-                    : '/courses/{$course.id}/lessons/{lesson.id}'}
+                    : '/courses/' + $course.id + '/lessons/' + lesson.id}
                   class="hover:underline text-black {isStudent &&
                   !lesson.is_complete
                     ? 'cursor-not-allowed'
