@@ -6,6 +6,7 @@
 
 <script>
   import { onMount } from 'svelte';
+  import { stores } from '@sapper/app';
   import Time24 from 'carbon-icons-svelte/lib/Time24';
   import Edit24 from 'carbon-icons-svelte/lib/Edit24';
   import Save24 from 'carbon-icons-svelte/lib/Save24';
@@ -22,6 +23,7 @@
   import Select from '../../../../components/Form/Select.svelte';
   import { fetchCourse } from '../../../../utils/services/courses';
   import CourseContainer from '../../../../components/CourseContainer/index.svelte';
+  import { profile } from '../../../../utils/store/user';
   import {
     lessons,
     handleAddLesson,
@@ -38,6 +40,9 @@
 
   let lessonEditing;
   let ref;
+  let isStudent = true;
+
+  const { page } = stores();
 
   function formatDate(date) {
     const d = new Date(date);
@@ -69,6 +74,16 @@
     const { data } = await fetchCourse(courseId);
     setCourseData(data);
   });
+
+  $: {
+    const user = $group.people.find(
+      (person) => person.profile_id === $profile.id
+    );
+
+    if (user) {
+      isStudent = user.role_id === 3;
+    }
+  }
 </script>
 
 <CourseContainer>
@@ -92,26 +107,29 @@
           class="group relative m-auto rounded-md border-2 border-gray-100 py-3 px-5 mb-4 flex items-center hover:shadow-2xl shadow-md transition delay-150 duration-300 ease-in-out"
         >
           <!-- Complete or Not complete icon -->
-          <RoleBasedSecurity allowedRoles="[1,2]">
-            <div class="absolute -left-6 -top-6 success">
-              <IconButton
-                onClick={() => {
-                  lesson.is_complete = !lesson.is_complete;
-                  handleSaveLesson(lesson, $course.id);
-                }}
-                toolTipProps={{
-                  title: `Click to ${lesson.is_complete ? 'lock' : 'unlock'}`,
-                  direction: 'right',
-                }}
-              >
-                {#if lesson.is_complete}
-                  <CheckmarkFilled24 class="carbon-icon" />
-                {:else}
-                  <span class="text-2xl">🔒</span>
-                {/if}
-              </IconButton>
-            </div>
+          <div class="absolute -left-6 -top-6 success">
+            <IconButton
+              disabled={isStudent}
+              onClick={() => {
+                lesson.is_complete = !lesson.is_complete;
+                handleSaveLesson(lesson, $course.id);
+              }}
+              toolTipProps={isStudent
+                ? {}
+                : {
+                    title: `Click to ${lesson.is_complete ? 'lock' : 'unlock'}`,
+                    direction: 'right',
+                  }}
+            >
+              {#if lesson.is_complete}
+                <CheckmarkFilled24 class="carbon-icon" />
+              {:else}
+                <span class="text-2xl">🔒</span>
+              {/if}
+            </IconButton>
+          </div>
 
+          <RoleBasedSecurity allowedRoles="[1,2]">
             <!-- Edit/Save -->
             <div class="absolute top-2 right-0">
               {#if lessonEditing === index}
@@ -140,8 +158,13 @@
             {:else}
               <h3 class="text-2xl m-0 flex items-center">
                 <a
-                  href="/courses/{$course.id}/lessons/{lesson.id}"
-                  class="hover:underline text-black"
+                  href={isStudent && !lesson.is_complete
+                    ? $page.path
+                    : '/courses/{$course.id}/lessons/{lesson.id}'}
+                  class="hover:underline text-black {isStudent &&
+                  !lesson.is_complete
+                    ? 'cursor-not-allowed'
+                    : ''}"
                 >
                   {lesson.title}
                 </a>
