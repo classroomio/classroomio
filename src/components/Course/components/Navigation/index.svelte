@@ -24,11 +24,11 @@
   import { course, group } from '../../store';
   import { updateCourse } from '../../../../utils/services/courses';
   import { profile } from '../../../../utils/store/user';
-  import People from '../../../../routes/people.svelte';
 
   // export let lessonId;
   export let path;
   let show = null;
+  let isStudent = null;
 
   const { page } = stores();
 
@@ -99,7 +99,9 @@
             (member) => member.profile_id === profileId
           );
 
-          return user ? user.role_id !== 3 : false;
+          isStudent = user ? user.role_id === 3 : true;
+
+          return !isStudent;
         },
       },
       {
@@ -153,9 +155,12 @@
                 <a
                   class="item flex items-center {(path || $page.path).includes(
                     item.id
-                  ) && 'active'} pl-7 py-2 {!item.is_complete &&
-                    'cursor-not-allowed'}"
-                  href={getLessonsRoute($course.id, item.id)}
+                  ) && 'active'} pl-7 py-2 {isStudent && !item.is_complete
+                    ? 'cursor-not-allowed'
+                    : ''}"
+                  href={isStudent && !item.is_complete
+                    ? $page.path
+                    : getLessonsRoute($course.id, item.id)}
                 >
                   <span class="course-counter">
                     {getLectureNo(index + 1)}
