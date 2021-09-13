@@ -70,14 +70,14 @@
         badgeValue = !!note ? 1 : 0;
       } else {
         badgeValue =
-          typeof video_url === 'string' ? video_url.split(',').length : 0;
+          typeof video_url === 'string' && !!video_url
+            ? video_url.split(',').length
+            : 0;
       }
 
       tab.badgeValue = badgeValue;
       return tab;
     });
-
-    console.log(`tabs`, tabs);
   }
 
   $: handleSave(prevMode);
@@ -138,7 +138,7 @@
           bind:value={$lesson.materials.video_url}
           onChange={() => ($isLessonDirty = true)}
         />
-      {:else if $lesson.materials.video_url && $lesson.materials.video_url.includes('youtube')}
+      {:else if !!$lesson.materials.video_url && $lesson.materials.video_url.includes('youtube')}
         {#each $lesson.materials.video_url.split(',') as url}
           <div class="mb-5">
             <iframe

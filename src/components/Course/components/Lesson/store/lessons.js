@@ -86,5 +86,11 @@ export async function handleSaveLesson(lesson, course_id) {
 }
 
 export async function handleUpdateLessonMaterials(lesson, lessonId) {
-  return await updateLesson(lesson.materials, lessonId);
+  const materials = {
+    ...lesson.materials,
+  };
+
+  delete materials.totalExercises;
+
+  return await updateLesson(materials, lessonId);
 }
