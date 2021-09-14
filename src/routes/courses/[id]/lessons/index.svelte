@@ -7,6 +7,7 @@
 <script>
   import { onMount } from 'svelte';
   import { stores } from '@sapper/app';
+  import { dndzone } from 'svelte-dnd-action';
   import Time24 from 'carbon-icons-svelte/lib/Time24';
   import Edit24 from 'carbon-icons-svelte/lib/Edit24';
   import Save24 from 'carbon-icons-svelte/lib/Save24';
@@ -21,7 +22,10 @@
   import TextField from '../../../../components/Form/TextField.svelte';
   import IconButton from '../../../../components/IconButton/index.svelte';
   import Select from '../../../../components/Form/Select.svelte';
-  import { fetchCourse } from '../../../../utils/services/courses';
+  import {
+    fetchCourse,
+    updateLesson,
+  } from '../../../../utils/services/courses';
   import CourseContainer from '../../../../components/CourseContainer/index.svelte';
   import { profile } from '../../../../utils/store/user';
   import {
@@ -43,6 +47,7 @@
   let isStudent = true;
 
   const { page } = stores();
+  const flipDurationMs = 300;
 
   function formatDate(date) {
     const d = new Date(date);
@@ -69,6 +74,36 @@
     }, 100);
   }
 
+  function handleDndConsider(e) {
+    $lessons = e.detail.items;
+  }
+
+  function handleDndFinalize(e) {
+    const prevLessonsByOrder = $lessons.reduce(
+      (acc, l) => ({ ...acc, [l.id]: l.order }),
+      {}
+    );
+    $lessons = e.detail.items;
+
+    // Only update the lesson order that changed
+    e.detail.items.forEach((item, index) => {
+      const order = index + 1;
+
+      if (order !== prevLessonsByOrder[item.id]) {
+        $lessons[index].order = order;
+        updateLesson({ order }, item.id).then((update) =>
+          console.log(`updated lesson order`, update)
+        );
+      }
+    });
+  }
+
+  function getLessonOrder(id) {
+    const index = $lessons.findIndex((lesson) => lesson.id === id);
+
+    return index + 1;
+  }
+
   onMount(async () => {
     if ($course.id) return;
     const { data } = await fetchCourse(courseId);
@@ -88,23 +123,35 @@
 
 <CourseContainer>
   <PageNav title="Lessons">
-    <RoleBasedSecurity allowedRoles="[1,2]">
-      <div slot="widget">
+    <div slot="widget">
+      <RoleBasedSecurity allowedRoles="[1,2]">
         <PrimaryButton
           label="Add"
           onClick={addLesson}
           isDisabled={!!lessonEditing}
         />
-      </div>
-    </RoleBasedSecurity>
+      </RoleBasedSecurity>
+    </div>
   </PageNav>
 
-  <PageBody>
-    <div class="w-11/12 mt-4 m-auto">
-      {#each $lessons as lesson, index}
+  <PageBody padding="p-0">
+    <section
+      class="w-11/12 py-3 px-4 m-auto lesson-list"
+      use:dndzone={{
+        items: $lessons,
+        flipDurationMs,
+        dropTargetStyle: {
+          border: '2px #1d4ed8 solid',
+          'border-style': 'dashed',
+        },
+      }}
+      on:consider={handleDndConsider}
+      on:finalize={handleDndFinalize}
+    >
+      {#each $lessons as lesson (lesson.id)}
         <div
           bind:this={ref}
-          class="group relative m-auto rounded-md border-2 border-gray-100 py-3 px-5 mb-4 flex items-center hover:shadow-2xl shadow-md transition delay-150 duration-300 ease-in-out"
+          class="group cursor-move relative m-auto rounded-md border-2 border-gray-100 py-3 px-5 mb-4 flex items-center hover:shadow-2xl shadow-md transition delay-150 duration-300 ease-in-out"
         >
           <!-- Complete or Not complete icon -->
           <div class="absolute -left-6 -top-6 success">
@@ -132,7 +179,7 @@
           <RoleBasedSecurity allowedRoles="[1,2]">
             <!-- Edit/Save -->
             <div class="absolute top-2 right-0">
-              {#if lessonEditing === index}
+              {#if lessonEditing === lesson.id}
                 <IconButton
                   onClick={() => {
                     lessonEditing = null;
@@ -142,7 +189,7 @@
                   <Save24 class="carbon-icon" />
                 </IconButton>
               {:else}
-                <IconButton onClick={() => (lessonEditing = index)}>
+                <IconButton onClick={() => (lessonEditing = lesson.id)}>
                   <Edit24 class="carbon-icon" />
                 </IconButton>
               {/if}
@@ -150,10 +197,12 @@
           </RoleBasedSecurity>
 
           <div class="">
-            <h3 class="text-3xl font-bold">{index + 1}.</h3>
+            <h3 class="text-3xl font-bold">
+              {getLessonOrder(lesson.id)}.
+            </h3>
           </div>
           <div class="ml-8 w-4/5">
-            {#if lessonEditing === index}
+            {#if lessonEditing === lesson.id}
               <TextField bind:value={lesson.title} autofocus={true} />
             {:else}
               <h3 class="text-2xl m-0 flex items-center">
@@ -177,7 +226,7 @@
             </div> -->
 
             <div class="flex items-center justify-between mt-6 w-full">
-              {#if lessonEditing === index}
+              {#if lessonEditing === lesson.id}
                 <Select
                   bind:value={lesson.profile}
                   options={$group.tutors}
@@ -201,7 +250,7 @@
               {/if}
 
               <div class="flex items-cente">
-                {#if lessonEditing === index}
+                {#if lessonEditing === lesson.id}
                   <input
                     type="date"
                     name="lesson-date-picker"
@@ -218,7 +267,7 @@
               </div>
 
               <div class="flex items-center">
-                {#if lessonEditing === index}
+                {#if lessonEditing === lesson.id}
                   <TextField
                     bind:value={lesson.call_url}
                     autofocus={true}
@@ -253,11 +302,15 @@
           <img alt="No lesson added" src="/notfound2.gif" class="w-80" />
         </Box>
       {/each}
-    </div>
+    </section>
   </PageBody>
 </CourseContainer>
 
 <style>
+  .lesson-list {
+    overflow-y: auto;
+    height: 84vh;
+  }
   .group {
     min-height: 170px;
     background-color: #fafafa;
