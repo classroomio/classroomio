@@ -140,6 +140,7 @@
       use:dndzone={{
         items: $lessons,
         flipDurationMs,
+        dragDisabled: isStudent,
         dropTargetStyle: {
           border: '2px #1d4ed8 solid',
           'border-style': 'dashed',
@@ -151,7 +152,7 @@
       {#each $lessons as lesson (lesson.id)}
         <div
           bind:this={ref}
-          class="group cursor-move relative m-auto rounded-md border-2 border-gray-100 py-3 px-5 mb-4 flex items-center hover:shadow-2xl shadow-md transition delay-150 duration-300 ease-in-out"
+          class="group relative m-auto rounded-md border-2 border-gray-100 py-3 px-5 mb-4 flex items-center hover:shadow-2xl shadow-md transition delay-150 duration-300 ease-in-out"
         >
           <!-- Complete or Not complete icon -->
           <div class="absolute -left-6 -top-6 success">
