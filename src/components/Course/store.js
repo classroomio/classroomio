@@ -57,9 +57,9 @@ export async function setCourseData(data, setLesson = true) {
   }
 
   if (setLesson) {
-    const orderedLessons = (data.lessons || []).sort(
-      (a, b) => new Date(a.created_at) - new Date(b.created_at)
-    );
+    const orderedLessons = (data.lessons || [])
+      .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+      .sort((a, b) => a.order - b.order);
     // .map((lesson) => ({
     //   ...lesson,
     //   profile: lesson.profile && tutorsById[lesson.profile.id],

@@ -34,7 +34,7 @@ export async function fetchCourse(courseId, session) {
         )
       ),
       lessons:lesson(
-        id, title,public, lesson_at, call_url, is_complete,created_at,
+        id, title,public, lesson_at, call_url, is_complete, order, created_at,
         profile:teacher_id(id, avatar_url, fullname)
       ),
       attendance:group_attendance(*)
