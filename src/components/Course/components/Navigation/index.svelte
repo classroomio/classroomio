@@ -204,7 +204,6 @@
           value="toggle"
           onClick={() => goto('/courses')}
           buttonClassName="mx-3"
-          size={$isMobile ? 'large' : 'small'}
         >
           <Home32 class="carbon-icon" />
         </IconButton>
@@ -218,12 +217,14 @@
     <IconButton
       value="toggle"
       onClick={() => (show = !show)}
-      size="small"
-      toolTipProps={{
-        title: 'Toggle sidebar',
-        hotkeys: ['B'],
-        direction: 'right',
-      }}
+      size={$isMobile ? 'large' : 'small'}
+      toolTipProps={$isMobile
+        ? {}
+        : {
+            title: 'Toggle sidebar',
+            hotkeys: ['B'],
+            direction: 'right',
+          }}
     >
       {#if show}
         <ChevronLeft16 class="carbon-icon" />
@@ -279,7 +280,7 @@
 
   .navItems {
     height: 82%;
-    overflow-y: scroll;
+    overflow-y: auto;
   }
 
   .toggler {
@@ -293,7 +294,7 @@
 
   @media (max-width: 760px) {
     .root {
-      width: 95%;
+      width: 98%;
       min-width: unset;
       max-width: unset;
     }

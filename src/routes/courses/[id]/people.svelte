@@ -141,7 +141,7 @@
         <p class="text-lg w-2/4">Name</p>
         <p class="text-lg w-1/4 ">Role</p>
         <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <p class="text-lg w-20" />
+          <p class="hidden lg:block text-lg w-20" />
         </RoleBasedSecurity>
       </div>
 
@@ -149,7 +149,7 @@
         <div class="flex relative items-center p-3 {borderBottomGrey}">
           {#if !shouldEditMemberId}
             <p
-              class="mr-2 w-20 text-center {!isStudent &&
+              class="mr-2 w-10 text-center {!isStudent &&
                 'hover:bg-gray-100 cursor-pointer'} p-3"
               on:click={() => !isStudent && handleEditStudentIdMode()}
             >
@@ -160,7 +160,7 @@
               bind:value={person.assigned_student_id}
               type="string"
               placeholder="Unique ID"
-              className="w-24"
+              className="w-20"
               onChange={() => editMemberId(person)}
             />
           {/if}
@@ -199,7 +199,7 @@
           <p class="text-lg w-1/4 ">{ROLE_LABEL[person.role_id]}</p>
 
           <RoleBasedSecurity allowedRoles={[1, 2]}>
-            <div class="w-20">
+            <div class="hidden lg:block w-20">
               {#if person.profile_id !== $profile.id}
                 <IconButton
                   onClick={() => {
