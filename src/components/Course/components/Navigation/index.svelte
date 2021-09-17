@@ -24,6 +24,7 @@
   import { course, group } from '../../store';
   import { updateCourse } from '../../../../utils/services/courses';
   import { profile } from '../../../../utils/store/user';
+  import { isMobile } from '../../../../utils/store/useMobile';
 
   // export let lessonId;
   export let path;
@@ -34,6 +35,9 @@
 
   function handleMainGroupClick(href) {
     return () => {
+      if ($isMobile) {
+        show = false;
+      }
       goto(href);
     };
   }
@@ -47,6 +51,11 @@
 
   function handleSaveTitle() {
     updateCourse($course.id, { title: $course.title });
+  }
+
+  function handleMobileChange(isMobile) {
+    if (isMobile) show = false;
+    else show = true;
   }
 
   onMount(() => {
@@ -65,6 +74,8 @@
       }
     });
   });
+
+  $: handleMobileChange($isMobile);
 
   $: {
     if (process.browser && show !== null) {
@@ -125,7 +136,9 @@
 
 <Settings />
 
-<div class="root z-10 {!show && 'hide'}">
+<div
+  class="root z-10 {!show && 'hide'} {$isMobile ? 'fixed shadow-xl' : 'sticky'}"
+>
   {#if show}
     <div class="relative h-full">
       <PageNav bind:title={$course.title} paddingClass="pl-2">
@@ -142,43 +155,47 @@
           </RoleBasedSecurity>
         </slot:fragment>
       </PageNav>
-      {#each navItems as navItem}
-        {#if !navItem.show || (typeof navItem.show === 'function' && navItem.show($group.people, $profile.id))}
-          <Expandable
-            label={navItem.label}
-            handleClick={handleMainGroupClick(navItem.to)}
-            isGroupActive={(path || $page.path) === navItem.to}
-            hideSortIcon={navItem.hideSortIcon}
-          >
-            {#if navItem.isLecture}
-              {#each $lessons as item, index}
-                <a
-                  class="item flex items-center {(path || $page.path).includes(
-                    item.id
-                  ) && 'active'} pl-7 py-2 {isStudent && !item.is_complete
-                    ? 'cursor-not-allowed'
-                    : ''}"
-                  href={isStudent && !item.is_complete
-                    ? $page.path
-                    : getLessonsRoute($course.id, item.id)}
-                >
-                  <span class="course-counter">
-                    {getLectureNo(index + 1)}
-                  </span>
-                  <span>{item.title}</span>
-                  {#if item.is_complete}
-                    <span class="ml-2 success">
-                      <CheckmarkFilled20 class="carbon-icon" />
+      <div class="navItems">
+        {#each navItems as navItem}
+          {#if !navItem.show || (typeof navItem.show === 'function' && navItem.show($group.people, $profile.id))}
+            <Expandable
+              label={navItem.label}
+              handleClick={handleMainGroupClick(navItem.to)}
+              isGroupActive={(path || $page.path) === navItem.to}
+              hideSortIcon={navItem.hideSortIcon}
+            >
+              {#if navItem.isLecture}
+                {#each $lessons as item, index}
+                  <a
+                    class="item flex items-center {(
+                      path || $page.path
+                    ).includes(item.id) && 'active'} pl-7 py-2 {isStudent &&
+                    !item.is_complete
+                      ? 'cursor-not-allowed'
+                      : ''}"
+                    href={isStudent && !item.is_complete
+                      ? $page.path
+                      : getLessonsRoute($course.id, item.id)}
+                    on:click={() => $isMobile && (show = false)}
+                  >
+                    <span class="course-counter">
+                      {getLectureNo(index + 1)}
                     </span>
-                  {:else}
-                    <span class="text-md ml-2">🔒</span>
-                  {/if}
-                </a>
-              {/each}
-            {/if}
-          </Expandable>
-        {/if}
-      {/each}
+                    <span>{item.title}</span>
+                    {#if item.is_complete}
+                      <span class="ml-2 success">
+                        <CheckmarkFilled20 class="carbon-icon" />
+                      </span>
+                    {:else}
+                      <span class="text-md ml-2">🔒</span>
+                    {/if}
+                  </a>
+                {/each}
+              {/if}
+            </Expandable>
+          {/if}
+        {/each}
+      </div>
 
       <div
         class="w-full footer p-3 absolute bottom-2 flex items-center justify-between"
@@ -187,6 +204,7 @@
           value="toggle"
           onClick={() => goto('/courses')}
           buttonClassName="mx-3"
+          size={$isMobile ? 'large' : 'small'}
         >
           <Home32 class="carbon-icon" />
         </IconButton>
@@ -223,7 +241,6 @@
     flex-direction: column;
     min-width: 360px;
     max-width: 360px;
-    position: sticky;
     top: 0;
     border-right: 1px solid var(--border-color);
     background-color: rgb(250, 251, 252);
@@ -260,6 +277,11 @@
     }
   }
 
+  .navItems {
+    height: 82%;
+    overflow-y: scroll;
+  }
+
   .toggler {
     right: -15px;
     z-index: 10;
@@ -267,5 +289,13 @@
     top: 50px;
     height: fit-content;
     background: var(--border-color);
+  }
+
+  @media (max-width: 760px) {
+    .root {
+      width: 95%;
+      min-width: unset;
+      max-width: unset;
+    }
   }
 </style>

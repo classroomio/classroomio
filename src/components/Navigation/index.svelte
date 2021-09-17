@@ -171,8 +171,5 @@
     ul {
       align-items: center;
     }
-    li a {
-      display: none;
-    }
   }
 </style>

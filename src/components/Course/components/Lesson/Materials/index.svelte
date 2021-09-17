@@ -101,6 +101,7 @@
           frameborder="0"
           width="100%"
           height="569"
+          class="iframe"
           allowfullscreen="true"
           mozallowfullscreen="true"
           webkitallowfullscreen="true"
@@ -144,6 +145,7 @@
             <iframe
               width="100%"
               height="569"
+              class="iframe"
               src={formatYoutubeVideo(url)}
               title="YouTube video player"
               frameborder="0"
@@ -161,3 +163,15 @@
     </TabContent>
   </slot:fragment>
 </Tabs>
+
+<style>
+  .iframe {
+    height: 569px;
+  }
+
+  @media (max-width: 760px) {
+    .iframe {
+      height: 209px;
+    }
+  }
+</style>

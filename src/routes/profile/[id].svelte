@@ -121,9 +121,11 @@
   <title>Profile of {currentProfile.username}</title>
 </svelte:head>
 
-<section class="root w-11/12 mt-3 m-auto flex items-start justify-between">
+<section
+  class="root w-11/12 mt-3 m-auto flex items-start justify-between flex-col lg:flex-row"
+>
   {#if currentProfile.id}
-    <div class="w-1/4 flex items-center flex-col">
+    <div class="w-full lg:w-1/4 flex items-center flex-col">
       <!-- <img
         alt={currentProfile.username}
         src={currentProfile.avatar_url}
