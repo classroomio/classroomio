@@ -138,4 +138,10 @@
     text-overflow: ellipsis;
     padding: 10px;
   }
+
+  @media (max-width: 760px) {
+    .title {
+      width: fit-content;
+    }
+  }
 </style>

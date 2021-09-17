@@ -104,7 +104,6 @@
   }
 
   async function getCourses(userId) {
-    console.log(`getCourses process.browser`, process.browser, cantFetch);
     if (process.browser) {
       if (cantFetch && typeof cantFetch === 'boolean' && !allCourses.length) {
         const updatedProfile = await setProfileIdOfGroupMember(

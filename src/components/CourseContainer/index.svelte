@@ -7,6 +7,7 @@
   // import { questionnaireMetaData } from '../Course/components/Lesson/store/answers';
   import { course } from '../Course/store';
   import Confetti from '../Confetti/index.svelte';
+  import { isMobile } from '../../utils/store/useMobile';
 
   export let path = '';
   export let isExercisePage = false;
@@ -33,7 +34,7 @@
 
 <div class="root">
   <Navigation {path} />
-  <div class="rightBar">
+  <div class="rightBar" class:isMobile={$isMobile}>
     {#if isExercisePage}
       <Confetti />
     {/if}
@@ -50,5 +51,9 @@
   .rightBar {
     flex-grow: 1;
     width: calc(100% - 360px);
+  }
+
+  .rightBar.isMobile {
+    margin-left: 10px;
   }
 </style>

@@ -4,7 +4,9 @@
   import { courses } from './store';
 </script>
 
-<div class="flex items-center flex-wrap my-4 m-auto">
+<div
+  class="flex items-center justify-center lg:justify-start flex-wrap my-4 m-auto"
+>
   {#each $courses as courseData}
     <Card
       id={courseData.id}
