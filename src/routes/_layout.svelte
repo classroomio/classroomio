@@ -19,6 +19,7 @@
   import { handleAuthChange } from '../utils/functions/api';
   import { user, profile } from '../utils/store/user';
   import { getSupabase } from '../utils/functions/supabase';
+  import { isMobile } from '../utils/store/useMobile';
 
   export let segment;
   export let config;
@@ -95,7 +96,13 @@
     return /courses\/[a-z 0-9 -]/.test(path);
   }
 
+  function handleResize() {
+    isMobile.update(() => window.innerWidth <= 760);
+  }
+
   onMount(() => {
+    handleResize();
+
     const _isMvpUser = localStorage.getItem('mvp');
 
     console.log('mounting layout', isMvpUser, path, _isMvpUser);
@@ -103,9 +110,9 @@
       localStorage.setItem('mvp', 'true');
       allowUser = true;
     } else if (!_isMvpUser) {
-      if (!!path) {
-        goto('/courses');
-      }
+      // if (!!path) {
+      //   goto('/courses');
+      // }
 
       return;
     }
@@ -134,6 +141,7 @@
   $: path = $page.path.replace('/', '');
 </script>
 
+<svelte:window on:resize={handleResize} />
 <Tailwindcss />
 
 <!-- <Nav {segment} /> -->

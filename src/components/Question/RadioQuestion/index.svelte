@@ -60,7 +60,7 @@
 
 <form on:submit|preventDefault={handleFormSubmit}>
   <div class="flex items-center justify-between">
-    <h2 class={!isNaN(grade) && 'w-3/4'}>{title}</h2>
+    <h3 class={!isNaN(grade) && 'w-3/4'}>{title}</h3>
     {#if !isNaN(grade)}
       <div class="flex items-center">
         <TextField

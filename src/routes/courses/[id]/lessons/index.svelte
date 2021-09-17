@@ -136,7 +136,7 @@
 
   <PageBody padding="p-0">
     <section
-      class="w-11/12 py-3 px-4 m-auto lesson-list"
+      class="w-full lg:w-11/12 py-3 px-3 lg:px-4 m-auto lesson-list"
       use:dndzone={{
         items: $lessons,
         flipDurationMs,
@@ -179,7 +179,7 @@
 
           <RoleBasedSecurity allowedRoles="[1,2]">
             <!-- Edit/Save -->
-            <div class="absolute top-2 right-0">
+            <div class="absolute -top-2 -right-2">
               {#if lessonEditing === lesson.id}
                 <IconButton
                   onClick={() => {
@@ -226,31 +226,35 @@
               </div>
             </div> -->
 
-            <div class="flex items-center justify-between mt-6 w-full">
-              {#if lessonEditing === lesson.id}
-                <Select
-                  bind:value={lesson.profile}
-                  options={$group.tutors}
-                  labelKey="fullname"
-                />
-              {:else if !lesson.profile}
-                <p class="ml-2 text-sm">No tutor added</p>
-              {:else}
-                <a href="." class="flex items-center hover:underline">
-                  <img
-                    alt="Placeholder"
-                    class="block rounded-full"
-                    width="24"
-                    height="20"
-                    src={lesson.profile.avatar_url}
+            <div
+              class="flex items-start justify-between flex-col lg:flex-row lg:items-center mt-6 w-full"
+            >
+              <div class="mb-3 lg:mb-0">
+                {#if lessonEditing === lesson.id}
+                  <Select
+                    bind:value={lesson.profile}
+                    options={$group.tutors}
+                    labelKey="fullname"
                   />
-                  <p class="ml-2 text-sm">
-                    {lesson.profile.fullname}
-                  </p>
-                </a>
-              {/if}
+                {:else if !lesson.profile}
+                  <p class="ml-2 text-sm">No tutor added</p>
+                {:else}
+                  <a href="." class="flex items-center hover:underline">
+                    <img
+                      alt="Placeholder"
+                      class="block rounded-full"
+                      width="24"
+                      height="20"
+                      src={lesson.profile.avatar_url}
+                    />
+                    <p class="ml-2 text-sm">
+                      {lesson.profile.fullname}
+                    </p>
+                  </a>
+                {/if}
+              </div>
 
-              <div class="flex items-cente">
+              <div class="flex items-center mb-3 lg:mb-0">
                 {#if lessonEditing === lesson.id}
                   <input
                     type="date"
@@ -267,7 +271,7 @@
                 {/if}
               </div>
 
-              <div class="flex items-center">
+              <div class="flex items-center mb-3 lg:mb-0">
                 {#if lessonEditing === lesson.id}
                   <TextField
                     bind:value={lesson.call_url}

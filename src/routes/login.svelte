@@ -54,7 +54,7 @@
 </svelte:head>
 
 <div class="w-full h-screen flex items-center justify-center ">
-  <div class="container border border-gray-300 rounded-md p-12">
+  <div class="container border border-gray-300 rounded-md p-2 lg:p-12">
     <form
       on:submit|preventDefault={handleSubmit}
       class="flex items-center flex-col w-full"
@@ -103,8 +103,8 @@
       </div>
 
       {#if !success}
-        <div class="my-4 w-full flex justify-between items-center">
-          <a href="/signup" class="text-blue-700 text-sm">Create an account</a>
+        <div class="my-4 w-full flex justify-end items-center">
+          <!-- <a href="/login" class="text-blue-700 text-sm">Create an account</a> -->
           <PrimaryButton
             label={loading ? 'Creating...' : 'Next'}
             type="submit"
