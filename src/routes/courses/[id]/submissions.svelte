@@ -24,6 +24,7 @@
   } from '../../../utils/services/submissions';
   import { formatAnswers } from '../../../components/Course/function';
   import { snackbarStore } from '../../../components/Snackbar/store';
+  import { SNACKBAR_SEVERITY } from '../../../components/Snackbar/constants';
 
   const flipDurationMs = 300;
 
@@ -168,9 +169,11 @@
       { returning: 'minimal' }
     ).then((res) => console.log('Updated submission', res));
 
-    await Promise.all(updates);
     $snackbarStore.open = true;
     $snackbarStore.message = `Saved successfully`;
+    $snackbarStore.severity = SNACKBAR_SEVERITY.SUCCESS;
+
+    await Promise.all(updates);
   }
 
   onMount(async () => {

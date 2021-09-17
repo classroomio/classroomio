@@ -36,32 +36,34 @@
 </script>
 
 {#if $snackbarStore.open}
-  <div
-    transition:fly={{ y: 200, duration: 500 }}
-    class="root text-white rounded-md flex justify-between items-center absolute {severityColor}"
-  >
-    <div class="flex items-center">
-      {#if $snackbarStore.severity === SNACKBAR_SEVERITY.SUCCESS}
-        <CheckmarkOutline24 class="carbon-icon" />
-      {:else if $snackbarStore.severity === SNACKBAR_SEVERITY.WARNING}
-        <Warning24 class="carbon-icon" />
-      {:else}
-        <Information24 class="carbon-icon" />
-      {/if}
-      <p class="ml-2 text-lg">{$snackbarStore.message}</p>
-    </div>
+  {#key $snackbarStore.message}
+    <div
+      transition:fly={{ x: 200, duration: 500 }}
+      class="root text-white rounded-md flex justify-between items-center absolute {severityColor}"
+    >
+      <div class="flex items-center">
+        {#if $snackbarStore.severity === SNACKBAR_SEVERITY.SUCCESS}
+          <CheckmarkOutline24 class="carbon-icon" />
+        {:else if $snackbarStore.severity === SNACKBAR_SEVERITY.WARNING}
+          <Warning24 class="carbon-icon" />
+        {:else}
+          <Information24 class="carbon-icon" />
+        {/if}
+        <p class="ml-2 text-lg">{$snackbarStore.message}</p>
+      </div>
 
-    <CloseButton onClick={handleClose} contained={true} color="text-white" />
-  </div>
+      <CloseButton onClick={handleClose} contained={true} color="text-white" />
+    </div>
+  {/key}
 {/if}
 
 <style>
   .root {
     font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
-    left: 50%;
-    right: auto;
-    bottom: 24px;
-    transform: translateX(-50%);
+    right: 5%;
+    left: auto;
+    top: 24px;
+    transform: translateX(-5%);
     min-width: 288px;
     padding: 6px 16px;
     flex-wrap: wrap;
