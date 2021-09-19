@@ -21,6 +21,7 @@
   import { fetchCourse, fetchExercises } from '../../../utils/services/courses';
   import { getLectureNo } from '../../../components/Course/function';
   import { fetchMarks } from '../../../utils/services/marks';
+  import { profile } from '../../../utils/store/user';
 
   export let courseId;
 
@@ -29,6 +30,7 @@
   let borderleftGrey =
     'border-r-0 border-t-0 border-b-0 border-l border-gray-300';
   let students = [];
+  let isStudent = false;
 
   let lessonMapping = {}; // { lessonId: { exerciseId: exerciseTitle, ... }, ... }
   let studentMarksByExerciseId = {}; // { groupMemberId: { exerciseId: `total_gotten/points`, ... }, ... }
@@ -85,13 +87,17 @@
   });
 
   $: {
-    students = $group.people.filter(
-      (person) => !!person.profile && person.role_id === ROLE.STUDENT
-    );
+    students = isStudent
+      ? $group.people.filter(
+          (person) => !!person.profile && person.profile.id === $profile.id
+        )
+      : $group.people.filter(
+          (person) => !!person.profile && person.role_id === ROLE.STUDENT
+        );
   }
 </script>
 
-<CourseContainer>
+<CourseContainer bind:isStudent>
   <PageNav title="Marks" />
 
   <PageBody width="w-11/12">

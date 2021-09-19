@@ -28,8 +28,8 @@
 
   // export let lessonId;
   export let path;
+  export let isStudent = null;
   let show = null;
-  let isStudent = null;
 
   const { page } = stores();
 
@@ -105,13 +105,7 @@
         label: 'Submissions',
         to: getNavItemRoute($course.id, 'submissions'),
         hideSortIcon: true,
-        show(groupMembers = [], profileId) {
-          const user = groupMembers.find(
-            (member) => member.profile_id === profileId
-          );
-
-          isStudent = user ? user.role_id === 3 : true;
-
+        show() {
           return !isStudent;
         },
       },
@@ -157,7 +151,7 @@
       </PageNav>
       <div class="navItems">
         {#each navItems as navItem}
-          {#if !navItem.show || (typeof navItem.show === 'function' && navItem.show($group.people, $profile.id))}
+          {#if !navItem.show || (typeof navItem.show === 'function' && navItem.show())}
             <Expandable
               label={navItem.label}
               handleClick={handleMainGroupClick(navItem.to)}

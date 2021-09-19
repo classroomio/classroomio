@@ -93,15 +93,6 @@
   });
 
   $: sortAndFilterPeople($group.people, filterBy);
-  $: {
-    const user: Person = $group.people.find(
-      (person: { profile_id: number }) => person.profile_id === $profile.id
-    )!;
-
-    if (user) {
-      isStudent = user.role_id === 3;
-    }
-  }
 </script>
 
 <InviationModal />
@@ -110,7 +101,7 @@
   {deletePerson}
 />
 
-<CourseContainer>
+<CourseContainer bind:isStudent>
   <PageNav title="People" disableSticky={true}>
     <slot:fragment slot="widget">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
