@@ -1,31 +1,26 @@
 <script>
-  import { onMount, afterUpdate } from 'svelte';
-
   import Navigation from '../Course/components/Navigation/index.svelte';
   // import { lessons, lesson } from '../Course/components/Lesson/store/lessons';
   // import { questionnaire } from '../Course/components/Lesson/Exercise/store/exercise';
   // import { questionnaireMetaData } from '../Course/components/Lesson/store/answers';
-  import { course } from '../Course/store';
+  import { course, group } from '../Course/store';
   import Confetti from '../Confetti/index.svelte';
   import { isMobile } from '../../utils/store/useMobile';
+  import { profile } from '../../utils/store/user';
 
   export let path = '';
   export let isExercisePage = false;
+  export let isStudent = false;
 
-  function setStoreWithData() {
-    // lessons.set(courseData.lessons);
-    // if (courseData.lesson) {
-    //   lesson.set(courseData.lesson);
-    // }
-    // if (courseData.exercise && courseData.exercise.data) {
-    //   questionnaire.set(courseData.exercise.data);
-    //   questionnaireMetaData.set(courseData.exercise.answers);
-    // }
+  $: {
+    const user = $group.people.find(
+      (person) => person.profile_id === $profile.id
+    );
+
+    if (user) {
+      isStudent = user.role_id === 3;
+    }
   }
-
-  onMount(setStoreWithData);
-
-  afterUpdate(setStoreWithData);
 </script>
 
 <svelte:head>
@@ -33,7 +28,7 @@
 </svelte:head>
 
 <div class="root">
-  <Navigation {path} />
+  <Navigation {path} {isStudent} />
   <div class="rightBar" class:isMobile={$isMobile}>
     {#if isExercisePage}
       <Confetti />

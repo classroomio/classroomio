@@ -121,7 +121,7 @@
   }
 </script>
 
-<CourseContainer>
+<CourseContainer bind:isStudent>
   <PageNav title="Lessons">
     <div slot="widget">
       <RoleBasedSecurity allowedRoles="[1,2]">
