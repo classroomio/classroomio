@@ -18,13 +18,13 @@
   } from '../../../components/Course/store';
   import { getLectureNo } from '../../../components/Course/function';
   import { fetchCourse } from '../../../utils/services/courses';
-  import { profile } from '../../../utils/store/user';
   import { lessons } from '../../../components/Course/components/Lesson/store/lessons';
   import { ROLE } from '../../../utils/constants/roles';
   import { takeAttendance } from '../../../utils/services/attendance';
   import { snackbarStore } from '../../../components/Snackbar/store';
   import { SNACKBAR_SEVERITY } from '../../../components/Snackbar/constants';
   import { attendance } from '../../../utils/store/attendance';
+  import { profile } from '../../../utils/store/user';
 
   export let courseId;
 
@@ -68,22 +68,16 @@
     setAttendance(data);
   });
 
-  $: students = $group.people.filter(
-    (person) => !!person.profile && person.role_id === ROLE.STUDENT
-  );
-
-  $: {
-    const user = $group.people.find(
-      (person) => person.profile_id === $profile.id
-    );
-
-    if (user) {
-      isStudent = user.role_id === 3;
-    }
-  }
+  $: students = isStudent
+    ? $group.people.filter(
+        (person) => !!person.profile && person.profile.id === $profile.id
+      )
+    : $group.people.filter(
+        (person) => !!person.profile && person.role_id === ROLE.STUDENT
+      );
 </script>
 
-<CourseContainer>
+<CourseContainer bind:isStudent>
   <PageNav title="Attendance" />
   <PageBody>
     <div class="table rounded-md border border-gray-300 w-full">
