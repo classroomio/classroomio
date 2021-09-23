@@ -6,6 +6,7 @@
   export let value;
   export let placeholder = ``;
   export let onInputChange = () => {};
+  export let textAreaHeight = '';
   const activeClassName = 'border-b-2 border-blue-700';
 
   const handleTabClick = (tab) => () => {
@@ -33,12 +34,13 @@
       <textarea
         bind:value
         {placeholder}
+        style="height: {textAreaHeight}"
         class="border border-gray rounded-md p-2"
         on:change={onInputChange}
       />
     {:else}
       <article class="preview prose prose-sm sm:prose p-2">
-        {@html marked(value)}
+        {@html marked(value || 'Nothing to preview')}
       </article>
     {/if}
   </div>
@@ -81,7 +83,6 @@
 <style>
   .root {
     width: 100%;
-    min-height: 200px;
   }
 
   .form-item {

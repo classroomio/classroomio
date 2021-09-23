@@ -13,6 +13,8 @@ export const questionnaireValidation = writable({});
 
 export const questionnaire = writable({
   title: '',
+  due_by: '',
+  is_due_by_dirty: false,
   is_title_dirty: false,
   description: '',
   is_description_dirty: false,

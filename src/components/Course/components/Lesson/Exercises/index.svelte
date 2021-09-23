@@ -68,7 +68,7 @@
       .from('exercise')
       .select(
         `
-        id, title, description,
+        id, title, description, due_by,
         questions:question(
           *,
           options:option(*),
@@ -89,6 +89,7 @@
 
     data.is_title_dirty = false;
     data.is_description_dirty = false;
+    data.is_due_by_dirty = false;
 
     questionnaire.set(data);
     console.log('getExercise', exerciseId, $questionnaire);
