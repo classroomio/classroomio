@@ -18,11 +18,12 @@
   import TextField from '../../../../Form/TextField.svelte';
   import TextArea from '../../../../Form/TextArea.svelte';
   import Checkbox from '../../../../Form/Checkbox.svelte';
+  import DateTime from '../../../../Form/DateTime.svelte';
   import RadioItem from '../../../../Form/RadioItem.svelte';
   import IconButton from '../../../../IconButton/index.svelte';
   import ErrorMessage from '../../../../ErrorMessage/index.svelte';
   import PrimaryButton from '../../../../PrimaryButton/index.svelte';
-  import Dropdown from '../../../../Dropdown/index.svelte';
+  import EditContent from '../../../../EditContent/index.svelte';
   import { VARIANTS } from '../../../../PrimaryButton/constants';
   import Select from '../../../../Form/Select.svelte';
   import QuestionContainer from '../../../../QuestionContainer/index.svelte';
@@ -75,17 +76,22 @@
       placeholder="Title"
       bind:value={$questionnaire.title}
       className="mb-2"
-      onChange={() => {
-        console.log('title dirty');
-        $questionnaire.is_title_dirty = true;
-      }}
+      onChange={() => ($questionnaire.is_title_dirty = true)}
     />
-    <TextArea
-      placeholder="Description and Rules"
+    <DateTime
+      label="Due by"
+      bind:value={$questionnaire.due_by}
+      placeholder="2021-03-25"
+      className="w-50"
+      useTime={true}
+      onChange={() => ($questionnaire.is_due_by_dirty = true)}
+    />
+    <EditContent
+      writeLabel="Description"
       bind:value={$questionnaire.description}
-      onChange={() => {
-        $questionnaire.is_description_dirty = true;
-      }}
+      placeholder="Start typing your lesson"
+      textAreaHeight="100px"
+      onInputChange={() => ($questionnaire.is_description_dirty = true)}
     />
   </QuestionContainer>
 

@@ -178,16 +178,19 @@ export async function upsertExercise(questionnaire, exerciseId) {
     questions,
     title,
     description,
+    due_by,
     is_title_dirty,
     is_description_dirty,
+    is_due_by_dirty,
   } = questionnaire;
 
-  if (is_description_dirty || is_title_dirty) {
+  if (is_description_dirty || is_title_dirty || is_due_by_dirty) {
     await supabase
       .from('exercise')
       .update({
         title,
         description,
+        due_by,
       })
       .match({ id: exerciseId });
   }
