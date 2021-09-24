@@ -17,6 +17,7 @@
   import { upsertExercise } from '../../../../../utils/services/courses';
 
   export let exerciseId;
+  export let refetchExercise = () => {};
 
   let mode = MODES.view;
   let preview = false;
@@ -46,6 +47,11 @@
     }
   }
 
+  function onCancel() {
+    mode = MODES.view;
+    refetchExercise();
+  }
+
   onDestroy(() => {
     reset();
   });
@@ -57,19 +63,27 @@
       <RoleBasedSecurity allowedRoles="[1,2]">
         <PrimaryButton
           className="mr-2"
-          variant={VARIANTS.OUTLINED}
+          variant={VARIANTS.CONTAINED}
           label={mode === MODES.edit ? 'Save' : 'Edit'}
           onClick={handleMode}
         />
+        {#if mode === MODES.edit}
+          <PrimaryButton
+            className="mr-2"
+            variant={VARIANTS.OUTLINED}
+            label={'Cancel'}
+            onClick={onCancel}
+          />
+        {/if}
       </RoleBasedSecurity>
 
-      <!-- {#if mode === MODES.edit || preview} -->
-      <PrimaryButton
-        variant={preview ? VARIANTS.CONTAINED : VARIANTS.OUTLINED}
-        label={'Toggle Preview'}
-        onClick={() => (preview = !preview)}
-      />
-      <!-- {/if} -->
+      {#if mode !== MODES.edit}
+        <PrimaryButton
+          variant={preview ? VARIANTS.CONTAINED : VARIANTS.OUTLINED}
+          label={'Toggle Preview'}
+          onClick={() => (preview = !preview)}
+        />
+      {/if}
     </div>
 
     {#if mode === MODES.edit}
