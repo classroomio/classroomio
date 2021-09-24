@@ -35,6 +35,7 @@
     QUESTION_TYPES,
   } from '../../../../Question/constants';
   import { filterOutDeleted } from './functions';
+  import Date from '../../../../Form/Date.svelte';
   // import EditContent from "../../../../EditContent/index.svelte";
   // import readme from "../../readme.js";
 
@@ -100,11 +101,12 @@
     />
     <DateTime
       label="Due by"
-      bind:value={$questionnaire.due_by}
-      placeholder="2021-03-25"
       className="w-50"
-      useTime={true}
-      onChange={() => ($questionnaire.is_due_by_dirty = true)}
+      value={$questionnaire.due_by}
+      onInput={(e) => {
+        $questionnaire.due_by = e.target.value;
+        $questionnaire.is_due_by_dirty = true;
+      }}
     />
     <EditContent
       writeLabel="Description"

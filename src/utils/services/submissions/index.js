@@ -10,9 +10,10 @@ export function fetchSubmissions(course_id) {
     .select(
       `
     id,
+    created_at,
     answers:question_answer(*),
     exercise:exercise_id(
-      id, title,
+      id, title, due_by,
       lesson:lesson_id(id, title),
       questions:question(
         *,

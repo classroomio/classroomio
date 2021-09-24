@@ -1,4 +1,5 @@
 <script>
+  import marked from 'marked';
   import { fly } from 'svelte/transition';
   import { group, course } from '../../../store';
   import { questionnaire } from '../store/exercise';
@@ -198,14 +199,23 @@
       </p>
       |
       <p class="mx-2">All required</p>
+      {#if $questionnaire.due_by}
+        |
+        <p class="mx-2">
+          <strong>Due by:</strong>
+          {new Date($questionnaire.due_by).toLocaleString()}
+        </p>
+      {/if}
     </div>
 
-    <p class="text-lg mt-3">{$questionnaire.description}</p>
+    <article class="preview prose prose-sm sm:prose p-2">
+      {@html marked($questionnaire.description || 'No desription')}
+    </article>
 
     <PrimaryButton
       onClick={handleStart}
       label="Start"
-      className="my-5"
+      className="my-5 float-right"
       type="button"
     />
   </div>
