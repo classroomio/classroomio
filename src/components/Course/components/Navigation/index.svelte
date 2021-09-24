@@ -36,7 +36,7 @@
   function handleMainGroupClick(href) {
     return () => {
       if ($isMobile) {
-        show = false;
+        setTimeout(() => (show = false), 500);
       }
       goto(href);
     };
@@ -170,7 +170,11 @@
                     href={isStudent && !item.is_complete
                       ? $page.path
                       : getLessonsRoute($course.id, item.id)}
-                    on:click={() => $isMobile && (show = false)}
+                    on:click={() => {
+                      if ($isMobile) {
+                        setTimeout(() => (show = false), 500);
+                      }
+                    }}
                   >
                     <span class="course-counter">
                       {getLectureNo(index + 1)}
