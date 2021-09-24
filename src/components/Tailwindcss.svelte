@@ -61,6 +61,10 @@
     fill: var(--main-primary-color);
   }
 
+  .prose a {
+    color: var(--main-primary-color);
+  }
+
   .success :global(svg.carbon-icon) {
     fill: green;
   }

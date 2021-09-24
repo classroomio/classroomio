@@ -116,7 +116,22 @@
       <div
         class="hover:bg-gray-100 border-b border-t-0 border-l-0 border-r-0 border-gray-300 p-3"
       >
-        <p class="font-bold text-lg">Details</p>
+        <p class="font-bold text-lg">
+          Details
+          {#if data.isEarly}
+            <span
+              class="ml-2 text-sm badge rounded-sm px-2 bg-green-500 text-white"
+            >
+              early
+            </span>
+          {:else}
+            <span
+              class="ml-2 badge text-sm rounded-sm px-2 bg-red-500 text-white"
+            >
+              late
+            </span>
+          {/if}
+        </p>
       </div>
 
       <div class="flex items-center text-sm p-3">
@@ -148,3 +163,9 @@
     </div>
   </div>
 </Modal>
+
+<style>
+  .badge {
+    width: fit-content;
+  }
+</style>
