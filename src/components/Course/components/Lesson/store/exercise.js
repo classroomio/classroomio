@@ -7,6 +7,7 @@ import { questionnaireMetaData } from './answers';
 import { isUUID } from '../../../../../utils/functions/isUUID';
 
 export const isQuestionnaireFetching = writable(false);
+export const deleteConfirmation = writable({ open: false });
 
 // {'question-id': { option: '', title: '', ... }}
 export const questionnaireValidation = writable({});
