@@ -213,6 +213,11 @@ export async function upsertExercise(questionnaire, exerciseId) {
     if (deleted_at) {
       // Delete from server only if this question exists in the database
       if (!isNew(id)) {
+        await supabase.from('option').delete().match({ question_id: id });
+        await supabase
+          .from('question_answer')
+          .delete()
+          .match({ question_id: id });
         const { error } = await supabase
           .from('question')
           .delete()
@@ -222,8 +227,6 @@ export async function upsertExercise(questionnaire, exerciseId) {
           console.error('Cannot delete this question', error);
           continue;
         }
-
-        await supabase.from('option').delete().match({ question_id: id });
       }
 
       // Skip the remaining operation so we filter out this question from the new questions array
