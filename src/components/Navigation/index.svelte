@@ -142,6 +142,7 @@
 
   a {
     text-decoration: none;
+    color: var(--main-primary-color);
     padding: 0 1.5em;
     font-weight: 700;
     display: flex;

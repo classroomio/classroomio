@@ -25,6 +25,9 @@
   import { formatAnswers } from '../../../components/Course/function';
   import { snackbarStore } from '../../../components/Snackbar/store';
   import { SNACKBAR_SEVERITY } from '../../../components/Snackbar/constants';
+  import Date from '../../../components/Form/Date.svelte';
+  import isSubmissionEarly from '../../../utils/functions/isSubmissionEarly';
+  import formatDate from '../../../utils/functions/formatDate';
 
   const flipDurationMs = 300;
 
@@ -188,12 +191,22 @@
     const sectionById = {};
 
     for (const submission of submissions) {
-      const { id, exercise, course, answers, groupmember, status_id } =
-        submission;
+      const {
+        id,
+        created_at,
+        exercise,
+        course,
+        answers,
+        groupmember,
+        status_id,
+      } = submission;
+      const isEarly = isSubmissionEarly(created_at, exercise.due_by);
 
       const submissionItem = {
         id,
         statusId: status_id,
+        isEarly,
+        submittedAt: formatDate(created_at),
         exercise: {
           id: exercise.id,
           title: exercise.title,
@@ -205,10 +218,11 @@
           title: exercise.lesson.title,
         },
       };
-      console.log(`answers`, answers);
+
       submissionIdData[id] = {
         id,
         status_id,
+        isEarly,
         title: exercise.title,
         student: submissionItem.student,
         questions: exercise.questions,
@@ -281,11 +295,16 @@
             >
               {#each items as item (item.id)}
                 <div
-                  class="border border-grey-700 w-full my-2 mx-0 rounded-md bg-white py-2 px-3"
+                  class="border {item.isEarly
+                    ? 'border-grey-700'
+                    : 'border-red-700'} w-full my-2 mx-0 rounded-md bg-white py-2 px-3"
                   animate:flip={{ duration: flipDurationMs }}
                 >
                   <div
-                    class="flex items-center no-underline hover:underline text-black mb-2"
+                    class="flex items-center cursor-pointer text-black mb-2"
+                    on:click={() => {
+                      goto(`${$page.path}?submissionId=${item.id}`);
+                    }}
                   >
                     <img
                       alt="Student avatar"
@@ -310,6 +329,15 @@
                       {`${item.tutor ? 'created by' + item.tutor.name : ''}`}
                     </p>
                   </a>
+                  <p class="text-gray-500 text-xs">
+                    {item.submittedAt}
+                  </p>
+                  <!-- <div class="badge rounded-md px-2 bg-green-500 text-white">
+                    early
+                  </div>
+                  <div class="badge rounded-md px-2 bg-red-600 text-white">
+                    late
+                  </div> -->
                 </div>
               {/each}
             </div>
