@@ -1,6 +1,8 @@
 <script>
+  import { fly } from 'svelte/transition';
   import {
     questionnaire,
+    deleteConfirmation,
     questionnaireValidation,
     handleAddOption,
     handleRemoveOption,
@@ -26,6 +28,7 @@
   import { VARIANTS } from '../../../../PrimaryButton/constants';
   import Select from '../../../../Form/Select.svelte';
   import QuestionContainer from '../../../../QuestionContainer/index.svelte';
+  import DeleteConfirmationModal from './DeleteConfirmation.svelte';
   import {
     QUESTION_TYPE,
     QUESTION_TYPES,
@@ -39,12 +42,24 @@
   const initialQuestionsLength = $questionnaire.questions.length;
 
   let errors = {};
+  let questionIdToDelete = null;
 
   function shouldScrollToLast(index, questions) {
     const currentQuestionsLength = questions.length;
     const isLast = index + 1 === currentQuestionsLength;
 
     return isLast && initialQuestionsLength !== currentQuestionsLength;
+  }
+
+  function onInitDeleteClicked(questionId) {
+    return () => {
+      questionIdToDelete = questionId;
+      $deleteConfirmation.open = true;
+    };
+  }
+
+  function onFinalDeleteClicked() {
+    handleRemoveQuestion(questionIdToDelete)();
   }
 
   function handleOptionClick(questionIndex) {
@@ -68,6 +83,11 @@
 
   $: errors = $questionnaireValidation;
 </script>
+
+<DeleteConfirmationModal
+  onCancel={() => (questionIdToDelete = null)}
+  onDelete={onFinalDeleteClicked}
+/>
 
 <div class="w-11/12 m-auto">
   <QuestionContainer isTitle={true}>
@@ -96,8 +116,10 @@
   {/if}
 
   {#each filterOutDeleted($questionnaire.questions) as question, index}
+    <!-- {#key question.id}
+      <div out:fly={{ x: 500, duration: 1000 }}> -->
     <QuestionContainer
-      onClose={handleRemoveQuestion(question.id)}
+      onClose={onInitDeleteClicked(question.id)}
       scrollToQuestion={shouldScrollToLast(index, $questionnaire.questions)}
       bind:points={question.points}
       hasError={!!errors[question.id]}
@@ -239,5 +261,7 @@
         </div>
       {/if}
     </QuestionContainer>
+    <!-- </div>
+    {/key} -->
   {/each}
 </div>
