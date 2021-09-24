@@ -30,6 +30,7 @@
       gradeMax={currentQuestion.points}
       handleGrade={handleGrade(currentQuestion.id)}
       {disableGrading}
+      disabled={true}
     />
   {:else if QUESTION_TYPE.CHECKBOX === currentQuestion.question_type.id}
     <CheckboxQuestion
@@ -46,6 +47,7 @@
       gradeMax={currentQuestion.points}
       handleGrade={handleGrade(currentQuestion.id)}
       {disableGrading}
+      disabled={true}
     />
   {:else if QUESTION_TYPE.TEXTAREA === currentQuestion.question_type.id}
     <TextareaQuestion
@@ -62,6 +64,7 @@
       gradeMax={currentQuestion.points}
       handleGrade={handleGrade(currentQuestion.id)}
       {disableGrading}
+      disabled={true}
     />
   {/if}
 {/each}

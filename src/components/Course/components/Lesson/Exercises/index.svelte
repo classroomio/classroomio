@@ -105,7 +105,7 @@
 </script>
 
 {#if exerciseId}
-  <Exercise {exerciseId} />
+  <Exercise {exerciseId} refetchExercise={() => getExercise(exerciseId)} />
 {:else}
   <Modal
     onClose={handleCancelAddExercise}
