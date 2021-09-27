@@ -1,6 +1,10 @@
 <script>
   import { onDestroy } from 'svelte';
-  import AddAlt16 from 'carbon-icons-svelte/lib/AddAlt16';
+  import AddAlt24 from 'carbon-icons-svelte/lib/AddAlt24';
+  import Delete24 from 'carbon-icons-svelte/lib/Delete24';
+  import Settings24 from 'carbon-icons-svelte/lib/Settings24';
+  import View32 from 'carbon-icons-svelte/lib/View32';
+  import ViewFilled32 from 'carbon-icons-svelte/lib/ViewFilled32';
   import {
     handleAddQuestion,
     questionnaire,
@@ -9,6 +13,7 @@
   } from '../store/exercise';
   import PrimaryButton from '../../../../PrimaryButton/index.svelte';
   import PageBody from '../../../../PageBody/index.svelte';
+  import IconButton from '../../../../IconButton/index.svelte';
   import RoleBasedSecurity from '../../../../RoleBasedSecurity/index.svelte';
   import ViewMode from './ViewMode.svelte';
   import EditMode from './EditMode.svelte';
@@ -21,6 +26,7 @@
 
   let mode = MODES.view;
   let preview = false;
+  let editDescription = false;
 
   async function handleMode() {
     if (mode === MODES.edit) {
@@ -47,6 +53,8 @@
     }
   }
 
+  function handleDeleteExercise() {}
+
   function onCancel() {
     mode = MODES.view;
     refetchExercise();
@@ -57,7 +65,7 @@
   });
 </script>
 
-<PageBody>
+<PageBody padding="px-4">
   <svelte:fragment slot="header">
     <div class="flex items-center">
       <RoleBasedSecurity allowedRoles="[1,2]">
@@ -78,25 +86,48 @@
       </RoleBasedSecurity>
 
       {#if mode !== MODES.edit}
-        <PrimaryButton
-          variant={preview ? VARIANTS.CONTAINED : VARIANTS.OUTLINED}
-          label={'Toggle Preview'}
+        <IconButton
           onClick={() => (preview = !preview)}
-        />
+          toolTipProps={{ title: 'Toggle preview', direction: 'right' }}
+          selected={preview}
+          contained={true}
+        >
+          {#if preview}
+            <ViewFilled32 class="carbon-icon" />
+          {:else}
+            <View32 class="carbon-icon" />
+          {/if}
+        </IconButton>
       {/if}
     </div>
 
     {#if mode === MODES.edit}
       <div class="flex items-center">
-        <PrimaryButton variant={VARIANTS.OUTLINED} onClick={handleAddQuestion}>
-          Add Question <AddAlt16 class="carbon-icon" />
-        </PrimaryButton>
+        <IconButton
+          onClick={() => (editDescription = true)}
+          toolTipProps={{ title: 'Edit description', direction: 'bottom' }}
+        >
+          <Settings24 class="carbon-icon" />
+        </IconButton>
+        <!-- <IconButton
+          onClick={handleDeleteExercise}
+          toolTipProps={{ title: 'Delete questionnaire', direction: 'bottom' }}
+        >
+          <Delete24 class="carbon-icon" />
+        </IconButton> -->
+
+        <IconButton
+          onClick={handleAddQuestion}
+          toolTipProps={{ title: 'Add question', direction: 'bottom' }}
+        >
+          <AddAlt24 class="carbon-icon" />
+        </IconButton>
       </div>
     {/if}
   </svelte:fragment>
 
   {#if mode === MODES.edit && !preview}
-    <EditMode />
+    <EditMode bind:editDescription />
   {:else}
     <ViewMode {preview} {exerciseId} />
   {/if}
