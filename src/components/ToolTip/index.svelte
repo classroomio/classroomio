@@ -6,7 +6,15 @@
 
 {#if !!title}
   <div class="tooltip">
-    <span class="tooltiptext z-20 {direction === 'right' && 'right'}">
+    <span
+      class="tooltiptext z-20 {direction === 'right'
+        ? 'right'
+        : direction === 'top'
+        ? 'top'
+        : direction === 'bottom'
+        ? 'bottom'
+        : 'left'}"
+    >
       {title}
       {#if Array.isArray(hotkeys) && hotkeys.length}
         <span class="shortcut">
@@ -29,11 +37,17 @@
     left: 100%;
     right: unset !important;
   }
+  .bottom {
+    bottom: -75% !important;
+    left: -80%;
+    right: unset !important;
+    top: unset !important;
+  }
   .tooltip .tooltiptext {
     color: #fff;
     padding: 8px;
     font-size: 0.625rem;
-    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
     font-weight: 500;
     line-height: 1.4em;
     border-radius: 8px;

@@ -86,6 +86,7 @@
       );
       return question;
     });
+    data.questions = data.questions.sort((a, b) => a.order - b.order);
 
     data.is_title_dirty = false;
     data.is_description_dirty = false;

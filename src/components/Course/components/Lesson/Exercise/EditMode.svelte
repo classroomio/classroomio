@@ -1,4 +1,5 @@
 <script>
+  import { dndzone } from 'svelte-dnd-action';
   import { fly } from 'svelte/transition';
   import {
     questionnaire,
@@ -18,6 +19,7 @@
   // import Subtract24 from "carbon-icons-svelte/lib/Subtract24";
 
   import TextField from '../../../../Form/TextField.svelte';
+  import Modal from '../../../../Modal/index.svelte';
   import TextArea from '../../../../Form/TextArea.svelte';
   import Checkbox from '../../../../Form/Checkbox.svelte';
   import DateTime from '../../../../Form/DateTime.svelte';
@@ -43,11 +45,42 @@
   const extraActions = ['Code Snippets', 'Upload image'];
   const initialQuestionsLength = $questionnaire.questions.length;
 
+  export let editDescription = false;
+
   let errors = {};
   let questionIdToDelete = null;
+  let questions = [];
+  let isDragging = false;
 
-  function shouldScrollToLast(index, questions) {
+  function handleDndConsider(e) {
+    questions = e.detail.items;
+  }
+
+  function handleDndFinalize(e) {
+    const prevQuestionsByOrder = questions.reduce(
+      (acc, l, index) => ({ ...acc, [l.id]: l.order }),
+      {}
+    );
+    questions = e.detail.items;
+
+    // // Only update the lesson order that changed
+    e.detail.items.forEach((item, index) => {
+      const order = index + 1;
+
+      if (order !== prevQuestionsByOrder[item.id]) {
+        $questionnaire.questions.some((q) => {
+          if (q.id === item.id) {
+            q.is_dirty = true;
+            q.order = order;
+          }
+        });
+      }
+    });
+  }
+
+  function shouldScrollToLast(questionId, questions) {
     const currentQuestionsLength = questions.length;
+    const index = questions.findIndex((question) => question.id === questionId);
     const isLast = index + 1 === currentQuestionsLength;
 
     return isLast && initialQuestionsLength !== currentQuestionsLength;
@@ -84,6 +117,7 @@
   }
 
   $: errors = $questionnaireValidation;
+  $: questions = filterOutDeleted($questionnaire.questions);
 </script>
 
 <DeleteConfirmationModal
@@ -91,64 +125,86 @@
   onDelete={onFinalDeleteClicked}
 />
 
-<div class="w-11/12 m-auto">
-  <QuestionContainer isTitle={true}>
-    <TextField
-      placeholder="Title"
-      bind:value={$questionnaire.title}
-      className="mb-2"
-      onChange={() => ($questionnaire.is_title_dirty = true)}
-    />
-    <DateTime
-      label="Due by"
-      className="w-50"
-      value={$questionnaire.due_by}
-      onInput={(e) => {
-        $questionnaire.due_by = e.target.value;
-        $questionnaire.is_due_by_dirty = true;
-      }}
-    />
-    <EditContent
-      writeLabel="Description"
-      bind:value={$questionnaire.description}
-      placeholder="Start typing your lesson"
-      textAreaHeight="100px"
-      onInputChange={() => ($questionnaire.is_description_dirty = true)}
-    />
-  </QuestionContainer>
+<Modal
+  onClose={() => (editDescription = false)}
+  bind:open={editDescription}
+  width="w-2/4"
+  modalHeading="Update description"
+>
+  <div>
+    <QuestionContainer isTitle={true}>
+      <TextField
+        placeholder="Title"
+        bind:value={$questionnaire.title}
+        className="mb-2"
+        onChange={() => ($questionnaire.is_title_dirty = true)}
+      />
+      <DateTime
+        label="Due by"
+        className="w-50"
+        value={$questionnaire.due_by}
+        onInput={(e) => {
+          $questionnaire.due_by = e.target.value;
+          $questionnaire.is_due_by_dirty = true;
+        }}
+      />
+      <EditContent
+        writeLabel="Description"
+        bind:value={$questionnaire.description}
+        placeholder="Start typing your lesson"
+        textAreaHeight="100px"
+        onInputChange={() => ($questionnaire.is_description_dirty = true)}
+      />
+    </QuestionContainer>
+  </div>
+</Modal>
 
+<div class="w-full">
   {#if Object.values(errors).length}
     <div class="w-full flex justify-center mb-4">
       <ErrorMessage message="You have some errors" />
     </div>
   {/if}
+  <div
+    use:dndzone={{
+      items: questions,
+      flipDurationMs: 300,
+      dropTargetStyle: {
+        border: '2px #1d4ed8 solid',
+        'border-style': 'dashed',
+      },
+    }}
+    on:consider={handleDndConsider}
+    on:finalize={handleDndFinalize}
+    class="questions pt-6 px-6"
+  >
+    {#each questions as question (question.id)}
+      <!-- {#key question.id} -->
+      <QuestionContainer
+        onClose={onInitDeleteClicked(question.id)}
+        scrollToQuestion={shouldScrollToLast(
+          question.id,
+          $questionnaire.questions
+        )}
+        bind:points={question.points}
+        hasError={!!errors[question.id]}
+        onPointsChange={() => {
+          question.is_dirty = true;
+        }}
+      >
+        <div class="flex justify-between items-center">
+          <div class="mr-2 w-3/5">
+            <TextField
+              placeholder="Question"
+              bind:value={question.title}
+              isRequired={true}
+              onChange={() => {
+                question.is_dirty = true;
+              }}
+            />
+          </div>
 
-  {#each filterOutDeleted($questionnaire.questions) as question, index}
-    <!-- {#key question.id}
-      <div out:fly={{ x: 500, duration: 1000 }}> -->
-    <QuestionContainer
-      onClose={onInitDeleteClicked(question.id)}
-      scrollToQuestion={shouldScrollToLast(index, $questionnaire.questions)}
-      bind:points={question.points}
-      hasError={!!errors[question.id]}
-      onPointsChange={() => {
-        question.is_dirty = true;
-      }}
-    >
-      <div class="flex justify-between items-center">
-        <div class="mr-2 w-3/5">
-          <TextField
-            placeholder="Question"
-            bind:value={question.title}
-            isRequired={true}
-            onChange={() => {
-              console.log('title changed', question.title);
-              question.is_dirty = true;
-            }}
-          />
-        </div>
-
-        <!-- <Dropdown
+          <!-- <Dropdown
           options={extraActions}
           handleOptionClick={handleOptionClick(question.id)}
         >
@@ -156,120 +212,132 @@
           <p class="ml-2 text-gray-600">Add</p>
         </Dropdown> -->
 
-        <Select
-          bind:value={question.question_type}
-          options={QUESTION_TYPES}
-          onChange={() => {
-            question.is_dirty = true;
-          }}
-        />
-      </div>
-
-      {#if typeof question.code === 'string'}
-        <div class="flex justify-between items-center my-3 w-3/5">
-          <TextArea
-            bind:value={question.code}
-            rows="2"
-            placeholder="Write your code"
+          <Select
+            bind:value={question.question_type}
+            options={QUESTION_TYPES}
+            onChange={() => {
+              question.is_dirty = true;
+            }}
           />
-          <IconButton
-            value="write-code"
-            onClick={() => handleCode(question.id, false)}
-          >
-            <Delete24 class="carbon-icon" />
-          </IconButton>
         </div>
-      {/if}
 
-      <div class="flex flex-col mt-2">
-        {#if QUESTION_TYPE.RADIO === question.question_type.id}
-          {#each filterOutDeleted(question.options) as option}
-            <RadioItem
-              isEditable={true}
-              name={question.title || 'radio-name'}
-              bind:label={option.label}
-              onChange={addDynamicValue(question.id, option.id)}
+        {#if typeof question.code === 'string'}
+          <div class="flex justify-between items-center my-3 w-3/5">
+            <TextArea
+              bind:value={question.code}
+              rows="2"
+              placeholder="Write your code"
+            />
+            <IconButton
+              value="write-code"
+              onClick={() => handleCode(question.id, false)}
             >
-              <div slot="iconbutton" class="flex items-center">
-                <IconButton
-                  value={option.id}
-                  onClick={handleRemoveOption(question.id, option.id)}
-                >
-                  <Delete24 class="carbon-icon" />
-                </IconButton>
-                <IconButton
-                  value={option.id}
-                  onClick={handleAnswerSelect(question.id, option.id)}
-                  buttonClassName={option.is_correct && 'success'}
-                >
-                  {#if option.is_correct}
-                    <CheckmarkFilled24 class="carbon-icon" />
-                  {:else}
-                    <CheckmarkOutline24 class="carbon-icon" />
-                  {/if}
-                </IconButton>
-              </div>
-            </RadioItem>
-          {/each}
+              <Delete24 class="carbon-icon" />
+            </IconButton>
+          </div>
         {/if}
 
-        {#if QUESTION_TYPE.CHECKBOX === question.question_type.id}
-          {#each filterOutDeleted(question.options) as option}
-            <Checkbox
-              isEditable={true}
-              name={question || 'checkbox-name'}
-              bind:label={option.label}
-              onChange={addDynamicValue(question.id, option.id)}
-            >
-              <div slot="iconbutton" class="flex items-center">
-                <IconButton
-                  value={option.id}
-                  onClick={handleRemoveOption(question.id, option.id)}
-                >
-                  <Delete24 class="carbon-icon" />
-                </IconButton>
-                <IconButton
-                  value={option.id}
-                  onClick={handleAnswerSelect(question.id, option.id)}
-                  buttonClassName={option.is_correct && 'success'}
-                >
-                  {#if option.is_correct}
-                    <CheckmarkFilled24 class="carbon-icon" />
-                  {:else}
-                    <CheckmarkOutline24 class="carbon-icon" />
-                  {/if}
-                </IconButton>
-              </div>
-            </Checkbox>
-          {/each}
-        {/if}
+        <div class="flex flex-col mt-2">
+          {#if QUESTION_TYPE.RADIO === question.question_type.id}
+            {#each filterOutDeleted(question.options) as option}
+              <RadioItem
+                isEditable={true}
+                name={question.title || 'radio-name'}
+                bind:label={option.label}
+                onChange={addDynamicValue(question.id, option.id)}
+              >
+                <div slot="iconbutton" class="flex items-center">
+                  <IconButton
+                    value={option.id}
+                    onClick={handleRemoveOption(question.id, option.id)}
+                  >
+                    <Delete24 class="carbon-icon" />
+                  </IconButton>
+                  <IconButton
+                    value={option.id}
+                    onClick={handleAnswerSelect(question.id, option.id)}
+                    buttonClassName={option.is_correct && 'success'}
+                  >
+                    {#if option.is_correct}
+                      <CheckmarkFilled24 class="carbon-icon" />
+                    {:else}
+                      <CheckmarkOutline24 class="carbon-icon" />
+                    {/if}
+                  </IconButton>
+                </div>
+              </RadioItem>
+            {/each}
+          {/if}
 
-        {#if QUESTION_TYPE.TEXTAREA === question.question_type.id}
-          <TextArea bind:value={question.value} />
-        {/if}
+          {#if QUESTION_TYPE.CHECKBOX === question.question_type.id}
+            {#each filterOutDeleted(question.options) as option}
+              <Checkbox
+                isEditable={true}
+                name={question || 'checkbox-name'}
+                bind:label={option.label}
+                onChange={addDynamicValue(question.id, option.id)}
+              >
+                <div slot="iconbutton" class="flex items-center">
+                  <IconButton
+                    value={option.id}
+                    onClick={handleRemoveOption(question.id, option.id)}
+                  >
+                    <Delete24 class="carbon-icon" />
+                  </IconButton>
+                  <IconButton
+                    value={option.id}
+                    onClick={handleAnswerSelect(question.id, option.id)}
+                    buttonClassName={option.is_correct && 'success'}
+                  >
+                    {#if option.is_correct}
+                      <CheckmarkFilled24 class="carbon-icon" />
+                    {:else}
+                      <CheckmarkOutline24 class="carbon-icon" />
+                    {/if}
+                  </IconButton>
+                </div>
+              </Checkbox>
+            {/each}
+          {/if}
 
-        {#if getQuestionErrorMsg(errors, question, 'option')}
-          <ErrorMessage
-            message={getQuestionErrorMsg(errors, question, 'option')}
-          />
-        {/if}
-      </div>
+          {#if QUESTION_TYPE.TEXTAREA === question.question_type.id}
+            <TextArea bind:value={question.value} />
+          {/if}
 
-      {#if QUESTION_TYPE.TEXTAREA !== question.question_type.id}
-        <div class="flex items-center mt-3">
-          <PrimaryButton
-            disablePadding={true}
-            className="p-2"
-            variant={VARIANTS.OUTLINED}
-            onClick={handleAddOption(question.id)}
-          >
-            <AddFilled24 class="carbon-icon" />
-            <p class="ml-2">Add option</p>
-          </PrimaryButton>
+          {#if getQuestionErrorMsg(errors, question, 'option')}
+            <ErrorMessage
+              message={getQuestionErrorMsg(errors, question, 'option')}
+            />
+          {/if}
         </div>
-      {/if}
-    </QuestionContainer>
-    <!-- </div>
-    {/key} -->
-  {/each}
+
+        {#if QUESTION_TYPE.TEXTAREA !== question.question_type.id}
+          <div class="flex items-center mt-3">
+            <PrimaryButton
+              disablePadding={true}
+              className="p-2"
+              variant={VARIANTS.OUTLINED}
+              onClick={handleAddOption(question.id)}
+            >
+              <AddFilled24 class="carbon-icon" />
+              <p class="ml-2">Add option</p>
+            </PrimaryButton>
+          </div>
+        {/if}
+      </QuestionContainer>
+
+      <!--  {/key} -->
+    {/each}
+  </div>
 </div>
+
+<style>
+  .questions {
+    height: 80vh;
+    overflow-y: auto;
+  }
+
+  :global(#dnd-action-dragged-el div) {
+    z-index: 100;
+  }
+</style>
