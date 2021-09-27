@@ -91,7 +91,7 @@
 
   function getTotalPossibleGrade() {
     return $questionnaire.questions.reduce((acc, question) => {
-      acc += parseInt(question.points, 10);
+      acc += parseFloat(question.points, 10);
       return acc;
     }, 0);
   }

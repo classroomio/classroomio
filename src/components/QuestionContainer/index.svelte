@@ -29,15 +29,15 @@
 
 <div
   bind:this={ref}
-  class="{isTitle ? 'border' : 'border-2'} {hasError
+  class="bg-white border {hasError
     ? 'border-red-700'
-    : 'border-gray hover:border-blue-700'} border-r-2 rounded-md mb-6 relative root"
+    : 'border-gray hover:border-blue-700'} rounded-md mb-6 relative root"
 >
   {#if isTitle}
     <div class="title absolute bg-blue-700" />
   {/if}
 
-  {#if onClose}
+  {#if onClose && !isTitle}
     <div class="close-button hidden absolute -top-6 -right-6">
       <CloseButton onClick={onClose} contained={true} />
     </div>

@@ -205,6 +205,7 @@ export async function upsertExercise(questionnaire, exerciseId) {
       question_type,
       options,
       deleted_at,
+      order,
       points,
       is_dirty,
     } = question;
@@ -239,6 +240,7 @@ export async function upsertExercise(questionnaire, exerciseId) {
       name: isNew(id) ? undefined : name,
       title,
       points,
+      order,
       question_type_id: question_type.id,
       exercise_id: exerciseId,
     };
@@ -256,7 +258,7 @@ export async function upsertExercise(questionnaire, exerciseId) {
     }
 
     if (questionSupabaseRes) {
-      const { question_type_id, id, name } = questionSupabaseRes;
+      const { question_type_id, id, name, order } = questionSupabaseRes;
 
       // Delete cause this is not a field in the table
       delete newQuestion.question_type_id;
@@ -264,6 +266,7 @@ export async function upsertExercise(questionnaire, exerciseId) {
       newQuestion.question_type = { id: question_type_id };
       newQuestion.id = id;
       newQuestion.name = name;
+      newQuestion.order = order;
       newQuestion.options = [];
 
       // Don't map options for 'Paragraph' questions

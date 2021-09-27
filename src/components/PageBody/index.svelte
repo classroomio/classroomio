@@ -9,7 +9,7 @@
 <div class="root mt-4 mx-auto {width} {className} relative {padding}">
   {#if $$slots.header}
     <div
-      class="head flex items-center justify-between sticky right-0 w-full py-3"
+      class="head flex items-center justify-between sticky right-0 w-full p-3"
     >
       <slot name="header" />
     </div>
@@ -21,7 +21,7 @@
 <style>
   .root {
     overflow-y: auto;
-    height: 85vh;
+    height: 90vh;
   }
   .head {
     top: 0px;
