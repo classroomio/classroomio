@@ -104,7 +104,9 @@
             />
             <div class="text-sm">
               <p class="font-semibold">{student.profile.fullname}</p>
-              <p>{`#${student.assigned_student_id}` || '-'}</p>
+              {#if student.assigned_student_id}
+              	<p>#{student.assigned_student_id}</p>
+              {/if}
             </div>
           </div>
           {#each $lessons as lesson}
