@@ -1,8 +1,9 @@
 <script>
   import { onDestroy } from 'svelte';
-  import AddAlt24 from 'carbon-icons-svelte/lib/AddAlt24';
-  import Delete24 from 'carbon-icons-svelte/lib/Delete24';
-  import Settings24 from 'carbon-icons-svelte/lib/Settings24';
+  import AddAlt32 from 'carbon-icons-svelte/lib/AddAlt32';
+  // import Delete32 from 'carbon-icons-svelte/lib/Delete32';
+  import Table32 from 'carbon-icons-svelte/lib/Table32';
+  import Settings32 from 'carbon-icons-svelte/lib/Settings32';
   import View32 from 'carbon-icons-svelte/lib/View32';
   import ViewFilled32 from 'carbon-icons-svelte/lib/ViewFilled32';
   import {
@@ -10,6 +11,7 @@
     questionnaire,
     validateQuestionnaire,
     reset,
+    questionnaireOrder,
   } from '../store/exercise';
   import PrimaryButton from '../../../../PrimaryButton/index.svelte';
   import PageBody from '../../../../PageBody/index.svelte';
@@ -104,24 +106,30 @@
     {#if mode === MODES.edit}
       <div class="flex items-center">
         <IconButton
+          onClick={handleAddQuestion}
+          toolTipProps={{ title: 'Add question', direction: 'bottom' }}
+        >
+          <AddAlt32 class="carbon-icon" />
+        </IconButton>
+        <IconButton
+          onClick={() => ($questionnaireOrder.open = true)}
+          toolTipProps={{ title: 'Order questionnaire', direction: 'bottom' }}
+        >
+          <Table32 class="carbon-icon" />
+        </IconButton>
+        <IconButton
           onClick={() => (editDescription = true)}
           toolTipProps={{ title: 'Edit description', direction: 'bottom' }}
         >
-          <Settings24 class="carbon-icon" />
+          <Settings32 class="carbon-icon" />
         </IconButton>
+
         <!-- <IconButton
           onClick={handleDeleteExercise}
           toolTipProps={{ title: 'Delete questionnaire', direction: 'bottom' }}
         >
-          <Delete24 class="carbon-icon" />
+          <Delete32 class="carbon-icon" />
         </IconButton> -->
-
-        <IconButton
-          onClick={handleAddQuestion}
-          toolTipProps={{ title: 'Add question', direction: 'bottom' }}
-        >
-          <AddAlt24 class="carbon-icon" />
-        </IconButton>
       </div>
     {/if}
   </svelte:fragment>

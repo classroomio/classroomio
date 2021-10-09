@@ -26,6 +26,7 @@
   let currentQuestion = {};
   let renderProps = {};
   let submission;
+  let hasSubmission = null;
 
   function handleStart() {
     $questionnaireMetaData.currentQuestionIndex += 1;
@@ -97,11 +98,13 @@
   }
 
   async function checkForSubmission(people, profileId, courseId) {
-    console.log('checkForSubmission');
-
     if (!Array.isArray(people) || !profileId || !courseId || !!submission) {
       return;
     }
+
+    if (hasSubmission) return;
+
+    console.log('checkForSubmission');
 
     const args = {
       exerciseId,
@@ -109,9 +112,9 @@
       submittedBy: getGroupMemberId(people, profileId),
     };
     const { data } = await fetchSubmission(args);
+    hasSubmission = true;
 
     if (Array.isArray(data) && data.length) {
-      console.log(`submissions`, data);
       submission = data[0];
 
       $questionnaireMetaData.answers = formatAnswers({
@@ -248,7 +251,7 @@
     </span>
   </div>
   <Preview
-    questions={$questionnaire.questions}
+    questions={$questionnaire.questions.sort((a, b) => a.order - b.order)}
     questionnaireMetaData={$questionnaireMetaData}
     grades={$questionnaireMetaData.grades}
     disableGrading={true}
