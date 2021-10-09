@@ -86,7 +86,9 @@
 >
   <div class="w-full">
     <Preview
-      questions={data.questions || []}
+      questions={Array.isArray(data.questions)
+        ? data.questions.sort((a, b) => a.order - b.order)
+        : []}
       questionnaireMetaData={{
         answers: data.answers || {},
         isFinished: true,
