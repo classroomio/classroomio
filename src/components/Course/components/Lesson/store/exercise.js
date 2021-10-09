@@ -8,6 +8,7 @@ import { isUUID } from '../../../../../utils/functions/isUUID';
 
 export const isQuestionnaireFetching = writable(false);
 export const deleteConfirmation = writable({ open: false });
+export const questionnaireOrder = writable({ open: false });
 
 // {'question-id': { option: '', title: '', ... }}
 export const questionnaireValidation = writable({});
@@ -71,6 +72,7 @@ export function handleAddQuestion() {
           name: `${questions.length + 1}-form`,
           value: '',
           points: 0,
+          order: questions.length,
           question_type: {
             id: QUESTION_TYPE.RADIO,
           },

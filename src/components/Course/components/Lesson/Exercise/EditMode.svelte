@@ -1,6 +1,4 @@
 <script>
-  import { dndzone } from 'svelte-dnd-action';
-  import { fly } from 'svelte/transition';
   import {
     questionnaire,
     deleteConfirmation,
@@ -32,6 +30,7 @@
   import Select from '../../../../Form/Select.svelte';
   import QuestionContainer from '../../../../QuestionContainer/index.svelte';
   import DeleteConfirmationModal from './DeleteConfirmation.svelte';
+  import OrderModal from './OrderModal.svelte';
   import {
     QUESTION_TYPE,
     QUESTION_TYPES,
@@ -50,33 +49,6 @@
   let errors = {};
   let questionIdToDelete = null;
   let questions = [];
-  let isDragging = false;
-
-  function handleDndConsider(e) {
-    questions = e.detail.items;
-  }
-
-  function handleDndFinalize(e) {
-    const prevQuestionsByOrder = questions.reduce(
-      (acc, l, index) => ({ ...acc, [l.id]: l.order }),
-      {}
-    );
-    questions = e.detail.items;
-
-    // // Only update the lesson order that changed
-    e.detail.items.forEach((item, index) => {
-      const order = index + 1;
-
-      if (order !== prevQuestionsByOrder[item.id]) {
-        $questionnaire.questions.some((q) => {
-          if (q.id === item.id) {
-            q.is_dirty = true;
-            q.order = order;
-          }
-        });
-      }
-    });
-  }
 
   function shouldScrollToLast(questionId, questions) {
     const currentQuestionsLength = questions.length;
@@ -125,6 +97,8 @@
   onDelete={onFinalDeleteClicked}
 />
 
+<OrderModal />
+
 <Modal
   onClose={() => (editDescription = false)}
   bind:open={editDescription}
@@ -165,19 +139,7 @@
       <ErrorMessage message="You have some errors" />
     </div>
   {/if}
-  <div
-    use:dndzone={{
-      items: questions,
-      flipDurationMs: 300,
-      dropTargetStyle: {
-        border: '2px #1d4ed8 solid',
-        'border-style': 'dashed',
-      },
-    }}
-    on:consider={handleDndConsider}
-    on:finalize={handleDndFinalize}
-    class="questions pt-6 px-6"
-  >
+  <div class="questions pt-6 px-6">
     {#each questions as question (question.id)}
       <!-- {#key question.id} -->
       <QuestionContainer
@@ -332,11 +294,6 @@
 </div>
 
 <style>
-  .questions {
-    height: 80vh;
-    overflow-y: auto;
-  }
-
   :global(#dnd-action-dragged-el div) {
     z-index: 100;
   }
