@@ -12,7 +12,10 @@
 
 <script lang="ts">
   import { onMount } from 'svelte';
+  import copy from 'copy-to-clipboard';
   import CourseContainer from '../../../components/CourseContainer/index.svelte';
+  import Edit16 from 'carbon-icons-svelte/lib/Edit16';
+  import Copy16 from 'carbon-icons-svelte/lib/Copy16';
   import Delete24 from 'carbon-icons-svelte/lib/Delete24';
   import Avatar from '../../../components/Avatar/index.svelte';
   import PageNav from '../../../components/PageNav/index.svelte';
@@ -39,13 +42,14 @@
   } from '../../../components/Course/components/People/types';
   import { ROLE_LABEL, ROLES } from '../../../utils/constants/roles';
   import { profile } from '../../../utils/store/user';
+  import { snackbarStore } from '../../../components/Snackbar/store';
 
   export let courseId: string = '';
 
   let people: Array<Person> = [];
   let borderBottomGrey = 'border-r-0 border-b border-l-0 border-gray-300';
   let member: { id?: string; email?: string; profile?: { email: string } } = {};
-  let shouldEditMemberId = false;
+  let shouldEditMemberId: string | null = null;
   let filterBy: ProfileRole = ROLES[0];
   let isStudent = false;
 
@@ -69,7 +73,7 @@
       { assigned_student_id: person.assigned_student_id },
       { id: person.id }
     );
-    shouldEditMemberId = false;
+    shouldEditMemberId = null;
   }
 
   function sortAndFilterPeople(_people: Array<Person>, filterBy: ProfileRole) {
@@ -82,8 +86,17 @@
       .sort((a: Person, b: Person) => a.role_id - b.role_id);
   }
 
-  function handleEditStudentIdMode() {
-    shouldEditMemberId = true;
+  function handleEditStudentIdMode(personId: string) {
+    shouldEditMemberId = personId;
+  }
+
+  function copyToClipboard(studentAssignedId: string | null) {
+    $snackbarStore.open = true;
+    $snackbarStore.message = `Copied to clipboard`;
+
+    if (studentAssignedId) {
+      copy(studentAssignedId);
+    }
   }
 
   onMount(async () => {
@@ -127,7 +140,7 @@
       <div
         class="flex items-center font-bold border-t-0 {borderBottomGrey} p-3"
       >
-        <span class="mr-2 w-20 text-center">ID</span>
+        <span class="w-1/4 text-center">ID</span>
         <!-- <span class="flex-grow" /> -->
         <p class="text-lg w-2/4">Name</p>
         <p class="text-lg w-1/4 ">Role</p>
@@ -136,24 +149,30 @@
         </RoleBasedSecurity>
       </div>
 
-      {#each people as person, index}
+      {#each people as person}
         <div class="flex relative items-center p-3 {borderBottomGrey}">
-          {#if !shouldEditMemberId}
-            <p
-              class="mr-2 w-10 text-center {!isStudent &&
-                'hover:bg-gray-100 cursor-pointer'} p-3"
-              on:click={() => !isStudent && handleEditStudentIdMode()}
-            >
-              {person.assigned_student_id || '-'}
-            </p>
-          {:else}
+          {#if shouldEditMemberId === person.id}
             <TextField
               bind:value={person.assigned_student_id}
               type="string"
               placeholder="Unique ID"
-              className="w-20"
+              className="w-1/4"
               onChange={() => editMemberId(person)}
             />
+          {:else}
+            <div class="student-id flex items-center justify-between relative">
+              <p class="w-11/12">{person.assigned_student_id || '-'}</p>
+              <div class="absolute {!isStudent && 'edit-btn'}">
+                <IconButton onClick={() => handleEditStudentIdMode(person.id)}>
+                  <Edit16 class="carbon-icon active" />
+                </IconButton>
+                <IconButton
+                  onClick={() => copyToClipboard(person.assigned_student_id)}
+                >
+                  <Copy16 class="carbon-icon active" />
+                </IconButton>
+              </div>
+            </div>
           {/if}
           <!-- <span class="flex-grow" /> -->
           {#if person.profile}
@@ -213,5 +232,24 @@
   .pending {
     width: fit-content;
     padding: 1px 15px;
+  }
+
+  .student-id {
+    width: 155px;
+  }
+
+  .student-id p {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .edit-btn {
+    display: none;
+  }
+  .student-id:hover .edit-btn {
+    display: flex;
+    bottom: 20px;
+    right: 0px;
   }
 </style>
