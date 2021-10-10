@@ -8,7 +8,6 @@
   export let isRequired = false;
   export let className = '';
   export let selectClassName = '';
-  export let color = 'default'; // primary
   export let onChange = () => {}; // This is to know if element is 'dirty'
 
   // onMount(() => {
@@ -22,6 +21,7 @@
     bind:value
     class="form-select block w-auto mt-1 {selectClassName}"
     required={isRequired}
+    on:blur={() => {}}
     on:change={onChange}
     class:customColor={!!selectClassName}
   >
