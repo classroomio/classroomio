@@ -242,13 +242,14 @@
         </span>
       {/if}
     </div>
-
-    <span
-      class="border-2 border-gray-700 rounded-full h-24 w-24 flex items-center justify-center text-2xl"
-      title="Status: Pending Review"
-    >
-      {$questionnaireMetaData.finalTotalGrade}/{$questionnaireMetaData.totalPossibleGrade}
-    </span>
+    {#if STATUS.GRADED === $questionnaireMetaData.status}
+      <span
+        class="border-2 border-gray-700 rounded-full h-24 w-24 flex items-center justify-center text-2xl"
+        title="Status: Pending Review"
+      >
+        {$questionnaireMetaData.finalTotalGrade}/{$questionnaireMetaData.totalPossibleGrade}
+      </span>
+    {/if}
   </div>
   <Preview
     questions={$questionnaire.questions.sort((a, b) => a.order - b.order)}
