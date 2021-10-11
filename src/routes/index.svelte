@@ -56,13 +56,14 @@
 </svelte:head>
 
 <div class="root w-screen flex items-center justify-center flex-col m-2 sm:m-0">
+<!--
   <img
-    src="/logo-192.png"
+  src="/logo-192.png"
     alt="ClassroomIO logo"
     class="rounded inline-block mx-auto w-20 h-20 sm:w-auto sm:h-auto"
     data-atf="1"
   />
-
+-->
   <div>
     <h3 class="text-4xl text-center">
       Classroom<span class="text-blue-700">IO</span>
@@ -70,6 +71,7 @@
     <p class="text-lg text-center">
       The operating system for classroooms of the future 🚀🚀🚀.
     </p>
+
   </div>
 
   <form on:submit|preventDefault={handleSubmit} class="my-4">
