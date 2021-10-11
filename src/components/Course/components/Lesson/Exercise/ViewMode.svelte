@@ -224,7 +224,7 @@
   </div>
 {:else if $questionnaireMetaData.isFinished}
   <div class="flex items-center justify-between">
-    <div class="flex flex-col justify-between">
+    <div class="flex flex-col justify-between w-full">
       <h2 class="text-xl mb-2 mt-0">{$questionnaire.title}</h2>
       {#if STATUS.GRADED === $questionnaireMetaData.status}
         <span
