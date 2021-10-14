@@ -228,14 +228,15 @@
       <h2 class="text-xl mb-2 mt-0">{$questionnaire.title}</h2>
       {#if STATUS.GRADED === $questionnaireMetaData.status}
         <span
-          class="bg-green-700 text-white rounded-full py-2 px-6 text-center"
+          class="status-text bg-green-700 text-white rounded-full py-2 px-6 text-center"
           title="Status: Pending Review"
+
         >
           Graded
         </span>
       {:else}
         <span
-          class="bg-yellow-600 text-white rounded-full py-2 px-6 text-center"
+          class=" status-text2 bg-yellow-600 text-white rounded-full py-2 px-6 text-center"
           title="Status: Pending Review"
         >
           Pending
@@ -273,6 +274,12 @@
 {/if}
 
 <style>
+  .status-text2 {
+    width: fit-content;
+  }
+  .status-text {
+    width: fit-content;
+  }
   :global(.shake) {
     animation: shake 0.85s;
   }
