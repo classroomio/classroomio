@@ -8,6 +8,11 @@ export async function fetchCourses(profileId) {
     .eq('profile_id', profileId);
 
   console.log(`allCourses`, allCourses);
+  if (!Array.isArray(allCourses)) {
+    return {
+      allCourses: [],
+    };
+  }
 
   return { allCourses };
 }
