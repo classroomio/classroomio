@@ -1,4 +1,5 @@
 <script>
+  import { goto } from '@sapper/app';
   import { onMount } from 'svelte';
   import AudioConsole32 from 'carbon-icons-svelte/lib/AudioConsole32';
   import Box from '../../../../Box/index.svelte';
@@ -79,14 +80,18 @@
       .eq('id', exerciseId)
       .single();
 
-    // Need to set the question type inorder for the select in the questionnaire builder to match
-    data.questions.forEach((question) => {
-      question.question_type = QUESTION_TYPES.find(
-        (type) => type.id === question.question_type.id
-      );
-      return question;
-    });
-    data.questions = data.questions.sort((a, b) => a.order - b.order);
+    if (data && Array.isArray(data.questions)) {
+      // Need to set the question type inorder for the select in the questionnaire builder to match
+      data.questions.forEach((question) => {
+        question.question_type = QUESTION_TYPES.find(
+          (type) => type.id === question.question_type.id
+        );
+        return question;
+      });
+      data.questions = data.questions.sort((a, b) => a.order - b.order);
+    } else {
+      data.questions = [];
+    }
 
     data.is_title_dirty = false;
     data.is_description_dirty = false;
@@ -98,6 +103,10 @@
     isQuestionnaireFetching.update(() => false);
   }
 
+  function goBack() {
+    goto(path);
+  }
+
   onMount(() => {
     getExercises();
   });
@@ -106,7 +115,11 @@
 </script>
 
 {#if exerciseId}
-  <Exercise {exerciseId} refetchExercise={() => getExercise(exerciseId)} />
+  <Exercise
+    {exerciseId}
+    {goBack}
+    refetchExercise={() => getExercise(exerciseId)}
+  />
 {:else}
   <Modal
     onClose={handleCancelAddExercise}

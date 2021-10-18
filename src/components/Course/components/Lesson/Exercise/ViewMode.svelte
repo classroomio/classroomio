@@ -230,13 +230,12 @@
         <span
           class="status-text bg-green-700 text-white rounded-full py-2 px-6 text-center"
           title="Status: Pending Review"
-
         >
           Graded
         </span>
       {:else}
         <span
-          class=" status-text bg-yellow-600 text-white rounded-full py-2 px-6 text-center"
+          class="status-text bg-yellow-600 text-white rounded-full py-2 px-6 text-center"
           title="Status: Pending Review"
         >
           Pending
@@ -245,7 +244,7 @@
     </div>
     {#if STATUS.GRADED === $questionnaireMetaData.status}
       <span
-        class="border-2 border-gray-700 rounded-full h-24 w-24 flex items-center justify-center text-2xl"
+        class="p-5 border-2 border-gray-700 rounded-full h-24 w-24 flex items-center justify-center text-2xl"
         title="Status: Pending Review"
       >
         {$questionnaireMetaData.finalTotalGrade}/{$questionnaireMetaData.totalPossibleGrade}

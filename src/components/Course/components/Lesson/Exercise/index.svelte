@@ -25,6 +25,7 @@
 
   export let exerciseId;
   export let refetchExercise = () => {};
+  export let goBack = () => {};
 
   let mode = MODES.view;
   let preview = false;
@@ -135,7 +136,7 @@
   </svelte:fragment>
 
   {#if mode === MODES.edit && !preview}
-    <EditMode bind:editDescription />
+    <EditMode bind:editDescription {exerciseId} {goBack} />
   {:else}
     <ViewMode {preview} {exerciseId} />
   {/if}
