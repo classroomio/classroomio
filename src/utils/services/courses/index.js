@@ -250,7 +250,7 @@ export async function upsertExercise(questionnaire, exerciseId) {
       const res = await supabase.from('question').upsert(newQuestion);
 
       if (res.error) {
-        console.error(`Upsert question`, error);
+        console.error(`Upsert question`, res.error);
       }
       questionSupabaseRes = Array.isArray(res.data) ? res.data[0] : null;
     } else {
@@ -357,4 +357,18 @@ export async function submitExercise(
 
   const res = await supabase.from('question_answer').insert(questionAnswers);
   console.log(`res`, res);
+}
+
+export async function deleteExercise(questions, exerciseId) {
+  for (const question of questions) {
+    const { id } = question;
+
+    await supabase.from('option').delete().match({ question_id: id });
+    await supabase.from('question_answer').delete().match({ question_id: id });
+
+    await supabase.from('question').delete().match({ id });
+  }
+
+  await supabase.from('submission').delete().match({ exercise_id: exerciseId });
+  await supabase.from('exercise').delete().match({ id: exerciseId });
 }

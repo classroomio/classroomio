@@ -36,7 +36,8 @@
     QUESTION_TYPES,
   } from '../../../../Question/constants';
   import { filterOutDeleted } from './functions';
-  import Date from '../../../../Form/Date.svelte';
+  import { deleteExercise } from '../../../../../utils/services/courses';
+  import { lesson } from '../store/lessons';
   // import EditContent from "../../../../EditContent/index.svelte";
   // import readme from "../../readme.js";
 
@@ -45,10 +46,14 @@
   const initialQuestionsLength = $questionnaire.questions.length;
 
   export let editDescription = false;
+  export let exerciseId;
+  export let goBack = () => {};
 
   let errors = {};
   let questionIdToDelete = null;
   let questions = [];
+  let shouldDelete = false;
+  let isDeleting = false;
 
   function shouldScrollToLast(questionId, questions) {
     const currentQuestionsLength = questions.length;
@@ -88,6 +93,22 @@
     return errors[question.id] ? errors[question.id][errorKey] : null;
   }
 
+  async function handleDelete() {
+    console.log('delete');
+    isDeleting = true;
+    await deleteExercise(questions, exerciseId);
+
+    lesson.update((_lesson) => ({
+      ..._lesson,
+      exercises: _lesson.exercises.filter(
+        (exercise) => exercise.id !== exerciseId
+      ),
+    }));
+
+    shouldDelete = false;
+    goBack();
+  }
+
   $: errors = $questionnaireValidation;
   $: questions = filterOutDeleted($questionnaire.questions);
 </script>
@@ -105,32 +126,62 @@
   width="w-2/4"
   modalHeading="Update description"
 >
-  <div>
-    <QuestionContainer isTitle={true}>
-      <TextField
-        placeholder="Title"
-        bind:value={$questionnaire.title}
-        className="mb-2"
-        onChange={() => ($questionnaire.is_title_dirty = true)}
-      />
-      <DateTime
-        label="Due by"
-        className="w-50"
-        value={$questionnaire.due_by}
-        onInput={(e) => {
-          $questionnaire.due_by = e.target.value;
-          $questionnaire.is_due_by_dirty = true;
-        }}
-      />
-      <EditContent
-        writeLabel="Description"
-        bind:value={$questionnaire.description}
-        placeholder="Start typing your lesson"
-        textAreaHeight="100px"
-        onInputChange={() => ($questionnaire.is_description_dirty = true)}
-      />
-    </QuestionContainer>
-  </div>
+  {#if shouldDelete}
+    <form on:submit|preventDefault={() => (shouldDelete = false)}>
+      <h1 class="text-2xl">Are you sure?</h1>
+
+      <div class="mt-5 flex items-center justify-between">
+        <PrimaryButton
+          className="px-6 py-2"
+          variant={VARIANTS.OUTLINED}
+          label="No, cancel"
+          type="submit"
+        />
+        <PrimaryButton
+          className="px-6 py-2"
+          variant={VARIANTS.CONTAINED_DANGER}
+          label={isDeleting ? 'Deleting...' : 'Yes, delete'}
+          isDisabled={isDeleting}
+          onClick={handleDelete}
+        />
+      </div>
+    </form>
+  {:else}
+    <div>
+      <QuestionContainer isTitle={true}>
+        <TextField
+          placeholder="Title"
+          bind:value={$questionnaire.title}
+          className="mb-2"
+          onChange={() => ($questionnaire.is_title_dirty = true)}
+        />
+        <DateTime
+          label="Due by"
+          className="w-50"
+          value={$questionnaire.due_by}
+          onInput={(e) => {
+            $questionnaire.due_by = e.target.value;
+            $questionnaire.is_due_by_dirty = true;
+          }}
+        />
+        <EditContent
+          writeLabel="Description"
+          bind:value={$questionnaire.description}
+          placeholder="Start typing your lesson"
+          textAreaHeight="100px"
+          onInputChange={() => ($questionnaire.is_description_dirty = true)}
+        />
+      </QuestionContainer>
+      <div class="float-right">
+        <PrimaryButton
+          className="px-6 py-2"
+          variant={VARIANTS.CONTAINED_DANGER}
+          label="Delete this exercise"
+          onClick={() => (shouldDelete = true)}
+        />
+      </div>
+    </div>
+  {/if}
 </Modal>
 
 <div class="w-full">
