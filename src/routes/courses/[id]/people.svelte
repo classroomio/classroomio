@@ -162,16 +162,20 @@
           {:else}
             <div class="student-id flex items-center justify-between relative">
               <p class="w-11/12">{person.assigned_student_id || '-'}</p>
-              <div class="absolute {!isStudent && 'edit-btn'}">
-                <IconButton onClick={() => handleEditStudentIdMode(person.id)}>
-                  <Edit16 class="carbon-icon active" />
-                </IconButton>
-                <IconButton
-                  onClick={() => copyToClipboard(person.assigned_student_id)}
-                >
-                  <Copy16 class="carbon-icon active" />
-                </IconButton>
-              </div>
+              {#if !isStudent}
+                <div class="absolute edit-btn">
+                  <IconButton
+                    onClick={() => handleEditStudentIdMode(person.id)}
+                  >
+                    <Edit16 class="carbon-icon active" />
+                  </IconButton>
+                  <IconButton
+                    onClick={() => copyToClipboard(person.assigned_student_id)}
+                  >
+                    <Copy16 class="carbon-icon active" />
+                  </IconButton>
+                </div>
+              {/if}
             </div>
           {/if}
           <!-- <span class="flex-grow" /> -->
