@@ -55,6 +55,57 @@
     }
   }
 
+  function handleAttendanceChange(e, student, lesson) {
+    if (isStudent) return;
+
+    const attendanceItem = $attendance[student.id]
+      ? $attendance[student.id][lesson.id] || {}
+      : {};
+
+    if (attendanceItem.id) {
+      $snackbarStore.open = true;
+      $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
+      $snackbarStore.message =
+        "Something isn't right. Please reload and take attendance again";
+      console.error(`Attendance Id Missing`, courseId, student.id, lesson.id);
+
+      return;
+    }
+
+    const data = {
+      id: attendanceItem.id,
+      student_id: student.id,
+      is_present: e.target.checked,
+      lesson_id: lesson.id,
+      course_id: courseId,
+    };
+
+    takeAttendance(data).then((res) => {
+      if (res.error) {
+        console.error(`res.error`, res.error);
+        $snackbarStore.open = true;
+        $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
+        $snackbarStore.message = "Something isn't right.";
+      } else {
+        console.log('res', JSON.stringify(res));
+        const { id, is_present } = res.data[0];
+        if ($attendance[student.id]) {
+          $attendance[student.id][lesson.id] = {
+            id,
+            is_present,
+          };
+        } else {
+          $attendance[student.id] = {
+            [lesson.id]: {
+              id,
+              is_present,
+            },
+          };
+        }
+      }
+    });
+  }
+
   onMount(async () => {
     if ($course.id) {
       if (!Object.keys($attendance).length) {
@@ -105,7 +156,7 @@
             <div class="text-sm">
               <p class="font-semibold">{student.profile.fullname}</p>
               {#if student.assigned_student_id}
-              	<p>#{student.assigned_student_id}</p>
+                <p>#{student.assigned_student_id}</p>
               {/if}
             </div>
           </div>
@@ -120,36 +171,7 @@
                     ? $attendance[student.id][lesson.id].is_present
                     : false
                   : false}
-                on:change={(e) => {
-                  if (isStudent) return;
-
-                  const attendanceItem = $attendance[student.id]
-                    ? $attendance[student.id][lesson.id] || {}
-                    : {};
-                  const data = {
-                    id: attendanceItem.id,
-                    student_id: student.id,
-                    is_present: e.target.checked,
-                    lesson_id: lesson.id,
-                    course_id: courseId,
-                  };
-
-                  takeAttendance(data).then((res) => {
-                    if (res.error) {
-                      console.error(`res.error`, res.error);
-                      $snackbarStore.open = true;
-                      $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
-                      $snackbarStore.message = "Something isn't right.";
-                    } else {
-                      console.log('res', res);
-                      const { id, is_present } = res.data[0];
-                      $attendance[student.id][lesson.id] = {
-                        id,
-                        is_present,
-                      };
-                    }
-                  });
-                }}
+                on:change={(e) => handleAttendanceChange(e, student, lesson)}
               />
             </p>
           {/each}
