@@ -14,7 +14,7 @@ import pkg from './package.json';
 
 const mode = process.env.NODE_ENV;
 const dev = mode === 'development';
-const sourcemap = dev ? 'inline' : false;
+const sourcemap = dev ? false : 'inline';
 const legacy = !!process.env.SAPPER_LEGACY_BUILD;
 
 const onwarn = (warning, onwarn) => {

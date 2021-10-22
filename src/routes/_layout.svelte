@@ -8,6 +8,7 @@
   import { onMount } from 'svelte';
   import { derived } from 'svelte/store';
   import { stores, goto } from '@sapper/app';
+  import * as Sentry from '@sentry/browser';
   import { Firework } from 'svelte-loading-spinners';
   import Tailwindcss from '../components/Tailwindcss.svelte';
   import Navigation from '../components/Navigation/index.svelte';
@@ -72,6 +73,8 @@
 
         profile.set(data[0]);
 
+        // Set user in sentry
+        Sentry.setUser($profile);
         // If user coming to login page, then
         if (path.includes('login') || path.includes('signup')) {
           goto('/profile/' + $profile.id);
@@ -84,6 +87,9 @@
       $user.currentSession = authUser;
       console.log(`profileData`, profileData);
       profile.set(profileData);
+
+      // Set user in sentry
+      Sentry.setUser($profile);
 
       // If user coming to login page, then
       if (path.includes('login') || path.includes('signup')) {
@@ -105,8 +111,7 @@
 
     const _isMvpUser = localStorage.getItem('mvp');
 
-    console.log('mounting layout', isMvpUser, path, _isMvpUser);
-    if (isMvpUser || window.location.search.includes('mvp')) {
+    if (_isMvpUser || window.location.search.includes('mvp')) {
       localStorage.setItem('mvp', 'true');
       allowUser = true;
     } else if (!_isMvpUser) {
@@ -122,7 +127,7 @@
         if (config.isDev) {
           handleAuthChange(event, session);
         }
-
+        console.log(`event`, event);
         if (event === 'SIGNED_IN') {
           $user.fetchingUser = true;
           getProfile();
