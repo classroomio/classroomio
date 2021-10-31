@@ -24,7 +24,7 @@
 
   export let segment;
   export let config;
-  export let isMvpUser;
+  // export let isMvpUser;
 
   let { page, preloading } = stores();
 
@@ -78,6 +78,8 @@
         // If user coming to login page, then
         if (path.includes('login') || path.includes('signup')) {
           goto('/profile/' + $profile.id);
+        } else if (!path.length) {
+          goto('/courses');
         }
       }
     } else if (profileData) {
@@ -85,7 +87,6 @@
       $user.fetchingUser = false;
       $user.isLoggedIn = true;
       $user.currentSession = authUser;
-      console.log(`profileData`, profileData);
       profile.set(profileData);
 
       // Set user in sentry
@@ -94,6 +95,8 @@
       // If user coming to login page, then
       if (path.includes('login') || path.includes('signup')) {
         goto('/profile/' + $profile.id);
+      } else if (!path.length) {
+        goto('/courses');
       }
     }
   }
