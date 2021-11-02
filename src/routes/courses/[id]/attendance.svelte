@@ -62,7 +62,7 @@
       ? $attendance[student.id][lesson.id] || {}
       : {};
 
-    if (attendanceItem.id) {
+    if (!attendanceItem.id) {
       $snackbarStore.open = true;
       $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
       $snackbarStore.message =
