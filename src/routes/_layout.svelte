@@ -79,7 +79,7 @@
         if (path.includes('login') || path.includes('signup')) {
           goto('/profile/' + $profile.id);
         } else if (!path.length) {
-          goto('/courses');
+          goto('/dashboard');
         }
       }
     } else if (profileData) {
@@ -96,7 +96,7 @@
       if (path.includes('login') || path.includes('signup')) {
         goto('/profile/' + $profile.id);
       } else if (!path.length) {
-        goto('/courses');
+        goto('/dashboard');
       }
     }
   }

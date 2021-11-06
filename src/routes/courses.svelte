@@ -130,7 +130,7 @@
 </script>
 
 <svelte:head>
-  <title>Courses</title>
+  <title>Courses - ClassroomIO</title>
 </svelte:head>
 
 <section class="root">
