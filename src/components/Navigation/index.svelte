@@ -172,5 +172,9 @@
     ul {
       align-items: center;
     }
+
+    a {
+      padding: 0 0.5em;
+    }
   }
 </style>
