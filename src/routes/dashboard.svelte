@@ -142,7 +142,7 @@
     {/if}
     <div
       id={$isMobile ? 'calendar' : ''}
-      class="calendar-info flex-grow border border-gray-300 ml-2 rounded-md"
+      class="calendar-info flex-grow border border-gray-300 mx-2 rounded-md"
     >
       {#if $isMobile}
         <div class="header w-full flex items-center">
@@ -253,7 +253,7 @@
 
   @media (max-width: 640px) {
     :global(span.active-day) {
-      font-size: 40px;
+      font-size: 30px;
     }
   }
 </style>
