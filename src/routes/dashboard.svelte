@@ -169,7 +169,7 @@
 
       {#each selectedDateLessonData as lessonData}
         <div class="flex items-center justify-between p-5 lesson-data">
-          <div>
+          <div class="w-4/5">
             <a
               class="text-black-700 text-lg font-bold"
               href="/courses/{lessonData.course_id}/lessons/{lessonData.lesson_id}"
