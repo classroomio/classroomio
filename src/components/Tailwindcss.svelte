@@ -8,6 +8,10 @@
     --scrollbarBG: #fff;
     --thumbBG: #ccc;
   }
+
+  #calendar .grid {
+    --sc-theme-calendar-colors-background-highlight: var(--main-primary-color);
+  }
   * {
     scrollbar-width: thin;
     scrollbar-color: var(--thumbBG) var(--scrollbarBG);

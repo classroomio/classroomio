@@ -28,7 +28,7 @@
     </div>
 
     {#if $user.isLoggedIn}
-      <li class="hidden">
+      <li class="">
         <a
           class="block"
           aria-current={segment === undefined || segment === 'dashboard'
