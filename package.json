@@ -57,6 +57,7 @@
     "sass": "^1.32.13",
     "svelte": "^3.17.3",
     "svelte-awesome": "^2.3.1",
+    "svelte-calendar": "^3.1.6",
     "svelte-dnd-action": "^0.9.9",
     "svelte-loading-spinners": "^0.1.7",
     "svelte-preprocess": "^4.7.3",
