@@ -27,7 +27,7 @@ export function getLessonsRoute(courseId, lessonId) {
 }
 
 export function getLectureNo(index) {
-  if (index < 9) {
+  if (index <= 9) {
     return `00${index}`;
   }
 
