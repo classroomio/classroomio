@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { InlineCalendar, Datepicker } from 'svelte-calendar';
+  import CheckmarkFilled20 from 'carbon-icons-svelte/lib/CheckmarkFilled20';
 
   import {
     formatUserUpcomingData,
@@ -171,10 +172,19 @@
         <div class="flex items-center justify-between p-5 lesson-data">
           <div class="w-4/5">
             <a
-              class="text-black-700 text-lg font-bold"
-              href="/courses/{lessonData.course_id}/lessons/{lessonData.lesson_id}"
+              class="text-black-700 text-lg font-bold flex items-center"
+              href={`/courses/${lessonData.course_id}/lessons/${
+                lessonData.is_complete ? lessonData.lesson_id : ''
+              }`}
             >
               {lessonData.lesson_title}
+              {#if lessonData.is_complete}
+                <span class="ml-2 success">
+                  <CheckmarkFilled20 class="carbon-icon" />
+                </span>
+              {:else}
+                <span class="text-md ml-2">🔒</span>
+              {/if}
             </a>
             <p class="text-grey text-sm flex items-center">
               <a
@@ -185,17 +195,19 @@
               </a>
             </p>
           </div>
-          <a
-            class="join-call rounded-3xl bg-blue-600 text-white py-3 font-bold shadow-lg {!lessonData.call_url &&
-              'opacity-50 pointer-events-none cursor-not-allowed'}"
-            href={!!lessonData.call_url ? lessonData.call_url : undefined}
-            target="_blank"
-            title={!!lessonData.call_url
-              ? 'Click to join the call'
-              : 'No call link was added for this lesson. Ask your trainer'}
-          >
-            Join call
-          </a>
+          {#if lessonData.is_complete}
+            <a
+              class="join-call rounded-3xl bg-blue-600 text-white py-3 font-bold shadow-lg {!lessonData.call_url &&
+                'opacity-50 pointer-events-none cursor-not-allowed'}"
+              href={!!lessonData.call_url ? lessonData.call_url : undefined}
+              target="_blank"
+              title={!!lessonData.call_url
+                ? 'Click to join the call'
+                : 'No call link was added for this lesson. Ask your trainer'}
+            >
+              Join call
+            </a>
+          {/if}
         </div>
       {:else}
         <p class="flex items-center justify-center w-full no-data">
