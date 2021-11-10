@@ -25,7 +25,7 @@
   let store;
   let calendar: HTMLElement | null = null;
   let lessonsByMonth: LessonsByMonthIndexType = {};
-  let prevSelectedDate: string = new Date().toDateString();
+  let prevSelectedDate: string = new Date().toUTCString();
   let selectedDateLessonData: UserLessonDataType[] | [] = [];
 
   const addDotsToCalendar = (currentMonthIndexInRenderedMonth: number) =>
@@ -85,9 +85,11 @@
   }
 
   function getDataOfSelectedDate(
-    selectedDate: string
+    _selectedDate: string
   ): UserLessonDataType[] | [] {
-    if (!selectedDate) return [];
+    if (!_selectedDate) return [];
+
+    const selectedDate = new Date(_selectedDate).toUTCString();
 
     const monthIndex = new Date(selectedDate).getMonth();
     const dateIndex = new Date(selectedDate).getDate();
