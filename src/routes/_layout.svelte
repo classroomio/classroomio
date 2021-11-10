@@ -110,6 +110,12 @@
   }
 
   onMount(() => {
+    // Disable GA on localhost
+    if (config && !config.isProd) {
+      console.log('disable GA');
+      window['ga-disable-G-C7WBN0S06R'] = true;
+    }
+
     handleResize();
 
     const _isMvpUser = localStorage.getItem('mvp');
@@ -127,7 +133,7 @@
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        if (config.isDev) {
+        if (config.isProd) {
           handleAuthChange(event, session);
         }
         console.log(`event`, event);
