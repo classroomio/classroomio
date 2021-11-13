@@ -62,6 +62,9 @@
       ? $attendance[student.id][lesson.id] || {}
       : {};
 
+    /* 
+    This validation is useless. We shouldn't assume we already have an attendance item id 
+    because it might be a new attendance.
     if (!attendanceItem.id) {
       $snackbarStore.open = true;
       $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
@@ -71,6 +74,7 @@
 
       return;
     }
+    */
 
     const data = {
       id: attendanceItem.id,
@@ -85,9 +89,10 @@
         console.error(`res.error`, res.error);
         $snackbarStore.open = true;
         $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
-        $snackbarStore.message = "Something isn't right.";
+        $snackbarStore.message =
+          "Something isn't right.  Please reload and take attendance again";
       } else {
-        console.log('res', JSON.stringify(res));
+        // console.log('res', JSON.stringify(res));
         const { id, is_present } = res.data[0];
         if ($attendance[student.id]) {
           $attendance[student.id][lesson.id] = {
