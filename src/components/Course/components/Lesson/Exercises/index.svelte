@@ -67,7 +67,7 @@
 
   async function getExercise(exerciseId) {
     if (!exerciseId) return;
-    isFetching = false;
+    isFetching = true;
     isQuestionnaireFetching.update(() => true);
 
     const { data } = await supabase
@@ -106,7 +106,7 @@
     console.log('getExercise', exerciseId, $questionnaire);
 
     isQuestionnaireFetching.update(() => false);
-    isFetching = true;
+    isFetching = false;
   }
 
   function goBack() {
