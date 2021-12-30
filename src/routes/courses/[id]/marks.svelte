@@ -18,7 +18,10 @@
     group,
   } from '../../../components/Course/store';
   import { lessons } from '../../../components/Course/components/Lesson/store/lessons';
-  import { fetchCourse, fetchExercises } from '../../../utils/services/courses';
+  import {
+    fetchCourse,
+    fetchExercisesByMarks,
+  } from '../../../utils/services/courses';
   import { getLectureNo } from '../../../components/Course/function';
   import { fetchMarks } from '../../../utils/services/marks';
   import { profile } from '../../../utils/store/user';
@@ -67,7 +70,7 @@
       }
     });
 
-    const { data: exercises } = await fetchExercises(courseId);
+    const { data: exercises } = await fetchExercisesByMarks(courseId);
 
     // Map exercises to { lessonId: { exerciseId: exerciseTitle, ... }, ... }
     exercises.forEach((exercise) => {

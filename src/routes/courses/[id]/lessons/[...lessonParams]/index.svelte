@@ -44,12 +44,14 @@
   let mode = MODES.view;
   let prevMode;
   let prevLessonId;
+  let isFetching = false;
 
   const { page } = stores();
 
   async function fetchReqData(lessonId) {
-    let lessonData;
+    isFetching = true;
 
+    let lessonData;
     if (!$course.id) {
       const [_course, lesson] = await Promise.all([
         fetchCourse(courseId),
@@ -69,6 +71,7 @@
     const totalExercises =
       lessonData.totalExercises[0] && lessonData.totalExercises[0].count;
     setLesson(lessonData, totalExercises);
+    isFetching = false;
   }
 
   function setLesson(lessonData, totalExercises) {
@@ -92,7 +95,11 @@
   }
 </script>
 
-<CourseContainer {path} isExercisePage={!isMaterialsTabActive && exerciseId}>
+<CourseContainer
+  {isFetching}
+  {path}
+  isExercisePage={!isMaterialsTabActive && exerciseId}
+>
   <PageNav
     navItems={[
       {

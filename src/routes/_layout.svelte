@@ -164,7 +164,7 @@
 <main>
   {#if $preloading && $delayedPreloading}
     <Backdrop>
-      <Firework size="60" color="#fff" unit="px" duration="1s" />
+      <Firework size="60" color="#1d4ed8" unit="px" duration="1s" />
     </Backdrop>
   {/if}
   {#if !['login', 'signup'].includes(path) && !isCoursePage(path)}

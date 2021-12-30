@@ -56,7 +56,7 @@
 <style>
   canvas {
     position: absolute;
-    width: 70%;
+    width: 60%;
     height: 70%;
   }
 </style>
