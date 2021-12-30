@@ -1,4 +1,5 @@
 <script>
+  import { goto } from '@sapper/app';
   import Modal from '../../../Modal/index.svelte';
   import TextField from '../../../Form/TextField.svelte';
   import TextArea from '../../../Form/TextArea.svelte';
@@ -44,6 +45,7 @@
   async function handleDelete() {
     $settingsDialog.open = false;
     await deleteCourse($course.id);
+    goto('/courses');
   }
 
   // function setAvatar(logo) {

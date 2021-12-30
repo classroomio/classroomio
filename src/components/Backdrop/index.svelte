@@ -12,7 +12,7 @@
     position: fixed;
     align-items: center;
     justify-content: center;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.3);
     -webkit-tap-highlight-color: transparent;
     color: #fff;
     z-index: 1201;

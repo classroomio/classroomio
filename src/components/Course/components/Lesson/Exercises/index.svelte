@@ -3,6 +3,8 @@
   import { onMount } from 'svelte';
   import AudioConsole32 from 'carbon-icons-svelte/lib/AudioConsole32';
   import Box from '../../../../Box/index.svelte';
+  import { Firework } from 'svelte-loading-spinners';
+  import Backdrop from '../../../../Backdrop/index.svelte';
   import PrimaryButton from '../../../../PrimaryButton/index.svelte';
   import RoleBasedSecurity from '../../../../RoleBasedSecurity/index.svelte';
   import PageBody from '../../../../PageBody/index.svelte';
@@ -20,6 +22,7 @@
   export let lessonId;
 
   let open = false;
+  let isFetching = false;
   let newExercise = {
     id: 1,
     title: '',
@@ -52,17 +55,19 @@
 
   async function getExercises() {
     if (!lessonId) return;
+    isFetching = true;
     const exercisesData = await supabase
       .from('exercise')
       .select(`id, title, created_at`)
       .match({ lesson_id: lessonId });
 
     $lesson.exercises = exercisesData.data;
+    isFetching = false;
   }
 
   async function getExercise(exerciseId) {
     if (!exerciseId) return;
-
+    isFetching = false;
     isQuestionnaireFetching.update(() => true);
 
     const { data } = await supabase
@@ -101,6 +106,7 @@
     console.log('getExercise', exerciseId, $questionnaire);
 
     isQuestionnaireFetching.update(() => false);
+    isFetching = true;
   }
 
   function goBack() {
@@ -113,6 +119,12 @@
 
   $: getExercise(exerciseId);
 </script>
+
+{#if isFetching}
+  <Backdrop>
+    <Firework size="60" color="#1d4ed8" unit="px" duration="1s" />
+  </Backdrop>
+{/if}
 
 {#if exerciseId}
   <Exercise

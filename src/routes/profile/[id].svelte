@@ -1,15 +1,10 @@
 <script context="module">
   export function preload({ params }) {
-    console.log(`params`, params);
     return { profileId: params.id };
   }
 </script>
 
 <script>
-  // import { goto } from '$app/navigation';
-  import { onMount } from 'svelte';
-  import { Chasing } from 'svelte-loading-spinners';
-  import Search32 from 'carbon-icons-svelte/lib/Search32';
   import UserAvatar16 from 'carbon-icons-svelte/lib/UserAvatar16';
   import Book16 from 'carbon-icons-svelte/lib/Book16';
   import TextField from '../../components/Form/TextField.svelte';

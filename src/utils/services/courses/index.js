@@ -114,8 +114,8 @@ export async function updateCourse(courseId, course) {
   return course.logo;
 }
 
-export async function deleteCourse(courseId, course) {
-  return await supabase.from('course').delete(course).match({ id: courseId });
+export async function deleteCourse(courseId) {
+  return await supabase.from('course').delete().match({ id: courseId });
 }
 
 export function addGroupMember(member) {
@@ -165,7 +165,7 @@ export function createExercise(exercise) {
   return supabase.from('exercise').insert(exercise);
 }
 
-export function fetchExercises(courseId) {
+export function fetchExercisesByMarks(courseId) {
   return supabase.rpc('get_exercises').eq('course_id', courseId);
 }
 
