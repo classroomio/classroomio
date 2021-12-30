@@ -64,7 +64,7 @@
       data-atf="1"
     />
   -->
-<div>
+  <div>
     <h3 class="text-4xl text-center">
       Classroom<span class="text-blue-700">IO</span>
     </h3>
@@ -87,18 +87,8 @@
           isRequired={true}
           isDisabled={isAdding}
         />
-        <PrimaryButton
-          type="submit"
-          variant={isAdding ? VARIANTS.OUTLINED : VARIANTS.CONTAINED}
-          className="py-2 w-full justify-center sm:w-auto {isAdding &&
-            'py-4 border-blue-700'}"
-          isDisabled={isAdding}
-        >
-          {#if isAdding}
-            <BarLoader size="30" color="#1d4ed8" unit="px" duration="1s" />
-          {:else}
-            Join waiting list
-          {/if}
+        <PrimaryButton type="submit" isLoading={isAdding}>
+          Join waiting list
         </PrimaryButton>
       {/if}
     </div>

@@ -1,5 +1,7 @@
 <script>
+  import { Firework } from 'svelte-loading-spinners';
   import Navigation from '../Course/components/Navigation/index.svelte';
+  import Backdrop from '../../components/Backdrop/index.svelte';
   // import { lessons, lesson } from '../Course/components/Lesson/store/lessons';
   // import { questionnaire } from '../Course/components/Lesson/Exercise/store/exercise';
   // import { questionnaireMetaData } from '../Course/components/Lesson/store/answers';
@@ -11,6 +13,7 @@
   export let path = '';
   export let isExercisePage = false;
   export let isStudent = false;
+  export let isFetching = false;
 
   $: {
     const user = $group.people.find(
@@ -26,6 +29,12 @@
 <svelte:head>
   <title>{$course.title || 'ClassroomIO Course'}</title>
 </svelte:head>
+
+{#if isFetching}
+  <Backdrop>
+    <Firework size="60" color="#1d4ed8" unit="px" duration="1s" />
+  </Backdrop>
+{/if}
 
 <div class="root">
   <Navigation {path} {isStudent} />

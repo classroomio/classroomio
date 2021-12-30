@@ -6,7 +6,7 @@
 
   import CloseButton from '../Buttons/Close/index.svelte';
   import { SNACKBAR_SEVERITY, SNACKBAR_SEVERITY_COLOR } from './constants';
-  import { snackbarStore } from './store';
+  import { snackbarStore, snackbarStoreInitialState } from './store';
 
   let severityColor;
 
@@ -15,7 +15,7 @@
       $snackbarStore.handleClose();
     }
 
-    $snackbarStore.open = false;
+    snackbarStore.set(snackbarStoreInitialState);
   }
 
   // When open is true trigger autoHideDuration
