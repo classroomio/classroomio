@@ -102,7 +102,7 @@
   }
 
   function isCoursePage(path) {
-    return /courses\/[a-z 0-9 -]/.test(path);
+    return /course[s]*\/[a-z 0-9 -]/.test(path);
   }
 
   function handleResize() {

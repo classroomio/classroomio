@@ -7,6 +7,7 @@
   html {
     --scrollbarBG: #fff;
     --thumbBG: #ccc;
+    scroll-behavior: smooth;
   }
 
   #calendar .grid {
