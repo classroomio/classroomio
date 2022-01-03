@@ -7,7 +7,7 @@
   import Settings20 from 'carbon-icons-svelte/lib/Settings20';
   import ChevronLeft16 from 'carbon-icons-svelte/lib/ChevronLeft16';
   import ChevronRight16 from 'carbon-icons-svelte/lib/ChevronRight16';
-  import Expandable from '../../../Expandable/index.svelte';
+  import NavExpandable from './NavExpandable.svelte';
   import PageNav from '../../../PageNav/index.svelte';
   import IconButton from '../../../IconButton/index.svelte';
   import Avatar from '../../../Avatar/index.svelte';
@@ -152,7 +152,7 @@
       <div class="navItems">
         {#each navItems as navItem}
           {#if !navItem.show || (typeof navItem.show === 'function' && navItem.show())}
-            <Expandable
+            <NavExpandable
               label={navItem.label}
               handleClick={handleMainGroupClick(navItem.to)}
               isGroupActive={(path || $page.path) === navItem.to}
@@ -190,7 +190,7 @@
                   </a>
                 {/each}
               {/if}
-            </Expandable>
+            </NavExpandable>
           {/if}
         {/each}
       </div>
