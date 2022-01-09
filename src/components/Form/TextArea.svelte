@@ -5,6 +5,7 @@
   export let rows = '3';
   export let maxRows = 3;
   export let className = '';
+  export let bgColor = 'bg-gray-100';
   export let helperMessage = '';
   export let errorMessage = '';
   export let isRequired = false;
@@ -36,7 +37,8 @@
     {placeholder}
     bind:value
     required={isRequired}
-    class="form-textarea mt-1 block w-full bg-gray-100 border-t-0 border-l-0 border-r-0 border-b-1 {!!errorMessage
+    class="form-textarea mt-1 block w-full 
+    {bgColor} border-t-0 border-l-0 border-r-0 border-b-1 {!!errorMessage
       ? 'border-red-500'
       : 'border-gray-300'}"
     on:change={onChange}
