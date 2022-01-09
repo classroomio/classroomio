@@ -124,6 +124,14 @@
         to: getNavItemRoute($course.id, 'people'),
         hideSortIcon: true,
       },
+      {
+        label: 'Landing Page',
+        to: getNavItemRoute($course.id, 'landingpage'),
+        hideSortIcon: true,
+        show() {
+          return !isStudent;
+        },
+      },
     ];
   }
 </script>

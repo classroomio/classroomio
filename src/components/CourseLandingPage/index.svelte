@@ -7,63 +7,10 @@
   import Expandable from '../Expandable/index.svelte';
   import PrimaryButton from '../PrimaryButton/index.svelte';
   import MarkdownRender from '../MarkdownRender/index.svelte';
+  import { NAV_ITEMS, SECTION_KEYS } from './constants';
+  import { landingPageStore } from './store';
 
   let activeNavItem = '';
-
-  const data = {
-    title: 'Online Business Masterclass: Sell Your Own Digital Products',
-    shortDescription:
-      'Create, Launch & Market Your Own Online Business w/ Digital Products such as Online Courses, Coaching, eBooks, Webinars+',
-    cost: {
-      currency: '$',
-      price: '300',
-    },
-    requirement:
-      "You don't need any experience creating an online business or digital product. \nYou don't need an online presence, website, or following - but it will help kickstart your online business if you do.",
-    description:
-      "### Have you ever dreamed of starting your own online business?. \n\nOf course I know that :-) I was just thinking if there is some way to do same as getStaticProps for other components too. I don't think such feature is completely necessary, though. \n### Enroll today and get instant access to. \n\nOf course I know that :-) I was just thinking if there is some way to do same as getStaticProps for other components too. I don't think such feature is completely necessary, though.\n ### You will learn many types of digital marketing:\n\n Of course I know that :-) I was just thinking if there is some way to do same as getStaticProps for other components too. I don't think such feature is completely necessary, though. Hello, thank you for reply. Of course I know that :-) I was just thinking if there is some way to do same as getStaticProps for other components too. I don't think such feature is completely necessary, though. Hello, thank you for reply. Of course I know that :-) I was just thinking if there is some way to do same as getStaticProps for other components too. I don't think such feature is completely necessary, though. Hello, thank you for reply. Of course I know that :-) I was just thinking if there is some way to do same as getStaticProps for other components too. I don't think such feature is completely necessary, though. Hello, thank you for reply. Of course I know that :-) I was just thinking if there is some way to do same as getStaticProps for other components too. I don't think such feature is completely necessary, though.",
-    lessons: [
-      {
-        title: 'What is FinTech?',
-      },
-      {
-        title: 'Payments, Cryptocurrencies and Blockchain',
-      },
-      {
-        title: 'Digital Finance and Alternative Finance',
-      },
-      {
-        title: 'FinTech Regulation and RegTech',
-      },
-      {
-        title: 'Data & TechFin',
-      },
-    ],
-    aboutUs: {
-      companyName: 'The Brad School',
-      logoUrl: 'https://img-c.udemycdn.com/user/200_H/19701574_95d1_13.jpg',
-      description:
-        '*Learn creative skills, from absolute beginner to advanced mastery.*\nVideo School exists to help you succeed in life. Each course has been hand-tailored to teach a specific skill from photography and video to art, design and business.\n**Whether you’re trying to learn a new skill from scratch, or want to refresh your memory on something you’ve learned in the past, you’ve come to the right place.**\nEducation makes the world a better place. Make your world better with new skills!\nOur courses can be watched 24/7 wherever you are. Most are fully downloadable so you can take them with you. You can also view them on mobile devices with the Udemy mobile app.\nAll courses have a 30-day money-back guarantee so that you can check it out, make sure it’s the right course for you, and get a refund if it’s not!',
-    },
-  };
-  const navItems = [
-    {
-      label: 'Requirement',
-      key: 'requirement',
-    },
-    {
-      label: 'Description',
-      key: 'description',
-    },
-    {
-      label: 'Syllabus',
-      key: 'syllabus',
-    },
-    {
-      label: 'About Us',
-      key: 'about-us',
-    },
-  ];
 
   const expandableRootClass =
     'max-w-4xl pt-5 my-3 border-r-0 border-b border-l-0 border-gray-300';
@@ -77,12 +24,12 @@
   }
 
   onMount(() => {
-    activeNavItem = window.location.hash || navItems[0].key;
+    activeNavItem = (window.location.hash || NAV_ITEMS[0].key).replace('#', '');
   });
 </script>
 
 <svelte:head>
-  <title>{data.title}</title>
+  <title>{$landingPageStore.header.title}</title>
 </svelte:head>
 
 <div class="w-full bg-white flex flex-col items-center">
@@ -92,10 +39,10 @@
     <div class="container flex justify-between items-center">
       <div class="course-description mr-3">
         <h1>
-          {data.title}
+          {$landingPageStore.header.title}
         </h1>
         <h5>
-          {data.shortDescription}
+          {$landingPageStore.header.description}
         </h5>
         <div>
           <span class="flex items-center">
@@ -107,14 +54,14 @@
       <div class="action-container bg-white p-3 flex items-start flex-col">
         <p class="mb-2 text-black text-md flex items-center">
           <Alarm16 class="carbon-icon active mr-2" />
-          Estimated 8 weeks
+          {$landingPageStore.header.duration}
         </p>
         <p class="mb-2 text-black text-md flex items-center">
           <CurrencyDollar16 class="carbon-icon active mr-2" />
-          {data.cost.currency}{data.cost.price}
+          {$landingPageStore.header.currency}{$landingPageStore.header.cost}
         </p>
         <PrimaryButton
-          label="Enrol"
+          label={$landingPageStore.header.buttonLabel}
           onClick={handleEnrol}
           className="md:w-full"
         />
@@ -125,7 +72,7 @@
   <nav
     class="w-full z-10 max-w-4xl flex items-center justify-evenly py-4 px-4 bg-gray-100 mt-4 sticky top-0"
   >
-    {#each navItems as navItem}
+    {#each NAV_ITEMS as navItem}
       <p
         class="text-md text-gray-900 {activeNavItem === navItem.key &&
           'font-bold'}"
@@ -137,33 +84,39 @@
   </nav>
 
   <Expandable
-    id="requirement"
+    id={SECTION_KEYS.REQUIREMENT}
     title="Requirement"
     titleClass="text-2xl"
     rootClass={expandableRootClass}
     supportsLink={true}
   >
-    <MarkdownRender content={data.requirement} disableMaxWidth={true} />
+    <MarkdownRender
+      content={$landingPageStore.requirement.content}
+      disableMaxWidth={true}
+    />
   </Expandable>
 
   <Expandable
-    id="description"
+    id={SECTION_KEYS.DESCRIPTION}
     title="Description"
     titleClass="text-2xl"
     rootClass={expandableRootClass}
     supportsLink={true}
   >
-    <MarkdownRender content={data.description} disableMaxWidth={true} />
+    <MarkdownRender
+      content={$landingPageStore.description.content}
+      disableMaxWidth={true}
+    />
   </Expandable>
 
   <Expandable
-    id="syllabus"
+    id={SECTION_KEYS.SYLLABUS}
     title="Syllabus"
     titleClass="text-2xl"
     rootClass={expandableRootClass}
     supportsLink={true}
   >
-    {#each data.lessons as lesson, index}
+    {#each $landingPageStore.syllabus.lessons as lesson, index}
       <div class="flex items-center my-2">
         <strong class="mr-2">Lesson {index + 1}. </strong>
         {lesson.title}
@@ -172,22 +125,25 @@
   </Expandable>
 
   <Expandable
-    id="about-us"
-    title="About Us - {data.aboutUs.companyName}"
+    id={SECTION_KEYS.ABOUT_US}
+    title="About Us - {$landingPageStore.aboutUs.companyName}"
     titleClass="text-2xl"
     rootClass={expandableRootClass}
     supportsLink={true}
   >
     <div class="w-full">
       <img
-        src={data.aboutUs.logoUrl}
-        alt={data.aboutUs.companyName}
+        src={$landingPageStore.aboutUs.logoUrl}
+        alt={$landingPageStore.aboutUs.companyName}
         height="260"
         width="260"
         class="rounded-full m-auto"
       />
     </div>
-    <MarkdownRender content={data.description} disableMaxWidth={true} />
+    <MarkdownRender
+      content={$landingPageStore.aboutUs.description}
+      disableMaxWidth={true}
+    />
   </Expandable>
 </div>
 
