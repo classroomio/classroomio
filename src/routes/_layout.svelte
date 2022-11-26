@@ -109,6 +109,7 @@
     isMobile.update(() => window.innerWidth <= 760);
   }
 
+  console.log('staging change');
   onMount(() => {
     console.log('Welcome to ClassroomIO, we are grateful you chose us.');
     // Disable GA on localhost
