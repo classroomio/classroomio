@@ -5,10 +5,12 @@
 </script>
 
 <script>
+  import { goto } from '@sapper/app';
   import UserAvatar16 from 'carbon-icons-svelte/lib/UserAvatar16';
   import Book16 from 'carbon-icons-svelte/lib/Book16';
   import TextField from '../../components/Form/TextField.svelte';
   import PrimaryButton from '../../components/PrimaryButton/index.svelte';
+  import { VARIANTS } from '../../components/PrimaryButton/constants';
   import UploadImage from '../../components/UploadImage/index.svelte';
   import { supabase } from '../../utils/functions/supabase';
   import { user, profile } from '../../utils/store/user';
@@ -98,6 +100,12 @@
       initialValueOfUserName = currentProfile.username;
       initialValueOfFullName = currentProfile.fullname;
     }
+  }
+
+  async function logout() {
+    const { error } = await supabase.auth.signOut();
+    console.log('error logout', error);
+    goto('/login');
   }
 
   $: isDirty =
@@ -217,6 +225,12 @@
           </div>
         </div>
       </div>
+      <PrimaryButton
+        className="px-6 py-2"
+        variant={VARIANTS.CONTAINED_DANGER}
+        label="Log out"
+        onClick={logout}
+      />
     </div>
     <!-- {:else if loading}
     <Box>
