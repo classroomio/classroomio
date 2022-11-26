@@ -16,7 +16,7 @@
   import Backdrop from '../components/Backdrop/index.svelte';
   // import SideBar from "../components/SideBar/index.svelte";
   // import Footer from '../components/Footer/index.svelte';
-  // import Apps from '../components/Apps/index.svelte';
+  import Apps from '../components/Apps/index.svelte';
   import { handleAuthChange } from '../utils/functions/api';
   import { user, profile } from '../utils/store/user';
   import { getSupabase } from '../utils/functions/supabase';
@@ -174,9 +174,9 @@
   <div class="flex justify-between">
     <slot />
 
-    <!-- {#if path.includes('courses')}
+    {#if path.includes('courses')}
       <Apps />
-    {/if} -->
+    {/if}
   </div>
 </main>
 
