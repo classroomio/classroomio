@@ -110,6 +110,7 @@
   }
 
   onMount(() => {
+    console.log('Welcome to ClassroomIO, we are grateful you chose us.');
     // Disable GA on localhost
     if (config && !config.isProd) {
       console.log('disable GA');
