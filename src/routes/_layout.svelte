@@ -197,5 +197,10 @@
   :global(:root) {
     --main-primary-color: rgba(29, 78, 216, 1);
     --border-color: #eaecef;
+    --app-background-color: #fafbfc;
+  }
+
+  :global(.app-background-color) {
+    background-color: var(--app-background-color);
   }
 </style>

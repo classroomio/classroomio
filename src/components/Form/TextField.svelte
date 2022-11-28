@@ -1,5 +1,8 @@
 <script>
   import { onMount } from 'svelte';
+  import IconButton from '../IconButton/index.svelte';
+  import PasswordEye from '../Icons/PasswordEye.svelte';
+
   export let label = '';
   export let placeholder = '';
   export let value = '';
@@ -7,6 +10,7 @@
   export let className = '';
   export let inputClassName = '';
   export let type = 'text';
+  export let isPassword = false;
   export let autoFocus = false;
   export let isRequired = false;
   export let isDisabled = false;
@@ -16,6 +20,7 @@
   export let onChange = () => {}; // This is to know if element is 'dirty'
 
   let ref;
+  let fieldNode;
 
   function typeAction(node) {
     node.type = type;
@@ -23,18 +28,29 @@
     if (isRequired) {
       node.required = '';
     }
+
+    fieldNode = node;
+  }
+
+  function handlePasswordEye() {
+    type = type === 'password' ? 'text' : 'password';
+    typeAction(fieldNode);
   }
 
   onMount(() => {
     if (autoFocus) {
       ref.focus();
     }
+
+    if (type === 'password') {
+      isPassword = true;
+    }
   });
 </script>
 
-<label class="block {className}">
+<label class="block relative {className}">
   {#if label}
-    <label for="text-field" class="m-0">
+    <label for="text-field" class="m-0 font-light">
       {label}
 
       {#if isRequired}
@@ -44,9 +60,9 @@
   {/if}
   <input
     use:typeAction
-    class="form-input p-2 mt-1 block w-full bg-white border {inputClassName} {errorMessage
+    class="form-input p-3 mt-1 block w-full border-none bg-gray-100 {inputClassName} {errorMessage
       ? 'border-red-500'
-      : 'border-gray-300'}"
+      : ''}"
     on:keydown={onKeyDown}
     {placeholder}
     bind:value
@@ -56,6 +72,13 @@
     autocomplete={autoComplete ? 'on' : 'off'}
     on:blur={onChange}
   />
+  {#if isPassword}
+    <span class="password-eye">
+      <IconButton value="write-code" onClick={handlePasswordEye}>
+        <PasswordEye isClosed={type === 'password' ? true : false} />
+      </IconButton>
+    </span>
+  {/if}
   {#if errorMessage}
     <p class="text-sm text-red-500">{errorMessage}</p>
   {:else if helperMessage}
@@ -64,3 +87,11 @@
     </p>
   {/if}
 </label>
+
+<style>
+  .password-eye {
+    position: absolute;
+    top: 33px;
+    right: 6px;
+  }
+</style>

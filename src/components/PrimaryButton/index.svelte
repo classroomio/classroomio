@@ -6,7 +6,7 @@
   export let className = '';
   export let onClick = () => {};
   export let name = '';
-  export let type = 'text';
+  export let type = 'button';
   export let variant = VARIANTS.CONTAINED;
   export let disablePadding = false;
   export let isDisabled = false;
@@ -21,7 +21,7 @@
     'bg-opacity-25 hover:bg-opacity-25 cursor-not-allowed'} flex items-center h-auto {VARIANTS_CLASS[
     variant
   ]} {!disablePadding &&
-    'py-1 px-5'} rounded {className} py-2 w-full justify-center sm:w-auto {isLoading &&
+    'py-1 px-5'} rounded-none {className} py-2 w-full justify-center sm:w-auto {isLoading &&
     'py-4 border-blue-700'} transition delay-150 duration-300 ease-in-out"
   on:click={onClick}
   {name}
