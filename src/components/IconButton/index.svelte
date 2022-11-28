@@ -6,6 +6,7 @@
   export let buttonClassName = '';
   export let contained = false;
   export let value = '';
+  export let type = 'button';
   export let size = 'large';
   export let color = '';
   export let toolTipProps = {
@@ -28,6 +29,7 @@
     class="root {color} {selected && 'active'} {size} {contained &&
       'contained'} {buttonClassName}"
     {disabled}
+    {type}
     on:click={handleClick}
   >
     <slot />
