@@ -3,6 +3,7 @@
   import Avatar from '../Avatar/index.svelte';
   import { user, profile } from '../../utils/store/user';
   import PrimaryButton from '../PrimaryButton/index.svelte';
+  import { VARIANTS } from '../PrimaryButton/constants';
 
   export let segment;
   export let disableLogin;
@@ -88,11 +89,20 @@
           />
         </a>
       {:else if !disableLogin}
-        <PrimaryButton
-          label="Login"
-          className="py-2 px-4"
-          onClick={() => goto('/login')}
-        />
+        <div class="flex">
+          <PrimaryButton
+            label="Login"
+            variant={VARIANTS.NONE}
+            className="py-2 px-6 mx-2 app-background-color"
+            onClick={() => goto('/login')}
+          />
+          <PrimaryButton
+            label="Sign Up"
+            variant={VARIANTS.CONTAINED}
+            className="py-2 px-6 mx-2"
+            onClick={() => goto('/signup')}
+          />
+        </div>
       {/if}
     </li>
     <!-- <li class="hidden">
