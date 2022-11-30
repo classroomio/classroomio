@@ -37,9 +37,9 @@
   });
 
   async function getProfile() {
-    console.log('Get user profile');
     // Get user profile
     const authUser = supabase.auth.user();
+    console.log('Get user profile', authUser);
 
     // Check if user has profile
     let {
@@ -82,6 +82,7 @@
           goto('/dashboard');
         }
       }
+      $user.fetchingUser = false;
     } else if (profileData) {
       // Profile exists, go to profile page
       $user.fetchingUser = false;
