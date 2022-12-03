@@ -69,7 +69,7 @@
 <section class="root">
   <PageNav title="All courses">
     <div slot="widget">
-      {#if $profile.can_add_course}
+      {#if $profile.role === 'educator'}
         <PrimaryButton
           label="New"
           onClick={() => ($createCourseModal.open = true)}

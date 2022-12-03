@@ -30,7 +30,8 @@
     "polka": "next",
     "sapper-environment": "^1.0.1",
     "sirv": "^1.0.0",
-    "svelte-easy-crop": "^1.0.4"
+    "svelte-easy-crop": "^1.0.4",
+    "zod": "^3.19.1"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",

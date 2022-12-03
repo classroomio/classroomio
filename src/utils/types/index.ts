@@ -11,7 +11,7 @@ export interface CurrentSessionType {
 
 export interface UserType {
   openAuthModal: boolean;
-  fetchingUser: boolean;
+  fetchingUser: boolean | null;
   isLoggedIn: boolean;
   currentSession: CurrentSessionType | null;
   expiresAt: number;
