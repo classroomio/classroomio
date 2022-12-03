@@ -7,21 +7,27 @@
   export let handleSubmit;
   export let isLogin = true;
   export let showOnlyContent = false;
+  export let showLogo = false;
+  export let formRef;
 
   async function signInWithGoogle() {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-    });
+    try {
+      console.log('signInWithGoogle');
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+      });
+
+      console.log('data', data);
+      console.log('error', error);
+    } catch (error) {}
   }
 </script>
 
 <div class="w-full min-h-screen flex items-center justify-center mt-4">
-  <div
-    class="container border border-gray bg-white {showOnlyContent && 'h-2/4'}"
-  >
+  <div class="container border border-gray bg-white">
     <div class="flex items-center flex-col p-2 lg:px-8 lg:py-4">
-      {#if !showOnlyContent}
-        <div class="flex items-center w-full justify-center">
+      {#if !showOnlyContent || showLogo}
+        <div class="flex items-center w-full justify-center pt-4">
           <img
             src="/logo-192.png"
             alt="ClassroomIO logo"
@@ -33,6 +39,7 @@
         </div>
       {/if}
       <form
+        bind:this={formRef}
         on:submit|preventDefault={handleSubmit}
         class="flex items-center flex-col w-10/12"
       >
@@ -47,7 +54,9 @@
             className="py-3 sm:w-full w-full"
           >
             <GoogleIconColored />
-            <span class="ml-2">Sign up with Google</span>
+            <span class="ml-2"
+              >{isLogin ? 'Sign in' : 'Sign up'} with Google</span
+            >
           </PrimaryButton>
         </div>
       {/if}

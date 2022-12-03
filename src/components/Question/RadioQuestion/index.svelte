@@ -6,7 +6,7 @@
   import TextField from '../../Form/TextField.svelte';
 
   export let title = '';
-  export let code;
+  export let code = '';
   export let name = '';
   export let options = [];
   export let onSubmit = () => {};
@@ -16,9 +16,11 @@
   export let disabled = false;
   export let isPreview = false;
   export let nextButtonProps = {};
-  export let grade;
+  export let grade = undefined;
   export let gradeMax = 0;
   export let disableGrading = false;
+  export let labelClassName = '';
+  export let disableOptContainerMargin = false;
 
   function getRadioVal(form, name) {
     let val;
@@ -60,7 +62,7 @@
 
 <form on:submit|preventDefault={handleFormSubmit}>
   <div class="flex items-center justify-between">
-    <h3 class={!isNaN(grade) && 'w-3/4'}>{title}</h3>
+    <h3 class="{labelClassName} {!isNaN(grade) && 'w-3/4'}">{title}</h3>
     {#if !isNaN(grade)}
       <div class="flex items-center">
         <TextField
@@ -79,7 +81,7 @@
     <CodeSnippet {code} />
   {/if}
 
-  <div class="ml-4">
+  <div class={!disableOptContainerMargin && 'ml-4'}>
     {#each options as option}
       <button
         class="cursor-pointer text-left my-2 border-2 border-gray-300 rounded-md hover:bg-gray-200 w-full {getValidationClassName(
