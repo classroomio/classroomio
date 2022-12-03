@@ -10,17 +10,17 @@
   import PrimaryButton from '../components/PrimaryButton/index.svelte';
   import { getSupabase } from '../utils/functions/supabase';
   import {
-    authValidation,
+    resetValidation,
     getConfirmPasswordError,
     getDisableSubmit,
   } from '../utils/functions/validator';
-  import { SIGNUP_FIELDS } from '../utils/constants/authentication';
+  import { RESET_FIELDS } from '../utils/constants/authentication';
   import AuthUI from '../components/AuthUI/index.svelte';
 
   export let config;
 
   let supabase = getSupabase(config);
-  let fields = Object.assign({}, SIGNUP_FIELDS);
+  let fields = Object.assign({}, RESET_FIELDS);
   let loading = false;
   let success = false;
   let errors = {};
@@ -29,18 +29,16 @@
   let formRef;
 
   async function handleSubmit(e) {
-    const validationRes = authValidation(fields);
-    console.log('validationRes', validationRes);
+    errors = resetValidation(fields);
+    console.log('errors', errors);
 
-    if (Object.keys(validationRes).length) {
-      errors = Object.assign(errors, validationRes);
+    if (Object.keys(errors).length) {
       return;
     }
 
     try {
       loading = true;
-      const { data, error } = await supabase.auth.signUp({
-        email: fields.email,
+      const { data, error } = await supabase.auth.update({
         password: fields.password,
       });
       console.log('data', data);
@@ -49,8 +47,6 @@
       formRef?.reset();
 
       return goto('/login');
-      // success = true;
-      // fields = Object.assign({}, SIGNUP_FIELDS);
     } catch (error) {
       submitError = error.error_description || error.message;
     } finally {
@@ -70,34 +66,13 @@
   {supabase}
   isLogin={false}
   {handleSubmit}
-  showOnlyContent={success}
+  showOnlyContent={true}
+  showLogo={true}
   bind:formRef
 >
   <div class="mt-4 w-full">
-    <p class="text-lg font-semibold mb-6">Create a free account</p>
-    <!-- <TextField
-      label="Full Name"
-      bind:value={fields.name}
-      type="text"
-      autoFocus={true}
-      placeholder="e.g Joke Silva"
-      className="mb-6"
-      inputClassName="w-full"
-      isDisabled={loading}
-      errorMessage={errors.name}
-      isRequired
-    /> -->
-    <TextField
-      label="Your Email"
-      bind:value={fields.email}
-      type="email"
-      placeholder="you@domain.com"
-      className="mb-6"
-      inputClassName="w-full"
-      isDisabled={loading}
-      errorMessage={errors.email}
-      isRequired
-    />
+    <h3 class="text-xl font-semibold my-3">New Password</h3>
+    <p class="text-sm mb-6">Enter your new password details</p>
     <TextField
       label="Your Password"
       bind:value={fields.password}
@@ -128,7 +103,7 @@
 
   <div class="my-4 w-full flex justify-end items-center">
     <PrimaryButton
-      label="Create Account"
+      label="Reset Password"
       type="submit"
       className="sm:w-full w-full"
       isDisabled={disableSubmit || loading}

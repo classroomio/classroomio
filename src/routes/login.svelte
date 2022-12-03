@@ -5,47 +5,47 @@
 </script>
 
 <script>
-  import { Chasing } from 'svelte-loading-spinners';
+  import { goto } from '@sapper/app';
   import TextField from '../components/Form/TextField.svelte';
   import PrimaryButton from '../components/PrimaryButton/index.svelte';
   import { getSupabase } from '../utils/functions/supabase';
-  import { user } from '../utils/store/user';
+  import { authValidation } from '../utils/functions/validator';
+  import { ROUTE } from '../utils/constants/routes';
+  import { LOGIN_FIELDS } from '../utils/constants/authentication';
   import AuthUI from '../components/AuthUI/index.svelte';
 
   export let config;
 
+  let formRef;
   let supabase = getSupabase(config);
-  let email;
-  let password;
+  let fields = Object.assign({}, LOGIN_FIELDS);
+  let submitError;
   let loading = false;
   let success = false;
   let errors = {};
 
   async function handleSubmit() {
-    if (!email) {
-      errors = {
-        email: 'Email is required',
-        password: 'Password is required',
-      };
+    const validationRes = authValidation(fields);
+    console.log('validationRes', validationRes);
+
+    if (Object.keys(validationRes).length) {
+      errors = Object.assign(errors, validationRes);
       return;
     }
 
     try {
       loading = true;
-      const { data, error } = await supabase.auth.signIn(
-        { email },
-        {
-          redirectTo: window.location.origin + '/login',
-        }
-      );
+      const { data, error } = await supabase.auth.signIn({
+        email: fields.email,
+        password: fields.password,
+      });
+      console.log('data', data);
       if (error) throw error;
 
       success = true;
-      email = {};
+      return goto(ROUTE.DASHBOARD);
     } catch (error) {
-      errors = {
-        email: error.error_description || error.message,
-      };
+      submitError = error.error_description || error.message;
     } finally {
       loading = false;
     }
@@ -53,64 +53,55 @@
 </script>
 
 <svelte:head>
-  <title>Login - ClassroomIO</title>
+  <title>Welcome back to ClassroomIO</title>
 </svelte:head>
 
-<AuthUI {supabase} isLogin={true} {handleSubmit}>
+<AuthUI
+  {supabase}
+  isLogin={true}
+  {handleSubmit}
+  showOnlyContent={loading}
+  bind:formRef
+>
   <div class="mt-4 w-full">
-    {#if $user.fetchingUser}
-      <div class="h-40 text-md flex items-center justify-center">
-        <Chasing size="60" color="#ff3e00" unit="px" duration="1s" />
-      </div>
-    {:else if success}
-      <div class="h-40 text-md flex items-center justify-center flex-col">
-        <p class="">
-          A link has been sent to your email. Please check both your
-          <strong>spam </strong>and your<strong>&nbsp; inbox</strong>.
-        </p>
-        <p class="mt-2 underline">
-          If our email is in your spam, do make sure you mark our email address
-          as safe, then move it from your spam to your inbox.
-        </p>
-      </div>
-    {:else}
-      <p class="text-lg font-semibold mb-6">Welcome back</p>
-      <TextField
-        label="Your email"
-        bind:value={email}
-        type="email"
-        autoFocus={true}
-        placeholder="you@domain.com"
-        className="mb-6"
-        inputClassName="w-full"
-        isDisabled={loading}
-        errorMessage={errors.email}
-      />
-      <TextField
-        label="Your password"
-        bind:value={password}
-        type="password"
-        placeholder="************"
-        className="mb-6"
-        inputClassName="w-full"
-        isDisabled={loading}
-        errorMessage={errors.password}
-      />
-      <div class="w-full text-right">
-        <a class="text-md text-blue-700" href="/forgot"> Forgot password? </a>
-      </div>
+    <p class="text-lg font-semibold mb-6">Welcome back</p>
+    <TextField
+      label="Your email"
+      bind:value={fields.email}
+      type="email"
+      autoFocus={true}
+      placeholder="you@domain.com"
+      className="mb-6"
+      inputClassName="w-full"
+      isDisabled={loading}
+      errorMessage={errors.email}
+    />
+    <TextField
+      label="Your password"
+      bind:value={fields.password}
+      type="password"
+      placeholder="************"
+      className="mb-6"
+      inputClassName="w-full"
+      isDisabled={loading}
+      errorMessage={errors.password}
+    />
+    {#if submitError}
+      <p class="text-sm text-red-500">{submitError}</p>
     {/if}
+    <div class="w-full text-right">
+      <a class="text-md text-blue-700" href="/forgot"> Forgot password? </a>
+    </div>
   </div>
 
-  {#if !success}
-    <div class="my-4 w-full flex justify-end items-center">
-      <!-- <a href="/login" class="text-blue-700 text-sm">Create an account</a> -->
-      <PrimaryButton
-        label={loading ? 'Creating...' : 'Log In'}
-        type="submit"
-        className="py-3 sm:w-full w-full"
-        isDisabled={loading}
-      />
-    </div>
-  {/if}
+  <div class="my-4 w-full flex justify-end items-center">
+    <!-- <a href="/login" class="text-blue-700 text-sm">Create an account</a> -->
+    <PrimaryButton
+      label="Log In"
+      type="submit"
+      className="sm:w-full w-full"
+      isDisabled={loading}
+      isLoading={loading}
+    />
+  </div>
 </AuthUI>

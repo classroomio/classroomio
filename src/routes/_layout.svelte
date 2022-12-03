@@ -1,6 +1,6 @@
 <script context="module">
   export function preload(page, { config }) {
-    return { config, isMvpUser: !!page.query.mvp };
+    return { config };
   }
 </script>
 
@@ -21,16 +21,15 @@
   import { user, profile } from '../utils/store/user';
   import { getSupabase } from '../utils/functions/supabase';
   import { isMobile } from '../utils/store/useMobile';
+  import { ROUTES_TO_HIDE_NAV, ROUTE } from '../utils/constants/routes';
 
   export let segment;
   export let config;
-  // export let isMvpUser;
 
   let { page, preloading } = stores();
 
   let supabase = getSupabase(config);
   let path = $page.path.replace('/', '');
-  let allowUser = false;
 
   const delayedPreloading = derived(preloading, (currentPreloading, set) => {
     setTimeout(() => set(currentPreloading), 250);
@@ -60,7 +59,7 @@
 
       const { data, error } = await supabase.from('profile').insert({
         id: authUser.id,
-        username: regexUsernameMatch[1],
+        username: regexUsernameMatch[1] + '1669991321770',
         fullname: regexUsernameMatch[1],
         email: authUser.email,
       });
@@ -75,12 +74,8 @@
 
         // Set user in sentry
         Sentry.setUser($profile);
-        // If user coming to login page, then
-        if (path.includes('login') || path.includes('signup')) {
-          goto('/profile/' + $profile.id);
-        } else if (!path.length) {
-          goto('/dashboard');
-        }
+
+        goto(ROUTE.ONBOARDING);
       }
       $user.fetchingUser = false;
     } else if (profileData) {
@@ -94,9 +89,9 @@
       Sentry.setUser($profile);
 
       // If user coming to login page, then
-      if (path.includes('login') || path.includes('signup')) {
-        goto('/profile/' + $profile.id);
-      } else if (!path.length) {
+      if (!$profile.role) {
+        goto(ROUTE.ONBOARDING);
+      } else {
         goto('/dashboard');
       }
     }
@@ -120,31 +115,27 @@
 
     handleResize();
 
-    const _isMvpUser = localStorage.getItem('mvp');
-
-    if (_isMvpUser || window.location.search.includes('mvp')) {
-      localStorage.setItem('mvp', 'true');
-      allowUser = true;
-    } else if (!_isMvpUser) {
-      // if (!!path) {
-      //   goto('/courses');
-      // }
-
-      return;
-    }
-
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (config.isProd) {
           handleAuthChange(event, session);
         }
         console.log(`event`, event);
+        if (event == 'PASSWORD_RECOVERY') {
+          console.log('PASSWORD RESET');
+        }
+
+        if (path.includes('reset')) {
+          console.log('Dont change auth when on reset page');
+          return;
+        }
+
         if (event === 'SIGNED_IN') {
           $user.fetchingUser = true;
           getProfile();
         } else {
           console.log('not logged in, go to login');
-          return goto('/courses');
+          return goto('/login');
         }
       }
     );
@@ -153,6 +144,18 @@
       authListener.unsubscribe();
     };
   });
+
+  // if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+  //   page.subscribe(() => {
+  //     const from = window.location.pathname;
+  //     const redirect = (href) => {
+  //       goto(href);
+  //     };
+  //     if (!$user.isLoggedIn && !PUBLIC_ROUTES.includes(from)) {
+  //       redirect('/login');
+  //     }
+  //   });
+  // }
 
   $: path = $page.path.replace('/', '');
 </script>
@@ -169,8 +172,8 @@
       <Firework size="60" color="#1d4ed8" unit="px" duration="1s" />
     </Backdrop>
   {/if}
-  {#if !['login', 'signup'].includes(path) && !isCoursePage(path)}
-    <Navigation {segment} disableLogin={!allowUser} />
+  {#if !ROUTES_TO_HIDE_NAV.includes($page.path) && !isCoursePage(path)}
+    <Navigation {segment} />
   {/if}
 
   <div class="flex justify-between">
