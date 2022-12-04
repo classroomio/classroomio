@@ -13,13 +13,16 @@
   async function signInWithGoogle() {
     try {
       console.log('signInWithGoogle');
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { user, session, error } = await supabase.auth.signIn({
         provider: 'google',
       });
 
-      console.log('data', data);
+      console.log('user', user);
+      console.log('session', session);
       console.log('error', error);
-    } catch (error) {}
+    } catch (error) {
+      console.log('catch error', error);
+    }
   }
 </script>
 
