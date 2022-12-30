@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "sapper dev",
     "build": "sapper build --legacy",
-    "export": "sapper export --legacy --entry \"/ /404 login signup courses dashboard discussions people timetable profile discussions\"",
+    "export": "sapper export --legacy --entry \"/ /404 login signup forgot onboarding courses dashboard people profile course\"",
     "postexport": "mv __sapper__/export/404/index.html __sapper__/export/404.html",
     "start": "node __sapper__/build"
   },
