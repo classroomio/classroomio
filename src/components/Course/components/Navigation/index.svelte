@@ -171,7 +171,7 @@
                   <a
                     class="item flex items-center {(
                       path || $page.path
-                    ).includes(item.id) && 'active'} pl-7 py-2 {isStudent &&
+                    ).includes(item.id) && 'active'} pl-7 py-3 {isStudent &&
                     !item.is_complete
                       ? 'cursor-not-allowed'
                       : ''}"

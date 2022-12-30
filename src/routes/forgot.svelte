@@ -65,7 +65,8 @@
       <p class="text-md mb-6 text-center">
         We have sent a confirmation email to <span class="text-blue-700"
           >{fields.email}</span
-        >. Kindly check your inbox to reset password.
+        >. Kindly check your inbox to reset password or spam to reset your
+        password.
       </p>
     </div>
 

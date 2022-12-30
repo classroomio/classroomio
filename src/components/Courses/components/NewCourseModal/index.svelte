@@ -128,7 +128,7 @@
     />
 
     <div class="mt-5 flex items-center">
-      <PrimaryButton className="px-6 py-2" label="Finish" type="submit" />
+      <PrimaryButton className="px-6 py-3" label="Finish" type="submit" />
     </div>
   </form>
 </Modal>

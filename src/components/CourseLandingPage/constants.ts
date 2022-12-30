@@ -1,9 +1,10 @@
 export const SECTION_KEYS = {
   HEADER: 'header',
-  REQUIREMENT: 'requirement',
-  DESCRIPTION: 'description',
-  SYLLABUS: 'syllabus',
-  ABOUT_US: 'about-us',
+  REQUIREMENT: '#requirement',
+  DESCRIPTION: '#description',
+  GOALS: '#goals',
+  LESSONS: '#lessons',
+  INSTRUCTOR: '#instructor',
 };
 
 export const NAV_ITEMS = [
@@ -16,11 +17,15 @@ export const NAV_ITEMS = [
     label: 'Description',
   },
   {
-    key: SECTION_KEYS.SYLLABUS,
-    label: 'Syllabus',
+    key: SECTION_KEYS.GOALS,
+    label: 'Goals',
   },
   {
-    key: SECTION_KEYS.ABOUT_US,
-    label: 'About Us',
+    key: SECTION_KEYS.LESSONS,
+    label: 'Lessons',
+  },
+  {
+    key: SECTION_KEYS.INSTRUCTOR,
+    label: 'Instructor',
   },
 ];

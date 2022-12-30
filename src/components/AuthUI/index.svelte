@@ -28,7 +28,7 @@
 
 <div class="w-full min-h-screen flex items-center justify-center mt-4">
   <div class="container border border-gray bg-white">
-    <div class="flex items-center flex-col p-2 lg:px-8 lg:py-4">
+    <div class="flex items-center flex-col p-2 lg:px-8 lg:py-3">
       {#if !showOnlyContent || showLogo}
         <div class="flex items-center w-full justify-center pt-4">
           <img

@@ -8,7 +8,7 @@
   let open = false;
 
   const notIconClass =
-    'border rounded-lg border-grey py-2 px-3 focus:outline-none focus:border-gray-400 focus:bg-gray-200';
+    'border rounded-lg border-grey py-3 px-3 focus:outline-none focus:border-gray-400 focus:bg-gray-200';
 
   function isOptionLast(index) {
     return index === options.length - 1;
@@ -41,11 +41,11 @@
 
   {#if open}
     <div
-      class="dropdown w-48 bg-white border border-grey rounded-lg mt-2 py-2 absolute"
+      class="dropdown w-48 bg-white border border-grey rounded-lg mt-2 py-3 absolute"
     >
       {#each options as option, index}
         <button
-          class="block px-4 py-2 {!isOptionLast(index) && 'border-b'} w-full"
+          class="block px-4 py-3 {!isOptionLast(index) && 'border-b'} w-full"
           on:click={onClick(option)}
         >
           {option.label}

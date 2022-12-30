@@ -9,7 +9,7 @@
   import { derived } from 'svelte/store';
   import { stores, goto } from '@sapper/app';
   import * as Sentry from '@sentry/browser';
-  import { Firework } from 'svelte-loading-spinners';
+  import { Moon } from 'svelte-loading-spinners';
   import Tailwindcss from '../components/Tailwindcss.svelte';
   import Navigation from '../components/Navigation/index.svelte';
   import Snackbar from '../components/Snackbar/index.svelte';
@@ -91,7 +91,7 @@
       // If user coming to login page, then
       if (!$profile.role) {
         goto(ROUTE.ONBOARDING);
-      } else {
+      } else if (['login', 'signup', 'onboarding'].includes(path)) {
         goto('/dashboard');
       }
     }
@@ -161,6 +161,10 @@
 </script>
 
 <svelte:window on:resize={handleResize} />
+
+<svelte:head>
+  <link href="/css/carbon.css" rel="stylesheet" />
+</svelte:head>
 <Tailwindcss />
 
 <!-- <Nav {segment} /> -->
@@ -169,7 +173,7 @@
 <main>
   {#if $preloading && $delayedPreloading}
     <Backdrop>
-      <Firework size="60" color="#1d4ed8" unit="px" duration="1s" />
+      <Moon size="60" color="#1d4ed8" unit="px" duration="1s" />
     </Backdrop>
   {/if}
   {#if !ROUTES_TO_HIDE_NAV.includes($page.path) && !isCoursePage(path)}

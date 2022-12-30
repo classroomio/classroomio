@@ -1,5 +1,5 @@
 <script>
-  import { Firework } from 'svelte-loading-spinners';
+  import { Moon } from 'svelte-loading-spinners';
   import Navigation from '../Course/components/Navigation/index.svelte';
   import Backdrop from '../../components/Backdrop/index.svelte';
   // import { lessons, lesson } from '../Course/components/Lesson/store/lessons';
@@ -32,7 +32,7 @@
 
 {#if isFetching}
   <Backdrop>
-    <Firework size="60" color="#1d4ed8" unit="px" duration="1s" />
+    <Moon size="60" color="#1d4ed8" unit="px" duration="1s" />
   </Backdrop>
 {/if}
 

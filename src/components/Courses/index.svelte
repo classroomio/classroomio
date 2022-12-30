@@ -1,6 +1,6 @@
 <script>
   import Box from '../Box/index.svelte';
-  import { Firework } from 'svelte-loading-spinners';
+  import { Moon } from 'svelte-loading-spinners';
   import Card from './components/Card/index.svelte';
   import CopyCourseModal from './components/CopyCourseModal/index.svelte';
   import { courses, courseMetaDeta } from './store';
@@ -13,7 +13,7 @@
 >
   {#if $courseMetaDeta.isLoading}
     <Box>
-      <Firework size="60" color="#1d4ed8" unit="px" duration="1s" />
+      <Moon size="60" color="#1d4ed8" unit="px" duration="1s" />
     </Box>
   {:else}
     {#each $courses as courseData}

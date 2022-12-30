@@ -1,6 +1,17 @@
 <script>
-  import EditContent from '../../../EditContent/index.svelte';
-  import { landingPageStore } from '../../store';
+  import { set, get, cloneDeep } from 'lodash';
+  import TextEditor from '../../../TextEditor/index.svelte';
+
+  export let course;
 </script>
 
-<EditContent bind:value={$landingPageStore.requirement.content} />
+<div class="h-2/5">
+  <TextEditor
+    content={get(course, 'metadata.requirements')}
+    onChange={(html) => {
+      const _course = cloneDeep(course);
+      set(_course, 'metadata.requirements', html);
+      course = _course;
+    }}
+  />
+</div>

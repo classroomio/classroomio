@@ -6,7 +6,7 @@
   import PrimaryButton from '../PrimaryButton/index.svelte';
   import PageBody from '../PageBody/index.svelte';
   import EditContent from '../EditContent/index.svelte';
-  import { course } from '../Course/store';
+  import { course } from './store';
   import { updateCourse } from '../../utils/services/courses';
 
   let mode = MODES.view;

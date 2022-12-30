@@ -29,8 +29,7 @@
     }
 
     $settingsDialog.open = false;
-    const logo = await updateCourse($course.id, {
-      avatar,
+    const logo = await updateCourse($course.id, avatar, {
       title: $course.title,
       description: $course.description,
     });
@@ -67,13 +66,13 @@
 
       <div class="mt-5 flex items-center justify-between">
         <PrimaryButton
-          className="px-6 py-2"
+          className="px-6 py-3"
           variant={VARIANTS.OUTLINED}
           label="No, cancel"
           type="submit"
         />
         <PrimaryButton
-          className="px-6 py-2"
+          className="px-6 py-3"
           variant={VARIANTS.OUTLINED}
           label="Yes, delete"
           onClick={handleDelete}
@@ -103,12 +102,12 @@
 
       <div class="mt-5 flex items-center justify-between">
         <PrimaryButton
-          className="px-6 py-2"
+          className="px-6 py-3"
           variant={VARIANTS.CONTAINED_DANGER}
           label="Delete"
           onClick={() => (shouldDelete = true)}
         />
-        <PrimaryButton className="px-6 py-2" label="Update" type="submit" />
+        <PrimaryButton className="px-6 py-3" label="Update" type="submit" />
       </div>
     </form>
   {/if}

@@ -9,7 +9,7 @@
   } from '../../../../utils/services/courses';
   import { invitationModal, resetForm } from './store';
   import { validateForm } from '../../../Courses/functions';
-  import { course, setCourseData } from '../../../Course/store';
+  import { course, setCourse } from '../../store';
 
   let errors = {
     emails: '',
@@ -47,7 +47,7 @@
     addGroupMember(membersStack).then(async (membersAdded) => {
       const group = await fetchGroup($course.group.id);
 
-      setCourseData(
+      setCourse(
         {
           ...$course,
           group: group.data,
@@ -90,7 +90,7 @@
     />
 
     <div class="mt-5 flex items-center">
-      <PrimaryButton className="px-6 py-2" label="Finish" type="submit" />
+      <PrimaryButton className="px-6 py-3" label="Finish" type="submit" />
     </div>
   </form>
 </Modal>

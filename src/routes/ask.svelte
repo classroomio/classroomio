@@ -1,22 +1,22 @@
 <script>
-  import ChevronDown24 from "carbon-icons-svelte/lib/ChevronDown24";
-  import TextEditor from "../components/TextEditor/index.svelte";
+  import ChevronDown24 from 'carbon-icons-svelte/lib/ChevronDown24';
+  import TextEditor from '../components/TextEditor/index.svelte';
 
-  let questionTitle = "";
-  let questionDescription = "";
+  let questionTitle = '';
+  let questionDescription = '';
   let facultyFilterOpened = false;
 
   const faculties = [
-    "ИЭКСУ",
-    "ИМБТ",
-    "ИМИ",
-    "ИПТДМ",
-    "ИИИР",
-    "ГФ",
-    "ХТФ",
-    "ИДЗО",
-    "УИИ",
-    "УНИ",
+    'ИЭКСУ',
+    'ИМБТ',
+    'ИМИ',
+    'ИПТДМ',
+    'ИИИР',
+    'ГФ',
+    'ХТФ',
+    'ИДЗО',
+    'УИИ',
+    'УНИ',
   ];
   let checkbox = faculties.reduce((acc, cur) => {
     acc[cur] = false;
@@ -38,7 +38,7 @@
   <div class="main-title my-1 flex">
     <div class="faculty-filter mr-1">
       <button
-        class="flex border rounded-lg border-grey py-2 px-3 focus:outline-none focus:border-gray-400 focus:bg-gray-200 relative"
+        class="flex border rounded-lg border-grey py-3 px-3 focus:outline-none focus:border-gray-400 focus:bg-gray-200 relative"
         on:click={handleFacultyFilters}
       >
         <span class="flex flex-row"
@@ -49,10 +49,10 @@
 
       {#if facultyFilterOpened}
         <div
-          class="w-48 bg-white border border-grey rounded-lg mt-2 py-2 absolute"
+          class="w-48 bg-white border border-grey rounded-lg mt-2 py-3 absolute"
         >
           {#each faculties as faculty}
-            <div class="block px-4 py-2 border-b">
+            <div class="block px-4 py-3 border-b">
               <input
                 type="checkbox"
                 class="border border-gray checked:bg-blue-600 checked:border-transparent mr-1 cursor-pointer"

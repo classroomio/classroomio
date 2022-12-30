@@ -93,13 +93,13 @@
           <PrimaryButton
             label="Login"
             variant={VARIANTS.NONE}
-            className="py-2 px-6 mx-2 app-background-color"
+            className="py-3 px-6 mx-2 app-background-color"
             onClick={() => goto('/login')}
           />
           <PrimaryButton
             label="Sign Up"
             variant={VARIANTS.CONTAINED}
-            className="py-2 px-6 mx-2"
+            className="py-3 px-6 mx-2"
             onClick={() => goto('/signup')}
           />
         </div>

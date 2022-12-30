@@ -4,14 +4,14 @@
   import { isMobile } from '../../../../utils/store/useMobile';
   import IconButton from '../../../IconButton/index.svelte';
 
-  let show = true;
+  export let show = true;
 </script>
 
 <section
   class="root z-10 {!show && 'hide'} {$isMobile ? 'fixed shadow-xl' : 'sticky'}"
 >
   {#if show}
-    <div class="relative h-full bg-gray-100">
+    <div class="relative h-full bg-white">
       <slot />
     </div>
   {/if}
@@ -46,6 +46,7 @@
     min-width: 300px;
     max-width: 300px;
     top: 0;
+    left: 0;
     border-right: 1px solid var(--border-color);
     background-color: rgb(250, 251, 252);
 

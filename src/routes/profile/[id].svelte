@@ -183,7 +183,7 @@
           This are the organizations you work at
         </p>
 
-        <div class="hidden my-3 py-2 px-4 border shadow-sm rounded-md">
+        <div class="hidden my-3 py-3 px-4 border shadow-sm rounded-md">
           <h4 class="m-0 font-normal">
             <a class="text-blue-700 font-bold" href="/courses"> CitiBim </a>
           </h4>
@@ -204,7 +204,7 @@
           </div>
         </div>
 
-        <div class="hidden my-2 py-2 px-4 border shadow-sm rounded-md">
+        <div class="hidden my-2 py-3 px-4 border shadow-sm rounded-md">
           <h4 class="m-0 font-normal">
             <a class="text-blue-700 font-bold" href="/courses">
               Climate Change Group
@@ -226,7 +226,7 @@
         </div>
       </div>
       <PrimaryButton
-        className="px-6 py-2"
+        className="px-6 py-3"
         variant={VARIANTS.CONTAINED_DANGER}
         label="Log out"
         onClick={logout}

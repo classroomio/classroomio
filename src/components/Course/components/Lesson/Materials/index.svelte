@@ -1,5 +1,6 @@
 <script>
   import MODES from '../../../../../utils/constants/mode.js';
+  import { formatYoutubeVideo } from '../../../../../utils/functions/formatYoutubeVideo';
 
   import Tabs from '../../../../Tabs/index.svelte';
   import TabContent from '../../../../TabContent/index.svelte';
@@ -23,34 +24,6 @@
   let errors = {};
 
   const onChange = (tab) => () => (currentTab = tab);
-
-  function formatYoutubeVideo(url) {
-    console.log(`url`, url);
-    const prefix = 'https://www.youtube.com/embed';
-
-    // https://www.youtube.com/embed/qajK1J1neAM
-    if (url.includes('embed')) {
-      return url;
-    }
-
-    // https://youtu.be/qajK1J1neAM
-    if (url.includes('.be/')) {
-      const splittedUrlWithBe = url.split('.be/');
-
-      return `${prefix}/${splittedUrlWithBe[1]}`;
-    }
-
-    // https://www.youtube.com/watch?v=qajK1J1neAM
-    const splitedUrl = url.split('watch');
-    if (splitedUrl.length !== 2) {
-      errors.video = 'Wrong url format';
-      return;
-    }
-
-    const query = new URLSearchParams(splitedUrl[1]);
-
-    return `${prefix}/${query.get('v')}`;
-  }
 
   function handleSave(prevMode) {
     if (prevMode === MODES.edit) {
@@ -146,7 +119,7 @@
               width="100%"
               height="569"
               class="iframe"
-              src={formatYoutubeVideo(url)}
+              src={formatYoutubeVideo(url, errors)}
               title="YouTube video player"
               frameborder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

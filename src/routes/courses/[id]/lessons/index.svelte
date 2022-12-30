@@ -36,7 +36,7 @@
   } from '../../../../components/Course/components/Lesson/store/lessons';
   import {
     course,
-    setCourseData,
+    setCourse,
     group,
   } from '../../../../components/Course/store';
 
@@ -107,7 +107,7 @@
   onMount(async () => {
     if ($course.id) return;
     const { data } = await fetchCourse(courseId);
-    setCourseData(data);
+    setCourse(data);
   });
 
   $: {

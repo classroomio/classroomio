@@ -7,7 +7,7 @@
 <script>
   import Overview from '../../../components/Course/index.svelte';
   import CourseContainer from '../../../components/CourseContainer/index.svelte';
-  import { setCourseData } from '../../../components/Course/store';
+  import { setCourse } from '../../../components/Course/store';
   import { fetchCourse } from '../../../utils/services/courses';
 
   export let courseId;
@@ -19,7 +19,7 @@
 
     const { data } = await fetchCourse(courseId);
 
-    setCourseData(data);
+    setCourse(data);
     prevCourseId = courseId;
   }
 

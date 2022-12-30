@@ -25,11 +25,7 @@
   import IconButton from '../../../components/IconButton/index.svelte';
   import PageBody from '../../../components/PageBody/index.svelte';
   import RoleBasedSecurity from '../../../components/RoleBasedSecurity/index.svelte';
-  import {
-    setCourseData,
-    course,
-    group,
-  } from '../../../components/Course/store';
+  import { setCourse, course, group } from '../../../components/Course/store';
   import InviationModal from '../../../components/Course/components/People/InviationModal.svelte';
   import DeleteConfirmation from '../../../components/Course/components/People/DeleteConfirmation.svelte';
   import {
@@ -102,7 +98,7 @@
   onMount(async () => {
     if ($course.id) return;
     const { data } = await fetchCourse(courseId);
-    setCourseData(data);
+    setCourse(data);
   });
 
   $: sortAndFilterPeople($group.people, filterBy);

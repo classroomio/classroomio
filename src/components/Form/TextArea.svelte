@@ -5,7 +5,8 @@
   export let rows = '3';
   export let maxRows = 3;
   export let className = '';
-  export let bgColor = 'bg-gray-100';
+  export let labelClassName = '';
+  export let bgColor = 'bg-gray-200';
   export let helperMessage = '';
   export let errorMessage = '';
   export let isRequired = false;
@@ -17,7 +18,7 @@
 
 <label class="block w-full relative {className}">
   {#if label}
-    <p for="text-field" class="">
+    <p for="text-field" class={labelClassName}>
       {label}
 
       {#if isRequired}
