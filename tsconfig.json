@@ -8,7 +8,7 @@
     "importsNotUsedAsValues": "error",
     "isolatedModules": true,
     "moduleResolution": "node",
-    "sourceMap": true,
+    "sourceMap": false,
     "strict": true,
     "types": ["svelte"]
   },
