@@ -11,11 +11,7 @@
   import PageNav from '../../../components/PageNav/index.svelte';
   import PageBody from '../../../components/PageBody/index.svelte';
   import Box from '../../../components/Box/index.svelte';
-  import {
-    course,
-    group,
-    setCourseData,
-  } from '../../../components/Course/store';
+  import { course, group, setCourse } from '../../../components/Course/store';
   import { getLectureNo } from '../../../components/Course/function';
   import { fetchCourse } from '../../../utils/services/courses';
   import { lessons } from '../../../components/Course/components/Lesson/store/lessons';
@@ -120,7 +116,7 @@
     }
 
     const { data } = await fetchCourse(courseId);
-    setCourseData(data);
+    setCourse(data);
     setAttendance(data);
   });
 

@@ -228,14 +228,14 @@
       <h2 class="text-xl mb-2 mt-0">{$questionnaire.title}</h2>
       {#if STATUS.GRADED === $questionnaireMetaData.status}
         <span
-          class="status-text bg-green-700 text-white rounded-full py-2 px-6 text-center"
+          class="status-text bg-green-700 text-white rounded-full py-3 px-6 text-center"
           title="Status: Pending Review"
         >
           Graded
         </span>
       {:else}
         <span
-          class="status-text bg-yellow-600 text-white rounded-full py-2 px-6 text-center"
+          class="status-text bg-yellow-600 text-white rounded-full py-3 px-6 text-center"
           title="Status: Pending Review"
         >
           Pending

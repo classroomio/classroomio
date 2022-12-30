@@ -16,7 +16,7 @@
   import PageBody from '../../../components/PageBody/index.svelte';
   import CourseContainer from '../../../components/CourseContainer/index.svelte';
   import { fetchCourse } from '../../../utils/services/courses';
-  import { setCourseData, course } from '../../../components/Course/store';
+  import { setCourse, course } from '../../../components/Course/store';
   import {
     fetchSubmissions,
     updateSubmission,
@@ -182,7 +182,7 @@
   onMount(async () => {
     if (!$course.id) {
       const { data } = await fetchCourse(courseId);
-      setCourseData(data);
+      setCourse(data);
     }
 
     const { data: submissions } = await fetchSubmissions(
@@ -297,7 +297,7 @@
                 <div
                   class="border {item.isEarly
                     ? 'border-grey-700'
-                    : 'border-red-700'} w-full my-2 mx-0 rounded-md bg-white py-2 px-3"
+                    : 'border-red-700'} w-full my-2 mx-0 rounded-md bg-white py-3 px-3"
                   animate:flip={{ duration: flipDurationMs }}
                 >
                   <div

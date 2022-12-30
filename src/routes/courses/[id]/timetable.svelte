@@ -20,12 +20,12 @@
   import CourseContainer from '../../../components/CourseContainer/index.svelte';
   import PageNav from '../../../components/PageNav/index.svelte';
   import PageBody from '../../../components/PageBody/index.svelte';
-  import { setCourseData } from '../../../components/Course/store';
+  import { setCourse } from '../../../components/Course/store';
 
   export let courseData = {};
 
   onMount(() => {
-    setCourseData(courseData);
+    setCourse(courseData);
   });
 </script>
 

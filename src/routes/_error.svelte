@@ -16,6 +16,10 @@
 
 <svelte:head>
   <title>{status}</title>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/carbon-components-svelte/css/g90.css"
+  />
 </svelte:head>
 
 <div class="w-3/5 h-3/5 m-auto flex flex-col items-center justify-center">

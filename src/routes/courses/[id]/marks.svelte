@@ -12,11 +12,7 @@
   import PageBody from '../../../components/PageBody/index.svelte';
   import Box from '../../../components/Box/index.svelte';
   import { ROLE } from '../../../utils/constants/roles';
-  import {
-    setCourseData,
-    course,
-    group,
-  } from '../../../components/Course/store';
+  import { setCourse, course, group } from '../../../components/Course/store';
   import { lessons } from '../../../components/Course/components/Lesson/store/lessons';
   import {
     fetchCourse,
@@ -50,7 +46,7 @@
   onMount(async () => {
     if (!$course.id) {
       const { data } = await fetchCourse(courseId);
-      setCourseData(data);
+      setCourse(data);
     }
 
     const { data: marks } = await fetchMarks(courseId);

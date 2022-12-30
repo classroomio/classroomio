@@ -1,25 +1,30 @@
 export * from './config';
 export * from './dashboard';
 
-export interface CurrentSessionType {
-  access_token: string;
-  expires_at: number;
-  expires_in: number;
-  refresh_token: string;
-  token_type: string;
+interface CourseMetadata {
+  requirements?: string;
+  description?: string;
+  goals?: string;
+  videoUrl?: '';
+  showDiscount: false;
+  discount: 0;
+  reward?: {
+    show: boolean;
+    description: string;
+  };
+  instructor?: {
+    name: string;
+    role: string;
+    coursesNo: number;
+    description: string;
+    imgUrl: string;
+  };
 }
 
-export interface UserType {
-  openAuthModal: boolean;
-  fetchingUser: boolean | null;
-  isLoggedIn: boolean;
-  currentSession: CurrentSessionType | null;
-  expiresAt: number;
-}
-
+// Generated from https://supabase-schema.vercel.app/
 export interface Organization {
   id: string /* primary key */;
-  name: string;
+  name: any; // type unknown;
 }
 
 export interface Profile {
@@ -29,27 +34,30 @@ export interface Profile {
   avatar_url?: string;
   created_at?: string;
   updated_at?: string;
-  email?: string;
+  email?: any; // type unknown;
   can_add_course?: boolean;
+  role?: any; // type unknown;
+  goal?: any; // type unknown;
+  source?: any; // type unknown;
 }
 
 export interface Question_type {
   id: number /* primary key */;
-  label: string;
+  label: any; // type unknown;
   created_at?: string;
   updated_at?: string;
-  typename?: string;
+  typename?: any; // type unknown;
 }
 
 export interface Submissionstatus {
   id: number /* primary key */;
-  label: string;
+  label: any; // type unknown;
   updated_at?: string;
 }
 
 export interface Group {
   id: string /* primary key */;
-  name: string;
+  name: any; // type unknown;
   description?: string;
   created_at?: string;
   updated_at?: string;
@@ -58,8 +66,8 @@ export interface Group {
 }
 
 export interface Role {
-  type: string;
-  description?: string;
+  type: any; // type unknown;
+  description?: any; // type unknown;
   id: number /* primary key */;
   updated_at?: string;
   created_at?: string;
@@ -67,24 +75,27 @@ export interface Role {
 
 export interface Waitinglist {
   id: number /* primary key */;
-  email: string;
+  email: any; // type unknown;
   created_at?: string;
 }
 
 export interface Course {
-  created_at?: string;
-  description: string;
-  group_id?: string /* foreign key to group.id */;
-  group?: Group;
+  title: any; // type unknown;
+  description: any; // type unknown;
+  overview?: any; // type unknown;
   id: string /* primary key */;
-  is_template?: boolean;
-  lessons: Lesson[];
-  logo?: string;
-  organization_id?: string /* foreign key to organization.id */;
-  organization?: Organization;
-  overview?: string;
-  title: string;
+  created_at?: string;
   updated_at?: string;
+  group_id?: string /* foreign key to group.id */;
+  is_template?: boolean;
+  organization_id?: string /* foreign key to organization.id */;
+  logo?: string;
+  slug?: any; // type unknown;
+  metadata?: CourseMetadata;
+  cost?: number;
+  currency?: string;
+  group?: Group;
+  organization?: Organization;
 }
 
 export interface Groupmember {
@@ -92,9 +103,9 @@ export interface Groupmember {
   group_id: string /* foreign key to group.id */;
   role_id: number /* foreign key to role.id */;
   profile_id?: string /* foreign key to profile.id */;
-  email?: string;
+  email?: any; // type unknown;
   created_at?: string;
-  assigned_student_id?: string;
+  assigned_student_id?: any; // type unknown;
   group?: Group;
   role?: Role;
   profile?: Profile;
@@ -123,46 +134,47 @@ export interface Group_attendance {
 }
 
 export interface Lesson {
-  call_url?: string;
+  note?: any; // type unknown;
+  video_url?: any; // type unknown;
+  slide_url?: any; // type unknown;
   course_id: string /* foreign key to course.id */;
-  created_at: string;
-  exercise?: Exercise[];
   id: string /* primary key */;
-  is_complete?: boolean;
-  lesson_at?: string;
-  note?: string;
-  order: number;
-  profile?: Profile;
-  public?: boolean;
-  slide_url?: string;
-  teacher_id?: string /* foreign key to profile.id */;
-  title: string;
+  created_at?: string;
   updated_at?: string;
-  video_url?: string;
+  title: any; // type unknown;
+  public?: boolean;
+  lesson_at?: string;
+  teacher_id?: string /* foreign key to profile.id */;
+  is_complete?: boolean;
+  call_url?: string;
+  order?: number;
+  course?: Course;
+  profile?: Profile;
 }
 
 export interface Exercise {
+  title: any; // type unknown;
+  description?: any; // type unknown;
+  lesson_id?: string /* foreign key to lesson.id */;
   created_at?: string;
-  description?: string;
-  due_by?: string;
-  id: string /* primary key */;
-  lesson_id: string /* foreign key */;
-  questions?: Question[];
-  title: string;
   updated_at?: string;
+  id: string /* primary key */;
+  due_by?: string;
+  lesson?: Lesson;
 }
 
 export interface Question {
-  created_at?: string;
-  exercise_id: string /* foreign key to exercise.id */;
   id: number /* primary key */;
-  name?: string;
-  options: Option[];
-  order?: number;
-  points?: string;
   question_type_id: number /* foreign key to question_type.id */;
-  title: string;
+  title: any; // type unknown;
+  created_at?: string;
   updated_at?: string;
+  exercise_id: string /* foreign key to exercise.id */;
+  name?: string;
+  points?: any; // type unknown;
+  order?: number;
+  question_type?: Question_type;
+  exercise?: Exercise;
 }
 
 export interface Submission {
@@ -182,15 +194,14 @@ export interface Submission {
 }
 
 export interface Option {
-  created_at?: string;
-  id?: number /* primary key */;
+  id: number /* primary key */;
+  label: any; // type unknown;
   is_correct: boolean;
-  is_dirty?: boolean;
-  label: string;
   question_id: number /* foreign key to question.id */;
-  question?: Question;
-  updated_at?: string;
   value?: string;
+  created_at?: string;
+  updated_at?: string;
+  question?: Question;
 }
 
 export interface Question_answer {

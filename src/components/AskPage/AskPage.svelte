@@ -57,9 +57,9 @@
       </button>
 
       {#if facultyFilterOpened}
-        <div class="w-48 bg-white border border-grey rounded-lg mt-2 py-2">
+        <div class="w-48 bg-white border border-grey rounded-lg mt-2 py-3">
           {#each faculties as faculty}
-            <div class="block px-4 py-2 border-b">
+            <div class="block px-4 py-3 border-b">
               <input
                 type="checkbox"
                 class="border border-gray checked:bg-blue-600 checked:border-transparent mr-1 cursor-pointer"

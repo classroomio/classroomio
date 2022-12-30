@@ -1,6 +1,6 @@
 <script>
-  import Label from "./Label.svelte";
-  import Avatar from "./Avatar.svelte";
+  import Label from './Label.svelte';
+  import Avatar from './Avatar.svelte';
 
   export let poll = {};
   export let onSelect = () => {};
@@ -19,7 +19,7 @@
   }
 
   function getSelectedUsers(users) {
-    return users.map((o) => o.label).join(", ");
+    return users.map((o) => o.label).join(', ');
   }
 
   function getTotalVotes(options) {
@@ -103,7 +103,7 @@
         <div class="mr-5">
           <Label>Expiration</Label>
           <p class="text-sm text-gray-600 mb-4">
-            {poll.expiration || "Today"}
+            {poll.expiration || 'Today'}
           </p>
         </div>
         <div class="flex flex-col items-center">
@@ -170,7 +170,7 @@
       {/each}
       <div class="flex items-center">
         <p class="text-sm text-gray-600">
-          Expires: {poll.expiration || "Today"}
+          Expires: {poll.expiration || 'Today'}
         </p>
         <span class="mx-2">|</span>
         <p class="text-sm text-gray-600">
@@ -182,7 +182,7 @@
     {#if isAuthor}
       <div class="w-full text-center mt-3">
         <button
-          class="px-5 py-2 bg-blue-700 text-white"
+          class="px-5 py-3 bg-blue-700 text-white"
           on:click={() => (viewResult = !viewResult)}
         >
           {#if viewResult}
@@ -192,7 +192,7 @@
           {/if}
         </button>
         <button
-          class="px-5 py-2 bg-red-500 text-white"
+          class="px-5 py-3 bg-red-500 text-white"
           on:click={handlePollDelete}
         >
           Delete

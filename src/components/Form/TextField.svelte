@@ -19,6 +19,7 @@
   export let helperMessage = '';
   export let autoComplete = true;
   export let onChange = () => {}; // This is to know if element is 'dirty'
+  export let onInputChange = () => {};
 
   let ref;
   let fieldNode;
@@ -61,10 +62,11 @@
   {/if}
   <input
     use:typeAction
-    class="form-input p-3 mt-1 block w-full border-none bg-gray-100 {inputClassName} {errorMessage
+    class="form-input p-3 mt-1 block w-full border-none bg-gray-200 {inputClassName} {errorMessage
       ? 'border-red-500'
       : ''}"
     on:keydown={onKeyDown}
+    on:change={onInputChange}
     {placeholder}
     bind:value
     bind:this={ref}
@@ -92,7 +94,7 @@
 <style>
   .password-eye {
     position: absolute;
-    top: 33px;
+    top: 23px;
     right: 6px;
   }
 </style>

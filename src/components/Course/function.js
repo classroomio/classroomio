@@ -26,12 +26,12 @@ export function getLessonsRoute(courseId, lessonId) {
   return `${path}/${lessonId}`;
 }
 
-export function getLectureNo(index) {
+export function getLectureNo(index, initNo = '00') {
   if (index <= 9) {
-    return `00${index}`;
+    return `${initNo}${index}`;
   }
 
-  return `0${index}`;
+  return `${initNo.replace('0', '')}${index}`;
 }
 
 export function formatAnswers(data) {
