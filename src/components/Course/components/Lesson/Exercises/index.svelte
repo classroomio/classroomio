@@ -3,7 +3,7 @@
   import { onMount } from 'svelte';
   import AudioConsole32 from 'carbon-icons-svelte/lib/AudioConsole32';
   import Box from '../../../../Box/index.svelte';
-  import { Firework } from 'svelte-loading-spinners';
+  import { Moon } from 'svelte-loading-spinners';
   import Backdrop from '../../../../Backdrop/index.svelte';
   import PrimaryButton from '../../../../PrimaryButton/index.svelte';
   import RoleBasedSecurity from '../../../../RoleBasedSecurity/index.svelte';
@@ -122,7 +122,7 @@
 
 {#if isFetching}
   <Backdrop>
-    <Firework size="60" color="#1d4ed8" unit="px" duration="1s" />
+    <Moon size="60" color="#1d4ed8" unit="px" duration="1s" />
   </Backdrop>
 {/if}
 
@@ -147,7 +147,7 @@
 
     <div class="mt-5 flex items-center">
       <PrimaryButton
-        className="px-6 py-2"
+        className="px-6 py-3"
         label="Submit"
         onClick={handleAddExercise}
       />

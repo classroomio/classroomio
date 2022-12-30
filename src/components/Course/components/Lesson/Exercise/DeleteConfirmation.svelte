@@ -25,7 +25,7 @@
 
     <div class="mt-5 flex items-center justify-between">
       <PrimaryButton
-        className="px-6 py-2"
+        className="px-6 py-3"
         variant={VARIANTS.OUTLINED}
         label="No, please don't"
         onClick={() => {
@@ -34,7 +34,7 @@
         }}
       />
       <PrimaryButton
-        className="px-6 py-2"
+        className="px-6 py-3"
         variant={VARIANTS.CONTAINED_DANGER}
         label="Yes, delete"
         onClick={() => {

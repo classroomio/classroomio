@@ -8,13 +8,18 @@
   import HeaderForm from './HeaderForm.svelte';
   import RequirementForm from './RequirementForm.svelte';
   import DescriptionForm from './DescriptionForm.svelte';
-  import SyllabusForm from './SyllabusForm.svelte';
-  import AboutUsForm from './AboutUsForm.svelte';
+  import PricingForm from './PricingForm.svelte';
+  import GoalsForm from './GoalsForm.svelte';
+  import InstructorForm from './InstructorForm.svelte';
   import PrimaryButton from '../../../PrimaryButton/index.svelte';
+  import { VARIANTS } from '../../../PrimaryButton/constants';
+  import { updateCourse } from '../../../../utils/services/courses';
 
+  export let course;
   export let courseId;
 
   let borderBottomGrey = 'border-r-0 border-b border-l-0 border-gray-300';
+  let loading = false;
 
   const sections = [
     {
@@ -31,11 +36,15 @@
     },
     {
       key: 4,
-      title: 'Syllabus',
+      title: 'Goals',
     },
     {
       key: 5,
-      title: 'About Us',
+      title: 'Instructor',
+    },
+    {
+      key: 6,
+      title: 'Pricing',
     },
   ];
   let selectedSection = null;
@@ -55,29 +64,66 @@
     };
   }
 
-  function handlePublish() {}
+  function generateSlug(title) {
+    return title
+      .replaceAll(' ', '-')
+      .toLowerCase()
+      .concat(`-${new Date().getTime()}`);
+  }
+
+  async function handleSave() {
+    loading = true;
+    course.slug = course.slug || generateSlug(course.title);
+
+    await updateCourse(courseId, undefined, {
+      ...course,
+      attendance: undefined,
+      group: undefined,
+      lessons: undefined,
+      slug: course.slug,
+    });
+    loading = false;
+
+    return `${window.location.origin}/course/${course.slug}`;
+  }
+  /**
+   * 1. Use all you have for editing now
+   * 2. Make course one interface we might need to computation
+   */
+  async function handlePreview() {
+    const link = `${window.location.origin}/course/${course.slug}`;
+    window.open(link, '_blank');
+  }
 </script>
 
-<Container>
+<Container show={true}>
+  <!-- Publish Header Section -->
   {#if !selectedSection}
-    <div
-      class="flex justify-between items-center px-2 {borderBottomGrey} w-full"
-    >
+    <div class="flex justify-between items-center px-2 w-full">
       <CloseButton onClick={handleClose} />
-      <PrimaryButton
-        label="Publish"
-        onClick={handlePublish}
-        disablePadding={true}
-      />
+      <div class="flex items-center">
+        <PrimaryButton
+          label="Save"
+          type="button"
+          className="mr-1"
+          variant={VARIANTS.OUTLINED}
+          onClick={handleSave}
+          isLoading={loading}
+        />
+        <PrimaryButton
+          label="Preview"
+          type="button"
+          onClick={handlePreview}
+          isDisabled={loading || !course.slug}
+        />
+      </div>
     </div>
-    <div
-      class="flex justify-between items-center px-2 bg-white {borderBottomGrey} w-full mb-2"
-    >
+    <div class="flex justify-between items-center px-2 w-full mb-2">
       <h3 class="">Page Builder</h3>
     </div>
     {#each sections as section}
       <button
-        class="w-full flex items-center justify-between px-2 py-3 bg-white border border-b-0 border-gray-300"
+        class="w-full flex items-center justify-between px-2 py-3 border border-b-0 border-gray-300"
         on:click={handleSectionSelect(section.key)}
       >
         <p class="mr-2">{section.title} section</p>
@@ -85,24 +131,27 @@
       </button>
     {/each}
   {:else}
-    <div class="flex items-center bg-white {borderBottomGrey} w-full">
+    <!-- Title -->
+    <div class="flex items-center  {borderBottomGrey} w-full">
       <IconButton onClick={handleClose}>
         <ArrowLeft24 class="carbon-icon" title="Go back" />
       </IconButton>
       <h3 class="">{selectedSection.title}</h3>
     </div>
 
-    <div class="p-2">
+    <div class="p-2 h-4/5 overflow-y">
       {#if selectedSection.key === 1}
-        <HeaderForm />
+        <HeaderForm bind:course />
       {:else if selectedSection.key === 2}
-        <RequirementForm />
+        <RequirementForm bind:course />
       {:else if selectedSection.key === 3}
-        <DescriptionForm />
+        <DescriptionForm bind:course />
       {:else if selectedSection.key === 4}
-        <SyllabusForm />
+        <GoalsForm bind:course />
       {:else if selectedSection.key === 5}
-        <AboutUsForm />
+        <InstructorForm bind:course />
+      {:else if selectedSection.key === 6}
+        <PricingForm bind:course />
       {/if}
     </div>
   {/if}

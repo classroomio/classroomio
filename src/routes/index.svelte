@@ -97,7 +97,7 @@
   <div class="flex flex-col md:flex-row">
     {#each areas as area, index}
       <div
-        class="box m-3 bg-white rounded-md py-4 px-12 active shadow-xl border-2 hover:border-blue-700 {animate}"
+        class="box m-3 bg-white rounded-md py-3 px-12 active shadow-xl border-2 hover:border-blue-700 {animate}"
       >
         <h3 class="text-3xl">
           {#if index === 0}

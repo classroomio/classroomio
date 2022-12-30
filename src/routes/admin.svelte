@@ -88,7 +88,7 @@
   <div class="flex items-center justify-evenly max-w-6xl m-auto">
     {#each boxes as box}
       <div
-        class="bg-white rounded-md py-4 px-16 active shadow-md hover:shadow-2xl border-2 hover:border-blue-700 cursor-pointer {animate}"
+        class="bg-white rounded-md py-3 px-16 active shadow-md hover:shadow-2xl border-2 hover:border-blue-700 cursor-pointer {animate}"
       >
         {#if box.icon === 'students'}
           <UserSpeaker32 class="carbon-icon" />
@@ -106,7 +106,7 @@
   <div class="flex items-center justify-evenly mt-16">
     <div class="table rounded-md bg-white shadow-md">
       <div class="flex border-t-0 {borderBottomGrey} p-3">
-        <h3 class="m-0 py-2 pl-2 text-lg">Outstanding students</h3>
+        <h3 class="m-0 py-3 pl-2 text-lg">Outstanding students</h3>
       </div>
 
       {#each topStudents as topStudent, index}
@@ -123,7 +123,7 @@
 
     <div class="table rounded-md bg-white shadow-md">
       <div class="flex border-t-0 {borderBottomGrey} p-3">
-        <h3 class="m-0 py-2 pl-2 text-lg">Top rated courses</h3>
+        <h3 class="m-0 py-3 pl-2 text-lg">Top rated courses</h3>
       </div>
 
       {#each topCourses as topCourse, index}

@@ -29,10 +29,7 @@
   import Materials from '../../../../../components/Course/components/Lesson/Materials/index.svelte';
   import Exercises from '../../../../../components/Course/components/Lesson/Exercises/index.svelte';
   import MODES from '../../../../../utils/constants/mode.js';
-  import {
-    setCourseData,
-    course,
-  } from '../../../../../components/Course/store';
+  import { setCourse, course } from '../../../../../components/Course/store';
   import { lesson } from '../../../../../components/Course/components/Lesson/store/lessons';
 
   export let courseId;
@@ -53,14 +50,10 @@
 
     let lessonData;
     if (!$course.id) {
-      const [_course, lesson] = await Promise.all([
-        fetchCourse(courseId),
-        fetchLesson(lessonId),
-      ]);
+      const { data } = await fetchCourse(courseId);
 
-      lessonData = lesson.data;
-
-      setCourseData(_course.data);
+      lessonData = data.lessons.find((lesson) => lesson.id === lessonId);
+      setCourse(data);
     } else if (prevLessonId !== lessonId) {
       const lesson = await fetchLesson(lessonId);
       lessonData = lesson.data;

@@ -132,13 +132,13 @@
 
       <div class="mt-5 flex items-center justify-between">
         <PrimaryButton
-          className="px-6 py-2"
+          className="px-6 py-3"
           variant={VARIANTS.OUTLINED}
           label="No, cancel"
           type="submit"
         />
         <PrimaryButton
-          className="px-6 py-2"
+          className="px-6 py-3"
           variant={VARIANTS.CONTAINED_DANGER}
           label={isDeleting ? 'Deleting...' : 'Yes, delete'}
           isDisabled={isDeleting}
@@ -174,7 +174,7 @@
       </QuestionContainer>
       <div class="float-right">
         <PrimaryButton
-          className="px-6 py-2"
+          className="px-6 py-3"
           variant={VARIANTS.CONTAINED_DANGER}
           label="Delete this exercise"
           onClick={() => (shouldDelete = true)}

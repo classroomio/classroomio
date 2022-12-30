@@ -1,11 +1,13 @@
-import { writable } from 'svelte/store';
+import { writable, Writable, Updater } from 'svelte/store';
 import {
   createLesson,
   updateLesson,
   deleteLesson,
 } from '../../../../../utils/services/courses';
 
-export const lessons = writable([]);
+import type { Lesson, Course } from '../../../../../utils/types';
+
+export const lessons: Writable<Lesson[]> = writable([]);
 export const lesson = writable({
   id: null,
   totalExercises: 0,
@@ -19,7 +21,7 @@ export const lesson = writable({
 export const isLessonDirty = writable(false);
 
 export function handleAddLesson() {
-  lessons.update((_lessons) => {
+  lessons.update(((_lessons) => {
     return [
       ..._lessons,
       {
@@ -31,10 +33,10 @@ export function handleAddLesson() {
         is_complete: false,
       },
     ];
-  });
+  }) as Updater<any>);
 }
 
-export function handleDelete(lessonId) {
+export function handleDelete(lessonId: Lesson['id']) {
   return async () => {
     // Need to implement soft delete
     if (lessonId) {
@@ -52,18 +54,21 @@ export function handleDelete(lessonId) {
   };
 }
 
-export async function handleSaveLesson(lesson, course_id) {
+export async function handleSaveLesson(
+  lesson: Lesson,
+  course_id: Course['id']
+) {
   console.log(`handleSaveLesson lesson`, lesson);
   const newLesson = {
     title: lesson.title,
     lesson_at: lesson.lesson_at,
     call_url: lesson.call_url,
-    teacher_id: lesson.profile ? lesson.profile.id : null,
+    teacher_id: lesson.profile ? lesson.profile.id : undefined,
     course_id,
     is_complete: lesson.is_complete,
   };
 
-  let updatedLesson;
+  let updatedLesson: any[] | null = null;
 
   if (typeof lesson.id === 'string') {
     // No need to get the result of update cause we have all in local state
@@ -85,7 +90,10 @@ export async function handleSaveLesson(lesson, course_id) {
   );
 }
 
-export async function handleUpdateLessonMaterials(lesson, lessonId) {
+export async function handleUpdateLessonMaterials(
+  lesson: any,
+  lessonId: Lesson['id']
+) {
   const materials = {
     ...lesson.materials,
   };

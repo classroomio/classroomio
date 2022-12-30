@@ -35,7 +35,7 @@
 </script>
 
 <div
-  class="root w-72 border bg-white px-2 py-2 mr-4 mb-4 rounded-md hover:shadow-2xl transition ease-in-out relative"
+  class="root w-72 border bg-white px-2 py-3 mr-4 mb-4 rounded-md hover:shadow-2xl transition ease-in-out relative"
 >
   <Dropdown
     options={getOptions()}

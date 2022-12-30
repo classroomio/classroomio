@@ -1,22 +1,24 @@
 import { supabase } from '../../functions/supabase';
 import { isUUID } from '../../functions/isUUID';
 import { QUESTION_TYPE } from '../../../components/Question/constants';
+import type {
+  Lesson,
+  Course,
+  Group,
+  Groupmember,
+  Exercise,
+} from '../../../utils/types';
 
-export async function fetchCourse(courseId, session) {
-  console.log(`courseId`, courseId);
-  let jsonUser;
+export async function fetchCourse(
+  courseId?: Course['id'],
+  slug?: Course['slug']
+) {
+  let match: { slug?: string; id?: string } = {};
 
-  if (!process.browser) {
-    // try {
-    //   jsonUser = JSON.parse(session.user);
-    // } catch (error) {
-    //   console.log('Token is expired probably cause user not found');
-    //   return {
-    //     data: [],
-    //     cantFetch: true,
-    //   };
-    //   // return this.redirect(301, '/login');
-    // }
+  if (slug) {
+    match.slug = slug;
+  } else {
+    match.id = courseId;
   }
 
   const { data, error } = await supabase
@@ -33,14 +35,19 @@ export async function fetchCourse(courseId, session) {
           profile(*)
         )
       ),
+      slug,
+      cost,
+      currency,
+      metadata,
       lessons:lesson(
         id, title,public, lesson_at, call_url, is_complete, order, created_at,
+        note, video_url, slide_url, call_url, totalExercises:exercise(count),
         profile:teacher_id(id, avatar_url, fullname)
       ),
       attendance:group_attendance(*)
     `
     )
-    .match({ id: courseId })
+    .match(match)
     .single();
   console.log(`error`, error);
   if (!data || error) {
@@ -56,7 +63,7 @@ export async function fetchCourse(courseId, session) {
   };
 }
 
-export async function fetchGroup(groupId) {
+export async function fetchGroup(groupId: Group['id']) {
   const { data, error } = await supabase
     .from('group')
     .select(`*,members:groupmember(*,profile(*))`)
@@ -69,7 +76,10 @@ export async function fetchGroup(groupId) {
   };
 }
 
-export async function setProfileIdOfGroupMember(email, profileId) {
+export async function setProfileIdOfGroupMember(
+  email: string,
+  profileId: string
+) {
   const { data, error } = await supabase
     .from('groupmember')
     .update({
@@ -84,13 +94,41 @@ export async function setProfileIdOfGroupMember(email, profileId) {
   };
 }
 
-export async function updateCourse(courseId, course) {
-  if (course.avatar) {
+export async function uploadAvatar(courseId: string, avatar: string) {
+  const filename = `course/${courseId + Date.now()}.webp`;
+  let logo;
+
+  const { data } = await supabase.storage
+    .from('avatars')
+    .upload(filename, avatar, {
+      cacheControl: '3600',
+      upsert: false,
+    });
+
+  if (data && data.Key) {
+    const { publicURL } = supabase.storage
+      .from('avatars')
+      .getPublicUrl(filename);
+
+    if (!publicURL) return;
+
+    logo = publicURL;
+  }
+
+  return logo;
+}
+
+export async function updateCourse(
+  courseId: Course['id'],
+  avatar: string | undefined,
+  course: Course
+) {
+  if (avatar) {
     const filename = `course/${courseId + Date.now()}.webp`;
 
     const { data } = await supabase.storage
       .from('avatars')
-      .upload(filename, course.avatar, {
+      .upload(filename, avatar, {
         cacheControl: '3600',
         upsert: false,
       });
@@ -100,11 +138,11 @@ export async function updateCourse(courseId, course) {
         .from('avatars')
         .getPublicUrl(filename);
 
+      if (!publicURL) return;
+
       course.logo = publicURL;
     }
   }
-
-  delete course.avatar;
 
   await supabase
     .from('course')
@@ -114,28 +152,28 @@ export async function updateCourse(courseId, course) {
   return course.logo;
 }
 
-export async function deleteCourse(courseId) {
+export async function deleteCourse(courseId: Course['id']) {
   return await supabase.from('course').delete().match({ id: courseId });
 }
 
-export function addGroupMember(member) {
+export function addGroupMember(member: any) {
   return supabase.from('groupmember').insert(member, {
     returning: 'minimal',
   });
 }
 
-export function updatedGroupMember(update, match) {
+export function updatedGroupMember(update: any, match: any) {
   return supabase
     .from('groupmember')
     .update(update, { returning: 'minimal' })
     .match(match);
 }
 
-export function deleteGroupMember(groupMemberId) {
+export function deleteGroupMember(groupMemberId: Groupmember['id']) {
   return supabase.from('groupmember').delete().match({ id: groupMemberId });
 }
 
-export function fetchLesson(lessonId) {
+export function fetchLesson(lessonId: Lesson['id']) {
   return supabase
     .from('lesson')
     .select(
@@ -145,35 +183,39 @@ export function fetchLesson(lessonId) {
     .single();
 }
 
-export function createLesson(lesson) {
+export function createLesson(lesson: any) {
   return supabase.from('lesson').insert(lesson);
 }
 
-export function updateLesson(lesson, lessonId) {
+export function updateLesson(lesson: any, lessonId: Lesson['id']) {
   return supabase
     .from('lesson')
     .update({ ...lesson, id: undefined }, { returning: 'minimal' })
     .match({ id: lessonId });
 }
 
-export function deleteLesson(lessonId) {
+export function deleteLesson(lessonId: Lesson['id']) {
   // Need to implement soft delete
   return supabase.from('lesson').delete().match({ id: lessonId });
 }
 
-export function createExercise(exercise) {
+export function createExercise(exercise: any) {
   return supabase.from('exercise').insert(exercise);
 }
 
-export function fetchExercisesByMarks(courseId) {
+export function fetchExercisesByMarks(courseId: Course['id']) {
   return supabase.rpc('get_exercises').eq('course_id', courseId);
 }
 
-function isNew(item) {
+function isNew(item: any) {
   return isNaN(item);
 }
 
-export async function upsertExercise(questionnaire, exerciseId) {
+// TODO: Add questionnaire type
+export async function upsertExercise(
+  questionnaire: any,
+  exerciseId: Exercise['id']
+) {
   const {
     questions,
     title,
@@ -263,10 +305,12 @@ export async function upsertExercise(questionnaire, exerciseId) {
       // Delete cause this is not a field in the table
       delete newQuestion.question_type_id;
 
+      // @ts-ignore
       newQuestion.question_type = { id: question_type_id };
       newQuestion.id = id;
       newQuestion.name = name;
       newQuestion.order = order;
+      // @ts-ignore
       newQuestion.options = [];
 
       // Don't map options for 'Paragraph' questions
@@ -297,9 +341,11 @@ export async function upsertExercise(questionnaire, exerciseId) {
           if (is_dirty || isNew(option.id)) {
             const { data } = await supabase.from('option').upsert(newOption);
             if (Array.isArray(data)) {
+              // @ts-ignore
               newQuestion.options.push(data[0]);
             }
           } else {
+            // @ts-ignore
             newQuestion.options.push(newOption);
           }
         }
@@ -312,12 +358,16 @@ export async function upsertExercise(questionnaire, exerciseId) {
   return updatedQuestions;
 }
 
+interface LooseObject {
+  [key: string]: any;
+}
+
 export async function submitExercise(
-  answers,
-  questions,
-  exerciseId,
-  courseId,
-  groupMemberId
+  answers: Array<string>,
+  questions: Array<{ name: string; id: string }>,
+  exerciseId: Exercise['id'],
+  courseId: Course['id'],
+  groupMemberId: Groupmember['id'] | undefined
 ) {
   if (!groupMemberId) {
     return;
@@ -326,7 +376,7 @@ export async function submitExercise(
   const questionsByName = questions.reduce(
     (acc, q) => ({ ...acc, [q.name]: q.id }),
     {}
-  );
+  ) as LooseObject;
   const questionAnswers = [];
 
   const { data: submission } = await supabase.from('submission').insert({
@@ -343,7 +393,7 @@ export async function submitExercise(
       question_id: questionsByName[questionName],
       open_answer: '',
       answers: [],
-      submission_id: submission[0].id,
+      submission_id: Array.isArray(submission) ? submission[0].id : null,
     };
 
     if (typeof value === 'string') {
@@ -359,7 +409,10 @@ export async function submitExercise(
   console.log(`res`, res);
 }
 
-export async function deleteExercise(questions, exerciseId) {
+export async function deleteExercise(
+  questions: Array<{ id: string }>,
+  exerciseId: Exercise['id']
+) {
   for (const question of questions) {
     const { id } = question;
 

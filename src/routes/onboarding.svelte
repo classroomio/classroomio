@@ -287,7 +287,7 @@
           <PrimaryButton
             label="Back"
             variant={VARIANTS.NONE}
-            className="py-2 px-6 mr-2 text-blue-700"
+            className="py-3 px-6 mr-2 text-blue-700"
             onClick={() => (step = step - 1)}
           />
         {/if}
