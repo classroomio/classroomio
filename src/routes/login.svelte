@@ -5,12 +5,10 @@
 </script>
 
 <script>
-  import { goto } from '@sapper/app';
   import TextField from '../components/Form/TextField.svelte';
   import PrimaryButton from '../components/PrimaryButton/index.svelte';
   import { getSupabase } from '../utils/functions/supabase';
   import { authValidation } from '../utils/functions/validator';
-  import { ROUTE } from '../utils/constants/routes';
   import { LOGIN_FIELDS } from '../utils/constants/authentication';
   import AuthUI from '../components/AuthUI/index.svelte';
 
@@ -21,7 +19,6 @@
   let fields = Object.assign({}, LOGIN_FIELDS);
   let submitError;
   let loading = false;
-  let success = false;
   let errors = {};
 
   async function handleSubmit() {
@@ -41,9 +38,6 @@
       });
       console.log('data', data);
       if (error) throw error;
-
-      success = true;
-      return goto(ROUTE.DASHBOARD);
     } catch (error) {
       submitError = error.error_description || error.message;
     } finally {
