@@ -28,6 +28,7 @@
         isPublished={courseData.is_published}
         cost={courseData.cost}
         currency={courseData.currency}
+        totalLessons={courseData.total_lessons}
       />
     {:else}
       <Box>
