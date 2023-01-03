@@ -12,6 +12,7 @@
   export let role_id = ROLE.STUDENT;
   export let isPublished = false;
   export let cost = 0;
+  export let totalLessons = 0;
   export let currency = 'NGN';
 
   let formatter = getCurrencyFormatter(currency);
@@ -70,7 +71,7 @@
         {description}
       </p>
       <div class="flex justify-between">
-        <p>0 lessons</p>
+        <p>{totalLessons} lessons</p>
         <div class="rounded bg-{isPublished ? 'green' : 'red'}-200 py-1 px-2">
           {#if isPublished}
             Published
