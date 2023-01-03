@@ -1,7 +1,8 @@
 <script>
   import Box from '../Box/index.svelte';
-  import { Moon } from 'svelte-loading-spinners';
   import Card from './components/Card/index.svelte';
+  import CardLoader from './components/Card/Loader.svelte';
+  import CoursesEmptyIcon from '../Icons/CoursesEmptyIcon.svelte';
   import CopyCourseModal from './components/CopyCourseModal/index.svelte';
   import { courses, courseMetaDeta } from './store';
 </script>
@@ -12,21 +13,30 @@
   class="flex items-center justify-center lg:justify-start flex-wrap my-4 m-auto"
 >
   {#if $courseMetaDeta.isLoading}
-    <Box>
-      <Moon size="60" color="#1d4ed8" unit="px" duration="1s" />
-    </Box>
+    <CardLoader />
+    <CardLoader />
+    <CardLoader />
   {:else}
     {#each $courses as courseData}
       <Card
         id={courseData.id}
         logo={courseData.logo}
+        bannerImage={courseData.banner_image}
         title={courseData.title}
         description={courseData.description}
         role_id={courseData.role_id}
+        isPublished={courseData.is_published}
+        cost={courseData.cost}
+        currency={courseData.currency}
       />
     {:else}
       <Box>
-        <h3 class="text-2xl text-gray-500">No Course Assigned</h3>
+        <CoursesEmptyIcon />
+        <h3 class="text-2xl my-5 ">No Courses Created</h3>
+        <p class="w-1/3 text-center">
+          Share your knowledge with the world by creating engaging courses for
+          your students.
+        </p>
       </Box>
     {/each}
   {/if}

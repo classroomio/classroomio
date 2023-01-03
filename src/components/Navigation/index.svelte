@@ -85,7 +85,8 @@
           <Avatar
             src={$profile.avatar_url}
             name={$profile.username}
-            className="mr-2"
+            width="w-7"
+            height="h-7"
           />
         </a>
       {:else if !disableLogin}

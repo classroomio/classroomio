@@ -19,7 +19,7 @@
   export let helperMessage = '';
   export let autoComplete = true;
   export let onChange = () => {}; // This is to know if element is 'dirty'
-  export let onInputChange = () => {};
+  export let onInputChange = (e) => {};
 
   let ref;
   let fieldNode;

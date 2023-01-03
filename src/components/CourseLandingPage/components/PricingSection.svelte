@@ -2,6 +2,7 @@
   import PrimaryButton from '../../PrimaryButton/index.svelte';
   import { VARIANTS } from '../../PrimaryButton/constants';
   import type { Course } from '../../../utils/types';
+  import getCurrencyFormatter from '../../../utils/functions/getCurrencyFormatter';
   import { get } from 'lodash';
 
   export let className = '';
@@ -26,11 +27,7 @@
 
   function setFormatter(currency: string | undefined) {
     if (!currency) return;
-    formatter = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency,
-      minimumFractionDigits: 2,
-    });
+    formatter = getCurrencyFormatter(currency);
   }
 
   $: setFormatter(courseData.currency);

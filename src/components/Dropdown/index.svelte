@@ -32,7 +32,11 @@
 <div class="{classNames} z-10d {!options.length && 'hidden'}">
   <button
     class="flex flex-row items-center {!isIcon && notIconClass}"
-    on:click={(e) => (open = !open)}
+    on:click={(e) => {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      open = !open;
+    }}
     on:blur={onBlur}
   >
     <slot />
