@@ -2,10 +2,12 @@
   export let name = '';
   export let src = '';
   export let className = '';
+  export let width = 'w-10';
+  export let height = 'h-10';
 </script>
 
 <img
   alt={name}
   {src}
-  class="w-10 h-10 rounded-full bg-light-blue-100 {className}"
+  class="{className} {width} {height} rounded-full bg-light-blue-100"
 />

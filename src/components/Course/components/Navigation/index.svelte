@@ -21,9 +21,10 @@
   import Settings from '../Settings/index.svelte';
   import { settingsDialog } from '../Settings/store';
   import { lessons } from '../Lesson/store/lessons';
-  import { course, group } from '../../store';
+  import { course } from '../../store';
   import { updateCourse } from '../../../../utils/services/courses';
   import { profile } from '../../../../utils/store/user';
+  import { currentOrg } from '../../../../utils/store/org';
   import { isMobile } from '../../../../utils/store/useMobile';
 
   // export let lessonId;
@@ -208,7 +209,7 @@
       >
         <IconButton
           value="toggle"
-          onClick={() => goto('/courses')}
+          onClick={() => goto(`/org/${$currentOrg.siteName}/courses`)}
           buttonClassName="mx-3"
         >
           <Home32 class="carbon-icon" />

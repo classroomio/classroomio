@@ -2,6 +2,8 @@
   import { goto } from '@sapper/app';
   import ChevronRight24 from 'carbon-icons-svelte/lib/ChevronRight24';
   import ArrowLeft24 from 'carbon-icons-svelte/lib/ArrowLeft24';
+  import ArrowUpRight24 from 'carbon-icons-svelte/lib/ArrowUpRight24';
+
   import Container from './Container.svelte';
   import IconButton from '../../../IconButton/index.svelte';
   import CloseButton from '../../../Buttons/Close/index.svelte';
@@ -94,6 +96,14 @@
     const link = `${window.location.origin}/course/${course.slug}`;
     window.open(link, '_blank');
   }
+
+  async function handlePublish() {
+    loading = true;
+    await updateCourse(courseId, undefined, {
+      is_published: true,
+    });
+    loading = false;
+  }
 </script>
 
 <Container show={true}>
@@ -111,11 +121,14 @@
           isLoading={loading}
         />
         <PrimaryButton
-          label="Preview"
+          label="Publish"
           type="button"
-          onClick={handlePreview}
-          isDisabled={loading || !course.slug}
+          onClick={handlePublish}
+          isDisabled={loading}
         />
+        <IconButton onClick={handlePreview} disabled={loading || !course.slug}>
+          <ArrowUpRight24 class="carbon-icon" title="Preview" />
+        </IconButton>
       </div>
     </div>
     <div class="flex justify-between items-center px-2 w-full mb-2">

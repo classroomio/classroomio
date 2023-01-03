@@ -8,12 +8,15 @@
   import { onMount } from 'svelte';
   import { derived } from 'svelte/store';
   import { stores, goto } from '@sapper/app';
+  import _ from 'lodash';
   import * as Sentry from '@sentry/browser';
   import { Moon } from 'svelte-loading-spinners';
   import Tailwindcss from '../components/Tailwindcss.svelte';
-  import Navigation from '../components/Navigation/index.svelte';
+  import LandingNavigation from '../components/Navigation/index.svelte';
+  import OrgNavigation from '../components/Navigation/app.svelte';
   import Snackbar from '../components/Snackbar/index.svelte';
   import Backdrop from '../components/Backdrop/index.svelte';
+  import OrgSideBar from '../components/Org/SideBar.svelte';
   // import SideBar from "../components/SideBar/index.svelte";
   // import Footer from '../components/Footer/index.svelte';
   import Apps from '../components/Apps/index.svelte';
@@ -22,6 +25,7 @@
   import { getSupabase } from '../utils/functions/supabase';
   import { isMobile } from '../utils/store/useMobile';
   import { ROUTES_TO_HIDE_NAV, ROUTE } from '../utils/constants/routes';
+  import { getOrganizations } from '../utils/services/org';
 
   export let segment;
   export let config;
@@ -47,7 +51,7 @@
       status,
     } = await supabase
       .from('profile')
-      .select(`*, org:organizationmember(*)`)
+      .select(`*`)
       .eq('id', authUser.id)
       .single();
 
@@ -88,17 +92,24 @@
       // Set user in sentry
       Sentry.setUser($profile);
 
+      const orgRes = await getOrganizations($profile.id);
+
       // If user coming to login page, then
-      if (!$profile.role) {
+      if (_.isEmpty(orgRes.orgs)) {
         goto(ROUTE.ONBOARDING);
       } else if (['login', 'signup', 'onboarding'].includes(path)) {
-        goto('/dashboard');
+        // By default redirect to first organization
+        goto(`/org/${orgRes.currentOrg.siteName}`);
       }
     }
   }
 
   function isCoursePage(path) {
     return /course[s]*\/[a-z 0-9 -]/.test(path);
+  }
+
+  function isOrgPage(path) {
+    return /org\/[a-z 0-9 -]/.test(path);
   }
 
   function handleResize() {
@@ -177,13 +188,26 @@
     </Backdrop>
   {/if}
   {#if !ROUTES_TO_HIDE_NAV.includes($page.path) && !isCoursePage(path)}
-    <Navigation {segment} />
+    {#if $page.path.includes('org') || $page.path.includes('profile')}
+      <OrgNavigation />
+    {:else}
+      <LandingNavigation {segment} />
+    {/if}
   {/if}
 
   <div class="flex justify-between">
-    <slot />
+    {#if isOrgPage($page.path)}
+      <div class="org-root w-full flex items-center justify-between">
+        <OrgSideBar />
+        <div class="org-slot bg-white">
+          <slot />
+        </div>
+      </div>
+    {:else}
+      <slot />
+    {/if}
 
-    {#if path.includes('courses')}
+    {#if isCoursePage(path)}
       <Apps />
     {/if}
   </div>
@@ -197,6 +221,15 @@
   main {
     background-color: #fafbfc;
     box-sizing: border-box;
+  }
+
+  .org-root {
+    height: calc(100vh - 44px);
+  }
+  .org-slot {
+    width: calc(100vw - 250px);
+    height: calc(100vh - 44px);
+    overflow-y: auto;
   }
 
   :global(a:hover) {

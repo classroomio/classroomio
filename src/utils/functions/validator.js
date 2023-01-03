@@ -28,10 +28,8 @@ const resetValidationSchema = z.object({
 const onboardingValidationSchema = {
   stepOne: z.object({
     fullname: z.string().min(1, { message: 'Enter your fullname' }),
-    role: z.string({
-      required_error: 'Please select a goal',
-      invalid_type_error: 'Please select a goal',
-    }),
+    orgName: z.string().min(1, { message: 'Enter your organisation name' }),
+    siteName: z.string().min(1, { message: 'Enter your site name' }),
   }),
   stepTwo: z.object({
     goal: z
