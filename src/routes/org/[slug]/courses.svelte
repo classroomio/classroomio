@@ -19,7 +19,6 @@
 
 <script>
   import { onMount } from 'svelte';
-  import PageNav from '../../../components/PageNav/index.svelte';
   import Courses from '../../../components/Courses/index.svelte';
   import NewCourseModal from '../../../components/Courses/components/NewCourseModal/index.svelte';
   import PrimaryButton from '../../../components/PrimaryButton/index.svelte';
