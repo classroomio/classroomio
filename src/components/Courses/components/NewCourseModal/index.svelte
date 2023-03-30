@@ -1,4 +1,6 @@
 <script>
+  import { onMount } from 'svelte';
+  import { goto } from '@sapper/app';
   import PrimaryButton from '../../../PrimaryButton/index.svelte';
   import Modal from '../../../Modal/index.svelte';
   import TextField from '../../../Form/TextField.svelte';
@@ -74,6 +76,14 @@
       $createCourseModal.open = false;
     });
   }
+
+  onMount(() => {
+    const { search, pathname } = window.location;
+    if (search.includes('create=true')) {
+      $createCourseModal.open = true;
+      goto(pathname);
+    }
+  });
 </script>
 
 <svelte:head>
@@ -88,16 +98,16 @@
 >
   <form on:submit|preventDefault={createCourse}>
     <TextField
-      label="Course name"
+      label="Course Title"
       bind:value={$createCourseModal.title}
       autofocus={true}
-      placeholder="Your course name"
+      placeholder="Your course title"
       className="mb-4"
       isRequired={true}
       errorMessage={errors.title}
       autoComplete={false}
     />
-    <TextArea
+    <!-- <TextArea
       label="Invite Tutors"
       bind:value={$createCourseModal.tutors}
       rows="2"
@@ -116,13 +126,13 @@
       helperMessage="To invite people, add their emails separated by a comma"
       errorMessage={errors.students}
       className="mb-4"
-    />
+    /> -->
     <TextArea
-      label="Short description"
+      label="Course Description"
       bind:value={$createCourseModal.description}
       rows="4"
       maxRows="4"
-      placeholder="A little description about this course"
+      placeholder="A description about this course"
       className="mb-4"
       isRequired={true}
     />

@@ -90,6 +90,7 @@ export interface Course {
   is_template?: boolean;
   organization_id?: string /* foreign key to organization.id */;
   logo?: string;
+  type?: string;
   slug?: any; // type unknown;
   metadata?: CourseMetadata;
   cost?: number;

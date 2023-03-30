@@ -26,6 +26,8 @@
   import { isMobile } from '../utils/store/useMobile';
   import { ROUTES_TO_HIDE_NAV, ROUTE } from '../utils/constants/routes';
   import { getOrganizations } from '../utils/services/org';
+  import { currentOrg } from '../utils/store/org';
+  import { isCoursePage, isOrgPage } from '../utils/functions/path';
 
   export let segment;
   export let config;
@@ -63,7 +65,7 @@
 
       const { data, error } = await supabase.from('profile').insert({
         id: authUser.id,
-        username: regexUsernameMatch[1] + '1669991321770',
+        username: regexUsernameMatch[1] + `${new Date().getTime()}`,
         fullname: regexUsernameMatch[1],
         email: authUser.email,
       });
@@ -97,19 +99,14 @@
       // If user coming to login page, then
       if (_.isEmpty(orgRes.orgs)) {
         goto(ROUTE.ONBOARDING);
-      } else if (['login', 'signup', 'onboarding'].includes(path)) {
+      } else if (['login', 'signup', 'onboarding', ''].includes(path)) {
         // By default redirect to first organization
+        goto(`/org/${orgRes.currentOrg.siteName}`);
+      } else if (isOrgPage($page.path)) {
+        // TODO
         goto(`/org/${orgRes.currentOrg.siteName}`);
       }
     }
-  }
-
-  function isCoursePage(path) {
-    return /course[s]*\/[a-z 0-9 -]/.test(path);
-  }
-
-  function isOrgPage(path) {
-    return /org\/[a-z 0-9 -]/.test(path);
   }
 
   function handleResize() {
@@ -125,6 +122,10 @@
     }
 
     handleResize();
+
+    if (!supabase.auth.user()) {
+      return goto('/login');
+    }
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
@@ -188,21 +189,27 @@
     </Backdrop>
   {/if}
   {#if !ROUTES_TO_HIDE_NAV.includes($page.path) && !isCoursePage(path)}
-    {#if $page.path.includes('org') || $page.path.includes('profile')}
-      <OrgNavigation />
-    {:else}
+    {#if !$user.isLoggedIn}
       <LandingNavigation {segment} />
+    {:else}
+      <OrgNavigation {segment} />
     {/if}
   {/if}
 
   <div class="flex justify-between">
     {#if isOrgPage($page.path)}
-      <div class="org-root w-full flex items-center justify-between">
-        <OrgSideBar />
-        <div class="org-slot bg-white">
-          <slot />
+      {#if !$currentOrg.id}
+        <Backdrop>
+          <Moon size="60" color="#1d4ed8" unit="px" duration="1s" />
+        </Backdrop>
+      {:else}
+        <div class="org-root w-full flex items-center justify-between">
+          <OrgSideBar />
+          <div class="org-slot bg-white">
+            <slot />
+          </div>
         </div>
-      </div>
+      {/if}
     {:else}
       <slot />
     {/if}

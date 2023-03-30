@@ -10,7 +10,7 @@
 <CopyCourseModal />
 
 <div
-  class="flex items-center justify-center lg:justify-start flex-wrap my-4 m-auto"
+  class="flex items-center justify-center lg:justify-start flex-wrap my-4 m-auto gap-7"
 >
   {#if $courseMetaDeta.isLoading}
     <CardLoader />

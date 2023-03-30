@@ -11,7 +11,7 @@
 
 <button
   class="flex items-center w-60 py-2 px-3 {hasDivider &&
-    'border-b border-gray-100'} {active && 'bg-blue-100'}"
+    'border-b border-gray-200'} {active && 'bg-blue-100'}"
   on:click={onClick}
 >
   {#if avatarText}

@@ -12,9 +12,9 @@
   import PrimaryButton from '../components/PrimaryButton/index.svelte';
   import { VARIANTS } from '../components/PrimaryButton/constants';
   import { profile } from '../utils/store/user';
-  import { orgs, currentOrg } from '../utils/store/org';
   import { onboardingValidation } from '../utils/functions/validator';
   import { supabase } from '../utils/functions/supabase';
+  import { createNewOrg } from '../utils/services/org';
 
   interface OnboardingField {
     fullname?: string;
@@ -110,48 +110,7 @@
     }
 
     if (step === 1) {
-      const { data: org, error } = await supabase.from('organization').insert({
-        name: fields.orgName,
-        siteName: fields.siteName,
-      });
-      console.log('Create organisation', org);
-      if (error) {
-        console.log('Error: create organisation', error);
-        errors.siteName = 'Sitename already exists.';
-        loading = false;
-        return;
-      }
-
-      if (Array.isArray(org) && org.length) {
-        const orgData = org[0];
-        const { data, error } = await supabase
-          .from('organizationmember')
-          .insert({
-            organization_id: orgData.id,
-            profile_id: $profile.id,
-            role_id: 1,
-          });
-        console.log('Create organisation member', data);
-
-        orgs.set([orgData as never]);
-        currentOrg.set(orgData);
-
-        if (error) {
-          console.log('Error: create organisation member', error);
-          errors.siteName =
-            'Something went wrong while creating this organization. Please reload and try again';
-
-          // Delete organization so it can be recreated.
-          await supabase
-            .from('organization')
-            .delete()
-            .match({ siteName: fields.siteName });
-          loading = false;
-          return;
-        }
-      }
-
-      // client
+      await createNewOrg(fields.orgName, fields.siteName, $profile.id, errors);
     }
 
     if (step === maxSteps) {

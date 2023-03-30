@@ -4,12 +4,13 @@
   import Help from 'carbon-icons-svelte/lib/Help20';
 
   import TextChip from '../../components/Chip/Text.svelte';
-  import OrgSelector from '../../components/OrgSelector/OrgSelector.svelte';
+  import OrgSelector from '../../components/Org/Selector.svelte';
   import HomeIcon from '../../components/Icons/HomeIcon.svelte';
   import CourseIcon from '../../components/Icons/CourseIcon.svelte';
   import SiteSettingsIcon from '../../components/Icons/SiteSettingsIcon.svelte';
   import AudienceIcon from '../../components/Icons/AudienceIcon.svelte';
   import { currentOrg } from '../../utils/store/org';
+  import { getOrgAcronym } from '../../utils/functions/org';
 
   let orgName = '';
   let activeClass = 'bg-gray-200';
@@ -32,7 +33,7 @@
 <aside class="root bg-gray-100 h-full">
   <div class="h-full flex flex-col">
     <div class="border-b border-gray-200 pt-5 px-4 ">
-      <TextChip value="DA" />
+      <TextChip value={getOrgAcronym($currentOrg.name)} />
 
       <OrgSelector />
 
