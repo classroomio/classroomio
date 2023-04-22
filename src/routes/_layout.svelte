@@ -21,6 +21,7 @@
   // import Footer from '../components/Footer/index.svelte';
   import Apps from '../components/Apps/index.svelte';
   import { handleAuthChange } from '../utils/functions/api';
+  import showAppsSideBar from '../utils/functions/showAppsSideBar';
   import { user, profile } from '../utils/store/user';
   import { getSupabase } from '../utils/functions/supabase';
   import { isMobile } from '../utils/store/useMobile';
@@ -210,7 +211,7 @@
       <slot />
     {/if}
 
-    {#if isCoursePage(path)}
+    {#if showAppsSideBar(path)}
       <Apps />
     {/if}
   </div>
