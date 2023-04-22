@@ -7,7 +7,7 @@
 <p
   class="{className} {size === 'sm'
     ? 'py-1 px-1'
-    : 'py-2 px-2'} org-avatar bg-blue-200 font-bold rounded-md text-center"
+    : 'py-2 px-2'} org-avatar bg-gray-200 rounded-md text-center"
 >
   {value}
 </p>
