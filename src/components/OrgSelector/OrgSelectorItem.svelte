@@ -7,21 +7,40 @@
   export let avatarText = '';
   export let text = '';
   export let onClick;
+  export let disabled = false;
 </script>
 
-<button
-  class="flex items-center w-60 py-2 px-3 {hasDivider &&
-    'border-b border-gray-100'} {active && 'bg-blue-100'}"
-  on:click={onClick}
->
-  {#if avatarText}
-    <TextChip value={avatarText} className="mr-2" {size} />
+<div class="relative">
+  <button
+    class="{disabled &&
+      'opacity-25'} flex items-center w-60 py-2 px-3 {hasDivider &&
+      'border-b border-gray-100'} {active && 'bg-blue-100'}"
+    on:click={onClick}
+  >
+    {#if avatarText}
+      <TextChip
+        value={avatarText}
+        className="mr-2 bg-blue-200 font-bold"
+        {size}
+      />
+    {/if}
+    {text}
+  </button>
+  {#if disabled}
+    <div class="coming-soon">
+      <TextChip value="Coming soon" className="text-xs" />
+    </div>
   {/if}
-  {text}
-</button>
+</div>
 
 <style>
   button {
     min-height: 56px;
+  }
+
+  .coming-soon {
+    position: absolute;
+    top: 5px;
+    right: 5px;
   }
 </style>

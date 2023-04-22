@@ -97,7 +97,10 @@
       // If user coming to login page, then
       if (_.isEmpty(orgRes.orgs)) {
         goto(ROUTE.ONBOARDING);
-      } else if (['login', 'signup', 'onboarding'].includes(path)) {
+      } else if (
+        ['login', 'signup', 'onboarding'].includes(path) ||
+        path === '' // for home page
+      ) {
         // By default redirect to first organization
         goto(`/org/${orgRes.currentOrg.siteName}`);
       }
