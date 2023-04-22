@@ -23,6 +23,8 @@ export async function getOrganizations(userId) {
       orgsArray.push({
         id: orgMember?.organization?.id,
         name: orgMember?.organization?.name,
+        shortName:
+          orgMember?.organization?.name?.substring(0, 2)?.toUpperCase() || '',
         siteName: orgMember?.organization?.siteName,
       });
     });

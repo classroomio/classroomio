@@ -11,16 +11,21 @@
   import Modal from '../Modal/index.svelte';
   import TextField from '../Form/TextField.svelte';
   import PrimaryButton from '../PrimaryButton/index.svelte';
+  import { currentOrg } from '../../utils/store/org';
 
   let open = false;
   let openAddOrg = false;
   let loading = false;
   let orgName = '';
 
+  const IS_FEATURE_ENABLED = false;
+
   function handleAddOrg() {
-    console.log('add org modal');
-    open = false;
-    openAddOrg = true;
+    if (IS_FEATURE_ENABLED) {
+      console.log('add org modal');
+      open = false;
+      openAddOrg = true;
+    }
   }
 
   function createNewOrg() {}
@@ -34,25 +39,22 @@
       open = !open;
     }}
   >
-    <p class="text-lg font-bold">DigDippa</p>
+    <p class="text-lg font-bold">{$currentOrg.name}</p>
     <CaretSortIcon class="ml-2" />
   </div>
   <Popover bind:open closeOnOutsideClick align="bottom-left">
     <OrgSelectorItem
       size="sm"
-      active={false}
-      avatarText="DA"
-      text="DigDippa"
+      active={true}
+      avatarText={$currentOrg.shortName}
+      text={$currentOrg.name}
       hasDivider={true}
     />
     <OrgSelectorItem
-      size="sm"
-      active={true}
-      avatarText="PA"
-      text="Pepsi Co"
-      hasDivider={true}
+      text=" + Add Organization"
+      onClick={handleAddOrg}
+      disabled={!IS_FEATURE_ENABLED}
     />
-    <OrgSelectorItem text=" + Add Organization" onClick={handleAddOrg} />
   </Popover>
 </div>
 
