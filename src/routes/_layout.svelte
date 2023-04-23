@@ -248,4 +248,8 @@
   :global(.app-background-color) {
     background-color: var(--app-background-color);
   }
+
+  :global(.bx--data-table-container) {
+    width: 100%;
+  }
 </style>

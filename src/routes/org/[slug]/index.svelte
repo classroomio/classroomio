@@ -209,7 +209,7 @@
   <title>Dashboard - ClassroomIO</title>
 </svelte:head>
 
-<div class="py-10 px-5">
+<div class="py-10 px-5 w-full max-w-7xl mx-auto">
   <div class="flex items-center justify-between mb-10">
     <h1 class="text-3xl font-bold">Dashboard</h1>
     <PrimaryButton label="Create Course" onClick={createCourse} />
