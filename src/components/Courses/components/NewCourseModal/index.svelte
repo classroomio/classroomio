@@ -9,6 +9,7 @@
   import { addGroupMember } from '../../../../utils/services/courses';
   import { supabase } from '../../../../utils/functions/supabase';
   import { profile } from '../../../../utils/store/user';
+  import { currentOrg } from '../../../../utils/store/org';
 
   let errors = {
     emails: '',
@@ -25,7 +26,7 @@
     // 1. Create group
     const { data: newGroup } = await supabase
       .from('group')
-      .insert({ name: title, description });
+      .insert({ name: title, description, organization_id: $currentOrg.id });
 
     console.log(`newGroup`, newGroup);
     const { id: group_id } = newGroup[0];
