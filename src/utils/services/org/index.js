@@ -1,5 +1,5 @@
 import { supabase } from '../../functions/supabase';
-import { orgs, currentOrg } from '../../store/org';
+import { orgs, currentOrg, orgAudience } from '../../store/org';
 
 export async function getOrganizations(userId) {
   const { data, error } = await supabase
@@ -36,6 +36,45 @@ export async function getOrganizations(userId) {
   return {
     orgs: orgsArray,
     currentOrg: orgsArray[0],
+    error,
+  };
+}
+
+export async function getOrgAudience(orgId) {
+  // get all students who are participants in any course belonging to an org
+  const { data, error } = await supabase
+    .from('profile')
+    .select(
+      `
+      id,
+      fullname,
+      email,
+      avatar_url,
+      created_at,
+      groupmember!inner(
+        role_id,
+        group!inner(
+          organization!inner(id)
+        )
+      )
+    `
+    )
+    .eq('groupmember.group.organization.id', orgId)
+    .eq('groupmember.role_id', 3); // is a student, tutor is 2 and admin is 1
+
+  console.log('data', data);
+
+  const audience = (data || []).map((profile) => ({
+    id: profile.id,
+    name: profile.fullname,
+    email: profile.email,
+    avatar_url: profile.avatar_url,
+    date_joined: new Date(profile.created_at).toDateString(),
+  }));
+  orgAudience.set(audience);
+
+  return {
+    audience: audience,
     error,
   };
 }
