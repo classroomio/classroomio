@@ -7,7 +7,7 @@
     Pagination,
     DataTableSkeleton,
   } from 'carbon-components-svelte';
-  import { orgAudience } from '../../utils/store/org';
+  import { orgAudience } from '../../../utils/store/org';
 
   export let isLoading = false;
 
