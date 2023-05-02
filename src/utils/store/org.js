@@ -6,5 +6,7 @@ export const currentOrg = writable({
   name: '',
   shortName: '',
   siteName: '',
+  avatar_url: '',
 });
 export const orgAudience = writable([]);
+export const orgTeam = writable([]);

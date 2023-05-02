@@ -9,13 +9,19 @@
   import { snackbarStore, snackbarStoreInitialState } from './store';
 
   let severityColor;
+  let timeoutId;
 
   function handleClose() {
     if (typeof $snackbarStore.handleClose === 'number') {
       $snackbarStore.handleClose();
     }
 
-    snackbarStore.set(snackbarStoreInitialState);
+    snackbarStore.update((_s) => ({
+      ..._s,
+      ...snackbarStoreInitialState,
+    }));
+    clearTimeout(timeoutId);
+    timeoutId = null;
   }
 
   // When open is true trigger autoHideDuration
@@ -26,8 +32,9 @@
 
     const { autoHideDuration } = $snackbarStore;
 
-    if (typeof autoHideDuration === 'number') {
-      setTimeout(handleClose, autoHideDuration);
+    if (typeof autoHideDuration === 'number' && !timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(handleClose, autoHideDuration);
     }
   }
 

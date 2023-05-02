@@ -1,5 +1,47 @@
 import { supabase } from '../../functions/supabase';
-import { orgs, currentOrg, orgAudience } from '../../store/org';
+import { orgs, currentOrg, orgAudience, orgTeam } from '../../store/org';
+import { ROLE, ROLE_LABEL } from '../../constants/roles';
+
+export async function getOrgTeam(orgId) {
+  const { data, error } = await supabase
+    .from('organizationmember')
+    .select(
+      `
+      id,
+      email,
+      verified,
+      role_id,
+      profile(
+        id,
+        fullname,
+        email
+      )
+    `
+    )
+    .eq('organization_id', orgId)
+    .order('id', { ascending: false });
+
+  const team = [];
+  if (data?.length) {
+    data.forEach((teamMember) => {
+      team.push({
+        id: teamMember.id,
+        email: teamMember?.profile?.email || teamMember?.email,
+        verified: teamMember?.verified,
+        profileId: teamMember?.profile?.id,
+        role: ROLE_LABEL[teamMember?.role_id] || '',
+        isAdmin: teamMember?.role_id === ROLE.ADMIN,
+      });
+    });
+
+    orgTeam.set(team);
+  }
+
+  return {
+    team,
+    error,
+  };
+}
 
 export async function getOrganizations(userId) {
   const { data, error } = await supabase
@@ -11,7 +53,8 @@ export async function getOrganizations(userId) {
       organization (
         id,
         name,
-        siteName
+        siteName,
+        avatar_url
       )
     `
     )
@@ -26,6 +69,7 @@ export async function getOrganizations(userId) {
         shortName:
           orgMember?.organization?.name?.substring(0, 2)?.toUpperCase() || '',
         siteName: orgMember?.organization?.siteName,
+        avatar_url: orgMember?.organization?.avatar_url,
       });
     });
 

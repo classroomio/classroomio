@@ -1,4 +1,5 @@
 import z from 'zod';
+import { validateEmail } from './validateEmail';
 
 const forgotValidationSchema = z.object({
   email: z.string().email({
@@ -99,4 +100,34 @@ export const onboardingValidation = (fields = {}, step) => {
 
 export const getDisableSubmit = ({ password, confirmPassword }) => {
   return !!(password && confirmPassword && password !== confirmPassword);
+};
+
+export const validateEmailInString = (emailsStr) => {
+  let error = '';
+  let hasError = false;
+
+  if (!emailsStr) {
+    return {
+      hasError: true,
+      error: 'Enter an email',
+      emails: [],
+    };
+  }
+
+  const emails = emailsStr.split(',').map((_email) => {
+    const email = _email.trim();
+
+    if (!validateEmail(email)) {
+      hasError = true;
+      error += !error.length ? `Not valid email: ${email}` : `, ${email}`;
+    }
+
+    return email;
+  });
+
+  return {
+    hasError,
+    error,
+    emails,
+  };
 };
