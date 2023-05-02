@@ -1,5 +1,6 @@
 <script>
   import TextChip from '../Chip/Text.svelte';
+  import ComingSoon from '../ComingSoon/index.svelte';
 
   export let size;
   export let hasDivider = false;
@@ -28,7 +29,7 @@
   </button>
   {#if disabled}
     <div class="coming-soon">
-      <TextChip value="Coming soon" className="text-xs" />
+      <ComingSoon />
     </div>
   {/if}
 </div>

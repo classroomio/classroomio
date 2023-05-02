@@ -1,6 +1,5 @@
 <script>
   import { goto } from '@sapper/app';
-  import Avatar from '../Avatar/index.svelte';
   import { user, profile } from '../../utils/store/user';
   import PrimaryButton from '../PrimaryButton/index.svelte';
   import { VARIANTS } from '../PrimaryButton/constants';
@@ -76,20 +75,7 @@
     <span class="flex-grow" />
 
     <li>
-      {#if $user.isLoggedIn}
-        <a
-          class="block"
-          aria-current={segment === 'profile' ? 'page' : undefined}
-          href={`/profile/${$profile.id}`}
-        >
-          <Avatar
-            src={$profile.avatar_url}
-            name={$profile.username}
-            width="w-7"
-            height="h-7"
-          />
-        </a>
-      {:else if !disableLogin}
+      {#if !disableLogin}
         <div class="flex">
           <PrimaryButton
             label="Login"

@@ -1,10 +1,10 @@
 <script>
   import { onMount } from 'svelte';
-  import Box from '../Box/index.svelte';
+  import Box from '../../Box/index.svelte';
   import AudienceList from './AudienceList.svelte';
-  import AudienceEmptyIcon from '../Icons/AudienceEmptyIcon.svelte';
-  import { getOrgAudience } from '../../utils/services/org';
-  import { orgAudience, currentOrg } from '../../utils/store/org';
+  import AudienceEmptyIcon from '../../Icons/AudienceEmptyIcon.svelte';
+  import { getOrgAudience } from '../../../utils/services/org';
+  import { orgAudience, currentOrg } from '../../../utils/store/org';
 
   let isLoading = false;
   onMount(async () => {

@@ -1,6 +1,6 @@
 <script>
   import PrimaryButton from '../../../components/PrimaryButton/index.svelte';
-  import Audience from '../../../components/Audience/index.svelte';
+  import Audience from '../../../components/Org/Audience/index.svelte';
 
   let isLoading = false;
   function exportAudience() {

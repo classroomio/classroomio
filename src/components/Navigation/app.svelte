@@ -1,9 +1,6 @@
 <script>
   import NotificationIcon from 'carbon-icons-svelte/lib/Notification20';
-  import Avatar from '../Avatar/index.svelte';
-  import { user, profile } from '../../utils/store/user';
 
-  export let segment;
   export let navClass = '';
 </script>
 
@@ -20,22 +17,7 @@
     <li>
       <NotificationIcon class="text-white mr-2" />
     </li>
-    <li>
-      {#if $user.isLoggedIn}
-        <a
-          class="block"
-          aria-current={segment === 'profile' ? 'page' : undefined}
-          href={`/profile/${$profile.id}`}
-        >
-          <Avatar
-            src={$profile.avatar_url}
-            name={$profile.username}
-            width="w-7"
-            height="h-7"
-          />
-        </a>
-      {/if}
-    </li>
+    <li />
   </ul>
 </nav>
 
