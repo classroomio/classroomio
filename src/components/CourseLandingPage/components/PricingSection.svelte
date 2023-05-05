@@ -42,11 +42,13 @@
   <div class="p-10">
     <!-- Pricing -->
     <div class="mb-6">
-      <p class="font-medium text-lg">
+      <p class="dark:text-white font-medium text-lg">
         {formatter?.format(calculatedCost) || calculatedCost}
       </p>
       {#if courseData?.metadata?.showDiscount}
-        <p class="font-light text-sm text-gray-500">
+        <p
+          class="dark:text-white font-light text-sm text-gray-500 dark:text-gray-200"
+        >
           {discount}% Discount.
           <span class="line-through"
             >{formatter?.format(courseData?.cost || 0) || courseData.cost}</span
@@ -68,7 +70,11 @@
         variant={VARIANTS.OUTLINED}
         onClick={addToCart}
       />
-      <p class="font-light text-sm text-gray-500">Early bird offer. Buy ASAP</p>
+      <p
+        class="dark:text-white font-light text-sm text-gray-500 dark:text-gray-200"
+      >
+        Early bird offer. Buy ASAP
+      </p>
     </div>
   </div>
 

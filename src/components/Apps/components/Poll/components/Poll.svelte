@@ -48,7 +48,7 @@
   }
 </script>
 
-<div class="p-4 bg-white-100 border-2 rounded-md mb-3">
+<div class="p-4 bg-white dark:bg-gray-800-100 border-2 rounded-md mb-3">
   {#if selectedOptionToView}
     <div>
       <div class="flex items-center mb-5">
@@ -59,13 +59,13 @@
           {`<`}
         </button>
         <div class="flex-grow text-center">
-          <h3 class="font-bold">Voted</h3>
+          <h3 class="dark:text-white font-bold">Voted</h3>
         </div>
       </div>
       {#each selectedOptionToView.selectedBy as user}
         <div class="flex items-center mb-2">
           <Avatar src={user.avatar} name={user.label} className="mr-2" />
-          <p>
+          <p class="dark:text-white">
             {user.label}
           </p>
         </div>
@@ -74,10 +74,10 @@
   {:else}
     <div class="flex mb-3 justify-between">
       <div>
-        <h3 class="font-bold">
+        <h3 class="dark:text-white font-bold">
           {poll.question}
         </h3>
-        <p class="text-sm italic">
+        <p class="dark:text-white text-sm italic">
           Created by <a
             class="text-blue-500"
             href="https://twitter.com/rotimi_best"
@@ -102,13 +102,13 @@
       <div class="flex items-center justify-between">
         <div class="mr-5">
           <Label>Expiration</Label>
-          <p class="text-sm text-gray-600 mb-4">
+          <p class="dark:text-white text-sm text-gray-600 mb-4">
             {poll.expiration || 'Today'}
           </p>
         </div>
         <div class="flex flex-col items-center">
           <Label>Total Votes</Label>
-          <p class="text-sm text-gray-600 mb-4">
+          <p class="dark:text-white text-sm text-gray-600 mb-4">
             {totalVotes}
           </p>
         </div>
@@ -117,7 +117,7 @@
       <Label>Responses</Label>
       {#each poll.options as option, index}
         <div class="border-b p-5">
-          <p>
+          <p class="dark:text-white">
             {option.label}
           </p>
 
@@ -148,7 +148,7 @@
     {:else}
       {#each poll.options as option, index}
         <button
-          class="bg-white rounded-md border-2 border-gray-500 {didUserSelect(
+          class="bg-white dark:bg-gray-800 rounded-md border-2 border-gray-500 {didUserSelect(
             option
           ) &&
             'focus:border-blue-700 border-blue-700'} text-black p-2 w-full mb-3 text-left relative"
@@ -158,7 +158,7 @@
             <span
               class="progress absolute top-0 left-0 {didUserSelect(option)
                 ? 'bg-blue-700'
-                : 'bg-gray-300'} h-full bg-opacity-25 "
+                : 'bg-gray-300'} h-full bg-opacity-25"
               style="width: {calculatePercent(poll.options, option)}%;"
             />
             <strong class="mr-3"
@@ -169,11 +169,11 @@
         </button>
       {/each}
       <div class="flex items-center">
-        <p class="text-sm text-gray-600">
+        <p class="dark:text-white text-sm text-gray-600">
           Expires: {poll.expiration || 'Today'}
         </p>
         <span class="mx-2">|</span>
-        <p class="text-sm text-gray-600">
+        <p class="dark:text-white text-sm text-gray-600">
           Voted: {totalVotes}
         </p>
       </div>

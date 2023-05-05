@@ -20,6 +20,7 @@
   import { getOrgTeam } from '../../../utils/services/org';
   import { profile } from '../../../utils/store/user';
   import { supabase } from '../../../utils/functions/supabase';
+  import SectionTitle from '../SectionTitle.svelte';
 
   let emailsStr = '';
   let errorMessage = '';
@@ -128,9 +129,11 @@
 
 <Grid class="border rounded border-gray-200 w-full mt-5">
   <Row class="py-7 border border-t-0 border-l-0 border-r-0 border-gray-300">
-    <Column sm={2} md={2} lg={4} class="text-lg"><strong>Add</strong></Column>
+    <Column sm={2} md={2} lg={4} class="text-lg"
+      ><SectionTitle>Add</SectionTitle></Column
+    >
     <Column sm={2} md={6} lg={8}>
-      <p class="text-md text-gray-500 mb-5">
+      <p class="text-md text-gray-500 dark:text-gray-200 mb-5">
         Add your team mates or collaborators to your organization. Start working
         together
       </p>
@@ -161,7 +164,7 @@
 
   <Row class="py-7 border border-t-0 border-l-0 border-r-0 border-gray-300">
     <Column sm={2} md={2} lg={4} class="text-lg"
-      ><strong>Members</strong></Column
+      ><SectionTitle>Members</SectionTitle></Column
     >
     <Column sm={2} md={6} lg={8}>
       {#if isFetching}
@@ -170,7 +173,7 @@
         {#each $orgTeam as teamMember}
           <div class="flex justify-between items-center mb-5">
             <div class="flex">
-              <p class="text-sm text-gray-500 mr-3">
+              <p class="text-sm text-gray-500 dark:text-gray-200 mr-3">
                 {teamMember.email}
               </p>
               <TextChip

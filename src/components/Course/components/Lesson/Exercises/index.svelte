@@ -168,16 +168,18 @@
     <div class="flex flex-wrap">
       {#each $lesson.exercises as exercise}
         <a
-          class="w-52 bg-gray-100 px-4 py-7 mr-4 mb-4"
+          class="w-52 bg-gray-100 dark:bg-gray-700 px-4 py-7 mr-4 mb-4"
           href="{path}/{exercise.id}"
         >
-          <h3 class="text-xl">{exercise.title}</h3>
-          <p class="mt-4 text-sm">Created Jul 3, 2021</p>
+          <h3 class="dark:text-white text-xl">{exercise.title}</h3>
+          <p class="dark:text-white mt-4 text-sm">Created Jul 3, 2021</p>
         </a>
       {:else}
         <Box>
           <AudioConsole32 class="carbon-icon w-80" />
-          <h3 class="text-3xl text-gray-500">No Exercise Added</h3>
+          <h3 class="text-3xl text-gray-500 dark:text-gray-200">
+            No Exercise Added
+          </h3>
         </Box>
       {/each}
     </div>

@@ -2,6 +2,7 @@
   import { goto } from '@sapper/app';
   import { Grid, Row, Column } from 'carbon-components-svelte';
   import TextField from '../../Form/TextField.svelte';
+  import SectionTitle from '../SectionTitle.svelte';
   import PrimaryButton from '../../PrimaryButton/index.svelte';
   import { VARIANTS } from '../../PrimaryButton/constants';
   import UploadImage from '../../UploadImage/index.svelte';
@@ -82,7 +83,9 @@
 
 <Grid class="border rounded border-gray-200 w-full mt-5">
   <Row class="py-7 border border-t-0 border-l-0 border-r-0 border-gray-300">
-    <Column sm={2} md={2} lg={4}><strong>Profile Picture</strong></Column>
+    <Column sm={2} md={2} lg={4}>
+      <SectionTitle>Profile Picture</SectionTitle>
+    </Column>
     <Column sm={2} md={6} lg={8}>
       <UploadImage
         bind:avatar
@@ -92,7 +95,9 @@
     </Column>
   </Row>
   <Row class="py-7 border border-t-0 border-l-0 border-r-0 border-gray-300">
-    <Column sm={2} md={2} lg={4}><strong>Personal Information</strong></Column>
+    <Column sm={2} md={2} lg={4}>
+      <SectionTitle>Personal Information</SectionTitle>
+    </Column>
     <Column sm={2} md={6} lg={8}>
       <TextField
         label="Full Name"

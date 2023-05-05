@@ -1,43 +1,43 @@
 <script>
-  import PageNav from "../../../PageNav/index.svelte";
-  import CloseButton from "../../../Buttons/Close/index.svelte";
-  import PrimaryButton from "../../../PrimaryButton/index.svelte";
-  import { VARIANTS } from "../../../PrimaryButton/constants";
-  import CreatePollForm from "./components/CreatePollForm.svelte";
-  import Poll from "./components/Poll.svelte";
-  import Tabs from "./components/Tabs.svelte";
+  import PageNav from '../../../PageNav/index.svelte';
+  import CloseButton from '../../../Buttons/Close/index.svelte';
+  import PrimaryButton from '../../../PrimaryButton/index.svelte';
+  import { VARIANTS } from '../../../PrimaryButton/constants';
+  import CreatePollForm from './components/CreatePollForm.svelte';
+  import Poll from './components/Poll.svelte';
+  import Tabs from './components/Tabs.svelte';
 
   export let handleClose;
 
   const users = [
     {
-      label: "Rich Harris",
-      value: "rich-harris",
-      avatar: "https://i.pravatar.cc/150?img=1",
+      label: 'Rich Harris',
+      value: 'rich-harris',
+      avatar: 'https://i.pravatar.cc/150?img=1',
     },
     {
-      label: "Linus Torvalds",
-      value: "linus-torvalds",
-      avatar: "https://i.pravatar.cc/150?img=2",
+      label: 'Linus Torvalds',
+      value: 'linus-torvalds',
+      avatar: 'https://i.pravatar.cc/150?img=2',
     },
     {
-      label: "Elon Musk",
-      value: "elon-musk",
-      avatar: "https://i.pravatar.cc/150?img=3",
+      label: 'Elon Musk',
+      value: 'elon-musk',
+      avatar: 'https://i.pravatar.cc/150?img=3',
     },
     {
-      label: "Satoshi Nakamoto",
-      value: "satoshi-nakamoto",
-      avatar: "https://i.pravatar.cc/150?img=4",
+      label: 'Satoshi Nakamoto',
+      value: 'satoshi-nakamoto',
+      avatar: 'https://i.pravatar.cc/150?img=4',
     },
   ];
   const tabs = [
     {
-      label: "My polls",
+      label: 'My polls',
       value: 0,
     },
     {
-      label: "Other polls",
+      label: 'Other polls',
       value: 1,
     },
   ];
@@ -47,36 +47,36 @@
   let shouldCreatePoll = false;
   let polls = [
     {
-      question: "Who is the creator of Svelte?",
+      question: 'Who is the creator of Svelte?',
       author: users[0],
-      status: "draft", // public
+      status: 'draft', // public
       expiration: new Date().toDateString(),
       options: [
         {
-          label: "Dan Abrahmov",
+          label: 'Dan Abrahmov',
           selectedBy: [],
         },
         {
-          label: "Evan You",
+          label: 'Evan You',
           selectedBy: [
             {
-              label: "Rich Harris",
-              value: "rich-harris",
-              avatar: "https://i.pravatar.cc/150?img=1",
+              label: 'Rich Harris',
+              value: 'rich-harris',
+              avatar: 'https://i.pravatar.cc/150?img=1',
             },
             {
-              label: "Linus Torvalds",
-              value: "linus-torvalds",
-              avatar: "https://i.pravatar.cc/150?img=2",
+              label: 'Linus Torvalds',
+              value: 'linus-torvalds',
+              avatar: 'https://i.pravatar.cc/150?img=2',
             },
           ],
         },
         {
-          label: "Rich Harris",
+          label: 'Rich Harris',
           selectedBy: [],
         },
         {
-          label: "Yehuda Katz",
+          label: 'Yehuda Katz',
           selectedBy: [],
         },
       ],
@@ -186,7 +186,7 @@
         {/if}
       {:else}
         <div
-          class="bg-gray-100 border rounded-md h-60 flex items-center justify-center "
+          class="bg-gray-100 dark:bg-gray-700 border rounded-md h-60 flex items-center justify-center"
         >
           <h2 class="text-xl font-bold">No polls to display</h2>
         </div>

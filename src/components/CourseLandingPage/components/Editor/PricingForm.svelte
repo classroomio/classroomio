@@ -82,7 +82,7 @@
 </div>
 
 {#if giftToggled}
-  <p class="font-bold mt-5">About Gift</p>
+  <p class="dark:text-white font-bold mt-5">About Gift</p>
 
   <div class="h-2/5">
     <TextEditor

@@ -61,8 +61,8 @@
   {#if success}
     <div class="mt-4 w-full flex items-center justify-center flex-col">
       <EmailSentIcon />
-      <h3 class="text-xl font-semibold my-3">Email Sent!</h3>
-      <p class="text-md mb-6 text-center">
+      <h3 class="dark:text-white text-xl font-semibold my-3">Email Sent!</h3>
+      <p class="dark:text-white text-md mb-6 text-center">
         We have sent a confirmation email to <span class="text-blue-700"
           >{fields.email}</span
         >. Kindly check your inbox to reset password or spam to reset your
@@ -80,8 +80,12 @@
     </div>
   {:else}
     <div class="mt-4 w-full">
-      <h3 class="text-xl font-semibold my-3">Forgot Password</h3>
-      <p class="text-sm mb-6">We will send you a reset link to your email</p>
+      <h3 class="dark:text-white text-xl font-semibold my-3">
+        Forgot Password
+      </h3>
+      <p class="dark:text-white text-sm mb-6">
+        We will send you a reset link to your email
+      </p>
       <TextField
         label="Your email"
         bind:value={fields.email}
@@ -94,7 +98,7 @@
         errorMessage={errors.email}
       />
       {#if submitError}
-        <p class="text-sm text-red-500">{submitError}</p>
+        <p class="dark:text-white text-sm text-red-500">{submitError}</p>
       {/if}
     </div>
 

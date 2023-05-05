@@ -1,35 +1,35 @@
 <script>
-  import marked from "marked";
-  import PageNav from "../../../PageNav/index.svelte";
-  import CloseButton from "../../../Buttons/Close/index.svelte";
-  import TextField from "../../../Form/TextField.svelte";
+  import marked from 'marked';
+  import PageNav from '../../../PageNav/index.svelte';
+  import CloseButton from '../../../Buttons/Close/index.svelte';
+  import TextField from '../../../Form/TextField.svelte';
   // import SendButton from "../../../Buttons/Send/index.svelte";
 
   export let handleClose;
 
-  let message = "";
+  let message = '';
   let bodyRef;
   let chats = [
     {
-      avatar: "https://picsum.photos/32/32/?random",
-      name: "Evgeniy",
+      avatar: 'https://picsum.photos/32/32/?random',
+      name: 'Evgeniy',
       message: "I'am looking at this and it looks great",
     },
     {
-      avatar: "https://picsum.photos/32/32/?random",
-      name: "Sergey Semko",
+      avatar: 'https://picsum.photos/32/32/?random',
+      name: 'Sergey Semko',
       message:
-        "Thanks for the feedback, what do you think about my website. https://rotimibest.com",
+        'Thanks for the feedback, what do you think about my website. https://rotimibest.com',
     },
     {
-      avatar: "https://picsum.photos/32/32/?random",
-      name: "Vitalii Marushko",
-      message: "Всем привет",
+      avatar: 'https://picsum.photos/32/32/?random',
+      name: 'Vitalii Marushko',
+      message: 'Всем привет',
     },
     {
-      avatar: "https://picsum.photos/32/32/?random",
-      name: "Natasha",
-      message: "Привет Виталий",
+      avatar: 'https://picsum.photos/32/32/?random',
+      name: 'Natasha',
+      message: 'Привет Виталий',
     },
   ];
 
@@ -41,8 +41,8 @@
     chats = [
       ...chats,
       {
-        avatar: "https://picsum.photos/32/32/?random",
-        name: "You",
+        avatar: 'https://picsum.photos/32/32/?random',
+        name: 'You',
         message,
       },
     ];
@@ -57,7 +57,7 @@
   }
 
   function handleKeyDown(e) {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       handleSend();
     }
   }
@@ -80,7 +80,7 @@
           height="20"
           src={chat.avatar}
         />
-        <p class="ml-2 text-sm font-bold">{chat.name}</p>
+        <p class="dark:text-white ml-2 text-sm font-bold">{chat.name}</p>
       </div>
       <article class="prose prose-sm sm:prose pt-2 pl-8">
         {@html marked(chat.message)}

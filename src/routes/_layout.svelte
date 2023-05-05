@@ -27,6 +27,8 @@
   import { isMobile } from '../utils/store/useMobile';
   import { ROUTES_TO_HIDE_NAV, ROUTE } from '../utils/constants/routes';
   import { getOrganizations } from '../utils/services/org';
+  import { toggleBodyByTheme } from '../utils/functions/app';
+  import { appStore } from '../utils/store/app';
 
   export let segment;
   export let config;
@@ -155,6 +157,10 @@
       }
     );
 
+    // Update theme - dark or light mode
+    $appStore.isDark = localStorage.getItem('theme') === 'dark';
+    toggleBodyByTheme($appStore.isDark);
+
     return () => {
       authListener.unsubscribe();
     };
@@ -185,7 +191,7 @@
 <!-- <Nav {segment} /> -->
 <Snackbar />
 
-<main>
+<main class="dark:bg-gray-800">
   {#if $preloading && $delayedPreloading}
     <Backdrop>
       <Moon size="60" color="#1d4ed8" unit="px" duration="1s" />
@@ -203,7 +209,7 @@
     {#if isOrgPage($page.path)}
       <div class="org-root w-full flex items-center justify-between">
         <OrgSideBar />
-        <div class="org-slot bg-white">
+        <div class="org-slot bg-white dark:bg-gray-800">
           <slot />
         </div>
       </div>
@@ -251,5 +257,9 @@
 
   :global(.bx--data-table-container) {
     width: 100%;
+  }
+
+  :global(.dark svg.dark path) {
+    fill: #fff;
   }
 </style>

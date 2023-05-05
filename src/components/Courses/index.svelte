@@ -33,8 +33,8 @@
     {:else}
       <Box>
         <CoursesEmptyIcon />
-        <h3 class="text-2xl my-5">No Courses Created</h3>
-        <p class="w-1/3 text-center">
+        <h3 class="dark:text-white text-2xl my-5">No Courses Created</h3>
+        <p class="dark:text-white w-1/3 text-center">
           Share your knowledge with the world by creating engaging courses for
           your students.
         </p>

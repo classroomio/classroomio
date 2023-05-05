@@ -71,8 +71,8 @@
   bind:formRef
 >
   <div class="mt-4 w-full">
-    <h3 class="text-xl font-semibold my-3">New Password</h3>
-    <p class="text-sm mb-6">Enter your new password details</p>
+    <h3 class="dark:text-white text-xl font-semibold my-3">New Password</h3>
+    <p class="dark:text-white text-sm mb-6">Enter your new password details</p>
     <TextField
       label="Your Password"
       bind:value={fields.password}
@@ -97,7 +97,7 @@
       isRequired
     />
     {#if submitError}
-      <p class="text-sm text-red-500">{submitError}</p>
+      <p class="dark:text-white text-sm text-red-500">{submitError}</p>
     {/if}
   </div>
 

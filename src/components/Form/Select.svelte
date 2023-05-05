@@ -16,7 +16,9 @@
 </script>
 
 <label class="block {className}">
-  {#if label} <span class="text-gray-700 mr-2">{label}</span> {/if}
+  {#if label}
+    <span class="text-gray-700 dark:text-white mr-2">{label}</span>
+  {/if}
   <select
     bind:value
     class="form-select block w-auto mt-1 {selectClassName}"
@@ -26,7 +28,7 @@
     class:customColor={!!selectClassName}
   >
     {#each options as option}
-      <option class="bg-white text-black" value={option}>
+      <option class="bg-white dark:bg-gray-800 text-black" value={option}>
         {option[labelKey]}
       </option>
     {/each}

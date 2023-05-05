@@ -181,7 +181,7 @@
   <div
     class="w-4/5 h-40 m-auto flex items-center justify-center text-center border-2 border-gray-200 rounded-md"
   >
-    <h3 class="text-2xl">
+    <h3 class="dark:text-white text-2xl">
       No questions added. <br />
       <RoleBasedSecurity allowedRoles="[1,2]">
         Click the <span class="text-blue-700">Edit</span> button to add.
@@ -193,18 +193,18 @@
     <h2 class="my-1">{$questionnaire.title}</h2>
 
     <div class="flex items-center">
-      <p class="mx-2">
+      <p class="dark:text-white mx-2">
         <strong>{$questionnaire.questions.length}</strong> questions
       </p>
       |
-      <p class="mx-2">
+      <p class="dark:text-white mx-2">
         <strong>{getTotalPossibleGrade()}</strong> points.
       </p>
       |
-      <p class="mx-2">All required</p>
+      <p class="dark:text-white mx-2">All required</p>
       {#if $questionnaire.due_by}
         |
-        <p class="mx-2">
+        <p class="dark:text-white mx-2">
           <strong>Due by:</strong>
           {new Date($questionnaire.due_by).toLocaleString()}
         </p>

@@ -38,7 +38,7 @@
     <div
       class="flex items-center justify-between {borderBottom} border-blue-700"
     >
-      <h3 class="text-3xl text-blue-700">Teachers</h3>
+      <h3 class="dark:text-white text-3xl text-blue-700">Teachers</h3>
       <IconButton
         toolTipProps={{ title: 'Add', direction: 'right' }}
         onClick={addTeacher}
@@ -54,7 +54,7 @@
           borderBottom} border-gray-300"
       >
         <Avatar src={teacher.avatar} name={teacher.name} />
-        <p class="ml-2">{teacher.name}</p>
+        <p class="dark:text-white ml-2">{teacher.name}</p>
       </div>
     {/each}
   </div>
@@ -63,7 +63,7 @@
     <div
       class="flex items-center justify-between {borderBottom} border-blue-700"
     >
-      <h3 class="text-3xl text-blue-700">Students</h3>
+      <h3 class="dark:text-white text-3xl text-blue-700">Students</h3>
       <IconButton
         toolTipProps={{ title: 'Add', direction: 'right' }}
         onClick={addStudent}
@@ -79,7 +79,7 @@
           borderBottom} border-gray-300"
       >
         <Avatar src={student.avatar} name={student.name} />
-        <p class="ml-2">{student.name}</p>
+        <p class="dark:text-white ml-2">{student.name}</p>
       </div>
     {/each}
   </div>

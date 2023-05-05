@@ -1,13 +1,31 @@
 <script>
   import NotificationIcon from 'carbon-icons-svelte/lib/Notification20';
+  import Moon from 'carbon-icons-svelte/lib/Moon16';
+  import Sun from 'carbon-icons-svelte/lib/Sun16';
+
+  import IconButton from '../IconButton/index.svelte';
+  import { appStore } from '../../utils/store/app';
+  import { toggleBodyByTheme } from '../../utils/functions/app';
 
   export let navClass = '';
+
+  function toggleTheme() {
+    $appStore.isDark = !$appStore.isDark;
+
+    toggleBodyByTheme($appStore.isDark);
+    localStorage.setItem('theme', $appStore.isDark ? 'dark' : '');
+  }
 </script>
 
 <nav class="{navClass} flex w-full p-2 md:px-6 bg-blue-600">
   <ul class="flex w-full items-center">
     <div class="">
-      <a href="/" title="Go to ClassroomIO Home" id="logo" class="text-lg">
+      <a
+        href={window.location.pathname}
+        title="Go to ClassroomIO Home"
+        id="logo"
+        class="text-lg"
+      >
         ClassroomIO
       </a>
     </div>
@@ -16,6 +34,15 @@
 
     <li>
       <NotificationIcon class="text-white mr-2" />
+    </li>
+    <li>
+      <IconButton size="small" onClick={toggleTheme}>
+        {#if $appStore.isDark}
+          <Sun class="text-white" />
+        {:else}
+          <Moon class="text-white" />
+        {/if}
+      </IconButton>
     </li>
     <li />
   </ul>

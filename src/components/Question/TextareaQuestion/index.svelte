@@ -45,7 +45,7 @@
           className="w-20"
           isDisabled={disableGrading}
         />
-        <p class="ml-2 text-lg">/ {gradeMax}</p>
+        <p class="dark:text-white ml-2 text-lg">/ {gradeMax}</p>
       </div>
     {/if}
   </div>
@@ -56,7 +56,7 @@
 
   <div class="ml-4">
     {#if disabled}
-      <div class="bg-gray-200 p-5 rounded-md mb-3">
+      <div class="bg-gray-200 dark:bg-gray-500 p-5 rounded-md mb-3">
         {@html marked(defaultValue)}
       </div>
     {:else}

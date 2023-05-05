@@ -11,7 +11,7 @@
   class="root z-10 {!show && 'hide'} {$isMobile ? 'fixed shadow-xl' : 'sticky'}"
 >
   {#if show}
-    <div class="relative h-full bg-white">
+    <div class="relative h-full bg-white dark:bg-gray-800">
       <slot />
     </div>
   {/if}

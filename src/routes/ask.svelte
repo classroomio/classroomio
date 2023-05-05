@@ -49,7 +49,7 @@
 
       {#if facultyFilterOpened}
         <div
-          class="w-48 bg-white border border-grey rounded-lg mt-2 py-3 absolute"
+          class="w-48 bg-white dark:bg-gray-800 border border-grey rounded-lg mt-2 py-3 absolute"
         >
           {#each faculties as faculty}
             <div class="block px-4 py-3 border-b">

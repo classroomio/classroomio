@@ -136,12 +136,12 @@
       <div
         class="flex items-center font-bold border-t-0 {borderBottomGrey} p-3"
       >
-        <span class="w-1/4 text-center">ID</span>
+        <span class="dark:text-white w-1/4 text-center">ID</span>
         <!-- <span class="flex-grow" /> -->
-        <p class="text-lg w-2/4">Name</p>
-        <p class="text-lg w-1/4 ">Role</p>
+        <p class="dark:text-white text-lg w-2/4">Name</p>
+        <p class="dark:text-white text-lg w-1/4">Role</p>
         <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <p class="hidden lg:block text-lg w-20" />
+          <p class="dark:text-white hidden lg:block text-lg w-20" />
         </RoleBasedSecurity>
       </div>
 
@@ -157,7 +157,9 @@
             />
           {:else}
             <div class="student-id flex items-center justify-between relative">
-              <p class="w-11/12">{person.assigned_student_id || '-'}</p>
+              <p class="dark:text-white w-11/12">
+                {person.assigned_student_id || '-'}
+              </p>
               {#if !isStudent}
                 <div class="absolute edit-btn">
                   <IconButton
@@ -182,7 +184,7 @@
                 name={person.profile.fullname}
               />
               <div class="ml-2 break-all">
-                <p class="text-lg">{person.profile.fullname}</p>
+                <p class="dark:text-white text-lg">{person.profile.fullname}</p>
                 {#if !isStudent}
                   <a
                     href="mailto:{person.profile.email}"
@@ -206,7 +208,9 @@
             </div>
           {/if}
 
-          <p class="text-lg w-1/4 ">{ROLE_LABEL[person.role_id]}</p>
+          <p class="dark:text-white text-lg w-1/4">
+            {ROLE_LABEL[person.role_id]}
+          </p>
 
           <RoleBasedSecurity allowedRoles={[1, 2]}>
             <div class="hidden lg:block w-20">

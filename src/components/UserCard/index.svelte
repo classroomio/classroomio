@@ -1,17 +1,17 @@
 <script>
-  import Icon from "svelte-awesome/components/Icon.svelte";
-  import { faTelegram } from "@fortawesome/free-brands-svg-icons";
-  import { faEnvelope } from "@fortawesome/free-regular-svg-icons";
+  import Icon from 'svelte-awesome/components/Icon.svelte';
+  import { faTelegram } from '@fortawesome/free-brands-svg-icons';
+  import { faEnvelope } from '@fortawesome/free-regular-svg-icons';
 
   export let avatarUrl =
-    "https://tailwindcss.com/_next/static/media/sarah-dayan.a8ff3f1095a58085a82e3bb6aab12eb2.jpg";
-  export let name = "Sarah Dayan";
-  export let title = "Staff Engineer, Algolia";
+    'https://tailwindcss.com/_next/static/media/sarah-dayan.a8ff3f1095a58085a82e3bb6aab12eb2.jpg';
+  export let name = 'Sarah Dayan';
+  export let title = 'Staff Engineer, Algolia';
   export let mailLink;
   export let telegramLink;
 </script>
 
-<figure class="w-52 bg-gray-100 px-4 py-7 mr-4 mb-4">
+<figure class="w-52 bg-gray-100 dark:bg-gray-700 px-4 py-7 mr-4 mb-4">
   <img
     class="w-32 h-32 rounded-full mx-auto"
     src={avatarUrl}
@@ -22,7 +22,7 @@
   <div class="pt-6 text-center space-y-4">
     <div class="description font-medium flex flex-col justify-around">
       <div class="text-cyan-600">{name}</div>
-      <div class="text-gray-500">{title}</div>
+      <div class="text-gray-500 dark:text-gray-200">{title}</div>
     </div>
   </div>
   {#if telegramLink && mailLink}

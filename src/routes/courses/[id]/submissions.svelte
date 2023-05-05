@@ -276,12 +276,12 @@
       <div class="flex items-center w-full">
         {#each sections as { id, title, items }, idx (id)}
           <div
-            class="section rounded-md bg-gray-100 border border-gray-50 p-3 h-80 mr-3 overflow-hidden"
+            class="section rounded-md bg-gray-100 dark:bg-gray-700 border border-gray-50 p-3 h-80 mr-3 overflow-hidden"
             animate:flip={{ duration: flipDurationMs }}
           >
             <div class="flex items-center mb-2">
               <Chip value={items.length} class="bg-set" />
-              <p class="ml-2 font-bold">{title}</p>
+              <p class="dark:text-white ml-2 font-bold">{title}</p>
             </div>
             <div
               class="content pr-2 overflow-y-auto mb-3"
@@ -297,7 +297,7 @@
                 <div
                   class="border {item.isEarly
                     ? 'border-grey-700'
-                    : 'border-red-700'} w-full my-2 mx-0 rounded-md bg-white py-3 px-3"
+                    : 'border-red-700'} w-full my-2 mx-0 rounded-md bg-white dark:bg-gray-800 py-3 px-3"
                   animate:flip={{ duration: flipDurationMs }}
                 >
                   <div
@@ -311,7 +311,9 @@
                       class="block rounded-full h-6 w-6"
                       src={item.student.avatar_url}
                     />
-                    <p class="ml-2 text-sm">{item.student.username}</p>
+                    <p class="dark:text-white ml-2 text-sm">
+                      {item.student.username}
+                    </p>
                   </div>
                   <a
                     class="text-blue-700 text-md font-bold"
@@ -324,12 +326,14 @@
                     href="{$page.path.replace('submissions', 'lessons')}/{item
                       .lesson.id}/exercises/{item.exercise.id}"
                   >
-                    <p class="text-grey text-sm">
+                    <p class="dark:text-white text-grey text-sm">
                       #{item.lesson.title}
                       {`${item.tutor ? 'created by' + item.tutor.name : ''}`}
                     </p>
                   </a>
-                  <p class="text-gray-500 text-xs">
+                  <p
+                    class="dark:text-white text-gray-500 dark:text-gray-200 text-xs"
+                  >
                     {item.submittedAt}
                   </p>
                   <!-- <div class="badge rounded-md px-2 bg-green-500 text-white">
