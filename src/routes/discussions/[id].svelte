@@ -45,8 +45,12 @@
           class="block rounded-full"
           src="https://picsum.photos/32/32/?random"
         />
-        <p class="ml-2 text-sm">{discussion.author.name}</p>
-        <p class="ml-2 text-sm text-gray-500">12h ago</p>
+        <p class="dark:text-white ml-2 text-sm">{discussion.author.name}</p>
+        <p
+          class="dark:text-white ml-2 text-sm text-gray-500 dark:text-gray-200"
+        >
+          12h ago
+        </p>
       </a>
     </header>
     <section class="prose prose-sm sm:prose p-2">
@@ -75,8 +79,12 @@
               height="20"
               src={comment.avatar}
             />
-            <p class="ml-2 text-sm">{comment.name}</p>
-            <p class="ml-2 text-sm text-gray-500">12h ago</p>
+            <p class="dark:text-white ml-2 text-sm">{comment.name}</p>
+            <p
+              class="dark:text-white ml-2 text-sm text-gray-500 dark:text-gray-200"
+            >
+              12h ago
+            </p>
           </a>
 
           <CheckmarkOutline20 />

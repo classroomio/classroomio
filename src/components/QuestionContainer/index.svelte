@@ -29,7 +29,7 @@
 
 <div
   bind:this={ref}
-  class="bg-white border {hasError
+  class="bg-white dark:bg-gray-800 border {hasError
     ? 'border-red-700'
     : 'border-gray hover:border-blue-700'} rounded-md mb-6 relative root"
 >
@@ -49,7 +49,7 @@
   {#if typeof points !== 'undefined'}
     <div class="border-gray border-t-2 border-r-0 border-b-0 border-l-0 p-2">
       <div class="flex items-center w-40">
-        <p class="text-sm mr-2">Points:</p>
+        <p class="dark:text-white text-sm mr-2">Points:</p>
         <TextField
           placeholder="Points"
           bind:value={points}

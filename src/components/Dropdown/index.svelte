@@ -45,11 +45,12 @@
 
   {#if open}
     <div
-      class="dropdown w-48 bg-white border border-grey rounded-lg mt-2 py-3 absolute"
+      class="dropdown w-48 bg-white dark:bg-gray-800 border border-grey rounded-lg mt-2 py-3 absolute"
     >
       {#each options as option, index}
         <button
-          class="block px-4 py-3 {!isOptionLast(index) && 'border-b'} w-full"
+          class="block px-4 py-3 {!isOptionLast(index) &&
+            'border-b'} w-full dark:text-white"
           on:click={onClick(option)}
         >
           {option.label}

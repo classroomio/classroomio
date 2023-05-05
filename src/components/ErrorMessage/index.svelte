@@ -2,4 +2,4 @@
   export let message;
 </script>
 
-<p class="text-sm text-red-500">{message}</p>
+<p class="dark:text-white text-sm text-red-500">{message}</p>

@@ -21,7 +21,7 @@
   modalHeading="Delete"
 >
   <div>
-    <h1 class="text-lg">
+    <h1 class="dark:text-white text-lg">
       Are you sure you want to delete <strong>{email}</strong>?
     </h1>
 

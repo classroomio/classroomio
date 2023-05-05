@@ -27,7 +27,7 @@
 </script>
 
 <div class="w-full min-h-screen flex items-center justify-center mt-4">
-  <div class="container border border-gray bg-white">
+  <div class="container border border-gray bg-white dark:bg-gray-800">
     <div class="flex items-center flex-col p-2 lg:px-8 lg:py-3">
       {#if !showOnlyContent || showLogo}
         <div class="flex items-center w-full justify-center pt-4">
@@ -38,7 +38,7 @@
             width="50"
             data-atf="1"
           />
-          <h4 class="text-xl">ClassroomIO</h4>
+          <h4 class="dark:text-white text-xl">ClassroomIO</h4>
         </div>
       {/if}
       <form
@@ -50,7 +50,7 @@
       </form>
       {#if !showOnlyContent}
         <div class="w-10/12 mb-3">
-          <p class="text-sm mb-5">or sign up with:</p>
+          <p class="dark:text-white text-sm mb-5">or sign up with:</p>
           <PrimaryButton
             variant={VARIANTS.OUTLINED}
             onClick={signInWithGoogle}

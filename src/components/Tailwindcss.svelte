@@ -57,6 +57,17 @@
       line-height: 1.25 !important;
     }
   }
+  .dark .prose {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p {
+      color: #fff;
+    }
+  }
 
   code {
     white-space: pre-wrap;
@@ -73,5 +84,9 @@
 
   .success :global(svg.carbon-icon) {
     fill: green;
+  }
+
+  .dark :global(svg.carbon-icon) {
+    fill: #fff;
   }
 </style>

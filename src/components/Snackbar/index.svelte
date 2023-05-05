@@ -56,7 +56,7 @@
         {:else}
           <Information24 class="carbon-icon" />
         {/if}
-        <p class="ml-2 text-lg">{$snackbarStore.message}</p>
+        <p class="dark:text-white ml-2 text-lg">{$snackbarStore.message}</p>
       </div>
 
       <CloseButton onClick={handleClose} contained={true} color="text-white" />

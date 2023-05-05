@@ -39,7 +39,7 @@
       open = !open;
     }}
   >
-    <p class="text-lg font-bold">{$currentOrg.name}</p>
+    <p class="dark:text-white text-lg font-bold">{$currentOrg.name}</p>
     <CaretSortIcon class="ml-2" />
   </div>
   <Popover bind:open closeOnOutsideClick align="bottom-left">

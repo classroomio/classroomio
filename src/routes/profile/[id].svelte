@@ -171,23 +171,23 @@
           />
         {/if}
       {:else}
-        <h3 class="text-xl">{currentProfile.username}</h3>
+        <h3 class="dark:text-white text-xl">{currentProfile.username}</h3>
       {/if}
     </div>
 
     <div class="flex-grow" />
     <div class="flex-grow flex flex-wrap mx-3 w-3/5">
       <div class="mb-3 w-full">
-        <h3 class="font-bold text-md m-0">Organizations</h3>
-        <p class="text-gray-500 text-sm">
+        <h3 class="dark:text-white font-bold text-md m-0">Organizations</h3>
+        <p class="dark:text-white text-gray-500 dark:text-gray-200 text-sm">
           This are the organizations you work at
         </p>
 
         <div class="hidden my-3 py-3 px-4 border shadow-sm rounded-md">
-          <h4 class="m-0 font-normal">
+          <h4 class="dark:text-white m-0 font-normal">
             <a class="text-blue-700 font-bold" href="/courses"> CitiBim </a>
           </h4>
-          <p class="text-gray-500">
+          <p class="dark:text-white text-gray-500 dark:text-gray-200">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Non aliquam
             tenetur magnam. Alias cumque quaerat expedita dolores placeat
             laboriosam culpa, suscipit veritatis adipisci eius magni obcaecati.
@@ -205,12 +205,12 @@
         </div>
 
         <div class="hidden my-2 py-3 px-4 border shadow-sm rounded-md">
-          <h4 class="m-0 font-normal">
+          <h4 class="dark:text-white m-0 font-normal">
             <a class="text-blue-700 font-bold" href="/courses">
               Climate Change Group
             </a>
           </h4>
-          <p class="text-gray-500">
+          <p class="dark:text-white text-gray-500 dark:text-gray-200">
             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo quasi
             autem quo possimus illum consequuntur repudiandae nobis error, porro
           </p>
@@ -241,7 +241,7 @@
       <div>
         <Search32 />
       </div>
-      <h3 class="text-xxl">Profile not found</h3>
+      <h3 class="dark:text-white text-xxl">Profile not found</h3>
     </Box> -->
   {/if}
 </section>

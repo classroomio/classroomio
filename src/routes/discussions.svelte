@@ -177,7 +177,7 @@
     <div class="discussion-box">
       <Vote value={discussion.votes} />
       <div class="discussion-topic-author">
-        <h4>
+        <h4 class="dark:text-white">
           <a rel="prefetch" href="discussions/{discussion.id}"
             >{discussion.title}</a
           >

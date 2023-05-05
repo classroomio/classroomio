@@ -128,7 +128,7 @@
 >
   {#if shouldDelete}
     <form on:submit|preventDefault={() => (shouldDelete = false)}>
-      <h1 class="text-2xl">Are you sure?</h1>
+      <h1 class="dark:text-white text-2xl">Are you sure?</h1>
 
       <div class="mt-5 flex items-center justify-between">
         <PrimaryButton
@@ -222,7 +222,7 @@
           handleOptionClick={handleOptionClick(question.id)}
         >
           <AddFilled24 class="carbon-icon" />
-          <p class="ml-2 text-gray-600">Add</p>
+          <p class="dark:text-white ml-2 text-gray-600">Add</p>
         </Dropdown> -->
 
           <Select
@@ -333,7 +333,7 @@
               onClick={handleAddOption(question.id)}
             >
               <AddFilled24 class="carbon-icon" />
-              <p class="ml-2">Add option</p>
+              <p class="dark:text-white ml-2">Add option</p>
             </PrimaryButton>
           </div>
         {/if}

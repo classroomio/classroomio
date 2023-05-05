@@ -74,7 +74,9 @@
   bind:formRef
 >
   <div class="mt-4 w-full">
-    <p class="text-lg font-semibold mb-6">Create a free account</p>
+    <p class="dark:text-white text-lg font-semibold mb-6">
+      Create a free account
+    </p>
     <!-- <TextField
       label="Full Name"
       bind:value={fields.name}
@@ -122,7 +124,7 @@
       isRequired
     />
     {#if submitError}
-      <p class="text-sm text-red-500">{submitError}</p>
+      <p class="dark:text-white text-sm text-red-500">{submitError}</p>
     {/if}
   </div>
 

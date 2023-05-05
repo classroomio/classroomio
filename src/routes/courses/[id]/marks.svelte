@@ -103,12 +103,12 @@
     <div class="table rounded-md border border-gray-300 w-auto">
       <div class="flex items-center {borderBottomGrey}">
         <div class="box flex items-center p-3">
-          <p class="w-40">Student</p>
+          <p class="dark:text-white w-40">Student</p>
         </div>
         {#each $lessons as lesson, index}
           {#if lessonMapping[lesson.id]}
             <div class="box flex flex-col items-center {borderleftGrey}">
-              <p class="col lesson-number" title={lesson.title}>
+              <p class="dark:text-white col lesson-number" title={lesson.title}>
                 {getLectureNo(index + 1)}
               </p>
               <div
@@ -116,7 +116,8 @@
               >
                 {#each Object.keys(lessonMapping[lesson.id]) as exerciseId, index}
                   <p
-                    class="col text-sm {index && borderleftGrey}"
+                    class="col text-sm dark:text-white {index &&
+                      borderleftGrey}"
                     title={lessonMapping[lesson.id][exerciseId].title}
                   >
                     {lessonMapping[lesson.id][exerciseId].title}
@@ -128,7 +129,7 @@
           {/if}
         {/each}
         <div class="box flex items-center {borderleftGrey}">
-          <p class="w-20 text-center">Total</p>
+          <p class="dark:text-white w-20 text-center">Total</p>
         </div>
       </div>
 
@@ -143,8 +144,10 @@
               class="w-8 h-8 rounded-full mr-2"
             />
             <div class="text-sm">
-              <p class="font-semibold">{student.profile.fullname}</p>
-              <p>
+              <p class="dark:text-white font-semibold">
+                {student.profile.fullname}
+              </p>
+              <p class="dark:text-white">
                 {`${
                   student.assigned_student_id
                     ? '#' + student.assigned_student_id
@@ -157,7 +160,7 @@
             {#if lessonMapping[lesson.id]}
               <div class="flex items-center">
                 {#each Object.keys(lessonMapping[lesson.id]) as exerciseId}
-                  <p class="col">
+                  <p class="dark:text-white col">
                     {studentMarksByExerciseId[student.id]
                       ? studentMarksByExerciseId[student.id][exerciseId] || '-'
                       : '-'}
@@ -169,7 +172,7 @@
 
           <div class="w-20 flex items-center">
             <div class="text-sm">
-              <p class="col">
+              <p class="dark:text-white col">
                 {calculateStudentTotal(studentMarksByExerciseId[student.id])}
               </p>
             </div>
@@ -178,7 +181,9 @@
       {:else}
         <Box>
           <AudioConsole32 class="carbon-icon w-80" />
-          <h3 class="text-3xl text-gray-500">No Student Added</h3>
+          <h3 class="text-3xl text-gray-500 dark:text-gray-200">
+            No Student Added
+          </h3>
         </Box>
       {/each}
     </div>

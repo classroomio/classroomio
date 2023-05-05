@@ -132,24 +132,24 @@
       </div>
     </div>
     <div class="flex justify-between items-center px-2 w-full mb-2">
-      <h3 class="">Page Builder</h3>
+      <h3 class="dark:text-white">Page Builder</h3>
     </div>
     {#each sections as section}
       <button
         class="w-full flex items-center justify-between px-2 py-3 border border-b-0 border-gray-300"
         on:click={handleSectionSelect(section.key)}
       >
-        <p class="mr-2">{section.title} section</p>
+        <p class="dark:text-white mr-2">{section.title} section</p>
         <ChevronRight24 class="carbon-class" />
       </button>
     {/each}
   {:else}
     <!-- Title -->
-    <div class="flex items-center  {borderBottomGrey} w-full">
+    <div class="flex items-center {borderBottomGrey} w-full">
       <IconButton onClick={handleClose}>
         <ArrowLeft24 class="carbon-icon" title="Go back" />
       </IconButton>
-      <h3 class="">{selectedSection.title}</h3>
+      <h3 class="dark:text-white">{selectedSection.title}</h3>
     </div>
 
     <div class="p-2 h-4/5 overflow-y">

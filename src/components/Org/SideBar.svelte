@@ -13,7 +13,7 @@
   import { profile } from '../../utils/store/user';
 
   let orgSiteName = '';
-  let activeClass = 'bg-gray-200';
+  let activeClass = 'bg-gray-200 dark:bg-gray-500';
   let { page } = stores();
 
   function isActive(pagePath, itemPath) {
@@ -30,7 +30,7 @@
   $: orgSiteName = $currentOrg.siteName;
 </script>
 
-<aside class="root bg-gray-100 h-full">
+<aside class="root bg-gray-100 dark:bg-gray-700 h-full">
   <div class="h-full flex flex-col">
     <div class="border-b border-gray-200 pt-5 px-4">
       {#if $currentOrg.avatar_url}
@@ -53,46 +53,46 @@
       <ul class="my-5">
         <a href="/org/{orgSiteName}" class="text-black">
           <li
-            class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 {isActive(
+            class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-500 {isActive(
               $page.path,
               `/org/${orgSiteName}`
             ) && activeClass}"
           >
             <HomeIcon />
-            <p class="ml-2">Home</p>
+            <p class="dark:text-white ml-2">Home</p>
           </li>
         </a>
         <a href="/org/{orgSiteName}/courses" class="text-black">
           <li
-            class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 {isActive(
+            class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-500 {isActive(
               $page.path,
               `/org/${orgSiteName}/courses`
             ) && activeClass}"
           >
             <CourseIcon />
-            <p class="ml-2">Courses</p>
+            <p class="dark:text-white ml-2">Courses</p>
           </li>
         </a>
         <a href="/org/{orgSiteName}/site" class="text-black">
           <li
-            class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 {isActive(
+            class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-500 {isActive(
               $page.path,
               `/org/${orgSiteName}/site`
             ) && activeClass}"
           >
             <SiteSettingsIcon />
-            <p class="ml-2">Site settings</p>
+            <p class="dark:text-white ml-2">Site settings</p>
           </li>
         </a>
         <a href="/org/{orgSiteName}/audience" class="text-black">
           <li
-            class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 {isActive(
+            class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-500 {isActive(
               $page.path,
               `/org/${orgSiteName}/audience`
             ) && activeClass}"
           >
             <AudienceIcon />
-            <p class="ml-2">Audience</p>
+            <p class="dark:text-white ml-2">Audience</p>
           </li>
         </a>
       </ul>
@@ -100,14 +100,16 @@
     <span class="flex-grow" />
     <ul class="my-5 pb-5 px-4">
       <a href="/help" class="text-black">
-        <li class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200">
-          <Help />
-          <p class="ml-2">Help</p>
+        <li
+          class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-500"
+        >
+          <Help class="carbon-icon" />
+          <p class="dark:text-white ml-2">Help</p>
         </li>
       </a>
       <a href="/org/{orgSiteName}/settings" class="text-black">
         <li
-          class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 {isActive(
+          class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-500 {isActive(
             $page.path,
             `/org/${orgSiteName}/settings`
           ) && activeClass}"
@@ -118,7 +120,7 @@
             width="w-7"
             height="h-7"
           />
-          <p class="ml-2">Settings</p>
+          <p class="dark:text-white ml-2">Settings</p>
         </li>
       </a>
     </ul>

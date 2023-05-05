@@ -2,19 +2,19 @@
   // your script goes here
   const contributors = [
     {
-      name: "Koskting",
+      name: 'Koskting',
     },
     {
-      name: "Koskting",
+      name: 'Koskting',
     },
     {
-      name: "Koskting",
+      name: 'Koskting',
     },
     {
-      name: "Koskting",
+      name: 'Koskting',
     },
     {
-      name: "Koskting",
+      name: 'Koskting',
     },
   ];
 </script>
@@ -23,7 +23,9 @@
 <div
   class="sidebar-root p-5 w-100 border border-1 border-gray rounded-md md:mt-12"
 >
-  <h4 class="border-b border-gray text-base font-bold pb-1">Самые полезные</h4>
+  <h4 class="dark:text-white border-b border-gray text-base font-bold pb-1">
+    Самые полезные
+  </h4>
   {#each contributors as contributor}
     <a class="flex pt-3" href="/{contributor.name}">
       <img
