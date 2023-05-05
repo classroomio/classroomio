@@ -198,7 +198,7 @@
           </RoleBasedSecurity>
 
           <div class="">
-            <h3 class="text-3xl font-bold">
+            <h3 class="dark:text-white text-3xl font-bold">
               {getLessonOrder(lesson.id)}.
             </h3>
           </div>
@@ -206,7 +206,7 @@
             {#if lessonEditing === lesson.id}
               <TextField bind:value={lesson.title} autofocus={true} />
             {:else}
-              <h3 class="text-2xl m-0 flex items-center">
+              <h3 class="dark:text-white text-2xl m-0 flex items-center">
                 <a
                   href={isStudent && !lesson.is_complete
                     ? $page.path
@@ -237,7 +237,7 @@
                     labelKey="fullname"
                   />
                 {:else if !lesson.profile}
-                  <p class="ml-2 text-sm">No tutor added</p>
+                  <p class="dark:text-white ml-2 text-sm">No tutor added</p>
                 {:else}
                   <a href="." class="flex items-center hover:underline">
                     <img
@@ -247,7 +247,7 @@
                       height="20"
                       src={lesson.profile.avatar_url}
                     />
-                    <p class="ml-2 text-sm">
+                    <p class="dark:text-white ml-2 text-sm">
                       {lesson.profile.fullname}
                     </p>
                   </a>
@@ -265,7 +265,7 @@
                   />
                 {:else}
                   <Time24 class="carbon-icon" />
-                  <p class="text-md ml-2">
+                  <p class="dark:text-white text-md ml-2">
                     {new Date(lesson.lesson_at).toDateString()}
                   </p>
                 {/if}
@@ -303,7 +303,9 @@
         </div>
       {:else}
         <Box>
-          <h3 class="text-3xl text-gray-500">No lesson added</h3>
+          <h3 class="text-3xl text-gray-500 dark:text-gray-200">
+            No lesson added
+          </h3>
           <img alt="No lesson added" src="/notfound2.gif" class="w-80" />
         </Box>
       {/each}

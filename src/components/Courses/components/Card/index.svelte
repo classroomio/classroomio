@@ -42,16 +42,16 @@
   }
 </script>
 
-<a rel="prefetch" href="/courses/{id}" class=" text-black ">
+<a rel="prefetch" href="/courses/{id}" class=" text-black">
   <div
-    class="root w-72 border bg-white mr-4 mb-4 rounded-md transition ease-in-out relative"
+    class="root w-72 border bg-white dark:bg-gray-800 mr-4 mb-4 rounded-md transition ease-in-out relative"
   >
     <Dropdown
       options={getOptions()}
       classNames="absolute top-4 right-4"
       isIcon={true}
     >
-      <div class="p-1 rounded-full bg-white">
+      <div class="p-1 rounded-full bg-white dark:bg-gray-600">
         <OverflowMenuHorizontal24 class="carbon-icon" />
       </div>
     </Dropdown>
@@ -61,17 +61,17 @@
       alt="Course Logo"
     />
     <div class="p-3 pb-0">
-      <h4 class="title text-md font-bold">
+      <h4 class="dark:text-white title text-md font-bold">
         {title}
       </h4>
       <p
-        class="description text-left text-sm font-small flex flex-col text-gray-500 my-3"
+        class="description text-left text-sm font-small flex flex-col text-gray-500 dark:text-gray-200 my-3"
         title={description}
       >
         {description}
       </p>
       <div class="flex justify-between">
-        <p>{totalLessons} lessons</p>
+        <p class="dark:text-white">{totalLessons} lessons</p>
         <div class="rounded bg-{isPublished ? 'green' : 'red'}-200 py-1 px-2">
           {#if isPublished}
             Published
@@ -80,7 +80,7 @@
           {/if}
         </div>
       </div>
-      <p class="text-gray-500 text-xs mt-1">
+      <p class="dark:text-white text-gray-500 text-xs mt-1">
         {!cost ? 'free' : formatter.format(cost)}
       </p>
     </div>

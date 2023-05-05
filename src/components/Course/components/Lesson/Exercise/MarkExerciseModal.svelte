@@ -116,9 +116,9 @@
     </div>
     <div class="border border-gray-300 rounded-md mt-2">
       <div
-        class="hover:bg-gray-100 border-b border-t-0 border-l-0 border-r-0 border-gray-300 p-3"
+        class="hover:bg-gray-100 dark:bg-gray-700 border-b border-t-0 border-l-0 border-r-0 border-gray-300 p-3"
       >
-        <p class="font-bold text-lg">
+        <p class="dark:text-white font-bold text-lg">
           Details
           {#if data.isEarly}
             <span
@@ -137,30 +137,30 @@
       </div>
 
       <div class="flex items-center text-sm p-3">
-        <p class="font-bold w-2/5">Total grade</p>
-        <p>{total} / {maxPoints}</p>
+        <p class="dark:text-white font-bold w-2/5">Total grade</p>
+        <p class="dark:text-white">{total} / {maxPoints}</p>
       </div>
       <!-- <div class="flex items-center text-sm p-3">
-        <p class="font-bold w-1/2">Status</p>
+        <p class="dark:text-white font-bold w-1/2">Status</p>
         <div class="flex items-center">
-          <p class="rounded-full w-5 h-5 bg-yellow-300 mr-2" />
-          <p>Grading</p>
+          <p class="dark:text-white rounded-full w-5 h-5 bg-yellow-300 mr-2" />
+          <p class="dark:text-white">Grading</p>
         </div>
       </div> -->
       <div class="flex items-center text-sm p-3">
-        <p class="font-bold w-2/5">Student</p>
+        <p class="dark:text-white font-bold w-2/5">Student</p>
         {#if data.student}
           <img
             alt="Student avatar"
             class="block rounded-full h-6 w-6"
             src={data.student.avatar_url}
           />
-          <p class="ml-2 text-sm">{data.student.fullname}</p>
+          <p class="dark:text-white ml-2 text-sm">{data.student.fullname}</p>
         {/if}
       </div>
       <!-- <div class="flex items-center text-sm p-3">
-        <p class="font-bold w-1/2">Teacher</p>
-        <p>rotimi-best</p>
+        <p class="dark:text-white font-bold w-1/2">Teacher</p>
+        <p class="dark:text-white">rotimi-best</p>
       </div> -->
     </div>
   </div>

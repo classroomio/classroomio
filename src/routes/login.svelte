@@ -58,7 +58,7 @@
   bind:formRef
 >
   <div class="mt-4 w-full">
-    <p class="text-lg font-semibold mb-6">Welcome back</p>
+    <p class="dark:text-white text-lg font-semibold mb-6">Welcome back</p>
     <TextField
       label="Your email"
       bind:value={fields.email}
@@ -81,7 +81,7 @@
       errorMessage={errors.password}
     />
     {#if submitError}
-      <p class="text-sm text-red-500">{submitError}</p>
+      <p class="dark:text-white text-sm text-red-500">{submitError}</p>
     {/if}
     <div class="w-full text-right">
       <a class="text-md text-blue-700" href="/forgot"> Forgot password? </a>

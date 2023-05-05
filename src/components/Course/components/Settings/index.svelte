@@ -62,7 +62,7 @@
 >
   {#if shouldDelete}
     <form on:submit|preventDefault={() => (shouldDelete = false)}>
-      <h1 class="text-2xl">Are you sure?</h1>
+      <h1 class="dark:text-white text-2xl">Are you sure?</h1>
 
       <div class="mt-5 flex items-center justify-between">
         <PrimaryButton

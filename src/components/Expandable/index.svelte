@@ -22,7 +22,7 @@
   }
 </script>
 
-<div {id} class="w-full bg-white {rootClass}">
+<div {id} class="w-full bg-white dark:bg-gray-800 {rootClass}">
   <div
     class="w-full relative flex items-center justify-between {!disableContainerPadding &&
       'p-5'}"
@@ -30,7 +30,7 @@
     tabindex="0"
     on:click={handleClick}
   >
-    <p class="font-bold flex items-center {titleClass}">
+    <p class="dark:text-white font-bold flex items-center {titleClass}">
       {title}
       {#if supportsLink}
         <a

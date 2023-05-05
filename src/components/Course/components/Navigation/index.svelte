@@ -143,7 +143,7 @@
   class="root z-10 {!show && 'hide'} {$isMobile ? 'fixed shadow-xl' : 'sticky'}"
 >
   {#if show}
-    <div class="relative h-full">
+    <div class="relative h-full dark:bg-gray-700">
       <PageNav bind:title={$course.title} paddingClass="pl-2">
         <slot:fragment slot="image">
           <Avatar src={$course.logo} />
@@ -280,9 +280,14 @@
 
   .item {
     font-size: 0.875rem;
+    font-weight: bold;
     &:hover {
       background-color: #cae2f9;
     }
+  }
+  :global(body.dark) .active,
+  :global(body.dark) .item:hover {
+    background-color: rgba(107, 114, 128);
   }
 
   .navItems {

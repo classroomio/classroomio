@@ -11,8 +11,8 @@
       <button
         class="relative border-r-1 border-t-0 border-b-0 border-l-0 rounded-none {currentTab ===
         tab.value
-          ? 'text-black font-bold bg-gray-100'
-          : 'bg-gray-200 text-gray'} focus:outline-none w-40 text-left p-3"
+          ? 'text-black font-bold bg-gray-100 dark:bg-gray-700'
+          : 'bg-gray-200 dark:bg-gray-500 text-gray'} focus:outline-none w-40 text-left p-3"
         on:click={onChange(tab.value)}
       >
         {tab.label}

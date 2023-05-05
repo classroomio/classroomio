@@ -21,7 +21,9 @@
   modalHeading="Delete question"
 >
   <div>
-    <h1 class="text-lg">Are you sure you want to delete this question?</h1>
+    <h1 class="dark:text-white text-lg">
+      Are you sure you want to delete this question?
+    </h1>
 
     <div class="mt-5 flex items-center justify-between">
       <PrimaryButton

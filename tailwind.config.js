@@ -1,19 +1,17 @@
 module.exports = {
+  darkMode: 'class',
   purge: {
-    mode: "all",
-    content: ["./**/**/*.html", "./**/**/*.svelte"],
+    mode: 'all',
+    content: ['./**/**/*.html', './**/**/*.svelte'],
 
     options: {
-      whitelistPatterns: [/svelte-/]
-    }
+      whitelistPatterns: [/svelte-/],
+    },
   },
 
   theme: {
-    extend: {}
+    extend: {},
   },
   variants: {},
-  plugins: [
-    require("@tailwindcss/typography"),
-    require('@tailwindcss/forms')
-  ]
+  plugins: [require('@tailwindcss/typography'), require('@tailwindcss/forms')],
 };

@@ -81,7 +81,9 @@
         />
       {:else}
         <Box>
-          <h3 class="text-3xl text-gray-500">No slide added</h3>
+          <h3 class="text-3xl text-gray-500 dark:text-gray-200">
+            No slide added
+          </h3>
           <img alt="Slide not found" src="/notfound.webp" class="w-80" />
         </Box>
       {/if}
@@ -99,7 +101,9 @@
         <MarkdownRender content={$lesson.materials.note} />
       {:else}
         <Box>
-          <h3 class="text-3xl text-gray-500">No note added</h3>
+          <h3 class="text-3xl text-gray-500 dark:text-gray-200">
+            No note added
+          </h3>
           <img alt="Lesson note not found" src="/notfound.webp" class="w-80" />
         </Box>
       {/if}
@@ -129,7 +133,9 @@
         {/each}
       {:else}
         <Box>
-          <h3 class="text-3xl text-gray-500">No youtube video added</h3>
+          <h3 class="text-3xl text-gray-500 dark:text-gray-200">
+            No youtube video added
+          </h3>
           <img alt="Video not found" src="/notfound.webp" class="w-80" />
         </Box>
       {/if}

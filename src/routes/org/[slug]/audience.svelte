@@ -17,7 +17,7 @@
 <section class="w-full max-w-6xl mx-auto">
   <div class="py-10 px-5">
     <div class="flex items-center justify-between mb-10">
-      <h1 class="text-3xl font-bold">Audience</h1>
+      <h1 class="dark:text-white text-3xl font-bold">Audience</h1>
       <PrimaryButton
         label="Export"
         onClick={exportAudience}

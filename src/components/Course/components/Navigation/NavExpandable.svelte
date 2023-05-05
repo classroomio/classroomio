@@ -26,7 +26,7 @@
         class="carbon-icon-sort {isExpanded ? '' : 'carbon-icon-minimize'}"
       />
     {/if}
-    <span class="font-bold">{label}</span>
+    <span class="dark:text-white font-bold">{label}</span>
   </div>
   {#if isExpanded}
     <div class="flex flex-col">
@@ -50,6 +50,11 @@
   .active {
     background-color: #cae2f9;
     border-left: 3px solid var(--main-primary-color);
+  }
+
+  :global(body.dark) .active,
+  :global(body.dark) .item:hover {
+    background-color: rgba(107, 114, 128);
   }
 
   .active span {

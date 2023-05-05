@@ -211,7 +211,7 @@
 
 <div class="py-10 px-5 w-full max-w-7xl mx-auto">
   <div class="flex items-center justify-between mb-10">
-    <h1 class="text-3xl font-bold">Dashboard</h1>
+    <h1 class="dark:text-white text-3xl font-bold">Dashboard</h1>
     <PrimaryButton label="Create Course" onClick={createCourse} />
   </div>
 
@@ -220,8 +220,8 @@
       <div
         class="box flex flex-col rounded border border-gray-200 justify-center px-5 mr-5 mb-5"
       >
-        <p class="mb-2 text-sm">{box.label}</p>
-        <p class="text-xl font-bold">{box.value}</p>
+        <p class="dark:text-white mb-2 text-sm">{box.label}</p>
+        <p class="dark:text-white text-xl font-bold">{box.value}</p>
       </div>
     {/each}
   </div>
@@ -229,7 +229,7 @@
   <div class="flex flex-wrap">
     <!-- Your Schedule -->
     <div>
-      <p class="font-bold mb-7">Your Schedule</p>
+      <p class="dark:text-white font-bold mb-7">Your Schedule</p>
       <div class="rounded border w-2/5 border-gray-200 mr-5 schedule-box">
         {#if !$isMobile}
           <div id="calendar" class="flex justify-center mt-5">
@@ -253,7 +253,7 @@
             </Datepicker>
           </div>
         {:else}
-          <p class="font-bold m-5">
+          <p class="dark:text-white font-bold m-5">
             {formatDate($store?.selected)}
           </p>
         {/if}
@@ -276,7 +276,7 @@
                   <span class="text-md ml-2">🔒</span>
                 {/if}
               </a>
-              <p class="text-grey text-sm flex items-center">
+              <p class="dark:text-white text-grey text-sm flex items-center">
                 <a
                   class="underline text-blue-700 my-2"
                   href="/courses/{lessonData.course_id}"
@@ -300,7 +300,9 @@
             {/if}
           </div>
         {:else}
-          <p class="flex items-center justify-center w-full no-data">
+          <p
+            class="dark:text-white flex items-center justify-center w-full no-data"
+          >
             No lesson on this day
           </p>
         {/each}
@@ -309,22 +311,22 @@
 
     <!-- Your Activities -->
     <div>
-      <p class="font-bold mb-7">Your Activities</p>
+      <p class="dark:text-white font-bold mb-7">Your Activities</p>
       <div class="rounded border border-gray-200 w-5 activities-box py-4 px-5">
         {#each activities as activity}
           <div class="flex mb-3 pb-3 border-b border-gray-200">
             <Avatar src={activity.avatar} name="avatar" />
             <div class="ml-2 flex">
               <div class="mr-2">
-                <p>{activity.name}</p>
-                <p class="mb-2 mt-1">
+                <p class="dark:text-white">{activity.name}</p>
+                <p class="dark:text-white mb-2 mt-1">
                   {activity.description}
                 </p>
                 <a href={activity.link}>View</a>
               </div>
 
               <div>
-                <p>{activity.time}</p>
+                <p class="dark:text-white">{activity.time}</p>
               </div>
             </div>
           </div>

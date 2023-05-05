@@ -8,7 +8,7 @@
 </script>
 
 <label class="block {className}">
-  <span class="text-gray-700">{label}</span>
+  <span class="text-gray-700 dark:text-white">{label}</span>
   <input
     bind:value
     on:input={onInput}

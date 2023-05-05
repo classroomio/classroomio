@@ -24,14 +24,14 @@
   />
   {#if isEditable}
     <input
-      class="form-input p-2 mt-1 ml-1 block w-2/4 bg-gray-100 border-t-0 border-l-0 border-r-0 border-b-1"
+      class="form-input p-2 mt-1 ml-1 block w-2/4 bg-gray-100 dark:bg-gray-700 border-t-0 border-l-0 border-r-0 border-b-1"
       type="text"
       placeholder="Your option"
       bind:value={label}
       on:change={onChange}
     />
   {:else}
-    <span class="ml-2">{label}</span>
+    <span class="dark:text-white ml-2">{label}</span>
   {/if}
 
   <slot name="iconbutton" />

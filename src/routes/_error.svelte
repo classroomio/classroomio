@@ -25,7 +25,7 @@
 <div class="w-3/5 h-3/5 m-auto flex flex-col items-center justify-center">
   <h1>Opps 😢</h1>
   <h2>Something wen't wrong and it's our fault.</h2>
-  <p>Please screenshot this page and send to me.</p>
+  <p class="dark:text-white">Please screenshot this page and send to me.</p>
   <pre>
     {errorContent}
   </pre>
@@ -34,7 +34,7 @@
 <!-- {#if dev && error.stack}
   <h1>{status}</h1>
 
-  <p>{error.message}</p>
+  <p class="dark:text-white">{error.message}</p>
   <pre>{error.stack}</pre>
 {/if} -->
 <style>

@@ -65,10 +65,10 @@
     />
   -->
   <div>
-    <h3 class="text-4xl text-center">
+    <h3 class="dark:text-white text-4xl text-center">
       Classroom<span class="text-blue-700">IO</span>
     </h3>
-    <p class="text-lg text-center">
+    <p class="dark:text-white text-lg text-center">
       The operating system for classroooms of the future 🚀🚀🚀.
     </p>
   </div>
@@ -76,7 +76,9 @@
   <form on:submit|preventDefault={handleSubmit} class="my-4">
     <div class="flex items-center flex-col sm:flex-row">
       {#if success}
-        <p>You have been added successfully. Thanks for joining.</p>
+        <p class="dark:text-white">
+          You have been added successfully. Thanks for joining.
+        </p>
       {:else}
         <TextField
           bind:value={email}
@@ -97,9 +99,9 @@
   <div class="flex flex-col md:flex-row">
     {#each areas as area, index}
       <div
-        class="box m-3 bg-white rounded-md py-3 px-12 active shadow-xl border-2 hover:border-blue-700 {animate}"
+        class="box m-3 bg-white dark:bg-gray-800 rounded-md py-3 px-12 active shadow-xl border-2 hover:border-blue-700 {animate}"
       >
-        <h3 class="text-3xl">
+        <h3 class="dark:text-white text-3xl">
           {#if index === 0}
             <FlowStreamReference32 class="carbon-icon" />
           {:else if index === 1}
@@ -109,7 +111,7 @@
           {/if}
           {area.title}
         </h3>
-        <p>{area.description}</p>
+        <p class="dark:text-white">{area.description}</p>
       </div>
     {/each}
   </div>

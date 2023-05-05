@@ -9,6 +9,7 @@
   import { supabase } from '../../../utils/functions/supabase';
   import { snackbarStore } from '../../Snackbar/store';
   import { SNACKBAR_SEVERITY } from '../../Snackbar/constants';
+  import SectionTitle from '../SectionTitle.svelte';
 
   let siteName;
   let errors = '';
@@ -56,7 +57,7 @@
   <Row class="py-7 border border-t-0 border-l-0 border-r-0 border-gray-300">
     <Column sm={2} md={2} lg={4} class="text-lg"><strong>Add</strong></Column>
     <Column sm={2} md={6} lg={8}>
-      <p class="text-md text-gray-500 mb-5">
+      <p class="text-md text-gray-500 dark:text-gray-200 mb-5">
         Add your team mates or collaborators to your organization. Start working
         together
       </p>
@@ -86,11 +87,11 @@
 
   <Row class="py-7 border border-t-0 border-l-0 border-r-0 border-gray-300">
     <Column sm={2} md={2} lg={4} class="text-lg"
-      ><strong>Custom domain</strong></Column
+      ><SectionTitle>Custom domain</SectionTitle></Column
     >
     <Column sm={2} md={6} lg={8}>
       <div class="flex items-center">
-        <p class="mr-3">Add your own domain name</p>
+        <p class="dark:text-white mr-3">Add your own domain name</p>
         <ComingSoon />
       </div>
     </Column>

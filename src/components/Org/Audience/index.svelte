@@ -22,8 +22,8 @@
   {:else}
     <Box>
       <AudienceEmptyIcon />
-      <h3 class="text-2xl my-5">No audience to manage!</h3>
-      <p class="w-1/3 text-center">
+      <h3 class="dark:text-white text-2xl my-5">No audience to manage!</h3>
+      <p class="dark:text-white w-1/3 text-center">
         Manage all your students here and stay connected with them.
       </p>
     </Box>

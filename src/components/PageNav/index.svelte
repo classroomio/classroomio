@@ -20,7 +20,7 @@
 </script>
 
 <div
-  class="header flex items-center justify-between {!disableSticky &&
+  class="header dark:bg-gray-700 flex items-center justify-between {!disableSticky &&
     'sticky'} {paddingClass} {dynamicRootClass}"
   style={overidableStyle}
 >
@@ -28,7 +28,7 @@
     {#if isTitleEditable}
       {#if !enterEditTitleMode}
         <h4
-          class="title editable-title hover:bg-gray-100 px-3 rounded-md overflow-ellipsis"
+          class="title editable-title hover:bg-gray-100 dark:bg-gray-700 px-3 rounded-md overflow-ellipsis"
           on:click={() => (enterEditTitleMode = true)}
         >
           {title}
@@ -49,7 +49,7 @@
     {:else}
       <div class="flex items-center" {title}>
         <slot name="image" />
-        <h4 class="title">{title}</h4>
+        <h4 class="dark:text-white title">{title}</h4>
       </div>
     {/if}
   {/if}
@@ -79,7 +79,6 @@
   .header {
     border-bottom: 1px solid var(--border-color);
     min-height: 61px;
-    background-color: #fff;
     z-index: 1;
   }
 

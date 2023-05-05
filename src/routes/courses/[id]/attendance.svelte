@@ -136,9 +136,9 @@
       <div
         class="flex items-center font-bold border-t-0 {borderBottomGrey} p-3"
       >
-        <p class="w-1/4">Student</p>
+        <p class="dark:text-white w-1/4">Student</p>
         {#each $lessons as lesson, index}
-          <p class="col" title={lesson.title}>
+          <p class="dark:text-white col" title={lesson.title}>
             {getLectureNo(index + 1)}
           </p>
         {/each}
@@ -155,14 +155,16 @@
               class="w-8 h-8 rounded-full mr-2"
             />
             <div class="text-sm">
-              <p class="font-semibold">{student.profile.fullname}</p>
+              <p class="dark:text-white font-semibold">
+                {student.profile.fullname}
+              </p>
               {#if student.assigned_student_id}
-                <p>#{student.assigned_student_id}</p>
+                <p class="dark:text-white">#{student.assigned_student_id}</p>
               {/if}
             </div>
           </div>
           {#each $lessons as lesson}
-            <p class="col">
+            <p class="dark:text-white col">
               <input
                 class="form-radio {isStudent && 'cursor-not-allowed'}"
                 type="checkbox"
@@ -180,7 +182,9 @@
       {:else}
         <Box>
           <AudioConsole32 class="carbon-icon w-80" />
-          <h3 class="text-3xl text-gray-500">No Student Added</h3>
+          <h3 class="text-3xl text-gray-500 dark:text-gray-200">
+            No Student Added
+          </h3>
         </Box>
       {/each}
     </div>

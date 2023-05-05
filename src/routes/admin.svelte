@@ -84,11 +84,11 @@
   <title>Admin Dashboard - ClassroomIO</title>
 </svelte:head>
 
-<div class="root w-full py-10 bg-gray-100">
+<div class="root w-full py-10 bg-gray-100 dark:bg-gray-700">
   <div class="flex items-center justify-evenly max-w-6xl m-auto">
     {#each boxes as box}
       <div
-        class="bg-white rounded-md py-3 px-16 active shadow-md hover:shadow-2xl border-2 hover:border-blue-700 cursor-pointer {animate}"
+        class="bg-white dark:bg-gray-800 rounded-md py-3 px-16 active shadow-md hover:shadow-2xl border-2 hover:border-blue-700 cursor-pointer {animate}"
       >
         {#if box.icon === 'students'}
           <UserSpeaker32 class="carbon-icon" />
@@ -97,43 +97,45 @@
         {:else if box.icon === 'courses'}
           <Book32 class="carbon-icon" />
         {/if}
-        <p class="text-xl">{box.label}</p>
-        <h3 class="text-3xl m-0 my-2">{box.value}</h3>
+        <p class="dark:text-white text-xl">{box.label}</p>
+        <h3 class="dark:text-white text-3xl m-0 my-2">{box.value}</h3>
       </div>
     {/each}
   </div>
 
   <div class="flex items-center justify-evenly mt-16">
-    <div class="table rounded-md bg-white shadow-md">
+    <div class="table rounded-md bg-white dark:bg-gray-800 shadow-md">
       <div class="flex border-t-0 {borderBottomGrey} p-3">
-        <h3 class="m-0 py-3 pl-2 text-lg">Outstanding students</h3>
+        <h3 class="dark:text-white m-0 py-3 pl-2 text-lg">
+          Outstanding students
+        </h3>
       </div>
 
       {#each topStudents as topStudent, index}
         <div
-          class="flex items-center p-3 cursor-pointer {borderBottomGrey} hover:bg-gray-100"
+          class="flex items-center p-3 cursor-pointer {borderBottomGrey} hover:bg-gray-100 dark:bg-gray-700"
         >
           <span class="mr-2">{index + 1}</span>
-          <p class="text-lg">{topStudent.name}</p>
+          <p class="dark:text-white text-lg">{topStudent.name}</p>
           <span class="flex-grow" />
-          <p class="text-lg">{topStudent.score}</p>
+          <p class="dark:text-white text-lg">{topStudent.score}</p>
         </div>
       {/each}
     </div>
 
-    <div class="table rounded-md bg-white shadow-md">
+    <div class="table rounded-md bg-white dark:bg-gray-800 shadow-md">
       <div class="flex border-t-0 {borderBottomGrey} p-3">
-        <h3 class="m-0 py-3 pl-2 text-lg">Top rated courses</h3>
+        <h3 class="dark:text-white m-0 py-3 pl-2 text-lg">Top rated courses</h3>
       </div>
 
       {#each topCourses as topCourse, index}
         <div
-          class="flex items-center p-3 cursor-pointer {borderBottomGrey} hover:bg-gray-100"
+          class="flex items-center p-3 cursor-pointer {borderBottomGrey} hover:bg-gray-100 dark:bg-gray-700"
         >
           <span class="mr-2">{index + 1}</span>
-          <p class="text-lg">{topCourse.title}</p>
+          <p class="dark:text-white text-lg">{topCourse.title}</p>
           <span class="flex-grow" />
-          <p class="text-lg">{topCourse.rating}</p>
+          <p class="dark:text-white text-lg">{topCourse.rating}</p>
         </div>
       {/each}
     </div>

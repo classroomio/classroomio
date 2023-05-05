@@ -1,10 +1,10 @@
 <script>
-  import marked from "marked";
-  import CheckmarkOutline20 from "carbon-icons-svelte/lib/CheckmarkOutline20";
-  import PageNav from "../../../PageNav/index.svelte";
-  import CloseButton from "../../../Buttons/Close/index.svelte";
-  import Vote from "../../../Vote/index.svelte";
-  import TextField from "../../../Form/TextField.svelte";
+  import marked from 'marked';
+  import CheckmarkOutline20 from 'carbon-icons-svelte/lib/CheckmarkOutline20';
+  import PageNav from '../../../PageNav/index.svelte';
+  import CloseButton from '../../../Buttons/Close/index.svelte';
+  import Vote from '../../../Vote/index.svelte';
+  import TextField from '../../../Form/TextField.svelte';
 
   export let handleClose;
   let bodyRef;
@@ -13,30 +13,30 @@
   let questions = [
     {
       id: 1,
-      name: "Evgeniy",
+      name: 'Evgeniy',
       question: "I'am looking at this and it looks great",
       vote: 1,
       answered: false,
     },
     {
       id: 2,
-      name: "Sergey Semko",
+      name: 'Sergey Semko',
       question:
-        "Thanks for the feedback, what do you think about my website. https://rotimibest.com",
+        'Thanks for the feedback, what do you think about my website. https://rotimibest.com',
       vote: 4,
       answered: false,
     },
     {
       id: 3,
-      name: "Vitalii Marushko",
-      question: "Всем привет",
+      name: 'Vitalii Marushko',
+      question: 'Всем привет',
       vote: 20,
       answered: false,
     },
     {
       id: 4,
-      name: "Natasha",
-      question: "Привет Виталий",
+      name: 'Natasha',
+      question: 'Привет Виталий',
       vote: 0,
       answered: false,
     },
@@ -51,7 +51,7 @@
       ...questions,
       {
         id: questions.length,
-        name: "You",
+        name: 'You',
         question,
         vote: 0,
         answered: false,
@@ -82,7 +82,7 @@
   }
 
   function handleKeyDown(e) {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       handleSend();
     }
   }
@@ -99,13 +99,13 @@
     <div class="flex items-start ml-2 mb-2 mt-2">
       <Vote bind:value={question.vote} />
       <div class="ml-2 flex-grow">
-        <p class="text-sm font-bold">{question.name}</p>
+        <p class="dark:text-white text-sm font-bold">{question.name}</p>
         <article class="prose prose-sm sm:prose">
           {@html marked(question.question)}
         </article>
       </div>
       <button
-        class={`${question.answered && "active"}`}
+        class={`${question.answered && 'active'}`}
         on:click={handleMarkAnswered(question.id)}
       >
         <CheckmarkOutline20 class="carbon-icon" />

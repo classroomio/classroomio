@@ -6,7 +6,7 @@
   export let maxRows = 3;
   export let className = '';
   export let labelClassName = '';
-  export let bgColor = 'bg-gray-200';
+  export let bgColor = 'bg-gray-200 dark:bg-gray-500';
   export let helperMessage = '';
   export let errorMessage = '';
   export let isRequired = false;
@@ -18,7 +18,7 @@
 
 <label class="block w-full relative {className}">
   {#if label}
-    <p for="text-field" class={labelClassName}>
+    <p for="text-field" class="dark:text-white {labelClassName}">
       {label}
 
       {#if isRequired}
@@ -38,7 +38,7 @@
     {placeholder}
     bind:value
     required={isRequired}
-    class="form-textarea mt-1 block w-full 
+    class="form-textarea mt-1 block w-full
     {bgColor} border-t-0 border-l-0 border-r-0 border-b-1 {!!errorMessage
       ? 'border-red-500'
       : 'border-gray-300'}"
@@ -49,7 +49,7 @@
       {errorMessage}
     </p>
   {:else if helperMessage}
-    <p class="text-sm text-gray-500">
+    <p class="text-sm text-gray-500 dark:text-gray-200">
       {helperMessage}
     </p>
   {/if}

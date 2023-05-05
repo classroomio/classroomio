@@ -9,6 +9,7 @@
   import { snackbarStore } from '../../Snackbar/store';
   import { SNACKBAR_SEVERITY } from '../../Snackbar/constants';
   import { currentOrg } from '../../../utils/store/org';
+  import SectionTitle from '../SectionTitle.svelte';
 
   let avatar;
   let loading = false;
@@ -79,7 +80,9 @@
 
 <Grid class="border rounded border-gray-200 w-full mt-5">
   <Row class="py-7 border border-t-0 border-l-0 border-r-0 border-gray-300">
-    <Column sm={2} md={2} lg={4}><strong>Organization Profile</strong></Column>
+    <Column sm={2} md={2} lg={4}
+      ><SectionTitle>Organization Profile</SectionTitle></Column
+    >
     <Column sm={2} md={6} lg={8}>
       <TextField
         label="Organization Name"
@@ -102,16 +105,18 @@
     </Column>
   </Row>
   <!-- <Row class="py-7 border border-t-0 border-l-0 border-r-0 border-gray-300">
-    <Column sm={2} md={2} lg={4}><strong>Theme</strong></Column>
+    <Column sm={2} md={2} lg={4}><SectionTitle>Theme</SectionTitle></Column>
     <Column sm={2} md={6} lg={8}>
-      <h4>Set your brand</h4>
+      <h4 class="dark:text-white">Set your brand</h4>
     </Column>
   </Row> -->
   <Row class="py-7 border border-t-0 border-l-0 border-r-0 border-gray-300">
-    <Column sm={2} md={2} lg={4}><strong>Custom Domain</strong></Column>
+    <Column sm={2} md={2} lg={4}
+      ><SectionTitle>Custom Domain</SectionTitle></Column
+    >
     <Column sm={2} md={6} lg={8}>
-      <h4>Customise your Domain</h4>
-      <p class="text-sm text-gray-500">
+      <h4 class="dark:text-white">Customise your Domain</h4>
+      <p class="text-sm text-gray-500 dark:text-gray-200">
         Create a custom URL so your audience can get to your organization easily
       </p>
       <PrimaryButton
@@ -123,10 +128,10 @@
     </Column>
   </Row>
   <Row class="py-7 border border-t-0 border-l-0 border-r-0 border-gray-300">
-    <Column sm={2} md={2} lg={4}><strong>Team</strong></Column>
+    <Column sm={2} md={2} lg={4}><SectionTitle>Team</SectionTitle></Column>
     <Column sm={2} md={6} lg={8}>
-      <h4>Set up your website</h4>
-      <p class="text-sm text-gray-500">
+      <h4 class="dark:text-white">Set up your website</h4>
+      <p class="text-sm text-gray-500 dark:text-gray-200">
         Add team mates to your organization so you can both collaborate on
         projects.
       </p>

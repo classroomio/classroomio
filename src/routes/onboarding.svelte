@@ -193,15 +193,15 @@
             width="50"
             data-atf="1"
           />
-          <h4 class="text-xl">ClassroomIO</h4>
+          <h4 class="dark:text-white text-xl">ClassroomIO</h4>
         </div>
 
         <!-- Loggedin Email -->
         <div
-          class="w-64 flex items-center justify-center mb-6 py-6 bg-gray-100 rounded-2xl border border-gray-300"
+          class="w-64 flex items-center justify-center mb-6 py-6 bg-gray-100 dark:bg-gray-700 rounded-2xl border border-gray-300"
         >
           <UserProfileIcon />
-          <p class="text-sm ml-2">{$profile.email}</p>
+          <p class="dark:text-white text-sm ml-2">{$profile.email}</p>
         </div>
       </div>
 
@@ -252,14 +252,17 @@
               <div
                 class="w-full flex items-start flex-col justify-between mb-10"
               >
-                <label for="text-field" class="m-0 text-lg font-normal mb-3">
+                <label
+                  for="text-field"
+                  class="dark:text-white m-0 text-lg font-normal mb-3"
+                >
                   What brings you to ClassroomIO?
                 </label>
 
                 <!-- Loop through Goals -->
                 {#each educatorGoals as goal}
                   <label
-                    class="w-full inline-flex items-center mb-1 font-light"
+                    class="dark:text-white w-full inline-flex items-center mb-1 font-light"
                   >
                     <input
                       type="radio"
@@ -273,20 +276,25 @@
                 {/each}
                 <!-- Goal: Error message -->
                 {#if errors.goal}
-                  <p class="text-sm text-red-500">{errors.goal}</p>
+                  <p class="dark:text-white text-sm text-red-500">
+                    {errors.goal}
+                  </p>
                 {/if}
               </div>
 
               <!-- Source Question -->
               <div class="w-full flex items-start flex-col justify-between">
-                <label for="text-field" class="m-0 text-lg font-normal mb-3">
+                <label
+                  for="text-field"
+                  class="dark:text-white m-0 text-lg font-normal mb-3"
+                >
                   How did you hear about us?
                 </label>
 
                 <!-- Loop through Goals -->
                 {#each sources as source}
                   <label
-                    class="w-full inline-flex items-center mb-1 font-light"
+                    class="dark:text-white w-full inline-flex items-center mb-1 font-light"
                   >
                     <input
                       type="radio"
@@ -300,7 +308,9 @@
                 {/each}
                 <!-- Goal: Error message -->
                 {#if errors.source}
-                  <p class="text-sm text-red-500">{errors.source}</p>
+                  <p class="dark:text-white text-sm text-red-500">
+                    {errors.source}
+                  </p>
                 {/if}
               </div>
             </div>

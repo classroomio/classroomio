@@ -70,7 +70,7 @@
           className="w-20"
           isDisabled={disableGrading}
         />
-        <p class="ml-2 text-lg">/ {gradeMax}</p>
+        <p class="dark:text-white ml-2 text-lg">/ {gradeMax}</p>
       </div>
     {/if}
   </div>
@@ -82,7 +82,7 @@
   <div class="ml-4">
     {#each options as option}
       <button
-        class="cursor-pointer text-left my-2 border-2 border-gray-300 rounded-md hover:bg-gray-200 w-full {getValidationClassName(
+        class="cursor-pointer text-left my-2 border-2 border-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-500 w-full {getValidationClassName(
           option
         )}"
         type="button"

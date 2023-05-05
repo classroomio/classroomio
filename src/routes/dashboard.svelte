@@ -136,7 +136,7 @@
   <title>Dashboard - ClassroomIO</title>
 </svelte:head>
 
-<section class="root w-full py-10 bg-gray-100">
+<section class="root w-full py-10 bg-gray-100 dark:bg-gray-700">
   <div class="calendar-root flex mx-2">
     {#if !$isMobile}
       <div id="calendar">
@@ -188,7 +188,7 @@
                 <span class="text-md ml-2">🔒</span>
               {/if}
             </a>
-            <p class="text-grey text-sm flex items-center">
+            <p class="dark:text-white text-grey text-sm flex items-center">
               <a
                 class="underline text-blue-700 my-2"
                 href="/courses/{lessonData.course_id}"
@@ -212,7 +212,9 @@
           {/if}
         </div>
       {:else}
-        <p class="flex items-center justify-center w-full no-data">
+        <p
+          class="dark:text-white flex items-center justify-center w-full no-data"
+        >
           No lesson on this day
         </p>
       {/each}

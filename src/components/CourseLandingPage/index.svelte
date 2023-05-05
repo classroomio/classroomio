@@ -73,7 +73,7 @@
   <title>{get(courseData, 'title', '')}</title>
 </svelte:head>
 
-<div class="w-full bg-white flex flex-col items-center">
+<div class="w-full bg-white dark:bg-gray-800 flex flex-col items-center">
   <!-- Header Section -->
   <header class="banner w-full flex items-center justify-center p-">
     <div
@@ -81,14 +81,14 @@
     >
       <!-- Course Description -->
       <div class="md:w-2/5 w-11/12 py-10">
-        <h1 class="text-5xl text-white my-4 font-bold">
+        <h1 class="dark:text-white text-5xl text-white my-4 font-bold">
           {get(courseData, 'title', '')}
         </h1>
-        <p class="text-md text-white mb-6">
+        <p class="dark:text-white text-md text-white mb-6">
           {get(courseData, 'description', '')}
         </p>
 
-        <p class="author my-3 text-sm">
+        <p class="dark:text-white author my-3 text-sm">
           {get(courseData, 'metadata.instructor.name', '')}
         </p>
         <PrimaryButton
@@ -141,7 +141,7 @@
   </header>
   <PricingSection className="md:hidden" {courseData} />
   <!-- Body -->
-  <div class="bg-white w-full">
+  <div class="bg-white dark:bg-gray-800 w-full">
     <div class="py-8 lg:w-10/12 w-full m-2 lg:m-auto flex justify-between">
       <!-- Course Details -->
       <div class="course-content w-full p-3 md:w-9/12 md:mr-14">
@@ -169,7 +169,7 @@
         <!-- Sections - Course Description -->
         <section id="description" class="border-b border-gray-300 mt-8 pb-10">
           <h3 class="text-2xl font-bold mt-0 mb-3">Course Description</h3>
-          <p class="text-sm font-light">
+          <p class="dark:text-white text-sm font-light">
             {@html get(courseData, 'metadata.description', '')}
           </p>
         </section>
@@ -185,7 +185,7 @@
         <!-- Sections - Certificate -->
         <section class="border-b border-gray-300 mt-8 pb-10">
           <h3 class="text-2xl font-bold mt-0">Certificate</h3>
-          <p class="text-sm font-light mb-3">
+          <p class="dark:text-white text-sm font-light mb-3">
             When you complete all of the courses in the program, you'll earn a
             Certificate to share with your professional network.
           </p>
@@ -199,7 +199,7 @@
         <section id="lessons" class="border-b border-gray-300 mt-8 pb-10">
           <div class="flex items-center justify-between w-full mb-3">
             <h3 class="text-2xl font-bold mt-0 mb-3">Course Content</h3>
-            <p class="text-sm font-light">
+            <p class="dark:text-white text-sm font-light">
               <!-- {lessons.length} lessons -->
               {pluralize('lesson', lessons.length, true)}
             </p>
@@ -213,7 +213,9 @@
                   value={getLectureNo(index + 1, '0')}
                   className="bg-blue-100 text-blue-700"
                 />
-                <p class="ml-2 text-sm font-light">{lesson.title}</p>
+                <p class="dark:text-white ml-2 text-sm font-light">
+                  {lesson.title}
+                </p>
               </div>
 
               <div class="w-2/4">
@@ -260,9 +262,13 @@
               src={get(instructor, 'imgUrl', '')}
             />
             <div>
-              <p class="text-md font-light">{get(instructor, 'name', '')}</p>
-              <p class="text-xs font-light">{get(instructor, 'role', '')}</p>
-              <p class="text-md font-light flex items-center">
+              <p class="dark:text-white text-md font-light">
+                {get(instructor, 'name', '')}
+              </p>
+              <p class="dark:text-white text-xs font-light">
+                {get(instructor, 'role', '')}
+              </p>
+              <p class="dark:text-white text-md font-light flex items-center">
                 <PlayFilled class="text-blue-700" />
                 <span class="ml-1"
                   >{get(instructor, 'courseNo', '')} courses</span
@@ -271,7 +277,7 @@
             </div>
           </div>
 
-          <p class="text-sm font-light">
+          <p class="dark:text-white text-sm font-light">
             {get(instructor, 'description', '')}
           </p>
         </section>
