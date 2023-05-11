@@ -7,6 +7,7 @@
   import { VARIANTS } from '../../PrimaryButton/constants';
   import { currentOrg } from '../../../utils/store/org';
   import { supabase } from '../../../utils/functions/supabase';
+  import { blockedSubdomain } from '../../../utils/constants/app';
   import { snackbarStore } from '../../Snackbar/store';
   import { SNACKBAR_SEVERITY } from '../../Snackbar/constants';
   import SectionTitle from '../SectionTitle.svelte';
@@ -16,6 +17,10 @@
   let isLoading = false;
 
   async function handleChangeDomain() {
+    if (blockedSubdomain.includes(siteName || '')) {
+      errors = 'Sitename already exists.';
+      return;
+    }
     isLoading = true;
 
     const { data: org, error } = await supabase
@@ -50,12 +55,21 @@
     }
   }
 
+  function resetErrors(_siteName) {
+    if (errors) {
+      errors = '';
+    }
+  }
+
+  $: resetErrors(siteName);
   $: setSiteName($currentOrg.siteName);
 </script>
 
 <Grid class="border rounded border-gray-200 w-full mt-5">
-  <Row class="py-7 border border-t-0 border-l-0 border-r-0 border-gray-300">
-    <Column sm={2} md={2} lg={4} class="text-lg"><strong>Add</strong></Column>
+  <Row class="py-7 border-bottom-c">
+    <Column sm={2} md={2} lg={4} class="text-lg"
+      ><SectionTitle>Add</SectionTitle></Column
+    >
     <Column sm={2} md={6} lg={8}>
       <p class="text-md text-gray-500 dark:text-gray-200 mb-5">
         Add your team mates or collaborators to your organization. Start working
@@ -85,7 +99,7 @@
     </Column>
   </Row>
 
-  <Row class="py-7 border border-t-0 border-l-0 border-r-0 border-gray-300">
+  <Row class="py-7 border-bottom-c">
     <Column sm={2} md={2} lg={4} class="text-lg"
       ><SectionTitle>Custom domain</SectionTitle></Column
     >

@@ -1,6 +1,6 @@
 <script context="module">
-  export function preload(page, { config }) {
-    return { config };
+  export function preload(page, { config, host }) {
+    return { config, host };
   }
 </script>
 
@@ -8,8 +8,9 @@
   import { onMount } from 'svelte';
   import { derived } from 'svelte/store';
   import { stores, goto } from '@sapper/app';
-  import _ from 'lodash';
+  import isEmpty from 'lodash/isEmpty';
   import * as Sentry from '@sentry/browser';
+  import { Theme } from 'carbon-components-svelte';
   import { Moon } from 'svelte-loading-spinners';
   import Tailwindcss from '../components/Tailwindcss.svelte';
   import LandingNavigation from '../components/Navigation/index.svelte';
@@ -30,13 +31,17 @@
   import { toggleBodyByTheme } from '../utils/functions/app';
   import { appStore } from '../utils/store/app';
 
+  // import 'carbon-components-svelte/css/all.css';
+
   export let segment;
   export let config;
+  export let host;
 
   let { page, preloading } = stores();
 
   let supabase = getSupabase(config);
   let path = $page.path.replace('/', '');
+  let theme = 'white';
 
   const delayedPreloading = derived(preloading, (currentPreloading, set) => {
     setTimeout(() => set(currentPreloading), 250);
@@ -98,7 +103,7 @@
       const orgRes = await getOrganizations($profile.id);
 
       // If user coming to login page, then
-      if (_.isEmpty(orgRes.orgs)) {
+      if (isEmpty(orgRes.orgs)) {
         goto(ROUTE.ONBOARDING);
       } else if (
         ['login', 'signup', 'onboarding'].includes(path) ||
@@ -123,7 +128,7 @@
   }
 
   onMount(() => {
-    console.log('Welcome to ClassroomIO, we are grateful you chose us.');
+    console.log('Welcome to ClassroomIO, we are grateful you chose us.', host);
     // Disable GA on localhost
     if (config && !config.isProd) {
       console.log('disable GA');
@@ -179,14 +184,21 @@
   // }
 
   $: path = $page.path.replace('/', '');
+  $: theme = $appStore.isDark ? 'g100' : 'white';
 </script>
 
 <svelte:window on:resize={handleResize} />
 
 <svelte:head>
   <link href="/css/carbon.css" rel="stylesheet" />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/carbon-components-svelte/css/all.css"
+  />
 </svelte:head>
+
 <Tailwindcss />
+<Theme bind:theme />
 
 <!-- <Nav {segment} /> -->
 <Snackbar />
@@ -261,5 +273,13 @@
 
   :global(.dark svg.dark path) {
     fill: #fff;
+  }
+
+  :global(.border-c) {
+    border: 1px solid var(--border-color);
+  }
+
+  :global(.border-bottom-c) {
+    border-bottom: 1px solid var(--border-color);
   }
 </style>

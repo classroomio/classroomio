@@ -1,5 +1,8 @@
 <script>
-  import { set, isEmpty, get, cloneDeep } from 'lodash';
+  import cloneDeep from 'lodash/cloneDeep';
+  import set from 'lodash/set';
+  import get from 'lodash/get';
+  import isEmpty from 'lodash/isEmpty';
   import { Toggle } from 'carbon-components-svelte';
   import TextEditor from '../../../TextEditor/index.svelte';
   import TextField from '../../../Form/TextField.svelte';

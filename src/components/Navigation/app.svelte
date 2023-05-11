@@ -1,4 +1,5 @@
 <script>
+  import { stores } from '@sapper/app';
   import NotificationIcon from 'carbon-icons-svelte/lib/Notification20';
   import Moon from 'carbon-icons-svelte/lib/Moon16';
   import Sun from 'carbon-icons-svelte/lib/Sun16';
@@ -8,6 +9,7 @@
   import { toggleBodyByTheme } from '../../utils/functions/app';
 
   export let navClass = '';
+  const { page } = stores();
 
   function toggleTheme() {
     $appStore.isDark = !$appStore.isDark;
@@ -21,7 +23,7 @@
   <ul class="flex w-full items-center">
     <div class="">
       <a
-        href={window.location.pathname}
+        href={$page.path}
         title="Go to ClassroomIO Home"
         id="logo"
         class="text-lg"

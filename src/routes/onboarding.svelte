@@ -15,6 +15,7 @@
   import { orgs, currentOrg } from '../utils/store/org';
   import { onboardingValidation } from '../utils/functions/validator';
   import { supabase } from '../utils/functions/supabase';
+  import { blockedSubdomain } from '../utils/constants/app';
 
   interface OnboardingField {
     fullname?: string;
@@ -110,6 +111,13 @@
     }
 
     if (step === 1) {
+      // Validate if domain is among our seculeded subdomains
+      if (blockedSubdomain.includes(fields.siteName || '')) {
+        errors.siteName = 'Sitename already exists.';
+        loading = false;
+        return;
+      }
+
       const { data: org, error } = await supabase.from('organization').insert({
         name: fields.orgName,
         siteName: fields.siteName,
@@ -276,7 +284,7 @@
                 {/each}
                 <!-- Goal: Error message -->
                 {#if errors.goal}
-                  <p class="dark:text-white text-sm text-red-500">
+                  <p class="text-sm text-red-500">
                     {errors.goal}
                   </p>
                 {/if}
@@ -308,7 +316,7 @@
                 {/each}
                 <!-- Goal: Error message -->
                 {#if errors.source}
-                  <p class="dark:text-white text-sm text-red-500">
+                  <p class="text-sm text-red-500">
                     {errors.source}
                   </p>
                 {/if}
