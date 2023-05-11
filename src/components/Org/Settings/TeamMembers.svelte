@@ -128,7 +128,7 @@
 </script>
 
 <Grid class="border rounded border-gray-200 w-full mt-5">
-  <Row class="py-7 border border-t-0 border-l-0 border-r-0 border-gray-300">
+  <Row class="py-7 border-bottom-c">
     <Column sm={2} md={2} lg={4} class="text-lg"
       ><SectionTitle>Add</SectionTitle></Column
     >
@@ -162,7 +162,7 @@
     </Column>
   </Row>
 
-  <Row class="py-7 border border-t-0 border-l-0 border-r-0 border-gray-300">
+  <Row class="py-7 border-bottom-c">
     <Column sm={2} md={2} lg={4} class="text-lg"
       ><SectionTitle>Members</SectionTitle></Column
     >

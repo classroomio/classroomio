@@ -81,7 +81,7 @@
       errorMessage={errors.password}
     />
     {#if submitError}
-      <p class="dark:text-white text-sm text-red-500">{submitError}</p>
+      <p class="text-sm text-red-500">{submitError}</p>
     {/if}
     <div class="w-full text-right">
       <a class="text-md text-blue-700" href="/forgot"> Forgot password? </a>

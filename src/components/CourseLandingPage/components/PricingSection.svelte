@@ -3,7 +3,7 @@
   import { VARIANTS } from '../../PrimaryButton/constants';
   import type { Course } from '../../../utils/types';
   import getCurrencyFormatter from '../../../utils/functions/getCurrencyFormatter';
-  import { get } from 'lodash';
+  import get from 'lodash/get';
 
   export let className = '';
   export let courseData: Course = {
@@ -46,9 +46,7 @@
         {formatter?.format(calculatedCost) || calculatedCost}
       </p>
       {#if courseData?.metadata?.showDiscount}
-        <p
-          class="dark:text-white font-light text-sm text-gray-500 dark:text-gray-200"
-        >
+        <p class="dark:text-white font-light text-sm text-gray-500">
           {discount}% Discount.
           <span class="line-through"
             >{formatter?.format(courseData?.cost || 0) || courseData.cost}</span
@@ -70,9 +68,7 @@
         variant={VARIANTS.OUTLINED}
         onClick={addToCart}
       />
-      <p
-        class="dark:text-white font-light text-sm text-gray-500 dark:text-gray-200"
-      >
+      <p class="dark:text-white font-light text-sm text-gray-500">
         Early bird offer. Buy ASAP
       </p>
     </div>

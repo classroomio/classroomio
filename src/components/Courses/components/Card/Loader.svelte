@@ -3,7 +3,7 @@
 </script>
 
 <div
-  class="root w-72 border bg-white dark:bg-gray-800 mr-4 mb-4 rounded-md transition ease-in-out relative"
+  class="root w-72 border bg-gray-100 dark:bg-gray-700 mr-4 mb-4 rounded-md transition ease-in-out relative"
 >
   <SkeletonPlaceholder style="width: 100%; height: 10rem;" />
   <div class="p-3 pb-0">

@@ -1,5 +1,7 @@
 <script>
-  import { set, get, cloneDeep } from 'lodash';
+  import cloneDeep from 'lodash/cloneDeep';
+  import set from 'lodash/set';
+  import get from 'lodash/get';
   import TextEditor from '../../../TextEditor/index.svelte';
 
   export let course;
