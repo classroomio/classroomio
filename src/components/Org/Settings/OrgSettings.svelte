@@ -78,8 +78,8 @@
   }
 </script>
 
-<Grid class="border rounded border-gray-200 w-full mt-5">
-  <Row class="py-7 border border-t-0 border-l-0 border-r-0 border-gray-300">
+<Grid class="border-c rounded border-gray-200 w-full mt-5">
+  <Row class="py-7 border-bottom-c">
     <Column sm={2} md={2} lg={4}
       ><SectionTitle>Organization Profile</SectionTitle></Column
     >
@@ -104,13 +104,13 @@
       />
     </Column>
   </Row>
-  <!-- <Row class="py-7 border border-t-0 border-l-0 border-r-0 border-gray-300">
+  <!-- <Row class="py-7 border-bottom-c">
     <Column sm={2} md={2} lg={4}><SectionTitle>Theme</SectionTitle></Column>
     <Column sm={2} md={6} lg={8}>
       <h4 class="dark:text-white">Set your brand</h4>
     </Column>
   </Row> -->
-  <Row class="py-7 border border-t-0 border-l-0 border-r-0 border-gray-300">
+  <Row class="py-7 border-bottom-c">
     <Column sm={2} md={2} lg={4}
       ><SectionTitle>Custom Domain</SectionTitle></Column
     >
@@ -127,7 +127,7 @@
       />
     </Column>
   </Row>
-  <Row class="py-7 border border-t-0 border-l-0 border-r-0 border-gray-300">
+  <Row class="py-7 border-bottom-c">
     <Column sm={2} md={2} lg={4}><SectionTitle>Team</SectionTitle></Column>
     <Column sm={2} md={6} lg={8}>
       <h4 class="dark:text-white">Set up your website</h4>

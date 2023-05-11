@@ -124,7 +124,7 @@
       isRequired
     />
     {#if submitError}
-      <p class="dark:text-white text-sm text-red-500">{submitError}</p>
+      <p class="text-sm text-red-500">{submitError}</p>
     {/if}
   </div>
 

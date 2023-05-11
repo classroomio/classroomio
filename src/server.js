@@ -33,9 +33,11 @@ express() // You can also use Express
       session: async (req) => {
         const { user } = await supabase.auth.api.getUserByCookie(req);
         console.log('cookie calling');
+        // console.log('req', req.headers.host);
         return {
           user: JSON.stringify(user),
           config,
+          host: req.headers.host,
         };
       },
     })

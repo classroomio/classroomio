@@ -44,7 +44,7 @@
 
 <a rel="prefetch" href="/courses/{id}" class=" text-black">
   <div
-    class="root w-72 border bg-white dark:bg-gray-800 mr-4 mb-4 rounded-md transition ease-in-out relative"
+    class="root w-72 border bg-gray-100 dark:bg-gray-700 mr-4 mb-4 rounded-md transition ease-in-out relative"
   >
     <Dropdown
       options={getOptions()}

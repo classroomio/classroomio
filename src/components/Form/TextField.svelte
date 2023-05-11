@@ -65,7 +65,7 @@
   {/if}
   <input
     use:typeAction
-    class="form-input p-3 mt-1 block w-full border-none bg-gray-200 {inputClassName} {errorMessage
+    class="form-input dark:text-black p-3 mt-1 block w-full border-none bg-gray-200 {inputClassName} {errorMessage
       ? 'border-red-500'
       : ''}"
     on:keydown={onKeyDown}
@@ -86,7 +86,7 @@
     </span>
   {/if}
   {#if errorMessage}
-    <p class="dark:text-white text-sm text-red-500">{errorMessage}</p>
+    <p class="text-sm text-red-500">{errorMessage}</p>
   {:else if helperMessage}
     <p class="dark:text-white text-sm">
       {helperMessage}

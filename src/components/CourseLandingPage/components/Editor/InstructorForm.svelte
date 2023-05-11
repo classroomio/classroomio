@@ -1,5 +1,8 @@
 <script>
-  import { set, cloneDeep, isEmpty, get } from 'lodash';
+  import cloneDeep from 'lodash/cloneDeep';
+  import set from 'lodash/set';
+  import get from 'lodash/get';
+  import isEmpty from 'lodash/isEmpty';
   import TextArea from '../../../Form/TextArea.svelte';
   import TextField from '../../../Form/TextField.svelte';
   import UploadImage from '../../../UploadImage/index.svelte';
