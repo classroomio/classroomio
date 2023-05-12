@@ -31,8 +31,6 @@
   import { toggleBodyByTheme } from '../utils/functions/app';
   import { appStore } from '../utils/store/app';
 
-  // import 'carbon-components-svelte/css/all.css';
-
   export let segment;
   export let config;
   export let host;
@@ -191,14 +189,10 @@
 
 <svelte:head>
   <link href="/css/carbon.css" rel="stylesheet" />
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/carbon-components-svelte/css/all.css"
-  />
 </svelte:head>
 
-<Tailwindcss />
 <Theme bind:theme />
+<Tailwindcss />
 
 <!-- <Nav {segment} /> -->
 <Snackbar />
