@@ -1,6 +1,6 @@
 <script context="module">
-  export function preload(page, { config, host }) {
-    return { config, host };
+  export function preload(page, { config }) {
+    return { config };
   }
 </script>
 
@@ -33,13 +33,13 @@
 
   export let segment;
   export let config;
-  export let host;
 
   let { page, preloading } = stores();
 
   let supabase = getSupabase(config);
   let path = $page.path.replace('/', '');
   let theme = 'white';
+  let isStudentDomain = false;
 
   const delayedPreloading = derived(preloading, (currentPreloading, set) => {
     setTimeout(() => set(currentPreloading), 250);
@@ -113,6 +113,16 @@
     }
   }
 
+  function getIsStudentDomain(host) {
+    if (typeof window !== 'undefined') {
+      const debug = localStorage.getItem('role') === 'student';
+      const matches = host.match(/([a-z0-9]+).*classroomio[.]com/);
+      const answer = Array.isArray(matches) ? !!matches[1] : false;
+
+      return debug || answer;
+    }
+  }
+
   function isCoursePage(path) {
     return /course[s]*\/[a-z 0-9 -]/.test(path);
   }
@@ -126,7 +136,11 @@
   }
 
   onMount(() => {
-    console.log('Welcome to ClassroomIO, we are grateful you chose us.', host);
+    console.log(
+      'Welcome to ClassroomIO, we are grateful you chose us.',
+      $page.host,
+      `\nIs student domain: ${isStudentDomain}`
+    );
     // Disable GA on localhost
     if (config && !config.isProd) {
       console.log('disable GA');
@@ -183,6 +197,7 @@
 
   $: path = $page.path.replace('/', '');
   $: theme = $appStore.isDark ? 'g100' : 'white';
+  $: isStudentDomain = getIsStudentDomain($page.host);
 </script>
 
 <svelte:window on:resize={handleResize} />
