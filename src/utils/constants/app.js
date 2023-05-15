@@ -1,6 +1,7 @@
 export const blockedSubdomain = [
   'app',
   'apps',
+  'play',
   'support',
   'help',
   'teachers',
