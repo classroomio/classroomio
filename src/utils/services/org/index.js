@@ -122,3 +122,24 @@ export async function getOrgAudience(orgId) {
     error,
   };
 }
+
+export async function getCourseBySiteName(siteName) {
+  const { data, error } = await supabase
+    .from('course')
+    .select(
+      `
+      *,
+      group!inner(
+        organization!inner(id, name, siteName, avatar_url)
+      )
+    `
+    )
+    .eq('group.organization.siteName', siteName)
+    .eq('is_published', true);
+
+  if (error) {
+    return [];
+  }
+
+  return data;
+}
