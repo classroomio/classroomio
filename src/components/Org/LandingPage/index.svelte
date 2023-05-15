@@ -13,6 +13,7 @@
   import { courses, courseMetaDeta } from '../../Courses/store';
   import { getCourseBySiteName } from '../../../utils/services/org';
   import { appStore } from '../../../utils/store/app';
+  import { currentOrg } from '../../../utils/store/org';
 
   export let segment;
 
@@ -30,7 +31,11 @@
 </script>
 
 <main>
-  <Navigation {segment} />
+  <Navigation
+    {segment}
+    logo={$currentOrg.avatar_url}
+    orgName={$currentOrg.name}
+  />
 
   <!-- Header Section -->
   <header class="banner w-full flex items-center justify-center p-">
@@ -95,18 +100,18 @@
       <div class="logo">
         <a
           href="/"
-          title="Go to ClassroomIO Home"
+          title={`Go to ${$currentOrg.name} Home`}
           id="logo"
           data-hveid="8"
           class="flex items-center"
         >
           <img
-            src="/logo-192.png"
-            alt="ClassroomIO logo"
+            src={`${$currentOrg.avatar_url}`}
+            alt={`${$currentOrg.name} logo`}
             class="rounded h-10 w-10 inline-block mx-auto"
             data-atf="1"
           />
-          <h3 class="text-black ml-3">Classroomio</h3>
+          <h3 class="text-black ml-3">{$currentOrg.name}</h3>
         </a>
       </div>
 

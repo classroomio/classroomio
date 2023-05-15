@@ -1,11 +1,13 @@
 <script>
   import { goto } from '@sapper/app';
-  import { user, profile } from '../../utils/store/user';
+  import { user } from '../../utils/store/user';
   import PrimaryButton from '../PrimaryButton/index.svelte';
   import { VARIANTS } from '../PrimaryButton/constants';
 
   export let segment;
   export let disableLogin;
+  export let logo = '/logo-192.png';
+  export let orgName = 'ClassroomIO';
 
   let navClass = '';
 
@@ -17,10 +19,10 @@
 >
   <ul class="flex w-full items-center">
     <div class="logo">
-      <a href="/" title="Go to ClassroomIO Home" id="logo" data-hveid="8">
+      <a href="/" title={`Go to ${orgName} Home`} id="logo" data-hveid="8">
         <img
-          src="/logo-192.png"
-          alt="ClassroomIO logo"
+          src={logo}
+          alt={`${orgName} logo`}
           class="rounded h-10 w-10 inline-block mx-auto"
           data-atf="1"
         />
