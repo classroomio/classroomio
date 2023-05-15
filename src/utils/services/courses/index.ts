@@ -54,7 +54,7 @@ export async function fetchCourse(
     console.log(`data`, data);
     console.log(`fetchCourse => error`, error);
     // return this.redirect(301, '/courses');
-    return;
+    return { data, error };
   }
 
   return {
