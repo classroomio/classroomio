@@ -1,3 +1,4 @@
+import get from 'lodash/get';
 import { supabase } from '../../functions/supabase';
 import { orgs, currentOrg, orgAudience, orgTeam } from '../../store/org';
 import { ROLE, ROLE_LABEL } from '../../constants/roles';
@@ -140,6 +141,8 @@ export async function getCourseBySiteName(siteName) {
   if (error) {
     return [];
   }
+
+  currentOrg.set(get(data, '[0].group.organization'));
 
   return data;
 }
