@@ -141,8 +141,14 @@ export async function getCourseBySiteName(siteName) {
   if (error) {
     return [];
   }
-
-  currentOrg.set(get(data, '[0].group.organization'));
+  const org = get(data, '[0].group.organization', {
+    id: '',
+    name: 'ClassroomIO',
+    shortName: '',
+    siteName: '',
+    avatar_url: '/logo-192.png',
+  });
+  currentOrg.set(org);
 
   return data;
 }

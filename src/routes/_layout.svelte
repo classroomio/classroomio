@@ -98,11 +98,10 @@
       // Set user in sentry
       Sentry.setUser($profile);
 
-      const orgRes = await getOrganizations($profile.id);
-
       if ($appStore.isStudentDomain) {
         // student redirect
       } else {
+        const orgRes = await getOrganizations($profile.id);
         // If user coming to login page, then
         if (isEmpty(orgRes.orgs)) {
           goto(ROUTE.ONBOARDING);
