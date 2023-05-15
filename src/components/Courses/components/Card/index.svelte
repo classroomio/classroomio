@@ -4,9 +4,11 @@
   import { ROLE } from '../../../../utils/constants/roles';
   import getCurrencyFormatter from '../../../../utils/functions/getCurrencyFormatter';
   import OverflowMenuHorizontal24 from 'carbon-icons-svelte/lib/OverflowMenuHorizontal24';
+  import ArrowRight from 'carbon-icons-svelte/lib/ArrowRight24';
 
   export let bannerImage: string | undefined;
   export let id = '';
+  export let slug = '';
   export let title = '';
   export let description = '';
   export let role_id = ROLE.STUDENT;
@@ -14,6 +16,7 @@
   export let cost = 0;
   export let totalLessons = 0;
   export let currency = 'NGN';
+  export let isOnLandingPage = false;
 
   let formatter = getCurrencyFormatter(currency);
 
@@ -42,25 +45,31 @@
   }
 </script>
 
-<a rel="prefetch" href="/courses/{id}" class=" text-black">
+<a
+  rel="prefetch"
+  href={isOnLandingPage ? `/course/${slug}` : `/courses/${id}`}
+  class=" text-black"
+>
   <div
-    class="root w-72 border bg-gray-100 dark:bg-gray-700 mr-4 mb-4 rounded-md transition ease-in-out relative"
+    class="root w-80 border bg-gray-100 dark:bg-gray-700 sm:mr-4 mb-4 rounded-md hover:shadow-2xl transition ease-in-out relative"
   >
-    <Dropdown
-      options={getOptions()}
-      classNames="absolute top-4 right-4"
-      isIcon={true}
-    >
-      <div class="p-1 rounded-full bg-white dark:bg-gray-600">
-        <OverflowMenuHorizontal24 class="carbon-icon" />
-      </div>
-    </Dropdown>
+    {#if !isOnLandingPage}
+      <Dropdown
+        options={getOptions()}
+        classNames="absolute top-4 right-4"
+        isIcon={true}
+      >
+        <div class="p-1 rounded-full bg-white dark:bg-gray-600">
+          <OverflowMenuHorizontal24 class="carbon-icon" />
+        </div>
+      </Dropdown>
+    {/if}
     <img
       class="h-2/5 w-full rounded-tl rounded-tr"
       src={bannerImage ?? '/images/classroomio-course-img-template.jpg'}
       alt="Course Logo"
     />
-    <div class="p-3 pb-0">
+    <div class="px-3 py-5">
       <h4 class="dark:text-white title text-md font-bold">
         {title}
       </h4>
@@ -72,13 +81,18 @@
       </p>
       <div class="flex justify-between">
         <p class="dark:text-white">{totalLessons} lessons</p>
-        <div class="rounded bg-{isPublished ? 'green' : 'red'}-200 py-1 px-2">
-          {#if isPublished}
-            Published
-          {:else}
-            Unpublished
-          {/if}
-        </div>
+
+        {#if isOnLandingPage}
+          <ArrowRight class="carbon-class" />
+        {:else}
+          <div class="rounded bg-{isPublished ? 'green' : 'red'}-200 py-1 px-2">
+            {#if isPublished}
+              Published
+            {:else}
+              Unpublished
+            {/if}
+          </div>
+        {/if}
       </div>
       <p class="dark:text-white text-gray-500 text-xs mt-1">
         {!cost ? 'free' : formatter.format(cost)}
@@ -92,7 +106,8 @@
     min-height: 370px;
   }
 
-  a {
+  a,
+  a:hover {
     text-decoration: none;
   }
   .title,

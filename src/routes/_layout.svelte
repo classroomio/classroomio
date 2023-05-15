@@ -15,6 +15,7 @@
   import Tailwindcss from '../components/Tailwindcss.svelte';
   import LandingNavigation from '../components/Navigation/index.svelte';
   import OrgNavigation from '../components/Navigation/app.svelte';
+  import OrgLandingPage from '../components/Org/LandingPage/index.svelte';
   import Snackbar from '../components/Snackbar/index.svelte';
   import Backdrop from '../components/Backdrop/index.svelte';
   import OrgSideBar from '../components/Org/SideBar.svelte';
@@ -39,7 +40,6 @@
   let supabase = getSupabase(config);
   let path = $page.path.replace('/', '');
   let theme = 'white';
-  let isStudentDomain = false;
 
   const delayedPreloading = derived(preloading, (currentPreloading, set) => {
     setTimeout(() => set(currentPreloading), 250);
@@ -100,26 +100,31 @@
 
       const orgRes = await getOrganizations($profile.id);
 
-      // If user coming to login page, then
-      if (isEmpty(orgRes.orgs)) {
-        goto(ROUTE.ONBOARDING);
-      } else if (
-        ['login', 'signup', 'onboarding'].includes(path) ||
-        path === '' // for home page
-      ) {
-        // By default redirect to first organization
-        goto(`/org/${orgRes.currentOrg.siteName}`);
+      if ($appStore.isStudentDomain) {
+        // student redirect
+      } else {
+        // If user coming to login page, then
+        if (isEmpty(orgRes.orgs)) {
+          goto(ROUTE.ONBOARDING);
+        } else if (
+          ['login', 'signup', 'onboarding'].includes(path) ||
+          path === '' // for home page
+        ) {
+          // By default redirect to first organization
+          goto(`/org/${orgRes.currentOrg.siteName}`);
+        }
       }
     }
   }
 
-  function getIsStudentDomain(host) {
+  function setOrgBasedOnUrl(host) {
     if (typeof window !== 'undefined') {
       const debug = localStorage.getItem('role') === 'student';
       const matches = host.match(/([a-z0-9]+).*classroomio[.]com/);
       const answer = Array.isArray(matches) ? !!matches[1] : false;
 
-      return debug || answer;
+      $appStore.isStudentDomain = debug || answer;
+      $appStore.siteNameFromDomain = debug ? 'startupscoo' : matches?.[1] ?? '';
     }
   }
 
@@ -139,7 +144,7 @@
     console.log(
       'Welcome to ClassroomIO, we are grateful you chose us.',
       $page.host,
-      `\nIs student domain: ${isStudentDomain}`
+      `\nIs student domain: ${$appStore.isStudentDomain}`
     );
     // Disable GA on localhost
     if (config && !config.isProd) {
@@ -183,21 +188,9 @@
     };
   });
 
-  // if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-  //   page.subscribe(() => {
-  //     const from = window.location.pathname;
-  //     const redirect = (href) => {
-  //       goto(href);
-  //     };
-  //     if (!$user.isLoggedIn && !PUBLIC_ROUTES.includes(from)) {
-  //       redirect('/login');
-  //     }
-  //   });
-  // }
-
   $: path = $page.path.replace('/', '');
   $: theme = $appStore.isDark ? 'g100' : 'white';
-  $: isStudentDomain = getIsStudentDomain($page.host);
+  $: setOrgBasedOnUrl($page.host);
 </script>
 
 <svelte:window on:resize={handleResize} />
@@ -209,43 +202,46 @@
 <Theme bind:theme />
 <Tailwindcss />
 
-<!-- <Nav {segment} /> -->
 <Snackbar />
 
-<main class="dark:bg-gray-800">
-  {#if $preloading && $delayedPreloading}
-    <Backdrop>
-      <Moon size="60" color="#1d4ed8" unit="px" duration="1s" />
-    </Backdrop>
-  {/if}
-  {#if !ROUTES_TO_HIDE_NAV.includes($page.path) && !isCoursePage(path)}
-    {#if $page.path.includes('org') || $page.path.includes('profile')}
-      <OrgNavigation />
-    {:else}
-      <LandingNavigation {segment} />
+{#if $appStore.isStudentDomain && !path}
+  <OrgLandingPage {segment} />
+{:else}
+  <main class="dark:bg-gray-800">
+    {#if $preloading && $delayedPreloading}
+      <Backdrop>
+        <Moon size="60" color="#1d4ed8" unit="px" duration="1s" />
+      </Backdrop>
     {/if}
-  {/if}
+    {#if !ROUTES_TO_HIDE_NAV.includes($page.path) && !isCoursePage(path)}
+      {#if $page.path.includes('org') || $page.path.includes('profile')}
+        <OrgNavigation />
+      {:else}
+        <LandingNavigation {segment} />
+      {/if}
+    {/if}
 
-  <div class="flex justify-between">
-    {#if isOrgPage($page.path)}
-      <div class="org-root w-full flex items-center justify-between">
-        <OrgSideBar />
-        <div class="org-slot bg-white dark:bg-gray-800">
-          <slot />
+    <div class="flex justify-between">
+      {#if isOrgPage($page.path)}
+        <div class="org-root w-full flex items-center justify-between">
+          <OrgSideBar />
+          <div class="org-slot bg-white dark:bg-gray-800">
+            <slot />
+          </div>
         </div>
-      </div>
-    {:else}
-      <slot />
-    {/if}
+      {:else}
+        <slot />
+      {/if}
 
-    {#if showAppsSideBar(path)}
-      <Apps />
-    {/if}
-  </div>
-</main>
+      {#if showAppsSideBar(path)}
+        <Apps />
+      {/if}
+    </div>
+  </main>
 
-{#if !['about', ''].includes(path)}
-  <!-- <Footer {segment} /> -->
+  {#if !['about', ''].includes(path)}
+    <!-- <Footer {segment} /> -->
+  {/if}
 {/if}
 
 <style>
