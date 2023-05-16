@@ -5,3 +5,19 @@ export function toggleBodyByTheme(isDark) {
     document.body.className = document.body.className.replace(' dark', '');
   }
 }
+
+export function isCoursesPage(path) {
+  return /courses\/[a-z 0-9 -]/.test(path);
+}
+
+export function isCoursePage(path) {
+  return /course\/[a-z 0-9 -]/.test(path);
+}
+
+export function isOrgPage(path) {
+  return /org\/[a-z 0-9 -]/.test(path);
+}
+
+export function isLMSPage(path) {
+  return /lms[\/a-z 0-9 -]*/.test(path);
+}
