@@ -151,10 +151,13 @@
     if (typeof window !== 'undefined') {
       const debug = localStorage.getItem('role') === 'student';
       const matches = host.match(/([a-z0-9]+).*classroomio[.]com/);
-      const answer = Array.isArray(matches) ? !!matches[1] : false;
+      const subdomain = matches?.[1] ?? '';
+      const answer = Array.isArray(matches)
+        ? !!subdomain && subdomain !== 'www'
+        : false;
 
       $appStore.isStudentDomain = debug || answer;
-      $appStore.siteNameFromDomain = debug ? 'codingdojo' : matches?.[1] ?? '';
+      $appStore.siteNameFromDomain = debug ? 'codingdojo' : subdomain;
     }
   }
 
