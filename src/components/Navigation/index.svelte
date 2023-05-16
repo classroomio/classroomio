@@ -7,8 +7,8 @@
 
   export let segment;
   export let disableLogin;
-  export let logo = '/logo-192.png';
-  export let orgName = 'ClassroomIO';
+  export let logo;
+  export let orgName;
 
   let { page } = stores();
   let navClass = '';
@@ -23,10 +23,15 @@
 >
   <ul class="flex w-full items-center">
     <div class="logo">
-      <a href="/" title={`Go to ${orgName} Home`} id="logo" data-hveid="8">
+      <a
+        href="/"
+        title={`Go to ${orgName || 'ClassroomIO'} Home`}
+        id="logo"
+        data-hveid="8"
+      >
         <img
-          src={logo}
-          alt={`${orgName} logo`}
+          src={logo || '/logo-192.png'}
+          alt={`${orgName || 'ClassroomIO'} logo`}
           class="rounded h-10 w-10 inline-block mx-auto"
           data-atf="1"
         />
