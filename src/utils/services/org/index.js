@@ -1,4 +1,5 @@
 import get from 'lodash/get';
+import { goto } from '@sapper/app';
 import { supabase } from '../../functions/supabase';
 import { orgs, currentOrg, orgAudience, orgTeam } from '../../store/org';
 import { ROLE, ROLE_LABEL } from '../../constants/roles';
@@ -20,6 +21,7 @@ export async function getOrgTeam(orgId) {
     `
     )
     .eq('organization_id', orgId)
+    .neq('role_id', ROLE.STUDENT)
     .order('id', { ascending: false });
 
   const team = [];
@@ -49,7 +51,6 @@ export async function getOrganizations(userId) {
     .from('organizationmember')
     .select(
       `
-      id,
       profile_id,
       organization (
         id,
@@ -151,4 +152,19 @@ export async function getCourseBySiteName(siteName) {
   currentOrg.set(org);
 
   return data;
+}
+
+export async function getCurrentOrg(siteName) {
+  const { data, error } = await supabase
+    .from('organization')
+    .select(`*`)
+    .eq('siteName', siteName)
+    .single();
+
+  if (error || !data) {
+    console.error('Error getOrganization', error);
+    return goto('/404');
+  }
+
+  currentOrg.set(data);
 }

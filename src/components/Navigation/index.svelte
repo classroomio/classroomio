@@ -1,6 +1,7 @@
 <script>
-  import { goto } from '@sapper/app';
+  import { goto, stores } from '@sapper/app';
   import { user } from '../../utils/store/user';
+  import { isCoursePage } from '../../utils/functions/app';
   import PrimaryButton from '../PrimaryButton/index.svelte';
   import { VARIANTS } from '../PrimaryButton/constants';
 
@@ -9,13 +10,16 @@
   export let logo = '/logo-192.png';
   export let orgName = 'ClassroomIO';
 
+  let { page } = stores();
   let navClass = '';
+
+  const redirect = isCoursePage($page.path) ? `?redirect=${$page.path}` : '';
 
   $: navClass = ['discussion'].includes(segment) ? 'hide' : '';
 </script>
 
 <nav
-  class="{navClass} flex w-full p-2 border-t-0 border-r-0 border-b border-l-0 border-gray-300"
+  class="{navClass} bg-white sticky top-0 z-50 flex w-full p-2 border-t-0 border-r-0 border-b border-l-0 border-gray-300"
 >
   <ul class="flex w-full items-center">
     <div class="logo">
@@ -76,24 +80,28 @@
 
     <span class="flex-grow" />
 
-    <li>
-      {#if !disableLogin}
-        <div class="flex">
-          <PrimaryButton
-            label="Login"
-            variant={VARIANTS.NONE}
-            className="py-3 px-6 mx-2 app-background-color"
-            onClick={() => goto('/login')}
-          />
-          <PrimaryButton
-            label="Sign Up"
-            variant={VARIANTS.CONTAINED}
-            className="py-3 px-6 mx-2"
-            onClick={() => goto('/signup')}
-          />
-        </div>
-      {/if}
-    </li>
+    {#if $user.isLoggedIn}
+      <li><a class="block" href="/lms"> Go to LMS </a></li>
+    {:else}
+      <li>
+        {#if !disableLogin}
+          <div class="flex">
+            <PrimaryButton
+              label="Login"
+              variant={VARIANTS.NONE}
+              className="py-3 px-6 mx-2 app-background-color"
+              onClick={() => goto('/login' + redirect)}
+            />
+            <PrimaryButton
+              label="Sign Up"
+              variant={VARIANTS.CONTAINED}
+              className="py-3 px-6 mx-2"
+              onClick={() => goto('/signup' + redirect)}
+            />
+          </div>
+        {/if}
+      </li>
+    {/if}
     <!-- <li class="hidden">
       <a
         class="flex items-center"

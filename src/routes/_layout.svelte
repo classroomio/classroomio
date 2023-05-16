@@ -15,22 +15,26 @@
   import Tailwindcss from '../components/Tailwindcss.svelte';
   import LandingNavigation from '../components/Navigation/index.svelte';
   import OrgNavigation from '../components/Navigation/app.svelte';
+  import LMSNavigation from '../components/Navigation/lms.svelte';
   import OrgLandingPage from '../components/Org/LandingPage/index.svelte';
   import Snackbar from '../components/Snackbar/index.svelte';
   import Backdrop from '../components/Backdrop/index.svelte';
   import OrgSideBar from '../components/Org/SideBar.svelte';
+  import LMSSideBar from '../components/LMS/SideBar.svelte';
   // import SideBar from "../components/SideBar/index.svelte";
   // import Footer from '../components/Footer/index.svelte';
   import Apps from '../components/Apps/index.svelte';
   import { handleAuthChange } from '../utils/functions/api';
+  import { isCoursesPage, isOrgPage, isLMSPage } from '../utils/functions/app';
   import showAppsSideBar from '../utils/functions/showAppsSideBar';
   import { user, profile } from '../utils/store/user';
   import { getSupabase } from '../utils/functions/supabase';
   import { isMobile } from '../utils/store/useMobile';
   import { ROUTES_TO_HIDE_NAV, ROUTE } from '../utils/constants/routes';
-  import { getOrganizations } from '../utils/services/org';
+  import { getOrganizations, getCurrentOrg } from '../utils/services/org';
   import { toggleBodyByTheme } from '../utils/functions/app';
   import { appStore } from '../utils/store/app';
+  import { currentOrg } from '../utils/store/org';
 
   export let segment;
   export let config;
@@ -46,6 +50,7 @@
   });
 
   async function getProfile() {
+    const params = new URLSearchParams(window.location.search);
     // Get user profile
     const authUser = supabase.auth.user();
     console.log('Get user profile', authUser);
@@ -85,6 +90,28 @@
         // Set user in sentry
         Sentry.setUser($profile);
 
+        if ($appStore.isStudentDomain) {
+          const { data, error } = await supabase
+            .from('organizationmember')
+            .insert({
+              organization_id: $currentOrg.id,
+              profile_id: $profile.id,
+              role_id: 3,
+            });
+          if (error) {
+            console.error('Error adding user to organisation', error);
+          } else {
+            console.log('Success adding user to organisation', data);
+          }
+
+          if (params.has('redirect')) {
+            goto(params.get('redirect'));
+          } else {
+            goto('/lms');
+          }
+          return;
+        }
+
         goto(ROUTE.ONBOARDING);
       }
       $user.fetchingUser = false;
@@ -97,12 +124,16 @@
 
       // Set user in sentry
       Sentry.setUser($profile);
+      const orgRes = await getOrganizations($profile.id);
 
+      // student redirect
       if ($appStore.isStudentDomain) {
-        // student redirect
+        if (params.has('redirect')) {
+          goto(params.get('redirect'));
+        } else {
+          goto('/lms');
+        }
       } else {
-        const orgRes = await getOrganizations($profile.id);
-        // If user coming to login page, then
         if (isEmpty(orgRes.orgs)) {
           goto(ROUTE.ONBOARDING);
         } else if (
@@ -123,16 +154,8 @@
       const answer = Array.isArray(matches) ? !!matches[1] : false;
 
       $appStore.isStudentDomain = debug || answer;
-      $appStore.siteNameFromDomain = debug ? 'startupscoo' : matches?.[1] ?? '';
+      $appStore.siteNameFromDomain = debug ? 'codingdojo' : matches?.[1] ?? '';
     }
-  }
-
-  function isCoursePage(path) {
-    return /course[s]*\/[a-z 0-9 -]/.test(path);
-  }
-
-  function isOrgPage(path) {
-    return /org\/[a-z 0-9 -]/.test(path);
   }
 
   function handleResize() {
@@ -182,6 +205,10 @@
     $appStore.isDark = localStorage.getItem('theme') === 'dark';
     toggleBodyByTheme($appStore.isDark);
 
+    if ($appStore.isStudentDomain) {
+      getCurrentOrg($appStore.siteNameFromDomain);
+    }
+
     return () => {
       authListener.unsubscribe();
     };
@@ -212,11 +239,17 @@
         <Moon size="60" color="#1d4ed8" unit="px" duration="1s" />
       </Backdrop>
     {/if}
-    {#if !ROUTES_TO_HIDE_NAV.includes($page.path) && !isCoursePage(path)}
-      {#if $page.path.includes('org') || $page.path.includes('profile')}
+    {#if !ROUTES_TO_HIDE_NAV.includes($page.path) && !isCoursesPage(path)}
+      {#if isOrgPage($page.path) || $page.path.includes('profile')}
         <OrgNavigation />
+      {:else if isLMSPage($page.path)}
+        <LMSNavigation />
       {:else}
-        <LandingNavigation {segment} />
+        <LandingNavigation
+          {segment}
+          logo={$appStore.isStudentDomain ? $currentOrg.avatar_url : undefined}
+          orgName={$appStore.isStudentDomain ? $currentOrg.name : undefined}
+        />
       {/if}
     {/if}
 
@@ -224,6 +257,13 @@
       {#if isOrgPage($page.path)}
         <div class="org-root w-full flex items-center justify-between">
           <OrgSideBar />
+          <div class="org-slot bg-white dark:bg-gray-800">
+            <slot />
+          </div>
+        </div>
+      {:else if isLMSPage($page.path)}
+        <div class="org-root w-full flex items-center justify-between">
+          <LMSSideBar />
           <div class="org-slot bg-white dark:bg-gray-800">
             <slot />
           </div>
