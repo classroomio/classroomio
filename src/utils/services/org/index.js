@@ -1,4 +1,5 @@
 import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
 import { goto } from '@sapper/app';
 import { supabase } from '../../functions/supabase';
 import { orgs, currentOrg, orgAudience, orgTeam } from '../../store/org';
@@ -157,11 +158,17 @@ export async function getCourseBySiteName(siteName) {
 export async function getCurrentOrg(siteName) {
   const { data, error } = await supabase
     .from('organization')
-    .select(`*`)
-    .eq('siteName', siteName)
-    .single();
+    .select(
+      `
+      id,
+      name,
+      siteName,
+      avatar_url
+    `
+    )
+    .eq('siteName', siteName);
 
-  if (error || !data) {
+  if (error || isEmpty(data)) {
     console.error('Error getOrganization', error);
     return goto('/404');
   }
