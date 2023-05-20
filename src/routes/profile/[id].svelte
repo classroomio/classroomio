@@ -179,7 +179,7 @@
     <div class="flex-grow flex flex-wrap mx-3 w-3/5">
       <div class="mb-3 w-full">
         <h3 class="dark:text-white font-bold text-md m-0">Organizations</h3>
-        <p class="dark:text-white text-gray-500 dark:text-gray-200 text-sm">
+        <p class="dark:text-white text-gray-500 text-sm">
           This are the organizations you work at
         </p>
 
@@ -187,7 +187,7 @@
           <h4 class="dark:text-white m-0 font-normal">
             <a class="text-blue-700 font-bold" href="/courses"> CitiBim </a>
           </h4>
-          <p class="dark:text-white text-gray-500 dark:text-gray-200">
+          <p class="dark:text-white text-gray-500">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Non aliquam
             tenetur magnam. Alias cumque quaerat expedita dolores placeat
             laboriosam culpa, suscipit veritatis adipisci eius magni obcaecati.
@@ -210,7 +210,7 @@
               Climate Change Group
             </a>
           </h4>
-          <p class="dark:text-white text-gray-500 dark:text-gray-200">
+          <p class="dark:text-white text-gray-500">
             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo quasi
             autem quo possimus illum consequuntur repudiandae nobis error, porro
           </p>

@@ -16,6 +16,7 @@
   import PrimaryButton from '../../../PrimaryButton/index.svelte';
   import { VARIANTS } from '../../../PrimaryButton/constants';
   import { updateCourse } from '../../../../utils/services/courses';
+  import generateSlug from '../../../../utils/functions/generateSlug';
 
   export let course;
   export let courseId;
@@ -64,13 +65,6 @@
     return () => {
       selectedSection = sections.find((section) => section.key === sectionKey);
     };
-  }
-
-  function generateSlug(title) {
-    return title
-      .replaceAll(' ', '-')
-      .toLowerCase()
-      .concat(`-${new Date().getTime()}`);
   }
 
   async function handleSave() {

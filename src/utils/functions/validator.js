@@ -1,6 +1,23 @@
 import z from 'zod';
 import { validateEmail } from './validateEmail';
 
+const askCommunityValidationSchema = z.object({
+  title: z.string().min(6, {
+    message: 'Must be 6 or more characters long',
+    invalid_type_error: 'Must not be empty',
+  }),
+  body: z.string().min(20, {
+    message: 'Must be 10 or more characters long',
+    invalid_type_error: 'Must not be empty',
+  }),
+});
+const commentInCommunityValidationSchema = z.object({
+  comment: z.string().min(6, {
+    message: 'Must be 6 or more characters long',
+    invalid_type_error: 'Must not be empty',
+  }),
+});
+
 const forgotValidationSchema = z.object({
   email: z.string().email({
     message: 'Invalid email address',
@@ -94,6 +111,18 @@ export const onboardingValidation = (fields = {}, step) => {
       ? onboardingValidationSchema.stepOne
       : onboardingValidationSchema.stepTwo;
   const { error } = schema.safeParse(fields);
+
+  return processErrors(error);
+};
+
+export const askCommunityValidation = (fields = {}) => {
+  const { error } = askCommunityValidationSchema.safeParse(fields);
+
+  return processErrors(error);
+};
+
+export const commentInCommunityValidation = (fields = {}) => {
+  const { error } = commentInCommunityValidationSchema.safeParse(fields);
 
   return processErrors(error);
 };

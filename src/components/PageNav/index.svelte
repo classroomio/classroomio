@@ -20,7 +20,7 @@
 </script>
 
 <div
-  class="header dark:bg-gray-700 flex items-center justify-between {!disableSticky &&
+  class="header dark:bg-gray-700 bg-white flex items-center justify-between {!disableSticky &&
     'sticky'} {paddingClass} {dynamicRootClass}"
   style={overidableStyle}
 >

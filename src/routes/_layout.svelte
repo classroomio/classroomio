@@ -102,6 +102,9 @@
             console.error('Error adding user to organisation', error);
           } else {
             console.log('Success adding user to organisation', data);
+            const memberId = data?.[0]?.id || '';
+
+            $currentOrg.memberId = memberId;
           }
 
           if (params.has('redirect')) {

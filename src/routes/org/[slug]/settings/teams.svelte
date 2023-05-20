@@ -1,6 +1,6 @@
 <script>
   import TeamMembers from '../../../../components/Org/Settings/TeamMembers.svelte';
-  import { currentOrg } from '../../../../utils/store/org';
+  import { currentOrgPath } from '../../../../utils/store/org';
 </script>
 
 <svelte:head>
@@ -11,7 +11,7 @@
   <div class="py-10 px-5">
     <a
       class="text-gray-500 dark:text-gray-200 text-md"
-      href={`/org/${$currentOrg.siteName}/settings`}>Back to Settings</a
+      href={`${$currentOrgPath}/settings`}>Back to Settings</a
     >
     <div class="flex items-center justify-between mb-10">
       <h1 class="dark:text-white text-3xl font-bold">Team members</h1>
