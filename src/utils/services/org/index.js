@@ -52,8 +52,9 @@ export async function getOrganizations(userId) {
     .from('organizationmember')
     .select(
       `
+      id,
       profile_id,
-      organization (
+      organization!organizationmember_organization_id_fkey (
         id,
         name,
         siteName,
@@ -64,7 +65,7 @@ export async function getOrganizations(userId) {
     .eq('profile_id', userId);
 
   const orgsArray = [];
-  if (data.length) {
+  if (Array.isArray(data) && data.length) {
     data.forEach((orgMember) => {
       orgsArray.push({
         id: orgMember?.organization?.id,
@@ -73,6 +74,7 @@ export async function getOrganizations(userId) {
           orgMember?.organization?.name?.substring(0, 2)?.toUpperCase() || '',
         siteName: orgMember?.organization?.siteName,
         avatar_url: orgMember?.organization?.avatar_url,
+        memberId: orgMember?.id,
       });
     });
 
@@ -98,16 +100,14 @@ export async function getOrgAudience(orgId) {
       email,
       avatar_url,
       created_at,
-      groupmember!inner(
+      organizationmember!inner(
         role_id,
-        group!inner(
-          organization!inner(id)
-        )
+        organization_id
       )
     `
     )
-    .eq('groupmember.group.organization.id', orgId)
-    .eq('groupmember.role_id', 3); // is a student, tutor is 2 and admin is 1
+    .eq('organizationmember.organization_id', orgId)
+    .eq('organizationmember.role_id', 3); // is a student, tutor is 2 and admin is 1
 
   console.log('data', data);
 
@@ -173,5 +173,5 @@ export async function getCurrentOrg(siteName) {
     return goto('/404');
   }
 
-  currentOrg.set(data);
+  currentOrg.set(data[0]);
 }

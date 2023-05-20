@@ -6,6 +6,7 @@
   export let disable;
   export let docId;
   export let placeholder = 'Type something...';
+  export let errorMessage;
 
   const settings = {
     modules: {
@@ -74,4 +75,23 @@
 
 <div class="p-2 w-full h-full">
   <div bind:this={container} />
+  {#if errorMessage}
+    <p class="dark:text-white text-red-500 text-sm">
+      {errorMessage}
+    </p>
+  {/if}
 </div>
+
+<style>
+  :global(.dark .ql-stroke) {
+    stroke: #fff;
+  }
+
+  :global(.dark .ql-snow .ql-picker) {
+    color: #fff;
+  }
+
+  :global(.dark .ql-editor.ql-blank::before) {
+    color: #fff;
+  }
+</style>

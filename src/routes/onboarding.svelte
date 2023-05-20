@@ -141,8 +141,13 @@
           });
         console.log('Create organisation member', data);
 
+        const memberId = Array.isArray(data) && data.length ? data[0].id : '';
+
         orgs.set([orgData as never]);
-        currentOrg.set(orgData);
+        currentOrg.set({
+          ...orgData,
+          memberId: memberId,
+        });
 
         if (error) {
           console.log('Error: create organisation member', error);

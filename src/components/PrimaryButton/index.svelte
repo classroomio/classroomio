@@ -16,11 +16,12 @@
 </script>
 
 <button
-  class="{isDisabled &&
-    'bg-opacity-25 hover:bg-opacity-25 cursor-not-allowed'} flex items-center h-auto {VARIANTS_CLASS[
+  class="{isDisabled
+    ? 'bg-opacity-25 hover:bg-opacity-25 cursor-not-allowed'
+    : 'cursor-pointer'} flex items-center h-auto {VARIANTS_CLASS[
     isLoading ? VARIANTS.OUTLINED : variant
   ]} {!disablePadding &&
-    'py-1 px-5'} rounded-none {className} py-3 w-fit justify-center sm:w-auto {isLoading &&
+    'py-3 px-5'} rounded-none {className} w-fit justify-center sm:w-auto {isLoading &&
     'py-3 border-blue-700'} hover:shadow-xl transition delay-150 duration-300 ease-in-out"
   on:click={onClick}
   {name}

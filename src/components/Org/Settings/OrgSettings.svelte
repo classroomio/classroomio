@@ -8,7 +8,7 @@
   import { supabase } from '../../../utils/functions/supabase';
   import { snackbarStore } from '../../Snackbar/store';
   import { SNACKBAR_SEVERITY } from '../../Snackbar/constants';
-  import { currentOrg } from '../../../utils/store/org';
+  import { currentOrg, currentOrgPath } from '../../../utils/store/org';
   import SectionTitle from '../SectionTitle.svelte';
 
   let avatar;
@@ -74,7 +74,7 @@
   }
 
   function gotoSetting(pathname) {
-    goto(`/org/${$currentOrg.siteName}/settings${pathname}`);
+    goto(`${$currentOrgPath}/settings${pathname}`);
   }
 </script>
 

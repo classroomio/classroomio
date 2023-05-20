@@ -1,6 +1,7 @@
 <script>
   import { stores } from '@sapper/app';
   import Help from 'carbon-icons-svelte/lib/Help20';
+  import UserMultipleIcon from 'carbon-icons-svelte/lib/UserMultiple20';
 
   import TextChip from '../../components/Chip/Text.svelte';
   import OrgSelector from '../../components/OrgSelector/OrgSelector.svelte';
@@ -9,12 +10,34 @@
   import SiteSettingsIcon from '../../components/Icons/SiteSettingsIcon.svelte';
   import AudienceIcon from '../../components/Icons/AudienceIcon.svelte';
   import Avatar from '../../components/Avatar/index.svelte';
-  import { currentOrg } from '../../utils/store/org';
+  import { currentOrg, currentOrgPath } from '../../utils/store/org';
   import { profile } from '../../utils/store/user';
 
-  let orgSiteName = '';
   let activeClass = 'bg-gray-200 dark:bg-gray-500';
   let { page } = stores();
+
+  const menuItems = [
+    {
+      path: '',
+      label: 'Home',
+    },
+    {
+      path: '/courses',
+      label: 'Courses',
+    },
+    {
+      path: '/community',
+      label: 'Community',
+    },
+    {
+      path: '/site',
+      label: 'Site settings',
+    },
+    {
+      path: '/audience',
+      label: 'Audience',
+    },
+  ];
 
   function isActive(pagePath, itemPath) {
     const pageLinkItems = pagePath.split('/');
@@ -26,8 +49,6 @@
 
     return pagePath.includes(itemPath);
   }
-
-  $: orgSiteName = $currentOrg.siteName;
 </script>
 
 <aside class="root bg-gray-100 dark:bg-gray-700 h-full">
@@ -51,55 +72,34 @@
       <OrgSelector />
 
       <ul class="my-5">
-        <a href="/org/{orgSiteName}" class="text-black">
-          <li
-            class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-500 {isActive(
-              $page.path,
-              `/org/${orgSiteName}`
-            ) && activeClass}"
-          >
-            <HomeIcon />
-            <p class="dark:text-white ml-2">Home</p>
-          </li>
-        </a>
-        <a href="/org/{orgSiteName}/courses" class="text-black">
-          <li
-            class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-500 {isActive(
-              $page.path,
-              `/org/${orgSiteName}/courses`
-            ) && activeClass}"
-          >
-            <CourseIcon />
-            <p class="dark:text-white ml-2">Courses</p>
-          </li>
-        </a>
-        <a href="/org/{orgSiteName}/site" class="text-black">
-          <li
-            class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-500 {isActive(
-              $page.path,
-              `/org/${orgSiteName}/site`
-            ) && activeClass}"
-          >
-            <SiteSettingsIcon />
-            <p class="dark:text-white ml-2">Site settings</p>
-          </li>
-        </a>
-        <a href="/org/{orgSiteName}/audience" class="text-black">
-          <li
-            class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-500 {isActive(
-              $page.path,
-              `/org/${orgSiteName}/audience`
-            ) && activeClass}"
-          >
-            <AudienceIcon />
-            <p class="dark:text-white ml-2">Audience</p>
-          </li>
-        </a>
+        {#each menuItems as menuItem}
+          <a href="{$currentOrgPath}{menuItem.path}" class="text-black">
+            <li
+              class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-500 {isActive(
+                $page.path,
+                `${$currentOrgPath}${menuItem.path}`
+              ) && activeClass}"
+            >
+              {#if menuItem.path === ''}
+                <HomeIcon />
+              {:else if menuItem.path === '/courses'}
+                <CourseIcon />
+              {:else if menuItem.path === '/site'}
+                <SiteSettingsIcon />
+              {:else if menuItem.path === '/community'}
+                <UserMultipleIcon class="carbon-icon" />
+              {:else if menuItem.path === '/audience'}
+                <AudienceIcon />
+              {/if}
+              <p class="dark:text-white ml-2">{menuItem.label}</p>
+            </li>
+          </a>
+        {/each}
       </ul>
     </div>
     <span class="flex-grow" />
     <ul class="my-5 pb-5 px-4">
-      <a href="/org" class="text-black">
+      <a href={$currentOrgPath} class="text-black">
         <li
           class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-500"
         >
@@ -107,11 +107,11 @@
           <p class="dark:text-white ml-2">Help</p>
         </li>
       </a>
-      <a href="/org/{orgSiteName}/settings" class="text-black">
+      <a href="{$currentOrgPath}/settings" class="text-black">
         <li
           class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-500 {isActive(
             $page.path,
-            `/org/${orgSiteName}/settings`
+            `${$currentOrgPath}/settings`
           ) && activeClass}"
         >
           <Avatar
