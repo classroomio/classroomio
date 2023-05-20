@@ -24,7 +24,7 @@
   import { course } from '../../store';
   import { updateCourse } from '../../../../utils/services/courses';
   import { profile } from '../../../../utils/store/user';
-  import { currentOrg } from '../../../../utils/store/org';
+  import { currentOrg, currentOrgPath } from '../../../../utils/store/org';
   import { isMobile } from '../../../../utils/store/useMobile';
 
   // export let lessonId;
@@ -209,7 +209,7 @@
       >
         <IconButton
           value="toggle"
-          onClick={() => goto(`/org/${$currentOrg.siteName}/courses`)}
+          onClick={() => goto(`${$currentOrgPath}/courses`)}
           buttonClassName="mx-3"
         >
           <Home32 class="carbon-icon" />

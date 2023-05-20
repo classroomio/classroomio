@@ -1,0 +1,431 @@
+<script context="module">
+  export async function preload({ params }) {
+    return { slug: params.slug };
+  }
+</script>
+
+<script>
+  import marked from 'marked';
+  import dayjs from 'dayjs';
+  import pluralize from 'pluralize';
+  import relativeTime from 'dayjs/plugin/relativeTime';
+  import Delete16 from 'carbon-icons-svelte/lib/Delete16';
+  import { SkeletonPlaceholder, SkeletonText } from 'carbon-components-svelte';
+  import ArrowLeft24 from 'carbon-icons-svelte/lib/ArrowLeft24';
+  import Vote from '../../../../components/Vote/index.svelte';
+  import PrimaryButton from '../../../../components/PrimaryButton/index.svelte';
+  import { VARIANTS } from '../../../../components/PrimaryButton/constants';
+  import TextEditor from '../../../../components/TextEditor/index.svelte';
+  import Avatar from '../../../../components/Avatar/index.svelte';
+  import IconButton from '../../../../components/IconButton/index.svelte';
+  import CheckmarkOutline20 from 'carbon-icons-svelte/lib/CheckmarkOutline20';
+  import { currentOrgPath, currentOrg } from '../../../../utils/store/org';
+  import { profile } from '../../../../utils/store/user';
+  import { supabase } from '../../../../utils/functions/supabase';
+  import {
+    askCommunityValidation,
+    commentInCommunityValidation,
+  } from '../../../../utils/functions/validator';
+  import { SNACKBAR_SEVERITY } from '../../../../components/Snackbar/constants';
+  import { snackbarStore } from '../../../../components/Snackbar/store';
+  import TextField from '../../../../components/Form/TextField.svelte';
+  import DeleteCommentModal from '../../../../components/Org/Community/DeleteCommentModal.svelte';
+
+  dayjs.extend(relativeTime);
+
+  export let slug;
+
+  let question;
+  let comment = '';
+  let errors = {};
+  let isValidAnswer = false; // V2 allow admin mark an answer as accepted
+  let resetInput = 1;
+  let voted = { question: false, comment: {} };
+  let isEditMode = false;
+  let deleteComment = {
+    shouldDelete: false,
+    commentId: null,
+  };
+  let editContent = {
+    title: '',
+    body: '',
+  };
+
+  function mapResToQuestion(data) {
+    return {
+      id: data.id,
+      title: data.title,
+      votes: data.votes,
+      author: {
+        id: data?.author?.profile?.id || '',
+        name: data?.author?.profile?.fullname || '',
+        avatar: data?.author?.profile?.avatar_url || '',
+      },
+      body: data.body,
+      createdAt: dayjs(data.created_at).fromNow(true),
+      comments: data.comments.map((c) => ({
+        id: c.id,
+        authorId: c.author?.profile?.id || '',
+        name: c.author?.profile?.fullname || '',
+        avatar: c.author?.profile?.avatar_url || '',
+        votes: c.votes,
+        comment: c.body,
+        createdAt: dayjs(c.created_at).fromNow(true),
+      })),
+      totalComments: 0,
+    };
+  }
+
+  async function fetchCommunityQuestion(slug) {
+    if (!slug) return;
+
+    const { data, error } = await supabase
+      .from('community_question')
+      .select(
+        `
+        id,
+        title,
+        body,
+        votes,
+        created_at,
+        comments:community_answer(
+          id,
+          body,
+          votes,
+          created_at,
+          author:organizationmember!community_answer_author_id_fkey!inner(
+            profile!inner(id, fullname, avatar_url)
+          )
+        ),
+        author:organizationmember!community_question_author_id_fkey!inner(
+          profile!inner(id, fullname, avatar_url)
+        )
+      `
+      )
+      .eq('slug', slug)
+      .single();
+
+    if (error) {
+      console.error('Error loading community', error);
+      return goto(`${currentOrgPath}`);
+    }
+
+    question = mapResToQuestion(data);
+    question.totalComments = question.comments.length;
+  }
+
+  async function submitComment() {
+    errors = commentInCommunityValidation({ comment });
+    console.log('submitComment errors', errors);
+
+    if (Object.keys(errors).length) {
+      return;
+    }
+
+    const { data, error } = await supabase.from('community_answer').insert({
+      id: undefined,
+      body: comment,
+      question_id: question.id,
+      author_id: $currentOrg.memberId,
+      votes: 0,
+    });
+
+    if (error) {
+      console.error('Error: commenting', error);
+      $snackbarStore.open = true;
+      $snackbarStore.message = 'Error - Please try again later';
+      $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
+    } else {
+      console.log('Success: commenting', data);
+
+      // Notification
+      $snackbarStore.open = true;
+      $snackbarStore.message = 'Success';
+      $snackbarStore.severity = SNACKBAR_SEVERITY.SUCCESS;
+
+      // Add to comment
+      const _c = data?.[0];
+      question.comments = [
+        ...question.comments,
+        {
+          id: _c.id,
+          name: $profile?.fullname || '',
+          avatar: $profile?.avatar_url || '',
+          votes: 0,
+          comment: _c.body,
+          createdAt: dayjs(_c.created_at).fromNow(true),
+        },
+      ];
+
+      // Reset input
+      comment = '';
+      resetInput = new Date().getTime();
+    }
+  }
+
+  async function upvoteQuestion(type, commentId) {
+    const isQuestion = type === 'question';
+
+    if (isQuestion && voted.question) return;
+    if (!isQuestion && voted.comment[commentId]) return;
+
+    const table = isQuestion ? 'community_question' : 'community_answer';
+    const matchId = isQuestion ? question.id : commentId;
+    let votes = 0;
+
+    if (isQuestion) {
+      question.votes = question.votes + 1;
+      votes = question.votes;
+    } else {
+      question.comments = question.comments.map((c) => {
+        if (c.id === commentId) {
+          c.votes = c.votes + 1;
+          votes = c.votes;
+        }
+        return c;
+      });
+    }
+    const { error } = await supabase
+      .from(table)
+      .update({ votes })
+      .match({ id: matchId });
+    if (error) {
+      console.error('Error: upvoteQuestion', error);
+      $snackbarStore.open = true;
+      $snackbarStore.message = 'Error - Please try again later';
+      $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
+    } else {
+      if (isQuestion) {
+        voted.question = true;
+      } else {
+        voted.comment[commentId] = true;
+      }
+    }
+  }
+
+  async function handleQuestionEdit() {
+    if (isEditMode) {
+      const fields = { title: editContent.title, body: editContent.body };
+      errors = askCommunityValidation(fields);
+      console.log('handleQuestionEdit errors', errors);
+
+      if (Object.keys(errors).length) {
+        return;
+      }
+    }
+
+    isEditMode = !isEditMode;
+
+    if (!isEditMode) {
+      const fields = { title: editContent.title, body: editContent.body };
+      errors = askCommunityValidation(fields);
+      console.log('handleQuestionEdit errors', errors);
+
+      if (Object.keys(errors).length) {
+        return;
+      }
+      const { error } = await supabase
+        .from('community_question')
+        .update(fields)
+        .match({ id: question.id });
+      if (error) {
+        console.error('Error: handleQuestionEdit', error);
+        $snackbarStore.open = true;
+        $snackbarStore.message = 'Error - Please try again later';
+        $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
+      } else {
+        question.title = fields.title;
+        question.body = fields.body;
+
+        editContent.title = '';
+        editContent.body = '';
+      }
+    } else {
+      editContent.title = question.title;
+      editContent.body = question.body;
+    }
+  }
+
+  async function handleCommentDelete() {
+    const { error } = await supabase
+      .from('community_answer')
+      .delete()
+      .match({ id: deleteComment.commentId });
+
+    if (!error) {
+      question.comments = question.comments.filter(
+        (c) => c.id !== deleteComment.commentId
+      );
+
+      deleteComment.shouldDelete = false;
+      deleteComment.commentId = null;
+    }
+  }
+
+  $: fetchCommunityQuestion(slug);
+</script>
+
+<svelte:head>
+  <title>{question?.title || 'Question'}</title>
+</svelte:head>
+
+<DeleteCommentModal
+  bind:open={deleteComment.shouldDelete}
+  onCancel={() => {
+    deleteComment.shouldDelete = false;
+    deleteComment.commentId = null;
+  }}
+  onDelete={handleCommentDelete}
+/>
+<section class="max-w-3xl mx-auto md:mx-10 lg:mb-20">
+  {#if !question}
+    <div class="py-10 px-5 mb-3">
+      <SkeletonText style="width: 25%;" />
+      <SkeletonText style="width: 100%; margin-bottom: 2rem" />
+      <SkeletonPlaceholder style="width: 100%; height: 20rem;" />
+    </div>
+  {:else}
+    <div class="py-10 px-5">
+      <a
+        class="text-gray-500 dark:text-gray-200 text-md flex items-center"
+        href={`${$currentOrgPath}/community`}
+      >
+        <ArrowLeft24 class="carbon-icon" /> Go Back
+      </a>
+      <div class="my-5 flex justify-between items-center">
+        {#if isEditMode}
+          <TextField
+            bind:value={editContent.title}
+            className="w-full mr-2"
+            errorMessage={errors.title}
+          />
+        {:else}
+          <div class="flex items-center">
+            <Vote
+              value={question.votes}
+              upVote={() => upvoteQuestion('question')}
+              disabled={voted.question}
+            />
+            <h2 class="text-3xl">{question.title}</h2>
+          </div>
+        {/if}
+
+        {#if question.author.id === $profile.id}
+          <PrimaryButton
+            label={isEditMode ? 'Save' : 'Edit'}
+            variant={VARIANTS.CONTAINED_INFO}
+            onClick={handleQuestionEdit}
+            className="py-3 px-6 rounded-sm h-fit"
+            disablePadding={true}
+          />
+          {#if isEditMode}
+            <PrimaryButton
+              label="Cancel"
+              variant={VARIANTS.TEXT}
+              onClick={() => (isEditMode = !isEditMode)}
+              className="py-3 px-6 rounded-sm h-fit"
+              disablePadding={true}
+            />
+          {/if}
+        {/if}
+      </div>
+      <div class="my-1 px-1 rounded-lg border border-1 border-gray">
+        <header class="flex items-center justify-between leading-none p-2">
+          <div
+            class="flex items-center no-underline hover:underline text-black"
+          >
+            <Avatar
+              src={question.author.avatar}
+              name={question.author.name}
+              width="w-7"
+              height="h-7"
+            />
+            <p class="dark:text-white ml-2 text-sm">{question.author.name}</p>
+            <p class="dark:text-white ml-2 text-sm text-gray-500">
+              {question.createdAt}
+            </p>
+          </div>
+        </header>
+        {#if isEditMode}
+          <div class="my-2">
+            <TextEditor
+              content={question.body}
+              onChange={(c) => (editContent.body = c)}
+              placeholder="Update question"
+              errorMessage={errors.body}
+              docId={resetInput}
+            />
+          </div>
+        {:else}
+          <section class="prose prose-sm sm:prose p-2">
+            {@html marked(question.body)}
+          </section>
+        {/if}
+      </div>
+
+      <div class="my-8 font-bold">
+        {pluralize('answers', question.totalComments, true)}
+      </div>
+
+      {#each question.comments as comment}
+        <div class="my-5 px-1 flex items-start">
+          <Vote
+            value={comment.votes}
+            upVote={() => upvoteQuestion('comment', comment.id)}
+            disabled={voted.comment[comment.id]}
+          />
+          <div class="w-full rounded-lg border border-1 border-gray">
+            <header class="flex items-center justify-between leading-none p-2">
+              <div class="flex items-center text-black">
+                <Avatar
+                  src={comment.avatar}
+                  name={comment.name}
+                  width="w-7"
+                  height="h-7"
+                />
+                <p class="dark:text-white ml-2 text-sm">{comment.name}</p>
+                <p class="dark:text-white ml-2 text-sm text-gray-500">
+                  {comment.createdAt}
+                </p>
+              </div>
+
+              {#if isValidAnswer}
+                <CheckmarkOutline20 />
+              {/if}
+
+              {#if comment.authorId === $profile.id}
+                <IconButton
+                  value="delete-comment"
+                  onClick={() => {
+                    deleteComment.shouldDelete = true;
+                    deleteComment.commentId = comment.id;
+                  }}
+                >
+                  <Delete16 class="carbon-icon" />
+                </IconButton>
+              {/if}
+            </header>
+            <article class="prose prose-sm sm:prose p-2">
+              {@html marked(comment.comment)}
+            </article>
+          </div>
+        </div>
+      {/each}
+
+      <hr />
+
+      <div>
+        <TextEditor
+          onChange={(c) => (comment = c)}
+          placeholder="Give an answer"
+          errorMessage={errors.comment}
+          docId={resetInput}
+        />
+
+        <div class="flex justify-end mr-2">
+          <PrimaryButton label="Comment" onClick={submitComment} />
+        </div>
+      </div>
+    </div>
+  {/if}
+</section>

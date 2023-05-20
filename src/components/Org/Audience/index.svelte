@@ -1,5 +1,4 @@
 <script>
-  import { onMount } from 'svelte';
   import Box from '../../Box/index.svelte';
   import AudienceList from './AudienceList.svelte';
   import AudienceEmptyIcon from '../../Icons/AudienceEmptyIcon.svelte';
@@ -7,11 +6,16 @@
   import { orgAudience, currentOrg } from '../../../utils/store/org';
 
   let isLoading = false;
-  onMount(async () => {
+
+  async function fetchInitData(orgId) {
+    if (!orgId) return;
+
     isLoading = true;
-    await getOrgAudience($currentOrg.id);
+    await getOrgAudience(orgId);
     isLoading = false;
-  });
+  }
+
+  $: fetchInitData($currentOrg.id);
 </script>
 
 <div

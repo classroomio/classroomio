@@ -22,7 +22,6 @@
   }
 
   .bg-set {
-    color: #586069;
     background-color: #d1d5da80;
   }
 </style>
