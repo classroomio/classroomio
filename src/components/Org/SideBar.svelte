@@ -39,6 +39,10 @@
     //   label: 'Site settings',
     // },
     {
+      path: '/quiz',
+      label: 'Quizzes',
+    },
+    {
       path: '/audience',
       label: 'Audience',
     },

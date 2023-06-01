@@ -8,9 +8,6 @@ export const themeImages = {
     play: 'https://koxqonvbkeakwvmdegcf.supabase.co/storage/v1/object/public/avatars/quizes/standard-quiz-play.svg',
   },
   mainland: {
-    card: 'https://koxqonvbkeakwvmdegcf.supabase.co/storage/v1/object/public/avatars/quizes/mainstream-quiz-card.svg',
-    editor:
-      'https://koxqonvbkeakwvmdegcf.supabase.co/storage/v1/object/public/avatars/quizes/mainstream-quiz-editor.svg',
     play: 'https://koxqonvbkeakwvmdegcf.supabase.co/storage/v1/object/public/avatars/quizes/mainstream-quiz-play.svg',
   },
 };
@@ -20,7 +17,6 @@ export const defOption = {
   label: '',
   options: [],
 };
-
 export const optionImage = {
   circle:
     'https://koxqonvbkeakwvmdegcf.supabase.co/storage/v1/object/public/avatars/quizes/circle.svg',
