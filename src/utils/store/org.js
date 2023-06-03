@@ -45,3 +45,8 @@ export const quizStore = writable({
 export const playQuizStore = writable({
   step: STEPS.CONNECT_TO_PLAY,
 });
+
+export const deleteModal = writable({
+  open: false,
+  isQuestion: false,
+});

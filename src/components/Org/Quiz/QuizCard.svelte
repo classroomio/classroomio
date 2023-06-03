@@ -74,12 +74,7 @@
         <h4 class="dark:text-white title text-md font-bold">
           <a href="{$currentOrgPath}/quiz/{quiz.id}">{quiz.title}</a>
         </h4>
-
-        <Dropdown
-          options={getOptions()}
-          classNames="absolute top-4 right-4"
-          isIcon={true}
-        >
+        <Dropdown>
           <div class="p-1 rounded-full bg-gray-200 dark:bg-gray-600">
             <OverflowMenuHorizontal20 class="carbon-icon active" />
           </div>
