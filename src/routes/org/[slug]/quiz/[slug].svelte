@@ -24,6 +24,7 @@
     allOptions,
     booleanOptions,
     allThemes,
+    optionImage,
   } from '../../../../utils/constants/quiz';
   import { quizStore, quizesStore } from '../../../../utils/store/org';
   import DeleteModal from '../../../../components/Org/Quiz/DeleteModal.svelte';
@@ -269,6 +270,14 @@
         <h1 class="text-white font-bold my-5">{$quizStore.title}</h1>
 
         <QuizQuestion {currentQuestion} {optionHasError} {currentError} />
+
+        {#if isBoolean(currentError.hasOneAnswer) && !currentError.hasOneAnswer}
+          <div class="mb-5">
+            <p class="text-red-500">
+              Please select at least one correct answer
+            </p>
+          </div>
+        {/if}
 
         {#if isBoolean(currentError.hasOneAnswer) && !currentError.hasOneAnswer}
           <div class="mb-5">

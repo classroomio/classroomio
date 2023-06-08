@@ -33,20 +33,20 @@ export const deleteModal = writable({
 
 export const quizesStore = writable([]);
 
-export const quizStore = writable({
-  uuid: '',
-  title: '',
-  questions: [],
-  timelimit: '10s',
-  theme: 'standard',
-  pin: '',
-});
-
 export const playQuizStore = writable({
   step: STEPS.CONNECT_TO_PLAY,
 });
 
-export const deleteModal = writable({
-  open: false,
-  isQuestion: false,
+export const quizStore = writable({
+  title: '',
+  questions: [
+    {
+      id: 1,
+      label: '',
+      type: 'multichoice',
+      options: cloneDeep(allOptions).slice(0, 2),
+    },
+  ],
+  timelimit: '10s',
+  theme: 'standard',
 });
