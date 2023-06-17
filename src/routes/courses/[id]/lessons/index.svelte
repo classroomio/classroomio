@@ -152,7 +152,7 @@
       {#each $lessons as lesson (lesson.id)}
         <div
           bind:this={ref}
-          class="group relative m-auto rounded-md border-2 border-gray-100 py-3 px-5 mb-4 flex items-center hover:shadow-2xl shadow-md transition delay-150 duration-300 ease-in-out"
+          class="group relative m-auto rounded-md border-2 border-gray-100 py-3 px-5 mb-4 flex items-center hover:shadow-md shadow-xl transition delay-150 duration-300 ease-in-out"
         >
           <!-- Complete or Not complete icon -->
           <div class="absolute -left-6 -top-6 success">
@@ -303,7 +303,7 @@
         </div>
       {:else}
         <Box>
-          <h3 class="text-3xl text-gray-500 dark:text-gray-200">
+          <h3 class="text-3xl text-gray-500 dark:text-white">
             No lesson added
           </h3>
           <img alt="No lesson added" src="/notfound2.gif" class="w-80" />

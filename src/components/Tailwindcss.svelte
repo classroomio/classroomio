@@ -86,6 +86,10 @@
     fill: green;
   }
 
+  :global(svg.carbon-icon.error) {
+    fill: red;
+  }
+
   .dark :global(svg.carbon-icon) {
     fill: #fff;
   }

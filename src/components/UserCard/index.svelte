@@ -22,7 +22,7 @@
   <div class="pt-6 text-center space-y-4">
     <div class="description font-medium flex flex-col justify-around">
       <div class="text-cyan-600">{name}</div>
-      <div class="text-gray-500 dark:text-gray-200">{title}</div>
+      <div class="text-gray-500 dark:text-white">{title}</div>
     </div>
   </div>
   {#if telegramLink && mailLink}

@@ -71,7 +71,7 @@
             {discussion.title}
           </a>
         </h4>
-        <span class="text-gray-600 dark:text-gray-100">
+        <span class="text-gray-600 dark:text-white">
           {discussion.author} asked {discussion.createdAt}
         </span>
       </div>

@@ -181,7 +181,7 @@
       {:else}
         <Box>
           <AudioConsole32 class="carbon-icon w-80" />
-          <h3 class="text-3xl text-gray-500 dark:text-gray-200">
+          <h3 class="text-3xl text-gray-500 dark:text-white">
             No Student Added
           </h3>
         </Box>

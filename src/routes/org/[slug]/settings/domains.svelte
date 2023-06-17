@@ -10,7 +10,7 @@
 <section class="w-full max-w-6xl mx-auto">
   <div class="py-10 px-5">
     <a
-      class="text-gray-500 dark:text-gray-200 text-md"
+      class="text-gray-500 dark:text-white text-md"
       href={`${$currentOrgPath}/settings`}>Back to Settings</a
     >
     <div class="flex items-center justify-between mb-10">

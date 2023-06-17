@@ -3,7 +3,7 @@
   import { copyCourseModal } from '../../store';
   import { ROLE } from '../../../../utils/constants/roles';
   import getCurrencyFormatter from '../../../../utils/functions/getCurrencyFormatter';
-  import OverflowMenuHorizontal24 from 'carbon-icons-svelte/lib/OverflowMenuHorizontal24';
+  import OverflowMenuHorizontal20 from 'carbon-icons-svelte/lib/OverflowMenuHorizontal20';
   import ArrowRight from 'carbon-icons-svelte/lib/ArrowRight24';
 
   export let bannerImage: string | undefined;
@@ -60,7 +60,7 @@
         isIcon={true}
       >
         <div class="p-1 rounded-full bg-white dark:bg-gray-600">
-          <OverflowMenuHorizontal24 class="carbon-icon" />
+          <OverflowMenuHorizontal20 class="carbon-icon" />
         </div>
       </Dropdown>
     {/if}
@@ -74,7 +74,7 @@
         {title}
       </h4>
       <p
-        class="description text-left text-sm font-small flex flex-col text-gray-500 dark:text-gray-200 my-3"
+        class="description text-left text-sm font-small flex flex-col text-gray-500 dark:text-white my-3"
         title={description}
       >
         {description}
