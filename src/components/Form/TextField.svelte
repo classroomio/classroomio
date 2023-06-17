@@ -10,6 +10,7 @@
   export let className = '';
   export let inputClassName = '';
   export let labelClassName = '';
+  export let bgColor = 'bg-gray-200';
   export let type = 'text';
   export let isPassword = false;
   export let autoFocus = false;
@@ -65,7 +66,7 @@
   {/if}
   <input
     use:typeAction
-    class="form-input dark:text-black p-3 mt-1 block w-full border-none bg-gray-200 {inputClassName} {errorMessage
+    class="form-input {inputClassName} dark:text-black p-3 mt-1 block w-full border-none {bgColor} {errorMessage
       ? 'border-red-500'
       : ''}"
     on:keydown={onKeyDown}

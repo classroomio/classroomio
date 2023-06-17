@@ -8,6 +8,7 @@
   export let width = '';
   export let maxWidth = '';
   export let containerClass = '';
+  export let size = '';
 
   afterUpdate(() => {
     if (open) {
@@ -25,8 +26,9 @@
   >
     <div aria-hidden="true" class="backdrop" />
     <div
-      class="{maxWidth ||
-        'container'} bg-white dark:bg-gray-800 mx-auto {width} shadow-lg p-5 pt-2 rounded-md"
+      class="{maxWidth || 'container'} {size === 'sm'
+        ? 'small'
+        : ''} bg-white dark:bg-gray-800 mx-auto {width} shadow-lg p-5 pt-2 rounded-md"
       on:click={(e) => e.stopPropagation()}
     >
       <div class="flex items-center justify-between mb-4">
@@ -36,7 +38,7 @@
         <CloseButton onClick={onClose} contained={true} />
       </div>
 
-      <div class="body h-4/5 overflow-y-auto {containerClass}">
+      <div class="body p-1 h-4/5 overflow-y-auto {containerClass}">
         <slot />
       </div>
     </div>
@@ -53,5 +55,9 @@
   }
   .body {
     max-height: 60vh;
+  }
+
+  .small {
+    max-width: 388px;
   }
 </style>

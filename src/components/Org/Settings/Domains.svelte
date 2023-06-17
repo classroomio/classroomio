@@ -71,7 +71,7 @@
       ><SectionTitle>Add</SectionTitle></Column
     >
     <Column sm={2} md={6} lg={8}>
-      <p class="text-md text-gray-500 dark:text-gray-200 mb-5">
+      <p class="text-md text-gray-500 dark:text-white mb-5">
         Add your team mates or collaborators to your organization. Start working
         together
       </p>

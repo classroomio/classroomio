@@ -9,6 +9,7 @@
   import { derived } from 'svelte/store';
   import { stores, goto } from '@sapper/app';
   import isEmpty from 'lodash/isEmpty';
+  import mixpanel from 'mixpanel-browser';
   import * as Sentry from '@sentry/browser';
   import { Theme } from 'carbon-components-svelte';
   import { Moon } from 'svelte-loading-spinners';
@@ -24,8 +25,14 @@
   // import SideBar from "../components/SideBar/index.svelte";
   // import Footer from '../components/Footer/index.svelte';
   import Apps from '../components/Apps/index.svelte';
+  import PlayQuiz from '../components/Org/Quiz/Play/index.svelte';
   import { handleAuthChange } from '../utils/functions/api';
-  import { isCoursesPage, isOrgPage, isLMSPage } from '../utils/functions/app';
+  import {
+    isCoursesPage,
+    isOrgPage,
+    isLMSPage,
+    isQuizPage,
+  } from '../utils/functions/app';
   import showAppsSideBar from '../utils/functions/showAppsSideBar';
   import { user, profile } from '../utils/store/user';
   import { getSupabase } from '../utils/functions/supabase';
@@ -39,11 +46,15 @@
   export let segment;
   export let config;
 
+  // MIXPANEL
+  mixpanel.init(config.mixpanelToken, { debug: !config.isProd });
+
   let { page, preloading } = stores();
 
   let supabase = getSupabase(config);
   let path = $page.path.replace('/', '');
   let theme = 'white';
+  let skipAuth = false;
 
   const delayedPreloading = derived(preloading, (currentPreloading, set) => {
     setTimeout(() => set(currentPreloading), 250);
@@ -89,6 +100,8 @@
 
         // Set user in sentry
         Sentry.setUser($profile);
+        // Set user in Mixpanel
+        mixpanel.identify($profile.email);
 
         if ($appStore.isStudentDomain) {
           const { data, error } = await supabase
@@ -127,6 +140,9 @@
 
       // Set user in sentry
       Sentry.setUser($profile);
+      // Set user in Mixpanel
+      mixpanel.identify($profile.email);
+
       const orgRes = await getOrganizations($profile.id);
 
       // student redirect
@@ -161,6 +177,8 @@
 
       $appStore.isStudentDomain = debug || answer;
       $appStore.siteNameFromDomain = debug ? 'codingdojo' : subdomain;
+
+      skipAuth = debug || subdomain === 'play';
     }
   }
 
@@ -187,6 +205,7 @@
         if (config.isProd) {
           handleAuthChange(event, session);
         }
+        // Log key events
         console.log(`event`, event);
         if (event == 'PASSWORD_RECOVERY') {
           console.log('PASSWORD RESET');
@@ -197,6 +216,10 @@
           return;
         }
 
+        // Skip Authentication
+        if (skipAuth) return;
+
+        // Authentication Steps
         if (event === 'SIGNED_IN') {
           $user.fetchingUser = true;
           getProfile();
@@ -236,7 +259,9 @@
 
 <Snackbar />
 
-{#if $appStore.isStudentDomain && !path}
+{#if skipAuth}
+  <PlayQuiz />
+{:else if $appStore.isStudentDomain && !path}
   <OrgLandingPage {segment} />
 {:else}
   <main class="dark:bg-gray-800">
@@ -262,7 +287,9 @@
     <div class="flex justify-between">
       {#if isOrgPage($page.path)}
         <div class="org-root w-full flex items-center justify-between">
-          <OrgSideBar />
+          {#if !isQuizPage($page.path)}
+            <OrgSideBar />
+          {/if}
           <div class="org-slot bg-white dark:bg-gray-800">
             <slot />
           </div>
@@ -299,7 +326,7 @@
     height: calc(100vh - 44px);
   }
   .org-slot {
-    width: calc(100vw - 250px);
+    min-width: calc(100vw - 250px);
     height: calc(100vh - 44px);
     overflow-y: auto;
   }

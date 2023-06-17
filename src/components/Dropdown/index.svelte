@@ -8,7 +8,7 @@
   let open = false;
 
   const notIconClass =
-    'border rounded-lg border-grey py-3 px-3 focus:outline-none focus:border-gray-400 focus:bg-gray-200';
+    'border rounded-lg border-grey p-3 focus:outline-none focus:border-gray-400 focus:bg-gray-200';
 
   function isOptionLast(index) {
     return index === options.length - 1;
@@ -29,7 +29,7 @@
   }
 </script>
 
-<div class="{classNames} z-10d {!options.length && 'hidden'}">
+<div class="{classNames} z-10 {!options.length && 'hidden'}">
   <button
     class="flex flex-row items-center {!isIcon && notIconClass}"
     on:click={(e) => {
@@ -45,12 +45,13 @@
 
   {#if open}
     <div
-      class="dropdown w-48 bg-white dark:bg-gray-800 border border-grey rounded-lg mt-2 py-3 absolute"
+      class="dropdown whitespace-nowrap bg-white dark:bg-gray-800 border border-grey rounded-lg mt-2 py-3 absolute"
     >
       {#each options as option, index}
         <button
-          class="block px-4 py-3 {!isOptionLast(index) &&
-            'border-b'} w-full dark:text-white"
+          class="block px-4 py-3 text-left hover:bg-blue-100 {!isOptionLast(
+            index
+          ) && 'border-b'} w-full dark:text-white dark:hover:text-black"
           on:click={onClick(option)}
         >
           {option.label}

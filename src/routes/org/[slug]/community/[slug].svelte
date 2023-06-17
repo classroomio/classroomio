@@ -287,7 +287,7 @@
   {:else}
     <div class="py-10 px-5">
       <a
-        class="text-gray-500 dark:text-gray-200 text-md flex items-center"
+        class="text-gray-500 dark:text-white text-md flex items-center"
         href={`${$currentOrgPath}/community`}
       >
         <ArrowLeft24 class="carbon-icon" /> Go Back

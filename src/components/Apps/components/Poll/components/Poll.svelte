@@ -48,7 +48,7 @@
   }
 </script>
 
-<div class="p-4 bg-white dark:bg-gray-800-100 border-2 rounded-md mb-3">
+<div class="p-4 bg-white dark:bg-gray-800 border-2 rounded-md mb-3">
   {#if selectedOptionToView}
     <div>
       <div class="flex items-center mb-5">
