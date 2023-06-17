@@ -22,7 +22,11 @@
     isLoading ? VARIANTS.OUTLINED : variant
   ]} {!disablePadding &&
     'py-3 px-5'} rounded-none {className} w-fit justify-center sm:w-auto {isLoading &&
-    'py-3 border-blue-700'} hover:shadow-xl transition delay-150 duration-300 ease-in-out"
+    'py-3 border-blue-700'} {variant !== VARIANTS.TEXT &&
+    'hover:shadow-xl'} transition delay-150 duration-300 ease-in-out {variant !==
+  VARIANTS.CONTAINED_WHITE
+    ? 'dark:text-white'
+    : ''}"
   on:click={onClick}
   {name}
   {type}

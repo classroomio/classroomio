@@ -18,6 +18,10 @@ export function isOrgPage(path) {
   return /org\/[a-z 0-9 -]/.test(path);
 }
 
+export function isQuizPage(path) {
+  return /org\/[a-z 0-9 -]+\/quiz\/[a-z 0-9 -]/.test(path);
+}
+
 export function isLMSPage(path) {
   return /lms[\/a-z 0-9 -]*/.test(path);
 }

@@ -1,12 +1,13 @@
 <script>
   import { stores } from '@sapper/app';
   import Help from 'carbon-icons-svelte/lib/Help20';
-  import UserMultipleIcon from 'carbon-icons-svelte/lib/UserMultiple20';
+  import ForumIcon from 'carbon-icons-svelte/lib/Forum20';
 
   import TextChip from '../../components/Chip/Text.svelte';
   import OrgSelector from '../../components/OrgSelector/OrgSelector.svelte';
   import HomeIcon from '../../components/Icons/HomeIcon.svelte';
   import CourseIcon from '../../components/Icons/CourseIcon.svelte';
+  import QuizIcon from '../../components/Icons/QuizIcon.svelte';
   import SiteSettingsIcon from '../../components/Icons/SiteSettingsIcon.svelte';
   import AudienceIcon from '../../components/Icons/AudienceIcon.svelte';
   import Avatar from '../../components/Avatar/index.svelte';
@@ -22,6 +23,10 @@
       label: 'Home',
     },
     {
+      path: '/quiz',
+      label: 'Quizzes',
+    },
+    {
       path: '/courses',
       label: 'Courses',
     },
@@ -29,10 +34,10 @@
       path: '/community',
       label: 'Community',
     },
-    {
-      path: '/site',
-      label: 'Site settings',
-    },
+    // {
+    //   path: '/site',
+    //   label: 'Site settings',
+    // },
     {
       path: '/audience',
       label: 'Audience',
@@ -73,7 +78,10 @@
 
       <ul class="my-5">
         {#each menuItems as menuItem}
-          <a href="{$currentOrgPath}{menuItem.path}" class="text-black">
+          <a
+            href="{$currentOrgPath}{menuItem.path}"
+            class="text-black no-underline"
+          >
             <li
               class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-500 {isActive(
                 $page.path,
@@ -87,7 +95,9 @@
               {:else if menuItem.path === '/site'}
                 <SiteSettingsIcon />
               {:else if menuItem.path === '/community'}
-                <UserMultipleIcon class="carbon-icon" />
+                <ForumIcon class="carbon-icon" />
+              {:else if menuItem.path === '/quiz'}
+                <QuizIcon />
               {:else if menuItem.path === '/audience'}
                 <AudienceIcon />
               {/if}
@@ -99,7 +109,7 @@
     </div>
     <span class="flex-grow" />
     <ul class="my-5 pb-5 px-4">
-      <a href={$currentOrgPath} class="text-black">
+      <a href={$currentOrgPath} class="text-black no-underline">
         <li
           class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-500"
         >
@@ -107,7 +117,7 @@
           <p class="dark:text-white ml-2">Help</p>
         </li>
       </a>
-      <a href="{$currentOrgPath}/settings" class="text-black">
+      <a href="{$currentOrgPath}/settings" class="text-black no-underline">
         <li
           class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-500 {isActive(
             $page.path,

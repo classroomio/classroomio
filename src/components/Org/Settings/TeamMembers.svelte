@@ -133,7 +133,7 @@
       ><SectionTitle>Add</SectionTitle></Column
     >
     <Column sm={2} md={6} lg={8}>
-      <p class="text-md text-gray-500 dark:text-gray-200 mb-5">
+      <p class="text-md text-gray-500 dark:text-white mb-5">
         Add your team mates or collaborators to your organization. Start working
         together
       </p>
@@ -173,7 +173,7 @@
         {#each $orgTeam as teamMember}
           <div class="flex justify-between items-center mb-5">
             <div class="flex">
-              <p class="text-sm text-gray-500 dark:text-gray-200 mr-3">
+              <p class="text-sm text-gray-500 dark:text-white mr-3">
                 {teamMember.email}
               </p>
               <TextChip

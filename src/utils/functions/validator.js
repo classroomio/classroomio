@@ -1,5 +1,14 @@
+import get from 'lodash/get';
+import isNumber from 'lodash/isNumber';
 import z from 'zod';
 import { validateEmail } from './validateEmail';
+
+const createQuizValidationSchema = z.object({
+  title: z.string().min(6, {
+    message: 'Must be 6 or more characters long',
+    invalid_type_error: 'Must not be empty',
+  }),
+});
 
 const askCommunityValidationSchema = z.object({
   title: z.string().min(6, {
@@ -71,14 +80,28 @@ export const getConfirmPasswordError = ({ password, confirmPassword }) => {
     : null;
 };
 
-const processErrors = (error) => {
+const processErrors = (error, mapToId) => {
   const errors = {};
 
   if (Array.isArray(error?.issues)) {
     for (const issue of error.issues) {
       const { message, path } = issue;
-      console.log(issue);
-      if (path.length) {
+
+      if (!path.length) {
+        continue;
+      }
+
+      if (mapToId) {
+        let value = '';
+        path.forEach((p, i) => {
+          const isLast = !path[i + 1];
+          const formatP = isNumber(p) ? `[${p}]` : p;
+
+          value += !value ? formatP : `.${formatP}`;
+        });
+        const key = value.replace('label', 'id');
+        errors[key] = value;
+      } else {
         errors[path[0]] = message;
       }
     }
@@ -111,6 +134,12 @@ export const onboardingValidation = (fields = {}, step) => {
       ? onboardingValidationSchema.stepOne
       : onboardingValidationSchema.stepTwo;
   const { error } = schema.safeParse(fields);
+
+  return processErrors(error);
+};
+
+export const createQuizValidation = (fields = {}) => {
+  const { error } = createQuizValidationSchema.safeParse(fields);
 
   return processErrors(error);
 };

@@ -25,7 +25,6 @@
   import { formatAnswers } from '../../../components/Course/function';
   import { snackbarStore } from '../../../components/Snackbar/store';
   import { SNACKBAR_SEVERITY } from '../../../components/Snackbar/constants';
-  import Date from '../../../components/Form/Date.svelte';
   import isSubmissionEarly from '../../../utils/functions/isSubmissionEarly';
   import formatDate from '../../../utils/functions/formatDate';
 
@@ -332,7 +331,7 @@
                     </p>
                   </a>
                   <p
-                    class="dark:text-white text-gray-500 dark:text-gray-200 text-xs"
+                    class="dark:text-white text-gray-500 dark:text-white text-xs"
                   >
                     {item.submittedAt}
                   </p>

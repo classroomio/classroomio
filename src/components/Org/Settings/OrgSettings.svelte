@@ -116,7 +116,7 @@
     >
     <Column sm={2} md={6} lg={8}>
       <h4 class="dark:text-white">Customise your Domain</h4>
-      <p class="text-sm text-gray-500 dark:text-gray-200">
+      <p class="text-sm text-gray-500 dark:text-white">
         Create a custom URL so your audience can get to your organization easily
       </p>
       <PrimaryButton
@@ -131,7 +131,7 @@
     <Column sm={2} md={2} lg={4}><SectionTitle>Team</SectionTitle></Column>
     <Column sm={2} md={6} lg={8}>
       <h4 class="dark:text-white">Set up your website</h4>
-      <p class="text-sm text-gray-500 dark:text-gray-200">
+      <p class="text-sm text-gray-500 dark:text-white">
         Add team mates to your organization so you can both collaborate on
         projects.
       </p>
