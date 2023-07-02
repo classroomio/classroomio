@@ -42,6 +42,7 @@
   import { toggleBodyByTheme } from '../utils/functions/app';
   import { appStore } from '../utils/store/app';
   import { currentOrg } from '../utils/store/org';
+  import { blockedSubdomain } from '../utils/constants/app';
 
   export let segment;
   export let config;
@@ -171,13 +172,15 @@
       const debug = localStorage.getItem('role') === 'student';
       const matches = host.match(/([a-z0-9]+).*classroomio[.]com/);
       const subdomain = matches?.[1] ?? '';
-      const answer = Array.isArray(matches)
-        ? !!subdomain && subdomain !== 'www'
-        : false;
 
-      $appStore.isStudentDomain = debug || answer;
-      $appStore.siteNameFromDomain = debug ? 'codingdojo' : subdomain;
+      if (!blockedSubdomain.includes(subdomain)) {
+        const answer = Array.isArray(matches)
+          ? !!subdomain && subdomain !== 'www'
+          : false;
 
+        $appStore.isStudentDomain = debug || answer;
+        $appStore.siteNameFromDomain = debug ? 'codingdojo' : subdomain;
+      }
       skipAuth = debug || subdomain === 'play';
     }
   }
