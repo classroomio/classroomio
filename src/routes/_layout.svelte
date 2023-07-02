@@ -141,10 +141,16 @@
 
       // Set user in sentry
       Sentry.setUser($profile);
-      // Set user in Mixpanel
-      mixpanel.identify($profile.email);
+      if (config.isProd) {
+        // Set user in Mixpanel
+        mixpanel.identify($profile.email);
+      }
 
       const orgRes = await getOrganizations($profile.id);
+      console.log('orgRes', orgRes);
+      console.log('$appStore.isStudentDomain', $appStore.isStudentDomain);
+      console.log('isEmpty(orgRes.orgs)', isEmpty(orgRes.orgs));
+      console.log('path', path);
 
       // student redirect
       if ($appStore.isStudentDomain) {
