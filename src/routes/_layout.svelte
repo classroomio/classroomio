@@ -26,7 +26,6 @@
   // import Footer from '../components/Footer/index.svelte';
   import Apps from '../components/Apps/index.svelte';
   import PlayQuiz from '../components/Org/Quiz/Play/index.svelte';
-  import { handleAuthChange } from '../utils/functions/api';
   import {
     isCoursesPage,
     isOrgPage,
@@ -147,10 +146,6 @@
       }
 
       const orgRes = await getOrganizations($profile.id);
-      console.log('orgRes', orgRes);
-      console.log('$appStore.isStudentDomain', $appStore.isStudentDomain);
-      console.log('isEmpty(orgRes.orgs)', isEmpty(orgRes.orgs));
-      console.log('path', path);
 
       // student redirect
       if ($appStore.isStudentDomain) {
@@ -163,7 +158,7 @@
         if (isEmpty(orgRes.orgs)) {
           goto(ROUTE.ONBOARDING);
         } else if (
-          ['login', 'signup', 'onboarding'].includes(path) ||
+          ['login', 'signup', 'onboarding'].some((r) => path.includes(r)) ||
           path === '' // for home page
         ) {
           // By default redirect to first organization
@@ -211,9 +206,6 @@
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        if (config.isProd) {
-          handleAuthChange(event, session);
-        }
         // Log key events
         console.log(`event`, event);
         if (event == 'PASSWORD_RECOVERY') {
