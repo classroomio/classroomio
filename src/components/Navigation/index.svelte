@@ -90,7 +90,7 @@
     {:else}
       <li>
         {#if !disableLogin}
-          <div class="flex hidden">
+          <div class="flex">
             <PrimaryButton
               label="Login"
               variant={VARIANTS.NONE}
