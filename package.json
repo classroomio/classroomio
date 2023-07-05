@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "sapper dev",
     "build": "sapper build --legacy",
-    "export": "sapper export --legacy --entry \"/ /404 login signup forgot onboarding courses dashboard people profile course\"",
+    "export": "sapper export --legacy --entry \"/ /404 login signup forgot onboarding courses org lms course\"",
     "postexport": "mv __sapper__/export/404/index.html __sapper__/export/404.html",
     "start": "node __sapper__/build",
     "electron": "wait-on http://localhost:3000 && electron .",
