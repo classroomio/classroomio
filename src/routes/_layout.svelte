@@ -10,7 +10,7 @@
   import { stores, goto } from '@sapper/app';
   import isEmpty from 'lodash/isEmpty';
   import mixpanel from 'mixpanel-browser';
-  import * as Sentry from '@sentry/browser';
+  // import * as Sentry from '@sentry/browser';
   import { Theme } from 'carbon-components-svelte';
   import { Moon } from 'svelte-loading-spinners';
   import Tailwindcss from '../components/Tailwindcss.svelte';
@@ -99,7 +99,7 @@
         profile.set(data[0]);
 
         // Set user in sentry
-        Sentry.setUser($profile);
+        // Sentry.setUser($profile);
         // Set user in Mixpanel
         mixpanel.identify($profile.email);
 
@@ -139,7 +139,7 @@
       profile.set(profileData);
 
       // Set user in sentry
-      Sentry.setUser($profile);
+      // Sentry.setUser($profile);
       if (config.isProd) {
         // Set user in Mixpanel
         mixpanel.identify($profile.email);
