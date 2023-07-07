@@ -13,7 +13,6 @@ dotenv.config();
 const config = {
   isProd: process.env.NODE_ENV !== 'development',
   telegramToken: process.env.SVELTE_APP_TELEGRAM_API_TOKEN,
-  mixpanelToken: process.env.SVELTE_APP_MIXPANEL_TOKEN,
   supabaseConfig: {
     bucketPath:
       'https://koxqonvbkeakwvmdegcf.supabase.in/storage/v1/object/sign',
