@@ -54,6 +54,7 @@ export default {
         emitCss: true,
       }),
       resolve({
+        preferBuiltins: false,
         browser: true,
         dedupe: ['svelte'],
       }),
@@ -115,6 +116,7 @@ export default {
         dev,
       }),
       resolve({
+        preferBuiltins: false,
         dedupe: ['svelte'],
       }),
       commonjs({
