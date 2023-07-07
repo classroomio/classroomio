@@ -9,7 +9,6 @@
   import { derived } from 'svelte/store';
   import { stores, goto } from '@sapper/app';
   import isEmpty from 'lodash/isEmpty';
-  import mixpanel from 'mixpanel-browser';
   // import * as Sentry from '@sentry/browser';
   import { Theme } from 'carbon-components-svelte';
   import { Moon } from 'svelte-loading-spinners';
@@ -45,9 +44,6 @@
 
   export let segment;
   export let config;
-
-  // MIXPANEL
-  mixpanel.init(config.mixpanelToken, { debug: !config.isProd });
 
   let { page, preloading } = stores();
 
@@ -100,8 +96,6 @@
 
         // Set user in sentry
         // Sentry.setUser($profile);
-        // Set user in Mixpanel
-        mixpanel.identify($profile.email);
 
         if ($appStore.isStudentDomain) {
           const { data, error } = await supabase
@@ -140,10 +134,6 @@
 
       // Set user in sentry
       // Sentry.setUser($profile);
-      if (config.isProd) {
-        // Set user in Mixpanel
-        mixpanel.identify($profile.email);
-      }
 
       const orgRes = await getOrganizations($profile.id);
 

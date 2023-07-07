@@ -6,7 +6,6 @@
 
 <script>
   import { goto } from '@sapper/app';
-  import mixpanel from 'mixpanel-browser';
   import TextField from '../components/Form/TextField.svelte';
   import PrimaryButton from '../components/PrimaryButton/index.svelte';
   import { getSupabase } from '../utils/functions/supabase';
@@ -47,9 +46,6 @@
       console.log('data', data);
       if (error) throw error;
 
-      mixpanel.track('Signed Up', {
-        'Signup Type': 'Referral',
-      });
       formRef?.reset();
 
       return goto('/login');
