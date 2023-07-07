@@ -46,7 +46,7 @@
     "sapper-environment": "^1.0.1",
     "sirv": "^1.0.0",
     "svelte-easy-crop": "^1.0.4",
-    "utils": "^0.3.1",
+    "util": "^0.12.5",
     "wait-on": "^7.0.1",
     "zod": "^3.19.1"
   },
