@@ -5,7 +5,6 @@
 </script>
 
 <script>
-  import mixpanel from 'mixpanel-browser';
   import TextField from '../components/Form/TextField.svelte';
   import PrimaryButton from '../components/PrimaryButton/index.svelte';
   import { getSupabase } from '../utils/functions/supabase';
@@ -36,9 +35,6 @@
       const { data, error } = await supabase.auth.signIn({
         email: fields.email,
         password: fields.password,
-      });
-      mixpanel.track('Log In', {
-        'Login Type': 'Referral',
       });
       console.log('data', data);
       if (error) throw error;
