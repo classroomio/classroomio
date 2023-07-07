@@ -36,7 +36,6 @@
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
     "marked": "^1.2.7",
-    "mixpanel-browser": "^2.47.0",
     "netlify": "^13.1.0",
     "node-sass": "^6.0.0",
     "paystack": "^2.0.1",
