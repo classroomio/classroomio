@@ -3,6 +3,7 @@ export const ROUTE = {
   DASHBOARD: '/dashboard',
   ONBOARDING: '/onboarding',
   COURSES: '/courses',
+  COURSE: '/course',
   LOGIN: '/login',
   SIGN_UP: '/signup',
   PROFILE: '/profile',
@@ -14,11 +15,12 @@ export const ROUTE = {
 };
 
 export const PUBLIC_ROUTES = [
-  ROUTE.HOME,
+  `^${ROUTE.HOME}$`,
   ROUTE.LOGIN,
   ROUTE.SIGN_UP,
   ROUTE.FORGOT,
   ROUTE.RESET,
+  `^${ROUTE.COURSE}/.*`,
 ];
 
 export const ROUTES_TO_HIDE_NAV = [
