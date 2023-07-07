@@ -32,6 +32,7 @@
     isQuizPage,
   } from '../utils/functions/app';
   import showAppsSideBar from '../utils/functions/showAppsSideBar';
+  import isPublicRoute from '../utils/functions/routes/isPublicRoute';
   import { user, profile } from '../utils/store/user';
   import { getSupabase } from '../utils/functions/supabase';
   import { isMobile } from '../utils/store/useMobile';
@@ -193,6 +194,17 @@
     }
 
     handleResize();
+
+    if (
+      !localStorage.getItem('supabase.auth.token') &&
+      !isPublicRoute($page.path)
+    ) {
+      console.log(
+        'No auth token and is not a public route, redirect to login',
+        path
+      );
+      return goto('/login');
+    }
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
