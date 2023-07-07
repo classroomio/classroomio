@@ -30,6 +30,7 @@
     "cookie-parser": "^1.4.5",
     "copy-to-clipboard": "^3.3.1",
     "electron-serve": "^1.1.0",
+    "events": "^3.3.0",
     "express": "^4.17.1",
     "hotkeys-js": "^3.8.5",
     "js-yaml": "^4.1.0",
@@ -44,6 +45,7 @@
     "sapper-environment": "^1.0.1",
     "sirv": "^1.0.0",
     "svelte-easy-crop": "^1.0.4",
+    "util": "^0.12.5",
     "wait-on": "^7.0.1",
     "zod": "^3.19.1"
   },
