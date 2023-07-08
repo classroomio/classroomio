@@ -4,5 +4,4 @@
 yarn-error.log
 /__sapper__/
 .env
-package-lock.json
 /dist/
