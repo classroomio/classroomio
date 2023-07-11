@@ -1,66 +1,141 @@
 <script>
-  export let status;
-  export let error;
-
+  // export let error;
   // const dev = process.env.NODE_ENV === 'development';
-  let errorContent;
-
+  // let errorContent;
   // function report() {}
+  // $: {
+  //   try {
+  //     errorContent = !!error ? JSON.stringify(error) : '';
+  //   } catch (error) {}
+  // }
 
-  $: {
-    try {
-      errorContent = !!error ? JSON.stringify(error) : '';
-    } catch (error) {}
-  }
+  export let status;
+  import { appStore } from "../utils/store/app";
+  // icons
+  import ErrorIcon from "../components/Icons/ErrorIcon.svelte";
+  import ErrorIconDarkMode from "../components/Icons/ErrorIconDarkMode.svelte";
 </script>
 
 <svelte:head>
   <title>{status}</title>
 </svelte:head>
 
-<div class="w-3/5 h-3/5 m-auto flex flex-col items-center justify-center">
-  <h1>Opps 😢</h1>
-  <h2>Something wen't wrong and it's our fault.</h2>
-  <p class="dark:text-white">Please screenshot this page and send to me.</p>
-  <pre>
-    {errorContent}
-  </pre>
+<div class="error-page flex flex-wrap items-center justify-center h-full py-10 dark:bg-gray-800">
+
+  <div class="error-message w-2/4">
+    <h2>Our server is taking a nap😴.</h2>
+    <p class="dark:text-white">Don't worry, your learning is safe. Our server is just taking a quick break to recharge. In the meantime, feel free to export the rest of our website or take a nap yourself.</p>
+    <button on:click={() => {}}>Contact Us</button>
+  </div>
+
+  <div class="error-icon w-2/4 flex items-center justify-center">
+    <!-- to check if it's in dark mode so as to render the appropriate svg -->
+    {#if $appStore.isDark}
+      <ErrorIconDarkMode />
+    {:else}
+      <ErrorIcon />
+    {/if}
+
+  </div>
+
 </div>
 
-<!-- {#if dev && error.stack}
-  <h1>{status}</h1>
-
-  <p class="dark:text-white">{error.message}</p>
-  <pre>{error.stack}</pre>
-{/if} -->
 <style>
-  h1,
-  p {
-    margin: 0 auto;
-  }
 
-  pre {
-    width: 500px;
-    white-space: pre-wrap; /* css-3 */
-    white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
-    white-space: -pre-wrap; /* Opera 4-6 */
-    white-space: -o-pre-wrap; /* Opera 7 */
-    word-wrap: break-word;
-  }
-
-  h1 {
-    font-size: 2.8em;
-    font-weight: 700;
-    margin: 0 0 0.5em 0;
+  h2 {
+    width: 100%;
+    font-size: 2rem;
+    font-weight: 600;
   }
 
   p {
-    margin: 1em auto;
+    width: 100%;
+    font-size: 16px;
+    font-weight: 400px;
+    line-height: 24px;
+    color: #656565;
+    margin: 5% 0;
   }
 
-  @media (min-width: 480px) {
-    h1 {
-      font-size: 4em;
+  button {
+    padding: 3% 10%;
+    background: #0233BD;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    color: #fff;
+  }
+
+  .error-icon {
+    width: 19.5rem;
+    height: 19.5rem;
+  }
+
+  /* Iphone (X, Xs, XR and 11) */
+  @media only screen 
+    and (device-width: 414px) 
+    and (device-height: 896px) 
+    and (-webkit-device-pixel-ratio: 2) {
+
+    .error-page {
+      padding: 10%;
+      flex-direction: column-reverse;
+    }
+    
+    .error-message {
+      width: 100%;
+    }  
+
+    h2 {
+      font-size: 1.5rem;
+    }
+
+    button {
+      padding: 4% 15%;
+    }
+
+    .error-icon {
+      width: 19rem;
+      height: 19rem;
     }
   }
+
+  /* iPhone 6+, 7+ and 8+ */
+  @media only screen 
+  and (min-device-width: 414px) 
+  and (max-device-width: 736px) 
+  and (-webkit-min-device-pixel-ratio: 3) {
+
+    .error-page {
+      padding: 10%;
+      flex-direction: column-reverse;
+    }
+    
+    .error-message {
+      width: 100%;
+    }  
+
+    h2 {
+      font-size: 1.5rem;
+    }
+
+    button {
+      padding: 4% 15%;
+    }
+
+    .error-icon {
+      width: 19rem;
+      height: 19rem;
+    }
+  }
+
+  @media only screen
+    and (min-device-width: 375px)
+    and (max-device-width: 667px)
+    and (-webkit-min-device-pixel-ratio: 2) {
+  
+    
+  }  
+
 </style>
