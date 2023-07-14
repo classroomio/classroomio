@@ -10,9 +10,9 @@
   // }
 
   export let status;
-  import { appStore } from "../utils/store/app";
-  import ErrorIcon from "../components/Icons/ErrorIcon.svelte";
-  import ErrorIconDarkMode from "../components/Icons/ErrorIconDarkMode.svelte";
+  import { appStore } from '../utils/store/app';
+  import ErrorIcon from '../components/Icons/ErrorIcon.svelte';
+  import ErrorIconDarkMode from '../components/Icons/ErrorIconDarkMode.svelte';
 </script>
 
 <svelte:head>
