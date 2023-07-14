@@ -25,9 +25,9 @@
       Something unexpected occured.
     </h2>
     <p class="dark:text-white w-full text-base font-normal my-6 text-gray-500">
-      Don't worry, your learning is safe. Our server is just taking a quick
-      break to recharge. In the meantime, feel free to export the rest of our
-      website or take a nap yourself.
+      Don't worry, your learning is safe. It isn't your fault, it is ours. We
+      have gotten the error notification and will push a fix ASAP. In the
+      meantime, take a short break and come back a bit later.
     </p>
     <a
       class="bg-blue-700 hover:bg-blue-900 hover:no-underline transition-all py-3 px-9 rounded-xl text-white mt-3"
