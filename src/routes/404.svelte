@@ -1,10 +1,10 @@
 <script>
-  import { stores, goto } from "@sapper/app";
+  import { stores, goto } from '@sapper/app';
   const { page } = stores();
-  import PrimaryButton from "../components/PrimaryButton/index.svelte";
-  const src = "./bg-404.png";
+  import PrimaryButton from '../components/PrimaryButton/index.svelte';
+  const src = './bg-404.png';
 
-  $: console.log("route", $page);
+  $: console.log('route', $page);
 </script>
 
 <div
@@ -28,7 +28,7 @@ background-size:contain"
       <PrimaryButton
         label="Go to Home"
         className="rounded-md"
-        onClick={() => goto("/")}
+        onClick={() => goto('/')}
       />
     </div>
     <img src="/classroom-404.png" alt="classroomio_error_image" />
