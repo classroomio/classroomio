@@ -1,66 +1,52 @@
 <script>
+  import { goto } from '@sapper/app';
+  import { appStore } from '../utils/store/app';
+  import ErrorIcon from '../components/Icons/ErrorIcon.svelte';
+  import ErrorIconDarkMode from '../components/Icons/ErrorIconDarkMode.svelte';
+
   export let status;
   export let error;
 
-  // const dev = process.env.NODE_ENV === 'development';
-  let errorContent;
-
-  // function report() {}
-
-  $: {
-    try {
-      errorContent = !!error ? JSON.stringify(error) : '';
-    } catch (error) {}
+  if (status == 404) {
+    goto('/404');
   }
+  console.error(error);
 </script>
 
 <svelte:head>
   <title>{status}</title>
 </svelte:head>
 
-<div class="w-3/5 h-3/5 m-auto flex flex-col items-center justify-center">
-  <h1>Opps 😢</h1>
-  <h2>Something wen't wrong and it's our fault.</h2>
-  <p class="dark:text-white">Please screenshot this page and send to me.</p>
-  <pre>
-    {errorContent}
-  </pre>
+<div
+  class="error-container m-auto flex flex-col-reverse lg:flex-row md:flex-col-reverse items-center justify-center h-full py-10 dark:bg-gray-800"
+>
+  <div class="md:w-full p-2 lg:w-2/4">
+    <h2 class="w-full text-lg lg:text-3xl font-medium lg:font-normal">
+      Something unexpected occured.
+    </h2>
+    <p class="dark:text-white w-full text-base font-normal my-6 text-gray-600">
+      Don't worry, your learning is safe. It isn't your fault, it is ours. We
+      have gotten the error notification and will push a fix ASAP. In the
+      meantime, take a short break and come back a bit later.
+    </p>
+    <a
+      class="bg-blue-700 hover:bg-blue-900 hover:no-underline transition-all py-3 px-9 rounded-xl text-white mt-3"
+      href="mailto:support@classroomio.com">Contact Us</a
+    >
+  </div>
+
+  <div class="w-72 lg:w-2/4 flex items-center justify-center">
+    <!-- to check if it's in dark mode so as to render the appropriate svg -->
+    {#if $appStore.isDark}
+      <ErrorIconDarkMode />
+    {:else}
+      <ErrorIcon />
+    {/if}
+  </div>
 </div>
 
-<!-- {#if dev && error.stack}
-  <h1>{status}</h1>
-
-  <p class="dark:text-white">{error.message}</p>
-  <pre>{error.stack}</pre>
-{/if} -->
 <style>
-  h1,
-  p {
-    margin: 0 auto;
-  }
-
-  pre {
-    width: 500px;
-    white-space: pre-wrap; /* css-3 */
-    white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
-    white-space: -pre-wrap; /* Opera 4-6 */
-    white-space: -o-pre-wrap; /* Opera 7 */
-    word-wrap: break-word;
-  }
-
-  h1 {
-    font-size: 2.8em;
-    font-weight: 700;
-    margin: 0 0 0.5em 0;
-  }
-
-  p {
-    margin: 1em auto;
-  }
-
-  @media (min-width: 480px) {
-    h1 {
-      font-size: 4em;
-    }
+  .error-container {
+    max-width: 964px;
   }
 </style>
