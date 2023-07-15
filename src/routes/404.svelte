@@ -1,7 +1,8 @@
 <script>
   import { stores, goto } from '@sapper/app';
-  const { page } = stores();
   import PrimaryButton from '../components/PrimaryButton/index.svelte';
+
+  const { page } = stores();
   const src = './bg-404.png';
 
   $: console.log('route', $page);
