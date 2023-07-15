@@ -4,12 +4,15 @@
 
   export async function preload(page, params) {
     const parsedUser = JSON.parse(params.user);
-
+    //   if (page.query.create === 'true') {
+    //   $createCourseModal.open = true;
+    // }
     // if (parsedUser && parsedUser.id) {
     //   return fetchCourses(parsedUser.id);
     // }
 
     return {
+      page,
       allCourses: [],
       organizationId: null,
       cantFetch: true,
@@ -31,7 +34,11 @@
 
   export let allCourses = [];
   export let cantFetch;
+  export let page;
 
+  if (page.query.create === 'true') {
+    $createCourseModal.open = true;
+  }
   async function getCourses(userId) {
     if (process.browser) {
       if (cantFetch && typeof cantFetch === 'boolean' && !allCourses.length) {
