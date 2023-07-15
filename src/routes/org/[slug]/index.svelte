@@ -15,7 +15,6 @@
   import { onMount } from 'svelte';
   import { InlineCalendar, Datepicker } from 'svelte-calendar';
   import CheckmarkFilled20 from 'carbon-icons-svelte/lib/CheckmarkFilled20';
-
   import {
     formatUserUpcomingData,
     formatDate,
