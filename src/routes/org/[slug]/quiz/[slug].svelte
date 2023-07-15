@@ -27,7 +27,7 @@
   } from '../../../../utils/constants/quiz';
   import { quizStore, quizesStore } from '../../../../utils/store/org';
   import DeleteModal from '../../../../components/Org/Quiz/DeleteModal.svelte';
-  import Preview from '../../../../components/Org/Quiz/Play/Preview.svelte';
+  import Preview from '../../../../components/Org/Quiz/Play/PlayPreview.svelte';
   import QuizQuestion from '../../../../components/Org/Quiz/QuizQuestion.svelte';
   import { snackbarStore } from '../../../../components/Snackbar/store';
   import { SNACKBAR_SEVERITY } from '../../../../components/Snackbar/constants';

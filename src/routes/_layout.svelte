@@ -24,7 +24,7 @@
   // import SideBar from "../components/SideBar/index.svelte";
   // import Footer from '../components/Footer/index.svelte';
   import Apps from '../components/Apps/index.svelte';
-  import PlayQuiz from '../components/Org/Quiz/Play/index.svelte';
+  import PlayQuizStudent from '../components/Org/Quiz/Play/PlayStudent.svelte';
   import {
     isCoursesPage,
     isOrgPage,
@@ -51,7 +51,7 @@
   let supabase = getSupabase(config);
   let path = $page.path.replace('/', '');
   let theme = 'white';
-  let skipAuth = false;
+  let playQuiz = false;
 
   const delayedPreloading = derived(preloading, (currentPreloading, set) => {
     setTimeout(() => set(currentPreloading), 250);
@@ -162,6 +162,8 @@
   function setOrgBasedOnUrl(host) {
     if (typeof window !== 'undefined') {
       const debug = localStorage.getItem('role') === 'student';
+      const debugPlay =
+        localStorage.getItem('play') === 'debug' && $page.path === '/';
       const matches = host.match(/([a-z0-9]+).*classroomio[.]com/);
       const subdomain = matches?.[1] ?? '';
 
@@ -170,10 +172,11 @@
           ? !!subdomain && subdomain !== 'www'
           : false;
 
-        $appStore.isStudentDomain = debug || answer;
-        $appStore.siteNameFromDomain = debug ? 'codingdojo' : subdomain;
-      }
-      skipAuth = debug || subdomain === 'play';
+      $appStore.isStudentDomain = debug || answer;
+      $appStore.siteNameFromDomain = debug ? 'codingdojo' : subdomain;
+
+      console.log('$page', $page);
+      playQuiz = debugPlay || subdomain === 'play';
     }
   }
 
@@ -220,7 +223,7 @@
         }
 
         // Skip Authentication
-        if (skipAuth) return;
+        if (playQuiz) return;
 
         // Authentication Steps
         if (event === 'SIGNED_IN') {
@@ -262,8 +265,8 @@
 
 <Snackbar />
 
-{#if skipAuth}
-  <PlayQuiz />
+{#if playQuiz}
+  <PlayQuizStudent />
 {:else if $appStore.isStudentDomain && !path}
   <OrgLandingPage {segment} />
 {:else}
