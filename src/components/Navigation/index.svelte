@@ -1,6 +1,7 @@
 <script>
   import { goto, stores } from '@sapper/app';
   import { user } from '../../utils/store/user';
+  import { appStore } from '../../utils/store/app';
   import { isCoursePage } from '../../utils/functions/app';
   import PrimaryButton from '../PrimaryButton/index.svelte';
   import { VARIANTS } from '../PrimaryButton/constants';
@@ -86,7 +87,9 @@
     <span class="flex-grow" />
 
     {#if $user.isLoggedIn}
-      <li><a class="block" href="/lms"> Go to LMS </a></li>
+      {#if $appStore.isStudentDomain}
+        <li><a class="block" href="/lms"> Go to LMS </a></li>
+      {/if}
     {:else}
       <li>
         {#if !disableLogin}
