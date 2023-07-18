@@ -95,7 +95,9 @@
               label="Login"
               variant={VARIANTS.NONE}
               className="py-3 px-6 mx-2 app-background-color"
-              onClick={() => goto('/login' + redirect)}
+              onClick={() => {
+                goto('/login' + redirect);
+              }}
             />
             <PrimaryButton
               label="Sign Up"
