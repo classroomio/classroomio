@@ -16,6 +16,7 @@
   import { onboardingValidation } from '../utils/functions/validator';
   import { supabase } from '../utils/functions/supabase';
   import { blockedSubdomain } from '../utils/constants/app';
+  import { welcomeModalStore } from '../components/WelcomeModal/store';
 
   interface OnboardingField {
     fullname?: string;
@@ -187,6 +188,7 @@
 
       console.log('data', data);
       console.log('error', error);
+      $welcomeModalStore.open = true;
       return goto(`/org/${fields.siteName}`);
     }
 
