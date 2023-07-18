@@ -1,15 +1,10 @@
 <script>
   import { stores, goto } from '@sapper/app';
-<<<<<<< HEAD
+
   import { appStore } from '../utils/store/app';
   import PrimaryButton from '../components/PrimaryButton/index.svelte';
-=======
-  import PrimaryButton from '../components/PrimaryButton/index.svelte';
-
->>>>>>> f7dda7d7ebcb719575404e3858c77de1aeb721a4
   const { page } = stores();
   const src = './bg-404.png';
-
   $: console.log('route', $page);
 </script>
 
