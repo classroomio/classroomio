@@ -130,6 +130,7 @@
 
   // Every time the date changes
   $: selectedDateLessonData = getDataOfSelectedDate($store?.selected);
+
 </script>
 
 <svelte:head>
