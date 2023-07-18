@@ -6,6 +6,7 @@
   export let label = '';
   export let placeholder = '';
   export let value = '';
+  export let name = '';
   export let onKeyDown = () => {};
   export let className = '';
   export let inputClassName = '';
@@ -78,6 +79,7 @@
     disabled={isDisabled}
     autocomplete={autoComplete ? 'on' : 'off'}
     on:blur={onChange}
+    {name}
   />
   {#if isPassword}
     <span class="password-eye">

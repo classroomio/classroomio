@@ -5,17 +5,17 @@
 </script>
 
 <script>
-  import { goto } from '@sapper/app';
-  import TextField from '../components/Form/TextField.svelte';
-  import PrimaryButton from '../components/PrimaryButton/index.svelte';
-  import { getSupabase } from '../utils/functions/supabase';
+  import { goto } from "@sapper/app";
+  import TextField from "../components/Form/TextField.svelte";
+  import PrimaryButton from "../components/PrimaryButton/index.svelte";
+  import { getSupabase } from "../utils/functions/supabase";
   import {
     authValidation,
     getConfirmPasswordError,
     getDisableSubmit,
-  } from '../utils/functions/validator';
-  import { SIGNUP_FIELDS } from '../utils/constants/authentication';
-  import AuthUI from '../components/AuthUI/index.svelte';
+  } from "../utils/functions/validator";
+  import { SIGNUP_FIELDS } from "../utils/constants/authentication";
+  import AuthUI from "../components/AuthUI/index.svelte";
 
   export let config;
 
@@ -30,7 +30,7 @@
 
   async function handleSubmit(e) {
     const validationRes = authValidation(fields);
-    console.log('validationRes', validationRes);
+    console.log("validationRes", validationRes);
 
     if (Object.keys(validationRes).length) {
       errors = Object.assign(errors, validationRes);
@@ -43,12 +43,12 @@
         email: fields.email,
         password: fields.password,
       });
-      console.log('data', data);
+      console.log("data", data);
       if (error) throw error;
 
       formRef?.reset();
 
-      return goto('/login');
+      return goto("/login");
       // success = true;
       // fields = Object.assign({}, SIGNUP_FIELDS);
     } catch (error) {
