@@ -1,6 +1,6 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { writable, derived } from 'svelte/store';
-import { allOptions, STEPS, booleanOptions } from '../constants/quiz';
+import { allOptions, STEPS, STUDENTS_PLAY_STEPS } from '../constants/quiz';
 
 export const orgs = writable([]);
 export const currentOrg = writable({
@@ -35,7 +35,89 @@ export const quizesStore = writable([]);
 
 export const playQuizStore = writable({
   step: STEPS.CONNECT_TO_PLAY,
+  studentStep: STUDENTS_PLAY_STEPS.QUESTION,
 });
+
+export const mockData = {
+  title:
+    'Spaceflight history, international cooperation, commercial ventures, and recent achievements.',
+  questions: [
+    {
+      id: 1,
+      label: 'Who launched the first satellite into orbit?',
+      type: 'multichoice',
+      options: [
+        {
+          id: 'circle',
+          label: 'Fritz von Opel',
+          isCorrect: false,
+        },
+        {
+          id: 'triangle',
+          label: 'Max Valier',
+          isCorrect: false,
+        },
+        {
+          id: 'spade',
+          label: 'Wernher von Braun',
+          isCorrect: false,
+        },
+        {
+          id: 'square',
+          label: 'The Soviet Union',
+          isCorrect: true,
+        },
+      ],
+    },
+    {
+      id: 2,
+      label: 'Did the US land the first man on the moon?',
+      type: 'boolean',
+      options: [
+        {
+          id: 'triangle',
+          label: 'True',
+          isCorrect: true,
+        },
+        {
+          id: 'square',
+          label: 'False',
+          isCorrect: false,
+        },
+      ],
+    },
+    {
+      id: 3,
+      label:
+        'Which company became the first commercial operator to launch a crewed mission to the International Space Station in 2020?',
+      type: 'multichoice',
+      options: [
+        {
+          id: 'circle',
+          label: 'SpaceX',
+          isCorrect: true,
+        },
+        {
+          id: 'triangle',
+          label: 'NASA',
+          isCorrect: false,
+        },
+        {
+          id: 'spade',
+          label: 'Roscosmos',
+          isCorrect: false,
+        },
+        {
+          id: 'square',
+          label: 'ESA',
+          isCorrect: false,
+        },
+      ],
+    },
+  ],
+  timelimit: '20s',
+  theme: 'standard',
+};
 
 export const quizStore = writable({
   title: '',

@@ -68,14 +68,12 @@ export const booleanOptions = [
   {
     id: 'triangle',
     label: 'True',
-    image:
-      'https://koxqonvbkeakwvmdegcf.supabase.co/storage/v1/object/public/avatars/quizes/triangle.svg',
+    isCorrect: false,
   },
   {
     id: 'square',
     label: 'False',
-    image:
-      'https://koxqonvbkeakwvmdegcf.supabase.co/storage/v1/object/public/avatars/quizes/square.svg',
+    isCorrect: false,
   },
 ];
 export const allThemes = [
@@ -101,6 +99,13 @@ export const STEPS = {
   CONNECT_TO_PLAY: 'CONNECT_TO_PLAY',
   WAIT_FOR_PLAYERS: 'WAIT_FOR_PLAYERS',
   SHOW_NEXT_QUESTION: 'SHOW_NEXT_QUESTION',
+  SCOREBOARD: 'SCOREBOARD',
+  PODIUM: 'PODIUM',
+};
+
+export const STUDENTS_PLAY_STEPS = {
+  PIN_SETUP: 'PIN_SETUP',
+  QUESTION: 'QUESTION',
   SCOREBOARD: 'SCOREBOARD',
   PODIUM: 'PODIUM',
 };

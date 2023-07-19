@@ -24,7 +24,7 @@
   // import SideBar from "../components/SideBar/index.svelte";
   // import Footer from '../components/Footer/index.svelte';
   import Apps from '../components/Apps/index.svelte';
-  import PlayQuizStudent from '../components/Org/Quiz/Play/PlayStudent.svelte';
+  import PlayQuizStudent from '../components/Org/Quiz/Play/Student/Play.svelte';
   import {
     isCoursesPage,
     isOrgPage,
@@ -172,11 +172,13 @@
           ? !!subdomain && subdomain !== 'www'
           : false;
 
-      $appStore.isStudentDomain = debug || answer;
-      $appStore.siteNameFromDomain = debug ? 'codingdojo' : subdomain;
+        $appStore.isStudentDomain = debug || answer;
+        $appStore.siteNameFromDomain = debug ? 'codingdojo' : subdomain;
 
-      console.log('$page', $page);
-      playQuiz = debugPlay || subdomain === 'play';
+        console.log('$page', $page);
+        playQuiz = debugPlay || subdomain === 'play';
+        console.log('playQuiz', playQuiz);
+      }
     }
   }
 
