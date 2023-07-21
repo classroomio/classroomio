@@ -51,7 +51,7 @@
   let supabase = getSupabase(config);
   let path = $page.path.replace('/', '');
   let theme = 'white';
-  let playQuiz = false;
+  let shouldRender = false;
 
   const delayedPreloading = derived(preloading, (currentPreloading, set) => {
     setTimeout(() => set(currentPreloading), 250);
@@ -158,12 +158,20 @@
       }
     }
   }
+  function showPlayQuizPage(host) {
+    if (typeof window !== 'undefined') {
+      const matches = host.match(/([a-z0-9]+).*classroomio[.]com/);
+      const subdomain = matches?.[1] ?? '';
+
+      return subdomain === 'play' || localStorage.getItem('play') === 'debug';
+    }
+
+    return false;
+  }
 
   function setOrgBasedOnUrl(host) {
     if (typeof window !== 'undefined') {
       const debug = localStorage.getItem('role') === 'student';
-      const debugPlay =
-        localStorage.getItem('play') === 'debug' && $page.path === '/';
       const matches = host.match(/([a-z0-9]+).*classroomio[.]com/);
       const subdomain = matches?.[1] ?? '';
 
@@ -176,8 +184,6 @@
         $appStore.siteNameFromDomain = debug ? 'codingdojo' : subdomain;
 
         console.log('$page', $page);
-        playQuiz = debugPlay || subdomain === 'play';
-        console.log('playQuiz', playQuiz);
       }
     }
   }
@@ -225,7 +231,7 @@
         }
 
         // Skip Authentication
-        if (playQuiz) return;
+        if (showPlayQuizPage($page.host)) return;
 
         // Authentication Steps
         if (event === 'SIGNED_IN') {
@@ -246,6 +252,7 @@
       getCurrentOrg($appStore.siteNameFromDomain);
     }
 
+    shouldRender = true;
     return () => {
       authListener.unsubscribe();
     };
@@ -267,11 +274,11 @@
 
 <Snackbar />
 
-{#if playQuiz}
+{#if showPlayQuizPage($page.host)}
   <PlayQuizStudent />
 {:else if $appStore.isStudentDomain && !path}
   <OrgLandingPage {segment} />
-{:else}
+{:else if shouldRender}
   <main class="dark:bg-gray-800">
     {#if $preloading && $delayedPreloading}
       <Backdrop>

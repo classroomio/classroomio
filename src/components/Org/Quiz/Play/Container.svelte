@@ -1,4 +1,4 @@
-<div class="root flex flex-col justify-between h-full m-auto">
+<div class="root flex flex-col h-full m-auto">
   {#if $$slots.header}
     <!-- HEADER -->
     <div class="header">
@@ -15,7 +15,7 @@
 
   {#if $$slots.footer}
     <!-- FOOTER -->
-    <div class="footer bg-white dark:bg-gray-700 py-6 px-2 m-auto">
+    <div class="footer bg-white dark:bg-gray-700 py-6 px-4 m-auto">
       <slot name="footer" />
     </div>
   {/if}

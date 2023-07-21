@@ -35,12 +35,11 @@ export const quizesStore = writable([]);
 
 export const playQuizStore = writable({
   step: STEPS.CONNECT_TO_PLAY,
-  studentStep: STUDENTS_PLAY_STEPS.QUESTION,
+  studentStep: STUDENTS_PLAY_STEPS.PODIUM,
 });
 
 export const mockData = {
-  title:
-    'Spaceflight history, international cooperation, commercial ventures, and recent achievements.',
+  title: 'Spaceflight history and its impact',
   questions: [
     {
       id: 1,

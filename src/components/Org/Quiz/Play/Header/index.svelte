@@ -9,7 +9,7 @@
 </script>
 
 <div class="flex justify-between items-center w-full">
-  <h3 class="text-white">{customTitle || $quizStore.title}</h3>
+  <h3 class="text-white text-2xl">{customTitle || $quizStore.title}</h3>
   {#if showCountDown}
     <div class="flex">
       <Timer {startCount} timelimit={$quizStore.timelimit} />

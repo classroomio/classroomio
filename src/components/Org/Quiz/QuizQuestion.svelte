@@ -14,7 +14,7 @@
 </script>
 
 {#if isPreview}
-  <h1 class="text-white mb-5 font-bold">{currentQuestion.label}</h1>
+  <h1 class="text-white mb-5 font-bold text-3xl">{currentQuestion.label}</h1>
 {:else}
   <TextField
     placeholder="Start typing your question"
