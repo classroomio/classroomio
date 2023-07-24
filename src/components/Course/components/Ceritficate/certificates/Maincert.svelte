@@ -9,7 +9,7 @@
 </script>
 
 <div
-  class="w-full flex flex-col items-center justify-center {borderwidth} {bordercolor}"
+  class="flex flex-col items-center justify-center {borderwidth} {bordercolor}"
 >
   <div>
     <img src={logo} alt="logo" />
