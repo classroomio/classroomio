@@ -1,7 +1,5 @@
 <script context="module">
-  import {
-    fetchCourse,
-  } from '../../../utils/services/courses';
+  import { fetchCourse } from '../../../utils/services/courses';
 
   export async function preload({ params }) {
     return { courseId: params.id };
@@ -17,12 +15,12 @@
   import PageBody from '../../../components/PageBody/index.svelte';
   import RoleBasedSecurity from '../../../components/RoleBasedSecurity/index.svelte';
   import { setCourse, course, group } from '../../../components/Course/store';
-  import IssueCertModal from '../../../components/Course/components/Ceritficate/IssueCertModal.svelte';
+  import IssueCertModal from '../../../components/Course/components/Ceritficate/IssueCertificateModal.svelte';
   // import DeleteConfirmation from '../../../components/Course/components/People/DeleteConfirmation.svelte';
   import Design from '../../../components/Course/components/Ceritficate/Design.svelte';
   import Reports from '../../../components/Course/components/Ceritficate/Reports.svelte';
 
-  import { issueCertModal } from '../../../components/Course/components/Ceritficate/store';
+  import { issueCertificateModal } from '../../../components/Course/components/Ceritficate/store';
   import { Tabs, Tab, TabContent } from 'carbon-components-svelte';
 
   export let courseId: string = '';
@@ -42,7 +40,7 @@
         <PrimaryButton
           className="mr-2 rounded-md text-sm font-medium"
           label="Issue Cert"
-          onClick={() => ($issueCertModal.open = true)}
+          onClick={() => ($issueCertificateModal.open = true)}
         />
       </RoleBasedSecurity>
     </slot:fragment>
