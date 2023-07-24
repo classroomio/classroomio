@@ -15,7 +15,7 @@
   import PageBody from '../../../components/PageBody/index.svelte';
   import RoleBasedSecurity from '../../../components/RoleBasedSecurity/index.svelte';
   import { setCourse, course, group } from '../../../components/Course/store';
-  import IssueCertModal from '../../../components/Course/components/Ceritficate/IssueCertificateModal.svelte';
+  import IssueCertificateModal from '../../../components/Course/components/Ceritficate/IssueCertificateModal.svelte';
   // import DeleteConfirmation from '../../../components/Course/components/People/DeleteConfirmation.svelte';
   import Design from '../../../components/Course/components/Ceritficate/Design.svelte';
   import Reports from '../../../components/Course/components/Ceritficate/Reports.svelte';
@@ -32,7 +32,7 @@
   });
 </script>
 
-<IssueCertModal />
+<IssueCertificateModal />
 <CourseContainer bind:isStudent>
   <PageNav title="Certificates" disableSticky={true}>
     <slot:fragment slot="widget">
