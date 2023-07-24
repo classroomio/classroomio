@@ -7,9 +7,9 @@
   import UploadImage from './Upload.svelte';
   import PrimaryButton from '../../../PrimaryButton/index.svelte';
   import TextArea from '../../../Form/TextArea.svelte';
-  import Introductorycert from './certificates/Introductorycert.svelte';
-  import Maincert from './certificates/Maincert.svelte';
-  import { certInfo } from './store';
+  import { certificateInfo } from './store';
+  import IntroductoryCertificate from './certificates/IntroductoryCertificate.svelte';
+  import MainCertificate from './certificates/MainCertificate.svelte';
 
   const theme1 = './theme1.png';
   const theme2 = './theme2.png';
@@ -59,8 +59,8 @@
             rows={6}
             placeholder="a little description about the course"
             bgColor="bg-gray-100"
-            bind:value={$certInfo.Desc}
-            onChange={$certInfo.Desc}
+            bind:value={$certificateInfo.Desc}
+            onChange={$certificateInfo.Desc}
           />
         </span>
 
@@ -80,9 +80,9 @@
     >
       <div class="flex justify-center items-center h-5/6 w-5/6">
         {#if Selectedtheme.label == 'theme1'}
-          <Introductorycert />
+          <IntroductoryCertificate />
         {:else}
-          <Maincert />
+          <MainCertificate />
         {/if}
         <!-- <img src="./certImg.png" alt="cert" class="object-cover" /> -->
         <!-- <img src={Selectedtheme.src} alt="cert" class="img object-cover" /> -->

@@ -1,7 +1,7 @@
 <script>
   import TextField from '../../../../Form/TextField.svelte';
   import TextArea from '../../../../Form/TextArea.svelte';
-  import { certInfo } from '../store';
+  import { certificateInfo } from '../store';
 
   let borderwidth = 'border-l-8';
   let bordercolor = 'border-blue-800';
@@ -19,7 +19,7 @@
       <div class="border-b border-gray-500 mb-4">
         <p class="text-xs text-black font-medium">This is to certify that</p>
         <TextField
-          bind:value={$certInfo.Name}
+          bind:value={$certificateInfo.Name}
           inputClassName="text-center placeholder:text-black"
           placeholder="Name of student"
           bgColor="bg-transparent"
@@ -30,7 +30,7 @@
           has successfully completed introductory courses in
         </p>
         <TextArea
-          bind:value={$certInfo.Title}
+          bind:value={$certificateInfo.Title}
           inputClassName=""
           placeholder="Name of course"
           bgColor="clamp bg-transparent font-semibold text-blue-800 text-center placeholder:text-black placeholder:text-base placeholder:font-semibold uppercase resize-none border-none"
@@ -38,7 +38,7 @@
           maxRows="2"
         />
       </div>
-      <p class="desc mb-2">{$certInfo.Desc}</p>
+      <p class="desc mb-2 text-justify">{$certificateInfo.Desc}</p>
       <div>
         <img src={logo} alt="logo" class="my-2" />
       </div>

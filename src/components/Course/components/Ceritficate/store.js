@@ -4,7 +4,7 @@ import { writable } from 'svelte/store';
 //   open: false,
 // });
 
-export const issueCertModal = writable({
+export const issueCertificateModal = writable({
   open: false,
   automatic: false,
   email: '',
@@ -12,14 +12,14 @@ export const issueCertModal = writable({
   message: '',
 });
 
-export const certInfo = writable({
+export const certificateInfo = writable({
   Name: 'Name of student',
   Title: 'Desiging functional components',
   Desc: '(Introduction to Digital Devices, The Internet Mobile Applications, Introduction to Social Media, Using social media for business, Digital Content Creation and Distribution,  Using mobile money in business, Digital financial management,Digital Empowerment,Digital Safety)',
 });
 
 export const resetForm = () =>
-  issueCertModal.update(() => ({
+  issueCertificateModal.update(() => ({
     open: false,
     automatic: false,
     email: '',

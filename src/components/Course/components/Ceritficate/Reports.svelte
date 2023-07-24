@@ -46,14 +46,14 @@
             class="flex-3 flex flex-row items-center justify-start w-full text-blue-600 text-sm font-medium"
           >
             <Checkbox bind:checked />
-            <p class="text-blue-600 text-start w-full text-sm font-medium">
+            <p class="text-blue-900 text-start w-full text-sm font-medium">
               Name of student
             </p>
           </div>
         </StructuredListCell>
         <StructuredListCell head>
           <div
-            class="flex-2 items-center w-full text-blue-600 text-sm font-medium"
+            class="flex-2 items-center w-full text-blue-900 text-sm font-medium"
           >
             <p class="align-middle text-sm font-medium pt-1">Date issued</p>
             <p class="opacity-0">personalized</p>

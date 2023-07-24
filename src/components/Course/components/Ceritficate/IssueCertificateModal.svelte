@@ -4,20 +4,20 @@
   import PrimaryButton from '../../../PrimaryButton/index.svelte';
   import TextArea from '../../../Form/TextArea.svelte';
   import TextField from '../../../Form/TextField.svelte';
-  import { issueCertModal, resetForm } from './store';
+  import { issueCertificateModal, resetForm } from './store';
 
   const onToggle = (e) => {
     console.log(e);
   };
 
-  const issueCert = () => {
+  const issueCertificate = () => {
     resetForm();
   };
 </script>
 
 <Modal
   onClose={resetForm}
-  bind:open={$issueCertModal.open}
+  bind:open={$issueCertificateModal.open}
   width="w-3/5"
   maxWidth=""
   modalHeading="Send Certificate"
@@ -41,7 +41,7 @@
     <p class="text-xs font-normal text-gray-500 my-4">
       or send a personalised/ custom certificate below:
     </p>
-    <form on:submit|preventDefault={issueCert}>
+    <form on:submit|preventDefault={issueCertificate}>
       <div class="flex flex-col md:flex-row gap-2 w-full">
         <TextField
           label="Email address of the student"
@@ -49,7 +49,7 @@
           labelClassName="text-xs font-normal"
           inputClassName="text-sm placeholder:text-sm placeholder:font-medium "
           placeholder="email,comma seperated"
-          bind:value={$issueCertModal.email}
+          bind:value={$issueCertificateModal.email}
         />
         <TextField
           label="Schedule date"
@@ -57,14 +57,14 @@
           labelClassName="text-xs font-normal"
           inputClassName="text-sm placeholder:text-sm placeholder:font-medium "
           placeholder="12/06/2023"
-          bind:value={$issueCertModal.date}
+          bind:value={$issueCertificateModal.date}
         />
       </div>
 
       <TextArea
         label="Add a personalized message"
         labelClassName="text-xs font-normal"
-        bind:value={$issueCertModal.message}
+        bind:value={$issueCertificateModal.message}
         rows="2"
         maxRows="3"
         placeholder="your message here"
