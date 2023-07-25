@@ -8,8 +8,8 @@
   import PrimaryButton from '../../../PrimaryButton/index.svelte';
   import TextArea from '../../../Form/TextArea.svelte';
   import { certificateInfo } from './store';
-  import IntroductoryCertificate from './certificates/IntroductoryCertificate.svelte';
-  import MainCertificate from './certificates/MainCertificate.svelte';
+  import Professional from './certificates/Professional.svelte';
+  import Plain from './certificates/Plain.svelte';
 
   const theme1 = './theme1.png';
   const theme2 = './theme2.png';
@@ -80,9 +80,9 @@
     >
       <div class="flex justify-center items-center h-5/6 w-5/6">
         {#if Selectedtheme.label == 'theme1'}
-          <IntroductoryCertificate />
+          <Professional />
         {:else}
-          <MainCertificate />
+          <Plain />
         {/if}
         <!-- <img src="./certImg.png" alt="cert" class="object-cover" /> -->
         <!-- <img src={Selectedtheme.src} alt="cert" class="img object-cover" /> -->
