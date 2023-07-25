@@ -11,12 +11,12 @@
   import Professional from './certificates/Professional.svelte';
   import Plain from './certificates/Plain.svelte';
 
-  const theme1 = './theme1.png';
-  const theme2 = './theme2.png';
+  const professional = './theme1.png';
+  const plain = './theme2.png';
 
   const themes = [
-    { label: 'theme1', src: theme1 },
-    { label: 'theme2', src: theme2 },
+    { label: 'professional', src: professional },
+    { label: 'plain', src: plain },
   ];
 
   let Selectedtheme = themes[0];
@@ -79,7 +79,7 @@
       class="certbg flex justify-center items-center rounded-md w-full md:w-3/5"
     >
       <div class="flex justify-center items-center h-5/6 w-5/6">
-        {#if Selectedtheme.label == 'theme1'}
+        {#if Selectedtheme.label == 'professional'}
           <Professional />
         {:else}
           <Plain />
