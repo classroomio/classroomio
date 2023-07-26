@@ -6,8 +6,8 @@
   } from 'carbon-components-svelte';
   import UploadImage from './Upload.svelte';
   import PrimaryButton from '../../../PrimaryButton/index.svelte';
+  import { course } from '../../../Course/store';
   import TextArea from '../../../Form/TextArea.svelte';
-  import { certificateInfo } from './store';
   import Professional from './certificates/Professional.svelte';
   import Plain from './certificates/Plain.svelte';
 
@@ -20,9 +20,22 @@
   ];
 
   let Selectedtheme = themes[0];
-  const saveCertificate = () => {};
-  const onToggle = (e) => {
-    console.log(e);
+  let isSaving = false;
+
+  const saveCertificate = () => {
+    // set isSaving to true
+    // Validation - make sure description isn't empty
+    // Upload the brand logo to give you a URL
+    // Update organisation logo (like in `src/components/Org/Settings/OrgSettings.svelte` line 25-51)
+    //    - Note from the file above both logo and name is updated, in this case we only want to update logo
+    /**
+     * Update only course description (like in src/components/Course/components/Settings/index.svelte)
+     * 
+     * await updateCourse($course.id, undefined, {
+        description: $course.description,
+      });
+     * */
+    // set isSaving to false
   };
 </script>
 
@@ -59,15 +72,14 @@
             rows={6}
             placeholder="a little description about the course"
             bgColor="bg-gray-100"
-            bind:value={$certificateInfo.Desc}
-            onChange={$certificateInfo.Desc}
+            bind:value={$course.description}
           />
         </span>
 
         <Toggle
-          labelText="Add date of completion"
-          on:toggle={(e) => onToggle(e)}
-          class="my-2"
+          labelText="Automatically send certificates on completion"
+          bind:toggled={$course.auto_send_certificate}
+          class="my-4"
           size="sm"
         >
           <span slot="labelA" style="color: #161616">Automatic</span>
@@ -94,7 +106,8 @@
     <PrimaryButton
       label="Save Changes"
       className="rounded-md"
-      onClick={() => saveCertificate()}
+      onClick={saveCertificate}
+      isLoading={isSaving}
     />
   </div>
 </main>
