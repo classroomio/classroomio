@@ -96,7 +96,7 @@ export interface Course {
   currency?: string;
   group?: Group;
   organization?: Organization;
-  auto_send_certificate?: boolean;
+  is_certificate_downloadable?: boolean;
 }
 
 export interface Groupmember {
