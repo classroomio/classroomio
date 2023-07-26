@@ -10,6 +10,7 @@ export const course: Writable<Course> = writable({
   description: '',
   cost: 0,
   currency: '',
+  auto_send_certificate: false,
   metadata: {
     requirements: '',
     description: '',
