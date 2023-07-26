@@ -33,6 +33,7 @@
      * 
      * await updateCourse($course.id, undefined, {
         description: $course.description,
+        auto_send_certificate: $course.auto_send_certificate
       });
      * */
     // set isSaving to false
