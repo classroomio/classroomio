@@ -33,7 +33,7 @@
      * 
      * await updateCourse($course.id, undefined, {
         description: $course.description,
-        auto_send_certificate: $course.auto_send_certificate
+        is_certificate_downloadable: $course.is_certificate_downloadable
       });
      * */
     // set isSaving to false
@@ -78,13 +78,13 @@
         </span>
 
         <Toggle
-          labelText="Automatically send certificates on completion"
-          bind:toggled={$course.auto_send_certificate}
+          labelText="Allow students download certificate"
+          bind:toggled={$course.is_certificate_downloadable}
           class="my-4"
           size="sm"
         >
-          <span slot="labelA" style="color: #161616">Automatic</span>
-          <span slot="labelB" style="color: green">Automatic</span>
+          <span slot="labelA" style="color: #161616">Student access</span>
+          <span slot="labelB" style="color: green">Student access</span>
         </Toggle>
       </div>
     </section>
