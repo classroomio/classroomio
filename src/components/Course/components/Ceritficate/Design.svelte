@@ -22,10 +22,26 @@
   ];
 
   let Selectedtheme = themes[0];
+  let isSaving = false;
 
-  const saveCertificate = () => {};
   const onToggle = (e) => {
     console.log(e);
+  };
+  const saveCertificate = () => {
+    // set isSaving to true
+    // Validation - make sure description isn't empty
+    // Upload the brand logo to give you a URL
+    // Update organisation logo (like in `src/components/Org/Settings/OrgSettings.svelte` line 25-51)
+    //    - Note from the file above both logo and name is updated, in this case we only want to update logo
+    /**
+     * Update only course description (like in src/components/Course/components/Settings/index.svelte)
+     * 
+     * await updateCourse($course.id, undefined, {
+        description: $course.description,
+        is_certificate_downloadable: $course.is_certificate_downloadable
+      });
+     * */
+    // set isSaving to false
   };
 </script>
 
@@ -72,17 +88,16 @@
             placeholder="a little description about the course"
             bgColor="bg-gray-100"
             bind:value={$course.description}
-            onChange={$course.description}
           />
         </span>
         <Toggle
-          labelText="Add date of completion"
-          on:toggle={(e) => onToggle(e)}
-          class="my-2"
+          labelText="Allow students download certificate"
+          bind:toggled={$course.is_certificate_downloadable}
+          class="my-4"
           size="sm"
         >
-          <span slot="labelA" style="color: #161616">Date</span>
-          <span slot="labelB" style="color: green">Date</span>
+          <span slot="labelA" style="color: #161616">Student access</span>
+          <span slot="labelB" style="color: green">Student access</span>
         </Toggle>
       </div>
     </section>
@@ -102,7 +117,8 @@
     <PrimaryButton
       label="Save Changes"
       className="rounded-md"
-      onClick={() => saveCertificate()}
+      onClick={saveCertificate}
+      isLoading={isSaving}
     />
   </div>
 </main>
