@@ -39,9 +39,9 @@
 
 <section class="mt-14 border-t border-gray-300">
   <StructuredList>
-    <StructuredListHead class="bg-blue-50 py-1">
-      <StructuredListRow head>
-        <StructuredListCell head>
+    <StructuredListHead class="bg-blue-50 py-0">
+      <StructuredListRow head class="py-0">
+        <StructuredListCell head class="py-0">
           <div
             class="flex-3 flex flex-row items-center justify-start w-full text-blue-600 text-sm font-medium"
           >
@@ -51,7 +51,7 @@
             </p>
           </div>
         </StructuredListCell>
-        <StructuredListCell head>
+        <StructuredListCell head class="py-0">
           <div
             class="flex-2 items-center w-full text-blue-900 text-sm font-medium"
           >

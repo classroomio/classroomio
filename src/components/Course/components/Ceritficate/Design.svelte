@@ -4,15 +4,17 @@
     RadioButton,
     Toggle,
   } from 'carbon-components-svelte';
-  import UploadImage from './Upload.svelte';
+  import { goto } from '@sapper/app';
   import PrimaryButton from '../../../PrimaryButton/index.svelte';
   import TextArea from '../../../Form/TextArea.svelte';
-  import { certificateInfo } from './store';
   import Professional from './certificates/Professional.svelte';
   import Plain from './certificates/Plain.svelte';
+  import { course } from '../../store';
+  import { currentOrg } from '../../../../utils/store/org';
 
-  const professional = './theme1.png';
-  const plain = './theme2.png';
+  const professional = './professional.svg';
+  const plain = './plain.svg';
+  const student = 'Name of student';
 
   const themes = [
     { label: 'professional', src: professional },
@@ -20,6 +22,7 @@
   ];
 
   let Selectedtheme = themes[0];
+
   const saveCertificate = () => {};
   const onToggle = (e) => {
     console.log(e);
@@ -46,12 +49,21 @@
       <div>
         <p class="text-xs font-normal text-black my-2">Brand Logo</p>
         <p class="text-base font-normal mt-2 mb-4">
-          We recommend using a PNG file with transparency. Maximum size: 1200 x
-          600px.
+          We recommend using a PNG file with transparency. Maximum size: 512px x
+          512px.
         </p>
-
-        <UploadImage />
-
+        <div>
+          <p class="text-base mt-1">
+            To update your brand image, go to <strong class="font-semibold"
+              >Settings &gt; Organisation settings</strong
+            > and upload you brand logo
+          </p>
+          <PrimaryButton
+            label="Go to Settings"
+            className="rounded-md mt-1"
+            onClick={() => goto(`org/${$currentOrg.siteName}/settings`)}
+          />
+        </div>
         <span class="my-4">
           <p class="text-xs font-normal mt-4 mb-2">Course Description</p>
           <TextArea
@@ -59,34 +71,30 @@
             rows={6}
             placeholder="a little description about the course"
             bgColor="bg-gray-100"
-            bind:value={$certificateInfo.Desc}
-            onChange={$certificateInfo.Desc}
+            bind:value={$course.description}
+            onChange={$course.description}
           />
         </span>
-
         <Toggle
           labelText="Add date of completion"
           on:toggle={(e) => onToggle(e)}
           class="my-2"
           size="sm"
         >
-          <span slot="labelA" style="color: #161616">Automatic</span>
-          <span slot="labelB" style="color: green">Automatic</span>
+          <span slot="labelA" style="color: #161616">Date</span>
+          <span slot="labelB" style="color: green">Date</span>
         </Toggle>
       </div>
     </section>
     <section
       class="certbg flex justify-center items-center rounded-md w-full md:w-3/5"
     >
-      <div class="flex justify-center items-center h-5/6 w-5/6">
+      <div class="certContainer flex justify-center items-center h-5/6">
         {#if Selectedtheme.label == 'professional'}
-          <Professional />
+          <Professional studentName={student} />
         {:else}
-          <Plain />
+          <Plain studentName={student} />
         {/if}
-        <!-- <img src="./certImg.png" alt="cert" class="object-cover" /> -->
-        <!-- <img src={Selectedtheme.src} alt="cert" class="img object-cover" /> -->
-        <!-- {Selectedtheme.label} -->
       </div>
     </section>
   </div>
@@ -102,6 +110,10 @@
 <style>
   p {
     color: #262626;
+  }
+  .certContainer {
+    width: 95%;
+    max-width: 95%;
   }
   .certbg {
     background-color: #f5f8fe;
