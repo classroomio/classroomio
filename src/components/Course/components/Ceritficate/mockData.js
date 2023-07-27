@@ -1,4 +1,4 @@
-export const CertData = [
+export const CertificateReportData = [
   {
     id: 1,
     title: 'Total students taking course',

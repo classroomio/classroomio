@@ -1,5 +1,4 @@
 <script>
-  import TextField from '../../../../Form/TextField.svelte';
   import { course } from '../../../store';
   import { currentOrg } from '../../../../../utils/store/org';
 
@@ -19,13 +18,7 @@
       </p>
       <div class="border-b border-gray-500 mb-4">
         <p class="text-xs text-black font-medium">This is to certify that</p>
-        <!-- TODO: Nothing in this file should be editable -->
-        <TextField
-          bind:value={studentName}
-          inputClassName="text-center placeholder:text-black"
-          placeholder="Name of student"
-          bgColor="bg-transparent"
-        />
+        <p class="text-center">{studentName}</p>
       </div>
       <div class="mb-2">
         <p class="text-xs text-black font-medium">
