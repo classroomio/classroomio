@@ -126,6 +126,11 @@
         hideSortIcon: true,
       },
       {
+        label: 'Certificates',
+        to: getNavItemRoute($course.id, 'certificates'),
+        hideSortIcon: true,
+      },
+      {
         label: 'Landing Page',
         to: getNavItemRoute($course.id, 'landingpage'),
         hideSortIcon: true,
