@@ -1,18 +1,24 @@
 <script>
   import TextField from '../../../../Form/TextField.svelte';
-  import TextArea from '../../../../Form/TextArea.svelte';
-  import { certificateInfo } from '../store';
+  import { course } from '../../../store';
+  import { currentOrg } from '../../../../../utils/store/org';
 
+  export let studentName;
   let borderwidth = 'border-4';
   let bordercolor = 'border-pink-700';
-  let logo = './certLogo.png';
+  let logo = './logo-512.png';
 </script>
 
 <div
   class="flex flex-col items-center justify-center {borderwidth} {bordercolor}"
 >
-  <div>
-    <img src={logo} alt="logo" />
+  <div class="flex items-center gap-1 my-2">
+    <img
+      src={$currentOrg.avatar_url ? $currentOrg.avatar_url : logo}
+      alt="logo"
+      class=" w-14 h-14 rounded-md"
+    />
+    <p class="font-semibold capitalize">{$currentOrg.name}</p>
   </div>
   <div class="w-full px-5 py-3">
     <p
@@ -23,7 +29,7 @@
     <div class="border-b border-gray-500 mb-4">
       <p class="text-xs text-black font-medium">This is to certify that</p>
       <TextField
-        bind:value={$certificateInfo.Name}
+        bind:value={studentName}
         inputClassName="text-center placeholder:text-black"
         placeholder="Name of student"
         bgColor="bg-transparent"
@@ -33,16 +39,15 @@
       <p class="text-xs text-black font-medium">
         has successfully completed a courses in
       </p>
-      <TextArea
-        bind:value={$certificateInfo.Title}
-        inputClassName=""
-        placeholder="Name of course"
-        bgColor="clamp bg-transparent text-base font-semibold text-pink-700 text-center placeholder:text-black placeholder:text-base placeholder:font-semibold uppercase resize-none"
-        rows="1"
-        maxRows="2"
-      />
+      <div>
+        <p
+          class="clamp bg-transparent text-base font-semibold text-pink-700 text-center uppercase"
+        >
+          {$course.title}
+        </p>
+      </div>
     </div>
-    <p class="desc text-center">{$certificateInfo.Desc}</p>
+    <p class="desc text-center">{$course.description}</p>
   </div>
 </div>
 
