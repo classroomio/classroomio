@@ -12,34 +12,38 @@
   import { course } from '../../store';
   import { currentOrg } from '../../../../utils/store/org';
 
-  const professional = './professional.svg';
-  const plain = './plain.svg';
-  const student = 'Name of student';
+  const studentNamePlaceholder = 'Name of student';
 
-  const themes = [
-    { label: 'professional', src: professional },
-    { label: 'plain', src: plain },
-  ];
+  const themes = ['professional', 'plain'];
 
-  let Selectedtheme = themes[0];
   let isSaving = false;
 
   const saveCertificate = () => {
     // set isSaving to true
     // Validation - make sure description isn't empty
     /**
-     * Update course description and is_certificate_downloadable (like in src/components/Course/components/Settings/index.svelte)
+     * Update course description, is_certificate_downloadable and certificate_theme (like in src/components/Course/components/Settings/index.svelte)
      * 
      * await updateCourse($course.id, undefined, {
         description: $course.description,
-        is_certificate_downloadable: $course.is_certificate_downloadable
+        is_certificate_downloadable: $course.is_certificate_downloadable,
+        certificate_theme: $course.certificate_theme
       });
      * */
     // set isSaving to false
   };
 </script>
 
-<main class="md:-ml-4 md:-mr-4">
+<svelte:head>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Qwitcher+Grypen&family=Roboto:wght@300;400;700&display=swap"
+    rel="stylesheet"
+  />
+</svelte:head>
+
+<main class="md:-ml-4 md:-mr-4 px-2">
   <div
     class="flex-1 flex flex-col md:flex-row justify-between gap-3 w-full mb-3 h-4/5"
   >
@@ -48,20 +52,16 @@
         >Certificate settings</strong
       >
       <p class="text-xs font-normal my-4">Choose a theme</p>
-      <RadioButtonGroup bind:selected={Selectedtheme} class="mb-10">
-        {#each themes as value}
+      <RadioButtonGroup bind:selected={$course.certificate_theme} class="mb-10">
+        {#each themes as theme}
           <div class="flex mr-3">
-            <RadioButton {value} size="sm" />
-            <img src={value.src} alt="themes" />
+            <RadioButton value={theme} size="sm" />
+            <img src={`./${theme}.svg`} alt="themes" />
           </div>
         {/each}
       </RadioButtonGroup>
       <div>
         <p class="text-xs font-normal text-black my-2">Brand Logo</p>
-        <p class="text-base font-normal mt-2 mb-4">
-          We recommend using a PNG file with transparency. Maximum size: 512px x
-          512px.
-        </p>
         <div>
           <p class="text-base mt-1">
             To update your brand image, go to <strong class="font-semibold"
@@ -70,7 +70,7 @@
           </p>
           <PrimaryButton
             label="Go to Settings"
-            className="rounded-md mt-1"
+            className="rounded-md mt-3"
             onClick={() => goto(`org/${$currentOrg.siteName}/settings`)}
           />
         </div>
@@ -90,19 +90,19 @@
           class="my-4"
           size="sm"
         >
-          <span slot="labelA" style="color: #161616">Student access</span>
-          <span slot="labelB" style="color: green">Student access</span>
+          <span slot="labelA" style="color: #161616">Locked</span>
+          <span slot="labelB" style="color: green">Unlocked</span>
         </Toggle>
       </div>
     </section>
     <section
-      class="certbg flex justify-center items-center rounded-md w-full md:w-3/5"
+      class="certificate-bg flex justify-center items-center rounded-md w-full md:w-3/5"
     >
-      <div class="certContainer flex justify-center items-center h-5/6">
-        {#if Selectedtheme.label == 'professional'}
-          <Professional studentName={student} />
+      <div class="certificate-container flex justify-center items-center h-5/6">
+        {#if $course.certificate_theme === 'professional'}
+          <Professional studentName={studentNamePlaceholder} />
         {:else}
-          <Plain studentName={student} />
+          <Plain studentName={studentNamePlaceholder} />
         {/if}
       </div>
     </section>
@@ -121,11 +121,11 @@
   p {
     color: #262626;
   }
-  .certContainer {
+  .certificate-container {
     width: 95%;
     max-width: 95%;
   }
-  .certbg {
+  .certificate-bg {
     background-color: #f5f8fe;
   }
 </style>
