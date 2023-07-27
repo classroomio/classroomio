@@ -5,6 +5,3 @@ yarn-error.log
 /__sapper__/
 .env
 /dist/
-
-# Local Netlify folder
-.netlify
