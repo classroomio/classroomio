@@ -24,17 +24,11 @@
   let Selectedtheme = themes[0];
   let isSaving = false;
 
-  const onToggle = (e) => {
-    console.log(e);
-  };
   const saveCertificate = () => {
     // set isSaving to true
     // Validation - make sure description isn't empty
-    // Upload the brand logo to give you a URL
-    // Update organisation logo (like in `src/components/Org/Settings/OrgSettings.svelte` line 25-51)
-    //    - Note from the file above both logo and name is updated, in this case we only want to update logo
     /**
-     * Update only course description (like in src/components/Course/components/Settings/index.svelte)
+     * Update course description and is_certificate_downloadable (like in src/components/Course/components/Settings/index.svelte)
      * 
      * await updateCourse($course.id, undefined, {
         description: $course.description,
