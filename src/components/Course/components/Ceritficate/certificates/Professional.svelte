@@ -19,6 +19,7 @@
       </p>
       <div class="border-b border-gray-500 mb-4">
         <p class="text-xs text-black font-medium">This is to certify that</p>
+        <!-- TODO: Nothing in this file should be editable -->
         <TextField
           bind:value={studentName}
           inputClassName="text-center placeholder:text-black"
