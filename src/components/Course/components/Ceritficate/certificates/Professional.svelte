@@ -18,7 +18,7 @@
       </p>
       <div class="border-b border-gray-500 mb-4">
         <p class="text-xs text-black font-medium">This is to certify that</p>
-        <p class="text-center">{studentName}</p>
+        <p class="student-name text-center text-5xl">{studentName}</p>
       </div>
       <div class="mb-2">
         <p class="text-xs text-black font-medium">
@@ -26,18 +26,18 @@
         </p>
         <div>
           <p
-            class="clamp bg-transparent text-base font-semibold text-blue-800 text-center uppercase"
+            class="clamp bg-transparent text-base font-semibold text-blue-800 text-center uppercase my-2"
           >
             {$course.title}
           </p>
         </div>
       </div>
-      <p class="desc mb-2 text-justify">{$course.description}</p>
+      <p class="desc mb-4 text-justify">{$course.description}</p>
       <div class="flex items-center gap-1 my-2">
         <img
           src={$currentOrg.avatar_url ? $currentOrg.avatar_url : logo}
           alt="logo"
-          class="w-14 h-14 rounded-md"
+          class="w-10 h-10 rounded-md"
         />
         <p class="font-semibold capitalize">{$currentOrg.name}</p>
       </div>
@@ -46,6 +46,9 @@
 </div>
 
 <style>
+  .student-name {
+    font-family: 'Qwitcher Grypen', cursive;
+  }
   .desc {
     font-size: 10px;
   }

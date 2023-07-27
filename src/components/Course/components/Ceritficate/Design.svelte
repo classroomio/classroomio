@@ -6,6 +6,7 @@
   } from 'carbon-components-svelte';
   import { goto } from '@sapper/app';
   import PrimaryButton from '../../../PrimaryButton/index.svelte';
+  import { VARIANTS } from '../../../PrimaryButton/constants';
   import TextArea from '../../../Form/TextArea.svelte';
   import Professional from './certificates/Professional.svelte';
   import Plain from './certificates/Plain.svelte';
@@ -39,7 +40,16 @@
   };
 </script>
 
-<main class="md:-ml-4 md:-mr-4">
+<svelte:head>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Qwitcher+Grypen&family=Roboto:wght@300;400;700&display=swap"
+    rel="stylesheet"
+  />
+</svelte:head>
+
+<main class="md:-ml-4 md:-mr-4 px-2">
   <div
     class="flex-1 flex flex-col md:flex-row justify-between gap-3 w-full mb-3 h-4/5"
   >
@@ -58,10 +68,6 @@
       </RadioButtonGroup>
       <div>
         <p class="text-xs font-normal text-black my-2">Brand Logo</p>
-        <p class="text-base font-normal mt-2 mb-4">
-          We recommend using a PNG file with transparency. Maximum size: 512px x
-          512px.
-        </p>
         <div>
           <p class="text-base mt-1">
             To update your brand image, go to <strong class="font-semibold"
@@ -71,6 +77,7 @@
           <PrimaryButton
             label="Go to Settings"
             className="rounded-md mt-1"
+            variant={VARIANTS.TEXT}
             onClick={() => goto(`org/${$currentOrg.siteName}/settings`)}
           />
         </div>
