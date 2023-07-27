@@ -134,8 +134,4 @@
   .certbg {
     background-color: #f5f8fe;
   }
-  /* .img {
-    width: 600px;
-    height: 200px;
-  } */
 </style>

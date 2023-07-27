@@ -9,9 +9,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import CourseContainer from '../../../components/CourseContainer/index.svelte';
-
   import PageNav from '../../../components/PageNav/index.svelte';
-  // import PrimaryButton from '../../../components/PrimaryButton/index.svelte';
   import PageBody from '../../../components/PageBody/index.svelte';
   import RoleBasedSecurity from '../../../components/RoleBasedSecurity/index.svelte';
   import { setCourse, course } from '../../../components/Course/store';
@@ -19,7 +17,6 @@
   // import DeleteConfirmation from '../../../components/Course/components/People/DeleteConfirmation.svelte';
   import Design from '../../../components/Course/components/Ceritficate/Design.svelte';
   // import Reports from '../../../components/Course/components/Ceritficate/Reports.svelte';
-
   // import { issueCertificateModal } from '../../../components/Course/components/Ceritficate/store';
   import { Tabs, Tab } from 'carbon-components-svelte';
   import TabContent from 'carbon-components-svelte/src/Tabs/TabContent.svelte';
