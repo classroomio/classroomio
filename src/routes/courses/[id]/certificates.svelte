@@ -18,8 +18,8 @@
   import Design from '../../../components/Course/components/Ceritficate/Design.svelte';
   // import Reports from '../../../components/Course/components/Ceritficate/Reports.svelte';
   // import { issueCertificateModal } from '../../../components/Course/components/Ceritficate/store';
-  import { Tabs, Tab } from 'carbon-components-svelte';
-  import TabContent from 'carbon-components-svelte/src/Tabs/TabContent.svelte';
+  // import { Tabs, Tab } from 'carbon-components-svelte';
+  // import TabContent from 'carbon-components-svelte/src/Tabs/TabContent.svelte';
 
   export let courseId: string = '';
   let isStudent = false;
@@ -47,20 +47,21 @@
     </slot:fragment>
   </PageNav>
 
-  <PageBody className="w-full mx-0" padding="px-0">
-    <Tabs autoWidth class="border-b border-gray-200">
+  <PageBody className="w-full mx-0" padding="px-3">
+    <Design />
+    <!-- <Tabs autoWidth class="border-b border-gray-200">
       <Tab label="Design" />
-      <!-- <Tab label="Reports" /> -->
+      <Tab label="Reports" />
       <svelte:fragment slot="content">
         <TabContent>
           <Design />
         </TabContent>
 
-        <!-- Temp disable Reports tab for V2 -->
-        <!-- <TabContent>
+        Temp disable Reports tab for V2
+        <TabContent>
           <Reports />
-        </TabContent> -->
+        </TabContent>
       </svelte:fragment>
-    </Tabs>
+    </Tabs> -->
   </PageBody>
 </CourseContainer>

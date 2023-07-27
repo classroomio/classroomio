@@ -11,6 +11,7 @@ export const course: Writable<Course> = writable({
   cost: 0,
   currency: '',
   is_certificate_downloadable: false,
+  certificate_theme: 'professional',
   metadata: {
     requirements: '',
     description: '',
@@ -128,6 +129,10 @@ export async function setCourse(data: Course, setLesson = true) {
         imgUrl: '',
       },
     };
+  }
+
+  if (!data.certificate_theme) {
+    data.certificate_theme = 'professional';
   }
   course.set(data);
 }
