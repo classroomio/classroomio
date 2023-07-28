@@ -31,7 +31,7 @@
     </div>
     <div class="mb-2">
       <p class="text-xs text-black font-medium">
-        has successfully completed a courses in
+        has successfully completed the course
       </p>
       <div>
         <p
