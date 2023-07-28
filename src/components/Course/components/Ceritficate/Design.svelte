@@ -5,6 +5,7 @@
     Toggle,
   } from 'carbon-components-svelte';
   import { goto } from '@sapper/app';
+  import { updateCourse } from '../../../../utils/services/courses';
   import PrimaryButton from '../../../PrimaryButton/index.svelte';
   import TextArea from '../../../Form/TextArea.svelte';
   import Professional from './certificates/Professional.svelte';
@@ -13,24 +14,26 @@
   import { currentOrg } from '../../../../utils/store/org';
 
   const studentNamePlaceholder = 'Name of student';
-
   const themes = ['professional', 'plain'];
 
   let isSaving = false;
+  let Saved = false;
+  let errors = {};
 
-  const saveCertificate = () => {
-    // set isSaving to true
-    // Validation - make sure description isn't empty
-    /**
-     * Update course description, is_certificate_downloadable and certificate_theme (like in src/components/Course/components/Settings/index.svelte)
-     * 
-     * await updateCourse($course.id, undefined, {
-        description: $course.description,
-        is_certificate_downloadable: $course.is_certificate_downloadable,
-        certificate_theme: $course.certificate_theme
-      });
-     * */
-    // set isSaving to false
+  const saveCertificate = async () => {
+    isSaving = true;
+    if (!$course.description) {
+      errors.description = 'Description cannot be empty';
+      isSaving = false;
+      return;
+    }
+    await updateCourse($course.id, undefined, {
+      description: $course.description,
+      is_certificate_downloadable: $course.is_certificate_downloadable,
+      certificate_theme: $course.certificate_theme,
+    });
+    Saved = true;
+    isSaving = false;
   };
 </script>
 
@@ -82,6 +85,7 @@
             placeholder="a little description about the course"
             bgColor="bg-gray-100"
             bind:value={$course.description}
+            errorMessage={errors.description}
           />
         </span>
         <Toggle
@@ -109,7 +113,7 @@
   </div>
   <div class="h-1/5">
     <PrimaryButton
-      label="Save Changes"
+      label={Saved == true ? 'Saved' : 'Save Changes'}
       className="rounded-md"
       onClick={saveCertificate}
       isLoading={isSaving}
