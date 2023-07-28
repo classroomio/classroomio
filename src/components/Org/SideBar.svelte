@@ -59,7 +59,7 @@
 <aside class="root bg-gray-100 dark:bg-gray-700 h-full">
   <div class="h-full flex flex-col">
     <div class="border-b border-gray-200 pt-5 px-4">
-      {#if $currentOrg.avatar_url}
+      {#if $currentOrg.avatar_url && $currentOrg.name}
         <Avatar
           src={$currentOrg.avatar_url}
           name={$currentOrg.name}
@@ -67,7 +67,7 @@
           width="w-7"
           height="h-7"
         />
-      {:else}
+      {:else if $currentOrg.shortName}
         <TextChip
           value={$currentOrg.shortName}
           className="bg-blue-200 font-bold"

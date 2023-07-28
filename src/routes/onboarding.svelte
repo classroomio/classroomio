@@ -17,6 +17,7 @@
   import { supabase } from '../utils/functions/supabase';
   import { blockedSubdomain } from '../utils/constants/app';
   import { welcomeModalStore } from '../components/WelcomeModal/store';
+  import { getOrganizations } from '../utils/services/org';
 
   interface OnboardingField {
     fullname?: string;
@@ -91,7 +92,7 @@
     if (!orgName || isTouched) return;
     let inputElement = event?.target as HTMLInputElement;
     let value = inputElement.name;
-    console.log('set org name', orgName, isTouched, value);
+
     if (value == 'orgname') {
       fields.siteName = orgName
         ?.toLowerCase()
@@ -102,7 +103,6 @@
         fields.siteName = inputElement.value;
       }
     }
-    console.log('set org name', orgName, isTouched, value);
   }
 
   const handleSubmit = async () => {
@@ -148,14 +148,6 @@
           });
         console.log('Create organisation member', data);
 
-        const memberId = Array.isArray(data) && data.length ? data[0].id : '';
-
-        orgs.set([orgData as never]);
-        currentOrg.set({
-          ...orgData,
-          memberId: memberId,
-        });
-
         if (error) {
           console.log('Error: create organisation member', error);
           errors.siteName =
@@ -169,6 +161,8 @@
           loading = false;
           return;
         }
+
+        await getOrganizations($profile.id);
       }
 
       // client
@@ -182,7 +176,11 @@
 
       let { data, error } = await supabase
         .from('profile')
-        .update(fields)
+        .update({
+          ...fields,
+          orgName: undefined,
+          siteName: undefined,
+        })
         .match({ id: $profile.id });
       loading = false;
 
