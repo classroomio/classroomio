@@ -80,7 +80,7 @@ export const getConfirmPasswordError = ({ password, confirmPassword }) => {
     : null;
 };
 
-const processErrors = (error, mapToId) => {
+export const processErrors = (error, mapToId) => {
   const errors = {};
 
   if (Array.isArray(error?.issues)) {

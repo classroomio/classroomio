@@ -12,10 +12,8 @@
   import { goto } from '@sapper/app';
   import PrimaryButton from '../../../components/PrimaryButton/index.svelte';
   import Avatar from '../../../components/Avatar/index.svelte';
-  import { onMount } from 'svelte';
   import { InlineCalendar, Datepicker } from 'svelte-calendar';
   import CheckmarkFilled20 from 'carbon-icons-svelte/lib/CheckmarkFilled20';
-
   import {
     formatUserUpcomingData,
     formatDate,
@@ -27,6 +25,8 @@
     UserLessonDataType,
     LessonsByMonthIndexType,
   } from '../../../utils/types';
+  import WelcomeModal from '../../../components/WelcomeModal/WelcomeModal.svelte';
+  import { onMount } from 'svelte';
 
   export let orgName: string;
 
@@ -192,9 +192,9 @@
   }
 
   onMount(() => {
-    // Remove default shouldEnlargeDay=true when using <DatePicker /> on mobile
+    // Remove default shouldEnlargeDay=true when <DatePicker /> on mobile
     if ($store && $store.shouldEnlargeDay) {
-      $store.shouldEnlargeDay = false;
+      $store.shouldEnlargeDay = false
     }
   });
 
@@ -208,6 +208,8 @@
 <svelte:head>
   <title>Dashboard - ClassroomIO</title>
 </svelte:head>
+
+<WelcomeModal />
 
 <div class="py-10 px-5 w-full max-w-7xl mx-auto">
   <div class="flex items-center justify-between mb-10">

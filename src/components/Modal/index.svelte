@@ -12,8 +12,10 @@
 
   afterUpdate(() => {
     if (open) {
+      if (!document) return;
       document.getElementsByTagName('body')[0].style.overflow = 'hidden';
     } else {
+      if (!document) return;
       document.getElementsByTagName('body')[0].style.overflow = 'auto';
     }
   });

@@ -6,6 +6,7 @@
   export let label = '';
   export let placeholder = '';
   export let value = '';
+  export let name = '';
   export let onKeyDown = () => {};
   export let className = '';
   export let inputClassName = '';
@@ -16,6 +17,8 @@
   export let autoFocus = false;
   export let isRequired = false;
   export let isDisabled = false;
+  export let min = undefined;
+  export let max = undefined;
   export let errorMessage = '';
   export let helperMessage = '';
   export let autoComplete = true;
@@ -78,6 +81,9 @@
     disabled={isDisabled}
     autocomplete={autoComplete ? 'on' : 'off'}
     on:blur={onChange}
+    {name}
+    {min}
+    {max}
   />
   {#if isPassword}
     <span class="password-eye">

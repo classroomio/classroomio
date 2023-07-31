@@ -16,6 +16,8 @@
   import { onboardingValidation } from '../utils/functions/validator';
   import { supabase } from '../utils/functions/supabase';
   import { blockedSubdomain } from '../utils/constants/app';
+  import { welcomeModalStore } from '../components/WelcomeModal/store';
+  import { getOrganizations } from '../utils/services/org';
 
   interface OnboardingField {
     fullname?: string;
@@ -32,7 +34,6 @@
   }
 
   const maxSteps = 2;
-
   let fields: OnboardingField = {
     fullname: '',
     orgName: '',
@@ -87,15 +88,21 @@
     const payload = await response.json();
     fields.metadata = payload;
   }
-
   function setOrgSiteName(orgName: string | undefined, isTouched: boolean) {
-    console.log('set org name', orgName, isTouched);
     if (!orgName || isTouched) return;
+    let inputElement = event?.target as HTMLInputElement;
+    let value = inputElement.name;
 
-    fields.siteName = orgName
-      // @ts-ignore
-      .replaceAll(' ', '-')
-      .toLowerCase();
+    if (value == 'orgname') {
+      fields.siteName = orgName
+        ?.toLowerCase()
+        ?.replace(/\s+/g, '-')
+        ?.replace(/[^a-zA-Z0-9-]/g, '');
+    } else {
+      if (value == 'sitename') {
+        fields.siteName = inputElement.value;
+      }
+    }
   }
 
   const handleSubmit = async () => {
@@ -141,14 +148,6 @@
           });
         console.log('Create organisation member', data);
 
-        const memberId = Array.isArray(data) && data.length ? data[0].id : '';
-
-        orgs.set([orgData as never]);
-        currentOrg.set({
-          ...orgData,
-          memberId: memberId,
-        });
-
         if (error) {
           console.log('Error: create organisation member', error);
           errors.siteName =
@@ -162,6 +161,8 @@
           loading = false;
           return;
         }
+
+        await getOrganizations($profile.id);
       }
 
       // client
@@ -175,12 +176,17 @@
 
       let { data, error } = await supabase
         .from('profile')
-        .update(fields)
+        .update({
+          ...fields,
+          orgName: undefined,
+          siteName: undefined,
+        })
         .match({ id: $profile.id });
       loading = false;
 
       console.log('data', data);
       console.log('error', error);
+      $welcomeModalStore.open = true;
       return goto(`/org/${fields.siteName}`);
     }
 
@@ -190,6 +196,10 @@
   };
 
   $: progress = Math.round((step / maxSteps) * 100);
+  $: fields.siteName = fields.siteName
+    ?.toLowerCase()
+    ?.replace(/\s+/g, '-')
+    ?.replace(/[^a-zA-Z0-9-]/g, '');
   $: setOrgSiteName(fields.orgName, isSiteNameTouched);
 </script>
 
@@ -226,6 +236,7 @@
             <TextField
               label="Full Name"
               bind:value={fields.fullname}
+              name="fullname"
               type="text"
               placeholder="e.g Joke Silva"
               className="mb-5 w-full"
@@ -237,12 +248,15 @@
             <TextField
               label="Name of Organization"
               bind:value={fields.orgName}
+              name="orgname"
               type="text"
               placeholder="e.g Education For All"
               className="mb-5 w-full"
               labelClassName="text-lg font-normal"
               errorMessage={errors.orgName}
-              onChange={() => (isSiteNameTouched = true)}
+              onChange={() => {
+                isSiteNameTouched = true;
+              }}
             />
 
             <!-- Org Site Name -->
@@ -250,6 +264,7 @@
               label="Organisation Site name"
               helperMessage={`https://${fields.siteName || ''}.classroomio.com`}
               bind:value={fields.siteName}
+              name="sitename"
               type="text"
               placeholder="e.g edforall"
               className="mb-5 w-full"

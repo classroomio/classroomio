@@ -9,7 +9,7 @@
   import { derived } from 'svelte/store';
   import { stores, goto } from '@sapper/app';
   import isEmpty from 'lodash/isEmpty';
-  // import * as Sentry from '@sentry/browser';
+  import * as Sentry from '@sentry/browser';
   import { Theme } from 'carbon-components-svelte';
   import { Moon } from 'svelte-loading-spinners';
   import Tailwindcss from '../components/Tailwindcss.svelte';
@@ -96,7 +96,7 @@
         profile.set(data[0]);
 
         // Set user in sentry
-        // Sentry.setUser($profile);
+        Sentry.setUser($profile);
 
         if ($appStore.isStudentDomain) {
           const { data, error } = await supabase
@@ -134,7 +134,7 @@
       profile.set(profileData);
 
       // Set user in sentry
-      // Sentry.setUser($profile);
+      Sentry.setUser($profile);
 
       const orgRes = await getOrganizations($profile.id);
 
