@@ -19,6 +19,7 @@ interface CourseMetadata {
     description: string;
     imgUrl: string;
   };
+  reviews?: Array<Review>;
 }
 
 // Generated from https://supabase-schema.vercel.app/
@@ -217,4 +218,14 @@ export interface Question_answer {
   question?: Question;
   groupmember?: Groupmember;
   submission?: Submission;
+}
+
+export interface Review {
+  id: number;
+  hide: boolean;
+  name: string;
+  avatar_url: string;
+  rating: number;
+  created_at: number;
+  description: string;
 }
