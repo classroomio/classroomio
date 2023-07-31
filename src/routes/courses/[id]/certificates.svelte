@@ -20,7 +20,7 @@
   // import { issueCertificateModal } from '../../../components/Course/components/Ceritficate/store';
   // import { Tabs, Tab } from 'carbon-components-svelte';
   // import TabContent from 'carbon-components-svelte/src/Tabs/TabContent.svelte';
-
+  import StudentCertificate from '../../../components/Course/components/Ceritficate/StudentCertificate/Index.svelte';
   export let courseId: string = '';
   let isStudent = false;
 
@@ -48,7 +48,13 @@
   </PageNav>
 
   <PageBody className="w-full mx-0" padding="px-3">
-    <Design />
+    <RoleBasedSecurity allowedRoles={[1, 2]}>
+      <Design />
+    </RoleBasedSecurity>
+    <RoleBasedSecurity allowedRoles={[3]}>
+      <StudentCertificate />
+    </RoleBasedSecurity>
+
     <!-- <Tabs autoWidth class="border-b border-gray-200">
       <Tab label="Design" />
       <Tab label="Reports" />
