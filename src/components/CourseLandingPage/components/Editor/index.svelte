@@ -12,6 +12,7 @@
   import DescriptionForm from './DescriptionForm.svelte';
   import PricingForm from './PricingForm.svelte';
   import GoalsForm from './GoalsForm.svelte';
+  import ReviewsForm from './ReviewsForm.svelte';
   import InstructorForm from './InstructorForm.svelte';
   import PrimaryButton from '../../../PrimaryButton/index.svelte';
   import { VARIANTS } from '../../../PrimaryButton/constants';
@@ -43,10 +44,14 @@
     },
     {
       key: 5,
-      title: 'Instructor',
+      title: 'Reviews',
     },
     {
       key: 6,
+      title: 'Instructor',
+    },
+    {
+      key: 7,
       title: 'Pricing',
     },
   ];
@@ -64,6 +69,16 @@
   function handleSectionSelect(sectionKey) {
     return () => {
       selectedSection = sections.find((section) => section.key === sectionKey);
+      if (selectedSection) {
+        const sectionId = selectedSection.title.toLowerCase();
+        const sectionEl = document.getElementById(sectionId);
+        if (sectionEl) {
+          sectionEl.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+          });
+        }
+      }
     };
   }
 
@@ -146,7 +161,7 @@
       <h3 class="dark:text-white">{selectedSection.title}</h3>
     </div>
 
-    <div class="p-2 h-4/5 overflow-y">
+    <div class="title-content p-2 overflow-y-auto">
       {#if selectedSection.key === 1}
         <HeaderForm bind:course />
       {:else if selectedSection.key === 2}
@@ -156,10 +171,18 @@
       {:else if selectedSection.key === 4}
         <GoalsForm bind:course />
       {:else if selectedSection.key === 5}
-        <InstructorForm bind:course />
+        <ReviewsForm bind:course />
       {:else if selectedSection.key === 6}
+        <InstructorForm bind:course />
+      {:else if selectedSection.key === 7}
         <PricingForm bind:course />
       {/if}
     </div>
   {/if}
 </Container>
+
+<style>
+  .title-content {
+    height: 90%;
+  }
+</style>
