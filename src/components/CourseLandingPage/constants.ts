@@ -4,6 +4,7 @@ export const SECTION_KEYS = {
   DESCRIPTION: '#description',
   GOALS: '#goals',
   LESSONS: '#lessons',
+  REVIEWS: '#reviews',
   INSTRUCTOR: '#instructor',
 };
 
@@ -23,6 +24,10 @@ export const NAV_ITEMS = [
   {
     key: SECTION_KEYS.LESSONS,
     label: 'Lessons',
+  },
+  {
+    key: SECTION_KEYS.REVIEWS,
+    label: 'Reviews',
   },
   {
     key: SECTION_KEYS.INSTRUCTOR,
