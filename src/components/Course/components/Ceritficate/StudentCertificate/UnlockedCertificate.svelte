@@ -27,7 +27,6 @@
       }
     );
     const data = await response.blob();
-    console.log(data);
     const file = new Blob([data], { type: 'application/pdf' });
     const fileURL = URL.createObjectURL(file);
     isLoading = false;
