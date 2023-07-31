@@ -28,6 +28,7 @@
   }
 
   $: onAvatarChange(avatar);
+  $: review.rating = parseInt(review.rating);
 </script>
 
 <div class="flex items-center flex-col w-full">
