@@ -4,6 +4,8 @@
   import { onMount } from 'svelte';
   import pluralize from 'pluralize';
   import { stores } from '@sapper/app';
+  import dayjs from 'dayjs';
+  import relativeTime from 'dayjs/plugin/relativeTime';
   import Notebook from 'carbon-icons-svelte/lib/Notebook16/Notebook16.svelte'; //note
   import PresentationFile from 'carbon-icons-svelte/lib/PresentationFile16/PresentationFile16.svelte'; // exercise
   import Video from 'carbon-icons-svelte/lib/Video16/Video16.svelte'; //video
@@ -13,17 +15,37 @@
   import PricingSection from './components/PricingSection.svelte';
   import { getLectureNo } from '../Course/function';
   import { NAV_ITEMS } from './constants';
+  import Avatar from '../../components/Avatar/index.svelte';
   import Chip from '../Chip/index.svelte';
   import { getEmbedId } from '../../utils/functions/formatYoutubeVideo';
-  import type { Course, Lesson } from '../../utils/types';
+  import type { Course, Lesson, Review } from '../../utils/types';
+  import Modal from '../Modal/index.svelte';
+  import { reviewsModalStore } from './store';
+  import { VARIANTS } from './../PrimaryButton/constants';
+
+  dayjs.extend(relativeTime);
 
   export let courseData: Course = {
     id: '',
     title: '',
     description: '',
   };
+  const ratingsImg = [
+    '/images/rating-1.svg',
+    '/images/rating-2.svg',
+    '/images/rating-3.svg',
+    '/images/rating-4.svg',
+    '/images/rating-5.svg',
+  ];
+
   let lessons: Array<Lesson> = [];
+  let reviews: Review[] = [];
   let player: any;
+  let averageRating = 0;
+  let totalRatings = 0;
+
+  // initialize the expandDescription array with 'false' values for each review.
+  let expandDescription = Array(reviews.length).fill(false);
 
   const { page } = stores();
   // const paystackApi = paystack('');
@@ -59,6 +81,10 @@
     window.player = plyr;
   }
 
+  function toggleDescription(id: number) {
+    expandDescription[id] = !expandDescription[id];
+  }
+
   onMount(() => {
     window.onhashchange = locationHashChanged;
   });
@@ -67,6 +93,14 @@
   $: lessons = get(courseData, 'lessons', []);
   $: instructor = courseData?.metadata?.instructor || {};
   $: initPlyr(player, video);
+  $: {
+    reviews = get(courseData, 'metadata.reviews') || [];
+    totalRatings = reviews?.reduce(
+      (acc = 0, review) => acc + (review?.rating || 0),
+      0
+    );
+    averageRating = totalRatings / reviews?.length;
+  }
 </script>
 
 <svelte:head>
@@ -75,7 +109,7 @@
 
 <div class="w-full bg-white dark:bg-gray-800 flex flex-col items-center">
   <!-- Header Section -->
-  <header class="banner w-full flex items-center justify-center p-">
+  <header id="header" class="banner w-full flex items-center justify-center p-">
     <div
       class="md:w-5/6 w-full flex items-center justify-between flex-col-reverse md:flex-row"
     >
@@ -252,6 +286,139 @@
           {/each}
         </section>
 
+        <!-- Sections - Reviews -->
+        {#if reviews && reviews.length > 0}
+          <section id="reviews">
+            <h2 class="my-16 mr-0 mb-6 ml-0 font-semibold">Reviews</h2>
+            <div class="flex flex-wrap">
+              {#each reviews.slice(0, 4) as review, id}
+                {#if !review.hide}
+                  <!-- review -->
+                  <div class="flex flex-row item-start w-2/4 my-2">
+                    <!-- image container -->
+                    {#if review.avatar_url}
+                      <Avatar
+                        src={review.avatar_url}
+                        name="Avatar"
+                        className="mt-1"
+                      />
+                    {/if}
+
+                    <!-- profile content -->
+                    <div class="pl-2.5 w-11/12">
+                      <p class="mb-0.5 font-medium">{review.name}</p>
+                      <!-- ratings -->
+                      <div class="flex flex-row items-center">
+                        {#if review.rating}
+                          <img
+                            src={ratingsImg[review.rating - 1]}
+                            class="w-24 mr-4 mt-1"
+                            alt=""
+                          />
+                        {/if}
+                      </div>
+                      <div
+                        class="read-more-content mb-2"
+                        style="max-height: {expandDescription[id]
+                          ? 'none'
+                          : '50px'}"
+                      >
+                        <p class="text-sm my-2 leading-5 text-gray-600">
+                          {review.description}
+                        </p>
+                      </div>
+                      {#if !expandDescription[id] && review.description.split(' ').length > 9}
+                        <button
+                          class="underline text-blue-700 mt-2 font-normal"
+                          on:click={() => toggleDescription(id)}
+                          >See More</button
+                        >
+                      {/if}
+                      {#if expandDescription[id]}
+                        <button
+                          class="underline text-blue-700 mt-2 font-normal"
+                          on:click={() => toggleDescription(id)}
+                          >See Less</button
+                        >
+                      {/if}
+                    </div>
+                  </div>
+                {/if}
+              {/each}
+            </div>
+            {#if reviews.length > 4}
+              <PrimaryButton
+                label="See All"
+                className="w-3/12 p-4 mt-2"
+                variant={VARIANTS.OUTLINED}
+                onClick={() => ($reviewsModalStore.open = true)}
+              />
+            {/if}
+
+            <!-- Reviews Modal -->
+            <Modal
+              onClose={() => ($reviewsModalStore.open = false)}
+              bind:open={$reviewsModalStore.open}
+              width="w-9/12"
+              modalHeading="Reviews"
+            >
+              <div class="flex">
+                <!-- ratings -->
+                <div class="w-1/3">
+                  <h2 class="text-xl font-bold">
+                    {averageRating} Rating
+                  </h2>
+                  <h2 class="text-lg font-semibold mt-2">
+                    {reviews.length} Ratings
+                  </h2>
+                </div>
+                <!-- reviews -->
+                <div class="flex flex-wrap w-4/6">
+                  {#each reviews as review, id}
+                    <!-- review -->
+                    <div class="flex flex-row item-start w-full my-2">
+                      <!-- image container -->
+                      {#if review.avatar_url}
+                        <Avatar
+                          src={review.avatar_url}
+                          name={review.name}
+                          className="mt-1"
+                        />
+                      {/if}
+
+                      <!-- profile content -->
+                      <div class="pl-2.5 w-11/12">
+                        <p class="mb-0.5 font-medium">{review.name}</p>
+                        <!-- ratings -->
+                        <div class="flex flex-row">
+                          <img
+                            src="/images/rating-full.svg"
+                            alt=""
+                            class="mr-2"
+                          />
+                          <p class="text-xs text-gray-600">
+                            {dayjs(review.created_at).fromNow(true)} ago
+                          </p>
+                        </div>
+                        <div
+                          class="read-more-content mb-2"
+                          style="max-height: {expandDescription[id]
+                            ? 'none'
+                            : '50px'}"
+                        >
+                          <p class="text-sm my-2 leading-5 text-gray-600">
+                            {review.description}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  {/each}
+                </div>
+              </div>
+            </Modal>
+          </section>
+        {/if}
+
         <!-- Sections - Instructor -->
         <section id="instructor" class="mt-8 pb-10">
           <h3 class="text-2xl font-bold mt-0 mb-3">Instructor</h3>
@@ -349,5 +516,18 @@
 
   :global(.plyr) {
     width: 100% !important;
+  }
+
+  .read-more-content {
+    max-height: 100px; /* Adjust this value to set the maximum height for the truncated content */
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    text-overflow: ellipsis;
+  }
+
+  .read-more-button {
+    cursor: pointer;
+    color: blue;
+    text-decoration: underline;
   }
 </style>

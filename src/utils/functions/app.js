@@ -1,4 +1,6 @@
 export function toggleBodyByTheme(isDark) {
+  if (!document) return;
+
   if (isDark) {
     document.body.className = document.body.className.concat(' ', 'dark');
   } else {

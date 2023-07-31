@@ -5,6 +5,7 @@
   export let src = null;
   export let widthHeight = null;
   export let shape = 'rounded-full';
+  export let errorMessage = null;
 
   let fileinput;
 
@@ -45,6 +46,9 @@
   >
     <Camera /> <span class="ml-2">Upload Image</span>
   </p>
+  {#if errorMessage}
+    <p class="text-sm text-red-500">{errorMessage}</p>
+  {/if}
 
   <input
     style="display:none"
