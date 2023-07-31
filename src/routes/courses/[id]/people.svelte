@@ -128,7 +128,7 @@
         label="Filter by"
         bind:value={filterBy}
         options={ROLES}
-        className="flex items-center"
+        className="flex items-center dark:text-black"
       />
     </div>
 

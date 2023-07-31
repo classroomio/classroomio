@@ -152,7 +152,7 @@
       {#each $lessons as lesson (lesson.id)}
         <div
           bind:this={ref}
-          class="group relative m-auto rounded-md border-2 border-gray-100 py-3 px-5 mb-4 flex items-center hover:shadow-md shadow-xl transition delay-150 duration-300 ease-in-out"
+          class="group relative m-auto rounded-md border-2 border-gray-100 py-3 px-5 mb-4 flex items-center hover:shadow-md shadow-xl transition delay-150 duration-300 ease-in-out dark:bg-gray-700"
         >
           <!-- Complete or Not complete icon -->
           <div class="absolute -left-6 -top-6 success">
@@ -211,7 +211,7 @@
                   href={isStudent && !lesson.is_complete
                     ? $page.path
                     : '/courses/' + $course.id + '/lessons/' + lesson.id}
-                  class="hover:underline text-black {isStudent &&
+                  class="dark:text-white hover:underline text-black {isStudent &&
                   !lesson.is_complete
                     ? 'cursor-not-allowed'
                     : ''}"
@@ -320,6 +320,5 @@
   }
   .group {
     min-height: 170px;
-    background-color: #fafafa;
   }
 </style>
