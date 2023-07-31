@@ -39,8 +39,6 @@ export async function fetchCourse(
       cost,
       currency,
       metadata,
-      is_certificate_downloadable,
-      certificate_theme,
       lessons:lesson(
         id, title,public, lesson_at, call_url, is_complete, order, created_at,
         note, video_url, slide_url, call_url, totalExercises:exercise(count),
