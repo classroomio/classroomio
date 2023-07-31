@@ -230,6 +230,7 @@
       value="toggle"
       onClick={() => (show = !show)}
       size={$isMobile ? 'large' : 'small'}
+      color="text-black"
       toolTipProps={$isMobile
         ? {}
         : {
@@ -239,9 +240,9 @@
           }}
     >
       {#if show}
-        <ChevronLeft16 class="carbon-icon" />
+        <ChevronLeft16 />
       {:else}
-        <ChevronRight16 class="carbon-icon" />
+        <ChevronRight16 />
       {/if}
     </IconButton>
   </div>
