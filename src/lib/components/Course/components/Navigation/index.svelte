@@ -3,6 +3,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import hotkeys from 'hotkeys-js';
+  import { browser } from '$app/environment';
   import HomeIcon from 'carbon-icons-svelte/lib/Home.svelte';
   import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
   import SettingsIcon from 'carbon-icons-svelte/lib/Settings.svelte';
@@ -27,7 +28,6 @@
   import { profile } from '$lib/utils/store/user';
   import { currentOrgPath } from '$lib/utils/store/org';
   import { isMobile } from '$lib/utils/store/useMobile';
-  import { browser } from '$app/environment';
 
   // export let lessonId;
   export let path;
