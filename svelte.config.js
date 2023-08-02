@@ -12,7 +12,8 @@ const config = {
     adapter:
       process.env.ADAPTER === 'NETLIFY'
         ? netlifyAdapter({
-            edge: true,
+            edge: false,
+            split: true,
           })
         : autoAdapter(),
   },
