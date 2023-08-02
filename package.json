@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build --legacy",
+    "build": "vite build",
     "export": "vite build --entry \"/ /404 login signup forgot onboarding courses org lms course\"",
     "postexport": "mv __sapper__/export/404/index.html __sapper__/export/404.html",
     "start": "node build",
