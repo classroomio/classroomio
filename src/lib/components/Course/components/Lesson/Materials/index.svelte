@@ -8,11 +8,7 @@
   import Box from '$lib/components/Box/index.svelte';
   import EditContent from '$lib/components/EditContent/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import {
-    lesson,
-    handleUpdateLessonMaterials,
-    isLessonDirty,
-  } from '../store/lessons';
+  import { lesson, handleUpdateLessonMaterials, isLessonDirty } from '../store/lessons';
   import * as CONSTANTS from './constants';
 
   export let mode = MODES.view;
@@ -42,10 +38,7 @@
       } else if (tab.value === 2) {
         badgeValue = !!note ? 1 : 0;
       } else {
-        badgeValue =
-          typeof video_url === 'string' && !!video_url
-            ? video_url.split(',').length
-            : 0;
+        badgeValue = typeof video_url === 'string' && !!video_url ? video_url.split(',').length : 0;
       }
 
       tab.badgeValue = badgeValue;
@@ -81,8 +74,14 @@
         />
       {:else}
         <Box>
-          <h3 class="text-3xl text-gray-500 dark:text-white">No slide added</h3>
-          <img alt="Slide not found" src="/notfound.webp" class="w-80" />
+          <div class="flex justify-between flex-col items-center w-96">
+            <img src="/images/empty-slide-icon.svg" alt="No Slide" class="my-2.5 mx-auto" />
+            <h2 class="text-xl my-1.5 font-normal">No slides yet</h2>
+            <p class="text-sm text-center text-slate-500">
+              Share your knowledge with the world by creating engaging slides. Add your slide's link
+              now.
+            </p>
+          </div>
         </Box>
       {/if}
     </TabContent>
@@ -99,8 +98,13 @@
         <MarkdownRender content={$lesson.materials.note} />
       {:else}
         <Box>
-          <h3 class="text-3xl text-gray-500 dark:text-white">No note added</h3>
-          <img alt="Lesson note not found" src="/notfound.webp" class="w-80" />
+          <div class="flex justify-between flex-col items-center w-96">
+            <img src="/images/empty-note-icon.svg" alt="No Note" class="my-2.5 mx-auto" />
+            <h2 class="text-xl my-1.5 font-normal">No Notes yet</h2>
+            <p class="text-sm text-center text-slate-500">
+              Share your knowledge with the world by creating engaging notes. Add your notes now.
+            </p>
+          </div>
         </Box>
       {/if}
     </TabContent>
@@ -129,10 +133,14 @@
         {/each}
       {:else}
         <Box>
-          <h3 class="text-3xl text-gray-500 dark:text-white">
-            No youtube video added
-          </h3>
-          <img alt="Video not found" src="/notfound.webp" class="w-80" />
+          <div class="flex justify-between flex-col items-center w-96">
+            <img src="/images/empty-video-icon.svg" alt="No Video" class="my-2.5 mx-auto" />
+            <h2 class="text-xl my-1.5 font-normal">No videos yet</h2>
+            <p class="text-sm text-center text-slate-500">
+              Share your knowledge with the world by creating engaging videos. Add your video link
+              now.
+            </p>
+          </div>
         </Box>
       {/if}
     </TabContent>
