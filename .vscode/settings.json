@@ -5,6 +5,6 @@
   "editor.formatOnPaste": false,
   "[svelte]": {
     "editor.defaultFormatter": "svelte.svelte-vscode"
-},
-"editor.formatOnSave": true,
+  },
+  "editor.formatOnSave": true
 }

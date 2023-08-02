@@ -81,10 +81,10 @@ export interface Waitinglist {
 }
 
 export interface Course {
-  title: any; // type unknown;
-  description: any; // type unknown;
+  title?: any; // type unknown;
+  description: string; // type unknown;
   overview?: any; // type unknown;
-  id: string /* primary key */;
+  id?: string /* primary key */;
   created_at?: string;
   updated_at?: string;
   group_id?: string /* foreign key to group.id */;
