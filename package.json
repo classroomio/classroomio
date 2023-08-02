@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
+    "preview": "vite preview",
     "export": "vite build --entry \"/ /404 login signup forgot onboarding courses org lms course\"",
     "postexport": "mv __sapper__/export/404/index.html __sapper__/export/404.html",
     "start": "node build",
@@ -17,6 +18,7 @@
     "@sentry/tracing": "^7.61.0",
     "@supabase/supabase-js": "^2.31.0",
     "@sveltejs/adapter-auto": "^2.1.0",
+    "@sveltejs/adapter-netlify": "^2.0.8",
     "@tailwindcss/forms": "^0.5.4",
     "@types/marked": "^5.0.1",
     "@types/paystack": "^2.0.1",
@@ -48,6 +50,7 @@
     "@sveltejs/kit": "^1.22.4",
     "@tailwindcss/typography": "^0.5.9",
     "@types/lodash": "^4.14.196",
+    "autoprefixer": "^10.4.14",
     "carbon-components-svelte": "^0.79.0",
     "carbon-icons-svelte": "^12.1.0",
     "dotenv": "^16.3.1",
@@ -63,8 +66,7 @@
     "tailwindcss": "^3.3.2",
     "tslib": "^2.6.1",
     "typescript": "^5.1.6",
-    "vite": "^4.4.8",
-    "autoprefixer": "^10.4.14"
+    "vite": "^4.4.8"
   },
   "type": "module"
 }
