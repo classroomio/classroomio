@@ -1,6 +1,6 @@
 <script>
   import SaveIcon from 'carbon-icons-svelte/lib/Save.svelte';
-  import DeleteIcon from 'carbon-icons-svelte/lib/Delete.svelte';
+  import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
   import { Toggle } from 'carbon-components-svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
@@ -86,7 +86,7 @@
       onClick={deleteReviewData}
       size="large"
     >
-      <DeleteIcon size={24} class="carbon-icon" />
+      <TrashCanIcon size={24} class="carbon-icon" />
     </IconButton>
     <IconButton
       contained={true}
