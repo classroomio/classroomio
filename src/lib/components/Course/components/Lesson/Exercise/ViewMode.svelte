@@ -9,16 +9,14 @@
   import CheckboxQuestion from '$lib/components/Question/CheckboxQuestion/index.svelte';
   import TextareaQuestion from '$lib/components/Question/TextareaQuestion/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import Box from '$lib/components/Box/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import Progress from '$lib/components/Progress/index.svelte';
   import { removeDuplicate } from '$lib/utils/functions/removeDuplicate';
   import { QUESTION_TYPE } from '$lib/components/Question/constants';
   import { STATUS } from './constants';
   import { getPropsForQuestion, filterOutDeleted } from './functions';
-  import {
-    formatAnswers,
-    getGroupMemberId,
-  } from '$lib/components/Course/function';
+  import { formatAnswers, getGroupMemberId } from '$lib/components/Course/function';
   import { submitExercise } from '$lib/utils/services/courses';
   import { fetchSubmission } from '$lib/utils/services/submissions';
   import { profile } from '$lib/utils/store/user';
@@ -42,21 +40,18 @@
 
     const prevAnswer = answers[id] || [];
     const formattedAnswer =
-      typeof value === 'string'
-        ? value
-        : removeDuplicate([...prevAnswer, ...(value || [])]);
+      typeof value === 'string' ? value : removeDuplicate([...prevAnswer, ...(value || [])]);
 
     $questionnaireMetaData.answers = {
       ...answers,
-      [id]: formattedAnswer,
+      [id]: formattedAnswer
     };
 
     if (moveToNextQuestion) {
       $questionnaireMetaData.currentQuestionIndex += 1;
     }
 
-    const isFinished =
-      !questions[$questionnaireMetaData.currentQuestionIndex - 1];
+    const isFinished = !questions[$questionnaireMetaData.currentQuestionIndex - 1];
     console.log(`isFinished`, isFinished);
     console.log(
       `$questionnaireMetaData.currentQuestionIndex`,
@@ -87,11 +82,7 @@
       return 100;
     }
 
-    return (
-      Math.round(
-        ((currentQuestionIndex - 1) / $questionnaire.questions.length) * 100
-      ) || 0
-    );
+    return Math.round(((currentQuestionIndex - 1) / $questionnaire.questions.length) * 100) || 0;
   }
 
   function getTotalPossibleGrade() {
@@ -113,7 +104,7 @@
     const args = {
       exerciseId,
       courseId,
-      submittedBy: getGroupMemberId(people, profileId),
+      submittedBy: getGroupMemberId(people, profileId)
     };
     const { data } = await fetchSubmission(args);
     hasSubmission = true;
@@ -123,31 +114,26 @@
 
       $questionnaireMetaData.answers = formatAnswers({
         questions: $questionnaire.questions,
-        answers: submission.answers,
+        answers: submission.answers
       });
 
       $questionnaireMetaData.totalPossibleGrade = getTotalPossibleGrade();
 
-      $questionnaireMetaData.currentQuestionIndex =
-        $questionnaire.questions.length;
+      $questionnaireMetaData.currentQuestionIndex = $questionnaire.questions.length;
       $questionnaireMetaData.isFinished = true;
       $questionnaireMetaData.status = submission.status_id;
       $questionnaireMetaData.finalTotalGrade = 0;
-      $questionnaireMetaData.grades = submission.answers.reduce(
-        (acc, answer) => {
-          acc[answer.question_id] = answer.point;
-          $questionnaireMetaData.finalTotalGrade += answer.point;
+      $questionnaireMetaData.grades = submission.answers.reduce((acc, answer) => {
+        acc[answer.question_id] = answer.point;
+        $questionnaireMetaData.finalTotalGrade += answer.point;
 
-          return acc;
-        },
-        {}
-      );
+        return acc;
+      }, {});
     }
   }
 
   $: {
-    currentQuestion =
-      $questionnaire.questions[$questionnaireMetaData.currentQuestionIndex - 1];
+    currentQuestion = $questionnaire.questions[$questionnaireMetaData.currentQuestionIndex - 1];
     if ($questionnaireMetaData.currentQuestionIndex > 0 && !currentQuestion) {
       $questionnaireMetaData.isFinished = true;
     }
@@ -182,16 +168,15 @@
     questionnaireMetaData={$questionnaireMetaData}
   />
 {:else if !$questionnaire.questions.length}
-  <div
-    class="w-4/5 h-40 m-auto flex items-center justify-center text-center border-2 border-gray-200 rounded-md"
-  >
-    <h3 class="dark:text-white text-2xl">
-      No questions added. <br />
+  <Box>
+    <img src="/images/empty-exercise-icon.svg" alt="Exercise svg" class="my-2.5" />
+    <h2 class="text-xl my-1.5">No question added for this exercise</h2>
+    <p class="text-sm text-center px-44">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
         Click the <span class="text-blue-700">Edit</span> button to add.
       </RoleBasedSecurity>
-    </h3>
-  </div>
+    </p>
+  </Box>
 {:else if $questionnaireMetaData.currentQuestionIndex === 0}
   <div>
     <h2 class="my-1">{$questionnaire.title}</h2>
@@ -219,12 +204,7 @@
       {@html marked($questionnaire.description || 'No desription')}
     </article>
 
-    <PrimaryButton
-      onClick={handleStart}
-      label="Start"
-      className="my-5 float-right"
-      type="button"
-    />
+    <PrimaryButton onClick={handleStart} label="Start" className="my-5 float-right" type="button" />
   </div>
 {:else if $questionnaireMetaData.isFinished}
   <div class="flex items-center justify-between">

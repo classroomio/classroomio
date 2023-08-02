@@ -23,7 +23,7 @@
     lessons,
     handleAddLesson,
     handleSaveLesson,
-    handleDelete,
+    handleDelete
   } from '$lib/components/Course/components/Lesson/store/lessons';
   import { course, setCourse, group } from '$lib/components/Course/store';
 
@@ -55,7 +55,7 @@
         ref.scrollIntoView({
           block: 'start',
           behavior: 'smooth',
-          inline: 'nearest',
+          inline: 'nearest'
         });
       }
     }, 100);
@@ -66,10 +66,7 @@
   }
 
   function handleDndFinalize(e) {
-    const prevLessonsByOrder = $lessons.reduce(
-      (acc, l) => ({ ...acc, [l.id]: l.order }),
-      {}
-    );
+    const prevLessonsByOrder = $lessons.reduce((acc, l) => ({ ...acc, [l.id]: l.order }), {});
     $lessons = e.detail.items;
 
     // Only update the lesson order that changed
@@ -98,9 +95,7 @@
   });
 
   $: {
-    const user = $group.people.find(
-      (person) => person.profile_id === $profile.id
-    );
+    const user = $group.people.find((person) => person.profile_id === $profile.id);
 
     if (user) {
       isStudent = user.role_id === 3;
@@ -112,11 +107,7 @@
   <PageNav title="Lessons">
     <div slot="widget">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
-        <PrimaryButton
-          label="Add"
-          onClick={addLesson}
-          isDisabled={!!lessonEditing}
-        />
+        <PrimaryButton label="Add" onClick={addLesson} isDisabled={!!lessonEditing} />
       </RoleBasedSecurity>
     </div>
   </PageNav>
@@ -130,8 +121,8 @@
         dragDisabled: isStudent,
         dropTargetStyle: {
           border: '2px #1d4ed8 solid',
-          'border-style': 'dashed',
-        },
+          'border-style': 'dashed'
+        }
       }}
       on:consider={handleDndConsider}
       on:finalize={handleDndFinalize}
@@ -153,7 +144,7 @@
                 ? {}
                 : {
                     title: `Click to ${lesson.is_complete ? 'lock' : 'unlock'}`,
-                    direction: 'right',
+                    direction: 'right'
                   }}
             >
               {#if lesson.is_complete}
@@ -218,11 +209,7 @@
             >
               <div class="mb-3 lg:mb-0">
                 {#if lessonEditing === lesson.id}
-                  <Select
-                    bind:value={lesson.profile}
-                    options={$group.tutors}
-                    labelKey="fullname"
-                  />
+                  <Select bind:value={lesson.profile} options={$group.tutors} labelKey="fullname" />
                 {:else if !lesson.profile}
                   <p class="dark:text-white ml-2 text-sm">No tutor added</p>
                 {:else}
@@ -268,11 +255,7 @@
                   />
                 {:else}
                   <PhoneIcon size={24} class="carbon-icon" />
-                  <a
-                    class="text-md ml-2"
-                    href={lesson.call_url || '#'}
-                    target="_blank"
-                  >
+                  <a class="text-md ml-2" href={lesson.call_url || '#'} target="_blank">
                     {lesson.call_url ? 'Join lesson' : 'No link'}
                   </a>
                 {/if}
@@ -290,10 +273,14 @@
         </div>
       {:else}
         <Box>
-          <h3 class="text-3xl text-gray-500 dark:text-white">
-            No lesson added
-          </h3>
-          <img alt="No lesson added" src="/notfound2.gif" class="w-80" />
+          <div class="flex justify-between flex-col items-center w-96">
+            <img src="/images/empty-lesson-icon.svg" alt="Lesson" class="my-2.5 mx-auto" />
+            <h2 class="text-xl my-1.5 font-normal">No lessons yet</h2>
+            <p class="text-sm text-center text-slate-500">
+              Share your knowledge with the world by creating engaging lessons. Start by clicking on
+              the New Lesson button.
+            </p>
+          </div>
         </Box>
       {/each}
     </section>
