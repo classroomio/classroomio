@@ -244,7 +244,8 @@
   });
 
   $: {
-    submissionId = $page.url.query.submissionId;
+    const query = new URLSearchParams($page.url.search)
+    submissionId = query.get('submissionId');
     openExercise = !!submissionId && submissionIdData[submissionId];
   }
 </script>
