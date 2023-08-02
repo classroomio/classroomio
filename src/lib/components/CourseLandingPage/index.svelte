@@ -21,7 +21,7 @@
   import type { Course, Lesson, Review } from '$lib/utils/types';
   import Modal from '../Modal/index.svelte';
   import { reviewsModalStore } from './store';
-  import { VARIANTS } from './$lib/components/PrimaryButton/constants';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
 
   dayjs.extend(relativeTime);
 
