@@ -1,7 +1,6 @@
 <script>
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
-  import AudioConsoleIcon from 'carbon-icons-svelte/lib/AudioConsole.svelte';
   import Box from '$lib/components/Box/index.svelte';
   import { Moon } from 'svelte-loading-spinners';
   import Backdrop from '$lib/components/Backdrop/index.svelte';
@@ -26,19 +25,19 @@
   let newExercise = {
     id: 1,
     title: '',
-    description: '',
+    description: ''
   };
 
   async function handleAddExercise() {
     const { data, error } = await createExercise({
       title: newExercise.title,
-      lesson_id: lessonId,
+      lesson_id: lessonId
     });
 
     console.log(`data, error `, data, error);
     lesson.update((_lesson) => ({
       ..._lesson,
-      exercises: [..._lesson.exercises, data[0]],
+      exercises: [..._lesson.exercises, data[0]]
     }));
 
     handleCancelAddExercise();
@@ -49,7 +48,7 @@
     newExercise = {
       id: $lesson.exercises.length + 1,
       title: '',
-      description: '',
+      description: ''
     };
   }
 
@@ -133,41 +132,20 @@
 {/if}
 
 {#if exerciseId}
-  <Exercise
-    {exerciseId}
-    {goBack}
-    refetchExercise={() => getExercise(exerciseId)}
-  />
+  <Exercise {exerciseId} {goBack} refetchExercise={() => getExercise(exerciseId)} />
 {:else}
-  <Modal
-    onClose={handleCancelAddExercise}
-    bind:open
-    modalHeading="Create an Exercise"
-    width="w-80"
-  >
-    <TextField
-      bind:value={newExercise.title}
-      autofocus={true}
-      placeholder="Exercise name"
-    />
+  <Modal onClose={handleCancelAddExercise} bind:open modalHeading="Create an Exercise" width="w-80">
+    <TextField bind:value={newExercise.title} autofocus={true} placeholder="Exercise name" />
 
     <div class="mt-5 flex items-center">
-      <PrimaryButton
-        className="px-6 py-3"
-        label="Submit"
-        onClick={handleAddExercise}
-      />
+      <PrimaryButton className="px-6 py-3" label="Submit" onClick={handleAddExercise} />
     </div>
   </Modal>
 
   <PageBody>
     <slot:fragment slot="header">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
-        <PrimaryButton
-          className="mr-2"
-          label="Add"
-          onClick={() => (open = !open)}
-        />
+        <PrimaryButton className="mr-2" label="Add" onClick={() => (open = !open)} />
       </RoleBasedSecurity>
     </slot:fragment>
 
@@ -181,11 +159,15 @@
           <p class="dark:text-white mt-4 text-sm">Created Jul 3, 2021</p>
         </a>
       {:else}
-        <Box>
-          <AudioConsoleIcon size={32} class="carbon-icon w-80" />
-          <h3 class="text-3xl text-gray-500 dark:text-white">
-            No Exercise Added
-          </h3>
+        <Box className="mt-3">
+          <div class="flex justify-between flex-col items-center w-96">
+            <img src="/images/empty-exercise-icon.svg" alt="Exercise" class="my-2.5 mx-auto" />
+            <h2 class="text-xl my-1.5 font-normal">No exercises added for this lesson</h2>
+            <p class="text-sm text-center text-slate-500">
+              Share your knowledge with the world by creating engaging exercises. Add an exercise
+              now.
+            </p>
+          </div>
         </Box>
       {/each}
     </div>

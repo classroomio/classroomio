@@ -8,7 +8,6 @@ export const load = ({ params = { id: '' } }) => {
   //   lessonId
   // }
   const splitparams = lessonParams.split('/');
-  console.log('splitparams', splitparams);
   const [lessonId, exerciseRouteName, exerciseId] = splitparams;
 
   return {
@@ -16,6 +15,6 @@ export const load = ({ params = { id: '' } }) => {
     lessonId,
     exerciseRouteName,
     exerciseId,
-    isMaterialsTabActive: !exerciseRouteName,
+    isMaterialsTabActive: !exerciseRouteName
   };
 };

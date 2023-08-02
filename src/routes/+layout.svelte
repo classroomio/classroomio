@@ -22,12 +22,7 @@
   // import Footer from '$lib/components/Footer/index.svelte';
   import Apps from '$lib/components/Apps/index.svelte';
   import PlayQuiz from '$lib/components/Org/Quiz/Play/index.svelte';
-  import {
-    isCoursesPage,
-    isOrgPage,
-    isLMSPage,
-    isQuizPage,
-  } from '$lib/utils/functions/app';
+  import { isCoursesPage, isOrgPage, isLMSPage, isQuizPage } from '$lib/utils/functions/app';
   import showAppsSideBar from '$lib/utils/functions/showAppsSideBar';
   import isPublicRoute from '$lib/utils/functions/routes/isPublicRoute';
   import { user, profile } from '$lib/utils/store/user';
@@ -58,14 +53,14 @@
         integrations: [
           new Integrations.BrowserTracing(),
           new CaptureConsole({
-            levels: ['error'],
-          }),
+            levels: ['error']
+          })
         ],
         environment: !dev ? 'production' : 'development',
         // Set tracesSampleRate to 1.0 to capture 100%
         // of transactions for performance monitoring.
         // We recommend adjusting this value in production
-        tracesSampleRate: 1.0,
+        tracesSampleRate: 1.0
       });
     }
   }
@@ -74,7 +69,7 @@
     const params = new URLSearchParams(window.location.search);
     // Get user profile
     const {
-      data: { session },
+      data: { session }
     } = await supabase.auth.getSession();
     const { user: authUser } = session;
     console.log('Get user profile', authUser);
@@ -83,20 +78,14 @@
     let {
       data: profileData,
       error,
-      status,
-    } = await supabase
-      .from('profile')
-      .select(`*`)
-      .eq('id', authUser?.id)
-      .single();
+      status
+    } = await supabase.from('profile').select(`*`).eq('id', authUser?.id).single();
 
     if (error && !profileData && status === 406 && authUser) {
       // User wasn't found, create profile
       console.log(`User wasn't found, create profile`);
 
-      const [regexUsernameMatch] = [
-        ...(authUser.email?.matchAll(/(.*)@/g) || []),
-      ];
+      const [regexUsernameMatch] = [...(authUser.email?.matchAll(/(.*)@/g) || [])];
 
       const { data, error } = await supabase
         .from('profile')
@@ -104,7 +93,7 @@
           id: authUser.id,
           username: regexUsernameMatch[1] + '1669991321770',
           fullname: regexUsernameMatch[1],
-          email: authUser.email,
+          email: authUser.email
         })
         .select();
 
@@ -125,7 +114,7 @@
             .insert({
               organization_id: $currentOrg.id,
               profile_id: $profile.id,
-              role_id: 3,
+              role_id: 3
             })
             .select();
           if (error) {
@@ -188,9 +177,7 @@
       const subdomain = matches?.[1] ?? '';
 
       if (!blockedSubdomain.includes(subdomain)) {
-        const answer = Array.isArray(matches)
-          ? !!subdomain && subdomain !== 'www'
-          : false;
+        const answer = Array.isArray(matches) ? !!subdomain && subdomain !== 'www' : false;
 
         $appStore.isStudentDomain = debug || answer;
         $appStore.siteNameFromDomain = debug ? 'codingdojo' : subdomain;
@@ -230,32 +217,30 @@
     //   return goto('/login');
     // }
 
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        // Log key events
-        console.log(`event`, event);
-        if (event == 'PASSWORD_RECOVERY') {
-          console.log('PASSWORD RESET');
-        }
-
-        if (path.includes('reset')) {
-          console.log('Dont change auth when on reset page');
-          return;
-        }
-
-        // Skip Authentication
-        if (skipAuth) return;
-
-        // Authentication Steps
-        if (event === 'SIGNED_IN') {
-          $user.fetchingUser = true;
-          getProfile();
-        } else {
-          console.log('not logged in, go to login');
-          return goto('/login');
-        }
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      // Log key events
+      console.log(`event`, event);
+      if (event == 'PASSWORD_RECOVERY') {
+        console.log('PASSWORD RESET');
       }
-    );
+
+      if (path.includes('reset')) {
+        console.log('Dont change auth when on reset page');
+        return;
+      }
+
+      // Skip Authentication
+      if (skipAuth) return;
+
+      // Authentication Steps
+      if (event === 'SIGNED_IN') {
+        $user.fetchingUser = true;
+        getProfile();
+      } else {
+        console.log('not logged in, go to login');
+        return goto('/login');
+      }
+    });
 
     // Update theme - dark or light mode
     $appStore.isDark = localStorage.getItem('theme') === 'dark';
@@ -266,6 +251,7 @@
     }
 
     return () => {
+      console.log('unsubscribed');
       authListener?.unsubscribe();
     };
   });

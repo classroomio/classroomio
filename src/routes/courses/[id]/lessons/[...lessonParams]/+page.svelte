@@ -27,9 +27,7 @@
     if (!$course.id) {
       const { data: _data } = await fetchCourse(data.courseId);
 
-      lessonData = _data.lessons.find(
-        (lesson = { id: '' }) => lesson.id === lessonId
-      );
+      lessonData = _data.lessons.find((lesson = { id: '' }) => lesson.id === lessonId);
       setCourse(_data);
     } else if (prevLessonId !== lessonId) {
       const lesson = await fetchLesson(lessonId);
@@ -38,8 +36,7 @@
 
     prevLessonId = lessonId;
 
-    const totalExercises =
-      lessonData?.totalExercises?.[0] && lessonData.totalExercises[0].count;
+    const totalExercises = lessonData?.totalExercises?.[0] && lessonData.totalExercises[0].count;
     setLesson(lessonData, totalExercises || 0);
     isFetching = false;
   }
@@ -51,7 +48,7 @@
       ...l,
       id: data.lessonId,
       totalExercises,
-      materials: lessonData,
+      materials: lessonData
     }));
   }
 
@@ -61,28 +58,22 @@
     mode = MODES.view;
     fetchReqData(data.lessonId);
   }
-
-  $: console.log('data changed', data);
 </script>
 
-<CourseContainer
-  {isFetching}
-  {path}
-  isExercisePage={!data.isMaterialsTabActive && data.exerciseId}
->
+<CourseContainer {isFetching} {path} isExercisePage={!data.isMaterialsTabActive && data.exerciseId}>
   <PageNav
     navItems={[
       {
         label: 'Materials',
         isActive: data.isMaterialsTabActive,
-        href: path,
+        href: path
       },
       {
         label: 'Exercises',
         badgeValue: $lesson.totalExercises,
         isActive: !data.isMaterialsTabActive,
-        href: `${path}/exercises`,
-      },
+        href: `${path}/exercises`
+      }
     ]}
   >
     <svelte:fragment slot="widget">
@@ -104,11 +95,7 @@
   </PageNav>
 
   {#if !data.isMaterialsTabActive}
-    <Exercises
-      lessonId={data.lessonId}
-      exerciseId={data.exerciseId}
-      path={`${path}/exercises`}
-    />
+    <Exercises lessonId={data.lessonId} exerciseId={data.exerciseId} path={`${path}/exercises`} />
   {:else if !!data.lessonId}
     <PageBody>
       <Materials lessonId={data.lessonId} {mode} {prevMode} />
