@@ -1,17 +1,9 @@
-module.exports = {
+/** @type {import('tailwindcss').Config} */
+export default {
   darkMode: 'class',
-  purge: {
-    mode: 'all',
-    content: ['./**/**/*.html', './**/**/*.svelte'],
-
-    options: {
-      whitelistPatterns: [/svelte-/],
-    },
-  },
-
+  content: ['./src/**/*.{html,js,svelte,ts}'],
   theme: {
     extend: {},
   },
-  variants: {},
   plugins: [require('@tailwindcss/typography'), require('@tailwindcss/forms')],
 };

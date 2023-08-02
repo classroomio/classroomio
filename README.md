@@ -1,6 +1,6 @@
 # classroomio
 
-The tool every classroom use in collaborating in and outside the class. 
+The tool every classroom use in collaborating in and outside the class.
 
 ## Why build another LMS.
 
@@ -17,3 +17,11 @@ I personally believe that in the future (as already exists in most countries), t
 3. All in one place
 4. Empower hybrid form of learning
 5. We Automate routine tasks and you focus on the health of your classroom.
+
+## Installation of modules
+
+```
+npm i --legacy-peer-deps --registry=https://registry.npmjs.org
+```
+
+Note: Make sure you are using Node 18
