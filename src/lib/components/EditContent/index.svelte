@@ -7,6 +7,8 @@
   export let placeholder = ``;
   export let onInputChange = () => {};
   export let textAreaHeight = '';
+  export let textareaRef;
+  export let buttonRef;
   const activeClassName = 'border-b-2 border-blue-700';
 
   const handleTabClick = (tab) => () => {
@@ -28,11 +30,19 @@
     >
       Preview
     </button>
+
+    {#if $$slots.buttons}
+      <div class="grow" />
+      <div bind:this={buttonRef}>
+        <slot name="buttons" />
+      </div>
+    {/if}
   </div>
   <div class="m-2 mb-0 p-0">
     {#if isWriteMode}
       <textarea
         bind:value
+        bind:this={textareaRef}
         {placeholder}
         style="height: {textAreaHeight}"
         class="border border-gray rounded-md p-2"
