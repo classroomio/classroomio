@@ -1,5 +1,6 @@
 <script>
   import { page } from '$app/stores';
+  import { browser } from '$app/environment';
   import NotificationIcon from 'carbon-icons-svelte/lib/Notification.svelte';
   import MoonIcon from 'carbon-icons-svelte/lib/Moon.svelte';
   import SunIcon from 'carbon-icons-svelte/lib/Sun.svelte';
@@ -14,19 +15,16 @@
     $appStore.isDark = !$appStore.isDark;
 
     toggleBodyByTheme($appStore.isDark);
-    localStorage.setItem('theme', $appStore.isDark ? 'dark' : '');
+    if (browser) {
+      localStorage.setItem('theme', $appStore.isDark ? 'dark' : '');
+    }
   }
 </script>
 
 <nav class="{navClass} flex w-full p-2 md:px-6 bg-blue-600">
   <ul class="flex w-full items-center">
     <div class="">
-      <a
-        href={$page.url.pathname}
-        title="Go to ClassroomIO Home"
-        id="logo"
-        class="text-lg"
-      >
+      <a href={$page.url.pathname} title="Go to ClassroomIO Home" id="logo" class="text-lg">
         ClassroomIO
       </a>
     </div>

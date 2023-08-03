@@ -59,8 +59,10 @@
   }
 
   onMount(() => {
-    if (localStorage.getItem('hideCourseNav')) {
-      show = localStorage.getItem('hideCourseNav') === 'false';
+    if (browser) {
+      if (localStorage.getItem('hideCourseNav')) {
+        show = localStorage.getItem('hideCourseNav') === 'false';
+      }
     } else {
       show = true;
     }

@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { derived } from 'svelte/store';
   import { goto } from '$app/navigation';
-  import { dev } from '$app/environment';
+  import { dev, browser } from '$app/environment';
   import { page, navigating } from '$app/stores';
   import isEmpty from 'lodash/isEmpty';
   import * as Sentry from '@sentry/browser';
@@ -171,7 +171,7 @@
   }
 
   function setOrgBasedOnUrl(host) {
-    if (typeof window !== 'undefined') {
+    if (browser) {
       const debug = localStorage.getItem('role') === 'student';
       const matches = host.match(/([a-z0-9]+).*classroomio[.]com/);
       const subdomain = matches?.[1] ?? '';
@@ -243,9 +243,11 @@
       }
     });
 
-    // Update theme - dark or light mode
-    $appStore.isDark = localStorage.getItem('theme') === 'dark';
-    toggleBodyByTheme($appStore.isDark);
+    if (browser) {
+      // Update theme - dark or light mode
+      $appStore.isDark = localStorage.getItem('theme') === 'dark';
+      toggleBodyByTheme($appStore.isDark);
+    }
 
     if ($appStore.isStudentDomain) {
       getCurrentOrg($appStore.siteNameFromDomain);
