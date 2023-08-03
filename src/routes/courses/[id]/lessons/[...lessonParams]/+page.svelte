@@ -2,6 +2,7 @@
   import { page } from '$app/stores';
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
   import { fetchCourse, fetchLesson } from '$lib/utils/services/courses';
+  import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
@@ -10,7 +11,7 @@
   import Exercises from '$lib/components/Course/components/Lesson/Exercises/index.svelte';
   import MODES from '$lib/utils/constants/mode.js';
   import { setCourse, course } from '$lib/components/Course/store';
-  import { lesson } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { lesson, handleSaveLesson } from '$lib/components/Course/components/Lesson/store/lessons';
 
   export let data;
 
@@ -19,6 +20,7 @@
   let prevMode = '';
   let prevLessonId = '';
   let isFetching = false;
+  let isMarkingComplete = false;
 
   async function fetchReqData(lessonId = '') {
     isFetching = true;
@@ -39,6 +41,13 @@
     const totalExercises = lessonData?.totalExercises?.[0] && lessonData.totalExercises[0].count;
     setLesson(lessonData, totalExercises || 0);
     isFetching = false;
+  }
+
+  async function markLessonComplete() {
+    isMarkingComplete = true;
+    $lesson.is_complete = !$lesson.is_complete;
+    await handleSaveLesson($lesson, $course.id);
+    isMarkingComplete = false;
   }
 
   function setLesson(lessonData, totalExercises) {
@@ -99,6 +108,18 @@
   {:else if !!data.lessonId}
     <PageBody>
       <Materials lessonId={data.lessonId} {mode} {prevMode} />
+
+      <div class="w-full flex flex-row-reverse">
+        <PrimaryButton
+          onClick={markLessonComplete}
+          isLoading={isMarkingComplete}
+          isDisabled={isMarkingComplete}
+          className="mt-10"
+        >
+          <CheckmarkOutlineIcon size={24} class="carbon-icon mr-2" />
+          Mark as {$lesson.is_complete ? 'Incomplete' : 'Complete'}
+        </PrimaryButton>
+      </div>
     </PageBody>
   {/if}
 </CourseContainer>

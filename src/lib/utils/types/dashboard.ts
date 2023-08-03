@@ -5,7 +5,7 @@ export type UserLessonDataType = {
   lesson_at: string;
   lesson_id: string;
   lesson_title: string;
-  is_complete: boolean;
+  is_unlocked: boolean;
 };
 
 type LessonByDayType = {

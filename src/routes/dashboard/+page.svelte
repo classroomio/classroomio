@@ -3,23 +3,17 @@
   import { InlineCalendar, Datepicker } from 'svelte-calendar';
   import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
 
-  import {
-    formatUserUpcomingData,
-    formatDate,
-  } from '$lib/utils/functions/routes/dashboard';
+  import { formatUserUpcomingData, formatDate } from '$lib/utils/functions/routes/dashboard';
   import { user } from '$lib/utils/store/user';
   import { fetchUserUpcomingData } from '$lib/utils/services/dashboard';
   import { isMobile } from '$lib/utils/store/useMobile';
-  import type {
-    UserLessonDataType,
-    LessonsByMonthIndexType,
-  } from '$lib/utils/types';
+  import type { UserLessonDataType, LessonsByMonthIndexType } from '$lib/utils/types';
 
   const theme = {
     calendar: {
       width: '400px',
-      shadow: '0px 0px 5px rgba(0, 0, 0, 0.25)',
-    },
+      shadow: '0px 0px 5px rgba(0, 0, 0, 0.25)'
+    }
   };
 
   let store;
@@ -37,8 +31,7 @@
       // );
 
       const renderedMonths =
-        calendar?.querySelectorAll('.contents .container .stage .grid .grid') ||
-        [];
+        calendar?.querySelectorAll('.contents .container .stage .grid .grid') || [];
       // console.log(`renderedMonths`, renderedMonths);
       const currentMonthIndex = new Date($store?.selected).getMonth();
       const currentMonth = renderedMonths[currentMonthIndexInRenderedMonth];
@@ -63,10 +56,7 @@
         if (!!currentMonthData[dateIndex]) {
           // console.log(`dateIndex`, dateIndex);
           // console.log(`lesson data`, currentMonthData[dateIndex]);
-          dayElement.insertAdjacentHTML(
-            'beforeend',
-            '<span class="active-day">•</span>'
-          );
+          dayElement.insertAdjacentHTML('beforeend', '<span class="active-day">•</span>');
         }
       }
     }, 500);
@@ -84,9 +74,7 @@
     }
   }
 
-  function getDataOfSelectedDate(
-    _selectedDate: string
-  ): UserLessonDataType[] | [] {
+  function getDataOfSelectedDate(_selectedDate: string): UserLessonDataType[] | [] {
     if (!_selectedDate) return [];
 
     const selectedDate = new Date(_selectedDate).toUTCString();
@@ -97,8 +85,7 @@
     // If we changed the month, update the calendar dots
     const prevMonthIndex = new Date(prevSelectedDate).getMonth();
     if (prevMonthIndex !== monthIndex) {
-      const currentMonthIndexInRenderedMonth =
-        monthIndex < prevMonthIndex ? 1 : 2;
+      const currentMonthIndexInRenderedMonth = monthIndex < prevMonthIndex ? 1 : 2;
 
       addDotsToCalendar(currentMonthIndexInRenderedMonth);
     }
@@ -163,9 +150,7 @@
           </Datepicker>
         </div>
       {:else}
-        <div
-          class="header text-lg font-bold text-blue-700 flex px-5 items-center"
-        >
+        <div class="header text-lg font-bold text-blue-700 flex px-5 items-center">
           {formatDate($store?.selected)}
         </div>
       {/if}
@@ -176,11 +161,11 @@
             <a
               class="text-black-700 text-lg font-bold flex items-center"
               href={`/courses/${lessonData.course_id}/lessons/${
-                lessonData.is_complete ? lessonData.lesson_id : ''
+                lessonData.is_unlocked ? lessonData.lesson_id : ''
               }`}
             >
               {lessonData.lesson_title}
-              {#if lessonData.is_complete}
+              {#if lessonData.is_unlocked}
                 <span class="ml-2 success">
                   <CheckmarkFilledIcon size={20} class="carbon-icon" />
                 </span>
@@ -189,15 +174,12 @@
               {/if}
             </a>
             <p class="dark:text-white text-grey text-sm flex items-center">
-              <a
-                class="underline text-blue-700 my-2"
-                href="/courses/{lessonData.course_id}"
-              >
+              <a class="underline text-blue-700 my-2" href="/courses/{lessonData.course_id}">
                 {` ${lessonData.course_title}`}
               </a>
             </p>
           </div>
-          {#if lessonData.is_complete}
+          {#if lessonData.is_unlocked}
             <a
               class="join-call rounded-3xl bg-blue-600 text-white py-3 font-bold shadow-lg {!lessonData.call_url &&
                 'opacity-50 pointer-events-none cursor-not-allowed'}"
@@ -212,9 +194,7 @@
           {/if}
         </div>
       {:else}
-        <p
-          class="dark:text-white flex items-center justify-center w-full no-data"
-        >
+        <p class="dark:text-white flex items-center justify-center w-full no-data">
           No lesson on this day
         </p>
       {/each}

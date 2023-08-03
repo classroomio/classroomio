@@ -181,8 +181,9 @@
 
         $appStore.isStudentDomain = debug || answer;
         $appStore.siteNameFromDomain = debug ? 'codingdojo' : subdomain;
+      } else if (subdomain === 'play' || debug) {
+        skipAuth = true;
       }
-      skipAuth = debug || subdomain === 'play';
     }
   }
 
@@ -236,7 +237,7 @@
       if (event === 'SIGNED_IN') {
         $user.fetchingUser = true;
         getProfile();
-      } else {
+      } else if (!['INITIAL_SESSION', 'TOKEN_REFRESHED'].includes(event)) {
         console.log('not logged in, go to login');
         return goto('/login');
       }
