@@ -12,11 +12,10 @@ const config = {
     adapter:
       process.env.ADAPTER === 'NETLIFY'
         ? netlifyAdapter({
-            edge: false,
-            split: true,
+            edge: true
           })
-        : autoAdapter(),
-  },
+        : autoAdapter()
+  }
 };
 
 export default config;
