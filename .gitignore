@@ -6,3 +6,6 @@ yarn-error.log
 .env
 /dist/
 package-lock.json
+
+# Local Netlify folder
+.netlify
