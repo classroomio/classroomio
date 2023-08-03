@@ -1,14 +1,21 @@
 <script>
+  import { useCompletion } from 'ai/svelte';
   import MODES from '$lib/utils/constants/mode.js';
+  import { Popover } from 'carbon-components-svelte';
+  import AlignBoxTopLeftIcon from 'carbon-icons-svelte/lib/AlignBoxTopLeft.svelte';
+  import ListIcon from 'carbon-icons-svelte/lib/List.svelte';
+  import IbmWatsonKnowledgeStudioIcon from 'carbon-icons-svelte/lib/IbmWatsonKnowledgeStudio.svelte';
   import { formatYoutubeVideo } from '$lib/utils/functions/formatYoutubeVideo';
-
+  import MachineLearningModel from 'carbon-icons-svelte/lib/MachineLearningModel.svelte';
   import Tabs from '$lib/components/Tabs/index.svelte';
   import TabContent from '$lib/components/TabContent/index.svelte';
   import MarkdownRender from '$lib/components/MarkdownRender/index.svelte';
   import Box from '$lib/components/Box/index.svelte';
   import EditContent from '$lib/components/EditContent/index.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import { lesson, handleUpdateLessonMaterials, isLessonDirty } from '../store/lessons';
+  import { lesson, lessons, handleUpdateLessonMaterials, isLessonDirty } from '../store/lessons';
+  import { course } from '$lib/components/Course/store';
   import * as CONSTANTS from './constants';
 
   export let mode = MODES.view;
@@ -18,6 +25,11 @@
   let tabs = CONSTANTS.tabs;
   let currentTab = tabs[0].value;
   let errors = {};
+  let textareaRef = {};
+  let aiButtonRef = {};
+  let openPopover = false;
+  let aiButtonClass =
+    'flex items-center px-5 py-2 border border-gray-300 hover:bg-gray-200 rounded-md w-full mb-2';
 
   const onChange = (tab) => () => (currentTab = tab);
 
@@ -46,9 +58,34 @@
     });
   }
 
+  const { input, handleSubmit, completion, isLoading } = useCompletion({
+    api: '/api/completion'
+  });
+
+  function updateNoteByCompletion(completion) {
+    $lesson.materials.note = completion;
+    if (textareaRef) {
+      textareaRef.scrollTop = textareaRef.scrollHeight;
+    }
+  }
+
+  function callAI(type = '') {
+    const _lesson = $lessons.find((les) => les.id === $lesson.id);
+    $input = {
+      type,
+      lessonTitle: _lesson?.title || '',
+      courseTitle: $course.title
+    };
+    setTimeout(() => {
+      handleSubmit({ preventDefault: () => {} });
+    }, 500);
+  }
+
   $: handleSave(prevMode);
 
   $: addBadgeValueToTab($lesson.materials);
+
+  $: updateNoteByCompletion($completion);
 </script>
 
 <Tabs {tabs} {currentTab} {onChange}>
@@ -93,7 +130,46 @@
           bind:value={$lesson.materials.note}
           placeholder="Start typing your lesson"
           onInputChange={() => ($isLessonDirty = true)}
-        />
+          bind:textareaRef
+          bind:buttonRef={aiButtonRef}
+        >
+          <div slot="buttons">
+            <PrimaryButton
+              className="flex items-center relative"
+              onClick={() => {
+                openPopover = !openPopover;
+              }}
+              isLoading={$isLoading}
+              isDisabled={$isLoading}
+            >
+              <MachineLearningModel size={20} class="carbon-icon mr-3" />
+              AI Assistant
+              <Popover
+                caret
+                align="left"
+                bind:open={openPopover}
+                on:click:outside={({ detail }) => {
+                  openPopover = aiButtonRef?.contains(detail.target);
+                }}
+              >
+                <div class="p-2">
+                  <button class={aiButtonClass} on:click={() => callAI('outline')}>
+                    <ListIcon class="carbon-icon mr-2" />
+                    Generate Lesson Outline
+                  </button>
+                  <button class={aiButtonClass} on:click={() => callAI('note')}>
+                    <AlignBoxTopLeftIcon class="carbon-icon mr-2" />
+                    Generate Lesson Note
+                  </button>
+                  <button class={aiButtonClass} on:click={() => callAI('activities')}>
+                    <IbmWatsonKnowledgeStudioIcon class="carbon-icon mr-2" />
+                    Generate Lesson Activities
+                  </button>
+                </div>
+              </Popover>
+            </PrimaryButton>
+          </div>
+        </EditContent>
       {:else if $lesson.materials.note}
         <MarkdownRender content={$lesson.materials.note} />
       {:else}
