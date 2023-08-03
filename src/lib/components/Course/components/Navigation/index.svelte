@@ -6,7 +6,7 @@
   import { browser } from '$app/environment';
   import LockedIcon from 'carbon-icons-svelte/lib/Locked.svelte';
   import HomeIcon from 'carbon-icons-svelte/lib/Home.svelte';
-  import CheckmarkOutline from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
+  import CheckmarkFilled from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
   import SettingsIcon from 'carbon-icons-svelte/lib/Settings.svelte';
   import ChevronLeftIcon from 'carbon-icons-svelte/lib/ChevronLeft.svelte';
   import ChevronRightIcon from 'carbon-icons-svelte/lib/ChevronRight.svelte';
@@ -31,6 +31,7 @@
   export let path;
   export let isStudent = null;
   let show = null;
+  let activeClass = 'bg-gray-200 dark:bg-gray-700';
 
   function handleMainGroupClick(href) {
     return () => {
@@ -157,20 +158,18 @@
           </RoleBasedSecurity>
         </slot:fragment>
       </PageNav>
-      <div class="navItems">
+      <div class="h-[82%] overflow-y-auto">
         {#each navItems as navItem}
           {#if !navItem.show || (typeof navItem.show === 'function' && navItem.show())}
             <NavExpandable
               label={navItem.label}
               handleClick={handleMainGroupClick(navItem.to)}
               isGroupActive={(path || $page.url.pathname) === navItem.to}
-              hideSortIcon={navItem.hideSortIcon}
             >
               {#if navItem.isLecture}
                 {#each $lessons as item, index}
                   <a
-                    class="item flex items-center {(path || $page.url.pathname).includes(item.id) &&
-                      'active'} pl-7 py-3 {isStudent && !item.is_unlocked
+                    class="pl-3 font-bold w-[95%] text-sm mb-1 {isStudent && !item.is_unlocked
                       ? 'cursor-not-allowed'
                       : ''}"
                     href={isStudent && !item.is_unlocked
@@ -183,22 +182,28 @@
                     }}
                     aria-disabled={!item.is_unlocked}
                   >
-                    <TextChip
-                      value={getLectureNo(index + 1)}
-                      className="bg-blue-200 text-xs mr-2"
-                      size="sm"
-                      shape="rounded-full"
-                    />
-                    <span>{item.title}</span>
-                    {#if !item.is_unlocked}
-                      <span class="text-md ml-2">
-                        <LockedIcon class="carbon-icon" />
-                      </span>
-                    {:else if item.is_complete}
-                      <span class="ml-2">
-                        <CheckmarkOutline class="carbon-icon" />
-                      </span>
-                    {/if}
+                    <div
+                      class="flex items-center py-3 px-4 rounded hover:bg-gray-200 dark:hover:bg-gray-500 w-full {(
+                        path || $page.url.pathname
+                      ).includes(item.id) && activeClass}"
+                    >
+                      <TextChip
+                        value={getLectureNo(index + 1)}
+                        className="bg-blue-200 text-xs mr-2"
+                        size="sm"
+                        shape="rounded-full"
+                      />
+                      <span>{item.title}</span>
+                      {#if !item.is_unlocked}
+                        <span class="text-md ml-2">
+                          <LockedIcon class="carbon-icon" />
+                        </span>
+                      {:else if item.is_complete}
+                        <span class="ml-2">
+                          <CheckmarkFilled class="carbon-icon" />
+                        </span>
+                      {/if}
+                    </div>
                   </a>
                 {/each}
               {/if}
@@ -207,7 +212,7 @@
         {/each}
       </div>
 
-      <div class="w-full footer p-3 absolute bottom-2 flex items-center justify-between">
+      <div class="w-full h-[50px] p-3 absolute bottom-2 flex items-center justify-between">
         <IconButton
           value="toggle"
           onClick={() => goto(`${$currentOrgPath}/courses`)}
@@ -263,38 +268,6 @@
 
   .footer {
     border-top: 1px solid var(--border-color);
-    height: 50px;
-  }
-
-  .active {
-    background-color: #cae2f9;
-    border-left: 3px solid var(--main-primary-color);
-    padding-left: 1.5rem;
-  }
-  .course-counter {
-    font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
-    background-color: inherit;
-    font-size: 0.6875rem;
-    font-weight: 600;
-    line-height: 1.5;
-    margin-right: 1.5rem;
-  }
-
-  .item {
-    font-size: 0.875rem;
-    font-weight: bold;
-    &:hover {
-      background-color: #cae2f9;
-    }
-  }
-  :global(body.dark) .active,
-  :global(body.dark) .item:hover {
-    background-color: rgba(107, 114, 128);
-  }
-
-  .navItems {
-    height: 82%;
-    overflow-y: auto;
   }
 
   .toggler {
