@@ -4,8 +4,9 @@
   import { page } from '$app/stores';
   import hotkeys from 'hotkeys-js';
   import { browser } from '$app/environment';
+  import LockedIcon from 'carbon-icons-svelte/lib/Locked.svelte';
   import HomeIcon from 'carbon-icons-svelte/lib/Home.svelte';
-  import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
+  import CheckmarkOutline from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
   import SettingsIcon from 'carbon-icons-svelte/lib/Settings.svelte';
   import ChevronLeftIcon from 'carbon-icons-svelte/lib/ChevronLeft.svelte';
   import ChevronRightIcon from 'carbon-icons-svelte/lib/ChevronRight.svelte';
@@ -13,12 +14,9 @@
   import PageNav from '$lib/components/PageNav/index.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import Avatar from '$lib/components/Avatar/index.svelte';
-  import {
-    getNavItemRoute,
-    getLessonsRoute,
-    getLectureNo,
-  } from '$lib/components/Course/function';
+  import { getNavItemRoute, getLessonsRoute, getLectureNo } from '$lib/components/Course/function';
 
+  import TextChip from '$lib/components/Chip/Text.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import Settings from '../Settings/index.svelte';
   import { settingsDialog } from '../Settings/store';
@@ -47,7 +45,7 @@
 
   function getHref(item) {
     return item.to;
-    // return item.is_complete ? item.to : path || $page.url.pathname
+    // return item.is_unlocked ? item.to : path || $page.url.pathname
   }
 
   function handleSaveTitle() {
@@ -89,18 +87,18 @@
       {
         label: 'Overview',
         to: getNavItemRoute($course.id),
-        hideSortIcon: true,
+        hideSortIcon: true
       },
       {
         label: 'Lessons',
         to: getLessonsRoute($course.id),
         hideSortIcon: false,
-        isLecture: true,
+        isLecture: true
       },
       {
         label: 'Attendance',
         to: getNavItemRoute($course.id, 'attendance'),
-        hideSortIcon: true,
+        hideSortIcon: true
       },
       {
         label: 'Submissions',
@@ -108,12 +106,12 @@
         hideSortIcon: true,
         show() {
           return !isStudent;
-        },
+        }
       },
       {
         label: 'Marks',
         to: getNavItemRoute($course.id, 'marks'),
-        hideSortIcon: true,
+        hideSortIcon: true
       },
       // {
       //   label: 'Scoreboard',
@@ -123,12 +121,12 @@
       {
         label: 'People',
         to: getNavItemRoute($course.id, 'people'),
-        hideSortIcon: true,
+        hideSortIcon: true
       },
       {
         label: 'Certificates',
         to: getNavItemRoute($course.id, 'certificates'),
-        hideSortIcon: true,
+        hideSortIcon: true
       },
       {
         label: 'Landing Page',
@@ -136,17 +134,15 @@
         hideSortIcon: true,
         show() {
           return !isStudent;
-        },
-      },
+        }
+      }
     ];
   }
 </script>
 
 <Settings />
 
-<div
-  class="root z-10 {!show && 'hide'} {$isMobile ? 'fixed shadow-xl' : 'sticky'}"
->
+<div class="root z-10 {!show && 'hide'} {$isMobile ? 'fixed shadow-xl' : 'sticky'}">
   {#if show}
     <div class="relative h-full dark:bg-gray-700">
       <PageNav bind:title={$course.title} paddingClass="pl-2">
@@ -155,9 +151,7 @@
         </slot:fragment>
         <slot:fragment slot="widget">
           <RoleBasedSecurity allowedRoles={[1, 2]}>
-            <IconButton
-              onClick={() => ($settingsDialog.open = !$settingsDialog.open)}
-            >
+            <IconButton onClick={() => ($settingsDialog.open = !$settingsDialog.open)}>
               <SettingsIcon size={20} class="carbon-icon" />
             </IconButton>
           </RoleBasedSecurity>
@@ -175,13 +169,11 @@
               {#if navItem.isLecture}
                 {#each $lessons as item, index}
                   <a
-                    class="item flex items-center {(
-                      path || $page.url.pathname
-                    ).includes(item.id) && 'active'} pl-7 py-3 {isStudent &&
-                    !item.is_complete
+                    class="item flex items-center {(path || $page.url.pathname).includes(item.id) &&
+                      'active'} pl-7 py-3 {isStudent && !item.is_unlocked
                       ? 'cursor-not-allowed'
                       : ''}"
-                    href={isStudent && !item.is_complete
+                    href={isStudent && !item.is_unlocked
                       ? $page.url.pathname
                       : getLessonsRoute($course.id, item.id)}
                     on:click={() => {
@@ -189,17 +181,23 @@
                         setTimeout(() => (show = false), 500);
                       }
                     }}
+                    aria-disabled={!item.is_unlocked}
                   >
-                    <span class="course-counter">
-                      {getLectureNo(index + 1)}
-                    </span>
+                    <TextChip
+                      value={getLectureNo(index + 1)}
+                      className="bg-blue-200 text-xs mr-2"
+                      size="sm"
+                      shape="rounded-full"
+                    />
                     <span>{item.title}</span>
-                    {#if item.is_complete}
-                      <span class="ml-2 success">
-                        <CheckmarkFilledIcon size={20} class="carbon-icon" />
+                    {#if !item.is_unlocked}
+                      <span class="text-md ml-2">
+                        <LockedIcon class="carbon-icon" />
                       </span>
-                    {:else}
-                      <span class="text-md ml-2">🔒</span>
+                    {:else if item.is_complete}
+                      <span class="ml-2">
+                        <CheckmarkOutline class="carbon-icon" />
+                      </span>
                     {/if}
                   </a>
                 {/each}
@@ -209,9 +207,7 @@
         {/each}
       </div>
 
-      <div
-        class="w-full footer p-3 absolute bottom-2 flex items-center justify-between"
-      >
+      <div class="w-full footer p-3 absolute bottom-2 flex items-center justify-between">
         <IconButton
           value="toggle"
           onClick={() => goto(`${$currentOrgPath}/courses`)}
@@ -236,7 +232,7 @@
         : {
             title: 'Toggle sidebar',
             hotkeys: ['B'],
-            direction: 'right',
+            direction: 'right'
           }}
     >
       {#if show}
