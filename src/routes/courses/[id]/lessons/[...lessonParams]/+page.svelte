@@ -4,6 +4,7 @@
   import { fetchCourse, fetchLesson } from '$lib/utils/services/courses';
   import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants.js';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
   import PageBody from '$lib/components/PageBody/index.svelte';
@@ -92,6 +93,7 @@
             <PrimaryButton
               className="mr-2"
               label={mode === MODES.edit ? 'Save' : 'Edit'}
+              variant={VARIANTS.CONTAINED_INFO}
               onClick={() => {
                 prevMode = mode;
                 mode = mode === MODES.edit ? MODES.view : MODES.edit;
@@ -114,6 +116,7 @@
           onClick={markLessonComplete}
           isLoading={isMarkingComplete}
           isDisabled={isMarkingComplete}
+          variant={VARIANTS.OUTLINED}
           className="mt-10"
         >
           <CheckmarkOutlineIcon size={24} class="carbon-icon mr-2" />
