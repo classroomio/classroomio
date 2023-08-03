@@ -8,9 +8,7 @@
 
 <div class="root mt-4 mx-auto {width} {className} relative {padding}">
   {#if $$slots.header}
-    <div
-      class="head dark:bg-gray-800 flex items-center justify-between sticky right-0 w-full px-3"
-    >
+    <div class="head dark:bg-gray-800 flex items-center justify-between sticky right-0 w-full px-3">
       <slot name="header" />
     </div>
   {/if}

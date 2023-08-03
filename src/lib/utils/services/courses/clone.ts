@@ -70,7 +70,7 @@ async function cloneGroupAndBasicCourse(
       lessons: undefined,
       id: undefined,
       updated_at: undefined,
-      created_at: undefined,
+      created_at: undefined
     })
     .select();
 
@@ -85,34 +85,30 @@ async function cloneGroupAndBasicCourse(
     profile_id: profileStoreValue.id,
     email: profileStoreValue.email,
     group_id,
-    role_id: ROLE.TUTOR,
+    role_id: ROLE.TUTOR
   });
 
   console.log('profileStoreValue', profileStoreValue);
 
   return {
-    newCourse: newCourse?.[0],
+    newCourse: newCourse?.[0]
   };
 }
 
 async function cloneLessons(lessons: Lesson[], courseId: Course['id']) {
   const clonedLessons = lessons
-    .sort(
-      (a, b) =>
-        new Date(a.created_at || '').getTime() -
-        new Date(b.created_at || '').getTime()
-    )
+    .sort((a, b) => new Date(a.created_at || '').getTime() - new Date(b.created_at || '').getTime())
     .map((lesson, index) => ({
       call_url: lesson.call_url,
       course_id: courseId,
-      is_complete: lesson.is_complete,
+      is_unlocked: lesson.is_unlocked,
       lesson_at: new Date(),
       note: lesson.note,
       order: lesson.order || index + 1,
       public: lesson.public,
       slide_url: lesson.slide_url,
       title: lesson.title,
-      video_url: lesson.video_url,
+      video_url: lesson.video_url
     }));
 
   const { data } = await supabase.from('lesson').insert(clonedLessons).select();
@@ -121,7 +117,7 @@ async function cloneLessons(lessons: Lesson[], courseId: Course['id']) {
     return {
       ...dataItem,
       // @ts-ignore
-      exercise: lessons[dataIndex].exercise,
+      exercise: lessons[dataIndex].exercise
     };
   });
 
@@ -147,7 +143,7 @@ async function cloneExercises(lessons: Lesson[]) {
           description,
           due_by: new Date(),
           lesson_id: lessonId,
-          title,
+          title
         })
         .select();
       const newExercise = Array.isArray(data) ? data[0] : data;
@@ -166,7 +162,7 @@ async function cloneExercises(lessons: Lesson[]) {
             points: question.points,
             order: question.order,
             question_type_id: question.question_type_id,
-            exercise_id: newExercise.id,
+            exercise_id: newExercise.id
           })
           .select();
         const newQuestion = Array.isArray(data) ? data[0] : data;
@@ -179,7 +175,7 @@ async function cloneExercises(lessons: Lesson[]) {
             value: option.value,
             label: option.label,
             is_correct: option.is_correct,
-            question_id: newQuestion.id,
+            question_id: newQuestion.id
           }));
 
           // Insert[Batch]
@@ -192,10 +188,7 @@ async function cloneExercises(lessons: Lesson[]) {
   return true;
 }
 
-export async function cloneCourse(
-  courseId: string,
-  newTitle: string
-): Promise<Course> {
+export async function cloneCourse(courseId: string, newTitle: string): Promise<Course> {
   const { data: course, error } = await fetchCourseData(courseId);
   console.log(`course`, course);
 

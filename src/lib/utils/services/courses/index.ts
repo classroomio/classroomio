@@ -1,18 +1,9 @@
 import { supabase } from '$lib/utils/functions/supabase';
 import { isUUID } from '$lib/utils/functions/isUUID';
 import { QUESTION_TYPE } from '$lib/components/Question/constants';
-import type {
-  Lesson,
-  Course,
-  Group,
-  Groupmember,
-  Exercise,
-} from '$lib/utils/types';
+import type { Lesson, Course, Group, Groupmember, Exercise } from '$lib/utils/types';
 
-export async function fetchCourse(
-  courseId?: Course['id'],
-  slug?: Course['slug']
-) {
+export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']) {
   let match: { slug?: string; id?: string } = {};
 
   if (slug) {
@@ -42,7 +33,7 @@ export async function fetchCourse(
       is_certificate_downloadable,
       certificate_theme,
       lessons:lesson(
-        id, title,public, lesson_at, call_url, is_complete, order, created_at,
+        id, title,public, lesson_at, call_url, is_unlocked, is_complete, order, created_at,
         note, video_url, slide_url, call_url, totalExercises:exercise(count),
         profile:teacher_id(id, avatar_url, fullname)
       ),
@@ -61,7 +52,7 @@ export async function fetchCourse(
 
   return {
     data,
-    error,
+    error
   };
 }
 
@@ -74,25 +65,22 @@ export async function fetchGroup(groupId: Group['id']) {
 
   return {
     data,
-    error,
+    error
   };
 }
 
-export async function setProfileIdOfGroupMember(
-  email: string,
-  profileId: string
-) {
+export async function setProfileIdOfGroupMember(email: string, profileId: string) {
   const { data, error } = await supabase
     .from('groupmember')
     .update({
       email: null,
-      profile_id: profileId,
+      profile_id: profileId
     })
     .match({ email: email });
 
   return {
     data,
-    error,
+    error
   };
 }
 
@@ -100,17 +88,13 @@ export async function uploadAvatar(courseId: string, avatar: string) {
   const filename = `course/${courseId + Date.now()}.webp`;
   let logo;
 
-  const { data } = await supabase.storage
-    .from('avatars')
-    .upload(filename, avatar, {
-      cacheControl: '3600',
-      upsert: false,
-    });
+  const { data } = await supabase.storage.from('avatars').upload(filename, avatar, {
+    cacheControl: '3600',
+    upsert: false
+  });
 
   if (data && data.Key) {
-    const { publicURL } = supabase.storage
-      .from('avatars')
-      .getPublicUrl(filename);
+    const { publicURL } = supabase.storage.from('avatars').getPublicUrl(filename);
 
     if (!publicURL) return;
 
@@ -128,17 +112,13 @@ export async function updateCourse(
   if (avatar) {
     const filename = `course/${courseId + Date.now()}.webp`;
 
-    const { data } = await supabase.storage
-      .from('avatars')
-      .upload(filename, avatar, {
-        cacheControl: '3600',
-        upsert: false,
-      });
+    const { data } = await supabase.storage.from('avatars').upload(filename, avatar, {
+      cacheControl: '3600',
+      upsert: false
+    });
 
     if (data && data.Key) {
-      const { publicURL } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(filename);
+      const { publicURL } = supabase.storage.from('avatars').getPublicUrl(filename);
 
       if (!publicURL) return;
 
@@ -170,9 +150,7 @@ export function deleteGroupMember(groupMemberId: Groupmember['id']) {
 export function fetchLesson(lessonId: Lesson['id']) {
   return supabase
     .from('lesson')
-    .select(
-      `id, note, video_url, slide_url, call_url, totalExercises:exercise(count)`
-    )
+    .select(`id, note, video_url, slide_url, call_url, totalExercises:exercise(count)`)
     .eq('id', lessonId)
     .single();
 }
@@ -206,10 +184,7 @@ function isNew(item: any) {
 }
 
 // TODO: Add questionnaire type
-export async function upsertExercise(
-  questionnaire: any,
-  exerciseId: Exercise['id']
-) {
+export async function upsertExercise(questionnaire: any, exerciseId: Exercise['id']) {
   const {
     questions,
     title,
@@ -217,7 +192,7 @@ export async function upsertExercise(
     due_by,
     is_title_dirty,
     is_description_dirty,
-    is_due_by_dirty,
+    is_due_by_dirty
   } = questionnaire;
 
   if (is_description_dirty || is_title_dirty || is_due_by_dirty) {
@@ -226,7 +201,7 @@ export async function upsertExercise(
       .update({
         title,
         description,
-        due_by,
+        due_by
       })
       .match({ id: exerciseId });
   }
@@ -234,31 +209,16 @@ export async function upsertExercise(
   const updatedQuestions = [];
 
   for (const question of questions) {
-    const {
-      title,
-      id,
-      name,
-      question_type,
-      options,
-      deleted_at,
-      order,
-      points,
-      is_dirty,
-    } = question;
+    const { title, id, name, question_type, options, deleted_at, order, points, is_dirty } =
+      question;
 
     // DELETE /delete/:questionId - Don't delete if answer already given
     if (deleted_at) {
       // Delete from server only if this question exists in the database
       if (!isNew(id)) {
         await supabase.from('option').delete().match({ question_id: id });
-        await supabase
-          .from('question_answer')
-          .delete()
-          .match({ question_id: id });
-        const { error } = await supabase
-          .from('question')
-          .delete()
-          .match({ id });
+        await supabase.from('question_answer').delete().match({ question_id: id });
+        const { error } = await supabase.from('question').delete().match({ id });
 
         if (error) {
           console.error('Cannot delete this question', error);
@@ -278,7 +238,7 @@ export async function upsertExercise(
       points,
       order,
       question_type_id: question_type.id,
-      exercise_id: exerciseId,
+      exercise_id: exerciseId
     };
     let questionSupabaseRes;
 
@@ -329,7 +289,7 @@ export async function upsertExercise(
             is_dirty: undefined,
             id: isNew(option.id) ? undefined : option.id,
             value: isUUID(option.value) ? option.value : undefined, // this value is of UUID type
-            question_id: newQuestion.id,
+            question_id: newQuestion.id
           };
 
           if (is_dirty || isNew(option.id)) {
@@ -378,7 +338,7 @@ export async function submitExercise(
     .insert({
       submitted_by: groupMemberId,
       exercise_id: exerciseId,
-      course_id: courseId,
+      course_id: courseId
     })
     .select();
 
@@ -390,7 +350,7 @@ export async function submitExercise(
       question_id: questionsByName[questionName],
       open_answer: '',
       answers: [],
-      submission_id: Array.isArray(submission) ? submission[0].id : null,
+      submission_id: Array.isArray(submission) ? submission[0].id : null
     };
 
     if (typeof value === 'string') {
@@ -402,17 +362,11 @@ export async function submitExercise(
     questionAnswers.push(questionAnswer);
   }
 
-  const res = await supabase
-    .from('question_answer')
-    .insert(questionAnswers)
-    .select();
+  const res = await supabase.from('question_answer').insert(questionAnswers).select();
   console.log(`res`, res);
 }
 
-export async function deleteExercise(
-  questions: Array<{ id: string }>,
-  exerciseId: Exercise['id']
-) {
+export async function deleteExercise(questions: Array<{ id: string }>, exerciseId: Exercise['id']) {
   for (const question of questions) {
     const { id } = question;
 

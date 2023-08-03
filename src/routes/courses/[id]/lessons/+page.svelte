@@ -2,12 +2,13 @@
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import { dndzone } from 'svelte-dnd-action';
+  import UnlockedIcon from 'carbon-icons-svelte/lib/Unlocked.svelte';
+  import LockedIcon from 'carbon-icons-svelte/lib/Locked.svelte';
   import TimeIcon from 'carbon-icons-svelte/lib/Time.svelte';
   import EditIcon from 'carbon-icons-svelte/lib/Edit.svelte';
   import SaveIcon from 'carbon-icons-svelte/lib/Save.svelte';
   import PhoneIcon from 'carbon-icons-svelte/lib/Phone.svelte';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
-  import CheckmarkFilled24 from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import Box from '$lib/components/Box/index.svelte';
@@ -137,20 +138,20 @@
             <IconButton
               disabled={isStudent}
               onClick={() => {
-                lesson.is_complete = !lesson.is_complete;
+                lesson.is_unlocked = !lesson.is_unlocked;
                 handleSaveLesson(lesson, $course.id);
               }}
               toolTipProps={isStudent
                 ? {}
                 : {
-                    title: `Click to ${lesson.is_complete ? 'lock' : 'unlock'}`,
+                    title: `Click to ${lesson.is_unlocked ? 'lock' : 'unlock'}`,
                     direction: 'right'
                   }}
             >
-              {#if lesson.is_complete}
-                <CheckmarkFilled24 class="carbon-icon" />
+              {#if lesson.is_unlocked}
+                <UnlockedIcon size={24} class="carbon-icon" />
               {:else}
-                <span class="text-2xl">🔒</span>
+                <LockedIcon size={24} class="carbon-icon" />
               {/if}
             </IconButton>
           </div>
@@ -186,11 +187,11 @@
             {:else}
               <h3 class="dark:text-white text-2xl m-0 flex items-center">
                 <a
-                  href={isStudent && !lesson.is_complete
+                  href={isStudent && !lesson.is_unlocked
                     ? $page.url.pathname
                     : '/courses/' + $course.id + '/lessons/' + lesson.id}
                   class="dark:text-white hover:underline text-black {isStudent &&
-                  !lesson.is_complete
+                  !lesson.is_unlocked
                     ? 'cursor-not-allowed'
                     : ''}"
                 >

@@ -15,20 +15,13 @@
 </script>
 
 <div>
-  <div
-    class="item relative flex items-center {isGroupActive && 'active'}"
-    role="button"
+  <button
+    class="item relative flex items-center {isGroupActive && 'active'} w-full"
     tabindex="0"
     on:click={onClick}
   >
-    {#if !hideSortIcon}
-      <CaretSortDownIcon
-        size={20}
-        class="carbon-icon-sort {isExpanded ? '' : 'carbon-icon-minimize'}"
-      />
-    {/if}
     <span class="dark:text-white font-bold">{label}</span>
-  </div>
+  </button>
   {#if isExpanded}
     <div class="flex flex-col">
       <slot />

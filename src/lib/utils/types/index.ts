@@ -141,13 +141,14 @@ export interface Lesson {
   video_url?: any; // type unknown;
   slide_url?: any; // type unknown;
   course_id: string /* foreign key to course.id */;
-  id: string /* primary key */;
+  id?: string /* primary key */;
   created_at?: string;
   updated_at?: string;
   title: any; // type unknown;
   public?: boolean;
   lesson_at?: string;
   teacher_id?: string /* foreign key to profile.id */;
+  is_unlocked?: boolean;
   is_complete?: boolean;
   call_url?: string;
   order?: number;

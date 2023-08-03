@@ -26,12 +26,12 @@ export function getLessonsRoute(courseId, lessonId) {
   return `${path}/${lessonId}`;
 }
 
-export function getLectureNo(index, initNo = '00') {
+export function getLectureNo(index, initNo = '0') {
   if (index <= 9) {
     return `${initNo}${index}`;
   }
 
-  return `${initNo.replace('0', '')}${index}`;
+  return index;
 }
 
 export function formatAnswers(data) {
@@ -46,9 +46,7 @@ export function formatAnswers(data) {
     const questionName = questionByIdAndName[answer.question_id];
 
     answers[questionName] =
-      Array.isArray(answer.answers) && answer.answers.length
-        ? answer.answers
-        : answer.open_answer;
+      Array.isArray(answer.answers) && answer.answers.length ? answer.answers : answer.open_answer;
   }
 
   return answers;
