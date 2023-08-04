@@ -6,7 +6,7 @@
   import {
     resetValidation,
     getConfirmPasswordError,
-    getDisableSubmit,
+    getDisableSubmit
   } from '$lib/utils/functions/validator';
   import { RESET_FIELDS } from '$lib/utils/constants/authentication';
   import AuthUI from '$lib/components/AuthUI/index.svelte';
@@ -31,7 +31,7 @@
     try {
       loading = true;
       const { data, error } = await supabase.auth.update({
-        password: fields.password,
+        password: fields.password
       });
       console.log('data', data);
       if (error) throw error;
@@ -59,6 +59,7 @@
   isLogin={false}
   {handleSubmit}
   showOnlyContent={true}
+  isLoading={loading}
   showLogo={true}
   bind:formRef
 >

@@ -6,7 +6,7 @@
   import {
     authValidation,
     getConfirmPasswordError,
-    getDisableSubmit,
+    getDisableSubmit
   } from '$lib/utils/functions/validator';
   import { SIGNUP_FIELDS } from '$lib/utils/constants/authentication';
   import AuthUI from '$lib/components/AuthUI/index.svelte';
@@ -33,7 +33,7 @@
       loading = true;
       const { data, error } = await supabase.auth.signUp({
         email: fields.email,
-        password: fields.password,
+        password: fields.password
       });
       console.log('data', data);
       if (error) throw error;
@@ -58,17 +58,9 @@
   <title>Join ClassroomIO</title>
 </svelte:head>
 
-<AuthUI
-  {supabase}
-  isLogin={false}
-  {handleSubmit}
-  showOnlyContent={success}
-  bind:formRef
->
+<AuthUI {supabase} isLogin={false} {handleSubmit} isLoading={loading} bind:formRef>
   <div class="mt-4 w-full">
-    <p class="dark:text-white text-lg font-semibold mb-6">
-      Create a free account
-    </p>
+    <p class="dark:text-white text-lg font-semibold mb-6">Create a free account</p>
     <!-- <TextField
       label="Full Name"
       bind:value={fields.name}

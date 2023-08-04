@@ -26,7 +26,7 @@
       loading = true;
       const { data, error } = await supabase.auth.signInWithPassword({
         email: fields.email,
-        password: fields.password,
+        password: fields.password
       });
       console.log('data', data);
       if (error) throw error;
@@ -42,13 +42,7 @@
   <title>Welcome back to ClassroomIO</title>
 </svelte:head>
 
-<AuthUI
-  {supabase}
-  isLogin={true}
-  {handleSubmit}
-  showOnlyContent={loading}
-  bind:formRef
->
+<AuthUI {supabase} isLogin={true} {handleSubmit} isLoading={loading} bind:formRef>
   <div class="mt-4 w-full">
     <p class="dark:text-white text-lg font-semibold mb-6">Welcome back</p>
     <TextField
