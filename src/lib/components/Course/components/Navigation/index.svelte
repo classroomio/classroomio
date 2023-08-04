@@ -155,7 +155,7 @@
         <slot:fragment slot="widget">
           <RoleBasedSecurity allowedRoles={[1, 2]}>
             <IconButton onClick={() => ($settingsDialog.open = !$settingsDialog.open)}>
-              <SettingsIcon size={20} class="carbon-icon" />
+              <SettingsIcon size={20} class="carbon-icon dark:text-white" />
             </IconButton>
           </RoleBasedSecurity>
         </slot:fragment>
@@ -198,11 +198,11 @@
                       <span>{item.title}</span>
                       {#if !item.is_unlocked}
                         <span class="text-md ml-2">
-                          <LockedIcon class="carbon-icon" />
+                          <LockedIcon class="carbon-icon dark:text-white" />
                         </span>
                       {:else if item.is_complete}
                         <span class="ml-2">
-                          <CheckmarkFilled class="carbon-icon" />
+                          <CheckmarkFilled class="carbon-icon dark:text-white" />
                         </span>
                       {/if}
                     </div>
@@ -220,7 +220,7 @@
           onClick={() => goto(`${$currentOrgPath}/courses`)}
           buttonClassName="mx-3"
         >
-          <HomeIcon size={32} class="carbon-icon" />
+          <HomeIcon size={32} class="carbon-icon dark:text-white" />
         </IconButton>
         <a class="block mx-3" href={`/profile/${$profile.id}`}>
           <Avatar src={$profile.avatar_url} name={$profile.username} />

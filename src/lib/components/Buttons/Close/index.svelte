@@ -10,8 +10,8 @@
 
 <IconButton {onClick} {color} {contained} {size}>
   {#if size === 'large'}
-    <CloseIcon size={24} class="carbon-icon" title="Delete" />
+    <CloseIcon size={24} class="carbon-icon dark:text-white" title="Delete" />
   {:else}
-    <CloseIcon size={24} class="carbon-icon" title="Delete" />
+    <CloseIcon size={24} class="carbon-icon dark:text-white" title="Delete" />
   {/if}
 </IconButton>

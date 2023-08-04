@@ -33,8 +33,8 @@
             $copyCourseModal.open = true;
             $copyCourseModal.title = `Copy of ${title}`;
           })();
-        },
-      },
+        }
+      }
       // {
       //   label: 'Delete',
       //   onClick() {
@@ -45,22 +45,14 @@
   }
 </script>
 
-<a
-  rel="prefetch"
-  href={isOnLandingPage ? `/course/${slug}` : `/courses/${id}`}
-  class=" text-black"
->
+<a rel="prefetch" href={isOnLandingPage ? `/course/${slug}` : `/courses/${id}`} class=" text-black">
   <div
     class="root w-80 border bg-gray-100 dark:bg-gray-700 sm:mr-4 mb-4 rounded-md hover:shadow-2xl transition ease-in-out relative"
   >
     {#if !isOnLandingPage}
-      <Dropdown
-        options={getOptions()}
-        classNames="absolute top-4 right-4"
-        isIcon={true}
-      >
+      <Dropdown options={getOptions()} classNames="absolute top-4 right-4" isIcon={true}>
         <div class="p-1 rounded-full bg-white dark:bg-gray-600">
-          <OverflowMenuHorizontalIcon size={20} class="carbon-icon" />
+          <OverflowMenuHorizontalIcon size={20} class="carbon-icon dark:text-white" />
         </div>
       </Dropdown>
     {/if}
@@ -85,11 +77,7 @@
         {#if isOnLandingPage}
           <ArrowRight size={24} class="carbon-class" />
         {:else}
-          <div
-            class="rounded dark:text-white bg-{isPublished
-              ? 'green'
-              : 'red'}-200 py-1 px-2"
-          >
+          <div class="rounded dark:text-white bg-{isPublished ? 'green' : 'red'}-200 py-1 px-2">
             {#if isPublished}
               Published
             {:else}

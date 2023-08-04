@@ -34,7 +34,7 @@
       avatar_url: '',
       rating: 1,
       created_at: new Date().getTime(),
-      description: '',
+      description: ''
     };
     reviews = [...reviews, _review];
     reviewToExpand = _review.id;
@@ -45,26 +45,26 @@
     const reviewSchema = z.object({
       name: z.string().min(5, {
         message: 'Name is too short, min of 5 character',
-        invalid_type_error: 'Must not be empty',
+        invalid_type_error: 'Must not be empty'
       }),
       avatar_url: z.string().min(6, {
         message: 'Upload an image',
-        invalid_type_error: 'Must not be empty',
+        invalid_type_error: 'Must not be empty'
       }),
       rating: z
         .number()
         .min(1, {
           message: 'Rating must be from 1-5',
-          invalid_type_error: 'Must not be empty',
+          invalid_type_error: 'Must not be empty'
         })
         .max(5, {
           message: 'Rating must be from 1-5',
-          invalid_type_error: 'Must not be empty',
+          invalid_type_error: 'Must not be empty'
         }),
       description: z.string().min(10, {
         message: 'Description is too short, min of 5 character',
-        invalid_type_error: 'Must not be empty',
-      }),
+        invalid_type_error: 'Must not be empty'
+      })
     });
 
     const { error } = reviewSchema.safeParse(review);
@@ -104,11 +104,7 @@
         {#if review.id !== reviewToExpand}
           <!-- the headers -->
           <div class="flex w-full justify-between items-center">
-            <Avatar
-              src={review.avatar_url}
-              name={review.name}
-              className="mt-1"
-            />
+            <Avatar src={review.avatar_url} name={review.name} className="mt-1" />
             <p class="text-sm">{review.name}</p>
 
             <IconButton
@@ -116,19 +112,13 @@
               onClick={() => onExpand(review.id)}
               size={$isMobile ? 'large' : 'small'}
             >
-              <ChevronDownIcon size={16} class="carbon-icon" />
+              <ChevronDownIcon size={16} class="carbon-icon dark:text-white" />
             </IconButton>
           </div>
         {/if}
         <!-- the body -->
         {#if review.id === reviewToExpand}
-          <ReviewFormEditor
-            bind:reviews
-            bind:review
-            {errors}
-            courseId={course.id}
-            {onExpand}
-          />
+          <ReviewFormEditor bind:reviews bind:review {errors} courseId={course.id} {onExpand} />
         {/if}
       </div>
     {/each}

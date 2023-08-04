@@ -17,18 +17,18 @@
     {
       title: 'Access',
       description:
-        'Quickly find any material you need to get your job done. ClassroomIO offers the All-in-on-platform',
+        'Quickly find any material you need to get your job done. ClassroomIO offers the All-in-on-platform'
     },
     {
       title: 'Analytics',
       description:
-        'Avoid assumptions, better understand the needs of your classrooms and give students a personlized experience',
+        'Avoid assumptions, better understand the needs of your classrooms and give students a personlized experience'
     },
     {
       title: 'Automation',
       description:
-        'Lesson reminders, deadline reminders and many other automated alerts to help everyone in the learning process be proactive',
-    },
+        'Lesson reminders, deadline reminders and many other automated alerts to help everyone in the learning process be proactive'
+    }
   ];
 
   async function handleSubmit() {
@@ -72,9 +72,7 @@
   <form on:submit|preventDefault={handleSubmit} class="my-4">
     <div class="flex items-center flex-col sm:flex-row">
       {#if success}
-        <p class="dark:text-white">
-          You have been added successfully. Thanks for joining.
-        </p>
+        <p class="dark:text-white">You have been added successfully. Thanks for joining.</p>
       {:else}
         <TextField
           bind:value={email}
@@ -85,9 +83,7 @@
           isRequired={true}
           isDisabled={isAdding}
         />
-        <PrimaryButton type="submit" isLoading={isAdding}>
-          Join waiting list
-        </PrimaryButton>
+        <PrimaryButton type="submit" isLoading={isAdding}>Join waiting list</PrimaryButton>
       {/if}
     </div>
   </form>
@@ -99,11 +95,11 @@
       >
         <h3 class="dark:text-white text-3xl">
           {#if index === 0}
-            <FlowStreamReferenceIcon size={32} class="carbon-icon" />
+            <FlowStreamReferenceIcon size={32} class="carbon-icon dark:text-white" />
           {:else if index === 1}
-            <ChartClusterBarIcon size={32} class="carbon-icon" />
+            <ChartClusterBarIcon size={32} class="carbon-icon dark:text-white" />
           {:else if index === 2}
-            <MachineLearningModelIcon size={32} class="carbon-icon" />
+            <MachineLearningModelIcon size={32} class="carbon-icon dark:text-white" />
           {/if}
           {area.title}
         </h3>

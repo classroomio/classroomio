@@ -6,7 +6,7 @@
   export let maxRows = 3;
   export let className = '';
   export let labelClassName = '';
-  export let bgColor = 'bg-gray-200 dark:bg-gray-500';
+  export let bgColor = 'bg-gray-50 focus:bg-blue-50 dark:bg-white';
   export let helperMessage = '';
   export let errorMessage = '';
   export let isRequired = false;
@@ -18,7 +18,7 @@
 
 <label class="block w-full relative {className}">
   {#if label}
-    <p for="text-field" class="dark:text-white {labelClassName}">
+    <p for="text-field" class="dark:text-white text-left {labelClassName}">
       {label}
 
       {#if isRequired}
@@ -38,10 +38,8 @@
     {placeholder}
     bind:value
     required={isRequired}
-    class="form-textarea mt-1 block w-full
-    {bgColor} border-t-0 border-l-0 border-r-0 border-b-1 {!!errorMessage
-      ? 'border-red-500'
-      : 'border-gray-300'}"
+    class="form-textarea border-l-0 border-r-0 border-t-0 border-b-2 border-gray-200 focus:border-l-0 focus:border-r-0 rounded-t-md focus:border-t-0 focus:border-b-2 focus:border-blue-600 mt-1 block w-full
+    {bgColor} {!!errorMessage ? 'border-red-500' : 'border-gray-300'}"
     on:change={onChange}
   />
   {#if !!errorMessage}
@@ -57,24 +55,7 @@
 </label>
 
 <style>
-  /* pre,
-  textarea {
-    font-family: inherit;
-    padding: 0.5em;
-    box-sizing: border-box;
-    border: 1px solid #eee;
-    line-height: 1.2;
-    overflow: hidden;
-  } */
-
-  /* textarea {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    resize: none;
+  .form-textarea {
+    box-shadow: none !important;
   }
-  textarea.has-label {
-    top: 30px;
-  } */
 </style>

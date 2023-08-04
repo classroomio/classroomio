@@ -8,7 +8,7 @@
     handleRemoveQuestion,
     handleCode,
     handleAnswerSelect,
-    addDynamicValue,
+    addDynamicValue
   } from '../store/exercise';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
   import AddFilledIcon from 'carbon-icons-svelte/lib/AddFilled.svelte';
@@ -30,10 +30,7 @@
   import QuestionContainer from '$lib/components/QuestionContainer/index.svelte';
   import DeleteConfirmationModal from './DeleteConfirmation.svelte';
   import OrderModal from './OrderModal.svelte';
-  import {
-    QUESTION_TYPE,
-    QUESTION_TYPES,
-  } from '$lib/components/Question/constants';
+  import { QUESTION_TYPE, QUESTION_TYPES } from '$lib/components/Question/constants';
   import { filterOutDeleted } from './functions';
   import { deleteExercise } from '$lib/utils/services/courses';
   import { lesson } from '../store/lessons';
@@ -98,9 +95,7 @@
 
     lesson.update((_lesson) => ({
       ..._lesson,
-      exercises: _lesson.exercises.filter(
-        (exercise) => exercise.id !== exerciseId
-      ),
+      exercises: _lesson.exercises.filter((exercise) => exercise.id !== exerciseId)
     }));
 
     shouldDelete = false;
@@ -193,10 +188,7 @@
       <!-- {#key question.id} -->
       <QuestionContainer
         onClose={onInitDeleteClicked(question.id)}
-        scrollToQuestion={shouldScrollToLast(
-          question.id,
-          $questionnaire.questions
-        )}
+        scrollToQuestion={shouldScrollToLast(question.id, $questionnaire.questions)}
         bind:points={question.points}
         hasError={!!errors[question.id]}
         onPointsChange={() => {
@@ -219,7 +211,7 @@
           options={extraActions}
           handleOptionClick={handleOptionClick(question.id)}
         >
-          <AddFilledIcon class="carbon-icon" />
+          <AddFilledIcon class="carbon-icon dark:text-white" />
           <p class="dark:text-white ml-2 text-gray-600">Add</p>
         </Dropdown> -->
 
@@ -234,16 +226,9 @@
 
         {#if typeof question.code === 'string'}
           <div class="flex justify-between items-center my-3 w-3/5">
-            <TextArea
-              bind:value={question.code}
-              rows="2"
-              placeholder="Write your code"
-            />
-            <IconButton
-              value="write-code"
-              onClick={() => handleCode(question.id, false)}
-            >
-              <TrashCanIcon size={24} class="carbon-icon" />
+            <TextArea bind:value={question.code} rows="2" placeholder="Write your code" />
+            <IconButton value="write-code" onClick={() => handleCode(question.id, false)}>
+              <TrashCanIcon size={24} class="carbon-icon dark:text-white" />
             </IconButton>
           </div>
         {/if}
@@ -262,7 +247,7 @@
                     value={option.id}
                     onClick={handleRemoveOption(question.id, option.id)}
                   >
-                    <TrashCanIcon size={24} class="carbon-icon" />
+                    <TrashCanIcon size={24} class="carbon-icon dark:text-white" />
                   </IconButton>
                   <IconButton
                     value={option.id}
@@ -270,9 +255,9 @@
                     buttonClassName={option.is_correct && 'success'}
                   >
                     {#if option.is_correct}
-                      <CheckmarkFilledIcon size={24} class="carbon-icon" />
+                      <CheckmarkFilledIcon size={24} class="carbon-icon dark:text-white" />
                     {:else}
-                      <CheckmarkOutlineIcon size={24} class="carbon-icon" />
+                      <CheckmarkOutlineIcon size={24} class="carbon-icon dark:text-white" />
                     {/if}
                   </IconButton>
                 </div>
@@ -293,7 +278,7 @@
                     value={option.id}
                     onClick={handleRemoveOption(question.id, option.id)}
                   >
-                    <TrashCanIcon size={24} class="carbon-icon" />
+                    <TrashCanIcon size={24} class="carbon-icon dark:text-white" />
                   </IconButton>
                   <IconButton
                     value={option.id}
@@ -301,9 +286,9 @@
                     buttonClassName={option.is_correct && 'success'}
                   >
                     {#if option.is_correct}
-                      <CheckmarkFilledIcon size={24} class="carbon-icon" />
+                      <CheckmarkFilledIcon size={24} class="carbon-icon dark:text-white" />
                     {:else}
-                      <CheckmarkOutlineIcon size={24} class="carbon-icon" />
+                      <CheckmarkOutlineIcon size={24} class="carbon-icon dark:text-white" />
                     {/if}
                   </IconButton>
                 </div>
@@ -316,9 +301,7 @@
           {/if}
 
           {#if getQuestionErrorMsg(errors, question, 'option')}
-            <ErrorMessage
-              message={getQuestionErrorMsg(errors, question, 'option')}
-            />
+            <ErrorMessage message={getQuestionErrorMsg(errors, question, 'option')} />
           {/if}
         </div>
 
@@ -330,7 +313,7 @@
               variant={VARIANTS.OUTLINED}
               onClick={handleAddOption(question.id)}
             >
-              <AddFilledIcon size={24} class="carbon-icon" />
+              <AddFilledIcon size={24} class="carbon-icon dark:text-white" />
               <p class="dark:text-white ml-2">Add option</p>
             </PrimaryButton>
           </div>
