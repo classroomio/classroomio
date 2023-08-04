@@ -7,14 +7,18 @@
   export let handleSubmit;
   export let isLogin = true;
   export let showOnlyContent = false;
+  export let isLoading = false;
   export let showLogo = false;
   export let formRef;
 
   async function signInWithGoogle() {
+    if (isLoading) {
+      return;
+    }
     try {
       console.log('signInWithGoogle');
       const { user, session, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
+        provider: 'google'
       });
 
       console.log('user', user);
@@ -31,13 +35,7 @@
     <div class="flex items-center flex-col p-2 lg:px-8 lg:py-3">
       {#if !showOnlyContent || showLogo}
         <div class="flex items-center w-full justify-center pt-4">
-          <img
-            src="/logo-192.png"
-            alt="ClassroomIO logo"
-            height="50"
-            width="50"
-            data-atf="1"
-          />
+          <img src="/logo-192.png" alt="ClassroomIO logo" height="50" width="50" data-atf="1" />
           <h4 class="dark:text-white text-xl">ClassroomIO</h4>
         </div>
       {/if}
@@ -54,12 +52,11 @@
           <PrimaryButton
             variant={VARIANTS.OUTLINED}
             onClick={signInWithGoogle}
+            isDisabled={isLoading}
             className="py-3 sm:w-full w-full"
           >
             <GoogleIconColored />
-            <span class="ml-2"
-              >{isLogin ? 'Sign in' : 'Sign up'} with Google</span
-            >
+            <span class="ml-2">{isLogin ? 'Sign in' : 'Sign up'} with Google</span>
           </PrimaryButton>
         </div>
       {/if}
@@ -67,15 +64,9 @@
     {#if !showOnlyContent}
       <div class="w-full p-6 border-t border-grey text-center">
         {#if isLogin}
-          Not registered yet? <a
-            class="hover:underline text-blue-700"
-            href="/signup">Sign up</a
-          >
+          Not registered yet? <a class="hover:underline text-blue-700" href="/signup">Sign up</a>
         {:else}
-          Already have an account? <a
-            class="hover:underline text-blue-700"
-            href="/login">Log In</a
-          >
+          Already have an account? <a class="hover:underline text-blue-700" href="/login">Log In</a>
         {/if}
       </div>
     {/if}
