@@ -80,21 +80,11 @@
   </div>
 
   <div class="mt-8 flex justify-between items-center w-full">
-    <IconButton
-      contained={true}
-      value="delete"
-      onClick={deleteReviewData}
-      size="large"
-    >
-      <TrashCanIcon size={24} class="carbon-icon" />
+    <IconButton contained={true} value="delete" onClick={deleteReviewData} size="large">
+      <TrashCanIcon size={24} class="carbon-icon dark:text-white" />
     </IconButton>
-    <IconButton
-      contained={true}
-      value="save"
-      onClick={() => onExpand(review.id)}
-      size="large"
-    >
-      <SaveIcon size={24} class="carbon-icon" />
+    <IconButton contained={true} value="save" onClick={() => onExpand(review.id)} size="large">
+      <SaveIcon size={24} class="carbon-icon dark:text-white" />
     </IconButton>
   </div>
 </div>

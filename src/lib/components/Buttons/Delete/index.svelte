@@ -6,5 +6,5 @@
 </script>
 
 <IconButton {onClick}>
-  <Close size={24} class="carbon-icon" title="Close" />
+  <Close size={24} class="carbon-icon dark:text-white" title="Close" />
 </IconButton>

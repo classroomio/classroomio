@@ -1,4 +1,5 @@
 <script>
+  import TextField from '$lib/components/Form/TextField.svelte';
   export let label = '';
   export let value = '';
   export let checked = false;
@@ -23,13 +24,15 @@
     disabled={disabled || isEditable}
   />
   {#if isEditable}
-    <input
-      class="form-input p-2 mt-1 ml-1 block w-2/4 bg-gray-100 dark:bg-gray-700 border-t-0 border-l-0 border-r-0 border-b-1"
-      type="text"
-      placeholder="Your option"
-      bind:value={label}
-      on:change={onChange}
-    />
+    <div class="w-2/4">
+      <TextField
+        bind:value={label}
+        placeholder="Your option"
+        className="ml-1"
+        type="text"
+        {onChange}
+      />
+    </div>
   {:else}
     <span class="dark:text-white ml-2">{label}</span>
   {/if}

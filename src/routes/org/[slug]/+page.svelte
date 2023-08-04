@@ -251,10 +251,10 @@
                 {lessonData.lesson_title}
                 {#if lessonData.is_unlocked}
                   <span class="ml-2 success">
-                    <LockedIcon class="carbon-icon" />
+                    <LockedIcon class="carbon-icon dark:text-white" />
                   </span>
                 {:else}
-                  <UnlockedIcon class="carbon-icon" />
+                  <UnlockedIcon class="carbon-icon dark:text-white" />
                 {/if}
               </a>
               <p class="dark:text-white text-grey text-sm flex items-center">

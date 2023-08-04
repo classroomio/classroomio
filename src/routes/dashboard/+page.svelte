@@ -167,7 +167,7 @@
               {lessonData.lesson_title}
               {#if lessonData.is_unlocked}
                 <span class="ml-2 success">
-                  <CheckmarkFilledIcon size={20} class="carbon-icon" />
+                  <CheckmarkFilledIcon size={20} class="carbon-icon dark:text-white" />
                 </span>
               {:else}
                 <span class="text-md ml-2">🔒</span>

@@ -16,7 +16,7 @@
       name: 'Evgeniy',
       question: "I'am looking at this and it looks great",
       vote: 1,
-      answered: false,
+      answered: false
     },
     {
       id: 2,
@@ -24,22 +24,22 @@
       question:
         'Thanks for the feedback, what do you think about my website. https://rotimibest.com',
       vote: 4,
-      answered: false,
+      answered: false
     },
     {
       id: 3,
       name: 'Vitalii Marushko',
       question: 'Всем привет',
       vote: 20,
-      answered: false,
+      answered: false
     },
     {
       id: 4,
       name: 'Natasha',
       question: 'Привет Виталий',
       vote: 0,
-      answered: false,
-    },
+      answered: false
+    }
   ];
 
   function handleSend() {
@@ -54,15 +54,15 @@
         name: 'You',
         question,
         vote: 0,
-        answered: false,
-      },
+        answered: false
+      }
     ];
 
     question = null;
 
     setTimeout(() => {
       bodyRef.scrollTo({
-        top: bodyRef.scrollHeight,
+        top: bodyRef.scrollHeight
       });
     }, 100);
   }
@@ -104,22 +104,15 @@
           {@html marked(question.question)}
         </article>
       </div>
-      <button
-        class={`${question.answered && 'active'}`}
-        on:click={handleMarkAnswered(question.id)}
-      >
-        <CheckmarkOutline size={20} class="carbon-icon" />
+      <button class={`${question.answered && 'active'}`} on:click={handleMarkAnswered(question.id)}>
+        <CheckmarkOutline size={20} class="carbon-icon dark:text-white" />
       </button>
     </div>
   {/each}
 </div>
 
 <div class="footer">
-  <TextField
-    placeholder="Say something"
-    bind:value={question}
-    onKeyDown={handleKeyDown}
-  />
+  <TextField placeholder="Say something" bind:value={question} onKeyDown={handleKeyDown} />
 </div>
 
 <style lang="scss">

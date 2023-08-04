@@ -6,7 +6,7 @@
   import IconButton from '$lib/components/IconButton/index.svelte';
 
   export let currentQuestion = {
-    label: '',
+    label: ''
   };
   export let currentError = {};
   export let optionHasError = () => false;
@@ -41,8 +41,7 @@
           bgColor="bg-white"
           className="mt-3"
           isDisabled={currentQuestion.type === 'boolean'}
-          errorMessage={optionHasError(option.id, currentError.options) &&
-            'Please enter a label'}
+          errorMessage={optionHasError(option.id, currentError.options) && 'Please enter a label'}
         />
         <div class="flex justify-end absolute top-2 right-2">
           <IconButton
@@ -51,9 +50,9 @@
             buttonClassName={option.isCorrect && 'success'}
           >
             {#if option.isCorrect}
-              <CheckmarkFilledIcon size={24} class="carbon-icon" />
+              <CheckmarkFilledIcon size={24} class="carbon-icon dark:text-white" />
             {:else}
-              <CheckmarkOutlineIcon size={24} class="carbon-icon" />
+              <CheckmarkOutlineIcon size={24} class="carbon-icon dark:text-white" />
             {/if}
           </IconButton>
         </div>

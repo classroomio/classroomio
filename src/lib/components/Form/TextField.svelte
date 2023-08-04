@@ -11,7 +11,7 @@
   export let className = '';
   export let inputClassName = '';
   export let labelClassName = '';
-  export let bgColor = 'bg-gray-200';
+  export let bgColor = 'bg-gray-50 focus:bg-blue-50 dark:bg-white';
   export let type = 'text';
   export let isPassword = false;
   export let autoFocus = false;
@@ -27,6 +27,7 @@
 
   let ref;
   let fieldNode;
+  let focusClass = '';
 
   function typeAction(node) {
     node.type = type;
@@ -56,21 +57,18 @@
 
 <label class="block relative {className}">
   {#if label}
-    <label
-      for="text-field"
-      class="dark:text-white m-0 font-light {labelClassName}"
-    >
+    <p for="text-field" class="text-sm dark:text-white text-left m-0 font-light {labelClassName}">
       {label}
 
       {#if isRequired}
         <span class="text-red-700">*</span>
       {/if}
-    </label>
+    </p>
   {/if}
   <input
     use:typeAction
-    class="form-input {inputClassName} dark:text-black p-3 mt-1 block w-full border-none {bgColor} {errorMessage
-      ? 'border-red-500'
+    class="form-input border-l-0 border-r-0 border-t-0 border-b-2 border-gray-200 focus:border-l-0 focus:border-r-0 rounded-t-md focus:border-t-0 focus:border-b-2 focus:border-blue-600 {inputClassName} {focusClass} dark:text-black p-3 mt-1 block w-full {bgColor} {errorMessage
+      ? 'border-red-600'
       : ''}"
     on:keydown={onKeyDown}
     on:change={onInputChange}
@@ -102,6 +100,9 @@
 </label>
 
 <style>
+  .form-input {
+    box-shadow: none !important;
+  }
   .password-eye {
     position: absolute;
     top: 23px;

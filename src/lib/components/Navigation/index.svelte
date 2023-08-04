@@ -13,9 +13,7 @@
 
   let navClass = '';
 
-  const redirect = isCoursePage($page.url.pathname)
-    ? `?redirect=${$page.url.pathname}`
-    : '';
+  const redirect = isCoursePage($page.url.pathname) ? `?redirect=${$page.url.pathname}` : '';
 
   $: navClass = '';
 </script>
@@ -25,12 +23,7 @@
 >
   <ul class="flex w-full items-center">
     <div class="logo">
-      <a
-        href="/"
-        title={`Go to ${orgName || 'ClassroomIO'} Home`}
-        id="logo"
-        data-hveid="8"
-      >
+      <a href="/" title={`Go to ${orgName || 'ClassroomIO'} Home`} id="logo" data-hveid="8">
         <img
           src={logo || '/logo-192.png'}
           alt={`${orgName || 'ClassroomIO'} logo`}
@@ -107,8 +100,8 @@
           data-file-width="25"
           data-file-height="25"
         />
-        <span><SendAlt32 class="carbon-icon" /> Канал</span>
-        <SendAlt32 class="carbon-icon" />
+        <span><SendAlt32 class="carbon-icon dark:text-white" /> Канал</span>
+        <SendAlt32 class="carbon-icon dark:text-white" />
         <span>Канал</span>
       </a>
     </li> -->

@@ -18,7 +18,7 @@
   import { supabase } from '$lib/utils/functions/supabase';
   import {
     askCommunityValidation,
-    commentInCommunityValidation,
+    commentInCommunityValidation
   } from '$lib/utils/functions/validator';
   import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
   import { snackbarStore } from '$lib/components/Snackbar/store';
@@ -39,11 +39,11 @@
   let isEditMode = false;
   let deleteComment = {
     shouldDelete: false,
-    commentId: null,
+    commentId: null
   };
   let editContent = {
     title: '',
-    body: '',
+    body: ''
   };
 
   function mapResToQuestion(data) {
@@ -54,7 +54,7 @@
       author: {
         id: data?.author?.profile?.id || '',
         name: data?.author?.profile?.fullname || '',
-        avatar: data?.author?.profile?.avatar_url || '',
+        avatar: data?.author?.profile?.avatar_url || ''
       },
       body: data.body,
       createdAt: dayjs(data.created_at).fromNow(true),
@@ -65,9 +65,9 @@
         avatar: c.author?.profile?.avatar_url || '',
         votes: c.votes,
         comment: c.body,
-        createdAt: dayjs(c.created_at).fromNow(true),
+        createdAt: dayjs(c.created_at).fromNow(true)
       })),
-      totalComments: 0,
+      totalComments: 0
     };
   }
 
@@ -124,7 +124,7 @@
         body: comment,
         question_id: question.id,
         author_id: $currentOrg.memberId,
-        votes: 0,
+        votes: 0
       })
       .select();
 
@@ -151,8 +151,8 @@
           avatar: $profile?.avatar_url || '',
           votes: 0,
           comment: _c.body,
-          createdAt: dayjs(_c.created_at).fromNow(true),
-        },
+          createdAt: dayjs(_c.created_at).fromNow(true)
+        }
       ];
 
       // Reset input
@@ -183,10 +183,7 @@
         return c;
       });
     }
-    const { error } = await supabase
-      .from(table)
-      .update({ votes })
-      .match({ id: matchId });
+    const { error } = await supabase.from(table).update({ votes }).match({ id: matchId });
     if (error) {
       console.error('Error: upvoteQuestion', error);
       $snackbarStore.open = true;
@@ -251,9 +248,7 @@
       .match({ id: deleteComment.commentId });
 
     if (!error) {
-      question.comments = question.comments.filter(
-        (c) => c.id !== deleteComment.commentId
-      );
+      question.comments = question.comments.filter((c) => c.id !== deleteComment.commentId);
 
       deleteComment.shouldDelete = false;
       deleteComment.commentId = null;
@@ -288,7 +283,7 @@
         class="text-gray-500 dark:text-white text-md flex items-center"
         href={`${$currentOrgPath}/community`}
       >
-        <ArrowLeftIcon size={24} class="carbon-icon" /> Go Back
+        <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" /> Go Back
       </a>
       <div class="my-5 flex justify-between items-center">
         {#if isEditMode}
@@ -329,9 +324,7 @@
       </div>
       <div class="my-1 px-1 rounded-lg border border-1 border-gray">
         <header class="flex items-center justify-between leading-none p-2">
-          <div
-            class="flex items-center no-underline hover:underline text-black"
-          >
+          <div class="flex items-center no-underline hover:underline text-black">
             <Avatar
               src={question.author.avatar}
               name={question.author.name}
@@ -375,12 +368,7 @@
           <div class="w-full rounded-lg border border-1 border-gray">
             <header class="flex items-center justify-between leading-none p-2">
               <div class="flex items-center text-black">
-                <Avatar
-                  src={comment.avatar}
-                  name={comment.name}
-                  width="w-7"
-                  height="h-7"
-                />
+                <Avatar src={comment.avatar} name={comment.name} width="w-7" height="h-7" />
                 <p class="dark:text-white ml-2 text-sm">{comment.name}</p>
                 <p class="dark:text-white ml-2 text-sm text-gray-500">
                   {comment.createdAt}
@@ -399,7 +387,7 @@
                     deleteComment.commentId = comment.id;
                   }}
                 >
-                  <TrashCanIcon size={16} class="carbon-icon" />
+                  <TrashCanIcon size={16} class="carbon-icon dark:text-white" />
                 </IconButton>
               {/if}
             </header>
