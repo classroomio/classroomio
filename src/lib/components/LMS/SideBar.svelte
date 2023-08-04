@@ -37,10 +37,7 @@
           height="h-7"
         />
       {:else}
-        <TextChip
-          value={$currentOrg.shortName}
-          className="bg-blue-200 font-bold"
-        />
+        <TextChip value={$currentOrg.shortName} className="bg-blue-200 font-bold" />
       {/if}
 
       <OrgSelector />
@@ -87,7 +84,7 @@
         <li
           class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-500"
         >
-          <HelpIcon size={20} class="carbon-icon" />
+          <HelpIcon size={20} class="carbon-icon dark:text-white" />
           <p class="dark:text-white ml-2">Help</p>
         </li>
       </a>
@@ -98,12 +95,7 @@
             `/lms/settings`
           ) && activeClass}"
         >
-          <Avatar
-            src={$profile.avatar_url}
-            name={$profile.username}
-            width="w-7"
-            height="h-7"
-          />
+          <Avatar src={$profile.avatar_url} name={$profile.username} width="w-7" height="h-7" />
           <p class="dark:text-white ml-2">Settings</p>
         </li>
       </a>

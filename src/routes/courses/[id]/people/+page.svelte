@@ -2,11 +2,7 @@
   import { onMount } from 'svelte';
   import copy from 'copy-to-clipboard';
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
-  import {
-    fetchCourse,
-    deleteGroupMember,
-    updatedGroupMember,
-  } from '$lib/utils/services/courses';
+  import { fetchCourse, deleteGroupMember, updatedGroupMember } from '$lib/utils/services/courses';
   import EditIcon from 'carbon-icons-svelte/lib/Edit.svelte';
   import CopyIcon from 'carbon-icons-svelte/lib/Copy.svelte';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
@@ -23,12 +19,9 @@
   import DeleteConfirmation from '$lib/components/Course/components/People/DeleteConfirmation.svelte';
   import {
     invitationModal,
-    deleteMemberModal,
+    deleteMemberModal
   } from '$lib/components/Course/components/People/store';
-  import type {
-    Person,
-    ProfileRole,
-  } from '$lib/components/Course/components/People/types';
+  import type { Person, ProfileRole } from '$lib/components/Course/components/People/types';
   import { ROLE_LABEL, ROLES } from '$lib/utils/constants/roles';
   import { profile } from '$lib/utils/store/user';
   import { snackbarStore } from '$lib/components/Snackbar/store';
@@ -51,9 +44,7 @@
   // }
 
   async function deletePerson() {
-    $group.people = $group.people.filter(
-      (person: { id: string }) => person.id !== member.id
-    );
+    $group.people = $group.people.filter((person: { id: string }) => person.id !== member.id);
 
     await deleteGroupMember(member.id);
   }
@@ -127,9 +118,7 @@
     </div>
 
     <div class="table rounded-md border border-gray-300 w-full">
-      <div
-        class="flex items-center font-bold border-t-0 {borderBottomGrey} p-3"
-      >
+      <div class="flex items-center font-bold border-t-0 {borderBottomGrey} p-3">
         <span class="dark:text-white w-1/4 text-center">ID</span>
         <!-- <span class="flex-grow" /> -->
         <p class="dark:text-white text-lg w-2/4">Name</p>
@@ -156,14 +145,10 @@
               </p>
               {#if !isStudent}
                 <div class="absolute edit-btn">
-                  <IconButton
-                    onClick={() => handleEditStudentIdMode(person.id)}
-                  >
+                  <IconButton onClick={() => handleEditStudentIdMode(person.id)}>
                     <EditIcon size={16} class="carbon-icon active" />
                   </IconButton>
-                  <IconButton
-                    onClick={() => copyToClipboard(person.assigned_student_id)}
-                  >
+                  <IconButton onClick={() => copyToClipboard(person.assigned_student_id)}>
                     <CopyIcon size={16} class="carbon-icon active" />
                   </IconButton>
                 </div>
@@ -173,17 +158,11 @@
           <!-- <span class="flex-grow" /> -->
           {#if person.profile}
             <div class="w-2/4 mx-2 flex items-center">
-              <Avatar
-                src={person.profile.avatar_url}
-                name={person.profile.fullname}
-              />
+              <Avatar src={person.profile.avatar_url} name={person.profile.fullname} />
               <div class="ml-2 break-all">
                 <p class="dark:text-white text-lg">{person.profile.fullname}</p>
                 {#if !isStudent}
-                  <a
-                    href="mailto:{person.profile.email}"
-                    class="text-md text-blue-600"
-                  >
+                  <a href="mailto:{person.profile.email}" class="text-md text-blue-600">
                     {person.profile.email}
                   </a>
                 {/if}
@@ -191,9 +170,7 @@
             </div>
           {:else}
             <div class="break-all w-2/4 mx-2">
-              <p
-                class="bg-yellow-500 pending text-sm text-center rounded-xl text-white"
-              >
+              <p class="bg-yellow-500 pending text-sm text-center rounded-xl text-white">
                 Pending Invite
               </p>
               <a href="mailto:{person.email}" class="text-md text-blue-600">
@@ -215,7 +192,7 @@
                     $deleteMemberModal.open = true;
                   }}
                 >
-                  <TrashCanIcon size={24} class="carbon-icon" />
+                  <TrashCanIcon size={24} class="carbon-icon dark:text-white" />
                 </IconButton>
               {/if}
             </div>

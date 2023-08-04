@@ -11,12 +11,7 @@
   import { currentOrgPath, deleteModal } from '$lib/utils/store/org';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import {
-    themeImages,
-    allOptions,
-    booleanOptions,
-    allThemes,
-  } from '$lib/utils/constants/quiz';
+  import { themeImages, allOptions, booleanOptions, allThemes } from '$lib/utils/constants/quiz';
   import { quizStore, quizesStore } from '$lib/utils/store/org';
   import DeleteModal from '$lib/components/Org/Quiz/DeleteModal.svelte';
   import Preview from '$lib/components/Org/Quiz/Play/Preview.svelte';
@@ -30,7 +25,7 @@
 
   // Questionnaire State
   let currentQuestion = $quizStore.questions[0] || {
-    options: [],
+    options: []
   };
 
   // Behavioural State
@@ -55,16 +50,14 @@
         id: new Date().getTime(),
         label: '',
         type: 'multichoice',
-        options: [],
-      },
+        options: []
+      }
     ];
     type = 'multichoice';
   }
   function addOption() {
     const cOptIds = currentQuestion.options.map((o) => o.id);
-    const nextOption = cloneDeep(allOptions).find(
-      (o) => !cOptIds.includes(o.id)
-    );
+    const nextOption = cloneDeep(allOptions).find((o) => !cOptIds.includes(o.id));
 
     if (!nextOption) return;
 
@@ -91,9 +84,7 @@
   function deleteQuestion() {
     // Only leave one question
     if ($quizStore.questions.length === 1) return;
-    $quizStore.questions = $quizStore.questions.filter(
-      (q) => q.id !== currentQuestion.id
-    );
+    $quizStore.questions = $quizStore.questions.filter((q) => q.id !== currentQuestion.id);
 
     currentQuestion = $quizStore.questions[0];
   }
@@ -115,7 +106,7 @@
         if (valLabelError) {
           options.push({
             id: o.id,
-            error: true,
+            error: true
           });
         }
 
@@ -128,7 +119,7 @@
         isLabelEmpty: labelError,
         hasOneAnswer,
         id: q.id,
-        options,
+        options
       });
     });
 
@@ -149,7 +140,7 @@
       .from('quiz')
       .update({
         ...$quizStore,
-        updated_at: new Date(),
+        updated_at: new Date()
       })
       .match({ id: quizId });
 
@@ -170,8 +161,7 @@
   function qHasError(qId, _errs) {
     return _errs.some((qe) => {
       return (
-        (qId ? qe.id === qId : true) &&
-        (qe.isLabelEmpty || !qe.hasOneAnswer || !!qe.options.length)
+        (qId ? qe.id === qId : true) && (qe.isLabelEmpty || !qe.hasOneAnswer || !!qe.options.length)
       );
     });
   }
@@ -212,7 +202,7 @@
         class="text-gray-500 dark:text-white text-md flex items-center"
         href={`${$currentOrgPath}/quiz`}
       >
-        <ArrowLeftIcon size={24} class="carbon-icon" /> Back to Quizzes
+        <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" /> Back to Quizzes
       </a>
 
       <h3 class="my-3">Quiz</h3>
@@ -239,11 +229,7 @@
       </div>
 
       <div class="w-full flex justify-end">
-        <PrimaryButton
-          label="Add Question"
-          variant={VARIANTS.CONTAINED}
-          onClick={addQuestion}
-        />
+        <PrimaryButton label="Add Question" variant={VARIANTS.CONTAINED} onClick={addQuestion} />
       </div>
     </div>
   </aside>
@@ -261,9 +247,7 @@
 
         {#if isBoolean(currentError.hasOneAnswer) && !currentError.hasOneAnswer}
           <div class="mb-5">
-            <p class="text-red-500">
-              Please select at least one correct answer
-            </p>
+            <p class="text-red-500">Please select at least one correct answer</p>
           </div>
         {/if}
 

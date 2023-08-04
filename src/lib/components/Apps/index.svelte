@@ -56,7 +56,7 @@
       onClick={handleAppClick}
       selected={APPS_CONSTANTS.APPS.LIVE_CHAT === selectedApp}
     >
-      <SendAlt size={24} class="carbon-icon" />
+      <SendAlt size={24} class="carbon-icon dark:text-white" />
     </IconButton>
 
     <IconButton
@@ -65,7 +65,7 @@
       onClick={handleAppClick}
       selected={APPS_CONSTANTS.APPS.QANDA === selectedApp}
     >
-      <Forum size={24} class="carbon-icon" />
+      <Forum size={24} class="carbon-icon dark:text-white" />
     </IconButton>
 
     <IconButton
@@ -74,7 +74,7 @@
       onClick={handleAppClick}
       selected={APPS_CONSTANTS.APPS.NOTES === selectedApp}
     >
-      <AlignBoxTopLeft size={24} class="carbon-icon" />
+      <AlignBoxTopLeft size={24} class="carbon-icon dark:text-white" />
     </IconButton>
 
     <IconButton
@@ -83,7 +83,7 @@
       onClick={handleAppClick}
       selected={APPS_CONSTANTS.APPS.POLL === selectedApp}
     >
-      <ChartPie size={24} class="carbon-icon" />
+      <ChartPie size={24} class="carbon-icon dark:text-white" />
     </IconButton>
   </div>
 

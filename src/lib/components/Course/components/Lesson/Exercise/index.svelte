@@ -10,7 +10,7 @@
     questionnaire,
     validateQuestionnaire,
     reset,
-    questionnaireOrder,
+    questionnaireOrder
   } from '../store/exercise';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import PageBody from '$lib/components/PageBody/index.svelte';
@@ -47,7 +47,7 @@
         ...q,
         is_title_dirty: false,
         is_description_dirty: false,
-        questions: updatedQuestions,
+        questions: updatedQuestions
       }));
     } else {
       mode = MODES.edit;
@@ -95,9 +95,9 @@
           contained={true}
         >
           {#if preview}
-            <ViewFilledIcon size={32} class="carbon-icon" />
+            <ViewFilledIcon size={32} class="carbon-icon dark:text-white" />
           {:else}
-            <ViewIcon size={32} class="carbon-icon" />
+            <ViewIcon size={32} class="carbon-icon dark:text-white" />
           {/if}
         </IconButton>
       {/if}
@@ -109,26 +109,26 @@
           onClick={handleAddQuestion}
           toolTipProps={{ title: 'Add question', direction: 'bottom' }}
         >
-          <AddAltIcon size={32} class="carbon-icon" />
+          <AddAltIcon size={32} class="carbon-icon dark:text-white" />
         </IconButton>
         <IconButton
           onClick={() => ($questionnaireOrder.open = true)}
           toolTipProps={{ title: 'Order questionnaire', direction: 'bottom' }}
         >
-          <TableIcon size={32} class="carbon-icon" />
+          <TableIcon size={32} class="carbon-icon dark:text-white" />
         </IconButton>
         <IconButton
           onClick={() => (editDescription = true)}
           toolTipProps={{ title: 'Edit description', direction: 'bottom' }}
         >
-          <SettingsIcon size={32} class="carbon-icon" />
+          <SettingsIcon size={32} class="carbon-icon dark:text-white" />
         </IconButton>
 
         <!-- <IconButton
           onClick={handleDeleteExercise}
           toolTipProps={{ title: 'Delete questionnaire', direction: 'bottom' }}
         >
-          <Delete32 class="carbon-icon" />
+          <Delete32 class="carbon-icon dark:text-white" />
         </IconButton> -->
       </div>
     {/if}

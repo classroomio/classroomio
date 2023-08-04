@@ -149,9 +149,9 @@
                   }}
             >
               {#if lesson.is_unlocked}
-                <UnlockedIcon size={24} class="carbon-icon" />
+                <UnlockedIcon size={24} class="carbon-icon dark:text-white" />
               {:else}
-                <LockedIcon size={24} class="carbon-icon" />
+                <LockedIcon size={24} class="carbon-icon dark:text-white" />
               {/if}
             </IconButton>
           </div>
@@ -166,11 +166,11 @@
                     handleSaveLesson(lesson, $course.id);
                   }}
                 >
-                  <SaveIcon size={24} class="carbon-icon" />
+                  <SaveIcon size={24} class="carbon-icon dark:text-white" />
                 </IconButton>
               {:else}
                 <IconButton onClick={() => (lessonEditing = lesson.id)}>
-                  <EditIcon size={24} class="carbon-icon" />
+                  <EditIcon size={24} class="carbon-icon dark:text-white" />
                 </IconButton>
               {/if}
             </div>
@@ -239,7 +239,7 @@
                     on:input={(e) => (lesson.lesson_at = e.target.value)}
                   />
                 {:else}
-                  <TimeIcon size={24} class="carbon-icon" />
+                  <TimeIcon size={24} class="carbon-icon dark:text-white" />
                   <p class="dark:text-white text-md ml-2">
                     {new Date(lesson.lesson_at).toDateString()}
                   </p>
@@ -255,7 +255,7 @@
                     placeholder="https://meet.google.com/mga-dsjs-fmb"
                   />
                 {:else}
-                  <PhoneIcon size={24} class="carbon-icon" />
+                  <PhoneIcon size={24} class="carbon-icon dark:text-white" />
                   <a class="text-md ml-2" href={lesson.call_url || '#'} target="_blank">
                     {lesson.call_url ? 'Join lesson' : 'No link'}
                   </a>
@@ -267,7 +267,7 @@
           <RoleBasedSecurity allowedRoles={[1, 2]}>
             <div class="absolute bottom-2 right-0">
               <IconButton onClick={handleDelete(lesson.id)}>
-                <TrashCanIcon size={24} class="carbon-icon" />
+                <TrashCanIcon size={24} class="carbon-icon dark:text-white" />
               </IconButton>
             </div>
           </RoleBasedSecurity>

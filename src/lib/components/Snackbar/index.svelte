@@ -18,7 +18,7 @@
 
     snackbarStore.update((_s) => ({
       ..._s,
-      ...snackbarStoreInitialState,
+      ...snackbarStoreInitialState
     }));
     clearTimeout(timeoutId);
     timeoutId = null;
@@ -50,11 +50,11 @@
     >
       <div class="flex items-center">
         {#if $snackbarStore.severity === SNACKBAR_SEVERITY.SUCCESS}
-          <CheckmarkOutline24 size={24} class="carbon-icon" />
+          <CheckmarkOutline24 size={24} class="carbon-icon dark:text-white" />
         {:else if $snackbarStore.severity === SNACKBAR_SEVERITY.WARNING}
-          <WarningIcon size={24} class="carbon-icon" />
+          <WarningIcon size={24} class="carbon-icon dark:text-white" />
         {:else}
-          <InformationIcon size={24} class="carbon-icon" />
+          <InformationIcon size={24} class="carbon-icon dark:text-white" />
         {/if}
         <p class="dark:text-white ml-2 text-lg">{$snackbarStore.message}</p>
       </div>

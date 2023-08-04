@@ -13,7 +13,7 @@
   let errors = {};
   let fields = {
     title: '',
-    body: '',
+    body: ''
   };
 
   async function handleSave() {
@@ -31,7 +31,7 @@
         organization_id: $currentOrg.id,
         author_id: $currentOrg.memberId,
         votes: 0,
-        slug: generateSlug(fields.title),
+        slug: generateSlug(fields.title)
       })
       .select();
 
@@ -61,7 +61,7 @@
       class="text-gray-500 dark:text-white text-md flex items-center"
       href={`${$currentOrgPath}/community`}
     >
-      <ArrowLeftIcon size={24} class="carbon-icon" /> Go Back
+      <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" /> Go Back
     </a>
     <div class="flex items-center justify-between">
       <h1 class="dark:text-white text-3xl font-bold">Ask the community</h1>

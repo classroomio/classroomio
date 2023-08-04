@@ -22,8 +22,7 @@
 
 <div {id} class="w-full bg-white dark:bg-gray-800 {rootClass}">
   <div
-    class="w-full relative flex items-center justify-between {!disableContainerPadding &&
-      'p-5'}"
+    class="w-full relative flex items-center justify-between {!disableContainerPadding && 'p-5'}"
     role="button"
     tabindex="0"
     on:click={handleClick}
@@ -31,20 +30,16 @@
     <p class="dark:text-white font-bold flex items-center {titleClass}">
       {title}
       {#if supportsLink}
-        <a
-          class="ml-2"
-          href="{$page.url.pathname}#{id}"
-          on:click={(e) => e.stopPropagation()}
-        >
-          <LinkIcon size={24} class="carbon-icon" />
+        <a class="ml-2" href="{$page.url.pathname}#{id}" on:click={(e) => e.stopPropagation()}>
+          <LinkIcon size={24} class="carbon-icon dark:text-white" />
         </a>
       {/if}
     </p>
 
     {#if isExpanded}
-      <ChevronUpIcon size={24} class="carbon-icon" />
+      <ChevronUpIcon size={24} class="carbon-icon dark:text-white" />
     {:else}
-      <ChevronDownIcon size={24} class="carbon-icon" />
+      <ChevronDownIcon size={24} class="carbon-icon dark:text-white" />
     {/if}
   </div>
   {#if isExpanded}

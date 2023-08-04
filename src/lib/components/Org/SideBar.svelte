@@ -19,19 +19,19 @@
   const menuItems = [
     {
       path: '',
-      label: 'Home',
+      label: 'Home'
     },
     {
       path: '/quiz',
-      label: 'Quizzes',
+      label: 'Quizzes'
     },
     {
       path: '/courses',
-      label: 'Courses',
+      label: 'Courses'
     },
     {
       path: '/community',
-      label: 'Community',
+      label: 'Community'
     },
     // {
     //   path: '/site',
@@ -39,8 +39,8 @@
     // },
     {
       path: '/audience',
-      label: 'Audience',
-    },
+      label: 'Audience'
+    }
   ];
 
   function isActive(pagePath, itemPath) {
@@ -67,20 +67,14 @@
           height="h-7"
         />
       {:else if $currentOrg.shortName}
-        <TextChip
-          value={$currentOrg.shortName}
-          className="bg-blue-200 font-bold"
-        />
+        <TextChip value={$currentOrg.shortName} className="bg-blue-200 font-bold" />
       {/if}
 
       <OrgSelector />
 
       <ul class="my-5">
         {#each menuItems as menuItem}
-          <a
-            href="{$currentOrgPath}{menuItem.path}"
-            class="text-black no-underline"
-          >
+          <a href="{$currentOrgPath}{menuItem.path}" class="text-black no-underline">
             <li
               class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-500 {isActive(
                 $page.url.pathname,
@@ -94,7 +88,7 @@
               {:else if menuItem.path === '/site'}
                 <SiteSettingsIcon />
               {:else if menuItem.path === '/community'}
-                <ForumIcon size={20} class="carbon-icon" />
+                <ForumIcon size={20} class="carbon-icon dark:text-white" />
               {:else if menuItem.path === '/quiz'}
                 <QuizIcon />
               {:else if menuItem.path === '/audience'}
@@ -112,7 +106,7 @@
         <li
           class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-500"
         >
-          <HelpIcon size={20} class="carbon-icon" />
+          <HelpIcon size={20} class="carbon-icon dark:text-white" />
           <p class="dark:text-white ml-2">Help</p>
         </li>
       </a>
@@ -123,12 +117,7 @@
             `${$currentOrgPath}/settings`
           ) && activeClass}"
         >
-          <Avatar
-            src={$profile.avatar_url}
-            name={$profile.username}
-            width="w-7"
-            height="h-7"
-          />
+          <Avatar src={$profile.avatar_url} name={$profile.username} width="w-7" height="h-7" />
           <p class="dark:text-white ml-2">Settings</p>
         </li>
       </a>

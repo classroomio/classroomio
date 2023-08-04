@@ -6,5 +6,5 @@
 </script>
 
 <IconButton {onClick}>
-  <SendFilled size={24} class="carbon-icon" />
+  <SendFilled size={24} class="carbon-icon dark:text-white" />
 </IconButton>

@@ -28,32 +28,32 @@
   const sections = [
     {
       key: 1,
-      title: 'Header',
+      title: 'Header'
     },
     {
       key: 2,
-      title: 'Requirement',
+      title: 'Requirement'
     },
     {
       key: 3,
-      title: 'Description',
+      title: 'Description'
     },
     {
       key: 4,
-      title: 'Goals',
+      title: 'Goals'
     },
     {
       key: 5,
-      title: 'Reviews',
+      title: 'Reviews'
     },
     {
       key: 6,
-      title: 'Instructor',
+      title: 'Instructor'
     },
     {
       key: 7,
-      title: 'Pricing',
-    },
+      title: 'Pricing'
+    }
   ];
   let selectedSection = null;
 
@@ -75,7 +75,7 @@
         if (sectionEl) {
           sectionEl.scrollIntoView({
             behavior: 'smooth',
-            block: 'start',
+            block: 'start'
           });
         }
       }
@@ -91,7 +91,7 @@
       attendance: undefined,
       group: undefined,
       lessons: undefined,
-      slug: course.slug,
+      slug: course.slug
     });
     loading = false;
 
@@ -109,7 +109,7 @@
   async function handlePublish() {
     loading = true;
     await updateCourse(courseId, undefined, {
-      is_published: true,
+      is_published: true
     });
     loading = false;
   }
@@ -129,14 +129,9 @@
           onClick={handleSave}
           isLoading={loading}
         />
-        <PrimaryButton
-          label="Publish"
-          type="button"
-          onClick={handlePublish}
-          isDisabled={loading}
-        />
+        <PrimaryButton label="Publish" type="button" onClick={handlePublish} isDisabled={loading} />
         <IconButton onClick={handlePreview} disabled={loading || !course.slug}>
-          <ArrowUpRightIcon size={24} class="carbon-icon" title="Preview" />
+          <ArrowUpRightIcon size={24} class="carbon-icon dark:text-white" title="Preview" />
         </IconButton>
       </div>
     </div>
@@ -156,7 +151,7 @@
     <!-- Title -->
     <div class="flex items-center {borderBottomGrey} w-full">
       <IconButton onClick={handleClose}>
-        <ArrowLeftIcon size={24} class="carbon-icon" title="Go back" />
+        <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" title="Go back" />
       </IconButton>
       <h3 class="dark:text-white">{selectedSection.title}</h3>
     </div>
