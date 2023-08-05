@@ -27,12 +27,12 @@
     }
   }
 
-  function getPathName(_isCoursePage = false) {
+  function getPathName(_isCoursePage = false, slug = '') {
     if (!_isCoursePage) {
       return '/';
     }
 
-    return $course.slug ? `${$page.url.host}/course/${$course.slug}` : `${$currentOrgPath}/courses`;
+    return slug ? `/course/${slug}` : `${$currentOrgPath}/courses`;
   }
 </script>
 
@@ -50,7 +50,7 @@
         </IconButton>
       {/if}
       <a
-        href={getPathName(isCoursePage)}
+        href={getPathName(isCoursePage, $course.slug)}
         target={isCoursePage && $course.slug ? '_blank' : ''}
         title="Go to {isCoursePage ? 'Courses' : 'ClassroomIO Home'}"
         id="logo"
