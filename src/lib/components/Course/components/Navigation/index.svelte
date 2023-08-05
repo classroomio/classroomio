@@ -172,7 +172,7 @@
           </RoleBasedSecurity>
         </slot:fragment>
       </PageNav> -->
-      <div class="h-[90%] mt-5 overflow-y-auto">
+      <div class="h-full mt-2 overflow-y-auto">
         {#each navItems as navItem}
           {#if !navItem.show || (typeof navItem.show === 'function' && navItem.show())}
             <NavExpandable
@@ -211,6 +211,7 @@
                         shape="rounded-full"
                       />
                       <span>{item.title}</span>
+                      <span class="grow" />
                       {#if !item.is_unlocked}
                         <span class="text-md ml-2" title="This lesson is locked.">
                           <LockedIcon class="carbon-icon dark:text-white" />
