@@ -19,7 +19,7 @@
 <style>
   .root {
     overflow-y: auto;
-    height: 90vh;
+    height: calc(100vh - 127px);
   }
   .head {
     top: 0px;
