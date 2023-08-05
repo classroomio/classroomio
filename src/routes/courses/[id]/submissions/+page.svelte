@@ -15,7 +15,7 @@
   import {
     fetchSubmissions,
     updateSubmission,
-    updateQuestionAnswer,
+    updateQuestionAnswer
   } from '$lib/utils/services/submissions';
   import { formatAnswers } from '$lib/components/Course/function';
   import { snackbarStore } from '$lib/components/Snackbar/store';
@@ -33,20 +33,20 @@
       id: 1,
       title: 'Submitted',
       value: 0,
-      items: [],
+      items: []
     },
     {
       id: 2,
       title: 'In Progress',
       value: 0,
-      items: [],
+      items: []
     },
     {
       id: 3,
       title: 'Graded',
       value: 10,
-      items: [],
-    },
+      items: []
+    }
   ];
   let submissionIdData = {};
   let submissionId;
@@ -73,7 +73,7 @@
       // Update key mapping for each submission also
       submissionIdData[itemToWithNewStatus.id] = {
         ...submissionIdData[itemToWithNewStatus.id],
-        status_id: itemToWithNewStatus.statusId,
+        status_id: itemToWithNewStatus.statusId
       };
       console.log(
         `submissionIdData[itemToWithNewStatus.id]`,
@@ -82,7 +82,7 @@
 
       updateSubmission({
         id: itemToWithNewStatus.id,
-        status_id: itemToWithNewStatus.statusId,
+        status_id: itemToWithNewStatus.statusId
       }).then((res) => console.log('Updated submission', res));
     }
   }
@@ -118,24 +118,21 @@
     });
     console.log(`itemToWithNewStatus`, itemToWithNewStatus);
     // Move to right column
-    sections[nextStatusId - 1].items = [
-      ...sections[nextStatusId - 1].items,
-      itemToWithNewStatus,
-    ];
+    sections[nextStatusId - 1].items = [...sections[nextStatusId - 1].items, itemToWithNewStatus];
 
     // If something changed
     if (itemToWithNewStatus) {
       // Update key mapping for each submission also
       submissionIdData[itemToWithNewStatus.id] = {
         ...submissionIdData[itemToWithNewStatus.id],
-        status_id: itemToWithNewStatus.statusId,
+        status_id: itemToWithNewStatus.statusId
       };
 
       // Update backend
       updateSubmission({
         id: itemToWithNewStatus.id,
         status_id: itemToWithNewStatus.statusId,
-        total,
+        total
       }).then((res) => console.log('Updated submission', res));
     }
   }
@@ -146,9 +143,7 @@
     let totalPoints = 0;
 
     const updates = Object.keys(questionAnswerByPoint).map((questionId) => {
-      const questionAnswer = questionAnswers.find(
-        (answer) => answer.question_id == questionId
-      );
+      const questionAnswer = questionAnswers.find((answer) => answer.question_id == questionId);
 
       const point = questionAnswerByPoint[questionId];
 
@@ -159,7 +154,7 @@
 
     updateSubmission({
       id: submissionId,
-      total: totalPoints,
+      total: totalPoints
     }).then((res) => console.log('Updated submission', res));
 
     $snackbarStore.open = true;
@@ -175,21 +170,11 @@
       setCourse(data);
     }
 
-    const { data: submissions } = await fetchSubmissions(
-      courseId || $course.id
-    );
+    const { data: submissions } = await fetchSubmissions(courseId || $course.id);
     const sectionById = {};
 
     for (const submission of submissions) {
-      const {
-        id,
-        created_at,
-        exercise,
-        course,
-        answers,
-        groupmember,
-        status_id,
-      } = submission;
+      const { id, created_at, exercise, course, answers, groupmember, status_id } = submission;
       const isEarly = isSubmissionEarly(created_at, exercise.due_by);
 
       const submissionItem = {
@@ -199,14 +184,14 @@
         submittedAt: formatDate(created_at),
         exercise: {
           id: exercise.id,
-          title: exercise.title,
+          title: exercise.title
         },
         answers,
         student: groupmember && groupmember.profile ? groupmember.profile : {},
         lesson: {
           id: exercise.lesson.id,
-          title: exercise.lesson.title,
-        },
+          title: exercise.lesson.title
+        }
       };
 
       submissionIdData[id] = {
@@ -222,7 +207,7 @@
           acc[answer.question_id] = answer.point;
 
           return acc;
-        }, {}),
+        }, {})
       };
 
       if (Array.isArray(sectionById[status_id])) {
@@ -234,17 +219,13 @@
 
     sections = sections.map((section, index) => ({
       ...section,
-      value: Array.isArray(sectionById[index + 1])
-        ? sectionById[index + 1].length
-        : 0,
-      items: Array.isArray(sectionById[index + 1])
-        ? sectionById[index + 1]
-        : [],
+      value: Array.isArray(sectionById[index + 1]) ? sectionById[index + 1].length : 0,
+      items: Array.isArray(sectionById[index + 1]) ? sectionById[index + 1] : []
     }));
   });
 
   $: {
-    const query = new URLSearchParams($page.url.search)
+    const query = new URLSearchParams($page.url.search);
     submissionId = query.get('submissionId');
     openExercise = !!submissionId && submissionIdData[submissionId];
   }
@@ -279,7 +260,7 @@
               use:dndzone={{
                 items,
                 flipDurationMs,
-                dropTargetStyle: { outline: 'blue' },
+                dropTargetStyle: { outline: 'blue' }
               }}
               on:consider={handleDndConsiderCards(idx)}
               on:finalize={handleDndFinalizeCards(idx)}
@@ -291,11 +272,9 @@
                     : 'border-red-700'} w-full my-2 mx-0 rounded-md bg-white dark:bg-gray-800 py-3 px-3"
                   animate:flip={{ duration: flipDurationMs }}
                 >
-                  <div
-                    class="flex items-center cursor-pointer text-black mb-2"
-                    on:click={() => {
-                      goto(`${$page.url.pathname}?submissionId=${item.id}`);
-                    }}
+                  <a
+                    class="flex w-full items-center cursor-pointer text-black mb-2"
+                    href={`${$page.url.pathname}?submissionId=${item.id}`}
                   >
                     <img
                       alt="Student avatar"
@@ -305,7 +284,7 @@
                     <p class="dark:text-white ml-2 text-sm">
                       {item.student.username}
                     </p>
-                  </div>
+                  </a>
                   <a
                     class="text-blue-700 text-md font-bold"
                     href="{$page.url.pathname}?submissionId={item.id}"
@@ -314,19 +293,15 @@
                   </a>
                   <a
                     class="flex items-center no-underline hover:underline text-black my-2"
-                    href="{$page.url.pathname.replace(
-                      'submissions',
-                      'lessons'
-                    )}/{item.lesson.id}/exercises/{item.exercise.id}"
+                    href="{$page.url.pathname.replace('submissions', 'lessons')}/{item.lesson
+                      .id}/exercises/{item.exercise.id}"
                   >
                     <p class="dark:text-white text-grey text-sm">
                       #{item.lesson.title}
                       {`${item.tutor ? 'created by' + item.tutor.name : ''}`}
                     </p>
                   </a>
-                  <p
-                    class="dark:text-white text-gray-500 dark:text-white text-xs"
-                  >
+                  <p class="dark:text-white text-gray-500 dark:text-white text-xs">
                     {item.submittedAt}
                   </p>
                   <!-- <div class="badge rounded-md px-2 bg-green-500 text-white">

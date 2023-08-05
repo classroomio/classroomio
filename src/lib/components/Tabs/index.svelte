@@ -17,7 +17,7 @@
       >
         {tab.label}
         {#if typeof tab.badgeValue === 'number'}
-          <Chip value={tab.badgeValue} className="ml-1 bg-gray-300" />
+          <Chip value={tab.badgeValue} className="ml-1 bg-gray-300 dark:text-black" />
         {/if}
 
         {#if currentTab === tab.value}

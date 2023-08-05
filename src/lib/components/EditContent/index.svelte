@@ -45,7 +45,7 @@
         bind:this={textareaRef}
         {placeholder}
         style="height: {textAreaHeight}"
-        class="border border-gray rounded-md p-2"
+        class="border border-gray rounded-md p-2 dark:bg-gray-500"
         on:change={onInputChange}
       />
     {:else}

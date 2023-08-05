@@ -79,7 +79,6 @@
           type="email"
           placeholder="Enter your email.."
           className="mr-3 my-2"
-          inputClassName="rounded-md"
           isRequired={true}
           isDisabled={isAdding}
         />

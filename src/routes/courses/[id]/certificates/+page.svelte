@@ -13,6 +13,8 @@
   // import { Tabs, Tab } from 'carbon-components-svelte';
   // import TabContent from 'carbon-components-svelte/src/Tabs/TabContent.svelte';
   import StudentCertificate from '$lib/components/Course/components/Ceritficate/StudentCertificate/Index.svelte';
+  import { fetchCourse } from '$lib/utils/services/courses';
+
   export let courseId: string = '';
   let isStudent = false;
 

@@ -11,7 +11,7 @@
   export let className = '';
   export let inputClassName = '';
   export let labelClassName = '';
-  export let bgColor = 'bg-gray-50 focus:bg-blue-50 dark:bg-white';
+  export let bgColor = 'bg-gray-100 focus:bg-blue-50 dark:bg-white';
   export let type = 'text';
   export let isPassword = false;
   export let autoFocus = false;

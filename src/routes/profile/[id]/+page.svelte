@@ -26,7 +26,7 @@
     let {
       data: profileData,
       error,
-      status,
+      status
     } = await supabase.from('profile').select(`*`).eq('id', profileId).single();
 
     if (error && !profileData && status === 406 && $user.currentSession) {
@@ -47,23 +47,19 @@
 
       const updates = {
         fullname: currentProfile.fullname,
-        username: currentProfile.username,
+        username: currentProfile.username
       };
 
       if (avatar) {
         const filename = `user/${currentProfile.username + Date.now()}.webp`;
 
-        const { data } = await supabase.storage
-          .from('avatars')
-          .upload(filename, avatar, {
-            cacheControl: '3600',
-            upsert: false,
-          });
+        const { data } = await supabase.storage.from('avatars').upload(filename, avatar, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
         if (data && data.Key) {
-          const { publicURL } = supabase.storage
-            .from('avatars')
-            .getPublicUrl(filename);
+          const { publicURL } = supabase.storage.from('avatars').getPublicUrl(filename);
 
           updates.avatar_url = publicURL;
           currentProfile.avatar_url = publicURL;
@@ -71,15 +67,12 @@
         avatar = undefined;
       }
 
-      let { error } = await supabase
-        .from('profile')
-        .update(updates)
-        .match({ id: profileId });
+      let { error } = await supabase.from('profile').update(updates).match({ id: profileId });
 
       if (isOwner) {
         profile.update((_profile) => ({
           ..._profile,
-          ...updates,
+          ...updates
         }));
       }
 
@@ -117,9 +110,7 @@
   <title>Profile of {currentProfile.username}</title>
 </svelte:head>
 
-<section
-  class="root w-11/12 mt-3 m-auto flex items-start justify-between flex-col lg:flex-row"
->
+<section class="root w-11/12 mt-3 m-auto flex items-start justify-between flex-col lg:flex-row">
   {#if currentProfile.id}
     <div class="w-full lg:w-1/4 flex items-center flex-col">
       <!-- <img
@@ -129,11 +120,7 @@
         width="260"
         class="rounded-full bg-light-blue-100 mb-4"
       /> -->
-      <UploadImage
-        bind:avatar
-        src={currentProfile.avatar_url}
-        widthHeight="w-60 h-60"
-      />
+      <UploadImage bind:avatar src={currentProfile.avatar_url} widthHeight="w-60 h-60" />
 
       {#if isOwner}
         <TextField
@@ -172,19 +159,16 @@
     <div class="flex-grow flex flex-wrap mx-3 w-3/5">
       <div class="mb-3 w-full">
         <h3 class="dark:text-white font-bold text-md m-0">Organizations</h3>
-        <p class="dark:text-white text-gray-500 text-sm">
-          This are the organizations you work at
-        </p>
+        <p class="dark:text-white text-gray-500 text-sm">This are the organizations you work at</p>
 
         <div class="hidden my-3 py-3 px-4 border shadow-sm rounded-md">
           <h4 class="dark:text-white m-0 font-normal">
             <a class="text-blue-700 font-bold" href="/courses"> CitiBim </a>
           </h4>
           <p class="dark:text-white text-gray-500">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Non aliquam
-            tenetur magnam. Alias cumque quaerat expedita dolores placeat
-            laboriosam culpa, suscipit veritatis adipisci eius magni obcaecati.
-            Sequi doloremque blanditiis earum.
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Non aliquam tenetur magnam.
+            Alias cumque quaerat expedita dolores placeat laboriosam culpa, suscipit veritatis
+            adipisci eius magni obcaecati. Sequi doloremque blanditiis earum.
           </p>
           <div class="mt-2 flex items-center">
             <span class="flex mr-2 items-center">
@@ -199,13 +183,11 @@
 
         <div class="hidden my-2 py-3 px-4 border shadow-sm rounded-md">
           <h4 class="dark:text-white m-0 font-normal">
-            <a class="text-blue-700 font-bold" href="/courses">
-              Climate Change Group
-            </a>
+            <a class="text-blue-700 font-bold" href="/courses"> Climate Change Group </a>
           </h4>
           <p class="dark:text-white text-gray-500">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo quasi
-            autem quo possimus illum consequuntur repudiandae nobis error, porro
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo quasi autem quo possimus
+            illum consequuntur repudiandae nobis error, porro
           </p>
           <div class="mt-2 flex items-center">
             <span class="flex mr-2 items-center">
@@ -218,12 +200,7 @@
           </div>
         </div>
       </div>
-      <PrimaryButton
-        className="px-6 py-3"
-        variant={VARIANTS.CONTAINED_DANGER}
-        label="Log out"
-        onClick={logout}
-      />
+      <PrimaryButton variant={VARIANTS.CONTAINED_DANGER} label="Log out" onClick={logout} />
     </div>
     <!-- {:else if loading}
     <Box>

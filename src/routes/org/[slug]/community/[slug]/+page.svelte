@@ -306,10 +306,9 @@
         {#if question.author.id === $profile.id}
           <PrimaryButton
             label={isEditMode ? 'Save' : 'Edit'}
-            variant={VARIANTS.CONTAINED_INFO}
+            variant={VARIANTS.OUTLINED}
             onClick={handleQuestionEdit}
-            className="py-3 px-6 rounded-sm h-fit"
-            disablePadding={true}
+            className="h-fit"
           />
           {#if isEditMode}
             <PrimaryButton

@@ -22,6 +22,7 @@
   // import Footer from '$lib/components/Footer/index.svelte';
   import Apps from '$lib/components/Apps/index.svelte';
   import PlayQuiz from '$lib/components/Org/Quiz/Play/index.svelte';
+  import { course } from '$lib/components/Course/store';
   import { isCoursesPage, isOrgPage, isLMSPage, isQuizPage } from '$lib/utils/functions/app';
   import showAppsSideBar from '$lib/utils/functions/showAppsSideBar';
   import isPublicRoute from '$lib/utils/functions/routes/isPublicRoute';
@@ -71,8 +72,12 @@
     const {
       data: { session }
     } = await supabase.auth.getSession();
-    const { user: authUser } = session;
+    const { user: authUser } = session || {};
     console.log('Get user profile', authUser);
+
+    if (!authUser) {
+      goto('/login');
+    }
 
     // Check if user has profile
     let {
@@ -207,16 +212,13 @@
 
     handleResize();
 
-    // if (
-    //   !localStorage.getItem('supabase.auth.token') &&
-    //   !isPublicRoute($page.url.pathname)
-    // ) {
-    //   console.log(
-    //     'No auth token and is not a public route, redirect to login',
-    //     path
-    //   );
-    //   return goto('/login');
-    // }
+    if (
+      !localStorage.getItem('sb-koxqonvbkeakwvmdegcf-auth-token') &&
+      !isPublicRoute($page.url.pathname)
+    ) {
+      console.log('No auth token and is not a public route, redirect to login', path);
+      return goto('/login');
+    }
 
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       // Log key events
@@ -285,9 +287,9 @@
         <Moon size="60" color="#1d4ed8" unit="px" duration="1s" />
       </Backdrop>
     {/if}
-    {#if !ROUTES_TO_HIDE_NAV.includes($page.url.pathname) && !isCoursesPage(path)}
-      {#if isOrgPage($page.url.pathname) || $page.url.pathname.includes('profile')}
-        <OrgNavigation />
+    {#if !ROUTES_TO_HIDE_NAV.includes($page.url.pathname)}
+      {#if isOrgPage($page.url.pathname) || $page.url.pathname.includes('profile') || isCoursesPage(path)}
+        <OrgNavigation bind:title={$course.title} isCoursePage={isCoursesPage(path)} />
       {:else if isLMSPage($page.url.pathname)}
         <LMSNavigation />
       {:else}
