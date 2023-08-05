@@ -5,21 +5,21 @@
   import hotkeys from 'hotkeys-js';
   import { browser } from '$app/environment';
   import LockedIcon from 'carbon-icons-svelte/lib/Locked.svelte';
-  import HomeIcon from 'carbon-icons-svelte/lib/Home.svelte';
+  // import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
   import CheckmarkFilled from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
-  import SettingsIcon from 'carbon-icons-svelte/lib/Settings.svelte';
+  // import SettingsIcon from 'carbon-icons-svelte/lib/Settings.svelte';
   import ChevronLeftIcon from 'carbon-icons-svelte/lib/ChevronLeft.svelte';
   import ChevronRightIcon from 'carbon-icons-svelte/lib/ChevronRight.svelte';
   import NavExpandable from './NavExpandable.svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
-  import Avatar from '$lib/components/Avatar/index.svelte';
+  // import Avatar from '$lib/components/Avatar/index.svelte';
   import { getNavItemRoute, getLessonsRoute, getLectureNo } from '$lib/components/Course/function';
 
   import TextChip from '$lib/components/Chip/Text.svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  // import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import Settings from '../Settings/index.svelte';
-  import { settingsDialog } from '../Settings/store';
+  // import { settingsDialog } from '../Settings/store';
   import { lessons } from '../Lesson/store/lessons';
   import { course } from '$lib/components/Course/store';
   import { updateCourse } from '$lib/utils/services/courses';
@@ -30,8 +30,10 @@
   // export let lessonId;
   export let path;
   export let isStudent = null;
+
   let show = null;
-  let activeClass = 'bg-gray-200 dark:bg-gray-700';
+  let activeClass = 'bg-gray-200 dark:bg-gray-500';
+  let isLessonActive = false;
 
   function handleMainGroupClick(href) {
     return () => {
@@ -84,6 +86,8 @@
       localStorage.setItem('hideCourseNav', `${!show}`);
     }
   }
+
+  $: isLessonActive = $page.url.pathname.includes('/lessons');
 
   $: {
     navItems = [
@@ -148,9 +152,17 @@
 <div class="root z-10 {!show && 'hide'} {$isMobile ? 'fixed shadow-xl' : 'sticky'}">
   {#if show}
     <div class="relative h-full dark:bg-gray-700">
-      <PageNav bind:title={$course.title} paddingClass="pl-2">
+      <!-- <PageNav title="Back to courses" paddingClass="pl-2" titleSize="text-md">
         <slot:fragment slot="image">
           <Avatar src={$course.logo} />
+          <IconButton
+            value="toggle"
+            onClick={() => goto(`${$currentOrgPath}/courses`)}
+            size="small"
+            contained={true}
+          >
+            <ArrowLeftIcon size={20} class="carbon-icon dark:text-white" />
+          </IconButton>
         </slot:fragment>
         <slot:fragment slot="widget">
           <RoleBasedSecurity allowedRoles={[1, 2]}>
@@ -159,19 +171,22 @@
             </IconButton>
           </RoleBasedSecurity>
         </slot:fragment>
-      </PageNav>
-      <div class="h-[82%] overflow-y-auto">
+      </PageNav> -->
+      <div class="h-[90%] mt-5 overflow-y-auto">
         {#each navItems as navItem}
           {#if !navItem.show || (typeof navItem.show === 'function' && navItem.show())}
             <NavExpandable
               label={navItem.label}
               handleClick={handleMainGroupClick(navItem.to)}
               isGroupActive={(path || $page.url.pathname) === navItem.to}
+              isExpanded={isLessonActive}
+              total={navItem.isLecture ? ($lessons || []).length : 0}
             >
               {#if navItem.isLecture}
                 {#each $lessons as item, index}
                   <a
-                    class="pl-3 font-bold w-[95%] text-sm mb-1 {isStudent && !item.is_unlocked
+                    class="pl-7 w-[95%] text-[0.80rem] mb-1 text-black dark:text-white {isStudent &&
+                    !item.is_unlocked
                       ? 'cursor-not-allowed'
                       : ''}"
                     href={isStudent && !item.is_unlocked
@@ -191,17 +206,17 @@
                     >
                       <TextChip
                         value={getLectureNo(index + 1)}
-                        className="bg-blue-200 text-xs mr-2"
+                        className="bg-blue-200 dark:text-black text-xs mr-2"
                         size="sm"
                         shape="rounded-full"
                       />
                       <span>{item.title}</span>
                       {#if !item.is_unlocked}
-                        <span class="text-md ml-2">
+                        <span class="text-md ml-2" title="This lesson is locked.">
                           <LockedIcon class="carbon-icon dark:text-white" />
                         </span>
                       {:else if item.is_complete}
-                        <span class="ml-2">
+                        <span class="ml-2" title="You have completed this lesson">
                           <CheckmarkFilled class="carbon-icon dark:text-white" />
                         </span>
                       {/if}
@@ -212,19 +227,6 @@
             </NavExpandable>
           {/if}
         {/each}
-      </div>
-
-      <div class="w-full h-[50px] p-3 absolute bottom-2 flex items-center justify-between">
-        <IconButton
-          value="toggle"
-          onClick={() => goto(`${$currentOrgPath}/courses`)}
-          buttonClassName="mx-3"
-        >
-          <HomeIcon size={32} class="carbon-icon dark:text-white" />
-        </IconButton>
-        <a class="block mx-3" href={`/profile/${$profile.id}`}>
-          <Avatar src={$profile.avatar_url} name={$profile.username} />
-        </a>
       </div>
     </div>
   {/if}
@@ -253,7 +255,7 @@
 
 <style lang="scss">
   .root {
-    height: 100vh;
+    height: calc(100vh - 44px);
     display: flex;
     flex-direction: column;
     min-width: 360px;

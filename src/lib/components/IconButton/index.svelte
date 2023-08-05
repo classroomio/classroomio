@@ -1,6 +1,7 @@
 <script>
   import ToolTip from '../ToolTip/index.svelte';
   export let onClick = () => {};
+  export let stopPropagation = false;
   export let disabled = false;
   export let selected = false;
   export let buttonClassName = '';
@@ -12,10 +13,13 @@
   export let toolTipProps = {
     title: '',
     hotkeys: [],
-    direction: '',
+    direction: ''
   };
 
-  function handleClick() {
+  function handleClick(e) {
+    if (stopPropagation) {
+      e.stopPropagation();
+    }
     onClick(value);
   }
 </script>
@@ -26,8 +30,7 @@
   direction={toolTipProps.direction}
 >
   <button
-    class="root {color} {selected && 'active'} {size} {contained &&
-      'contained'} {buttonClassName}"
+    class="root {color} {selected && 'active'} {size} {contained && 'contained'} {buttonClassName}"
     {disabled}
     {type}
     on:click={handleClick}

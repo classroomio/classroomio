@@ -7,9 +7,12 @@
 
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { appStore } from '$lib/utils/store/app';
+  import { currentOrgPath } from '$lib/utils/store/org';
   import { toggleBodyByTheme } from '$lib/utils/functions/app';
 
+  export let title = '';
   export let navClass = '';
+  export let isCoursePage = false;
 
   function toggleTheme() {
     $appStore.isDark = !$appStore.isDark;
@@ -20,13 +23,26 @@
       localStorage.setItem('theme', $appStore.isDark ? 'dark' : '');
     }
   }
+
+  function getPathName(_isCoursePage) {
+    if (!_isCoursePage) {
+      return $currentOrgPath;
+    }
+
+    return `${$currentOrgPath}/courses`;
+  }
 </script>
 
 <nav class="{navClass} flex w-full p-2 md:px-6 bg-blue-600">
   <ul class="flex w-full items-center">
     <div class="">
-      <a href={$page.url.pathname} title="Go to ClassroomIO Home" id="logo" class="text-lg">
-        ClassroomIO
+      <a
+        href={getPathName(isCoursePage)}
+        title="Go to {isCoursePage ? 'Courses' : 'ClassroomIO Home'}"
+        id="logo"
+        class="text-lg"
+      >
+        {isCoursePage ? title : 'ClassroomIO'}
       </a>
     </div>
 

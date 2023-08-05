@@ -21,9 +21,8 @@
 </script>
 
 <div {id} class="w-full bg-white dark:bg-gray-800 {rootClass}">
-  <div
+  <button
     class="w-full relative flex items-center justify-between {!disableContainerPadding && 'p-5'}"
-    role="button"
     tabindex="0"
     on:click={handleClick}
   >
@@ -41,7 +40,7 @@
     {:else}
       <ChevronDownIcon size={24} class="carbon-icon dark:text-white" />
     {/if}
-  </div>
+  </button>
   {#if isExpanded}
     <div class="flex flex-col p-5">
       <slot />

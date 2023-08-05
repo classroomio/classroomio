@@ -38,14 +38,14 @@
     {/if}
   </div>
 
-  <p
+  <button
     class="width-fit text-blue-700 flex items-center cursor-pointer text-sm mt-3"
     on:click={() => {
       fileinput.click();
     }}
   >
     <Camera size={20} /> <span class="ml-2">Upload Image</span>
-  </p>
+  </button>
   {#if errorMessage}
     <p class="text-sm text-red-500">{errorMessage}</p>
   {/if}
