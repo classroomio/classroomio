@@ -63,8 +63,8 @@
           <div class="flex">
             <PrimaryButton
               label="Login"
-              variant={VARIANTS.NONE}
-              className="py-3 px-6 mx-2 app-background-color"
+              variant={VARIANTS.OUTLINED}
+              className="mx-2"
               onClick={() => {
                 console.log('clicked login');
                 goto('/login' + redirect);
@@ -73,7 +73,7 @@
             <PrimaryButton
               label="Sign Up"
               variant={VARIANTS.CONTAINED}
-              className="py-3 px-6 mx-2"
+              className="mx-2"
               onClick={() => {
                 console.log('clicked signup');
                 goto('/signup' + redirect);

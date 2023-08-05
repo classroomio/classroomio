@@ -30,7 +30,7 @@
       <textarea
         bind:value
         {placeholder}
-        class="border border-gray rounded-md p-2"
+        class="border border-gray rounded-md p-2 dark:bg-gray-500"
       />
     {:else}
       <article class="m-auto preview prose prose-sm sm:prose p-2">

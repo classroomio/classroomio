@@ -28,14 +28,14 @@
   export let courseData: Course = {
     id: '',
     title: '',
-    description: '',
+    description: ''
   };
   const ratingsImg = [
     '/images/rating-1.svg',
     '/images/rating-2.svg',
     '/images/rating-3.svg',
     '/images/rating-4.svg',
-    '/images/rating-5.svg',
+    '/images/rating-5.svg'
   ];
 
   let lessons: Array<Lesson> = [];
@@ -94,10 +94,7 @@
   $: initPlyr(player, video);
   $: {
     reviews = get(courseData, 'metadata.reviews') || [];
-    totalRatings = reviews?.reduce(
-      (acc = 0, review) => acc + (review?.rating || 0),
-      0
-    );
+    totalRatings = reviews?.reduce((acc = 0, review) => acc + (review?.rating || 0), 0);
     averageRating = totalRatings / reviews?.length;
   }
 </script>
@@ -109,9 +106,7 @@
 <div class="w-full bg-white dark:bg-gray-800 flex flex-col items-center">
   <!-- Header Section -->
   <header id="header" class="banner w-full flex items-center justify-center p-">
-    <div
-      class="md:w-5/6 w-full flex items-center justify-between flex-col-reverse md:flex-row"
-    >
+    <div class="md:w-5/6 w-full flex items-center justify-between flex-col-reverse md:flex-row">
       <!-- Course Description -->
       <div class="md:w-2/5 w-11/12 py-10">
         <h1 class="dark:text-white text-5xl text-white my-4 font-bold">
@@ -124,10 +119,7 @@
         <p class="dark:text-white author my-3 text-sm">
           {get(courseData, 'metadata.instructor.name', '')}
         </p>
-        <PrimaryButton
-          label="Start Course"
-          className="px-6 py-5 mt-6 sm:w-fit"
-        />
+        <PrimaryButton label="Start Course" className="px-6 py-5 mt-6 sm:w-fit" />
       </div>
 
       <!-- Banner Image getEmbedId(videoUrl) -->
@@ -184,7 +176,7 @@
             <a
               href="{$page.url.pathname}{navItem.key}"
               class="{navItem.key === activeNav &&
-                'active text-blue-700'} rounded-lg px-2 mr-6 text-slate-700 font-normal hover:bg-slate-100 hover:text-slate-900"
+                'active text-blue-700'} rounded-lg px-2 mr-6 text-slate-700 font-normal hover:bg-slate-100 hover:text-slate-900 dark:text-white"
             >
               {navItem.label}
             </a>
@@ -219,13 +211,10 @@
         <section class="border-b border-gray-300 mt-8 pb-10">
           <h3 class="text-2xl font-bold mt-0">Certificate</h3>
           <p class="dark:text-white text-sm font-light mb-3">
-            When you complete all of the courses in the program, you'll earn a
-            Certificate to share with your professional network.
+            When you complete all of the courses in the program, you'll earn a Certificate to share
+            with your professional network.
           </p>
-          <img
-            src="/images/certificate-template.svg"
-            alt="certificate template"
-          />
+          <img src="/images/certificate-template.svg" alt="certificate template" />
         </section>
 
         <!-- Sections - Lessons -->
@@ -238,14 +227,9 @@
             </p>
           </div>
           {#each lessons as lesson, index}
-            <div
-              class="w-full flex md:items-center justify-between mb-6 flex-col md:flex-row"
-            >
+            <div class="w-full flex md:items-center justify-between mb-6 flex-col md:flex-row">
               <div class="flex items-center mb-3">
-                <Chip
-                  value={getLectureNo(index + 1, '0')}
-                  className="bg-blue-100 text-blue-700"
-                />
+                <Chip value={getLectureNo(index + 1, '0')} className="bg-blue-100 text-blue-700" />
                 <p class="dark:text-white ml-2 text-sm font-light">
                   {lesson.title}
                 </p>
@@ -296,11 +280,7 @@
                   <div class="flex flex-row item-start w-2/4 my-2">
                     <!-- image container -->
                     {#if review.avatar_url}
-                      <Avatar
-                        src={review.avatar_url}
-                        name="Avatar"
-                        className="mt-1"
-                      />
+                      <Avatar src={review.avatar_url} name="Avatar" className="mt-1" />
                     {/if}
 
                     <!-- profile content -->
@@ -309,18 +289,12 @@
                       <!-- ratings -->
                       <div class="flex flex-row items-center">
                         {#if review.rating}
-                          <img
-                            src={ratingsImg[review.rating - 1]}
-                            class="w-24 mr-4 mt-1"
-                            alt=""
-                          />
+                          <img src={ratingsImg[review.rating - 1]} class="w-24 mr-4 mt-1" alt="" />
                         {/if}
                       </div>
                       <div
                         class="read-more-content mb-2"
-                        style="max-height: {expandDescription[id]
-                          ? 'none'
-                          : '50px'}"
+                        style="max-height: {expandDescription[id] ? 'none' : '50px'}"
                       >
                         <p class="text-sm my-2 leading-5 text-gray-600">
                           {review.description}
@@ -329,15 +303,13 @@
                       {#if !expandDescription[id] && review.description.split(' ').length > 9}
                         <button
                           class="underline text-blue-700 mt-2 font-normal"
-                          on:click={() => toggleDescription(id)}
-                          >See More</button
+                          on:click={() => toggleDescription(id)}>See More</button
                         >
                       {/if}
                       {#if expandDescription[id]}
                         <button
                           class="underline text-blue-700 mt-2 font-normal"
-                          on:click={() => toggleDescription(id)}
-                          >See Less</button
+                          on:click={() => toggleDescription(id)}>See Less</button
                         >
                       {/if}
                     </div>
@@ -378,11 +350,7 @@
                     <div class="flex flex-row item-start w-full my-2">
                       <!-- image container -->
                       {#if review.avatar_url}
-                        <Avatar
-                          src={review.avatar_url}
-                          name={review.name}
-                          className="mt-1"
-                        />
+                        <Avatar src={review.avatar_url} name={review.name} className="mt-1" />
                       {/if}
 
                       <!-- profile content -->
@@ -390,20 +358,14 @@
                         <p class="mb-0.5 font-medium">{review.name}</p>
                         <!-- ratings -->
                         <div class="flex flex-row">
-                          <img
-                            src="/images/rating-full.svg"
-                            alt=""
-                            class="mr-2"
-                          />
+                          <img src="/images/rating-full.svg" alt="" class="mr-2" />
                           <p class="text-xs text-gray-600">
                             {dayjs(review.created_at).fromNow(true)} ago
                           </p>
                         </div>
                         <div
                           class="read-more-content mb-2"
-                          style="max-height: {expandDescription[id]
-                            ? 'none'
-                            : '50px'}"
+                          style="max-height: {expandDescription[id] ? 'none' : '50px'}"
                         >
                           <p class="text-sm my-2 leading-5 text-gray-600">
                             {review.description}
@@ -436,9 +398,7 @@
               </p>
               <p class="dark:text-white text-md font-light flex items-center">
                 <PlayFilled size={16} class="text-blue-700" />
-                <span class="ml-1"
-                  >{get(instructor, 'courseNo', '')} courses</span
-                >
+                <span class="ml-1">{get(instructor, 'courseNo', '')} courses</span>
               </p>
             </div>
           </div>

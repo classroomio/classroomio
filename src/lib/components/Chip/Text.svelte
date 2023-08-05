@@ -10,7 +10,7 @@
     'bg-'
   )
     ? ''
-    : 'bg-gray-200'} {shape} text-center"
+    : 'bg-gray-200 dark:text-black'} {shape} text-center"
 >
   {value}
 </p>
