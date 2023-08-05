@@ -4,11 +4,14 @@
   import NotificationIcon from 'carbon-icons-svelte/lib/Notification.svelte';
   import Moon from 'carbon-icons-svelte/lib/Moon.svelte';
   import Sun from 'carbon-icons-svelte/lib/Sun.svelte';
+  import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
 
   import IconButton from '$lib/components/IconButton/index.svelte';
+  import { course } from '$lib/components/Course/store';
   import { appStore } from '$lib/utils/store/app';
   import { currentOrgPath } from '$lib/utils/store/org';
   import { toggleBodyByTheme } from '$lib/utils/functions/app';
+  import { goto } from '$app/navigation';
 
   export let title = '';
   export let navClass = '';
@@ -24,23 +27,34 @@
     }
   }
 
-  function getPathName(_isCoursePage) {
+  function getPathName(_isCoursePage = false) {
     if (!_isCoursePage) {
-      return $currentOrgPath ?? '/';
+      return '/';
     }
 
-    return $currentOrgPath ? `${$currentOrgPath}/courses` : '';
+    return $course.slug ? `${$page.url.host}/course/${$course.slug}` : `${$currentOrgPath}/courses`;
   }
 </script>
 
 <nav class="{navClass} flex w-full p-2 md:px-6 bg-blue-600">
   <ul class="flex w-full items-center">
-    <div class="">
+    <div class="flex items-center text-white">
+      {#if isCoursePage}
+        <IconButton
+          onClick={() => {
+            goto(`${$currentOrgPath}/courses`);
+          }}
+          size="small"
+        >
+          <CourseIcon fill="#fff" />
+        </IconButton>
+      {/if}
       <a
         href={getPathName(isCoursePage)}
+        target={isCoursePage && $course.slug ? '_blank' : ''}
         title="Go to {isCoursePage ? 'Courses' : 'ClassroomIO Home'}"
         id="logo"
-        class="text-lg"
+        class="text-lg {isCoursePage && 'ml-2'}"
       >
         {isCoursePage ? title : 'ClassroomIO'}
       </a>
