@@ -26,10 +26,10 @@
 
   function getPathName(_isCoursePage) {
     if (!_isCoursePage) {
-      return $currentOrgPath;
+      return $currentOrgPath ?? '/';
     }
 
-    return `${$currentOrgPath}/courses`;
+    return $currentOrgPath ? `${$currentOrgPath}/courses` : '';
   }
 </script>
 
