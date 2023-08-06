@@ -65,10 +65,7 @@
               label="Login"
               variant={VARIANTS.OUTLINED}
               className="mx-2"
-              onClick={() => {
-                console.log('clicked login');
-                goto('/login' + redirect);
-              }}
+              onClick={() => goto('/login' + redirect)}
             />
             <PrimaryButton
               label="Sign Up"
