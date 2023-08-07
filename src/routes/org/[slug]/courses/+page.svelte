@@ -6,12 +6,9 @@
   import Courses from '$lib/components/Courses/index.svelte';
   import NewCourseModal from '$lib/components/Courses/components/NewCourseModal/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import {
-    courses,
-    createCourseModal,
-    courseMetaDeta,
-  } from '$lib/components/Courses/store';
+  import { courses, createCourseModal, courseMetaDeta } from '$lib/components/Courses/store';
   import { setProfileIdOfGroupMember } from '$lib/utils/services/courses';
+  import { currentOrg } from '$lib/utils/store/org.js';
 
   export let data;
   let { allCourses, cantFetch } = data;
@@ -22,16 +19,13 @@
     $createCourseModal.open = true;
   }
 
-  async function getCourses(userId) {
-    if (cantFetch && typeof cantFetch === 'boolean' && !allCourses.length) {
+  async function getCourses(userId, orgId) {
+    if (cantFetch && typeof cantFetch === 'boolean' && !allCourses.length && orgId) {
       $courseMetaDeta.isLoading = true;
 
-      const updatedProfile = await setProfileIdOfGroupMember(
-        $profile.email,
-        userId
-      );
+      const updatedProfile = await setProfileIdOfGroupMember($profile.email, userId);
       console.log(`updatedProfile`, updatedProfile);
-      const coursesResult = await fetchCourses(userId);
+      const coursesResult = await fetchCourses(userId, orgId);
       console.log(`coursesResult`, coursesResult);
 
       $courseMetaDeta.isLoading = false;
@@ -46,7 +40,7 @@
     courses.set(allCourses);
   });
 
-  $: getCourses($profile.id);
+  $: getCourses($profile.id, $currentOrg.id);
 </script>
 
 <svelte:head>
@@ -57,10 +51,7 @@
   <div class="py-10 px-5">
     <div class="flex items-center justify-between mb-10">
       <h1 class="dark:text-white text-3xl font-bold">Courses</h1>
-      <PrimaryButton
-        label="Create Course"
-        onClick={() => ($createCourseModal.open = true)}
-      />
+      <PrimaryButton label="Create Course" onClick={() => ($createCourseModal.open = true)} />
     </div>
 
     <NewCourseModal />

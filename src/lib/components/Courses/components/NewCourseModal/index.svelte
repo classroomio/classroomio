@@ -12,12 +12,11 @@
   import { currentOrg } from '$lib/utils/store/org';
 
   let errors = {
-    emails: '',
+    emails: ''
   };
 
   async function createCourse(e) {
-    const { hasError, fieldErrors, students, tutors } =
-      validateForm($createCourseModal);
+    const { hasError, fieldErrors, students, tutors } = validateForm($createCourseModal);
 
     errors = fieldErrors;
     if (hasError) return;
@@ -38,7 +37,7 @@
       .insert({
         title,
         description,
-        group_id,
+        group_id
       })
       .select();
     console.log(`newCourse`, newCourse);
@@ -52,7 +51,7 @@
       profile_id: $profile.id,
       email: $profile.email,
       group_id,
-      role_id: ROLE.TUTOR,
+      role_id: ROLE.TUTOR
     });
 
     let membersStack = [];
@@ -62,7 +61,7 @@
       membersStack.push({
         email: student,
         group_id,
-        role_id: ROLE.STUDENT,
+        role_id: ROLE.STUDENT
       });
     }
 
@@ -70,7 +69,7 @@
       membersStack.push({
         email: tutor,
         group_id,
-        role_id: ROLE.TUTOR,
+        role_id: ROLE.TUTOR
       });
     }
 
@@ -95,7 +94,7 @@
     <TextField
       label="Course name"
       bind:value={$createCourseModal.title}
-      autofocus={true}
+      autoFocus={true}
       placeholder="Your course name"
       className="mb-4"
       isRequired={true}
