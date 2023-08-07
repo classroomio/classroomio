@@ -1,8 +1,11 @@
 import { writable } from 'svelte/store';
 import type { Writable, Updater } from 'svelte/store';
 import { createLesson, updateLesson, deleteLesson } from '$lib/utils/services/courses';
-
 import type { Lesson, Course } from '$lib/utils/types';
+
+export const uploadCourseVideoStore = writable({
+  isModalOpen: false
+});
 
 export const lessons: Writable<Lesson[]> = writable([]);
 export const lesson = writable({
@@ -10,9 +13,9 @@ export const lesson = writable({
   totalExercises: 0,
   is_complete: false,
   materials: {
-    note: null,
-    slide_url: null,
-    video_url: null
+    note: '',
+    slide_url: '',
+    video_url: ''
   },
   exercises: []
 });
@@ -92,7 +95,23 @@ export async function handleUpdateLessonMaterials(lesson: any, lessonId: Lesson[
     ...lesson.materials
   };
 
+  delete materials.profile;
   delete materials.totalExercises;
 
   return await updateLesson(materials, lessonId);
 }
+
+export const deleteLessonVideo = (index: any) => {
+  lesson.update((currentLesson) => {
+    const links = currentLesson.materials.video_url.split(',').map((link) => link.trim());
+    links.splice(index, 1);
+    const updatedVideoUrl = links.join(',').trim();
+    return {
+      ...currentLesson,
+      materials: {
+        ...currentLesson.materials,
+        video_url: updatedVideoUrl
+      }
+    };
+  });
+};
