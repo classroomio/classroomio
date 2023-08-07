@@ -1,5 +1,5 @@
 <script>
-  import { Popover } from 'carbon-components-svelte';
+  import { Popover, SkeletonText } from 'carbon-components-svelte';
   import CaretSortIcon from 'carbon-icons-svelte/lib/CaretSort.svelte';
   import OrgSelectorItem from './OrgSelectorItem.svelte';
   import Modal from '../Modal/index.svelte';
@@ -26,18 +26,25 @@
 </script>
 
 <div class="mt-5 relative" data-outline>
-  <button
-    class="flex items-center cursor-pointer max-w-[219px]"
-    on:click={(e) => {
-      e.stopPropagation();
-      open = !open;
-    }}
-  >
-    <p class="dark:text-white text-lg font-bold whitespace-nowrap truncate">
-      {$currentOrg.name}
-    </p>
-    <CaretSortIcon size={16} class="ml-2" />
-  </button>
+  {#if $currentOrg.name}
+    <button
+      class="flex items-center cursor-pointer max-w-[219px]"
+      on:click={(e) => {
+        e.stopPropagation();
+        open = !open;
+      }}
+    >
+      <p class="dark:text-white text-lg font-bold whitespace-nowrap truncate">
+        {$currentOrg.name}
+      </p>
+      <CaretSortIcon size={16} class="ml-2" />
+    </button>
+  {:else}
+    <div class="w-[219px] h-[30px]">
+      <SkeletonText style="width: 100%; height: 100%;" />
+    </div>
+  {/if}
+
   <Popover bind:open closeOnOutsideClick align="bottom-left">
     <OrgSelectorItem
       size="sm"
