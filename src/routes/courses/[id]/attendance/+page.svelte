@@ -1,5 +1,15 @@
 <script>
   import { onMount } from 'svelte';
+  import {
+    Search,
+    Checkbox,
+    StructuredList,
+    StructuredListBody,
+    StructuredListCell,
+    StructuredListHead,
+    StructuredListRow,
+    Pagination
+  } from 'carbon-components-svelte';
   import AudioConsoleIcon from 'carbon-icons-svelte/lib/AudioConsole.svelte';
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
@@ -21,6 +31,7 @@
   let borderBottomGrey = 'border-r-0 border-b border-l-0 border-gray-300';
   let students = [];
   let isStudent;
+  let searchValue = '';
 
   function setAttendance(courseData) {
     for (const attendanceItem of courseData.attendance) {
@@ -30,16 +41,16 @@
         $attendance[student_id] = {
           [lesson_id]: {
             id,
-            is_present,
-          },
+            is_present
+          }
         };
       } else {
         $attendance[student_id] = {
           ...$attendance[student_id],
           [lesson_id]: {
             id,
-            is_present,
-          },
+            is_present
+          }
         };
       }
     }
@@ -48,9 +59,7 @@
   function handleAttendanceChange(e, student, lesson) {
     if (isStudent) return;
 
-    const attendanceItem = $attendance[student.id]
-      ? $attendance[student.id][lesson.id] || {}
-      : {};
+    const attendanceItem = $attendance[student.id] ? $attendance[student.id][lesson.id] || {} : {};
 
     /* 
     This validation is useless. We shouldn't assume we already have an attendance item id 
@@ -71,7 +80,7 @@
       student_id: student.id,
       is_present: e.target.checked,
       lesson_id: lesson.id,
-      course_id: data.courseId,
+      course_id: data.courseId
     };
 
     takeAttendance(_data).then((res) => {
@@ -79,26 +88,33 @@
         console.error(`res.error`, res.error);
         $snackbarStore.open = true;
         $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
-        $snackbarStore.message =
-          "Something isn't right.  Please reload and take attendance again";
+        $snackbarStore.message = "Something isn't right.  Please reload and take attendance again";
       } else {
         // console.log('res', JSON.stringify(res));
         const { id, is_present } = res.data[0];
         if ($attendance[student.id]) {
           $attendance[student.id][lesson.id] = {
             id,
-            is_present,
+            is_present
           };
         } else {
           $attendance[student.id] = {
             [lesson.id]: {
               id,
-              is_present,
-            },
+              is_present
+            }
           };
         }
       }
     });
+  }
+
+  // function for the searchbar
+  function searchStudents(query) {
+    const lowercaseQuery = query.toLowerCase();
+    return students.filter((student) =>
+      student.profile.fullname.toLowerCase().includes(lowercaseQuery)
+    );
   }
 
   onMount(async () => {
@@ -115,78 +131,85 @@
   });
 
   $: students = isStudent
-    ? $group.people.filter(
-        (person) => !!person.profile && person.profile.id === $profile.id
-      )
-    : $group.people.filter(
-        (person) => !!person.profile && person.role_id === ROLE.STUDENT
-      );
+    ? $group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
+    : $group.people.filter((person) => !!person.profile && person.role_id === ROLE.STUDENT);
+  console.log(students);
 </script>
 
 <CourseContainer bind:isStudent>
   <PageNav title="Attendance" />
-  <PageBody>
-    <div class="table rounded-md border border-gray-300 w-full">
-      <div
-        class="flex items-center font-bold border-t-0 {borderBottomGrey} p-3"
-      >
-        <p class="dark:text-white w-1/4">Student</p>
-        {#each $lessons as lesson, index}
-          <p class="dark:text-white col" title={lesson.title}>
-            {getLectureNo(index + 1)}
-          </p>
-        {/each}
-      </div>
 
-      {#each students as student}
-        <div
-          class="flex relative items-center p-3 cursor-pointer {borderBottomGrey}"
-        >
-          <div class="w-1/4 flex items-center">
-            <img
-              alt="Student avatar"
-              src={student.profile.avatar_url}
-              class="w-8 h-8 rounded-full mr-2"
-            />
-            <div class="text-sm">
-              <p class="dark:text-white font-semibold">
-                {student.profile.fullname}
-              </p>
-              {#if student.assigned_student_id}
-                <p class="dark:text-white">#{student.assigned_student_id}</p>
-              {/if}
-            </div>
-          </div>
-          {#each $lessons as lesson}
-            <p class="dark:text-white col">
-              <input
-                class="form-radio {isStudent && 'cursor-not-allowed'}"
-                type="checkbox"
-                disabled={isStudent}
-                checked={$attendance[student.id]
-                  ? $attendance[student.id][lesson.id]
-                    ? $attendance[student.id][lesson.id].is_present
-                    : false
-                  : false}
-                on:change={(e) => handleAttendanceChange(e, student, lesson)}
-              />
-            </p>
+  <section class="mx-9 my-5">
+    <div class="flex flex-row items-center justify-between">
+      <div class="flex">
+        <p class="flex items-center mr-5">
+          <Checkbox checked disabled /> Present
+        </p>
+        <p class="flex items-center">
+          <Checkbox disabled /> Absent
+        </p>
+      </div>
+      <div class="dark:">
+        <Search
+          class="dark:text-slate-950"
+          placeholder="Search students"
+          bind:value={searchValue}
+        />
+      </div>
+    </div>
+  </section>
+
+  <section class="my-5 mx-9">
+    <StructuredList class="m-0">
+      <!-- Moved the lesson headers outside the students loop -->
+      <StructuredListHead class="bg-blue-100">
+        <StructuredListRow head class="mx-7">
+          <StructuredListCell head class="text-blue-600 py-3">Student</StructuredListCell>
+          {#each $lessons as lesson, index}
+            <StructuredListCell head class="text-blue-600 py-3"
+              >Lesson 0{getLectureNo(index + 1)}</StructuredListCell
+            >
           {/each}
-        </div>
-      {:else}
+        </StructuredListRow>
+      </StructuredListHead>
+
+      {#each searchStudents(searchValue) as student}
+        <StructuredListBody>
+          <StructuredListRow>
+            <StructuredListCell>
+              <div class="w-1/4 flex items-center">
+                <p class="dark:text-white font-semibold">
+                  {student.profile.fullname}
+                </p>
+              </div>
+            </StructuredListCell>
+            {#each $lessons as lesson}
+              <StructuredListCell class="">
+                <Checkbox
+                  class={isStudent && 'cursor-not-allowed'}
+                  disabled={isStudent}
+                  checked={$attendance[student.id]
+                    ? $attendance[student.id][lesson.id]
+                      ? $attendance[student.id][lesson.id].is_present
+                      : false
+                    : false}
+                  on:change={(e) => handleAttendanceChange(e, student, lesson)}
+                />
+              </StructuredListCell>
+            {/each}
+          </StructuredListRow>
+        </StructuredListBody>
+      {/each}
+    </StructuredList>
+    {#if students.length === 0}
+      <div>
         <Box>
           <AudioConsoleIcon size={32} class="carbon-icon w-80" />
-          <h3 class="text-3xl text-gray-500 dark:text-white">
-            No Student Added
-          </h3>
+          <h3 class="text-3xl text-gray-500 dark:text-white">No Student Added</h3>
         </Box>
-      {/each}
-    </div>
-  </PageBody>
-</CourseContainer>
+      </div>
+    {/if}
 
-<style>
-  .col {
-    width: 50px;
-  }
-</style>
+    <Pagination totalItems={10} pageSizes={[10, 15, 20]} />
+  </section>
+</CourseContainer>

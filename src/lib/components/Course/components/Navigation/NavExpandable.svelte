@@ -12,7 +12,7 @@
   export let total = 0;
   // export let subMenuItems = [];
 
-  let activeClass = 'bg-gray-200 dark:bg-gray-500';
+  let activeClass = 'bg-gray-200 dark:bg-gray-800';
 
   function onClick() {
     handleClick();
@@ -25,7 +25,7 @@
 
 <div class="">
   <button
-    class="item relative flex items-center py-3 px-4 ml-2 mb-1 rounded hover:bg-gray-200 dark:hover:bg-gray-500 {isGroupActive &&
+    class="item relative flex items-center py-3 px-4 ml-2 mb-1 rounded hover:bg-gray-200 dark:hover:bg-gray-800 {isGroupActive &&
       activeClass} w-[95%]"
     tabindex="0"
     on:click={onClick}

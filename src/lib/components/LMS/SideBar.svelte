@@ -11,7 +11,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
 
-  let activeClass = 'bg-gray-200 dark:bg-gray-500';
+  let activeClass = 'bg-gray-200 dark:bg-gray-800';
 
   function isActive(pagePath, itemPath) {
     const pageLinkItems = pagePath.split('/');
@@ -45,7 +45,7 @@
       <ul class="my-5">
         <a href="/lms" class="text-black">
           <li
-            class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-500 {isActive(
+            class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-800 {isActive(
               $page.url.pathname,
               `/lms`
             ) && activeClass}"
@@ -56,7 +56,7 @@
         </a>
         <a href="/lms/mylearning" class="text-black">
           <li
-            class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-500 {isActive(
+            class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-800 {isActive(
               $page.url.pathname,
               `/lms/mylearning`
             ) && activeClass}"
@@ -67,7 +67,7 @@
         </a>
         <a href="/lms/exercises" class="text-black">
           <li
-            class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-500 {isActive(
+            class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-800 {isActive(
               $page.url.pathname,
               `/lms/exercises`
             ) && activeClass}"
@@ -82,7 +82,7 @@
     <ul class="my-5 pb-5 px-4">
       <a href="/lms" class="text-black">
         <li
-          class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-500"
+          class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-800"
         >
           <HelpIcon size={20} class="carbon-icon dark:text-white" />
           <p class="dark:text-white ml-2">Help</p>
@@ -90,7 +90,7 @@
       </a>
       <a href="/lms/settings" class="text-black">
         <li
-          class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-500 {isActive(
+          class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-800 {isActive(
             $page.url.pathname,
             `/lms/settings`
           ) && activeClass}"
