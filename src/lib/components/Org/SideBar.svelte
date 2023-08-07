@@ -104,7 +104,7 @@
     <ul class="my-5 pb-5 px-4">
       <a href={$currentOrgPath} class="text-black no-underline">
         <li
-          class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-500"
+          class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-800"
         >
           <HelpIcon size={20} class="carbon-icon dark:text-white" />
           <p class="dark:text-white ml-2">Help</p>
@@ -112,7 +112,7 @@
       </a>
       <a href="{$currentOrgPath}/settings" class="text-black no-underline">
         <li
-          class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-500 {isActive(
+          class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-800 {isActive(
             $page.url.pathname,
             `${$currentOrgPath}/settings`
           ) && activeClass}"
