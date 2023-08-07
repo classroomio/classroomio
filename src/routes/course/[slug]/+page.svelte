@@ -6,6 +6,7 @@
   import { setCourse, course } from '$lib/components/Course/store';
   import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
   import { fetchCourse } from '$lib/utils/services/courses';
+  import { browser } from '$app/environment';
 
   export let data;
 
@@ -13,6 +14,7 @@
   let loading = false;
 
   async function triggerSetCourse(_profile) {
+    if (!browser) return;
     loading = true;
     const { data: _data } = await fetchCourse(undefined, data.slug);
     setCourse(_data);

@@ -1,11 +1,12 @@
 <script>
   import { page } from '$app/stores';
   import HelpIcon from 'carbon-icons-svelte/lib/Help.svelte';
-
   import TextChip from '$lib/components/Chip/Text.svelte';
   import OrgSelector from '$lib/components/OrgSelector/OrgSelector.svelte';
   import HomeIcon from '$lib/components/Icons/HomeIcon.svelte';
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
+  import ReviewsIcon from '$lib/components/Icons/ReviewsIcon.svelte';
+  import CommunityIcon from '$lib/components/Icons/CommunityIcon.svelte';
   import ExerciseIcon from '$lib/components/Icons/ExerciseIcon.svelte';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import { currentOrg } from '$lib/utils/store/org';
@@ -23,6 +24,33 @@
 
     return pagePath.includes(itemPath);
   }
+  let sideLinks = [
+    {
+      name: 'Home',
+      icon: HomeIcon,
+      link: '/lms'
+    },
+    {
+      name: 'My Learning',
+      icon: CourseIcon,
+      link: '/lms/mylearning'
+    },
+    {
+      name: 'Exercise',
+      icon: ExerciseIcon,
+      link: '/lms/exercises'
+    },
+    {
+      name: 'Reviews',
+      icon: ReviewsIcon,
+      link: '/lms/reviews'
+    },
+    {
+      name: 'Community',
+      icon: CommunityIcon,
+      link: '/lms/community'
+    }
+  ];
 </script>
 
 <aside class="root bg-gray-100 dark:bg-gray-700 h-full">
@@ -43,39 +71,22 @@
       <OrgSelector />
 
       <ul class="my-5">
-        <a href="/lms" class="text-black">
-          <li
-            class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-800 {isActive(
-              $page.url.pathname,
-              `/lms`
-            ) && activeClass}"
-          >
-            <HomeIcon />
-            <p class="dark:text-white ml-2">Home</p>
-          </li>
-        </a>
-        <a href="/lms/mylearning" class="text-black">
-          <li
-            class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-800 {isActive(
-              $page.url.pathname,
-              `/lms/mylearning`
-            ) && activeClass}"
-          >
-            <CourseIcon />
-            <p class="dark:text-white ml-2">My Learning</p>
-          </li>
-        </a>
-        <a href="/lms/exercises" class="text-black">
-          <li
-            class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-800 {isActive(
-              $page.url.pathname,
-              `/lms/exercises`
-            ) && activeClass}"
-          >
-            <ExerciseIcon />
-            <p class="dark:text-white ml-2">Exercises</p>
-          </li>
-        </a>
+        {#each sideLinks as item (item.name)}
+          <a href={item.link} class="text-black">
+            <li
+              class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-500 {isActive(
+                $page.url.pathname,
+                `${item.link}`
+              ) && activeClass}"
+            >
+              <svelte:component
+                this={item.icon}
+                color={isActive($page.url.pathname, `${item.link}`) ? 'black' : 'gray'}
+              />
+              <p class="dark:text-white ml-2">{item.name}</p>
+            </li>
+          </a>
+        {/each}
       </ul>
     </div>
     <span class="flex-grow" />

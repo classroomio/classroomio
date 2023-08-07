@@ -172,7 +172,7 @@
           </RoleBasedSecurity>
         </slot:fragment>
       </PageNav> -->
-      <div class="h-full mt-2 overflow-y-auto">
+      <div class="h-full py-3 overflow-y-auto">
         {#each navItems as navItem}
           {#if !navItem.show || (typeof navItem.show === 'function' && navItem.show())}
             <NavExpandable
@@ -270,7 +270,6 @@
       max-width: 15px;
     }
   }
-
   .footer {
     border-top: 1px solid var(--border-color);
   }

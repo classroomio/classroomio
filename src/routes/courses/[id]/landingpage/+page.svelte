@@ -7,6 +7,7 @@
   import { setCourse, course } from '$lib/components/Course/store';
   import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
   import { fetchCourse } from '$lib/utils/services/courses';
+  import { browser } from '$app/environment';
 
   export let data;
   const { courseId } = data;
@@ -14,7 +15,7 @@
   let courseData = {};
 
   async function triggerSetCourse(_profile) {
-    if ($course.id) return;
+    if ($course.id || !browser) return;
     const { data: _data } = await fetchCourse(courseId);
     setCourse(_data);
   }

@@ -14,12 +14,13 @@
   // import TabContent from 'carbon-components-svelte/src/Tabs/TabContent.svelte';
   import StudentCertificate from '$lib/components/Course/components/Ceritficate/StudentCertificate/Index.svelte';
   import { fetchCourse } from '$lib/utils/services/courses';
+  import { browser } from '$app/environment';
 
   export let courseId: string = '';
   let isStudent = false;
 
   onMount(async () => {
-    if ($course.id) return;
+    if ($course.id || !browser) return;
     const { data } = await fetchCourse(courseId);
     setCourse(data);
   });

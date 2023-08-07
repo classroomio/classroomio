@@ -4,7 +4,7 @@
 
   export let onClick;
   export let contained;
-  export let color = '';
+  export let color = 'text-blue-700 bg-blue-200 dark:bg-gray-500';
   export let size = 'large';
 </script>
 
@@ -12,6 +12,7 @@
   {#if size === 'large'}
     <CloseIcon size={24} class="carbon-icon dark:text-white" title="Delete" />
   {:else}
-    <CloseIcon size={24} class="carbon-icon dark:text-white" title="Delete" />
+    <CloseIcon size={20} class="carbon-icon dark:text-white" title="Delete" />
   {/if}
 </IconButton>
+<!-- color="text-blue-700 bg-blue-200 dark:bg-gray-200 dark:text-black" -->
