@@ -376,4 +376,12 @@
   :global(.border-bottom-c) {
     border-bottom: 1px solid var(--border-color);
   }
+
+  :global(.bx--search-close > svg) {
+    fill: black;
+  }
+
+  :global(.dark .bx--search-close:hover > svg) {
+    fill: #fff;
+  }
 </style>

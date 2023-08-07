@@ -14,7 +14,7 @@
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
 
-  let activeClass = 'bg-gray-200 dark:bg-gray-700';
+  let activeClass = 'bg-gray-200 dark:bg-gray-800';
 
   const menuItems = [
     {
@@ -76,7 +76,7 @@
         {#each menuItems as menuItem}
           <a href="{$currentOrgPath}{menuItem.path}" class="text-black no-underline">
             <li
-              class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-500 {isActive(
+              class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-800 {isActive(
                 $page.url.pathname,
                 `${$currentOrgPath}${menuItem.path}`
               ) && activeClass}"
