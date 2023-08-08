@@ -1,18 +1,25 @@
 <script lang="ts">
+  import TextChip from '$lib/components/Chip/Text.svelte';
+  import ComingSoon from '$lib/components/ComingSoon/index.svelte';
   import { onMount } from 'svelte';
   import copy from 'copy-to-clipboard';
+  import {
+    Pagination,
+    CopyButton,
+    Search,
+    StructuredList,
+    StructuredListBody,
+    StructuredListCell,
+    StructuredListHead,
+    StructuredListRow
+  } from 'carbon-components-svelte';
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
   import { fetchCourse, deleteGroupMember, updatedGroupMember } from '$lib/utils/services/courses';
-  import EditIcon from 'carbon-icons-svelte/lib/Edit.svelte';
-  import CopyIcon from 'carbon-icons-svelte/lib/Copy.svelte';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
-  import Avatar from '$lib/components/Avatar/index.svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
   import Select from '$lib/components/Form/Select.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
-  import PageBody from '$lib/components/PageBody/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import { setCourse, course, group } from '$lib/components/Course/store';
   import InviationModal from '$lib/components/Course/components/People/InviationModal.svelte';
@@ -25,16 +32,17 @@
   import { ROLE_LABEL, ROLES } from '$lib/utils/constants/roles';
   import { profile } from '$lib/utils/store/user';
   import { snackbarStore } from '$lib/components/Snackbar/store';
+  import Avatar from '$lib/components/Avatar/index.svelte';
 
   export let data;
   const { courseId } = data;
 
   let people: Array<Person> = [];
-  let borderBottomGrey = 'border-r-0 border-b border-l-0 border-gray-300';
   let member: { id?: string; email?: string; profile?: { email: string } } = {};
   let shouldEditMemberId: string | null = null;
   let filterBy: ProfileRole = ROLES[0];
   let isStudent = false;
+  let searchValue = '';
 
   // function setPeople(people: Array<Person>) {
   //   if (!Array.isArray(people)) return;
@@ -42,6 +50,15 @@
   //   people = (people || []).sort((a, b) => a.role_id - b.role_id);
   //   console.log(`people changed`, people);
   // }
+
+  // function for the searchbar
+  function filterPeople(_query, people) {
+    const query = _query.toLowerCase();
+    return people.filter((person) => {
+      const { profile, email } = person;
+      return profile?.fullname?.toLowerCase()?.includes(query) || email?.includes(query);
+    });
+  }
 
   async function deletePerson() {
     $group.people = $group.people.filter((person: { id: string }) => person.id !== member.id);
@@ -64,7 +81,14 @@
 
         return person.role_id === filterBy.value;
       })
+      .sort((a: Person, b: Person) => new Date(a.created_at) - new Date(b.created_at))
       .sort((a: Person, b: Person) => a.role_id - b.role_id);
+  }
+
+  function getEmail(person) {
+    const { profile, email } = person;
+
+    return profile ? profile.email : email;
   }
 
   function handleEditStudentIdMode(personId: string) {
@@ -107,124 +131,138 @@
       </RoleBasedSecurity>
     </slot:fragment>
   </PageNav>
-  <PageBody className="">
-    <div class="mb-3">
-      <Select
-        label="Filter by"
-        bind:value={filterBy}
-        options={ROLES}
-        className="flex items-center dark:text-black"
-      />
+  <section class="my-5 mx-9">
+    <div class="flex flex-row flex-end justify-end items-center mb-7">
+      <div class="mr-5 w-80">
+        <Search
+          class="dark:text-slate-950 border-0 bg-zinc-100 w-full"
+          placeholder="Search people"
+          bind:value={searchValue}
+        />
+      </div>
+      <div class="mb-3">
+        <Select bind:value={filterBy} options={ROLES} className="dark:text-black mt-3 w-20" />
+        <!-- <select bind:value={filterBy} class="mt-3">
+          {#each ROLES as option}
+            <option value={option.value}>{option.label}</option>
+          {/each}
+        </select> -->
+      </div>
+      <RoleBasedSecurity allowedRoles={[1, 2]}>
+        <p class="dark:text-white hidden lg:block text-lg w-20" />
+      </RoleBasedSecurity>
     </div>
 
-    <div class="table rounded-md border border-gray-300 w-full">
-      <div class="flex items-center font-bold border-t-0 {borderBottomGrey} p-3">
-        <span class="dark:text-white w-1/4 text-center">ID</span>
-        <!-- <span class="flex-grow" /> -->
-        <p class="dark:text-white text-lg w-2/4">Name</p>
-        <p class="dark:text-white text-lg w-1/4">Role</p>
-        <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <p class="dark:text-white hidden lg:block text-lg w-20" />
-        </RoleBasedSecurity>
-      </div>
+    <StructuredList class="m-0">
+      <StructuredListHead
+        class="bg-slate-100 dark:bg-neutral-800 dark:border-2 dark:border-neutral-800"
+      >
+        <StructuredListRow head class="mx-7">
+          <StructuredListCell head class="text-blue-700 py-3 dark:text-white"
+            >Name</StructuredListCell
+          >
+          <StructuredListCell head class="text-blue-700 py-3 dark:text-white"
+            >Role</StructuredListCell
+          >
+          <StructuredListCell head class="text-blue-700 py-3 dark:text-white"
+            >Action</StructuredListCell
+          >
+          <RoleBasedSecurity allowedRoles={[1, 2]}>
+            <p class="dark:text-white hidden lg:block text-lg w-20" />
+          </RoleBasedSecurity>
+        </StructuredListRow>
+      </StructuredListHead>
 
-      {#each people as person}
-        <div class="flex relative items-center p-3 {borderBottomGrey}">
-          {#if shouldEditMemberId === person.id}
-            <TextField
-              bind:value={person.assigned_student_id}
-              type="string"
-              placeholder="Unique ID"
-              className="w-1/4"
-              onChange={() => editMemberId(person)}
-            />
-          {:else}
-            <div class="student-id flex items-center justify-between relative">
-              <p class="dark:text-white w-11/12">
-                {person.assigned_student_id || '-'}
-              </p>
-              {#if !isStudent}
-                <div class="absolute edit-btn">
-                  <IconButton onClick={() => handleEditStudentIdMode(person.id)}>
-                    <EditIcon size={16} class="carbon-icon active" />
-                  </IconButton>
-                  <IconButton onClick={() => copyToClipboard(person.assigned_student_id)}>
-                    <CopyIcon size={16} class="carbon-icon active" />
-                  </IconButton>
+      {#each filterPeople(searchValue, people) as person}
+        <StructuredListBody>
+          <StructuredListRow class="relative">
+            <!-- first column -->
+            <StructuredListCell class="w-3/6">
+              {#if person.profile}
+                <div class="flex items-center absolute bottom-3">
+                  <Avatar
+                    src={person.profile.avatar_url}
+                    name={person.profile.fullname}
+                    width="w-8"
+                    height="h-8"
+                    className="mr-3"
+                  />
+                  <div class="flex items-center">
+                    <div class="mr-2">
+                      <p class="dark:text-white text-base font-normal">
+                        {person.profile.fullname}
+                      </p>
+                      <p class="text-xs text-blue-600">
+                        {getEmail(person)}
+                      </p>
+                    </div>
+                    <RoleBasedSecurity allowedRoles={[1, 2]}>
+                      <div class="hidden lg:flex lg:justify-between lg:items-center mr-2">
+                        <CopyButton text={getEmail(person)} feedback="Copied Email to clipboard" />
+                      </div>
+                    </RoleBasedSecurity>
+                    {#if person.profile_id == $profile.id}
+                      <ComingSoon label="You" />
+                    {/if}
+                  </div>
+                </div>
+              {:else}
+                <div class="flex items-center w-2/4 absolute bottom-3">
+                  <TextChip
+                    value={person.email.substring(0, 2).toUpperCase()}
+                    className="bg-blue-200 text-black font-semibold text-xs mr-3"
+                    shape="rounded-full"
+                  />
+                  <a
+                    href="mailto:{person.email}"
+                    class="text-md text-blue-600 mr-2 dark:text-white"
+                  >
+                    {person.email}
+                  </a>
+
+                  <RoleBasedSecurity allowedRoles={[1, 2]}>
+                    <div class="hidden lg:flex lg:justify-between lg:items-center w-20">
+                      <CopyButton text={getEmail(person)} feedback="Copied Email to clipboard" />
+                    </div>
+                  </RoleBasedSecurity>
+
+                  <TextChip
+                    value="Pending"
+                    className="text-xs bg-yellow-200 text-yellow-700 h-fit"
+                    size="sm"
+                  />
                 </div>
               {/if}
-            </div>
-          {/if}
-          <!-- <span class="flex-grow" /> -->
-          {#if person.profile}
-            <div class="w-2/4 mx-2 flex items-center">
-              <Avatar src={person.profile.avatar_url} name={person.profile.fullname} />
-              <div class="ml-2 break-all">
-                <p class="dark:text-white text-lg">{person.profile.fullname}</p>
-                {#if !isStudent}
-                  <a href="mailto:{person.profile.email}" class="text-md text-blue-600">
-                    {person.profile.email}
-                  </a>
-                {/if}
-              </div>
-            </div>
-          {:else}
-            <div class="break-all w-2/4 mx-2">
-              <p class="bg-yellow-500 pending text-sm text-center rounded-xl text-white">
-                Pending Invite
+            </StructuredListCell>
+
+            <!-- second column -->
+            <StructuredListCell class="w-1/4 py-4 px-3">
+              <p class="dark:text-white font-normal text-base w-1/4 my-auto">
+                {ROLE_LABEL[person.role_id]}
               </p>
-              <a href="mailto:{person.email}" class="text-md text-blue-600">
-                {person.email}
-              </a>
-            </div>
-          {/if}
+            </StructuredListCell>
 
-          <p class="dark:text-white text-lg w-1/4">
-            {ROLE_LABEL[person.role_id]}
-          </p>
-
-          <RoleBasedSecurity allowedRoles={[1, 2]}>
-            <div class="hidden lg:block w-20">
-              {#if person.profile_id !== $profile.id}
-                <IconButton
-                  onClick={() => {
-                    member = person;
-                    $deleteMemberModal.open = true;
-                  }}
-                >
-                  <TrashCanIcon size={24} class="carbon-icon dark:text-white" />
-                </IconButton>
-              {/if}
-            </div>
-          </RoleBasedSecurity>
-        </div>
+            <!-- third column -->
+            <StructuredListCell class="p-0 w-1/4">
+              <RoleBasedSecurity allowedRoles={[1, 2]}>
+                <div class="hidden lg:flex lg:justify-between lg:items-center w-20">
+                  {#if person.profile_id !== $profile.id}
+                    <IconButton
+                      onClick={() => {
+                        member = person;
+                        $deleteMemberModal.open = true;
+                      }}
+                    >
+                      <TrashCanIcon size={16} class="carbon-icon dark:text-white" />
+                    </IconButton>
+                  {/if}
+                </div>
+              </RoleBasedSecurity>
+            </StructuredListCell>
+          </StructuredListRow>
+        </StructuredListBody>
       {/each}
-    </div>
-  </PageBody>
+    </StructuredList>
+    <Pagination totalItems={10} pageSizes={[10, 15, 20]} />
+  </section>
 </CourseContainer>
-
-<style>
-  .pending {
-    width: fit-content;
-    padding: 1px 15px;
-  }
-
-  .student-id {
-    width: 155px;
-  }
-
-  .student-id p {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .edit-btn {
-    display: none;
-  }
-  .student-id:hover .edit-btn {
-    display: flex;
-    bottom: 20px;
-    right: 0px;
-  }
-</style>
