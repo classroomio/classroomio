@@ -149,7 +149,7 @@
           <Checkbox disabled /> Absent
         </p>
       </div>
-      <div class="dark:">
+      <div>
         <Search
           class="dark:text-slate-950"
           placeholder="Search students"
@@ -209,7 +209,6 @@
         </Box>
       </div>
     {/if}
-
     <Pagination totalItems={10} pageSizes={[10, 15, 20]} />
   </section>
 </CourseContainer>
