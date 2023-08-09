@@ -206,8 +206,8 @@
                     >
                       <TextChip
                         value={getLectureNo(index + 1)}
-                        className="bg-blue-200 dark:text-black text-xs mr-2"
-                        size="sm"
+                        className="bg-blue-200 text-blue-600 text-xs mr-2"
+                        size="xl"
                         shape="rounded-full"
                       />
                       <span>{item.title}</span>
