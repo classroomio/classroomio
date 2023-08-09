@@ -142,39 +142,6 @@
   <slot:fragment slot="content">
     <TabContent value={tabs[0].value} index={currentTab}>
       {#if mode === MODES.edit}
-        <TextField
-          label="Slide link"
-          bind:value={$lesson.materials.slide_url}
-          onChange={() => ($isLessonDirty = true)}
-        />
-      {:else if $lesson.materials.slide_url}
-        <iframe
-          title="Embeded Slides"
-          src={$lesson.materials.slide_url}
-          frameborder="0"
-          width="100%"
-          height="569"
-          class="iframe"
-          allowfullscreen="true"
-          mozallowfullscreen="true"
-          webkitallowfullscreen="true"
-        />
-      {:else}
-        <Box>
-          <div class="flex justify-between flex-col items-center w-96">
-            <img src="/images/empty-slide-icon.svg" alt="No Slide" class="my-2.5 mx-auto" />
-            <h2 class="text-xl my-1.5 font-normal">No slides yet</h2>
-            <p class="text-sm text-center text-slate-500">
-              Share your knowledge with the world by creating engaging slides. Add your slide's link
-              now.
-            </p>
-          </div>
-        </Box>
-      {/if}
-    </TabContent>
-
-    <TabContent value={tabs[1].value} index={currentTab}>
-      {#if mode === MODES.edit}
         <EditContent
           writeLabel="Note"
           bind:value={$lesson.materials.note}
@@ -229,6 +196,39 @@
             <h2 class="text-xl my-1.5 font-normal">No Notes yet</h2>
             <p class="text-sm text-center text-slate-500">
               Share your knowledge with the world by creating engaging notes. Add your notes now.
+            </p>
+          </div>
+        </Box>
+      {/if}
+    </TabContent>
+
+    <TabContent value={tabs[1].value} index={currentTab}>
+      {#if mode === MODES.edit}
+        <TextField
+          label="Slide link"
+          bind:value={$lesson.materials.slide_url}
+          onChange={() => ($isLessonDirty = true)}
+        />
+      {:else if $lesson.materials.slide_url}
+        <iframe
+          title="Embeded Slides"
+          src={$lesson.materials.slide_url}
+          frameborder="0"
+          width="100%"
+          height="569"
+          class="iframe"
+          allowfullscreen="true"
+          mozallowfullscreen="true"
+          webkitallowfullscreen="true"
+        />
+      {:else}
+        <Box>
+          <div class="flex justify-between flex-col items-center w-96">
+            <img src="/images/empty-slide-icon.svg" alt="No Slide" class="my-2.5 mx-auto" />
+            <h2 class="text-xl my-1.5 font-normal">No slides yet</h2>
+            <p class="text-sm text-center text-slate-500">
+              Share your knowledge with the world by creating engaging slides. Add your slide's link
+              now.
             </p>
           </div>
         </Box>
