@@ -1,18 +1,19 @@
 <script>
+  import PageBody from '$lib/components/PageBody/index.svelte';
+  import TextChip from '$lib/components/Chip/Text.svelte';
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import { dndzone } from 'svelte-dnd-action';
   import UnlockedIcon from 'carbon-icons-svelte/lib/Unlocked.svelte';
   import LockedIcon from 'carbon-icons-svelte/lib/Locked.svelte';
-  import TimeIcon from 'carbon-icons-svelte/lib/Time.svelte';
-  import EditIcon from 'carbon-icons-svelte/lib/Edit.svelte';
   import SaveIcon from 'carbon-icons-svelte/lib/Save.svelte';
-  import PhoneIcon from 'carbon-icons-svelte/lib/Phone.svelte';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
+  import Calendar from 'carbon-icons-svelte/lib/Calendar.svelte';
+  import Video from 'carbon-icons-svelte/lib/Video.svelte';
+  import WatsonHealthTextAnnotationToggle from 'carbon-icons-svelte/lib/WatsonHealthTextAnnotationToggle.svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import Box from '$lib/components/Box/index.svelte';
-  import PageBody from '$lib/components/PageBody/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
@@ -30,7 +31,6 @@
 
   export let data;
   const { courseId } = data;
-
   let lessonEditing;
   let ref;
   let isStudent = true;
@@ -86,7 +86,11 @@
   function getLessonOrder(id) {
     const index = $lessons.findIndex((lesson) => lesson.id === id);
 
-    return index + 1;
+    if (index < 10) {
+      return '0' + (index + 1);
+    } else {
+      return index + 1;
+    }
   }
 
   onMount(async () => {
@@ -113,9 +117,9 @@
     </div>
   </PageNav>
 
-  <PageBody padding="p-0">
+  <PageBody width="max-w-6xl" padding="p-0">
     <section
-      class="w-full lg:w-11/12 py-3 px-3 lg:px-4 m-auto lesson-list"
+      class="w-full lg:w-11/12 py-3 px-3 lg:px-4 m-auto"
       use:dndzone={{
         items: $lessons,
         flipDurationMs,
@@ -131,66 +135,27 @@
       {#each $lessons as lesson (lesson.id)}
         <div
           bind:this={ref}
-          class="group relative m-auto rounded-md border-2 border-gray-100 py-3 px-5 mb-4 flex items-center hover:shadow-md shadow-xl transition delay-150 duration-300 ease-in-out dark:bg-gray-700"
+          class="h-32 relative m-auto rounded-md border-2 border-gray-100 py-3 px-5 mb-4 flex items-center dark:bg-gray-700"
         >
-          <!-- Complete or Not complete icon -->
-          <div class="absolute -left-6 -top-6 success">
-            <IconButton
-              disabled={isStudent}
-              onClick={() => {
-                lesson.is_unlocked = !lesson.is_unlocked;
-                handleSaveLesson(lesson, $course.id);
-              }}
-              toolTipProps={isStudent
-                ? {}
-                : {
-                    title: `Click to ${lesson.is_unlocked ? 'lock' : 'unlock'}`,
-                    direction: 'right'
-                  }}
-            >
-              {#if lesson.is_unlocked}
-                <UnlockedIcon size={24} class="carbon-icon dark:text-white" />
-              {:else}
-                <LockedIcon size={24} class="carbon-icon dark:text-white" />
-              {/if}
-            </IconButton>
+          <div class="mr-5">
+            <TextChip
+              value={getLessonOrder(lesson.id)}
+              size="xl"
+              shape="rounded-full"
+              className="bg-blue-200 text-blue-600 text-xs"
+            />
           </div>
 
-          <RoleBasedSecurity allowedRoles={[1, 2]}>
-            <!-- Edit/Save -->
-            <div class="absolute -top-2 -right-2">
-              {#if lessonEditing === lesson.id}
-                <IconButton
-                  onClick={() => {
-                    lessonEditing = null;
-                    handleSaveLesson(lesson, $course.id);
-                  }}
-                >
-                  <SaveIcon size={24} class="carbon-icon dark:text-white" />
-                </IconButton>
-              {:else}
-                <IconButton onClick={() => (lessonEditing = lesson.id)}>
-                  <EditIcon size={24} class="carbon-icon dark:text-white" />
-                </IconButton>
-              {/if}
-            </div>
-          </RoleBasedSecurity>
-
-          <div class="">
-            <h3 class="dark:text-white text-3xl font-bold">
-              {getLessonOrder(lesson.id)}.
-            </h3>
-          </div>
-          <div class="ml-8 w-4/5">
+          <div class="w-4/5">
             {#if lessonEditing === lesson.id}
-              <TextField bind:value={lesson.title} autofocus={true} />
+              <TextField bind:value={lesson.title} autofocus={true} className="max-w-lg" />
             {:else}
-              <h3 class="dark:text-white text-2xl m-0 flex items-center">
+              <h3 class="dark:text-white text-xl m-0 flex items-center">
                 <a
                   href={isStudent && !lesson.is_unlocked
                     ? $page.url.pathname
                     : '/courses/' + $course.id + '/lessons/' + lesson.id}
-                  class="dark:text-white hover:underline text-black {isStudent &&
+                  class="dark:text-white no-underline hover:underline font-semibold text-black {isStudent &&
                   !lesson.is_unlocked
                     ? 'cursor-not-allowed'
                     : ''}"
@@ -206,7 +171,7 @@
             </div> -->
 
             <div
-              class="flex items-start justify-between flex-col lg:flex-row lg:items-center mt-6 w-full"
+              class="flex items-start justify-between flex-col lg:flex-row lg:items-center mt-2 w-4/5"
             >
               <div class="mb-3 lg:mb-0">
                 {#if lessonEditing === lesson.id}
@@ -234,13 +199,13 @@
                   <input
                     type="date"
                     name="lesson-date-picker"
-                    class="p-2 rounded-md w-40"
+                    class="p-2 m-2 rounded-md w-40"
                     value={formatDate(lesson.lesson_at)}
                     on:input={(e) => (lesson.lesson_at = e.target.value)}
                   />
                 {:else}
-                  <TimeIcon size={24} class="carbon-icon dark:text-white" />
-                  <p class="dark:text-white text-md ml-2">
+                  <Calendar size={20} class="carbon-icon text-gray-400 dark:text-white" />
+                  <p class="dark:text-white text-sm ml-2">
                     {new Date(lesson.lesson_at).toDateString()}
                   </p>
                 {/if}
@@ -255,22 +220,72 @@
                     placeholder="https://meet.google.com/mga-dsjs-fmb"
                   />
                 {:else}
-                  <PhoneIcon size={24} class="carbon-icon dark:text-white" />
-                  <a class="text-md ml-2" href={lesson.call_url || '#'} target="_blank">
+                  <Video size={20} class="carbon-icon text-gray-400 dark:text-white" />
+                  <a
+                    class="text-sm ml-2 text-blue-600"
+                    href={lesson.call_url || '#'}
+                    target="_blank"
+                  >
                     {lesson.call_url ? 'Join lesson' : 'No link'}
                   </a>
                 {/if}
               </div>
             </div>
-          </div>
 
-          <RoleBasedSecurity allowedRoles={[1, 2]}>
-            <div class="absolute bottom-2 right-0">
-              <IconButton onClick={handleDelete(lesson.id)}>
-                <TrashCanIcon size={24} class="carbon-icon dark:text-white" />
-              </IconButton>
+            <div class="flex flex-row absolute bottom-10 right-10">
+              <div class="success">
+                <IconButton
+                  disabled={isStudent}
+                  onClick={() => {
+                    lesson.is_unlocked = !lesson.is_unlocked;
+                    handleSaveLesson(lesson, $course.id);
+                  }}
+                  toolTipProps={isStudent
+                    ? {}
+                    : {
+                        title: `Click to ${lesson.is_unlocked ? 'lock' : 'unlock'}`,
+                        direction: 'right'
+                      }}
+                >
+                  {#if lesson.is_unlocked}
+                    <UnlockedIcon size={24} class="carbon-icon dark:text-white" />
+                  {:else}
+                    <LockedIcon size={24} class="carbon-icon dark:text-white" />
+                  {/if}
+                </IconButton>
+              </div>
+
+              <RoleBasedSecurity allowedRoles={[1, 2]}>
+                <div class="">
+                  {#if lessonEditing === lesson.id}
+                    <IconButton
+                      onClick={() => {
+                        lessonEditing = null;
+                        handleSaveLesson(lesson, $course.id);
+                      }}
+                    >
+                      <SaveIcon size={24} class="carbon-icon dark:text-white" />
+                    </IconButton>
+                  {:else}
+                    <IconButton onClick={() => (lessonEditing = lesson.id)}>
+                      <WatsonHealthTextAnnotationToggle
+                        size={32}
+                        class="carbon-icon dark:text-white"
+                      />
+                    </IconButton>
+                  {/if}
+                </div>
+              </RoleBasedSecurity>
+
+              <RoleBasedSecurity allowedRoles={[1, 2]}>
+                <div class="">
+                  <IconButton onClick={handleDelete(lesson.id)}>
+                    <TrashCanIcon size={24} class="carbon-icon dark:text-white" />
+                  </IconButton>
+                </div>
+              </RoleBasedSecurity>
             </div>
-          </RoleBasedSecurity>
+          </div>
         </div>
       {:else}
         <Box>
@@ -287,13 +302,3 @@
     </section>
   </PageBody>
 </CourseContainer>
-
-<style>
-  .lesson-list {
-    overflow-y: auto;
-    height: 84vh;
-  }
-  .group {
-    min-height: 170px;
-  }
-</style>
