@@ -24,7 +24,7 @@
   import { course } from '$lib/components/Course/store';
   import { updateCourse } from '$lib/utils/services/courses';
   import { profile } from '$lib/utils/store/user';
-  import { currentOrgPath } from '$lib/utils/store/org';
+  import { NavClasses } from '$lib/utils/constants/reusableClass';
   import { isMobile } from '$lib/utils/store/useMobile';
 
   // export let lessonId;
@@ -32,7 +32,6 @@
   export let isStudent = null;
 
   let show = null;
-  let activeClass = 'bg-gray-200 dark:bg-gray-800';
   let isLessonActive = false;
 
   function handleMainGroupClick(href) {
@@ -151,7 +150,7 @@
 
 <div class="root z-10 {!show && 'hide'} {$isMobile ? 'fixed shadow-xl' : 'sticky'}">
   {#if show}
-    <div class="relative h-full dark:bg-gray-700">
+    <div class="relative h-full dark:bg-gray-800">
       <!-- <PageNav title="Back to courses" paddingClass="pl-2" titleSize="text-md">
         <slot:fragment slot="image">
           <Avatar src={$course.logo} />
@@ -202,12 +201,12 @@
                     <div
                       class="flex items-center py-3 px-4 rounded hover:bg-gray-200 dark:hover:bg-gray-800 w-full {(
                         path || $page.url.pathname
-                      ).includes(item.id) && activeClass}"
+                      ).includes(item.id) && NavClasses.active}"
                     >
                       <TextChip
                         value={getLectureNo(index + 1)}
                         className="bg-blue-200 text-blue-600 text-xs mr-2"
-                        size="xl"
+                        size="sm"
                         shape="rounded-full"
                       />
                       <span>{item.title}</span>

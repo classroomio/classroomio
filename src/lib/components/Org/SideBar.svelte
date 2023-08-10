@@ -13,8 +13,7 @@
   import Avatar from '$lib/components/Avatar/index.svelte';
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
-
-  let activeClass = 'bg-gray-200 dark:bg-gray-800';
+  import { NavClasses } from '$lib/utils/constants/reusableClass';
 
   const menuItems = [
     {
@@ -55,7 +54,9 @@
   }
 </script>
 
-<aside class="root bg-gray-100 dark:bg-gray-700 h-full">
+<aside
+  class="root bg-gray-100 dark:bg-gray-800 h-full border border-l-0 border-t-0 border-b-0 border-r-1"
+>
   <div class="h-full flex flex-col">
     <div class="border-b border-gray-200 pt-5 px-4">
       {#if $currentOrg.avatar_url && $currentOrg.name}
@@ -76,10 +77,10 @@
         {#each menuItems as menuItem}
           <a href="{$currentOrgPath}{menuItem.path}" class="text-black no-underline">
             <li
-              class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-800 {isActive(
+              class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 {isActive(
                 $page.url.pathname,
                 `${$currentOrgPath}${menuItem.path}`
-              ) && activeClass}"
+              ) && NavClasses.active}"
             >
               {#if menuItem.path === ''}
                 <HomeIcon color="#7A797D" />
@@ -115,10 +116,10 @@
       </a>
       <a href="{$currentOrgPath}/settings" class="text-black no-underline">
         <li
-          class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-800 {isActive(
+          class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 {isActive(
             $page.url.pathname,
             `${$currentOrgPath}/settings`
-          ) && activeClass}"
+          ) && NavClasses.active}"
         >
           <Avatar src={$profile.avatar_url} name={$profile.username} width="w-7" height="h-7" />
           <p class="dark:text-white ml-2">Settings</p>
