@@ -108,7 +108,7 @@ async function cloneLessons(lessons: Lesson[], courseId: Course['id']) {
       public: lesson.public,
       slide_url: lesson.slide_url,
       title: lesson.title,
-      video_url: lesson.video_url
+      videos: lesson.videos
     }));
 
   const { data } = await supabase.from('lesson').insert(clonedLessons).select();

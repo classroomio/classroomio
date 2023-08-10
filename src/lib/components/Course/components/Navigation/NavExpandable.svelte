@@ -1,5 +1,5 @@
 <script>
-  import CaretSortDownIcon from 'carbon-icons-svelte/lib/CaretSortDown.svelte';
+  import { slide } from 'svelte/transition';
   import ChevronDownIcon from 'carbon-icons-svelte/lib/ChevronDown.svelte';
   import ChevronUpIcon from 'carbon-icons-svelte/lib/ChevronUp.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
@@ -48,7 +48,7 @@
     {/if}
   </button>
   {#if isExpanded}
-    <div class="flex flex-col">
+    <div in:slide out:slide class="flex flex-col">
       <slot />
     </div>
   {/if}
