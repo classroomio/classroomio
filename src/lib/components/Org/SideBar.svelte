@@ -82,13 +82,16 @@
               ) && activeClass}"
             >
               {#if menuItem.path === ''}
-                <HomeIcon />
+                <HomeIcon color="#7A797D" />
               {:else if menuItem.path === '/courses'}
-                <CourseIcon />
+                <CourseIcon color="#7A797D" />
               {:else if menuItem.path === '/site'}
                 <SiteSettingsIcon />
               {:else if menuItem.path === '/community'}
-                <ForumIcon size={20} class="carbon-icon dark:text-white" />
+                <ForumIcon
+                  size={24}
+                  class="carbon-icon dark:text-white fill-[#7A797D] dark:fill-[#fff]"
+                />
               {:else if menuItem.path === '/quiz'}
                 <QuizIcon />
               {:else if menuItem.path === '/audience'}
