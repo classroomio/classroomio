@@ -105,6 +105,14 @@ export const actions = {
       });
     }
 
+    if (formData.file?.size > 20 * 1024 * 1024) {
+      return fail(400, {
+        success: false,
+        type: 'FILE_TOO_LARGE',
+        message: 'File is too large'
+      });
+    }
+
     const { file, lessonId } = formData;
     console.log('file', file);
     console.log('lessonId', lessonId);

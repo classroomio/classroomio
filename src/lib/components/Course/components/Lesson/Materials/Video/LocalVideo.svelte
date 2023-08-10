@@ -89,7 +89,7 @@
       <input style="display:none;" type="submit" bind:this={submit} />
     </form>
   </button>
-{:else if isBig && isUploaded === false}
+{:else if $uploadCourseVideoStore.formRes?.type === 'FILE_TOO_LARGE'}
   <div class="h-full w-full flex flex-col items-center justify-center rounded-xl">
     <img src="/video-upload-error.svg" alt="upload error" />
     <span class="pt-3 pb-2">
@@ -102,7 +102,7 @@
     </span>
     <PrimaryButton label="Try again" />
   </div>
-{:else if isWrongFormat && isUploaded === false}
+{:else if $uploadCourseVideoStore.formRes?.success}
   <div class="h-full w-full flex flex-col items-center justify-center rounded-xl">
     <img src="/video-upload-error.svg" alt="upload error" />
     <span class="pt-3 pb-2">
