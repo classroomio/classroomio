@@ -36,7 +36,7 @@
         {/if} -->
 
         <span
-          class="absolute w-full bottom-0 left-0 h-1 bg-blue-500 rounded-md transition-all ease-in-out duration-500 {currentTab ===
+          class="absolute bottom-0 left-0 h-1 bg-blue-500 rounded-md transition-all ease-in-out duration-500 {currentTab ===
           tab.value
             ? 'w-full'
             : 'w-0'}"
