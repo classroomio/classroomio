@@ -136,9 +136,29 @@ export interface Group_attendance {
   groupmember?: Groupmember;
 }
 
+enum VideoType {
+  youtube,
+  muse
+}
+export interface LessonPage {
+  id?: string | null;
+  totalExercises: Number;
+  is_complete: Boolean;
+  materials: {
+    note: string;
+    slide_url: string;
+    videos: Array<{
+      type: string;
+      link: string;
+      metadata?: {};
+    }>;
+  };
+  exercises: [];
+}
+
 export interface Lesson {
   note?: any; // type unknown;
-  video_url?: any; // type unknown;
+  videos?: []; // type unknown;
   slide_url?: any; // type unknown;
   course_id: string /* foreign key to course.id */;
   id?: string /* primary key */;

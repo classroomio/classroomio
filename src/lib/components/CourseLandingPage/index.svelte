@@ -249,10 +249,13 @@
                   {/if}
                 </div>
                 <div class="flex items-center">
-                  {#if lesson.video_url}
+                  {#if lesson.videos}
                     <span class="text-sm font-light flex w-2/4"
-                      ><Video size={16} class="mr-1" />1 video</span
-                    >
+                      ><Video size={16} class="mr-1" />{lesson.videos.length} video{lesson.videos
+                        .length > 1
+                        ? 's'
+                        : ''}
+                    </span>
                   {/if}
                   {#if get(lesson, 'totalExercises[0].count')}
                     <span class="text-sm font-light flex w-2/4"
