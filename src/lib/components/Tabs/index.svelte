@@ -7,6 +7,7 @@
 
 <div class="w-full flex flex-col">
   <div class="flex items-center border-b-2 w-full">
+  <div class="flex items-center border-b-2 w-full">
     {#each tabs as tab}
       <button
         class="relative {currentTab === tab.value
@@ -29,6 +30,12 @@
           {/if}
         </div>
 
+        <span
+          class="absolute bottom-0 left-0 h-1 bg-blue-500 rounded-md transition-all ease-in-out duration-500 {currentTab ===
+          tab.value
+            ? 'w-full'
+            : 'w-0'}"
+        />
         <span
           class="absolute bottom-0 left-0 h-1 bg-blue-500 rounded-md transition-all ease-in-out duration-500 {currentTab ===
           tab.value
