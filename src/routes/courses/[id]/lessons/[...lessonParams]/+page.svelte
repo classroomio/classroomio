@@ -12,10 +12,16 @@
   import Exercises from '$lib/components/Course/components/Lesson/Exercises/index.svelte';
   import MODES from '$lib/utils/constants/mode.js';
   import { setCourse, course } from '$lib/components/Course/store';
-  import { lesson, handleSaveLesson } from '$lib/components/Course/components/Lesson/store/lessons';
+  import {
+    lesson,
+    handleSaveLesson,
+    uploadCourseVideoStore
+  } from '$lib/components/Course/components/Lesson/store/lessons';
   import { browser } from '$app/environment';
 
   export let data;
+
+  export let form;
 
   let path = '';
   let mode = MODES.view;
@@ -68,12 +74,14 @@
     mode = mode === MODES.edit ? MODES.view : MODES.edit;
   }
 
-  $: path = $page.url.pathname.replace(/\/exercises[\/ 0-9 a-z -]*/, '');
+  $: path = $page.url?.pathname?.replace(/\/exercises[\/ 0-9 a-z -]*/, '');
 
   $: if (data.courseId && browser) {
     mode = MODES.view;
     fetchReqData(data.lessonId);
   }
+
+  $: $uploadCourseVideoStore.formRes = form;
 </script>
 
 <CourseContainer {isFetching} {path} isExercisePage={!data.isMaterialsTabActive && data.exerciseId}>

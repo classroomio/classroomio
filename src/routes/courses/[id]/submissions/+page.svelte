@@ -293,7 +293,7 @@
                   </a>
                   <a
                     class="flex items-center no-underline hover:underline text-black my-2"
-                    href="{$page.url.pathname.replace('submissions', 'lessons')}/{item.lesson
+                    href="{$page.url?.pathname?.replace('submissions', 'lessons')}/{item.lesson
                       .id}/exercises/{item.exercise.id}"
                   >
                     <p class="dark:text-white text-grey text-sm">

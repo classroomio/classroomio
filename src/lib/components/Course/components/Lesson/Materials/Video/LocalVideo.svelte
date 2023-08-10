@@ -1,45 +1,95 @@
 <script>
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { deleteLessonVideo } from '$lib/components/Course/components/Lesson/store/lessons';
+  import {
+    lesson,
+    deleteLessonVideo,
+    uploadCourseVideoStore
+  } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { enhance } from '$app/forms';
+  import { Moon } from 'svelte-loading-spinners';
+
+  export let lessonId = '';
+  export let saveLesson = () => {};
 
   let isWrongFormat = false;
   let isUploaded = false;
   let isLoaded = false;
   let isBig = false;
+  let fileInput;
+  let submit;
+  let uploadedFileUrl = '';
+  let isLoading = false;
 
-  const uploadVideo = () => {
-    // if the file is too big or not the correct format
-    isWrongFormat = true;
+  function isVideoAdded(link) {
+    return $lesson.materials?.videos?.find((v) => v.link === link);
+  }
 
-    // when the upload has been sucessfully completed
-    // here the you set the video_url to something and that would be displayed on the page
-    isUploaded = false;
+  async function isDoneUploading(response) {
+    uploadedFileUrl = response?.success && response?.url;
 
-    //  closes the modal
-    //  $uploadCourseVideo.isModalOpen = false;
-  };
+    if (uploadedFileUrl && !isVideoAdded(uploadedFileUrl)) {
+      $lesson.materials.videos = [
+        ...$lesson.materials.videos,
+        {
+          type: 'muse',
+          link: uploadedFileUrl,
+          metadata: {}
+        }
+      ];
+      saveLesson();
+    }
+  }
 
-  const onUpload = () => {
-    // PROBABLY GET THE SNAPSHOT OR SOMETHING
-    isLoaded = true;
-  };
+  $: isDoneUploading($uploadCourseVideoStore.formRes);
 </script>
 
-{#if isLoaded == false}
+{#if isLoaded === false}
   <button
-    on:click={onUpload}
-    class="h-full w-full flex flex-col items-center justify-center border border-blue-300 border-dashed rounded-xl"
+    type="button"
+    on:click={() => (fileInput && !isLoading ? fileInput.click() : null)}
+    class="w-full h-full"
+    disabled={isLoading}
   >
-    <img src="/upload-video.svg" alt="upload" />
-    <span class="pt-3">
-      <h3 class="text-center text-xl font-normal dark:text-white">Upload video</h3>
-      <p class=" text-center text-sm font-normal">
-        Select file( Mp4, MOV, AVI) to upload or drag and drop video here.<br /> Size must be less than
-        20 MB.
-      </p>
-    </span>
+    <form
+      class="h-full w-full flex flex-col items-center justify-center border border-blue-300 border-dashed rounded-xl"
+      method="POST"
+      action="?/create"
+      enctype="multipart/form-data"
+      use:enhance={() => {
+        isLoading = true;
+
+        return async ({ update }) => {
+          await update();
+          isLoading = false;
+          isLoaded = true;
+        };
+      }}
+    >
+      {#if isLoading}
+        <Moon size="40" color="#1d4ed8" unit="px" duration="1s" />
+        <p class="mt-5">Uploading Video</p>
+      {:else}
+        <img src="/upload-video.svg" alt="upload" />
+        <span class="pt-3">
+          <h3 class="text-center text-xl font-normal dark:text-white">Upload video</h3>
+          <p class=" text-center text-sm font-normal">
+            Select file( Mp4, MOV, AVI) to upload to your lesson.
+          </p>
+        </span>
+      {/if}
+      <input
+        style="display:none;"
+        type="file"
+        accept="video/*"
+        name="file"
+        on:change={() => submit.click()}
+        bind:this={fileInput}
+      />
+      <input type="text" name="lessonId" value={lessonId} style="display: none;" />
+      <input style="display:none;" type="submit" bind:this={submit} />
+    </form>
   </button>
-{:else if isBig && isUploaded == false}
+{:else if isBig && isUploaded === false}
   <div class="h-full w-full flex flex-col items-center justify-center rounded-xl">
     <img src="/video-upload-error.svg" alt="upload error" />
     <span class="pt-3 pb-2">
@@ -52,7 +102,7 @@
     </span>
     <PrimaryButton label="Try again" />
   </div>
-{:else if isWrongFormat && isUploaded == false}
+{:else if isWrongFormat && isUploaded === false}
   <div class="h-full w-full flex flex-col items-center justify-center rounded-xl">
     <img src="/video-upload-error.svg" alt="upload error" />
     <span class="pt-3 pb-2">
@@ -72,17 +122,19 @@
       <div class="flex items-center justify-between">
         <span class="flex items-center gap-2">
           <div class="rounded-sm overflow-hidden">
-            <img src="/course-video.png" alt="coursevideo" class="object-cover" />
+            <video class="w-[200px]">
+              <source src={uploadedFileUrl} type="video/mp4" />
+              <!-- <source src="/path/to/video.webm" type="video/webm" /> -->
+              <!-- Captions are optional -->
+              <track kind="captions" />
+            </video>
           </div>
-          <p>Video.png</p>
+          <p>{fileInput?.files?.[0]?.name || uploadedFileUrl}</p>
         </span>
         <button on:click={deleteLessonVideo}>
           <img src="/delete-video.svg" alt="deletevideo" class="dark:invert" />
         </button>
       </div>
-    </div>
-    <div class="ml-auto">
-      <PrimaryButton label="upload" onClick={uploadVideo} />
     </div>
   </div>
 {/if}

@@ -39,7 +39,7 @@
   import '../app.postcss';
 
   let supabase = getSupabase();
-  let path = $page.url.pathname.replace('/', '');
+  let path = $page.url?.pathname?.replace('/', '');
   let theme = 'white';
   let skipAuth = false;
 
@@ -261,7 +261,7 @@
     };
   });
 
-  $: path = $page.url.pathname.replace('/', '');
+  $: path = $page.url?.pathname?.replace('/', '');
   $: theme = $appStore.isDark ? 'g100' : 'white';
   $: setOrgBasedOnUrl($page.url.host);
 </script>
