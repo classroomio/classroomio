@@ -69,14 +69,13 @@ const uploadToMuse = (s3Data, fileName, lessonId, fileUrl) => {
           .eq('id', lessonId)
           .select();
         if (error) {
-          console.log('Error updating supabase configs');
+          console.log('Error updating lesson', error);
         }
-        console.log('update error', error);
-        console.log('update data', data, data[0].videos);
+        console.log('update data', data);
       }
     })
     .catch(function (error) {
-      console.log('Upload error', error);
+      console.log('Upload to Muse failed', error);
     });
 };
 
