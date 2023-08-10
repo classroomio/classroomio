@@ -265,6 +265,17 @@
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowfullscreen
                     />
+                  {:else if video.metadata?.svid}
+                    <div style="position:relative;padding-bottom:51.416579%">
+                      <iframe
+                        src="https://muse.ai/embed/{video.metadata
+                          ?.svid}?logo=https://app.classroomio.com/logo-512.png&volume=0&subtitles=auto&cover_play_position=center"
+                        style="width:100%;height:100%;position:absolute;left:0;top:0"
+                        frameborder="0"
+                        allowfullscreen
+                        title="Muse AI Video Embed"
+                      />
+                    </div>
                   {:else}
                     <video class="plyr-video-trigger" playsinline controls>
                       <source src={video.link} type="video/mp4" />
