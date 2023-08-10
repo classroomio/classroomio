@@ -35,9 +35,12 @@
           <Chip value={tab.badgeValue} className="ml-1 bg-gray-300 dark:text-black" />
         {/if} -->
 
-        {#if currentTab === tab.value}
-          <span class="absolute w-full bottom-0 left-0 h-1 bg-blue-500 rounded-md" />
-        {/if}
+        <span
+          class="absolute w-full bottom-0 left-0 h-1 bg-blue-500 rounded-md transition-all ease-in-out duration-500 {currentTab ===
+          tab.value
+            ? 'w-full'
+            : 'w-0'}"
+        />
       </button>
     {/each}
   </div>
