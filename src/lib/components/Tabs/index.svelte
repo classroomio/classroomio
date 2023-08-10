@@ -1,28 +1,33 @@
 <script>
-  import Chip from '../Chip/index.svelte';
   export let tabs = [];
   export let currentTab;
   export let onChange;
 </script>
 
 <div class="w-full flex flex-col">
-  <div class="flex items-center justify-center">
+  <div class="flex items-center border-b-2 w-full">
     {#each tabs as tab}
       <button
-        class="relative border-r-1 border-t-0 border-b-0 border-l-0 rounded-none {currentTab ===
-        tab.value
-          ? 'text-black font-bold bg-gray-100 dark:bg-gray-700'
-          : 'bg-gray-200 dark:bg-gray-500 text-gray'} focus:outline-none w-40 text-left p-3"
+        class="relative {currentTab === tab.value
+          ? 'text-blue-500 dark:bg-gray-700'
+          : 'dark:bg-gray-500 text-black'} font-semibold focus:outline-none w-16 text-left py-3 mr-10"
         on:click={onChange(tab.value)}
       >
-        {tab.label}
-        {#if typeof tab.badgeValue === 'number'}
-          <Chip value={tab.badgeValue} className="ml-1 bg-gray-300 dark:text-black" />
-        {/if}
+        <div class="grid grid-cols-3 gap-4 items-center">
+          <svelte:component this={tab.icon} />
+          {tab.label}
+        </div>
 
-        {#if currentTab === tab.value}
-          <span class="absolute w-full top-0 left-0 h-1 bg-blue-500" />
-        {/if}
+        <!-- {#if typeof tab.badgeValue === 'number'}
+          <Chip value={tab.badgeValue} className="ml-1 bg-gray-300 dark:text-black" />
+        {/if} -->
+
+        <span
+          class="absolute bottom-0 left-0 h-1 bg-blue-500 rounded-md transition-all ease-in-out duration-500 {currentTab ===
+          tab.value
+            ? 'w-full'
+            : 'w-0'}"
+        />
       </button>
     {/each}
   </div>
