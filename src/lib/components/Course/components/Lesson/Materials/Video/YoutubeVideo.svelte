@@ -1,47 +1,49 @@
 <script>
   import { CopyButton, Tag } from 'carbon-components-svelte';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
+  import IconButton from '$lib/components/IconButton/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import { lesson, isLessonDirty } from '$lib/components/Course/components/Lesson/store/lessons';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import Chip from '$lib/components/Chip/Text.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
 
   let youtubeLinks = '';
   let error = '';
 
+  function getVideoUrls(urls = '') {
+    return (urls || '').split(',').filter((url) => !!url.trim());
+  }
+
   function addVideo() {
-    const links = youtubeLinks.split(',').map((link) => link.trim());
+    const links = getVideoUrls(youtubeLinks);
     const validLinks = links.filter(isValidYouTubeLink);
 
     if (validLinks.length === 0) {
       error = 'Invalid YouTube link(s)';
     } else {
-      const existingLinks = $lesson.materials.video_url
-        .split(',')
-        .map((link) => link.trim())
-        .filter(Boolean);
-      const updatedLinks = [
+      const existingLinks = $lesson?.materials?.videos || [];
+
+      $lesson.materials.videos = [
         ...existingLinks,
-        ...validLinks.filter((link) => !existingLinks.includes(link))
+        ...validLinks.map((link = '') => ({
+          type: 'youtube',
+          link,
+          metadata: {}
+        }))
       ];
-      $lesson.materials.video_url = updatedLinks.join(',').trim();
       youtubeLinks = '';
       error = '';
     }
   }
 
-  function isValidYouTubeLink(link) {
+  function isValidYouTubeLink(link = '') {
     const youtubeRegex =
       /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
 
     return youtubeRegex.test(link.trim());
   }
 
-  function removeVideo(index) {
-    const links = $lesson.materials.video_url.split(',').map((link) => link.trim());
-    links.splice(index, 1);
-    $lesson.materials.video_url = links.join(',').trim();
+  function removeVideo(index = 0) {
+    $lesson.materials.videos = $lesson.materials.videos.filter((v, i) => i !== index);
   }
 </script>
 
@@ -58,22 +60,23 @@
   <PrimaryButton label="Add Video" className="rounded-md" onClick={addVideo} />
 </div>
 <p class="mt-4 pl-2 text-sm">
-  Added : <strong
-    >{($lesson?.materials?.video_url && $lesson.materials.video_url.trim().split(',').length) || 0} Videos</strong
-  >
+  Videos added: <strong>
+    {$lesson?.materials?.videos.filter((v) => v.type === 'youtube' && isValidYouTubeLink(v.link))
+      .length || 0}
+  </strong>
 </p>
 <div class="">
-  {#each $lesson?.materials?.video_url && $lesson.materials.video_url
-      .trim()
-      .split(',') as videoLink, index}
-    <div class="flex items-center gap-1">
-      <Tag type="blue">
-        {videoLink}
-      </Tag>
-      <CopyButton text={videoLink} feedback="Copied to clipboard" />
-      <IconButton value="delete-video" onClick={() => removeVideo(index)}>
-        <TrashCanIcon size={16} class="carbon-icon dark:text-white" />
-      </IconButton>
-    </div>
+  {#each $lesson?.materials?.videos as video, index}
+    {#if video.type === 'youtube'}
+      <div class="flex items-center gap-1">
+        <Tag type="blue">
+          {video.link}
+        </Tag>
+        <CopyButton text={video.link} feedback="Copied to clipboard" />
+        <IconButton value="delete-video" onClick={() => removeVideo(index)}>
+          <TrashCanIcon size={16} class="carbon-icon dark:text-white" />
+        </IconButton>
+      </div>
+    {/if}
   {/each}
 </div>

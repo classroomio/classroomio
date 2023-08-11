@@ -135,12 +135,12 @@
       {#each $lessons as lesson (lesson.id)}
         <div
           bind:this={ref}
-          class="sm:h-48 md:h-40 lg:h-32 relative m-auto rounded-md border-2 border-gray-100 py-3 px-5 mb-4 flex items-center dark:bg-gray-700"
+          class="sm:h-48 md:h-40 lg:h-32 relative m-auto rounded-md border-2 border-gray-200 py-3 px-5 mb-4 flex items-center dark:bg-gray-700"
         >
           <div class="mr-5">
             <TextChip
               value={getLessonOrder(lesson.id)}
-              size="xl"
+              size="sm"
               shape="rounded-full"
               className="bg-blue-200 text-blue-600 text-xs"
             />

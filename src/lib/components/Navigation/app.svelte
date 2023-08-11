@@ -46,7 +46,7 @@
           }}
           size="small"
         >
-          <CourseIcon fill="#fff" />
+          <CourseIcon color="#fff" />
         </IconButton>
       {/if}
       <a
