@@ -384,4 +384,10 @@
   :global(.dark .bx--search-close:hover > svg) {
     fill: #fff;
   }
+
+  :global(.plyr__controls) {
+    background: url(/logo-192.png) 99% 70% no-repeat,
+      linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5)) !important;
+    background-size: 50px auto, auto !important;
+  }
 </style>
