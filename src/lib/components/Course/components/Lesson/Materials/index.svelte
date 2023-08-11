@@ -42,6 +42,7 @@
   let textareaRef = {};
   let aiButtonRef = {};
   let openPopover = false;
+  let player = null;
   let aiButtonClass =
     'flex items-center px-5 py-2 border border-gray-300 hover:bg-gray-200 rounded-md w-full mb-2';
 
@@ -114,6 +115,18 @@
     }, 500);
   }
 
+  function initPlyr(_player: any, _video: string | undefined) {
+    if (!_player) return;
+
+    const players = Array.from(document.querySelectorAll('.plyr-video-trigger')).map((p) => {
+      // @ts-ignore
+      return new Plyr(p);
+    });
+
+    // @ts-ignore
+    window.players = players;
+  }
+
   const onClose = () => {
     saveLesson();
     $uploadCourseVideoStore.isModalOpen = false;
@@ -125,6 +138,8 @@
   $: addBadgeValueToTab($lesson.materials);
 
   $: updateNoteByCompletion($completion);
+
+  $: initPlyr(player, $lesson.materials.videos);
 </script>
 
 <Modal
@@ -277,7 +292,7 @@
                       />
                     </div>
                   {:else}
-                    <video class="plyr-video-trigger" playsinline controls>
+                    <video bind:this={player} class="plyr-video-trigger" playsinline controls>
                       <source src={video.link} type="video/mp4" />
                       <track kind="captions" />
                     </video>
