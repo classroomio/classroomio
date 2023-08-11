@@ -34,7 +34,7 @@ export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']
       certificate_theme,
       lessons:lesson(
         id, title,public, lesson_at, call_url, is_unlocked, is_complete, order, created_at,
-        note, video_url, slide_url, call_url, totalExercises:exercise(count),
+        note, videos, slide_url, call_url, totalExercises:exercise(count),
         profile:teacher_id(id, avatar_url, fullname)
       ),
       attendance:group_attendance(*)
@@ -150,7 +150,7 @@ export function deleteGroupMember(groupMemberId: Groupmember['id']) {
 export function fetchLesson(lessonId: Lesson['id']) {
   return supabase
     .from('lesson')
-    .select(`id, note, video_url, slide_url, call_url, totalExercises:exercise(count)`)
+    .select(`id, note, videos, slide_url, call_url, totalExercises:exercise(count)`)
     .eq('id', lessonId)
     .single();
 }

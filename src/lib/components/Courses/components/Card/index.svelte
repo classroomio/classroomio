@@ -47,7 +47,7 @@
 
 <a rel="prefetch" href={isOnLandingPage ? `/course/${slug}` : `/courses/${id}`} class=" text-black">
   <div
-    class="root w-80 border bg-gray-100 dark:bg-gray-700 sm:mr-4 mb-4 rounded-md hover:shadow-2xl transition ease-in-out relative"
+    class="root w-80 border bg-gray-100 dark:bg-gray-800 sm:mr-4 mb-4 rounded-md hover:shadow-2xl transition ease-in-out relative"
   >
     {#if !isOnLandingPage}
       <Dropdown options={getOptions()} classNames="absolute top-4 right-4" isIcon={true}>

@@ -1,6 +1,7 @@
 <script>
-  import { Moon } from 'svelte-loading-spinners';
+  // import { Moon } from 'svelte-loading-spinners';
   import { VARIANTS, VARIANTS_CLASS } from './constants';
+  import { Loading } from 'carbon-components-svelte';
 
   export let label = '';
   export let className = '';
@@ -33,7 +34,8 @@
   disabled={isDisabled}
 >
   {#if isLoading}
-    <Moon size="20" color="#1d4ed8" unit="px" duration="1s" />
+    <Loading withOverlay={false} small />
+    <!-- <Moon size="20" color="#1d4ed8" unit="px" duration="1s" /> -->
   {:else if !!label}
     {label}
   {:else}
