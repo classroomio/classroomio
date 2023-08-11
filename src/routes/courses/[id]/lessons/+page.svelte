@@ -119,7 +119,7 @@
 
   <PageBody width="max-w-6xl" padding="p-0">
     <section
-      class="w-full lg:w-11/12 py-3 px-3 lg:px-4 m-auto"
+      class="w-full lg:w-11/12 p-3 lg:px-4 m-auto"
       use:dndzone={{
         items: $lessons,
         flipDurationMs,
@@ -135,7 +135,7 @@
       {#each $lessons as lesson (lesson.id)}
         <div
           bind:this={ref}
-          class="h-32 relative m-auto rounded-md border-2 border-gray-100 py-3 px-5 mb-4 flex items-center dark:bg-gray-700"
+          class="sm:h-48 md:h-40 lg:h-32 relative m-auto rounded-md border-2 border-gray-100 py-3 px-5 mb-4 flex items-center dark:bg-gray-700"
         >
           <div class="mr-5">
             <TextChip
