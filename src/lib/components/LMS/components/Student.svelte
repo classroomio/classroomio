@@ -32,7 +32,7 @@
   <p class="text-base font-semibold text-[#040F2D] pb-3 dark:text-white">Your Schedule</p>
 
   <Box
-    className="p-5 border-2 border-[#EAEAEA] gap-5 rounded w-full h-fit xl:h-full flex flex-col justify-start"
+    className="p-5 border-2 border-[#EAEAEA]  dark:bg-gray-700 gap-5 rounded w-full h-[516px] overflow-y-auto  flex flex-col justify-start"
   >
     <div class="w-full hidden xl:flex items-center justify-center">
       <InlineCalendar bind:store {theme} />
