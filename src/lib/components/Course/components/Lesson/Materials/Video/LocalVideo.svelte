@@ -102,7 +102,7 @@
     </span>
     <PrimaryButton label="Try again" />
   </div>
-{:else if $uploadCourseVideoStore.formRes?.success}
+{:else if !$uploadCourseVideoStore.formRes?.success}
   <div class="h-full w-full flex flex-col items-center justify-center rounded-xl">
     <img src="/video-upload-error.svg" alt="upload error" />
     <span class="pt-3 pb-2">
