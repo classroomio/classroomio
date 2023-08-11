@@ -1,11 +1,13 @@
 <script lang="ts">
   import { useCompletion } from 'ai/svelte';
+  import merge from 'lodash/merge';
   import MODES from '$lib/utils/constants/mode.js';
-  import { getEmbedId } from '$lib/utils/functions/formatYoutubeVideo';
+  import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
+  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { formatYoutubeVideo } from '$lib/utils/functions/formatYoutubeVideo';
   import Modal from '$lib/components/Modal/index.svelte';
   import { Popover } from 'carbon-components-svelte';
   import AlignBoxTopLeftIcon from 'carbon-icons-svelte/lib/AlignBoxTopLeft.svelte';
-  import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
   import ListIcon from 'carbon-icons-svelte/lib/List.svelte';
   import IbmWatsonKnowledgeStudioIcon from 'carbon-icons-svelte/lib/IbmWatsonKnowledgeStudio.svelte';
   import MachineLearningModel from 'carbon-icons-svelte/lib/MachineLearningModel.svelte';
@@ -27,7 +29,8 @@
   import VideoUploader from '$lib/components/Course/components/Lesson/Materials/Video/Index.svelte';
   import { course } from '$lib/components/Course/store';
   import * as CONSTANTS from './constants';
-  import { browser } from '$app/environment';
+  import { fetchLesson } from '$lib/utils/services/courses';
+  import type { LessonPage } from '$lib/utils/types';
 
   export let mode = MODES.view;
   export let prevMode = '';
@@ -36,11 +39,10 @@
   let tabs = CONSTANTS.tabs;
   let currentTab = tabs[0].value;
   let errors = {};
-  let player = {};
   let textareaRef = {};
   let aiButtonRef = {};
   let openPopover = false;
-  let videoUrls: Array<string> = [];
+  let player = null;
   let aiButtonClass =
     'flex items-center px-5 py-2 border border-gray-300 hover:bg-gray-200 rounded-md w-full mb-2';
 
@@ -49,26 +51,26 @@
     () =>
       (currentTab = tab);
 
-  function initPlyr(_player, videoUrl = '') {
-    if (!browser) return;
+  // problem: after we save an uploaded video,
+  async function saveLesson() {
+    const { data } = await fetchLesson(lessonId);
+    const materials = merge(data, $lesson.materials);
 
-    const players = Array.from(document.querySelectorAll('.plyr-video-trigger')).map((p) => {
-      // @ts-ignore
-      return new Plyr(p);
-    });
-
-    // @ts-ignore
-    window.players = players;
+    lesson.update((l) => ({
+      ...l,
+      materials
+    }));
+    handleUpdateLessonMaterials($lesson, lessonId);
   }
 
-  function handleSave(prevMode) {
+  function handleSave(prevMode: string) {
     if (prevMode === MODES.edit) {
-      handleUpdateLessonMaterials($lesson, lessonId);
+      saveLesson();
     }
   }
 
   function addBadgeValueToTab(materials) {
-    const { slide_url, video_url, note } = materials;
+    const { slide_url, videos, note } = materials;
 
     tabs = tabs.map((tab) => {
       let badgeValue;
@@ -78,7 +80,7 @@
       } else if (tab.value === 2) {
         badgeValue = !!note ? 1 : 0;
       } else {
-        badgeValue = typeof video_url === 'string' && !!video_url ? video_url.split(',').length : 0;
+        badgeValue = Array.isArray(videos) ? videos.length : 0;
       }
 
       tab.badgeValue = badgeValue;
@@ -113,20 +115,31 @@
     }, 500);
   }
 
+  function initPlyr(_player: any, _video: string | undefined) {
+    if (!_player) return;
+
+    const players = Array.from(document.querySelectorAll('.plyr-video-trigger')).map((p) => {
+      // @ts-ignore
+      return new Plyr(p);
+    });
+
+    // @ts-ignore
+    window.players = players;
+  }
+
   const onClose = () => {
-    handleUpdateLessonMaterials($lesson, lessonId);
+    saveLesson();
     $uploadCourseVideoStore.isModalOpen = false;
+    $uploadCourseVideoStore.formRes = null;
   };
 
   $: handleSave(prevMode);
-
-  $: initPlyr(player, $lesson.materials.video_url);
 
   $: addBadgeValueToTab($lesson.materials);
 
   $: updateNoteByCompletion($completion);
 
-  $: videoUrls = ($lesson?.materials?.video_url || '').split(',').filter((url) => !!url.trim());
+  $: initPlyr(player, $lesson.materials.videos);
 </script>
 
 <Modal
@@ -135,7 +148,7 @@
   width="w-4/5 h-[566px]"
   modalHeading="Add a Video"
 >
-  <VideoUploader {onClose} />
+  <VideoUploader {lessonId} {saveLesson} />
 </Modal>
 
 <Tabs {tabs} {currentTab} {onChange}>
@@ -236,34 +249,56 @@
     </TabContent>
 
     <TabContent value={tabs[2].value} index={currentTab}>
-      {#if mode === MODES.edit && videoUrls.length}
-        <PrimaryButton label="Add/Edit Video" onClick={openAddVideoModal} className="mb-2" />
+      {#if mode === MODES.edit && $lesson.materials.videos.length}
+        <PrimaryButton label="Add/Edit Video(s)" onClick={openAddVideoModal} className="mb-2" />
       {/if}
-      <!-- Line 230 would run if its in edit mode or the video is truthy but then in line 235 we are mapping for an empty string -->
-      {#if videoUrls.length}
+      {#if $lesson.materials.videos.length}
         <div class="flex flex-col items-start w-full h-full">
-          {#each videoUrls as url, index}
+          {#each $lesson.materials.videos as video, index}
+            {#if mode === MODES.edit}
+              <div class="ml-auto">
+                <IconButton
+                  value="delete-video"
+                  contained={true}
+                  onClick={() => deleteLessonVideo(index)}
+                >
+                  <TrashCanIcon size={20} class="carbon-icon dark:text-white" />
+                </IconButton>
+              </div>
+            {/if}
             <div class="w-full h-full flex flex-col gap-2 overflow-hidden">
-              {#if url.includes('youtube')}
+              {#key video.link}
                 <div class="mb-5">
-                  <div
-                    bind:this={player}
-                    class="plyr-video-trigger"
-                    data-plyr-provider="youtube"
-                    data-plyr-embed-id={getEmbedId(url)}
-                  />
+                  {#if video.type === 'youtube'}
+                    <iframe
+                      width="100%"
+                      height="569"
+                      class="iframe"
+                      src={formatYoutubeVideo(video.link, errors)}
+                      title="YouTube video player"
+                      frameborder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowfullscreen
+                    />
+                  {:else if video.metadata?.svid}
+                    <div style="position:relative;padding-bottom:51.416579%">
+                      <iframe
+                        src="https://muse.ai/embed/{video.metadata
+                          ?.svid}?logo=https://app.classroomio.com/logo-512.png&subtitles=auto&cover_play_position=center"
+                        style="width:100%;height:100%;position:absolute;left:0;top:0"
+                        frameborder="0"
+                        allowfullscreen
+                        title="Muse AI Video Embed"
+                      />
+                    </div>
+                  {:else}
+                    <video bind:this={player} class="plyr-video-trigger" playsinline controls>
+                      <source src={video.link} type="video/mp4" />
+                      <track kind="captions" />
+                    </video>
+                  {/if}
                 </div>
-              {:else}
-                <video bind:this={player} class="plyr-video-trigger" playsinline controls>
-                  <source
-                    src="https://pub-bd38ff7251aa402a93762181a947f7ea.r2.dev/generate-lesson-draft.mp4"
-                    type="video/mp4"
-                  />
-                  <!-- <source src="/path/to/video.webm" type="video/webm" /> -->
-                  <!-- Captions are optional -->
-                  <track kind="captions" />
-                </video>
-              {/if}
+              {/key}
             </div>
           {/each}
         </div>

@@ -1,5 +1,6 @@
 <script>
   import pluralize from 'pluralize';
+  import { ImageLoader } from 'carbon-components-svelte';
   import OverflowMenuHorizontalIcon from 'carbon-icons-svelte/lib/OverflowMenuHorizontal.svelte';
   import dayjs from 'dayjs';
   import relativeTime from 'dayjs/plugin/relativeTime';
@@ -33,7 +34,7 @@
         label: 'Rename',
         onClick() {
           onRename(quiz);
-        },
+        }
       },
       // {
       //   label: 'Make a copy',
@@ -45,8 +46,8 @@
         label: 'Delete',
         onClick() {
           onDelete(quiz);
-        },
-      },
+        }
+      }
     ];
   }
 
@@ -55,12 +56,11 @@
 
 {#if quiz}
   <div
-    class="root w-full border hover:shadow-2xl transition ease-in-out rounded-lg bg-gray-100 dark:bg-gray-700 mr-4 mb-5 relative flex p-3"
+    class="root w-full border hover:shadow-2xl transition ease-in-out rounded-lg bg-gray-100 dark:bg-gray-800 mr-4 mb-5 relative flex p-3"
   >
-    <img
+    <ImageLoader
       src={themeImages[quiz.theme]?.card || themeImages.standard.card}
       alt="quiz-card"
-      class=""
       style="max-width: 300px;"
     />
 
@@ -70,11 +70,7 @@
           <a href="{$currentOrgPath}/quiz/{quiz.id}">{quiz.title}</a>
         </h4>
 
-        <Dropdown
-          options={getOptions()}
-          classNames="absolute top-4 right-4"
-          isIcon={true}
-        >
+        <Dropdown options={getOptions()} classNames="absolute top-4 right-4" isIcon={true}>
           <div class="p-1 rounded-full bg-gray-200 dark:bg-gray-600">
             <OverflowMenuHorizontalIcon size={20} class="carbon-icon active" />
           </div>

@@ -11,8 +11,7 @@
   import Avatar from '$lib/components/Avatar/index.svelte';
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
-
-  let activeClass = 'bg-gray-200 dark:bg-gray-800';
+  import { NavClasses } from '$lib/utils/constants/reusableClass';
 
   function isActive(pagePath, itemPath) {
     const pageLinkItems = pagePath.split('/');
@@ -77,7 +76,7 @@
               class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-500 {isActive(
                 $page.url.pathname,
                 `${item.link}`
-              ) && activeClass}"
+              ) && NavClasses.active}"
             >
               <svelte:component
                 this={item.icon}
@@ -101,10 +100,10 @@
       </a>
       <a href="/lms/settings" class="text-black">
         <li
-          class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-800 {isActive(
+          class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 {isActive(
             $page.url.pathname,
             `/lms/settings`
-          ) && activeClass}"
+          ) && NavClasses.active}"
         >
           <Avatar src={$profile.avatar_url} name={$profile.username} width="w-7" height="h-7" />
           <p class="dark:text-white ml-2">Settings</p>

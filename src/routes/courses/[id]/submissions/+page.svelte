@@ -248,7 +248,7 @@
       <div class="flex items-center w-full">
         {#each sections as { id, title, items }, idx (id)}
           <div
-            class="section rounded-md bg-gray-100 dark:bg-gray-700 border border-gray-50 p-3 h-80 mr-3 overflow-hidden"
+            class="section rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-50 p-3 h-80 mr-3 overflow-hidden"
             animate:flip={{ duration: flipDurationMs }}
           >
             <div class="flex items-center mb-2">
@@ -293,7 +293,7 @@
                   </a>
                   <a
                     class="flex items-center no-underline hover:underline text-black my-2"
-                    href="{$page.url.pathname.replace('submissions', 'lessons')}/{item.lesson
+                    href="{$page.url?.pathname?.replace('submissions', 'lessons')}/{item.lesson
                       .id}/exercises/{item.exercise.id}"
                   >
                     <p class="dark:text-white text-grey text-sm">

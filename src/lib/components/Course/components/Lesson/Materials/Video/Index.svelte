@@ -3,6 +3,9 @@
   import LocalVideo from './LocalVideo.svelte';
   import * as CONSTANTS from './constants';
 
+  export let lessonId = '';
+  export let saveLesson = () => {};
+
   let tabs = CONSTANTS.videoTabs;
   let currentTab = tabs[0].value;
 
@@ -34,7 +37,7 @@
     {#if currentTab === 1}
       <YoutubeVideo />
     {:else}
-      <LocalVideo />
+      <LocalVideo {lessonId} {saveLesson} />
     {/if}
   </main>
 </section>

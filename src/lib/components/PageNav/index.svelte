@@ -20,7 +20,7 @@
 </script>
 
 <div
-  class="header dark:bg-gray-700 bg-white flex items-center justify-between {!disableSticky &&
+  class="header dark:bg-gray-800 bg-white flex items-center justify-between {!disableSticky &&
     'sticky'} {paddingClass} {dynamicRootClass}"
   style={overidableStyle}
 >
@@ -29,7 +29,7 @@
       {#if !enterEditTitleMode}
         <button class="w-full" on:click={() => (enterEditTitleMode = true)}>
           <h4
-            class="editable-title hover:bg-gray-100 dark:bg-gray-700 px-3 rounded-md overflow-ellipsis"
+            class="editable-title hover:bg-gray-100 dark:bg-gray-800 px-3 rounded-md overflow-ellipsis"
           >
             {title}
           </h4>

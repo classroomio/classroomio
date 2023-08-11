@@ -1,8 +1,9 @@
 <script>
-  import CaretSortDownIcon from 'carbon-icons-svelte/lib/CaretSortDown.svelte';
+  import { slide } from 'svelte/transition';
   import ChevronDownIcon from 'carbon-icons-svelte/lib/ChevronDown.svelte';
   import ChevronUpIcon from 'carbon-icons-svelte/lib/ChevronUp.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
+  import { NavClasses } from '$lib/utils/constants/reusableClass';
   import NavIcons from './NavIcons.svelte';
 
   export let handleClick = () => {};
@@ -11,8 +12,6 @@
   export let isExpanded = true;
   export let total = 0;
   // export let subMenuItems = [];
-
-  let activeClass = 'bg-gray-200 dark:bg-gray-800';
 
   function onClick() {
     handleClick();
@@ -25,8 +24,8 @@
 
 <div class="">
   <button
-    class="item relative flex items-center py-3 px-4 ml-2 mb-1 rounded hover:bg-gray-200 dark:hover:bg-gray-800 {isGroupActive &&
-      activeClass} w-[95%]"
+    class="item relative flex items-center py-3 px-4 ml-2 mb-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 {isGroupActive &&
+      NavClasses.active} w-[95%]"
     tabindex="0"
     on:click={onClick}
   >
@@ -48,7 +47,7 @@
     {/if}
   </button>
   {#if isExpanded}
-    <div class="flex flex-col">
+    <div in:slide out:slide class="flex flex-col">
       <slot />
     </div>
   {/if}
