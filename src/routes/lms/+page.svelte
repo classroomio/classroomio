@@ -44,7 +44,7 @@
       <Learning />
     </div>
     <Box
-      className="w-full xl:w-[400px] h-full bg-[#F5F8FE] dark:bg-gray-500 flex items-center justify-center my-20 xl:mt-11 p-2"
+      className="w-full xl:w-[400px] h-[516px] overflow-y-auto bg-[#F5F8FE] dark:bg-gray-700 flex items-center justify-center my-20 xl:mt-11 p-2"
     >
       <div
         class="w-full h-full flex flex-col md:flex-row xl:flex-col items-center md:items-center xl:items-start gap-5 md:justify-around"
