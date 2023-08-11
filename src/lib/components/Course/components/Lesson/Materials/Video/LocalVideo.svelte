@@ -1,4 +1,5 @@
 <script>
+  import axios from 'axios';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import {
     lesson,
@@ -11,10 +12,8 @@
   export let lessonId = '';
   export let saveLesson = () => {};
 
-  let isWrongFormat = false;
-  let isUploaded = false;
+  let formRes;
   let isLoaded = false;
-  let isBig = false;
   let fileInput;
   let submit;
   let uploadedFileUrl = '';
@@ -22,6 +21,42 @@
 
   function isVideoAdded(link) {
     return $lesson.materials?.videos?.find((v) => v.link === link);
+  }
+
+  async function onUpload(e) {
+    isLoading = true;
+    if (!fileInput) return;
+
+    console.log('file', fileInput.files[0]);
+    const formData = new FormData();
+    formData.append('videoFile', fileInput.files[0]);
+    console.log('formData', formData);
+
+    try {
+      const response = await axios({
+        method: 'POST',
+        url: 'https://classroomio-server.fly.dev/uploadVideo?lessonId=' + lessonId,
+        data: formData,
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
+        headers: {
+          'Content-Type': 'multipart/form-data; boundary=MyBoundary'
+        }
+      });
+
+      formRes = response.data;
+      console.log('Upload res', formRes);
+      isLoading = false;
+      isLoaded = false;
+    } catch (err) {
+      console.error('Error uploading video', err, '\n\n', err.response);
+      if (err.response) {
+        formRes = err.response.data;
+        console.log('formRes', formRes);
+      }
+    }
+
+    isLoaded = true;
   }
 
   async function isDoneUploading(response) {
@@ -40,10 +75,10 @@
     }
   }
 
-  $: isDoneUploading($uploadCourseVideoStore.formRes);
+  $: isDoneUploading(formRes);
 </script>
 
-{#if isLoaded === false}
+{#if !isLoaded}
   <button
     type="button"
     on:click={() => (fileInput && !isLoading ? fileInput.click() : null)}
@@ -52,18 +87,7 @@
   >
     <form
       class="h-full w-full flex flex-col items-center justify-center border border-blue-300 border-dashed rounded-xl"
-      method="POST"
-      action="?/create"
-      enctype="multipart/form-data"
-      use:enhance={() => {
-        isLoading = true;
-
-        return async ({ update }) => {
-          await update();
-          isLoading = false;
-          isLoaded = true;
-        };
-      }}
+      on:submit|preventDefault={onUpload}
     >
       {#if isLoading}
         <Moon size="40" color="#1d4ed8" unit="px" duration="1s" />
@@ -81,7 +105,7 @@
         style="display:none;"
         type="file"
         accept="video/*"
-        name="file"
+        name="videoFile"
         on:change={() => submit.click()}
         bind:this={fileInput}
       />
@@ -89,7 +113,7 @@
       <input style="display:none;" type="submit" bind:this={submit} />
     </form>
   </button>
-{:else if $uploadCourseVideoStore.formRes?.type === 'FILE_TOO_LARGE'}
+{:else if formRes?.type === 'FILE_TOO_LARGE'}
   <div class="h-full w-full flex flex-col items-center justify-center rounded-xl">
     <img src="/video-upload-error.svg" alt="upload error" />
     <span class="pt-3 pb-2">
@@ -100,9 +124,9 @@
         Sorry we video wasn’t uploaded. The file size is too big,<br /> maximum size is 20 MB. Try again!
       </p>
     </span>
-    <PrimaryButton label="Try again" />
+    <PrimaryButton label="Try again" onClick={() => fileInput?.click()} />
   </div>
-{:else if !$uploadCourseVideoStore.formRes?.success}
+{:else if !formRes?.success}
   <div class="h-full w-full flex flex-col items-center justify-center rounded-xl">
     <img src="/video-upload-error.svg" alt="upload error" />
     <span class="pt-3 pb-2">
@@ -114,7 +138,10 @@
         files.
       </p>
     </span>
-    <PrimaryButton label="Try again" />
+    <PrimaryButton
+      label="Try again later"
+      onClick={() => ($uploadCourseVideoStore.isModalOpen = false)}
+    />
   </div>
 {:else}
   <div class="flex flex-col w-full h-full items-start justify-between">

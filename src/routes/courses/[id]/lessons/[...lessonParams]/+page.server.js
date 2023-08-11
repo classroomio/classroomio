@@ -1,3 +1,10 @@
+/**
+ * This code isn't used anymore due to vercels 4.5MB limit of file sizes
+ * I will leave it here for reference and learning purposes
+ * The code has now been moved to classroomio-server, our express.js backend
+ *
+ * Read more: https://vercel.com/guides/how-to-bypass-vercel-body-size-limit-serverless-functions
+ *  */
 import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import FormData from 'form-data';
 import axios from 'axios';
