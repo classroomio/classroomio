@@ -24,7 +24,9 @@
 
 <section class="h-full mt-10 mb-20 xl:mt-2">
   <p class="text-base font-semibold text-[#040F2D] pb-3 dark:text-white">Currently Learning</p>
-  <Box className="w-full h-full border-2 border-[#EAEAEA] gap-10 rounded">
+  <Box
+    className="w-full border-2 border-[#EAEAEA]  dark:bg-gray-700 h-[516px] overflow-y-auto gap-10 rounded"
+  >
     {#if courseInProgress === false}
       <div class="flex flex-col items-center">
         <CoursesEmptyIcon />
