@@ -40,7 +40,6 @@ const uploadToMuse = (s3Data, fileName, lessonId, fileUrl) => {
     maxContentLength: Infinity,
     maxBodyLength: Infinity,
     headers: {
-      ...form.getHeaders(),
       Key: MUSE_API_KEY
     }
   })
