@@ -55,7 +55,8 @@
           new Integrations.BrowserTracing(),
           new CaptureConsole({
             levels: ['error']
-          })
+          }),
+          new Sentry.Replay()
         ],
         environment: !dev ? 'production' : 'development',
         // Set tracesSampleRate to 1.0 to capture 100%
