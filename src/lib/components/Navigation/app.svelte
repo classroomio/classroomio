@@ -36,7 +36,7 @@
   }
 </script>
 
-<nav class="{navClass} flex w-full p-2 md:px-6 bg-blue-500">
+<nav class="{navClass} flex w-full p-2 md:px-6 bg-blue-700">
   <ul class="flex w-full items-center">
     <div class="flex items-center text-white">
       {#if isCoursePage}

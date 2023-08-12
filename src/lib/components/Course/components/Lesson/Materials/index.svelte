@@ -54,12 +54,14 @@
   // problem: after we save an uploaded video,
   async function saveLesson() {
     const { data } = await fetchLesson(lessonId);
-    const materials = merge(data, $lesson.materials);
+    if (data?.videos?.length === $lesson.materials.videos.length) {
+      const materials = merge(data, $lesson.materials);
 
-    lesson.update((l) => ({
-      ...l,
-      materials
-    }));
+      lesson.update((l) => ({
+        ...l,
+        materials
+      }));
+    }
     handleUpdateLessonMaterials($lesson, lessonId);
   }
 
