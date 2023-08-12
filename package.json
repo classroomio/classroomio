@@ -17,6 +17,7 @@
     "@sentry/browser": "^7.61.0",
     "@sentry/integrations": "^7.61.0",
     "@sentry/tracing": "^7.61.0",
+    "@sentry/vite-plugin": "^2.6.2",
     "@supabase/supabase-js": "^2.31.0",
     "@sveltejs/adapter-auto": "^2.1.0",
     "@sveltejs/adapter-netlify": "^2.0.8",
