@@ -121,7 +121,7 @@
         Oops 😬, couldn’t upload video
       </h3>
       <p class="text-center text-xs font-normal text-[#ADADAD]">
-        Sorry we video wasn’t uploaded. The file size is too big,<br /> maximum size is 20 MB. Try again!
+        Sorry we video wasn’t uploaded. The file size is too big,<br /> maximum size is 50 MB. Try again!
       </p>
     </span>
     <PrimaryButton label="Try again" onClick={() => fileInput?.click()} />
