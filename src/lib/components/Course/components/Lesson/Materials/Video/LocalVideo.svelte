@@ -75,6 +75,11 @@
     }
   }
 
+  function tryAgain() {
+    formRes = null;
+    isLoaded = false;
+  }
+
   $: isDoneUploading(formRes);
 </script>
 
@@ -124,7 +129,7 @@
         Sorry we video wasn’t uploaded. The file size is too big,<br /> maximum size is 50 MB. Try again!
       </p>
     </span>
-    <PrimaryButton label="Try again" onClick={() => fileInput?.click()} />
+    <PrimaryButton label="Try another file" onClick={tryAgain} />
   </div>
 {:else if !formRes?.success}
   <div class="h-full w-full flex flex-col items-center justify-center rounded-xl">
@@ -134,14 +139,11 @@
         Oops 😬, couldn’t upload video
       </h3>
       <p class="text-center text-xs font-normal text-[#ADADAD]">
-        Sorry we video wasn’t uploaded, the file format isn’t supported.<br /> Upload MP4, MOV and AVI
-        files.
+        Sorry we video wasn’t uploaded, the file format isn’t supported or something went wrong on
+        the server.<br /> Upload MP4, MOV and AVI files.
       </p>
     </span>
-    <PrimaryButton
-      label="Try again later"
-      onClick={() => ($uploadCourseVideoStore.isModalOpen = false)}
-    />
+    <PrimaryButton label="Please try again" onClick={tryAgain} />
   </div>
 {:else}
   <div class="flex flex-col w-full h-full items-start justify-between">
@@ -162,6 +164,7 @@
           <img src="/delete-video.svg" alt="deletevideo" class="dark:invert" />
         </button>
       </div>
+      <PrimaryButton label="Done" onClick={() => ($uploadCourseVideoStore.isModalOpen = false)} />
     </div>
   </div>
 {/if}
