@@ -34,7 +34,7 @@ export async function getOrgTeam(orgId) {
         verified: teamMember?.verified,
         profileId: teamMember?.profile?.id,
         role: ROLE_LABEL[teamMember?.role_id] || '',
-        isAdmin: teamMember?.role_id === ROLE.ADMIN,
+        isAdmin: teamMember?.role_id === ROLE.ADMIN
       });
     });
 
@@ -43,7 +43,7 @@ export async function getOrgTeam(orgId) {
 
   return {
     team,
-    error,
+    error
   };
 }
 
@@ -70,11 +70,10 @@ export async function getOrganizations(userId) {
       orgsArray.push({
         id: orgMember?.organization?.id,
         name: orgMember?.organization?.name,
-        shortName:
-          orgMember?.organization?.name?.substring(0, 2)?.toUpperCase() || '',
+        shortName: orgMember?.organization?.name?.substring(0, 2)?.toUpperCase() || '',
         siteName: orgMember?.organization?.siteName,
         avatar_url: orgMember?.organization?.avatar_url,
-        memberId: orgMember?.id,
+        memberId: orgMember?.id
       });
     });
 
@@ -85,7 +84,7 @@ export async function getOrganizations(userId) {
   return {
     orgs: orgsArray,
     currentOrg: orgsArray[0],
-    error,
+    error
   };
 }
 
@@ -116,13 +115,13 @@ export async function getOrgAudience(orgId) {
     name: profile.fullname,
     email: profile.email,
     avatar_url: profile.avatar_url,
-    date_joined: new Date(profile.created_at).toDateString(),
+    date_joined: new Date(profile.created_at).toDateString()
   }));
   orgAudience.set(audience);
 
   return {
     audience: audience,
-    error,
+    error
   };
 }
 
@@ -132,6 +131,7 @@ export async function getCourseBySiteName(siteName) {
     .select(
       `
       *,
+      lessons:lesson(count),
       group!inner(
         organization!inner(id, name, siteName, avatar_url)
       )
@@ -148,7 +148,7 @@ export async function getCourseBySiteName(siteName) {
     name: 'ClassroomIO',
     shortName: '',
     siteName: '',
-    avatar_url: '/logo-192.png',
+    avatar_url: '/logo-192.png'
   });
   currentOrg.set(org);
 

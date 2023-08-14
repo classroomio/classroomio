@@ -2,7 +2,6 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { user } from '$lib/utils/store/user';
-  import { appStore } from '$lib/utils/store/app';
   import { isCoursePage } from '$lib/utils/functions/app';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
@@ -10,6 +9,7 @@
   export let disableLogin;
   export let logo;
   export let orgName;
+  export let isOrgSite = false;
 
   let navClass = '';
 
@@ -54,7 +54,7 @@
     <span class="flex-grow" />
 
     {#if $user.isLoggedIn}
-      {#if $appStore.isStudentDomain}
+      {#if isOrgSite}
         <li><a class="block" href="/lms"> Go to LMS </a></li>
       {/if}
     {:else}
