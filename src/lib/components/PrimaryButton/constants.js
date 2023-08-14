@@ -1,5 +1,6 @@
 export const VARIANTS = {
   CONTAINED: 'CONTAINED',
+  CONTAINED_LIGHT: 'CONTAINED_LIGHT',
   CONTAINED_INFO: 'CONTAINED_INFO',
   CONTAINED_WHITE: 'CONTAINED_WHITE',
   CONTAINED_DANGER: 'CONTAINED_DANGER',
@@ -12,6 +13,7 @@ export const VARIANTS = {
 
 export const VARIANTS_CLASS = {
   [VARIANTS.CONTAINED]: 'border-none bg-blue-700 hover:bg-blue-900 text-white font-bold',
+  [VARIANTS.CONTAINED_LIGHT]: 'border-none bg-blue-600 hover:bg-blue-900 text-white font-bold',
   [VARIANTS.CONTAINED_WHITE]:
     'border-none hover:border-black-300 hover:bg-blue-700 dark:hover:bg-blue-900 text-black hover:text-white bg-white',
   [VARIANTS.CONTAINED_INFO]: 'border-none bg-gray-400 hover:bg-gray-600 text-white',
