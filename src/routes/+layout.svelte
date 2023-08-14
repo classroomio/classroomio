@@ -38,10 +38,11 @@
 
   import '../app.postcss';
 
+  export let data;
+
   let supabase = getSupabase();
   let path = $page.url?.pathname?.replace('/', '');
   let theme = 'white';
-  let skipAuth = false;
 
   const delayedPreloading = derived(navigating, (currentPreloading, set) => {
     setTimeout(() => set(currentPreloading), 250);
@@ -114,7 +115,7 @@
         // Set user in sentry
         Sentry.setUser($profile);
 
-        if ($appStore.isStudentDomain) {
+        if (data.isOrgSite) {
           const { data, error } = await supabase
             .from('organizationmember')
             .insert({
@@ -156,7 +157,7 @@
       const orgRes = await getOrganizations($profile.id);
 
       // student redirect
-      if ($appStore.isStudentDomain) {
+      if (data.isOrgSite) {
         if (params.has('redirect')) {
           goto(params.get('redirect') || '');
         } else {
@@ -176,23 +177,6 @@
     }
   }
 
-  function setOrgBasedOnUrl(host) {
-    if (browser) {
-      const debug = localStorage.getItem('role') === 'student';
-      const matches = host.match(/([a-z0-9]+).*classroomio[.]com/);
-      const subdomain = matches?.[1] ?? '';
-
-      if (!blockedSubdomain.includes(subdomain)) {
-        const answer = Array.isArray(matches) ? !!subdomain && subdomain !== 'www' : false;
-
-        $appStore.isStudentDomain = debug || answer;
-        $appStore.siteNameFromDomain = debug ? 'codingdojo' : subdomain;
-      } else if (subdomain === 'play' || debug) {
-        skipAuth = true;
-      }
-    }
-  }
-
   function handleResize() {
     isMobile.update(() => window.innerWidth <= 760);
   }
@@ -201,7 +185,7 @@
     console.log(
       'Welcome to ClassroomIO, we are grateful you chose us.',
       $page.url.host,
-      `\nIs student domain: ${$appStore.isStudentDomain}`
+      `\nIs student domain: ${data.isOrgSite}`
     );
     // Disable GA on localhost
     if (dev) {
@@ -234,7 +218,7 @@
       }
 
       // Skip Authentication
-      if (skipAuth) return;
+      if (data.skipAuth) return;
 
       // Authentication Steps
       if (event === 'SIGNED_IN') {
@@ -252,8 +236,10 @@
       toggleBodyByTheme($appStore.isDark);
     }
 
-    if ($appStore.isStudentDomain) {
-      getCurrentOrg($appStore.siteNameFromDomain);
+    if (data.isOrgSite) {
+      $appStore.orgSiteName = data.orgSiteName;
+      $appStore.isOrgSite = data.isOrgSite;
+      getCurrentOrg(data.orgSiteName);
     }
 
     return () => {
@@ -264,7 +250,6 @@
 
   $: path = $page.url?.pathname?.replace('/', '');
   $: theme = $appStore.isDark ? 'g100' : 'white';
-  $: setOrgBasedOnUrl($page.url.host);
 </script>
 
 <svelte:window on:resize={handleResize} />
@@ -277,10 +262,10 @@
 
 <Snackbar />
 
-{#if skipAuth}
+{#if data.skipAuth}
   <PlayQuiz />
-{:else if $appStore.isStudentDomain && !path}
-  <OrgLandingPage />
+{:else if data.isOrgSite && !path}
+  <OrgLandingPage orgSiteName={data.orgSiteName} />
 {:else}
   <main class="dark:bg-gray-800">
     {#if $navigating && $delayedPreloading}
@@ -295,8 +280,9 @@
         <LMSNavigation />
       {:else}
         <LandingNavigation
-          logo={$appStore.isStudentDomain ? $currentOrg.avatar_url : undefined}
-          orgName={$appStore.isStudentDomain ? $currentOrg.name : undefined}
+          isOrgSite={data.isOrgSite}
+          logo={data.isOrgSite ? $currentOrg.avatar_url : undefined}
+          orgName={data.isOrgSite ? $currentOrg.name : undefined}
           disableLogin={false}
         />
       {/if}

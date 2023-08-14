@@ -3,6 +3,7 @@ export const ROUTE = {
   DASHBOARD: '/dashboard',
   ONBOARDING: '/onboarding',
   COURSES: '/courses',
+  PAGES: '/pages',
   COURSE: '/course',
   LOGIN: '/login',
   SIGN_UP: '/signup',
@@ -11,7 +12,7 @@ export const ROUTE = {
   DISCUSSIONS: '/discussions',
   ASK: '/ask',
   FORGOT: '/forgot',
-  RESET: '/reset',
+  RESET: '/reset'
 };
 
 export const PUBLIC_ROUTES = [
@@ -20,7 +21,8 @@ export const PUBLIC_ROUTES = [
   ROUTE.SIGN_UP,
   ROUTE.FORGOT,
   ROUTE.RESET,
-  `^${ROUTE.COURSE}/.*`,
+  `^${ROUTE.PAGES}/.*`,
+  `^${ROUTE.COURSE}/.*`
 ];
 
 export const ROUTES_TO_HIDE_NAV = [
@@ -28,5 +30,5 @@ export const ROUTES_TO_HIDE_NAV = [
   ROUTE.SIGN_UP,
   ROUTE.FORGOT,
   ROUTE.RESET,
-  ROUTE.ONBOARDING,
+  ROUTE.ONBOARDING
 ];
