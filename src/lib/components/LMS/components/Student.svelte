@@ -1,7 +1,6 @@
 <script lang="ts">
   import { InlineCalendar, Datepicker } from 'svelte-calendar';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import Box from '$lib/components/Box/index.svelte';
   import { isMobile } from '$lib/utils/store/useMobile';
   import { formatDate } from '$lib/utils/functions/routes/dashboard';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
@@ -10,8 +9,8 @@
 
   const theme = {
     calendar: {
-      width: '22em',
-      height: '100%',
+      width: '250px',
+      height: '200px',
       shadow: '0px 0px 5px rgba(0, 0, 0, 0.25)',
       colors: {
         background: {
@@ -31,10 +30,10 @@
 <section class="w-full h-full mt-2">
   <p class="text-base font-semibold text-[#040F2D] pb-3 dark:text-white">Your Schedule</p>
 
-  <Box
-    className="p-5 border-2 border-[#EAEAEA]  dark:bg-gray-700 gap-5 rounded w-full h-[516px] overflow-y-auto  flex flex-col justify-start"
+  <div
+    class="flex items-center flex-col border border-[#EAEAEA] dark:bg-gray-700 rounded w-full h-fit xl:h-[516px] p-3"
   >
-    <div class="w-full hidden xl:flex items-center justify-center">
+    <div class="w-full h-fit hidden xl:flex items-center justify-center">
       <InlineCalendar bind:store {theme} />
     </div>
     {#if $isMobile}
@@ -76,5 +75,5 @@
     {:else}
       <p>No Lesson on this day</p>
     {/if}
-  </Box>
+  </div>
 </section>
