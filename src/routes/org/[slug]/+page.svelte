@@ -207,7 +207,7 @@
     {/each}
   </div>
 
-  <div class="flex flex-wrap">
+  <div class="flex flex-wrap mt-5">
     <!-- Your Schedule -->
     <div>
       <p class="dark:text-white font-bold mb-7">Your Schedule</p>

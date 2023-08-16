@@ -1,6 +1,4 @@
 <script>
-  import PageBody from '$lib/components/PageBody/index.svelte';
-  import TextChip from '$lib/components/Chip/Text.svelte';
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import { dndzone } from 'svelte-dnd-action';
@@ -11,6 +9,7 @@
   import Calendar from 'carbon-icons-svelte/lib/Calendar.svelte';
   import Video from 'carbon-icons-svelte/lib/Video.svelte';
   import WatsonHealthTextAnnotationToggle from 'carbon-icons-svelte/lib/WatsonHealthTextAnnotationToggle.svelte';
+  import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import Box from '$lib/components/Box/index.svelte';
@@ -28,6 +27,8 @@
     handleDelete
   } from '$lib/components/Course/components/Lesson/store/lessons';
   import { course, setCourse, group } from '$lib/components/Course/store';
+  import PageBody from '$lib/components/PageBody/index.svelte';
+  import TextChip from '$lib/components/Chip/Text.svelte';
 
   export let data;
   const { courseId } = data;
@@ -135,7 +136,7 @@
       {#each $lessons as lesson (lesson.id)}
         <div
           bind:this={ref}
-          class="sm:h-48 md:h-40 lg:h-32 relative m-auto rounded-md border-2 border-gray-200 py-3 px-5 mb-4 flex items-center dark:bg-gray-700"
+          class="sm:min-h-[245px] md:min-h-[100px] lg:min-h-[190px] relative m-auto rounded-md border-2 border-gray-200 py-3 px-5 mb-4 flex items-center dark:bg-gray-700"
         >
           <div class="mr-5">
             <TextChip
@@ -173,13 +174,18 @@
             <div
               class="flex items-start justify-between flex-col lg:flex-row lg:items-center mt-2 w-4/5"
             >
-              <div class="mb-3 lg:mb-0">
+              <div class="lg:mb-0">
                 {#if lessonEditing === lesson.id}
-                  <Select bind:value={lesson.profile} options={$group.tutors} labelKey="fullname" />
+                  <Select
+                    bind:value={lesson.profile}
+                    options={$group.tutors}
+                    labelKey="fullname"
+                    className="sm:my-1 w-[100%]"
+                  />
                 {:else if !lesson.profile}
-                  <p class="dark:text-white ml-2 text-sm">No tutor added</p>
+                  <p class="dark:text-white ml-2 text-sm mb-3">No tutor added</p>
                 {:else}
-                  <a href="." class="flex items-center hover:underline">
+                  <a href="." class="flex items-center hover:underline mb-2">
                     <img
                       alt="Placeholder"
                       class="block rounded-full"
@@ -194,20 +200,22 @@
                 {/if}
               </div>
 
-              <div class="flex items-center mb-3 lg:mb-0">
+              <div class="flex items-center lg:mb-0">
                 {#if lessonEditing === lesson.id}
                   <input
                     type="date"
                     name="lesson-date-picker"
-                    class="p-2 m-2 rounded-md w-40"
+                    class="p-2 my-2 rounded-md sm:w-[179px]"
                     value={formatDate(lesson.lesson_at)}
                     on:input={(e) => (lesson.lesson_at = e.target.value)}
                   />
                 {:else}
-                  <Calendar size={20} class="carbon-icon text-gray-400 dark:text-white" />
-                  <p class="dark:text-white text-sm ml-2">
-                    {new Date(lesson.lesson_at).toDateString()}
-                  </p>
+                  <div class="flex mb-2">
+                    <Calendar size={20} class="carbon-icon text-gray-400 dark:text-white" />
+                    <p class="dark:text-white text-sm ml-2">
+                      {new Date(lesson.lesson_at).toDateString()}
+                    </p>
+                  </div>
                 {/if}
               </div>
 
@@ -216,24 +224,26 @@
                   <TextField
                     bind:value={lesson.call_url}
                     autofocus={true}
-                    className="w-40"
+                    className="w-[179px]"
                     placeholder="https://meet.google.com/mga-dsjs-fmb"
                   />
                 {:else}
-                  <Video size={20} class="carbon-icon text-gray-400 dark:text-white" />
-                  <a
-                    class="text-sm ml-2 text-blue-600"
-                    href={lesson.call_url || '#'}
-                    target="_blank"
-                  >
-                    {lesson.call_url ? 'Join lesson' : 'No link'}
-                  </a>
+                  <div class="flex">
+                    <Video size={20} class="carbon-icon text-gray-400 dark:text-white ml-0.5" />
+                    <a
+                      class="text-sm ml-2 text-blue-600"
+                      href={lesson.call_url || '#'}
+                      target="_blank"
+                    >
+                      {lesson.call_url ? 'Join lesson' : 'No link'}
+                    </a>
+                  </div>
                 {/if}
               </div>
             </div>
 
-            <div class="flex flex-row absolute bottom-10 right-10">
-              <div class="success">
+            <div class="flex flex-row absolute sm:bottom-20 bottom-10 right-10">
+              <div class="success hidden md:block">
                 <IconButton
                   disabled={isStudent}
                   onClick={() => {
@@ -256,7 +266,7 @@
               </div>
 
               <RoleBasedSecurity allowedRoles={[1, 2]}>
-                <div class="">
+                <div class="hidden md:block">
                   {#if lessonEditing === lesson.id}
                     <IconButton
                       onClick={() => {
@@ -278,11 +288,36 @@
               </RoleBasedSecurity>
 
               <RoleBasedSecurity allowedRoles={[1, 2]}>
-                <div class="">
+                <div class="hidden md:block">
                   <IconButton onClick={handleDelete(lesson.id)}>
                     <TrashCanIcon size={24} class="carbon-icon dark:text-white" />
                   </IconButton>
                 </div>
+              </RoleBasedSecurity>
+
+              <RoleBasedSecurity allowedRoles={[1, 2]}>
+                <OverflowMenu size="xl" class="block md:hidden absolute right-10 bottom-4 pl-4">
+                  <OverflowMenuItem
+                    disabled={isStudent}
+                    text={lesson.is_unlocked ? 'Lock' : 'Unlock'}
+                    on:click={() => {
+                      lesson.is_unlocked = !lesson.is_unlocked;
+                      handleSaveLesson(lesson, $course.id);
+                    }}
+                  />
+                  <OverflowMenuItem
+                    text={lessonEditing === lesson.id ? 'Save' : 'Edit'}
+                    on:click={() => {
+                      if (lessonEditing === lesson.id) {
+                        lessonEditing = null;
+                        handleSaveLesson(lesson, $course.id);
+                      } else {
+                        lessonEditing = lesson.id;
+                      }
+                    }}
+                  />
+                  <OverflowMenuItem danger text="Delete" on:click={handleDelete(lesson.id)} />
+                </OverflowMenu>
               </RoleBasedSecurity>
             </div>
           </div>

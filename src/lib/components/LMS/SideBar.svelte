@@ -1,11 +1,11 @@
 <script>
   import { page } from '$app/stores';
   import HelpIcon from 'carbon-icons-svelte/lib/Help.svelte';
+  import LicenseDraft from 'carbon-icons-svelte/lib/LicenseDraft.svelte';
   import TextChip from '$lib/components/Chip/Text.svelte';
   import OrgSelector from '$lib/components/OrgSelector/OrgSelector.svelte';
   import HomeIcon from '$lib/components/Icons/HomeIcon.svelte';
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
-  import ReviewsIcon from '$lib/components/Icons/ReviewsIcon.svelte';
   import CommunityIcon from '$lib/components/Icons/CommunityIcon.svelte';
   import ExerciseIcon from '$lib/components/Icons/ExerciseIcon.svelte';
   import Avatar from '$lib/components/Avatar/index.svelte';
@@ -36,13 +36,8 @@
     },
     {
       name: 'Exercise',
-      icon: ExerciseIcon,
+      icon: LicenseDraft,
       link: '/lms/exercises'
-    },
-    {
-      name: 'Reviews',
-      icon: ReviewsIcon,
-      link: '/lms/reviews'
     },
     {
       name: 'Community',
@@ -81,6 +76,8 @@
               <svelte:component
                 this={item.icon}
                 color={isActive($page.url.pathname, `${item.link}`) ? 'black' : 'gray'}
+                size={24}
+                class="carbon-icon dark:text-white"
               />
               <p class="dark:text-white ml-2">{item.name}</p>
             </li>
