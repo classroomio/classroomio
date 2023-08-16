@@ -6,72 +6,91 @@ import { validateEmail } from './validateEmail';
 const createQuizValidationSchema = z.object({
   title: z.string().min(6, {
     message: 'Must be 6 or more characters long',
-    invalid_type_error: 'Must not be empty',
-  }),
+    invalid_type_error: 'Must not be empty'
+  })
 });
 
 const askCommunityValidationSchema = z.object({
   title: z.string().min(6, {
     message: 'Must be 6 or more characters long',
-    invalid_type_error: 'Must not be empty',
+    invalid_type_error: 'Must not be empty'
   }),
   body: z.string().min(20, {
     message: 'Must be 10 or more characters long',
-    invalid_type_error: 'Must not be empty',
-  }),
+    invalid_type_error: 'Must not be empty'
+  })
 });
 const commentInCommunityValidationSchema = z.object({
   comment: z.string().min(6, {
     message: 'Must be 6 or more characters long',
-    invalid_type_error: 'Must not be empty',
+    invalid_type_error: 'Must not be empty'
+  })
+});
+
+const orgLandingpageValidationSchema = z.object({
+  name: z.string().min(6, {
+    message: 'Must be 6 or more characters long',
+    invalid_type_error: 'Must not be empty'
   }),
+  email: z.string().email({
+    message: 'Invalid email address',
+    invalid_type_error: 'Must not be empty'
+  }),
+  phone: z.string().min(6, {
+    message: 'Must be 6 or more characters long',
+    invalid_type_error: 'Must not be empty'
+  }),
+  message: z.string().min(20, {
+    message: 'Must be 10 or more characters long',
+    invalid_type_error: 'Must not be empty'
+  })
 });
 
 const forgotValidationSchema = z.object({
   email: z.string().email({
     message: 'Invalid email address',
-    invalid_type_error: 'Must not be empty',
-  }),
+    invalid_type_error: 'Must not be empty'
+  })
 });
 
 const authValidationSchema = z.object({
   email: z.string().email({
     message: 'Invalid email address',
-    invalid_type_error: 'Must not be empty',
+    invalid_type_error: 'Must not be empty'
   }),
   password: z.string().min(6, {
     message: 'Must be 6 or more characters long',
-    invalid_type_error: 'Must not be empty',
-  }),
+    invalid_type_error: 'Must not be empty'
+  })
 });
 
 const resetValidationSchema = z.object({
   password: z.string().min(6, {
     message: 'Must be 6 or more characters long',
-    invalid_type_error: 'Must not be empty',
-  }),
+    invalid_type_error: 'Must not be empty'
+  })
 });
 
 const onboardingValidationSchema = {
   stepOne: z.object({
     fullname: z.string().min(1, { message: 'Enter your fullname' }),
     orgName: z.string().min(1, { message: 'Enter your organisation name' }),
-    siteName: z.string().min(1, { message: 'Enter your site name' }),
+    siteName: z.string().min(1, { message: 'Enter your site name' })
   }),
   stepTwo: z.object({
     goal: z
       .string({
         required_error: 'Select an option',
-        invalid_type_error: 'Select an option',
+        invalid_type_error: 'Select an option'
       })
       .min(1),
     source: z
       .string({
         required_error: 'Select an option',
-        invalid_type_error: 'Select an option',
+        invalid_type_error: 'Select an option'
       })
-      .min(1),
-  }),
+      .min(1)
+  })
 };
 
 export const getConfirmPasswordError = ({ password, confirmPassword }) => {
@@ -128,11 +147,15 @@ export const forgotValidation = (fields = {}) => {
   return processErrors(error);
 };
 
+export const orgLandingpageValidation = (fields = {}) => {
+  const { error } = orgLandingpageValidationSchema.safeParse(fields);
+
+  return processErrors(error);
+};
+
 export const onboardingValidation = (fields = {}, step) => {
   const schema =
-    step === 1
-      ? onboardingValidationSchema.stepOne
-      : onboardingValidationSchema.stepTwo;
+    step === 1 ? onboardingValidationSchema.stepOne : onboardingValidationSchema.stepTwo;
   const { error } = schema.safeParse(fields);
 
   return processErrors(error);
@@ -168,7 +191,7 @@ export const validateEmailInString = (emailsStr) => {
     return {
       hasError: true,
       error: 'Enter an email',
-      emails: [],
+      emails: []
     };
   }
 
@@ -186,6 +209,6 @@ export const validateEmailInString = (emailsStr) => {
   return {
     hasError,
     error,
-    emails,
+    emails
   };
 };
