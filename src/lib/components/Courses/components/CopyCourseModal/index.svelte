@@ -5,10 +5,7 @@
   import { snackbarStore } from '$lib/components/Snackbar/store';
   import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import {
-    copyCourseModalInitialState,
-    copyCourseModal,
-  } from '$lib/components/Courses/store';
+  import { copyCourseModalInitialState, copyCourseModal } from '$lib/components/Courses/store';
   import { cloneCourse } from '$lib/utils/services/courses/clone';
 
   // clone, show spinner and redirect to new course
@@ -17,10 +14,7 @@
     $copyCourseModal.isSaving = true;
 
     try {
-      const newCourse = await cloneCourse(
-        $copyCourseModal.id,
-        $copyCourseModal.title
-      );
+      const newCourse = await cloneCourse($copyCourseModal.id, $copyCourseModal.title);
 
       goto(`/courses/${newCourse.id}`);
 

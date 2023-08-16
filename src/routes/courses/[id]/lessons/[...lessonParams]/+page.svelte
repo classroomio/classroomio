@@ -14,10 +14,14 @@
   import { setCourse, course } from '$lib/components/Course/store';
   import {
     lesson,
+    lessons,
     handleSaveLesson,
     uploadCourseVideoStore
   } from '$lib/components/Course/components/Lesson/store/lessons';
   import { browser } from '$app/environment';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { snackbarStore } from '$lib/components/Snackbar/store';
+  import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
 
   export let data;
 
@@ -29,6 +33,17 @@
   let prevLessonId = '';
   let isFetching = false;
   let isMarkingComplete = false;
+  let isLoading = false;
+
+  function getLessonOrder(id) {
+    const index = $lessons.findIndex((lesson) => lesson.id === id);
+
+    if (index < 10) {
+      return '0' + (index + 1);
+    } else {
+      return index + 1;
+    }
+  }
 
   async function fetchReqData(lessonId = '') {
     isFetching = true;
@@ -57,6 +72,64 @@
     await handleSaveLesson($lesson, $course.id);
     isMarkingComplete = false;
   }
+
+  const downloadLesson = async () => {
+    const currentLesson = $lessons.find((l) => l.id === $lesson?.id);
+    if (!currentLesson) {
+      return;
+    }
+
+    isLoading = true;
+
+    try {
+      const lessonVideo = $lesson.materials.videos.map((video) => video.link);
+      const lessonNumber = getLessonOrder(currentLesson.id);
+
+      const response = await fetch('https://classroomio-server.fly.dev/downloadLesson', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          title: currentLesson.title,
+          number: lessonNumber,
+          orgName: `${$currentOrg.name}`,
+          note: `${$lesson.materials.note}`,
+          slideUrl: `${$lesson.materials.slide_url}`,
+          video: lessonVideo,
+          courseTitle: `${$course.title}`
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+
+      const data = await response.blob();
+      console.log(data);
+      const file = new Blob([data], { type: 'application/pdf' });
+      const fileURL = URL.createObjectURL(file);
+
+      let a = document.createElement('a');
+      document.body.append(a);
+      a.download = $course.title + ' - ' + 'Lesson ' + lessonNumber;
+      a.href = fileURL;
+      a.click();
+      a.remove();
+
+      $snackbarStore.message = 'Download Complete';
+      $snackbarStore.severity = SNACKBAR_SEVERITY.SUCCESS;
+      $snackbarStore.open = true;
+    } catch (error) {
+      console.log('error downloading lesson', error);
+      $snackbarStore.message = "Something's not right - Please try later";
+      $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
+      $snackbarStore.open = true;
+    }
+
+    isLoading = false;
+  };
 
   function setLesson(lessonData, totalExercises) {
     if (!lessonData) return;
@@ -106,8 +179,15 @@
           <div class="flex items-center">
             <PrimaryButton
               className="mr-2"
+              label="Download PDF"
+              variant={VARIANTS.OUTLINED}
+              onClick={downloadLesson}
+              {isLoading}
+            />
+            <PrimaryButton
+              className="mr-2"
               label={mode === MODES.edit ? 'Save' : 'Edit'}
-              variant={VARIANTS.CONTAINED_INFO}
+              variant={VARIANTS.OUTLINED}
               onClick={toggleMode}
             />
           </div>
