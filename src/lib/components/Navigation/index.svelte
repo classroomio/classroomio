@@ -10,6 +10,7 @@
   export let logo;
   export let orgName;
   export let isOrgSite = false;
+  export let backgroundColor = 'bg-blue';
 
   let navClass = '';
 
@@ -19,7 +20,7 @@
 </script>
 
 <nav
-  class="{navClass} bg-white sticky top-0 z-50 flex w-full p-2 border-t-0 border-r-0 border-b border-l-0 border-gray-300"
+  class="{navClass} {backgroundColor} sticky top-0 z-50 flex w-full px-2 py-1 border-t-0 border-r-0 border-b border-l-0 border-gray-300"
 >
   <ul class="flex w-full items-center">
     <div class="logo">
@@ -27,7 +28,7 @@
         <img
           src={logo || '/logo-192.png'}
           alt={`${orgName || 'ClassroomIO'} logo`}
-          class="rounded h-10 w-10 inline-block mx-auto"
+          class="rounded h-9 w-9 inline-block mx-auto"
           data-atf="1"
         />
       </a>
@@ -63,18 +64,8 @@
           <div class="flex">
             <PrimaryButton
               label="Login"
-              variant={VARIANTS.OUTLINED}
-              className="mx-2"
+              variant={VARIANTS.TEXT}
               onClick={() => goto('/login' + redirect)}
-            />
-            <PrimaryButton
-              label="Sign Up"
-              variant={VARIANTS.CONTAINED}
-              className="mx-2"
-              onClick={() => {
-                console.log('clicked signup');
-                goto('/signup' + redirect);
-              }}
             />
           </div>
         {/if}

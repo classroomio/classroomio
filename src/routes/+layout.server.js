@@ -18,7 +18,7 @@ export const load = ({ url, cookies }) => {
   const debugMode = debugOrgLandingPage === 'true';
   console.log('debugOrgLandingPage', debugOrgLandingPage);
 
-  const matches = url.host.match(/([a-z0-9]+).*classroomio[.]com/);
+  const matches = url.host.match(/([a-z 0-9 \-]+).*classroomio[.]com/);
   const subdomain = matches?.[1] ?? '';
 
   if (!blockedSubdomain.includes(subdomain)) {
