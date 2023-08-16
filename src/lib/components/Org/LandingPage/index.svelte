@@ -255,7 +255,7 @@
         {:else}
           <Box>
             <CoursesEmptyIcon />
-            <h3 class="dark:text-white text-2xl my-5">No Courses Created</h3>
+            <h3 class="dark:text-white text-2xl my-5">No Course Published</h3>
             <p class="dark:text-white w-1/3 text-center">
               We've got great courses coming your way, stay tuned!!!
             </p>
