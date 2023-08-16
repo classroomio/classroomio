@@ -28,8 +28,15 @@
     console.log(data);
     const file = new Blob([data], { type: 'application/pdf' });
     const fileURL = URL.createObjectURL(file);
+
+    let a = document.createElement('a');
+    document.body.append(a);
+    a.download = 'Certificate of Completion - ' + $currentOrg.name;
+    a.href = fileURL;
+    a.click();
+    a.remove();
+
     isLoading = false;
-    window.open(fileURL);
   };
 </script>
 
