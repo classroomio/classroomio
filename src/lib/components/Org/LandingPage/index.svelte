@@ -441,7 +441,7 @@
           class="flex items-center"
         >
           <img
-            src={`${$currentOrg.avatar_url}`}
+            src={$currentOrg.avatar_url || '/logo-192.png'}
             alt={`${$currentOrg.name} logo`}
             class="rounded h-10 w-10 inline-block mx-auto"
             data-atf="1"
