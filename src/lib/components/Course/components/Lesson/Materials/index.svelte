@@ -17,6 +17,7 @@
   import Box from '$lib/components/Box/index.svelte';
   import EditContent from '$lib/components/EditContent/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import TextField from '$lib/components/Form/TextField.svelte';
   import {
     lesson,
@@ -75,15 +76,18 @@
     const { slide_url, videos, note } = materials;
 
     tabs = tabs.map((tab) => {
-      let badgeValue;
-
-      if (tab.value === 1) {
-        badgeValue = !!slide_url ? 1 : 0;
-      } else if (tab.value === 2) {
-        badgeValue = !!note ? 1 : 0;
-      } else {
-        badgeValue = Array.isArray(videos) ? videos.length : 0;
-      }
+      const badgeValue =
+        tab.value === 1
+          ? !!note
+            ? 1
+            : 0
+          : tab.value === 2
+          ? !!slide_url
+            ? 1
+            : 0
+          : Array.isArray(videos)
+          ? videos.length
+          : 0;
 
       tab.badgeValue = badgeValue;
       return tab;
@@ -173,6 +177,7 @@
               }}
               isLoading={$isLoading}
               isDisabled={$isLoading}
+              variant={VARIANTS.OUTLINED}
             >
               <MachineLearningModel size={20} class="carbon-icon mr-3" />
               AI Assistant
