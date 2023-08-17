@@ -10,6 +10,8 @@
   import { currentOrgPath, currentOrg } from '$lib/utils/store/org';
   import { supabase } from '$lib/utils/functions/supabase';
 
+  export let isLMS = false;
+
   let discussions = [];
 
   dayjs.extend(relativeTime);
@@ -38,7 +40,7 @@
 
     if (error) {
       console.error('Error loading community', error);
-      return goto(`${currentOrgPath}`);
+      return goto(isLMS ? '/lms' : $currentOrgPath);
     }
 
     discussions =
@@ -48,7 +50,7 @@
         author: discussion?.author?.profile?.fullname,
         comments: discussion.comments?.[0]?.count || 0,
         votes: discussion.votes,
-        createdAt: dayjs(discussion.created_at).fromNow(true),
+        createdAt: dayjs(discussion.created_at).fromNow(true)
       })) || [];
   }
 
@@ -65,7 +67,7 @@
         <h4>
           <a
             class="text-black dark:text-white"
-            href="{$currentOrgPath}/community/{discussion.slug}"
+            href="{isLMS ? '/lms' : $currentOrgPath}/community/{discussion.slug}"
           >
             {discussion.title}
           </a>
@@ -84,9 +86,7 @@
     <Box>
       <CoursesEmptyIcon />
       <h3 class="dark:text-white text-2xl my-5">No Questions asked</h3>
-      <p class="dark:text-white w-1/3 text-center">
-        Ask a question to the community
-      </p>
+      <p class="dark:text-white w-1/3 text-center">Ask a question to the community</p>
     </Box>
   {/each}
 </div>

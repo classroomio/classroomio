@@ -133,7 +133,9 @@
 </script>
 
 <svelte:head>
-  {$currentOrg.name}
+  <title>
+    {$currentOrg.name}'s Landing Page
+  </title>
 </svelte:head>
 
 <main>
@@ -148,7 +150,7 @@
           class="md:w-11/12 lg:w-5/6 w-full flex items-center justify-between flex-col-reverse md:flex-row z-20 relative"
         >
           <!-- Course Description -->
-          <div class="md:w-2/5 w-11/12 py-10 flex flex-col items-start">
+          <div class="md:w-2/5 w-11/12 py-10 flex flex-col items-start mr-3">
             <p class=" text-blue-600 text-2xl font-semibold">Coding Dojo</p>
             <h1 class="text-4xl md:text-5xl lg:text-6xl my-4 font-bold">
               Web Developement Courses for <br /><span class="text-blue-600">Everyone</span>
@@ -164,7 +166,7 @@
               onClick={() => goto('#contact')}
             />
           </div>
-          <div class="w-4/6 md:w-2/3 md:max-w-[650px] flex">
+          <div class="w-4/6 md:w-1/2 md:max-w-[650px] flex">
             <video class="w-full rounded-xl" controls loop autoplay>
               <source src={video} type="video/mp4" />
               <!-- <source src="/path/to/video.webm" type="video/webm" /> -->

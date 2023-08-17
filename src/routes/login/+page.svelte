@@ -5,6 +5,7 @@
   import { authValidation } from '$lib/utils/functions/validator';
   import { LOGIN_FIELDS } from '$lib/utils/constants/authentication';
   import AuthUI from '$lib/components/AuthUI/index.svelte';
+  import { currentOrg } from '$lib/utils/store/org';
 
   let formRef;
   let supabase = getSupabase();
@@ -39,7 +40,7 @@
 </script>
 
 <svelte:head>
-  <title>Welcome back to ClassroomIO</title>
+  <title>Welcome back to {$currentOrg.name ?? 'ClassroomIO'}</title>
 </svelte:head>
 
 <AuthUI {supabase} isLogin={true} {handleSubmit} isLoading={loading} bind:formRef>

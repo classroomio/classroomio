@@ -47,7 +47,7 @@
   ];
 </script>
 
-<aside class=" root bg-gray-100 dark:bg-gray-700 h-full">
+<aside class="w-[250px] min-w-[250px] bg-gray-100 dark:bg-gray-700 h-full">
   <div class="h-full flex flex-col">
     <div class="border-b border-gray-200 pt-5 px-4">
       {#if $currentOrg.avatar_url}
@@ -109,9 +109,3 @@
     </ul>
   </div>
 </aside>
-
-<style>
-  .root {
-    width: 250px;
-  }
-</style>
