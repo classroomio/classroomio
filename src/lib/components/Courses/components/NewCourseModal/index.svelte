@@ -81,7 +81,7 @@
 </script>
 
 <svelte:head>
-  <title>Courses - ClassroomIO</title>
+  <title>Create a new course</title>
 </svelte:head>
 
 <Modal

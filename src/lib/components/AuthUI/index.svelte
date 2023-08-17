@@ -2,6 +2,8 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import GoogleIconColored from '../Icons/GoogleIconColored.svelte';
+  import Avatar from '$lib/components/Avatar/index.svelte';
+  import { currentOrg } from '$lib/utils/store/org';
 
   export let supabase;
   export let handleSubmit;
@@ -34,9 +36,17 @@
   <div class="container border border-gray bg-white dark:bg-gray-800">
     <div class="flex items-center flex-col p-2 lg:px-8 lg:py-3">
       {#if !showOnlyContent || showLogo}
-        <div class="flex items-center w-full justify-center pt-4">
-          <img src="/logo-192.png" alt="ClassroomIO logo" height="50" width="50" data-atf="1" />
-          <h4 class="dark:text-white text-xl">ClassroomIO</h4>
+        <div class="flex flex-col items-center w-full justify-center pt-2">
+          <Avatar
+            src={$currentOrg.avatar_url ? $currentOrg.avatar_url : '/logo-192.png'}
+            name={$currentOrg.name ? $currentOrg.name : 'ClassroomIO'}
+            shape="rounded-md"
+            width="w-10"
+            height="h-10"
+          />
+          <h4 class="dark:text-white text-xl mt-1">
+            {$currentOrg.name ? $currentOrg.name : 'ClassroomIO'}
+          </h4>
         </div>
       {/if}
       <form

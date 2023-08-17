@@ -31,7 +31,6 @@
   import { course } from '$lib/components/Course/store';
   import * as CONSTANTS from './constants';
   import { fetchLesson } from '$lib/utils/services/courses';
-  import type { LessonPage } from '$lib/utils/types';
 
   export let mode = MODES.view;
   export let prevMode = '';
