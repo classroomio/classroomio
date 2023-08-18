@@ -11,7 +11,6 @@
   import ChevronLeftIcon from 'carbon-icons-svelte/lib/ChevronLeft.svelte';
   import ChevronRightIcon from 'carbon-icons-svelte/lib/ChevronRight.svelte';
   import NavExpandable from './NavExpandable.svelte';
-  import PageNav from '$lib/components/PageNav/index.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   // import Avatar from '$lib/components/Avatar/index.svelte';
   import { getNavItemRoute, getLessonsRoute, getLectureNo } from '$lib/components/Course/function';
@@ -23,7 +22,6 @@
   import { lessons } from '../Lesson/store/lessons';
   import { course } from '$lib/components/Course/store';
   import { updateCourse } from '$lib/utils/services/courses';
-  import { profile } from '$lib/utils/store/user';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
   import { isMobile } from '$lib/utils/store/useMobile';
 

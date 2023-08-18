@@ -32,19 +32,20 @@
   }
 </script>
 
-<div class="w-full min-h-screen flex items-center justify-center mt-4">
+<div class="w-full min-h-screen flex items-center justify-center">
   <div class="container border border-gray bg-white dark:bg-gray-800">
     <div class="flex items-center flex-col p-2 lg:px-8 lg:py-3">
       {#if !showOnlyContent || showLogo}
-        <div class="flex flex-col items-center w-full justify-center pt-2">
+        <div class="flex items-center justify-center w-full pt-2">
           <Avatar
             src={$currentOrg.avatar_url ? $currentOrg.avatar_url : '/logo-192.png'}
             name={$currentOrg.name ? $currentOrg.name : 'ClassroomIO'}
             shape="rounded-md"
             width="w-10"
             height="h-10"
+            className="mr-2"
           />
-          <h4 class="dark:text-white text-xl mt-1">
+          <h4 class="dark:text-white text-xl">
             {$currentOrg.name ? $currentOrg.name : 'ClassroomIO'}
           </h4>
         </div>
