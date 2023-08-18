@@ -283,7 +283,7 @@
           isOrgSite={data.isOrgSite}
           logo={data.isOrgSite ? $currentOrg.avatar_url : undefined}
           orgName={data.isOrgSite ? $currentOrg.name : undefined}
-          disableLogin={false}
+          disableSignup={false}
         />
       {/if}
     {/if}
@@ -322,7 +322,7 @@
 
 <style>
   main {
-    background: radial-gradient(circle at 10% 20%, rgb(239, 246, 249) 0%, rgb(206, 239, 253) 90%);
+    background-color: white;
     box-sizing: border-box;
   }
 

@@ -1,6 +1,5 @@
 <script lang="ts">
   import { useCompletion } from 'ai/svelte';
-  import merge from 'lodash/merge';
   import MODES from '$lib/utils/constants/mode.js';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
@@ -30,12 +29,14 @@
   import VideoUploader from '$lib/components/Course/components/Lesson/Materials/Video/Index.svelte';
   import { course } from '$lib/components/Course/store';
   import * as CONSTANTS from './constants';
-  import { fetchLesson } from '$lib/utils/services/courses';
 
   export let mode = MODES.view;
   export let prevMode = '';
   export let lessonId = '';
+  export let isSaving = false;
 
+  let initAutoSave = false;
+  let timeoutId: NodeJS.Timeout;
   let tabs = CONSTANTS.tabs;
   let currentTab = tabs[0].value;
   let errors = {};
@@ -51,18 +52,14 @@
     () =>
       (currentTab = tab);
 
-  // problem: after we save an uploaded video,
-  async function saveLesson() {
-    const { data } = await fetchLesson(lessonId);
-    if (data?.videos?.length === $lesson.materials.videos.length) {
-      const materials = merge(data, $lesson.materials);
-
-      lesson.update((l) => ({
-        ...l,
-        materials
-      }));
-    }
-    handleUpdateLessonMaterials($lesson, lessonId);
+  async function saveLesson(materials = undefined) {
+    const _lesson = !!materials
+      ? {
+          ...$lesson,
+          materials
+        }
+      : $lesson;
+    handleUpdateLessonMaterials(_lesson, lessonId);
   }
 
   function handleSave(prevMode: string) {
@@ -132,11 +129,37 @@
     window.players = players;
   }
 
+  function autoSave(updatedMaterials) {
+    if (timeoutId) clearTimeout(timeoutId);
+
+    if (!initAutoSave) {
+      initAutoSave = true;
+      return;
+    }
+
+    isSaving = true;
+    timeoutId = setTimeout(async () => {
+      await saveLesson(updatedMaterials);
+
+      isSaving = false;
+    }, 1500);
+  }
+
+  function handleInputChange() {
+    $isLessonDirty = true;
+  }
+
+  function onLessonIdChange() {
+    initAutoSave = false;
+  }
+
   const onClose = () => {
-    saveLesson();
     $uploadCourseVideoStore.isModalOpen = false;
-    $uploadCourseVideoStore.formRes = null;
   };
+
+  $: autoSave($lesson.materials);
+
+  $: onLessonIdChange(lessonId);
 
   $: handleSave(prevMode);
 
@@ -153,7 +176,7 @@
   width="w-4/5 h-[566px]"
   modalHeading="Add a Video"
 >
-  <VideoUploader {lessonId} {saveLesson} />
+  <VideoUploader {lessonId} />
 </Modal>
 
 <Tabs {tabs} {currentTab} {onChange}>
@@ -164,11 +187,11 @@
           writeLabel="Note"
           bind:value={$lesson.materials.note}
           placeholder="Start typing your lesson"
-          onInputChange={() => ($isLessonDirty = true)}
+          on:change={handleInputChange}
           bind:textareaRef
           bind:buttonRef={aiButtonRef}
         >
-          <div slot="buttons">
+          <div slot="buttons" class="flex items-center">
             <PrimaryButton
               className="flex items-center relative"
               onClick={() => {
@@ -179,7 +202,7 @@
               variant={VARIANTS.OUTLINED}
             >
               <MachineLearningModel size={20} class="carbon-icon mr-3" />
-              AI Assistant
+              AI
               <Popover
                 caret
                 align="left"
@@ -226,7 +249,7 @@
         <TextField
           label="Slide link"
           bind:value={$lesson.materials.slide_url}
-          onChange={() => ($isLessonDirty = true)}
+          onInputChange={handleInputChange}
         />
       {:else if $lesson.materials.slide_url}
         <iframe
@@ -312,11 +335,12 @@
         <Box>
           <img src="/no-video.svg" alt="Video not found" />
           <h3 class="text-xl font-normal dark:text-white py-2">
-            No youtube video added for this lesson yet
+            No video added for this lesson yet
           </h3>
           <p class="text-sm text-center font-normal py-2">
-            Share your knowledge with the world by creating engaging lessons.<br />
-            Start by clicking on New Lesson button.
+            Share videos with your students and get auto transcription and in video search out of
+            the box.<br />
+            Start by clicking on Add Video button.
           </p>
           <PrimaryButton label="Add Video" className="rounded-md" onClick={openAddVideoModal} />
         </Box>
