@@ -5,6 +5,7 @@
   import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants.js';
+  import { Loading } from 'carbon-components-svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
   import PageBody from '$lib/components/PageBody/index.svelte';
@@ -12,11 +13,12 @@
   import Exercises from '$lib/components/Course/components/Lesson/Exercises/index.svelte';
   import MODES from '$lib/utils/constants/mode.js';
   import { setCourse, course } from '$lib/components/Course/store';
+  import Download from 'carbon-icons-svelte/lib/Download.svelte';
+
   import {
     lesson,
     lessons,
-    handleSaveLesson,
-    uploadCourseVideoStore
+    handleSaveLesson
   } from '$lib/components/Course/components/Lesson/store/lessons';
   import { browser } from '$app/environment';
   import { currentOrg } from '$lib/utils/store/org';
@@ -25,8 +27,6 @@
 
   export let data;
 
-  export let form;
-
   let path = '';
   let mode = MODES.view;
   let prevMode = '';
@@ -34,6 +34,7 @@
   let isFetching = false;
   let isMarkingComplete = false;
   let isLoading = false;
+  let isSaving = false;
 
   function getLessonOrder(id) {
     const index = $lessons.findIndex((lesson) => lesson.id === id);
@@ -153,8 +154,6 @@
     mode = MODES.view;
     fetchReqData(data.lessonId);
   }
-
-  $: $uploadCourseVideoStore.formRes = form;
 </script>
 
 <CourseContainer {isFetching} {path} isExercisePage={!data.isMaterialsTabActive && data.exerciseId}>
@@ -179,17 +178,22 @@
           <div class="flex items-center">
             <PrimaryButton
               className="mr-2"
-              label="Download PDF"
               variant={VARIANTS.OUTLINED}
               onClick={downloadLesson}
               {isLoading}
-            />
-            <PrimaryButton
-              className="mr-2"
-              label={mode === MODES.edit ? 'Save' : 'Edit'}
-              variant={VARIANTS.OUTLINED}
-              onClick={toggleMode}
-            />
+            >
+              <Download size={16} class="mr-2" />
+              Download PDF
+            </PrimaryButton>
+
+            <PrimaryButton className="mr-2" variant={VARIANTS.OUTLINED} onClick={toggleMode}>
+              {#if isSaving}
+                <Loading withOverlay={false} small />
+                <span class="text-sm ml-2 italic">Autosaving...</span>
+              {:else}
+                {mode === MODES.edit ? 'Done' : 'Edit'}
+              {/if}
+            </PrimaryButton>
           </div>
         {/if}
       </RoleBasedSecurity>
@@ -200,7 +204,7 @@
     <Exercises lessonId={data.lessonId} exerciseId={data.exerciseId} path={`${path}/exercises`} />
   {:else if !!data.lessonId}
     <PageBody>
-      <Materials lessonId={data.lessonId} {mode} {prevMode} />
+      <Materials lessonId={data.lessonId} {mode} {prevMode} bind:isSaving />
 
       <div class="w-full flex flex-row-reverse">
         <PrimaryButton

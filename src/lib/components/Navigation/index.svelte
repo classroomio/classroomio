@@ -6,7 +6,7 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
 
-  export let disableLogin;
+  export let disableSignup = false;
   export let logo;
   export let orgName;
   export let isOrgSite = false;
@@ -60,12 +60,21 @@
       {/if}
     {:else}
       <li>
-        {#if !disableLogin}
+        <div class="flex">
+          <PrimaryButton
+            label="Login"
+            variant={VARIANTS.TEXT}
+            onClick={() => goto('/login' + redirect)}
+          />
+        </div>
+      </li>
+      <li>
+        {#if !disableSignup}
           <div class="flex">
             <PrimaryButton
-              label="Login"
-              variant={VARIANTS.TEXT}
-              onClick={() => goto('/login' + redirect)}
+              label="Signup"
+              variant={VARIANTS.CONTAINED}
+              onClick={() => goto('/signup' + redirect)}
             />
           </div>
         {/if}

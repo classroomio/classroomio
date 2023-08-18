@@ -6,11 +6,9 @@
     deleteLessonVideo,
     uploadCourseVideoStore
   } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { enhance } from '$app/forms';
   import { Moon } from 'svelte-loading-spinners';
 
   export let lessonId = '';
-  export let saveLesson = () => {};
 
   let formRes;
   let isLoaded = false;
@@ -18,6 +16,15 @@
   let submit;
   let uploadedFileUrl = '';
   let isLoading = false;
+  let timeoutkey;
+
+  const uploadingTexts = [
+    'Sending your video to our server...',
+    'Generating a link to your video...',
+    'Generating transcription for your video...',
+    'Wrapping things up'
+  ];
+  let uploadingLoadingText = uploadingTexts[0];
 
   function isVideoAdded(link) {
     return $lesson.materials?.videos?.find((v) => v.link === link);
@@ -27,10 +34,8 @@
     isLoading = true;
     if (!fileInput) return;
 
-    console.log('file', fileInput.files[0]);
     const formData = new FormData();
     formData.append('videoFile', fileInput.files[0]);
-    console.log('formData', formData);
 
     try {
       const response = await axios({
@@ -68,16 +73,35 @@
         {
           type: 'muse',
           link: uploadedFileUrl,
-          metadata: {}
+          metadata: response?.metadata || {}
         }
       ];
-      saveLesson();
     }
   }
 
   function tryAgain() {
     formRes = null;
     isLoaded = false;
+    isLoading = false;
+  }
+
+  $: {
+    if (isLoading) {
+      timeoutkey = setTimeout(() => {
+        console.log('timeout');
+        const i = uploadingTexts.findIndex((text) => text === uploadingLoadingText);
+        const next = uploadingTexts[i + 1];
+
+        if (next) {
+          console.log('uploadingLoadingText', next);
+          uploadingLoadingText = next;
+        }
+      }, 5000);
+    } else if (timeoutkey) {
+      console.log('clearTimeout');
+      clearTimeout(timeoutkey);
+      uploadingLoadingText = uploadingTexts[0];
+    }
   }
 
   $: isDoneUploading(formRes);
@@ -96,7 +120,7 @@
     >
       {#if isLoading}
         <Moon size="40" color="#1d4ed8" unit="px" duration="1s" />
-        <p class="mt-5">Uploading Video</p>
+        <p class="mt-5">{uploadingLoadingText}</p>
       {:else}
         <img src="/upload-video.svg" alt="upload" />
         <span class="pt-3">

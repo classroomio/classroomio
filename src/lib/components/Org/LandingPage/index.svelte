@@ -141,7 +141,7 @@
 <main>
   <!-- Header Section -->
   <header id="header" class="banner w-full h-[80vh] mb-10 relative">
-    <Navigation logo={$currentOrg.avatar_url} orgName={$currentOrg.name} disableLogin={false} />
+    <Navigation logo={$currentOrg.avatar_url} orgName={$currentOrg.name} disableSignup={true} />
     <div class="absolute h-[80vh] top-0 w-full opacity-80 z-10 bg-white" />
 
     {#if video}
