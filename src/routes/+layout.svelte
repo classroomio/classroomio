@@ -322,7 +322,7 @@
 
 <style>
   main {
-    background-color: #fafbfc;
+    background: radial-gradient(circle at 10% 20%, rgb(239, 246, 249) 0%, rgb(206, 239, 253) 90%);
     box-sizing: border-box;
   }
 
@@ -342,10 +342,15 @@
     --main-primary-color: rgba(29, 78, 216, 1);
     --border-color: #eaecef;
     --app-background-color: #fafbfc;
+    --app-background: radial-gradient(
+      circle at 10% 20%,
+      rgb(239, 246, 249) 0%,
+      rgb(206, 239, 253) 90%
+    );
   }
 
-  :global(.app-background-color) {
-    background-color: var(--app-background-color);
+  :global(.app-background) {
+    background: var(--app-background);
   }
 
   :global(.bx--data-table-container) {
