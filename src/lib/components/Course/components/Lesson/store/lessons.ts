@@ -4,8 +4,7 @@ import { createLesson, updateLesson, deleteLesson } from '$lib/utils/services/co
 import type { Lesson, Course, LessonPage } from '$lib/utils/types';
 
 export const uploadCourseVideoStore = writable({
-  isModalOpen: false,
-  formRes: null
+  isModalOpen: false
 });
 
 export const lessons: Writable<Lesson[]> = writable([]);
@@ -14,6 +13,7 @@ export const lesson = writable<LessonPage>({
   id: null,
   totalExercises: 0,
   is_complete: false,
+  isSaving: false,
   materials: {
     note: '',
     slide_url: '',
@@ -104,14 +104,11 @@ export async function handleUpdateLessonMaterials(lesson: any, lessonId: Lesson[
 }
 
 export const deleteLessonVideo = (index: any) => {
-  lesson.update((currentLesson) => {
-    const videos = currentLesson.materials.videos || [];
-    return {
-      ...currentLesson,
-      materials: {
-        ...currentLesson.materials,
-        videos: videos?.filter((video, i) => i !== index)
-      }
-    };
-  });
+  lesson.update((currentLesson) => ({
+    ...currentLesson,
+    materials: {
+      ...currentLesson.materials,
+      videos: currentLesson.materials.videos.filter((video, i) => i !== index)
+    }
+  }));
 };

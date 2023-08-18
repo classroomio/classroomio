@@ -144,6 +144,7 @@ export interface LessonPage {
   id?: string | null;
   totalExercises: Number;
   is_complete: Boolean;
+  isSaving: Boolean;
   materials: {
     note: string;
     slide_url: string;

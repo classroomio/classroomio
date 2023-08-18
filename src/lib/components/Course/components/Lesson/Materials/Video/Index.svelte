@@ -4,7 +4,6 @@
   import * as CONSTANTS from './constants';
 
   export let lessonId = '';
-  export let saveLesson = () => {};
 
   let tabs = CONSTANTS.videoTabs;
   let currentTab = tabs[0].value;
@@ -37,7 +36,7 @@
     {#if currentTab === 1}
       <YoutubeVideo />
     {:else}
-      <LocalVideo {lessonId} {saveLesson} />
+      <LocalVideo {lessonId} />
     {/if}
   </main>
 </section>
