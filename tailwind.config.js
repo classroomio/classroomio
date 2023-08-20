@@ -3,7 +3,7 @@ export default {
   darkMode: 'class',
   content: ['./src/**/*.{html,js,svelte,ts}'],
   theme: {
-    extend: {},
+    extend: {}
   },
-  plugins: [require('@tailwindcss/typography'), require('@tailwindcss/forms')],
+  plugins: [require('@tailwindcss/typography'), require('@tailwindcss/forms')]
 };
