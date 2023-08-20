@@ -351,7 +351,7 @@
         {#each allThemes as _theme}
           <div
             class="theme rounded-md w-full border cursor-pointer mb-5 relative {$quizStore.theme ===
-              _theme.id && 'border-blue-700'}"
+              _theme.id && 'border-primary-700'}"
           >
             {#if $quizStore.theme === _theme.id}
               <CheckmarkFilledIcon

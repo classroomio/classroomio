@@ -68,7 +68,7 @@
           height="h-7"
         />
       {:else if $currentOrg.shortName}
-        <TextChip value={$currentOrg.shortName} className="bg-blue-200 font-bold" />
+        <TextChip value={$currentOrg.shortName} className="bg-primary-200 font-bold" />
       {/if}
 
       <OrgSelector />
@@ -77,7 +77,7 @@
         {#each menuItems as menuItem}
           <a href="{$currentOrgPath}{menuItem.path}" class="text-black no-underline">
             <li
-              class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 {isActive(
+              class="flex items-center py-3 px-4 mb-2 rounded hover:bg-primary-200 dark:hover:bg-gray-700 {isActive(
                 $page.url.pathname,
                 `${$currentOrgPath}${menuItem.path}`
               ) && NavClasses.active}"
@@ -107,16 +107,14 @@
     <span class="flex-grow" />
     <ul class="my-5 pb-5 px-4">
       <a href={$currentOrgPath} class="text-black no-underline">
-        <li
-          class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-800"
-        >
+        <li class="flex items-center py-3 px-4 mb-2 rounded">
           <HelpIcon size={20} class="carbon-icon dark:text-white" />
           <p class="dark:text-white ml-2">Help</p>
         </li>
       </a>
       <a href="{$currentOrgPath}/settings" class="text-black no-underline">
         <li
-          class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 {isActive(
+          class="flex items-center py-3 px-4 mb-2 rounded {isActive(
             $page.url.pathname,
             `${$currentOrgPath}/settings`
           ) && NavClasses.active}"

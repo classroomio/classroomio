@@ -29,6 +29,7 @@
   import { course, setCourse, group } from '$lib/components/Course/store';
   import PageBody from '$lib/components/PageBody/index.svelte';
   import TextChip from '$lib/components/Chip/Text.svelte';
+  import Avatar from '$lib/components/Apps/components/Poll/components/Avatar.svelte';
 
   export let data;
   const { courseId } = data;
@@ -143,7 +144,7 @@
               value={getLessonOrder(lesson.id)}
               size="sm"
               shape="rounded-full"
-              className="bg-blue-200 text-blue-600 text-xs"
+              className="bg-primary-200 text-primary-600 text-xs"
             />
           </div>
 
@@ -186,12 +187,10 @@
                   <p class="dark:text-white ml-2 text-sm mb-3">No tutor added</p>
                 {:else}
                   <a href="." class="flex items-center hover:underline mb-2">
-                    <img
-                      alt="Placeholder"
-                      class="block rounded-full"
-                      width="24"
-                      height="20"
+                    <Avatar
+                      className="w-6 h-6"
                       src={lesson.profile.avatar_url}
+                      name="Avatar placeholder"
                     />
                     <p class="dark:text-white ml-2 text-sm">
                       {lesson.profile.fullname}
@@ -231,7 +230,7 @@
                   <div class="flex">
                     <Video size={20} class="carbon-icon text-gray-400 dark:text-white ml-0.5" />
                     <a
-                      class="text-sm ml-2 text-blue-600"
+                      class="text-sm ml-2 text-primary-600"
                       href={lesson.call_url || '#'}
                       target="_blank"
                     >

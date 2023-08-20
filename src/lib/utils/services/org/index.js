@@ -58,6 +58,7 @@ export async function getOrganizations(userId) {
         id,
         name,
         siteName,
+        theme,
         avatar_url
       )
     `
@@ -72,6 +73,7 @@ export async function getOrganizations(userId) {
         name: orgMember?.organization?.name,
         shortName: orgMember?.organization?.name?.substring(0, 2)?.toUpperCase() || '',
         siteName: orgMember?.organization?.siteName,
+        theme: orgMember?.organization?.theme,
         avatar_url: orgMember?.organization?.avatar_url,
         memberId: orgMember?.id
       });
@@ -155,7 +157,7 @@ export async function getCourseBySiteName(siteName) {
   return data;
 }
 
-export async function getCurrentOrg(siteName) {
+export async function getCurrentOrg(siteName, justGet = false) {
   const { data, error } = await supabase
     .from('organization')
     .select(
@@ -163,15 +165,20 @@ export async function getCurrentOrg(siteName) {
       id,
       name,
       siteName,
+      theme,
       avatar_url
     `
     )
     .eq('siteName', siteName);
 
-  if (error || isEmpty(data)) {
+  if (!justGet && (error || isEmpty(data))) {
     console.error('Error getOrganization', error);
     return goto('/404');
   }
 
-  currentOrg.set(data[0]);
+  if (!justGet) {
+    currentOrg.set(data[0]);
+  } else {
+    return data[0];
+  }
 }

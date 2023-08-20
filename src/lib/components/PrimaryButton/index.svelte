@@ -23,7 +23,7 @@
     isLoading ? VARIANTS.OUTLINED : variant
   ]} {!disablePadding &&
     'py-[0.60rem] px-6'} rounded-md {className} w-fit justify-center sm:w-auto {isLoading &&
-    'py-[0.60rem] border-blue-700'} {variant !== VARIANTS.TEXT &&
+    'py-[0.60rem] border-primary-700'} {variant !== VARIANTS.TEXT &&
     'hover:shadow-xl'} transition delay-150 duration-300 ease-in-out {variant !==
   VARIANTS.CONTAINED_WHITE
     ? 'dark:text-white'

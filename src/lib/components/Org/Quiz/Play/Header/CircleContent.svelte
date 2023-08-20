@@ -12,18 +12,18 @@
       css: (t) => `
 				${slideTrans.css(t)}
 				opacity: ${t};
-			`,
+			`
     };
   }
 </script>
 
 <div class="circle flex items-center flex-col justify-center {className}">
   {#key value}
-    <h3 class="text-blue-600" transition:fadeSlide={{ duration: 500 }}>
+    <h3 class="text-primary-600" transition:fadeSlide={{ duration: 500 }}>
       {value}
     </h3>
   {/key}
-  <p class="text-blue-600 text-md">{label}</p>
+  <p class="text-primary-600 text-md">{label}</p>
 </div>
 
 <style>

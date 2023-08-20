@@ -9,7 +9,7 @@
   export let textAreaHeight = '';
   export let textareaRef;
   export let buttonRef;
-  const activeClassName = 'border-b-2 border-blue-700';
+  const activeClassName = 'border-b-2 border-primary-700';
 
   const handleTabClick = (tab) => () => {
     isWriteMode = tab === 1;
@@ -76,7 +76,7 @@
         Styling with Markdown is supported.
         <a
           target="_blank"
-          class="text-blue-500 underline"
+          class="text-primary-500 underline"
           href="https://guides.github.com/features/mastering-markdown"
         >
           Learn more
