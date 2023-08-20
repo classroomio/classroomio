@@ -24,13 +24,13 @@
 
 <div class="">
   <button
-    class="item relative flex items-center py-3 px-4 ml-2 mb-1 rounded hover:opacity-80 dark:hover:bg-gray-700 {isGroupActive &&
+    class="item relative flex items-center py-3 px-4 ml-2 mb-1 rounded hover:bg-gray-200 hover:text-black {isGroupActive &&
       NavClasses.active} w-[95%]"
     tabindex="0"
     on:click={onClick}
   >
     <NavIcons name={label} />
-    <span class="dark:text-white font-bold text-md">{label}</span>
+    <span class="font-bold text-md">{label}</span>
     {#if total}
       <span class="ml-1">({total})</span>
     {/if}
