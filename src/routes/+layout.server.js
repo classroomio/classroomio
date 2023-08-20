@@ -1,8 +1,9 @@
 // import { redirect } from '@sveltejs/kit';
 import { blockedSubdomain } from '$lib/utils/constants/app';
+import { getCurrentOrg } from '$lib/utils/services/org';
 
 /** @type {import('./$types').LayoutServerLoad} */
-export const load = ({ url, cookies }) => {
+export const load = async ({ url, cookies }) => {
   // if (url.hostname === 'classroomio.com') {
   //   throw redirect(301, 'https://about.classroomio.com');
   // }
@@ -10,7 +11,8 @@ export const load = ({ url, cookies }) => {
   let response = {
     orgSiteName: '',
     isOrgSite: false,
-    skipAuth: false
+    skipAuth: false,
+    org: {}
   };
 
   const debugOrgLandingPage = cookies.get('debugOrgLandingPage');
@@ -26,6 +28,7 @@ export const load = ({ url, cookies }) => {
 
     response.isOrgSite = debugMode || answer;
     response.orgSiteName = debugMode ? 'codingdojo' : subdomain;
+    response.org = await getCurrentOrg(response.orgSiteName, true);
   } else if (subdomain === 'play' || debugPlay === 'true') {
     response.skipAuth = true;
   }

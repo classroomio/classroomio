@@ -203,7 +203,7 @@
                     >
                       <TextChip
                         value={getLectureNo(index + 1)}
-                        className="bg-blue-200 text-blue-600 text-xs mr-2"
+                        className="bg-primary-200 text-primary-600 text-xs mr-2"
                         size="sm"
                         shape="rounded-full"
                       />

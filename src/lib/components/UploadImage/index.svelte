@@ -39,7 +39,7 @@
   </div>
 
   <button
-    class="width-fit text-blue-700 flex items-center cursor-pointer text-sm mt-3"
+    class="width-fit text-primary-700 flex items-center cursor-pointer text-sm mt-3"
     on:click={() => {
       fileinput.click();
     }}

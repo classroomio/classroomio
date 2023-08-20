@@ -1,6 +1,6 @@
 <script>
   // import
-  //   border border-gray-300 rounded-md p-3 bg-blue-200 bg-opacity-25
+  //   border border-gray-300 rounded-md p-3 bg-primary-200 bg-opacity-25
   export let width = 'max-w-4xl w-full lg:w-11/12';
   export let padding = 'pb-5 px-4';
   export let className = '';

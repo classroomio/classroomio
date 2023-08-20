@@ -151,9 +151,9 @@
         >
           <!-- Course Description -->
           <div class="md:w-2/5 w-11/12 py-10 flex flex-col items-start mr-3">
-            <p class=" text-blue-600 text-2xl font-semibold">Coding Dojo</p>
+            <p class=" text-primary-600 text-2xl font-semibold">Coding Dojo</p>
             <h1 class="text-4xl md:text-5xl lg:text-6xl my-4 font-bold">
-              Web Developement Courses for <br /><span class="text-blue-600">Everyone</span>
+              Web Developement Courses for <br /><span class="text-primary-600">Everyone</span>
             </h1>
             <p class="text-md mb-6 text-xl">
               Practical project-based courses that are easy to understand and straight to the point
@@ -179,9 +179,9 @@
     {:else}
       <div class="w-full h-full flex items-center justify-center md:flex-row z-20 relative">
         <div class="max-w-[600px] mx-auto w-11/12 py-10 flex flex-col items-center">
-          <p class=" text-blue-600 text-2xl font-semibold">Coding Dojo</p>
+          <p class=" text-primary-600 text-2xl font-semibold">Coding Dojo</p>
           <h1 class="text-4xl md:text-6xl text-center my-4 font-bold">
-            Web Developement Courses for <br /><span class="text-blue-600">Everyone</span>
+            Web Developement Courses for <br /><span class="text-primary-600">Everyone</span>
           </h1>
           <p class="text-md mb-6 text-center text-xl">
             Practical project-based courses that are easy to understand and straight to the point
@@ -227,7 +227,7 @@
     <div class="w-full">
       <div class="max-w-[500px] mx-auto w-11/12 py-10">
         <h1 class="text-5xl text-center my-4 font-bold">
-          Explore our <span class="text-blue-600">Courses</span>
+          Explore our <span class="text-primary-600">Courses</span>
         </h1>
         <p class="text-md text-center">
           Find courses you will love from best teachers all over the world🌎.
@@ -297,11 +297,11 @@
   </section>
 
   <!-- Contact Section-->
-  <section id="contact" transition:fade class="my-10 w-full bg-blue-50">
+  <section id="contact" transition:fade class="my-10 w-full bg-primary-50">
     <div class="mx-auto max-w-6xl w-full">
       <div class="max-w-[500px] mx-auto w-11/12 py-10">
         <h1 class="text-5xl text-center my-4 font-bold">
-          Have you got any <span class="text-blue-600">Question?</span>
+          Have you got any <span class="text-primary-600">Question?</span>
         </h1>
         <p class="text-md text-center">Reach out to us with any question you might have.</p>
       </div>
@@ -393,7 +393,7 @@
   <!-- Waitlist Section -->
   <section id="waitlist" transition:fade class="my-10 mx-auto max-w-6xl w-[95%]">
     <div
-      class="bg-blue-700 rounded-lg flex flex-col lg:flex-row lg:items-center px-4 md:px-10 py-14"
+      class="bg-primary-700 rounded-lg flex flex-col lg:flex-row lg:items-center px-4 md:px-10 py-14"
     >
       <div class="w-full md:w-[65%] md:mr-4">
         <h1 class="text-4xl font-bold mb-5 mt-0 text-white">Join our mailing list</h1>
@@ -474,7 +474,7 @@
     </ul>
     <p class="text-center mt-5">
       Powered by
-      <a class="text-blue-600 underline" href="https://classroomio.com" target="_blank"
+      <a class="text-primary-600 underline" href="https://classroomio.com" target="_blank"
         >ClassroomIO</a
       >
     </p>

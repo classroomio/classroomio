@@ -39,16 +39,14 @@
         }
       });
     });
-    $questionnaire.questions = $questionnaire.questions.sort(
-      (a, b) => a.order - b.order
-    );
+    $questionnaire.questions = $questionnaire.questions.sort((a, b) => a.order - b.order);
     $questionnaireOrder.open = false;
   }
 
   $: items = filterOutDeleted($questionnaire.questions).map((q) => ({
     id: q.id,
     name: q.title,
-    type: q.question_type.id,
+    type: q.question_type.id
   }));
 </script>
 
@@ -64,8 +62,8 @@
       flipDurationMs,
       dropTargetStyle: {
         border: '2px #1d4ed8 solid',
-        'border-style': 'dashed',
-      },
+        'border-style': 'dashed'
+      }
     }}
     on:consider={handleDndConsider}
     on:finalize={handleDndFinalize}
@@ -74,7 +72,7 @@
     {#each items as item (item.id)}
       <div
         animate:flip={{ duration: flipDurationMs }}
-        class="flex items-center rounded-md p-4 border border-blue-600"
+        class="flex items-center rounded-md p-4 border border-primary-600"
       >
         {#if item.type === 1}
           <RadioButtonCheckedIcon size={16} class="carbon-icon active" />

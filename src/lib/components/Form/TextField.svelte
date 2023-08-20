@@ -11,7 +11,7 @@
   export let className = '';
   export let inputClassName = '';
   export let labelClassName = '';
-  export let bgColor = 'bg-gray-100 focus:bg-blue-50 dark:bg-white';
+  export let bgColor = 'bg-gray-100 focus:bg-primary-50 dark:bg-white';
   export let type = 'text';
   export let isPassword = false;
   export let autoFocus = false;
@@ -67,7 +67,7 @@
   {/if}
   <input
     use:typeAction
-    class="form-input border-l-0 border-r-0 border-t-0 border-b-2 border-gray-200 focus:border-l-0 focus:border-r-0 rounded-t-md focus:border-t-0 focus:border-b-2 focus:border-blue-600 {inputClassName} {focusClass} dark:text-black p-3 mt-1 block w-full {bgColor} {errorMessage
+    class="form-input border-l-0 border-r-0 border-t-0 border-b-2 border-gray-200 focus:border-l-0 focus:border-r-0 rounded-t-md focus:border-t-0 focus:border-b-2 focus:border-primary-600 {inputClassName} {focusClass} dark:text-black p-3 mt-1 block w-full {bgColor} {errorMessage
       ? 'border-red-600'
       : ''}"
     on:keydown={onKeyDown}

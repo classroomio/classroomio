@@ -158,13 +158,13 @@
         class="bg-slate-100 dark:bg-neutral-800 dark:border-2 dark:border-neutral-800"
       >
         <StructuredListRow head class="mx-7">
-          <StructuredListCell head class="text-blue-700 py-3 dark:text-white"
+          <StructuredListCell head class="text-primary-700 py-3 dark:text-white"
             >Name</StructuredListCell
           >
-          <StructuredListCell head class="text-blue-700 py-3 dark:text-white"
+          <StructuredListCell head class="text-primary-700 py-3 dark:text-white"
             >Role</StructuredListCell
           >
-          <StructuredListCell head class="text-blue-700 py-3 dark:text-white"
+          <StructuredListCell head class="text-primary-700 py-3 dark:text-white"
             >Action</StructuredListCell
           >
           <RoleBasedSecurity allowedRoles={[1, 2]}>
@@ -192,7 +192,7 @@
                       <p class="dark:text-white text-base font-normal">
                         {person.profile.fullname}
                       </p>
-                      <p class="text-xs text-blue-600">
+                      <p class="text-xs text-primary-600">
                         {getEmail(person)}
                       </p>
                     </div>
@@ -210,12 +210,12 @@
                 <div class="flex items-center w-2/4 absolute bottom-3">
                   <TextChip
                     value={person.email.substring(0, 2).toUpperCase()}
-                    className="bg-blue-200 text-black font-semibold text-xs mr-3"
+                    className="bg-primary-200 text-black font-semibold text-xs mr-3"
                     shape="rounded-full"
                   />
                   <a
                     href="mailto:{person.email}"
-                    class="text-md text-blue-600 mr-2 dark:text-white"
+                    class="text-md text-primary-600 mr-2 dark:text-white"
                   >
                     {person.email}
                   </a>
