@@ -132,7 +132,7 @@
         />
         <PrimaryButton
           className="px-6 py-3"
-          variant={VARIANTS.CONTAINED_DANGER}
+          variant={VARIANTS.CONTAINED}
           label={isDeleting ? 'Deleting...' : 'Yes, delete'}
           isDisabled={isDeleting}
           onClick={handleDelete}
@@ -168,7 +168,7 @@
       <div class="float-right">
         <PrimaryButton
           className="px-6 py-3"
-          variant={VARIANTS.CONTAINED_DANGER}
+          variant={VARIANTS.CONTAINED}
           label="Delete this exercise"
           onClick={() => (shouldDelete = true)}
         />

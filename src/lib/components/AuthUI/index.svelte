@@ -75,9 +75,11 @@
     {#if !showOnlyContent}
       <div class="w-full p-6 border-t border-grey text-center">
         {#if isLogin}
-          Not registered yet? <a class="hover:underline text-blue-700" href="/signup">Sign up</a>
+          Not registered yet? <a class="hover:underline text-primary-700" href="/signup">Sign up</a>
         {:else}
-          Already have an account? <a class="hover:underline text-blue-700" href="/login">Log In</a>
+          Already have an account? <a class="hover:underline text-primary-700" href="/login"
+            >Log In</a
+          >
         {/if}
       </div>
     {/if}

@@ -162,11 +162,11 @@
   <section class="my-5 mx-9">
     <StructuredList class="m-0">
       <!-- Moved the lesson headers outside the students loop -->
-      <StructuredListHead class="bg-blue-100">
+      <StructuredListHead class="bg-primary-100">
         <StructuredListRow head class="mx-7">
-          <StructuredListCell head class="text-blue-600 py-3">Student</StructuredListCell>
+          <StructuredListCell head class="text-primary-600 py-3">Student</StructuredListCell>
           {#each $lessons as lesson, index}
-            <StructuredListCell head class="text-blue-600 py-3"
+            <StructuredListCell head class="text-primary-600 py-3"
               >Lesson 0{getLectureNo(index + 1)}</StructuredListCell
             >
           {/each}

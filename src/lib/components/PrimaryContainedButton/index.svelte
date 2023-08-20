@@ -5,7 +5,7 @@
 </script>
 
 <a
-  class="root bg-blue-700 hover:bg-blue-900 text-white font-bold rounded inline-flex items-center float-right"
+  class="root bg-primary-700 hover:bg-primary-900 text-white font-bold rounded inline-flex items-center float-right"
   {href}
   on:click={handleClick}
 >

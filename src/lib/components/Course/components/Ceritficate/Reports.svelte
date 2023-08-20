@@ -8,7 +8,7 @@
     StructuredListRow,
     StructuredListCell,
     StructuredListBody,
-    Pagination,
+    Pagination
   } from 'carbon-components-svelte';
 
   let searchValue = '';
@@ -17,9 +17,7 @@
 
 <section class="flex flex-wrap items-start gap-2 mb-10 -ml-4 -mr-4">
   {#each CertificateReportData as data (data.id)}
-    <div
-      class="box flex flex-col rounded border border-gray-200 justify-center px-2 mb-5"
-    >
+    <div class="box flex flex-col rounded border border-gray-200 justify-center px-2 mb-5">
       <p class="text-xs font-normal">{data.title}</p>
       <bold class="text-2xl font-medium">{data.value}</bold>
     </div>
@@ -39,22 +37,18 @@
 
 <section class="mt-14 border-t border-gray-300">
   <StructuredList>
-    <StructuredListHead class="bg-blue-50 py-0">
+    <StructuredListHead class="bg-primary-50 py-0">
       <StructuredListRow head class="py-0">
         <StructuredListCell head class="py-0">
           <div
-            class="flex-3 flex flex-row items-center justify-start w-full text-blue-600 text-sm font-medium"
+            class="flex-3 flex flex-row items-center justify-start w-full text-primary-600 text-sm font-medium"
           >
             <Checkbox bind:checked />
-            <p class="text-blue-900 text-start w-full text-sm font-medium">
-              Name of student
-            </p>
+            <p class="text-primary-900 text-start w-full text-sm font-medium">Name of student</p>
           </div>
         </StructuredListCell>
         <StructuredListCell head class="py-0">
-          <div
-            class="flex-2 items-center w-full text-blue-900 text-sm font-medium"
-          >
+          <div class="flex-2 items-center w-full text-primary-900 text-sm font-medium">
             <p class="align-middle text-sm font-medium pt-1">Date issued</p>
             <p class="opacity-0">personalized</p>
           </div>
@@ -76,8 +70,8 @@
             <div class="flex-2 flex flex-row items-center gap-10 w-full">
               <p class="text-sm font-normal align-middle">{item.issued}</p>
               {#if item.peronalized == true}
-                <span class="text-center bg-blue-100 px-3 py-2 rounded-lg">
-                  <p class="opacity-100 text-xs text-blue-600">personalized</p>
+                <span class="text-center bg-primary-100 px-3 py-2 rounded-lg">
+                  <p class="opacity-100 text-xs text-primary-600">personalized</p>
                 </span>
               {:else}
                 <p class="opacity-0">personalized</p>

@@ -21,7 +21,7 @@
       ref.scrollIntoView({
         block: 'start',
         behavior: 'smooth',
-        inline: 'nearest',
+        inline: 'nearest'
       });
     }
   }
@@ -31,10 +31,10 @@
   bind:this={ref}
   class="bg-white dark:bg-gray-800 border {hasError
     ? 'border-red-700'
-    : 'border-gray hover:border-blue-700'} rounded-md mb-6 relative root"
+    : 'border-gray hover:border-primary-700'} rounded-md mb-6 relative root"
 >
   {#if isTitle}
-    <div class="title absolute bg-blue-700" />
+    <div class="title absolute bg-primary-700" />
   {/if}
 
   {#if onClose && !isTitle}

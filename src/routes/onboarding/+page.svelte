@@ -29,7 +29,7 @@
   let fields: OnboardingField = {
     fullname: '',
     orgName: '',
-    siteName: '',
+    siteName: ''
   };
   let errors: OnboardingField = {};
   let progress = 50;
@@ -40,39 +40,39 @@
   const educatorGoals: Goal[] = [
     {
       label: 'Sell courses online',
-      value: 'sell-online',
+      value: 'sell-online'
     },
     {
       label: 'Teach my current students online',
-      value: 'teach-online',
+      value: 'teach-online'
     },
     {
       label: 'On another platform, expanding here',
-      value: 'expanding-platform',
+      value: 'expanding-platform'
     },
     {
       label: 'Just here to explore',
-      value: 'explore',
-    },
+      value: 'explore'
+    }
   ];
 
   const sources = [
     {
       label: 'Articles',
-      value: 'articles',
+      value: 'articles'
     },
     {
       label: 'Search engine',
-      value: 'search-engine',
+      value: 'search-engine'
     },
     {
       label: 'Social media',
-      value: 'social-media',
+      value: 'social-media'
     },
     {
       label: 'Friends and family',
-      value: 'friends-family',
-    },
+      value: 'friends-family'
+    }
   ];
 
   async function setMetaData() {
@@ -121,7 +121,7 @@
         .from('organization')
         .insert({
           name: fields.orgName,
-          siteName: fields.siteName,
+          siteName: fields.siteName
         })
         .select();
       console.log('Create organisation', org);
@@ -139,7 +139,7 @@
           .insert({
             organization_id: orgData.id,
             profile_id: $profile.id,
-            role_id: 1,
+            role_id: 1
           })
           .select();
         console.log('Create organisation member', data);
@@ -150,10 +150,7 @@
             'Something went wrong while creating this organization. Please reload and try again';
 
           // Delete organization so it can be recreated.
-          await supabase
-            .from('organization')
-            .delete()
-            .match({ siteName: fields.siteName });
+          await supabase.from('organization').delete().match({ siteName: fields.siteName });
           loading = false;
           return;
         }
@@ -175,7 +172,7 @@
         .update({
           ...fields,
           orgName: undefined,
-          siteName: undefined,
+          siteName: undefined
         })
         .match({ id: $profile.id });
       loading = false;
@@ -205,13 +202,7 @@
       <!-- Header With Logo -->
       <div class="flex flex-col items-center">
         <div class="flex items-center w-full justify-center mb-4">
-          <img
-            src="/logo-192.png"
-            alt="ClassroomIO logo"
-            height="50"
-            width="50"
-            data-atf="1"
-          />
+          <img src="/logo-192.png" alt="ClassroomIO logo" height="50" width="50" data-atf="1" />
           <h4 class="dark:text-white text-xl">ClassroomIO</h4>
         </div>
 
@@ -273,21 +264,14 @@
           <div id="goal-question" class="flex items-center flex-col mb-6">
             <div class="w-10/12">
               <!-- Goal Question -->
-              <div
-                class="w-full flex items-start flex-col justify-between mb-10"
-              >
-                <label
-                  for="text-field"
-                  class="dark:text-white m-0 text-lg font-normal mb-3"
-                >
+              <div class="w-full flex items-start flex-col justify-between mb-10">
+                <label for="text-field" class="dark:text-white m-0 text-lg font-normal mb-3">
                   What brings you to ClassroomIO?
                 </label>
 
                 <!-- Loop through Goals -->
                 {#each educatorGoals as goal}
-                  <label
-                    class="dark:text-white w-full inline-flex items-center mb-1 font-light"
-                  >
+                  <label class="dark:text-white w-full inline-flex items-center mb-1 font-light">
                     <input
                       type="radio"
                       bind:group={fields.goal}
@@ -308,18 +292,13 @@
 
               <!-- Source Question -->
               <div class="w-full flex items-start flex-col justify-between">
-                <label
-                  for="text-field"
-                  class="dark:text-white m-0 text-lg font-normal mb-3"
-                >
+                <label for="text-field" class="dark:text-white m-0 text-lg font-normal mb-3">
                   How did you hear about us?
                 </label>
 
                 <!-- Loop through Goals -->
                 {#each sources as source}
-                  <label
-                    class="dark:text-white w-full inline-flex items-center mb-1 font-light"
-                  >
+                  <label class="dark:text-white w-full inline-flex items-center mb-1 font-light">
                     <input
                       type="radio"
                       bind:group={fields.source}
@@ -346,7 +325,7 @@
       <div class="flex justify-between items-center mt-8 w-full">
         <div class="w-24 h-2 bg-gray-300 relative">
           <span
-            class="progress absolute top-0 left-0 bg-blue-700 h-full"
+            class="progress absolute top-0 left-0 bg-primary-700 h-full"
             style="width: {progress}%;"
           />
         </div>
@@ -356,7 +335,7 @@
             <PrimaryButton
               label="Back"
               variant={VARIANTS.NONE}
-              className="py-3 px-6 mr-2 text-blue-700"
+              className="py-3 px-6 mr-2 text-primary-700"
               onClick={() => (step = step - 1)}
             />
           {/if}

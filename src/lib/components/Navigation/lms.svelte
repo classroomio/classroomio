@@ -11,7 +11,7 @@
 
   export let navClass = '';
 
-  function toggleTheme() {
+  function toggleDarkMode() {
     $appStore.isDark = !$appStore.isDark;
 
     toggleBodyByTheme($appStore.isDark);
@@ -21,7 +21,7 @@
   }
 </script>
 
-<nav class="{navClass} flex w-full p-2 md:px-6 bg-blue-600">
+<nav class="{navClass} flex w-full p-2 md:px-6 bg-primary-600">
   <ul class="flex w-full items-center">
     <div class="">
       <a href={$page.url.pathname} title="Go to ClassroomIO Home" id="logo" class="text-lg">
@@ -35,7 +35,7 @@
       <NotificationIcon size={20} class="text-white mr-2" />
     </li>
     <li>
-      <IconButton size="small" onClick={toggleTheme}>
+      <IconButton size="small" onClick={toggleDarkMode}>
         {#if $appStore.isDark}
           <SunIcon size={16} class="text-white" />
         {:else}

@@ -12,15 +12,12 @@
       ...m,
       open: false,
       id: null,
-      isQuestion: false,
+      isQuestion: false
     }));
   }
 
   async function deleteQuiz() {
-    const { data, error } = await supabase
-      .from('quiz')
-      .delete()
-      .match({ id: $deleteModal.id });
+    const { data, error } = await supabase.from('quiz').delete().match({ id: $deleteModal.id });
     console.log('data', data);
     console.log('error', error);
 
@@ -53,7 +50,7 @@
     <div class="mt-5">
       <PrimaryButton
         className="px-6 py-3"
-        variant={VARIANTS.CONTAINED_DANGER}
+        variant={VARIANTS.CONTAINED}
         label="Delete"
         onClick={() => {
           if ($deleteModal.isQuestion) {

@@ -13,15 +13,14 @@
 
 <div class="relative">
   <button
-    class="{disabled &&
-      'opacity-25'} flex items-center w-60 py-2 px-3 {hasDivider &&
-      'border-b border-gray-100'} {active && 'bg-blue-100 dark:bg-gray-500'}"
+    class="{disabled && 'opacity-25'} flex items-center w-60 py-2 px-3 {hasDivider &&
+      'border-b border-gray-100'} {active && 'bg-primary-100 dark:bg-gray-500'}"
     on:click={onClick}
   >
     {#if avatarText}
       <TextChip
         value={avatarText}
-        className="mr-2 bg-blue-200 font-bold dark:bg-gray-600"
+        className="mr-2 bg-primary-200 font-bold dark:bg-gray-600"
         {size}
       />
     {/if}
