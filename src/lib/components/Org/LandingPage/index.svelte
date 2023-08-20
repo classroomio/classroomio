@@ -145,7 +145,7 @@
     <div class="absolute h-[80vh] top-0 w-full opacity-80 z-10 bg-white" />
 
     {#if video}
-      <div class="flex items-center justify-center">
+      <div class="flex items-center justify-center h-full">
         <div
           class="md:w-11/12 lg:w-5/6 w-full flex items-center justify-between flex-col-reverse md:flex-row z-20 relative"
         >
