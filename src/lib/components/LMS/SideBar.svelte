@@ -68,7 +68,7 @@
         {#each sideLinks as item (item.name)}
           <a href={item.link} class="text-black">
             <li
-              class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-500 {isActive(
+              class="flex items-center py-3 px-4 mb-2 rounded hover:opacity-80 {isActive(
                 $page.url.pathname,
                 `${item.link}`
               ) && NavClasses.active}"
@@ -77,7 +77,7 @@
                 this={item.icon}
                 color={isActive($page.url.pathname, `${item.link}`) ? 'black' : 'gray'}
                 size={24}
-                class="carbon-icon text-white"
+                class="carbon-icon "
               />
               <p class="dark:text-white ml-2">{item.name}</p>
             </li>
@@ -95,7 +95,7 @@
       </a>
       <a href="/lms/settings" class="text-black">
         <li
-          class="flex items-center py-3 px-4 mb-2 rounded {isActive(
+          class="flex items-center py-3 px-4 mb-2 rounded hover:opacity-80 {isActive(
             $page.url.pathname,
             `/lms/settings`
           ) && NavClasses.active}"

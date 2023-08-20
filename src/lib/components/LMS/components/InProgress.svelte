@@ -38,7 +38,9 @@
                 {#if data.inProgress}
                   <div class="flex items-center gap-2">
                     <div class=" relative bg-[#EAEAEA] w-full h-1">
-                      <div class={`absolute top-0 left-0 bg-[#0233BD] h-full ${data.progress} ]`} />
+                      <div
+                        class={`absolute top-0 left-0 bg-primary-700 h-full ${data.progress} ]`}
+                      />
                     </div>
                     <p class="text-xs text-[#656565] dark:text-white">{data.progressRate}%</p>
                   </div>

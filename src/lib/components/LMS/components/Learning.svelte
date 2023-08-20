@@ -37,7 +37,7 @@
               />
             </span>
             <div class="relative bg-[#EAEAEA] w-full h-1">
-              <div class={`absolute top-0 left-0 bg-[#0233BD] h-full ${data.progress} ]`} />
+              <div class={`absolute top-0 left-0 bg-primary-700 h-full ${data.progress} ]`} />
             </div>
           </div>
         {/each}

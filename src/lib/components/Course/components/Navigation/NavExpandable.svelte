@@ -24,7 +24,7 @@
 
 <div class="">
   <button
-    class="item relative flex items-center py-3 px-4 ml-2 mb-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 {isGroupActive &&
+    class="item relative flex items-center py-3 px-4 ml-2 mb-1 rounded hover:opacity-80 dark:hover:bg-gray-700 {isGroupActive &&
       NavClasses.active} w-[95%]"
     tabindex="0"
     on:click={onClick}
