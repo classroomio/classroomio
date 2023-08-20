@@ -3,6 +3,7 @@
   import { goto } from '$app/navigation';
   import { updateCourse } from '$lib/utils/services/courses';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import Professional from './certificates/Professional.svelte';
   import Plain from './certificates/Plain.svelte';
@@ -68,6 +69,7 @@
           </p>
           <PrimaryButton
             label="Go to Settings"
+            variant={VARIANTS.OUTLINED}
             className="rounded-md mt-3"
             onClick={() => goto(`org/${$currentOrg.siteName}/settings`)}
           />

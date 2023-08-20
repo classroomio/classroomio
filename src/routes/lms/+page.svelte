@@ -20,7 +20,7 @@
   <div class="m-5">
     <h1 class="text-3xl font-semibold">Dashboard</h1>
     <div
-      class="w-full h-fit lg:h-[265px] flex md:items-center justify-between flex-col-reverse md:flex-row p-5 lg:p-10 rounded-md bg-[#042172] my-2"
+      class="w-full h-fit lg:h-[265px] flex md:items-center justify-between flex-col-reverse md:flex-row p-5 lg:p-10 rounded-md bg-primary-900 my-2"
     >
       <span>
         <p class="w-full md:w-[75%] lg:w-[80%] text-white text-xs lg:text-xl font-normal mb-5">

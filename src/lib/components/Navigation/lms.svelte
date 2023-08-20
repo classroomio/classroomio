@@ -21,7 +21,7 @@
   }
 </script>
 
-<nav class="{navClass} flex w-full p-2 md:px-6 bg-primary-600">
+<nav class="{navClass} flex w-full p-2 md:px-6 bg-primary-700">
   <ul class="flex w-full items-center">
     <div class="">
       <a href={$page.url.pathname} title="Go to ClassroomIO Home" id="logo" class="text-lg">
