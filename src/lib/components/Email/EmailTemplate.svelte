@@ -24,7 +24,8 @@
 
       <!-- Footer -->
       <div class="w-full p-6 border-t border-grey text-center">
-        Already have an account? <a class="hover:underline text-blue-700" href="/login">Log In</a>
+        Already have an account? <a class="hover:underline text-primary-700" href="/login">Log In</a
+        >
       </div>
     </div>
   </div>

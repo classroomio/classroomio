@@ -176,7 +176,7 @@
             <a
               href="{$page.url.pathname}{navItem.key}"
               class="{navItem.key === activeNav &&
-                'active text-blue-700'} rounded-lg px-2 mr-6 text-slate-700 font-normal hover:bg-slate-100 hover:text-slate-900 dark:text-white"
+                'active text-primary-700'} rounded-lg px-2 mr-6 text-slate-700 font-normal hover:bg-slate-100 hover:text-slate-900 dark:text-white"
             >
               {navItem.label}
             </a>
@@ -229,7 +229,10 @@
           {#each lessons as lesson, index}
             <div class="w-full flex md:items-center justify-between mb-6 flex-col md:flex-row">
               <div class="flex items-center mb-3">
-                <Chip value={getLectureNo(index + 1, '0')} className="bg-blue-100 text-blue-700" />
+                <Chip
+                  value={getLectureNo(index + 1, '0')}
+                  className="bg-primary-100 text-primary-700"
+                />
                 <p class="dark:text-white ml-2 text-sm font-light">
                   {lesson.title}
                 </p>
@@ -305,13 +308,13 @@
                       </div>
                       {#if !expandDescription[id] && review.description.split(' ').length > 9}
                         <button
-                          class="underline text-blue-700 mt-2 font-normal"
+                          class="underline text-primary-700 mt-2 font-normal"
                           on:click={() => toggleDescription(id)}>See More</button
                         >
                       {/if}
                       {#if expandDescription[id]}
                         <button
-                          class="underline text-blue-700 mt-2 font-normal"
+                          class="underline text-primary-700 mt-2 font-normal"
                           on:click={() => toggleDescription(id)}>See Less</button
                         >
                       {/if}
@@ -400,7 +403,7 @@
                 {get(instructor, 'role', '')}
               </p>
               <p class="dark:text-white text-md font-light flex items-center">
-                <PlayFilled size={16} class="text-blue-700" />
+                <PlayFilled size={16} class="text-primary-700" />
                 <span class="ml-1">{get(instructor, 'courseNo', '')} courses</span>
               </p>
             </div>

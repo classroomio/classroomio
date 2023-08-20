@@ -138,7 +138,7 @@
         <div class="header w-full flex items-center">
           <Datepicker bind:store let:key let:send let:receive>
             <button
-              class="text-lg font-bold text-blue-700 p-3 hover:bg-gray-300 rounded-md"
+              class="text-lg font-bold text-primary-700 p-3 hover:bg-gray-300 rounded-md"
               in:receive|local={{ key }}
               out:send|local={{ key }}
               on:click={() => {
@@ -150,7 +150,7 @@
           </Datepicker>
         </div>
       {:else}
-        <div class="header text-lg font-bold text-blue-700 flex px-5 items-center">
+        <div class="header text-lg font-bold text-primary-700 flex px-5 items-center">
           {formatDate($store?.selected)}
         </div>
       {/if}
@@ -174,14 +174,14 @@
               {/if}
             </a>
             <p class="dark:text-white text-grey text-sm flex items-center">
-              <a class="underline text-blue-700 my-2" href="/courses/{lessonData.course_id}">
+              <a class="underline text-primary-700 my-2" href="/courses/{lessonData.course_id}">
                 {` ${lessonData.course_title}`}
               </a>
             </p>
           </div>
           {#if lessonData.is_unlocked}
             <a
-              class="join-call rounded-3xl bg-blue-600 text-white py-3 font-bold shadow-lg {!lessonData.call_url &&
+              class="join-call rounded-3xl bg-primary-600 text-white py-3 font-bold shadow-lg {!lessonData.call_url &&
                 'opacity-50 pointer-events-none cursor-not-allowed'}"
               href={!!lessonData.call_url ? lessonData.call_url : undefined}
               target="_blank"

@@ -34,7 +34,6 @@
   import { toggleBodyByTheme } from '$lib/utils/functions/app';
   import { appStore } from '$lib/utils/store/app';
   import { currentOrg } from '$lib/utils/store/org';
-  import { blockedSubdomain } from '$lib/utils/constants/app';
 
   import '../app.postcss';
 
@@ -47,6 +46,10 @@
   const delayedPreloading = derived(navigating, (currentPreloading, set) => {
     setTimeout(() => set(currentPreloading), 250);
   });
+
+  function setTheme(theme) {
+    document.body.className = document.body.className.concat(' ', theme);
+  }
 
   function setupSentry() {
     if (!dev) {
@@ -173,6 +176,8 @@
           // By default redirect to first organization
           goto(`/org/${orgRes.currentOrg.siteName}`);
         }
+
+        setTheme(orgRes.currentOrg.theme);
       }
     }
   }
@@ -237,9 +242,11 @@
     }
 
     if (data.isOrgSite) {
+      console.log('data', data);
       $appStore.orgSiteName = data.orgSiteName;
       $appStore.isOrgSite = data.isOrgSite;
-      getCurrentOrg(data.orgSiteName);
+
+      currentOrg.set(data.org);
     }
 
     return () => {
@@ -357,7 +364,9 @@
     width: 100%;
   }
 
-  :global(.dark svg.dark path) {
+  :global(.dark svg.dark path),
+  :global(.active-sidenav svg.dark path),
+  :global(.active-sidenav svg.carbon-icon path) {
     fill: #fff;
   }
 

@@ -7,8 +7,4 @@
   export let height = 'h-10';
 </script>
 
-<img
-  alt={name}
-  {src}
-  class="{className} {width} {height} {shape} bg-light-blue-100"
-/>
+<img alt={name} {src} class="{className} {width} {height} {shape} bg-primary-100" />

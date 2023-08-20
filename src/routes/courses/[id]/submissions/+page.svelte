@@ -286,7 +286,7 @@
                     </p>
                   </a>
                   <a
-                    class="text-blue-700 text-md font-bold"
+                    class="text-primary-700 text-md font-bold"
                     href="{$page.url.pathname}?submissionId={item.id}"
                   >
                     {item.exercise.title}

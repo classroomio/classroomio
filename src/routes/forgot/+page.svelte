@@ -27,12 +27,9 @@
 
     try {
       loading = true;
-      const { data, error } = await supabase.auth.resetPasswordForEmail(
-        fields.email,
-        {
-          redirectTo: window.location.origin + ROUTE.RESET,
-        }
-      );
+      const { data, error } = await supabase.auth.resetPasswordForEmail(fields.email, {
+        redirectTo: window.location.origin + ROUTE.RESET
+      });
       console.log('data', data);
       if (error) throw error;
 
@@ -55,10 +52,8 @@
       <EmailSentIcon />
       <h3 class="dark:text-white text-xl font-semibold my-3">Email Sent!</h3>
       <p class="dark:text-white text-md mb-6 text-center">
-        We have sent a confirmation email to <span class="text-blue-700"
-          >{fields.email}</span
-        >. Kindly check your inbox to reset password or spam to reset your
-        password.
+        We have sent a confirmation email to <span class="text-primary-700">{fields.email}</span>.
+        Kindly check your inbox to reset password or spam to reset your password.
       </p>
     </div>
 
@@ -72,12 +67,8 @@
     </div>
   {:else}
     <div class="mt-4 w-full">
-      <h3 class="dark:text-white text-xl font-semibold my-3">
-        Forgot Password
-      </h3>
-      <p class="dark:text-white text-sm mb-6">
-        We will send you a reset link to your email
-      </p>
+      <h3 class="dark:text-white text-xl font-semibold my-3">Forgot Password</h3>
+      <p class="dark:text-white text-sm mb-6">We will send you a reset link to your email</p>
       <TextField
         label="Your email"
         bind:value={fields.email}
@@ -105,7 +96,7 @@
       <PrimaryButton
         label="Cancel"
         type="button"
-        className="sm:w-full w-full text-blue-700"
+        className="sm:w-full w-full text-primary-700"
         variant={VARIANTS.NONE}
         onClick={() => goto(ROUTE.LOGIN)}
       />

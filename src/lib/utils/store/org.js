@@ -9,6 +9,7 @@ export const currentOrg = writable({
   shortName: '',
   siteName: '',
   avatar_url: '',
+  theme: '',
   memberId: ''
 });
 export const orgAudience = writable([]);
