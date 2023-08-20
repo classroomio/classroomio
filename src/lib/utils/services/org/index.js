@@ -150,6 +150,7 @@ export async function getCourseBySiteName(siteName) {
     name: 'ClassroomIO',
     shortName: '',
     siteName: '',
+    theme: '',
     avatar_url: '/logo-192.png'
   });
   currentOrg.set(org);

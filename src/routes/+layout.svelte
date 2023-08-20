@@ -247,6 +247,7 @@
       $appStore.isOrgSite = data.isOrgSite;
 
       currentOrg.set(data.org);
+      setTheme(data.org.theme);
     }
 
     return () => {

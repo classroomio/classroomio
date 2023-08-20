@@ -61,15 +61,11 @@
             <p class="text-lg font-semibold text-[#262626] dark:text-white">
               The essence of design collaboration
             </p>
-            <a href="#" class="text-sm font-normal text-[#0233BD] dark:text-white"
+            <a href="#" class="text-sm font-normal text-primary-700 dark:text-white"
               >Figma Introduction</a
             >
           </span>
-          <PrimaryButton
-            label="Join Call"
-            variant={VARIANTS.OUTLINED}
-            className="bg-transparent outline-1 outline-[#0233BD] text-[#0233BD] rounded-md hover:bg-[blue]"
-          />
+          <PrimaryButton label="Join Call" variant={VARIANTS.OUTLINED} className="" />
         </div>
       </span>
     {:else}

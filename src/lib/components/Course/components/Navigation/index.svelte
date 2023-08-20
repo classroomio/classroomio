@@ -197,7 +197,7 @@
                     aria-disabled={!item.is_unlocked}
                   >
                     <div
-                      class="flex items-center py-3 px-4 rounded hover:bg-gray-200 dark:hover:bg-gray-800 w-full {(
+                      class="flex items-center py-3 px-4 rounded hover:opacity-80 w-full {(
                         path || $page.url.pathname
                       ).includes(item.id) && NavClasses.active}"
                     >
