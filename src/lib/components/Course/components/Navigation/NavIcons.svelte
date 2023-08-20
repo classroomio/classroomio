@@ -12,19 +12,19 @@
 </script>
 
 {#if name === 'Overview'}
-  <TableOfContents size={20} class="carbon-icon dark:text-white mr-2" />
+  <TableOfContents size={20} class="carbon-icon  mr-2" />
 {:else if name === 'Lessons'}
-  <IbmWatsonKnowledgeCatalog size={20} class="carbon-icon dark:text-white mr-2" />
+  <IbmWatsonKnowledgeCatalog size={20} class="carbon-icon mr-2" />
 {:else if name === 'Attendance'}
-  <ListChecked size={20} class="carbon-icon dark:text-white mr-2" />
+  <ListChecked size={20} class="carbon-icon mr-2" />
 {:else if name === 'Submissions'}
-  <Workspace size={20} class="carbon-icon dark:text-white mr-2" />
+  <Workspace size={20} class="carbon-icon mr-2" />
 {:else if name === 'Marks'}
-  <Result size={20} class="carbon-icon dark:text-white mr-2" />
+  <Result size={20} class="carbon-icon mr-2" />
 {:else if name === 'People'}
-  <Group size={20} class="carbon-icon dark:text-white mr-2" />
+  <Group size={20} class="carbon-icon mr-2" />
 {:else if name === 'Landing Page'}
-  <ApplicationWeb size={20} class="carbon-icon dark:text-white mr-2" />
+  <ApplicationWeb size={20} class="carbon-icon mr-2" />
 {:else if name === 'Certificates'}
-  <Badge size={20} class="carbon-icon dark:text-white mr-2" />
+  <Badge size={20} class="carbon-icon mr-2" />
 {/if}
