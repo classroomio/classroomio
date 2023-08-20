@@ -7,10 +7,8 @@
   <div class="flex justify-center w-full">
     <span class="text-gray-700 text-sm py-3"
       >Created with love by
-      <a
-        class="underline text-blue-700"
-        href="https://twitter.com/rotimi_best"
-        target="_blank">Rotimi Best</a
+      <a class="underline text-primary-700" href="https://twitter.com/rotimi_best" target="_blank"
+        >Rotimi Best</a
       ></span
     >
   </div>

@@ -173,7 +173,7 @@
     <h2 class="text-xl my-1.5">No question added for this exercise</h2>
     <p class="text-sm text-center px-44">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
-        Click the <span class="text-blue-700">Edit</span> button to add.
+        Click the <span class="text-primary-700">Edit</span> button to add.
       </RoleBasedSecurity>
     </p>
   </Box>

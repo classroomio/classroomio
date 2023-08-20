@@ -11,7 +11,7 @@
       {#if !tab.icon && !tab.badgeValue}
         <button
           class="relative {currentTab === tab.value
-            ? 'text-blue-700'
+            ? 'text-primary-700'
             : 'dark:bg-gray-500 dark:text-white'} dark:bg-transparent font-semibold focus:outline-none w-fit mr-8 text-center py-3"
           on:click={onChange(tab.value)}
         >
@@ -19,7 +19,7 @@
             {tab.label}
           </div>
           <span
-            class="absolute bottom-0 left-0 h-1 bg-blue-700 transition-all ease-in-out duration-500 {currentTab ===
+            class="absolute bottom-0 left-0 h-1 bg-primary-700 transition-all ease-in-out duration-500 {currentTab ===
             tab.value
               ? 'w-full'
               : 'w-0'}"
@@ -28,7 +28,7 @@
       {:else}
         <button
           class="relative {currentTab === tab.value
-            ? 'text-blue-700'
+            ? 'text-primary-700'
             : 'dark:bg-gray-500 dark:text-white'} dark:bg-transparent font-semibold focus:outline-none w-24 text-left py-3 mr-10"
           on:click={onChange(tab.value)}
         >
@@ -47,7 +47,7 @@
             {/if}
           </div>
           <span
-            class="absolute bottom-0 left-0 h-1 bg-blue-700 transition-all ease-in-out duration-500 {currentTab ===
+            class="absolute bottom-0 left-0 h-1 bg-primary-700 transition-all ease-in-out duration-500 {currentTab ===
             tab.value
               ? 'w-full'
               : 'w-0'}"

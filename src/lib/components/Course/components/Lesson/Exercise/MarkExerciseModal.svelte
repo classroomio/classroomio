@@ -22,18 +22,12 @@
   let maxPoints = 0;
 
   function getMaxPoints(questions) {
-    return (questions || []).reduce(
-      (acc, question) => acc + question.points,
-      0
-    );
+    return (questions || []).reduce((acc, question) => acc + question.points, 0);
   }
 
   function calculateTotal(grades) {
     if (!grades) return 0;
-    return Object.values(grades).reduce(
-      (acc, grade) => acc + parseInt(grade),
-      0
-    );
+    return Object.values(grades).reduce((acc, grade) => acc + parseInt(grade), 0);
   }
 
   function handleStatusChange() {
@@ -41,7 +35,7 @@
       submissionId: data.id,
       prevStatusId: data.status_id,
       nextStatusId: status.value,
-      total,
+      total
     });
 
     $snackbarStore.open = true;
@@ -49,9 +43,7 @@
   }
 
   function setStatus(data) {
-    status = SELECTABLE_STATUS.find(
-      (status) => status.value === data.status_id
-    );
+    status = SELECTABLE_STATUS.find((status) => status.value === data.status_id);
   }
 
   function getStatusColor(status) {
@@ -62,7 +54,7 @@
     //   case STATUS.SUBMITTED:
     //     return '';
     //   case STATUS.IN_PROGRESS:
-    //     return 'text-white bg-blue-700';
+    //     return 'text-white bg-primary-700';
     //   case STATUS.GRADED:
     //     return 'text-white bg-green-700';
     // }
@@ -91,7 +83,7 @@
         : []}
       questionnaireMetaData={{
         answers: data.answers || {},
-        isFinished: true,
+        isFinished: true
       }}
       bind:grades={data.questionAnswerByPoint}
     />
@@ -121,17 +113,9 @@
         <p class="dark:text-white font-bold text-lg">
           Details
           {#if data.isEarly}
-            <span
-              class="ml-2 text-sm badge rounded-sm px-2 bg-green-500 text-white"
-            >
-              early
-            </span>
+            <span class="ml-2 text-sm badge rounded-sm px-2 bg-green-500 text-white"> early </span>
           {:else}
-            <span
-              class="ml-2 badge text-sm rounded-sm px-2 bg-red-500 text-white"
-            >
-              late
-            </span>
+            <span class="ml-2 badge text-sm rounded-sm px-2 bg-red-500 text-white"> late </span>
           {/if}
         </p>
       </div>

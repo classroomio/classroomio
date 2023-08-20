@@ -30,9 +30,7 @@
     const totalVoteOfAllOptions = getTotalVotes(options);
     const totalVotesOfCurrentOption = currentOption.selectedBy.length;
 
-    return (
-      Math.round((totalVotesOfCurrentOption / totalVoteOfAllOptions) * 100) || 0
-    );
+    return Math.round((totalVotesOfCurrentOption / totalVoteOfAllOptions) * 100) || 0;
   }
 
   function didUserSelect(option) {
@@ -52,10 +50,7 @@
   {#if selectedOptionToView}
     <div>
       <div class="flex items-center mb-5">
-        <button
-          class="text-xl w-10 px-3"
-          on:click={() => (selectedOptionToView = null)}
-        >
+        <button class="text-xl w-10 px-3" on:click={() => (selectedOptionToView = null)}>
           {`<`}
         </button>
         <div class="flex-grow text-center">
@@ -79,7 +74,7 @@
         </h3>
         <p class="dark:text-white text-sm italic">
           Created by <a
-            class="text-blue-500"
+            class="text-primary-500"
             href="https://twitter.com/rotimi_best"
             target="_blank">@{poll.author.label}</a
           >
@@ -124,15 +119,12 @@
           <div class="flex items-center">
             <div class="w-4/5 h-2 bg-gray-200 relative">
               <span
-                class="absolute top-0 left-0 bg-blue-700 h-full"
+                class="absolute top-0 left-0 bg-primary-700 h-full"
                 style="width: {calculatePercent(poll.options, option)}%;"
               />
             </div>
             {#if option.selectedBy.length}
-              <button
-                class="text-xl px-3 ml-5"
-                on:click={() => (selectedOptionToView = option)}
-              >
+              <button class="text-xl px-3 ml-5" on:click={() => (selectedOptionToView = option)}>
                 >
               </button>
             {/if}
@@ -151,19 +143,17 @@
           class="bg-white dark:bg-gray-800 rounded-md border-2 border-gray-500 {didUserSelect(
             option
           ) &&
-            'focus:border-blue-700 border-blue-700'} text-black p-2 w-full mb-3 text-left relative"
+            'focus:border-primary-700 border-primary-700'} text-black p-2 w-full mb-3 text-left relative"
           on:click={handleSelect(index)}
         >
           {#if hasUserVoted}
             <span
               class="progress absolute top-0 left-0 {didUserSelect(option)
-                ? 'bg-blue-700'
+                ? 'bg-primary-700'
                 : 'bg-gray-300'} h-full bg-opacity-25"
               style="width: {calculatePercent(poll.options, option)}%;"
             />
-            <strong class="mr-3"
-              >{calculatePercent(poll.options, option)}%</strong
-            >
+            <strong class="mr-3">{calculatePercent(poll.options, option)}%</strong>
           {/if}
           {option.label}
         </button>
@@ -182,7 +172,7 @@
     {#if isAuthor}
       <div class="w-full text-center mt-3">
         <button
-          class="px-5 py-3 bg-blue-700 text-white"
+          class="px-5 py-3 bg-primary-700 text-white"
           on:click={() => (viewResult = !viewResult)}
         >
           {#if viewResult}
@@ -191,10 +181,7 @@
             View results
           {/if}
         </button>
-        <button
-          class="px-5 py-3 bg-red-500 text-white"
-          on:click={handlePollDelete}
-        >
+        <button class="px-5 py-3 bg-red-500 text-white" on:click={handlePollDelete}>
           Delete
         </button>
       </div>

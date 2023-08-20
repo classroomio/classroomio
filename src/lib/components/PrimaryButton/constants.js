@@ -12,15 +12,16 @@ export const VARIANTS = {
 };
 
 export const VARIANTS_CLASS = {
-  [VARIANTS.CONTAINED]: 'border-none bg-blue-700 hover:bg-blue-900 text-white font-bold',
-  [VARIANTS.CONTAINED_LIGHT]: 'border-none bg-blue-600 hover:bg-blue-900 text-white font-bold',
+  [VARIANTS.CONTAINED]: 'border-none bg-primary-700 hover:bg-primary-900 text-white font-bold',
+  [VARIANTS.CONTAINED_LIGHT]:
+    'border-none bg-primary-600 hover:bg-primary-900 text-white font-bold',
   [VARIANTS.CONTAINED_WHITE]:
-    'border-none hover:border-black-300 hover:bg-blue-700 dark:hover:bg-blue-900 text-black hover:text-white bg-white',
+    'border-none hover:border-black-300 hover:bg-primary-700 dark:hover:bg-primary-900 text-black hover:text-white bg-white',
   [VARIANTS.CONTAINED_INFO]: 'border-none bg-gray-400 hover:bg-gray-600 text-white',
   [VARIANTS.CONTAINED_SUCCESS]: 'bg-green-700 hover:bg-green-900 text-white',
   [VARIANTS.CONTAINED_DANGER]: 'bg-red-700 hover:bg-red-900 text-white',
   [VARIANTS.OUTLINED]:
-    'border border-blue-700 hover:border-black-300 hover:bg-blue-700 text-black hover:text-white dark:text-white',
+    'border border-primary-700 hover:border-black-300 hover:bg-primary-700 text-black dark:text-white',
   [VARIANTS.NONE]:
     'border-none hover:border-black-300 hover:bg-gray-200 dark:hover:bg-gray-500 text-black',
   [VARIANTS.TEXT]: 'text-black hover:underline',

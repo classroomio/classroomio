@@ -28,7 +28,7 @@
     $settingsDialog.open = false;
     const logo = await updateCourse($course.id, avatar, {
       title: $course.title,
-      description: $course.description,
+      description: $course.description
     });
 
     if (logo) {
@@ -100,7 +100,7 @@
       <div class="mt-5 flex items-center justify-between">
         <PrimaryButton
           className="px-6 py-3"
-          variant={VARIANTS.CONTAINED_DANGER}
+          variant={VARIANTS.CONTAINED}
           label="Delete"
           onClick={() => (shouldDelete = true)}
         />

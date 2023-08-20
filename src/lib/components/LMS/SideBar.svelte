@@ -59,7 +59,7 @@
           height="h-7"
         />
       {:else}
-        <TextChip value={$currentOrg.shortName} className="bg-blue-200 font-bold" />
+        <TextChip value={$currentOrg.shortName} className="bg-primary-200 font-bold" />
       {/if}
 
       <OrgSelector />
@@ -77,7 +77,7 @@
                 this={item.icon}
                 color={isActive($page.url.pathname, `${item.link}`) ? 'black' : 'gray'}
                 size={24}
-                class="carbon-icon dark:text-white"
+                class="carbon-icon text-white"
               />
               <p class="dark:text-white ml-2">{item.name}</p>
             </li>
@@ -88,16 +88,14 @@
     <span class="flex-grow" />
     <ul class="my-5 pb-5 px-4">
       <a href="/lms" class="text-black">
-        <li
-          class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-800"
-        >
+        <li class="flex items-center py-3 px-4 mb-2 rounded">
           <HelpIcon size={20} class="carbon-icon dark:text-white" />
           <p class="dark:text-white ml-2">Help</p>
         </li>
       </a>
       <a href="/lms/settings" class="text-black">
         <li
-          class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 {isActive(
+          class="flex items-center py-3 px-4 mb-2 rounded {isActive(
             $page.url.pathname,
             `/lms/settings`
           ) && NavClasses.active}"

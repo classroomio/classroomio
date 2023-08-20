@@ -4,8 +4,4 @@
   export let className;
 </script>
 
-<img
-  alt={name}
-  {src}
-  class="w-10 h-10 rounded-full bg-light-blue-100 {className}"
-/>
+<img alt={name} {src} class="w-10 h-10 rounded-full bg-primary-100 {className}" />

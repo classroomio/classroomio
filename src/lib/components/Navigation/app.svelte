@@ -17,7 +17,7 @@
   export let navClass = '';
   export let isCoursePage = false;
 
-  function toggleTheme() {
+  function toggleDarkMode() {
     $appStore.isDark = !$appStore.isDark;
 
     toggleBodyByTheme($appStore.isDark);
@@ -36,7 +36,9 @@
   }
 </script>
 
-<nav class="{navClass} flex w-full p-2 md:px-6 bg-blue-700">
+<nav
+  class="{navClass} flex w-full p-1 md:px-6 bg-primary-700 transition delay-150 duration-300 ease-in-out"
+>
   <ul class="flex w-full items-center">
     <div class="flex items-center text-white">
       {#if isCoursePage}
@@ -66,7 +68,7 @@
       <NotificationIcon size={20} class="text-white mr-2" />
     </li>
     <li>
-      <IconButton size="small" onClick={toggleTheme}>
+      <IconButton size="small" onClick={toggleDarkMode}>
         {#if $appStore.isDark}
           <Sun size={16} class="text-white" />
         {:else}
