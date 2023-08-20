@@ -100,21 +100,6 @@
     font-weight: 700;
   }
 
-  /* [aria-current] {
-    color: var(--main-primary-color);
-    position: relative;
-    display: inline-block;
-  }
-  [aria-current]::after {
-    position: absolute;
-    content: '';
-    width: calc(100% - 3em);
-    height: 2px;
-    background-color: var(--main-primary-color);
-    display: block;
-    bottom: -17px;
-  } */
-
   @media only screen and (max-width: 1002px) {
     nav.hide {
       display: none;
