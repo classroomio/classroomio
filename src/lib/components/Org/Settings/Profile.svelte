@@ -99,6 +99,6 @@
       isDisabled={loading}
       onClick={handleUpdate}
     />
-    <PrimaryButton variant={VARIANTS.CONTAINED_DANGER} label="Log out" onClick={logout} />
+    <PrimaryButton variant={VARIANTS.OUTLINED} label="Log out" onClick={logout} />
   </Row>
 </Grid>

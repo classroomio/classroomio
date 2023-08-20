@@ -40,7 +40,7 @@
       <div class="header w-full flex items-center">
         <Datepicker bind:store let:key let:send let:receive>
           <button
-            class="text-lg font-bold text-blue-700 p-3 hover:bg-gray-300 rounded-md"
+            class="text-lg font-bold text-primary-700 p-3 hover:bg-gray-300 rounded-md"
             in:receive|local={{ key }}
             out:send|local={{ key }}
           >

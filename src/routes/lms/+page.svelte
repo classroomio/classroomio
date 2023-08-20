@@ -30,7 +30,7 @@
         <PrimaryButton
           label="Start learning"
           variant={VARIANTS.CONTAINED_WHITE}
-          className="bg-white text-blue-800"
+          className="bg-white text-primary-800"
           onClick={() => goto('/lms/mylearning')}
         />
       </span>

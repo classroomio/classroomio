@@ -46,9 +46,8 @@
     >
       {#each options as option, index}
         <button
-          class="block px-4 py-3 text-left hover:bg-blue-100 {!isOptionLast(
-            index
-          ) && 'border-b'} w-full dark:text-white dark:hover:text-black"
+          class="block px-4 py-3 text-left hover:bg-primary-100 {!isOptionLast(index) &&
+            'border-b'} w-full dark:text-white dark:hover:text-black"
           on:click={onClick(option)}
         >
           {option.label}
@@ -60,8 +59,8 @@
 
 <style>
   .dropdown {
-    box-shadow: 0px 5px 5px -3px rgb(0 0 0 / 20%),
-      0px 8px 10px 1px rgb(0 0 0 / 14%), 0px 3px 14px 2px rgb(0 0 0 / 12%);
+    box-shadow: 0px 5px 5px -3px rgb(0 0 0 / 20%), 0px 8px 10px 1px rgb(0 0 0 / 14%),
+      0px 3px 14px 2px rgb(0 0 0 / 12%);
     right: 0px;
     top: 20px;
     left: unset;

@@ -4,11 +4,13 @@
 
   export let studentName;
   let borderwidth = 'border-l-8';
-  let bordercolor = 'border-blue-800';
+  let bordercolor = 'border-primary-800';
   let logo = './logo-512.png';
 </script>
 
-<div class="certificate-bg flex items-center justify-center border border-dashed border-blue-400">
+<div
+  class="certificate-bg flex items-center justify-center border border-dashed border-primary-400"
+>
   <div class="{borderwidth} {bordercolor}">
     <div class="w-full px-5 py-3">
       <p class="text-sm font-normal my-2 uppercase text-gray-500">
@@ -24,7 +26,7 @@
         </p>
         <div>
           <p
-            class="clamp bg-transparent text-base font-semibold text-blue-800 text-center uppercase my-2"
+            class="clamp bg-transparent text-base font-semibold text-primary-800 text-center uppercase my-2"
           >
             {$course.title}
           </p>

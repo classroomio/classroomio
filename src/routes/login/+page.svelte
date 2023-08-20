@@ -71,12 +71,12 @@
       <p class="text-sm text-red-500">{submitError}</p>
     {/if}
     <div class="w-full text-right">
-      <a class="text-md text-blue-700" href="/forgot"> Forgot password? </a>
+      <a class="text-md text-primary-700" href="/forgot"> Forgot password? </a>
     </div>
   </div>
 
   <div class="my-4 w-full flex justify-end items-center">
-    <!-- <a href="/login" class="text-blue-700 text-sm">Create an account</a> -->
+    <!-- <a href="/login" class="text-primary-700 text-sm">Create an account</a> -->
     <PrimaryButton
       label="Log In"
       type="submit"

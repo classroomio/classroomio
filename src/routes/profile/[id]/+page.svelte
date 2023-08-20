@@ -118,7 +118,7 @@
         src={currentProfile.avatar_url}
         height="260"
         width="260"
-        class="rounded-full bg-light-blue-100 mb-4"
+        class="rounded-full bg-primary-100 mb-4"
       /> -->
       <UploadImage bind:avatar src={currentProfile.avatar_url} widthHeight="w-60 h-60" />
 
@@ -163,7 +163,7 @@
 
         <div class="hidden my-3 py-3 px-4 border shadow-sm rounded-md">
           <h4 class="dark:text-white m-0 font-normal">
-            <a class="text-blue-700 font-bold" href="/courses"> CitiBim </a>
+            <a class="text-primary-700 font-bold" href="/courses"> CitiBim </a>
           </h4>
           <p class="dark:text-white text-gray-500">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Non aliquam tenetur magnam.
@@ -183,7 +183,7 @@
 
         <div class="hidden my-2 py-3 px-4 border shadow-sm rounded-md">
           <h4 class="dark:text-white m-0 font-normal">
-            <a class="text-blue-700 font-bold" href="/courses"> Climate Change Group </a>
+            <a class="text-primary-700 font-bold" href="/courses"> Climate Change Group </a>
           </h4>
           <p class="dark:text-white text-gray-500">
             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo quasi autem quo possimus
@@ -200,7 +200,7 @@
           </div>
         </div>
       </div>
-      <PrimaryButton variant={VARIANTS.CONTAINED_DANGER} label="Log out" onClick={logout} />
+      <PrimaryButton variant={VARIANTS.OUTLINED} label="Log out" onClick={logout} />
     </div>
     <!-- {:else if loading}
     <Box>

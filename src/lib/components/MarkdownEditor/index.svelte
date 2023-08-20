@@ -1,7 +1,7 @@
 <script>
   export let value;
   export let placeholder = ``;
-  const activeClassName = 'border-b-2 border-blue-700';
+  const activeClassName = 'border-b-2 border-primary-700';
   let isWriteMode = true;
 
   const handleTabClick = (tab) => (event) => {

@@ -24,12 +24,12 @@
       Something unexpected occured.
     </h2>
     <p class="dark:text-white w-full text-base font-normal my-6 text-gray-600">
-      Don't worry, your learning is safe. It isn't your fault, it is ours. We
-      have gotten the error notification and will push a fix ASAP. In the
-      meantime, take a short break and come back a bit later.
+      Don't worry, your learning is safe. It isn't your fault, it is ours. We have gotten the error
+      notification and will push a fix ASAP. In the meantime, take a short break and come back a bit
+      later.
     </p>
     <a
-      class="bg-blue-700 hover:bg-blue-900 hover:no-underline transition-all py-3 px-9 rounded-xl text-white mt-3"
+      class="bg-primary-700 hover:bg-primary-900 hover:no-underline transition-all py-3 px-9 rounded-xl text-white mt-3"
       href="mailto:support@classroomio.com">Contact Us</a
     >
   </div>

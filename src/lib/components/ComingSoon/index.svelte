@@ -3,7 +3,7 @@
 </script>
 
 <p
-  class="org-avatar text-xs bg-blue-200 text-blue-700 font-bold py-1 px-1 rounded-md text-center"
+  class="org-avatar text-xs bg-primary-200 text-primary-700 font-bold py-1 px-1 rounded-md text-center"
 >
   {label}
 </p>

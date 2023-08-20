@@ -115,7 +115,7 @@
     disabled={isLoading}
   >
     <form
-      class="h-full w-full flex flex-col items-center justify-center border border-blue-300 border-dashed rounded-xl"
+      class="h-full w-full flex flex-col items-center justify-center border border-primary-300 border-dashed rounded-xl"
       on:submit|preventDefault={onUpload}
     >
       {#if isLoading}
