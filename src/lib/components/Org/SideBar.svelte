@@ -77,10 +77,12 @@
         {#each menuItems as menuItem}
           <a href="{$currentOrgPath}{menuItem.path}" class="text-black no-underline">
             <li
-              class="flex items-center py-3 px-4 mb-2 rounded hover:opacity-80 {isActive(
+              class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 hover:text-black dark:hover:text-black {isActive(
                 $page.url.pathname,
                 `${$currentOrgPath}${menuItem.path}`
-              ) && NavClasses.active}"
+              )
+                ? NavClasses.active
+                : 'dark:text-white'}"
             >
               {#if menuItem.path === ''}
                 <HomeIcon color="#7A797D" />
@@ -89,16 +91,13 @@
               {:else if menuItem.path === '/site'}
                 <SiteSettingsIcon />
               {:else if menuItem.path === '/community'}
-                <ForumIcon
-                  size={24}
-                  class="carbon-icon dark:text-white fill-[#7A797D] dark:fill-[#fff]"
-                />
+                <ForumIcon size={24} class="carbon-icon dark:text-white fill-[#7A797D]" />
               {:else if menuItem.path === '/quiz'}
                 <QuizIcon />
               {:else if menuItem.path === '/audience'}
                 <AudienceIcon />
               {/if}
-              <p class="dark:text-white ml-2">{menuItem.label}</p>
+              <p class=" ml-2">{menuItem.label}</p>
             </li>
           </a>
         {/each}
@@ -114,13 +113,15 @@
       </a>
       <a href="{$currentOrgPath}/settings" class="text-black no-underline">
         <li
-          class="flex items-center py-3 px-4 mb-2 rounded hover:opacity-80 {isActive(
+          class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 hover:text-black dark:hover:text-black {isActive(
             $page.url.pathname,
             `${$currentOrgPath}/settings`
-          ) && NavClasses.active}"
+          )
+            ? NavClasses.active
+            : 'dark:text-white'}"
         >
           <Avatar src={$profile.avatar_url} name={$profile.username} width="w-7" height="h-7" />
-          <p class="dark:text-white ml-2">Settings</p>
+          <p class="ml-2">Settings</p>
         </li>
       </a>
     </ul>

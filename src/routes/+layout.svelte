@@ -365,9 +365,7 @@
     width: 100%;
   }
 
-  :global(.dark svg.dark path),
-  :global(.active-sidenav svg.dark path),
-  :global(.active-sidenav svg.carbon-icon path) {
+  :global(.dark svg.dark) {
     fill: #fff;
   }
 
