@@ -58,8 +58,8 @@
         if (data && data.Key) {
           const { publicURL } = supabase.storage.from('avatars').getPublicUrl(filename);
 
-          updates.avatar_url = publicURL;
-          $currentOrg.avatar_url = publicURL;
+          updates.avatar_url = data.publicUrl;
+          $currentOrg.avatar_url = data.publicUrl;
         }
         avatar = undefined;
       }

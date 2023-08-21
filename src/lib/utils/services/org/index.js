@@ -58,8 +58,9 @@ export async function getOrganizations(userId) {
         id,
         name,
         siteName,
-        theme,
-        avatar_url
+        avatar_url,
+        landingpage,
+        theme
       )
     `
     )
@@ -75,7 +76,8 @@ export async function getOrganizations(userId) {
         siteName: orgMember?.organization?.siteName,
         theme: orgMember?.organization?.theme,
         avatar_url: orgMember?.organization?.avatar_url,
-        memberId: orgMember?.id
+        memberId: orgMember?.id,
+        landingpage: orgMember?.organization?.landingpage
       });
     });
 
@@ -150,8 +152,9 @@ export async function getCourseBySiteName(siteName) {
     name: 'ClassroomIO',
     shortName: '',
     siteName: '',
-    theme: '',
-    avatar_url: '/logo-192.png'
+    avatar_url: '/logo-192.png',
+    landingpage: {},
+    theme: ''
   });
   currentOrg.set(org);
 
@@ -166,8 +169,9 @@ export async function getCurrentOrg(siteName, justGet = false) {
       id,
       name,
       siteName,
-      theme,
-      avatar_url
+      avatar_url,
+      landingpage,
+      theme
     `
     )
     .eq('siteName', siteName);

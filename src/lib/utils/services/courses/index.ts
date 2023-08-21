@@ -93,12 +93,12 @@ export async function uploadAvatar(courseId: string, avatar: string) {
     upsert: false
   });
 
-  if (data && data.Key) {
-    const { publicURL } = supabase.storage.from('avatars').getPublicUrl(filename);
+  if (data) {
+    const { data } = supabase.storage.from('avatars').getPublicUrl(filename);
 
-    if (!publicURL) return;
+    if (!data.publicUrl) return;
 
-    logo = publicURL;
+    logo = data.publicUrl;
   }
 
   return logo;
@@ -117,12 +117,12 @@ export async function updateCourse(
       upsert: false
     });
 
-    if (data && data.Key) {
-      const { publicURL } = supabase.storage.from('avatars').getPublicUrl(filename);
+    if (data) {
+      const { data: response } = supabase.storage.from('avatars').getPublicUrl(filename);
 
-      if (!publicURL) return;
+      if (!response.publicUrl) return;
 
-      course.logo = publicURL;
+      course.logo = response.publicUrl;
     }
   }
 
