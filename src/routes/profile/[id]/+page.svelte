@@ -58,11 +58,11 @@
           upsert: false
         });
 
-        if (data && data.Key) {
-          const { publicURL } = supabase.storage.from('avatars').getPublicUrl(filename);
+        if (data) {
+          const { data: response } = supabase.storage.from('avatars').getPublicUrl(filename);
 
-          updates.avatar_url = publicURL;
-          currentProfile.avatar_url = publicURL;
+          updates.avatar_url = response.publicUrl;
+          currentProfile.avatar_url = response.publicUrl;
         }
         avatar = undefined;
       }

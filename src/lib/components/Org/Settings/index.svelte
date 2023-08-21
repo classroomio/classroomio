@@ -2,6 +2,7 @@
   import { page } from '$app/stores';
   import { Tabs, Tab, TabContent } from 'carbon-components-svelte';
   import Profile from './Profile.svelte';
+  import LandingpageSettings from './LandingpageSettings.svelte';
   // import Account from './Account.svelte';
   import OrgSettings from './OrgSettings.svelte';
   import { onMount } from 'svelte';
@@ -21,20 +22,22 @@
     },
     {
       key: 1,
-      label: 'Organization Settings',
+      label: 'Organization',
       tabKey: 'org',
       href: `${$page.url.pathname}?tab=org`
+    },
+    {
+      key: 2,
+      label: 'LandingPage',
+      tabKey: 'landingpage',
+      href: `${$page.url.pathname}?tab=landingpage`
     }
   ];
 
   function getSelectedByTab(tabKey = '') {
     const tab = tabs.find((t) => t.tabKey === tabKey);
-    console.log('tab', tab);
-    if (tab) {
-      return tab.key;
-    }
 
-    return 0;
+    return tab ? tab.key : 0;
   }
   function changeRouteOnTabChange(key = 0) {
     const tab = tabs.find((t) => t.key === key);
@@ -68,6 +71,9 @@
     </TabContent> -->
     <TabContent>
       <OrgSettings />
+    </TabContent>
+    <TabContent>
+      <LandingpageSettings />
     </TabContent>
   </svelte:fragment>
 </Tabs>
