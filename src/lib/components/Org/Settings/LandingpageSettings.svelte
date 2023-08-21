@@ -1,0 +1,434 @@
+<script lang="ts">
+  import { Grid, Row, Column } from 'carbon-components-svelte';
+  import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import SectionTitle from '../SectionTitle.svelte';
+  import { Toggle } from 'carbon-components-svelte';
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import TextArea from '$lib/components/Form/TextArea.svelte';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { getSupabase } from '$lib/utils/functions/supabase';
+  import { snackbarStore } from '$lib/components/Snackbar/store';
+  import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
+  import { FileUploader } from 'carbon-components-svelte';
+  import { landingPageSettings } from './store';
+
+  let files: File[] = [];
+  let imageBuffer: File;
+  let uploadingImage = false;
+  let isSaving = false;
+  let creatingNewQuestion = false;
+
+  const supabase = getSupabase();
+
+  let newQuestion = {
+    title: '',
+    content: ''
+  };
+
+  function createNewFaq() {
+    newQuestion = {
+      title: '',
+      content: ''
+    };
+    creatingNewQuestion = true;
+  }
+
+  function saveNewFAQ() {
+    if (newQuestion.title !== '' && newQuestion.content !== '') {
+      $landingPageSettings.faq.questions = [
+        ...$landingPageSettings.faq.questions,
+        {
+          id: new Date().getTime(),
+          title: newQuestion.title,
+          content: newQuestion.content
+        }
+      ];
+      creatingNewQuestion = false;
+    }
+  }
+
+  function cancelNewFAQ() {
+    creatingNewQuestion = false;
+  }
+
+  function deleteFaq(id: number) {
+    let faqs = $landingPageSettings.faq.questions;
+    const filteredFaq = faqs.filter((faq) => faq.id !== id);
+    $landingPageSettings.faq.questions = filteredFaq;
+  }
+
+  const uploadImage = async (image: File) => {
+    if (image) {
+      const filename = `landingpage/${Date.now()}` + image.name;
+      const { data } = await supabase.storage.from('avatars').upload(filename, image, {
+        cacheControl: '3600',
+        upsert: false
+      });
+
+      if (data) {
+        const { data: response } = await supabase.storage.from('avatars').getPublicUrl(filename);
+
+        $landingPageSettings.aboutUs.imageUrl = response.publicUrl;
+        uploadingImage = false;
+      }
+    }
+  };
+
+  const onFileSelected = (image: File) => {
+    uploadingImage = true;
+    let reader = new FileReader();
+    reader.readAsDataURL(image);
+    reader.onload = (e) => {
+      imageBuffer = image;
+
+      uploadImage(image);
+    };
+  };
+
+  async function handleSave() {
+    isSaving = true;
+
+    const { data, error } = await supabase
+      .from('organization')
+      .update({ landingpage: $landingPageSettings })
+      .match({ id: $currentOrg.id });
+
+    if (error) {
+      let message = error?.message || 'Please try again';
+
+      $snackbarStore.open = true;
+      $snackbarStore.message = `Update failed: ${message}`;
+      $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
+    } else {
+      $currentOrg.landingpage = $landingPageSettings;
+      $snackbarStore.open = true;
+      $snackbarStore.message = 'Saved successful';
+      $snackbarStore.severity = SNACKBAR_SEVERITY.SUCCESS;
+    }
+
+    isSaving = false;
+  }
+
+  function setDefault(landingpage) {
+    if (landingpage && Object.keys(landingpage).length) {
+      $landingPageSettings = landingpage;
+    }
+  }
+
+  $: setDefault($currentOrg.landingpage);
+</script>
+
+<Grid class="border-c rounded border-gray-200 w-full mt-5 relative">
+  <Row class="py-7 border-bottom-c">
+    <Column sm={2} md={2} lg={4}>
+      <SectionTitle>Landing Page</SectionTitle>
+      <Toggle bind:toggled={$landingPageSettings.header.show} size="sm">
+        <span slot="labelA" style="color: gray">Hide section</span>
+        <span slot="labelB" style="color: gray">Show section</span>
+      </Toggle>
+    </Column>
+    <Column sm={2} md={6} lg={8}>
+      <TextField
+        label="Title"
+        placeholder="Write your title here"
+        bind:value={$landingPageSettings.header.title}
+        className="mb-5"
+      />
+      <TextField
+        label="Title-Highlight"
+        placeholder="Write your titlehighlight here"
+        className="mb-5"
+        bind:value={$landingPageSettings.header.titleHighlight}
+      />
+
+      <TextArea
+        label="Subtitle"
+        labelClassName="font-light"
+        placeholder="Write your subtitle here"
+        className="mb-5"
+        bind:value={$landingPageSettings.header.subtitle}
+      />
+
+      <SectionTitle>Actions</SectionTitle>
+      <TextField
+        label="Label"
+        placeholder="Write your label here"
+        className="mt-3 mb-5"
+        bind:value={$landingPageSettings.header.action.label}
+      />
+      <div class="gap-2 mb-5">
+        <TextField
+          label="Link"
+          placeholder="Write your link here"
+          bind:value={$landingPageSettings.header.action.link}
+        />
+        <Toggle bind:toggled={$landingPageSettings.header.action.redirect} size="sm">
+          <span slot="labelA" style="color: red">No redirect</span>
+          <span slot="labelB" style="color: green">Redirect</span>
+        </Toggle>
+      </div>
+      <SectionTitle>Video</SectionTitle>
+      <div class="gap-2 mt-3 mb-5">
+        <TextField
+          label="Link"
+          placeholder="Write your video link here"
+          bind:value={$landingPageSettings.header.video.link}
+        />
+        <Toggle bind:toggled={$landingPageSettings.header.video.show} size="sm">
+          <span slot="labelA" style="color: red">Hide Video</span>
+          <span slot="labelB" style="color: green">Show Video</span>
+        </Toggle>
+      </div>
+    </Column>
+  </Row>
+
+  <Row class="py-7 border-bottom-c">
+    <Column sm={2} md={2} lg={4}
+      ><SectionTitle>About</SectionTitle>
+      <Toggle bind:toggled={$landingPageSettings.aboutUs.show} size="sm">
+        <span slot="labelA" style="color: gray">Hide section</span>
+        <span slot="labelB" style="color: gray">Show section</span>
+      </Toggle></Column
+    >
+    <Column sm={2} md={6} lg={8}>
+      <TextField
+        label="Title"
+        placeholder="Write your title here"
+        bind:value={$landingPageSettings.aboutUs.title}
+        className="mb-5"
+      />
+
+      <TextArea
+        label="Content"
+        labelClassName="font-light"
+        placeholder="Write your Content here"
+        className="mb-5"
+        bind:value={$landingPageSettings.aboutUs.content}
+      />
+
+      <div>
+        <FileUploader
+          status={uploadingImage ? 'uploading' : 'complete'}
+          buttonLabel="Select file"
+          labelTitle="Upload an image"
+          class="flex-col items-start gap-2 w-full"
+          accept={['.jpg', '.jpeg', '.png']}
+          bind:files
+          on:change={(file) => onFileSelected(file?.detail?.[0])}
+        />
+        {#if $landingPageSettings.aboutUs.imageUrl}
+          <img
+            alt="About us"
+            src={$landingPageSettings.aboutUs.imageUrl}
+            class="mt-2 rounded-md w-full"
+          />
+        {/if}
+      </div>
+    </Column>
+  </Row>
+
+  <Row class="py-7 border-bottom-c">
+    <Column sm={2} md={2} lg={4}
+      ><SectionTitle>Courses</SectionTitle>
+      <Toggle bind:toggled={$landingPageSettings.courses.show} size="sm">
+        <span slot="labelA" style="color: gray">Hide section</span>
+        <span slot="labelB" style="color: gray">Show section</span>
+      </Toggle>
+    </Column>
+    <Column sm={2} md={6} lg={8}>
+      <TextField
+        label="Title"
+        placeholder="Write your title here"
+        bind:value={$landingPageSettings.courses.title}
+      />
+      <TextField
+        label="Title-Highlight"
+        placeholder="Write your title highlight here"
+        bind:value={$landingPageSettings.courses.titleHighlight}
+      />
+      <TextArea
+        label="Subtitle"
+        labelClassName="font-light"
+        placeholder="Write your subtitle here"
+        bind:value={$landingPageSettings.courses.subtitle}
+      />
+    </Column>
+  </Row>
+
+  <Row class="py-7 border-bottom-c">
+    <Column sm={2} md={2} lg={4}
+      ><SectionTitle>Frequently Asked Questions</SectionTitle>
+      <Toggle bind:toggled={$landingPageSettings.faq.show} size="sm">
+        <span slot="labelA" style="color: gray">Hide section</span>
+        <span slot="labelB" style="color: gray">Show section</span>
+      </Toggle>
+    </Column>
+    <Column sm={2} md={6} lg={8}>
+      <TextField
+        label="Title"
+        placeholder="Write your title here"
+        bind:value={$landingPageSettings.faq.title}
+        className="mb-5"
+      />
+      {#each $landingPageSettings.faq.questions as item (item.id)}
+        <div class="mb-3">
+          <TextField
+            label="Question"
+            placeholder="Write your question here"
+            bind:value={item.title}
+            className="mb-5"
+          />
+          <TextArea
+            label="Answer"
+            labelClassName="font-light"
+            placeholder="Write your answer here"
+            bind:value={item.content}
+            className="mb-5"
+          />
+          <IconButton onClick={() => deleteFaq(item.id)}>
+            <TrashCan size={24} class="fill-red-700" />
+          </IconButton>
+        </div>
+      {/each}
+      {#if creatingNewQuestion}
+        <TextField
+          label="Question"
+          placeholder="Write your question here"
+          bind:value={newQuestion.title}
+          className="mb-5"
+        />
+        <TextArea
+          label="Answer"
+          labelClassName="font-light"
+          placeholder="Write your answer here"
+          bind:value={newQuestion.content}
+          className="mb-5"
+        />
+        <div class="flex items-center gap-2">
+          <PrimaryButton variant={VARIANTS.OUTLINED} label="Save" onClick={saveNewFAQ} />
+          <PrimaryButton variant={VARIANTS.OUTLINED} label="Cancel" onClick={cancelNewFAQ} />
+        </div>
+      {:else}
+        <PrimaryButton variant={VARIANTS.OUTLINED} label="Add New Faq" onClick={createNewFaq} />
+      {/if}
+    </Column>
+  </Row>
+
+  <Row class="py-7 border-bottom-c">
+    <Column sm={2} md={2} lg={4}
+      ><SectionTitle>Contact us</SectionTitle>
+      <Toggle bind:toggled={$landingPageSettings.contact.show} size="sm">
+        <span slot="labelA" style="color: gray">Hide section</span>
+        <span slot="labelB" style="color: gray">Show section</span>
+      </Toggle>
+    </Column>
+    <Column sm={2} md={6} lg={8}>
+      <TextField
+        label="Title"
+        placeholder="Write your title here"
+        bind:value={$landingPageSettings.contact.title}
+        className="mb-5"
+      />
+      <TextField
+        label="Title-highlight"
+        labelClassName="font-light"
+        placeholder="Write your title highlight here"
+        className="mb-5"
+        bind:value={$landingPageSettings.contact.titleHighlight}
+      />
+      <TextArea
+        label="Subtitle"
+        labelClassName="font-light"
+        placeholder="Write your subtitle here"
+        className="mt-3 mb-5"
+        bind:value={$landingPageSettings.contact.subtitle}
+      />
+      <TextField
+        label="Phone number"
+        placeholder="Write your phone number here"
+        className="mt-3 mb-5"
+        bind:value={$landingPageSettings.contact.phone}
+      />
+      <TextField
+        label="Email"
+        placeholder="Write your email here"
+        className="mt-3 mb-5"
+        bind:value={$landingPageSettings.contact.email}
+      />
+    </Column>
+  </Row>
+
+  <Row class="py-7 border-bottom-c">
+    <Column sm={2} md={2} lg={4}
+      ><SectionTitle>Mailing List</SectionTitle>
+      <Toggle bind:toggled={$landingPageSettings.mailinglist.show} size="sm">
+        <span slot="labelA" style="color: gray">Hide section</span>
+        <span slot="labelB" style="color: gray">Show section</span>
+      </Toggle>
+    </Column>
+    <Column sm={2} md={6} lg={8}>
+      <TextField
+        label="Title"
+        placeholder="Write your title here"
+        bind:value={$landingPageSettings.mailinglist.title}
+        className="mb-5"
+      />
+      <TextArea
+        label="Subtitle"
+        labelClassName="font-light"
+        placeholder="Write your subtitle here"
+        className="mb-5"
+        bind:value={$landingPageSettings.mailinglist.subtitle}
+      />
+
+      <TextField
+        label="Button-label"
+        placeholder="Write your label here"
+        className="mb-5"
+        bind:value={$landingPageSettings.mailinglist.buttonLabel}
+      />
+    </Column>
+  </Row>
+
+  <Row class="py-7 border-bottom-c">
+    <Column sm={2} md={2} lg={4}
+      ><SectionTitle>Footer</SectionTitle>
+      <Toggle bind:toggled={$landingPageSettings.footer.show} size="sm">
+        <span slot="labelA" style="color: gray">Hide section</span>
+        <span slot="labelB" style="color: gray">Show section</span>
+      </Toggle>
+    </Column>
+    <Column sm={2} md={6} lg={8}>
+      <TextField
+        label="Facebook"
+        placeholder="Write your Facebook link here"
+        bind:value={$landingPageSettings.footer.facebook}
+        className="mb-5"
+      />
+      <TextField
+        label="Instagram"
+        placeholder="Write your Instagram link here"
+        className="mb-5"
+        bind:value={$landingPageSettings.footer.instagram}
+      />
+
+      <TextField
+        label="Linkedin"
+        placeholder="Write your Linkedin link here"
+        className="mb-5"
+        bind:value={$landingPageSettings.footer.linkedin}
+      />
+    </Column>
+  </Row>
+  <Row class="p-5 w-full flex items-center justify-center">
+    <PrimaryButton
+      label="Save Changes"
+      isLoading={isSaving}
+      isDisabled={isSaving}
+      onClick={handleSave}
+    />
+  </Row>
+</Grid>

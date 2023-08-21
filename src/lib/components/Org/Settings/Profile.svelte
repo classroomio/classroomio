@@ -36,12 +36,11 @@
           cacheControl: '3600',
           upsert: false
         });
+        if (data) {
+          const { data: response } = await supabase.storage.from('avatars').getPublicUrl(filename);
 
-        if (data && data.Key) {
-          const { publicURL } = supabase.storage.from('avatars').getPublicUrl(filename);
-
-          updates.avatar_url = publicURL;
-          $profile.avatar_url = publicURL;
+          updates.avatar_url = response.publicUrl;
+          $profile.avatar_url = response.publicUrl;
         }
         avatar = undefined;
       }

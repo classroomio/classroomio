@@ -1,6 +1,5 @@
-import cloneDeep from 'lodash/cloneDeep';
 import { writable, derived } from 'svelte/store';
-import { allOptions, STEPS, booleanOptions } from '../constants/quiz';
+import { STEPS } from '../constants/quiz';
 
 export const orgs = writable([]);
 export const currentOrg = writable({
@@ -9,8 +8,9 @@ export const currentOrg = writable({
   shortName: '',
   siteName: '',
   avatar_url: '',
-  theme: '',
-  memberId: ''
+  memberId: '',
+  landingpage: {},
+  theme: ''
 });
 export const orgAudience = writable([]);
 export const orgTeam = writable([]);
