@@ -12,12 +12,11 @@
   import MachineLearningModel from 'carbon-icons-svelte/lib/MachineLearningModel.svelte';
   import Tabs from '$lib/components/Tabs/index.svelte';
   import TabContent from '$lib/components/TabContent/index.svelte';
-  import MarkdownRender from '$lib/components/MarkdownRender/index.svelte';
   import Box from '$lib/components/Box/index.svelte';
-  import EditContent from '$lib/components/EditContent/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import TextField from '$lib/components/Form/TextField.svelte';
+  import TextEditor from '$lib/components/TextEditor/index.svelte';
   import {
     lesson,
     lessons,
@@ -74,7 +73,7 @@
     tabs = tabs.map((tab) => {
       const badgeValue =
         tab.value === 1
-          ? !!note
+          ? note.length > 15
             ? 1
             : 0
           : tab.value === 2
@@ -100,8 +99,9 @@
 
   function updateNoteByCompletion(completion) {
     $lesson.materials.note = completion;
-    if (textareaRef) {
-      textareaRef.scrollTop = textareaRef.scrollHeight;
+    if (textareaRef && textareaRef?.children?.[0]) {
+      let qlEditor = textareaRef?.children?.[0];
+      qlEditor.scrollTop = qlEditor.scrollHeight;
     }
   }
 
@@ -183,54 +183,55 @@
   <slot:fragment slot="content">
     <TabContent value={tabs[0].value} index={currentTab}>
       {#if mode === MODES.edit}
-        <EditContent
-          writeLabel="Note"
-          bind:value={$lesson.materials.note}
-          placeholder="Start typing your lesson"
-          on:change={handleInputChange}
-          bind:textareaRef
-          bind:buttonRef={aiButtonRef}
-        >
-          <div slot="buttons" class="flex items-center">
-            <PrimaryButton
-              className="flex items-center relative"
-              onClick={() => {
-                openPopover = !openPopover;
+        <div bind:this={aiButtonRef} class="w-full flex flex-row-reverse">
+          <PrimaryButton
+            className="flex items-center relative"
+            onClick={() => {
+              openPopover = !openPopover;
+            }}
+            isLoading={$isLoading}
+            isDisabled={$isLoading}
+            variant={VARIANTS.OUTLINED}
+          >
+            <MachineLearningModel size={20} class="carbon-icon mr-3" />
+            AI
+            <Popover
+              caret
+              align="left"
+              bind:open={openPopover}
+              on:click:outside={({ detail }) => {
+                openPopover = aiButtonRef?.contains(detail.target);
               }}
-              isLoading={$isLoading}
-              isDisabled={$isLoading}
-              variant={VARIANTS.OUTLINED}
             >
-              <MachineLearningModel size={20} class="carbon-icon mr-3" />
-              AI
-              <Popover
-                caret
-                align="left"
-                bind:open={openPopover}
-                on:click:outside={({ detail }) => {
-                  openPopover = aiButtonRef?.contains(detail.target);
-                }}
-              >
-                <div class="p-2">
-                  <button class={aiButtonClass} on:click={() => callAI('outline')}>
-                    <ListIcon class="carbon-icon mr-2" />
-                    Generate Lesson Outline
-                  </button>
-                  <button class={aiButtonClass} on:click={() => callAI('note')}>
-                    <AlignBoxTopLeftIcon class="carbon-icon mr-2" />
-                    Generate Lesson Note
-                  </button>
-                  <button class={aiButtonClass} on:click={() => callAI('activities')}>
-                    <IbmWatsonKnowledgeStudioIcon class="carbon-icon mr-2" />
-                    Generate Lesson Activities
-                  </button>
-                </div>
-              </Popover>
-            </PrimaryButton>
-          </div>
-        </EditContent>
-      {:else if $lesson.materials.note}
-        <MarkdownRender content={$lesson.materials.note} />
+              <div class="p-2">
+                <button class={aiButtonClass} on:click={() => callAI('outline')}>
+                  <ListIcon class="carbon-icon mr-2" />
+                  Generate Lesson Outline
+                </button>
+                <button class={aiButtonClass} on:click={() => callAI('note')}>
+                  <AlignBoxTopLeftIcon class="carbon-icon mr-2" />
+                  Generate Lesson Note
+                </button>
+                <button class={aiButtonClass} on:click={() => callAI('activities')}>
+                  <IbmWatsonKnowledgeStudioIcon class="carbon-icon mr-2" />
+                  Generate Lesson Activities
+                </button>
+              </div>
+            </Popover>
+          </PrimaryButton>
+        </div>
+
+        <div class="h-[60vh]">
+          <TextEditor
+            bind:container={textareaRef}
+            bind:content={$lesson.materials.note}
+            onChange={(c) => ($lesson.materials.note = c)}
+          />
+        </div>
+      {:else if $lesson.materials.note.length > 15}
+        <div>
+          {@html $lesson.materials.note}
+        </div>
       {:else}
         <Box>
           <div class="flex justify-between flex-col items-center w-96">

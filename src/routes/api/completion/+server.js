@@ -29,7 +29,7 @@ export async function POST({ request }) {
     messages: [
       {
         role: 'user',
-        content: `Generate a ${instruction[type]} given the course title is "${courseTitle}" and the lesson is "${lessonTitle}". Format in markdown`
+        content: `Generate a ${instruction[type]} given the course title is "${courseTitle}" and the lesson is "${lessonTitle}". Format in HTML without any styling, don't include the title of the course and title of the lesson in the result & make sure the content is well detailed.`
       }
     ],
     stream: true
