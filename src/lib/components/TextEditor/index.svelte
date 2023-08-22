@@ -7,6 +7,7 @@
   export let docId;
   export let placeholder = 'Type something...';
   export let errorMessage;
+  export let container;
 
   const settings = {
     modules: {
@@ -16,19 +17,18 @@
           toolbar: [
             [{ header: [1, 2, 3, false] }],
             ['bold', 'italic', 'underline', 'strike'],
-            ['link', 'code-block'],
-          ],
+            ['link', 'code-block']
+          ]
         },
         placeholder: 'Type something...',
-        theme: 'snow',
-      },
+        theme: 'snow'
+      }
     },
     theme: 'snow',
-    placeholder,
+    placeholder
   };
 
   let quill = null;
-  let container = null;
 
   function resetContent(docId) {
     if (quill && quill.setText) {
@@ -37,6 +37,14 @@
       } else {
         quill.setText('');
       }
+    }
+  }
+
+  function setQuillHTML(html) {
+    console.log('outside if');
+    if (quill) {
+      console.log('inside if', html);
+      quill.setHTML(html);
     }
   }
 
@@ -70,6 +78,8 @@
     }
   }
 
+  $: setQuillHTML(content);
+
   $: resetContent(docId);
 </script>
 
@@ -93,5 +103,17 @@
 
   :global(.dark .ql-editor.ql-blank::before) {
     color: #fff;
+  }
+
+  :global(.ql-editor) {
+    white-space: normal !important;
+  }
+
+  :global(.ql-editor p),
+  :global(.ql-editor h1),
+  :global(.ql-editor h2),
+  :global(.ql-editor h3),
+  :global(.ql-editor h4) {
+    line-height: 2.2;
   }
 </style>
