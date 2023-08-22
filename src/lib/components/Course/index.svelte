@@ -1,4 +1,5 @@
 <script>
+  import TextEditor from '$lib/components/TextEditor/index.svelte';
   import { marked } from 'marked';
   import RoleBasedSecurity from '../RoleBasedSecurity/index.svelte';
   import PageNav from '../PageNav/index.svelte';
@@ -41,13 +42,11 @@
 
 <PageBody width="max-w-3xl px-3">
   {#if mode === MODES.edit}
-    <EditContent
-      writeLabel="Note"
-      bind:value={$course.overview}
-      placeholder="Start typing your lesson"
-      onInputChange={() => {
+    <TextEditor
+      bind:content={$course.overview}
+      onChange={(c) => {
+        $course.overview = c;
         isDirty = true;
-        console.log('input change');
       }}
     />
   {:else}
