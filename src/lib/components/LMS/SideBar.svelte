@@ -68,7 +68,7 @@
         {#each sideLinks as item (item.name)}
           <a href={item.link} class="text-black">
             <li
-              class="flex items-center py-3 px-4 mb-2 rounded hover:opacity-80 {isActive(
+              class="flex items-center py-3 px-4 mb-2 {NavClasses.item} {isActive(
                 $page.url.pathname,
                 `${item.link}`
               ) && NavClasses.active}"
@@ -95,7 +95,7 @@
       </a>
       <a href="/lms/settings" class="text-black">
         <li
-          class="flex items-center py-3 px-4 mb-2 rounded hover:opacity-80 {isActive(
+          class="flex items-center py-3 px-4 mb-2 {NavClasses.item} {isActive(
             $page.url.pathname,
             `/lms/settings`
           ) && NavClasses.active}"

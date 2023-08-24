@@ -77,7 +77,7 @@
         {#each menuItems as menuItem}
           <a href="{$currentOrgPath}{menuItem.path}" class="text-black no-underline">
             <li
-              class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 hover:text-black dark:hover:text-black {isActive(
+              class="flex items-center py-3 px-4 mb-2 {NavClasses.item} {isActive(
                 $page.url.pathname,
                 `${$currentOrgPath}${menuItem.path}`
               )
@@ -113,7 +113,7 @@
       </a>
       <a href="{$currentOrgPath}/settings" class="text-black no-underline">
         <li
-          class="flex items-center py-3 px-4 mb-2 rounded hover:bg-gray-200 hover:text-black dark:hover:text-black {isActive(
+          class="flex items-center py-3 px-4 mb-2 {NavClasses.item} {isActive(
             $page.url.pathname,
             `${$currentOrgPath}/settings`
           )
