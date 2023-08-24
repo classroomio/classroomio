@@ -155,7 +155,7 @@
   }
 </script>
 
-<section class="max-w-[1240px] mx-auto">
+<section class="max-w-6xl mx-auto">
   <div class="m-5">
     <h1 class="text-3xl font-semibold my-4">Exercises</h1>
     <div class="flex items-center w-full">
