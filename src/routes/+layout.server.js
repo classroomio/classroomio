@@ -22,7 +22,7 @@ export const load = async ({ url, cookies }) => {
 
   const _orgSiteName = cookies.get('_orgSiteName');
   const debugPlay = cookies.get('debugPlay');
-  const debugMode = _orgSiteName !== 'false';
+  const debugMode = _orgSiteName && _orgSiteName !== 'false';
   console.log('_orgSiteName', _orgSiteName);
 
   const matches = url.host.match(/([a-z 0-9 \-]+).*classroomio[.]com/);
