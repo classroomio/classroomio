@@ -101,21 +101,6 @@
     top: 0;
   }
 
-  .active {
-    position: relative;
-    display: inline-block;
-  }
-
-  .active::after {
-    position: absolute;
-    content: '';
-    width: 100%;
-    height: 3px;
-    background-color: var(--main-primary-color);
-    display: block;
-    bottom: -8px;
-  }
-
   .header.bring-down {
     flex-direction: column;
     align-items: flex-start;
