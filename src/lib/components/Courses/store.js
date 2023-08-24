@@ -2,7 +2,7 @@ import { writable } from 'svelte/store';
 
 export const courses = writable([]);
 export const courseMetaDeta = writable({
-  isLoading: false,
+  isLoading: true
 });
 
 export const createCourseModal = writable({
@@ -11,7 +11,7 @@ export const createCourseModal = writable({
   description: '',
   emails: '',
   tutors: '',
-  students: '',
+  students: ''
 });
 
 export const copyCourseModalInitialState = {
@@ -20,6 +20,6 @@ export const copyCourseModalInitialState = {
   id: '',
   title: '',
   isSaving: false,
-  error: null,
+  error: null
 };
 export const copyCourseModal = writable({ ...copyCourseModalInitialState });
