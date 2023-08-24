@@ -34,6 +34,7 @@
   import { toggleBodyByTheme } from '$lib/utils/functions/app';
   import { appStore } from '$lib/utils/store/app';
   import { currentOrg } from '$lib/utils/store/org';
+  import { setTheme } from '$lib/utils/functions/theme';
 
   import '../app.postcss';
 
@@ -46,10 +47,6 @@
   const delayedPreloading = derived(navigating, (currentPreloading, set) => {
     setTimeout(() => set(currentPreloading), 250);
   });
-
-  function setTheme(theme) {
-    document.body.className = document.body.className.concat(' ', theme);
-  }
 
   function setupSentry() {
     if (!dev) {
@@ -243,11 +240,15 @@
 
     if (data.isOrgSite) {
       console.log('data', data);
-      $appStore.orgSiteName = data.orgSiteName;
-      $appStore.isOrgSite = data.isOrgSite;
+      if (!data.org) {
+        goto('/404');
+      } else {
+        $appStore.orgSiteName = data.orgSiteName;
+        $appStore.isOrgSite = data.isOrgSite;
 
-      currentOrg.set(data.org);
-      setTheme(data.org.theme);
+        currentOrg.set(data.org);
+        setTheme(data.org.theme);
+      }
     }
 
     return () => {
@@ -273,7 +274,7 @@
 {#if data.skipAuth}
   <PlayQuiz />
 {:else if data.isOrgSite && !path}
-  <OrgLandingPage orgSiteName={data.orgSiteName} />
+  <OrgLandingPage orgSiteName={data.orgSiteName} org={data.org} />
 {:else}
   <main class="dark:bg-gray-800">
     {#if $navigating && $delayedPreloading}
@@ -389,5 +390,15 @@
     background: url(/logo-192.png) 99% 70% no-repeat,
       linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5)) !important;
     background-size: 50px auto, auto !important;
+  }
+
+  :global(.cards-container) {
+    width: 90%;
+    margin: 0 auto;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    column-gap: 12px;
+    row-gap: 12px;
   }
 </style>
