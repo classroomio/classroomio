@@ -20,10 +20,10 @@ export const load = async ({ url, cookies }) => {
     org: {}
   };
 
-  const debugOrgLandingPage = cookies.get('debugOrgLandingPage');
+  const _orgSiteName = cookies.get('_orgSiteName');
   const debugPlay = cookies.get('debugPlay');
-  const debugMode = debugOrgLandingPage === 'true';
-  console.log('debugOrgLandingPage', debugOrgLandingPage);
+  const debugMode = _orgSiteName !== 'false';
+  console.log('_orgSiteName', _orgSiteName);
 
   const matches = url.host.match(/([a-z 0-9 \-]+).*classroomio[.]com/);
   const subdomain = matches?.[1] ?? '';
@@ -32,8 +32,7 @@ export const load = async ({ url, cookies }) => {
     const answer = Array.isArray(matches) ? !!subdomain && subdomain !== 'www' : false;
 
     response.isOrgSite = debugMode || answer;
-    response.orgSiteName = debugMode ? 'codingdojo' : subdomain;
-
+    response.orgSiteName = debugMode ? _orgSiteName : subdomain;
     response.org = await getCurrentOrg(response.orgSiteName, true);
   } else if (subdomain === 'play' || debugPlay === 'true') {
     response.skipAuth = true;

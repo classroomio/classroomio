@@ -22,7 +22,8 @@ export const PUBLIC_ROUTES = [
   ROUTE.FORGOT,
   ROUTE.RESET,
   `^${ROUTE.PAGES}/.*`,
-  `^${ROUTE.COURSE}/.*`
+  `^${ROUTE.COURSE}/.*`,
+  '/404'
 ];
 
 export const ROUTES_TO_HIDE_NAV = [
