@@ -5,7 +5,7 @@
   export let onClick;
   export let contained;
   export let color = 'text-primary-700 bg-primary-200 dark:bg-gray-500';
-  export let size = 'large';
+  export let size = 'small';
 </script>
 
 <IconButton {onClick} {color} {contained} {size}>
