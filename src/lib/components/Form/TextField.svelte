@@ -67,7 +67,7 @@
   {/if}
   <input
     use:typeAction
-    class="form-input border-l-0 border-r-0 border-t-0 border-b-2 border-gray-200 focus:border-l-0 focus:border-r-0 rounded-t-md focus:border-t-0 focus:border-b-2 focus:border-primary-600 {inputClassName} {focusClass} dark:text-black p-3 mt-1 block w-full {bgColor} {errorMessage
+    class="form-input border-l-0 border-r-0 border-t-0 border-b-2 border-gray-200 focus:border-l-0 focus:border-r-0 rounded-t-md focus:border-t-0 focus:border-b-2 {inputClassName} {focusClass} dark:text-black p-3 mt-1 block w-full {bgColor} {errorMessage
       ? 'border-red-600'
       : ''}"
     on:keydown={onKeyDown}
@@ -78,7 +78,13 @@
     required={isRequired}
     disabled={isDisabled}
     autocomplete={autoComplete ? 'on' : 'off'}
-    on:blur={onChange}
+    on:blur={(e) => {
+      if (focusClass.includes('border-primary-600')) {
+        focusClass = focusClass.replace('border-primary-600', '');
+      }
+      onChange(e);
+    }}
+    on:focus={() => (focusClass += ' border-primary-600')}
     {name}
     {min}
     {max}
