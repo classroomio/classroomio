@@ -14,6 +14,7 @@
   import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
   import { FileUploader } from 'carbon-components-svelte';
   import { landingPageSettings } from './store';
+  import type { OrgLandingPageJson } from './store';
 
   let files: File[] = [];
   let imageBuffer: File;
@@ -88,9 +89,22 @@
     };
   };
 
+  const checkPrefix = (inputValue: string) => {
+    if (!inputValue) return;
+
+    if (inputValue.trim() !== '') {
+      if (!inputValue.startsWith('https://')) {
+        inputValue = 'https://' + inputValue;
+      }
+    }
+    return inputValue;
+  };
   async function handleSave() {
     isSaving = true;
-
+    $landingPageSettings.footer.twitter = checkPrefix($landingPageSettings.footer.twitter);
+    $landingPageSettings.footer.linkedin = checkPrefix($landingPageSettings.footer.linkedin);
+    $landingPageSettings.footer.facebook = checkPrefix($landingPageSettings.footer.facebook);
+    console.log($landingPageSettings.footer.twitter);
     const { data, error } = await supabase
       .from('organization')
       .update({ landingpage: $landingPageSettings })
@@ -112,13 +126,13 @@
     isSaving = false;
   }
 
-  function setDefault(landingpage) {
+  function setDefault(landingpage: OrgLandingPageJson) {
     if (landingpage && Object.keys(landingpage).length) {
       $landingPageSettings = landingpage;
     }
   }
 
-  $: setDefault($currentOrg.landingpage);
+  $: setDefault($currentOrg?.landingpage);
 </script>
 
 <Grid class="border-c rounded border-gray-200 w-full mt-5 relative">
@@ -166,8 +180,8 @@
           bind:value={$landingPageSettings.header.action.link}
         />
         <Toggle bind:toggled={$landingPageSettings.header.action.redirect} size="sm">
-          <span slot="labelA" style="color: red">No redirect</span>
-          <span slot="labelB" style="color: green">Redirect</span>
+          <span slot="labelA" style="color: gray">No redirect</span>
+          <span slot="labelB" style="color: gray">Redirect</span>
         </Toggle>
       </div>
       <SectionTitle>Video</SectionTitle>
@@ -178,8 +192,8 @@
           bind:value={$landingPageSettings.header.video.link}
         />
         <Toggle bind:toggled={$landingPageSettings.header.video.show} size="sm">
-          <span slot="labelA" style="color: red">Hide Video</span>
-          <span slot="labelB" style="color: green">Show Video</span>
+          <span slot="labelA" style="color: gray">Hide Video</span>
+          <span slot="labelB" style="color: gray">Show Video</span>
         </Toggle>
       </div>
     </Column>
@@ -408,13 +422,18 @@
         bind:value={$landingPageSettings.footer.facebook}
         className="mb-5"
       />
-      <TextField
+      <!-- <TextField
         label="Instagram"
         placeholder="Write your Instagram link here"
         className="mb-5"
         bind:value={$landingPageSettings.footer.instagram}
+      /> -->
+      <TextField
+        label="Twitter"
+        placeholder="Write your Twitter link here"
+        className="mb-5"
+        bind:value={$landingPageSettings.footer.twitter}
       />
-
       <TextField
         label="Linkedin"
         placeholder="Write your Linkedin link here"

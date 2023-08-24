@@ -147,16 +147,6 @@ export async function getCourseBySiteName(siteName) {
   if (error) {
     return [];
   }
-  const org = get(data, '[0].group.organization', {
-    id: '',
-    name: 'ClassroomIO',
-    shortName: '',
-    siteName: '',
-    avatar_url: '/logo-192.png',
-    landingpage: {},
-    theme: ''
-  });
-  currentOrg.set(org);
 
   return data;
 }
