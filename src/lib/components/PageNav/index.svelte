@@ -64,9 +64,9 @@
     <div class="flex justify-evenly items-center">
       {#each navItems as item}
         <a
-          class="mr-5 pb-2 text-sm flex items-center relative {item.isActive
+          class="mr-5 pb-2 text-sm font-bold flex items-center relative {item.isActive
             ? 'text-primary-700'
-            : 'dark:bg-gray-500 dark:text-white'}"
+            : 'dark:text-white text-black'}"
           href={item.href}
         >
           {item.label}
