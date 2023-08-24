@@ -63,12 +63,22 @@
   {#if Array.isArray(navItems) && navItems.length}
     <div class="flex justify-evenly items-center">
       {#each navItems as item}
-        <a class="mr-5 text-sm flex items-center {item.isActive && 'active'}" href={item.href}>
+        <a
+          class="mr-5 pb-2 text-sm flex items-center relative {item.isActive
+            ? 'text-primary-700'
+            : 'dark:bg-gray-500 dark:text-white'}"
+          href={item.href}
+        >
           {item.label}
 
           {#if typeof item.badgeValue === 'number'}
             <Chip value={item.badgeValue} className="ml-1 bg-gray-300 dark:text-black" />
           {/if}
+          <span
+            class="absolute bottom-0 left-0 h-1 bg-primary-700 transition-all ease-in-out duration-500 {item.isActive
+              ? 'w-full'
+              : 'w-0'}"
+          />
         </a>
       {/each}
       {#if addButtonHref}
