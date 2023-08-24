@@ -31,7 +31,7 @@
       (currentTab = tab);
 </script>
 
-<section class="max-w-[1240px] mx-auto">
+<section class="max-w-6xl mx-auto">
   <div class="m-2 md:m-5">
     <div role="searchbox" class=" bg-gray-100 w-full md:w-[60%] lg:w-[30%]">
       <Search placeholder="Search courses" class="dark:text-black" />
