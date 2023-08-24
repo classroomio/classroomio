@@ -16,7 +16,7 @@
   <title>Student Dashboard - ClassroomIO</title>
 </svelte:head>
 
-<section class="max-w-[1240px] gap-5 mx-auto">
+<section class="max-w-6xl gap-5 mx-auto">
   <div class="m-5">
     <h1 class="text-3xl font-semibold">Dashboard</h1>
     <div
