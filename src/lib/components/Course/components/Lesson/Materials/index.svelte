@@ -73,7 +73,7 @@
     tabs = tabs.map((tab) => {
       const badgeValue =
         tab.value === 1
-          ? note.length > 15
+          ? note?.length > 15
             ? 1
             : 0
           : tab.value === 2
@@ -228,7 +228,7 @@
             onChange={(c) => ($lesson.materials.note = c)}
           />
         </div>
-      {:else if $lesson.materials.note.length > 15}
+      {:else if $lesson.materials?.note?.length > 15}
         <div>
           {@html $lesson.materials.note}
         </div>

@@ -41,9 +41,7 @@
   }
 
   function setQuillHTML(html) {
-    console.log('outside if');
     if (quill) {
-      console.log('inside if', html);
       quill.setHTML(html);
     }
   }
