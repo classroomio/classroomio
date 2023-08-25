@@ -242,7 +242,7 @@
             </div>
 
             <div class="flex flex-row absolute sm:bottom-20 bottom-10 right-10">
-              <div class="success hidden md:block">
+              <div class="success hidden md:block lg:block">
                 <IconButton
                   disabled={isStudent}
                   onClick={() => {
@@ -265,7 +265,7 @@
               </div>
 
               <RoleBasedSecurity allowedRoles={[1, 2]}>
-                <div class="hidden md:block">
+                <div class="hidden md:block lg:block">
                   {#if lessonEditing === lesson.id}
                     <IconButton
                       onClick={() => {
@@ -287,7 +287,7 @@
               </RoleBasedSecurity>
 
               <RoleBasedSecurity allowedRoles={[1, 2]}>
-                <div class="hidden md:block">
+                <div class="hidden md:block lg:block">
                   <IconButton onClick={handleDelete(lesson.id)}>
                     <TrashCanIcon size={24} class="carbon-icon dark:text-white" />
                   </IconButton>
@@ -295,7 +295,10 @@
               </RoleBasedSecurity>
 
               <RoleBasedSecurity allowedRoles={[1, 2]}>
-                <OverflowMenu size="xl" class="block md:hidden absolute right-10 bottom-4 pl-4">
+                <OverflowMenu
+                  size="xl"
+                  class="block md:hidden lg:hidden absolute right-10 bottom-4 pl-4"
+                >
                   <OverflowMenuItem
                     disabled={isStudent}
                     text={lesson.is_unlocked ? 'Lock' : 'Unlock'}
