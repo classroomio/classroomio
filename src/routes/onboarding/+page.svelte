@@ -10,6 +10,7 @@
   import { blockedSubdomain } from '$lib/utils/constants/app';
   import { welcomeModalStore } from '$lib/components/WelcomeModal/store';
   import { getOrganizations } from '$lib/utils/services/org';
+  import { sendWelcomeEmail } from './utils';
 
   interface OnboardingField {
     fullname?: string;
@@ -80,6 +81,7 @@
     const payload = await response.json();
     fields.metadata = payload;
   }
+
   function setOrgSiteName(orgName: string | undefined, isTouched: boolean) {
     if (!orgName || isTouched) return;
     let inputElement = event?.target as HTMLInputElement;
@@ -176,6 +178,10 @@
         })
         .match({ id: $profile.id });
       loading = false;
+
+      if (fields.fullname) {
+        sendWelcomeEmail($profile.email, fields.fullname);
+      }
 
       console.log('data', data);
       console.log('error', error);
