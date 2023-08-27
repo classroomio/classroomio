@@ -55,11 +55,11 @@
           upsert: false
         });
 
-        if (data && data.Key) {
-          const { publicURL } = supabase.storage.from('avatars').getPublicUrl(filename);
+        if (data) {
+          const { data: response } = supabase.storage.from('avatars').getPublicUrl(filename);
 
-          updates.avatar_url = data.publicUrl;
-          $currentOrg.avatar_url = data.publicUrl;
+          updates.avatar_url = response.publicUrl;
+          $currentOrg.avatar_url = response.publicUrl;
         }
         avatar = undefined;
       }
