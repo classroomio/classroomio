@@ -229,9 +229,9 @@
           />
         </div>
       {:else if $lesson.materials?.note?.length > 15}
-        <div>
+        <article class="preview prose prose-sm sm:prose p-2">
           {@html $lesson.materials.note}
-        </div>
+        </article>
       {:else}
         <Box>
           <div class="flex justify-between flex-col items-center w-96">
