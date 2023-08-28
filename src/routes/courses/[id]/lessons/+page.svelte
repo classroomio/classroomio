@@ -88,7 +88,7 @@
   function getLessonOrder(id) {
     const index = $lessons.findIndex((lesson) => lesson.id === id);
 
-    if (index < 10) {
+    if (index < 9) {
       return '0' + (index + 1);
     } else {
       return index + 1;
