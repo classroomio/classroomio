@@ -242,7 +242,7 @@
             </div>
 
             <div class="flex flex-row absolute sm:bottom-20 bottom-10 right-10">
-              <div class="success hidden md:block lg:block">
+              <div class="success hidden md:block">
                 <IconButton
                   disabled={isStudent}
                   onClick={() => {
@@ -265,7 +265,7 @@
               </div>
 
               <RoleBasedSecurity allowedRoles={[1, 2]}>
-                <div class="hidden md:block lg:block">
+                <div class="hidden md:block">
                   {#if lessonEditing === lesson.id}
                     <IconButton
                       onClick={() => {
@@ -287,7 +287,7 @@
               </RoleBasedSecurity>
 
               <RoleBasedSecurity allowedRoles={[1, 2]}>
-                <div class="hidden md:block lg:block">
+                <div class="hidden md:block">
                   <IconButton onClick={handleDelete(lesson.id)}>
                     <TrashCanIcon size={24} class="carbon-icon dark:text-white" />
                   </IconButton>
@@ -295,31 +295,30 @@
               </RoleBasedSecurity>
 
               <RoleBasedSecurity allowedRoles={[1, 2]}>
-                <OverflowMenu
-                  size="xl"
-                  class="block md:hidden lg:hidden absolute right-10 bottom-4 pl-4"
-                >
-                  <OverflowMenuItem
-                    disabled={isStudent}
-                    text={lesson.is_unlocked ? 'Lock' : 'Unlock'}
-                    on:click={() => {
-                      lesson.is_unlocked = !lesson.is_unlocked;
-                      handleSaveLesson(lesson, $course.id);
-                    }}
-                  />
-                  <OverflowMenuItem
-                    text={lessonEditing === lesson.id ? 'Save' : 'Edit'}
-                    on:click={() => {
-                      if (lessonEditing === lesson.id) {
-                        lessonEditing = null;
+                <div class="overflowmenu">
+                  <OverflowMenu size="xl" class="block absolute right-10 bottom-4 pl-4">
+                    <OverflowMenuItem
+                      disabled={isStudent}
+                      text={lesson.is_unlocked ? 'Lock' : 'Unlock'}
+                      on:click={() => {
+                        lesson.is_unlocked = !lesson.is_unlocked;
                         handleSaveLesson(lesson, $course.id);
-                      } else {
-                        lessonEditing = lesson.id;
-                      }
-                    }}
-                  />
-                  <OverflowMenuItem danger text="Delete" on:click={handleDelete(lesson.id)} />
-                </OverflowMenu>
+                      }}
+                    />
+                    <OverflowMenuItem
+                      text={lessonEditing === lesson.id ? 'Save' : 'Edit'}
+                      on:click={() => {
+                        if (lessonEditing === lesson.id) {
+                          lessonEditing = null;
+                          handleSaveLesson(lesson, $course.id);
+                        } else {
+                          lessonEditing = lesson.id;
+                        }
+                      }}
+                    />
+                    <OverflowMenuItem danger text="Delete" on:click={handleDelete(lesson.id)} />
+                  </OverflowMenu>
+                </div>
               </RoleBasedSecurity>
             </div>
           </div>
@@ -339,3 +338,11 @@
     </section>
   </PageBody>
 </CourseContainer>
+
+<style>
+  @media (min-width: 760px) {
+    .overflowmenu {
+      display: none !important;
+    }
+  }
+</style>
