@@ -85,6 +85,7 @@
     try {
       const lessonVideo = $lesson.materials.videos.map((video) => video.link);
       const lessonNumber = getLessonOrder(currentLesson.id);
+      const slideUrl = $lesson.materials.slide_url || '';
 
       const response = await fetch('https://classroomio-server.fly.dev/downloadLesson', {
         method: 'POST',
@@ -95,11 +96,11 @@
         body: JSON.stringify({
           title: currentLesson.title,
           number: lessonNumber,
-          orgName: `${$currentOrg.name}`,
-          note: `${$lesson.materials.note}`,
-          slideUrl: `${$lesson.materials.slide_url}`,
+          orgName: $currentOrg.name,
+          note: $lesson.materials.note,
+          slideUrl: slideUrl,
           video: lessonVideo,
-          courseTitle: `${$course.title}`
+          courseTitle: $course.title
         })
       });
 
