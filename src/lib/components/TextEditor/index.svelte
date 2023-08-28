@@ -29,6 +29,7 @@
   };
 
   let quill = null;
+  let isUserTyping = false;
 
   function resetContent(docId) {
     if (quill && quill.setText) {
@@ -64,6 +65,16 @@
     quill.on('text-change', function () {
       onChange(quill.getHTML());
     });
+    quill.getModule('toolbar').container.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      isUserTyping = true;
+    });
+    quill.root.addEventListener('focus', () => {
+      isUserTyping = true;
+    });
+    quill.root.addEventListener('blur', () => {
+      isUserTyping = false;
+    });
   });
 
   $: {
@@ -76,7 +87,9 @@
     }
   }
 
-  $: setQuillHTML(content);
+  $: if (!isUserTyping) {
+    setQuillHTML(content);
+  }
 
   $: resetContent(docId);
 </script>

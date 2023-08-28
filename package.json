@@ -31,6 +31,7 @@
     "axios": "^1.4.0",
     "body-parser": "^1.20.2",
     "canvas-confetti": "^1.6.0",
+    "cl-editor": "^2.3.0",
     "cookie-parser": "^1.4.6",
     "copy-to-clipboard": "^3.3.3",
     "form-data": "^4.0.0",
