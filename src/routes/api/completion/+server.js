@@ -22,19 +22,16 @@ const instruction = {
 export async function POST({ request }) {
   const { prompt } = await request.json();
   const { courseTitle, lessonTitle, type } = prompt;
-  console.log('prompt', prompt);
-  console.time('debugOpenAi');
   const response = await openai.createChatCompletion({
     model: 'gpt-3.5-turbo',
     messages: [
       {
         role: 'user',
-        content: `Generate a ${instruction[type]} given the course title is "${courseTitle}" and the lesson is "${lessonTitle}". Format in HTML without any styling, don't include the title of the course and title of the lesson in the result & make sure the content is well detailed.`
+        content: `Generate a ${instruction[type]} given the course title is "${courseTitle}" and the lesson is "${lessonTitle}". Format in HTML without any styling, no ul, ol or li tags, don't include the title of the course and title of the lesson in the result & make sure the content is well detailed.`
       }
     ],
     stream: true
   });
-  console.timeEnd('debugOpenAi');
   // Convert the response into a friendly text-stream
   const stream = OpenAIStream(response);
   // Respond with the stream

@@ -17,6 +17,7 @@
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import TextField from '$lib/components/Form/TextField.svelte';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
+  // import ClEditor from '$lib/components/ClEditor/index.svelte';
   import {
     lesson,
     lessons,
@@ -28,6 +29,7 @@
   import VideoUploader from '$lib/components/Course/components/Lesson/Materials/Video/Index.svelte';
   import { course } from '$lib/components/Course/store';
   import * as CONSTANTS from './constants';
+  import isEmpty from 'lodash/isEmpty';
 
   export let mode = MODES.view;
   export let prevMode = '';
@@ -61,6 +63,14 @@
     handleUpdateLessonMaterials(_lesson, lessonId);
   }
 
+  function isNoteEmpty(note) {
+    if (!note || typeof note !== 'string') return true;
+    if (!note.trim()) return true;
+    if (note.trim() === '<p><br></p>') return true;
+
+    return false;
+  }
+
   function handleSave(prevMode: string) {
     if (prevMode === MODES.edit) {
       saveLesson();
@@ -71,19 +81,15 @@
     const { slide_url, videos, note } = materials;
 
     tabs = tabs.map((tab) => {
-      const badgeValue =
-        tab.value === 1
-          ? note?.length > 15
-            ? 1
-            : 0
-          : tab.value === 2
-          ? !!slide_url
-            ? 1
-            : 0
-          : Array.isArray(videos)
-          ? videos.length
-          : 0;
+      let badgeValue = 0;
 
+      if (tab.value === 1 && !isNoteEmpty(note)) {
+        badgeValue = 1;
+      } else if (tab.value === 2 && !!slide_url) {
+        badgeValue = 1;
+      } else if (tab.value === 3 && !isEmpty(videos)) {
+        badgeValue = 1;
+      }
       tab.badgeValue = badgeValue;
       return tab;
     });
@@ -227,8 +233,9 @@
             bind:content={$lesson.materials.note}
             onChange={(c) => ($lesson.materials.note = c)}
           />
+          <!-- <ClEditor bind:html={$lesson.materials.note} /> -->
         </div>
-      {:else if $lesson.materials?.note?.length > 15}
+      {:else if !isNoteEmpty($lesson.materials?.note)}
         <article class="preview prose prose-sm sm:prose p-2">
           {@html $lesson.materials.note}
         </article>
