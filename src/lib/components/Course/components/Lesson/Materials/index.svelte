@@ -65,10 +65,13 @@
 
   function isNoteEmpty(note) {
     if (!note || typeof note !== 'string') return true;
-    if (!note.trim()) return true;
-    if (note.trim() === '<p><br></p>') return true;
 
-    return false;
+    const dummyDiv = document.createElement('div');
+    dummyDiv.innerHTML = note;
+
+    const rawText = dummyDiv.textContent?.trim();
+
+    return rawText === '';
   }
 
   function handleSave(prevMode: string) {
