@@ -1,5 +1,6 @@
 <script>
   export let label = '';
+  export let disabled = false;
   export let placeholder = 'Write your answer...';
   export let value = '';
   export let rows = '3';
@@ -34,11 +35,12 @@
   </pre> -->
 
   <textarea
+    {disabled}
     {rows}
     {placeholder}
     bind:value
     required={isRequired}
-    class="form-textarea dark:bg-gray-500 border-l-0 border-r-0 border-t-0 border-b-2 border-gray-200 focus:border-l-0 focus:border-r-0 rounded-t-md focus:border-t-0 focus:border-b-2 focus:border-primary-600 mt-1 block w-full
+    class="form-textarea dark:bg-gray-500 dark:text-gray-800 border-l-0 border-r-0 border-t-0 border-b-2 border-gray-200 focus:border-l-0 focus:border-r-0 rounded-t-md focus:border-t-0 focus:border-b-2 focus:border-primary-600 mt-1 block w-full
     {bgColor} {!!errorMessage ? 'border-red-500' : 'border-gray-300'}"
     on:change={onChange}
   />

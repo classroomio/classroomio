@@ -30,6 +30,7 @@
   import PageBody from '$lib/components/PageBody/index.svelte';
   import TextChip from '$lib/components/Chip/Text.svelte';
   import Avatar from '$lib/components/Apps/components/Poll/components/Avatar.svelte';
+  import { exerciseMode } from '$lib/components/Course/components/Lesson/Exercise/store';
 
   export let data;
   const { courseId } = data;
@@ -108,6 +109,7 @@
       isStudent = user.role_id === 3;
     }
   }
+  $: $exerciseMode.editMode = !isStudent;
 </script>
 
 <CourseContainer bind:isStudent>

@@ -4,11 +4,14 @@
   export let width = 'max-w-4xl w-full lg:w-11/12';
   export let padding = 'pb-5 px-4';
   export let className = '';
+  export let headerClassName = '';
 </script>
 
 <div class="root mt-4 mx-auto {width} {className} relative {padding}">
   {#if $$slots.header}
-    <div class="head dark:bg-gray-800 flex items-center justify-between sticky right-0 w-full px-3">
+    <div
+      class="head dark:bg-gray-800 flex items-center justify-between sticky right-0 w-full px-3 {headerClassName}"
+    >
       <slot name="header" />
     </div>
   {/if}
@@ -19,6 +22,7 @@
 <style>
   .root {
     overflow-y: auto;
+    overflow-x: hidden;
     height: calc(100vh - 127px);
   }
   .head {

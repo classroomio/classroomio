@@ -19,12 +19,10 @@
   import Modal from '$lib/components/Modal/index.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import Checkbox from '$lib/components/Form/Checkbox.svelte';
-  import DateTime from '$lib/components/Form/DateTime.svelte';
   import RadioItem from '$lib/components/Form/RadioItem.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import ErrorMessage from '$lib/components/ErrorMessage/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import EditContent from '$lib/components/EditContent/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import Select from '$lib/components/Form/Select.svelte';
   import QuestionContainer from '$lib/components/QuestionContainer/index.svelte';
@@ -34,6 +32,7 @@
   import { filterOutDeleted } from './functions';
   import { deleteExercise } from '$lib/utils/services/courses';
   import { lesson } from '../store/lessons';
+
   // import EditContent from "$lib/components/EditContent/index.svelte";
 
   // let value = readme;
@@ -47,13 +46,12 @@
   let errors = {};
   let questionIdToDelete = null;
   let questions = [];
-  let shouldDelete = false;
   let isDeleting = false;
 
   function shouldScrollToLast(questionId, questions) {
+    const [lastQuestion] = questions.slice(-1);
     const currentQuestionsLength = questions.length;
-    const index = questions.findIndex((question) => question.id === questionId);
-    const isLast = index + 1 === currentQuestionsLength;
+    const isLast = lastQuestion.id === questionId;
 
     return isLast && initialQuestionsLength !== currentQuestionsLength;
   }
@@ -97,8 +95,6 @@
       ..._lesson,
       exercises: _lesson.exercises.filter((exercise) => exercise.id !== exerciseId)
     }));
-
-    shouldDelete = false;
     goBack();
   }
 
@@ -119,62 +115,26 @@
   width="w-2/4"
   modalHeading="Update description"
 >
-  {#if shouldDelete}
-    <form on:submit|preventDefault={() => (shouldDelete = false)}>
-      <h1 class="dark:text-white text-2xl">Are you sure?</h1>
+  <form on:submit|preventDefault>
+    <h1 class="dark:text-white text-2xl">Are you sure?</h1>
 
-      <div class="mt-5 flex items-center justify-between">
-        <PrimaryButton
-          className="px-6 py-3"
-          variant={VARIANTS.OUTLINED}
-          label="No, cancel"
-          type="submit"
-        />
-        <PrimaryButton
-          className="px-6 py-3"
-          variant={VARIANTS.CONTAINED}
-          label={isDeleting ? 'Deleting...' : 'Yes, delete'}
-          isDisabled={isDeleting}
-          onClick={handleDelete}
-        />
-      </div>
-    </form>
-  {:else}
-    <div>
-      <QuestionContainer isTitle={true}>
-        <TextField
-          placeholder="Title"
-          bind:value={$questionnaire.title}
-          className="mb-2"
-          onChange={() => ($questionnaire.is_title_dirty = true)}
-        />
-        <DateTime
-          label="Due by"
-          className="w-50"
-          value={$questionnaire.due_by}
-          onInput={(e) => {
-            $questionnaire.due_by = e.target.value;
-            $questionnaire.is_due_by_dirty = true;
-          }}
-        />
-        <EditContent
-          writeLabel="Description"
-          bind:value={$questionnaire.description}
-          placeholder="Start typing your lesson"
-          textAreaHeight="100px"
-          onInputChange={() => ($questionnaire.is_description_dirty = true)}
-        />
-      </QuestionContainer>
-      <div class="float-right">
-        <PrimaryButton
-          className="px-6 py-3"
-          variant={VARIANTS.CONTAINED}
-          label="Delete this exercise"
-          onClick={() => (shouldDelete = true)}
-        />
-      </div>
+    <div class="mt-5 flex items-center justify-between">
+      <PrimaryButton
+        className="px-6 py-3"
+        variant={VARIANTS.OUTLINED}
+        label="No, cancel"
+        type="submit"
+        onClick={() => (editDescription = false)}
+      />
+      <PrimaryButton
+        className="px-6 py-3"
+        variant={VARIANTS.CONTAINED}
+        label={isDeleting ? 'Deleting...' : 'Yes, delete'}
+        isDisabled={isDeleting}
+        onClick={handleDelete}
+      />
     </div>
-  {/if}
+  </form>
 </Modal>
 
 <div class="w-full">
@@ -206,14 +166,6 @@
               }}
             />
           </div>
-
-          <!-- <Dropdown
-          options={extraActions}
-          handleOptionClick={handleOptionClick(question.id)}
-        >
-          <AddFilledIcon class="carbon-icon dark:text-white" />
-          <p class="dark:text-white ml-2 text-gray-600">Add</p>
-        </Dropdown> -->
 
           <Select
             bind:value={question.question_type}
@@ -297,7 +249,7 @@
           {/if}
 
           {#if QUESTION_TYPE.TEXTAREA === question.question_type.id}
-            <TextArea bind:value={question.value} />
+            <TextArea bind:value={question.value} disabled={true} />
           {/if}
 
           {#if getQuestionErrorMsg(errors, question, 'option')}

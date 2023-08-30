@@ -1,20 +1,16 @@
 <script>
-  // import { onMount } from "svelte";
   import TextField from '../Form/TextField.svelte';
-  import CloseButton from '../Buttons/Close/index.svelte';
+  import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
+  import IconButton from '$lib/components/IconButton/index.svelte';
+
   export let isTitle = false;
   export let onClose = () => {};
   export let scrollToQuestion = false;
   export let points = undefined;
   export let hasError = false;
   export let onPointsChange = () => {};
-  let ref;
 
-  // onMount(() => {
-  //   if (scrollToQuestion) {
-  //     ref.scrollIntoView({ block: "end", behavior: "smooth" });
-  //   }
-  // });
+  let ref;
 
   $: {
     if (ref && scrollToQuestion) {
@@ -36,18 +32,14 @@
   {#if isTitle}
     <div class="title absolute bg-primary-700" />
   {/if}
-
-  {#if onClose && !isTitle}
-    <div class="close-button hidden absolute -top-6 -right-6">
-      <CloseButton onClick={onClose} contained={true} />
-    </div>
-  {/if}
   <div class="px-4 {isTitle ? 'pt-4' : 'pt-2'} pb-3">
     <slot />
   </div>
 
   {#if typeof points !== 'undefined'}
-    <div class="border-gray border-t-2 border-r-0 border-b-0 border-l-0 p-2">
+    <div
+      class="flex justify-between items-center border-gray border-t-2 border-r-0 border-b-0 border-l-0 p-2"
+    >
       <div class="flex items-center w-40">
         <p class="dark:text-white text-sm mr-2">Points:</p>
         <TextField
@@ -57,14 +49,17 @@
           onChange={onPointsChange}
         />
       </div>
+
+      {#if onClose && !isTitle}
+        <IconButton onClick={onClose}>
+          <TrashCanIcon size={24} />
+        </IconButton>
+      {/if}
     </div>
   {/if}
 </div>
 
 <style>
-  .root:hover .close-button {
-    display: block;
-  }
   .title {
     color: rgba(255, 255, 255, 1);
     border-top-left-radius: 8px;
