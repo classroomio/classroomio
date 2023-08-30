@@ -2,7 +2,6 @@
   import { onDestroy } from 'svelte';
   import AddAltIcon from 'carbon-icons-svelte/lib/AddAlt.svelte';
   import TableIcon from 'carbon-icons-svelte/lib/Table.svelte';
-  import SettingsIcon from 'carbon-icons-svelte/lib/Settings.svelte';
   import ViewIcon from 'carbon-icons-svelte/lib/View.svelte';
   import ViewFilledIcon from 'carbon-icons-svelte/lib/ViewFilled.svelte';
   import {
@@ -20,121 +19,128 @@
   import EditMode from './EditMode.svelte';
   import MODES from '$lib/utils/constants/mode.js';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { upsertExercise } from '$lib/utils/services/courses';
+  import { deleteExercise, upsertExercise } from '$lib/utils/services/courses';
+  import UpdateDescription from './UpdateDescription.svelte';
+  import { TrashCan } from 'carbon-icons-svelte';
+  import { exerciseMode } from './store';
+  import { snackbarStore } from '$lib/components/Snackbar/store';
+  import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
 
   export let exerciseId;
   export let refetchExercise = () => {};
   export let goBack = () => {};
 
-  let mode = MODES.view;
   let preview = false;
   let editDescription = false;
+  let isSaving = false;
 
-  async function handleMode() {
-    if (mode === MODES.edit) {
+  async function handleSave() {
+    if ($exerciseMode.editMode) {
       const errors = validateQuestionnaire($questionnaire.questions);
       if (Object.values(errors).length > 0) {
         return;
       }
-
-      mode = MODES.view;
+      isSaving = true;
+      // $exerciseMode.mode = MODES.view;
 
       reset();
+      try {
+        const updatedQuestions = await upsertExercise($questionnaire, exerciseId);
 
-      const updatedQuestions = await upsertExercise($questionnaire, exerciseId);
-
-      questionnaire.update((q) => ({
-        ...q,
-        is_title_dirty: false,
-        is_description_dirty: false,
-        questions: updatedQuestions
-      }));
-    } else {
-      mode = MODES.edit;
-      preview = false;
+        questionnaire.update((q) => ({
+          ...q,
+          is_title_dirty: false,
+          is_description_dirty: false,
+          questions: updatedQuestions
+        }));
+        $snackbarStore.open = true;
+        $snackbarStore.message = 'Saved Successfully';
+        $snackbarStore.severity = SNACKBAR_SEVERITY.SUCCESS;
+      } catch (error) {
+        $snackbarStore.open = true;
+        $snackbarStore.message = `An Error Occurred`;
+        $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
+      }
+      isSaving = false;
     }
-  }
-
-  function handleDeleteExercise() {}
-
-  function onCancel() {
-    mode = MODES.view;
-    refetchExercise();
   }
 
   onDestroy(() => {
     reset();
   });
+
+  $: $questionnaire.questions.length < 1 && handleAddQuestion();
 </script>
 
-<PageBody padding="px-4">
+<PageBody padding="px-4" headerClassName="bg-gray-100 rounded-md mb-3">
   <svelte:fragment slot="header">
-    <div class="flex items-center">
+    <div class="flex items-center py-2 w-">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
-        <PrimaryButton
-          className="mr-2"
-          variant={VARIANTS.CONTAINED}
-          label={mode === MODES.edit ? 'Save' : 'Edit'}
-          onClick={handleMode}
-        />
-        {#if mode === MODES.edit}
+        {#if $exerciseMode.editMode}
           <PrimaryButton
             className="mr-2"
-            variant={VARIANTS.OUTLINED}
-            label={'Cancel'}
-            onClick={onCancel}
+            variant={VARIANTS.CONTAINED}
+            label={'Save'}
+            onClick={handleSave}
+            isLoading={isSaving}
           />
         {/if}
+        {#if $exerciseMode.editMode}
+          <IconButton
+            onClick={() => (preview = !preview)}
+            toolTipProps={{ title: 'Toggle preview', direction: 'right' }}
+            selected={preview}
+            contained={true}
+            size="small"
+          >
+            {#if preview}
+              <ViewFilledIcon size={24} class="carbon-icon dark:text-white" />
+            {:else}
+              <ViewIcon size={24} class="carbon-icon dark:text-white" />
+            {/if}
+          </IconButton>
+        {/if}
       </RoleBasedSecurity>
-
-      {#if mode !== MODES.edit}
-        <IconButton
-          onClick={() => (preview = !preview)}
-          toolTipProps={{ title: 'Toggle preview', direction: 'right' }}
-          selected={preview}
-          contained={true}
-        >
-          {#if preview}
-            <ViewFilledIcon size={32} class="carbon-icon dark:text-white" />
-          {:else}
-            <ViewIcon size={32} class="carbon-icon dark:text-white" />
-          {/if}
-        </IconButton>
-      {/if}
     </div>
 
-    {#if mode === MODES.edit}
+    {#if $exerciseMode.editMode}
       <div class="flex items-center">
         <IconButton
-          onClick={handleAddQuestion}
+          onClick={() => handleAddQuestion()}
           toolTipProps={{ title: 'Add question', direction: 'bottom' }}
+          size="small"
         >
-          <AddAltIcon size={32} class="carbon-icon dark:text-white" />
+          <AddAltIcon size={24} class="carbon-icon dark:text-white" />
         </IconButton>
         <IconButton
           onClick={() => ($questionnaireOrder.open = true)}
           toolTipProps={{ title: 'Order questionnaire', direction: 'bottom' }}
+          size="small"
         >
-          <TableIcon size={32} class="carbon-icon dark:text-white" />
+          <TableIcon size={24} class="carbon-icon dark:text-white" />
         </IconButton>
         <IconButton
           onClick={() => (editDescription = true)}
-          toolTipProps={{ title: 'Edit description', direction: 'bottom' }}
+          toolTipProps={{ title: 'Delete Exercise', direction: 'bottom' }}
+          size="small"
         >
-          <SettingsIcon size={32} class="carbon-icon dark:text-white" />
+          <TrashCan size={24} class="carbon-icon dark:text-white" />
         </IconButton>
 
         <!-- <IconButton
-          onClick={handleDeleteExercise}
-          toolTipProps={{ title: 'Delete questionnaire', direction: 'bottom' }}
-        >
-          <Delete32 class="carbon-icon dark:text-white" />
-        </IconButton> -->
+              onClick={handleDeleteExercise}
+              toolTipProps={{ title: 'Delete questionnaire', direction: 'bottom' }}
+            >
+              <Delete32 class="carbon-icon dark:text-white" />
+            </IconButton> -->
       </div>
     {/if}
   </svelte:fragment>
 
-  {#if mode === MODES.edit && !preview}
+  {#if $exerciseMode.editMode}
+    <UpdateDescription {preview} {exerciseId} />
+  {/if}
+  {#if $exerciseMode.editMode && !preview}
     <EditMode bind:editDescription {exerciseId} {goBack} />
   {:else}
     <ViewMode {preview} {exerciseId} />

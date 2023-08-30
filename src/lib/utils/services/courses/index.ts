@@ -243,7 +243,7 @@ export async function upsertExercise(questionnaire: any, exerciseId: Exercise['i
     let questionSupabaseRes;
 
     if (is_dirty || isNew(id)) {
-      const res = await supabase.from('question').upsert(newQuestion);
+      const res = await supabase.from('question').upsert(newQuestion).select();
 
       if (res.error) {
         console.error(`Upsert question`, res.error);
@@ -293,7 +293,7 @@ export async function upsertExercise(questionnaire: any, exerciseId: Exercise['i
           };
 
           if (is_dirty || isNew(option.id)) {
-            const { data } = await supabase.from('option').upsert(newOption);
+            const { data } = await supabase.from('option').upsert(newOption).select();
             if (Array.isArray(data)) {
               // @ts-ignore
               newQuestion.options.push(data[0]);

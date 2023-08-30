@@ -9,7 +9,7 @@
 
 <CopyCourseModal />
 
-<div class="w-full cards-container my-4 m-auto">
+<div class={`w-full ${$courseMetaDeta.isLoading || $courses ? 'cards-container' : ''} my-4 m-auto`}>
   {#if $courseMetaDeta.isLoading}
     <CardLoader />
     <CardLoader />
