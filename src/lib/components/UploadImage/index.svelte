@@ -3,7 +3,7 @@
 
   export let avatar = null;
   export let src = null;
-  export let widthHeight = null;
+  export let widthHeight = '';
   export let shape = 'rounded-full';
   export let errorMessage = null;
 

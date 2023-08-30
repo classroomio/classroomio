@@ -14,7 +14,10 @@
   import { createExercise } from '$lib/utils/services/courses';
   import { QUESTION_TYPES } from '$lib/components/Question/constants';
   import { lesson } from '../store/lessons';
-  import { questionnaire, isQuestionnaireFetching } from '../store/exercise';
+  import { questionnaire, isQuestionnaireFetching, handleAddQuestion } from '../store/exercise';
+  import MODES from '$lib/utils/constants/mode.js';
+  import { ROLE } from '$lib/utils/constants/roles';
+  import { exerciseMode } from '../Exercise/store';
 
   export let path;
   export let exerciseId;
@@ -46,7 +49,7 @@
   function handleCancelAddExercise() {
     open = false;
     newExercise = {
-      id: $lesson.exercises.length + 1,
+      id: new Date().getTime(),
       title: '',
       description: ''
     };
@@ -122,6 +125,10 @@
     getExercises();
   });
 
+  const gotoEdit = () => {
+    $exerciseMode.editMode = true;
+  };
+
   $: getExercise(exerciseId);
 </script>
 
@@ -145,15 +152,16 @@
   <PageBody>
     <slot:fragment slot="header">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
-        <PrimaryButton className="mr-2" label="Add" onClick={() => (open = !open)} />
+        <PrimaryButton className="mr-2 mb-2" label="Add" onClick={() => (open = !open)} />
       </RoleBasedSecurity>
     </slot:fragment>
 
     <div class="flex flex-wrap">
       {#each $lesson.exercises as exercise}
         <a
-          class="w-52 bg-gray-100 dark:bg-gray-700 px-4 py-7 mr-4 mb-4"
+          class="w-52 bg-gray-100 dark:bg-gray-700 px-4 py-7 mr-4 mb-4 rounded-lg"
           href="{path}/{exercise.id}"
+          on:click={gotoEdit}
         >
           <h3 class="dark:text-white text-xl">{exercise.title}</h3>
           <p class="dark:text-white mt-4 text-sm">Created Jul 3, 2021</p>

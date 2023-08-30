@@ -21,7 +21,7 @@
   {/if}
   <select
     bind:value
-    class="form-select block w-auto mt-1 {selectClassName}"
+    class="form-select block w-auto mt-1 dark:text-gray-800 {selectClassName}"
     required={isRequired}
     on:blur={() => {}}
     on:change={onChange}

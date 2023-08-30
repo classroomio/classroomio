@@ -20,6 +20,8 @@
   import { submitExercise } from '$lib/utils/services/courses';
   import { fetchSubmission } from '$lib/utils/services/submissions';
   import { profile } from '$lib/utils/store/user';
+  import MODES from '$lib/utils/constants/mode.js';
+  import { exerciseMode } from './store';
 
   export let preview;
 
@@ -163,10 +165,12 @@
 {/if}
 
 {#if preview}
-  <Preview
-    questions={filterOutDeleted($questionnaire.questions)}
-    questionnaireMetaData={$questionnaireMetaData}
-  />
+  {#if $exerciseMode.editMode}
+    <Preview
+      questions={filterOutDeleted($questionnaire.questions)}
+      questionnaireMetaData={$questionnaireMetaData}
+    />
+  {/if}
 {:else if !$questionnaire.questions.length}
   <Box>
     <img src="/images/empty-exercise-icon.svg" alt="Exercise svg" class="my-2.5" />
@@ -178,34 +182,41 @@
     </p>
   </Box>
 {:else if $questionnaireMetaData.currentQuestionIndex === 0}
-  <div>
-    <h2 class="my-1">{$questionnaire.title}</h2>
+  <RoleBasedSecurity allowedRoles={[3]}>
+    <div>
+      <h2 class="my-1">{$questionnaire.title}</h2>
 
-    <div class="flex items-center">
-      <p class="dark:text-white mx-2">
-        <strong>{$questionnaire.questions.length}</strong> questions
-      </p>
-      |
-      <p class="dark:text-white mx-2">
-        <strong>{getTotalPossibleGrade()}</strong> points.
-      </p>
-      |
-      <p class="dark:text-white mx-2">All required</p>
-      {#if $questionnaire.due_by}
+      <div class="flex items-center">
+        <p class="dark:text-white mx-2">
+          <strong>{$questionnaire.questions.length}</strong> questions
+        </p>
         |
         <p class="dark:text-white mx-2">
-          <strong>Due by:</strong>
-          {new Date($questionnaire.due_by).toLocaleString()}
+          <strong>{getTotalPossibleGrade()}</strong> points.
         </p>
-      {/if}
+        |
+        <p class="dark:text-white mx-2">All required</p>
+        {#if $questionnaire.due_by}
+          |
+          <p class="dark:text-white mx-2">
+            <strong>Due by:</strong>
+            {new Date($questionnaire.due_by).toLocaleString()}
+          </p>
+        {/if}
+      </div>
+
+      <article class="preview prose prose-sm sm:prose p-2">
+        {@html marked($questionnaire.description || 'No desription')}
+      </article>
+
+      <PrimaryButton
+        onClick={handleStart}
+        label="Start"
+        className="my-5 float-right"
+        type="button"
+      />
     </div>
-
-    <article class="preview prose prose-sm sm:prose p-2">
-      {@html marked($questionnaire.description || 'No desription')}
-    </article>
-
-    <PrimaryButton onClick={handleStart} label="Start" className="my-5 float-right" type="button" />
-  </div>
+  </RoleBasedSecurity>
 {:else if $questionnaireMetaData.isFinished}
   <div class="flex items-center justify-between">
     <div class="flex flex-col justify-between w-full">
