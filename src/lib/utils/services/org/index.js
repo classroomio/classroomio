@@ -54,6 +54,7 @@ export async function getOrganizations(userId) {
       `
       id,
       profile_id,
+      role_id,
       organization!organizationmember_organization_id_fkey (
         id,
         name,
@@ -67,6 +68,7 @@ export async function getOrganizations(userId) {
     .eq('profile_id', userId);
 
   const orgsArray = [];
+
   if (Array.isArray(data) && data.length) {
     data.forEach((orgMember) => {
       orgsArray.push({
@@ -77,6 +79,7 @@ export async function getOrganizations(userId) {
         theme: orgMember?.organization?.theme,
         avatar_url: orgMember?.organization?.avatar_url,
         memberId: orgMember?.id,
+        role_id: orgMember?.role_id,
         landingpage: orgMember?.organization?.landingpage
       });
     });
@@ -173,7 +176,7 @@ export async function getCurrentOrg(siteName, justGet = false) {
 
   if (!justGet) {
     currentOrg.set(data[0]);
-  } else {
+  } else if (!isEmpty(data)) {
     return data[0];
   }
 }

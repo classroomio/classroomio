@@ -96,7 +96,7 @@ const onboardingValidationSchema = {
 export const getConfirmPasswordError = ({ password, confirmPassword }) => {
   return password > 6 && confirmPassword > 6 && password !== confirmPassword
     ? 'Does not match password'
-    : null;
+    : undefined;
 };
 
 export const processErrors = (error, mapToId) => {

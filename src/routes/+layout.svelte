@@ -29,7 +29,7 @@
   import { user, profile } from '$lib/utils/store/user';
   import { getSupabase } from '$lib/utils/functions/supabase';
   import { isMobile } from '$lib/utils/store/useMobile';
-  import { ROUTES_TO_HIDE_NAV, ROUTE } from '$lib/utils/constants/routes';
+  import { ROUTE } from '$lib/utils/constants/routes';
   import { getOrganizations, getCurrentOrg } from '$lib/utils/services/org';
   import { toggleBodyByTheme } from '$lib/utils/functions/app';
   import { appStore } from '$lib/utils/store/app';
@@ -37,6 +37,7 @@
   import { setTheme } from '$lib/utils/functions/theme';
 
   import '../app.postcss';
+  import hideNavByRoute from '$lib/utils/functions/routes/hideNavByRoute';
 
   export let data;
 
@@ -98,13 +99,13 @@
         .from('profile')
         .insert({
           id: authUser.id,
-          username: regexUsernameMatch[1] + '1669991321770',
+          username: regexUsernameMatch[1] + `${new Date().getTime()}`,
           fullname: regexUsernameMatch[1],
           email: authUser.email
         })
         .select();
 
-      // Profile created, go to profile page
+      // Profile created, go to onboarding or lms
       if (!error && data) {
         $user.fetchingUser = false;
         $user.isLoggedIn = true;
@@ -141,7 +142,10 @@
           return;
         }
 
-        goto(ROUTE.ONBOARDING);
+        // On invite page, don't go to onboarding
+        if (!path.includes('invite')) {
+          goto(ROUTE.ONBOARDING);
+        }
       }
       $user.fetchingUser = false;
     } else if (profileData) {
@@ -164,17 +168,20 @@
           goto('/lms');
         }
       } else {
-        if (isEmpty(orgRes.orgs)) {
+        // Not on invite page or no org, go to onboarding
+        if (isEmpty(orgRes.orgs) && !path.includes('invite')) {
           goto(ROUTE.ONBOARDING);
         } else if (
-          ['login', 'signup', 'onboarding'].some((r) => path.includes(r)) ||
+          ['login', 'signup', 'onboarding', 'invite'].some((r) => path.includes(r)) ||
           path === '' // for home page
         ) {
           // By default redirect to first organization
           goto(`/org/${orgRes.currentOrg.siteName}`);
         }
 
-        setTheme(orgRes.currentOrg.theme);
+        if (typeof orgRes?.currentOrg?.theme === 'string') {
+          setTheme(orgRes.currentOrg.theme);
+        }
       }
     }
   }
@@ -282,7 +289,7 @@
         <Moon size="60" color="#1d4ed8" unit="px" duration="1s" />
       </Backdrop>
     {/if}
-    {#if !ROUTES_TO_HIDE_NAV.includes($page.url.pathname)}
+    {#if !hideNavByRoute($page.url.pathname)}
       {#if isOrgPage($page.url.pathname) || $page.url.pathname.includes('profile') || isCoursesPage(path)}
         <OrgNavigation bind:title={$course.title} isCoursePage={isCoursesPage(path)} />
       {:else if isLMSPage($page.url.pathname)}

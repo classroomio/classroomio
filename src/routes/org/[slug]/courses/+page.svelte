@@ -8,7 +8,7 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { courses, createCourseModal, courseMetaDeta } from '$lib/components/Courses/store';
   import { setProfileIdOfGroupMember } from '$lib/utils/services/courses';
-  import { currentOrg } from '$lib/utils/store/org.js';
+  import { currentOrg } from '$lib/utils/store/org';
 
   export let data;
   let { allCourses, cantFetch } = data;

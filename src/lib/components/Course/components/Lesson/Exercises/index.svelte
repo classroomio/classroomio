@@ -15,8 +15,6 @@
   import { QUESTION_TYPES } from '$lib/components/Question/constants';
   import { lesson } from '../store/lessons';
   import { questionnaire, isQuestionnaireFetching, handleAddQuestion } from '../store/exercise';
-  import MODES from '$lib/utils/constants/mode.js';
-  import { ROLE } from '$lib/utils/constants/roles';
   import { exerciseMode } from '../Exercise/store';
 
   export let path;
@@ -139,10 +137,10 @@
 {/if}
 
 {#if exerciseId}
-  <Exercise {exerciseId} {goBack} refetchExercise={() => getExercise(exerciseId)} />
+  <Exercise {exerciseId} {goBack} />
 {:else}
   <Modal onClose={handleCancelAddExercise} bind:open modalHeading="Create an Exercise" width="w-80">
-    <TextField bind:value={newExercise.title} autofocus={true} placeholder="Exercise name" />
+    <TextField bind:value={newExercise.title} autoFocus={true} placeholder="Exercise name" />
 
     <div class="mt-5 flex items-center">
       <PrimaryButton className="px-6 py-3" label="Submit" onClick={handleAddExercise} />

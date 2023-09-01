@@ -27,7 +27,6 @@
   import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
 
   export let exerciseId;
-  export let refetchExercise = () => {};
   export let goBack = () => {};
 
   let preview = false;
