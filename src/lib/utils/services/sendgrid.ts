@@ -3,6 +3,7 @@ import type { MailService } from '@sendgrid/mail';
 import { SENDGRID_API_KEY } from '$env/static/private';
 
 export const SENDGRID_FROM = 'Rotimi Best <best@classroomio.com>';
+export const SENDGRID_FROM_HELP = 'ClassroomIO <help@classroomio.com>';
 
 export let sendgrid: MailService;
 

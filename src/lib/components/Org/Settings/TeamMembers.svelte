@@ -1,11 +1,5 @@
 <script>
-  import {
-    Grid,
-    Row,
-    Column,
-    Select,
-    SelectItem,
-  } from 'carbon-components-svelte';
+  import { Grid, Row, Column, Select, SelectItem } from 'carbon-components-svelte';
   import { Moon } from 'svelte-loading-spinners';
   import TextField from '$lib/components/Form/TextField.svelte';
   import TextChip from '$lib/components/Chip/Text.svelte';
@@ -21,6 +15,7 @@
   import { profile } from '$lib/utils/store/user';
   import { supabase } from '$lib/utils/functions/supabase';
   import SectionTitle from '../SectionTitle.svelte';
+  import { sendInvite } from './utils';
 
   let emailsStr = '';
   let errorMessage = '';
@@ -30,11 +25,7 @@
   let isRemoving = false;
 
   async function onSendInvite() {
-    const {
-      hasError,
-      error: _error,
-      emails,
-    } = validateEmailInString(emailsStr);
+    const { hasError, error: _error, emails } = validateEmailInString(emailsStr);
 
     if (hasError) {
       errorMessage = _error;
@@ -51,13 +42,14 @@
           organization_id: $currentOrg.id,
           email,
           role_id: role,
-          verified: false,
+          verified: false
         })
         .select();
       console.log('data', data);
 
       if (error) {
         apiError = error;
+
         console.error('onSendInvite:', error);
         $snackbarStore.open = true;
         $snackbarStore.message = `Failed to send invite, please try again`;
@@ -67,7 +59,6 @@
         return;
       }
       const [newMember] = data || [];
-
       if (newMember) {
         orgTeam.update((team) => [
           {
@@ -75,11 +66,18 @@
             email: newMember?.email,
             verified: newMember?.verified,
             role: ROLE_LABEL[newMember?.role_id] || '',
-            isAdmin: newMember?.role_id === ROLE.ADMIN,
+            isAdmin: newMember?.role_id === ROLE.ADMIN
           },
-          ...team,
+          ...team
         ]);
       }
+
+      // Send email invite
+      sendInvite(email, {
+        id: $currentOrg.id,
+        name: $currentOrg.name,
+        siteName: $currentOrg.siteName
+      });
 
       const isLast = index === emails.length - 1;
       if (isLast) {
@@ -94,20 +92,17 @@
   }
 
   async function onRemove(id) {
-    console.error('onRemove called');
+    console.log('onRemove called');
     isRemoving = true;
-    const { data, error } = await supabase
-      .from('organizationmember')
-      .delete()
-      .match({ id });
+    const { data, error } = await supabase.from('organizationmember').delete().match({ id });
 
     if (error) {
       console.error('onRemove:', error);
       $snackbarStore.open = true;
       $snackbarStore.message = `Failed to remove user, please try again`;
       $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
-    } else if (data) {
-      orgTeam.update((team) => team.filter((member) => member.id !== id));
+    } else {
+      orgTeam.update((team) => [...team.filter((member) => member.id !== id)]);
     }
 
     isRemoving = false;
@@ -122,9 +117,7 @@
   };
 
   const isTeamMemberAdmin = (members, profileId) => {
-    return members.some(
-      (member) => member.profileId === profileId && member.isAdmin
-    );
+    return members.some((member) => member.profileId === profileId && member.isAdmin);
   };
 
   $: fetchTeam($currentOrg.id);
@@ -132,13 +125,10 @@
 
 <Grid class="border rounded border-gray-200 w-full mt-5">
   <Row class="py-7 border-bottom-c">
-    <Column sm={2} md={2} lg={4} class="text-lg"
-      ><SectionTitle>Add</SectionTitle></Column
-    >
+    <Column sm={2} md={2} lg={4} class="text-lg"><SectionTitle>Add</SectionTitle></Column>
     <Column sm={2} md={6} lg={8}>
       <p class="text-md text-gray-500 dark:text-white mb-5">
-        Add your team mates or collaborators to your organization. Start working
-        together
+        Add your team mates or collaborators to your organization. Start working together
       </p>
 
       <div class="">
@@ -166,9 +156,7 @@
   </Row>
 
   <Row class="py-7 border-bottom-c">
-    <Column sm={2} md={2} lg={4} class="text-lg"
-      ><SectionTitle>Members</SectionTitle></Column
-    >
+    <Column sm={2} md={2} lg={4} class="text-lg"><SectionTitle>Members</SectionTitle></Column>
     <Column sm={2} md={6} lg={8}>
       {#if isFetching}
         <Moon />
@@ -179,11 +167,7 @@
               <p class="text-sm text-gray-500 dark:text-white mr-3">
                 {teamMember.email}
               </p>
-              <TextChip
-                value={teamMember.role}
-                className="text-xs mr-3"
-                size="sm"
-              />
+              <TextChip value={teamMember.role} className="text-xs mr-3" size="sm" />
               {#if !teamMember.verified}
                 <TextChip
                   value="Invite Sent"

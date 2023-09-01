@@ -11,6 +11,7 @@
   import { welcomeModalStore } from '$lib/components/WelcomeModal/store';
   import { getOrganizations } from '$lib/utils/services/org';
   import { sendWelcomeEmail } from './utils';
+  import { currentOrg } from '$lib/utils/store/org';
 
   interface OnboardingField {
     fullname?: string;
@@ -200,6 +201,10 @@
     ?.replace(/\s+/g, '-')
     ?.replace(/[^a-zA-Z0-9-]/g, '');
   $: setOrgSiteName(fields.orgName, isSiteNameTouched);
+
+  $: {
+    console.log('currentOrg', $currentOrg);
+  }
 </script>
 
 {#if $profile.id}
