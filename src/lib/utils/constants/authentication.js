@@ -1,19 +1,20 @@
 export const SIGNUP_FIELDS = {
+  name: '',
   email: '',
   password: '',
-  confirmPassword: '',
+  confirmPassword: ''
 };
 
 export const RESET_FIELDS = {
   password: '',
-  confirmPassword: '',
+  confirmPassword: ''
 };
 
 export const LOGIN_FIELDS = {
   email: '',
-  password: '',
+  password: ''
 };
 
 export const FORGOT_PASSWORD_FIELDS = {
-  email: '',
+  email: ''
 };

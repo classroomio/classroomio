@@ -109,7 +109,10 @@
       isStudent = user.role_id === 3;
     }
   }
-  $: $exerciseMode.editMode = !isStudent;
+  $: {
+    console.log('isStudent', isStudent);
+    $exerciseMode.editMode = !isStudent;
+  }
 </script>
 
 <CourseContainer bind:isStudent>

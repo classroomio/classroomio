@@ -1,14 +1,17 @@
 import { writable, derived } from 'svelte/store';
 import { STEPS } from '../constants/quiz';
+import type { Writable } from 'svelte/store';
+import type { CurrentOrg } from '../types/org';
 
 export const orgs = writable([]);
-export const currentOrg = writable({
+export const currentOrg: Writable<CurrentOrg> = writable({
   id: '',
   name: '',
   shortName: '',
   siteName: '',
   avatar_url: '',
   memberId: '',
+  role_id: '',
   landingpage: {},
   theme: ''
 });

@@ -67,7 +67,8 @@
   {/if}
   <input
     use:typeAction
-    class="form-input border-l-0 border-r-0 border-t-0 border-b-2 border-gray-200 focus:border-l-0 focus:border-r-0 rounded-t-md focus:border-t-0 focus:border-b-2 {inputClassName} {focusClass} dark:text-black p-3 mt-1 block w-full {bgColor} {errorMessage
+    class="form-input border-l-0 border-r-0 border-t-0 border-b-2 border-gray-200 focus:border-l-0 focus:border-r-0 rounded-t-md focus:border-t-0 focus:border-b-2 {inputClassName} {focusClass} {isDisabled &&
+      'hover:cursor-not-allowed opacity-50'} dark:text-black p-3 mt-1 block w-full {bgColor} {errorMessage
       ? 'border-red-600'
       : ''}"
     on:keydown={onKeyDown}
@@ -111,7 +112,7 @@
   }
   .password-eye {
     position: absolute;
-    top: 23px;
+    top: 30px;
     right: 6px;
   }
 </style>

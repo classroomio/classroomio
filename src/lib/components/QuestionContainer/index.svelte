@@ -25,7 +25,7 @@
 
 <div
   bind:this={ref}
-  class="bg-white dark:bg-gray-800 border {hasError
+  class="bg-white dark:bg-gray-800 border-2 {hasError
     ? 'border-red-700'
     : 'border-gray hover:border-primary-700'} rounded-md mb-6 relative root"
 >
