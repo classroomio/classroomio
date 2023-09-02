@@ -128,6 +128,7 @@
           <p class=" text-center text-sm font-normal">
             Select file( Mp4, MOV, AVI) to upload to your lesson.
           </p>
+          <p>(Max 30 MB)</p>
         </span>
       {/if}
       <input
@@ -150,7 +151,7 @@
         Oops 😬, couldn’t upload video
       </h3>
       <p class="text-center text-xs font-normal text-[#ADADAD]">
-        Sorry we video wasn’t uploaded. The file size is too big,<br /> maximum size is 50 MB. Try again!
+        Sorry we video wasn’t uploaded. The file size is too big,<br /> maximum size is 30 MB. Try again!
       </p>
     </span>
     <PrimaryButton label="Try another file" onClick={tryAgain} />
