@@ -14,9 +14,9 @@ export const config = {
 };
 
 const instruction = {
-  outline: 'lesson outline',
-  note: 'lesson note',
-  activities: 'interactive lesson activities'
+  outline: 'a structured lesson outline',
+  note: 'a sample lesson note',
+  activities: 'few interactive lesson activities to my lecture'
 };
 
 export async function POST({ request }) {
@@ -27,7 +27,7 @@ export async function POST({ request }) {
     messages: [
       {
         role: 'user',
-        content: `Generate a ${instruction[type]} given the course title is "${courseTitle}" and the lesson is "${lessonTitle}". Format in HTML without any styling, no ul, ol or li tags, don't include the title of the course and title of the lesson in the result & make sure the content is well detailed.`
+        content: `Generate ${instruction[type]} given the course title is "${courseTitle}" and the lesson is "${lessonTitle}". Format in HTML without any styling, no ul, ol or li tags, don't include the title of the course and title of the lesson in the result & make sure the content is well detailed.`
       }
     ],
     stream: true
