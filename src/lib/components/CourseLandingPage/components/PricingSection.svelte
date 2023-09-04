@@ -9,7 +9,7 @@
   export let courseData: Course = {
     id: '',
     title: '',
-    description: '',
+    description: ''
   };
 
   let calculatedCost = 0;
@@ -18,7 +18,9 @@
 
   function calcDisc(percent: number, cost: number) {
     if (!percent) return cost;
-    return Math.round((percent / 100) * cost) || cost;
+    const discountAmount = (percent / 100) * cost;
+    const discountedPrice = cost - discountAmount;
+    return Math.round(discountedPrice);
   }
 
   function addToCart() {}
@@ -36,9 +38,7 @@
 </script>
 
 <!-- Pricing Details -->
-<aside
-  class="{className} price-container md:sticky md:top-0 md:shadow-2xl md:rounded-lg m-h-fit"
->
+<aside class="{className} price-container md:sticky md:top-0 md:shadow-2xl md:rounded-lg m-h-fit">
   <div class="p-10">
     <!-- Pricing -->
     <div class="mb-6">
@@ -68,17 +68,13 @@
         variant={VARIANTS.OUTLINED}
         onClick={addToCart}
       />
-      <p class="dark:text-white font-light text-sm text-gray-500">
-        Early bird offer. Buy ASAP
-      </p>
+      <p class="dark:text-white font-light text-sm text-gray-500">Early bird offer. Buy ASAP</p>
     </div>
   </div>
 
   <!-- Gift Container -->
   {#if courseData?.metadata?.reward?.show}
-    <div
-      class="p-10 flex items-center flex-col border-t border-b border-gray-300"
-    >
+    <div class="p-10 flex items-center flex-col border-t border-b border-gray-300">
       {@html get(courseData, 'metadata.reward.description', '')}
     </div>
   {/if}
