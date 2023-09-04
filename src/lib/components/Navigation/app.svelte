@@ -5,6 +5,8 @@
   import Moon from 'carbon-icons-svelte/lib/Moon.svelte';
   import Sun from 'carbon-icons-svelte/lib/Sun.svelte';
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
+  import Menu from 'carbon-icons-svelte/lib/Menu.svelte';
+  import Close from 'carbon-icons-svelte/lib/Close.svelte';
 
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { course } from '$lib/components/Course/store';
@@ -12,10 +14,15 @@
   import { currentOrgPath } from '$lib/utils/store/org';
   import { toggleBodyByTheme } from '$lib/utils/functions/app';
   import { goto } from '$app/navigation';
+  import { menu } from '../Org/store';
 
   export let title = '';
   export let navClass = '';
   export let isCoursePage = false;
+
+  const toggleSidebar = () => {
+    $menu.hidden = !$menu.hidden;
+  };
 
   function toggleDarkMode() {
     $appStore.isDark = !$appStore.isDark;
@@ -41,6 +48,15 @@
 >
   <ul class="flex w-full items-center">
     <div class="flex items-center text-white">
+      <li>
+        <IconButton onClick={toggleSidebar}>
+          {#if $menu.hidden}
+            <Menu size={16} class="md:hidden text-white" />
+          {:else}
+            <Close size={16} class="md:hidden text-white" />
+          {/if}
+        </IconButton>
+      </li>
       {#if isCoursePage}
         <IconButton
           onClick={() => {
@@ -76,6 +92,7 @@
         {/if}
       </IconButton>
     </li>
+
     <li />
   </ul>
 </nav>
