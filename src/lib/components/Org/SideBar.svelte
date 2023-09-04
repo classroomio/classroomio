@@ -14,6 +14,7 @@
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
+  import { menu } from './store';
 
   const menuItems = [
     {
@@ -55,7 +56,11 @@
 </script>
 
 <aside
-  class="w-[250px] min-w-[250px] bg-gray-100 dark:bg-gray-800 h-full border border-l-0 border-t-0 border-b-0 border-r-1"
+  class={` ${
+    $menu.hidden
+      ? '-translate-x-[100%] top-[48px] md:top-0 absolute md:translate-x-0 md:relative '
+      : 'translate-x-0 absolute md:relative top-[48px] md:top-0'
+  } transition w-[250px] min-w-[250px] bg-gray-100 dark:bg-gray-800   h-full border border-l-0 border-t-0 border-b-0 border-r-1`}
 >
   <div class="h-full flex flex-col">
     <div class="border-b border-gray-200 pt-5 px-4">
