@@ -3,6 +3,7 @@
   import dayjs from 'dayjs';
   import relativeTime from 'dayjs/plugin/relativeTime';
   import AddCommentIcon from 'carbon-icons-svelte/lib/AddComment.svelte';
+  import CommunityLoader from './Loader.svelte';
   import Vote from '$lib/components/Vote/index.svelte';
   import Box from '$lib/components/Box/index.svelte';
   import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
@@ -12,12 +13,14 @@
 
   export let isLMS = false;
 
+  let isLoading = false;
   let discussions = [];
 
   dayjs.extend(relativeTime);
 
   async function fetchCommunityQuestions(orgId) {
     if (!orgId) return;
+    isLoading = true;
 
     const { data, error } = await supabase
       .from('community_question')
@@ -37,6 +40,7 @@
       .eq('organization_id', orgId);
     console.log('data', data);
     console.log('error', error);
+    isLoading = false;
 
     if (error) {
       console.error('Error loading community', error);
@@ -60,35 +64,42 @@
 <div
   class="flex items-center justify-center lg:justify-start flex-wrap my-4 m-auto border-c rounded bg-gray-100 dark:bg-gray-700"
 >
-  {#each discussions as discussion}
-    <div class="w-full flex border-bottom-c p-5">
-      <Vote value={discussion.votes} />
-      <div class="discussion-topic-author">
-        <h4>
-          <a
-            class="text-black dark:text-white"
-            href="{isLMS ? '/lms' : $currentOrgPath}/community/{discussion.slug}"
-          >
-            {discussion.title}
-          </a>
-        </h4>
-        <span class="text-gray-600 dark:text-white">
-          {discussion.author} asked {discussion.createdAt}
-        </span>
-      </div>
-      <Space />
-      <div class="flex items-center">
-        <AddCommentIcon size={20} />
-        <span class="ml-1">{discussion.comments}</span>
-      </div>
-    </div>
+  {#if isLoading}
+    <CommunityLoader />
+    <CommunityLoader />
+    <CommunityLoader />
+    <CommunityLoader />
   {:else}
-    <Box>
-      <CoursesEmptyIcon />
-      <h3 class="dark:text-white text-2xl my-5">No Questions asked</h3>
-      <p class="dark:text-white w-1/3 text-center">Ask a question to the community</p>
-    </Box>
-  {/each}
+    {#each discussions as discussion}
+      <div class="w-full flex border-bottom-c p-5">
+        <Vote value={discussion.votes} />
+        <div class="discussion-topic-author">
+          <h4>
+            <a
+              class="text-black dark:text-white"
+              href="{isLMS ? '/lms' : $currentOrgPath}/community/{discussion.slug}"
+            >
+              {discussion.title}
+            </a>
+          </h4>
+          <span class="text-gray-600 dark:text-white">
+            {discussion.author} asked {discussion.createdAt}
+          </span>
+        </div>
+        <Space />
+        <div class="flex items-center">
+          <AddCommentIcon size={20} />
+          <span class="ml-1">{discussion.comments}</span>
+        </div>
+      </div>
+    {:else}
+      <Box>
+        <CoursesEmptyIcon />
+        <h3 class="dark:text-white text-2xl my-5">No Questions asked</h3>
+        <p class="dark:text-white w-1/3 text-center">Ask a question to the community</p>
+      </Box>
+    {/each}
+  {/if}
 </div>
 
 <style>
