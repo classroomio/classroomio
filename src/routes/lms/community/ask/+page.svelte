@@ -1,7 +1,6 @@
 <script>
   import { goto } from '$app/navigation';
   import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
   import { currentOrg } from '$lib/utils/store/org';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { askCommunityValidation } from '$lib/utils/functions/validator';
@@ -9,6 +8,7 @@
   import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
   import { snackbarStore } from '$lib/components/Snackbar/store';
   import generateSlug from '$lib/utils/functions/generateSlug';
+  import TextEditor from '$lib/components/TextEditor/index.svelte';
 
   let errors = {};
   let fields = {
@@ -87,8 +87,8 @@
   </div>
 
   <TextEditor
-    onChange={(v) => (fields.body = v)}
+    bind:value={fields.body}
     placeholder="Ask the community any question you might have"
-    errorMessage={errors.body}
+    onChange={(html) => (fields.body = html)}
   />
 </section>

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import isEmpty from 'lodash/isEmpty';
   import { useCompletion } from 'ai/svelte';
   import MODES from '$lib/utils/constants/mode.js';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
@@ -16,8 +17,6 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
-  // import ClEditor from '$lib/components/ClEditor/index.svelte';
   import {
     lesson,
     lessons,
@@ -28,8 +27,8 @@
   } from '$lib/components/Course/components/Lesson/store/lessons';
   import VideoUploader from '$lib/components/Course/components/Lesson/Materials/Video/Index.svelte';
   import { course } from '$lib/components/Course/store';
+  import TextEditor from '$lib/components/TextEditor/index.svelte';
   import * as CONSTANTS from './constants';
-  import isEmpty from 'lodash/isEmpty';
 
   export let mode = MODES.view;
   export let prevMode = '';
@@ -41,7 +40,7 @@
   let tabs = CONSTANTS.tabs;
   let currentTab = tabs[0].value;
   let errors = {};
-  let textareaRef = {};
+  let editorWindowRef;
   let aiButtonRef = {};
   let openPopover = false;
   let player = null;
@@ -108,9 +107,10 @@
 
   function updateNoteByCompletion(completion) {
     $lesson.materials.note = completion;
-    if (textareaRef && textareaRef?.children?.[0]) {
-      let qlEditor = textareaRef?.children?.[0];
-      qlEditor.scrollTop = qlEditor.scrollHeight;
+    if (editorWindowRef) {
+      const tmceBody = editorWindowRef?.document?.querySelector('body');
+
+      editorWindowRef?.scrollTo(0, tmceBody?.scrollHeight);
     }
   }
 
@@ -230,13 +230,13 @@
           </PrimaryButton>
         </div>
 
-        <div class="h-[60vh]">
+        <div class="h-[60vh] mt-5">
           <TextEditor
-            bind:container={textareaRef}
-            bind:content={$lesson.materials.note}
-            onChange={(c) => ($lesson.materials.note = c)}
+            bind:editorWindowRef
+            value={$lesson.materials.note}
+            onChange={(html) => ($lesson.materials.note = html)}
+            placeholder="Write your lesson note here"
           />
-          <!-- <ClEditor bind:html={$lesson.materials.note} /> -->
         </div>
       {:else if !isNoteEmpty($lesson.materials?.note)}
         <article class="preview prose prose-sm sm:prose p-2">

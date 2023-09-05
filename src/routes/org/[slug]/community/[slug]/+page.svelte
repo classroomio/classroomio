@@ -9,7 +9,6 @@
   import Vote from '$lib/components/Vote/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
@@ -24,6 +23,7 @@
   import { snackbarStore } from '$lib/components/Snackbar/store';
   import TextField from '$lib/components/Form/TextField.svelte';
   import DeleteCommentModal from '$lib/components/Org/Community/DeleteCommentModal.svelte';
+  import TextEditor from '$lib/components/TextEditor/index.svelte';
 
   dayjs.extend(relativeTime);
 
@@ -45,6 +45,8 @@
     title: '',
     body: ''
   };
+
+  let editorInstance = false;
 
   function mapResToQuestion(data) {
     return {
@@ -210,6 +212,7 @@
     }
 
     isEditMode = !isEditMode;
+    editorInstance = !editorInstance;
 
     if (!isEditMode) {
       const fields = { title: editContent.title, body: editContent.body };
@@ -336,14 +339,12 @@
             </p>
           </div>
         </header>
-        {#if isEditMode}
+        {#if isEditMode && editorInstance}
           <div class="my-2">
             <TextEditor
-              content={question.body}
-              onChange={(c) => (editContent.body = c)}
-              placeholder="Update question"
-              errorMessage={errors.body}
-              docId={resetInput}
+              bind:value={editContent.body}
+              placeholder="Give an answer"
+              onChange={(html) => (editContent.body = html)}
             />
           </div>
         {:else}
@@ -400,12 +401,13 @@
       <hr />
 
       <div>
-        <TextEditor
-          onChange={(c) => (comment = c)}
-          placeholder="Give an answer"
-          errorMessage={errors.comment}
-          docId={resetInput}
-        />
+        {#if !editorInstance}
+          <TextEditor
+            bind:value={comment}
+            placeholder="Give an answer"
+            onChange={(html) => (comment = html)}
+          />
+        {/if}
 
         <div class="flex justify-end mr-2">
           <PrimaryButton label="Comment" onClick={submitComment} />
