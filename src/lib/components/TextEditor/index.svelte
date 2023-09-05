@@ -1,130 +1,41 @@
 <script>
-  import { onMount } from 'svelte';
+  import { PUBLIC_TINYMCE_API_KEY } from '$env/static/public';
+  import Editor from '@tinymce/tinymce-svelte';
 
-  export let onChange;
-  export let content;
-  export let disable;
-  export let docId;
-  export let placeholder = 'Type something...';
-  export let errorMessage;
-  export let container;
+  export let value;
+  export let onChange = (html = '') => {};
+  export let height = 300;
+  export let placeholder = '';
+  export let editorWindowRef;
 
-  const settings = {
-    modules: {
-      toolbar: {
-        modules: {
-          syntax: true,
-          toolbar: [
-            [{ header: [1, 2, 3, false] }],
-            ['bold', 'italic', 'underline', 'strike'],
-            ['link', 'code-block']
-          ]
-        },
-        placeholder: 'Type something...',
-        theme: 'snow'
-      }
-    },
-    theme: 'snow',
-    placeholder
+  const apiKey = PUBLIC_TINYMCE_API_KEY;
+
+  // editor configuration
+  let conf = {
+    plugins: 'lists',
+    toolbar: [
+      { name: 'history', items: ['undo', 'redo'] },
+      { name: 'styles', items: ['styles'] },
+      { name: 'formatting', items: ['bold', 'italic'] },
+      { name: 'alignment', items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify'] },
+      { name: 'indentation', items: ['outdent', 'indent'] },
+      { name: 'list', items: ['numlist', 'bullist'] }
+    ],
+    lists_indent_on_tab: false,
+    min_height: height,
+    placeholder: placeholder,
+    init_instance_callback: function (editor) {
+      editorWindowRef = editor.iframeElement?.contentWindow;
+      editor.on('Input', function (e) {
+        const html = editor.getContent();
+        if (onChange) {
+          onChange(html);
+        }
+      });
+    }
   };
-
-  let quill = null;
-  let isUserTyping = false;
-
-  function resetContent(docId) {
-    if (quill && quill.setText) {
-      if (content) {
-        quill.setContents(JSON.parse(content));
-      } else {
-        quill.setText('');
-      }
-    }
-  }
-
-  function setQuillHTML(html) {
-    if (quill) {
-      quill.setHTML(html);
-    }
-  }
-
-  onMount(async () => {
-    const { default: Quill } = await import('quill');
-
-    Quill.prototype.getHTML = function () {
-      return this.container.querySelector('.ql-editor').innerHTML;
-    };
-
-    Quill.prototype.setHTML = function (html) {
-      this.container.querySelector('.ql-editor').innerHTML = html;
-    };
-
-    quill = new Quill(container, settings);
-
-    quill.setHTML(content || '');
-
-    quill.on('text-change', function () {
-      onChange(quill.getHTML());
-    });
-    quill.getModule('toolbar').container.addEventListener('mousedown', (e) => {
-      e.preventDefault();
-      isUserTyping = true;
-    });
-    quill.root.addEventListener('focus', () => {
-      isUserTyping = true;
-    });
-    quill.root.addEventListener('blur', () => {
-      isUserTyping = false;
-    });
-  });
-
-  $: {
-    if (quill && quill.setText) {
-      if (disable) {
-        quill.disable(disable);
-      } else {
-        quill.enable(true);
-      }
-    }
-  }
-
-  $: if (!isUserTyping) {
-    setQuillHTML(content);
-  }
-
-  $: resetContent(docId);
 </script>
 
-<div class="p-2 w-full h-full">
-  <div bind:this={container} />
-  {#if errorMessage}
-    <p class="dark:text-white text-red-500 text-sm">
-      {errorMessage}
-    </p>
-  {/if}
+<div>
+  <Editor onIni {value} {apiKey} {conf} />
 </div>
-
-<style>
-  :global(.dark .ql-stroke) {
-    stroke: #fff;
-  }
-
-  :global(.dark .ql-snow .ql-picker) {
-    color: #fff;
-  }
-
-  :global(.dark .ql-editor.ql-blank::before) {
-    color: #fff;
-  }
-
-  :global(.ql-editor) {
-    white-space: normal !important;
-  }
-
-  :global(.ql-editor p),
-  :global(.ql-editor h1),
-  :global(.ql-editor h2),
-  :global(.ql-editor h3),
-  :global(.ql-editor h4) {
-    line-height: 2.2;
-  }
-</style>

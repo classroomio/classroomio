@@ -4,8 +4,8 @@
   import get from 'lodash/get';
   import isEmpty from 'lodash/isEmpty';
   import { Toggle } from 'carbon-components-svelte';
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
+  import TextEditor from '$lib/components/TextEditor/index.svelte';
 
   export let course = {};
 
@@ -31,6 +31,12 @@
 
     const _course = cloneDeep(course);
     set(_course, setterKey, value);
+    course = _course;
+  }
+
+  function handleChange(html) {
+    const _course = cloneDeep(course);
+    set(_course, 'metadata.reward.description', html);
     course = _course;
   }
 
@@ -88,13 +94,6 @@
   <p class="dark:text-white font-bold mt-5">About Gift</p>
 
   <div class="h-2/5">
-    <TextEditor
-      content={get(course, 'metadata.reward.description')}
-      onChange={(html) => {
-        const _course = cloneDeep(course);
-        set(_course, 'metadata.reward.description', html);
-        course = _course;
-      }}
-    />
+    <TextEditor value={get(course, 'metadata.reward.description')} onChange={handleChange} />
   </div>
 {/if}

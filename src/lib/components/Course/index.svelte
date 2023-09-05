@@ -1,14 +1,13 @@
 <script>
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
   import { marked } from 'marked';
   import RoleBasedSecurity from '../RoleBasedSecurity/index.svelte';
   import PageNav from '../PageNav/index.svelte';
   import MODES from '$lib/utils/constants/mode';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import PageBody from '../PageBody/index.svelte';
-  import EditContent from '../EditContent/index.svelte';
   import { course } from './store';
   import { updateCourse } from '$lib/utils/services/courses';
+  import TextEditor from '$lib/components/TextEditor/index.svelte';
 
   let mode = MODES.view;
   let isDirty = false;
@@ -43,11 +42,13 @@
 <PageBody width="max-w-3xl px-3">
   {#if mode === MODES.edit}
     <TextEditor
-      bind:content={$course.overview}
-      onChange={(c) => {
-        $course.overview = c;
+      value={$course.overview}
+      onChange={(html) => {
         isDirty = true;
+        $course.overview = html;
       }}
+      placeholder="Write your overview here"
+      height="700"
     />
   {:else}
     <article class="preview prose prose-sm sm:prose p-2">
