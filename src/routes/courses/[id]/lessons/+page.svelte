@@ -22,7 +22,6 @@
   import { profile } from '$lib/utils/store/user';
   import {
     lessons,
-    handleAddLesson,
     handleSaveLesson,
     handleDelete
   } from '$lib/components/Course/components/Lesson/store/lessons';
@@ -30,13 +29,14 @@
   import PageBody from '$lib/components/PageBody/index.svelte';
   import TextChip from '$lib/components/Chip/Text.svelte';
   import Avatar from '$lib/components/Apps/components/Poll/components/Avatar.svelte';
+  import AddLessonModal from '$lib/components/Course/components/Lesson/AddLessonModal.svelte';
   import { exerciseMode } from '$lib/components/Course/components/Lesson/Exercise/store';
 
   export let data;
   const { courseId } = data;
   let lessonEditing;
-  let ref;
   let isStudent = true;
+  let openModal = false;
 
   const flipDurationMs = 300;
 
@@ -52,17 +52,7 @@
 
   // TODO: CRUD of lessons
   function addLesson() {
-    handleAddLesson();
-    setTimeout(() => {
-      lessonEditing = $lessons.length - 1;
-      if (ref) {
-        ref.scrollIntoView({
-          block: 'start',
-          behavior: 'smooth',
-          inline: 'nearest'
-        });
-      }
-    }, 100);
+    openModal = true;
   }
 
   function handleDndConsider(e) {
@@ -115,6 +105,8 @@
   }
 </script>
 
+<AddLessonModal {isStudent} bind:openModal />
+
 <CourseContainer bind:isStudent>
   <PageNav title="Lessons">
     <div slot="widget">
@@ -141,7 +133,6 @@
     >
       {#each $lessons as lesson (lesson.id)}
         <div
-          bind:this={ref}
           class="sm:min-h-[245px] md:min-h-[100px] lg:min-h-[190px] relative m-auto rounded-md border-2 border-gray-200 py-3 px-5 mb-4 flex items-center dark:bg-gray-700"
         >
           <div class="mr-5">

@@ -78,18 +78,7 @@ export async function handleSaveLesson(lesson: Lesson, course_id: Course['id']) 
 
     newLessonData = data;
   }
-
-  lessons.update((l) =>
-    l.map((_lesson) => {
-      if (!_lesson.id && newLessonData) {
-        _lesson.id = newLessonData[0].id;
-      } else if (typeof lesson.id === 'string' && lesson.id === _lesson.id) {
-        return { ..._lesson, is_complete: lesson.is_complete };
-      }
-
-      return _lesson;
-    })
-  );
+  return newLessonData;
 }
 
 export async function handleUpdateLessonMaterials(lesson: any, lessonId: Lesson['id']) {
