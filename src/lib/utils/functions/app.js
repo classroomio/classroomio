@@ -1,4 +1,4 @@
-export function toggleBodyByTheme(isDark) {
+export function toggleBodyByMode(isDark) {
   if (!document) return;
 
   if (isDark) {

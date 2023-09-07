@@ -22,16 +22,16 @@ export const course: Writable<Course> = writable({
     discount: 0,
     reward: {
       show: false,
-      description: '',
+      description: ''
     },
     instructor: {
       name: '',
       role: '',
       coursesNo: 0,
       description: '',
-      imgUrl: '',
-    },
-  },
+      imgUrl: ''
+    }
+  }
 });
 
 export const mockGroupMember = {
@@ -46,15 +46,15 @@ export const mockGroupMember = {
     username: 'robertblake',
     avatar_url: '',
     created_at: '2021-08-08T13:42:13+00:00',
-    updated_at: '2021-08-08T13:42:13+00:00',
-  },
+    updated_at: '2021-08-08T13:42:13+00:00'
+  }
 };
 
 export const group = writable({
   id: null,
   tutors: [],
   students: [],
-  people: [],
+  people: []
 });
 
 export async function setCourse(data: Course, setLesson = true) {
@@ -65,7 +65,7 @@ export async function setCourse(data: Course, setLesson = true) {
     const groupData = Object.assign(data.group, {
       tutors: [],
       students: [],
-      people: [],
+      people: []
     });
 
     // @ts-ignore
@@ -77,7 +77,10 @@ export async function setCourse(data: Course, setLesson = true) {
           groupData.students.push(member);
         } else if (member.profile) {
           // @ts-ignore
-          groupData.tutors.push(member.profile);
+          groupData.tutors.push({
+            ...member.profile,
+            memberId: member.id
+          });
 
           // tutorsById[member.profile.id] = member.profile;
         }
@@ -120,15 +123,15 @@ export async function setCourse(data: Course, setLesson = true) {
       discount: 0,
       reward: {
         show: false,
-        description: '',
+        description: ''
       },
       instructor: {
         name: '',
         role: '',
         coursesNo: 0,
         description: '',
-        imgUrl: '',
-      },
+        imgUrl: ''
+      }
     };
   }
 

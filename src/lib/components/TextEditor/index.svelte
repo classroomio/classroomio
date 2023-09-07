@@ -37,5 +37,5 @@
 </script>
 
 <div>
-  <Editor onIni {value} {apiKey} {conf} />
+  <Editor {value} {apiKey} {conf} />
 </div>

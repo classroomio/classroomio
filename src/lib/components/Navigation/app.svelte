@@ -12,7 +12,7 @@
   import { course } from '$lib/components/Course/store';
   import { appStore } from '$lib/utils/store/app';
   import { currentOrgPath } from '$lib/utils/store/org';
-  import { toggleBodyByTheme } from '$lib/utils/functions/app';
+  import { toggleBodyByMode } from '$lib/utils/functions/app';
   import { goto } from '$app/navigation';
   import { menu } from '../Org/store';
 
@@ -27,10 +27,10 @@
   function toggleDarkMode() {
     $appStore.isDark = !$appStore.isDark;
 
-    toggleBodyByTheme($appStore.isDark);
+    toggleBodyByMode($appStore.isDark);
 
     if (browser) {
-      localStorage.setItem('theme', $appStore.isDark ? 'dark' : '');
+      localStorage.setItem('mode', $appStore.isDark ? 'dark' : '');
     }
   }
 

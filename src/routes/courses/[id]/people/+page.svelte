@@ -62,6 +62,9 @@
 
   async function deletePerson() {
     $group.people = $group.people.filter((person: { id: string }) => person.id !== member.id);
+    $group.tutors = $group.tutors.filter(
+      (person: { memberId: string }) => person.memberId !== member.id
+    );
 
     await deleteGroupMember(member.id);
   }
@@ -114,6 +117,7 @@
 </script>
 
 <InviationModal />
+
 <DeleteConfirmation
   email={member.email || (member.profile && member.profile.email)}
   {deletePerson}

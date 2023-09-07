@@ -1,7 +1,7 @@
 import { writable, derived } from 'svelte/store';
 import { STEPS } from '../constants/quiz';
 import type { Writable } from 'svelte/store';
-import type { CurrentOrg } from '../types/org';
+import type { CurrentOrg, OrgTeamMember } from '../types/org';
 
 export const orgs = writable([]);
 export const currentOrg: Writable<CurrentOrg> = writable({
@@ -16,7 +16,7 @@ export const currentOrg: Writable<CurrentOrg> = writable({
   theme: ''
 });
 export const orgAudience = writable([]);
-export const orgTeam = writable([]);
+export const orgTeam = writable<OrgTeamMember[]>([]);
 export const currentOrgPath = derived(currentOrg, ($currentOrg) =>
   $currentOrg.siteName ? `/org/${$currentOrg.siteName}` : ''
 );
