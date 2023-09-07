@@ -31,7 +31,7 @@
   import { isMobile } from '$lib/utils/store/useMobile';
   import { ROUTE } from '$lib/utils/constants/routes';
   import { getOrganizations, getCurrentOrg } from '$lib/utils/services/org';
-  import { toggleBodyByTheme } from '$lib/utils/functions/app';
+  import { toggleBodyByMode } from '$lib/utils/functions/app';
   import { appStore } from '$lib/utils/store/app';
   import { currentOrg } from '$lib/utils/store/org';
   import { setTheme } from '$lib/utils/functions/theme';
@@ -202,6 +202,15 @@
       window['ga-disable-G-C7WBN0S06R'] = true;
     }
 
+    if (browser) {
+      // Update theme - dark or light mode
+      $appStore.isDark = localStorage.getItem('mode') === 'dark';
+      toggleBodyByMode($appStore.isDark);
+
+      const theme = localStorage.getItem('theme');
+      if (theme) setTheme(theme);
+    }
+
     setupSentry();
 
     handleResize();
@@ -238,12 +247,6 @@
         return goto('/login');
       }
     });
-
-    if (browser) {
-      // Update theme - dark or light mode
-      $appStore.isDark = localStorage.getItem('theme') === 'dark';
-      toggleBodyByTheme($appStore.isDark);
-    }
 
     if (data.isOrgSite) {
       console.log('data', data);

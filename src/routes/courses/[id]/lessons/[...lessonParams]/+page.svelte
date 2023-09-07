@@ -205,7 +205,7 @@
     <Exercises lessonId={data.lessonId} exerciseId={data.exerciseId} path={`${path}/exercises`} />
   {:else if !!data.lessonId}
     <PageBody>
-      <Materials lessonId={data.lessonId} {mode} {prevMode} bind:isSaving />
+      <Materials lessonId={data.lessonId} {mode} {prevMode} {toggleMode} bind:isSaving />
 
       <div class="w-full flex flex-row-reverse">
         <PrimaryButton

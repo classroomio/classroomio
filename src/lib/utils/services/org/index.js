@@ -1,5 +1,6 @@
-import get from 'lodash/get';
 import isEmpty from 'lodash/isEmpty';
+import { get } from 'svelte/store';
+
 import { goto } from '$app/navigation';
 import { supabase } from '$lib/utils/functions/supabase';
 import { orgs, currentOrg, orgAudience, orgTeam } from '$lib/utils/store/org';
@@ -30,9 +31,10 @@ export async function getOrgTeam(orgId) {
     data.forEach((teamMember) => {
       team.push({
         id: teamMember.id,
-        email: teamMember?.profile?.email || teamMember?.email,
-        verified: teamMember?.verified,
+        email: teamMember?.profile?.email || teamMember.email,
+        verified: teamMember.verified,
         profileId: teamMember?.profile?.id,
+        fullname: teamMember?.profile?.fullname || '',
         role: ROLE_LABEL[teamMember?.role_id] || '',
         isAdmin: teamMember?.role_id === ROLE.ADMIN
       });
@@ -42,7 +44,7 @@ export async function getOrgTeam(orgId) {
   }
 
   return {
-    team,
+    team: get(orgTeam),
     error
   };
 }

@@ -1,7 +1,7 @@
 import { render } from 'svelte-email';
 import { json } from '@sveltejs/kit';
 import TeacherInviteTemplate from './template.svelte';
-import { getSendgrid, SENDGRID_FROM_HELP } from '$lib/utils/services/sendgrid';
+import { getSendgrid, SENDGRID_FROM_NOTIFY } from '$lib/utils/services/sendgrid';
 import { getSupabase } from '$lib/utils/functions/supabase';
 
 const sendgrid = getSendgrid();
@@ -47,7 +47,7 @@ export async function POST({ request }) {
   console.log('inviteData', inviteData);
 
   const options = {
-    from: SENDGRID_FROM_HELP,
+    from: SENDGRID_FROM_NOTIFY,
     to: email,
     subject: `Join ${name} on ClassroomIO`,
     html: render({

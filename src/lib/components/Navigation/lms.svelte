@@ -7,16 +7,16 @@
 
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { appStore } from '$lib/utils/store/app';
-  import { toggleBodyByTheme } from '$lib/utils/functions/app';
+  import { toggleBodyByMode } from '$lib/utils/functions/app';
 
   export let navClass = '';
 
   function toggleDarkMode() {
     $appStore.isDark = !$appStore.isDark;
 
-    toggleBodyByTheme($appStore.isDark);
+    toggleBodyByMode($appStore.isDark);
     if (browser) {
-      localStorage.setItem('theme', $appStore.isDark ? 'dark' : '');
+      localStorage.setItem('mode', $appStore.isDark ? 'dark' : '');
     }
   }
 </script>
