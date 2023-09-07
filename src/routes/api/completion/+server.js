@@ -26,8 +26,12 @@ export async function POST({ request }) {
     model: 'gpt-3.5-turbo',
     messages: [
       {
+        role: 'system',
+        content: 'Act like an assistant of a lecturer'
+      },
+      {
         role: 'user',
-        content: `Generate ${instruction[type]} given the course title is "${courseTitle}" and the lesson is "${lessonTitle}". Format in HTML without any styling, no ul, ol or li tags, don't include the title of the course and title of the lesson in the result & make sure the content is well detailed.`
+        content: `Generate ${instruction[type]} given the course title is "${courseTitle}" and the title of the lesson is "${lessonTitle}". Format in HTML without any styling. MOST IMPORTANT DON'T include the title of the course and don't include the lesson title: "${lessonTitle}" in your output. Please make sure the content is well detailed.`
       }
     ],
     stream: true

@@ -9,3 +9,13 @@ export interface CurrentOrg {
   landingpage: {};
   theme: string;
 }
+
+export interface OrgTeamMember {
+  id: number;
+  email: string;
+  verified: boolean;
+  profileId?: string;
+  fullname: string;
+  role: string;
+  isAdmin: boolean;
+}

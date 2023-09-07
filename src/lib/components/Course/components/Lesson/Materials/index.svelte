@@ -34,7 +34,9 @@
   export let prevMode = '';
   export let lessonId = '';
   export let isSaving = false;
+  export let toggleMode = () => {};
 
+  let lessonTitle = '';
   let initAutoSave = false;
   let timeoutId: NodeJS.Timeout;
   let tabs = CONSTANTS.tabs;
@@ -65,12 +67,20 @@
   function isNoteEmpty(note) {
     if (!note || typeof note !== 'string') return true;
 
+    if (!document) return false;
+
     const dummyDiv = document.createElement('div');
     dummyDiv.innerHTML = note;
 
     const rawText = dummyDiv.textContent?.trim();
 
     return rawText === '';
+  }
+
+  function isMaterialsEmpty(materials) {
+    const { slide_url, videos, note } = materials;
+
+    return isNoteEmpty(note) && !slide_url && isEmpty(videos);
   }
 
   function handleSave(prevMode: string) {
@@ -138,7 +148,7 @@
     window.players = players;
   }
 
-  function autoSave(updatedMaterials) {
+  function autoSave(updatedMaterials, _isLoading) {
     if (timeoutId) clearTimeout(timeoutId);
 
     if (!initAutoSave) {
@@ -166,7 +176,7 @@
     $uploadCourseVideoStore.isModalOpen = false;
   };
 
-  $: autoSave($lesson.materials);
+  $: autoSave($lesson.materials, $isLoading);
 
   $: onLessonIdChange(lessonId);
 
@@ -177,6 +187,8 @@
   $: updateNoteByCompletion($completion);
 
   $: initPlyr(player, $lesson.materials.videos);
+
+  $: lessonTitle = $lessons.find((les) => les.id === $lesson.id)?.title || '';
 </script>
 
 <Modal
@@ -188,10 +200,14 @@
   <VideoUploader {lessonId} />
 </Modal>
 
-<Tabs {tabs} {currentTab} {onChange}>
-  <slot:fragment slot="content">
-    <TabContent value={tabs[0].value} index={currentTab}>
-      {#if mode === MODES.edit}
+<h1 class="text-4xl mt-0">
+  {lessonTitle}
+</h1>
+
+{#if mode === MODES.edit}
+  <Tabs {tabs} {currentTab} {onChange}>
+    <slot:fragment slot="content">
+      <TabContent value={tabs[0].value} index={currentTab}>
         <div bind:this={aiButtonRef} class="w-full flex flex-row-reverse">
           <PrimaryButton
             className="flex items-center relative"
@@ -238,131 +254,151 @@
             placeholder="Write your lesson note here"
           />
         </div>
-      {:else if !isNoteEmpty($lesson.materials?.note)}
-        <article class="preview prose prose-sm sm:prose p-2">
-          {@html $lesson.materials.note}
-        </article>
-      {:else}
-        <Box>
-          <div class="flex justify-between flex-col items-center w-96">
-            <img src="/images/empty-note-icon.svg" alt="No Note" class="my-2.5 mx-auto" />
-            <h2 class="text-xl my-1.5 font-normal">No Notes yet</h2>
-            <p class="text-sm text-center text-slate-500">
-              Share your knowledge with the world by creating engaging notes. Add your notes now.
-            </p>
-          </div>
-        </Box>
-      {/if}
-    </TabContent>
+      </TabContent>
 
-    <TabContent value={tabs[1].value} index={currentTab}>
-      {#if mode === MODES.edit}
-        <TextField
-          label="Slide link"
-          bind:value={$lesson.materials.slide_url}
-          onInputChange={handleInputChange}
-        />
-      {:else if $lesson.materials.slide_url}
-        <iframe
-          title="Embeded Slides"
-          src={$lesson.materials.slide_url}
-          frameborder="0"
-          width="100%"
-          height="569"
-          class="iframe"
-          allowfullscreen="true"
-          mozallowfullscreen="true"
-          webkitallowfullscreen="true"
-        />
-      {:else}
-        <Box>
-          <div class="flex justify-between flex-col items-center w-96">
-            <img src="/images/empty-slide-icon.svg" alt="No Slide" class="my-2.5 mx-auto" />
-            <h2 class="text-xl my-1.5 font-normal">No slides yet</h2>
-            <p class="text-sm text-center text-slate-500">
-              Share your knowledge with the world by creating engaging slides. Add your slide's link
-              now.
-            </p>
-          </div>
-        </Box>
-      {/if}
-    </TabContent>
+      <TabContent value={tabs[1].value} index={currentTab}>
+        {#if mode === MODES.edit}
+          <TextField
+            label="Slide link"
+            bind:value={$lesson.materials.slide_url}
+            onInputChange={handleInputChange}
+          />
+        {/if}
+      </TabContent>
 
-    <TabContent value={tabs[2].value} index={currentTab}>
-      {#if mode === MODES.edit && $lesson.materials.videos.length}
+      <TabContent value={tabs[2].value} index={currentTab}>
         <PrimaryButton label="Add/Edit Video(s)" onClick={openAddVideoModal} className="mb-2" />
-      {/if}
-      {#if $lesson.materials.videos.length}
-        <div class="flex flex-col items-start w-full h-full">
-          {#each $lesson.materials.videos as video, index}
-            {#if mode === MODES.edit}
-              <div class="ml-auto">
-                <IconButton
-                  value="delete-video"
-                  contained={true}
-                  onClick={() => deleteLessonVideo(index)}
-                >
-                  <TrashCanIcon size={20} class="carbon-icon dark:text-white" />
-                </IconButton>
-              </div>
-            {/if}
-            <div class="w-full h-full flex flex-col gap-2 overflow-hidden">
-              {#key video.link}
-                <div class="mb-5">
-                  {#if video.type === 'youtube'}
-                    <iframe
-                      width="100%"
-                      height="569"
-                      class="iframe"
-                      src={formatYoutubeVideo(video.link, errors)}
-                      title="YouTube video player"
-                      frameborder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowfullscreen
-                    />
-                  {:else if video.metadata?.svid}
-                    <div style="position:relative;padding-bottom:51.416579%">
-                      <iframe
-                        src="https://muse.ai/embed/{video.metadata
-                          ?.svid}?logo=https://app.classroomio.com/logo-512.png&subtitles=auto&cover_play_position=center"
-                        style="width:100%;height:100%;position:absolute;left:0;top:0"
-                        frameborder="0"
-                        allowfullscreen
-                        title="Muse AI Video Embed"
-                      />
-                    </div>
-                  {:else}
-                    <video bind:this={player} class="plyr-video-trigger" playsinline controls>
-                      <source src={video.link} type="video/mp4" />
-                      <track kind="captions" />
-                    </video>
-                  {/if}
+        {#if $lesson.materials.videos.length}
+          <div class="flex flex-col items-start w-full h-full">
+            {#each $lesson.materials.videos as video, index}
+              {#if mode === MODES.edit}
+                <div class="ml-auto">
+                  <IconButton
+                    value="delete-video"
+                    contained={true}
+                    onClick={() => deleteLessonVideo(index)}
+                  >
+                    <TrashCanIcon size={20} class="carbon-icon dark:text-white" />
+                  </IconButton>
                 </div>
-              {/key}
+              {/if}
+              <div class="w-full h-full flex flex-col gap-2 overflow-hidden">
+                {#key video.link}
+                  <div class="mb-5">
+                    {#if video.type === 'youtube'}
+                      <iframe
+                        width="100%"
+                        height="569"
+                        class="iframe"
+                        src={formatYoutubeVideo(video.link, errors)}
+                        title="YouTube video player"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen
+                      />
+                    {:else if video.metadata?.svid}
+                      <div style="position:relative;padding-bottom:51.416579%">
+                        <iframe
+                          src="https://muse.ai/embed/{video.metadata
+                            ?.svid}?logo=https://app.classroomio.com/logo-512.png&subtitles=auto&cover_play_position=center"
+                          style="width:100%;height:100%;position:absolute;left:0;top:0"
+                          frameborder="0"
+                          allowfullscreen
+                          title="Muse AI Video Embed"
+                        />
+                      </div>
+                    {:else}
+                      <video bind:this={player} class="plyr-video-trigger" playsinline controls>
+                        <source src={video.link} type="video/mp4" />
+                        <track kind="captions" />
+                      </video>
+                    {/if}
+                  </div>
+                {/key}
+              </div>
+            {/each}
+          </div>
+        {/if}
+      </TabContent>
+    </slot:fragment>
+  </Tabs>
+{:else if !isMaterialsEmpty($lesson.materials)}
+  {#if $lesson.materials.videos.length}
+    <div class="w-full">
+      {#each $lesson.materials.videos as video}
+        <div class="w-full overflow-hidden mb-5">
+          {#key video.link}
+            <div class="mb-5">
+              {#if video.type === 'youtube'}
+                <iframe
+                  class="iframe"
+                  src={formatYoutubeVideo(video.link, errors)}
+                  title="YouTube video player"
+                  frameborder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen
+                />
+              {:else if video.metadata?.svid}
+                <div style="position:relative;padding-bottom:51.416579%">
+                  <iframe
+                    src="https://muse.ai/embed/{video.metadata
+                      ?.svid}?logo=https://app.classroomio.com/logo-512.png&subtitles=auto&cover_play_position=center"
+                    style="width:100%;height:100%;position:absolute;left:0;top:0"
+                    frameborder="0"
+                    allowfullscreen
+                    title="Muse AI Video Embed"
+                  />
+                </div>
+              {:else}
+                <video bind:this={player} class="plyr-video-trigger" playsinline controls>
+                  <source src={video.link} type="video/mp4" />
+                  <track kind="captions" />
+                </video>
+              {/if}
             </div>
-          {/each}
+          {/key}
         </div>
-      {:else}
-        <Box>
-          <img src="/no-video.svg" alt="Video not found" />
-          <h3 class="text-xl font-normal dark:text-white py-2">
-            No video added for this lesson yet
-          </h3>
-          <p class="text-sm text-center font-normal py-2">
-            Share videos with your students and get auto transcription and in video search out of
-            the box.<br />
-            Start by clicking on Add Video button.
-          </p>
-          <PrimaryButton label="Add Video" className="rounded-md" onClick={openAddVideoModal} />
-        </Box>
-      {/if}
-    </TabContent>
-  </slot:fragment>
-</Tabs>
+      {/each}
+    </div>
+  {/if}
+
+  {#if $lesson.materials.slide_url}
+    <iframe
+      title="Embeded Slides"
+      src={$lesson.materials.slide_url}
+      frameborder="0"
+      width="100%"
+      height="569"
+      class="iframe my-3"
+      allowfullscreen="true"
+      mozallowfullscreen="true"
+      webkitallowfullscreen="true"
+    />
+  {/if}
+
+  {#if !isNoteEmpty($lesson.materials?.note)}
+    <article class="preview prose prose-sm sm:prose p-2">
+      {@html $lesson.materials.note}
+    </article>
+  {/if}
+{:else}
+  <Box>
+    <img src="/no-video.svg" alt="Video not found" />
+    <h3 class="text-xl font-normal dark:text-white py-2">
+      No note, video or slide added for this lesson yet
+    </h3>
+    <p class="text-sm text-center font-normal py-2">
+      Share your knowledge with your students by creating engaging content<br />
+      Start by clicking on <strong>Get started</strong> button.
+    </p>
+    <PrimaryButton label="Get started" className="rounded-md" onClick={toggleMode} />
+  </Box>
+{/if}
 
 <style>
   .iframe {
-    height: 569px;
+    width: 100%;
+    height: 450px;
   }
 
   @media (max-width: 760px) {
