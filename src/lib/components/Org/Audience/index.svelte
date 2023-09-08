@@ -18,15 +18,13 @@
   $: fetchInitData($currentOrg.id);
 </script>
 
-<div
-  class="flex items-center justify-center lg:justify-start flex-wrap my-4 m-auto"
->
+<div class="flex items-center justify-center lg:justify-start flex-wrap my-4 m-auto">
   {#if $orgAudience.length || isLoading}
     <AudienceList {isLoading} />
   {:else}
     <Box>
       <AudienceEmptyIcon />
-      <h3 class="dark:text-white text-2xl my-5">No audience to manage!</h3>
+      <h3 class="dark:text-white text-2xl text-center my-5">No audience to manage!</h3>
       <p class="dark:text-white w-1/3 text-center">
         Manage all your students here and stay connected with them.
       </p>

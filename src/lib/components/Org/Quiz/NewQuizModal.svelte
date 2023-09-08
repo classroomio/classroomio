@@ -6,17 +6,12 @@
   import { snackbarStore } from '$lib/components/Snackbar/store';
   import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
   import { supabase } from '$lib/utils/functions/supabase';
-  import {
-    currentOrg,
-    createQuizModal,
-    currentOrgPath,
-    quizesStore,
-  } from '$lib/utils/store/org';
+  import { currentOrg, createQuizModal, currentOrgPath, quizesStore } from '$lib/utils/store/org';
   import { createQuizValidation } from '$lib/utils/functions/validator';
 
   let open = false;
   let errors = {
-    title: '',
+    title: ''
   };
   let isLoading = false;
 
@@ -76,16 +71,16 @@
                 {
                   id: 'circle',
                   label: '',
-                  isCorrect: false,
+                  isCorrect: false
                 },
                 {
                   id: 'triangle',
                   label: '',
-                  isCorrect: false,
-                },
-              ],
-            },
-          ],
+                  isCorrect: false
+                }
+              ]
+            }
+          ]
         })
         .select();
       isLoading = false;
@@ -111,7 +106,7 @@
 <Modal
   onClose={handleClose}
   bind:open
-  width="w-2/5"
+  width="w-4/5 md:w-2/5"
   modalHeading="{$createQuizModal.openEdit ? 'Update' : 'Create'} a Quiz"
 >
   <form on:submit|preventDefault={createQuiz}>

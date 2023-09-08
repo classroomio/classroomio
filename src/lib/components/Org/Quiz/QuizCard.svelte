@@ -56,17 +56,17 @@
 
 {#if quiz}
   <div
-    class="root w-full border hover:shadow-2xl transition ease-in-out rounded-lg bg-gray-100 dark:bg-gray-800 mr-4 mb-5 relative flex p-3"
+    class="root w-full border hover:shadow-2xl transition ease-in-out rounded-lg bg-gray-100 dark:bg-gray-800 mr-4 mb-5 relative flex flex-col lg:flex-row p-3"
   >
     <ImageLoader
       src={themeImages[quiz.theme]?.card || themeImages.standard.card}
       alt="quiz-card"
-      style="max-width: 300px;"
+      style="max-width:300px, min-width: 200px;"
     />
 
-    <div class="p-5 flex flex-col justify-between w-full">
+    <div class="p-2 md:p-5 flex flex-col justify-between w-full">
       <div class="flex justify-between">
-        <h4 class="dark:text-white title text-md font-bold">
+        <h4 class="dark:text-white title text-md font-bold capitalize">
           <a href="{$currentOrgPath}/quiz/{quiz.id}">{quiz.title}</a>
         </h4>
 
@@ -77,10 +77,10 @@
         </Dropdown>
       </div>
 
-      <div class="flex justify-between">
+      <div class="flex md:flex-row flex-col justify-between">
         <div>
           <p class="mb-2">{pluralize('question', totalQuestions, true)}</p>
-          <p>Updated {dayjs(quiz.updated_at).fromNow(true)} ago</p>
+          <p class="mb-2 md:mb-0">Updated {dayjs(quiz.updated_at).fromNow(true)} ago</p>
         </div>
 
         <PrimaryButton
@@ -96,6 +96,6 @@
 
 <style>
   .root {
-    height: 180px;
+    min-height: 180px;
   }
 </style>
