@@ -55,7 +55,7 @@
   <title>Ask the Community - ClassroomIO</title>
 </svelte:head>
 
-<section class="w-full max-w-3xl mx-auto">
+<section class="w-full md:max-w-3xl md:mx-auto">
   <div class="p-5">
     <a
       class="text-gray-500 dark:text-white text-md flex items-center"
@@ -63,15 +63,15 @@
     >
       <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" /> Go Back
     </a>
-    <div class="flex items-center justify-between">
-      <h1 class="dark:text-white text-3xl font-bold">Ask the community</h1>
+    <div class="flex items-center gap-12 justify-between">
+      <h1 class="dark:text-white text-2xl md:text-3xl font-bold">Ask the community</h1>
       <PrimaryButton label="Publish" onClick={handleSave} />
     </div>
   </div>
 
   <div class="mb-3 p-2">
     <input
-      class="title rounded-lg border border-1 border-gray p-2 w-full focus:outline-none"
+      class="title rounded-lg border border-1 border-gray p-2 w-full dark:text-black focus:outline-none"
       error="false"
       autocomplete="off"
       placeholder="Title"
@@ -88,10 +88,11 @@
       </p>
     {/if}
   </div>
-
-  <TextEditor
-    bind:value={fields.body}
-    placeholder="Ask the community any question you might have"
-    onChange={(html) => (fields.body = html)}
-  />
+  <div class="px-2">
+    <TextEditor
+      bind:value={fields.body}
+      placeholder="Ask the community any question you might have"
+      onChange={(html) => (fields.body = html)}
+    />
+  </div>
 </section>
