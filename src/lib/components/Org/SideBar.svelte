@@ -63,7 +63,7 @@
     $menu.hidden
       ? '-translate-x-[100%] absolute md:translate-x-0 md:relative z-[9999]'
       : 'translate-x-0 absolute md:relative z-[9999]'
-  } transition w-[250px] min-w-[250px] bg-gray-100 dark:bg-gray-800 h-[calc(100vh-36px)] md:h-full border border-l-0 border-t-0 border-b-0 border-r-1`}
+  } transition w-[250px] min-w-[250px] bg-gray-100 dark:bg-gray-800 h-[calc(100vh-48px)] md:h-full border border-l-0 border-t-0 border-b-0 border-r-1`}
 >
   <div class="h-full flex flex-col">
     <div class="border-b border-gray-200 pt-5 px-4">

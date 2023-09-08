@@ -50,7 +50,7 @@
 </svelte:head>
 
 <section class="w-full md:max-w-6xl md:mx-auto">
-  <div class="py-10 px-2 md:px-5">
+  <div class="py-2 md:py-10 px-2 md:px-5">
     <div class="flex items-center justify-between mb-10">
       <h1 class="dark:text-white text-2xl md:text-3xl font-bold">Courses</h1>
       {#if $isMobile}
