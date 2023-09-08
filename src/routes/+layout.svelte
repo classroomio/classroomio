@@ -346,11 +346,11 @@
   }
 
   .org-root {
-    height: calc(100vh - 44px);
+    height: calc(100vh - 38px);
   }
   .org-slot {
     min-width: calc(100vw - 250px);
-    height: calc(100vh - 44px);
+    height: calc(100vh - 38px);
     overflow-y: auto;
   }
 
@@ -410,5 +410,23 @@
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     column-gap: 12px;
     row-gap: 12px;
+  }
+  @media screen and (max-width: 768px) {
+    :global(.cards-container) {
+      width: 95%;
+      margin: 0 auto;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      column-gap: 12px;
+      row-gap: 12px;
+    }
+  }
+  @media screen and (max-width: 457px) {
+    .org-slot {
+      min-width: 100%;
+      max-height: calc(100vh - 38px);
+      overflow-y: auto;
+    }
   }
 </style>

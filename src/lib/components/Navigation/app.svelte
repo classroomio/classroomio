@@ -48,15 +48,17 @@
 >
   <ul class="flex w-full items-center">
     <div class="flex items-center text-white">
-      <li>
-        <IconButton onClick={toggleSidebar}>
-          {#if $menu.hidden}
-            <Menu size={16} class="md:hidden text-white" />
-          {:else}
-            <Close size={16} class="md:hidden text-white" />
-          {/if}
-        </IconButton>
-      </li>
+      {#if !isCoursePage}
+        <li>
+          <IconButton onClick={toggleSidebar}>
+            {#if $menu.hidden}
+              <Menu size={16} class="md:hidden text-white" />
+            {:else}
+              <Close size={16} class="md:hidden text-white" />
+            {/if}
+          </IconButton>
+        </li>
+      {/if}
       {#if isCoursePage}
         <IconButton
           onClick={() => {

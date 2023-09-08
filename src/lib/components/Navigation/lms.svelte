@@ -7,9 +7,15 @@
 
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { appStore } from '$lib/utils/store/app';
+  import { Close, Menu } from 'carbon-icons-svelte';
+  import { menu } from '$lib/components/Org/store';
   import { toggleBodyByMode } from '$lib/utils/functions/app';
 
   export let navClass = '';
+
+  const toggleSidebar = () => {
+    $menu.hidden = !$menu.hidden;
+  };
 
   function toggleDarkMode() {
     $appStore.isDark = !$appStore.isDark;
@@ -23,6 +29,15 @@
 
 <nav class="{navClass} flex w-full p-2 md:px-6 bg-primary-700">
   <ul class="flex w-full items-center">
+    <li>
+      <IconButton onClick={toggleSidebar}>
+        {#if $menu.hidden}
+          <Menu size={16} class="md:hidden text-white" />
+        {:else}
+          <Close size={16} class="md:hidden text-white" />
+        {/if}
+      </IconButton>
+    </li>
     <div class="">
       <a href={$page.url.pathname} title="Go to ClassroomIO Home" id="logo" class="text-lg">
         ClassroomIO

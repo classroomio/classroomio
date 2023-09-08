@@ -12,6 +12,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
+  import { menu } from '$lib/components/Org/store';
 
   function isActive(pagePath, itemPath) {
     const pageLinkItems = pagePath.split('/');
@@ -45,9 +46,18 @@
       link: '/lms/community'
     }
   ];
+  const toggleSidebar = () => {
+    $menu.hidden = !$menu.hidden;
+  };
 </script>
 
-<aside class="w-[250px] min-w-[250px] bg-gray-100 dark:bg-gray-700 h-full">
+<aside
+  class={`${
+    $menu.hidden
+      ? '-translate-x-[100%] top-[56px] md:top-0 absolute md:translate-x-0 md:relative z-[9999]'
+      : 'translate-x-0 absolute md:relative top-[56px] md:top-0 z-[9999]'
+  } transition w-[250px] min-w-[250px] bg-gray-100 dark:bg-gray-700 h-full`}
+>
   <div class="h-full flex flex-col">
     <div class="border-b border-gray-200 pt-5 px-4">
       {#if $currentOrg.avatar_url}
@@ -66,7 +76,7 @@
 
       <ul class="my-5">
         {#each sideLinks as item (item.name)}
-          <a href={item.link} class="text-black">
+          <a href={item.link} class="text-black" on:click={toggleSidebar}>
             <li
               class="flex items-center py-3 px-4 mb-2 {NavClasses.item} {isActive(
                 $page.url.pathname,
@@ -87,13 +97,13 @@
     </div>
     <span class="flex-grow" />
     <ul class="my-5 pb-5 px-4">
-      <a href="/lms" class="text-black">
+      <a href="/lms" class="text-black" on:click={toggleSidebar}>
         <li class="flex items-center py-3 px-4 mb-2 rounded">
           <HelpIcon size={20} class="carbon-icon dark:text-white" />
           <p class="dark:text-white ml-2">Help</p>
         </li>
       </a>
-      <a href="/lms/settings" class="text-black">
+      <a href="/lms/settings" class="text-black" on:click={toggleSidebar}>
         <li
           class="flex items-center py-3 px-4 mb-2 {NavClasses.item} {isActive(
             $page.url.pathname,

@@ -14,6 +14,7 @@
   import type { UserLessonDataType, LessonsByMonthIndexType } from '$lib/utils/types';
   import WelcomeModal from '$lib/components/WelcomeModal/WelcomeModal.svelte';
   import { onMount } from 'svelte';
+  import { Add } from 'carbon-icons-svelte';
 
   export let data;
   const { orgName } = data;
@@ -194,24 +195,32 @@
 
 <div class="py-10 px-5 w-full max-w-7xl mx-auto">
   <div class="flex items-center justify-between mb-10">
-    <h1 class="dark:text-white text-3xl font-bold">Dashboard</h1>
-    <PrimaryButton label="Create Course" onClick={createCourse} />
+    <h1 class="dark:text-white text-2xl md:text-3xl font-bold">Dashboard</h1>
+    {#if $isMobile}
+      <PrimaryButton onClick={createCourse}>
+        <Add size={24} />
+      </PrimaryButton>
+    {:else}
+      <PrimaryButton label="Create Course" onClick={createCourse} />
+    {/if}
   </div>
 
   <div class="flex items-start flex-wrap">
     {#each boxes as box}
-      <div class="box flex flex-col rounded border border-gray-200 justify-center px-5 mr-5 mb-5">
+      <div
+        class="w-full md:w-[246px] h-[165px] flex flex-col rounded border border-gray-200 justify-center px-5 md:mr-5 mb-5"
+      >
         <p class="dark:text-white mb-2 text-sm">{box.label}</p>
         <p class="dark:text-white text-xl font-bold">{box.value}</p>
       </div>
     {/each}
   </div>
 
-  <div class="flex flex-wrap mt-5">
+  <div class="flex flex-wrap lg:flex-nowrap gap-2 mt-5 w-full">
     <!-- Your Schedule -->
-    <div>
+    <div class="w-full md:w-auto">
       <p class="dark:text-white font-bold mb-7">Your Schedule</p>
-      <div class="rounded border w-2/5 border-gray-200 mr-5 schedule-box">
+      <div class="rounded border border-gray-200 md:mr-3 md:min-w-[450px] schedule-box">
         {#if !$isMobile}
           <div id="calendar" class="flex justify-center mt-5">
             <InlineCalendar bind:store {theme} />
@@ -287,15 +296,15 @@
 
     <!-- Your Activities -->
     <div>
-      <p class="dark:text-white font-bold mb-7">Your Activities</p>
-      <div class="rounded border border-gray-200 w-5 activities-box py-4 px-5">
+      <p class="dark:text-white font-bold mb-7 mt-5 lg:mt-0">Your Activities</p>
+      <div class="rounded border border-gray-200 md:min-w-[450px] activities-box py-4 px-2 md:px-5">
         {#each activities as activity}
           <div class="flex mb-3 pb-3 border-b border-gray-200">
             <Avatar src={activity.avatar} name="avatar" />
-            <div class="ml-2 flex">
+            <div class="ml-2 flex flex-col lg:flex-row">
               <div class="mr-2">
                 <p class="dark:text-white">{activity.name}</p>
-                <p class="dark:text-white mb-2 mt-1">
+                <p class="dark:text-white mb-2 mt-1 line-clamp-1 md:line-clamp-2">
                   {activity.description}
                 </p>
                 <a href={activity.link}>View</a>
@@ -323,9 +332,9 @@
   }
   .schedule-box,
   .activities-box {
-    min-width: 450px;
     height: 516px;
     overflow-y: auto;
+    overflow: hidden;
   }
 
   .calendar-root {
@@ -373,4 +382,21 @@
       font-size: 30px;
     }
   }
+  /* @media screen and (min-width: 756px) {
+    .schedule-box,
+    .activities-box {
+      height: fit-content;
+      overflow-y: auto;
+      overflow: hidden;
+    }
+
+  }
+  @media screen and (min-width: 756px) {
+    .schedule-box,
+    .activities-box {
+      height: fit-content;
+      overflow-y: auto;
+    }
+    
+  } */
 </style>

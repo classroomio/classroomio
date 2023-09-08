@@ -87,7 +87,7 @@
 <Modal
   onClose={() => ($createCourseModal.open = false)}
   bind:open={$createCourseModal.open}
-  width="w-2/5"
+  width="w-4/5 md:w-2/5"
   modalHeading="Create a Course"
 >
   <form on:submit|preventDefault={createCourse}>

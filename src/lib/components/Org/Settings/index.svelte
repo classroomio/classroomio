@@ -63,16 +63,16 @@
   {/each}
   <!-- <Tab label="Account" /> -->
   <svelte:fragment slot="content">
-    <TabContent>
+    <TabContent class="w-full p-0">
       <Profile />
     </TabContent>
     <!-- <TabContent>
       <Account />
     </TabContent> -->
-    <TabContent>
+    <TabContent class="w-full p-0">
       <OrgSettings />
     </TabContent>
-    <TabContent>
+    <TabContent class="w-full p-0">
       <LandingpageSettings />
     </TabContent>
   </svelte:fragment>

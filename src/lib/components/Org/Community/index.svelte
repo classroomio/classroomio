@@ -93,7 +93,7 @@
         </div>
       </div>
     {:else}
-      <Box>
+      <Box className="w-screen">
         <CoursesEmptyIcon />
         <h3 class="dark:text-white text-2xl my-5">No Questions asked</h3>
         <p class="dark:text-white w-1/3 text-center">Ask a question to the community</p>

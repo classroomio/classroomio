@@ -136,25 +136,25 @@
 </script>
 
 <Grid class="border-c rounded border-gray-200 w-full mt-5 relative">
-  <Row class="py-7 border-bottom-c">
-    <Column sm={2} md={2} lg={4}>
+  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+    <Column sm={4} md={4} lg={4}>
       <SectionTitle>Landing Page</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.header.show} size="sm">
         <span slot="labelA" style="color: gray">Hide section</span>
         <span slot="labelB" style="color: gray">Show section</span>
       </Toggle>
     </Column>
-    <Column sm={2} md={6} lg={8}>
+    <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
       <TextField
         label="Title"
         placeholder="Write your title here"
         bind:value={$landingPageSettings.header.title}
-        className="mb-5"
+        className="w-full mb-5"
       />
       <TextField
         label="Title-Highlight"
         placeholder="Write your titlehighlight here"
-        className="mb-5"
+        className="w-full mb-5"
         bind:value={$landingPageSettings.header.titleHighlight}
       />
 
@@ -162,7 +162,7 @@
         label="Subtitle"
         labelClassName="font-light"
         placeholder="Write your subtitle here"
-        className="mb-5"
+        className="w-full mb-5"
         bind:value={$landingPageSettings.header.subtitle}
       />
 
@@ -170,7 +170,7 @@
       <TextField
         label="Label"
         placeholder="Write your label here"
-        className="mt-3 mb-5"
+        className="w-full mt-3 mb-5"
         bind:value={$landingPageSettings.header.action.label}
       />
       <div class="gap-2 mb-5">
@@ -199,15 +199,15 @@
     </Column>
   </Row>
 
-  <Row class="py-7 border-bottom-c">
-    <Column sm={2} md={2} lg={4}
+  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+    <Column sm={4} md={4} lg={4}
       ><SectionTitle>About</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.aboutUs.show} size="sm">
         <span slot="labelA" style="color: gray">Hide section</span>
         <span slot="labelB" style="color: gray">Show section</span>
       </Toggle></Column
     >
-    <Column sm={2} md={6} lg={8}>
+    <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
       <TextField
         label="Title"
         placeholder="Write your title here"
@@ -244,15 +244,15 @@
     </Column>
   </Row>
 
-  <Row class="py-7 border-bottom-c">
-    <Column sm={2} md={2} lg={4}
+  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+    <Column sm={4} md={4} lg={4}
       ><SectionTitle>Courses</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.courses.show} size="sm">
         <span slot="labelA" style="color: gray">Hide section</span>
         <span slot="labelB" style="color: gray">Show section</span>
       </Toggle>
     </Column>
-    <Column sm={2} md={6} lg={8}>
+    <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
       <TextField
         label="Title"
         placeholder="Write your title here"
@@ -272,15 +272,15 @@
     </Column>
   </Row>
 
-  <Row class="py-7 border-bottom-c">
-    <Column sm={2} md={2} lg={4}
+  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+    <Column sm={4} md={4} lg={4}
       ><SectionTitle>Frequently Asked Questions</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.faq.show} size="sm">
         <span slot="labelA" style="color: gray">Hide section</span>
         <span slot="labelB" style="color: gray">Show section</span>
       </Toggle>
     </Column>
-    <Column sm={2} md={6} lg={8}>
+    <Column sm={8} md={8} lg={8}>
       <TextField
         label="Title"
         placeholder="Write your title here"
@@ -331,15 +331,15 @@
     </Column>
   </Row>
 
-  <Row class="py-7 border-bottom-c">
-    <Column sm={2} md={2} lg={4}
+  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+    <Column sm={4} md={4} lg={4}
       ><SectionTitle>Contact us</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.contact.show} size="sm">
         <span slot="labelA" style="color: gray">Hide section</span>
         <span slot="labelB" style="color: gray">Show section</span>
       </Toggle>
     </Column>
-    <Column sm={2} md={6} lg={8}>
+    <Column sm={8} md={8} lg={8}>
       <TextField
         label="Title"
         placeholder="Write your title here"
@@ -375,15 +375,15 @@
     </Column>
   </Row>
 
-  <Row class="py-7 border-bottom-c">
-    <Column sm={2} md={2} lg={4}
+  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+    <Column sm={4} md={4} lg={4}
       ><SectionTitle>Mailing List</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.mailinglist.show} size="sm">
         <span slot="labelA" style="color: gray">Hide section</span>
         <span slot="labelB" style="color: gray">Show section</span>
       </Toggle>
     </Column>
-    <Column sm={2} md={6} lg={8}>
+    <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
       <TextField
         label="Title"
         placeholder="Write your title here"
@@ -407,15 +407,15 @@
     </Column>
   </Row>
 
-  <Row class="py-7 border-bottom-c">
-    <Column sm={2} md={2} lg={4}
+  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+    <Column sm={4} md={4} lg={4}
       ><SectionTitle>Footer</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.footer.show} size="sm">
         <span slot="labelA" style="color: gray">Hide section</span>
         <span slot="labelB" style="color: gray">Show section</span>
       </Toggle>
     </Column>
-    <Column sm={2} md={6} lg={8}>
+    <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
       <TextField
         label="Facebook"
         placeholder="Write your Facebook link here"
