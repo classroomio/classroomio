@@ -346,11 +346,11 @@
   }
 
   .org-root {
-    height: calc(100vh - 38px);
+    height: calc(100vh - 48px);
   }
   .org-slot {
     min-width: calc(100vw - 250px);
-    height: calc(100vh - 38px);
+    height: calc(100vh - 48px);
     overflow-y: auto;
   }
 
@@ -425,7 +425,7 @@
   @media screen and (max-width: 457px) {
     .org-slot {
       min-width: 100%;
-      max-height: calc(100vh - 38px);
+      max-height: calc(100vh - 48px);
       overflow-y: auto;
     }
   }
