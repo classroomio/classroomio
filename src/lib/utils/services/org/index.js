@@ -147,6 +147,7 @@ export async function getCourseBySiteName(siteName) {
     `
     )
     .eq('group.organization.siteName', siteName)
+    .eq('status', 'ACTIVE')
     .eq('is_published', true);
 
   if (error) {

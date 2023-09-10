@@ -5,6 +5,7 @@
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
   import OverflowMenuHorizontalIcon from 'carbon-icons-svelte/lib/OverflowMenuHorizontal.svelte';
   import ArrowRight from 'carbon-icons-svelte/lib/ArrowRight.svelte';
+  // import { deleteCourse } from '$lib/utils/services/courses';
 
   export let bannerImage: string | undefined;
   export let id = '';
@@ -17,6 +18,7 @@
   export let totalLessons = 0;
   export let currency = 'NGN';
   export let isOnLandingPage = false;
+  // export let onDelete = (id: string) => {};
 
   let formatter = getCurrencyFormatter(currency);
 
@@ -37,10 +39,15 @@
       }
       // {
       //   label: 'Delete',
+      //   show: () => role_id === ROLE.TUTOR,
       //   onClick() {
-      //     console.log('Deleting');
-      //   },
-      // },
+      //     (async () => {
+      //       await deleteCourse(id);
+      //       onDelete(id);
+      //       console.log('Deleting');
+      //     })();
+      //   }
+      // }
     ].filter((option) => option.show());
   }
 </script>

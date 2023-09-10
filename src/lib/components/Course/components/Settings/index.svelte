@@ -10,6 +10,7 @@
   import { settingsDialog } from './store';
   import { course } from '$lib/components/Course/store';
   import { updateCourse, deleteCourse } from '$lib/utils/services/courses';
+  import { currentOrgPath } from '$lib/utils/store/org';
 
   let shouldDelete = false;
   let avatar;
@@ -41,7 +42,7 @@
   async function handleDelete() {
     $settingsDialog.open = false;
     await deleteCourse($course.id);
-    goto('/courses');
+    goto($currentOrgPath + '/courses');
   }
 
   // function setAvatar(logo) {

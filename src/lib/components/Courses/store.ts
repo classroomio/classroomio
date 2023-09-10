@@ -1,6 +1,7 @@
 import { writable } from 'svelte/store';
+import type { Course } from '$lib/utils/types';
 
-export const courses = writable([]);
+export const courses = writable<Course[]>([]);
 export const courseMetaDeta = writable({
   isLoading: true
 });
