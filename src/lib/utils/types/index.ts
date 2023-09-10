@@ -99,6 +99,7 @@ export interface Course {
   organization?: Organization;
   is_certificate_downloadable?: boolean;
   certificate_theme?: string;
+  status: string;
 }
 
 export interface Groupmember {
