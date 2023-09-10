@@ -1,11 +1,10 @@
-<script>
+<script lang="ts">
   import Box from '../Box/index.svelte';
   import Card from './components/Card/index.svelte';
   import CardLoader from './components/Card/Loader.svelte';
   import CoursesEmptyIcon from '../Icons/CoursesEmptyIcon.svelte';
   import CopyCourseModal from './components/CopyCourseModal/index.svelte';
   import { courses, courseMetaDeta } from './store';
-  import { isMobile } from '$lib/utils/store/useMobile';
 </script>
 
 <CopyCourseModal />

@@ -2,15 +2,18 @@ import { supabase } from '$lib/utils/functions/supabase';
 import { isUUID } from '$lib/utils/functions/isUUID';
 import { QUESTION_TYPE } from '$lib/components/Question/constants';
 import type { Lesson, Course, Group, Groupmember, Exercise } from '$lib/utils/types';
+import { STATUS } from '$lib/utils/constants/course';
 
 export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']) {
-  let match: { slug?: string; id?: string } = {};
+  let match: { slug?: string; id?: string; status?: string } = {};
 
   if (slug) {
     match.slug = slug;
   } else {
     match.id = courseId;
   }
+
+  match.status = STATUS[STATUS.ACTIVE];
 
   const { data, error } = await supabase
     .from('course')
@@ -109,7 +112,7 @@ export async function updateCourse(
   avatar: string | undefined,
   course: Course
 ) {
-  if (avatar) {
+  if (avatar && courseId) {
     const filename = `course/${courseId + Date.now()}.webp`;
 
     const { data } = await supabase.storage.from('avatars').upload(filename, avatar, {
@@ -132,7 +135,7 @@ export async function updateCourse(
 }
 
 export async function deleteCourse(courseId: Course['id']) {
-  return await supabase.from('course').delete().match({ id: courseId });
+  return await supabase.from('course').update({ status: 'DELETED' }).match({ id: courseId });
 }
 
 export function addGroupMember(member: any) {

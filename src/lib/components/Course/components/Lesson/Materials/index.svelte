@@ -47,7 +47,7 @@
   let openPopover = false;
   let player = null;
   let aiButtonClass =
-    'flex items-center px-5 py-2 border border-gray-300 hover:bg-gray-200 rounded-md w-full mb-2';
+    'flex items-center px-5 py-2 border border-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md w-full mb-2';
 
   const onChange =
     (tab = 0) =>
