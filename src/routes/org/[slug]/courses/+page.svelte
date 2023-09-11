@@ -7,7 +7,6 @@
   import NewCourseModal from '$lib/components/Courses/components/NewCourseModal/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { courses, createCourseModal, courseMetaDeta } from '$lib/components/Courses/store';
-  import { setProfileIdOfGroupMember } from '$lib/utils/services/courses';
   import { currentOrg } from '$lib/utils/store/org';
   import { Add } from 'carbon-icons-svelte';
   import { isMobile } from '$lib/utils/store/useMobile';
@@ -25,8 +24,6 @@
     if (cantFetch && typeof cantFetch === 'boolean' && !allCourses.length && orgId) {
       $courseMetaDeta.isLoading = true;
 
-      const updatedProfile = await setProfileIdOfGroupMember($profile.email, userId);
-      console.log(`updatedProfile`, updatedProfile);
       const coursesResult = await fetchCourses(userId, orgId);
       console.log(`coursesResult`, coursesResult);
 

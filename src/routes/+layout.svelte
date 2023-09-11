@@ -30,14 +30,15 @@
   import { getSupabase } from '$lib/utils/functions/supabase';
   import { isMobile } from '$lib/utils/store/useMobile';
   import { ROUTE } from '$lib/utils/constants/routes';
-  import { getOrganizations, getCurrentOrg } from '$lib/utils/services/org';
+  import { getOrganizations } from '$lib/utils/services/org';
   import { toggleBodyByMode } from '$lib/utils/functions/app';
   import { appStore } from '$lib/utils/store/app';
   import { currentOrg } from '$lib/utils/store/org';
   import { setTheme } from '$lib/utils/functions/theme';
+  import hideNavByRoute from '$lib/utils/functions/routes/hideNavByRoute';
+  import AddOrgModal from '$lib/components/Org/AddOrgModal/AddOrgModal.svelte';
 
   import '../app.postcss';
-  import hideNavByRoute from '$lib/utils/functions/routes/hideNavByRoute';
 
   export let data;
 
@@ -171,6 +172,8 @@
         // Not on invite page or no org, go to onboarding
         if (isEmpty(orgRes.orgs) && !path.includes('invite')) {
           goto(ROUTE.ONBOARDING);
+        } else if (params.has('redirect')) {
+          goto(params.get('redirect') || '');
         } else if (
           ['login', 'signup', 'onboarding', 'invite'].some((r) => path.includes(r)) ||
           path === '' // for home page
@@ -220,7 +223,7 @@
       !isPublicRoute($page.url.pathname)
     ) {
       console.log('No auth token and is not a public route, redirect to login', path);
-      return goto('/login');
+      return goto('/login?redirect=/' + path);
     }
 
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
@@ -309,6 +312,7 @@
 
     <div class="flex justify-between">
       {#if isOrgPage($page.url.pathname)}
+        <AddOrgModal />
         <div class="org-root w-full flex items-center justify-between">
           {#if !isQuizPage($page.url.pathname)}
             <OrgSideBar />

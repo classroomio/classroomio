@@ -3,7 +3,7 @@ import { STEPS } from '../constants/quiz';
 import type { Writable } from 'svelte/store';
 import type { CurrentOrg, OrgTeamMember } from '../types/org';
 
-export const orgs = writable([]);
+export const orgs = writable<CurrentOrg[]>([]);
 export const currentOrg: Writable<CurrentOrg> = writable({
   id: '',
   name: '',

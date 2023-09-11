@@ -57,17 +57,20 @@ export async function getOrganizations(userId) {
       id,
       profile_id,
       role_id,
+      created_at,
       organization!organizationmember_organization_id_fkey (
         id,
         name,
         siteName,
         avatar_url,
         landingpage,
-        theme
+        theme,
+        created_at
       )
     `
     )
-    .eq('profile_id', userId);
+    .eq('profile_id', userId)
+    .order('id', { ascending: false });
 
   const orgsArray = [];
 

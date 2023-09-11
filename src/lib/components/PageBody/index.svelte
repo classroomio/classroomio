@@ -22,7 +22,6 @@
 <style>
   .root {
     overflow-y: auto;
-    overflow-x: hidden;
     height: calc(100vh - 127px);
   }
   .head {

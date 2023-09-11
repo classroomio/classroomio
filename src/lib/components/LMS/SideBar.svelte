@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { page } from '$app/stores';
   import HelpIcon from 'carbon-icons-svelte/lib/Help.svelte';
   import LicenseDraft from 'carbon-icons-svelte/lib/LicenseDraft.svelte';
@@ -7,14 +7,13 @@
   import HomeIcon from '$lib/components/Icons/HomeIcon.svelte';
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
   import CommunityIcon from '$lib/components/Icons/CommunityIcon.svelte';
-  import ExerciseIcon from '$lib/components/Icons/ExerciseIcon.svelte';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
   import { menu } from '$lib/components/Org/store';
 
-  function isActive(pagePath, itemPath) {
+  function isActive(pagePath: string, itemPath: string) {
     const pageLinkItems = pagePath.split('/');
     const itemLinkItems = itemPath.split('/');
 
@@ -54,8 +53,8 @@
 <aside
   class={`${
     $menu.hidden
-      ? '-translate-x-[100%] top-[56px] md:top-0 absolute md:translate-x-0 md:relative z-[9999]'
-      : 'translate-x-0 absolute md:relative top-[56px] md:top-0 z-[9999]'
+      ? '-translate-x-[100%] top-[56px] md:top-0 absolute md:translate-x-0 md:relative z-40'
+      : 'translate-x-0 absolute md:relative top-[56px] md:top-0 z-40'
   } transition w-[250px] min-w-[250px] bg-gray-100 dark:bg-gray-700 h-full`}
 >
   <div class="h-full flex flex-col">
@@ -72,7 +71,7 @@
         <TextChip value={$currentOrg.shortName} className="bg-primary-200 font-bold" />
       {/if}
 
-      <OrgSelector />
+      <OrgSelector canAddOrg={false} />
 
       <ul class="my-5">
         {#each sideLinks as item (item.name)}
