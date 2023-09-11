@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { page } from '$app/stores';
   import HelpIcon from 'carbon-icons-svelte/lib/Help.svelte';
   import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
@@ -43,7 +43,7 @@
     }
   ];
 
-  function isActive(pagePath, itemPath) {
+  function isActive(pagePath: string, itemPath: string) {
     const pageLinkItems = pagePath.split('/');
     const itemLinkItems = itemPath.split('/');
 
@@ -61,8 +61,8 @@
 <aside
   class={`${
     $menu.hidden
-      ? '-translate-x-[100%] absolute md:translate-x-0 md:relative z-[9999]'
-      : 'translate-x-0 absolute md:relative z-[9999]'
+      ? '-translate-x-[100%] absolute md:translate-x-0 md:relative z-40'
+      : 'translate-x-0 absolute md:relative z-40'
   } transition w-[250px] min-w-[250px] bg-gray-100 dark:bg-gray-800 h-[calc(100vh-48px)] md:h-full border border-l-0 border-t-0 border-b-0 border-r-1`}
 >
   <div class="h-full flex flex-col">
@@ -97,13 +97,13 @@
                 : 'dark:text-white'}"
             >
               {#if menuItem.path === ''}
-                <HomeIcon color="#7A797D" />
+                <HomeIcon />
               {:else if menuItem.path === '/courses'}
-                <CourseIcon color="#7A797D" />
+                <CourseIcon />
               {:else if menuItem.path === '/site'}
                 <SiteSettingsIcon />
               {:else if menuItem.path === '/community'}
-                <ForumIcon size={24} class="carbon-icon dark:text-white fill-[#7A797D]" />
+                <ForumIcon size={24} class="carbon-icon dark:fill-[#fff] fill-[#000]" />
               {:else if menuItem.path === '/quiz'}
                 <QuizIcon />
               {:else if menuItem.path === '/audience'}

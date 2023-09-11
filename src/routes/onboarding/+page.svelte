@@ -12,6 +12,7 @@
   import { getOrganizations } from '$lib/utils/services/org';
   import { sendWelcomeEmail } from './utils';
   import { currentOrg } from '$lib/utils/store/org';
+  import { generateSitename } from '$lib/utils/functions/org';
 
   interface OnboardingField {
     fullname?: string;
@@ -196,10 +197,7 @@
   };
 
   $: progress = Math.round((step / maxSteps) * 100);
-  $: fields.siteName = fields.siteName
-    ?.toLowerCase()
-    ?.replace(/\s+/g, '-')
-    ?.replace(/[^a-zA-Z0-9-]/g, '');
+  $: fields.siteName = generateSitename(fields.siteName || '');
   $: setOrgSiteName(fields.orgName, isSiteNameTouched);
 
   $: {
