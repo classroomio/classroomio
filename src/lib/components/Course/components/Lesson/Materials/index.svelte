@@ -148,7 +148,8 @@
     window.players = players;
   }
 
-  function autoSave(updatedMaterials, _isLoading) {
+  function autoSave(updatedMaterials, _isLoading: boolean, lessonId: string) {
+    isSaving = false;
     if (timeoutId) clearTimeout(timeoutId);
 
     if (!initAutoSave) {
@@ -161,7 +162,7 @@
       await saveLesson(updatedMaterials);
 
       isSaving = false;
-    }, 1500);
+    }, 500);
   }
 
   function handleInputChange() {
@@ -176,7 +177,7 @@
     $uploadCourseVideoStore.isModalOpen = false;
   };
 
-  $: autoSave($lesson.materials, $isLoading);
+  $: autoSave($lesson.materials, $isLoading, lessonId);
 
   $: onLessonIdChange(lessonId);
 
