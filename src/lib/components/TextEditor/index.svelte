@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
   import { PUBLIC_TINYMCE_API_KEY } from '$env/static/public';
   import Editor from '@tinymce/tinymce-svelte';
 
-  export let value;
+  export let value: string;
   export let onChange = (html = '') => {};
   export let height = 300;
   export let placeholder = '';
@@ -24,9 +24,9 @@
     lists_indent_on_tab: false,
     min_height: height,
     placeholder: placeholder,
-    init_instance_callback: function (editor) {
+    init_instance_callback: function (editor: any) {
       editorWindowRef = editor.iframeElement?.contentWindow;
-      editor.on('Input', function (e) {
+      editor.on('Input', function () {
         const html = editor.getContent();
         if (onChange) {
           onChange(html);
@@ -34,6 +34,8 @@
       });
     }
   };
+
+  $: value = !value ? '' : value;
 </script>
 
 <div>
