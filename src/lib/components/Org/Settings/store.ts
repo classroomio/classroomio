@@ -74,16 +74,16 @@ export let landingPageSettings: Writable<OrgLandingPageJson> = writable({
     },
     video: {
       show: true,
-      link: 'https://www.youtube.com/watch?v=bbVZo4Yw7pI'
+      link: 'https://www.youtube.com/watch?v=qqAYW7uxErI'
     },
-    show: false
+    show: true
   },
   aboutUs: {
     title: 'Our Story',
     content:
       'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Repudiandae, quaerat cum. Ullam similique quae dicta ipsum atque quam fugit iusto eligendi magni voluptatum aut, exercitationem deserunt vitae iste rem sunt!\nLorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores obcaecati veritatis tenetur in, nihil repellat quasi cumque sed molestias id reiciendis harum doloremque minus fugit quia cum dolores quas pariatur.',
     imageUrl: '',
-    show: false
+    show: true
   },
   courses: {
     title: 'Explore our',

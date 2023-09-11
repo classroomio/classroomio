@@ -270,12 +270,14 @@
             </p>
           </div>
         </div>
-        <div class="cards-container my-4 mx-2">
-          {#if $courseMetaDeta.isLoading}
+        {#if $courseMetaDeta.isLoading}
+          <div class="cards-container my-4 mx-2">
             <CardLoader />
             <CardLoader />
             <CardLoader />
-          {:else}
+          </div>
+        {:else if $courses.length > 0}
+          <div class="cards-container my-4 mx-2">
             {#each $courses.slice(0, viewAll ? $courses.length : 3) as courseData}
               <Card
                 id={courseData.id}
@@ -290,17 +292,17 @@
                 totalLessons={get(courseData, 'lessons[0].count', 0)}
                 isOnLandingPage={true}
               />
-            {:else}
-              <Box>
-                <CoursesEmptyIcon />
-                <h3 class="dark:text-white text-2xl my-5">No Course Published</h3>
-                <p class="dark:text-white w-1/3 text-center">
-                  We've got great courses coming your way, stay tuned!!!
-                </p>
-              </Box>
             {/each}
-          {/if}
-        </div>
+          </div>
+        {:else}
+          <Box>
+            <CoursesEmptyIcon />
+            <h3 class="dark:text-white text-2xl my-5">No Course Published</h3>
+            <p class="dark:text-white w-1/3 text-center">
+              We've got great courses coming your way, stay tuned!!!
+            </p>
+          </Box>
+        {/if}
 
         {#if $courses.length > 3}
           <div class="w-full flex justify-center">

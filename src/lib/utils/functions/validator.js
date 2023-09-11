@@ -1,4 +1,3 @@
-import get from 'lodash/get';
 import isNumber from 'lodash/isNumber';
 import z from 'zod';
 import { validateEmail } from './validateEmail';
@@ -156,6 +155,22 @@ export const orgLandingpageValidation = (fields = {}) => {
 export const onboardingValidation = (fields = {}, step) => {
   const schema =
     step === 1 ? onboardingValidationSchema.stepOne : onboardingValidationSchema.stepTwo;
+  const { error } = schema.safeParse(fields);
+
+  return processErrors(error);
+};
+
+export const createOrgValidation = (fields = {}) => {
+  const schema = z.object({
+    orgName: z.string().min(5, {
+      message: 'Must be 5 or more characters long',
+      invalid_type_error: 'Must not be empty'
+    }),
+    siteName: z.string().min(5, {
+      message: 'Must be 5 or more characters long',
+      invalid_type_error: 'Must not be empty'
+    })
+  });
   const { error } = schema.safeParse(fields);
 
   return processErrors(error);

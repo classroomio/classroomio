@@ -72,21 +72,6 @@ export async function fetchGroup(groupId: Group['id']) {
   };
 }
 
-export async function setProfileIdOfGroupMember(email: string, profileId: string) {
-  const { data, error } = await supabase
-    .from('groupmember')
-    .update({
-      email: null,
-      profile_id: profileId
-    })
-    .match({ email: email });
-
-  return {
-    data,
-    error
-  };
-}
-
 export async function uploadAvatar(courseId: string, avatar: string) {
   const filename = `course/${courseId + Date.now()}.webp`;
   let logo;
