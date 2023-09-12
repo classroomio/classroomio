@@ -53,9 +53,9 @@
 <aside
   class={`${
     $menu.hidden
-      ? '-translate-x-[100%] top-[56px] md:top-0 absolute md:translate-x-0 md:relative z-40'
-      : 'translate-x-0 absolute md:relative top-[56px] md:top-0 z-40'
-  } transition w-[250px] min-w-[250px] bg-gray-100 dark:bg-gray-700 h-full`}
+      ? '-translate-x-[100%] absolute md:translate-x-0 md:relative z-[9999]'
+      : 'translate-x-0 absolute md:relative z-[9999]'
+  } overflow-y-auto transition w-[250px] min-w-[250px] bg-gray-100 dark:bg-gray-700 h-[calc(100vh-48px)]`}
 >
   <div class="h-full flex flex-col">
     <div class="border-b border-gray-200 pt-5 px-4">

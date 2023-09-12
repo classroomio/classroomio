@@ -1,10 +1,11 @@
-<script lang="ts">
+<script>
   import Box from '../Box/index.svelte';
   import Card from './components/Card/index.svelte';
   import CardLoader from './components/Card/Loader.svelte';
   import CoursesEmptyIcon from '../Icons/CoursesEmptyIcon.svelte';
   import CopyCourseModal from './components/CopyCourseModal/index.svelte';
   import { courses, courseMetaDeta } from './store';
+  import { isMobile } from '$lib/utils/store/useMobile';
 </script>
 
 <CopyCourseModal />
@@ -41,7 +42,7 @@
     {/each}
   {/if}
 </div>
-{#if !$courses.length}
+{#if !$courseMetaDeta.isLoading && !$courses.length}
   <Box className="w-full">
     <CoursesEmptyIcon />
     <h3 class="dark:text-white text-2xl my-5">No Courses Created</h3>
