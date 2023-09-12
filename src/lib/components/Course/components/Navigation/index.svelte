@@ -253,7 +253,7 @@
 
 <style lang="scss">
   .root {
-    height: calc(100vh - 45px);
+    height: calc(100vh - 48px);
     display: flex;
     flex-direction: column;
     min-width: 360px;
