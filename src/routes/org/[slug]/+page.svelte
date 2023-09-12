@@ -216,11 +216,11 @@
     {/each}
   </div>
 
-  <div class="flex flex-wrap lg:flex-nowrap gap-2 mt-5 w-full">
+  <div class="flex flex-wrap mt-5 gap-4 w-full">
     <!-- Your Schedule -->
-    <div class="w-full md:w-auto">
+    <div class="w-full xl:w-auto container">
       <p class="dark:text-white font-bold mb-7">Your Schedule</p>
-      <div class="rounded border border-gray-200 md:mr-3 md:min-w-[450px] schedule-box">
+      <div class="rounded border border-gray-200 md:mr-3 md:min-w-[450px] schedule-box w-full">
         {#if !$isMobile}
           <div id="calendar" class="flex justify-center mt-5">
             <InlineCalendar bind:store {theme} />
@@ -295,16 +295,19 @@
     </div>
 
     <!-- Your Activities -->
-    <div>
-      <p class="dark:text-white font-bold mb-7 mt-5 lg:mt-0">Your Activities</p>
-      <div class="rounded border border-gray-200 md:min-w-[450px] activities-box py-4 px-2 md:px-5">
+
+    <div class="w-full xl:w-auto container">
+      <p class="dark:text-white font-bold mb-7">Your Activities</p>
+      <div
+        class="rounded border border-gray-200 md:min-w-[450px] activities-box py-4 px-2 md:px-5 w-full"
+      >
         {#each activities as activity}
           <div class="flex mb-3 pb-3 border-b border-gray-200">
             <Avatar src={activity.avatar} name="avatar" />
-            <div class="ml-2 flex flex-col lg:flex-row">
+            <div class="ml-2 flex flex-col xl:flex-row">
               <div class="mr-2">
                 <p class="dark:text-white">{activity.name}</p>
-                <p class="dark:text-white mb-2 mt-1 line-clamp-1 md:line-clamp-2">
+                <p class="dark:text-white mb-2 mt-1 line-clamp-1">
                   {activity.description}
                 </p>
                 <a href={activity.link}>View</a>
@@ -382,21 +385,10 @@
       font-size: 30px;
     }
   }
-  /* @media screen and (min-width: 756px) {
-    .schedule-box,
-    .activities-box {
-      height: fit-content;
-      overflow-y: auto;
-      overflow: hidden;
-    }
 
-  }
-  @media screen and (min-width: 756px) {
-    .schedule-box,
-    .activities-box {
-      height: fit-content;
-      overflow-y: auto;
+  @media only screen and (min-width: 1280px) and (max-width: 1360px) {
+    .container {
+      width: 48%;
     }
-    
-  } */
+  }
 </style>
