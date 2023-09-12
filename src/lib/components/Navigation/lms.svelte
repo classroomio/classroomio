@@ -27,14 +27,14 @@
   }
 </script>
 
-<nav class="{navClass} flex w-full p-2 md:px-6 bg-primary-700">
+<nav class="{navClass} flex w-full p-2 md:px-6 bg-primary-700 h-[48px]">
   <ul class="flex w-full items-center">
-    <li>
+    <li class="md:hidden">
       <IconButton onClick={toggleSidebar}>
         {#if $menu.hidden}
-          <Menu size={16} class="md:hidden text-white" />
+          <Menu size={16} class=" text-white" />
         {:else}
-          <Close size={16} class="md:hidden text-white" />
+          <Close size={16} class=" text-white" />
         {/if}
       </IconButton>
     </li>

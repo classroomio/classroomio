@@ -44,21 +44,20 @@
 </script>
 
 <nav
-  class="{navClass} flex w-full p-1 md:px-6 bg-primary-700 transition delay-150 duration-300 ease-in-out"
+  class="{navClass} flex w-full p-1 md:px-6 bg-primary-700 transition delay-150 duration-300 ease-in-out h-[48px]"
 >
   <ul class="flex w-full items-center">
     <div class="flex items-center text-white">
-      {#if !isCoursePage}
-        <li>
-          <IconButton onClick={toggleSidebar}>
-            {#if $menu.hidden}
-              <Menu size={16} class="md:hidden text-white" />
-            {:else}
-              <Close size={16} class="md:hidden text-white" />
-            {/if}
-          </IconButton>
-        </li>
-      {/if}
+      <li class="md:hidden">
+        <IconButton onClick={toggleSidebar}>
+          {#if $menu.hidden}
+            <Menu size={16} class=" text-white" />
+          {:else}
+            <Close size={16} class=" text-white" />
+          {/if}
+        </IconButton>
+      </li>
+
       {#if isCoursePage}
         <IconButton
           onClick={() => {
@@ -74,7 +73,7 @@
         target={isCoursePage && $course.slug ? '_blank' : ''}
         title="Go to {isCoursePage ? 'Courses' : 'ClassroomIO Home'}"
         id="logo"
-        class="text-lg {isCoursePage && 'ml-2'}"
+        class="text-lg {isCoursePage && '-ml-2 md:ml-2'} line-clamp-1"
       >
         {isCoursePage ? title : 'ClassroomIO'}
       </a>
