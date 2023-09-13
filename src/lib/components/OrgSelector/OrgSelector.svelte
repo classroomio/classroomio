@@ -5,14 +5,21 @@
   import { currentOrg, orgs, currentOrgPath } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
   import { newOrgModal } from '$lib/components/Org/store';
+  import type { CurrentOrg } from '$lib/utils/types/org';
 
   export let canAddOrg = true;
   let open = false;
 
   function handleAddOrg() {
-    console.log('add org modal');
     open = false;
     $newOrgModal.open = true;
+  }
+
+  function onClick(org: CurrentOrg) {
+    localStorage.setItem('classroomio_org_sitename', org.siteName);
+    currentOrg.set(org);
+    goto($currentOrgPath);
+    open = false;
   }
 </script>
 
@@ -45,11 +52,7 @@
           avatarText={org.shortName}
           text={org.name}
           hasDivider={true}
-          onClick={() => {
-            currentOrg.set(org);
-            goto($currentOrgPath);
-            open = false;
-          }}
+          onClick={() => onClick(org)}
         />
       {/each}
 

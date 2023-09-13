@@ -15,7 +15,7 @@
 
 <div class="relative">
   <button
-    class="{disabled && 'opacity-25'} flex items-center w-60 py-2 px-3 {hasDivider &&
+    class="{disabled && 'opacity-25'} flex items-center w-[14rem] py-2 px-3 {hasDivider &&
       'border-b border-gray-100'} {active && 'bg-primary-100 dark:bg-gray-500'}"
     on:click={onClick}
   >
