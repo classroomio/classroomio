@@ -117,6 +117,9 @@
 
   function updateNoteByCompletion(completion) {
     $lesson.materials.note = completion;
+
+    autoSave($lesson.materials);
+
     if (editorWindowRef) {
       const tmceBody = editorWindowRef?.document?.querySelector('body');
 
@@ -148,8 +151,7 @@
     window.players = players;
   }
 
-  function autoSave(updatedMaterials, _isLoading: boolean, lessonId: string) {
-    isSaving = false;
+  function autoSave(updatedMaterials, _isLoading?: boolean, lessonId?: string) {
     if (timeoutId) clearTimeout(timeoutId);
 
     if (!initAutoSave) {
@@ -160,7 +162,6 @@
     isSaving = true;
     timeoutId = setTimeout(async () => {
       await saveLesson(updatedMaterials);
-
       isSaving = false;
     }, 500);
   }
@@ -169,8 +170,9 @@
     $isLessonDirty = true;
   }
 
-  function onLessonIdChange() {
+  function onLessonIdChange(_lid: string) {
     initAutoSave = false;
+    isSaving = false;
   }
 
   const onClose = () => {
@@ -249,6 +251,7 @@
 
         <div class="h-[60vh] mt-5">
           <TextEditor
+            id={lessonId}
             bind:editorWindowRef
             value={$lesson.materials.note}
             onChange={(html) => ($lesson.materials.note = html)}
