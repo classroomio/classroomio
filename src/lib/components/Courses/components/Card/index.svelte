@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Tag } from 'carbon-components-svelte';
+  import { Tag, ImageLoader, SkeletonPlaceholder } from 'carbon-components-svelte';
   // import { ROLE } from '$lib/utils/constants/roles';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
 
@@ -54,11 +54,16 @@
   >
     <div class="p-4">
       <div class=" mb-5">
-        <img
-          class="h-2/5 w-full rounded"
+        <ImageLoader
           src={bannerImage ?? '/images/classroomio-course-img-template.jpg'}
           alt="Course Logo"
-        />
+          class="h-2/5 w-full rounded"
+        >
+          <svelte:fragment slot="loading">
+            <SkeletonPlaceholder style="width: 100%; height: 10rem;" />
+          </svelte:fragment>
+          <svelte:fragment slot="error">An error occurred.</svelte:fragment>
+        </ImageLoader>
       </div>
 
       <h3 class="text-xl dark:text-white title">{title}</h3>
