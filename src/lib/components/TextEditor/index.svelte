@@ -2,6 +2,7 @@
   import { PUBLIC_TINYMCE_API_KEY } from '$env/static/public';
   import Editor from '@tinymce/tinymce-svelte';
 
+  export let id = '';
   export let value: string;
   export let onChange = (html = '') => {};
   export let height = 300;
@@ -26,10 +27,15 @@
     placeholder: placeholder,
     init_instance_callback: function (editor: any) {
       editorWindowRef = editor.iframeElement?.contentWindow;
-      editor.on('Input', function () {
+      editor.on('Change', function () {
         const html = editor.getContent();
         if (onChange) {
           onChange(html);
+        }
+
+        // backup in case the data doesn't get to our backend, we should store the note to avoid data loss
+        if (id) {
+          localStorage.setItem(id, html);
         }
       });
     }
