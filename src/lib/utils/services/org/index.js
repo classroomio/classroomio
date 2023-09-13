@@ -91,15 +91,25 @@ export async function getOrganizations(userId) {
 
     orgs.set(orgsArray);
 
-    const _cOrg = get(currentOrg);
-    if (!_cOrg.siteName) {
+    if (localStorage) {
+      const lastOrgSiteName = localStorage.getItem('classroomio_org_sitename');
+
+      const lastOrg = orgsArray.find((org) => org.siteName === lastOrgSiteName);
+
+      if (lastOrg) {
+        currentOrg.set(lastOrg);
+      }
+    }
+
+    const _currentOrg = get(currentOrg);
+    if (!_currentOrg.siteName) {
       currentOrg.set(orgsArray[0]);
     }
   }
 
   return {
     orgs: orgsArray,
-    currentOrg: orgsArray[0],
+    currentOrg: get(currentOrg),
     error
   };
 }
