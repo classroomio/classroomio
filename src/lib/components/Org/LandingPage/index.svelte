@@ -305,7 +305,7 @@
         {/if}
 
         {#if $courses.length > 3}
-          <div class="w-full flex justify-center">
+          <div class="w-full mt-3 flex justify-center">
             <PrimaryButton
               variant={VARIANTS.OUTLINED}
               onClick={() => (viewAll = !viewAll)}
