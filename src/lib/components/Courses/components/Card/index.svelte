@@ -48,9 +48,13 @@
   // }
 </script>
 
-<a rel="prefetch" href={isOnLandingPage ? `/course/${slug}` : `/courses/${id}`} class=" text-black">
+<a
+  rel="prefetch"
+  href={isOnLandingPage ? `/course/${slug}` : `/courses/${id}`}
+  class=" text-black w-fit"
+>
   <div
-    class="border border-gray w-full max-w-[400px] relative hover:shadow-lg transition-all ease-in-out"
+    class="border border-gray w-full max-w-[350px] relative hover:shadow-lg transition-all ease-in-out"
   >
     <div class="p-4">
       <div class=" mb-5">
