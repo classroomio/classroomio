@@ -1,18 +1,14 @@
 <script lang="ts">
-  import Dropdown from '$lib/components/Dropdown/index.svelte';
-  import { copyCourseModal } from '$lib/components/Courses/store';
-  import { ROLE } from '$lib/utils/constants/roles';
+  import { Tag } from 'carbon-components-svelte';
+  // import { ROLE } from '$lib/utils/constants/roles';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
-  import OverflowMenuHorizontalIcon from 'carbon-icons-svelte/lib/OverflowMenuHorizontal.svelte';
-  import ArrowRight from 'carbon-icons-svelte/lib/ArrowRight.svelte';
-  // import { deleteCourse } from '$lib/utils/services/courses';
 
   export let bannerImage: string | undefined;
   export let id = '';
   export let slug = '';
   export let title = '';
   export let description = '';
-  export let role_id = ROLE.STUDENT;
+  // export let role_id = ROLE.STUDENT;
   export let isPublished = false;
   export let cost = 0;
   export let totalLessons = 0;
@@ -22,89 +18,75 @@
 
   let formatter = getCurrencyFormatter(currency);
 
-  function getOptions() {
-    return [
-      {
-        label: 'Make a copy',
-        // Show this option only if user has admin control over this course.
-        show: () => role_id === ROLE.ADMIN || role_id === ROLE.TUTOR,
-        onClick() {
-          // IIFI of copyCourseModal
-          (() => {
-            $copyCourseModal.id = id;
-            $copyCourseModal.open = true;
-            $copyCourseModal.title = `Copy of ${title}`;
-          })();
-        }
-      }
-      // {
-      //   label: 'Delete',
-      //   show: () => role_id === ROLE.TUTOR,
-      //   onClick() {
-      //     (async () => {
-      //       await deleteCourse(id);
-      //       onDelete(id);
-      //       console.log('Deleting');
-      //     })();
-      //   }
-      // }
-    ].filter((option) => option.show());
-  }
+  // function getOptions() {
+  //   return [
+  //     {
+  //       label: 'Make a copy',
+  //       // Show this option only if user has admin control over this course.
+  //       show: () => role_id === ROLE.ADMIN || role_id === ROLE.TUTOR,
+  //       onClick() {
+  //         // IIFI of copyCourseModal
+  //         (() => {
+  //           $copyCourseModal.id = id;
+  //           $copyCourseModal.open = true;
+  //           $copyCourseModal.title = `Copy of ${title}`;
+  //         })();
+  //       }
+  //     }
+  //     // {
+  //     //   label: 'Delete',
+  //     //   show: () => role_id === ROLE.TUTOR,
+  //     //   onClick() {
+  //     //     (async () => {
+  //     //       await deleteCourse(id);
+  //     //       onDelete(id);
+  //     //       console.log('Deleting');
+  //     //     })();
+  //     //   }
+  //     // }
+  //   ].filter((option) => option.show());
+  // }
 </script>
 
 <a rel="prefetch" href={isOnLandingPage ? `/course/${slug}` : `/courses/${id}`} class=" text-black">
   <div
-    class="root w-full md:w-80 border bg-gray-100 dark:bg-gray-800 mb-4 rounded-md hover:shadow-2xl transition ease-in-out relative"
+    class="border border-gray w-full max-w-[400px] relative hover:shadow-lg transition-all ease-in-out"
   >
-    {#if !isOnLandingPage}
-      <Dropdown options={getOptions()} classNames="absolute top-4 right-4" isIcon={true}>
-        <div class="p-1 rounded-full bg-white dark:bg-gray-600">
-          <OverflowMenuHorizontalIcon size={20} class="carbon-icon dark:text-white" />
-        </div>
-      </Dropdown>
-    {/if}
-    <img
-      class="h-2/5 w-full rounded-tl rounded-tr"
-      src={bannerImage ?? '/images/classroomio-course-img-template.jpg'}
-      alt="Course Logo"
-    />
-    <div class="px-3 py-5">
-      <h4 class="dark:text-white title text-md font-bold">
-        {title}
-      </h4>
-      <p
-        class="description text-left text-sm font-small flex flex-col text-gray-500 dark:text-white my-3"
-        title={description}
-      >
+    <div class="p-4">
+      <div class=" mb-5">
+        <img
+          class="h-2/5 w-full rounded"
+          src={bannerImage ?? '/images/classroomio-course-img-template.jpg'}
+          alt="Course Logo"
+        />
+      </div>
+
+      <h3 class="text-xl dark:text-white title">{title}</h3>
+      <p class="mt-2 text-sm text-gray-500 dark:text-gray-300 description">
         {description}
       </p>
-      <div class="flex justify-between">
-        <p class="dark:text-white">{totalLessons} lessons</p>
+    </div>
 
+    <div class="px-4 border border-gray border-b-0 border-l-0 border-r-0 footer">
+      <p class="text-xs pt-2 pl-2 dark:text-white">{totalLessons} lessons</p>
+      <p class="text-xs py-2">
         {#if isOnLandingPage}
-          <ArrowRight size={24} class="carbon-class" />
+          <span class="px-2">{!cost ? 'Free' : formatter.format(cost)}</span>
         {:else}
-          <div class="rounded dark:text-white bg-{isPublished ? 'green' : 'red'}-200 py-1 px-2">
+          <Tag type={isPublished ? 'green' : 'cool-gray'}>
             {#if isPublished}
               Published
             {:else}
               Unpublished
             {/if}
-          </div>
+          </Tag>
         {/if}
-      </div>
-      <p class="dark:text-white text-gray-500 text-xs mt-1">
-        {!cost ? 'free' : formatter.format(cost)}
       </p>
     </div>
   </div>
 </a>
 
 <style>
-  .root {
-    min-height: 370px;
-  }
-
   a,
   a:hover {
     text-decoration: none;

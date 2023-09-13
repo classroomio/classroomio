@@ -21,7 +21,6 @@
     {#each $courses as courseData}
       <Card
         id={courseData.id}
-        logo={courseData.logo}
         bannerImage={courseData.banner_image}
         title={courseData.title}
         description={courseData.description}

@@ -90,7 +90,11 @@ export async function getOrganizations(userId) {
     });
 
     orgs.set(orgsArray);
-    currentOrg.set(orgsArray[0]);
+
+    const _cOrg = get(currentOrg);
+    if (!_cOrg.siteName) {
+      currentOrg.set(orgsArray[0]);
+    }
   }
 
   return {
