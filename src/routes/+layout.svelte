@@ -36,6 +36,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { setTheme } from '$lib/utils/functions/theme';
   import hideNavByRoute from '$lib/utils/functions/routes/hideNavByRoute';
+  import shouldRedirectOnAuth from '$lib/utils/functions/routes/shouldRedirectOnAuth';
   import AddOrgModal from '$lib/components/Org/AddOrgModal/AddOrgModal.svelte';
 
   import '../app.postcss';
@@ -174,10 +175,7 @@
           goto(ROUTE.ONBOARDING);
         } else if (params.has('redirect')) {
           goto(params.get('redirect') || '');
-        } else if (
-          ['login', 'signup', 'onboarding', 'invite'].some((r) => path.includes(r)) ||
-          path === '' // for home page
-        ) {
+        } else if (shouldRedirectOnAuth(path)) {
           // By default redirect to first organization
           goto(`/org/${orgRes.currentOrg.siteName}`);
         }
@@ -317,14 +315,14 @@
           {#if !isQuizPage($page.url.pathname)}
             <OrgSideBar />
           {/if}
-          <div class="org-slot bg-white dark:bg-gray-800 w-full">
+          <div class="org-slot w-full bg-white dark:bg-gray-800">
             <slot />
           </div>
         </div>
       {:else if isLMSPage($page.url.pathname)}
         <div class="org-root w-full flex items-center justify-between">
           <LMSSideBar />
-          <div class="org-slot bg-white dark:bg-gray-800 w-full">
+          <div class="org-slot w-full bg-white dark:bg-gray-800">
             <slot />
           </div>
         </div>
