@@ -138,77 +138,80 @@
 
 <CourseContainer bind:isStudent>
   <PageNav title="Attendance" />
-
-  <section class="mx-9 my-5">
-    <div class="flex flex-row items-center justify-between">
-      <div class="flex">
-        <p class="flex items-center mr-5">
-          <Checkbox checked disabled /> Present
-        </p>
-        <p class="flex items-center">
-          <Checkbox disabled /> Absent
-        </p>
+  <PageBody width="w-full max-w-6xl md:w-11/12">
+    <section class="flex items-center mx-2 lg:mx-9 my-5">
+      <div
+        class="flex flex-col lg:flex-row items-start gap-2 lg:items-center justify-between w-full"
+      >
+        <div class="flex">
+          <p class="flex items-center mr-5">
+            <Checkbox checked disabled /> Present
+          </p>
+          <p class="flex items-center">
+            <Checkbox disabled /> Absent
+          </p>
+        </div>
+        <div>
+          <Search
+            class="dark:text-slate-950"
+            placeholder="Search students"
+            bind:value={searchValue}
+          />
+        </div>
       </div>
-      <div>
-        <Search
-          class="dark:text-slate-950"
-          placeholder="Search students"
-          bind:value={searchValue}
-        />
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="my-5 mx-9">
-    <StructuredList class="m-0">
-      <!-- Moved the lesson headers outside the students loop -->
-      <StructuredListHead class="bg-primary-100">
-        <StructuredListRow head class="mx-7">
-          <StructuredListCell head class="text-primary-600 py-3">Student</StructuredListCell>
-          {#each $lessons as lesson, index}
-            <StructuredListCell head class="text-primary-600 py-3"
-              >Lesson 0{getLectureNo(index + 1)}</StructuredListCell
-            >
-          {/each}
-        </StructuredListRow>
-      </StructuredListHead>
-
-      {#each searchStudents(searchValue) as student}
-        <StructuredListBody>
-          <StructuredListRow>
-            <StructuredListCell>
-              <div class="w-1/4 flex items-center">
-                <p class="dark:text-white font-semibold">
-                  {student.profile.fullname}
-                </p>
-              </div>
-            </StructuredListCell>
-            {#each $lessons as lesson}
-              <StructuredListCell class="">
-                <Checkbox
-                  class={isStudent && 'cursor-not-allowed'}
-                  disabled={isStudent}
-                  checked={$attendance[student.id]
-                    ? $attendance[student.id][lesson.id]
-                      ? $attendance[student.id][lesson.id].is_present
-                      : false
-                    : false}
-                  on:change={(e) => handleAttendanceChange(e, student, lesson)}
-                />
-              </StructuredListCell>
+    <section class="my-5 mx-2 lg:mx-9">
+      <StructuredList class="m-0 relative">
+        <!-- Moved the lesson headers outside the students loop -->
+        <StructuredListHead class="bg-primary-100">
+          <StructuredListRow head class="mx-7">
+            <StructuredListCell head class="text-primary-600 py-3">Student</StructuredListCell>
+            {#each $lessons as lesson, index}
+              <StructuredListCell head class="text-primary-600 py-3"
+                >Lesson 0{getLectureNo(index + 1)}</StructuredListCell
+              >
             {/each}
           </StructuredListRow>
-        </StructuredListBody>
-      {/each}
-    </StructuredList>
-    {#if students.length === 0}
-      <div>
-        <Box>
+        </StructuredListHead>
+
+        {#each searchStudents(searchValue) as student}
+          <StructuredListBody>
+            <StructuredListRow>
+              <StructuredListCell>
+                <div class="w-1/4 flex items-center">
+                  <p class="dark:text-white font-semibold">
+                    {student.profile.fullname}
+                  </p>
+                </div>
+              </StructuredListCell>
+              {#each $lessons as lesson}
+                <StructuredListCell class="">
+                  <Checkbox
+                    class={isStudent && 'cursor-not-allowed'}
+                    disabled={isStudent}
+                    checked={$attendance[student.id]
+                      ? $attendance[student.id][lesson.id]
+                        ? $attendance[student.id][lesson.id].is_present
+                        : false
+                      : false}
+                    on:change={(e) => handleAttendanceChange(e, student, lesson)}
+                  />
+                </StructuredListCell>
+              {/each}
+            </StructuredListRow>
+          </StructuredListBody>
+        {/each}
+      </StructuredList>
+      {#if students.length === 0}
+        <Box className="h-[300px] w-full">
           <AudioConsoleIcon size={32} class="carbon-icon w-80" />
-          <h3 class="text-3xl text-gray-500 dark:text-white">No Student Added</h3>
+          <h3 class="text-3xl text-gray-500 dark:text-white text-center">No Student Added</h3>
         </Box>
-      </div>
-    {/if}
-    <Pagination totalItems={10} pageSizes={[10, 15, 20]} />
-  </section>
+      {/if}
+      {#if students.length !== 0}
+        <Pagination totalItems={10} pageSizes={[10, 15, 20]} />
+      {/if}
+    </section>
+  </PageBody>
 </CourseContainer>

@@ -145,7 +145,7 @@
 <Modal
   onClose={resetForm}
   bind:open={$invitationModal.open}
-  width="w-2/5"
+  width="w-4/5 md:w-2/5"
   maxWidth="max-w-lg"
   modalHeading="Invite people"
 >

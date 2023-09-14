@@ -38,7 +38,7 @@
 </script>
 
 <!-- Pricing Details -->
-<aside class="{className} price-container md:sticky md:top-0 md:shadow-2xl md:rounded-lg m-h-fit">
+<aside class="{className} price-container lg:sticky lg:top-0 lg:shadow-2xl lg:rounded-lg m-h-fit">
   <div class="p-10">
     <!-- Pricing -->
     <div class="mb-6">
@@ -120,9 +120,9 @@
     height: fit-content;
   }
 
-  @media (max-width: 768px) {
+  @media screen and (min-width: 768px) and (max-width: 1024px) {
     .price-container {
-      width: 100%;
+      width: 405px;
       min-width: unset;
     }
   }

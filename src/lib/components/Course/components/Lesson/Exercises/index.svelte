@@ -165,8 +165,8 @@
           <p class="dark:text-white mt-4 text-sm">Created Jul 3, 2021</p>
         </a>
       {:else}
-        <Box className="mt-3">
-          <div class="flex justify-between flex-col items-center w-96">
+        <Box className="mt-3 text-center">
+          <div class="flex justify-between flex-col items-center w-[80%] md:w-96">
             <img src="/images/empty-exercise-icon.svg" alt="Exercise" class="my-2.5 mx-auto" />
             <h2 class="text-xl my-1.5 font-normal">No exercises added for this lesson</h2>
             <p class="text-sm text-center text-slate-500">

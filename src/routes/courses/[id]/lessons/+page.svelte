@@ -321,12 +321,12 @@
         </div>
       {:else}
         <Box>
-          <div class="flex justify-between flex-col items-center w-96">
+          <div class="flex justify-between flex-col items-center w-[90%] md:w-96">
             <img src="/images/empty-lesson-icon.svg" alt="Lesson" class="my-2.5 mx-auto" />
             <h2 class="text-xl my-1.5 font-normal">No lessons yet</h2>
             <p class="text-sm text-center text-slate-500">
               Share your knowledge with the world by creating engaging lessons. Start by clicking on
-              the New Lesson button.
+              the Add button.
             </p>
           </div>
         </Box>

@@ -164,12 +164,14 @@
       {/if}
     </div>
   </header>
-  <PricingSection className="md:hidden" {courseData} />
+  <!-- <PricingSection className="md:hidden" {courseData} /> -->
   <!-- Body -->
   <div class="bg-white dark:bg-gray-800 w-full">
-    <div class="py-8 lg:w-10/12 w-full m-2 lg:m-auto flex justify-between">
+    <div
+      class="py-8 lg:w-11/12 w-full m-2 lg:m-auto flex flex-col-reverse lg:flex-row items-center lg:items-start justify-between"
+    >
       <!-- Course Details -->
-      <div class="course-content w-full p-3 md:w-9/12 md:mr-14">
+      <div class="course-content w-full p-3 lg:w-10/12 lg:mr-14">
         <!-- Navigation -->
         <nav class="flex items-center border-b border-gray-300 pb-3">
           {#each NAV_ITEMS as navItem}
@@ -416,7 +418,7 @@
       </div>
 
       <!-- Pricing Details -->
-      <PricingSection className="hidden md:block" {courseData} />
+      <PricingSection {courseData} />
     </div>
   </div>
 </div>
@@ -464,7 +466,7 @@
   }
 
   .course-content {
-    max-width: 608px;
+    max-width: 800px;
   }
 
   nav {

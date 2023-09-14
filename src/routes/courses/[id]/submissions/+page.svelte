@@ -244,8 +244,8 @@
   <CourseContainer>
     <PageNav title="Submitted Exercises" />
 
-    <PageBody width="w-11/12 overflow-x-auto overflow-y-hidden">
-      <div class="flex items-center w-full">
+    <PageBody width="w-full max-w-6xl md:w-11/12 overflow-x-auto">
+      <div class="flex items-center w-full overflow-x-scroll">
         {#each sections as { id, title, items }, idx (id)}
           <div
             class="section rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-50 p-3 h-80 mr-3 overflow-hidden"
@@ -301,7 +301,7 @@
                       {`${item.tutor ? 'created by' + item.tutor.name : ''}`}
                     </p>
                   </a>
-                  <p class="dark:text-white text-gray-500 dark:text-white text-xs">
+                  <p class="dark:text-white text-gray-500 text-xs">
                     {item.submittedAt}
                   </p>
                   <!-- <div class="badge rounded-md px-2 bg-green-500 text-white">
@@ -324,10 +324,15 @@
   .section {
     max-width: 355px;
     min-width: 355px;
-    height: 80vh;
+    height: 75vh;
   }
 
   .content {
     height: 95%;
+  }
+  @media screen and (max-width: 768px) {
+    .section {
+      min-width: 250px;
+    }
   }
 </style>

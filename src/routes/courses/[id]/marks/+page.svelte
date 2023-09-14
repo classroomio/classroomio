@@ -8,10 +8,7 @@
   import { ROLE } from '$lib/utils/constants/roles';
   import { setCourse, course, group } from '$lib/components/Course/store';
   import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
-  import {
-    fetchCourse,
-    fetchExercisesByMarks,
-  } from '$lib/utils/services/courses';
+  import { fetchCourse, fetchExercisesByMarks } from '$lib/utils/services/courses';
   import { getLectureNo } from '$lib/components/Course/function';
   import { fetchMarks } from '$lib/utils/services/marks';
   import { profile } from '$lib/utils/store/user';
@@ -19,10 +16,8 @@
   export let data;
   const { courseId } = data;
 
-  let borderBottomGrey =
-    'border-r-0 border-t-0 border-b border-l-0 border-gray-300';
-  let borderleftGrey =
-    'border-r-0 border-t-0 border-b-0 border-l border-gray-300';
+  let borderBottomGrey = 'border-r-0 border-t-0 border-b border-l-0 border-gray-300';
+  let borderleftGrey = 'border-r-0 border-t-0 border-b-0 border-l border-gray-300';
   let students = [];
   let isStudent = false;
 
@@ -52,11 +47,11 @@
       if (studentMarksByExerciseId[groupmember_id]) {
         studentMarksByExerciseId[groupmember_id] = {
           ...studentMarksByExerciseId[groupmember_id],
-          [exercise_id]: total_points_gotten,
+          [exercise_id]: total_points_gotten
         };
       } else {
         studentMarksByExerciseId[groupmember_id] = {
-          [exercise_id]: total_points_gotten,
+          [exercise_id]: total_points_gotten
         };
       }
     });
@@ -70,11 +65,11 @@
       if (lessonMapping[lesson_id]) {
         lessonMapping[lesson_id] = {
           ...lessonMapping[lesson_id],
-          [exercise_id]: { title: exercise_title, points },
+          [exercise_id]: { title: exercise_title, points }
         };
       } else {
         lessonMapping[lesson_id] = {
-          [exercise_id]: { title: exercise_title, points },
+          [exercise_id]: { title: exercise_title, points }
         };
       }
     });
@@ -82,20 +77,16 @@
 
   $: {
     students = isStudent
-      ? $group.people.filter(
-          (person) => !!person.profile && person.profile.id === $profile.id
-        )
-      : $group.people.filter(
-          (person) => !!person.profile && person.role_id === ROLE.STUDENT
-        );
+      ? $group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
+      : $group.people.filter((person) => !!person.profile && person.role_id === ROLE.STUDENT);
   }
 </script>
 
 <CourseContainer bind:isStudent>
   <PageNav title="Marks" />
 
-  <PageBody width="w-11/12">
-    <div class="table rounded-md border border-gray-300 w-auto">
+  <PageBody width="w-full max-w-6xl md:w-11/12">
+    <div class="table rounded-md border border-gray-300 w-full">
       <div class="flex items-center {borderBottomGrey}">
         <div class="box flex items-center p-3">
           <p class="dark:text-white w-40">Student</p>
@@ -111,8 +102,7 @@
               >
                 {#each Object.keys(lessonMapping[lesson.id]) as exerciseId, index}
                   <p
-                    class="col text-sm dark:text-white {index &&
-                      borderleftGrey}"
+                    class="col text-sm dark:text-white {index && borderleftGrey}"
                     title={lessonMapping[lesson.id][exerciseId].title}
                   >
                     {lessonMapping[lesson.id][exerciseId].title}
@@ -129,9 +119,7 @@
       </div>
 
       {#each students as student}
-        <div
-          class="flex relative items-center p-3 cursor-pointer {borderBottomGrey}"
-        >
+        <div class="flex relative items-center p-3 cursor-pointer {borderBottomGrey}">
           <div class="w-40 flex items-center">
             <img
               alt="Student avatar"
@@ -143,11 +131,7 @@
                 {student.profile.fullname}
               </p>
               <p class="dark:text-white">
-                {`${
-                  student.assigned_student_id
-                    ? '#' + student.assigned_student_id
-                    : '-'
-                }`}
+                {`${student.assigned_student_id ? '#' + student.assigned_student_id : '-'}`}
               </p>
             </div>
           </div>
@@ -176,9 +160,7 @@
       {:else}
         <Box>
           <AudioConsoleIcon size={32} class="carbon-icon w-80" />
-          <h3 class="text-3xl text-gray-500 dark:text-white">
-            No Student Added
-          </h3>
+          <h3 class="text-3xl text-gray-500 dark:text-white">No Student Added</h3>
         </Box>
       {/each}
     </div>
