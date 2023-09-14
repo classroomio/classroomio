@@ -25,6 +25,7 @@
 
   dayjs.extend(relativeTime);
 
+  export let editMode = false;
   export let courseData: Course = {
     id: '',
     title: '',
@@ -164,7 +165,11 @@
       {/if}
     </div>
   </header>
+<<<<<<< Updated upstream
   <!-- <PricingSection className="md:hidden" {courseData} /> -->
+=======
+  <PricingSection className="md:hidden" {courseData} {editMode} />
+>>>>>>> Stashed changes
   <!-- Body -->
   <div class="bg-white dark:bg-gray-800 w-full">
     <div

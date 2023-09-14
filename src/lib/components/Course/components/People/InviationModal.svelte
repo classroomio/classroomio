@@ -15,6 +15,7 @@
   import { sendTeacherCourseWelcome } from './utils';
   import type { Course } from '$lib/utils/types';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { getStudentInviteLink } from '$lib/utils/functions/course';
 
   interface Tutor {
     id: number;
@@ -109,21 +110,6 @@
     isLoadingTutors = false;
   }
 
-  function getInviteLink(_course: Course, siteName: string) {
-    const hash = encodeURIComponent(
-      btoa(
-        JSON.stringify({
-          groupId: _course.group?.id,
-          name: _course.title,
-          description: _course.description,
-          orgSiteName: siteName
-        })
-      )
-    );
-
-    return `https://${siteName}.classroomio.com/invite/s/${hash}`;
-  }
-
   function copyLink() {
     copy(link);
     copied = true;
@@ -139,7 +125,7 @@
 
   $: setTutors($currentOrg.id, $invitationModal.open);
 
-  $: link = getInviteLink($course, $currentOrg.siteName);
+  $: link = getStudentInviteLink($course, $currentOrg.siteName);
 </script>
 
 <Modal
