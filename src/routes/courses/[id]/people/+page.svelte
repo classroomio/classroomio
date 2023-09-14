@@ -1,6 +1,7 @@
 <script lang="ts">
   import TextChip from '$lib/components/Chip/Text.svelte';
   import ComingSoon from '$lib/components/ComingSoon/index.svelte';
+  import Filter from 'carbon-icons-svelte/lib/Filter.svelte';
   import { onMount } from 'svelte';
   import copy from 'copy-to-clipboard';
   import {
@@ -17,6 +18,7 @@
   import { fetchCourse, deleteGroupMember, updatedGroupMember } from '$lib/utils/services/courses';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
+  import PageBody from '$lib/components/PageBody/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import Select from '$lib/components/Form/Select.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
@@ -135,138 +137,148 @@
       </RoleBasedSecurity>
     </slot:fragment>
   </PageNav>
-  <section class="my-5 mx-9">
-    <div class="flex flex-row flex-end justify-end items-center mb-7">
-      <div class="mr-5 w-80">
-        <Search
-          class="dark:text-slate-950 border-0 bg-zinc-100 w-full"
-          placeholder="Search people"
-          bind:value={searchValue}
-        />
-      </div>
-      <div class="mb-3">
-        <Select bind:value={filterBy} options={ROLES} className="dark:text-black mt-3 w-20" />
-        <!-- <select bind:value={filterBy} class="mt-3">
-          {#each ROLES as option}
-            <option value={option.value}>{option.label}</option>
-          {/each}
-        </select> -->
-      </div>
-      <RoleBasedSecurity allowedRoles={[1, 2]}>
-        <p class="dark:text-white hidden lg:block text-lg w-20" />
-      </RoleBasedSecurity>
-    </div>
-
-    <StructuredList class="m-0">
-      <StructuredListHead
-        class="bg-slate-100 dark:bg-neutral-800 dark:border-2 dark:border-neutral-800"
+  <PageBody width="w-full max-w-6xl md:w-11/12">
+    <section class="my-5 mx-2 md:mx-9">
+      <div
+        class="flex flex-col md:flex-row flex-end gap-2 justify-end items-start md:items-center mb-7"
       >
-        <StructuredListRow head class="mx-7">
-          <StructuredListCell head class="text-primary-700 py-3 dark:text-white"
-            >Name</StructuredListCell
-          >
-          <StructuredListCell head class="text-primary-700 py-3 dark:text-white"
-            >Role</StructuredListCell
-          >
-          <StructuredListCell head class="text-primary-700 py-3 dark:text-white"
-            >Action</StructuredListCell
-          >
-          <RoleBasedSecurity allowedRoles={[1, 2]}>
-            <p class="dark:text-white hidden lg:block text-lg w-20" />
-          </RoleBasedSecurity>
-        </StructuredListRow>
-      </StructuredListHead>
+        <div class="max-w-[320px]">
+          <Search
+            class="dark:text-slate-950 border-0 bg-zinc-100 w-full"
+            placeholder="Search people"
+            bind:value={searchValue}
+          />
+        </div>
+        <div class="mb-3">
+          <Select
+            bind:value={filterBy}
+            options={ROLES}
+            className="dark:text-black mt-3 max-w-[80px]"
+          />
+          <!-- <select bind:value={filterBy} class="mt-3">
+            {#each ROLES as option}
+              <option value={option.value}>{option.label}</option>
+            {/each}
+          </select> -->
+        </div>
+        <RoleBasedSecurity allowedRoles={[1, 2]}>
+          <p class="dark:text-white hidden lg:block text-lg w-20" />
+        </RoleBasedSecurity>
+      </div>
 
-      {#each filterPeople(searchValue, people) as person}
-        <StructuredListBody>
-          <StructuredListRow class="relative">
-            <!-- first column -->
-            <StructuredListCell class="w-3/6">
-              {#if person.profile}
-                <div class="flex items-center absolute bottom-3">
-                  <Avatar
-                    src={person.profile.avatar_url}
-                    name={person.profile.fullname}
-                    width="w-8"
-                    height="h-8"
-                    className="mr-3"
-                  />
-                  <div class="flex items-center">
-                    <div class="mr-2">
-                      <p class="dark:text-white text-base font-normal">
-                        {person.profile.fullname}
-                      </p>
-                      <p class="text-xs text-primary-600">
-                        {getEmail(person)}
-                      </p>
-                    </div>
-                    <RoleBasedSecurity allowedRoles={[1, 2]}>
-                      <div class="hidden lg:flex lg:justify-between lg:items-center mr-2">
-                        <CopyButton text={getEmail(person)} feedback="Copied Email to clipboard" />
+      <StructuredList class="m-0">
+        <StructuredListHead
+          class="bg-slate-100 dark:bg-neutral-800 dark:border-2 dark:border-neutral-800"
+        >
+          <StructuredListRow head class="mx-7">
+            <StructuredListCell head class="text-primary-700 py-3 dark:text-white"
+              >Name</StructuredListCell
+            >
+            <StructuredListCell head class="text-primary-700 py-3 dark:text-white"
+              >Role</StructuredListCell
+            >
+            <StructuredListCell head class="text-primary-700 py-3 dark:text-white"
+              >Action</StructuredListCell
+            >
+            <RoleBasedSecurity allowedRoles={[1, 2]}>
+              <p class="dark:text-white hidden lg:block text-lg w-20" />
+            </RoleBasedSecurity>
+          </StructuredListRow>
+        </StructuredListHead>
+
+        {#each filterPeople(searchValue, people) as person}
+          <StructuredListBody>
+            <StructuredListRow class="relative">
+              <!-- first column -->
+              <StructuredListCell class="w-4/6 md:w-3/6">
+                {#if person.profile}
+                  <div class="flex items-start lg:items-center">
+                    <Avatar
+                      src={person.profile.avatar_url}
+                      name={person.profile.fullname}
+                      width="w-8"
+                      height="h-8"
+                      className="mr-3"
+                    />
+                    <div class="flex flex-col lg:flex-row items-start lg:items-center">
+                      <div class="mr-2">
+                        <p class="dark:text-white text-base font-normal">
+                          {person.profile.fullname}
+                        </p>
+                        <p class="text-xs text-primary-600 line-clamp-1">
+                          {getEmail(person)}
+                        </p>
                       </div>
-                    </RoleBasedSecurity>
-                    {#if person.profile_id == $profile.id}
-                      <ComingSoon label="You" />
+                      <div class="flex items-center">
+                        <RoleBasedSecurity allowedRoles={[1, 2]}>
+                          <CopyButton
+                            text={getEmail(person)}
+                            feedback="Copied Email to clipboard"
+                          />
+                        </RoleBasedSecurity>
+                        {#if person.profile_id == $profile.id}
+                          <ComingSoon label="You" />
+                        {/if}
+                      </div>
+                    </div>
+                  </div>
+                {:else}
+                  <div class="flex items-start lg:items-center w-2/4">
+                    <TextChip
+                      value={person.email.substring(0, 2).toUpperCase()}
+                      className="bg-primary-200 text-black font-semibold text-xs mr-3"
+                      shape="rounded-full"
+                    />
+                    <a
+                      href="mailto:{person.email}"
+                      class="text-md text-primary-600 mr-2 dark:text-white"
+                    >
+                      {person.email}
+                    </a>
+                    <div class="flex items-center justify-between">
+                      <RoleBasedSecurity allowedRoles={[1, 2]}>
+                        <CopyButton text={getEmail(person)} feedback="Copied Email to clipboard" />
+                      </RoleBasedSecurity>
+
+                      <TextChip
+                        value="Pending"
+                        className="text-xs bg-yellow-200 text-yellow-700 h-fit"
+                        size="sm"
+                      />
+                    </div>
+                  </div>
+                {/if}
+              </StructuredListCell>
+
+              <!-- second column -->
+              <StructuredListCell class="w-1/4 px-3">
+                <p class=" dark:text-white font-normal text-center text-base w-1/4">
+                  {ROLE_LABEL[person.role_id]}
+                </p>
+              </StructuredListCell>
+
+              <!-- third column -->
+              <StructuredListCell class="p-0 w-1/4">
+                <RoleBasedSecurity allowedRoles={[1, 2]}>
+                  <div class="hidden lg:flex lg:justify-between lg:items-center w-20">
+                    {#if person.profile_id !== $profile.id}
+                      <IconButton
+                        onClick={() => {
+                          member = person;
+                          $deleteMemberModal.open = true;
+                        }}
+                      >
+                        <TrashCanIcon size={16} class="carbon-icon dark:text-white" />
+                      </IconButton>
                     {/if}
                   </div>
-                </div>
-              {:else}
-                <div class="flex items-center w-2/4 absolute bottom-3">
-                  <TextChip
-                    value={person.email.substring(0, 2).toUpperCase()}
-                    className="bg-primary-200 text-black font-semibold text-xs mr-3"
-                    shape="rounded-full"
-                  />
-                  <a
-                    href="mailto:{person.email}"
-                    class="text-md text-primary-600 mr-2 dark:text-white"
-                  >
-                    {person.email}
-                  </a>
-
-                  <RoleBasedSecurity allowedRoles={[1, 2]}>
-                    <div class="hidden lg:flex lg:justify-between lg:items-center w-20">
-                      <CopyButton text={getEmail(person)} feedback="Copied Email to clipboard" />
-                    </div>
-                  </RoleBasedSecurity>
-
-                  <TextChip
-                    value="Pending"
-                    className="text-xs bg-yellow-200 text-yellow-700 h-fit"
-                    size="sm"
-                  />
-                </div>
-              {/if}
-            </StructuredListCell>
-
-            <!-- second column -->
-            <StructuredListCell class="w-1/4 py-4 px-3">
-              <p class="dark:text-white font-normal text-base w-1/4 my-auto">
-                {ROLE_LABEL[person.role_id]}
-              </p>
-            </StructuredListCell>
-
-            <!-- third column -->
-            <StructuredListCell class="p-0 w-1/4">
-              <RoleBasedSecurity allowedRoles={[1, 2]}>
-                <div class="hidden lg:flex lg:justify-between lg:items-center w-20">
-                  {#if person.profile_id !== $profile.id}
-                    <IconButton
-                      onClick={() => {
-                        member = person;
-                        $deleteMemberModal.open = true;
-                      }}
-                    >
-                      <TrashCanIcon size={16} class="carbon-icon dark:text-white" />
-                    </IconButton>
-                  {/if}
-                </div>
-              </RoleBasedSecurity>
-            </StructuredListCell>
-          </StructuredListRow>
-        </StructuredListBody>
-      {/each}
-    </StructuredList>
-    <Pagination totalItems={10} pageSizes={[10, 15, 20]} />
-  </section>
+                </RoleBasedSecurity>
+              </StructuredListCell>
+            </StructuredListRow>
+          </StructuredListBody>
+        {/each}
+      </StructuredList>
+      <!-- <Pagination totalItems={10} pageSizes={[10, 15, 20]} /> -->
+    </section>
+  </PageBody>
 </CourseContainer>
