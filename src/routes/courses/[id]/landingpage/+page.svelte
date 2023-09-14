@@ -36,7 +36,7 @@
 >
   <Editor {courseId} bind:course={courseData} />
   <div class="rightBar">
-    <CourseLandingPage bind:courseData />
+    <CourseLandingPage bind:courseData editMode={true} />
   </div>
 </div>
 
