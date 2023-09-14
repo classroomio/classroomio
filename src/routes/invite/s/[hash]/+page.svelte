@@ -10,6 +10,7 @@
   import type { CurrentOrg } from '$lib/utils/types/org.js';
   import { ROLE } from '$lib/utils/constants/roles';
   import { profile } from '$lib/utils/store/user.js';
+  import { sendStudentCourseWelcome, sendTeacherStudentJoinedCourse } from './utils';
 
   export let data;
 
@@ -27,6 +28,18 @@
       group_id: data.groupId,
       role_id: ROLE.STUDENT
     };
+
+    const teacherMembers = await supabase
+      .from('groupmember')
+      .select('id, profile(email)')
+      .eq('group_id', data.groupId)
+      .eq('role_id', ROLE.TUTOR);
+
+    const teachers: Array<string> =
+      teacherMembers.data?.map((teacher) => {
+        return teacher.profile?.email || '';
+      }) || [];
+
     addGroupMember(member).then((addedMember) => {
       loading = false;
       if (addedMember.error) {
@@ -34,8 +47,19 @@
         return;
       }
 
+      // Send email welcoming student to the course
+      sendStudentCourseWelcome({
+        to: $profile.email,
+        orgName: data.currentOrg?.name,
+        courseName: data.name
+      });
+
       // Send notification to teacher(s) that a student has joined the course.
-      // also send welcome email to students when they join the course
+      sendTeacherStudentJoinedCourse({
+        to: teachers,
+        courseName: data.name
+      });
+
       // go to lms
       return goto('/lms');
     });
@@ -46,7 +70,7 @@
     currentOrg.set(cOrg);
   }
 
-  onMount(() => {
+  onMount(async () => {
     setTheme(data.currentOrg?.theme || '');
   });
 

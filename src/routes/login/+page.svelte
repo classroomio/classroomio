@@ -1,4 +1,5 @@
 <script>
+  import { page } from '$app/stores';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { getSupabase } from '$lib/utils/functions/supabase';
@@ -6,6 +7,7 @@
   import { LOGIN_FIELDS } from '$lib/utils/constants/authentication';
   import AuthUI from '$lib/components/AuthUI/index.svelte';
   import { currentOrg } from '$lib/utils/store/org';
+  import { goto } from '$app/navigation';
 
   let formRef;
   let supabase = getSupabase();
@@ -13,6 +15,9 @@
   let submitError;
   let loading = false;
   let errors = {};
+
+  let query = new URLSearchParams($page.url.search);
+  let redirect = query.get('redirect');
 
   async function handleSubmit() {
     const validationRes = authValidation(fields);
@@ -31,6 +36,10 @@
       });
       console.log('data', data);
       if (error) throw error;
+
+      if (redirect) {
+        goto(redirect);
+      }
     } catch (error) {
       submitError = error.error_description || error.message;
     } finally {
