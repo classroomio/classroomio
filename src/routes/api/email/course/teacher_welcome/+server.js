@@ -1,7 +1,7 @@
 import { render } from 'svelte-email';
 import { json } from '@sveltejs/kit';
 import WelcomeTemplate from './template.svelte';
-import { getSendgrid, SENDGRID_FROM_NOTIFY } from '$lib/utils/services/sendgrid';
+import { getSendgrid, SENDGRID_FROM_NOREPLY } from '$lib/utils/services/sendgrid';
 import { getSupabase } from '$lib/utils/functions/supabase';
 
 const sendgrid = getSendgrid();
@@ -32,7 +32,7 @@ export async function POST({ request }) {
   const inviteLink = `${origin}/org/${orgSiteName}/courses`;
 
   const options = {
-    from: SENDGRID_FROM_NOTIFY,
+    from: SENDGRID_FROM_NOREPLY,
     to,
     subject: `You have been invited to a course in ${orgName}!`,
     html: render({

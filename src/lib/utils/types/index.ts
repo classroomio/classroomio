@@ -8,6 +8,7 @@ interface CourseMetadata {
   videoUrl?: '';
   showDiscount: false;
   discount: 0;
+  paymentLink?: string;
   reward?: {
     show: boolean;
     description: string;
@@ -94,7 +95,7 @@ export interface Course {
   logo?: string;
   slug?: any; // type unknown;
   metadata?: CourseMetadata;
-  cost?: number;
+  cost: number;
   currency?: string;
   group?: Group;
   organization?: Organization;
