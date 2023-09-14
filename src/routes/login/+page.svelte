@@ -7,7 +7,6 @@
   import { LOGIN_FIELDS } from '$lib/utils/constants/authentication';
   import AuthUI from '$lib/components/AuthUI/index.svelte';
   import { currentOrg } from '$lib/utils/store/org';
-  import { goto } from '$app/navigation';
 
   let formRef;
   let supabase = getSupabase();
@@ -36,10 +35,6 @@
       });
       console.log('data', data);
       if (error) throw error;
-
-      // if (redirect) {
-      //   goto(redirect);
-      // }
     } catch (error) {
       submitError = error.error_description || error.message;
     } finally {
