@@ -315,14 +315,14 @@
           {#if !isQuizPage($page.url.pathname)}
             <OrgSideBar />
           {/if}
-          <div class="org-slot w-full bg-white dark:bg-gray-800">
+          <div class="org-slot bg-white dark:bg-gray-800 w-full">
             <slot />
           </div>
         </div>
       {:else if isLMSPage($page.url.pathname)}
         <div class="org-root w-full flex items-center justify-between">
           <LMSSideBar />
-          <div class="org-slot w-full bg-white dark:bg-gray-800">
+          <div class="org-slot bg-white dark:bg-gray-800 w-full">
             <slot />
           </div>
         </div>

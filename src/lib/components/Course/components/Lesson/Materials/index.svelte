@@ -197,13 +197,13 @@
 <Modal
   {onClose}
   bind:open={$uploadCourseVideoStore.isModalOpen}
-  width="w-4/5 h-[566px]"
+  width="w-4/5 w-[90%] h-[80%] md:h-[566px]"
   modalHeading="Add a Video"
 >
   <VideoUploader {lessonId} />
 </Modal>
 
-<h1 class="text-4xl mt-0">
+<h1 class="text-4xl mt-0 capitalize">
   {lessonTitle}
 </h1>
 
@@ -386,7 +386,7 @@
     </article>
   {/if}
 {:else}
-  <Box>
+  <Box className="text-center">
     <img src="/no-video.svg" alt="Video not found" />
     <h3 class="text-xl font-normal dark:text-white py-2">
       No note, video or slide added for this lesson yet
