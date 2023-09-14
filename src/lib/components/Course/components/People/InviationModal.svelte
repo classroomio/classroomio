@@ -1,27 +1,20 @@
 <script lang="ts">
+  import { Popover } from 'carbon-components-svelte';
+  import Link from 'carbon-icons-svelte/lib/Link.svelte';
   import Modal from '$lib/components/Modal/index.svelte';
+  import copy from 'copy-to-clipboard';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
   import { ROLE } from '$lib/utils/constants/roles';
   import { addGroupMember, fetchGroup } from '$lib/utils/services/courses';
   import { invitationModal, resetForm } from './store';
-  import { validateForm } from '$lib/components/Courses/functions';
   import { course, setCourse } from '$lib/components/Course/store';
   import { MultiSelect, Loading } from 'carbon-components-svelte';
   import { currentOrg } from '$lib/utils/store/org';
   import { getOrgTeam } from '$lib/utils/services/org';
   import type { OrgTeamMember } from '$lib/utils/types/org';
   import { sendTeacherCourseWelcome } from './utils';
-
-  let errors: {
-    students: string;
-    tutors: string;
-    title?: string;
-    description?: string;
-  } = {
-    students: '',
-    tutors: ''
-  };
+  import type { Course } from '$lib/utils/types';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
 
   interface Tutor {
     id: number;
@@ -33,6 +26,8 @@
   let selectedIds: Array<number> = [];
   let selectedTutors: Tutor[] = [];
   let isLoadingTutors = false;
+  let link = '';
+  let copied = false;
 
   function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
     return value !== null && value !== undefined;
@@ -41,27 +36,13 @@
     i.length === 0 ? [] : i.map((id) => tutors.find((tutor) => tutor.id === id)).filter(notEmpty);
 
   function onSubmit() {
-    const { hasError, fieldErrors, students } = validateForm({
-      ...$invitationModal,
-      title: 'sfdsd',
-      description: 'dsfdsf',
-      tutors: 'sgsg'
-    });
-
-    errors = fieldErrors;
-    if (hasError) return;
+    if (!selectedTutors.length) {
+      resetForm();
+      return;
+    }
 
     let membersStack = [];
     console.log(`$course`, $course);
-
-    // Create groupmemebers from group_id and add teachers and students
-    for (const studentEmail of students) {
-      membersStack.push({
-        email: studentEmail,
-        group_id: $course.group?.id,
-        role_id: ROLE.STUDENT
-      });
-    }
 
     for (const tutor of selectedTutors) {
       membersStack.push({
@@ -128,12 +109,37 @@
     isLoadingTutors = false;
   }
 
+  function getInviteLink(_course: Course, siteName: string) {
+    const hash = encodeURIComponent(
+      btoa(
+        JSON.stringify({
+          groupId: _course.group?.id,
+          name: _course.title,
+          description: _course.description,
+          orgSiteName: siteName
+        })
+      )
+    );
+
+    return `https://${siteName}.classroomio.com/invite/s/${hash}`;
+  }
+
+  function copyLink() {
+    copy(link);
+    copied = true;
+    setTimeout(() => {
+      copied = false;
+    }, 1000);
+  }
+
   $: {
     selectedTutors = formatSelected(selectedIds);
     console.log('selectedTutors', selectedTutors);
   }
 
   $: setTutors($currentOrg.id, $invitationModal.open);
+
+  $: link = getInviteLink($course, $currentOrg.siteName);
 </script>
 
 <Modal
@@ -144,8 +150,8 @@
   modalHeading="Invite people"
 >
   <form on:submit|preventDefault={onSubmit}>
-    <div class="mb-4">
-      <p class="text-base mb-1">Invite Tutors</p>
+    <div class="mb-8">
+      <p class="text-base mb-1 font-semibold">Invite Tutors</p>
       <MultiSelect
         disabled={isLoadingTutors}
         label="Select tutors in organization..."
@@ -169,19 +175,29 @@
       {/if}
     </div>
 
-    <TextArea
-      label="Invite Students"
-      labelClassName="text-base"
-      bind:value={$invitationModal.students}
-      rows="2"
-      maxRows={3}
-      placeholder="student@gmail.com, john@gmail.com"
-      helperMessage="To invite people, add their emails separated by a comma"
-      errorMessage={errors.students}
-      className="mb-4"
-    />
+    <div class="mb-8 w-[90%] flex justify-between items-center">
+      <div class="w-3/5">
+        <p class="text-base mb-1 font-semibold">Invite Students</p>
+        <p class=" text-sm">You can invite students via an invite link</p>
+      </div>
 
-    <div class="mt-5 flex items-center">
+      <div class="relative">
+        <PrimaryButton
+          disablePadding={true}
+          className="text-sm py-2 px-3"
+          variant={VARIANTS.OUTLINED}
+          onClick={copyLink}
+        >
+          <Link size={16} class="mr-1" />
+          Copy link
+        </PrimaryButton>
+        <Popover caret open={copied} align="bottom">
+          <div style="padding: 5px">Copied Successfully</div>
+        </Popover>
+      </div>
+    </div>
+
+    <div class="mt-5 flex items-center flex-row-reverse">
       <PrimaryButton className="px-6 py-3" label="Finish" type="submit" />
     </div>
   </form>

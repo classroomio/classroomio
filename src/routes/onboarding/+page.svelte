@@ -199,10 +199,6 @@
   $: progress = Math.round((step / maxSteps) * 100);
   $: fields.siteName = generateSitename(fields.siteName || '');
   $: setOrgSiteName(fields.orgName, isSiteNameTouched);
-
-  $: {
-    console.log('currentOrg', $currentOrg);
-  }
 </script>
 
 {#if $profile.id}

@@ -81,7 +81,7 @@
     console.log('Get user profile', authUser);
 
     if (!authUser) {
-      goto('/login');
+      goto('/login?redirect=/' + path);
     }
 
     // Check if user has profile
