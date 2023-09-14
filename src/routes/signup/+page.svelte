@@ -1,5 +1,6 @@
 <script>
   import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { getSupabase } from '$lib/utils/functions/supabase';
@@ -40,7 +41,7 @@
 
       formRef?.reset();
 
-      return goto('/login');
+      return goto('/login' + $page.url.search);
       // success = true;
       // fields = Object.assign({}, SIGNUP_FIELDS);
     } catch (error) {

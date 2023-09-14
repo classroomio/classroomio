@@ -5,12 +5,10 @@ export const deleteMemberModal = writable({
 });
 
 export const invitationModal = writable({
-  open: false,
-  students: ''
+  open: false
 });
 
 export const resetForm = () =>
   invitationModal.update(() => ({
-    open: false,
-    students: ''
+    open: false
   }));

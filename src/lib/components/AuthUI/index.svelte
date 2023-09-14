@@ -1,17 +1,20 @@
-<script>
+<script lang="ts">
+  import { page } from '$app/stores';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import GoogleIconColored from '../Icons/GoogleIconColored.svelte';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import { currentOrg } from '$lib/utils/store/org';
+  import type { SupabaseClient } from '@supabase/supabase-js';
 
-  export let supabase;
-  export let handleSubmit;
+  export let supabase: SupabaseClient;
+  export let handleSubmit = () => {};
   export let isLogin = true;
   export let showOnlyContent = false;
   export let isLoading = false;
   export let showLogo = false;
   export let formRef;
+  export let hideGoogleAuth = false;
 
   async function signInWithGoogle() {
     if (isLoading) {
@@ -19,12 +22,11 @@
     }
     try {
       console.log('signInWithGoogle');
-      const { user, session, error } = await supabase.auth.signInWithOAuth({
+      const { error, data } = await supabase.auth.signInWithOAuth({
         provider: 'google'
       });
 
-      console.log('user', user);
-      console.log('session', session);
+      console.log('data', data);
       console.log('error', error);
     } catch (error) {
       console.log('catch error', error);
@@ -57,7 +59,7 @@
       >
         <slot />
       </form>
-      {#if !showOnlyContent}
+      {#if !showOnlyContent && !hideGoogleAuth}
         <div class="w-10/12 mb-3">
           <p class="dark:text-white text-sm mb-5">or sign up with:</p>
           <PrimaryButton
@@ -75,10 +77,14 @@
     {#if !showOnlyContent}
       <div class="w-full p-6 border-t border-grey text-center">
         {#if isLogin}
-          Not registered yet? <a class="hover:underline text-primary-700" href="/signup">Sign up</a>
+          Not registered yet? <a
+            class="hover:underline text-primary-700"
+            href="/signup{$page.url.search}">Sign up</a
+          >
         {:else}
-          Already have an account? <a class="hover:underline text-primary-700" href="/login"
-            >Log In</a
+          Already have an account? <a
+            class="hover:underline text-primary-700"
+            href="/login{$page.url.search}">Log In</a
           >
         {/if}
       </div>
