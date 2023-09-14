@@ -1,11 +1,12 @@
 <script lang="ts">
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import type { Course } from '$lib/utils/types';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
+  import { isCourseFree } from '$lib/utils/functions/course';
   import get from 'lodash/get';
 
   export let className = '';
+  export let editMode = false;
   export let courseData: Course = {
     id: '',
     title: '',
@@ -15,6 +16,7 @@
   let calculatedCost = 0;
   let discount = 0;
   let formatter: Intl.NumberFormat | undefined;
+  let isFree = false;
 
   function calcDisc(percent: number, cost: number) {
     if (!percent) return cost;
@@ -23,7 +25,15 @@
     return Math.round(discountedPrice);
   }
 
-  function addToCart() {}
+  function handleJoinCourse() {
+    if (editMode) return;
+
+    if (isFree) {
+      // get invite link
+      // redirect to link
+    } else {
+    }
+  }
 
   function buyNow() {}
 
@@ -32,9 +42,11 @@
     formatter = getCurrencyFormatter(currency);
   }
 
+  $: console.log('courseData.currency', courseData.currency);
   $: setFormatter(courseData.currency);
   $: discount = get(courseData, 'metadata.discount', 0);
   $: calculatedCost = calcDisc(discount, courseData.cost || 0);
+  $: isFree = isCourseFree(calculatedCost);
 </script>
 
 <!-- Pricing Details -->
@@ -44,6 +56,9 @@
     <div class="mb-6">
       <p class="dark:text-white font-medium text-lg">
         {formatter?.format(calculatedCost) || calculatedCost}
+        {#if isFree}
+          <span class="text-sm">(Free)</span>
+        {/if}
       </p>
       {#if courseData?.metadata?.showDiscount}
         <p class="dark:text-white font-light text-sm text-gray-500">
@@ -58,15 +73,9 @@
     <!-- Call To Action Buttons -->
     <div class="flex flex-col w-full items-center">
       <PrimaryButton
-        label="Add to Cart"
+        label="Join Course"
         className="w-full sm:w-full py-3 mb-3"
-        onClick={addToCart}
-      />
-      <PrimaryButton
-        label="Buy Now"
-        className="w-full sm:w-full py-3 mb-3"
-        variant={VARIANTS.OUTLINED}
-        onClick={addToCart}
+        onClick={handleJoinCourse}
       />
       <p class="dark:text-white font-light text-sm text-gray-500">Early bird offer. Buy ASAP</p>
     </div>

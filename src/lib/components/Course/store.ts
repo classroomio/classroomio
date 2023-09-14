@@ -21,6 +21,7 @@ export const course: Writable<Course> = writable({
     videoUrl: '',
     showDiscount: false,
     discount: 0,
+    paymentLink: '',
     reward: {
       show: false,
       description: ''

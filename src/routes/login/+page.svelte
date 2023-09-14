@@ -35,6 +35,13 @@
       });
       console.log('data', data);
       if (error) throw error;
+
+      // reload page on org site cause for some reason the authlistener on +layout.svelte doesn't run
+      // on org site
+      if ($currentOrg.id && redirect) {
+        console.log('Forcing full page reload for auth listener');
+        window.location.reload();
+      }
     } catch (error) {
       submitError = error.error_description || error.message;
     } finally {
