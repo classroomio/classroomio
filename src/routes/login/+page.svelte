@@ -37,9 +37,9 @@
       console.log('data', data);
       if (error) throw error;
 
-      if (redirect) {
-        goto(redirect);
-      }
+      // if (redirect) {
+      //   goto(redirect);
+      // }
     } catch (error) {
       submitError = error.error_description || error.message;
     } finally {
