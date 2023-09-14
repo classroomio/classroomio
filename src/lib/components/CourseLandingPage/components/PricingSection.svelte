@@ -42,7 +42,6 @@
     formatter = getCurrencyFormatter(currency);
   }
 
-  $: console.log('courseData.currency', courseData.currency);
   $: setFormatter(courseData.currency);
   $: discount = get(courseData, 'metadata.discount', 0);
   $: calculatedCost = calcDisc(discount, courseData.cost || 0);
