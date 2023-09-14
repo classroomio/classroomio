@@ -7,12 +7,13 @@ import { getSupabase } from '$lib/utils/functions/supabase';
 const sendgrid = getSendgrid();
 const supabase = getSupabase();
 
+// Sends email to student when they successfully join a course
 export async function POST({ request }) {
-  const { to, name, orgName, courseName, orgSiteName } = await request.json();
+  const { to, orgName, courseName } = await request.json();
   const accessToken = request.headers.get('Authorization') || '';
-  console.log('/POST api/email/course/welcome', to, name, orgName);
+  console.log('/POST api/email/course/student_welcome', to, orgName);
 
-  if (!to || !name || !orgName || !courseName || !orgSiteName) {
+  if (!to || !orgName || !courseName) {
     return json({ success: false, message: 'Missing required fields' }, { status: 400 });
   }
 
@@ -28,19 +29,14 @@ export async function POST({ request }) {
     return json({ success: false, message: 'Unauthenticated user' }, { status: 401 });
   }
 
-  const origin = request.headers.get('origin');
-  const inviteLink = `${origin}/org/${orgSiteName}/courses`;
-
   const options = {
     from: SENDGRID_FROM_NOTIFY,
     to,
-    subject: `You have been invited to a course in ${orgName}!`,
+    subject: `[${orgName}] Welcome to Class`,
     html: render({
       template: WelcomeTemplate,
       props: {
-        name,
         orgName,
-        inviteLink,
         courseName
       }
     })

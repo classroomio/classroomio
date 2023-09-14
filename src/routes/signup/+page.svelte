@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import TextField from '$lib/components/Form/TextField.svelte';
@@ -11,15 +11,19 @@
   } from '$lib/utils/functions/validator';
   import { SIGNUP_FIELDS } from '$lib/utils/constants/authentication';
   import AuthUI from '$lib/components/AuthUI/index.svelte';
+  import { profile } from '$lib/utils/store/user';
 
   let supabase = getSupabase();
   let fields = Object.assign({}, SIGNUP_FIELDS);
   let loading = false;
   let success = false;
   let errors = {};
-  let submitError;
+  let submitError: string;
   let disableSubmit = false;
-  let formRef;
+  let formRef: HTMLFormElement;
+
+  let query = new URLSearchParams($page.url.search);
+  let redirect = query.get('redirect');
 
   async function handleSubmit(e) {
     const validationRes = authValidation(fields);
@@ -32,18 +36,55 @@
 
     try {
       loading = true;
-      const { data, error } = await supabase.auth.signUp({
+
+      const {
+        data: { session },
+        error
+      } = await supabase.auth.signUp({
         email: fields.email,
         password: fields.password
       });
-      console.log('data', data);
+      console.log('session', session);
+
       if (error) throw error;
+
+      const { user: authUser } = session || {};
+      if (!authUser) {
+        throw 'Error creating user';
+      }
+
+      const [regexUsernameMatch] = [...(authUser.email?.matchAll(/(.*)@/g) || [])];
+
+      const profileRes = await supabase
+        .from('profile')
+        .insert({
+          id: authUser.id,
+          username: regexUsernameMatch[1] + `${new Date().getTime()}`,
+          fullname: regexUsernameMatch[1],
+          email: authUser.email
+        })
+        .select();
+      console.log('profileRes', profileRes);
+
+      if (profileRes.error) {
+        throw profileRes.error;
+      }
+
+      // Setting profile
+      console.log('setting profile', profileRes.data[0]);
+      profile.set(profileRes.data[0]);
+
+      if (redirect) {
+        goto(redirect);
+      } else {
+        goto('/');
+      }
 
       formRef?.reset();
 
-      return goto('/login' + $page.url.search);
-      // success = true;
-      // fields = Object.assign({}, SIGNUP_FIELDS);
+      // return goto('/login' + $page.url.search);
+      success = true;
+      fields = Object.assign({}, SIGNUP_FIELDS);
     } catch (error) {
       submitError = error.error_description || error.message;
     } finally {
