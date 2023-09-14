@@ -15,7 +15,7 @@ export async function POST({ request }) {
   const accessToken = request.headers.get('Authorization');
   console.log('/POST api/email/invite', body);
 
-  if (!org || !Object.keys(org) || !email) {
+  if (!org || !Object.keys(org) || !email || !accessToken) {
     return json(
       { success: false, message: 'Org data and Teacher name are required' },
       { status: 400 }
@@ -43,7 +43,7 @@ export async function POST({ request }) {
     orgId: id,
     orgSiteName: siteName
   });
-  const inviteLink = `${origin}/invite/${encodeURIComponent(btoa(inviteData))}`;
+  const inviteLink = `${origin}/invite/t/${encodeURIComponent(btoa(inviteData))}`;
   console.log('inviteData', inviteData);
 
   const options = {

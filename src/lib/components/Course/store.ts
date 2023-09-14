@@ -11,6 +11,7 @@ export const course: Writable<Course> = writable({
   description: '',
   cost: 0,
   currency: '',
+  status: 'ACTIVE',
   is_certificate_downloadable: false,
   certificate_theme: 'professional',
   metadata: {

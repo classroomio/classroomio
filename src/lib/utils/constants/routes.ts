@@ -7,7 +7,8 @@ export const ROUTE = {
   COURSE: '/course',
   LOGIN: '/login',
   SIGN_UP: '/signup',
-  INVITE_SIGNUP: '/invite',
+  INVITE_TEACHER: '/invite/t',
+  INVITE_STUDENT: '/invite/s',
   PROFILE: '/profile',
   PEOPLE: '/people',
   DISCUSSIONS: '/discussions',
@@ -20,7 +21,7 @@ export const PUBLIC_ROUTES = [
   `^${ROUTE.HOME}$`,
   ROUTE.LOGIN,
   ROUTE.SIGN_UP,
-  `^${ROUTE.INVITE_SIGNUP}/.*`,
+  `^${ROUTE.INVITE_TEACHER}/.*`,
   ROUTE.FORGOT,
   ROUTE.RESET,
   `^${ROUTE.PAGES}/.*`,
@@ -31,7 +32,8 @@ export const PUBLIC_ROUTES = [
 export const ROUTES_TO_HIDE_NAV = [
   ROUTE.LOGIN,
   ROUTE.SIGN_UP,
-  `^${ROUTE.INVITE_SIGNUP}/.*`,
+  `^${ROUTE.INVITE_TEACHER}/.*`,
+  `^${ROUTE.INVITE_STUDENT}/.*`,
   ROUTE.FORGOT,
   ROUTE.RESET,
   ROUTE.ONBOARDING
