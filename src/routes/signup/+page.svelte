@@ -12,6 +12,7 @@
   import { SIGNUP_FIELDS } from '$lib/utils/constants/authentication';
   import AuthUI from '$lib/components/AuthUI/index.svelte';
   import { profile } from '$lib/utils/store/user';
+  import { currentOrg } from '$lib/utils/store/org';
 
   let supabase = getSupabase();
   let fields = Object.assign({}, SIGNUP_FIELDS);
@@ -53,7 +54,11 @@
         throw 'Error creating user';
       }
 
+      if (!$currentOrg.id) return;
+
       const [regexUsernameMatch] = [...(authUser.email?.matchAll(/(.*)@/g) || [])];
+      const response = await fetch('https://api.ipregistry.co/?key=tryout');
+      const metadata = await response.json();
 
       const profileRes = await supabase
         .from('profile')
@@ -61,7 +66,8 @@
           id: authUser.id,
           username: regexUsernameMatch[1] + `${new Date().getTime()}`,
           fullname: regexUsernameMatch[1],
-          email: authUser.email
+          email: authUser.email,
+          metadata
         })
         .select();
       console.log('profileRes', profileRes);
@@ -77,12 +83,10 @@
       if (redirect) {
         goto(redirect);
       } else {
-        goto('/');
+        goto('/login');
       }
 
       formRef?.reset();
-
-      // return goto('/login' + $page.url.search);
       success = true;
       fields = Object.assign({}, SIGNUP_FIELDS);
     } catch (error) {
