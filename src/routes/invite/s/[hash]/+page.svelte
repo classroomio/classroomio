@@ -16,12 +16,25 @@
 
   let supabase = getSupabase();
   let loading = false;
+  let refresh = false;
 
   let disableSubmit = false;
   let formRef: HTMLFormElement;
 
   async function handleSubmit() {
     loading = true;
+
+    if (refresh) {
+      window.location.reload();
+      refresh = false;
+      return;
+    }
+
+    if (!$profile.id || !$profile.email) {
+      console.log('Profile not found', $profile);
+      refresh = true;
+      return;
+    }
 
     const member = {
       profile_id: $profile.id,
@@ -91,13 +104,19 @@
   bind:formRef
 >
   <div class="mt-0 w-full">
-    <h3 class="dark:text-white text-lg font-medium mt-0 mb-4 text-center">{data.name}</h3>
-    <p class="dark:text-white text-sm font-light text-center">{data.description}</p>
+    {#if refresh}
+      <p class="dark:text-white text-sm font-light text-center">
+        Something went wrong, please try again.
+      </p>
+    {:else}
+      <h3 class="dark:text-white text-lg font-medium mt-0 mb-4 text-center">{data.name}</h3>
+      <p class="dark:text-white text-sm font-light text-center">{data.description}</p>
+    {/if}
   </div>
 
   <div class="my-4 w-full flex justify-center items-center">
     <PrimaryButton
-      label="Join Course"
+      label={refresh ? 'Try again' : 'Join Course'}
       type="submit"
       isDisabled={disableSubmit || loading}
       isLoading={loading}

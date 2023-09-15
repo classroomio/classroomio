@@ -154,7 +154,7 @@
     $menu.hidden
       ? '-translate-x-[100%] absolute md:translate-x-0 md:relative z-[40]'
       : 'translate-x-0 absolute md:relative z-[40]'
-  } transition w-[250px] min-w-[250px] bg-gray-100 dark:bg-gray-800 h-[calc(100vh-48px)] border border-l-0 border-t-0 border-b-0 border-r-1`}
+  } transition w-[350px] min-w-[350px] md:max-w-[350px] bg-gray-100 dark:bg-gray-800 h-[calc(100vh-48px)] overflow-y-auto border border-l-0 border-t-0 border-b-0 border-r-1`}
 >
   <div class="h-full flex flex-col">
     <ul class="my-5">
