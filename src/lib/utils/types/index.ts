@@ -66,6 +66,7 @@ export interface Group {
   organization_id?: string /* foreign key to organization.id */;
   organization?: Organization;
   tutors: Profile[];
+  members: Groupmember[];
 }
 
 export interface Role {

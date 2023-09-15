@@ -1,17 +1,19 @@
 <script lang="ts">
+  import get from 'lodash/get';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import type { Course } from '$lib/utils/types';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
   import { isCourseFree } from '$lib/utils/functions/course';
-  import get from 'lodash/get';
+  import { getStudentInviteLink } from '$lib/utils/functions/course';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { goto } from '$app/navigation';
+  import PaymentModal from './PaymentModal.svelte';
+  import type { Course } from '$lib/utils/types';
+  import { ROLE } from '$lib/utils/constants/roles';
 
   export let className = '';
   export let editMode = false;
-  export let courseData: Course = {
-    id: '',
-    title: '',
-    description: ''
-  };
+  export let courseData: Course;
+  export let startCoursePayment = false;
 
   let calculatedCost = 0;
   let discount = 0;
@@ -29,17 +31,22 @@
     if (editMode) return;
 
     if (isFree) {
-      // get invite link
-      // redirect to link
+      const link = getStudentInviteLink(courseData, $currentOrg.siteName);
+      goto(link);
     } else {
+      startCoursePayment = true;
     }
   }
-
-  function buyNow() {}
 
   function setFormatter(currency: string | undefined) {
     if (!currency) return;
     formatter = getCurrencyFormatter(currency);
+  }
+
+  function getTeacherEmail(group: Course['group']) {
+    const firstTutor = group?.members?.find((m) => m.role_id === ROLE.TUTOR);
+
+    return firstTutor?.profile?.email || '';
   }
 
   $: setFormatter(courseData.currency);
@@ -48,8 +55,15 @@
   $: isFree = isCourseFree(calculatedCost);
 </script>
 
+<PaymentModal
+  bind:open={startCoursePayment}
+  paymentLink={get(courseData, 'metadata.paymentLink', '')}
+  courseName={courseData.title}
+  teacherEmail={getTeacherEmail(courseData.group)}
+/>
+
 <!-- Pricing Details -->
-<aside class="{className} price-container lg:sticky lg:top-0 lg:shadow-2xl lg:rounded-lg m-h-fit">
+<aside class="{className} price-container lg:sticky lg:top-10 lg:shadow-2xl lg:rounded-lg m-h-fit">
   <div class="p-10">
     <!-- Pricing -->
     <div class="mb-6">
@@ -72,7 +86,7 @@
     <!-- Call To Action Buttons -->
     <div class="flex flex-col w-full items-center">
       <PrimaryButton
-        label="Join Course"
+        label={isFree ? 'Join Course' : 'Buy Now'}
         className="w-full sm:w-full py-3 mb-3"
         onClick={handleJoinCourse}
       />
