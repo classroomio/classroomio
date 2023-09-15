@@ -134,6 +134,22 @@ export const authValidation = (fields = {}) => {
   return processErrors(error);
 };
 
+export const coursePaymentValidation = (fields = {}) => {
+  const schema = z.object({
+    fullname: z.string().min(6, {
+      message: 'Must be 6 or more characters long',
+      invalid_type_error: 'Must not be empty'
+    }),
+    email: z.string().email({
+      message: 'Invalid email address',
+      invalid_type_error: 'Must not be empty'
+    })
+  });
+  const { error } = schema.safeParse(fields);
+
+  return processErrors(error);
+};
+
 export const resetValidation = (fields = {}) => {
   const { error } = resetValidationSchema.safeParse(fields);
 

@@ -2,6 +2,8 @@
   import { Text, Link } from 'svelte-email';
 
   export let courseName = '';
+  export let studentFullname = '';
+  export let studentEmail = '';
 
   const fontFamily =
     '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif';
@@ -28,14 +30,12 @@
 
 <Text style={paragraph}>Hi amazing tutor,</Text>
 <Text style={paragraphContent}>
-  Congratulations, a new student has joined a course you are teaching: “{courseName}"
+  A new student has requested to join a course you are teaching: “{courseName}"
 </Text>
+<Text style={paragraphContent}>Student details</Text>
 <Text style={paragraphContent}>
-  We hope they have a great experience learning from the best (YOU).
-</Text>
-<Text style={paragraphContent}>
-  If you run into any issues, please don’t fail to reach out to us, we’d love to make your teaching
-  experience as easy as possible.
+  Name: {studentFullname}<br />
+  Email: {studentEmail}
 </Text>
 
 <Text style={footerParagraph}>Cheers</Text>
