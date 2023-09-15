@@ -2,6 +2,7 @@ import { writable, derived } from 'svelte/store';
 import { STEPS } from '../constants/quiz';
 import type { Writable } from 'svelte/store';
 import type { CurrentOrg, OrgTeamMember } from '../types/org';
+import { ROLE } from '$lib/utils/constants/roles';
 
 export const orgs = writable<CurrentOrg[]>([]);
 export const currentOrg: Writable<CurrentOrg> = writable({
@@ -17,6 +18,10 @@ export const currentOrg: Writable<CurrentOrg> = writable({
 });
 export const orgAudience = writable([]);
 export const orgTeam = writable<OrgTeamMember[]>([]);
+export const isOrgAdmin = derived(
+  currentOrg,
+  ($currentOrg) => parseInt($currentOrg.role_id) === ROLE.ADMIN
+);
 export const currentOrgPath = derived(currentOrg, ($currentOrg) =>
   $currentOrg.siteName ? `/org/${$currentOrg.siteName}` : ''
 );
