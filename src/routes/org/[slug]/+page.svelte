@@ -15,6 +15,7 @@
   import WelcomeModal from '$lib/components/WelcomeModal/WelcomeModal.svelte';
   import { onMount } from 'svelte';
   import { Add } from 'carbon-icons-svelte';
+  import { isOrgAdmin } from '$lib/utils/store/org';
 
   export let data;
   const { orgName } = data;
@@ -201,7 +202,7 @@
         <Add size={24} />
       </PrimaryButton>
     {:else}
-      <PrimaryButton label="Create Course" onClick={createCourse} />
+      <PrimaryButton label="Create Course" onClick={createCourse} isDisabled={!$isOrgAdmin} />
     {/if}
   </div>
 
