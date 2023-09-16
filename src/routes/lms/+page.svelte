@@ -49,7 +49,7 @@
         <Learning />
       </div>
       <div
-        class="flex items-center justify-center border border-[#EAEAEA] dark:bg-gray-700 gap-2 rounded w-full xl:w-[400px] h-fit xl:h-[516px] overflow-y-auto p-3 xl:mt-11"
+        class="flex items-center justify-center border border-[#EAEAEA] dark:bg-neutral-800 gap-2 rounded w-full xl:w-[400px] h-fit xl:h-[516px] overflow-y-auto p-3 xl:mt-11"
       >
         <div
           class="w-full h-full flex flex-col sm:flex-row xl:flex-col items-center justify-between md:items-center xl:items-start gap-5 md:justify-around"

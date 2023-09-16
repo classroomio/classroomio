@@ -35,7 +35,7 @@
 </script>
 
 <div class="root w-full min-h-screen flex items-center justify-center">
-  <div class="container border border-gray bg-white dark:bg-gray-800">
+  <div class="container border border-gray bg-white dark:bg-black">
     <div class="flex items-center flex-col p-2 lg:px-8 lg:py-3">
       {#if !showOnlyContent || showLogo}
         <div class="flex flex-col items-center justify-center w-full pt-2">

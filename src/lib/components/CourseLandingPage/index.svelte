@@ -91,7 +91,7 @@
   <title>{get(courseData, 'title', '')}</title>
 </svelte:head>
 
-<div class="w-full bg-white dark:bg-gray-800 flex flex-col items-center">
+<div class="w-full bg-white dark:bg-black flex flex-col items-center">
   <!-- Header Section -->
   <header id="header" class="banner w-full flex items-center justify-center p-">
     <div class="md:w-5/6 w-full flex items-center justify-between flex-col-reverse md:flex-row">
@@ -160,7 +160,7 @@
   </header>
   <PricingSection className="md:hidden" {courseData} {editMode} bind:startCoursePayment />
   <!-- Body -->
-  <div class="bg-white dark:bg-gray-800 w-full">
+  <div class="bg-white dark:bg-black w-full">
     <div
       class="py-8 lg:w-11/12 w-full m-2 lg:m-auto flex flex-col-reverse lg:flex-row items-center lg:items-start justify-between max-w-[1200px]"
     >

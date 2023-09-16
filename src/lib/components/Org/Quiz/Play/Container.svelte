@@ -15,7 +15,7 @@
 
   {#if $$slots.footer}
     <!-- FOOTER -->
-    <div class="footer bg-white dark:bg-gray-700 py-6 px-2 m-auto">
+    <div class="footer bg-white dark:bg-neutral-800 py-6 px-2 m-auto">
       <slot name="footer" />
     </div>
   {/if}

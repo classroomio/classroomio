@@ -62,7 +62,7 @@
 </script>
 
 <div
-  class="flex items-center justify-center lg:justify-start flex-wrap my-4 m-auto border-c rounded bg-gray-100 dark:bg-gray-700"
+  class="flex items-center justify-center lg:justify-start flex-wrap my-4 m-auto border-c rounded bg-gray-100 dark:bg-neutral-800"
 >
   {#if isLoading}
     <CommunityLoader />

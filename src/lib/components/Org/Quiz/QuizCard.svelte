@@ -56,7 +56,7 @@
 
 {#if quiz}
   <div
-    class="root w-full border hover:shadow-2xl transition ease-in-out rounded-lg bg-gray-100 dark:bg-gray-800 mb-5 relative flex flex-col lg:flex-row p-3"
+    class="root w-full border hover:shadow-2xl transition ease-in-out rounded-lg bg-gray-100 dark:bg-black mb-5 relative flex flex-col lg:flex-row p-3"
   >
     <ImageLoader
       src={themeImages[quiz.theme]?.card || themeImages.standard.card}

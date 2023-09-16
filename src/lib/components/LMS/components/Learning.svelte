@@ -15,7 +15,7 @@
 <section class="h-full mt-10 mb-20 xl:mt-2">
   <p class="text-base font-semibold text-[#040F2D] pb-3 dark:text-white">Currently Learning</p>
   <div
-    class="flex items-center flex-col border border-[#EAEAEA] dark:bg-gray-700 gap-2 rounded w-full h-fit xl:h-[516px] p-3"
+    class="flex items-center flex-col border border-[#EAEAEA] dark:bg-neutral-800 gap-2 rounded w-full h-fit xl:h-[516px] p-3"
   >
     {#if courseInProgress.length > 0}
       <div class="w-full h-full xl:h-[516px] flex flex-col justify-start">

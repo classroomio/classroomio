@@ -287,7 +287,7 @@
 {:else if data.isOrgSite && !path}
   <OrgLandingPage orgSiteName={data.orgSiteName} org={data.org} />
 {:else}
-  <main class="dark:bg-gray-800">
+  <main class="dark:bg-black">
     {#if $navigating && $delayedPreloading}
       <Backdrop>
         <Moon size="60" color="#1d4ed8" unit="px" duration="1s" />
@@ -315,14 +315,14 @@
           {#if !isQuizPage($page.url.pathname)}
             <OrgSideBar />
           {/if}
-          <div class="org-slot bg-white dark:bg-gray-800 w-full">
+          <div class="org-slot bg-white dark:bg-black w-full">
             <slot />
           </div>
         </div>
       {:else if isLMSPage($page.url.pathname)}
         <div class="org-root w-full flex items-center justify-between">
           <LMSSideBar />
-          <div class="org-slot bg-white dark:bg-gray-800 w-full">
+          <div class="org-slot bg-white dark:bg-black w-full">
             <slot />
           </div>
         </div>
