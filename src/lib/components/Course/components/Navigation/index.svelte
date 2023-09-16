@@ -24,6 +24,7 @@
   import { updateCourse } from '$lib/utils/services/courses';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
   import { isMobile } from '$lib/utils/store/useMobile';
+  import { menu } from '$lib/components/Org/store';
 
   // export let lessonId;
   export let path;
@@ -32,12 +33,14 @@
   let show = null;
   let isLessonActive = false;
 
+  const toggleSidebar = () => {
+    $menu.hidden = !$menu.hidden;
+  };
+
   function handleMainGroupClick(href) {
     return () => {
-      if ($isMobile) {
-        setTimeout(() => (show = false), 500);
-      }
       goto(href);
+      toggleSidebar();
     };
   }
 
@@ -146,145 +149,66 @@
 
 <Settings />
 
-<div class="root z-10 {!show && 'hide'} {$isMobile ? 'fixed shadow-xl' : 'sticky'}">
-  {#if show}
-    <div class="relative h-full dark:bg-gray-800">
-      <!-- <PageNav title="Back to courses" paddingClass="pl-2" titleSize="text-md">
-        <slot:fragment slot="image">
-          <Avatar src={$course.logo} />
-          <IconButton
-            value="toggle"
-            onClick={() => goto(`${$currentOrgPath}/courses`)}
-            size="small"
-            contained={true}
+<aside
+  class={`${
+    $menu.hidden
+      ? '-translate-x-[100%] absolute md:translate-x-0 md:relative z-[40]'
+      : 'translate-x-0 absolute md:relative z-[40]'
+  } transition w-[350px] min-w-[350px] md:max-w-[350px] bg-gray-100 dark:bg-gray-800 h-[calc(100vh-48px)] overflow-y-auto border border-l-0 border-t-0 border-b-0 border-r-1`}
+>
+  <div class="h-full flex flex-col">
+    <ul class="my-5">
+      {#each navItems as navItem}
+        {#if !navItem.show || (typeof navItem.show === 'function' && navItem.show())}
+          <NavExpandable
+            label={navItem.label}
+            handleClick={handleMainGroupClick(navItem.to)}
+            isGroupActive={(path || $page.url.pathname) === navItem.to}
+            isExpanded={isLessonActive}
+            total={navItem.isLecture ? ($lessons || []).length : 0}
           >
-            <ArrowLeftIcon size={20} class="carbon-icon dark:text-white" />
-          </IconButton>
-        </slot:fragment>
-        <slot:fragment slot="widget">
-          <RoleBasedSecurity allowedRoles={[1, 2]}>
-            <IconButton onClick={() => ($settingsDialog.open = !$settingsDialog.open)}>
-              <SettingsIcon size={20} class="carbon-icon dark:text-white" />
-            </IconButton>
-          </RoleBasedSecurity>
-        </slot:fragment>
-      </PageNav> -->
-      <div class="h-full py-3 overflow-y-auto">
-        {#each navItems as navItem}
-          {#if !navItem.show || (typeof navItem.show === 'function' && navItem.show())}
-            <NavExpandable
-              label={navItem.label}
-              handleClick={handleMainGroupClick(navItem.to)}
-              isGroupActive={(path || $page.url.pathname) === navItem.to}
-              isExpanded={isLessonActive}
-              total={navItem.isLecture ? ($lessons || []).length : 0}
-            >
-              {#if navItem.isLecture}
-                {#each $lessons as item, index}
-                  <a
-                    class="pl-7 w-[95%] text-[0.80rem] mb-1 text-black dark:text-white {isStudent &&
-                    !item.is_unlocked
-                      ? 'cursor-not-allowed'
-                      : ''}"
-                    href={isStudent && !item.is_unlocked
-                      ? $page.url.pathname
-                      : getLessonsRoute($course.id, item.id)}
-                    on:click={() => {
-                      if ($isMobile) {
-                        setTimeout(() => (show = false), 500);
-                      }
-                    }}
-                    aria-disabled={!item.is_unlocked}
+            {#if navItem.isLecture}
+              {#each $lessons as item, index}
+                <a
+                  class="pl-7 w-[95%] text-[0.80rem] mb-1 text-black dark:text-white {isStudent &&
+                  !item.is_unlocked
+                    ? 'cursor-not-allowed'
+                    : ''}"
+                  href={isStudent && !item.is_unlocked
+                    ? $page.url.pathname
+                    : getLessonsRoute($course.id, item.id)}
+                  on:click={toggleSidebar}
+                  aria-disabled={!item.is_unlocked}
+                >
+                  <div
+                    class="flex items-center py-3 px-4 {NavClasses.item} {(
+                      path || $page.url.pathname
+                    ).includes(item.id) && NavClasses.active}"
                   >
-                    <div
-                      class="flex items-center py-3 px-4 {NavClasses.item} {(
-                        path || $page.url.pathname
-                      ).includes(item.id) && NavClasses.active}"
-                    >
-                      <TextChip
-                        value={getLectureNo(index + 1)}
-                        className="bg-primary-200 text-primary-600 text-xs mr-2"
-                        size="sm"
-                        shape="rounded-full"
-                      />
-                      <span>{item.title}</span>
-                      <span class="grow" />
-                      {#if !item.is_unlocked}
-                        <span class="text-md ml-2" title="This lesson is locked.">
-                          <LockedIcon class="carbon-icon dark:text-white" />
-                        </span>
-                      {:else if item.is_complete}
-                        <span class="ml-2" title="You have completed this lesson">
-                          <CheckmarkFilled class="carbon-icon dark:text-white" />
-                        </span>
-                      {/if}
-                    </div>
-                  </a>
-                {/each}
-              {/if}
-            </NavExpandable>
-          {/if}
-        {/each}
-      </div>
-    </div>
-  {/if}
-  <div class="toggler rounded-full shadow-lg absolute bottom-0">
-    <IconButton
-      value="toggle"
-      onClick={() => (show = !show)}
-      size={$isMobile ? 'large' : 'small'}
-      color="text-black"
-      toolTipProps={$isMobile
-        ? {}
-        : {
-            title: 'Toggle sidebar',
-            hotkeys: ['B'],
-            direction: 'right'
-          }}
-    >
-      {#if show}
-        <ChevronLeftIcon size={16} />
-      {:else}
-        <ChevronRightIcon size={16} />
-      {/if}
-    </IconButton>
+                    <TextChip
+                      value={getLectureNo(index + 1)}
+                      className="bg-primary-200 text-primary-600 text-xs mr-2"
+                      size="sm"
+                      shape="rounded-full"
+                    />
+                    <span>{item.title}</span>
+                    <span class="grow" />
+                    {#if !item.is_unlocked}
+                      <span class="text-md ml-2" title="This lesson is locked.">
+                        <LockedIcon class="carbon-icon dark:text-white" />
+                      </span>
+                    {:else if item.is_complete}
+                      <span class="ml-2" title="You have completed this lesson">
+                        <CheckmarkFilled class="carbon-icon dark:text-white" />
+                      </span>
+                    {/if}
+                  </div>
+                </a>
+              {/each}
+            {/if}
+          </NavExpandable>
+        {/if}
+      {/each}
+    </ul>
   </div>
-</div>
-
-<style lang="scss">
-  .root {
-    height: calc(100vh - 48px);
-    display: flex;
-    flex-direction: column;
-    min-width: 360px;
-    max-width: 360px;
-    top: 0;
-    border-right: 1px solid var(--border-color);
-    background-color: rgb(250, 251, 252);
-
-    &.hide {
-      min-width: 15px;
-      max-width: 15px;
-    }
-  }
-  .footer {
-    border-top: 1px solid var(--border-color);
-  }
-
-  .toggler {
-    right: -15px;
-    z-index: 10;
-    border: 1px solid var(--border-color);
-    top: 50px;
-    height: fit-content;
-    background: var(--border-color);
-  }
-
-  @media (max-width: 760px) {
-    .root {
-      width: 98%;
-      min-width: unset;
-      max-width: unset;
-    }
-  }
-</style>
+</aside>

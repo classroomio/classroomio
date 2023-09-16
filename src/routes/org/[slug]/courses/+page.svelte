@@ -10,6 +10,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { Add } from 'carbon-icons-svelte';
   import { isMobile } from '$lib/utils/store/useMobile';
+  import { isOrgAdmin } from '$lib/utils/store/org';
 
   export let data;
   let { allCourses, cantFetch } = data;
@@ -51,11 +52,15 @@
     <div class="flex items-center justify-between mb-10">
       <h1 class="dark:text-white text-2xl md:text-3xl font-bold">Courses</h1>
       {#if $isMobile}
-        <PrimaryButton onClick={() => ($createCourseModal.open = true)}>
+        <PrimaryButton isDisabled={!$isOrgAdmin} onClick={() => ($createCourseModal.open = true)}>
           <Add size={24} />
         </PrimaryButton>
       {:else}
-        <PrimaryButton label="Create Course" onClick={() => ($createCourseModal.open = true)} />
+        <PrimaryButton
+          label="Create Course"
+          isDisabled={!$isOrgAdmin}
+          onClick={() => ($createCourseModal.open = true)}
+        />
       {/if}
     </div>
 

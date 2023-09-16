@@ -1,4 +1,5 @@
 <script>
+  import { page } from '$app/stores';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { getSupabase } from '$lib/utils/functions/supabase';
@@ -13,6 +14,9 @@
   let submitError;
   let loading = false;
   let errors = {};
+
+  let query = new URLSearchParams($page.url.search);
+  let redirect = query.get('redirect');
 
   async function handleSubmit() {
     const validationRes = authValidation(fields);
@@ -31,6 +35,13 @@
       });
       console.log('data', data);
       if (error) throw error;
+
+      // reload page on org site cause for some reason the authlistener on +layout.svelte doesn't run
+      // on org site
+      if ($currentOrg.id && redirect) {
+        console.log('Forcing full page reload for auth listener');
+        window.location.reload();
+      }
     } catch (error) {
       submitError = error.error_description || error.message;
     } finally {

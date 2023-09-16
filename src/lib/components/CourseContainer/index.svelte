@@ -16,9 +16,7 @@
   export let isFetching = false;
 
   $: {
-    const user = $group.people.find(
-      (person) => person.profile_id === $profile.id
-    );
+    const user = $group.people.find((person) => person.profile_id === $profile.id);
 
     if (user) {
       isStudent = user.role_id === 3;
@@ -58,6 +56,6 @@
   }
 
   .rightBar.isMobile {
-    margin-left: 10px;
+    /* margin-left: 10px; */
   }
 </style>

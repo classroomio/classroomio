@@ -13,12 +13,12 @@
   export let isDisabled = false;
   export let isLoading = false;
 
-  $: isDisabled = isLoading ? true : false;
+  $: isDisabled = isLoading ? true : isDisabled;
 </script>
 
 <button
   class="{isDisabled
-    ? 'bg-opacity-25 hover:bg-opacity-25 cursor-not-allowed'
+    ? 'opacity-25 cursor-not-allowed'
     : 'cursor-pointer'} flex items-center h-auto {VARIANTS_CLASS[
     isLoading ? VARIANTS.OUTLINED : variant
   ]} {!disablePadding &&

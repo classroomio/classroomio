@@ -11,7 +11,7 @@ export async function sendTeacherCourseWelcome(params: {
   const accessToken = data.session?.access_token || '';
 
   try {
-    const response = await fetch('/api/email/course/welcome', {
+    const response = await fetch('/api/email/course/teacher_welcome', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

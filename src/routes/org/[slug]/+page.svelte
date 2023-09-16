@@ -15,6 +15,7 @@
   import WelcomeModal from '$lib/components/WelcomeModal/WelcomeModal.svelte';
   import { onMount } from 'svelte';
   import { Add } from 'carbon-icons-svelte';
+  import { isOrgAdmin } from '$lib/utils/store/org';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants.js';
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
 
@@ -201,13 +202,13 @@
   <div class="flex items-center justify-between mb-10">
     <h1 class="dark:text-white text-2xl md:text-3xl font-bold">Dashboard</h1>
     <div class="flex items-center">
-      {#if $isMobile}
-        <PrimaryButton onClick={createCourse}>
+      <PrimaryButton variant={VARIANTS.OUTLINED} onClick={createCourse} isDisabled={!$isOrgAdmin}>
+        {#if $isMobile}
           <Add size={24} />
-        </PrimaryButton>
-      {:else}
-        <PrimaryButton variant={VARIANTS.OUTLINED} label="Create Course" onClick={createCourse} />
-      {/if}
+        {:else}
+          Create Course
+        {/if}
+      </PrimaryButton>
 
       <VisitOrgSiteButton />
     </div>

@@ -8,6 +8,7 @@
   import { onMount } from 'svelte';
   import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
+  import { isOrgAdmin } from '$lib/utils/store/org';
 
   let selected = 0;
   let query = new URLSearchParams($page.url.search);
@@ -18,19 +19,22 @@
       key: 0,
       label: 'Profile',
       tabKey: '',
-      href: $page.url.pathname
+      href: $page.url.pathname,
+      disabled: false
     },
     {
       key: 1,
       label: 'Organization',
       tabKey: 'org',
-      href: `${$page.url.pathname}?tab=org`
+      href: `${$page.url.pathname}?tab=org`,
+      disabled: !$isOrgAdmin
     },
     {
       key: 2,
       label: 'LandingPage',
       tabKey: 'landingpage',
-      href: `${$page.url.pathname}?tab=landingpage`
+      href: `${$page.url.pathname}?tab=landingpage`,
+      disabled: !$isOrgAdmin
     }
   ];
 
@@ -59,7 +63,7 @@
 
 <Tabs autoWidth bind:selected>
   {#each tabs as tab}
-    <Tab label={tab.label} href={tab.href} />
+    <Tab label={tab.label} href={tab.href} disabled={tab.disabled} />
   {/each}
   <!-- <Tab label="Account" /> -->
   <svelte:fragment slot="content">

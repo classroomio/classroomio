@@ -6,12 +6,15 @@
   import SendAlt from 'carbon-icons-svelte/lib/SendAlt.svelte';
   import ChartPie from 'carbon-icons-svelte/lib/ChartPie.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
+  import Settings from 'carbon-icons-svelte/lib/Settings.svelte';
+  import { apps } from './store';
 
   import QandA from './components/QandA/index.svelte';
   import LiveChat from './components/LiveChat/index.svelte';
   import Notes from './components/Notes/index.svelte';
   import Poll from './components/Poll/index.svelte';
   import APPS_CONSTANTS from './constants';
+  import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
 
   let selectedApp;
 
@@ -48,8 +51,21 @@
   });
 </script>
 
-<div class="root">
-  <div class="apps">
+<div class={`root ${$apps.open ? 'open dark:bg-slate-800' : 'close dark:bg-slate-800'}`}>
+  <div class={`apps`}>
+    <div class="lg:hidden">
+      <IconButton
+        buttonClassName="lg:hidden"
+        toolTipProps={{ title: 'Settings', hotkeys: ['A', '0'] }}
+        onClick={() => {
+          handleAppClick;
+          $apps.dropdown = !$apps.dropdown;
+        }}
+      >
+        <Settings size={24} class="carbon-icon dark:text-white lg:hidden" />
+      </IconButton>
+    </div>
+
     <IconButton
       toolTipProps={{ title: 'Live Chat', hotkeys: ['A', '1'] }}
       value={APPS_CONSTANTS.APPS.LIVE_CHAT}
@@ -104,7 +120,7 @@
 
 <style lang="scss">
   .root {
-    height: 93vh;
+    height: calc(100vh - 48px);
     position: sticky;
     top: 0;
     border-left: 1px solid var(--border-color);
@@ -127,6 +143,27 @@
       transition: all 1s ease-out;
       position: relative;
       overflow: auto;
+    }
+  }
+
+  @media screen and (max-width: 1024px) {
+    .root {
+      position: absolute;
+      height: calc(100vh - 109px);
+      top: 109px;
+      right: 0;
+      z-index: 999;
+    }
+    .open {
+      position: absolute;
+      transform: translateX(0);
+      transition: all 0.2s ease-in-out;
+    }
+    .close {
+      position: absolute;
+      transform: translateX(100%);
+      display: none;
+      transition: all 0.2s ease-in-out;
     }
   }
 </style>

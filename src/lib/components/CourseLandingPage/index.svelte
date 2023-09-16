@@ -25,11 +25,8 @@
 
   dayjs.extend(relativeTime);
 
-  export let courseData: Course = {
-    id: '',
-    title: '',
-    description: ''
-  };
+  export let editMode = false;
+  export let courseData: Course;
   const ratingsImg = [
     '/images/rating-1.svg',
     '/images/rating-2.svg',
@@ -43,6 +40,7 @@
   let player: any;
   let averageRating = 0;
   let totalRatings = 0;
+  let startCoursePayment = false;
 
   // initialize the expandDescription array with 'false' values for each review.
   let expandDescription = Array(reviews.length).fill(false);
@@ -59,16 +57,6 @@
 
   function locationHashChanged() {
     activeNav = window.location.hash;
-  }
-
-  function addToCart() {}
-
-  function buyNow() {
-    // if (courseData.cost) {
-    //   paystackApi.tra;
-    // } else {
-    //   // Course is free
-    // }
   }
 
   function initPlyr(_player: any, _video: string | undefined) {
@@ -119,7 +107,13 @@
         <p class="dark:text-white author my-3 text-sm">
           {get(courseData, 'metadata.instructor.name', '')}
         </p>
-        <PrimaryButton label="Start Course" className="px-6 py-5 mt-6 sm:w-fit" />
+        <PrimaryButton
+          label="Start Course"
+          className="px-6 py-5 mt-6 sm:w-fit"
+          onClick={() => {
+            startCoursePayment = true;
+          }}
+        />
       </div>
 
       <!-- Banner Image getEmbedId(videoUrl) -->
@@ -164,14 +158,16 @@
       {/if}
     </div>
   </header>
-  <PricingSection className="md:hidden" {courseData} />
+  <PricingSection className="md:hidden" {courseData} {editMode} bind:startCoursePayment />
   <!-- Body -->
   <div class="bg-white dark:bg-gray-800 w-full">
-    <div class="py-8 lg:w-10/12 w-full m-2 lg:m-auto flex justify-between">
+    <div
+      class="py-8 lg:w-11/12 w-full m-2 lg:m-auto flex flex-col-reverse lg:flex-row items-center lg:items-start justify-between max-w-[1200px]"
+    >
       <!-- Course Details -->
-      <div class="course-content w-full p-3 md:w-9/12 md:mr-14">
+      <div class="course-content w-full p-3 lg:w-10/12 lg:mr-14">
         <!-- Navigation -->
-        <nav class="flex items-center border-b border-gray-300 pb-3">
+        <nav class="flex items-center border-b border-gray-300 py-3 sticky top-11 bg-white">
           {#each NAV_ITEMS as navItem}
             <a
               href="{$page.url.pathname}{navItem.key}"
@@ -416,7 +412,7 @@
       </div>
 
       <!-- Pricing Details -->
-      <PricingSection className="hidden md:block" {courseData} />
+      <PricingSection {courseData} />
     </div>
   </div>
 </div>
@@ -464,7 +460,7 @@
   }
 
   .course-content {
-    max-width: 608px;
+    max-width: 800px;
   }
 
   nav {
