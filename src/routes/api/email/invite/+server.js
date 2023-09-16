@@ -1,7 +1,7 @@
 import { render } from 'svelte-email';
 import { json } from '@sveltejs/kit';
 import TeacherInviteTemplate from './template.svelte';
-import { getSendgrid, SENDGRID_FROM_NOTIFY } from '$lib/utils/services/sendgrid';
+import { getSendgrid, SENDGRID_FROM_NOREPLY } from '$lib/utils/services/sendgrid';
 import { getSupabase } from '$lib/utils/functions/supabase';
 
 const sendgrid = getSendgrid();
@@ -15,7 +15,7 @@ export async function POST({ request }) {
   const accessToken = request.headers.get('Authorization');
   console.log('/POST api/email/invite', body);
 
-  if (!org || !Object.keys(org) || !email) {
+  if (!org || !Object.keys(org) || !email || !accessToken) {
     return json(
       { success: false, message: 'Org data and Teacher name are required' },
       { status: 400 }
@@ -43,11 +43,11 @@ export async function POST({ request }) {
     orgId: id,
     orgSiteName: siteName
   });
-  const inviteLink = `${origin}/invite/${encodeURIComponent(btoa(inviteData))}`;
+  const inviteLink = `${origin}/invite/t/${encodeURIComponent(btoa(inviteData))}`;
   console.log('inviteData', inviteData);
 
   const options = {
-    from: SENDGRID_FROM_NOTIFY,
+    from: SENDGRID_FROM_NOREPLY,
     to: email,
     subject: `Join ${name} on ClassroomIO`,
     html: render({

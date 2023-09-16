@@ -2,6 +2,7 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import ArrowUpRightIcon from '$lib/components/Icons/ArrowTopRight.svelte';
   import { currentOrg } from '$lib/utils/store/org';
+  import { isMobile } from '$lib/utils/store/useMobile';
 
   export let className = '';
 </script>
@@ -12,7 +13,9 @@
   class="{className} ml-2 hover:no-underline"
 >
   <PrimaryButton>
-    View site
+    {#if !$isMobile}
+      View site
+    {/if}
     <ArrowUpRightIcon />
   </PrimaryButton>
 </a>

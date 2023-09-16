@@ -4,17 +4,19 @@
   import { fetchCourse, fetchLesson } from '$lib/utils/services/courses';
   import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants.js';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { Loading } from 'carbon-components-svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
   import PageBody from '$lib/components/PageBody/index.svelte';
   import Materials from '$lib/components/Course/components/Lesson/Materials/index.svelte';
   import Exercises from '$lib/components/Course/components/Lesson/Exercises/index.svelte';
-  import MODES from '$lib/utils/constants/mode.js';
+  import MODES from '$lib/utils/constants/mode';
   import { setCourse, course } from '$lib/components/Course/store';
   import Download from 'carbon-icons-svelte/lib/Download.svelte';
-
+  import OverflowMenuVertical from 'carbon-icons-svelte/lib/OverflowMenuVertical.svelte';
+  import { apps } from '$lib/components/Apps/store';
+  import IconButton from '$lib/components/IconButton/index.svelte';
   import {
     lesson,
     lessons,
@@ -144,6 +146,10 @@
     }));
   }
 
+  const toggleApps = () => {
+    $apps.open = !$apps.open;
+  };
+
   function toggleMode() {
     prevMode = mode;
     mode = mode === MODES.edit ? MODES.view : MODES.edit;
@@ -176,9 +182,20 @@
     <svelte:fragment slot="widget">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
         {#if data.isMaterialsTabActive}
-          <div class="flex items-center">
+          <div class="lg:hidden">
+            <IconButton onClick={toggleApps} buttonClassName="">
+              <OverflowMenuVertical size={24} />
+            </IconButton>
+          </div>
+          <div
+            class={`flex-row ${
+              $apps.dropdown && $apps.open
+                ? 'absolute lg:relative top-[85px] lg:top-0 right-14 lg:right-0 z-40 dark:bg-gray-800 p-3 lg:p-0'
+                : 'hidden'
+            } lg:flex items-center`}
+          >
             <PrimaryButton
-              className="mr-2"
+              className="mb-2 lg:mb-0 mr-2"
               variant={VARIANTS.OUTLINED}
               onClick={downloadLesson}
               {isLoading}
@@ -207,7 +224,7 @@
     <PageBody>
       <Materials lessonId={data.lessonId} {mode} {prevMode} {toggleMode} bind:isSaving />
 
-      <div class="w-full flex flex-row-reverse">
+      <div class="w-full flex flex-row-reverse mt-10">
         <PrimaryButton
           onClick={markLessonComplete}
           isLoading={isMarkingComplete}

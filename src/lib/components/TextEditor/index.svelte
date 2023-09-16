@@ -4,10 +4,10 @@
 
   export let id = '';
   export let value: string;
-  export let onChange = (html = '') => {};
+  export let onChange = (html: string) => {};
   export let height = 300;
   export let placeholder = '';
-  export let editorWindowRef;
+  export let editorWindowRef = null;
 
   const apiKey = PUBLIC_TINYMCE_API_KEY;
 

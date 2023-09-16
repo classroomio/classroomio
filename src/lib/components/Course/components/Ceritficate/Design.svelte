@@ -45,8 +45,8 @@
 </svelte:head>
 
 <main class="md:-ml-4 md:-mr-4 px-2">
-  <div class="flex-1 flex flex-col md:flex-row justify-between gap-3 w-full mb-3 h-4/5">
-    <section class="w-full md:w-2/5 h-full">
+  <div class="flex-1 flex flex-col lg:flex-row justify-between gap-3 w-full mb-3 h-4/5">
+    <section class="w-full lg:w-2/5 h-full">
       <strong class="my-2 text-base font-semibold text-black dark:text-gray-100"
         >Certificate settings</strong
       >
@@ -99,7 +99,7 @@
       </div>
     </section>
     <section
-      class="bg-gray-100 dark:bg-gray-700 flex justify-center items-center rounded-md w-full md:w-3/5"
+      class="bg-gray-100 dark:bg-gray-700 flex justify-center items-center rounded-md w-full lg:w-3/5"
     >
       <div class="certificate-container flex justify-center items-center h-5/6">
         {#if $course.certificate_theme === 'professional'}

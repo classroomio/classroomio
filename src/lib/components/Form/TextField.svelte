@@ -1,11 +1,11 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import PasswordEye from '../Icons/PasswordEye.svelte';
 
   export let label = '';
   export let placeholder = '';
-  export let value = '';
+  export let value: string | number;
   export let name = '';
   export let onKeyDown = () => {};
   export let className = '';

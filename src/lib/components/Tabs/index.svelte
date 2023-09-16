@@ -6,7 +6,7 @@
 </script>
 
 <div class="w-full flex flex-col">
-  <div class="flex items-center border-b-2 w-full">
+  <div class="flex items-center border-b-2 w-full overflow-x-auto">
     {#each tabs as tab}
       {#if !tab.icon && !tab.badgeValue}
         <button
@@ -32,7 +32,7 @@
             : 'dark:bg-gray-500 dark:text-white'} dark:bg-transparent font-semibold focus:outline-none w-24 text-left py-3 mr-10"
           on:click={onChange(tab.value)}
         >
-          <div class="grid grid-cols-4 gap-3 items-center">
+          <div class="grid grid-cols-5 md:grid-cols-4 gap-5 md:gap-3 items-center">
             {#if tab.icon}
               <svelte:component this={tab.icon} />
             {/if}
