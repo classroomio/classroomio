@@ -76,7 +76,10 @@
           height="h-7"
         />
       {:else if $currentOrg.shortName}
-        <TextChip value={$currentOrg.shortName} className="bg-primary-200 font-bold" />
+        <TextChip
+          value={$currentOrg.shortName}
+          className="bg-primary-200 dark:text-black font-bold"
+        />
       {/if}
 
       <OrgSelector />

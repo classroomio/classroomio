@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { goto } from '$app/navigation';
   import { Grid, Row, Column } from 'carbon-components-svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
@@ -11,8 +11,9 @@
   import { snackbarStore } from '$lib/components/Snackbar/store';
   import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
   import SectionTitle from '../SectionTitle.svelte';
+  import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
 
-  let siteName;
+  let siteName = '';
   let errors = '';
   let isLoading = false;
 
@@ -44,13 +45,13 @@
     isLoading = false;
   }
 
-  function setSiteName(_siteName) {
+  function setSiteName(_siteName: string) {
     if (!siteName) {
       siteName = _siteName;
     }
   }
 
-  function resetErrors(_siteName) {
+  function resetErrors(_siteName: string) {
     if (errors) {
       errors = '';
     }
@@ -62,13 +63,10 @@
 
 <Grid class="border rounded border-gray-200 w-full mt-5">
   <Row class="py-7 border-bottom-c">
-    <Column sm={2} md={2} lg={4} class="text-lg"
-      ><SectionTitle>Add</SectionTitle></Column
-    >
+    <Column sm={2} md={2} lg={4} class="text-lg"><SectionTitle>Add</SectionTitle></Column>
     <Column sm={2} md={6} lg={8}>
       <p class="text-md text-gray-500 dark:text-white mb-5">
-        Add your team mates or collaborators to your organization. Start working
-        together
+        Add your team mates or collaborators to your organization. Start working together
       </p>
 
       <div>
@@ -83,21 +81,23 @@
           labelClassName=""
           errorMessage={errors}
         />
-        <PrimaryButton
-          label="Change Domain"
-          className="mb-6 py-4"
-          variant={VARIANTS.CONTAINED}
-          onClick={handleChangeDomain}
-          isDisabled={isLoading}
-        />
+        <div class="flex items-center mb-6">
+          <PrimaryButton
+            label="Update Domain"
+            className="py-4"
+            variant={VARIANTS.OUTLINED}
+            onClick={handleChangeDomain}
+            isDisabled={isLoading}
+          />
+
+          <VisitOrgSiteButton />
+        </div>
       </div>
     </Column>
   </Row>
 
   <Row class="py-7 border-bottom-c">
-    <Column sm={2} md={2} lg={4} class="text-lg"
-      ><SectionTitle>Custom domain</SectionTitle></Column
-    >
+    <Column sm={2} md={2} lg={4} class="text-lg"><SectionTitle>Custom domain</SectionTitle></Column>
     <Column sm={2} md={6} lg={8}>
       <div class="flex items-center">
         <p class="dark:text-white mr-3">Add your own domain name</p>
