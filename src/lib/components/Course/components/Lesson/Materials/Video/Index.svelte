@@ -11,13 +11,15 @@
   const onChange = (tab) => () => (currentTab = tab);
 </script>
 
-<section class="w-full h-full flex flex-row items-start gap-3">
-  <div class="flex-1 flex-col">
-    <p class="text-sm font-normal text-start text-[#4F4B4B] dark:text-[#b0a9a9] mb-3">Add By</p>
+<section class="w-full h-full flex flex-col md:flex-row items-start gap-3">
+  <div class="flex flex-row md:flex-col gap-2 items-center">
+    <p class="text-sm font-normal text-start text-[#4F4B4B] dark:text-[#b0a9a9] mb-3 w-full">
+      Add By
+    </p>
     {#each tabs as item (item.value)}
       <button
         on:click={onChange(item.value)}
-        class={`w-full px-4 py-3 my-5 border ${
+        class={`w-full px-4 py-3 my-1 border ${
           currentTab === item.value
             ? 'border border-[#0233BD] bg-[#F5F8FE] dark:text-black'
             : 'border border-gray-200'

@@ -19,12 +19,12 @@
   const menuItems = [
     {
       path: '',
-      label: 'Home'
+      label: 'Dashboard'
     },
-    {
-      path: '/quiz',
-      label: 'Quizzes'
-    },
+    // {
+    //   path: '/quiz',
+    //   label: 'Quizzes'
+    // },
     {
       path: '/courses',
       label: 'Courses'

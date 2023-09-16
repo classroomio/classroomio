@@ -30,26 +30,21 @@
 </script>
 
 <div
-  class="root absolute inset-0 flex justify-center items-center z-50 bg-white"
+  class="absolute inset-0 z-50 bg-white"
   in:fly={{ y: 500, duration: 500 }}
   out:fly={{ y: 500, duration: 500 }}
 >
   <Editor {courseId} bind:course={courseData} />
-  <div class="rightBar" class:isMobile={$isMobile}>
-    <CourseLandingPage bind:courseData />
+  <div class="rightBar">
+    <CourseLandingPage bind:courseData editMode={true} />
   </div>
 </div>
 
 <style>
   .rightBar {
     flex-grow: 1;
-    width: calc(100% - 360px);
-    overflow: auto;
+    width: 100%;
     height: 100%;
-    overflow: auto;
-  }
-
-  .rightBar.isMobile {
-    margin-left: 10px;
+    overflow-y: auto;
   }
 </style>

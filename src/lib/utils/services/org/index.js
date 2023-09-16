@@ -125,14 +125,16 @@ export async function getOrgAudience(orgId) {
       email,
       avatar_url,
       created_at,
-      organizationmember!inner(
+      groupmember!inner(
         role_id,
-        organization_id
+        group_id:group!inner(
+          organization_id
+        )
       )
     `
     )
-    .eq('organizationmember.organization_id', orgId)
-    .eq('organizationmember.role_id', 3); // is a student, tutor is 2 and admin is 1
+    .eq('groupmember.group.organization_id', orgId)
+    .eq('groupmember.role_id', ROLE.STUDENT);
 
   console.log('data', data);
 

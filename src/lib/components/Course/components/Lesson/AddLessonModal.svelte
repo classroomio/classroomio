@@ -55,7 +55,7 @@
 <Modal
   onClose={() => (openModal = false)}
   bind:open={openModal}
-  width="w-[60%]"
+  width="w-[80%] md:w-[60%]"
   containerClass="overflow-hidden"
   modalHeading="Add New Lesson"
 >

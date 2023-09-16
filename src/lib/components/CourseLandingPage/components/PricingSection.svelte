@@ -1,20 +1,24 @@
 <script lang="ts">
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import type { Course } from '$lib/utils/types';
-  import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
   import get from 'lodash/get';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
+  import { isCourseFree } from '$lib/utils/functions/course';
+  import { getStudentInviteLink } from '$lib/utils/functions/course';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { goto } from '$app/navigation';
+  import PaymentModal from './PaymentModal.svelte';
+  import type { Course } from '$lib/utils/types';
+  import { ROLE } from '$lib/utils/constants/roles';
 
   export let className = '';
-  export let courseData: Course = {
-    id: '',
-    title: '',
-    description: ''
-  };
+  export let editMode = false;
+  export let courseData: Course;
+  export let startCoursePayment = false;
 
   let calculatedCost = 0;
   let discount = 0;
   let formatter: Intl.NumberFormat | undefined;
+  let isFree = false;
 
   function calcDisc(percent: number, cost: number) {
     if (!percent) return cost;
@@ -23,27 +27,51 @@
     return Math.round(discountedPrice);
   }
 
-  function addToCart() {}
+  function handleJoinCourse() {
+    if (editMode) return;
 
-  function buyNow() {}
+    if (isFree) {
+      const link = getStudentInviteLink(courseData, $currentOrg.siteName);
+      goto(link);
+    } else {
+      startCoursePayment = true;
+    }
+  }
 
   function setFormatter(currency: string | undefined) {
     if (!currency) return;
     formatter = getCurrencyFormatter(currency);
   }
 
+  function getTeacherEmail(group: Course['group']) {
+    const firstTutor = group?.members?.find((m) => m.role_id === ROLE.TUTOR);
+
+    return firstTutor?.profile?.email || '';
+  }
+
   $: setFormatter(courseData.currency);
   $: discount = get(courseData, 'metadata.discount', 0);
   $: calculatedCost = calcDisc(discount, courseData.cost || 0);
+  $: isFree = isCourseFree(calculatedCost);
 </script>
 
+<PaymentModal
+  bind:open={startCoursePayment}
+  paymentLink={get(courseData, 'metadata.paymentLink', '')}
+  courseName={courseData.title}
+  teacherEmail={getTeacherEmail(courseData.group)}
+/>
+
 <!-- Pricing Details -->
-<aside class="{className} price-container md:sticky md:top-0 md:shadow-2xl md:rounded-lg m-h-fit">
+<aside class="{className} price-container lg:sticky lg:top-10 lg:shadow-2xl lg:rounded-lg m-h-fit">
   <div class="p-10">
     <!-- Pricing -->
     <div class="mb-6">
       <p class="dark:text-white font-medium text-lg">
         {formatter?.format(calculatedCost) || calculatedCost}
+        {#if isFree}
+          <span class="text-sm">(Free)</span>
+        {/if}
       </p>
       {#if courseData?.metadata?.showDiscount}
         <p class="dark:text-white font-light text-sm text-gray-500">
@@ -58,15 +86,9 @@
     <!-- Call To Action Buttons -->
     <div class="flex flex-col w-full items-center">
       <PrimaryButton
-        label="Add to Cart"
+        label={isFree ? 'Join Course' : 'Buy Now'}
         className="w-full sm:w-full py-3 mb-3"
-        onClick={addToCart}
-      />
-      <PrimaryButton
-        label="Buy Now"
-        className="w-full sm:w-full py-3 mb-3"
-        variant={VARIANTS.OUTLINED}
-        onClick={addToCart}
+        onClick={handleJoinCourse}
       />
       <p class="dark:text-white font-light text-sm text-gray-500">Early bird offer. Buy ASAP</p>
     </div>
@@ -120,9 +142,9 @@
     height: fit-content;
   }
 
-  @media (max-width: 768px) {
+  @media screen and (min-width: 768px) and (max-width: 1024px) {
     .price-container {
-      width: 100%;
+      width: 405px;
       min-width: unset;
     }
   }

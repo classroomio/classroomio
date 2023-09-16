@@ -7,6 +7,7 @@ export const VARIANTS = {
   CONTAINED_SUCCESS: 'CONTAINED_SUCCESS',
   OUTLINED: 'OUTLINED',
   NONE: 'NONE',
+  LINK: 'LINK',
   TEXT: 'TEXT',
   TEXT_DANGER: 'TEXT_DANGER'
 };
@@ -25,6 +26,7 @@ export const VARIANTS_CLASS = {
   [VARIANTS.NONE]:
     'border-none hover:border-black-300 hover:bg-gray-200 dark:hover:bg-gray-500 text-black',
   [VARIANTS.TEXT]: 'text-black hover:underline',
+  [VARIANTS.LINK]: 'text-primary-500 dark:text-primary-500 hover:underline',
   [VARIANTS.TEXT_DANGER]:
     'text-red-500 hover:border border-t-0 border-l-0 border-r-0 border-red-300'
 };

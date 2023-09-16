@@ -1,18 +1,24 @@
 import { render } from 'svelte-email';
 import { json } from '@sveltejs/kit';
-import WelcomeTemplate from './template.svelte';
-import { getSendgrid, SENDGRID_FROM_NOTIFY } from '$lib/utils/services/sendgrid';
+import JoinRequestTemplate from './template.svelte';
+import { getSendgrid, SENDGRID_FROM_NOREPLY } from '$lib/utils/services/sendgrid';
 import { getSupabase } from '$lib/utils/functions/supabase';
 
 const sendgrid = getSendgrid();
 const supabase = getSupabase();
 
 export async function POST({ request }) {
-  const { to, name, orgName, courseName, orgSiteName } = await request.json();
+  const { to, courseName, studentEmail, studentFullname } = await request.json();
   const accessToken = request.headers.get('Authorization') || '';
-  console.log('/POST api/email/course/welcome', to, name, orgName);
+  console.log(
+    '/POST api/email/course/teacher_student_buycourse',
+    to,
+    courseName,
+    studentEmail,
+    studentFullname
+  );
 
-  if (!to || !name || !orgName || !courseName || !orgSiteName) {
+  if (!to || !courseName || !studentEmail || !studentFullname) {
     return json({ success: false, message: 'Missing required fields' }, { status: 400 });
   }
 
@@ -28,20 +34,16 @@ export async function POST({ request }) {
     return json({ success: false, message: 'Unauthenticated user' }, { status: 401 });
   }
 
-  const origin = request.headers.get('origin');
-  const inviteLink = `${origin}/org/${orgSiteName}/courses`;
-
   const options = {
-    from: SENDGRID_FROM_NOTIFY,
+    from: SENDGRID_FROM_NOREPLY,
     to,
-    subject: `You have been invited to a course in ${orgName}!`,
+    subject: `[${courseName}] Request to Join Course!`,
     html: render({
-      template: WelcomeTemplate,
+      template: JoinRequestTemplate,
       props: {
-        name,
-        orgName,
-        inviteLink,
-        courseName
+        courseName,
+        studentFullname,
+        studentEmail
       }
     })
   };

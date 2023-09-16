@@ -8,6 +8,7 @@ interface CourseMetadata {
   videoUrl?: '';
   showDiscount: false;
   discount: 0;
+  paymentLink?: string;
   reward?: {
     show: boolean;
     description: string;
@@ -64,6 +65,8 @@ export interface Group {
   updated_at?: string;
   organization_id?: string /* foreign key to organization.id */;
   organization?: Organization;
+  tutors: Profile[];
+  members: Groupmember[];
 }
 
 export interface Role {
@@ -93,7 +96,7 @@ export interface Course {
   logo?: string;
   slug?: any; // type unknown;
   metadata?: CourseMetadata;
-  cost?: number;
+  cost: number;
   currency?: string;
   group?: Group;
   organization?: Organization;
