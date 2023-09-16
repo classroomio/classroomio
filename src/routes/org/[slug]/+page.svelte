@@ -202,7 +202,12 @@
   <div class="flex items-center justify-between mb-10">
     <h1 class="dark:text-white text-2xl md:text-3xl font-bold">Dashboard</h1>
     <div class="flex items-center">
-      <PrimaryButton variant={VARIANTS.OUTLINED} onClick={createCourse} isDisabled={!$isOrgAdmin}>
+      <PrimaryButton
+        variant={VARIANTS.OUTLINED}
+        onClick={createCourse}
+        isDisabled={!$isOrgAdmin}
+        className="min-h-[36px]"
+      >
         {#if $isMobile}
           <Add size={24} />
         {:else}
