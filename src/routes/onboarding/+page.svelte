@@ -213,7 +213,7 @@
 
         <!-- Loggedin Email -->
         <div
-          class="w-64 flex items-center justify-center mb-6 py-6 bg-gray-100 dark:bg-gray-700 rounded-2xl border border-gray-300"
+          class="w-64 flex items-center justify-center mb-6 py-6 bg-gray-100 dark:bg-neutral-800 rounded-2xl border border-gray-300"
         >
           <UserProfileIcon />
           <p class="dark:text-white text-sm ml-2">{$profile.email}</p>

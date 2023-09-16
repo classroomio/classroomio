@@ -46,7 +46,7 @@
   }
 </script>
 
-<div class="p-4 bg-white dark:bg-gray-800 border-2 rounded-md mb-3">
+<div class="p-4 bg-white dark:bg-black border-2 rounded-md mb-3">
   {#if selectedOptionToView}
     <div>
       <div class="flex items-center mb-5">
@@ -140,7 +140,7 @@
     {:else}
       {#each poll.options as option, index}
         <button
-          class="bg-white dark:bg-gray-800 rounded-md border-2 border-gray-500 {didUserSelect(
+          class="bg-white dark:bg-black rounded-md border-2 border-gray-500 {didUserSelect(
             option
           ) &&
             'focus:border-primary-700 border-primary-700'} text-black p-2 w-full mb-3 text-left relative"

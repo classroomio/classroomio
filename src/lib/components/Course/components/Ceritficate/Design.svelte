@@ -99,7 +99,7 @@
       </div>
     </section>
     <section
-      class="bg-gray-100 dark:bg-gray-700 flex justify-center items-center rounded-md w-full lg:w-3/5"
+      class="bg-gray-100 dark:bg-neutral-800 flex justify-center items-center rounded-md w-full lg:w-3/5"
     >
       <div class="certificate-container flex justify-center items-center h-5/6">
         {#if $course.certificate_theme === 'professional'}

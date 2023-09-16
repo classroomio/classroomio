@@ -9,7 +9,7 @@
 
 <section class="root z-10">
   {#if show}
-    <div class="relative h-full bg-white dark:bg-gray-800">
+    <div class="relative h-full bg-white dark:bg-black">
       <slot />
     </div>
   {/if}

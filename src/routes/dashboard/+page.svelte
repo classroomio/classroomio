@@ -123,7 +123,7 @@
   <title>Dashboard - ClassroomIO</title>
 </svelte:head>
 
-<section class="root w-full py-10 bg-gray-100 dark:bg-gray-700">
+<section class="root w-full py-10 bg-gray-100 dark:bg-neutral-800">
   <div class="calendar-root flex mx-2">
     {#if !$isMobile}
       <div id="calendar">

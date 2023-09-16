@@ -38,7 +38,7 @@
 
   function activeClass(q, cq) {
     if (q.id === cq.id) {
-      return 'bg-gray-200 dark:bg-gray-800';
+      return 'bg-gray-200 dark:bg-black';
     }
     return '';
   }
@@ -196,7 +196,7 @@
 
 <section class="w-screen h-full flex justify-between">
   <!-- Questions list -->
-  <aside class="root w-1/5 p-4 bg-gray-100 dark:bg-gray-700 h-full">
+  <aside class="root w-1/5 p-4 bg-gray-100 dark:bg-neutral-800 h-full">
     <div class="h-full flex flex-col">
       <a
         class="text-gray-500 dark:text-white text-md flex items-center"
@@ -275,7 +275,7 @@
   </div>
 
   <!-- Quiz Settings -->
-  <aside class="settings w-1/5 p-4 bg-gray-100 dark:bg-gray-700 h-full">
+  <aside class="settings w-1/5 p-4 bg-gray-100 dark:bg-neutral-800 h-full">
     <div class="py-5">
       <h5>Quiz settings</h5>
       <PrimaryButton
