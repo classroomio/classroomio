@@ -121,7 +121,7 @@
 <aside
   class={`${
     show ? '-translate-x-[100%] fixed z-[9999]' : 'translate-x-0 fixed z-[9999]'
-  } left-0 transition w-[280px] min-w-[280px] bg-gray-100 dark:bg-gray-800 h-full border border-l-0 border-t-0 border-b-0 border-r-1`}
+  } left-0 transition w-[280px] min-w-[280px] bg-gray-100 dark:bg-black h-full border border-l-0 border-t-0 border-b-0 border-r-1`}
 >
   <div class="toggler rounded-full shadow-lg absolute">
     <IconButton

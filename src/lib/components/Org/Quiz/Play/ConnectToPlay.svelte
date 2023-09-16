@@ -32,10 +32,7 @@
     <PlayHeader startCount={true} showCountDown={true} />
   </div>
 
-  <div
-    slot="body"
-    class="w-full rounded-md bg-white dark:bg-gray-700 py-7 px-5"
-  >
+  <div slot="body" class="w-full rounded-md bg-white dark:bg-neutral-800 py-7 px-5">
     <div class="mb-3">
       <p>1. Visit</p>
       <h3>play.classroomio.com</h3>
@@ -52,10 +49,6 @@
 
   <div slot="footer" class="flex justify-center items-center">
     <p class="font-bold mr-3">Let's go</p>
-    <PrimaryButton
-      label="View Players"
-      variant={VARIANTS.OUTLINED}
-      onClick={goToPlayersStep}
-    />
+    <PrimaryButton label="View Players" variant={VARIANTS.OUTLINED} onClick={goToPlayersStep} />
   </div>
 </PlayContainer>

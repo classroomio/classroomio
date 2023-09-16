@@ -20,7 +20,7 @@
   }
 </script>
 
-<div {id} class="w-full bg-white dark:bg-gray-800 {rootClass}">
+<div {id} class="w-full bg-white dark:bg-black {rootClass}">
   <button
     class="w-full relative flex items-center justify-between {!disableContainerPadding && 'p-5'}"
     tabindex="0"

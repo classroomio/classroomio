@@ -108,7 +108,7 @@
     </div>
     <div class="border border-gray-300 rounded-md mt-2">
       <div
-        class="hover:bg-gray-100 dark:bg-gray-700 border-b border-t-0 border-l-0 border-r-0 border-gray-300 p-3"
+        class="hover:bg-gray-100 dark:bg-neutral-800 border-b border-t-0 border-l-0 border-r-0 border-gray-300 p-3"
       >
         <p class="dark:text-white font-bold text-lg">
           Details

@@ -42,7 +42,7 @@
 
   {#if open}
     <div
-      class="dropdown whitespace-nowrap bg-white dark:bg-gray-800 border border-grey rounded-lg mt-2 py-3 absolute"
+      class="dropdown whitespace-nowrap bg-white dark:bg-black border border-grey rounded-lg mt-2 py-3 absolute"
     >
       {#each options as option, index}
         <button

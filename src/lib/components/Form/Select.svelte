@@ -28,7 +28,7 @@
     class:customColor={!!selectClassName}
   >
     {#each options as option}
-      <option class="bg-white dark:bg-gray-800 text-black" value={option}>
+      <option class="bg-white dark:bg-black text-black" value={option}>
         {option[labelKey]}
       </option>
     {/each}

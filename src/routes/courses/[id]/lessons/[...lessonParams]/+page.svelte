@@ -190,7 +190,7 @@
           <div
             class={`flex-row ${
               $apps.dropdown && $apps.open
-                ? 'absolute lg:relative top-[85px] lg:top-0 right-14 lg:right-0 z-40 dark:bg-gray-800 p-3 lg:p-0'
+                ? 'absolute lg:relative top-[85px] lg:top-0 right-14 lg:right-0 z-40 dark:bg-black p-3 lg:p-0'
                 : 'hidden'
             } lg:flex items-center`}
           >

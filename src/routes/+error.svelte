@@ -17,7 +17,7 @@
 </svelte:head>
 
 <div
-  class="error-container m-auto flex flex-col-reverse lg:flex-row md:flex-col-reverse items-center justify-center h-full py-10 dark:bg-gray-800"
+  class="error-container m-auto flex flex-col-reverse lg:flex-row md:flex-col-reverse items-center justify-center h-full py-10 dark:bg-black"
 >
   <div class="md:w-full p-2 lg:w-2/4">
     <h2 class="w-full text-lg lg:text-3xl font-medium lg:font-normal">

@@ -157,7 +157,7 @@
     <div class="flex flex-wrap">
       {#each $lesson.exercises as exercise}
         <a
-          class="w-52 bg-gray-100 dark:bg-gray-700 px-4 py-7 mr-4 mb-4 rounded-lg"
+          class="w-52 bg-gray-100 dark:bg-neutral-800 px-4 py-7 mr-4 mb-4 rounded-lg"
           href="{path}/{exercise.id}"
           on:click={gotoEdit}
         >

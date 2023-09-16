@@ -161,7 +161,7 @@
     <div class="flex items-center w-full">
       {#each sections as { id, title, items, className }, idx (id)}
         <div
-          class="min-w-[355px] max-w-[355px] h-[516px] rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-50 p-3 mr-3 overflow-hidden"
+          class="min-w-[355px] max-w-[355px] h-[516px] rounded-md bg-gray-100 dark:bg-black border border-gray-50 p-3 mr-3 overflow-hidden"
           animate:flip={{ duration: flipDurationMs }}
         >
           <div class="flex items-center mb-2 gap-2">
