@@ -12,6 +12,7 @@
   export let errorMessage = '';
   export let isRequired = false;
   export let onChange = () => {}; // This is to know if element is 'dirty'
+  export let ref;
 
   $: minHeight = `${1 + parseInt(rows, 10) * 1.2}em`;
   $: maxHeight = maxRows ? `${1 + maxRows * 1.2}em` : `auto`;
@@ -39,6 +40,7 @@
     {rows}
     {placeholder}
     bind:value
+    bind:this={ref}
     required={isRequired}
     class="form-textarea dark:bg-gray-500 dark:text-gray-800 border-l-0 border-r-0 border-t-0 border-b-2 border-gray-200 focus:border-l-0 focus:border-r-0 rounded-t-md focus:border-t-0 focus:border-b-2 focus:border-primary-600 mt-1 block w-full
     {bgColor} {!!errorMessage ? 'border-red-500' : 'border-gray-300'}"

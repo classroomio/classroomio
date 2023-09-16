@@ -15,6 +15,8 @@
   import WelcomeModal from '$lib/components/WelcomeModal/WelcomeModal.svelte';
   import { onMount } from 'svelte';
   import { Add } from 'carbon-icons-svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants.js';
+  import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
 
   export let data;
   const { orgName } = data;
@@ -173,6 +175,8 @@
     return dateLessonData;
   }
 
+  function goToSite() {}
+
   onMount(() => {
     // Remove default shouldEnlargeDay=true when <DatePicker /> on mobile
     if ($store && $store.shouldEnlargeDay) {
@@ -196,13 +200,17 @@
 <div class="py-10 px-5 w-full max-w-7xl mx-auto">
   <div class="flex items-center justify-between mb-10">
     <h1 class="dark:text-white text-2xl md:text-3xl font-bold">Dashboard</h1>
-    {#if $isMobile}
-      <PrimaryButton onClick={createCourse}>
-        <Add size={24} />
-      </PrimaryButton>
-    {:else}
-      <PrimaryButton label="Create Course" onClick={createCourse} />
-    {/if}
+    <div class="flex items-center">
+      {#if $isMobile}
+        <PrimaryButton onClick={createCourse}>
+          <Add size={24} />
+        </PrimaryButton>
+      {:else}
+        <PrimaryButton variant={VARIANTS.OUTLINED} label="Create Course" onClick={createCourse} />
+      {/if}
+
+      <VisitOrgSiteButton />
+    </div>
   </div>
 
   <div class="flex items-start flex-wrap">
