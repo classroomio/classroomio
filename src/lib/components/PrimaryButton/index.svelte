@@ -22,7 +22,7 @@
     : 'cursor-pointer'} flex items-center h-auto {VARIANTS_CLASS[
     isLoading ? VARIANTS.OUTLINED : variant
   ]} {!disablePadding &&
-    'py-[0.5rem] px-6'} rounded-md {className} w-fit justify-center sm:w-auto {isLoading &&
+    'py-[0.5rem] px-6'} rounded-md {className} w-fit min-h-[36px] justify-center sm:w-auto {isLoading &&
     'py-[1rem] border-primary-700'} {variant !== VARIANTS.TEXT &&
     'hover:shadow-xl'} transition delay-150 duration-300 ease-in-out {variant !==
   VARIANTS.CONTAINED_WHITE
