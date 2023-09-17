@@ -12,12 +12,10 @@
   export let disablePadding = false;
   export let isDisabled = false;
   export let isLoading = false;
-
-  $: isDisabled = isLoading ? true : isDisabled;
 </script>
 
 <button
-  class="{isDisabled
+  class="{isLoading || isDisabled
     ? 'opacity-25 cursor-not-allowed'
     : 'cursor-pointer'} flex items-center h-auto {VARIANTS_CLASS[
     isLoading ? VARIANTS.OUTLINED : variant
@@ -31,7 +29,7 @@
   on:click={onClick}
   {name}
   {type}
-  disabled={isDisabled}
+  disabled={isLoading || isDisabled}
 >
   {#if isLoading}
     <Loading withOverlay={false} small />
