@@ -141,15 +141,7 @@
   <title>Join ClassroomIO</title>
 </svelte:head>
 
-<AuthUI
-  {supabase}
-  isLogin={false}
-  {handleSubmit}
-  isLoading={loading}
-  showOnlyContent={true}
-  showLogo={true}
-  bind:formRef
->
+<AuthUI {supabase} isLogin={false} {handleSubmit} isLoading={loading} showLogo={true} bind:formRef>
   <div class="mt-4 w-full">
     <p class="dark:text-white text-lg font-semibold mb-6">
       {#if data.profile}
