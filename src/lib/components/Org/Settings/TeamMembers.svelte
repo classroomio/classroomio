@@ -19,7 +19,7 @@
 
   let emailsStr = '';
   let errorMessage = '';
-  let role = ROLE.ADMIN;
+  let role = ROLE.TUTOR;
   let isFetching = false;
   let isLoading = false;
   let isRemoving = false;
@@ -141,7 +141,7 @@
         />
 
         <Select labelText="Role" bind:selected={role} class="mb-5 w-40">
-          <SelectItem value={ROLE.ADMIN} text={ROLE_LABEL[ROLE.ADMIN]} />
+          <!-- <SelectItem value={ROLE.ADMIN} text={ROLE_LABEL[ROLE.ADMIN]} /> -->
           <SelectItem value={ROLE.TUTOR} text={ROLE_LABEL[ROLE.TUTOR]} />
         </Select>
 
