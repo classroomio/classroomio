@@ -15,7 +15,7 @@ export async function POST({ request }) {
   const accessToken = request.headers.get('Authorization');
   console.log('/POST api/email/invite', body);
 
-  if (!org || !Object.keys(org) || !email || !accessToken) {
+  if (!org || !Object.keys(org).length || !email) {
     return json(
       { success: false, message: 'Org data and Teacher name are required' },
       { status: 400 }
@@ -30,7 +30,6 @@ export async function POST({ request }) {
     console.error(error);
   }
 
-  console.log('user', user);
   if (!user) {
     return json({ success: false, message: 'Unauthenticated user' }, { status: 401 });
   }
