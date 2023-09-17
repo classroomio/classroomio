@@ -30,7 +30,7 @@
 
     try {
       loading = true;
-      const { data, error } = await supabase.auth.update({
+      const { data, error } = await supabase.auth.updateUser({
         password: fields.password
       });
       console.log('data', data);

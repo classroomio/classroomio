@@ -28,7 +28,7 @@
     try {
       loading = true;
       const { data, error } = await supabase.auth.resetPasswordForEmail(fields.email, {
-        redirectTo: window.location.origin + ROUTE.RESET
+        redirectTo: 'https://app.classroomio.com/reset'
       });
       console.log('data', data);
       if (error) throw error;
