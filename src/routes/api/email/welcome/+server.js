@@ -24,7 +24,6 @@ export async function POST({ request }) {
     console.error(error);
   }
 
-  console.log('user', user);
   if (!user) {
     return json({ success: false, message: 'Unauthenticated user' }, { status: 401 });
   }
