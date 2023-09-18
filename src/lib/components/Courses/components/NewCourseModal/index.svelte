@@ -12,11 +12,12 @@
   import { currentOrg } from '$lib/utils/store/org';
 
   let errors = {
-    emails: ''
+    title: '',
+    description: ''
   };
 
   async function createCourse(e) {
-    const { hasError, fieldErrors, students, tutors } = validateForm($createCourseModal);
+    const { hasError, fieldErrors } = validateForm($createCourseModal);
 
     errors = fieldErrors;
     if (hasError) return;
@@ -54,29 +55,7 @@
       role_id: ROLE.TUTOR
     });
 
-    let membersStack = [];
-
-    // Create groupmemebers from group_id and add teachers and students
-    for (const student of students) {
-      membersStack.push({
-        email: student,
-        group_id,
-        role_id: ROLE.STUDENT
-      });
-    }
-
-    for (const tutor of tutors) {
-      membersStack.push({
-        email: tutor,
-        group_id,
-        role_id: ROLE.TUTOR
-      });
-    }
-
-    addGroupMember(membersStack).then((membersAdded) => {
-      console.log(`membersAdded`, membersAdded);
-      $createCourseModal.open = false;
-    });
+    $createCourseModal.open = false;
   }
 </script>
 
@@ -102,26 +81,6 @@
       autoComplete={false}
     />
     <TextArea
-      label="Invite Tutors"
-      bind:value={$createCourseModal.tutors}
-      rows="2"
-      maxRows="3"
-      placeholder="tutor@company.com, john@gmail.com"
-      helperMessage="To invite people, add their emails separated by a comma"
-      errorMessage={errors.tutors}
-      className="mb-4"
-    />
-    <TextArea
-      label="Invite Students"
-      bind:value={$createCourseModal.students}
-      rows="2"
-      maxRows="3"
-      placeholder="student@gmail.com, john@gmail.com"
-      helperMessage="To invite people, add their emails separated by a comma"
-      errorMessage={errors.students}
-      className="mb-4"
-    />
-    <TextArea
       label="Short description"
       bind:value={$createCourseModal.description}
       rows="4"
@@ -129,6 +88,7 @@
       placeholder="A little description about this course"
       className="mb-4"
       isRequired={true}
+      errorMessage={errors.description}
     />
 
     <div class="mt-5 flex items-center">
