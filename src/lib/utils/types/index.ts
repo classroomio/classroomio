@@ -2,9 +2,9 @@ export * from './config';
 export * from './dashboard';
 
 interface CourseMetadata {
-  requirements?: string;
-  description?: string;
-  goals?: string;
+  requirements: string;
+  description: string;
+  goals: string;
   videoUrl?: '';
   showDiscount: false;
   discount: 0;
@@ -95,7 +95,7 @@ export interface Course {
   organization_id?: string /* foreign key to organization.id */;
   logo?: string;
   slug?: any; // type unknown;
-  metadata?: CourseMetadata;
+  metadata: CourseMetadata;
   cost: number;
   currency?: string;
   group?: Group;

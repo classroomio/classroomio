@@ -1,18 +1,9 @@
-<script>
-  import cloneDeep from 'lodash/cloneDeep';
-  import set from 'lodash/set';
-  import get from 'lodash/get';
+<script lang="ts">
   import TextEditor from '$lib/components/TextEditor/index.svelte';
 
-  export let course;
-
-  function handleChange(html) {
-    const _course = cloneDeep(course);
-    set(_course, 'metadata.requirements', html);
-    course = _course;
-  }
+  export let value: string;
 </script>
 
 <div class="h-2/5">
-  <TextEditor value={get(course, 'metadata.requirements')} onChange={handleChange} />
+  <TextEditor bind:value />
 </div>

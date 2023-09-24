@@ -1,10 +1,11 @@
-<script>
+<script lang="ts">
   import { goto } from '$app/navigation';
+  import cloneDeep from 'lodash/cloneDeep';
+  import set from 'lodash/set';
   import ChevronRightIcon from 'carbon-icons-svelte/lib/ChevronRight.svelte';
   import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
   import ArrowUpRightIcon from 'carbon-icons-svelte/lib/ArrowUpRight.svelte';
 
-  import Container from './Container.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import CloseButton from '$lib/components/Buttons/Close/index.svelte';
   import HeaderForm from './HeaderForm.svelte';
@@ -21,47 +22,70 @@
   import ChevronLeftIcon from 'carbon-icons-svelte/lib/ChevronLeft.svelte';
 
   import { isMobile } from '$lib/utils/store/useMobile';
+  import CustomPromptBtn from '$lib/components/AI/AIButton/CustomPromptBtn.svelte';
+  import type { Course } from '$lib/utils/types';
 
-  export let course;
-  export let courseId;
+  export let course: Course;
+  export let courseId: string;
 
   let borderBottomGrey = 'border-r-0 border-b border-l-0 border-gray-300';
   let loading = false;
   let show = false;
-  const sections = [
+
+  interface Section {
+    key: number;
+    path: string;
+    title: string;
+    enableAIWriter?: boolean;
+    initPrompt?: string;
+  }
+
+  const sections: Section[] = [
     {
       key: 1,
+      path: '',
       title: 'Header'
     },
     {
       key: 2,
-      title: 'Requirement'
+      path: 'metadata.requirements',
+      title: 'Requirement',
+      enableAIWriter: true,
+      initPrompt: 'Generate a course requirement for this given course:'
     },
     {
       key: 3,
-      title: 'Description'
+      path: 'metadata.description',
+      title: 'Description',
+      enableAIWriter: true,
+      initPrompt: 'Generate a course description for this given course:'
     },
     {
       key: 4,
-      title: 'Goals'
+      path: 'metadata.goals',
+      title: 'Goals',
+      enableAIWriter: true,
+      initPrompt: 'What should a student expect to learn from this given course:'
     },
     {
       key: 5,
+      path: '',
       title: 'Reviews'
     },
     {
       key: 6,
+      path: '',
       title: 'Instructor'
     },
     {
       key: 7,
+      path: '',
       title: 'Pricing'
     }
   ];
-  let selectedSection = null;
+  let selectedSection: Section | null = null;
 
   function handleClose() {
-    console.log('closing');
     if (!selectedSection) {
       goto(`/courses/${courseId}`);
     }
@@ -69,11 +93,13 @@
     selectedSection = null;
   }
 
-  function handleSectionSelect(sectionKey) {
+  function handleSectionSelect(sectionKey: number) {
     return () => {
-      selectedSection = sections.find((section) => section.key === sectionKey);
+      selectedSection = sections.find((section) => section.key === sectionKey) || null;
+
       if (selectedSection) {
         const sectionId = selectedSection.title.toLowerCase();
+
         const sectionEl = document.getElementById(sectionId);
         if (sectionEl) {
           sectionEl.scrollIntoView({
@@ -120,8 +146,8 @@
 
 <aside
   class={`${
-    show ? '-translate-x-[100%] fixed z-[9999]' : 'translate-x-0 fixed z-[9999]'
-  } left-0 transition w-[280px] min-w-[280px] bg-gray-100 dark:bg-black h-full border border-l-0 border-t-0 border-b-0 border-r-1`}
+    show ? '-translate-x-[100%] fixed z-[50]' : 'translate-x-0 fixed z-[50]'
+  } left-0 transition w-[350px] min-w-[300px] bg-gray-100 dark:bg-black h-full border border-l-0 border-t-0 border-b-0 border-r-1`}
 >
   <div class="toggler rounded-full shadow-lg absolute">
     <IconButton
@@ -185,18 +211,36 @@
         <IconButton onClick={handleClose}>
           <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" title="Go back" />
         </IconButton>
-        <h3 class="dark:text-white">{selectedSection.title}</h3>
+        <div class=" flex items-center">
+          <h3 class="dark:text-white">
+            {selectedSection.title}
+          </h3>
+          {#if selectedSection.enableAIWriter}
+            <CustomPromptBtn
+              className="w-fit ml-2"
+              alignPopover="bottom-left"
+              defaultPrompt={`${selectedSection.initPrompt} ${course.title}. Please format in html`}
+              isHTML={true}
+              handleInsert={(v) => {
+                if (!selectedSection) return;
+                const _course = cloneDeep(course);
+                set(_course, selectedSection.path, v);
+                course = _course;
+              }}
+            />
+          {/if}
+        </div>
       </div>
 
       <div class="title-content p-2 overflow-y-auto">
         {#if selectedSection.key === 1}
           <HeaderForm bind:course />
         {:else if selectedSection.key === 2}
-          <RequirementForm bind:course />
+          <RequirementForm bind:value={course.metadata.requirements} />
         {:else if selectedSection.key === 3}
-          <DescriptionForm bind:course />
+          <DescriptionForm bind:value={course.metadata.description} />
         {:else if selectedSection.key === 4}
-          <GoalsForm bind:course />
+          <GoalsForm bind:value={course.metadata.goals} />
         {:else if selectedSection.key === 5}
           <ReviewsForm bind:course />
         {:else if selectedSection.key === 6}
