@@ -58,6 +58,9 @@
     placeholder=""
     bind:value={review.description}
     errorMessage={errors.description}
+    isAIEnabled={true}
+    initAIPrompt="Generate a 20 word review from a student saying good things about me teaching"
+    aiAlignPopover="top-right"
   />
 
   <div class="flex justify-between w-full items-center mt-2">

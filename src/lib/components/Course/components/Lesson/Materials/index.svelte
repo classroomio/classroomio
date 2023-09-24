@@ -11,6 +11,7 @@
   import ListIcon from 'carbon-icons-svelte/lib/List.svelte';
   import IbmWatsonKnowledgeStudioIcon from 'carbon-icons-svelte/lib/IbmWatsonKnowledgeStudio.svelte';
   import MachineLearningModel from 'carbon-icons-svelte/lib/MachineLearningModel.svelte';
+  import MagicWandFilled from 'carbon-icons-svelte/lib/MagicWandFilled.svelte';
   import Tabs from '$lib/components/Tabs/index.svelte';
   import TabContent from '$lib/components/TabContent/index.svelte';
   import Box from '$lib/components/Box/index.svelte';
@@ -221,7 +222,7 @@
             isDisabled={$isLoading}
             variant={VARIANTS.OUTLINED}
           >
-            <MachineLearningModel size={20} class="carbon-icon mr-3" />
+            <MagicWandFilled size={20} class="carbon-icon mr-3" />
             AI
             <Popover
               caret

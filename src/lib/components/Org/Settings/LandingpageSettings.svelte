@@ -164,6 +164,7 @@
         placeholder="Write your subtitle here"
         className="w-full mb-5"
         bind:value={$landingPageSettings.header.subtitle}
+        isAIEnabled={true}
       />
 
       <SectionTitle>Actions</SectionTitle>
@@ -221,6 +222,7 @@
         placeholder="Write your Content here"
         className="mb-5"
         bind:value={$landingPageSettings.aboutUs.content}
+        isAIEnabled={true}
       />
 
       <div>
@@ -268,6 +270,7 @@
         labelClassName="font-light"
         placeholder="Write your subtitle here"
         bind:value={$landingPageSettings.courses.subtitle}
+        isAIEnabled={true}
       />
     </Column>
   </Row>
@@ -301,6 +304,7 @@
             placeholder="Write your answer here"
             bind:value={item.content}
             className="mb-5"
+            isAIEnabled={true}
           />
           <IconButton onClick={() => deleteFaq(item.id)}>
             <TrashCan size={24} class="fill-red-700" />
@@ -320,6 +324,7 @@
           placeholder="Write your answer here"
           bind:value={newQuestion.content}
           className="mb-5"
+          isAIEnabled={true}
         />
         <div class="flex items-center gap-2">
           <PrimaryButton variant={VARIANTS.OUTLINED} label="Save" onClick={saveNewFAQ} />
@@ -359,6 +364,7 @@
         placeholder="Write your subtitle here"
         className="mt-3 mb-5"
         bind:value={$landingPageSettings.contact.subtitle}
+        isAIEnabled={true}
       />
       <TextField
         label="Phone number"
@@ -396,6 +402,7 @@
         placeholder="Write your subtitle here"
         className="mb-5"
         bind:value={$landingPageSettings.mailinglist.subtitle}
+        isAIEnabled={true}
       />
 
       <TextField

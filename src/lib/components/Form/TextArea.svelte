@@ -1,10 +1,13 @@
-<script>
+<script lang="ts">
+  import CustomPromptBtn from '$lib/components/AI/AIButton/CustomPromptBtn.svelte';
+  import type { PopoverProps } from 'carbon-components-svelte/types/Popover/Popover.svelte';
+
   export let label = '';
   export let disabled = false;
   export let placeholder = 'Write your answer...';
   export let value = '';
-  export let rows = '3';
-  export let maxRows = 3;
+  export let rows = 3;
+  // export let maxRows = 3;
   export let className = '';
   export let labelClassName = '';
   export let bgColor = 'bg-gray-50 focus:bg-primary-50 dark:bg-white';
@@ -12,19 +15,33 @@
   export let errorMessage = '';
   export let isRequired = false;
   export let onChange = () => {}; // This is to know if element is 'dirty'
-  export let ref;
+  export let ref = null;
+  export let isAIEnabled = false;
+  export let initAIPrompt = '';
+  export let aiAlignPopover: PopoverProps['align'] = 'left';
 
-  $: minHeight = `${1 + parseInt(rows, 10) * 1.2}em`;
-  $: maxHeight = maxRows ? `${1 + maxRows * 1.2}em` : `auto`;
+  // $: minHeight = `${1 + parseInt(rows, 10) * 1.2}em`;
+  // $: maxHeight = maxRows ? `${1 + maxRows * 1.2}em` : `auto`;
 </script>
 
-<label class="block w-full relative {className}">
+<label for="text-field" class="block w-full relative {className}">
   {#if label}
-    <p for="text-field" class="dark:text-white text-left {labelClassName}">
-      {label}
+    <p class="dark:text-white text-left w-full flex items-center justify-between {labelClassName}">
+      <span>
+        {label}
+        {#if isRequired}
+          <span class="text-red-700">*</span>
+        {/if}
+      </span>
 
-      {#if isRequired}
-        <span class="text-red-700">*</span>
+      {#if isAIEnabled}
+        <CustomPromptBtn
+          defaultPrompt={initAIPrompt}
+          alignPopover={aiAlignPopover}
+          handleInsert={(v) => {
+            value = v;
+          }}
+        />
       {/if}
     </p>
   {/if}
