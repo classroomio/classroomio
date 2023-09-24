@@ -4,7 +4,7 @@
 
   export let onClick;
   export let contained;
-  export let color = 'text-primary-700 bg-primary-200 dark:bg-gray-500';
+  export let color = 'text-primary-700 bg-primary-200 dark:bg-neutral-500';
   export let size = 'small';
 </script>
 
