@@ -2,7 +2,6 @@
   import { fly } from 'svelte/transition';
   import CourseLandingPage from '$lib/components/CourseLandingPage/index.svelte';
   import Editor from '$lib/components/CourseLandingPage/components/Editor/index.svelte';
-  import { isMobile } from '$lib/utils/store/useMobile';
   import { profile } from '$lib/utils/store/user';
   import { setCourse, course } from '$lib/components/Course/store';
   import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
@@ -30,7 +29,7 @@
 </script>
 
 <div
-  class="absolute inset-0 z-50 bg-white"
+  class="absolute flex inset-0 z-50 bg-white"
   in:fly={{ y: 500, duration: 500 }}
   out:fly={{ y: 500, duration: 500 }}
 >
@@ -45,6 +44,7 @@
     flex-grow: 1;
     width: 100%;
     height: 100%;
+    overflow-x: hidden;
     overflow-y: auto;
   }
 </style>

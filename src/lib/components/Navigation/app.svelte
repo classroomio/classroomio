@@ -1,5 +1,4 @@
 <script>
-  import { page } from '$app/stores';
   import { browser } from '$app/environment';
   import NotificationIcon from 'carbon-icons-svelte/lib/Notification.svelte';
   import Moon from 'carbon-icons-svelte/lib/Moon.svelte';

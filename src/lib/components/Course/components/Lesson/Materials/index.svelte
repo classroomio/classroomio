@@ -30,6 +30,10 @@
   import { course } from '$lib/components/Course/store';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
   import * as CONSTANTS from './constants';
+  import { orderedTabs } from './constants';
+  import ComponentNote from './components/ComponentNote.svelte';
+  import ComponentSlide from './components/ComponentSlide.svelte';
+  import ComponentVideo from './components/ComponentVideo.svelte';
 
   export let mode = MODES.view;
   export let prevMode = '';
@@ -47,6 +51,7 @@
   let aiButtonRef = {};
   let openPopover = false;
   let player = null;
+  let componentsToRender = getComponentOrder(tabs);
   let aiButtonClass =
     'flex items-center px-5 py-2 border border-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md w-full mb-2';
 
@@ -55,6 +60,10 @@
     () =>
       (currentTab = tab);
 
+  const getValue = (label) => {
+    const tabValue = tabs.find((tab) => tab.label === label)?.value;
+    return tabValue;
+  };
   async function saveLesson(materials = undefined) {
     const _lesson = !!materials
       ? {
@@ -174,11 +183,32 @@
   function onLessonIdChange(_lid: string) {
     initAutoSave = false;
     isSaving = false;
+
+    tabs = orderedTabs(tabs, $course.metadata?.lessonTabsOrder);
+    currentTab = tabs[0].value;
+    componentsToRender = getComponentOrder(tabs);
   }
 
   const onClose = () => {
     $uploadCourseVideoStore.isModalOpen = false;
   };
+
+  function getComponentOrder(tabs) {
+    const componentMap = {
+      Video: ComponentVideo,
+      Slide: ComponentSlide,
+      Note: ComponentNote
+    };
+
+    const componentNames = tabs
+      .map((tab) => {
+        const component = componentMap[tab.label];
+        return component || null;
+      })
+      .filter(Boolean);
+
+    return componentNames;
+  }
 
   $: autoSave($lesson.materials, $isLoading, lessonId);
 
@@ -211,7 +241,7 @@
 {#if mode === MODES.edit}
   <Tabs {tabs} {currentTab} {onChange}>
     <slot:fragment slot="content">
-      <TabContent value={tabs[0].value} index={currentTab}>
+      <TabContent value={getValue('Note')} index={currentTab}>
         <div bind:this={aiButtonRef} class="w-full flex flex-row-reverse">
           <PrimaryButton
             className="flex items-center relative"
@@ -261,7 +291,7 @@
         </div>
       </TabContent>
 
-      <TabContent value={tabs[1].value} index={currentTab}>
+      <TabContent value={getValue('Slide')} index={currentTab}>
         {#if mode === MODES.edit}
           <TextField
             label="Slide link"
@@ -270,8 +300,7 @@
           />
         {/if}
       </TabContent>
-
-      <TabContent value={tabs[2].value} index={currentTab}>
+      <TabContent value={getValue('Video')} index={currentTab}>
         <PrimaryButton label="Add/Edit Video(s)" onClick={openAddVideoModal} className="mb-2" />
         {#if $lesson.materials.videos.length}
           <div class="flex flex-col items-start w-full h-full">
@@ -328,64 +357,11 @@
     </slot:fragment>
   </Tabs>
 {:else if !isMaterialsEmpty($lesson.materials)}
-  {#if $lesson.materials.videos.length}
-    <div class="w-full">
-      {#each $lesson.materials.videos as video}
-        <div class="w-full overflow-hidden mb-5">
-          {#key video.link}
-            <div class="mb-5">
-              {#if video.type === 'youtube'}
-                <iframe
-                  class="iframe"
-                  src={formatYoutubeVideo(video.link, errors)}
-                  title="YouTube video player"
-                  frameborder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen
-                />
-              {:else if video.metadata?.svid}
-                <div style="position:relative;padding-bottom:51.416579%">
-                  <iframe
-                    src="https://muse.ai/embed/{video.metadata
-                      ?.svid}?logo=https://app.classroomio.com/logo-512.png&subtitles=auto&cover_play_position=center"
-                    style="width:100%;height:100%;position:absolute;left:0;top:0"
-                    frameborder="0"
-                    allowfullscreen
-                    title="Muse AI Video Embed"
-                  />
-                </div>
-              {:else}
-                <video bind:this={player} class="plyr-video-trigger" playsinline controls>
-                  <source src={video.link} type="video/mp4" />
-                  <track kind="captions" />
-                </video>
-              {/if}
-            </div>
-          {/key}
-        </div>
-      {/each}
-    </div>
-  {/if}
-
-  {#if $lesson.materials.slide_url}
-    <iframe
-      title="Embeded Slides"
-      src={$lesson.materials.slide_url}
-      frameborder="0"
-      width="100%"
-      height="569"
-      class="iframe my-3"
-      allowfullscreen="true"
-      mozallowfullscreen="true"
-      webkitallowfullscreen="true"
-    />
-  {/if}
-
-  {#if !isNoteEmpty($lesson.materials?.note)}
-    <article class="preview prose prose-sm sm:prose p-2">
-      {@html $lesson.materials.note}
-    </article>
-  {/if}
+  <div class="w-full">
+    {#each componentsToRender as Component, index}
+      <svelte:component this={Component} key={index} />
+    {/each}
+  </div>
 {:else}
   <Box className="text-center">
     <img src="/no-video.svg" alt="Video not found" />
@@ -399,16 +375,3 @@
     <PrimaryButton label="Get started" className="rounded-md" onClick={toggleMode} />
   </Box>
 {/if}
-
-<style>
-  .iframe {
-    width: 100%;
-    height: 450px;
-  }
-
-  @media (max-width: 760px) {
-    .iframe {
-      height: 209px;
-    }
-  }
-</style>

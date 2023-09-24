@@ -20,11 +20,8 @@
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
 
   export let data;
-  const { orgName } = data;
 
-  function createCourse() {
-    goto(`/org/${orgName}/courses?create=true`);
-  }
+  const { orgName } = data;
 
   const theme = {
     calendar: {
@@ -92,6 +89,10 @@
       link: '/'
     }
   ];
+
+  function createCourse() {
+    goto(`/org/${orgName}/courses?create=true`);
+  }
 
   const addDotsToCalendar = (currentMonthIndexInRenderedMonth: number) =>
     setTimeout(() => {

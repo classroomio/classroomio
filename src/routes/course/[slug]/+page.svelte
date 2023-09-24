@@ -5,6 +5,7 @@
   interface Data {
     course: Course;
   }
+
   export let data: Data;
 
   let courseData: Course;

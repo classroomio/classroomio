@@ -159,17 +159,17 @@
       {/if}
     </div>
   </header>
-  <PricingSection className="md:hidden" {courseData} {editMode} bind:startCoursePayment />
   <!-- Body -->
   <div class="bg-white dark:bg-black w-full">
     <div
       class="py-8 lg:w-11/12 w-full m-2 lg:m-auto flex flex-col-reverse lg:flex-row items-center lg:items-start justify-between max-w-[1200px]"
     >
       <!-- Course Details -->
-      <div class="course-content w-full p-3 lg:w-10/12 lg:mr-14">
+      <div class="course-content w-full p-3 lg:w-10/12 lg:mr-10">
         <!-- Navigation -->
         <nav
-          class="flex items-center border-b border-gray-300 py-3 sticky top-11 bg-white dark:bg-neutral-800"
+          class="flex items-center border-b border-gray-300 py-3 sticky top-0 {!editMode &&
+            'lg:top-11'} bg-white dark:bg-neutral-800"
         >
           {#each NAV_ITEMS as navItem}
             <a
@@ -416,7 +416,7 @@
       </div>
 
       <!-- Pricing Details -->
-      <PricingSection {courseData} />
+      <PricingSection {courseData} {editMode} bind:startCoursePayment />
     </div>
   </div>
 </div>
@@ -464,7 +464,8 @@
   }
 
   .course-content {
-    max-width: 800px;
+    max-width: 608px;
+    min-width: 60%;
   }
 
   nav {
@@ -494,5 +495,10 @@
     cursor: pointer;
     color: blue;
     text-decoration: underline;
+  }
+  @media screen and (max-width: 1023px) {
+    .course-content {
+      min-width: 80%;
+    }
   }
 </style>

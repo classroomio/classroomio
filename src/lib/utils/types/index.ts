@@ -21,6 +21,9 @@ interface CourseMetadata {
     imgUrl: string;
   };
   reviews?: Array<Review>;
+  lessonTabsOrder: Array<Tabs>;
+  grading: boolean;
+  lessonDownload: boolean;
 }
 
 // Generated from https://supabase-schema.vercel.app/
@@ -254,4 +257,9 @@ export interface Review {
   rating: number;
   created_at: number;
   description: string;
+}
+
+interface Tabs {
+  id: number;
+  name: string;
 }

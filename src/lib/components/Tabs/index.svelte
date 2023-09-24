@@ -1,5 +1,6 @@
 <script>
   import TextChip from '$lib/components/Chip/Text.svelte';
+
   export let tabs = [];
   export let currentTab;
   export let onChange;

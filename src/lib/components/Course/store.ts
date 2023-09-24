@@ -32,7 +32,14 @@ export const course: Writable<Course> = writable({
       coursesNo: 0,
       description: '',
       imgUrl: ''
-    }
+    },
+    lessonTabsOrder: [
+      { id: 1, name: 'Note' },
+      { id: 2, name: 'Slide' },
+      { id: 3, name: 'Video' }
+    ],
+    grading: false,
+    lessonDownload: true
   }
 });
 
