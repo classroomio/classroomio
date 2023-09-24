@@ -22,6 +22,7 @@
   import Modal from '../Modal/index.svelte';
   import { reviewsModalStore } from './store';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
 
   dayjs.extend(relativeTime);
 
@@ -185,23 +186,24 @@
         <section id="requirement" class="border-b border-gray-300 mt-8 pb-10">
           <h3 class="text-2xl font-bold mt-0 mb-3">Requirement</h3>
           <ul class="list font-light">
-            {@html get(courseData, 'metadata.requirements', '')}
+            <HtmlRender content={get(courseData, 'metadata.requirements', '')} />
           </ul>
         </section>
 
         <!-- Sections - Course Description -->
         <section id="description" class="border-b border-gray-300 mt-8 pb-10">
           <h3 class="text-2xl font-bold mt-0 mb-3">Course Description</h3>
-          <p class="dark:text-white text-sm font-light">
-            {@html get(courseData, 'metadata.description', '')}
-          </p>
+          <HtmlRender
+            className="dark:text-white text-sm font-light"
+            content={get(courseData, 'metadata.description', '')}
+          />
         </section>
 
         <!-- Sections - Goal -->
         <section id="goals" class="mt-8 pb-10">
           <h3 class="text-2xl font-bold mt-0 mb-3">What you'll learn</h3>
           <ul class="list font-light">
-            {@html get(courseData, 'metadata.goals', '')}
+            <HtmlRender content={get(courseData, 'metadata.goals', '')} />
           </ul>
         </section>
 

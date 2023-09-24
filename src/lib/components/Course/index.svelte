@@ -1,5 +1,4 @@
 <script>
-  import { marked } from 'marked';
   import RoleBasedSecurity from '../RoleBasedSecurity/index.svelte';
   import PageNav from '../PageNav/index.svelte';
   import MODES from '$lib/utils/constants/mode';
@@ -8,6 +7,7 @@
   import { course } from './store';
   import { updateCourse } from '$lib/utils/services/courses';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
+  import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
 
   let mode = MODES.view;
   let isDirty = false;
@@ -51,8 +51,6 @@
       height="700"
     />
   {:else}
-    <article class="preview prose prose-sm sm:prose p-2">
-      {@html marked($course.overview || '')}
-    </article>
+    <HtmlRender className="p-2" content={$course.overview || ''} />
   {/if}
 </PageBody>
