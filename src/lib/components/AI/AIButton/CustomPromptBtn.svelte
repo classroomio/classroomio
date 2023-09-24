@@ -51,7 +51,7 @@
 <div class="{className} relative z-[100]">
   <IconButton
     contained={true}
-    color="text-primary-700 dark:bg-neutral-800"
+    color="text-primary-700 dark:bg-neutral-500 dark:text-white"
     size="large"
     onClick={() => (openPopover = !openPopover)}
   >
