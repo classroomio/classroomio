@@ -31,7 +31,7 @@
     <div
       class="{maxWidth || 'container'} {size === 'sm'
         ? 'small'
-        : ''} bg-white dark:bg-black mx-auto {width} shadow-lg p-5 pt-2 rounded-md"
+        : ''} bg-white dark:bg-neutral-800 mx-auto {width} shadow-lg p-5 pt-2 rounded-md"
       on:click={(e) => e.stopPropagation()}
       role="presentation"
     >
