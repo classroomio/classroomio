@@ -17,7 +17,6 @@
   // export let onDelete = (id: string) => {};
 
   let formatter = getCurrencyFormatter(currency);
-
   // function getOptions() {
   //   return [
   //     {
@@ -51,7 +50,7 @@
 <a
   rel="prefetch"
   href={isOnLandingPage ? `/course/${slug}` : `/courses/${id}`}
-  class=" text-black w-fit"
+  class=" text-black w-full"
 >
   <div
     class="border border-gray rounded w-full max-w-[350px] relative hover:shadow-lg transition-all ease-in-out"
@@ -59,12 +58,12 @@
     <div class="p-4">
       <div class=" mb-5">
         <ImageLoader
-          src={bannerImage ?? '/images/classroomio-course-img-template.jpg'}
+          src={bannerImage ? bannerImage : '/images/classroomio-course-img-template.jpg'}
           alt="Course Logo"
-          class="h-2/5 w-full rounded dark:border dark:border-white"
+          class="h-[200px] w-full rounded dark:border dark:border-white"
         >
           <svelte:fragment slot="loading">
-            <SkeletonPlaceholder style="width: 100%; height: 10rem;" />
+            <SkeletonPlaceholder style="width: 100%; height: 200px;" />
           </svelte:fragment>
           <svelte:fragment slot="error">An error occurred.</svelte:fragment>
         </ImageLoader>

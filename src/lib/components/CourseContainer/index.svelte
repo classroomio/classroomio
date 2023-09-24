@@ -1,4 +1,6 @@
 <script>
+  // @ts-nocheck
+
   import { Moon } from 'svelte-loading-spinners';
   import Navigation from '../Course/components/Navigation/index.svelte';
   import Backdrop from '$lib/components/Backdrop/index.svelte';
@@ -53,9 +55,5 @@
   .rightBar {
     flex-grow: 1;
     width: calc(100% - 360px);
-  }
-
-  .rightBar.isMobile {
-    /* margin-left: 10px; */
   }
 </style>

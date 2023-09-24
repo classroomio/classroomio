@@ -5,20 +5,10 @@
   import hotkeys from 'hotkeys-js';
   import { browser } from '$app/environment';
   import LockedIcon from 'carbon-icons-svelte/lib/Locked.svelte';
-  // import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
   import CheckmarkFilled from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
-  // import SettingsIcon from 'carbon-icons-svelte/lib/Settings.svelte';
-  import ChevronLeftIcon from 'carbon-icons-svelte/lib/ChevronLeft.svelte';
-  import ChevronRightIcon from 'carbon-icons-svelte/lib/ChevronRight.svelte';
   import NavExpandable from './NavExpandable.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
-  // import Avatar from '$lib/components/Avatar/index.svelte';
   import { getNavItemRoute, getLessonsRoute, getLectureNo } from '$lib/components/Course/function';
-
   import TextChip from '$lib/components/Chip/Text.svelte';
-  // import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import Settings from '../Settings/index.svelte';
-  // import { settingsDialog } from '../Settings/store';
   import { lessons } from '../Lesson/store/lessons';
   import { course } from '$lib/components/Course/store';
   import { updateCourse } from '$lib/utils/services/courses';
@@ -26,7 +16,6 @@
   import { isMobile } from '$lib/utils/store/useMobile';
   import { menu } from '$lib/components/Org/store';
 
-  // export let lessonId;
   export let path;
   export let isStudent = null;
 
@@ -142,19 +131,25 @@
         show() {
           return !isStudent;
         }
+      },
+      {
+        label: 'Settings',
+        to: getNavItemRoute($course.id, 'settings'),
+        hideSortIcon: true,
+        show() {
+          return !isStudent;
+        }
       }
     ];
   }
 </script>
-
-<Settings />
 
 <aside
   class={`${
     $menu.hidden
       ? '-translate-x-[100%] absolute md:translate-x-0 md:relative z-[40]'
       : 'translate-x-0 absolute md:relative z-[40]'
-  } transition w-[350px] min-w-[350px] md:max-w-[350px] bg-gray-100 dark:bg-black h-[calc(100vh-48px)] overflow-y-auto border border-l-0 border-t-0 border-b-0 border-r-1`}
+  } transition w-[90vw] md:max-w-[350px] bg-gray-100 dark:bg-black h-[calc(100vh-48px)] overflow-y-auto border border-l-0 border-t-0 border-b-0 border-r-1`}
 >
   <div class="h-full flex flex-col">
     <ul class="my-5">

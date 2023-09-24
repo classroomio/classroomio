@@ -26,6 +26,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { snackbarStore } from '$lib/components/Snackbar/store';
   import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
+  import { FaceSatisfied } from 'carbon-icons-svelte';
 
   export let data;
 
@@ -55,7 +56,7 @@
     if (!$course.id) {
       const { data: _data } = await fetchCourse(data.courseId);
 
-      lessonData = _data.lessons.find((lesson = { id: '' }) => lesson.id === lessonId);
+      lessonData = _data?.lessons.find((lesson = { id: '' }) => lesson.id === lessonId);
       setCourse(_data);
     } else if (prevLessonId !== lessonId) {
       const lesson = await fetchLesson(lessonId);
@@ -163,7 +164,7 @@
   }
 </script>
 
-<CourseContainer {isFetching} {path} isExercisePage={!data.isMaterialsTabActive && data.exerciseId}>
+<CourseContainer {path} isExercisePage={!data.isMaterialsTabActive && data.exerciseId}>
   <PageNav
     navItems={[
       {
@@ -182,7 +183,7 @@
     <svelte:fragment slot="widget">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
         {#if data.isMaterialsTabActive}
-          <div class="lg:hidden">
+          <div class="tab">
             <IconButton onClick={toggleApps} buttonClassName="">
               <OverflowMenuVertical size={24} />
             </IconButton>
@@ -190,7 +191,7 @@
           <div
             class={`flex-row ${
               $apps.dropdown && $apps.open
-                ? 'absolute lg:relative top-[85px] lg:top-0 right-14 lg:right-0 z-40 dark:bg-black p-3 lg:p-0'
+                ? 'absolute lg:relative top-[85px] lg:top-0 right-14 lg:right-0 z-40 dark:bg-slate-800 p-3 lg:p-0'
                 : 'hidden'
             } lg:flex items-center`}
           >
@@ -221,7 +222,13 @@
   {#if !data.isMaterialsTabActive}
     <Exercises lessonId={data.lessonId} exerciseId={data.exerciseId} path={`${path}/exercises`} />
   {:else if !!data.lessonId}
-    <PageBody>
+    <PageBody
+      onClick={() => {
+        $apps.open = false;
+        $apps.dropdown = false;
+      }}
+      width="lg:w-full xl:w-11/12"
+    >
       <Materials lessonId={data.lessonId} {mode} {prevMode} {toggleMode} bind:isSaving />
 
       <div class="w-full flex flex-row-reverse mt-10">
@@ -239,3 +246,11 @@
     </PageBody>
   {/if}
 </CourseContainer>
+
+<style>
+  @media screen and (min-width: 1023px) {
+    .tab {
+      display: none;
+    }
+  }
+</style>
