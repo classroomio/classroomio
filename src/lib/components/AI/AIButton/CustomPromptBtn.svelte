@@ -5,6 +5,7 @@
   import MagicWandFilled from 'carbon-icons-svelte/lib/MagicWandFilled.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { Loading } from 'carbon-components-svelte';
+  import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
 
   export let className = '';
   export let handleInsert = (v: string) => {};
@@ -66,10 +67,10 @@
           <div class="h-[200px]">
             <div
               bind:this={textRef}
-              class="h-[82%] bg-white dark:text-black p-2 overflow-y-auto text-sm text-start w-full my-1"
+              class="h-[82%] bg-white dark:bg-neutral-700 dark:text-black p-2 overflow-y-auto text-sm text-start w-full my-1"
             >
               {#if isHTML}
-                {@html plainText}
+                <HtmlRender content={plainText} />
               {:else}
                 <p class="font-normal">
                   {plainText}
