@@ -147,7 +147,7 @@
 <aside
   class={`${
     show ? '-translate-x-[100%] fixed md:absolute z-[50]' : 'translate-x-0 fixed md:relative z-[50]'
-  }left-0 transition w-[350px] min-w-[300px] bg-gray-100 dark:bg-gray-800 h-full border border-l-0 border-t-0 border-b-0 border-r-1`}
+  }left-0 transition w-[350px] min-w-[300px] bg-gray-100 dark:bg-neutral-800 h-full border border-l-0 border-t-0 border-b-0 border-r-1`}
 >
   <div class="toggler rounded-full shadow-lg absolute">
     <IconButton
@@ -196,9 +196,10 @@
       <div class="flex justify-between items-center px-2 w-full mb-2">
         <h3 class="dark:text-white">Page Builder</h3>
       </div>
-      {#each sections as section}
+      {#each sections as section, index}
         <button
-          class="w-full flex items-center justify-between px-2 py-3 border border-b-0 border-gray-300"
+          class="w-full flex items-center justify-between px-2 py-3 border border-l-0 {index + 1 <
+            sections.length && 'border-b-0'} border-gray-300"
           on:click={handleSectionSelect(section.key)}
         >
           <p class="dark:text-white mr-2">{section.title} section</p>
