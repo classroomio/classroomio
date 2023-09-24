@@ -63,7 +63,11 @@
 />
 
 <!-- Pricing Details -->
-<aside class="{className} price-container lg:sticky lg:top-10 lg:shadow-2xl lg:rounded-lg m-h-fit">
+<aside
+  class="{className} price-container lg:sticky {editMode
+    ? 'lg:top-0'
+    : 'lg:top-10'} lg:shadow-2xl lg:rounded-lg m-h-fit bg-neutral-800"
+>
   <div class="p-10">
     <!-- Pricing -->
     <div class="mb-6">

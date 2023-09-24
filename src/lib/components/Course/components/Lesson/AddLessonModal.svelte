@@ -19,7 +19,7 @@
   let errors = {};
   let lesson = {
     id: null,
-    title: 'Untitled lesson',
+    title: '',
     profile: undefined,
     call_url: undefined,
     lesson_at: new Date(),

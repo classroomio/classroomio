@@ -167,12 +167,14 @@
       <!-- Course Details -->
       <div class="course-content w-full p-3 lg:w-10/12 lg:mr-14">
         <!-- Navigation -->
-        <nav class="flex items-center border-b border-gray-300 py-3 sticky top-11 bg-white">
+        <nav
+          class="flex items-center border-b border-gray-300 py-3 sticky top-11 bg-white dark:bg-neutral-800"
+        >
           {#each NAV_ITEMS as navItem}
             <a
               href="{$page.url.pathname}{navItem.key}"
               class="{navItem.key === activeNav &&
-                'active text-primary-700'} rounded-lg px-2 mr-6 text-slate-700 font-normal hover:bg-slate-100 hover:text-slate-900 dark:text-white"
+                'active text-primary-700'} rounded-lg px-2 mr-6 text-slate-700 font-normal hover:bg-neutral-600 hover:text-slate-900 dark:text-white"
             >
               {navItem.label}
             </a>

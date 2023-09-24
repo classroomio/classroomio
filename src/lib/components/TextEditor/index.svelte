@@ -45,5 +45,5 @@
 </script>
 
 <div>
-  <Editor {value} {apiKey} {conf} />
+  <Editor bind:value {apiKey} {conf} />
 </div>
