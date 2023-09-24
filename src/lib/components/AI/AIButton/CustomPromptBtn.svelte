@@ -67,7 +67,7 @@
           <div class="h-[200px]">
             <div
               bind:this={textRef}
-              class="h-[82%] bg-white dark:bg-neutral-700 dark:text-black p-2 overflow-y-auto text-sm text-start w-full my-1"
+              class="h-[82%] bg-white dark:bg-neutral-700 p-2 overflow-y-auto text-sm text-start w-full my-1"
             >
               {#if isHTML}
                 <HtmlRender content={plainText} />
