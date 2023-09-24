@@ -146,10 +146,10 @@
     height: fit-content;
   }
 
-  @media screen and (min-width: 768px) and (max-width: 1024px) {
+  @media screen and (max-width: 1024px) {
     .price-container {
-      width: 405px;
-      min-width: unset;
+      width: 350px;
+      min-width: 250px;
     }
   }
 

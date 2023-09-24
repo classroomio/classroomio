@@ -1,6 +1,6 @@
 import { Video, Notebook, PresentationFile } from 'carbon-icons-svelte';
 
-export const tabs = [
+export let tabs = [
   {
     label: 'Note',
     icon: Notebook,
@@ -20,3 +20,20 @@ export const tabs = [
     badgeValue: 0
   }
 ];
+
+export function orderedTabs(tabs, Settingtabs) {
+  if (!Array.isArray(Settingtabs)) return tabs;
+  const reorderedTabs = [];
+
+  const tabMap = new Map(tabs.map((tab) => [tab.label, tab]));
+
+  Settingtabs.forEach((settingTab, index) => {
+    const tab = tabMap.get(settingTab.name);
+    if (tab) {
+      reorderedTabs[index] = tab;
+    }
+  });
+
+  const filteredReorderedTabs = reorderedTabs.filter((tab) => tab !== undefined);
+  return filteredReorderedTabs;
+}

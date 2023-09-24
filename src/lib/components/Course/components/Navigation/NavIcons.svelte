@@ -7,6 +7,7 @@
   import ApplicationWeb from 'carbon-icons-svelte/lib/ApplicationWeb.svelte';
   import Badge from 'carbon-icons-svelte/lib/Badge.svelte';
   import IbmWatsonKnowledgeCatalog from 'carbon-icons-svelte/lib/IbmWatsonKnowledgeCatalog.svelte';
+  import Settings from 'carbon-icons-svelte/lib/Settings.svelte';
 
   export let name = '';
 </script>
@@ -27,4 +28,6 @@
   <ApplicationWeb size={20} class="carbon-icon mr-2" />
 {:else if name === 'Certificates'}
   <Badge size={20} class="carbon-icon mr-2" />
+{:else if name === 'Settings'}
+  <Settings size={20} class="carbon-icon mr-2" />
 {/if}

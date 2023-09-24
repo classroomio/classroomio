@@ -5,7 +5,6 @@
   import CoursesEmptyIcon from '../Icons/CoursesEmptyIcon.svelte';
   import CopyCourseModal from './components/CopyCourseModal/index.svelte';
   import { courses, courseMetaDeta } from './store';
-  import { isMobile } from '$lib/utils/store/useMobile';
 </script>
 
 <CopyCourseModal />
@@ -21,7 +20,7 @@
     {#each $courses as courseData}
       <Card
         id={courseData.id}
-        bannerImage={courseData.banner_image}
+        bannerImage={courseData.logo}
         title={courseData.title}
         description={courseData.description}
         role_id={courseData.role_id}
@@ -30,14 +29,6 @@
         currency={courseData.currency}
         totalLessons={courseData.total_lessons}
       />
-      <!-- {:else}  
-        <Box className="w-full">
-          <CoursesEmptyIcon />
-          <h3 class="dark:text-white text-2xl my-5">No Courses Created</h3>
-          <p class="dark:text-white w-1/3 text-center">
-            Share your knowledge with the world by creating engaging courses for your students.
-          </p>
-        </Box> -->
     {/each}
   {/if}
 </div>

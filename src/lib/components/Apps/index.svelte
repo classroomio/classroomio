@@ -14,7 +14,6 @@
   import Notes from './components/Notes/index.svelte';
   import Poll from './components/Poll/index.svelte';
   import APPS_CONSTANTS from './constants';
-  import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
 
   let selectedApp;
 
@@ -28,8 +27,8 @@
     } else {
       selectedApp = appName;
     }
+    $apps.dropdown = false;
   }
-
   onMount(() => {
     hotkeys('A+1,A+2,A+3,A+4', function (event, handler) {
       event.preventDefault();
@@ -146,7 +145,7 @@
     }
   }
 
-  @media screen and (max-width: 1024px) {
+  @media screen and (max-width: 1023px) {
     .root {
       position: absolute;
       height: calc(100vh - 109px);
@@ -164,6 +163,35 @@
       transform: translateX(100%);
       display: none;
       transition: all 0.2s ease-in-out;
+    }
+  }
+
+  @media screen and (min-width: 1024px) {
+    .root {
+      height: calc(100vh - 48px);
+      position: sticky;
+      top: 0;
+      border-left: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: row;
+      z-index: 1;
+
+      & .apps {
+        padding-top: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 60px;
+        border-right: 1px solid var(--border-color);
+        height: 100%;
+      }
+
+      & .app {
+        width: 400px;
+        transition: all 1s ease-out;
+        position: relative;
+        overflow: auto;
+      }
     }
   }
 </style>
