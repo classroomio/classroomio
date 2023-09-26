@@ -14,6 +14,7 @@
   export let editMode = false;
   export let courseData: Course;
   export let startCoursePayment = false;
+  export let mobile = false;
 
   let calculatedCost = 0;
   let discount = 0;
@@ -63,48 +64,89 @@
 />
 
 <!-- Pricing Details -->
-<aside
-  class="{className} price-container lg:sticky {editMode
-    ? 'lg:top-0'
-    : 'lg:top-10'} lg:shadow-2xl lg:rounded-lg m-h-fit bg-neutral-800"
->
-  <div class="p-10">
-    <!-- Pricing -->
-    <div class="mb-6">
-      <p class="dark:text-white font-medium text-lg">
-        {formatter?.format(calculatedCost) || calculatedCost}
-        {#if isFree}
-          <span class="text-sm">(Free)</span>
-        {/if}
-      </p>
-      {#if courseData?.metadata?.showDiscount}
-        <p class="dark:text-white font-light text-sm text-gray-500">
-          {discount}% Discount.
-          <span class="line-through"
-            >{formatter?.format(courseData?.cost || 0) || courseData.cost}</span
-          >
-        </p>
-      {/if}
-    </div>
+{#if mobile}
+  <div
+    class="sticky w-full flex items-center justify-center transition duration-300 h-fit bottom-0 lg:hidden bg-gray-50 dark:bg-neutral-800"
+  >
+    <aside
+      class="price-container sticky lg:hidden {editMode
+        ? 'lg:bottom-2'
+        : 'lg:top-10'} lg:shadow-2xl lg:rounded-lg m-h-fit bg-gray-50 dark:bg-neutral-800 z-0 {className}"
+    >
+      <div class="flex items-center justify-center gap-3 px-3 py-3">
+        <!-- Pricing -->
+        <div class=" text-center">
+          <p class="dark:text-white font-medium text-sm flex items-center gap-1">
+            {formatter?.format(calculatedCost) || calculatedCost}
+            {#if isFree}
+              <span class="text-xs">(Free)</span>
+            {/if}
+          </p>
+          {#if courseData?.metadata?.showDiscount}
+            <p class="dark:text-white font-light text-sm text-gray-500">
+              {discount}% Discount.
+              <span class="line-through"
+                >{formatter?.format(courseData?.cost || 0) || courseData.cost}</span
+              >
+            </p>
+          {/if}
+        </div>
 
-    <!-- Call To Action Buttons -->
-    <div class="flex flex-col w-full items-center">
-      <PrimaryButton
-        label={isFree ? 'Join Course' : 'Buy Now'}
-        className="w-full sm:w-full py-3 mb-3"
-        onClick={handleJoinCourse}
-      />
-      <p class="dark:text-white font-light text-sm text-gray-500">Early bird offer. Buy ASAP</p>
-    </div>
+        <!-- Call To Action Buttons -->
+        <div class="flex flex-col w-full h-full items-center">
+          <PrimaryButton
+            label={isFree ? 'Join Course' : 'Buy Now'}
+            className="w-full sm:w-full h-[40px]"
+            onClick={handleJoinCourse}
+          />
+        </div>
+      </div>
+    </aside>
   </div>
+{:else}
+  <aside
+    class="price-container lg:sticky {editMode
+      ? 'lg:top-0'
+      : 'lg:top-10'} lg:shadow-2xl lg:rounded-lg m-h-fit dark:bg-neutral-800 {className}"
+  >
+    <div class="p-2 lg:p-10">
+      <!-- Pricing -->
+      <div class="mb-6">
+        <p class="dark:text-white font-medium text-lg">
+          {formatter?.format(calculatedCost) || calculatedCost}
+          {#if isFree}
+            <span class="text-sm">(Free)</span>
+          {/if}
+        </p>
+        {#if courseData?.metadata?.showDiscount}
+          <p class="dark:text-white font-light text-sm text-gray-500">
+            {discount}% Discount.
+            <span class="line-through"
+              >{formatter?.format(courseData?.cost || 0) || courseData.cost}</span
+            >
+          </p>
+        {/if}
+      </div>
 
-  <!-- Gift Container -->
-  {#if courseData?.metadata?.reward?.show}
-    <div class="p-10 flex items-center flex-col border-t border-b border-gray-300">
-      {@html get(courseData, 'metadata.reward.description', '')}
+      <!-- Call To Action Buttons -->
+      <div class="flex flex-col w-full items-center">
+        <PrimaryButton
+          label={isFree ? 'Join Course' : 'Buy Now'}
+          className="w-full sm:w-full py-3 mb-3"
+          onClick={handleJoinCourse}
+        />
+        <p class="dark:text-white font-light text-sm text-gray-500">Early bird offer. Buy ASAP</p>
+      </div>
     </div>
-  {/if}
-</aside>
+
+    <!-- Gift Container -->
+    {#if courseData?.metadata?.reward?.show}
+      <div class="p-10 flex items-center flex-col border-t border-b border-gray-300">
+        {@html get(courseData, 'metadata.reward.description', '')}
+      </div>
+    {/if}
+  </aside>
+{/if}
 
 <style lang="scss">
   .banner {
@@ -141,18 +183,30 @@
   }
 
   .price-container {
-    width: 405px;
-    min-width: 330px;
+    width: 90%;
+    max-width: 405px;
     height: fit-content;
   }
 
-  @media screen and (max-width: 1024px) {
+  @media screen and (min-width: 768px) {
+    .price-container {
+      width: 50%;
+      height: fit-content;
+    }
+  }
+  @media screen and (min-width: 1024px) {
     .price-container {
       width: 350px;
       min-width: 250px;
     }
   }
-
+  @media screen and (min-width: 1280px) {
+    .price-container {
+      width: 405px;
+      min-width: 330px;
+      height: fit-content;
+    }
+  }
   .course-content {
     max-width: 608px;
   }
