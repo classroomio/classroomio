@@ -1,7 +1,14 @@
 import { supabase } from '$lib/utils/functions/supabase';
 import { isUUID } from '$lib/utils/functions/isUUID';
 import { QUESTION_TYPE } from '$lib/components/Question/constants';
-import type { Lesson, Course, Group, Groupmember, Exercise } from '$lib/utils/types';
+import type {
+  Lesson,
+  Course,
+  Group,
+  Groupmember,
+  Exercise,
+  LessonCompletion
+} from '$lib/utils/types';
 import { STATUS } from '$lib/utils/constants/course';
 
 export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']) {
@@ -36,9 +43,10 @@ export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']
       is_certificate_downloadable,
       certificate_theme,
       lessons:lesson(
-        id, title,public, lesson_at, call_url, is_unlocked, is_complete, order, created_at,
+        id, title,public, lesson_at, call_url, is_unlocked, order, created_at,
         note, videos, slide_url, call_url, totalExercises:exercise(count),
-        profile:teacher_id(id, avatar_url, fullname)
+        profile:teacher_id(id, avatar_url, fullname),
+        lesson_completion(id, profile_id, is_complete)
       ),
       attendance:group_attendance(*)
     `
@@ -138,7 +146,9 @@ export function deleteGroupMember(groupMemberId: Groupmember['id']) {
 export function fetchLesson(lessonId: Lesson['id']) {
   return supabase
     .from('lesson')
-    .select(`id, note, videos, slide_url, call_url, totalExercises:exercise(count)`)
+    .select(
+      `id, note, videos, slide_url, call_url, totalExercises:exercise(count), lesson_completion(id, profile_id, is_complete)`
+    )
     .eq('id', lessonId)
     .single();
 }
@@ -152,6 +162,10 @@ export function updateLesson(lesson: any, lessonId: Lesson['id']) {
     .from('lesson')
     .update({ ...lesson, id: undefined })
     .match({ id: lessonId });
+}
+
+export function updateLessonCompletion(completion: LessonCompletion) {
+  return supabase.from('lesson_completion').upsert(completion);
 }
 
 export function deleteLesson(lessonId: Lesson['id']) {

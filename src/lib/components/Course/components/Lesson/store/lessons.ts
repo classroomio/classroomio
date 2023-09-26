@@ -12,15 +12,16 @@ export const lessons: Writable<Lesson[]> = writable([]);
 export const lesson = writable<LessonPage>({
   id: null,
   totalExercises: 0,
-  is_complete: false,
   isSaving: false,
   materials: {
     note: '',
     slide_url: '',
     videos: []
   },
-  exercises: []
+  exercises: [],
+  lesson_completion: []
 });
+
 export const isLessonDirty = writable(false);
 
 export function handleAddLesson() {
@@ -33,8 +34,7 @@ export function handleAddLesson() {
         // profile: undefined,
         call_url: undefined,
         lesson_at: new Date(),
-        is_unlocked: false,
-        is_complete: false
+        is_unlocked: false
       }
     ];
   }) as Updater<any>);
@@ -60,12 +60,11 @@ export async function handleSaveLesson(lesson: Lesson, course_id: Course['id']) 
   console.log(`handleSaveLesson lesson`, lesson);
   const newLesson = {
     title: lesson.title,
-    lesson_at: lesson.lesson_at,
-    call_url: lesson.call_url,
-    teacher_id: lesson.profile ? lesson.profile.id : undefined,
+    lesson_at: lesson?.lesson_at,
+    call_url: lesson?.call_url,
+    teacher_id: lesson?.profile ? lesson?.profile.id : undefined,
     course_id,
-    is_unlocked: lesson.is_unlocked,
-    is_complete: lesson.is_complete
+    is_unlocked: lesson.is_unlocked
   };
 
   let newLessonData: any[] | null = null;
@@ -85,7 +84,7 @@ export async function handleUpdateLessonMaterials(lesson: any, lessonId: Lesson[
   const materials = {
     ...lesson.materials
   };
-
+  delete materials.lesson_completion;
   delete materials.profile;
   delete materials.totalExercises;
 

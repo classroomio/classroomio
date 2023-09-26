@@ -1,4 +1,6 @@
-export function getUniqueValue(label) {
+import type { LessonCompletion } from '$lib/utils/types';
+
+export function getUniqueValue(label: string) {
   return label.toLowerCase().replace(' ', '');
 }
 
@@ -15,9 +17,16 @@ export function generateQuestion(questions) {
     generatedQuestions.push({
       ...question,
       name,
-      options,
+      options
     });
   }
 
   return generatedQuestions;
+}
+
+export function getIsLessonComplete(completions: LessonCompletion[], profileId: string | null) {
+  if (!Array.isArray(completions)) return false;
+  return completions.find((c) => {
+    return c.is_complete && c.profile_id === profileId;
+  });
 }

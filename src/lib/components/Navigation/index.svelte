@@ -10,7 +10,7 @@
   export let logo;
   export let orgName;
   export let isOrgSite = false;
-  export let backgroundColor = 'bg-white';
+  export let backgroundColor = 'bg-white dark:bg-black';
 
   let navClass = '';
 

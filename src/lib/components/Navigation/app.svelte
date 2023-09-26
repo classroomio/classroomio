@@ -58,14 +58,16 @@
       </li>
 
       {#if isCoursePage}
-        <IconButton
-          onClick={() => {
-            goto(`${$currentOrgPath}/courses`);
-          }}
-          size="small"
-        >
-          <CourseIcon color="#fff" />
-        </IconButton>
+        <div class="hidden md:block">
+          <IconButton
+            onClick={() => {
+              goto(`${$currentOrgPath}/courses`);
+            }}
+            size="small"
+          >
+            <CourseIcon color="#fff" />
+          </IconButton>
+        </div>
       {/if}
       <a
         href={getPathName(isCoursePage, $course.slug)}
