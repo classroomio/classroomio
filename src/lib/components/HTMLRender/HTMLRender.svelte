@@ -6,5 +6,9 @@
 </script>
 
 <article class="preview prose prose-sm sm:prose {className}">
-  {@html marked(content, { breaks: true, gfm: true })}
+  {#if $$slots.content}
+    <slot name="content" />
+  {:else}
+    {@html marked(content, { breaks: true, gfm: true })}
+  {/if}
 </article>
