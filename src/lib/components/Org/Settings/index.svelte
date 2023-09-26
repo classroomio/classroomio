@@ -9,6 +9,7 @@
   import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
   import { isOrgAdmin } from '$lib/utils/store/org';
+  import Integrations from './Integrations.svelte';
 
   let selected = 0;
   let query = new URLSearchParams($page.url.search);
@@ -35,6 +36,13 @@
       tabKey: 'landingpage',
       href: `${$page.url.pathname}?tab=landingpage`,
       disabled: !$isOrgAdmin
+    },
+    {
+      key: 3,
+      label: 'Integrations',
+      tabKey: 'integrations',
+      href: `${$page.url.pathname}?tab=integrations`,
+      disabled: false
     }
   ];
 
@@ -78,6 +86,9 @@
     </TabContent>
     <TabContent class="w-full p-0">
       <LandingpageSettings />
+    </TabContent>
+    <TabContent class="w-full p-0">
+      <Integrations />
     </TabContent>
   </svelte:fragment>
 </Tabs>
