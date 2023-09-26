@@ -51,21 +51,21 @@
       path: 'metadata.requirements',
       title: 'Requirement',
       enableAIWriter: true,
-      initPrompt: 'Generate a course requirement for this given course:'
+      initPrompt: 'Please write few requirements needed to take this course:'
     },
     {
       key: 3,
       path: 'metadata.description',
       title: 'Description',
       enableAIWriter: true,
-      initPrompt: 'Generate a course description for this given course:'
+      initPrompt: 'Please write a detailed course description for this course:'
     },
     {
       key: 4,
       path: 'metadata.goals',
       title: 'Goals',
       enableAIWriter: true,
-      initPrompt: 'What should a student expect to learn from this given course:'
+      initPrompt: 'What should a student expect to learn from this course:'
     },
     {
       key: 5,

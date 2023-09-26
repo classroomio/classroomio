@@ -25,7 +25,7 @@ export async function POST({ request }) {
       },
       {
         role: 'user',
-        content: prompt
+        content: `${prompt}. DONT ADD ANY CSS STYLE TO THE HTML FORMATTING AND DON'T USE CODE HTML TAG`
       }
     ],
     stream: true
