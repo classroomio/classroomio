@@ -44,7 +44,7 @@
   />
 </svelte:head>
 
-<main class="md:-ml-4 md:-mr-4 px-2">
+<main class="md:-ml-3 md:-mr-3 px-2">
   <div class="flex-1 flex flex-col lg:flex-row justify-between gap-3 w-full mb-3 h-4/5">
     <section class="w-full lg:w-2/5 h-full">
       <strong class="my-2 text-base font-semibold text-black dark:text-gray-100"
@@ -55,7 +55,7 @@
         {#each themes as theme}
           <div class="flex mr-3">
             <RadioButton value={theme} />
-            <img src={`/${theme}.svg`} alt="themes" />
+            <img src={`/${theme}.png`} alt="themes" class="w-[110px] h-[82px]" />
           </div>
         {/each}
       </RadioButtonGroup>

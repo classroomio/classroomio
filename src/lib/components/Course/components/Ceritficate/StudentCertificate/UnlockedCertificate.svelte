@@ -42,7 +42,7 @@
 
 <Box>
   <div class="flex flex-col items-center justify-center w-max h-full gap-5">
-    <img src="/professional.svg" alt="Certificate" />
+    <img src="/professional.png" alt="Certificate" />
     <p class="text-xl font-normal text-center">Certificate is now available</p>
     <PrimaryButton
       label="DownLoad Certificate"
