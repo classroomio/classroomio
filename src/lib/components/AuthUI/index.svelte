@@ -34,7 +34,7 @@
   }
 </script>
 
-<div class="root w-full min-h-screen flex items-center justify-center">
+<div class="app-background w-full min-h-screen flex items-center justify-center">
   <div class="container border border-gray bg-white dark:bg-black">
     <div class="flex items-center flex-col p-2 lg:px-8 lg:py-3">
       {#if !showOnlyContent || showLogo}
@@ -93,9 +93,6 @@
 </div>
 
 <style>
-  .root {
-    background: radial-gradient(circle at 10% 20%, rgb(239, 246, 249) 0%, rgb(206, 239, 253) 90%);
-  }
   .container {
     width: 450px;
   }

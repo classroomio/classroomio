@@ -143,14 +143,14 @@ export interface Group_attendance {
   groupmember?: Groupmember;
 }
 
-enum VideoType {
+export enum VideoType {
   youtube,
   muse
 }
+
 export interface LessonPage {
   id?: string | null;
   totalExercises: Number;
-  is_complete: Boolean;
   isSaving: Boolean;
   materials: {
     note: string;
@@ -162,6 +162,16 @@ export interface LessonPage {
     }>;
   };
   exercises: [];
+  lesson_completion: LessonCompletion[];
+}
+
+export interface LessonCompletion {
+  id?: number;
+  lesson_id: string;
+  profile_id: string;
+  is_complete: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Lesson {
@@ -169,19 +179,19 @@ export interface Lesson {
   videos?: []; // type unknown;
   slide_url?: any; // type unknown;
   course_id: string /* foreign key to course.id */;
-  id?: string /* primary key */;
+  id: string /* primary key */;
   created_at?: string;
   updated_at?: string;
-  title: any; // type unknown;
+  title: string; // type unknown;
   public?: boolean;
   lesson_at?: string;
   teacher_id?: string /* foreign key to profile.id */;
   is_unlocked?: boolean;
-  is_complete?: boolean;
   call_url?: string;
   order?: number;
   course?: Course;
   profile?: Profile;
+  lesson_completion: LessonCompletion[];
 }
 
 export interface Exercise {
