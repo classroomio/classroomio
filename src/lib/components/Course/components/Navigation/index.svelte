@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
@@ -11,40 +11,40 @@
   import TextChip from '$lib/components/Chip/Text.svelte';
   import { lessons } from '../Lesson/store/lessons';
   import { course } from '$lib/components/Course/store';
-  import { updateCourse } from '$lib/utils/services/courses';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
   import { isMobile } from '$lib/utils/store/useMobile';
   import { menu } from '$lib/components/Org/store';
+  import { profile } from '$lib/utils/store/user';
+  import { getIsLessonComplete } from '../Lesson/functions';
 
-  export let path;
-  export let isStudent = null;
+  export let path: string;
+  export let isStudent: boolean = false;
 
-  let show = null;
+  interface NavItem {
+    label: string;
+    to: string;
+    hideSortIcon: boolean;
+    isLecture?: boolean;
+    show?: () => boolean;
+  }
+
+  let show: boolean = false;
   let isLessonActive = false;
 
   const toggleSidebar = () => {
     $menu.hidden = !$menu.hidden;
   };
 
-  function handleMainGroupClick(href) {
+  function handleMainGroupClick(href: string) {
     return () => {
       goto(href);
       toggleSidebar();
     };
   }
 
-  let navItems = [];
+  let navItems: NavItem[] = [];
 
-  function getHref(item) {
-    return item.to;
-    // return item.is_unlocked ? item.to : path || $page.url.pathname
-  }
-
-  function handleSaveTitle() {
-    updateCourse($course.id, { title: $course.title });
-  }
-
-  function handleMobileChange(isMobile) {
+  function handleMobileChange(isMobile: boolean) {
     if (isMobile) show = false;
     else show = true;
   }
@@ -192,7 +192,7 @@
                       <span class="text-md ml-2" title="This lesson is locked.">
                         <LockedIcon class="carbon-icon dark:text-white" />
                       </span>
-                    {:else if item.is_complete}
+                    {:else if getIsLessonComplete(item.lesson_completion, $profile.id)}
                       <span class="ml-2" title="You have completed this lesson">
                         <CheckmarkFilled class="carbon-icon dark:text-white" />
                       </span>

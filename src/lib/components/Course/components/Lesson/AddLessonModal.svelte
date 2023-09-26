@@ -15,19 +15,20 @@
   import { goto } from '$app/navigation';
 
   export let openModal = false;
-  export let isStudent;
-  let errors = {};
+  export let isStudent = false;
+  let errors = {
+    title: ''
+  };
   let lesson = {
     id: null,
     title: '',
     profile: undefined,
     call_url: undefined,
     lesson_at: new Date(),
-    is_unlocked: false,
-    is_complete: false
+    is_unlocked: false
   };
 
-  function getLessonOrder(id) {
+  function getLessonOrder(id = '') {
     const index = $lessons.findIndex((lesson) => lesson.id === id);
     if (index < 9) {
       return '0' + (index + 1);

@@ -1,7 +1,7 @@
-<script>
+<script lang="ts">
   import { page } from '$app/stores';
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
-  import { fetchCourse, fetchLesson } from '$lib/utils/services/courses';
+  import { fetchCourse, fetchLesson, updateLessonCompletion } from '$lib/utils/services/courses';
   import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
@@ -26,7 +26,9 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { snackbarStore } from '$lib/components/Snackbar/store';
   import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
-  import { FaceSatisfied } from 'carbon-icons-svelte';
+  import type { LessonCompletion, LessonPage } from '$lib/utils/types';
+  import { profile } from '$lib/utils/store/user.js';
+  import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
 
   export let data;
 
@@ -39,7 +41,7 @@
   let isLoading = false;
   let isSaving = false;
 
-  function getLessonOrder(id) {
+  function getLessonOrder(id: string) {
     const index = $lessons.findIndex((lesson) => lesson.id === id);
 
     if (index < 10) {
@@ -56,7 +58,8 @@
     if (!$course.id) {
       const { data: _data } = await fetchCourse(data.courseId);
 
-      lessonData = _data?.lessons.find((lesson = { id: '' }) => lesson.id === lessonId);
+      lessonData = _data?.lessons.find((lesson) => lesson.id === lessonId);
+
       setCourse(_data);
     } else if (prevLessonId !== lessonId) {
       const lesson = await fetchLesson(lessonId);
@@ -71,9 +74,40 @@
   }
 
   async function markLessonComplete() {
+    let found = false;
     isMarkingComplete = true;
-    $lesson.is_complete = !$lesson.is_complete;
-    await handleSaveLesson($lesson, $course.id);
+
+    let completion: LessonCompletion = {
+      is_complete: true,
+      profile_id: $profile.id || '',
+      lesson_id: $lesson.id || '',
+      created_at: new Date().toDateString(),
+      updated_at: new Date().toDateString()
+    };
+    const completions: LessonCompletion[] = $lesson.lesson_completion.map((_completion) => {
+      if (_completion.profile_id === $profile.id) {
+        found = true;
+        _completion.is_complete = !_completion.is_complete;
+
+        completion = _completion;
+      }
+
+      return _completion;
+    });
+    if (!found) {
+      completions.push(completion);
+    }
+
+    $lesson.lesson_completion = completions;
+    $lessons = $lessons.map((l) => {
+      if (l.id === $lesson.id) {
+        l.lesson_completion = completions;
+      }
+
+      return l;
+    });
+
+    await updateLessonCompletion(completion);
     isMarkingComplete = false;
   }
 
@@ -139,11 +173,18 @@
   function setLesson(lessonData, totalExercises) {
     if (!lessonData) return;
 
+    let lesson_completion: LessonCompletion[] = [];
+
+    if (Array.isArray(lessonData.lesson_completion)) {
+      lesson_completion = [...lessonData.lesson_completion];
+    }
+
     lesson.update((l) => ({
       ...l,
       id: data.lessonId,
       totalExercises,
-      materials: lessonData
+      materials: lessonData,
+      lesson_completion
     }));
   }
 
@@ -191,7 +232,7 @@
           <div
             class={`flex-row ${
               $apps.dropdown && $apps.open
-                ? 'absolute lg:relative top-[85px] lg:top-0 right-14 lg:right-0 z-40 dark:bg-slate-800 p-3 lg:p-0'
+                ? 'absolute lg:relative top-[85px] lg:top-0 right-14 lg:right-0 z-40 dark:bg-neutral-800 p-3 lg:p-0'
                 : 'hidden'
             } lg:flex items-center`}
           >
@@ -240,7 +281,9 @@
           className="mt-10"
         >
           <CheckmarkOutlineIcon size={24} class="carbon-icon mr-2" />
-          Mark as {$lesson.is_complete ? 'Incomplete' : 'Complete'}
+          Mark as {getIsLessonComplete($lesson.lesson_completion, $profile.id)
+            ? 'Incomplete'
+            : 'Complete'}
         </PrimaryButton>
       </div>
     </PageBody>

@@ -50,7 +50,7 @@
   });
 </script>
 
-<div class={`root ${$apps.open ? 'open dark:bg-slate-800' : 'close dark:bg-slate-800'}`}>
+<div class={`root ${$apps.open ? 'open dark:bg-black' : 'close dark:bg-black'}`}>
   <div class={`apps`}>
     <div class="lg:hidden">
       <IconButton
