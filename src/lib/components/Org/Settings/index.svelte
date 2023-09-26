@@ -15,36 +15,7 @@
   let query = new URLSearchParams($page.url.search);
   let tabKey = query.get('tab') || '';
 
-  const tabs = [
-    {
-      key: 0,
-      label: 'Profile',
-      tabKey: '',
-      href: $page.url.pathname,
-      disabled: false
-    },
-    {
-      key: 1,
-      label: 'Organization',
-      tabKey: 'org',
-      href: `${$page.url.pathname}?tab=org`,
-      disabled: !$isOrgAdmin
-    },
-    {
-      key: 2,
-      label: 'LandingPage',
-      tabKey: 'landingpage',
-      href: `${$page.url.pathname}?tab=landingpage`,
-      disabled: !$isOrgAdmin
-    },
-    {
-      key: 3,
-      label: 'Integrations',
-      tabKey: 'integrations',
-      href: `${$page.url.pathname}?tab=integrations`,
-      disabled: false
-    }
-  ];
+  let tabs = [];
 
   function getSelectedByTab(tabKey = '') {
     const tab = tabs.find((t) => t.tabKey === tabKey);
@@ -66,6 +37,39 @@
     if (browser) {
       changeRouteOnTabChange(selected);
     }
+  }
+
+  $: {
+    tabs = [
+      {
+        key: 0,
+        label: 'Profile',
+        tabKey: '',
+        href: $page.url.pathname,
+        disabled: false
+      },
+      {
+        key: 1,
+        label: 'Organization',
+        tabKey: 'org',
+        href: `${$page.url.pathname}?tab=org`,
+        disabled: !$isOrgAdmin
+      },
+      {
+        key: 2,
+        label: 'LandingPage',
+        tabKey: 'landingpage',
+        href: `${$page.url.pathname}?tab=landingpage`,
+        disabled: !$isOrgAdmin
+      },
+      {
+        key: 3,
+        label: 'Integrations',
+        tabKey: 'integrations',
+        href: `${$page.url.pathname}?tab=integrations`,
+        disabled: false
+      }
+    ];
   }
 </script>
 
