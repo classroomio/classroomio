@@ -1,7 +1,8 @@
 <script lang="ts">
   // import paystack from 'paystack';
   import get from 'lodash/get';
-  import { onMount } from 'svelte';
+  import { observeIntersection } from './components/IntersectionObserver';
+  import { onMount, onDestroy } from 'svelte';
   import pluralize from 'pluralize';
   import { page } from '$app/stores';
   import dayjs from 'dayjs';
@@ -42,6 +43,8 @@
   let averageRating = 0;
   let totalRatings = 0;
   let startCoursePayment = false;
+  let isVisible = false;
+  let observer;
 
   // initialize the expandDescription array with 'false' values for each review.
   let expandDescription = Array(reviews.length).fill(false);
@@ -75,6 +78,14 @@
 
   onMount(() => {
     window.onhashchange = locationHashChanged;
+    const targetNode = document.querySelector('.target-component');
+    observer = observeIntersection(targetNode, (inView) => {
+      isVisible = inView;
+    });
+  });
+
+  onDestroy(() => {
+    observer?.destroy();
   });
 
   $: video = get(courseData, 'metadata.videoUrl');
@@ -110,7 +121,7 @@
         </p>
         <PrimaryButton
           label="Start Course"
-          className="px-6 py-5 mt-6 sm:w-fit"
+          className="px-6 py-5 mt-6 sm:w-fit hidden md:block"
           onClick={() => {
             startCoursePayment = true;
           }}
@@ -162,11 +173,12 @@
   <!-- Body -->
   <div class="bg-white dark:bg-black w-full">
     <div
-      class="py-8 lg:w-11/12 w-full m-2 lg:m-auto flex flex-col-reverse lg:flex-row items-center lg:items-start justify-between max-w-[1200px]"
+      class="lg:py-8 lg:w-11/12 w-full mx-0 my-2 lg:m-auto flex flex-col-reverse lg:flex-row items-center lg:items-start justify-between max-w-[1200px]"
     >
       <!-- Course Details -->
       <div class="course-content w-full p-3 lg:w-10/12 lg:mr-10">
         <!-- Navigation -->
+
         <nav
           class="flex items-center border-b border-gray-300 py-3 sticky top-0 {!editMode &&
             'lg:top-11'} bg-white dark:bg-neutral-800"
@@ -175,7 +187,7 @@
             <a
               href="{$page.url.pathname}{navItem.key}"
               class="{navItem.key === activeNav &&
-                'active text-primary-700'} rounded-lg px-2 mr-6 text-slate-700 font-normal hover:bg-neutral-600 hover:text-slate-900 dark:text-white"
+                'active text-primary-700'} rounded-lg px-2 mr-6 text-slate-700 font-normal hover:bg-neutral-600 hover:text-slate-900 dark:text-white z-0"
             >
               {navItem.label}
             </a>
@@ -416,8 +428,22 @@
       </div>
 
       <!-- Pricing Details -->
-      <PricingSection {courseData} {editMode} bind:startCoursePayment />
+      <PricingSection
+        {courseData}
+        {editMode}
+        bind:startCoursePayment
+        className="target-component"
+      />
     </div>
+    {#if !isVisible}
+      <PricingSection
+        {courseData}
+        {editMode}
+        bind:startCoursePayment
+        mobile={true}
+        className="w-full"
+      />
+    {/if}
   </div>
 </div>
 
