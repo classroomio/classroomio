@@ -16,7 +16,7 @@
 </script>
 
 {#if !isNoteEmpty($lesson.materials?.note)}
-  <article class="preview prose prose-sm sm:prose p-2">
+  <div>
     {@html $lesson.materials.note}
-  </article>
+  </div>
 {/if}

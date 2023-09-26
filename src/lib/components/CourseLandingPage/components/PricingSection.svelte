@@ -21,8 +21,8 @@
   let formatter: Intl.NumberFormat | undefined;
   let isFree = false;
 
-  function calcDisc(percent: number, cost: number) {
-    if (!percent) return cost;
+  function calcDisc(percent: number, cost: number, showDiscount: boolean) {
+    if (!percent || !showDiscount) return cost;
     const discountAmount = (percent / 100) * cost;
     const discountedPrice = cost - discountAmount;
     return Math.round(discountedPrice);
@@ -51,8 +51,9 @@
   }
 
   $: setFormatter(courseData.currency);
+
   $: discount = get(courseData, 'metadata.discount', 0);
-  $: calculatedCost = calcDisc(discount, courseData.cost || 0);
+  $: calculatedCost = calcDisc(discount, courseData.cost || 0, courseData.metadata.showDiscount);
   $: isFree = isCourseFree(calculatedCost);
 </script>
 
