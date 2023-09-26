@@ -2,6 +2,7 @@
   import { page } from '$app/stores';
   import { Tabs, Tab, TabContent } from 'carbon-components-svelte';
   import Profile from '$lib/components/LMS/components/Profile.svelte';
+  import Integrations from '$lib/components/Org/Settings/Integrations.svelte';
 
   let selected = 0;
   const tabs = [
@@ -10,6 +11,13 @@
       label: 'Profile',
       tabKey: '',
       href: $page.url.pathname
+    },
+    {
+      key: 1,
+      label: 'Integrations',
+      tabKey: 'integrations',
+      href: `${$page.url.pathname}?tab=integrations`,
+      disabled: false
     }
   ];
 </script>
@@ -23,6 +31,9 @@
       <svelte:fragment slot="content">
         <TabContent>
           <Profile />
+        </TabContent>
+        <TabContent>
+          <Integrations />
         </TabContent>
       </svelte:fragment>
     </Tabs>
