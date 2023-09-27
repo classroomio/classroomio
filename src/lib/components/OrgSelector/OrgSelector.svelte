@@ -6,6 +6,7 @@
   import { goto } from '$app/navigation';
   import { newOrgModal } from '$lib/components/Org/store';
   import type { CurrentOrg } from '$lib/utils/types/org';
+  import { setTheme } from '$lib/utils/functions/theme';
 
   export let canAddOrg = true;
   let open = false;
@@ -18,6 +19,7 @@
   function onClick(org: CurrentOrg) {
     localStorage.setItem('classroomio_org_sitename', org.siteName);
     currentOrg.set(org);
+    setTheme(org.theme);
     goto($currentOrgPath);
     open = false;
   }
@@ -47,7 +49,7 @@
       {#each $orgs as org}
         <OrgSelectorItem
           size="sm"
-          active={$currentOrg.shortName === org.shortName}
+          active={$currentOrg.id === org.id}
           avatar={org.avatar_url}
           avatarText={org.shortName}
           text={org.name}

@@ -10,6 +10,7 @@
   import { newOrgModal } from '../store';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { createOrgValidation } from '$lib/utils/functions/validator';
+  import { goto } from '$app/navigation';
 
   type Error = {
     orgName: string;
@@ -97,6 +98,7 @@
 
       resetForm();
 
+      goto(`/org/${siteName}`);
       $newOrgModal.open = false;
     }
   }

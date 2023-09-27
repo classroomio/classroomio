@@ -196,7 +196,7 @@
       <SectionTitle>Banner Image</SectionTitle>
       <p>
         This optional image will show up on your welcome page. If you include one, it should be at
-        least 300 x 200"
+        least 280 x 200"
       </p>
       <span class="flex items-center justify-start">
         <PrimaryButton
@@ -223,13 +223,13 @@
           on:change={onFileSelected}
         />
         <img
-          style="width:250px; height:150px"
+          style="min-width:280px; min-height:200px"
           alt="About us"
           src={$settings.image ? $settings.image : '/images/classroomio-course-img-template.jpg'}
           class="mt-2 md:mt-0 rounded-md w-full relative"
         />
         {#if uploadingImage}
-          <Loading withOverlay={true} small class="absolute top-0 w-[250px]" />
+          <Loading withOverlay={true} small class="absolute top-0 w-[280px]" />
         {/if}
       </div>
     </Column>
