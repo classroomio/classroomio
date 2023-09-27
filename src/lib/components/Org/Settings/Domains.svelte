@@ -8,8 +8,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { supabase } from '$lib/utils/functions/supabase';
   import { blockedSubdomain } from '$lib/utils/constants/app';
-  import { snackbarStore } from '$lib/components/Snackbar/store';
-  import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
+  import { snackbar } from '$lib/components/Snackbar/store';
   import SectionTitle from '../SectionTitle.svelte';
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
 
@@ -34,9 +33,7 @@
       console.log('Error: create organisation', error);
       errors = 'Sitename already exists.';
     } else {
-      $snackbarStore.open = true;
-      $snackbarStore.message = 'Success';
-      $snackbarStore.severity = SNACKBAR_SEVERITY.SUCCESS;
+      snackbar.success();
       $currentOrg.siteName = siteName;
 
       goto(`/org/${$currentOrg.siteName}/settings/domains`);

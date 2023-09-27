@@ -18,8 +18,7 @@
   import { isObject } from '$lib/utils/functions/isObject';
   import { lessons } from '../Lesson/store/lessons';
   import { currentOrg } from '$lib/utils/store/org';
-  import { snackbarStore } from '$lib/components/Snackbar/store';
-  import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
+  import { snackbar } from '$lib/components/Snackbar/store';
 
   let uploadingImage = false;
   let isSaving = false;
@@ -109,13 +108,9 @@
       a.click();
       a.remove();
 
-      $snackbarStore.message = 'Download Complete';
-      $snackbarStore.severity = SNACKBAR_SEVERITY.SUCCESS;
-      $snackbarStore.open = true;
+      snackbar.success('Download Complete');
     } catch (error) {
-      $snackbarStore.message = "Something's not right - Please try later";
-      $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
-      $snackbarStore.open = true;
+      snackbar.error("Something's not right - Please try later");
     }
     isLoading = false;
   };
@@ -131,9 +126,7 @@
       isDeleting = false;
       goto($currentOrgPath + '/courses');
     } catch (error) {
-      $snackbarStore.message = 'Something went wrong - Please try later';
-      $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
-      $snackbarStore.open = true;
+      snackbar.error('Something went wrong - Please try later');
       isDeleting = false;
     }
   }
@@ -171,13 +164,9 @@
         grading: grading,
         lessonDownload: lesson_download
       };
-      $snackbarStore.message = 'saved successfully';
-      $snackbarStore.severity = SNACKBAR_SEVERITY.SUCCESS;
-      $snackbarStore.open = true;
+      snackbar.success('Saved successfully');
     } catch (error) {
-      $snackbarStore.message = 'Something went wrong - Please try later';
-      $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
-      $snackbarStore.open = true;
+      snackbar.error();
     }
 
     isSaving = false;

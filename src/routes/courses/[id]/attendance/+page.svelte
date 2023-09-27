@@ -21,14 +21,12 @@
   import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
   import { ROLE } from '$lib/utils/constants/roles';
   import { takeAttendance } from '$lib/utils/services/attendance';
-  import { snackbarStore } from '$lib/components/Snackbar/store';
-  import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
+  import { snackbar } from '$lib/components/Snackbar/store';
   import { attendance } from '$lib/utils/store/attendance';
   import { profile } from '$lib/utils/store/user';
 
   export let data;
 
-  let borderBottomGrey = 'border-r-0 border-b border-l-0 border-gray-300';
   let students = [];
   let isStudent;
   let searchValue = '';
@@ -65,12 +63,8 @@
     This validation is useless. We shouldn't assume we already have an attendance item id 
     because it might be a new attendance.
     if (!attendanceItem.id) {
-      $snackbarStore.open = true;
-      $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
-      $snackbarStore.message =
-        "Something isn't right. Please reload and take attendance again";
+      snackbar.error("Something isn't right. Please reload and take attendance again");
       console.error(`Attendance Id Missing`, courseId, student.id, lesson.id);
-
       return;
     }
     */
@@ -86,9 +80,7 @@
     takeAttendance(_data).then((res) => {
       if (res.error) {
         console.error(`res.error`, res.error);
-        $snackbarStore.open = true;
-        $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
-        $snackbarStore.message = "Something isn't right.  Please reload and take attendance again";
+        snackbar.error("Something isn't right.  Please reload and take attendance again");
       } else {
         // console.log('res', JSON.stringify(res));
         const { id, is_present } = res.data[0];

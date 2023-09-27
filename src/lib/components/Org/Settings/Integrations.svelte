@@ -3,8 +3,7 @@
   import CheckmarkFilled from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
   import { supabase } from '$lib/utils/functions/supabase';
   import { profile } from '$lib/utils/store/user';
-  import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
-  import { snackbarStore } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$lib/components/Snackbar/store';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
@@ -14,54 +13,37 @@
   let chatId: number | null;
 
   async function addChatId() {
-    const updates = {
-      telegram_chat_id: chatId
-    };
-    if ($profile.telegram_chat_id === null) {
-      let { error } = await supabase.from('profile').update(updates).match({ id: $profile.id });
-      // Update the telegram_chat_id in the profile store with the value from the TextField
-      profile.update((profileData) => ({
-        ...profileData,
-        ...updates
-      }));
-      // Clear the chatId variable after updating the store
-      chatId = null;
+    if (!chatId || `${chatId}`.length < 5) return;
 
-      if (error) {
-        $snackbarStore.open = true;
-        $snackbarStore.message = 'Integration Failed, please try again later';
-        $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
-        console.log(error);
-      } else {
-        $snackbarStore.open = true;
-        $snackbarStore.message = 'Integration successful';
-        $snackbarStore.severity = SNACKBAR_SEVERITY.SUCCESS;
-      }
+    const { error } = await supabase
+      .from('profile')
+      .update({
+        telegram_chat_id: chatId
+      })
+      .match({ id: $profile.id });
+
+    if (error) {
+      console.log(error);
+      snackbar.error('Integration Failed, please try again later');
+    } else {
+      $profile.telegram_chat_id = chatId;
+      chatId = null;
+      snackbar.success('Integration successful');
     }
   }
 
   async function deleteChatId() {
-    const updates = {
-      telegram_chat_id: null
-    };
-    let { error } = await supabase.from('profile').update(updates).match({ id: $profile.id });
-    if (typeof $profile.telegram_chat_id !== null) {
-      profile.update((profileData) => ({
-        ...profileData,
-        telegram_chat_id: null
-      }));
+    const { error } = await supabase
+      .from('profile')
+      .update({ telegram_chat_id: null })
+      .match({ id: $profile.id });
 
-      if (error) {
-        $snackbarStore.open = true;
-        $snackbarStore.message = 'Deletion Failed, please try again later';
-        $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
-        console.log(error);
-      } else {
-        // Show a success message in the snackbar
-        $snackbarStore.open = true;
-        $snackbarStore.message = 'Integration deleted';
-        $snackbarStore.severity = SNACKBAR_SEVERITY.SUCCESS;
-      }
+    if (error) {
+      snackbar.error('Deletion Failed, please try again later');
+      console.log(error);
+    } else {
+      $profile.telegram_chat_id = null;
+      snackbar.success('Integration deleted');
     }
   }
 </script>

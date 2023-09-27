@@ -6,8 +6,7 @@
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
   import { supabase } from '$lib/utils/functions/supabase';
-  import { snackbarStore } from '$lib/components/Snackbar/store';
-  import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
+  import { snackbar } from '$lib/components/Snackbar/store';
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import SectionTitle from '../SectionTitle.svelte';
 
@@ -73,9 +72,8 @@
         ..._currentOrg,
         ...updates
       }));
-      $snackbarStore.open = true;
-      $snackbarStore.message = 'Update successful';
-      $snackbarStore.severity = SNACKBAR_SEVERITY.SUCCESS;
+
+      snackbar.success('Update successful');
 
       if (error) throw error;
     } catch (error) {
@@ -83,9 +81,8 @@
       if (message.includes('profile_username_key')) {
         message = 'username already exists';
       }
-      $snackbarStore.open = true;
-      $snackbarStore.message = `Update failed: ${message}`;
-      $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
+
+      snackbar.error(`Update failed: ${message}`);
       loading = false;
     } finally {
       loading = false;

@@ -8,8 +8,7 @@
   import UploadImage from '$lib/components/UploadImage/index.svelte';
   import { supabase } from '$lib/utils/functions/supabase';
   import { profile } from '$lib/utils/store/user';
-  import { snackbarStore } from '$lib/components/Snackbar/store';
-  import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
+  import { snackbar } from '$lib/components/Snackbar/store';
 
   let avatar;
   let loading = false;
@@ -51,9 +50,7 @@
         ..._profile,
         ...updates
       }));
-      $snackbarStore.open = true;
-      $snackbarStore.message = 'Update successful';
-      $snackbarStore.severity = SNACKBAR_SEVERITY.SUCCESS;
+      snackbar.success('Update successful');
 
       if (error) throw error;
     } catch (error) {
@@ -61,9 +58,7 @@
       if (message.includes('profile_username_key')) {
         message = 'username already exists';
       }
-      $snackbarStore.open = true;
-      $snackbarStore.message = `Update failed: ${message}`;
-      $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
+      snackbar.success(`Update failed: ${message}`);
       loading = false;
     } finally {
       loading = false;

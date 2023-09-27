@@ -1,11 +1,9 @@
 <script lang="ts">
   import TextChip from '$lib/components/Chip/Text.svelte';
   import ComingSoon from '$lib/components/ComingSoon/index.svelte';
-  import Filter from 'carbon-icons-svelte/lib/Filter.svelte';
   import { onMount } from 'svelte';
   import copy from 'copy-to-clipboard';
   import {
-    Pagination,
     CopyButton,
     Search,
     StructuredList,
@@ -33,7 +31,7 @@
   import type { Person, ProfileRole } from '$lib/components/Course/components/People/types';
   import { ROLE_LABEL, ROLES } from '$lib/utils/constants/roles';
   import { profile } from '$lib/utils/store/user';
-  import { snackbarStore } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$lib/components/Snackbar/store';
   import Avatar from '$lib/components/Avatar/index.svelte';
 
   export let data;
@@ -101,8 +99,7 @@
   }
 
   function copyToClipboard(studentAssignedId: string | null) {
-    $snackbarStore.open = true;
-    $snackbarStore.message = `Copied to clipboard`;
+    snackbar.success(`Copied to clipboard`);
 
     if (studentAssignedId) {
       copy(studentAssignedId);

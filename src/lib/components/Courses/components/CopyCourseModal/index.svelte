@@ -2,8 +2,7 @@
   import { goto } from '$app/navigation';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import Modal from '$lib/components/Modal/index.svelte';
-  import { snackbarStore } from '$lib/components/Snackbar/store';
-  import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
+  import { snackbar } from '$lib/components/Snackbar/store';
   import TextField from '$lib/components/Form/TextField.svelte';
   import { copyCourseModalInitialState, copyCourseModal } from '$lib/components/Courses/store';
   import { cloneCourse } from '$lib/utils/services/courses/clone';
@@ -22,11 +21,9 @@
     } catch (error) {
       console.error(error);
 
-      // IIFI of snackbarStore to Show notification error
+      // IIFI of snackbar to Show notification error
       (() => {
-        $snackbarStore.message = "Something's not right - Please try later";
-        $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
-        $snackbarStore.open = true;
+        snackbar.error();
       })();
 
       // Stop loader
