@@ -1,38 +1,41 @@
-<script>
+<script lang="ts">
   import Box from '../Box/index.svelte';
   import Card from './components/Card/index.svelte';
   import CardLoader from './components/Card/Loader.svelte';
   import CoursesEmptyIcon from '../Icons/CoursesEmptyIcon.svelte';
   import CopyCourseModal from './components/CopyCourseModal/index.svelte';
-  import { courses, courseMetaDeta } from './store';
+  import { courseMetaDeta } from './store';
+  import type { Course } from '$lib/utils/types';
+
+  export let courses: Course[] = [];
 </script>
 
 <CopyCourseModal />
 
-<div
-  class={`w-full ${$courseMetaDeta.isLoading || $courses ? 'cards-container' : ''} my-4 mx-auto`}
->
+<div class={`w-full ${$courseMetaDeta.isLoading || courses ? 'cards-container' : ''} my-4 mx-auto`}>
   {#if $courseMetaDeta.isLoading}
     <CardLoader />
     <CardLoader />
     <CardLoader />
   {:else}
-    {#each $courses as courseData}
-      <Card
-        id={courseData.id}
-        bannerImage={courseData.logo}
-        title={courseData.title}
-        description={courseData.description}
-        role_id={courseData.role_id}
-        isPublished={courseData.is_published}
-        cost={courseData.cost}
-        currency={courseData.currency}
-        totalLessons={courseData.total_lessons}
-      />
+    {#each courses as courseData}
+      {#key courseData.id}
+        <Card
+          id={courseData.id}
+          bannerImage={courseData.logo || '/images/classroomio-course-img-template.jpg'}
+          title={courseData.title}
+          description={courseData.description}
+          role_id={courseData.role_id}
+          isPublished={courseData.is_published}
+          cost={courseData.cost}
+          currency={courseData.currency}
+          totalLessons={courseData.total_lessons}
+        />
+      {/key}
     {/each}
   {/if}
 </div>
-{#if !$courseMetaDeta.isLoading && !$courses.length}
+{#if !$courseMetaDeta.isLoading && !courses.length}
   <Box className="w-full">
     <CoursesEmptyIcon />
     <h3 class="dark:text-white text-2xl my-5">No Courses Created</h3>
