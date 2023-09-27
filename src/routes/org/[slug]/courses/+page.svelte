@@ -20,6 +20,7 @@
   let searchValue = '';
   let selectedId: string;
   let filteredCourses: Course[];
+  let hasFetched = false;
 
   const urlParams = new URLSearchParams($page.url.search);
 
@@ -28,7 +29,7 @@
   }
 
   async function getCourses(userId: string | null, orgId: string) {
-    if (cantFetch && typeof cantFetch === 'boolean' && !allCourses.length && orgId) {
+    if (cantFetch && typeof cantFetch === 'boolean' && !allCourses.length && orgId && !hasFetched) {
       $courseMetaDeta.isLoading = true;
 
       const coursesResult = await fetchCourses(userId, orgId);
@@ -39,6 +40,7 @@
 
       // organizationId = coursesResult.organizationId;
       courses.set(coursesResult.allCourses);
+      hasFetched = true;
     }
   }
 
