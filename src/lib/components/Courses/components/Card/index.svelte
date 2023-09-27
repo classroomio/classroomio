@@ -50,47 +50,43 @@
 <a
   rel="prefetch"
   href={isOnLandingPage ? `/course/${slug}` : `/courses/${id}`}
-  class=" text-black w-full"
+  class="text-black border border-gray rounded w-full max-w-[320px] relative hover:shadow-lg transition-all ease-in-out"
 >
-  <div
-    class="border border-gray rounded w-full max-w-[350px] relative hover:shadow-lg transition-all ease-in-out"
-  >
-    <div class="p-4">
-      <div class=" mb-5">
-        <ImageLoader
-          src={bannerImage ? bannerImage : '/images/classroomio-course-img-template.jpg'}
-          alt="Course Logo"
-          class="h-[200px] w-full rounded dark:border dark:border-white"
-        >
-          <svelte:fragment slot="loading">
-            <SkeletonPlaceholder style="width: 100%; height: 200px;" />
-          </svelte:fragment>
-          <svelte:fragment slot="error">An error occurred.</svelte:fragment>
-        </ImageLoader>
-      </div>
-
-      <h3 class="text-xl dark:text-white title">{title}</h3>
-      <p class="mt-2 text-sm text-gray-500 dark:text-gray-300 description">
-        {description}
-      </p>
+  <div class="p-4">
+    <div class=" mb-5">
+      <ImageLoader
+        src={bannerImage}
+        alt="Course Logo"
+        class="h-[200px] w-full rounded dark:border dark:border-white"
+      >
+        <svelte:fragment slot="loading">
+          <SkeletonPlaceholder style="width: 100%; height: 200px;" />
+        </svelte:fragment>
+        <svelte:fragment slot="error">An error occurred.</svelte:fragment>
+      </ImageLoader>
     </div>
 
-    <div class="px-4 border border-gray border-b-0 border-l-0 border-r-0 footer">
-      <p class="text-xs pt-2 pl-2 dark:text-white">{totalLessons} lessons</p>
-      <p class="text-xs py-2">
-        {#if isOnLandingPage}
-          <span class="px-2">{!cost ? 'Free' : formatter.format(cost)}</span>
-        {:else}
-          <Tag type={isPublished ? 'green' : 'cool-gray'}>
-            {#if isPublished}
-              Published
-            {:else}
-              Unpublished
-            {/if}
-          </Tag>
-        {/if}
-      </p>
-    </div>
+    <h3 class="text-xl dark:text-white title">{title}</h3>
+    <p class="mt-2 text-sm text-gray-500 dark:text-gray-300 description">
+      {description}
+    </p>
+  </div>
+
+  <div class="px-4 border border-gray border-b-0 border-l-0 border-r-0 footer">
+    <p class="text-xs pt-2 pl-2 dark:text-white">{totalLessons} lessons</p>
+    <p class="text-xs py-2">
+      {#if isOnLandingPage}
+        <span class="px-2">{!cost ? 'Free' : formatter.format(cost)}</span>
+      {:else}
+        <Tag type={isPublished ? 'green' : 'cool-gray'}>
+          {#if isPublished}
+            Published
+          {:else}
+            Unpublished
+          {/if}
+        </Tag>
+      {/if}
+    </p>
   </div>
 </a>
 
