@@ -17,14 +17,12 @@
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import ViewMode from './ViewMode.svelte';
   import EditMode from './EditMode.svelte';
-  import MODES from '$lib/utils/constants/mode.js';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { deleteExercise, upsertExercise } from '$lib/utils/services/courses';
+  import { upsertExercise } from '$lib/utils/services/courses';
   import UpdateDescription from './UpdateDescription.svelte';
   import { TrashCan } from 'carbon-icons-svelte';
   import { exerciseMode } from './store';
-  import { snackbarStore } from '$lib/components/Snackbar/store';
-  import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
+  import { snackbar } from '$lib/components/Snackbar/store';
 
   export let exerciseId;
   export let goBack = () => {};
@@ -52,13 +50,10 @@
           is_description_dirty: false,
           questions: updatedQuestions
         }));
-        $snackbarStore.open = true;
-        $snackbarStore.message = 'Saved Successfully';
-        $snackbarStore.severity = SNACKBAR_SEVERITY.SUCCESS;
+        snackbar.success('Saved Successfully');
       } catch (error) {
-        $snackbarStore.open = true;
-        $snackbarStore.message = `An Error Occurred`;
-        $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
+        console.error(error);
+        snackbar.error();
       }
       isSaving = false;
     }

@@ -8,8 +8,7 @@
   import { getOrganizations } from '$lib/utils/services/org';
   import { blockedSubdomain } from '$lib/utils/constants/app';
   import { newOrgModal } from '../store';
-  import { snackbarStore } from '$lib/components/Snackbar/store';
-  import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
+  import { snackbar } from '$lib/components/Snackbar/store';
   import { createOrgValidation } from '$lib/utils/functions/validator';
 
   type Error = {
@@ -93,10 +92,7 @@
         return;
       }
 
-      $snackbarStore.open = true;
-      $snackbarStore.message = 'Org created Successfully';
-      $snackbarStore.severity = SNACKBAR_SEVERITY.SUCCESS;
-
+      snackbar.success();
       await getOrganizations($profile.id);
 
       resetForm();

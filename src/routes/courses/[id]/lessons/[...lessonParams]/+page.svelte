@@ -24,8 +24,7 @@
   } from '$lib/components/Course/components/Lesson/store/lessons';
   import { browser } from '$app/environment';
   import { currentOrg } from '$lib/utils/store/org';
-  import { snackbarStore } from '$lib/components/Snackbar/store';
-  import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
+  import { snackbar } from '$lib/components/Snackbar/store';
   import type { LessonCompletion, LessonPage } from '$lib/utils/types';
   import { profile } from '$lib/utils/store/user.js';
   import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
@@ -157,14 +156,10 @@
       a.click();
       a.remove();
 
-      $snackbarStore.message = 'Download Complete';
-      $snackbarStore.severity = SNACKBAR_SEVERITY.SUCCESS;
-      $snackbarStore.open = true;
+      snackbar.success('Download Complete');
     } catch (error) {
       console.log('error downloading lesson', error);
-      $snackbarStore.message = "Something's not right - Please try later";
-      $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
-      $snackbarStore.open = true;
+      snackbar.error("Something's not right - Please try later");
     }
 
     isLoading = false;

@@ -6,7 +6,7 @@
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import Preview from './Preview.svelte';
   import { SELECTABLE_STATUS } from './constants';
-  import { snackbarStore } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$lib/components/Snackbar/store';
 
   export let open = false;
   export let onClose = () => {};
@@ -38,8 +38,7 @@
       total
     });
 
-    $snackbarStore.open = true;
-    $snackbarStore.message = `Submission updated to '${status.label}'`;
+    snackbar.success(`Submission updated to '${status.label}'`);
   }
 
   function setStatus(data) {

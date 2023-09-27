@@ -45,7 +45,7 @@
 
   let supabase = getSupabase();
   let path = $page.url?.pathname?.replace('/', '');
-  let theme = 'white';
+  let carbonTheme = 'white';
 
   const delayedPreloading = derived(navigating, (currentPreloading, set) => {
     setTimeout(() => set(currentPreloading), 250);
@@ -166,7 +166,7 @@
       if (data.isOrgSite) {
         if (params.has('redirect')) {
           goto(params.get('redirect') || '');
-        } else {
+        } else if (!path.includes('lms')) {
           goto('/lms');
         }
       } else {
@@ -179,10 +179,9 @@
           // By default redirect to first organization
           goto(`/org/${orgRes.currentOrg.siteName}`);
         }
-
-        if (typeof orgRes?.currentOrg?.theme === 'string') {
-          setTheme(orgRes.currentOrg.theme);
-        }
+      }
+      if (typeof orgRes?.currentOrg?.theme === 'string') {
+        setTheme(orgRes.currentOrg.theme);
       }
     }
   }
@@ -197,11 +196,6 @@
       $page.url.host,
       `\nIs student domain: ${data.isOrgSite}`
     );
-    // Disable GA on localhost
-    if (dev) {
-      console.log('disable GA');
-      window['ga-disable-G-C7WBN0S06R'] = true;
-    }
 
     if (browser) {
       // Update theme - dark or light mode
@@ -209,7 +203,11 @@
       toggleBodyByMode($appStore.isDark);
 
       const theme = localStorage.getItem('theme');
-      if (theme) setTheme(theme);
+      if (data.isOrgSite && data.org?.theme) {
+        setTheme(data.org?.theme);
+      } else if (theme) {
+        setTheme(theme);
+      }
     }
 
     setupSentry();
@@ -250,7 +248,6 @@
     });
 
     if (data.isOrgSite) {
-      console.log('data', data);
       if (!data.org) {
         goto('/404');
       } else {
@@ -258,18 +255,19 @@
         $appStore.isOrgSite = data.isOrgSite;
 
         currentOrg.set(data.org);
-        setTheme(data.org.theme);
       }
     }
 
     return () => {
       console.log('unsubscribed');
-      authListener?.unsubscribe();
+      if (typeof authListener?.unsubscribe === 'function') {
+        authListener?.unsubscribe();
+      }
     };
   });
 
   $: path = $page.url?.pathname?.replace('/', '');
-  $: theme = $appStore.isDark ? 'g100' : 'white';
+  $: carbonTheme = $appStore.isDark ? 'g100' : 'white';
 </script>
 
 <svelte:window on:resize={handleResize} />
@@ -278,7 +276,7 @@
   <link href="/css/carbon.css" rel="stylesheet" />
 </svelte:head>
 
-<Theme bind:theme />
+<Theme bind:theme={carbonTheme} />
 
 <Snackbar />
 

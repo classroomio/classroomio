@@ -10,8 +10,7 @@
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import { currentOrg } from '$lib/utils/store/org';
   import { getSupabase } from '$lib/utils/functions/supabase';
-  import { snackbarStore } from '$lib/components/Snackbar/store';
-  import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
+  import { snackbar } from '$lib/components/Snackbar/store';
   import { FileUploader } from 'carbon-components-svelte';
   import { landingPageSettings } from './store';
   import type { OrgLandingPageJson } from './store';
@@ -101,26 +100,21 @@
   };
   async function handleSave() {
     isSaving = true;
-    $landingPageSettings.footer.twitter = checkPrefix($landingPageSettings.footer.twitter);
-    $landingPageSettings.footer.linkedin = checkPrefix($landingPageSettings.footer.linkedin);
-    $landingPageSettings.footer.facebook = checkPrefix($landingPageSettings.footer.facebook);
-    console.log($landingPageSettings.footer.twitter);
-    const { data, error } = await supabase
+    $landingPageSettings.footer.twitter = checkPrefix($landingPageSettings.footer.twitter) || '';
+    $landingPageSettings.footer.linkedin = checkPrefix($landingPageSettings.footer.linkedin) || '';
+    $landingPageSettings.footer.facebook = checkPrefix($landingPageSettings.footer.facebook) || '';
+
+    const { error } = await supabase
       .from('organization')
       .update({ landingpage: $landingPageSettings })
       .match({ id: $currentOrg.id });
 
     if (error) {
-      let message = error?.message || 'Please try again';
-
-      $snackbarStore.open = true;
-      $snackbarStore.message = `Update failed: ${message}`;
-      $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
+      const message = error?.message || 'Please try again';
+      snackbar.error(`Update failed: ${message}`);
     } else {
       $currentOrg.landingpage = $landingPageSettings;
-      $snackbarStore.open = true;
-      $snackbarStore.message = 'Saved successful';
-      $snackbarStore.severity = SNACKBAR_SEVERITY.SUCCESS;
+      snackbar.success();
     }
 
     isSaving = false;

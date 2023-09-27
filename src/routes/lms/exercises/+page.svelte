@@ -1,33 +1,10 @@
 <script>
-  import { onMount } from 'svelte';
   import { flip } from 'svelte/animate';
   import { dndzone } from 'svelte-dnd-action';
-  import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import PageNav from '$lib/components/PageNav/index.svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import MarkExerciseModal from '$lib/components/Course/components/Lesson/Exercise/MarkExerciseModal.svelte';
   import Chip from '$lib/components/Chip/index.svelte';
-  import PageBody from '$lib/components/PageBody/index.svelte';
-  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
-  import { fetchCourse } from '$lib/utils/services/courses';
-  import { setCourse, course } from '$lib/components/Course/store';
-  import {
-    fetchSubmissions,
-    updateSubmission,
-    updateQuestionAnswer
-  } from '$lib/utils/services/submissions';
-  import { formatAnswers } from '$lib/components/Course/function';
-  import { snackbarStore } from '$lib/components/Snackbar/store';
-  import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
-  import isSubmissionEarly from '$lib/utils/functions/isSubmissionEarly';
-  import formatDate from '$lib/utils/functions/formatDate';
 
   const flipDurationMs = 300;
-
-  // export let data;
-  // const { courseId } = data;
-  let items;
 
   let sections = [
     {
@@ -124,24 +101,6 @@
 
       return item;
     });
-
-    // // Update backend
-    // if (itemToWithNewStatus) {
-    //   // Update key mapping for each submission also
-    //   submissionIdData[itemToWithNewStatus.id] = {
-    //     ...submissionIdData[itemToWithNewStatus.id],
-    //     status_id: itemToWithNewStatus.statusId
-    //   };
-    //   console.log(
-    //     `submissionIdData[itemToWithNewStatus.id]`,
-    //     submissionIdData[itemToWithNewStatus.id]
-    //   );
-
-    //   updateSubmission({
-    //     id: itemToWithNewStatus.id,
-    //     status_id: itemToWithNewStatus.statusId
-    //   }).then((res) => console.log('Updated submission', res));
-    // }
   }
 
   function handleDndConsiderCards(columnIdx) {
@@ -204,17 +163,12 @@
                     class="flex w-full items-center cursor-pointer text-black mb-2"
                     href={`${$page.url.pathname}?submissionId=${item.id}`}
                   >
-                    <!-- <img
-              alt="Student avatar"
-              class="block rounded-full h-6 w-6"
-              src={item.student.avatar_url}
-            /> -->
                     <p class="dark:text-white ml-2 text-sm">
                       {item.student.username}
                     </p>
                   </a>
                   <a
-                    class="text-primary-700 text-md font-bold"
+                    class="text-primary-700 dark:text-white text-md font-bold"
                     href="{$page.url.pathname}?submissionId={item.id}"
                   >
                     {item.exercise.title}
