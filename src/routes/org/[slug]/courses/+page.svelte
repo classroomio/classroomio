@@ -68,8 +68,6 @@
     } else if (_selectedId === '2') {
       filteredCourses = filteredCourses.sort((a, b) => b.total_lessons - a.total_lessons);
     }
-
-    console.log('filteredCourses', filteredCourses);
   }
 
   onMount(() => {
