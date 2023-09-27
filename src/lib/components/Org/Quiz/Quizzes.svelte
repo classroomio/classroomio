@@ -4,8 +4,7 @@
   import QuizLoader from './Loader.svelte';
   import QuizCard from './QuizCard.svelte';
   import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
-  import { snackbarStore } from '$lib/components/Snackbar/store';
-  import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
+  import { snackbar } from '$lib/components/Snackbar/store';
   import { supabase } from '$lib/utils/functions/supabase';
   import { currentOrg, quizesStore } from '$lib/utils/store/org';
 
@@ -22,9 +21,7 @@
       .order('updated_at', { ascending: false });
 
     if (error) {
-      $snackbarStore.message = "Something's not right - Please try later";
-      $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
-      $snackbarStore.open = true;
+      snackbar.error();
       return;
     }
     console.log('data', data);
@@ -35,9 +32,7 @@
   $: fetchQuizes($currentOrg.id);
 </script>
 
-<div
-  class="flex items-center justify-center lg:justify-start flex-wrap my-4 m-auto"
->
+<div class="flex items-center justify-center lg:justify-start flex-wrap my-4 m-auto">
   {#if isLoading}
     <QuizLoader />
     <QuizLoader />

@@ -19,8 +19,7 @@
     askCommunityValidation,
     commentInCommunityValidation
   } from '$lib/utils/functions/validator';
-  import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
-  import { snackbarStore } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$lib/components/Snackbar/store';
   import TextField from '$lib/components/Form/TextField.svelte';
   import DeleteCommentModal from '$lib/components/Org/Community/DeleteCommentModal.svelte';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
@@ -132,16 +131,11 @@
 
     if (error) {
       console.error('Error: commenting', error);
-      $snackbarStore.open = true;
-      $snackbarStore.message = 'Error - Please try again later';
-      $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
+      snackbar.error('Error - Please try again later');
     } else {
       console.log('Success: commenting', data);
 
-      // Notification
-      $snackbarStore.open = true;
-      $snackbarStore.message = 'Success';
-      $snackbarStore.severity = SNACKBAR_SEVERITY.SUCCESS;
+      snackbar.success('Success');
 
       // Add to comment
       const _c = data?.[0];
@@ -188,9 +182,7 @@
     const { error } = await supabase.from(table).update({ votes }).match({ id: matchId });
     if (error) {
       console.error('Error: upvoteQuestion', error);
-      $snackbarStore.open = true;
-      $snackbarStore.message = 'Error - Please try again later';
-      $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
+      snackbar.error('Error - Please try again later');
     } else {
       if (isQuestion) {
         voted.question = true;
@@ -228,9 +220,7 @@
         .match({ id: question.id });
       if (error) {
         console.error('Error: handleQuestionEdit', error);
-        $snackbarStore.open = true;
-        $snackbarStore.message = 'Error - Please try again later';
-        $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
+        snackbar.error('Error - Please try again later');
       } else {
         question.title = fields.title;
         question.body = fields.body;

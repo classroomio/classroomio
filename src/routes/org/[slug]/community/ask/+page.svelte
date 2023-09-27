@@ -5,8 +5,7 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { askCommunityValidation } from '$lib/utils/functions/validator';
   import { supabase } from '$lib/utils/functions/supabase';
-  import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
-  import { snackbarStore } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$lib/components/Snackbar/store';
   import generateSlug from '$lib/utils/functions/generateSlug';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
 
@@ -37,15 +36,10 @@
 
     if (error) {
       console.error('Error: asking question', error);
-      $snackbarStore.open = true;
-      $snackbarStore.message = 'Error - Please try again later';
-      $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
+      snackbar.error('Error - Please try again later');
     } else {
       console.log('Success: asking question', question);
-      $snackbarStore.open = true;
-      $snackbarStore.message = 'Success';
-      $snackbarStore.severity = SNACKBAR_SEVERITY.SUCCESS;
-
+      snackbar.success('Success');
       goto(`${$currentOrgPath}/community/${question[0].slug}`);
     }
   }

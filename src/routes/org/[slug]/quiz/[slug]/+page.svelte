@@ -16,8 +16,7 @@
   import DeleteModal from '$lib/components/Org/Quiz/DeleteModal.svelte';
   import Preview from '$lib/components/Org/Quiz/Play/Preview.svelte';
   import QuizQuestion from '$lib/components/Org/Quiz/QuizQuestion.svelte';
-  import { snackbarStore } from '$lib/components/Snackbar/store';
-  import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
+  import { snackbar } from '$lib/components/Snackbar/store';
   import { supabase } from '$lib/utils/functions/supabase';
 
   export let data;
@@ -147,14 +146,10 @@
     console.log('data', data);
     console.log('error', error);
     if (error) {
-      $snackbarStore.message = "Something's not right - Please try later";
-      $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
-      $snackbarStore.open = true;
+      snackbar.error("Something's not right - Please try later");
       return;
     } else {
-      $snackbarStore.message = 'Saved Successfully';
-      $snackbarStore.severity = SNACKBAR_SEVERITY.SUCCESS;
-      $snackbarStore.open = true;
+      snackbar.success('Saved Successfully');
     }
   }
 

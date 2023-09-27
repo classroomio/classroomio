@@ -9,8 +9,7 @@
   import { validateEmailInString } from '$lib/utils/functions/validator';
   import { ROLE_LABEL, ROLE } from '$lib/utils/constants/roles';
   import { currentOrg, orgTeam } from '$lib/utils/store/org';
-  import { snackbarStore } from '$lib/components/Snackbar/store';
-  import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
+  import { snackbar } from '$lib/components/Snackbar/store';
   import { getOrgTeam } from '$lib/utils/services/org';
   import { profile } from '$lib/utils/store/user';
   import { supabase } from '$lib/utils/functions/supabase';
@@ -51,10 +50,7 @@
         apiError = error;
 
         console.error('onSendInvite:', error);
-        $snackbarStore.open = true;
-        $snackbarStore.message = `Failed to send invite, please try again`;
-        $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
-
+        snackbar.error(`Failed to send invite, please try again`);
         isLoading = false;
         return;
       }
@@ -81,9 +77,7 @@
 
       const isLast = index === emails.length - 1;
       if (isLast) {
-        $snackbarStore.open = true;
-        $snackbarStore.message = 'Success';
-        $snackbarStore.severity = SNACKBAR_SEVERITY.SUCCESS;
+        snackbar.success('Success');
 
         emailsStr = '';
         isLoading = false;
@@ -98,9 +92,7 @@
 
     if (error) {
       console.error('onRemove:', error);
-      $snackbarStore.open = true;
-      $snackbarStore.message = `Failed to remove user, please try again`;
-      $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
+      snackbar.error('Failed to remove user, please try again');
     } else {
       orgTeam.update((team) => [...team.filter((member) => member.id !== id)]);
     }

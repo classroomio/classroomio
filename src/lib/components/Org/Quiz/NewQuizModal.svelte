@@ -3,8 +3,7 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import Modal from '$lib/components/Modal/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import { snackbarStore } from '$lib/components/Snackbar/store';
-  import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
+  import { snackbar } from '$lib/components/Snackbar/store';
   import { supabase } from '$lib/utils/functions/supabase';
   import { currentOrg, createQuizModal, currentOrgPath, quizesStore } from '$lib/utils/store/org';
   import { createQuizValidation } from '$lib/utils/functions/validator';
@@ -23,9 +22,7 @@
   }
 
   function errorNotification() {
-    $snackbarStore.message = "Something's not right - Please try later";
-    $snackbarStore.severity = SNACKBAR_SEVERITY.ERROR;
-    $snackbarStore.open = true;
+    snackbar.error();
   }
 
   async function createQuiz() {

@@ -18,8 +18,7 @@
     updateQuestionAnswer
   } from '$lib/utils/services/submissions';
   import { formatAnswers } from '$lib/components/Course/function';
-  import { snackbarStore } from '$lib/components/Snackbar/store';
-  import { SNACKBAR_SEVERITY } from '$lib/components/Snackbar/constants';
+  import { snackbar } from '$lib/components/Snackbar/store';
   import isSubmissionEarly from '$lib/utils/functions/isSubmissionEarly';
   import formatDate from '$lib/utils/functions/formatDate';
 
@@ -157,9 +156,7 @@
       total: totalPoints
     }).then((res) => console.log('Updated submission', res));
 
-    $snackbarStore.open = true;
-    $snackbarStore.message = `Saved successfully`;
-    $snackbarStore.severity = SNACKBAR_SEVERITY.SUCCESS;
+    snackbar.success();
 
     await Promise.all(updates);
   }
