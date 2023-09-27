@@ -80,14 +80,11 @@
               class="flex items-center py-3 px-4 mb-2 {NavClasses.item} {isActive(
                 $page.url.pathname,
                 `${item.link}`
-              ) && NavClasses.active}"
+              )
+                ? NavClasses.active
+                : 'dark:text-white'}"
             >
-              <svelte:component
-                this={item.icon}
-                color={isActive($page.url.pathname, `${item.link}`) ? 'black' : 'gray'}
-                size={24}
-                class="carbon-icon "
-              />
+              <svelte:component this={item.icon} size={24} class="carbon-icon dark:fill-[#fff]" />
               <p class="dark:text-white ml-2">{item.name}</p>
             </li>
           </a>
