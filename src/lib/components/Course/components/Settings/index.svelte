@@ -142,11 +142,20 @@
     }
     isSaving = true;
     try {
-      const { course_title, course_description, image, tabs, grading, lesson_download } = $settings;
+      const {
+        course_title,
+        course_description,
+        image,
+        tabs,
+        grading,
+        lesson_download,
+        is_published
+      } = $settings;
       await updateCourse($course.id, avatar, {
         title: course_title,
         description: course_description,
         logo: image,
+        is_published,
         metadata: {
           ...(isObject($course.metadata) ? $course.metadata : {}),
           lessonTabsOrder: tabs,
@@ -158,6 +167,7 @@
       $course.title = course_title;
       $course.description = course_description;
       $course.logo = image;
+      $course.is_published = is_published;
       $course.metadata = {
         ...(isObject($course.metadata) ? $course.metadata : {}),
         lessonTabsOrder: tabs,
@@ -173,6 +183,7 @@
   };
 
   function setDefault(course) {
+    console.log('course.is_published', course.is_published);
     if (course && Object.keys(course).length) {
       $settings = {
         course_title: course.title,
@@ -180,7 +191,8 @@
         image: course.logo,
         tabs: course.metadata.lessonTabsOrder || $settings.tabs,
         grading: course.metadata.grading,
-        lesson_download: course.metadata.lessonDownload
+        lesson_download: course.metadata.lessonDownload,
+        is_published: course.is_published
       };
     }
   }
@@ -305,6 +317,21 @@
       />
     </Column>
   </Row>
+
+  <!-- Publish Course -->
+  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+    <Column sm={8} md={8} lg={8}>
+      <SectionTitle>Publish Course</SectionTitle>
+      <p>This determines if your course displays on your landing page</p>
+    </Column>
+    <Column sm={8} md={8} lg={8}>
+      <Toggle size="sm" bind:toggled={$settings.is_published}>
+        <span slot="labelA" style="color: gray">Unpublished</span>
+        <span slot="labelB" style="color: gray">Published</span>
+      </Toggle>
+    </Column>
+  </Row>
+
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={8} md={8} lg={8}>
       <SectionTitle>Delete course</SectionTitle>
