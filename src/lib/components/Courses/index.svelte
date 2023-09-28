@@ -3,14 +3,23 @@
   import Card from './components/Card/index.svelte';
   import CardLoader from './components/Card/Loader.svelte';
   import CoursesEmptyIcon from '../Icons/CoursesEmptyIcon.svelte';
-  import CopyCourseModal from './components/CopyCourseModal/index.svelte';
+  // import CopyCourseModal from './components/CopyCourseModal/index.svelte';
   import { courseMetaDeta } from './store';
   import type { Course } from '$lib/utils/types';
+  import { appStore } from '$lib/utils/store/app';
 
   export let courses: Course[] = [];
+
+  function calcProgressRate(progressRate?: number, totalLessons?: number): number {
+    if (!progressRate || !totalLessons) {
+      return 0;
+    }
+
+    return Math.round((progressRate / totalLessons) * 100);
+  }
 </script>
 
-<CopyCourseModal />
+<!-- <CopyCourseModal /> -->
 
 <div class={`w-full ${$courseMetaDeta.isLoading || courses ? 'cards-container' : ''} my-4 mx-auto`}>
   {#if $courseMetaDeta.isLoading}
@@ -30,6 +39,8 @@
           cost={courseData.cost}
           currency={courseData.currency}
           totalLessons={courseData.total_lessons}
+          isLMS={$appStore.isOrgSite}
+          progressRate={calcProgressRate(courseData.progress_rate, courseData.total_lessons)}
         />
       {/key}
     {/each}

@@ -1,34 +1,49 @@
-<script>
-  import TextField from '$lib/components/Form/TextField.svelte';
-
+<script lang="ts">
   import { Search } from 'carbon-components-svelte';
-  import AllLearning from '$lib/components/LMS/components/AllLearning.svelte';
   import Completed from '$lib/components/LMS/components/Completed.svelte';
-  import InProgress from '$lib/components/LMS/components/InProgress.svelte';
+  import { courseInProgress } from '$lib/components/LMS/components/store';
   import Tabs from '$lib/components/Tabs/index.svelte';
   import TabContent from '$lib/components/TabContent/index.svelte';
-
-  // let tabs = CONSTANTS.tabs;
+  import Courses from '$lib/components/Courses/index.svelte';
+  import { courses, courseMetaDeta } from '$lib/components/Courses/store';
+  import { profile } from '$lib/utils/store/user';
+  import { fetchCourses } from '$lib/components/Courses/api';
+  import { currentOrg } from '$lib/utils/store/org';
 
   const tabs = [
     {
-      label: 'All',
+      label: 'In progress',
       value: 1
     },
     {
-      label: 'In progress',
-      value: 2
-    },
-    {
       label: 'Complete',
-      value: 3
+      value: 2
     }
   ];
   let currentTab = tabs[0].value;
+  let hasFetched = false;
+
   const onChange =
     (tab = 0) =>
     () =>
       (currentTab = tab);
+
+  async function getCourses(userId: string | null, orgId: string) {
+    if (!hasFetched) {
+      $courseMetaDeta.isLoading = true;
+
+      const coursesResult = await fetchCourses(userId, orgId);
+      console.log(`coursesResult`, coursesResult);
+
+      $courseMetaDeta.isLoading = false;
+      if (!coursesResult) return;
+
+      courses.set(coursesResult.allCourses);
+      hasFetched = true;
+    }
+  }
+
+  $: getCourses($profile.id, $currentOrg.id);
 </script>
 
 <section class="max-w-6xl mx-auto">
@@ -40,12 +55,9 @@
     <Tabs {tabs} {currentTab} {onChange}>
       <slot:fragment slot="content">
         <TabContent value={tabs[0].value} index={currentTab}>
-          <AllLearning />
+          <Courses courses={$courses} />
         </TabContent>
         <TabContent value={tabs[1].value} index={currentTab}>
-          <InProgress />
-        </TabContent>
-        <TabContent value={tabs[2].value} index={currentTab}>
           <Completed />
         </TabContent>
       </slot:fragment>

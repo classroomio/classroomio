@@ -1,5 +1,6 @@
 export const mockData = [
   {
+    id: '1',
     title: 'Photo editing 101',
     description:
       'Learn the different techniques to edit photos using Adobe Lightroom.Learn the basics of figma and start design web apps for the world ...Learn the basics of figma and start design web apps for the world ...',
@@ -12,6 +13,7 @@ export const mockData = [
     progressRate: 45
   },
   {
+    id: '2',
     title: 'Colorful digital painting',
     description:
       'Learn the different techniques to edit photos using Adobe Lightroom.Learn the basics of figma and start design web apps for the world ...Learn the basics of figma and start design web apps for the world ...',
@@ -24,6 +26,7 @@ export const mockData = [
     progressRate: 45
   },
   {
+    id: '3',
     title: 'AI for dummys',
     description:
       'Learn the different techniques to edit photos using Adobe Lightroom.Learn the basics of figma and start design web apps for the world ...Learn the basics of figma and start design web apps for the world ...',

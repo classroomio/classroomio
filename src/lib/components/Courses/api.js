@@ -6,7 +6,8 @@ export async function fetchCourses(profileId, orgId) {
   // Gets courses for a particular organisation where the current logged in user is a groupmember
   const { data: allCourses } = await supabase
     .rpc('get_courses', {
-      org_id_arg: orgId
+      org_id_arg: orgId,
+      profile_id_arg: profileId
     })
     .eq('profile_id', profileId);
 

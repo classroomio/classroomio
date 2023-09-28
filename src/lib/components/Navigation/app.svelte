@@ -8,7 +8,6 @@
   import Close from 'carbon-icons-svelte/lib/Close.svelte';
 
   import IconButton from '$lib/components/IconButton/index.svelte';
-  import { course } from '$lib/components/Course/store';
   import { appStore } from '$lib/utils/store/app';
   import { currentOrgPath } from '$lib/utils/store/org';
   import { toggleBodyByMode } from '$lib/utils/functions/app';
@@ -33,13 +32,7 @@
     }
   }
 
-  function getPathName(_isCoursePage = false, slug = '') {
-    if (!_isCoursePage) {
-      return '/';
-    }
-
-    return slug ? `/course/${slug}` : `${$currentOrgPath}/courses`;
-  }
+  $: coursesPath = $appStore.isOrgSite ? '/lms/mylearning' : `${$currentOrgPath}/courses`;
 </script>
 
 <nav
@@ -61,7 +54,7 @@
         <div class="hidden md:block">
           <IconButton
             onClick={() => {
-              goto(`${$currentOrgPath}/courses`);
+              goto(coursesPath);
             }}
             size="small"
           >
@@ -70,8 +63,7 @@
         </div>
       {/if}
       <a
-        href={getPathName(isCoursePage, $course.slug)}
-        target={isCoursePage && $course.slug ? '_blank' : ''}
+        href={coursesPath}
         title="Go to {isCoursePage ? 'Courses' : 'ClassroomIO Home'}"
         id="logo"
         class="text-lg {isCoursePage && '-ml-2 md:ml-2'} line-clamp-1"
