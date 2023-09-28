@@ -282,7 +282,7 @@
               <Card
                 id={courseData.id}
                 slug={courseData.slug}
-                bannerImage={courseData.banner_image}
+                bannerImage={courseData.logo || '/images/classroomio-course-img-template.jpg'}
                 title={courseData.title}
                 description={courseData.description}
                 role_id={courseData.role_id}
