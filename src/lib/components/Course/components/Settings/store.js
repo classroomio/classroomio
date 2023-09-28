@@ -10,5 +10,6 @@ export const settings = writable({
     { id: 2, name: 'Slide' },
     { id: 3, name: 'Video' }
   ],
-  lesson_download: false
+  lesson_download: false,
+  is_published: false
 });

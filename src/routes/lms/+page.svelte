@@ -7,7 +7,6 @@
     progressPercentage
   } from '$lib/components/LMS/components/store';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import Box from '$lib/components/Box/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { goto } from '$app/navigation';
 </script>

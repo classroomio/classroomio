@@ -21,9 +21,9 @@ interface CourseMetadata {
     imgUrl: string;
   };
   reviews?: Array<Review>;
-  lessonTabsOrder: Array<Tabs>;
-  grading: boolean;
-  lessonDownload: boolean;
+  lessonTabsOrder?: Array<Tabs>;
+  grading?: boolean;
+  lessonDownload?: boolean;
 }
 
 // Generated from https://supabase-schema.vercel.app/
@@ -106,6 +106,9 @@ export interface Course {
   is_certificate_downloadable?: boolean;
   certificate_theme?: string;
   status: string;
+  is_published?: boolean;
+  progress_rate?: number;
+  total_lessons?: number;
 }
 
 export interface Groupmember {
