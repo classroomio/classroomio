@@ -1,14 +1,45 @@
-<script>
-  import Student from '$lib/components/LMS/components/Student.svelte';
+<script lang="ts">
+  import Schedule from '$lib/components/LMS/components/Schedule.svelte';
   import Learning from '$lib/components/LMS/components/Learning.svelte';
-  import {
-    courseInProgress,
-    totalCourses,
-    progressPercentage
-  } from '$lib/components/LMS/components/store';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { goto } from '$app/navigation';
+  import { profile } from '$lib/utils/store/user';
+  import { fetchCourses } from '$lib/components/Courses/api';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { courses, courseMetaDeta } from '$lib/components/Courses/store';
+  import type { Course } from '$lib/utils/types';
+
+  let hasFetched = false;
+  let progressPercentage = 0;
+  let totalLessons = 0;
+  let totalComPleted = 0;
+
+  async function getCourses(userId: string | null, orgId: string) {
+    if (hasFetched || !userId || !orgId) {
+      return;
+    }
+    $courseMetaDeta.isLoading = true;
+
+    const coursesResult = await fetchCourses(userId, orgId);
+    console.log(`coursesResult`, coursesResult);
+
+    $courseMetaDeta.isLoading = false;
+    if (!coursesResult) return;
+
+    courses.set(coursesResult.allCourses);
+    hasFetched = true;
+  }
+
+  function calcTotalProgress(courses: Course[]) {
+    totalComPleted = courses.reduce((acc, cur) => acc + (cur.progress_rate || 0), 0);
+    totalLessons = courses.reduce((acc, cur) => acc + (cur.total_lessons || 0), 0);
+
+    progressPercentage = Math.round((totalComPleted / totalLessons) * 100);
+  }
+
+  $: getCourses($profile.id, $currentOrg.id);
+  $: calcTotalProgress($courses);
 </script>
 
 <svelte:head>
@@ -41,7 +72,7 @@
     </div>
     <main class="flex w-full h-full flex-col xl:flex-row xl:gap-5">
       <div class="w-full h-full">
-        <Student />
+        <Schedule />
       </div>
 
       <div class="w-full h-full">
@@ -58,12 +89,12 @@
           </div>
           <span class="text-center xl:text-start">
             <p class="text-base font-semibold py-2 text-[#040F2D] dark:text-white">Your Progress</p>
-            {#if courseInProgress.length > 0}
+            {#if totalLessons > 0}
               <p class="text-xs font-normal text-[#656565] dark:text-white">
-                {courseInProgress.length}/{totalCourses} lessons in progress
+                {totalComPleted}/{totalLessons} lessons completed
               </p>
             {:else}
-              <p class="text-xs font-normal text-[#656565] dark:text-white">No lessons started</p>
+              <p class="text-xs font-normal text-[#656565] dark:text-white">No courses started</p>
             {/if}
           </span>
           <h1 class="text-5xl md:text-6xl font-bold text-[#262626] dark:text-white my-0">

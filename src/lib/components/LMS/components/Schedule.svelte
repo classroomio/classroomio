@@ -23,8 +23,6 @@
       }
     }
   };
-
-  // just copy and paste
 </script>
 
 <section class="w-full h-full mt-2">

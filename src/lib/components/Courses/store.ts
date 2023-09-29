@@ -1,7 +1,10 @@
-import { writable } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
 import type { Course } from '$lib/utils/types';
 
 export const courses = writable<Course[]>([]);
+export const courseInProgress = derived(courses, ($courses) =>
+  $courses.length > 0 ? $courses.slice(0, 3) : []
+);
 export const courseMetaDeta = writable({
   isLoading: true
 });
@@ -23,4 +26,5 @@ export const copyCourseModalInitialState = {
   isSaving: false,
   error: null
 };
+
 export const copyCourseModal = writable({ ...copyCourseModalInitialState });
