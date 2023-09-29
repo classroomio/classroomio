@@ -17,8 +17,6 @@
   export let isLMS = false;
   export let progressRate = 45;
 
-  $: console.log(progressRate);
-
   $: formatter = getCurrencyFormatter(currency);
 </script>
 

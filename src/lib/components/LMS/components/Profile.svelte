@@ -14,7 +14,6 @@
 
   async function logout() {
     const { error } = await supabase.auth.signOut();
-    console.log('error logout', error);
     goto('/login');
   }
 
