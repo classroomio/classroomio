@@ -2,8 +2,7 @@
   import { page } from '$app/stores';
   import HelpIcon from 'carbon-icons-svelte/lib/Help.svelte';
   import LicenseDraft from 'carbon-icons-svelte/lib/LicenseDraft.svelte';
-  import TextChip from '$lib/components/Chip/Text.svelte';
-  import OrgSelector from '$lib/components/OrgSelector/OrgSelector.svelte';
+  import Settings from 'carbon-icons-svelte/lib/Settings.svelte';
   import HomeIcon from '$lib/components/Icons/HomeIcon.svelte';
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
   import CommunityIcon from '$lib/components/Icons/CommunityIcon.svelte';
@@ -59,19 +58,21 @@
 >
   <div class="h-full flex flex-col">
     <div class="border-b border-gray-200 pt-5 px-4">
-      {#if $currentOrg.avatar_url}
+      <div class="w-full flex flex-col items-center">
         <Avatar
-          src={$currentOrg.avatar_url}
-          name={$currentOrg.name}
-          shape="rounded-md"
-          width="w-7"
-          height="h-7"
+          src={$profile.avatar_url}
+          name={$profile.fullname}
+          shape="rounded-full"
+          width="w-20"
+          height="h-20"
         />
-      {:else}
-        <TextChip value={$currentOrg.shortName} className="bg-primary-200 font-bold" />
-      {/if}
 
-      <OrgSelector canAddOrg={false} />
+        <div class="mt-5">
+          <p class="dark:text-white text-lg font-bold whitespace-nowrap truncate">
+            {$profile.fullname}
+          </p>
+        </div>
+      </div>
 
       <ul class="my-5">
         {#each sideLinks as item (item.name)}
@@ -106,7 +107,7 @@
             `/lms/settings`
           ) && NavClasses.active}"
         >
-          <Avatar src={$profile.avatar_url} name={$profile.username} width="w-7" height="h-7" />
+          <Settings size={20} class="carbon-icon dark:text-white" />
           <p class="dark:text-white ml-2">Settings</p>
         </li>
       </a>

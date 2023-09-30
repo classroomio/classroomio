@@ -4,11 +4,14 @@
   import NotificationIcon from 'carbon-icons-svelte/lib/Notification.svelte';
   import MoonIcon from 'carbon-icons-svelte/lib/Moon.svelte';
   import SunIcon from 'carbon-icons-svelte/lib/Sun.svelte';
+  import Avatar from '$lib/components/Avatar/index.svelte';
+  import TextChip from '$lib/components/Chip/Text.svelte';
 
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { appStore } from '$lib/utils/store/app';
   import { Close, Menu } from 'carbon-icons-svelte';
   import { menu } from '$lib/components/Org/store';
+  import { currentOrg } from '$lib/utils/store/org';
   import { toggleBodyByMode } from '$lib/utils/functions/app';
 
   export let navClass = '';
@@ -39,8 +42,27 @@
       </IconButton>
     </li>
     <div class="">
-      <a href={$page.url.pathname} title="Go to ClassroomIO Home" id="logo" class="text-lg">
-        ClassroomIO
+      <a
+        href={$page.url.pathname}
+        title="Go to ClassroomIO Home"
+        id="logo"
+        class="text-lg flex items-center"
+      >
+        {#if $currentOrg.avatar_url}
+          <Avatar
+            src={$currentOrg.avatar_url}
+            name={$currentOrg.name}
+            shape="rounded-md"
+            width="w-7"
+            height="h-7"
+            className="mr-2"
+          />
+        {:else}
+          <TextChip value={$currentOrg.shortName} className="bg-primary-200 font-bold" />
+        {/if}
+        <span class="line-clamp-1">
+          {$currentOrg.name}
+        </span>
       </a>
     </div>
 

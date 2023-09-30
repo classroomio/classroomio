@@ -187,7 +187,7 @@
             <a
               href="{$page.url.pathname}{navItem.key}"
               class="{navItem.key === activeNav &&
-                'active text-primary-700'} rounded-lg px-2 mr-6 text-slate-700 font-normal hover:bg-neutral-600 hover:text-slate-900 dark:text-white z-0"
+                'active text-primary-700'} rounded-lg px-2 mr-6 text-slate-700 font-normal hover:bg-neutral-600 dark:hover:text-slate-900 dark:text-white z-0"
             >
               {navItem.label}
             </a>
