@@ -4,6 +4,7 @@
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import RadioItem from '$lib/components/Form/RadioItem.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
+  import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
 
   export let title = '';
   export let code = '';
@@ -62,9 +63,13 @@
 
 <form on:submit|preventDefault={handleFormSubmit}>
   <div class="flex items-center justify-between">
-    <h3 class="dark:text-white {labelClassName} {!isNaN(grade) && 'w-3/4'}">
-      {title}
-    </h3>
+    <HtmlRender className="mt-4">
+      <svelte:fragment slot="content">
+        <h3 class="dark:text-white {labelClassName} {!isNaN(grade) && 'w-3/4'}">
+          {title}
+        </h3>
+      </svelte:fragment>
+    </HtmlRender>
     {#if !isNaN(grade)}
       <div class="flex items-center">
         <TextField
@@ -112,9 +117,7 @@
         variant={VARIANTS.OUTLINED}
       />
       <PrimaryButton
-        variant={nextButtonProps.isActive
-          ? VARIANTS.CONTAINED
-          : VARIANTS.OUTLINED}
+        variant={nextButtonProps.isActive ? VARIANTS.CONTAINED : VARIANTS.OUTLINED}
         type="submit"
         label={nextButtonProps.label}
         {name}
