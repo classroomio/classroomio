@@ -2,8 +2,15 @@ import { writable, derived } from 'svelte/store';
 import type { Course } from '$lib/utils/types';
 
 export const courses = writable<Course[]>([]);
-export const courseInProgress = derived(courses, ($courses) =>
+export const coursesInProgress = derived(courses, ($courses) =>
   $courses.length > 0 ? $courses.slice(0, 3) : []
+);
+export const coursesComplete = derived(courses, ($courses) =>
+  $courses.length > 0
+    ? $courses.filter((course) => {
+        return course.total_lessons === course.progress_rate;
+      })
+    : []
 );
 export const courseMetaDeta = writable({
   isLoading: true

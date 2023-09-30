@@ -3,7 +3,10 @@
   import Tabs from '$lib/components/Tabs/index.svelte';
   import TabContent from '$lib/components/TabContent/index.svelte';
   import Courses from '$lib/components/Courses/index.svelte';
-  import { courses } from '$lib/components/Courses/store';
+  import { fetchCourses } from '$lib/components/Courses/api';
+  import { profile } from '$lib/utils/store/user';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { courses, courseMetaDeta, coursesComplete } from '$lib/components/Courses/store';
 
   const tabs = [
     {
@@ -16,11 +19,29 @@
     }
   ];
   let currentTab = tabs[0].value;
+  let hasFetched = false;
 
-  const onChange =
-    (tab = 0) =>
-    () =>
-      (currentTab = tab);
+  function onChange(tab: 0) {
+    return () => (currentTab = tab);
+  }
+
+  async function getCourses(userId: string | null, orgId: string) {
+    if (hasFetched || !userId || !orgId) {
+      return;
+    }
+    $courseMetaDeta.isLoading = true;
+
+    const coursesResult = await fetchCourses(userId, orgId);
+    console.log(`coursesResult`, coursesResult);
+
+    $courseMetaDeta.isLoading = false;
+    if (!coursesResult) return;
+
+    courses.set(coursesResult.allCourses);
+    hasFetched = true;
+  }
+
+  $: getCourses($profile.id, $currentOrg.id);
 </script>
 
 <section class="max-w-6xl mx-auto">
@@ -32,10 +53,18 @@
     <Tabs {tabs} {currentTab} {onChange}>
       <slot:fragment slot="content">
         <TabContent value={tabs[0].value} index={currentTab}>
-          <Courses courses={$courses} />
+          <Courses
+            courses={$courses}
+            emptyTitle="No Course In progress"
+            emptyDescription="Any course that you start will be displayed here"
+          />
         </TabContent>
         <TabContent value={tabs[1].value} index={currentTab}>
-          <Courses courses={[]} />
+          <Courses
+            courses={$coursesComplete}
+            emptyTitle="No Course Completed"
+            emptyDescription="Any course that you complete will be displayed here"
+          />
         </TabContent>
       </slot:fragment>
     </Tabs>

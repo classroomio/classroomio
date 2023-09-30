@@ -29,7 +29,7 @@
   <p class="text-base font-semibold text-[#040F2D] pb-3 dark:text-white">Your Schedule</p>
 
   <div
-    class="flex items-center flex-col border border-[#EAEAEA] dark:bg-neutral-800 rounded w-full h-fit xl:h-[516px] p-3"
+    class="flex items-center flex-col border border-[#EAEAEA] dark:bg-neutral-800 rounded w-full h-fit lg:h-[40vh] p-3 overflow-y-auto"
   >
     <div class="w-full h-fit hidden xl:flex items-center justify-center">
       <InlineCalendar bind:store {theme} />

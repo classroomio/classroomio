@@ -177,8 +177,6 @@
     return dateLessonData;
   }
 
-  function goToSite() {}
-
   onMount(() => {
     // Remove default shouldEnlargeDay=true when <DatePicker /> on mobile
     if ($store && $store.shouldEnlargeDay) {
