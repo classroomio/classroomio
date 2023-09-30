@@ -22,20 +22,26 @@
   ];
 </script>
 
-<section class="max-w-6xl mx-auto">
-  <div class="m-2 md:m-5">
-    <Tabs autoWidth bind:selected>
-      {#each tabs as tab}
-        <Tab label={tab.label} href={tab.href} />
-      {/each}
-      <svelte:fragment slot="content">
-        <TabContent>
-          <Profile />
-        </TabContent>
-        <TabContent>
-          <Integrations />
-        </TabContent>
-      </svelte:fragment>
-    </Tabs>
+<section class="w-full max-w-6xl mx-auto">
+  <div class="py-10 px-5">
+    <div class="flex items-center justify-between mb-10">
+      <h1 class="dark:text-white text-3xl font-bold">Settings</h1>
+    </div>
+
+    <div class="">
+      <Tabs autoWidth bind:selected>
+        {#each tabs as tab}
+          <Tab label={tab.label} href={tab.href} />
+        {/each}
+        <svelte:fragment slot="content">
+          <TabContent>
+            <Profile />
+          </TabContent>
+          <TabContent>
+            <Integrations />
+          </TabContent>
+        </svelte:fragment>
+      </Tabs>
+    </div>
   </div>
 </section>

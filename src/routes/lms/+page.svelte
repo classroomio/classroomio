@@ -1,12 +1,11 @@
 <script lang="ts">
-  import Schedule from '$lib/components/LMS/components/Schedule.svelte';
   import Learning from '$lib/components/LMS/components/Learning.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { goto } from '$app/navigation';
   import { profile } from '$lib/utils/store/user';
-  import { fetchCourses } from '$lib/components/Courses/api';
   import { currentOrg } from '$lib/utils/store/org';
+  import { fetchCourses } from '$lib/components/Courses/api';
   import { courses, courseMetaDeta } from '$lib/components/Courses/store';
   import type { Course } from '$lib/utils/types';
 
@@ -70,38 +69,39 @@
         class="w-28 md:block md:w-1/3 lg:w-[275px] lg:h-[205px] mb-3 md:mb-0"
       />
     </div>
-    <main class="flex w-full h-full flex-col xl:flex-row xl:gap-5">
-      <div class="w-full h-full">
-        <Schedule />
-      </div>
-
-      <div class="w-full h-full">
+    <section class="flex w-full flex-col xl:flex-row xl:gap-5">
+      <div class="w-full md:w-[75%] mt-10 xl:mt-2">
         <Learning />
       </div>
-      <div
-        class="flex items-center justify-center border border-[#EAEAEA] dark:bg-neutral-800 gap-2 rounded w-full xl:w-[400px] h-fit xl:h-[516px] overflow-y-auto p-3 xl:mt-11"
-      >
+      <div class="mt-10 xl:mt-2 w-full md:w-[75%] xl:w-[400px]">
+        <p class="text-base font-semibold text-[#040F2D] pb-3 dark:text-white">Your Progress</p>
         <div
-          class="w-full h-full flex flex-col sm:flex-row xl:flex-col items-center justify-between md:items-center xl:items-start gap-5 md:justify-around"
+          class="flex items-center justify-center border border-[#EAEAEA] dark:bg-neutral-800 gap-2 rounded h-fit lg:h-[40vh] lg:overflow-y-auto p-3"
         >
-          <div>
-            <img src="/images/target.svg" alt="student Learning score" />
-          </div>
-          <span class="text-center xl:text-start">
-            <p class="text-base font-semibold py-2 text-[#040F2D] dark:text-white">Your Progress</p>
-            {#if totalLessons > 0}
-              <p class="text-xs font-normal text-[#656565] dark:text-white">
-                {totalComPleted}/{totalLessons} lessons completed
+          <div
+            class="w-full h-full flex flex-col sm:flex-row xl:flex-col items-center justify-between md:items-center xl:items-start gap-5 md:justify-around"
+          >
+            <div>
+              <img src="/images/target.svg" alt="student Learning score" />
+            </div>
+            <span class="text-center xl:text-start">
+              <p class="text-base font-semibold py-2 text-[#040F2D] dark:text-white">
+                Your Progress
               </p>
-            {:else}
-              <p class="text-xs font-normal text-[#656565] dark:text-white">No courses started</p>
-            {/if}
-          </span>
-          <h1 class="text-5xl md:text-6xl font-bold text-[#262626] dark:text-white my-0">
-            {progressPercentage} %
-          </h1>
+              {#if totalLessons > 0}
+                <p class="text-xs font-normal text-[#656565] dark:text-white">
+                  {totalComPleted}/{totalLessons} lessons completed
+                </p>
+              {:else}
+                <p class="text-xs font-normal text-[#656565] dark:text-white">No courses started</p>
+              {/if}
+            </span>
+            <h1 class="text-5xl md:text-6xl font-bold text-[#262626] dark:text-white my-0">
+              {progressPercentage} %
+            </h1>
+          </div>
         </div>
       </div>
-    </main>
+    </section>
   </div>
 </section>

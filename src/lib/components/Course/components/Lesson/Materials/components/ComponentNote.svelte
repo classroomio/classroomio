@@ -1,7 +1,8 @@
 <script lang="ts">
   import { lesson } from '$lib/components/Course/components/Lesson/store/lessons';
+  import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
 
-  function isNoteEmpty(note) {
+  function isNoteEmpty(note: string) {
     if (!note || typeof note !== 'string') return true;
 
     if (!document) return false;
@@ -16,7 +17,11 @@
 </script>
 
 {#if !isNoteEmpty($lesson.materials?.note)}
-  <div>
-    {@html $lesson.materials.note}
-  </div>
+  <HtmlRender>
+    <svelte:fragment slot="content">
+      <div>
+        {@html $lesson.materials.note}
+      </div>
+    </svelte:fragment>
+  </HtmlRender>
 {/if}

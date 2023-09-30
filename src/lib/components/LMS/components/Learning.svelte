@@ -3,7 +3,7 @@
   import { goto } from '$app/navigation';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
-  import { courseInProgress } from '$lib/components/Courses/store';
+  import { coursesInProgress } from '$lib/components/Courses/store';
 
   const gotoCourse = (id: string | undefined) => {
     if (!id) return;
@@ -11,14 +11,14 @@
   };
 </script>
 
-<section class="h-full mt-10 mb-20 xl:mt-2">
+<section class="h-full">
   <p class="text-base font-semibold text-[#040F2D] pb-3 dark:text-white">Currently Learning</p>
   <div
-    class="flex items-center flex-col border border-[#EAEAEA] dark:bg-neutral-800 gap-2 rounded w-full h-fit xl:h-[516px] p-3"
+    class="flex items-center flex-col border border-[#EAEAEA] dark:bg-neutral-800 gap-2 rounded w-full lg:h-[40vh] p-3"
   >
-    {#if $courseInProgress.length > 0}
-      <div class="w-full h-full xl:h-[516px] flex flex-col justify-start">
-        {#each $courseInProgress as course}
+    {#if $coursesInProgress.length > 0}
+      <div class="w-full h-full flex flex-col justify-start overflow-y-auto">
+        {#each $coursesInProgress as course}
           <div class="p-5">
             <span class="flex flex-col md:flex-row gap-3 items-start pb-5">
               <img
