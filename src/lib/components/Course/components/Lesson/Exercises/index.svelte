@@ -20,6 +20,7 @@
   export let path;
   export let exerciseId;
   export let lessonId;
+  export let isStudent = true;
 
   let open = false;
   let isFetching = false;
@@ -123,11 +124,9 @@
     getExercises();
   });
 
-  const gotoEdit = () => {
-    $exerciseMode.editMode = true;
-  };
-
   $: getExercise(exerciseId);
+
+  $: $exerciseMode.editMode = !isStudent;
 </script>
 
 {#if isFetching}
@@ -159,7 +158,6 @@
         <a
           class="w-52 bg-gray-100 dark:bg-neutral-800 px-4 py-7 mr-4 mb-4 rounded-lg"
           href="{path}/{exercise.id}"
-          on:click={gotoEdit}
         >
           <h3 class="dark:text-white text-xl">{exercise.title}</h3>
           <p class="dark:text-white mt-4 text-sm">Created Jul 3, 2021</p>

@@ -30,10 +30,10 @@
   import TextChip from '$lib/components/Chip/Text.svelte';
   import Avatar from '$lib/components/Apps/components/Poll/components/Avatar.svelte';
   import AddLessonModal from '$lib/components/Course/components/Lesson/AddLessonModal.svelte';
-  import { exerciseMode } from '$lib/components/Course/components/Lesson/Exercise/store';
 
   export let data;
   const { courseId } = data;
+
   let lessonEditing;
   let isStudent = true;
   let openModal = false;
@@ -98,10 +98,6 @@
     if (user) {
       isStudent = user.role_id === 3;
     }
-  }
-  $: {
-    console.log('isStudent', isStudent);
-    $exerciseMode.editMode = !isStudent;
   }
 </script>
 

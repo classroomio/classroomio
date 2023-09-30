@@ -68,8 +68,8 @@
 
 <PageBody padding="px-4" headerClassName="bg-gray-100 rounded-md mb-3">
   <svelte:fragment slot="header">
-    <div class="flex items-center py-2 w-">
-      <RoleBasedSecurity allowedRoles={[1, 2]}>
+    <RoleBasedSecurity allowedRoles={[1, 2]}>
+      <div class="flex items-center py-2 w-">
         {#if $exerciseMode.editMode}
           <PrimaryButton
             className="mr-2"
@@ -94,8 +94,8 @@
             {/if}
           </IconButton>
         {/if}
-      </RoleBasedSecurity>
-    </div>
+      </div>
+    </RoleBasedSecurity>
 
     {#if $exerciseMode.editMode}
       <div class="flex items-center">

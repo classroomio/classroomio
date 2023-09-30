@@ -166,7 +166,7 @@
       if (data.isOrgSite) {
         if (params.has('redirect')) {
           goto(params.get('redirect') || '');
-        } else if (!path.includes('lms')) {
+        } else if (shouldRedirectOnAuth(path)) {
           goto('/lms');
         }
       } else {
