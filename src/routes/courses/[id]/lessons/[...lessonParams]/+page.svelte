@@ -39,6 +39,7 @@
   let isMarkingComplete = false;
   let isLoading = false;
   let isSaving = false;
+  let isStudent = true;
 
   function getLessonOrder(id: string) {
     const index = $lessons.findIndex((lesson) => lesson.id === id);
@@ -200,7 +201,11 @@
   }
 </script>
 
-<CourseContainer {path} isExercisePage={!data.isMaterialsTabActive && data.exerciseId}>
+<CourseContainer
+  bind:isStudent
+  {path}
+  isExercisePage={!data.isMaterialsTabActive && data.exerciseId}
+>
   <PageNav
     navItems={[
       {
@@ -256,7 +261,12 @@
   </PageNav>
 
   {#if !data.isMaterialsTabActive}
-    <Exercises lessonId={data.lessonId} exerciseId={data.exerciseId} path={`${path}/exercises`} />
+    <Exercises
+      bind:isStudent
+      lessonId={data.lessonId}
+      exerciseId={data.exerciseId}
+      path={`${path}/exercises`}
+    />
   {:else if !!data.lessonId}
     <PageBody
       onClick={() => {
