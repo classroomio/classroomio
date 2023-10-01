@@ -218,6 +218,8 @@
 
   $: addBadgeValueToTab($lesson.materials);
 
+  $: console.log('$lesson.materials', $lesson.materials);
+
   $: updateNoteByCompletion($completion);
 
   $: initPlyr(player, $lesson.materials.videos);

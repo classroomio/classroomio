@@ -63,7 +63,7 @@
     // If last question send to server
     if (isFinished) {
       $questionnaireMetaData.status = 1;
-      $questionnaireMetaData.totalPossibleGrade = getTotalPossibleGrade();
+      $questionnaireMetaData.totalPossibleGrade = getTotalPossibleGrade($questionnaire.questions);
       $questionnaireMetaData.grades = {};
       submitExercise(
         $questionnaireMetaData.answers,
@@ -87,8 +87,8 @@
     return Math.round(((currentQuestionIndex - 1) / $questionnaire.questions.length) * 100) || 0;
   }
 
-  function getTotalPossibleGrade() {
-    return $questionnaire.questions.reduce((acc, question) => {
+  function getTotalPossibleGrade(questions) {
+    return questions.reduce((acc, question) => {
       acc += parseFloat(question.points, 10);
       return acc;
     }, 0);
@@ -119,7 +119,7 @@
         answers: submission.answers
       });
 
-      $questionnaireMetaData.totalPossibleGrade = getTotalPossibleGrade();
+      $questionnaireMetaData.totalPossibleGrade = getTotalPossibleGrade($questionnaire.questions);
 
       $questionnaireMetaData.currentQuestionIndex = $questionnaire.questions.length;
       $questionnaireMetaData.isFinished = true;
@@ -192,7 +192,7 @@
         </p>
         |
         <p class="dark:text-white mx-2">
-          <strong>{getTotalPossibleGrade()}</strong> points.
+          <strong>{getTotalPossibleGrade($questionnaire.questions)}</strong> points.
         </p>
         |
         <p class="dark:text-white mx-2">All required</p>

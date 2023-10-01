@@ -51,7 +51,7 @@
     }
   }
 
-  async function fetchReqData(lessonId = '') {
+  async function fetchReqData(lessonId = '', isMaterialsTabActive: false) {
     isFetching = true;
 
     let lessonData;
@@ -61,11 +61,12 @@
       lessonData = _data?.lessons.find((lesson) => lesson.id === lessonId);
 
       setCourse(_data);
-    } else if (prevLessonId !== lessonId) {
+    } else if (isMaterialsTabActive) {
       const lesson = await fetchLesson(lessonId);
       lessonData = lesson.data;
     }
 
+    console.log('lessonData', lessonData);
     prevLessonId = lessonId;
 
     const totalExercises = lessonData?.totalExercises?.[0] && lessonData.totalExercises[0].count;
@@ -197,7 +198,7 @@
 
   $: if (data.courseId && browser) {
     mode = MODES.view;
-    fetchReqData(data.lessonId);
+    fetchReqData(data.lessonId, data.isMaterialsTabActive);
   }
 </script>
 

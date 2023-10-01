@@ -50,7 +50,6 @@
     return `${ye}-${mo}-${da}`;
   }
 
-  // TODO: CRUD of lessons
   function addLesson() {
     openModal = true;
   }
