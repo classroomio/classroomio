@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import {
     Search,
@@ -22,16 +22,25 @@
   import { ROLE } from '$lib/utils/constants/roles';
   import { takeAttendance } from '$lib/utils/services/attendance';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import { attendance } from '$lib/utils/store/attendance';
+  import { attendance } from '$lib/utils/store/attendance.js';
   import { profile } from '$lib/utils/store/user';
+  import type { GroupPerson, Lesson } from '$lib/utils/types/index';
 
   export let data;
+  interface CourseData {
+    attendance: {
+      student_id: string;
+      lesson_id: string;
+      is_present: boolean;
+      id: number;
+    }[];
+  }
 
-  let students = [];
-  let isStudent;
+  let students: GroupPerson[] = [];
+  let isStudent: boolean;
   let searchValue = '';
 
-  function setAttendance(courseData) {
+  function setAttendance(courseData: CourseData) {
     for (const attendanceItem of courseData.attendance) {
       const { student_id, lesson_id, is_present, id } = attendanceItem;
 
@@ -54,10 +63,12 @@
     }
   }
 
-  function handleAttendanceChange(e, student, lesson) {
+  function handleAttendanceChange(e: any, student: GroupPerson, lesson: Lesson) {
     if (isStudent) return;
 
-    const attendanceItem = $attendance[student.id] ? $attendance[student.id][lesson.id] || {} : {};
+    const attendanceItem = $attendance[student.id]
+      ? $attendance[student.id][lesson.id] || { id: undefined }
+      : { id: undefined };
 
     /* 
     This validation is useless. We shouldn't assume we already have an attendance item id 
@@ -102,7 +113,7 @@
   }
 
   // function for the searchbar
-  function searchStudents(query) {
+  function searchStudents(query: string) {
     const lowercaseQuery = query.toLowerCase();
     return students.filter((student) =>
       student.profile.fullname.toLowerCase().includes(lowercaseQuery)
@@ -118,6 +129,8 @@
     }
 
     const { data: _data } = await fetchCourse(data.courseId);
+    if (!_data) return;
+
     setCourse(_data);
     setAttendance(_data);
   });
@@ -125,7 +138,7 @@
   $: students = isStudent
     ? $group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
     : $group.people.filter((person) => !!person.profile && person.role_id === ROLE.STUDENT);
-  console.log(students);
+  $: console.log(students);
 </script>
 
 <CourseContainer bind:isStudent>
@@ -180,7 +193,7 @@
               {#each $lessons as lesson}
                 <StructuredListCell class="">
                   <Checkbox
-                    class={isStudent && 'cursor-not-allowed'}
+                    class={isStudent ? 'cursor-not-allowed' : ''}
                     disabled={isStudent}
                     checked={$attendance[student.id]
                       ? $attendance[student.id][lesson.id]

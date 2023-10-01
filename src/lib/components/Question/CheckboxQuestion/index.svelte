@@ -82,7 +82,7 @@
   <div class="ml-4">
     {#each options as option}
       <button
-        class="cursor-pointer text-left my-2 border-2 border-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-500 w-full {getValidationClassName(
+        class="cursor-pointer text-left my-2 border-2 border-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-neutral-800 w-full {getValidationClassName(
           option
         )}"
         type="button"
@@ -107,9 +107,7 @@
         variant={VARIANTS.OUTLINED}
       />
       <PrimaryButton
-        variant={nextButtonProps.isActive
-          ? VARIANTS.CONTAINED
-          : VARIANTS.OUTLINED}
+        variant={nextButtonProps.isActive ? VARIANTS.CONTAINED : VARIANTS.OUTLINED}
         type="submit"
         label={nextButtonProps.label}
         {name}

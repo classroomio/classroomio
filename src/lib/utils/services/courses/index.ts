@@ -10,6 +10,7 @@ import type {
   LessonCompletion
 } from '$lib/utils/types';
 import { STATUS } from '$lib/utils/constants/course';
+import type { PostgrestError, PostgrestSingleResponse } from '@supabase/supabase-js';
 
 export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']) {
   let match: { slug?: string; id?: string; status?: string } = {};
@@ -22,7 +23,7 @@ export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']
 
   match.status = STATUS[STATUS.ACTIVE];
 
-  const { data, error } = await supabase
+  const response: PostgrestSingleResponse<Course | null> = await supabase
     .from('course')
     .select(
       `
@@ -53,6 +54,9 @@ export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']
     )
     .match(match)
     .single();
+
+  const { data, error } = response;
+
   console.log(`error`, error);
   if (!data || error) {
     console.log(`data`, data);
@@ -185,7 +189,6 @@ function isNew(item: any) {
   return isNaN(item);
 }
 
-// TODO: Add questionnaire type
 export async function upsertExercise(questionnaire: any, exerciseId: Exercise['id']) {
   const {
     questions,
@@ -214,7 +217,7 @@ export async function upsertExercise(questionnaire: any, exerciseId: Exercise['i
     const { title, id, name, question_type, options, deleted_at, order, points, is_dirty } =
       question;
 
-    // DELETE /delete/:questionId - Don't delete if answer already given
+    // "DELETE" /delete/:questionId - Don't delete if answer already given
     if (deleted_at) {
       // Delete from server only if this question exists in the database
       if (!isNew(id)) {
@@ -232,7 +235,7 @@ export async function upsertExercise(questionnaire: any, exerciseId: Exercise['i
       continue;
     }
 
-    // INSERT or UPDATE /update/:questionId or /insert/:questionId
+    // "INSERT" or "UPDATE" /update/:questionId or /insert/:questionId
     const newQuestion = {
       id: isNew(id) ? undefined : id,
       name: isNew(id) ? undefined : name,
@@ -274,7 +277,7 @@ export async function upsertExercise(questionnaire: any, exerciseId: Exercise['i
         for (const option of options) {
           const { deleted_at, is_dirty } = option;
 
-          // DELETE /delete/:optionId
+          // "DELETE" /delete/:optionId
           if (deleted_at) {
             // if this option exists in the database
             if (!isNew(option.id)) {
@@ -285,7 +288,7 @@ export async function upsertExercise(questionnaire: any, exerciseId: Exercise['i
             continue;
           }
 
-          // INSERT and UPDATE
+          // "INSERT" and "UPDATE"
           const newOption = {
             ...option,
             is_dirty: undefined,

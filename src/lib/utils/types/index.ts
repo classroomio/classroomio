@@ -1,6 +1,19 @@
 export * from './config';
 export * from './dashboard';
 
+//===============Custom Type===============
+export interface GroupPerson {
+  assigned_student_id: number | null;
+  created_at: string;
+  email: string | null;
+  group_id: string;
+  id: string;
+  profile: Profile;
+  profile_id: string;
+  role_id: Role['id'];
+}
+//===========================================
+
 interface CourseMetadata {
   requirements: string;
   description: string;
@@ -109,6 +122,12 @@ export interface Course {
   is_published?: boolean;
   progress_rate?: number;
   total_lessons?: number;
+  attendance: {
+    student_id: string;
+    lesson_id: string;
+    is_present: boolean;
+    id: number;
+  }[];
 }
 
 export interface Groupmember {

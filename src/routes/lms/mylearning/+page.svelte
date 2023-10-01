@@ -7,6 +7,7 @@
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
   import { courses, courseMetaDeta, coursesComplete } from '$lib/components/Courses/store';
+  import { browser } from '$app/environment';
 
   const tabs = [
     {
@@ -26,13 +27,15 @@
   }
 
   async function getCourses(userId: string | null, orgId: string) {
+    console.log('hasFetched', hasFetched);
     if (hasFetched || !userId || !orgId) {
       return;
     }
+    hasFetched = true;
     $courseMetaDeta.isLoading = true;
 
     const coursesResult = await fetchCourses(userId, orgId);
-    console.log(`coursesResult`, coursesResult);
+    console.log(`get courses result`, coursesResult);
 
     $courseMetaDeta.isLoading = false;
     if (!coursesResult) return;
@@ -41,7 +44,9 @@
     hasFetched = true;
   }
 
-  $: getCourses($profile.id, $currentOrg.id);
+  $: if (browser && $profile.id && $currentOrg.id) {
+    getCourses($profile.id, $currentOrg.id);
+  }
 </script>
 
 <section class="max-w-6xl mx-auto">
