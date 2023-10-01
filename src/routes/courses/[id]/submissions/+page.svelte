@@ -242,14 +242,14 @@
     <PageNav title="Submitted Exercises" />
 
     <PageBody width="w-full max-w-6xl md:w-11/12 overflow-x-auto">
-      <div class="flex items-center w-full overflow-x-scroll">
+      <div class="flex items-center w-full">
         {#each sections as { id, title, items }, idx (id)}
           <div
-            class="section rounded-md bg-gray-100 dark:bg-black border border-gray-50 p-3 h-80 mr-3 overflow-hidden"
+            class="section rounded-md bg-gray-100 dark:bg-black border border-gray-50 dark:border-neutral-600 p-3 h-80 mr-3 overflow-hidden"
             animate:flip={{ duration: flipDurationMs }}
           >
             <div class="flex items-center mb-2">
-              <Chip value={items.length} class="bg-set" />
+              <Chip value={items.length} className="bg-set dark:bg-neutral-800" />
               <p class="dark:text-white ml-2 font-bold">{title}</p>
             </div>
             <div
@@ -264,9 +264,9 @@
             >
               {#each items as item (item.id)}
                 <div
-                  class="border {item.isEarly
-                    ? 'border-grey-700'
-                    : 'border-red-700'} w-full my-2 mx-0 rounded-md bg-white dark:bg-black py-3 px-3"
+                  class="{item.isEarly
+                    ? 'border-none'
+                    : 'border border-red-700'} w-full my-2 mx-0 rounded-md bg-white dark:bg-neutral-800 py-3 px-3"
                   animate:flip={{ duration: flipDurationMs }}
                 >
                   <a

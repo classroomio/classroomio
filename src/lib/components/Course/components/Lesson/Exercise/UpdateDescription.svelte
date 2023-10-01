@@ -7,8 +7,8 @@
   import { marked } from 'marked';
   export let preview;
 
-  function getTotalPossibleGrade() {
-    return $questionnaire.questions.reduce((acc, question) => {
+  function getTotalPossibleGrade(questions) {
+    return questions.reduce((acc, question) => {
       acc += parseFloat(question.points, 10);
       return acc;
     }, 0);
@@ -48,7 +48,7 @@
         </p>
         |
         <p class="dark:text-white mx-2">
-          <strong>{getTotalPossibleGrade()}</strong> points.
+          <strong>{getTotalPossibleGrade($questionnaire.questions)}</strong> points.
         </p>
         |
         <p class="dark:text-white mx-2">All required</p>

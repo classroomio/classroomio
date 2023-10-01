@@ -2,7 +2,7 @@ import { writable } from 'svelte/store';
 import type { Writable } from 'svelte/store';
 import { lessons } from './components/Lesson/store/lessons';
 import { ROLE } from '$lib/utils/constants/roles';
-import type { Course } from '$lib/utils/types';
+import type { Course, GroupPerson } from '$lib/utils/types';
 
 export const course: Writable<Course> = writable({
   id: '',
@@ -16,6 +16,7 @@ export const course: Writable<Course> = writable({
   is_published: false,
   created_at: new Date().toDateString(),
   updated_at: new Date().toDateString(),
+  attendance: [],
   metadata: {
     requirements: '',
     description: '',
@@ -61,7 +62,12 @@ export const mockGroupMember = {
   }
 };
 
-export const group = writable({
+export const group = writable<{
+  id: number | null;
+  tutors: GroupPerson[];
+  students: GroupPerson[];
+  people: GroupPerson[];
+}>({
   id: null,
   tutors: [],
   students: [],
