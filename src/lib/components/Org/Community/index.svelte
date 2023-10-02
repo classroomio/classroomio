@@ -1,7 +1,5 @@
 <script>
   import { goto } from '$app/navigation';
-  import dayjs from 'dayjs';
-  import relativeTime from 'dayjs/plugin/relativeTime';
   import AddCommentIcon from 'carbon-icons-svelte/lib/AddComment.svelte';
   import CommunityLoader from './Loader.svelte';
   import Vote from '$lib/components/Vote/index.svelte';
@@ -10,13 +8,12 @@
   import Space from '$lib/components/Space/index.svelte';
   import { currentOrgPath, currentOrg } from '$lib/utils/store/org';
   import { supabase } from '$lib/utils/functions/supabase';
+  import { calDateDiff } from '$lib/utils/functions/date';
 
   export let isLMS = false;
 
   let isLoading = false;
   let discussions = [];
-
-  dayjs.extend(relativeTime);
 
   async function fetchCommunityQuestions(orgId) {
     if (!orgId) return;
@@ -54,7 +51,7 @@
         author: discussion?.author?.profile?.fullname,
         comments: discussion.comments?.[0]?.count || 0,
         votes: discussion.votes,
-        createdAt: dayjs(discussion.created_at).fromNow(true)
+        createdAt: calDateDiff(discussion.created_at)
       })) || [];
   }
 

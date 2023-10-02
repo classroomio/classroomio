@@ -5,9 +5,13 @@ export interface LMSExercise {
   id: string;
   title: string;
   updated_at: string;
+  questions: {
+    points: number;
+  }[];
   submission: {
     status_id: number;
     updated_at: string;
+    total: number;
     groupmember: {
       id: string;
       profile: {
@@ -53,9 +57,11 @@ export async function fetchLMSExercises(
       id,
       title,
       updated_at,
+      questions:question(points),
       submission (
         status_id,
         updated_at,
+        total,
         groupmember:submitted_by!inner (
           id,
           profile!inner (
@@ -90,7 +96,7 @@ export async function fetchLMSExercises(
     .eq('submission.groupmember.profile.id', profileId);
 
   return {
-    exercises: data,
+    exercises: data as LMSExercise[] | null,
     error
   };
 }

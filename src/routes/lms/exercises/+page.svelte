@@ -7,10 +7,7 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import { fetchLMSExercises } from '$lib/utils/services/lms/exercises';
   import type { LMSExercise } from '$lib/utils/services/lms/exercises';
-  import dayjs from 'dayjs';
-  import relativeTime from 'dayjs/plugin/relativeTime';
-
-  dayjs.extend(relativeTime);
+  import { calDateDiff } from '$lib/utils/functions/date';
 
   const defaultSections = [
     {
@@ -27,7 +24,7 @@
     },
     {
       id: 2,
-      title: 'Grading',
+      title: 'Grading In Progress',
       items: [],
       className: 'text-yellow-700 bg-yellow-200'
     },
@@ -51,9 +48,10 @@
   interface ExerciseItem {
     courseTitle: string;
     courseURL: string;
-    exerciseTitle: string;
     exerciseId: string;
+    exerciseTitle: string;
     exerciseURL: string;
+    grade: string;
     lessonNo: string;
     lessonURL: string;
     submissionStatus: number;
@@ -64,16 +62,22 @@
     const _sections: Section[] = cloneDeep(defaultSections);
 
     for (const exercise of exercises) {
-      const { id, title, updated_at, submission, lesson } = exercise;
+      const { id, title, updated_at, submission, lesson, questions } = exercise;
 
       const submissionItem = submission[0] || {
         status_id: 0,
-        updated_at
+        updated_at,
+        total: 0
       };
 
       const courseURL = `/courses/${lesson.course.id}`;
       const lessonURL = `${courseURL}/lessons/${lesson.id}`;
       const exerciseURL = `${lessonURL}/exercises/${id}`;
+
+      const grade = `${submissionItem.total}/${questions.reduce(
+        (acc, cur) => (acc += cur.points),
+        0
+      )}`;
 
       const item: ExerciseItem = {
         exerciseId: id,
@@ -84,7 +88,8 @@
         lessonNo: lesson.order < 9 ? '0' + (lesson.order + 1) : `${lesson.order}`,
         lessonURL,
         submissionStatus: submissionItem.status_id,
-        submissionUpdatedAt: dayjs(submissionItem.updated_at).fromNow(true) + ` ago`
+        submissionUpdatedAt: calDateDiff(submissionItem.updated_at),
+        grade
       };
 
       _sections[submissionItem.status_id].items.push(item);
@@ -106,6 +111,7 @@
     if (!exercises) return;
 
     sections = generateSections(exercises);
+    console.log('sections', sections);
   }
 
   $: if (browser && $profile.id && $currentOrg.id) {
@@ -121,7 +127,7 @@
 
     <div>
       <div class="flex items-center w-full">
-        {#each sections as { title, items, className }}
+        {#each sections as { title, items, className, id }}
           <div
             class="min-w-[355px] max-w-[355px] h-[70vh] rounded-md bg-gray-100 dark:bg-black border border-gray-50 dark:border-neutral-700 p-3 mr-3 overflow-hidden"
           >
@@ -139,6 +145,9 @@
                     <p class="text-xs">{item.courseTitle}</p>
                   </a>
                   <a class="text-black dark:text-white text-md font-bold" href={item.exerciseURL}>
+                    {#if id === 3}
+                      ({item.grade}) -
+                    {/if}
                     {item.exerciseTitle}
                   </a>
                   <a
