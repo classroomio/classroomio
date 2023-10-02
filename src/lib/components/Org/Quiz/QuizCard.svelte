@@ -2,16 +2,13 @@
   import pluralize from 'pluralize';
   import { ImageLoader } from 'carbon-components-svelte';
   import OverflowMenuHorizontalIcon from 'carbon-icons-svelte/lib/OverflowMenuHorizontal.svelte';
-  import dayjs from 'dayjs';
-  import relativeTime from 'dayjs/plugin/relativeTime';
   import { currentOrgPath } from '$lib/utils/store/org';
   import Dropdown from '$lib/components/Dropdown/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { onRename, onDelete } from '$lib/utils/services/org/quiz';
   import { themeImages } from '$lib/utils/constants/quiz';
-
-  dayjs.extend(relativeTime);
+  import { calDateDiff } from '$lib/utils/functions/date';
 
   export let quiz;
   export let totalQuestions;
@@ -80,7 +77,7 @@
       <div class="flex md:flex-row flex-col justify-between">
         <div>
           <p class="mb-2">{pluralize('question', totalQuestions, true)}</p>
-          <p class="mb-2 md:mb-0">Updated {dayjs(quiz.updated_at).fromNow(true)} ago</p>
+          <p class="mb-2 md:mb-0">Updated {calDateDiff(quiz.updated_at)}</p>
         </div>
 
         <PrimaryButton
