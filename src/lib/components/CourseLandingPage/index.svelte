@@ -1,12 +1,9 @@
 <script lang="ts">
-  // import paystack from 'paystack';
   import get from 'lodash/get';
   import { observeIntersection } from './components/IntersectionObserver';
   import { onMount, onDestroy } from 'svelte';
   import pluralize from 'pluralize';
   import { page } from '$app/stores';
-  import dayjs from 'dayjs';
-  import relativeTime from 'dayjs/plugin/relativeTime';
   import Notebook from 'carbon-icons-svelte/lib/Notebook.svelte'; //note
   import PresentationFile from 'carbon-icons-svelte/lib/PresentationFile.svelte'; // exercise
   import Video from 'carbon-icons-svelte/lib/Video.svelte'; //video
@@ -24,8 +21,7 @@
   import { reviewsModalStore } from './store';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
-
-  dayjs.extend(relativeTime);
+  import { calDateDiff } from '$lib/utils/functions/date';
 
   export let editMode = false;
   export let courseData: Course;
@@ -378,7 +374,7 @@
                         <div class="flex flex-row">
                           <img src="/images/rating-full.svg" alt="" class="mr-2" />
                           <p class="text-xs text-gray-600">
-                            {dayjs(review.created_at).fromNow(true)} ago
+                            {calDateDiff(review.created_at)}
                           </p>
                         </div>
                         <div

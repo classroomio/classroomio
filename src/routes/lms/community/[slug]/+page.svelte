@@ -1,9 +1,7 @@
 <script>
   import { marked } from 'marked';
   import { goto } from '$app/navigation';
-  import dayjs from 'dayjs';
   import pluralize from 'pluralize';
-  import relativeTime from 'dayjs/plugin/relativeTime';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
   import { SkeletonPlaceholder, SkeletonText } from 'carbon-components-svelte';
   import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
@@ -24,8 +22,7 @@
   import TextField from '$lib/components/Form/TextField.svelte';
   import DeleteCommentModal from '$lib/components/Org/Community/DeleteCommentModal.svelte';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
-
-  dayjs.extend(relativeTime);
+  import { calDateDiff } from '$lib/utils/functions/date';
 
   export let data;
   const { slug } = data;
@@ -59,7 +56,7 @@
         avatar: data?.author?.profile?.avatar_url || ''
       },
       body: data.body,
-      createdAt: dayjs(data.created_at).fromNow(true),
+      createdAt: calDateDiff(data.created_at),
       comments: data.comments.map((c) => ({
         id: c.id,
         authorId: c.author?.profile?.id || '',
@@ -67,7 +64,7 @@
         avatar: c.author?.profile?.avatar_url || '',
         votes: c.votes,
         comment: c.body,
-        createdAt: dayjs(c.created_at).fromNow(true)
+        createdAt: calDateDiff(c.created_at)
       })),
       totalComments: 0
     };
@@ -148,7 +145,7 @@
           avatar: $profile?.avatar_url || '',
           votes: 0,
           comment: _c.body,
-          createdAt: dayjs(_c.created_at).fromNow(true)
+          createdAt: calDateDiff(_c.created_at)
         }
       ];
 
