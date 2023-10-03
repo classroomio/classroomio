@@ -38,6 +38,7 @@
   import hideNavByRoute from '$lib/utils/functions/routes/hideNavByRoute';
   import shouldRedirectOnAuth from '$lib/utils/functions/routes/shouldRedirectOnAuth';
   import AddOrgModal from '$lib/components/Org/AddOrgModal/AddOrgModal.svelte';
+  import Hotjar from '$lib/components/Hotjar/index.svelte';
 
   import '../app.postcss';
 
@@ -279,6 +280,10 @@
 <Theme bind:theme={carbonTheme} />
 
 <Snackbar />
+
+{#if !dev}
+  <Hotjar />
+{/if}
 
 {#if data.skipAuth}
   <PlayQuiz />
