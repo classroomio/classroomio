@@ -10,7 +10,9 @@
   import { supabase } from '$lib/utils/functions/supabase';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
+  import { goto } from '$app/navigation';
 
+  let isLoading = false;
   let errors = {
     title: '',
     description: ''
@@ -30,6 +32,7 @@
   }
 
   async function createCourse(e) {
+    isLoading = true;
     const { hasError, fieldErrors } = validateForm($createCourseModal);
 
     errors = fieldErrors;
@@ -70,8 +73,11 @@
       group_id,
       role_id: ROLE.TUTOR
     });
-
+    if (newCourse[0] != null && newCourse[0].id) {
+      goto(`/courses/${newCourse[0]?.id}`);
+    }
     onClose();
+    isLoading = false;
   }
 </script>
 
@@ -110,7 +116,13 @@
     />
 
     <div class="mt-5 flex items-center">
-      <PrimaryButton className="px-6 py-3" label="Finish" type="submit" />
+      <PrimaryButton
+        className="px-6 py-3"
+        label="Finish"
+        type="submit"
+        isDisabled={isLoading}
+        {isLoading}
+      />
     </div>
   </form>
 </Modal>
