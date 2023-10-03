@@ -237,15 +237,17 @@
                 : 'hidden'
             } lg:flex items-center`}
           >
-            <PrimaryButton
-              className="mb-2 lg:mb-0 mr-2"
-              variant={VARIANTS.OUTLINED}
-              onClick={downloadLesson}
-              {isLoading}
-            >
-              <Download size={16} class="mr-2" />
-              Download PDF
-            </PrimaryButton>
+            {#if $course.metadata.lessonDownload}
+              <PrimaryButton
+                className="mb-2 lg:mb-0 mr-2"
+                variant={VARIANTS.OUTLINED}
+                onClick={downloadLesson}
+                {isLoading}
+              >
+                <Download size={16} class="mr-2" />
+                Download PDF
+              </PrimaryButton>
+            {/if}
 
             <PrimaryButton className="mr-2" variant={VARIANTS.OUTLINED} onClick={toggleMode}>
               {#if isSaving}
