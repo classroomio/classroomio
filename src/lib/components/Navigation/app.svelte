@@ -12,7 +12,7 @@
   import { currentOrgPath } from '$lib/utils/store/org';
   import { toggleBodyByMode } from '$lib/utils/functions/app';
   import { goto } from '$app/navigation';
-  import { menu } from '../Org/store';
+  import { menu, sideBar } from '../Org/store';
 
   export let title = '';
   export let navClass = '';
@@ -20,6 +20,10 @@
 
   const toggleSidebar = () => {
     $menu.hidden = !$menu.hidden;
+  };
+
+  const openSidebar = () => {
+    $sideBar.open = !$sideBar.open;
   };
 
   function toggleDarkMode() {
@@ -47,6 +51,12 @@
           {:else}
             <Close size={16} class=" text-white" />
           {/if}
+        </IconButton>
+      </li>
+
+      <li class="hidden md:block">
+        <IconButton onClick={openSidebar}>
+          <Menu size={16} class=" text-white" />
         </IconButton>
       </li>
 
