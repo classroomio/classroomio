@@ -7,3 +7,7 @@ export const menu = writable({
 export const newOrgModal = writable({
   open: false
 });
+
+export const sideBar = writable({
+  open: true
+});

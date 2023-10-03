@@ -1,5 +1,5 @@
 <script>
-  import { onMount } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
   import hotkeys from 'hotkeys-js';
   import Forum from 'carbon-icons-svelte/lib/Forum.svelte';
   import AlignBoxTopLeft from 'carbon-icons-svelte/lib/AlignBoxTopLeft.svelte';
@@ -14,14 +14,33 @@
   import Notes from './components/Notes/index.svelte';
   import Poll from './components/Poll/index.svelte';
   import APPS_CONSTANTS from './constants';
+  import { browser } from '$app/environment';
 
   let selectedApp;
+  let resize = false;
+  let isDragging = false;
+  let startX;
+  let initialWidth;
+  let appBarRef;
+  let appContentRef;
+
+  const ResizableSidebar = window.innerWidth >= 1024;
 
   function handleClose() {
     selectedApp = null;
+    if (ResizableSidebar) {
+      appBarRef.style.width = '60px';
+    }
   }
 
   function handleAppClick(appName) {
+    if (!selectedApp && ResizableSidebar) {
+      if (window.innerWidth <= 1024) {
+        appBarRef.style.width = '300px';
+      } else {
+        appBarRef.style.width = '400px';
+      }
+    }
     if (appName === selectedApp) {
       handleClose();
     } else {
@@ -29,7 +48,69 @@
     }
     $apps.dropdown = false;
   }
+
+  function handleCursor(event) {
+    if (!ResizableSidebar) return;
+    if (!resize && selectedApp) {
+      const isNearLeftBorder = event.clientX - appContentRef.getBoundingClientRect().left < 8;
+      const isNearRightBorder = appContentRef.getBoundingClientRect().right - event.clientX < 8;
+
+      if (isNearLeftBorder || isNearRightBorder) {
+        appContentRef.style.cursor = 'ew-resize';
+      } else {
+        appContentRef.style.cursor = 'auto';
+      }
+    }
+  }
+
+  function startDragging(event) {
+    if (!ResizableSidebar) return;
+    if (event.button === 0 && selectedApp) {
+      event.preventDefault();
+      const isNearLeftBorder = event.clientX - appContentRef.getBoundingClientRect().left < 8;
+      const isNearRightBorder = appContentRef.getBoundingClientRect().right - event.clientX < 8;
+
+      if (
+        (isNearRightBorder || isNearLeftBorder) &&
+        event.clientX >= 0 &&
+        event.clientX <= window.innerWidth
+      ) {
+        isDragging = true;
+        resize = true;
+        startX = event.clientX;
+        initialWidth = parseInt(getComputedStyle(appBarRef).width, 10);
+      }
+    }
+  }
+
+  function stopDragging() {
+    if (!ResizableSidebar) return;
+    isDragging = false;
+    resize = false;
+  }
+
+  function dragSidebar(event) {
+    if (!ResizableSidebar) return;
+    if (!isDragging || !selectedApp) return;
+    const deltaX = startX - event.clientX + 60;
+    let newWidth = initialWidth + deltaX;
+    if (newWidth <= 100) {
+      handleClose();
+      appBarRef.style.width = '60px';
+      appContentRef.style.width = '0';
+    } else {
+      appBarRef.style.width = newWidth + 'px';
+    }
+  }
+
   onMount(() => {
+    if (ResizableSidebar) {
+      appBarRef.addEventListener('mousedown', startDragging);
+      document.addEventListener('mousemove', dragSidebar);
+      document.addEventListener('mouseup', stopDragging);
+      document.addEventListener('mousemove', handleCursor);
+    }
+
     hotkeys('A+1,A+2,A+3,A+4', function (event, handler) {
       event.preventDefault();
       switch (handler.key) {
@@ -48,9 +129,22 @@
       }
     });
   });
+
+  onDestroy(() => {
+    if (ResizableSidebar) {
+      appBarRef.removeEventListener('mousedown', startDragging);
+      document.removeEventListener('mousemove', dragSidebar);
+      document.removeEventListener('mouseup', stopDragging);
+      document.removeEventListener('mousemove', handleCursor);
+    }
+  });
+  $: ResizableSidebar;
 </script>
 
-<div class={`root ${$apps.open ? 'open dark:bg-black' : 'close dark:bg-black'}`}>
+<div
+  class={`${$apps.open ? 'open dark:bg-slate-800' : 'close dark:bg-slate-800'} root`}
+  bind:this={appBarRef}
+>
   <div class={`apps`}>
     <div class="lg:hidden">
       <IconButton
@@ -103,7 +197,12 @@
   </div>
 
   {#if !!selectedApp}
-    <div class="app">
+    <div
+      class={`app cursor-auto lg:cursor-ew-resize  ${
+        resize && ' border-l-8 border-l-blue-500 transition-none'
+      } `}
+      bind:this={appContentRef}
+    >
       {#if selectedApp === APPS_CONSTANTS.APPS.QANDA}
         <QandA {handleClose} />
       {:else if selectedApp === APPS_CONSTANTS.APPS.LIVE_CHAT}
@@ -138,8 +237,25 @@
     }
 
     & .app {
-      width: 400px;
-      transition: all 1s ease-out;
+      width: 100%;
+      position: relative;
+      overflow: auto;
+    }
+  }
+
+  @media screen and (min-width: 768px) and (max-width: 1023px) {
+    .app {
+      min-width: 280px;
+      max-width: 300px;
+      width: 300px;
+      position: relative;
+      overflow: auto;
+    }
+  }
+
+  @media screen and (max-width: 767px) {
+    .app {
+      width: 100%;
       position: relative;
       overflow: auto;
     }
@@ -187,8 +303,7 @@
       }
 
       & .app {
-        width: 400px;
-        transition: all 1s ease-out;
+        width: 100%;
         position: relative;
         overflow: auto;
       }

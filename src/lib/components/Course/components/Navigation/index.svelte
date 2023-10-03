@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import hotkeys from 'hotkeys-js';
@@ -13,7 +13,7 @@
   import { course } from '$lib/components/Course/store';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
   import { isMobile } from '$lib/utils/store/useMobile';
-  import { menu } from '$lib/components/Org/store';
+  import { menu, sideBar } from '$lib/components/Org/store';
   import { profile } from '$lib/utils/store/user';
   import { getIsLessonComplete } from '../Lesson/functions';
 
@@ -29,7 +29,15 @@
   }
 
   let show: boolean = false;
-  let isLessonActive = false;
+  let isLessonActive: boolean = false;
+  let resize = false;
+  let isDragging = false;
+  let startX;
+  let initialWidth;
+  let sidebarRef;
+  let menuContentRef;
+
+  const ResizableSidebar = window.innerWidth >= 1024;
 
   const toggleSidebar = () => {
     $menu.hidden = !$menu.hidden;
@@ -49,7 +57,75 @@
     else show = true;
   }
 
+  function handleCursor(event) {
+    if (!resize) {
+      const isNearLeftBorder = event.clientX - sidebarRef.getBoundingClientRect().left < 8;
+      const isNearRightBorder = sidebarRef.getBoundingClientRect().right - event.clientX < 8;
+
+      if (isNearLeftBorder || isNearRightBorder) {
+        sidebarRef.style.cursor = 'ew-resize';
+      } else {
+        sidebarRef.style.cursor = 'auto';
+      }
+    }
+  }
+
+  function startDragging(event) {
+    if (event.button === 0) {
+      event.preventDefault();
+
+      const isNearRightBorder = sidebarRef.getBoundingClientRect().right - event.clientX < 8;
+      const isNearLeftBorder = event.clientX - sidebarRef.getBoundingClientRect().left < 8;
+
+      if (
+        (isNearRightBorder || isNearLeftBorder) &&
+        event.clientX >= 0 &&
+        event.clientX <= window.innerWidth
+      ) {
+        isDragging = true;
+        resize = true;
+        startX = event.clientX;
+        initialWidth = parseInt(getComputedStyle(sidebarRef).width, 10);
+      }
+    }
+  }
+
+  function stopDragging() {
+    isDragging = false;
+    resize = false;
+  }
+
+  function dragSidebar(event) {
+    if (!ResizableSidebar) return;
+    if (!isDragging) return;
+
+    const deltaX = event.clientX - startX;
+    let newWidth = initialWidth + deltaX;
+
+    if (newWidth < 150) {
+      sidebarRef.style.width = '0';
+      menuContentRef.style.display = 'none';
+      $sideBar.open = false;
+      isDragging = false;
+      resize = false;
+    } else if (newWidth > window.innerWidth / 3 && window.innerWidth >= 1280) {
+      sidebarRef.style.width = '40vw';
+    } else if (newWidth > window.innerWidth / 4 && window.innerWidth < 1280) {
+      sidebarRef.style.width = '28vw';
+    } else {
+      sidebarRef.style.width = newWidth + 'px';
+      menuContentRef.style.display = 'block';
+    }
+  }
+
   onMount(() => {
+    if (ResizableSidebar) {
+      sidebarRef.addEventListener('mousedown', startDragging);
+      document.addEventListener('mousemove', dragSidebar);
+      document.addEventListener('mouseup', stopDragging);
+      document.addEventListener('mousemove', handleCursor);
+    }
+
     if (browser) {
       if (localStorage.getItem('hideCourseNav')) {
         show = localStorage.getItem('hideCourseNav') === 'false';
@@ -66,6 +142,15 @@
           break;
       }
     });
+  });
+
+  onDestroy(() => {
+    if (ResizableSidebar) {
+      sidebarRef.removeEventListener('mousedown', startDragging);
+      document.removeEventListener('mousemove', dragSidebar);
+      document.removeEventListener('mouseup', stopDragging);
+      document.removeEventListener('mousemove', handleCursor);
+    }
   });
 
   $: handleMobileChange($isMobile);
@@ -142,6 +227,7 @@
       }
     ];
   }
+  $: ResizableSidebar;
 </script>
 
 <aside
@@ -149,10 +235,18 @@
     $menu.hidden
       ? '-translate-x-[100%] absolute md:translate-x-0 md:relative z-[40]'
       : 'translate-x-0 absolute md:relative z-[40]'
-  } transition w-[90vw] md:max-w-[350px] bg-gray-100 dark:bg-black h-[calc(100vh-48px)] overflow-y-auto border border-l-0 border-t-0 border-b-0 border-r-1`}
+  } transition w-[90vw] md:w-[350px] bg-gray-100 dark:bg-black h-[calc(100vh-48px)] ${
+    resize && 'border-r-8 border-r-blue-500'
+  } overflow-y-auto border border-l-0 border-t-0 border-b-0 border-r-1`}
+  style={$sideBar.open && 'width:0' ? 'width :300px' : 'width:0'}
+  bind:this={sidebarRef}
 >
-  <div class="h-full flex flex-col">
-    <ul class="my-5">
+  <div class="sidebar-contenth-full flex flex-col">
+    <ul
+      class="sidebar-content my-5"
+      style={$sideBar.open && 'width:0' ? 'display:block' : ''}
+      bind:this={menuContentRef}
+    >
       {#each navItems as navItem}
         {#if !navItem.show || (typeof navItem.show === 'function' && navItem.show())}
           <NavExpandable

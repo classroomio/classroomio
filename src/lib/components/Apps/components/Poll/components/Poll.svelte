@@ -46,7 +46,7 @@
   }
 </script>
 
-<div class="p-4 bg-white dark:bg-black border-2 rounded-md mb-3">
+<div class="p-4 flex-wrap bg-white dark:bg-black border-2 rounded-md mb-3 w-full">
   {#if selectedOptionToView}
     <div>
       <div class="flex items-center mb-5">
@@ -67,7 +67,7 @@
       {/each}
     </div>
   {:else}
-    <div class="flex mb-3 justify-between">
+    <div class="flex flex-wrap gap-2 mb-3 justify-between">
       <div>
         <h3 class="dark:text-white font-bold">
           {poll.question}
