@@ -21,8 +21,8 @@
     AI = 2
   }
 
-  let step = 1;
-  let type: Type = Type.TEMPLATE;
+  let step = 0;
+  let type: Type = Type.SCRATCH;
 
   const options = [
     {
@@ -132,8 +132,7 @@
           <div class="mb-5 flex items-center gap-2">
             {#each tags as tag}
               <Tag
-                type={selectedTag === tag ? undefined : 'outline'}
-                class={selectedTag === tag ? 'bg-primary-500 text-white dark:text-black' : ''}
+                type={selectedTag === tag ? 'cool-gray' : 'outline'}
                 interactive
                 on:click={() => {
                   selectedTag = tag;
