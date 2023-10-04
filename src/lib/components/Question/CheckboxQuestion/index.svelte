@@ -4,6 +4,7 @@
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import Checkbox from '$lib/components/Form/Checkbox.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
+  import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
 
   export let title = '';
   export let code;
@@ -60,7 +61,11 @@
 
 <form on:submit|preventDefault={handleFormSubmit}>
   <div class="flex items-center justify-between">
-    <h3 class={!isNaN(grade) && 'w-3/4'}>{title}</h3>
+    <HtmlRender className="mt-4">
+      <svelte:fragment slot="content">
+        <h3 class={!isNaN(grade) ? 'w-3/4' : ''}>{title}</h3>
+      </svelte:fragment>
+    </HtmlRender>
     {#if !isNaN(grade)}
       <div class="flex items-center">
         <TextField
