@@ -54,13 +54,12 @@
         </IconButton>
       </li>
 
-      <li class="hidden md:block">
-        <IconButton onClick={openSidebar}>
-          <Menu size={16} class=" text-white" />
-        </IconButton>
-      </li>
-
       {#if isCoursePage}
+        <li class="hidden md:block">
+          <IconButton onClick={openSidebar}>
+            <Menu size={16} class=" text-white" />
+          </IconButton>
+        </li>
         <div class="hidden md:block">
           <IconButton
             onClick={() => {

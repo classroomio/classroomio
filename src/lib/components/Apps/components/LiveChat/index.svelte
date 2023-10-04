@@ -1,5 +1,4 @@
 <script>
-  import { marked } from 'marked';
   import PageNav from '$lib/components/PageNav/index.svelte';
   import CloseButton from '$lib/components/Buttons/Close/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
@@ -13,24 +12,23 @@
     {
       avatar: 'https://picsum.photos/32/32/?random',
       name: 'Evgeniy',
-      message: "I'am looking at this and it looks great",
+      message: "I'am looking at this and it looks great"
     },
     {
       avatar: 'https://picsum.photos/32/32/?random',
       name: 'Sergey Semko',
-      message:
-        'Thanks for the feedback, what do you think about my website. https://rotimibest.com',
+      message: 'Thanks for the feedback, what do you think about my website. https://rotimibest.com'
     },
     {
       avatar: 'https://picsum.photos/32/32/?random',
       name: 'Vitalii Marushko',
-      message: 'Всем привет',
+      message: 'Всем привет'
     },
     {
       avatar: 'https://picsum.photos/32/32/?random',
       name: 'Natasha',
-      message: 'Привет Виталий',
-    },
+      message: 'Привет Виталий'
+    }
   ];
 
   function handleSend() {
@@ -43,15 +41,15 @@
       {
         avatar: 'https://picsum.photos/32/32/?random',
         name: 'You',
-        message,
-      },
+        message
+      }
     ];
 
     message = null;
 
     setTimeout(() => {
       bodyRef.scrollTo({
-        top: bodyRef.scrollHeight,
+        top: bodyRef.scrollHeight
       });
     }, 100);
   }
@@ -83,7 +81,7 @@
         <p class="dark:text-white ml-2 text-sm font-bold">{chat.name}</p>
       </div>
       <article class="prose prose-sm sm:prose pt-2 pl-8">
-        {@html marked(chat.message)}
+        {@html chat.message}
       </article>
     </div>
   {/each}
@@ -91,11 +89,7 @@
 
 <div class="footer">
   <!-- <div class="flex items-center justify-between leading-none pl-2"> -->
-  <TextField
-    placeholder="Say something"
-    bind:value={message}
-    onKeyDown={handleKeyDown}
-  />
+  <TextField placeholder="Say something" bind:value={message} onKeyDown={handleKeyDown} />
   <!-- <SendButton onClick={handleSend} /> -->
   <!-- </div> -->
 </div>

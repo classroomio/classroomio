@@ -21,14 +21,14 @@
   {/if}
   <select
     bind:value
-    class="form-select block w-auto mt-1 dark:text-gray-800 {selectClassName}"
+    class="form-select block w-auto mt-1 dark:bg-neutral-800 dark:text-white {selectClassName}"
     required={isRequired}
     on:blur={() => {}}
     on:change={onChange}
     class:customColor={!!selectClassName}
   >
     {#each options as option}
-      <option class="bg-white dark:bg-black text-black" value={option}>
+      <option class="bg-white text-black" value={option}>
         {option[labelKey]}
       </option>
     {/each}

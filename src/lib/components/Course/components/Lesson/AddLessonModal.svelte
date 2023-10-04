@@ -117,7 +117,11 @@
         </div>
 
         <div class="flex items-center lg:mb-0">
-          <input type="date" name="lesson-date-picker" class="p-2 my-2 rounded-md sm:w-[179px]" />
+          <input
+            type="date"
+            name="lesson-date-picker"
+            class="p-2 my-2 rounded-md sm:w-[179px] dark:bg-neutral-800 dark:text-white"
+          />
         </div>
 
         <div class="flex items-center mb-3 lg:mb-0">

@@ -7,10 +7,13 @@ import type {
   Group,
   Groupmember,
   Exercise,
-  LessonCompletion
+  LessonCompletion,
+  ExerciseTemplate
 } from '$lib/utils/types';
 import { STATUS } from '$lib/utils/constants/course';
-import type { PostgrestError, PostgrestSingleResponse } from '@supabase/supabase-js';
+import type { PostgrestSingleResponse } from '@supabase/supabase-js';
+
+import htmlElements from '$lib/mocks/html/001_html_elements';
 
 export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']) {
   let match: { slug?: string; id?: string; status?: string } = {};
@@ -187,6 +190,32 @@ export function fetchExercisesByMarks(courseId: Course['id']) {
 
 function isNew(item: any) {
   return isNaN(item);
+}
+
+export async function createExerciseFromTemplate(
+  lessonId: string,
+  template: ExerciseTemplate
+): Promise<any | undefined> {
+  const { data, error } = await createExercise({
+    title: template.title,
+    description: template.description,
+    lesson_id: lessonId
+  });
+
+  if (error) {
+    console.error('Something went wrong', error);
+    return;
+  }
+
+  const { id } = data[0] || {};
+  if (!id) {
+    console.error('Something went wrong, no id', error);
+    return;
+  }
+
+  await upsertExercise(template.questionnaire, id);
+
+  return data[0];
 }
 
 export async function upsertExercise(questionnaire: any, exerciseId: Exercise['id']) {

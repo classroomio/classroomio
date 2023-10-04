@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
   import Box from '$lib/components/Box/index.svelte';
@@ -7,19 +7,19 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import PageBody from '$lib/components/PageBody/index.svelte';
-  import Modal from '$lib/components/Modal/index.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
   import Exercise from '../Exercise/index.svelte';
   import { supabase } from '$lib/utils/functions/supabase';
-  import { createExercise } from '$lib/utils/services/courses';
+  import { createExercise, createExerciseFromTemplate } from '$lib/utils/services/courses';
   import { QUESTION_TYPES } from '$lib/components/Question/constants';
   import { lesson } from '../store/lessons';
-  import { questionnaire, isQuestionnaireFetching, handleAddQuestion } from '../store/exercise';
+  import { questionnaire, isQuestionnaireFetching } from '../store/exercise';
   import { exerciseMode } from '../Exercise/store';
+  import NewExerciseModal from '$lib/components/Course/components/Lesson/Exercises/NewExerciseModal.svelte';
+  import type { ExerciseTemplate } from '$lib/utils/types';
 
-  export let path;
-  export let exerciseId;
-  export let lessonId;
+  export let path = '';
+  export let exerciseId = '';
+  export let lessonId = '';
   export let isStudent = true;
 
   let open = false;
@@ -30,7 +30,21 @@
     description: ''
   };
 
+  async function handleTemplateCreate(template: ExerciseTemplate) {
+    const newExercise = await createExerciseFromTemplate(lessonId, template);
+    console.log('newExercise', newExercise);
+    if (!newExercise) return;
+
+    lesson.update((_lesson) => ({
+      ..._lesson,
+      exercises: [..._lesson.exercises, newExercise]
+    }));
+
+    handleCancelAddExercise();
+    goto(path + '/' + newExercise.id);
+  }
   async function handleAddExercise() {
+    // createExerciseFromTemplate(lessonId);
     const { data, error } = await createExercise({
       title: newExercise.title,
       lesson_id: lessonId
@@ -66,7 +80,7 @@
     isFetching = false;
   }
 
-  async function getExercise(exerciseId) {
+  async function getExercise(exerciseId: string | undefined) {
     if (!exerciseId) return;
     isFetching = true;
     isQuestionnaireFetching.update(() => true);
@@ -138,13 +152,13 @@
 {#if exerciseId}
   <Exercise {exerciseId} {goBack} />
 {:else}
-  <Modal onClose={handleCancelAddExercise} bind:open modalHeading="Create an Exercise" width="w-80">
-    <TextField bind:value={newExercise.title} autoFocus={true} placeholder="Exercise name" />
-
-    <div class="mt-5 flex items-center">
-      <PrimaryButton className="px-6 py-3" label="Submit" onClick={handleAddExercise} />
-    </div>
-  </Modal>
+  <NewExerciseModal
+    bind:open
+    {handleCancelAddExercise}
+    {handleAddExercise}
+    {handleTemplateCreate}
+    bind:title={newExercise.title}
+  />
 
   <PageBody>
     <slot:fragment slot="header">
