@@ -36,7 +36,7 @@
       role="presentation"
     >
       <div class="flex items-center justify-between mb-4">
-        <h3 class="dark:text-white text-xl m-0">
+        <h3 class="dark:text-white text-md font-medium m-0">
           {modalHeading}
         </h3>
         <div class="rounded-full">

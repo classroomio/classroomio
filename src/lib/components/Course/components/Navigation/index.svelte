@@ -37,8 +37,6 @@
   let sidebarRef;
   let menuContentRef;
 
-  const ResizableSidebar = window.innerWidth >= 1024;
-
   const toggleSidebar = () => {
     $menu.hidden = !$menu.hidden;
   };
@@ -96,7 +94,7 @@
   }
 
   function dragSidebar(event) {
-    if (!ResizableSidebar) return;
+    if (!(window.innerWidth >= 1024)) return;
     if (!isDragging) return;
 
     const deltaX = event.clientX - startX;
@@ -119,7 +117,7 @@
   }
 
   onMount(() => {
-    if (ResizableSidebar) {
+    if (window.innerWidth >= 1024) {
       sidebarRef.addEventListener('mousedown', startDragging);
       document.addEventListener('mousemove', dragSidebar);
       document.addEventListener('mouseup', stopDragging);
@@ -145,7 +143,10 @@
   });
 
   onDestroy(() => {
-    if (ResizableSidebar) {
+    if (!browser) {
+      return;
+    }
+    if (window.innerWidth >= 1024) {
       sidebarRef.removeEventListener('mousedown', startDragging);
       document.removeEventListener('mousemove', dragSidebar);
       document.removeEventListener('mouseup', stopDragging);
@@ -227,7 +228,6 @@
       }
     ];
   }
-  $: ResizableSidebar;
 </script>
 
 <aside

@@ -24,21 +24,25 @@
   let appBarRef;
   let appContentRef;
 
-  const ResizableSidebar = window.innerWidth >= 1024;
+  const getResizableSidebar = () => {
+    if (!browser) return;
+
+    return window.innerWidth >= 1024;
+  };
 
   function handleClose() {
     selectedApp = null;
-    if (ResizableSidebar) {
+    if (getResizableSidebar()) {
       appBarRef.style.width = '60px';
     }
   }
 
   function handleAppClick(appName) {
-    if (!selectedApp && ResizableSidebar) {
+    if (!selectedApp && getResizableSidebar()) {
       if (window.innerWidth <= 1024) {
         appBarRef.style.width = '300px';
       } else {
-        appBarRef.style.width = '400px';
+        appBarRef.style.width = '500px';
       }
     }
     if (appName === selectedApp) {
@@ -50,7 +54,7 @@
   }
 
   function handleCursor(event) {
-    if (!ResizableSidebar) return;
+    if (!getResizableSidebar()) return;
     if (!resize && selectedApp) {
       const isNearLeftBorder = event.clientX - appContentRef.getBoundingClientRect().left < 8;
       const isNearRightBorder = appContentRef.getBoundingClientRect().right - event.clientX < 8;
@@ -64,7 +68,7 @@
   }
 
   function startDragging(event) {
-    if (!ResizableSidebar) return;
+    if (!getResizableSidebar()) return;
     if (event.button === 0 && selectedApp) {
       event.preventDefault();
       const isNearLeftBorder = event.clientX - appContentRef.getBoundingClientRect().left < 8;
@@ -84,13 +88,13 @@
   }
 
   function stopDragging() {
-    if (!ResizableSidebar) return;
+    if (!getResizableSidebar()) return;
     isDragging = false;
     resize = false;
   }
 
   function dragSidebar(event) {
-    if (!ResizableSidebar) return;
+    if (!getResizableSidebar()) return;
     if (!isDragging || !selectedApp) return;
     const deltaX = startX - event.clientX + 60;
     let newWidth = initialWidth + deltaX;
@@ -104,7 +108,7 @@
   }
 
   onMount(() => {
-    if (ResizableSidebar) {
+    if (getResizableSidebar()) {
       appBarRef.addEventListener('mousedown', startDragging);
       document.addEventListener('mousemove', dragSidebar);
       document.addEventListener('mouseup', stopDragging);
@@ -131,27 +135,27 @@
   });
 
   onDestroy(() => {
-    if (ResizableSidebar) {
+    if (getResizableSidebar()) {
       appBarRef.removeEventListener('mousedown', startDragging);
       document.removeEventListener('mousemove', dragSidebar);
       document.removeEventListener('mouseup', stopDragging);
       document.removeEventListener('mousemove', handleCursor);
     }
   });
-  $: ResizableSidebar;
+  $: getResizableSidebar();
 </script>
 
 <div
-  class={`${$apps.open ? 'open dark:bg-slate-800' : 'close dark:bg-slate-800'} root`}
+  class={`${$apps.open ? 'open dark:bg-black' : 'close dark:bg-black'} root`}
   bind:this={appBarRef}
 >
-  <div class={`apps`}>
+  <div class="apps">
     <div class="lg:hidden">
       <IconButton
         buttonClassName="lg:hidden"
         toolTipProps={{ title: 'Settings', hotkeys: ['A', '0'] }}
         onClick={() => {
-          handleAppClick;
+          handleAppClick();
           $apps.dropdown = !$apps.dropdown;
         }}
       >

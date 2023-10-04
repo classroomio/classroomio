@@ -176,6 +176,20 @@ export const onboardingValidation = (fields = {}, step) => {
   return processErrors(error);
 };
 
+// export const createTemplateExerciseValidation = (fields = {}) => {
+//   const schema = z.object({
+//     orgName: z.string().min(5, {
+//       message: 'Must be 5 or more characters long',
+//     }),
+//     siteName: z.string().min(5, {
+//       message: 'Must be 5 or more characters long',
+//     })
+//   });
+//   const { error } = schema.safeParse(fields);
+
+//   return processErrors(error);
+// };
+
 export const createOrgValidation = (fields = {}) => {
   const schema = z.object({
     orgName: z.string().min(5, {
