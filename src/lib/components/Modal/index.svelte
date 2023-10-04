@@ -36,9 +36,9 @@
       role="presentation"
     >
       <div class="flex items-center justify-between mb-4">
-        <h3 class="dark:text-white text-md font-medium m-0">
+        <p class="dark:text-white text-md font-medium m-0">
           {modalHeading}
-        </h3>
+        </p>
         <div class="rounded-full">
           <CloseButton onClick={onClose} contained={true} size="small" />
         </div>
