@@ -66,7 +66,7 @@
   $: $questionnaire.questions.length < 1 && handleAddQuestion();
 </script>
 
-<PageBody padding="px-4" headerClassName="bg-gray-100 rounded-md mb-3">
+<PageBody padding="px-4 overflow-x-hidden" headerClassName="bg-gray-100 rounded-md mb-3">
   <svelte:fragment slot="header">
     <RoleBasedSecurity allowedRoles={[1, 2]}>
       <div class="flex items-center py-2 w-">
@@ -139,4 +139,5 @@
   {:else}
     <ViewMode {preview} {exerciseId} />
   {/if}
+  <!-- </div> -->
 </PageBody>
