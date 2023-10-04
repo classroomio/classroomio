@@ -22,7 +22,8 @@
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import { calDateDiff } from '$lib/utils/functions/date';
-
+  import { landingPage } from './store';
+  import { Loading } from 'carbon-components-svelte';
   export let editMode = false;
   export let courseData: Course;
   const ratingsImg = [
@@ -85,6 +86,7 @@
   });
 
   $: video = get(courseData, 'metadata.videoUrl');
+  $: bannerImage = get(courseData, 'logo');
   $: lessons = get(courseData, 'lessons', []);
   $: instructor = courseData?.metadata?.instructor || {};
   $: initPlyr(player, video);
@@ -144,6 +146,18 @@
           />
         </div> -->
       {:else}
+        <div class="w-2/3 relative rounded-md overflow-hidden">
+          <img
+            style="min-width:280px; min-height:200px"
+            alt="About us"
+            src={bannerImage ? bannerImage : '/images/classroomio-course-img-template.jpg'}
+            class="mt-2 md:mt-0 rounded-md w-full relative"
+          />
+          {#if $landingPage.uploadingImage}
+            <Loading withOverlay={true} small class="absolute top-0 w-full h-full" />
+          {/if}
+        </div>
+
         <!-- <div
           class="banner-image w-2/3 h-96 relative cursor-pointer"
           on:click={playVideo}
