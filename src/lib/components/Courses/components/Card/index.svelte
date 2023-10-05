@@ -23,7 +23,7 @@
 <a
   rel="prefetch"
   href={isOnLandingPage ? `/course/${slug}` : `/courses/${id}`}
-  class="text-black border border-gray rounded w-full max-w-[320px] relative hover:shadow-lg transition-all ease-in-out"
+  class="text-black border border-gray rounded w-full max-w-[320px] relative hover:scale-95 transition-all ease-in-out"
 >
   <div class="p-4">
     <div class=" mb-5">

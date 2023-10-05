@@ -64,3 +64,7 @@ export const landingPage = writable({
   uploadingImage: false,
   imageUrl: ''
 });
+
+export let handleOpenWidget = writable({
+  open: false
+});

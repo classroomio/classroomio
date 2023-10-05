@@ -1,29 +1,33 @@
 <script lang="ts">
+  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import get from 'lodash/get';
-  import { observeIntersection } from './components/IntersectionObserver';
+
   import { onMount, onDestroy } from 'svelte';
   import pluralize from 'pluralize';
   import { page } from '$app/stores';
+  import { landingPage } from './store';
+  import { Loading } from 'carbon-components-svelte';
   import Notebook from 'carbon-icons-svelte/lib/Notebook.svelte'; //note
   import PresentationFile from 'carbon-icons-svelte/lib/PresentationFile.svelte'; // exercise
   import Video from 'carbon-icons-svelte/lib/Video.svelte'; //video
   import PageNumber from 'carbon-icons-svelte/lib/PageNumber.svelte';
   import PlayFilled from 'carbon-icons-svelte/lib/PlayFilled.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import PricingSection from './components/PricingSection.svelte';
+  import { observeIntersection } from './components/IntersectionObserver';
   import { getLectureNo } from '../Course/function';
   import { NAV_ITEMS } from './constants';
-  import Avatar from '$lib/components/Avatar/index.svelte';
-  import Chip from '../Chip/index.svelte';
-  import { getEmbedId } from '$lib/utils/functions/formatYoutubeVideo';
-  import type { Course, Lesson, Review } from '$lib/utils/types';
   import Modal from '../Modal/index.svelte';
   import { reviewsModalStore } from './store';
+  import Chip from '../Chip/index.svelte';
+  import Avatar from '$lib/components/Avatar/index.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { getEmbedId } from '$lib/utils/functions/formatYoutubeVideo';
+  import type { Course, Lesson, Review } from '$lib/utils/types';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import { calDateDiff } from '$lib/utils/functions/date';
-  import { landingPage } from './store';
-  import { Loading } from 'carbon-components-svelte';
+  import { handleOpenWidget } from './store';
+
   export let editMode = false;
   export let courseData: Course;
   const ratingsImg = [
@@ -124,6 +128,10 @@
             startCoursePayment = true;
           }}
         />
+
+        {#if $handleOpenWidget.open}
+          <UploadWidget />
+        {/if}
       </div>
 
       <!-- Banner Image getEmbedId(videoUrl) -->
@@ -146,12 +154,12 @@
           />
         </div> -->
       {:else}
-        <div class="w-2/3 relative rounded-md overflow-hidden">
+        <div class="banner-image md:w-2/3 relative rounded-md overflow-hidden">
           <img
             style="min-width:280px; min-height:200px"
             alt="About us"
             src={bannerImage ? bannerImage : '/images/classroomio-course-img-template.jpg'}
-            class="mt-2 md:mt-0 rounded-md w-full relative"
+            class="mt-2 md:mt-0 rounded-md w-full h-full max-w-[500px] max-h-[400px] relative"
           />
           {#if $landingPage.uploadingImage}
             <Loading withOverlay={true} small class="absolute top-0 w-full h-full" />
