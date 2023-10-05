@@ -150,7 +150,7 @@
 {/if}
 
 {#if exerciseId}
-  <Exercise {exerciseId} {goBack} />
+  <Exercise {exerciseId} {goBack} bind:isStudent />
 {:else}
   <NewExerciseModal
     bind:open
@@ -160,7 +160,7 @@
     bind:title={newExercise.title}
   />
 
-  <PageBody>
+  <PageBody bind:isPageNavHidden={isStudent}>
     <slot:fragment slot="header">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
         <PrimaryButton className="mr-2 mb-2" label="Add" onClick={() => (open = !open)} />
