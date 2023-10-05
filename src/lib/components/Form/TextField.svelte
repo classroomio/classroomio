@@ -10,7 +10,7 @@
   export let onKeyDown = () => {};
   export let className = '';
   export let inputClassName = '';
-  export let labelClassName = '';
+  export let labelClassName = 'font-light';
   export let bgColor = 'bg-gray-100 focus:bg-primary-50 dark:bg-neutral-800 dark:text-white';
   export let type = 'text';
   export let isPassword = false;
@@ -57,7 +57,7 @@
 
 <label class="block relative {className}">
   {#if label}
-    <p for="text-field" class="text-sm dark:text-white text-left m-0 font-light {labelClassName}">
+    <p for="text-field" class="text-sm dark:text-white text-left m-0 {labelClassName}">
       {label}
 
       {#if isRequired}

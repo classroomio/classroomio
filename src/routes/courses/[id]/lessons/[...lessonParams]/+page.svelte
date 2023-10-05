@@ -306,7 +306,7 @@
           class="px-2 my-2 pr-4 border-t-0 border-b-0 border-l-0 border border-gray-300 flex items-center"
           on:click={() => goto(path)}
         >
-          <CourseIcon color="#fff" />
+          <CourseIcon />
         </button>
       {/if}
       <button

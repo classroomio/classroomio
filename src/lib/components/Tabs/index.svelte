@@ -58,7 +58,7 @@
     {/each}
   </div>
 
-  <div class="mt-4">
+  <div class="">
     <slot name="content" />
   </div>
 </div>

@@ -73,7 +73,7 @@
             type
               ? 'border-primary-400'
               : `border-gray-200 dark:border-gray-400 ${
-                  !option.isDisabled && 'hover:scale-90'
+                  !option.isDisabled && 'hover:scale-95'
                 }`} flex flex-col {option.isDisabled &&
               'cursor-not-allowed opacity-60'} transition-all ease-in-out"
             type="button"
@@ -145,7 +145,7 @@
           <div class="flex flex-wrap items-start gap-2">
             {#each TEMPLATES[selectedTag] as template}
               <button
-                class="w-[161px] h-[140px] p-5 rounded-md dark:bg-neutral-700 border {template.id ===
+                class="w-[161px] h-[140px] hover:scale-95 p-5 rounded-md dark:bg-neutral-700 border-2 {template.id ===
                 selectedTemplateId
                   ? 'border-primary-400'
                   : `border-gray-200 dark:border-gray-400`} flex flex-col transition-all ease-in-out"
