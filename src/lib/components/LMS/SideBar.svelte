@@ -7,7 +7,6 @@
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
   import CommunityIcon from '$lib/components/Icons/CommunityIcon.svelte';
   import Avatar from '$lib/components/Avatar/index.svelte';
-  import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
   import { menu } from '$lib/components/Org/store';

@@ -1,8 +1,14 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
   import { fetchCourse, fetchLesson, updateLessonCompletion } from '$lib/utils/services/courses';
   import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
+  import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
+  import ListChecked from 'carbon-icons-svelte/lib/ListChecked.svelte';
+
+  import SendAlt from 'carbon-icons-svelte/lib/SendAlt.svelte';
+  import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { Loading } from 'carbon-components-svelte';
@@ -17,15 +23,11 @@
   import OverflowMenuVertical from 'carbon-icons-svelte/lib/OverflowMenuVertical.svelte';
   import { apps } from '$lib/components/Apps/store';
   import IconButton from '$lib/components/IconButton/index.svelte';
-  import {
-    lesson,
-    lessons,
-    handleSaveLesson
-  } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { lesson, lessons } from '$lib/components/Course/components/Lesson/store/lessons';
   import { browser } from '$app/environment';
   import { currentOrg } from '$lib/utils/store/org';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import type { LessonCompletion, LessonPage } from '$lib/utils/types';
+  import type { LessonCompletion } from '$lib/utils/types';
   import { profile } from '$lib/utils/store/user.js';
   import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
 
@@ -51,7 +53,7 @@
     }
   }
 
-  async function fetchReqData(lessonId = '', isMaterialsTabActive: false) {
+  async function fetchReqData(lessonId = '', isMaterialsTabActive: boolean) {
     isFetching = true;
 
     let lessonData;
@@ -109,6 +111,7 @@
     });
 
     await updateLessonCompletion(completion);
+    snackbar.success('Marked as complete');
     isMarkingComplete = false;
   }
 
@@ -167,7 +170,7 @@
     isLoading = false;
   };
 
-  function setLesson(lessonData, totalExercises) {
+  function setLesson(lessonData, totalExercises: number) {
     if (!lessonData) return;
 
     let lesson_completion: LessonCompletion[] = [];
@@ -208,6 +211,7 @@
   isExercisePage={!data.isMaterialsTabActive && data.exerciseId}
 >
   <PageNav
+    bind:hideOnMobile={isStudent}
     navItems={[
       {
         label: 'Materials',
@@ -272,30 +276,54 @@
     />
   {:else if !!data.lessonId}
     <PageBody
+      bind:isPageNavHidden={isStudent}
       onClick={() => {
         $apps.open = false;
         $apps.dropdown = false;
       }}
       width="lg:w-full xl:w-11/12"
+      className="overflow-x-hidden"
     >
       <Materials lessonId={data.lessonId} {mode} {prevMode} {toggleMode} bind:isSaving />
-
-      <div class="w-full flex flex-row-reverse mt-10">
-        <PrimaryButton
-          onClick={markLessonComplete}
-          isLoading={isMarkingComplete}
-          isDisabled={isMarkingComplete}
-          variant={VARIANTS.OUTLINED}
-          className="mt-10"
-        >
-          <CheckmarkOutlineIcon size={24} class="carbon-icon mr-2" />
-          Mark as {getIsLessonComplete($lesson.lesson_completion, $profile.id)
-            ? 'Incomplete'
-            : 'Complete'}
-        </PrimaryButton>
-      </div>
     </PageBody>
   {/if}
+
+  <!-- Mobile Navigation -->
+  <div class="fixed bottom-5 w-[90%] flex items-center justify-center lg:hidden">
+    <div
+      class="flex items-center gap-2 w-fit rounded-full shadow-xl bg-gray-100 dark:bg-neutral-700 px-5 py-1"
+    >
+      {#if data.isMaterialsTabActive}
+        <button
+          class="px-2 my-2 pr-4 border-t-0 border-b-0 border-l-0 border border-gray-300 flex items-center"
+          on:click={() => goto(`${path}/exercises`)}
+        >
+          <ListChecked size={24} class="carbon-icon" />
+          <span class="ml-1">{$lesson.totalExercises}</span>
+        </button>
+      {:else}
+        <button
+          class="px-2 my-2 pr-4 border-t-0 border-b-0 border-l-0 border border-gray-300 flex items-center"
+          on:click={() => goto(path)}
+        >
+          <CourseIcon color="#fff" />
+        </button>
+      {/if}
+      <button
+        class="px-2 my-2 pr-4 border-t-0 border-b-0 border-l-0 border border-gray-300 flex items-center"
+      >
+        <SendAlt size={24} class="carbon-icon" />
+        <span class="ml-1">{$lesson.comments}</span>
+      </button>
+      <button class="px-2 my-2" on:click={markLessonComplete} disabled={isMarkingComplete}>
+        {#if getIsLessonComplete($lesson.lesson_completion, $profile.id)}
+          <CheckmarkFilledIcon size={24} class="carbon-icon text-primary-600" />
+        {:else}
+          <CheckmarkOutlineIcon size={24} class="carbon-icon" />
+        {/if}
+      </button>
+    </div>
+  </div>
 </CourseContainer>
 
 <style>

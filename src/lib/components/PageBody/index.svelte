@@ -6,9 +6,15 @@
   export let className = '';
   export let headerClassName = '';
   export let onClick = () => {};
+  export let isPageNavHidden = false;
 </script>
 
-<div class="root mt-4 mx-auto {width} {className} relative {padding}" on:click={onClick}>
+<div
+  class="overflow-y-auto {isPageNavHidden
+    ? 'h-[calc(100vh-65px)] lg:h-[calc(100vh-127px)]'
+    : 'h-[calc(100vh-127px)]'} mt-4 mx-auto {width} {className} relative {padding}"
+  on:click={onClick}
+>
   {#if $$slots.header}
     <div
       class="head dark:bg-black flex items-center justify-between sticky right-0 w-full px-3 {headerClassName}"
@@ -21,10 +27,6 @@
 </div>
 
 <style>
-  .root {
-    overflow-y: auto;
-    height: calc(100vh - 127px);
-  }
   .head {
     top: 0px;
     z-index: 1;

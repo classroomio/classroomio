@@ -26,6 +26,7 @@
 
   export let exerciseId;
   export let goBack = () => {};
+  export let isStudent = true;
 
   let preview = false;
   let editDescription = false;
@@ -66,7 +67,11 @@
   $: $questionnaire.questions.length < 1 && handleAddQuestion();
 </script>
 
-<PageBody padding="px-4 overflow-x-hidden" headerClassName="bg-gray-100 rounded-md mb-3">
+<PageBody
+  bind:isPageNavHidden={isStudent}
+  padding="px-4 overflow-x-hidden"
+  headerClassName="bg-gray-100 rounded-md mb-3"
+>
   <svelte:fragment slot="header">
     <RoleBasedSecurity allowedRoles={[1, 2]}>
       <div class="flex items-center py-2 w-">
@@ -139,5 +144,4 @@
   {:else}
     <ViewMode {preview} {exerciseId} />
   {/if}
-  <!-- </div> -->
 </PageBody>

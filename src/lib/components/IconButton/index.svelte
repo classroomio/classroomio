@@ -30,7 +30,8 @@
   direction={toolTipProps.direction}
 >
   <button
-    class="root {color} {selected && 'active'} {size} {contained && 'contained '} {buttonClassName}"
+    class="root {color} {selected && 'active'} {size} {contained &&
+      'contained dark:bg-neutral-700'} {buttonClassName}"
     {disabled}
     {type}
     on:click={handleClick}

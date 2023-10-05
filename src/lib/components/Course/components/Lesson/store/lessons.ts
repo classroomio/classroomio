@@ -12,6 +12,7 @@ export const lessons: Writable<Lesson[]> = writable([]);
 export const lesson = writable<LessonPage>({
   id: null,
   totalExercises: 0,
+  comments: 0,
   isSaving: false,
   materials: {
     note: '',

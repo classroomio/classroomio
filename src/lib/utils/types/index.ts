@@ -196,6 +196,7 @@ export enum VideoType {
 export interface LessonPage {
   id?: string | null;
   totalExercises: Number;
+  comments: Number;
   isSaving: Boolean;
   materials: {
     note: string;
