@@ -12,6 +12,7 @@
   export let isTitleEditable = false;
   export let onEditComplete = () => {};
   export let paddingClass = 'px-2';
+  export let hideOnMobile = false;
 
   let dynamicRootClass = '';
   let enterEditTitleMode = false;
@@ -20,7 +21,9 @@
 </script>
 
 <div
-  class="header dark:bg-black dark:border-neutral-600 bg-white flex items-center justify-between {!disableSticky &&
+  class="{hideOnMobile
+    ? 'hidden lg:flex'
+    : ''} header dark:bg-black dark:border-neutral-600 bg-white flex items-center justify-between {!disableSticky &&
     'sticky'} {paddingClass} {dynamicRootClass}"
   style={overidableStyle}
 >
