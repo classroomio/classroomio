@@ -68,11 +68,10 @@
   }
 
   function startDragging(event) {
-    if (!getResizableSidebar()) return;
     if (event.button === 0 && selectedApp) {
       event.preventDefault();
-      const isNearLeftBorder = event.clientX - appContentRef.getBoundingClientRect().left < 8;
-      const isNearRightBorder = appContentRef.getBoundingClientRect().right - event.clientX < 8;
+      const isNearLeftBorder = event.clientX - appContentRef.getBoundingClientRect().left < 5;
+      const isNearRightBorder = appContentRef.getBoundingClientRect().right - event.clientX < 5;
 
       if (
         (isNearRightBorder || isNearLeftBorder) &&
@@ -88,7 +87,6 @@
   }
 
   function stopDragging() {
-    if (!getResizableSidebar()) return;
     isDragging = false;
     resize = false;
   }
@@ -98,7 +96,7 @@
     if (!isDragging || !selectedApp) return;
     const deltaX = startX - event.clientX + 60;
     let newWidth = initialWidth + deltaX;
-    if (newWidth <= 100) {
+    if (newWidth <= 250) {
       handleClose();
       appBarRef.style.width = '60px';
       appContentRef.style.width = '0';
