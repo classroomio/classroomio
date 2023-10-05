@@ -19,6 +19,8 @@
   import { lessons } from '../Lesson/store/lessons';
   import { currentOrg } from '$lib/utils/store/org';
   import { snackbar } from '$lib/components/Snackbar/store';
+  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
+  import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
 
   let uploadingImage = false;
   let isSaving = false;
@@ -29,37 +31,10 @@
   let avatar;
   let imagebuffer;
 
-  // FILE UPLOAD
-  const uploadImage = async (image: File) => {
-    if (image) {
-      const filename = `bannerimage/${Date.now()}` + image.name;
-      const { data } = await supabase.storage.from('avatars').upload(filename, image, {
-        cacheControl: '3600',
-        upsert: false
-      });
-
-      if (data) {
-        const { data: response } = await supabase.storage.from('avatars').getPublicUrl(filename);
-
-        $settings.image = response.publicUrl;
-
-        uploadingImage = false;
-      }
-    }
-  };
-
-  const onFileSelected = () => {
-    uploadingImage = true;
-    const image = fileInput.files[0];
-    if (image) {
-      let reader = new FileReader();
-      reader.readAsDataURL(image);
-      reader.onload = (e) => {
-        imagebuffer = image;
-        uploadImage(image);
-      };
-    }
-  };
+  // controls widget open and close
+  function widgetControl() {
+    $handleOpenWidget.open = true;
+  }
 
   function getLessonOrder(id) {
     const index = $lessons.findIndex((lesson) => lesson.id === id);
@@ -205,17 +180,17 @@
 <Grid class="border-c rounded border-gray-200">
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={8} md={8} lg={8}>
-      <SectionTitle>Banner Image</SectionTitle>
+      <SectionTitle>Cover Image</SectionTitle>
       <p>
         This optional image will show up on your welcome page. If you include one, it should be at
         least 280 x 200"
       </p>
       <span class="flex items-center justify-start">
         <PrimaryButton
-          variant={VARIANTS.LINK}
-          label="Replace Banner image"
-          className="-ml-6"
-          onClick={() => fileInput.click()}
+          variant={VARIANTS.OUTLINED}
+          label="Replace"
+          className="mr-2"
+          onClick={widgetControl}
         />
         <PrimaryButton
           variant={VARIANTS.CONTAINED_DANGER}
@@ -223,22 +198,18 @@
           onClick={deleteBannerImage}
         />
       </span>
+      {#if $handleOpenWidget.open}
+        <UploadWidget />
+      {/if}
     </Column>
 
     <Column sm={8} md={8} lg={6}>
-      <div class="w-fit relative">
-        <input
-          type="file"
-          accept=".jpg, .jpeg, .png"
-          style="display: none;"
-          bind:this={fileInput}
-          on:change={onFileSelected}
-        />
+      <div class="w-fit relative z-[20]">
         <img
           style="min-width:280px; min-height:200px"
           alt="About us"
           src={$settings.image ? $settings.image : '/images/classroomio-course-img-template.jpg'}
-          class="mt-2 md:mt-0 rounded-md w-full relative"
+          class="mt-2 md:mt-0 w-[280px] h-[200px] rounded-md relative"
         />
         {#if uploadingImage}
           <Loading withOverlay={true} small class="absolute top-0 w-[280px]" />
