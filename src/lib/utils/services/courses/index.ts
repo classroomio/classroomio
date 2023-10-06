@@ -294,7 +294,7 @@ export async function upsertExercise(questionnaire: any, exerciseId: Exercise['i
       delete newQuestion.question_type_id;
 
       // @ts-ignore
-      newQuestion.question_type = { id: question_type_id };
+      newQuestion.question_type = { id: question_type_id, label: question_type.label || '' };
       newQuestion.id = id;
       newQuestion.name = name;
       newQuestion.order = order;

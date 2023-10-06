@@ -10,6 +10,8 @@
     handleAnswerSelect,
     addDynamicValue
   } from '../store/exercise';
+  import { Select, SelectItem } from 'carbon-components-svelte';
+
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
   import AddFilledIcon from 'carbon-icons-svelte/lib/AddFilled.svelte';
   import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
@@ -24,7 +26,6 @@
   import ErrorMessage from '$lib/components/ErrorMessage/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import Select from '$lib/components/Form/Select.svelte';
   import QuestionContainer from '$lib/components/QuestionContainer/index.svelte';
   import DeleteConfirmationModal from './DeleteConfirmation.svelte';
   import OrderModal from './OrderModal.svelte';
@@ -156,7 +157,7 @@
         }}
       >
         <div class="flex justify-between items-center">
-          <div class="mr-2 w-3/5">
+          <div class="mr-5 w-3/5">
             <TextField
               placeholder="Question"
               bind:value={question.title}
@@ -168,12 +169,19 @@
           </div>
 
           <Select
-            bind:value={question.question_type}
-            options={QUESTION_TYPES}
-            onChange={() => {
+            size="xl"
+            class="w-[50px]"
+            bind:selected={question.question_type.id}
+            on:change={(e) => {
+              const id = parseInt(e.target.value);
+              question.question_type = QUESTION_TYPES.find((q) => q.id === id);
               question.is_dirty = true;
             }}
-          />
+          >
+            {#each QUESTION_TYPES as type}
+              <SelectItem value={type.id} text={type.label} />
+            {/each}
+          </Select>
         </div>
 
         {#if typeof question.code === 'string'}
