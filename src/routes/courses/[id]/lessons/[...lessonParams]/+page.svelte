@@ -22,6 +22,7 @@
   import Download from 'carbon-icons-svelte/lib/Download.svelte';
   import OverflowMenuVertical from 'carbon-icons-svelte/lib/OverflowMenuVertical.svelte';
   import { apps } from '$lib/components/Apps/store';
+  import APPS_CONSTANTS from '$lib/components/Apps/constants';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { lesson, lessons } from '$lib/components/Course/components/Lesson/store/lessons';
   import { browser } from '$app/environment';
@@ -197,6 +198,11 @@
     mode = mode === MODES.edit ? MODES.view : MODES.edit;
   }
 
+  function handleAppClick(appName) {
+    $apps.selectedApp = appName;
+    $apps.open = true;
+  }
+
   $: path = $page.url?.pathname?.replace(/\/exercises[\/ 0-9 a-z -]*/, '');
 
   $: if (data.courseId && browser) {
@@ -311,6 +317,7 @@
       {/if}
       <button
         class="px-2 my-2 pr-4 border-t-0 border-b-0 border-l-0 border border-gray-300 flex items-center"
+        on:click={() => handleAppClick(APPS_CONSTANTS.APPS.LIVE_CHAT)}
       >
         <SendAlt size={24} class="carbon-icon" />
         <span class="ml-1">{$lesson.comments}</span>

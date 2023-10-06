@@ -16,13 +16,14 @@
   import APPS_CONSTANTS from './constants';
   import { browser } from '$app/environment';
 
-  let selectedApp;
   let resize = false;
   let isDragging = false;
   let startX;
   let initialWidth;
   let appBarRef;
   let appContentRef;
+
+  let topPadding = $apps.isStudent ? '48px' : '109px';
 
   const getResizableSidebar = () => {
     if (!browser) return;
@@ -31,31 +32,33 @@
   };
 
   function handleClose() {
-    selectedApp = null;
+    $apps.selectedApp = null;
     if (getResizableSidebar()) {
       appBarRef.style.width = '60px';
+    } else if (!getResizableSidebar() && $apps.isStudent) {
+      $apps.open = false;
     }
   }
 
   function handleAppClick(appName) {
-    if (!selectedApp && getResizableSidebar()) {
+    if (!$apps.selectedApp && getResizableSidebar()) {
       if (window.innerWidth <= 1024) {
         appBarRef.style.width = '300px';
       } else {
         appBarRef.style.width = '500px';
       }
     }
-    if (appName === selectedApp) {
+    if (appName === $apps.selectedApp) {
       handleClose();
     } else {
-      selectedApp = appName;
+      $apps.selectedApp = appName;
     }
     $apps.dropdown = false;
   }
 
   function handleCursor(event) {
     if (!getResizableSidebar()) return;
-    if (!resize && selectedApp) {
+    if (!resize && $apps.selectedApp) {
       const isNearLeftBorder = event.clientX - appContentRef.getBoundingClientRect().left < 8;
       const isNearRightBorder = appContentRef.getBoundingClientRect().right - event.clientX < 8;
 
@@ -68,7 +71,7 @@
   }
 
   function startDragging(event) {
-    if (event.button === 0 && selectedApp) {
+    if (event.button === 0 && $apps.selectedApp) {
       event.preventDefault();
       const isNearLeftBorder = event.clientX - appContentRef.getBoundingClientRect().left < 5;
       const isNearRightBorder = appContentRef.getBoundingClientRect().right - event.clientX < 5;
@@ -93,7 +96,7 @@
 
   function dragSidebar(event) {
     if (!getResizableSidebar()) return;
-    if (!isDragging || !selectedApp) return;
+    if (!isDragging || !$apps.selectedApp) return;
     const deltaX = startX - event.clientX + 60;
     let newWidth = initialWidth + deltaX;
     if (newWidth <= 250) {
@@ -105,14 +108,18 @@
     }
   }
 
+  function updateTopPadding(isStudent) {
+    topPadding = isStudent ? '48px' : '109px';
+  }
+
   onMount(() => {
+    updateTopPadding($apps.isStudent);
     if (getResizableSidebar()) {
       appBarRef.addEventListener('mousedown', startDragging);
       document.addEventListener('mousemove', dragSidebar);
       document.addEventListener('mouseup', stopDragging);
       document.addEventListener('mousemove', handleCursor);
     }
-
     hotkeys('A+1,A+2,A+3,A+4', function (event, handler) {
       event.preventDefault();
       switch (handler.key) {
@@ -140,10 +147,12 @@
       document.removeEventListener('mousemove', handleCursor);
     }
   });
+  $: updateTopPadding($apps.isStudent);
   $: getResizableSidebar();
 </script>
 
 <div
+  style={`--top-padding:${topPadding}`}
   class={`${$apps.open ? 'open dark:bg-black' : 'close dark:bg-black'} root`}
   bind:this={appBarRef}
 >
@@ -165,7 +174,7 @@
       toolTipProps={{ title: 'Live Chat', hotkeys: ['A', '1'] }}
       value={APPS_CONSTANTS.APPS.LIVE_CHAT}
       onClick={handleAppClick}
-      selected={APPS_CONSTANTS.APPS.LIVE_CHAT === selectedApp}
+      selected={APPS_CONSTANTS.APPS.LIVE_CHAT === $apps.selectedApp}
     >
       <SendAlt size={24} class="carbon-icon dark:text-white" />
     </IconButton>
@@ -174,7 +183,7 @@
       toolTipProps={{ title: 'QandA', hotkeys: ['A', '2'] }}
       value={APPS_CONSTANTS.APPS.QANDA}
       onClick={handleAppClick}
-      selected={APPS_CONSTANTS.APPS.QANDA === selectedApp}
+      selected={APPS_CONSTANTS.APPS.QANDA === $apps.selectedApp}
     >
       <Forum size={24} class="carbon-icon dark:text-white" />
     </IconButton>
@@ -183,7 +192,7 @@
       toolTipProps={{ title: 'Notes', hotkeys: ['A', '3'] }}
       value={APPS_CONSTANTS.APPS.NOTES}
       onClick={handleAppClick}
-      selected={APPS_CONSTANTS.APPS.NOTES === selectedApp}
+      selected={APPS_CONSTANTS.APPS.NOTES === $apps.selectedApp}
     >
       <AlignBoxTopLeft size={24} class="carbon-icon dark:text-white" />
     </IconButton>
@@ -192,26 +201,26 @@
       toolTipProps={{ title: 'Poll', hotkeys: ['A', '4'] }}
       value={APPS_CONSTANTS.APPS.POLL}
       onClick={handleAppClick}
-      selected={APPS_CONSTANTS.APPS.POLL === selectedApp}
+      selected={APPS_CONSTANTS.APPS.POLL === $apps.selectedApp}
     >
       <ChartPie size={24} class="carbon-icon dark:text-white" />
     </IconButton>
   </div>
 
-  {#if !!selectedApp}
+  {#if !!$apps.selectedApp}
     <div
       class={`app cursor-auto lg:cursor-ew-resize  ${
         resize && ' border-l-8 border-l-blue-500 transition-none'
       } `}
       bind:this={appContentRef}
     >
-      {#if selectedApp === APPS_CONSTANTS.APPS.QANDA}
+      {#if $apps.selectedApp === APPS_CONSTANTS.APPS.QANDA}
         <QandA {handleClose} />
-      {:else if selectedApp === APPS_CONSTANTS.APPS.LIVE_CHAT}
+      {:else if $apps.selectedApp === APPS_CONSTANTS.APPS.LIVE_CHAT}
         <LiveChat {handleClose} />
-      {:else if selectedApp === APPS_CONSTANTS.APPS.POLL}
+      {:else if $apps.selectedApp === APPS_CONSTANTS.APPS.POLL}
         <Poll {handleClose} />
-      {:else if selectedApp === APPS_CONSTANTS.APPS.NOTES}
+      {:else if $apps.selectedApp === APPS_CONSTANTS.APPS.NOTES}
         <Notes {handleClose} />
       {/if}
     </div>
@@ -266,14 +275,15 @@
   @media screen and (max-width: 1023px) {
     .root {
       position: absolute;
-      height: calc(100vh - 109px);
-      top: 109px;
+      height: calc(100vh - var(--top-padding));
+      top: var(--top-padding);
       right: 0;
       z-index: 999;
     }
     .open {
       position: absolute;
       transform: translateX(0);
+
       transition: all 0.2s ease-in-out;
     }
     .close {
