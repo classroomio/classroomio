@@ -69,7 +69,7 @@
         <a
           class="mr-5 pb-2 text-sm font-bold flex items-center relative {item.isActive
             ? 'text-primary-700'
-            : 'dark:text-white text-black'}"
+            : 'dark:text-white text-black'} hover:no-underline"
           href={item.href}
         >
           {item.label}
