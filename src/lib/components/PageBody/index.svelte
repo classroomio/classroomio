@@ -7,6 +7,8 @@
   export let headerClassName = '';
   export let onClick = () => {};
   export let isPageNavHidden = false;
+
+  $: padding = isPageNavHidden ? `pb-20 px-4` : padding;
 </script>
 
 <div

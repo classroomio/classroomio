@@ -1,11 +1,12 @@
-<script>
+<script lang="ts">
   import QuestionContainer from '$lib/components/QuestionContainer/index.svelte';
   import EditContent from '$lib/components/EditContent/index.svelte';
   import DateTime from '$lib/components/Form/DateTime.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import { questionnaire } from '../store/exercise';
   import { marked } from 'marked';
-  export let preview;
+
+  export let preview: boolean;
 
   function getTotalPossibleGrade(questions) {
     return questions.reduce((acc, question) => {
@@ -15,7 +16,7 @@
   }
 </script>
 
-<div class="mb-5 px-6">
+<div class="mb-5 {!preview ? 'px-6' : 'px-2'}">
   <QuestionContainer isTitle={true}>
     {#if !preview}
       <TextField
