@@ -7,7 +7,7 @@
 </script>
 
 <div class="w-full flex flex-col">
-  <div class="flex items-center border-b w-full overflow-x-auto">
+  <div class="flex items-center border-b w-full overflow-x-auto mb-2">
     {#each tabs as tab}
       {#if !tab.icon && !tab.badgeValue}
         <button
