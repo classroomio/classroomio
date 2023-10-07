@@ -1,41 +1,44 @@
 import { supabase } from '$lib/utils/functions/supabase';
 
-export class Notification {
-  name = '';
-  accessToken = '';
+export const NOTIFICATION_NAME = {
+  WELCOME_TO_APP: 'WELCOME TO APP'
+};
 
-  constructor(name: string) {
-    this.name = name;
-  }
+const NAME_TO_PATH = {
+  [NOTIFICATION_NAME.WELCOME_TO_APP]: '/api/email/welcome'
+};
 
-  async getAccessToken() {
-    const { data } = await supabase.auth.getSession();
-    this.accessToken = data.session?.access_token || '';
+const getAccessToken = async () => {
+  const { data } = await supabase.auth.getSession();
 
-    return this.accessToken;
-  }
+  return data.session?.access_token || '';
+};
 
-  async send(path: string, body: { [k: string]: string }) {
-    try {
-      await this.getAccessToken();
-      const response = await fetch(path, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: this.accessToken
-        },
-        body: JSON.stringify(body)
-      });
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
-      const result = await response.json();
+export const triggerSendEmail = async (name: string, body: { [k: string]: string }) => {
+  try {
+    const accessToken = await getAccessToken();
+    const path = NAME_TO_PATH[name];
 
-      console.log(`${this.name} sent email result`, result);
-    } catch (error) {
-      console.log(`${this.name} sent email error`, error);
+    if (!path) {
+      console.error('Could not trigger send');
+      return;
     }
-  }
-}
 
-export class InviteNotification extends Notification {}
+    const response = await fetch(path, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: accessToken
+      },
+      body: JSON.stringify(body)
+    });
+    if (!response.ok) {
+      throw new Error(await response.text());
+    }
+    const result = await response.json();
+
+    console.log(`${name} sent email result`, result);
+  } catch (error) {
+    console.log(`${name} sent email error`, error);
+  }
+};
