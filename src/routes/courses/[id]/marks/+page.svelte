@@ -75,11 +75,9 @@
     });
   });
 
-  $: {
-    students = isStudent
-      ? $group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
-      : $group.people.filter((person) => !!person.profile && person.role_id === ROLE.STUDENT);
-  }
+  $: students = isStudent
+    ? $group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
+    : $group.people.filter((person) => !!person.profile && person.role_id === ROLE.STUDENT);
 </script>
 
 <CourseContainer bind:isStudent>

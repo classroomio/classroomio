@@ -1,4 +1,6 @@
 import { HTML_IDS, HTML_TEMPLATES } from './html';
+import { calculateTotalPoints } from './utils';
+import type { ExerciseTemplate } from '$lib/utils/types';
 
 export const TAGS = {
   HTML: 'HTML',
@@ -9,37 +11,30 @@ export const TAGS = {
   VueJS: 'VueJS'
 };
 
+function generateTemplateForTag(
+  keys: { [key: string]: string },
+  templates: {
+    [x: string]: ExerciseTemplate;
+  }
+) {
+  const template = [];
+
+  for (const key in keys) {
+    const id = keys[key];
+    template.push({
+      id,
+      title: templates[id].title,
+      questions: templates[id].questionnaire.questions.length,
+      points: calculateTotalPoints(templates[id]),
+      data: templates[id]
+    });
+  }
+
+  return template;
+}
+
 export const TEMPLATES = {
-  [TAGS.HTML]: [
-    {
-      id: HTML_IDS.HTML_ELEMENTS,
-      title: 'Learn HTML Elements',
-      questions: 10,
-      points: 20,
-      data: HTML_TEMPLATES[HTML_IDS.HTML_ELEMENTS]
-    },
-    {
-      id: HTML_IDS.HTML_ATTRIBUTES,
-      title: 'HTML Attributes',
-      questions: 5,
-      points: 10,
-      data: HTML_TEMPLATES[HTML_IDS.HTML_ATTRIBUTES]
-    },
-    {
-      id: HTML_IDS.HTML_HEADINGS,
-      title: 'Practice HTML Headings',
-      questions: 15,
-      points: 50,
-      data: HTML_TEMPLATES[HTML_IDS.HTML_ELEMENTS]
-    },
-    {
-      id: HTML_IDS.HTML_PARAGRAPH,
-      title: 'Understand p tag',
-      questions: 15,
-      points: 20,
-      data: HTML_TEMPLATES[HTML_IDS.HTML_ELEMENTS]
-    }
-  ],
+  [TAGS.HTML]: generateTemplateForTag(HTML_IDS, HTML_TEMPLATES),
   [TAGS.CSS]: [],
   [TAGS.JS]: [],
   [TAGS.Typescript]: [],

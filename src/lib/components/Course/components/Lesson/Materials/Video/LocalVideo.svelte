@@ -128,7 +128,7 @@
           <p class=" text-center text-sm font-normal">
             Select file( Mp4, MOV, AVI) to upload to your lesson.
           </p>
-          <p>(Max 30 MB)</p>
+          <p>(Max 80 MB)</p>
         </span>
       {/if}
       <input
