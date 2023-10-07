@@ -72,7 +72,7 @@ export const withEmailTemplate = (content: string) =>
 
       .button {
         margin-top:12px;
-        background: #0f172a;
+        background: #0233BD;
         border-radius: 8px;
         text-decoration: none !important;
         color: #fff !important;
@@ -110,10 +110,10 @@ export const withEmailTemplate = (content: string) =>
       }
 
       a {
-        color: #00c4b8;
+        color: #0233BD;
       }
       a:hover {
-        color: #00e6ca;
+        color: #0233BD;
       }
       h1,
       h2,

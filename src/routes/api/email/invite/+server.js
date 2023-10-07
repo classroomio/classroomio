@@ -1,10 +1,7 @@
-import { render } from 'svelte-email';
 import { json } from '@sveltejs/kit';
-import TeacherInviteTemplate from './template.svelte';
-import { getSendgrid, SENDGRID_FROM_NOREPLY } from '$lib/utils/services/sendgrid';
 import { getSupabase } from '$lib/utils/functions/supabase';
+import { sendEmail } from '$lib/utils/services/notification/send';
 
-const sendgrid = getSendgrid();
 const supabase = getSupabase();
 
 // API to send invite to teacher
@@ -45,20 +42,18 @@ export async function POST({ request }) {
   const inviteLink = `${origin}/invite/t/${encodeURIComponent(btoa(inviteData))}`;
   console.log('inviteData', inviteData);
 
-  const options = {
-    from: SENDGRID_FROM_NOREPLY,
+  await sendEmail({
     to: email,
-    subject: `Join ${name} on ClassroomIO`,
-    html: render({
-      template: TeacherInviteTemplate,
-      props: {
-        orgName: name,
-        inviteLink
-      }
-    })
-  };
-
-  sendgrid.send(options);
+    subject: `Join ${name} on ClassroomIO 😃`,
+    content: `
+    <p>Hey there,</p>
+      <p> You have been invited to join ${name} on ClassroomIO 🎉🎉🎉.</p>
+      <div>
+        <a class="button" href="${inviteLink}">Accept Invitation</a>
+      </div>
+    `,
+    isPersonalEmail: true
+  });
 
   return json({
     success: true,
