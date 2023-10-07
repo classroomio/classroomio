@@ -10,9 +10,11 @@
   import { blockedSubdomain } from '$lib/utils/constants/app';
   import { welcomeModalStore } from '$lib/components/WelcomeModal/store';
   import { getOrganizations } from '$lib/utils/services/org';
-  import { sendWelcomeEmail } from './utils';
-  import { currentOrg } from '$lib/utils/store/org';
   import { generateSitename } from '$lib/utils/functions/org';
+  import {
+    triggerSendEmail,
+    NOTIFICATION_NAME
+  } from '$lib/utils/services/notification/notification';
 
   interface OnboardingField {
     fullname?: string;
@@ -182,7 +184,10 @@
       loading = false;
 
       if (fields.fullname) {
-        sendWelcomeEmail($profile.email, fields.fullname);
+        triggerSendEmail(NOTIFICATION_NAME.WELCOME_TO_APP, {
+          to: $profile.email,
+          name: fields.fullname
+        });
       }
 
       console.log('data', data);
