@@ -1,11 +1,7 @@
-import { render } from 'svelte-email';
 import { json } from '@sveltejs/kit';
-import { getSendgrid, SENDGRID_FROM } from '$lib/utils/services/sendgrid';
 import { getSupabase } from '$lib/utils/functions/supabase';
-
 import { sendEmail } from '$lib/utils/services/notification/send';
 
-const sendgrid = getSendgrid();
 const supabase = getSupabase();
 
 export async function POST({ request }) {
@@ -50,7 +46,8 @@ export async function POST({ request }) {
       <div>
         <a href="https://app.classroomio.com">Go to Dashboard</a>
       </div>
-    `
+    `,
+    isPersonalEmail: true
   });
 
   return json({

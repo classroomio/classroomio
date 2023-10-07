@@ -47,7 +47,7 @@
 
 <section class="max-w-6xl gap-5 mx-auto">
   <div class="m-5">
-    <h1 class="text-3xl font-semibold">Dashboard</h1>
+    <h1 class="text-3xl font-semibold">Welcome</h1>
     <div
       class="w-full h-fit lg:h-[265px] flex md:items-center justify-between flex-col-reverse md:flex-row p-5 lg:p-10 rounded-md bg-primary-900 my-2"
     >
