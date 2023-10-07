@@ -255,6 +255,7 @@
             isGroupActive={(path || $page.url.pathname) === navItem.to}
             isExpanded={isLessonActive}
             total={navItem.isLecture ? ($lessons || []).length : 0}
+            isLoading={!$course.id}
           >
             {#if navItem.isLecture}
               {#each $lessons as item, index}

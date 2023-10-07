@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { page } from '$app/stores';
   import { browser } from '$app/environment';
   import NotificationIcon from 'carbon-icons-svelte/lib/Notification.svelte';
@@ -27,6 +27,10 @@
     if (browser) {
       localStorage.setItem('mode', $appStore.isDark ? 'dark' : '');
     }
+  }
+
+  function shortenName(name: string) {
+    return name?.substring(0, 2)?.toUpperCase() || '';
   }
 </script>
 
@@ -58,7 +62,10 @@
             className="mr-2"
           />
         {:else}
-          <TextChip value={$currentOrg.shortName} className="bg-primary-200 font-bold" />
+          <TextChip
+            value={shortenName($currentOrg.name)}
+            className="bg-primary-200 font-bold mr-2"
+          />
         {/if}
         <span class="line-clamp-1">
           {$currentOrg.name}

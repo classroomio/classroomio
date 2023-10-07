@@ -1,10 +1,7 @@
-import { render } from 'svelte-email';
 import { json } from '@sveltejs/kit';
-import WelcomeTemplate from './template.svelte';
-import { getSendgrid, SENDGRID_FROM_NOREPLY } from '$lib/utils/services/sendgrid';
 import { getSupabase } from '$lib/utils/functions/supabase';
+import { sendEmail } from '$lib/utils/services/notification/send';
 
-const sendgrid = getSendgrid();
 const supabase = getSupabase();
 
 export async function POST({ request }) {
@@ -31,22 +28,19 @@ export async function POST({ request }) {
   const origin = request.headers.get('origin');
   const inviteLink = `${origin}/org/${orgSiteName}/courses`;
 
-  const options = {
-    from: SENDGRID_FROM_NOREPLY,
+  await sendEmail({
+    from: `"[${orgName}] - ClassroomIO" <help@classroomio.com>`,
     to,
     subject: `You have been invited to a course in ${orgName}!`,
-    html: render({
-      template: WelcomeTemplate,
-      props: {
-        name,
-        orgName,
-        inviteLink,
-        courseName
-      }
-    })
-  };
-
-  sendgrid.send(options);
+    content: `
+    <p>Hey ${name},</p>
+      <p> You have been given access to teach a course by ${orgName}</p>
+      <p>The course is titled: ${courseName}</p>
+      <div>
+        <a class="button" href="${inviteLink}">Open Dashboard</a>
+      </div>
+    `
+  });
 
   return json({
     success: true,

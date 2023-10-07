@@ -1,10 +1,7 @@
-import { render } from 'svelte-email';
 import { json } from '@sveltejs/kit';
-import WelcomeTemplate from './template.svelte';
-import { getSendgrid, SENDGRID_FROM_NOREPLY } from '$lib/utils/services/sendgrid';
 import { getSupabase } from '$lib/utils/functions/supabase';
+import { sendEmail } from '$lib/utils/services/notification/send';
 
-const sendgrid = getSendgrid();
 const supabase = getSupabase();
 
 export async function POST({ request }) {
@@ -28,19 +25,18 @@ export async function POST({ request }) {
     return json({ success: false, message: 'Unauthenticated user' }, { status: 401 });
   }
 
-  const options = {
-    from: SENDGRID_FROM_NOREPLY,
+  await sendEmail({
+    from: `"ClassroomIO" <help@classroomio.com>`,
     to,
-    subject: `[${courseName}] You've got a new student!`,
-    html: render({
-      template: WelcomeTemplate,
-      props: {
-        courseName
-      }
-    })
-  };
-
-  sendgrid.send(options);
+    subject: `[${courseName}] You've got a new student 🎉!`,
+    content: `
+      <p>Hi amazing tutor,</p>
+      <p>Congratulations 🎉, a new student has joined a course you are teaching: ${courseName}</p>
+      <p>We hope they have a great experience learning from the best (YOU).</p>
+      <p>If you run into any issues, please don’t fail to reach out to us, we’d love to make your teaching
+      experience as easy as possible.</p>
+    `
+  });
 
   return json({
     success: true,

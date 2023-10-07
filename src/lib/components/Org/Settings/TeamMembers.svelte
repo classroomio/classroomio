@@ -14,7 +14,10 @@
   import { profile } from '$lib/utils/store/user';
   import { supabase } from '$lib/utils/functions/supabase';
   import SectionTitle from '../SectionTitle.svelte';
-  import { sendInvite } from './utils';
+  import {
+    triggerSendEmail,
+    NOTIFICATION_NAME
+  } from '$lib/utils/services/notification/notification';
 
   let emailsStr = '';
   let errorMessage = '';
@@ -68,11 +71,13 @@
         ]);
       }
 
-      // Send email invite
-      sendInvite(email, {
-        id: $currentOrg.id,
-        name: $currentOrg.name,
-        siteName: $currentOrg.siteName
+      triggerSendEmail(NOTIFICATION_NAME.INVITE_TEACHER, {
+        email: newMember.email,
+        org: {
+          id: $currentOrg.id,
+          name: $currentOrg.name,
+          siteName: $currentOrg.siteName
+        }
       });
 
       const isLast = index === emails.length - 1;

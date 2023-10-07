@@ -10,7 +10,11 @@
   import type { CurrentOrg } from '$lib/utils/types/org.js';
   import { ROLE } from '$lib/utils/constants/roles';
   import { profile } from '$lib/utils/store/user.js';
-  import { sendStudentCourseWelcome, sendTeacherStudentJoinedCourse } from './utils';
+  import {
+    triggerSendEmail,
+    NOTIFICATION_NAME
+  } from '$lib/utils/services/notification/notification';
+  import { snackbar } from '$lib/components/Snackbar/store.js';
 
   export let data;
 
@@ -57,19 +61,20 @@
       loading = false;
       if (addedMember.error) {
         console.error('Error adding student to group', data.groupId);
+        snackbar.error('Joining failed, please contact your admin');
         return;
       }
 
       // Send email welcoming student to the course
-      sendStudentCourseWelcome({
+      triggerSendEmail(NOTIFICATION_NAME.STUDENT_COURSE_WELCOME, {
         to: $profile.email,
         orgName: data.currentOrg?.name,
         courseName: data.name
       });
 
       // Send notification to teacher(s) that a student has joined the course.
-      sendTeacherStudentJoinedCourse({
-        to: teachers,
+      triggerSendEmail(NOTIFICATION_NAME.TEACHER_STUDENT_JOINED, {
+        to: teachers[0],
         courseName: data.name
       });
 

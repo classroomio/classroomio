@@ -12,10 +12,12 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { getOrgTeam } from '$lib/utils/services/org';
   import type { OrgTeamMember } from '$lib/utils/types/org';
-  import { sendTeacherCourseWelcome } from './utils';
-  import type { Course } from '$lib/utils/types';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { getStudentInviteLink } from '$lib/utils/functions/course';
+  import {
+    triggerSendEmail,
+    NOTIFICATION_NAME
+  } from '$lib/utils/services/notification/notification';
 
   interface Tutor {
     id: number;
@@ -52,7 +54,7 @@
         role_id: ROLE.TUTOR
       });
 
-      sendTeacherCourseWelcome({
+      triggerSendEmail(NOTIFICATION_NAME.WELCOME_TEACHER_TO_COURSE, {
         to: tutor.email,
         name: tutor.text,
         orgName: $currentOrg.name,

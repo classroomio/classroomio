@@ -1,6 +1,12 @@
 import nodemailer from 'nodemailer';
 import { withEmailTemplate } from './template';
-import { SMTP_HOST, SMTP_USER, SMTP_PASSWORD } from '$env/static/private';
+import {
+  SMTP_HOST,
+  SMTP_USER,
+  SMTP_PASSWORD,
+  SMTP_USER_HELP,
+  SMTP_PASSWORD_HELP
+} from '$env/static/private';
 
 const content = `
 <div>
@@ -13,18 +19,20 @@ Your ClassroomIO Team
 </div>
 `;
 
-const transporter = nodemailer.createTransport({
-  host: SMTP_HOST,
-  port: 465,
-  secure: true,
-  auth: {
-    user: SMTP_USER,
-    pass: SMTP_PASSWORD
-  }
-});
+let transporter: nodemailer.Transporter;
 
-const getTransporter = async (): Promise<boolean> => {
+const getTransporter = async (isPersonal?: boolean): Promise<boolean> => {
   return await new Promise((resolve, reject) => {
+    transporter = nodemailer.createTransport({
+      host: SMTP_HOST,
+      port: 465,
+      secure: true,
+      auth: {
+        user: isPersonal ? SMTP_USER : SMTP_USER_HELP,
+        pass: isPersonal ? SMTP_PASSWORD : SMTP_PASSWORD_HELP
+      }
+    });
+
     transporter.verify(function (error, success) {
       if (error) {
         console.log('Transporter error', error);
@@ -38,19 +46,26 @@ const getTransporter = async (): Promise<boolean> => {
 };
 
 export const sendEmail = async ({
+  from,
   to,
   subject,
-  content
+  content,
+  isPersonalEmail,
+  replyTo
 }: {
+  from?: string;
   to: string;
   subject: string;
   content: string;
+  isPersonalEmail?: boolean;
+  replyTo?: string;
 }) => {
-  await getTransporter();
+  await getTransporter(isPersonalEmail);
   const info = await transporter.sendMail({
-    from: '"Best from ClassroomIO" <best@classroomio.com>', // sender address
+    from: from || '"Best from ClassroomIO" <best@classroomio.com>', // sender address
     to, // list of receivers
     subject, // Subject line
+    replyTo,
     html: withEmailTemplate(content) // html body
   });
 

@@ -1,10 +1,7 @@
-import { render } from 'svelte-email';
 import { json } from '@sveltejs/kit';
-import JoinRequestTemplate from './template.svelte';
-import { getSendgrid, SENDGRID_FROM_NOREPLY } from '$lib/utils/services/sendgrid';
 import { getSupabase } from '$lib/utils/functions/supabase';
+import { sendEmail } from '$lib/utils/services/notification/send';
 
-const sendgrid = getSendgrid();
 const supabase = getSupabase();
 
 export async function POST({ request }) {
@@ -34,21 +31,20 @@ export async function POST({ request }) {
     return json({ success: false, message: 'Unauthenticated user' }, { status: 401 });
   }
 
-  const options = {
-    from: SENDGRID_FROM_NOREPLY,
+  await sendEmail({
+    from: `ClassroomIO" <help@classroomio.com>`,
     to,
     subject: `[${courseName}] Request to Join Course!`,
-    html: render({
-      template: JoinRequestTemplate,
-      props: {
-        courseName,
-        studentFullname,
-        studentEmail
-      }
-    })
-  };
-
-  sendgrid.send(options);
+    content: `
+    <p>Hi amazing tutor,</p>
+      <p> A new student has requested to join a course you are teaching: “${courseName}"</p>
+      <p style="font: bold;">Student details</p>
+      <p>
+        Name: ${studentFullname}<br />
+       Email: ${studentEmail}
+      </p>
+    `
+  });
 
   return json({
     success: true,

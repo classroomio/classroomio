@@ -4,8 +4,11 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { coursePaymentValidation } from '$lib/utils/functions/validator';
   import { Link } from 'carbon-components-svelte';
-  import { sendTeacherStudentJoinRequest, sendStudentRequestReceipt } from './utils';
   import { currentOrg } from '$lib/utils/store/org';
+  import {
+    triggerSendEmail,
+    NOTIFICATION_NAME
+  } from '$lib/utils/services/notification/notification';
 
   export let open = false;
   export let paymentLink = '';
@@ -41,7 +44,7 @@
       step = STEPS.STEP_2;
 
       // Send email to first added teacher of student wanting to join
-      sendTeacherStudentJoinRequest({
+      triggerSendEmail(NOTIFICATION_NAME.SEND_TEACHER_STUDENT_BUY_REQUEST, {
         to: teacherEmail,
         courseName,
         studentEmail: fields.email,
@@ -54,7 +57,7 @@
 
   function onClickPaymentLink() {
     // Send email to student to send proof of payment to teacher
-    sendStudentRequestReceipt({
+    triggerSendEmail(NOTIFICATION_NAME.STUDENT_PROOVE_COURSE_PAYMENT, {
       to: fields.email,
       courseName,
       teacherEmail,

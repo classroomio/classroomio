@@ -28,6 +28,7 @@
     "@types/paystack": "^2.0.1",
     "@types/pluralize": "0.0.30",
     "ai": "^2.1.31",
+    "axios": "^1.5.1",
     "body-parser": "^1.20.2",
     "canvas-confetti": "^1.6.0",
     "cookie-parser": "^1.4.6",
