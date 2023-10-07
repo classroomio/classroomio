@@ -4,63 +4,114 @@ import type { ExerciseTemplate } from '$lib/utils/types';
 
 const template: ExerciseTemplate = {
   title: 'HTML Elements Quiz',
-  description: 'Test your knowledge of HTML elements.',
+  description: 'Test your knowledge of HTML elements',
   questionnaire: {
     questions: [
       {
-        title: 'What does the <p> element stand for?',
-        name: 'p_element',
-        points: 2,
-        order: 1,
+        title: 'Which HTML tag is used to define the structure of an HTML document?',
+        name: 'q1',
+        points: 1,
+        order: 0,
         question_type: QuestionTypes[0], // RADIO
         options: [
-          { label: 'Paragraph', is_correct: true },
-          { label: 'Page', is_correct: false },
-          { label: 'Preformatted', is_correct: false }
+          { label: '<html>', is_correct: true },
+          { label: '<head>', is_correct: false },
+          { label: '<body>', is_correct: false }
         ]
       },
       {
-        title: 'Which HTML element is used for creating an unordered list?',
-        name: 'ul_element',
-        points: 2,
+        title: 'How can you create a hyperlink in HTML?',
+        name: 'q2',
+        points: 1,
+        order: 1,
+        question_type: QuestionTypes[0], // RADIO
+        options: [
+          { label: "<a href='url'>link text</a>", is_correct: true },
+          { label: "<link href='url'>link text</link>", is_correct: false },
+          { label: '<hyperlink>link text</hyperlink>', is_correct: false }
+        ]
+      },
+      {
+        title: 'Which HTML tag is used to define a paragraph?',
+        name: 'q3',
+        points: 1,
         order: 2,
         question_type: QuestionTypes[0], // RADIO
         options: [
-          { label: '<ul>', is_correct: true },
-          { label: '<ol>', is_correct: false },
+          { label: '<p>', is_correct: true },
+          { label: '<paragraph>', is_correct: false },
+          { label: '<para>', is_correct: false }
+        ]
+      },
+      {
+        title: 'How do you create an ordered list in HTML?',
+        name: 'q4',
+        points: 1,
+        order: 3,
+        question_type: QuestionTypes[0], // RADIO
+        options: [
+          { label: '<ol>', is_correct: true },
+          { label: '<ul>', is_correct: false },
           { label: '<li>', is_correct: false }
         ]
       },
       {
-        title: 'What does the <a> element do?',
-        name: 'a_element',
-        points: 2,
-        order: 3,
+        title: 'Which HTML tag is used to define a table?',
+        name: 'q5',
+        points: 1,
+        order: 4,
         question_type: QuestionTypes[1], // CHECKBOX
         options: [
-          { label: 'Defines a hyperlink', is_correct: true },
-          { label: 'Creates a table', is_correct: false },
-          { label: 'Adds an image', is_correct: false },
-          { label: 'Defines a form', is_correct: false }
+          { label: '<table>', is_correct: true },
+          { label: '<tab>', is_correct: false },
+          { label: '<tb>', is_correct: false }
         ]
       },
       {
-        title: 'Which HTML element is used for creating a line break?',
-        name: 'br_element',
-        points: 2,
-        order: 4,
-        question_type: QuestionTypes[0], // RADIO
-        options: [
-          { label: '<br>', is_correct: true },
-          { label: '<p>', is_correct: false },
-          { label: '<hr>', is_correct: false }
-        ]
-      },
-      {
-        title: 'What does the <h1> to <h6> elements represent?',
-        name: 'h_elements',
-        points: 2,
+        title: 'How do you insert an image in HTML?',
+        name: 'q6',
+        points: 1,
         order: 5,
+        question_type: QuestionTypes[1], // CHECKBOX
+        options: [
+          { label: "<img src='image.jpg'>", is_correct: true },
+          { label: "<image href='image.jpg'>", is_correct: false },
+          { label: "<picture src='image.jpg'>", is_correct: false }
+        ]
+      },
+      {
+        title: "What is the purpose of the 'div' element in HTML?",
+        name: 'q7',
+        points: 1,
+        order: 6,
+        question_type: QuestionTypes[1], // CHECKBOX
+        options: [
+          { label: 'Define a division or a section', is_correct: true },
+          { label: 'Create a link', is_correct: false },
+          { label: 'Insert a video', is_correct: false }
+        ]
+      },
+      {
+        title: "Explain the use of the 'hr' element in HTML.",
+        name: 'q8',
+        points: 2,
+        order: 7,
+        question_type: QuestionTypes[2], // TEXTAREA
+        options: []
+      },
+      {
+        title: "What is the purpose of the 'iframe' element in HTML?",
+        name: 'q9',
+        points: 2,
+        order: 8,
+        question_type: QuestionTypes[2], // TEXTAREA
+        options: []
+      },
+      {
+        title: 'How do you create an unordered list in HTML?',
+        name: 'q10',
+        points: 1,
+        order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
         options: []
       }

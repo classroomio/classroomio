@@ -7,7 +7,7 @@
   import Confetti from '../Confetti/index.svelte';
   import { isMobile } from '$lib/utils/store/useMobile';
   import { profile } from '$lib/utils/store/user';
-
+  import { apps } from '$lib/components/Apps/store';
   export let path = '';
   export let isExercisePage = false;
   export let isStudent = false;
@@ -18,6 +18,7 @@
 
     if (user) {
       isStudent = user.role_id === 3;
+      $apps.isStudent = isStudent;
     }
   }
 </script>

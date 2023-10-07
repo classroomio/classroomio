@@ -182,8 +182,13 @@
             <img src="/images/empty-exercise-icon.svg" alt="Exercise" class="my-2.5 mx-auto" />
             <h2 class="text-xl my-1.5 font-normal">No exercises added for this lesson</h2>
             <p class="text-sm text-center text-slate-500">
-              Share your knowledge with the world by creating engaging exercises. Add an exercise
-              now.
+              {#if isStudent}
+                Your tutor hasn't assigned any exercise to this lesson. For the main time, you can
+                <strong>chill with the big boys :)</strong>
+              {:else}
+                Share your knowledge with the world by creating engaging exercises. Add an exercise
+                now.
+              {/if}
             </p>
           </div>
         </Box>

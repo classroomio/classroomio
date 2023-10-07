@@ -37,7 +37,7 @@
   }
 
   let students: GroupPerson[] = [];
-  let isStudent: boolean;
+  let isStudent: boolean = false;
   let searchValue = '';
 
   function setAttendance(courseData: CourseData) {
@@ -113,9 +113,9 @@
   }
 
   // function for the searchbar
-  function searchStudents(query: string) {
+  function searchStudents(query: string, _students: GroupPerson[]) {
     const lowercaseQuery = query.toLowerCase();
-    return students.filter((student) =>
+    return _students.filter((student) =>
       student.profile.fullname.toLowerCase().includes(lowercaseQuery)
     );
   }
@@ -138,7 +138,6 @@
   $: students = isStudent
     ? $group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
     : $group.people.filter((person) => !!person.profile && person.role_id === ROLE.STUDENT);
-  $: console.log(students);
 </script>
 
 <CourseContainer bind:isStudent>
@@ -180,7 +179,7 @@
           </StructuredListRow>
         </StructuredListHead>
 
-        {#each searchStudents(searchValue) as student}
+        {#each searchStudents(searchValue, students) as student}
           <StructuredListBody>
             <StructuredListRow>
               <StructuredListCell>
