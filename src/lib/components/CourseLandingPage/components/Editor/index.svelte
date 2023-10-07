@@ -134,14 +134,6 @@
     const link = `${window.location.origin}/course/${course.slug}`;
     window.open(link, '_blank');
   }
-
-  async function handlePublish() {
-    loading = true;
-    await updateCourse(courseId, undefined, {
-      is_published: true
-    });
-    loading = false;
-  }
 </script>
 
 <aside
@@ -181,12 +173,6 @@
             variant={VARIANTS.OUTLINED}
             onClick={handleSave}
             isLoading={loading}
-          />
-          <PrimaryButton
-            label="Publish"
-            type="button"
-            onClick={handlePublish}
-            isDisabled={loading}
           />
           <IconButton onClick={handlePreview} disabled={loading || !course.slug}>
             <ArrowUpRightIcon size={24} class="carbon-icon dark:text-white" title="Preview" />

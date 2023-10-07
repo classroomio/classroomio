@@ -132,7 +132,8 @@
           <div class="mb-5 flex items-center gap-2">
             {#each tags as tag}
               <Tag
-                type={selectedTag === tag ? 'cool-gray' : 'outline'}
+                type={selectedTag === tag ? 'warm-gray' : 'outline'}
+                class={selectedTag === tag ? 'bg-primary-400' : ''}
                 interactive
                 on:click={() => {
                   selectedTag = tag;
