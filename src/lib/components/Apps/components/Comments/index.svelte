@@ -50,7 +50,7 @@
         comment: comment,
         name: 'You',
         avatar: $profile.avatar_url,
-        commentAt: new Date().getTime().toLocaleString()
+        commentAt: new Date()
       }
     ];
     scrollToBottom();
@@ -194,7 +194,7 @@
   </div>
 </PageNav>
 
-<div bind:this={bodyRef} class="overflow-auto h-[90%] pb-10 px-2 min-w-[300px] max-w-[350px]">
+<div bind:this={bodyRef} class="overflow-y-auto h-[87%] pb-10 px-2 md:min-w-[300px]">
   {#each comments as comment}
     <div class="pb-2 mt-2">
       <div class="flex items-start">
@@ -212,7 +212,7 @@
           </p>
         </div>
       </div>
-      <article class="prose prose-sm sm:prose ml-8">
+      <article class="prose prose-sm sm:prose ml-8 max-w-[300px]">
         {comment.comment}
       </article>
     </div>

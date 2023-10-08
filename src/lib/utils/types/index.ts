@@ -74,7 +74,7 @@ export interface LessonComment {
   name: string;
   avatar: string;
   comment: string;
-  commentAt: string;
+  commentAt: string | Date;
 }
 
 // Generated from https://supabase-schema.vercel.app/
