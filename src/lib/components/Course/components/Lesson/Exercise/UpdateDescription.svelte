@@ -1,10 +1,9 @@
 <script lang="ts">
   import QuestionContainer from '$lib/components/QuestionContainer/index.svelte';
-  import EditContent from '$lib/components/EditContent/index.svelte';
   import DateTime from '$lib/components/Form/DateTime.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import { questionnaire } from '../store/exercise';
-  import { marked } from 'marked';
+  import TextEditor from '$lib/components/TextEditor/index.svelte';
 
   export let preview: boolean;
 
@@ -34,13 +33,19 @@
           $questionnaire.is_due_by_dirty = true;
         }}
       />
-      <EditContent
-        writeLabel="Description"
-        bind:value={$questionnaire.description}
-        placeholder="Start typing your lesson"
-        textAreaHeight="100px"
-        onInputChange={() => ($questionnaire.is_description_dirty = true)}
-      />
+
+      <div class="mt-3">
+        <p class="mb-1">Description</p>
+        <TextEditor
+          value={$questionnaire.description}
+          onChange={(html) => {
+            $questionnaire.is_description_dirty = true;
+            $questionnaire.description = html;
+          }}
+          placeholder="Describe the exercise to your student"
+          maxHeight={300}
+        />
+      </div>
     {:else if preview}
       <h2 class="my-1">{$questionnaire.title}</h2>
       <div class="flex items-center">
@@ -62,8 +67,8 @@
         {/if}
       </div>
 
-      <article class="preview prose prose-sm sm:prose p-2">
-        {@html marked($questionnaire.description || 'No description')}
+      <article class="mt-3 preview prose prose-sm sm:prose p-2">
+        {@html $questionnaire.description || 'No description'}
       </article>
     {/if}
   </QuestionContainer>

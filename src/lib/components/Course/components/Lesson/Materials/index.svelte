@@ -34,6 +34,7 @@
   import ComponentSlide from './components/ComponentSlide.svelte';
   import ComponentVideo from './components/ComponentVideo.svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
+  import type { LessonPage } from '$lib/utils/types';
 
   export let mode = MODES.view;
   export let prevMode = '';
@@ -46,11 +47,13 @@
   let timeoutId: NodeJS.Timeout;
   let tabs = CONSTANTS.tabs;
   let currentTab = tabs[0].value;
-  let errors = {};
-  let editorWindowRef;
-  let aiButtonRef = {};
+  let errors: {
+    video: string;
+  };
+  let editorWindowRef: Window;
+  let aiButtonRef: HTMLDivElement;
   let openPopover = false;
-  let player = null;
+  let player: HTMLVideoElement;
   let componentsToRender = getComponentOrder(tabs);
   let aiButtonClass =
     'flex items-center px-5 py-2 border border-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md w-full mb-2';
@@ -60,11 +63,11 @@
     () =>
       (currentTab = tab);
 
-  const getValue = (label) => {
+  const getValue = (label: string) => {
     const tabValue = tabs.find((tab) => tab.label === label)?.value;
     return tabValue;
   };
-  async function saveLesson(materials = undefined) {
+  async function saveLesson(materials?: LessonPage['materials']) {
     const _lesson = !!materials
       ? {
           ...$lesson,
@@ -74,7 +77,7 @@
     handleUpdateLessonMaterials(_lesson, lessonId);
   }
 
-  function isNoteEmpty(note) {
+  function isNoteEmpty(note: string) {
     if (!note || typeof note !== 'string') return true;
 
     if (!document) return false;
@@ -87,7 +90,7 @@
     return rawText === '';
   }
 
-  function isMaterialsEmpty(materials) {
+  function isMaterialsEmpty(materials: LessonPage['materials']) {
     const { slide_url, videos, note } = materials;
 
     return isNoteEmpty(note) && !slide_url && isEmpty(videos);
@@ -99,7 +102,7 @@
     }
   }
 
-  function addBadgeValueToTab(materials) {
+  function addBadgeValueToTab(materials: LessonPage['materials']) {
     const { slide_url, videos, note } = materials;
 
     tabs = tabs.map((tab) => {
@@ -132,24 +135,25 @@
 
     if (editorWindowRef) {
       const tmceBody = editorWindowRef?.document?.querySelector('body');
-
-      editorWindowRef?.scrollTo(0, tmceBody?.scrollHeight);
+      if (typeof tmceBody?.scrollHeight === 'number') {
+        editorWindowRef?.scrollTo(0, tmceBody.scrollHeight);
+      }
     }
   }
 
   function callAI(type = '') {
     const _lesson = $lessons.find((les) => les.id === $lesson.id);
-    $input = {
+    $input = JSON.stringify({
       type,
       lessonTitle: _lesson?.title || '',
       courseTitle: $course.title
-    };
+    });
     setTimeout(() => {
       handleSubmit({ preventDefault: () => {} });
     }, 500);
   }
 
-  function initPlyr(_player: any, _video: string | undefined) {
+  function initPlyr(_player: any, _video: LessonPage['materials']['videos']) {
     if (!_player) return;
 
     const players = Array.from(document.querySelectorAll('.plyr-video-trigger')).map((p) => {
@@ -161,9 +165,13 @@
     window.players = players;
   }
 
-  function autoSave(updatedMaterials, _isLoading?: boolean, lessonId?: string) {
+  function autoSave(
+    updatedMaterials: LessonPage['materials'],
+    _isLoading?: boolean,
+    lessonId?: string
+  ) {
     if (timeoutId) clearTimeout(timeoutId);
-
+    console.log('autosaving');
     if (!initAutoSave) {
       initAutoSave = true;
       return;
@@ -193,7 +201,7 @@
     $uploadCourseVideoStore.isModalOpen = false;
   };
 
-  function getComponentOrder(tabs) {
+  function getComponentOrder(tabs = CONSTANTS.tabs) {
     const componentMap = {
       Video: ComponentVideo,
       Slide: ComponentSlide,
@@ -202,6 +210,7 @@
 
     const componentNames = tabs
       .map((tab) => {
+        // @ts-ignore
         const component = componentMap[tab.label];
         return component || null;
       })

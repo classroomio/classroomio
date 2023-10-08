@@ -1,5 +1,4 @@
 <script>
-  import { marked } from 'marked';
   import { fly } from 'svelte/transition';
   import { group, course } from '$lib/components/Course/store';
   import { questionnaire } from '../store/exercise';
@@ -20,7 +19,6 @@
   import { submitExercise } from '$lib/utils/services/courses';
   import { fetchSubmission } from '$lib/utils/services/submissions';
   import { profile } from '$lib/utils/store/user';
-  import MODES from '$lib/utils/constants/mode.js';
   import { exerciseMode } from './store';
 
   export let preview;
@@ -205,8 +203,8 @@
         {/if}
       </div>
 
-      <article class="preview prose prose-sm sm:prose p-2">
-        {@html marked($questionnaire.description || 'No desription')}
+      <article class="mt-3 preview prose prose-sm sm:prose p-2">
+        {@html $questionnaire.description || 'No desription'}
       </article>
 
       <PrimaryButton

@@ -1,6 +1,5 @@
 <script>
   import CodeSnippet from '$lib/components/CodeSnippet/index.svelte';
-  import { marked } from 'marked';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import TextArea from '$lib/components/Form/TextArea.svelte';
@@ -62,7 +61,7 @@
   <div class="ml-4">
     {#if disabled}
       <div class="bg-gray-200 dark:bg-gray-500 p-5 rounded-md mb-3">
-        {@html marked(defaultValue)}
+        {defaultValue}
       </div>
     {:else}
       <TextArea bind:value={defaultValue} rows="5" placeholder="Write your answer here" />

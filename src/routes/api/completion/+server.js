@@ -21,7 +21,7 @@ const instruction = {
 
 export async function POST({ request }) {
   const { prompt } = await request.json();
-  const { courseTitle, lessonTitle, type } = prompt;
+  const { courseTitle, lessonTitle, type } = JSON.parse(prompt);
   const response = await openai.createChatCompletion({
     model: 'gpt-3.5-turbo',
     messages: [

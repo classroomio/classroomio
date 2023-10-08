@@ -73,7 +73,8 @@
     prevLessonId = lessonId;
 
     const totalExercises = lessonData?.totalExercises?.[0] && lessonData.totalExercises[0].count;
-    setLesson(lessonData, totalExercises || 0);
+    const totalComments = lessonData?.totalComments?.[0] && lessonData.totalComments[0].count;
+    setLesson(lessonData, totalExercises || 0, totalComments || 0);
     isFetching = false;
   }
 
@@ -171,7 +172,7 @@
     isLoading = false;
   };
 
-  function setLesson(lessonData, totalExercises: number) {
+  function setLesson(lessonData, totalExercises: number, totalComments: number) {
     if (!lessonData) return;
 
     let lesson_completion: LessonCompletion[] = [];
@@ -184,7 +185,12 @@
       ...l,
       id: data.lessonId,
       totalExercises,
-      materials: lessonData,
+      totalComments: totalComments,
+      materials: {
+        videos: lessonData.videos,
+        note: lessonData.note,
+        slide_url: lessonData.slide_url
+      },
       lesson_completion
     }));
   }
@@ -317,10 +323,10 @@
       {/if}
       <button
         class="px-2 my-2 pr-4 border-t-0 border-b-0 border-l-0 border border-gray-300 flex items-center"
-        on:click={() => handleAppClick(APPS_CONSTANTS.APPS.LIVE_CHAT)}
+        on:click={() => handleAppClick(APPS_CONSTANTS.APPS.COMMENTS)}
       >
         <SendAlt size={24} class="carbon-icon" />
-        <span class="ml-1">{$lesson.comments}</span>
+        <span class="ml-1">{$lesson.totalComments}</span>
       </button>
       <button class="px-2 my-2" on:click={markLessonComplete} disabled={isMarkingComplete}>
         {#if getIsLessonComplete($lesson.lesson_completion, $profile.id)}
