@@ -194,7 +194,7 @@
   </div>
 </PageNav>
 
-<div bind:this={bodyRef} class="overflow-auto h-[90%] pb-10 px-2 max-w-[350px]">
+<div bind:this={bodyRef} class="overflow-auto h-[90%] pb-10 px-2 min-w-[300px] max-w-[350px]">
   {#each comments as comment}
     <div class="pb-2 mt-2">
       <div class="flex items-start">
