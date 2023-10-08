@@ -119,8 +119,7 @@
         `
       )
       .match({
-        lesson_id: lessonId,
-        groupmember_id: groupmember.id
+        lesson_id: lessonId
       })
       .returns<FetchComments[]>();
 
