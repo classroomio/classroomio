@@ -148,7 +148,7 @@
         >
           {#if hasUserVoted}
             <span
-              class="progress absolute top-0 left-0 {didUserSelect(option)
+              class="progress absolute top-0 text-black left-0 {didUserSelect(option)
                 ? 'bg-primary-700'
                 : 'bg-gray-300'} h-full bg-opacity-25"
               style="width: {calculatePercent(poll.options, option)}%;"

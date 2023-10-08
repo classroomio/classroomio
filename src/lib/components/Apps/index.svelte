@@ -75,12 +75,9 @@
   }
 
   function startDragging(event: MouseEvent) {
-    console.log('start dragging');
     $isDown = true;
     setTimeout(() => {
-      console.log('is down', $isDown);
       if (event.button === 0 && $apps.selectedApp && $isDown) {
-        console.log('start dragging if');
         event.preventDefault();
         const isNearLeftBorder = event.clientX - appContentRef.getBoundingClientRect().left < 5;
         const isNearRightBorder = appContentRef.getBoundingClientRect().right - event.clientX < 5;
@@ -90,7 +87,6 @@
           event.clientX >= 0 &&
           event.clientX <= window.innerWidth
         ) {
-          console.log('is dragging');
           isDragging = true;
           resize = true;
           startX = event.clientX;
@@ -194,7 +190,7 @@
         <SendAlt size={24} class="carbon-icon dark:text-white" />
       </IconButton>
     </div>
-    <div class="mb-2">
+    <!-- <div class="mb-2">
       <IconButton
         toolTipProps={{ title: 'QandA', hotkeys: ['A', '2'] }}
         value={APPS_CONSTANTS.APPS.QANDA}
@@ -213,7 +209,7 @@
       >
         <AlignBoxTopLeft size={24} class="carbon-icon dark:text-white" />
       </IconButton>
-    </div>
+    </div> -->
     <div class="mb-2">
       <IconButton
         toolTipProps={{ title: 'Poll', hotkeys: ['A', '4'] }}

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import PageNav from '$lib/components/PageNav/index.svelte';
   import CloseButton from '$lib/components/Buttons/Close/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -7,7 +7,7 @@
   import Poll from './components/Poll.svelte';
   import Tabs from './components/Tabs.svelte';
 
-  export let handleClose;
+  export let handleClose = () => {};
 
   const users = [
     {
@@ -147,7 +147,7 @@
   </div>
 </PageNav>
 
-<div class="m-2 overlow-auto">
+<div class="m-2 overlow-y-auto min-w-[300px]">
   {#if shouldCreatePoll}
     <CreatePollForm onSubmit={handlePollCreate} onCancel={handleCreatePoll} />
   {:else}

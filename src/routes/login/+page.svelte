@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { page } from '$app/stores';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -7,6 +7,7 @@
   import { LOGIN_FIELDS } from '$lib/utils/constants/authentication';
   import AuthUI from '$lib/components/AuthUI/index.svelte';
   import { currentOrg } from '$lib/utils/store/org';
+  import { onDestroy } from 'svelte';
 
   let formRef;
   let supabase = getSupabase();
@@ -14,6 +15,7 @@
   let submitError;
   let loading = false;
   let errors = {};
+  let reloadTimeout: NodeJS.Timeout;
 
   let query = new URLSearchParams($page.url.search);
   let redirect = query.get('redirect');
@@ -36,18 +38,21 @@
       console.log('data', data);
       if (error) throw error;
 
-      // reload page on org site cause for some reason the authlistener on +layout.svelte doesn't run
-      // on org site
-      if ($currentOrg.id && redirect) {
+      // reload page on org site cause for some reason the authlistener on +layout.svelte doesn't run sometimes
+      reloadTimeout = setTimeout(() => {
         console.log('Forcing full page reload for auth listener');
         window.location.reload();
-      }
+      }, 1500);
     } catch (error) {
       submitError = error.error_description || error.message;
     } finally {
       loading = false;
     }
   }
+
+  onDestroy(() => {
+    clearTimeout(reloadTimeout);
+  });
 </script>
 
 <svelte:head>
