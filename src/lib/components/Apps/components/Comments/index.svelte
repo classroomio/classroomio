@@ -50,11 +50,6 @@
     });
 
     comment = '';
-    setTimeout(() => {
-      bodyRef.scrollTo({
-        top: bodyRef.scrollHeight
-      });
-    }, 100);
   }
 
   function handleKeyDown(e: KeyboardEvent) {
@@ -98,6 +93,11 @@
       }
     ];
     $lesson.totalComments = comments.length;
+    setTimeout(() => {
+      bodyRef.scrollTo({
+        top: bodyRef.scrollHeight
+      });
+    }, 100);
   }
 
   async function fetchComments(people: GroupPerson[], lessonId?: string | null) {
@@ -139,7 +139,6 @@
             : lessonComment.groupmember.profile.fullname
       };
     });
-    // $lesson.totalComments = comments.length;
   }
 
   onMount(async () => {
@@ -166,7 +165,7 @@
   </div>
 </PageNav>
 
-<div bind:this={bodyRef} class="overflow-auto h-[90%] px-2 min-w-[300px]">
+<div bind:this={bodyRef} class="overflow-auto h-[90%] pb-10 px-2 min-w-[300px]">
   {#each comments as comment}
     <div class="pb-2 mt-2">
       <div class="flex items-start">
@@ -184,7 +183,7 @@
           </p>
         </div>
       </div>
-      <article class="prose prose-sm sm:prose ml-8">
+      <article class="prose prose-sm sm:prose ml-8 max-w-[350px]">
         {comment.comment}
       </article>
     </div>
