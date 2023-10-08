@@ -1,5 +1,4 @@
 <script>
-  import { marked } from 'marked';
   import pluralize from 'pluralize';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
   import { SkeletonPlaceholder, SkeletonText } from 'carbon-components-svelte';
@@ -336,7 +335,7 @@
           </div>
         {:else}
           <section class="prose prose-sm sm:prose p-2">
-            {@html marked(question.body)}
+            {@html question.body}
           </section>
         {/if}
       </div>
@@ -379,7 +378,7 @@
               {/if}
             </header>
             <article class="prose prose-sm sm:prose p-2">
-              {@html marked(comment.comment)}
+              {@html comment.comment}
             </article>
           </div>
         </div>

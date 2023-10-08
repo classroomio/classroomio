@@ -1,5 +1,6 @@
-<script>
+<script lang="ts">
   import { onDestroy, onMount } from 'svelte';
+  import { writable } from 'svelte/store';
   import hotkeys from 'hotkeys-js';
   import Forum from 'carbon-icons-svelte/lib/Forum.svelte';
   import AlignBoxTopLeft from 'carbon-icons-svelte/lib/AlignBoxTopLeft.svelte';
@@ -9,19 +10,22 @@
   import Settings from 'carbon-icons-svelte/lib/Settings.svelte';
   import { apps } from './store';
 
+  import Chip from '$lib/components/Chip/index.svelte';
   import QandA from './components/QandA/index.svelte';
-  import LiveChat from './components/LiveChat/index.svelte';
+  import Comments from './components/Comments/index.svelte';
   import Notes from './components/Notes/index.svelte';
   import Poll from './components/Poll/index.svelte';
   import APPS_CONSTANTS from './constants';
   import { browser } from '$app/environment';
+  import { lesson } from '$lib/components/Course/components/Lesson/store/lessons';
 
   let resize = false;
   let isDragging = false;
-  let startX;
-  let initialWidth;
-  let appBarRef;
-  let appContentRef;
+  let isDown = writable(false);
+  let startX: number;
+  let initialWidth: number;
+  let appBarRef: HTMLDivElement;
+  let appContentRef: HTMLDivElement;
 
   let topPadding = $apps.isStudent ? '48px' : '109px';
 
@@ -32,7 +36,7 @@
   };
 
   function handleClose() {
-    $apps.selectedApp = null;
+    $apps.selectedApp = undefined;
     if (getResizableSidebar()) {
       appBarRef.style.width = '60px';
     } else if (!getResizableSidebar() && $apps.isStudent) {
@@ -40,7 +44,7 @@
     }
   }
 
-  function handleAppClick(appName) {
+  function handleAppClick(appName?: string) {
     if (!$apps.selectedApp && getResizableSidebar()) {
       if (window.innerWidth <= 1024) {
         appBarRef.style.width = '300px';
@@ -56,7 +60,7 @@
     $apps.dropdown = false;
   }
 
-  function handleCursor(event) {
+  function handleCursor(event: MouseEvent) {
     if (!getResizableSidebar()) return;
     if (!resize && $apps.selectedApp) {
       const isNearLeftBorder = event.clientX - appContentRef.getBoundingClientRect().left < 8;
@@ -70,31 +74,39 @@
     }
   }
 
-  function startDragging(event) {
-    if (event.button === 0 && $apps.selectedApp) {
-      event.preventDefault();
-      const isNearLeftBorder = event.clientX - appContentRef.getBoundingClientRect().left < 5;
-      const isNearRightBorder = appContentRef.getBoundingClientRect().right - event.clientX < 5;
+  function startDragging(event: MouseEvent) {
+    console.log('start dragging');
+    $isDown = true;
+    setTimeout(() => {
+      console.log('is down', $isDown);
+      if (event.button === 0 && $apps.selectedApp && $isDown) {
+        console.log('start dragging if');
+        event.preventDefault();
+        const isNearLeftBorder = event.clientX - appContentRef.getBoundingClientRect().left < 5;
+        const isNearRightBorder = appContentRef.getBoundingClientRect().right - event.clientX < 5;
 
-      if (
-        (isNearRightBorder || isNearLeftBorder) &&
-        event.clientX >= 0 &&
-        event.clientX <= window.innerWidth
-      ) {
-        isDragging = true;
-        resize = true;
-        startX = event.clientX;
-        initialWidth = parseInt(getComputedStyle(appBarRef).width, 10);
+        if (
+          (isNearRightBorder || isNearLeftBorder) &&
+          event.clientX >= 0 &&
+          event.clientX <= window.innerWidth
+        ) {
+          console.log('is dragging');
+          isDragging = true;
+          resize = true;
+          startX = event.clientX;
+          initialWidth = parseInt(getComputedStyle(appBarRef).width, 10) + 5;
+        }
       }
-    }
+    }, 100);
   }
 
   function stopDragging() {
     isDragging = false;
     resize = false;
+    $isDown = false;
   }
 
-  function dragSidebar(event) {
+  function dragSidebar(event: MouseEvent) {
     if (!getResizableSidebar()) return;
     if (!isDragging || !$apps.selectedApp) return;
     const deltaX = startX - event.clientX + 60;
@@ -108,7 +120,7 @@
     }
   }
 
-  function updateTopPadding(isStudent) {
+  function updateTopPadding(isStudent: boolean) {
     topPadding = isStudent ? '48px' : '109px';
   }
 
@@ -124,7 +136,7 @@
       event.preventDefault();
       switch (handler.key) {
         case 'A+1':
-          handleAppClick(APPS_CONSTANTS.APPS.LIVE_CHAT);
+          handleAppClick(APPS_CONSTANTS.APPS.COMMENTS);
           break;
         case 'A+2':
           handleAppClick(APPS_CONSTANTS.APPS.QANDA);
@@ -153,11 +165,11 @@
 
 <div
   style={`--top-padding:${topPadding}`}
-  class={`${$apps.open ? 'open dark:bg-black' : 'close dark:bg-black'} root`}
+  class={`${$apps.open ? 'open ' : 'close'} root bg-white dark:bg-black`}
   bind:this={appBarRef}
 >
   <div class="apps">
-    <div class="lg:hidden">
+    <div class="lg:hidden mb-2">
       <IconButton
         buttonClassName="lg:hidden"
         toolTipProps={{ title: 'Settings', hotkeys: ['A', '0'] }}
@@ -170,41 +182,48 @@
       </IconButton>
     </div>
 
-    <IconButton
-      toolTipProps={{ title: 'Live Chat', hotkeys: ['A', '1'] }}
-      value={APPS_CONSTANTS.APPS.LIVE_CHAT}
-      onClick={handleAppClick}
-      selected={APPS_CONSTANTS.APPS.LIVE_CHAT === $apps.selectedApp}
-    >
-      <SendAlt size={24} class="carbon-icon dark:text-white" />
-    </IconButton>
-
-    <IconButton
-      toolTipProps={{ title: 'QandA', hotkeys: ['A', '2'] }}
-      value={APPS_CONSTANTS.APPS.QANDA}
-      onClick={handleAppClick}
-      selected={APPS_CONSTANTS.APPS.QANDA === $apps.selectedApp}
-    >
-      <Forum size={24} class="carbon-icon dark:text-white" />
-    </IconButton>
-
-    <IconButton
-      toolTipProps={{ title: 'Notes', hotkeys: ['A', '3'] }}
-      value={APPS_CONSTANTS.APPS.NOTES}
-      onClick={handleAppClick}
-      selected={APPS_CONSTANTS.APPS.NOTES === $apps.selectedApp}
-    >
-      <AlignBoxTopLeft size={24} class="carbon-icon dark:text-white" />
-    </IconButton>
-
-    <IconButton
-      toolTipProps={{ title: 'Poll', hotkeys: ['A', '4'] }}
-      value={APPS_CONSTANTS.APPS.POLL}
-      onClick={handleAppClick}
-      selected={APPS_CONSTANTS.APPS.POLL === $apps.selectedApp}
-    >
-      <ChartPie size={24} class="carbon-icon dark:text-white" />
-    </IconButton>
+    <div class="mb-2 relative">
+      <IconButton
+        toolTipProps={{ title: 'Comments', hotkeys: ['A', '1'] }}
+        value={APPS_CONSTANTS.APPS.COMMENTS}
+        onClick={handleAppClick}
+        contained={APPS_CONSTANTS.APPS.COMMENTS === $apps.selectedApp}
+        buttonClassName="relative"
+      >
+        <Chip value={$lesson.totalComments} className="absolute -top-2 right-0 bg-primary-500" />
+        <SendAlt size={24} class="carbon-icon dark:text-white" />
+      </IconButton>
+    </div>
+    <div class="mb-2">
+      <IconButton
+        toolTipProps={{ title: 'QandA', hotkeys: ['A', '2'] }}
+        value={APPS_CONSTANTS.APPS.QANDA}
+        onClick={handleAppClick}
+        contained={APPS_CONSTANTS.APPS.QANDA === $apps.selectedApp}
+      >
+        <Forum size={24} class="carbon-icon dark:text-white" />
+      </IconButton>
+    </div>
+    <div class="mb-2">
+      <IconButton
+        toolTipProps={{ title: 'Notes', hotkeys: ['A', '3'] }}
+        value={APPS_CONSTANTS.APPS.NOTES}
+        onClick={handleAppClick}
+        contained={APPS_CONSTANTS.APPS.NOTES === $apps.selectedApp}
+      >
+        <AlignBoxTopLeft size={24} class="carbon-icon dark:text-white" />
+      </IconButton>
+    </div>
+    <div class="mb-2">
+      <IconButton
+        toolTipProps={{ title: 'Poll', hotkeys: ['A', '4'] }}
+        value={APPS_CONSTANTS.APPS.POLL}
+        onClick={handleAppClick}
+        contained={APPS_CONSTANTS.APPS.POLL === $apps.selectedApp}
+      >
+        <ChartPie size={24} class="carbon-icon dark:text-white" />
+      </IconButton>
+    </div>
   </div>
 
   {#if !!$apps.selectedApp}
@@ -216,8 +235,8 @@
     >
       {#if $apps.selectedApp === APPS_CONSTANTS.APPS.QANDA}
         <QandA {handleClose} />
-      {:else if $apps.selectedApp === APPS_CONSTANTS.APPS.LIVE_CHAT}
-        <LiveChat {handleClose} />
+      {:else if $apps.selectedApp === APPS_CONSTANTS.APPS.COMMENTS}
+        <Comments {handleClose} />
       {:else if $apps.selectedApp === APPS_CONSTANTS.APPS.POLL}
         <Poll {handleClose} />
       {:else if $apps.selectedApp === APPS_CONSTANTS.APPS.NOTES}

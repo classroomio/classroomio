@@ -7,7 +7,7 @@
   export let placeholder = '';
   export let value: string | number | null;
   export let name = '';
-  export let onKeyDown = () => {};
+  export let onKeyDown = (e) => {};
   export let className = '';
   export let inputClassName = '';
   export let labelClassName = 'font-light';

@@ -48,7 +48,7 @@ export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']
       certificate_theme,
       lessons:lesson(
         id, title,public, lesson_at, call_url, is_unlocked, order, created_at,
-        note, videos, slide_url, call_url, totalExercises:exercise(count),
+        note, videos, slide_url, call_url, totalExercises:exercise(count), totalComments:lesson_comment(count),
         profile:teacher_id(id, avatar_url, fullname),
         lesson_completion(id, profile_id, is_complete)
       ),
@@ -154,7 +154,7 @@ export function fetchLesson(lessonId: Lesson['id']) {
   return supabase
     .from('lesson')
     .select(
-      `id, note, videos, slide_url, call_url, totalExercises:exercise(count), lesson_completion(id, profile_id, is_complete)`
+      `id, note, videos, slide_url, call_url, totalExercises:exercise(count), totalComments:lesson_comment(count), lesson_completion(id, profile_id, is_complete)`
     )
     .eq('id', lessonId)
     .single();

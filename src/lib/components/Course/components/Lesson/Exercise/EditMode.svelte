@@ -34,9 +34,6 @@
   import { deleteExercise } from '$lib/utils/services/courses';
   import { lesson } from '../store/lessons';
 
-  // import EditContent from "$lib/components/EditContent/index.svelte";
-
-  // let value = readme;
   const extraActions = ['Code Snippets', 'Upload image'];
   const initialQuestionsLength = $questionnaire.questions.length;
 

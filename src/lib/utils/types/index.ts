@@ -62,6 +62,21 @@ interface CourseMetadata {
   lessonDownload?: boolean;
 }
 
+export interface LessonCommentInsertPayload {
+  id: number;
+  created_at: string;
+  updated_at: string;
+  lesson_id: string;
+  groupmember_id: string;
+  comment: string;
+}
+export interface LessonComment {
+  name: string;
+  avatar: string;
+  comment: string;
+  commentAt: string;
+}
+
 // Generated from https://supabase-schema.vercel.app/
 export interface Organization {
   id: string /* primary key */;
@@ -195,8 +210,8 @@ export enum VideoType {
 
 export interface LessonPage {
   id?: string | null;
-  totalExercises: Number;
-  comments: Number;
+  totalExercises: number;
+  totalComments: number;
   isSaving: Boolean;
   materials: {
     note: string;
@@ -204,7 +219,9 @@ export interface LessonPage {
     videos: Array<{
       type: string;
       link: string;
-      metadata?: {};
+      metadata?: {
+        svid?: string;
+      };
     }>;
   };
   exercises: [];
