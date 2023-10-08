@@ -43,13 +43,23 @@
       return;
     }
 
+    comments = [
+      ...comments,
+      {
+        comment: comment,
+        name: 'You',
+        avatar: $profile.avatar_url,
+        commentAt: new Date().getTime().toLocaleString()
+      }
+    ];
+    comment = '';
+    scrollToBottom();
+
     await supabase.from('lesson_comment').insert({
       lesson_id: $lesson.id,
       groupmember_id: groupmember.id,
       comment
     });
-
-    comment = '';
   }
 
   function handleKeyDown(e: KeyboardEvent) {
@@ -58,8 +68,21 @@
     }
   }
 
+  function scrollToBottom() {
+    setTimeout(() => {
+      bodyRef.scrollTo({
+        top: bodyRef.scrollHeight
+      });
+    }, 100);
+  }
+
   async function handleInsert(payload: RealtimePostgresChangesPayload<LessonCommentInsertPayload>) {
     const insertedComment = payload.new as LessonCommentInsertPayload;
+
+    if (groupmember && groupmember.id === insertedComment.groupmember_id) {
+      console.log('is my comment');
+      return;
+    }
 
     const {
       data,
@@ -87,17 +110,14 @@
       ...comments,
       {
         comment: insertedComment.comment,
-        name: data.id === insertedComment.groupmember_id ? 'You' : data.profile.fullname || '',
+        name: data.profile.fullname,
         avatar: data.profile.avatar_url,
         commentAt: insertedComment.created_at
       }
     ];
     $lesson.totalComments = comments.length;
-    setTimeout(() => {
-      bodyRef.scrollTo({
-        top: bodyRef.scrollHeight
-      });
-    }, 100);
+
+    scrollToBottom();
   }
 
   async function fetchComments(people: GroupPerson[], lessonId?: string | null) {
@@ -139,6 +159,7 @@
             : lessonComment.groupmember.profile.fullname
       };
     });
+    scrollToBottom();
   }
 
   onMount(async () => {
