@@ -24,6 +24,7 @@
   let lessonCommentChannel: RealtimeChannel;
   let comments: LessonComment[] = [];
   let groupmember: GroupPerson | undefined;
+  let isSaving: boolean = false;
 
   interface FetchComments {
     comment: string;
@@ -52,14 +53,21 @@
         commentAt: new Date().getTime().toLocaleString()
       }
     ];
-    comment = '';
     scrollToBottom();
 
-    await supabase.from('lesson_comment').insert({
-      lesson_id: $lesson.id,
-      groupmember_id: groupmember.id,
-      comment
-    });
+    isSaving = true;
+    supabase
+      .from('lesson_comment')
+      .insert({
+        lesson_id: $lesson.id,
+        groupmember_id: groupmember.id,
+        comment
+      })
+      .then(() => {
+        isSaving = false;
+      });
+
+    comment = '';
   }
 
   function handleKeyDown(e: KeyboardEvent) {
@@ -186,7 +194,7 @@
   </div>
 </PageNav>
 
-<div bind:this={bodyRef} class="overflow-auto h-[90%] pb-10 px-2 min-w-[300px]">
+<div bind:this={bodyRef} class="overflow-auto h-[90%] pb-10 px-2 max-w-[350px]">
   {#each comments as comment}
     <div class="pb-2 mt-2">
       <div class="flex items-start">
@@ -204,7 +212,7 @@
           </p>
         </div>
       </div>
-      <article class="prose prose-sm sm:prose ml-8 max-w-[350px]">
+      <article class="prose prose-sm sm:prose ml-8">
         {comment.comment}
       </article>
     </div>
@@ -212,7 +220,12 @@
 </div>
 
 <div class="footer">
-  <TextField placeholder="Say something" bind:value={comment} onKeyDown={handleKeyDown} />
+  <TextField
+    placeholder="Say something"
+    bind:value={comment}
+    onKeyDown={handleKeyDown}
+    isDisabled={isSaving}
+  />
 </div>
 
 <style>
