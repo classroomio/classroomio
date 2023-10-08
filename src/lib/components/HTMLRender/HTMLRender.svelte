@@ -1,6 +1,4 @@
 <script>
-  import { marked } from 'marked';
-
   export let content = '';
   export let className = '';
 </script>
@@ -9,6 +7,6 @@
   {#if $$slots.content}
     <slot name="content" />
   {:else}
-    {@html marked(content, { breaks: true, gfm: true })}
+    {@html content}
   {/if}
 </article>

@@ -1,5 +1,4 @@
 <script>
-  import { marked } from 'marked';
   import CheckmarkOutline from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
   import CloseButton from '$lib/components/Buttons/Close/index.svelte';
@@ -101,7 +100,7 @@
       <div class="ml-2 flex-grow">
         <p class="dark:text-white text-sm font-bold">{question.name}</p>
         <article class="prose prose-sm sm:prose">
-          {@html marked(question.question)}
+          {question.question}
         </article>
       </div>
       <button class={`${question.answered && 'active'}`} on:click={handleMarkAnswered(question.id)}>

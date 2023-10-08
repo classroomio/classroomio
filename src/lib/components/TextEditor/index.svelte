@@ -7,7 +7,8 @@
   export let onChange = (html: string) => {};
   export let height = 300;
   export let placeholder = '';
-  export let editorWindowRef = null;
+  export let editorWindowRef: Window;
+  export let maxHeight: number | undefined = undefined;
 
   const apiKey = PUBLIC_TINYMCE_API_KEY;
 
@@ -24,6 +25,7 @@
     ],
     lists_indent_on_tab: false,
     min_height: height,
+    max_height: maxHeight,
     placeholder: placeholder,
     init_instance_callback: function (editor: any) {
       editorWindowRef = editor.iframeElement?.contentWindow;

@@ -1,22 +1,26 @@
-<script>
+<script lang="ts">
   import ToolTip from '../ToolTip/index.svelte';
-  export let onClick = () => {};
+  export let onClick = (v: string) => {};
   export let stopPropagation = false;
   export let disabled = false;
   export let selected = false;
   export let buttonClassName = '';
   export let contained = false;
   export let value = '';
-  export let type = 'button';
+  export let type: 'button' | 'submit' | 'reset' | null | undefined = 'button';
   export let size = 'large';
   export let color = '';
-  export let toolTipProps = {
+  export let toolTipProps: {
+    title: string;
+    hotkeys: string[];
+    direction?: string;
+  } = {
     title: '',
     hotkeys: [],
     direction: ''
   };
 
-  function handleClick(e) {
+  function handleClick(e: Event) {
     if (stopPropagation) {
       e.stopPropagation();
     }
