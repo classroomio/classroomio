@@ -43,7 +43,7 @@
   ];
 
   let selectedTab = 0;
-  let userId = users[0].value;
+  let userId = 'satoshi-nakamoto';
   let shouldCreatePoll = false;
   let polls = [
     {
@@ -92,7 +92,11 @@
       polls = [
         {
           ...poll,
-          author: users.find((u) => u.value === userId)
+          author: {
+            label: 'Satoshi Nakamoto',
+            value: 'satoshi-nakamoto',
+            avatar: 'https://i.pravatar.cc/150?img=4'
+          }
         },
         ...polls
       ];
@@ -122,7 +126,11 @@
                   // Select if already selected
                   option.selectedBy = [
                     ...option.selectedBy,
-                    users.find((user) => user.value === userId)
+                    {
+                      label: 'Satoshi Nakamoto',
+                      value: 'satoshi-nakamoto',
+                      avatar: 'https://i.pravatar.cc/150?img=4'
+                    }
                   ];
                 }
               } else if (option.selectedBy.find((user) => user.value === userId)) {
@@ -147,7 +155,7 @@
   </div>
 </PageNav>
 
-<div class="m-2 overlow-y-auto min-w-[300px]">
+<div class="m-2 overlow-y-auto min-w-[350px]">
   {#if shouldCreatePoll}
     <CreatePollForm onSubmit={handlePollCreate} onCancel={handleCreatePoll} />
   {:else}

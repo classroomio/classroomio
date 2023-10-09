@@ -110,7 +110,7 @@
       </div>
 
       <Label>Responses</Label>
-      {#each poll.options as option, index}
+      {#each poll.options as option}
         <div class="border-b p-5">
           <p class="dark:text-white">
             {option.label}
@@ -140,7 +140,7 @@
     {:else}
       {#each poll.options as option, index}
         <button
-          class="bg-white dark:bg-black rounded-md border-2 border-gray-500 {didUserSelect(
+          class="bg-white dark:bg-black rounded-md border-2 border-gray-500 h-[50px] {didUserSelect(
             option
           ) &&
             'focus:border-primary-700 border-primary-700'} text-black p-2 w-full mb-3 text-left relative"
@@ -153,9 +153,11 @@
                 : 'bg-gray-300'} h-full bg-opacity-25"
               style="width: {calculatePercent(poll.options, option)}%;"
             />
-            <strong class="mr-3">{calculatePercent(poll.options, option)}%</strong>
           {/if}
-          {option.label}
+          <p class="absolute top-3 text-black left-2">
+            {option.label}
+            ({calculatePercent(poll.options, option)}%)
+          </p>
         </button>
       {/each}
       <div class="flex items-center">
