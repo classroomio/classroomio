@@ -1,46 +1,47 @@
-<script>
+<script lang="ts">
   import FormSection from './FormSection.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import type { Poll } from '../types';
 
   export let title = 'Poll';
-  export let onSubmit;
-  export let onCancel;
+  export let onSubmit = (p: Poll) => {};
+  export let onCancel = () => {};
 
-  let values = {
+  let poll: Poll = {
     question: '',
-    author: '',
+    authorId: '',
     isPublic: false,
     expiration: '',
     options: [
       {
         label: '',
-        selectedBy: [],
-      },
-    ],
+        selectedBy: []
+      }
+    ]
   };
 
   function handleAddOptions() {
-    values = {
-      ...values,
+    poll = {
+      ...poll,
       options: [
-        ...values.options,
+        ...poll.options,
         {
           label: '',
-          selectedBy: [],
-        },
-      ],
+          selectedBy: []
+        }
+      ]
     };
   }
 
-  function handleRemoveOptions(index) {
+  function handleRemoveOptions(index: number) {
     return () => {
-      values.options = values.options.filter((o, i) => i !== index);
+      poll.options = poll.options.filter((o, i) => i !== index);
     };
   }
 
   function finishPoll() {
-    onSubmit(values);
+    onSubmit(poll);
   }
 </script>
 
@@ -49,16 +50,23 @@
     {title}
   </div>
   <div class="p-3">
-    <FormSection label="Question" bind:value={values.question} />
+    <FormSection
+      label="Question"
+      bind:value={poll.question}
+      handleLabelButton={undefined}
+      handleInputButton={undefined}
+    />
     <FormSection
       label="Expiration"
-      bind:value={values.expiration}
+      bind:value={poll.expiration}
       type="date"
+      handleLabelButton={undefined}
+      handleInputButton={undefined}
     />
 
-    {#each values.options as option, index}
+    {#each poll.options as option, index}
       <FormSection
-        label={index === 0 && 'Options'}
+        label={index === 0 ? 'Options' : ''}
         bind:value={option.label}
         handleLabelButton={handleAddOptions}
         handleInputButton={handleRemoveOptions(index)}
@@ -68,10 +76,6 @@
 
   <div class="w-full flex justify-center mb-3">
     <PrimaryButton label="Create poll" onClick={finishPoll} />
-    <PrimaryButton
-      label="Cancel"
-      variant={VARIANTS.OUTLINED}
-      onClick={onCancel}
-    />
+    <PrimaryButton label="Cancel" variant={VARIANTS.OUTLINED} onClick={onCancel} />
   </div>
 </div>
