@@ -170,6 +170,9 @@
     _isLoading?: boolean,
     lessonId?: string
   ) {
+    // don't autosave on view mode
+    if (mode === MODES.view) return;
+
     if (timeoutId) clearTimeout(timeoutId);
     console.log('autosaving');
     if (!initAutoSave) {

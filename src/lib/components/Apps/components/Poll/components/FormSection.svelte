@@ -1,23 +1,19 @@
-<script>
-  export let value;
-  export let label;
+<script lang="ts">
+  export let value: string | Date;
+  export let label: string;
   export let type = 'text';
   export let name = 'text';
-  export let handleLabelButton;
-  export let handleInputButton;
+  export let handleLabelButton: undefined | (() => void);
+  export let handleInputButton: undefined | (() => void);
 </script>
 
 <div class="mb-3">
   {#if label}
-    <p
-      class="dark:text-white p-0 m-0 mb-1 uppercase text-sm font-bold text-gray-600"
-    >
+    <p class="dark:text-white p-0 m-0 mb-1 uppercase text-sm font-bold text-gray-600">
       {label}
 
       {#if typeof handleLabelButton === 'function'}
-        <button class="text-xl px-3 ml-5" on:click={handleLabelButton}>
-          +
-        </button>
+        <button class="text-xl px-3 ml-5" on:click={handleLabelButton}> + </button>
       {/if}
     </p>
   {/if}
@@ -32,9 +28,7 @@
     {/if}
 
     {#if typeof handleInputButton === 'function'}
-      <button class="text-xl px-3 ml-5" on:click={handleInputButton}>
-        -
-      </button>
+      <button class="text-xl px-3 ml-5" on:click={handleInputButton}> - </button>
     {/if}
   </div>
 </div>

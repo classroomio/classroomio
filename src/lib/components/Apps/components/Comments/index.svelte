@@ -53,6 +53,7 @@
         commentAt: new Date()
       }
     ];
+    $lesson.totalComments = comments.length;
     scrollToBottom();
 
     isSaving = true;
@@ -65,9 +66,8 @@
       })
       .then(() => {
         isSaving = false;
+        comment = '';
       });
-
-    comment = '';
   }
 
   function handleKeyDown(e: KeyboardEvent) {
@@ -212,7 +212,7 @@
           </p>
         </div>
       </div>
-      <article class="prose prose-sm sm:prose ml-8 max-w-[300px]">
+      <article class="prose prose-sm sm:prose ml-8 max-w-[300px] dark:text-white">
         {comment.comment}
       </article>
     </div>
