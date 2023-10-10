@@ -3,6 +3,7 @@ import { CSS_IDS, CSS_TEMPLATES } from './css';
 import { calculateTotalPoints, shuffleOptions } from './utils';
 import type { ExerciseTemplate } from '$lib/utils/types';
 import { JS_IDS, JS_TEMPLATES } from './js';
+import { NODE_IDS, NODE_TEMPLATES } from './node';
 import { REACT_IDS, REACT_TEMPLATES } from './react';
 import { TS_IDS, TS_TEMPLATES } from './typescript';
 
@@ -12,7 +13,8 @@ export const TAGS = {
   JS: 'JS',
   Typescript: 'Typescript',
   ReactJS: 'ReactJS',
-  VueJS: 'VueJS'
+  VueJS: 'VueJS',
+  NodeJS: 'NodeJS'
 };
 
 function generateTemplateForTag(
@@ -47,5 +49,6 @@ export const TEMPLATES = {
   [TAGS.JS]: generateTemplateForTag(JS_IDS, JS_TEMPLATES),
   [TAGS.Typescript]: generateTemplateForTag(TS_IDS, TS_TEMPLATES),
   [TAGS.ReactJS]: generateTemplateForTag(REACT_IDS, REACT_TEMPLATES),
-  [TAGS.VueJS]: []
+  [TAGS.VueJS]: [],
+  [TAGS.NodeJS]: generateTemplateForTag(NODE_IDS, NODE_TEMPLATES)
 };
