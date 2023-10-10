@@ -6,6 +6,7 @@ import { JS_IDS, JS_TEMPLATES } from './js';
 import { NODE_IDS, NODE_TEMPLATES } from './node';
 import { REACT_IDS, REACT_TEMPLATES } from './react';
 import { TS_IDS, TS_TEMPLATES } from './typescript';
+import { PHP_IDS, PHP_TEMPLATES } from './php';
 
 export const TAGS = {
   HTML: 'HTML',
@@ -14,7 +15,8 @@ export const TAGS = {
   Typescript: 'Typescript',
   ReactJS: 'ReactJS',
   VueJS: 'VueJS',
-  NodeJS: 'NodeJS'
+  NodeJS: 'NodeJS',
+  PHP: 'PHP'
 };
 
 function generateTemplateForTag(
@@ -50,5 +52,6 @@ export const TEMPLATES = {
   [TAGS.Typescript]: generateTemplateForTag(TS_IDS, TS_TEMPLATES),
   [TAGS.ReactJS]: generateTemplateForTag(REACT_IDS, REACT_TEMPLATES),
   [TAGS.VueJS]: [],
-  [TAGS.NodeJS]: generateTemplateForTag(NODE_IDS, NODE_TEMPLATES)
+  [TAGS.NodeJS]: generateTemplateForTag(NODE_IDS, NODE_TEMPLATES),
+  [TAGS.PHP]: generateTemplateForTag(PHP_IDS, PHP_TEMPLATES)
 };
