@@ -1,9 +1,15 @@
-<script>
+<script lang="ts">
   import TextChip from '$lib/components/Chip/Text.svelte';
 
-  export let tabs = [];
-  export let currentTab;
-  export let onChange;
+  interface Tab {
+    icon?: any;
+    label: string;
+    value: string;
+    badgeValue?: number;
+  }
+  export let tabs: Tab[] = [];
+  export let currentTab: string;
+  export let onChange = (v: string) => () => {};
 </script>
 
 <div class="w-full flex flex-col">
@@ -40,7 +46,7 @@
             {tab.label}
             {#if typeof tab.badgeValue === 'number'}
               <TextChip
-                value={tab.badgeValue}
+                value={`${tab.badgeValue}`}
                 size="sm"
                 shape="rounded-full"
                 className="bg-gray-300 dark:text-black text-xs absolute right-0 px-2"

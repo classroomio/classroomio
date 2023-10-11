@@ -11,8 +11,10 @@ export interface OrgLandingPageJson {
       link: string;
       redirect: boolean;
     };
-    video: {
-      link: string;
+    banner: {
+      video: string;
+      image: string;
+      type: string;
       show: boolean;
     };
     show: boolean;
@@ -72,9 +74,11 @@ export let landingPageSettings: Writable<OrgLandingPageJson> = writable({
       link: '#contact',
       redirect: false
     },
-    video: {
-      show: true,
-      link: 'https://www.youtube.com/watch?v=qqAYW7uxErI'
+    banner: {
+      video: 'https://www.youtube.com/watch?v=qqAYW7uxErI',
+      image: '',
+      type: 'video',
+      show: true
     },
     show: true
   },
