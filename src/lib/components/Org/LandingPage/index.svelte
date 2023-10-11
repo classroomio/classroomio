@@ -132,11 +132,17 @@
   // Use default data in store if user hasn't added their own content to landing page
   function setDefault(landingpage) {
     if (landingpage && Object.keys(landingpage).length) {
-      $landingPageSettings = landingpage;
+      if (!landingpage?.header?.banner) {
+        landingpage.header.banner = $landingPageSettings.header.banner;
+      }
+
+      $landingPageSettings = {
+        ...landingpage
+      };
     }
   }
 
-  $: initPlyr(player, $landingPageSettings.header.video.link);
+  $: initPlyr(player, $landingPageSettings.header?.banner?.video);
   $: setDefault(org.landingpage);
 </script>
 
@@ -155,7 +161,7 @@
       <header id="header" class="banner w-full h-[100vh] md:h-[90vh] mb-10 relative">
         <Navigation logo={org.avatar_url} orgName={org.name} disableSignup={true} />
         <div class="absolute h-[100vh] md:h-[90vh] top-0 w-full opacity-80 z-10 bg-white" />
-        {#if $landingPageSettings.header.video.show}
+        {#if $landingPageSettings.header.banner.show}
           <div class="flex items-center justify-center md:h-full py-2">
             <div
               class="md:w-11/12 lg:w-5/6 w-full flex items-center justify-center md:justify-between flex-col-reverse md:flex-row z-20 relative"
@@ -185,24 +191,30 @@
                   }}
                 />
               </div>
+
               <div class="w-5/6 md:w-1/2 md:max-w-[650px] flex">
-                {#if isYouTubeLink($landingPageSettings.header.video.link)}
+                {#if isYouTubeLink($landingPageSettings.header?.banner?.video) && $landingPageSettings.header.banner.type === 'video'}
                   <div bind:this={player} id="player" style="width:100%; border-radius:12px">
                     <iframe
                       title="Header video"
-                      src={$landingPageSettings.header.video.link}
+                      src={$landingPageSettings.header?.banner?.video}
                       allowfullscreen
                       allowtransparency
                       allow="autoplay"
                     />
                   </div>
                 {:else}
-                  <video class="w-full rounded-xl" controls loop autoplay>
-                    <source src={$landingPageSettings.header.video.link} type="video/mp4" />
-                    <!-- <source src="/path/to/video.webm" type="video/webm" /> -->
-                    <!-- Captions are optional -->
-                    <track kind="captions" />
-                  </video>
+                  <!-- <video class="w-full rounded-xl" controls loop autoplay>
+                      <source src={$landingPageSettings.header?.banner?.video} type="video/mp4" />
+                      <source src="/path/to/video.webm" type="video/webm" />
+                      Captions are optional
+                      <track kind="captions" />
+                    </video> -->
+                  <img
+                    class="rounded-md"
+                    src={$landingPageSettings.header?.banner?.image}
+                    alt="landing page banner"
+                  />
                 {/if}
               </div>
             </div>

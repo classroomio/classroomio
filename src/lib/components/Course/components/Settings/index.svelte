@@ -13,8 +13,6 @@
   import { course } from '$lib/components/Course/store';
   import { updateCourse, deleteCourse } from '$lib/utils/services/courses';
   import { currentOrgPath } from '$lib/utils/store/org';
-  import { supabase } from '$lib/utils/functions/supabase';
-  import { Loading } from 'carbon-components-svelte';
   import { isObject } from '$lib/utils/functions/isObject';
   import { lessons } from '../Lesson/store/lessons';
   import { currentOrg } from '$lib/utils/store/org';
@@ -22,14 +20,11 @@
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
 
-  let uploadingImage = false;
   let isSaving = false;
-  let fileInput;
   let isLoading = false;
   let isDeleting = false;
   let errors = {};
   let avatar;
-  let imagebuffer;
 
   // controls widget open and close
   function widgetControl() {
@@ -120,7 +115,7 @@
       const {
         course_title,
         course_description,
-        image,
+        logo,
         tabs,
         grading,
         lesson_download,
@@ -129,7 +124,7 @@
       await updateCourse($course.id, avatar, {
         title: course_title,
         description: course_description,
-        logo: image,
+        logo: logo,
         is_published,
         metadata: {
           ...(isObject($course.metadata) ? $course.metadata : {}),
@@ -141,7 +136,7 @@
 
       $course.title = course_title;
       $course.description = course_description;
-      $course.logo = image;
+      $course.logo = logo;
       $course.is_published = is_published;
       $course.metadata = {
         ...(isObject($course.metadata) ? $course.metadata : {}),
@@ -163,7 +158,7 @@
       $settings = {
         course_title: course.title,
         course_description: course.description,
-        image: course.logo,
+        logo: course.logo,
         tabs: course.metadata.lessonTabsOrder || $settings.tabs,
         grading: course.metadata.grading,
         lesson_download: course.metadata.lessonDownload,
@@ -199,7 +194,7 @@
         />
       </span>
       {#if $handleOpenWidget.open}
-        <UploadWidget />
+        <UploadWidget bind:imageURL={$settings.logo} />
       {/if}
     </Column>
 
@@ -208,12 +203,9 @@
         <img
           style="min-width:280px; min-height:200px"
           alt="About us"
-          src={$settings.image ? $settings.image : '/images/classroomio-course-img-template.jpg'}
+          src={$settings.logo ? $settings.logo : '/images/classroomio-course-img-template.jpg'}
           class="mt-2 md:mt-0 w-[280px] h-[200px] rounded-md relative"
         />
-        {#if uploadingImage}
-          <Loading withOverlay={true} small class="absolute top-0 w-[280px]" />
-        {/if}
       </div>
     </Column>
   </Row>

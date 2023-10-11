@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store';
 
 export const settings = writable({
-  image: '',
+  logo: '',
   course_title: '',
   course_description: '',
   grading: false,

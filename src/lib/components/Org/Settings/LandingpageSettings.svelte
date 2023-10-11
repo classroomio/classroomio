@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Grid, Row, Column } from 'carbon-components-svelte';
+  import { Grid, Row, Column, RadioButtonGroup, RadioButton } from 'carbon-components-svelte';
   import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
@@ -14,19 +14,32 @@
   import { FileUploader } from 'carbon-components-svelte';
   import { landingPageSettings } from './store';
   import type { OrgLandingPageJson } from './store';
+  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
+  import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
+  import merge from 'lodash/merge';
 
   let files: File[] = [];
   let imageBuffer: File;
   let uploadingImage = false;
   let isSaving = false;
   let creatingNewQuestion = false;
+  let widgetKey = '';
 
+  const banner = [
+    { value: 'video', label: 'Video' },
+    { value: 'image', label: 'Image' }
+  ];
   const supabase = getSupabase();
 
   let newQuestion = {
     title: '',
     content: ''
   };
+
+  function widgetControl(key: string) {
+    widgetKey = key;
+    $handleOpenWidget.open = true;
+  }
 
   function createNewFaq() {
     newQuestion = {
@@ -60,34 +73,6 @@
     $landingPageSettings.faq.questions = filteredFaq;
   }
 
-  const uploadImage = async (image: File) => {
-    if (image) {
-      const filename = `landingpage/${Date.now()}` + image.name;
-      const { data } = await supabase.storage.from('avatars').upload(filename, image, {
-        cacheControl: '3600',
-        upsert: false
-      });
-
-      if (data) {
-        const { data: response } = await supabase.storage.from('avatars').getPublicUrl(filename);
-
-        $landingPageSettings.aboutUs.imageUrl = response.publicUrl;
-        uploadingImage = false;
-      }
-    }
-  };
-
-  const onFileSelected = (image: File) => {
-    uploadingImage = true;
-    let reader = new FileReader();
-    reader.readAsDataURL(image);
-    reader.onload = (e) => {
-      imageBuffer = image;
-
-      uploadImage(image);
-    };
-  };
-
   const checkPrefix = (inputValue: string) => {
     if (!inputValue) return;
 
@@ -98,6 +83,7 @@
     }
     return inputValue;
   };
+
   async function handleSave() {
     isSaving = true;
     $landingPageSettings.footer.twitter = checkPrefix($landingPageSettings.footer.twitter) || '';
@@ -122,11 +108,18 @@
 
   function setDefault(landingpage: OrgLandingPageJson) {
     if (landingpage && Object.keys(landingpage).length) {
-      $landingPageSettings = landingpage;
+      // Added new key, support backward compatibility
+      if (!landingpage?.header?.banner) {
+        landingpage.header.banner = $landingPageSettings.header.banner;
+      }
+
+      $landingPageSettings = {
+        ...landingpage
+      };
     }
   }
 
-  $: setDefault($currentOrg?.landingpage);
+  $: setDefault($currentOrg?.landingpage as OrgLandingPageJson);
 </script>
 
 <Grid class="border-c rounded border-gray-200 w-full mt-5 relative">
@@ -179,18 +172,48 @@
           <span slot="labelB" style="color: gray">Redirect</span>
         </Toggle>
       </div>
-      <SectionTitle>Video</SectionTitle>
-      <div class="gap-2 mt-3 mb-5">
-        <TextField
-          label="Link"
-          placeholder="Write your video link here"
-          bind:value={$landingPageSettings.header.video.link}
+
+      <div />
+      <RadioButtonGroup
+        legendText="Banner Type"
+        bind:selected={$landingPageSettings.header.banner.type}
+        class="mt-10 mb-5"
+      >
+        {#each banner as item}
+          <RadioButton value={item.value} labelText={item.label} />
+        {/each}
+      </RadioButtonGroup>
+      {#if $landingPageSettings.header.banner.type === 'video'}
+        <div class="gap-2 mt-3 mb-5">
+          <TextField
+            label="Link"
+            placeholder="Write your video link here"
+            bind:value={$landingPageSettings.header.banner.video}
+          />
+        </div>
+      {:else}
+        <PrimaryButton
+          variant={VARIANTS.OUTLINED}
+          label="Select Image"
+          className="mt-3"
+          onClick={() => widgetControl('banner')}
         />
-        <Toggle bind:toggled={$landingPageSettings.header.video.show} size="sm">
-          <span slot="labelA" style="color: gray">Hide Video</span>
-          <span slot="labelB" style="color: gray">Show Video</span>
-        </Toggle>
-      </div>
+      {/if}
+      {#if $landingPageSettings.header.banner.image && $landingPageSettings.header.banner.type === 'image'}
+        <img
+          alt="bannerImage"
+          src={$landingPageSettings.header.banner.image}
+          class="mt-2 rounded-md w-full"
+        />
+      {/if}
+
+      <Toggle bind:toggled={$landingPageSettings.header.banner.show} size="sm">
+        <span slot="labelA" style="color: gray">Hide banner</span>
+        <span slot="labelB" style="color: gray">Show banner</span>
+      </Toggle>
+      {#if $handleOpenWidget.open && widgetKey === 'banner'}
+        <UploadWidget bind:imageURL={$landingPageSettings.header.banner.image} />
+      {/if}
     </Column>
   </Row>
 
@@ -220,14 +243,12 @@
       />
 
       <div>
-        <FileUploader
-          status={uploadingImage ? 'uploading' : 'complete'}
-          buttonLabel="Select file"
-          labelTitle="Upload an image"
-          class="flex-col items-start gap-2 w-full"
-          accept={['.jpg', '.jpeg', '.png']}
-          bind:files
-          on:change={(file) => onFileSelected(file?.detail?.[0])}
+        <p class="font-bold">Upload an image</p>
+        <PrimaryButton
+          variant={VARIANTS.OUTLINED}
+          label="Select Image"
+          className="mt-3"
+          onClick={() => widgetControl('about-us')}
         />
         {#if $landingPageSettings.aboutUs.imageUrl}
           <img
@@ -235,6 +256,9 @@
             src={$landingPageSettings.aboutUs.imageUrl}
             class="mt-2 rounded-md w-full"
           />
+        {/if}
+        {#if $handleOpenWidget.open && widgetKey === 'about-us'}
+          <UploadWidget bind:imageURL={$landingPageSettings.aboutUs.imageUrl} />
         {/if}
       </div>
     </Column>

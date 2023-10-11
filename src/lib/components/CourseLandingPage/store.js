@@ -60,11 +60,6 @@ export const reviewsModalStore = writable({
   open: false
 });
 
-export const landingPage = writable({
-  uploadingImage: false,
-  imageUrl: ''
-});
-
 export let handleOpenWidget = writable({
   open: false
 });

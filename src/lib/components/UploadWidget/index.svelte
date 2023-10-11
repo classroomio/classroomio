@@ -1,91 +1,69 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import Tabs from '$lib/components/Tabs/index.svelte';
-  import { course } from '$lib/components/Course/store';
   import { getSupabase } from '$lib/utils/functions/supabase';
   import TabContent from '$lib/components/TabContent/index.svelte';
-  import { updateCourse } from '$lib/utils/services/courses';
   import { snackbar } from '../Snackbar/store';
-  import { isObject } from '$lib/utils/functions/isObject';
   import Modal from '$lib/components/Modal/index.svelte';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
-  import { settings } from '../Course/components/Settings/store';
   import { queryUnsplash } from './utils';
 
-  export let selectedImgUrl = '';
+  export let imageURL = '';
 
-  let tabs = [
+  const supabase = getSupabase();
+  const tabs = [
     { label: 'Unsplash', value: 'unsplash' },
     { label: 'Upload', value: 'upload' }
   ];
+
   let currentTab = tabs[0].value;
   let searchQuery = '';
-  let unsplashImages = [];
-  let avatar;
-  let fileInput;
+  let unsplashImages: {
+    id: string | number;
+    urls: {
+      regular: string;
+    };
+    alt_description: string;
+  }[] = [];
+  let fileInput: HTMLInputElement;
   let imagebuffer;
 
-  const supabase = getSupabase();
-  const onChange = (tabValue) => {
-    currentTab = tabValue;
-  };
+  const onChange = (tabValue: string) => () => (currentTab = tabValue);
 
-  async function handleImageClick(imageUrl) {
-    selectedImgUrl = imageUrl;
-    uploadImage(selectedImgUrl);
+  async function handleImageClick(img: string) {
+    imageURL = img;
+    $handleOpenWidget.open = false;
   }
 
   const onFileSelected = () => {
-    const image = fileInput.files[0];
-    if (image) {
+    const file = fileInput?.files?.[0];
+    if (file) {
       let reader = new FileReader();
-      reader.readAsDataURL(image);
+      reader.readAsDataURL(file);
       reader.onload = (e) => {
-        imagebuffer = image;
-        uploadImage(image);
+        imagebuffer = file;
+        uploadImage(file);
       };
     }
   };
 
-  const uploadImage = async (image) => {
-    if (image) {
-      if (typeof image === 'string') {
-        $settings.image = image;
-      } else if (image instanceof File) {
-        const filename = `bannerimage/${Date.now()}` + image.name;
-        const { data } = await supabase.storage.from('avatars').upload(filename, image, {
-          cacheControl: '3600',
-          upsert: false
-        });
-
-        if (data) {
-          const { data: response } = await supabase.storage.from('avatars').getPublicUrl(filename);
-
-          $settings.image = response.publicUrl;
-        }
-      }
-
-      try {
-        const { image } = $settings;
-        await updateCourse($course.id, avatar, {
-          logo: image,
-
-          metadata: {
-            ...(isObject($course.metadata) ? $course.metadata : {})
-          }
-        });
-
-        $course.logo = image;
-        $course.metadata = {
-          ...(isObject($course.metadata) ? $course.metadata : {})
-        };
-        snackbar.success('Saved successfully');
-        $handleOpenWidget.open = false;
-      } catch (error) {
-        snackbar.error();
-        console.log(error);
-      }
+  const uploadImage = async (image: File) => {
+    if (!image) {
+      return;
     }
+    const filename = `uploadwidget/${Date.now()}` + image.name;
+    const { data } = await supabase.storage.from('avatars').upload(filename, image, {
+      cacheControl: '3600',
+      upsert: false
+    });
+
+    if (data) {
+      const { data: response } = await supabase.storage.from('avatars').getPublicUrl(filename);
+      imageURL = response.publicUrl;
+    }
+
+    snackbar.success(`Complete :)`);
+    $handleOpenWidget.open = false;
   };
 
   function handleUpload() {
@@ -96,6 +74,7 @@
     try {
       unsplashImages = await queryUnsplash(searchQuery || 'rocks');
     } catch (error) {
+      snackbar.error('Error fetching images from Unsplash');
       console.error('Error fetching images from Unsplash:', error);
     }
   }
@@ -153,12 +132,13 @@
               <div class="flex flex-row items-center flex-wrap gap-2 py-4 px-[10px] max-h-[300px]">
                 {#each unsplashImages as unsplashImages (unsplashImages.id)}
                   <div class="w-[190px] h-[130px] overflow-hidden relative">
-                    <img
-                      src={unsplashImages.urls.regular}
-                      alt={unsplashImages.alt_description}
-                      class="w-full h-full object-cover rounded-md hover:opacity-80 cursor-pointer"
-                      on:click={() => handleImageClick(unsplashImages.urls.regular)}
-                    />
+                    <button on:click={() => handleImageClick(unsplashImages.urls.regular)}>
+                      <img
+                        src={unsplashImages.urls.regular}
+                        alt={unsplashImages.alt_description}
+                        class="w-full h-full object-cover rounded-md hover:opacity-80 cursor-pointer"
+                      />
+                    </button>
                   </div>
                 {/each}
               </div>
