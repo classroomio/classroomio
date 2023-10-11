@@ -6,7 +6,9 @@ export interface CurrentOrg {
   avatar_url: string;
   memberId: string;
   role_id: string;
-  landingpage: {};
+  landingpage: {
+    [key: string]: any;
+  };
   theme: string;
 }
 

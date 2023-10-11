@@ -1,12 +1,8 @@
 <script lang="ts">
-  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import get from 'lodash/get';
-
   import { onMount, onDestroy } from 'svelte';
   import pluralize from 'pluralize';
   import { page } from '$app/stores';
-  import { landingPage } from './store';
-  import { Loading } from 'carbon-components-svelte';
   import Notebook from 'carbon-icons-svelte/lib/Notebook.svelte'; //note
   import PresentationFile from 'carbon-icons-svelte/lib/PresentationFile.svelte'; // exercise
   import Video from 'carbon-icons-svelte/lib/Video.svelte'; //video
@@ -26,7 +22,6 @@
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import { calDateDiff } from '$lib/utils/functions/date';
-  import { handleOpenWidget } from './store';
 
   export let editMode = false;
   export let courseData: Course;
@@ -128,10 +123,6 @@
             startCoursePayment = true;
           }}
         />
-
-        {#if $handleOpenWidget.open}
-          <UploadWidget />
-        {/if}
       </div>
 
       <!-- Banner Image getEmbedId(videoUrl) -->
@@ -161,9 +152,6 @@
             src={bannerImage ? bannerImage : '/images/classroomio-course-img-template.jpg'}
             class="mt-2 md:mt-0 rounded-md w-full h-full max-w-[500px] max-h-[400px] relative"
           />
-          {#if $landingPage.uploadingImage}
-            <Loading withOverlay={true} small class="absolute top-0 w-full h-full" />
-          {/if}
         </div>
 
         <!-- <div

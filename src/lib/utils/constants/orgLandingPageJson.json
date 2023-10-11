@@ -8,9 +8,10 @@
       "link": "#contact",
       "redirect": false
     },
-    "video": {
-      "show": false,
-      "link": "https://youtube.com/sosf24lsfgs"
+    "banner": {
+      "video": "https://youtube.com/sosf24lsfgs",
+      "image": "",
+      "show": false
     },
     "show": true
   },
