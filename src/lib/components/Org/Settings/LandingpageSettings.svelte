@@ -468,7 +468,6 @@
       isLoading={isSaving}
       isDisabled={isSaving}
       onClick={handleSave}
-      className="target-component"
     />
   </div>
 </Grid>
