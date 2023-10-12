@@ -2,6 +2,7 @@
   import { Grid, Row, Column, RadioButtonGroup, RadioButton } from 'carbon-components-svelte';
   import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import Save from 'carbon-icons-svelte/lib/Save.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import SectionTitle from '../SectionTitle.svelte';
@@ -11,20 +12,14 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { getSupabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import { FileUploader } from 'carbon-components-svelte';
   import { landingPageSettings } from './store';
   import type { OrgLandingPageJson } from './store';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
-  import merge from 'lodash/merge';
 
-  let files: File[] = [];
-  let imageBuffer: File;
-  let uploadingImage = false;
   let isSaving = false;
   let creatingNewQuestion = false;
   let widgetKey = '';
-
   const banner = [
     { value: 'video', label: 'Video' },
     { value: 'image', label: 'Image' }
@@ -432,7 +427,7 @@
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="flex lg:flex-row flex-col py-7">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>Footer</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.footer.show} size="sm">
@@ -467,12 +462,42 @@
       />
     </Column>
   </Row>
-  <Row class="p-5 w-full flex items-center justify-center">
+  <div class="sticky desktop float-right bottom-12 mr-2 z-[120]">
     <PrimaryButton
       label="Save Changes"
       isLoading={isSaving}
       isDisabled={isSaving}
       onClick={handleSave}
     />
-  </Row>
+  </div>
 </Grid>
+
+<div
+  class="absolute
+ mobile right-6 bottom-8 z-[120]"
+>
+  <span>
+    <IconButton onClick={handleSave} disabled={isSaving}>
+      <Save size={40} class=" bg-blue-700 p-1 rounded-full" />
+    </IconButton>
+  </span>
+</div>
+
+<style>
+  @media screen and (min-width: 769px) {
+    .desktop {
+      display: block;
+    }
+    .mobile {
+      display: none;
+    }
+  }
+  @media screen and (max-width: 768px) {
+    .desktop {
+      display: none;
+    }
+    .mobile {
+      display: flex;
+    }
+  }
+</style>
