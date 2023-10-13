@@ -1,47 +1,47 @@
-<script>
+<script lang="ts">
   import Label from './Label.svelte';
   import Avatar from './Avatar.svelte';
 
   export let poll = {};
   export let onSelect = () => {};
   export let handlePollDelete = () => {};
-  export let currentUserId;
+  export let currentUserId: number | string;
   let viewResult = false;
-  let selectedOptionToView;
+  let selectedOptionToView: { selectedBy: any } | null;
   let isAuthor = false;
   let totalVotes = 0;
   let hasUserVoted = false;
 
-  function handleSelect(optionIndex) {
+  function handleSelect(optionIndex: number) {
     return () => {
       onSelect(optionIndex);
     };
   }
 
-  function getSelectedUsers(users) {
+  function getSelectedUsers(users: any[]) {
     return users.map((o) => o.label).join(', ');
   }
 
-  function getTotalVotes(options) {
+  function getTotalVotes(options: any[]) {
     return options.reduce((acc, cur) => acc + cur.selectedBy.length, 0);
   }
 
-  function calculatePercent(options, currentOption) {
+  function calculatePercent(options: any[], currentOption: { selectedBy: string | any[] }) {
     const totalVoteOfAllOptions = getTotalVotes(options);
     const totalVotesOfCurrentOption = currentOption.selectedBy.length;
 
     return Math.round((totalVotesOfCurrentOption / totalVoteOfAllOptions) * 100) || 0;
   }
 
-  function didUserSelect(option) {
-    return option.selectedBy.find((user) => user.value === currentUserId);
+  function didUserSelect(option: { selectedBy: any[] }) {
+    return option.selectedBy.find((user) => user.id === currentUserId);
   }
 
-  $: isAuthor = currentUserId === poll.author.value;
+  $: isAuthor = currentUserId === poll.author.id;
   $: totalVotes = getTotalVotes(poll.options);
   $: {
     hasUserVoted = poll.options.some((option) =>
-      option.selectedBy.find((u) => u.value === currentUserId)
+      option.selectedBy.find((u) => u.id === currentUserId)
     );
   }
 </script>

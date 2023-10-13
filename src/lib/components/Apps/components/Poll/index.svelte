@@ -6,119 +6,57 @@
   import CreatePollForm from './components/CreatePollForm.svelte';
   import Poll from './components/Poll.svelte';
   import Tabs from './components/Tabs.svelte';
+  import { polls } from './store';
+  import type { IPoll, ITabs } from './types';
+  import RoleBaseSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
 
   export let handleClose = () => {};
-
-  const users = [
-    {
-      label: 'Rich Harris',
-      value: 'rich-harris',
-      avatar: 'https://i.pravatar.cc/150?img=1'
-    },
-    {
-      label: 'Linus Torvalds',
-      value: 'linus-torvalds',
-      avatar: 'https://i.pravatar.cc/150?img=2'
-    },
-    {
-      label: 'Elon Musk',
-      value: 'elon-musk',
-      avatar: 'https://i.pravatar.cc/150?img=3'
-    },
-    {
-      label: 'Satoshi Nakamoto',
-      value: 'satoshi-nakamoto',
-      avatar: 'https://i.pravatar.cc/150?img=4'
-    }
-  ];
-  const tabs = [
-    {
-      label: 'My polls',
-      value: 0
-    },
-    {
-      label: 'Other polls',
-      value: 1
-    }
-  ];
-
   let selectedTab = 0;
-  let userId = 'satoshi-nakamoto';
+  let userId = 'abcdefghijk';
   let shouldCreatePoll = false;
-  let polls = [
-    {
-      question: 'Who is the creator of Svelte?',
-      author: users[0],
-      status: 'draft', // public
-      expiration: new Date().toDateString(),
-      options: [
-        {
-          label: 'Dan Abrahmov',
-          selectedBy: []
-        },
-        {
-          label: 'Evan You',
-          selectedBy: [
-            {
-              label: 'Rich Harris',
-              value: 'rich-harris',
-              avatar: 'https://i.pravatar.cc/150?img=1'
-            },
-            {
-              label: 'Linus Torvalds',
-              value: 'linus-torvalds',
-              avatar: 'https://i.pravatar.cc/150?img=2'
-            }
-          ]
-        },
-        {
-          label: 'Rich Harris',
-          selectedBy: []
-        },
-        {
-          label: 'Yehuda Katz',
-          selectedBy: []
-        }
-      ]
-    }
-  ];
+  let myPolls = 0;
+  let otherPolls = 0;
+
+  let tabs: ITabs = [];
 
   function handleCreatePoll() {
     shouldCreatePoll = !shouldCreatePoll;
   }
 
-  function handlePollCreate(poll) {
+  function handlePollCreate(poll: IPoll) {
     if (poll) {
-      polls = [
+      $polls = [
         {
           ...poll,
+          id: 'a',
           author: {
+            id: 'abcdefghijk',
             label: 'Satoshi Nakamoto',
-            value: 'satoshi-nakamoto',
-            avatar: 'https://i.pravatar.cc/150?img=4'
+            fullname: 'satoshi-nakamoto',
+            avatarUrl: 'https://i.pravatar.cc/150?img=4'
           }
         },
-        ...polls
+        ...$polls
       ];
     }
 
     handleCreatePoll();
   }
 
-  function handlePollDelete(pollId) {
+  function handlePollDelete(pollId: string) {
     return () => {
-      polls = [...polls.filter((p, i) => i !== pollId)];
+      $polls = [...$polls.filter((p, i) => p.id !== pollId)];
     };
   }
 
-  function handleVote(pollId) {
-    return (optionId) => {
-      polls = [
-        ...polls.map((poll, index) => {
+  function handleVote(pollId: string | number) {
+    return (optionId: string | number) => {
+      $polls = [
+        ...$polls.map((poll, index) => {
           if (index === pollId) {
             poll.options = poll.options.map((option, optionIndex) => {
               if (optionIndex === optionId) {
-                if (option.selectedBy.find((user) => user.value === userId)) {
+                if (option.selectedBy.find((user) => user.id === userId)) {
                   // Unselect if already selected
                   // <<update: let me keep this commented so after a user selects an answer it can't be unselected>>
                   // option.selectedBy = option.selectedBy.filter(user => user.value !== userId)
@@ -127,15 +65,16 @@
                   option.selectedBy = [
                     ...option.selectedBy,
                     {
+                      id: 'abcdefghijk',
                       label: 'Satoshi Nakamoto',
-                      value: 'satoshi-nakamoto',
-                      avatar: 'https://i.pravatar.cc/150?img=4'
+                      fullname: 'satoshi-nakamoto',
+                      avatarUrl: 'https://i.pravatar.cc/150?img=4'
                     }
                   ];
                 }
-              } else if (option.selectedBy.find((user) => user.value === userId)) {
+              } else if (option.selectedBy.find((user) => user.id === userId)) {
                 // This makes the user to select only one option
-                option.selectedBy = option.selectedBy.filter((user) => user.value !== userId);
+                option.selectedBy = option.selectedBy.filter((user) => user.id !== userId);
               }
 
               return option;
@@ -146,6 +85,22 @@
         })
       ];
     };
+  }
+  $: {
+    myPolls = $polls.filter((poll) => poll.author.id === userId).length;
+    otherPolls = $polls.filter((poll) => poll.author.id !== userId).length;
+    tabs = [
+      {
+        label: 'My polls',
+        value: 0,
+        number: myPolls
+      },
+      {
+        label: 'Other polls',
+        value: 1,
+        number: otherPolls
+      }
+    ];
   }
 </script>
 
@@ -161,40 +116,49 @@
   {:else}
     <div>
       <Tabs {tabs} bind:selectedTab />
+      <RoleBaseSecurity allowedRoles={[1, 2]}>
+        {#if selectedTab === tabs[0].value}
+          <div class="w-full flex justify-center mb-3">
+            <PrimaryButton
+              label="Create poll"
+              variant={VARIANTS.CONTAINED}
+              onClick={handleCreatePoll}
+            />
+          </div>
+        {/if}
+      </RoleBaseSecurity>
 
-      {#if selectedTab === tabs[0].value}
-        <div class="w-full flex justify-center mb-3">
-          <PrimaryButton
-            label="Create poll"
-            variant={VARIANTS.CONTAINED}
-            onClick={handleCreatePoll}
-          />
-        </div>
-      {/if}
-
-      {#each polls as poll, index}
-        {#if selectedTab === tabs[0].value && poll.author.value === userId}
+      {#each $polls as poll, index}
+        {#if selectedTab === tabs[0].value && poll.author.id === userId}
           <Poll
             bind:poll
             onSelect={handleVote(index)}
-            handlePollDelete={handlePollDelete(index)}
+            handlePollDelete={handlePollDelete(poll.id)}
             currentUserId={userId}
           />
-        {:else if selectedTab === tabs[1].value && poll.author.value !== userId}
+        {:else if selectedTab === tabs[1].value && poll.author.id !== userId}
           <Poll
             bind:poll
             onSelect={handleVote(index)}
-            handlePollDelete={handlePollDelete(index)}
+            handlePollDelete={handlePollDelete(poll.id)}
             currentUserId={userId}
           />
         {/if}
-      {:else}
+      {/each}
+      {#if selectedTab === tabs[0].value && myPolls == 0}
         <div
           class="bg-gray-100 dark:bg-neutral-800 border rounded-md h-60 flex items-center justify-center"
         >
           <h2 class="text-xl font-bold">No polls to display</h2>
         </div>
-      {/each}
+      {/if}
+      {#if selectedTab === tabs[1].value && otherPolls == 0}
+        <div
+          class="bg-gray-100 dark:bg-neutral-800 border rounded-md h-60 flex items-center justify-center"
+        >
+          <h2 class="text-xl font-bold">No polls to display</h2>
+        </div>
+      {/if}
     </div>
   {/if}
 </div>
