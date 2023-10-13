@@ -3,7 +3,6 @@
   import NotificationIcon from 'carbon-icons-svelte/lib/Notification.svelte';
   import Moon from 'carbon-icons-svelte/lib/Moon.svelte';
   import Sun from 'carbon-icons-svelte/lib/Sun.svelte';
-  import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
   import Menu from 'carbon-icons-svelte/lib/Menu.svelte';
   import Close from 'carbon-icons-svelte/lib/Close.svelte';
 
@@ -11,7 +10,6 @@
   import { appStore } from '$lib/utils/store/app';
   import { currentOrgPath } from '$lib/utils/store/org';
   import { toggleBodyByMode } from '$lib/utils/functions/app';
-  import { goto } from '$app/navigation';
   import { menu, sideBar } from '../Org/store';
 
   export let title = '';
@@ -60,16 +58,6 @@
             <Menu size={16} class=" text-white" />
           </IconButton>
         </li>
-        <div class="hidden md:block">
-          <IconButton
-            onClick={() => {
-              goto(coursesPath);
-            }}
-            size="small"
-          >
-            <CourseIcon color="#fff" />
-          </IconButton>
-        </div>
       {/if}
       <a
         href={coursesPath}
