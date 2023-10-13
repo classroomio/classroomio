@@ -1,4 +1,4 @@
-export type IPoll = {
+export type PollType = {
   id: string;
   question: string;
   author: {
@@ -23,7 +23,7 @@ export type IPoll = {
       }[];
 };
 
-export type ITabs = {
+export type TabsType = {
   label: string;
   value: number;
   number: number;

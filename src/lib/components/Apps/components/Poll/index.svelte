@@ -7,7 +7,7 @@
   import Poll from './components/Poll.svelte';
   import Tabs from './components/Tabs.svelte';
   import { polls } from './store';
-  import type { IPoll, ITabs } from './types';
+  import type { PollType, TabsType } from './types';
   import RoleBaseSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
 
   export let handleClose = () => {};
@@ -17,13 +17,13 @@
   let myPolls = 0;
   let otherPolls = 0;
 
-  let tabs: ITabs = [];
+  let tabs: TabsType = [];
 
   function handleCreatePoll() {
     shouldCreatePoll = !shouldCreatePoll;
   }
 
-  function handlePollCreate(poll: IPoll) {
+  function handlePollCreate(poll: PollType) {
     if (poll) {
       $polls = [
         {
@@ -54,31 +54,36 @@
       $polls = [
         ...$polls.map((poll, index) => {
           if (index === pollId) {
-            poll.options = poll.options.map((option, optionIndex) => {
-              if (optionIndex === optionId) {
-                if (option.selectedBy.find((user) => user.id === userId)) {
-                  // Unselect if already selected
-                  // <<update: let me keep this commented so after a user selects an answer it can't be unselected>>
-                  // option.selectedBy = option.selectedBy.filter(user => user.value !== userId)
-                } else {
-                  // Select if already selected
-                  option.selectedBy = [
-                    ...option.selectedBy,
-                    {
-                      id: 'abcdefghijk',
-                      label: 'Satoshi Nakamoto',
-                      fullname: 'satoshi-nakamoto',
-                      avatarUrl: 'https://i.pravatar.cc/150?img=4'
-                    }
-                  ];
+            poll.options = poll.options.map(
+              (
+                option: { selectedBy: PollType['options'][0]['selectedBy'] },
+                optionIndex: string | number
+              ) => {
+                if (optionIndex === optionId) {
+                  if (option.selectedBy.find((user: { id: string }) => user.id === userId)) {
+                    // Unselect if already selected
+                    // <<update: let me keep this commented so after a user selects an answer it can't be unselected>>
+                    // option.selectedBy = option.selectedBy.filter(user => user.value !== userId)
+                  } else {
+                    // Select if already selected
+                    option.selectedBy = [
+                      ...option.selectedBy,
+                      {
+                        id: 'abcdefghijk',
+                        label: 'Satoshi Nakamoto',
+                        fullname: 'satoshi-nakamoto',
+                        avatarUrl: 'https://i.pravatar.cc/150?img=4'
+                      }
+                    ];
+                  }
+                } else if (option.selectedBy.find((user) => user.id === userId)) {
+                  // This makes the user to select only one option
+                  option.selectedBy = option.selectedBy.filter((user) => user.id !== userId);
                 }
-              } else if (option.selectedBy.find((user) => user.id === userId)) {
-                // This makes the user to select only one option
-                option.selectedBy = option.selectedBy.filter((user) => user.id !== userId);
-              }
 
-              return option;
-            });
+                return option;
+              }
+            );
           }
 
           return poll;
