@@ -1,7 +1,9 @@
-<script>
-  export let tabs = [];
+<script lang="ts">
+  import Chip from '$lib/components/Chip/index.svelte';
+  import type { ITabs } from '../types';
+  export let tabs: ITabs = [];
 
-  export let selectedTab;
+  export let selectedTab: any;
 </script>
 
 <div class="mb-3">
@@ -13,6 +15,7 @@
       on:click={() => (selectedTab = tab.value)}
     >
       {tab.label}
+      <Chip bind:value={tab.number} />
     </button>
   {/each}
 </div>

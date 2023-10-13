@@ -2,19 +2,27 @@
   import FormSection from './FormSection.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import type { Poll } from '../types';
+  import type { IPoll } from '../types';
 
   export let title = 'Poll';
-  export let onSubmit = (p: Poll) => {};
+  export let onSubmit = (p: IPoll) => {};
   export let onCancel = () => {};
 
-  let poll: Poll = {
+  let poll: IPoll = {
+    id: '',
     question: '',
-    authorId: '',
+    author: {
+      id: '',
+      label: '',
+      fullname: '',
+      avatarUrl: ''
+    },
     isPublic: false,
+    status: '',
     expiration: '',
     options: [
       {
+        id: '',
         label: '',
         selectedBy: []
       }
@@ -27,6 +35,7 @@
       options: [
         ...poll.options,
         {
+          id: '',
           label: '',
           selectedBy: []
         }
@@ -34,7 +43,7 @@
     };
   }
 
-  function handleRemoveOptions(index: number) {
+  function handleRemoveOptions(index: string | number) {
     return () => {
       poll.options = poll.options.filter((o, i) => i !== index);
     };
