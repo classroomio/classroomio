@@ -1,13 +1,14 @@
 <script lang="ts">
   import Label from './Label.svelte';
   import Avatar from './Avatar.svelte';
+  import type { PollType } from '../types';
 
   export let poll = {};
   export let onSelect = () => {};
   export let handlePollDelete = () => {};
   export let currentUserId: number | string;
   let viewResult = false;
-  let selectedOptionToView: { selectedBy: any } | null;
+  let selectedOptionToView: { selectedBy: PollType['options'][0]['selectedBy'] } | null;
   let isAuthor = false;
   let totalVotes = 0;
   let hasUserVoted = false;
@@ -18,22 +19,25 @@
     };
   }
 
-  function getSelectedUsers(users: any[]) {
+  function getSelectedUsers(users: PollType['options'][0]['selectedBy']) {
     return users.map((o) => o.label).join(', ');
   }
 
-  function getTotalVotes(options: any[]) {
+  function getTotalVotes(options: PollType['options']) {
     return options.reduce((acc, cur) => acc + cur.selectedBy.length, 0);
   }
 
-  function calculatePercent(options: any[], currentOption: { selectedBy: string | any[] }) {
+  function calculatePercent(
+    options: PollType['options'],
+    currentOption: { selectedBy: string | PollType['options'][0]['selectedBy'] }
+  ) {
     const totalVoteOfAllOptions = getTotalVotes(options);
     const totalVotesOfCurrentOption = currentOption.selectedBy.length;
 
     return Math.round((totalVotesOfCurrentOption / totalVoteOfAllOptions) * 100) || 0;
   }
 
-  function didUserSelect(option: { selectedBy: any[] }) {
+  function didUserSelect(option: { selectedBy: PollType['options'][0]['selectedBy'] }) {
     return option.selectedBy.find((user) => user.id === currentUserId);
   }
 

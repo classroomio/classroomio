@@ -1,9 +1,9 @@
 <script lang="ts">
   import Chip from '$lib/components/Chip/index.svelte';
-  import type { ITabs } from '../types';
-  export let tabs: ITabs = [];
+  import type { TabsType, PollType } from '../types';
+  export let tabs: TabsType = [];
 
-  export let selectedTab: any;
+  export let selectedTab: number;
 </script>
 
 <div class="mb-3">
