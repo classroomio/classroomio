@@ -14,8 +14,6 @@
   let selectedTab = 0;
   let userId = 'abcdefghijk';
   let shouldCreatePoll = false;
-  let myPolls = 0;
-  let otherPolls = 0;
 
   let tabs: TabsType = [];
 
@@ -91,19 +89,18 @@
       ];
     };
   }
+
   $: {
-    myPolls = $polls.filter((poll) => poll.author.id === userId).length;
-    otherPolls = $polls.filter((poll) => poll.author.id !== userId).length;
     tabs = [
       {
         label: 'My polls',
         value: 0,
-        number: myPolls
+        number: $polls.filter((poll) => poll.author.id === userId).length
       },
       {
         label: 'Other polls',
         value: 1,
-        number: otherPolls
+        number: $polls.filter((poll) => poll.author.id !== userId).length
       }
     ];
   }
@@ -150,14 +147,14 @@
           />
         {/if}
       {/each}
-      {#if selectedTab === tabs[0].value && myPolls == 0}
+      {#if selectedTab === tabs[0].value && selectedTab == 0}
         <div
           class="bg-gray-100 dark:bg-neutral-800 border rounded-md h-60 flex items-center justify-center"
         >
           <h2 class="text-xl font-bold">No polls to display</h2>
         </div>
       {/if}
-      {#if selectedTab === tabs[1].value && otherPolls == 0}
+      {#if selectedTab === tabs[1].value && selectedTab == 0}
         <div
           class="bg-gray-100 dark:bg-neutral-800 border rounded-md h-60 flex items-center justify-center"
         >

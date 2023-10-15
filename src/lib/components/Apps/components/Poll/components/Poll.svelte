@@ -3,8 +3,8 @@
   import Avatar from './Avatar.svelte';
   import type { PollType } from '../types';
 
-  export let poll = {};
-  export let onSelect = () => {};
+  export let poll: PollType;
+  export let onSelect: (a: number) => void;
   export let handlePollDelete = () => {};
   export let currentUserId: number | string;
   let viewResult = false;
@@ -17,10 +17,6 @@
     return () => {
       onSelect(optionIndex);
     };
-  }
-
-  function getSelectedUsers(users: PollType['options'][0]['selectedBy']) {
-    return users.map((o) => o.label).join(', ');
   }
 
   function getTotalVotes(options: PollType['options']) {
@@ -44,9 +40,9 @@
   $: isAuthor = currentUserId === poll.author.id;
   $: totalVotes = getTotalVotes(poll.options);
   $: {
-    hasUserVoted = poll.options.some((option) =>
-      option.selectedBy.find((u) => u.id === currentUserId)
-    );
+    hasUserVoted =
+      poll?.options?.some((option) => option.selectedBy.find((u) => u.id === currentUserId)) ||
+      false;
   }
 </script>
 
@@ -63,7 +59,7 @@
       </div>
       {#each selectedOptionToView.selectedBy as user}
         <div class="flex items-center mb-2">
-          <Avatar src={user.avatar} name={user.label} className="mr-2" />
+          <Avatar src={user.avatarUrl} name={user.label} className="mr-2" />
           <p class="dark:text-white">
             {user.label}
           </p>
@@ -136,7 +132,7 @@
 
           <div class="flex items-center">
             {#each option.selectedBy.slice(0, 3) as user}
-              <Avatar src={user.avatar} name={user.label} className="mr-2" />
+              <Avatar src={user.avatarUrl} name={user.label} className="mr-2" />
             {/each}
           </div>
         </div>
