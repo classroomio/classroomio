@@ -30,21 +30,21 @@
     description: ''
   };
 
-  async function handleTemplateCreate(template: ExerciseTemplate) {
+  async function handleTemplateCreate(template: ExerciseTemplate): Promise<void> {
     const newExercise = await createExerciseFromTemplate(lessonId, template);
     console.log('newExercise', newExercise);
-    if (!newExercise) return;
+    if (newExercise) {
+      lesson.update((_lesson) => ({
+        ..._lesson,
+        exercises: [..._lesson.exercises, newExercise]
+      }));
 
-    lesson.update((_lesson) => ({
-      ..._lesson,
-      exercises: [..._lesson.exercises, newExercise]
-    }));
-
-    handleCancelAddExercise();
-    goto(path + '/' + newExercise.id);
+      handleCancelAddExercise();
+      goto(path + '/' + newExercise.id);
+    }
   }
+
   async function handleAddExercise() {
-    // createExerciseFromTemplate(lessonId);
     const { data, error } = await createExercise({
       title: newExercise.title,
       lesson_id: lessonId

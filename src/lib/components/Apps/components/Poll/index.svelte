@@ -155,7 +155,7 @@
   </div>
 </PageNav>
 
-<div class="m-2 overlow-y-auto min-w-[350px]">
+<div class="m-2 overlow-y-auto md:min-w-[350px] w-full">
   {#if shouldCreatePoll}
     <CreatePollForm onSubmit={handlePollCreate} onCancel={handleCreatePoll} />
   {:else}
