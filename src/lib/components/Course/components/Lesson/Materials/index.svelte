@@ -35,6 +35,7 @@
   import ComponentVideo from './components/ComponentVideo.svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import type { LessonPage } from '$lib/utils/types';
+  import { getTextFromHTML } from '$lib/utils/functions/course';
 
   export let mode = MODES.view;
   export let prevMode = '';
@@ -82,12 +83,7 @@
 
     if (!document) return false;
 
-    const dummyDiv = document.createElement('div');
-    dummyDiv.innerHTML = note;
-
-    const rawText = dummyDiv.textContent?.trim();
-
-    return rawText === '';
+    return getTextFromHTML(note) === '';
   }
 
   function isMaterialsEmpty(materials: LessonPage['materials']) {

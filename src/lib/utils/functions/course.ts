@@ -16,3 +16,10 @@ export const getStudentInviteLink = (_course: Course, orgSiteName: string) => {
 
   return `https://${orgSiteName}.classroomio.com/invite/s/${hash}`;
 };
+
+export const getTextFromHTML = (html: string): string => {
+  const dummyDiv = document.createElement('div');
+  dummyDiv.innerHTML = html;
+
+  return dummyDiv.textContent?.trim() || '';
+};

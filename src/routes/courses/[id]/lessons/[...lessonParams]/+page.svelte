@@ -232,7 +232,7 @@
       },
       {
         label: 'Exercises',
-        badgeValue: $lesson.totalExercises,
+        badgeValue: $lesson.exercises.length,
         isActive: !data.isMaterialsTabActive,
         href: `${path}/exercises`
       }
