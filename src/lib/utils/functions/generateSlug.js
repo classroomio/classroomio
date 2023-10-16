@@ -1,7 +1,7 @@
 function generateSlug(title) {
   return title
     .match(/[^\W\s\d]*/g, '')
-    .join('')
+    .join('-')
     .toLowerCase()
     .concat(`-${new Date().getTime()}`);
 }
