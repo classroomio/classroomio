@@ -4,7 +4,7 @@ The tool every classroom use in collaborating in and outside the class.
 
 ## Why the name?
 
-Initially I set out to build a customizable version of Google Classroom and I knew I wanted this to be a teaching software that can be used anywhere therefore I needed Classroom in the name  just like Google Classroom. As for `IO`, I followed the Google IO conference so closely and, the wording really sounded well to me plus, IO sounded more techy which made me feel that adding it to the name would mean `A Classroom driven by technology`. This made me consider calling it `Classroom` + `IO`, however the domain for classroom.io was taken so I made the IO part of the name thereby giving birth to `ClassroomIO.com` 
+Initially I set out to build a customizable version of Google Classroom and I knew I wanted this to be a teaching software that can be used anywhere therefore I needed Classroom in the name just like Google Classroom. As for `IO`, I followed the Google IO conference so closely and, the wording really sounded well to me plus, IO sounded more techy which made me feel that adding it to the name would mean `A Classroom driven by technology`. This made me consider calling it `Classroom` + `IO`, however the domain for classroom.io was taken so I made the IO part of the name thereby giving birth to `ClassroomIO.com`
 
 ## Why build another LMS?
 
@@ -40,7 +40,6 @@ Note: Make sure you are using Node 18
 PUBLIC_SUPABASE_ANON_KEY=
 PUBLIC_SUPABASE_URL=
 NETLIFY_API_KEY=
-MIXPANEL_TOKEN=
 OPENAI_API_KEY=
 CLOUDFLARE_TOKEN_VALUE=
 CLOUDFLARE_ACCESS_KEY=
