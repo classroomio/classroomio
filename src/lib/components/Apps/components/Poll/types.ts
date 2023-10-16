@@ -10,17 +10,16 @@ export type PollType = {
   isPublic: boolean;
   status: string;
   expiration: string | Date;
-  options:
-    | {
-        id: string;
-        label: string;
-        selectedBy: {
-          id: string;
-          label: string;
-          fullname: string;
-          avatarUrl: string;
-        }[];
-      }[];
+  options: {
+    id: string;
+    label: string;
+    selectedBy: {
+      id: string;
+      label: string;
+      fullname: string;
+      avatarUrl: string;
+    }[];
+  }[];
 };
 
 export type TabsType = {
