@@ -1,4 +1,4 @@
 import { writable, type Writable } from 'svelte/store';
-import type { IPoll } from './types';
+import type { PollType } from './types';
 
-export const polls: Writable<IPoll[]> = writable([]);
+export const polls: Writable<PollType[]> = writable([]);
