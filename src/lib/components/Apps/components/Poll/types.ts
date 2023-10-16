@@ -1,4 +1,15 @@
+export type PollOptionType = {
+  id: string;
+  label: string;
+  selectedBy: {
+    id: string;
+    label: string;
+    fullname: string;
+    avatarUrl: string;
+  }[];
+};
 export type PollType = {
+  courseId: string;
   id: string;
   question: string;
   author: {
@@ -10,16 +21,7 @@ export type PollType = {
   isPublic: boolean;
   status: string;
   expiration: string | Date;
-  options: {
-    id: string;
-    label: string;
-    selectedBy: {
-      id: string;
-      label: string;
-      fullname: string;
-      avatarUrl: string;
-    }[];
-  }[];
+  options: PollOptionType[];
 };
 
 export type TabsType = {

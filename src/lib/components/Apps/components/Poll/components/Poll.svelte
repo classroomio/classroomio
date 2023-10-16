@@ -4,7 +4,7 @@
   import type { PollType } from '../types';
 
   export let poll: PollType;
-  export let onSelect: (a: number) => void;
+  export let onSelect: (a: string | number) => void;
   export let handlePollDelete = () => {};
   export let currentUserId: number | string;
   let viewResult = false;

@@ -7,7 +7,7 @@
   import Poll from './components/Poll.svelte';
   import Tabs from './components/Tabs.svelte';
   import { polls } from './store';
-  import type { PollType, TabsType } from './types';
+  import type { PollType, TabsType, PollOptionType } from './types';
   import RoleBaseSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
 
   export let handleClose = () => {};
@@ -53,10 +53,7 @@
         ...$polls.map((poll, index) => {
           if (index === pollId) {
             poll.options = poll.options.map(
-              (
-                option: { selectedBy: PollType['options'][0]['selectedBy'] },
-                optionIndex: string | number
-              ) => {
+              (option: PollOptionType, optionIndex: string | number) => {
                 if (optionIndex === optionId) {
                   if (option.selectedBy.find((user: { id: string }) => user.id === userId)) {
                     // Unselect if already selected
