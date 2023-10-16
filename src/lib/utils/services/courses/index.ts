@@ -13,8 +13,6 @@ import type {
 import { STATUS } from '$lib/utils/constants/course';
 import type { PostgrestSingleResponse } from '@supabase/supabase-js';
 
-import htmlElements from '$lib/mocks/html/001_html_elements';
-
 export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']) {
   let match: { slug?: string; id?: string; status?: string } = {};
 

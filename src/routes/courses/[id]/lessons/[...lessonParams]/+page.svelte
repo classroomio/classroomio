@@ -191,7 +191,8 @@
         note: lessonData.note,
         slide_url: lessonData.slide_url
       },
-      lesson_completion
+      lesson_completion,
+      exercises: []
     }));
   }
 
@@ -204,7 +205,7 @@
     mode = mode === MODES.edit ? MODES.view : MODES.edit;
   }
 
-  function handleAppClick(appName) {
+  function handleAppClick(appName: string) {
     $apps.selectedApp = appName;
     $apps.open = true;
   }
@@ -232,7 +233,7 @@
       },
       {
         label: 'Exercises',
-        badgeValue: $lesson.exercises.length,
+        badgeValue: data.isMaterialsTabActive ? $lesson.totalExercises : $lesson.exercises.length,
         isActive: !data.isMaterialsTabActive,
         href: `${path}/exercises`
       }
