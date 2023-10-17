@@ -9,13 +9,29 @@
   import { polls } from './store';
   import type { PollType, TabsType, PollOptionType } from './types';
   import RoleBaseSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import { getSupabase } from '$lib/utils/functions/supabase';
+  import { profile } from '$lib/utils/store/user';
+  import { group } from '$lib/components/Course/store';
 
   export let handleClose = () => {};
+
+  const supabase = getSupabase();
+
   let selectedTab = 0;
   let userId = 'abcdefghijk';
   let shouldCreatePoll = false;
 
   let tabs: TabsType = [];
+
+  async function createPoll(poll: PollType) {
+    const { data, error } = await supabase.from('apps_poll').insert({
+      question: poll.question,
+      authorId: '',
+      isPublic: poll.isPublic,
+      status: poll.question,
+      expiration: poll.expiration
+    });
+  }
 
   function handleCreatePoll() {
     shouldCreatePoll = !shouldCreatePoll;
@@ -28,10 +44,10 @@
           ...poll,
           id: 'a',
           author: {
-            id: 'abcdefghijk',
-            label: 'Satoshi Nakamoto',
-            fullname: 'satoshi-nakamoto',
-            avatarUrl: 'https://i.pravatar.cc/150?img=4'
+            id: userId,
+            label: $profile.fullname,
+            fullname: $profile.fullname,
+            avatarUrl: $profile.avatar_url
           }
         },
         ...$polls
@@ -55,10 +71,10 @@
             poll.options = poll.options.map(
               (option: PollOptionType, optionIndex: string | number) => {
                 if (optionIndex === optionId) {
-                  if (option.selectedBy.find((user: { id: string }) => user.id === userId)) {
+                  if (option.selectedBy.find((gmember: { id: string }) => gmember.id === userId)) {
                     // Unselect if already selected
-                    // <<update: let me keep this commented so after a user selects an answer it can't be unselected>>
-                    // option.selectedBy = option.selectedBy.filter(user => user.value !== userId)
+                    // <<update: let me keep this commented so after a groupmember selects an answer it can't be unselected>>
+                    // option.selectedBy = option.selectedBy.filter(gmember => gmember.id !== userId)
                   } else {
                     // Select if already selected
                     option.selectedBy = [
@@ -71,9 +87,9 @@
                       }
                     ];
                   }
-                } else if (option.selectedBy.find((user) => user.id === userId)) {
-                  // This makes the user to select only one option
-                  option.selectedBy = option.selectedBy.filter((user) => user.id !== userId);
+                } else if (option.selectedBy.find((gmember) => gmember.id === userId)) {
+                  // This makes the groupmember to select only one option
+                  option.selectedBy = option.selectedBy.filter((gmember) => gmember.id !== userId);
                 }
 
                 return option;
@@ -87,6 +103,7 @@
     };
   }
 
+  $: groupmember = $group.people.find((person) => person.profile_id === $profile.id);
   $: {
     tabs = [
       {

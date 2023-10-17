@@ -8,6 +8,7 @@ export type PollOptionType = {
     avatarUrl: string;
   }[];
 };
+
 export type PollType = {
   courseId: string;
   id: string;
