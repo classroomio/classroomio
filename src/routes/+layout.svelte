@@ -216,7 +216,7 @@
     handleResize();
 
     if (
-      !localStorage.getItem('sb-koxqonvbkeakwvmdegcf-auth-token') &&
+      !localStorage.getItem('sb-tapaozmyjsuykgerrfkt-auth-token') &&
       !isPublicRoute($page.url.pathname)
     ) {
       console.log('No auth token and is not a public route, redirect to login', path);
