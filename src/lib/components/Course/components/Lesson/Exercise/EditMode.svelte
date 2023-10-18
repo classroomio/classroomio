@@ -17,11 +17,11 @@
   import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
   import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
 
-  import TextField from '$lib/components/Form/TextField.svelte';
   import Modal from '$lib/components/Modal/index.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import Checkbox from '$lib/components/Form/Checkbox.svelte';
   import RadioItem from '$lib/components/Form/RadioItem.svelte';
+  import AutoGrowTextField from '$lib/components/Form/AutoGrowTextField.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import ErrorMessage from '$lib/components/ErrorMessage/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -153,15 +153,15 @@
           question.is_dirty = true;
         }}
       >
-        <div class="flex justify-between items-center">
+        <div class="flex justify-between">
           <div class="mr-5 w-3/5">
-            <TextField
-              placeholder="Question"
+            <AutoGrowTextField
               bind:value={question.title}
-              isRequired={true}
-              onChange={() => {
+              onInput={(e) => {
+                question.title = e.target?.textContent;
                 question.is_dirty = true;
               }}
+              placeholder="Question"
             />
           </div>
 
