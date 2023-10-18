@@ -58,7 +58,7 @@ interface ExerciseTemplate {
 }
 
 I am a teacher and I need your help evaluating my students after I have taught a lesson. Please generate a test with ${questionNumber} questions and ${optionNumber} options. The sourse of this test should come from my lesson note in thripple quotes: """${lessonNote}""". Format the quiz to match the ExerciseTemplate interface above and VERY IMPORTANTANTLY: ONLY RETURN JSON FORMAT AND DO NOT EXPLAIN ANTHING.
-NB: Ask a mixture of 10 DIFFERENT Question Types(RADIO, CHECKBOX AND TEXTAREA), mark the correct answer.`;
+NB: Ask a mixture of ${optionNumber} options and ${questionNumber} DIFFERENT Question Types(RADIO, CHECKBOX AND TEXTAREA), mark the correct answer.`;
 
   const response = await openai.createChatCompletion({
     model: 'gpt-3.5-turbo',
