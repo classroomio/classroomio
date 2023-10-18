@@ -64,7 +64,7 @@ export async function fetchLMSExercises(
         total,
         groupmember:submitted_by!inner (
           id,
-          profile!inner (
+          profile:profile_id!inner (
             id
           )
         )
@@ -79,12 +79,12 @@ export async function fetchLMSExercises(
           group:group_id!inner (
             organisation:organization_id!inner (
               id
-            )
-          ),
-          groupmember:group_id!inner(
-            id,
-            profile!inner (
-              id
+            ),
+            groupmember!inner(
+              id,
+              profile:profile_id!inner (
+                id
+              )
             )
           )
         )
@@ -92,7 +92,7 @@ export async function fetchLMSExercises(
     `
     )
     .eq('lesson.course.group.organisation.id', orgId)
-    .eq('lesson.course.groupmember.profile.id', profileId)
+    .eq('lesson.course.group.groupmember.profile.id', profileId)
     .eq('submission.groupmember.profile.id', profileId);
 
   return {

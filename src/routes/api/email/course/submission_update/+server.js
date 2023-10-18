@@ -5,11 +5,10 @@ import { sendEmail } from '$lib/utils/services/notification/send';
 const supabase = getSupabase();
 
 export async function POST({ request }) {
-  const { to, name, orgName, courseName, orgSiteName } = await request.json();
+  const { to, content, orgName } = await request.json();
   const accessToken = request.headers.get('Authorization') || '';
-  console.log('/POST api/email/course/teacher_welcome', to, name, orgName);
 
-  if (!to || !name || !orgName || !courseName || !orgSiteName) {
+  if (!to || !content || !orgName) {
     return json({ success: false, message: 'Missing required fields' }, { status: 400 });
   }
 
@@ -25,21 +24,11 @@ export async function POST({ request }) {
     return json({ success: false, message: 'Unauthenticated user' }, { status: 401 });
   }
 
-  const origin = request.headers.get('origin');
-  const inviteLink = `${origin}/org/${orgSiteName}/courses`;
-
   await sendEmail({
     from: `"${orgName} (via ClassroomIO.com)" <help@classroomio.com>`,
     to,
-    subject: `You have been invited to a course in ${orgName}!`,
-    content: `
-    <p>Hey ${name},</p>
-      <p> You have been given access to teach a course by ${orgName}</p>
-      <p>The course is titled: ${courseName}</p>
-      <div>
-        <a class="button" href="${inviteLink}">Open Dashboard</a>
-      </div>
-    `
+    subject: `Submission Update`,
+    content
   });
 
   return json({

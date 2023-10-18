@@ -29,7 +29,7 @@ export function fetchSubmissions(course_id) {
   `
     )
     .match({
-      course_id,
+      course_id
     });
 }
 
@@ -46,13 +46,16 @@ export async function fetchSubmission({ courseId, exerciseId, submittedBy }) {
     .match({
       submitted_by: submittedBy,
       exercise_id: exerciseId,
-      course_id: courseId,
+      course_id: courseId
     });
 }
 
-export async function updateSubmission({ id, status_id, total }, otherArgs) {
+export async function updateSubmission(
+  { id, status_id, total }: { id?: number; status_id?: number; total?: number },
+  otherArgs?: any
+) {
   const toUpdate = {
-    status_id,
+    status_id
   };
 
   if (typeof total === 'number') {
