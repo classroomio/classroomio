@@ -27,9 +27,9 @@ export async function POST({ request }) {
   }
 
   await sendEmail({
-    from: `"${orgName} - ClassroomIO" <help@classroomio.com>`,
+    from: `"${orgName} (via ClassroomIO.com)" <help@classroomio.com>`,
     to,
-    subject: `[${orgName}] Welcome to Class 🎉`,
+    subject: `${orgName} - Welcome to Class 🎉`,
     content: `
     <p>Hi there,</p>
       <p>Congratulations 🎉, you’ve successfully joined: <strong>${courseName}</strong></p>
