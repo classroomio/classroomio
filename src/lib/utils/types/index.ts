@@ -35,6 +35,26 @@ export interface ExerciseTemplate {
     }[];
   };
 }
+export interface ExerciseSubmissions {
+  id: string;
+  status_id: number;
+  submitted_by: {
+    profile: {
+      id: string;
+      fullname: string;
+      avatar_url: string;
+    };
+  };
+  answers: {
+    answers: string[];
+    group_member_id: string;
+    id: number;
+    open_answer: string;
+    point: number;
+    question_id: number;
+    submission_id: string;
+  }[];
+}
 //===========================================
 
 interface CourseMetadata {

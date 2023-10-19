@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { fly } from 'svelte/transition';
   import { group, course } from '$lib/components/Course/store';
   import { questionnaire } from '../store/exercise';
@@ -19,16 +19,15 @@
   import { submitExercise } from '$lib/utils/services/courses';
   import { fetchSubmission } from '$lib/utils/services/submissions';
   import { profile } from '$lib/utils/store/user';
-  import { exerciseMode } from './store';
 
-  export let preview;
+  export let preview = false;
 
-  export let exerciseId;
+  export let exerciseId = '';
 
   let currentQuestion = {};
   let renderProps = {};
   let submission;
-  let hasSubmission = null;
+  let hasSubmission = false;
 
   function handleStart() {
     $questionnaireMetaData.currentQuestionIndex += 1;
@@ -92,7 +91,7 @@
     }, 0);
   }
 
-  async function checkForSubmission(people, profileId, courseId) {
+  async function checkForSubmission(people, profileId: string, courseId: string) {
     if (!Array.isArray(people) || !profileId || !courseId || !!submission) {
       return;
     }
@@ -163,12 +162,12 @@
 {/if}
 
 {#if preview}
-  {#if $exerciseMode.editMode}
+  <RoleBasedSecurity allowedRoles={[1, 2]}>
     <Preview
       questions={filterOutDeleted($questionnaire.questions)}
       questionnaireMetaData={$questionnaireMetaData}
     />
-  {/if}
+  </RoleBasedSecurity>
 {:else if !$questionnaire.questions.length}
   <Box>
     <img src="/images/empty-exercise-icon.svg" alt="Exercise svg" class="my-2.5" />

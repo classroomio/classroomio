@@ -1,10 +1,12 @@
+import type { PostgrestSingleResponse } from '@supabase/supabase-js';
 import { supabase } from '$lib/utils/functions/supabase';
+import type { ExerciseSubmissions } from '$lib/utils/types';
 
 export function fetchSubmissionStatus() {
   return supabase.from('submissionstatus').select(`*`);
 }
 
-export function fetchSubmissions(course_id) {
+export function fetchSubmissions(course_id: string) {
   return supabase
     .from('submission')
     .select(
@@ -33,28 +35,58 @@ export function fetchSubmissions(course_id) {
     });
 }
 
-export async function fetchSubmission({ courseId, exerciseId, submittedBy }) {
+export async function fetchSubmission({
+  courseId,
+  exerciseId,
+  submittedBy
+}: {
+  exerciseId: string;
+  courseId?: string;
+  submittedBy?: string;
+}) {
+  const query: {
+    exercise_id: string;
+    course_id?: string;
+    submitted_by?: string;
+  } = {
+    exercise_id: exerciseId
+  };
+
+  if (courseId) {
+    query.course_id = courseId;
+  }
+  if (submittedBy) {
+    query.submitted_by = submittedBy;
+  }
+
   return supabase
     .from('submission')
     .select(
       `
       id,
       answers:question_answer(*),
-      status_id
+      status_id,
+      submitted_by:groupmember!inner(
+        profile!inner(
+          id,
+          fullname,
+          avatar_url
+        )
+      )
     `
     )
-    .match({
-      submitted_by: submittedBy,
-      exercise_id: exerciseId,
-      course_id: courseId
-    });
+    .match(query)
+    .returns<ExerciseSubmissions[]>();
 }
 
 export async function updateSubmission(
   { id, status_id, total }: { id?: number; status_id?: number; total?: number },
   otherArgs?: any
 ) {
-  const toUpdate = {
+  const toUpdate: {
+    status_id?: number;
+    total?: number;
+  } = {
     status_id
   };
 
@@ -65,6 +97,6 @@ export async function updateSubmission(
   return supabase.from('submission').update(toUpdate, otherArgs).match({ id });
 }
 
-export async function updateQuestionAnswer(update, match) {
+export async function updateQuestionAnswer(update: any, match: any) {
   return supabase.from('question_answer').update(update).match(match);
 }
