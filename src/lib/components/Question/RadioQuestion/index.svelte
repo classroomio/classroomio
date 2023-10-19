@@ -66,7 +66,7 @@
     <HtmlRender className="mt-4">
       <svelte:fragment slot="content">
         <h3 class="dark:text-white {labelClassName} {!isNaN(grade) && 'w-3/4'}">
-          {title}
+          {@html title}
         </h3>
       </svelte:fragment>
     </HtmlRender>

@@ -17,11 +17,11 @@
   import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
   import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
 
+  import TextField from '$lib/components/Form/TextField.svelte';
   import Modal from '$lib/components/Modal/index.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import Checkbox from '$lib/components/Form/Checkbox.svelte';
   import RadioItem from '$lib/components/Form/RadioItem.svelte';
-  import AutoGrowTextField from '$lib/components/Form/AutoGrowTextField.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import ErrorMessage from '$lib/components/ErrorMessage/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -34,10 +34,9 @@
   import { deleteExercise } from '$lib/utils/services/courses';
   import { lesson } from '../store/lessons';
 
-  const extraActions = ['Code Snippets', 'Upload image'];
   const initialQuestionsLength = $questionnaire.questions.length;
 
-  export let editDescription = false;
+  export let shouldDeleteExercise = false;
   export let exerciseId;
   export let goBack = () => {};
 
@@ -63,21 +62,6 @@
 
   function onFinalDeleteClicked() {
     handleRemoveQuestion(questionIdToDelete)();
-  }
-
-  function handleOptionClick(questionIndex) {
-    return (actionIndex) => {
-      switch (actionIndex) {
-        case 0:
-          handleCode(questionIndex, true);
-          break;
-        case 1:
-          // uploadImage(questionIndex);
-          break;
-        default:
-          console.log('No option');
-      }
-    };
   }
 
   function getQuestionErrorMsg(errors, question, errorKey) {
@@ -108,13 +92,13 @@
 <OrderModal />
 
 <Modal
-  onClose={() => (editDescription = false)}
-  bind:open={editDescription}
+  onClose={() => (shouldDeleteExercise = false)}
+  bind:open={shouldDeleteExercise}
   width="w-2/4"
-  modalHeading="Update description"
+  modalHeading="Delete Modal"
 >
   <form on:submit|preventDefault>
-    <h1 class="dark:text-white text-2xl">Are you sure?</h1>
+    <h1 class="dark:text-white text-xl">Are you sure you want to delete this exercise?</h1>
 
     <div class="mt-5 flex items-center justify-between">
       <PrimaryButton
@@ -122,7 +106,7 @@
         variant={VARIANTS.OUTLINED}
         label="No, cancel"
         type="submit"
-        onClick={() => (editDescription = false)}
+        onClick={() => (shouldDeleteExercise = false)}
       />
       <PrimaryButton
         className="px-6 py-3"
@@ -153,15 +137,15 @@
           question.is_dirty = true;
         }}
       >
-        <div class="flex justify-between">
+        <div class="flex justify-between items-center">
           <div class="mr-5 w-3/5">
-            <AutoGrowTextField
+            <TextField
+              placeholder="Question"
               bind:value={question.title}
-              onInput={(e) => {
-                question.title = e.target?.textContent;
+              isRequired={true}
+              onChange={() => {
                 question.is_dirty = true;
               }}
-              placeholder="Question"
             />
           </div>
 

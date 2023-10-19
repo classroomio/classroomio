@@ -7,7 +7,7 @@
 
   export let preview: boolean;
 
-  function getTotalPossibleGrade(questions) {
+  function getTotalPossibleGrade(questions: { points: string }[]) {
     return questions.reduce((acc, question) => {
       acc += parseFloat(question.points, 10);
       return acc;

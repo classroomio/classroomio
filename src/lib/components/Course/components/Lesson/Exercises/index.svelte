@@ -13,7 +13,6 @@
   import { QUESTION_TYPES } from '$lib/components/Question/constants';
   import { lesson } from '../store/lessons';
   import { questionnaire, isQuestionnaireFetching } from '../store/exercise';
-  import { exerciseMode } from '../Exercise/store';
   import NewExerciseModal from '$lib/components/Course/components/Lesson/Exercises/NewExerciseModal.svelte';
   import type { ExerciseTemplate } from '$lib/utils/types';
 
@@ -124,7 +123,6 @@
     data.is_due_by_dirty = false;
 
     questionnaire.set(data);
-    console.log('getExercise', exerciseId, $questionnaire);
 
     isQuestionnaireFetching.update(() => false);
     isFetching = false;
@@ -139,8 +137,6 @@
   });
 
   $: getExercise(exerciseId);
-
-  $: $exerciseMode.editMode = !isStudent;
 </script>
 
 {#if isFetching}
