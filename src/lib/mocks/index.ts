@@ -9,6 +9,7 @@ import { TS_IDS, TS_TEMPLATES } from './typescript';
 import { PHP_IDS, PHP_TEMPLATES } from './php';
 import { VUE_IDS, VUE_TEMPLATES } from './vue';
 import { GIT_IDS, GIT_TEMPLATES } from './git';
+import { PYTHON_IDS, PYTHON_TEMPLATES } from './python';
 
 export const TAGS = {
   HTML: 'HTML',
@@ -18,6 +19,7 @@ export const TAGS = {
   ReactJS: 'ReactJS',
   VueJS: 'VueJS',
   NodeJS: 'NodeJS',
+  Python: 'Python',
   PHP: 'PHP',
   GIT: 'GIT'
 };
@@ -56,6 +58,7 @@ export const TEMPLATES = {
   [TAGS.ReactJS]: generateTemplateForTag(REACT_IDS, REACT_TEMPLATES),
   [TAGS.VueJS]: generateTemplateForTag(VUE_IDS, VUE_TEMPLATES),
   [TAGS.NodeJS]: generateTemplateForTag(NODE_IDS, NODE_TEMPLATES),
+  [TAGS.Python]: generateTemplateForTag(PYTHON_IDS, PYTHON_TEMPLATES),
   [TAGS.PHP]: generateTemplateForTag(PHP_IDS, PHP_TEMPLATES),
   [TAGS.GIT]: generateTemplateForTag(GIT_IDS, GIT_TEMPLATES)
 };
