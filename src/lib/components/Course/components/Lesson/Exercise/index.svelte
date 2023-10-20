@@ -69,10 +69,12 @@
 </script>
 
 <PageBody bind:isPageNavHidden={isStudent} padding="px-4 overflow-x-hidden">
-  <ContentSwitcher bind:selectedIndex class="mb-2">
-    <Switch text={`Questions ${0}`} />
-    <Switch text="Analytics" />
-  </ContentSwitcher>
+  <RoleBasedSecurity allowedRoles={[1, 2]}>
+    <ContentSwitcher bind:selectedIndex class="mb-2">
+      <Switch text="Questions" />
+      <Switch text="Analytics" />
+    </ContentSwitcher>
+  </RoleBasedSecurity>
 
   {#if selectedIndex === 0}
     <div

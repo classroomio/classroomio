@@ -11,6 +11,7 @@ export interface GroupPerson {
   profile: Profile;
   profile_id: string;
   role_id: Role['id'];
+  fullname?: string;
 }
 
 export interface CustomQuestionType {

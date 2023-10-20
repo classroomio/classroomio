@@ -33,6 +33,7 @@
   import { profile } from '$lib/utils/store/user';
   import { snackbar } from '$lib/components/Snackbar/store';
   import Avatar from '$lib/components/Avatar/index.svelte';
+  import type { GroupPerson } from '$lib/utils/types';
 
   export let data;
   const { courseId } = data;
@@ -62,9 +63,7 @@
 
   async function deletePerson() {
     $group.people = $group.people.filter((person: { id: string }) => person.id !== member.id);
-    $group.tutors = $group.tutors.filter(
-      (person: { memberId: string }) => person.memberId !== member.id
-    );
+    $group.tutors = $group.tutors.filter((person: GroupPerson) => person.memberId !== member.id);
 
     await deleteGroupMember(member.id);
   }
