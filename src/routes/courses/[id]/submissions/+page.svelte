@@ -114,12 +114,9 @@
         ${
           status_id == 3
             ? `<p>Your score was ${totalMark}/${maxMark}</p>
-          <div>
-            <a class="button" href="${exerciseLink}">View your Result</a>
-            <div>`
-            : `<div>
-              <a class="button" href="${exerciseLink}">Open Exercise</a>
-              <div>`
+              <a class="button" href="${exerciseLink}">View your Result</a>
+            `
+            : `<a class="button" href="${exerciseLink}">Open Exercise</a>`
         }
         <p>This exercise is for <strong>${
           lessonDetails.title
@@ -254,7 +251,7 @@
       total: totalPoints
     }).then((res) => console.log('Updated submission', res));
 
-    snackbar.success();
+    snackbar.success('Grading saved and student notified');
 
     await Promise.all(updates);
   }
