@@ -77,11 +77,9 @@
   </RoleBasedSecurity>
 
   {#if selectedIndex === 0}
-    <div
-      class="top-0 z-10 bg-gray-100 rounded-md mb-3 dark:bg-neutral-800 flex items-center justify-end sticky right-0 w-full px-3"
-    >
+    <div class="top-0 z-10 mb-3 flex items-center justify-end sticky right-0 w-full">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
-        <div class="flex items-center">
+        <div class="flex items-center bg-gray-100 dark:bg-neutral-800 rounded-md pl-3">
           <PrimaryButton
             className="mr-2"
             variant={VARIANTS.CONTAINED}
