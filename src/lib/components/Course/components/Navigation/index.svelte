@@ -211,16 +211,16 @@
         hideSortIcon: true
       },
       {
-        label: 'Settings',
-        to: getNavItemRoute($course.id, 'settings'),
+        label: 'Landing Page',
+        to: getNavItemRoute($course.id, 'landingpage'),
         hideSortIcon: true,
         show() {
           return !isStudent;
         }
       },
       {
-        label: 'Landing Page',
-        to: getNavItemRoute($course.id, 'landingpage'),
+        label: 'Settings',
+        to: getNavItemRoute($course.id, 'settings'),
         hideSortIcon: true,
         show() {
           return !isStudent;

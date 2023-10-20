@@ -7,6 +7,7 @@
   import Modal from '$lib/components/Modal/index.svelte';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
   import { queryUnsplash } from './utils';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   export let imageURL = '';
 
@@ -16,6 +17,7 @@
     { label: 'Upload', value: 'upload' }
   ];
 
+  let isUploading = false;
   let currentTab = tabs[0].value;
   let searchQuery = '';
   let unsplashImages: {
@@ -30,7 +32,6 @@
     alt_description: string;
   }[] = [];
   let fileInput: HTMLInputElement;
-  let imagebuffer;
 
   const onChange = (tabValue: string) => () => (currentTab = tabValue);
 
@@ -45,13 +46,13 @@
       let reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = (e) => {
-        imagebuffer = file;
         uploadImage(file);
       };
     }
   };
 
   const uploadImage = async (image: File) => {
+    isUploading = true;
     if (!image) {
       return;
     }
@@ -65,6 +66,7 @@
       const { data: response } = await supabase.storage.from('avatars').getPublicUrl(filename);
       imageURL = response.publicUrl;
     }
+    isUploading = false;
 
     snackbar.success(`Complete :)`);
     $handleOpenWidget.open = false;
@@ -104,11 +106,14 @@
               style="display: none;"
               bind:this={fileInput}
               on:change={onFileSelected}
+              disabled={isUploading}
             />
-            <button
-              on:click={handleUpload}
-              class="py-2 w-full font-semibold hover:bg-gray-200 border-[1px]">Upload Image</button
-            >
+            <PrimaryButton
+              label="Upload Image"
+              onClick={handleUpload}
+              isLoading={isUploading}
+              className="w-full font-semibold m-auto"
+            />
             <p class="text-center text-sm text-gray-500 my-2">
               Images wider than 1500 pixels work best.
             </p>
