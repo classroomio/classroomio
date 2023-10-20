@@ -66,14 +66,13 @@
   const { input, handleSubmit, completion } = useCompletion({
     api: '/api/completion/exerciseprompt',
     onFinish: async (prompt: string, completion: string) => {
-      $isLoading = false;
-
       if (!$lesson.id) return;
 
       toggleConfetti();
       const template: ExerciseTemplate = JSON.parse($completion);
       await handleTemplateCreate(template);
       toggleConfetti();
+      $isLoading = false;
     }
   });
 
