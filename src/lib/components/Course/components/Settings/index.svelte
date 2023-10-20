@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { Grid, Row, Column, Toggle } from 'carbon-components-svelte';
+  import { CodeSnippet, Grid, Row, Column, Toggle } from 'carbon-components-svelte';
 
   import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
@@ -212,7 +212,7 @@
 
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={8} md={8} lg={8}>
-      <SectionTitle>Update course details</SectionTitle>
+      <SectionTitle>Course details</SectionTitle>
     </Column>
 
     <Column sm={8} md={8} lg={8}>
@@ -230,6 +230,18 @@
         bind:value={$settings.course_description}
         errorMessage={errors.description}
       />
+      <div class="">
+        <p class="text-md">Course Link</p>
+        {#if $course.slug}
+          <CodeSnippet
+            wrapText
+            type="multi"
+            code={`https://${$currentOrg.siteName}.classroomio.com/course/${$course.slug}`}
+          />
+        {:else}
+          <CodeSnippet code="Setup landing page to get course link" />
+        {/if}
+      </div>
     </Column>
   </Row>
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
