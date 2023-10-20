@@ -19,9 +19,14 @@
   import { submitExercise } from '$lib/utils/services/courses';
   import { fetchSubmission } from '$lib/utils/services/submissions';
   import { profile } from '$lib/utils/store/user';
+  import { currentOrg } from '$lib/utils/store/org';
+  import {
+    NOTIFICATION_NAME,
+    triggerSendEmail
+  } from '$lib/utils/services/notification/notification';
+  import { lesson } from '../store/lessons';
 
-  export let preview = false;
-
+  export let preview;
   export let exerciseId = '';
 
   let currentQuestion = {};
@@ -33,10 +38,40 @@
     $questionnaireMetaData.currentQuestionIndex += 1;
   }
 
+  const getStudent = (people, profileId) => {
+    return people.find((person) => person.profile_id === profileId);
+  };
+
+  const sendEmail = () => {
+    const student = getStudent($group.students, $profile.id);
+    const teacherFullname = $group.tutors[0]?.fullname;
+    const teacherEmail = $group.tutors[0]?.email;
+
+    if (!student || !teacherFullname || !teacherEmail) return;
+
+    const baseUrl = `https://app.classroomio.com/courses/${$course.id}`;
+    const exerciseLink = `${baseUrl}/lessons/${$lesson.id}/exercises/${exerciseId}`;
+    const submissionLink = `${baseUrl}/submissions`;
+    const content = `
+      <p>Hello ${teacherFullname},</p>
+      <p>A student ${student.profile.fullname} just submitted an exercise <a href=${exerciseLink}>${$questionnaire.title}</a> 
+        <p>You can get started grading by clicking "Open Submissions"</p>
+      <div>
+        <a class="button" href=${submissionLink}>Open Submissions</a>
+      </div>
+      `;
+
+    triggerSendEmail(NOTIFICATION_NAME.EXERCISE_SUBMISSION_UPDATE, {
+      to: teacherEmail,
+      content,
+      orgName: $currentOrg?.name,
+      exerciseTitle: $questionnaire.title
+    });
+  };
+
   function onSubmit(id, value, moveToNextQuestion = false) {
     const { answers } = $questionnaireMetaData;
     const { questions } = $questionnaire;
-
     const prevAnswer = answers[id] || [];
     const formattedAnswer =
       typeof value === 'string' ? value : removeDuplicate([...prevAnswer, ...(value || [])]);
@@ -69,6 +104,7 @@
         $course.id,
         getGroupMemberId($group.people, $profile.id)
       );
+      sendEmail();
     }
   }
 
@@ -153,7 +189,6 @@
   $: $questionnaireMetaData.progressValue = getProgressValue(
     $questionnaireMetaData.currentQuestionIndex
   );
-
   $: checkForSubmission($group.people, $profile.id, $course.id);
 </script>
 

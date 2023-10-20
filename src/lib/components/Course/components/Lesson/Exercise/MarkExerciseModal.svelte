@@ -88,23 +88,6 @@
     />
   </div>
   <div class="ml-4 w-2/5 sticky top-0">
-    <div class="flex items-center justify-between">
-      <Select
-        bind:value={status}
-        options={SELECTABLE_STATUS}
-        selectClassName={getStatusColor(status)}
-        onChange={handleStatusChange}
-      />
-
-      <PrimaryButton
-        onClick={() => {
-          handleSave(data);
-        }}
-        label="Save"
-        variant={VARIANTS.CONTAINED_SUCCESS}
-        className="py-3 px-8"
-      />
-    </div>
     <div class="border border-gray-300 rounded-md mt-2">
       <div
         class="hover:bg-gray-100 dark:bg-neutral-800 border-b border-t-0 border-l-0 border-r-0 border-gray-300 p-3"
@@ -140,6 +123,26 @@
           />
           <p class="dark:text-white ml-2 text-sm">{data.student.fullname}</p>
         {/if}
+      </div>
+      <div class="flex items-center text-sm p-3">
+        <p class="dark:text-white font-bold w-2/5">Status</p>
+        <Select
+          bind:value={status}
+          options={SELECTABLE_STATUS}
+          selectClassName={getStatusColor(status)}
+          onChange={handleStatusChange}
+          className="w-full"
+        />
+      </div>
+      <div class="flex items-center justify-center w-full p-3">
+        <PrimaryButton
+          onClick={() => {
+            handleSave(data);
+          }}
+          label="Submit Grades"
+          variant={VARIANTS.CONTAINED_SUCCESS}
+          className="py-3 px-8 w-full"
+        />
       </div>
       <!-- <div class="flex items-center text-sm p-3">
         <p class="dark:text-white font-bold w-1/2">Teacher</p>

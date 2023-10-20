@@ -5,7 +5,7 @@ import { sendEmail } from '$lib/utils/services/notification/send';
 const supabase = getSupabase();
 
 export async function POST({ request }) {
-  const { to, content, orgName } = await request.json();
+  const { to, content, orgName, exerciseTitle } = await request.json();
   const accessToken = request.headers.get('Authorization') || '';
 
   if (!to || !content || !orgName) {
@@ -27,7 +27,7 @@ export async function POST({ request }) {
   await sendEmail({
     from: `"${orgName} (via ClassroomIO.com)" <help@classroomio.com>`,
     to,
-    subject: 'Submission Update',
+    subject: `[Submitted]: ${exerciseTitle}`,
     content
   });
 

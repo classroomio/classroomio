@@ -56,7 +56,7 @@
   }
 
   function handleCursor(event) {
-    if (!resize) {
+    if (!resize && sidebarRef) {
       const isNearLeftBorder = event.clientX - sidebarRef.getBoundingClientRect().left < 8;
       const isNearRightBorder = sidebarRef.getBoundingClientRect().right - event.clientX < 8;
 
@@ -69,7 +69,7 @@
   }
 
   function startDragging(event) {
-    if (event.button === 0) {
+    if (event.button === 0 && sidebarRef) {
       event.preventDefault();
 
       const isNearRightBorder = sidebarRef.getBoundingClientRect().right - event.clientX < 8;

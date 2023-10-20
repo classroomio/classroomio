@@ -1,10 +1,10 @@
-<script>
+<script lang="ts">
   import CodeSnippet from '$lib/components/CodeSnippet/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import Checkbox from '$lib/components/Form/Checkbox.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
+  import Grade from '$lib/components/Question/Grade.svelte';
 
   export let title = '';
   export let code;
@@ -17,7 +17,7 @@
   export let disabled = false;
   export let isPreview = false;
   export let nextButtonProps = {};
-  export let grade;
+  export let grade: number | undefined;
   export let gradeMax = 0;
   export let disableGrading = false;
 
@@ -63,21 +63,10 @@
   <div class="flex items-center justify-between">
     <HtmlRender className="mt-4">
       <svelte:fragment slot="content">
-        <h3 class={!isNaN(grade) ? 'w-3/4' : ''}>{title}</h3>
+        <h3 class={typeof grade === 'number' ? 'w-3/4' : ''}>{title}</h3>
       </svelte:fragment>
     </HtmlRender>
-    {#if !isNaN(grade)}
-      <div class="flex items-center">
-        <TextField
-          placeholder="Points"
-          bind:value={grade}
-          type="number"
-          className="w-20"
-          isDisabled={disableGrading}
-        />
-        <p class="dark:text-white ml-2 text-lg">/ {gradeMax}</p>
-      </div>
-    {/if}
+    <Grade {gradeMax} {grade} {disableGrading} />
   </div>
 
   {#if code}
