@@ -46,7 +46,11 @@
     const student = getStudent($group.students, $profile.id);
     const teacherFullname = $group.tutors[0]?.fullname;
     const teacherEmail = $group.tutors[0]?.email;
-
+    console.log({
+      student,
+      teacherFullname,
+      teacherEmail
+    });
     if (!student || !teacherFullname || !teacherEmail) return;
 
     const baseUrl = `https://app.classroomio.com/courses/${$course.id}`;
