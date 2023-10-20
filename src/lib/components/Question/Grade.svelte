@@ -2,7 +2,7 @@
   import TextField from '$lib/components/Form/TextField.svelte';
   export let gradeMax = 0;
   export let disableGrading = false;
-  export let grade: number | undefined = 0;
+  export let grade: number | undefined;
 </script>
 
 {#if typeof grade === 'number'}
