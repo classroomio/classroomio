@@ -25,6 +25,7 @@
   let comments: LessonComment[] = [];
   let groupmember: GroupPerson | undefined;
   let isSaving: boolean = false;
+  let isFetched = false;
 
   interface FetchComments {
     comment: string;
@@ -155,6 +156,7 @@
       console.error('error');
       return;
     }
+    console.log('fetch comments', data);
 
     comments = data.map((lessonComment) => {
       return {
@@ -167,6 +169,7 @@
             : lessonComment.groupmember.profile.fullname
       };
     });
+    isFetched = true;
     scrollToBottom();
   }
 
@@ -185,7 +188,7 @@
     supabase.removeChannel(lessonCommentChannel);
   });
 
-  $: fetchComments($group.people, $lesson.id);
+  $: !isFetched && fetchComments($group.people, $lesson.id);
 </script>
 
 <PageNav title="Comments" overidableStyle="padding: 0 10px">

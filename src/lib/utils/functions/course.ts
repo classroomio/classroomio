@@ -26,3 +26,16 @@ export const getTextFromHTML = (html: string): string => {
 
   return dummyDiv.textContent?.trim() || '';
 };
+
+const tagsToReplace = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;'
+};
+
+export function replaceHTMLTag(text: string) {
+  return text
+    .split('')
+    .map((char) => tagsToReplace[char] || char)
+    .join('');
+}
