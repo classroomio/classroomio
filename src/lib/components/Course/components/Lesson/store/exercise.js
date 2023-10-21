@@ -1,8 +1,5 @@
 import { writable } from 'svelte/store';
-import {
-  QUESTION_TEMPLATE,
-  QUESTION_TYPE,
-} from '$lib/components/Question/constants';
+import { QUESTION_TEMPLATE, QUESTION_TYPE } from '$lib/components/Question/constants';
 import { questionnaireMetaData } from './answers';
 import { isUUID } from '$lib/utils/functions/isUUID';
 
@@ -21,6 +18,7 @@ export const questionnaire = writable({
   description: '',
   is_description_dirty: false,
   questions: [],
+  totalSubmissions: 0
 });
 
 export function reset() {
@@ -36,10 +34,7 @@ export function validateQuestionnaire(questions) {
   const errors = {};
 
   for (const question of questions) {
-    if (
-      question.question_type.id === QUESTION_TYPE.TEXTAREA ||
-      question.deleted_at
-    ) {
+    if (question.question_type.id === QUESTION_TYPE.TEXTAREA || question.deleted_at) {
       continue;
     }
     const qErrors = errors[question.id] || {};
@@ -74,18 +69,18 @@ export function handleAddQuestion() {
           points: 0,
           order: questions.length,
           question_type: {
-            id: QUESTION_TYPE.RADIO,
+            id: QUESTION_TYPE.RADIO
           },
           options: [
             {
               id: '1-form',
               label: '',
               value: null,
-              is_correct: false,
-            },
-          ],
-        },
-      ],
+              is_correct: false
+            }
+          ]
+        }
+      ]
     };
   });
 }
@@ -106,14 +101,14 @@ export function handleAddOption(questionId) {
                   id: `${question.options.length + 1}-form`,
                   label: '',
                   value: '',
-                  is_correct: false,
-                },
-              ],
+                  is_correct: false
+                }
+              ]
             };
           }
 
           return question;
-        }),
+        })
       };
     });
   };
@@ -135,12 +130,12 @@ export function handleRemoveOption(questionId, optionId) {
                   option.deleted_at = new Date();
                 }
                 return option;
-              }),
+              })
             };
           }
 
           return question;
-        }),
+        })
       };
     });
   };
@@ -158,7 +153,7 @@ export function handleRemoveQuestion(questionId) {
             q.deleted_at = new Date();
           }
           return q;
-        }),
+        })
       };
     });
   };
@@ -174,12 +169,12 @@ export function handleCode(questionId, shouldAdd = true) {
         if (question.id === questionId) {
           return {
             ...question,
-            code: shouldAdd ? question.code || '' : undefined,
+            code: shouldAdd ? question.code || '' : undefined
           };
         }
 
         return question;
-      }),
+      })
     };
   });
 }
@@ -201,12 +196,12 @@ export function handleAnswerSelect(questionId, optionId) {
                   option.is_dirty = true;
                 }
                 return option;
-              }),
+              })
             };
           }
 
           return question;
-        }),
+        })
       };
     });
   };
@@ -236,12 +231,12 @@ export function addDynamicValue(questionId, optionId) {
                 }
 
                 return option;
-              }),
+              })
             };
           }
 
           return question;
-        }),
+        })
       };
     });
   };

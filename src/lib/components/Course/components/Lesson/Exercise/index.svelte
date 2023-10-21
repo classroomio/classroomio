@@ -10,6 +10,14 @@
     reset,
     questionnaireOrder
   } from '../store/exercise';
+  import {
+    ContentSwitcher,
+    Switch,
+    Breadcrumb,
+    BreadcrumbItem,
+    OverflowMenu,
+    OverflowMenuItem
+  } from 'carbon-components-svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import PageBody from '$lib/components/PageBody/index.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
@@ -20,11 +28,10 @@
   import { upsertExercise } from '$lib/utils/services/courses';
   import UpdateDescription from './UpdateDescription.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
-  import Analytics from './Analytics/index.svelte';
-  import { ContentSwitcher, Switch } from 'carbon-components-svelte';
+  import Analytics from './Submissions/index.svelte';
 
   export let exerciseId = '';
+  export let path = '';
   export let goBack = () => {};
   export let isStudent = true;
 
@@ -65,60 +72,71 @@
     reset();
   });
 
-  $: $questionnaire.questions.length < 1 && handleAddQuestion();
+  $: $questionnaire?.questions?.length < 1 && handleAddQuestion();
+  console.log('question', $questionnaire.questions);
 </script>
 
 <PageBody bind:isPageNavHidden={isStudent} padding="px-4 overflow-x-hidden">
-  <RoleBasedSecurity allowedRoles={[1, 2]}>
-    <ContentSwitcher bind:selectedIndex class="mb-2">
-      <Switch text="Questions" />
-      <Switch text="Analytics" />
-    </ContentSwitcher>
-  </RoleBasedSecurity>
+  <div class="bg-gray-100 dark:bg-neutral-800 top-0 z-10 sticky p-2 mb-3">
+    <Breadcrumb noTrailingSlash class="mb-5">
+      <BreadcrumbItem href={path}>All Exercises</BreadcrumbItem>
+      <BreadcrumbItem href={`${path}${exerciseId}`} isCurrentPage>
+        {$questionnaire.title}
+      </BreadcrumbItem>
+    </Breadcrumb>
+
+    <RoleBasedSecurity allowedRoles={[1, 2]}>
+      <ContentSwitcher bind:selectedIndex class="mb-2">
+        <Switch text="Questions ({$questionnaire.questions.length})" />
+        <Switch text="Submissions ({$questionnaire.totalSubmissions})" />
+      </ContentSwitcher>
+
+      {#if selectedIndex === 0}
+        <div class="flex items-center justify-end right-0 w-full">
+          <div class="flex items-center">
+            <PrimaryButton
+              className="mr-2"
+              variant={VARIANTS.CONTAINED}
+              label="Save"
+              onClick={handleSave}
+              isLoading={isSaving}
+            />
+            <IconButton
+              onClick={() => (preview = !preview)}
+              contained={preview}
+              toolTipProps={{
+                title: 'Preview',
+                direction: 'bottom',
+                hotkeys: []
+              }}
+            >
+              {#if preview}
+                <ViewFilledIcon size={24} class="carbon-icon dark:text-white" />
+              {:else}
+                <ViewIcon size={24} class="carbon-icon dark:text-white" />
+              {/if}
+            </IconButton>
+            <IconButton onClick={() => handleAddQuestion()} size="small">
+              <AddAltIcon size={24} class="carbon-icon dark:text-white" />
+            </IconButton>
+            <OverflowMenu flipped>
+              <OverflowMenuItem
+                text="Reorder Questions"
+                on:click={() => ($questionnaireOrder.open = true)}
+              />
+              <OverflowMenuItem
+                danger
+                text="Delete Exercise"
+                on:click={() => (shouldDeleteExercise = true)}
+              />
+            </OverflowMenu>
+          </div>
+        </div>
+      {/if}
+    </RoleBasedSecurity>
+  </div>
 
   {#if selectedIndex === 0}
-    <div class="top-0 z-10 mb-3 flex items-center justify-end sticky right-0 w-full">
-      <RoleBasedSecurity allowedRoles={[1, 2]}>
-        <div class="flex items-center bg-gray-100 dark:bg-neutral-800 rounded-md pl-3">
-          <PrimaryButton
-            className="mr-2"
-            variant={VARIANTS.CONTAINED}
-            label="Save"
-            onClick={handleSave}
-            isLoading={isSaving}
-          />
-          <IconButton
-            onClick={() => (preview = !preview)}
-            contained={preview}
-            toolTipProps={{
-              title: 'Preview',
-              direction: 'bottom',
-              hotkeys: []
-            }}
-          >
-            {#if preview}
-              <ViewFilledIcon size={24} class="carbon-icon dark:text-white" />
-            {:else}
-              <ViewIcon size={24} class="carbon-icon dark:text-white" />
-            {/if}
-          </IconButton>
-          <IconButton onClick={() => handleAddQuestion()} size="small">
-            <AddAltIcon size={24} class="carbon-icon dark:text-white" />
-          </IconButton>
-          <OverflowMenu flipped>
-            <OverflowMenuItem
-              text="Reorder Questions"
-              on:click={() => ($questionnaireOrder.open = true)}
-            />
-            <OverflowMenuItem
-              danger
-              text="Delete Exercise"
-              on:click={() => (shouldDeleteExercise = true)}
-            />
-          </OverflowMenu>
-        </div>
-      </RoleBasedSecurity>
-    </div>
     <RoleBasedSecurity allowedRoles={[1, 2]}>
       <UpdateDescription {preview} />
     </RoleBasedSecurity>

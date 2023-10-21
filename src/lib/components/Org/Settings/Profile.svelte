@@ -25,7 +25,8 @@
 
       const updates = {
         fullname: $profile.fullname,
-        username: $profile.username
+        username: $profile.username,
+        email: $profile.email
       };
 
       if (avatar) {
