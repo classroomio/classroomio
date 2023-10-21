@@ -145,7 +145,7 @@
 
   {#if !!$apps.selectedApp}
     <div
-      class={`app cursor-auto lg:cursor-ew-resize max-w-[350px] transition ease-in-out delay-150 duration-100`}
+      class="app max-w-[350px] transition ease-in-out delay-150 duration-100"
       bind:this={appContentRef}
     >
       {#key $apps.selectedApp}
