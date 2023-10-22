@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
   import PageBody from '$lib/components/PageBody/index.svelte';
@@ -13,22 +12,14 @@
   // import { Tabs, Tab } from 'carbon-components-svelte';
   // import TabContent from 'carbon-components-svelte/src/Tabs/TabContent.svelte';
   import StudentCertificate from '$lib/components/Course/components/Ceritficate/StudentCertificate/Index.svelte';
-  import { fetchCourse } from '$lib/utils/services/courses';
-  import { browser } from '$app/environment';
 
   export let courseId: string = '';
   let isStudent = false;
-
-  onMount(async () => {
-    if ($course.id || !browser) return;
-    const { data } = await fetchCourse(courseId);
-    setCourse(data);
-  });
 </script>
 
 <IssueCertificateModal />
 
-<CourseContainer bind:isStudent>
+<CourseContainer bind:isStudent bind:courseId>
   <PageNav title="Certificates" disableSticky={true}>
     <slot:fragment slot="widget">
       <RoleBasedSecurity allowedRoles={[1, 2]}>

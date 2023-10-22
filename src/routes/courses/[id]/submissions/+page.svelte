@@ -10,8 +10,7 @@
   import Chip from '$lib/components/Chip/index.svelte';
   import PageBody from '$lib/components/PageBody/index.svelte';
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
-  import { fetchCourse } from '$lib/utils/services/courses';
-  import { setCourse, course } from '$lib/components/Course/store';
+  import { course } from '$lib/components/Course/store';
   import {
     fetchSubmissions,
     updateSubmission,
@@ -258,8 +257,7 @@
 
   onMount(async () => {
     if (!$course.id) {
-      const { data } = await fetchCourse(courseId);
-      setCourse(data);
+      return;
     }
 
     const { data: submissions } = await fetchSubmissions(courseId || $course.id);
@@ -339,7 +337,7 @@
 />
 
 <RoleBasedSecurity allowedRoles={[1, 2]}>
-  <CourseContainer>
+  <CourseContainer bind:courseId={data.courseId}>
     <PageNav title="Submitted Exercises" />
 
     <PageBody width="w-full max-w-6xl md:w-11/12 overflow-x-auto">

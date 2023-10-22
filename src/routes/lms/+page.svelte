@@ -8,6 +8,7 @@
   import { fetchCourses } from '$lib/components/Courses/api';
   import { courses, courseMetaDeta } from '$lib/components/Courses/store';
   import type { Course } from '$lib/utils/types';
+  import { getGreeting } from '$lib/utils/functions/date';
 
   let hasFetched = false;
   let progressPercentage = 0;
@@ -47,7 +48,10 @@
 
 <section class="max-w-6xl gap-5 mx-auto">
   <div class="m-5">
-    <h1 class="text-3xl font-semibold">Welcome</h1>
+    <h1 class="dark:text-white text-2xl md:text-3xl font-bold">
+      {getGreeting()}
+      {$profile.fullname}!
+    </h1>
     <div
       class="w-full h-fit lg:h-[265px] flex md:items-center justify-between flex-col-reverse md:flex-row p-5 lg:p-10 rounded-md bg-primary-900 my-2"
     >
@@ -57,7 +61,7 @@
           you learn the better you get.
         </p>
         <PrimaryButton
-          label="Start learning"
+          label="Don't give up"
           variant={VARIANTS.CONTAINED_WHITE}
           className="bg-white text-primary-800"
           onClick={() => goto('/lms/mylearning')}
@@ -69,14 +73,14 @@
         class="w-28 md:block md:w-1/3 lg:w-[275px] lg:h-[205px] mb-3 md:mb-0"
       />
     </div>
-    <section class="flex w-full flex-col xl:flex-row xl:gap-5">
-      <div class="w-full md:w-[75%] mt-10 xl:mt-2">
+    <section class="flex w-full flex-col md:flex-row md:gap-5">
+      <div class="w-full md:w-[50%] mt-10 xl:mt-2">
         <Learning />
       </div>
-      <div class="mt-10 xl:mt-2 w-full md:w-[75%] xl:w-[400px]">
+      <div class="mt-10 xl:mt-2 w-full md:w-[50%]">
         <p class="text-base font-semibold text-[#040F2D] pb-3 dark:text-white">Your Progress</p>
         <div
-          class="flex items-center justify-center border border-[#EAEAEA] dark:bg-neutral-800 gap-2 rounded h-fit lg:h-[40vh] lg:overflow-y-auto p-3"
+          class="flex items-center justify-center border border-[#EAEAEA] dark:bg-neutral-800 gap-2 rounded h-fit md:h-[40vh] lg:overflow-y-auto p-3"
         >
           <div
             class="w-full h-full flex flex-col sm:flex-row xl:flex-col items-center justify-between md:items-center xl:items-start gap-5 md:justify-around"
@@ -96,7 +100,9 @@
                 <p class="text-xs font-normal text-[#656565] dark:text-white">No courses started</p>
               {/if}
             </span>
-            <h1 class="text-5xl md:text-6xl font-bold text-[#262626] dark:text-white my-0">
+            <h1
+              class="text-5xl md:text-6xl font-bold text-[#262626] dark:text-white my-0 whitespace-nowrap"
+            >
               {progressPercentage} %
             </h1>
           </div>

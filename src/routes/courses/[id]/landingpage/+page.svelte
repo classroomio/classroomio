@@ -2,28 +2,19 @@
   import { fly } from 'svelte/transition';
   import CourseLandingPage from '$lib/components/CourseLandingPage/index.svelte';
   import Editor from '$lib/components/CourseLandingPage/components/Editor/index.svelte';
-  import { profile } from '$lib/utils/store/user';
-  import { setCourse, course } from '$lib/components/Course/store';
+  import { course } from '$lib/components/Course/store';
   import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { fetchCourse } from '$lib/utils/services/courses';
-  import { browser } from '$app/environment';
 
   export let data;
+
   const { courseId } = data;
 
   let courseData = {};
-
-  async function triggerSetCourse(_profile) {
-    if ($course.id || !browser) return;
-    const { data: _data } = await fetchCourse(courseId);
-    setCourse(_data);
-  }
 
   function setCourseData(course = {}, lessons) {
     courseData = { ...course, lessons };
   }
 
-  $: triggerSetCourse($profile);
   $: setCourseData($course, $lessons);
   $: console.log('courseData changed', courseData);
 </script>
