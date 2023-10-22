@@ -3,6 +3,7 @@ import { STEPS } from '../constants/quiz';
 import type { Writable } from 'svelte/store';
 import type { CurrentOrg, OrgTeamMember } from '../types/org';
 import { ROLE } from '$lib/utils/constants/roles';
+import type { UserLessonDataType } from '$lib/utils/types';
 
 export const orgs = writable<CurrentOrg[]>([]);
 export const currentOrg: Writable<CurrentOrg> = writable({
@@ -54,3 +55,5 @@ export const quizStore = writable({
 export const playQuizStore = writable({
   step: STEPS.CONNECT_TO_PLAY
 });
+
+export const userUpcomingData = writable<UserLessonDataType[]>([]);

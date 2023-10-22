@@ -17,7 +17,7 @@
   import TextField from '$lib/components/Form/TextField.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import Select from '$lib/components/Form/Select.svelte';
-  import { fetchCourse, updateLesson } from '$lib/utils/services/courses';
+  import { updateLesson } from '$lib/utils/services/courses';
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
   import { profile } from '$lib/utils/store/user';
   import {
@@ -25,14 +25,13 @@
     handleSaveLesson,
     handleDelete
   } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { course, setCourse, group } from '$lib/components/Course/store';
+  import { course, group } from '$lib/components/Course/store';
   import PageBody from '$lib/components/PageBody/index.svelte';
   import TextChip from '$lib/components/Chip/Text.svelte';
   import Avatar from '$lib/components/Apps/components/Poll/components/Avatar.svelte';
   import AddLessonModal from '$lib/components/Course/components/Lesson/AddLessonModal.svelte';
 
   export let data;
-  const { courseId } = data;
 
   let lessonEditing;
   let isStudent = true;
@@ -85,12 +84,6 @@
     }
   }
 
-  onMount(async () => {
-    if ($course.id) return;
-    const { data: _data } = await fetchCourse(courseId);
-    setCourse(_data);
-  });
-
   $: {
     const user = $group.people.find((person) => person.profile_id === $profile.id);
 
@@ -102,7 +95,7 @@
 
 <AddLessonModal {isStudent} bind:openModal />
 
-<CourseContainer bind:isStudent>
+<CourseContainer bind:isStudent bind:courseId={data.courseId}>
   <PageNav title="Lessons">
     <div slot="widget">
       <RoleBasedSecurity allowedRoles={[1, 2]}>

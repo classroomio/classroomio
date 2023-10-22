@@ -1,11 +1,11 @@
 <script lang="ts">
-  // import { profile } from '$lib/utils/store/user';
+  import { profile } from '$lib/utils/store/user';
   // import { supabase } from '$lib/utils/functions/supabase';
   import { goto } from '$app/navigation';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import UnlockedIcon from 'carbon-icons-svelte/lib/Unlocked.svelte';
   import LockedIcon from 'carbon-icons-svelte/lib/Locked.svelte';
-  import Avatar from '$lib/components/Avatar/index.svelte';
+  // import Avatar from '$lib/components/Avatar/index.svelte';
   import { InlineCalendar, Datepicker } from 'svelte-calendar';
   import { formatUserUpcomingData, formatDate } from '$lib/utils/functions/routes/dashboard';
   import { user } from '$lib/utils/store/user';
@@ -15,21 +15,17 @@
   import WelcomeModal from '$lib/components/WelcomeModal/WelcomeModal.svelte';
   import { onMount } from 'svelte';
   import { Add } from 'carbon-icons-svelte';
-  import { isOrgAdmin } from '$lib/utils/store/org';
+  import { isOrgAdmin, currentOrgPath, currentOrg, userUpcomingData } from '$lib/utils/store/org';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants.js';
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
+  import { getGreeting } from '$lib/utils/functions/date';
+  import { appStore } from '$lib/utils/store/app';
 
   export let data;
 
   const { orgName } = data;
 
-  const theme = {
-    calendar: {
-      width: '300px',
-      height: '300px',
-      shadow: '0px 0px 5px rgba(0, 0, 0, 0.25)'
-    }
-  };
+  let theme = {};
 
   let store;
   let calendar: HTMLElement | null = null;
@@ -53,40 +49,6 @@
     {
       label: 'Total students',
       value: 0
-    }
-  ];
-  const activities = [
-    {
-      avatar:
-        'https://lh3.googleusercontent.com/ogw/AOh-ky0MLuNJZQa6E_6mm3eZtLW2dmTIhriSgzQlRLA9=s64-c-mo',
-      name: 'Nnancy Okoye',
-      time: '1 hour ago',
-      description: 'Submitted an assignment for lesson Figma prototyping',
-      link: '/'
-    },
-    {
-      avatar:
-        'https://lh3.googleusercontent.com/ogw/AOh-ky0MLuNJZQa6E_6mm3eZtLW2dmTIhriSgzQlRLA9=s64-c-mo',
-      name: 'Bro Shagi',
-      time: '2 days ago',
-      description: 'Submitted an assignment for lesson Figma prototyping',
-      link: '/'
-    },
-    {
-      avatar:
-        'https://lh3.googleusercontent.com/ogw/AOh-ky0MLuNJZQa6E_6mm3eZtLW2dmTIhriSgzQlRLA9=s64-c-mo',
-      name: 'Bill Gates',
-      time: '13 hours ago',
-      description: 'Submitted an assignment for lesson Figma prototyping',
-      link: '/'
-    },
-    {
-      avatar:
-        'https://lh3.googleusercontent.com/ogw/AOh-ky0MLuNJZQa6E_6mm3eZtLW2dmTIhriSgzQlRLA9=s64-c-mo',
-      name: 'Steve Jobs',
-      time: 'yesterday',
-      description: 'Submitted an assignment for lesson Figma prototyping',
-      link: '/'
     }
   ];
 
@@ -133,12 +95,14 @@
       }
     }, 500);
 
-  async function runFirstThings(currentSession: { id: string } | null) {
-    if (!currentSession || !currentSession.id) return;
+  async function runFirstThings(currentSession: { id: string } | null, orgId: string) {
+    if (!currentSession || !currentSession.id || !orgId) return;
 
-    const userUpcomingData = await fetchUserUpcomingData(currentSession.id);
+    if (!$userUpcomingData.length) {
+      $userUpcomingData = await fetchUserUpcomingData(currentSession.id, orgId);
+    }
 
-    lessonsByMonth = formatUserUpcomingData(userUpcomingData);
+    lessonsByMonth = formatUserUpcomingData($userUpcomingData);
 
     // Only for desktop. Only run on mobile when the user clicks on the date
     if (!$isMobile) {
@@ -146,7 +110,7 @@
     }
   }
 
-  function getDataOfSelectedDate(_selectedDate: string): UserLessonDataType[] | [] {
+  function getDataOfSelectedDate(_selectedDate: string, orgId: string): UserLessonDataType[] | [] {
     if (!_selectedDate) return [];
 
     const selectedDate = new Date(_selectedDate).toUTCString();
@@ -185,10 +149,33 @@
   });
 
   // This is here not called onMount because we want to call it as soon as we have the user's `currentSession` value
-  $: runFirstThings($user.currentSession);
+  $: runFirstThings($user.currentSession, $currentOrg.id);
 
   // Every time the date changes
-  $: selectedDateLessonData = getDataOfSelectedDate($store?.selected);
+  $: selectedDateLessonData = getDataOfSelectedDate($store?.selected, $currentOrg.id);
+
+  $: theme = {
+    calendar: {
+      width: '250px',
+      height: '283px',
+      shadow: '0px 0px 5px rgba(0, 0, 0, 0.25)',
+      legend: {
+        height: '30px'
+      },
+      colors: {
+        text: {
+          primary: $appStore.isDark ? '#eee' : '#333',
+          highlight: '#fff'
+        },
+        background: {
+          primary: $appStore.isDark ? '#333' : '#fff',
+          highlight: $appStore.isDark ? '#5829d6' : '#eb7400',
+          hover: $appStore.isDark ? '#222' : '#eee'
+        },
+        border: $appStore.isDark ? '#222' : '#eee'
+      }
+    }
+  };
 </script>
 
 <svelte:head>
@@ -199,7 +186,10 @@
 
 <div class="py-10 px-5 w-full max-w-7xl mx-auto">
   <div class="flex items-center justify-between mb-10">
-    <h1 class="dark:text-white text-2xl md:text-3xl font-bold">Dashboard</h1>
+    <h1 class="dark:text-white text-2xl md:text-3xl font-bold">
+      {getGreeting()}
+      {$profile.fullname}!
+    </h1>
     <div class="flex items-center">
       <PrimaryButton
         variant={VARIANTS.OUTLINED}
@@ -218,7 +208,29 @@
     </div>
   </div>
 
-  <div class="flex items-start flex-wrap">
+  <div
+    class="w-full h-fit lg:h-[265px] flex md:items-center justify-between flex-col-reverse md:flex-row p-5 lg:p-10 rounded-md bg-primary-900 my-2"
+  >
+    <span>
+      <p class="w-full md:w-[75%] lg:w-[80%] text-white text-xs lg:text-xl font-normal mb-5">
+        Thank you for what you do ❤️. You are changing lives, one classroom at a time, thanks to you
+        the world is a better place. 😊
+      </p>
+      <PrimaryButton
+        label="Keep Building 🚀"
+        variant={VARIANTS.CONTAINED_WHITE}
+        className="bg-white text-primary-800"
+        onClick={() => goto(`${$currentOrgPath}/courses`)}
+      />
+    </span>
+    <img
+      src="/images/student-learning.svg"
+      alt="student Learning Pictogram"
+      class="w-28 md:block md:w-1/3 lg:w-[200px] lg:max-h-[205px] mb-3 md:mb-0"
+    />
+  </div>
+
+  <!-- <div class="flex items-start flex-wrap">
     {#each boxes as box}
       <div
         class="w-full md:w-[246px] h-[165px] flex flex-col rounded border border-gray-200 justify-center px-5 md:mr-5 mb-5"
@@ -227,20 +239,20 @@
         <p class="dark:text-white text-xl font-bold">{box.value}</p>
       </div>
     {/each}
-  </div>
+  </div> -->
 
-  <div class="flex flex-wrap mt-5 gap-4 w-full">
+  <div class="w-full">
     <!-- Your Schedule -->
     <div class="w-full xl:w-auto container">
-      <p class="dark:text-white font-bold mb-7">Your Schedule</p>
-      <div class="rounded border border-gray-200 md:mr-3 md:min-w-[450px] schedule-box w-full">
+      <p class="dark:text-white font-bold mt-7 mb-4">Your Schedule</p>
+      <div
+        class="rounded border border-gray-200 gap-3 flex flex-col md:flex-row items-start px-2 md:px-5 py-5 w-full"
+      >
         {#if !$isMobile}
-          <div id="calendar" class="flex justify-center mt-5">
+          <div id="calendar" class="flex justify-center mt-5 w-2/5">
             <InlineCalendar bind:store {theme} />
           </div>
-        {/if}
-
-        {#if $isMobile}
+        {:else}
           <div class="header w-full flex items-center">
             <Datepicker bind:store let:key let:send let:receive>
               <button
@@ -255,61 +267,64 @@
               </button>
             </Datepicker>
           </div>
-        {:else}
-          <p class="dark:text-white font-bold m-5">
-            {formatDate($store?.selected)}
-          </p>
         {/if}
 
-        {#each selectedDateLessonData as lessonData}
-          <div class="flex items-center justify-between p-5 lesson-data">
-            <div class="w-4/5">
-              <a
-                class="text-black-700 text-lg font-bold flex items-center"
-                href={`/courses/${lessonData.course_id}/lessons/${
-                  lessonData.is_unlocked ? lessonData.lesson_id : ''
-                }`}
-              >
-                {lessonData.lesson_title}
-                {#if lessonData.is_unlocked}
-                  <span class="ml-2 success">
-                    <LockedIcon class="carbon-icon dark:text-white" />
-                  </span>
-                {:else}
-                  <UnlockedIcon class="carbon-icon dark:text-white" />
-                {/if}
-              </a>
-              <p class="dark:text-white text-grey text-sm flex items-center">
-                <a class="underline text-primary-700 my-2" href="/courses/{lessonData.course_id}">
-                  {` ${lessonData.course_title}`}
+        <div class="max-h-[400px] overflow-y-scroll w-full">
+          {#if !$isMobile}
+            <p class="dark:text-white font-bold m-5">
+              {formatDate($store?.selected)}
+            </p>
+          {/if}
+          {#each selectedDateLessonData as lessonData}
+            <div class="flex items-center justify-between p-5 lesson-data">
+              <div class="w-full">
+                <a
+                  class="text-black-700 text-lg font-bold flex items-center"
+                  href={`/courses/${lessonData.course_id}/lessons/${
+                    lessonData.is_unlocked ? lessonData.lesson_id : ''
+                  }`}
+                >
+                  {lessonData.lesson_title}
+                  {#if lessonData.is_unlocked}
+                    <span class="ml-2 success">
+                      <LockedIcon class="carbon-icon dark:text-white" />
+                    </span>
+                  {:else}
+                    <UnlockedIcon class="carbon-icon dark:text-white" />
+                  {/if}
                 </a>
-              </p>
+                <p class="dark:text-white text-grey text-sm flex items-center">
+                  <a class="underline text-primary-700 my-2" href="/courses/{lessonData.course_id}">
+                    {` ${lessonData.course_title}`}
+                  </a>
+                </p>
+              </div>
+              {#if lessonData.is_unlocked}
+                <a
+                  class="join-call rounded-3xl bg-primary-600 text-white py-3 font-bold shadow-lg {!lessonData.call_url &&
+                    'opacity-50 pointer-events-none cursor-not-allowed'}"
+                  href={!!lessonData.call_url ? lessonData.call_url : undefined}
+                  target="_blank"
+                  title={!!lessonData.call_url
+                    ? 'Click to join the call'
+                    : 'No call link was added for this lesson. Ask your trainer'}
+                >
+                  Join call
+                </a>
+              {/if}
             </div>
-            {#if lessonData.is_unlocked}
-              <a
-                class="join-call rounded-3xl bg-primary-600 text-white py-3 font-bold shadow-lg {!lessonData.call_url &&
-                  'opacity-50 pointer-events-none cursor-not-allowed'}"
-                href={!!lessonData.call_url ? lessonData.call_url : undefined}
-                target="_blank"
-                title={!!lessonData.call_url
-                  ? 'Click to join the call'
-                  : 'No call link was added for this lesson. Ask your trainer'}
-              >
-                Join call
-              </a>
-            {/if}
-          </div>
-        {:else}
-          <p class="dark:text-white flex items-center justify-center w-full no-data">
-            No lesson on this day
-          </p>
-        {/each}
+          {:else}
+            <p class="dark:text-white flex items-center justify-center w-full no-data">
+              No lesson on this day
+            </p>
+          {/each}
+        </div>
       </div>
     </div>
 
     <!-- Your Activities -->
 
-    <div class="w-full xl:w-auto container">
+    <!-- <div class="w-full xl:w-auto container">
       <p class="dark:text-white font-bold mb-7">Your Activities</p>
       <div
         class="rounded border border-gray-200 md:min-w-[450px] activities-box py-4 px-2 md:px-5 w-full"
@@ -333,7 +348,7 @@
           </div>
         {/each}
       </div>
-    </div>
+    </div> -->
   </div>
 </div>
 
@@ -345,23 +360,6 @@
   .box {
     width: 246px;
     height: 165px;
-  }
-  .schedule-box,
-  .activities-box {
-    height: 516px;
-    overflow-y: auto;
-    overflow: hidden;
-  }
-
-  .calendar-root {
-    max-width: 1000px;
-    margin: 0 auto;
-  }
-
-  .calendar-info {
-    max-width: 600px;
-    width: 100%;
-    height: 100%;
   }
 
   .header {
@@ -391,6 +389,10 @@
     bottom: -8px;
     left: 40%;
     color: var(--main-primary-color);
+  }
+
+  :global(#calendar .controls .button.label) {
+    font-size: 1rem;
   }
 
   @media (max-width: 640px) {

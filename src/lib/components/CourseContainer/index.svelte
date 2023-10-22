@@ -1,17 +1,39 @@
 <script>
-  // @ts-nocheck
   import { Moon } from 'svelte-loading-spinners';
+  import { browser } from '$app/environment';
   import Navigation from '../Course/components/Navigation/index.svelte';
   import Backdrop from '$lib/components/Backdrop/index.svelte';
-  import { course, group } from '../Course/store';
+  import { course, group, setCourse, defaultCourse } from '../Course/store';
   import Confetti from '../Confetti/index.svelte';
   import { isMobile } from '$lib/utils/store/useMobile';
   import { profile } from '$lib/utils/store/user';
   import { apps } from '$lib/components/Apps/store';
+  import { fetchCourse } from '$lib/utils/services/courses';
+
+  export let courseId = '';
   export let path = '';
   export let isExercisePage = false;
   export let isStudent = false;
   export let isFetching = false;
+
+  let prevCourseId = '';
+
+  async function onCourseIdChange(courseId = '') {
+    console.log('courseid changed', courseId);
+    if (!courseId || prevCourseId === courseId || !browser) return;
+    console.log('making request', courseId);
+    isFetching = true;
+    course.set(defaultCourse);
+
+    const { data: _data } = await fetchCourse(courseId);
+
+    setCourse(_data);
+
+    isFetching = false;
+    prevCourseId = courseId;
+  }
+
+  $: onCourseIdChange(courseId);
 
   $: {
     const user = $group.people.find((person) => person.profile_id === $profile.id);

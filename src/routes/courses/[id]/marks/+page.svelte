@@ -6,9 +6,9 @@
   import PageBody from '$lib/components/PageBody/index.svelte';
   import Box from '$lib/components/Box/index.svelte';
   import { ROLE } from '$lib/utils/constants/roles';
-  import { setCourse, course, group } from '$lib/components/Course/store';
+  import { group } from '$lib/components/Course/store';
   import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { fetchCourse, fetchExercisesByMarks } from '$lib/utils/services/courses';
+  import { fetchExercisesByMarks } from '$lib/utils/services/courses';
   import { getLectureNo } from '$lib/components/Course/function';
   import { fetchMarks } from '$lib/utils/services/marks';
   import { profile } from '$lib/utils/store/user';
@@ -34,11 +34,6 @@
   }
 
   onMount(async () => {
-    if (!$course.id) {
-      const { data } = await fetchCourse(courseId);
-      setCourse(data);
-    }
-
     const { data: marks } = await fetchMarks(courseId);
 
     marks.forEach((mark) => {
@@ -80,7 +75,7 @@
     : $group.people.filter((person) => !!person.profile && person.role_id === ROLE.STUDENT);
 </script>
 
-<CourseContainer bind:isStudent>
+<CourseContainer bind:isStudent bind:courseId={data.courseId}>
   <PageNav title="Marks" />
 
   <PageBody width="w-full max-w-6xl md:w-11/12">

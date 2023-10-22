@@ -58,13 +58,7 @@
     isFetching = true;
 
     let lessonData;
-    if (!$course.id) {
-      const { data: _data } = await fetchCourse(data.courseId);
-
-      lessonData = _data?.lessons.find((lesson) => lesson.id === lessonId);
-
-      setCourse(_data);
-    } else if (isMaterialsTabActive) {
+    if (isMaterialsTabActive) {
       const lesson = await fetchLesson(lessonId);
       lessonData = lesson.data;
     }
@@ -222,6 +216,7 @@
   bind:isStudent
   {path}
   isExercisePage={!data.isMaterialsTabActive && data.exerciseId}
+  bind:courseId={data.courseId}
 >
   <PageNav
     bind:hideOnMobile={isStudent}
