@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { Loading } from 'carbon-components-svelte';
+  import type { ExerciseSubmissions } from '$lib/utils/types';
   import { questionnaire } from '../../store/exercise';
   import { submissions } from './store';
 
@@ -9,18 +11,49 @@
 
   let studentSelected = 0;
 
-  const isSelected = (option: { value: string[] }): boolean => {
+  const isSelected = (
+    student: ExerciseSubmissions,
+    option: { question_id: number; value: string[] }
+  ) => {
     if ($submissions) {
-      let submittedAnswer = $submissions[studentSelected]?.answers.map((answer) => answer.answers);
-      return !!submittedAnswer.find((opt) => opt == option.value);
+      let submittedAnswer = student?.answers;
+      let filteredAnswer = submittedAnswer.filter(
+        (ans: { question_id: number }) => ans.question_id === option.question_id
+      );
+      if (filteredAnswer.map((ans) => ans.answers.length > 1)) {
+        return filteredAnswer.some((ans) => ans.answers.includes(option.value));
+      } else {
+        return filteredAnswer.map((ans: { answers: any }) => ans.answers) == option.value;
+      }
     }
+  };
 
-    return false;
+  const isCorrect = (
+    student: ExerciseSubmissions,
+    option: { is_correct?: any; question_id?: number; value?: string[] }
+  ) => {
+    if (!isSelected(student, option)) return;
+    if (option.is_correct) {
+      return 'border-green-700';
+    } else {
+      return 'border-red-700';
+    }
+  };
+  const getOpenAnswer = (student: ExerciseSubmissions, q: never) => {
+    let submittedAnswer = student?.answers;
+    let filteredAnswer = submittedAnswer.filter(
+      (ans: { question_id: number }) => ans.question_id === q.id
+    );
+    if (filteredAnswer.some((ans: { open_answer: string }) => ans.open_answer == '')) {
+      return 'No Answer was provided';
+    } else {
+      return filteredAnswer.map((ans: { open_answer: any }) => ans.open_answer);
+    }
   };
 </script>
 
 {#if isLoading}
-  Loading data
+  <Loading withOverlay={true} />
 {:else if $submissions?.length}
   <div class="flex gap-1 w-full overflow-auto mt-2 mb-5">
     {#each $submissions as student, i}
@@ -52,28 +85,30 @@
     {#if $questionnaire.questions}
       {#each $questionnaire.questions as q, i}
         <div class="pb-4">
-          <p>{i + 1}. {q.title}</p>
+          <h3>{i + 1}. {q.title}</h3>
           {#if q.question_type_id !== 3}
             {#each q.options as option, i}
               <div
-                class="flex gap-2 max-w-[80%] items-center my-1 border border-gray-600 dark:border-gray-100 rounded-md p-3"
+                class={`flex gap-2 items-center my-2 border-2 border-gray-300 rounded-md p-2 ${isCorrect(
+                  $submissions[studentSelected],
+                  option
+                )}`}
               >
-                <input type="checkbox" name="" id="" checked={isSelected(option)} />
-                <p>{option.label}</p>
+                <input
+                  type="radio"
+                  name=""
+                  id=""
+                  class="form-radio"
+                  checked={isSelected($submissions[studentSelected], option)}
+                />
+                <span class="dark:text-white">{option.label}</span>
               </div>
             {/each}
-          {/if}
-          {#if q.question_type_id === 3}
-            <div
-              class="border border-gray-300 rounded-md max-w-[80%] bg-slate-200 dark:bg-slate-500 p-2 my-1"
-            >
-              {#if $submissions[studentSelected].answers.map((ans) => ans.open_answer)}
-                <p>
-                  {$submissions[studentSelected].answers.map((ans) => ans.open_answer)}
-                </p>
-              {:else}
-                <p>No answer</p>
-              {/if}
+          {:else}
+            <div class="rounded bg-slate-100 dark:bg-slate-300 p-2 my-1 w-full">
+              <span class="text-base font-medium text-black">
+                {getOpenAnswer($submissions[studentSelected], q)}
+              </span>
             </div>
           {/if}
         </div>
