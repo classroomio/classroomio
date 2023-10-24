@@ -58,13 +58,12 @@ export function getPropsForQuestion(
   }
 
   return {
-    title: questionIndex + '. ' + question.title,
+    index: questionIndex + '. ',
+    title: question.title,
     name: `${question.name}`,
     options: question.options,
     code: question.code,
-    defaultValue: isOpenQuesiton
-      ? answers[question.name] || ''
-      : answers[question.name] || [],
+    defaultValue: isOpenQuesiton ? answers[question.name] || '' : answers[question.name] || [],
     onSubmit,
     onPrevious,
     disablePreviousButton: questionIndex === 1,
@@ -75,18 +74,18 @@ export function getPropsForQuestion(
     nextButtonProps: isOpenQuesiton
       ? {
           label: 'Next',
-          isActive: true,
+          isActive: true
         }
       : isCorrect
       ? {
           label: isLast ? 'Finish' : 'Next',
           isActive: true,
-          disableOptionSelect: true,
+          disableOptionSelect: true
         }
       : {
           label: 'Check',
-          isActive: false,
-        },
+          isActive: false
+        }
   };
 }
 

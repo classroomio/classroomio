@@ -7,6 +7,7 @@
   import Grade from '$lib/components/Question/Grade.svelte';
 
   export let title = '';
+  export let index = 1;
   export let code;
   export let name = '';
   export let options = [];
@@ -63,7 +64,12 @@
   <div class="flex items-center justify-between">
     <HtmlRender className="mt-4">
       <svelte:fragment slot="content">
-        <h3 class={typeof grade === 'number' ? 'w-3/4' : ''}>{title}</h3>
+        <span class={`${typeof grade === 'number' ? 'w-3/4' : ''} flex gap-1`}>
+          <h3>{index}</h3>
+          <h3>
+            {title}
+          </h3>
+        </span>
       </svelte:fragment>
     </HtmlRender>
     <Grade {gradeMax} {grade} {disableGrading} />
