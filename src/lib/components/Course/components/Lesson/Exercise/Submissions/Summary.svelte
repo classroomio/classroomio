@@ -13,6 +13,7 @@
   import { getChartOptions } from './functions';
   import { submissions } from './store';
   import '@carbon/charts-svelte/styles.css';
+  import { Loading } from 'carbon-components-svelte';
 
   export let isLoading = true;
 
@@ -138,7 +139,7 @@
 </script>
 
 {#if isLoading}
-  Loading data
+  <Loading withOverlay={true} />
 {:else if browser}
   <div>
     <h1>Question Charts</h1>
@@ -150,14 +151,12 @@
         {:else if q.type === 2}
           <svelte:component this={barChart} data={q.chartData} options={barOptions} />
         {:else}
-          <div class="max-h-[200px] overflow-auto">
+          <div class="max-h-[250px] overflow-auto">
             <ul>
               {#each q.chartData as answer (answer)}
                 {#if answer.group}
-                  <div
-                    class="border border-gray-300 rounded-md w-[80%] bg-slate-200 dark:bg-slate-500 p-2 my-1"
-                  >
-                    <li>{answer.group}</li>
+                  <div class="rounded bg-slate-100 dark:bg-slate-300 p-2 my-1 w-full">
+                    <li class="text-base font-medium text-black">{answer.group}</li>
                   </div>
                 {/if}
               {/each}
