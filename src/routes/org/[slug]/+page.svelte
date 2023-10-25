@@ -213,8 +213,8 @@
   >
     <span>
       <p class="w-full md:w-[75%] lg:w-[80%] text-white text-xs lg:text-xl font-normal mb-5">
-        Thank you for what you do ❤️. You are changing lives, one classroom at a time, thanks to you
-        the world is a better place. 😊
+        Thank you for what you do ❤️. You are changing lives, one classroom at a time, thanks to
+        you, the world is a better place. 😊
       </p>
       <PrimaryButton
         label="Keep Building 🚀"

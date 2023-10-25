@@ -33,6 +33,7 @@ export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']
       description,
       overview,
       logo,
+      is_published,
       group(*,
         members:groupmember(*,
           profile(*)
