@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onDestroy } from 'svelte';
   import { fade, fly } from 'svelte/transition';
-
   import WhitePaper from 'carbon-icons-svelte/lib/WhitePaper.svelte';
   import Folder from 'carbon-icons-svelte/lib/Folder.svelte';
   import Star from 'carbon-icons-svelte/lib/Star.svelte';
@@ -19,9 +18,7 @@
   import Table from 'carbon-icons-svelte/lib/Table.svelte';
   import Copy from 'carbon-icons-svelte/lib/Copy.svelte';
   import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
-
   import { ToggleSkeleton } from 'carbon-components-svelte';
-
   import Modal from '$lib/components/Modal/index.svelte';
   import Checkbox from '$lib/components/Form/Checkbox.svelte';
   import Tabs from '$lib/components/Tabs/index.svelte';
@@ -30,8 +27,7 @@
   import RadioItem from '$lib/components/Form/RadioItem.svelte';
   import AutoGrowTextField from '$lib/components/Form/AutoGrowTextField.svelte';
   import Select from '$lib/components/Form/Select.svelte';
-
-  import { mockQuestions } from '../store.js';
+  import { forms, QuestionTypesArray } from '../store.js';
 
   export let data;
 
@@ -46,25 +42,13 @@
   // let selectValue: { value: string | number } = { value: 'checkboxes' };
   let tabsPosition = 'justify-center';
   let activeButton = 'text-black bg-gray-100';
+  let options = QuestionTypesArray;
+  let selectedQuestionType = QuestionTypesArray[0];
   const tabs = [
     { label: 'Questions', value: 'questions' },
     { label: 'Responses', value: 'responses' },
     { label: 'Settings', value: 'settings' }
   ];
-  const options = [
-    { label: 'Checkboxes', value: 'checkboxes' },
-    { label: 'Short Answer', value: 'shortAnswer' },
-    { label: 'Paragraph', value: 'paragraph' },
-    { label: 'Multiple Choice', value: 'multipleChoice' },
-    { label: 'Dropdown', value: 'dropdown' },
-    { label: 'File Upload', value: 'fileUpload' },
-    { label: 'Linear Scale', value: 'linearScale' },
-    { label: 'Multiple Choice Grid', value: 'multipleChoiceGrid' },
-    { label: 'Checkbox Grid', value: 'checkboxGrid' },
-    { label: 'Date', value: 'date' },
-    { label: 'Time', value: 'time' }
-  ];
-
   let currentTab = tabs[0].value;
   const onChange = (tabValue: string) => () => (currentTab = tabValue);
 
@@ -111,149 +95,155 @@
             <p>Form Description</p>
           </div>
 
-          {#each $mockQuestions as mockQuestion}
-            <div class="relative mt-10 min-h-[30vh] w-full">
-              <div class="w-full border shadow-md rounded-md min-h-[43vh] py-4 px-5">
-                <div class="flex gap-7 items-center relative pb-9">
-                  <AutoGrowTextField
-                    placeholder="Question"
-                    value={mockQuestion.title}
-                    inputClassName="text-editor w-[30rem] {isBold
-                      ? 'font-bold'
-                      : 'font-normal'} {isItalics ? 'italic' : 'non-italic'} {isUnderline
-                      ? 'underline'
-                      : 'no-underline'} {isUndoFormatting ? 'unset' : ''}"
-                    onClick={() => {
-                      isInputOptions = true;
-                      console.log(isInputOptions);
-                    }}
-                  />
-                  {#if isInputOptions}
-                    <div
-                      class="flex gap-7 items-center text-black absolute left-[5%] bottom-0"
-                      in:fly={{ y: 5, duration: 1000 }}
-                      out:fade
-                    >
-                      <button
-                        class="text-editor {isBold
-                          ? activeButton
-                          : ''} text-lg font-semibold text-gray-500 hover:text-black px-3.5 py-0.5 rounded-md hover:bg-gray-100 transition-all cursor-pointer"
-                        on:click={() => (isBold = !isBold)}
-                      >
-                        B
-                      </button>
-                      <button
-                        class="text-editor {isItalics
-                          ? activeButton
-                          : ''} text-lg font-semibold text-gray-500 hover:text-black px-3.5 py-0.5 rounded-md hover:bg-gray-100 transition-all cursor-pointer"
-                        on:click={() => (isItalics = !isItalics)}
-                      >
-                        I
-                      </button>
-                      <button
-                        class="text-editor {isUnderline
-                          ? activeButton
-                          : ''} underline text-lg font-semibold text-gray-500 hover:text-black px-3.5 py-0.5 rounded-md hover:bg-gray-100 transition-all cursor-pointer"
-                        on:click={() => (isUnderline = !isUnderline)}
-                      >
-                        U
-                      </button>
-                      <button
-                        class="text-editor underline text-lg font-semibold text-gray-500 hover:text-black px-2.5 py-0.5 rounded-md hover:bg-gray-100 transition-all cursor-pointer"
-                        on:click={() => (isLink = !isLink)}
-                      >
-                        <Link size={24} class="cursor-pointer text-editor" />
-                      </button>
-
-                      <Modal bind:open={isLink} onClose={() => (isLink = !isLink)} width="30px">
-                        <TextField label="Text to display" bind:value={linkDisplay} />
-                        <br />
-                        <TextField label="Link to" bind:value={textLink} />
-                        <div class="flex gap-5 mt-5">
-                          <button>Cancel</button>
-                          <button
-                            class="text-primary-700"
-                            on:click={() => {
-                              // question.title = textLink;
-                              isLink = !isLink;
-                            }}>OK</button
-                          >
-                        </div>
-                      </Modal>
-
-                      <button
-                        class="text-editor line-through text-lg font-semibold text-gray-500 hover:text-black px-3.5 py-0.5 rounded-md hover:bg-gray-100 transition-all cursor-pointer"
-                        on:click={() => (isUndoFormatting = !isUndoFormatting)}
-                      >
-                        T
-                      </button>
-                    </div>
-                  {/if}
-                  <Image size={32} class="scale-[1.1]" />
-                  <Select {options} bind:value={mockQuestion.question_type} />
-                </div>
-
-                <!-- consitional rendering -->
-                <div>
-                  {#if mockQuestion.question_type === 'checkboxes'}
-                    {#each mockQuestion.options as option (option.label)}
-                      <Checkbox
-                        isEditable={true}
-                        name="checkbox"
-                        label={option.label}
-                        value={option.value}
-                      />
-                    {/each}
-                    <!-- <Checkbox isEditable={true} name="checkbox" label="Add Option" /> -->
-                  {:else if mockQuestion.question_type === 'shortAnswer'}
+          {#each $forms as form}
+            {#each form.questions as mockQuestion}
+              <div class="relative mt-10 min-h-[30vh] w-full">
+                <div class="w-full border shadow-md rounded-md min-h-[43vh] py-4 px-5">
+                  <div class="flex gap-7 items-center relative pb-9">
                     <AutoGrowTextField
-                      isEditable={true}
-                      placeholder="Short Answer Text"
-                      value=""
-                      inputClassName="w-[45%]"
+                      placeholder="Question"
+                      value={mockQuestion.title}
+                      inputClassName="text-editor w-[30rem] {isBold
+                        ? 'font-bold'
+                        : 'font-normal'} {isItalics ? 'italic' : 'non-italic'} {isUnderline
+                        ? 'underline'
+                        : 'no-underline'} {isUndoFormatting ? 'unset' : ''}"
+                      onClick={() => {
+                        isInputOptions = true;
+                        console.log(isInputOptions);
+                      }}
                     />
-                  {:else if mockQuestion.question_type === 'paragraph'}
-                    <AutoGrowTextField isEditable={true} placeholder="Long Answer Text" value="" />
-                  {:else if mockQuestion.question_type === 'multipleChoice'}
-                    {#each mockQuestion.options as option (option.label)}
-                      <RadioItem label={option.label} value={option.value} />
-                      <!-- <br /> -->
-                      <!-- <RadioItem label="Add Option" isEditable={false} /> -->
-                    {/each}
-                  {:else if mockQuestion.question_type === 'dropdown'}
-                    {#each mockQuestion.options as option (option.label)}
-                      <TextField
-                        placeholder="Option 1"
-                        className="w-[40%]"
-                        label={option.label}
-                        value={option.value}
-                      />
-                      <!-- <TextField placeholder="Option 2" className="w-[40%]" /> -->
-                    {/each}
-                  {:else if mockQuestion.question_type === 'fileUpload'}
-                    <h1>Let respondents upload files to Drive</h1>
-                    <p>
-                      Files will be uploaded to the form owner's Google Drive. Respondents will be
-                      required to sign in to Google when file upload questions are added to a form.
-                      Make sure to only share this form with people you trust.
-                    </p>
-                  {/if}
-                </div>
+                    {#if isInputOptions}
+                      <div
+                        class="flex gap-7 items-center text-black absolute left-[5%] bottom-0"
+                        in:fly={{ y: 5, duration: 1000 }}
+                        out:fade
+                      >
+                        <button
+                          class="text-editor {isBold
+                            ? activeButton
+                            : ''} text-lg font-semibold text-gray-500 hover:text-black px-3.5 py-0.5 rounded-md hover:bg-gray-100 transition-all cursor-pointer"
+                          on:click={() => (isBold = !isBold)}
+                        >
+                          B
+                        </button>
+                        <button
+                          class="text-editor {isItalics
+                            ? activeButton
+                            : ''} text-lg font-semibold text-gray-500 hover:text-black px-3.5 py-0.5 rounded-md hover:bg-gray-100 transition-all cursor-pointer"
+                          on:click={() => (isItalics = !isItalics)}
+                        >
+                          I
+                        </button>
+                        <button
+                          class="text-editor {isUnderline
+                            ? activeButton
+                            : ''} underline text-lg font-semibold text-gray-500 hover:text-black px-3.5 py-0.5 rounded-md hover:bg-gray-100 transition-all cursor-pointer"
+                          on:click={() => (isUnderline = !isUnderline)}
+                        >
+                          U
+                        </button>
+                        <button
+                          class="text-editor underline text-lg font-semibold text-gray-500 hover:text-black px-2.5 py-0.5 rounded-md hover:bg-gray-100 transition-all cursor-pointer"
+                          on:click={() => (isLink = !isLink)}
+                        >
+                          <Link size={24} class="cursor-pointer text-editor" />
+                        </button>
 
-                <div class="w-[97%] absolute bottom-3 left-0 flex gap-6 items-center justify-end">
-                  <Copy size={20} class="cursor-pointer hover:scale-110 transition-all" />
-                  <TrashCan size={20} class="cursor-pointer hover:scale-110 transition-all" />
-                  <div class="flex flex-row items-center gap-3 border-l-2 pl-4">
-                    <p>Required</p>
-                    <ToggleSkeleton />
-                    <OverflowMenuVertical
-                      size={20}
-                      class="cursor-pointer hover:scale-110 transition-all"
-                    />
+                        <Modal bind:open={isLink} onClose={() => (isLink = !isLink)} width="30px">
+                          <TextField label="Text to display" bind:value={linkDisplay} />
+                          <br />
+                          <TextField label="Link to" bind:value={textLink} />
+                          <div class="flex gap-5 mt-5">
+                            <button>Cancel</button>
+                            <button
+                              class="text-primary-700"
+                              on:click={() => {
+                                // question.title = textLink;
+                                isLink = !isLink;
+                              }}>OK</button
+                            >
+                          </div>
+                        </Modal>
+
+                        <button
+                          class="text-editor line-through text-lg font-semibold text-gray-500 hover:text-black px-3.5 py-0.5 rounded-md hover:bg-gray-100 transition-all cursor-pointer"
+                          on:click={() => (isUndoFormatting = !isUndoFormatting)}
+                        >
+                          T
+                        </button>
+                      </div>
+                    {/if}
+                    <Image size={32} class="scale-[1.1]" />
+                    <Select {options} labelKey="label" value={selectedQuestionType} />
+                  </div>
+
+                  <!-- consitional rendering -->
+                  <div>
+                    {#if mockQuestion.question_type === 'checkboxes'}
+                      {#each mockQuestion.options as option (option.label)}
+                        <Checkbox
+                          isEditable={true}
+                          name="checkbox"
+                          label={option.label}
+                          value={option.value}
+                        />
+                      {/each}
+                      <!-- <Checkbox isEditable={true} name="checkbox" label="Add Option" /> -->
+                    {:else if mockQuestion.question_type === 'shortAnswer'}
+                      <AutoGrowTextField
+                        isEditable={true}
+                        placeholder="Short Answer Text"
+                        value=""
+                        inputClassName="w-[35%]"
+                      />
+                    {:else if mockQuestion.question_type === 'paragraph'}
+                      <AutoGrowTextField
+                        isEditable={true}
+                        placeholder="Long Answer Text"
+                        value=""
+                      />
+                    {:else if mockQuestion.question_type === 'multipleChoice'}
+                      {#each mockQuestion.options as option (option.label)}
+                        <RadioItem label={option.label} value={option.value} />
+                        <!-- <br /> -->
+                        <!-- <RadioItem label="Add Option" isEditable={false} /> -->
+                      {/each}
+                    {:else if mockQuestion.question_type === 'dropdown'}
+                      {#each mockQuestion.options as option (option.label)}
+                        <TextField
+                          placeholder="Option 1"
+                          className="w-[40%]"
+                          label={option.label}
+                          value={option.value}
+                        />
+                        <!-- <TextField placeholder="Option 2" className="w-[40%]" /> -->
+                      {/each}
+                    {:else if mockQuestion.question_type === 'fileUpload'}
+                      <h1>Let respondents upload files to Drive</h1>
+                      <p>
+                        Files will be uploaded to the form owner's Google Drive. Respondents will be
+                        required to sign in to Google when file upload questions are added to a
+                        form. Make sure to only share this form with people you trust.
+                      </p>
+                    {/if}
+                  </div>
+
+                  <div class="w-[97%] absolute bottom-3 left-0 flex gap-6 items-center justify-end">
+                    <Copy size={20} class="cursor-pointer hover:scale-110 transition-all" />
+                    <TrashCan size={20} class="cursor-pointer hover:scale-110 transition-all" />
+                    <div class="flex flex-row items-center gap-3 border-l-2 pl-4">
+                      <p>Required</p>
+                      <ToggleSkeleton />
+                      <OverflowMenuVertical
+                        size={20}
+                        class="cursor-pointer hover:scale-110 transition-all"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            {/each}
           {/each}
 
           <!-- sidebar -->
