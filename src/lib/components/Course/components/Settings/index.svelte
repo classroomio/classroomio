@@ -11,6 +11,7 @@
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { settings } from './store';
   import { course } from '$lib/components/Course/store';
+  import type { Course } from '$lib/utils/types';
   import { updateCourse, deleteCourse } from '$lib/utils/services/courses';
   import { currentOrgPath } from '$lib/utils/store/org';
   import { isObject } from '$lib/utils/functions/isObject';
@@ -154,16 +155,16 @@
     isSaving = false;
   };
 
-  function setDefault(course) {
+  function setDefault(course: Course) {
     if (course && Object.keys(course).length) {
       $settings = {
         course_title: course.title,
         course_description: course.description,
-        logo: course.logo,
+        logo: course.logo || '',
         tabs: course.metadata.lessonTabsOrder || $settings.tabs,
-        grading: course.metadata.grading,
-        lesson_download: course.metadata.lessonDownload,
-        is_published: course.is_published,
+        grading: !!course.metadata.grading,
+        lesson_download: !!course.metadata.lessonDownload,
+        is_published: !!course.is_published,
         allow_new_students: course.metadata.allowNewStudent
       };
     }

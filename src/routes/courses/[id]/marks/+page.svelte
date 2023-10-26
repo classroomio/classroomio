@@ -1,5 +1,4 @@
-<script>
-  import { onMount } from 'svelte';
+<script lang="ts">
   import AudioConsoleIcon from 'carbon-icons-svelte/lib/AudioConsole.svelte';
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
@@ -12,6 +11,8 @@
   import { getLectureNo } from '$lib/components/Course/function';
   import { fetchMarks } from '$lib/utils/services/marks';
   import { profile } from '$lib/utils/store/user';
+  import { browser } from '$app/environment';
+  import { course } from '$lib/components/Course/store';
 
   export let data;
   const { courseId } = data;
@@ -33,7 +34,7 @@
     );
   }
 
-  onMount(async () => {
+  async function firstRender(courseId: string) {
     const { data: marks } = await fetchMarks(courseId);
 
     marks.forEach((mark) => {
@@ -68,11 +69,13 @@
         };
       }
     });
-  });
+  }
 
   $: students = isStudent
     ? $group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
     : $group.people.filter((person) => !!person.profile && person.role_id === ROLE.STUDENT);
+
+  $: browser && $course.id && firstRender($course.id);
 </script>
 
 <CourseContainer bind:isStudent bind:courseId={data.courseId}>
