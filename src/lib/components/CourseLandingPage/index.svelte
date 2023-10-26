@@ -40,7 +40,7 @@
   let totalRatings = 0;
   let startCoursePayment = false;
   let isVisible = false;
-  let observer;
+  let observer: { destroy: () => void };
 
   // initialize the expandDescription array with 'false' values for each review.
   let expandDescription = Array(reviews.length).fill(false);
@@ -75,7 +75,7 @@
   onMount(() => {
     window.onhashchange = locationHashChanged;
     const targetNode = document.querySelector('.target-component');
-    observer = observeIntersection(targetNode, (inView) => {
+    observer = observeIntersection(targetNode, (inView: boolean) => {
       isVisible = inView;
     });
   });
@@ -132,6 +132,7 @@
           onClick={() => {
             startCoursePayment = true;
           }}
+          isDisabled={!editMode && !courseData.metadata.allowNewStudent}
         />
       </div>
 

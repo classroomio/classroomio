@@ -99,6 +99,7 @@
             label={isFree ? 'Join Course' : 'Buy Now'}
             className="w-full sm:w-full h-[40px]"
             onClick={handleJoinCourse}
+            isDisabled={!editMode && !courseData.metadata.allowNewStudent}
           />
         </div>
       </div>
@@ -135,6 +136,7 @@
           label={isFree ? 'Join Course' : 'Buy Now'}
           className="w-full sm:w-full py-3 mb-3"
           onClick={handleJoinCourse}
+          isDisabled={!editMode && !courseData.metadata.allowNewStudent}
         />
         <p class="dark:text-white font-light text-sm text-gray-500">Early bird offer. Buy ASAP</p>
       </div>
