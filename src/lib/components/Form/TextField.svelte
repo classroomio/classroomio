@@ -5,7 +5,7 @@
 
   export let label = '';
   export let placeholder = '';
-  export let value: string | number | null;
+  export let value: string | number | null | boolean;
   export let name = '';
   export let onKeyDown = (e) => {};
   export let className = '';

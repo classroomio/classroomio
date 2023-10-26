@@ -2,6 +2,7 @@
   import { page } from '$app/stores';
   import HelpIcon from 'carbon-icons-svelte/lib/Help.svelte';
   import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
+  import WhitePaper from 'carbon-icons-svelte/lib/WhitePaper.svelte';
 
   import TextChip from '$lib/components/Chip/Text.svelte';
   import OrgSelector from '$lib/components/OrgSelector/OrgSelector.svelte';
@@ -32,6 +33,10 @@
     {
       path: '/community',
       label: 'Community'
+    },
+    {
+      path: '/forms',
+      label: 'Forms'
     },
     // {
     //   path: '/site',
@@ -107,6 +112,8 @@
                 <SiteSettingsIcon />
               {:else if menuItem.path === '/community'}
                 <ForumIcon size={24} class="carbon-icon dark:fill-[#fff] fill-[#000]" />
+              {:else if menuItem.path === '/forms'}
+                <WhitePaper size={24} class="carbon-icon dark:fill-[#fff] fill-[#000]" />
               {:else if menuItem.path === '/quiz'}
                 <QuizIcon />
               {:else if menuItem.path === '/audience'}
