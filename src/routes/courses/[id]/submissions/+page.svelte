@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { flip } from 'svelte/animate';
   import { dndzone } from 'svelte-dnd-action';
   import { goto } from '$app/navigation';
@@ -25,6 +24,7 @@
     NOTIFICATION_NAME
   } from '$lib/utils/services/notification/notification';
   import { currentOrg } from '$lib/utils/store/org';
+  import { browser } from '$app/environment';
 
   type items = {
     id: number;
@@ -255,12 +255,14 @@
     await Promise.all(updates);
   }
 
-  onMount(async () => {
-    if (!$course.id) {
-      return;
-    }
+  $: {
+    const query = new URLSearchParams($page.url.search);
+    submissionId = query.get('submissionId');
+    openExercise = !!submissionId && submissionIdData[submissionId];
+  }
 
-    const { data: submissions } = await fetchSubmissions(courseId || $course.id);
+  async function firstRender(courseId: string) {
+    const { data: submissions } = await fetchSubmissions(courseId);
     const sectionById: { [key: number]: sectionType[] } = {};
     if (submissions) {
       for (const submission of submissions) {
@@ -318,13 +320,9 @@
       value: Array.isArray(sectionById[index + 1]) ? sectionById[index + 1].length : 0,
       items: Array.isArray(sectionById[index + 1]) ? sectionById[index + 1] : []
     }));
-  });
-
-  $: {
-    const query = new URLSearchParams($page.url.search);
-    submissionId = query.get('submissionId');
-    openExercise = !!submissionId && submissionIdData[submissionId];
   }
+
+  $: browser && $course.id && firstRender($course.id);
 </script>
 
 <MarkExerciseModal
