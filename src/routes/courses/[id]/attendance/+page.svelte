@@ -24,6 +24,7 @@
   import { attendance } from '$lib/utils/store/attendance.js';
   import { profile } from '$lib/utils/store/user';
   import type { GroupPerson, Lesson } from '$lib/utils/types/index';
+  import { browser } from '$app/environment';
 
   export let data;
 
@@ -120,18 +121,20 @@
     );
   }
 
-  onMount(async () => {
-    if ($course.id) {
+  async function firstRender(courseId: string) {
+    if (courseId) {
       if (!Object.keys($attendance).length) {
         setAttendance($course);
       }
       return;
     }
-  });
+  }
 
   $: students = isStudent
     ? $group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
     : $group.people.filter((person) => !!person.profile && person.role_id === ROLE.STUDENT);
+
+  $: browser && $course.id && firstRender($course.id);
 </script>
 
 <CourseContainer bind:isStudent bind:courseId={data.courseId}>
