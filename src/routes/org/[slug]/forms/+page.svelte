@@ -1,7 +1,7 @@
 <script lang="ts">
+  import { Search } from 'carbon-components-svelte';
   import { goto } from '$app/navigation';
   import WhitePaper from 'carbon-icons-svelte/lib/WhitePaper.svelte';
-  import Search from 'carbon-icons-svelte/lib/Search.svelte';
   import ChevronSort from 'carbon-icons-svelte/lib/ChevronSort.svelte';
   import Table from 'carbon-icons-svelte/lib/Table.svelte';
   import Folder from 'carbon-icons-svelte/lib/Folder.svelte';
@@ -10,10 +10,8 @@
   import { forms } from './store';
 
   let uuid;
+  let searchValue: string | null = '';
 
-  function createForm() {
-    goto(`${$currentOrgPath}/forms/create`);
-  }
   function handleButtonClick(uuid: number | string) {
     goto(`${$currentOrgPath}/forms/${uuid}`);
     console.log(`Button clicked with ID: ${uuid}`);
@@ -27,12 +25,10 @@
       <h1 class="font-medium">Forms</h1>
     </div>
     <div class="w-[70%] flex relative">
-      <Search size={32} class="scale-[1] px-1 py-2 absolute top-1 left-2 fill-gray-400" />
-      <input
-        type="search"
-        name=""
-        id=""
-        class="w-full bg-gray-100 border-none outline-none rounded-md pl-10"
+      <Search
+        class="dark:text-slate-950 border-0 bg-zinc-100 w-full rounded-md"
+        placeholder="Search people"
+        bind:value={searchValue}
       />
     </div>
     <div class="flex items-center gap-3">
@@ -48,10 +44,7 @@
       >
     </div>
     <div class="mt-5 flex flex-wrap items-center gap-x-32 gap-y-14">
-      <button
-        class="w-[200px] h-[20vh] border rounded-md hover:scale-105 transition-all"
-        on:click={createForm}
-      >
+      <button class="w-[200px] h-[20vh] border rounded-md hover:scale-105 transition-all">
         <img
           src="https://ssl.gstatic.com/docs/templates/thumbnails/forms-blank-googlecolors.png"
           alt=""
@@ -67,10 +60,10 @@
         >
           <img
             src={template.imgUrl}
-            alt={template.templateName}
+            alt={template.name}
             class="w-full h-full object-cover rounded-md"
           />
-          <h4>{template.templateName}</h4>
+          <h4>{template.name}</h4>
         </button>
       {/each}
     </div>
