@@ -81,6 +81,7 @@ interface CourseMetadata {
   lessonTabsOrder?: Array<Tabs>;
   grading?: boolean;
   lessonDownload?: boolean;
+  allowNewStudent: boolean;
 }
 
 export interface LessonCommentInsertPayload {
