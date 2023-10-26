@@ -87,10 +87,10 @@
         >
           <img
             src={template.imgUrl}
-            alt={template.templateName}
+            alt={template.name}
             class="w-full h-full object-cover rounded-md"
           />
-          <h4>{template.templateName}</h4>
+          <h4>{template.name}</h4>
         </button>
       {/each}
     </div>
