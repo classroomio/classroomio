@@ -42,7 +42,8 @@ export const defaultCourse: Course = {
       { id: 3, name: 'Video' }
     ],
     grading: false,
-    lessonDownload: true
+    lessonDownload: true,
+    allowNewStudent: false
   }
 };
 

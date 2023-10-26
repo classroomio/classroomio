@@ -26,7 +26,6 @@
   let errors = {};
   let avatar;
 
-  // controls widget open and close
   function widgetControl() {
     $handleOpenWidget.open = true;
   }
@@ -118,6 +117,7 @@
         logo,
         tabs,
         grading,
+        allow_new_students,
         lesson_download,
         is_published
       } = $settings;
@@ -130,7 +130,8 @@
           ...(isObject($course.metadata) ? $course.metadata : {}),
           lessonTabsOrder: tabs,
           grading: grading,
-          lessonDownload: lesson_download
+          lessonDownload: lesson_download,
+          allowNewStudent: allow_new_students
         }
       });
 
@@ -142,7 +143,8 @@
         ...(isObject($course.metadata) ? $course.metadata : {}),
         lessonTabsOrder: tabs,
         grading: grading,
-        lessonDownload: lesson_download
+        lessonDownload: lesson_download,
+        allowNewStudent: allow_new_students
       };
       snackbar.success('Saved successfully');
     } catch (error) {
@@ -153,7 +155,6 @@
   };
 
   function setDefault(course) {
-    console.log('course.is_published', course.is_published);
     if (course && Object.keys(course).length) {
       $settings = {
         course_title: course.title,
@@ -162,13 +163,16 @@
         tabs: course.metadata.lessonTabsOrder || $settings.tabs,
         grading: course.metadata.grading,
         lesson_download: course.metadata.lessonDownload,
-        is_published: course.is_published
+        is_published: course.is_published,
+        allow_new_students: course.metadata.allowNewStudent
       };
     }
   }
 
   $: $settings.course_description = $course.description;
   $: $settings.course_title = $course.title;
+  $: $settings.allow_new_students = $settings.is_published;
+
   $: setDefault($course);
 </script>
 
@@ -251,6 +255,18 @@
     </Column>
     <Column sm={8} md={8} lg={8}>
       <Toggle size="sm" bind:toggled={$settings.grading}>
+        <span slot="labelA" style="color: gray">Disable</span>
+        <span slot="labelB" style="color: gray">Enable</span>
+      </Toggle>
+    </Column>
+  </Row>
+  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+    <Column sm={8} md={8} lg={8}>
+      <SectionTitle>Allow New Students</SectionTitle>
+      <p>Allow new students to access this course</p>
+    </Column>
+    <Column sm={8} md={8} lg={8}>
+      <Toggle size="sm" bind:toggled={$settings.allow_new_students}>
         <span slot="labelA" style="color: gray">Disable</span>
         <span slot="labelB" style="color: gray">Enable</span>
       </Toggle>
