@@ -9,11 +9,12 @@
   }
   export let tabs: Tab[] = [];
   export let currentTab: string;
+  export let tabsPosition: string;
   export let onChange = (v: string) => () => {};
 </script>
 
 <div class="w-full flex flex-col">
-  <div class="flex items-center border-b w-full overflow-x-auto mb-2">
+  <div class="flex items-center border-b w-full overflow-x-auto mb-2 {tabsPosition}">
     {#each tabs as tab}
       {#if !tab.icon && !tab.badgeValue}
         <button

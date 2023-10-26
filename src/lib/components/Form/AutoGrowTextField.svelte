@@ -1,14 +1,18 @@
 <script lang="ts">
   export let label = '';
-  export let value: string | number | null;
+  export let value: string | number | boolean | null;
   export let placeholder = '';
   export let inputClassName = '';
   export let labelClassName = 'font-light';
   export let isDisabled = false;
   export let isRequired = false;
+  export let isEditable = true;
   export let bgColor = 'bg-gray-100 focus:bg-primary-50 dark:bg-neutral-800 dark:text-white';
   export let errorMessage = '';
   export let helperMessage = '';
+  export let onClick = (e) => {};
+  export let onBlur = (e) => {};
+  export let onFocus = (e) => {};
   export let onInput = (e) => {};
   export let onKeyDown = (e) => {};
   export let onInputChange = (e) => {};
@@ -33,7 +37,7 @@
     : ''}"
   role="textbox"
   tabindex={0}
-  contenteditable
+  contenteditable={isEditable}
   on:input={onInput}
   on:keydown={onKeyDown}
   on:change={onInputChange}
@@ -43,7 +47,10 @@
     }
     onChange(e);
   }}
+  on:blur={onBlur}
   on:focus={() => (focusClass += ' border-primary-600')}
+  on:focus={onFocus}
+  on:click={onClick}
   style="--placeholder: '{placeholder}'">{value}</span
 >
 {#if errorMessage}

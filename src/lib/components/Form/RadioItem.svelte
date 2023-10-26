@@ -1,7 +1,7 @@
-<script>
+<script lang="ts">
   import TextField from '$lib/components/Form/TextField.svelte';
   export let label = '';
-  export let value = '';
+  export let value: string | boolean;
   export let checked = false;
   export let name = '';
   export let isEditable = false;
