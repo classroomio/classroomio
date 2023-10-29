@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import { derived } from 'svelte/store';
   import { goto } from '$app/navigation';
@@ -8,7 +8,9 @@
   import * as Sentry from '@sentry/browser';
   import { Integrations } from '@sentry/tracing';
   import { CaptureConsole } from '@sentry/integrations';
+  import posthog from 'posthog-js';
   import { Theme } from 'carbon-components-svelte';
+  import type { CarbonTheme } from 'carbon-components-svelte/types/Theme/Theme.svelte';
   import { Moon } from 'svelte-loading-spinners';
   import LandingNavigation from '$lib/components/Navigation/index.svelte';
   import OrgNavigation from '$lib/components/Navigation/app.svelte';
@@ -45,30 +47,45 @@
 
   let supabase = getSupabase();
   let path = $page.url?.pathname?.replace('/', '');
-  let carbonTheme = 'white';
+  let carbonTheme: CarbonTheme = 'white';
 
   const delayedPreloading = derived(navigating, (currentPreloading, set) => {
     setTimeout(() => set(currentPreloading), 250);
   });
 
   function setupSentry() {
-    if (!dev) {
-      Sentry.init({
-        dsn: 'https://c966f7e8cb1d4306be20b26bb4f0cc96@o476906.ingest.sentry.io/5999999',
-        integrations: [
-          new Integrations.BrowserTracing(),
-          new CaptureConsole({
-            levels: ['error']
-          }),
-          new Sentry.Replay()
-        ],
-        environment: !dev ? 'production' : 'development',
-        // This sets the sample rate to be 10%. You may want this to be 100% while
-        // in development and sample at a lower rate in production
-        replaysSessionSampleRate: 0.5,
-        // If the entire session is not sampled, use the below sample rate to sample
-        // sessions when an error occurs.
-        replaysOnErrorSampleRate: 1.0
+    Sentry.init({
+      dsn: 'https://c966f7e8cb1d4306be20b26bb4f0cc96@o476906.ingest.sentry.io/5999999',
+      integrations: [
+        new Integrations.BrowserTracing(),
+        new CaptureConsole({
+          levels: ['error']
+        }),
+        new Sentry.Replay()
+      ],
+      environment: !dev ? 'production' : 'development',
+      // This sets the sample rate to be 10%. You may want this to be 100% while
+      // in development and sample at a lower rate in production
+      replaysSessionSampleRate: 0.5,
+      // If the entire session is not sampled, use the below sample rate to sample
+      // sessions when an error occurs.
+      replaysOnErrorSampleRate: 1.0
+    });
+  }
+
+  function setupPosthug() {
+    posthog.init('phc_JfdHOZ6v0cVlGELBYx1Tmoen2nxNOrAzvgvrPA6Ksov', {
+      api_host: 'https://eu.posthog.com'
+    });
+  }
+
+  function setSentryUser() {
+    if ($profile) {
+      Sentry.setUser({
+        id: $profile.id,
+        username: $profile.username,
+        email: $profile.email,
+        fullname: $profile.fullname
       });
     }
   }
@@ -99,7 +116,7 @@
 
       const [regexUsernameMatch] = [...(authUser.email?.matchAll(/(.*)@/g) || [])];
 
-      const { data, error } = await supabase
+      const { data: newProfileData, error } = await supabase
         .from('profile')
         .insert({
           id: authUser.id,
@@ -110,15 +127,15 @@
         .select();
 
       // Profile created, go to onboarding or lms
-      if (!error && data) {
+      if (!error && newProfileData) {
         $user.fetchingUser = false;
         $user.isLoggedIn = true;
         $user.currentSession = authUser;
 
-        profile.set(data[0]);
+        profile.set(newProfileData[0]);
 
         // Set user in sentry
-        Sentry.setUser($profile);
+        setSentryUser();
 
         if (data.isOrgSite) {
           const { data, error } = await supabase
@@ -160,7 +177,7 @@
       profile.set(profileData);
 
       // Set user in sentry
-      Sentry.setUser($profile);
+      setSentryUser();
 
       const orgRes = await getOrganizations($profile.id);
 
@@ -212,7 +229,10 @@
       }
     }
 
-    setupSentry();
+    if (!dev) {
+      setupSentry();
+      setupPosthug();
+    }
 
     handleResize();
 
@@ -262,9 +282,7 @@
 
     return () => {
       console.log('unsubscribed');
-      if (typeof authListener?.unsubscribe === 'function') {
-        authListener?.unsubscribe();
-      }
+      authListener.subscription.unsubscribe();
     };
   });
 

@@ -44,6 +44,7 @@
     "nodemailer": "^6.9.5",
     "openai-edge": "^1.2.2",
     "pluralize": "^8.0.0",
+    "posthog-js": "^1.87.2",
     "sirv": "^2.0.3",
     "svelte-email": "^0.0.4",
     "unsplash-js": "^7.0.18",
