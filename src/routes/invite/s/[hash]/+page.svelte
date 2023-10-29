@@ -60,7 +60,7 @@
     addGroupMember(member).then((addedMember) => {
       loading = false;
       if (addedMember.error) {
-        console.error('Error adding student to group', data.groupId);
+        console.error('Error adding student to group', data.groupId, addedMember.error);
         snackbar.error('Joining failed, please contact your admin');
         return;
       }
