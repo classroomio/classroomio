@@ -9,7 +9,7 @@
   import { addGroupMember } from '$lib/utils/services/courses';
   import type { CurrentOrg } from '$lib/utils/types/org.js';
   import { ROLE } from '$lib/utils/constants/roles';
-  import { profile } from '$lib/utils/store/user.js';
+  import { profile } from '$lib/utils/store/user';
   import {
     triggerSendEmail,
     NOTIFICATION_NAME
@@ -50,7 +50,15 @@
       .from('groupmember')
       .select('id, profile(email)')
       .eq('group_id', data.groupId)
-      .eq('role_id', ROLE.TUTOR);
+      .eq('role_id', ROLE.TUTOR)
+      .returns<
+        {
+          id: string;
+          profile: {
+            email: string;
+          };
+        }[]
+      >();
 
     const teachers: Array<string> =
       teacherMembers.data?.map((teacher) => {

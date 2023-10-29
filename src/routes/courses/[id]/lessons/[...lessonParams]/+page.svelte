@@ -29,7 +29,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { snackbar } from '$lib/components/Snackbar/store';
   import type { LessonCompletion } from '$lib/utils/types';
-  import { profile } from '$lib/utils/store/user.js';
+  import { profile } from '$lib/utils/store/user';
   import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
 
   export let data;
