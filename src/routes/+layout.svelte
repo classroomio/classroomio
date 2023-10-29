@@ -38,7 +38,6 @@
   import hideNavByRoute from '$lib/utils/functions/routes/hideNavByRoute';
   import shouldRedirectOnAuth from '$lib/utils/functions/routes/shouldRedirectOnAuth';
   import AddOrgModal from '$lib/components/Org/AddOrgModal/AddOrgModal.svelte';
-  import Hotjar from '$lib/components/Hotjar/index.svelte';
 
   import '../app.postcss';
 
@@ -64,10 +63,12 @@
           new Sentry.Replay()
         ],
         environment: !dev ? 'production' : 'development',
-        // Set tracesSampleRate to 1.0 to capture 100%
-        // of transactions for performance monitoring.
-        // We recommend adjusting this value in production
-        tracesSampleRate: 0.5
+        // This sets the sample rate to be 10%. You may want this to be 100% while
+        // in development and sample at a lower rate in production
+        replaysSessionSampleRate: 0.5,
+        // If the entire session is not sampled, use the below sample rate to sample
+        // sessions when an error occurs.
+        replaysOnErrorSampleRate: 1.0
       });
     }
   }
@@ -280,10 +281,6 @@
 <Theme bind:theme={carbonTheme} />
 
 <Snackbar />
-
-{#if !dev}
-  <Hotjar />
-{/if}
 
 {#if data.skipAuth}
   <PlayQuiz />
