@@ -45,8 +45,6 @@
   // initialize the expandDescription array with 'false' values for each review.
   let expandDescription = Array(reviews.length).fill(false);
 
-  // const paystackApi = paystack('');
-
   let activeNav = NAV_ITEMS[0].key;
   let instructor = {};
   let video: string | undefined;

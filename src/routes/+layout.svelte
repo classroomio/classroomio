@@ -6,7 +6,6 @@
   import { page, navigating } from '$app/stores';
   import isEmpty from 'lodash/isEmpty';
   import * as Sentry from '@sentry/browser';
-  import { Integrations } from '@sentry/tracing';
   import { CaptureConsole } from '@sentry/integrations';
   import posthog from 'posthog-js';
   import { Theme } from 'carbon-components-svelte';
@@ -57,13 +56,12 @@
     Sentry.init({
       dsn: 'https://c966f7e8cb1d4306be20b26bb4f0cc96@o476906.ingest.sentry.io/5999999',
       integrations: [
-        new Integrations.BrowserTracing(),
         new CaptureConsole({
           levels: ['error']
         }),
         new Sentry.Replay()
       ],
-      environment: !dev ? 'production' : 'development',
+      environment: 'production',
       // This sets the sample rate to be 10%. You may want this to be 100% while
       // in development and sample at a lower rate in production
       replaysSessionSampleRate: 0.5,
