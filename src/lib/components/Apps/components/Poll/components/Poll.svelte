@@ -1,4 +1,6 @@
 <script lang="ts">
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import Label from './Label.svelte';
   import Avatar from './Avatar.svelte';
   import type { PollType } from '../types';
@@ -7,6 +9,7 @@
   export let onSelect: (a: string | number) => void;
   export let handlePollDelete = () => {};
   export let currentUserId: number | string;
+
   let viewResult = false;
   let selectedOptionToView: { selectedBy: PollType['options'][0]['selectedBy'] } | null;
   let isAuthor = false;
@@ -59,9 +62,9 @@
       </div>
       {#each selectedOptionToView.selectedBy as user}
         <div class="flex items-center mb-2">
-          <Avatar src={user.avatarUrl} name={user.label} className="mr-2" />
+          <Avatar src={user.avatarUrl} name={user.username} className="mr-2" />
           <p class="dark:text-white">
-            {user.label}
+            {user.fullname}
           </p>
         </div>
       {/each}
@@ -73,11 +76,7 @@
           {poll.question}
         </h3>
         <p class="dark:text-white text-sm italic">
-          Created by <a
-            class="text-primary-500"
-            href="https://twitter.com/rotimi_best"
-            target="_blank">@{poll.author.label}</a
-          >
+          Created by <span class="text-primary-500">@{poll.author.username}</span>
         </p>
       </div>
 
@@ -132,7 +131,7 @@
 
           <div class="flex items-center">
             {#each option.selectedBy.slice(0, 3) as user}
-              <Avatar src={user.avatarUrl} name={user.label} className="mr-2" />
+              <Avatar src={user.avatarUrl} name={user.username} className="mr-2" />
             {/each}
           </div>
         </div>
@@ -172,20 +171,12 @@
     {/if}
 
     {#if isAuthor}
-      <div class="w-full text-center mt-3">
-        <button
-          class="px-5 py-3 bg-primary-700 text-white"
-          on:click={() => (viewResult = !viewResult)}
-        >
-          {#if viewResult}
-            Back to poll
-          {:else}
-            View results
-          {/if}
-        </button>
-        <button class="px-5 py-3 bg-red-500 text-white" on:click={handlePollDelete}>
-          Delete
-        </button>
+      <div class="w-full flex items-center mt-3">
+        <PrimaryButton
+          label={viewResult ? 'Back' : 'Result'}
+          onClick={() => (viewResult = !viewResult)}
+        />
+        <PrimaryButton label="Delete" variant={VARIANTS.TEXT_DANGER} onClick={handlePollDelete} />
       </div>
     {/if}
   {/if}

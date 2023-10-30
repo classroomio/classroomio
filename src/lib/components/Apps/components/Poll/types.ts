@@ -3,7 +3,7 @@ export type PollOptionType = {
   label: string;
   selectedBy: {
     id: string;
-    label: string;
+    username: string;
     fullname: string;
     avatarUrl: string;
   }[];
@@ -15,7 +15,7 @@ export type PollType = {
   question: string;
   author: {
     id: string;
-    label: string;
+    username: string;
     fullname: string;
     avatarUrl: string;
   };

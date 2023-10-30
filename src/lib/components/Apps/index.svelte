@@ -15,6 +15,7 @@
   import Poll from './components/Poll/index.svelte';
   import APPS_CONSTANTS from './constants';
   import { browser } from '$app/environment';
+  import { course } from '$lib/components/Course/store';
   import { lesson } from '$lib/components/Course/components/Lesson/store/lessons';
 
   let appBarRef: HTMLDivElement;
@@ -118,6 +119,10 @@
         value={APPS_CONSTANTS.APPS.POLL}
         onClick={handleAppClick}
       >
+        <Chip
+          value={$course.appsPollCount?.[0]?.count}
+          className="absolute -top-1 right-0 bg-primary-600 text-white"
+        />
         <ChartPie size={24} class="carbon-icon dark:text-white" />
       </IconButton>
     </div>

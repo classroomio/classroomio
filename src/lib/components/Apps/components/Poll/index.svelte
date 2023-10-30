@@ -1,65 +1,107 @@
 <script lang="ts">
   import PageNav from '$lib/components/PageNav/index.svelte';
   import CloseButton from '$lib/components/Buttons/Close/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import CreatePollForm from './components/CreatePollForm.svelte';
   import Poll from './components/Poll.svelte';
   import Tabs from './components/Tabs.svelte';
   import { polls } from './store';
   import type { PollType, TabsType, PollOptionType } from './types';
-  import RoleBaseSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import { getSupabase } from '$lib/utils/functions/supabase';
   import { profile } from '$lib/utils/store/user';
-  import { group } from '$lib/components/Course/store';
+  import { group, course } from '$lib/components/Course/store';
+  import type { Groupmember } from '$lib/utils/types';
+  import { fetchPolls } from '$lib/utils/services/apps';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import { onMount } from 'svelte';
 
   export let handleClose = () => {};
 
   const supabase = getSupabase();
 
   let selectedTab = 0;
-  let userId = 'abcdefghijk';
-  let shouldCreatePoll = false;
+  let currentGroupMember: Groupmember | undefined;
+  let openCreatePollForm = false;
+  let isCreating = false;
 
   let tabs: TabsType = [];
 
   async function createPoll(poll: PollType) {
-    const { data, error } = await supabase.from('apps_poll').insert({
-      question: poll.question,
-      authorId: '',
-      isPublic: poll.isPublic,
-      status: poll.question,
-      expiration: poll.expiration
-    });
-  }
+    if (!currentGroupMember || !$course.id) return;
 
-  function handleCreatePoll() {
-    shouldCreatePoll = !shouldCreatePoll;
-  }
+    const { data, error } = await supabase
+      .from('apps_poll')
+      .insert({
+        question: poll.question,
+        authorId: currentGroupMember.id,
+        isPublic: poll.isPublic,
+        status: poll.question,
+        expiration: poll.expiration
+      })
+      .select('id');
 
-  function handlePollCreate(poll: PollType) {
-    if (poll) {
-      $polls = [
-        {
-          ...poll,
-          id: 'a',
-          author: {
-            id: userId,
-            label: $profile.fullname,
-            fullname: $profile.fullname,
-            avatarUrl: $profile.avatar_url
-          }
-        },
-        ...$polls
-      ];
+    if (error || !data) {
+      console.log(error);
+      snackbar.error('An error occurred while creating poll');
+      return;
     }
 
-    handleCreatePoll();
+    const pollId = data[0].id;
+    const appsPollOptions = poll.options.map((option) => ({
+      poll_id: pollId,
+      label: option.label
+    }));
+    const { data: appsPollOptionsData, error: appsPollOptionsError } = await supabase
+      .from('apps_poll_option')
+      .insert(appsPollOptions)
+      .select();
+
+    if (appsPollOptionsError || !appsPollOptionsData) {
+      console.log({ appsPollOptionsError });
+      snackbar.error('An error occurred while creating poll');
+      return;
+    }
+
+    $polls = [
+      ...$polls,
+      {
+        ...poll,
+        id: pollId,
+        courseId: $course.id,
+        author: {
+          id: currentGroupMember.id,
+          username: $profile.username,
+          fullname: $profile.fullname,
+          avatarUrl: $profile.avatar_url
+        },
+        options: appsPollOptionsData.map((option) => ({
+          ...option,
+          id: option.id,
+          selectedBy: []
+        }))
+      }
+    ];
+
+    $course.appsPollCount = [{ count: $polls.length }];
+  }
+
+  async function handlePollCreate(poll: PollType) {
+    if (!currentGroupMember) return;
+
+    isCreating = true;
+    await createPoll(poll);
+    isCreating = false;
+
+    openCreatePollForm = false;
   }
 
   function handlePollDelete(pollId: string) {
-    return () => {
+    return async () => {
+      await supabase.from('apps_poll').delete().match({ id: pollId });
+      await supabase.from('apps_poll_option').delete().match({ poll_id: pollId });
+
       $polls = [...$polls.filter((p, i) => p.id !== pollId)];
+
+      $course.appsPollCount = [{ count: $polls.length }];
     };
   }
 
@@ -71,25 +113,35 @@
             poll.options = poll.options.map(
               (option: PollOptionType, optionIndex: string | number) => {
                 if (optionIndex === optionId) {
-                  if (option.selectedBy.find((gmember: { id: string }) => gmember.id === userId)) {
+                  if (
+                    option.selectedBy.find(
+                      (gmember: { id: string }) => gmember.id === currentGroupMember?.id
+                    )
+                  ) {
                     // Unselect if already selected
                     // <<update: let me keep this commented so after a groupmember selects an answer it can't be unselected>>
-                    // option.selectedBy = option.selectedBy.filter(gmember => gmember.id !== userId)
+                    // option.selectedBy = option.selectedBy.filter(gmember => gmember.id !== currentGroupMember?.id)
                   } else {
                     // Select if already selected
-                    option.selectedBy = [
-                      ...option.selectedBy,
-                      {
-                        id: 'abcdefghijk',
-                        label: 'Satoshi Nakamoto',
-                        fullname: 'satoshi-nakamoto',
-                        avatarUrl: 'https://i.pravatar.cc/150?img=4'
-                      }
-                    ];
+                    if (currentGroupMember) {
+                      option.selectedBy = [
+                        ...option.selectedBy,
+                        {
+                          id: currentGroupMember.id,
+                          username: $profile.username,
+                          fullname: $profile.fullname,
+                          avatarUrl: $profile.avatar_url
+                        }
+                      ];
+                    }
                   }
-                } else if (option.selectedBy.find((gmember) => gmember.id === userId)) {
+                } else if (
+                  option.selectedBy.find((gmember) => gmember.id === currentGroupMember?.id)
+                ) {
                   // This makes the groupmember to select only one option
-                  option.selectedBy = option.selectedBy.filter((gmember) => gmember.id !== userId);
+                  option.selectedBy = option.selectedBy.filter(
+                    (gmember) => gmember.id !== currentGroupMember?.id
+                  );
                 }
 
                 return option;
@@ -103,20 +155,55 @@
     };
   }
 
-  $: groupmember = $group.people.find((person) => person.profile_id === $profile.id);
+  onMount(async () => {
+    if (!$course.id) return;
+
+    const { data, error } = await fetchPolls($course.id);
+
+    if (!data || error) {
+      console.log(error);
+      return;
+    }
+
+    const pollsData: PollType[] = data.map((appsPollItem) => ({
+      id: appsPollItem.id,
+      courseId: appsPollItem.courseId,
+      expiration: appsPollItem.expiration,
+      status: appsPollItem.status,
+      question: appsPollItem.question,
+      isPublic: appsPollItem.isPublic,
+      author: {
+        id: appsPollItem.authorId,
+        username: appsPollItem.author.profile.username,
+        fullname: appsPollItem.author.profile.fullname,
+        avatarUrl: appsPollItem.author.profile.avatar_url
+      },
+      options: appsPollItem.options.map((option) => ({
+        id: option.id,
+        label: option.label,
+        selectedBy: []
+      }))
+    }));
+    console.log({ pollsData });
+    polls.set(pollsData);
+  });
+
+  $: currentGroupMember = $group.people.find((person) => person.profile_id === $profile.id);
   $: {
     tabs = [
       {
-        label: 'My polls',
+        label: 'Active polls',
         value: 0,
-        number: $polls.filter((poll) => poll.author.id === userId).length
+        number: $polls.filter((poll) => new Date(poll.expiration) >= new Date()).length
       },
       {
-        label: 'Other polls',
+        label: 'Expired polls',
         value: 1,
-        number: $polls.filter((poll) => poll.author.id !== userId).length
+        number: $polls.filter((poll) => new Date(poll.expiration) <= new Date()).length
       }
     ];
+
+    console.log({ tabs });
   }
 </script>
 
@@ -126,55 +213,40 @@
   </div>
 </PageNav>
 
-<div class="m-2 overlow-y-auto md:min-w-[350px] w-full">
-  {#if shouldCreatePoll}
-    <CreatePollForm onSubmit={handlePollCreate} onCancel={handleCreatePoll} />
+<div class="p-2 overlow-y-auto md:min-w-[350px] w-full">
+  {#if openCreatePollForm}
+    <CreatePollForm
+      onSubmit={handlePollCreate}
+      onCancel={() => (openCreatePollForm = !openCreatePollForm)}
+      bind:isSaving={isCreating}
+    />
   {:else}
     <div>
-      <Tabs {tabs} bind:selectedTab />
-      <RoleBaseSecurity allowedRoles={[1, 2]}>
-        {#if selectedTab === tabs[0].value}
-          <div class="w-full flex justify-center mb-3">
-            <PrimaryButton
-              label="Create poll"
-              variant={VARIANTS.CONTAINED}
-              onClick={handleCreatePoll}
-            />
-          </div>
-        {/if}
-      </RoleBaseSecurity>
+      <Tabs {tabs} bind:selectedTab onCreate={() => (openCreatePollForm = !openCreatePollForm)} />
 
       {#each $polls as poll, index}
-        {#if selectedTab === tabs[0].value && poll.author.id === userId}
+        {#if selectedTab === tabs[0].value}
           <Poll
             bind:poll
             onSelect={handleVote(index)}
             handlePollDelete={handlePollDelete(poll.id)}
-            currentUserId={userId}
+            currentUserId={currentGroupMember?.id || ''}
           />
-        {:else if selectedTab === tabs[1].value && poll.author.id !== userId}
+        {:else if selectedTab === tabs[1].value}
           <Poll
             bind:poll
             onSelect={handleVote(index)}
             handlePollDelete={handlePollDelete(poll.id)}
-            currentUserId={userId}
+            currentUserId={currentGroupMember?.id || ''}
           />
         {/if}
+      {:else}
+        <div
+          class="bg-gray-100 dark:bg-neutral-800 border rounded-md h-60 flex items-center justify-center"
+        >
+          <h2 class="text-xl font-bold">No polls to display</h2>
+        </div>
       {/each}
-      {#if selectedTab === tabs[0].value && selectedTab == 0}
-        <div
-          class="bg-gray-100 dark:bg-neutral-800 border rounded-md h-60 flex items-center justify-center"
-        >
-          <h2 class="text-xl font-bold">No polls to display</h2>
-        </div>
-      {/if}
-      {#if selectedTab === tabs[1].value && selectedTab == 0}
-        <div
-          class="bg-gray-100 dark:bg-neutral-800 border rounded-md h-60 flex items-center justify-center"
-        >
-          <h2 class="text-xl font-bold">No polls to display</h2>
-        </div>
-      {/if}
     </div>
   {/if}
 </div>

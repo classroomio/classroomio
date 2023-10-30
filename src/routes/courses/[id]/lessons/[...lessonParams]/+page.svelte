@@ -72,23 +72,24 @@
     isFetching = false;
   }
 
-  async function markLessonComplete() {
+  async function markLessonComplete(lessonId: string) {
     let found = false;
     isMarkingComplete = true;
 
     let completion: LessonCompletion = {
       is_complete: true,
       profile_id: $profile.id || '',
-      lesson_id: $lesson.id || '',
+      lesson_id: lessonId,
       created_at: new Date().toDateString(),
       updated_at: new Date().toDateString()
     };
     const completions: LessonCompletion[] = $lesson.lesson_completion.map((_completion) => {
       if (_completion.profile_id === $profile.id) {
         found = true;
-        _completion.is_complete = !_completion.is_complete;
-
-        completion = _completion;
+        completion = {
+          ...completion,
+          is_complete: _completion.is_complete
+        };
       }
 
       return _completion;
@@ -324,7 +325,11 @@
         <SendAlt size={24} class="carbon-icon" />
         <span class="ml-1">{$lesson.totalComments}</span>
       </button>
-      <button class="px-2 my-2" on:click={markLessonComplete} disabled={isMarkingComplete}>
+      <button
+        class="px-2 my-2"
+        on:click={() => markLessonComplete(data.lessonId)}
+        disabled={isMarkingComplete}
+      >
         {#if getIsLessonComplete($lesson.lesson_completion, $profile.id)}
           <CheckmarkFilledIcon size={24} class="carbon-icon text-primary-600" />
         {:else}

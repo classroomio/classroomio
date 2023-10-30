@@ -51,7 +51,8 @@ export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']
         profile:teacher_id(id, avatar_url, fullname),
         lesson_completion(id, profile_id, is_complete)
       ),
-      attendance:group_attendance(*)
+      attendance:group_attendance(*),
+      appsPollCount:apps_poll(count)
     `
     )
     .match(match)

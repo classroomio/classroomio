@@ -1,25 +1,32 @@
 <script lang="ts">
-  import FormSection from './FormSection.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import type { IPoll } from '../types';
+  import DateTime from '$lib/components/Form/DateTime.svelte';
+  import type { PollType } from '../types';
+  import { course } from '$lib/components/Course/store';
+  import { profile } from '$lib/utils/store/user';
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import { Add, TrashCan } from 'carbon-icons-svelte';
+  import IconButton from '$lib/components/IconButton/index.svelte';
 
   export let title = 'Poll';
-  export let onSubmit = (p: IPoll) => {};
+  export let isSaving = false;
+  export let onSubmit = (p: PollType) => {};
   export let onCancel = () => {};
 
-  let poll: IPoll = {
-    id: '',
+  let poll: PollType = {
+    id: new Date().getTime().toString(),
+    courseId: $course.id || '',
     question: '',
-    author: {
-      id: '',
-      label: '',
-      fullname: '',
-      avatarUrl: ''
-    },
+    expiration: new Date().toDateString(),
     isPublic: false,
-    status: '',
-    expiration: '',
+    status: 'draft',
+    author: {
+      id: $profile.id || '',
+      username: $profile.username || '',
+      fullname: $profile.fullname || '',
+      avatarUrl: $profile.avatar_url || ''
+    },
     options: [
       {
         id: '',
@@ -28,6 +35,7 @@
       }
     ]
   };
+  let isCreateDisabled = false;
 
   function handleAddOptions() {
     poll = {
@@ -45,13 +53,15 @@
 
   function handleRemoveOptions(index: string | number) {
     return () => {
-      poll.options = poll.options.filter((o, i) => i !== index);
+      poll.options = poll.options.filter((_, i) => i !== index);
     };
   }
 
   function finishPoll() {
     onSubmit(poll);
   }
+
+  $: isCreateDisabled = poll.question === '' || poll.options.length < 2;
 </script>
 
 <div class="border rounded-md">
@@ -59,32 +69,53 @@
     {title}
   </div>
   <div class="p-3">
-    <FormSection
+    <TextField
       label="Question"
+      className="w-full mb-3"
       bind:value={poll.question}
-      handleLabelButton={undefined}
-      handleInputButton={undefined}
+      placeholder="Poll question"
+      isRequired={true}
     />
-    <FormSection
+    <DateTime
       label="Expiration"
+      className="w-full mb-3"
       bind:value={poll.expiration}
-      type="date"
-      handleLabelButton={undefined}
-      handleInputButton={undefined}
+      isRequired={true}
     />
 
+    <div>
+      <p class="dark:text-white p-0 m-0 mb-1 text-md flex items-center gap-2">
+        Options
+
+        <IconButton onClick={handleAddOptions} contained={true} size="small">
+          <Add size={16} />
+        </IconButton>
+      </p>
+    </div>
+
     {#each poll.options as option, index}
-      <FormSection
-        label={index === 0 ? 'Options' : ''}
-        bind:value={option.label}
-        handleLabelButton={handleAddOptions}
-        handleInputButton={handleRemoveOptions(index)}
-      />
+      <div class="flex items-center gap-2 mb-3">
+        <TextField
+          label=""
+          className="w-full"
+          bind:value={option.label}
+          placeholder="Option Label"
+          isRequired={true}
+        />
+        <IconButton onClick={handleRemoveOptions(index)} contained={true} size="small">
+          <TrashCan size={16} />
+        </IconButton>
+      </div>
     {/each}
   </div>
 
-  <div class="w-full flex justify-center mb-3">
-    <PrimaryButton label="Create poll" onClick={finishPoll} />
+  <div class="w-full flex justify-center gap-2 mb-3">
+    <PrimaryButton
+      label="Create poll"
+      onClick={finishPoll}
+      isLoading={isSaving}
+      isDisabled={isCreateDisabled}
+    />
     <PrimaryButton label="Cancel" variant={VARIANTS.OUTLINED} onClick={onCancel} />
   </div>
 </div>
