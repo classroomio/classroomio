@@ -25,14 +25,18 @@
     triggerSendEmail
   } from '$lib/utils/services/notification/notification';
   import { lesson } from '../store/lessons';
+  import { onMount } from 'svelte';
+  import { browser } from '$app/environment';
 
-  export let preview;
+  export let preview: false;
   export let exerciseId = '';
 
   let currentQuestion = {};
   let renderProps = {};
   let submission;
   let hasSubmission = false;
+  let isLoadingAutoSavedData = false;
+  let alreadyCheckedAutoSavedData = false;
 
   function handleStart() {
     $questionnaireMetaData.currentQuestionIndex += 1;
@@ -77,6 +81,7 @@
     const { answers } = $questionnaireMetaData;
     const { questions } = $questionnaire;
     const prevAnswer = answers[id] || [];
+
     const formattedAnswer =
       typeof value === 'string' ? value : removeDuplicate([...prevAnswer, ...(value || [])]);
 
@@ -87,6 +92,10 @@
 
     if (moveToNextQuestion) {
       $questionnaireMetaData.currentQuestionIndex += 1;
+      localStorage.setItem(
+        `autosave-exercise-${exerciseId}`,
+        JSON.stringify($questionnaireMetaData)
+      );
     }
 
     const isFinished = !questions[$questionnaireMetaData.currentQuestionIndex - 1];
@@ -98,6 +107,7 @@
 
     // If last question send to server
     if (isFinished) {
+      localStorage.removeItem(`autosave-exercise-${exerciseId}`);
       $questionnaireMetaData.status = 1;
       $questionnaireMetaData.totalPossibleGrade = getTotalPossibleGrade($questionnaire.questions);
       $questionnaireMetaData.grades = {};
@@ -138,8 +148,6 @@
 
     if (hasSubmission) return;
 
-    console.log('checkForSubmission');
-
     const args = {
       exerciseId,
       courseId,
@@ -150,7 +158,6 @@
 
     if (Array.isArray(data) && data.length) {
       submission = data[0];
-
       $questionnaireMetaData.answers = formatAnswers({
         questions: $questionnaire.questions,
         answers: submission.answers
@@ -171,7 +178,27 @@
     }
   }
 
-  $: {
+  function getAutoSavedData() {
+    isLoadingAutoSavedData = true;
+
+    const stringifiedQuestionnaireMetaData = localStorage.getItem(
+      `autosave-exercise-${exerciseId}`
+    );
+
+    if (stringifiedQuestionnaireMetaData) {
+      const autoSavedData = JSON.parse(stringifiedQuestionnaireMetaData);
+      if (autoSavedData) {
+        $questionnaireMetaData = autoSavedData;
+      }
+    }
+    isLoadingAutoSavedData = false;
+    alreadyCheckedAutoSavedData = true;
+  }
+
+  $: browser && !alreadyCheckedAutoSavedData && getAutoSavedData();
+
+  // Reactive code
+  $: if (alreadyCheckedAutoSavedData && $questionnaire.questions.length > 2) {
     currentQuestion = $questionnaire.questions[$questionnaireMetaData.currentQuestionIndex - 1];
     if ($questionnaireMetaData.currentQuestionIndex > 0 && !currentQuestion) {
       $questionnaireMetaData.isFinished = true;
@@ -188,11 +215,10 @@
         preview
       );
     }
+    $questionnaireMetaData.progressValue = getProgressValue(
+      $questionnaireMetaData.currentQuestionIndex
+    );
   }
-
-  $: $questionnaireMetaData.progressValue = getProgressValue(
-    $questionnaireMetaData.currentQuestionIndex
-  );
   $: checkForSubmission($group.people, $profile.id, $course.id);
 </script>
 
@@ -254,41 +280,43 @@
     </div>
   </RoleBasedSecurity>
 {:else if $questionnaireMetaData.isFinished}
-  <div class="flex items-center justify-between">
-    <div class="flex flex-col justify-between w-full">
-      <h2 class="text-xl mb-2 mt-0">{$questionnaire.title}</h2>
+  {#if !isLoadingAutoSavedData}
+    <div class="flex items-center justify-between">
+      <div class="flex flex-col justify-between w-full">
+        <h2 class="text-xl mb-2 mt-0">{$questionnaire.title}</h2>
+        {#if STATUS.GRADED === $questionnaireMetaData.status}
+          <span
+            class="status-text bg-green-700 text-white rounded-full py-3 px-6 text-center"
+            title="Status: Pending Review"
+          >
+            Graded
+          </span>
+        {:else}
+          <span
+            class="status-text bg-yellow-600 text-white rounded-full py-3 px-6 text-center"
+            title="Status: Pending Review"
+          >
+            Pending
+          </span>
+        {/if}
+      </div>
       {#if STATUS.GRADED === $questionnaireMetaData.status}
         <span
-          class="status-text bg-green-700 text-white rounded-full py-3 px-6 text-center"
+          class="p-5 border-2 border-gray-700 rounded-full h-24 w-24 flex items-center justify-center text-2xl"
           title="Status: Pending Review"
         >
-          Graded
-        </span>
-      {:else}
-        <span
-          class="status-text bg-yellow-600 text-white rounded-full py-3 px-6 text-center"
-          title="Status: Pending Review"
-        >
-          Pending
+          {$questionnaireMetaData.finalTotalGrade}/{$questionnaireMetaData.totalPossibleGrade}
         </span>
       {/if}
     </div>
-    {#if STATUS.GRADED === $questionnaireMetaData.status}
-      <span
-        class="p-5 border-2 border-gray-700 rounded-full h-24 w-24 flex items-center justify-center text-2xl"
-        title="Status: Pending Review"
-      >
-        {$questionnaireMetaData.finalTotalGrade}/{$questionnaireMetaData.totalPossibleGrade}
-      </span>
-    {/if}
-  </div>
-  <Preview
-    questions={$questionnaire.questions.sort((a, b) => a.order - b.order)}
-    questionnaireMetaData={$questionnaireMetaData}
-    grades={$questionnaireMetaData.grades}
-    disableGrading={true}
-  />
-{:else if currentQuestion}
+    <Preview
+      questions={$questionnaire.questions.sort((a, b) => a.order - b.order)}
+      questionnaireMetaData={$questionnaireMetaData}
+      grades={$questionnaireMetaData.grades}
+      disableGrading={true}
+    />
+  {/if}
+{:else if currentQuestion && currentQuestion?.id}
   {#key currentQuestion.id}
     <!-- <div transition:fade id="question"> -->
     <div in:fly={{ x: 500, duration: 1000 }} id="question">
