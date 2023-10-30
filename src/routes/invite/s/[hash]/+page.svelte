@@ -15,6 +15,7 @@
     NOTIFICATION_NAME
   } from '$lib/utils/services/notification/notification';
   import { snackbar } from '$lib/components/Snackbar/store.js';
+  import { capturePosthogEvent } from '$lib/utils/services/posthog/index.js';
 
   export let data;
 
@@ -72,6 +73,12 @@
         snackbar.error('Joining failed, please contact your admin');
         return;
       }
+
+      capturePosthogEvent('student_joined_course', {
+        course_name: data.name,
+        student_id: $profile.id,
+        student_email: $profile.email
+      });
 
       // Send email welcoming student to the course
       triggerSendEmail(NOTIFICATION_NAME.STUDENT_COURSE_WELCOME, {

@@ -11,6 +11,7 @@
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
+  import { capturePosthogEvent } from '$lib/utils/services/posthog';
 
   let isLoading = false;
   let errors = {
@@ -31,7 +32,7 @@
     }));
   }
 
-  async function createCourse(e) {
+  async function createCourse() {
     isLoading = true;
     const { hasError, fieldErrors } = validateForm($createCourseModal);
 
@@ -46,6 +47,9 @@
       .select();
 
     console.log(`newGroup`, newGroup);
+
+    if (!newGroup) return;
+
     const { id: group_id } = newGroup[0];
 
     // Set userPrompt to the description
@@ -62,11 +66,21 @@
       .select();
     console.log(`newCourse`, newCourse);
 
+    if (!newCourse) return;
+
     courses.update((_courses) => [..._courses, newCourse[0]]);
 
-    // 3. Add group members
+    capturePosthogEvent('course_created', {
+      course_id: newCourse[0]?.id,
+      course_title: newCourse[0]?.title,
+      course_description: newCourse[0]?.description,
+      organization_id: $currentOrg.id,
+      organization_name: $currentOrg.name,
+      user_id: $profile.id,
+      user_email: $profile.email
+    });
 
-    // Get profile of author and add as member
+    // 3. Add group members
     await addGroupMember({
       profile_id: $profile.id,
       email: $profile.email,
@@ -105,8 +119,7 @@
     <TextArea
       label="Short description"
       bind:value={$createCourseModal.description}
-      rows="4"
-      maxRows="4"
+      rows={4}
       placeholder="A little description about this course"
       className="mb-4"
       isRequired={true}
