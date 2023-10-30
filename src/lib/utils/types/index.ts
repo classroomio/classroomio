@@ -11,6 +11,7 @@ export interface GroupPerson {
   profile: Profile;
   profile_id: string;
   role_id: Role['id'];
+  fullname?: string;
 }
 
 export interface CustomQuestionType {
@@ -35,15 +36,35 @@ export interface ExerciseTemplate {
     }[];
   };
 }
+export interface ExerciseSubmissions {
+  id: string;
+  status_id: number;
+  submitted_by: {
+    profile: {
+      id: string;
+      fullname: string;
+      avatar_url: string;
+    };
+  };
+  answers: {
+    answers: string[];
+    group_member_id: string;
+    id: number;
+    open_answer: string;
+    point: number;
+    question_id: number;
+    submission_id: string;
+  }[];
+}
 //===========================================
 
 interface CourseMetadata {
-  requirements: string;
-  description: string;
-  goals: string;
+  requirements?: string;
+  description?: string;
+  goals?: string;
   videoUrl?: '';
-  showDiscount: false;
-  discount: 0;
+  showDiscount?: false;
+  discount?: 0;
   paymentLink?: string;
   reward?: {
     show: boolean;
@@ -60,6 +81,7 @@ interface CourseMetadata {
   lessonTabsOrder?: Array<Tabs>;
   grading?: boolean;
   lessonDownload?: boolean;
+  allowNewStudent: boolean;
 }
 
 export interface LessonCommentInsertPayload {
@@ -166,6 +188,7 @@ export interface Course {
     is_present: boolean;
     id: number;
   }[];
+  lessons?: Lesson[];
 }
 
 export interface Groupmember {

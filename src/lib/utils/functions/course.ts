@@ -1,3 +1,4 @@
+import { browser } from '$app/environment';
 import type { Course } from '../types';
 
 export const isCourseFree = (cost: number) => !(Number(cost) > 0);
@@ -18,8 +19,23 @@ export const getStudentInviteLink = (_course: Course, orgSiteName: string) => {
 };
 
 export const getTextFromHTML = (html: string): string => {
+  if (!browser) return html;
+
   const dummyDiv = document.createElement('div');
   dummyDiv.innerHTML = html;
 
   return dummyDiv.textContent?.trim() || '';
 };
+
+const tagsToReplace = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;'
+};
+
+export function replaceHTMLTag(text: string) {
+  return text
+    .split('')
+    .map((char) => tagsToReplace[char] || char)
+    .join('');
+}

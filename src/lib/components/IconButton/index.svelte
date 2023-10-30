@@ -1,5 +1,6 @@
 <script lang="ts">
   import ToolTip from '../ToolTip/index.svelte';
+
   export let onClick = (v: string) => {};
   export let stopPropagation = false;
   export let disabled = false;

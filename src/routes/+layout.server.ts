@@ -2,22 +2,31 @@
 import { blockedSubdomain } from '$lib/utils/constants/app';
 import { getCurrentOrg } from '$lib/utils/services/org';
 import { getSupabase, supabase } from '$lib/utils/functions/supabase';
+import type { CurrentOrg } from '$lib/utils/types/org';
 
 if (!supabase) {
   getSupabase();
 }
 
-/** @type {import('./$types').LayoutServerLoad} */
-export const load = async ({ url, cookies }) => {
+interface LoadOutput {
+  orgSiteName: string;
+  isOrgSite: boolean;
+  skipAuth: boolean;
+  org: CurrentOrg;
+}
+
+export const load = async ({ url, cookies }): LoadOutput => {
   // if (url.hostname === 'classroomio.com') {
   //   throw redirect(301, 'https://about.classroomio.com');
   // }
 
-  let response = {
+  let response: LoadOutput = {
     orgSiteName: '',
     isOrgSite: false,
     skipAuth: false,
-    org: {}
+    org: {
+      theme: ''
+    }
   };
 
   const _orgSiteName = cookies.get('_orgSiteName');

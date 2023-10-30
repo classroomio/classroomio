@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // import { Moon } from 'svelte-loading-spinners';
   import { VARIANTS, VARIANTS_CLASS } from './constants';
   import { Loading } from 'carbon-components-svelte';
@@ -7,7 +7,7 @@
   export let className = '';
   export let onClick = () => {};
   export let name = '';
-  export let type = 'button';
+  export let type: 'button' | 'submit' | 'reset' | null | undefined = 'button';
   export let variant = VARIANTS.CONTAINED;
   export let disablePadding = false;
   export let isDisabled = false;

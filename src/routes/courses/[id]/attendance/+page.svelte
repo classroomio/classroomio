@@ -15,9 +15,8 @@
   import PageNav from '$lib/components/PageNav/index.svelte';
   import PageBody from '$lib/components/PageBody/index.svelte';
   import Box from '$lib/components/Box/index.svelte';
-  import { course, group, setCourse } from '$lib/components/Course/store';
+  import { course, group } from '$lib/components/Course/store';
   import { getLectureNo } from '$lib/components/Course/function';
-  import { fetchCourse } from '$lib/utils/services/courses';
   import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
   import { ROLE } from '$lib/utils/constants/roles';
   import { takeAttendance } from '$lib/utils/services/attendance';
@@ -25,8 +24,10 @@
   import { attendance } from '$lib/utils/store/attendance.js';
   import { profile } from '$lib/utils/store/user';
   import type { GroupPerson, Lesson } from '$lib/utils/types/index';
+  import { browser } from '$app/environment';
 
   export let data;
+
   interface CourseData {
     attendance: {
       student_id: string;
@@ -120,27 +121,23 @@
     );
   }
 
-  onMount(async () => {
-    if ($course.id) {
+  async function firstRender(courseId: string) {
+    if (courseId) {
       if (!Object.keys($attendance).length) {
         setAttendance($course);
       }
       return;
     }
-
-    const { data: _data } = await fetchCourse(data.courseId);
-    if (!_data) return;
-
-    setCourse(_data);
-    setAttendance(_data);
-  });
+  }
 
   $: students = isStudent
     ? $group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
     : $group.people.filter((person) => !!person.profile && person.role_id === ROLE.STUDENT);
+
+  $: browser && $course.id && firstRender($course.id);
 </script>
 
-<CourseContainer bind:isStudent>
+<CourseContainer bind:isStudent bind:courseId={data.courseId}>
   <PageNav title="Attendance" />
   <PageBody width="w-full max-w-6xl md:w-11/12">
     <section class="flex items-center mx-2 lg:mx-9 my-5">

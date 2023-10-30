@@ -1,15 +1,13 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
+  import { fly } from 'svelte/transition';
   import { derived } from 'svelte/store';
   import { goto } from '$app/navigation';
-  import { dev, browser } from '$app/environment';
+  import { browser } from '$app/environment';
   import { page, navigating } from '$app/stores';
   import isEmpty from 'lodash/isEmpty';
-  import * as Sentry from '@sentry/browser';
-  import { Integrations } from '@sentry/tracing';
-  import { CaptureConsole } from '@sentry/integrations';
-  import { Theme } from 'carbon-components-svelte';
-  import { Moon } from 'svelte-loading-spinners';
+  import { Theme, ToastNotification, Loading } from 'carbon-components-svelte';
+  import type { CarbonTheme } from 'carbon-components-svelte/types/Theme/Theme.svelte';
   import LandingNavigation from '$lib/components/Navigation/index.svelte';
   import OrgNavigation from '$lib/components/Navigation/app.svelte';
   import LMSNavigation from '$lib/components/Navigation/lms.svelte';
@@ -18,8 +16,6 @@
   import Backdrop from '$lib/components/Backdrop/index.svelte';
   import OrgSideBar from '$lib/components/Org/SideBar.svelte';
   import LMSSideBar from '$lib/components/LMS/SideBar.svelte';
-  // import SideBar from "../components/SideBar/index.svelte";
-  // import Footer from '$lib/components/Footer/index.svelte';
   import Apps from '$lib/components/Apps/index.svelte';
   import PlayQuiz from '$lib/components/Org/Quiz/Play/index.svelte';
   import { course } from '$lib/components/Course/store';
@@ -38,7 +34,8 @@
   import hideNavByRoute from '$lib/utils/functions/routes/hideNavByRoute';
   import shouldRedirectOnAuth from '$lib/utils/functions/routes/shouldRedirectOnAuth';
   import AddOrgModal from '$lib/components/Org/AddOrgModal/AddOrgModal.svelte';
-  import Hotjar from '$lib/components/Hotjar/index.svelte';
+  import { identifyPosthogUser, initPosthog } from '$lib/utils/services/posthog';
+  import { initSentry, setSentryUser } from '$lib/utils/services/sentry';
 
   import '../app.postcss';
 
@@ -46,29 +43,30 @@
 
   let supabase = getSupabase();
   let path = $page.url?.pathname?.replace('/', '');
-  let carbonTheme = 'white';
+  let carbonTheme: CarbonTheme = 'white';
 
   const delayedPreloading = derived(navigating, (currentPreloading, set) => {
     setTimeout(() => set(currentPreloading), 250);
   });
 
-  function setupSentry() {
-    if (!dev) {
-      Sentry.init({
-        dsn: 'https://c966f7e8cb1d4306be20b26bb4f0cc96@o476906.ingest.sentry.io/5999999',
-        integrations: [
-          new Integrations.BrowserTracing(),
-          new CaptureConsole({
-            levels: ['error']
-          }),
-          new Sentry.Replay()
-        ],
-        environment: !dev ? 'production' : 'development',
-        // Set tracesSampleRate to 1.0 to capture 100%
-        // of transactions for performance monitoring.
-        // We recommend adjusting this value in production
-        tracesSampleRate: 0.5
+  function setupAnalytics() {
+    // Set up sentry
+    initSentry();
+
+    // Set up posthog
+    initPosthog();
+  }
+
+  function setAnalyticsUser() {
+    if ($profile.id) {
+      setSentryUser({
+        id: $profile.id,
+        username: $profile.username,
+        email: $profile.email,
+        fullname: $profile.fullname
       });
+
+      identifyPosthogUser($profile.id, { email: $profile.email, name: $profile.fullname });
     }
   }
 
@@ -98,7 +96,7 @@
 
       const [regexUsernameMatch] = [...(authUser.email?.matchAll(/(.*)@/g) || [])];
 
-      const { data, error } = await supabase
+      const { data: newProfileData, error } = await supabase
         .from('profile')
         .insert({
           id: authUser.id,
@@ -109,15 +107,14 @@
         .select();
 
       // Profile created, go to onboarding or lms
-      if (!error && data) {
+      if (!error && newProfileData) {
         $user.fetchingUser = false;
         $user.isLoggedIn = true;
         $user.currentSession = authUser;
 
-        profile.set(data[0]);
+        profile.set(newProfileData[0]);
 
-        // Set user in sentry
-        Sentry.setUser($profile);
+        setAnalyticsUser();
 
         if (data.isOrgSite) {
           const { data, error } = await supabase
@@ -159,9 +156,9 @@
       profile.set(profileData);
 
       // Set user in sentry
-      Sentry.setUser($profile);
+      setAnalyticsUser();
 
-      const orgRes = await getOrganizations($profile.id);
+      const orgRes = await getOrganizations(profileData.id);
 
       // student redirect
       if (data.isOrgSite) {
@@ -211,12 +208,12 @@
       }
     }
 
-    setupSentry();
+    setupAnalytics();
 
     handleResize();
 
     if (
-      !localStorage.getItem('sb-koxqonvbkeakwvmdegcf-auth-token') &&
+      !localStorage.getItem('sb-tapaozmyjsuykgerrfkt-auth-token') &&
       !isPublicRoute($page.url.pathname)
     ) {
       console.log('No auth token and is not a public route, redirect to login', path);
@@ -261,9 +258,7 @@
 
     return () => {
       console.log('unsubscribed');
-      if (typeof authListener?.unsubscribe === 'function') {
-        authListener?.unsubscribe();
-      }
+      authListener.subscription.unsubscribe();
     };
   });
 
@@ -281,10 +276,6 @@
 
 <Snackbar />
 
-{#if !dev}
-  <Hotjar />
-{/if}
-
 {#if data.skipAuth}
   <PlayQuiz />
 {:else if data.isOrgSite && !path}
@@ -292,8 +283,16 @@
 {:else}
   <main class="dark:bg-black">
     {#if $navigating && $delayedPreloading}
-      <Backdrop>
-        <Moon size="60" color="#1d4ed8" unit="px" duration="1s" />
+      <Backdrop disableCenteredContent={true} className="opacity-90">
+        <div class="h-full w-full relative" transition:fly={{ x: -200, duration: 500 }}>
+          <ToastNotification kind="info-square" class="absolute bottom-5 left-5">
+            <span slot="title" class="flex items-center">
+              <span class="mr-2">Redirecting</span>
+              <Loading withOverlay={false} small />
+            </span>
+            <span slot="caption">Taking you to the next page, please wait.</span>
+          </ToastNotification>
+        </div>
       </Backdrop>
     {/if}
     {#if !hideNavByRoute($page.url.pathname)}
@@ -338,10 +337,6 @@
       {/if}
     </div>
   </main>
-
-  {#if !['about', ''].includes(path)}
-    <!-- <Footer /> -->
-  {/if}
 {/if}
 
 <style>

@@ -145,7 +145,7 @@ export const withEmailTemplate = (content: string) =>
     <div class="gutter" style="padding: 30px">
       <a href="https://classroomio.com" target="_blank">
         <img
-          src="https://koxqonvbkeakwvmdegcf.supabase.co/storage/v1/object/public/avatars/classroomio-logo-full.png"
+          src="https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/classroomio-logo-full.png"
           alt="ClassroomIO Logo"
       /></a>
     </div>
@@ -172,7 +172,7 @@ export const withEmailTemplate = (content: string) =>
             <a target="_blank" href="https://twitter.com/classroomio"
               ><img
                 title="X"
-                src="https://koxqonvbkeakwvmdegcf.supabase.co/storage/v1/object/public/avatars/classroomio-x.png"
+                src="https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/classroomio-x.png"
                 alt="X"
                 width="32"
             /></a>
@@ -181,7 +181,7 @@ export const withEmailTemplate = (content: string) =>
             <a target="_blank" href="https://www.youtube.com/@ClassroomIO"
               ><img
                 title="Youtube"
-                src="https://koxqonvbkeakwvmdegcf.supabase.co/storage/v1/object/public/avatars/classroomio-youtube.png"
+                src="https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/classroomio-youtube.png"
                 alt="Youtube"
                 width="32"
             /></a>
@@ -190,7 +190,7 @@ export const withEmailTemplate = (content: string) =>
             <a target="_blank" href="https://www.facebook.com/classroomiohq"
               ><img
                 title="Facebook"
-                src="https://koxqonvbkeakwvmdegcf.supabase.co/storage/v1/object/public/avatars/classroomio-facebook.png"
+                src="https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/classroomio-facebook.png"
                 alt="Facebook"
                 width="32"
             /></a>

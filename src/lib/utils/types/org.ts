@@ -21,3 +21,11 @@ export interface OrgTeamMember {
   role: string;
   isAdmin: boolean;
 }
+
+export interface OrgAudience {
+  id: string;
+  name: string;
+  email: string;
+  avatar_url: string;
+  date_joined: string;
+}

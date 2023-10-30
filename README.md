@@ -28,7 +28,7 @@ Ultimately I want this project to become the Wordpress or Linux for Education. A
 
 ## Installation of modules
 
-```
+```js
 npm i --legacy-peer-deps --registry=https://registry.npmjs.org
 ```
 
@@ -36,10 +36,9 @@ Note: Make sure you are using Node 18
 
 ## Environment variable
 
-```
+```env
 PUBLIC_SUPABASE_ANON_KEY=
 PUBLIC_SUPABASE_URL=
-NETLIFY_API_KEY=
 OPENAI_API_KEY=
 CLOUDFLARE_TOKEN_VALUE=
 CLOUDFLARE_ACCESS_KEY=

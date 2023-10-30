@@ -2,6 +2,7 @@
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
   import Box from '$lib/components/Box/index.svelte';
+  import { Breadcrumb, BreadcrumbItem } from 'carbon-components-svelte';
   import { Moon } from 'svelte-loading-spinners';
   import Backdrop from '$lib/components/Backdrop/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -13,7 +14,6 @@
   import { QUESTION_TYPES } from '$lib/components/Question/constants';
   import { lesson } from '../store/lessons';
   import { questionnaire, isQuestionnaireFetching } from '../store/exercise';
-  import { exerciseMode } from '../Exercise/store';
   import NewExerciseModal from '$lib/components/Course/components/Lesson/Exercises/NewExerciseModal.svelte';
   import type { ExerciseTemplate } from '$lib/utils/types';
 
@@ -90,6 +90,7 @@
       .select(
         `
         id, title, description, due_by,
+        totalSubmissions:submission(count),
         questions:question(
           *,
           options:option(*),
@@ -115,16 +116,16 @@
       data.questions = data.questions.sort((a, b) => a.order - b.order);
     } else if (data) {
       data.questions = [];
-    } else {
-      data = {};
     }
 
-    data.is_title_dirty = false;
-    data.is_description_dirty = false;
-    data.is_due_by_dirty = false;
-
-    questionnaire.set(data);
-    console.log('getExercise', exerciseId, $questionnaire);
+    questionnaire.set({
+      ...(data || {}),
+      is_title_dirty: false,
+      is_description_dirty: false,
+      is_due_by_dirty: false,
+      questions: Array.isArray(data.questions) ? data.questions : [],
+      totalSubmissions: data?.totalSubmissions?.[0]?.count || 0
+    });
 
     isQuestionnaireFetching.update(() => false);
     isFetching = false;
@@ -139,8 +140,6 @@
   });
 
   $: getExercise(exerciseId);
-
-  $: $exerciseMode.editMode = !isStudent;
 </script>
 
 {#if isFetching}
@@ -150,7 +149,7 @@
 {/if}
 
 {#if exerciseId}
-  <Exercise {exerciseId} {goBack} bind:isStudent />
+  <Exercise {exerciseId} {goBack} bind:path bind:isStudent />
 {:else}
   <NewExerciseModal
     bind:open
@@ -162,12 +161,15 @@
 
   <PageBody bind:isPageNavHidden={isStudent}>
     <slot:fragment slot="header">
+      <Breadcrumb class="my-2">
+        <BreadcrumbItem href={path}>All Exercises</BreadcrumbItem>
+      </Breadcrumb>
       <RoleBasedSecurity allowedRoles={[1, 2]}>
-        <PrimaryButton className="mr-2 mb-2" label="Add" onClick={() => (open = !open)} />
+        <PrimaryButton className="mr-2 my-2" label="Add" onClick={() => (open = !open)} />
       </RoleBasedSecurity>
     </slot:fragment>
 
-    <div class="flex flex-wrap">
+    <div class="flex flex-wrap mt-5">
       {#each $lesson.exercises as exercise}
         <a
           class="w-52 bg-gray-100 dark:bg-neutral-800 px-4 py-7 mr-4 mb-4 rounded-lg"

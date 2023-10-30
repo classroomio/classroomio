@@ -1,8 +1,10 @@
 import { writable, derived } from 'svelte/store';
+import { dev, browser } from '$app/environment';
 import { STEPS } from '../constants/quiz';
 import type { Writable } from 'svelte/store';
-import type { CurrentOrg, OrgTeamMember } from '../types/org';
+import type { CurrentOrg, OrgTeamMember, OrgAudience } from '../types/org';
 import { ROLE } from '$lib/utils/constants/roles';
+import type { UserLessonDataType } from '$lib/utils/types';
 
 export const orgs = writable<CurrentOrg[]>([]);
 export const currentOrg: Writable<CurrentOrg> = writable({
@@ -16,7 +18,7 @@ export const currentOrg: Writable<CurrentOrg> = writable({
   landingpage: {},
   theme: ''
 });
-export const orgAudience = writable([]);
+export const orgAudience = writable<OrgAudience[]>([]);
 export const orgTeam = writable<OrgTeamMember[]>([]);
 export const isOrgAdmin = derived(
   currentOrg,
@@ -25,6 +27,14 @@ export const isOrgAdmin = derived(
 export const currentOrgPath = derived(currentOrg, ($currentOrg) =>
   $currentOrg.siteName ? `/org/${$currentOrg.siteName}` : ''
 );
+export const currentOrgDomain = derived(currentOrg, ($currentOrg) => {
+  const browserOrigin = dev && browser && window.location.origin;
+  return browserOrigin
+    ? browserOrigin
+    : $currentOrg.siteName
+    ? `https://${$currentOrg.siteName}.classroomio.com`
+    : '';
+});
 
 // Quiz
 export const createQuizModal = writable({
@@ -54,3 +64,5 @@ export const quizStore = writable({
 export const playQuizStore = writable({
   step: STEPS.CONNECT_TO_PLAY
 });
+
+export const userUpcomingData = writable<UserLessonDataType[]>([]);

@@ -5,8 +5,9 @@ import { goto } from '$app/navigation';
 import { supabase } from '$lib/utils/functions/supabase';
 import { orgs, currentOrg, orgAudience, orgTeam } from '$lib/utils/store/org';
 import { ROLE, ROLE_LABEL } from '$lib/utils/constants/roles';
+import type { CurrentOrg, OrgTeamMember, OrgAudience } from '$lib/utils/types/org';
 
-export async function getOrgTeam(orgId) {
+export async function getOrgTeam(orgId: string) {
   const { data, error } = await supabase
     .from('organizationmember')
     .select(
@@ -24,9 +25,22 @@ export async function getOrgTeam(orgId) {
     )
     .eq('organization_id', orgId)
     .neq('role_id', ROLE.STUDENT)
-    .order('id', { ascending: false });
+    .order('id', { ascending: false })
+    .returns<
+      {
+        id: number;
+        email: string;
+        verified: boolean;
+        role_id: number;
+        profile: {
+          id: string;
+          fullname: string;
+          email: string;
+        };
+      }[]
+    >();
 
-  const team = [];
+  const team: OrgTeamMember[] = [];
   if (data?.length) {
     data.forEach((teamMember) => {
       team.push({
@@ -49,7 +63,7 @@ export async function getOrgTeam(orgId) {
   };
 }
 
-export async function getOrganizations(userId) {
+export async function getOrganizations(userId: string) {
   const { data, error } = await supabase
     .from('organizationmember')
     .select(
@@ -70,9 +84,18 @@ export async function getOrganizations(userId) {
     `
     )
     .eq('profile_id', userId)
-    .order('id', { ascending: false });
+    .order('id', { ascending: false })
+    .returns<
+      {
+        id: string;
+        profile_id: string;
+        role_id: string;
+        created_at: string;
+        organization: CurrentOrg;
+      }[]
+    >();
 
-  const orgsArray = [];
+  const orgsArray: CurrentOrg[] = [];
 
   if (Array.isArray(data) && data.length) {
     data.forEach((orgMember) => {
@@ -114,7 +137,7 @@ export async function getOrganizations(userId) {
   };
 }
 
-export async function getOrgAudience(orgId) {
+export async function getOrgAudience(orgId: string) {
   // get all students who are participants in any course belonging to an org
   const { data, error } = await supabase
     .from('profile')
@@ -153,7 +176,7 @@ export async function getOrgAudience(orgId) {
   };
 }
 
-export async function getCourseBySiteName(siteName) {
+export async function getCourseBySiteName(siteName: string) {
   const { data, error } = await supabase
     .from('course')
     .select(
@@ -176,7 +199,7 @@ export async function getCourseBySiteName(siteName) {
   return data;
 }
 
-export async function getCurrentOrg(siteName, justGet = false) {
+export async function getCurrentOrg(siteName: string, justGet = false) {
   const { data, error } = await supabase
     .from('organization')
     .select(
@@ -189,16 +212,21 @@ export async function getCurrentOrg(siteName, justGet = false) {
       theme
     `
     )
-    .eq('siteName', siteName);
+    .eq('siteName', siteName)
+    .returns<CurrentOrg[]>();
 
-  if (!justGet && (error || isEmpty(data))) {
+  const isDataEmpty = !data?.[0];
+
+  if (!justGet && (error || isDataEmpty)) {
     console.error('Error getOrganization', error);
     return goto('/404');
   }
 
   if (!justGet) {
+    if (isDataEmpty) return;
+
     currentOrg.set(data[0]);
-  } else if (!isEmpty(data)) {
+  } else if (!isDataEmpty) {
     return data[0];
   }
 }

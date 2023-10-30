@@ -1,5 +1,4 @@
-<script>
-  import { onMount } from 'svelte';
+<script lang="ts">
   import { flip } from 'svelte/animate';
   import { dndzone } from 'svelte-dnd-action';
   import { goto } from '$app/navigation';
@@ -10,24 +9,65 @@
   import Chip from '$lib/components/Chip/index.svelte';
   import PageBody from '$lib/components/PageBody/index.svelte';
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
-  import { fetchCourse } from '$lib/utils/services/courses';
-  import { setCourse, course } from '$lib/components/Course/store';
+  import { course } from '$lib/components/Course/store';
   import {
     fetchSubmissions,
     updateSubmission,
     updateQuestionAnswer
-  } from '$lib/utils/services/submissions';
+  } from '$lib/utils/services/submissions/index';
   import { formatAnswers } from '$lib/components/Course/function';
   import { snackbar } from '$lib/components/Snackbar/store';
   import isSubmissionEarly from '$lib/utils/functions/isSubmissionEarly';
   import formatDate from '$lib/utils/functions/formatDate';
+  import {
+    triggerSendEmail,
+    NOTIFICATION_NAME
+  } from '$lib/utils/services/notification/notification';
+  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
+  import { browser } from '$app/environment';
 
-  const flipDurationMs = 300;
+  type items = {
+    id: number;
+    statusId: number;
+    isEarly: boolean;
+    submittedAt: string;
+    exercise: {
+      id: string;
+      title: string;
+    };
+    answers: string;
+    student: any;
+    lesson: {
+      id: string | any;
+      title: string | any;
+    };
+  };
+  type sectionType = {
+    id: number;
+    title: string;
+    value: number;
+    items: items[] | [];
+  };
 
   export let data;
   const { courseId } = data;
 
-  let sections = [
+  const flipDurationMs = 300;
+  let exerciseDetails: { id: string; title: string };
+  let lessonDetails: { id: string; title: string };
+  let totalMark = 0;
+  let maxMark = 0;
+  let submissionIdData: { [key: number]: any } = {};
+  let submissionId: string | number | null;
+  let openExercise = false;
+
+  const submissionStatus: { [key: number]: string } = {
+    1: 'Submitted',
+    2: 'In Progress',
+    3: 'Graded'
+  };
+
+  let sections: sectionType[] = [
     {
       id: 1,
       title: 'Submitted',
@@ -47,13 +87,53 @@
       items: []
     }
   ];
-  let submissionIdData = {};
-  let submissionId;
 
-  let openExercise = false;
+  function getMaxPoints(questions) {
+    return (questions || []).reduce((acc, question) => acc + question.points, 0);
+  }
 
-  function handleItemFinalize(columnIdx, newItems) {
-    let itemToWithNewStatus;
+  function calculateTotal(grades: string[]): number {
+    if (!grades) return 0;
+    return Object.values(grades).reduce((acc, grade) => acc + parseInt(grade), 0);
+  }
+
+  const sendEmail = (submissionData) => {
+    maxMark = getMaxPoints(submissionData?.questions);
+    totalMark = calculateTotal(submissionData?.questionAnswerByPoint);
+
+    const { fullname, email } = submissionData?.student;
+    const { title, status_id }: { title: string; status_id: number } = submissionData;
+    const exerciseLink = `${$currentOrgDomain}/courses/${courseId}/lessons/${lessonDetails.id}/exercises/${exerciseDetails.id}`;
+
+    const content = `
+      <p>Hello ${fullname},</p>
+        <p>The status of your submitted exercise on <strong>${title}</strong> has been updated to ${
+      submissionStatus[status_id]
+    }</p>
+        ${
+          status_id == 3
+            ? `<p>Your score was ${totalMark}/${maxMark}</p>
+              <a class="button" href="${exerciseLink}">View your Result</a>
+            `
+            : `<a class="button" href="${exerciseLink}">Open Exercise</a>`
+        }
+        <p>This exercise is for <strong>${
+          lessonDetails.title
+        }</strong> in a course you are taking titled <strong>${$course.title}</strong></p>
+      `;
+
+    triggerSendEmail(NOTIFICATION_NAME.SUBMISSION_UPDATE, {
+      to: email,
+      content,
+      orgName: $currentOrg?.name
+    });
+  };
+
+  function handleItemFinalize(
+    columnIdx: number,
+    newItems: { map: (arg0: (item: items) => items) => items[] }
+  ) {
+    let itemToWithNewStatus: items | undefined;
 
     const { id } = sections[columnIdx];
 
@@ -74,11 +154,8 @@
         ...submissionIdData[itemToWithNewStatus.id],
         status_id: itemToWithNewStatus.statusId
       };
-      console.log(
-        `submissionIdData[itemToWithNewStatus.id]`,
-        submissionIdData[itemToWithNewStatus.id]
-      );
 
+      sendEmail(submissionIdData[itemToWithNewStatus.id]);
       updateSubmission({
         id: itemToWithNewStatus.id,
         status_id: itemToWithNewStatus.statusId
@@ -86,13 +163,13 @@
     }
   }
 
-  function handleDndConsiderCards(columnIdx) {
+  function handleDndConsiderCards(columnIdx: number) {
     return function (e) {
       sections[columnIdx].items = e.detail.items;
     };
   }
 
-  function handleDndFinalizeCards(columnIdx) {
+  function handleDndFinalizeCards(columnIdx: number) {
     return (e) => handleItemFinalize(columnIdx, e.detail.items);
   }
 
@@ -101,15 +178,27 @@
   }
 
   // Via dialog
-  function updateStatus({ submissionId, prevStatusId, nextStatusId, total }) {
-    let itemToWithNewStatus;
+  function updateStatus({
+    submissionId,
+    prevStatusId,
+    nextStatusId,
+    total
+  }: {
+    submissionId: number;
+    prevStatusId: number;
+    nextStatusId: number;
+    total: number;
+  }) {
+    let itemToWithNewStatus: items | undefined;
 
     // Remove from current column
     const { items } = sections[prevStatusId - 1];
-    sections[prevStatusId - 1].items = items.filter((item) => {
+    sections[prevStatusId - 1].items = items?.filter((item) => {
       if (item.id === submissionId) {
         itemToWithNewStatus = Object.assign(item);
-        itemToWithNewStatus.statusId = nextStatusId;
+        if (itemToWithNewStatus) {
+          itemToWithNewStatus.statusId = nextStatusId;
+        }
         return false;
       }
 
@@ -117,7 +206,9 @@
     });
     console.log(`itemToWithNewStatus`, itemToWithNewStatus);
     // Move to right column
-    sections[nextStatusId - 1].items = [...sections[nextStatusId - 1].items, itemToWithNewStatus];
+    if (itemToWithNewStatus) {
+      sections[nextStatusId - 1].items = [...sections[nextStatusId - 1].items, itemToWithNewStatus];
+    }
 
     // If something changed
     if (itemToWithNewStatus) {
@@ -127,6 +218,7 @@
         status_id: itemToWithNewStatus.statusId
       };
 
+      sendEmail(submissionIdData[itemToWithNewStatus.id]);
       // Update backend
       updateSubmission({
         id: itemToWithNewStatus.id,
@@ -136,19 +228,21 @@
     }
   }
 
-  async function handleSave(submission) {
+  async function handleSave(submission: { questionAnswerByPoint: any; questionAnswers: any }) {
     const { questionAnswerByPoint, questionAnswers } = submission;
 
     let totalPoints = 0;
 
     const updates = Object.keys(questionAnswerByPoint).map((questionId) => {
-      const questionAnswer = questionAnswers.find((answer) => answer.question_id == questionId);
+      const questionAnswer = questionAnswers.find(
+        (answer: { question_id: string }) => answer.question_id == questionId
+      );
 
       const point = questionAnswerByPoint[questionId];
 
       totalPoints += parseInt(point, 10);
 
-      return updateQuestionAnswer({ point }, { id: questionAnswer.id });
+      return updateQuestionAnswer({ point }, { id: questionAnswer?.id });
     });
 
     updateSubmission({
@@ -156,61 +250,68 @@
       total: totalPoints
     }).then((res) => console.log('Updated submission', res));
 
-    snackbar.success();
+    snackbar.success('Grading saved and student notified');
 
     await Promise.all(updates);
   }
 
-  onMount(async () => {
-    if (!$course.id) {
-      const { data } = await fetchCourse(courseId);
-      setCourse(data);
-    }
+  $: {
+    const query = new URLSearchParams($page.url.search);
+    submissionId = query.get('submissionId');
+    openExercise = !!submissionId && submissionIdData[submissionId];
+  }
 
-    const { data: submissions } = await fetchSubmissions(courseId || $course.id);
-    const sectionById = {};
+  async function firstRender(courseId: string) {
+    const { data: submissions } = await fetchSubmissions(courseId);
+    const sectionById: { [key: number]: sectionType[] } = {};
+    if (submissions) {
+      for (const submission of submissions) {
+        const { id, created_at, exercise, course, answers, groupmember, status_id } = submission;
 
-    for (const submission of submissions) {
-      const { id, created_at, exercise, course, answers, groupmember, status_id } = submission;
-      const isEarly = isSubmissionEarly(created_at, exercise.due_by);
+        const isEarly = isSubmissionEarly(created_at, exercise.due_by);
 
-      const submissionItem = {
-        id,
-        statusId: status_id,
-        isEarly,
-        submittedAt: formatDate(created_at),
-        exercise: {
-          id: exercise.id,
-          title: exercise.title
-        },
-        answers,
-        student: groupmember && groupmember.profile ? groupmember.profile : {},
-        lesson: {
-          id: exercise.lesson.id,
-          title: exercise.lesson.title
+        const submissionItem = {
+          id,
+          statusId: status_id,
+          isEarly,
+          submittedAt: formatDate(created_at),
+          exercise: {
+            id: exercise.id,
+            title: exercise.title
+          },
+          answers,
+          student: groupmember && groupmember.profile ? groupmember.profile : {},
+          lesson: {
+            id: exercise.lesson.id,
+            title: exercise.lesson.title
+          }
+        };
+        exerciseDetails = { id: submissionItem.exercise.id, title: submissionItem.exercise.title };
+        lessonDetails = {
+          id: submissionItem.lesson.id,
+          title: submissionItem.lesson.title
+        };
+        submissionIdData[id] = {
+          id,
+          status_id,
+          isEarly,
+          title: exercise.title,
+          student: submissionItem.student,
+          questions: exercise.questions,
+          answers: formatAnswers({ questions: exercise.questions, answers }),
+          questionAnswers: answers,
+          questionAnswerByPoint: answers.reduce((acc, answer) => {
+            acc[answer.question_id] = answer.point;
+
+            return acc;
+          }, {})
+        };
+
+        if (Array.isArray(sectionById[status_id])) {
+          sectionById[status_id].push(submissionItem);
+        } else {
+          sectionById[status_id] = [submissionItem];
         }
-      };
-
-      submissionIdData[id] = {
-        id,
-        status_id,
-        isEarly,
-        title: exercise.title,
-        student: submissionItem.student,
-        questions: exercise.questions,
-        answers: formatAnswers({ questions: exercise.questions, answers }),
-        questionAnswers: answers,
-        questionAnswerByPoint: answers.reduce((acc, answer) => {
-          acc[answer.question_id] = answer.point;
-
-          return acc;
-        }, {})
-      };
-
-      if (Array.isArray(sectionById[status_id])) {
-        sectionById[status_id].push(submissionItem);
-      } else {
-        sectionById[status_id] = [submissionItem];
       }
     }
 
@@ -219,13 +320,9 @@
       value: Array.isArray(sectionById[index + 1]) ? sectionById[index + 1].length : 0,
       items: Array.isArray(sectionById[index + 1]) ? sectionById[index + 1] : []
     }));
-  });
-
-  $: {
-    const query = new URLSearchParams($page.url.search);
-    submissionId = query.get('submissionId');
-    openExercise = !!submissionId && submissionIdData[submissionId];
   }
+
+  $: browser && $course.id && firstRender($course.id);
 </script>
 
 <MarkExerciseModal
@@ -238,7 +335,7 @@
 />
 
 <RoleBasedSecurity allowedRoles={[1, 2]}>
-  <CourseContainer>
+  <CourseContainer bind:courseId={data.courseId}>
     <PageNav title="Submitted Exercises" />
 
     <PageBody width="w-full max-w-6xl md:w-11/12 overflow-x-auto">

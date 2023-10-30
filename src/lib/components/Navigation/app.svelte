@@ -1,10 +1,12 @@
 <script>
+  import { goto } from '$app/navigation';
   import { browser } from '$app/environment';
   import NotificationIcon from 'carbon-icons-svelte/lib/Notification.svelte';
   import Moon from 'carbon-icons-svelte/lib/Moon.svelte';
   import Sun from 'carbon-icons-svelte/lib/Sun.svelte';
   import Menu from 'carbon-icons-svelte/lib/Menu.svelte';
   import Close from 'carbon-icons-svelte/lib/Close.svelte';
+  import ArrowLeft from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
 
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { appStore } from '$lib/utils/store/app';
@@ -34,7 +36,11 @@
     }
   }
 
-  $: coursesPath = $appStore.isOrgSite ? '/lms/mylearning' : `${$currentOrgPath}/courses`;
+  $: coursesPath = $appStore.isOrgSite
+    ? '/lms/mylearning'
+    : isCoursePage
+    ? `${$currentOrgPath}/courses`
+    : $currentOrgPath;
 </script>
 
 <nav
@@ -58,12 +64,17 @@
             <Menu size={16} class=" text-white" />
           </IconButton>
         </li>
+        <li class="hidden md:block">
+          <IconButton onClick={() => goto(coursesPath)}>
+            <ArrowLeft size={16} class="text-white" />
+          </IconButton>
+        </li>
       {/if}
       <a
         href={coursesPath}
         title="Go to {isCoursePage ? 'Courses' : 'ClassroomIO Home'}"
         id="logo"
-        class="text-lg {isCoursePage && '-ml-2 md:ml-2'} line-clamp-1"
+        class="text-lg line-clamp-1"
       >
         {isCoursePage ? title : 'ClassroomIO'}
       </a>

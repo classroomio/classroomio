@@ -5,6 +5,7 @@ export const settings = writable({
   course_title: '',
   course_description: '',
   grading: false,
+  allow_new_students: false,
   tabs: [
     { id: 1, name: 'Note' },
     { id: 2, name: 'Slide' },

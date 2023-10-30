@@ -9,12 +9,13 @@
   import { addGroupMember } from '$lib/utils/services/courses';
   import type { CurrentOrg } from '$lib/utils/types/org.js';
   import { ROLE } from '$lib/utils/constants/roles';
-  import { profile } from '$lib/utils/store/user.js';
+  import { profile } from '$lib/utils/store/user';
   import {
     triggerSendEmail,
     NOTIFICATION_NAME
   } from '$lib/utils/services/notification/notification';
   import { snackbar } from '$lib/components/Snackbar/store.js';
+  import { capturePosthogEvent } from '$lib/utils/services/posthog/index.js';
 
   export let data;
 
@@ -50,7 +51,15 @@
       .from('groupmember')
       .select('id, profile(email)')
       .eq('group_id', data.groupId)
-      .eq('role_id', ROLE.TUTOR);
+      .eq('role_id', ROLE.TUTOR)
+      .returns<
+        {
+          id: string;
+          profile: {
+            email: string;
+          };
+        }[]
+      >();
 
     const teachers: Array<string> =
       teacherMembers.data?.map((teacher) => {
@@ -60,10 +69,16 @@
     addGroupMember(member).then((addedMember) => {
       loading = false;
       if (addedMember.error) {
-        console.error('Error adding student to group', data.groupId);
+        console.error('Error adding student to group', data.groupId, addedMember.error);
         snackbar.error('Joining failed, please contact your admin');
         return;
       }
+
+      capturePosthogEvent('student_joined_course', {
+        course_name: data.name,
+        student_id: $profile.id,
+        student_email: $profile.email
+      });
 
       // Send email welcoming student to the course
       triggerSendEmail(NOTIFICATION_NAME.STUDENT_COURSE_WELCOME, {

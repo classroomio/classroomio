@@ -29,7 +29,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { snackbar } from '$lib/components/Snackbar/store';
   import type { LessonCompletion } from '$lib/utils/types';
-  import { profile } from '$lib/utils/store/user.js';
+  import { profile } from '$lib/utils/store/user';
   import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
 
   export let data;
@@ -58,13 +58,7 @@
     isFetching = true;
 
     let lessonData;
-    if (!$course.id) {
-      const { data: _data } = await fetchCourse(data.courseId);
-
-      lessonData = _data?.lessons.find((lesson) => lesson.id === lessonId);
-
-      setCourse(_data);
-    } else if (isMaterialsTabActive) {
+    if (isMaterialsTabActive) {
       const lesson = await fetchLesson(lessonId);
       lessonData = lesson.data;
     }
@@ -222,6 +216,7 @@
   bind:isStudent
   {path}
   isExercisePage={!data.isMaterialsTabActive && data.exerciseId}
+  bind:courseId={data.courseId}
 >
   <PageNav
     bind:hideOnMobile={isStudent}

@@ -4,7 +4,7 @@ import { lessons } from './components/Lesson/store/lessons';
 import { ROLE } from '$lib/utils/constants/roles';
 import type { Course, GroupPerson } from '$lib/utils/types';
 
-export const course: Writable<Course> = writable({
+export const defaultCourse: Course = {
   id: '',
   title: '',
   description: '',
@@ -42,9 +42,12 @@ export const course: Writable<Course> = writable({
       { id: 3, name: 'Video' }
     ],
     grading: false,
-    lessonDownload: true
+    lessonDownload: true,
+    allowNewStudent: false
   }
-});
+};
+
+export const course: Writable<Course> = writable({ ...defaultCourse });
 
 export const mockGroupMember = {
   id: '434534534535',

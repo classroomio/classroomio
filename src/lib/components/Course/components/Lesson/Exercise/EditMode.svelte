@@ -34,10 +34,9 @@
   import { deleteExercise } from '$lib/utils/services/courses';
   import { lesson } from '../store/lessons';
 
-  const extraActions = ['Code Snippets', 'Upload image'];
   const initialQuestionsLength = $questionnaire.questions.length;
 
-  export let editDescription = false;
+  export let shouldDeleteExercise = false;
   export let exerciseId;
   export let goBack = () => {};
 
@@ -63,21 +62,6 @@
 
   function onFinalDeleteClicked() {
     handleRemoveQuestion(questionIdToDelete)();
-  }
-
-  function handleOptionClick(questionIndex) {
-    return (actionIndex) => {
-      switch (actionIndex) {
-        case 0:
-          handleCode(questionIndex, true);
-          break;
-        case 1:
-          // uploadImage(questionIndex);
-          break;
-        default:
-          console.log('No option');
-      }
-    };
   }
 
   function getQuestionErrorMsg(errors, question, errorKey) {
@@ -108,13 +92,13 @@
 <OrderModal />
 
 <Modal
-  onClose={() => (editDescription = false)}
-  bind:open={editDescription}
+  onClose={() => (shouldDeleteExercise = false)}
+  bind:open={shouldDeleteExercise}
   width="w-2/4"
-  modalHeading="Update description"
+  modalHeading="Delete Modal"
 >
   <form on:submit|preventDefault>
-    <h1 class="dark:text-white text-2xl">Are you sure?</h1>
+    <h1 class="dark:text-white text-xl">Are you sure you want to delete this exercise?</h1>
 
     <div class="mt-5 flex items-center justify-between">
       <PrimaryButton
@@ -122,7 +106,7 @@
         variant={VARIANTS.OUTLINED}
         label="No, cancel"
         type="submit"
-        onClick={() => (editDescription = false)}
+        onClick={() => (shouldDeleteExercise = false)}
       />
       <PrimaryButton
         className="px-6 py-3"

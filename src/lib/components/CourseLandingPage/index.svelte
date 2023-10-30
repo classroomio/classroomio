@@ -40,12 +40,10 @@
   let totalRatings = 0;
   let startCoursePayment = false;
   let isVisible = false;
-  let observer;
+  let observer: { destroy: () => void };
 
   // initialize the expandDescription array with 'false' values for each review.
   let expandDescription = Array(reviews.length).fill(false);
-
-  // const paystackApi = paystack('');
 
   let activeNav = NAV_ITEMS[0].key;
   let instructor = {};
@@ -75,7 +73,7 @@
   onMount(() => {
     window.onhashchange = locationHashChanged;
     const targetNode = document.querySelector('.target-component');
-    observer = observeIntersection(targetNode, (inView) => {
+    observer = observeIntersection(targetNode, (inView: boolean) => {
       isVisible = inView;
     });
   });
@@ -98,6 +96,16 @@
 
 <svelte:head>
   <title>{get(courseData, 'title', '')}</title>
+  <meta name="description" content={get(courseData, 'description', '')} />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta property="og:title" content={get(courseData, 'title', '')} />
+  <meta property="og:description" content={get(courseData, 'description', '')} />
+  <meta property="og:type" content="website" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="280" />
+  <meta property="og:image:height" content="200" />
+  <meta property="og:image:secure_url" content={get(courseData, 'logo', '')} />
 </svelte:head>
 
 <div class="w-full bg-white dark:bg-black flex flex-col items-center">
@@ -120,8 +128,10 @@
           label="Start Course"
           className="px-6 py-5 mt-6 sm:w-fit hidden md:block"
           onClick={() => {
+            if (editMode) return;
             startCoursePayment = true;
           }}
+          isDisabled={!courseData.metadata.allowNewStudent}
         />
       </div>
 
@@ -193,7 +203,7 @@
             <a
               href="{$page.url.pathname}{navItem.key}"
               class="{navItem.key === activeNav &&
-                'active text-primary-700'} rounded-lg px-2 mr-6 text-slate-700 font-normal hover:bg-neutral-600 dark:hover:text-slate-900 dark:text-white z-0"
+                'active text-primary-700'} rounded-lg px-2 mr-6 text-slate-700 font-normal hover:bg-gray-200 dark:hover:text-slate-900 dark:text-white z-0"
             >
               {navItem.label}
             </a>

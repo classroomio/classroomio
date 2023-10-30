@@ -1,7 +1,6 @@
 <script>
   import { onDestroy } from 'svelte';
   import AddAltIcon from 'carbon-icons-svelte/lib/AddAlt.svelte';
-  import TableIcon from 'carbon-icons-svelte/lib/Table.svelte';
   import ViewIcon from 'carbon-icons-svelte/lib/View.svelte';
   import ViewFilledIcon from 'carbon-icons-svelte/lib/ViewFilled.svelte';
   import {
@@ -11,6 +10,14 @@
     reset,
     questionnaireOrder
   } from '../store/exercise';
+  import {
+    ContentSwitcher,
+    Switch,
+    Breadcrumb,
+    BreadcrumbItem,
+    OverflowMenu,
+    OverflowMenuItem
+  } from 'carbon-components-svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import PageBody from '$lib/components/PageBody/index.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
@@ -20,128 +27,125 @@
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { upsertExercise } from '$lib/utils/services/courses';
   import UpdateDescription from './UpdateDescription.svelte';
-  import { TrashCan } from 'carbon-icons-svelte';
-  import { exerciseMode } from './store';
   import { snackbar } from '$lib/components/Snackbar/store';
+  import Analytics from './Submissions/index.svelte';
 
-  export let exerciseId;
+  export let exerciseId = '';
+  export let path = '';
   export let goBack = () => {};
   export let isStudent = true;
 
   let preview = false;
-  let editDescription = false;
+  let shouldDeleteExercise = false;
   let isSaving = false;
+  let selectedIndex = 0;
 
   async function handleSave() {
-    if ($exerciseMode.editMode) {
-      const errors = validateQuestionnaire($questionnaire.questions);
-      if (Object.values(errors).length > 0) {
-        return;
-      }
-      isSaving = true;
-      // $exerciseMode.mode = MODES.view;
+    if (isStudent) return;
 
-      reset();
-      try {
-        const updatedQuestions = await upsertExercise($questionnaire, exerciseId);
-
-        questionnaire.update((q) => ({
-          ...q,
-          is_title_dirty: false,
-          is_description_dirty: false,
-          questions: updatedQuestions
-        }));
-        snackbar.success('Saved Successfully');
-      } catch (error) {
-        console.error(error);
-        snackbar.error();
-      }
-      isSaving = false;
+    const errors = validateQuestionnaire($questionnaire.questions);
+    if (Object.values(errors).length > 0) {
+      return;
     }
+    isSaving = true;
+
+    reset();
+    try {
+      const updatedQuestions = await upsertExercise($questionnaire, exerciseId);
+
+      questionnaire.update((q) => ({
+        ...q,
+        is_title_dirty: false,
+        is_description_dirty: false,
+        // @ts-ignore
+        questions: updatedQuestions
+      }));
+      snackbar.success('Saved Successfully');
+    } catch (error) {
+      console.error(error);
+      snackbar.error();
+    }
+    isSaving = false;
   }
 
   onDestroy(() => {
     reset();
   });
 
-  $: $questionnaire.questions.length < 1 && handleAddQuestion();
+  $: $questionnaire?.questions?.length < 1 && handleAddQuestion();
+  console.log('question', $questionnaire.questions);
 </script>
 
-<PageBody
-  bind:isPageNavHidden={isStudent}
-  padding="px-4 overflow-x-hidden"
-  headerClassName="bg-gray-100 rounded-md mb-3"
->
-  <svelte:fragment slot="header">
+<PageBody bind:isPageNavHidden={isStudent} padding="px-4 overflow-x-hidden">
+  <div class="bg-gray-100 dark:bg-neutral-800 top-0 z-10 sticky p-2 mb-3">
+    <Breadcrumb noTrailingSlash class="mb-5">
+      <BreadcrumbItem href={path}>All Exercises</BreadcrumbItem>
+      <BreadcrumbItem href={`${path}${exerciseId}`} isCurrentPage>
+        {$questionnaire.title}
+      </BreadcrumbItem>
+    </Breadcrumb>
+
     <RoleBasedSecurity allowedRoles={[1, 2]}>
-      <div class="flex items-center py-2 w-">
-        {#if $exerciseMode.editMode}
-          <PrimaryButton
-            className="mr-2"
-            variant={VARIANTS.CONTAINED}
-            label={'Save'}
-            onClick={handleSave}
-            isLoading={isSaving}
-          />
-        {/if}
-        {#if $exerciseMode.editMode}
-          <IconButton
-            onClick={() => (preview = !preview)}
-            toolTipProps={{ title: 'Toggle preview', direction: 'right' }}
-            selected={preview}
-            contained={true}
-            size="small"
-          >
-            {#if preview}
-              <ViewFilledIcon size={24} class="carbon-icon dark:text-white" />
-            {:else}
-              <ViewIcon size={24} class="carbon-icon dark:text-white" />
-            {/if}
-          </IconButton>
-        {/if}
-      </div>
-    </RoleBasedSecurity>
+      <ContentSwitcher bind:selectedIndex class="mb-2">
+        <Switch text="Questions ({$questionnaire.questions.length})" />
+        <Switch text="Submissions ({$questionnaire.totalSubmissions})" />
+      </ContentSwitcher>
 
-    {#if $exerciseMode.editMode}
-      <div class="flex items-center">
-        <IconButton
-          onClick={() => handleAddQuestion()}
-          toolTipProps={{ title: 'Add question', direction: 'bottom' }}
-          size="small"
-        >
-          <AddAltIcon size={24} class="carbon-icon dark:text-white" />
-        </IconButton>
-        <IconButton
-          onClick={() => ($questionnaireOrder.open = true)}
-          toolTipProps={{ title: 'Order questionnaire', direction: 'bottom' }}
-          size="small"
-        >
-          <TableIcon size={24} class="carbon-icon dark:text-white" />
-        </IconButton>
-        <IconButton
-          onClick={() => (editDescription = true)}
-          toolTipProps={{ title: 'Delete Exercise', direction: 'bottom' }}
-          size="small"
-        >
-          <TrashCan size={24} class="carbon-icon dark:text-white" />
-        </IconButton>
-
-        <!-- <IconButton
-              onClick={handleDeleteExercise}
-              toolTipProps={{ title: 'Delete questionnaire', direction: 'bottom' }}
+      {#if selectedIndex === 0}
+        <div class="flex items-center justify-end right-0 w-full">
+          <div class="flex items-center">
+            <PrimaryButton
+              className="mr-2"
+              variant={VARIANTS.CONTAINED}
+              label="Save"
+              onClick={handleSave}
+              isLoading={isSaving}
+            />
+            <IconButton
+              onClick={() => (preview = !preview)}
+              contained={preview}
+              toolTipProps={{
+                title: 'Preview',
+                direction: 'bottom',
+                hotkeys: []
+              }}
             >
-              <Delete32 class="carbon-icon dark:text-white" />
-            </IconButton> -->
-      </div>
-    {/if}
-  </svelte:fragment>
+              {#if preview}
+                <ViewFilledIcon size={24} class="carbon-icon dark:text-white" />
+              {:else}
+                <ViewIcon size={24} class="carbon-icon dark:text-white" />
+              {/if}
+            </IconButton>
+            <IconButton onClick={() => handleAddQuestion()} size="small">
+              <AddAltIcon size={24} class="carbon-icon dark:text-white" />
+            </IconButton>
+            <OverflowMenu flipped>
+              <OverflowMenuItem
+                text="Reorder Questions"
+                on:click={() => ($questionnaireOrder.open = true)}
+              />
+              <OverflowMenuItem
+                danger
+                text="Delete Exercise"
+                on:click={() => (shouldDeleteExercise = true)}
+              />
+            </OverflowMenu>
+          </div>
+        </div>
+      {/if}
+    </RoleBasedSecurity>
+  </div>
 
-  {#if $exerciseMode.editMode}
-    <UpdateDescription {preview} {exerciseId} />
-  {/if}
-  {#if $exerciseMode.editMode && !preview}
-    <EditMode bind:editDescription {exerciseId} {goBack} />
-  {:else}
-    <ViewMode {preview} {exerciseId} />
+  {#if selectedIndex === 0}
+    <RoleBasedSecurity allowedRoles={[1, 2]}>
+      <UpdateDescription {preview} />
+    </RoleBasedSecurity>
+    {#if !isStudent && !preview}
+      <EditMode bind:shouldDeleteExercise {exerciseId} {goBack} />
+    {:else}
+      <ViewMode {preview} {exerciseId} />
+    {/if}
+  {:else if selectedIndex === 1}
+    <Analytics bind:exerciseId />
   {/if}
 </PageBody>

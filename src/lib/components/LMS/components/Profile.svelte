@@ -1,21 +1,15 @@
 <script>
-  import { goto } from '$app/navigation';
   import { Grid, Row, Column } from 'carbon-components-svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
   import { supabase } from '$lib/utils/functions/supabase';
   import { profile } from '$lib/utils/store/user';
   import { snackbar } from '$lib/components/Snackbar/store';
+  import LogoutButton from '$lib/components/Buttons/Logout/index.svelte';
 
-  let avatar;
+  let avatar = '';
   let loading = false;
-
-  async function logout() {
-    const { error } = await supabase.auth.signOut();
-    goto('/login');
-  }
 
   async function handleUpdate() {
     try {
@@ -92,6 +86,6 @@
       isDisabled={loading}
       onClick={handleUpdate}
     />
-    <PrimaryButton variant={VARIANTS.OUTLINED} label="Log out" onClick={logout} />
+    <LogoutButton />
   </Row>
 </Grid>

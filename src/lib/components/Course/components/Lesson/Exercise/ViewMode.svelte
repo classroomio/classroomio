@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { fly } from 'svelte/transition';
   import { group, course } from '$lib/components/Course/store';
   import { questionnaire } from '../store/exercise';
@@ -19,26 +19,69 @@
   import { submitExercise } from '$lib/utils/services/courses';
   import { fetchSubmission } from '$lib/utils/services/submissions';
   import { profile } from '$lib/utils/store/user';
-  import { exerciseMode } from './store';
+  import { currentOrg } from '$lib/utils/store/org';
+  import {
+    NOTIFICATION_NAME,
+    triggerSendEmail
+  } from '$lib/utils/services/notification/notification';
+  import { lesson } from '../store/lessons';
+  import { onMount } from 'svelte';
+  import { browser } from '$app/environment';
 
-  export let preview;
-
-  export let exerciseId;
+  export let preview: false;
+  export let exerciseId = '';
 
   let currentQuestion = {};
   let renderProps = {};
   let submission;
-  let hasSubmission = null;
+  let hasSubmission = false;
+  let isLoadingAutoSavedData = false;
+  let alreadyCheckedAutoSavedData = false;
 
   function handleStart() {
     $questionnaireMetaData.currentQuestionIndex += 1;
   }
 
+  const getStudent = (people, profileId) => {
+    return people.find((person) => person.profile_id === profileId);
+  };
+
+  const sendEmail = () => {
+    const student = getStudent($group.students, $profile.id);
+    const teacherFullname = $group.tutors[0]?.fullname;
+    const teacherEmail = $group.tutors[0]?.email;
+    console.log({
+      student,
+      teacherFullname,
+      teacherEmail
+    });
+    if (!student || !teacherFullname || !teacherEmail) return;
+
+    const baseUrl = `https://app.classroomio.com/courses/${$course.id}`;
+    const exerciseLink = `${baseUrl}/lessons/${$lesson.id}/exercises/${exerciseId}`;
+    const submissionLink = `${baseUrl}/submissions`;
+    const content = `
+      <p>Hello ${teacherFullname},</p>
+      <p>A student ${student.profile.fullname} just submitted an exercise <a href=${exerciseLink}>${$questionnaire.title}</a> 
+        <p>You can get started grading by clicking "Open Submissions"</p>
+      <div>
+        <a class="button" href=${submissionLink}>Open Submissions</a>
+      </div>
+      `;
+
+    triggerSendEmail(NOTIFICATION_NAME.EXERCISE_SUBMISSION_UPDATE, {
+      to: teacherEmail,
+      content,
+      orgName: $currentOrg?.name,
+      exerciseTitle: $questionnaire.title
+    });
+  };
+
   function onSubmit(id, value, moveToNextQuestion = false) {
     const { answers } = $questionnaireMetaData;
     const { questions } = $questionnaire;
-
     const prevAnswer = answers[id] || [];
+
     const formattedAnswer =
       typeof value === 'string' ? value : removeDuplicate([...prevAnswer, ...(value || [])]);
 
@@ -49,6 +92,10 @@
 
     if (moveToNextQuestion) {
       $questionnaireMetaData.currentQuestionIndex += 1;
+      localStorage.setItem(
+        `autosave-exercise-${exerciseId}`,
+        JSON.stringify($questionnaireMetaData)
+      );
     }
 
     const isFinished = !questions[$questionnaireMetaData.currentQuestionIndex - 1];
@@ -60,6 +107,7 @@
 
     // If last question send to server
     if (isFinished) {
+      localStorage.removeItem(`autosave-exercise-${exerciseId}`);
       $questionnaireMetaData.status = 1;
       $questionnaireMetaData.totalPossibleGrade = getTotalPossibleGrade($questionnaire.questions);
       $questionnaireMetaData.grades = {};
@@ -70,6 +118,7 @@
         $course.id,
         getGroupMemberId($group.people, $profile.id)
       );
+      sendEmail();
     }
   }
 
@@ -92,14 +141,12 @@
     }, 0);
   }
 
-  async function checkForSubmission(people, profileId, courseId) {
+  async function checkForSubmission(people, profileId: string, courseId: string) {
     if (!Array.isArray(people) || !profileId || !courseId || !!submission) {
       return;
     }
 
     if (hasSubmission) return;
-
-    console.log('checkForSubmission');
 
     const args = {
       exerciseId,
@@ -111,7 +158,6 @@
 
     if (Array.isArray(data) && data.length) {
       submission = data[0];
-
       $questionnaireMetaData.answers = formatAnswers({
         questions: $questionnaire.questions,
         answers: submission.answers
@@ -132,7 +178,27 @@
     }
   }
 
-  $: {
+  function getAutoSavedData() {
+    isLoadingAutoSavedData = true;
+
+    const stringifiedQuestionnaireMetaData = localStorage.getItem(
+      `autosave-exercise-${exerciseId}`
+    );
+
+    if (stringifiedQuestionnaireMetaData) {
+      const autoSavedData = JSON.parse(stringifiedQuestionnaireMetaData);
+      if (autoSavedData) {
+        $questionnaireMetaData = autoSavedData;
+      }
+    }
+    isLoadingAutoSavedData = false;
+    alreadyCheckedAutoSavedData = true;
+  }
+
+  $: browser && !alreadyCheckedAutoSavedData && getAutoSavedData();
+
+  // Reactive code
+  $: if (alreadyCheckedAutoSavedData && $questionnaire.questions.length > 2) {
     currentQuestion = $questionnaire.questions[$questionnaireMetaData.currentQuestionIndex - 1];
     if ($questionnaireMetaData.currentQuestionIndex > 0 && !currentQuestion) {
       $questionnaireMetaData.isFinished = true;
@@ -149,12 +215,10 @@
         preview
       );
     }
+    $questionnaireMetaData.progressValue = getProgressValue(
+      $questionnaireMetaData.currentQuestionIndex
+    );
   }
-
-  $: $questionnaireMetaData.progressValue = getProgressValue(
-    $questionnaireMetaData.currentQuestionIndex
-  );
-
   $: checkForSubmission($group.people, $profile.id, $course.id);
 </script>
 
@@ -163,12 +227,12 @@
 {/if}
 
 {#if preview}
-  {#if $exerciseMode.editMode}
+  <RoleBasedSecurity allowedRoles={[1, 2]}>
     <Preview
       questions={filterOutDeleted($questionnaire.questions)}
       questionnaireMetaData={$questionnaireMetaData}
     />
-  {/if}
+  </RoleBasedSecurity>
 {:else if !$questionnaire.questions.length}
   <Box>
     <img src="/images/empty-exercise-icon.svg" alt="Exercise svg" class="my-2.5" />
@@ -216,41 +280,43 @@
     </div>
   </RoleBasedSecurity>
 {:else if $questionnaireMetaData.isFinished}
-  <div class="flex items-center justify-between">
-    <div class="flex flex-col justify-between w-full">
-      <h2 class="text-xl mb-2 mt-0">{$questionnaire.title}</h2>
+  {#if !isLoadingAutoSavedData}
+    <div class="flex items-center justify-between">
+      <div class="flex flex-col justify-between w-full">
+        <h2 class="text-xl mb-2 mt-0">{$questionnaire.title}</h2>
+        {#if STATUS.GRADED === $questionnaireMetaData.status}
+          <span
+            class="status-text bg-green-700 text-white rounded-full py-3 px-6 text-center"
+            title="Status: Pending Review"
+          >
+            Graded
+          </span>
+        {:else}
+          <span
+            class="status-text bg-yellow-600 text-white rounded-full py-3 px-6 text-center"
+            title="Status: Pending Review"
+          >
+            Pending
+          </span>
+        {/if}
+      </div>
       {#if STATUS.GRADED === $questionnaireMetaData.status}
         <span
-          class="status-text bg-green-700 text-white rounded-full py-3 px-6 text-center"
+          class="p-5 border-2 border-gray-700 rounded-full h-24 w-24 flex items-center justify-center text-2xl"
           title="Status: Pending Review"
         >
-          Graded
-        </span>
-      {:else}
-        <span
-          class="status-text bg-yellow-600 text-white rounded-full py-3 px-6 text-center"
-          title="Status: Pending Review"
-        >
-          Pending
+          {$questionnaireMetaData.finalTotalGrade}/{$questionnaireMetaData.totalPossibleGrade}
         </span>
       {/if}
     </div>
-    {#if STATUS.GRADED === $questionnaireMetaData.status}
-      <span
-        class="p-5 border-2 border-gray-700 rounded-full h-24 w-24 flex items-center justify-center text-2xl"
-        title="Status: Pending Review"
-      >
-        {$questionnaireMetaData.finalTotalGrade}/{$questionnaireMetaData.totalPossibleGrade}
-      </span>
-    {/if}
-  </div>
-  <Preview
-    questions={$questionnaire.questions.sort((a, b) => a.order - b.order)}
-    questionnaireMetaData={$questionnaireMetaData}
-    grades={$questionnaireMetaData.grades}
-    disableGrading={true}
-  />
-{:else if currentQuestion}
+    <Preview
+      questions={$questionnaire.questions.sort((a, b) => a.order - b.order)}
+      questionnaireMetaData={$questionnaireMetaData}
+      grades={$questionnaireMetaData.grades}
+      disableGrading={true}
+    />
+  {/if}
+{:else if currentQuestion && currentQuestion?.id}
   {#key currentQuestion.id}
     <!-- <div transition:fade id="question"> -->
     <div in:fly={{ x: 500, duration: 1000 }} id="question">

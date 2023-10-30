@@ -1,7 +1,7 @@
-<script>
-  export let title;
-  export let hotkeys = [];
-  export let direction;
+<script lang="ts">
+  export let title = '';
+  export let hotkeys: string[] = [];
+  export let direction = '';
 </script>
 
 {#if !!title}

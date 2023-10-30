@@ -1,17 +1,18 @@
-<script>
-  import { onMount } from 'svelte';
+<script lang="ts">
   import AudioConsoleIcon from 'carbon-icons-svelte/lib/AudioConsole.svelte';
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
   import PageBody from '$lib/components/PageBody/index.svelte';
   import Box from '$lib/components/Box/index.svelte';
   import { ROLE } from '$lib/utils/constants/roles';
-  import { setCourse, course, group } from '$lib/components/Course/store';
+  import { group } from '$lib/components/Course/store';
   import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { fetchCourse, fetchExercisesByMarks } from '$lib/utils/services/courses';
+  import { fetchExercisesByMarks } from '$lib/utils/services/courses';
   import { getLectureNo } from '$lib/components/Course/function';
   import { fetchMarks } from '$lib/utils/services/marks';
   import { profile } from '$lib/utils/store/user';
+  import { browser } from '$app/environment';
+  import { course } from '$lib/components/Course/store';
 
   export let data;
   const { courseId } = data;
@@ -33,12 +34,7 @@
     );
   }
 
-  onMount(async () => {
-    if (!$course.id) {
-      const { data } = await fetchCourse(courseId);
-      setCourse(data);
-    }
-
+  async function firstRender(courseId: string) {
     const { data: marks } = await fetchMarks(courseId);
 
     marks.forEach((mark) => {
@@ -73,14 +69,16 @@
         };
       }
     });
-  });
+  }
 
   $: students = isStudent
     ? $group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
     : $group.people.filter((person) => !!person.profile && person.role_id === ROLE.STUDENT);
+
+  $: browser && $course.id && firstRender($course.id);
 </script>
 
-<CourseContainer bind:isStudent>
+<CourseContainer bind:isStudent bind:courseId={data.courseId}>
   <PageNav title="Marks" />
 
   <PageBody width="w-full max-w-6xl md:w-11/12">
