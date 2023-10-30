@@ -1,10 +1,9 @@
 <script>
-  import { goto } from '$app/navigation';
   import UserAvatarIcon from 'carbon-icons-svelte/lib/UserAvatar.svelte';
   import BookIcon from 'carbon-icons-svelte/lib/Book.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
+  import LogoutButton from '$lib/components/Buttons/Logout/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
   import { supabase } from '$lib/utils/functions/supabase';
   import { user, profile } from '$lib/utils/store/user';
@@ -86,12 +85,6 @@
       initialValueOfUserName = currentProfile.username;
       initialValueOfFullName = currentProfile.fullname;
     }
-  }
-
-  async function logout() {
-    const { error } = await supabase.auth.signOut();
-    console.log('error logout', error);
-    goto('/login');
   }
 
   $: isDirty =
@@ -200,7 +193,7 @@
           </div>
         </div>
       </div>
-      <PrimaryButton variant={VARIANTS.OUTLINED} label="Log out" onClick={logout} />
+      <LogoutButton />
     </div>
     <!-- {:else if loading}
     <Box>

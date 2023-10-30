@@ -3,12 +3,9 @@
   import { fly } from 'svelte/transition';
   import { derived } from 'svelte/store';
   import { goto } from '$app/navigation';
-  import { dev, browser } from '$app/environment';
+  import { browser } from '$app/environment';
   import { page, navigating } from '$app/stores';
   import isEmpty from 'lodash/isEmpty';
-  import * as Sentry from '@sentry/browser';
-  import { CaptureConsole } from '@sentry/integrations';
-  import posthog from 'posthog-js';
   import { Theme, ToastNotification, Loading } from 'carbon-components-svelte';
   import type { CarbonTheme } from 'carbon-components-svelte/types/Theme/Theme.svelte';
   import LandingNavigation from '$lib/components/Navigation/index.svelte';
@@ -37,6 +34,8 @@
   import hideNavByRoute from '$lib/utils/functions/routes/hideNavByRoute';
   import shouldRedirectOnAuth from '$lib/utils/functions/routes/shouldRedirectOnAuth';
   import AddOrgModal from '$lib/components/Org/AddOrgModal/AddOrgModal.svelte';
+  import { identifyPosthogUser, initPosthog } from '$lib/utils/services/posthog';
+  import { initSentry, setSentryUser } from '$lib/utils/services/sentry';
 
   import '../app.postcss';
 
@@ -50,39 +49,24 @@
     setTimeout(() => set(currentPreloading), 250);
   });
 
-  function setupSentry() {
-    Sentry.init({
-      dsn: 'https://c966f7e8cb1d4306be20b26bb4f0cc96@o476906.ingest.sentry.io/5999999',
-      integrations: [
-        new CaptureConsole({
-          levels: ['error']
-        }),
-        new Sentry.Replay()
-      ],
-      environment: 'production',
-      // This sets the sample rate to be 10%. You may want this to be 100% while
-      // in development and sample at a lower rate in production
-      replaysSessionSampleRate: 0.5,
-      // If the entire session is not sampled, use the below sample rate to sample
-      // sessions when an error occurs.
-      replaysOnErrorSampleRate: 1.0
-    });
+  function setupAnalytics() {
+    // Set up sentry
+    initSentry();
+
+    // Set up posthog
+    initPosthog();
   }
 
-  function setupPosthug() {
-    posthog.init('phc_JfdHOZ6v0cVlGELBYx1Tmoen2nxNOrAzvgvrPA6Ksov', {
-      api_host: 'https://eu.posthog.com'
-    });
-  }
-
-  function setSentryUser() {
-    if ($profile) {
-      Sentry.setUser({
+  function setAnalyticsUser() {
+    if ($profile.id) {
+      setSentryUser({
         id: $profile.id,
         username: $profile.username,
         email: $profile.email,
         fullname: $profile.fullname
       });
+
+      identifyPosthogUser($profile.id, { email: $profile.email, name: $profile.fullname });
     }
   }
 
@@ -130,8 +114,7 @@
 
         profile.set(newProfileData[0]);
 
-        // Set user in sentry
-        setSentryUser();
+        setAnalyticsUser();
 
         if (data.isOrgSite) {
           const { data, error } = await supabase
@@ -173,7 +156,7 @@
       profile.set(profileData);
 
       // Set user in sentry
-      setSentryUser();
+      setAnalyticsUser();
 
       const orgRes = await getOrganizations(profileData.id);
 
@@ -225,10 +208,7 @@
       }
     }
 
-    if (!dev) {
-      setupSentry();
-      setupPosthug();
-    }
+    setupAnalytics();
 
     handleResize();
 

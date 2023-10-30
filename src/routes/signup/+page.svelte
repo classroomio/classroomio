@@ -13,12 +13,17 @@
   import AuthUI from '$lib/components/AuthUI/index.svelte';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
+  import { capturePosthogEvent } from '$lib/utils/services/posthog';
 
   let supabase = getSupabase();
   let fields = Object.assign({}, SIGNUP_FIELDS);
   let loading = false;
   let success = false;
-  let errors = {};
+  let errors: {
+    email?: string;
+    password?: string;
+    confirmPassword?: string;
+  } = {};
   let submitError: string;
   let disableSubmit = false;
   let formRef: HTMLFormElement;
@@ -26,7 +31,7 @@
   let query = new URLSearchParams($page.url.search);
   let redirect = query.get('redirect');
 
-  async function handleSubmit(e) {
+  async function handleSubmit() {
     const validationRes = authValidation(fields);
     console.log('validationRes', validationRes);
 
@@ -80,6 +85,13 @@
       console.log('setting profile', profileRes.data[0]);
       profile.set(profileRes.data[0]);
 
+      capturePosthogEvent('user_signed_up', {
+        distinct_id: $profile.id || '',
+        email: authUser.email,
+        username: regexUsernameMatch[1],
+        metadata
+      });
+
       if (redirect) {
         goto(redirect);
       } else {
@@ -90,7 +102,7 @@
       success = true;
       fields = Object.assign({}, SIGNUP_FIELDS);
     } catch (error) {
-      submitError = error.error_description || error.message;
+      submitError = error?.error_description || error?.message;
     } finally {
       loading = false;
     }
