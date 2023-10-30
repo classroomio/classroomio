@@ -8,11 +8,12 @@
   import AuthUI from '$lib/components/AuthUI/index.svelte';
   import { currentOrg } from '$lib/utils/store/org';
   import { onDestroy } from 'svelte';
+  import { capturePosthogEvent } from '$lib/utils/services/posthog';
 
   let formRef;
   let supabase = getSupabase();
   let fields = Object.assign({}, LOGIN_FIELDS);
-  let submitError;
+  let submitError: string;
   let loading = false;
   let errors = {};
   let reloadTimeout: NodeJS.Timeout;
@@ -43,6 +44,10 @@
         console.log('Forcing full page reload for auth listener');
         window.location.reload();
       }, 1500);
+
+      capturePosthogEvent('login', {
+        email: fields.email
+      });
     } catch (error) {
       submitError = error.error_description || error.message;
     } finally {
