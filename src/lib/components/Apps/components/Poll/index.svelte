@@ -184,7 +184,6 @@
         selectedBy: []
       }))
     }));
-    console.log({ pollsData });
     polls.set(pollsData);
   });
 
@@ -202,8 +201,6 @@
         number: $polls.filter((poll) => new Date(poll.expiration) <= new Date()).length
       }
     ];
-
-    console.log({ tabs });
   }
 </script>
 
