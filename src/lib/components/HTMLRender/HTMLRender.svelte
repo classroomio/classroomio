@@ -3,7 +3,7 @@
   export let className = '';
 </script>
 
-<article class="preview prose prose-sm sm:prose {className}">
+<article class="preview prose prose-sm sm:prose {className} dark:text-white">
   {#if $$slots.content}
     <slot name="content" />
   {:else}
