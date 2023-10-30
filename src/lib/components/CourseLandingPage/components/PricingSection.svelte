@@ -53,7 +53,7 @@
   $: setFormatter(courseData.currency);
 
   $: discount = get(courseData, 'metadata.discount', 0);
-  $: calculatedCost = calcDisc(discount, courseData.cost || 0, courseData.metadata.showDiscount);
+  $: calculatedCost = calcDisc(discount, courseData.cost || 0, !!courseData.metadata.showDiscount);
   $: isFree = isCourseFree(calculatedCost);
 </script>
 
@@ -77,18 +77,24 @@
       <div class="flex items-center justify-center gap-3 px-3 py-3">
         <!-- Pricing -->
         <div class=" text-center">
-          <p class="dark:text-white font-medium text-sm flex items-center gap-1">
-            {formatter?.format(calculatedCost) || calculatedCost}
-            {#if isFree}
-              <span class="text-xs">(Free)</span>
+          {#if courseData?.metadata?.allowNewStudent}
+            <p class="dark:text-white font-medium text-sm flex items-center gap-1">
+              {formatter?.format(calculatedCost) || calculatedCost}
+              {#if isFree}
+                <span class="text-xs">(Free)</span>
+              {/if}
+            </p>
+            {#if courseData?.metadata?.showDiscount}
+              <p class="dark:text-white font-light text-sm text-gray-500">
+                {discount}% Discount.
+                <span class="line-through"
+                  >{formatter?.format(courseData?.cost || 0) || courseData.cost}</span
+                >
+              </p>
             {/if}
-          </p>
-          {#if courseData?.metadata?.showDiscount}
-            <p class="dark:text-white font-light text-sm text-gray-500">
-              {discount}% Discount.
-              <span class="line-through"
-                >{formatter?.format(courseData?.cost || 0) || courseData.cost}</span
-              >
+          {:else}
+            <p class="dark:text-white text-lg">
+              This course is currently not accepting new students.
             </p>
           {/if}
         </div>
@@ -99,7 +105,7 @@
             label={isFree ? 'Join Course' : 'Buy Now'}
             className="w-full sm:w-full h-[40px]"
             onClick={handleJoinCourse}
-            isDisabled={!editMode && !courseData.metadata.allowNewStudent}
+            isDisabled={!courseData.metadata.allowNewStudent}
           />
         </div>
       </div>
@@ -114,18 +120,24 @@
     <div class="p-2 lg:p-10">
       <!-- Pricing -->
       <div class="mb-6">
-        <p class="dark:text-white font-medium text-lg">
-          {formatter?.format(calculatedCost) || calculatedCost}
-          {#if isFree}
-            <span class="text-sm">(Free)</span>
+        {#if courseData?.metadata?.allowNewStudent}
+          <p class="dark:text-white font-medium text-lg">
+            {formatter?.format(calculatedCost) || calculatedCost}
+            {#if isFree}
+              <span class="text-sm">(Free)</span>
+            {/if}
+          </p>
+          {#if courseData?.metadata?.showDiscount}
+            <p class="dark:text-white font-light text-sm text-gray-500">
+              {discount}% Discount.
+              <span class="line-through"
+                >{formatter?.format(courseData?.cost || 0) || courseData.cost}</span
+              >
+            </p>
           {/if}
-        </p>
-        {#if courseData?.metadata?.showDiscount}
-          <p class="dark:text-white font-light text-sm text-gray-500">
-            {discount}% Discount.
-            <span class="line-through"
-              >{formatter?.format(courseData?.cost || 0) || courseData.cost}</span
-            >
+        {:else}
+          <p class="dark:text-white text-lg">
+            This course is currently not accepting new students.
           </p>
         {/if}
       </div>
@@ -136,9 +148,11 @@
           label={isFree ? 'Join Course' : 'Buy Now'}
           className="w-full sm:w-full py-3 mb-3"
           onClick={handleJoinCourse}
-          isDisabled={!editMode && !courseData.metadata.allowNewStudent}
+          isDisabled={!courseData.metadata.allowNewStudent}
         />
-        <p class="dark:text-white font-light text-sm text-gray-500">Early bird offer. Buy ASAP</p>
+        {#if courseData?.metadata?.showDiscount && courseData.metadata.allowNewStudent}
+          <p class="dark:text-white font-light text-sm text-gray-500">Early bird offer. Buy ASAP</p>
+        {/if}
       </div>
     </div>
 

@@ -16,7 +16,7 @@
   import { currentOrgPath } from '$lib/utils/store/org';
   import { isObject } from '$lib/utils/functions/isObject';
   import { lessons } from '../Lesson/store/lessons';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { snackbar } from '$lib/components/Snackbar/store';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
@@ -24,14 +24,17 @@
   let isSaving = false;
   let isLoading = false;
   let isDeleting = false;
-  let errors = {};
-  let avatar;
+  let errors: {
+    title: string | undefined;
+    description: string | undefined;
+  } = { title: undefined, description: undefined };
+  let avatar: string | undefined;
 
   function widgetControl() {
     $handleOpenWidget.open = true;
   }
 
-  function getLessonOrder(id) {
+  function getLessonOrder(id: string) {
     const index = $lessons.findIndex((lesson) => lesson.id === id);
     if (index < 9) {
       return '0' + (index + 1);
@@ -172,7 +175,6 @@
 
   $: $settings.course_description = $course.description;
   $: $settings.course_title = $course.title;
-  $: $settings.allow_new_students = $settings.is_published;
 
   $: setDefault($course);
 </script>
@@ -238,11 +240,7 @@
       <div class="">
         <p class="text-md">Course Link</p>
         {#if $course.slug}
-          <CodeSnippet
-            wrapText
-            type="multi"
-            code={`https://${$currentOrg.siteName}.classroomio.com/course/${$course.slug}`}
-          />
+          <CodeSnippet wrapText type="multi" code={`${$currentOrgDomain}/course/${$course.slug}`} />
         {:else}
           <CodeSnippet code="Setup landing page to get course link" />
         {/if}
@@ -256,23 +254,12 @@
     </Column>
     <Column sm={8} md={8} lg={8}>
       <Toggle size="sm" bind:toggled={$settings.grading}>
-        <span slot="labelA" style="color: gray">Disable</span>
-        <span slot="labelB" style="color: gray">Enable</span>
+        <span slot="labelA" style="color: gray">Disabled</span>
+        <span slot="labelB" style="color: gray">Enabled</span>
       </Toggle>
     </Column>
   </Row>
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
-    <Column sm={8} md={8} lg={8}>
-      <SectionTitle>Allow New Students</SectionTitle>
-      <p>Allow new students to access this course</p>
-    </Column>
-    <Column sm={8} md={8} lg={8}>
-      <Toggle size="sm" bind:toggled={$settings.allow_new_students}>
-        <span slot="labelA" style="color: gray">Disable</span>
-        <span slot="labelB" style="color: gray">Enable</span>
-      </Toggle>
-    </Column>
-  </Row>
+
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={8} md={8} lg={8}>
       <SectionTitle>Order Lessons Tab</SectionTitle>
@@ -289,8 +276,8 @@
     </Column>
     <Column sm={8} md={8} lg={8}>
       <Toggle size="sm" bind:toggled={$settings.lesson_download}>
-        <span slot="labelA" style="color: gray">Disable</span>
-        <span slot="labelB" style="color: gray">Enable</span>
+        <span slot="labelA" style="color: gray">Disabled</span>
+        <span slot="labelB" style="color: gray">Enabled</span>
       </Toggle>
     </Column>
   </Row>
@@ -301,12 +288,25 @@
     </Column>
     <Column sm={8} md={8} lg={8}>
       <PrimaryButton
-        variant={VARIANTS.LINK}
-        label="Download Course"
+        variant={VARIANTS.OUTLINED}
+        label="Download"
         onClick={downloadCourse}
         isDisabled={isLoading}
         {isLoading}
       />
+    </Column>
+  </Row>
+
+  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+    <Column sm={8} md={8} lg={8}>
+      <SectionTitle>Allow New Students</SectionTitle>
+      <p>Allow new students to access this course</p>
+    </Column>
+    <Column sm={8} md={8} lg={8}>
+      <Toggle size="sm" bind:toggled={$settings.allow_new_students}>
+        <span slot="labelA" style="color: gray">Disabled</span>
+        <span slot="labelB" style="color: gray">Enabled</span>
+      </Toggle>
     </Column>
   </Row>
 
@@ -317,7 +317,13 @@
       <p>This determines if your course displays on your landing page</p>
     </Column>
     <Column sm={8} md={8} lg={8}>
-      <Toggle size="sm" bind:toggled={$settings.is_published}>
+      <Toggle
+        size="sm"
+        bind:toggled={$settings.is_published}
+        on:toggle={(e) => {
+          $settings.allow_new_students = e.detail.toggled;
+        }}
+      >
         <span slot="labelA" style="color: gray">Unpublished</span>
         <span slot="labelB" style="color: gray">Published</span>
       </Toggle>

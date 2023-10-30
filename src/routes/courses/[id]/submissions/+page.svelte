@@ -23,7 +23,7 @@
     triggerSendEmail,
     NOTIFICATION_NAME
   } from '$lib/utils/services/notification/notification';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { browser } from '$app/environment';
 
   type items = {
@@ -103,7 +103,7 @@
 
     const { fullname, email } = submissionData?.student;
     const { title, status_id }: { title: string; status_id: number } = submissionData;
-    const exerciseLink = `${$currentOrg.siteName}.classroomio.com/courses/${courseId}/lessons/${lessonDetails.id}/exercises/${exerciseDetails.id}`;
+    const exerciseLink = `${$currentOrgDomain}/courses/${courseId}/lessons/${lessonDetails.id}/exercises/${exerciseDetails.id}`;
 
     const content = `
       <p>Hello ${fullname},</p>

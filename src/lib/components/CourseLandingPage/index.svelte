@@ -128,9 +128,10 @@
           label="Start Course"
           className="px-6 py-5 mt-6 sm:w-fit hidden md:block"
           onClick={() => {
+            if (editMode) return;
             startCoursePayment = true;
           }}
-          isDisabled={!editMode && !courseData.metadata.allowNewStudent}
+          isDisabled={!courseData.metadata.allowNewStudent}
         />
       </div>
 
@@ -202,7 +203,7 @@
             <a
               href="{$page.url.pathname}{navItem.key}"
               class="{navItem.key === activeNav &&
-                'active text-primary-700'} rounded-lg px-2 mr-6 text-slate-700 font-normal hover:bg-neutral-600 dark:hover:text-slate-900 dark:text-white z-0"
+                'active text-primary-700'} rounded-lg px-2 mr-6 text-slate-700 font-normal hover:bg-gray-200 dark:hover:text-slate-900 dark:text-white z-0"
             >
               {navItem.label}
             </a>

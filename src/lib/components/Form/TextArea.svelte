@@ -36,7 +36,7 @@
 
       {#if isAIEnabled}
         <CustomPromptBtn
-          defaultPrompt={initAIPrompt}
+          bind:defaultPrompt={initAIPrompt}
           alignPopover={aiAlignPopover}
           handleInsert={(v) => {
             value = v;

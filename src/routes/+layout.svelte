@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { fly } from 'svelte/transition';
   import { derived } from 'svelte/store';
   import { goto } from '$app/navigation';
   import { dev, browser } from '$app/environment';
@@ -8,9 +9,8 @@
   import * as Sentry from '@sentry/browser';
   import { CaptureConsole } from '@sentry/integrations';
   import posthog from 'posthog-js';
-  import { Theme } from 'carbon-components-svelte';
+  import { Theme, ToastNotification, Loading } from 'carbon-components-svelte';
   import type { CarbonTheme } from 'carbon-components-svelte/types/Theme/Theme.svelte';
-  import { Moon } from 'svelte-loading-spinners';
   import LandingNavigation from '$lib/components/Navigation/index.svelte';
   import OrgNavigation from '$lib/components/Navigation/app.svelte';
   import LMSNavigation from '$lib/components/Navigation/lms.svelte';
@@ -19,8 +19,6 @@
   import Backdrop from '$lib/components/Backdrop/index.svelte';
   import OrgSideBar from '$lib/components/Org/SideBar.svelte';
   import LMSSideBar from '$lib/components/LMS/SideBar.svelte';
-  // import SideBar from "../components/SideBar/index.svelte";
-  // import Footer from '$lib/components/Footer/index.svelte';
   import Apps from '$lib/components/Apps/index.svelte';
   import PlayQuiz from '$lib/components/Org/Quiz/Play/index.svelte';
   import { course } from '$lib/components/Course/store';
@@ -177,7 +175,7 @@
       // Set user in sentry
       setSentryUser();
 
-      const orgRes = await getOrganizations($profile.id);
+      const orgRes = await getOrganizations(profileData.id);
 
       // student redirect
       if (data.isOrgSite) {
@@ -305,8 +303,16 @@
 {:else}
   <main class="dark:bg-black">
     {#if $navigating && $delayedPreloading}
-      <Backdrop>
-        <Moon size="60" color="#1d4ed8" unit="px" duration="1s" />
+      <Backdrop disableCenteredContent={true} className="opacity-90">
+        <div class="h-full w-full relative" transition:fly={{ x: -200, duration: 500 }}>
+          <ToastNotification kind="info-square" class="absolute bottom-5 left-5">
+            <span slot="title" class="flex items-center">
+              <span class="mr-2">Redirecting</span>
+              <Loading withOverlay={false} small />
+            </span>
+            <span slot="caption">Taking you to the next page, please wait.</span>
+          </ToastNotification>
+        </div>
       </Backdrop>
     {/if}
     {#if !hideNavByRoute($page.url.pathname)}
@@ -351,10 +357,6 @@
       {/if}
     </div>
   </main>
-
-  {#if !['about', ''].includes(path)}
-    <!-- <Footer /> -->
-  {/if}
 {/if}
 
 <style>

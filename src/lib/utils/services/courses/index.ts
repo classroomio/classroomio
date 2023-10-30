@@ -109,7 +109,7 @@ export async function uploadAvatar(courseId: string, avatar: string) {
 export async function updateCourse(
   courseId: Course['id'],
   avatar: string | undefined,
-  course: Course
+  course: Partial<Course>
 ) {
   if (avatar && courseId) {
     const filename = `course/${courseId + Date.now()}.webp`;
