@@ -16,7 +16,7 @@ export const user = writable<{
 });
 
 export const profile = writable<{
-  id: string | number | undefined;
+  id: string | undefined;
   fullname: string;
   avatar_url: string;
   profile_url?: string;

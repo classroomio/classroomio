@@ -1,17 +1,18 @@
-<script>
+<script lang="ts">
   import { fly } from 'svelte/transition';
   import CourseLandingPage from '$lib/components/CourseLandingPage/index.svelte';
   import Editor from '$lib/components/CourseLandingPage/components/Editor/index.svelte';
   import { course } from '$lib/components/Course/store';
   import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
+  import type { Course, Lesson } from '$lib/utils/types';
 
   export let data;
 
   const { courseId } = data;
 
-  let courseData = {};
+  let courseData: Course;
 
-  function setCourseData(course = {}, lessons) {
+  function setCourseData(course: Course, lessons: Lesson[]) {
     courseData = { ...course, lessons };
   }
 

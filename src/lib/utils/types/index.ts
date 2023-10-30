@@ -59,12 +59,12 @@ export interface ExerciseSubmissions {
 //===========================================
 
 interface CourseMetadata {
-  requirements: string;
-  description: string;
-  goals: string;
+  requirements?: string;
+  description?: string;
+  goals?: string;
   videoUrl?: '';
-  showDiscount: false;
-  discount: 0;
+  showDiscount?: false;
+  discount?: 0;
   paymentLink?: string;
   reward?: {
     show: boolean;
@@ -188,6 +188,7 @@ export interface Course {
     is_present: boolean;
     id: number;
   }[];
+  lessons?: Lesson[];
 }
 
 export interface Groupmember {
