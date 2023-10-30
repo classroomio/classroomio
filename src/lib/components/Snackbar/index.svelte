@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { fly } from 'svelte/transition';
   import InformationIcon from 'carbon-icons-svelte/lib/Information.svelte';
   import WarningIcon from 'carbon-icons-svelte/lib/Warning.svelte';
@@ -8,11 +8,11 @@
   import { SNACKBAR_SEVERITY, SNACKBAR_SEVERITY_COLOR } from './constants';
   import { snackbarStore, snackbarStoreInitialState } from './store';
 
-  let severityColor;
-  let timeoutId;
+  let severityColor: string;
+  let timeoutId: NodeJS.Timeout | undefined;
 
   function handleClose() {
-    if (typeof $snackbarStore.handleClose === 'number') {
+    if (typeof $snackbarStore.handleClose === 'function') {
       $snackbarStore.handleClose();
     }
 
@@ -21,11 +21,11 @@
       ...snackbarStoreInitialState
     }));
     clearTimeout(timeoutId);
-    timeoutId = null;
+    timeoutId = undefined;
   }
 
   // When open is true trigger autoHideDuration
-  function handleOpen(open) {
+  function handleOpen(open: boolean) {
     if (!open) {
       return;
     }

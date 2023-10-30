@@ -47,6 +47,7 @@
   }
 
   $: onCompletion($completion);
+  $: prompt = defaultPrompt;
 </script>
 
 <div class="{className} relative z-[100]">
