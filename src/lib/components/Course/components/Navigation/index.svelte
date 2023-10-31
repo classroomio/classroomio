@@ -167,7 +167,7 @@
   $: {
     navItems = [
       {
-        label: 'Overview',
+        label: 'Anouncements',
         to: getNavItemRoute($course.id),
         hideSortIcon: true
       },
@@ -232,19 +232,17 @@
 
 <aside
   class={`${
-    $menu.hidden
-      ? '-translate-x-[100%] absolute md:translate-x-0 md:relative z-[40]'
-      : 'translate-x-0 absolute md:relative z-[40]'
+    $menu.hidden ? '-translate-x-[100%] absolute ' : 'translate-x-0 absolute md:relative z-[40]'
   } transition w-[90vw] md:w-[350px] bg-gray-100 dark:bg-black h-[calc(100vh-48px)] ${
     resize && 'border-r-8 border-r-blue-500'
   } overflow-y-auto border border-l-0 border-t-0 border-b-0 border-r-1`}
-  style={$sideBar.open && 'width:0' ? 'width :300px' : 'width:0'}
+  style={$sideBar.openDesktop && 'width:0' ? 'width :300px' : 'width:0'}
   bind:this={sidebarRef}
 >
   <div class="sidebar-contenth-full flex flex-col">
     <ul
       class="sidebar-content my-5"
-      style={$sideBar.open && 'width:0' ? 'display:block' : ''}
+      style={$sideBar.openDesktop && 'width:0' ? 'display:block' : ''}
       bind:this={menuContentRef}
     >
       {#each navItems as navItem}
