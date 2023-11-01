@@ -142,10 +142,10 @@
   <Loading withOverlay={true} />
 {:else if browser}
   <div>
-    <h1>Question Charts</h1>
+    <p class="text-2xl mb-3">Question Charts</p>
     {#each transformedQuestions as q}
-      <div>
-        <h3>{q.title}</h3>
+      <div class="mb-4">
+        <p>{q.title}</p>
         {#if q.type === 1}
           <svelte:component this={pieChart} data={q.chartData} options={pieOptions} />
         {:else if q.type === 2}
