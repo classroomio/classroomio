@@ -48,7 +48,7 @@
         $course.overview = html;
       }}
       placeholder="Write your overview here"
-      height="700"
+      height={700}
     />
   {:else}
     <HtmlRender className="p-2" content={$course.overview || ''} />

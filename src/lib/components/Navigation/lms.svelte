@@ -10,14 +10,14 @@
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { appStore } from '$lib/utils/store/app';
   import { Close, Menu } from 'carbon-icons-svelte';
-  import { menu } from '$lib/components/Org/store';
+  import { sideBar } from '$lib/components/Org/store';
   import { currentOrg } from '$lib/utils/store/org';
   import { toggleBodyByMode } from '$lib/utils/functions/app';
 
   export let navClass = '';
 
   const toggleSidebar = () => {
-    $menu.hidden = !$menu.hidden;
+    $sideBar.hidden = !$sideBar.hidden;
   };
 
   function toggleDarkMode() {
@@ -38,7 +38,7 @@
   <ul class="flex w-full items-center">
     <li class="md:hidden">
       <IconButton onClick={toggleSidebar}>
-        {#if $menu.hidden}
+        {#if $sideBar.hidden}
           <Menu size={16} class=" text-white" />
         {:else}
           <Close size={16} class=" text-white" />
