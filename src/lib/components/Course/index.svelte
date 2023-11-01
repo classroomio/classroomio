@@ -1,10 +1,8 @@
 <script>
   import PageNav from '../PageNav/index.svelte';
-  import MODES from '$lib/utils/constants/mode';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import PageBody from '../PageBody/index.svelte';
   import { course } from './store';
-  import { updateCourse } from '$lib/utils/services/courses';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
   import AnoucementCard from './components/AnoucementCard.svelte';
   import { Dropdown } from 'carbon-components-svelte';
@@ -15,8 +13,6 @@
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { getTextFromHTML } from '$lib/utils/functions/course';
 
-  let mode = MODES.view;
-  let isDirty = false;
   let anouncement = false;
 
   const emojipicker = [
@@ -61,28 +57,11 @@
     name: 'Best Emmanuel Ibitoye-Rotimi',
     emoji: emojipicker
   };
-  const reusePost = () => {
-    console.log('clicked');
-  };
+  const reusePost = () => {};
 
   const post = () => {
-    console.log('pushing');
     mockAnouncements = [newAnouncement, ...mockAnouncements];
   };
-
-  async function handleModeChange() {
-    if (mode === MODES.edit) {
-      mode = MODES.view;
-      if (isDirty) {
-        const { overview, id } = $course;
-        await updateCourse(id, undefined, { overview });
-      }
-    } else {
-      mode = MODES.edit;
-    }
-  }
-
-  $: mockAnouncements;
 </script>
 
 <PageNav title="Anouncements" disableSticky={true} />
