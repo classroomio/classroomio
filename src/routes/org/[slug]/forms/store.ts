@@ -20,12 +20,15 @@ interface Question {
   order: number;
   question_type: QuestionType;
   options: { label: string; value: boolean }[];
+  image: string;
+  video: string;
+  isRequired: boolean;
 }
 
 interface Form {
   id: string;
+  title: string;
   imgUrl: string;
-  name: string;
   questions: Question[];
 }
 
@@ -35,7 +38,7 @@ export const forms = writable<Form[]>(
       id: 'flsgklsf-355tecsg-fghdye-53t6fgdh-dghdghh',
       imgUrl:
         'https://ssl.gstatic.com/docs/templates/thumbnails/1xQF3s6EP0d58H-XJ7R440OpREKo4KqEapa0mkw43RPE_400_1.png',
-      name: 'React',
+      title: 'React',
       questions: [
         {
           title: 'What is an arrow function in ES6?',
@@ -48,6 +51,9 @@ export const forms = writable<Form[]>(
             { label: 'A function expression', value: false },
             { label: 'A concise way to write functions', value: true },
           ],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'Which of the following statements about arrow functions is correct?',
@@ -60,6 +66,9 @@ export const forms = writable<Form[]>(
             { label: 'Arrow functions cannot have parameters', value: false },
             { label: 'Arrow functions do not have their own "this" value', value: true },
           ],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'How do you write a multi-line arrow function in JavaScript?',
@@ -72,6 +81,9 @@ export const forms = writable<Form[]>(
             { label: 'Using curly braces around the function body', value: true },
             { label: 'Using square brackets around the function body', value: false },
           ],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'What is the main advantage of using arrow functions in React components?',
@@ -84,6 +96,9 @@ export const forms = writable<Form[]>(
             { label: 'They can be asynchronous', value: false },
             { label: 'They automatically bind "this"', value: false },
           ],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'When should you NOT use an arrow function for a class method in React?',
@@ -96,6 +111,9 @@ export const forms = writable<Form[]>(
             { label: 'When the method is static', value: false },
             { label: 'When the method is a constructor', value: false },
           ],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'Select all valid use cases for arrow functions in JavaScript.',
@@ -109,6 +127,9 @@ export const forms = writable<Form[]>(
             { label: 'Defining constructors', value: false },
             { label: 'Using in a "for" loop', value: true },
           ],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'Write an example of a single-line arrow function in JavaScript.',
@@ -117,6 +138,9 @@ export const forms = writable<Form[]>(
           order: 6,
           question_type: QuestionType.Paragraph, // TEXTAREA
           options: [],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'Explain the concept of lexical scoping in arrow functions.',
@@ -125,6 +149,9 @@ export const forms = writable<Form[]>(
           order: 7,
           question_type: QuestionType.Paragraph, // TEXTAREA
           options: [],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'What is the difference between regular functions and arrow functions in terms of "this" binding?',
@@ -133,6 +160,9 @@ export const forms = writable<Form[]>(
           order: 8,
           question_type: QuestionType.Paragraph, // TEXTAREA
           options: [],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'List some potential drawbacks of using arrow functions in certain situations.',
@@ -141,6 +171,9 @@ export const forms = writable<Form[]>(
           order: 9,
           question_type: QuestionType.Paragraph, // TEXTAREA
           options: [],
+          image: '',
+          video: '',
+          isRequired: false
         },
       ]
     },
@@ -148,7 +181,7 @@ export const forms = writable<Form[]>(
       id: '355tecsg-fghdye-flsgklsf-53t6fgdh-dghdghh',
       imgUrl:
         'https://ssl.gstatic.com/docs/templates/thumbnails/1kkUjv3G7-PgOEUPMTiKvKResxGxS7MTsy5Amj4b0Trw_400_1.png',
-      name: 'Node Js',
+      title: 'Node Js',
       questions: [
         {
           title: 'What is the purpose of creating tables in a MySQL database?',
@@ -170,6 +203,9 @@ export const forms = writable<Form[]>(
               value: false,
             },
           ],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'Which SQL statement is used to create a new table in a MySQL database?',
@@ -191,6 +227,9 @@ export const forms = writable<Form[]>(
               value: false,
             },
           ],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'What is the purpose of the "AUTO_INCREMENT" attribute in a MySQL table?',
@@ -212,6 +251,9 @@ export const forms = writable<Form[]>(
               value: false,
             },
           ],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'Explain the purpose of primary keys in MySQL tables.',
@@ -220,6 +262,9 @@ export const forms = writable<Form[]>(
           order: 3,
           question_type: QuestionType.Paragraph, // TEXTAREA
           options: [],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'What is the purpose of the "FOREIGN KEY" constraint in MySQL tables?',
@@ -241,6 +286,9 @@ export const forms = writable<Form[]>(
               value: false,
             },
           ],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'How do you add a new column to an existing MySQL table?',
@@ -262,6 +310,9 @@ export const forms = writable<Form[]>(
               value: false,
             },
           ],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'What is the purpose of the "UNIQUE" constraint in MySQL columns?',
@@ -283,6 +334,9 @@ export const forms = writable<Form[]>(
               value: false,
             },
           ],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'What is the purpose of the "DROP TABLE" statement in MySQL?',
@@ -304,6 +358,9 @@ export const forms = writable<Form[]>(
               value: false,
             },
           ],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'How can you add a foreign key constraint to a MySQL table column?',
@@ -325,6 +382,9 @@ export const forms = writable<Form[]>(
               value: false,
             },
           ],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'What is the purpose of indexing columns in MySQL tables?',
@@ -346,6 +406,9 @@ export const forms = writable<Form[]>(
               value: false,
             },
           ],
+          image: '',
+          video: '',
+          isRequired: false
         },
       ]
     },
@@ -353,7 +416,7 @@ export const forms = writable<Form[]>(
       id: 'fghdye-dghdghh-355tecsg-flsgklsf-53t6fgdh',
       imgUrl:
         'https://ssl.gstatic.com/docs/templates/thumbnails/134dbGrMBrHFEfdPk5UpsZWEBZb7xJrOKRdESE58Fvcg_400_1.png',
-      name: 'Typescript',
+      title: 'Typescript',
       questions: [
         {
           title: 'What is a TypeScript tuple?',
@@ -378,7 +441,10 @@ export const forms = writable<Form[]>(
               label: 'A data structure that stores elements of mixed types without size restrictions.',
               value: false
             }
-          ]
+          ],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'How do you define a tuple type in TypeScript?',
@@ -403,7 +469,10 @@ export const forms = writable<Form[]>(
               label: 'Using the `list` keyword',
               value: false
             }
-          ]
+          ],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'How can you access elements of a TypeScript tuple?',
@@ -428,7 +497,10 @@ export const forms = writable<Form[]>(
               label: 'By using the `get` method (e.g., `tuple.get(0)`)',
               value: false
             }
-          ]
+          ],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'Which of the following statements is true about TypeScript tuples?',
@@ -453,7 +525,10 @@ export const forms = writable<Form[]>(
               label: 'Tuples can only contain elements of the same type.',
               value: false
             }
-          ]
+          ],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'What is the correct way to initialize a TypeScript tuple?',
@@ -478,7 +553,10 @@ export const forms = writable<Form[]>(
               label: 'const myTuple: tuple<number, string, number> = [1, "two", 3]',
               value: false
             }
-          ]
+          ],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'In a TypeScript tuple, what does the number in the tuple type represent?',
@@ -503,7 +581,10 @@ export const forms = writable<Form[]>(
               label: 'The size of the tuple in memory.',
               value: false
             }
-          ]
+          ],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'How do you update a value in a TypeScript tuple?',
@@ -528,7 +609,10 @@ export const forms = writable<Form[]>(
               label: 'By using the `set` method on the tuple.',
               value: false
             }
-          ]
+          ],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'What is the advantage of using TypeScript tuples over arrays?',
@@ -553,7 +637,10 @@ export const forms = writable<Form[]>(
               label: 'Tuples provide built-in sorting methods.',
               value: false
             }
-          ]
+          ],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'Can TypeScript tuples be used to represent key-value pairs?',
@@ -578,7 +665,10 @@ export const forms = writable<Form[]>(
               label: 'No, TypeScript does not support key-value pairs in tuples.',
               value: false
             }
-          ]
+          ],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'Which TypeScript version introduced tuple types?',
@@ -603,7 +693,10 @@ export const forms = writable<Form[]>(
               label: 'TypeScript 4.0',
               value: false
             }
-          ]
+          ],
+          image: '',
+          video: '',
+          isRequired: false
         }
       ]
     },
@@ -611,7 +704,7 @@ export const forms = writable<Form[]>(
       id: 'dghdghh-53t6fgdh-fghdye-355tecsg-flsgklsf',
       imgUrl:
         'https://ssl.gstatic.com/docs/templates/thumbnails/1m0UYQl1LSGxl3sGsh9_xjim4hUYQ8BO_zbvcFXv1Qug_400_1.png',
-      name: 'Python',
+      title: 'Python',
       questions: [
         {
           title: 'What is the purpose of comments in Python?',
@@ -624,6 +717,9 @@ export const forms = writable<Form[]>(
             { label: 'To explain the code and make it more readable', value: true },
             { label: 'To hide code from others', value: false },
           ],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'Which symbol is used to start a single-line comment in Python?',
@@ -636,6 +732,9 @@ export const forms = writable<Form[]>(
             { label: '/*', value: false },
             { label: '#', value: true },
           ],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'How do you write a multi-line comment in Python?',
@@ -648,6 +747,9 @@ export const forms = writable<Form[]>(
             { label: '// This is a comment //', value: false },
             { label: '""" This is a comment """', value: true },
           ],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'What is the correct way to comment out a single line of code in Python?',
@@ -660,6 +762,9 @@ export const forms = writable<Form[]>(
             { label: 'Using double slashes (//)', value: false },
             { label: 'Using triple quotes (\'\'\')', value: false },
           ],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'Explain the purpose of docstrings in Python.',
@@ -668,6 +773,9 @@ export const forms = writable<Form[]>(
           order: 4,
           question_type: QuestionType.Paragraph, // TEXTAREA
           options: [],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'What is the main purpose of writing comments in your code?',
@@ -680,6 +788,9 @@ export const forms = writable<Form[]>(
             { label: 'To make your code look more colorful', value: false },
             { label: 'To make the code understandable for you and others', value: true },
           ],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'How can you comment out multiple lines of code in Python?',
@@ -692,6 +803,9 @@ export const forms = writable<Form[]>(
             { label: 'Using triple quotes (\'\'\')', value: true },
             { label: 'Using double slashes (//)', value: false },
           ],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'What is the purpose of triple-quoted strings in Python?',
@@ -704,6 +818,9 @@ export const forms = writable<Form[]>(
             { label: 'To make your code more colorful', value: false },
             { label: 'To indicate the end of a Python program', value: false },
           ],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'Explain the purpose of inline comments in Python.',
@@ -712,6 +829,9 @@ export const forms = writable<Form[]>(
           order: 8,
           question_type: QuestionType.ShortAnswer, // TEXTAREA
           options: [],
+          image: '',
+          video: '',
+          isRequired: false
         },
         {
           title: 'Which type of comment is used for documenting functions, classes, and modules in Python?',
@@ -724,6 +844,9 @@ export const forms = writable<Form[]>(
             { label: 'Multi-line comments', value: false },
             { label: 'Docstrings', value: true },
           ],
+          image: '',
+          video: '',
+          isRequired: false
         },
       ]
     },

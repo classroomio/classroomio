@@ -23,6 +23,8 @@
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { currentOrg } from '$lib/utils/store/org';
+  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
+  import { handleOpenWidget } from './store';
 
   export let editMode = false;
   export let courseData: Course;
@@ -92,6 +94,9 @@
     reviews = get(courseData, 'metadata.reviews') || [];
     totalRatings = reviews?.reduce((acc = 0, review) => acc + (review?.rating || 0), 0);
     averageRating = totalRatings / reviews?.length;
+  }
+  $: {
+    console.log(bannerImage);
   }
 </script>
 
@@ -164,6 +169,9 @@
             class="mt-2 md:mt-0 rounded-md w-full h-full max-w-[500px] max-h-[400px] relative"
           />
         </div>
+        {#if $handleOpenWidget.open}
+          <UploadWidget bind:imageURL={bannerImage} />
+        {/if}
 
         <!-- <div
           class="banner-image w-2/3 h-96 relative cursor-pointer"

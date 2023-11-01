@@ -60,10 +60,10 @@
         >
           <img
             src={template.imgUrl}
-            alt={template.name}
+            alt={template.title}
             class="w-full h-full object-cover rounded-md"
           />
-          <h4>{template.name}</h4>
+          <h4>{template.title}</h4>
         </button>
       {/each}
     </div>
@@ -87,10 +87,10 @@
         >
           <img
             src={template.imgUrl}
-            alt={template.name}
+            alt={template.title}
             class="w-full h-full object-cover rounded-md"
           />
-          <h4>{template.name}</h4>
+          <h4>{template.title}</h4>
         </button>
       {/each}
     </div>
