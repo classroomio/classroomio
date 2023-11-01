@@ -12,18 +12,14 @@
   import { appStore } from '$lib/utils/store/app';
   import { currentOrgPath } from '$lib/utils/store/org';
   import { toggleBodyByMode } from '$lib/utils/functions/app';
-  import { menu, sideBar } from '../Org/store';
+  import { sideBar } from '../Org/store';
 
   export let title = '';
   export let navClass = '';
   export let isCoursePage = false;
 
   const toggleSidebar = () => {
-    $menu.hidden = !$menu.hidden;
-  };
-
-  const openSidebar = () => {
-    $sideBar.open = !$sideBar.open;
+    $sideBar.hidden = !$sideBar.hidden;
   };
 
   function toggleDarkMode() {
@@ -49,8 +45,12 @@
   <ul class="flex w-full items-center">
     <div class="flex items-center text-white">
       <li class="md:hidden">
-        <IconButton onClick={toggleSidebar}>
-          {#if $menu.hidden}
+        <IconButton
+          onClick={() => {
+            toggleSidebar();
+          }}
+        >
+          {#if $sideBar.hidden}
             <Menu size={16} class=" text-white" />
           {:else}
             <Close size={16} class=" text-white" />
@@ -60,7 +60,11 @@
 
       {#if isCoursePage}
         <li class="hidden md:block">
-          <IconButton onClick={openSidebar}>
+          <IconButton
+            onClick={() => {
+              toggleSidebar();
+            }}
+          >
             <Menu size={16} class=" text-white" />
           </IconButton>
         </li>
