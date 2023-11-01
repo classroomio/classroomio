@@ -14,7 +14,7 @@
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
-  import { menu } from './store';
+  import { sideBar } from './store';
 
   const menuItems = [
     {
@@ -54,13 +54,13 @@
     return pagePath.includes(itemPath);
   }
   const toggleSidebar = () => {
-    $menu.hidden = !$menu.hidden;
+    $sideBar.hidden = !$sideBar.hidden;
   };
 </script>
 
 <aside
   class={`${
-    $menu.hidden
+    $sideBar.hidden
       ? '-translate-x-[100%] absolute md:translate-x-0 md:relative z-40'
       : 'translate-x-0 absolute md:relative z-40'
   } overflow-y-auto transition w-[250px] min-w-[250px] bg-gray-100 dark:bg-neutral-900 h-[calc(100vh-48px)] border border-l-0 border-t-0 border-b-0 border-r-1`}

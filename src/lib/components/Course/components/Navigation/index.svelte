@@ -13,7 +13,7 @@
   import { course } from '$lib/components/Course/store';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
   import { isMobile } from '$lib/utils/store/useMobile';
-  import { menu, sideBar } from '$lib/components/Org/store';
+  import { sideBar } from '$lib/components/Org/store';
   import { profile } from '$lib/utils/store/user';
   import { getIsLessonComplete } from '../Lesson/functions';
 
@@ -38,7 +38,9 @@
   let menuContentRef;
 
   const toggleSidebar = () => {
-    $menu.hidden = !$menu.hidden;
+    if ($isMobile) {
+      $sideBar.hidden = !$sideBar.hidden;
+    }
   };
 
   function handleMainGroupClick(href: string) {
@@ -103,7 +105,7 @@
     if (newWidth < 150) {
       sidebarRef.style.width = '0';
       menuContentRef.style.display = 'none';
-      $sideBar.open = false;
+      $sideBar.hidden = true;
       isDragging = false;
       resize = false;
     } else if (newWidth > window.innerWidth / 3 && window.innerWidth >= 1280) {
@@ -231,19 +233,25 @@
 </script>
 
 <aside
-  class={`${
-    $menu.hidden ? '-translate-x-[100%] absolute ' : 'translate-x-0 absolute md:relative z-[40]'
-  } transition w-[90vw] md:w-[350px] bg-gray-100 dark:bg-black h-[calc(100vh-48px)] ${
+  class={`
+  ${
+    $sideBar.hidden
+      ? '-translate-x-[100%] absolute z-[40]'
+      : 'translate-x-0 absolute md:relative z-[40]'
+  }
+    transition w-[90vw] md:w-[300px] lg:w-[350px] bg-gray-100 dark:bg-black h-[calc(100vh-48px)] 
+  
+  ${
     resize && 'border-r-8 border-r-blue-500'
   } overflow-y-auto border border-l-0 border-t-0 border-b-0 border-r-1`}
-  style={$sideBar.openDesktop && 'width:0' ? 'width :300px' : 'width:0'}
+  style={$sideBar.hidden === true ? 'width:0' : 'width:300px'}
   bind:this={sidebarRef}
 >
   <div class="sidebar-contenth-full flex flex-col">
     <ul
       class="sidebar-content my-5"
-      style={$sideBar.openDesktop && 'width:0' ? 'display:block' : ''}
       bind:this={menuContentRef}
+      style={$sideBar.hidden === true ? '' : 'display:block'}
     >
       {#each navItems as navItem}
         {#if !navItem.show || (typeof navItem.show === 'function' && navItem.show())}

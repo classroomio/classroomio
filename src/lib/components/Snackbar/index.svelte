@@ -1,15 +1,13 @@
 <script lang="ts">
   import { fly } from 'svelte/transition';
-  import InformationIcon from 'carbon-icons-svelte/lib/Information.svelte';
-  import WarningIcon from 'carbon-icons-svelte/lib/Warning.svelte';
-  import CheckmarkOutline24 from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
+  import { InlineNotification } from 'carbon-components-svelte';
+  import { capitalizeFirstLetter } from '$lib/utils/functions/string';
 
-  import CloseButton from '../Buttons/Close/index.svelte';
-  import { SNACKBAR_SEVERITY, SNACKBAR_SEVERITY_COLOR } from './constants';
+  import { SNACKBAR_SEVERITY } from './constants';
   import { snackbarStore, snackbarStoreInitialState } from './store';
 
-  let severityColor: string;
   let timeoutId: NodeJS.Timeout | undefined;
+  let kind: 'error' | 'info' | 'info-square' | 'success' | 'warning' | 'warning-alt' = 'info';
 
   function handleClose() {
     if (typeof $snackbarStore.handleClose === 'function') {
@@ -39,41 +37,37 @@
   }
 
   $: handleOpen($snackbarStore.open);
-  $: severityColor = SNACKBAR_SEVERITY_COLOR[$snackbarStore.severity];
+  $: kind =
+    $snackbarStore.severity === SNACKBAR_SEVERITY.SUCCESS
+      ? 'success'
+      : $snackbarStore.severity === SNACKBAR_SEVERITY.ERROR
+      ? 'error'
+      : 'info';
 </script>
 
 {#if $snackbarStore.open}
   {#key $snackbarStore.message}
-    <div
-      transition:fly={{ x: 200, duration: 500 }}
-      class="root text-white rounded-md flex justify-between items-center absolute {severityColor}"
-    >
-      <div class="flex items-center">
-        {#if $snackbarStore.severity === SNACKBAR_SEVERITY.SUCCESS}
-          <CheckmarkOutline24 size={24} class="carbon-icon dark:text-white" />
-        {:else if $snackbarStore.severity === SNACKBAR_SEVERITY.WARNING}
-          <WarningIcon size={24} class="carbon-icon dark:text-white" />
-        {:else}
-          <InformationIcon size={24} class="carbon-icon dark:text-white" />
-        {/if}
-        <p class="dark:text-white ml-2 text-lg">{$snackbarStore.message}</p>
-      </div>
-
-      <CloseButton onClick={handleClose} contained={true} color="text-white" />
+    <div transition:fly={{ x: 200, duration: 500 }} class="root absolute">
+      <InlineNotification
+        {kind}
+        title={capitalizeFirstLetter(kind || '')}
+        subtitle={$snackbarStore.message}
+        on:close={(e) => {
+          e.preventDefault();
+          handleClose();
+        }}
+      />
     </div>
   {/key}
 {/if}
 
 <style>
   .root {
-    font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
     right: 5%;
     left: auto;
     top: 24px;
     transform: translateX(-5%);
     min-width: 288px;
-    padding: 6px 16px;
-    flex-wrap: wrap;
     z-index: 51;
   }
 </style>

@@ -36,6 +36,7 @@
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import type { LessonPage } from '$lib/utils/types';
   import { getTextFromHTML } from '$lib/utils/functions/course';
+  import { snackbar } from '$lib/components/Snackbar/store';
 
   export let mode = MODES.view;
   export let prevMode = '';
@@ -75,7 +76,7 @@
           materials
         }
       : $lesson;
-    handleUpdateLessonMaterials(_lesson, lessonId);
+    return handleUpdateLessonMaterials(_lesson, lessonId);
   }
 
   function isNoteEmpty(note: string) {
@@ -178,7 +179,12 @@
 
     isSaving = true;
     timeoutId = setTimeout(async () => {
-      await saveLesson(updatedMaterials);
+      const { error } = await saveLesson(updatedMaterials);
+
+      if (error) {
+        console.log('error saving lesson', error);
+        snackbar.error('We apologise, there was an error saving your lesson.');
+      }
       isSaving = false;
     }, 500);
   }
@@ -244,9 +250,9 @@
   <VideoUploader {lessonId} />
 </Modal>
 
-<HtmlRender>
+<HtmlRender className="m-auto text-center">
   <svelte:fragment slot="content">
-    <h1 class="text-4xl mt-0 capitalize">
+    <h1 class="text-2xl md:text-4xl mt-0 capitalize">
       {lessonTitle}
     </h1>
   </svelte:fragment>
