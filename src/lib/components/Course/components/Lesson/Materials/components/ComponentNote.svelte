@@ -17,7 +17,7 @@
 </script>
 
 {#if !isNoteEmpty($lesson.materials?.note)}
-  <HtmlRender>
+  <HtmlRender className="m-auto">
     <svelte:fragment slot="content">
       <div>
         {@html $lesson.materials.note}
