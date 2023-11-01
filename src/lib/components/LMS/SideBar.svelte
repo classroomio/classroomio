@@ -9,7 +9,7 @@
   import Avatar from '$lib/components/Avatar/index.svelte';
   import { profile } from '$lib/utils/store/user';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
-  import { menu } from '$lib/components/Org/store';
+  import { sideBar } from '$lib/components/Org/store';
 
   function isActive(pagePath: string, itemPath: string) {
     const pageLinkItems = pagePath.split('/');
@@ -44,13 +44,13 @@
     }
   ];
   const toggleSidebar = () => {
-    $menu.hidden = !$menu.hidden;
+    $sideBar.hidden = !$sideBar.hidden;
   };
 </script>
 
 <aside
   class={`${
-    $menu.hidden
+    $sideBar.hidden
       ? '-translate-x-[100%] absolute md:translate-x-0 md:relative z-40'
       : 'translate-x-0 absolute md:relative z-40'
   } overflow-y-auto transition w-[250px] min-w-[250px] bg-gray-100 dark:bg-neutral-900 h-[calc(100vh-48px)]`}
