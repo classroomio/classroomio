@@ -56,6 +56,10 @@
   const onChange = (tabValue: string) => () => (currentTab = tabValue);
 
   let questions = writable(data.form?.questions || []);
+  let currentUploadingImgQuestionIndex;
+  let currentUploadingImgUrl;
+
+  // let activeQuestionIndex: number | null = null;
 
   // adds a new question tab
   function handleAddQuestion(formId: string) {
@@ -108,23 +112,40 @@
       return allQuestions;
     });
   }
-  let widgetStates = Array($questions.length).fill(false);
 
-  // i had to had index because of the specific question in the array of questions. When this function is called with an index, it toggles the state of the widget associated with that question.
   function widgetControl(index: number) {
-    if (index >= 0 && index < $questions.length) {
-      // Toggle the state
-      widgetStates[index] = !widgetStates[index];
-
-      // Create a copy of the widgetStates array and set handleOpenWidget to true or false for the specific question
-      handleOpenWidget.set({
-        open: widgetStates[index]
-      });
-    }
+    currentUploadingImgQuestionIndex = index;
+    $handleOpenWidget.open = true;
   }
 
-  // make question required tab
-  function handleRequired() {}
+  async function setUploadingImgToQuestion(imgUrl) {
+    if (!imgUrl) return;
+
+    // Ensure that the currentUploadingImgQuestionIndex is a valid index
+    if (currentUploadingImgQuestionIndex !== null && currentUploadingImgQuestionIndex >= 0) {
+      // Find the question we are uploading an image for
+      const question = $questions[currentUploadingImgQuestionIndex];
+
+      if (question) {
+        // Set the image url
+        // Make sure `.image` is the correct property name for your image upload question
+        question.image = imgUrl;
+
+        // Update the questions array to reflect the change
+        questions.update((currentQuestions) => {
+          const updatedQuestions = [...currentQuestions];
+          updatedQuestions[currentUploadingImgQuestionIndex] = question;
+          return updatedQuestions;
+        });
+      }
+    }
+
+    // Reset the currentUploadingImgQuestionIndex
+    currentUploadingImgQuestionIndex = null;
+
+    // Reset the currentUploadingImgUrl
+    currentUploadingImgUrl = null;
+  }
 
   document.addEventListener('click', handleDocumentClick);
   function handleDocumentClick(e) {
@@ -137,6 +158,11 @@
     // Clean up the event listener when the component is destroyed
     document.removeEventListener('click', handleDocumentClick);
   });
+
+  $: setUploadingImgToQuestion(currentUploadingImgUrl);
+  $: {
+    console.log(currentUploadingImgUrl);
+  }
 </script>
 
 <header class="flex justify-between w-full px-10">
@@ -256,10 +282,6 @@
                     </div>
 
                     <div class="mb-5">
-                      {#if widgetStates[index]}
-                        <UploadWidget bind:imageURL={mockQuestion.image} />
-                      {/if}
-
                       <!-- conditional rendering for images/videos -->
                       {#if mockQuestion.image !== ''}
                         <img src={mockQuestion.image} alt="" />
@@ -267,7 +289,7 @@
                     </div>
 
                     <!-- consitional rendering -->
-                    <div>
+                    <div class="mb-10">
                       {#if mockQuestion.question_type === 'checkboxes'}
                         {#each mockQuestion.options as option (option.label)}
                           <Checkbox
@@ -350,6 +372,10 @@
                 </div>
               </button>
             {/each}
+          {/if}
+
+          {#if $handleOpenWidget.open}
+            <UploadWidget bind:imageURL={currentUploadingImgUrl} />
           {/if}
 
           <!-- sidebar -->
