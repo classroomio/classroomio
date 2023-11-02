@@ -1,6 +1,6 @@
 # ClassroomIO
 
-The tool every classroom use in collaborating in and outside the class.
+The Open Source Teaching Platform for Bootcamps
 
 ## Why the name?
 
