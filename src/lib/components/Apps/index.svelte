@@ -41,7 +41,7 @@
     } else {
       $apps.selectedApp = appName;
     }
-    $apps.dropdown = false;
+    $apps.dropdown = !$apps.dropdown;
   }
 
   function updateTopPadding(isStudent: boolean) {
@@ -92,7 +92,6 @@
         toolTipProps={{ title: 'Settings', hotkeys: ['A', '0'] }}
         onClick={() => {
           handleAppClick();
-          $apps.dropdown = !$apps.dropdown;
         }}
       >
         <Settings size={24} class="carbon-icon dark:text-white lg:hidden" />
@@ -199,9 +198,7 @@
 
   @media screen and (min-width: 768px) and (max-width: 1023px) {
     .app {
-      min-width: 280px;
-      max-width: 300px;
-      width: 300px;
+      width: 50vw;
       position: relative;
       overflow: auto;
     }
@@ -209,7 +206,8 @@
 
   @media screen and (max-width: 767px) {
     .app {
-      width: 100%;
+      width: 100vw;
+      min-width: calc(100vw - 60px);
       position: relative;
       overflow: auto;
     }

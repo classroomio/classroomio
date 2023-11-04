@@ -15,7 +15,7 @@
   let totalLessons = 0;
   let totalComPleted = 0;
 
-  async function getCourses(userId: string | null, orgId: string) {
+  async function getCourses(userId: string | undefined, orgId: string) {
     if (hasFetched || !userId || !orgId) {
       return;
     }
@@ -48,7 +48,7 @@
 
 <section class="max-w-6xl gap-5 mx-auto">
   <div class="m-5">
-    <h1 class="dark:text-white text-2xl md:text-3xl font-bold">
+    <h1 class="dark:text-white text-2xl md:text-3xl font-bold mb-3">
       {getGreeting()}
       {$profile.fullname}!
     </h1>
@@ -63,7 +63,6 @@
         <PrimaryButton
           label="Don't give up"
           variant={VARIANTS.CONTAINED_WHITE}
-          className="bg-white text-primary-800"
           onClick={() => goto('/lms/mylearning')}
         />
       </span>

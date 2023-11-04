@@ -204,7 +204,7 @@
   }
 </script>
 
-<PageNav title="Poll" overidableStyle="padding: 0 10px">
+<PageNav title="Poll" overidableStyle="padding: 0 10px" paddingClass="w-full">
   <div slot="widget">
     <CloseButton onClick={handleClose} />
   </div>

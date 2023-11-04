@@ -7,7 +7,7 @@
   export let onChange = (html: string) => {};
   export let height = 300;
   export let placeholder = '';
-  export let editorWindowRef: Window;
+  export let editorWindowRef: Window | undefined = undefined;
   export let maxHeight: number | undefined = undefined;
 
   const apiKey = PUBLIC_TINYMCE_API_KEY;
