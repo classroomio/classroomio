@@ -17,7 +17,7 @@ export const VARIANTS_CLASS = {
   [VARIANTS.CONTAINED_LIGHT]:
     'border-none bg-primary-600 hover:bg-primary-900 text-white font-bold',
   [VARIANTS.CONTAINED_WHITE]:
-    'border-none hover:border-black-300 hover:bg-primary-700 dark:hover:bg-primary-900 text-black hover:text-white bg-white',
+    'border-none bg-white hover:border-black-300 hover:bg-primary-700 dark:hover:bg-primary-900 text-black',
   [VARIANTS.CONTAINED_INFO]: 'border-none bg-gray-400 hover:bg-gray-600 text-white',
   [VARIANTS.CONTAINED_SUCCESS]: 'bg-green-700 hover:bg-green-900 text-white',
   [VARIANTS.CONTAINED_DANGER]: 'bg-red-700 hover:bg-red-900 text-white',

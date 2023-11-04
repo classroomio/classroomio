@@ -102,7 +102,7 @@
         <!-- Call To Action Buttons -->
         <div class="flex flex-col w-full h-full items-center">
           <PrimaryButton
-            label={isFree ? 'Join Course' : 'Buy Now'}
+            label={isFree ? 'Enroll Now' : 'Buy Now'}
             className="w-full sm:w-full h-[40px]"
             onClick={handleJoinCourse}
             isDisabled={!courseData.metadata.allowNewStudent}
@@ -145,7 +145,7 @@
       <!-- Call To Action Buttons -->
       <div class="flex flex-col w-full items-center">
         <PrimaryButton
-          label={isFree ? 'Join Course' : 'Buy Now'}
+          label={isFree ? 'Enroll Now' : 'Buy Now'}
           className="w-full sm:w-full py-3 mb-3"
           onClick={handleJoinCourse}
           isDisabled={!courseData.metadata.allowNewStudent}

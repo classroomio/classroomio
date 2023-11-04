@@ -186,7 +186,7 @@
 
 <div class="py-10 px-5 w-full max-w-7xl mx-auto">
   <div class="flex items-center justify-between mb-10">
-    <h1 class="dark:text-white text-2xl md:text-3xl font-bold">
+    <h1 class="dark:text-white text-2xl md:text-3xl font-bold mb-3">
       {getGreeting()}
       {$profile.fullname}!
     </h1>
@@ -219,7 +219,6 @@
       <PrimaryButton
         label="Keep Building 🚀"
         variant={VARIANTS.CONTAINED_WHITE}
-        className="bg-white text-primary-800"
         onClick={() => goto(`${$currentOrgPath}/courses`)}
       />
     </span>
