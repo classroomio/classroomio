@@ -4,9 +4,10 @@
   import Label from './Label.svelte';
   import Avatar from './Avatar.svelte';
   import type { PollType } from '../types';
+  import { updatePollStatus } from '../service';
 
   export let poll: PollType;
-  export let onSelect: (a: string | number) => void;
+  export let onSelect: (a: string) => void;
   export let handlePollDelete = () => {};
   export let currentUserId: number | string;
 
@@ -15,12 +16,6 @@
   let isAuthor = false;
   let totalVotes = 0;
   let hasUserVoted = false;
-
-  function handleSelect(optionIndex: number) {
-    return () => {
-      onSelect(optionIndex);
-    };
-  }
 
   function getTotalVotes(options: PollType['options']) {
     return options.reduce((acc, cur) => acc + cur.selectedBy.length, 0);
@@ -40,6 +35,15 @@
     return option.selectedBy.find((user) => user.id === currentUserId);
   }
 
+  let prevStatus = poll.status;
+  function onStatusChange(status: string) {
+    if (status === prevStatus || !status) return;
+
+    updatePollStatus(poll.id, status);
+    prevStatus = status;
+  }
+
+  $: onStatusChange(poll.status);
   $: isAuthor = currentUserId === poll.author.id;
   $: totalVotes = getTotalVotes(poll.options);
   $: {
@@ -84,9 +88,14 @@
         <div class="flex mb-3 justify-end items-center">
           <label class="mr-2 font-bold" for="user-select">Status:</label>
 
-          <select name="users" id="user-select" bind:value={poll.status}>
+          <select
+            name="users"
+            id="user-select"
+            class="dark:text-white dark:bg-black"
+            bind:value={poll.status}
+          >
             <option value="draft">Draft</option>
-            <option value="Public">Public</option>
+            <option value="public">Public</option>
           </select>
         </div>
       {/if}
@@ -142,8 +151,8 @@
           class="bg-white dark:bg-black rounded-md border-2 border-gray-500 h-[50px] {didUserSelect(
             option
           ) &&
-            'focus:border-primary-700 border-primary-700'} text-black p-2 w-full mb-3 text-left relative"
-          on:click={handleSelect(index)}
+            'focus:border-primary-700 border-primary-700'} text-black dark:text-white p-2 w-full mb-3 text-left relative"
+          on:click={() => onSelect(option.id)}
         >
           {#if hasUserVoted}
             <span
@@ -153,7 +162,11 @@
               style="width: {calculatePercent(poll.options, option)}%;"
             />
           {/if}
-          <p class="absolute top-3 text-black left-2">
+          <p
+            class="absolute top-3 {didUserSelect(option)
+              ? 'text-white'
+              : 'dark:text-white text-black'} left-2"
+          >
             {option.label}
             ({calculatePercent(poll.options, option)}%)
           </p>

@@ -1,7 +1,5 @@
 <script lang="ts">
   import Chip from '$lib/components/Chip/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import RoleBaseSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import { Add } from 'carbon-icons-svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';

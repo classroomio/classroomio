@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import hotkeys from 'hotkeys-js';
   import { fade } from 'svelte/transition';
   import SendAlt from 'carbon-icons-svelte/lib/SendAlt.svelte';
   import ChartPie from 'carbon-icons-svelte/lib/ChartPie.svelte';
@@ -56,24 +55,6 @@
 
   onMount(() => {
     updateTopPadding($apps.isStudent);
-
-    hotkeys('A+1,A+2', function (event, handler) {
-      event.preventDefault();
-      switch (handler.key) {
-        case 'A+1':
-          handleAppClick(APPS_CONSTANTS.APPS.COMMENTS);
-          break;
-        case 'A+2':
-          handleAppClick(APPS_CONSTANTS.APPS.POLL);
-          break;
-        // case 'A+3':
-        //   handleAppClick(APPS_CONSTANTS.APPS.NOTES);
-        //   break;
-        // case 'A+4':
-        //   handleAppClick(APPS_CONSTANTS.APPS.QANDA);
-        //   break;
-      }
-    });
   });
 
   $: updateTopPadding($apps.isStudent);
@@ -89,10 +70,8 @@
     <div class="lg:hidden mb-2">
       <IconButton
         buttonClassName="lg:hidden"
-        toolTipProps={{ title: 'Settings', hotkeys: ['A', '0'] }}
-        onClick={() => {
-          handleAppClick();
-        }}
+        toolTipProps={{ title: 'Settings', hotkeys: [] }}
+        onClick={handleAppClick}
       >
         <Settings size={24} class="carbon-icon dark:text-white lg:hidden" />
       </IconButton>
@@ -100,7 +79,7 @@
 
     <div class="mb-2 relative {getAppClass(APPS_CONSTANTS.APPS.COMMENTS, $apps.selectedApp)}">
       <IconButton
-        toolTipProps={{ title: 'Comments', hotkeys: ['A', '1'] }}
+        toolTipProps={{ title: 'Comments', hotkeys: ['Ctrl/Command', '1'] }}
         value={APPS_CONSTANTS.APPS.COMMENTS}
         onClick={handleAppClick}
         buttonClassName="relative"
@@ -114,7 +93,7 @@
     </div>
     <div class="mb-2 {getAppClass(APPS_CONSTANTS.APPS.POLL, $apps.selectedApp)}">
       <IconButton
-        toolTipProps={{ title: 'Poll', hotkeys: ['A', '2'] }}
+        toolTipProps={{ title: 'Poll', hotkeys: ['Ctrl/Command', '2'] }}
         value={APPS_CONSTANTS.APPS.POLL}
         onClick={handleAppClick}
       >

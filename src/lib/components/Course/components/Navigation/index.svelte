@@ -2,7 +2,6 @@
   import { onDestroy, onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import hotkeys from 'hotkeys-js';
   import { browser } from '$app/environment';
   import LockedIcon from 'carbon-icons-svelte/lib/Locked.svelte';
   import CheckmarkFilled from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
@@ -32,21 +31,20 @@
   let isLessonActive: boolean = false;
   let resize = false;
   let isDragging = false;
-  let startX;
-  let initialWidth;
-  let sidebarRef;
-  let menuContentRef;
+  let startX: number;
+  let initialWidth: number;
+  let sidebarRef: HTMLElement;
+  let menuContentRef: HTMLUListElement;
 
-  const toggleSidebar = () => {
-    if ($isMobile) {
-      $sideBar.hidden = !$sideBar.hidden;
-    }
+  const toggleSidebar = (defaultValue?: boolean) => {
+    $sideBar.hidden = defaultValue ?? !$sideBar.hidden;
   };
+  const toggleSidebarOnMobile = () => $isMobile && toggleSidebar();
 
   function handleMainGroupClick(href: string) {
     return () => {
       goto(href);
-      toggleSidebar();
+      toggleSidebarOnMobile();
     };
   }
 
@@ -57,7 +55,7 @@
     else show = true;
   }
 
-  function handleCursor(event) {
+  function handleCursor(event: MouseEvent) {
     if (!resize && sidebarRef) {
       const isNearLeftBorder = event.clientX - sidebarRef.getBoundingClientRect().left < 8;
       const isNearRightBorder = sidebarRef.getBoundingClientRect().right - event.clientX < 8;
@@ -70,7 +68,7 @@
     }
   }
 
-  function startDragging(event) {
+  function startDragging(event: MouseEvent) {
     if (event.button === 0 && sidebarRef) {
       event.preventDefault();
 
@@ -95,7 +93,7 @@
     resize = false;
   }
 
-  function dragSidebar(event) {
+  function dragSidebar(event: MouseEvent) {
     if (!(window.innerWidth >= 1024)) return;
     if (!isDragging) return;
 
@@ -126,22 +124,7 @@
       document.addEventListener('mousemove', handleCursor);
     }
 
-    if (browser) {
-      if (localStorage.getItem('hideCourseNav')) {
-        show = localStorage.getItem('hideCourseNav') === 'false';
-      }
-    } else {
-      show = true;
-    }
-
-    hotkeys('b', function (event, handler) {
-      event.preventDefault();
-      switch (handler.key) {
-        case 'b':
-          show = !show;
-          break;
-      }
-    });
+    toggleSidebar(false);
   });
 
   onDestroy(() => {
@@ -157,12 +140,6 @@
   });
 
   $: handleMobileChange($isMobile);
-
-  $: {
-    if (browser) {
-      localStorage.setItem('hideCourseNav', `${!show}`);
-    }
-  }
 
   $: isLessonActive = $page.url.pathname.includes('/lessons');
 
@@ -230,6 +207,8 @@
       }
     ];
   }
+
+  $: console.log({ hidden: $sideBar.hidden });
 </script>
 
 <aside
@@ -273,7 +252,7 @@
                   href={isStudent && !item.is_unlocked
                     ? $page.url.pathname
                     : getLessonsRoute($course.id, item.id)}
-                  on:click={toggleSidebar}
+                  on:click={toggleSidebarOnMobile}
                   aria-disabled={!item.is_unlocked}
                 >
                   <div
