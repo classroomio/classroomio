@@ -378,8 +378,8 @@
   </Tabs>
 {:else if !isMaterialsEmpty($lesson.materials)}
   <div class="w-full">
-    {#each componentsToRender as Component, index}
-      <svelte:component this={Component} key={index} />
+    {#each componentsToRender as Component}
+      <svelte:component this={Component} />
     {/each}
   </div>
 {:else}
