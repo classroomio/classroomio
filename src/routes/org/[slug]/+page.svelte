@@ -248,7 +248,7 @@
         class="rounded border border-gray-200 gap-3 flex flex-col md:flex-row items-start px-2 md:px-5 py-5 w-full"
       >
         {#if !$isMobile}
-          <div id="calendar" class="flex justify-center mt-5 w-2/5">
+          <div id="calendar" class="flex justify-center mt-5 w-2/5 min-w-[250px]">
             <InlineCalendar bind:store {theme} />
           </div>
         {:else}
@@ -323,7 +323,7 @@
 
     <!-- Your Activities -->
 
-    <!-- <div class="w-full xl:w-auto container">
+    <!-- <div class="w-full">
       <p class="dark:text-white font-bold mb-7">Your Activities</p>
       <div
         class="rounded border border-gray-200 md:min-w-[450px] activities-box py-4 px-2 md:px-5 w-full"
@@ -397,12 +397,6 @@
   @media (max-width: 640px) {
     :global(span.active-day) {
       font-size: 30px;
-    }
-  }
-
-  @media only screen and (min-width: 1280px) and (max-width: 1360px) {
-    .container {
-      width: 48%;
     }
   }
 </style>
