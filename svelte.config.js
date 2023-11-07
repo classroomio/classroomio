@@ -1,5 +1,5 @@
-import autoAdapter from '@sveltejs/adapter-auto';
 import { vitePreprocess } from '@sveltejs/kit/vite';
+import vercelAdapter from '@sveltejs/adapter-vercel';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -8,7 +8,7 @@ const config = {
   preprocess: [vitePreprocess({})],
 
   kit: {
-    adapter: autoAdapter()
+    adapter: vercelAdapter()
   }
 };
 
