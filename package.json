@@ -20,6 +20,7 @@
     "@sentry/vite-plugin": "^2.6.2",
     "@supabase/supabase-js": "^2.31.0",
     "@sveltejs/adapter-auto": "^2.1.0",
+    "@sveltejs/adapter-vercel": "^3.0.3",
     "@tailwindcss/forms": "^0.5.4",
     "@tinymce/tinymce-svelte": "^1.0.1",
     "@types/pluralize": "0.0.30",
