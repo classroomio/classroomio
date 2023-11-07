@@ -29,5 +29,14 @@ export const snackbar = {
 
       return store;
     });
+  },
+  info(message = 'Update') {
+    snackbarStore.update((store) => {
+      store.open = true;
+      store.message = message;
+      store.severity = SNACKBAR_SEVERITY.INFO;
+
+      return store;
+    });
   }
 };

@@ -23,17 +23,19 @@
   export let helperMessage = '';
   export let autoComplete = true;
   export let onChange = () => {}; // This is to know if element is 'dirty'
-  export let onInputChange = (e) => {};
+  export let onInputChange = () => {};
 
-  let ref;
-  let fieldNode;
+  let ref: HTMLInputElement | undefined = undefined;
+  let fieldNode: HTMLInputElement | undefined = undefined;
   let focusClass = '';
 
-  function typeAction(node) {
-    node.type = type;
+  function typeAction(node: HTMLInputElement | undefined) {
+    if (!node) return;
+
+    node.type = type || 'text';
 
     if (isRequired) {
-      node.required = '';
+      node.required = true;
     }
 
     fieldNode = node;
@@ -45,7 +47,7 @@
   }
 
   onMount(() => {
-    if (autoFocus) {
+    if (autoFocus && ref) {
       ref.focus();
     }
 

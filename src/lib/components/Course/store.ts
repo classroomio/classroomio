@@ -17,6 +17,7 @@ export const defaultCourse: Course = {
   created_at: new Date().toDateString(),
   updated_at: new Date().toDateString(),
   attendance: [],
+  polls: [],
   metadata: {
     requirements: '',
     description: '',
@@ -151,7 +152,8 @@ export async function setCourse(data: Course, setLesson = true) {
         coursesNo: 0,
         description: '',
         imgUrl: ''
-      }
+      },
+      allowNewStudent: false
     };
   }
 

@@ -24,7 +24,10 @@ export function generateQuestion(questions) {
   return generatedQuestions;
 }
 
-export function getIsLessonComplete(completions: LessonCompletion[], profileId: string | null) {
+export function getIsLessonComplete(
+  completions: LessonCompletion[],
+  profileId: string | undefined
+) {
   if (!Array.isArray(completions)) return false;
   return completions.find((c) => {
     return c.is_complete && c.profile_id === profileId;

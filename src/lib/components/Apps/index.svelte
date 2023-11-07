@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import hotkeys from 'hotkeys-js';
   import { fade } from 'svelte/transition';
   import SendAlt from 'carbon-icons-svelte/lib/SendAlt.svelte';
   import ChartPie from 'carbon-icons-svelte/lib/ChartPie.svelte';
@@ -15,6 +14,7 @@
   import Poll from './components/Poll/index.svelte';
   import APPS_CONSTANTS from './constants';
   import { browser } from '$app/environment';
+  import { course } from '$lib/components/Course/store';
   import { lesson } from '$lib/components/Course/components/Lesson/store/lessons';
 
   let appBarRef: HTMLDivElement;
@@ -55,24 +55,6 @@
 
   onMount(() => {
     updateTopPadding($apps.isStudent);
-
-    hotkeys('A+1,A+2', function (event, handler) {
-      event.preventDefault();
-      switch (handler.key) {
-        case 'A+1':
-          handleAppClick(APPS_CONSTANTS.APPS.COMMENTS);
-          break;
-        case 'A+2':
-          handleAppClick(APPS_CONSTANTS.APPS.POLL);
-          break;
-        // case 'A+3':
-        //   handleAppClick(APPS_CONSTANTS.APPS.NOTES);
-        //   break;
-        // case 'A+4':
-        //   handleAppClick(APPS_CONSTANTS.APPS.QANDA);
-        //   break;
-      }
-    });
   });
 
   $: updateTopPadding($apps.isStudent);
@@ -88,10 +70,8 @@
     <div class="lg:hidden mb-2">
       <IconButton
         buttonClassName="lg:hidden"
-        toolTipProps={{ title: 'Settings', hotkeys: ['A', '0'] }}
-        onClick={() => {
-          handleAppClick();
-        }}
+        toolTipProps={{ title: 'Settings', hotkeys: [] }}
+        onClick={handleAppClick}
       >
         <Settings size={24} class="carbon-icon dark:text-white lg:hidden" />
       </IconButton>
@@ -99,24 +79,28 @@
 
     <div class="mb-2 relative {getAppClass(APPS_CONSTANTS.APPS.COMMENTS, $apps.selectedApp)}">
       <IconButton
-        toolTipProps={{ title: 'Comments', hotkeys: ['A', '1'] }}
+        toolTipProps={{ title: 'Comments', hotkeys: ['Ctrl/Command', '1'] }}
         value={APPS_CONSTANTS.APPS.COMMENTS}
         onClick={handleAppClick}
         buttonClassName="relative"
       >
         <Chip
           value={$lesson.totalComments}
-          className="absolute -top-1 right-0 bg-primary-600 text-white"
+          className="absolute -top-1 right-0 bg-gray-100 text-gray-600 dark:bg-neutral-700 dark:text-white"
         />
         <SendAlt size={24} class="carbon-icon dark:text-white" />
       </IconButton>
     </div>
     <div class="mb-2 {getAppClass(APPS_CONSTANTS.APPS.POLL, $apps.selectedApp)}">
       <IconButton
-        toolTipProps={{ title: 'Poll', hotkeys: ['A', '2'] }}
+        toolTipProps={{ title: 'Poll', hotkeys: ['Ctrl/Command', '2'] }}
         value={APPS_CONSTANTS.APPS.POLL}
         onClick={handleAppClick}
       >
+        <Chip
+          value={$course.polls.length}
+          className="absolute -top-1 right-0 bg-gray-100 text-gray-600 dark:bg-neutral-700 dark:text-white"
+        />
         <ChartPie size={24} class="carbon-icon dark:text-white" />
       </IconButton>
     </div>
