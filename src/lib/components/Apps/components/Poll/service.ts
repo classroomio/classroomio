@@ -36,11 +36,12 @@ export async function fetchPolls(courseId: string) {
     `
     )
     .match({ courseId })
+    .order('created_at', { ascending: false })
     .returns<FetchPollsResponse>();
 }
 
 export const updatePollStatus = async (pollId: string, status: PollType['status']) => {
-  const { error } = await supabase.from('apps_poll').insert({ status }).match({ id: pollId });
+  const { error } = await supabase.from('apps_poll').update({ status }).match({ id: pollId });
 
   if (error) {
     console.log(error);
@@ -93,10 +94,17 @@ export function handleVote(pollId: string, groupmemberId: string, author: PollTy
         ..._polls.map((poll) => {
           // Prevent user from voting on their own poll
           // if (poll.author.id === currentGroupMember?.id) return poll;
+
           // Prevent user from voting on a poll that has expired
           if (poll.expiration && new Date(poll.expiration) < new Date()) return poll;
 
           if (poll.id === pollId) {
+            // Prevent user from voting on a poll that the status is not published
+            if (poll.status !== 'published') {
+              snackbar.info('Poll is not published yet');
+              return poll;
+            }
+
             // Prevent user from voting twice
             if (
               poll.options.some((option) => isOptionSelectedByCurrentUser(option, groupmemberId))
@@ -114,6 +122,13 @@ export function handleVote(pollId: string, groupmemberId: string, author: PollTy
 
                 togglePollSubmission(pollId, optionId, groupmemberId, true);
               }
+              // else if (isSelected) {
+              //   // If user has voted on this option, remove their vote
+              //   option.selectedBy = option.selectedBy.filter(
+              //     (gmember) => gmember.id !== groupmemberId
+              //   );
+              // }
+
               return option;
             });
           }

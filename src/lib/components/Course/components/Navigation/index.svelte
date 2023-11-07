@@ -117,7 +117,7 @@
   }
 
   onMount(() => {
-    if (window.innerWidth >= 1024) {
+    if (!$isMobile) {
       sidebarRef.addEventListener('mousedown', startDragging);
       document.addEventListener('mousemove', dragSidebar);
       document.addEventListener('mouseup', stopDragging);
@@ -131,7 +131,7 @@
     if (!browser) {
       return;
     }
-    if (window.innerWidth >= 1024) {
+    if (!$isMobile) {
       sidebarRef.removeEventListener('mousedown', startDragging);
       document.removeEventListener('mousemove', dragSidebar);
       document.removeEventListener('mouseup', stopDragging);
@@ -207,8 +207,6 @@
       }
     ];
   }
-
-  $: console.log({ hidden: $sideBar.hidden });
 </script>
 
 <aside

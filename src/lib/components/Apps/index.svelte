@@ -86,7 +86,7 @@
       >
         <Chip
           value={$lesson.totalComments}
-          className="absolute -top-1 right-0 bg-primary-600 text-white"
+          className="absolute -top-1 right-0 bg-gray-100 text-gray-600 dark:bg-neutral-700 dark:text-white"
         />
         <SendAlt size={24} class="carbon-icon dark:text-white" />
       </IconButton>
@@ -98,8 +98,8 @@
         onClick={handleAppClick}
       >
         <Chip
-          value={$course.appsPollCount?.[0]?.count}
-          className="absolute -top-1 right-0 bg-primary-600 text-white"
+          value={$course.polls.length}
+          className="absolute -top-1 right-0 bg-gray-100 text-gray-600 dark:bg-neutral-700 dark:text-white"
         />
         <ChartPie size={24} class="carbon-icon dark:text-white" />
       </IconButton>

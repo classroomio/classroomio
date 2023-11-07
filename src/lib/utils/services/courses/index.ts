@@ -52,7 +52,7 @@ export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']
         lesson_completion(id, profile_id, is_complete)
       ),
       attendance:group_attendance(*),
-      appsPollCount:apps_poll(count)
+      polls:apps_poll(status)
     `
     )
     .match(match)

@@ -5,7 +5,7 @@
   import Poll from './components/Poll.svelte';
   import Tabs from './components/Tabs.svelte';
   import { polls } from './store';
-  import type { PollType, TabsType } from './types';
+  import type { PollType, TabsType, PollOptionsSubmissionType } from './types';
   import { apps } from '$lib/components/Apps/store';
   import { getSupabase } from '$lib/utils/functions/supabase';
   import { profile } from '$lib/utils/store/user';
@@ -14,7 +14,12 @@
   import { fetchPolls, handleVote } from './service';
   import { getPollsData } from './utils';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
+  import type {
+    RealtimeChannel,
+    RealtimePostgresChangesPayload,
+    PostgrestSingleResponse
+  } from '@supabase/supabase-js';
 
   export let handleClose = () => {};
 
@@ -31,8 +36,15 @@
     fullname: '',
     avatarUrl: ''
   };
+  let pollSubmissionsChannel: RealtimeChannel;
 
   let tabs: TabsType = [];
+  let activePolls: PollType[] = [];
+  let expiredPolls: PollType[] = [];
+
+  function setCoursePolls() {
+    $course.polls = $polls.map((p) => ({ status: p.status }));
+  }
 
   async function createPoll(poll: PollType) {
     if (!currentGroupMember || !$course.id) return;
@@ -85,7 +97,71 @@
       ...$polls
     ];
 
-    $course.appsPollCount = [{ count: $polls.length }];
+    setCoursePolls();
+  }
+
+  // now the most interesting part,
+  // how do I implement real time functionality for polls?
+  // the only thing that is real time is the apps_poll_submission
+  // table, so I will have to listen to changes in that table
+  // and update the polls accordingly.
+
+  async function handleInsert(payload: RealtimePostgresChangesPayload<PollOptionsSubmissionType>) {
+    const newVote = payload.new as PollOptionsSubmissionType;
+
+    const {
+      data,
+      error
+    }: PostgrestSingleResponse<{
+      profile: {
+        username: string;
+        fullname: string;
+        avatar_url: string;
+      };
+    }> = await supabase
+      .from('groupmember')
+      .select('profile:profile_id(username, fullname, avatar_url)')
+      .eq('id', newVote.selected_by_id)
+      .single();
+
+    console.log('newVote => data', data);
+    console.log('newVote => error', error);
+
+    if (error || !data) {
+      return;
+    }
+
+    $polls = $polls.map((poll) => {
+      if (poll.id === newVote.poll_id) {
+        return {
+          ...poll,
+          options: poll.options.map((option) => {
+            if (option.id === newVote.poll_option_id) {
+              if (option.selectedBy.some((s) => s.id === newVote.selected_by_id)) {
+                return option;
+              }
+
+              return {
+                ...option,
+                selectedBy: [
+                  ...option.selectedBy,
+                  {
+                    id: newVote.selected_by_id,
+                    username: data.profile.username,
+                    fullname: data.profile.fullname,
+                    avatarUrl: data.profile.avatar_url
+                  }
+                ]
+              };
+            }
+
+            return option;
+          })
+        };
+      }
+
+      return poll;
+    });
   }
 
   async function handlePollCreate(poll: PollType) {
@@ -106,12 +182,13 @@
 
       $polls = [...$polls.filter((p, i) => p.id !== pollId)];
 
-      $course.appsPollCount = [{ count: $polls.length }];
+      setCoursePolls();
     };
   }
 
   onMount(async () => {
     if (!$course.id) return;
+
     isLoading = true;
     const { data, error } = await fetchPolls($course.id);
 
@@ -122,7 +199,23 @@
     }
 
     polls.set(getPollsData(data, $apps.isStudent));
+
+    setCoursePolls();
+
     isLoading = false;
+
+    pollSubmissionsChannel = supabase
+      .channel('any')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'apps_poll_submission' },
+        handleInsert
+      )
+      .subscribe();
+  });
+
+  onDestroy(() => {
+    supabase.removeChannel(pollSubmissionsChannel);
   });
 
   $: currentGroupMember = $group.people.find((person) => person.profile_id === $profile.id);
@@ -134,20 +227,22 @@
   };
 
   $: {
+    activePolls = $polls.filter(
+      (poll) => new Date(poll.expiration).getTime() >= new Date().getTime()
+    );
+    expiredPolls = $polls.filter(
+      (poll) => new Date(poll.expiration).getTime() <= new Date().getTime()
+    );
     tabs = [
       {
         label: 'Active polls',
         value: 0,
-        number: $polls.filter(
-          (poll) => new Date(poll.expiration).getMilliseconds() <= new Date().getMilliseconds()
-        ).length
+        number: activePolls.length
       },
       {
         label: 'Expired polls',
         value: 1,
-        number: $polls.filter(
-          (poll) => new Date(poll.expiration).getMilliseconds() >= new Date().getMilliseconds()
-        ).length
+        number: expiredPolls.length
       }
     ];
   }
@@ -159,36 +254,27 @@
   </div>
 </PageNav>
 
-<div class="p-2 overlow-y-auto md:min-w-[350px] w-full">
+<div class="p-2 overlow-y-auto md:max-w-[350px] md:min-w-[340px] w-full">
   {#if openCreatePollForm}
     <CreatePollForm
       onSubmit={handlePollCreate}
       onCancel={() => (openCreatePollForm = !openCreatePollForm)}
       bind:isSaving={isCreating}
     />
-  {:else}
+  {:else if currentGroupMember}
     <div>
       <Tabs {tabs} bind:selectedTab onCreate={() => (openCreatePollForm = !openCreatePollForm)} />
 
       {#if isLoading}
         Loading...
       {:else}
-        {#each $polls as poll}
-          {#if selectedTab === tabs[0].value}
-            <Poll
-              bind:poll
-              onSelect={handleVote(poll.id, currentGroupMember?.id || '', author)}
-              handlePollDelete={handlePollDelete(poll.id)}
-              currentUserId={currentGroupMember?.id || ''}
-            />
-          {:else if selectedTab === tabs[1].value}
-            <Poll
-              bind:poll
-              onSelect={handleVote(poll.id, currentGroupMember?.id || '', author)}
-              handlePollDelete={handlePollDelete(poll.id)}
-              currentUserId={currentGroupMember?.id || ''}
-            />
-          {/if}
+        {#each selectedTab === tabs[0].value ? activePolls : expiredPolls as poll}
+          <Poll
+            bind:poll
+            onSelect={handleVote(poll.id, currentGroupMember?.id || '', author)}
+            handlePollDelete={handlePollDelete(poll.id)}
+            bind:currentUserId={currentGroupMember.id}
+          />
         {:else}
           <div
             class="bg-gray-100 dark:bg-neutral-800 border rounded-md h-60 flex items-center justify-center"

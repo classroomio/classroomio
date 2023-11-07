@@ -189,7 +189,7 @@ export interface Course {
     id: number;
   }[];
   lessons?: Lesson[];
-  appsPollCount: { count: number }[];
+  polls: { status: string }[];
 }
 
 export interface Groupmember {

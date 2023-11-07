@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { Moon } from 'svelte-loading-spinners';
   import { browser } from '$app/environment';
   import Navigation from '../Course/components/Navigation/index.svelte';
@@ -36,6 +36,12 @@
     prevCourseId = courseId;
   }
 
+  function filterPollsByStatus(shouldFilter: boolean) {
+    if (!shouldFilter) return;
+
+    $course.polls = $course.polls.filter((poll) => poll.status === 'published');
+  }
+
   $: onCourseIdChange(courseId);
 
   $: {
@@ -44,6 +50,8 @@
     if (user) {
       isStudent = user.role_id === 3;
       $apps.isStudent = isStudent;
+
+      filterPollsByStatus(isStudent);
     }
   }
 </script>

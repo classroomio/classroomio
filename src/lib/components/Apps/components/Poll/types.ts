@@ -30,6 +30,12 @@ export type TabsType = {
   number: number;
 }[];
 
+export type PollOptionsSubmissionType = {
+  poll_id: string;
+  poll_option_id: string;
+  selected_by_id: string;
+};
+
 export type FetchPollsResponse = {
   id: string;
   courseId: string;

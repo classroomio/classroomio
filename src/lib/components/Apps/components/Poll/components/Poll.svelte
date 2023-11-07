@@ -15,7 +15,7 @@
   let selectedOptionToView: { selectedBy: PollType['options'][0]['selectedBy'] } | null;
   let isAuthor = false;
   let totalVotes = 0;
-  let hasUserVoted = false;
+  let isThereAnyVote = false;
 
   function getTotalVotes(options: PollType['options']) {
     return options.reduce((acc, cur) => acc + cur.selectedBy.length, 0);
@@ -31,8 +31,11 @@
     return Math.round((totalVotesOfCurrentOption / totalVoteOfAllOptions) * 100) || 0;
   }
 
-  function didUserSelect(option: { selectedBy: PollType['options'][0]['selectedBy'] }) {
-    return option.selectedBy.find((user) => user.id === currentUserId);
+  function didUserSelect(
+    option: { selectedBy: PollType['options'][0]['selectedBy'] },
+    userId: number | string
+  ) {
+    return option.selectedBy.find((user) => user.id === userId);
   }
 
   let prevStatus = poll.status;
@@ -47,9 +50,7 @@
   $: isAuthor = currentUserId === poll.author.id;
   $: totalVotes = getTotalVotes(poll.options);
   $: {
-    hasUserVoted =
-      poll?.options?.some((option) => option.selectedBy.find((u) => u.id === currentUserId)) ||
-      false;
+    isThereAnyVote = poll?.options?.some((option) => option.selectedBy.length) || false;
   }
 </script>
 
@@ -95,7 +96,7 @@
             bind:value={poll.status}
           >
             <option value="draft">Draft</option>
-            <option value="public">Public</option>
+            <option value="published">Publish</option>
           </select>
         </div>
       {/if}
@@ -148,22 +149,23 @@
     {:else}
       {#each poll.options as option, index}
         <button
-          class="bg-white dark:bg-black rounded-md border-2 border-gray-500 h-[50px] {didUserSelect(
-            option
+          class="bg-white dark:bg-black rounded-md border-2 border-gray-100 h-[50px] {didUserSelect(
+            option,
+            currentUserId
           ) &&
             'focus:border-primary-700 border-primary-700'} text-black dark:text-white p-2 w-full mb-3 text-left relative"
           on:click={() => onSelect(option.id)}
         >
-          {#if hasUserVoted}
+          {#if isThereAnyVote}
             <span
-              class="progress absolute top-0 text-black left-0 {didUserSelect(option)
+              class="progress absolute top-0 text-black left-0 {didUserSelect(option, currentUserId)
                 ? 'bg-primary-700'
                 : 'bg-gray-300'} h-full bg-opacity-25"
               style="width: {calculatePercent(poll.options, option)}%;"
             />
           {/if}
           <p
-            class="absolute top-3 {didUserSelect(option)
+            class="absolute top-3 {didUserSelect(option, currentUserId)
               ? 'text-white'
               : 'dark:text-white text-black'} left-2"
           >
