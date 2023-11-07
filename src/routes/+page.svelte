@@ -7,7 +7,7 @@
   import { getSupabase } from '$lib/utils/functions/supabase';
   import { validateEmail } from '$lib/utils/functions/validateEmail';
 
-  let email;
+  let email = '';
   let isAdding = false;
   let success = false;
 
@@ -42,7 +42,7 @@
     setTimeout(() => {
       isAdding = false;
       success = false;
-      email = null;
+      email = '';
     }, 5000);
   }
 </script>

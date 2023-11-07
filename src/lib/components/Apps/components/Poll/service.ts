@@ -1,87 +1,141 @@
 import { snackbar } from '$lib/components/Snackbar/store';
-import type { PollType } from './types';
+import type { PollType, PollOptionType, FetchPollsResponse } from './types';
 import { getSupabase } from '$lib/utils/functions/supabase';
-import type { GroupPerson } from '$lib/utils/types';
+import { polls } from './store';
 
 const supabase = getSupabase();
 
-export async function createPoll(poll: PollType, groupmember: GroupPerson, courseId: string) {
-  if (!groupmember) return;
-
-  const { data: newPolls, error } = await supabase
-    .from('apps_poll')
-    .insert({
-      question: poll.question,
-      authorId: groupmember.id,
-      isPublic: poll.isPublic,
-      status: poll.question,
-      expiration: poll.expiration,
-      courseId
-    })
-    .select();
-
-  if (!newPolls || error) {
-    snackbar.error('Error creating poll');
-    console.error(error);
-    return;
-  }
-
-  const [newPoll] = newPolls;
-
-  if (!newPoll.id) return;
-  poll = {
-    poll,
-    ...newPoll
-  };
-
-  poll.options = await Promise.all(
-    poll.options.map(async (option) => {
-      const { data: newPollOptions, error: newPollOptionsError } = await supabase
-        .from('apps_poll_option')
-        .insert({
-          poll_id: newPoll.id,
-          label: option.label
-        })
-        .select();
-
-      if (!newPollOptions || newPollOptionsError) {
-        return option;
-      }
-
-      const [newPollOption] = newPollOptions;
-      option.id = newPollOption.id;
-
-      return option;
-    })
-  );
-
-  return poll;
-}
-
 export async function fetchPolls(courseId: string) {
-  const {} = await supabase
-    .from('app_poll')
+  return await supabase
+    .from('apps_poll')
     .select(
       `
-      id,
-      question,
-      isPublic,
-      status,
-      expiration
-      groupmember:authorId(
-        profile!inner(
-          id,
+      *,
+      created_at,
+      author:groupmember(
+        profile(
+          username,
           fullname,
           avatar_url
         )
-      )
-      apps_poll_option!inner(
+      ),
+      options: apps_poll_option (
         id,
         label,
+        submissions:apps_poll_submission(
+          selectedBy:groupmember(
+            id,
+            profile(
+              username,
+              fullname,
+              avatar_url
+            )
+          )
+        )
       )
     `
     )
-    .match({
-      courseId
+    .match({ courseId })
+    .order('created_at', { ascending: false })
+    .returns<FetchPollsResponse>();
+}
+
+export const updatePollStatus = async (pollId: string, status: PollType['status']) => {
+  const { error } = await supabase.from('apps_poll').update({ status }).match({ id: pollId });
+
+  if (error) {
+    console.log(error);
+    snackbar.error('An error occurred while updating poll status');
+    return;
+  }
+};
+
+export const togglePollSubmission = async (
+  pollId: PollType['id'],
+  pollOptionId: PollOptionType['id'],
+  groupmemberId: string,
+  add: boolean
+) => {
+  if (add) {
+    const { error } = await supabase.from('apps_poll_submission').insert({
+      poll_id: pollId,
+      poll_option_id: pollOptionId,
+      selected_by_id: groupmemberId
     });
+    if (error) {
+      console.log(error);
+      snackbar.error('An error occurred while submitting poll');
+      return;
+    }
+  } else {
+    const { error } = await supabase.from('apps_poll_submission').delete().match({
+      poll_id: pollId,
+      poll_option_id: pollOptionId,
+      selected_by_id: groupmemberId
+    });
+
+    if (error) {
+      console.log(error);
+      snackbar.error('An error occurred while submitting poll');
+      return;
+    }
+  }
+};
+
+function isOptionSelectedByCurrentUser(option: PollOptionType, groupmemberId: string) {
+  return option.selectedBy.some((gmember) => gmember.id === groupmemberId);
+}
+
+export function handleVote(pollId: string, groupmemberId: string, author: PollType['author']) {
+  return (optionId: string) => {
+    // we have the pollId and the optionId
+    polls.update((_polls) => {
+      return [
+        ..._polls.map((poll) => {
+          // Prevent user from voting on their own poll
+          // if (poll.author.id === currentGroupMember?.id) return poll;
+
+          // Prevent user from voting on a poll that has expired
+          if (poll.expiration && new Date(poll.expiration) < new Date()) return poll;
+
+          if (poll.id === pollId) {
+            // Prevent user from voting on a poll that the status is not published
+            if (poll.status !== 'published') {
+              snackbar.info('Poll is not published yet');
+              return poll;
+            }
+
+            // Prevent user from voting twice
+            if (
+              poll.options.some((option) => isOptionSelectedByCurrentUser(option, groupmemberId))
+            ) {
+              snackbar.info('You can only vote once');
+              return poll;
+            }
+
+            poll.options = poll.options.map((option) => {
+              const isSelected = isOptionSelectedByCurrentUser(option, groupmemberId);
+
+              // If user has not voted on this option, add their vote
+              if (option.id === optionId && !isSelected) {
+                option.selectedBy = [...option.selectedBy, author];
+
+                togglePollSubmission(pollId, optionId, groupmemberId, true);
+              }
+              // else if (isSelected) {
+              //   // If user has voted on this option, remove their vote
+              //   option.selectedBy = option.selectedBy.filter(
+              //     (gmember) => gmember.id !== groupmemberId
+              //   );
+              // }
+
+              return option;
+            });
+          }
+
+          return poll;
+        })
+      ];
+    });
+  };
 }

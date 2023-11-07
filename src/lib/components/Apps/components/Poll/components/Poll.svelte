@@ -1,48 +1,56 @@
-<script>
+<script lang="ts">
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import Label from './Label.svelte';
   import Avatar from './Avatar.svelte';
+  import type { PollType } from '../types';
+  import { updatePollStatus } from '../service';
 
-  export let poll = {};
-  export let onSelect = () => {};
+  export let poll: PollType;
+  export let onSelect: (a: string) => void;
   export let handlePollDelete = () => {};
-  export let currentUserId;
+  export let currentUserId: number | string;
+
   let viewResult = false;
-  let selectedOptionToView;
+  let selectedOptionToView: { selectedBy: PollType['options'][0]['selectedBy'] } | null;
   let isAuthor = false;
   let totalVotes = 0;
-  let hasUserVoted = false;
+  let isThereAnyVote = false;
 
-  function handleSelect(optionIndex) {
-    return () => {
-      onSelect(optionIndex);
-    };
-  }
-
-  function getSelectedUsers(users) {
-    return users.map((o) => o.label).join(', ');
-  }
-
-  function getTotalVotes(options) {
+  function getTotalVotes(options: PollType['options']) {
     return options.reduce((acc, cur) => acc + cur.selectedBy.length, 0);
   }
 
-  function calculatePercent(options, currentOption) {
+  function calculatePercent(
+    options: PollType['options'],
+    currentOption: { selectedBy: string | PollType['options'][0]['selectedBy'] }
+  ) {
     const totalVoteOfAllOptions = getTotalVotes(options);
     const totalVotesOfCurrentOption = currentOption.selectedBy.length;
 
     return Math.round((totalVotesOfCurrentOption / totalVoteOfAllOptions) * 100) || 0;
   }
 
-  function didUserSelect(option) {
-    return option.selectedBy.find((user) => user.value === currentUserId);
+  function didUserSelect(
+    option: { selectedBy: PollType['options'][0]['selectedBy'] },
+    userId: number | string
+  ) {
+    return option.selectedBy.find((user) => user.id === userId);
   }
 
-  $: isAuthor = currentUserId === poll.author.value;
+  let prevStatus = poll.status;
+  function onStatusChange(status: string) {
+    if (status === prevStatus || !status) return;
+
+    updatePollStatus(poll.id, status);
+    prevStatus = status;
+  }
+
+  $: onStatusChange(poll.status);
+  $: isAuthor = currentUserId === poll.author.id;
   $: totalVotes = getTotalVotes(poll.options);
   $: {
-    hasUserVoted = poll.options.some((option) =>
-      option.selectedBy.find((u) => u.value === currentUserId)
-    );
+    isThereAnyVote = poll?.options?.some((option) => option.selectedBy.length) || false;
   }
 </script>
 
@@ -59,9 +67,9 @@
       </div>
       {#each selectedOptionToView.selectedBy as user}
         <div class="flex items-center mb-2">
-          <Avatar src={user.avatar} name={user.label} className="mr-2" />
+          <Avatar src={user.avatarUrl} name={user.username} className="mr-2" />
           <p class="dark:text-white">
-            {user.label}
+            {user.fullname}
           </p>
         </div>
       {/each}
@@ -73,11 +81,7 @@
           {poll.question}
         </h3>
         <p class="dark:text-white text-sm italic">
-          Created by <a
-            class="text-primary-500"
-            href="https://twitter.com/rotimi_best"
-            target="_blank">@{poll.author.label}</a
-          >
+          Created by <span class="text-primary-500">@{poll.author.username}</span>
         </p>
       </div>
 
@@ -85,9 +89,14 @@
         <div class="flex mb-3 justify-end items-center">
           <label class="mr-2 font-bold" for="user-select">Status:</label>
 
-          <select name="users" id="user-select" bind:value={poll.status}>
+          <select
+            name="users"
+            id="user-select"
+            class="dark:text-white dark:bg-black"
+            bind:value={poll.status}
+          >
             <option value="draft">Draft</option>
-            <option value="Public">Public</option>
+            <option value="published">Publish</option>
           </select>
         </div>
       {/if}
@@ -132,7 +141,7 @@
 
           <div class="flex items-center">
             {#each option.selectedBy.slice(0, 3) as user}
-              <Avatar src={user.avatar} name={user.label} className="mr-2" />
+              <Avatar src={user.avatarUrl} name={user.username} className="mr-2" />
             {/each}
           </div>
         </div>
@@ -140,21 +149,26 @@
     {:else}
       {#each poll.options as option, index}
         <button
-          class="bg-white dark:bg-black rounded-md border-2 border-gray-500 h-[50px] {didUserSelect(
-            option
+          class="bg-white dark:bg-black rounded-md border-2 border-gray-100 h-[50px] {didUserSelect(
+            option,
+            currentUserId
           ) &&
-            'focus:border-primary-700 border-primary-700'} text-black p-2 w-full mb-3 text-left relative"
-          on:click={handleSelect(index)}
+            'focus:border-primary-700 border-primary-700'} text-black dark:text-white p-2 w-full mb-3 text-left relative"
+          on:click={() => onSelect(option.id)}
         >
-          {#if hasUserVoted}
+          {#if isThereAnyVote}
             <span
-              class="progress absolute top-0 text-black left-0 {didUserSelect(option)
+              class="progress absolute top-0 text-black left-0 {didUserSelect(option, currentUserId)
                 ? 'bg-primary-700'
                 : 'bg-gray-300'} h-full bg-opacity-25"
               style="width: {calculatePercent(poll.options, option)}%;"
             />
           {/if}
-          <p class="absolute top-3 text-black left-2">
+          <p
+            class="absolute top-3 {didUserSelect(option, currentUserId)
+              ? 'text-white'
+              : 'dark:text-white text-black'} left-2"
+          >
             {option.label}
             ({calculatePercent(poll.options, option)}%)
           </p>
@@ -172,20 +186,12 @@
     {/if}
 
     {#if isAuthor}
-      <div class="w-full text-center mt-3">
-        <button
-          class="px-5 py-3 bg-primary-700 text-white"
-          on:click={() => (viewResult = !viewResult)}
-        >
-          {#if viewResult}
-            Back to poll
-          {:else}
-            View results
-          {/if}
-        </button>
-        <button class="px-5 py-3 bg-red-500 text-white" on:click={handlePollDelete}>
-          Delete
-        </button>
+      <div class="w-full flex items-center mt-3">
+        <PrimaryButton
+          label={viewResult ? 'Back' : 'Result'}
+          onClick={() => (viewResult = !viewResult)}
+        />
+        <PrimaryButton label="Delete" variant={VARIANTS.TEXT_DANGER} onClick={handlePollDelete} />
       </div>
     {/if}
   {/if}

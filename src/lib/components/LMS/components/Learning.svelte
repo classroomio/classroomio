@@ -14,17 +14,17 @@
 <section class="h-full">
   <p class="text-base font-semibold text-[#040F2D] pb-3 dark:text-white">Currently Learning</p>
   <div
-    class="flex items-center flex-col border border-[#EAEAEA] dark:bg-neutral-800 gap-2 rounded w-full md:h-[40vh] p-3"
+    class="flex items-center flex-col border border-[#EAEAEA] dark:bg-neutral-800 gap-2 rounded w-full lg:h-[40vh] p-3"
   >
     {#if $coursesInProgress.length > 0}
       <div class="w-full h-full flex flex-col justify-start overflow-y-auto">
         {#each $coursesInProgress as course}
           <div class="p-5">
-            <span class="flex flex-col md:flex-row gap-3 items-start pb-5">
+            <span class="flex flex-col lg:flex-row gap-3 items-start pb-5">
               <img
                 src={course.logo || '/images/classroomio-course-img-template.jpg'}
                 alt="course"
-                class="hidden md:block md:w-[60px] md:h-[60px]"
+                class="hidden lg:block lg:w-[60px] lg:h-[60px]"
               />
               <div class="w-full">
                 <p class="text-base font-semibold dark:text-white">{course.title}</p>
