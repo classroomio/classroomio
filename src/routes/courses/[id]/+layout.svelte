@@ -31,6 +31,8 @@
       // Prevent default behavior
       event.preventDefault();
 
+      console.log({ handlerKey: handler.key });
+
       switch (handler.key) {
         case 'ctrl+b':
         case 'command+b':
