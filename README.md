@@ -6,6 +6,8 @@
 
 ## Installation
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/629e2bb8994345729513c4d69ccbe3d5)](https://app.codacy.com/gh/rotimi-best/classroomio?utm_source=github.com&utm_medium=referral&utm_content=rotimi-best/classroomio&utm_campaign=Badge_Grade)
+
 ```js
 npm i --legacy-peer-deps --registry=https://registry.npmjs.org
 ```
