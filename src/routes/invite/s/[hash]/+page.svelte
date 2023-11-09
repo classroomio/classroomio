@@ -15,7 +15,7 @@
     NOTIFICATION_NAME
   } from '$lib/utils/services/notification/notification';
   import { snackbar } from '$lib/components/Snackbar/store.js';
-  import { capturePosthogEvent } from '$lib/utils/services/posthog/index.js';
+  import { capturePosthogEvent } from '$lib/utils/services/posthog';
 
   export let data;
 
