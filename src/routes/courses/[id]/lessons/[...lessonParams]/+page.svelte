@@ -43,6 +43,7 @@
   let isLoading = false;
   let isSaving = false;
   let isStudent = true;
+  let isLessonComplete = false;
 
   function getLessonOrder(id: string) {
     const index = $lessons.findIndex((lesson) => lesson.id === id);
@@ -211,6 +212,8 @@
     mode = MODES.view;
     fetchReqData(data.lessonId, data.isMaterialsTabActive);
   }
+
+  $: isLessonComplete = getIsLessonComplete($lesson.lesson_completion, $profile.id);
 </script>
 
 <CourseContainer
@@ -294,6 +297,22 @@
       className="overflow-x-hidden"
     >
       <Materials lessonId={data.lessonId} {mode} {prevMode} {toggleMode} bind:isSaving />
+      <div class="w-full hidden lg:flex flex-row-reverse mt-10">
+        <PrimaryButton
+          onClick={() => markLessonComplete(data.lessonId)}
+          isLoading={isMarkingComplete}
+          isDisabled={isMarkingComplete}
+          variant={VARIANTS.OUTLINED}
+          className="mt-10"
+        >
+          {#if isLessonComplete}
+            <CheckmarkFilledIcon size={24} class="carbon-icon text-primary-600 mr-2" />
+          {:else}
+            <CheckmarkOutlineIcon size={24} class="carbon-icon mr-2" />
+          {/if}
+          Mark as {isLessonComplete ? 'Incomplete' : 'Complete'}
+        </PrimaryButton>
+      </div>
     </PageBody>
   {/if}
 
@@ -330,7 +349,7 @@
         on:click={() => markLessonComplete(data.lessonId)}
         disabled={isMarkingComplete}
       >
-        {#if getIsLessonComplete($lesson.lesson_completion, $profile.id)}
+        {#if isLessonComplete}
           <CheckmarkFilledIcon size={24} class="carbon-icon text-primary-600" />
         {:else}
           <CheckmarkOutlineIcon size={24} class="carbon-icon" />
