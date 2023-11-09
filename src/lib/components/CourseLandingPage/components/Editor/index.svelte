@@ -120,6 +120,7 @@
       attendance: undefined,
       group: undefined,
       lessons: undefined,
+      polls: undefined,
       slug: course.slug
     });
     loading = false;

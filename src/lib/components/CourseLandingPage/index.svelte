@@ -22,6 +22,7 @@
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import { calDateDiff } from '$lib/utils/functions/date';
+  import { currentOrg } from '$lib/utils/store/org';
 
   export let editMode = false;
   export let courseData: Course;
@@ -95,7 +96,7 @@
 </script>
 
 <svelte:head>
-  <title>{get(courseData, 'title', '')}</title>
+  <title>{editMode ? '[app] - ' : ''}{get(courseData, 'title', '')}</title>
   <meta name="description" content={get(courseData, 'description', '')} />
   <meta name="theme-color" content="#ffffff" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -421,7 +422,7 @@
             <img
               alt="Author Avatar"
               class="block rounded-full h-20 w-20 mr-3"
-              src={get(instructor, 'imgUrl', '')}
+              src={get(instructor, 'imgUrl', $currentOrg.avatar_url)}
             />
             <div>
               <p class="dark:text-white text-md font-light">

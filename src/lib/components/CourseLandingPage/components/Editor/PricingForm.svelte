@@ -14,8 +14,8 @@
 
   let discount = 0;
   let paymentLink = '';
-  let showDiscount = false;
-  let giftToggled = false;
+  let showDiscount: boolean | undefined = undefined;
+  let giftToggled: boolean | undefined = undefined;
 
   let hasBeenSet = false;
 
@@ -30,7 +30,7 @@
     giftToggled = get(course, 'metadata.reward.show', false);
   }
 
-  function setter(value: string | number | boolean, setterKey: string) {
+  function setter(value: string | number | boolean | undefined, setterKey: string) {
     if (typeof value !== 'boolean' && !value) return;
 
     const _course = cloneDeep(course);
