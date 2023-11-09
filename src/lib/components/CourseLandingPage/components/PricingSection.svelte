@@ -9,6 +9,7 @@
   import PaymentModal from './PaymentModal.svelte';
   import type { Course } from '$lib/utils/types';
   import { ROLE } from '$lib/utils/constants/roles';
+  import { capturePosthogEvent } from '$lib/utils/services/posthog';
 
   export let className = '';
   export let editMode = false;
@@ -31,6 +32,12 @@
   function handleJoinCourse() {
     if (editMode) return;
 
+    capturePosthogEvent('join_course', {
+      course_id: courseData.id,
+      course_title: courseData.title,
+      course_cost: courseData.cost,
+      course_free: isFree
+    });
     if (isFree) {
       const link = getStudentInviteLink(courseData, $currentOrg.siteName);
       goto(link);
