@@ -4,6 +4,8 @@
   <p align="center">The Open Source Teaching Platform for Bootcamps</p>
 </a>
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/629e2bb8994345729513c4d69ccbe3d5)](https://app.codacy.com/gh/rotimi-best/classroomio?utm_source=github.com&utm_medium=referral&utm_content=rotimi-best/classroomio&utm_campaign=Badge_Grade)
+
 ## Installation
 
 ```js
