@@ -156,6 +156,7 @@
       };
 
       sendEmail(submissionIdData[itemToWithNewStatus.id]);
+
       updateSubmission({
         id: itemToWithNewStatus.id,
         status_id: itemToWithNewStatus.statusId

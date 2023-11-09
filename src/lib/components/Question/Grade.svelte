@@ -5,7 +5,7 @@
   export let grade: number | undefined;
 </script>
 
-{#if typeof grade === 'number'}
+{#if typeof grade !== 'undefined'}
   <div class="flex items-center">
     <TextField
       placeholder="Points"

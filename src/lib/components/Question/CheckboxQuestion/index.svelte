@@ -72,7 +72,7 @@
         </span>
       </svelte:fragment>
     </HtmlRender>
-    <Grade {gradeMax} {grade} {disableGrading} />
+    <Grade {gradeMax} bind:grade {disableGrading} />
   </div>
 
   {#if code}
