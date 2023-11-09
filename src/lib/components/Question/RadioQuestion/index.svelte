@@ -66,15 +66,13 @@
   <div class="flex items-center justify-between">
     <HtmlRender className="mt-4">
       <svelte:fragment slot="content">
-        <span
-          class="dark:text-white flex gap-1 {labelClassName} {typeof grade === 'number' && 'w-3/4'}"
-        >
+        <span class="dark:text-white flex items-center gap-1 {labelClassName}">
           <h3>{index}</h3>
           <h3>{title}</h3>
         </span>
       </svelte:fragment>
     </HtmlRender>
-    <Grade {gradeMax} {grade} {disableGrading} />
+    <Grade {gradeMax} bind:grade {disableGrading} />
   </div>
 
   {#if code}
