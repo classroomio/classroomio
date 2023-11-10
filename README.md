@@ -58,12 +58,12 @@ Here is what you need to be able to run Cal.com.
 - NPM
 
 
-## Other Repos
+## 😍 More setup guides coming soon
+
+## Useful Repos
 
 You can find other repos related to classroomio here:
 
 - Help Docs: https://github.com/rotimi-best/docs.classroomio.com
 - ClassroomIO.com: https://github.com/rotimi-best/classroomio.com
 
-
-## 😍 More upcoming updates to the README
