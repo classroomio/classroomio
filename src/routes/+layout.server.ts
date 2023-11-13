@@ -15,7 +15,7 @@ interface LoadOutput {
   org: CurrentOrg;
 }
 
-export const load = async ({ url, cookies }): LoadOutput => {
+export const load = async ({ url, cookies }): Promise<LoadOutput> => {
   // if (url.hostname === 'classroomio.com') {
   //   throw redirect(301, 'https://about.classroomio.com');
   // }

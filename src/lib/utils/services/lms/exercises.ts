@@ -73,6 +73,7 @@ export async function fetchLMSExercises(
         id,
         title,
         order,
+        is_unlocked,
         course!inner (
           id,
           title,
@@ -91,6 +92,7 @@ export async function fetchLMSExercises(
       )
     `
     )
+    .eq('lesson.is_unlocked', true)
     .eq('lesson.course.group.organisation.id', orgId)
     .eq('lesson.course.group.groupmember.profile.id', profileId)
     .eq('submission.groupmember.profile.id', profileId);

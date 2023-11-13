@@ -52,6 +52,7 @@
     exerciseURL: string;
     grade: string;
     lessonNo: string;
+    lessonTitle: string;
     lessonURL: string;
     submissionStatus: number;
     submissionUpdatedAt: string;
@@ -84,6 +85,7 @@
         courseURL,
         exerciseTitle: title,
         exerciseURL,
+        lessonTitle: lesson.title,
         lessonNo: lesson.order < 9 ? '0' + (lesson.order + 1) : `${lesson.order}`,
         lessonURL,
         submissionStatus: submissionItem.status_id,
@@ -154,7 +156,7 @@
                     href={item.lessonURL}
                   >
                     <p class="dark:text-white text-grey text-sm">
-                      #Lesson {item.lessonNo}
+                      Lesson: <span class="italic">{item.lessonTitle}</span>
                     </p>
                   </a>
                   <p class="dark:text-white text-gray-500 text-xs">
