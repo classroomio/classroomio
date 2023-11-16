@@ -4,7 +4,7 @@
   <p align="center">
     The Open Source Teaching Platform for Bootcamps
     <br />
-    <a href="https://classroomio.com">Website</a>  |  <a href="https://classroomio.com/discord">Join Discord community</a>
+    <a href="https://classroomio.com">Website</a>  |  <a href="https://dub.sh/ciodiscord">Join Discord community</a>
   </p>
 </a>
 
@@ -18,7 +18,7 @@ ClassroomIO is a platform for bootcamps, individual educators, and training busi
 
 ### Mission: Provide Students with the best learning experience.
 
-At ClassroomIO, our mission is to provide students with the best possible learning experience. We believe in empowering educators with the tools they need to deliver high-quality education that is accessible, engaging, and effective. 
+At ClassroomIO, our mission is to provide students with the best possible learning experience. We believe in empowering educators with the tools they need to deliver high-quality education that is accessible, engaging, and effective.
 
 ### Key Features
 
@@ -31,6 +31,7 @@ At ClassroomIO, our mission is to provide students with the best possible learni
 7. **🔒 Fully open source:** You can self-hostable the whole stack on your servers.
 
 ### Roadmap Features
+
 1. **Forms:** Instead of using Google Forms to collect vital information from your students, you will be able to create forms directly within the dashboard.
 2. **Course Announcement:** You can make public announcements from the course dashboard to all your students.
 3. **Run Courses on Telegram:** Students can just join a channel on telegram and our bot automatically sends daily lesson content to your students.
@@ -57,7 +58,6 @@ Here is what you need to be able to run Cal.com.
 - Supabase CLI
 - NPM
 
-
 ## 😍 More setup guides coming soon
 
 ## Useful Repos
@@ -66,4 +66,3 @@ You can find other repos related to classroomio here:
 
 - Help Docs: https://github.com/rotimi-best/docs.classroomio.com
 - ClassroomIO.com: https://github.com/rotimi-best/classroomio.com
-
