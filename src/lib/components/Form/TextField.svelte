@@ -5,13 +5,13 @@
 
   export let label = '';
   export let placeholder = '';
-  export let value: string | number | null;
+  export let value: string | number | null = null;
   export let name = '';
   export let onKeyDown = (e) => {};
   export let className = '';
   export let inputClassName = '';
   export let labelClassName = 'font-light';
-  export let bgColor = 'bg-gray-100 focus:bg-primary-50 dark:bg-neutral-800 dark:text-white';
+  export let bgColor = 'bg-gray-100 focus:bg-primary-50 dark:bg-neutral-700 dark:text-white';
   export let type = 'text';
   export let isPassword = false;
   export let autoFocus = false;

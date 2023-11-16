@@ -14,3 +14,5 @@ package-lock.json
 .env.sentry-build-plugin
 
 /_supascripts/
+data.sql
+changes.sql

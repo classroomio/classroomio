@@ -7,6 +7,7 @@
   import { profile } from '$lib/utils/store/user';
   import { snackbar } from '$lib/components/Snackbar/store';
   import LogoutButton from '$lib/components/Buttons/Logout/index.svelte';
+  import generateUUID from '$lib/utils/functions/generateUUID';
 
   let avatar = '';
   let loading = false;
@@ -21,7 +22,7 @@
       };
 
       if (avatar) {
-        const filename = `user/${$profile.username + Date.now()}.webp`;
+        const filename = `user/${generateUUID()}.webp`;
 
         const { data } = await supabase.storage.from('avatars').upload(filename, avatar, {
           cacheControl: '3600',

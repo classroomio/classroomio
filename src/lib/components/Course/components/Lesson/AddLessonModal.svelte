@@ -65,7 +65,7 @@
   >
     <div class="mr-5">
       <TextChip
-        value={getLessonOrder(lesson.id)}
+        value={getLessonOrder(lesson.id || '')}
         size="sm"
         shape="rounded-full"
         className="bg-primary-200 text-primary-600 text-xs"

@@ -1,6 +1,6 @@
-<script>
+<script lang="ts">
   export let className = '';
-  export let value = '';
+  export let value: string | number = '';
   export let size = '';
   export let shape = 'rounded-md';
 </script>

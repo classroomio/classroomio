@@ -15,7 +15,7 @@
   width="w-9/12"
   modalHeading="Welcome"
 >
-  <p class="text-black text-sm md:text-base lg:text-lg">
+  <p class="text-black dark:text-white text-sm md:text-base lg:text-lg">
     We at <a
       href="https://app.classroomio.com/"
       class="text-primary-700 no-underline hover:no-underline">ClassroomIO</a
@@ -26,5 +26,5 @@
     <span class="text-primary-700">Thank you for choosing us;</span> we deeply appreciate it and are
     at your service.
   </p>
-  <img src="/images/welcome-modal-banner.svg" alt="A welcome banner" class="w-full my-6" />
+  <img src="/images/welcome-img.svg" alt="A welcome banner" class="w-full my-6" />
 </Modal>
