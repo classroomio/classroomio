@@ -1,4 +1,5 @@
 <script>
+  import { PUBLIC_SERVER_URL } from '$env/static/public';
   import { course } from '$lib/components/Course/store';
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
@@ -9,7 +10,7 @@
 
   const downLoadCertificate = async () => {
     isLoading = true;
-    const response = await fetch('https://classroomio-server.fly.dev/downloadCertificate', {
+    const response = await fetch(PUBLIC_SERVER_URL + '/downloadCertificate', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -48,6 +49,7 @@
       label="DownLoad Certificate"
       className="rounded-md"
       onClick={downLoadCertificate}
+      isDisabled={!PUBLIC_SERVER_URL}
       {isLoading}
     />
   </div>

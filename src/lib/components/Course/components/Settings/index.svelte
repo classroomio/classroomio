@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { CodeSnippet, Grid, Row, Column, Toggle } from 'carbon-components-svelte';
+  import { PUBLIC_SERVER_URL } from '$env/static/public';
 
   import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
@@ -53,7 +54,7 @@
         slideUrl: lesson.slide_url || '',
         video: lesson.videos || ''
       }));
-      const response = await fetch('https://classroomio-server.fly.dev/downloadCourse', {
+      const response = await fetch(PUBLIC_SERVER_URL + '/downloadCourse', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -291,7 +292,7 @@
         variant={VARIANTS.OUTLINED}
         label="Download"
         onClick={downloadCourse}
-        isDisabled={isLoading}
+        isDisabled={isLoading || !PUBLIC_SERVER_URL}
         {isLoading}
       />
     </Column>

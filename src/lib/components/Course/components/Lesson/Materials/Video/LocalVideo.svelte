@@ -1,5 +1,6 @@
 <script>
   import axios from 'axios';
+  import { PUBLIC_SERVER_URL } from '$env/static/public';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import {
     lesson,
@@ -40,7 +41,7 @@
     try {
       const response = await axios({
         method: 'POST',
-        url: 'https://classroomio-server.fly.dev/uploadVideo?lessonId=' + lessonId,
+        url: PUBLIC_SERVER_URL + '/uploadVideo?lessonId=' + lessonId,
         data: formData,
         maxContentLength: Infinity,
         maxBodyLength: Infinity,
@@ -112,7 +113,7 @@
     type="button"
     on:click={() => (fileInput && !isLoading ? fileInput.click() : null)}
     class="w-full h-full"
-    disabled={isLoading}
+    disabled={isLoading || !PUBLIC_SERVER_URL}
   >
     <form
       class="h-full w-full flex flex-col items-center justify-center border border-primary-300 border-dashed rounded-xl"
