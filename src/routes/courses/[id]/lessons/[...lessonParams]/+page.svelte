@@ -2,7 +2,8 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
-  import { fetchCourse, fetchLesson, updateLessonCompletion } from '$lib/utils/services/courses';
+  import { PUBLIC_SERVER_URL } from '$env/static/public';
+  import { fetchLesson, updateLessonCompletion } from '$lib/utils/services/courses';
   import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
   import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
   import ListChecked from 'carbon-icons-svelte/lib/ListChecked.svelte';
@@ -126,7 +127,7 @@
       const lessonNumber = getLessonOrder(currentLesson.id);
       const slideUrl = $lesson.materials.slide_url || '';
 
-      const response = await fetch('https://classroomio-server.fly.dev/downloadLesson', {
+      const response = await fetch(PUBLIC_SERVER_URL + '/downloadLesson', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -253,7 +254,7 @@
                 : 'hidden'
             } lg:flex items-center`}
           >
-            {#if $course.metadata.lessonDownload}
+            {#if $course.metadata.lessonDownload && !!PUBLIC_SERVER_URL}
               <PrimaryButton
                 className="mb-2 lg:mb-0 mr-2"
                 variant={VARIANTS.OUTLINED}
