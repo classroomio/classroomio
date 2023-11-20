@@ -10,7 +10,7 @@
   // export let maxRows = 3;
   export let className = '';
   export let labelClassName = '';
-  export let bgColor = 'bg-gray-50 focus:bg-primary-50 dark:bg-neutral-800 dark:text-white';
+  export let bgColor = 'bg-gray-50 focus:bg-primary-50 dark:bg-neutral-700 dark:text-white';
   export let helperMessage = '';
   export let errorMessage = '';
   export let isRequired = false;
