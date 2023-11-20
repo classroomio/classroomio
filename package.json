@@ -42,6 +42,7 @@
     "pluralize": "^8.0.0",
     "posthog-js": "^1.87.2",
     "sirv": "^2.0.3",
+    "supabase": "^1.112.0",
     "svelte-email": "^0.0.4",
     "unsplash-js": "^7.0.18",
     "wait-on": "^7.0.1",

@@ -30,6 +30,7 @@
   import TextChip from '$lib/components/Chip/Text.svelte';
   import Avatar from '$lib/components/Apps/components/Poll/components/Avatar.svelte';
   import AddLessonModal from '$lib/components/Course/components/Lesson/AddLessonModal.svelte';
+  import DateField from '$lib/components/Form/Date.svelte';
 
   export let data;
 
@@ -186,16 +187,10 @@
 
                 <div class="flex items-center lg:mb-0">
                   {#if lessonEditing === lesson.id}
-                    <input
-                      type="date"
-                      name="lesson-date-picker"
-                      class="p-2 my-2 rounded-md sm:w-[179px]"
-                      value={formatDate(lesson.lesson_at)}
-                      on:input={(e) => (lesson.lesson_at = e.target.value)}
-                    />
+                    <DateField value={formatDate(lesson.lesson_at)} className="p-2 my-2 rounded-md sm:w-[179px] dark:bg-neutral-800 dark:text-white" label="" placeholder="" onChange={(e) => (lesson.lesson_at = e.target.value)}/>
                   {:else}
                     <div class="flex mb-2">
-                      <Calendar size={20} class="carbon-icon text-gray-400 dark:text-white" />
+                      <Calendar size={20} class="carbon-icon text-gray-400 dark:text-whit" />
                       <p class="dark:text-white text-sm ml-2">
                         {new Date(lesson.lesson_at).toDateString()}
                       </p>
