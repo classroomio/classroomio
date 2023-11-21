@@ -187,10 +187,16 @@
 
                 <div class="flex items-center lg:mb-0">
                   {#if lessonEditing === lesson.id}
-                    <DateField value={formatDate(lesson.lesson_at)} className="p-2 my-2 rounded-md sm:w-[179px] dark:bg-neutral-800 dark:text-white" label="" placeholder="" onChange={(e) => (lesson.lesson_at = e.target.value)}/>
+                    <DateField
+                      value={formatDate(lesson.lesson_at)}
+                      className="p-2 my-2 rounded-md sm:w-[179px] dark:bg-neutral-800 dark:text-white"
+                      label=""
+                      placeholder=""
+                      onChange={(e) => (lesson.lesson_at = e.target.value)}
+                    />
                   {:else}
                     <div class="flex mb-2">
-                      <Calendar size={20} class="carbon-icon text-gray-400 dark:text-whit" />
+                      <Calendar size={20} class="carbon-icon text-gray-400 dark:text-white" />
                       <p class="dark:text-white text-sm ml-2">
                         {new Date(lesson.lesson_at).toDateString()}
                       </p>
