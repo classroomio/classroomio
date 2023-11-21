@@ -190,8 +190,6 @@
                     <DateField
                       value={formatDate(lesson.lesson_at)}
                       className="p-2 my-2 rounded-md sm:w-[179px] dark:bg-neutral-800 dark:text-white"
-                      label=""
-                      placeholder=""
                       onChange={(e) => (lesson.lesson_at = e.target.value)}
                     />
                   {:else}
