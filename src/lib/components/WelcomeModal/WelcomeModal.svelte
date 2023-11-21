@@ -3,9 +3,11 @@
   import { writable } from 'svelte/store';
   import { onMount, onDestroy } from 'svelte';
   import { welcomeModalStore } from './store';
+  import { goto } from '$app/navigation';
 
   const closeModal = () => {
     $welcomeModalStore.open = false;
+    return goto('/org/org_slug_name/courses?create=true');
   };
 </script>
 
