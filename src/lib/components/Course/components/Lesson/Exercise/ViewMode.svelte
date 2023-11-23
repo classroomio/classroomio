@@ -57,7 +57,7 @@
     });
     if (!student || !teacherFullname || !teacherEmail) return;
 
-    const baseUrl = `https://app.classroomio.com/courses/${$course.id}`;
+    const baseUrl = `${window.location.origin}/courses/${$course.id}`;
     const exerciseLink = `${baseUrl}/lessons/${$lesson.id}/exercises/${exerciseId}`;
     const submissionLink = `${baseUrl}/submissions`;
     const content = `

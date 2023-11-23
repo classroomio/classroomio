@@ -17,7 +17,6 @@ export const getSupabase = (config?: ConfigType) => {
       anonKey: PUBLIC_SUPABASE_ANON_KEY || ''
     }
   };
-  console.log('supabase config', config);
 
   supabase = createClient(config.supabaseConfig.url, config.supabaseConfig.anonKey);
 

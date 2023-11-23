@@ -77,7 +77,7 @@
       data: { session }
     } = await supabase.auth.getSession();
     const { user: authUser } = session || {};
-    console.log('Get user profile', authUser);
+    console.log('Get user', authUser);
 
     if (!authUser) {
       goto('/login?redirect=/' + path);
@@ -89,6 +89,8 @@
       error,
       status
     } = await supabase.from('profile').select(`*`).eq('id', authUser?.id).single();
+    console.log('Get user', authUser);
+    console.log('Get profile', profileData);
 
     if (error && !profileData && status === 406 && authUser) {
       // User wasn't found, create profile
@@ -181,6 +183,10 @@
       if (typeof orgRes?.currentOrg?.theme === 'string') {
         setTheme(orgRes.currentOrg.theme);
       }
+    }
+
+    if (!profileData) {
+      goto('/login?redirect=/' + path);
     }
   }
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { PUBLIC_IP_REGISTRY_KEY } from '$env/static/public';
   import { goto } from '$app/navigation';
   import TextField from '$lib/components/Form/TextField.svelte';
   import UserProfileIcon from '$lib/components/Icons/UserProfileIcon.svelte';
@@ -81,26 +82,20 @@
   ];
 
   async function setMetaData() {
-    const response = await fetch('https://api.ipregistry.co/?key=tryout');
+    if (!PUBLIC_IP_REGISTRY_KEY) return;
+
+    const response = await fetch(`https://api.ipregistry.co/?key=${PUBLIC_IP_REGISTRY_KEY}`);
     const payload = await response.json();
     fields.metadata = payload;
   }
 
   function setOrgSiteName(orgName: string | undefined, isTouched: boolean) {
     if (!orgName || isTouched) return;
-    let inputElement = event?.target as HTMLInputElement;
-    let value = inputElement.name;
 
-    if (value == 'orgname') {
-      fields.siteName = orgName
-        ?.toLowerCase()
-        ?.replace(/\s+/g, '-')
-        ?.replace(/[^a-zA-Z0-9-]/g, '');
-    } else {
-      if (value == 'sitename') {
-        fields.siteName = inputElement.value;
-      }
-    }
+    fields.siteName = orgName
+      ?.toLowerCase()
+      ?.replace(/\s+/g, '-')
+      ?.replace(/[^a-zA-Z0-9-]/g, '');
   }
 
   const handleSubmit = async () => {
@@ -110,7 +105,7 @@
     errors = onboardingValidation(fields, step);
     console.log('errors', errors);
 
-    if (Object.keys(errors).length) {
+    if (Object.keys(errors).length || !$profile.id) {
       loading = false;
       return;
     }

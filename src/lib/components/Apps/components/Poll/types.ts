@@ -20,6 +20,7 @@ export type PollType = {
     avatarUrl: string;
   };
   status: string;
+  isPublic: boolean;
   expiration: string | Date;
   options: PollOptionType[];
 };

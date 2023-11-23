@@ -30,7 +30,7 @@
     </p>
     <a
       class="bg-primary-700 hover:bg-primary-900 hover:no-underline transition-all py-3 px-9 rounded-xl text-white mt-3"
-      href="mailto:support@classroomio.com">Contact Us</a
+      href="/">Go Home</a
     >
   </div>
 
