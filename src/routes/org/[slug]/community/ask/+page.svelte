@@ -8,6 +8,7 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import generateSlug from '$lib/utils/functions/generateSlug';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
+  import TextField from '$lib/components/Form/TextField.svelte';
 
   let errors = {};
   let fields = {
@@ -64,23 +65,7 @@
   </div>
 
   <div class="mb-3 p-2">
-    <input
-      class="title rounded-lg border border-1 border-gray p-2 w-full dark:text-black focus:outline-none"
-      error="false"
-      autocomplete="off"
-      placeholder="Title"
-      aria-label="Title"
-      aria-describedby="title-input-validation"
-      type="text"
-      name="discussion_title"
-      id="discussion_title"
-      bind:value={fields.title}
-    />
-    {#if errors.title}
-      <p class="dark:text-white text-red-500 text-sm">
-        {errors.title}
-      </p>
-    {/if}
+    <TextField placeholder="Title"/>
   </div>
   <div class="px-2">
     <TextEditor

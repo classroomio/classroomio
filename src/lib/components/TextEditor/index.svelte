@@ -27,6 +27,8 @@
     min_height: height,
     max_height: maxHeight,
     placeholder: placeholder,
+    skin: 'oxide-dark',
+    content_css: 'dark',
     init_instance_callback: function (editor: any) {
       editorWindowRef = editor.iframeElement?.contentWindow;
       editor.on('Change', function () {
