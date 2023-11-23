@@ -4,13 +4,12 @@
   import { onMount, onDestroy } from 'svelte';
   import { welcomeModalStore } from './store';
   import { goto } from '$app/navigation';
+  import { currentOrgPath } from '$lib/utils/store/org';
 
-  const orgSlug = orgData.siteName;
   const closeModal = () => {
     $welcomeModalStore.open = false;
-    goto('/org/${orgSlug}/courses?create=true');
+    goto($currentOrgPath + '/courses?create=true');
   };
-  
 </script>
 
 <Modal
