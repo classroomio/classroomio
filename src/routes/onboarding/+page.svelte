@@ -251,9 +251,6 @@
               className="mb-5 w-full"
               labelClassName="text-lg font-normal"
               errorMessage={errors.orgName}
-              onChange={() => {
-                isSiteNameTouched = true;
-              }}
             />
 
             <!-- Org Site Name -->
@@ -267,6 +264,9 @@
               className="mb-5 w-full"
               labelClassName="text-lg font-normal"
               errorMessage={errors.siteName}
+              onChange={() => {
+                isSiteNameTouched = true;
+              }}
             />
           </div>
         {:else}
