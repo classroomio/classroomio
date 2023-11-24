@@ -2,10 +2,10 @@
   import { course } from '$lib/components/Course/store';
   import { currentOrg } from '$lib/utils/store/org';
 
-  export let studentName;
+  export let studentName = '';
   let borderwidth = 'border-l-8';
   let bordercolor = 'border-primary-800';
-  let logo = './logo-512.png';
+  let logo = '/logo-512.png';
 </script>
 
 <div

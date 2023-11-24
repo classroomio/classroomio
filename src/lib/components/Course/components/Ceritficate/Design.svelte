@@ -55,7 +55,11 @@
         {#each themes as theme}
           <div class="flex mr-3">
             <RadioButton value={theme} />
-            <img src={`/${theme}.png`} alt="themes" class="w-[110px] h-[82px]" />
+            <img
+              src={`/images/certificate_theme_${theme}.png`}
+              alt="themes"
+              class="w-[110px] h-[82px]"
+            />
           </div>
         {/each}
       </RadioButtonGroup>
@@ -77,8 +81,7 @@
         <span class="my-4">
           <p class="dark:text-gray-100 text-xs font-normal mt-4 mb-2">Course Description</p>
           <TextArea
-            maxRows={6}
-            rows="6"
+            rows={6}
             placeholder="a little description about the course"
             bgColor="bg-gray-100"
             bind:value={$course.description}
