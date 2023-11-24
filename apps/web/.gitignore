@@ -1,0 +1,18 @@
+.DS_Store
+/node_modules/
+/src/node_modules/@sapper/
+yarn-error.log
+.svelte-kit/
+.env
+/dist/
+package-lock.json
+
+# Local Netlify folder
+.netlify
+
+# Sentry Auth Token
+.env.sentry-build-plugin
+
+/_supascripts/
+data.sql
+changes.sql
