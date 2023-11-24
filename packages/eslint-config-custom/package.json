@@ -6,6 +6,9 @@
   },
   "author": "Elvis Ndubuisi",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "@vercel/style-guide": "^5.1.0",
     "eslint-config-turbo": "^1.10.16",
