@@ -33,7 +33,7 @@
       preload="auto"
     >
       <source
-        src="https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/landingpage/student-dashboard.mp4"
+        src="./student-dashboard.mp4"
         type="video/mp4"
       />
       <track kind="captions" />

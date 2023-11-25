@@ -71,7 +71,7 @@
       preload="auto"
     >
       <source
-        src="https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/landingpage/dark-light-mode-demo.mp4"
+        src="./dark-light-mode.mp4"
         type="video/mp4"
       />
       <track kind="captions" />
