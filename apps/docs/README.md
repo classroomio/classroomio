@@ -1,23 +1,31 @@
-# Nextra Docs Template 
+# ClassroomIO Documentation
 
-This is a template for creating documentation with [Nextra](https://nextra.site).
+The help docs of classroomio in Next.js live on [https://docs.classroomio.com](https://docs.classroomio.com)
 
-[**Live Demo →**](https://nextra-docs-template.vercel.app)
+## Development
 
-[![](.github/screenshot.png)](https://nextra-docs-template.vercel.app)
+### Local setup
 
-## Quick Start
+1. Clone the repo
 
-Click the button to clone this repository and deploy it on Vercel:
+   ```bash
+   git clone https://github.com/rotimi-best/classroomio.git
+   ```
 
-[![](https://vercel.com/button)](https://vercel.com/new/clone?s=https%3A%2F%2Fgithub.com%2Fshuding%2Fnextra-docs-template&showOptionalTeamCreation=false)
+2. Go to project folder
 
-## Local Development
+   ```bash
+   cd classroomio
+   ```
 
-First, run `pnpm i` to install the dependencies.
+3. Install the required dependencies
 
-Then, run `pnpm dev` to start the development server and visit localhost:3000.
+   ```bash
+   pnpm i
+   ```
 
-## License
+4. Run (in development mode)
 
-This project is licensed under the MIT License.
+   ```bash
+   pnpm dev
+   ```
