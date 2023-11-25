@@ -160,9 +160,9 @@ This repo is a mono repo that consists of 3 projects:
    ```
 
 8. All projects should start running
-   - `classroomio-com`: http://localhost:5173
-   - `dashboard`: http://localhost:5174
-   - `docs`: http://localhost:3000
+   - `classroomio-com`: [http://localhost:5173](http://localhost:5173)
+   - `dashboard`: [http://localhost:5174](http://localhost:5174)
+   - `docs`: [http://localhost:3000](http://localhost:3000)
 
 ## Related Repos
 
