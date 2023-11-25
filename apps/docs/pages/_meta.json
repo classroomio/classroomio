@@ -1,0 +1,11 @@
+{
+  "index": "Introduction",
+  "what-is-classroomio": "What is ClassroomIO?",
+  "getting-started": "Getting Started",
+  "contact": {
+    "title": "Contact ↗",
+    "type": "page",
+    "href": "https://twitter.com/classroomio",
+    "newWindow": true
+  }
+}
