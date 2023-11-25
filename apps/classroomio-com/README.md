@@ -3,7 +3,7 @@
   <h1 align="center">ClassroomIO</h1>
 </a>
 
-The Open Source Teaching Platform for Bootcamps
+The Open Source Teaching Platform for Tech Bootcamps
 
 ## Tools
 
