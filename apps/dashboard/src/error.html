@@ -1,0 +1,33 @@
+<script>
+  import ErrorIcon from '$lib/components/Icons/ErrorIcon.svelte';
+</script>
+
+<div
+  class="error-container m-auto flex flex-col-reverse lg:flex-row md:flex-col-reverse items-center justify-center h-screen w-screen py-10 dark:bg-black"
+>
+  <div class="md:w-full p-2 lg:w-2/4">
+    <h2 class="w-full text-lg lg:text-3xl font-medium lg:font-normal">
+      Something unexpected occured.
+    </h2>
+    <p class="dark:text-white w-full text-base font-normal my-6 text-gray-600">
+      Don't worry, your learning is safe. It isn't your fault, it is ours. We have gotten the error
+      notification and will push a fix ASAP. In the meantime, take a short break and come back a bit
+      later.
+    </p>
+    <a
+      class="bg-primary-700 hover:bg-primary-900 hover:no-underline transition-all py-3 px-9 rounded-xl text-white mt-3"
+      href="mailto:support@classroomio.com"
+      >Contact Us</a
+    >
+  </div>
+
+  <div class="w-72 lg:w-2/4 flex items-center justify-center">
+    <ErrorIcon />
+  </div>
+</div>
+
+<style>
+  .error-container {
+    max-width: 964px;
+  }
+</style>

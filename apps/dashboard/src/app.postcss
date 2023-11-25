@@ -1,0 +1,638 @@
+/*Write your global styles here, in PostCSS syntax */
+@tailwind base;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/** Global scrollbar styles */
+html {
+  --scrollbarBG: #fff;
+  --thumbBG: #ccc;
+  scroll-behavior: smooth;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    Roboto,
+    Helvetica Neue,
+    Arial,
+    Noto Sans,
+    sans-serif,
+    'Apple Color Emoji',
+    'Segoe UI Emoji',
+    Segoe UI Symbol,
+    'Noto Color Emoji' !important;
+}
+
+#calendar .grid {
+  --sc-theme-calendar-colors-background-highlight: var(--main-primary-color);
+}
+
+html .dark {
+  --scrollbarBG: #1f2937;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--thumbBG) var(--scrollbarBG);
+}
+html .dark {
+  --scrollbarBG: #1f2937;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--scrollbarBG);
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--thumbBG);
+  border-radius: 10px;
+  border: 2px solid var(--scrollbarBG);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: revert;
+  font-weight: revert;
+  margin: 0.8em 0;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+  margin-top: 0px !important;
+  margin-bottom: 16px !important;
+  font-weight: 600 !important;
+  line-height: 1.25 !important;
+}
+
+.prose p {
+  margin-top: 0px !important;
+  margin-bottom: 10px !important;
+}
+
+.dark .prose h1,
+.dark .prose h2,
+.dark .prose h3,
+.dark .prose h4,
+.dark .prose h5,
+.dark .prose h6,
+.dark .prose li,
+.dark .prose strong,
+.dark .prose li::marker,
+.dark .prose p {
+  color: #fff;
+}
+
+code {
+  white-space: pre-wrap;
+}
+
+[aria-current] :global(svg.carbon-icon),
+.active :global(svg.carbon-icon) {
+  fill: var(--main-primary-color);
+}
+
+.prose a {
+  color: var(--main-primary-color);
+}
+
+.success :global(svg.carbon-icon) {
+  fill: green;
+}
+
+:global(svg.carbon-icon.error) {
+  fill: red;
+}
+
+@tailwind components;
+
+@tailwind utilities;
+
+/**
+  Rose Theme
+*/
+.theme-rose .bg-primary-50 {
+  background-color: #fff1f2;
+}
+.theme-rose .text-primary-50 {
+  color: #fff1f2;
+}
+.theme-rose .border-primary-50 {
+  border-color: #fff1f2;
+}
+
+.theme-rose .bg-primary-100 {
+  background-color: #ffe4e7;
+}
+.theme-rose .text-primary-100 {
+  color: #ffe4e7;
+}
+.theme-rose .border-primary-100 {
+  border-color: #ffe4e7;
+}
+
+.theme-rose .bg-primary-200 {
+  background-color: #fecdd4;
+}
+.theme-rose .text-primary-200 {
+  color: #fecdd4;
+}
+.theme-rose .border-primary-200 {
+  border-color: #fecdd4;
+}
+
+.theme-rose .bg-primary-300 {
+  background-color: #fda4b2;
+}
+.theme-rose .text-primary-300 {
+  color: #fda4b2;
+}
+.theme-rose .border-primary-300 {
+  border-color: #fda4b2;
+}
+
+.theme-rose .bg-primary-400 {
+  background-color: #fb7189;
+}
+.theme-rose .text-primary-400 {
+  color: #fb7189;
+}
+.theme-rose .border-primary-400 {
+  border-color: #fb7189;
+}
+
+.theme-rose .bg-primary-500 {
+  background-color: #f43f63;
+}
+.theme-rose .text-primary-500 {
+  color: #f43f63;
+}
+.theme-rose .border-primary-500 {
+  border-color: #f43f63;
+}
+
+.theme-rose .bg-primary-600 {
+  background-color: #e21d4e;
+}
+.theme-rose .text-primary-600 {
+  color: #e21d4e;
+}
+.theme-rose .border-primary-600 {
+  border-color: #e21d4e;
+}
+
+.theme-rose .bg-primary-700 {
+  background-color: #be1241;
+}
+.theme-rose .text-primary-700 {
+  color: #be1241;
+}
+.theme-rose .border-primary-700 {
+  border-color: #be1241;
+}
+
+.theme-rose .bg-primary-800 {
+  background-color: #9f123d;
+}
+.theme-rose .text-primary-800 {
+  color: #9f123d;
+}
+.theme-rose .border-primary-800 {
+  border-color: #9f123d;
+}
+
+.theme-rose .bg-primary-900 {
+  background-color: #88133a;
+}
+.theme-rose .text-primary-900 {
+  color: #88133a;
+}
+.theme-rose .border-primary-900 {
+  border-color: #88133a;
+}
+
+/**
+  Blue Theme
+*/
+.bg-primary-50 {
+  background-color: #eff6ff;
+}
+.text-primary-50 {
+  color: #eff6ff;
+}
+.border-primary-50 {
+  border-color: #eff6ff;
+}
+
+.bg-primary-100 {
+  background-color: #dbeafe;
+}
+.text-primary-100 {
+  color: #dbeafe;
+}
+.border-primary-100 {
+  border-color: #dbeafe;
+}
+
+.bg-primary-200 {
+  background-color: #bfdafe;
+}
+.text-primary-200 {
+  color: #bfdafe;
+}
+.border-primary-200 {
+  border-color: #bfdafe;
+}
+
+.bg-primary-300 {
+  background-color: #92c4fe;
+}
+.text-primary-300 {
+  color: #92c4fe;
+}
+.border-primary-300 {
+  border-color: #92c4fe;
+}
+
+.bg-primary-400 {
+  background-color: #5fa3fb;
+}
+.text-primary-400 {
+  color: #5fa3fb;
+}
+.border-primary-400 {
+  border-color: #5fa3fb;
+}
+
+.bg-primary-500 {
+  background-color: #3a7ff7;
+}
+.text-primary-500 {
+  color: #3a7ff7;
+}
+.border-primary-500 {
+  border-color: #3a7ff7;
+}
+
+.bg-primary-600 {
+  background-color: #2460ec;
+}
+.text-primary-600 {
+  color: #2460ec;
+}
+.border-primary-600 {
+  border-color: #2460ec;
+}
+
+.bg-primary-700 {
+  background-color: #1d4ee2;
+}
+.text-primary-700 {
+  color: #1d4ee2;
+}
+.border-primary-700 {
+  border-color: #1d4ee2;
+}
+
+.bg-primary-800 {
+  background-color: #1d3eb0;
+}
+.text-primary-800 {
+  color: #1d3eb0;
+}
+.border-primary-800 {
+  border-color: #1d3eb0;
+}
+
+.bg-primary-900 {
+  background-color: #1d398b;
+}
+.text-primary-900 {
+  color: #1d398b;
+}
+.border-primary-900 {
+  border-color: #1d398b;
+}
+
+/**
+  Green Theme
+*/
+.theme-green .bg-primary-50 {
+  background-color: #effef0;
+}
+.theme-green .text-primary-50 {
+  color: #effef0;
+}
+.theme-green .border-primary-50 {
+  border-color: #effef0;
+}
+
+.theme-green .bg-primary-100 {
+  background-color: #d9ffdc;
+}
+.theme-green .text-primary-100 {
+  color: #d9ffdc;
+}
+.theme-green .border-primary-100 {
+  border-color: #d9ffdc;
+}
+
+.theme-green .bg-primary-200 {
+  background-color: #b6fcbc;
+}
+.theme-green .text-primary-200 {
+  color: #b6fcbc;
+}
+.theme-green .border-primary-200 {
+  border-color: #b6fcbc;
+}
+
+.theme-green .bg-primary-300 {
+  background-color: #7df88a;
+}
+.theme-green .text-primary-300 {
+  color: #7df88a;
+}
+.theme-green .border-primary-300 {
+  border-color: #7df88a;
+}
+
+.theme-green .bg-primary-400 {
+  background-color: #3deb51;
+}
+.theme-green .text-primary-400 {
+  color: #3deb51;
+}
+.theme-green .border-primary-400 {
+  border-color: #3deb51;
+}
+
+.theme-green .bg-primary-500 {
+  background-color: #12bf26;
+}
+.theme-green .text-primary-500 {
+  color: #12bf26;
+}
+.theme-green .border-primary-500 {
+  border-color: #12bf26;
+}
+
+.theme-green .bg-primary-600 {
+  background-color: #0aaf1d;
+}
+.theme-green .text-primary-600 {
+  color: #0aaf1d;
+}
+.theme-green .border-primary-600 {
+  border-color: #0aaf1d;
+}
+
+.theme-green .bg-primary-700 {
+  background-color: #0c891b;
+}
+.theme-green .text-primary-700 {
+  color: #0c891b;
+}
+.theme-green .border-primary-700 {
+  border-color: #0c891b;
+}
+
+.theme-green .bg-primary-800 {
+  background-color: #0f6c1b;
+}
+.theme-green .text-primary-800 {
+  color: #0f6c1b;
+}
+.theme-green .border-primary-800 {
+  border-color: #0f6c1b;
+}
+
+.theme-green .bg-primary-900 {
+  background-color: #0f581a;
+}
+.theme-green .text-primary-900 {
+  color: #0f581a;
+}
+.theme-green .border-primary-900 {
+  border-color: #0f581a;
+}
+
+/**
+  Orange Theme
+*/
+.theme-orange .bg-primary-50 {
+  background-color: #fff8ec;
+}
+.theme-orange .text-primary-50 {
+  color: #fff8ec;
+}
+.theme-orange .border-primary-50 {
+  border-color: #fff8ec;
+}
+
+.theme-orange .bg-primary-100 {
+  background-color: #fff0d3;
+}
+.theme-orange .text-primary-100 {
+  color: #fff0d3;
+}
+.theme-orange .border-primary-100 {
+  border-color: #fff0d3;
+}
+
+.theme-orange .bg-primary-200 {
+  background-color: #ffdca5;
+}
+.theme-orange .text-primary-200 {
+  color: #ffdca5;
+}
+.theme-orange .border-primary-200 {
+  border-color: #ffdca5;
+}
+
+.theme-orange .bg-primary-300 {
+  background-color: #ffc26d;
+}
+.theme-orange .text-primary-300 {
+  color: #ffc26d;
+}
+.theme-orange .border-primary-300 {
+  border-color: #ffc26d;
+}
+
+.theme-orange .bg-primary-400 {
+  background-color: #ff9d32;
+}
+.theme-orange .text-primary-400 {
+  color: #ff9d32;
+}
+.theme-orange .border-primary-400 {
+  border-color: #ff9d32;
+}
+
+.theme-orange .bg-primary-500 {
+  background-color: #ff7f0a;
+}
+.theme-orange .text-primary-500 {
+  color: #ff7f0a;
+}
+.theme-orange .border-primary-500 {
+  border-color: #ff7f0a;
+}
+
+.theme-orange .bg-primary-600 {
+  background-color: #ff6600;
+}
+.theme-orange .text-primary-600 {
+  color: #ff6600;
+}
+.theme-orange .border-primary-600 {
+  border-color: #ff6600;
+}
+
+.theme-orange .bg-primary-700 {
+  background-color: #cc4902;
+}
+.theme-orange .text-primary-700 {
+  color: #cc4902;
+}
+.theme-orange .border-primary-700 {
+  border-color: #cc4902;
+}
+
+.theme-orange .bg-primary-800 {
+  background-color: #a1390b;
+}
+.theme-orange .text-primary-800 {
+  color: #a1390b;
+}
+.theme-orange .border-primary-800 {
+  border-color: #a1390b;
+}
+
+.theme-orange .bg-primary-900 {
+  background-color: #82310c;
+}
+.theme-orange .text-primary-900 {
+  color: #82310c;
+}
+.theme-orange .border-primary-900 {
+  border-color: #82310c;
+}
+
+/**
+  Violet Theme
+*/
+.theme-violet .bg-primary-50 {
+  background-color: #fff2fe;
+}
+.theme-violet .text-primary-50 {
+  color: #fff2fe;
+}
+.theme-violet .border-primary-50 {
+  border-color: #fff2fe;
+}
+
+.theme-violet .bg-primary-100 {
+  background-color: #ffe3fe;
+}
+.theme-violet .text-primary-100 {
+  color: #ffe3fe;
+}
+.theme-violet .border-primary-100 {
+  border-color: #ffe3fe;
+}
+
+.theme-violet .bg-primary-200 {
+  background-color: #ffc6fe;
+}
+.theme-violet .text-primary-200 {
+  color: #ffc6fe;
+}
+.theme-violet .border-primary-200 {
+  border-color: #ffc6fe;
+}
+
+.theme-violet .bg-primary-300 {
+  background-color: #ff99f7;
+}
+.theme-violet .text-primary-300 {
+  color: #ff99f7;
+}
+.theme-violet .border-primary-300 {
+  border-color: #ff99f7;
+}
+
+.theme-violet .bg-primary-400 {
+  background-color: #ff5df2;
+}
+.theme-violet .text-primary-400 {
+  color: #ff5df2;
+}
+.theme-violet .border-primary-400 {
+  border-color: #ff5df2;
+}
+
+.theme-violet .bg-primary-500 {
+  background-color: #ff21f5;
+}
+.theme-violet .text-primary-500 {
+  color: #ff21f5;
+}
+.theme-violet .border-primary-500 {
+  border-color: #ff21f5;
+}
+
+.theme-violet .bg-primary-600 {
+  background-color: #fb00ff;
+}
+.theme-violet .text-primary-600 {
+  color: #fb00ff;
+}
+.theme-violet .border-primary-600 {
+  border-color: #fb00ff;
+}
+
+.theme-violet .bg-primary-700 {
+  background-color: #cf00ce;
+}
+.theme-violet .text-primary-700 {
+  color: #cf00ce;
+}
+.theme-violet .border-primary-700 {
+  border-color: #cf00ce;
+}
+
+.theme-violet .bg-primary-800 {
+  background-color: #a900a6;
+}
+.theme-violet .text-primary-800 {
+  color: #a900a6;
+}
+.theme-violet .border-primary-800 {
+  border-color: #a900a6;
+}
+
+.theme-violet .bg-primary-900 {
+  background-color: #890684;
+}
+.theme-violet .text-primary-900 {
+  color: #890684;
+}
+.theme-violet .border-primary-900 {
+  border-color: #890684;
+}

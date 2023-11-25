@@ -12,7 +12,7 @@
 
 ## ✨ About ClassroomIO
 
-<img alt="ClassroomIO Courses page" src="https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/classroomio-courses.png" />
+<img alt="ClassroomIO Courses page" src="https://classroomio.com/classroomio-courses.png" />
 
 ClassroomIO is a platform for bootcamps, individual educators, and training businesses that brings teaching and learning into one place while at the same time helping them be 10x more productive. With our platform, anyone can run multiple classes and cohorts all from one UI. The application is mobile-first, which means that students can access your lesson materials from any device.
 
@@ -69,6 +69,14 @@ Here is what you need to be able to run ClassroomIO.com
 - [Docker](https://docs.docker.com/engine/install/)
 - [NPM](https://www.npmjs.com/)
 
+### Project Structure
+
+This repo is a mono repo that consists of 3 projects:
+
+1. `classroomio-com`: The landing page of ClassroomIO hosted [here](https://classroomio.com)
+2. `dashboard`: The web application that runs the learning management system.
+3. `docs`: Official documentation of ClassroomIO hosted [here](https://docs.classroomio.com)
+
 ## Development
 
 ### Setup
@@ -101,6 +109,7 @@ Here is what you need to be able to run ClassroomIO.com
 
 4. Set up your `.env` file
 
+   - Go to `apps/classroomio-com` and `apps/dashboard`
    - Duplicate the `.env.example` file and rename it to `.env`
 
 5. Setup Supabase.
@@ -141,14 +150,19 @@ Here is what you need to be able to run ClassroomIO.com
 6. Install the required dependencies
 
    ```bash
-   npm i
+   pnpm i
    ```
 
 7. Run (in development mode)
 
    ```bash
-   npm run dev
+   pnpm dev
    ```
+
+8. All projects should start running
+   - `classroomio-com`: [http://localhost:5173](http://localhost:5173)
+   - `dashboard`: [http://localhost:5174](http://localhost:5174)
+   - `docs`: [http://localhost:3000](http://localhost:3000)
 
 ## Related Repos
 
