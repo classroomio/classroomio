@@ -1,6 +1,7 @@
 <script>
   import { slide } from 'svelte/transition';
   import ChevronDownIcon from 'carbon-icons-svelte/lib/ChevronDown.svelte';
+  import ArrowUpRight from 'carbon-icons-svelte/lib/ArrowUpRight.svelte';
   import ChevronUpIcon from 'carbon-icons-svelte/lib/ChevronUp.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
@@ -11,6 +12,7 @@
   export let label = '';
   export let isGroupActive = false;
   export let isExpanded = true;
+  export let showLinkIcon = false;
   export let total = 0;
   export let isLoading = true;
   // export let subMenuItems = [];
@@ -52,6 +54,8 @@
             <ChevronDownIcon class="carbon-icon dark:text-white" />
           {/if}
         </IconButton>
+      {:else if showLinkIcon}
+        <ArrowUpRight class="carbon-icon dark:text-white" />
       {/if}
     </button>
     {#if isExpanded}

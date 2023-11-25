@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { Tag, ImageLoader, SkeletonPlaceholder } from 'carbon-components-svelte';
+  import { Tag } from 'carbon-components-svelte';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import Image from './Image.svelte';
 
   export let bannerImage: string | undefined;
   export let id = '';
@@ -27,16 +28,7 @@
 >
   <div class="p-4">
     <div class=" mb-5">
-      <ImageLoader
-        src={bannerImage}
-        alt="Course Logo"
-        class="h-[200px] w-full rounded dark:border dark:border-white"
-      >
-        <svelte:fragment slot="loading">
-          <SkeletonPlaceholder style="width: 100%; height: 200px;" />
-        </svelte:fragment>
-        <svelte:fragment slot="error">An error occurred.</svelte:fragment>
-      </ImageLoader>
+      <Image src={bannerImage} />
     </div>
 
     <h3 class="text-xl dark:text-white title">{title}</h3>

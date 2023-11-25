@@ -1,0 +1,40 @@
+<script lang="ts">
+  import type { WaitlistQuestion } from '$lib/utils/types';
+  import CourseImage from '$lib/components/Courses/components/Card/Image.svelte';
+  import AutoGrowTextField from '$lib/components/Form/AutoGrowTextField.svelte';
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import { course } from '$lib/components/Course/store';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+
+  export let question: WaitlistQuestion;
+
+  let isCompleted = false;
+
+  function handleSubmit() {}
+</script>
+
+<CourseImage src={$course.logo} style="max-width:280px" />
+<AutoGrowTextField
+  placeholder="Enter question"
+  value={question.title}
+  bgColor="bg-white dark:bg-black dark:text-white"
+  inputClassName="text-md my-2"
+  isPreview={true}
+  onInput={(e) => {
+    question.title = e.currentTarget.innerText || '';
+  }}
+/>
+<AutoGrowTextField
+  placeholder="Enter description"
+  value={question.description}
+  bgColor="bg-white dark:bg-black dark:text-white"
+  inputClassName="text-sm italic mb-2"
+  isPreview={true}
+  onInput={(e) => {
+    question.description = e.currentTarget.innerText || '';
+  }}
+/>
+
+<TextField placeholder="name@example.com" isDisabled={true} />
+
+<PrimaryButton label="Submit" onClick={handleStart} className="mt-5" />

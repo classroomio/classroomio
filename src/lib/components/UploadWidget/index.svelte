@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import Tabs from '$lib/components/Tabs/index.svelte';
-  import { getSupabase } from '$lib/utils/functions/supabase';
   import TabContent from '$lib/components/TabContent/index.svelte';
+  import { getSupabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '../Snackbar/store';
   import Modal from '$lib/components/Modal/index.svelte';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';

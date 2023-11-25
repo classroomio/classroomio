@@ -306,6 +306,22 @@ export interface Question {
   exercise?: Exercise;
 }
 
+export interface WaitlistQuestionOption {
+  id: string;
+  label: string;
+  isCorrect: boolean;
+}
+export interface WaitlistQuestion {
+  id: string;
+  no: number;
+  title: string;
+  description: string;
+  type?: number;
+  options?: WaitlistQuestionOption[];
+  isPage?: boolean;
+  isRequired?: boolean;
+}
+
 export interface Submission {
   id: string /* primary key */;
   reviewer_id?: number;

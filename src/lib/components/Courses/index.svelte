@@ -33,7 +33,7 @@
       {#key courseData.id}
         <Card
           id={courseData.id}
-          bannerImage={courseData.logo || '/images/classroomio-course-img-template.jpg'}
+          bannerImage={courseData.logo}
           title={courseData.title}
           description={courseData.description}
           isPublished={courseData.is_published}

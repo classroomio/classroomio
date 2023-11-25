@@ -8,6 +8,7 @@
   import Badge from 'carbon-icons-svelte/lib/Badge.svelte';
   import IbmWatsonKnowledgeCatalog from 'carbon-icons-svelte/lib/IbmWatsonKnowledgeCatalog.svelte';
   import Settings from 'carbon-icons-svelte/lib/Settings.svelte';
+  import AnalyticsCustom from 'carbon-icons-svelte/lib/AnalyticsCustom.svelte';
 
   export let name = '';
 </script>
@@ -28,6 +29,8 @@
   <ApplicationWeb size={20} class="carbon-icon mr-2" />
 {:else if name === 'Certificates'}
   <Badge size={20} class="carbon-icon mr-2" />
+{:else if name === 'Waitlist Form'}
+  <AnalyticsCustom size={20} class="carbon-icon mr-2" />
 {:else if name === 'Settings'}
   <Settings size={20} class="carbon-icon mr-2" />
 {/if}

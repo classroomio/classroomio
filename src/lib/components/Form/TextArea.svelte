@@ -19,9 +19,7 @@
   export let isAIEnabled = false;
   export let initAIPrompt = '';
   export let aiAlignPopover: PopoverProps['align'] = 'left';
-
-  // $: minHeight = `${1 + parseInt(rows, 10) * 1.2}em`;
-  // $: maxHeight = maxRows ? `${1 + maxRows * 1.2}em` : `auto`;
+  export let isPreview = false;
 </script>
 
 <label for="text-field" class="block w-full relative {className}">
@@ -59,7 +57,9 @@
     bind:value
     bind:this={ref}
     required={isRequired}
-    class="form-textarea border-l-0 border-r-0 border-t-0 border-b-2 border-gray-200 focus:border-l-0 focus:border-r-0 rounded-t-md focus:border-t-0 focus:border-b-2 focus:border-primary-600 mt-1 block w-full
+    class="form-textarea border-l-0 border-r-0 border-t-0 {isPreview
+      ? 'border-b-0'
+      : 'border-b-2'} border-gray-200 focus:border-l-0 focus:border-r-0 rounded-t-md focus:border-t-0 focus:border-b-2 focus:border-primary-600 mt-1 block w-full
     {bgColor} {!!errorMessage ? 'border-red-500' : 'border-gray-300'}"
     on:change={onChange}
   />

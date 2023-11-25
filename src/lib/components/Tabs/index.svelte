@@ -18,8 +18,8 @@
       {#if !tab.icon && !tab.badgeValue}
         <button
           class="relative {currentTab === tab.value
-            ? 'text-primary-700'
-            : 'dark:bg-gray-500 dark:text-white'} dark:bg-transparent font-semibold focus:outline-none w-fit mr-4 text-center py-3 px-2"
+            ? 'font-extrabold'
+            : 'dark:bg-gray-500 dark:text-white'} dark:bg-transparent font-normal focus:outline-none w-fit mr-4 text-center py-3 px-2"
           on:click={onChange(tab.value)}
         >
           <div class="flex items-center justify-center w-full text-center">
@@ -35,8 +35,8 @@
       {:else}
         <button
           class="relative {currentTab === tab.value
-            ? 'text-primary-700'
-            : 'dark:bg-gray-500 dark:text-white'} dark:bg-transparent font-semibold focus:outline-none w-24 text-left py-3 mr-8 px-2"
+            ? 'font-extrabold'
+            : 'dark:bg-gray-500 dark:text-white'} dark:bg-transparent font-normal focus:outline-none w-24 text-left py-3 mr-8 px-2"
           on:click={onChange(tab.value)}
         >
           <div class="grid grid-cols-5 md:grid-cols-4 gap-5 md:gap-3 items-center">

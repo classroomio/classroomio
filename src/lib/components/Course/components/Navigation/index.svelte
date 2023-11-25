@@ -24,6 +24,7 @@
     to: string;
     hideSortIcon: boolean;
     isLecture?: boolean;
+    showLinkIcon?: boolean;
     show?: () => boolean;
   }
 
@@ -190,9 +191,18 @@
         hideSortIcon: true
       },
       {
+        label: 'Waitlist Form',
+        to: getNavItemRoute($course.id, 'waitlist'),
+        hideSortIcon: true,
+        show() {
+          return !isStudent;
+        }
+      },
+      {
         label: 'Landing Page',
         to: getNavItemRoute($course.id, 'landingpage'),
         hideSortIcon: true,
+        showLinkIcon: true,
         show() {
           return !isStudent;
         }
@@ -237,6 +247,7 @@
             handleClick={handleMainGroupClick(navItem.to)}
             isGroupActive={(path || $page.url.pathname) === navItem.to}
             isExpanded={isLessonActive}
+            showLinkIcon={navItem.showLinkIcon}
             total={navItem.isLecture ? ($lessons || []).length : 0}
             isLoading={!$course.id}
           >

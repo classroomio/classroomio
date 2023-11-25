@@ -4,7 +4,6 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import PageNav from '$lib/components/PageNav/index.svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import MarkExerciseModal from '$lib/components/Course/components/Lesson/Exercise/MarkExerciseModal.svelte';
   import Chip from '$lib/components/Chip/index.svelte';
   import PageBody from '$lib/components/PageBody/index.svelte';
@@ -335,85 +334,83 @@
   {submissionId}
 />
 
-<RoleBasedSecurity allowedRoles={[1, 2]}>
-  <CourseContainer bind:courseId={data.courseId}>
-    <PageNav title="Submitted Exercises" />
+<CourseContainer bind:courseId={data.courseId}>
+  <PageNav title="Submitted Exercises" />
 
-    <PageBody width="w-full max-w-6xl md:w-11/12 overflow-x-auto">
-      <div class="flex items-center w-full">
-        {#each sections as { id, title, items }, idx (id)}
+  <PageBody width="w-full max-w-6xl md:w-11/12 overflow-x-auto">
+    <div class="flex items-center w-full">
+      {#each sections as { id, title, items }, idx (id)}
+        <div
+          class="section rounded-md bg-gray-100 dark:bg-black border border-gray-50 dark:border-neutral-600 p-3 h-80 mr-3 overflow-hidden"
+          animate:flip={{ duration: flipDurationMs }}
+        >
+          <div class="flex items-center mb-2">
+            <Chip value={items.length} className="bg-set dark:bg-neutral-800" />
+            <p class="dark:text-white ml-2 font-bold">{title}</p>
+          </div>
           <div
-            class="section rounded-md bg-gray-100 dark:bg-black border border-gray-50 dark:border-neutral-600 p-3 h-80 mr-3 overflow-hidden"
-            animate:flip={{ duration: flipDurationMs }}
+            class="content pr-2 overflow-y-auto mb-3"
+            use:dndzone={{
+              items,
+              flipDurationMs,
+              dropTargetStyle: { outline: 'blue' }
+            }}
+            on:consider={handleDndConsiderCards(idx)}
+            on:finalize={handleDndFinalizeCards(idx)}
           >
-            <div class="flex items-center mb-2">
-              <Chip value={items.length} className="bg-set dark:bg-neutral-800" />
-              <p class="dark:text-white ml-2 font-bold">{title}</p>
-            </div>
-            <div
-              class="content pr-2 overflow-y-auto mb-3"
-              use:dndzone={{
-                items,
-                flipDurationMs,
-                dropTargetStyle: { outline: 'blue' }
-              }}
-              on:consider={handleDndConsiderCards(idx)}
-              on:finalize={handleDndFinalizeCards(idx)}
-            >
-              {#each items as item (item.id)}
-                <div
-                  class="{item.isEarly
-                    ? 'border-none'
-                    : 'border border-red-700'} w-full my-2 mx-0 rounded-md bg-white dark:bg-neutral-800 py-3 px-3"
-                  animate:flip={{ duration: flipDurationMs }}
+            {#each items as item (item.id)}
+              <div
+                class="{item.isEarly
+                  ? 'border-none'
+                  : 'border border-red-700'} w-full my-2 mx-0 rounded-md bg-white dark:bg-neutral-800 py-3 px-3"
+                animate:flip={{ duration: flipDurationMs }}
+              >
+                <a
+                  class="flex w-full items-center cursor-pointer text-black mb-2"
+                  href={`${$page.url.pathname}?submissionId=${item.id}`}
                 >
-                  <a
-                    class="flex w-full items-center cursor-pointer text-black mb-2"
-                    href={`${$page.url.pathname}?submissionId=${item.id}`}
-                  >
-                    <img
-                      alt="Student avatar"
-                      class="block rounded-full h-6 w-6"
-                      src={item.student.avatar_url}
-                    />
-                    <p class="dark:text-white ml-2 text-sm">
-                      {item.student.username}
-                    </p>
-                  </a>
-                  <a
-                    class="text-primary-700 text-md font-bold"
-                    href="{$page.url.pathname}?submissionId={item.id}"
-                  >
-                    {item.exercise.title}
-                  </a>
-                  <a
-                    class="flex items-center no-underline hover:underline text-black my-2"
-                    href="{$page.url?.pathname?.replace('submissions', 'lessons')}/{item.lesson
-                      .id}/exercises/{item.exercise.id}"
-                  >
-                    <p class="dark:text-white text-grey text-sm">
-                      #{item.lesson.title}
-                      {`${item.tutor ? 'created by' + item.tutor.name : ''}`}
-                    </p>
-                  </a>
-                  <p class="dark:text-white text-gray-500 text-xs">
-                    {item.submittedAt}
+                  <img
+                    alt="Student avatar"
+                    class="block rounded-full h-6 w-6"
+                    src={item.student.avatar_url}
+                  />
+                  <p class="dark:text-white ml-2 text-sm">
+                    {item.student.username}
                   </p>
-                  <!-- <div class="badge rounded-md px-2 bg-green-500 text-white">
+                </a>
+                <a
+                  class="text-primary-700 text-md font-bold"
+                  href="{$page.url.pathname}?submissionId={item.id}"
+                >
+                  {item.exercise.title}
+                </a>
+                <a
+                  class="flex items-center no-underline hover:underline text-black my-2"
+                  href="{$page.url?.pathname?.replace('submissions', 'lessons')}/{item.lesson
+                    .id}/exercises/{item.exercise.id}"
+                >
+                  <p class="dark:text-white text-grey text-sm">
+                    #{item.lesson.title}
+                    {`${item.tutor ? 'created by' + item.tutor.name : ''}`}
+                  </p>
+                </a>
+                <p class="dark:text-white text-gray-500 text-xs">
+                  {item.submittedAt}
+                </p>
+                <!-- <div class="badge rounded-md px-2 bg-green-500 text-white">
                     early
                   </div>
                   <div class="badge rounded-md px-2 bg-red-600 text-white">
                     late
                   </div> -->
-                </div>
-              {/each}
-            </div>
+              </div>
+            {/each}
           </div>
-        {/each}
-      </div>
-    </PageBody>
-  </CourseContainer>
-</RoleBasedSecurity>
+        </div>
+      {/each}
+    </div>
+  </PageBody>
+</CourseContainer>
 
 <style>
   .section {

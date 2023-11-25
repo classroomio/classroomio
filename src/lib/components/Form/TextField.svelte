@@ -7,7 +7,7 @@
   export let placeholder = '';
   export let value: string | number | null = null;
   export let name = '';
-  export let onKeyDown = (e) => {};
+  export let onKeyDown = (e: Event) => {};
   export let className = '';
   export let inputClassName = '';
   export let labelClassName = 'font-light';
@@ -17,13 +17,14 @@
   export let autoFocus = false;
   export let isRequired = false;
   export let isDisabled = false;
-  export let min = undefined;
-  export let max = undefined;
+  export let min: number | undefined = undefined;
+  export let max: number | undefined = undefined;
   export let errorMessage = '';
   export let helperMessage = '';
   export let autoComplete = true;
-  export let onChange = () => {}; // This is to know if element is 'dirty'
+  export let onChange = (e: Event) => {}; // This is to know if element is 'dirty'
   export let onInputChange = () => {};
+  export let isPreview = false;
 
   let ref: HTMLInputElement | undefined = undefined;
   let fieldNode: HTMLInputElement | undefined = undefined;
@@ -59,7 +60,7 @@
 
 <label class="block relative {className}">
   {#if label}
-    <p for="text-field" class="text-sm dark:text-white text-left m-0 {labelClassName}">
+    <p class="text-sm dark:text-white text-left m-0 {labelClassName}">
       {label}
 
       {#if isRequired}
@@ -69,8 +70,10 @@
   {/if}
   <input
     use:typeAction
-    class="form-input border-l-0 border-r-0 border-t-0 border-b-2 border-gray-200 focus:border-l-0 focus:border-r-0 rounded-t-md focus:border-t-0 focus:border-b-2 {inputClassName} {focusClass} {isDisabled &&
-      'hover:cursor-not-allowed opacity-50'} dark:text-black p-3 mt-1 block w-full {bgColor} {errorMessage
+    class="form-input border-l-0 border-r-0 border-t-0 {isPreview
+      ? 'border-b-0 focus:border-b-0 p-0'
+      : 'border-b-2 focus:border-b-2 p-3'} border-gray-200 focus:border-l-0 focus:border-r-0 rounded-t-md focus:border-t-0 {inputClassName} {focusClass} {isDisabled &&
+      'hover:cursor-not-allowed opacity-50'} dark:text-black mt-1 block w-full {bgColor} {errorMessage
       ? 'border-red-600'
       : ''}"
     on:keydown={onKeyDown}
