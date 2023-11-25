@@ -50,7 +50,8 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title: 'Which parameter of the `search()` method specifies the regular expression pattern to be searched for?',
+        title:
+          'Which parameter of the `search()` method specifies the regular expression pattern to be searched for?',
         name: 'q3',
         points: 1,
         order: 3,
@@ -71,7 +72,8 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title: 'What does the `search()` method return if the specified value is not found in the string?',
+        title:
+          'What does the `search()` method return if the specified value is not found in the string?',
         name: 'q4',
         points: 1,
         order: 4,
@@ -92,7 +94,8 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title: 'Which of the following is a valid example of using the `search()` method with a regular expression pattern?',
+        title:
+          'Which of the following is a valid example of using the `search()` method with a regular expression pattern?',
         name: 'q5',
         points: 1,
         order: 5,
@@ -113,7 +116,8 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title: 'Which JavaScript method is used to search for a specified value in a string and replace it with another value?',
+        title:
+          'Which JavaScript method is used to search for a specified value in a string and replace it with another value?',
         name: 'q6',
         points: 1,
         order: 6,
@@ -134,7 +138,8 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title: 'What does the `replace()` method return after replacing the specified value in a string?',
+        title:
+          'What does the `replace()` method return after replacing the specified value in a string?',
         name: 'q7',
         points: 1,
         order: 7,
@@ -176,7 +181,8 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title: 'What does the `replace()` method do if the specified value is not found in the string?',
+        title:
+          'What does the `replace()` method do if the specified value is not found in the string?',
         name: 'q9',
         points: 1,
         order: 9,
@@ -197,7 +203,8 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title: 'Which JavaScript method is used to perform a case-insensitive search and replacement?',
+        title:
+          'Which JavaScript method is used to perform a case-insensitive search and replacement?',
         name: 'q10',
         points: 1,
         order: 10,

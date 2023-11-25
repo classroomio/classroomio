@@ -16,21 +16,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: '**',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: '^',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '^^',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'exp()',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the result of the expression: `5 + 3` in PHP?',
@@ -41,21 +41,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: '15',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '8',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: '53',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Error',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Which PHP function is used to find the square root of a number?',
@@ -66,21 +66,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'sqrt()',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'pow()',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'log()',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'exp()',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the correct way to generate a random number between 1 and 100 in PHP?',
@@ -91,21 +91,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'rand(1, 100)',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'random(1, 100)',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'mt_rand(1, 100)',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'random_int(1, 100)',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the result of the expression: `floor(6.75)` in PHP?',
@@ -116,21 +116,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: '7',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '6.75',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '6',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'Error',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Which PHP function is used to calculate the absolute (positive) value of a number?',
@@ -141,21 +141,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'abs()',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'absolute()',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'pos()',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'positive()',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the result of the expression: `pi()` in PHP?',
@@ -166,21 +166,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: '3.14159265359',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: '3.14',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '22/7',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Error',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How can you calculate the factorial of a number in PHP?',
@@ -191,21 +191,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'Use a loop to calculate the factorial',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'Use the `factorial()` function',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Multiply the number by itself repeatedly',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'Use recursion to calculate the factorial',
-            is_correct: true,
-          },
-        ],
+            is_correct: true
+          }
+        ]
       },
       {
         title: 'What is the result of the expression: `log10(100)` in PHP?',
@@ -216,21 +216,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: '2',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: '10',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '0.01',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Error',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How can you round a floating-point number to the nearest integer in PHP?',
@@ -241,12 +241,12 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'Enter your answer here',
-            is_correct: false,
-          },
-        ],
-      },
-    ],
-  },
+            is_correct: false
+          }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

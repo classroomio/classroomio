@@ -16,17 +16,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'A field that must be filled out by the user',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'A field that is optional for the user to fill out',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'A field that is automatically populated by the server',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How can you mark a field as required in HTML?',
@@ -37,17 +37,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: '<input type="required">',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '<input required>',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: '<input type="text" required>',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the purpose of the "required" attribute in HTML forms?',
@@ -58,17 +58,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'It specifies the maximum length of input data',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'It specifies that the field must be filled out before submitting the form',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'It specifies the default value for the input field',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
 
       {
@@ -77,7 +77,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 4,
         question_type: QuestionTypes[3],
-        options: [], // No options for TEXTAREA type
+        options: [] // No options for TEXTAREA type
       },
 
       {
@@ -89,17 +89,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'Option 1',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'Option 2',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Option 3',
-            is_correct: true,
-          },
-        ],
+            is_correct: true
+          }
+        ]
       },
 
       {
@@ -108,7 +108,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 6,
         question_type: QuestionTypes[5],
-        options: [], // No options for TEXTAREA type
+        options: [] // No options for TEXTAREA type
       },
 
       {
@@ -120,13 +120,13 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'Option A',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'Option B',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
 
       {
@@ -138,17 +138,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'Option X',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'Option Y',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Option Z',
-            is_correct: true,
-          },
-        ],
+            is_correct: true
+          }
+        ]
       },
 
       {
@@ -157,7 +157,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 9,
         question_type: QuestionTypes[8],
-        options: [], // No options for TEXTAREA type
+        options: [] // No options for TEXTAREA type
       },
 
       {
@@ -169,17 +169,16 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'Option P',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Option Q',
-            is_correct: true,
-          },
-        ],
-      },
-
-    ],
-  },
+            is_correct: true
+          }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

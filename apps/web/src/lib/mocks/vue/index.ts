@@ -62,5 +62,5 @@ export const VUE_TEMPLATES = {
   [VUE_IDS.VUE_PROPS]: vueProps,
   [VUE_IDS.VUE_VFORCOMP]: vueVForComp,
   [VUE_IDS.VUE_EMIT]: vueEmit,
-  [VUE_IDS.VUE_FALLTHROUGHATTRIBUTE]: vueFallThroughAttribute,
+  [VUE_IDS.VUE_FALLTHROUGHATTRIBUTE]: vueFallThroughAttribute
 };

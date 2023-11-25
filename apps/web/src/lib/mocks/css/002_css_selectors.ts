@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'All <h1> elements', is_correct: true },
           { label: 'The first <h1> element', is_correct: false },
-          { label: 'All elements with class "h1"', is_correct: false },
-        ],
+          { label: 'All elements with class "h1"', is_correct: false }
+        ]
       },
       {
         title: 'Which CSS selector selects all elements with the class "example"?',
@@ -28,8 +28,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '.example', is_correct: true },
           { label: '#example', is_correct: false },
-          { label: 'element="example"', is_correct: false },
-        ],
+          { label: 'element="example"', is_correct: false }
+        ]
       },
       {
         title: 'How can you select all elements inside a <div> element?',
@@ -40,8 +40,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '<div> { }', is_correct: false },
           { label: 'div { }', is_correct: true },
-          { label: '<div> * { }', is_correct: false },
-        ],
+          { label: '<div> * { }', is_correct: false }
+        ]
       },
       {
         title: 'Which CSS selector selects elements with the "href" attribute?',
@@ -52,8 +52,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '[href]', is_correct: true },
           { label: 'href', is_correct: false },
-          { label: 'element="href"', is_correct: false },
-        ],
+          { label: 'element="href"', is_correct: false }
+        ]
       },
       {
         title: 'How do you select an element with the id "myID"?',
@@ -64,8 +64,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '#myID', is_correct: true },
           { label: '.myID', is_correct: false },
-          { label: 'id="myID"', is_correct: false },
-        ],
+          { label: 'id="myID"', is_correct: false }
+        ]
       },
       {
         title: 'What does the CSS selector "p.intro" target?',
@@ -76,8 +76,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'All <p> elements with class "intro"', is_correct: true },
           { label: 'The first <p> element with class "intro"', is_correct: false },
-          { label: 'All elements with the id "intro"', is_correct: false },
-        ],
+          { label: 'All elements with the id "intro"', is_correct: false }
+        ]
       },
       {
         title: 'Explain the usage of the universal selector "*" in CSS.',
@@ -85,7 +85,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 6,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How can you select only the first child element of a parent element?',
@@ -93,7 +93,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 7,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the purpose of pseudo-classes in CSS?',
@@ -101,18 +101,19 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 8,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
-        title: 'What is the difference between the "descendant" selector and the "child" selector in CSS?',
+        title:
+          'What is the difference between the "descendant" selector and the "child" selector in CSS?',
         name: 'q10',
         points: 2,
         order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
-      },
-    ],
-  },
+        options: []
+      }
+    ]
+  }
 };
 
 export default template;

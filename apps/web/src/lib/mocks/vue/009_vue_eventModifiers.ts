@@ -16,17 +16,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To stop event propagation',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To prevent the default behavior of an event',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To stop the method execution',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How can you use the ".prevent" event modifier in Vue.js?',
@@ -34,7 +34,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 1,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Explain the purpose of the ".capture" event modifier in Vue.js.',
@@ -42,7 +42,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 2,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What does the ".self" event modifier do in Vue.js?',
@@ -50,7 +50,7 @@ const template: ExerciseTemplate = {
         points: 3,
         order: 3,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How do you use the ".once" event modifier in Vue.js?',
@@ -58,7 +58,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 4,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Explain the ".passive" event modifier in Vue.js and its use cases.',
@@ -66,7 +66,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 5,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the purpose of the ".ctrl" event modifier in Vue.js?',
@@ -74,7 +74,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 6,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Explain how to use the ".exact" event modifier in Vue.js and its significance.',
@@ -82,7 +82,7 @@ const template: ExerciseTemplate = {
         points: 3,
         order: 7,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the use of the ".middle" event modifier in Vue.js?',
@@ -93,17 +93,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To handle middle mouse button clicks',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To handle right mouse button clicks',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To handle left mouse button clicks',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How can you combine multiple event modifiers in Vue.js?',
@@ -111,10 +111,10 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
-      },
-    ],
-  },
+        options: []
+      }
+    ]
+  }
 };
 
 export default template;

@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'border-width', is_correct: true },
           { label: 'border-size', is_correct: false },
-          { label: 'border-thickness', is_correct: false },
-        ],
+          { label: 'border-thickness', is_correct: false }
+        ]
       },
       {
         title: 'How do you set the border color in CSS?',
@@ -28,8 +28,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'border-color', is_correct: true },
           { label: 'color', is_correct: false },
-          { label: 'border-style', is_correct: false },
-        ],
+          { label: 'border-style', is_correct: false }
+        ]
       },
       {
         title: 'What is the default value of the "border-style" property in CSS?',
@@ -40,8 +40,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'solid', is_correct: false },
           { label: 'none', is_correct: false },
-          { label: 'none (or not specified)', is_correct: true },
-        ],
+          { label: 'none (or not specified)', is_correct: true }
+        ]
       },
       {
         title: 'How do you create a rounded border in CSS?',
@@ -52,8 +52,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'border-round', is_correct: false },
           { label: 'border-radius', is_correct: true },
-          { label: 'rounded-border', is_correct: false },
-        ],
+          { label: 'rounded-border', is_correct: false }
+        ]
       },
       {
         title: 'What is the CSS property used to set the space between the border and the content?',
@@ -64,8 +64,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'border-spacing', is_correct: false },
           { label: 'padding', is_correct: true },
-          { label: 'margin', is_correct: false },
-        ],
+          { label: 'margin', is_correct: false }
+        ]
       },
       {
         title: 'Explain the difference between "border-width" and "border-style" in CSS.',
@@ -73,7 +73,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 5,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How can you set different border colors for each side of an element in CSS?',
@@ -81,7 +81,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 6,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the purpose of the "border-collapse" property in CSS?',
@@ -92,8 +92,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'To collapse table borders', is_correct: true },
           { label: 'To add a shadow to borders', is_correct: false },
-          { label: 'To remove all borders', is_correct: false },
-        ],
+          { label: 'To remove all borders', is_correct: false }
+        ]
       },
       {
         title: 'How do you remove the border from an image in CSS?',
@@ -104,11 +104,12 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'border: none;', is_correct: true },
           { label: 'border-image: none;', is_correct: false },
-          { label: 'border-remove: true;', is_correct: false },
-        ],
+          { label: 'border-remove: true;', is_correct: false }
+        ]
       },
       {
-        title: 'What is the CSS property used to set the space between the borders of adjacent cells in a table?',
+        title:
+          'What is the CSS property used to set the space between the borders of adjacent cells in a table?',
         name: 'q10',
         points: 1,
         order: 9,
@@ -116,11 +117,11 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'cell-spacing', is_correct: false },
           { label: 'border-space', is_correct: false },
-          { label: 'border-spacing', is_correct: true },
-        ],
-      },
-    ],
-  },
+          { label: 'border-spacing', is_correct: true }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

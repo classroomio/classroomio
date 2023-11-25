@@ -16,17 +16,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To conditionally apply a class to an element',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To dynamically bind an attribute to an element',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To define a computed property in Vue.js',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How do you bind an attribute to an element using "v-bind"?',
@@ -34,7 +34,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 1,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Explain the usage of the "v-bind:class" directive in Vue.js.',
@@ -42,7 +42,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 2,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the purpose of the "v-bind:style" directive in Vue.js?',
@@ -50,7 +50,7 @@ const template: ExerciseTemplate = {
         points: 3,
         order: 3,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How do you bind the "href" attribute of an anchor tag in Vue.js?',
@@ -61,17 +61,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'By using "v-href"',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By using "v-bind:href"',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'By using "v-url"',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Explain the usage of the "v-bind" directive with "v-for" in Vue.js.',
@@ -79,7 +79,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 5,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How do you bind a method to a button click event using "v-on"?',
@@ -87,7 +87,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 6,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the purpose of the "v-bind:key" directive in a "v-for" loop?',
@@ -95,7 +95,7 @@ const template: ExerciseTemplate = {
         points: 3,
         order: 7,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How can you bind an image source dynamically in Vue.js?',
@@ -106,17 +106,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'By using "v-src"',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By using "v-image"',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By using "v-bind:src"',
-            is_correct: true,
-          },
-        ],
+            is_correct: true
+          }
+        ]
       },
       {
         title: 'Explain the usage of the "v-bind" directive with "v-model" in Vue.js.',
@@ -124,10 +124,10 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
-      },
-    ],
-  },
+        options: []
+      }
+    ]
+  }
 };
 
 export default template;

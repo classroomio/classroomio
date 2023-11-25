@@ -8,7 +8,8 @@ const template: ExerciseTemplate = {
   questionnaire: {
     questions: [
       {
-        title: 'Which JavaScript method returns the smallest integer greater than or equal to a given number?',
+        title:
+          'Which JavaScript method returns the smallest integer greater than or equal to a given number?',
         name: 'q1',
         points: 1,
         order: 1,
@@ -172,7 +173,8 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title: 'Which JavaScript method returns the largest integer less than or equal to a given number?',
+        title:
+          'Which JavaScript method returns the largest integer less than or equal to a given number?',
         name: 'q9',
         points: 1,
         order: 9,

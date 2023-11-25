@@ -2,7 +2,7 @@ import pythonSyntax from './001_python_syntax';
 import pythonComments from './002_python_comments';
 import pythonVariables from './003_python_variables';
 import pythonDataTypes from './004_python_dataTypes';
-import pythonNumbers from './005_python_numbers'; 
+import pythonNumbers from './005_python_numbers';
 import pythonCasting from './006_python_casting';
 import pythonStrings from './007_python_strings';
 import pythonBooleans from './008_python_booleans';
@@ -62,5 +62,5 @@ export const PYTHON_TEMPLATES = {
   [PYTHON_IDS.PYTHON_FUNCTIONS]: pythonFunctions,
   [PYTHON_IDS.PYTHON_LAMBDA]: pythonLambda,
   [PYTHON_IDS.PYTHON_ARRAYS]: pythonArrays,
-  [PYTHON_IDS.PYTHON_CLASSES]: pythonClasses,
+  [PYTHON_IDS.PYTHON_CLASSES]: pythonClasses
 };

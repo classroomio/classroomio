@@ -16,17 +16,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To pass data from a parent component to a child component',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To create a new data property in a child component',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To define a computed property in a child component',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How do you define a prop in a child component in Vue.js?',
@@ -34,7 +34,7 @@ const template: ExerciseTemplate = {
         points: 3,
         order: 1,
         question_type: QuestionTypes[3], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'In a Vue.js parent component, how do you pass a prop to a child component?',
@@ -45,17 +45,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'By using the v-bind directive on the child component tag',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'By using the v-model directive on the child component tag',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By using double curly braces ({{ }}) around the prop value',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What happens if a parent component updates the value of a prop?',
@@ -66,17 +66,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'The change is not reflected in the child component',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'The child component receives the updated value automatically',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'An error occurs',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'In Vue.js, how do you specify the type of a prop?',
@@ -84,7 +84,7 @@ const template: ExerciseTemplate = {
         points: 3,
         order: 4,
         question_type: QuestionTypes[3], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the purpose of the "required" prop option in Vue.js?',
@@ -95,17 +95,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'It specifies that the prop must be passed from the parent',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'It indicates that the prop is optional',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'It defines the type of the prop',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How do you provide a default value for a prop in Vue.js?',
@@ -116,17 +116,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'By adding a default property to the prop definition',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'By using the v-bind directive in the parent component',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By using the v-model directive in the child component',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is a prop validation function used for in Vue.js?',
@@ -134,7 +134,7 @@ const template: ExerciseTemplate = {
         points: 3,
         order: 7,
         question_type: QuestionTypes[3], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How do you pass multiple props to a child component in Vue.js?',
@@ -145,17 +145,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'By including multiple v-bind directives on the child component tag',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'By using the v-model directive with an array of prop names',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By wrapping the child component in a div element',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How do you receive and access props in a child component in Vue.js?',
@@ -166,20 +166,20 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'By declaring a props option in the child component',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'By using the "this" keyword in the child component',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By defining a new data property for each prop',
-            is_correct: false,
-          },
-        ],
-      },
-    ],
-  },
+            is_correct: false
+          }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

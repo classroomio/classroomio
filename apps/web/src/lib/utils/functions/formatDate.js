@@ -8,6 +8,6 @@ export default (date) => {
   // return `${ye}-${mo}-${da} ${d.toLocaleTimeString('en-US')}`;
   return new Intl.DateTimeFormat('en-US', {
     dateStyle: 'full',
-    timeStyle: 'medium',
+    timeStyle: 'medium'
   }).format(d);
 };

@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'A JavaScript file', is_correct: true },
           { label: 'A Node.js package', is_correct: false },
-          { label: 'A built-in Node.js function', is_correct: false },
-        ],
+          { label: 'A built-in Node.js function', is_correct: false }
+        ]
       },
       {
         title: 'How do you include a module in Node.js?',
@@ -26,10 +26,10 @@ const template: ExerciseTemplate = {
         order: 2,
         question_type: QuestionTypes[0], // RADIO
         options: [
-          { label: 'require(\'module_name\')', is_correct: true },
-          { label: 'import module_name from \'module\'', is_correct: false },
-          { label: 'import \'module_name\'', is_correct: false },
-        ],
+          { label: "require('module_name')", is_correct: true },
+          { label: "import module_name from 'module'", is_correct: false },
+          { label: "import 'module_name'", is_correct: false }
+        ]
       },
       {
         title: 'Which of the following is a built-in Node.js module?',
@@ -41,8 +41,8 @@ const template: ExerciseTemplate = {
           { label: 'fs', is_correct: true },
           { label: 'http', is_correct: true },
           { label: 'express', is_correct: false },
-          { label: 'path', is_correct: true },
-        ],
+          { label: 'path', is_correct: true }
+        ]
       },
       {
         title: 'How do you export a module in Node.js?',
@@ -53,8 +53,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'module.exports', is_correct: true },
           { label: 'export default', is_correct: false },
-          { label: 'exports', is_correct: false },
-        ],
+          { label: 'exports', is_correct: false }
+        ]
       },
       {
         title: 'What is the purpose of the "exports" object in a Node.js module?',
@@ -62,7 +62,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 5,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Which of the following is a valid way to create a readable stream in Node.js?',
@@ -73,8 +73,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'fs.createWriteStream()', is_correct: false },
           { label: 'fs.createReadStream()', is_correct: true },
-          { label: 'fs.readFile()', is_correct: false },
-        ],
+          { label: 'fs.readFile()', is_correct: false }
+        ]
       },
       {
         title: 'What is the purpose of the "events" module in Node.js?',
@@ -82,7 +82,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 7,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Which method is used to handle HTTP POST requests in Node.js?',
@@ -94,8 +94,8 @@ const template: ExerciseTemplate = {
           { label: 'HTTP POST requests are handled automatically', is_correct: false },
           { label: 'http.createServer()', is_correct: false },
           { label: 'req.on("data")', is_correct: false },
-          { label: 'req.on("end")', is_correct: true },
-        ],
+          { label: 'req.on("end")', is_correct: true }
+        ]
       },
       {
         title: 'In Node.js, what does the "path" module provide?',
@@ -106,8 +106,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'File system operations', is_correct: true },
           { label: 'URL parsing', is_correct: true },
-          { label: 'Event handling', is_correct: false },
-        ],
+          { label: 'Event handling', is_correct: false }
+        ]
       },
       {
         title: 'How do you import a local module in Node.js?',
@@ -116,13 +116,13 @@ const template: ExerciseTemplate = {
         order: 10,
         question_type: QuestionTypes[0], // RADIO
         options: [
-          { label: 'require(\'./module_name\')', is_correct: true },
-          { label: 'import module_name from \'module_name\'', is_correct: false },
-          { label: 'import \'./module_name\'', is_correct: false },
-        ],
-      },
-    ],
-  },
+          { label: "require('./module_name')", is_correct: true },
+          { label: "import module_name from 'module_name'", is_correct: false },
+          { label: "import './module_name'", is_correct: false }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

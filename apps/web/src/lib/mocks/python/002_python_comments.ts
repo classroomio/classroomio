@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'To add color to your code', is_correct: false },
           { label: 'To explain the code and make it more readable', is_correct: true },
-          { label: 'To hide code from others', is_correct: false },
-        ],
+          { label: 'To hide code from others', is_correct: false }
+        ]
       },
       {
         title: 'Which symbol is used to start a single-line comment in Python?',
@@ -28,8 +28,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '//', is_correct: false },
           { label: '/*', is_correct: false },
-          { label: '#', is_correct: true },
-        ],
+          { label: '#', is_correct: true }
+        ]
       },
       {
         title: 'How do you write a multi-line comment in Python?',
@@ -40,8 +40,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '/* This is a comment */', is_correct: false },
           { label: '// This is a comment //', is_correct: false },
-          { label: '""" This is a comment """', is_correct: true },
-        ],
+          { label: '""" This is a comment """', is_correct: true }
+        ]
       },
       {
         title: 'What is the correct way to comment out a single line of code in Python?',
@@ -52,8 +52,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Using a hash symbol (#)', is_correct: true },
           { label: 'Using double slashes (//)', is_correct: false },
-          { label: 'Using triple quotes (\'\'\')', is_correct: false },
-        ],
+          { label: "Using triple quotes (''')", is_correct: false }
+        ]
       },
       {
         title: 'Explain the purpose of docstrings in Python.',
@@ -61,7 +61,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 4,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the main purpose of writing comments in your code?',
@@ -72,8 +72,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'To increase the size of your code', is_correct: false },
           { label: 'To make your code look more colorful', is_correct: false },
-          { label: 'To make the code understandable for you and others', is_correct: true },
-        ],
+          { label: 'To make the code understandable for you and others', is_correct: true }
+        ]
       },
       {
         title: 'How can you comment out multiple lines of code in Python?',
@@ -83,9 +83,9 @@ const template: ExerciseTemplate = {
         question_type: QuestionTypes[1], // CHECKBOX
         options: [
           { label: 'Using a hash symbol (#)', is_correct: false },
-          { label: 'Using triple quotes (\'\'\')', is_correct: true },
-          { label: 'Using double slashes (//)', is_correct: false },
-        ],
+          { label: "Using triple quotes (''')", is_correct: true },
+          { label: 'Using double slashes (//)', is_correct: false }
+        ]
       },
       {
         title: 'What is the purpose of triple-quoted strings in Python?',
@@ -96,8 +96,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'To define a string that spans multiple lines', is_correct: true },
           { label: 'To make your code more colorful', is_correct: false },
-          { label: 'To indicate the end of a Python program', is_correct: false },
-        ],
+          { label: 'To indicate the end of a Python program', is_correct: false }
+        ]
       },
       {
         title: 'Explain the purpose of inline comments in Python.',
@@ -105,10 +105,11 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 8,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
-        title: 'Which type of comment is used for documenting functions, classes, and modules in Python?',
+        title:
+          'Which type of comment is used for documenting functions, classes, and modules in Python?',
         name: 'question10',
         points: 2,
         order: 9,
@@ -116,12 +117,11 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Single-line comments', is_correct: false },
           { label: 'Multi-line comments', is_correct: false },
-          { label: 'Docstrings', is_correct: true },
-        ],
-      },
-    ],
-  },
+          { label: 'Docstrings', is_correct: true }
+        ]
+      }
+    ]
+  }
 };
-
 
 export default template;

@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Creates a new commit', is_correct: false },
           { label: 'Amends the last commit', is_correct: true },
-          { label: 'Deletes the last commit', is_correct: false },
-        ],
+          { label: 'Deletes the last commit', is_correct: false }
+        ]
       },
       {
         title: 'What is the purpose of the Git amend operation?',
@@ -29,8 +29,8 @@ const template: ExerciseTemplate = {
           { label: 'To add new files to the last commit', is_correct: false },
           { label: 'To modify the last commit message', is_correct: true },
           { label: 'To create a new branch', is_correct: false },
-          { label: 'To revert to a previous commit', is_correct: false },
-        ],
+          { label: 'To revert to a previous commit', is_correct: false }
+        ]
       },
       {
         title: 'Explain the command "git commit --amend" in your own words.',
@@ -38,7 +38,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 3,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is a Git stash?',
@@ -49,8 +49,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'A temporary storage area for changes', is_correct: true },
           { label: 'A remote Git repository', is_correct: false },
-          { label: 'A Git branch', is_correct: false },
-        ],
+          { label: 'A Git branch', is_correct: false }
+        ]
       },
       {
         title: 'How do you create a new branch in Git?',
@@ -62,8 +62,8 @@ const template: ExerciseTemplate = {
           { label: 'git branch new-branch', is_correct: true },
           { label: 'git create-branch new-branch', is_correct: false },
           { label: 'git checkout -b new-branch', is_correct: true },
-          { label: 'git new-branch', is_correct: false },
-        ],
+          { label: 'git new-branch', is_correct: false }
+        ]
       },
       {
         title: 'What is a Git remote?',
@@ -71,7 +71,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 6,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is a Git conflict?',
@@ -82,8 +82,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'A disagreement between team members', is_correct: false },
           { label: 'A merge conflict when merging branches', is_correct: true },
-          { label: 'A Git error message', is_correct: false },
-        ],
+          { label: 'A Git error message', is_correct: false }
+        ]
       },
       {
         title: 'What is the purpose of "git pull"?',
@@ -93,10 +93,13 @@ const template: ExerciseTemplate = {
         question_type: QuestionTypes[1], // CHECKBOX
         options: [
           { label: 'To push changes to a remote repository', is_correct: false },
-          { label: 'To update your local repository with changes from a remote repository', is_correct: true },
+          {
+            label: 'To update your local repository with changes from a remote repository',
+            is_correct: true
+          },
           { label: 'To create a new branch', is_correct: false },
-          { label: 'To create a new commit', is_correct: false },
-        ],
+          { label: 'To create a new commit', is_correct: false }
+        ]
       },
       {
         title: 'Explain the Git stash operation.',
@@ -104,7 +107,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is a Git tag?',
@@ -115,11 +118,11 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'A label or pointer to a specific commit', is_correct: true },
           { label: 'A branch in Git', is_correct: false },
-          { label: 'A type of Git remote', is_correct: false },
-        ],
-      },
-    ],
-  },
+          { label: 'A type of Git remote', is_correct: false }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

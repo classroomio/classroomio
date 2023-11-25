@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'A type of snake', is_correct: false },
           { label: 'A classification of data', is_correct: true },
-          { label: 'A Python function', is_correct: false },
-        ],
+          { label: 'A Python function', is_correct: false }
+        ]
       },
       {
         title: 'How do you declare a variable with the "int" data type in Python?',
@@ -28,8 +28,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'var x: int', is_correct: false },
           { label: 'int x', is_correct: true },
-          { label: 'x = int', is_correct: false },
-        ],
+          { label: 'x = int', is_correct: false }
+        ]
       },
       {
         title: 'Which of the following is a valid variable name in Python?',
@@ -41,8 +41,8 @@ const template: ExerciseTemplate = {
           { label: '123variable', is_correct: false },
           { label: 'my_variable', is_correct: true },
           { label: 'variable@name', is_correct: false },
-          { label: '_variable', is_correct: true },
-        ],
+          { label: '_variable', is_correct: true }
+        ]
       },
       {
         title: 'What is the purpose of the "str" data type in Python?',
@@ -53,8 +53,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'To store integers', is_correct: false },
           { label: 'To store strings', is_correct: true },
-          { label: 'To store floating-point numbers', is_correct: false },
-        ],
+          { label: 'To store floating-point numbers', is_correct: false }
+        ]
       },
       {
         title: 'Explain the purpose of data types in Python.',
@@ -62,7 +62,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 4,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Which data type is used to store a sequence of items in Python?',
@@ -73,8 +73,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'int', is_correct: false },
           { label: 'str', is_correct: false },
-          { label: 'list', is_correct: true },
-        ],
+          { label: 'list', is_correct: true }
+        ]
       },
       {
         title: 'How do you check the data type of a variable in Python?',
@@ -85,8 +85,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'typeof()', is_correct: false },
           { label: 'type()', is_correct: true },
-          { label: 'datatype()', is_correct: false },
-        ],
+          { label: 'datatype()', is_correct: false }
+        ]
       },
       {
         title: 'Which data type is used to store a single character in Python?',
@@ -97,8 +97,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'char', is_correct: false },
           { label: 'str', is_correct: false },
-          { label: 'chr', is_correct: true },
-        ],
+          { label: 'chr', is_correct: true }
+        ]
       },
       {
         title: 'What is the "bool" data type used for in Python?',
@@ -106,7 +106,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 8,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Which data type is used to store a collection of items in Python?',
@@ -118,11 +118,11 @@ const template: ExerciseTemplate = {
           { label: 'tuple', is_correct: true },
           { label: 'set', is_correct: true },
           { label: 'dict', is_correct: true },
-          { label: 'str', is_correct: false },
-        ],
-      },
-    ],
-  },
+          { label: 'str', is_correct: false }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

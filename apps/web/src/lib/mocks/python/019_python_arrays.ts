@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'An ordered collection of items', is_correct: true },
           { label: 'A data type to store text', is_correct: false },
-          { label: 'A way to define functions', is_correct: false },
-        ],
+          { label: 'A way to define functions', is_correct: false }
+        ]
       },
       {
         title: 'How do you create an empty list in Python?',
@@ -28,8 +28,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Using the `array()` function', is_correct: false },
           { label: 'Using the `list()` function', is_correct: true },
-          { label: 'You cannot create an empty list', is_correct: false },
-        ],
+          { label: 'You cannot create an empty list', is_correct: false }
+        ]
       },
       {
         title: 'What is the index of the first element in a Python list?',
@@ -40,8 +40,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '0', is_correct: true },
           { label: '1', is_correct: false },
-          { label: '-1', is_correct: false },
-        ],
+          { label: '-1', is_correct: false }
+        ]
       },
       {
         title: 'Explain the concept of slicing in Python lists.',
@@ -49,7 +49,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 3,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the difference between lists and tuples in Python?',
@@ -59,9 +59,12 @@ const template: ExerciseTemplate = {
         question_type: QuestionTypes[0], // RADIO
         options: [
           { label: 'Lists are immutable, tuples are mutable', is_correct: false },
-          { label: 'Lists are ordered and mutable, tuples are ordered and immutable', is_correct: true },
-          { label: 'Lists are unordered, tuples are ordered', is_correct: false },
-        ],
+          {
+            label: 'Lists are ordered and mutable, tuples are ordered and immutable',
+            is_correct: true
+          },
+          { label: 'Lists are unordered, tuples are ordered', is_correct: false }
+        ]
       },
       {
         title: 'How do you add an element to the end of a list in Python?',
@@ -72,8 +75,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Using the `insert()` method', is_correct: false },
           { label: 'Using the `append()` method', is_correct: true },
-          { label: 'Using the `add()` function', is_correct: false },
-        ],
+          { label: 'Using the `add()` function', is_correct: false }
+        ]
       },
       {
         title: 'Explain the concept of list comprehension in Python.',
@@ -81,7 +84,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 6,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How do you remove an element from a list by value in Python?',
@@ -92,8 +95,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Using the `delete()` method', is_correct: false },
           { label: 'Using the `remove()` method', is_correct: true },
-          { label: 'Using the `pop()` function', is_correct: false },
-        ],
+          { label: 'Using the `pop()` function', is_correct: false }
+        ]
       },
       {
         title: 'What is the result of the expression `len(my_list)` where `my_list` is a list?',
@@ -104,8 +107,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'The last element of the list', is_correct: false },
           { label: 'The length (number of elements) of the list', is_correct: true },
-          { label: 'The sum of all elements in the list', is_correct: false },
-        ],
+          { label: 'The sum of all elements in the list', is_correct: false }
+        ]
       },
       {
         title: 'Explain an example use case for Python arrays in programming.',
@@ -113,10 +116,10 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
-      },
-    ],
-  },
+        options: []
+      }
+    ]
+  }
 };
 
 export default template;

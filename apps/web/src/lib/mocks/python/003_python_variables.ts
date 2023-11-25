@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'A reserved keyword', is_correct: false },
           { label: 'A container for storing data', is_correct: true },
-          { label: 'A function in Python', is_correct: false },
-        ],
+          { label: 'A function in Python', is_correct: false }
+        ]
       },
       {
         title: 'How do you declare a variable in Python?',
@@ -28,8 +28,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'var x;', is_correct: false },
           { label: 'x = 5', is_correct: true },
-          { label: 'let x;', is_correct: false },
-        ],
+          { label: 'let x;', is_correct: false }
+        ]
       },
       {
         title: 'What is the correct way to comment a variable declaration in Python?',
@@ -40,8 +40,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '/* This is a comment */', is_correct: false },
           { label: '# This is a comment', is_correct: true },
-          { label: '// This is a comment', is_correct: false },
-        ],
+          { label: '// This is a comment', is_correct: false }
+        ]
       },
       {
         title: 'What is a valid variable name in Python?',
@@ -53,8 +53,8 @@ const template: ExerciseTemplate = {
           { label: '123variable', is_correct: false },
           { label: 'my_variable', is_correct: true },
           { label: 'variable@name', is_correct: false },
-          { label: '_variable', is_correct: true },
-        ],
+          { label: '_variable', is_correct: true }
+        ]
       },
       {
         title: 'Explain the purpose of variable names in Python.',
@@ -62,7 +62,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 4,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How do you assign a value to a variable in Python?',
@@ -73,8 +73,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'x = value', is_correct: true },
           { label: 'assign(x, value)', is_correct: false },
-          { label: 'set x to value', is_correct: false },
-        ],
+          { label: 'set x to value', is_correct: false }
+        ]
       },
       {
         title: 'Which data types are supported by Python variables?',
@@ -86,8 +86,8 @@ const template: ExerciseTemplate = {
           { label: 'Number', is_correct: true },
           { label: 'Boolean', is_correct: true },
           { label: 'Array', is_correct: false },
-          { label: 'Object', is_correct: false },
-        ],
+          { label: 'Object', is_correct: false }
+        ]
       },
       {
         title: 'What is the scope of a variable in Python?',
@@ -98,8 +98,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Local scope', is_correct: true },
           { label: 'Global scope', is_correct: true },
-          { label: 'Function scope', is_correct: false },
-        ],
+          { label: 'Function scope', is_correct: false }
+        ]
       },
       {
         title: 'Explain the purpose of variable assignment in Python.',
@@ -107,7 +107,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 8,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How do you check the data type of a variable in Python?',
@@ -118,11 +118,11 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'type()', is_correct: true },
           { label: 'typeof', is_correct: false },
-          { label: 'isinstance()', is_correct: true },
-        ],
-      },
-    ],
-  },
+          { label: 'isinstance()', is_correct: true }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

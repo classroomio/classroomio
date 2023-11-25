@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Both "var" and "let" have block scope.', is_correct: false },
           { label: '"var" has block scope, while "let" has function scope.', is_correct: false },
-          { label: '"var" has function scope, while "let" has block scope.', is_correct: true },
-        ],
+          { label: '"var" has function scope, while "let" has block scope.', is_correct: true }
+        ]
       },
       {
         title: 'Which ES6 keyword is used to declare a constant variable?',
@@ -28,8 +28,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'const', is_correct: true },
           { label: 'let', is_correct: false },
-          { label: 'var', is_correct: false },
-        ],
+          { label: 'var', is_correct: false }
+        ]
       },
       {
         title: 'What is the value of a variable declared using "const" that is not initialized?',
@@ -40,8 +40,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Undefined', is_correct: false },
           { label: 'null', is_correct: false },
-          { label: 'It throws an error', is_correct: true },
-        ],
+          { label: 'It throws an error', is_correct: true }
+        ]
       },
       {
         title: 'Which ES6 feature allows you to destructure an object into individual variables?',
@@ -52,8 +52,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Spread operator', is_correct: false },
           { label: 'Rest operator', is_correct: false },
-          { label: 'Object destructuring', is_correct: true },
-        ],
+          { label: 'Object destructuring', is_correct: true }
+        ]
       },
       {
         title: 'What is the purpose of the "let" keyword in ES6?',
@@ -64,8 +64,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'To declare variables with block scope', is_correct: true },
           { label: 'To declare variables with function scope', is_correct: false },
-          { label: 'To declare constant variables', is_correct: false },
-        ],
+          { label: 'To declare constant variables', is_correct: false }
+        ]
       },
       {
         title: 'Select all valid data types that can be used with "const" declarations in ES6.',
@@ -78,8 +78,8 @@ const template: ExerciseTemplate = {
           { label: 'String', is_correct: true },
           { label: 'Array', is_correct: true },
           { label: 'Object', is_correct: true },
-          { label: 'Function', is_correct: true },
-        ],
+          { label: 'Function', is_correct: true }
+        ]
       },
       {
         title: 'Write an example of destructuring an object in ES6.',
@@ -87,7 +87,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 6,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Explain the difference between "var" and "let" in terms of hoisting.',
@@ -95,7 +95,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 7,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the purpose of the "const" keyword in ES6?',
@@ -103,7 +103,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 8,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'List some common use cases for destructuring in JavaScript.',
@@ -111,10 +111,10 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
-      },
-    ],
-  },
+        options: []
+      }
+    ]
+  }
 };
 
 export default template;

@@ -5,32 +5,32 @@ export const SECTION_KEYS = {
   GOALS: '#goals',
   LESSONS: '#lessons',
   REVIEWS: '#reviews',
-  INSTRUCTOR: '#instructor',
+  INSTRUCTOR: '#instructor'
 };
 
 export const NAV_ITEMS = [
   {
     key: SECTION_KEYS.REQUIREMENT,
-    label: 'Requirement',
+    label: 'Requirement'
   },
   {
     key: SECTION_KEYS.DESCRIPTION,
-    label: 'Description',
+    label: 'Description'
   },
   {
     key: SECTION_KEYS.GOALS,
-    label: 'Goals',
+    label: 'Goals'
   },
   {
     key: SECTION_KEYS.LESSONS,
-    label: 'Lessons',
+    label: 'Lessons'
   },
   {
     key: SECTION_KEYS.REVIEWS,
-    label: 'Reviews',
+    label: 'Reviews'
   },
   {
     key: SECTION_KEYS.INSTRUCTOR,
-    label: 'Instructor',
-  },
+    label: 'Instructor'
+  }
 ];

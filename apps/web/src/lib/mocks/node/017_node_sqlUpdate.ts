@@ -16,17 +16,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'UPDATE',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'INSERT',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'SELECT',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the purpose of the "SET" clause in an "UPDATE" statement?',
@@ -37,17 +37,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To specify which table to update.',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To set a new value for a column.',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To specify the condition for updating rows.',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Which SQL statement is used to update a specific row in a table?',
@@ -58,17 +58,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'UPDATE',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'UPDATE ROW',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'UPDATE ... WHERE',
-            is_correct: true,
-          },
-        ],
+            is_correct: true
+          }
+        ]
       },
       {
         title: 'What is the purpose of the "WHERE" clause in an "UPDATE" statement?',
@@ -76,7 +76,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 3,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Which SQL statement is used to update multiple rows in a table?',
@@ -87,17 +87,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'UPDATE ROW',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'UPDATE ALL',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'UPDATE ... WHERE',
-            is_correct: true,
-          },
-        ],
+            is_correct: true
+          }
+        ]
       },
       {
         title: 'What is the purpose of the "LIMIT" clause in an "UPDATE" statement?',
@@ -108,17 +108,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To specify the maximum number of columns to update.',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To limit the number of rows to update.',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To set a new value for a column.',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the purpose of the "ORDER BY" clause in an "UPDATE" statement?',
@@ -126,7 +126,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 6,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Can you use a subquery in an "UPDATE" statement?',
@@ -137,13 +137,13 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'Yes, to update rows based on the result of a subquery.',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'No, subqueries are not allowed in "UPDATE" statements.',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What happens if you omit the "WHERE" clause in an "UPDATE" statement?',
@@ -154,17 +154,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'All rows in the table are updated.',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'An error is thrown, and no rows are updated.',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'The first row in the table is updated.',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the purpose of the "RETURNING" clause in an "UPDATE" statement?',
@@ -172,11 +172,10 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
-      },
-    ],
-  },
+        options: []
+      }
+    ]
+  }
 };
-
 
 export default template;

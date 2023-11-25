@@ -8,7 +8,8 @@ const template: ExerciseTemplate = {
   questionnaire: {
     questions: [
       {
-        title: 'Which string method is used to extract a specific number of characters from a string?',
+        title:
+          'Which string method is used to extract a specific number of characters from a string?',
         name: 'q1',
         points: 1,
         order: 1,
@@ -29,7 +30,8 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title: 'Which string method is used to replace a specified value with another value in a string?',
+        title:
+          'Which string method is used to replace a specified value with another value in a string?',
         name: 'q2',
         points: 1,
         order: 2,
@@ -92,7 +94,8 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title: 'Which string method is used to convert a string to an array of substrings based on a specified separator?',
+        title:
+          'Which string method is used to convert a string to an array of substrings based on a specified separator?',
         name: 'q5',
         points: 1,
         order: 5,
@@ -176,7 +179,8 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title: 'Which string method is used to extract the characters from a string, between two specified indices, and returns the new string?',
+        title:
+          'Which string method is used to extract the characters from a string, between two specified indices, and returns the new string?',
         name: 'q9',
         points: 1,
         order: 9,
@@ -197,7 +201,8 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title: 'What is the return value of the `indexOf()` method if the specified substring is not found in the string?',
+        title:
+          'What is the return value of the `indexOf()` method if the specified substring is not found in the string?',
         name: 'q10',
         points: 1,
         order: 10,

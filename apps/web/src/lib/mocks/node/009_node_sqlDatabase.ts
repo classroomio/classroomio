@@ -16,17 +16,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To store and manage data for the application.',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To display images on the website.',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To create interactive user interfaces.',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Which Node.js module is commonly used to interact with MySQL databases?',
@@ -37,17 +37,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'fs',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'http',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'mysql',
-            is_correct: true,
-          },
-        ],
+            is_correct: true
+          }
+        ]
       },
       {
         title: 'What is the purpose of the "mysql.createConnection" method in the mysql module?',
@@ -58,17 +58,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To establish a connection to a MySQL database server.',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To create a new database.',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To define a route in an Express.js application.',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Explain the purpose of the "query" method in the mysql module.',
@@ -76,7 +76,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 3,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How can you handle errors when connecting to a MySQL database in Node.js?',
@@ -87,17 +87,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'By using try-catch blocks.',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By providing a callback function to the connection method.',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'By ignoring errors and proceeding with the connection.',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the purpose of the "CREATE DATABASE" SQL statement?',
@@ -108,17 +108,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To insert data into a database.',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To create a new MySQL database.',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To update existing records in a database.',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How can you execute SQL queries in Node.js using the mysql module?',
@@ -129,17 +129,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'By calling the "execute" method.',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By using the "query" method.',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'By sending HTTP requests to a database server.',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the purpose of the "DROP DATABASE" SQL statement?',
@@ -150,20 +150,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To retrieve data from a database.',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To delete an existing MySQL database.',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To modify the structure of a table.',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
-        title: 'How can you prevent SQL injection when executing user-provided SQL queries in Node.js?',
+        title:
+          'How can you prevent SQL injection when executing user-provided SQL queries in Node.js?',
         name: 'question9',
         points: 2,
         order: 8,
@@ -171,17 +172,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'By using input validation and sanitization.',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'By disabling the execution of user-provided queries.',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By increasing the database security settings.',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the purpose of the "pooling" mechanism in the mysql module?',
@@ -192,21 +193,20 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To group multiple databases together.',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To efficiently manage and reuse database connections.',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To create backup copies of the database.',
-            is_correct: false,
-          },
-        ],
-      },
-    ],
-  },
+            is_correct: false
+          }
+        ]
+      }
+    ]
+  }
 };
-
 
 export default template;

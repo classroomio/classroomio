@@ -1,5 +1,5 @@
-import {writable} from 'svelte/store';
+import { writable } from 'svelte/store';
 
 export const welcomeModalStore = writable({
-    open: false
+  open: false
 });

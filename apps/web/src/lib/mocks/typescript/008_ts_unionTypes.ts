@@ -123,7 +123,8 @@ const template: ExerciseTemplate = {
             is_correct: false
           },
           {
-            label: 'A union type where each option has a common property to discriminate between them.',
+            label:
+              'A union type where each option has a common property to discriminate between them.',
             is_correct: true
           },
           {

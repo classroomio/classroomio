@@ -14,9 +14,15 @@ importers:
       prettier:
         specifier: ^3.1.0
         version: 3.1.0
+      prettier-plugin-svelte:
+        specifier: ^3.1.2
+        version: 3.1.2(prettier@3.1.0)(svelte@4.1.2)
       prettier-plugin-tailwindcss:
         specifier: ^0.5.7
-        version: 0.5.7(prettier@3.1.0)
+        version: 0.5.7(prettier-plugin-svelte@3.1.2)(prettier@3.1.0)
+      tsconfig:
+        specifier: workspace:*
+        version: link:packages/tsconfig
       turbo:
         specifier: ^1.10.16
         version: 1.10.16
@@ -119,6 +125,9 @@ importers:
       svelte-email:
         specifier: ^0.0.4
         version: 0.0.4
+      svelte-ui:
+        specifier: workspace:*
+        version: link:../../packages/svelte-ui
       unsplash-js:
         specifier: ^7.0.18
         version: 7.0.18
@@ -168,6 +177,9 @@ importers:
       dotenv:
         specifier: ^16.3.1
         version: 16.3.1
+      eslint-config-custom:
+        specifier: workspace:*
+        version: link:../../packages/eslint-config-custom
       postcss:
         specifier: ^8.4.24
         version: 8.4.24
@@ -195,6 +207,9 @@ importers:
       tailwindcss:
         specifier: ^3.3.2
         version: 3.3.2
+      tsconfig:
+        specifier: workspace:*
+        version: link:../../packages/tsconfig
       tslib:
         specifier: ^2.6.1
         version: 2.6.1
@@ -215,10 +230,21 @@ importers:
         version: 1.10.16(eslint@8.54.0)
       eslint-plugin-svelte:
         specifier: ^2.35.1
-        version: 2.35.1(eslint@8.54.0)
+        version: 2.35.1(eslint@8.54.0)(svelte@4.1.2)
       typescript:
         specifier: ^5.1.6
         version: 5.3.2
+
+  packages/svelte-ui:
+    devDependencies:
+      eslint-config-custom:
+        specifier: workspace:*
+        version: link:../eslint-config-custom
+      svelte:
+        specifier: ^3.9.2
+        version: 3.59.2
+
+  packages/tsconfig: {}
 
 packages:
 
@@ -5258,7 +5284,7 @@ packages:
       string.prototype.matchall: 4.0.10
     dev: true
 
-  /eslint-plugin-svelte@2.35.1(eslint@8.54.0):
+  /eslint-plugin-svelte@2.35.1(eslint@8.54.0)(svelte@4.1.2):
     resolution: {integrity: sha512-IF8TpLnROSGy98Z3NrsKXWDSCbNY2ReHDcrYTuXZMbfX7VmESISR78TWgO9zdg4Dht1X8coub5jKwHzP0ExRug==}
     engines: {node: ^14.17.0 || >=16.0.0}
     peerDependencies:
@@ -5280,7 +5306,8 @@ packages:
       postcss-safe-parser: 6.0.0(postcss@8.4.31)
       postcss-selector-parser: 6.0.13
       semver: 7.5.4
-      svelte-eslint-parser: 0.33.1
+      svelte: 4.1.2
+      svelte-eslint-parser: 0.33.1(svelte@4.1.2)
     transitivePeerDependencies:
       - supports-color
       - ts-node
@@ -7203,7 +7230,17 @@ packages:
       synckit: 0.8.5
     dev: true
 
-  /prettier-plugin-tailwindcss@0.5.7(prettier@3.1.0):
+  /prettier-plugin-svelte@3.1.2(prettier@3.1.0)(svelte@4.1.2):
+    resolution: {integrity: sha512-7xfMZtwgAWHMT0iZc8jN4o65zgbAQ3+O32V6W7pXrqNvKnHnkoyQCGCbKeUyXKZLbYE0YhFRnamfxfkEGxm8qA==}
+    peerDependencies:
+      prettier: ^3.0.0
+      svelte: ^3.2.0 || ^4.0.0-next.0 || ^5.0.0-next.0
+    dependencies:
+      prettier: 3.1.0
+      svelte: 4.1.2
+    dev: true
+
+  /prettier-plugin-tailwindcss@0.5.7(prettier-plugin-svelte@3.1.2)(prettier@3.1.0):
     resolution: {integrity: sha512-4v6uESAgwCni6YF6DwJlRaDjg9Z+al5zM4JfngcazMy4WEf/XkPS5TEQjbD+DZ5iNuG6RrKQLa/HuX2SYzC3kQ==}
     engines: {node: '>=14.21.3'}
     peerDependencies:
@@ -7256,6 +7293,7 @@ packages:
         optional: true
     dependencies:
       prettier: 3.1.0
+      prettier-plugin-svelte: 3.1.2(prettier@3.1.0)(svelte@4.1.2)
     dev: true
 
   /prettier@3.1.0:
@@ -7955,7 +7993,7 @@ packages:
       svelte: 3.59.2
     dev: false
 
-  /svelte-eslint-parser@0.33.1:
+  /svelte-eslint-parser@0.33.1(svelte@4.1.2):
     resolution: {integrity: sha512-vo7xPGTlKBGdLH8T5L64FipvTrqv3OQRx9d2z5X05KKZDlF4rQk8KViZO4flKERY+5BiVdOh7zZ7JGJWo5P0uA==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
@@ -7969,6 +8007,7 @@ packages:
       espree: 9.6.1
       postcss: 8.4.31
       postcss-scss: 4.0.9(postcss@8.4.31)
+      svelte: 4.1.2
     dev: true
 
   /svelte-hmr@0.15.3(svelte@4.1.2):
@@ -8037,7 +8076,6 @@ packages:
   /svelte@3.59.2:
     resolution: {integrity: sha512-vzSyuGr3eEoAtT/A6bmajosJZIUWySzY2CzB3w2pgPvnkUjGqlDnsNnA0PMO+mMAhuyMul6C2uuZzY6ELSkzyA==}
     engines: {node: '>= 8'}
-    dev: false
 
   /svelte@4.1.2:
     resolution: {integrity: sha512-/evA8U6CgOHe5ZD1C1W3va9iJG7mWflcCdghBORJaAhD2JzrVERJty/2gl0pIPrJYBGZwZycH6onYf+64XXF9g==}

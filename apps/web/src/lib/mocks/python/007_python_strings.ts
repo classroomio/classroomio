@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'A sequence of numbers', is_correct: false },
           { label: 'A sequence of characters', is_correct: true },
-          { label: 'A data type in Python', is_correct: false },
-        ],
+          { label: 'A data type in Python', is_correct: false }
+        ]
       },
       {
         title: 'How do you declare a string in Python?',
@@ -28,8 +28,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'str x', is_correct: false },
           { label: 'x = "Hello"', is_correct: true },
-          { label: 'string x', is_correct: false },
-        ],
+          { label: 'string x', is_correct: false }
+        ]
       },
       {
         title: 'Which of the following is a valid string declaration in Python?',
@@ -40,9 +40,9 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'x = "Hello, World!"', is_correct: true },
           { label: 'x = 42', is_correct: false },
-          { label: 'x = \'Python\'', is_correct: true },
-          { label: 'x = True', is_correct: false },
-        ],
+          { label: "x = 'Python'", is_correct: true },
+          { label: 'x = True', is_correct: false }
+        ]
       },
       {
         title: 'How do you access characters in a string in Python?',
@@ -53,8 +53,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Using parentheses', is_correct: false },
           { label: 'By index', is_correct: true },
-          { label: 'Using curly braces', is_correct: false },
-        ],
+          { label: 'Using curly braces', is_correct: false }
+        ]
       },
       {
         title: 'Explain the concept of string concatenation in Python.',
@@ -62,7 +62,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 4,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Which operator is used for string concatenation in Python?',
@@ -73,8 +73,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '+', is_correct: true },
           { label: '-', is_correct: false },
-          { label: '*', is_correct: false },
-        ],
+          { label: '*', is_correct: false }
+        ]
       },
       {
         title: 'What is the result of "Hello" * 3 in Python?',
@@ -85,8 +85,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'HelloHelloHello', is_correct: true },
           { label: 'HelloHello', is_correct: false },
-          { label: '333', is_correct: false },
-        ],
+          { label: '333', is_correct: false }
+        ]
       },
       {
         title: 'What is the purpose of string methods in Python?',
@@ -94,7 +94,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 7,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How do you check the length of a string in Python?',
@@ -105,11 +105,12 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'len(string)', is_correct: true },
           { label: 'string.length', is_correct: false },
-          { label: 'string.len()', is_correct: false },
-        ],
+          { label: 'string.len()', is_correct: false }
+        ]
       },
       {
-        title: 'Which method is used to remove whitespace from the beginning and end of a string in Python?',
+        title:
+          'Which method is used to remove whitespace from the beginning and end of a string in Python?',
         name: 'question10',
         points: 2,
         order: 9,
@@ -118,11 +119,11 @@ const template: ExerciseTemplate = {
           { label: 'strip()', is_correct: true },
           { label: 'trim()', is_correct: false },
           { label: 'clean()', is_correct: false },
-          { label: 'clear()', is_correct: false },
-        ],
-      },
-    ],
-  },
+          { label: 'clear()', is_correct: false }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

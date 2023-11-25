@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'background-color', is_correct: true },
           { label: 'color', is_correct: false },
-          { label: 'text-color', is_correct: false },
-        ],
+          { label: 'text-color', is_correct: false }
+        ]
       },
       {
         title: 'How do you specify a color in CSS using hexadecimal notation?',
@@ -28,8 +28,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '#RRGGBB', is_correct: true },
           { label: 'rgb(R, G, B)', is_correct: false },
-          { label: 'color: name;', is_correct: false },
-        ],
+          { label: 'color: name;', is_correct: false }
+        ]
       },
       {
         title: 'Which CSS property is used to set the text color of an element?',
@@ -40,8 +40,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'color', is_correct: true },
           { label: 'text-color', is_correct: false },
-          { label: 'background-color', is_correct: false },
-        ],
+          { label: 'background-color', is_correct: false }
+        ]
       },
       {
         title: 'What is the CSS property for setting the transparency of an element?',
@@ -52,8 +52,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'opacity', is_correct: true },
           { label: 'transparent', is_correct: false },
-          { label: 'visibility', is_correct: false },
-        ],
+          { label: 'visibility', is_correct: false }
+        ]
       },
       {
         title: 'Which color code represents fully transparent?',
@@ -64,8 +64,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'rgba(0, 0, 0, 0)', is_correct: true },
           { label: 'rgba(255, 255, 255, 1)', is_correct: false },
-          { label: 'rgb(0, 0, 0)', is_correct: false },
-        ],
+          { label: 'rgb(0, 0, 0)', is_correct: false }
+        ]
       },
       {
         title: 'Explain the difference between RGB and hexadecimal color notations in CSS.',
@@ -73,7 +73,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 5,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the purpose of setting the transparency of an element in CSS?',
@@ -81,10 +81,11 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 6,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
-        title: 'Which CSS property is used to set the color of an element when a user hovers over it?',
+        title:
+          'Which CSS property is used to set the color of an element when a user hovers over it?',
         name: 'q8',
         points: 1,
         order: 7,
@@ -93,8 +94,8 @@ const template: ExerciseTemplate = {
           { label: 'hover-color', is_correct: false },
           { label: 'color:hover', is_correct: false },
           { label: 'color', is_correct: false },
-          { label: 'hover', is_correct: false },
-        ],
+          { label: 'hover', is_correct: false }
+        ]
       },
       {
         title: 'How do you specify the background color of an element using an RGB value?',
@@ -105,8 +106,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'background-color: rgb(R, G, B);', is_correct: true },
           { label: 'color: rgb(R, G, B);', is_correct: false },
-          { label: 'bg-color: rgb(R, G, B);', is_correct: false },
-        ],
+          { label: 'bg-color: rgb(R, G, B);', is_correct: false }
+        ]
       },
       {
         title: 'Can you use color names to specify colors in CSS?',
@@ -116,11 +117,11 @@ const template: ExerciseTemplate = {
         question_type: QuestionTypes[0], // RADIO
         options: [
           { label: 'Yes, using predefined color names', is_correct: true },
-          { label: 'No, color names are not supported in CSS', is_correct: false },
-        ],
-      },
-    ],
-  },
+          { label: 'No, color names are not supported in CSS', is_correct: false }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

@@ -95,7 +95,8 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title: 'Which special type is used for specifying that a variable can be of multiple types?',
+        title:
+          'Which special type is used for specifying that a variable can be of multiple types?',
         name: 'q4',
         points: 1,
         order: 4,
@@ -240,7 +241,8 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title: 'What is the special type used for representing a value that may be either a specified type or null or undefined?',
+        title:
+          'What is the special type used for representing a value that may be either a specified type or null or undefined?',
         name: 'q9',
         points: 1,
         order: 9,
@@ -269,7 +271,8 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title: 'What special type represents a value that is the result of a computation that may fail?',
+        title:
+          'What special type represents a value that is the result of a computation that may fail?',
         name: 'q10',
         points: 1,
         order: 10,

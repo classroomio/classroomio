@@ -16,21 +16,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'int',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'float',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'string',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'double',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the result of the expression: `5 + 3 * 2` in PHP?',
@@ -41,21 +41,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: '16',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '11',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: '13',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '10',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Which PHP function is used to check if a variable is an integer?',
@@ -66,21 +66,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'is_int()',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'intval()',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'is_integer()',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'int_check()',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the correct way to increment a variable `$x` by 1 in PHP?',
@@ -91,21 +91,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: '$x = $x++',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '$x++',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: '$x += 1',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '$x = ++$x',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Which PHP function is used to round a float to the nearest integer?',
@@ -116,21 +116,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'round()',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'ceil()',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'floor()',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'intval()',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the result of the expression: `10 / 0` in PHP?',
@@ -141,21 +141,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: '0',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '10',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Infinity',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'Error',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Which PHP function is used to find the minimum value among a list of numbers?',
@@ -166,21 +166,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'min()',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'maximum()',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'minimum()',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'smallest()',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the result of the expression: `5 == "5"` in PHP?',
@@ -191,21 +191,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'true',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'false',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Error',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '0',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How can you check if a PHP variable is NaN (Not-a-Number)?',
@@ -216,21 +216,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'Use `is_nan()` function',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'Compare the variable to itself using `!==`',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'Use `isNaN()` function',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Check if the variable is equal to `NaN`',
-            is_correct: true,
-          },
-        ],
+            is_correct: true
+          }
+        ]
       },
       {
         title: 'What is the correct way to convert the string "123" to an integer in PHP?',
@@ -241,12 +241,12 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'Enter your answer here',
-            is_correct: false,
-          },
-        ],
-      },
-    ],
-  },
+            is_correct: false
+          }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

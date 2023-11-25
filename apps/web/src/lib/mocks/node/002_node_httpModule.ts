@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Handling HTTP requests and responses', is_correct: true },
           { label: 'Creating file streams', is_correct: false },
-          { label: 'Database operations', is_correct: false },
-        ],
+          { label: 'Database operations', is_correct: false }
+        ]
       },
       {
         title: 'Which HTTP method is used to request data from a server?',
@@ -28,8 +28,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'POST', is_correct: false },
           { label: 'GET', is_correct: true },
-          { label: 'PUT', is_correct: false },
-        ],
+          { label: 'PUT', is_correct: false }
+        ]
       },
       {
         title: 'What does the HTTP response status code 404 indicate?',
@@ -40,8 +40,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'OK', is_correct: false },
           { label: 'Not Found', is_correct: true },
-          { label: 'Server Error', is_correct: false },
-        ],
+          { label: 'Server Error', is_correct: false }
+        ]
       },
       {
         title: 'Which of the following is a valid HTTP request header?',
@@ -53,8 +53,8 @@ const template: ExerciseTemplate = {
           { label: 'Content-Type', is_correct: true },
           { label: 'Authorization', is_correct: true },
           { label: 'User-Agent', is_correct: false },
-          { label: 'Cache-Control', is_correct: true },
-        ],
+          { label: 'Cache-Control', is_correct: true }
+        ]
       },
       {
         title: 'Explain the purpose of a query string in a URL.',
@@ -62,7 +62,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 5,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the purpose of the "http" module in Node.js?',
@@ -70,7 +70,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 6,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Which method in the "http" module is used to create an HTTP server?',
@@ -81,16 +81,17 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'http.createServer()', is_correct: true },
           { label: 'http.request()', is_correct: false },
-          { label: 'http.listen()', is_correct: false },
-        ],
+          { label: 'http.listen()', is_correct: false }
+        ]
       },
       {
-        title: 'What is the purpose of the "request" and "response" objects in an HTTP server callback?',
+        title:
+          'What is the purpose of the "request" and "response" objects in an HTTP server callback?',
         name: 'q8',
         points: 2,
         order: 8,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Which HTTP method is used to send data to the server for processing?',
@@ -101,8 +102,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'POST', is_correct: true },
           { label: 'GET', is_correct: false },
-          { label: 'PUT', is_correct: false },
-        ],
+          { label: 'PUT', is_correct: false }
+        ]
       },
       {
         title: 'What is the purpose of the "querystring" module in Node.js?',
@@ -113,11 +114,11 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Parsing and formatting URL query strings', is_correct: true },
           { label: 'Handling HTTP headers', is_correct: false },
-          { label: 'Creating HTML templates', is_correct: false },
-        ],
-      },
-    ],
-  },
+          { label: 'Creating HTML templates', is_correct: false }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

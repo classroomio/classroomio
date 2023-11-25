@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Iterating over a range of values', is_correct: false },
           { label: 'Repeating a block of code while a condition is true', is_correct: true },
-          { label: 'Defining a function', is_correct: false },
-        ],
+          { label: 'Defining a function', is_correct: false }
+        ]
       },
       {
         title: 'How do you write a simple while loop in Python?',
@@ -28,11 +28,12 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'while x > 5:', is_correct: false },
           { label: 'while (x < 10):', is_correct: false },
-          { label: 'while condition:', is_correct: true },
-        ],
+          { label: 'while condition:', is_correct: true }
+        ]
       },
       {
-        title: 'Which of the following statements is true about the "break" statement in a while loop?',
+        title:
+          'Which of the following statements is true about the "break" statement in a while loop?',
         name: 'question3',
         points: 2,
         order: 2,
@@ -40,8 +41,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'It is used to exit the current loop', is_correct: true },
           { label: 'It is used to define a new variable', is_correct: false },
-          { label: 'It is used to skip the next iteration of the loop', is_correct: false },
-        ],
+          { label: 'It is used to skip the next iteration of the loop', is_correct: false }
+        ]
       },
       {
         title: 'Explain the concept of an infinite loop in Python while loops.',
@@ -49,7 +50,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 3,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the result of using "continue" in a while loop in Python?',
@@ -60,8 +61,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Exit the loop', is_correct: false },
           { label: 'Skip the current iteration and continue with the next', is_correct: true },
-          { label: 'Re-run the loop from the beginning', is_correct: false },
-        ],
+          { label: 'Re-run the loop from the beginning', is_correct: false }
+        ]
       },
       {
         title: 'What is the purpose of the "else" statement in a while loop?',
@@ -72,8 +73,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'As a replacement for "if"', is_correct: false },
           { label: 'To execute code if the loop completes without a "break"', is_correct: true },
-          { label: 'To define a function', is_correct: false },
-        ],
+          { label: 'To define a function', is_correct: false }
+        ]
       },
       {
         title: 'Explain the concept of "nested while loops" in Python.',
@@ -81,7 +82,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 6,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How do you use the "for" loop in Python?',
@@ -92,8 +93,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'To create an infinite loop', is_correct: false },
           { label: 'To iterate over a sequence of items', is_correct: true },
-          { label: 'To execute code only once', is_correct: false },
-        ],
+          { label: 'To execute code only once', is_correct: false }
+        ]
       },
       {
         title: 'What is the result of "range(3)" in a for loop in Python?',
@@ -104,8 +105,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '0, 1, 2', is_correct: true },
           { label: '3, 6, 9', is_correct: false },
-          { label: '1, 2, 3', is_correct: false },
-        ],
+          { label: '1, 2, 3', is_correct: false }
+        ]
       },
       {
         title: 'Explain the concept of "loop control statements" in Python.',
@@ -113,10 +114,10 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
-      },
-    ],
-  },
+        options: []
+      }
+    ]
+  }
 };
 
 export default template;

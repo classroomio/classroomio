@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'margin', is_correct: true },
           { label: 'margin-all', is_correct: false },
-          { label: 'margin-sides', is_correct: false },
-        ],
+          { label: 'margin-sides', is_correct: false }
+        ]
       },
       {
         title: 'How do you set the top margin of an element to 20px in CSS?',
@@ -28,8 +28,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'margin-top: 20px;', is_correct: true },
           { label: 'margin: 20px top;', is_correct: false },
-          { label: 'margin: top 20px;', is_correct: false },
-        ],
+          { label: 'margin: top 20px;', is_correct: false }
+        ]
       },
       {
         title: 'What is the default value of the "margin" property in CSS?',
@@ -40,8 +40,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '0', is_correct: true },
           { label: 'auto', is_correct: false },
-          { label: '10px', is_correct: false },
-        ],
+          { label: '10px', is_correct: false }
+        ]
       },
       {
         title: 'How can you center an element horizontally in CSS using margin?',
@@ -52,8 +52,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'margin-left: auto; margin-right: auto;', is_correct: true },
           { label: 'margin-center: auto;', is_correct: false },
-          { label: 'margin-horizontal: center;', is_correct: false },
-        ],
+          { label: 'margin-horizontal: center;', is_correct: false }
+        ]
       },
       {
         title: 'Explain the difference between "margin" and "padding" in CSS.',
@@ -61,7 +61,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 4,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How can you remove the margin from all sides of an element in CSS?',
@@ -69,7 +69,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 5,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the CSS property used to set the margin between adjacent table cells?',
@@ -80,8 +80,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'cell-spacing', is_correct: false },
           { label: 'table-spacing', is_correct: false },
-          { label: 'border-spacing', is_correct: true },
-        ],
+          { label: 'border-spacing', is_correct: true }
+        ]
       },
       {
         title: 'How do you set different margins for each side of an element in CSS?',
@@ -92,8 +92,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'margin-top, margin-right, margin-bottom, margin-left', is_correct: true },
           { label: 'margin-all', is_correct: false },
-          { label: 'margin-sides', is_correct: false },
-        ],
+          { label: 'margin-sides', is_correct: false }
+        ]
       },
       {
         title: 'What is the purpose of the "margin-collapse" property in CSS?',
@@ -104,8 +104,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'To collapse the margin of adjacent elements', is_correct: true },
           { label: 'To increase the margin size', is_correct: false },
-          { label: 'To hide the margin', is_correct: false },
-        ],
+          { label: 'To hide the margin', is_correct: false }
+        ]
       },
       {
         title: 'How do you create a space between two block-level elements in CSS?',
@@ -116,11 +116,11 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Using margin', is_correct: true },
           { label: 'Using padding', is_correct: false },
-          { label: 'Using border', is_correct: false },
-        ],
-      },
-    ],
-  },
+          { label: 'Using border', is_correct: false }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

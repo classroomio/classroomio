@@ -16,17 +16,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To observe and react to changes in data properties',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To create new data properties',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To define computed properties',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How do you define a watcher in a Vue component?',
@@ -34,7 +34,7 @@ const template: ExerciseTemplate = {
         points: 3,
         order: 1,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'In Vue.js, can you have multiple watchers for the same data property?',
@@ -45,17 +45,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'Yes, you can have multiple watchers for the same property',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'No, you can only have one watcher for each property',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Only if the data property is an array',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'When is a watcher function executed in Vue.js?',
@@ -66,17 +66,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'Before the data property changes',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Immediately after the data property changes',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'At a specific interval set by the developer',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the main difference between a computed property and a watcher in Vue.js?',
@@ -84,7 +84,7 @@ const template: ExerciseTemplate = {
         points: 3,
         order: 4,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How do you unregister a watcher in Vue.js?',
@@ -95,17 +95,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'By using the "$off" method',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By setting the watcher function to null',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By calling the "$unwatch" method on the component',
-            is_correct: true,
-          },
-        ],
+            is_correct: true
+          }
+        ]
       },
       {
         title: 'What is the purpose of using a deep watcher in Vue.js?',
@@ -116,17 +116,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To watch changes in nested data properties of objects or arrays',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To watch data properties only at the top level',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To watch computed properties',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What happens if you attempt to watch a non-existent data property in Vue.js?',
@@ -134,7 +134,7 @@ const template: ExerciseTemplate = {
         points: 3,
         order: 7,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Can you use watchers with computed properties in Vue.js?',
@@ -145,17 +145,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'Yes, watchers can be used with computed properties',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'No, computed properties and watchers are mutually exclusive',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Only in specific situations',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'In Vue.js, what is the purpose of the "immediate" option in a watcher definition?',
@@ -166,20 +166,20 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To trigger the watcher immediately after component creation',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To prevent the watcher from ever executing',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To delay the execution of the watcher',
-            is_correct: false,
-          },
-        ],
-      },
-    ],
-  },
+            is_correct: false
+          }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

@@ -1,20 +1,20 @@
 export const STATUS = {
   SUBMITTED: 1,
   IN_PROGRESS: 2,
-  GRADED: 3,
+  GRADED: 3
 };
 
 export const SELECTABLE_STATUS = [
   {
     label: 'Submitted',
-    value: STATUS.SUBMITTED,
+    value: STATUS.SUBMITTED
   },
   {
     label: 'In progress',
-    value: STATUS.IN_PROGRESS,
+    value: STATUS.IN_PROGRESS
   },
   {
     label: 'Graded',
-    value: STATUS.GRADED,
-  },
+    value: STATUS.GRADED
+  }
 ];

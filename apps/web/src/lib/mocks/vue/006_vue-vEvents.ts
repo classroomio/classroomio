@@ -16,17 +16,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To create computed properties',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To manage user interactions and respond to them',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To define data properties in Vue.js',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How can you attach a click event handler to an element in Vue.js?',
@@ -34,7 +34,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 1,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the syntax for binding a method to an event in Vue.js?',
@@ -42,7 +42,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 2,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How can you pass data to an event handler in Vue.js?',
@@ -50,7 +50,7 @@ const template: ExerciseTemplate = {
         points: 3,
         order: 3,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Explain the purpose of the "@" symbol in Vue.js event binding.',
@@ -58,7 +58,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 4,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the difference between "v-on" and "v-bind" in Vue.js event handling?',
@@ -66,7 +66,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 5,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How can you prevent the default behavior of an event in Vue.js?',
@@ -74,7 +74,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 6,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Explain the concept of event modifiers in Vue.js.',
@@ -82,7 +82,7 @@ const template: ExerciseTemplate = {
         points: 3,
         order: 7,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the purpose of the "stop" event modifier in Vue.js?',
@@ -93,17 +93,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To stop event propagation',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To stop the event handler',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To stop event bubbling',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Explain the usage of the "once" event modifier in Vue.js.',
@@ -111,10 +111,10 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
-      },
-    ],
-  },
+        options: []
+      }
+    ]
+  }
 };
 
 export default template;

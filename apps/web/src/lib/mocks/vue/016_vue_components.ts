@@ -16,17 +16,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'A reusable and self-contained Vue instance',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'A JavaScript function',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'A built-in HTML element',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How do you define a Vue.js component?',
@@ -34,7 +34,7 @@ const template: ExerciseTemplate = {
         points: 3,
         order: 1,
         question_type: QuestionTypes[3], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the primary advantage of using Vue components?',
@@ -45,17 +45,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'Reusability and maintainability',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'Faster page load times',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Improved SEO',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How do you pass data from a parent component to a child component?',
@@ -66,17 +66,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'By using props',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'By defining a data property in the child component',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By using v-model directive',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is a Vue.js component lifecycle hook?',
@@ -84,7 +84,7 @@ const template: ExerciseTemplate = {
         points: 3,
         order: 4,
         question_type: QuestionTypes[3], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How can you create a global Vue component?',
@@ -95,17 +95,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'By using Vue.component method',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'By including a component in a parent component template',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By defining a new Vue instance',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the purpose of the Vue component template?',
@@ -116,17 +116,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To define the structure and layout of the component',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To store data and business logic',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To define component props',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How do you define component props?',
@@ -134,7 +134,7 @@ const template: ExerciseTemplate = {
         points: 3,
         order: 7,
         question_type: QuestionTypes[3], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the purpose of the Vue component root element?',
@@ -145,17 +145,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'It encapsulates the component template',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'It defines component data properties',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'It represents the component props',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How do you create a named slot in a Vue component?',
@@ -166,20 +166,20 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'By using the "slot" attribute in the component template',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'By defining a prop with the name of the slot',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By declaring a new Vue instance',
-            is_correct: false,
-          },
-        ],
-      },
-    ],
-  },
+            is_correct: false
+          }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

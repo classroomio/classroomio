@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '8', is_correct: true },
           { label: '53', is_correct: false },
-          { label: '35', is_correct: false },
-        ],
+          { label: '35', is_correct: false }
+        ]
       },
       {
         title: 'Which operator is used for exponentiation in Python?',
@@ -28,8 +28,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '**', is_correct: true },
           { label: '^', is_correct: false },
-          { label: '^^', is_correct: false },
-        ],
+          { label: '^^', is_correct: false }
+        ]
       },
       {
         title: 'What is the result of 10 / 2 in Python?',
@@ -40,8 +40,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '5.0', is_correct: true },
           { label: '5', is_correct: false },
-          { label: '2.5', is_correct: false },
-        ],
+          { label: '2.5', is_correct: false }
+        ]
       },
       {
         title: 'Explain the concept of operator precedence in Python.',
@@ -49,7 +49,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 3,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Which operator is used to calculate the remainder of a division in Python?',
@@ -60,8 +60,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '%', is_correct: true },
           { label: 'remainder', is_correct: false },
-          { label: 'remainderOf', is_correct: false },
-        ],
+          { label: 'remainderOf', is_correct: false }
+        ]
       },
       {
         title: 'What is the result of 2 * 3 in Python?',
@@ -72,8 +72,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '6', is_correct: true },
           { label: '23', is_correct: false },
-          { label: '32', is_correct: false },
-        ],
+          { label: '32', is_correct: false }
+        ]
       },
       {
         title: 'Explain the concept of logical operators in Python.',
@@ -81,7 +81,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 6,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the result of "Hello" + " " + "World" in Python?',
@@ -92,8 +92,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'HelloWorld', is_correct: false },
           { label: 'Hello World', is_correct: true },
-          { label: '"Hello World"', is_correct: false },
-        ],
+          { label: '"Hello World"', is_correct: false }
+        ]
       },
       {
         title: 'Which operator is used for string repetition in Python?',
@@ -104,8 +104,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '*', is_correct: true },
           { label: '+', is_correct: false },
-          { label: '++', is_correct: false },
-        ],
+          { label: '++', is_correct: false }
+        ]
       },
       {
         title: 'Explain the concept of membership operators in Python.',
@@ -113,10 +113,10 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
-      },
-    ],
-  },
+        options: []
+      }
+    ]
+  }
 };
 
 export default template;

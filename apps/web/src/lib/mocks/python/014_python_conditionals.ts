@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Looping', is_correct: false },
           { label: 'Making decisions', is_correct: true },
-          { label: 'Defining functions', is_correct: false },
-        ],
+          { label: 'Defining functions', is_correct: false }
+        ]
       },
       {
         title: 'How do you write an if statement in Python?',
@@ -28,8 +28,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'if x > 5', is_correct: true },
           { label: 'if x < 5:', is_correct: false },
-          { label: 'if (x > 5) {', is_correct: false },
-        ],
+          { label: 'if (x > 5) {', is_correct: false }
+        ]
       },
       {
         title: 'Which of the following is a valid Python if statement?',
@@ -40,8 +40,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'if x > 5:', is_correct: true },
           { label: 'if x < 10:', is_correct: true },
-          { label: 'if x == 7', is_correct: false },
-        ],
+          { label: 'if x == 7', is_correct: false }
+        ]
       },
       {
         title: 'Explain the concept of boolean expressions in Python conditions.',
@@ -49,7 +49,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 3,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How do you use the "else" statement in Python?',
@@ -60,8 +60,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'As a replacement for "if"', is_correct: false },
           { label: 'To define a function', is_correct: false },
-          { label: 'To execute code if the "if" statement is false', is_correct: true },
-        ],
+          { label: 'To execute code if the "if" statement is false', is_correct: true }
+        ]
       },
       {
         title: 'What is the result of (5 > 3) and (10 > 7) in Python?',
@@ -72,8 +72,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'True', is_correct: true },
           { label: 'False', is_correct: false },
-          { label: '1', is_correct: false },
-        ],
+          { label: '1', is_correct: false }
+        ]
       },
       {
         title: 'Explain the concept of "elif" in Python conditions.',
@@ -81,7 +81,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 6,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How do you use the "or" operator in Python conditions?',
@@ -92,8 +92,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'To combine conditions that must both be true', is_correct: false },
           { label: 'To combine conditions where at least one must be true', is_correct: true },
-          { label: 'To exclude conditions', is_correct: false },
-        ],
+          { label: 'To exclude conditions', is_correct: false }
+        ]
       },
       {
         title: 'What is the result of not(True) in Python?',
@@ -104,8 +104,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'True', is_correct: false },
           { label: 'False', is_correct: true },
-          { label: 'None', is_correct: false },
-        ],
+          { label: 'None', is_correct: false }
+        ]
       },
       {
         title: 'Explain the concept of nested if statements in Python.',
@@ -113,10 +113,10 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
-      },
-    ],
-  },
+        options: []
+      }
+    ]
+  }
 };
 
 export default template;

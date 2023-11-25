@@ -16,17 +16,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'Node Project Manager',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Node Package Manager',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'Node Module Processor',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How do you initialize a new Node.js project with NPM?',
@@ -37,17 +37,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'npm create-project',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'npm init',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'npm start-project',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What command is used to install a package locally using NPM?',
@@ -58,17 +58,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'npm install',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'npm add',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'npm get',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Explain the purpose of the "package.json" file in a Node.js project.',
@@ -76,7 +76,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 3,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How do you update a global NPM package to the latest version?',
@@ -87,17 +87,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'npm update -g package-name',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'npm upgrade package-name',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'npm install -g package-name',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the purpose of the "npm start" command?',
@@ -108,17 +108,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'It starts the development server.',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'It installs all project dependencies.',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'It updates NPM to the latest version.',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How do you remove a package from your Node.js project using NPM?',
@@ -129,17 +129,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'npm remove package-name',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'npm uninstall package-name',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'npm delete package-name',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the purpose of "npm install --save"?',
@@ -150,17 +150,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To install a package globally.',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To install a package and add it to the dependencies in package.json.',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To uninstall a package.',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How can you view a list of globally installed NPM packages?',
@@ -171,17 +171,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'npm list -g',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'npm global list',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'npm show -g',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the purpose of the "npm audit" command?',
@@ -192,21 +192,20 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To perform security audits on your project dependencies.',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To check the version of NPM installed globally.',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To start a new NPM project.',
-            is_correct: false,
-          },
-        ],
-      },
-    ],
-  },
+            is_correct: false
+          }
+        ]
+      }
+    ]
+  }
 };
-
 
 export default template;

@@ -50,7 +50,8 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title: 'Which of the following is a correct way to assign a value to a variable in JavaScript?',
+        title:
+          'Which of the following is a correct way to assign a value to a variable in JavaScript?',
         name: 'q3',
         points: 1,
         order: 3,

@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'An ordered collection of elements that can be modified', is_correct: false },
           { label: 'An ordered collection of elements that cannot be modified', is_correct: true },
-          { label: 'A list with different syntax', is_correct: false },
-        ],
+          { label: 'A list with different syntax', is_correct: false }
+        ]
       },
       {
         title: 'How do you declare a Python tuple?',
@@ -28,8 +28,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'tuple x = (1, 2, 3)', is_correct: false },
           { label: 'x = (1, 2, 3)', is_correct: true },
-          { label: 'x = tuple(1, 2, 3)', is_correct: false },
-        ],
+          { label: 'x = tuple(1, 2, 3)', is_correct: false }
+        ]
       },
       {
         title: 'Which of the following is a valid tuple declaration in Python?',
@@ -40,8 +40,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'mytuple = (1, 2, 3)', is_correct: true },
           { label: 'mytuple = [1, 2, 3]', is_correct: false },
-          { label: 'mytuple = (\'apple\', \'banana\', \'cherry\')', is_correct: true },
-        ],
+          { label: "mytuple = ('apple', 'banana', 'cherry')", is_correct: true }
+        ]
       },
       {
         title: 'Explain the concept of immutability of tuples in Python.',
@@ -49,7 +49,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 3,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How do you access elements in a tuple in Python?',
@@ -60,8 +60,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'By index using square brackets', is_correct: true },
           { label: 'By using dot notation', is_correct: false },
-          { label: 'By using curly braces', is_correct: false },
-        ],
+          { label: 'By using curly braces', is_correct: false }
+        ]
       },
       {
         title: 'What is the result of (1, 2, 3) + (4, 5, 6) in Python?',
@@ -72,8 +72,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '(1, 2, 3, 4, 5, 6)', is_correct: true },
           { label: '10', is_correct: false },
-          { label: '(10, 15, 21)', is_correct: false },
-        ],
+          { label: '(10, 15, 21)', is_correct: false }
+        ]
       },
       {
         title: 'Explain the concept of tuple methods in Python.',
@@ -81,7 +81,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 6,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How do you check if an item is present in a tuple in Python?',
@@ -92,8 +92,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'By using the `contains` keyword', is_correct: false },
           { label: 'Using the `in` keyword', is_correct: true },
-          { label: 'By using a loop', is_correct: false },
-        ],
+          { label: 'By using a loop', is_correct: false }
+        ]
       },
       {
         title: 'What is the result of (1, 2, 3).count(2) in Python?',
@@ -104,8 +104,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '2', is_correct: false },
           { label: '3', is_correct: false },
-          { label: '1', is_correct: true },
-        ],
+          { label: '1', is_correct: true }
+        ]
       },
       {
         title: 'Explain the concept of tuple unpacking in Python.',
@@ -113,10 +113,10 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
-      },
-    ],
-  },
+        options: []
+      }
+    ]
+  }
 };
 
 export default template;

@@ -16,17 +16,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To pass data from child to parent components',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To create Vue.js components',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To style the user interface',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How is an event emitted from a child component?',
@@ -34,7 +34,7 @@ const template: ExerciseTemplate = {
         points: 3,
         order: 1,
         question_type: QuestionTypes[3], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the purpose of the $emit method in Vue.js?',
@@ -45,17 +45,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To emit an event from a parent component',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To emit an event from a child component',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To define CSS styles',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How can you pass data when emitting an event?',
@@ -66,17 +66,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'By using the $on method',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By including data as a parameter in $emit',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'By defining a new event handler',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the key modifier for emitting events with the Enter key?',
@@ -84,7 +84,7 @@ const template: ExerciseTemplate = {
         points: 3,
         order: 4,
         question_type: QuestionTypes[3], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the v-on directive used for in Vue.js?',
@@ -95,17 +95,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To define CSS styles',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To handle DOM events and call methods',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To create Vue.js components',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How can you stop an event from propagating to parent components?',
@@ -116,17 +116,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'By using $emit with the .stop modifier',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By using $emit with the .prevent modifier',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By using $emit with the .stop modifier',
-            is_correct: true,
-          },
-        ],
+            is_correct: true
+          }
+        ]
       },
       {
         title: 'How can you capture a specific event emitted from a child component?',
@@ -134,7 +134,7 @@ const template: ExerciseTemplate = {
         points: 3,
         order: 7,
         question_type: QuestionTypes[3], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the v-bind directive used for in Vue.js?',
@@ -145,17 +145,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To emit custom events',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To handle DOM events',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To bind an element’s attribute to a Vue.js data value',
-            is_correct: true,
-          },
-        ],
+            is_correct: true
+          }
+        ]
       },
       {
         title: 'What is the argument of the v-on directive when listening to a custom event?',
@@ -166,20 +166,20 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'The event name',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'The method to call',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'The event data',
-            is_correct: false,
-          },
-        ],
-      },
-    ],
-  },
+            is_correct: false
+          }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

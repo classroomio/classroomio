@@ -71,7 +71,8 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title: 'Which of the following is a correct way to comment out a single line of code in JavaScript?',
+        title:
+          'Which of the following is a correct way to comment out a single line of code in JavaScript?',
         name: 'q4',
         points: 1,
         order: 4,

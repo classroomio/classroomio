@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'To add color to your code', is_correct: false },
           { label: 'To perform mathematical operations', is_correct: true },
-          { label: 'To create text strings', is_correct: false },
-        ],
+          { label: 'To create text strings', is_correct: false }
+        ]
       },
       {
         title: 'Which of the following is not a valid numeric data type in Python?',
@@ -29,8 +29,8 @@ const template: ExerciseTemplate = {
           { label: 'int', is_correct: true },
           { label: 'float', is_correct: true },
           { label: 'str', is_correct: false },
-          { label: 'char', is_correct: false },
-        ],
+          { label: 'char', is_correct: false }
+        ]
       },
       {
         title: 'How do you declare a floating-point number in Python?',
@@ -41,8 +41,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'x = 5', is_correct: false },
           { label: 'float x', is_correct: false },
-          { label: 'x = 5.0', is_correct: true },
-        ],
+          { label: 'x = 5.0', is_correct: true }
+        ]
       },
       {
         title: 'What is the result of 5 + 2 in Python?',
@@ -53,8 +53,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '7', is_correct: true },
           { label: '52', is_correct: false },
-          { label: '25', is_correct: false },
-        ],
+          { label: '25', is_correct: false }
+        ]
       },
       {
         title: 'Explain the purpose of numeric data types in Python.',
@@ -62,7 +62,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 4,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Which operator is used for exponentiation in Python?',
@@ -73,8 +73,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '^', is_correct: false },
           { label: '**', is_correct: true },
-          { label: '^^', is_correct: false },
-        ],
+          { label: '^^', is_correct: false }
+        ]
       },
       {
         title: 'What is the result of 10 / 3 in Python?',
@@ -85,8 +85,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '3.333', is_correct: false },
           { label: '3.0', is_correct: false },
-          { label: '3', is_correct: true },
-        ],
+          { label: '3', is_correct: true }
+        ]
       },
       {
         title: 'What is the purpose of the "complex" data type in Python?',
@@ -97,8 +97,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'To store complex numbers', is_correct: true },
           { label: 'To represent text', is_correct: false },
-          { label: 'To handle exceptions', is_correct: false },
-        ],
+          { label: 'To handle exceptions', is_correct: false }
+        ]
       },
       {
         title: 'Explain the purpose of mathematical operators in Python.',
@@ -106,7 +106,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 8,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Which operator is used to find the remainder of a division in Python?',
@@ -118,11 +118,11 @@ const template: ExerciseTemplate = {
           { label: '%', is_correct: true },
           { label: '/', is_correct: false },
           { label: '*', is_correct: false },
-          { label: '//', is_correct: false },
-        ],
-      },
-    ],
-  },
+          { label: '//', is_correct: false }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

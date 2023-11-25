@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'git add .', is_correct: true },
           { label: 'git commit -m', is_correct: false },
-          { label: 'git push origin', is_correct: false },
-        ],
+          { label: 'git push origin', is_correct: false }
+        ]
       },
       {
         title: 'What does "git status" show for new files?',
@@ -29,8 +29,8 @@ const template: ExerciseTemplate = {
           { label: 'Untracked files', is_correct: true },
           { label: 'Staged files', is_correct: false },
           { label: 'Committed files', is_correct: false },
-          { label: 'Modified files', is_correct: false },
-        ],
+          { label: 'Modified files', is_correct: false }
+        ]
       },
       {
         title: 'Explain the purpose of "git add" in your own words.',
@@ -38,7 +38,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 3,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the recommended way to unstage a file in Git?',
@@ -49,8 +49,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'git unstage', is_correct: false },
           { label: 'git reset HEAD', is_correct: true },
-          { label: 'git checkout', is_correct: false },
-        ],
+          { label: 'git checkout', is_correct: false }
+        ]
       },
       {
         title: 'How can you commit only specific new files in Git?',
@@ -62,8 +62,8 @@ const template: ExerciseTemplate = {
           { label: 'Use "git commit -a"', is_correct: false },
           { label: 'Add the specific files with "git add" and then commit', is_correct: true },
           { label: 'Use "git commit --all"', is_correct: false },
-          { label: 'Use "git commit -m"', is_correct: false },
-        ],
+          { label: 'Use "git commit -m"', is_correct: false }
+        ]
       },
       {
         title: 'What is the purpose of "git diff" for new files?',
@@ -71,7 +71,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 6,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What does "git stash" do?',
@@ -82,8 +82,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Deletes all your changes', is_correct: false },
           { label: 'Temporarily saves your changes', is_correct: true },
-          { label: 'Creates a new branch', is_correct: false },
-        ],
+          { label: 'Creates a new branch', is_correct: false }
+        ]
       },
       {
         title: 'What is the purpose of "git commit -m"?',
@@ -95,8 +95,8 @@ const template: ExerciseTemplate = {
           { label: 'To stage new files', is_correct: false },
           { label: 'To commit changes with a specified message', is_correct: true },
           { label: 'To push changes to a remote repository', is_correct: false },
-          { label: 'To create a new branch', is_correct: false },
-        ],
+          { label: 'To create a new branch', is_correct: false }
+        ]
       },
       {
         title: 'Explain the Git stash operation in your own words.',
@@ -104,7 +104,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the purpose of "git log"?',
@@ -115,11 +115,11 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'To view a list of available branches', is_correct: false },
           { label: 'To view the commit history', is_correct: true },
-          { label: 'To merge branches', is_correct: false },
-        ],
-      },
-    ],
-  },
+          { label: 'To merge branches', is_correct: false }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

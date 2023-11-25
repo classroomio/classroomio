@@ -19,7 +19,6 @@ import nodeSqlLimit from './018_node_sqlLimit';
 import nodeSqlJoin from './019_node_sqlJoin';
 import nodeMongoDBDatabase from './020_node_mongodbDatabase';
 
-
 export const NODE_IDS: { [key: string]: string } = {
   NODE_MODULE: 'NODE_MODULE',
   NODE_HTTPMODULE: 'NODE_HTTPMODULE',
@@ -40,7 +39,7 @@ export const NODE_IDS: { [key: string]: string } = {
   NODE_SQLUPDATE: 'NODE_SQLUPDATE',
   NODE_SQLLIMIT: 'NODE_SQLLIMIT',
   NODE_SQLJOIN: 'NODE_SQLJOIN',
-  NODE_MONGODBDATABASE: 'NODE_MONGODBDATABASE',
+  NODE_MONGODBDATABASE: 'NODE_MONGODBDATABASE'
 };
 
 export const NODE_TEMPLATES = {
@@ -63,5 +62,5 @@ export const NODE_TEMPLATES = {
   [NODE_IDS.NODE_SQLUPDATE]: nodeSqlUpdate,
   [NODE_IDS.NODE_SQLLIMIT]: nodeSqlLimit,
   [NODE_IDS.NODE_SQLJOIN]: nodeSqlJoin,
-  [NODE_IDS.NODE_MONGODBDATABASE]: nodeMongoDBDatabase,
+  [NODE_IDS.NODE_MONGODBDATABASE]: nodeMongoDBDatabase
 };

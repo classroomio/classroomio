@@ -16,17 +16,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To create a new branch in the repository',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To undo a previous commit by creating a new commit',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To delete a Git repository',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How can you revert a specific commit in Git?',
@@ -37,17 +37,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'By using the "git revert" command followed by the commit hash',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'By deleting the commit from the commit history',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By creating a new branch and manually reverting changes',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Explain the difference between "git revert" and "git reset" commands.',
@@ -55,7 +55,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 2,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is a potential drawback of using "git revert" to undo commits?',
@@ -63,7 +63,7 @@ const template: ExerciseTemplate = {
         points: 3,
         order: 3,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How can you revert multiple consecutive commits in Git?',
@@ -74,17 +74,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'By running "git revert" multiple times for each commit',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'By creating a new branch and deleting the unwanted commits',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'It is not possible to revert multiple commits at once',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is a "revert commit" in Git?',
@@ -95,17 +95,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'A new commit that undoes the changes introduced by a previous commit',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'A commit that creates a new branch',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'A commit with no changes',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How can you preview the changes that will be made by a "git revert" operation?',
@@ -116,17 +116,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'By using the "git diff" command with the commit hash',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'By using the "git show" command with the commit hash',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'It is not possible to preview changes before reverting',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What happens to the commit history after a "git revert" operation?',
@@ -137,17 +137,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'A new commit is added to undo the changes, preserving the commit history',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'The commit history is deleted',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'The commit is marked as "reverted" without adding a new commit',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Explain the concept of a "conflict" when reverting changes in Git.',
@@ -155,7 +155,7 @@ const template: ExerciseTemplate = {
         points: 3,
         order: 8,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the purpose of the "git revert -n" command?',
@@ -166,20 +166,20 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To revert a commit without creating a new commit',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To revert a commit and delete the commit history',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To revert a commit and force push it to the remote repository',
-            is_correct: false,
-          },
-        ],
-      },
-    ],
-  },
+            is_correct: false
+          }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

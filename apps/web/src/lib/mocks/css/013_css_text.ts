@@ -17,8 +17,8 @@ const template: ExerciseTemplate = {
           { label: 'font-family', is_correct: true },
           { label: 'font-style', is_correct: false },
           { label: 'text-align', is_correct: false },
-          { label: 'line-height', is_correct: false },
-        ],
+          { label: 'line-height', is_correct: false }
+        ]
       },
       {
         title: 'What is the default value of the CSS "text-decoration" property?',
@@ -30,8 +30,8 @@ const template: ExerciseTemplate = {
           { label: 'Underline', is_correct: false },
           { label: 'None', is_correct: true },
           { label: 'Overline', is_correct: false },
-          { label: 'Line-through', is_correct: false },
-        ],
+          { label: 'Line-through', is_correct: false }
+        ]
       },
       {
         title: 'Which CSS property is used to control the spacing between letters in text?',
@@ -43,8 +43,8 @@ const template: ExerciseTemplate = {
           { label: 'letter-spacing', is_correct: true },
           { label: 'word-spacing', is_correct: false },
           { label: 'line-height', is_correct: false },
-          { label: 'text-transform', is_correct: false },
-        ],
+          { label: 'text-transform', is_correct: false }
+        ]
       },
       {
         title: 'How do you make text bold in CSS?',
@@ -56,8 +56,8 @@ const template: ExerciseTemplate = {
           { label: 'font-weight: bold;', is_correct: true },
           { label: 'text-decoration: bold;', is_correct: false },
           { label: 'text-weight: bold;', is_correct: false },
-          { label: 'font-style: bold;', is_correct: false },
-        ],
+          { label: 'font-style: bold;', is_correct: false }
+        ]
       },
       {
         title: 'What does the CSS property "text-transform: uppercase;" do?',
@@ -69,8 +69,8 @@ const template: ExerciseTemplate = {
           { label: 'Converts text to uppercase', is_correct: true },
           { label: 'Converts text to lowercase', is_correct: false },
           { label: 'Underlines the text', is_correct: false },
-          { label: 'Strikes through the text', is_correct: false },
-        ],
+          { label: 'Strikes through the text', is_correct: false }
+        ]
       },
       {
         title: 'Explain the usage of the CSS "text-align" property.',
@@ -78,7 +78,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 5,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the purpose of the "text-shadow" property in CSS?',
@@ -90,8 +90,8 @@ const template: ExerciseTemplate = {
           { label: 'Adds a shadow to text', is_correct: true },
           { label: 'Changes the font size', is_correct: false },
           { label: 'Underlines the text', is_correct: false },
-          { label: 'Converts text to uppercase', is_correct: false },
-        ],
+          { label: 'Converts text to uppercase', is_correct: false }
+        ]
       },
       {
         title: 'In CSS, can you use "font-style: italic;" to make text italic?',
@@ -101,8 +101,8 @@ const template: ExerciseTemplate = {
         question_type: QuestionTypes[0], // RADIO
         options: [
           { label: 'Yes', is_correct: true },
-          { label: 'No', is_correct: false },
-        ],
+          { label: 'No', is_correct: false }
+        ]
       },
       {
         title: 'Which CSS property is used to set the color of the text?',
@@ -114,8 +114,8 @@ const template: ExerciseTemplate = {
           { label: 'color', is_correct: true },
           { label: 'background-color', is_correct: false },
           { label: 'text-color', is_correct: false },
-          { label: 'font-color', is_correct: false },
-        ],
+          { label: 'font-color', is_correct: false }
+        ]
       },
       {
         title: 'What is the default value of the CSS "line-height" property?',
@@ -127,11 +127,11 @@ const template: ExerciseTemplate = {
           { label: '1', is_correct: false },
           { label: 'normal', is_correct: true },
           { label: '100%', is_correct: false },
-          { label: '0', is_correct: false },
-        ],
-      },
-    ],
-  },
+          { label: '0', is_correct: false }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

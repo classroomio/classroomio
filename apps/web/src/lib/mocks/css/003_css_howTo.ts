@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '<link rel="stylesheet" type="text/css" href="styles.css">', is_correct: true },
           { label: '<style src="styles.css">', is_correct: false },
-          { label: '<css src="styles.css">', is_correct: false },
-        ],
+          { label: '<css src="styles.css">', is_correct: false }
+        ]
       },
       {
         title: 'What does CSS stand for?',
@@ -28,8 +28,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Cascading Style Sheets', is_correct: true },
           { label: 'Computer Style Sheets', is_correct: false },
-          { label: 'Creative Style Sheets', is_correct: false },
-        ],
+          { label: 'Creative Style Sheets', is_correct: false }
+        ]
       },
       {
         title: 'Which CSS property is used to change the text color of an element?',
@@ -40,8 +40,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'color', is_correct: true },
           { label: 'text-color', is_correct: false },
-          { label: 'font-color', is_correct: false },
-        ],
+          { label: 'font-color', is_correct: false }
+        ]
       },
       {
         title: 'What is the correct way to comment out CSS code?',
@@ -52,8 +52,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '/* This is a comment */', is_correct: true },
           { label: '<!-- This is a comment -->', is_correct: false },
-          { label: '// This is a comment', is_correct: false },
-        ],
+          { label: '// This is a comment', is_correct: false }
+        ]
       },
       {
         title: 'How do you apply an inline style to an HTML element?',
@@ -64,8 +64,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '<div style="color: blue;">', is_correct: true },
           { label: '<div class="blue">', is_correct: false },
-          { label: '<div id="blue">', is_correct: false },
-        ],
+          { label: '<div id="blue">', is_correct: false }
+        ]
       },
       {
         title: 'Which CSS selector selects all elements with the class "highlight"?',
@@ -76,8 +76,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '.highlight', is_correct: true },
           { label: '#highlight', is_correct: false },
-          { label: 'element="highlight"', is_correct: false },
-        ],
+          { label: 'element="highlight"', is_correct: false }
+        ]
       },
       {
         title: 'Explain the usage of the CSS "box-sizing" property.',
@@ -85,7 +85,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 6,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How do you select all <p> elements that are inside a <div> element?',
@@ -93,7 +93,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 7,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the purpose of CSS pseudo-classes?',
@@ -101,7 +101,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 8,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the difference between margin and padding in CSS?',
@@ -109,10 +109,10 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
-      },
-    ],
-  },
+        options: []
+      }
+    ]
+  }
 };
 
 export default template;

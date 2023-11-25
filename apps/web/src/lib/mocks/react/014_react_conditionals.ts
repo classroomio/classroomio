@@ -16,17 +16,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'Using conditional statements (if-else).',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'Always rendering all content.',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Using randomization.',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the purpose of the "ternary operator" in conditional rendering?',
@@ -34,10 +34,11 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 1,
         question_type: QuestionTypes[2],
-        options: [],
+        options: []
       },
       {
-        title: 'How would you conditionally render "ComponentA" if a condition is true and "ComponentB" if the condition is false?',
+        title:
+          'How would you conditionally render "ComponentA" if a condition is true and "ComponentB" if the condition is false?',
         name: 'conditionalRenderingComponents',
         points: 1,
         order: 2,
@@ -45,17 +46,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: '{condition ? <ComponentA /> : <ComponentB />}',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: '<ComponentA /> || <ComponentB />',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '<ComponentA /> && <ComponentB />',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'In React, how do you conditionally render content based on the state?',
@@ -66,25 +67,26 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'Using the "setState" method.',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'By directly modifying the state object.',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'State cannot be used for conditional rendering.',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
-        title: 'What is the purpose of the "map" function in conditional rendering with lists in React?',
+        title:
+          'What is the purpose of the "map" function in conditional rendering with lists in React?',
         name: 'mapFunctionPurpose',
         points: 1,
         order: 4,
         question_type: QuestionTypes[2],
-        options: [],
+        options: []
       },
       {
         title: 'How do you conditionally render a list of items in React using the "map" function?',
@@ -95,17 +97,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: '{items.map(item => <ItemComponent key={item.id} />)}',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: '{items.forEach(item => <ItemComponent />)}',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '{items.render(item => <ItemComponent />)}',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How can you conditionally render content based on user input in a form?',
@@ -116,17 +118,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'Using event handlers and state changes.',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'By hardcoding the content in the form.',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By using server-side logic only.',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the purpose of conditional rendering in a React form?',
@@ -134,10 +136,11 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 7,
         question_type: QuestionTypes[2],
-        options: [],
+        options: []
       },
       {
-        title: 'How would you conditionally render a component "ErrorMessage" if a form input is invalid?',
+        title:
+          'How would you conditionally render a component "ErrorMessage" if a form input is invalid?',
         name: 'conditionalRenderingInvalidInput',
         points: 1,
         order: 8,
@@ -145,17 +148,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: '{isInvalid ? <ErrorMessage /> : null}',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: '{!isInvalid && <ErrorMessage />}',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '{isInvalid && <ErrorMessage />}',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Explain briefly why conditional rendering is important in React applications.',
@@ -163,10 +166,10 @@ const template: ExerciseTemplate = {
         points: 5,
         order: 9,
         question_type: QuestionTypes[2],
-        options: [],
-      },
-    ],
-  },
+        options: []
+      }
+    ]
+  }
 };
 
 export default template;

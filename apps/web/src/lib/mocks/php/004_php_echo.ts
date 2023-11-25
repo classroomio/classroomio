@@ -16,17 +16,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To display text or HTML content to the browser.',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To declare a new variable.',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To perform mathematical calculations.',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Which of the following is the correct syntax for the "echo" statement in PHP?',
@@ -37,21 +37,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'echo "Hello, World!";',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'echo("Hello, World!");',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'echo = "Hello, World!";',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'echo("Hello, World!");',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the difference between "echo" and "print" in PHP?',
@@ -62,17 +62,18 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'There is no difference; "echo" and "print" are interchangeable.',
-            is_correct: false,
+            is_correct: false
           },
           {
-            label: '"echo" can output multiple values at once, while "print" can output only one value at a time.',
-            is_correct: true,
+            label:
+              '"echo" can output multiple values at once, while "print" can output only one value at a time.',
+            is_correct: true
           },
           {
             label: '"echo" can only output text, while "print" can output both text and variables.',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Which of the following is an example of using the "print" statement in PHP?',
@@ -80,15 +81,16 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 3,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
-        title: 'What is the output of the following PHP code?\n\n```php\n$variable = "Hello, World!";\necho $variable;\n```',
+        title:
+          'What is the output of the following PHP code?\n\n```php\n$variable = "Hello, World!";\necho $variable;\n```',
         name: 'question5',
         points: 2,
         order: 4,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Which of the following is a valid use of the "print_r" function in PHP?',
@@ -99,21 +101,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'Displaying the structure of an array.',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'Performing mathematical calculations.',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Printing a text string.',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Checking the existence of a file.',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Which of the following PHP statements can be used to output HTML content?',
@@ -124,21 +126,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'echo',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'if',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'for',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'while',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the purpose of the "nl2br" function in PHP?',
@@ -149,25 +151,26 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To perform mathematical calculations.',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To convert newlines to HTML line breaks.',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To check the length of a string.',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
-        title: 'What is the output of the following PHP code?\n\n```php\n$text = "Hello\nWorld!";\necho nl2br($text);\n```',
+        title:
+          'What is the output of the following PHP code?\n\n```php\n$text = "Hello\nWorld!";\necho nl2br($text);\n```',
         name: 'question9',
         points: 2,
         order: 8,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'In PHP, which function can be used to output the length of a string?',
@@ -175,10 +178,10 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
-      },
-    ],
-  },
+        options: []
+      }
+    ]
+  }
 };
 
 export default template;

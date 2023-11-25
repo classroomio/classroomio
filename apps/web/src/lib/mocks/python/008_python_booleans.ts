@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'A data type for representing true and false values', is_correct: true },
           { label: 'A numeric data type', is_correct: false },
-          { label: 'A string data type', is_correct: false },
-        ],
+          { label: 'A string data type', is_correct: false }
+        ]
       },
       {
         title: 'Which of the following values is a valid boolean value in Python?',
@@ -29,8 +29,8 @@ const template: ExerciseTemplate = {
           { label: '0', is_correct: false },
           { label: 'True', is_correct: true },
           { label: 'False', is_correct: true },
-          { label: '1', is_correct: false },
-        ],
+          { label: '1', is_correct: false }
+        ]
       },
       {
         title: 'What is the result of the expression "10 > 5" in Python?',
@@ -40,8 +40,8 @@ const template: ExerciseTemplate = {
         question_type: QuestionTypes[0], // RADIO
         options: [
           { label: 'True', is_correct: true },
-          { label: 'False', is_correct: false },
-        ],
+          { label: 'False', is_correct: false }
+        ]
       },
       {
         title: 'Explain the concept of boolean operators in Python.',
@@ -49,7 +49,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 3,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Which operator is used for logical AND in Python?',
@@ -60,8 +60,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '&&', is_correct: false },
           { label: 'and', is_correct: true },
-          { label: '||', is_correct: false },
-        ],
+          { label: '||', is_correct: false }
+        ]
       },
       {
         title: 'What is the result of "True and False" in Python?',
@@ -71,8 +71,8 @@ const template: ExerciseTemplate = {
         question_type: QuestionTypes[0], // RADIO
         options: [
           { label: 'True', is_correct: false },
-          { label: 'False', is_correct: true },
-        ],
+          { label: 'False', is_correct: true }
+        ]
       },
       {
         title: 'Which operator is used for logical OR in Python?',
@@ -83,8 +83,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '||', is_correct: false },
           { label: 'or', is_correct: true },
-          { label: '&&', is_correct: false },
-        ],
+          { label: '&&', is_correct: false }
+        ]
       },
       {
         title: 'Explain the concept of truthy and falsy values in Python.',
@@ -92,7 +92,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 7,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the result of "not True" in Python?',
@@ -102,8 +102,8 @@ const template: ExerciseTemplate = {
         question_type: QuestionTypes[0], // RADIO
         options: [
           { label: 'True', is_correct: false },
-          { label: 'False', is_correct: true },
-        ],
+          { label: 'False', is_correct: true }
+        ]
       },
       {
         title: 'Which operator is used for logical NOT in Python?',
@@ -114,11 +114,11 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'not', is_correct: true },
           { label: '!', is_correct: false },
-          { label: 'and', is_correct: false },
-        ],
-      },
-    ],
-  },
+          { label: 'and', is_correct: false }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

@@ -17,8 +17,8 @@ const template: ExerciseTemplate = {
           { label: 'icon-style', is_correct: false },
           { label: 'image-display', is_correct: false },
           { label: 'icon-display', is_correct: false },
-          { label: 'content', is_correct: true },
-        ],
+          { label: 'content', is_correct: true }
+        ]
       },
       {
         title: 'How can you change the color of an icon in CSS?',
@@ -30,8 +30,8 @@ const template: ExerciseTemplate = {
           { label: 'color', is_correct: true },
           { label: 'icon-color', is_correct: false },
           { label: 'image-color', is_correct: false },
-          { label: 'display-color', is_correct: false },
-        ],
+          { label: 'display-color', is_correct: false }
+        ]
       },
       {
         title: 'What CSS property allows you to add custom icons to elements?',
@@ -43,8 +43,8 @@ const template: ExerciseTemplate = {
           { label: 'content', is_correct: false },
           { label: 'icon-image', is_correct: false },
           { label: 'custom-icon', is_correct: false },
-          { label: 'background-image', is_correct: true },
-        ],
+          { label: 'background-image', is_correct: true }
+        ]
       },
       {
         title: 'Which value of the CSS "content" property is commonly used for adding icons?',
@@ -56,8 +56,8 @@ const template: ExerciseTemplate = {
           { label: 'text', is_correct: false },
           { label: 'icon', is_correct: false },
           { label: 'url()', is_correct: false },
-          { label: 'none', is_correct: true },
-        ],
+          { label: 'none', is_correct: true }
+        ]
       },
       {
         title: 'What does the CSS "font-size" property control when dealing with icons?',
@@ -69,16 +69,17 @@ const template: ExerciseTemplate = {
           { label: 'Icon width', is_correct: true },
           { label: 'Icon color', is_correct: false },
           { label: 'Icon style', is_correct: false },
-          { label: 'Icon placement', is_correct: false },
-        ],
+          { label: 'Icon placement', is_correct: false }
+        ]
       },
       {
-        title: 'Explain how to use the "before" pseudo-element to add an icon before a text element.',
+        title:
+          'Explain how to use the "before" pseudo-element to add an icon before a text element.',
         name: 'q6',
         points: 2,
         order: 5,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the purpose of the CSS property "content" when working with icons?',
@@ -90,8 +91,8 @@ const template: ExerciseTemplate = {
           { label: 'Defines icon size', is_correct: false },
           { label: 'Defines icon color', is_correct: false },
           { label: 'Defines icon content', is_correct: true },
-          { label: 'Defines icon placement', is_correct: false },
-        ],
+          { label: 'Defines icon placement', is_correct: false }
+        ]
       },
       {
         title: 'How can you align an icon vertically within a container?',
@@ -103,8 +104,8 @@ const template: ExerciseTemplate = {
           { label: 'align-vertical', is_correct: false },
           { label: 'vertical-align', is_correct: true },
           { label: 'icon-align', is_correct: false },
-          { label: 'content-align', is_correct: false },
-        ],
+          { label: 'content-align', is_correct: false }
+        ]
       },
       {
         title: 'In CSS, what is the common way to center-align an icon horizontally?',
@@ -116,8 +117,8 @@ const template: ExerciseTemplate = {
           { label: 'text-align', is_correct: false },
           { label: 'horizontal-align', is_correct: false },
           { label: 'icon-align', is_correct: false },
-          { label: 'margin: 0 auto;', is_correct: true },
-        ],
+          { label: 'margin: 0 auto;', is_correct: true }
+        ]
       },
       {
         title: 'How can you add an external icon library to your web project?',
@@ -129,11 +130,11 @@ const template: ExerciseTemplate = {
           { label: 'Use the "icon-library" property', is_correct: false },
           { label: 'Include a stylesheet link to the library', is_correct: true },
           { label: 'Import it in JavaScript', is_correct: false },
-          { label: 'Download the icons as image files', is_correct: false },
-        ],
-      },
-    ],
-  },
+          { label: 'Download the icons as image files', is_correct: false }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

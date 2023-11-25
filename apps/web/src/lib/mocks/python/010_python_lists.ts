@@ -15,9 +15,12 @@ const template: ExerciseTemplate = {
         question_type: QuestionTypes[0], // RADIO
         options: [
           { label: 'A data structure that stores elements of the same type', is_correct: false },
-          { label: 'An ordered collection of elements, which can be of any type', is_correct: true },
-          { label: 'A string with comma-separated values', is_correct: false },
-        ],
+          {
+            label: 'An ordered collection of elements, which can be of any type',
+            is_correct: true
+          },
+          { label: 'A string with comma-separated values', is_correct: false }
+        ]
       },
       {
         title: 'How do you declare an empty list in Python?',
@@ -28,8 +31,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'list x = []', is_correct: false },
           { label: 'x = list()', is_correct: true },
-          { label: 'list x', is_correct: false },
-        ],
+          { label: 'list x', is_correct: false }
+        ]
       },
       {
         title: 'Which of the following is a valid list declaration in Python?',
@@ -41,8 +44,8 @@ const template: ExerciseTemplate = {
           { label: 'mylist = [1, 2, 3]', is_correct: true },
           { label: 'mylist = (1, 2, 3)', is_correct: false },
           { label: 'mylist = 1, 2, 3', is_correct: false },
-          { label: 'mylist = [\'apple\', \'banana\', \'cherry\']', is_correct: true },
-        ],
+          { label: "mylist = ['apple', 'banana', 'cherry']", is_correct: true }
+        ]
       },
       {
         title: 'Explain the concept of list indexing in Python.',
@@ -50,7 +53,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 3,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How do you add an item to the end of a list in Python?',
@@ -61,8 +64,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'add()', is_correct: false },
           { label: 'append()', is_correct: true },
-          { label: 'insert()', is_correct: false },
-        ],
+          { label: 'insert()', is_correct: false }
+        ]
       },
       {
         title: 'What is the result of ["apple", "banana"] + ["cherry", "date"] in Python?',
@@ -73,8 +76,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: "['apple', 'banana', 'cherry', 'date']", is_correct: true },
           { label: "['apple', 'banana'] ['cherry', 'date']", is_correct: false },
-          { label: "['apple', 'banana', ['cherry', 'date']]", is_correct: false },
-        ],
+          { label: "['apple', 'banana', ['cherry', 'date']]", is_correct: false }
+        ]
       },
       {
         title: 'Explain the concept of list methods in Python.',
@@ -82,7 +85,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 6,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the result of [1, 2, 3, 4, 5][1:4] in Python?',
@@ -93,8 +96,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '[2, 3, 4]', is_correct: true },
           { label: '[1, 2, 3]', is_correct: false },
-          { label: '[1, 2, 3, 4, 5]', is_correct: false },
-        ],
+          { label: '[1, 2, 3, 4, 5]', is_correct: false }
+        ]
       },
       {
         title: 'How do you remove an item from a list in Python?',
@@ -105,8 +108,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'remove()', is_correct: false },
           { label: 'delete()', is_correct: false },
-          { label: 'pop()', is_correct: true },
-        ],
+          { label: 'pop()', is_correct: true }
+        ]
       },
       {
         title: 'Explain the concept of list comprehension in Python.',
@@ -114,10 +117,10 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
-      },
-    ],
-  },
+        options: []
+      }
+    ]
+  }
 };
 
 export default template;

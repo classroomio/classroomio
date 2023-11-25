@@ -17,8 +17,8 @@ const template: ExerciseTemplate = {
           { label: 'table-width', is_correct: false },
           { label: 'border-width', is_correct: true },
           { label: 'table-border-width', is_correct: false },
-          { label: 'width', is_correct: false },
-        ],
+          { label: 'width', is_correct: false }
+        ]
       },
       {
         title: 'How can you set the background color for a table row?',
@@ -30,8 +30,8 @@ const template: ExerciseTemplate = {
           { label: 'row-color', is_correct: false },
           { label: 'background-row', is_correct: false },
           { label: 'row-background-color', is_correct: false },
-          { label: 'background-color', is_correct: true },
-        ],
+          { label: 'background-color', is_correct: true }
+        ]
       },
       {
         title: 'What CSS property is used to remove the spacing between table cells?',
@@ -43,8 +43,8 @@ const template: ExerciseTemplate = {
           { label: 'table-spacing', is_correct: false },
           { label: 'cell-spacing', is_correct: false },
           { label: 'spacing', is_correct: false },
-          { label: 'border-collapse', is_correct: true },
-        ],
+          { label: 'border-collapse', is_correct: true }
+        ]
       },
       {
         title: 'How do you align text to the right within a table cell?',
@@ -56,8 +56,8 @@ const template: ExerciseTemplate = {
           { label: 'text-align: right;', is_correct: true },
           { label: 'align-text: right;', is_correct: false },
           { label: 'text-align: center;', is_correct: false },
-          { label: 'align-text: center;', is_correct: false },
-        ],
+          { label: 'align-text: center;', is_correct: false }
+        ]
       },
       {
         title: 'Explain the purpose of the "border-collapse" property in CSS table styling.',
@@ -65,7 +65,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 4,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the default value of the "border-collapse" property for a table?',
@@ -77,8 +77,8 @@ const template: ExerciseTemplate = {
           { label: 'separate', is_correct: false },
           { label: 'collapse', is_correct: true },
           { label: 'hidden', is_correct: false },
-          { label: 'inherit', is_correct: false },
-        ],
+          { label: 'inherit', is_correct: false }
+        ]
       },
       {
         title: 'How can you set the width of a table to be a percentage of its containing element?',
@@ -90,8 +90,8 @@ const template: ExerciseTemplate = {
           { label: 'table-width: 50%;', is_correct: false },
           { label: 'width: 50%;', is_correct: true },
           { label: 'table-size: 50%;', is_correct: false },
-          { label: 'size: 50%;', is_correct: false },
-        ],
+          { label: 'size: 50%;', is_correct: false }
+        ]
       },
       {
         title: 'What is the purpose of the "table-layout" property in CSS table styling?',
@@ -103,8 +103,8 @@ const template: ExerciseTemplate = {
           { label: 'To set the table width', is_correct: false },
           { label: 'To control the layout algorithm used for the table', is_correct: true },
           { label: 'To set the border-collapse value', is_correct: false },
-          { label: 'To control the spacing between table cells', is_correct: false },
-        ],
+          { label: 'To control the spacing between table cells', is_correct: false }
+        ]
       },
       {
         title: 'How can you add a border to a table cell?',
@@ -116,8 +116,8 @@ const template: ExerciseTemplate = {
           { label: 'cell-border: 1px;', is_correct: false },
           { label: 'border-cell: 1px;', is_correct: false },
           { label: 'border: 1px solid;', is_correct: true },
-          { label: 'table-cell-border: 1px;', is_correct: false },
-        ],
+          { label: 'table-cell-border: 1px;', is_correct: false }
+        ]
       },
       {
         title: 'How can you center-align a table on a web page?',
@@ -129,12 +129,11 @@ const template: ExerciseTemplate = {
           { label: 'align: center;', is_correct: false },
           { label: 'text-align: center;', is_correct: false },
           { label: 'center-align: true;', is_correct: false },
-          { label: 'margin: 0 auto;', is_correct: true },
-        ],
-      },
-    ],
-  },
+          { label: 'margin: 0 auto;', is_correct: true }
+        ]
+      }
+    ]
+  }
 };
-
 
 export default template;

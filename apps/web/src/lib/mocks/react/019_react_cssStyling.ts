@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'style attribute', is_correct: true },
           { label: 'class attribute', is_correct: false },
-          { label: 'className attribute', is_correct: false },
-        ],
+          { label: 'className attribute', is_correct: false }
+        ]
       },
       {
         title: 'How can you apply CSS classes to React components?',
@@ -28,8 +28,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Using the className attribute', is_correct: true },
           { label: 'Using the style attribute', is_correct: false },
-          { label: 'Using the class attribute', is_correct: false },
-        ],
+          { label: 'Using the class attribute', is_correct: false }
+        ]
       },
       {
         title: 'What is the purpose of CSS Modules in React?',
@@ -40,8 +40,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'To scope CSS styles locally to a component', is_correct: true },
           { label: 'To apply global styles to the entire application', is_correct: false },
-          { label: 'To generate CSS code dynamically', is_correct: false },
-        ],
+          { label: 'To generate CSS code dynamically', is_correct: false }
+        ]
       },
       {
         title: 'How do you define styles using CSS Modules in React?',
@@ -49,7 +49,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 3,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the benefit of using a CSS-in-JS library like styled-components in React?',
@@ -61,8 +61,8 @@ const template: ExerciseTemplate = {
           { label: 'Encapsulation of styles', is_correct: true },
           { label: 'Simpler CSS file management', is_correct: false },
           { label: 'Better performance', is_correct: false },
-          { label: 'Easier debugging', is_correct: false },
-        ],
+          { label: 'Easier debugging', is_correct: false }
+        ]
       },
       {
         title: 'How do you use styled-components to create a styled element in React?',
@@ -70,7 +70,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 5,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the purpose of the CSS-in-JS library Emotion in React?',
@@ -81,8 +81,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'To create and manage styled components', is_correct: true },
           { label: 'To apply global styles', is_correct: false },
-          { label: 'To add inline styles', is_correct: false },
-        ],
+          { label: 'To add inline styles', is_correct: false }
+        ]
       },
       {
         title: 'In React, what is the difference between CSS Modules and styled-components?',
@@ -90,7 +90,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 7,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the purpose of the CSS property `classNames` in React?',
@@ -101,8 +101,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'To conditionally apply multiple CSS classes', is_correct: true },
           { label: 'To define styles using JavaScript', is_correct: false },
-          { label: 'To create CSS animations', is_correct: false },
-        ],
+          { label: 'To create CSS animations', is_correct: false }
+        ]
       },
       {
         title: 'How can you apply conditional styles to a React component?',
@@ -113,11 +113,11 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'By using a ternary operator in the className attribute', is_correct: true },
           { label: 'By using a switch statement in the style attribute', is_correct: false },
-          { label: 'By using a for loop in the class attribute', is_correct: false },
-        ],
-      },
-    ],
-  },
+          { label: 'By using a for loop in the class attribute', is_correct: false }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

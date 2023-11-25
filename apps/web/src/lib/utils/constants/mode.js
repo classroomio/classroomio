@@ -1,4 +1,4 @@
 export default {
   edit: 'edit',
-  view: 'view',
+  view: 'view'
 };

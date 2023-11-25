@@ -15,7 +15,8 @@ const template: ExerciseTemplate = {
         question_type: QuestionTypes[0], // RADIO type
         options: [
           {
-            label: 'A data structure that stores a fixed-size collection of elements of mixed types.',
+            label:
+              'A data structure that stores a fixed-size collection of elements of mixed types.',
             is_correct: true
           },
           {
@@ -27,7 +28,8 @@ const template: ExerciseTemplate = {
             is_correct: false
           },
           {
-            label: 'A data structure that stores elements of mixed types without size restrictions.',
+            label:
+              'A data structure that stores elements of mixed types without size restrictions.',
             is_correct: false
           }
         ]
@@ -219,7 +221,8 @@ const template: ExerciseTemplate = {
             is_correct: false
           },
           {
-            label: 'Yes, by using tuples with two elements where the first element is the key and the second element is the value.',
+            label:
+              'Yes, by using tuples with two elements where the first element is the key and the second element is the value.',
             is_correct: true
           },
           {

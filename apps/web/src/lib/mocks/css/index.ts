@@ -6,7 +6,7 @@ import cssColors from './005_css_colors';
 import cssBackgounds from './006_css_backgrounds';
 import cssBorders from './007_css_borders';
 import cssMargin from './008_css_margin';
-import cssPadding from './009_css_padding'
+import cssPadding from './009_css_padding';
 import cssDimensions from './010_css_dimentions';
 import cssBoxModel from './011_css_boxModel';
 import cssOutline from './012_css_outline';
@@ -39,7 +39,7 @@ export const CSS_IDS: { [key: string]: string } = {
   CSS_LISTS: 'CSS_LISTS',
   CSS_TABLES: 'CSS_TABLES',
   CSS_DISPLAY: 'CSS_DISPLAY',
-  CSS_MAXWIDTH: 'CSS_MAXWIDTH',
+  CSS_MAXWIDTH: 'CSS_MAXWIDTH'
 };
 
 export const CSS_TEMPLATES = {
@@ -62,5 +62,5 @@ export const CSS_TEMPLATES = {
   [CSS_IDS.CSS_LISTS]: cssLists,
   [CSS_IDS.CSS_TABLES]: cssTables,
   [CSS_IDS.CSS_DISPLAY]: cssDisplay,
-  [CSS_IDS.CSS_MAXWIDTH]: cssMaxWidth,
+  [CSS_IDS.CSS_MAXWIDTH]: cssMaxWidth
 };

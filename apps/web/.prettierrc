@@ -5,9 +5,7 @@
   "printWidth": 100,
   "overrides": [
     {
-      "files": [
-        "*.svelte"
-      ],
+      "files": ["*.svelte"],
       "options": {
         "svelteBracketNewLine": true
       }

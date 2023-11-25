@@ -15,9 +15,12 @@ const template: ExerciseTemplate = {
         question_type: QuestionTypes[0], // RADIO
         options: [
           { label: 'A way to create new variables', is_correct: false },
-          { label: 'A way to extract values from objects and arrays into distinct variables', is_correct: true },
-          { label: 'A way to assign values to multiple variables', is_correct: false },
-        ],
+          {
+            label: 'A way to extract values from objects and arrays into distinct variables',
+            is_correct: true
+          },
+          { label: 'A way to assign values to multiple variables', is_correct: false }
+        ]
       },
       {
         title: 'How do you destructure an object in JavaScript?',
@@ -28,8 +31,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Using square brackets', is_correct: false },
           { label: 'Using curly braces', is_correct: true },
-          { label: 'Using parentheses', is_correct: false },
-        ],
+          { label: 'Using parentheses', is_correct: false }
+        ]
       },
       {
         title: 'Which of the following is a valid use case for array destructuring?',
@@ -40,8 +43,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Swapping the values of two variables', is_correct: true },
           { label: 'Accessing object properties', is_correct: false },
-          { label: 'Defining a function', is_correct: false },
-        ],
+          { label: 'Defining a function', is_correct: false }
+        ]
       },
       {
         title: 'What happens if you try to destructure a non-existent property from an object?',
@@ -52,8 +55,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'An error is thrown', is_correct: false },
           { label: 'The variable is assigned "undefined"', is_correct: true },
-          { label: 'The variable is assigned "null"', is_correct: false },
-        ],
+          { label: 'The variable is assigned "null"', is_correct: false }
+        ]
       },
       {
         title: 'Select all valid methods of destructuring an array in JavaScript.',
@@ -65,8 +68,8 @@ const template: ExerciseTemplate = {
           { label: 'Using square brackets', is_correct: true },
           { label: 'Using curly braces', is_correct: false },
           { label: 'Using parentheses', is_correct: false },
-          { label: 'Using the "destruct" keyword', is_correct: false },
-        ],
+          { label: 'Using the "destruct" keyword', is_correct: false }
+        ]
       },
       {
         title: 'Write an example of object destructuring in JavaScript.',
@@ -74,7 +77,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 5,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Explain the concept of nested destructuring in JavaScript.',
@@ -82,7 +85,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 6,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the purpose of the rest operator (...) in destructuring?',
@@ -90,7 +93,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 7,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What are the advantages of using destructuring in JavaScript?',
@@ -98,7 +101,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 8,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'List some common use cases for destructuring in JavaScript.',
@@ -106,10 +109,10 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
-      },
-    ],
-  },
+        options: []
+      }
+    ]
+  }
 };
 
 export default template;

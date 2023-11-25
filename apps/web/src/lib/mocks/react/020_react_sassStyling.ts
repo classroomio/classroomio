@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'A CSS preprocessor', is_correct: true },
           { label: 'A JavaScript library', is_correct: false },
-          { label: 'A CSS framework', is_correct: false },
-        ],
+          { label: 'A CSS framework', is_correct: false }
+        ]
       },
       {
         title: 'How do you import Sass files into a React component?',
@@ -25,7 +25,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 1,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the primary advantage of using Sass variables?',
@@ -36,8 +36,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Reuse and maintain consistent values', is_correct: true },
           { label: 'Enhance browser compatibility', is_correct: false },
-          { label: 'Improve performance', is_correct: false },
-        ],
+          { label: 'Improve performance', is_correct: false }
+        ]
       },
       {
         title: 'In Sass, how do you nest CSS rules?',
@@ -45,7 +45,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 3,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the purpose of the Sass function `darken()`?',
@@ -56,8 +56,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'To make a color darker', is_correct: true },
           { label: 'To create a CSS class', is_correct: false },
-          { label: 'To import external stylesheets', is_correct: false },
-        ],
+          { label: 'To import external stylesheets', is_correct: false }
+        ]
       },
       {
         title: 'How can you use mixins in Sass?',
@@ -65,7 +65,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 5,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the purpose of the `@import` directive in Sass?',
@@ -76,8 +76,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'To include styles from other Sass files', is_correct: true },
           { label: 'To import JavaScript modules', is_correct: false },
-          { label: 'To define CSS animations', is_correct: false },
-        ],
+          { label: 'To define CSS animations', is_correct: false }
+        ]
       },
       {
         title: 'How do you comment out code in Sass?',
@@ -89,8 +89,8 @@ const template: ExerciseTemplate = {
           { label: 'Using // for single-line comments', is_correct: true },
           { label: 'Using /* */ for multi-line comments', is_correct: true },
           { label: 'Using # for comments', is_correct: false },
-          { label: 'Using <!-- --> for comments', is_correct: false },
-        ],
+          { label: 'Using <!-- --> for comments', is_correct: false }
+        ]
       },
       {
         title: 'What is the output format of the `compressed` style in Sass?',
@@ -101,8 +101,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Minified and compressed CSS', is_correct: true },
           { label: 'Human-readable and indented CSS', is_correct: false },
-          { label: 'JSON format', is_correct: false },
-        ],
+          { label: 'JSON format', is_correct: false }
+        ]
       },
       {
         title: 'How do you compile Sass code into CSS?',
@@ -113,11 +113,11 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Using a Sass compiler or command-line tool', is_correct: true },
           { label: 'By embedding Sass directly in HTML', is_correct: false },
-          { label: 'By using the browser\'s built-in Sass support', is_correct: false },
-        ],
-      },
-    ],
-  },
+          { label: "By using the browser's built-in Sass support", is_correct: false }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

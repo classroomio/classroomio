@@ -62,5 +62,5 @@ export const GIT_TEMPLATES = {
   [GIT_IDS.GIT_IGNORE]: gitIgnore,
   [GIT_IDS.GIT_SSH]: gitSsh,
   [GIT_IDS.GIT_REVERT]: gitRevert,
-  [GIT_IDS.GIT_RESET]: gitReset,
+  [GIT_IDS.GIT_RESET]: gitReset
 };

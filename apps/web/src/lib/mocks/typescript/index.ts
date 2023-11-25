@@ -15,7 +15,6 @@ import tsKeyOf from './014_ts_keyOf';
 import tsNull from './015_ts_null';
 import tsDefinitelyTyped from './016_ts_definitelyTyped';
 
-
 export const TS_IDS: { [key: string]: string } = {
   TS_SIMPLETYPES: 'TS_SIMPLETYPES',
   TS_SPECIALTYPES: 'TS_SPECIALTYPES',
@@ -32,7 +31,7 @@ export const TS_IDS: { [key: string]: string } = {
   TS_UTILITYTYPES: 'TS_UTILITYTYPES',
   TS_KEYOF: 'TS_KEYOF',
   TS_NULL: 'TS_NULL',
-  TS_DEFINITELYTYPED: 'TS_DEFINITELYTYPED',
+  TS_DEFINITELYTYPED: 'TS_DEFINITELYTYPED'
 };
 
 export const TS_TEMPLATES = {
@@ -51,5 +50,5 @@ export const TS_TEMPLATES = {
   [TS_IDS.TS_UTILITYTYPES]: tsUtilityTypes,
   [TS_IDS.TS_KEYOF]: tsKeyOf,
   [TS_IDS.TS_NULL]: tsNull,
-  [TS_IDS.TS_DEFINITELYTYPED]: tsDefinitelyTyped,
+  [TS_IDS.TS_DEFINITELYTYPED]: tsDefinitelyTyped
 };

@@ -16,17 +16,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'String',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Integer',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'Boolean',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Which of the following is NOT a valid PHP data type?',
@@ -37,21 +37,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'Array',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Object',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Float',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Character',
-            is_correct: true,
-          },
-        ],
+            is_correct: true
+          }
+        ]
       },
       {
         title: 'How do you declare a floating-point number in PHP?',
@@ -62,21 +62,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: '$x = 5;',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '$x = "5";',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '$x = 5.0;',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: '$x = true;',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Which data type is used to store a sequence of characters in PHP?',
@@ -87,21 +87,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'Boolean',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Integer',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'String',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'Array',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the data type of the value "true" in PHP?',
@@ -112,21 +112,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'String',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Integer',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Boolean',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'Float',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Which data type is used to store a list of values in PHP?',
@@ -137,21 +137,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'Array',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'String',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Object',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Float',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How do you declare a constant in PHP?',
@@ -159,7 +159,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 6,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Which data type is used to represent a date and time in PHP?',
@@ -170,21 +170,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'String',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Integer',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Date',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'DateTime',
-            is_correct: true,
-          },
-        ],
+            is_correct: true
+          }
+        ]
       },
       {
         title: 'How do you check the data type of a variable in PHP?',
@@ -192,7 +192,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 8,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Which data type is used to store a single character in PHP?',
@@ -203,24 +203,24 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'String',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'Character',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Integer',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Boolean',
-            is_correct: false,
-          },
-        ],
-      },
-    ],
-  },
+            is_correct: false
+          }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

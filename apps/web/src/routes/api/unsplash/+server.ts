@@ -12,7 +12,7 @@ export async function POST({ request }) {
 
   try {
     const response = await fetch(`${UNSPLASH_API_URL}&query=${encodeURIComponent(query)}`, {
-      method: 'GET',
+      method: 'GET'
     });
 
     if (!response.ok) {
@@ -23,11 +23,14 @@ export async function POST({ request }) {
 
     return json({
       success: true,
-      photos: data.results,
+      photos: data.results
     });
   } catch (error) {
     console.error(error);
 
-    return json({ success: false, message: 'Error fetching photos from Unsplash' }, { status: 500 });
+    return json(
+      { success: false, message: 'Error fetching photos from Unsplash' },
+      { status: 500 }
+    );
   }
 }

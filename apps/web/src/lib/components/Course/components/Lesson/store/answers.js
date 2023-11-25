@@ -19,7 +19,7 @@ const initAnswerState = {
   currentQuestionIndex: 0,
   isFinished: false,
   progressValue: 100,
-  status: STATUS.PENDING,
+  status: STATUS.PENDING
 };
 
 export const questionnaireMetaData = writable(initAnswerState);

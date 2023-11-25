@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'A function', is_correct: false },
           { label: 'A constructor method', is_correct: false },
-          { label: 'A blueprint for creating objects', is_correct: true },
-        ],
+          { label: 'A blueprint for creating objects', is_correct: true }
+        ]
       },
       {
         title: 'What keyword is used to create a class in ES6?',
@@ -28,8 +28,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'function', is_correct: false },
           { label: 'prototype', is_correct: false },
-          { label: 'class', is_correct: true },
-        ],
+          { label: 'class', is_correct: true }
+        ]
       },
       {
         title: 'Which method is automatically called when an object is created from a class?',
@@ -40,8 +40,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'constructor', is_correct: true },
           { label: 'initialize', is_correct: false },
-          { label: 'create', is_correct: false },
-        ],
+          { label: 'create', is_correct: false }
+        ]
       },
       {
         title: 'What is the purpose of the "render" method in a React component?',
@@ -52,8 +52,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'To update state', is_correct: false },
           { label: 'To render HTML elements', is_correct: true },
-          { label: 'To define props', is_correct: false },
-        ],
+          { label: 'To define props', is_correct: false }
+        ]
       },
       {
         title: 'Which React lifecycle method is used for cleanup activities?',
@@ -64,8 +64,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'componentDidMount', is_correct: false },
           { label: 'componentDidUpdate', is_correct: false },
-          { label: 'componentWillUnmount', is_correct: true },
-        ],
+          { label: 'componentWillUnmount', is_correct: true }
+        ]
       },
       {
         title: 'Select all valid ways to define props in React.',
@@ -77,8 +77,8 @@ const template: ExerciseTemplate = {
           { label: 'Using the render method', is_correct: false },
           { label: 'Using the constructor', is_correct: false },
           { label: 'Using defaultProps', is_correct: true },
-          { label: 'Using propTypes', is_correct: true },
-        ],
+          { label: 'Using propTypes', is_correct: true }
+        ]
       },
       {
         title: 'Write a JSX element representing a React component named "MyComponent".',
@@ -86,7 +86,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 6,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Explain the purpose of "setState" in React.',
@@ -94,7 +94,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 7,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the purpose of "super()" in a React class constructor?',
@@ -102,7 +102,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 8,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'List some advantages of using ES6 classes in React development.',
@@ -110,10 +110,10 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
-      },
-    ],
-  },
+        options: []
+      }
+    ]
+  }
 };
 
 export default template;

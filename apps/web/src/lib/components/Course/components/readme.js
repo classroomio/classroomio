@@ -23,4 +23,4 @@ Please see our [contributing.md](/contributing.md).
 - Arunoda Susiripala ([@arunoda](https://twitter.com/arunoda))
 - Tony Kovanen ([@tonykovanen](https://twitter.com/tonykovanen))
 - Dan Zajdband ([@impronunciable](https://twitter.com/impronunciable))
-`
+`;

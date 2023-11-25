@@ -92,7 +92,8 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title: 'Which HTML attribute is used to specify the JavaScript code to run when an event occurs?',
+        title:
+          'Which HTML attribute is used to specify the JavaScript code to run when an event occurs?',
         name: 'q5',
         points: 1,
         order: 5,

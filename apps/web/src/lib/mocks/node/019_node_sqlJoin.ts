@@ -16,17 +16,18 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To create a new table.',
-            is_correct: false,
+            is_correct: false
           },
           {
-            label: 'To combine rows from two or more tables based on a related column between them.',
-            is_correct: true,
+            label:
+              'To combine rows from two or more tables based on a related column between them.',
+            is_correct: true
           },
           {
             label: 'To delete data from a table.',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Which JOIN type returns all rows when there is a match in either table?',
@@ -37,21 +38,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'INNER JOIN',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'LEFT JOIN (or LEFT OUTER JOIN)',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'RIGHT JOIN (or RIGHT OUTER JOIN)',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'FULL JOIN (or FULL OUTER JOIN)',
-            is_correct: true,
-          },
-        ],
+            is_correct: true
+          }
+        ]
       },
       {
         title: 'Which JOIN type returns only the rows that have matching values in both tables?',
@@ -62,21 +63,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'INNER JOIN',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'LEFT JOIN (or LEFT OUTER JOIN)',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'RIGHT JOIN (or RIGHT OUTER JOIN)',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'FULL JOIN (or FULL OUTER JOIN)',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the purpose of the "ON" clause in a JOIN operation?',
@@ -84,10 +85,11 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 3,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
-        title: 'Which JOIN type returns all rows from both tables with NULL records where there is no match?',
+        title:
+          'Which JOIN type returns all rows from both tables with NULL records where there is no match?',
         name: 'question5',
         points: 2,
         order: 4,
@@ -95,21 +97,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'INNER JOIN',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'LEFT JOIN (or LEFT OUTER JOIN)',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'RIGHT JOIN (or RIGHT OUTER JOIN)',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'FULL JOIN (or FULL OUTER JOIN)',
-            is_correct: true,
-          },
-        ],
+            is_correct: true
+          }
+        ]
       },
       {
         title: 'Which SQL statement is used to perform an INNER JOIN in MySQL?',
@@ -120,20 +122,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'JOIN',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'INNER',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'ON',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
-        title: 'Which JOIN type returns all rows from the left table and the matching rows from the right table?',
+        title:
+          'Which JOIN type returns all rows from the left table and the matching rows from the right table?',
         name: 'question7',
         points: 2,
         order: 6,
@@ -141,21 +144,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'INNER JOIN',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'LEFT JOIN (or LEFT OUTER JOIN)',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'RIGHT JOIN (or RIGHT OUTER JOIN)',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'FULL JOIN (or FULL OUTER JOIN)',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the difference between INNER JOIN and LEFT JOIN?',
@@ -163,7 +166,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 7,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Which SQL statement is used to perform a LEFT JOIN in MySQL?',
@@ -174,17 +177,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'JOIN',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'LEFT JOIN (or LEFT OUTER JOIN)',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'OUTER JOIN',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What happens if there are duplicate column names in the tables being joined?',
@@ -192,11 +195,10 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
-      },
-    ],
-  },
+        options: []
+      }
+    ]
+  }
 };
-
 
 export default template;

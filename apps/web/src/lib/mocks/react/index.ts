@@ -32,7 +32,6 @@ import reactUseCallback from './031_react_useCallBack';
 import reactCustomHooks from './032_react_customHooks';
 import reactUseMemo from './033_react_useMemo';
 
-
 export const REACT_IDS: { [key: string]: string } = {
   REACT_ES6: 'REACT_ES6',
   REACT_ES6ARROWFUNCTION: 'REACT_ES6ARROWFUNCTION',
@@ -66,7 +65,7 @@ export const REACT_IDS: { [key: string]: string } = {
   REACT_USEREDUCER: 'REACT_USEREDUCER',
   REACT_USECALLBACK: 'REACT_USECALLBACK',
   REACT_CUSTOMHOOKS: 'REACT_CUSTOMHOOKS',
-  REACT_USEMEMO: 'REACT_USEMEMO',
+  REACT_USEMEMO: 'REACT_USEMEMO'
 };
 
 export const REACT_TEMPLATES = {
@@ -102,5 +101,5 @@ export const REACT_TEMPLATES = {
   [REACT_IDS.REACT_USEREDUCER]: reactUseReducer,
   [REACT_IDS.REACT_USECALLBACK]: reactUseCallback,
   [REACT_IDS.REACT_CUSTOMHOOKS]: reactCustomHooks,
-  [REACT_IDS.REACT_USEMEMO]: reactUseMemo,
+  [REACT_IDS.REACT_USEMEMO]: reactUseMemo
 };

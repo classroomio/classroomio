@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Cascading Style Sheets', is_correct: true },
           { label: 'Computer Style Sheets', is_correct: false },
-          { label: 'Creative Style Sheets', is_correct: false },
-        ],
+          { label: 'Creative Style Sheets', is_correct: false }
+        ]
       },
       {
         title: 'How do you select an HTML element with id="demo" in CSS?',
@@ -28,8 +28,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '#demo', is_correct: true },
           { label: '.demo', is_correct: false },
-          { label: 'element="demo"', is_correct: false },
-        ],
+          { label: 'element="demo"', is_correct: false }
+        ]
       },
       {
         title: 'How do you select HTML elements with class="example" in CSS?',
@@ -40,8 +40,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '.example', is_correct: true },
           { label: '#example', is_correct: false },
-          { label: 'element="example"', is_correct: false },
-        ],
+          { label: 'element="example"', is_correct: false }
+        ]
       },
       {
         title: 'Which CSS property is used to change the text color of an element?',
@@ -52,8 +52,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'text-color', is_correct: false },
           { label: 'color', is_correct: true },
-          { label: 'font-color', is_correct: false },
-        ],
+          { label: 'font-color', is_correct: false }
+        ]
       },
       {
         title: 'How do you add a background color for all <h1> elements?',
@@ -64,8 +64,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'h1 {background-color: yellow;}', is_correct: true },
           { label: 'h1.background-color: yellow;', is_correct: false },
-          { label: 'all.h1 {bg-color: yellow;}', is_correct: false },
-        ],
+          { label: 'all.h1 {bg-color: yellow;}', is_correct: false }
+        ]
       },
       {
         title: 'What is the correct CSS syntax for making all the <p> elements bold?',
@@ -76,8 +76,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'p {text-style: bold;}', is_correct: false },
           { label: 'p {font-weight: bold;}', is_correct: true },
-          { label: 'p.bold {text-weight: bold;}', is_correct: false },
-        ],
+          { label: 'p.bold {text-weight: bold;}', is_correct: false }
+        ]
       },
       {
         title: 'How do you add a comment in CSS?',
@@ -85,7 +85,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 6,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the purpose of the "float" property in CSS?',
@@ -93,7 +93,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 7,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Explain the box model in CSS.',
@@ -101,7 +101,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 8,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What does CSS specificity refer to?',
@@ -109,10 +109,10 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
-      },
-    ],
-  },
+        options: []
+      }
+    ]
+  }
 };
 
 export default template;

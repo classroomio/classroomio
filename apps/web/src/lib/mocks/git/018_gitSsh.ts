@@ -16,17 +16,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To securely authenticate and communicate with remote Git repositories',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To store sensitive information in Git repositories',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To track changes in SSH keys',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How can you generate a new SSH key pair?',
@@ -37,17 +37,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'By using the "ssh-keygen" command',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'By sending a request to the Git repository hosting service',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'SSH keys cannot be generated manually',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Explain the difference between a public SSH key and a private SSH key.',
@@ -55,7 +55,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 2,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the purpose of adding your SSH public key to your Git hosting service?',
@@ -63,7 +63,7 @@ const template: ExerciseTemplate = {
         points: 3,
         order: 3,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How can you configure Git to use an SSH key for authentication?',
@@ -74,17 +74,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'By adding the SSH key to your SSH agent and configuring Git to use it',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'By including the SSH key in your Git repository',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By manually entering the SSH key every time you push or pull',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the purpose of SSH key passphrase?',
@@ -95,17 +95,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To add an extra layer of security to your SSH key',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To store the SSH key on the Git hosting service',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To generate a new SSH key pair',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What should you do if you lose your SSH private key?',
@@ -115,18 +115,19 @@ const template: ExerciseTemplate = {
         question_type: QuestionTypes[0], // RADIO
         options: [
           {
-            label: 'Generate a new SSH key pair and update your Git hosting service with the new public key',
-            is_correct: true,
+            label:
+              'Generate a new SSH key pair and update your Git hosting service with the new public key',
+            is_correct: true
           },
           {
             label: 'There is no way to recover from a lost SSH private key',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Contact your Git hosting service to reset your password',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Explain the concept of two-factor authentication (2FA) in SSH.',
@@ -134,7 +135,7 @@ const template: ExerciseTemplate = {
         points: 3,
         order: 7,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the purpose of SSH key fingerprints?',
@@ -145,17 +146,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To verify the authenticity of an SSH key',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To encrypt SSH key data',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To increase the length of an SSH key',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How can you check if your SSH key is properly configured in Git?',
@@ -165,21 +166,22 @@ const template: ExerciseTemplate = {
         question_type: QuestionTypes[0], // RADIO
         options: [
           {
-            label: 'By using the "ssh -T" command to test authentication with your Git hosting service',
-            is_correct: true,
+            label:
+              'By using the "ssh -T" command to test authentication with your Git hosting service',
+            is_correct: true
           },
           {
             label: 'By checking the ".ssh" directory in your home directory',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'There is no way to verify SSH key configuration in Git',
-            is_correct: false,
-          },
-        ],
-      },
-    ],
-  },
+            is_correct: false
+          }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

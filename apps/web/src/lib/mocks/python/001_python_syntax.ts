@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Web development', is_correct: false },
           { label: 'Data analysis', is_correct: false },
-          { label: 'All of the above', is_correct: true },
-        ],
+          { label: 'All of the above', is_correct: true }
+        ]
       },
       {
         title: 'What symbol is used for comments in Python?',
@@ -28,8 +28,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '#', is_correct: true },
           { label: '//', is_correct: false },
-          { label: '--', is_correct: false },
-        ],
+          { label: '--', is_correct: false }
+        ]
       },
       {
         title: 'How do you declare a variable in Python?',
@@ -40,8 +40,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'var x;', is_correct: false },
           { label: 'let x;', is_correct: false },
-          { label: 'x = 5', is_correct: true },
-        ],
+          { label: 'x = 5', is_correct: true }
+        ]
       },
       {
         title: 'What is the correct way to print "Hello, World!" in Python?',
@@ -53,8 +53,8 @@ const template: ExerciseTemplate = {
           { label: 'print("Hello, World!")', is_correct: true },
           { label: 'echo("Hello, World!")', is_correct: false },
           { label: 'console.log("Hello, World!")', is_correct: false },
-          { label: 'System.out.println("Hello, World!")', is_correct: false },
-        ],
+          { label: 'System.out.println("Hello, World!")', is_correct: false }
+        ]
       },
       {
         title: 'Explain the purpose of "if" statements in Python.',
@@ -62,7 +62,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 4,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the correct way to define a function in Python?',
@@ -73,8 +73,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'function myFunction():', is_correct: false },
           { label: 'def myFunction():', is_correct: true },
-          { label: 'method myFunction():', is_correct: false },
-        ],
+          { label: 'method myFunction():', is_correct: false }
+        ]
       },
       {
         title: 'Which operator is used for exponentiation in Python?',
@@ -85,8 +85,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '^', is_correct: false },
           { label: '**', is_correct: true },
-          { label: '^^', is_correct: false },
-        ],
+          { label: '^^', is_correct: false }
+        ]
       },
       {
         title: 'What is the correct way to create a list in Python?',
@@ -97,8 +97,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '[1, 2, 3]', is_correct: true },
           { label: '(1, 2, 3)', is_correct: false },
-          { label: '{1, 2, 3}', is_correct: false },
-        ],
+          { label: '{1, 2, 3}', is_correct: false }
+        ]
       },
       {
         title: 'Explain the purpose of "for" loops in Python.',
@@ -106,7 +106,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 8,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How do you check the length of a list in Python?',
@@ -117,11 +117,11 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'len(myList)', is_correct: true },
           { label: 'myList.length', is_correct: false },
-          { label: 'size(myList)', is_correct: false },
-        ],
-      },
-    ],
-  },
+          { label: 'size(myList)', is_correct: false }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

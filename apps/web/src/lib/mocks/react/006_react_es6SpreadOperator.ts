@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'To concatenate arrays', is_correct: false },
           { label: 'To clone an object or array', is_correct: true },
-          { label: 'To create a new function', is_correct: false },
-        ],
+          { label: 'To create a new function', is_correct: false }
+        ]
       },
       {
         title: 'How do you use the spread operator to copy an array in JavaScript?',
@@ -28,8 +28,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'array.copy()', is_correct: false },
           { label: 'array.clone()', is_correct: false },
-          { label: '[...array]', is_correct: true },
-        ],
+          { label: '[...array]', is_correct: true }
+        ]
       },
       {
         title: 'Which of the following is a valid use case for the spread operator in JavaScript?',
@@ -40,8 +40,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Merging two arrays', is_correct: true },
           { label: 'Creating a new object', is_correct: false },
-          { label: 'Defining a function', is_correct: false },
-        ],
+          { label: 'Defining a function', is_correct: false }
+        ]
       },
       {
         title: 'What is the output of the following code: `const arr = [1, 2, ...[3, 4], 5];`?',
@@ -52,8 +52,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '[1, 2, [3, 4], 5]', is_correct: false },
           { label: '[1, 2, 3, 4, 5]', is_correct: true },
-          { label: '[1, 2, ...[3, 4], ...5]', is_correct: false },
-        ],
+          { label: '[1, 2, ...[3, 4], ...5]', is_correct: false }
+        ]
       },
       {
         title: 'Select all valid use cases for the spread operator in JavaScript.',
@@ -65,8 +65,8 @@ const template: ExerciseTemplate = {
           { label: 'Cloning an array', is_correct: true },
           { label: 'Concatenating arrays', is_correct: true },
           { label: 'Merging objects', is_correct: true },
-          { label: 'Defining a new function', is_correct: false },
-        ],
+          { label: 'Defining a new function', is_correct: false }
+        ]
       },
       {
         title: 'Write an example of using the spread operator to merge two objects in JavaScript.',
@@ -74,7 +74,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 5,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Explain the concept of shallow copying using the spread operator in JavaScript.',
@@ -82,7 +82,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 6,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What are the advantages of using the spread operator in JavaScript?',
@@ -90,7 +90,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 7,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'List some common use cases for the spread operator in JavaScript.',
@@ -98,7 +98,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 8,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What happens if you use the spread operator on a non-iterable value in JavaScript?',
@@ -106,10 +106,10 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
-      },
-    ],
-  },
+        options: []
+      }
+    ]
+  }
 };
 
 export default template;

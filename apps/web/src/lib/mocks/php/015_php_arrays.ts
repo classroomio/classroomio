@@ -16,21 +16,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'A mathematical function',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'A data structure that can hold multiple values',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'A string manipulation technique',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'A type of loop in PHP',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How do you create an indexed array in PHP?',
@@ -41,21 +41,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'Using the `array()` constructor',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'Using the `new Array()` constructor',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By defining each element separately',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Indexed arrays are not supported in PHP',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the index of the first element in a PHP indexed array?',
@@ -66,21 +66,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: '0',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: '1',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '-1',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'No index for the first element',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How do you access an element in a PHP indexed array?',
@@ -91,21 +91,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'By using the element name',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By using the element value',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By using the element index',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'By using the element key',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the purpose of an associative array in PHP?',
@@ -116,21 +116,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To store only numbers',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To store only strings',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To store key-value pairs',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To store only boolean values',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How do you add a key-value pair to an associative array in PHP?',
@@ -141,21 +141,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'By using the `add` keyword',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By using the `append` method',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By using square brackets and the key name',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'Associative arrays do not support adding key-value pairs',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How do you check if a key exists in an associative array in PHP?',
@@ -166,21 +166,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'By using the `exists` method',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By using the `contains` keyword',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By using the `in_array` function',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By using the `array_key_exists` function',
-            is_correct: true,
-          },
-        ],
+            is_correct: true
+          }
+        ]
       },
       {
         title: 'What is the purpose of a multidimensional array in PHP?',
@@ -191,21 +191,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To store only numbers',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To store only strings',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To store key-value pairs',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To store arrays within an array',
-            is_correct: true,
-          },
-        ],
+            is_correct: true
+          }
+        ]
       },
       {
         title: 'How do you access an element in a multidimensional array in PHP?',
@@ -216,21 +216,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'By using the element name',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By using the element value',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By using the element index',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'By using the element key',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the difference between indexed and associative arrays in PHP?',
@@ -241,24 +241,24 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'Indexed arrays have keys and values, while associative arrays only have values',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Indexed arrays are unordered, while associative arrays are ordered',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Indexed arrays use strings as keys, while associative arrays use integers',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Indexed arrays use integers as keys, while associative arrays use named keys',
-            is_correct: true,
-          },
-        ],
-      },
-    ],
-  },
+            is_correct: true
+          }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

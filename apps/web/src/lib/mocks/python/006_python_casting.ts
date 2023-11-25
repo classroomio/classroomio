@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Casting spells in Python', is_correct: false },
           { label: 'Changing the data type of a value', is_correct: true },
-          { label: 'Type checking in Python', is_correct: false },
-        ],
+          { label: 'Type checking in Python', is_correct: false }
+        ]
       },
       {
         title: 'How do you perform type casting in Python?',
@@ -28,8 +28,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Using the "cast" keyword', is_correct: false },
           { label: 'Using the "to" keyword', is_correct: false },
-          { label: 'By specifying the target data type', is_correct: true },
-        ],
+          { label: 'By specifying the target data type', is_correct: true }
+        ]
       },
       {
         title: 'What is the result of casting "3.14" to an integer in Python?',
@@ -40,8 +40,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '3.14', is_correct: false },
           { label: '3', is_correct: true },
-          { label: '14', is_correct: false },
-        ],
+          { label: '14', is_correct: false }
+        ]
       },
       {
         title: 'Explain the purpose of type casting in Python.',
@@ -49,7 +49,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 3,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Which casting function is used to convert a value to a floating-point number?',
@@ -60,8 +60,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'float()', is_correct: true },
           { label: 'int()', is_correct: false },
-          { label: 'str()', is_correct: false },
-        ],
+          { label: 'str()', is_correct: false }
+        ]
       },
       {
         title: 'What happens if you try to cast a string that is not a valid number to an integer?',
@@ -72,8 +72,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'It becomes a valid integer', is_correct: false },
           { label: 'An error occurs', is_correct: true },
-          { label: 'It becomes a float', is_correct: false },
-        ],
+          { label: 'It becomes a float', is_correct: false }
+        ]
       },
       {
         title: 'Which casting function is used to convert a value to an integer in Python?',
@@ -84,8 +84,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'int()', is_correct: true },
           { label: 'float()', is_correct: false },
-          { label: 'str()', is_correct: false },
-        ],
+          { label: 'str()', is_correct: false }
+        ]
       },
       {
         title: 'Explain the concept of implicit type casting in Python.',
@@ -93,7 +93,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 7,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What happens if you try to cast a floating-point number to an integer using int()?',
@@ -104,8 +104,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'It becomes a string', is_correct: false },
           { label: 'It becomes a float', is_correct: false },
-          { label: 'The decimal part is truncated', is_correct: true },
-        ],
+          { label: 'The decimal part is truncated', is_correct: true }
+        ]
       },
       {
         title: 'Which casting function is used to convert a value to a string in Python?',
@@ -116,11 +116,11 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'str()', is_correct: true },
           { label: 'int()', is_correct: false },
-          { label: 'float()', is_correct: false },
-        ],
-      },
-    ],
-  },
+          { label: 'float()', is_correct: false }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

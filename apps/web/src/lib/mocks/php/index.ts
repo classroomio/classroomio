@@ -39,7 +39,7 @@ export const PHP_IDS: { [key: string]: string } = {
   PHP_REGEX: 'PHP_REGEX',
   PHP_FORMS: 'PHP_FORMS',
   PHP_FORMVALIDATION: 'PHP_FORMVALIDATION',
-  PHP_FORMREQUIRED: 'PHP_FORMREQUIRED',
+  PHP_FORMREQUIRED: 'PHP_FORMREQUIRED'
 };
 
 export const PHP_TEMPLATES = {
@@ -62,6 +62,5 @@ export const PHP_TEMPLATES = {
   [PHP_IDS.PHP_REGEX]: phpRegex,
   [PHP_IDS.PHP_FORMS]: phpForms,
   [PHP_IDS.PHP_FORMVALIDATION]: phpFormValidation,
-  [PHP_IDS.PHP_FORMREQUIRED]: phpFormRequired,
-
+  [PHP_IDS.PHP_FORMREQUIRED]: phpFormRequired
 };

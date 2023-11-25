@@ -1,5 +1,5 @@
 export const load = ({ params = { id: '' } }) => {
   return {
-    profileId: params.id,
+    profileId: params.id
   };
 };

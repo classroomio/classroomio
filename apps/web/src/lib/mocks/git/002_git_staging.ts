@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Changes staged for commit', is_correct: false },
           { label: 'Changes not staged for commit', is_correct: false },
-          { label: 'Both staged and unstaged changes', is_correct: true },
-        ],
+          { label: 'Both staged and unstaged changes', is_correct: true }
+        ]
       },
       {
         title: 'What is the purpose of the Git staging area?',
@@ -29,8 +29,8 @@ const template: ExerciseTemplate = {
           { label: 'To store all changes made in the repository', is_correct: false },
           { label: 'To review changes before committing', is_correct: true },
           { label: 'To create new branches', is_correct: false },
-          { label: 'To push changes to a remote repository', is_correct: false },
-        ],
+          { label: 'To push changes to a remote repository', is_correct: false }
+        ]
       },
       {
         title: 'Explain the process of staging changes in Git in your own words.',
@@ -38,7 +38,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 3,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How do you stage specific files for a commit in Git?',
@@ -49,8 +49,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Use "git add ." to stage all changes', is_correct: false },
           { label: 'Use "git add filename" to stage a specific file', is_correct: true },
-          { label: 'Use "git stage filename"', is_correct: false },
-        ],
+          { label: 'Use "git stage filename"', is_correct: false }
+        ]
       },
       {
         title: 'What is the purpose of the "git reset" command in the staging environment?',
@@ -62,8 +62,8 @@ const template: ExerciseTemplate = {
           { label: 'To unstage changes', is_correct: true },
           { label: 'To discard all changes', is_correct: false },
           { label: 'To create a new branch', is_correct: false },
-          { label: 'To view the commit history', is_correct: false },
-        ],
+          { label: 'To view the commit history', is_correct: false }
+        ]
       },
       {
         title: 'What does "git diff" show in the staging environment?',
@@ -71,7 +71,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 6,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is a Git stash?',
@@ -82,8 +82,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'A temporary storage area for changes', is_correct: true },
           { label: 'A remote Git repository', is_correct: false },
-          { label: 'A Git branch', is_correct: false },
-        ],
+          { label: 'A Git branch', is_correct: false }
+        ]
       },
       {
         title: 'How do you unstage changes in Git?',
@@ -95,8 +95,8 @@ const template: ExerciseTemplate = {
           { label: 'Use "git stage filename"', is_correct: false },
           { label: 'Use "git unstage filename"', is_correct: true },
           { label: 'Use "git reset"', is_correct: true },
-          { label: 'Use "git diff"', is_correct: false },
-        ],
+          { label: 'Use "git diff"', is_correct: false }
+        ]
       },
       {
         title: 'Explain the Git stash operation in your own words.',
@@ -104,7 +104,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is the purpose of "git log" in the staging environment?',
@@ -115,11 +115,11 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'To view a list of available branches', is_correct: false },
           { label: 'To view the commit history', is_correct: true },
-          { label: 'To create a new branch', is_correct: false },
-        ],
-      },
-    ],
-  },
+          { label: 'To create a new branch', is_correct: false }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

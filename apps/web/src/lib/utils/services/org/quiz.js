@@ -11,7 +11,7 @@ export function onRename(quiz) {
     ...m,
     id: quiz.id,
     title: quiz.title,
-    openEdit: true,
+    openEdit: true
   }));
 }
 
@@ -21,6 +21,6 @@ export function onDelete(quiz) {
   deleteModal.update((m) => ({
     ...m,
     open: true,
-    id: quiz.id,
+    id: quiz.id
   }));
 }

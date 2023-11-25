@@ -16,17 +16,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To execute code.',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To document code and provide explanations.',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To hide code from others.',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Which symbol is used to start a single-line comment in PHP?',
@@ -37,21 +37,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: '#',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: '//',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '/*',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '--',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How do you start a multi-line comment in PHP?',
@@ -62,21 +62,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: '/*',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: '#',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '//',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '--',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How do you end a multi-line comment in PHP?',
@@ -87,21 +87,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: '*/',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: '#',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '//',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '--',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the purpose of using comments in code?',
@@ -112,21 +112,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To provide explanations for code.',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To disable code temporarily.',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To make code execute faster.',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To document the author of the code.',
-            is_correct: true,
-          },
-        ],
+            is_correct: true
+          }
+        ]
       },
       {
         title: 'What is the correct way to add a comment in PHP?',
@@ -134,7 +134,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 5,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Can comments be nested in PHP?',
@@ -145,13 +145,13 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'Yes',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'No',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Which of the following is not a valid way to comment out a block of code in PHP?',
@@ -162,21 +162,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: '/* ... */',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '// ...',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '# ... #',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: '-- ... --',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the purpose of a doc comment in PHP?',
@@ -187,17 +187,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To disable code temporarily.',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To document functions, classes, and methods.',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To hide code from others.',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Which PHP function is used to add a single-line comment?',
@@ -205,11 +205,10 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
-      },
-    ],
-  },
+        options: []
+      }
+    ]
+  }
 };
-
 
 export default template;

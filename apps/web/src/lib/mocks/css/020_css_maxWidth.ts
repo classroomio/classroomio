@@ -13,7 +13,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 0,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Which CSS property is used to set the maximum width of an element?',
@@ -25,8 +25,8 @@ const template: ExerciseTemplate = {
           { label: 'max-height', is_correct: false },
           { label: 'min-width', is_correct: false },
           { label: 'width', is_correct: false },
-          { label: 'max-width', is_correct: true },
-        ],
+          { label: 'max-width', is_correct: true }
+        ]
       },
       {
         title: 'What is the default value of the "max-width" property?',
@@ -38,8 +38,8 @@ const template: ExerciseTemplate = {
           { label: 'auto', is_correct: true },
           { label: '100%', is_correct: false },
           { label: '0', is_correct: false },
-          { label: 'none', is_correct: false },
-        ],
+          { label: 'none', is_correct: false }
+        ]
       },
       {
         title: 'How can you make sure an image never exceeds a specified width?',
@@ -51,8 +51,8 @@ const template: ExerciseTemplate = {
           { label: 'max-width: 100%;', is_correct: true },
           { label: 'max-width: none;', is_correct: false },
           { label: 'max-width: auto;', is_correct: false },
-          { label: 'max-width: inherit;', is_correct: false },
-        ],
+          { label: 'max-width: inherit;', is_correct: false }
+        ]
       },
       {
         title: 'What is the effect of setting "max-width" to "none"?',
@@ -60,7 +60,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 4,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'When should you use the "max-width" property in CSS?',
@@ -68,7 +68,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 5,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Which CSS property is used to set the maximum width of an image?',
@@ -80,8 +80,8 @@ const template: ExerciseTemplate = {
           { label: 'image-max-width', is_correct: false },
           { label: 'img-width', is_correct: false },
           { label: 'width-max', is_correct: false },
-          { label: 'max-width', is_correct: true },
-        ],
+          { label: 'max-width', is_correct: true }
+        ]
       },
       {
         title: 'What happens if the content of an element exceeds its "max-width"?',
@@ -89,7 +89,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 7,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How can you center-align a block-level element with a maximum width?',
@@ -101,8 +101,8 @@ const template: ExerciseTemplate = {
           { label: 'text-align: center;', is_correct: false },
           { label: 'margin: 0 auto;', is_correct: true },
           { label: 'align: center;', is_correct: false },
-          { label: 'position: center;', is_correct: false },
-        ],
+          { label: 'position: center;', is_correct: false }
+        ]
       },
       {
         title: 'What is the syntax for setting a specific maximum width in CSS using "max-width"?',
@@ -110,11 +110,10 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       }
-    ],
-  },
+    ]
+  }
 };
-
 
 export default template;

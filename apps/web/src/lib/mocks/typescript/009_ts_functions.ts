@@ -119,11 +119,13 @@ const template: ExerciseTemplate = {
             is_correct: false
           },
           {
-            label: 'An arrow function is a concise way to write function expressions in TypeScript.',
+            label:
+              'An arrow function is a concise way to write function expressions in TypeScript.',
             is_correct: true
           },
           {
-            label: 'An arrow function is a type of function that uses arrows instead of parentheses.',
+            label:
+              'An arrow function is a type of function that uses arrows instead of parentheses.',
             is_correct: false
           },
           {
@@ -169,7 +171,8 @@ const template: ExerciseTemplate = {
             is_correct: false
           },
           {
-            label: 'A generator function is a special type of function that can pause and resume its execution.',
+            label:
+              'A generator function is a special type of function that can pause and resume its execution.',
             is_correct: true
           },
           {
@@ -190,7 +193,8 @@ const template: ExerciseTemplate = {
         question_type: QuestionTypes[0], // RADIO type
         options: [
           {
-            label: 'The `yield` keyword is used to yield control back to the caller of the generator function.',
+            label:
+              'The `yield` keyword is used to yield control back to the caller of the generator function.',
             is_correct: true
           },
           {
@@ -202,7 +206,8 @@ const template: ExerciseTemplate = {
             is_correct: false
           },
           {
-            label: 'The `yield` keyword is used to specify the return value of the generator function.',
+            label:
+              'The `yield` keyword is used to specify the return value of the generator function.',
             is_correct: false
           }
         ]

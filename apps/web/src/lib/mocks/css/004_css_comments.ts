@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '/* This is a CSS comment */', is_correct: true },
           { label: '// This is a CSS comment', is_correct: false },
-          { label: '<!-- This is a CSS comment -->', is_correct: false },
-        ],
+          { label: '<!-- This is a CSS comment -->', is_correct: false }
+        ]
       },
       {
         title: 'Can you add multiline comments in CSS?',
@@ -27,8 +27,8 @@ const template: ExerciseTemplate = {
         question_type: QuestionTypes[0], // RADIO
         options: [
           { label: 'Yes, using /* */', is_correct: true },
-          { label: 'No, CSS only supports single-line comments', is_correct: false },
-        ],
+          { label: 'No, CSS only supports single-line comments', is_correct: false }
+        ]
       },
       {
         title: 'What is the purpose of CSS comments?',
@@ -39,8 +39,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'To provide explanations and notes within the code', is_correct: true },
           { label: 'To disable specific styles temporarily', is_correct: false },
-          { label: 'To hide styles from the browser', is_correct: false },
-        ],
+          { label: 'To hide styles from the browser', is_correct: false }
+        ]
       },
       {
         title: 'Which of the following is NOT a valid way to add a CSS comment?',
@@ -51,8 +51,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '<!-- This is a CSS comment -->', is_correct: true },
           { label: '// This is a CSS comment', is_correct: false },
-          { label: '/* This is a CSS comment */', is_correct: false },
-        ],
+          { label: '/* This is a CSS comment */', is_correct: false }
+        ]
       },
       {
         title: 'Explain the use of CSS comments in improving code readability.',
@@ -60,7 +60,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 4,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'When might you use CSS comments to organize your styles?',
@@ -68,7 +68,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 5,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Which CSS selector should you use to select all elements with a specific class?',
@@ -79,8 +79,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: '.classname', is_correct: true },
           { label: '#classname', is_correct: false },
-          { label: 'elementname', is_correct: false },
-        ],
+          { label: 'elementname', is_correct: false }
+        ]
       },
       {
         title: 'How do you add a CSS comment using the "style" attribute in HTML?',
@@ -91,8 +91,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'style="/* This is a CSS comment */"', is_correct: true },
           { label: 'style="// This is a CSS comment"', is_correct: false },
-          { label: 'style="<!-- This is a CSS comment -->"', is_correct: false },
-        ],
+          { label: 'style="<!-- This is a CSS comment -->"', is_correct: false }
+        ]
       },
       {
         title: 'In CSS, comments are displayed in the rendered web page.',
@@ -102,8 +102,8 @@ const template: ExerciseTemplate = {
         question_type: QuestionTypes[0], // RADIO
         options: [
           { label: 'True', is_correct: false },
-          { label: 'False', is_correct: true },
-        ],
+          { label: 'False', is_correct: true }
+        ]
       },
       {
         title: 'Explain the advantages of using CSS comments for code maintenance.',
@@ -111,10 +111,10 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
-      },
-    ],
-  },
+        options: []
+      }
+    ]
+  }
 };
 
 export default template;

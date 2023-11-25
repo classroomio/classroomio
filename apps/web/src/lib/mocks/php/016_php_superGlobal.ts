@@ -8,7 +8,8 @@ const template: ExerciseTemplate = {
   questionnaire: {
     questions: [
       {
-        title: 'Which superglobal in PHP is used to collect form data after submitting an HTML form?',
+        title:
+          'Which superglobal in PHP is used to collect form data after submitting an HTML form?',
         name: 'question1',
         points: 2,
         order: 0,
@@ -16,21 +17,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: '$_POST',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: '$_GET',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '$_REQUEST',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '$_SESSION',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Which superglobal in PHP is used to read variables from the global scope?',
@@ -41,21 +42,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: '$_POST',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '$_GET',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '$_REQUEST',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '$GLOBALS',
-            is_correct: true,
-          },
-        ],
+            is_correct: true
+          }
+        ]
       },
       {
         title: 'What does the superglobal $_SESSION in PHP store?',
@@ -66,21 +67,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'User session data',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'Server configuration settings',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Database connection details',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'Form input data',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Which superglobal in PHP is used to retrieve data sent to the server via a URL?',
@@ -91,21 +92,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: '$_POST',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '$_GET',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: '$_REQUEST',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '$_SERVER',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the purpose of the $_COOKIE superglobal in PHP?',
@@ -116,21 +117,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To store database records',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To store session data',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To store user-specific data on the client side',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To store form input data',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the purpose of the $_REQUEST superglobal in PHP?',
@@ -141,21 +142,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To retrieve server configuration settings',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To retrieve data from the client side',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To store user session data',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To store form input data',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the purpose of the $_SERVER superglobal in PHP?',
@@ -166,21 +167,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To store user session data',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To retrieve information about the server environment and request',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To store form input data',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To retrieve data from the client side',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the purpose of the $_ENV superglobal in PHP?',
@@ -191,21 +192,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To store user session data',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To retrieve server configuration settings',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To store form input data',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To retrieve data from the client side',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Which superglobal in PHP is used to access environment variables?',
@@ -216,21 +217,21 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: '$_SERVER',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '$_GET',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: '$_ENV',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: '$_POST',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the purpose of the $_FILES superglobal in PHP?',
@@ -241,24 +242,24 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To store user session data',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To retrieve server configuration settings',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To store form input data',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To handle file uploads from HTML forms',
-            is_correct: true,
-          },
-        ],
-      },
-    ],
-  },
+            is_correct: true
+          }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

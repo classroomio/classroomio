@@ -16,17 +16,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To conditionally render an element based on a condition',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To toggle a class on an element',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To define a computed property in Vue.js',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How do you use "v-show" to conditionally display an element in Vue.js?',
@@ -34,7 +34,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 1,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'Explain the key difference between "v-show" and "v-if" directives in Vue.js.',
@@ -42,7 +42,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 2,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'In what scenarios is "v-show" typically preferred over "v-if" in Vue.js?',
@@ -50,7 +50,7 @@ const template: ExerciseTemplate = {
         points: 3,
         order: 3,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How do you conditionally show an element using "v-show" in Vue.js?',
@@ -61,17 +61,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'By rendering the element conditionally',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'By toggling the element display property',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By using a computed property',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Explain the usage of "v-show" with "v-else" in Vue.js.',
@@ -79,26 +79,29 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 5,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
-        title: 'How can you use "v-show" with "v-else-if" to conditionally render content in Vue.js?',
+        title:
+          'How can you use "v-show" with "v-else-if" to conditionally render content in Vue.js?',
         name: 'q7',
         points: 2,
         order: 6,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
-        title: 'What is the key difference between "v-show" and "v-if" in terms of rendering in Vue.js?',
+        title:
+          'What is the key difference between "v-show" and "v-if" in terms of rendering in Vue.js?',
         name: 'q8',
         points: 3,
         order: 7,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
-        title: 'How do you use "v-else-if" with "v-show" to conditionally render content in Vue.js?',
+        title:
+          'How do you use "v-else-if" with "v-show" to conditionally render content in Vue.js?',
         name: 'q9',
         points: 1,
         order: 8,
@@ -106,17 +109,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'By using "v-else" with a condition',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'By using "v-else" with multiple conditions',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By using "v-if" with a condition',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Explain the usage of "v-show" with "v-for" in Vue.js.',
@@ -124,10 +127,10 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
-      },
-    ],
-  },
+        options: []
+      }
+    ]
+  }
 };
 
 export default template;

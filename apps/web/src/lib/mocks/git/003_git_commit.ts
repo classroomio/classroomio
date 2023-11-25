@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'A snapshot of your code at a specific point in time', is_correct: true },
           { label: 'A type of Git branch', is_correct: false },
-          { label: 'A remote repository', is_correct: false },
-        ],
+          { label: 'A remote repository', is_correct: false }
+        ]
       },
       {
         title: 'What does the "git commit" command do?',
@@ -29,8 +29,8 @@ const template: ExerciseTemplate = {
           { label: 'Creates a new branch', is_correct: false },
           { label: 'Records changes to the repository', is_correct: true },
           { label: 'Deletes the current branch', is_correct: false },
-          { label: 'Pushes changes to a remote repository', is_correct: false },
-        ],
+          { label: 'Pushes changes to a remote repository', is_correct: false }
+        ]
       },
       {
         title: 'Explain the purpose of "git commit" in your own words.',
@@ -38,7 +38,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 3,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is a Git commit message?',
@@ -49,8 +49,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'A comment about the weather', is_correct: false },
           { label: 'A brief description of the changes made in the commit', is_correct: true },
-          { label: 'A list of all the files in the repository', is_correct: false },
-        ],
+          { label: 'A list of all the files in the repository', is_correct: false }
+        ]
       },
       {
         title: 'How do you commit changes with a message in Git?',
@@ -62,8 +62,8 @@ const template: ExerciseTemplate = {
           { label: 'Use "git commit -m"', is_correct: true },
           { label: 'Use "git push"', is_correct: false },
           { label: 'Use "git checkout"', is_correct: false },
-          { label: 'Use "git add"', is_correct: false },
-        ],
+          { label: 'Use "git add"', is_correct: false }
+        ]
       },
       {
         title: 'What is the purpose of "git log"?',
@@ -71,7 +71,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 6,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is a Git branch?',
@@ -82,8 +82,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'A snapshot of your code at a specific point in time', is_correct: false },
           { label: 'A separate line of development', is_correct: true },
-          { label: 'A Git commit message', is_correct: false },
-        ],
+          { label: 'A Git commit message', is_correct: false }
+        ]
       },
       {
         title: 'What is the purpose of "git reset" in relation to commits?',
@@ -95,8 +95,8 @@ const template: ExerciseTemplate = {
           { label: 'To undo the last commit and reset the staging area', is_correct: true },
           { label: 'To create a new branch', is_correct: false },
           { label: 'To push changes to a remote repository', is_correct: false },
-          { label: 'To view the commit history', is_correct: false },
-        ],
+          { label: 'To view the commit history', is_correct: false }
+        ]
       },
       {
         title: 'Explain the purpose of "git log" in your own words.',
@@ -104,7 +104,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is a Git merge?',
@@ -115,11 +115,11 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'A conflict resolution process', is_correct: false },
           { label: 'Combining changes from one branch into another', is_correct: true },
-          { label: 'A Git repository backup', is_correct: false },
-        ],
-      },
-    ],
-  },
+          { label: 'A Git repository backup', is_correct: false }
+        ]
+      }
+    ]
+  }
 };
 
 export default template;

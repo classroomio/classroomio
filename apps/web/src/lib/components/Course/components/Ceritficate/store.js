@@ -5,7 +5,7 @@ export const issueCertificateModal = writable({
   automatic: false,
   email: '',
   date: '',
-  message: '',
+  message: ''
 });
 
 export const resetForm = () =>
@@ -14,5 +14,5 @@ export const resetForm = () =>
     automatic: false,
     email: '',
     date: '',
-    message: '',
+    message: ''
   }));

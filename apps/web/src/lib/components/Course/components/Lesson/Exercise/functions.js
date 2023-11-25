@@ -77,15 +77,15 @@ export function getPropsForQuestion(
           isActive: true
         }
       : isCorrect
-      ? {
-          label: isLast ? 'Finish' : 'Next',
-          isActive: true,
-          disableOptionSelect: true
-        }
-      : {
-          label: 'Check',
-          isActive: false
-        }
+        ? {
+            label: isLast ? 'Finish' : 'Next',
+            isActive: true,
+            disableOptionSelect: true
+          }
+        : {
+            label: 'Check',
+            isActive: false
+          }
   };
 }
 

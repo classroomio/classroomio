@@ -18,7 +18,7 @@ function createWindow() {
     width: 800,
     height: 600,
     webPreferences: {
-      nodeIntegration: true,
+      nodeIntegration: true
     },
     // Use this in development mode.
     icon: isDev()
@@ -26,7 +26,7 @@ function createWindow() {
       : path.join(__dirname, '__sapper__/export/logo-512.png'),
     // Use this in production mode.
     // icon: path.join(__dirname, '__sapper__/export/logo-512.png'),
-    show: false,
+    show: false
   });
 
   // This block of code is intended for development purpose only.

@@ -3,6 +3,6 @@ export async function handleAuthChange(event, session) {
     method: 'POST',
     headers: new Headers({ 'Content-Type': 'application/json' }),
     credentials: 'same-origin',
-    body: JSON.stringify({ event, session }),
+    body: JSON.stringify({ event, session })
   });
 }

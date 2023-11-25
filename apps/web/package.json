@@ -7,6 +7,9 @@
     "dev": "vite dev",
     "build": "vite build",
     "preview": "vite preview",
+    "lint": "eslint ./src",
+    "clean":"rm -rf node_modules",
+    "format": "prettier . --write .",
     "export": "vite build --entry \"/ /404 login signup forgot onboarding courses org lms course\"",
     "postexport": "mv __sapper__/export/404/index.html __sapper__/export/404.html",
     "start": "node build",
@@ -46,7 +49,8 @@
     "svelte-email": "^0.0.4",
     "unsplash-js": "^7.0.18",
     "wait-on": "^7.0.1",
-    "zod": "^3.21.4"
+    "zod": "^3.21.4",
+    "svelte-ui": "workspace:*"
   },
   "devDependencies": {
     "@babel/core": "^7.22.9",
@@ -73,7 +77,9 @@
     "tailwindcss": "^3.3.2",
     "tslib": "^2.6.1",
     "typescript": "^5.1.6",
-    "vite": "^4.4.8"
+    "vite": "^4.4.8",
+    "eslint-config-custom": "workspace:*",
+    "tsconfig": "workspace:*"
   },
   "type": "module"
 }

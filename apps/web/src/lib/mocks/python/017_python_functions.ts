@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'To define a variable', is_correct: false },
           { label: 'To execute code repeatedly', is_correct: false },
-          { label: 'To group and reuse code', is_correct: true },
-        ],
+          { label: 'To group and reuse code', is_correct: true }
+        ]
       },
       {
         title: 'How do you define a function in Python?',
@@ -28,8 +28,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'function myFunction:', is_correct: false },
           { label: 'define myFunction:', is_correct: false },
-          { label: 'def myFunction():', is_correct: true },
-        ],
+          { label: 'def myFunction():', is_correct: true }
+        ]
       },
       {
         title: 'Which keyword is used to call a function in Python?',
@@ -40,8 +40,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'call', is_correct: false },
           { label: 'invoke', is_correct: false },
-          { label: 'return', is_correct: true },
-        ],
+          { label: 'return', is_correct: true }
+        ]
       },
       {
         title: 'Explain the concept of function parameters in Python.',
@@ -49,7 +49,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 3,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'What is a "default parameter" in a Python function?',
@@ -60,8 +60,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'A parameter with a default value', is_correct: true },
           { label: 'A parameter that cannot be changed', is_correct: false },
-          { label: 'A reserved keyword', is_correct: false },
-        ],
+          { label: 'A reserved keyword', is_correct: false }
+        ]
       },
       {
         title: 'How do you return a value from a function in Python?',
@@ -72,8 +72,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'use return statement', is_correct: true },
           { label: 'use print statement', is_correct: false },
-          { label: 'use break statement', is_correct: false },
-        ],
+          { label: 'use break statement', is_correct: false }
+        ]
       },
       {
         title: 'Explain the concept of "local variables" in Python functions.',
@@ -81,7 +81,7 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 6,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How can you make a Python function accept an arbitrary number of arguments?',
@@ -92,8 +92,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Use a for loop', is_correct: false },
           { label: 'Use the *args parameter', is_correct: true },
-          { label: 'Use the $args parameter', is_correct: false },
-        ],
+          { label: 'Use the $args parameter', is_correct: false }
+        ]
       },
       {
         title: 'What is a "lambda function" in Python?',
@@ -104,8 +104,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'A function defined with the lambda keyword', is_correct: true },
           { label: 'A built-in Python function', is_correct: false },
-          { label: 'A function with a long name', is_correct: false },
-        ],
+          { label: 'A function with a long name', is_correct: false }
+        ]
       },
       {
         title: 'Explain the concept of "recursion" in Python functions.',
@@ -113,10 +113,10 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
-      },
-    ],
-  },
+        options: []
+      }
+    ]
+  }
 };
 
 export default template;

@@ -16,8 +16,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'To declare variables', is_correct: false },
           { label: 'To conditionally assign a value based on a condition', is_correct: true },
-          { label: 'To define reusable functions', is_correct: false },
-        ],
+          { label: 'To define reusable functions', is_correct: false }
+        ]
       },
       {
         title: 'How does the ternary operator differ from an "if...else" statement?',
@@ -26,10 +26,16 @@ const template: ExerciseTemplate = {
         order: 1,
         question_type: QuestionTypes[0], // RADIO
         options: [
-          { label: 'The ternary operator cannot be used for conditional assignments', is_correct: false },
+          {
+            label: 'The ternary operator cannot be used for conditional assignments',
+            is_correct: false
+          },
           { label: 'The ternary operator is shorter and results in a value', is_correct: true },
-          { label: 'The ternary operator can only be used for boolean conditions', is_correct: false },
-        ],
+          {
+            label: 'The ternary operator can only be used for boolean conditions',
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the syntax of the ternary operator in JavaScript?',
@@ -40,8 +46,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'if (condition) { value1 } else { value2 }', is_correct: false },
           { label: 'condition ? value1 : value2', is_correct: true },
-          { label: 'condition ? { value1 } : { value2 }', is_correct: false },
-        ],
+          { label: 'condition ? { value1 } : { value2 }', is_correct: false }
+        ]
       },
       {
         title: 'How do you use the ternary operator to assign a value based on a condition?',
@@ -52,8 +58,8 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'Using "if" statements', is_correct: false },
           { label: 'Using "switch" statements', is_correct: false },
-          { label: 'Using the "?" and ":" symbols', is_correct: true },
-        ],
+          { label: 'Using the "?" and ":" symbols', is_correct: true }
+        ]
       },
       {
         title: 'Select all valid use cases for the ternary operator in JavaScript.',
@@ -65,32 +71,35 @@ const template: ExerciseTemplate = {
           { label: 'Assigning a value based on a condition', is_correct: true },
           { label: 'Replacing "if...else" statements', is_correct: true },
           { label: 'Defining functions', is_correct: false },
-          { label: 'Creating arrays', is_correct: false },
-        ],
+          { label: 'Creating arrays', is_correct: false }
+        ]
       },
       {
-        title: 'Write an example of using the ternary operator to conditionally assign a value in JavaScript.',
+        title:
+          'Write an example of using the ternary operator to conditionally assign a value in JavaScript.',
         name: 'q6',
         points: 1,
         order: 5,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
-        title: 'Explain the concept of a "truthy" and "falsy" value in the context of the ternary operator.',
+        title:
+          'Explain the concept of a "truthy" and "falsy" value in the context of the ternary operator.',
         name: 'q7',
         points: 1,
         order: 6,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
-        title: 'What is the advantage of using the ternary operator over an "if...else" statement in certain situations?',
+        title:
+          'What is the advantage of using the ternary operator over an "if...else" statement in certain situations?',
         name: 'q8',
         points: 1,
         order: 7,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'List some common pitfalls to avoid when using the ternary operator in JavaScript.',
@@ -98,7 +107,7 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 8,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How can you nest ternary operators in JavaScript?',
@@ -106,10 +115,10 @@ const template: ExerciseTemplate = {
         points: 1,
         order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
-      },
-    ],
-  },
+        options: []
+      }
+    ]
+  }
 };
 
 export default template;

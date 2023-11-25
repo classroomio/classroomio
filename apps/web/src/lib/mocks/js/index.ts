@@ -62,5 +62,5 @@ export const JS_TEMPLATES = {
   [JS_IDS.JS_STRINGTEMPLATES]: jsStringTemplates,
   [JS_IDS.JS_NUMBERS]: jsNumbers,
   [JS_IDS.JS_BIGINT]: jsBigInt,
-  [JS_IDS.JS_NUMBERMETHODS]: jsNumberMethods,
+  [JS_IDS.JS_NUMBERMETHODS]: jsNumberMethods
 };

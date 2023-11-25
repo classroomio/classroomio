@@ -16,17 +16,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'By using the "v-css" directive',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By using the "v-bind" directive with the "class" attribute',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'By defining a custom CSS binding method',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the purpose of binding CSS classes in Vue.js?',
@@ -34,7 +34,7 @@ const template: ExerciseTemplate = {
         points: 3,
         order: 1,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
+        options: []
       },
       {
         title: 'How do you conditionally apply CSS classes in Vue.js?',
@@ -45,17 +45,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'By using the "v-style" directive',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By using conditional expressions with the "v-bind" directive',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'By using inline styles',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Which syntax should you use to bind a single CSS class conditionally in Vue.js?',
@@ -66,17 +66,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: ':class="{ active: isActive }"',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'class="active: isActive"',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'v-bind:class="active: isActive"',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the Vue.js directive for binding inline styles?',
@@ -87,17 +87,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'v-inline',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'v-style',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'v-css',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How can you bind multiple CSS classes in Vue.js?',
@@ -108,17 +108,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'By defining a custom CSS binding method',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'By using a computed property that returns an object',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'By using the "v-class" directive',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the benefit of using CSS binding in Vue.js?',
@@ -129,17 +129,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'It simplifies CSS usage in Vue components',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'It improves JavaScript performance',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'It is not recommended in Vue.js',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'How do you bind CSS inline styles in Vue.js using "v-style"?',
@@ -150,17 +150,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'By directly specifying a string of CSS properties',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'By using a computed property that returns an object of style properties',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'By applying a predefined CSS class',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'What is the purpose of using conditional CSS classes in Vue.js?',
@@ -171,17 +171,17 @@ const template: ExerciseTemplate = {
         options: [
           {
             label: 'To apply styles dynamically based on data or user interaction',
-            is_correct: true,
+            is_correct: true
           },
           {
             label: 'To override all other CSS styles',
-            is_correct: false,
+            is_correct: false
           },
           {
             label: 'To define fixed styles for all components',
-            is_correct: false,
-          },
-        ],
+            is_correct: false
+          }
+        ]
       },
       {
         title: 'Which Vue.js directive is used to bind HTML attributes?',
@@ -189,10 +189,10 @@ const template: ExerciseTemplate = {
         points: 2,
         order: 9,
         question_type: QuestionTypes[2], // TEXTAREA
-        options: [],
-      },
-    ],
-  },
+        options: []
+      }
+    ]
+  }
 };
 
 export default template;
