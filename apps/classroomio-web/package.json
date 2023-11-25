@@ -1,5 +1,5 @@
 {
-  "name": "classroomio",
+  "name": "classroomio-web",
   "description": "classroomio",
   "version": "0.0.1",
   "main": "main.js",
@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint ./src",
-    "clean":"rm -rf node_modules",
+    "clean": "rm -rf node_modules",
     "format": "prettier . --write .",
     "export": "vite build --entry \"/ /404 login signup forgot onboarding courses org lms course\"",
     "postexport": "mv __sapper__/export/404/index.html __sapper__/export/404.html",
@@ -36,6 +36,7 @@
     "d3": "^7.8.5",
     "d3-cloud": "^1.2.7",
     "d3-sankey": "^0.12.3",
+    "dayjs": "^1.11.10",
     "form-data": "^4.0.0",
     "hotkeys-js": "^3.11.2",
     "js-yaml": "^4.1.0",
@@ -47,10 +48,10 @@
     "sirv": "^2.0.3",
     "supabase": "^1.112.0",
     "svelte-email": "^0.0.4",
+    "svelte-ui": "workspace:*",
     "unsplash-js": "^7.0.18",
     "wait-on": "^7.0.1",
-    "zod": "^3.21.4",
-    "svelte-ui": "workspace:*"
+    "zod": "^3.21.4"
   },
   "devDependencies": {
     "@babel/core": "^7.22.9",
@@ -66,6 +67,7 @@
     "carbon-components-svelte": "^0.79.0",
     "carbon-icons-svelte": "^12.1.0",
     "dotenv": "^16.3.1",
+    "eslint-config-custom": "workspace:*",
     "postcss": "^8.4.24",
     "postcss-load-config": "^4.0.1",
     "sass": "^1.64.2",
@@ -75,11 +77,10 @@
     "svelte-loading-spinners": "^0.3.4",
     "svelte-preprocess": "^5.0.4",
     "tailwindcss": "^3.3.2",
+    "tsconfig": "workspace:*",
     "tslib": "^2.6.1",
     "typescript": "^5.1.6",
-    "vite": "^4.4.8",
-    "eslint-config-custom": "workspace:*",
-    "tsconfig": "workspace:*"
+    "vite": "^4.4.8"
   },
   "type": "module"
 }

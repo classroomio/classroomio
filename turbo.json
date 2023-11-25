@@ -8,9 +8,8 @@
 		"lint": {
 			"dependsOn": ["^build"]
 		},
-		"format": {"cache": true},
+		"format": { "cache": true },
 		"dev": {
-			"dependsOn": ["^db:generate"],
 			"cache": false,
 			"persistent": true
 		},
