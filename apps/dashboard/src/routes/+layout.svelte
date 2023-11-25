@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { PUBLIC_SUPABASE_PROJECT_REF } from '$env/static/public';
   import { fly } from 'svelte/transition';
   import { derived } from 'svelte/store';
   import { goto } from '$app/navigation';
@@ -219,7 +220,7 @@
     handleResize();
 
     if (
-      !localStorage.getItem('sb-tapaozmyjsuykgerrfkt-auth-token') &&
+      !localStorage.getItem(`sb-${PUBLIC_SUPABASE_PROJECT_REF}-auth-token`) &&
       !isPublicRoute($page.url.pathname)
     ) {
       console.log('No auth token and is not a public route, redirect to login', path);

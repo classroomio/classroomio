@@ -57,10 +57,6 @@
   </button>
 
   <div class="relative my-5 md:my-10">
-    <!-- <ImageCompare
-      before="https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/landingpage/courses-light-mode.png"
-      after="https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/landingpage/courses-dark-mode.png"
-    /> -->
     <video
       class="floating w-[85%] lg:w-[70%] mx-auto rounded-lg shadow-lg"
       autoplay

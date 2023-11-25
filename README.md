@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <a href="https://classroomio.com/">
   <img alt="Spend less time on the boring stuff, and instead focus on impacting the lives of your students." src="https://classroomio.com/classroomio-opengraph-image.png" />
   <h1 align="center">ClassroomIO</h1>
@@ -13,7 +12,7 @@
 
 ## ✨ About ClassroomIO
 
-<img alt="ClassroomIO Courses page" src="https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/classroomio-courses.png" />
+<img alt="ClassroomIO Courses page" src="https://classroomio.com/classroomio-courses.png" />
 
 ClassroomIO is a platform for bootcamps, individual educators, and training businesses that brings teaching and learning into one place while at the same time helping them be 10x more productive. With our platform, anyone can run multiple classes and cohorts all from one UI. The application is mobile-first, which means that students can access your lesson materials from any device.
 
@@ -102,6 +101,7 @@ Here is what you need to be able to run ClassroomIO.com
 
 4. Set up your `.env` file
 
+   - Go to `apps/classroomio-com` and `apps/dashboard`
    - Duplicate the `.env.example` file and rename it to `.env`
 
 5. Setup Supabase.
@@ -157,5 +157,3 @@ You can find other repos related to classroomio here:
 
 - Help Docs: <https://github.com/rotimi-best/docs.classroomio.com>
 - ClassroomIO.com: <https://github.com/rotimi-best/classroomio.com>
-=======
->>>>>>> fa27e04c6f8e50b23aacd37e47a673b7fc098af5
