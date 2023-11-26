@@ -52,8 +52,6 @@
   };
 
   function handleModeChange(isDark: boolean) {
-    if (!tinmycEditor) return;
-
     if (isDark) {
       conf.content_css = 'dark';
       conf.skin = 'oxide-dark';
@@ -75,6 +73,6 @@
 
 <div>
   {#if !unmount}
-  <Editor bind:value {apiKey} {conf} />
+  <Editor bind:value {apiKey} bind:conf />
   {/if}
 </div>
