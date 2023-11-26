@@ -1,6 +1,7 @@
 <script lang="ts">
   import { PUBLIC_TINYMCE_API_KEY } from '$env/static/public';
   import Editor from '@tinymce/tinymce-svelte';
+  import { appStore } from '$lib/utils/store/app';
 
   export let id = '';
   export let value: string;
@@ -11,6 +12,9 @@
   export let maxHeight: number | undefined = undefined;
 
   const apiKey = PUBLIC_TINYMCE_API_KEY;
+
+  let tinmycEditor: any;
+  let unmount = false
 
   // editor configuration
   let conf = {
@@ -27,8 +31,12 @@
     min_height: height,
     max_height: maxHeight,
     placeholder: placeholder,
+    skin: 'oxide-dark',
+    content_css: 'dark',
     init_instance_callback: function (editor: any) {
       editorWindowRef = editor.iframeElement?.contentWindow;
+
+      tinmycEditor = editor;
       editor.on('Change', function () {
         const html = editor.getContent();
         if (onChange) {
@@ -43,9 +51,28 @@
     }
   };
 
+  function handleModeChange(isDark: boolean) {
+    if (isDark) {
+      conf.content_css = 'dark';
+      conf.skin = 'oxide-dark';
+    } else {
+      conf.content_css = 'light';
+      conf.skin = 'oxide';
+    }
+
+    unmount = true;
+    setTimeout(() => {
+      unmount = false;
+    }, 200);
+  }
+
   $: value = !value ? '' : value;
+
+  $: handleModeChange($appStore.isDark);
 </script>
 
 <div>
-  <Editor bind:value {apiKey} {conf} />
+  {#if !unmount}
+  <Editor bind:value {apiKey} bind:conf />
+  {/if}
 </div>
