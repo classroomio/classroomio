@@ -153,7 +153,7 @@ This repo is a mono repo that consists of 3 projects:
    pnpm i
    ```
 
-7. Run (in development mode)
+7. Run all projects (in development mode)
 
    ```bash
    pnpm dev
@@ -163,3 +163,8 @@ This repo is a mono repo that consists of 3 projects:
    - `classroomio-com`: [http://localhost:5173](http://localhost:5173)
    - `dashboard`: [http://localhost:5174](http://localhost:5174)
    - `docs`: [http://localhost:3000](http://localhost:3000)
+     
+9. Running a specific project
+   - **classroomio-com**: `pnpm dev --filter=classroomio-com`
+   - **dashboard**: `pnpm dev --filter=dashboard`
+   - **docs**: `pnpm dev --filter=docs` 
