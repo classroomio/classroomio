@@ -164,7 +164,7 @@ This repo is a mono repo that consists of 3 projects:
    - `dashboard`: [http://localhost:5174](http://localhost:5174)
    - `docs`: [http://localhost:3000](http://localhost:3000)
      
-9. Running specific projects
+9. Running a specific project
    - **classroomio-com**: `pnpm dev --filter=classroomio-com`
    - **dashboard**: `pnpm dev --filter=dashboard`
    - **docs**: `pnpm dev --filter=docs` 
