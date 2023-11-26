@@ -13,6 +13,10 @@
 			"cache": false,
 			"persistent": true
 		},
+		"prepare": {
+			"dependsOn": ["^build"],
+			"persistent": true
+		},
 		"clean": { "cache": false },
 		"db:generate": { "cache": false },
 		"db:push": { "cache": false },

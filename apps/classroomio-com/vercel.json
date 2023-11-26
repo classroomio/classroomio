@@ -1,0 +1,11 @@
+{
+  "rewrites": [
+    {"source": "/docs/", "destination": "https://ciodocs.vercel.app/"},
+    {"source": "/demo/", "destination": "https://cal.com/classroomio/demo/"},
+    {"source": "/discord/", "destination": "https://discord.gg/NJqaZNuD/"},
+    {"source": "/github/", "destination": "https://github.com/rotimi-best/classroomio/"},
+    {"source": "/privacy/", "destination": "https://app.enzuzo.com/policies/privacy/958fc978-5477-11ee-a03b-7b111830c594/"},
+    {"source": "/tos/", "destination": "https://app.enzuzo.com/policies/tos/958fc978-5477-11ee-a03b-7b111830c594/"},
+    {"source": "/blog/", "destination": "https://classroomio.substack.com/"}
+  ]
+}

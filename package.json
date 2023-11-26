@@ -4,6 +4,7 @@
 	"scripts": {
 		"build": "turbo run build",
 		"dev": "turbo run dev",
+		"prepare": "turbo run prepare",
 		"lint": "turbo run lint",
 		"clean": "turbo clean && rm -rf node_modules",
 		"format": "prettier . --write"
