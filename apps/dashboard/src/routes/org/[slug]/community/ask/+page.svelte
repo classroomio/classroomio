@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { goto } from '$app/navigation';
   import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
   import { currentOrgPath, currentOrg } from '$lib/utils/store/org';
@@ -8,8 +8,11 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import generateSlug from '$lib/utils/functions/generateSlug';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
+  import TextField from '$lib/components/Form/TextField.svelte';
 
-  let errors = {};
+  let errors: {
+    title?: string;
+  } = {};
   let fields = {
     title: '',
     body: ''
@@ -64,23 +67,11 @@
   </div>
 
   <div class="mb-3 p-2">
-    <input
-      class="title rounded-lg border border-1 border-gray p-2 w-full dark:text-black focus:outline-none"
-      error="false"
-      autocomplete="off"
-      placeholder="Title"
-      aria-label="Title"
-      aria-describedby="title-input-validation"
-      type="text"
-      name="discussion_title"
-      id="discussion_title"
+    <TextField 
       bind:value={fields.title}
+      placeholder="Title"
+      errorMessage={errors.title}
     />
-    {#if errors.title}
-      <p class="dark:text-white text-red-500 text-sm">
-        {errors.title}
-      </p>
-    {/if}
   </div>
   <div class="px-2">
     <TextEditor
