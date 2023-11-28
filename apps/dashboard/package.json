@@ -47,7 +47,7 @@
     "posthog-js": "^1.87.2",
     "sirv": "^2.0.3",
     "svelte-email": "^0.0.4",
-    "svelte-ui": "workspace:*",
+    "svelte-ui": "file:*",
     "unsplash-js": "^7.0.18",
     "wait-on": "^7.0.1",
     "zod": "^3.21.4"
@@ -66,7 +66,7 @@
     "carbon-components-svelte": "^0.79.0",
     "carbon-icons-svelte": "^12.1.0",
     "dotenv": "^16.3.1",
-    "eslint-config-custom": "workspace:*",
+    "eslint-config-custom": "file:*",
     "postcss": "^8.4.24",
     "postcss-load-config": "^4.0.1",
     "sass": "^1.64.2",
@@ -77,7 +77,7 @@
     "svelte-loading-spinners": "^0.3.4",
     "svelte-preprocess": "^5.0.4",
     "tailwindcss": "^3.3.2",
-    "tsconfig": "workspace:*",
+    "tsconfig": "file:*",
     "tslib": "^2.6.1",
     "typescript": "^5.1.6",
     "vite": "^4.4.8"
