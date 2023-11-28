@@ -8,7 +8,7 @@
 		"format": "prettier --write --ignore-path=../../.prettierignore ."
 	},
 	"devDependencies": {
-		"eslint-config-custom": "file:*",
+		"eslint-config-custom": "workspace:*",
 		"svelte": "^3.9.2"
 	},
 	"keywords": [],

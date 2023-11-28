@@ -21,7 +21,7 @@ importers:
         specifier: ^0.5.7
         version: 0.5.7(prettier-plugin-svelte@3.1.2)(prettier@3.1.0)
       tsconfig:
-        specifier: file:*
+        specifier: workspace:*
         version: link:packages/tsconfig
       turbo:
         specifier: ^1.10.16
@@ -172,7 +172,7 @@ importers:
         specifier: ^0.0.4
         version: 0.0.4
       svelte-ui:
-        specifier: file:*
+        specifier: workspace:*
         version: link:../../packages/svelte-ui
       unsplash-js:
         specifier: ^7.0.18
@@ -224,7 +224,7 @@ importers:
         specifier: ^16.3.1
         version: 16.3.1
       eslint-config-custom:
-        specifier: file:*
+        specifier: workspace:*
         version: link:../../packages/eslint-config-custom
       postcss:
         specifier: ^8.4.24
@@ -257,7 +257,7 @@ importers:
         specifier: ^3.3.2
         version: 3.3.2
       tsconfig:
-        specifier: file:*
+        specifier: workspace:*
         version: link:../../packages/tsconfig
       tslib:
         specifier: ^2.6.1
@@ -312,7 +312,7 @@ importers:
   packages/svelte-ui:
     devDependencies:
       eslint-config-custom:
-        specifier: file:*
+        specifier: workspace:*
         version: link:../eslint-config-custom
       svelte:
         specifier: ^3.9.2
