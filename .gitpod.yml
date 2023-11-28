@@ -1,0 +1,11 @@
+image: gitpod/workspace-base
+
+tasks:
+  - name: Setup Supabase CLI
+    init: npm i supabase --save-dev
+  - name: Start Supabase
+    command: supabase start
+  - name: Install required dependencies
+    command: pnpm i
+  - name: Run all projects (in development mode)
+    command: pnpm dev
