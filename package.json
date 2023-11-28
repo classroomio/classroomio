@@ -19,8 +19,5 @@
 		"turbo": "^1.10.16",
 		"typescript": "^5.1.6",
 		"tsconfig": "file:*"
-	},
-	"workspaces": [
-		"packages/*"
-	]
+	}
 }
