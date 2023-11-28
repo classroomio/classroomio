@@ -3,9 +3,7 @@ image: gitpod/workspace-full
 tasks:
   - name: Setup Supabase CLI
     init: brew install supabase/tap/supabase
-  - name: Start Supabase
-    command: supabase start
-  - name: Install required dependencies
-    command: pnpm i
-  - name: Run all projects (in development mode)
-    command: pnpm dev
+    main: supabase start
+  - name: Install required dependencies and run projects
+    init: pnpm i
+    main: pnpm dev
