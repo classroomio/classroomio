@@ -1,4 +1,4 @@
-image: gitpod/workspace-base
+image: gitpod/workspace-node
 
 tasks:
   - name: Setup Supabase CLI
