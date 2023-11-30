@@ -137,7 +137,7 @@ This repo is a mono repo that consists of 3 projects:
      service_role key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
      ```
 
-   - Supabase environment variables should be taken from the result of `supabase start`
+   - Add Supabase environment variables into `app/dashboard` folder, which should be taken from the result of `supabase start`
 
      ```env
        PUBLIC_SUPABASE_URL=<API URL>
@@ -163,7 +163,7 @@ This repo is a mono repo that consists of 3 projects:
    - `classroomio-com`: [http://localhost:5173](http://localhost:5173)
    - `dashboard`: [http://localhost:5174](http://localhost:5174)
    - `docs`: [http://localhost:3000](http://localhost:3000)
-     
+
 9. Running a specific project
    - **classroomio-com**: `pnpm dev --filter=classroomio-com`
    - **dashboard**: `pnpm dev --filter=dashboard`
