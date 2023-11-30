@@ -22,6 +22,10 @@
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
 
+  import { Restart  } from 'carbon-icons-svelte';
+  import IconButton from '$lib/components/IconButton/index.svelte';
+  import generateSlug from '$lib/utils/functions/generateSlug';
+
   let isSaving = false;
   let isLoading = false;
   let isDeleting = false;
@@ -30,6 +34,7 @@
     description: string | undefined;
   } = { title: undefined, description: undefined };
   let avatar: string | undefined;
+  let newSlug: string | undefined;
 
   function widgetControl() {
     $handleOpenWidget.open = true;
@@ -137,7 +142,8 @@
           grading: grading,
           lessonDownload: lesson_download,
           allowNewStudent: allow_new_students
-        }
+        },
+        slug: newSlug
       });
 
       $course.title = course_title;
@@ -169,9 +175,14 @@
         grading: !!course.metadata.grading,
         lesson_download: !!course.metadata.lessonDownload,
         is_published: !!course.is_published,
-        allow_new_students: course.metadata.allowNewStudent
+        allow_new_students: course.metadata.allowNewStudent,
       };
     }
+  }
+
+  const generateNewCourseLink = async () => {
+    newSlug = await generateSlug($course.title);
+    $course.slug = newSlug;
   }
 
   $: $settings.course_description = $course.description;
@@ -239,7 +250,12 @@
         errorMessage={errors.description}
       />
       <div class="">
-        <p class="text-md">Course Link</p>
+        <p class="text-md flex items-center gap-2 mb-2">
+          Course Link
+          <IconButton contained={true} size="small" onClick={generateNewCourseLink}>
+            <Restart size={16} />
+          </IconButton>
+        </p>
         {#if $course.slug}
           <CodeSnippet wrapText type="multi" code={`${$currentOrgDomain}/course/${$course.slug}`} />
         {:else}
