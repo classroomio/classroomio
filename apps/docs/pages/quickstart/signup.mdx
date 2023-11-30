@@ -1,0 +1,46 @@
+import { Steps, Callout } from "nextra/components";
+
+# Signing Up for ClassroomIO
+
+Signing up is currently disabled on production. Potential customers can only book a demo or try out our local setup.
+
+## Signing up locally.
+
+This assumption of this section is that you already have ClassroomIO setup locally.
+
+To sign up do the following.
+
+<Steps>
+### Start the application locally
+
+To get the application running locally, you should run this at the root of the project:
+
+```js
+pnpm dev --filter=dashboard
+```
+
+This will only startup the dashboard which powers all of the learning management features.
+
+<Callout
+	type='info'
+	emoji='ℹ️'>
+	Note: Make sure you have installed all dependencies by running `pnpm i`
+</Callout>
+
+### Go to Sign up page
+
+Once you startup the `dashboard`, you can open your browser and go to `http://localhost:5173`. Click on the signup button to take you to the Sign up page.
+
+### Create an account
+
+Once you are on the signup page, enter your email and a password made up of 6 or more characters
+
+### Complete the onboarding
+
+Upon completing the signup flow, you will be redirected to the onboarding page. Here you can enter your fullname and your organization details and next you would share how you heard of ClassroomIO
+
+### Welcome to the dashboard
+
+After you go through the onboarding, you are successfully signed up and you are ready to start using the platform.
+
+</Steps>
