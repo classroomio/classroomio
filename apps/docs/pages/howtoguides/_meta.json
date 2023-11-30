@@ -1,5 +1,12 @@
 {
-  "createfirstcourse": "Creating your first course",
+  "setupprofile": "Setup your Profile",
+  "customizeorganization": "Customize Organization",
+  "createfirstcourse": "Create Сourse",
+  "createexercise": "Create an Exercise",
+  "gradeexercise": "Grade an Exercise",
+  "takeattendance": "Take Attendance",
+  "certificates": "Create Certificates",
+  "courselandingpage": "Course Landing Page",
   "inviteteammember": "Inviting Team Members",
-  "customizeorganization": "Customize your Organization"
+  "invitestudents": "Inviting Students"
 }
