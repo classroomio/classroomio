@@ -22,3 +22,15 @@ export const getSupabase = (config?: ConfigType) => {
 
   return supabase;
 };
+
+export const isSupabaseTokenInLocalStorage = () => {
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key === null) continue; // Skip if null (shouldn't happen)
+    if (/sb-[\w-]+-auth-token/.test(key)) {
+      return true;
+    }
+  }
+
+  return false;
+};

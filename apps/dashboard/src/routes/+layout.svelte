@@ -24,7 +24,7 @@
   import showAppsSideBar from '$lib/utils/functions/showAppsSideBar';
   import isPublicRoute from '$lib/utils/functions/routes/isPublicRoute';
   import { user, profile } from '$lib/utils/store/user';
-  import { getSupabase } from '$lib/utils/functions/supabase';
+  import { getSupabase, isSupabaseTokenInLocalStorage } from '$lib/utils/functions/supabase';
   import { isMobile } from '$lib/utils/store/useMobile';
   import { ROUTE } from '$lib/utils/constants/routes';
   import { getOrganizations } from '$lib/utils/services/org';
@@ -220,7 +220,7 @@
     handleResize();
 
     if (
-      !localStorage.getItem(`sb-${PUBLIC_SUPABASE_PROJECT_REF}-auth-token`) &&
+      !isSupabaseTokenInLocalStorage() &&
       !isPublicRoute($page.url.pathname)
     ) {
       console.log('No auth token and is not a public route, redirect to login', path);
