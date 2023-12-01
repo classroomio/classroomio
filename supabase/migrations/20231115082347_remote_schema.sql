@@ -1258,7 +1258,7 @@ INSERT INTO "public"."question_type" (label, created_at, updated_at, typename) V
 INSERT INTO "public"."question_type" (label, created_at, updated_at, typename) VALUES ('Paragraph', '2021-08-07 18:49:46.246529+00', '2021-08-15 00:57:38.634665+00', 'TEXTAREA');
 
 
-alter table "storage"."buckets" drop constraint "buckets_owner_fkey";
+-- alter table "storage"."buckets" drop constraint "buckets_owner_fkey";
 
 alter table "storage"."buckets" add column "owner_id" text;
 
