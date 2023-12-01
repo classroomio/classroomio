@@ -34,7 +34,6 @@
     description: string | undefined;
   } = { title: undefined, description: undefined };
   let avatar: string | undefined;
-  let newSlug: string | undefined;
 
   function widgetControl() {
     $handleOpenWidget.open = true;
@@ -143,7 +142,7 @@
           lessonDownload: lesson_download,
           allowNewStudent: allow_new_students
         },
-        slug: newSlug
+        slug: $course.slug
       });
 
       $course.title = course_title;
@@ -180,9 +179,8 @@
     }
   }
 
-  const generateNewCourseLink = async () => {
-    newSlug = await generateSlug($course.title);
-    $course.slug = newSlug;
+  const generateNewCourseLink = () => {
+    $course.slug = generateSlug($course.title);
   }
 
   $: $settings.course_description = $course.description;
