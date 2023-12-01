@@ -11,18 +11,20 @@
     const { error } = await supabase.auth.signOut();
     console.error('Error logging out: ', error);
 
-    $currentOrg = {
-    id: '',
-    name: '',
-    shortName: '',
-    siteName: '',
-    avatar_url: '',
-    memberId: '',
-    role_id: '',
-    landingpage: {},
-    theme: ''
-  }
-  $orgs = []
+		// Reset organization values, TODO: consider abstracting if needed in other places
+		currentOrg.set({
+	    id: '',
+	    name: '',
+	    shortName: '',
+	    siteName: '',
+	    avatar_url: '',
+	    memberId: '',
+	    role_id: '',
+	    landingpage: {},
+	    theme: ''
+	  })
+  	orgs.set([]);
+
     capturePosthogEvent('user_logged_out');
     posthog.reset();
     goto('/login');
