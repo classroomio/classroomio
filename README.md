@@ -81,7 +81,7 @@ This repo is a mono repo that consists of 3 projects:
 
 ### Setup
 
-1. Fork the repo,then Clone it using the following command (remember to replace the url with the url from your repo)
+1. Fork the repo, then clone it using the following command (remember to replace the url with the url from your forked repo)
 
    ```bash
    git clone https://github.com/rotimi-best/classroomio.git
@@ -107,7 +107,7 @@ This repo is a mono repo that consists of 3 projects:
 
    You can install nvm from [here](https://github.com/nvm-sh/nvm).
 
-   You also need to have pnpm installed,you can install from [here](https://pnpm.io/installation#using-npm)
+   You also need to have pnpm installed, you can find the installation guide [here](https://pnpm.io/installation#using-npm)
 
 5. Set up your `.env` file
 
