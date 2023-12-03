@@ -1,23 +1,22 @@
-name: "Assign issues with .take"
+name: 'Assign issues with .take'
 
 on:
-    issue_comment:
-        types:
-            - created
-            - edited
+  issue_comment:
+    types:
+      - created
+      - edited
 jobs:
-    take-issue:
-        name: Disable take issue
-        runs-on: ubuntu-latest
-        timeout-minutes: 10
-        steps:
-            -   name: Disable take an issue
-                uses: bdougie/take-action@v1.6
-                with:
-                    message: Thanks for taking this issue! Let us know if you have any questions!
-                    trigger: .take
-                    issueCurrentlyAssignedMessage: Thanks for being interested in this issue. It looks like this ticket is already assigned to a contributor.
-                    token: ${{ secrets.GITHUB_TOKEN }}
-                    blockingLabels: 👀 needs triage,blocked,core team work,needs design,duplicate
-                    blockingLabelsMessage: The issue you are trying to assign yourself is blocked by the label on the issue. 
-            
+  take-issue:
+    name: Disable take issue
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Disable take an issue
+        uses: bdougie/take-action@v1.6
+        with:
+          message: Thanks for taking this issue! Let us know if you have any questions!
+          trigger: .take
+          issueCurrentlyAssignedMessage: Thanks for being interested in this issue. It looks like this ticket is already assigned to a contributor.
+          token: ${{ secrets.GITHUB_TOKEN }}
+          blockingLabels: 👀 needs triage,blocked,core team work,needs design,duplicate
+          blockingLabelsMessage: The issue you are trying to assign yourself is blocked by the label on the issue.
