@@ -237,7 +237,7 @@
                       ? {}
                       : {
                           title: `Click to ${lesson.is_unlocked ? 'lock' : 'unlock'}`,
-                          direction: 'right'
+                          direction: 'left'
                         }}
                   >
                     {#if lesson.is_unlocked}
