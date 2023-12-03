@@ -45,7 +45,7 @@
   <p
     class="mx-auto mt-10 lg:mt-6 px-4 lg:p-0 text-md md:text-xl tracking-wide leading-6 lg:leading-10 text-slate-700 lg:w-2/4"
   >
-    Spend less time doing the boring stuffs, instead focus on impacting the
+    Spend less time doing the boring stuff, instead focus on impacting the
     lives of your students.
   </p>
   <button
