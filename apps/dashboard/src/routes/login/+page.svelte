@@ -16,7 +16,7 @@
   let submitError: string;
   let loading = false;
   let errors = {};
-  let reloadTimeout: NodeJS.Timeout;
+  // let reloadTimeout: NodeJS.Timeout;
 
   let query = new URLSearchParams($page.url.search);
   let redirect = query.get('redirect');
@@ -40,10 +40,10 @@
       if (error) throw error;
 
       // reload page on org site cause for some reason the authlistener on +layout.svelte doesn't run sometimes
-      reloadTimeout = setTimeout(() => {
-        console.log('Forcing full page reload for auth listener');
-        window.location.reload();
-      }, 1500);
+      // reloadTimeout = setTimeout(() => {
+      //   console.log('Forcing full page reload for auth listener');
+      //   window.location.reload();
+      // }, 1500);
 
       capturePosthogEvent('login', {
         email: fields.email
@@ -55,9 +55,9 @@
     }
   }
 
-  onDestroy(() => {
-    clearTimeout(reloadTimeout);
-  });
+  // onDestroy(() => {
+  //   clearTimeout(reloadTimeout);
+  // });
 </script>
 
 <svelte:head>
