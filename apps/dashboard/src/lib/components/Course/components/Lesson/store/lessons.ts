@@ -2,6 +2,7 @@ import { writable } from 'svelte/store';
 import type { Writable, Updater } from 'svelte/store';
 import { createLesson, updateLesson, deleteLesson } from '$lib/utils/services/courses';
 import type { Lesson, Course, LessonPage, LessonComment } from '$lib/utils/types';
+import { snackbar } from '$lib/components/Snackbar/store';
 
 export const uploadCourseVideoStore = writable({
   isModalOpen: false
@@ -43,20 +44,20 @@ export function handleAddLesson() {
   }) as Updater<any>);
 }
 
-export function handleDelete(lessonId: Lesson['id']) {
-  return async () => {
-    // Need to implement soft delete
-    if (lessonId) {
-      const { error } = await deleteLesson(lessonId);
+export async function handleDelete(lessonId: Lesson['id'] | undefined) {
+  // Need to implement soft delete
+  if (lessonId) {
+    const { error } = await deleteLesson(lessonId);
 
-      if (error) {
-        return alert('Please delete all exercises first');
-      }
+    if (error) {
+      snackbar.error(error.message);
+      return console.error('Error deleting course', error);
     }
 
     lessons.update((_lessons) => _lessons.filter((lesson) => lesson.id !== lessonId));
-    console.log(`lessonId`, lessonId);
-  };
+  }
+
+  console.log(`lessonId`, lessonId);
 }
 
 export async function handleSaveLesson(lesson: Lesson, course_id: Course['id']) {
