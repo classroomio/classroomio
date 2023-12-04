@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { dev } from '$app/environment';
   import { fly } from 'svelte/transition';
   import CourseLandingPage from '$lib/components/CourseLandingPage/index.svelte';
   import Editor from '$lib/components/CourseLandingPage/components/Editor/index.svelte';
@@ -10,14 +11,18 @@
 
   const { courseId } = data;
 
-  let courseData: Course;
+  let courseData: Course = $course;
 
   function setCourseData(course: Course, lessons: Lesson[]) {
     courseData = { ...course, lessons };
   }
 
+  function syncCourseStore(_courseData: Course) {
+    $course = _courseData;
+  }
+
   $: setCourseData($course, $lessons);
-  $: console.log('courseData changed', courseData);
+  $: dev && console.log('courseData changed', courseData);
 </script>
 
 <div
@@ -25,7 +30,7 @@
   in:fly={{ y: 500, duration: 500 }}
   out:fly={{ y: 500, duration: 500 }}
 >
-  <Editor {courseId} bind:course={courseData} />
+  <Editor {courseId} bind:course={courseData} {syncCourseStore} />
   <div class="rightBar">
     <CourseLandingPage bind:courseData editMode={true} />
   </div>

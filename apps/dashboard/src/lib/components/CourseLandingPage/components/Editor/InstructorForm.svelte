@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import cloneDeep from 'lodash/cloneDeep';
   import set from 'lodash/set';
   import get from 'lodash/get';
@@ -7,32 +7,37 @@
   import TextField from '$lib/components/Form/TextField.svelte';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
   import { uploadAvatar } from '$lib/utils/services/courses';
+  import type { Course } from '$lib/utils/types';
 
-  export let course = {};
-  let name;
-  let role;
-  let imgUrl;
-  let description;
-  let courseNo;
-  let avatar;
+  export let course: Course;
+  let name: string | undefined;
+  let role: string | undefined;
+  let imgUrl: string | undefined;
+  let description: string | undefined;
+  let courseNo: string | undefined;
+  let avatar: string | undefined;
   let hasBeenSet = false;
 
-  function setter(value, setterKey) {
+  function setter(value: any, setterKey: string) {
     if (!value) return;
 
     const _course = cloneDeep(course);
     set(_course, setterKey, value);
+
     course = _course;
   }
 
-  async function onAvatarChange(_avatar) {
-    if (!_avatar) return;
+  async function onAvatarChange(_avatar: string | undefined) {
+    if (!_avatar || !course.id) return;
 
     const logo = await uploadAvatar(course.id, _avatar);
+
+    if (!logo) return;
+
     imgUrl = logo;
   }
 
-  function setDefaults(course) {
+  function setDefaults(course: Course) {
     if (isEmpty(course) || hasBeenSet) return;
 
     hasBeenSet = true;
@@ -78,7 +83,7 @@
 <TextArea
   label="About instructor"
   placeholder="A short background about the instructor"
-  rows="6"
+  rows={6}
   className="mt-5"
   labelClassName="font-bold"
   bind:value={description}

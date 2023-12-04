@@ -86,7 +86,7 @@
   $: video = get(courseData, 'metadata.videoUrl');
   $: bannerImage = get(courseData, 'logo');
   $: lessons = get(courseData, 'lessons', []);
-  $: instructor = courseData?.metadata?.instructor || {};
+  $: instructor = get(courseData, 'metadata.instructor') || {};
   $: initPlyr(player, video);
   $: {
     reviews = get(courseData, 'metadata.reviews') || [];
@@ -276,7 +276,7 @@
                   {/if}
                   {#if lesson.note}
                     <span class="text-sm font-light flex w-2/4"
-                      ><Notebook size={16} class="mr-1" />1 note</span
+                      ><Notebook size={16} class="mr-1" />note</span
                     >
                   {/if}
                 </div>

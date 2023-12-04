@@ -4,7 +4,7 @@
   import { appStore } from '$lib/utils/store/app';
 
   export let id = '';
-  export let value: string;
+  export let value: string | undefined = '';
   export let onChange = (html: string) => {};
   export let height = 300;
   export let placeholder = '';
@@ -14,7 +14,7 @@
   const apiKey = PUBLIC_TINYMCE_API_KEY;
 
   let tinmycEditor: any;
-  let unmount = false
+  let unmount = false;
 
   // editor configuration
   let conf = {
@@ -73,6 +73,6 @@
 
 <div>
   {#if !unmount}
-  <Editor bind:value {apiKey} bind:conf />
+    <Editor bind:value {apiKey} bind:conf />
   {/if}
 </div>
