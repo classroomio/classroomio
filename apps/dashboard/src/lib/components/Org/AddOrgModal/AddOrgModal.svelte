@@ -97,6 +97,8 @@
       await getOrganizations($profile.id);
       goto(`/org/${siteName}`);
       $newOrgModal.open = false;
+
+      resetForm();
     }
   }
 
