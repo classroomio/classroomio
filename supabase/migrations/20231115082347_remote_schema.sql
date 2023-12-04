@@ -230,7 +230,7 @@ CREATE TABLE IF NOT EXISTS "public"."course" (
     "is_template" boolean DEFAULT true,
     "logo" "text" DEFAULT ''::"text" NOT NULL,
     "slug" character varying,
-    "metadata" "jsonb" DEFAULT '{"gols": "", "description": "", "requirements": ""}'::"jsonb" NOT NULL,
+    "metadata" "jsonb" DEFAULT '{"goals": "", "description": "", "requirements": ""}'::"jsonb" NOT NULL,
     "cost" bigint DEFAULT '0'::bigint,
     "currency" character varying DEFAULT 'NGN'::character varying NOT NULL,
     "banner_image" "text",

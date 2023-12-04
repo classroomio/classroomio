@@ -27,6 +27,7 @@
 
   export let course: Course;
   export let courseId: string;
+  export let syncCourseStore: (course: Course) => void;
 
   let borderBottomGrey = 'border-r-0 border-b border-l-0 border-gray-300';
   let loading = false;
@@ -123,9 +124,9 @@
       polls: undefined,
       slug: course.slug
     });
-    loading = false;
 
-    return `${window.location.origin}/course/${course.slug}`;
+    loading = false;
+    syncCourseStore(course);
   }
   /**
    * 1. Use all you have for editing now
@@ -149,10 +150,11 @@
       size={$isMobile ? 'large' : 'small'}
       color="text-black"
       toolTipProps={$isMobile
-        ? {}
+        ? undefined
         : {
             title: 'Toggle editor',
-            direction: 'right'
+            direction: 'right',
+            hotkeys: []
           }}
     >
       {#if show}

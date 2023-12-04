@@ -1,21 +1,22 @@
-<script>
+<script lang="ts">
   import Camera from 'carbon-icons-svelte/lib/Camera.svelte';
 
-  export let avatar = null;
-  export let src = null;
+  export let avatar: string | undefined;
+  export let src: string | undefined;
   export let widthHeight = '';
   export let shape = 'rounded-full';
-  export let errorMessage = null;
+  export let errorMessage: string | null = null;
 
-  let fileinput;
+  let fileinput: HTMLInputElement;
 
-  const onFileSelected = (e) => {
+  const onFileSelected = (e: Event<HTMLInputElement>) => {
     const image = e.target.files[0];
     let reader = new FileReader();
     reader.readAsDataURL(image);
     reader.onload = (e) => {
       avatar = image;
-      src = e.target.result;
+      // @ts-ignore
+      src = e.target?.result || undefined;
     };
   };
 </script>

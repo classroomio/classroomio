@@ -90,7 +90,6 @@
       error,
       status
     } = await supabase.from('profile').select(`*`).eq('id', authUser?.id).single();
-    console.log('Get user', authUser);
     console.log('Get profile', profileData);
 
     if (error && !profileData && status === 406 && authUser) {
@@ -219,10 +218,7 @@
 
     handleResize();
 
-    if (
-      !isSupabaseTokenInLocalStorage() &&
-      !isPublicRoute($page.url.pathname)
-    ) {
+    if (!isSupabaseTokenInLocalStorage() && !isPublicRoute($page.url.pathname)) {
       console.log('No auth token and is not a public route, redirect to login', path);
       return goto('/login?redirect=/' + path);
     }
@@ -408,9 +404,12 @@
   }
 
   :global(.plyr__controls) {
-    background: url(/logo-192.png) 99% 70% no-repeat,
+    background:
+      url(/logo-192.png) 99% 70% no-repeat,
       linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5)) !important;
-    background-size: 50px auto, auto !important;
+    background-size:
+      50px auto,
+      auto !important;
   }
 
   :global(.cards-container) {
