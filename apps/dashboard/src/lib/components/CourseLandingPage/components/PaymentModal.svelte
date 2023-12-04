@@ -85,7 +85,7 @@
         errorMessage={errors.fullname}
       />
       <TextField
-        label="Your Fullname"
+        label="Your Email"
         bind:value={fields.email}
         placeholder="johndoe@email.com"
         className="mb-4"
