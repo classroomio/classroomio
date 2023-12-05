@@ -6,8 +6,7 @@ import type { CurrentOrg, OrgTeamMember, OrgAudience } from '../types/org';
 import { ROLE } from '$lib/utils/constants/roles';
 import type { UserLessonDataType } from '$lib/utils/types';
 
-export const orgs = writable<CurrentOrg[]>([]);
-export const currentOrg: Writable<CurrentOrg> = writable({
+export const defaultCurrentOrgState: CurrentOrg = {
   id: '',
   name: '',
   shortName: '',
@@ -17,7 +16,10 @@ export const currentOrg: Writable<CurrentOrg> = writable({
   role_id: '',
   landingpage: {},
   theme: ''
-});
+};
+
+export const orgs = writable<CurrentOrg[]>([]);
+export const currentOrg: Writable<CurrentOrg> = writable(defaultCurrentOrgState);
 export const orgAudience = writable<OrgAudience[]>([]);
 export const orgTeam = writable<OrgTeamMember[]>([]);
 export const isOrgAdmin = derived(

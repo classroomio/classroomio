@@ -66,8 +66,10 @@
           height="h-20"
         />
 
-        <div class="mt-5">
-          <p class="dark:text-white text-lg font-bold whitespace-nowrap truncate">
+        <div class="mt-5 flex justify-center w-full">
+          <p
+            class="dark:text-white text-lg font-bold whitespace-nowrap truncate max-w-[80%] text-center"
+          >
             {$profile.fullname}
           </p>
         </div>

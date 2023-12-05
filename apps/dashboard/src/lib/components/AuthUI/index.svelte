@@ -47,9 +47,11 @@
             height="h-10"
             className="mr-2"
           />
-          <h4 class="dark:text-white text-xl mt-0">
-            {$currentOrg.name ? $currentOrg.name : 'ClassroomIO'}
-          </h4>
+          <a href="/">
+            <h4 class="dark:text-white text-xl mt-0">
+              {$currentOrg.name ? $currentOrg.name : 'ClassroomIO'}
+            </h4>
+          </a>
         </div>
       {/if}
       <form

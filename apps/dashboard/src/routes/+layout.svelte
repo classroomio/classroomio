@@ -80,8 +80,8 @@
     const { user: authUser } = session || {};
     console.log('Get user', authUser);
 
-    if (!authUser) {
-      goto('/login?redirect=/' + path);
+    if (!authUser && !isPublicRoute($page.url.pathname)) {
+      return goto('/login?redirect=/' + path);
     }
 
     // Check if user has profile
@@ -185,7 +185,7 @@
       }
     }
 
-    if (!profileData) {
+    if (!profileData && !isPublicRoute($page.url.pathname)) {
       goto('/login?redirect=/' + path);
     }
   }
@@ -239,10 +239,10 @@
       if (data.skipAuth) return;
 
       // Authentication Steps
-      if (event === 'SIGNED_IN') {
+      if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
         $user.fetchingUser = true;
         getProfile();
-      } else if (!['INITIAL_SESSION', 'TOKEN_REFRESHED'].includes(event)) {
+      } else if (!['TOKEN_REFRESHED'].includes(event)) {
         console.log('not logged in, go to login');
         return goto('/login');
       }

@@ -5,6 +5,7 @@
   import ChevronRightIcon from 'carbon-icons-svelte/lib/ChevronRight.svelte';
   import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
   import ArrowUpRightIcon from 'carbon-icons-svelte/lib/ArrowUpRight.svelte';
+  import { currentOrgDomain } from '$lib/utils/store/org';
 
   import IconButton from '$lib/components/IconButton/index.svelte';
   import CloseButton from '$lib/components/Buttons/Close/index.svelte';
@@ -128,12 +129,9 @@
     loading = false;
     syncCourseStore(course);
   }
-  /**
-   * 1. Use all you have for editing now
-   * 2. Make course one interface we might need to computation
-   */
+
   async function handlePreview() {
-    const link = `${window.location.origin}/course/${course.slug}`;
+    const link = `${$currentOrgDomain}/course/${course.slug}`;
     window.open(link, '_blank');
   }
 </script>
