@@ -8,7 +8,7 @@
     <a
       target="_blank"
       rel="noopener noreferrer nofollow"
-      href="https://github.com/rotimi-best/quizify"
+      href="https://github.com/rotimi-best/classroomio"
       style="color: rgb(75, 85, 99);"
       class="border border-gray-300 rounded-full px-4 py-1 text-sm font-medium hover:underline"
       >Give us a <span class="text-[#1D4EE2]">star</span> on github</a
