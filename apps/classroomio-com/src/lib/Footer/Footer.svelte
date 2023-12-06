@@ -5,22 +5,25 @@
 </script>
 
 <div class="px-[2%] lg:px-[14%] border-t-[1px]">
-  <div
-    class="flex flex-col lg:flex-row justify-between items-center py-[10%] pl-5 lg:pl-0"
-  >
+  <div class="flex flex-col lg:flex-row justify-between items-center py-[10%] pl-5 lg:pl-0">
     <div class="w-full lg:w-2/4">
-      <img
-        src="/logo-192.png"
-        alt="classroomio logo"
-        class="w-[10%] lg:w-[5%] mb-5 lg:mb-10"
-      />
-      <p
-        class="text-sm lg:text-md tracking-wide leading-7 lg:leading-7 text-gray-600 inter"
-      >
+      <img src="/logo-192.png" alt="classroomio logo" class="w-[10%] lg:w-[5%] mb-5 lg:mb-10" />
+      <p class="text-sm lg:text-md tracking-wide leading-7 lg:leading-7 text-gray-600 inter mb-5">
         The Open Source Platform for Tech Bootcamps
         <br />
         Making teaching and learning seamless for tech bootcamps
       </p>
+      <a
+        href="https://www.producthunt.com/posts/classroomio?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-classroomio"
+        target="_blank"
+        ><img
+          src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=425236&theme=light"
+          alt="ClassroomIO - The&#0032;Open&#0032;Source&#0032;Platform&#0032;for&#0032;Tech&#0032;Bootcamps | Product Hunt"
+          style="width: 250px; height: 54px;"
+          width="250"
+          height="54"
+        /></a
+      >
       <div class="flex items-center mt-5 lg:mt-10 gap-3 lg:gap-7">
         <a href="https://www.facebook.com/classroomiohq" target="_blank">
           <LogoFacebook
@@ -48,73 +51,43 @@
       class="flex justify-between items-start flex-col lg:flex-row w-full lg:w-2/4 pr-[5%] mt-16 lg:mt-0 space-y-6 lg:space-y-0"
     >
       <div>
-        <h3
-          class="mb-3 lg:mb-10 text-base lg:text-md font-semibold leading-6 text-gray-900 inter"
-        >
+        <h3 class="mb-3 lg:mb-10 text-base lg:text-md font-semibold leading-6 text-gray-900 inter">
           Product
         </h3>
         <ul class="space-y-2 lg:space-y-4">
-          <li
-            class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900"
-          >
+          <li class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900">
             <a href="#coursemanagement"> Course Management </a>
           </li>
-          <li
-            class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900"
-          >
+          <li class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900">
             <a href="#customization"> Customizations </a>
           </li>
-          <li
-            class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900"
-          >
+          <li class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900">
             <a href="#collaboration"> Forum </a>
           </li>
-          <li
-            class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900"
-          >
+          <li class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900">
             <a href="#ai"> AI Lesson Planner </a>
           </li>
         </ul>
       </div>
 
       <div>
-        <h3
-          class="mb-3 lg:mb-10 text-base lg:text-md font-semibold leading-6 text-gray-900 inter"
-        >
+        <h3 class="mb-3 lg:mb-10 text-base lg:text-md font-semibold leading-6 text-gray-900 inter">
           Resources
         </h3>
         <ul class="space-y-2 lg:space-y-4">
-          <li
-            class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900"
-          >
-            <a target="_blank" href="https://classroomio.substack.com/">
-              Blog
-            </a>
+          <li class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900">
+            <a target="_blank" href="https://classroomio.substack.com/"> Blog </a>
           </li>
-          <li
-            class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900"
-          >
-            <a target="_blank" href="https://docs.classroomio.com/">
-              Help center
-            </a>
+          <li class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900">
+            <a target="_blank" href="https://docs.classroomio.com/"> Help center </a>
           </li>
-          <li
-            class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900"
-          >
-            <a
-              target="_blank"
-              href="https://docs.classroomio.com/what-is-classroomio"
-            >
+          <li class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900">
+            <a target="_blank" href="https://docs.classroomio.com/what-is-classroomio">
               What is ClassroomIO?
             </a>
           </li>
-          <li
-            class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900"
-          >
-            <a
-              target="_blank"
-              href="https://docs.classroomio.com/getting-started"
-            >
+          <li class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900">
+            <a target="_blank" href="https://docs.classroomio.com/getting-started">
               Getting Started
             </a>
           </li>
@@ -122,22 +95,14 @@
       </div>
 
       <div>
-        <h3
-          class="mb-3 lg:mb-10 text-base lg:text-md font-semibold leading-6 text-gray-900 inter"
-        >
+        <h3 class="mb-3 lg:mb-10 text-base lg:text-md font-semibold leading-6 text-gray-900 inter">
           Company
         </h3>
         <ul class="space-y-2 lg:space-y-4">
-          <li
-            class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900"
-          >
-            <a href="mailto:help@classroomio.com" target="_blank">
-              Contact us
-            </a>
+          <li class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900">
+            <a href="mailto:help@classroomio.com" target="_blank"> Contact us </a>
           </li>
-          <li
-            class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900"
-          >
+          <li class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900">
             <a
               href="https://app.enzuzo.com/policies/privacy/958fc978-5477-11ee-a03b-7b111830c594"
               target="_blank"
@@ -145,19 +110,12 @@
               Privacy policy
             </a>
           </li>
-          <li
-            class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900"
-          >
-            <a
-              target="_blank"
-              href="https://docs.classroomio.com/getting-started"
-            >
+          <li class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900">
+            <a target="_blank" href="https://docs.classroomio.com/getting-started">
               Getting Started
             </a>
           </li>
-          <li
-            class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900"
-          >
+          <li class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900">
             <a
               href="https://app.enzuzo.com/policies/tos/958fc978-5477-11ee-a03b-7b111830c594"
               target="_blank"
@@ -175,10 +133,8 @@
     <p>All rights reserved.</p>
     <p class="flex items-center">
       ClassroomIO © {new Date().getFullYear()} by
-      <a
-        href="https://twitter.com/rotimi_best"
-        target="_blank"
-        class="underline text-blue-700 mx-1">Rotimi Best</a
+      <a href="https://twitter.com/rotimi_best" target="_blank" class="underline text-blue-700 mx-1"
+        >Rotimi Best</a
       >
       from
       <img alt="Nigerian Flag" src="/ng.png" class="ml-2 h-3 w-3" />
