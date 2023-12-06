@@ -18,14 +18,18 @@
 
   // editor configuration
   let conf = {
-    plugins: 'lists',
+    plugins: 'lists, link, emoticons, code, media',
     toolbar: [
       { name: 'history', items: ['undo', 'redo'] },
       { name: 'styles', items: ['styles'] },
       { name: 'formatting', items: ['bold', 'italic'] },
       { name: 'alignment', items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify'] },
       { name: 'indentation', items: ['outdent', 'indent'] },
-      { name: 'list', items: ['numlist', 'bullist'] }
+      { name: 'list', items: ['numlist', 'bullist'] },
+      { name: 'link', items: ['link'] },
+      { name: 'insert', items: ['emoticons'] },
+      { name: 'code', items: ['code'] },
+      { name: 'media', items: ['media'] }
     ],
     lists_indent_on_tab: false,
     min_height: height,
