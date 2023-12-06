@@ -5,24 +5,13 @@
 
 <div class="text-center mt-[30%] md:mt-36 border-b-2 relative">
   <div class="mb-10 flex items-center justify-center w-full">
-    <!-- <a
+    <a
       target="_blank"
       rel="noopener noreferrer nofollow"
       href="https://github.com/rotimi-best/quizify"
       style="color: rgb(75, 85, 99);"
       class="border border-gray-300 rounded-full px-4 py-1 text-sm font-medium hover:underline"
       >Give us a <span class="text-[#1D4EE2]">star</span> on github</a
-    > -->
-    <a
-      href="https://www.producthunt.com/posts/classroomio?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-classroomio"
-      target="_blank"
-      ><img
-        src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=425236&theme=light"
-        alt="ClassroomIO - The&#0032;Open&#0032;Source&#0032;Platform&#0032;for&#0032;Tech&#0032;Bootcamps | Product Hunt"
-        style="width: 250px; height: 54px;"
-        width="250"
-        height="54"
-      /></a
     >
   </div>
   <h1
@@ -45,8 +34,7 @@
   <p
     class="mx-auto mt-10 lg:mt-6 px-4 lg:p-0 text-md md:text-xl tracking-wide leading-6 lg:leading-10 text-slate-700 lg:w-2/4"
   >
-    Spend less time doing the boring stuff, instead focus on impacting the
-    lives of your students.
+    Spend less time doing the boring stuff, instead focus on impacting the lives of your students.
   </p>
   <button
     class="font-medium lg:font-semibold text-sm md:text-md text-white px-6 py-3 lg:px-10 lg:py-5 bg-[#1D4EE2] rounded-md lg:rounded-xl mt-10"
@@ -57,7 +45,7 @@
   </button>
 
   <div class="relative my-5 md:my-10">
-    <video
+    <!-- <video
       class="floating w-[85%] lg:w-[70%] mx-auto rounded-lg shadow-lg"
       autoplay
       loop
@@ -66,22 +54,21 @@
       playsinline
       preload="auto"
     >
-      <source
-        src="./dark-light-mode.mp4"
-        type="video/mp4"
-      />
+      <source src="./dark-light-mode.mp4" type="video/mp4" />
       <track kind="captions" />
-    </video>
+    </video> -->
+
+    <img
+      src="./hero-section.png"
+      alt="hero section with dark vs light mode"
+      class="floating w-[85%] lg:w-[70%] mx-auto rounded-lg shadow-lg"
+    />
   </div>
 
   {#if PUBLIC_ENABLE_USERS_COMPANIES}
     <div class="px-[15%] mb-[10%]">
-      <h2 class="inter text-base lg:text-xl font-semibold text-gray-900">
-        Used at
-      </h2>
-      <div
-        class="w-full flex flex-wrap flex-row gap-5 justify-between items-center py-[5%]"
-      >
+      <h2 class="inter text-base lg:text-xl font-semibold text-gray-900">Used at</h2>
+      <div class="w-full flex flex-wrap flex-row gap-5 justify-between items-center py-[5%]">
         <img src="/hero-1.svg" alt="" class="w-[30%] lg:w-[13%]" />
         <img src="/hero-2.svg" alt="" class="w-[30%] lg:w-[13%]" />
         <img src="/hero-3.svg" alt="" class="w-[30%] lg:w-[13%]" />
