@@ -95,20 +95,6 @@
   }
 </script>
 
-<svelte:head>
-  <title>{editMode ? '[app] - ' : ''}{get(courseData, 'title', '')}</title>
-  <meta name="description" content={get(courseData, 'description', '')} />
-  <meta name="theme-color" content="#ffffff" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta property="og:title" content={get(courseData, 'title', '')} />
-  <meta property="og:description" content={get(courseData, 'description', '')} />
-  <meta property="og:type" content="website" />
-  <meta property="og:image:type" content="image/png" />
-  <meta property="og:image:width" content="280" />
-  <meta property="og:image:height" content="200" />
-  <meta property="og:image:secure_url" content={get(courseData, 'logo', '')} />
-</svelte:head>
-
 <div class="w-full bg-white dark:bg-black flex flex-col items-center">
   <!-- Header Section -->
   <header id="header" class="banner w-full flex items-center justify-center p-">
