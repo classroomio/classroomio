@@ -4,7 +4,7 @@
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
   import { isCourseFree } from '$lib/utils/functions/course';
   import { getStudentInviteLink } from '$lib/utils/functions/course';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
   import PaymentModal from './PaymentModal.svelte';
   import type { Course } from '$lib/utils/types';
@@ -17,6 +17,7 @@
   export let startCoursePayment = false;
   export let mobile = false;
 
+  let openModal = false;
   let calculatedCost = 0;
   let discount = 0;
   let formatter: Intl.NumberFormat | undefined;
@@ -39,11 +40,13 @@
       course_free: isFree
     });
     if (isFree) {
-      const link = getStudentInviteLink(courseData, $currentOrg.siteName);
+      const link = getStudentInviteLink(courseData, $currentOrg.siteName, $currentOrgDomain);
       goto(link);
     } else {
-      startCoursePayment = true;
+      openModal = true;
     }
+
+    startCoursePayment = false;
   }
 
   function setFormatter(currency: string | undefined) {
@@ -62,10 +65,11 @@
   $: discount = get(courseData, 'metadata.discount', 0);
   $: calculatedCost = calcDisc(discount, courseData.cost || 0, !!courseData.metadata.showDiscount);
   $: isFree = isCourseFree(calculatedCost);
+  $: startCoursePayment && handleJoinCourse();
 </script>
 
 <PaymentModal
-  bind:open={startCoursePayment}
+  bind:open={openModal}
   paymentLink={get(courseData, 'metadata.paymentLink', '')}
   courseName={courseData.title}
   teacherEmail={getTeacherEmail(courseData.group)}

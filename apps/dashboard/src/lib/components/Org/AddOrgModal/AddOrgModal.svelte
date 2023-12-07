@@ -95,11 +95,10 @@
 
       snackbar.success();
       await getOrganizations($profile.id);
-
-      resetForm();
-
       goto(`/org/${siteName}`);
       $newOrgModal.open = false;
+
+      resetForm();
     }
   }
 

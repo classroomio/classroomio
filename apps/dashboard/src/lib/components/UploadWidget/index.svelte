@@ -33,6 +33,8 @@
   }[] = [];
   let fileInput: HTMLInputElement;
 
+  let label = "Upload Image"
+
   const onChange = (tabValue: string) => () => (currentTab = tabValue);
 
   async function handleImageClick(img: string) {
@@ -42,6 +44,12 @@
 
   const onFileSelected = () => {
     const file = fileInput?.files?.[0];
+    const sizeInkb = file?.size! / 1024;
+    if (sizeInkb > 500){
+      snackbar.error("File Size must not be greater than 500kb")
+      label = "Try Again"
+      return;
+    }
     if (file) {
       let reader = new FileReader();
       reader.readAsDataURL(file);
@@ -109,7 +117,7 @@
               disabled={isUploading}
             />
             <PrimaryButton
-              label="Upload Image"
+              label={label}
               onClick={handleUpload}
               isLoading={isUploading}
               className="w-full font-semibold m-auto"
@@ -117,7 +125,7 @@
             <p class="text-center text-sm text-gray-500 my-2">
               Images wider than 1500 pixels work best.
             </p>
-            <p class="text-center text-sm text-gray-500">The maximum size per file is 5 MB.</p>
+            <p class="text-center text-sm text-gray-500">The maximum size per file is 500kb.</p>
           </div>
         </TabContent>
         <TabContent value={tabs[0].value} index={currentTab}>

@@ -13,7 +13,7 @@
   let hasFetched = false;
   let progressPercentage = 0;
   let totalLessons = 0;
-  let totalComPleted = 0;
+  let totalCompleted = 0;
 
   async function getCourses(userId: string | undefined, orgId: string) {
     if (hasFetched || !userId || !orgId) {
@@ -32,10 +32,10 @@
   }
 
   function calcTotalProgress(courses: Course[]) {
-    totalComPleted = courses.reduce((acc, cur) => acc + (cur.progress_rate || 0), 0);
+    totalCompleted = courses.reduce((acc, cur) => acc + (cur.progress_rate || 0), 0);
     totalLessons = courses.reduce((acc, cur) => acc + (cur.total_lessons || 0), 0);
 
-    progressPercentage = Math.round((totalComPleted / totalLessons) * 100);
+    progressPercentage = Math.round((totalCompleted / totalLessons) * 100) || 0;
   }
 
   $: getCourses($profile.id, $currentOrg.id);
@@ -93,7 +93,7 @@
               </p>
               {#if totalLessons > 0}
                 <p class="text-xs font-normal text-[#656565] dark:text-white">
-                  {totalComPleted}/{totalLessons} lessons completed
+                  {totalCompleted}/{totalLessons} lessons completed
                 </p>
               {:else}
                 <p class="text-xs font-normal text-[#656565] dark:text-white">No courses started</p>

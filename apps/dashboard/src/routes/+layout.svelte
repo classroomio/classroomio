@@ -24,7 +24,7 @@
   import showAppsSideBar from '$lib/utils/functions/showAppsSideBar';
   import isPublicRoute from '$lib/utils/functions/routes/isPublicRoute';
   import { user, profile } from '$lib/utils/store/user';
-  import { getSupabase } from '$lib/utils/functions/supabase';
+  import { getSupabase, isSupabaseTokenInLocalStorage } from '$lib/utils/functions/supabase';
   import { isMobile } from '$lib/utils/store/useMobile';
   import { ROUTE } from '$lib/utils/constants/routes';
   import { getOrganizations } from '$lib/utils/services/org';
@@ -80,8 +80,8 @@
     const { user: authUser } = session || {};
     console.log('Get user', authUser);
 
-    if (!authUser) {
-      goto('/login?redirect=/' + path);
+    if (!authUser && !isPublicRoute($page.url.pathname)) {
+      return goto('/login?redirect=/' + path);
     }
 
     // Check if user has profile
@@ -90,7 +90,6 @@
       error,
       status
     } = await supabase.from('profile').select(`*`).eq('id', authUser?.id).single();
-    console.log('Get user', authUser);
     console.log('Get profile', profileData);
 
     if (error && !profileData && status === 406 && authUser) {
@@ -186,7 +185,7 @@
       }
     }
 
-    if (!profileData) {
+    if (!profileData && !isPublicRoute($page.url.pathname)) {
       goto('/login?redirect=/' + path);
     }
   }
@@ -219,10 +218,7 @@
 
     handleResize();
 
-    if (
-      !localStorage.getItem(`sb-${PUBLIC_SUPABASE_PROJECT_REF}-auth-token`) &&
-      !isPublicRoute($page.url.pathname)
-    ) {
+    if (!isSupabaseTokenInLocalStorage() && !isPublicRoute($page.url.pathname)) {
       console.log('No auth token and is not a public route, redirect to login', path);
       return goto('/login?redirect=/' + path);
     }
@@ -243,10 +239,10 @@
       if (data.skipAuth) return;
 
       // Authentication Steps
-      if (event === 'SIGNED_IN') {
+      if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
         $user.fetchingUser = true;
         getProfile();
-      } else if (!['INITIAL_SESSION', 'TOKEN_REFRESHED'].includes(event)) {
+      } else if (!['TOKEN_REFRESHED'].includes(event)) {
         console.log('not logged in, go to login');
         return goto('/login');
       }
@@ -408,9 +404,12 @@
   }
 
   :global(.plyr__controls) {
-    background: url(/logo-192.png) 99% 70% no-repeat,
+    background:
+      url(/logo-192.png) 99% 70% no-repeat,
       linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5)) !important;
-    background-size: 50px auto, auto !important;
+    background-size:
+      50px auto,
+      auto !important;
   }
 
   :global(.cards-container) {

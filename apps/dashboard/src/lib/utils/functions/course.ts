@@ -3,7 +3,7 @@ import type { Course } from '../types';
 
 export const isCourseFree = (cost: number) => !(Number(cost) > 0);
 
-export const getStudentInviteLink = (_course: Course, orgSiteName: string) => {
+export const getStudentInviteLink = (_course: Course, orgSiteName: string, origin: string) => {
   const hash = encodeURIComponent(
     btoa(
       JSON.stringify({
@@ -15,7 +15,7 @@ export const getStudentInviteLink = (_course: Course, orgSiteName: string) => {
     )
   );
 
-  return `https://${orgSiteName}.classroomio.com/invite/s/${hash}`;
+  return `${origin}/invite/s/${hash}`;
 };
 
 export const getTextFromHTML = (html: string): string => {
@@ -27,7 +27,7 @@ export const getTextFromHTML = (html: string): string => {
   return dummyDiv.textContent?.trim() || '';
 };
 
-const tagsToReplace = {
+const tagsToReplace: { [k: string]: string } = {
   '&': '&amp;',
   '<': '&lt;',
   '>': '&gt;'
