@@ -12,6 +12,7 @@
   export let isPublished = false;
   export let cost = 0;
   export let totalLessons = 0;
+  export let totalStudents = 0;
   export let currency = 'NGN';
   export let isOnLandingPage = false;
   export let isLMS = false;
@@ -46,7 +47,8 @@
   </div>
 
   <div
-    class="px-4 border border-gray border-b-0 border-l-0 border-r-0 flex justify-between items-center"
+    class="px-4 border border-gray border-b-0 border-l-0 border-r-0 flex justify-between {isLMS &&
+      'items-center'}"
   >
     <div>
       <p class="text-xs pt-2 {!isLMS && 'pl-2'} dark:text-white">{totalLessons} lessons</p>
@@ -81,6 +83,11 @@
         variant={VARIANTS.OUTLINED}
         className="rounded-none text-primary-600"
       />
+    {:else if !isOnLandingPage}
+      <div class="flex flex-col justify-between">
+        <p class="text-xs pt-2 pl-2 dark:text-white">{totalStudents} students</p>
+        <div></div>
+      </div>
     {/if}
   </div>
 </a>

@@ -182,6 +182,7 @@ export interface Course {
   is_published?: boolean;
   progress_rate?: number;
   total_lessons?: number;
+  total_students?: number;
   attendance: {
     student_id: string;
     lesson_id: string;
