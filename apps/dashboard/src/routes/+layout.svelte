@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { PUBLIC_SUPABASE_PROJECT_REF } from '$env/static/public';
+  import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
   import { fly } from 'svelte/transition';
   import { derived } from 'svelte/store';
   import { goto } from '$app/navigation';
@@ -215,6 +215,8 @@
     }
 
     setupAnalytics();
+
+    injectSpeedInsights();
 
     handleResize();
 
