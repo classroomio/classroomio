@@ -35,3 +35,9 @@ ports:
   - port: 54324
     visibility: public
     onOpen: ignore
+
+github:
+  prebuilds:
+    master: true
+    pullRequests: true
+    addComment: true
