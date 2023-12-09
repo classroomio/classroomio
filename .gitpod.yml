@@ -1,9 +1,40 @@
 image: gitpod/workspace-full
 
 tasks:
-  - name: Setup Supabase CLI
-    init: brew install supabase/tap/supabase
-    command: supabase start
-  - name: Install required dependencies and run projects
+  - name: Install required dependencies & setup .env
     init: pnpm i
-    command: pnpm dev
+    command: |
+      cd apps/classroomio-com &&
+      cp .env.example .env &&
+      cd apps/dashboard &&
+      cp .env.example .env
+
+  - name: Setup Supabase
+    init: pnpm supabase migrate up && pnpm supabase seed
+    command: |
+      cd apps/dashboard &&
+      SUPABASE_ANON_KEY=(supabase status | grep "anon key" | awk '{print $3}' | tr -d '\\n') &&
+      sed -i "s/PUBLIC_SUPABASE_ANON_KEY=.*/SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY/g" .env
+
+  - name: Start all projects
+    init: pnpm dev
+
+ports:
+  - port: 3000
+    visibility: public
+    onOpen: open-browser
+  - port: 5173
+    visibility: public
+    onOpen: open-browser
+  - port: 5174
+    visibility: public
+    onOpen: open-browser
+  - port: 54321
+    visibility: public
+    onOpen: ignore
+  - port: 54323
+    visibility: public
+    onOpen: ignore
+  - port: 54324
+    visibility: public
+    onOpen: ignore
