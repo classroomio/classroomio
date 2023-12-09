@@ -16,6 +16,7 @@
   import { questionnaire, isQuestionnaireFetching } from '../store/exercise';
   import NewExerciseModal from '$lib/components/Course/components/Lesson/Exercises/NewExerciseModal.svelte';
   import type { ExerciseTemplate } from '$lib/utils/types';
+  import { formatDate } from '$lib/utils/functions/routes/dashboard';
 
   export let path = '';
   export let exerciseId = '';
@@ -176,7 +177,7 @@
           href="{path}/{exercise.id}"
         >
           <h3 class="dark:text-white text-xl">{exercise.title}</h3>
-          <p class="dark:text-white mt-4 text-sm">Created Jul 3, 2021</p>
+          <p class="dark:text-white mt-4 text-sm">{formatDate(exercise.created_at)}</p>
         </a>
       {:else}
         <Box className="mt-3 text-center">
