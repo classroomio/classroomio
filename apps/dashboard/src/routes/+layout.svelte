@@ -80,7 +80,7 @@
     const { user: authUser } = session || {};
     console.log('Get user', authUser);
 
-    if (!authUser && !isPublicRoute($page.url.pathname)) {
+    if (!authUser && !isPublicRoute($page.url?.pathname)) {
       return goto('/login?redirect=/' + path);
     }
 
@@ -185,7 +185,7 @@
       }
     }
 
-    if (!profileData && !isPublicRoute($page.url.pathname)) {
+    if (!profileData && !isPublicRoute($page.url?.pathname)) {
       goto('/login?redirect=/' + path);
     }
   }
@@ -220,7 +220,7 @@
 
     handleResize();
 
-    if (!isSupabaseTokenInLocalStorage() && !isPublicRoute($page.url.pathname)) {
+    if (!isSupabaseTokenInLocalStorage() && !isPublicRoute($page.url?.pathname)) {
       console.log('No auth token and is not a public route, redirect to login', path);
       return goto('/login?redirect=/' + path);
     }
@@ -300,10 +300,10 @@
         </div>
       </Backdrop>
     {/if}
-    {#if !hideNavByRoute($page.url.pathname)}
-      {#if isOrgPage($page.url.pathname) || $page.url.pathname.includes('profile') || isCoursesPage(path)}
+    {#if !hideNavByRoute($page.url?.pathname)}
+      {#if isOrgPage($page.url?.pathname) || $page.url?.pathname.includes('profile') || isCoursesPage(path)}
         <OrgNavigation bind:title={$course.title} isCoursePage={isCoursesPage(path)} />
-      {:else if isLMSPage($page.url.pathname)}
+      {:else if isLMSPage($page.url?.pathname)}
         <LMSNavigation />
       {:else}
         <LandingNavigation
@@ -316,17 +316,17 @@
     {/if}
 
     <div class="flex justify-between">
-      {#if isOrgPage($page.url.pathname)}
+      {#if isOrgPage($page.url?.pathname)}
         <AddOrgModal />
         <div class="org-root w-full flex items-center justify-between">
-          {#if !isQuizPage($page.url.pathname)}
+          {#if !isQuizPage($page.url?.pathname)}
             <OrgSideBar />
           {/if}
           <div class="org-slot bg-white dark:bg-black w-full">
             <slot />
           </div>
         </div>
-      {:else if isLMSPage($page.url.pathname)}
+      {:else if isLMSPage($page.url?.pathname)}
         <div class="org-root w-full flex items-center justify-between">
           <LMSSideBar />
           <div class="org-slot bg-white dark:bg-black w-full">
