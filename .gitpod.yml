@@ -8,10 +8,13 @@ tasks:
       cp .env.example .env &&
       cd ../dashboard &&
       cp .env.example .env &&
-      SUPABASE_ANON_KEY=(supabase status | grep "anon key" | awk '{print $3}' | tr -d '\\n') &&
-      sed -i "s/PUBLIC_SUPABASE_ANON_KEY=.*/SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY/g" .env &&
       cd ../.. &&
-      pnpm supabase start
+      pnpm supabase start &&
+      SUPABASE_ANON_KEY=$(pnpm supabase status | grep "anon key" | awk '{print $3}' | tr -d '\\n') &&
+      cd apps/dashboard &&
+      sed -i "s/PUBLIC_SUPABASE_ANON_KEY=.*/PUBLIC_SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY/g" .env &&
+      cd ../.. &&
+      pnpm dev
 
 ports:
   - port: 3000
