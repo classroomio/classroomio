@@ -7,13 +7,11 @@ module.exports = {
   basePath: '/docs',
   ...withNextra(),
   async rewrites() {
-    return {
-      fallback: [
-        {
-          source: '/:path*',
-          destination: `https://classroomio-com.vercel.app/:path*`
-        }
-      ]
-    };
+    return [
+      {
+        source: '/:path*',
+        destination: `https://classroomio-com.vercel.app/:path*`
+      }
+    ];
   }
 };
