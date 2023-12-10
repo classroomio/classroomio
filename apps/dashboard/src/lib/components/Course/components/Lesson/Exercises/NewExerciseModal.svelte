@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { browser } from '$app/environment';
   import Modal from '$lib/components/Modal/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -98,7 +99,7 @@
     }, 500);
   }
 
-  $: note = getTextFromHTML($lesson?.materials?.note || '');
+  $: note = browser ? getTextFromHTML($lesson?.materials?.note || '') : '';
 </script>
 
 <Modal
