@@ -154,5 +154,5 @@ Here is what you need to be able to run Cal.com.
 
 You can find other repos related to classroomio here:
 
-- Help Docs: <https://github.com/rotimi-best/docs.classroomio.com>
+- Help Docs: <https://github.com/rotimi-best/classroomio.com/docs>
 - ClassroomIO.com: <https://github.com/rotimi-best/classroomio.com>

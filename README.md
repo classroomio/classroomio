@@ -75,7 +75,7 @@ This repo is a mono repo that consists of 3 projects:
 
 1. `classroomio-com`: The landing page of ClassroomIO hosted [here](https://classroomio.com)
 2. `dashboard`: The web application that runs the learning management system.
-3. `docs`: Official documentation of ClassroomIO hosted [here](https://docs.classroomio.com)
+3. `docs`: Official documentation of ClassroomIO hosted [here](https://classroomio.com/docs)
 
 ## Development
 
