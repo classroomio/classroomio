@@ -42,7 +42,7 @@
       snackbar.error('Error - Please try again later');
     } else {
       console.log('Success: asking question', question);
-      snackbar.success('Success');
+      snackbar.success('Question Submitted!');
       goto(`${$currentOrgPath}/community/${question[0].slug}`);
     }
   }
