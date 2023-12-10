@@ -82,7 +82,7 @@
 
       const isLast = index === emails.length - 1;
       if (isLast) {
-        snackbar.success('Success');
+        snackbar.success('Invite Sent!');
 
         emailsStr = '';
         isLoading = false;
