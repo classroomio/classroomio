@@ -38,7 +38,17 @@
     let apiError = '';
     emails.forEach(async (email, index) => {
       if (apiError) return;
-      const { data, error } = await supabase
+
+      const { data, error } = await supabase.from('organizationmember').select('email');
+
+      const emailExists = data?.some((obj) => obj.email === email);
+
+      if (emailExists) {
+        snackbar.error("Email Already Exists");
+        isLoading = false;
+        return;
+      } else {
+        const { data, error } = await supabase
         .from('organizationmember')
         .insert({
           organization_id: $currentOrg.id,
@@ -47,7 +57,8 @@
           verified: false
         })
         .select();
-      console.log('data', data);
+        console.log('data', data);
+      }
 
       if (error) {
         apiError = error;
