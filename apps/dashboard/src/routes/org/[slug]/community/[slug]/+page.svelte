@@ -131,7 +131,7 @@
     } else {
       console.log('Success: commenting', data);
 
-      snackbar.success('Success');
+      snackbar.success('Comment Submitted!');
 
       // Add to comment
       const _c = data?.[0];
