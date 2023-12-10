@@ -230,7 +230,7 @@ CREATE TABLE IF NOT EXISTS "public"."course" (
     "is_template" boolean DEFAULT true,
     "logo" "text" DEFAULT ''::"text" NOT NULL,
     "slug" character varying,
-    "metadata" "jsonb" DEFAULT '{"gols": "", "description": "", "requirements": ""}'::"jsonb" NOT NULL,
+    "metadata" "jsonb" DEFAULT '{"goals": "", "description": "", "requirements": ""}'::"jsonb" NOT NULL,
     "cost" bigint DEFAULT '0'::bigint,
     "currency" character varying DEFAULT 'NGN'::character varying NOT NULL,
     "banner_image" "text",
@@ -1258,11 +1258,42 @@ INSERT INTO "public"."question_type" (label, created_at, updated_at, typename) V
 INSERT INTO "public"."question_type" (label, created_at, updated_at, typename) VALUES ('Paragraph', '2021-08-07 18:49:46.246529+00', '2021-08-15 00:57:38.634665+00', 'TEXTAREA');
 
 
-alter table "storage"."buckets" drop constraint "buckets_owner_fkey";
+-- First, let's check if the constraint 'buckets_owner_fkey' exists before trying to drop it.
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.constraint_column_usage 
+               WHERE table_schema = 'storage' 
+               AND table_name = 'buckets' 
+               AND constraint_name = 'buckets_owner_fkey') THEN
+        ALTER TABLE "storage"."buckets" DROP CONSTRAINT "buckets_owner_fkey";
+    END IF;
+END
+$$;
 
-alter table "storage"."buckets" add column "owner_id" text;
+-- Now, we check if the column 'owner_id' exists in 'buckets' before trying to add it.
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                   WHERE table_schema = 'storage' 
+                   AND table_name = 'buckets' 
+                   AND column_name = 'owner_id') THEN
+        ALTER TABLE "storage"."buckets" ADD COLUMN "owner_id" text;
+    END IF;
+END
+$$;
 
-alter table "storage"."objects" add column "owner_id" text;
+-- Similarly, check if 'owner_id' exists in 'objects' before adding it.
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                   WHERE table_schema = 'storage' 
+                   AND table_name = 'objects' 
+                   AND column_name = 'owner_id') THEN
+        ALTER TABLE "storage"."objects" ADD COLUMN "owner_id" text;
+    END IF;
+END
+$$;
+
 
 create policy "Anyone can update an avatar. 1oj01fe_0"
 on "storage"."objects"

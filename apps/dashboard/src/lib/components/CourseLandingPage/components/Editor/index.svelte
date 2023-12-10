@@ -5,6 +5,7 @@
   import ChevronRightIcon from 'carbon-icons-svelte/lib/ChevronRight.svelte';
   import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
   import ArrowUpRightIcon from 'carbon-icons-svelte/lib/ArrowUpRight.svelte';
+  import { currentOrgDomain } from '$lib/utils/store/org';
 
   import IconButton from '$lib/components/IconButton/index.svelte';
   import CloseButton from '$lib/components/Buttons/Close/index.svelte';
@@ -27,6 +28,7 @@
 
   export let course: Course;
   export let courseId: string;
+  export let syncCourseStore: (course: Course) => void;
 
   let borderBottomGrey = 'border-r-0 border-b border-l-0 border-gray-300';
   let loading = false;
@@ -123,16 +125,13 @@
       polls: undefined,
       slug: course.slug
     });
-    loading = false;
 
-    return `${window.location.origin}/course/${course.slug}`;
+    loading = false;
+    syncCourseStore(course);
   }
-  /**
-   * 1. Use all you have for editing now
-   * 2. Make course one interface we might need to computation
-   */
+
   async function handlePreview() {
-    const link = `${window.location.origin}/course/${course.slug}`;
+    const link = `${$currentOrgDomain}/course/${course.slug}`;
     window.open(link, '_blank');
   }
 </script>
@@ -149,10 +148,11 @@
       size={$isMobile ? 'large' : 'small'}
       color="text-black"
       toolTipProps={$isMobile
-        ? {}
+        ? undefined
         : {
             title: 'Toggle editor',
-            direction: 'right'
+            direction: 'right',
+            hotkeys: []
           }}
     >
       {#if show}

@@ -1,5 +1,4 @@
-<script>
-  import { onMount } from 'svelte';
+<script lang="ts">
   import { page } from '$app/stores';
   import { dndzone } from 'svelte-dnd-action';
   import UnlockedIcon from 'carbon-icons-svelte/lib/Unlocked.svelte';
@@ -20,6 +19,7 @@
   import { updateLesson } from '$lib/utils/services/courses';
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
   import { profile } from '$lib/utils/store/user';
+  import type { Lesson } from '$lib/utils/types';
   import {
     lessons,
     handleSaveLesson,
@@ -31,16 +31,20 @@
   import Avatar from '$lib/components/Apps/components/Poll/components/Avatar.svelte';
   import AddLessonModal from '$lib/components/Course/components/Lesson/AddLessonModal.svelte';
   import DateField from '$lib/components/Form/Date.svelte';
+  import DeleteLessonConfirmation from '$lib/components/Course/components/Lesson/DeleteLessonConfirmation.svelte';
 
   export let data;
 
-  let lessonEditing;
+  let lessonEditing: string | undefined;
+  let lessonToDelete: Lesson | undefined;
   let isStudent = true;
   let openModal = false;
+  let openDeleteModal = false;
 
   const flipDurationMs = 300;
 
-  function formatDate(date) {
+  function formatDate(date: string | undefined) {
+    if (!date) return '';
     const d = new Date(date);
 
     const ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(d);
@@ -54,16 +58,16 @@
     openModal = true;
   }
 
-  function handleDndConsider(e) {
+  function handleDndConsider(e: any) {
     $lessons = e.detail.items;
   }
 
-  function handleDndFinalize(e) {
+  function handleDndFinalize(e: any) {
     const prevLessonsByOrder = $lessons.reduce((acc, l) => ({ ...acc, [l.id]: l.order }), {});
     $lessons = e.detail.items;
 
     // Only update the lesson order that changed
-    e.detail.items.forEach((item, index) => {
+    e.detail.items.forEach((item: { id: string }, index: number) => {
       const order = index + 1;
 
       if (order !== prevLessonsByOrder[item.id]) {
@@ -75,7 +79,7 @@
     });
   }
 
-  function getLessonOrder(id) {
+  function getLessonOrder(id: string) {
     const index = $lessons.findIndex((lesson) => lesson.id === id);
 
     if (index < 9) {
@@ -95,6 +99,12 @@
 </script>
 
 <AddLessonModal {isStudent} bind:openModal />
+
+<DeleteLessonConfirmation
+  bind:openDeleteModal
+  lessonTitle={lessonToDelete?.title || ''}
+  deleteLesson={() => handleDelete(lessonToDelete?.id)}
+/>
 
 <CourseContainer bind:isStudent bind:courseId={data.courseId}>
   <PageNav title="Lessons">
@@ -136,7 +146,7 @@
 
             <div class="w-4/5">
               {#if lessonEditing === lesson.id}
-                <TextField bind:value={lesson.title} autofocus={true} className="max-w-lg" />
+                <TextField bind:value={lesson.title} autoFocus={true} className="max-w-lg" />
               {:else}
                 <h3 class="dark:text-white text-xl m-0 flex items-center">
                   <a
@@ -196,7 +206,7 @@
                     <div class="flex mb-2">
                       <Calendar size={20} class="carbon-icon text-gray-400 dark:text-white" />
                       <p class="dark:text-white text-sm ml-2">
-                        {new Date(lesson.lesson_at).toDateString()}
+                        {new Date(lesson.lesson_at || '').toDateString()}
                       </p>
                     </div>
                   {/if}
@@ -206,7 +216,7 @@
                   {#if lessonEditing === lesson.id}
                     <TextField
                       bind:value={lesson.call_url}
-                      autofocus={true}
+                      autoFocus={true}
                       className="w-[179px]"
                       placeholder="https://meet.google.com/mga-dsjs-fmb"
                     />
@@ -234,10 +244,11 @@
                       handleSaveLesson(lesson, $course.id);
                     }}
                     toolTipProps={isStudent
-                      ? {}
+                      ? undefined
                       : {
                           title: `Click to ${lesson.is_unlocked ? 'lock' : 'unlock'}`,
-                          direction: 'right'
+                          direction: 'left',
+                          hotkeys: []
                         }}
                   >
                     {#if lesson.is_unlocked}
@@ -253,7 +264,7 @@
                     {#if lessonEditing === lesson.id}
                       <IconButton
                         onClick={() => {
-                          lessonEditing = null;
+                          lessonEditing = undefined;
                           handleSaveLesson(lesson, $course.id);
                         }}
                       >
@@ -272,7 +283,12 @@
 
                 <RoleBasedSecurity allowedRoles={[1, 2]}>
                   <div class="hidden md:block">
-                    <IconButton onClick={handleDelete(lesson.id)}>
+                    <IconButton
+                      onClick={() => {
+                        lessonToDelete = lesson;
+                        openDeleteModal = true;
+                      }}
+                    >
                       <TrashCanIcon size={24} class="carbon-icon dark:text-white" />
                     </IconButton>
                   </div>
@@ -293,7 +309,7 @@
                         text={lessonEditing === lesson.id ? 'Save' : 'Edit'}
                         on:click={() => {
                           if (lessonEditing === lesson.id) {
-                            lessonEditing = null;
+                            lessonEditing = undefined;
                             handleSaveLesson(lesson, $course.id);
                           } else {
                             lessonEditing = lesson.id;

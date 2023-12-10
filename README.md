@@ -79,9 +79,17 @@ This repo is a mono repo that consists of 3 projects:
 
 ## Development
 
-### Setup
+### Gitpod Setup
 
-1. Clone the repo
+1. Click the button below to open this project in Gitpod.
+
+2. This will open a fully configured workspace in your browser with all the necessary dependencies already installed.
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/rotimi-best/classroomio)
+
+### Local Setup
+
+1. Fork the repo, then clone it using the following command (remember to replace the url with the url from your forked repo)
 
    ```bash
    git clone https://github.com/rotimi-best/classroomio.git
@@ -107,6 +115,8 @@ This repo is a mono repo that consists of 3 projects:
 
    You can install nvm from [here](https://github.com/nvm-sh/nvm).
 
+   You also need to have pnpm installed, you can find the installation guide [here](https://pnpm.io/installation#using-npm)
+
 4. Set up your `.env` file
 
    - Go to `apps/classroomio-com` and `apps/dashboard`
@@ -119,7 +129,7 @@ This repo is a mono repo that consists of 3 projects:
    - Go to the project directory in your terminal and start Supabase
 
      ```bash
-       supabase start
+       pnpm supabase start
      ```
 
    - You should get a result like this
@@ -137,7 +147,7 @@ This repo is a mono repo that consists of 3 projects:
      service_role key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
      ```
 
-   - Supabase environment variables should be taken from the result of `supabase start`
+   - Add Supabase environment variables into `app/dashboard` folder, which should be taken from the result of `pnpm supabase start`
 
      ```env
        PUBLIC_SUPABASE_URL=<API URL>
@@ -145,7 +155,7 @@ This repo is a mono repo that consists of 3 projects:
        PUBLIC_SUPABASE_BUCKET_URL=<Inbucket URL>
      ```
 
-   - To view the Supabase studio, open the Studio URL from the result of `supabase start`
+   - To view the Supabase studio, open the Studio URL from the result of `pnpm supabase start`
 
 6. Install the required dependencies
 
@@ -160,11 +170,12 @@ This repo is a mono repo that consists of 3 projects:
    ```
 
 8. All projects should start running
+
    - `classroomio-com`: [http://localhost:5173](http://localhost:5173)
    - `dashboard`: [http://localhost:5174](http://localhost:5174)
    - `docs`: [http://localhost:3000](http://localhost:3000)
-     
+
 9. Running a specific project
    - **classroomio-com**: `pnpm dev --filter=classroomio-com`
    - **dashboard**: `pnpm dev --filter=dashboard`
-   - **docs**: `pnpm dev --filter=docs` 
+   - **docs**: `pnpm dev --filter=docs`

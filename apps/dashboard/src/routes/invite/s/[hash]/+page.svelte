@@ -16,12 +16,12 @@
   } from '$lib/utils/services/notification/notification';
   import { snackbar } from '$lib/components/Snackbar/store.js';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
+  import { page } from '$app/stores';
 
   export let data;
 
   let supabase = getSupabase();
   let loading = false;
-  let refresh = false;
 
   let disableSubmit = false;
   let formRef: HTMLFormElement;
@@ -29,16 +29,9 @@
   async function handleSubmit() {
     loading = true;
 
-    if (refresh) {
-      window.location.reload();
-      refresh = false;
-      return;
-    }
-
     if (!$profile.id || !$profile.email) {
       console.log('Profile not found', $profile);
-      refresh = true;
-      return;
+      return goto(`/signup?redirect=${$page.url?.pathname || ''}`);
     }
 
     const member = {
@@ -124,19 +117,13 @@
   bind:formRef
 >
   <div class="mt-0 w-full">
-    {#if refresh}
-      <p class="dark:text-white text-sm font-light text-center">
-        Something went wrong, please try again.
-      </p>
-    {:else}
-      <h3 class="dark:text-white text-lg font-medium mt-0 mb-4 text-center">{data.name}</h3>
-      <p class="dark:text-white text-sm font-light text-center">{data.description}</p>
-    {/if}
+    <h3 class="dark:text-white text-lg font-medium mt-0 mb-4 text-center">{data.name}</h3>
+    <p class="dark:text-white text-sm font-light text-center">{data.description}</p>
   </div>
 
   <div class="my-4 w-full flex justify-center items-center">
     <PrimaryButton
-      label={refresh ? 'Try again' : 'Join Course'}
+      label="Join Course"
       type="submit"
       isDisabled={disableSubmit || loading}
       isLoading={loading}

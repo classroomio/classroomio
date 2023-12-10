@@ -12,29 +12,22 @@ interface LoadOutput {
   orgSiteName: string;
   isOrgSite: boolean;
   skipAuth: boolean;
-  org: CurrentOrg;
+  org: CurrentOrg | null;
 }
 
 export const load = async ({ url, cookies }): Promise<LoadOutput> => {
-  // if (url.hostname === 'classroomio.com') {
-  //   throw redirect(301, 'https://about.classroomio.com');
-  // }
-
-  let response: LoadOutput = {
+  const response: LoadOutput = {
     orgSiteName: '',
     isOrgSite: false,
     skipAuth: false,
-    org: {
-      theme: ''
-    }
+    org: null
   };
 
   const _orgSiteName = cookies.get('_orgSiteName');
   const debugPlay = cookies.get('debugPlay');
   const debugMode = _orgSiteName && _orgSiteName !== 'false';
-  console.log('_orgSiteName', _orgSiteName);
 
-  const matches = url.host.match(/([a-z 0-9 \-]+).*classroomio[.]com/);
+  const matches = url.host.match(/([a-z 0-9 -]+).*classroomio[.]com/);
   const subdomain = matches?.[1] ?? '';
 
   if (!blockedSubdomain.includes(subdomain)) {
@@ -42,7 +35,7 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
 
     response.isOrgSite = debugMode || answer;
     response.orgSiteName = debugMode ? _orgSiteName : subdomain;
-    response.org = await getCurrentOrg(response.orgSiteName, true);
+    response.org = (await getCurrentOrg(response.orgSiteName, true)) || null;
   } else if (subdomain === 'play' || debugPlay === 'true') {
     response.skipAuth = true;
   }

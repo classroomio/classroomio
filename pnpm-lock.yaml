@@ -20,6 +20,9 @@ importers:
       prettier-plugin-tailwindcss:
         specifier: ^0.5.7
         version: 0.5.7(prettier-plugin-svelte@3.1.2)(prettier@3.1.0)
+      supabase:
+        specifier: ^1.112.0
+        version: 1.112.0
       tsconfig:
         specifier: workspace:*
         version: link:packages/tsconfig
@@ -111,6 +114,9 @@ importers:
       '@types/pluralize':
         specifier: 0.0.30
         version: 0.0.30
+      '@vercel/speed-insights':
+        specifier: ^1.0.1
+        version: 1.0.1
       ai:
         specifier: ^2.1.31
         version: 2.1.31(react@18.2.0)(solid-js@1.8.6)(svelte@4.1.2)(vue@3.3.8)
@@ -4023,6 +4029,11 @@ packages:
     transitivePeerDependencies:
       - encoding
       - supports-color
+    dev: false
+
+  /@vercel/speed-insights@1.0.1:
+    resolution: {integrity: sha512-cm8KTTsDgS1AbWsgIEZuMoyPUjclzeqJihyLp0tnA21B/x9iTE8hu2S5zM+/DBzihuHxWL1dx9pCWk22ctMFWQ==}
+    requiresBuild: true
     dev: false
 
   /@vercel/style-guide@5.1.0(eslint@8.54.0)(prettier@3.1.0)(typescript@5.3.2):

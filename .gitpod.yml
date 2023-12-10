@@ -1,0 +1,44 @@
+image: gitpod/workspace-full
+
+tasks:
+  - name: Setup all projects
+    init: |
+      pnpm i &&
+      cd apps/classroomio-com &&
+      cp .env.example .env &&
+      cd ../dashboard &&
+      cp .env.example .env &&
+      cd ../.. &&
+      pnpm supabase start
+    command: |
+      SUPABASE_ANON_KEY=$(pnpm supabase status | grep "anon key" | awk '{print $3}' | tr -d '\\n') &&
+      cd apps/dashboard &&
+      sed -i "s/PUBLIC_SUPABASE_ANON_KEY=.*/PUBLIC_SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY/g" .env &&
+      cd ../.. &&
+      pnpm dev
+
+ports:
+  - port: 3000
+    visibility: public
+    onOpen: open-browser
+  - port: 5173
+    visibility: public
+    onOpen: open-browser
+  - port: 5174
+    visibility: public
+    onOpen: open-browser
+  - port: 54321
+    visibility: public
+    onOpen: ignore
+  - port: 54323
+    visibility: public
+    onOpen: ignore
+  - port: 54324
+    visibility: public
+    onOpen: ignore
+
+github:
+  prebuilds:
+    master: true
+    pullRequests: true
+    addComment: true

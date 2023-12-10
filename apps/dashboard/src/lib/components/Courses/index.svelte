@@ -40,6 +40,7 @@
           cost={courseData.cost}
           currency={courseData.currency}
           totalLessons={courseData.total_lessons}
+          totalStudents={courseData.total_students}
           isLMS={$appStore.isOrgSite}
           progressRate={calcProgressRate(courseData.progress_rate, courseData.total_lessons)}
         />

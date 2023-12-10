@@ -4,7 +4,7 @@
   import { appStore } from '$lib/utils/store/app';
 
   export let id = '';
-  export let value: string;
+  export let value: string | undefined = '';
   export let onChange = (html: string) => {};
   export let height = 300;
   export let placeholder = '';
@@ -14,18 +14,22 @@
   const apiKey = PUBLIC_TINYMCE_API_KEY;
 
   let tinmycEditor: any;
-  let unmount = false
+  let unmount = false;
 
   // editor configuration
   let conf = {
-    plugins: 'lists',
+    plugins: 'lists, link, emoticons, code, media',
     toolbar: [
       { name: 'history', items: ['undo', 'redo'] },
       { name: 'styles', items: ['styles'] },
       { name: 'formatting', items: ['bold', 'italic'] },
       { name: 'alignment', items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify'] },
       { name: 'indentation', items: ['outdent', 'indent'] },
-      { name: 'list', items: ['numlist', 'bullist'] }
+      { name: 'list', items: ['numlist', 'bullist'] },
+      { name: 'link', items: ['link'] },
+      { name: 'insert', items: ['emoticons'] },
+      { name: 'code', items: ['code'] },
+      { name: 'media', items: ['media'] }
     ],
     lists_indent_on_tab: false,
     min_height: height,
@@ -73,6 +77,6 @@
 
 <div>
   {#if !unmount}
-  <Editor bind:value {apiKey} bind:conf />
+    <Editor bind:value {apiKey} bind:conf />
   {/if}
 </div>
