@@ -5,5 +5,15 @@ const withNextra = require('nextra')({
 
 module.exports = {
   basePath: '/docs',
-  ...withNextra()
+  ...withNextra(),
+  async rewrites() {
+    return {
+      fallback: [
+        {
+          source: '/:path*',
+          destination: `https://classroomio-com.vercel.app/:path*`
+        }
+      ]
+    };
+  }
 };
