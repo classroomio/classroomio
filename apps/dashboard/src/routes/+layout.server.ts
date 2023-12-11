@@ -42,6 +42,8 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
     }
   } else if (subdomain === 'play' || debugPlay === 'true') {
     response.skipAuth = true;
+  } else {
+    throw redirect(301, 'https://app.classroomio.com');
   }
 
   return response;
