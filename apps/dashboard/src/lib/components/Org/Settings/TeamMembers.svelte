@@ -39,12 +39,10 @@
     emails.forEach(async (email, index) => {
       if (apiError) return;
 
-      const { data, error } = await supabase.from('organizationmember').select('email');
+      const doesEmailExist = $orgTeam.some(teamMember => teamMember.email.toLowerCase() === email.toLowerCase())
 
-      const emailExists = data?.some((obj) => obj.email === email);
-
-      if (emailExists) {
-        snackbar.error("Email Already Exists");
+      if (doesEmailExist) {
+        snackbar.error("User Already Exists");
         isLoading = false;
         return;
       } else {
