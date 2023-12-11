@@ -1,4 +1,4 @@
-// import { redirect } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import { blockedSubdomain } from '$lib/utils/constants/app';
 import { getCurrentOrg } from '$lib/utils/services/org';
 import { getSupabase, supabase } from '$lib/utils/functions/supabase';
@@ -36,6 +36,10 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
     response.isOrgSite = debugMode || answer;
     response.orgSiteName = debugMode ? _orgSiteName : subdomain;
     response.org = (await getCurrentOrg(response.orgSiteName, true)) || null;
+
+    if (!response.org) {
+      throw redirect(302, '/404?type=org');
+    }
   } else if (subdomain === 'play' || debugPlay === 'true') {
     response.skipAuth = true;
   }

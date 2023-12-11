@@ -1,10 +1,13 @@
 <script>
+  import { page } from '$app/stores';
   import { goto } from '$app/navigation';
 
   import { appStore } from '$lib/utils/store/app';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   const src = './bg-404.png';
+  let query = new URLSearchParams($page.url.search);
+  let isOrg = query.get('type') === 'org';
 </script>
 
 <div
@@ -13,26 +16,21 @@
 >
   <div class=" dark:text-white gap-3 w-4/5 lg:w-2/5">
     <p class="text-3xl dark:text-white font-semibold mb-5">
-      Oops😕,where did the page go?
+      {#if isOrg}
+        Oops😕, this organization doesn't exist!
+      {:else}
+        Oops😕,where did the page go?
+      {/if}
     </p>
     <p class="text-base text-gray-600 dark:text-white mb-5">
-      We're sorry, but something went wrong and we can't show you the page
-      you're looking for. In the meantime, here's a joke to make you laugh:<br
-      />
+      We're sorry, but something went wrong and we can't show you the page you're looking for. In
+      the meantime, here's a joke to make you laugh:<br />
       What do you call a fish with no eyes? Fsh!
     </p>
-    <PrimaryButton
-      label="Go to Home"
-      className="rounded-md"
-      onClick={() => goto('/')}
-    />
+    <PrimaryButton label="Go to Home" className="rounded-md" onClick={() => goto('/')} />
   </div>
 
-  <img
-    src="/classroom-404.png"
-    alt="classroomio_error_image"
-    class="errorImg"
-  />
+  <img src="/classroom-404.png" alt="classroomio_error_image" class="errorImg" />
 </div>
 
 <style>
