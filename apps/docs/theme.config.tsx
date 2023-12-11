@@ -71,9 +71,9 @@ const config: DocsThemeConfig = {
   },
   head: (
     <>
-      <link rel="shortcut icon" type="image/x-icon" href={`/img/favicon.ico`} />
-      <link rel="icon" type="image/x-icon" sizes="16x16" href={`/img/logo-16.png`} />
-      <link rel="icon" type="image/x-icon" sizes="32x32" href={`/img/logo-32.png`} />
+      <link rel="shortcut icon" type="image/x-icon" href={`/docs/img/favicon.ico`} />
+      <link rel="icon" type="image/x-icon" sizes="16x16" href={`/docs/img/logo-16.png`} />
+      <link rel="icon" type="image/x-icon" sizes="32x32" href={`/docs/img/logo-32.png`} />
     </>
   )
 };
