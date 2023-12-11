@@ -13,12 +13,12 @@
   let showNav = false;
 
   const {
-    elements: { menu, item, trigger, arrow },
+    elements: { menu, item, trigger, arrow }
   } = createDropdownMenu({
     positioning: {
       placement: 'bottom-start',
-      fitViewport: true,
-    },
+      fitViewport: true
+    }
   });
 
   function handleShow() {
@@ -35,7 +35,7 @@
       el?.scrollIntoView({
         behavior: 'smooth',
         block: 'start',
-        inline: 'nearest',
+        inline: 'nearest'
       });
     }, 50);
   }
@@ -44,23 +44,23 @@
     {
       key: 'coursemanagement',
       title: 'Course Management',
-      subtitle: 'Advanced course management tools ',
+      subtitle: 'Advanced course management tools '
     },
     {
       key: 'customization',
       title: 'Customizations',
-      subtitle: 'Customize your classroom to your needs',
+      subtitle: 'Customize your classroom to your needs'
     },
     {
       key: 'collaboration',
       title: 'Forum',
-      subtitle: 'Seamlessly collaborate with your students',
+      subtitle: 'Seamlessly collaborate with your students'
     },
     {
       key: 'ai',
       title: 'AI Lesson Planner',
-      subtitle: "10x Educator's productivity with AI",
-    },
+      subtitle: "10x Educator's productivity with AI"
+    }
   ];
 </script>
 
@@ -116,14 +116,10 @@
       </li>
       <!--  -->
       <a href="#morefeatures">
-        <li class="text-gray-800 font-semibold text-sm cursor-pointer">
-          More features
-        </li>
+        <li class="text-gray-800 font-semibold text-sm cursor-pointer">More features</li>
       </a>
       <a href="#pricing">
-        <li class="text-gray-800 font-semibold text-sm cursor-pointer">
-          Pricing
-        </li>
+        <li class="text-gray-800 font-semibold text-sm cursor-pointer">Pricing</li>
       </a>
     </ul>
   </nav>
@@ -135,26 +131,17 @@
       Sign Up
     </button> -->
     <a href="/discord" target="_blank">
-      <img
-        alt="discord logo"
-        src="/discord-blue.png"
-        class="w-8 h-6 mr-4 cursor-pointer"
-      />
+      <img alt="discord logo" src="/discord-blue.png" class="w-8 h-6 mr-4 cursor-pointer" />
     </a>
     <a href="/github" target="_blank">
-      <img
-        alt="github logo"
-        src="/github-mark.png"
-        class="w-6 h-6 mr-4 cursor-pointer"
-      />
+      <img alt="github logo" src="/github-mark.png" class="w-6 h-6 mr-4 cursor-pointer" />
     </a>
-    <button
+    <a
       class="font-medium text-sm after:content-['→'] after:ml-2"
-      data-cal-config={"{'layout':'month_view'}"}
-      data-cal-link="classroomio/demo"
+      href="https://app.classroomio.com"
     >
-      Get a Demo
-    </button>
+      Dashboard
+    </a>
   </div>
 
   <button class="block md:block lg:hidden" on:click={handleShowNav}
@@ -170,18 +157,12 @@
     >
       <div class="flex justify-between py-2 mb-5">
         <img src="/logo-512.png" alt="classroomio logo" class="w-[8%]" />
-        <button on:click={handleShowNav}
-          ><CloseLarge size={24} class="mr-5" /></button
-        >
+        <button on:click={handleShowNav}><CloseLarge size={24} class="mr-5" /></button>
       </div>
       <nav class="">
-        <ul
-          class="flex items-center flex-col lg:flex-row justify-between w-full"
-        >
+        <ul class="flex items-center flex-col lg:flex-row justify-between w-full">
           <!--  -->
-          <li
-            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer w-full"
-          >
+          <li class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer w-full">
             <button
               class="w-full flex items-center justify-between hover:bg-gray-100 py-3 px-4 rounded-lg"
               on:click={handleShow}
@@ -189,10 +170,7 @@
               Our Superpowers <ChevronDown />
             </button>
             {#if showsubNav}
-              <div
-                in:fly={{ y: -20, duration: 700 }}
-                out:fly={{ y: 20, duration: 400 }}
-              >
+              <div in:fly={{ y: -20, duration: 700 }} out:fly={{ y: 20, duration: 400 }}>
                 {#each superpowers as superpower}
                   <a href="#{superpower.key}">
                     <p
@@ -228,11 +206,7 @@
           target="_blank"
           class="flex items-center rounded-md after:ml-2 w-full text-left py-4 px-4 hover:bg-gray-100 text-sm md:text-lg"
         >
-          <img
-            alt="discord logo"
-            src="/discord-blue.png"
-            class="w-8 h-6 mr-2 cursor-pointer"
-          />
+          <img alt="discord logo" src="/discord-blue.png" class="w-8 h-6 mr-2 cursor-pointer" />
           <span>Discord</span>
         </a>
         <a
@@ -240,20 +214,15 @@
           target="_blank"
           class="flex items-center rounded-md after:ml-2 w-full text-left py-4 px-4 hover:bg-gray-100 text-sm md:text-lg"
         >
-          <img
-            alt="github logo"
-            src="/github-mark.png"
-            class="w-6 h-6 mr-3 cursor-pointer"
-          />
+          <img alt="github logo" src="/github-mark.png" class="w-6 h-6 mr-3 cursor-pointer" />
           <span>Github</span>
         </a>
-        <button
+        <a
           class="font-semibold after:content-['→'] rounded-md after:ml-2 w-full text-left py-4 px-4 hover:bg-gray-100 text-sm md:text-lg"
-          data-cal-config={"{'layout':'month_view'}"}
-          data-cal-link="classroomio/demo"
+          href="https://app.classroomio.com"
         >
-          Get a Demo
-        </button>
+          Dashboard
+        </a>
       </div>
     </div>
   {/if}
