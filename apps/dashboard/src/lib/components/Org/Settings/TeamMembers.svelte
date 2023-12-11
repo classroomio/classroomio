@@ -38,7 +38,15 @@
     let apiError = '';
     emails.forEach(async (email, index) => {
       if (apiError) return;
-      const { data, error } = await supabase
+
+      const doesEmailExist = $orgTeam.some(teamMember => teamMember.email.toLowerCase() === email.toLowerCase())
+
+      if (doesEmailExist) {
+        snackbar.error("User Already Exists");
+        isLoading = false;
+        return;
+      } else {
+        const { data, error } = await supabase
         .from('organizationmember')
         .insert({
           organization_id: $currentOrg.id,
@@ -47,7 +55,8 @@
           verified: false
         })
         .select();
-      console.log('data', data);
+        console.log('data', data);
+      }
 
       if (error) {
         apiError = error;
