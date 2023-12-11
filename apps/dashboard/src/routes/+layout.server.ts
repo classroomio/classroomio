@@ -1,3 +1,4 @@
+import { dev } from '$app/environment';
 import { redirect } from '@sveltejs/kit';
 import { blockedSubdomain } from '$lib/utils/constants/app';
 import { getCurrentOrg } from '$lib/utils/services/org';
@@ -37,12 +38,12 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
     response.orgSiteName = debugMode ? _orgSiteName : subdomain;
     response.org = (await getCurrentOrg(response.orgSiteName, true)) || null;
 
-    if (!response.org) {
+    if (!response.org && !dev) {
       throw redirect(301, 'https://app.classroomio.com/404?type=org');
     }
   } else if (subdomain === 'play' || debugPlay === 'true') {
     response.skipAuth = true;
-  } else if (subdomain !== 'app') {
+  } else if (subdomain !== 'app' && !dev) {
     throw redirect(301, 'https://app.classroomio.com');
   }
 

@@ -42,7 +42,6 @@
       });
     } catch (error) {
       submitError = error.error_description || error.message;
-    } finally {
       loading = false;
     }
   }

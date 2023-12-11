@@ -4,7 +4,7 @@
   import { fly } from 'svelte/transition';
   import { derived } from 'svelte/store';
   import { goto } from '$app/navigation';
-  import { browser } from '$app/environment';
+  import { browser, dev } from '$app/environment';
   import { page, navigating } from '$app/stores';
   import isEmpty from 'lodash/isEmpty';
   import { Theme, ToastNotification, Loading } from 'carbon-components-svelte';
@@ -56,6 +56,10 @@
 
     // Set up posthog
     initPosthog();
+
+    if (!dev) {
+      injectSpeedInsights();
+    }
   }
 
   function setAnalyticsUser() {
@@ -215,8 +219,6 @@
     }
 
     setupAnalytics();
-
-    injectSpeedInsights();
 
     handleResize();
 

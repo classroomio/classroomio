@@ -108,8 +108,8 @@
     const content = `
       <p>Hello ${fullname},</p>
         <p>The status of your submitted exercise on <strong>${title}</strong> has been updated to ${
-      submissionStatus[status_id]
-    }</p>
+          submissionStatus[status_id]
+        }</p>
         ${
           status_id == 3
             ? `<p>Your score was ${totalMark}/${maxMark}</p>
