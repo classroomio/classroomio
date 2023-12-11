@@ -59,7 +59,7 @@
     </video> -->
 
     <img
-      src="./hero-section.png"
+      src="./cio-hero-imac.png"
       alt="hero section with dark vs light mode"
       class="floating w-[85%] lg:w-[70%] mx-auto rounded-lg shadow-lg"
     />
