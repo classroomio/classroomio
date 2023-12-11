@@ -38,7 +38,7 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
     response.org = (await getCurrentOrg(response.orgSiteName, true)) || null;
 
     if (!response.org) {
-      throw redirect(302, '/404?type=org');
+      throw redirect(301, 'https://app.classroomio.com/404?type=org');
     }
   } else if (subdomain === 'play' || debugPlay === 'true') {
     response.skipAuth = true;
