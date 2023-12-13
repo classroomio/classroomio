@@ -2,10 +2,9 @@
   import { goto } from '$app/navigation';
   import Community from '$lib/components/Org/Community/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { currentOrgPath } from '$lib/utils/store/org';
 
   function askCommunity() {
-    goto(`${$currentOrgPath}/community/ask`);
+    goto(`/lms/community/ask`);
   }
 </script>
 
