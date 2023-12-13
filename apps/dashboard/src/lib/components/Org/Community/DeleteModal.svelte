@@ -7,6 +7,7 @@
   export let onCancel = () => {};
   export let open = false;
   export let isQuestion = false;
+  export let isDeleting = false;
 </script>
 
 <Modal
@@ -32,6 +33,7 @@
         variant={VARIANTS.CONTAINED}
         label="Yes, delete"
         onClick={onDelete}
+        isLoading={isDeleting}
       />
     </div>
   </div>

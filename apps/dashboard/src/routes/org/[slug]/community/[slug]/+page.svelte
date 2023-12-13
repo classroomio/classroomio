@@ -67,11 +67,13 @@
   let isEditMode = false;
   let deleteComment = {
     shouldDelete: false,
-    commentId: ''
+    commentId: '',
+    isDeleting: false
   };
   let deleteQuestion = {
     shouldDelete: false,
-    questionId: ''
+    questionId: '',
+    isDeleting: false
   };
   let editContent = {
     title: '',
@@ -267,10 +269,14 @@
 
   async function handleDelete(isQuestion: boolean) {
     if (!isQuestion) {
+      deleteComment.isDeleting = true;
+
       const { error } = await supabase
         .from('community_answer')
         .delete()
         .match({ id: deleteComment.commentId });
+
+      deleteComment.isDeleting = false;
 
       if (error) {
         snackbar.error('Error deleting comments');
@@ -286,6 +292,7 @@
       // Handle only delete comment
       return;
     }
+    deleteQuestion.isDeleting = true;
 
     const { error: commentDeleteError } = await supabase
       .from('community_answer')
@@ -295,6 +302,8 @@
     if (commentDeleteError) {
       snackbar.error('Error deleting comments');
       console.log('Error deleting comments', commentDeleteError);
+
+      deleteQuestion.isDeleting = false;
       return;
     }
 
@@ -311,6 +320,7 @@
 
     snackbar.success('Deleted successfully');
     goto(`${$currentOrgPath}/community`);
+    deleteQuestion.isDeleting = false;
   }
 
   $: browser && fetchCommunityQuestion(slug);
@@ -322,6 +332,7 @@
 
 <DeleteModal
   bind:open={deleteQuestion.shouldDelete}
+  bind:isDeleting={deleteQuestion.isDeleting}
   onCancel={() => {
     deleteQuestion.shouldDelete = false;
     deleteQuestion.questionId = '';
@@ -332,6 +343,7 @@
 
 <DeleteModal
   bind:open={deleteComment.shouldDelete}
+  isDeleting={deleteComment.isDeleting}
   onCancel={() => {
     deleteComment.shouldDelete = false;
     deleteComment.commentId = '';
