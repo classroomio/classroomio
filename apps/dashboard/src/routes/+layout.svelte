@@ -318,26 +318,7 @@
     {/if}
 
     <div class="flex justify-between">
-      {#if isOrgPage($page.url?.pathname)}
-        <AddOrgModal />
-        <div class="org-root w-full flex items-center justify-between">
-          {#if !isQuizPage($page.url?.pathname)}
-            <OrgSideBar />
-          {/if}
-          <div class="org-slot bg-white dark:bg-black w-full">
-            <slot />
-          </div>
-        </div>
-      {:else if isLMSPage($page.url?.pathname)}
-        <div class="org-root w-full flex items-center justify-between">
-          <LMSSideBar />
-          <div class="org-slot bg-white dark:bg-black w-full">
-            <slot />
-          </div>
-        </div>
-      {:else}
-        <slot />
-      {/if}
+      <slot />
 
       {#if showAppsSideBar(path)}
         <Apps />
@@ -350,15 +331,6 @@
   main {
     background-color: white;
     box-sizing: border-box;
-  }
-
-  .org-root {
-    height: calc(100vh - 48px);
-  }
-  .org-slot {
-    min-width: calc(100vw - 250px);
-    height: calc(100vh - 48px);
-    overflow-y: auto;
   }
 
   :global(a:hover) {
