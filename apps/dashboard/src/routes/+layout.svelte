@@ -412,11 +412,4 @@
       row-gap: 12px;
     }
   }
-  @media screen and (max-width: 457px) {
-    .org-slot {
-      min-width: 100%;
-      max-height: calc(100vh - 48px);
-      overflow-y: auto;
-    }
-  }
 </style>
