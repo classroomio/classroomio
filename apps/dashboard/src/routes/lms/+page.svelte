@@ -19,7 +19,10 @@
     if (hasFetched || !userId || !orgId) {
       return;
     }
-    $courseMetaDeta.isLoading = true;
+    // only show is loading when fetching for the first time
+    if (!$courses.length) {
+      $courseMetaDeta.isLoading = true;
+    }
 
     const coursesResult = await fetchCourses(userId, orgId);
     console.log(`coursesResult`, coursesResult);

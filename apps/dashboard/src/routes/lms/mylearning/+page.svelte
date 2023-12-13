@@ -27,12 +27,15 @@
   }
 
   async function getCourses(userId: string | null, orgId: string) {
-    console.log('hasFetched', hasFetched);
     if (hasFetched || !userId || !orgId) {
       return;
     }
     hasFetched = true;
-    $courseMetaDeta.isLoading = true;
+
+    // only show is loading when fetching for the first time
+    if (!$courses.length) {
+      $courseMetaDeta.isLoading = true;
+    }
 
     const coursesResult = await fetchCourses(userId, orgId);
     console.log(`get courses result`, coursesResult);

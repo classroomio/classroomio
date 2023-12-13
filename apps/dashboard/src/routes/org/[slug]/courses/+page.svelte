@@ -30,7 +30,10 @@
 
   async function getCourses(userId: string | null, orgId: string) {
     if (cantFetch && typeof cantFetch === 'boolean' && !allCourses.length && orgId && !hasFetched) {
-      $courseMetaDeta.isLoading = true;
+      // only show is loading when fetching for the first time
+      if (!$courses.length) {
+        $courseMetaDeta.isLoading = true;
+      }
 
       const coursesResult = await fetchCourses(userId, orgId);
       console.log(`coursesResult`, coursesResult);

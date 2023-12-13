@@ -88,6 +88,9 @@
       return goto('/login?redirect=/' + path);
     }
 
+    // Skip refetching profile, if already in store
+    if ($profile.id) return;
+
     // Check if user has profile
     let {
       data: profileData,
