@@ -4,7 +4,12 @@ import { DocsThemeConfig } from 'nextra-theme-docs';
 const config: DocsThemeConfig = {
   logo: (
     <div style={{ display: 'flex', alignItems: 'center' }}>
-      <img src={`/docs/img/logo-512.png`} alt={'ClassroomIO logo'} width={32} height={32} />
+      <img
+        src={`${process.env.imagePath}/img/logo-512.png`}
+        alt={'ClassroomIO logo'}
+        width={32}
+        height={32}
+      />
       <span style={{ marginLeft: '5px', lineHeight: '15px' }}>ClassroomIO Docs</span>
     </div>
   ),
@@ -21,34 +26,34 @@ const config: DocsThemeConfig = {
           'Spend less time doing the boring stuff, instead focus on impacting the lives of your students.',
         images: [
           {
-            url: '/docs/img/logo-16.png',
+            url: `${process.env.imagePath}/img/logo-16.png`,
             width: 16,
             height: 16,
             alt: 'ClassroomIO Docs Og Image Alt',
             type: 'image/png'
           },
           {
-            url: '/docs/img/logo-32.png',
+            url: `${process.env.imagePath}/img/logo-32.png`,
             width: 32,
             height: 32,
             alt: 'ClassroomIO Docs Og Image Alt',
             type: 'image/png'
           },
           {
-            url: '/docs/img/logo-192.png',
+            url: `${process.env.imagePath}/img/logo-192.png`,
             width: 192,
             height: 192,
             alt: 'ClassroomIO Docs Og Image Alt',
             type: 'image/png'
           },
           {
-            url: '/docs/img/logo-512.png',
+            url: `${process.env.imagePath}/img/logo-512.png`,
             width: 512,
             height: 512,
             alt: 'ClassroomIO Docs Og Image Alt',
             type: 'image/png'
           },
-          { url: '/docs/img/og-image.png' }
+          { url: `${process.env.imagePath}/img/og-image.png'` }
         ],
         twitter: {
           handle: '@classroomio',
