@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { goto } from '$app/navigation';
   import pluralize from 'pluralize';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
@@ -10,7 +10,7 @@
   import Avatar from '$lib/components/Avatar/index.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { isOrgAdmin } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { supabase } from '$lib/utils/functions/supabase';
   import {
@@ -19,23 +19,59 @@
   } from '$lib/utils/functions/validator';
   import { snackbar } from '$lib/components/Snackbar/store';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import DeleteCommentModal from '$lib/components/Org/Community/DeleteCommentModal.svelte';
+  import DeleteModal from '$lib/components/Org/Community/DeleteModal.svelte';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
   import { calDateDiff } from '$lib/utils/functions/date';
+  import { browser } from '$app/environment';
 
   export let data;
   const { slug } = data;
 
-  let question;
+  interface Comment {
+    id: string;
+    authorId: string;
+    name: string;
+    avatar: string;
+    votes: number;
+    comment: string;
+    createdAt: string;
+  }
+  interface Question {
+    id: string;
+    title: string;
+    votes: number;
+    author: {
+      id: string;
+      name: string;
+      avatar: string;
+    };
+    body: string;
+    createdAt: string;
+    comments: Comment[];
+    totalComments: number;
+  }
+
+  let question: Question;
   let comment = '';
-  let errors = {};
+  let errors: {
+    title?: string;
+  } = {};
   let isValidAnswer = false; // V2 allow admin mark an answer as accepted
   let resetInput = 1;
-  let voted = { question: false, comment: {} };
+  let voted: {
+    question: boolean;
+    comment: {
+      [key: string]: boolean;
+    };
+  } = { question: false, comment: {} };
   let isEditMode = false;
   let deleteComment = {
     shouldDelete: false,
-    commentId: null
+    commentId: ''
+  };
+  let deleteQuestion = {
+    shouldDelete: false,
+    questionId: ''
   };
   let editContent = {
     title: '',
@@ -44,23 +80,23 @@
 
   let editorInstance = false;
 
-  function mapResToQuestion(data) {
+  function mapResToQuestion(data): Question {
     return {
       id: data.id,
       title: data.title,
       votes: data.votes,
       author: {
-        id: data?.author?.profile?.id || '',
-        name: data?.author?.profile?.fullname || '',
-        avatar: data?.author?.profile?.avatar_url || ''
+        id: data?.author?.id || '',
+        name: data?.author?.fullname || '',
+        avatar: data?.author?.avatar_url || ''
       },
       body: data.body,
       createdAt: calDateDiff(data.created_at),
       comments: data.comments.map((c) => ({
         id: c.id,
-        authorId: c.author?.profile?.id || '',
-        name: c.author?.profile?.fullname || '',
-        avatar: c.author?.profile?.avatar_url || '',
+        authorId: c.author?.id || '',
+        name: c.author?.fullname || '',
+        avatar: c.author?.avatar_url || '',
         votes: c.votes,
         comment: c.body,
         createdAt: calDateDiff(c.created_at)
@@ -69,7 +105,7 @@
     };
   }
 
-  async function fetchCommunityQuestion(slug) {
+  async function fetchCommunityQuestion(slug: string) {
     if (!slug) return;
 
     const { data, error } = await supabase
@@ -81,26 +117,23 @@
         body,
         votes,
         created_at,
+        slug,
         comments:community_answer(
           id,
           body,
           votes,
           created_at,
-          author:organizationmember!community_answer_author_id_fkey!inner(
-            profile!inner(id, fullname, avatar_url)
-          )
+          author:profile(id, fullname, avatar_url)
         ),
-        author:organizationmember!community_question_author_id_fkey!inner(
-          profile!inner(id, fullname, avatar_url)
-        )
+        author:profile(id, fullname, avatar_url)
       `
       )
       .eq('slug', slug)
       .single();
 
     if (error) {
-      console.error('Error loading community', error);
-      return goto('/lms/community');
+      console.error('[LMS] Error loading community', error);
+      return goto(`/lms`);
     }
 
     question = mapResToQuestion(data);
@@ -121,7 +154,7 @@
         id: undefined,
         body: comment,
         question_id: question.id,
-        author_id: $currentOrg.memberId,
+        author_profile_id: $profile.id,
         votes: 0
       })
       .select();
@@ -132,7 +165,7 @@
     } else {
       console.log('Success: commenting', data);
 
-      snackbar.success();
+      snackbar.success('Comment Submitted!');
 
       // Add to comment
       const _c = data?.[0];
@@ -140,6 +173,7 @@
         ...question.comments,
         {
           id: _c.id,
+          authorId: $profile.id || '',
           name: $profile?.fullname || '',
           avatar: $profile?.avatar_url || '',
           votes: 0,
@@ -154,11 +188,11 @@
     }
   }
 
-  async function upvoteQuestion(type, commentId) {
+  async function upvoteQuestion(type: string, commentId?: string) {
     const isQuestion = type === 'question';
 
     if (isQuestion && voted.question) return;
-    if (!isQuestion && voted.comment[commentId]) return;
+    if (!isQuestion && commentId && voted.comment[commentId]) return;
 
     const table = isQuestion ? 'community_question' : 'community_answer';
     const matchId = isQuestion ? question.id : commentId;
@@ -179,11 +213,11 @@
     const { error } = await supabase.from(table).update({ votes }).match({ id: matchId });
     if (error) {
       console.error('Error: upvoteQuestion', error);
-      snackbar.error();
+      snackbar.error('Error - Please try again later');
     } else {
       if (isQuestion) {
         voted.question = true;
-      } else {
+      } else if (commentId) {
         voted.comment[commentId] = true;
       }
     }
@@ -217,7 +251,7 @@
         .match({ id: question.id });
       if (error) {
         console.error('Error: handleQuestionEdit', error);
-        snackbar.error();
+        snackbar.error('Error - Please try again later');
       } else {
         question.title = fields.title;
         question.body = fields.body;
@@ -231,34 +265,78 @@
     }
   }
 
-  async function handleCommentDelete() {
-    const { error } = await supabase
+  async function handleDelete(isQuestion: boolean) {
+    if (!isQuestion) {
+      const { error } = await supabase
+        .from('community_answer')
+        .delete()
+        .match({ id: deleteComment.commentId });
+
+      if (error) {
+        snackbar.error('Error deleting comments');
+        console.log('Error deleting comments', error);
+        return;
+      }
+      snackbar.success('Deleted successfully');
+
+      question.comments = question.comments.filter((c) => c.id !== deleteComment.commentId);
+      deleteComment.shouldDelete = false;
+      deleteComment.commentId = '';
+
+      // Handle only delete comment
+      return;
+    }
+
+    const { error: commentDeleteError } = await supabase
       .from('community_answer')
       .delete()
-      .match({ id: deleteComment.commentId });
+      .match({ question_id: deleteQuestion.questionId });
 
-    if (!error) {
-      question.comments = question.comments.filter((c) => c.id !== deleteComment.commentId);
-
-      deleteComment.shouldDelete = false;
-      deleteComment.commentId = null;
+    if (commentDeleteError) {
+      snackbar.error('Error deleting comments');
+      console.log('Error deleting comments', commentDeleteError);
+      return;
     }
+
+    const { error: questionDeleteError } = await supabase
+      .from('community_question')
+      .delete()
+      .match({ id: deleteQuestion.questionId });
+
+    if (questionDeleteError) {
+      snackbar.error('Error deleting question');
+      console.log('Error deleting question', questionDeleteError);
+      return;
+    }
+
+    snackbar.success('Deleted successfully');
+    goto(`/lms/community`);
   }
 
-  $: fetchCommunityQuestion(slug);
+  $: browser && fetchCommunityQuestion(slug);
 </script>
 
 <svelte:head>
   <title>{question?.title || 'Question'}</title>
 </svelte:head>
 
-<DeleteCommentModal
+<DeleteModal
+  bind:open={deleteQuestion.shouldDelete}
+  onCancel={() => {
+    deleteQuestion.shouldDelete = false;
+    deleteQuestion.questionId = '';
+  }}
+  onDelete={() => handleDelete(true)}
+  isQuestion={true}
+/>
+
+<DeleteModal
   bind:open={deleteComment.shouldDelete}
   onCancel={() => {
     deleteComment.shouldDelete = false;
-    deleteComment.commentId = null;
+    deleteComment.commentId = '';
   }}
-  onDelete={handleCommentDelete}
+  onDelete={() => handleDelete(false)}
 />
 <section class="max-w-3xl mx-auto md:mx-10 lg:mb-20">
   {#if !question}
@@ -322,6 +400,17 @@
               {question.createdAt}
             </p>
           </div>
+          {#if question.author.id === $profile.id || $isOrgAdmin}
+            <IconButton
+              value="delete-question"
+              onClick={() => {
+                deleteQuestion.shouldDelete = true;
+                deleteQuestion.questionId = question.id;
+              }}
+            >
+              <TrashCanIcon size={16} class="carbon-icon dark:text-white" />
+            </IconButton>
+          {/if}
         </header>
         {#if isEditMode && editorInstance}
           <div class="my-2">
@@ -363,7 +452,7 @@
                 <CheckmarkOutlineIcon size={20} />
               {/if}
 
-              {#if comment.authorId === $profile.id}
+              {#if comment.authorId === $profile.id || $isOrgAdmin}
                 <IconButton
                   value="delete-comment"
                   onClick={() => {

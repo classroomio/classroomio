@@ -15,12 +15,10 @@
   import OrgLandingPage from '$lib/components/Org/LandingPage/index.svelte';
   import Snackbar from '$lib/components/Snackbar/index.svelte';
   import Backdrop from '$lib/components/Backdrop/index.svelte';
-  import OrgSideBar from '$lib/components/Org/SideBar.svelte';
-  import LMSSideBar from '$lib/components/LMS/SideBar.svelte';
   import Apps from '$lib/components/Apps/index.svelte';
   import PlayQuiz from '$lib/components/Org/Quiz/Play/index.svelte';
   import { course } from '$lib/components/Course/store';
-  import { isCoursesPage, isOrgPage, isLMSPage, isQuizPage } from '$lib/utils/functions/app';
+  import { isCoursesPage, isOrgPage, isLMSPage } from '$lib/utils/functions/app';
   import showAppsSideBar from '$lib/utils/functions/showAppsSideBar';
   import isPublicRoute from '$lib/utils/functions/routes/isPublicRoute';
   import { user, profile } from '$lib/utils/store/user';
@@ -34,7 +32,6 @@
   import { setTheme } from '$lib/utils/functions/theme';
   import hideNavByRoute from '$lib/utils/functions/routes/hideNavByRoute';
   import shouldRedirectOnAuth from '$lib/utils/functions/routes/shouldRedirectOnAuth';
-  import AddOrgModal from '$lib/components/Org/AddOrgModal/AddOrgModal.svelte';
   import { identifyPosthogUser, initPosthog } from '$lib/utils/services/posthog';
   import { initSentry, setSentryUser } from '$lib/utils/services/sentry';
 
@@ -410,13 +407,6 @@
       grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       column-gap: 12px;
       row-gap: 12px;
-    }
-  }
-  @media screen and (max-width: 457px) {
-    .org-slot {
-      min-width: 100%;
-      max-height: calc(100vh - 48px);
-      overflow-y: auto;
     }
   }
 </style>

@@ -6,11 +6,19 @@
   export let onDelete = () => {};
   export let onCancel = () => {};
   export let open = false;
+  export let isQuestion = false;
 </script>
 
-<Modal onClose={() => (open = false)} bind:open width="w-96" modalHeading="Delete comment">
+<Modal
+  onClose={() => (open = false)}
+  bind:open
+  width="w-96"
+  modalHeading="Delete {isQuestion ? 'question' : 'comment'}"
+>
   <div>
-    <h1 class="dark:text-white text-lg">Are you sure you want to delete this comment?</h1>
+    <h1 class="dark:text-white text-lg">
+      Are you sure you want to delete this {isQuestion ? 'question' : 'comment'}?
+    </h1>
 
     <div class="mt-5 flex items-center justify-between">
       <PrimaryButton
