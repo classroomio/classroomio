@@ -20,10 +20,20 @@
     if (isLoading) {
       return;
     }
+
+    const params = new URLSearchParams(window.location.search);
+    console.log({ params });
+    const redirectTo = window.location.origin + params.get('redirectTo');
+
+    console.log({ redirectTo });
+
     try {
       console.log('signInWithGoogle');
       const { error, data } = await supabase.auth.signInWithOAuth({
-        provider: 'google'
+        provider: 'google',
+        options: {
+          redirectTo
+        }
       });
 
       console.log('data', data);
