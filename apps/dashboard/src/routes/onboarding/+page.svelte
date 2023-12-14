@@ -176,9 +176,12 @@
           siteName: undefined
         })
         .match({ id: $profile.id });
+
       loading = false;
 
       if (fields.fullname) {
+        $profile.fullname = fields.fullname;
+
         triggerSendEmail(NOTIFICATION_NAME.WELCOME_TO_APP, {
           to: $profile.email,
           name: fields.fullname
