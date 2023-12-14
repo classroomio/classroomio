@@ -78,7 +78,7 @@ const config: DocsThemeConfig = {
         }}
         href="https://app.classroomio.com"
       >
-        Dashboard
+        Dashboard ↗
       </a>
     )
   },
