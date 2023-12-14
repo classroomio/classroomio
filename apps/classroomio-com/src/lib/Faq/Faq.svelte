@@ -24,7 +24,7 @@
           {faq.question}
         </h1>
         <p
-          class="mt-2 text:md lg:text-md font-normal leading-7 lg:leading-9 text-gray-600 inter tracking-wide"
+          class="mt-2 text:md lg:text-md font-light leading-7 lg:leading-9 text-gray-600 inter tracking-wide"
         >
           {faq.answer}
         </p>
