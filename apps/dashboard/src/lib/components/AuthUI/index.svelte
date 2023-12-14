@@ -23,7 +23,9 @@
 
     const params = new URLSearchParams(window.location.search);
     console.log({ params });
-    const redirectTo = window.location.origin + params.get('redirectTo');
+    const redirectTo = `https://app.classroomio.com?forwardTo=${
+      window.location.origin + params.get('redirect')
+    }`;
 
     console.log({ redirectTo });
 

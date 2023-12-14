@@ -31,6 +31,15 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
   const matches = url.host.match(/([a-z 0-9 -]+).*classroomio[.]com/);
   const subdomain = matches?.[1] ?? '';
 
+  if (subdomain === 'app' && url.search && url.search?.includes('forwardTo')) {
+    const params = new URLSearchParams(url.search);
+    const forwardToURL = params.get('forwardTo');
+
+    if (forwardToURL) {
+      throw redirect(307, forwardToURL);
+    }
+  }
+
   if (!blockedSubdomain.includes(subdomain)) {
     const answer = Array.isArray(matches) ? !!subdomain && subdomain !== 'www' : false;
 
