@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { goto } from '$app/navigation';
   import AddCommentIcon from 'carbon-icons-svelte/lib/AddComment.svelte';
   import CommunityLoader from './Loader.svelte';
@@ -15,10 +15,9 @@
   let isLoading = false;
   let discussions = [];
 
-  async function fetchCommunityQuestions(orgId) {
+  async function fetchCommunityQuestions(orgId?: string) {
     if (!orgId) return;
     isLoading = true;
-
     const { data, error } = await supabase
       .from('community_question')
       .select(
@@ -29,12 +28,13 @@
         created_at,
         slug,
         comments:community_answer(count),
-        author:organizationmember!community_question_author_id_fkey!inner(
-          profile!inner(fullname)
+        author:profile(
+          fullname
         )
       `
       )
-      .eq('organization_id', orgId);
+      .eq('organization_id', orgId)
+      .order('created_at', { ascending: false });
     console.log('data', data);
     console.log('error', error);
     isLoading = false;
@@ -48,7 +48,7 @@
       data?.map((discussion) => ({
         title: discussion.title,
         slug: discussion.slug,
-        author: discussion?.author?.profile?.fullname,
+        author: discussion?.author?.fullname,
         comments: discussion.comments?.[0]?.count || 0,
         votes: discussion.votes,
         createdAt: calDateDiff(discussion.created_at)

@@ -4,6 +4,7 @@
     "title": "Introduction"
   },
   "index": "Welcome",
+  "what-is-classroomio": "What is ClassroomIO",
   "quickstart": "Quick Start",
   "--": {
     "type": "separator",
@@ -11,14 +12,14 @@
   },
   "organization": "Organization",
   "course": "Course",
-  "studentdashboard": "Student Dashboard",
+  "student-dashboard": "Student Dashboard",
   "community": "Community",
   "audience": "Audience",
   "---": {
     "type": "separator",
     "title": "Guides"
   },
-  "contributorguides": "Contributor Guides",
+  "contributor-guides": "Contributor Guides",
   "howtoguides": "How To Guides",
   "contact": {
     "title": "Contact ↗",

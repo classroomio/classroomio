@@ -4,7 +4,6 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { currentOrgPath } from '$lib/utils/store/org';
   import { isMobile } from '$lib/utils/store/useMobile';
-  import AddFilled from 'carbon-icons-svelte/lib/AddFilled.svelte';
   import Add from 'carbon-icons-svelte/lib/Add.svelte';
 
   function askCommunity() {

@@ -1,6 +1,6 @@
 # ClassroomIO Documentation
 
-The help docs of classroomio in Next.js live on [https://docs.classroomio.com](https://docs.classroomio.com)
+The help docs of classroomio in Next.js live on [https://classroomio.com/docs](https://classroomio.com/docs)
 
 ## Development
 

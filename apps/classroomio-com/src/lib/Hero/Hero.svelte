@@ -36,13 +36,23 @@
   >
     Spend less time doing the boring stuff, instead focus on impacting the lives of your students.
   </p>
-  <button
-    class="font-medium lg:font-semibold text-sm md:text-md text-white px-6 py-3 lg:px-10 lg:py-5 bg-[#1D4EE2] rounded-md lg:rounded-xl mt-10"
-    data-cal-config={"{'layout':'month_view'}"}
-    data-cal-link="classroomio/demo"
-  >
-    Let's show you 😍️️️️️️
-  </button>
+  <div class="mt-10 flex gap-4 items-center justify-center flex-col md:flex-row">
+    <a
+      class="font-medium lg:font-semibold text-sm md:text-md w-11/12 md:w-fit text-white px-6 py-3 lg:px-10 lg:py-5 bg-[#1D4EE2] rounded-md lg:rounded-xl"
+      href="/signup"
+      rel="noopener noreferrer nofollow"
+    >
+      Create a free account 🚀
+    </a>
+    <a
+      class="font-medium lg:font-semibold text-sm md:text-md w-11/12 md:w-fit border px-6 py-3 lg:px-10 lg:py-5 rounded-md lg:rounded-xl"
+      href="/github"
+      target="_blank"
+      rel="noopener noreferrer nofollow"
+    >
+      View on Github
+    </a>
+  </div>
 
   <div class="relative my-5 md:my-10">
     <!-- <video
@@ -59,7 +69,7 @@
     </video> -->
 
     <img
-      src="./hero-section.png"
+      src="./cio-hero-imac.png"
       alt="hero section with dark vs light mode"
       class="floating w-[85%] lg:w-[70%] mx-auto rounded-lg shadow-lg"
     />

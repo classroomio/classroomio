@@ -8,7 +8,8 @@
   </p>
 </a>
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/629e2bb8994345729513c4d69ccbe3d5)](https://app.codacy.com/gh/rotimi-best/classroomio?utm_source=github.com&utm_medium=referral&utm_content=rotimi-best/classroomio&utm_campaign=Badge_Grade)
+<!-- [![Codacy Badge](https://api.codacy.com/project/badge/Grade/629e2bb8994345729513c4d69ccbe3d5)](https://app.codacy.com/gh/rotimi-best/classroomio?utm_source=github.com&utm_medium=referral&utm_content=rotimi-best/classroomio&utm_campaign=Badge_Grade)
+-->
 
 ## ✨ About ClassroomIO
 
@@ -75,7 +76,7 @@ This repo is a mono repo that consists of 3 projects:
 
 1. `classroomio-com`: The landing page of ClassroomIO hosted [here](https://classroomio.com)
 2. `dashboard`: The web application that runs the learning management system.
-3. `docs`: Official documentation of ClassroomIO hosted [here](https://docs.classroomio.com)
+3. `docs`: Official documentation of ClassroomIO hosted [here](https://classroomio.com/docs)
 
 ## Development
 
