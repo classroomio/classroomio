@@ -204,6 +204,7 @@ module.exports = {
   testEnvironment: 'node',
   transform: {
     '^.+\\.svelte$': 'svelte-jester',
-    '^.+\\.ts$': 'ts-jest'
+    '^.+\\.ts$': 'ts-jest',
+    '\\.[jt]sx?$': 'babel-jest'
   }
 };

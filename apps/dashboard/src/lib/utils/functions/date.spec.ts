@@ -12,7 +12,7 @@ describe('calDateDiff', () => {
   });
 
   test('should return the correct time difference when the input date is a number', () => {
-    const inputDate = 1640995200000; // January 1, 2022
+    const inputDate = new Date(1640995200000); // January 1, 2022
     const expectedOutput = '2 years ago';
 
     const result = calDateDiff(inputDate);
