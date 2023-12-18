@@ -27,7 +27,8 @@
   } from '$lib/components/Course/components/Lesson/store/lessons';
   import VideoUploader from '$lib/components/Course/components/Lesson/Materials/Video/Index.svelte';
   import { course } from '$lib/components/Course/store';
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
+  // import TextEditor from '$lib/components/TextEditor/index.svelte';
+  import { Editor } from 'novel-svelte';
   import * as CONSTANTS from './constants';
   import { orderedTabs } from './constants';
   import ComponentNote from './components/ComponentNote.svelte';
@@ -44,6 +45,7 @@
   export let isSaving = false;
   export let toggleMode = () => {};
 
+  let saveStatus = '';
   let lessonTitle = '';
   let initAutoSave = false;
   let timeoutId: NodeJS.Timeout;
@@ -262,7 +264,8 @@
   <Tabs {tabs} {currentTab} {onChange}>
     <slot:fragment slot="content">
       <TabContent value={getValue('Note')} index={currentTab}>
-        <div bind:this={aiButtonRef} class="w-full flex flex-row-reverse">
+        <!-- Temporarily hide this AI button on lesson page -->
+        <div bind:this={aiButtonRef} class="hidden w-full flex-row-reverse">
           <PrimaryButton
             className="flex items-center relative"
             onClick={() => {
@@ -301,13 +304,27 @@
         </div>
 
         <div class="h-[60vh] mt-5">
-          <TextEditor
-            id={lessonId}
-            bind:editorWindowRef
-            value={$lesson.materials.note}
-            onChange={(html) => ($lesson.materials.note = html)}
-            placeholder="Write your lesson note here"
-          />
+          <Editor
+            defaultValue={$lesson.materials.note}
+            onUpdate={(editor) => {
+              saveStatus = 'Unsaved';
+              const html = editor?.getHTML() || '';
+              $lesson.materials.note = html;
+            }}
+            onDebouncedUpdate={() => {
+              saveStatus = 'Saving...';
+              setTimeout(() => {
+                saveStatus = 'Saved';
+              }, 500);
+            }}
+            storageKey={`lesson-${lessonId}`}
+          >
+            <div
+              class="absolute right-5 top-5 z-10 mb-5 rounded-lg bg-stone-100 px-2 py-1 text-sm text-stone-400"
+            >
+              {saveStatus}
+            </div>
+          </Editor>
         </div>
       </TabContent>
 

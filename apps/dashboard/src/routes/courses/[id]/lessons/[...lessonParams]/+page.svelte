@@ -12,7 +12,7 @@
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { Loading } from 'carbon-components-svelte';
+  // import { Loading } from 'carbon-components-svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
   import PageBody from '$lib/components/PageBody/index.svelte';
@@ -267,12 +267,12 @@
             {/if}
 
             <PrimaryButton className="mr-2" variant={VARIANTS.OUTLINED} onClick={toggleMode}>
-              {#if isSaving}
+              <!-- {#if isSaving}
                 <Loading withOverlay={false} small />
                 <span class="text-sm ml-2 italic">Autosaving...</span>
               {:else}
-                {mode === MODES.edit ? 'Done' : 'Edit'}
-              {/if}
+              {/if} -->
+              {mode === MODES.edit ? 'Done' : 'Edit'}
             </PrimaryButton>
           </div>
         {/if}

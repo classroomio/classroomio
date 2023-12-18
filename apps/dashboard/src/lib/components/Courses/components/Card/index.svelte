@@ -40,7 +40,7 @@
       </ImageLoader>
     </div>
 
-    <h3 class="text-xl dark:text-white title">{title}</h3>
+    <h3 class="text-lg dark:text-white title">{title}</h3>
     <p class="mt-2 text-sm text-gray-500 dark:text-gray-300 description">
       {description}
     </p>

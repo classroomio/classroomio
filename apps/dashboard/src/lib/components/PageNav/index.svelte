@@ -9,7 +9,6 @@
   export let addButtonHref = '';
   export let addButtonLabel = '';
   export let disableSticky = false;
-  export let isTitleEditable = false;
   export let onEditComplete = () => {};
   export let paddingClass = 'px-2';
   export let hideOnMobile = false;
@@ -28,40 +27,16 @@
   style={overidableStyle}
 >
   {#if !!title}
-    {#if isTitleEditable}
-      {#if !enterEditTitleMode}
-        <button class="w-full" on:click={() => (enterEditTitleMode = true)}>
-          <h4
-            class="editable-title hover:bg-gray-100 dark:bg-black px-3 rounded-md overflow-ellipsis"
-          >
-            {title}
-          </h4>
-        </button>
-      {:else}
-        <TextField
-          bind:value={title}
-          placeholder="Course title"
-          onChange={() => {
-            enterEditTitleMode = false;
-
-            if (typeof onEditComplete === 'function') {
-              onEditComplete();
-            }
-          }}
-        />
-      {/if}
-    {:else}
-      <div class="flex items-center w-full" {title}>
-        <slot name="image" />
-        <h4
-          class="{$$slots.image
-            ? 'ml-2'
-            : ''} dark:text-white whitespace-nowrap truncate text-lg font-semibold"
-        >
-          {title}
-        </h4>
-      </div>
-    {/if}
+    <div class="flex items-center w-full" {title}>
+      <slot name="image" />
+      <h4
+        class="{$$slots.image
+          ? 'ml-2'
+          : ''} dark:text-white whitespace-nowrap truncate text-lg font-semibold"
+      >
+        {title}
+      </h4>
+    </div>
   {/if}
   {#if Array.isArray(navItems) && navItems.length}
     <div class="flex justify-evenly items-center">

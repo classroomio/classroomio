@@ -43,6 +43,7 @@
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
     "nodemailer": "^6.9.5",
+    "novel-svelte": "^0.1.6",
     "openai-edge": "^1.2.2",
     "pluralize": "^8.0.0",
     "posthog-js": "^1.96.0",
