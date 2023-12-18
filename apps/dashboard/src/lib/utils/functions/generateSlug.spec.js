@@ -1,4 +1,3 @@
-// import '@testing-library/jest-dom';
 import generateSlug from './generateSlug';
 
 describe('generateSlug', () => {

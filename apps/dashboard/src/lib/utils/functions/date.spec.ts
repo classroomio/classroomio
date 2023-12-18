@@ -1,4 +1,3 @@
-import '@testing-library/jest-dom';
 import { calDateDiff, getGreeting } from './date';
 
 describe('calDateDiff', () => {

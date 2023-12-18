@@ -1,4 +1,3 @@
-import '@testing-library/jest-dom';
 import { formatYoutubeVideo, getEmbedId } from './formatYoutubeVideo';
 
 describe('format youtube video', () => {

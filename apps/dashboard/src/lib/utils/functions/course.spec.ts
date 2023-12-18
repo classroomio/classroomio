@@ -1,4 +1,3 @@
-import '@testing-library/jest-dom';
 import { isCourseFree } from './course';
 
 describe('course.ts', () => {
