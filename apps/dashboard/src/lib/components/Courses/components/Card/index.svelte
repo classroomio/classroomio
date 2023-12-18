@@ -1,8 +1,11 @@
 <script lang="ts">
-  import { Tag, ImageLoader, SkeletonPlaceholder } from 'carbon-components-svelte';
+  import { Tag, ImageLoader, SkeletonPlaceholder, ContextMenu, ContextMenuDivider, ContextMenuOption, } from 'carbon-components-svelte';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import CopyFile from "carbon-icons-svelte/lib/CopyFile.svelte";
+  import Share from "carbon-icons-svelte/lib/Share.svelte";
+  import UserFollow from "carbon-icons-svelte/lib/UserFollow.svelte";
 
   export let bannerImage: string | undefined;
   export let id = '';
@@ -17,12 +20,24 @@
   export let isOnLandingPage = false;
   export let isLMS = false;
   export let progressRate = 45;
+  export let showContextMenu = false;
+  let target: any;
 
   $: formatter = getCurrencyFormatter(currency);
 </script>
+{#if showContextMenu}
+  <ContextMenu {target} on:open={(e) => console.log(e.detail)}>
+    <ContextMenuOption indented labelText="Clone" icon={CopyFile} />
+    <ContextMenuOption indented labelText="Share" icon={Share} />
+    <ContextMenuOption indented labelText="Invite" icon={UserFollow} />
+    <ContextMenuDivider />
+    <ContextMenuOption kind="danger" labelText="Delete" />
+  </ContextMenu>
+{/if}
 
 <a
   rel="prefetch"
+  bind:this={target}
   href={isOnLandingPage ? `/course/${slug}` : `/courses/${id}`}
   class="text-black border border-gray rounded w-full max-w-[320px] relative hover:scale-95 transition-all ease-in-out"
 >
