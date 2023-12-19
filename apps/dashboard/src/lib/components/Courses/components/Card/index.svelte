@@ -25,22 +25,22 @@
 
   $: formatter = getCurrencyFormatter(currency);
 
-  const handleCloneCourse = () => {
+  function handleCloneCourse() {
     // TODO: Clone course functionality
     alert('WIP: Clone course');
   }
 
-  const handleShareCourse = () => {
+  function handleShareCourse() {
     // TODO: Share course functionality
     alert('WIP: Share course');
   }
 
-  const handleInvite = () => {
+  function handleInvite() {
     // TODO: Invite functionality
     alert('WIP: Invite people to course');
   }
 
-  const handleDeleteCourse = () => {
+  function handleDeleteCourse() {
     // TODO: Delete course functionality
     alert('WIP: Delete course');
   }
