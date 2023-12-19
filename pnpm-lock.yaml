@@ -114,6 +114,12 @@ importers:
       '@types/pluralize':
         specifier: 0.0.30
         version: 0.0.30
+      '@upstash/ratelimit':
+        specifier: ^1.0.0
+        version: 1.0.0
+      '@vercel/kv':
+        specifier: ^1.0.1
+        version: 1.0.1
       '@vercel/speed-insights':
         specifier: ^1.0.1
         version: 1.0.1
@@ -164,7 +170,7 @@ importers:
         version: 6.9.5
       novel-svelte:
         specifier: ^0.1.6
-        version: 0.1.6(prettier-plugin-svelte@3.1.2)(prettier@3.1.0)(react@18.2.0)(solid-js@1.8.6)(svelte@4.1.2)(vue@3.3.8)
+        version: 0.1.6(prettier@3.1.0)(react@18.2.0)(solid-js@1.8.6)(svelte@4.1.2)(vue@3.3.8)
       openai-edge:
         specifier: ^1.2.2
         version: 1.2.2
@@ -4520,6 +4526,32 @@ packages:
   /@ungap/structured-clone@1.2.0:
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
 
+  /@upstash/core-analytics@0.0.6:
+    resolution: {integrity: sha512-cpPSR0XJAJs4Ddz9nq3tINlPS5aLfWVCqhhtHnXt4p7qr5+/Znlt1Es736poB/9rnl1hAHrOsOvVj46NEXcVqA==}
+    engines: {node: '>=16.0.0'}
+    dependencies:
+      '@upstash/redis': 1.25.1
+    dev: false
+
+  /@upstash/ratelimit@1.0.0:
+    resolution: {integrity: sha512-IUlc+UKuHJQqXGQi7E3UKV0CKfRZ0g6qeNnbSve940k3xLoM+X3H45MrSwDaH7meMWemztLs0Q4yjkd3ItddCw==}
+    dependencies:
+      '@upstash/core-analytics': 0.0.6
+    dev: false
+
+  /@upstash/redis@1.25.1:
+    resolution: {integrity: sha512-ACj0GhJ4qrQyBshwFgPod6XufVEfKX2wcaihsEvSdLYnY+m+pa13kGt1RXm/yTHKf4TQi/Dy2A8z/y6WUEOmlg==}
+    dependencies:
+      crypto-js: 4.2.0
+    dev: false
+
+  /@vercel/kv@1.0.1:
+    resolution: {integrity: sha512-uTKddsqVYS2GRAM/QMNNXCTuw9N742mLoGRXoNDcyECaxEXvIHG0dEY+ZnYISV4Vz534VwJO+64fd9XeSggSKw==}
+    engines: {node: '>=14.6'}
+    dependencies:
+      '@upstash/redis': 1.25.1
+    dev: false
+
   /@vercel/nft@0.23.1:
     resolution: {integrity: sha512-NE0xSmGWVhgHF1OIoir71XAd0W0C1UE3nzFyhpFiMr3rVhetww7NvM1kc41trBsPG37Bh+dE5FYCTMzM/gBu0w==}
     engines: {node: '>=14'}
@@ -5612,6 +5644,10 @@ packages:
 
   /crypt@0.0.2:
     resolution: {integrity: sha512-mCxBlsHFYh9C+HVpiEacem8FEBnMXgU9gy4zmNC+SXAZNB/1idgp/aulFJ4FgCi7GPEVbfyng092GqL2k2rmow==}
+    dev: false
+
+  /crypto-js@4.2.0:
+    resolution: {integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==}
     dev: false
 
   /css-styled@1.0.8:
@@ -9504,7 +9540,7 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
-  /novel-svelte@0.1.6(prettier-plugin-svelte@3.1.2)(prettier@3.1.0)(react@18.2.0)(solid-js@1.8.6)(svelte@4.1.2)(vue@3.3.8):
+  /novel-svelte@0.1.6(prettier@3.1.0)(react@18.2.0)(solid-js@1.8.6)(svelte@4.1.2)(vue@3.3.8):
     resolution: {integrity: sha512-4yszpl52cPWCw/8FIU0A+GNra/KLh/+QhdHwwuhGTDFEZrL+F61F3ynoGcLrqDpgYh7YNYOCuGWIYdh0ttZMjA==}
     peerDependencies:
       svelte: ^4.0.0
@@ -9530,8 +9566,8 @@ packages:
       cal-sans: 1.0.1
       clsx: 2.0.0
       lucide-svelte: 0.275.0-beta.0(svelte@4.1.2)
-      openai: 4.22.0
-      prettier-plugin-tailwindcss: 0.5.7(prettier-plugin-svelte@3.1.2)(prettier@3.1.0)
+      openai: 4.23.0
+      prettier-plugin-tailwindcss: 0.5.7(prettier@3.1.0)
       svelte: 4.1.2
       svelte-moveable: 0.43.4(svelte@4.1.2)
       svelte-sequential-preprocessor: 2.0.1
@@ -9725,8 +9761,8 @@ packages:
     engines: {node: '>=18'}
     dev: false
 
-  /openai@4.22.0:
-    resolution: {integrity: sha512-HrRx5pvkeG5H8ihaI8GmG1ls+H2pkLaFewIFmvh9Dnwz9GNcGQS6CSh5PjgalnYxE5Vu9jvz2ikRgw8xhOFweg==}
+  /openai@4.23.0:
+    resolution: {integrity: sha512-ey2CXh1OTcTUa0AWZWuTpgA9t5GuAG3DVU1MofCRUI7fQJij8XJ3Sr0VtgxoAE69C9wbHBMCux8Z/IQZfSwHiA==}
     hasBin: true
     dependencies:
       '@types/node': 18.19.3
@@ -10119,6 +10155,7 @@ packages:
     dependencies:
       prettier: 3.1.0
       svelte: 4.1.2
+    dev: true
 
   /prettier-plugin-tailwindcss@0.5.7(prettier-plugin-svelte@3.1.2)(prettier@3.1.0):
     resolution: {integrity: sha512-4v6uESAgwCni6YF6DwJlRaDjg9Z+al5zM4JfngcazMy4WEf/XkPS5TEQjbD+DZ5iNuG6RrKQLa/HuX2SYzC3kQ==}
@@ -10174,6 +10211,62 @@ packages:
     dependencies:
       prettier: 3.1.0
       prettier-plugin-svelte: 3.1.2(prettier@3.1.0)(svelte@4.1.2)
+    dev: true
+
+  /prettier-plugin-tailwindcss@0.5.7(prettier@3.1.0):
+    resolution: {integrity: sha512-4v6uESAgwCni6YF6DwJlRaDjg9Z+al5zM4JfngcazMy4WEf/XkPS5TEQjbD+DZ5iNuG6RrKQLa/HuX2SYzC3kQ==}
+    engines: {node: '>=14.21.3'}
+    peerDependencies:
+      '@ianvs/prettier-plugin-sort-imports': '*'
+      '@prettier/plugin-pug': '*'
+      '@shopify/prettier-plugin-liquid': '*'
+      '@shufo/prettier-plugin-blade': '*'
+      '@trivago/prettier-plugin-sort-imports': '*'
+      prettier: ^3.0
+      prettier-plugin-astro: '*'
+      prettier-plugin-css-order: '*'
+      prettier-plugin-import-sort: '*'
+      prettier-plugin-jsdoc: '*'
+      prettier-plugin-marko: '*'
+      prettier-plugin-organize-attributes: '*'
+      prettier-plugin-organize-imports: '*'
+      prettier-plugin-style-order: '*'
+      prettier-plugin-svelte: '*'
+      prettier-plugin-twig-melody: '*'
+    peerDependenciesMeta:
+      '@ianvs/prettier-plugin-sort-imports':
+        optional: true
+      '@prettier/plugin-pug':
+        optional: true
+      '@shopify/prettier-plugin-liquid':
+        optional: true
+      '@shufo/prettier-plugin-blade':
+        optional: true
+      '@trivago/prettier-plugin-sort-imports':
+        optional: true
+      prettier-plugin-astro:
+        optional: true
+      prettier-plugin-css-order:
+        optional: true
+      prettier-plugin-import-sort:
+        optional: true
+      prettier-plugin-jsdoc:
+        optional: true
+      prettier-plugin-marko:
+        optional: true
+      prettier-plugin-organize-attributes:
+        optional: true
+      prettier-plugin-organize-imports:
+        optional: true
+      prettier-plugin-style-order:
+        optional: true
+      prettier-plugin-svelte:
+        optional: true
+      prettier-plugin-twig-melody:
+        optional: true
+    dependencies:
+      prettier: 3.1.0
+    dev: false
 
   /prettier@3.1.0:
     resolution: {integrity: sha512-TQLvXjq5IAibjh8EpBIkNKxO749UEWABoiIZehEPiY4GNpVdhaFKqSTu+QrlU6D2dPAfubRmtJTi4K4YkQ5eXw==}

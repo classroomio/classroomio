@@ -21,5 +21,10 @@
 		"db:generate": { "cache": false },
 		"db:push": { "cache": false },
 		"db:format": { "cache": false }
-	}
+	},
+	"globalEnv":[
+		"NODE_ENV",
+		"KV_REST_API_URL",
+		"KV_REST_API_TOKEN"
+	]
 }
