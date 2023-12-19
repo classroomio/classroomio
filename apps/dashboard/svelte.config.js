@@ -8,14 +8,7 @@ const config = {
   preprocess: [vitePreprocess({})],
 
   kit: {
-    adapter: vercelAdapter(),
-    files: {
-      // Add this line to include test files
-      template: {
-        // ...
-        transform: 'svelte-jester'
-      }
-    }
+    adapter: vercelAdapter()
   }
 };
 
