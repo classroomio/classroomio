@@ -24,14 +24,35 @@
   let target: any;
 
   $: formatter = getCurrencyFormatter(currency);
+
+  const handleCloneCourse = () => {
+    // TODO: Clone course functionality
+    console.log('clone');
+  }
+
+  const handleShareCourse = () => {
+    // TODO: Share course functionality
+    console.log('share');
+  }
+
+  const handleInvite = () => {
+    // TODO: Invite functionality
+    console.log('invite');
+  }
+
+  const handleDeleteCourse = () => {
+    // TODO: Delete course functionality
+    console.log('delete');
+  }
 </script>
+
 {#if showContextMenu}
-  <ContextMenu {target} on:open={(e) => console.log(e.detail)}>
-    <ContextMenuOption indented labelText="Clone" icon={CopyFile} />
-    <ContextMenuOption indented labelText="Share" icon={Share} />
-    <ContextMenuOption indented labelText="Invite" icon={UserFollow} />
+  <ContextMenu {target}>
+    <ContextMenuOption indented labelText="Clone" icon={CopyFile} on:click={handleCloneCourse} />
+    <ContextMenuOption indented labelText="Share" icon={Share} on:click={handleShareCourse} />
+    <ContextMenuOption indented labelText="Invite" icon={UserFollow} on:click={handleInvite} />
     <ContextMenuDivider />
-    <ContextMenuOption kind="danger" labelText="Delete" />
+    <ContextMenuOption kind="danger" labelText="Delete"  on:click={handleDeleteCourse} />
   </ContextMenu>
 {/if}
 
