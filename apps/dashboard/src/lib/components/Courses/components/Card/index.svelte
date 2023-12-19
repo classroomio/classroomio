@@ -27,22 +27,22 @@
 
   const handleCloneCourse = () => {
     // TODO: Clone course functionality
-    console.log('clone');
+    alert('WIP: Clone course');
   }
 
   const handleShareCourse = () => {
     // TODO: Share course functionality
-    console.log('share');
+    alert('WIP: Share course');
   }
 
   const handleInvite = () => {
     // TODO: Invite functionality
-    console.log('invite');
+    alert('WIP: Invite people to course');
   }
 
   const handleDeleteCourse = () => {
     // TODO: Delete course functionality
-    console.log('delete');
+    alert('WIP: Delete course');
   }
 </script>
 
