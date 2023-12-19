@@ -305,11 +305,11 @@
 
         <div class="h-[60vh] mt-5">
           <Editor
-            defaultValue={$lesson.materials.note}
+            defaultValue={$lesson.materials.note_json}
             onUpdate={(editor) => {
               saveStatus = 'Unsaved';
-              const html = editor?.getHTML() || '';
-              $lesson.materials.note = html;
+              $lesson.materials.note = editor?.getHTML() || '';
+              $lesson.materials.note_json = editor?.getJSON() || {};
             }}
             onDebouncedUpdate={() => {
               saveStatus = 'Saving...';

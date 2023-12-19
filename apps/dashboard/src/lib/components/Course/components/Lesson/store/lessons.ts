@@ -18,7 +18,8 @@ export const lesson = writable<LessonPage>({
   materials: {
     note: '',
     slide_url: '',
-    videos: []
+    videos: [],
+    note_json: {}
   },
   exercises: [],
   lesson_completion: []

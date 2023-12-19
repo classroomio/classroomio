@@ -154,7 +154,7 @@ export function fetchLesson(lessonId: Lesson['id']) {
   return supabase
     .from('lesson')
     .select(
-      `id, note, videos, slide_url, call_url, totalExercises:exercise(count), totalComments:lesson_comment(count), lesson_completion(id, profile_id, is_complete)`
+      `id, note, note_json, videos, slide_url, call_url, totalExercises:exercise(count), totalComments:lesson_comment(count), lesson_completion(id, profile_id, is_complete)`
     )
     .eq('id', lessonId)
     .single();

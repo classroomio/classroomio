@@ -65,7 +65,6 @@
       lessonData = lesson.data;
     }
 
-    console.log('lessonData', lessonData);
     prevLessonId = lessonId;
 
     const totalExercises = lessonData?.totalExercises?.[0] && lessonData.totalExercises[0].count;
@@ -186,7 +185,8 @@
       materials: {
         videos: lessonData.videos,
         note: lessonData.note,
-        slide_url: lessonData.slide_url
+        slide_url: lessonData.slide_url,
+        note_json: lessonData.note_json
       },
       lesson_completion,
       exercises: []
@@ -220,7 +220,7 @@
 <CourseContainer
   bind:isStudent
   {path}
-  isExercisePage={!data.isMaterialsTabActive && data.exerciseId}
+  isExercisePage={Boolean(!data.isMaterialsTabActive && data.exerciseId)}
   bind:courseId={data.courseId}
 >
   <PageNav
@@ -250,9 +250,9 @@
           <div
             class={`flex-row ${
               $apps.dropdown && $apps.open
-                ? 'absolute lg:relative top-[85px] lg:top-0 right-14 lg:right-0 z-40 dark:bg-neutral-800 p-3 lg:p-0'
+                ? 'absolute md:relative top-[85px] md:top-0 right-14 md:right-0 z-40 dark:bg-neutral-800 p-3 md:p-0'
                 : 'hidden'
-            } lg:flex items-center`}
+            } md:flex items-center`}
           >
             {#if $course.metadata.lessonDownload && !!PUBLIC_SERVER_URL}
               <PrimaryButton
@@ -361,7 +361,7 @@
 </CourseContainer>
 
 <style>
-  @media screen and (min-width: 1023px) {
+  @media screen and (min-width: 768px) {
     .tab {
       display: none;
     }

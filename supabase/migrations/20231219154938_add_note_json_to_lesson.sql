@@ -1,0 +1,1 @@
+alter table "public"."lesson" add column "note_json" jsonb;

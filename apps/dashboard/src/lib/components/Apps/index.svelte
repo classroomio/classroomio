@@ -67,13 +67,13 @@
   bind:this={appBarRef}
 >
   <div class="apps">
-    <div class="lg:hidden mb-2">
+    <div class="md:hidden mb-2">
       <IconButton
-        buttonClassName="lg:hidden"
+        buttonClassName="md:hidden"
         toolTipProps={{ title: 'Settings', hotkeys: [] }}
         onClick={handleAppClick}
       >
-        <Settings size={24} class="carbon-icon dark:text-white lg:hidden" />
+        <Settings size={24} class="carbon-icon dark:text-white md:hidden" />
       </IconButton>
     </div>
 

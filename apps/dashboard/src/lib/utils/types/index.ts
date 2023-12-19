@@ -237,9 +237,10 @@ export interface LessonPage {
   id?: string | null;
   totalExercises: number;
   totalComments: number;
-  isSaving: Boolean;
+  isSaving: boolean;
   materials: {
     note: string;
+    note_json: any;
     slide_url: string;
     videos: Array<{
       type: string;
