@@ -44,7 +44,7 @@
     try {
       loading = true;
 
-      //Check if the email address is disposable:
+      // Check if the email address is disposable
       const emailCheck = await fetch('https://is-disposable-email.ephraimduncan68.workers.dev/', {
         method: 'POST',
         headers: {
