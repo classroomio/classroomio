@@ -7,5 +7,5 @@ export const load = ({ request }) => {
     event: 'discord page visited'
   });
 
-  throw redirect(301, 'https://discord.gg/dRmxBpJw59');
+  throw redirect(307, 'https://discord.gg/dRmxBpJw59');
 };

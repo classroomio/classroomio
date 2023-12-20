@@ -25,39 +25,40 @@
 </script>
 
 <div class="">
-  {#if isLoading}
-    <div class="w-11/12 mx-auto">
-      <SkeletonText class="py-3 px-4 mb-3 rounded-md" style="height: 40px;" />
-    </div>
-  {:else}
-    <button
-      class="item relative flex items-center py-3 px-4 ml-2 mb-1 {NavClasses.item} {isGroupActive &&
-        NavClasses.active} w-[95%]"
-      tabindex="0"
-      on:click={onClick}
-      disabled={isLoading}
-    >
-      <NavIcons name={label} />
+  <button
+    class="item relative flex items-center py-3 px-4 ml-2 mb-1 {NavClasses.item} {isGroupActive &&
+      !isLoading &&
+      NavClasses.active} w-[95%]"
+    tabindex="0"
+    on:click={onClick}
+    disabled={isLoading}
+  >
+    <NavIcons name={label} />
+    {#if isLoading}
+      <div class="w-11/12 mx-auto">
+        <SkeletonText class="rounded-md" style="margin: 0px; height: 30px;" />
+      </div>
+    {:else}
       <span class="font-bold text-md">{label}</span>
       {#if total}
         <span class="ml-1">({total})</span>
       {/if}
-      <span class="grow" />
-
-      {#if label === 'Lessons' && !isLoading}
-        <IconButton size="small" stopPropagation={true} onClick={toggleIsExpanded}>
-          {#if isExpanded}
-            <ChevronUpIcon class="carbon-icon dark:text-white" />
-          {:else}
-            <ChevronDownIcon class="carbon-icon dark:text-white" />
-          {/if}
-        </IconButton>
-      {/if}
-    </button>
-    {#if isExpanded}
-      <div in:slide out:slide class="flex flex-col">
-        <slot />
-      </div>
     {/if}
+    <span class="grow" />
+
+    {#if label === 'Lessons' && !isLoading}
+      <IconButton size="small" stopPropagation={true} onClick={toggleIsExpanded}>
+        {#if isExpanded}
+          <ChevronUpIcon class="carbon-icon dark:text-white" />
+        {:else}
+          <ChevronDownIcon class="carbon-icon dark:text-white" />
+        {/if}
+      </IconButton>
+    {/if}
+  </button>
+  {#if isExpanded && !isLoading}
+    <div in:slide out:slide class="flex flex-col">
+      <slot />
+    </div>
   {/if}
 </div>

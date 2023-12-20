@@ -64,7 +64,7 @@ export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']
   if (!data || error) {
     console.log(`data`, data);
     console.log(`fetchCourse => error`, error);
-    // return this.redirect(301, '/courses');
+    // return this.redirect(307, '/courses');
     return { data, error };
   }
 

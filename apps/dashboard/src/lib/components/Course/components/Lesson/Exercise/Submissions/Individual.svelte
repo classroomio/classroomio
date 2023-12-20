@@ -85,7 +85,7 @@
     {#if $questionnaire.questions}
       {#each $questionnaire.questions as q, i}
         <div class="pb-4">
-          <h3>{i + 1}. {q.title}</h3>
+          <h3 class="text-lg">{i + 1}. {q.title}</h3>
           {#if q.question_type_id !== 3}
             {#each q.options as option, i}
               <div

@@ -9,6 +9,7 @@
   import generateSlug from '$lib/utils/functions/generateSlug';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
+  import { profile } from '$lib/utils/store/user';
 
   let errors: {
     title?: string;
@@ -31,7 +32,7 @@
       .insert({
         ...fields,
         organization_id: $currentOrg.id,
-        author_id: $currentOrg.memberId,
+        author_profile_id: $profile.id,
         votes: 0,
         slug: generateSlug(fields.title)
       })
@@ -41,10 +42,11 @@
       console.error('Error: asking question', error);
       snackbar.error();
     } else {
-      console.log('Success: asking question', question);
+      const slug = question[0]?.slug;
+      console.log('Success: asking question in lms', question, slug);
       snackbar.success();
 
-      goto(`/lms/community/${question[0].slug}`);
+      goto(`/lms/community/${slug}`);
     }
   }
 </script>
@@ -65,11 +67,7 @@
   </div>
 
   <div class="mb-3 p-2">
-    <TextField 
-      bind:value={fields.title}
-      placeholder="Title"
-      errorMessage={errors.title}
-    />
+    <TextField bind:value={fields.title} placeholder="Title" errorMessage={errors.title} />
   </div>
 
   <TextEditor

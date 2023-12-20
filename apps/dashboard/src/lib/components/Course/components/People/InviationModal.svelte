@@ -9,7 +9,7 @@
   import { invitationModal, resetForm } from './store';
   import { course, setCourse } from '$lib/components/Course/store';
   import { MultiSelect, Loading } from 'carbon-components-svelte';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { getOrgTeam } from '$lib/utils/services/org';
   import type { OrgTeamMember } from '$lib/utils/types/org';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
@@ -18,6 +18,7 @@
     triggerSendEmail,
     NOTIFICATION_NAME
   } from '$lib/utils/services/notification/notification';
+  import { snackbar } from '$lib/components/Snackbar/store';
 
   interface Tutor {
     id: number;
@@ -29,7 +30,6 @@
   let selectedIds: Array<number> = [];
   let selectedTutors: Tutor[] = [];
   let isLoadingTutors = false;
-  let link = '';
   let copied = false;
 
   function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
@@ -113,6 +113,13 @@
   }
 
   function copyLink() {
+    if (!$currentOrgDomain) {
+      snackbar.error('Org data missing, please reload the page');
+      console.error('No current org domain');
+      return;
+    }
+
+    const link = getStudentInviteLink($course, $currentOrg.siteName, $currentOrgDomain);
     copy(link);
     copied = true;
     setTimeout(() => {
@@ -126,8 +133,6 @@
   }
 
   $: setTutors($currentOrg.id, $invitationModal.open);
-
-  $: link = getStudentInviteLink($course, $currentOrg.siteName);
 </script>
 
 <Modal

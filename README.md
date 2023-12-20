@@ -8,7 +8,8 @@
   </p>
 </a>
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/629e2bb8994345729513c4d69ccbe3d5)](https://app.codacy.com/gh/rotimi-best/classroomio?utm_source=github.com&utm_medium=referral&utm_content=rotimi-best/classroomio&utm_campaign=Badge_Grade)
+<!-- [![Codacy Badge](https://api.codacy.com/project/badge/Grade/629e2bb8994345729513c4d69ccbe3d5)](https://app.codacy.com/gh/rotimi-best/classroomio?utm_source=github.com&utm_medium=referral&utm_content=rotimi-best/classroomio&utm_campaign=Badge_Grade)
+-->
 
 ## ✨ About ClassroomIO
 
@@ -75,11 +76,19 @@ This repo is a mono repo that consists of 3 projects:
 
 1. `classroomio-com`: The landing page of ClassroomIO hosted [here](https://classroomio.com)
 2. `dashboard`: The web application that runs the learning management system.
-3. `docs`: Official documentation of ClassroomIO hosted [here](https://docs.classroomio.com)
+3. `docs`: Official documentation of ClassroomIO hosted [here](https://classroomio.com/docs)
 
 ## Development
 
-### Setup
+### Gitpod Setup
+
+1. Click the button below to open this project in Gitpod.
+
+2. This will open a fully configured workspace in your browser with all the necessary dependencies already installed.
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/rotimi-best/classroomio)
+
+### Local Setup
 
 1. Fork the repo, then clone it using the following command (remember to replace the url with the url from your forked repo)
 
@@ -109,12 +118,12 @@ This repo is a mono repo that consists of 3 projects:
 
    You also need to have pnpm installed, you can find the installation guide [here](https://pnpm.io/installation#using-npm)
 
-5. Set up your `.env` file
+4. Set up your `.env` file
 
    - Go to `apps/classroomio-com` and `apps/dashboard`
    - Duplicate the `.env.example` file and rename it to `.env`
 
-6. Setup Supabase.
+5. Setup Supabase.
 
    - Make sure you've downloaded the [Supabase cli](https://github.com/supabase/cli)
    - Install and Start [docker](https://docs.docker.com/engine/install/)
@@ -149,24 +158,25 @@ This repo is a mono repo that consists of 3 projects:
 
    - To view the Supabase studio, open the Studio URL from the result of `pnpm supabase start`
 
-7. Install the required dependencies
+6. Install the required dependencies
 
    ```bash
    pnpm i
    ```
 
-8. Run all projects (in development mode)
+7. Run all projects (in development mode)
 
    ```bash
    pnpm dev
    ```
 
-9. All projects should start running
+8. All projects should start running
+
    - `classroomio-com`: [http://localhost:5173](http://localhost:5173)
    - `dashboard`: [http://localhost:5174](http://localhost:5174)
    - `docs`: [http://localhost:3000](http://localhost:3000)
 
-10. Running a specific project
+9. Running a specific project
    - **classroomio-com**: `pnpm dev --filter=classroomio-com`
    - **dashboard**: `pnpm dev --filter=dashboard`
-   - **docs**: `pnpm dev --filter=docs` 
+   - **docs**: `pnpm dev --filter=docs`

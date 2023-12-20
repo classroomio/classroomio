@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { Grid, Row, Column, Select, SelectItem } from 'carbon-components-svelte';
   import { Moon } from 'svelte-loading-spinners';
   import TextField from '$lib/components/Form/TextField.svelte';
@@ -18,6 +18,7 @@
     triggerSendEmail,
     NOTIFICATION_NAME
   } from '$lib/utils/services/notification/notification';
+  import type { OrgTeamMember } from '$lib/utils/types/org';
 
   let emailsStr = '';
   let errorMessage = '';
@@ -36,8 +37,18 @@
 
     isLoading = true;
     let apiError = '';
-    emails.forEach(async (email, index) => {
+    emails.forEach(async (email: string, index: number) => {
       if (apiError) return;
+
+      const doesEmailExist = $orgTeam.some(
+        (teamMember) => teamMember.email.toLowerCase() === email.toLowerCase()
+      );
+
+      if (doesEmailExist) {
+        snackbar.error('User Already Exists');
+        isLoading = false;
+        return;
+      }
       const { data, error } = await supabase
         .from('organizationmember')
         .insert({
@@ -50,7 +61,7 @@
       console.log('data', data);
 
       if (error) {
-        apiError = error;
+        apiError = `${error}`;
 
         console.error('onSendInvite:', error);
         snackbar.error(`Failed to send invite, please try again`);
@@ -63,6 +74,7 @@
           {
             id: newMember.id,
             email: newMember?.email,
+            fullname: newMember?.fullname || '',
             verified: newMember?.verified,
             role: ROLE_LABEL[newMember?.role_id] || '',
             isAdmin: newMember?.role_id === ROLE.ADMIN
@@ -82,7 +94,7 @@
 
       const isLast = index === emails.length - 1;
       if (isLast) {
-        snackbar.success('Success');
+        snackbar.success('Invite Sent!');
 
         emailsStr = '';
         isLoading = false;
@@ -90,7 +102,7 @@
     });
   }
 
-  async function onRemove(id) {
+  async function onRemove(id: number) {
     console.log('onRemove called');
     isRemoving = true;
     const { data, error } = await supabase.from('organizationmember').delete().match({ id });
@@ -105,7 +117,7 @@
     isRemoving = false;
   }
 
-  const fetchTeam = async (id) => {
+  const fetchTeam = async (id: string) => {
     if (!id) return;
 
     isFetching = true;
@@ -113,7 +125,7 @@
     isFetching = false;
   };
 
-  const isTeamMemberAdmin = (members, profileId) => {
+  const isTeamMemberAdmin = (members: OrgTeamMember[], profileId: string | undefined) => {
     return members.some((member) => member.profileId === profileId && member.isAdmin);
   };
 

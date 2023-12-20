@@ -1,5 +1,4 @@
 <script>
-  import LogoTwitter from 'carbon-icons-svelte/lib/LogoTwitter.svelte';
   import LogoYoutube from 'carbon-icons-svelte/lib/LogoYoutube.svelte';
   import LogoFacebook from 'carbon-icons-svelte/lib/LogoFacebook.svelte';
 </script>
@@ -79,15 +78,15 @@
             <a target="_blank" href="https://classroomio.substack.com/"> Blog </a>
           </li>
           <li class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900">
-            <a target="_blank" href="https://docs.classroomio.com/"> Help center </a>
+            <a target="_blank" href="https://classroomio.com/docs/"> Help center </a>
           </li>
           <li class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900">
-            <a target="_blank" href="https://docs.classroomio.com/what-is-classroomio">
+            <a target="_blank" href="https://classroomio.com/docs/what-is-classroomio">
               What is ClassroomIO?
             </a>
           </li>
           <li class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900">
-            <a target="_blank" href="https://docs.classroomio.com/getting-started">
+            <a target="_blank" href="https://classroomio.com/docs/quickstart/signup">
               Getting Started
             </a>
           </li>
@@ -111,7 +110,7 @@
             </a>
           </li>
           <li class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900">
-            <a target="_blank" href="https://docs.classroomio.com/getting-started">
+            <a target="_blank" href="https://classroomio.com/docs/quickstart/signup">
               Getting Started
             </a>
           </li>

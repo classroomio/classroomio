@@ -1,6 +1,5 @@
-export const load = ({ params = { slug: '' } }) => {
+export const load = () => {
   return {
-    allCourses: [],
     cantFetch: true
   };
 };

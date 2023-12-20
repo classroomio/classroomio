@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { Search, Dropdown } from 'carbon-components-svelte';
   import { page } from '$app/stores';
   import { profile } from '$lib/utils/store/user';
@@ -16,7 +15,7 @@
   import { browser } from '$app/environment';
 
   export let data;
-  let { allCourses, cantFetch } = data;
+  let { cantFetch } = data;
   let searchValue = '';
   let selectedId: string;
   let filteredCourses: Course[];
@@ -29,8 +28,11 @@
   }
 
   async function getCourses(userId: string | null, orgId: string) {
-    if (cantFetch && typeof cantFetch === 'boolean' && !allCourses.length && orgId && !hasFetched) {
-      $courseMetaDeta.isLoading = true;
+    if (cantFetch && typeof cantFetch === 'boolean' && orgId && !hasFetched) {
+      // only show is loading when fetching for the first time
+      if (!$courses.length) {
+        $courseMetaDeta.isLoading = true;
+      }
 
       const coursesResult = await fetchCourses(userId, orgId);
       console.log(`coursesResult`, coursesResult);
@@ -71,10 +73,6 @@
       filteredCourses = filteredCourses.sort((a, b) => b.total_lessons - a.total_lessons);
     }
   }
-
-  onMount(() => {
-    courses.set(allCourses);
-  });
 
   $: filterCourses(searchValue, selectedId, $courses);
   $: getCourses($profile.id, $currentOrg.id);
