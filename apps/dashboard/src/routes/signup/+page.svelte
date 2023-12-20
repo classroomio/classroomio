@@ -56,6 +56,7 @@
 
       if (emailCheckResponse.isDisposable === true) {
         snackbar.error('The email you provided is disposable');
+        return;
       }
 
       const {
