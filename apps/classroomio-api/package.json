@@ -1,0 +1,25 @@
+{
+  "name": "classroomio-api",
+  "version": "0.0.0",
+  "description": "Classroom IO api",
+  "scripts": {
+    "postinstall": "bun install",
+    "dev": "bun run --hot src/index.ts",
+    "start": "bun run src/index.ts"
+  },
+  "dependencies": {
+    "@hono/swagger-ui": "^0.2.0",
+    "@hono/zod-validator": "^0.1.11",
+    "argon2": "^0.31.2",
+    "drizzle-orm": "^0.29.1",
+    "generate-api-key": "^1.0.2",
+    "hono": "^3.11.7",
+    "limiter": "^2.1.0",
+    "postgres": "^3.4.3",
+    "zod": "^3.21.4"
+  },
+  "devDependencies": {
+    "bun-types": "^1.0.7",
+    "drizzle-kit": "^0.20.7"
+  }
+}
