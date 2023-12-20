@@ -1,4 +1,3 @@
-import { browser } from '$app/environment';
 import type { Course } from '../types';
 
 export const isCourseFree = (cost: number) => !(Number(cost) > 0);
@@ -19,8 +18,6 @@ export const getStudentInviteLink = (_course: Course, orgSiteName: string, origi
 };
 
 export const getTextFromHTML = (html: string): string => {
-  if (!browser) return html;
-
   const dummyDiv = document.createElement('div');
   dummyDiv.innerHTML = html;
 
