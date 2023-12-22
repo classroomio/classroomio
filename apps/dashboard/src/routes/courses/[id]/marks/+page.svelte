@@ -13,9 +13,9 @@
   import { profile } from '$lib/utils/store/user';
   import { browser } from '$app/environment';
   import { course } from '$lib/components/Course/store';
+  import { snackbar } from '$lib/components/Snackbar/store';
 
   export let data;
-  const { courseId } = data;
 
   let borderBottomGrey = 'border-r-0 border-t-0 border-b border-l-0 border-gray-300';
   let borderleftGrey = 'border-r-0 border-t-0 border-b-0 border-l border-gray-300';
@@ -35,7 +35,14 @@
   }
 
   async function firstRender(courseId: string) {
-    const { data: marks } = await fetchMarks(courseId);
+    const { data: marks, error } = await fetchMarks(courseId);
+    if (error) {
+      console.error('Error fetching marks', error);
+      snackbar.error('Error fetching marks');
+      return;
+    }
+
+    if (!marks || !Array.isArray(marks)) return;
 
     marks.forEach((mark) => {
       const { groupmember_id, exercise_id, total_points_gotten } = mark;

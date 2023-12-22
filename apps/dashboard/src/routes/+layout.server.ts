@@ -31,15 +31,6 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
   const matches = url.host.match(/([a-z 0-9 -]+).*classroomio[.]com/);
   const subdomain = matches?.[1] ?? '';
 
-  if (subdomain === 'app' && url.search && url.search?.includes('forwardTo')) {
-    const params = new URLSearchParams(url.search);
-    const forwardToURL = params.get('forwardTo');
-
-    if (forwardToURL) {
-      throw redirect(307, forwardToURL);
-    }
-  }
-
   if (!blockedSubdomain.includes(subdomain)) {
     const answer = Array.isArray(matches) ? !!subdomain && subdomain !== 'www' : false;
 
@@ -48,12 +39,12 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
     response.org = (await getCurrentOrg(response.orgSiteName, true)) || null;
 
     if (!response.org && !dev) {
-      throw redirect(301, 'https://app.classroomio.com/404?type=org');
+      throw redirect(307, 'https://app.classroomio.com/404?type=org');
     }
   } else if (subdomain === 'play' || debugPlay === 'true') {
     response.skipAuth = true;
   } else if (subdomain !== 'app' && !dev) {
-    throw redirect(301, 'https://app.classroomio.com');
+    throw redirect(307, 'https://app.classroomio.com');
   }
 
   return response;

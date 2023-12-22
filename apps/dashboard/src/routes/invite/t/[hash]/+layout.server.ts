@@ -29,6 +29,6 @@ export const load = async ({ params = { hash: '' } }) => {
     };
   } catch (error) {
     console.error('Error decoding invite params.hash', error);
-    throw redirect(301, '/404');
+    throw redirect(307, '/404');
   }
 };

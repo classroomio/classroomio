@@ -222,10 +222,10 @@
 
     handleResize();
 
-    if (!isSupabaseTokenInLocalStorage() && !isPublicRoute($page.url?.pathname)) {
-      console.log('No auth token and is not a public route, redirect to login', path);
-      return goto('/login?redirect=/' + path);
-    }
+    // if (!isSupabaseTokenInLocalStorage() && !isPublicRoute($page.url?.pathname)) {
+    //   console.log('No auth token and is not a public route, redirect to login', path);
+    //   return goto('/login?redirect=/' + path);
+    // }
 
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       // Log key events

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { browser } from '$app/environment';
   import isEmpty from 'lodash/isEmpty';
   import { useCompletion } from 'ai/svelte';
   import MODES from '$lib/utils/constants/mode.js';
@@ -84,7 +85,7 @@
 
     if (!document) return false;
 
-    return getTextFromHTML(note) === '';
+    return browser ? getTextFromHTML(note) === '' : false;
   }
 
   function isMaterialsEmpty(materials: LessonPage['materials']) {
