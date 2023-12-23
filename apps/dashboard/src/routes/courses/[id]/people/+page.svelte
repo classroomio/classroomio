@@ -91,6 +91,13 @@
     return profile ? profile.email : email;
   }
 
+	function obscureEmail(email) {
+		const [username, domain] = email.split('@');
+		const obscuredUsername = username.charAt(0) + '*'.repeat(username.length - 2) + username.charAt(username.length - 1);
+
+		return `${obscuredUsername}@${domain}`;
+	}
+
   function handleEditStudentIdMode(personId: string) {
     shouldEditMemberId = personId;
   }
@@ -194,7 +201,7 @@
                           {person.profile.fullname}
                         </p>
                         <p class="text-xs text-primary-600 line-clamp-1">
-                          {getEmail(person)}
+                          {obscureEmail(getEmail(person))}
                         </p>
                       </div>
                       <div class="flex items-center">
