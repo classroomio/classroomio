@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Popover, SkeletonText } from 'carbon-components-svelte';
-  import CaretSortIcon from 'carbon-icons-svelte/lib/CaretSort.svelte';
+  import CaretDown from 'carbon-icons-svelte/lib/CaretDown.svelte';
   import OrgSelectorItem from './OrgSelectorItem.svelte';
   import { currentOrg, orgs, currentOrgPath } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
@@ -37,7 +37,7 @@
       <p class="dark:text-white text-lg font-bold whitespace-nowrap truncate">
         {$currentOrg.name}
       </p>
-      <CaretSortIcon size={16} class="ml-2" />
+      <CaretDown size={16} class="ml-2"/>
     </button>
   {:else}
     <div class="w-[219px] h-[30px]">
