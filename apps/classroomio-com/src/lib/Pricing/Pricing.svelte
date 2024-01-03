@@ -28,7 +28,7 @@
     'Email Support',
   ];
   const teamFeatures = [
-    'Everything in Teams',
+    'Everything in Pro',
     'Unlimited students',
     'Unlimited AI Prompts',
     'White Labelling',
