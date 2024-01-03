@@ -37,7 +37,7 @@
       <p class="dark:text-white text-lg font-bold whitespace-nowrap truncate">
         {$currentOrg.name}
       </p>
-      <CaretDown size={16} class="ml-2"/>
+      <CaretDown size={16} class="ml-2" />
     </button>
   {:else}
     <div class="w-[219px] h-[30px]">
