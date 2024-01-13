@@ -5,7 +5,9 @@
 
 <div class="overflow-hidden">
   <Navigation />
-  <slot />
+  <div class="mt-[30%] md:my-36">
+    <slot />
+  </div>
 
   <Footer />
 </div>

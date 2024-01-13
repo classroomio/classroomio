@@ -2,20 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+/** Global scrollbar styles */
+html {
+  --scrollbarBG: #fff;
+  --thumbBG: #ccc;
+  scroll-behavior: smooth;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    Roboto,
+    Helvetica Neue,
+    Arial,
+    Noto Sans,
+    sans-serif,
+    'Apple Color Emoji',
+    'Segoe UI Emoji',
+    Segoe UI Symbol,
+    'Noto Color Emoji' !important;
+}
+
 body {
   overflow-x: hidden;
 }
 
 body::-webkit-scrollbar {
   display: none;
-}
-
-li {
-  font-family: 'Inter', sans-serif;
-}
-
-.inter {
-  font-family: 'Inter', sans-serif;
 }
 
 .floating {

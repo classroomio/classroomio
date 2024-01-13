@@ -2,7 +2,7 @@
   import { faqs } from './faqs';
 </script>
 
-<div class="mt-[5%] mb-[15%]">
+<div class="mt-[5%]">
   <header class="text-center mb-[5%] px-[8%]">
     <h1 class="mt-2 text-4xl lg:text-4xl font-medium tracking-tight text-gray-900">
       Questions & Answers

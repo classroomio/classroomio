@@ -114,12 +114,12 @@
           <div use:melt={$arrow} />
         </div>
       </li>
-      <!--  -->
-      <a href="#morefeatures">
-        <li class="text-gray-800 font-semibold text-sm cursor-pointer">More features</li>
-      </a>
       <a href="#pricing">
         <li class="text-gray-800 font-semibold text-sm cursor-pointer">Pricing</li>
+      </a>
+      <!--  -->
+      <a href="/blog">
+        <li class="text-gray-800 font-semibold text-sm cursor-pointer">Blog</li>
       </a>
     </ul>
   </nav>
@@ -183,16 +183,15 @@
               </div>
             {/if}
           </li>
-          <!--  -->
-          <li
-            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full"
-          >
-            <a href="#morefeatures"> More features </a>
-          </li>
           <li
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full"
           >
             <a href="#pricing"> Pricing </a>
+          </li>
+          <li
+            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full"
+          >
+            <a href="/blog"> Blog </a>
           </li>
         </ul>
       </nav>

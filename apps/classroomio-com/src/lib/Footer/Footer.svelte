@@ -75,20 +75,16 @@
         </h3>
         <ul class="space-y-2 lg:space-y-4">
           <li class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900">
-            <a target="_blank" href="https://classroomio.substack.com/"> Blog </a>
+            <a href="/blog"> Blog </a>
           </li>
           <li class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900">
-            <a target="_blank" href="https://classroomio.com/docs/"> Help center </a>
+            <a href="https://classroomio.com/docs/"> Help center </a>
           </li>
           <li class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900">
-            <a target="_blank" href="https://classroomio.com/docs/what-is-classroomio">
-              What is ClassroomIO?
-            </a>
+            <a href="https://classroomio.com/docs/what-is-classroomio"> What is ClassroomIO? </a>
           </li>
           <li class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900">
-            <a target="_blank" href="https://classroomio.com/docs/quickstart/signup">
-              Getting Started
-            </a>
+            <a href="https://classroomio.com/docs/quickstart/signup"> Getting Started </a>
           </li>
         </ul>
       </div>

@@ -1,9 +1,8 @@
 <script>
-  // import ImageCompare from './ImageCompare.svelte';
   import { PUBLIC_ENABLE_USERS_COMPANIES } from '$env/static/public';
 </script>
 
-<div class="text-center mt-[30%] md:mt-36 border-b-2 relative">
+<div class="text-center border-b-2 relative">
   <div class="mb-10 flex items-center justify-center w-full">
     <a
       target="_blank"
