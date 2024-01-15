@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../../client/components/dynamic.tsx"],"names":["dynamic","loader","React","lazy"],"mappings":"AAAA;;;;kBAcwBA,OAAO;;AAdb,IAAA,MAAO,oCAAP,OAAO,EAAA;AAcV,SAASA,OAAO,CAC7BC,MAAiB,EACO;IACxB,qBAAOC,MAAK,QAAA,CAACC,IAAI,CAACF,MAAM,CAAC,CAAA;CAC1B"}

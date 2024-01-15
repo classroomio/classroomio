@@ -1,0 +1,35 @@
+import type { RuleContext, ASTNode } from '../../types';
+import type * as TS from 'typescript';
+export type TypeScript = typeof TS;
+export type { TS };
+export type TSTools = {
+    service: {
+        esTreeNodeToTSNodeMap: ReadonlyMap<unknown, TS.Node>;
+        tsNodeToESTreeNodeMap: ReadonlyMap<TS.Node, ASTNode>;
+        program: TS.Program;
+        hasFullTypeInformation: boolean;
+    };
+    ts: TypeScript;
+};
+export declare function getTypeScriptTools(context: RuleContext): TSTools | null;
+export declare function getTypeScript(context: RuleContext): TypeScript | null;
+export declare function isTruthyLiteral(type: TS.Type, tsTools: TSTools): boolean;
+export declare function isFalsyType(type: TS.Type, tsTools: TSTools): boolean;
+export declare function isNullishType(type: TS.Type, ts: TypeScript): boolean;
+export declare function isNullableType(type: TS.Type, ts: TypeScript): boolean;
+export declare function isBooleanLiteralType(type: TS.Type, ts: TypeScript): boolean;
+export declare function isObjectType(type: TS.Type, ts: TypeScript): type is TS.ObjectType;
+export declare function isReferenceObjectType(type: TS.Type, ts: TypeScript): type is TS.TypeReference;
+export declare function isTupleObjectType(type: TS.Type, ts: TypeScript): type is TS.TupleType;
+export declare function isTupleType(type: TS.Type, ts: TypeScript): boolean;
+export declare function isAnyType(type: TS.Type, ts: TypeScript): boolean;
+export declare function isUnknownType(type: TS.Type, ts: TypeScript): boolean;
+export declare function isNeverType(type: TS.Type, ts: TypeScript): boolean;
+export declare function isUndefinedType(type: TS.Type, ts: TypeScript): boolean;
+export declare function isVoidType(type: TS.Type, ts: TypeScript): boolean;
+export declare function isNullType(type: TS.Type, ts: TypeScript): boolean;
+export declare function isPossiblyFalsyType(type: TS.Type, ts: TypeScript): boolean;
+export declare function getCallSignaturesOfType(type: TS.Type): readonly TS.Signature[];
+export declare function getConstrainedTypeAtLocation(checker: TS.TypeChecker, node: TS.Node): TS.Type;
+export declare function getTypeName(type: TS.Type, tsTools: TSTools): string;
+export declare function getTypeOfPropertyOfType(type: TS.Type, name: string, checker: TS.TypeChecker): TS.Type | undefined;

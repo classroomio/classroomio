@@ -1,0 +1,43 @@
+{
+  "name": "svelte-calendar",
+  "version": "3.1.6",
+  "main": "index.js",
+  "scripts": {
+    "dev": "svelte-kit dev",
+    "package": "svelte-kit package",
+    "postpackage": "node scripts/postpackage",
+    "prebuild": "rm -rf build",
+    "build": "svelte-kit build",
+    "postbuild": "touch docs/.nojekyll",
+    "postversion": "cp package.json ./package/ && cp package-lock.json ./package/",
+    "preview": "svelte-kit preview",
+    "lint": "prettier --check --plugin-search-dir=. . && eslint --ignore-path .gitignore .",
+    "format": "prettier --write --plugin-search-dir=. ."
+  },
+  "dependencies": {
+    "dayjs": "^1.10.6",
+    "just-throttle": "^2.3.1"
+  },
+  "devDependencies": {
+    "@semantic-release/changelog": "^5.0.1",
+    "@semantic-release/git": "^9.0.1",
+    "@semantic-release/npm": "^7.1.3",
+    "@sveltejs/adapter-static": "^1.0.0-next.19",
+    "@sveltejs/kit": "^1.0.0-next.147",
+    "eslint": "^7.22.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-svelte3": "^3.2.0",
+    "p-limit": "^4.0.0",
+    "prettier": "~2.2.1",
+    "prettier-plugin-svelte": "^2.2.0",
+    "prism-svelte": "^0.4.7",
+    "prism-themes": "^1.8.0",
+    "prismjs": "^1.24.1",
+    "svelte": "3.38.0",
+    "svelte-preprocess": "^4.8.0",
+    "svelte2tsx": "^0.4.6",
+    "typescript": "^4.4.3"
+  },
+  "type": "module",
+  "svelte": "index.js"
+}

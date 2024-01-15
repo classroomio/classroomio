@@ -1,0 +1,10 @@
+export { NextraPlugin } from './nextra.mjs';
+export { NextraSearchPlugin } from './nextra-search.mjs';
+import 'webpack';
+import '../types-c8e621b7.js';
+import '@mdx-js/mdx';
+import 'gray-matter';
+import 'mdast';
+import 'next';
+import 'react';
+import 'rehype-pretty-code';

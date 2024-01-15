@@ -1,0 +1,84 @@
+{
+  "name": "@tinymce/tinymce-svelte",
+  "version": "1.0.1",
+  "description": "TinyMCE Svelte Component",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "url": "https://github.com/tinymce/tinymce-svelte"
+  },
+  "main": "dist/index.umd.js",
+  "module": "dist/index.mjs",
+  "svelte": "dist/index.js",
+  "types": "dist/ts/index.d.ts",
+  "scripts": {
+    "prebuild": "rm -rf ./dist",
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "validate": "svelte-check",
+    "lint": "eslint src/main/**/*.{ts,svelte}",
+    "test": "echo 'No tests hooked up yet'",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook",
+    "deploy-storybook": "yarn storybook-to-ghpages --source-branch=main",
+    "prepublishOnly": "yarn run build"
+  },
+  "keywords": [
+    "tinymce",
+    "svelte",
+    "component"
+  ],
+  "author": "Tiny",
+  "license": "MIT",
+  "files": [
+    "src",
+    "dist",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE.txt"
+  ],
+  "devDependencies": {
+    "@babel/core": "^7.14.8",
+    "@rollup/plugin-commonjs": "^17.0.0",
+    "@rollup/plugin-node-resolve": "^11.0.0",
+    "@rollup/plugin-typescript": "^8.2.5",
+    "@storybook/addon-actions": "^6.3.7",
+    "@storybook/addon-essentials": "^6.3.7",
+    "@storybook/addon-links": "^6.3.7",
+    "@storybook/addon-svelte-csf": "^1.1.0",
+    "@storybook/builder-webpack5": "^6.5.16",
+    "@storybook/manager-webpack5": "^6.5.16",
+    "@storybook/storybook-deployer": "^2.8.10",
+    "@storybook/svelte": "^6.3.7",
+    "@tinymce/beehive-flow": "^0.19.0",
+    "@tinymce/eslint-plugin": "^1.9.2",
+    "@tsconfig/svelte": "^2.0.0",
+    "@typescript-eslint/eslint-plugin": "^4.29.2",
+    "@typescript-eslint/parser": "^4.29.2",
+    "babel-loader": "^8.2.2",
+    "eslint": "^7.32.0",
+    "eslint-plugin-svelte3": "^3.2.0",
+    "rollup": "^2.56.2",
+    "rollup-plugin-css-only": "^3.1.0",
+    "rollup-plugin-livereload": "^2.0.0",
+    "rollup-plugin-svelte": "^7.0.0",
+    "rollup-plugin-terser": "^7.0.0",
+    "svelte": "^3.42.1",
+    "svelte-check": "^2.2.4",
+    "svelte-loader": "^3.1.2",
+    "svelte-preprocess": "^4.0.0",
+    "tslib": "^2.3.1",
+    "typescript": "^4.0.0",
+    "webpack": "^5.76.2"
+  },
+  "resolutions": {
+    "browserslist": "^4.16.5",
+    "glob-parent": "^5.1.2",
+    "trim": "^0.0.3"
+  },
+  "dependencies": {
+    "rollup-plugin-execute": "^1.1.1"
+  }
+}

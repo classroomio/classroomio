@@ -1,0 +1,97 @@
+import { EndpointParameterInstructions } from "@smithy/middleware-endpoint";
+import { Command as $Command } from "@smithy/smithy-client";
+import { Handler, HttpHandlerOptions as __HttpHandlerOptions, MetadataBearer as __MetadataBearer, MiddlewareStack } from "@smithy/types";
+import { DeleteBucketRequest } from "../models/models_0";
+import { S3ClientResolvedConfig, ServiceInputTypes, ServiceOutputTypes } from "../S3Client";
+/**
+ * @public
+ */
+export { __MetadataBearer, $Command };
+/**
+ * @public
+ *
+ * The input for {@link DeleteBucketCommand}.
+ */
+export interface DeleteBucketCommandInput extends DeleteBucketRequest {
+}
+/**
+ * @public
+ *
+ * The output of {@link DeleteBucketCommand}.
+ */
+export interface DeleteBucketCommandOutput extends __MetadataBearer {
+}
+/**
+ * @public
+ * <p>Deletes the S3 bucket. All objects (including all object versions and delete markers) in
+ *          the bucket must be deleted before the bucket itself can be deleted.</p>
+ *          <p>The following operations are related to <code>DeleteBucket</code>:</p>
+ *          <ul>
+ *             <li>
+ *                <p>
+ *                   <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucket.html">CreateBucket</a>
+ *                </p>
+ *             </li>
+ *             <li>
+ *                <p>
+ *                   <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObject.html">DeleteObject</a>
+ *                </p>
+ *             </li>
+ *          </ul>
+ * @example
+ * Use a bare-bones client and the command you need to make an API call.
+ * ```javascript
+ * import { S3Client, DeleteBucketCommand } from "@aws-sdk/client-s3"; // ES Modules import
+ * // const { S3Client, DeleteBucketCommand } = require("@aws-sdk/client-s3"); // CommonJS import
+ * const client = new S3Client(config);
+ * const input = { // DeleteBucketRequest
+ *   Bucket: "STRING_VALUE", // required
+ *   ExpectedBucketOwner: "STRING_VALUE",
+ * };
+ * const command = new DeleteBucketCommand(input);
+ * const response = await client.send(command);
+ * // {};
+ *
+ * ```
+ *
+ * @param DeleteBucketCommandInput - {@link DeleteBucketCommandInput}
+ * @returns {@link DeleteBucketCommandOutput}
+ * @see {@link DeleteBucketCommandInput} for command's `input` shape.
+ * @see {@link DeleteBucketCommandOutput} for command's `response` shape.
+ * @see {@link S3ClientResolvedConfig | config} for S3Client's `config` shape.
+ *
+ * @throws {@link S3ServiceException}
+ * <p>Base exception class for all service exceptions from S3 service.</p>
+ *
+ * @example To delete a bucket
+ * ```javascript
+ * // The following example deletes the specified bucket.
+ * const input = {
+ *   "Bucket": "forrandall2"
+ * };
+ * const command = new DeleteBucketCommand(input);
+ * await client.send(command);
+ * // example id: to-delete-a-bucket-1473108514262
+ * ```
+ *
+ */
+export declare class DeleteBucketCommand extends $Command<DeleteBucketCommandInput, DeleteBucketCommandOutput, S3ClientResolvedConfig> {
+    readonly input: DeleteBucketCommandInput;
+    static getEndpointParameterInstructions(): EndpointParameterInstructions;
+    /**
+     * @public
+     */
+    constructor(input: DeleteBucketCommandInput);
+    /**
+     * @internal
+     */
+    resolveMiddleware(clientStack: MiddlewareStack<ServiceInputTypes, ServiceOutputTypes>, configuration: S3ClientResolvedConfig, options?: __HttpHandlerOptions): Handler<DeleteBucketCommandInput, DeleteBucketCommandOutput>;
+    /**
+     * @internal
+     */
+    private serialize;
+    /**
+     * @internal
+     */
+    private deserialize;
+}

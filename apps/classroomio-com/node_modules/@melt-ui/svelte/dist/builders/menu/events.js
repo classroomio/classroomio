@@ -1,0 +1,33 @@
+export const menuEvents = {
+    menu: ['keydown'],
+    trigger: ['pointerdown', 'keydown'],
+    item: [
+        'pointerdown',
+        'click',
+        'keydown',
+        'pointermove',
+        'pointerleave',
+        'focusin',
+        'focusout',
+    ],
+    checkboxItem: [
+        'pointerdown',
+        'click',
+        'keydown',
+        'pointermove',
+        'pointerleave',
+        'focusin',
+        'focusout',
+    ],
+    radioItem: [
+        'pointerdown',
+        'click',
+        'keydown',
+        'pointermove',
+        'pointerleave',
+        'focusin',
+        'focusout',
+    ],
+    submenu: ['keydown', 'pointermove', 'focusout'],
+    subTrigger: ['click', 'keydown', 'pointermove', 'pointerleave', 'focusin', 'focusout'],
+};

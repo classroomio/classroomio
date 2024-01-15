@@ -1,0 +1,17 @@
+.subheading-anchor {
+  @apply nx-opacity-0 nx-transition-opacity ltr:nx-ml-1 rtl:nx-mr-1;
+
+  :hover > &,
+  &:focus {
+    @apply nx-opacity-100;
+  }
+
+  &:after {
+    @apply nx-content-['#'] nx-px-1;
+    @apply nx-text-gray-300 dark:nx-text-neutral-700;
+    span:target + & {
+      @apply nx-text-gray-400;
+      @apply dark:nx-text-neutral-500;
+    }
+  }
+}

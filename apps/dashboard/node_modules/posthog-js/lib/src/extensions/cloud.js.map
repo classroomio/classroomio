@@ -1,0 +1,1 @@
+{"version":3,"file":"cloud.js","sourceRoot":"","sources":["../../../src/extensions/cloud.ts"],"names":[],"mappings":"AAAA,MAAM,CAAC,IAAM,qBAAqB,GAAG,CAAC,yBAAyB,EAAE,wBAAwB,CAAC,CAAA","sourcesContent":["export const POSTHOG_MANAGED_HOSTS = ['https://app.posthog.com', 'https://eu.posthog.com']\n"]}

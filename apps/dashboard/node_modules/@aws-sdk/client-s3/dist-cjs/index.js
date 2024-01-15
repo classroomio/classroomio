@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.S3ServiceException = void 0;
+const tslib_1 = require("tslib");
+tslib_1.__exportStar(require("./S3Client"), exports);
+tslib_1.__exportStar(require("./S3"), exports);
+tslib_1.__exportStar(require("./commands"), exports);
+tslib_1.__exportStar(require("./pagination"), exports);
+tslib_1.__exportStar(require("./waiters"), exports);
+tslib_1.__exportStar(require("./models"), exports);
+var S3ServiceException_1 = require("./models/S3ServiceException");
+Object.defineProperty(exports, "S3ServiceException", { enumerable: true, get: function () { return S3ServiceException_1.S3ServiceException; } });

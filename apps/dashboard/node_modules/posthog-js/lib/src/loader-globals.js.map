@@ -1,0 +1,1 @@
+{"version":3,"file":"loader-globals.js","sourceRoot":"","sources":["../../src/loader-globals.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,iBAAiB,EAAE,MAAM,gBAAgB,CAAA;AAElD,iBAAiB,EAAE,CAAA","sourcesContent":["import { init_from_snippet } from './posthog-core'\n\ninit_from_snippet()\n"]}
