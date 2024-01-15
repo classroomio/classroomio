@@ -43,7 +43,7 @@ Please reach out to me on [twitter](https://x.com/rotimi_best) if you have any f
 
 ## Built With
 
-- [Svelekit](https://kit.svelte.dev/?ref=classroomio.com)
+- [SvelteKit](https://kit.svelte.dev/?ref=classroomio.com)
 - [Supabase](https://supabase.com/?ref=classroomio.com)
 - [TailwindCSS](https://tailwindcss.com/?ref=classroomio.com)
 
