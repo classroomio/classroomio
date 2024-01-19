@@ -133,7 +133,6 @@ Here is what you need to be able to run Cal.com.
      ```env
        PUBLIC_SUPABASE_URL=<API URL>
        PUBLIC_SUPABASE_ANON_KEY=<anon key>
-       PUBLIC_SUPABASE_BUCKET_URL=<Inbucket URL>
      ```
 
    - To view the Supabase studio, open the Studio URL from the result of supabase start
