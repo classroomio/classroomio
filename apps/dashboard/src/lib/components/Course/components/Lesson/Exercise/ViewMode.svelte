@@ -198,7 +198,7 @@
   $: browser && !alreadyCheckedAutoSavedData && getAutoSavedData();
 
   // Reactive code
-  $: if (alreadyCheckedAutoSavedData && $questionnaire.questions.length > 2) {
+  $: if (alreadyCheckedAutoSavedData && $questionnaire.questions.length > 0) {
     currentQuestion = $questionnaire.questions[$questionnaireMetaData.currentQuestionIndex - 1];
     if ($questionnaireMetaData.currentQuestionIndex > 0 && !currentQuestion) {
       $questionnaireMetaData.isFinished = true;
