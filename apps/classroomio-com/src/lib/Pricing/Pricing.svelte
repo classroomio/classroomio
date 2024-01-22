@@ -76,7 +76,7 @@
         on:click={handlePriceChange}>Annually</button
       >
       <div
-        class="absolute top-[-60%] right-[-40%] lg:top-[-45%] lg:right-[-33%] bg-green-600 border border-green-700 text-xs text-white px-3.5 py-1.5 rounded-full scale-[90%] lg:scale-100"
+        class="absolute top-[-85%] right-[-40%] lg:top-[-75%] lg:right-[-43%] bg-green-600 border border-green-700 text-xs text-white px-3.5 py-1.5 rounded-full scale-[90%] lg:scale-100"
       >
         Save 2 months
       </div>
