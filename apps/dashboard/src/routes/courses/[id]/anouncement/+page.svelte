@@ -45,16 +45,6 @@
 
   let mockAnouncements = [];
 
-  let newAnouncement = {
-    id: generateUniqueId(),
-    image:
-      'https://www.befunky.com/images/prismic/82e0e255-17f9-41e0-85f1-210163b0ea34_hero-blur-image-3.jpg?auto=avif,webp&format=jpg&width=896',
-    content: '',
-    name: 'Best Emmanuel Ibitoye-Rotimi',
-    timestamp: getCurrentTime(),
-    comments: [],
-    emoji: getEmojiPicker()
-  };
   const reusePost = () => {};
 
   const deleteComment = (id) => {
