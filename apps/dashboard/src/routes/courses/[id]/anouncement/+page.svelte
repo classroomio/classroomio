@@ -126,7 +126,12 @@
         <Repeat size={24} />
       </IconButton>
     </button>
-    <NewAnouncementModal {newAnouncement} bind:mockAnouncements />
+    <NewAnouncementModal
+      bind:mockAnouncements
+      {generateUniqueId}
+      {getEmojiPicker}
+      {getCurrentTime}
+    />
     {#each mockAnouncements as info}
       <AnouncementCard value={info} {deleteAnouncement} {addNewComment} {deleteComment} />
     {/each}

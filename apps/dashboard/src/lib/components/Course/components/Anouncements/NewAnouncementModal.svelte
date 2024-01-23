@@ -13,11 +13,28 @@
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { getTextFromHTML } from '$lib/utils/functions/course';
 
-  export let newAnouncement = {};
   export let mockAnouncements = [];
+
+  export let generateUniqueId = () => {};
+  export let getCurrentTime = () => {};
+  export let getEmojiPicker = () => {};
+
+  let newAnouncement = {};
   const onPost = () => {
     if (newAnouncement.content !== '') {
-      mockAnouncements = [{ ...newAnouncement }, ...mockAnouncements];
+      mockAnouncements = [
+        {
+          id: generateUniqueId(),
+          image:
+            'https://www.befunky.com/images/prismic/82e0e255-17f9-41e0-85f1-210163b0ea34_hero-blur-image-3.jpg?auto=avif,webp&format=jpg&width=896',
+          content: newAnouncement.content,
+          name: 'Best Emmanuel Ibitoye-Rotimi',
+          timestamp: getCurrentTime(),
+          comments: [],
+          emoji: getEmojiPicker()
+        },
+        ...mockAnouncements
+      ];
       newAnouncement.content = '';
       $isNewAnouncementModal.open = false;
     }

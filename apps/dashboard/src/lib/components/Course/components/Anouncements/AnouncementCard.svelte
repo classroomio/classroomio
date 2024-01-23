@@ -37,12 +37,12 @@
 
   const handleDeleteAnouncement = (option) => {
     deleteAnouncement(value.id);
-    toggle(option);
+    isAnouncementOptionOpen = false;
   };
 
-  const handleDeleteComment = (option, id) => {
+  const handleDeleteComment = (id) => {
     deleteComment(id);
-    toggle(option);
+    isCommentOptionOpen = false;
   };
 </script>
 
@@ -141,7 +141,7 @@
                 <div
                   class="absolute right-2 rounded-md p-2 border hover:bg-slate-200 cursor-pointer"
                 >
-                  <button on:click={() => handleDeleteComment('comment', comment.id)}>
+                  <button on:click={() => handleDeleteComment(comment.id)}>
                     <p>Delete</p>
                   </button>
                 </div>
