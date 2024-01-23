@@ -146,8 +146,13 @@
   $: {
     navItems = [
       {
-        label: 'Anouncements',
+        label: 'Overview',
         to: getNavItemRoute($course.id),
+        hideSortIcon: true
+      },
+      {
+        label: 'Anouncements',
+        to: getNavItemRoute($course.id, 'anouncement'),
         hideSortIcon: true
       },
       {

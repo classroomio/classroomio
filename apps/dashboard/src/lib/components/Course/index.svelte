@@ -1,4 +1,4 @@
-<!-- <script>
+<script>
   import RoleBasedSecurity from '../RoleBasedSecurity/index.svelte';
   import PageNav from '../PageNav/index.svelte';
   import MODES from '$lib/utils/constants/mode';
@@ -53,9 +53,11 @@
   {:else}
     <HtmlRender className="p-2" content={$course.overview || ''} />
   {/if}
-</PageBody> -->
+</PageBody>
 
-<script>
+<!-- <script>
+  // @ts-nocheck
+
   import PageNav from '../PageNav/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import PageBody from '../PageBody/index.svelte';
@@ -70,8 +72,8 @@
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { getTextFromHTML } from '$lib/utils/functions/course';
 
-  let anouncement = false;
-
+  let isAnouncement = false;
+  let open = false;
   const emojipicker = [
     { name: 'smile', icon: '😀', count: 0 },
     { name: 'thumbsup', icon: '👍', count: 0 },
@@ -115,21 +117,27 @@
     emoji: emojipicker
   };
   const reusePost = () => {};
+
   const deleteAnouncement = (/** @type {number} */ id) => {
-    return mockAnouncements.filter((anouncement) => anouncement.id !== id);
+    const deletedAnouncement = mockAnouncements.filter((anouncement) => anouncement.id !== id);
+    return (mockAnouncements = deletedAnouncement);
   };
-  const post = () => {
-    mockAnouncements = [newAnouncement, ...mockAnouncements];
+
+  const onPost = () => {
+    if (newAnouncement.content !== '') {
+      mockAnouncements = [{ ...newAnouncement }, ...mockAnouncements];
+      newAnouncement.content = '';
+    }
   };
 </script>
 
 <PageNav title="Anouncements" disableSticky={true} />
 
 <PageBody width="max-w-4xl px-3">
-  {#if !anouncement}
+  {#if !isAnouncement}
     <button
       class="flex items-center justify-between border-gray-200 bg-gray-50 p-3 w-full h-20 rounded-md my-2 shadow-md"
-      on:click={() => (anouncement = true)}
+      on:click={() => (isAnouncement = true)}
     >
       <div class="flex gap-2">
         <span class="w-7 h-7">
@@ -139,7 +147,7 @@
             class="w-full h-full rounded-full object-cover"
           />
         </span>
-        <button class="flex-1" on:click={() => (anouncement = true)}>
+        <button class="flex-1" on:click={() => (isAnouncement = true)}>
           <p class="text-gray-400 hover:text-gray-500">Anounce something to your class</p>
         </button>
       </div>
@@ -195,13 +203,13 @@
           </IconButton>
         </div>
         <div class="flex gap-2">
-          <PrimaryButton label="Cancel" onClick={() => (anouncement = false)} />
-          <PrimaryButton label="Post" onClick={post} />
+          <PrimaryButton label="Cancel" onClick={() => (isAnouncement = false)} />
+          <PrimaryButton label="Post" onClick={onPost} />
         </div>
       </div>
     </section>
   {/if}
   {#each mockAnouncements as info}
-    <AnouncementCard value={info} />
+    <AnouncementCard value={info} {deleteAnouncement} />
   {/each}
-</PageBody>
+</PageBody> -->
