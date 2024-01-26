@@ -1,5 +1,5 @@
 <a href="https://classroomio.com/">
-  <img alt="Spend less time doing the boring stuff, instead focus on impacting the lives of your students." src="https://classroomio.com/classroomio-opengraph-image.png" />
+  <img alt="ClassroomIO is a no-code tool that allows you build and scale your own teaching platform with ease." src="https://classroomio.com/classroomio-opengraph-image.png" />
   <h1 align="center">ClassroomIO</h1>
 </a>
 
