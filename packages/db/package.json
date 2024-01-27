@@ -1,0 +1,13 @@
+{
+  "name": "db",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {},
+  "devDependencies": {
+    "tsconfig": "workspace:*"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

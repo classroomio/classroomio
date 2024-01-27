@@ -346,6 +346,12 @@ importers:
         specifier: ^4.9.3
         version: 4.9.3
 
+  packages/db:
+    devDependencies:
+      tsconfig:
+        specifier: workspace:*
+        version: link:../tsconfig
+
   packages/eslint-config-custom:
     devDependencies:
       '@vercel/style-guide':

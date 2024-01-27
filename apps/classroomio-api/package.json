@@ -5,7 +5,8 @@
   "scripts": {
     "postinstall": "bun install",
     "dev": "bun run --hot src/index.ts",
-    "start": "bun run src/index.ts"
+    "start": "bun run src/index.ts",
+    "clean": "rm -rf node_modules"
   },
   "dependencies": {
     "@hono/swagger-ui": "^0.2.0",

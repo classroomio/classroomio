@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev --port 3030",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "clean": "rm -rf node_modules"
   },
   "repository": {
     "type": "git",
