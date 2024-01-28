@@ -169,8 +169,8 @@ importers:
         specifier: ^8.0.0
         version: 8.0.0
       posthog-js:
-        specifier: ^1.96.0
-        version: 1.96.0
+        specifier: ^1.103.0
+        version: 1.103.0
       sirv:
         specifier: ^2.0.3
         version: 2.0.3
@@ -10768,10 +10768,11 @@ packages:
       picocolors: 1.0.0
       source-map-js: 1.0.2
 
-  /posthog-js@1.96.0:
-    resolution: {integrity: sha512-nutEP3UbwjPt1a78KwBbdNBMhAY30lLjYXbBOPZ/juB9NDklmSqLF+lWImPcf6+rlXEhIboSr5sdTAF/R+Dasg==}
+  /posthog-js@1.103.0:
+    resolution: {integrity: sha512-NldabkbCB9a/2JLszoB7vk5XZr93iBoGEgEEKn201oDD3QkRn1nC+c+e1HQ3S9oMs5oZIhKmPNBCje1J9prYRg==}
     dependencies:
       fflate: 0.4.8
+      preact: 10.19.3
     dev: false
 
   /posthog-node@3.1.3:
@@ -10782,6 +10783,10 @@ packages:
       rusha: 0.8.14
     transitivePeerDependencies:
       - debug
+    dev: false
+
+  /preact@10.19.3:
+    resolution: {integrity: sha512-nHHTeFVBTHRGxJXKkKu5hT8C/YWBkPso4/Gad6xuj5dbptt9iF9NZr9pHbPhBrnT2klheu7mHTxTZ/LjwJiEiQ==}
     dev: false
 
   /prelude-ls@1.2.1:
