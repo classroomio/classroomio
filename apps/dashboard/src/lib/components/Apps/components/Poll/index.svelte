@@ -5,7 +5,7 @@
   import Poll from './components/Poll.svelte';
   import Tabs from './components/Tabs.svelte';
   import { polls } from './store';
-  import type { PollType, TabsType, PollOptionsSubmissionType } from './types';
+  import type { PollType, TabsType, PollOptionsSubmissionType, FetchPollsResponse } from './types';
   import { apps } from '$lib/components/Apps/store';
   import { getSupabase } from '$lib/utils/functions/supabase';
   import { profile } from '$lib/utils/store/user';
@@ -15,10 +15,10 @@
   import { getPollsData } from './utils';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { onMount, onDestroy } from 'svelte';
-  import type {
+  import {
     RealtimeChannel,
-    RealtimePostgresChangesPayload,
-    PostgrestSingleResponse
+    type RealtimePostgresChangesPayload,
+    type PostgrestSingleResponse
   } from '@supabase/supabase-js';
 
   export let handleClose = () => {};
@@ -36,6 +36,7 @@
     fullname: '',
     avatarUrl: ''
   };
+  let pollChannel: RealtimeChannel;
   let pollSubmissionsChannel: RealtimeChannel;
 
   let tabs: TabsType = [];
@@ -186,23 +187,124 @@
     };
   }
 
-  onMount(async () => {
-    if (!$course.id) return;
+  async function handlePollUpdate(payload: RealtimePostgresChangesPayload<PollType>) {
+    // Extract the updated poll's ID from the payload
+    const updatedPoll = payload.new as FetchPollsResponse;
 
-    isLoading = true;
-    const { data, error } = await fetchPolls($course.id);
+    // Fetch the updated poll data from the 'apps_poll' table
+    const {
+      data,
+      error
+    }: PostgrestSingleResponse<{
+      newPoll: {
+        id: string;
+        courseId: string;
+        expiration: string;
+        authorId: string;
+        status: string;
+        question: string;
+        created_at: string;
+        author: {
+          profile: {
+            username: string;
+            fullname: string;
+            avatar_url: string;
+          };
+        };
+        options: {
+          id: string;
+          label: string;
+          submissions: {
+            selectedBy: {
+              id: string;
+              profile: {
+                username: string;
+                fullname: string;
+                avatar_url: string;
+              };
+            };
+          }[];
+        }[];
+      };
+    }> = await supabase
+      .from('apps_poll')
+      .select(
+        `
+      *,
+      id,
+      courseId,
+      expiration,
+      authorId,
+      status,
+      question,
+      created_at,
+      author:groupmember(
+        profile(
+          username,
+          fullname,
+          avatar_url
+        )
+      ),
+      options: apps_poll_option (
+        id,
+        label,
+        submissions:apps_poll_submission(
+          selectedBy:groupmember(
+            id,
+            profile(
+              username,
+              fullname,
+              avatar_url
+            )
+          )
+        )
+      )
+    `
+      )
+      .eq('id', updatedPoll.id)
+      .single();
 
-    if (!data || error) {
-      console.log(error);
-      isLoading = false;
+    console.log('updatedPoll => data', data);
+    console.log('updatedPoll => error', error);
+
+    if (error || !data) {
       return;
     }
+
+    fetchPolls(updatedPoll.id);
 
     polls.set(getPollsData(data, $apps.isStudent));
 
     setCoursePolls();
+  }
+
+  onMount(async () => {
+    if (!$course.id) return;
+
+    isLoading = true;
+    // const { data, error } = await fetchPolls($course.id);
+
+    // if (!data || error) {
+    //   console.log(error);
+    //   isLoading = false;
+    //   return;
+    // }
+
+    // polls.set(getPollsData(data, $apps.isStudent));
+
+    // setCoursePolls();
 
     isLoading = false;
+
+    // Subscribe to real-time updates for the 'apps_poll' table
+    pollChannel = supabase
+      .channel('any')
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'apps_poll' },
+        handlePollUpdate
+      )
+      .subscribe();
 
     pollSubmissionsChannel = supabase
       .channel('any')
@@ -215,6 +317,7 @@
   });
 
   onDestroy(() => {
+    supabase.removeChannel(pollChannel);
     supabase.removeChannel(pollSubmissionsChannel);
   });
 
