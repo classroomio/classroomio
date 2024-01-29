@@ -15,10 +15,10 @@
   import { getPollsData } from './utils';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { onMount, onDestroy } from 'svelte';
-  import {
+  import type {
     RealtimeChannel,
-    type RealtimePostgresChangesPayload,
-    type PostgrestSingleResponse
+    RealtimePostgresChangesPayload,
+    PostgrestSingleResponse
   } from '@supabase/supabase-js';
 
   export let handleClose = () => {};
@@ -187,11 +187,11 @@
     };
   }
 
-  async function handlePollUpdate(payload: RealtimePostgresChangesPayload<PollType>) {
-    // Extract the updated poll's ID from the payload
-    const updatedPoll = payload.new as FetchPollsResponse;
+  async function handlePollInsert(payload: RealtimePostgresChangesPayload<FetchPollsResponse>) {
+    const insertedPoll = payload.new as FetchPollsResponse;
+    console.log(insertedPoll);
+    return;
 
-    // Fetch the updated poll data from the 'apps_poll' table
     const {
       data,
       error
@@ -261,7 +261,10 @@
       )
     `
       )
-      .eq('id', updatedPoll.id)
+      .eq(
+        'id',
+        insertedPoll.map((poll) => poll.id)
+      )
       .single();
 
     console.log('updatedPoll => data', data);
@@ -270,39 +273,32 @@
     if (error || !data) {
       return;
     }
-
-    fetchPolls(updatedPoll.id);
-
-    polls.set(getPollsData(data, $apps.isStudent));
-
-    setCoursePolls();
   }
 
   onMount(async () => {
     if (!$course.id) return;
 
     isLoading = true;
-    // const { data, error } = await fetchPolls($course.id);
+    const { data, error } = await fetchPolls($course.id);
 
-    // if (!data || error) {
-    //   console.log(error);
-    //   isLoading = false;
-    //   return;
-    // }
+    if (!data || error) {
+      console.log(error);
+      isLoading = false;
+      return;
+    }
 
-    // polls.set(getPollsData(data, $apps.isStudent));
+    polls.set(getPollsData(data, $apps.isStudent));
 
-    // setCoursePolls();
+    setCoursePolls();
 
     isLoading = false;
 
-    // Subscribe to real-time updates for the 'apps_poll' table
     pollChannel = supabase
       .channel('any')
       .on(
         'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'apps_poll' },
-        handlePollUpdate
+        { event: 'INSERT', schema: 'public', table: 'apps_poll' },
+        handlePollInsert
       )
       .subscribe();
 
