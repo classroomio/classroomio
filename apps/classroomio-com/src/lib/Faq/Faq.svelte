@@ -42,7 +42,7 @@
       Try before you buy. No credit card required.
     </p>
     <button
-      class="font-semibold text-md lg:text-lg text-gray-900 bg-white px-6 lg:px-7 py-4 lg:py-3 rounded-xl mt-10 inter"
+      class="font-semibold text-md lg:text-lg text-gray-900 bg-white px-6 lg:px-7 py-4 lg:py-3 rounded-md mt-10 inter"
       data-cal-config={"{'layout':'month_view'}"}
       data-cal-link="classroomio/demo"
     >

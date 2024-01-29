@@ -5,6 +5,7 @@
   import ChevronRightIcon from 'carbon-icons-svelte/lib/ChevronRight.svelte';
   import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
   import ArrowUpRightIcon from 'carbon-icons-svelte/lib/ArrowUpRight.svelte';
+  import ChevronLeftIcon from 'carbon-icons-svelte/lib/ChevronLeft.svelte';
   import { currentOrgDomain } from '$lib/utils/store/org';
 
   import IconButton from '$lib/components/IconButton/index.svelte';
@@ -20,7 +21,6 @@
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { updateCourse } from '$lib/utils/services/courses';
   import generateSlug from '$lib/utils/functions/generateSlug';
-  import ChevronLeftIcon from 'carbon-icons-svelte/lib/ChevronLeft.svelte';
 
   import { isMobile } from '$lib/utils/store/useMobile';
   import CustomPromptBtn from '$lib/components/AI/AIButton/CustomPromptBtn.svelte';

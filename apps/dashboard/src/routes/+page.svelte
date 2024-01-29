@@ -51,7 +51,7 @@
   <title>ClassroomIO - The classroom software</title>
 </svelte:head>
 
-<div class="root w-screen flex items-center justify-center flex-col m-2 sm:m-0">
+<div class="md:h-[93vh] w-screen flex items-center justify-center flex-col m-2 sm:m-0 font-sans">
   <!--
     <img
       src="/logo-192.png"
@@ -69,7 +69,7 @@
     </p>
   </div>
 
-  <form on:submit|preventDefault={handleSubmit} class="my-4">
+  <form on:submit|preventDefault={handleSubmit} class="my-4 hidden">
     <div class="flex items-center flex-col sm:flex-row">
       {#if success}
         <p class="dark:text-white">You have been added successfully. Thanks for joining.</p>
@@ -87,10 +87,10 @@
     </div>
   </form>
 
-  <div class="flex flex-col md:flex-row">
+  <div class="flex flex-col md:flex-row mt-4">
     {#each areas as area, index}
       <div
-        class="box m-3 bg-white dark:bg-black rounded-md py-3 px-12 active shadow-xl border-2 hover:border-primary-700 {animate}"
+        class="max-w-[350px] m-3 bg-white dark:bg-black rounded-md py-3 px-12 active shadow-xl border-2 hover:border-primary-700 {animate}"
       >
         <h3 class="dark:text-white text-3xl">
           {#if index === 0}
@@ -107,15 +107,3 @@
     {/each}
   </div>
 </div>
-
-<style>
-  .box {
-    max-width: 350px;
-  }
-
-  @media (min-width: 640px) {
-    .root {
-      height: 93vh;
-    }
-  }
-</style>
