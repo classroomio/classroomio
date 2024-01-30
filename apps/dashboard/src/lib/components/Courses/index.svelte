@@ -32,6 +32,7 @@
     {#each courses as courseData}
       {#key courseData.id}
         <Card
+          showContextMenu
           id={courseData.id}
           bannerImage={courseData.logo || '/images/classroomio-course-img-template.jpg'}
           title={courseData.title}

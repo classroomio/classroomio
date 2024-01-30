@@ -122,9 +122,8 @@
       document.addEventListener('mousemove', dragSidebar);
       document.addEventListener('mouseup', stopDragging);
       document.addEventListener('mousemove', handleCursor);
+      toggleSidebar(false);
     }
-
-    toggleSidebar(false);
   });
 
   onDestroy(() => {
