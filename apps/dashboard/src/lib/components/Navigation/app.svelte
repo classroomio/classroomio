@@ -35,8 +35,8 @@
   $: coursesPath = $appStore.isOrgSite
     ? '/lms/mylearning'
     : isCoursePage
-    ? `${$currentOrgPath}/courses`
-    : $currentOrgPath;
+      ? `${$currentOrgPath}/courses`
+      : $currentOrgPath;
 </script>
 
 <nav

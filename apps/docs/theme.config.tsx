@@ -23,17 +23,17 @@ const config: DocsThemeConfig = {
       />
       <meta
         name="description"
-        content="Spend less time doing the boring stuff, instead focus on impacting the lives of your students."
+        content="ClassroomIO is a no-code tool that allows you build and scale your own teaching platform with ease."
       />
       <meta name="theme-color" content="#ffffff" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <meta
         property="og:title"
-        content="ClassroomIO –&nbsp;The Open Source Platform for Tech Bootcamps"
+        content="ClassroomIO –&nbsp;Launch Your Online Bootcamp In Minutes"
       />
       <meta
         property="og:description"
-        content="Spend less time doing the boring stuff, instead focus on impacting the lives of your students."
+        content="ClassroomIO is a no-code tool that allows you build and scale your own teaching platform with ease."
       />
       <meta property="og:type" content="website" />
       <meta property="og:image:type" content="image/png" />
@@ -47,11 +47,11 @@ const config: DocsThemeConfig = {
       <meta name="twitter:creator" content="@rotimi_best" />
       <meta
         name="twitter:title"
-        content="ClassroomIO –&nbsp;The Open Source Platform for Tech Bootcamps"
+        content="ClassroomIO –&nbsp;Launch Your Online Bootcamp In Minutes"
       />
       <meta
         name="twitter:description"
-        content="Spend less time doing the boring stuff, instead focus on impacting the lives of your students."
+        content="ClassroomIO is a no-code tool that allows you build and scale your own teaching platform with ease."
       />
     </>
   ),
@@ -92,7 +92,7 @@ const config: DocsThemeConfig = {
         siteName: 'ClassroomIO Docs',
         title: 'ClassroomIO Documentation',
         description:
-          'Spend less time doing the boring stuff, instead focus on impacting the lives of your students.',
+          'ClassroomIO is a no-code tool that allows you build and scale your own teaching platform with ease.',
         images: [
           {
             url: `${process.env.imagePath}/img/logo-16.png`,

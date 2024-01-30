@@ -8,7 +8,7 @@
     <div class="w-full lg:w-2/4">
       <img src="/logo-192.png" alt="classroomio logo" class="w-[10%] lg:w-[5%] mb-5 lg:mb-10" />
       <p class="text-sm lg:text-md tracking-wide leading-7 lg:leading-7 text-gray-600 inter mb-5">
-        The Open Source Platform for Tech Bootcamps
+        Launch Your Online Bootcamp In Minutes
         <br />
         Making teaching and learning seamless for tech bootcamps
       </p>

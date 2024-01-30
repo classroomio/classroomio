@@ -5,5 +5,5 @@ export const newOrgModal = writable({
 });
 
 export const sideBar = writable({
-  hidden: false
+  hidden: true
 });

@@ -8,7 +8,7 @@
   export let course = {};
 
   function widgetControl() {
-    $handleOpenWidget.open = true;
+    $handleOpenWidget.open = !$handleOpenWidget.open;
   }
 </script>
 

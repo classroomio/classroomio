@@ -22,7 +22,7 @@
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
 
-  import { Restart  } from 'carbon-icons-svelte';
+  import { Restart } from 'carbon-icons-svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import generateSlug from '$lib/utils/functions/generateSlug';
 
@@ -36,7 +36,7 @@
   let avatar: string | undefined;
 
   function widgetControl() {
-    $handleOpenWidget.open = true;
+    $handleOpenWidget.open = !$handleOpenWidget.open;
   }
 
   function getLessonOrder(id: string) {
@@ -174,14 +174,14 @@
         grading: !!course.metadata.grading,
         lesson_download: !!course.metadata.lessonDownload,
         is_published: !!course.is_published,
-        allow_new_students: course.metadata.allowNewStudent,
+        allow_new_students: course.metadata.allowNewStudent
       };
     }
   }
 
   const generateNewCourseLink = () => {
     $course.slug = generateSlug($course.title);
-  }
+  };
 
   $: $settings.course_description = $course.description;
   $: $settings.course_title = $course.title;

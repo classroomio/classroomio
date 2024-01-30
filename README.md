@@ -1,6 +1,6 @@
 <a href="https://classroomio.com/">
-  <img alt="Spend less time on the boring stuff, and instead focus on impacting the lives of your students." src="https://classroomio.com/classroomio-opengraph-image.png" />
-  <h1 align="center">ClassroomIO</h1>
+  <img alt="ClassroomIO is a no-code tool that allows you build and scale your own teaching platform with ease." src="https://classroomio.com/classroomio-opengraph-image.png" />
+  <h1 align="center">ClassroomIO.com</h1>
   <p align="center">
     The Open Source Teaching Platform for Tech Bootcamps
     <br />
@@ -11,11 +11,11 @@
 <!-- [![Codacy Badge](https://api.codacy.com/project/badge/Grade/629e2bb8994345729513c4d69ccbe3d5)](https://app.codacy.com/gh/rotimi-best/classroomio?utm_source=github.com&utm_medium=referral&utm_content=rotimi-best/classroomio&utm_campaign=Badge_Grade)
 -->
 
-## ✨ About ClassroomIO
+## ✨ About ClassroomIO.com
 
 <img alt="ClassroomIO Courses page" src="https://classroomio.com/classroomio-courses.png" />
 
-ClassroomIO is a platform for bootcamps, individual educators, and training businesses that brings teaching and learning into one place while at the same time helping them be 10x more productive. With our platform, anyone can run multiple classes and cohorts all from one UI. The application is mobile-first, which means that students can access your lesson materials from any device.
+ClassroomIO.com is a platform for bootcamps, individual educators, and training businesses that brings teaching and learning into one place while at the same time helping them be 10x more productive. With our platform, anyone can run multiple classes and cohorts all from one UI. The application is mobile-first, which means that students can access your lesson materials from any device.
 
 ### Mission: Provide Students with the Best Learning Experience
 
