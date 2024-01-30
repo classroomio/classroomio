@@ -32,13 +32,13 @@
   import AddLessonModal from '$lib/components/Course/components/Lesson/AddLessonModal.svelte';
   import DateField from '$lib/components/Form/Date.svelte';
   import DeleteLessonConfirmation from '$lib/components/Course/components/Lesson/DeleteLessonConfirmation.svelte';
+  import { handleAddLessonWidget } from '$lib/components/Course/components/Navigation/store.js';
 
   export let data;
 
   let lessonEditing: string | undefined;
   let lessonToDelete: Lesson | undefined;
   let isStudent = true;
-  let openModal = false;
   let openDeleteModal = false;
 
   const flipDurationMs = 300;
@@ -55,7 +55,7 @@
   }
 
   function addLesson() {
-    openModal = true;
+    $handleAddLessonWidget.open = true;
   }
 
   function handleDndConsider(e: any) {
@@ -98,7 +98,9 @@
   }
 </script>
 
-<AddLessonModal {isStudent} bind:openModal />
+{#if $handleAddLessonWidget}
+  <AddLessonModal {isStudent} />
+{/if}
 
 <DeleteLessonConfirmation
   bind:openDeleteModal
