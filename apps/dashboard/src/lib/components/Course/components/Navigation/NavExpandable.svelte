@@ -53,11 +53,7 @@
     <span class="grow" />
 
     {#if label === 'Lessons' && !isLoading}
-      <IconButton
-        onClick={() => addLesson()}
-        size="small"
-        color="text-primary-700 bg-primary-200 dark:bg-neutral-500"
-      >
+      <IconButton onClick={() => addLesson()} size="small">
         <Add />
       </IconButton>
       <IconButton size="small" stopPropagation={true} onClick={toggleIsExpanded}>
