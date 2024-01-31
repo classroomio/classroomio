@@ -16,9 +16,14 @@ published: true
 
 Hey again, friends! 👋
 
+> In life's vast theater, emotions play a fleeting role. The world, indifferent to our inner turmoil, demands action. So rise, brush off setbacks, and toil relentlessly. For success bows not to sentiment, but to unwavering effort.
+
 In the last post, we discussed the importance of product-market fit in commodifying startups. Now that you've identified your target audience and validated your product idea, it's time to focus on growth.
 
 User acquisition is the lifeblood of any startup. Without a steady stream of users, your product will struggle to gain traction in the market. But with so many channels and tactics available, navigating the maze of user acquisition can be daunting.
+
+![best](/best.jpg)
+_this is a caption_
 
 Fear not! In this post, we'll break down some effective strategies for attracting and retaining loyal customers:
 

@@ -46,6 +46,9 @@ li {
     transform: translateY(1rem);
   }
 }
+.prose {
+  font-family: 'Inter', sans-serif;
+}
 
 .prose :is(h1, h2, h3, h4, h5, h6) {
   font-weight: 700;
@@ -69,9 +72,9 @@ li {
 .prose :is(h6) {
   font-size: 0.67em;
 }
+
 .prose :is(p, li) {
   margin-top: 4px;
-  font-size: 1.1em;
   color: #374151;
 }
 
@@ -84,4 +87,19 @@ li {
   padding: 1rem;
   border-radius: 8px;
   tab-size: 2;
+}
+.prose blockquote {
+  border-left: 4px solid gray;
+  font-style: italic;
+  font-weight: 500;
+  padding-left: 16px;
+  margin: 20px 0;
+}
+.prose figure + em {
+  display: block;
+  font-size: 18px;
+  margin-bottom: 40px;
+  border: none;
+  padding: none;
+  text-align: center;
 }

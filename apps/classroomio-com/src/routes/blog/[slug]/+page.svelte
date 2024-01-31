@@ -16,9 +16,9 @@
       <!-- Title -->
       <hgroup class="flex flex-col items-center justify-center text-center w-full">
         <p class="text-sm text-slate-500">{formatDate(data.meta.date)}</p>
-        <p class="font-bold text-3xl py-2 text-center">{data.meta.title}</p>
+        <p class="font-bold text-3xl py-2 text-center md:w-[60%]">{data.meta.title}</p>
       </hgroup>
-      <main class="px-6 md:px-[20%]">
+      <main class="px-6 md:px-[25%]">
         <div class="flex items-center justify-start gap-4 my-2 border-y border-slate-200 py-4">
           <img src={data.meta.avatar} alt="avatar" class="w-10 h-10 rounded-full" />
           <span>
