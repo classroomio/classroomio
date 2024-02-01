@@ -200,6 +200,8 @@ export async function getCourseBySiteName(siteName: string) {
 }
 
 export async function getCurrentOrg(siteName: string, justGet = false) {
+  console.log(siteName);
+  
   const { data, error } = await supabase
     .from('organization')
     .select(
@@ -214,6 +216,9 @@ export async function getCurrentOrg(siteName: string, justGet = false) {
     )
     .eq('siteName', siteName)
     .returns<CurrentOrg[]>();
+  console.log('data =', data);
+  console.log('error =', error);
+  
 
   const isDataEmpty = !data?.[0];
 
