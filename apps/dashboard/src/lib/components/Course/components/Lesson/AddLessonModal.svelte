@@ -13,8 +13,8 @@
   import TextChip from '$lib/components/Chip/Text.svelte';
   import Modal from '$lib/components/Modal/index.svelte';
   import { goto } from '$app/navigation';
+  import { handleAddLessonWidget } from '../Navigation/store';
 
-  export let openModal = false;
   export let isStudent = false;
   let errors = {
     title: ''
@@ -49,13 +49,13 @@
       $lessons = [...$lessons, lesson];
       goto('/courses/' + $course.id + '/lessons/' + lesson.id);
     }
-    openModal = false;
+    $handleAddLessonWidget.open = false;
   };
 </script>
 
 <Modal
-  onClose={() => (openModal = false)}
-  bind:open={openModal}
+  onClose={() => ($handleAddLessonWidget.open = false)}
+  bind:open={$handleAddLessonWidget.open}
   width="w-[80%] md:w-[60%]"
   containerClass="overflow-hidden"
   modalHeading="Add New Lesson"
