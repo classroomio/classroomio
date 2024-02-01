@@ -14,13 +14,13 @@
   import { browser } from '$app/environment';
   import { course } from '$lib/components/Course/store';
   import { snackbar } from '$lib/components/Snackbar/store';
+  import { globalStore } from '$lib/utils/store/app';
 
   export let data;
 
   let borderBottomGrey = 'border-r-0 border-t-0 border-b border-l-0 border-gray-300';
   let borderleftGrey = 'border-r-0 border-t-0 border-b-0 border-l border-gray-300';
   let students = [];
-  let isStudent = false;
 
   let lessonMapping = {}; // { lessonId: { exerciseId: exerciseTitle, ... }, ... }
   let studentMarksByExerciseId = {}; // { groupMemberId: { exerciseId: `total_gotten/points`, ... }, ... }
@@ -78,14 +78,14 @@
     });
   }
 
-  $: students = isStudent
+  $: students = $globalStore.isStudent
     ? $group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
     : $group.people.filter((person) => !!person.profile && person.role_id === ROLE.STUDENT);
 
   $: browser && $course.id && firstRender($course.id);
 </script>
 
-<CourseContainer bind:isStudent bind:courseId={data.courseId}>
+<CourseContainer bind:courseId={data.courseId}>
   <PageNav title="Marks" />
 
   <PageBody width="w-full max-w-6xl md:w-11/12">

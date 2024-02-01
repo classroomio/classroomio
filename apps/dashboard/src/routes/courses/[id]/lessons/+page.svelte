@@ -18,7 +18,6 @@
   import Select from '$lib/components/Form/Select.svelte';
   import { updateLesson } from '$lib/utils/services/courses';
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
-  import { profile } from '$lib/utils/store/user';
   import type { Lesson } from '$lib/utils/types';
   import {
     lessons,
@@ -88,14 +87,6 @@
       return index + 1;
     }
   }
-
-  $: {
-    const user = $group.people.find((person) => person.profile_id === $profile.id);
-
-    if (user) {
-      isStudent = user.role_id === 3;
-    }
-  }
 </script>
 
 {#if $handleAddLessonWidget}
@@ -108,6 +99,7 @@
   deleteLesson={() => handleDelete(lessonToDelete?.id)}
 />
 
+<!-- TODO: Refactor usage of two way binding isStudent, rather use $globalStore.isStudent -->
 <CourseContainer bind:isStudent bind:courseId={data.courseId}>
   <PageNav title="Lessons">
     <div slot="widget">

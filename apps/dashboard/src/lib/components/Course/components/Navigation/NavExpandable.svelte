@@ -3,7 +3,7 @@
   import ChevronDownIcon from 'carbon-icons-svelte/lib/ChevronDown.svelte';
   import ChevronUpIcon from 'carbon-icons-svelte/lib/ChevronUp.svelte';
   import Add from 'carbon-icons-svelte/lib/Add.svelte';
-  import { SkeletonPlaceholder, SkeletonText } from 'carbon-components-svelte';
+  import { SkeletonText } from 'carbon-components-svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
   import { handleAddLessonWidget } from './store';
@@ -15,6 +15,8 @@
   export let isExpanded = true;
   export let total = 0;
   export let isLoading = true;
+  export let isLesson = false;
+  export let isStudent = true;
   // export let subMenuItems = [];
 
   function addLesson() {
@@ -52,10 +54,12 @@
     {/if}
     <span class="grow" />
 
-    {#if label === 'Lessons' && !isLoading}
-      <IconButton onClick={() => addLesson()} size="small">
-        <Add />
-      </IconButton>
+    {#if isLesson && !isLoading}
+      {#if !isStudent}
+        <IconButton onClick={() => addLesson()} size="small">
+          <Add />
+        </IconButton>
+      {/if}
       <IconButton size="small" stopPropagation={true} onClick={toggleIsExpanded}>
         {#if isExpanded}
           <ChevronUpIcon class="carbon-icon dark:text-white" />

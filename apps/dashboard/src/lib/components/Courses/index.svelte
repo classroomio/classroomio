@@ -5,7 +5,7 @@
   import CoursesEmptyIcon from '../Icons/CoursesEmptyIcon.svelte';
   import { courseMetaDeta } from './store';
   import type { Course } from '$lib/utils/types';
-  import { appStore } from '$lib/utils/store/app';
+  import { globalStore } from '$lib/utils/store/app';
 
   export let courses: Course[] = [];
   export let emptyTitle = 'No Courses Created';
@@ -42,7 +42,7 @@
           currency={courseData.currency}
           totalLessons={courseData.total_lessons}
           totalStudents={courseData.total_students}
-          isLMS={$appStore.isOrgSite}
+          isLMS={$globalStore.isOrgSite}
           progressRate={calcProgressRate(courseData.progress_rate, courseData.total_lessons)}
         />
       {/key}

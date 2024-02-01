@@ -217,6 +217,7 @@
   $: isLessonComplete = getIsLessonComplete($lesson.lesson_completion, $profile.id);
 </script>
 
+<!-- TODO: Refactor usage of two way binding isStudent, rather use $globalStore.isStudent -->
 <CourseContainer
   bind:isStudent
   {path}

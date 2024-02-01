@@ -14,12 +14,11 @@
   import StudentCertificate from '$lib/components/Course/components/Ceritficate/StudentCertificate/Index.svelte';
 
   export let courseId: string = '';
-  let isStudent = false;
 </script>
 
 <IssueCertificateModal />
 
-<CourseContainer bind:isStudent bind:courseId>
+<CourseContainer bind:courseId>
   <PageNav title="Certificates" disableSticky={true}>
     <slot:fragment slot="widget">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
