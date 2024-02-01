@@ -36,6 +36,7 @@
     fullname: '',
     avatarUrl: ''
   };
+  let pollData = [];
   let pollChannel: RealtimeChannel;
   let pollSubmissionsChannel: RealtimeChannel;
 
@@ -187,99 +188,12 @@
     };
   }
 
-  async function handlePollInsert(payload: RealtimePostgresChangesPayload<FetchPollsResponse>) {
-    const insertedPoll = payload.new as FetchPollsResponse;
-    console.log(insertedPoll);
-    return;
-
-    const {
-      data,
-      error
-    }: PostgrestSingleResponse<{
-      newPoll: {
-        id: string;
-        courseId: string;
-        expiration: string;
-        authorId: string;
-        status: string;
-        question: string;
-        created_at: string;
-        author: {
-          profile: {
-            username: string;
-            fullname: string;
-            avatar_url: string;
-          };
-        };
-        options: {
-          id: string;
-          label: string;
-          submissions: {
-            selectedBy: {
-              id: string;
-              profile: {
-                username: string;
-                fullname: string;
-                avatar_url: string;
-              };
-            };
-          }[];
-        }[];
-      };
-    }> = await supabase
-      .from('apps_poll')
-      .select(
-        `
-      *,
-      id,
-      courseId,
-      expiration,
-      authorId,
-      status,
-      question,
-      created_at,
-      author:groupmember(
-        profile(
-          username,
-          fullname,
-          avatar_url
-        )
-      ),
-      options: apps_poll_option (
-        id,
-        label,
-        submissions:apps_poll_submission(
-          selectedBy:groupmember(
-            id,
-            profile(
-              username,
-              fullname,
-              avatar_url
-            )
-          )
-        )
-      )
-    `
-      )
-      .eq(
-        'id',
-        insertedPoll.map((poll) => poll.id)
-      )
-      .single();
-
-    console.log('updatedPoll => data', data);
-    console.log('updatedPoll => error', error);
-
-    if (error || !data) {
-      return;
-    }
-  }
-
   onMount(async () => {
     if (!$course.id) return;
 
     isLoading = true;
     const { data, error } = await fetchPolls($course.id);
+    pollData = data;
 
     if (!data || error) {
       console.log(error);
@@ -287,7 +201,9 @@
       return;
     }
 
-    polls.set(getPollsData(data, $apps.isStudent));
+    console.log(pollData);
+
+    polls.set(getPollsData(pollData, $apps.isStudent));
 
     setCoursePolls();
 
@@ -298,7 +214,17 @@
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'apps_poll' },
-        handlePollInsert
+        (payload) => {
+          console.log('Change recieved', payload);
+          const { old, new: newPollsPayload } = payload;
+
+          pollData = [
+            ...pollData,
+            {
+              ...newPollsPayload
+            }
+          ];
+        }
       )
       .subscribe();
 
