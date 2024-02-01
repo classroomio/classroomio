@@ -6,7 +6,7 @@
   import Tabs from './components/Tabs.svelte';
   import { polls } from './store';
   import type { PollType, TabsType, PollOptionsSubmissionType } from './types';
-  import { apps } from '$lib/components/Apps/store';
+  import { globalStore } from '$lib/utils/store/app';
   import { getSupabase } from '$lib/utils/functions/supabase';
   import { profile } from '$lib/utils/store/user';
   import { group, course } from '$lib/components/Course/store';
@@ -198,7 +198,7 @@
       return;
     }
 
-    polls.set(getPollsData(data, $apps.isStudent));
+    polls.set(getPollsData(data, $globalStore.isStudent));
 
     setCoursePolls();
 

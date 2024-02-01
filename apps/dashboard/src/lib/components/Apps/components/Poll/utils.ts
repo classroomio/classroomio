@@ -1,6 +1,6 @@
 import type { PollType, FetchPollsResponse } from './types';
 
-export const getPollsData = (data: FetchPollsResponse, isStudent: boolean) => {
+export const getPollsData = (data: FetchPollsResponse, isStudent?: boolean) => {
   const pollsData: PollType[] = data.map((appsPollItem) => ({
     id: appsPollItem.id,
     courseId: appsPollItem.courseId,

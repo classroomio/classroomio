@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
   import { browser } from '$app/environment';
   import { page } from '$app/stores';
-  import { appStore } from '$lib/utils/store/app';
+  import { globalStore } from '$lib/utils/store/app';
   import ErrorIcon from '$lib/components/Icons/ErrorIcon.svelte';
   import ErrorIconDarkMode from '$lib/components/Icons/ErrorIconDarkMode.svelte';
 
@@ -36,7 +36,7 @@
 
   <div class="w-72 lg:w-2/4 flex items-center justify-center">
     <!-- to check if it's in dark mode so as to render the appropriate svg -->
-    {#if $appStore.isDark}
+    {#if $globalStore.isDark}
       <ErrorIconDarkMode />
     {:else}
       <ErrorIcon />

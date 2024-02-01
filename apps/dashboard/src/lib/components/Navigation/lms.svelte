@@ -8,7 +8,7 @@
   import TextChip from '$lib/components/Chip/Text.svelte';
 
   import IconButton from '$lib/components/IconButton/index.svelte';
-  import { appStore } from '$lib/utils/store/app';
+  import { globalStore } from '$lib/utils/store/app';
   import { Close, Menu } from 'carbon-icons-svelte';
   import { sideBar } from '$lib/components/Org/store';
   import { currentOrg } from '$lib/utils/store/org';
@@ -21,11 +21,11 @@
   };
 
   function toggleDarkMode() {
-    $appStore.isDark = !$appStore.isDark;
+    $globalStore.isDark = !$globalStore.isDark;
 
-    toggleBodyByMode($appStore.isDark);
+    toggleBodyByMode($globalStore.isDark);
     if (browser) {
-      localStorage.setItem('mode', $appStore.isDark ? 'dark' : '');
+      localStorage.setItem('mode', $globalStore.isDark ? 'dark' : '');
     }
   }
 
@@ -80,7 +80,7 @@
     </li>
     <li>
       <IconButton size="small" onClick={toggleDarkMode}>
-        {#if $appStore.isDark}
+        {#if $globalStore.isDark}
           <SunIcon size={16} class="text-white" />
         {:else}
           <MoonIcon size={16} class="text-white" />
