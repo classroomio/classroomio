@@ -14,10 +14,6 @@ li {
   font-family: 'Inter', sans-serif;
 }
 
-.inter {
-  font-family: 'Inter', sans-serif;
-}
-
 .floating {
   -webkit-animation: floating 2.5s linear infinite;
   animation: floating 2.5s linear infinite;
@@ -74,12 +70,14 @@ li {
 }
 
 .prose :is(p, li) {
-  margin-top: 4px;
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
   color: #374151;
 }
 
 .prose :is(ul, ol) {
   list-style-type: disc;
+  padding-left: 3rem;
 }
 
 .prose pre {
@@ -97,7 +95,7 @@ li {
 }
 .prose figure + em {
   display: block;
-  font-size: 18px;
+  font-size: 14px;
   margin-bottom: 40px;
   border: none;
   padding: none;

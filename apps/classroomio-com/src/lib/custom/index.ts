@@ -1,2 +1,2 @@
-import img from './img.svelte'
-export { img }
+import img from './img.svelte';
+export { img };

@@ -7,7 +7,7 @@
   <div class="flex flex-col lg:flex-row justify-between items-center py-[10%] pl-5 lg:pl-0">
     <div class="w-full lg:w-2/4">
       <img src="/logo-192.png" alt="classroomio logo" class="w-[10%] lg:w-[5%] mb-5 lg:mb-10" />
-      <p class="text-sm lg:text-md tracking-wide leading-7 lg:leading-7 text-gray-600 inter mb-5">
+      <p class="text-sm lg:text-md tracking-wide leading-7 lg:leading-7 text-gray-600 mb-5 mr-2">
         Launch Your Online Bootcamp In Minutes
         <br />
         Making teaching and learning seamless for tech bootcamps
@@ -50,27 +50,27 @@
       class="flex justify-between items-start flex-col lg:flex-row w-full lg:w-2/4 pr-[5%] mt-16 lg:mt-0 space-y-6 lg:space-y-0"
     >
       <div>
-        <h3 class="mb-3 lg:mb-10 text-base lg:text-md font-semibold leading-6 text-gray-900 inter">
+        <h3 class="mb-3 lg:mb-10 text-base lg:text-md font-semibold leading-6 text-gray-900">
           Product
         </h3>
         <ul class="space-y-2 lg:space-y-4">
           <li class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900">
-            <a href="#coursemanagement"> Course Management </a>
+            <a href="/#coursemanagement"> Course Management </a>
           </li>
           <li class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900">
-            <a href="#customization"> Customizations </a>
+            <a href="/#customization"> Customizations </a>
           </li>
           <li class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900">
-            <a href="#collaboration"> Forum </a>
+            <a href="/#collaboration"> Forum </a>
           </li>
           <li class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900">
-            <a href="#ai"> AI Lesson Planner </a>
+            <a href="/#ai"> AI Lesson Planner </a>
           </li>
         </ul>
       </div>
 
       <div>
-        <h3 class="mb-3 lg:mb-10 text-base lg:text-md font-semibold leading-6 text-gray-900 inter">
+        <h3 class="mb-3 lg:mb-10 text-base lg:text-md font-semibold leading-6 text-gray-900">
           Resources
         </h3>
         <ul class="space-y-2 lg:space-y-4">
@@ -94,7 +94,7 @@
       </div>
 
       <div>
-        <h3 class="mb-3 lg:mb-10 text-base lg:text-md font-semibold leading-6 text-gray-900 inter">
+        <h3 class="mb-3 lg:mb-10 text-base lg:text-md font-semibold leading-6 text-gray-900">
           Company
         </h3>
         <ul class="space-y-2 lg:space-y-4">

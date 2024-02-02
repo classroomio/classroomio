@@ -76,7 +76,7 @@
 
   {#if PUBLIC_ENABLE_USERS_COMPANIES}
     <div class="px-[15%] mb-[10%]">
-      <h2 class="inter text-base lg:text-xl font-semibold text-gray-900">Used at</h2>
+      <h2 class="text-base lg:text-xl font-semibold text-gray-900">Used at</h2>
       <div class="w-full flex flex-wrap flex-row gap-5 justify-between items-center py-[5%]">
         <img src="/hero-1.svg" alt="" class="w-[30%] lg:w-[13%]" />
         <img src="/hero-2.svg" alt="" class="w-[30%] lg:w-[13%]" />

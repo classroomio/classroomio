@@ -8,6 +8,7 @@
   import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
   import CourseIcon from '$lib/Icons/CourseIcon.svelte';
   import MapCenter from 'carbon-icons-svelte/lib/MapCenter.svelte';
+  import { goto } from '$app/navigation';
 
   let showsubNav = false;
   let showNav = false;
@@ -89,7 +90,10 @@
             <button
               use:melt={$item}
               class="flex justify-between items-center w-full rounded-lg hover:bg-slate-100 p-5 mb-4"
-              on:m-click={() => scroll(superpower.key)}
+              on:m-click={() => {
+                goto('/');
+                setTimeout(() => scroll(superpower.key), 200);
+              }}
             >
               {#if superpower.key === 'coursemanagement'}
                 <CourseIcon />
@@ -114,15 +118,21 @@
           <div use:melt={$arrow} />
         </div>
       </li>
-      <!--  -->
-      <a href="/#morefeatures">
+      <!-- More Features -->
+      <!-- <a href="/#morefeatures">
         <li class="text-gray-800 font-semibold text-sm cursor-pointer">More features</li>
-      </a>
-      <a href="/blog">
-        <li class="text-gray-800 font-semibold text-sm cursor-pointer">Blog</li>
-      </a>
+      </a> -->
+      <!-- Pricing -->
       <a href="/#pricing">
         <li class="text-gray-800 font-semibold text-sm cursor-pointer">Pricing</li>
+      </a>
+      <!-- Docs -->
+      <a href="/docs">
+        <li class="text-gray-800 font-semibold text-sm cursor-pointer">Docs</li>
+      </a>
+      <!-- Blog -->
+      <a href="/blog">
+        <li class="text-gray-800 font-semibold text-sm cursor-pointer">Blog</li>
       </a>
     </ul>
   </nav>
@@ -175,7 +185,7 @@
             {#if showsubNav}
               <div in:fly={{ y: -20, duration: 700 }} out:fly={{ y: 20, duration: 400 }}>
                 {#each superpowers as superpower}
-                  <a href="#{superpower.key}">
+                  <a href="/#{superpower.key}">
                     <p
                       class="font-normal text-xs text-gray-700 hover:bg-gray-100 rounded-lg py-2.5 pl-5"
                     >
@@ -186,21 +196,32 @@
               </div>
             {/if}
           </li>
-          <!--  -->
+          <!-- Pricing -->
+          <li
+            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full"
+          >
+            <a on:click={handleShowNav} href="/#pricing"> Pricing </a>
+          </li>
+
+          <!-- Docs -->
           <li
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
           >
-            <a on:click={handleShowNav} href="/#morefeatures"> More features </a>
+            <a on:click={handleShowNav} href="/docs"> Docs </a>
           </li>
+
+          <!-- Blog -->
           <li
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
           >
             <a on:click={handleShowNav} href="/blog"> Blog </a>
           </li>
+
+          <!-- More Features -->
           <li
-            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full"
+            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
           >
-            <a on:click={handleShowNav} href="/#pricing"> Pricing </a>
+            <a on:click={handleShowNav} href="/#morefeatures"> More features </a>
           </li>
         </ul>
       </nav>
