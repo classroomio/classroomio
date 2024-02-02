@@ -127,7 +127,7 @@
         <li class="text-gray-800 font-semibold text-sm cursor-pointer">Pricing</li>
       </a>
       <!-- Docs -->
-      <a href="/docs">
+      <a href="/docs" target="_blank">
         <li class="text-gray-800 font-semibold text-sm cursor-pointer">Docs</li>
       </a>
       <!-- Blog -->
@@ -207,7 +207,7 @@
           <li
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
           >
-            <a on:click={handleShowNav} href="/docs"> Docs </a>
+            <a on:click={handleShowNav} href="/docs" target="_blank"> Docs </a>
           </li>
 
           <!-- Blog -->
