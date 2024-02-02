@@ -2,12 +2,13 @@
   import { onMount } from 'svelte';
   import { sideBar } from '$lib/components/Org/store';
   import { apps } from '$lib/components/Apps/store';
+  import { globalStore } from '$lib/utils/store/app';
   import APPS_CONSTANTS from '$lib/components/Apps/constants';
   import hotkeys from 'hotkeys-js';
 
   function handleClose() {
     $apps.selectedApp = undefined;
-    if ($apps.isStudent) {
+    if ($globalStore.isStudent) {
       $apps.open = false;
     }
   }

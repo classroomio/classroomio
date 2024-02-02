@@ -48,27 +48,23 @@
   >
     <div class="w-full">
       <h2
-        class="w-full order-first text-3xl font-semibold inter tracking-tight text-gray-900 sm:text-5xl"
+        class="w-full order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl"
       >
         1 thousand
       </h2>
-      <p class="text-base leading-7 text-gray-600 inter">Feedback collected</p>
+      <p class="text-base leading-7 text-gray-600">Feedback collected</p>
     </div>
     <div class="w-full">
-      <h2
-        class="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl inter"
-      >
+      <h2 class="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
         5 thousand
       </h2>
-      <p class="text-base leading-7 text-gray-600 inter">Documents processed</p>
+      <p class="text-base leading-7 text-gray-600">Documents processed</p>
     </div>
     <div class="w-full">
-      <h2
-        class="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl inter"
-      >
+      <h2 class="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
         1 million
       </h2>
-      <p class="text-base leading-7 text-gray-600 inter">Page views recorded</p>
+      <p class="text-base leading-7 text-gray-600">Page views recorded</p>
     </div>
   </div>
 {/if}

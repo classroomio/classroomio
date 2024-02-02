@@ -9,7 +9,7 @@
   import Plain from './certificates/Plain.svelte';
   import { course } from '$lib/components/Course/store';
   import { currentOrg } from '$lib/utils/store/org';
-  import { appStore } from '$lib/utils/store/app';
+  import { globalStore } from '$lib/utils/store/app';
 
   const studentNamePlaceholder = 'Name of student';
   const themes = ['professional', 'plain'];
@@ -94,7 +94,7 @@
           class="my-4"
           size="sm"
         >
-          <span slot="labelA" style={$appStore.isDark ? 'color: white' : 'color: #161616'}
+          <span slot="labelA" style={$globalStore.isDark ? 'color: white' : 'color: #161616'}
             >Locked</span
           >
           <span slot="labelB" style="color: green">Unlocked</span>
