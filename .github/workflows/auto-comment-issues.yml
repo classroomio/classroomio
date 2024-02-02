@@ -20,4 +20,4 @@ jobs:
           issue-number: ${{ github.event.issue.number }}
           body: |
             Thanks for the issue, our team will look into it as soon as possible. If you would like to work on this issue, please wait for us to decide if it's ready. To claim an issue that does not have the "needs triage" label, please leave a comment that says ".take". If you have any questions, please reach out to us on [Discord](https://discord.gg/KJUb2AwM) or follow up on the issue itself.
-            For full info on how to contribute, please check out our [contributors guide](https://classroomio.com/docs/contributorguides/devs)
+            For full info on how to contribute, please check out our [contributors guide](https://classroomio.com/docs/contributor-guides/devs)
