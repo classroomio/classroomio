@@ -1,0 +1,44 @@
+version: '3.8'
+services:
+  classroomio-com:
+    build: ./apps/classroomio-com
+    command: pnpm dev
+    volumes:
+      - ./apps/classroomio-com:/usr/src/classroomio-com
+    ports:
+      - 3001:3000
+    depends_on:
+      - supabase
+    environment:
+      - SUPABASE_URL=http://supabase:8000
+      - SUPABASE_SERVICE_ROLE_KEY=service_role_key
+      - SUPABASE_ANON_KEY=anon_key
+
+  dashboard:
+    build: ./apps/dashboard
+    command: pnpm dev
+    volumes:
+      - ./apps/dashboard:/usr/src/dashboard
+    ports:
+      - 3002:3000
+    depends_on:
+      - supabase
+    environment:
+      - SUPABASE_URL=http://supabase:8000
+      - SUPABASE_SERVICE_ROLE_KEY=service_role_key
+      - SUPABASE_ANON_KEY=anon_key
+
+  supabase:
+    image: bitnami/supabase-postgres
+    ports:
+      - 54321:54321
+      - 54323:54323
+      - 54324:54324
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+      - DB_HOST=supabase
+      - DB_PORT=5432
+      - SUPABASE_JWT_SECRET=your-jwt-secret
+      - AUTO_APPLY_MIGRATIONS=true
