@@ -181,3 +181,55 @@ This repo is a mono repo that consists of 3 projects:
    - **classroomio-com**: `pnpm dev --filter=classroomio-com`
    - **dashboard**: `pnpm dev --filter=dashboard`
    - **docs**: `pnpm dev --filter=docs`
+
+
+## Steps to Setup this project with Docker and Docker Compose
+
+
+### Prerequisites
+
+- Have Docker installed on your machine. 
+  If not, you can download the right option for your OS from [here](https://docs.docker.com/get-docker/).
+
+- Have Docker Compose installed on your machine. It comes pre-installed with Docker Desktop on Windows and Mac. 
+  For Linux users, you can follow the instructions [here](https://docs.docker.com/compose/install/linux/).
+
+
+### Steps
+
+1. Fork this repository.
+
+2. Clone the forked project repository to your local machine.
+
+   ```bash
+   git clone https://github.com/<github-account>/classroomio.git
+   ```
+
+3. Navigate to the project directory or change your current directory to the project directory.
+
+   ```bash
+   cd classroomio
+   ```
+
+4. Build and run the Docker services: Use Docker Compose to build and run the services defined in the `docker-compose.yaml` file.
+
+   ```bash
+    docker-compose up --build
+   ```
+
+
+This command will start all the services defined in the `docker-compose.yaml` file. 
+
+These services include:
+
+   - **classroomio-com**: This service runs the ClassroomIO application. It is accessible on port 3001 of your localhost.
+   - **dashboard**: This service runs the Dashboard application. It is accessible on port 3002 of your localhost.
+   - **supabase**: This service runs a Supabase Postgres database. It is accessible on ports `54321`, `54323`, and `54324` of your *localhost*.
+
+
+Access the applications
+
+You can now access the ClassroomIO application at [http://localhost:3001](http://localhost:3001) and the Dashboard application at [http://localhost:3002](http://localhost:3002).
+
+Note
+The `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_ANON_KEY`, and `SUPABASE_JWT_SECRET` environment variables in the `docker-compose.yaml` file are placeholders. Replace them with your actual Supabase keys and JWT secret for the services to function correctly.
