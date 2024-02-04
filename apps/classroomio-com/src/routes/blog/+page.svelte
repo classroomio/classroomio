@@ -14,7 +14,7 @@
       class="mx-auto text-3xl md:text-4xl lg:text-6xl font-normal leading-[1.5] text-slate-900 flex flex-col items-center"
     >
       <span>What's new on</span>
-      <span class="text-[#1D4EE2] relative"
+      <span class="text-blue-700 relative"
         >ClassroomIO?
         <svg
           aria-hidden="true"

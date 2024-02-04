@@ -139,7 +139,7 @@
 
   <div class="justify-between items-center flex-row hidden md:hidden lg:flex">
     <!-- <button
-      class="bg-[#1D4EE2] text-white text-sm font-medium px-4 py-1.5 rounded-md mr-5"
+      class="bg-blue-700 text-white text-sm font-medium px-4 py-1.5 rounded-md mr-5"
     >
       Sign Up
     </button> -->

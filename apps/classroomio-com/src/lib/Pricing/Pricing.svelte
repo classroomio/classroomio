@@ -39,7 +39,7 @@
 <section id="pricing" class="py-[12%]">
   <div class="px-[6%] flex flex-col justify-center items-center">
     <div class="text-center mb-[3%]">
-      <h3 id="pricing" class="text-[#1D4EE2] text-md font-semibold tracking-wide">Pricing</h3>
+      <h3 id="pricing" class="text-blue-700 text-md font-semibold tracking-wide">Pricing</h3>
       <h1 class="my-5 lg:my-4 font-semibold tracking-tight text-gray-900 text-3xl lg:text-4xl">
         For teams and individuals
       </h1>
@@ -55,7 +55,7 @@
         style="background-color: {prices ? 'initial' : '#1D4EE2'}; color: {prices
           ? '#777E8A'
           : '#fff'}"
-        class="bg-[#1D4EE2] text-white rounded-[30px] py-1 px-3 lg:py-2 lg:px-4 text-xs"
+        class="bg-blue-700 text-white rounded-[30px] py-1 px-3 lg:py-2 lg:px-4 text-xs"
         on:click={handlePriceChange}>Monthly</button
       >
       <button
@@ -164,7 +164,7 @@
     >
       <div class="mr-5 pl-5">
         <h2
-          class="text-md lg:text-xl font-semibold font-display leading-8 tracking-wide lg:tracking-tight text-[#1D4EE2] mb-0 lg:mb-4"
+          class="text-md lg:text-xl font-semibold font-display leading-8 tracking-wide lg:tracking-tight text-blue-700 mb-0 lg:mb-4"
         >
           Hobby
         </h2>
@@ -176,7 +176,7 @@
         </p>
       </div>
         <button
-          class="font-semibold text-base lg:text-md text-white leading-5 mt-5 lg:m-0 p-4 lg:py-5 ml-5 bg-[#1D4EE2] rounded-lg lg:rounded-md w-[70%] lg:w-full"
+          class="font-semibold text-base lg:text-md text-white leading-5 mt-5 lg:m-0 p-4 lg:py-5 ml-5 bg-blue-700 rounded-lg lg:rounded-md w-[70%] lg:w-full"
         >
           Create a free account
         </button>

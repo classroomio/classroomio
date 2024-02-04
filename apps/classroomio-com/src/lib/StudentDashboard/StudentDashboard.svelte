@@ -1,11 +1,8 @@
-<section
-  id="student-dashboard"
-  class="text-center text-white py-[10%] px-3 lg:px-0 bg-black"
->
+<section id="student-dashboard" class="text-center text-white py-[10%] px-3 lg:px-0 bg-black">
   <div class="mb-10">
     <a
       href="#student-dashboard"
-      class="rounded-full px-4 py-2 text-sm font-medium hover:underline bg-[#1D4EE2] underline"
+      class="rounded-full px-4 py-2 text-sm font-medium hover:underline bg-blue-700 underline"
       ><span class="">yourorg</span>.classroomio.com</a
     >
   </div>
@@ -18,8 +15,8 @@
   <p
     class="mx-auto mt-10 lg:mt-6 px-4 lg:p-0 text-md tracking-wide leading-6 text-gray-400 lg:w-2/4"
   >
-    Once you create an account, you get a dedicated dashboard where your
-    students can access all their courses, assignments, and more.
+    Once you create an account, you get a dedicated dashboard where your students can access all
+    their courses, assignments, and more.
   </p>
 
   <div class="relative my-5 md:my-10">
@@ -32,10 +29,7 @@
       playsinline
       preload="auto"
     >
-      <source
-        src="./student-dashboard.mp4"
-        type="video/mp4"
-      />
+      <source src="./student-dashboard.mp4" type="video/mp4" />
       <track kind="captions" />
     </video>
   </div>

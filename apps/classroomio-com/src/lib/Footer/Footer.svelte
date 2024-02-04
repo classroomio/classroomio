@@ -47,7 +47,7 @@
     </div>
 
     <nav
-      class="flex justify-between items-start flex-col lg:flex-row w-full lg:w-2/4 pr-[5%] mt-16 lg:mt-0 space-y-6 lg:space-y-0"
+      class="flex justify-between items-start flex-col lg:flex-row w-full lg:w-2/4 gap-3 mt-16 lg:mt-0 space-y-6 lg:space-y-0"
     >
       <div>
         <h3 class="mb-3 lg:mb-10 text-base lg:text-md font-semibold leading-6 text-gray-900">
@@ -89,6 +89,9 @@
             <a target="_blank" href="https://classroomio.com/docs/quickstart/signup">
               Getting Started
             </a>
+          </li>
+          <li class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900">
+            <a href="/oss-friends"> OSS Friends </a>
           </li>
         </ul>
       </div>
