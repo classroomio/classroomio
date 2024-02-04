@@ -1,13 +1,26 @@
-# Build stage
-FROM node:18 AS build
-WORKDIR /usr/src/classroomio-com
-COPY package*.json ./
-RUN npm install
+# Use an official Node.js runtime as the base image
+FROM node:18
+
+# Set the working directory in the Docker container
+WORKDIR /usr/src/app
+
+# Copy everything from the current directory to the Docker container
 COPY . .
+
+# Navigate to the classroomio-com directory
+WORKDIR /usr/src/app/classroomio-com
+
+# Install pnpm globally
+RUN npm install -g pnpm
+
+# Install the application's dependencies inside the Docker container
+RUN pnpm install
+
+# Build the application
 RUN npm run build
 
-# Production stage
-FROM nginx:stable-alpine AS production
-COPY --from=build /app/build /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+# Make port 3000 available to the outside world
+EXPOSE 3000
+
+# Define the command that should be executed when the Docker container starts up
+CMD [ "npm", "dev" ]

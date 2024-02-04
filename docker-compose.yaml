@@ -1,10 +1,13 @@
 version: '3.8'
 services:
   classroomio-com:
-    build: ./apps/classroomio-com
+    build: 
+      context: ./
+      dockerfile: ./apps/classroomio-com/Dockerfile
     command: pnpm dev
     volumes:
       - ./apps/classroomio-com:/usr/src/classroomio-com
+      - ./packages:/usr/src/packages
     ports:
       - 3001:3000
     depends_on:
@@ -15,10 +18,13 @@ services:
       - SUPABASE_ANON_KEY=anon_key
 
   dashboard:
-    build: ./apps/dashboard
-    command: pnpm dev
+    build: 
+      context: ./ 
+      dockerfile: ./apps/dashboard/Dockerfile
+    command: pnpm start
     volumes:
       - ./apps/dashboard:/usr/src/dashboard
+      - ./packages:/usr/src/packages
     ports:
       - 3002:3000
     depends_on:

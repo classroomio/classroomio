@@ -1,22 +1,29 @@
+# Use an official Node.js runtime as the base image
 FROM node:18
 
-# Set the working directory
-WORKDIR /usr/src/apps
+# Set the working directory in the Docker container
+WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json
-COPY package*.json ./
-
-# Install dependencies
-RUN npm install
-
-# Copy the rest of the code
+# Copy everything from the current directory to the Docker container
 COPY . .
 
-# Build the application 
+# Navigate to the dashboard directory
+WORKDIR /usr/src/app/dashboard
+
+# Install pnpm globally
+RUN npm install -g pnpm
+
+# Install the application's dependencies inside the Docker container
+RUN pnpm install
+
+# Build the application
 RUN npm run build
 
-# Expose the port the app runs on
+#TODO: the build is failing because of the $env, add this part to the readme and test again.
+#TODO: I need to figure out why the dashboard triggers the classroomio-com build
+
+# Make port 3000 available to the outside world
 EXPOSE 3000
 
-# Start the application
-CMD ["npm", "start"]
+# Define the command that should be executed when the Docker container starts up
+CMD [ "npm", "start" ]
