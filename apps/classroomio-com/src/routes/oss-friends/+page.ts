@@ -44,12 +44,6 @@ export async function load() {
       href: 'https://formbricks.com'
     },
     {
-      name: 'Papermark',
-      description:
-        'Open-Source Docsend Alternative to securely share documents with real-time analytics.',
-      href: 'https://papermark.io'
-    },
-    {
       name: 'Hanko',
       description:
         'Open-source authentication and user management for the passkey era. Integrated in minutes, for web and mobile apps.',
@@ -77,6 +71,12 @@ export async function load() {
       name: 'OpenStatus',
       description: 'Open-source monitoring platform with beautiful status pages.',
       href: 'https://www.openstatus.dev'
+    },
+    {
+      name: 'Papermark',
+      description:
+        'Open-Source Docsend Alternative to securely share documents with real-time analytics.',
+      href: 'https://papermark.io'
     },
     {
       name: 'Trigger',
