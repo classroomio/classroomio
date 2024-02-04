@@ -4,7 +4,7 @@ export async function load() {
   const friends: OssFriend[] = [
     {
       name: 'Appsmith',
-      description: 'Build build custom software on top of your data.',
+      description: 'Build custom software on top of your data.',
       href: 'https://www.appsmith.com'
     },
     {
