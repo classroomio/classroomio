@@ -29,7 +29,10 @@
       playsinline
       preload="auto"
     >
-      <source src="./student-dashboard.mp4" type="video/mp4" />
+      <source
+        src="https://pub-bd38ff7251aa402a93762181a947f7ea.r2.dev/student-dashboard.mp4"
+        type="video/mp4"
+      />
       <track kind="captions" />
     </video>
   </div>
