@@ -9,11 +9,11 @@
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import { isNewAnouncementModal } from '$lib/components/Course/components/Anouncements/store';
   import AnouncementCard from '$lib/components/Course/components/Anouncements/AnouncementCard.svelte';
-
   import Repeat from 'carbon-icons-svelte/lib/Repeat.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import NewAnouncementModal from '$lib/components/Course/components/Anouncements/NewAnouncementModal.svelte';
-
+  import { fetchAnnouncement } from '$lib/utils/services/announcement/index.ts';
+  import { onMount } from 'svelte';
   export let data;
   let isStudent = false;
 
@@ -58,8 +58,8 @@
       if (announcement.id === id) {
         const newComment = {
           id: generateUniqueId(),
-          name: 'Nwosu Ifeanyi',
-          timestamp: getCurrentTime(),
+          author: 'Nwosu Ifeanyi',
+          created_at: getCurrentTime(),
           content: comment
         };
         return {
@@ -77,6 +77,11 @@
     const deletedAnouncement = mockAnouncements.filter((anouncement) => anouncement.id !== id);
     return (mockAnouncements = deletedAnouncement);
   };
+
+  onMount(async () => {
+    const { data: _data } = await fetchAnnouncement(data.courseId);
+    // fetchAnnouncement();
+  });
 </script>
 
 <CourseContainer bind:isStudent bind:courseId={data.courseId}>
@@ -93,35 +98,37 @@
   </PageNav>
 
   <PageBody width="max-w-4xl px-3">
-    <button
-      class="flex items-center justify-between border-gray-200 bg-gray-50 p-3 w-full h-20 rounded-md my-2 shadow-md"
-      on:click={() => ($isNewAnouncementModal.open = true)}
-    >
-      <div class="flex gap-2">
-        <span class="w-7 h-7">
-          <img
-            src={$course.logo}
-            alt="users banner"
-            class="w-full h-full rounded-full object-cover"
-          />
-        </span>
-        <button class="flex-1" on:click={() => ($isNewAnouncementModal.open = true)}>
-          <p class="text-gray-400 hover:text-gray-500">Anounce something to your class</p>
-        </button>
-      </div>
-      <IconButton
-        onClick={reusePost}
-        toolTipProps={{ title: 'Reuse Post', hotkeys: [], direction: 'bottom' }}
+    <RoleBasedSecurity allowedRoles={[1, 2]}>
+      <button
+        class="flex items-center justify-between border-gray-200 bg-gray-50 p-3 w-full h-20 rounded-md my-2 shadow-md"
+        on:click={() => ($isNewAnouncementModal.open = true)}
       >
-        <Repeat size={24} />
-      </IconButton>
-    </button>
-    <NewAnouncementModal
-      bind:mockAnouncements
-      {generateUniqueId}
-      {getEmojiPicker}
-      {getCurrentTime}
-    />
+        <div class="flex gap-2">
+          <span class="w-7 h-7">
+            <img
+              src={$course.logo}
+              alt="users banner"
+              class="w-full h-full rounded-full object-cover"
+            />
+          </span>
+          <button class="flex-1" on:click={() => ($isNewAnouncementModal.open = true)}>
+            <p class="text-gray-400 hover:text-gray-500">Anounce something to your class</p>
+          </button>
+        </div>
+        <IconButton
+          onClick={reusePost}
+          toolTipProps={{ title: 'Reuse Post', hotkeys: [], direction: 'bottom' }}
+        >
+          <Repeat size={24} />
+        </IconButton>
+      </button>
+      <NewAnouncementModal
+        bind:mockAnouncements
+        {generateUniqueId}
+        {getEmojiPicker}
+        {getCurrentTime}
+      />
+    </RoleBasedSecurity>
     {#each mockAnouncements as info}
       <AnouncementCard value={info} {deleteAnouncement} {addNewComment} {deleteComment} />
     {/each}

@@ -59,8 +59,8 @@
             />
           </div>
           <span>
-            <p class="text-base font-semibold">{value.name}</p>
-            <p class="text-sm font-medium text-gray-600">{value.timestamp}</p>
+            <p class="text-base font-semibold">{value.author}</p>
+            <p class="text-sm font-medium text-gray-600">{value.created_at}</p>
           </span>
         </span>
         <div class="relative">
@@ -125,8 +125,8 @@
               </div>
               <span>
                 <div class="flex items-center gap-2">
-                  <p class="text-sm font-medium">{comment.name}</p>
-                  <p class="text-xs font-medium text-gray-600">{comment.timestamp}</p>
+                  <p class="text-sm font-medium">{comment.author}</p>
+                  <p class="text-xs font-medium text-gray-600">{comment.created_at}</p>
                 </div>
                 <p>{comment.content}</p>
               </span>

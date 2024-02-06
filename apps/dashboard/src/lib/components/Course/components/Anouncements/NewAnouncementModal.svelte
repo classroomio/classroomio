@@ -12,6 +12,7 @@
   import Upload from 'carbon-icons-svelte/lib/Upload.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { getTextFromHTML } from '$lib/utils/functions/course';
+  import { createAnnouncement } from '$lib/utils/services/announcement';
 
   export let mockAnouncements = [];
 
@@ -20,7 +21,7 @@
   export let getEmojiPicker = () => {};
 
   let newAnouncement = {};
-  const onPost = () => {
+  const onPost = async () => {
     if (newAnouncement.content !== '') {
       mockAnouncements = [
         {
@@ -28,13 +29,32 @@
           image:
             'https://www.befunky.com/images/prismic/82e0e255-17f9-41e0-85f1-210163b0ea34_hero-blur-image-3.jpg?auto=avif,webp&format=jpg&width=896',
           content: newAnouncement.content,
-          name: 'Best Emmanuel Ibitoye-Rotimi',
-          timestamp: getCurrentTime(),
+          author: 'Best Emmanuel Ibitoye-Rotimi',
+          created_at: getCurrentTime(),
           comments: [],
           emoji: getEmojiPicker()
         },
         ...mockAnouncements
       ];
+
+      try {
+        const data = await createAnnouncement({
+          image:
+            'https://www.befunky.com/images/prismic/82e0e255-17f9-41e0-85f1-210163b0ea34_hero-blur-image-3.jpg?auto=avif,webp&format=jpg&width=896',
+          content: newAnouncement.content,
+          author: 'Best Emmanuel Ibitoye-Rotimi',
+          created_at: getCurrentTime(),
+          // comments: [],
+          emoji: getEmojiPicker()
+        });
+
+        if (data) {
+          console.log('onPost', data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+
       newAnouncement.content = '';
       $isNewAnouncementModal.open = false;
     }
