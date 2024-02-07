@@ -1,11 +1,6 @@
 import Image from 'next/image';
 import { Steps } from 'nextra/components';
 import { Callout } from 'nextra/components';
-import DBUrl from './images/db-url.webp';
-import DBPushResult from './images/db-push-result.webp';
-import AuthSettings from './images/auth-settings.webp';
-import MatchEnvVariables from './images/match-env.webp';
-import NewProject from './images/new-project.webp';
 
 # Supabase Cloud Setup
 
@@ -30,7 +25,7 @@ If your requirement matches any of the above, then this guide is for you.
     title="YouTube video player"
     frameborder="0"
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-    className="nx-my-4 nx-rounded-md"
+    className="nx-my-4 nx-nx-rounded-md nx-my-4"
     allowfullscreen
   ></iframe>
 </div>
@@ -45,7 +40,14 @@ For this step you need to have signed up for supabase and create an account, jus
 
 Once you have an account just click on the _New Project_ on your dashboard. After that you should see a similar screen to the below, fill in the fields.
 
-<Image src={NewProject} alt="New project in supabase" quality="100" />
+<Image
+  src="/docs/new-project.webp"
+  alt="New project in supabase"
+  quality="100"
+  width={500}
+  height={500}
+  className="nx-rounded-md nx-my-4"
+/>
 
 <Callout>
   Make sure you save your database password somewhere, else you won't be able to get it back
@@ -66,7 +68,14 @@ Follow the instruction in your terminal to generate your access token. Paste the
 
 - Go to the supabase dashboard, go to your project, click on the settings icon on the left side bar
 
-<Image src={DBUrl} alt="DB URL in the supabase dashboard" quality="100" />
+<Image
+  src="/docs/db-url.webp"
+  alt="DB URL in the supabase dashboard"
+  quality="100"
+  width={500}
+  height={500}
+  className="nx-rounded-md nx-my-4"
+/>
 
 - Copy the URL in the image above for your `db url`
 - Paste it somewhere
@@ -84,13 +93,27 @@ pnpm supabase db push --db-url "URL HERE"
 
 #### Result
 
-<Image src={DBPushResult} alt="Result of supabase db push" quality="100" />
+<Image
+  src="/docs/db-push-result.webp"
+  alt="Result of supabase db push"
+  quality="100"
+  width={500}
+  height={500}
+  className="nx-rounded-md nx-my-4"
+/>
 
 ### Configure Auth in your Supabase project
 
 Here we will update our email configurations, to prevent supabase from sending confirmation emails on signup. This is because we don't have email confirmation setup on ClassroomIO, this feature will come later. If you don't disable it, you won't be able to signup into the application.
 
-<Image src={AuthSettings} alt="Authentication configuration" quality="100" />
+<Image
+  src="/docs/auth-settings.webp"
+  alt="Authentication configuration"
+  quality="100"
+  width={500}
+  height={500}
+  className="nx-rounded-md nx-my-4"
+/>
 
 ### Add configurations to your environment variables
 
@@ -104,7 +127,14 @@ PUBLIC_SUPABASE_ANON_KEY=
 
 To get the correct environment variables, follow the instructions in this image
 
-<Image src={MatchEnvVariables} alt="Source of supabase environment variables" quality="100" />
+<Image
+  src="/docs/match-env.webp"
+  alt="Source of supabase environment variables"
+  quality="100"
+  width={500}
+  height={500}
+  className="nx-rounded-md nx-my-4"
+/>
 
 ### Tada - That's all
 
