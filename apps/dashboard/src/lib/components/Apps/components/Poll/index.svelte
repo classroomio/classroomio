@@ -36,7 +36,6 @@
     fullname: '',
     avatarUrl: ''
   };
-  let pollData = [];
   let pollChannel: RealtimeChannel;
   let pollSubmissionsChannel: RealtimeChannel;
 
@@ -193,7 +192,6 @@
 
     isLoading = true;
     const { data, error } = await fetchPolls($course.id);
-    pollData = data;
 
     if (!data || error) {
       console.log(error);
@@ -201,9 +199,7 @@
       return;
     }
 
-    console.log(pollData);
-
-    polls.set(getPollsData(pollData, $apps.isStudent));
+    polls.set(getPollsData(data, $apps.isStudent));
 
     setCoursePolls();
 
@@ -211,21 +207,18 @@
 
     pollChannel = supabase
       .channel('any')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'apps_poll' },
-        (payload) => {
-          console.log('Change recieved', payload);
-          const { old, new: newPollsPayload } = payload;
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'apps_poll' }, (payload) => {
+        console.log('Change recieved', payload);
+        // const { old, new: newPollsPayload } = payload;
+        // console.log('newPollsPayload = ', newPollsPayload);
 
-          pollData = [
-            ...pollData,
-            {
-              ...newPollsPayload
-            }
-          ];
-        }
-      )
+        // pollData = [
+        //   ...pollData,
+        //   {
+        //     ...newPollsPayload
+        //   }
+        // ];
+      })
       .subscribe();
 
     pollSubmissionsChannel = supabase
