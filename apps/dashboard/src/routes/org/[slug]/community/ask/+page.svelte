@@ -13,7 +13,7 @@
   import { fetchCourses } from '$lib/components/Courses/api';
   import { onMount } from 'svelte';
 
-  export let isLMS = false;
+  // export let isLMS = false;
   export let data;
 
   let errors: {
@@ -100,17 +100,9 @@
       on:change={(e) => (fields.course_id = e.target.value)}
     >
       {#if fetchedCourses}
-        {#if isLMS}
-          {#each fetchedCourses as course}
-            {#if !course.is_published}
-              <option value={course.id}>{course.title}</option>
-            {/if}
-          {/each}
-        {:else}
-          {#each fetchedCourses as course}
-            <option value={course.id}>{course.title}</option>
-          {/each}
-        {/if}
+        {#each fetchedCourses as course}
+          <option value={course.id}>{course.title}</option>
+        {/each}
       {/if}
     </select>
   </div>

@@ -10,14 +10,25 @@
   import TextEditor from '$lib/components/TextEditor/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import { profile } from '$lib/utils/store/user';
+  import { fetchCourses } from '$lib/components/Courses/api';
+  import { onMount } from 'svelte';
 
   let errors: {
     title?: string;
   } = {};
   let fields = {
     title: '',
-    body: ''
+    body: '',
+    course_id: ''
   };
+
+  let coursesResults;
+  let fetchedCourses = [];
+
+  async function getCourses(userId: string | null, orgId: string) {
+    coursesResults = await fetchCourses(userId, orgId);
+    fetchedCourses = coursesResults.allCourses;
+  }
 
   async function handleSave() {
     errors = askCommunityValidation(fields);
@@ -49,6 +60,10 @@
       goto(`/lms/community/${slug}`);
     }
   }
+
+  onMount(() => {
+    getCourses($profile.id, $currentOrg.id);
+  });
 </script>
 
 <svelte:head>
@@ -66,8 +81,24 @@
     </div>
   </div>
 
-  <div class="mb-3 p-2">
-    <TextField bind:value={fields.title} placeholder="Title" errorMessage={errors.title} />
+  <div class="mb-3 p-2 flex gap-x-5 justify-between">
+    <TextField
+      bind:value={fields.title}
+      placeholder="Title"
+      errorMessage={errors.title}
+      className="w-[75%]"
+    />
+    <select
+      class="w-[25%]"
+      bind:value={fields.course_id}
+      on:change={(e) => (fields.course_id = e.target.value)}
+    >
+      {#if fetchedCourses}
+        {#each fetchedCourses as course}
+          <option value={course.id}>{course.title}</option>
+        {/each}
+      {/if}
+    </select>
   </div>
 
   <TextEditor
