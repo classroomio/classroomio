@@ -151,8 +151,8 @@
         hideSortIcon: true
       },
       {
-        label: 'Anouncements',
-        to: getNavItemRoute($course.id, 'anouncement'),
+        label: 'News Feed',
+        to: getNavItemRoute($course.id, 'newsfeed'),
         hideSortIcon: true
       },
       {

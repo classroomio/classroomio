@@ -2,7 +2,10 @@
   // @ts-nocheck
 
   import Modal from '$lib/components/Modal/index.svelte';
-  import { isNewAnouncementModal } from '$lib/components/Course/components/Anouncements/store';
+  import {
+    anouncementList,
+    isNewAnouncementModal
+  } from '$lib/components/Course/components/Anouncements/store';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
@@ -15,50 +18,58 @@
   import { createAnnouncement } from '$lib/utils/services/announcement';
 
   export let mockAnouncements = [];
+  export let author = {};
+  export let emoji = {};
+  export let courseId = '';
+  export let id = '';
+  // export let generateUniqueId = () => {};
+  // export let getCurrentTime = () => {};
+  // export let getEmojiPicker = () => {};
 
-  export let generateUniqueId = () => {};
-  export let getCurrentTime = () => {};
-  export let getEmojiPicker = () => {};
+  let newAnouncement = '';
+  let createdAnnouncement;
 
-  let newAnouncement = {};
   const onPost = async () => {
-    if (newAnouncement.content !== '') {
-      mockAnouncements = [
-        {
-          id: generateUniqueId(),
-          image:
-            'https://www.befunky.com/images/prismic/82e0e255-17f9-41e0-85f1-210163b0ea34_hero-blur-image-3.jpg?auto=avif,webp&format=jpg&width=896',
-          content: newAnouncement.content,
-          author: 'Best Emmanuel Ibitoye-Rotimi',
-          created_at: getCurrentTime(),
-          comments: [],
-          emoji: getEmojiPicker()
-        },
-        ...mockAnouncements
-      ];
+    if (!newAnouncement) return;
 
-      try {
-        const data = await createAnnouncement({
-          image:
-            'https://www.befunky.com/images/prismic/82e0e255-17f9-41e0-85f1-210163b0ea34_hero-blur-image-3.jpg?auto=avif,webp&format=jpg&width=896',
-          content: newAnouncement.content,
-          author: 'Best Emmanuel Ibitoye-Rotimi',
-          created_at: getCurrentTime(),
-          // comments: [],
-          emoji: getEmojiPicker()
-        });
+    try {
+      const response = await createAnnouncement({
+        content: newAnouncement,
+        author_id: author.id,
+        course_id: courseId
+      });
 
-        if (data) {
-          console.log('onPost', data);
-        }
-      } catch (error) {
-        console.log(error);
-      }
+      createdAnnouncement = response.response.data[0];
 
-      newAnouncement.content = '';
-      $isNewAnouncementModal.open = false;
+      console.log('cretaed details 1', createdAnnouncement);
+    } catch (error) {
+      console.log(error);
     }
+    if (!createdAnnouncement) return;
+    anouncementList.update((_announcement) => [..._announcement, createdAnnouncement]);
+    id = createdAnnouncement.id;
+    console.log('creataed details 2', createdAnnouncement);
+    mockAnouncements = [
+      {
+        id: createdAnnouncement.id,
+        content: newAnouncement,
+        author: {
+          id: author.id,
+          username: author.username,
+          fullname: author.fullname,
+          avatar: author.avatar
+        },
+        created_at: createdAnnouncement.created_at,
+        comment: [],
+        emoji: emoji
+      },
+      ...mockAnouncements
+    ];
+    console.log(author);
+    newAnouncement = '';
+    $isNewAnouncementModal.open = false;
   };
+
   const resetEditor = () => {
     newAnouncement.content = '';
     $isNewAnouncementModal.open = false;
@@ -72,49 +83,16 @@
   maxWidth="max-w-lg"
   modalHeading="Make An Anouncement"
 >
-  <section class="flex flex-col border-2 rounded-xl p-3 h-full">
-    <div class="mb-3">
-      <p class="mb-3 text-base font-medium">For</p>
-      <section class="flex items-start justify-start gap-2">
-        <Dropdown
-          selectedId="0"
-          class="h-10"
-          items={[
-            { id: '0', text: 'Authors' },
-            { id: '1', text: 'Tutors' }
-          ]}
-        />
-        <Dropdown
-          selectedId="0"
-          class="h-10"
-          items={[
-            { id: '0', text: 'Students' },
-            { id: '1', text: 'Visitors' },
-            { id: '2', text: 'Public' }
-          ]}
-        />
-      </section>
-    </div>
+  <section class="flex flex-col rounded-xl pb-3 h-full">
     <TextEditor
-      value={newAnouncement.content}
+      value={newAnouncement}
       onChange={(text) => {
-        newAnouncement.content = getTextFromHTML(text);
+        newAnouncement = getTextFromHTML(text);
       }}
       placeholder="Make an anouncement to your students"
       maxHeight={200}
     />
-    <div class="flex items-center justify-between py-2">
-      <div class="flex gap-2">
-        <IconButton contained={true}>
-          <LogoYoutube size={20} />
-        </IconButton>
-        <IconButton contained={true}>
-          <Link size={20} />
-        </IconButton>
-        <IconButton contained={true}>
-          <Upload size={20} />
-        </IconButton>
-      </div>
+    <div class="flex items-center justify-end py-2">
       <div class="flex gap-2">
         <PrimaryButton
           label="Cancel"

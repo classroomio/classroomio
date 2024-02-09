@@ -15,7 +15,7 @@
 
 {#if name === 'Overview'}
   <TableOfContents size={20} class="carbon-icon  mr-2" />
-{:else if name === 'Anouncements'}
+{:else if name === 'News Feed'}
   <Bullhorn size={20} class="carbon-icon  mr-2" />
 {:else if name === 'Lessons'}
   <IbmWatsonKnowledgeCatalog size={20} class="carbon-icon mr-2" />
