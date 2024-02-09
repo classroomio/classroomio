@@ -9,11 +9,24 @@
   import { currentOrgPath, currentOrg } from '$lib/utils/store/org';
   import { supabase } from '$lib/utils/functions/supabase';
   import { calDateDiff } from '$lib/utils/functions/date';
+  import { courses } from '$lib/components/Courses/store';
 
   export let isLMS = false;
 
   let isLoading = false;
   let discussions = [];
+  let courseId = '';
+
+  // this function is to solve a situation where a student clicks the course title that he isn't enrolled in
+  function setPath(isLMS: boolean, discussion: any, courseId: string): string {
+    if (isLMS && discussion.course_id === courseId) {
+      return `/courses/${discussion.course_id}`;
+    } else if (!isLMS) {
+      return `/courses/${discussion.course_id}`;
+    } else {
+      return '#';
+    }
+  }
 
   async function fetchCommunityQuestions(orgId?: string) {
     if (!orgId) return;
@@ -61,6 +74,9 @@
         votes: discussion.votes,
         createdAt: calDateDiff(discussion.created_at)
       })) || [];
+
+    // sets course id of the current user
+    courseId = $courses[0].id;
   }
 
   $: fetchCommunityQuestions($currentOrg.id);
@@ -92,9 +108,7 @@
           </span>
           <a
             class="text-gray-600 dark:text-white text-xs"
-            href={isLMS
-              ? `/lms/courses/${discussion.course_id}`
-              : `/courses/${discussion.course_id}`}
+            href={setPath(isLMS, discussion, courseId)}
           >
             {discussion.course_title}
           </a>
