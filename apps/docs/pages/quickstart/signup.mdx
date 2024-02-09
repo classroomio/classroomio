@@ -1,10 +1,5 @@
 import Image from 'next/image';
 import { Steps } from 'nextra/components';
-import DashboardHomePageSignedin from './images/dashboard-homepage-signedin.webp';
-import DashboardHomePageSignedout from './images/dashboard-homepage-signedout.webp';
-import DashboardOnboardingPage1 from './images/onboarding-page1.webp';
-import DashboardOnboardingPage2 from './images/onboarding-page2.webp';
-import DashboardSignupPage from './images/signup-page.webp';
 
 # Signing Up for ClassroomIO
 
@@ -15,25 +10,60 @@ Signing up is currently disabled on production. Potential customers can only boo
 
 Got to [app.classroomio.com](https://app.classroomio.com). Click on the signup button on the top right to take you to the Sign up page.
 
-<Image src={DashboardHomePageSignedout} alt="Dashboard before signin" quality="100" />
+<Image
+  src={`${process.env.imagePath}/signup/dashboard-homepage-signedout.webp`}
+  alt="Dashboard before signin"
+  quality="100"
+  width={500}
+  height={500}
+  className="nx-rounded-md nx-my-4"
+/>
 
 ### Create an account
 
 Once you are on the signup page, enter your email and a password made up of 6 or more characters.
 
-<Image src={DashboardSignupPage} alt="Dashboard signin page" quality="100" />
+<Image
+  src={`${process.env.imagePath}/signup/signup-page.webp`}
+  alt="Dashboard signin page"
+  quality="100"
+  width={500}
+  height={500}
+  className="nx-rounded-md nx-my-4"
+/>
 
 ### Complete the onboarding
 
 Upon completing the signup flow, you will be redirected to the onboarding page. Here you can enter your fullname and your organization details and next you would share how you heard of ClassroomIO
 
-<Image src={DashboardOnboardingPage1} alt="Dashboard onboarding page 1" quality="100" />
-<Image src={DashboardOnboardingPage2} alt="Dashboard onboarding page 2" quality="100" />
+<Image
+  src={`${process.env.imagePath}/signup/onboarding-page1.webp`}
+  alt="Dashboard onboarding page 1"
+  quality="100"
+  width={500}
+  height={500}
+  className="nx-rounded-md nx-my-4"
+/>
+<Image
+  src={`${process.env.imagePath}/signup/onboarding-page2.webp`}
+  alt="Dashboard onboarding page 2"
+  quality="100"
+  width={500}
+  height={500}
+  className="nx-rounded-md nx-my-4"
+/>
 
 ### Welcome to the dashboard
 
 After you go through the onboarding, you are successfully signed up and you are ready to start using the platform.
 
-<Image src={DashboardHomePageSignedin} alt="Dashboard after signing in" quality="100" />
+<Image
+  src={`${process.env.imagePath}/signup/dashboard-homepage-signedin.webp`}
+  alt="Dashboard after signing in"
+  quality="100"
+  width={500}
+  height={500}
+  className="nx-rounded-md nx-my-4"
+/>
 
 </Steps>

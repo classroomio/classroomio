@@ -16,10 +16,10 @@
   import { onMount } from 'svelte';
   import { Add } from 'carbon-icons-svelte';
   import { isOrgAdmin, currentOrgPath, currentOrg, userUpcomingData } from '$lib/utils/store/org';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants.js';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
   import { getGreeting } from '$lib/utils/functions/date';
-  import { appStore } from '$lib/utils/store/app';
+  import { globalStore } from '$lib/utils/store/app';
 
   export let data;
 
@@ -164,15 +164,15 @@
       },
       colors: {
         text: {
-          primary: $appStore.isDark ? '#eee' : '#333',
+          primary: $globalStore.isDark ? '#eee' : '#333',
           highlight: '#fff'
         },
         background: {
-          primary: $appStore.isDark ? '#333' : '#fff',
-          highlight: $appStore.isDark ? '#5829d6' : '#eb7400',
-          hover: $appStore.isDark ? '#222' : '#eee'
+          primary: $globalStore.isDark ? '#333' : '#fff',
+          highlight: $globalStore.isDark ? '#5829d6' : '#eb7400',
+          hover: $globalStore.isDark ? '#222' : '#eee'
         },
-        border: $appStore.isDark ? '#222' : '#eee'
+        border: $globalStore.isDark ? '#222' : '#eee'
       }
     }
   };
