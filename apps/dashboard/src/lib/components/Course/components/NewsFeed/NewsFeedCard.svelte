@@ -1,6 +1,5 @@
 <script>
   // @ts-nocheck
-
   import OverflowMenuVertical from 'carbon-icons-svelte/lib/OverflowMenuVertical.svelte';
   import Send from 'carbon-icons-svelte/lib/Send.svelte';
   import Chip from '$lib/components/Chip/index.svelte';
@@ -9,11 +8,12 @@
 
   export let value = {};
   export let author = {};
-  export let deleteAnouncement = () => {};
+  export let deleteFeed = () => {};
   export let deleteComment = () => {};
   export let addNewComment = () => {};
   export let addNewReaction = () => {};
-  let isAnouncementOptionOpen = false;
+
+  let isFeedOptionOpen = false;
   let isCommentOptionOpen = false;
   let comment = '';
   let areCommentsExpanded = false;
@@ -29,30 +29,28 @@
   };
 
   const toggleOption = (option) => {
-    if (option === 'announcement') {
-      isAnouncementOptionOpen = !isAnouncementOptionOpen;
+    if (option === 'feed') {
+      isFeedOptionOpen = !isFeedOptionOpen;
     } else if (option === 'comment') {
       isCommentOptionOpen = !isCommentOptionOpen;
     }
   };
 
   const handleAddNewReaction = (reactionType) => {
-    console.log('react', reactionType, value.id, value.author_id);
     addNewReaction(reactionType, value.id, value.author_id);
   };
 
   const handleAddNewComment = (event) => {
     if (event.key === 'Enter' || event.type === 'click') {
       event.preventDefault();
-      console.log('UI', value.id, value.author_id);
       addNewComment(comment, value.id, value.author_id);
       comment = '';
     }
   };
 
-  const handleDeleteAnouncement = () => {
-    deleteAnouncement(value.id);
-    isAnouncementOptionOpen = false;
+  const handleDeleteFeed = () => {
+    deleteFeed(value.id);
+    isFeedOptionOpen = false;
   };
 
   const handleDeleteComment = (id) => {
@@ -79,13 +77,13 @@
           </span>
         </span>
         <div class="relative">
-          <button on:click={() => toggleOption('announcement')}>
+          <button on:click={() => toggleOption('feed')}>
             <OverflowMenuVertical size={24} />
           </button>
 
-          {#if isAnouncementOptionOpen == true}
+          {#if isFeedOptionOpen == true}
             <div class="absolute right-2 rounded-md p-2 border hover:bg-slate-200 cursor-pointer">
-              <button on:click={() => handleDeleteAnouncement()}>
+              <button on:click={() => handleDeleteFeed()}>
                 <p>Delete</p>
               </button>
             </div>
@@ -101,30 +99,19 @@
           {#if reactions[reactionType]}
             <button
               on:click={() => handleAddNewReaction(reactionType)}
-              class="flex items-center gap-1 transition hover:bg-sky-50 px-2 border border-gray-300 rounded-full"
+              class={`flex transition ${
+                value.reaction[reactionType].length >= 1 &&
+                'bg-sky-50 px-1 border border-sky-600 rounded-full'
+              }`}
             >
               <div class="text-[15px]">{reactions[reactionType]}</div>
-              <p>{value.reaction[reactionType].length}</p>
+              {#if value.reaction[reactionType].length >= 1}
+                <Chip value={value.reaction[reactionType].length} className="bg-transparent" />
+              {/if}
             </button>
           {/if}
         {/each}
       </div>
-
-      <!-- {#each value.emoji as emoji (emoji)}
-        <button
-          on:click={() => (emoji.count += 1)}
-          class={`flex transition ${
-            emoji.count >= 1 && 'bg-sky-50 px-1 border border-sky-600 rounded-full'
-          }`}
-        >
-          <div class="text-[15px]">
-            {emoji.icon}
-          </div>
-          {#if emoji.count >= 1}
-            <Chip value={emoji.count} className="bg-transparent" />
-          {/if}
-        </button>
-      {/each} -->
     </div>
   </section>
 

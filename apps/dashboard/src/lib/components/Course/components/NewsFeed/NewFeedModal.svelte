@@ -1,17 +1,12 @@
 <script>
   // @ts-nocheck
-
   import Modal from '$lib/components/Modal/index.svelte';
-  import {
-    anouncementList,
-    isNewAnouncementModal
-  } from '$lib/components/Course/components/Anouncements/store';
+  import { isNewFeedModal } from '$lib/components/Course/components/NewsFeed/store';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
-
   import { getTextFromHTML } from '$lib/utils/functions/course';
-  import { createAnnouncement } from '$lib/utils/services/announcement';
+  import { createNewFeed } from '$lib/utils/services/newsfeed';
   import { snackbar } from '$lib/components/Snackbar/store';
 
   export let author = {};
@@ -25,7 +20,7 @@
     if (!newPost) return;
 
     try {
-      const response = await createAnnouncement({
+      const response = await createNewFeed({
         content: newPost,
         author_id: author.id,
         course_id: courseId,
@@ -38,15 +33,10 @@
       });
 
       createdFeed = response.response.data[0];
-
-      console.log('cretaed details 1', createdFeed);
     } catch (error) {
-      console.log(error);
       return snackbar.error('An error occurred while creating feed');
     }
     if (!createdFeed) return;
-
-    console.log('creataed details 2', createdFeed);
 
     onSave({
       id: createdFeed.id,
@@ -62,21 +52,19 @@
       reaction: createdFeed.reaction
     });
 
-    console.log(author);
-
     newPost = '';
-    $isNewAnouncementModal.open = false;
+    $isNewFeedModal.open = false;
   };
 
   const resetEditor = () => {
     newPost = '';
-    $isNewAnouncementModal.open = false;
+    $isNewFeedModal.open = false;
   };
 </script>
 
 <Modal
   onClose={resetEditor}
-  bind:open={$isNewAnouncementModal.open}
+  bind:open={$isNewFeedModal.open}
   width="w-4/5 md:w-2/5"
   maxWidth="max-w-lg"
   modalHeading="Make An Anouncement"
@@ -95,7 +83,7 @@
         <PrimaryButton
           label="Cancel"
           variant={VARIANTS.OUTLINED}
-          onClick={() => ($isNewAnouncementModal.open = false)}
+          onClick={() => ($isNewFeedModal.open = false)}
         />
         <PrimaryButton label="Post" onClick={onPost} />
       </div>
