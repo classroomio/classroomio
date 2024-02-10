@@ -1,8 +1,8 @@
 <a href="https://classroomio.com/">
-  <img alt="ClassroomIO is a no-code tool that allows you build and scale your own teaching platform with ease." src="https://classroomio.com/classroomio-opengraph-image.png" />
+  <img alt="ClassroomIO is a no-code tool that allows you build and scale your own teaching platform with ease." src="https://raw.githubusercontent.com/rotimi-best/classroomio/main/apps/classroomio-com/static/classroomio-opengraph-image.png" />
   <h1 align="center">ClassroomIO.com</h1>
   <p align="center">
-    The Open Source Teaching Platform for Tech Bootcamps
+    The Open Source Teaching Platform
     <br />
     <a href="https://classroomio.com">Website</a>  |  <a href="https://dub.sh/ciodiscord">Join Discord community</a>
   </p>
@@ -14,7 +14,7 @@
 
 ## ✨ About ClassroomIO.com
 
-<img alt="ClassroomIO Courses page" src="https://classroomio.com/classroomio-courses.png" />
+<img alt="ClassroomIO Courses page" src="https://raw.githubusercontent.com/rotimi-best/classroomio/main/apps/classroomio-com/static/classroomio-courses.png" />
 
 ClassroomIO.com is a platform for bootcamps, individual educators, and training businesses that brings teaching and learning into one place while at the same time helping them be 10x more productive. With our platform, anyone can run multiple classes and cohorts all from one UI. The application is mobile-first, which means that students can access your lesson materials from any device.
 

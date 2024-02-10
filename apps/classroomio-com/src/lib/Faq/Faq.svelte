@@ -11,7 +11,7 @@
       class="lg:px-[20%] mt-4 text-lg lg:text-xl text-gray-500 font-normal tracking-normal lg:tracking-wide"
     >
       Can’t find the answer you’re looking for?
-      <a class="text-[#1D4EE2]" href="mailto:help@classroomio.com" target="_blank"
+      <a class="text-blue-700" href="mailto:help@classroomio.com" target="_blank"
         >Shoot us an email</a
       > and we’ll get back to you ASAP.
     </h3>

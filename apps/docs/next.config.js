@@ -8,6 +8,6 @@ module.exports = withNextra(withMDX({
   env: {
     imagePath: env === 'production' ? '/docs' : ''
   },
+
   pageExtensions: ['js', 'jsx', 'md', 'mdx']
 }));
-
