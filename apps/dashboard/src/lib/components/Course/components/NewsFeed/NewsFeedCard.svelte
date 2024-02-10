@@ -17,6 +17,7 @@
   let isCommentOptionOpen = false;
   let comment = '';
   let areCommentsExpanded = false;
+
   let reactions = {
     smile: '😀',
     thumbsup: '👍',
