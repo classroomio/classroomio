@@ -1,26 +1,26 @@
 # Use an official Node.js runtime as the base image
 FROM node:18
 
-# Set the working directory in the Docker container
-WORKDIR /usr/src/app
+WORKDIR /usr/src/app/
 
-# Copy everything from the current directory to the Docker container
-COPY . .
+COPY packages /usr/src/app/packages
 
-# Navigate to the classroomio-com directory
-WORKDIR /usr/src/app/classroomio-com
+COPY pnpm*.yaml /usr/src/app/
 
-# Install pnpm globally
+COPY apps/classroomio-com/ ./
+
 RUN npm install -g pnpm
 
-# Install the application's dependencies inside the Docker container
 RUN pnpm install
+RUN pnpm add -w @sveltejs/vite-plugin-svelte
+
+# Set environment variables
+#ENV STATIC_PUBLIC=/path/to/your/static/public
 
 # Build the application
 RUN npm run build
 
-# Make port 3000 available to the outside world
-EXPOSE 3000
+EXPOSE 5173
 
 # Define the command that should be executed when the Docker container starts up
-CMD [ "npm", "dev" ]
+# CMD [ "npm", "dev" ]

@@ -22,5 +22,12 @@
 		"tsconfig": "workspace:*",
 		"turbo": "^1.10.16",
 		"typescript": "^5.1.6"
+	},
+	"dependencies": {
+		"@sveltejs/vite-plugin-svelte": "^3.0.2",
+		"npm": "10.4.0",
+		"pnpm": "^8.15.1",
+		"sentry-vite-plugin": "^1.0.4",
+		"svelte": "^4.0.0"
 	}
 }

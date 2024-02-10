@@ -214,7 +214,7 @@ This repo is a mono repo that consists of 3 projects:
 4. Build and run the Docker services: Use Docker Compose to build and run the services defined in the `docker-compose.yaml` file.
 
    ```bash
-    docker-compose up --build
+     sudo docker-compose up --build
    ```
 
 

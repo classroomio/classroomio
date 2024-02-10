@@ -10,6 +10,7 @@
     "access": "public"
   },
   "devDependencies": {
+    "@types/node": "^20.11.17",
     "@vercel/style-guide": "^5.1.0",
     "eslint-config-turbo": "^1.10.16",
     "eslint-plugin-svelte": "^2.35.1",

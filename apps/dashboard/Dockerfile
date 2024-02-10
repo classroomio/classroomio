@@ -1,54 +1,45 @@
 # Use an official Node.js runtime as the base image
 FROM node:18
 
-ARG SUPABASE_KEY 
-ARG OPENAI_API_KEY
-ARG PUBLIC_SUPABASE_URL
-ARG PUBLIC_SUPABASE_ANON_KEY
-ARG SMTP_PASSWORD
-ARG SMTP_USER
-ARG SMTP_HOST
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+  libgtk-3-0 \
+  libnss3 \
+  libasound2 \
+  libxtst6 \
+  libxss1 \
+  libgbm1 \
+  && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install -y xvfb
+
+# Set the DISPLAY environment variable
+ENV DISPLAY=:99
 
 
-ENV supabaseKey=$SUPABASE_KEY
-ENV OPENAI_API_KEY=$OPENAI_API_KEY
-ENV PUBLIC_SUPABASE_URL=$PUBLIC_SUPABASE_URL
-ENV PUBLIC_SUPABASE_ANON_KEY=$SUPABASE_KEY
-ENV SMTP_HOST=$SMTP_HOST
-ENV SMTP_PORT=465
-ENV SMTP_USER=$SMTP_USER
-ENV SMTP_PASSWORD=$SMTP_PASSWORD
-ENV SMTP_USER_HELP=$SMTP_USER
-ENV SMTP_PASSWORD_HELP=$SMTP_PASSWORD
-ENV UNSPLASH_API_KEY=$UNSPLASH_API_KEY
-ENV PUBLIC_TINYMCE_API_KEY=$PUBLIC_TINYMCE_API_KEY
-ENV PUBLIC_SERVER_URL=$PUBLIC_SERVER_URL
-ENV PUBLIC_IP_REGISTRY_KEY=$PUBLIC_IP_REGISTRY_KEY
 
-WORKDIR /usr/src/app/dashboard
+WORKDIR /usr/src/app/
 
-COPY ../../packages /usr/src/app/dashboard/packages
+COPY packages /usr/src/app/packages
 
-COPY ../../pnpm*.yaml /usr/src/app/dashboard/
+COPY pnpm*.yaml /usr/src/app/
 
-COPY ../../apps/dashboard/ ./
-
-#RUN cp .env.example .env
-
-RUN npm install -g npm@10.4.0
+COPY apps/dashboard/ ./
 
 RUN npm install -g pnpm
 
 RUN pnpm install
+
+RUN pnpm add -w @sveltejs/vite-plugin-svelte
+RUN pnpm add -w sentry-vite-plugin
+RUN pnpm add -w vite-plugin-electron
+RUN pnpm add -w vite-plugin-electron-renderer
+RUN pnpm add -w electron
 
 # Build the application
 RUN npm run build
 
 # Make port 3000 available to the outside world
 EXPOSE 3000
-
 # Define the command that should be executed when the Docker container starts up
-CMD [ "npm", "start" ]
-
-#TODO: the build is failing because of the $env, add this part to the readme and test again.
-#TODO: I need to figure out why the dashboard triggers the classroomio-com build
+# CMD [ "npm", "start" ]

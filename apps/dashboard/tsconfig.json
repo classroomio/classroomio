@@ -1,7 +1,8 @@
 {
   "extends": "./.svelte-kit/tsconfig.json",
   "compilerOptions": {
-    "allowJs": true,
+    "outDir": "./dist", // Change this to a different directory
+    "allowJs": true, // Set this to false if you don't want TypeScript to compile JavaScript files
     "checkJs": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -13,7 +14,8 @@
     "module": "ESNext",
     "moduleResolution": "node",
     "noImplicitAny": false
-  }
+  },
+  "include": ["main.ts","src/**/*"],
 
   // Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
   //
