@@ -77,13 +77,13 @@
   <nav class="w-[40%] hidden md:hidden lg:block">
     <ul class="flex items-center justify-between w-full gap-2">
       <!--  -->
-      <li class="text-gray-800 font-semibold text-sm cursor-pointer">
+      <li class="text-gray-800 font-semibold text-sm cursor-pointer hover:text-[#1D4EE2]">
         <button use:melt={$trigger} class="flex items-center"
           >Our Superpowers <ChevronDown class="ml-2" /></button
         >
         <div
           use:melt={$menu}
-          class="w-[28%] border px-5 py-5 rounded-[30px] shadow-slate-700 mt-2 z-[3001] ml-[-30px] bg-white"
+          class="w-[28%] border px-5 py-5 rounded-[30px] shadow-slate-700 mt-2 z-[3001] ml-[-30px] bg-white hover:text-[#1D4EE2]"
         >
           {#each superpowers as superpower}
             <button
@@ -116,10 +116,10 @@
       </li>
       <!--  -->
       <a href="#morefeatures">
-        <li class="text-gray-800 font-semibold text-sm cursor-pointer">More features</li>
+        <li class="text-gray-800 font-semibold text-sm cursor-pointer hover:text-[#1D4EE2]">More features</li>
       </a>
       <a href="#pricing">
-        <li class="text-gray-800 font-semibold text-sm cursor-pointer">Pricing</li>
+        <li class="text-gray-800 font-semibold text-sm cursor-pointer hover:text-[#1D4EE2]">Pricing</li>
       </a>
     </ul>
   </nav>
