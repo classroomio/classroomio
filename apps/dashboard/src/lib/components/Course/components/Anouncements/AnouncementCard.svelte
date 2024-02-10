@@ -6,7 +6,6 @@
   import Chip from '$lib/components/Chip/index.svelte';
   import UserMultiple from 'carbon-icons-svelte/lib/UserMultiple.svelte';
   import formatTime from '$lib/utils/functions/formatTime';
-  import { createReaction } from '$lib/utils/services/announcement';
 
   export let value = {};
   export let author = {};
@@ -37,14 +36,15 @@
     }
   };
 
-  const handleAddNewReaction = (emoji) => {
-    console.log('react', emoji, value.id, value.author_id);
-    addNewReaction(emoji, value.author_id, value.id);
+  const handleAddNewReaction = (reactionType) => {
+    console.log('react', reactionType, value.id, value.author_id);
+    addNewReaction(reactionType, value.id, value.author_id);
   };
 
   const handleAddNewComment = (event) => {
     if (event.key === 'Enter' || event.type === 'click') {
       event.preventDefault();
+      console.log('UI', value.id, value.author_id);
       addNewComment(comment, value.id, value.author_id);
       comment = '';
     }
@@ -97,14 +97,14 @@
 
     <div class="flex gap-4 px-3">
       <div class="flex gap-4 px-3">
-        {#each Object.keys(value.emoji) as emojiType}
-          {#if reactions[emojiType]}
+        {#each Object.keys(value.reaction) as reactionType}
+          {#if reactions[reactionType]}
             <button
-              on:click={() => handleAddNewReaction(emojiType)}
+              on:click={() => handleAddNewReaction(reactionType)}
               class="flex items-center gap-1 transition hover:bg-sky-50 px-2 border border-gray-300 rounded-full"
             >
-              <div class="text-[15px]">{reactions[emojiType]}</div>
-              <p>{value.emoji[emojiType].length}</p>
+              <div class="text-[15px]">{reactions[reactionType]}</div>
+              <p>{value.reaction[reactionType].length}</p>
             </button>
           {/if}
         {/each}

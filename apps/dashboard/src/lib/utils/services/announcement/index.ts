@@ -6,7 +6,7 @@ import type { PostgrestResponse, PostgrestSingleResponse } from '@supabase/supab
 
 export async function fetchAnnouncement(courseId?: Course['id']) {
   const response: any = await supabase
-    .from('course_announcement')
+    .from('course_newsfeed')
     .select(
       `
     id,
@@ -14,11 +14,12 @@ export async function fetchAnnouncement(courseId?: Course['id']) {
     content,
     course_id,
     author_id,
-    comment:course_announcement_comment(id,
+    reaction,
+    comment:course_newsfeed_comment(id,
         created_at,
         author_id,
         content,
-        course_announcement_id)
+        course_newsfeed_id)
     `
     )
     .match({ course_id: courseId })
@@ -32,7 +33,6 @@ export async function fetchAnnouncement(courseId?: Course['id']) {
   if (!data || error) {
     console.log(`data`, data);
     console.log(`fetchCourse => error`, error);
-    // return this.redirect(307, '/courses');
     return { data, error };
   }
 
@@ -43,14 +43,16 @@ export async function createAnnouncement(announcement: {
   content: string;
   author_id: string;
   course_id: string;
+  reaction: any;
 }) {
   console.log(announcement);
   const response = await supabase
-    .from('course_announcement')
+    .from('course_newsfeed')
     .insert({
       content: announcement.content,
       author_id: announcement.author_id,
-      course_id: announcement.course_id
+      course_id: announcement.course_id,
+      reaction: announcement.reaction
     })
     .select();
 
@@ -62,63 +64,30 @@ export async function createAnnouncement(announcement: {
 export async function createComment(comment: {
   content: string;
   author_id: string;
-  course_announcement_id: string;
+  course_newsfeed_id: string;
 }) {
   const response = await supabase
-    .from('course_announcement_comment')
+    .from('course_newsfeed_comment')
     .insert({
       content: comment.content,
       author_id: comment.author_id,
-      course_announcement_id: comment.course_announcement_id
+      course_newsfeed_id: comment.course_newsfeed_id
     })
     .select();
 
   console.log('create', response);
 
   return { response };
-}
-
-export async function createReaction(
-  reaction: string,
-  author_id: string,
-  course_announcement_id: string
-) {
-  const response = await supabase
-    .from('course_announcement_reaction')
-    .insert({
-      reaction: reaction,
-      selected_by: author_id,
-      course_announcement_id: course_announcement_id
-    })
-    .select();
-
-  console.log('create', response);
-
-  return { response };
-}
-
-export async function deleteReaction(reactionId: string) {
-  const response = await supabase
-    .from('course_announcement_reaction')
-    .delete()
-    .match({ id: reactionId });
-  console.log('deleteReaction', reactionId, response);
-  return response;
-}
-export async function deleteNewsFeed(announcementId: string) {
-  const response = await supabase
-    .from('course_announcement')
-    .delete()
-    .match({ id: announcementId });
-  console.log('deleteAnnoucement', response);
-  return response;
 }
 
 export async function deleteNewsFeedComment(commentId: string) {
-  const response = await supabase
-    .from('course_announcement_comment')
-    .delete()
-    .match({ id: commentId });
+  const response = await supabase.from('course_newsfeed_comment').delete().match({ id: commentId });
   console.log('deletecomment', response);
+  return response;
+}
+export async function deleteNewsFeed(feedId: string) {
+  await supabase.from('course_newsfeed_comment').delete().match({ course_newsfeed_id: feedId });
+  const response = await supabase.from('course_newsfeed').delete().match({ id: feedId });
+  console.log('deleteFeed', response);
   return response;
 }

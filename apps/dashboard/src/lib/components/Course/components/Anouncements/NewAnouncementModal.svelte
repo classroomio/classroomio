@@ -9,69 +9,67 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
-  import { Dropdown } from 'carbon-components-svelte';
-  import LogoYoutube from 'carbon-icons-svelte/lib/LogoYoutube.svelte';
-  import { Link } from 'carbon-icons-svelte';
-  import Upload from 'carbon-icons-svelte/lib/Upload.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+
   import { getTextFromHTML } from '$lib/utils/functions/course';
   import { createAnnouncement } from '$lib/utils/services/announcement';
+  import { snackbar } from '$lib/components/Snackbar/store';
 
-  export let mockAnouncements = [];
   export let author = {};
-  export let emoji = {};
   export let courseId = '';
-  export let id = '';
-  // export let generateUniqueId = () => {};
-  // export let getCurrentTime = () => {};
-  // export let getEmojiPicker = () => {};
+  export let onSave = () => {};
 
-  let newAnouncement = '';
-  let createdAnnouncement;
+  let newPost = '';
+  let createdFeed;
 
   const onPost = async () => {
-    if (!newAnouncement) return;
+    if (!newPost) return;
 
     try {
       const response = await createAnnouncement({
-        content: newAnouncement,
+        content: newPost,
         author_id: author.id,
-        course_id: courseId
+        course_id: courseId,
+        reaction: {
+          smile: [],
+          thumbsup: [],
+          thumbsdown: [],
+          clap: []
+        }
       });
 
-      createdAnnouncement = response.response.data[0];
+      createdFeed = response.response.data[0];
 
-      console.log('cretaed details 1', createdAnnouncement);
+      console.log('cretaed details 1', createdFeed);
     } catch (error) {
       console.log(error);
+      return snackbar.error('An error occurred while creating feed');
     }
-    if (!createdAnnouncement) return;
-    anouncementList.update((_announcement) => [..._announcement, createdAnnouncement]);
-    id = createdAnnouncement.id;
-    console.log('creataed details 2', createdAnnouncement);
-    mockAnouncements = [
-      {
-        id: createdAnnouncement.id,
-        content: newAnouncement,
-        author: {
-          id: author.id,
-          username: author.username,
-          fullname: author.fullname,
-          avatar: author.avatar
-        },
-        created_at: createdAnnouncement.created_at,
-        comment: [],
-        emoji: emoji
+    if (!createdFeed) return;
+
+    console.log('creataed details 2', createdFeed);
+
+    onSave({
+      id: createdFeed.id,
+      content: newPost,
+      author: {
+        id: author.id,
+        username: author.username,
+        fullname: author.fullname,
+        avatar: author.avatar
       },
-      ...mockAnouncements
-    ];
+      created_at: createdFeed.created_at,
+      comment: [],
+      reaction: createdFeed.reaction
+    });
+
     console.log(author);
-    newAnouncement = '';
+
+    newPost = '';
     $isNewAnouncementModal.open = false;
   };
 
   const resetEditor = () => {
-    newAnouncement.content = '';
+    newPost = '';
     $isNewAnouncementModal.open = false;
   };
 </script>
@@ -85,9 +83,9 @@
 >
   <section class="flex flex-col rounded-xl pb-3 h-full">
     <TextEditor
-      value={newAnouncement}
+      value={newPost}
       onChange={(text) => {
-        newAnouncement = getTextFromHTML(text);
+        newPost = getTextFromHTML(text);
       }}
       placeholder="Make an anouncement to your students"
       maxHeight={200}
