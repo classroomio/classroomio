@@ -42,7 +42,6 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
     response.isOrgSite = debugMode || answer;
     response.orgSiteName = debugMode ? _orgSiteName : subdomain;
     response.org = (await getCurrentOrg(response.orgSiteName, true)) || null;
-    console.log(response.org);
     
 
     if (!response.org && !dev) {

@@ -200,7 +200,6 @@ export async function getCourseBySiteName(siteName: string) {
 }
 
 export async function getCurrentOrg(siteName: string, justGet = false) {
-  console.log(siteName);
   
   const { data, error } = await supabase
     .from('organization')
