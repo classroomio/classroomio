@@ -9,16 +9,16 @@ dayjs.extend(isToday);
 dayjs.extend(isTomorrow);
 dayjs.extend(localizedFormat);
 
-export default function formatTime(utcTimestamp:string) {
+export default function formatTime(utcTimestamp: string) {
   if (!utcTimestamp) return '';
 
-  const selectedDate = dayjs(utcTimestamp);
+  const createdDate = dayjs(utcTimestamp);
 
-  if (selectedDate.isToday()) {
-    return selectedDate.format('LT');
-  } else if (selectedDate.isYesterday()) {
-    return `Yesterday ${selectedDate.format('LT')}`;
+  if (createdDate.isToday()) {
+    return createdDate.format('LT');
+  } else if (createdDate.isYesterday()) {
+    return `Yesterday ${createdDate.format('LT')}`;
   }
 
-  return selectedDate.format('llll');
+  return createdDate.format('llll');
 }
