@@ -209,7 +209,7 @@
           <img src="/images/empty-lesson-icon.svg" alt="Lesson" class="my-2.5 mx-auto" />
           <h2 class="text-xl my-1.5 font-normal">No post yet</h2>
           <p class="text-sm text-center text-slate-500">
-            Make an announcement to your class. Start by clicking on the Add button.
+            Make a post to your class. Start by clicking on the Add button.
           </p>
         </div>
       </Box>

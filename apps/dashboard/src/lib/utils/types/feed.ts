@@ -21,7 +21,7 @@ interface Emoji {
   }[];
 }
 
-export interface Announcement {
+export interface Feed {
   id: string;
   image: string;
   content: string;
@@ -33,7 +33,7 @@ export interface Announcement {
 
 // interface for Database structure
 
-interface course_announcement {
+interface Course_Newsfeed {
   id?: string;
   created_at?: string;
   author_id?: string; //foreign key to groupmember.id
@@ -41,10 +41,10 @@ interface course_announcement {
   course_id?: string; // foreign key to course.id
 }
 
-interface course_announcement_comment {
+interface course_Newsfeed_Comment {
   id?: string;
   created_at?: string;
   author_id?: string; //foreign key to groupmember.id
   content?: string;
-  course_announcement_id: string; // foreign key to course_announcement.id
+  course_newsfeed_id: string; // foreign key to course_newsfeed.id
 }
