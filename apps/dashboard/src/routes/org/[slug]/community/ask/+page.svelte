@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { Dropdown } from 'carbon-components-svelte';
   import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
   import { currentOrgPath, currentOrg } from '$lib/utils/store/org';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -11,13 +12,12 @@
   import TextField from '$lib/components/Form/TextField.svelte';
   import { profile } from '$lib/utils/store/user';
   import { fetchCourses } from '$lib/components/Courses/api';
-  import { onMount } from 'svelte';
 
-  // export let isLMS = false;
   export let data;
 
   let errors: {
     title?: string;
+    courseId?: string;
   } = {};
   let fields = {
     title: '',
@@ -27,6 +27,7 @@
 
   let coursesResults;
   let fetchedCourses = [];
+  let isInvalid = false;
 
   async function getCourses(userId: string | null, orgId: string) {
     coursesResults = await fetchCourses(userId, orgId);
@@ -36,11 +37,13 @@
   async function handleSave() {
     errors = askCommunityValidation(fields);
     console.log('handleSave errors', errors);
+    isInvalid = true;
 
     if (Object.keys(errors).length) {
       return;
     }
 
+    isInvalid = false;
     const { data: question, error } = await supabase
       .from('community_question')
       .insert({
@@ -64,9 +67,11 @@
     }
   }
 
-  onMount(() => {
-    getCourses($profile.id, $currentOrg.id);
-  });
+  $: {
+    if ($profile.id !== undefined && $currentOrg.id !== undefined) {
+      getCourses($profile.id, $currentOrg.id);
+    }
+  }
 </script>
 
 <svelte:head>
@@ -87,24 +92,25 @@
     </div>
   </div>
 
-  <div class="mb-3 p-2 flex gap-x-5 justify-between">
+  <div class="mb-3 p-2 flex gap-x-5 justify-between items-center">
     <TextField
       bind:value={fields.title}
       placeholder="Title"
       errorMessage={errors.title}
       className="w-[75%]"
     />
-    <select
-      class="w-[25%]"
-      bind:value={fields.course_id}
-      on:change={(e) => (fields.course_id = e.target.value)}
-    >
-      {#if fetchedCourses}
-        {#each fetchedCourses as course}
-          <option value={course.id}>{course.title}</option>
-        {/each}
-      {/if}
-    </select>
+    <Dropdown
+      class="w-[25%] h-full"
+      size="xl"
+      label="Select Course"
+      invalid={isInvalid}
+      items={fetchedCourses.map((course) => ({ id: course.id, text: course.title }))}
+      bind:selectedId={fields.course_id}
+      on:select={(event) => {
+        const { selectedId } = event.detail;
+        fields.course_id = selectedId;
+      }}
+    />
   </div>
   <div class="px-2">
     <TextEditor

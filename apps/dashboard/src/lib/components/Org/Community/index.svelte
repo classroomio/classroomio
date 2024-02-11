@@ -9,28 +9,28 @@
   import { currentOrgPath, currentOrg } from '$lib/utils/store/org';
   import { supabase } from '$lib/utils/functions/supabase';
   import { calDateDiff } from '$lib/utils/functions/date';
-  import { courses } from '$lib/components/Courses/store';
+  import { fetchCourses } from '$lib/components/Courses/api';
+  import { profile } from '$lib/utils/store/user';
+  import TextChip from '$lib/components/Chip/Text.svelte';
+  import { Search, Dropdown } from 'carbon-components-svelte';
 
   export let isLMS = false;
 
   let isLoading = false;
   let discussions = [];
-  let courseId = '';
+  let searchValue = '';
+  let allCourses = [];
+  let selectedId = '';
 
-  // this function is to solve a situation where a student clicks the course title that he isn't enrolled in
-  function setPath(isLMS: boolean, discussion: any, courseId: string): string {
-    if (isLMS && discussion.course_id === courseId) {
-      return `/courses/${discussion.course_id}`;
-    } else if (!isLMS) {
-      return `/courses/${discussion.course_id}`;
-    } else {
-      return '#';
-    }
-  }
-
-  async function fetchCommunityQuestions(orgId?: string) {
-    if (!orgId) return;
+  async function fetchCommunityQuestions(orgId?: string, profileId?: string) {
+    if (!orgId || !profileId) return;
     isLoading = true;
+
+    ({ allCourses } = (await fetchCourses(profileId, orgId)) || { allCourses: [] });
+
+    const courseIds = allCourses.map((course) => course.id);
+    const courseIdsFilter = `(${courseIds.join(',')})`;
+
     const { data, error } = await supabase
       .from('community_question')
       .select(
@@ -45,16 +45,15 @@
         author:profile(
           fullname
         ),
-        course_title:course(
+        course!inner (
           title
         )
       `
       )
-      .eq('organization_id', orgId)
+      .filter('course_id', 'in', courseIdsFilter)
       .order('created_at', { ascending: false });
     console.log('data', data);
     console.log('error', error);
-    console.log();
 
     isLoading = false;
 
@@ -66,22 +65,42 @@
     discussions =
       data?.map((discussion) => ({
         title: discussion.title,
-        course_id: discussion.course_id,
-        course_title: discussion.course_title.title,
+        courseId: discussion.course_id,
+        courseTitle: discussion.course?.title,
         slug: discussion.slug,
         author: discussion?.author?.fullname,
         comments: discussion.comments?.[0]?.count || 0,
         votes: discussion.votes,
         createdAt: calDateDiff(discussion.created_at)
       })) || [];
-
-    // sets course id of the current user
-    courseId = $courses[0].id;
   }
 
-  $: fetchCommunityQuestions($currentOrg.id);
+  $: fetchCommunityQuestions($currentOrg.id, $profile.id);
+  $: filteredDiscussions = discussions.filter(
+    (discussion) =>
+      discussion.title.toLowerCase().includes(searchValue.toLowerCase()) &&
+      (!selectedId || discussion.courseId === selectedId)
+  );
 </script>
 
+<div class="flex justify-between">
+  <Search
+    placeholder="Find Question"
+    bind:value={searchValue}
+    searchClass="mr-2"
+    class=" bg-gray-100 dark:bg-neutral-800"
+  />
+  <Dropdown
+    class="w-[25%]"
+    size="xl"
+    label="Select Course"
+    items={allCourses.map((course) => ({ id: course.id, text: course.title }))}
+    bind:selectedId
+    on:select={(event) => {
+      const { selectedId } = event.detail;
+    }}
+  />
+</div>
 <div
   class="flex items-center justify-center lg:justify-start flex-wrap my-4 m-auto border-c rounded bg-gray-100 dark:bg-neutral-800"
 >
@@ -90,8 +109,8 @@
     <CommunityLoader />
     <CommunityLoader />
     <CommunityLoader />
-  {:else}
-    {#each discussions as discussion}
+  {:else if filteredDiscussions.length > 0}
+    {#each filteredDiscussions as discussion}
       <div class="w-full flex border-bottom-c p-5">
         <Vote value={discussion.votes} />
         <div class="discussion-topic-author flex flex-col gap-y-0.5">
@@ -106,11 +125,12 @@
           <span class="text-gray-600 dark:text-white">
             {discussion.author} asked {discussion.createdAt}
           </span>
-          <a
-            class="text-gray-600 dark:text-white text-xs"
-            href={setPath(isLMS, discussion, courseId)}
-          >
-            {discussion.course_title}
+          <a class="mt-3" href="/courses/{discussion.courseId}">
+            <TextChip
+              value={discussion.courseTitle}
+              size="sm"
+              className="text-xs bg-primary-200 dark:text-black text-primary-700 px-3"
+            />
           </a>
         </div>
         <Space />
