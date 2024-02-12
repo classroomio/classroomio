@@ -6,7 +6,7 @@
   import Tabs from './components/Tabs.svelte';
   import { polls } from './store';
   import type { PollType, TabsType, PollOptionsSubmissionType } from './types';
-  import { apps } from '$lib/components/Apps/store';
+  import { globalStore } from '$lib/utils/store/app';
   import { getSupabase } from '$lib/utils/functions/supabase';
   import { profile } from '$lib/utils/store/user';
   import { group, course } from '$lib/components/Course/store';
@@ -100,12 +100,6 @@
     setCoursePolls();
   }
 
-  // now the most interesting part,
-  // how do I implement real time functionality for polls?
-  // the only thing that is real time is the apps_poll_submission
-  // table, so I will have to listen to changes in that table
-  // and update the polls accordingly.
-
   async function handleInsert(payload: RealtimePostgresChangesPayload<PollOptionsSubmissionType>) {
     const newVote = payload.new as PollOptionsSubmissionType;
 
@@ -198,7 +192,7 @@
       return;
     }
 
-    polls.set(getPollsData(data, $apps.isStudent));
+    polls.set(getPollsData(data, $globalStore.isStudent));
 
     setCoursePolls();
 

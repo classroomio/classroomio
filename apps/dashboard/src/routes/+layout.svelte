@@ -27,7 +27,7 @@
   import { ROUTE } from '$lib/utils/constants/routes';
   import { getOrganizations } from '$lib/utils/services/org';
   import { toggleBodyByMode } from '$lib/utils/functions/app';
-  import { appStore } from '$lib/utils/store/app';
+  import { globalStore } from '$lib/utils/store/app';
   import { currentOrg } from '$lib/utils/store/org';
   import { setTheme } from '$lib/utils/functions/theme';
   import hideNavByRoute from '$lib/utils/functions/routes/hideNavByRoute';
@@ -207,8 +207,8 @@
 
     if (browser) {
       // Update theme - dark or light mode
-      $appStore.isDark = localStorage.getItem('mode') === 'dark';
-      toggleBodyByMode($appStore.isDark);
+      $globalStore.isDark = localStorage.getItem('mode') === 'dark';
+      toggleBodyByMode($globalStore.isDark);
 
       const theme = localStorage.getItem('theme');
       if (data.isOrgSite && data.org?.theme) {
@@ -256,8 +256,8 @@
       if (!data.org) {
         goto('/404');
       } else {
-        $appStore.orgSiteName = data.orgSiteName;
-        $appStore.isOrgSite = data.isOrgSite;
+        $globalStore.orgSiteName = data.orgSiteName;
+        $globalStore.isOrgSite = data.isOrgSite;
 
         currentOrg.set(data.org);
       }
@@ -270,7 +270,7 @@
   });
 
   $: path = $page.url?.pathname?.replace('/', '');
-  $: carbonTheme = $appStore.isDark ? 'g100' : 'white';
+  $: carbonTheme = $globalStore.isDark ? 'g100' : 'white';
 </script>
 
 <svelte:window on:resize={handleResize} />

@@ -2,7 +2,7 @@
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
 
-  import { appStore } from '$lib/utils/store/app';
+  import { globalStore } from '$lib/utils/store/app';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   const src = './bg-404.png';
@@ -11,7 +11,7 @@
 </script>
 
 <div
-  style={$appStore.isDark ? `background-image:url(${src})` : ''}
+  style={$globalStore.isDark ? `background-image:url(${src})` : ''}
   class={`error bg-gray-200 bg-no-repeat bg-cover flex items-center justify-center w-screen gap-20`}
 >
   <div class=" dark:text-white gap-3 w-4/5 lg:w-2/5">

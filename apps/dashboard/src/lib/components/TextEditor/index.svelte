@@ -1,7 +1,7 @@
 <script lang="ts">
   import { PUBLIC_TINYMCE_API_KEY } from '$env/static/public';
   import Editor from '@tinymce/tinymce-svelte';
-  import { appStore } from '$lib/utils/store/app';
+  import { globalStore } from '$lib/utils/store/app';
 
   export let id = '';
   export let value: string | undefined = '';
@@ -72,7 +72,7 @@
 
   $: value = !value ? '' : value;
 
-  $: handleModeChange($appStore.isDark);
+  $: handleModeChange($globalStore.isDark);
 </script>
 
 <div>

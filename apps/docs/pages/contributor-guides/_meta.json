@@ -1,6 +1,7 @@
 {
   "devs": "Developers Guide",
   "gitpod": "Gitpod setup",
+  "supabase-cloud": "Supabase Cloud Setup",
   "design": "Designers Guide",
   "student-dashboard": "Student Dashboard"
 }

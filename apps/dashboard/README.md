@@ -1,8 +1,8 @@
 <a href="https://classroomio.com/">
-  <img alt="Spend less time doing the boring stuff, instead focus on impacting the lives of your students." src="https://classroomio.com/classroomio-opengraph-image.png" />
+  <img alt="ClassroomIO is a no-code tool that allows you build and scale your own teaching platform with ease." src="https://classroomio.com/classroomio-opengraph-image.png" />
   <h1 align="center">ClassroomIO</h1>
   <p align="center">
-    The Open Source Teaching Platform for Bootcamps
+    The Open Source Teaching Platform
     <br />
     <a href="https://classroomio.com">Website</a>  |  <a href="https://dub.sh/ciodiscord">Join Discord community</a>
   </p>
@@ -133,7 +133,6 @@ Here is what you need to be able to run Cal.com.
      ```env
        PUBLIC_SUPABASE_URL=<API URL>
        PUBLIC_SUPABASE_ANON_KEY=<anon key>
-       PUBLIC_SUPABASE_BUCKET_URL=<Inbucket URL>
      ```
 
    - To view the Supabase studio, open the Studio URL from the result of supabase start

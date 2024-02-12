@@ -15,6 +15,7 @@
   import { sideBar } from '$lib/components/Org/store';
   import { profile } from '$lib/utils/store/user';
   import { getIsLessonComplete } from '../Lesson/functions';
+  import { globalStore } from '$lib/utils/store/app';
 
   export let path: string;
   export let isStudent: boolean = false;
@@ -23,7 +24,7 @@
     label: string;
     to: string;
     hideSortIcon: boolean;
-    isLecture?: boolean;
+    isLesson?: boolean;
     show?: () => boolean;
   }
 
@@ -122,9 +123,8 @@
       document.addEventListener('mousemove', dragSidebar);
       document.addEventListener('mouseup', stopDragging);
       document.addEventListener('mousemove', handleCursor);
+      toggleSidebar(false);
     }
-
-    toggleSidebar(false);
   });
 
   onDestroy(() => {
@@ -159,7 +159,7 @@
         label: 'Lessons',
         to: getLessonsRoute($course.id),
         hideSortIcon: false,
-        isLecture: true
+        isLesson: true
       },
       {
         label: 'Attendance',
@@ -212,6 +212,8 @@
       }
     ];
   }
+
+  $: console.log({ isStudent: $globalStore.isStudent });
 </script>
 
 <aside
@@ -242,10 +244,12 @@
             handleClick={handleMainGroupClick(navItem.to)}
             isGroupActive={(path || $page.url.pathname) === navItem.to}
             isExpanded={isLessonActive}
-            total={navItem.isLecture ? ($lessons || []).length : 0}
+            total={navItem.isLesson ? ($lessons || []).length : 0}
             isLoading={!$course.id}
+            isLesson={navItem.isLesson}
+            {isStudent}
           >
-            {#if navItem.isLecture}
+            {#if navItem.isLesson}
               {#each $lessons as item, index}
                 <a
                   class="pl-7 w-[95%] text-[0.80rem] mb-1 text-black dark:text-white {isStudent &&

@@ -1,11 +1,5 @@
 <script>
-  import {
-    flexible,
-    leftFist,
-    rightFist,
-    robotArm,
-    thumbsUp,
-  } from '$lib/emojis';
+  import { flexible, leftFist, rightFist, robotArm, thumbsUp } from '$lib/emojis';
 
   export let id = '';
   export let rightToLeft = false;
@@ -16,10 +10,7 @@
   export let taglineIcon = '';
 </script>
 
-<section
-  {id}
-  class="w-full py-32 border-b border-x-0 border-t-0 border-gray-200"
->
+<section {id} class="w-full py-32 border-b border-x-0 border-t-0 border-gray-200">
   <div
     class="w-4/5 mx-auto flex flex-col {rightToLeft
       ? 'lg:flex-row-reverse'
@@ -55,7 +46,7 @@
     </div>
     <div class="w-[95vw] md:w-[80vw] lg:w-full">
       <video
-        class="w-full h-auto lg:max-h-[80%] rounded-xl shadow-xl"
+        class="w-full h-auto lg:max-h-[80%] rounded-md shadow-xl"
         autoplay
         loop
         muted

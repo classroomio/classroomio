@@ -58,7 +58,7 @@
         />
       {/each}
 
-      <OrgSelectorItem size="" text=" + Add Organization" onClick={handleAddOrg} />
+      <OrgSelectorItem disabled={true} size="" text=" + Add Organization" onClick={handleAddOrg} />
     </Popover>
   {/if}
 </div>

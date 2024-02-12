@@ -7,8 +7,8 @@
   import Confetti from '../Confetti/index.svelte';
   import { isMobile } from '$lib/utils/store/useMobile';
   import { profile } from '$lib/utils/store/user';
-  import { apps } from '$lib/components/Apps/store';
   import { fetchCourse } from '$lib/utils/services/courses';
+  import { globalStore } from '$lib/utils/store/app';
 
   export let courseId = '';
   export let path = '';
@@ -44,15 +44,17 @@
 
   $: onCourseIdChange(courseId);
 
-  $: {
+  $: if (typeof $globalStore.isStudent !== 'boolean') {
     const user = $group.people.find((person) => person.profile_id === $profile.id);
 
     if (user) {
       isStudent = user.role_id === 3;
-      $apps.isStudent = isStudent;
+      $globalStore.isStudent = isStudent;
 
       filterPollsByStatus(isStudent);
     }
+  } else {
+    isStudent = $globalStore.isStudent;
   }
 </script>
 

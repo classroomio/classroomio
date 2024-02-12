@@ -45,15 +45,13 @@
   $: h = imgOffset && imgOffset.height;
   $: x = w * offset;
   $: opacity = hideOnSlide && sliding ? 0 : 1;
-  $: style = contain
-    ? `width:100%;height:100%;`
-    : `width:${w}px;height:${h}px;`;
+  $: style = contain ? `width:100%;height:100%;` : `width:${w}px;height:${h}px;`;
 </script>
 
 <svelte:window on:resize={resize} />
 
 <button
-  class="container floating w-[85%] lg:w-[70%] h-full mx-auto rounded-xl"
+  class="container floating w-[85%] lg:w-[70%] h-full mx-auto rounded-md"
   {style}
   on:touchstart={start}
   on:mousedown={start}
