@@ -21,37 +21,34 @@ const config: DocsThemeConfig = {
         sizes="32x32"
         href={`${process.env.imagePath}/img/logo-32.png`}
       />
+
+      <title>ClassroomIO – Launch Your Online Bootcamp In Minutes</title>
       <meta
         name="description"
         content="ClassroomIO is a no-code tool that allows you build and scale your own teaching platform with ease."
       />
-      <meta name="theme-color" content="#ffffff" />
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <meta
-        property="og:title"
-        content="ClassroomIO –&nbsp;Launch Your Online Bootcamp In Minutes"
-      />
+
+      <meta property="og:url" content="https://classroomio.com/docs" />
+      <meta property="og:type" content="website" />
+      <meta property="og:title" content="ClassroomIO – Launch Your Online Bootcamp In Minutes" />
       <meta
         property="og:description"
         content="ClassroomIO is a no-code tool that allows you build and scale your own teaching platform with ease."
       />
-      <meta property="og:type" content="website" />
-      <meta property="og:image:type" content="image/png" />
-      <meta property="og:image:width" content="1920" />
-      <meta property="og:image:height" content="1080" />
-      <meta
-        property="og:image:secure_url"
-        content="https://classroomio.com/classroomio-opengraph-image.png"
-      />
+      <meta property="og:image" content="https://classroomio.com/classroomio-opengraph-image.png" />
+
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:creator" content="@rotimi_best" />
-      <meta
-        name="twitter:title"
-        content="ClassroomIO –&nbsp;Launch Your Online Bootcamp In Minutes"
-      />
+      <meta property="twitter:domain" content="classroomio.com" />
+      <meta property="twitter:url" content="https://classroomio.com/docs" />
+      <meta name="twitter:title" content="ClassroomIO – Launch Your Online Bootcamp In Minutes" />
       <meta
         name="twitter:description"
         content="ClassroomIO is a no-code tool that allows you build and scale your own teaching platform with ease."
+      />
+      <meta name="twitter:creator" content="@classroomio" />
+      <meta
+        name="twitter:image"
+        content="https://classroomio.com/classroomio-opengraph-image.png'"
       />
     </>
   ),
