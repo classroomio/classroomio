@@ -154,7 +154,6 @@ This repo is a mono repo that consists of 3 projects:
      ```env
        PUBLIC_SUPABASE_URL=<API URL>
        PUBLIC_SUPABASE_ANON_KEY=<anon key>
-       PUBLIC_SUPABASE_BUCKET_URL=<Inbucket URL>
      ```
 
    - To view the Supabase studio, open the Studio URL from the result of `pnpm supabase start`

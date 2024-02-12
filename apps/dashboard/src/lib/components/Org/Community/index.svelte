@@ -19,14 +19,15 @@
   let isLoading = false;
   let discussions = [];
   let searchValue = '';
-  let allCourses = [];
+  let allCourses: any[] = [];
   let selectedId = '';
 
   async function fetchCommunityQuestions(orgId?: string, profileId?: string) {
     if (!orgId || !profileId) return;
     isLoading = true;
 
-    ({ allCourses } = (await fetchCourses(profileId, orgId)) || { allCourses: [] });
+    const courseResult = (await fetchCourses(profileId, orgId)) || { allCourses: [] };
+    allCourses = courseResult.allCourses;
 
     const courseIds = allCourses.map((course) => course.id);
     const courseIdsFilter = `(${courseIds.join(',')})`;
@@ -111,10 +112,15 @@
     <CommunityLoader />
   {:else if filteredDiscussions.length > 0}
     {#each filteredDiscussions as discussion}
-      <div class="w-full flex border-bottom-c p-5">
+      <div class="w-full flex border-bottom-c p-3">
         <Vote value={discussion.votes} />
         <div class="discussion-topic-author flex flex-col gap-y-0.5">
-          <h4>
+          <a class="m-0" href="/courses/{discussion.courseId}">
+            <span class="text-xs text-primary-200 dark:text-black text-primary-700 p-0 underline">
+              #{discussion.courseTitle}
+            </span>
+          </a>
+          <h4 class="mt-0">
             <a
               class="text-black dark:text-white"
               href="{isLMS ? '/lms' : $currentOrgPath}/community/{discussion.slug}"
@@ -125,13 +131,6 @@
           <span class="text-gray-600 dark:text-white">
             {discussion.author} asked {discussion.createdAt}
           </span>
-          <a class="mt-3" href="/courses/{discussion.courseId}">
-            <TextChip
-              value={discussion.courseTitle}
-              size="sm"
-              className="text-xs bg-primary-200 dark:text-black text-primary-700 px-3"
-            />
-          </a>
         </div>
         <Space />
         <div class="flex items-center">
