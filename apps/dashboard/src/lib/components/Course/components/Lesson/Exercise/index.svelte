@@ -62,6 +62,8 @@
         questions: updatedQuestions
       }));
       snackbar.success('Saved Successfully');
+
+      // Redirect to exercises page
       goto(path);
     } catch (error) {
       console.error(error);
