@@ -31,7 +31,7 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
   const matches = url.host.match(/([a-z 0-9 -]+).*classroomio[.]com/);
   const subdomain = matches?.[1] ?? '';
 
-  if (!url.host.includes('.classroomio.com')) {
+  if (!url.host.includes('.classroomio.com') && !url.host.includes('localhost')) {
     // TODO: We can verify if custom domain here
     return response;
   }
