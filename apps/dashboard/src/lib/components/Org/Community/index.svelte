@@ -96,9 +96,6 @@
     label="Select Course"
     items={allCourses.map((course) => ({ id: course.id, text: course.title }))}
     bind:selectedId
-    on:select={(event) => {
-      const { selectedId } = event.detail;
-    }}
   />
 </div>
 <div
