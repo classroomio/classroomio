@@ -95,7 +95,7 @@
       className="w-[75%]"
     />
     <Dropdown
-      class="w-[25%] h-auto"
+      class="w-[25%]"
       size="xl"
       label="Select Course"
       invalid={isInvalid}
