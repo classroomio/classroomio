@@ -66,7 +66,7 @@
   }
 
   $: {
-    if ($profile.id !== undefined && $currentOrg.id !== undefined) {
+    if ($profile.id && $currentOrg.id) {
       getCourses($profile.id, $currentOrg.id);
     }
   }
@@ -95,16 +95,12 @@
       className="w-[75%]"
     />
     <Dropdown
-      class="w-[25%]"
+      class="w-[25%] h-auto"
       size="xl"
       label="Select Course"
       invalid={isInvalid}
       items={fetchedCourses.map((course) => ({ id: course.id, text: course.title }))}
       bind:selectedId={fields.course_id}
-      on:select={(event) => {
-        const { selectedId } = event.detail;
-        fields.course_id = selectedId;
-      }}
     />
   </div>
 
