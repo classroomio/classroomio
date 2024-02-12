@@ -1,5 +1,6 @@
 <script>
   import { onDestroy } from 'svelte';
+  import { goto } from '$app/navigation';
   import AddAltIcon from 'carbon-icons-svelte/lib/AddAlt.svelte';
   import ViewIcon from 'carbon-icons-svelte/lib/View.svelte';
   import ViewFilledIcon from 'carbon-icons-svelte/lib/ViewFilled.svelte';
@@ -41,6 +42,7 @@
   let selectedIndex = 0;
 
   async function handleSave() {
+    console.log("This is the werey")
     if (isStudent) return;
 
     const errors = validateQuestionnaire($questionnaire.questions);
@@ -61,6 +63,7 @@
         questions: updatedQuestions
       }));
       snackbar.success('Saved Successfully');
+      goto(path);
     } catch (error) {
       console.error(error);
       snackbar.error();
