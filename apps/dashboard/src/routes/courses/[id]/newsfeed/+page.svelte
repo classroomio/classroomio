@@ -1,5 +1,4 @@
-<script>
-  // @ts-nocheck
+<script lang="ts">
   import { onMount } from 'svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -20,6 +19,7 @@
   import Box from '$lib/components/Box/index.svelte';
   import { supabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
+  import type { Feed } from '$lib/utils/types/feed';
 
   export let data;
 
@@ -41,9 +41,9 @@
     clap: []
   };
 
-  let newsFeed = [];
+  let newsFeed: Feed[] = [];
 
-  const deleteComment = (id) => {
+  const deleteComment = (id: string) => {
     deleteNewsFeedComment(id);
     newsFeed = newsFeed.flatMap((feed) => ({
       ...feed,
@@ -51,11 +51,11 @@
     }));
   };
 
-  const addNewReaction = async (reactionType, feedId, authorId) => {
+  const addNewReaction = async (reactionType: string, feedId: string, authorId: string) => {
     const reactedFeed = newsFeed.find((feed) => feed.id === feedId);
 
     if (!reactedFeed) return;
-    let reactedAuthorIds = reactedFeed.reaction[reactionType];
+    let reactedAuthorIds: string[] = reactedFeed.reaction[reactionType];
     if (reactedAuthorIds.includes(authorId)) {
       reactedAuthorIds = reactedAuthorIds.filter(
         (reactionAuthorId) => reactionAuthorId !== authorId
@@ -94,8 +94,8 @@
         author_id: authorId,
         course_newsfeed_id: feedId
       });
-
-      createdComment = response.response.data[0];
+      if (!response.response.data) return;
+      createdComment = response?.response?.data[0];
     } catch (error) {
       return snackbar.error('An error occurred while creating comment');
     }
@@ -126,7 +126,7 @@
     newsFeed = updatedFeed;
   };
 
-  const deleteFeed = (id) => {
+  const deleteFeed = (id: string) => {
     deleteNewsFeed(id);
     const deletedFeed = newsFeed.filter((feed) => feed.id !== id);
     return (newsFeed = deletedFeed);

@@ -1,17 +1,17 @@
-<script>
-  // @ts-nocheck
+<script lang="ts">
   import OverflowMenuVertical from 'carbon-icons-svelte/lib/OverflowMenuVertical.svelte';
   import Send from 'carbon-icons-svelte/lib/Send.svelte';
   import Chip from '$lib/components/Chip/index.svelte';
   import UserMultiple from 'carbon-icons-svelte/lib/UserMultiple.svelte';
-  import formatTime from '$lib/utils/functions/formatTime';
+  import { calDateDiff } from '$lib/utils/functions/date';
+  import type { Author, Feed } from '$lib/utils/types/feed';
 
-  export let value = {};
-  export let author = {};
-  export let deleteFeed = () => {};
-  export let deleteComment = () => {};
-  export let addNewComment = () => {};
-  export let addNewReaction = () => {};
+  export let value: Feed | any = {};
+  export let author: Author | any = {};
+  export let deleteFeed = (arg: string) => {};
+  export let deleteComment = (arg: string) => {};
+  export let addNewComment = (arg1: string, arg2: string, arg3: string) => {};
+  export let addNewReaction = (arg1: string, arg2: string, arg3: string) => {};
 
   let isFeedOptionOpen = false;
   let isCommentOptionOpen = false;
@@ -29,7 +29,7 @@
     areCommentsExpanded = !areCommentsExpanded;
   };
 
-  const toggleOption = (option) => {
+  const toggleOption = (option: string) => {
     if (option === 'feed') {
       isFeedOptionOpen = !isFeedOptionOpen;
     } else if (option === 'comment') {
@@ -37,7 +37,7 @@
     }
   };
 
-  const handleAddNewReaction = (reactionType) => {
+  const handleAddNewReaction = (reactionType: string) => {
     addNewReaction(reactionType, value.id, value.author_id);
   };
 
@@ -54,7 +54,7 @@
     isFeedOptionOpen = false;
   };
 
-  const handleDeleteComment = (id) => {
+  const handleDeleteComment = (id: string) => {
     deleteComment(id);
     isCommentOptionOpen = false;
   };
@@ -74,7 +74,7 @@
           </div>
           <span>
             <p class="text-base font-semibold capitalize">{value.author.fullname}</p>
-            <p class="text-sm font-medium text-gray-600">{formatTime(value.created_at)}</p>
+            <p class="text-sm font-medium text-gray-600">{calDateDiff(value.created_at)}</p>
           </span>
         </span>
         <div class="relative">
@@ -143,7 +143,7 @@
               <span>
                 <div class="flex items-center gap-2">
                   <p class="text-sm font-medium capitalize">{comment.author.fullname}</p>
-                  <p class="text-xs font-medium text-gray-600">{formatTime(comment.created_at)}</p>
+                  <p class="text-xs font-medium text-gray-600">{calDateDiff(comment.created_at)}</p>
                 </div>
                 <p>{comment.content}</p>
               </span>
@@ -179,10 +179,8 @@
       <div class="flex-1">
         <input
           type="text"
-          name=""
-          id=""
           value={comment}
-          on:input={(e) => (comment = e.target.value)}
+          on:input={(e) => (comment = e.target?.value)}
           on:keydown={(e) => handleAddNewComment(e)}
           placeholder="Add class comment"
           class="w-full bg-transparent border-2 border-gray-200 rounded-3xl"

@@ -1,5 +1,6 @@
 import type { Course } from '$lib/utils/types';
 import { supabase } from '$lib/utils/functions/supabase';
+import type { Feed, Reaction } from '$lib/utils/types/feed';
 
 export async function fetchNewsFeeds(courseId?: Course['id']) {
   const response: any = await supabase
@@ -32,7 +33,7 @@ export async function createNewFeed(post: {
   content: string;
   author_id: string;
   course_id: string;
-  reaction: any;
+  reaction: Reaction;
 }) {
   const response = await supabase
     .from('course_newsfeed')

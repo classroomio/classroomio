@@ -1,5 +1,4 @@
-<script>
-  // @ts-nocheck
+<script lang="ts">
   import Modal from '$lib/components/Modal/index.svelte';
   import { isNewFeedModal } from '$lib/components/Course/components/NewsFeed/store';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -8,10 +7,11 @@
   import { getTextFromHTML } from '$lib/utils/functions/course';
   import { createNewFeed } from '$lib/utils/services/newsfeed';
   import { snackbar } from '$lib/components/Snackbar/store';
+  import type { Feed, Author } from '$lib/utils/types/feed';
 
-  export let author = {};
+  export let author: Author | any = {};
   export let courseId = '';
-  export let onSave = () => {};
+  export let onSave = (feed: Feed) => {};
 
   let newPost = '';
   let createdFeed;
@@ -31,7 +31,7 @@
           clap: []
         }
       });
-
+      if (!response.response.data) return;
       createdFeed = response.response.data[0];
     } catch (error) {
       return snackbar.error('An error occurred while creating feed');
