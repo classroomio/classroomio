@@ -35,9 +35,9 @@
   async function handleSave() {
     errors = askCommunityValidation(fields);
     console.log('handleSave errors', errors);
-    isInvalid = true;
 
     if (Object.keys(errors).length) {
+      isInvalid = true;
       return;
     }
 
