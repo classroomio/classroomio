@@ -48,7 +48,7 @@ const config: DocsThemeConfig = {
       <meta name="twitter:creator" content="@classroomio" />
       <meta
         name="twitter:image"
-        content="https://classroomio.com/classroomio-opengraph-image.png'"
+        content="https://classroomio.com/classroomio-opengraph-image.png"
       />
     </>
   ),
