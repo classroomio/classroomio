@@ -110,12 +110,7 @@
     {#each filteredDiscussions as discussion}
       <div class="w-full flex border-bottom-c p-3">
         <Vote value={discussion.votes} />
-        <div class="discussion-topic-author flex flex-col gap-y-0.5">
-          <a class="m-0" href="/courses/{discussion.courseId}">
-            <span class="text-xs text-primary-200 dark:text-black text-primary-700 p-0 underline">
-              #{discussion.courseTitle}
-            </span>
-          </a>
+        <div class="text-sm flex flex-col gap-y-0.5">
           <h4 class="mt-0">
             <a
               class="text-black dark:text-white"
@@ -127,6 +122,11 @@
           <span class="text-gray-600 dark:text-white">
             {discussion.author} asked {discussion.createdAt}
           </span>
+          <a class="m-0" href="/courses/{discussion.courseId}">
+            <span class="text-xs text-primary-200 dark:text-black text-primary-700 p-0">
+              #{discussion.courseTitle}
+            </span>
+          </a>
         </div>
         <Space />
         <div class="flex items-center">
@@ -151,12 +151,5 @@
     word-break: break-word;
     overflow-wrap: break-word;
     margin: 0;
-  }
-
-  .discussion-topic-author {
-    margin-right: 20px;
-  }
-  .discussion-topic-author span {
-    font-size: 12px;
   }
 </style>
