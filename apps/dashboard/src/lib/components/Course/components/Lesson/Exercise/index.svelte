@@ -42,7 +42,6 @@
   let selectedIndex = 0;
 
   async function handleSave() {
-    console.log("This is the werey")
     if (isStudent) return;
 
     const errors = validateQuestionnaire($questionnaire.questions);
