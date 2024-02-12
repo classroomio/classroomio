@@ -11,7 +11,6 @@
   import { calDateDiff } from '$lib/utils/functions/date';
   import { fetchCourses } from '$lib/components/Courses/api';
   import { profile } from '$lib/utils/store/user';
-  import TextChip from '$lib/components/Chip/Text.svelte';
   import { Search, Dropdown } from 'carbon-components-svelte';
 
   export let isLMS = false;
@@ -107,7 +106,7 @@
     <CommunityLoader />
     <CommunityLoader />
     <CommunityLoader />
-  {:else if filteredDiscussions.length > 0}
+  {:else}
     {#each filteredDiscussions as discussion}
       <div class="w-full flex border-bottom-c p-3">
         <Vote value={discussion.votes} />
