@@ -20,7 +20,7 @@
   let fields = {
     title: '',
     body: '',
-    courseId: ''
+    course_id: ''
   };
 
   let coursesResults;

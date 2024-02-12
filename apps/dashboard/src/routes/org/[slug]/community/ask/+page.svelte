@@ -17,7 +17,7 @@
 
   let errors: {
     title?: string;
-    courseId?: string;
+    course_id?: string;
   } = {};
   let fields = {
     title: '',
