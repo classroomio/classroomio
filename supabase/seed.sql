@@ -1,4 +1,3 @@
-
 --
 -- Data for Name: flow_state; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
 --
@@ -497,7 +496,7 @@ INSERT INTO "public"."question_answer" ("id", "answers", "question_id", "open_an
 --
 
 INSERT INTO "storage"."buckets" ("id", "name", "owner", "created_at", "updated_at", "public", "avif_autodetection", "file_size_limit", "allowed_mime_types", "owner_id") VALUES
-	('avatars', 'avatars', NULL, '2023-11-22 09:29:04.533114+00', '2023-11-22 09:29:04.533114+00', true, false, NULL, NULL, NULL);
+	('avatars', 'avatars', true, '2023-11-22 09:29:04.533114+00', '2023-11-22 09:29:04.533114+00', true, false, NULL, NULL, NULL);
 
 
 --
@@ -507,8 +506,3 @@ INSERT INTO "storage"."buckets" ("id", "name", "owner", "created_at", "updated_a
 INSERT INTO "storage"."objects" ("id", "bucket_id", "name", "owner", "created_at", "updated_at", "last_accessed_at", "metadata", "version", "owner_id") VALUES
 	('5d620391-1dcf-40be-a5bc-1381abdc0ec5', 'avatars', 'uploadwidget/1702918825284How-To-Learn-ReactJS-A-Complete-Guide-For-Beginners.jpeg', '7ac00503-8519-43c8-a5ea-b79aeca900b1', '2023-12-18 17:00:25.498486+00', '2023-12-18 17:00:25.498486+00', '2023-12-18 17:00:25.498486+00', '{"eTag": "\"f7a82d978d0dc6e5199bbc3a49fac75e\"", "size": 48545, "mimetype": "image/jpeg", "cacheControl": "max-age=3600", "lastModified": "2023-12-18T17:00:25.470Z", "contentLength": 48545, "httpStatusCode": 200}', '2bc8bcfa-2b78-4687-b10d-15b428b8b0e8', NULL),
 	('84dbef75-c5b7-4c82-aa6c-473d5c2974f7', 'avatars', 'uploadwidget/1702918965257What-is-M.Tech-in-Artificial-Intelligence_AI.jpg.optimal.webp', '7ac00503-8519-43c8-a5ea-b79aeca900b1', '2023-12-18 17:02:45.392673+00', '2023-12-18 17:02:45.392673+00', '2023-12-18 17:02:45.392673+00', '{"eTag": "\"d594396a021ab5d32642179a01047248\"", "size": 83504, "mimetype": "image/webp", "cacheControl": "max-age=3600", "lastModified": "2023-12-18T17:02:45.385Z", "contentLength": 83504, "httpStatusCode": 200}', '61ee8901-8268-450d-940f-60acc2afbca8', NULL);
-
-
---
--- Data for Name: hooks; Type: TABLE DATA; Schema: supabase_functions; Owner: supabase_functions_admin
---

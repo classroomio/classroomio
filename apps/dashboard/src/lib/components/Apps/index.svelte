@@ -6,6 +6,7 @@
   import IconButton from '$lib/components/IconButton/index.svelte';
   import Settings from 'carbon-icons-svelte/lib/Settings.svelte';
   import { apps } from './store';
+  import { globalStore } from '$lib/utils/store/app';
 
   import Chip from '$lib/components/Chip/index.svelte';
   import QandA from './components/QandA/index.svelte';
@@ -19,7 +20,7 @@
 
   let appBarRef: HTMLDivElement;
   let appContentRef: HTMLDivElement;
-  let topPadding = $apps.isStudent ? '48px' : '109px';
+  let topPadding = $globalStore.isStudent ? '48px' : '109px';
 
   const getResizableSidebar = () => {
     if (!browser) return;
@@ -29,7 +30,7 @@
 
   function handleClose() {
     $apps.selectedApp = undefined;
-    if ($apps.isStudent) {
+    if ($globalStore.isStudent) {
       $apps.open = false;
     }
   }
@@ -43,7 +44,7 @@
     $apps.dropdown = !$apps.dropdown;
   }
 
-  function updateTopPadding(isStudent: boolean) {
+  function updateTopPadding(isStudent?: boolean) {
     topPadding = isStudent ? '48px' : '109px';
   }
 
@@ -54,10 +55,10 @@
   }
 
   onMount(() => {
-    updateTopPadding($apps.isStudent);
+    updateTopPadding($globalStore.isStudent);
   });
 
-  $: updateTopPadding($apps.isStudent);
+  $: updateTopPadding($globalStore.isStudent);
   $: getResizableSidebar();
 </script>
 

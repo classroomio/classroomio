@@ -8,10 +8,10 @@
       Questions & Answers
     </h1>
     <h3
-      class="lg:px-[20%] mt-4 text-lg lg:text-xl text-gray-500 inter font-normal tracking-normal lg:tracking-wide"
+      class="lg:px-[20%] mt-4 text-lg lg:text-xl text-gray-500 font-normal tracking-normal lg:tracking-wide"
     >
       Can’t find the answer you’re looking for?
-      <a class="text-[#1D4EE2]" href="mailto:help@classroomio.com" target="_blank"
+      <a class="text-blue-700" href="mailto:help@classroomio.com" target="_blank"
         >Shoot us an email</a
       > and we’ll get back to you ASAP.
     </h3>
@@ -20,11 +20,11 @@
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-20 lg:px-[13%] mt-[20%] lg:m-0">
     {#each faqs as faq}
       <div class="max-w-[100%] px-6 lg:p-0">
-        <h1 class="text:md lg:text-md font-semibold leading-8 text-gray-800 inter">
+        <h1 class="text:md lg:text-md font-semibold leading-8 text-gray-800">
           {faq.question}
         </h1>
         <p
-          class="mt-2 text:md lg:text-md font-light leading-7 lg:leading-9 text-gray-600 inter tracking-wide"
+          class="mt-2 text:md lg:text-md font-light leading-7 lg:leading-9 text-gray-600 tracking-wide"
         >
           {faq.answer}
         </p>
@@ -38,11 +38,11 @@
     <h1 class="mt-3 lg:mt-2 text-3xl lg:text-4xl font-bold font-display tracking-tight text-white">
       Supercharge your Classroom Today
     </h1>
-    <p class="mt-6 text-xl lg:text-lg text-gray-300 inter">
+    <p class="mt-6 text-xl lg:text-lg text-gray-300">
       Try before you buy. No credit card required.
     </p>
     <button
-      class="font-semibold text-md lg:text-lg text-gray-900 bg-white px-6 lg:px-7 py-4 lg:py-3 rounded-xl mt-10 inter"
+      class="font-semibold text-md lg:text-lg text-gray-900 bg-white px-6 lg:px-7 py-4 lg:py-3 rounded-md mt-10"
       data-cal-config={"{'layout':'month_view'}"}
       data-cal-link="classroomio/demo"
     >

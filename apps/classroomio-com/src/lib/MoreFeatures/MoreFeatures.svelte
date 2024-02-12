@@ -4,7 +4,7 @@
   import { folder, globe, team, transcription } from '$lib/emojis';
 
   let selected = 0;
-  let interval = 0;
+  let interval: NodeJS.Timer;
 
   const moreFeatures = [
     {
@@ -12,29 +12,28 @@
       title: 'Customizable Landing Page',
       description:
         'A minimalistic landing page template out of the box to share your courses with the world',
-      image: '/landing-page-builder.png',
+      image: '/landing-page-builder.png'
     },
     {
       icon: team,
       title: 'Team management',
       description:
         'Extend invitations and manage your teaching institution seamlessly through ClassroomIO.',
-      image: '/team-management.png',
+      image: '/team-management.png'
     },
     {
       icon: transcription,
       title: 'Auto Video Transcription',
       description:
         'AI automatically transcribes videos, making content searchable for seamless student access.',
-      image: '/video-transcription.png',
+      image: '/video-transcription.png'
     },
     {
       icon: folder,
       title: 'Downloadable Lesson PDF',
-      description:
-        'Students can download lessons automatically for offline access.',
-      image: '/download-pdf.png',
-    },
+      description: 'Students can download lessons automatically for offline access.',
+      image: '/download-pdf.png'
+    }
   ];
 
   onMount(() => {
@@ -50,21 +49,15 @@
 <section id="morefeatures" class="py-[10%] px-3 lg:px-0 bg-gray-50">
   <div class="mx-0 lg:mx-[12%]">
     <div class="w-full lg:w-4/5 mx-4 lg:mx-0 mb-14">
-      <h2
-        class="mt-2 text-3xl font-bold font-display tracking-tight lg:text-4xl"
-      >
+      <h2 class="mt-2 text-3xl font-bold font-display tracking-tight lg:text-4xl">
         There is More...
       </h2>
-      <p class="mt-4 text-lg inter text-gray-500 w-[94%] lg:w-4/5">
-        ClassroomIO is packed with useful features while we try to make it easy
-        to use.
+      <p class="mt-4 text-lg text-gray-500 w-[94%] lg:w-4/5">
+        ClassroomIO is packed with useful features while we try to make it easy to use.
       </p>
     </div>
 
-    <div
-      class="flex flex-col-reverse lg:flex-row gap-3 md:gap-10"
-      id="image-container"
-    >
+    <div class="flex flex-col-reverse lg:flex-row gap-3 md:gap-10" id="image-container">
       <div
         class="w-[95%] p-3 mt-5 overflow-auto lg:overflow-hidden lg:mt-0 lg:w-[45%] flex lg:block"
       >
