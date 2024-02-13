@@ -184,9 +184,8 @@
           goto(`/org/${orgRes.currentOrg.siteName}`);
         }
       }
-      if (typeof orgRes?.currentOrg?.theme === 'string') {
-        setTheme(orgRes.currentOrg.theme);
-      }
+
+      setTheme(orgRes?.currentOrg?.theme);
     }
 
     if (!profileData && !isPublicRoute($page.url?.pathname)) {
