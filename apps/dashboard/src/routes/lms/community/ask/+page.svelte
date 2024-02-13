@@ -23,12 +23,10 @@
     course_id: ''
   };
 
-  let coursesResults;
   let fetchedCourses = [];
-  let isInvalid = false;
 
   async function getCourses(userId: string | null, orgId: string) {
-    coursesResults = await fetchCourses(userId, orgId);
+    const coursesResults = await fetchCourses(userId, orgId);
     fetchedCourses = coursesResults.allCourses;
   }
 
@@ -37,11 +35,9 @@
     console.log('handleSave errors', errors);
 
     if (Object.keys(errors).length) {
-      isInvalid = true;
       return;
     }
 
-    isInvalid = false;
     const { data: question, error } = await supabase
       .from('community_question')
       .insert({
@@ -98,7 +94,7 @@
       class="w-[25%]"
       size="xl"
       label="Select Course"
-      invalid={isInvalid}
+      invalid={!!errors.course_id}
       items={fetchedCourses.map((course) => ({ id: course.id, text: course.title }))}
       bind:selectedId={fields.course_id}
     />
