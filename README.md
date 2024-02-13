@@ -178,6 +178,11 @@ This repo is a mono repo that consists of 3 projects:
    - `docs`: [http://localhost:3000](http://localhost:3000)
 
 9. Running a specific project
+
    - **classroomio-com**: `pnpm dev --filter=classroomio-com`
    - **dashboard**: `pnpm dev --filter=dashboard`
    - **docs**: `pnpm dev --filter=docs`
+
+10. Login into `dashboard`.
+
+To learn how to login into the dashboard please [go here](https://classroomio.com/docs/contributor-guides/demo-accounts)
