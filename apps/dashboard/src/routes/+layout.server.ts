@@ -42,6 +42,7 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
     response.isOrgSite = debugMode || answer;
     response.orgSiteName = debugMode ? _orgSiteName : subdomain;
     response.org = (await getCurrentOrg(response.orgSiteName, true)) || null;
+    
 
     if (!response.org && !dev) {
       throw redirect(307, 'https://app.classroomio.com/404?type=org');

@@ -17,6 +17,10 @@ const askCommunityValidationSchema = z.object({
   body: z.string().min(20, {
     message: 'Must be 10 or more characters long',
     invalid_type_error: 'Must not be empty'
+  }),
+  courseId: z.string().min(36, {
+    message: 'Select a course',
+    invalid_type_error: 'Select a course'
   })
 });
 const commentInCommunityValidationSchema = z.object({
