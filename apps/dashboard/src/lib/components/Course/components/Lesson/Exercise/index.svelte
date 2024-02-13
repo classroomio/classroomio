@@ -1,5 +1,6 @@
 <script>
   import { onDestroy } from 'svelte';
+  import { goto } from '$app/navigation';
   import AddAltIcon from 'carbon-icons-svelte/lib/AddAlt.svelte';
   import ViewIcon from 'carbon-icons-svelte/lib/View.svelte';
   import ViewFilledIcon from 'carbon-icons-svelte/lib/ViewFilled.svelte';
@@ -61,6 +62,9 @@
         questions: updatedQuestions
       }));
       snackbar.success('Saved Successfully');
+
+      // Redirect to exercises page
+      goto(path);
     } catch (error) {
       console.error(error);
       snackbar.error();
