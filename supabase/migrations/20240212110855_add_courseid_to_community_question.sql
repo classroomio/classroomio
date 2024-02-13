@@ -5,6 +5,7 @@ create table "public"."test_tenant" (
     "details" text
 );
 
+truncate "public"."community_question" cascade;
 
 alter table "public"."community_question" add column "course_id" uuid not null;
 
