@@ -17,12 +17,12 @@
 
   let errors: {
     title?: string;
-    course_id?: string;
+    courseId?: string;
   } = {};
   let fields = {
     title: '',
     body: '',
-    course_id: ''
+    courseId: ''
   };
 
   let fetchedCourses = [];
@@ -43,11 +43,13 @@
     const { data: question, error } = await supabase
       .from('community_question')
       .insert({
-        ...fields,
+        title: fields.title,
+        body: fields.body,
         organization_id: $currentOrg.id,
         author_profile_id: $profile.id,
         votes: 0,
-        slug: generateSlug(fields.title)
+        slug: generateSlug(fields.title),
+        course_id: fields.courseId
       })
       .select();
 
@@ -99,9 +101,10 @@
       class="w-[25%]"
       size="xl"
       label="Select Course"
-      invalid={!!errors.course_id}
+      invalid={!!errors.courseId}
+      invalidText={errors.courseId}
       items={fetchedCourses.map((course) => ({ id: course.id, text: course.title }))}
-      bind:selectedId={fields.course_id}
+      bind:selectedId={fields.courseId}
     />
   </div>
   <div class="px-2">

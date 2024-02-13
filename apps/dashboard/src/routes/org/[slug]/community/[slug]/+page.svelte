@@ -80,7 +80,7 @@
   let editContent = {
     title: '',
     body: '',
-    course_id: ''
+    courseId: ''
   };
 
   let editorInstance = false;
@@ -241,12 +241,7 @@
 
   async function handleQuestionEdit() {
     if (isEditMode) {
-      const fields = {
-        title: editContent.title,
-        body: editContent.body,
-        course_id: editContent.course_id
-      };
-      errors = askCommunityValidation(fields);
+      errors = askCommunityValidation(editContent);
       console.log('handleQuestionEdit errors', errors);
 
       if (Object.keys(errors).length) {
@@ -258,12 +253,7 @@
     editorInstance = !editorInstance;
 
     if (!isEditMode) {
-      const fields = {
-        title: editContent.title,
-        body: editContent.body,
-        course_id: editContent.course_id
-      };
-      errors = askCommunityValidation(fields);
+      errors = askCommunityValidation(editContent);
       console.log('handleQuestionEdit errors', errors);
 
       if (Object.keys(errors).length) {
@@ -271,24 +261,27 @@
       }
       const { error } = await supabase
         .from('community_question')
-        .update(fields)
+        .update({
+          ...editContent,
+          course_id: editContent.courseId
+        })
         .match({ id: question.id });
       if (error) {
         console.error('Error: handleQuestionEdit', error);
         snackbar.error('Error - Please try again later');
       } else {
-        question.title = fields.title;
-        question.body = fields.body;
-        question.courseId = fields.course_id;
+        question.title = editContent.title;
+        question.body = editContent.body;
+        question.courseId = editContent.courseId;
 
         editContent.title = '';
         editContent.body = '';
-        editContent.course_id = '';
+        editContent.courseId = '';
       }
     } else {
       editContent.title = question.title;
       editContent.body = question.body;
-      editContent.course_id = question.courseId;
+      editContent.courseId = question.courseId;
     }
   }
 
@@ -407,7 +400,7 @@
             size="xl"
             label="Select Course"
             items={fetchedCourses.map((course) => ({ id: course.id, text: course.title }))}
-            bind:selectedId={editContent.course_id}
+            bind:selectedId={editContent.courseId}
           />
         {:else}
           <div class="flex items-center">

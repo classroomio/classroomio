@@ -20,7 +20,7 @@
   let fields = {
     title: '',
     body: '',
-    course_id: ''
+    courseId: ''
   };
 
   let fetchedCourses = [];
@@ -41,7 +41,9 @@
     const { data: question, error } = await supabase
       .from('community_question')
       .insert({
-        ...fields,
+        title: fields.title,
+        body: fields.body,
+        course_id: fields.courseId,
         organization_id: $currentOrg.id,
         author_profile_id: $profile.id,
         votes: 0,
@@ -55,7 +57,7 @@
     } else {
       const slug = question[0]?.slug;
       console.log('Success: asking question in lms', question, slug);
-      snackbar.success();
+      snackbar.success('Question Submitted!');
 
       goto(`/lms/community/${slug}`);
     }
@@ -94,9 +96,10 @@
       class="w-[25%]"
       size="xl"
       label="Select Course"
-      invalid={!!errors.course_id}
+      invalid={!!errors.courseId}
+      invalidText={errors.courseId}
       items={fetchedCourses.map((course) => ({ id: course.id, text: course.title }))}
-      bind:selectedId={fields.course_id}
+      bind:selectedId={fields.courseId}
     />
   </div>
 

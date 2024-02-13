@@ -496,7 +496,7 @@ INSERT INTO "public"."question_answer" ("id", "answers", "question_id", "open_an
 --
 
 INSERT INTO "storage"."buckets" ("id", "name", "owner", "created_at", "updated_at", "public", "avif_autodetection", "file_size_limit", "allowed_mime_types", "owner_id") VALUES
-	('avatars', 'avatars', true, '2023-11-22 09:29:04.533114+00', '2023-11-22 09:29:04.533114+00', true, false, NULL, NULL, NULL);
+	('avatars', 'avatars', NULL, '2023-11-22 09:29:04.533114+00', '2023-11-22 09:29:04.533114+00', true, false, NULL, NULL, NULL);
 
 
 --
