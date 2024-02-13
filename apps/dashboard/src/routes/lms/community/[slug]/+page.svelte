@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
   import pluralize from 'pluralize';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
-  import { SkeletonPlaceholder, SkeletonText } from 'carbon-components-svelte';
+  import { Dropdown, SkeletonPlaceholder, SkeletonText } from 'carbon-components-svelte';
   import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
   import Vote from '$lib/components/Vote/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -10,7 +10,7 @@
   import Avatar from '$lib/components/Avatar/index.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
-  import { isOrgAdmin } from '$lib/utils/store/org';
+  import { currentOrg, isOrgAdmin } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { supabase } from '$lib/utils/functions/supabase';
   import {
@@ -23,6 +23,7 @@
   import TextEditor from '$lib/components/TextEditor/index.svelte';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { browser } from '$app/environment';
+  import { fetchCourses } from '$lib/components/Courses/api.js';
 
   export let data;
   const { slug } = data;
@@ -49,6 +50,7 @@
     createdAt: string;
     comments: Comment[];
     totalComments: number;
+    courseId: string;
   }
 
   let question: Question;
@@ -77,10 +79,12 @@
   };
   let editContent = {
     title: '',
-    body: ''
+    body: '',
+    course_id: ''
   };
 
   let editorInstance = false;
+  let fetchedCourses = [];
 
   function mapResToQuestion(data): Question {
     return {
@@ -103,8 +107,14 @@
         comment: c.body,
         createdAt: calDateDiff(c.created_at)
       })),
-      totalComments: 0
+      totalComments: 0,
+      courseId: data.course_id
     };
+  }
+
+  async function getCourses(userId: string | null, orgId: string) {
+    const coursesResults = await fetchCourses(userId, orgId);
+    fetchedCourses = coursesResults.allCourses;
   }
 
   async function fetchCommunityQuestion(slug: string) {
@@ -119,6 +129,7 @@
         body,
         votes,
         created_at,
+        course_id,
         slug,
         comments:community_answer(
           id,
@@ -127,7 +138,10 @@
           created_at,
           author:profile(id, fullname, avatar_url)
         ),
-        author:profile(id, fullname, avatar_url)
+        author:profile(id, fullname, avatar_url),
+        course!inner (
+          title
+        )
       `
       )
       .eq('slug', slug)
@@ -227,7 +241,11 @@
 
   async function handleQuestionEdit() {
     if (isEditMode) {
-      const fields = { title: editContent.title, body: editContent.body };
+      const fields = {
+        title: editContent.title,
+        body: editContent.body,
+        course_id: editContent.course_id
+      };
       errors = askCommunityValidation(fields);
       console.log('handleQuestionEdit errors', errors);
 
@@ -240,7 +258,11 @@
     editorInstance = !editorInstance;
 
     if (!isEditMode) {
-      const fields = { title: editContent.title, body: editContent.body };
+      const fields = {
+        title: editContent.title,
+        body: editContent.body,
+        course_id: editContent.course_id
+      };
       errors = askCommunityValidation(fields);
       console.log('handleQuestionEdit errors', errors);
 
@@ -257,13 +279,16 @@
       } else {
         question.title = fields.title;
         question.body = fields.body;
+        question.courseId = fields.course_id;
 
         editContent.title = '';
         editContent.body = '';
+        editContent.course_id = '';
       }
     } else {
       editContent.title = question.title;
       editContent.body = question.body;
+      editContent.course_id = question.courseId;
     }
   }
 
@@ -324,6 +349,11 @@
   }
 
   $: browser && fetchCommunityQuestion(slug);
+  $: {
+    if ($profile.id && $currentOrg.id) {
+      getCourses($profile.id, $currentOrg.id);
+    }
+  }
 </script>
 
 <svelte:head>
@@ -368,6 +398,13 @@
             bind:value={editContent.title}
             className="w-full mr-2"
             errorMessage={errors.title}
+          />
+          <Dropdown
+            class="w-[25%] h-fit"
+            size="xl"
+            label="Select Course"
+            items={fetchedCourses.map((course) => ({ id: course.id, text: course.title }))}
+            bind:selectedId={editContent.course_id}
           />
         {:else}
           <div class="flex items-center">
