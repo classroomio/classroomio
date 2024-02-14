@@ -4,7 +4,6 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
-  import { getTextFromHTML } from '$lib/utils/functions/course';
   import { createNewFeed } from '$lib/utils/services/newsfeed';
   import { snackbar } from '$lib/components/Snackbar/store';
   import type { Feed, Author } from '$lib/utils/types/feed';

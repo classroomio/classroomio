@@ -3,7 +3,7 @@
   import PageNav from '$lib/components/PageNav/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import PageBody from '$lib/components/PageBody/index.svelte';
-  import { group, course } from '$lib/components/Course/store';
+  import { group } from '$lib/components/Course/store';
   import { profile } from '$lib/utils/store/user';
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
