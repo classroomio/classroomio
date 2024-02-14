@@ -1,22 +1,27 @@
 <script lang="ts">
   import OverflowMenuVertical from 'carbon-icons-svelte/lib/OverflowMenuVertical.svelte';
+  import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
   import Send from 'carbon-icons-svelte/lib/Send.svelte';
   import Chip from '$lib/components/Chip/index.svelte';
   import UserMultiple from 'carbon-icons-svelte/lib/UserMultiple.svelte';
   import { calDateDiff } from '$lib/utils/functions/date';
   import type { Author, Feed } from '$lib/utils/types/feed';
+  import DeleteFeedConfirmation from './DeleteFeedConfirmation.svelte';
+  import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
+  import { isNewFeedModal } from '$lib/components/Course/components/NewsFeed/store';
 
   export let value: Feed | any = {};
+  export let editValue: Feed | any = {};
   export let author: Author | any = {};
+  export let edit = false;
   export let deleteFeed = (arg: string) => {};
   export let deleteComment = (arg: string) => {};
   export let addNewComment = (arg1: string, arg2: string, arg3: string) => {};
   export let addNewReaction = (arg1: string, arg2: string, arg3: string) => {};
 
-  let isFeedOptionOpen = false;
-  let isCommentOptionOpen = false;
   let comment = '';
   let areCommentsExpanded = false;
+  let isDeleteFeedModal = false;
 
   let reactions = {
     smile: '😀',
@@ -25,16 +30,15 @@
     clap: '👏'
   };
 
+  const openEditFeed = () => {
+    $isNewFeedModal.open = true;
+    edit = true;
+    if (edit === true) {
+      editValue = value;
+    }
+  };
   const expandComment = () => {
     areCommentsExpanded = !areCommentsExpanded;
-  };
-
-  const toggleOption = (option: string) => {
-    if (option === 'feed') {
-      isFeedOptionOpen = !isFeedOptionOpen;
-    } else if (option === 'comment') {
-      isCommentOptionOpen = !isCommentOptionOpen;
-    }
   };
 
   const handleAddNewReaction = (reactionType: string) => {
@@ -51,13 +55,24 @@
 
   const handleDeleteFeed = () => {
     deleteFeed(value.id);
-    isFeedOptionOpen = false;
   };
 
   const handleDeleteComment = (id: string) => {
     deleteComment(id);
-    isCommentOptionOpen = false;
   };
+
+  function isNoteEmpty(note: string) {
+    if (!note || typeof note !== 'string') return true;
+
+    if (!document) return false;
+
+    const dummyDiv = document.createElement('div');
+    dummyDiv.innerHTML = note;
+
+    const rawText = dummyDiv.textContent?.trim();
+
+    return rawText === '';
+  }
 </script>
 
 <div class="flex flex-col gap-5 border-2 border-gray-200 rounded-md my-5">
@@ -77,21 +92,21 @@
             <p class="text-sm font-medium text-gray-600">{calDateDiff(value.created_at)}</p>
           </span>
         </span>
-        <div class="relative">
-          <button on:click={() => toggleOption('feed')}>
-            <OverflowMenuVertical size={24} />
-          </button>
-
-          {#if isFeedOptionOpen == true}
-            <div class="absolute right-2 rounded-md p-2 border hover:bg-slate-200 cursor-pointer">
-              <button on:click={() => handleDeleteFeed()}>
-                <p>Delete</p>
-              </button>
-            </div>
-          {/if}
-        </div>
+        <OverflowMenu flipped>
+          <OverflowMenuItem text="Edit" on:click={openEditFeed} />
+          <OverflowMenuItem danger text="Delete" on:click={() => (isDeleteFeedModal = true)} />
+        </OverflowMenu>
       </div>
-      <p class="text-sm font-medium w-[80%] mb-4">{value.content}</p>
+      {#if !isNoteEmpty(value.content)}
+        <HtmlRender className="text-sm font-medium w-[80%] mb-4">
+          <svelte:fragment slot="content">
+            <div>
+              {@html value.content}
+            </div>
+          </svelte:fragment>
+        </HtmlRender>
+      {/if}
+      <!-- <HtmlRender className="text-sm font-medium w-[80%] mb-4" content={value.content} /> -->
     </div>
 
     <div class="flex gap-4 px-3">
@@ -148,22 +163,14 @@
                 <p>{comment.content}</p>
               </span>
             </span>
-
-            <div class="relative opacity-0 group-hover:opacity-100">
-              <button on:click={() => toggleOption('comment')}>
-                <OverflowMenuVertical size={24} />
-              </button>
-
-              {#if isCommentOptionOpen == true}
-                <div
-                  class="absolute right-2 rounded-md p-2 border hover:bg-slate-200 cursor-pointer"
-                >
-                  <button on:click={() => handleDeleteComment(comment.id)}>
-                    <p>Delete</p>
-                  </button>
-                </div>
-              {/if}
-            </div>
+            <OverflowMenu flipped class="hidden group-hover:flex">
+              <OverflowMenuItem text="Edit" />
+              <OverflowMenuItem
+                danger
+                text="Delete"
+                on:click={() => handleDeleteComment(comment.id)}
+              />
+            </OverflowMenu>
           </div>
         {/if}
       {/each}
@@ -191,4 +198,5 @@
       </button>
     </div>
   </section>
+  <DeleteFeedConfirmation bind:openDeleteModal={isDeleteFeedModal} deleteFeed={handleDeleteFeed} />
 </div>

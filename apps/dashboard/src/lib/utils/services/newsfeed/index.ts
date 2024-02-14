@@ -48,6 +48,15 @@ export async function createNewFeed(post: {
   return { response };
 }
 
+export async function editFeed(feedId: string, content: string) {
+  const response = await supabase
+    .from('course_newsfeed')
+    .update({ content: content })
+    .match({ id: feedId })
+    .select();
+  return response;
+}
+
 export async function createComment(comment: {
   content: string;
   author_id: string;

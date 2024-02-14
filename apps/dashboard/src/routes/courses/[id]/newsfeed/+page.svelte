@@ -14,7 +14,8 @@
     createComment,
     deleteNewsFeedComment,
     deleteNewsFeed,
-    fetchNewsFeeds
+    fetchNewsFeeds,
+    editFeed
   } from '$lib/utils/services/newsfeed/index';
   import Box from '$lib/components/Box/index.svelte';
   import { supabase } from '$lib/utils/functions/supabase';
@@ -26,6 +27,8 @@
   let isStudent = false;
   let currentGroupMember;
   let createdComment;
+  let edit = false;
+  let editValue = {};
 
   let author = {
     id: '',
@@ -43,12 +46,22 @@
 
   let newsFeed: Feed[] = [];
 
+  const onEdit = (id: string, content: string) => {
+    editFeed(id, content);
+    newsFeed = newsFeed.map((feed) => {
+      if (feed.id === id) {
+        return { ...feed, content: content };
+      }
+      return feed;
+    });
+  };
   const deleteComment = (id: string) => {
     deleteNewsFeedComment(id);
     newsFeed = newsFeed.flatMap((feed) => ({
       ...feed,
       comment: feed.comment.filter((comment) => comment.id !== id)
     }));
+    return snackbar.success('Comment deleted successfully');
   };
 
   const addNewReaction = async (reactionType: string, feedId: string, authorId: string) => {
@@ -87,7 +100,7 @@
     });
   };
 
-  const addNewComment = async (comment, feedId, authorId) => {
+  const addNewComment = async (comment: string, feedId: string, authorId: string) => {
     try {
       const response = await createComment({
         content: comment,
@@ -119,7 +132,7 @@
           comment: [...feed.comment, { ...newComment }]
         };
       }
-
+      snackbar.success('comment added successfully');
       return feed;
     });
 
@@ -129,6 +142,7 @@
   const deleteFeed = (id: string) => {
     deleteNewsFeed(id);
     const deletedFeed = newsFeed.filter((feed) => feed.id !== id);
+    snackbar.success('Feed deleted successfully');
     return (newsFeed = deletedFeed);
   };
 
@@ -174,6 +188,39 @@
     });
   });
 
+  $: newsFeed = newsFeed.map((feed) => {
+    const feedAuthorDetails = $group.people.find((person) => person.id === feed.author_id);
+
+    const feedAuthor = {
+      id: feedAuthorDetails?.id || '',
+      username: feedAuthorDetails?.profile.username || '',
+      fullname: feedAuthorDetails?.profile.fullname || '',
+      avatar: feedAuthorDetails?.profile.avatar_url || ''
+    };
+
+    const commentWithAuthor = feed.comment.map((comment) => {
+      const commentAuthorDetails = $group.people.find((person) => person.id === comment.author_id);
+
+      const commentAuthor = {
+        id: commentAuthorDetails?.id || '',
+        username: commentAuthorDetails?.profile.username || '',
+        fullname: commentAuthorDetails?.profile.fullname || '',
+        avatar: commentAuthorDetails?.profile.avatar_url || ''
+      };
+
+      return {
+        ...comment,
+        author: commentAuthor
+      };
+    });
+
+    return {
+      ...feed,
+      author: feedAuthor,
+      comment: commentWithAuthor,
+      emoji: reaction
+    };
+  });
   $: currentGroupMember = $group.people.find((person) => person.profile_id === $profile.id);
   $: author = {
     id: currentGroupMember?.id || '',
@@ -197,9 +244,12 @@
       <NewFeedModal
         courseId={data.courseId}
         {author}
+        bind:edit
+        bind:editValue
         onSave={(newFeed) => {
           newsFeed = [newFeed, ...newsFeed];
         }}
+        {onEdit}
       />
     </RoleBasedSecurity>
 
@@ -222,6 +272,8 @@
           {deleteComment}
           {addNewReaction}
           {author}
+          bind:edit
+          bind:editValue
         />
       {/each}
     {/if}

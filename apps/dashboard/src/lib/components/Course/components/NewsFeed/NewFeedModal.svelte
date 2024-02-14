@@ -12,54 +12,66 @@
   export let author: Author | any = {};
   export let courseId = '';
   export let onSave = (feed: Feed) => {};
+  export let onEdit = (id: string, content: string) => {};
+  export let edit = false;
+  export let editValue = {};
 
   let newPost = '';
   let createdFeed;
 
   const onPost = async () => {
     if (!newPost) return;
+    if (!edit) {
+      try {
+        const response = await createNewFeed({
+          content: newPost,
+          author_id: author.id,
+          course_id: courseId,
+          reaction: {
+            smile: [],
+            thumbsup: [],
+            thumbsdown: [],
+            clap: []
+          }
+        });
+        if (!response.response.data) return;
+        createdFeed = response.response.data[0];
+      } catch (error) {
+        return snackbar.error('An error occurred while creating feed');
+      }
+      if (!createdFeed) return;
 
-    try {
-      const response = await createNewFeed({
+      onSave({
+        id: createdFeed.id,
         content: newPost,
-        author_id: author.id,
-        course_id: courseId,
-        reaction: {
-          smile: [],
-          thumbsup: [],
-          thumbsdown: [],
-          clap: []
-        }
+        author: {
+          id: author.id,
+          username: author.username,
+          fullname: author.fullname,
+          avatar: author.avatar
+        },
+        created_at: createdFeed.created_at,
+        comment: [],
+        reaction: createdFeed.reaction
       });
-      if (!response.response.data) return;
-      createdFeed = response.response.data[0];
-    } catch (error) {
-      return snackbar.error('An error occurred while creating feed');
+      snackbar.success('New feed added successfully');
+      newPost = '';
+      $isNewFeedModal.open = false;
+    } else {
+      onEdit(editValue.id, newPost);
+      snackbar.success('Feed edited successfully');
+      edit = false;
+      newPost = '';
+      $isNewFeedModal.open = false;
     }
-    if (!createdFeed) return;
-
-    onSave({
-      id: createdFeed.id,
-      content: newPost,
-      author: {
-        id: author.id,
-        username: author.username,
-        fullname: author.fullname,
-        avatar: author.avatar
-      },
-      created_at: createdFeed.created_at,
-      comment: [],
-      reaction: createdFeed.reaction
-    });
-
-    newPost = '';
-    $isNewFeedModal.open = false;
   };
 
   const resetEditor = () => {
     newPost = '';
+    edit = false;
     $isNewFeedModal.open = false;
   };
+  $: newPost = edit === true ? editValue?.content : '';
 </script>
 
 <Modal
@@ -67,13 +79,13 @@
   bind:open={$isNewFeedModal.open}
   width="w-4/5 md:w-2/5"
   maxWidth="max-w-lg"
-  modalHeading="Make An Anouncement"
+  modalHeading={edit === true ? 'Edit Feed' : 'Create Feed'}
 >
   <section class="flex flex-col rounded-xl pb-3 h-full">
     <TextEditor
       value={newPost}
       onChange={(text) => {
-        newPost = getTextFromHTML(text);
+        newPost = text;
       }}
       placeholder="Make an anouncement to your students"
       maxHeight={200}
