@@ -92,8 +92,6 @@
   function gotoSetting(pathname) {
     goto(`${$currentOrgPath}/settings${pathname}`);
   }
-
-  $: console.log('theme', $currentOrg.theme);
 </script>
 
 <Grid class="border-c rounded border-gray-200 w-full mt-5">
