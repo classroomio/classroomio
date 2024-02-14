@@ -40,7 +40,6 @@
   let member: { id?: string; email?: string; profile?: { email: string } } = {};
   let shouldEditMemberId: string | null = null;
   let filterBy: ProfileRole = ROLES[0];
-  let isStudent = false;
   let searchValue = '';
 
   // function setPeople(people: Array<Person>) {
@@ -91,12 +90,13 @@
     return profile ? profile.email : email;
   }
 
-	function obscureEmail(email) {
-		const [username, domain] = email.split('@');
-		const obscuredUsername = username.charAt(0) + '*'.repeat(username.length - 2) + username.charAt(username.length - 1);
+  function obscureEmail(email) {
+    const [username, domain] = email.split('@');
+    const obscuredUsername =
+      username.charAt(0) + '*'.repeat(username.length - 2) + username.charAt(username.length - 1);
 
-		return `${obscuredUsername}@${domain}`;
-	}
+    return `${obscuredUsername}@${domain}`;
+  }
 
   function handleEditStudentIdMode(personId: string) {
     shouldEditMemberId = personId;
@@ -120,7 +120,7 @@
   {deletePerson}
 />
 
-<CourseContainer bind:isStudent bind:courseId={data.courseId}>
+<CourseContainer bind:courseId={data.courseId}>
   <PageNav title="People" disableSticky={true}>
     <slot:fragment slot="widget">
       <RoleBasedSecurity allowedRoles={[1, 2]}>

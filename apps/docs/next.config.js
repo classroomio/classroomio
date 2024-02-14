@@ -10,5 +10,8 @@ module.exports = {
   env: {
     imagePath: env === 'production' ? '/docs' : ''
   },
+  images: {
+    unoptimized: true
+  },
   ...withNextra()
 };

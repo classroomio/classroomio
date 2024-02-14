@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import {
     Search,
     Checkbox,
@@ -21,10 +20,11 @@
   import { ROLE } from '$lib/utils/constants/roles';
   import { takeAttendance } from '$lib/utils/services/attendance';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import { attendance } from '$lib/utils/store/attendance.js';
+  import { attendance } from '$lib/utils/store/attendance';
   import { profile } from '$lib/utils/store/user';
   import type { GroupPerson, Lesson } from '$lib/utils/types/index';
   import { browser } from '$app/environment';
+  import { globalStore } from '$lib/utils/store/app';
 
   export let data;
 
@@ -38,7 +38,6 @@
   }
 
   let students: GroupPerson[] = [];
-  let isStudent: boolean = false;
   let searchValue = '';
 
   function setAttendance(courseData: CourseData) {
@@ -65,7 +64,7 @@
   }
 
   function handleAttendanceChange(e: any, student: GroupPerson, lesson: Lesson) {
-    if (isStudent) return;
+    if ($globalStore.isStudent) return;
 
     const attendanceItem = $attendance[student.id]
       ? $attendance[student.id][lesson.id] || { id: undefined }
@@ -130,14 +129,14 @@
     }
   }
 
-  $: students = isStudent
+  $: students = $globalStore.isStudent
     ? $group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
     : $group.people.filter((person) => !!person.profile && person.role_id === ROLE.STUDENT);
 
   $: browser && $course.id && firstRender($course.id);
 </script>
 
-<CourseContainer bind:isStudent bind:courseId={data.courseId}>
+<CourseContainer bind:courseId={data.courseId}>
   <PageNav title="Attendance" />
   <PageBody width="w-full max-w-6xl md:w-11/12">
     <section class="flex items-center mx-2 lg:mx-9 my-5">
@@ -189,8 +188,8 @@
               {#each $lessons as lesson}
                 <StructuredListCell class="">
                   <Checkbox
-                    class={isStudent ? 'cursor-not-allowed' : ''}
-                    disabled={isStudent}
+                    class={$globalStore.isStudent ? 'cursor-not-allowed' : ''}
+                    disabled={$globalStore.isStudent}
                     checked={$attendance[student.id]
                       ? $attendance[student.id][lesson.id]
                         ? $attendance[student.id][lesson.id].is_present

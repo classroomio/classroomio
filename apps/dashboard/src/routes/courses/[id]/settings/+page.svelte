@@ -5,10 +5,9 @@
   import Settings from '$lib/components/Course/components/Settings/index.svelte';
 
   export let data;
-  let isStudent = false;
 </script>
 
-<CourseContainer bind:isStudent bind:courseId={data.courseId}>
+<CourseContainer bind:courseId={data.courseId}>
   <PageNav title="Settings" />
   <PageBody>
     <Settings />

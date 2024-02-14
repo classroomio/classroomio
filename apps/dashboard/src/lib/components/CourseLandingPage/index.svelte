@@ -13,7 +13,7 @@
   import { getLectureNo } from '../Course/function';
   import { NAV_ITEMS } from './constants';
   import Modal from '../Modal/index.svelte';
-  import { reviewsModalStore } from './store';
+  import { handleOpenWidget, reviewsModalStore } from './store';
   import Chip from '../Chip/index.svelte';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -23,6 +23,8 @@
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { currentOrg } from '$lib/utils/store/org';
+  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
+  import { course } from '$lib/components/Course/store';
 
   export let editMode = false;
   export let courseData: Course;
@@ -120,6 +122,9 @@
           }}
           isDisabled={!courseData.metadata.allowNewStudent}
         />
+        {#if $handleOpenWidget.open}
+          <UploadWidget bind:imageURL={$course.logo} />
+        {/if}
       </div>
 
       <!-- Banner Image getEmbedId(videoUrl) -->

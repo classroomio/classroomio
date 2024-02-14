@@ -9,7 +9,7 @@
   import ArrowLeft from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
 
   import IconButton from '$lib/components/IconButton/index.svelte';
-  import { appStore } from '$lib/utils/store/app';
+  import { globalStore } from '$lib/utils/store/app';
   import { currentOrgPath } from '$lib/utils/store/org';
   import { toggleBodyByMode } from '$lib/utils/functions/app';
   import { sideBar } from '../Org/store';
@@ -23,20 +23,20 @@
   };
 
   function toggleDarkMode() {
-    $appStore.isDark = !$appStore.isDark;
+    $globalStore.isDark = !$globalStore.isDark;
 
-    toggleBodyByMode($appStore.isDark);
+    toggleBodyByMode($globalStore.isDark);
 
     if (browser) {
-      localStorage.setItem('mode', $appStore.isDark ? 'dark' : '');
+      localStorage.setItem('mode', $globalStore.isDark ? 'dark' : '');
     }
   }
 
-  $: coursesPath = $appStore.isOrgSite
+  $: coursesPath = $globalStore.isOrgSite
     ? '/lms/mylearning'
     : isCoursePage
-    ? `${$currentOrgPath}/courses`
-    : $currentOrgPath;
+      ? `${$currentOrgPath}/courses`
+      : $currentOrgPath;
 </script>
 
 <nav
@@ -91,7 +91,7 @@
     </li>
     <li>
       <IconButton size="small" onClick={toggleDarkMode}>
-        {#if $appStore.isDark}
+        {#if $globalStore.isDark}
           <Sun size={16} class="text-white" />
         {:else}
           <Moon size={16} class="text-white" />
