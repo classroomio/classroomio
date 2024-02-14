@@ -154,7 +154,6 @@ This repo is a mono repo that consists of 3 projects:
      ```env
        PUBLIC_SUPABASE_URL=<API URL>
        PUBLIC_SUPABASE_ANON_KEY=<anon key>
-       PUBLIC_SUPABASE_BUCKET_URL=<Inbucket URL>
      ```
 
    - To view the Supabase studio, open the Studio URL from the result of `pnpm supabase start`
@@ -178,6 +177,11 @@ This repo is a mono repo that consists of 3 projects:
    - `docs`: [http://localhost:3000](http://localhost:3000)
 
 9. Running a specific project
+
    - **classroomio-com**: `pnpm dev --filter=classroomio-com`
    - **dashboard**: `pnpm dev --filter=dashboard`
    - **docs**: `pnpm dev --filter=docs`
+
+10. Login into `dashboard`.
+
+To learn how to login into the dashboard please [go here](https://classroomio.com/docs/contributor-guides/demo-accounts)
