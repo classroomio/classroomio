@@ -76,8 +76,9 @@ Here is what you need to be able to run ClassroomIO.com
 This repo is a mono repo that consists of 3 projects:
 
 1. `classroomio-com`: The landing page of ClassroomIO hosted [here](https://classroomio.com)
-2. `dashboard`: The web application that runs the learning management system.
-3. `docs`: Official documentation of ClassroomIO hosted [here](https://classroomio.com/docs)
+2. `classroomio-server`: The server of ClassroomIO.
+3. `dashboard`: The web application that runs the learning management system.
+4. `docs`: Official documentation of ClassroomIO hosted [here](https://classroomio.com/docs)
 
 ## Development
 
@@ -173,6 +174,7 @@ This repo is a mono repo that consists of 3 projects:
 8. All projects should start running
 
    - `classroomio-com`: [http://localhost:5173](http://localhost:5173)
+   - `classroomio-server`: [http://localhost:3002](http://localhost:3002)
    - `dashboard`: [http://localhost:5174](http://localhost:5174)
    - `docs`: [http://localhost:3000](http://localhost:3000)
 
