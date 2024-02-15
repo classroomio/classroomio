@@ -1,5 +1,4 @@
 <script lang="ts">
-  import OverflowMenuVertical from 'carbon-icons-svelte/lib/OverflowMenuVertical.svelte';
   import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
   import Send from 'carbon-icons-svelte/lib/Send.svelte';
   import Chip from '$lib/components/Chip/index.svelte';
@@ -9,6 +8,7 @@
   import DeleteFeedConfirmation from './DeleteFeedConfirmation.svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import { isNewFeedModal } from '$lib/components/Course/components/NewsFeed/store';
+  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
 
   export let value: Feed | any = {};
   export let editValue: Feed | any = {};
@@ -92,10 +92,12 @@
             <p class="text-sm font-medium text-gray-600">{calDateDiff(value.created_at)}</p>
           </span>
         </span>
-        <OverflowMenu flipped>
-          <OverflowMenuItem text="Edit" on:click={openEditFeed} />
-          <OverflowMenuItem danger text="Delete" on:click={() => (isDeleteFeedModal = true)} />
-        </OverflowMenu>
+        <RoleBasedSecurity allowedRoles={[1, 2]}>
+          <OverflowMenu flipped>
+            <OverflowMenuItem text="Edit" on:click={openEditFeed} />
+            <OverflowMenuItem danger text="Delete" on:click={() => (isDeleteFeedModal = true)} />
+          </OverflowMenu>
+        </RoleBasedSecurity>
       </div>
       {#if !isNoteEmpty(value.content)}
         <HtmlRender className="text-sm font-medium w-[80%] mb-4">
@@ -106,7 +108,6 @@
           </svelte:fragment>
         </HtmlRender>
       {/if}
-      <!-- <HtmlRender className="text-sm font-medium w-[80%] mb-4" content={value.content} /> -->
     </div>
 
     <div class="flex gap-4 px-3">
@@ -163,14 +164,15 @@
                 <p>{comment.content}</p>
               </span>
             </span>
-            <OverflowMenu flipped class="hidden group-hover:flex">
-              <OverflowMenuItem text="Edit" />
-              <OverflowMenuItem
-                danger
-                text="Delete"
-                on:click={() => handleDeleteComment(comment.id)}
-              />
-            </OverflowMenu>
+            <RoleBasedSecurity allowedRoles={[1, 2]}>
+              <OverflowMenu flipped class="hidden group-hover:flex">
+                <OverflowMenuItem
+                  danger
+                  text="Delete"
+                  on:click={() => handleDeleteComment(comment.id)}
+                />
+              </OverflowMenu>
+            </RoleBasedSecurity>
           </div>
         {/if}
       {/each}
