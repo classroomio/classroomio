@@ -1,26 +1,44 @@
-import { Hono } from 'hono';
+import { Hono, Context } from 'hono';
 import { supabaseInit } from './utils/supabase';
 import { env } from 'hono/adapter';
 import generateRandomUUID from './utils/generateRandomUUID';
+import { getRateLimiter } from './utils/redis';
+import { SupabaseClient } from '@supabase/supabase-js';
+import { Ratelimit } from '@upstash/ratelimit';
 
 const app = new Hono();
+interface Env {
+  SUPABASE_ANON_KEY: string;
+  SUPABASE_URL: string;
+  redis_url: string;
+  host: string;
+  token: string;
+  telemetry: string;
+}
+let supabase: SupabaseClient;
+let ratelimit: Ratelimit;
 app.get('/', (c) => {
   return c.text('Hello Hono!');
+});
+
+app.use(async (c, next) => {
+  // a middleware that handles rate limiting
+  const response = await fetch('https://api.ipify.org?format=json');
+  const { ip } = (await response.json()) as { ip: string };
+  console.log(ip);
+  const { success } = await ratelimit.limit(ip);
+  console.log(success);
+  if (success) {
+    return c.json({ error: 'Too much request' }, 429);
+  }
+  return await next();
 });
 
 app.get('/:id', async (c) => {
   const { id } = c.req.param();
   console.log(id);
-  const { SUPABASE_URL, SUPABASE_ANON_KEY } = env<{
-    SUPABASE_URL: string;
-    SUPABASE_ANON_KEY: string;
-  }>(c);
   try {
-    const url = await supabaseInit({ url: SUPABASE_URL, key: SUPABASE_ANON_KEY })
-      .from('links')
-      .select('original_url')
-      .eq('short_code', id)
-      .single();
+    const url = await supabase.from('links').select('original_url').eq('short_code', id).single();
     if (!url.data) {
       return c.json({ message: 'Url not found' }, 404);
     }
@@ -33,44 +51,34 @@ app.get('/:id', async (c) => {
 });
 
 app.post('/short', async (c) => {
-  const { SUPABASE_URL, SUPABASE_ANON_KEY, host } = env<{
-    SUPABASE_URL: string;
-    SUPABASE_ANON_KEY: string;
-    host: string;
-  }>(c);
-  console.log(SUPABASE_URL);
-  console.log(SUPABASE_ANON_KEY);
   try {
+    const { host } = env<{
+      host: string;
+    }>(c);
+
     let { url } = await c.req.json();
     //append https:// if it doesn't exist
     if (url.indexOf(':') === -1) {
       url = 'https://' + url;
     }
     const uid = generateRandomUUID();
-    const uidExists = await supabaseInit({ url: SUPABASE_URL, key: SUPABASE_ANON_KEY })
-      .from('links')
-      .select('*')
-      .eq('short_code', uid)
-      .single();
+    const uidExists = await supabase.from('links').select('*').eq('short_code', uid).single();
     if (uidExists.data) {
       return c.json({ message: 'Server error! Try again' }, 500);
     }
-    const urlExists = await supabaseInit({ url: SUPABASE_URL, key: SUPABASE_ANON_KEY })
-      .from('links')
-      .select('*')
-      .eq('original_url', url)
-      .single();
+    const urlExists = await supabase.from('links').select('*').eq('original_url', url).single();
     if (urlExists.data) {
-      return c.json({ message: 'Link already exists', urlExists }, 409);
+      return c.json(
+        { message: 'Link already exists', short_link: `${host}/${urlExists.data?.short_code}` },
+        409
+      );
     }
     const data = {
       original_url: url as string,
       short_code: uid,
       created_at: new Date().toISOString()
     };
-    const res = await supabaseInit({ url: SUPABASE_URL, key: SUPABASE_ANON_KEY })
-      .from('links')
-      .insert(data);
+    const res = await supabase.from('links').insert(data);
     if (res.error) {
       return c.json(res, 500);
     }
@@ -81,4 +89,19 @@ app.post('/short', async (c) => {
   }
 });
 
-export default app;
+export default {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext) {
+    if (!supabase) {
+      supabase = supabaseInit({ url: env.SUPABASE_URL, key: env.SUPABASE_ANON_KEY });
+    }
+    if (!ratelimit) {
+      ratelimit = getRateLimiter({
+        url: env.redis_url,
+        token: env.token,
+        telemetry: env.telemetry
+      });
+    }
+
+    return app.fetch(request, env, ctx);
+  }
+};

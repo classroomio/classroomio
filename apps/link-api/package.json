@@ -5,6 +5,8 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.31.0",
+    "@upstash/ratelimit": "^1.0.1",
+    "@upstash/redis": "^1.28.3",
     "hono": "^4.0.1"
   },
   "devDependencies": {

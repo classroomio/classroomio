@@ -10,5 +10,6 @@ export let supabase: SupabaseClient;
 // Initialize Supabase client
 export function supabaseInit({ url, key }: SupabaseConfig): SupabaseClient {
   if (supabase) return supabase;
-  return createClient<Database>(url, key);
+  supabase = createClient<Database>(url, key);
+  return supabase;
 }
