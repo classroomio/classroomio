@@ -1,10 +1,11 @@
-import { Hono, Context } from 'hono';
+import { Hono } from 'hono';
 import { supabaseInit } from './utils/supabase';
 import { env } from 'hono/adapter';
 import generateRandomUUID from './utils/generateRandomUUID';
 import { getRateLimiter } from './utils/redis';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { Ratelimit } from '@upstash/ratelimit';
+import { ExecutionContext } from 'hono/dist/types/context';
 
 const app = new Hono();
 interface Env {
@@ -25,10 +26,8 @@ app.use(async (c, next) => {
   // a middleware that handles rate limiting
   const response = await fetch('https://api.ipify.org?format=json');
   const { ip } = (await response.json()) as { ip: string };
-  console.log(ip);
   const { success } = await ratelimit.limit(ip);
-  console.log(success);
-  if (success) {
+  if (!success) {
     return c.json({ error: 'Too much request' }, 429);
   }
   return await next();
@@ -36,13 +35,11 @@ app.use(async (c, next) => {
 
 app.get('/:id', async (c) => {
   const { id } = c.req.param();
-  console.log(id);
   try {
     const url = await supabase.from('links').select('original_url').eq('short_code', id).single();
     if (!url.data) {
       return c.json({ message: 'Url not found' }, 404);
     }
-    console.log(url.data);
     return c.redirect(url.data?.original_url);
   } catch (error) {
     console.log(error);
@@ -90,7 +87,7 @@ app.post('/short', async (c) => {
 });
 
 export default {
-  async fetch(request: Request, env: Env, ctx: ExecutionContext) {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext | undefined) {
     if (!supabase) {
       supabase = supabaseInit({ url: env.SUPABASE_URL, key: env.SUPABASE_ANON_KEY });
     }
@@ -101,7 +98,6 @@ export default {
         telemetry: env.telemetry
       });
     }
-
     return app.fetch(request, env, ctx);
   }
 };
