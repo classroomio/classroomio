@@ -6,8 +6,10 @@ import { getRateLimiter } from './utils/redis';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { Ratelimit } from '@upstash/ratelimit';
 import { ExecutionContext } from 'hono/dist/types/context';
+import { logger } from 'hono/logger';
 
 const app = new Hono();
+app.use(logger());
 interface Env {
   SUPABASE_ANON_KEY: string;
   SUPABASE_URL: string;
