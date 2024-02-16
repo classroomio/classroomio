@@ -8,8 +8,8 @@ This service runs as a cloudflare worker and written in [HonoJs](https://hono.de
 
 - Url shortening
 - Rate Limiting
+- Logging (✅)
 - Validations (⌛)
-- Logging (⌛)
 
 ### API Flow ♒
 
