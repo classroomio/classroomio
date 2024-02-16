@@ -76,7 +76,7 @@ Here is what you need to be able to run ClassroomIO.com
 This repo is a mono repo that consists of 3 projects:
 
 1. `classroomio-com`: The landing page of ClassroomIO hosted [here](https://classroomio.com)
-2. `server`: The backend service that handles PDF & video processing.
+2. `backend`: The backend service that handles PDF & video processing.
 3. `dashboard`: The web application that runs the learning management system hosted [here](https://app.classroomio.com).
 4. `docs`: Official documentation of ClassroomIO hosted [here](https://classroomio.com/docs)
 
@@ -174,14 +174,14 @@ This repo is a mono repo that consists of 3 projects:
 8. All projects should start running
 
    - `classroomio-com`: [http://localhost:5173](http://localhost:5173)
-   - `server`: [http://localhost:3002](http://localhost:3002)
+   - `backend`: [http://localhost:3002](http://localhost:3002)
    - `dashboard`: [http://localhost:5174](http://localhost:5174)
    - `docs`: [http://localhost:3000](http://localhost:3000)
 
 9. Running a specific project
 
    - **classroomio-com**: `pnpm dev --filter=classroomio-com`
-   - **server**: `pnpm dev --filter=server`
+   - **backend**: `pnpm dev --filter=backend`
    - **dashboard**: `pnpm dev --filter=dashboard`
    - **docs**: `pnpm dev --filter=docs`
 

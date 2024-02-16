@@ -1,4 +1,4 @@
-# ClassroomIO Server
+# ClassroomIO Backend
 
 ## Supported Features
 
@@ -8,7 +8,3 @@
 ## Debugging Fly.io
 
 View logs from fly.io in real time
-
-```bash
-flyctl logs -a classroomio-server > /Users/rotimibest/_pros/classroomio-server-logs/log2.log
-```
