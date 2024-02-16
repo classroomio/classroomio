@@ -9,6 +9,8 @@
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import { isNewFeedModal } from '$lib/components/Course/components/NewsFeed/store';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import { isOrgAdmin } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
 
   export let value: Feed | any = {};
   export let editValue: Feed | any = {};
@@ -42,13 +44,13 @@
   };
 
   const handleAddNewReaction = (reactionType: string) => {
-    addNewReaction(reactionType, value.id, value.author_id);
+    addNewReaction(reactionType, value.id, author.id);
   };
 
   const handleAddNewComment = (event) => {
     if (event.key === 'Enter' || event.type === 'click') {
       event.preventDefault();
-      addNewComment(comment, value.id, value.author_id);
+      addNewComment(comment, value.id, author.id);
       comment = '';
     }
   };
@@ -82,13 +84,13 @@
         <span class="flex items-center gap-3">
           <div class="w-9 h-9">
             <img
-              src={value.author.avatar}
+              src={value.author?.profile.avatar_url}
               alt="users banner"
               class="w-full h-full rounded-full object-cover"
             />
           </div>
           <span>
-            <p class="text-base font-semibold capitalize">{value.author.fullname}</p>
+            <p class="text-base font-semibold capitalize">{value.author?.profile.fullname}</p>
             <p class="text-sm font-medium text-gray-600">{calDateDiff(value.created_at)}</p>
           </span>
         </span>
@@ -151,20 +153,21 @@
             <span class="flex items-center gap-3">
               <div class="w-9 h-9">
                 <img
-                  src={comment.author.avatar}
+                  src={comment.author?.profile?.avatar_url}
                   alt="users banner"
                   class="w-full h-full rounded-full object-cover"
                 />
               </div>
               <span>
                 <div class="flex items-center gap-2">
-                  <p class="text-sm font-medium capitalize">{comment.author.fullname}</p>
+                  <p class="text-sm font-medium capitalize">{comment.author?.profile?.fullname}</p>
                   <p class="text-xs font-medium text-gray-600">{calDateDiff(comment.created_at)}</p>
                 </div>
                 <p>{comment.content}</p>
               </span>
             </span>
-            <RoleBasedSecurity allowedRoles={[1, 2]}>
+
+            {#if comment.author?.profile?.id === $profile.id || $isOrgAdmin}
               <OverflowMenu flipped class="hidden group-hover:flex">
                 <OverflowMenuItem
                   danger
@@ -172,7 +175,7 @@
                   on:click={() => handleDeleteComment(comment.id)}
                 />
               </OverflowMenu>
-            </RoleBasedSecurity>
+            {/if}
           </div>
         {/if}
       {/each}

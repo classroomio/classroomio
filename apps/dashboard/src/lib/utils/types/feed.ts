@@ -2,14 +2,16 @@ export interface Author {
   id: string;
   username: string;
   fullname: string;
-  avatar: string;
+  avatar_url: string;
 }
 
 export interface Comment {
   id: string;
   created_at: string;
   content: string;
-  author: Author;
+  author: {
+    profile: Author;
+  };
 }
 
 export interface Reaction {
@@ -22,7 +24,9 @@ export interface Reaction {
 export interface Feed {
   id: string;
   content: string;
-  author: Author;
+  author: {
+    profile: Author;
+  };
   created_at: string;
   comment: Comment[];
   reaction: Reaction[];

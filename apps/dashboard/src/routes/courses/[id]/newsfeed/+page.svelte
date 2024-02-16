@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import PageBody from '$lib/components/PageBody/index.svelte';
@@ -52,15 +51,18 @@
       if (feed.id === id) {
         return { ...feed, content: content };
       }
+
       return feed;
     });
   };
+
   const deleteComment = (id: string) => {
     deleteNewsFeedComment(id);
     newsFeed = newsFeed.flatMap((feed) => ({
       ...feed,
       comment: feed.comment.filter((comment) => comment.id !== id)
     }));
+
     return snackbar.success('Comment deleted successfully');
   };
 
@@ -96,6 +98,7 @@
       if (feed.id === feedId) {
         feed.reaction = reactedFeed.reaction;
       }
+
       return feed;
     });
   };
@@ -118,10 +121,12 @@
         const newComment = {
           id: createdComment.id,
           author: {
-            id: author.id,
-            username: author.username,
-            fullname: author.fullname,
-            avatar: author.avatar
+            profile: {
+              id: author.id,
+              username: author.username,
+              fullname: author.fullname,
+              avatar_url: author.avatar
+            }
           },
           created_at: createdComment.created_at,
           content: comment
@@ -146,81 +151,19 @@
     return (newsFeed = deletedFeed);
   };
 
-  onMount(async () => {
-    currentGroupMember = $group.people.find((person) => person.profile_id === $profile.id);
-
-    const { data: _data } = await fetchNewsFeeds(data.courseId);
-
-    newsFeed = _data.map((feed) => {
-      const feedAuthorDetails = $group.people.find((person) => person.id === feed.author_id);
-
-      const feedAuthor = {
-        id: feedAuthorDetails?.id || '',
-        username: feedAuthorDetails?.profile.username || '',
-        fullname: feedAuthorDetails?.profile.fullname || '',
-        avatar: feedAuthorDetails?.profile.avatar_url || ''
-      };
-
-      const commentWithAuthor = feed.comment.map((comment) => {
-        const commentAuthorDetails = $group.people.find(
-          (person) => person.id === comment.author_id
-        );
-
-        const commentAuthor = {
-          id: commentAuthorDetails?.id || '',
-          username: commentAuthorDetails?.profile.username || '',
-          fullname: commentAuthorDetails?.profile.fullname || '',
-          avatar: commentAuthorDetails?.profile.avatar_url || ''
-        };
-
-        return {
-          ...comment,
-          author: commentAuthor
-        };
-      });
-
+  const setAllFeed = async () => {
+    const { data: feed } = await fetchNewsFeeds(data.courseId);
+    if (!feed) return;
+    newsFeed = feed.map((feed) => {
       return {
         ...feed,
-        author: feedAuthor,
-        comment: commentWithAuthor,
         emoji: reaction
       };
     });
-  });
+  };
 
-  $: newsFeed = newsFeed.map((feed) => {
-    const feedAuthorDetails = $group.people.find((person) => person.id === feed.author_id);
+  $: setAllFeed();
 
-    const feedAuthor = {
-      id: feedAuthorDetails?.id || '',
-      username: feedAuthorDetails?.profile.username || '',
-      fullname: feedAuthorDetails?.profile.fullname || '',
-      avatar: feedAuthorDetails?.profile.avatar_url || ''
-    };
-
-    const commentWithAuthor = feed.comment.map((comment) => {
-      const commentAuthorDetails = $group.people.find((person) => person.id === comment.author_id);
-
-      const commentAuthor = {
-        id: commentAuthorDetails?.id || '',
-        username: commentAuthorDetails?.profile.username || '',
-        fullname: commentAuthorDetails?.profile.fullname || '',
-        avatar: commentAuthorDetails?.profile.avatar_url || ''
-      };
-
-      return {
-        ...comment,
-        author: commentAuthor
-      };
-    });
-
-    return {
-      ...feed,
-      author: feedAuthor,
-      comment: commentWithAuthor,
-      emoji: reaction
-    };
-  });
   $: currentGroupMember = $group.people.find((person) => person.profile_id === $profile.id);
   $: author = {
     id: currentGroupMember?.id || '',

@@ -44,10 +44,12 @@
         id: createdFeed.id,
         content: newPost,
         author: {
-          id: author.id,
-          username: author.username,
-          fullname: author.fullname,
-          avatar: author.avatar
+          profile: {
+            id: author.id,
+            username: author.username,
+            fullname: author.fullname,
+            avatar_url: author.avatar
+          }
         },
         created_at: createdFeed.created_at,
         comment: [],

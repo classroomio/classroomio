@@ -11,12 +11,12 @@ export async function fetchNewsFeeds(courseId?: Course['id']) {
     created_at,
     content,
     course_id,
-    author_id,
+    author:groupmember( profile(id, fullname, avatar_url) ),
     reaction,
     comment:course_newsfeed_comment(
         id,
         created_at,
-        author_id,
+        author:groupmember( profile(id, fullname, avatar_url) ),
         content,
         course_newsfeed_id)
     `
