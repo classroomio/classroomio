@@ -100,12 +100,6 @@
     setCoursePolls();
   }
 
-  // now the most interesting part,
-  // how do I implement real time functionality for polls?
-  // the only thing that is real time is the apps_poll_submission
-  // table, so I will have to listen to changes in that table
-  // and update the polls accordingly.
-
   async function handleInsert(payload: RealtimePostgresChangesPayload<PollOptionsSubmissionType>) {
     const newVote = payload.new as PollOptionsSubmissionType;
 

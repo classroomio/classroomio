@@ -12,3 +12,9 @@ export type BlogPost = {
   categories: Categories[];
   published: boolean;
 };
+
+export type OssFriend = {
+  name: string;
+  description: string;
+  href: string;
+};

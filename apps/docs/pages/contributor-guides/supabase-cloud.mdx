@@ -1,0 +1,125 @@
+import Image from 'next/image';
+import { Steps } from 'nextra/components';
+import { Callout } from 'nextra/components';
+import DBUrl from './images/db-url.webp';
+import DBPushResult from './images/db-push-result.webp';
+import AuthSettings from './images/auth-settings.webp';
+import MatchEnvVariables from './images/match-env.webp';
+import NewProject from './images/new-project.webp';
+
+# Supabase Cloud Setup
+
+In this guide, you will learn how to setup a supabase cloud project and link it to your local environment.
+
+## Who is this guide for?
+
+1. You don't want to setup supabase on your local machine
+2. You can't run docker on your computer
+3. You are experiencing performance issues using supabase locally
+4. You want to selfhost our frontend app but use supabase cloud.
+
+If your requirement matches any of the above, then this guide is for you.
+
+## Video Walkthrough
+
+<div className="nx-w-full nx-flex nx-items-center nx-justify-center">
+  <iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/dAZAZ0oiky0?si=1h-KtppNqJ3U4BTe"
+    title="YouTube video player"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    className="nx-my-4 nx-rounded-md"
+    allowfullscreen
+  ></iframe>
+</div>
+
+## Step by Step guide
+
+<Steps>
+
+### Create a Supabase project
+
+For this step you need to have signed up for supabase and create an account, just visit [supabase.com](https://supabase.com).
+
+Once you have an account just click on the _New Project_ on your dashboard. After that you should see a similar screen to the below, fill in the fields.
+
+<Image src={NewProject} alt="New project in supabase" quality="100" />
+
+<Callout>
+  Make sure you save your database password somewhere, else you won't be able to get it back
+  anywhere in the dashboard for security reasons.
+</Callout>
+
+### Login to Supabase via the CLI
+
+Open your terminal and go to the root of the project. Run the following:
+
+```bash copy
+pnpm supabase login
+```
+
+Follow the instruction in your terminal to generate your access token. Paste the token in the console and hit **Enter**
+
+### Push migrations to your Supabase project
+
+- Go to the supabase dashboard, go to your project, click on the settings icon on the left side bar
+
+<Image src={DBUrl} alt="DB URL in the supabase dashboard" quality="100" />
+
+- Copy the URL in the image above for your `db url`
+- Paste it somewhere
+- In the url, replace `[YOUR PASSWORD]` with your db password (which you saved in section 1).
+- Then run in your terminal:
+
+```bash copy
+pnpm supabase db push --db-url "URL HERE"
+```
+
+<Callout>
+  Make sure you preserve the double quotes before and after the url. Only replace `URL HERE` with
+  your `db url` that contains your password
+</Callout>
+
+#### Result
+
+<Image src={DBPushResult} alt="Result of supabase db push" quality="100" />
+
+### Configure Auth in your Supabase project
+
+Here we will update our email configurations, to prevent supabase from sending confirmation emails on signup. This is because we don't have email confirmation setup on ClassroomIO, this feature will come later. If you don't disable it, you won't be able to signup into the application.
+
+<Image src={AuthSettings} alt="Authentication configuration" quality="100" />
+
+### Add configurations to your environment variables
+
+Now with all these set up you need to get update the .env file in `apps/dashboard`. You need to update the following environment variables:
+
+```bash copy
+PUBLIC_SUPABASE_PROJECT_REF=
+PUBLIC_SUPABASE_URL=
+PUBLIC_SUPABASE_ANON_KEY=
+```
+
+To get the correct environment variables, follow the instructions in this image
+
+<Image src={MatchEnvVariables} alt="Source of supabase environment variables" quality="100" />
+
+### Tada - That's all
+
+Now you can run:
+
+```bash copy
+pnpm dev --filter=dashboard
+```
+
+- Open the url in your browser
+- Click on Sign up
+- And that's it ...
+
+<Callout type="info" emoji="ℹ️">
+  Visit the [Sign up guide](/quickstart/signup) to learn how to signup
+</Callout>
+
+</Steps>

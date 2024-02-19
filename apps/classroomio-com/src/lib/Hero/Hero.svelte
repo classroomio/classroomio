@@ -11,14 +11,14 @@
       href="https://github.com/rotimi-best/classroomio"
       style="color: rgb(75, 85, 99);"
       class="border border-gray-300 rounded-full px-4 py-1 text-sm font-medium hover:underline"
-      >Give us a <span class="text-[#1D4EE2]">star</span> on github</a
+      >Give us a <span class="text-blue-700">star</span> on github</a
     >
   </div>
   <h1
     class="mx-auto text-3xl md:text-4xl lg:text-6xl font-normal leading-[1.5] text-slate-900 flex flex-col items-center"
   >
     <span>Launch Your Online Bootcamp</span>
-    <span class="text-[#1D4EE2] relative"
+    <span class="text-blue-700 relative"
       >In Minutes
       <svg
         aria-hidden="true"
@@ -39,7 +39,7 @@
   </p>
   <div class="mt-10 flex gap-4 items-center justify-center flex-col md:flex-row">
     <a
-      class="font-medium lg:font-semibold text-sm md:text-md w-11/12 md:w-fit text-white px-6 py-3 lg:px-6 lg:py-5 bg-[#1D4EE2] rounded-md"
+      class="font-medium lg:font-semibold text-sm md:text-md w-11/12 md:w-fit text-white px-6 py-3 lg:px-6 lg:py-5 bg-blue-700 rounded-md hover:bg-blue-800 hover:shadow-xl transition-all delay-100"
       href="/signup"
       rel="noopener noreferrer nofollow"
     >
