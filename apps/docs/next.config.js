@@ -1,3 +1,5 @@
+const million = require('million/compiler');
+
 const env = process.env.NODE_ENV;
 
 const withNextra = require('nextra')({
@@ -5,7 +7,7 @@ const withNextra = require('nextra')({
   themeConfig: './theme.config.tsx'
 });
 
-module.exports = {
+const nextConfig = {
   basePath: env === 'production' ? '/docs' : undefined,
   env: {
     imagePath: env === 'production' ? '/docs' : ''
@@ -15,3 +17,9 @@ module.exports = {
   },
   ...withNextra()
 };
+
+const millionConfig = {
+  auto: true
+};
+
+module.exports = million.next(nextConfig, millionConfig);

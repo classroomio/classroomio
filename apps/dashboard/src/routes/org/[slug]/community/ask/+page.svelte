@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { Dropdown } from 'carbon-components-svelte';
   import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
   import { currentOrgPath, currentOrg } from '$lib/utils/store/org';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -10,14 +11,26 @@
   import TextEditor from '$lib/components/TextEditor/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import { profile } from '$lib/utils/store/user';
+  import { fetchCourses } from '$lib/components/Courses/api';
+
+  export let data;
 
   let errors: {
     title?: string;
+    courseId?: string;
   } = {};
   let fields = {
     title: '',
-    body: ''
+    body: '',
+    courseId: ''
   };
+
+  let fetchedCourses = [];
+
+  async function getCourses(userId: string | null, orgId: string) {
+    const coursesResults = await fetchCourses(userId, orgId);
+    fetchedCourses = coursesResults.allCourses;
+  }
 
   async function handleSave() {
     errors = askCommunityValidation(fields);
@@ -30,11 +43,13 @@
     const { data: question, error } = await supabase
       .from('community_question')
       .insert({
-        ...fields,
+        title: fields.title,
+        body: fields.body,
         organization_id: $currentOrg.id,
         author_profile_id: $profile.id,
         votes: 0,
-        slug: generateSlug(fields.title)
+        slug: generateSlug(fields.title),
+        course_id: fields.courseId
       })
       .select();
 
@@ -47,6 +62,12 @@
       console.log('Success: asking question', question, slug);
       snackbar.success('Question Submitted!');
       goto(`${$currentOrgPath}/community/${slug}`);
+    }
+  }
+
+  $: {
+    if ($profile.id && $currentOrg.id) {
+      getCourses($profile.id, $currentOrg.id);
     }
   }
 </script>
@@ -69,8 +90,22 @@
     </div>
   </div>
 
-  <div class="mb-3 p-2">
-    <TextField bind:value={fields.title} placeholder="Title" errorMessage={errors.title} />
+  <div class="mb-3 p-2 flex gap-x-5 justify-between">
+    <TextField
+      bind:value={fields.title}
+      placeholder="Title"
+      errorMessage={errors.title}
+      className="w-[75%]"
+    />
+    <Dropdown
+      class="w-[25%]"
+      size="xl"
+      label="Select Course"
+      invalid={!!errors.courseId}
+      invalidText={errors.courseId}
+      items={fetchedCourses.map((course) => ({ id: course.id, text: course.title }))}
+      bind:selectedId={fields.courseId}
+    />
   </div>
   <div class="px-2">
     <TextEditor

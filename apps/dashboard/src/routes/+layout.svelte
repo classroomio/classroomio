@@ -184,9 +184,8 @@
           goto(`/org/${orgRes.currentOrg.siteName}`);
         }
       }
-      if (typeof orgRes?.currentOrg?.theme === 'string') {
-        setTheme(orgRes.currentOrg.theme);
-      }
+
+      setTheme(orgRes?.currentOrg?.theme);
     }
 
     if (!profileData && !isPublicRoute($page.url?.pathname)) {
@@ -286,7 +285,7 @@
 {#if data.skipAuth}
   <PlayQuiz />
 {:else if data.isOrgSite && !path}
-  <OrgLandingPage orgSiteName={data.orgSiteName} org={data.org} />
+  <OrgLandingPage orgSiteName={data.orgSiteName} org={data.org || {}} />
 {:else}
   <main class="dark:bg-black">
     {#if $navigating && $delayedPreloading}
