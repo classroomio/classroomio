@@ -13,58 +13,77 @@
   export let onSave = (feed: Feed) => {};
   export let onEdit = (id: string, content: string) => {};
   export let edit = false;
-  export let editValue = {};
+  export let editValue: {
+    id: string;
+    content: string;
+  } = {
+    id: '',
+    content: ''
+  };
 
   let newPost = '';
   let createdFeed;
 
   const onPost = async () => {
     if (!newPost) return;
-    if (!edit) {
-      try {
-        const response = await createNewFeed({
-          content: newPost,
-          author_id: author.id,
-          course_id: courseId,
-          reaction: {
-            smile: [],
-            thumbsup: [],
-            thumbsdown: [],
-            clap: []
-          }
-        });
-        if (!response.response.data) return;
-        createdFeed = response.response.data[0];
-      } catch (error) {
-        return snackbar.error('An error occurred while creating feed');
-      }
-      if (!createdFeed) return;
 
-      onSave({
-        id: createdFeed.id,
-        content: newPost,
-        author: {
-          profile: {
-            id: author.id,
-            username: author.username,
-            fullname: author.fullname,
-            avatar_url: author.avatar
-          }
-        },
-        created_at: createdFeed.created_at,
-        comment: [],
-        reaction: createdFeed.reaction
-      });
-      snackbar.success('New feed added successfully');
-      newPost = '';
-      $isNewFeedModal.open = false;
-    } else {
+    // Edit state
+    if (edit) {
       onEdit(editValue.id, newPost);
+
       snackbar.success('Feed edited successfully');
+
       edit = false;
       newPost = '';
       $isNewFeedModal.open = false;
+
+      return;
     }
+
+    // Create state
+    try {
+      const {
+        response: { data }
+      } = await createNewFeed({
+        content: newPost,
+        author_id: author.id,
+        course_id: courseId,
+        reaction: {
+          smile: [],
+          thumbsup: [],
+          thumbsdown: [],
+          clap: []
+        }
+      });
+
+      if (!data) return;
+
+      createdFeed = data[0];
+    } catch (error) {
+      return snackbar.error('An error occurred while creating feed');
+    }
+
+    if (!createdFeed) return;
+
+    onSave({
+      id: createdFeed.id,
+      content: newPost,
+      author: {
+        profile: {
+          id: author.id,
+          username: author.username,
+          fullname: author.fullname,
+          avatar_url: author.avatar
+        }
+      },
+      created_at: createdFeed.created_at,
+      comment: [],
+      reaction: createdFeed.reaction
+    });
+
+    snackbar.success('New feed added successfully');
+
+    resetEditor();
   };
 
   const resetEditor = () => {
@@ -78,7 +97,7 @@
 <Modal
   onClose={resetEditor}
   bind:open={$isNewFeedModal.open}
-  width="w-4/5 md:w-2/5"
+  width="w-4/5"
   maxWidth="max-w-lg"
   modalHeading={edit === true ? 'Edit Feed' : 'Create Feed'}
 >
