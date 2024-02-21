@@ -1,6 +1,31 @@
 <script>
-  // import ImageCompare from './ImageCompare.svelte';
+  import { onMount } from 'svelte';
   import { PUBLIC_ENABLE_USERS_COMPANIES } from '$env/static/public';
+
+  let width = '810';
+  let height = '810';
+
+  onMount(() => {
+    const handleResize = () => {
+      const screenWidth = window.innerWidth;
+      if (screenWidth < 768) {
+        // Mobile view
+        width = '1920';
+        height = '1440';
+      } else {
+        // Desktop view
+        width = '810';
+        height = '810';
+      }
+    };
+
+    handleResize(); // Call it initially
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  });
 </script>
 
 <div class="text-center mt-[30%] md:mt-36 border-b-2 relative">
@@ -70,9 +95,12 @@
     </video> -->
 
     <img
-      src="./cio-hero-imac.png"
+      loading="eager"
+      {width}
+      {height}
+      src="./cio-hero-imac.webp"
       alt="hero section with dark vs light mode"
-      class="floating w-[85%] lg:w-[70%] mx-auto rounded-lg shadow-lg"
+      class="hidden md:block lg:block w-[80%] lg:w-[70%] floating mx-auto rounded-lg shadow-lg"
     />
   </div>
 
@@ -80,11 +108,11 @@
     <div class="px-[15%] mb-[10%]">
       <h2 class="text-base lg:text-xl font-semibold text-gray-900">Used at</h2>
       <div class="w-full flex flex-wrap flex-row gap-5 justify-between items-center py-[5%]">
-        <img src="/hero-1.svg" alt="" class="w-[30%] lg:w-[13%]" />
-        <img src="/hero-2.svg" alt="" class="w-[30%] lg:w-[13%]" />
-        <img src="/hero-3.svg" alt="" class="w-[30%] lg:w-[13%]" />
-        <img src="/hero-4.svg" alt="" class="w-[30%] lg:w-[13%]" />
-        <img src="/hero-5.svg" alt="" class="w-[30%] lg:w-[13%]" />
+        <img loading="lazy" src="/hero-1.svg" alt="" class="w-[30%] lg:w-[13%]" />
+        <img loading="lazy" src="/hero-2.svg" alt="" class="w-[30%] lg:w-[13%]" />
+        <img loading="lazy" src="/hero-3.svg" alt="" class="w-[30%] lg:w-[13%]" />
+        <img loading="lazy" src="/hero-4.svg" alt="" class="w-[30%] lg:w-[13%]" />
+        <img loading="lazy" src="/hero-5.svg" alt="" class="w-[30%] lg:w-[13%]" />
       </div>
     </div>
   {/if}

@@ -61,6 +61,7 @@
   on:mouseup={end}
 >
   <img
+    loading="lazy"
     bind:this={img}
     src={after}
     alt="after"
@@ -69,6 +70,7 @@
     {style}
   />
   <img
+    loading="lazy"
     src={before}
     alt="before"
     on:mousedown|preventDefault

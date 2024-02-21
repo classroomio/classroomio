@@ -6,7 +6,14 @@
 <div class="px-[2%] lg:px-[14%] border-t-[1px]">
   <div class="flex flex-col lg:flex-row justify-between items-center py-[10%] pl-5 lg:pl-0">
     <div class="w-full lg:w-2/4">
-      <img src="/logo-192.png" alt="classroomio logo" class="w-[10%] lg:w-[5%] mb-5 lg:mb-10" />
+      <img
+        width="32"
+        height="32"
+        loading="lazy"
+        src="/logo-192.png"
+        alt="classroomio logo"
+        class="w-[10%] lg:w-[5%] mb-5 lg:mb-10"
+      />
       <p class="text-sm lg:text-md tracking-wide leading-7 lg:leading-7 text-gray-600 mb-5 mr-2">
         Launch Your Online Bootcamp In Minutes
         <br />
@@ -16,6 +23,7 @@
         href="https://www.producthunt.com/posts/classroomio?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-classroomio"
         target="_blank"
         ><img
+          loading="lazy"
           src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=425236&theme=light"
           alt="ClassroomIO - The&#0032;Open&#0032;Source&#0032;Platform&#0032;for&#0032;Tech&#0032;Bootcamps | Product Hunt"
           style="width: 250px; height: 54px;"
@@ -24,20 +32,23 @@
         /></a
       >
       <div class="flex items-center mt-5 lg:mt-10 gap-3 lg:gap-7">
-        <a href="https://www.facebook.com/classroomiohq" target="_blank">
+        <a href="https://www.facebook.com/classroomiohq" target="_blank" aria-label="Facebook Link">
           <LogoFacebook
             class="fill-gray-400 hover:fill-gray-500 hover:scale-110 scale-90 lg:scale-150 transition-all cursor-pointer"
             size={20}
           />
         </a>
-        <a href="https://twitter.com/classroomio" target="_blank">
+        <a href="https://twitter.com/classroomio" target="_blank" aria-label="Twitter Link">
           <img
+            width="10"
+            height="10"
+            loading="lazy"
             src="/twitter_logo.png"
             alt=""
             class="w-3 hover:fill-gray-500 hover:scale-110 scale-90 lg:scale-150 transition-all cursor-pointer"
           />
         </a>
-        <a href="https://www.youtube.com/@ClassroomIO" target="_blank">
+        <a href="https://www.youtube.com/@ClassroomIO" target="_blank" aria-label="Youtube Link">
           <LogoYoutube
             class="fill-gray-400 hover:fill-gray-500 hover:scale-110 scale-90 lg:scale-150 transition-all cursor-pointer"
             size={20}
@@ -50,9 +61,9 @@
       class="flex justify-between items-start flex-col lg:flex-row w-full lg:w-2/4 gap-3 mt-16 lg:mt-0 space-y-6 lg:space-y-0"
     >
       <div>
-        <h3 class="mb-3 lg:mb-10 text-base lg:text-md font-semibold leading-6 text-gray-900">
+        <p class="mb-3 lg:mb-10 text-base lg:text-md font-semibold leading-6 text-gray-900">
           Product
-        </h3>
+        </p>
         <ul class="space-y-2 lg:space-y-4">
           <li class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900">
             <a href="/#coursemanagement"> Course Management </a>
@@ -70,9 +81,9 @@
       </div>
 
       <div>
-        <h3 class="mb-3 lg:mb-10 text-base lg:text-md font-semibold leading-6 text-gray-900">
+        <p class="mb-3 lg:mb-10 text-base lg:text-md font-semibold leading-6 text-gray-900">
           Resources
-        </h3>
+        </p>
         <ul class="space-y-2 lg:space-y-4">
           <li class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900">
             <a href="/blog"> Blog </a>
@@ -97,9 +108,9 @@
       </div>
 
       <div>
-        <h3 class="mb-3 lg:mb-10 text-base lg:text-md font-semibold leading-6 text-gray-900">
+        <p class="mb-3 lg:mb-10 text-base lg:text-md font-semibold leading-6 text-gray-900">
           Company
-        </h3>
+        </p>
         <ul class="space-y-2 lg:space-y-4">
           <li class="text-sm lg:text-md tracking-wide leading-6 text-gray-600 hover:text-gray-900">
             <a href="mailto:help@classroomio.com" target="_blank"> Contact us </a>
@@ -139,7 +150,7 @@
         >Rotimi Best</a
       >
       from
-      <img alt="Nigerian Flag" src="/ng.png" class="ml-2 h-3 w-3" />
+      <img loading="lazy" alt="Nigerian Flag" src="/ng.png" class="ml-2 h-3 w-3" />
     </p>
   </footer>
 </div>
