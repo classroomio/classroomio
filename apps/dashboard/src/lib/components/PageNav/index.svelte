@@ -22,13 +22,13 @@
 
 <div
   class="header dark:bg-black dark:border-neutral-600 bg-white {!disableSticky &&
-    'sticky'} {paddingClass} {dynamicRootClass}"
+    'sticky'} {dynamicRootClass}"
   style={overidableStyle}
 >
   <div
     class="{hideOnMobile
       ? 'hidden lg:flex'
-      : ''} max-w-4xl m-auto flex items-center justify-between"
+      : ''} {paddingClass} max-w-4xl m-auto flex items-center justify-between min-h-[61px]"
   >
     {#if !!title}
       {#if isTitleEditable}
@@ -111,9 +111,6 @@
   .header.bring-down {
     flex-direction: column;
     align-items: flex-start;
-  }
-  .spacing {
-    flex-grow: 1;
   }
 
   .editable-title {
