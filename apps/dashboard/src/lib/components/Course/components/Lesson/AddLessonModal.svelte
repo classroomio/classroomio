@@ -28,8 +28,8 @@
     is_unlocked: false
   };
 
-  function getLessonOrder(id = '') {
-    const index = $lessons.findIndex((lesson) => lesson.id === id);
+  function getLessonOrder(id = '', fallbackIndex) {
+    const index = fallbackIndex || $lessons.findIndex((lesson) => lesson.id === id);
     if (index < 9) {
       return '0' + (index + 1);
     } else {
@@ -65,7 +65,7 @@
   >
     <div class="mr-5">
       <TextChip
-        value={getLessonOrder(lesson.id || '')}
+        value={getLessonOrder('', $lessons.length)}
         size="sm"
         shape="rounded-full"
         className="bg-primary-200 text-primary-600 text-xs"
@@ -75,9 +75,10 @@
     <div class="w-full md:w-4/5">
       <div class="flex flex-row gap-1 md:gap-2">
         <TextField
+          label="Lesson title"
           bind:value={lesson.title}
           autofocus={true}
-          className=" flex-1 min-w-lg max-w-lg"
+          className="flex-1 min-w-lg max-w-lg"
           isRequired={true}
           errorMessage={errors.title}
         />
