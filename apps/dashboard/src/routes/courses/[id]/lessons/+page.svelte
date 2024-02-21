@@ -121,7 +121,7 @@
       >
         {#each $lessons as lesson (lesson.id)}
           <div
-            class="relative m-auto max-w-xl rounded-md border-2 border-gray-200 p-5 mb-4 flex items-center dark:bg-neutral-800"
+            class="relative m-auto max-w-xl rounded-md border-2 border-gray-200 p-5 mb-4 flex items-center dark:bg-neutral-800 dark:border-neutral-700 hover:scale-95 transition-all ease-in-out"
           >
             <!-- Number Chip -->
             <div class="mr-5">
@@ -139,12 +139,12 @@
               {#if lessonEditing === lesson.id}
                 <TextField bind:value={lesson.title} autoFocus={true} className="max-w-lg" />
               {:else}
-                <h3 class="dark:text-white text-xl m-0 flex items-center">
+                <h3 class="dark:text-white text-lg m-0 flex items-center">
                   <a
                     href={isStudent && !lesson.is_unlocked
                       ? $page.url.pathname
                       : '/courses/' + $course.id + '/lessons/' + lesson.id}
-                    class="dark:text-white no-underline hover:underline font-semibold text-black {isStudent &&
+                    class="dark:text-white no-underline hover:underline font-medium text-black {isStudent &&
                     !lesson.is_unlocked
                       ? 'cursor-not-allowed'
                       : ''}"

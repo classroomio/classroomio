@@ -21,75 +21,79 @@
 </script>
 
 <div
-  class="{hideOnMobile
-    ? 'hidden lg:flex'
-    : ''} header dark:bg-black dark:border-neutral-600 bg-white flex items-center justify-between {!disableSticky &&
+  class="header dark:bg-black dark:border-neutral-600 bg-white {!disableSticky &&
     'sticky'} {paddingClass} {dynamicRootClass}"
   style={overidableStyle}
 >
-  {#if !!title}
-    {#if isTitleEditable}
-      {#if !enterEditTitleMode}
-        <button class="w-full" on:click={() => (enterEditTitleMode = true)}>
+  <div
+    class="{hideOnMobile
+      ? 'hidden lg:flex'
+      : ''} max-w-4xl m-auto flex items-center justify-between"
+  >
+    {#if !!title}
+      {#if isTitleEditable}
+        {#if !enterEditTitleMode}
+          <button class="w-full" on:click={() => (enterEditTitleMode = true)}>
+            <h4
+              class="editable-title hover:bg-gray-100 dark:bg-black px-3 rounded-md overflow-ellipsis"
+            >
+              {title}
+            </h4>
+          </button>
+        {:else}
+          <TextField
+            bind:value={title}
+            placeholder="Course title"
+            onChange={() => {
+              enterEditTitleMode = false;
+
+              if (typeof onEditComplete === 'function') {
+                onEditComplete();
+              }
+            }}
+          />
+        {/if}
+      {:else}
+        <div class="flex items-center w-full" {title}>
+          <slot name="image" />
           <h4
-            class="editable-title hover:bg-gray-100 dark:bg-black px-3 rounded-md overflow-ellipsis"
+            class="{$$slots.image
+              ? 'ml-2'
+              : ''} dark:text-white whitespace-nowrap truncate text-lg font-semibold"
           >
             {title}
           </h4>
-        </button>
-      {:else}
-        <TextField
-          bind:value={title}
-          placeholder="Course title"
-          onChange={() => {
-            enterEditTitleMode = false;
-
-            if (typeof onEditComplete === 'function') {
-              onEditComplete();
-            }
-          }}
-        />
+        </div>
       {/if}
-    {:else}
-      <div class="flex items-center w-full" {title}>
-        <slot name="image" />
-        <h4
-          class="{$$slots.image
-            ? 'ml-2'
-            : ''} dark:text-white whitespace-nowrap truncate text-lg font-semibold"
-        >
-          {title}
-        </h4>
+    {/if}
+    {#if Array.isArray(navItems) && navItems.length}
+      <div class="flex justify-evenly items-center">
+        {#each navItems as item}
+          <a
+            class="mr-5 pb-2 text-sm font-bold flex items-center relative {item.isActive
+              ? 'text-primary-700'
+              : 'dark:text-white text-black'} hover:no-underline"
+            href={item.href}
+          >
+            {item.label}
+
+            {#if typeof item.badgeValue === 'number'}
+              <Chip value={item.badgeValue} className="ml-1 bg-gray-300 dark:text-black" />
+            {/if}
+            <span
+              class="absolute bottom-0 left-0 h-1 bg-primary-700 transition-all ease-in-out duration-500 {item.isActive
+                ? 'w-full'
+                : 'w-0'}"
+            />
+          </a>
+        {/each}
+        {#if addButtonHref}
+          <NewButton href={addButtonHref} label={addButtonLabel} />
+        {/if}
       </div>
     {/if}
-  {/if}
-  {#if Array.isArray(navItems) && navItems.length}
-    <div class="flex justify-evenly items-center">
-      {#each navItems as item}
-        <a
-          class="mr-5 pb-2 text-sm font-bold flex items-center relative {item.isActive
-            ? 'text-primary-700'
-            : 'dark:text-white text-black'} hover:no-underline"
-          href={item.href}
-        >
-          {item.label}
-
-          {#if typeof item.badgeValue === 'number'}
-            <Chip value={item.badgeValue} className="ml-1 bg-gray-300 dark:text-black" />
-          {/if}
-          <span
-            class="absolute bottom-0 left-0 h-1 bg-primary-700 transition-all ease-in-out duration-500 {item.isActive
-              ? 'w-full'
-              : 'w-0'}"
-          />
-        </a>
-      {/each}
-      {#if addButtonHref}
-        <NewButton href={addButtonHref} label={addButtonLabel} />
-      {/if}
-    </div>
-  {/if}
-  <slot name="widget" />
+    <slot name="widget" />
+  </div>
 </div>
 
 <style>
