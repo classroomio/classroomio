@@ -1,37 +1,31 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { dndzone } from 'svelte-dnd-action';
-  import UnlockedIcon from 'carbon-icons-svelte/lib/Unlocked.svelte';
-  import LockedIcon from 'carbon-icons-svelte/lib/Locked.svelte';
-  import SaveIcon from 'carbon-icons-svelte/lib/Save.svelte';
-  import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
-  import Calendar from 'carbon-icons-svelte/lib/Calendar.svelte';
-  import Video from 'carbon-icons-svelte/lib/Video.svelte';
-  import WatsonHealthTextAnnotationToggle from 'carbon-icons-svelte/lib/WatsonHealthTextAnnotationToggle.svelte';
-  import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import Box from '$lib/components/Box/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
-  import Select from '$lib/components/Form/Select.svelte';
   import { updateLesson } from '$lib/utils/services/courses';
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
-  import type { Lesson } from '$lib/utils/types';
   import {
     lessons,
-    handleSaveLesson,
-    handleDelete
+    handleDelete,
+    handleSaveLesson
   } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { course, group } from '$lib/components/Course/store';
   import PageBody from '$lib/components/PageBody/index.svelte';
+
+  import AddLessonModal from '$lib/components/Course/components/Lesson/AddLessonModal.svelte';
+  import DeleteLessonConfirmation from '$lib/components/Course/components/Lesson/DeleteLessonConfirmation.svelte';
+  import { handleAddLessonWidget } from '$lib/components/Course/components/Navigation/store';
+  import { Video, Calendar } from 'carbon-icons-svelte';
+  import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import Select from '$lib/components/Form/Select.svelte';
   import TextChip from '$lib/components/Chip/Text.svelte';
   import Avatar from '$lib/components/Apps/components/Poll/components/Avatar.svelte';
-  import AddLessonModal from '$lib/components/Course/components/Lesson/AddLessonModal.svelte';
+  import { course, group } from '$lib/components/Course/store';
   import DateField from '$lib/components/Form/Date.svelte';
-  import DeleteLessonConfirmation from '$lib/components/Course/components/Lesson/DeleteLessonConfirmation.svelte';
-  import { handleAddLessonWidget } from '$lib/components/Course/components/Navigation/store.js';
+  import type { Lesson } from '$lib/utils/types';
 
   export let data;
 
@@ -41,17 +35,6 @@
   let openDeleteModal = false;
 
   const flipDurationMs = 300;
-
-  function formatDate(date: string | undefined) {
-    if (!date) return '';
-    const d = new Date(date);
-
-    const ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(d);
-    const mo = new Intl.DateTimeFormat('en', { month: '2-digit' }).format(d);
-    const da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(d);
-
-    return `${ye}-${mo}-${da}`;
-  }
 
   function addLesson() {
     $handleAddLessonWidget.open = true;
@@ -76,6 +59,17 @@
         );
       }
     });
+  }
+
+  function formatDate(date: string | undefined) {
+    if (!date) return '';
+    const d = new Date(date);
+
+    const ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(d);
+    const mo = new Intl.DateTimeFormat('en', { month: '2-digit' }).format(d);
+    const da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(d);
+
+    return `${ye}-${mo}-${da}`;
   }
 
   function getLessonOrder(id: string) {
@@ -127,8 +121,9 @@
       >
         {#each $lessons as lesson (lesson.id)}
           <div
-            class="sm:min-h-[245px] md:min-h-[100px] lg:min-h-[190px] relative m-auto rounded-md border-2 border-gray-200 py-3 px-5 mb-4 flex items-center dark:bg-neutral-800"
+            class="relative m-auto max-w-xl rounded-md border-2 border-gray-200 p-5 mb-4 flex items-center dark:bg-neutral-800 dark:border-neutral-700 hover:scale-95 transition-all ease-in-out"
           >
+            <!-- Number Chip -->
             <div class="mr-5">
               <TextChip
                 value={getLessonOrder(lesson.id)}
@@ -138,16 +133,18 @@
               />
             </div>
 
+            <!-- Lesson Content -->
             <div class="w-4/5">
+              <!-- Lesson Title -->
               {#if lessonEditing === lesson.id}
                 <TextField bind:value={lesson.title} autoFocus={true} className="max-w-lg" />
               {:else}
-                <h3 class="dark:text-white text-xl m-0 flex items-center">
+                <h3 class="dark:text-white text-lg m-0 flex items-center">
                   <a
                     href={isStudent && !lesson.is_unlocked
                       ? $page.url.pathname
                       : '/courses/' + $course.id + '/lessons/' + lesson.id}
-                    class="dark:text-white no-underline hover:underline font-semibold text-black {isStudent &&
+                    class="dark:text-white no-underline hover:underline font-medium text-black {isStudent &&
                     !lesson.is_unlocked
                       ? 'cursor-not-allowed'
                       : ''}"
@@ -156,12 +153,8 @@
                   </a>
                 </h3>
               {/if}
-              <!-- <div class="flex items-center mb-2">
-              <div class="flex items-center mr-2">
-                {resources.map((r) => `${r.value} ${r.label}`).join(', ')}
-              </div>
-            </div> -->
 
+              <!-- Lesson Educator -->
               <div
                 class="flex items-start justify-between flex-col lg:flex-row lg:items-center mt-2 w-4/5"
               >
@@ -189,6 +182,7 @@
                   {/if}
                 </div>
 
+                <!-- Lesson Date -->
                 <div class="flex items-center lg:mb-0">
                   {#if lessonEditing === lesson.id}
                     <DateField
@@ -206,6 +200,7 @@
                   {/if}
                 </div>
 
+                <!-- Lesson Call url -->
                 <div class="flex items-center mb-3 lg:mb-0">
                   {#if lessonEditing === lesson.id}
                     <TextField
@@ -228,93 +223,34 @@
                   {/if}
                 </div>
               </div>
+            </div>
 
-              <div class="flex flex-row absolute sm:bottom-20 bottom-10 right-10">
-                <div class="success hidden md:block">
-                  <IconButton
+            <!-- 3 dot edit -->
+            <div class="flex flex-row">
+              <RoleBasedSecurity allowedRoles={[1, 2]}>
+                <OverflowMenu flipped size="xl" class="absolute top-0 right-0">
+                  <OverflowMenuItem
                     disabled={isStudent}
-                    onClick={() => {
+                    text={lesson.is_unlocked ? 'Lock' : 'Unlock'}
+                    on:click={() => {
                       lesson.is_unlocked = !lesson.is_unlocked;
                       handleSaveLesson(lesson, $course.id);
                     }}
-                    toolTipProps={isStudent
-                      ? undefined
-                      : {
-                          title: `Click to ${lesson.is_unlocked ? 'lock' : 'unlock'}`,
-                          direction: 'left',
-                          hotkeys: []
-                        }}
-                  >
-                    {#if lesson.is_unlocked}
-                      <UnlockedIcon size={24} class="carbon-icon dark:text-white" />
-                    {:else}
-                      <LockedIcon size={24} class="carbon-icon dark:text-white" />
-                    {/if}
-                  </IconButton>
-                </div>
-
-                <RoleBasedSecurity allowedRoles={[1, 2]}>
-                  <div class="hidden md:block">
-                    {#if lessonEditing === lesson.id}
-                      <IconButton
-                        onClick={() => {
-                          lessonEditing = undefined;
-                          handleSaveLesson(lesson, $course.id);
-                        }}
-                      >
-                        <SaveIcon size={24} class="carbon-icon dark:text-white" />
-                      </IconButton>
-                    {:else}
-                      <IconButton onClick={() => (lessonEditing = lesson.id)}>
-                        <WatsonHealthTextAnnotationToggle
-                          size={32}
-                          class="carbon-icon dark:text-white"
-                        />
-                      </IconButton>
-                    {/if}
-                  </div>
-                </RoleBasedSecurity>
-
-                <RoleBasedSecurity allowedRoles={[1, 2]}>
-                  <div class="hidden md:block">
-                    <IconButton
-                      onClick={() => {
-                        lessonToDelete = lesson;
-                        openDeleteModal = true;
-                      }}
-                    >
-                      <TrashCanIcon size={24} class="carbon-icon dark:text-white" />
-                    </IconButton>
-                  </div>
-                </RoleBasedSecurity>
-
-                <RoleBasedSecurity allowedRoles={[1, 2]}>
-                  <div class="overflowmenu">
-                    <OverflowMenu size="xl" class="block absolute right-10 bottom-4 pl-4">
-                      <OverflowMenuItem
-                        disabled={isStudent}
-                        text={lesson.is_unlocked ? 'Lock' : 'Unlock'}
-                        on:click={() => {
-                          lesson.is_unlocked = !lesson.is_unlocked;
-                          handleSaveLesson(lesson, $course.id);
-                        }}
-                      />
-                      <OverflowMenuItem
-                        text={lessonEditing === lesson.id ? 'Save' : 'Edit'}
-                        on:click={() => {
-                          if (lessonEditing === lesson.id) {
-                            lessonEditing = undefined;
-                            handleSaveLesson(lesson, $course.id);
-                          } else {
-                            lessonEditing = lesson.id;
-                          }
-                        }}
-                      />
-                      <OverflowMenuItem danger text="Delete" on:click={handleDelete(lesson.id)} />
-                    </OverflowMenu>
-                  </div>
-                </RoleBasedSecurity>
-              </div>
+                  />
+                  <OverflowMenuItem
+                    text={lessonEditing === lesson.id ? 'Save' : 'Edit'}
+                    on:click={() => {
+                      if (lessonEditing === lesson.id) {
+                        lessonEditing = undefined;
+                        handleSaveLesson(lesson, $course.id);
+                      } else {
+                        lessonEditing = lesson.id;
+                      }
+                    }}
+                  />
+                  <OverflowMenuItem danger text="Delete" on:click={() => handleDelete(lesson.id)} />
+                </OverflowMenu>
+              </RoleBasedSecurity>
             </div>
           </div>
         {:else}
@@ -344,11 +280,3 @@
     {/if}
   </PageBody>
 </CourseContainer>
-
-<style>
-  @media (min-width: 760px) {
-    .overflowmenu {
-      display: none !important;
-    }
-  }
-</style>
