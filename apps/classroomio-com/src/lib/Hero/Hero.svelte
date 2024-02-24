@@ -14,8 +14,8 @@
         height = '1440';
       } else {
         // Desktop view
-        width = '810';
-        height = '810';
+        width = '710';
+        height = '710';
       }
     };
 
@@ -100,7 +100,7 @@
       {height}
       src="./cio-hero-imac.webp"
       alt="hero section with dark vs light mode"
-      class="hidden md:block lg:block w-[80%] lg:w-[70%] floating mx-auto rounded-lg shadow-lg"
+      class="hidden md:block lg:block floating mx-auto rounded-lg shadow-lg"
     />
   </div>
 
