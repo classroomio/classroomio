@@ -2,8 +2,8 @@
   import { onMount } from 'svelte';
   import { PUBLIC_ENABLE_USERS_COMPANIES } from '$env/static/public';
 
-  let width = '810';
-  let height = '810';
+  let width = '710';
+  let height = '710';
 
   onMount(() => {
     const handleResize = () => {
