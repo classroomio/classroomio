@@ -1,9 +1,9 @@
 import type { Course } from '$lib/utils/types';
 import { supabase } from '$lib/utils/functions/supabase';
-import type { Feed, Reaction } from '$lib/utils/types/feed';
+import type { Reaction, FeedApi } from '$lib/utils/types/feed';
 
 export async function fetchNewsFeeds(courseId?: Course['id']) {
-  const response: any = await supabase
+  const response = await supabase
     .from('course_newsfeed')
     .select(
       `
@@ -11,8 +11,15 @@ export async function fetchNewsFeeds(courseId?: Course['id']) {
     created_at,
     content,
     course_id,
-    author:groupmember( profile(id, fullname, avatar_url) ),
+    author:groupmember(
+      profile(
+        id,
+        fullname,
+        avatar_url
+      )
+    ),
     reaction,
+    is_pinned,
     comment:course_newsfeed_comment(
         id,
         created_at,
@@ -22,7 +29,8 @@ export async function fetchNewsFeeds(courseId?: Course['id']) {
     `
     )
     .match({ course_id: courseId })
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .returns<FeedApi[]>();
 
   const { data, error } = response;
 
@@ -48,7 +56,7 @@ export async function createNewFeed(post: {
   return { response };
 }
 
-export async function editFeed(feedId: string, content: string) {
+export async function handleEditFeed(feedId: string, content: string) {
   const response = await supabase
     .from('course_newsfeed')
     .update({ content: content })
@@ -70,6 +78,17 @@ export async function createComment(comment: {
       course_newsfeed_id: comment.course_newsfeed_id
     })
     .select();
+
+  return { response };
+}
+
+export async function toggleFeedIsPinned(feedId: string, isPinned: boolean) {
+  const response = await supabase
+    .from('course_newsfeed')
+    .update({
+      is_pinned: isPinned
+    })
+    .match({ id: feedId });
 
   return { response };
 }

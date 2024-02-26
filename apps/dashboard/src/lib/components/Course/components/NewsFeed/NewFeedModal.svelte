@@ -13,13 +13,7 @@
   export let onSave = (feed: Feed) => {};
   export let onEdit = (id: string, content: string) => {};
   export let edit = false;
-  export let editValue: {
-    id: string;
-    content: string;
-  } = {
-    id: '',
-    content: ''
-  };
+  export let editFeed: Feed;
 
   let newPost = '';
   let createdFeed;
@@ -29,7 +23,7 @@
 
     // Edit state
     if (edit) {
-      onEdit(editValue.id, newPost);
+      onEdit(editFeed.id, newPost);
 
       snackbar.success('Feed edited successfully');
 
@@ -78,7 +72,8 @@
       },
       created_at: createdFeed.created_at,
       comment: [],
-      reaction: createdFeed.reaction
+      reaction: createdFeed.reaction,
+      isPinned: false
     });
 
     snackbar.success('New feed added successfully');
@@ -91,7 +86,7 @@
     edit = false;
     $isNewFeedModal.open = false;
   };
-  $: newPost = edit === true ? editValue?.content : '';
+  $: newPost = edit === true ? editFeed?.content : '';
 </script>
 
 <Modal
@@ -99,7 +94,7 @@
   bind:open={$isNewFeedModal.open}
   width="w-4/5"
   maxWidth="max-w-lg"
-  modalHeading={edit === true ? 'Edit Feed' : 'Create Feed'}
+  modalHeading={edit === true ? 'Edit Post' : 'Make a Post'}
 >
   <section class="flex flex-col rounded-xl pb-3 h-full w-2/">
     <TextEditor

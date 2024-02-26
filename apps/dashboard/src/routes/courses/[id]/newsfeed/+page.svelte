@@ -1,4 +1,5 @@
 <script lang="ts">
+  import PinFilled from 'carbon-icons-svelte/lib/PinFilled.svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import PageBody from '$lib/components/PageBody/index.svelte';
@@ -14,8 +15,9 @@
     deleteNewsFeedComment,
     deleteNewsFeed,
     fetchNewsFeeds,
-    editFeed
-  } from '$lib/utils/services/newsfeed/index';
+    handleEditFeed,
+    toggleFeedIsPinned
+  } from '$lib/utils/services/newsfeed';
   import Box from '$lib/components/Box/index.svelte';
   import { supabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
@@ -23,11 +25,9 @@
 
   export let data;
 
-  let isStudent = false;
-  let currentGroupMember;
   let createdComment;
   let edit = false;
-  let editValue = {};
+  let editFeed: Feed;
 
   let author = {
     id: '',
@@ -36,17 +36,11 @@
     avatar: ''
   };
 
-  let reaction = {
-    smile: [],
-    thumbsup: [],
-    thumbsdown: [],
-    clap: []
-  };
-
   let newsFeed: Feed[] = [];
 
   const onEdit = (id: string, content: string) => {
-    editFeed(id, content);
+    handleEditFeed(id, content);
+
     newsFeed = newsFeed.map((feed) => {
       if (feed.id === id) {
         return { ...feed, content: content };
@@ -63,14 +57,16 @@
       comment: feed.comment.filter((comment) => comment.id !== id)
     }));
 
-    return snackbar.success('Comment deleted successfully');
+    return snackbar.success('Comment Deleted');
   };
 
   const addNewReaction = async (reactionType: string, feedId: string, authorId: string) => {
     const reactedFeed = newsFeed.find((feed) => feed.id === feedId);
 
     if (!reactedFeed) return;
+
     let reactedAuthorIds: string[] = reactedFeed.reaction[reactionType];
+
     if (reactedAuthorIds.includes(authorId)) {
       reactedAuthorIds = reactedAuthorIds.filter(
         (reactionAuthorId) => reactionAuthorId !== authorId
@@ -78,6 +74,7 @@
     } else {
       reactedAuthorIds = [...reactedAuthorIds, authorId];
     }
+
     reactedFeed.reaction = {
       ...reactedFeed.reaction,
       [reactionType]: reactedAuthorIds
@@ -104,19 +101,21 @@
   };
 
   const addNewComment = async (comment: string, feedId: string, authorId: string) => {
-    try {
-      const response = await createComment({
-        content: comment,
-        author_id: authorId,
-        course_newsfeed_id: feedId
-      });
-      if (!response.response.data) return;
-      createdComment = response?.response?.data[0];
-    } catch (error) {
+    const { response } = await createComment({
+      content: comment,
+      author_id: authorId,
+      course_newsfeed_id: feedId
+    });
+
+    if (response.error) {
       return snackbar.error('An error occurred while creating comment');
     }
 
-    const updatedFeed = newsFeed.map((feed) => {
+    if (!response.data) return;
+
+    createdComment = response?.data[0];
+
+    newsFeed = newsFeed.map((feed) => {
       if (feed.id === feedId) {
         const newComment = {
           id: createdComment.id,
@@ -132,48 +131,86 @@
           content: comment
         };
 
+        snackbar.success('Comment added');
+
         return {
           ...feed,
           comment: [...feed.comment, { ...newComment }]
         };
       }
-      snackbar.success('comment added successfully');
+
       return feed;
     });
+  };
 
-    newsFeed = updatedFeed;
+  const onPin = async (feedId, isPinned) => {
+    const newIsPinned = !isPinned;
+    const { response } = await toggleFeedIsPinned(feedId, newIsPinned);
+
+    if (response.error) {
+      return snackbar.error('Failed to toggle pinned feed');
+    }
+
+    newsFeed = newsFeed
+      .map((feed) => {
+        if (feed.id === feedId) {
+          snackbar.success(`${newIsPinned ? 'Pinned' : 'Unpinned'} Successfully`);
+
+          feed.isPinned = newIsPinned;
+          return feed;
+        }
+
+        return feed;
+      })
+      .sort((a, b) => Number(b.isPinned) - Number(a.isPinned));
   };
 
   const deleteFeed = (id: string) => {
     deleteNewsFeed(id);
+
     const deletedFeed = newsFeed.filter((feed) => feed.id !== id);
     snackbar.success('Feed deleted successfully');
-    return (newsFeed = deletedFeed);
+
+    newsFeed = deletedFeed;
   };
 
-  const setAllFeed = async () => {
-    const { data: feed } = await fetchNewsFeeds(data.courseId);
-    if (!feed) return;
-    newsFeed = feed.map((feed) => {
-      return {
-        ...feed,
-        emoji: reaction
-      };
-    });
+  const setAllFeed = async (courseId: string) => {
+    if (!courseId) return;
+
+    const { data, error } = await fetchNewsFeeds(courseId);
+
+    if (error) {
+      snackbar.error('Failed to fetch news feeds');
+      return;
+    }
+
+    if (!data) return;
+
+    newsFeed = data
+      .map((feedItem) => ({
+        ...feedItem,
+        isPinned: feedItem.is_pinned
+      }))
+      .sort((a, b) => Number(b.isPinned) - Number(a.isPinned));
   };
 
-  $: setAllFeed();
+  function setAuthor(groups, profileId) {
+    const currentGroupMember = groups.people.find((person) => person.profile_id === profileId);
 
-  $: currentGroupMember = $group.people.find((person) => person.profile_id === $profile.id);
-  $: author = {
-    id: currentGroupMember?.id || '',
-    username: $profile.username || '',
-    fullname: $profile.fullname || '',
-    avatar: $profile.avatar_url || ''
-  };
+    author = {
+      id: currentGroupMember?.id || '',
+      username: $profile.username || '',
+      fullname: $profile.fullname || '',
+      avatar: $profile.avatar_url || ''
+    };
+  }
+
+  $: setAllFeed(data.courseId);
+
+  $: setAuthor($group, $profile.id);
 </script>
 
-<CourseContainer bind:isStudent bind:courseId={data.courseId}>
+<CourseContainer bind:courseId={data.courseId}>
   <PageNav title="News Feed" disableSticky={true}>
     <slot:fragment slot="widget">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
@@ -188,7 +225,7 @@
         courseId={data.courseId}
         {author}
         bind:edit
-        bind:editValue
+        bind:editFeed
         onSave={(newFeed) => {
           newsFeed = [newFeed, ...newsFeed];
         }}
@@ -207,16 +244,24 @@
         </div>
       </Box>
     {:else}
-      {#each newsFeed as info}
+      {#each newsFeed as feed}
+        {#if feed.isPinned}
+          <div class="flex items-center gap-2 mb-3">
+            <PinFilled size={16} />
+
+            <p class="text-sm">Pinned</p>
+          </div>
+        {/if}
         <NewsFeedCard
-          value={info}
+          {feed}
           {deleteFeed}
           {addNewComment}
           {deleteComment}
           {addNewReaction}
+          {onPin}
           {author}
           bind:edit
-          bind:editValue
+          bind:editFeed
         />
       {/each}
     {/if}

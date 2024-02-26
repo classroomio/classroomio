@@ -21,6 +21,18 @@ export interface Reaction {
   clap: string[];
 }
 
+export interface FeedApi {
+  id: string;
+  content: string;
+  author: {
+    profile: Author;
+  };
+  created_at: string;
+  comment: Comment[];
+  reaction: Reaction[];
+  is_pinned: false;
+}
+
 export interface Feed {
   id: string;
   content: string;
@@ -30,4 +42,5 @@ export interface Feed {
   created_at: string;
   comment: Comment[];
   reaction: Reaction[];
+  isPinned: boolean;
 }

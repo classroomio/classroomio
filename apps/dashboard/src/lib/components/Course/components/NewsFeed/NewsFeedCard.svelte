@@ -11,15 +11,18 @@
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
+  import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
+  import pluralize from 'pluralize';
 
-  export let value: Feed | any = {};
-  export let editValue: Feed | any = {};
+  export let feed: Feed;
+  export let editFeed: Feed | any = {};
   export let author: Author | any = {};
   export let edit = false;
   export let deleteFeed = (arg: string) => {};
   export let deleteComment = (arg: string) => {};
   export let addNewComment = (arg1: string, arg2: string, arg3: string) => {};
   export let addNewReaction = (arg1: string, arg2: string, arg3: string) => {};
+  export let onPin = (feedId: Feed['id'], isPinned: Feed['isPinned']) => {};
 
   let comment = '';
   let areCommentsExpanded = false;
@@ -35,77 +38,70 @@
   const openEditFeed = () => {
     $isNewFeedModal.open = true;
     edit = true;
+
     if (edit === true) {
-      editValue = value;
+      editFeed = feed;
     }
   };
+
   const expandComment = () => {
     areCommentsExpanded = !areCommentsExpanded;
   };
 
   const handleAddNewReaction = (reactionType: string) => {
-    addNewReaction(reactionType, value.id, author.id);
+    addNewReaction(reactionType, feed.id, author.id);
   };
 
   const handleAddNewComment = (event) => {
     if (event.key === 'Enter' || event.type === 'click') {
       event.preventDefault();
-      addNewComment(comment, value.id, author.id);
+      addNewComment(comment, feed.id, author.id);
       comment = '';
     }
   };
 
   const handleDeleteFeed = () => {
-    deleteFeed(value.id);
+    deleteFeed(feed.id);
   };
 
   const handleDeleteComment = (id: string) => {
     deleteComment(id);
   };
-
-  function isNoteEmpty(note: string) {
-    if (!note || typeof note !== 'string') return true;
-
-    if (!document) return false;
-
-    const dummyDiv = document.createElement('div');
-    dummyDiv.innerHTML = note;
-
-    const rawText = dummyDiv.textContent?.trim();
-
-    return rawText === '';
-  }
 </script>
 
-<div class="flex flex-col gap-5 border-2 border-gray-200 rounded-md my-5">
+<div class="flex flex-col gap-5 border-2 border-gray-200 rounded-md mb-5">
   <section>
     <div class="p-3">
       <div class="flex justify-between mb-2">
         <span class="flex items-center gap-3">
           <div class="w-9 h-9">
             <img
-              src={value.author?.profile.avatar_url}
+              src={feed.author?.profile.avatar_url}
               alt="users banner"
               class="w-full h-full rounded-full object-cover"
             />
           </div>
           <span>
-            <p class="text-base font-semibold capitalize">{value.author?.profile.fullname}</p>
-            <p class="text-sm font-medium text-gray-600">{calDateDiff(value.created_at)}</p>
+            <p class="text-base font-semibold capitalize">{feed.author?.profile.fullname}</p>
+            <p class="text-sm font-medium text-gray-600">{calDateDiff(feed.created_at)}</p>
           </span>
         </span>
         <RoleBasedSecurity allowedRoles={[1, 2]}>
           <OverflowMenu flipped>
+            <OverflowMenuItem
+              text={feed.isPinned ? 'Unpin' : 'Pin'}
+              on:click={() => onPin(feed.id, feed.isPinned)}
+            />
             <OverflowMenuItem text="Edit" on:click={openEditFeed} />
             <OverflowMenuItem danger text="Delete" on:click={() => (isDeleteFeedModal = true)} />
           </OverflowMenu>
         </RoleBasedSecurity>
       </div>
-      {#if !isNoteEmpty(value.content)}
+      {#if !isHtmlValueEmpty(feed.content)}
         <HtmlRender className="text-sm font-medium w-[80%] mb-4">
           <svelte:fragment slot="content">
             <div>
-              {@html value.content}
+              {@html feed.content}
             </div>
           </svelte:fragment>
         </HtmlRender>
@@ -114,18 +110,18 @@
 
     <div class="flex gap-4 px-3">
       <div class="flex gap-4 px-3">
-        {#each Object.keys(value.reaction) as reactionType}
+        {#each Object.keys(feed.reaction) as reactionType}
           {#if reactions[reactionType]}
             <button
               on:click={() => handleAddNewReaction(reactionType)}
               class={`flex transition ${
-                value.reaction[reactionType].length >= 1 &&
-                'bg-sky-50 px-1 border border-sky-600 rounded-full'
+                feed.reaction[reactionType].length >= 1 &&
+                'bg-primary-200 dark:bg-gray-900 dark:text-black px-1 border border-primary-600 rounded-full'
               }`}
             >
               <div class="text-[15px]">{reactions[reactionType]}</div>
-              {#if value.reaction[reactionType].length >= 1}
-                <Chip value={value.reaction[reactionType].length} className="bg-transparent" />
+              {#if feed.reaction[reactionType].length >= 1}
+                <Chip value={feed.reaction[reactionType].length} className="bg-transparent" />
               {/if}
             </button>
           {/if}
@@ -135,20 +131,20 @@
   </section>
 
   <section class="border-t-2 border-gray-200 p-3">
-    {#if value.comment.length > 0}
+    {#if feed.comment.length > 0}
       <button
         on:click={expandComment}
-        class="flex flex-row items-center gap-1 -mx-2 px-2 hover:bg-slate-200 rounded-md"
+        class="flex flex-row items-center gap-1 -mx-2 px-2 rounded-md"
       >
         <UserMultiple size={16} />
         <p class="text-sm py-2">
-          {value.comment.length} class {value.comment.length > 1 ? 'comments' : 'comment'}
+          {pluralize('comment', feed.comment.length, true)}
         </p>
       </button>
     {/if}
     <div>
-      {#each value.comment as comment, index}
-        {#if comment.content && (areCommentsExpanded || index === value.comment.length - 1)}
+      {#each feed.comment as comment, index}
+        {#if comment.content && (areCommentsExpanded || index === feed.comment.length - 1)}
           <div class="group flex justify-between items-center py-2">
             <span class="flex items-center gap-3">
               <div class="w-9 h-9">
@@ -191,14 +187,13 @@
       <div class="flex-1">
         <input
           type="text"
-          value={comment}
-          on:input={(e) => (comment = e.target?.value)}
-          on:keydown={(e) => handleAddNewComment(e)}
+          bind:value={comment}
+          on:keydown={handleAddNewComment}
           placeholder="Add class comment"
           class="w-full bg-transparent border-2 border-gray-200 rounded-3xl"
         />
       </div>
-      <button on:click={(e) => handleAddNewComment(e)}>
+      <button on:click={handleAddNewComment}>
         <Send size={24} />
       </button>
     </div>

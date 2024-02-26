@@ -4,7 +4,7 @@ create table "public"."course_newsfeed" (
     "content" text,
     "id" uuid not null default gen_random_uuid(),
     "course_id" uuid,
-    "reaction" jsonb,
+    "reaction" jsonb default '{"clap": [], "smile": [], "thumbsup": [], "thumbsdown": []}'::jsonb,
     "is_pinned" boolean not null default false
 );
 
