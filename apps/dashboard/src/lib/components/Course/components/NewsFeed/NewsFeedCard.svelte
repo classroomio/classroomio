@@ -69,9 +69,9 @@
   };
 </script>
 
-<div class="flex flex-col gap-5 border-2 border-gray-200 rounded-md mb-5">
+<div class="flex flex-col gap-5 border border-gray-200 rounded-md mb-7 max-w-3xl">
   <section>
-    <div class="p-3">
+    <div class="p-3 pb-0">
       <div class="flex justify-between mb-2">
         <span class="flex items-center gap-3">
           <div class="w-9 h-9">
@@ -130,7 +130,7 @@
     </div>
   </section>
 
-  <section class="border-t-2 border-gray-200 p-3">
+  <section class="border-t border-gray-200 p-3">
     {#if feed.comment.length > 0}
       <button
         on:click={expandComment}
@@ -190,7 +190,7 @@
           bind:value={comment}
           on:keydown={handleAddNewComment}
           placeholder="Add class comment"
-          class="w-full bg-transparent border-2 border-gray-200 rounded-3xl"
+          class="w-full bg-transparent border border-gray-200 rounded-3xl"
         />
       </div>
       <button on:click={handleAddNewComment}>

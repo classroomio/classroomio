@@ -146,13 +146,8 @@
   $: {
     navItems = [
       {
-        label: 'Overview',
-        to: getNavItemRoute($course.id),
-        hideSortIcon: true
-      },
-      {
         label: 'News Feed',
-        to: getNavItemRoute($course.id, 'newsfeed'),
+        to: getNavItemRoute($course.id),
         hideSortIcon: true
       },
       {
@@ -212,8 +207,6 @@
       }
     ];
   }
-
-  $: console.log({ isStudent: $globalStore.isStudent });
 </script>
 
 <aside
