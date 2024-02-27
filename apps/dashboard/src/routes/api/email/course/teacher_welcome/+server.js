@@ -28,7 +28,7 @@ export async function POST({ request }) {
   const origin = request.headers.get('origin');
   const inviteLink = `${origin}/org/${orgSiteName}/courses`;
 
-  await sendEmail({
+  sendEmail({
     from: `"${orgName} (via ClassroomIO.com)" <help@classroomio.com>`,
     to,
     subject: `You have been invited to a course in ${orgName}!`,
@@ -40,7 +40,7 @@ export async function POST({ request }) {
         <a class="button" href="${inviteLink}">Open Dashboard</a>
       </div>
     `
-  });
+  }).then((info) => console.log('Email sent:', info));
 
   return json({
     success: true,

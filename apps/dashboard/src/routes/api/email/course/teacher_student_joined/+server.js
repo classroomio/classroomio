@@ -25,7 +25,7 @@ export async function POST({ request }) {
     return json({ success: false, message: 'Unauthenticated user' }, { status: 401 });
   }
 
-  await sendEmail({
+  sendEmail({
     from: `"ClassroomIO" <help@classroomio.com>`,
     to,
     subject: `[${courseName}] You've got a new student 🎉!`,
@@ -36,7 +36,7 @@ export async function POST({ request }) {
       <p>If you run into any issues, please don’t fail to reach out to us, we’d love to make your teaching
       experience as easy as possible.</p>
     `
-  });
+  }).then((info) => console.log('Email sent:', info));
 
   return json({
     success: true,

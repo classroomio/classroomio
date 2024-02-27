@@ -70,4 +70,6 @@ export const sendEmail = async ({
   });
 
   console.log('Message sent: %s', info.messageId);
+
+  return info;
 };
