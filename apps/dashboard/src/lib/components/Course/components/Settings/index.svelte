@@ -25,6 +25,7 @@
   import { Restart } from 'carbon-icons-svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import generateSlug from '$lib/utils/functions/generateSlug';
+  import { onMount } from 'svelte';
 
   let isSaving = false;
   let isLoading = false;
@@ -165,7 +166,7 @@
   };
 
   function setDefault(course: Course) {
-    if (course && Object.keys(course).length) {
+    if (course && Object.keys(course).length && $settings.course_title !== course.title) {
       $settings = {
         course_title: course.title,
         course_description: course.description,
@@ -182,9 +183,6 @@
   const generateNewCourseLink = () => {
     $course.slug = generateSlug($course.title);
   };
-
-  $: $settings.course_description = $course.description;
-  $: $settings.course_title = $course.title;
 
   $: setDefault($course);
 </script>
@@ -337,6 +335,10 @@
         bind:toggled={$settings.is_published}
         on:toggle={(e) => {
           $settings.allow_new_students = e.detail.toggled;
+
+          if (!$course.slug) {
+            generateNewCourseLink();
+          }
         }}
       >
         <span slot="labelA" style="color: gray">Unpublished</span>
