@@ -2,6 +2,11 @@ import isNumber from 'lodash/isNumber';
 import z from 'zod';
 import { validateEmail } from './validateEmail';
 
+const getOrgNameValidation = () =>
+  z.string().min(5, { message: 'Organization must contain 5 or more characters' });
+const getSiteNameValidation = () =>
+  z.string().min(5, { message: 'Site name must contain 5 or more characters' });
+
 const createQuizValidationSchema = z.object({
   title: z.string().min(6, {
     message: 'Must be 6 or more characters long',
@@ -76,9 +81,9 @@ const resetValidationSchema = z.object({
 
 const onboardingValidationSchema = {
   stepOne: z.object({
-    fullname: z.string().min(1, { message: 'Enter your fullname' }),
-    orgName: z.string().min(1, { message: 'Enter your organisation name' }),
-    siteName: z.string().min(1, { message: 'Enter your site name' })
+    fullname: z.string().min(5, { message: 'Fullname must contain 5 or more characters' }),
+    orgName: getOrgNameValidation(),
+    siteName: getSiteNameValidation()
   }),
   stepTwo: z.object({
     goal: z
@@ -196,16 +201,19 @@ export const onboardingValidation = (fields = {}, step) => {
 
 export const createOrgValidation = (fields = {}) => {
   const schema = z.object({
-    orgName: z.string().min(5, {
-      message: 'Must be 5 or more characters long',
-      invalid_type_error: 'Must not be empty'
-    }),
-    siteName: z.string().min(5, {
-      message: 'Must be 5 or more characters long',
-      invalid_type_error: 'Must not be empty'
-    })
+    orgName: getOrgNameValidation(),
+    siteName: getSiteNameValidation()
   });
   const { error } = schema.safeParse(fields);
+
+  return processErrors(error);
+};
+
+export const updateOrgSiteNameValidation = (siteName) => {
+  const schema = z.object({
+    siteName: getSiteNameValidation()
+  });
+  const { error } = schema.safeParse({ siteName });
 
   return processErrors(error);
 };
