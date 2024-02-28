@@ -26,8 +26,6 @@
   async function handleChangeDomain() {
     errors = updateOrgSiteNameValidation(siteName) as Error;
 
-    console.log({ errors });
-
     if (Object.values(errors).length) {
       isLoading = false;
       return;
