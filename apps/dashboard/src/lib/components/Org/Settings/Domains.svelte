@@ -11,14 +11,30 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import SectionTitle from '../SectionTitle.svelte';
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
+  import { updateOrgSiteNameValidation } from '$lib/utils/functions/validator';
+
+  type Error = {
+    siteName: string;
+  };
 
   let siteName = '';
-  let errors = '';
+  let errors: Error = {
+    siteName: ''
+  };
   let isLoading = false;
 
   async function handleChangeDomain() {
+    errors = updateOrgSiteNameValidation(siteName) as Error;
+
+    console.log({ errors });
+
+    if (Object.values(errors).length) {
+      isLoading = false;
+      return;
+    }
+
     if (blockedSubdomain.includes(siteName || '')) {
-      errors = 'Sitename already exists.';
+      errors.siteName = 'Sitename already exists.';
       return;
     }
     isLoading = true;
@@ -31,7 +47,7 @@
     console.log('Updating organisation', org);
     if (error) {
       console.log('Error: create organisation', error);
-      errors = 'Sitename already exists.';
+      errors.siteName = 'Sitename already exists.';
     } else {
       snackbar.success();
       $currentOrg.siteName = siteName;
@@ -49,8 +65,8 @@
   }
 
   function resetErrors(_siteName: string) {
-    if (errors) {
-      errors = '';
+    if (errors.siteName) {
+      errors.siteName = '';
     }
   }
 
@@ -76,7 +92,7 @@
           placeholder="e.g traversymedia"
           className="mb-5 w-full"
           labelClassName=""
-          errorMessage={errors}
+          errorMessage={errors.siteName}
         />
         <div class="flex items-center mb-6">
           <PrimaryButton
