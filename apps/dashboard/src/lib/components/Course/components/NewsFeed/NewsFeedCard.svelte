@@ -13,6 +13,7 @@
   import { profile } from '$lib/utils/store/user';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import pluralize from 'pluralize';
+  import { onMount } from 'svelte';
 
   export let feed: Feed;
   export let editFeed: Feed | any = {};
@@ -23,6 +24,7 @@
   export let addNewComment = (arg1: string, arg2: string, arg3: string) => {};
   export let addNewReaction = (arg1: string, arg2: string, arg3: string) => {};
   export let onPin = (feedId: Feed['id'], isPinned: Feed['isPinned']) => {};
+  export let isActive = false;
 
   let comment = '';
   let areCommentsExpanded = false;
@@ -67,9 +69,25 @@
   const handleDeleteComment = (id: string) => {
     deleteComment(id);
   };
+
+  onMount(() => {
+    if (isActive) {
+      const el = document.getElementById(feed.id);
+      el?.scrollIntoView({
+        block: 'start',
+        behavior: 'smooth',
+        inline: 'nearest'
+      });
+    }
+  });
 </script>
 
-<div class="flex flex-col gap-5 border border-gray-200 rounded-md mb-7 max-w-3xl">
+<div
+  id={feed.id}
+  class="flex flex-col gap-5 {isActive
+    ? 'border-2 border-primary-700'
+    : 'border border-gray-200'} rounded-md mb-7 max-w-3xl"
+>
   <section>
     <div class="p-3 pb-0">
       <div class="flex justify-between mb-2">

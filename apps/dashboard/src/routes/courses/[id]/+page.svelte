@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/stores';
   import PinFilled from 'carbon-icons-svelte/lib/PinFilled.svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -22,21 +23,25 @@
   import { supabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
   import type { Feed } from '$lib/utils/types/feed';
+  import {
+    NOTIFICATION_NAME,
+    triggerSendEmail
+  } from '$lib/utils/services/notification/notification';
 
   export let data;
 
   let createdComment;
   let edit = false;
   let editFeed: Feed;
-
   let author = {
     id: '',
     username: '',
     fullname: '',
     avatar: ''
   };
-
   let newsFeed: Feed[] = [];
+  let query = new URLSearchParams($page.url.search);
+  let feedId = query.get('feedId') || '';
 
   const onEdit = (id: string, content: string) => {
     handleEditFeed(id, content);
@@ -115,6 +120,12 @@
 
     createdComment = response?.data[0];
 
+    triggerSendEmail(NOTIFICATION_NAME.NEWSFEED, {
+      authorId: author.id,
+      feedId: feedId,
+      comment
+    });
+
     newsFeed = newsFeed.map((feed) => {
       if (feed.id === feedId) {
         const newComment = {
@@ -172,7 +183,7 @@
     newsFeed = deletedFeed;
   };
 
-  const setAllFeed = async (courseId: string) => {
+  const initNewsFeed = async (courseId: string) => {
     if (!courseId) return;
 
     const { data, error } = await fetchNewsFeeds(courseId);
@@ -201,7 +212,7 @@
     };
   }
 
-  $: setAllFeed(data.courseId);
+  $: initNewsFeed(data.courseId);
 
   $: setAuthor($group, $profile.id);
 
@@ -260,6 +271,7 @@
           {author}
           bind:edit
           bind:editFeed
+          isActive={feedId === feed.id}
         />
       {/each}
     {/if}

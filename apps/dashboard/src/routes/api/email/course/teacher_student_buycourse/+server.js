@@ -32,7 +32,7 @@ export async function POST({ request }) {
   }
 
   sendEmail({
-    from: `ClassroomIO" <help@classroomio.com>`,
+    from: `ClassroomIO" <notify@classroomio.com>`,
     to,
     subject: `[${courseName}] Request to Join Course!`,
     content: `

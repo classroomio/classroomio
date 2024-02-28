@@ -104,3 +104,78 @@ export async function deleteNewsFeed(feedId: string) {
 
   return response;
 }
+
+export async function getFeedForNotification(feedId: string, authorId: string) {
+  const { data, error } = await supabase
+    .from('course_newsfeed')
+    .select(
+      `
+    content,
+    author:groupmember(profile(fullname, email)),
+    course(
+      id,
+      title,
+      group(
+        organization(siteName, name),
+        members:groupmember(id, profile(email, fullname))
+      )
+    )
+  `
+    )
+    .eq('id', feedId)
+    .limit(1)
+    .returns<
+      {
+        content: string;
+        author: {
+          profile: {
+            email: string;
+            fullname: string;
+          };
+        };
+        course: {
+          id: string;
+          title: string;
+          group: {
+            organization: {
+              name: string;
+              siteName: string;
+            };
+            members: {
+              id: string;
+              profile: {
+                email: string;
+                fullname: string;
+              };
+            }[];
+          };
+        };
+      }[]
+    >();
+
+  if (error) {
+    console.error('Failed to get feed', error);
+    return null;
+  }
+  console.log({
+    data
+  });
+  const [feed] = data || [];
+
+  if (!feed) return;
+
+  return {
+    id: feedId,
+    courseId: feed.course.id,
+    courseTitle: feed.course.title,
+    teacherName: feed.author.profile.fullname,
+    teacherEmail: feed.author.profile.email,
+    content: feed.content,
+    org: feed.course.group.organization,
+    courseMembers: feed.course.group.members
+      .filter((member) => member.id !== authorId)
+      .map((member) => {
+        return member.profile;
+      })
+  };
+}

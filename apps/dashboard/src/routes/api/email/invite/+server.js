@@ -12,7 +12,7 @@ export async function POST({ request }) {
   const accessToken = request.headers.get('Authorization');
   console.log('/POST api/email/invite', body);
 
-  if (!org || !Object.keys(org).length || !email) {
+  if (!org || !Object.keys(org).length || !email || !accessToken) {
     return json(
       { success: false, message: 'Org data and Teacher name are required' },
       { status: 400 }

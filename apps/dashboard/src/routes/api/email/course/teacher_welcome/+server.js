@@ -29,7 +29,7 @@ export async function POST({ request }) {
   const inviteLink = `${origin}/org/${orgSiteName}/courses`;
 
   sendEmail({
-    from: `"${orgName} (via ClassroomIO.com)" <help@classroomio.com>`,
+    from: `"${orgName} (via ClassroomIO.com)" <notify@classroomio.com>`,
     to,
     subject: `You have been invited to a course in ${orgName}!`,
     content: `

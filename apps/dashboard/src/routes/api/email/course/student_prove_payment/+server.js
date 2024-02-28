@@ -33,7 +33,7 @@ export async function POST({ request }) {
   }
 
   sendEmail({
-    from: `"${orgName} - ClassroomIO" <help@classroomio.com>`,
+    from: `"${orgName} - ClassroomIO" <notify@classroomio.com>`,
     to,
     replyTo: teacherEmail,
     subject: `[${courseName}] One more step left`,

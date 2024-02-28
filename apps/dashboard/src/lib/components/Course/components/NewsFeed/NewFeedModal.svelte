@@ -7,6 +7,10 @@
   import { createNewFeed } from '$lib/utils/services/newsfeed';
   import { snackbar } from '$lib/components/Snackbar/store';
   import type { Feed, Author } from '$lib/utils/types/feed';
+  import {
+    NOTIFICATION_NAME,
+    triggerSendEmail
+  } from '$lib/utils/services/notification/notification';
 
   export let author: Author | any = {};
   export let courseId = '';
@@ -77,6 +81,10 @@
     });
 
     snackbar.success('New feed added successfully');
+    triggerSendEmail(NOTIFICATION_NAME.NEWSFEED, {
+      authorId: createdFeed.author_id,
+      feedId: createdFeed.id
+    });
 
     resetEditor();
   };
