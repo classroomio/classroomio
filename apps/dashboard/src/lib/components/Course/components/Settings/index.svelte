@@ -25,7 +25,6 @@
   import { Restart } from 'carbon-icons-svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import generateSlug from '$lib/utils/functions/generateSlug';
-  import { onMount } from 'svelte';
 
   let isSaving = false;
   let isLoading = false;
