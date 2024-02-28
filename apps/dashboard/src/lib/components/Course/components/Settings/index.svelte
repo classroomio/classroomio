@@ -165,7 +165,7 @@
   };
 
   function setDefault(course: Course) {
-    if (course && Object.keys(course).length) {
+    if (course && Object.keys(course).length && $settings.course_title !== course.title) {
       $settings = {
         course_title: course.title,
         course_description: course.description,
@@ -182,9 +182,6 @@
   const generateNewCourseLink = () => {
     $course.slug = generateSlug($course.title);
   };
-
-  $: $settings.course_description = $course.description;
-  $: $settings.course_title = $course.title;
 
   $: setDefault($course);
 </script>
@@ -337,6 +334,10 @@
         bind:toggled={$settings.is_published}
         on:toggle={(e) => {
           $settings.allow_new_students = e.detail.toggled;
+
+          if (!$course.slug) {
+            generateNewCourseLink();
+          }
         }}
       >
         <span slot="labelA" style="color: gray">Unpublished</span>
