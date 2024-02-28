@@ -89,11 +89,9 @@
     });
 
     // 4. Add default news feed.
-    console.log('data', data);
-
     if (Array.isArray(data) && data.length) {
       const { id: authorId } = data[0];
-      console.log('Add news feed', authorId);
+      console.log('Add news feed into course');
 
       await addDefaultNewsFeed({
         content: `<h2>Welcome to this course 🎉&nbsp;</h2>

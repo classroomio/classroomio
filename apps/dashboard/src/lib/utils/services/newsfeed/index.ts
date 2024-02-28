@@ -168,13 +168,13 @@ export async function getFeedForNotification(feedId: string, authorId: string) {
     id: feedId,
     courseId: feed.course.id,
     courseTitle: feed.course.title,
-    teacherName: feed.author.profile.fullname,
-    teacherEmail: feed.author.profile.email,
+    teacherName: feed.author?.profile?.fullname,
+    teacherEmail: feed.author?.profile?.email,
     content: feed.content,
-    org: feed.course.group.organization,
-    courseMembers: feed.course.group.members
-      .filter((member) => member.id !== authorId)
-      .map((member) => {
+    org: feed.course.group?.organization,
+    courseMembers: feed.course?.group?.members
+      ?.filter((member) => member.id !== authorId)
+      ?.map((member) => {
         return member.profile;
       })
   };
