@@ -12,7 +12,7 @@ export async function POST({ request }) {
   const accessToken = request.headers.get('Authorization');
   console.log('/POST api/email/invite', body);
 
-  if (!org || !Object.keys(org).length || !email) {
+  if (!org || !Object.keys(org).length || !email || !accessToken) {
     return json(
       { success: false, message: 'Org data and Teacher name are required' },
       { status: 400 }
@@ -42,7 +42,7 @@ export async function POST({ request }) {
   const inviteLink = `${origin}/invite/t/${encodeURIComponent(btoa(inviteData))}`;
   console.log('inviteData', inviteData);
 
-  await sendEmail({
+  sendEmail({
     to: email,
     subject: `Join ${name} on ClassroomIO 😃`,
     content: `
@@ -53,7 +53,7 @@ export async function POST({ request }) {
       </div>
     `,
     isPersonalEmail: true
-  });
+  }).then((info) => console.log('Email sent:', info));
 
   return json({
     success: true,

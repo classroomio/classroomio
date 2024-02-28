@@ -4,20 +4,9 @@ import {
   SMTP_HOST,
   SMTP_USER,
   SMTP_PASSWORD,
-  SMTP_USER_HELP,
-  SMTP_PASSWORD_HELP
+  SMTP_USER_NOTIFY,
+  SMTP_PASSWORD_NOTIFY
 } from '$env/static/private';
-
-const content = `
-<div>
-  <h1>Welcome</h1>
-  <br/>
-  <p>Thank you so much for trying out ClassroomIO</p>
-  <a href="https://app.classroomio.com/login">Login</a><br/>
-<br/>
-Your ClassroomIO Team
-</div>
-`;
 
 let transporter: nodemailer.Transporter;
 
@@ -28,8 +17,8 @@ const getTransporter = async (isPersonal?: boolean): Promise<boolean> => {
       port: 465,
       secure: true,
       auth: {
-        user: isPersonal ? SMTP_USER : SMTP_USER_HELP,
-        pass: isPersonal ? SMTP_PASSWORD : SMTP_PASSWORD_HELP
+        user: isPersonal ? SMTP_USER : SMTP_USER_NOTIFY,
+        pass: isPersonal ? SMTP_PASSWORD : SMTP_PASSWORD_NOTIFY
       }
     });
 
@@ -60,14 +49,22 @@ export const sendEmail = async ({
   isPersonalEmail?: boolean;
   replyTo?: string;
 }) => {
-  await getTransporter(isPersonalEmail);
-  const info = await transporter.sendMail({
-    from: from || '"Best from ClassroomIO" <best@classroomio.com>', // sender address
-    to, // list of receivers
-    subject, // Subject line
-    replyTo,
-    html: withEmailTemplate(content) // html body
-  });
+  try {
+    await getTransporter(isPersonalEmail);
+    const info = await transporter.sendMail({
+      from: from || '"Best from ClassroomIO" <best@classroomio.com>', // sender address
+      to, // list of receivers
+      subject, // Subject line
+      replyTo,
+      html: withEmailTemplate(content) // html body
+    });
 
-  console.log('Message sent: %s', info.messageId);
+    console.log('Message sent: %s', info.messageId);
+
+    return info;
+  } catch (error) {
+    console.error({ error });
+
+    return error;
+  }
 };
