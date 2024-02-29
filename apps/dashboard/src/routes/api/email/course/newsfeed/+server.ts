@@ -52,6 +52,7 @@ const sendEmailNotification = async (feedId: string, authorId: string, comment?:
     </div>
     `
   }));
+  console.log('Sending emails to all students', emails);
 
   await sendEmails(emails);
 };
