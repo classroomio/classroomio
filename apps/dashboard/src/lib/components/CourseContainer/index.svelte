@@ -19,10 +19,8 @@
   let prevCourseId = '';
 
   async function onCourseIdChange(courseId = '') {
-    console.log('courseid changed', courseId);
     if (!courseId || prevCourseId === courseId || !browser || $course.id === courseId) return;
 
-    console.log('making request', courseId);
     isFetching = true;
     course.set(defaultCourse);
 

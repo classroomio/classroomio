@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { getSupabase } from '$lib/utils/functions/supabase';
-import { sendEmail } from '$lib/utils/services/notification/send';
+import sendEmail from '$defer/sendEmail';
 
 const supabase = getSupabase();
 
@@ -29,7 +29,7 @@ export async function POST({ request }) {
   const inviteLink = `${origin}/org/${orgSiteName}/courses`;
 
   await sendEmail({
-    from: `"${orgName} (via ClassroomIO.com)" <help@classroomio.com>`,
+    from: `"${orgName} (via ClassroomIO.com)" <notify@classroomio.com>`,
     to,
     subject: `You have been invited to a course in ${orgName}!`,
     content: `

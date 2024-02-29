@@ -14,7 +14,7 @@
   import Confetti from '$lib/components/Confetti/index.svelte';
   import { toggleConfetti } from '$lib/components/Confetti/store';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { getTextFromHTML } from '$lib/utils/functions/course';
+  import { getTextFromHTML } from '$lib/utils/functions/toHtml';
   import { writable } from 'svelte/store';
   import { Circle3 } from 'svelte-loading-spinners';
 

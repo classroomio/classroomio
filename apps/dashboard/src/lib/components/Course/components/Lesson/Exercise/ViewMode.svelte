@@ -46,7 +46,7 @@
     return people.find((person) => person.profile_id === profileId);
   };
 
-  const sendEmail = () => {
+  const notifyEducator = () => {
     const student = getStudent($group.students, $profile.id);
     const teacherFullname = $group.tutors[0]?.fullname;
     const teacherEmail = $group.tutors[0]?.email;
@@ -118,7 +118,7 @@
         $course.id,
         getGroupMemberId($group.people, $profile.id)
       );
-      sendEmail();
+      notifyEducator();
     }
   }
 
