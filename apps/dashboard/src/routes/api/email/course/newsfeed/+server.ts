@@ -8,7 +8,7 @@ const supabase = getSupabase();
 
 const sendEmailNotification = async (feedId: string, authorId: string, comment?: string) => {
   const feed = await getFeedForNotification(feedId, authorId);
-
+  console.log({ feed });
   if (!feed) return;
 
   const postLink = `https://${feed.org.siteName}.classroomio.com/courses/${feed.courseId}?feedId=${feed.id}`;
@@ -32,6 +32,7 @@ const sendEmailNotification = async (feedId: string, authorId: string, comment?:
     // dont continue
     return;
   }
+  console.log({ members: feed.courseMembers });
 
   if (!feed.courseMembers.length) {
     return;
