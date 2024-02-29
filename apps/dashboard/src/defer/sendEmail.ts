@@ -1,44 +1,7 @@
 import { defer } from '@defer/client';
 
-import nodemailer from 'nodemailer';
 import { withEmailTemplate } from '../lib/utils/services/notification/template';
-import {
-  SMTP_HOST,
-  SMTP_USER,
-  SMTP_PASSWORD,
-  SMTP_USER_NOTIFY,
-  SMTP_PASSWORD_NOTIFY
-} from '$env/static/private';
-
-let transporter: nodemailer.Transporter;
-
-const getTransporter = async (isPersonal?: boolean): Promise<boolean> => {
-  return await new Promise((resolve, reject) => {
-    if (transporter) {
-      return resolve(true);
-    }
-
-    transporter = nodemailer.createTransport({
-      host: SMTP_HOST,
-      port: 465,
-      secure: true,
-      auth: {
-        user: isPersonal ? SMTP_USER : SMTP_USER_NOTIFY,
-        pass: isPersonal ? SMTP_PASSWORD : SMTP_PASSWORD_NOTIFY
-      }
-    });
-
-    transporter.verify(function (error, success) {
-      if (error) {
-        console.log('Transporter error', error);
-        reject(error);
-      } else {
-        console.log('Server is ready to take our messages');
-        resolve(success);
-      }
-    });
-  });
-};
+import { getTransporter } from '../lib/utils/services/notification/send';
 
 const sendEmail = async ({
   from,
@@ -56,7 +19,11 @@ const sendEmail = async ({
   replyTo?: string;
 }) => {
   try {
-    await getTransporter(isPersonalEmail);
+    const transporter = await getTransporter(isPersonalEmail);
+
+    if (!transporter) {
+      return;
+    }
 
     const info = await transporter.sendMail({
       from: from || '"Best from ClassroomIO" <best@classroomio.com>', // sender address
