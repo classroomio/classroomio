@@ -39,29 +39,44 @@ const sendEmailNotification = async (feedId: string, authorId: string, comment?:
   }
 
   // else send to everyone except the author of the post
-  const emails = feed.courseMembers.map((member) => ({
-    from: `"${feed.org.name} - ClassroomIO" <notify@classroomio.com>`,
-    to: member.email,
-    replyTo: feed.teacherEmail,
-    subject: `[${feed.courseTitle}] - New post in course`,
-    content: `
-    <p>${feed.teacherName} made a post in a course you are taking: ${feed.courseTitle}.</p>
-    
-    <div style="font-style: italic; margin-top: 10px;">${feed.content}</div>
-    <div>
-      <a class="button" href="${postLink}">View post</a>
-    </div>
-    `
-  }));
-  console.log('Sending emails to all students', emails);
+  // const emails = feed.courseMembers.map((member) => ({
+  //   from: `"${feed.org.name} - ClassroomIO" <notify@classroomio.com>`,
+  //   to: member.email,
+  //   replyTo: feed.teacherEmail,
+  //   subject: `[${feed.courseTitle}] - New post in course`,
+  //   content: `
+  //   <p>${feed.teacherName} made a post in a course you are taking: ${feed.courseTitle}.</p>
+
+  //   <div style="font-style: italic; margin-top: 10px;">${feed.content}</div>
+  //   <div>
+  //     <a class="button" href="${postLink}">View post</a>
+  //   </div>
+  //   `
+  // }));
+  console.log('Sending emails to all students', feed.courseMembers.length);
 
   // This is the defer function with a loop
   // await sendEmails(emails);
 
   // try sendEmail without Loop
-  emails.forEach(async (email) => {
-    await sendEmail(email);
-  });
+
+  for (const member of feed.courseMembers) {
+    console.log('Loop', member);
+    await sendEmail({
+      from: `"${feed.org.name} - ClassroomIO" <notify@classroomio.com>`,
+      to: member.email,
+      replyTo: feed.teacherEmail,
+      subject: `[${feed.courseTitle}] - New post in course`,
+      content: `
+      <p>${feed.teacherName} made a post in a course you are taking: ${feed.courseTitle}.</p>
+      
+      <div style="font-style: italic; margin-top: 10px;">${feed.content}</div>
+      <div>
+        <a class="button" href="${postLink}">View post</a>
+      </div>
+      `
+    });
+  }
 };
 
 export async function POST({ request }) {
