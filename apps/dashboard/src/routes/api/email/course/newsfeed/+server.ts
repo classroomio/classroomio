@@ -55,7 +55,13 @@ const sendEmailNotification = async (feedId: string, authorId: string, comment?:
   }));
   console.log('Sending emails to all students', emails);
 
-  await sendEmails(emails);
+  // This is the defer function with a loop
+  // await sendEmails(emails);
+
+  // try sendEmail without Loop
+  emails.forEach(async (email) => {
+    await sendEmail(email);
+  });
 };
 
 export async function POST({ request }) {
