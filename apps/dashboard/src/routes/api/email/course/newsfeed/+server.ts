@@ -2,7 +2,7 @@ import { json } from '@sveltejs/kit';
 import { getSupabase } from '$lib/utils/functions/supabase';
 import { getFeedForNotification } from '$lib/utils/services/newsfeed/index';
 import sendEmail from '$defer/sendEmail';
-import sendEmails from '$defer/sendEmails';
+// import sendEmails from '$defer/sendEmails';
 
 const supabase = getSupabase();
 
