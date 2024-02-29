@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { getSupabase } from '$lib/utils/functions/supabase';
-import { sendEmail } from '$lib/utils/services/notification/send';
+import sendEmail from '$defer/sendEmail';
 
 const supabase = getSupabase();
 
@@ -33,7 +33,7 @@ export async function POST({ request }) {
   }
 
   await sendEmail({
-    from: `"${orgName} - ClassroomIO" <help@classroomio.com>`,
+    from: `"${orgName} - ClassroomIO" <notify@classroomio.com>`,
     to,
     replyTo: teacherEmail,
     subject: `[${courseName}] One more step left`,

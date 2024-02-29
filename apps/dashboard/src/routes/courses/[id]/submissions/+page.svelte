@@ -97,7 +97,7 @@
     return Object.values(grades).reduce((acc, grade) => acc + parseInt(grade), 0);
   }
 
-  const sendEmail = (submissionData) => {
+  const notifyStudent = (submissionData) => {
     maxMark = getMaxPoints(submissionData?.questions);
     totalMark = calculateTotal(submissionData?.questionAnswerByPoint);
 
@@ -155,7 +155,7 @@
         status_id: itemToWithNewStatus.statusId
       };
 
-      sendEmail(submissionIdData[itemToWithNewStatus.id]);
+      notifyStudent(submissionIdData[itemToWithNewStatus.id]);
 
       updateSubmission({
         id: itemToWithNewStatus.id,
@@ -219,7 +219,7 @@
         status_id: itemToWithNewStatus.statusId
       };
 
-      sendEmail(submissionIdData[itemToWithNewStatus.id]);
+      notifyStudent(submissionIdData[itemToWithNewStatus.id]);
       // Update backend
       updateSubmission({
         id: itemToWithNewStatus.id,

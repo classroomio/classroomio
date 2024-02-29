@@ -1,5 +1,6 @@
 import { vitePreprocess } from '@sveltejs/kit/vite';
 import vercelAdapter from '@sveltejs/adapter-vercel';
+import path from 'path';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -8,7 +9,11 @@ const config = {
   preprocess: [vitePreprocess({})],
 
   kit: {
-    adapter: vercelAdapter()
+    adapter: vercelAdapter(),
+    alias: {
+      $lib: path.resolve('./src/lib'),
+      $defer: path.resolve('./src/defer')
+    }
   }
 };
 

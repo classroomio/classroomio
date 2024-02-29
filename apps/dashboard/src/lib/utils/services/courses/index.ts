@@ -142,6 +142,10 @@ export function addGroupMember(member: any) {
   return supabase.from('groupmember').insert(member).select();
 }
 
+export function addDefaultNewsFeed(feed) {
+  return supabase.from('course_newsfeed').insert(feed);
+}
+
 export function updatedGroupMember(update: any, match: any) {
   return supabase.from('groupmember').update(update).match(match);
 }
