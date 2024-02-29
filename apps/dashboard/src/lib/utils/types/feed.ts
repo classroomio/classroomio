@@ -29,7 +29,7 @@ export interface FeedApi {
   };
   created_at: string;
   comment: Comment[];
-  reaction: Reaction[];
+  reaction: Reaction;
   is_pinned: false;
 }
 
@@ -41,6 +41,6 @@ export interface Feed {
   };
   created_at: string;
   comment: Comment[];
-  reaction: Reaction[];
+  reaction: Reaction;
   isPinned: boolean;
 }

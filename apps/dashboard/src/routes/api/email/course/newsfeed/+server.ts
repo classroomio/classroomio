@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { getSupabase } from '$lib/utils/functions/supabase';
-import { sendEmail } from '$lib/utils/services/notification/send';
 import { getFeedForNotification } from '$lib/utils/services/newsfeed/index';
+import sendEmail from '$defer/sendEmail';
 
 const supabase = getSupabase();
 
@@ -14,7 +14,7 @@ const sendEmailNotification = async (feedId: string, authorId: string, comment?:
 
   if (comment) {
     // send only to teacher
-    sendEmail({
+    await sendEmail({
       from: `"${feed.org.name} - ClassroomIO" <notify@classroomio.com>`,
       to: feed.teacherEmail,
       subject: `[${feed.courseTitle}] - News feed comment`,
@@ -26,14 +26,14 @@ const sendEmailNotification = async (feedId: string, authorId: string, comment?:
         <a class="button" href="${postLink}">View comment</a>
       </div>
       `
-    }).then((info) => console.log('Email sent:', info));
+    });
 
     // dont continue
     return;
   }
 
   // else send to everyone except the author of the post
-  Promise.all(
+  await Promise.all(
     feed.courseMembers.map((member) => {
       return sendEmail({
         from: `"${feed.org.name} - ClassroomIO" <notify@classroomio.com>`,
@@ -50,7 +50,7 @@ const sendEmailNotification = async (feedId: string, authorId: string, comment?:
         `
       });
     })
-  ).then((emails) => console.log(`Sent emails to ${emails.length} students`));
+  );
 };
 
 export async function POST({ request }) {

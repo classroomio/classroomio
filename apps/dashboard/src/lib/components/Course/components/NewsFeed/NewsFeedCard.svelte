@@ -16,8 +16,8 @@
   import { onMount } from 'svelte';
 
   export let feed: Feed;
-  export let editFeed: Feed | any = {};
-  export let author: Author | any = {};
+  export let editFeed: Feed;
+  export let author: Author;
   export let edit = false;
   export let deleteFeed = (arg: string) => {};
   export let deleteComment = (arg: string) => {};
@@ -70,6 +70,14 @@
     deleteComment(id);
   };
 
+  const getClassIfSelectedByAuthor = (reactionType) => {
+    const usersReacted = feed.reaction[reactionType] || [];
+
+    return usersReacted.includes(author.id)
+      ? 'bg-primary-200 border-primary-600 pl-2'
+      : 'bg-gray-200 border-gray-600 pl-2';
+  };
+
   onMount(() => {
     if (isActive) {
       const el = document.getElementById(feed.id);
@@ -94,13 +102,13 @@
         <span class="flex items-center gap-3">
           <div class="w-9 h-9">
             <img
-              src={feed.author?.profile.avatar_url}
+              src={feed.author?.profile?.avatar_url}
               alt="users banner"
               class="w-full h-full rounded-full object-cover"
             />
           </div>
           <span>
-            <p class="text-base font-semibold capitalize">{feed.author?.profile.fullname}</p>
+            <p class="text-base font-semibold capitalize">{feed.author?.profile?.fullname}</p>
             <p class="text-sm font-medium text-gray-600">{calDateDiff(feed.created_at)}</p>
           </span>
         </span>
@@ -134,7 +142,7 @@
               on:click={() => handleAddNewReaction(reactionType)}
               class={`flex transition ${
                 feed.reaction[reactionType].length >= 1 &&
-                'bg-primary-200 dark:bg-gray-900 dark:text-black px-1 border border-primary-600 rounded-full'
+                `${getClassIfSelectedByAuthor(reactionType)} dark:text-black border rounded-full`
               }`}
             >
               <div class="text-[15px]">{reactions[reactionType]}</div>
@@ -197,7 +205,7 @@
     <div class="flex items-center justify-between gap-2">
       <div class="w-7 h-7">
         <img
-          src={author.avatar}
+          src={author.avatar_url}
           alt="users banner"
           class="w-full h-full rounded-full object-cover"
         />

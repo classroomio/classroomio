@@ -1,6 +1,10 @@
 import type { Course } from '$lib/utils/types';
 import { supabase } from '$lib/utils/functions/supabase';
-import type { Reaction, FeedApi } from '$lib/utils/types/feed';
+import type { Reaction, FeedApi, Feed } from '$lib/utils/types/feed';
+
+export async function fetchNewsFeedReaction(feedId: Feed['id']) {
+  return supabase.from('course_newsfeed').select(`reaction`).eq('id', feedId).single();
+}
 
 export async function fetchNewsFeeds(courseId?: Course['id']) {
   const response = await supabase
