@@ -40,40 +40,40 @@ const getTransporter = async (isPersonal?: boolean): Promise<boolean> => {
   });
 };
 
-export default defer(
-  async ({
-    from,
-    to,
-    subject,
-    content,
-    isPersonalEmail,
-    replyTo
-  }: {
-    from?: string;
-    to: string;
-    subject: string;
-    content: string;
-    isPersonalEmail?: boolean;
-    replyTo?: string;
-  }) => {
-    try {
-      await getTransporter(isPersonalEmail);
+const sendEmail = async ({
+  from,
+  to,
+  subject,
+  content,
+  isPersonalEmail,
+  replyTo
+}: {
+  from?: string;
+  to: string;
+  subject: string;
+  content: string;
+  isPersonalEmail?: boolean;
+  replyTo?: string;
+}) => {
+  try {
+    await getTransporter(isPersonalEmail);
 
-      const info = await transporter.sendMail({
-        from: from || '"Best from ClassroomIO" <best@classroomio.com>', // sender address
-        to, // list of receivers
-        subject, // Subject line
-        replyTo,
-        html: withEmailTemplate(content) // html body
-      });
+    const info = await transporter.sendMail({
+      from: from || '"Best from ClassroomIO" <best@classroomio.com>', // sender address
+      to, // list of receivers
+      subject, // Subject line
+      replyTo,
+      html: withEmailTemplate(content) // html body
+    });
 
-      console.log('Message sent: %s', info.messageId);
+    console.log('Message sent: %s', info.messageId);
 
-      return info;
-    } catch (error) {
-      console.error({ error });
+    return info;
+  } catch (error) {
+    console.error({ error });
 
-      return error;
-    }
+    return error;
   }
-);
+};
+
+export default defer(sendEmail);
