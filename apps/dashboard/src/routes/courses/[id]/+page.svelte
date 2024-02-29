@@ -17,7 +17,8 @@
     deleteNewsFeed,
     fetchNewsFeeds,
     handleEditFeed,
-    toggleFeedIsPinned
+    toggleFeedIsPinned,
+    fetchNewsFeedReaction
   } from '$lib/utils/services/newsfeed';
   import Box from '$lib/components/Box/index.svelte';
   import { supabase } from '$lib/utils/functions/supabase';
@@ -37,7 +38,7 @@
     id: '',
     username: '',
     fullname: '',
-    avatar: ''
+    avatar_url: ''
   };
   let newsFeed: Feed[] = [];
   let query = new URLSearchParams($page.url.search);
@@ -66,9 +67,11 @@
   };
 
   const addNewReaction = async (reactionType: string, feedId: string, authorId: string) => {
-    const reactedFeed = newsFeed.find((feed) => feed.id === feedId);
+    const { data } = await fetchNewsFeedReaction(feedId);
 
-    if (!reactedFeed) return;
+    if (!data) return;
+
+    const reactedFeed = data || newsFeed.find((feed) => feed.id === feedId);
 
     let reactedAuthorIds: string[] = reactedFeed.reaction[reactionType];
 
@@ -131,12 +134,7 @@
         const newComment = {
           id: createdComment.id,
           author: {
-            profile: {
-              id: author.id,
-              username: author.username,
-              fullname: author.fullname,
-              avatar_url: author.avatar
-            }
+            profile: { ...author }
           },
           created_at: createdComment.created_at,
           content: comment
@@ -208,7 +206,7 @@
       id: currentGroupMember?.id || '',
       username: $profile.username || '',
       fullname: $profile.fullname || '',
-      avatar: $profile.avatar_url || ''
+      avatar_url: $profile.avatar_url || ''
     };
   }
 
