@@ -86,6 +86,7 @@
   });
 
   $: video = get(courseData, 'metadata.videoUrl');
+  $: allowNewStudent = get(courseData, 'metadata.allowNewStudent');
   $: bannerImage = get(courseData, 'logo');
   $: lessons = get(courseData, 'lessons', []);
   $: instructor = get(courseData, 'metadata.instructor') || {};
@@ -120,7 +121,7 @@
             if (editMode) return;
             startCoursePayment = true;
           }}
-          isDisabled={!courseData.metadata.allowNewStudent}
+          isDisabled={!allowNewStudent}
         />
         {#if $handleOpenWidget.open}
           <UploadWidget bind:imageURL={$course.logo} />

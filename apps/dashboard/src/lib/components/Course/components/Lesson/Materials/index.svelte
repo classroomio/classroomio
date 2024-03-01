@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
   import isEmpty from 'lodash/isEmpty';
   import { useCompletion } from 'ai/svelte';
   import MODES from '$lib/utils/constants/mode.js';
@@ -36,8 +35,8 @@
   import ComponentVideo from './components/ComponentVideo.svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import type { LessonPage } from '$lib/utils/types';
-  import { getTextFromHTML } from '$lib/utils/functions/course';
   import { snackbar } from '$lib/components/Snackbar/store';
+  import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
 
   export let mode = MODES.view;
   export let prevMode = '';
@@ -80,18 +79,10 @@
     return handleUpdateLessonMaterials(_lesson, lessonId);
   }
 
-  function isNoteEmpty(note: string) {
-    if (!note || typeof note !== 'string') return true;
-
-    if (!document) return false;
-
-    return browser ? getTextFromHTML(note) === '' : false;
-  }
-
   function isMaterialsEmpty(materials: LessonPage['materials']) {
     const { slide_url, videos, note } = materials;
 
-    return isNoteEmpty(note) && !slide_url && isEmpty(videos);
+    return isHtmlValueEmpty(note) && !slide_url && isEmpty(videos);
   }
 
   function handleSave(prevMode: string) {
@@ -106,7 +97,7 @@
     tabs = tabs.map((tab) => {
       let badgeValue = 0;
 
-      if (tab.value === 1 && !isNoteEmpty(note)) {
+      if (tab.value === 1 && !isHtmlValueEmpty(note)) {
         badgeValue = 1;
       } else if (tab.value === 2 && !!slide_url) {
         badgeValue = 1;

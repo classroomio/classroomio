@@ -9,7 +9,8 @@ export const NOTIFICATION_NAME = {
   STUDENT_COURSE_WELCOME: 'STUDENT COURSE WELCOME',
   TEACHER_STUDENT_JOINED: 'TEACHER STUDENT JOINED',
   SUBMISSION_UPDATE: 'SUBMISSION UPDATE',
-  EXERCISE_SUBMISSION_UPDATE: 'EXERCISE SUBMISSION UPDATE'
+  EXERCISE_SUBMISSION_UPDATE: 'EXERCISE SUBMISSION UPDATE',
+  NEWSFEED: 'NEWSFEED'
 };
 
 const NAME_TO_PATH = {
@@ -22,7 +23,8 @@ const NAME_TO_PATH = {
   [NOTIFICATION_NAME.STUDENT_COURSE_WELCOME]: '/api/email/course/student_welcome',
   [NOTIFICATION_NAME.TEACHER_STUDENT_JOINED]: '/api/email/course/teacher_student_joined',
   [NOTIFICATION_NAME.SUBMISSION_UPDATE]: '/api/email/course/submission_update',
-  [NOTIFICATION_NAME.EXERCISE_SUBMISSION_UPDATE]: '/api/email/course/exercise_submission_update'
+  [NOTIFICATION_NAME.EXERCISE_SUBMISSION_UPDATE]: '/api/email/course/exercise_submission_update',
+  [NOTIFICATION_NAME.NEWSFEED]: '/api/email/course/newsfeed'
 };
 
 const getAccessToken = async () => {
@@ -30,7 +32,7 @@ const getAccessToken = async () => {
   return data.session?.access_token || '';
 };
 
-export const triggerSendEmail = async (name: string, body: { [k: string]: any }) => {
+export const triggerSendEmail = async (name: string, body: { [k: string]: unknown }) => {
   try {
     const accessToken = await getAccessToken();
     const path = NAME_TO_PATH[name];
@@ -51,7 +53,6 @@ export const triggerSendEmail = async (name: string, body: { [k: string]: any })
       console.log(response);
       throw new Error(await response.text());
     }
-    const result = await response.json();
   } catch (error) {
     console.error(name, error);
   }
