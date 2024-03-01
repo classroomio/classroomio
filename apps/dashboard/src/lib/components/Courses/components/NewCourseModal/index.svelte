@@ -6,7 +6,7 @@
   import { courses, createCourseModal } from '$lib/components/Courses/store';
   import { validateForm } from '$lib/components/Courses/functions';
   import { ROLE } from '$lib/utils/constants/roles';
-  import { addGroupMember } from '$lib/utils/services/courses';
+  import { addGroupMember, addDefaultNewsFeed } from '$lib/utils/services/courses';
   import { supabase } from '$lib/utils/functions/supabase';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
@@ -81,12 +81,27 @@
     });
 
     // 3. Add group members
-    await addGroupMember({
+    const { data } = await addGroupMember({
       profile_id: $profile.id,
       email: $profile.email,
       group_id,
       role_id: ROLE.TUTOR
     });
+
+    // 4. Add default news feed.
+    if (Array.isArray(data) && data.length) {
+      const { id: authorId } = data[0];
+      console.log('Add news feed into course');
+
+      await addDefaultNewsFeed({
+        content: `<h2>Welcome to this course 🎉&nbsp;</h2>
+<p>Thank you for joining this course and I hope you get the best out of it.</p>`,
+        course_id: newCourse[0]?.id,
+        is_pinned: true,
+        author_id: authorId
+      });
+    }
+
     if (newCourse[0] != null && newCourse[0].id) {
       goto(`/courses/${newCourse[0]?.id}`);
     }

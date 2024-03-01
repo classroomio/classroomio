@@ -1,22 +1,10 @@
 <script lang="ts">
   import { lesson } from '$lib/components/Course/components/Lesson/store/lessons';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
-
-  function isNoteEmpty(note: string) {
-    if (!note || typeof note !== 'string') return true;
-
-    if (!document) return false;
-
-    const dummyDiv = document.createElement('div');
-    dummyDiv.innerHTML = note;
-
-    const rawText = dummyDiv.textContent?.trim();
-
-    return rawText === '';
-  }
+  import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
 </script>
 
-{#if !isNoteEmpty($lesson.materials?.note)}
+{#if !isHtmlValueEmpty($lesson.materials?.note)}
   <HtmlRender className="m-auto">
     <svelte:fragment slot="content">
       <div>

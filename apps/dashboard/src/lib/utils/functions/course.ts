@@ -17,13 +17,6 @@ export const getStudentInviteLink = (_course: Course, orgSiteName: string, origi
   return `${origin}/invite/s/${hash}`;
 };
 
-export const getTextFromHTML = (html: string): string => {
-  const dummyDiv = document.createElement('div');
-  dummyDiv.innerHTML = html;
-
-  return dummyDiv.textContent?.trim() || '';
-};
-
 const tagsToReplace: { [k: string]: string } = {
   '&': '&amp;',
   '<': '&lt;',

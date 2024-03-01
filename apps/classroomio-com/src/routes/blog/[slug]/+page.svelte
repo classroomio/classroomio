@@ -23,7 +23,7 @@
       </hgroup>
       <main class="mx-auto max-w-screen-md px-4 lg:px-8">
         <div class="flex items-center justify-start gap-4 my-2 border-y border-gray-200 py-4">
-          <img src={data.meta.avatar} alt="avatar" class="w-10 h-10 rounded-full" />
+          <img loading="lazy" src={data.meta.avatar} alt="avatar" class="w-10 h-10 rounded-full" />
           <span>
             <p class="font-semibold">{data.meta.author}</p>
             <p class="text-gray-500">{data.meta.role}</p>

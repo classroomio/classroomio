@@ -56,7 +56,7 @@
           </a>
 
           <div class="flex items-center justify-start gap-4 my-2">
-            <img src={post.avatar} alt="avatar" class="w-10 h-10 rounded-full" />
+            <img loading="lazy" src={post.avatar} alt="avatar" class="w-10 h-10 rounded-full" />
             <span>
               <p class="font-semibold">{post.author}</p>
               <p class="text-slate-500">{post.role}</p>
