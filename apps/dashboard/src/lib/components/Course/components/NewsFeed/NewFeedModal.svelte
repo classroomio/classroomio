@@ -108,7 +108,7 @@
     <div class="flex items-center justify-end py-2">
       <div class="flex gap-2">
         <PrimaryButton label="Cancel" variant={VARIANTS.OUTLINED} onClick={resetEditor} />
-        <PrimaryButton isDisabled={isLoading} label="Post" onClick={onPost} />
+        <PrimaryButton {isLoading} label="Post" onClick={onPost} />
       </div>
     </div>
   </section>
