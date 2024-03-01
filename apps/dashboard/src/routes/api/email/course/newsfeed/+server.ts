@@ -105,7 +105,7 @@ export async function POST({ request }) {
     return json({ success: false, message: 'Unauthenticated user' }, { status: 401 });
   }
 
-  sendEmailNotification(feedId, authorId, comment);
+  await sendEmailNotification(feedId, authorId, comment);
   // TODO: Support sending to other platforms like telegram and discord
   // sendDiscordNotification(); sendTelegramNotification();
 
