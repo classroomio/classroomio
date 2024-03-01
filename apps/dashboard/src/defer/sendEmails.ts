@@ -14,7 +14,6 @@ const sendEmails = async (
     replyTo?: string;
   }[]
 ) => {
-  console.log('emailParams length', emailParams.length);
   for (const emailParam of emailParams) {
     const { from, to, subject, content, isPersonalEmail, replyTo } = emailParam;
 
@@ -22,11 +21,8 @@ const sendEmails = async (
       const transporter = await getTransporter(isPersonalEmail);
 
       if (!transporter) {
-        console.log('Transporter not found');
         return;
       }
-
-      console.log('Gotten transporter');
 
       const info = await transporter.sendMail({
         from: from || '"Best from ClassroomIO" <best@classroomio.com>', // sender address
@@ -37,12 +33,8 @@ const sendEmails = async (
       });
 
       console.log('Message sent: %s', info.messageId);
-
-      return info;
     } catch (error) {
       console.error({ error });
-
-      return error;
     }
   }
 };
