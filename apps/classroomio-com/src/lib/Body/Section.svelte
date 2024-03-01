@@ -14,25 +14,25 @@
   <div
     class="w-4/5 mx-auto flex flex-col {rightToLeft
       ? 'lg:flex-row-reverse'
-      : 'lg:flex-row'} items-center justify-between gap-28"
+      : 'lg:flex-row'} items-center justify-between gap-8 lg:gap-28"
   >
     <div class="w-[80vw] flex flex-col">
-      <div class="my-4 ml-1 flex gap-2 items-center">
+      <div class="my-2 lg:my-4 ml-1 flex gap-2 items-center">
         {#if taglineIcon === 'simplified'}
-          <img src={thumbsUp} alt="" class="w-7" />
+          <img width="27" height="27" loading="lazy" src={thumbsUp} alt="" class="w-7" />
         {:else if taglineIcon === 'flexible'}
-          <img src={flexible} alt="" class="w-7" />
+          <img width="27" height="27" loading="lazy" src={flexible} alt="" class="w-7" />
         {:else if taglineIcon === 'collaboration'}
           <div class="flex items-center">
-            <img src={leftFist} alt="" class="w-6" />
-            <img src={rightFist} alt="" class="w-6" />
+            <img width="24" height="24" loading="lazy" src={leftFist} alt="" class="w-6" />
+            <img width="24" height="24" loading="lazy" src={rightFist} alt="" class="w-6" />
           </div>
         {:else if taglineIcon === 'productivity'}
-          <img src={robotArm} alt="" class="w-7" />
+          <img width="27" height="27" loading="lazy" src={robotArm} alt="" class="w-7" />
         {/if}
-        <p class="font-medium text-md">{tagline}</p>
+        <p class="font-medium text-base">{tagline}</p>
       </div>
-      <h2 class="font-bold text-4xl mb-6">{title}</h2>
+      <h2 class="font-bold text-4xl mb-3 lg:mb-6">{title}</h2>
       <p class="leading-8 text-lg text-gray-500">
         {description}
       </p>
@@ -44,8 +44,10 @@
         </p>
       {/if}
     </div>
-    <div class="w-[95vw] md:w-[80vw] lg:w-full">
+    <div class="w-[80vw] md:w-[80vw] lg:w-full">
       <video
+        width="100%"
+        height="100%"
         class="w-full h-auto lg:max-h-[80%] rounded-md shadow-xl"
         autoplay
         loop
