@@ -5,7 +5,4 @@ export const isNewFeedModal = writable({
   open: false
 });
 
-export const Feeds = writable({
-  newsFeed: [] as Feed[],
-  isLoading: false
-});
+export const newsFeed = writable<Feed[]>([]);

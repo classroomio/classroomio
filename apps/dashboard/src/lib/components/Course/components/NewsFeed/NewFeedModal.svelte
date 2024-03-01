@@ -110,11 +110,7 @@
     />
     <div class="flex items-center justify-end py-2">
       <div class="flex gap-2">
-        <PrimaryButton
-          label="Cancel"
-          variant={VARIANTS.OUTLINED}
-          onClick={() => ($isNewFeedModal.open = false)}
-        />
+        <PrimaryButton label="Cancel" variant={VARIANTS.OUTLINED} onClick={resetEditor} />
         <PrimaryButton label="Post" onClick={onPost} />
       </div>
     </div>
