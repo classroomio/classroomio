@@ -20,6 +20,7 @@
     toggleFeedIsPinned,
     fetchNewsFeedReaction
   } from '$lib/utils/services/newsfeed';
+  import { Feeds } from '$lib/components/Course/components/NewsFeed/store';
   import Box from '$lib/components/Box/index.svelte';
   import { supabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
@@ -28,7 +29,7 @@
     NOTIFICATION_NAME,
     triggerSendEmail
   } from '$lib/utils/services/notification/notification';
-
+  import NewsFeedLoader from '$lib/components/Course/components/NewsFeed/NewsFeedLoader.svelte';
   export let data;
 
   let createdComment;
@@ -40,14 +41,14 @@
     fullname: '',
     avatar_url: ''
   };
-  let newsFeed: Feed[] = [];
+
   let query = new URLSearchParams($page.url.search);
   let feedId = query.get('feedId') || '';
 
   const onEdit = (id: string, content: string) => {
     handleEditFeed(id, content);
 
-    newsFeed = newsFeed.map((feed) => {
+    $Feeds.newsFeed = $Feeds.newsFeed.map((feed) => {
       if (feed.id === id) {
         return { ...feed, content: content };
       }
@@ -58,7 +59,7 @@
 
   const deleteComment = (id: string) => {
     deleteNewsFeedComment(id);
-    newsFeed = newsFeed.flatMap((feed) => ({
+    $Feeds.newsFeed = $Feeds.newsFeed.flatMap((feed) => ({
       ...feed,
       comment: feed.comment.filter((comment) => comment.id !== id)
     }));
@@ -71,7 +72,7 @@
 
     if (!data) return;
 
-    const reactedFeed = data || newsFeed.find((feed) => feed.id === feedId);
+    const reactedFeed = data || $Feeds.newsFeed.find((feed) => feed.id === feedId);
 
     let reactedAuthorIds: string[] = reactedFeed.reaction[reactionType];
 
@@ -99,7 +100,7 @@
       return snackbar.error('An error occurred while reacting to news feed');
     }
 
-    newsFeed = newsFeed.map((feed) => {
+    $Feeds.newsFeed = $Feeds.newsFeed.map((feed) => {
       if (feed.id === feedId) {
         feed.reaction = reactedFeed.reaction;
       }
@@ -129,7 +130,7 @@
       comment
     });
 
-    newsFeed = newsFeed.map((feed) => {
+    $Feeds.newsFeed = $Feeds.newsFeed.map((feed) => {
       if (feed.id === feedId) {
         const newComment = {
           id: createdComment.id,
@@ -160,7 +161,7 @@
       return snackbar.error('Failed to toggle pinned feed');
     }
 
-    newsFeed = newsFeed.map((feed) => {
+    $Feeds.newsFeed = $Feeds.newsFeed.map((feed) => {
       if (feed.id === feedId) {
         snackbar.success(`${newIsPinned ? 'Pinned' : 'Unpinned'} Successfully`);
 
@@ -175,28 +176,31 @@
   const deleteFeed = (id: string) => {
     deleteNewsFeed(id);
 
-    const deletedFeed = newsFeed.filter((feed) => feed.id !== id);
+    const deletedFeed = $Feeds.newsFeed.filter((feed) => feed.id !== id);
     snackbar.success('Feed deleted successfully');
 
-    newsFeed = deletedFeed;
+    $Feeds.newsFeed = deletedFeed;
   };
 
   const initNewsFeed = async (courseId: string) => {
     if (!courseId) return;
-
-    const { data, error } = await fetchNewsFeeds(courseId);
-
-    if (error) {
-      snackbar.error('Failed to fetch news feeds');
-      return;
+    try {
+      $Feeds.isLoading = true;
+      const { data, error } = await fetchNewsFeeds(courseId);
+      if (error) {
+        snackbar.error('Failed to fetch news feeds');
+      }
+      if (data) {
+        $Feeds.newsFeed = data.map((feedItem) => ({
+          ...feedItem,
+          isPinned: feedItem.is_pinned
+        }));
+      }
+    } catch (error) {
+      snackbar.error('An error occured while fetching feed');
+    } finally {
+      $Feeds.isLoading = false;
     }
-
-    if (!data) return;
-
-    newsFeed = data.map((feedItem) => ({
-      ...feedItem,
-      isPinned: feedItem.is_pinned
-    }));
   };
 
   function setAuthor(groups, profileId) {
@@ -214,7 +218,7 @@
 
   $: setAuthor($group, $profile.id);
 
-  $: newsFeed = newsFeed.sort((a, b) => Number(b.isPinned) - Number(a.isPinned));
+  $: $Feeds.newsFeed = $Feeds.newsFeed.sort((a, b) => Number(b.isPinned) - Number(a.isPinned));
 </script>
 
 <CourseContainer bind:courseId={data.courseId}>
@@ -234,13 +238,18 @@
         bind:edit
         bind:editFeed
         onSave={(newFeed) => {
-          newsFeed = [newFeed, ...newsFeed];
+          $Feeds.newsFeed = [newFeed, ...$Feeds.newsFeed];
         }}
         {onEdit}
       />
     </RoleBasedSecurity>
-
-    {#if !newsFeed.length}
+    {#if $Feeds.isLoading}
+      <div>
+        <NewsFeedLoader />
+        <NewsFeedLoader />
+        <NewsFeedLoader />
+      </div>
+    {:else if !$Feeds.newsFeed.length}
       <Box>
         <div class="flex justify-between flex-col items-center w-[90%] md:w-96">
           <img src="/images/empty-lesson-icon.svg" alt="Lesson" class="my-2.5 mx-auto" />
@@ -251,7 +260,7 @@
         </div>
       </Box>
     {:else}
-      {#each newsFeed as feed}
+      {#each $Feeds.newsFeed as feed}
         {#if feed.isPinned}
           <div class="flex items-center gap-2 mb-3">
             <PinFilled size={16} />
