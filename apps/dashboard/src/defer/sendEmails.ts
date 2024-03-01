@@ -14,37 +14,33 @@ const sendEmails = async (
     replyTo?: string;
   }[]
 ) => {
-  await Promise.all(
-    emailParams.map(async (emailParam) => {
-      const { from, to, subject, content, isPersonalEmail, replyTo } = emailParam;
-      console.log('Sending email to:', to);
-      console.log('content:', content);
+  for (const emailParam of emailParams) {
+    const { from, to, subject, content, isPersonalEmail, replyTo } = emailParam;
 
-      try {
-        const transporter = await getTransporter(isPersonalEmail);
+    try {
+      const transporter = await getTransporter(isPersonalEmail);
 
-        if (!transporter) {
-          return;
-        }
-
-        const info = await transporter.sendMail({
-          from: from || '"Best from ClassroomIO" <best@classroomio.com>', // sender address
-          to, // list of receivers
-          subject, // Subject line
-          replyTo,
-          html: withEmailTemplate(content) // html body
-        });
-
-        console.log('Message sent: %s', info.messageId);
-
-        return info;
-      } catch (error) {
-        console.error({ error });
-
-        return error;
+      if (!transporter) {
+        return;
       }
-    })
-  );
+
+      const info = await transporter.sendMail({
+        from: from || '"Best from ClassroomIO" <best@classroomio.com>', // sender address
+        to, // list of receivers
+        subject, // Subject line
+        replyTo,
+        html: withEmailTemplate(content) // html body
+      });
+
+      console.log('Message sent: %s', info.messageId);
+
+      return info;
+    } catch (error) {
+      console.error({ error });
+
+      return error;
+    }
+  }
 };
 
 export default defer(sendEmails);

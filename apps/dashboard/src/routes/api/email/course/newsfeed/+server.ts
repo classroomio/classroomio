@@ -2,7 +2,7 @@ import { json } from '@sveltejs/kit';
 import { getSupabase } from '$lib/utils/functions/supabase';
 import { getFeedForNotification } from '$lib/utils/services/newsfeed/index';
 import sendEmail from '$defer/sendEmail';
-// import sendEmails from '$defer/sendEmails';
+import sendEmails from '$defer/sendEmails';
 
 const supabase = getSupabase();
 
@@ -39,49 +39,24 @@ const sendEmailNotification = async (feedId: string, authorId: string, comment?:
   }
 
   // else send to everyone except the author of the post
-  // const emails = feed.courseMembers.map((member) => ({
-  //   from: `"${feed.org.name} - ClassroomIO" <notify@classroomio.com>`,
-  //   to: member.email,
-  //   replyTo: feed.teacherEmail,
-  //   subject: `[${feed.courseTitle}] - New post in course`,
-  //   content: `
-  //   <p>${feed.teacherName} made a post in a course you are taking: ${feed.courseTitle}.</p>
+  const emails = feed.courseMembers.map((member) => ({
+    from: `"${feed.org.name} - ClassroomIO" <notify@classroomio.com>`,
+    to: member.email,
+    replyTo: feed.teacherEmail,
+    subject: `[${feed.courseTitle}] - New post in course`,
+    content: `
+    <p>${feed.teacherName} made a post in a course you are taking: ${feed.courseTitle}.</p>
 
-  //   <div style="font-style: italic; margin-top: 10px;">${feed.content}</div>
-  //   <div>
-  //     <a class="button" href="${postLink}">View post</a>
-  //   </div>
-  //   `
-  // }));
+    <div style="font-style: italic; margin-top: 10px;">${feed.content}</div>
+    <div>
+      <a class="button" href="${postLink}">View post</a>
+    </div>
+    `
+  }));
   console.log('Sending emails to all students', feed.courseMembers.length);
 
   // This is the defer function with a loop
-  // await sendEmails(emails);
-
-  // try sendEmail without Loop
-
-  const resolvedAll = await Promise.all(
-    feed.courseMembers.map((member, i) => {
-      console.log('Loop index:', i);
-
-      return sendEmail({
-        from: `"${feed.org.name} - ClassroomIO" <notify@classroomio.com>`,
-        to: member.email,
-        replyTo: feed.teacherEmail,
-        subject: `[${feed.courseTitle}] - New post in course`,
-        content: `
-      <p>${feed.teacherName} made a post in a course you are taking: ${feed.courseTitle}.</p>
-      
-      <div style="font-style: italic; margin-top: 10px;">${feed.content}</div>
-      <div>
-        <a class="button" href="${postLink}">View post</a>
-      </div>
-      `
-      });
-    })
-  );
-
-  console.log('Done with sending all', resolvedAll);
+  await sendEmails(emails);
 };
 
 export async function POST({ request }) {
