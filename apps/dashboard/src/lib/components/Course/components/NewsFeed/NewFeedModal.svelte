@@ -67,12 +67,7 @@
       id: createdFeed.id,
       content: newPost,
       author: {
-        profile: {
-          id: author.id,
-          username: author.username,
-          fullname: author.fullname,
-          avatar_url: author.avatar
-        }
+        profile: { ...author }
       },
       created_at: createdFeed.created_at,
       comment: [],

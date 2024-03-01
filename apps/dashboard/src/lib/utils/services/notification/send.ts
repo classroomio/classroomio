@@ -1,5 +1,4 @@
 import nodemailer from 'nodemailer';
-import { withEmailTemplate } from './template';
 import {
   SMTP_HOST,
   SMTP_USER,
@@ -10,8 +9,19 @@ import {
 
 let transporter: nodemailer.Transporter;
 
-const getTransporter = async (isPersonal?: boolean): Promise<boolean> => {
+export const getTransporter = async (
+  isPersonal?: boolean
+): Promise<nodemailer.Transporter | null> => {
   return await new Promise((resolve, reject) => {
+    // If email sending isn't configured
+    if (!SMTP_HOST) {
+      resolve(null);
+    }
+
+    if (transporter) {
+      return resolve(transporter);
+    }
+
     transporter = nodemailer.createTransport({
       host: SMTP_HOST,
       port: 465,
@@ -22,49 +32,14 @@ const getTransporter = async (isPersonal?: boolean): Promise<boolean> => {
       }
     });
 
-    transporter.verify(function (error, success) {
+    transporter.verify(function (error) {
       if (error) {
         console.log('Transporter error', error);
-        reject(error);
+        reject(null);
       } else {
         console.log('Server is ready to take our messages');
-        resolve(success);
+        resolve(transporter);
       }
     });
   });
-};
-
-export const sendEmail = async ({
-  from,
-  to,
-  subject,
-  content,
-  isPersonalEmail,
-  replyTo
-}: {
-  from?: string;
-  to: string;
-  subject: string;
-  content: string;
-  isPersonalEmail?: boolean;
-  replyTo?: string;
-}) => {
-  try {
-    await getTransporter(isPersonalEmail);
-    const info = await transporter.sendMail({
-      from: from || '"Best from ClassroomIO" <best@classroomio.com>', // sender address
-      to, // list of receivers
-      subject, // Subject line
-      replyTo,
-      html: withEmailTemplate(content) // html body
-    });
-
-    console.log('Message sent: %s', info.messageId);
-
-    return info;
-  } catch (error) {
-    console.error({ error });
-
-    return error;
-  }
 };
