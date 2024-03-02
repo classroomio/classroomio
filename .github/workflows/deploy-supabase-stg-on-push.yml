@@ -22,5 +22,5 @@ jobs:
         with:
           version: latest
 
-      - run: supabase link --project-ref $PROJECT_ID
+      - run: SUPABASE_DB_PASSWORD=$SUPABASE_DB_PASSWORD supabase link --project-ref $PROJECT_ID
       - run: supabase db push --include-all
