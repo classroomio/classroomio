@@ -1,4 +1,4 @@
-name: Deploy Supabase on Push
+name: Deploy Supabase Staging on Push
 
 on:
   push:
@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      SUPABASE_ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN_STG }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
       SUPABASE_DB_PASSWORD: ${{ secrets.DB_PASSWORD_STG }}
       PROJECT_ID: uwzgscaxncunqjcsuaib
 
