@@ -1,0 +1,49 @@
+{
+  "FREE": {
+    "PRICE": {
+      "MONTHLY": "0",
+      "YEARLY": "0",
+      "IS_PREMIUM": false
+    },
+    "FEATURES": [
+      "Unlimited Courses",
+      "Unlimited Conversations",
+      "50 Students",
+      "AI Course Builder (no video upload)",
+      "Course Landing Page",
+      "Live chat & Live polls",
+      "20 AI Prompts"
+    ]
+  },
+  "PRO": {
+    "PRICE": {
+      "MONTHLY": "30",
+      "YEARLY": "25",
+      "IS_PREMIUM": false
+    },
+    "FEATURES": [
+      "Everything in Free",
+      "3000 Students",
+      "Advanced AI Course Builder (video upload)",
+      "Lesson/Course PDF Download",
+      "Certificates",
+      "2000 AI Prompts",
+      "Remove ClassroomIO Branding",
+      "Email Support"
+    ]
+  },
+  "TEAM": {
+    "PRICE": {
+      "MONTHLY": "99",
+      "YEARLY": "85",
+      "IS_PREMIUM": true
+    },
+    "FEATURES": [
+      "Everything in Pro",
+      "Unlimited students",
+      "Unlimited AI Prompts",
+      "Custom Domain",
+      "24/7 Support"
+    ]
+  }
+}

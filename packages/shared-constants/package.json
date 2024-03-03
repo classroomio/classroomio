@@ -1,0 +1,7 @@
+{
+  "name": "shared-constants",
+  "version": "1.0.0",
+  "dependencies": {
+    "tsconfig": "workspace:*"
+  }
+}

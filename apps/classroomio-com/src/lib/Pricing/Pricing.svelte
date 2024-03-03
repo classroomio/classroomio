@@ -1,10 +1,11 @@
 <script>
   import Checkmark from 'carbon-icons-svelte/lib/Checkmark.svelte';
+  import PLANS from 'shared-constants/src/plans.json';
 
-  let prices = false;
+  let isYearlyPlan = false;
 
-  function handlePriceChange() {
-    prices = !prices;
+  function toggleIsYearlyPlan() {
+    isYearlyPlan = !isYearlyPlan;
   }
 
   const freeFeatures = [
@@ -37,63 +38,65 @@
 </script>
 
 <section id="pricing" class="py-[12%]">
-  <div class="px-[6%] flex flex-col justify-center items-center">
-    <div class="text-center mb-[3%]">
-      <h1 id="pricing" class="text-blue-700 text-md font-semibold tracking-wide">Pricing</h1>
-      <h2 class="my-5 lg:my-4 font-semibold tracking-tight text-gray-900 text-3xl lg:text-4xl">
+  <div class="flex flex-col items-center justify-center px-[6%]">
+    <div class="mb-[3%] text-center">
+      <h1 id="pricing" class="text-md font-semibold tracking-wide text-blue-700">Pricing</h1>
+      <h2 class="my-5 text-3xl font-semibold tracking-tight text-gray-900 lg:my-4 lg:text-4xl">
         For teams and individuals
       </h2>
-      <p class="mt-4 text-lg text-gray-500 tracking-normal lg:tracking-wide">
+      <p class="mt-4 text-lg tracking-normal text-gray-500 lg:tracking-wide">
         Customizable LMS, AI integration for productive educators and many more...
       </p>
     </div>
 
     <div
-      class="flex items-center border-[2px] rounded-[30px] p-[2px] relative lg:scale-100 mt-10 lg:mt-0"
+      class="relative mt-10 flex items-center rounded-[30px] border-[2px] p-[2px] lg:mt-0 lg:scale-100"
     >
       <button
-        style="background-color: {prices ? 'initial' : '#1D4EE2'}; color: {prices
+        style="background-color: {isYearlyPlan ? 'initial' : '#1D4EE2'}; color: {isYearlyPlan
           ? '#5e636b'
           : '#fff'}"
-        class="bg-blue-700 text-white rounded-[30px] py-1 px-3 lg:py-2 lg:px-4 text-xs"
-        on:click={handlePriceChange}>Monthly</button
+        class="rounded-[30px] bg-blue-700 px-3 py-1 text-xs text-white lg:px-4 lg:py-2"
+        on:click={toggleIsYearlyPlan}>Monthly</button
       >
       <button
-        style="background-color: {prices ? '#1D4EE2' : ''}; color: {prices ? '#fff' : '#5e636b'}"
-        class="text-white rounded-[30px] py-1 lg:py-2 px-3 lg:px-4 text-xs"
-        on:click={handlePriceChange}>Annually</button
+        style="background-color: {isYearlyPlan ? '#1D4EE2' : ''}; color: {isYearlyPlan
+          ? '#fff'
+          : '#5e636b'}"
+        class="rounded-[30px] px-3 py-1 text-xs text-white lg:px-4 lg:py-2"
+        on:click={toggleIsYearlyPlan}>Annually</button
       >
       <div
-        class="absolute top-[-85%] right-[-40%] lg:top-[-75%] lg:right-[-43%] bg-[#006600] text-xs text-white px-3.5 py-1.5 rounded-full scale-[90%] lg:scale-100"
+        class="absolute right-[-40%] top-[-85%] scale-[90%] rounded-full bg-[#006600] px-3.5 py-1.5 text-xs text-white lg:right-[-43%] lg:top-[-75%] lg:scale-100"
       >
         Save 2 months
       </div>
     </div>
 
-    <div class="isolate mt-10 grid gap-10 grid-cols-1 lg:grid-cols-3">
+    <div class="isolate mt-10 grid grid-cols-1 gap-10 lg:grid-cols-3">
       <!-- card 1 -->
-      <div class="ring-gray-200 rounded-3xl p-8 ring-1 xl:p-9 max-w-xl lg:max-w-sm">
-        <p class="text-gray-900 text-lg lg:text-xl font-semibold leading-8">Hobby</p>
-        <p class="text-gray-500 font-light mt-4 text-sm lg:text-md leading-6 lg:leading-6">
+      <div class="max-w-xl rounded-3xl p-8 ring-1 ring-gray-200 lg:max-w-sm xl:p-9">
+        <p class="text-lg font-semibold leading-8 text-gray-900 lg:text-xl">Hobby</p>
+        <p class="lg:text-md mt-4 text-sm font-light leading-6 text-gray-500 lg:leading-6">
           For personal use. Hobby plan is free for up to 5 courses forever, no credit card required.
         </p>
-        <p class="mt-6 flex items-baseline gap-x-1 text-4xl lg:text-4xl font-medium">
-          $0 <sub class="text-base">/mo</sub>
+        <p class="mt-6 flex items-baseline gap-x-1 text-4xl font-medium lg:text-4xl">
+          ${PLANS.FREE.PRICE.MONTHLY} <sub class="text-base">/mo</sub>
         </p>
         <button
-          class="font-medium lg:font-semibold text-md lg:text-lg text-white py-3 lg:py-3 w-full bg-slate-900 hover:bg-slate-700 rounded-md lg:rounded-md mt-10"
+          class="text-md mt-10 w-full rounded-md bg-slate-900 py-3 font-medium text-white hover:bg-slate-700 lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
           data-cal-config={"{'layout':'month_view'}"}
           data-cal-link="classroomio/demo"
         >
           Get started
         </button>
-        <ul class="text-gray-600 mt-8 space-y-2 lg:space-y-5 text-sm xl:mt-10">
-          {#each freeFeatures as freeFeature}
+        <ul class="mt-8 space-y-2 text-sm text-gray-600 lg:space-y-5 xl:mt-10">
+          {#each PLANS.FREE.FEATURES as freeFeature}
             <li class="flex items-center">
               <Checkmark
                 size={24}
                 fill="#1D4EE2"
-                class="mr-2 lg:mr-3 scale-[70%] lg:scale-[100%]"
+                class="mr-2 scale-[70%] lg:mr-3 lg:scale-[100%]"
               />
               {freeFeature}
             </li>
@@ -102,25 +105,26 @@
       </div>
 
       <!-- card 2 -->
-      <div class="bg-gray-900 rounded-3xl p-8 xl:p-9 max-w-xl lg:max-w-lg">
-        <p class="text-white text-lg lg:text-xl font-semibold leading-8">Pro</p>
-        <p class="text-white font-light mt-4 text-sm lg:text-md leading-6 lg:leading-6">
+      <div class="max-w-xl rounded-3xl bg-gray-900 p-8 lg:max-w-lg xl:p-9">
+        <p class="text-lg font-semibold leading-8 text-white lg:text-xl">Pro</p>
+        <p class="lg:text-md mt-4 text-sm font-light leading-6 text-white lg:leading-6">
           Advanced features for small teaching businesses. Built for scale.
         </p>
-        <p class="mt-6 text-white flex items-baseline gap-x-1 text-4xl lg:text-4xl font-medium">
-          ${prices ? '12' : '15'} <sub class="text-base">/member</sub>
+        <p class="mt-6 flex items-baseline gap-x-1 text-4xl font-medium text-white lg:text-4xl">
+          ${isYearlyPlan ? PLANS.PRO.PRICE.YEARLY : PLANS.PRO.PRICE.MONTHLY}
+          <sub class="text-base">/member</sub>
         </p>
         <button
-          class="font-medium lg:font-semibold text-md lg:text-lg text-slate-900 py-3 lg:py-3 w-full bg-white hover:bg-indigo-50 rounded-md lg:rounded-md mt-10"
+          class="text-md mt-10 w-full rounded-md bg-white py-3 font-medium text-slate-900 hover:bg-indigo-50 lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
           data-cal-config={"{'layout':'month_view'}"}
           data-cal-link="classroomio/demo"
         >
           Get Started
         </button>
-        <ul class="text-white mt-8 space-y-3 font-light lg:space-y-5 text-sm xl:mt-10">
-          {#each proFeatures as proFeature}
+        <ul class="mt-8 space-y-3 text-sm font-light text-white lg:space-y-5 xl:mt-10">
+          {#each PLANS.PRO.FEATURES as proFeature}
             <li class="flex items-center">
-              <Checkmark size={24} fill="#fff" class="mr-2 lg:mr-3 scale-[70%] lg:scale-[100%]" />
+              <Checkmark size={24} fill="#fff" class="mr-2 scale-[70%] lg:mr-3 lg:scale-[100%]" />
               {proFeature}
             </li>
           {/each}
@@ -128,29 +132,30 @@
       </div>
 
       <!-- card 3 -->
-      <div class="ring-gray-200 rounded-3xl p-8 ring-1 xl:p-9 max-w-xl lg:max-w-sm">
-        <p class="text-gray-900 text-lg lg:text-xl font-semibold leading-8">Team</p>
-        <p class="text-gray-500 font-light mt-4 text-sm lg:text-md leading-6 lg:leading-6">
+      <div class="max-w-xl rounded-3xl p-8 ring-1 ring-gray-200 lg:max-w-sm xl:p-9">
+        <p class="text-lg font-semibold leading-8 text-gray-900 lg:text-xl">Team</p>
+        <p class="lg:text-md mt-4 text-sm font-light leading-6 text-gray-500 lg:leading-6">
           Best suited for teams and larger businesses that need more control.
         </p>
-        <p class="mt-6 lg:mt-6 flex items-baseline gap-x-1 text-4xl lg:text-4xl font-medium">
-          ${prices ? '42' : '50'} <sub class="text-base">/member</sub>
+        <p class="mt-6 flex items-baseline gap-x-1 text-4xl font-medium lg:mt-6 lg:text-4xl">
+          ${isYearlyPlan ? PLANS.TEAM.PRICE.YEARLY : PLANS.TEAM.PRICE.MONTHLY}
+          <sub class="text-base">/member</sub>
         </p>
         <button
-          class="font-medium lg:font-semibold text-md lg:text-lg text-white py-3 lg:py-3 w-full bg-slate-900 hover:bg-slate-700 rounded-md lg:rounded-md mt-10"
+          class="text-md mt-10 w-full rounded-md bg-slate-900 py-3 font-medium text-white hover:bg-slate-700 lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
           data-cal-config={"{'layout':'month_view'}"}
           data-cal-link="classroomio/demo"
         >
           Get started
         </button>
 
-        <ul class="text-gray-600 mt-8 space-y-2 lg:space-y-5 text-sm xl:mt-10">
-          {#each teamFeatures as teamFeature}
+        <ul class="mt-8 space-y-2 text-sm text-gray-600 lg:space-y-5 xl:mt-10">
+          {#each PLANS.TEAM.FEATURES as teamFeature}
             <li class="flex items-center">
               <Checkmark
                 size={24}
                 fill="#1D4EE2"
-                class="mr-2 lg:mr-3 scale-[70%] lg:scale-[100%]"
+                class="mr-2 scale-[70%] lg:mr-3 lg:scale-[100%]"
               />
               {teamFeature}
             </li>
