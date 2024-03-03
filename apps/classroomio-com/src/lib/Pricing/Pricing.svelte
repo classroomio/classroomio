@@ -7,34 +7,6 @@
   function toggleIsYearlyPlan() {
     isYearlyPlan = !isYearlyPlan;
   }
-
-  const freeFeatures = [
-    'Unlimited Courses',
-    'Unlimited Conversations',
-    '50 Students',
-    'AI Course Builder (no video upload)',
-    'Course Landing Page',
-    'Live chat & Live polls',
-    '20 AI Prompts'
-  ];
-
-  const proFeatures = [
-    'Everything in Free',
-    '1000 Students',
-    'Advanced AI Course Builder (video upload)',
-    'Lesson/Course PDF Download',
-    'Certificates',
-    '2000 AI Prompts',
-    'Remove ClassroomIO Branding',
-    'Email Support'
-  ];
-  const teamFeatures = [
-    'Everything in Pro',
-    'Unlimited students',
-    'Unlimited AI Prompts',
-    'White Labelling',
-    'Priority Support'
-  ];
 </script>
 
 <section id="pricing" class="py-[12%]">
