@@ -426,7 +426,11 @@ importers:
         specifier: ^5.1.6
         version: 5.3.2
 
-  packages/shared-constants: {}
+  packages/shared-constants:
+    dependencies:
+      tsconfig:
+        specifier: workspace:*
+        version: link:../tsconfig
 
   packages/svelte-ui:
     devDependencies:
