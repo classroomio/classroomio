@@ -1,6 +1,6 @@
 {
   "name": "backend",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Express Server for long processing",
   "main": "server.js",
   "scripts": {
@@ -12,8 +12,7 @@
     "type": "git",
     "url": "git+https://github.com/rotimi-best/classroomio.git"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Rotimi-Best <best@classroomio.com>",
   "bugs": {
     "url": "https://github.com/rotimi-best/classroomio/issues"
   },
