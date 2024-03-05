@@ -1,0 +1,43 @@
+{
+  "settings": {
+    "heading": "Paramètres",
+    "subheadings": {
+      "view_site": "Voir le site"
+    },
+    "tabs": {
+      "1": "Profil",
+      "2": "Organisation",
+      "3": "Page de destination",
+      "4": "Intégrations",
+      "5": "Langue"
+    },
+    "profile": {
+      "profile_picture": {
+        "heading": "Image de profil",
+        "upload_image": "Télécharger une image"
+      },
+      "personal_information": {
+        "heading": "Informations personnelles",
+        "full_name": "Nom et prénom",
+        "username": "Nom d'utilisateur",
+        "email": "E-mail"
+      },
+      "update_profile": "Mettre à jour le profil",
+      "logout": "Se déconnecter"
+    }
+  },
+  "content": {
+    "heading": "Internationalisation dans SvelteKit",
+    "toggle_label": "Sélectionnez la langue préférée",
+    "button_labels": {
+      "0": "{{value:number}}",
+      "1": "{{value:number}}",
+      "2": "{{value:number}}"
+    },
+    "body_text": "Ceci est un petit exemple pour démontrer la fonctionnalité d'i18n dans SvelteKit en utilisant la bibliothèque sveltekit-i18n. sveltekit-i18n est une petite bibliothèque sans dépendances externes, conçue pour Svelte et SvelteKit. Elle assemble @sveltekit-i18n/base et @sveltekit-i18n/parser-default pour vous fournir la solution sveltekit-i18n la plus simple. Le nombre total de téléchargements npm par semaine à partir de {{dateValue:date}} est de {{download:number}}.",
+    "awards": "Vous avez {{award:gt; 0: {{award; 1:remporté exactement {{award}} prix; default:remporté {{award}} prix}}; default:aucun prix remporté}}!",
+    "date": "{{val:date}}",
+    "time": "Seul le format 'heure' n'est pas disponible, il doit s'agir d'un formateur DateTime",
+    "number": "{{value:currency}}"
+  }
+}

@@ -249,6 +249,9 @@ importers:
       svelte-ui:
         specifier: workspace:*
         version: link:../../packages/svelte-ui
+      sveltekit-i18n:
+        specifier: ^2.4.2
+        version: 2.4.2(svelte@4.1.2)
       unsplash-js:
         specifier: ^7.0.18
         version: 7.0.18
@@ -5497,6 +5500,18 @@ packages:
       vitefu: 0.2.5(vite@4.4.8)
     transitivePeerDependencies:
       - supports-color
+
+  /@sveltekit-i18n/base@1.3.7(svelte@4.1.2):
+    resolution: {integrity: sha512-kg1kql1/ro/lIudwFiWrv949Q07gmweln87tflUZR51MNdXXzK4fiJQv5Mw50K/CdQ5BOk/dJ0WOH2vOtBI6yw==}
+    peerDependencies:
+      svelte: '>=3.49.0'
+    dependencies:
+      svelte: 4.1.2
+    dev: false
+
+  /@sveltekit-i18n/parser-default@1.1.1:
+    resolution: {integrity: sha512-/gtzLlqm/sox7EoPKD56BxGZktK/syGc79EbJAPWY5KVitQD9SM0TP8yJCqDxTVPk7Lk0WJhrBGUE2Nn0f5M1w==}
+    dev: false
 
   /@swc/helpers@0.4.14:
     resolution: {integrity: sha512-4C7nX/dvpzB7za4Ql9K81xK3HPxCpHMgwTZVyf+9JQ6VUbn9jjZVN7/Nkdz/Ugzs2CSjqnL/UPXroiVBVHUWUw==}
@@ -14974,6 +14989,16 @@ packages:
       locate-character: 3.0.0
       magic-string: 0.30.5
       periscopic: 3.1.0
+
+  /sveltekit-i18n@2.4.2(svelte@4.1.2):
+    resolution: {integrity: sha512-hjRWn4V4DBL8JQKJoJa3MRvn6d32Zo+rWkoSP5bsQ/XIAguPdQUZJ8LMe6Nc1rST8WEVdu9+vZI3aFdKYGR3+Q==}
+    peerDependencies:
+      svelte: '>=3.49.0'
+    dependencies:
+      '@sveltekit-i18n/base': 1.3.7(svelte@4.1.2)
+      '@sveltekit-i18n/parser-default': 1.1.1
+      svelte: 4.1.2
+    dev: false
 
   /swr-store@0.10.6:
     resolution: {integrity: sha512-xPjB1hARSiRaNNlUQvWSVrG5SirCjk2TmaUyzzvk69SZQan9hCJqw/5rG9iL7xElHU784GxRPISClq4488/XVw==}

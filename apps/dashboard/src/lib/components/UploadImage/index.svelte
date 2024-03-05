@@ -1,5 +1,6 @@
 <script lang="ts">
   import Camera from 'carbon-icons-svelte/lib/Camera.svelte';
+  import { t } from '$lib/utils/functions/translations';
 
   export let avatar: string | undefined;
   export let src: string | undefined;
@@ -45,7 +46,8 @@
       fileinput.click();
     }}
   >
-    <Camera size={20} /> <span class="ml-2">Upload Image</span>
+    <Camera size={20} />
+    <span class="ml-2">{$t('settings.profile.profile_picture.upload_image')}</span>
   </button>
   {#if errorMessage}
     <p class="text-sm text-red-500">{errorMessage}</p>

@@ -9,6 +9,7 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import LogoutButton from '$lib/components/Buttons/Logout/index.svelte';
   import generateUUID from '$lib/utils/functions/generateUUID';
+  import { t } from '$lib/utils/functions/translations';
 
   let avatar = '';
   let loading = false;
@@ -64,7 +65,7 @@
 <Grid class="border-c rounded border-gray-200 w-full mt-5">
   <Row class="flex flex-col lg:flex-row items-center lg:items-start py-7 border-bottom-c ">
     <Column sm={4} md={8} lg={4} class="mt-2 md:mt-0">
-      <SectionTitle>Profile Picture</SectionTitle>
+      <SectionTitle>{$t('settings.profile.profile_picture.heading')}</SectionTitle>
     </Column>
     <Column sm={2} md={4} lg={8} class="mt-2 lg:mt-0">
       <UploadImage bind:avatar src={$profile.avatar_url} widthHeight="w-16 h-16 lg:w-24 lg:h-24" />
@@ -72,17 +73,29 @@
   </Row>
   <Row class="flex flex-col lg:flex-row py-7 border-bottom-c">
     <Column sm={4} md={4} lg={4}>
-      <SectionTitle>Personal Information</SectionTitle>
+      <SectionTitle>{$t('settings.profile.personal_information.heading')}</SectionTitle>
     </Column>
     <Column sm={8} md={8} lg={8} class="mt-2 lg:mt-0">
-      <TextField label="Full Name" bind:value={$profile.fullname} className="w-full lg:w-60 mb-4" />
-      <TextField label="Username" bind:value={$profile.username} className="w-full lg:w-60 mb-4" />
-      <TextField label="Email" bind:value={$profile.email} className="w-full lg:w-60 mb-4" />
+      <TextField
+        label={$t('settings.profile.personal_information.full_name')}
+        bind:value={$profile.fullname}
+        className="w-full lg:w-60 mb-4"
+      />
+      <TextField
+        label={$t('settings.profile.personal_information.username')}
+        bind:value={$profile.username}
+        className="w-full lg:w-60 mb-4"
+      />
+      <TextField
+        label={$t('settings.profile.personal_information.email')}
+        bind:value={$profile.email}
+        className="w-full lg:w-60 mb-4"
+      />
     </Column>
   </Row>
   <Row class="m-5 w-full flex items-center gap-2 lg:justify-center">
     <PrimaryButton
-      label="Update Profile"
+      label={$t('settings.profile.update_profile')}
       className="mr-5"
       isLoading={loading}
       isDisabled={loading}

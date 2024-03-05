@@ -1,0 +1,44 @@
+{
+  "settings": {
+    "heading": "Settings",
+    "subheadings": {
+      "view_site": "View site"
+    },
+    "tabs": {
+      "1": "Profile",
+      "2": "Organization",
+      "3": "Landing Page",
+      "4": "Integrations",
+      "5": "Language"
+    },
+    "profile": {
+      "profile_picture": {
+        "heading": "Profile Picture",
+        "upload_image": "Upload Image"
+      },
+      "personal_information": {
+        "heading": "Personal Information",
+        "full_name": "Full Name",
+        "username": "Username",
+        "email": "Email"
+      },
+      "update_profile": "Update Profile",
+      "logout": "Log out"
+    }
+  },
+
+  "content": {
+    "heading": "Internationalization in SvelteKit",
+    "toggle_label": "Select Preferred Language",
+    "button_labels": {
+      "0": "{{value:number}}",
+      "1": "{{value:number}}",
+      "2": "{{value:number}}"
+    },
+    "body_text": "This is a small example to demonstrate i18n functionality in SvelteKit using sveltekit-i18n library. sveltekit-i18n is a tiny library with no external dependencies, built for Svelte and SvelteKit. It glues @sveltekit-i18n/base and @sveltekit-i18n/parser-default together to provide you the most straightforward sveltekit-i18n solution. Total number of npm downloads per week as of {{dateValue:date}} are {{download:number}}.",
+    "awards": "You have {{award:gt; 0: {{award; 1:won exactly {{award}} award; default:won {{award}} awards}}; default:not won any awards}}!",
+    "date": "{{val:date}}",
+    "time": "Only 'time' formatter is not available, it must be DateTime formatter",
+    "number": "{{value:currency}}"
+  }
+}

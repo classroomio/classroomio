@@ -10,6 +10,8 @@
   import { goto } from '$app/navigation';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import Integrations from './Integrations.svelte';
+  import Languages from './Languages.svelte';
+  import { t } from '$lib/utils/functions/translations';
 
   let selected = 0;
   let query = new URLSearchParams($page.url.search);
@@ -43,30 +45,37 @@
     tabs = [
       {
         key: 0,
-        label: 'Profile',
+        label: $t('settings.tabs.1'),
         tabKey: '',
         href: $page.url.pathname,
         disabled: false
       },
       {
         key: 1,
-        label: 'Organization',
+        label: $t('settings.tabs.2'),
         tabKey: 'org',
         href: `${$page.url.pathname}?tab=org`,
         disabled: !$isOrgAdmin
       },
       {
         key: 2,
-        label: 'LandingPage',
+        label: $t('settings.tabs.3'),
         tabKey: 'landingpage',
         href: `${$page.url.pathname}?tab=landingpage`,
         disabled: !$isOrgAdmin
       },
       {
         key: 3,
-        label: 'Integrations',
+        label: $t('settings.tabs.4'),
         tabKey: 'integrations',
         href: `${$page.url.pathname}?tab=integrations`,
+        disabled: false
+      },
+      {
+        key: 4,
+        label: $t('settings.tabs.5'),
+        tabKey: 'languages',
+        href: `${$page.url.pathname}?tab=languages`,
         disabled: false
       }
     ];
@@ -93,6 +102,9 @@
     </TabContent>
     <TabContent class="w-full p-0">
       <Integrations />
+    </TabContent>
+    <TabContent class="w-full p-0">
+      <Languages />
     </TabContent>
   </svelte:fragment>
 </Tabs>

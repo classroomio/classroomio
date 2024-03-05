@@ -1,0 +1,44 @@
+{
+  "settings": {
+    "heading": "समायोजन",
+    "subheadings": {
+      "view_site": "साइट देखें"
+    },
+    "tabs": {
+      "1": "प्रोफ़ाइल",
+      "2": "संगठन",
+      "3": "लैंडिंग पृष्ठ",
+      "4": "एकीकरण",
+      "5": "भाषा"
+    },
+    "profile": {
+      "profile_picture": {
+        "heading": "प्रोफ़ाइल फोटो",
+        "upload_image": "तस्विर अपलोड करना"
+      },
+      "personal_information": {
+        "heading": "व्यक्तिगत जानकारी",
+        "full_name": "पूरा नाम",
+        "username": "उपयोगकर्ता नाम",
+        "email": "ईमेल"
+      },
+      "update_profile": "प्रोफ़ाइल अपडेट करें",
+      "logout": "लॉग आउट"
+    }
+  },
+
+  "content": {
+    "heading": "SvelteKit में अंतर्राष्ट्रीयकरण",
+    "toggle_label": "पसंदीदा भाषा चुनें",
+    "button_labels": {
+      "0": "{{value:number}}",
+      "1": "{{value:number}}",
+      "2": "{{value:number}}"
+    },
+    "body_text": "यह sveltekit-i18n लाइब्रेरी का उपयोग करके SvelteKit में i18n कार्यक्षमता प्रदर्शित करने के लिए एक छोटा सा उदाहरण है। sveltekit-i18n एक छोटी लाइब्रेरी है जिसमें कोई बाहरी निर्भरता नहीं है, जो Svelte और SvelteKit के लिए बनाई गई है। यह आपको सबसे सीधा sveltekit-i18n समाधान प्रदान करने के लिए @sveltekit-i18n/base और @sveltekit-i18n/parser-default को एक साथ जोड़ता है। {{dateValue:date}} तक प्रति सप्ताह npm डाउनलोड की कुल संख्या {{download:number}} है।",
+    "awards": "आपने {{award:gt; 0: {{award; 1:बिल्कुल {{award}} पुरस्कार जीता; default:{{award}} पुरस्कार जीते }}; default:कोई पुरस्कार नहीं जीता }} है।",
+    "date": "{{val:date}}",
+    "time": "केवल 'समय' फ़ॉर्मेटर उपलब्ध नहीं है, यह डेटटाइम फ़ॉर्मेटर होना चाहिए",
+    "number": "{{value:currency}}"
+  }
+}

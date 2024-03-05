@@ -52,6 +52,7 @@
     "sirv": "^2.0.3",
     "svelte-email": "^0.0.4",
     "svelte-ui": "workspace:*",
+    "sveltekit-i18n": "^2.4.2",
     "unsplash-js": "^7.0.18",
     "wait-on": "^7.0.1",
     "zod": "^3.21.4"

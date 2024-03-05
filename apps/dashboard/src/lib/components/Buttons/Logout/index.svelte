@@ -7,6 +7,7 @@
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { currentOrg, orgs, defaultCurrentOrgState } from '$lib/utils/store/org';
   import { user, profile, defaultProfileState, defaultUserState } from '$lib/utils/store/user';
+  import { t } from '$lib/utils/functions/translations';
 
   async function logout() {
     const { error } = await supabase.auth.signOut();
@@ -23,4 +24,4 @@
   }
 </script>
 
-<PrimaryButton variant={VARIANTS.OUTLINED} label="Log out" onClick={logout} />
+<PrimaryButton variant={VARIANTS.OUTLINED} label={$t('settings.profile.logout')} onClick={logout} />
