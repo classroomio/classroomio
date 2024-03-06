@@ -24,7 +24,132 @@
       },
       "update_profile": "प्रोफ़ाइल अपडेट करें",
       "logout": "लॉग आउट"
+    },
+    "organization": {
+      "organization_profile": {
+        "heading": "संगठन प्रोफ़ाइल",
+        "organization_name": "संगठन का नाम",
+        "upload_image": "तस्विर अपलोड करना",
+        "update_organization": "संगठन अद्यतन करें",
+        "theme": {
+          "heading": "विषय",
+          "sub_heading": "अपना ब्रांड रंग सेट करें"
+        },
+        "custom_domain": {
+          "heading": "कस्टम डोमेन",
+          "sub_heading": "अपने डोमेन को अनुकूलित करें",
+          "body": "एक कस्टम यूआरएल बनाएं ताकि आपके दर्शक आपके संगठन तक आसानी से पहुंच सकें",
+          "button": "डोमेन संपादित करें"
+        },
+        "team": {
+          "heading": "टीम",
+          "sub_heading": "अपनी वेबसाइट सेट करें",
+          "body": "अपने संगठन में टीम के साथियों को जोड़ें ताकि आप दोनों परियोजनाओं पर सहयोग कर सकें.",
+          "button": "टीम का प्रबंधन करें"
+        }
+      }
+    },
+    "landing_page": {
+      "heading": "लैंडिंग पृष्ठ",
+      "show_section": "अनुभाग दिखाएँ",
+      "hide_section": "अनुभाग छिपाएँ",
+      "title": "शीर्षक",
+      "title_highlight": "शीर्षक-हाइलाइट",
+      "subtitle": "उपशीर्षक",
+      "actions": {
+        "heading": "कार्रवाई",
+        "label": "लेबल",
+        "link": "जोड़ना",
+        "no_redirect": "कोई रीडायरेक्ट नहीं",
+        "redirect": "पुनर्निर्देशन",
+        "banner_type": {
+          "heading": "बैनर प्रकार",
+          "video": "वीडियो",
+          "image": "छवि"
+        },
+        "show_banner": "बैनर दिखाओ",
+        "hide_banner": "बैनर छिपाएँ"
+      },
+      "about": {
+        "heading": "के बारे में",
+        "title": "शीर्षक",
+        "content": "सामग्री",
+        "upload_an_image": "एक छवि अपलोड करें",
+        "select_image": "छवि चुने"
+      },
+      "courses": {
+        "heading": "पाठ्यक्रम",
+        "show_section": "अनुभाग दिखाएँ",
+        "hide_section": "अनुभाग छिपाएँ",
+        "title": "शीर्षक",
+        "title_highlight": "शीर्षक-हाइलाइट",
+        "subtitle": "उपशीर्षक"
+      },
+      "faq": {
+        "heading": "अक्सर पूछे जाने वाले प्रश्नों",
+        "show_section": "अनुभाग दिखाएँ",
+        "hide_section": "अनुभाग छिपाएँ",
+        "title": "शीर्षक",
+        "question": "सवाल",
+        "answer": "उत्तर",
+        "button": "नया Faq जोड़ें",
+        "save": "बचाना",
+        "cancel": "रद्द करना"
+      },
+      "contact_us": {
+        "heading": "संपर्क करें",
+        "show_section": "अनुभाग दिखाएँ",
+        "hide_section": "अनुभाग छिपाएँ",
+        "title": "शीर्षक",
+        "title_highlight": "शीर्षक-हाइलाइट",
+        "subtitle": "उपशीर्षक",
+        "phone_number": "फ़ोन नंबर",
+        "email": "ईमेल"
+      },
+      "mailing_list": {
+        "heading": "मेलिंग सूची",
+        "show_section": "अनुभाग दिखाएँ",
+        "hide_section": "अनुभाग छिपाएँ",
+        "title": "शीर्षक",
+        "subtitle": "उपशीर्षक",
+        "button_label": "बटन-लेबल"
+      },
+      "footer": {
+        "heading": "फ़ुटबाल",
+        "show_section": "अनुभाग दिखाएँ",
+        "hide_section": "अनुभाग छिपाएँ",
+        "facebook": "फेसबुक",
+        "twitter": "ट्विटर",
+        "linkedin": "LinkedIn"
+      },
+      "save_changes": "परिवर्तनों को सुरक्षित करें"
+    },
+    "integrations": {
+      "heading": "तार",
+      "sub_heading": "एप्लिकेशन में किसी भी बदलाव की सूचना पाने के लिए अपने खाते को टेलीग्राम से कनेक्ट करें।.",
+      "step_1": "चरण 1: ClassroomIO बॉट के माध्यम से अपने खाते को प्रमाणित करें।.",
+      "button_1": "बॉट खोलें",
+      "step_2": "चरण 2: बॉट द्वारा आपको दी गई चैट आईडी दर्ज करें।.",
+      "button_2": "जोड़ना",
+      "success_message": "एकीकरण सफल",
+      "disconnect": "डिस्कनेक्ट"
     }
+  },
+
+  "org_navigation": {
+    "dashboard": "डैशबोर्ड",
+    "courses": "पाठ्यक्रम",
+    "community": "समुदाय",
+    "audience": "श्रोता",
+    "help": "मदद",
+    "settings": "समायोजन"
+  },
+
+  "lms_navigation": {
+    "home": "घर",
+    "my_learning": "मेरी सीख",
+    "exercise": "व्यायाम",
+    "community": "समुदाय"
   },
 
   "content": {

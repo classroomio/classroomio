@@ -24,7 +24,132 @@
       },
       "update_profile": "Update Profile",
       "logout": "Log out"
+    },
+    "organization": {
+      "organization_profile": {
+        "heading": "Organization Profile",
+        "organization_name": "Organization Name",
+        "upload_image": "Upload Image",
+        "update_organization": "Update Organization",
+        "theme": {
+          "heading": "Theme",
+          "sub_heading": "Set your brand color"
+        },
+        "custom_domain": {
+          "heading": "Custom Domain",
+          "sub_heading": "Customise your Domain",
+          "body": "Create a custom URL so your audience can get to your organization easily",
+          "button": "Edit domain"
+        },
+        "team": {
+          "heading": "Team",
+          "sub_heading": "Set up your website",
+          "body": "Add team mates to your organization so you can both collaborate on projects.",
+          "button": "Manage Team"
+        }
+      }
+    },
+    "landing_page": {
+      "heading": "Landing Page",
+      "show_section": "Show Section",
+      "hide_section": "Hide Section",
+      "title": "Title",
+      "title_highlight": "Title-Highlight",
+      "subtitle": "Subtitle",
+      "actions": {
+        "heading": "Actions",
+        "label": "Label",
+        "link": "Link",
+        "no_redirect": "No redirect",
+        "redirect": "Redirect",
+        "banner_type": {
+          "heading": "Banner Type",
+          "video": "Video",
+          "image": "Image"
+        },
+        "show_banner": "Show banner",
+        "hide_banner": "Hide banner"
+      },
+      "about": {
+        "heading": "About",
+        "title": "Title",
+        "content": "Content",
+        "upload_an_image": "Upload an image",
+        "select_image": "Select Image"
+      },
+      "courses": {
+        "heading": "Courses",
+        "show_section": "Show Section",
+        "hide_section": "Hide Section",
+        "title": "Title",
+        "title_highlight": "Title-Highlight",
+        "subtitle": "Subtitle"
+      },
+      "faq": {
+        "heading": "Frequently Asked Questions",
+        "show_section": "Show Section",
+        "hide_section": "Hide Section",
+        "title": "Title",
+        "question": "Question",
+        "answer": "Answer",
+        "button": "Add New Faq",
+        "save": "Save",
+        "cancel": "Cancel"
+      },
+      "contact_us": {
+        "heading": "Contact us",
+        "show_section": "Show Section",
+        "hide_section": "Hide Section",
+        "title": "Title",
+        "title_highlight": "Title-Highlight",
+        "subtitle": "Subtitle",
+        "phone_number": "Phone Number",
+        "email": "Email"
+      },
+      "mailing_list": {
+        "heading": "Mailing List",
+        "show_section": "Show Section",
+        "hide_section": "Hide Section",
+        "title": "Title",
+        "subtitle": "Subtitle",
+        "button_label": "Button-label"
+      },
+      "footer": {
+        "heading": "Footer",
+        "show_section": "Show Section",
+        "hide_section": "Hide Section",
+        "facebook": "Facebook",
+        "twitter": "Twitter",
+        "linkedin": "LinkedIn"
+      },
+      "save_changes": "Save Changes"
+    },
+    "integrations": {
+      "heading": "Telegram",
+      "sub_heading": "Connect your account to telegram to get notified of any change within the application.",
+      "step_1": "Step 1: Authenticate your account via the ClassroomIO bot.",
+      "button_1": "Open Bot",
+      "step_2": "Step 2: Enter the Chat ID given to you by the bot.",
+      "button_2": "Connect",
+      "success_message": "Integration Successful",
+      "disconnect": "Disconnect"
     }
+  },
+
+  "org_navigation": {
+    "dashboard": "Dashboard",
+    "courses": "Courses",
+    "community": "Community",
+    "audience": "Audience",
+    "help": "Help",
+    "settings": "Settings"
+  },
+
+  "lms_navigation": {
+    "home": "Home",
+    "my_learning": "My Learning",
+    "exercise": "Exercise",
+    "community": "Community"
   },
 
   "content": {

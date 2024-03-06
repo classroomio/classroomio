@@ -24,8 +24,134 @@
       },
       "update_profile": "Mettre à jour le profil",
       "logout": "Se déconnecter"
+    },
+    "organization": {
+      "organization_profile": {
+        "heading": "Profil de l'organisation",
+        "organization_name": "nom de l'organisation",
+        "upload_image": "Télécharger une image",
+        "update_organization": "Mettre à jour l'organisation",
+        "theme": {
+          "heading": "Thème",
+          "sub_heading": "Définissez la couleur de votre marque"
+        },
+        "custom_domain": {
+          "heading": "Domaine personnalisé",
+          "sub_heading": "Personnalisez votre domaine",
+          "body": "Créez une URL personnalisée pour que votre public puisse accéder facilement à votre organisation",
+          "button": "Modifier le domaine"
+        },
+        "team": {
+          "heading": "Équipe",
+          "sub_heading": "Configurez votre site Web",
+          "body": "Ajoutez des coéquipiers à votre organisation afin que vous puissiez tous les deux collaborer sur des projets.",
+          "button": "Gérer l'équipe"
+        }
+      }
+    },
+    "landing_page": {
+      "heading": "Page de destination",
+      "show_section": "Afficher la section",
+      "hide_section": "Section cachée",
+      "title": "Titre",
+      "title_highlight": "Titre-Point culminant",
+      "subtitle": "Sous-titre",
+      "actions": {
+        "heading": "Actions",
+        "label": "Étiquette",
+        "link": "Lien",
+        "no_redirect": "Pas de redirection",
+        "redirect": "Réorienter",
+        "banner_type": {
+          "heading": "Type de bannière",
+          "video": "Vidéo",
+          "image": "Image"
+        },
+        "show_banner": "Afficher la bannière",
+        "hide_banner": "Masquer la bannière"
+      },
+      "about": {
+        "heading": "À propos",
+        "title": "Titre",
+        "content": "Contenu",
+        "upload_an_image": "Télécharger une image",
+        "select_image": "Sélectionnez une image"
+      },
+      "courses": {
+        "heading": "Cours",
+        "show_section": "Afficher la section",
+        "hide_section": "Section cachée",
+        "title": "Titre",
+        "title_highlight": "Titre-Point culminant",
+        "subtitle": "Sous-titre"
+      },
+      "faq": {
+        "heading": "Questions fréquemment posées",
+        "show_section": "Afficher la section",
+        "hide_section": "Section cachée",
+        "title": "Titre",
+        "question": "Question",
+        "answer": "Répondre",
+        "button": "Ajouter une nouvelle Faq",
+        "save": "Sauvegarder",
+        "cancel": "Annuler"
+      },
+      "contact_us": {
+        "heading": "Contactez-nous",
+        "show_section": "Afficher la section",
+        "hide_section": "Section cachée",
+        "title": "Titre",
+        "title_highlight": "Titre-Point culminant",
+        "subtitle": "Sous-titre",
+        "phone_number": "Numéro de téléphone",
+        "email": "Email"
+      },
+      "mailing_list": {
+        "heading": "Liste de diffusion",
+        "show_section": "Afficher la section",
+        "hide_section": "Section cachée",
+        "title": "Titre",
+        "subtitle": "Sous-titre",
+        "button_label": "Étiquette de bouton"
+      },
+      "footer": {
+        "heading": "Bas de page",
+        "show_section": "Afficher la section",
+        "hide_section": "Section cachée",
+        "facebook": "Facebook",
+        "twitter": "Twitter",
+        "linkedin": "LinkedIn"
+      },
+      "save_changes": "Sauvegarder les modifications"
+    },
+    "integrations": {
+      "heading": "Télégramme",
+      "sub_heading": "Connectez votre compte à Telegram pour être informé de tout changement dans l'application.",
+      "step_1": "Étape 1 : Authentifiez votre compte via le bot ClassroomIO.",
+      "button_1": "Ouvrir le robot",
+      "step_2": "Étape 2 : Saisissez l'ID de chat qui vous a été fourni par le bot.",
+      "button_2": "Connecter",
+      "success_message": "Intégration réussie",
+      "disconnect": "Déconnecter"
     }
   },
+
+  "org_navigation": {
+    "dashboard": "Tableau de bord",
+    "courses": "Cours",
+    "community": "Communauté",
+    "audience": "Public",
+    "help": "Aide",
+    "settings": "Paramètres"
+  },
+
+  "lms_navigation": {
+    "home": "Maison",
+    "my_learning": "Mon apprentissage",
+    "exercise": "Exercise",
+    "community": "Communauté"
+  },
+
   "content": {
     "heading": "Internationalisation dans SvelteKit",
     "toggle_label": "Sélectionnez la langue préférée",

@@ -9,6 +9,7 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import SectionTitle from '../SectionTitle.svelte';
+  import { t } from '$lib/utils/functions/translations';
 
   let avatar;
   let loading = false;
@@ -96,10 +97,13 @@
 
 <Grid class="border-c rounded border-gray-200 w-full mt-5">
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
-    <Column sm={4} md={4} lg={4}><SectionTitle>Organization Profile</SectionTitle></Column>
+    <Column sm={4} md={4} lg={4}
+      ><SectionTitle>{$t('settings.organization.organization_profile.heading')}</SectionTitle
+      ></Column
+    >
     <Column sm={8} md={8} lg={8} class="mt-2 lg:mt-0 flex flex-col items-center lg:items-start">
       <TextField
-        label="Organization Name"
+        label={$t('settings.organization.organization_profile.organization_name')}
         bind:value={$currentOrg.name}
         className="w-full lg:w-60 mb-5"
       />
@@ -110,7 +114,7 @@
         widthHeight="w-24 h-24"
       />
       <PrimaryButton
-        label="Update Organization"
+        label={$t('settings.organization.organization_profile.update_organization')}
         className="px-6 py-3 lg:mr-5 mt-5"
         isLoading={loading}
         isDisabled={loading}
@@ -119,9 +123,14 @@
     </Column>
   </Row>
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
-    <Column sm={4} md={4} lg={4}><SectionTitle>Theme</SectionTitle></Column>
+    <Column sm={4} md={4} lg={4}
+      ><SectionTitle>{$t('settings.organization.organization_profile.theme.heading')}</SectionTitle
+      ></Column
+    >
     <Column sm={8} md={8} lg={8}>
-      <h4 class="dark:text-white lg:mt-0">Set your brand color</h4>
+      <h4 class="dark:text-white lg:mt-0">
+        {$t('settings.organization.organization_profile.theme.sub_heading')}
+      </h4>
 
       <div class="flex gap-2">
         <button
@@ -167,14 +176,20 @@
     </Column>
   </Row>
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
-    <Column sm={4} md={4} lg={4}><SectionTitle>Custom Domain</SectionTitle></Column>
+    <Column sm={4} md={4} lg={4}
+      ><SectionTitle
+        >{$t('settings.organization.organization_profile.custom_domain.heading')}</SectionTitle
+      ></Column
+    >
     <Column sm={8} md={8} lg={8}>
-      <h4 class="dark:text-white lg:mt-0">Customise your Domain</h4>
+      <h4 class="dark:text-white lg:mt-0">
+        {$t('settings.organization.organization_profile.custom_domain.sub_heading')}
+      </h4>
       <p class="text-sm text-gray-500 dark:text-white">
-        Create a custom URL so your audience can get to your organization easily
+        {$t('settings.organization.organization_profile.custom_domain.body')}
       </p>
       <PrimaryButton
-        label="Edit domain"
+        label={$t('settings.organization.organization_profile.custom_domain.button')}
         className="my-7 py-5 px-10 text-primary-700"
         variant={VARIANTS.OUTLINED}
         onClick={() => gotoSetting('/domains')}
@@ -182,14 +197,19 @@
     </Column>
   </Row>
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
-    <Column sm={4} md={4} lg={4}><SectionTitle>Team</SectionTitle></Column>
+    <Column sm={4} md={4} lg={4}
+      ><SectionTitle>{$t('settings.organization.organization_profile.team.heading')}</SectionTitle
+      ></Column
+    >
     <Column sm={8} md={8} lg={8}>
-      <h4 class="dark:text-white lg:mt-0">Set up your website</h4>
+      <h4 class="dark:text-white lg:mt-0">
+        {$t('settings.organization.organization_profile.team.sub_heading')}
+      </h4>
       <p class="text-sm text-gray-500 dark:text-white">
-        Add team mates to your organization so you can both collaborate on projects.
+        {$t('settings.organization.organization_profile.team.body')}
       </p>
       <PrimaryButton
-        label="Manage Team"
+        label={$t('settings.organization.organization_profile.team.button')}
         className="my-7 py-5 px-10 text-primary-700"
         variant={VARIANTS.OUTLINED}
         onClick={() => gotoSetting('/teams')}
