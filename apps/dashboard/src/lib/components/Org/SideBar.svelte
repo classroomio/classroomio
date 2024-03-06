@@ -17,17 +17,13 @@
   import { sideBar } from './store';
   import { t } from '$lib/utils/functions/translations';
 
-  import { selectedLocale } from '$lib/utils/functions/translations';
+  let menuItems = [];
 
-  const menuItems = [
+  $: menuItems = [
     {
       path: '',
       label: `${$t('org_navigation.dashboard')}`
     },
-    // {
-    //   path: '/quiz',
-    //   label: 'Quizzes'
-    // },
     {
       path: '/courses',
       label: `${$t('org_navigation.courses')}`
@@ -36,10 +32,6 @@
       path: '/community',
       label: `${$t('org_navigation.community')}`
     },
-    // {
-    //   path: '/site',
-    //   label: 'Site settings',
-    // },
     {
       path: '/audience',
       label: `${$t('org_navigation.audience')}`
