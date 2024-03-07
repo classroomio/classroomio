@@ -37,6 +37,7 @@
   import type { LessonPage } from '$lib/utils/types';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
+  import { t } from '$lib/utils/functions/translations';
 
   export let mode = MODES.view;
   export let prevMode = '';
@@ -237,7 +238,7 @@
   {onClose}
   bind:open={$uploadCourseVideoStore.isModalOpen}
   width="w-4/5 w-[90%] h-[80%] md:h-[566px]"
-  modalHeading="Add a Video"
+  modalHeading={$t('course.navItem.lessons.materials.tabs.video.add_video.title')}
 >
   <VideoUploader {lessonId} />
 </Modal>
@@ -298,7 +299,7 @@
             bind:editorWindowRef
             value={$lesson.materials.note}
             onChange={(html) => ($lesson.materials.note = html)}
-            placeholder="Write your lesson note here"
+            placeholder={$t('course.navItem.lessons.materials.tabs.note.placeholder')}
           />
         </div>
       </TabContent>
@@ -306,14 +307,18 @@
       <TabContent value={getValue('Slide')} index={currentTab}>
         {#if mode === MODES.edit}
           <TextField
-            label="Slide link"
+            label={$t('course.navItem.lessons.materials.tabs.slide.slide_link')}
             bind:value={$lesson.materials.slide_url}
             onInputChange={handleInputChange}
           />
         {/if}
       </TabContent>
       <TabContent value={getValue('Video')} index={currentTab}>
-        <PrimaryButton label="Add/Edit Video(s)" onClick={openAddVideoModal} className="mb-2" />
+        <PrimaryButton
+          label={$t('course.navItem.lessons.materials.tabs.video.button')}
+          onClick={openAddVideoModal}
+          className="mb-2"
+        />
         {#if $lesson.materials.videos.length}
           <div class="flex flex-col items-start w-full h-full">
             {#each $lesson.materials.videos as video, index}
@@ -378,12 +383,17 @@
   <Box className="text-center">
     <img src="/no-video.svg" alt="Video not found" />
     <h3 class="text-xl font-normal dark:text-white py-2">
-      No note, video or slide added for this lesson yet
+      {$t('course.navItem.lessons.materials.body_heading')}
     </h3>
     <p class="text-sm text-center font-normal py-2">
-      Share your knowledge with your students by creating engaging content<br />
-      Start by clicking on <strong>Get started</strong> button.
+      {$t('course.navItem.lessons.materials.body_content')}
+      <strong>{$t('course.navItem.lessons.materials.get_started')}</strong>
+      {$t('course.navItem.lessons.materials.button')}.
     </p>
-    <PrimaryButton label="Get started" className="rounded-md" onClick={toggleMode} />
+    <PrimaryButton
+      label={$t('course.navItem.lessons.materials.get_started')}
+      className="rounded-md"
+      onClick={toggleMode}
+    />
   </Box>
 {/if}

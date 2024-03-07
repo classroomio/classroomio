@@ -2,6 +2,7 @@
   import YoutubeVideo from './YoutubeVideo.svelte';
   import LocalVideo from './LocalVideo.svelte';
   import * as CONSTANTS from './constants';
+  import { t } from '$lib/utils/functions/translations';
 
   export let lessonId = '';
 
@@ -14,7 +15,7 @@
 <section class="w-full h-full flex flex-col md:flex-row items-start gap-3">
   <div class="flex flex-row md:flex-col gap-2 items-center">
     <p class="text-sm font-normal text-start text-[#4F4B4B] dark:text-[#b0a9a9] mb-3 w-full">
-      Add By
+      {$t('course.navItem.lessons.materials.tabs.video.add_video.add_by')}
     </p>
     {#each tabs as item (item.value)}
       <button

@@ -12,6 +12,12 @@
   import { sideBar } from '$lib/components/Org/store';
   import { t } from '$lib/utils/functions/translations';
 
+  interface sideLinks {
+    name: string;
+    icon: any;
+    link: string;
+  }
+
   function isActive(pagePath: string, itemPath: string) {
     const pageLinkItems = pagePath.split('/');
     const itemLinkItems = itemPath.split('/');
@@ -22,24 +28,27 @@
 
     return pagePath.includes(itemPath);
   }
-  let sideLinks = [
+
+  let sideLinks: sideLinks[] = [];
+
+  $: sideLinks = [
     {
-      name: `${$t('lms_navigation.home')}`,
+      name: $t('lms_navigation.home'),
       icon: HomeIcon,
       link: '/lms'
     },
     {
-      name: `${$t('lms_navigation.my_learning')}`,
+      name: $t('lms_navigation.my_learning'),
       icon: CourseIcon,
       link: '/lms/mylearning'
     },
     {
-      name: `${$t('lms_navigation.exercise')}`,
+      name: $t('lms_navigation.exercise'),
       icon: LicenseDraft,
       link: '/lms/exercises'
     },
     {
-      name: `${$t('lms_navigation.community')}`,
+      name: $t('lms_navigation.community'),
       icon: CommunityIcon,
       link: '/lms/community'
     }

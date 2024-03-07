@@ -30,6 +30,8 @@
     triggerSendEmail
   } from '$lib/utils/services/notification/notification';
   import NewsFeedLoader from '$lib/components/Course/components/NewsFeed/NewsFeedLoader.svelte';
+  import { t } from '$lib/utils/functions/translations.js';
+
   export let data;
 
   let createdComment;
@@ -223,10 +225,14 @@
 </script>
 
 <CourseContainer bind:courseId={data.courseId}>
-  <PageNav title="News Feed" disableSticky={true}>
+  <PageNav title={$t('course.navItem.news_feed.heading')} disableSticky={true}>
     <slot:fragment slot="widget">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
-        <PrimaryButton className="mr-2" label="Add" onClick={() => ($isNewFeedModal.open = true)} />
+        <PrimaryButton
+          className="mr-2"
+          label={$t('course.navItem.news_feed.heading_button.title')}
+          onClick={() => ($isNewFeedModal.open = true)}
+        />
       </RoleBasedSecurity>
     </slot:fragment>
   </PageNav>
@@ -254,9 +260,9 @@
       <Box>
         <div class="flex justify-between flex-col items-center w-[90%] md:w-96">
           <img src="/images/empty-lesson-icon.svg" alt="Lesson" class="my-2.5 mx-auto" />
-          <h2 class="text-xl my-1.5 font-normal">No post yet</h2>
+          <h2 class="text-xl my-1.5 font-normal">{$t('course.navItem.news_feed.body_header')}</h2>
           <p class="text-sm text-center text-slate-500">
-            Make a post to your class. Start by clicking on the Add button.
+            {$t('course.navItem.news_feed.body_content')}
           </p>
         </div>
       </Box>
@@ -266,7 +272,7 @@
           <div class="flex items-center gap-2 mb-3">
             <PinFilled size={16} />
 
-            <p class="text-sm">Pinned</p>
+            <p class="text-sm">{$t('course.navItem.news_feed.pinned')}</p>
           </div>
         {/if}
         <NewsFeedCard

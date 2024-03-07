@@ -6,11 +6,11 @@
   import { courseMetaDeta } from './store';
   import type { Course } from '$lib/utils/types';
   import { globalStore } from '$lib/utils/store/app';
+  import { t } from '$lib/utils/functions/translations';
 
   export let courses: Course[] = [];
-  export let emptyTitle = 'No Courses Created';
-  export let emptyDescription =
-    'Share your knowledge with the world by creating engaging courses for your students.';
+  export let emptyTitle = $t('courses.lesson_card.empty_title');
+  export let emptyDescription = $t('courses.lesson_card.empty_description');
 
   function calcProgressRate(progressRate?: number, totalLessons?: number): number {
     if (!progressRate || !totalLessons) {

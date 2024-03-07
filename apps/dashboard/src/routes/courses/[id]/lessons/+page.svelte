@@ -26,6 +26,7 @@
   import { course, group } from '$lib/components/Course/store';
   import DateField from '$lib/components/Form/Date.svelte';
   import type { Lesson } from '$lib/utils/types';
+  import { t } from '$lib/utils/functions/translations.js';
 
   export let data;
 
@@ -95,10 +96,14 @@
 
 <!-- TODO: Refactor usage of two way binding isStudent, rather use $globalStore.isStudent -->
 <CourseContainer bind:isStudent bind:courseId={data.courseId}>
-  <PageNav title="Lessons">
+  <PageNav title={$t('course.navItem.lessons.heading')}>
     <div slot="widget">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
-        <PrimaryButton label="Add" onClick={addLesson} isDisabled={!!lessonEditing} />
+        <PrimaryButton
+          label={$t('course.navItem.lessons.add_lesson.button_title')}
+          onClick={addLesson}
+          isDisabled={!!lessonEditing}
+        />
       </RoleBasedSecurity>
     </div>
   </PageNav>
@@ -167,7 +172,9 @@
                       className="sm:my-1 w-[100%]"
                     />
                   {:else if !lesson.profile}
-                    <p class="dark:text-white ml-2 text-sm mb-3">No tutor added</p>
+                    <p class="dark:text-white ml-2 text-sm mb-3">
+                      {$t('course.navItem.lessons.no_tutor')}
+                    </p>
                   {:else}
                     <a href="." class="flex items-center hover:underline mb-2">
                       <Avatar
@@ -217,7 +224,9 @@
                         href={lesson.call_url || '#'}
                         target="_blank"
                       >
-                        {lesson.call_url ? 'Join lesson' : 'No link'}
+                        {lesson.call_url
+                          ? $t('course.navItem.lessons.join_lesson')
+                          : $t('course.navItem.lessons.no_link')}
                       </a>
                     </div>
                   {/if}
@@ -231,14 +240,18 @@
                 <OverflowMenu flipped size="xl" class="absolute top-0 right-0">
                   <OverflowMenuItem
                     disabled={isStudent}
-                    text={lesson.is_unlocked ? 'Lock' : 'Unlock'}
+                    text={lesson.is_unlocked
+                      ? $t('course.navItem.lessons.add_lesson.lock')
+                      : $t('course.navItem.lessons.add_lesson.unlock')}
                     on:click={() => {
                       lesson.is_unlocked = !lesson.is_unlocked;
                       handleSaveLesson(lesson, $course.id);
                     }}
                   />
                   <OverflowMenuItem
-                    text={lessonEditing === lesson.id ? 'Save' : 'Edit'}
+                    text={lessonEditing === lesson.id
+                      ? $t('course.navItem.lessons.add_lesson.save')
+                      : $t('course.navItem.lessons.add_lesson.edit')}
                     on:click={() => {
                       if (lessonEditing === lesson.id) {
                         lessonEditing = undefined;
@@ -248,7 +261,11 @@
                       }
                     }}
                   />
-                  <OverflowMenuItem danger text="Delete" on:click={() => handleDelete(lesson.id)} />
+                  <OverflowMenuItem
+                    danger
+                    text={$t('course.navItem.lessons.add_lesson.delete')}
+                    on:click={() => handleDelete(lesson.id)}
+                  />
                 </OverflowMenu>
               </RoleBasedSecurity>
             </div>
@@ -257,10 +274,9 @@
           <Box>
             <div class="flex justify-between flex-col items-center w-[90%] md:w-96">
               <img src="/images/empty-lesson-icon.svg" alt="Lesson" class="my-2.5 mx-auto" />
-              <h2 class="text-xl my-1.5 font-normal">No lessons yet</h2>
+              <h2 class="text-xl my-1.5 font-normal">{$t('course.navItem.lessons.body_header')}</h2>
               <p class="text-sm text-center text-slate-500">
-                Share your knowledge with the world by creating engaging lessons. Start by clicking
-                on the Add button.
+                {$t('course.navItem.lessons.body_content')}
               </p>
             </div>
           </Box>
@@ -270,10 +286,9 @@
       <Box className="w-full lg:w-11/12 lg:px-4 m-auto">
         <div class="flex justify-between flex-col items-center">
           <img src="/images/empty-lesson-icon.svg" alt="Lesson" class="my-2.5 mx-auto" />
-          <h2 class="text-xl my-1.5 font-normal">No lessons yet</h2>
+          <h2 class="text-xl my-1.5 font-normal">{$t('course.navItem.lessons.body_header')}</h2>
           <p class="text-sm text-center text-slate-500">
-            Share your knowledge with the world by creating engaging lessons. Start by clicking on
-            the Add button.
+            {$t('course.navItem.lessons.body_content')}
           </p>
         </div>
       </Box>

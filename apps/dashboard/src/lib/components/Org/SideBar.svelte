@@ -17,24 +17,29 @@
   import { sideBar } from './store';
   import { t } from '$lib/utils/functions/translations';
 
-  let menuItems = [];
+  interface menuItems {
+    label: string;
+    path: string;
+  }
+
+  let menuItems: menuItems[] = [];
 
   $: menuItems = [
     {
       path: '',
-      label: `${$t('org_navigation.dashboard')}`
+      label: $t('org_navigation.dashboard')
     },
     {
       path: '/courses',
-      label: `${$t('org_navigation.courses')}`
+      label: $t('org_navigation.courses')
     },
     {
       path: '/community',
-      label: `${$t('org_navigation.community')}`
+      label: $t('org_navigation.community')
     },
     {
       path: '/audience',
-      label: `${$t('org_navigation.audience')}`
+      label: $t('org_navigation.audience')
     }
   ];
 

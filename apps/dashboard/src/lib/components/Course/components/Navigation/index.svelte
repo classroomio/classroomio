@@ -16,6 +16,7 @@
   import { profile } from '$lib/utils/store/user';
   import { getIsLessonComplete } from '../Lesson/functions';
   import { globalStore } from '$lib/utils/store/app';
+  import { t } from '$lib/utils/functions/translations';
 
   export let path: string;
   export let isStudent: boolean = false;
@@ -146,23 +147,23 @@
   $: {
     navItems = [
       {
-        label: 'News Feed',
+        label: $t('course.navItems.1'),
         to: getNavItemRoute($course.id),
         hideSortIcon: true
       },
       {
-        label: 'Lessons',
+        label: $t('course.navItems.2'),
         to: getLessonsRoute($course.id),
         hideSortIcon: false,
         isLesson: true
       },
       {
-        label: 'Attendance',
+        label: $t('course.navItems.3'),
         to: getNavItemRoute($course.id, 'attendance'),
         hideSortIcon: true
       },
       {
-        label: 'Submissions',
+        label: $t('course.navItems.4'),
         to: getNavItemRoute($course.id, 'submissions'),
         hideSortIcon: true,
         show() {
@@ -170,7 +171,7 @@
         }
       },
       {
-        label: 'Marks',
+        label: $t('course.navItems.5'),
         to: getNavItemRoute($course.id, 'marks'),
         hideSortIcon: true
       },
@@ -180,17 +181,17 @@
       //   hideSortIcon: true,
       // },
       {
-        label: 'People',
+        label: $t('course.navItems.6'),
         to: getNavItemRoute($course.id, 'people'),
         hideSortIcon: true
       },
       {
-        label: 'Certificates',
+        label: $t('course.navItems.7'),
         to: getNavItemRoute($course.id, 'certificates'),
         hideSortIcon: true
       },
       {
-        label: 'Landing Page',
+        label: $t('course.navItems.8'),
         to: getNavItemRoute($course.id, 'landingpage'),
         hideSortIcon: true,
         show() {
@@ -198,7 +199,7 @@
         }
       },
       {
-        label: 'Settings',
+        label: $t('course.navItems.9'),
         to: getNavItemRoute($course.id, 'settings'),
         hideSortIcon: true,
         show() {

@@ -152,6 +152,163 @@
     "community": "Communauté"
   },
 
+  "dashboard": {
+    "morning_heading": "Bonjour",
+    "afternoon_heading": "Bon après-midi",
+    "evening_heading": "Bonne soirée",
+    "create_course": "Créer un cours",
+    "view_site": "Voir le site",
+    "hero_content": "Merci pour ce que vous faites ❤️. Vous changez des vies, une classe à la fois et grâce à vous, le monde est meilleur. 😊",
+    "hero_button": "Continuer à construire",
+    "your_schedule": "Votre emploi du temps",
+    "today": "Aujourd'hui",
+    "no_schedule": "Pas de cours ce jour"
+  },
+
+  "courses": {
+    "heading": "Cours",
+    "heading_button": "Créer un cours",
+    "search_placeholder": "Trouver un cours",
+    "course_filter": {
+      "date_created": "date créée",
+      "published": "Publié",
+      "lessons": "Cours"
+    },
+    "lesson_card": {
+      "empty_title": "Aucun cours créé",
+      "empty_description": "Partagez vos connaissances avec le monde en créant des cours attrayants pour vos étudiants.",
+      "context_menu": {
+        "clone": "Cloner",
+        "share": "Partager",
+        "invite": "Inviter",
+        "delete": "Supprimer"
+      },
+      "error_message": "Une erreur s'est produite.",
+      "lessons_number": "course",
+      "students": "étudiants",
+      "published": "Publié",
+      "unpublished": "Inédit",
+      "continue_course": "Continuer le cours"
+    },
+    "new_course_modal": {
+      "heading": "Créer un cours",
+      "course_name": "Nom du cours",
+      "course_name_placeholder": "Le nom de votre cours",
+      "short_description": "brève description",
+      "short_description_placeholder": "Une petite description de ce cours",
+      "button": "Finition"
+    }
+  },
+
+  "course": {
+    "navItems": {
+      "1": "Fil d'actualité",
+      "2": "Cours",
+      "3": "Présence",
+      "4": "Soumissions",
+      "5": "Des marques",
+      "6": "Personnes",
+      "7": "Certificats",
+      "8": "Page de destination",
+      "9": "Paramètres"
+    },
+
+    "navItem": {
+      "news_feed": {
+        "heading": "Fil d'actualité",
+        "heading_button": {
+          "title": "Ajouter",
+          "edit_post": "Modifier le message",
+          "make_a_post": "Créer un message",
+          "placeholder": "Partagez une mise à jour avec vos étudiants",
+          "cancel": "Annuler",
+          "post": "Poste"
+        },
+        "body_header": "Pas encore de message",
+        "body_content": "Faites un message dans votre classe. Commencez par cliquer sur le bouton Ajouter.",
+        "pinned": "Épinglé",
+        "snackbar": {
+          "comment_deleted": "Commentaire supprimé",
+          "reaction_error": "Une erreur s'est produite lors de la réaction au fil d'actualité",
+          "comment_creation_error": "Une erreur s'est produite lors de la création du commentaire",
+          "add_comment_success": "Commentaire ajouté",
+          "toggle_pin_error": "Échec de l'activation du flux épinglé",
+          "unpinned": "Échec de l'activation du flux épinglé",
+          "successfully": "Avec succès",
+          "feed_delete_success": "Flux supprimé avec succès",
+          "fetch_feed_fail": "Échec de la récupération des flux d'actualités",
+          "fetching_error": "Une erreur s'est produite lors de la récupération du flux"
+        }
+      },
+
+      "lessons": {
+        "heading": "Cours",
+        "add_lesson": {
+          "button_title": "Ajouter",
+          "modal_heading": "Ajouter une nouvelle leçon",
+          "lesson_title": "Titre de la leçon",
+          "click_to": "Cliquez pour",
+          "lock": "fermer",
+          "unlock": "ouvrir",
+          "fullname": "nom et prénom",
+          "save": "sauvegarder",
+          "edit": "Modifier",
+          "delete": "Supprimer"
+        },
+        "delete_lesson": {
+          "modal_heading": "Supprimer",
+          "content": "Etes-vous sûr que vous voulez supprimer:",
+          "no": "Non",
+          "yes": "Oui"
+        },
+        "join_lesson": "Rejoindre la leçon",
+        "no_link": "Pas de lien",
+        "no_tutor": "Aucun tuteur ajouté",
+        "body_header": "Pas encore de cours",
+        "body_content": "Partagez vos connaissances avec le monde en créant des leçons engageantes. Commencez par cliquer sur le bouton Ajouter.",
+
+        "materials": {
+          "body_heading": "Aucune note, vidéo ou diapositive ajoutée pour cette leçon pour le moment",
+          "body_content": "Partagez vos connaissances avec vos élèves en créant du contenu engageant. Commencez par cliquer sur",
+          "get_started": "Commencer",
+          "button": "bouton",
+          "tabs": {
+            "note": {
+              "title": "Note",
+              "placeholder": "Écrivez votre note de cours ici"
+            },
+            "slide": {
+              "title": "Glisser",
+              "slide_link": "Lien de diapositive"
+            },
+            "video": {
+              "title": "Vidéo",
+              "button": "Ajouter/Modifier des vidéos",
+              "add_video": {
+                "title": "Ajouter une vidéo",
+                "add_by": "Ajouter par",
+                "youtube_link": "Lien Youtube",
+                "videos_added": "Vidéos ajoutées",
+                "add_video": "Ajouter une vidéo",
+                "upload_video": "Télécharger une video",
+                "select_file": "Sélectionnez le fichier (Mp4, MOV, AVI) à télécharger dans votre leçon.",
+                "size": "(80 Mo maximum)",
+                "oops": "Oups 😬, impossible de télécharger la vidéo",
+                "sorry": "Désolé, la vidéo n'a pas été téléchargée. La taille du fichier est trop grande,",
+                "sorry_2": "la taille maximale est de 30 Mo. Essayer à nouveau!",
+                "button": "Essayez un autre fichier",
+                "try_again": "Veuillez réessayer",
+                "sorry_3": "Désolé, notre vidéo n'a pas été téléchargée, le format de fichier n'est pas pris en charge ou quelque chose s'est mal passé sur le serveur.",
+                "sorry_4": "Téléchargez des fichiers MP4, MOV et AVI."
+              }
+            }
+          },
+          "button_done": "Fait"
+        }
+      }
+    }
+  },
+
   "content": {
     "heading": "Internationalisation dans SvelteKit",
     "toggle_label": "Sélectionnez la langue préférée",

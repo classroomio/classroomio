@@ -152,6 +152,163 @@
     "community": "Community"
   },
 
+  "dashboard": {
+    "morning_heading": "Good Morning",
+    "afternoon_heading": "Good Afternoon",
+    "evening_heading": "Good Evening",
+    "create_course": "Create Course",
+    "view_site": "View Site",
+    "hero_content": "Thank you for what you do ❤️. You are changing lives one classroom at a time and thanks to you, the world is a better place. 😊",
+    "hero_button": "Keep Building",
+    "your_schedule": "Your Schedule",
+    "today": "Today",
+    "no_schedule": "No lesson on this day"
+  },
+
+  "courses": {
+    "heading": "Courses",
+    "heading_button": "Create Course",
+    "search_placeholder": "Find Course",
+    "course_filter": {
+      "date_created": "Date Created",
+      "published": "Published",
+      "lessons": "Lessons"
+    },
+    "lesson_card": {
+      "empty_title": "No Courses Created",
+      "empty_description": "Share your knowledge with the world by creating engaging courses for your students.",
+      "context_menu": {
+        "clone": "Clone",
+        "share": "Share",
+        "invite": "Invite",
+        "delete": "Delete"
+      },
+      "error_message": "An error occurred.",
+      "lessons_number": "lessons",
+      "students": "students",
+      "published": "Published",
+      "unpublished": "Unpublished",
+      "continue_course": "Continue Course"
+    },
+    "new_course_modal": {
+      "heading": "Create a Course",
+      "course_name": "Course name",
+      "course_name_placeholder": "Your course name",
+      "short_description": "Short Description",
+      "short_description_placeholder": "A little description about this course",
+      "button": "Finish"
+    }
+  },
+
+  "course": {
+    "navItems": {
+      "1": "News Feed",
+      "2": "Lessons",
+      "3": "Attendance",
+      "4": "Submissions",
+      "5": "Marks",
+      "6": "People",
+      "7": "Certificates",
+      "8": "Landing Page",
+      "9": "Settings"
+    },
+
+    "navItem": {
+      "news_feed": {
+        "heading": "News Feed",
+        "heading_button": {
+          "title": "Add",
+          "edit_post": "Edit Post",
+          "make_a_post": "Make a Post",
+          "placeholder": "Share an update with your students",
+          "cancel": "Cancel",
+          "post": "Post"
+        },
+        "body_header": "No post yet",
+        "body_content": "Make a post to your class. Start by clicking on the Add button.",
+        "pinned": "Pinned",
+        "snackbar": {
+          "comment_deleted": "Comment Deleted",
+          "reaction_error": "An error occurred while reacting to news feed",
+          "comment_creation_error": "An error occurred while creating comment",
+          "add_comment_success": "Comment added",
+          "toggle_pin_error": "Failed to toggle pinned feed",
+          "unpinned": "Unpinned",
+          "successfully": "Successfully",
+          "feed_delete_success": "Feed deleted successfully",
+          "fetch_feed_fail": "Failed to fetch news feeds",
+          "fetching_error": "An error occured while fetching feed"
+        }
+      },
+
+      "lessons": {
+        "heading": "Lessons",
+        "add_lesson": {
+          "button_title": "Add",
+          "modal_heading": "Add New Lesson",
+          "lesson_title": "Lesson Title",
+          "click_to": "Click to",
+          "lock": "lock",
+          "unlock": "unlock",
+          "fullname": "fullname",
+          "save": "Save",
+          "edit": "Edit",
+          "delete": "Delete"
+        },
+        "delete_lesson": {
+          "modal_heading": "Delete",
+          "content": "Are you sure you want to delete:",
+          "no": "No",
+          "yes": "Yes"
+        },
+        "join_lesson": "Join lesson",
+        "no_link": "No link",
+        "no_tutor": "No tutor added",
+        "body_header": "No lessons yet",
+        "body_content": "Share your knowledge with the world by creating engaging lessons. Start by clicking on the Add button.",
+
+        "materials": {
+          "body_heading": "No note, video or slide added for this lesson yet",
+          "body_content": "Share your knowledge with your students by creating engaging content. Start by clicking on",
+          "get_started": "Get Started",
+          "button": "button",
+          "tabs": {
+            "note": {
+              "title": "Note",
+              "placeholder": "Write your lesson note here"
+            },
+            "slide": {
+              "title": "Slide",
+              "slide_link": "Slide Link"
+            },
+            "video": {
+              "title": "Video",
+              "button": "Add/Edit Video(s)",
+              "add_video": {
+                "title": "Add a Video",
+                "add_by": "Add By",
+                "youtube_link": "Youtube Link",
+                "videos_added": "Videos Added",
+                "add_video": "Add Video",
+                "upload_video": "Upload Video",
+                "select_file": "Select file( Mp4, MOV, AVI) to upload to your lesson.",
+                "size": "(Max 80 MB)",
+                "oops": "Oops 😬, couldn’t upload video",
+                "sorry": "Sorry we video wasn’t uploaded. The file size is too big,",
+                "sorry_2": "maximum size is 30 MB. Try again!",
+                "button": "Try another file",
+                "try_again": "Please try again",
+                "sorry_3": "Sorry we video wasn’t uploaded, the file format isn’t supported or something went wrong on the server.",
+                "sorry_4": "Upload MP4, MOV and AVI files."
+              }
+            }
+          },
+          "button_done": "Done"
+        }
+      }
+    }
+  },
+
   "content": {
     "heading": "Internationalization in SvelteKit",
     "toggle_label": "Select Preferred Language",

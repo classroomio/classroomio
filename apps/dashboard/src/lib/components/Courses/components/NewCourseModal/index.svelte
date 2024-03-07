@@ -12,6 +12,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
+  import { t } from '$lib/utils/functions/translations';
 
   let isLoading = false;
   let errors = {
@@ -118,13 +119,13 @@
   {onClose}
   bind:open={$createCourseModal.open}
   width="w-4/5 md:w-2/5"
-  modalHeading="Create a Course"
+  modalHeading={$t('courses.new_course_modal.heading')}
 >
   <form on:submit|preventDefault={createCourse}>
     <TextField
-      label="Course name"
+      label={$t('courses.new_course_modal.course_name')}
       bind:value={$createCourseModal.title}
-      placeholder="Your course name"
+      placeholder={$t('courses.new_course_modal.course_name_placeholder')}
       className="mb-4"
       isRequired={true}
       errorMessage={errors.title}
@@ -132,10 +133,10 @@
     />
 
     <TextArea
-      label="Short description"
+      label={$t('courses.new_course_modal.short_description')}
       bind:value={$createCourseModal.description}
       rows={4}
-      placeholder="A little description about this course"
+      placeholder={$t('courses.new_course_modal.short_description_placeholder')}
       className="mb-4"
       isRequired={true}
       errorMessage={errors.description}
@@ -146,7 +147,7 @@
     <div class="mt-5 flex items-center">
       <PrimaryButton
         className="px-6 py-3"
-        label="Finish"
+        label={$t('courses.new_course_modal.button')}
         type="submit"
         isDisabled={isLoading}
         {isLoading}
