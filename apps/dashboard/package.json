@@ -3,6 +3,15 @@
   "description": "classroomio",
   "version": "0.0.1",
   "main": "main.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rotimi-best/classroomio.git"
+  },
+  "author": "Rotimi-Best <best@classroomio.com>",
+  "bugs": {
+    "url": "https://github.com/rotimi-best/classroomio/issues"
+  },
+  "homepage": "https://github.com/rotimi-best/classroomio#readme",
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
