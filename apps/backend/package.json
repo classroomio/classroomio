@@ -20,6 +20,7 @@
   "homepage": "https://github.com/fly-examples/hellonode#readme",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.388.0",
+    "@aws-sdk/lib-storage": "^3.525.1",
     "@supabase/supabase-js": "^2.32.0",
     "axios": "^1.4.0",
     "body-parser": "^1.20.2",
@@ -28,6 +29,8 @@
     "dotenv": "^16.3.1",
     "express": "^4.17.1",
     "express-rate-limit": "^6.9.0",
+    "ffmpeg": "^0.0.4",
+    "fluent-ffmpeg": "^2.1.2",
     "form-data": "^4.0.0",
     "marked": "^7.0.3",
     "multer": "^1.4.3",

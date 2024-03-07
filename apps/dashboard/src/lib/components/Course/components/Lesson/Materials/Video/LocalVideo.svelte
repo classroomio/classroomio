@@ -31,12 +31,46 @@
     return $lesson.materials?.videos?.find((v) => v.link === link);
   }
 
+  function validateFile(file) {
+    // Check file size
+    // if (file.size > 200 * 1024 * 1024) {
+    //   return {
+    //     success: false,
+    //     type: 'FILE_TOO_LARGE',
+    //     message: 'File is too large (maximum 30MB allowed)'
+    //   };
+    // }
+
+    // // Check file format
+    // const allowedFormats = ['video/*', 'video/mp4', 'video/quicktime', 'video/x-msvideo'];
+    // if (!allowedFormats.includes(file.type)) {
+    //   return {
+    //     success: false,
+    //     type: 'INVALID_FORMAT',
+    //     message: 'Unsupported file format. Please upload MP4, MOV, or AVI files'
+    //   };
+    // }
+
+    return { success: true };
+  }
+
   async function onUpload(e) {
     isLoading = true;
     if (!fileInput) return;
 
+    const file = fileInput.files[0];
+
+    // Validate file
+    const validationResult = validateFile(file);
+    if (!validationResult.success) {
+      formRes = validationResult;
+      isLoading = false;
+      isLoaded = true;
+      return;
+    }
+
     const formData = new FormData();
-    formData.append('videoFile', fileInput.files[0]);
+    formData.append('videoFile', file);
 
     try {
       const response = await axios({
@@ -61,7 +95,6 @@
         console.log('formRes', formRes);
       }
     }
-
     isLoaded = true;
   }
 

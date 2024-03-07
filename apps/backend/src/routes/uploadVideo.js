@@ -1,6 +1,8 @@
 const express = require('express');
 const FormData = require('form-data');
 const axios = require('axios');
+
+const path = require('path');
 // const Queue = require('bull');
 const { promisify } = require('util');
 const fs = require('fs');
@@ -16,6 +18,7 @@ const {
 // const { getSupabase } = require('../utils/supabase');
 const genUniqueId = require('../utils/genUniqueId');
 const upload = require('../utils/upload');
+const { UploadFileController } = require('../controller/uploadFileContoller');
 
 const {
   CLOUDFLARE_ACCESS_KEY,
@@ -42,13 +45,12 @@ const S3 = new S3Client({
 //   redis: { tls: { rejectUnauthorized: false } },
 // });
 
+// MAIN UPLOAD VIDEO
 router.post('/', upload.single('videoFile'), async (req, res) => {
   const {
     file,
     query: { lessonId }
   } = req;
-  console.log('lessonId', lessonId);
-  console.log('file', file);
 
   if (!file?.fieldname || !file?.fieldname) {
     return res.status(400).json({
@@ -90,30 +92,90 @@ router.post('/', upload.single('videoFile'), async (req, res) => {
       message: 'Uploaded successfully'
     });
   } catch (error) {
-    // error handling.
-    const { requestId, cfId, extendedRequestId } = error.$$metadata || {};
-
     console.error('Error uploading file', error);
-    console.log({ requestId, cfId, extendedRequestId });
-
-    res.json({
+    res.status(500).json({
       success: false,
-      message: 'Uploaded failed: ' + error
+      message: 'Failed to compress video'
     });
-  } finally {
-    // finally.
-    console.log('File upload complete');
-
-    // console.log('Add muse queue');
-    // museUploadQueue.add({
-    //   fileName,
-    //   originalFileName: file.originalname,
-    //   lessonId,
-    //   fileUrl,
-    //   unlinkPath: file.path,
-    // });
   }
 });
+
+// UPLOAD VIDEO IN PARALLEL CHUNKS
+// router.post('/', upload.single('videoFile'), UploadFileController);
+
+// UPLOAD VIDEO WITH MUSE
+// router.post('/', upload.single('videoFile'), async (req, res) => {
+//   const {
+//     file,
+//     query: { lessonId }
+//   } = req;
+//   console.log('lessonId', lessonId);
+//   console.log('file', file);
+
+//   if (!file?.fieldname || !file?.fieldname) {
+//     return res.status(400).json({
+//       success: false,
+//       message: 'You must provide a file to upload'
+//     });
+//   }
+
+//   if (file?.size > 30 * 1024 * 1024) {
+//     return res.status(400).json({
+//       success: false,
+//       type: 'FILE_TOO_LARGE',
+//       message: 'File is too large'
+//     });
+//   }
+//   const fileData = fs.readFileSync(file.path);
+
+//   const fileName = `${genUniqueId()}-${file.originalname}`;
+//   const params = {
+//     Bucket: 'videos',
+//     Key: fileName,
+//     Body: fileData
+//   };
+
+//   const fileUrl = `https://pub-${CLOUDFLARE_PUBLIC_ACCOUNT_ID}.r2.dev/${fileName}`;
+//   let metadata = {};
+
+//   try {
+//     const s3UploadRes = await S3.send(new PutObjectCommand(params));
+//     // Delete file saved by mutler in file
+//     unlinkAsync(file.path);
+
+//     console.log('s3UploadRes', s3UploadRes);
+
+//     res.json({
+//       success: true,
+//       url: fileUrl,
+//       metadata,
+//       message: 'Uploaded successfully'
+//     });
+//   } catch (error) {
+//     // error handling.
+//     const { requestId, cfId, extendedRequestId } = error.$$metadata || {};
+
+//     console.error('Error uploading file', error);
+//     console.log({ requestId, cfId, extendedRequestId });
+
+//     res.json({
+//       success: false,
+//       message: 'Uploaded failed: ' + error
+//     });
+//   } finally {
+//     // finally.
+//     console.log('File upload complete');
+
+//     // console.log('Add muse queue');
+//     // museUploadQueue.add({
+//     //   fileName,
+//     //   originalFileName: file.originalname,
+//     //   lessonId,
+//     //   fileUrl,
+//     //   unlinkPath: file.path,
+//     // });
+//   }
+// });
 
 router.get('/', (req, res) => {
   res.send('Get upload video');
