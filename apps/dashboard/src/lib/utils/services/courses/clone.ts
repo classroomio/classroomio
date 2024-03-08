@@ -228,7 +228,6 @@ export async function cloneCourse(courseId: string, newTitle: string): Promise<C
 -> Note the following information will be copied
 
 3. Things to copy
-Overview
 Lessons
 Exercises - questions, options, everything basically.
 

@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { getSupabase } from '$lib/utils/functions/supabase';
-import { sendEmail } from '$lib/utils/services/notification/send';
+import sendEmail from '$defer/sendEmail';
 
 const supabase = getSupabase();
 
@@ -9,7 +9,7 @@ export async function POST({ request }) {
   const accessToken = request.headers.get('Authorization');
   console.log('/POST api/email/welcome', to, name);
 
-  if (!to || !name) {
+  if (!to || !name || !accessToken) {
     return json({ success: false, message: 'Name and To are required fields' }, { status: 400 });
   }
 

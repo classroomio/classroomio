@@ -8,12 +8,15 @@
   import Badge from 'carbon-icons-svelte/lib/Badge.svelte';
   import IbmWatsonKnowledgeCatalog from 'carbon-icons-svelte/lib/IbmWatsonKnowledgeCatalog.svelte';
   import Settings from 'carbon-icons-svelte/lib/Settings.svelte';
+  import Bullhorn from 'carbon-icons-svelte/lib/Bullhorn.svelte';
 
   export let name = '';
 </script>
 
 {#if name === 'Overview'}
   <TableOfContents size={20} class="carbon-icon  mr-2" />
+{:else if name === 'News Feed'}
+  <Bullhorn size={20} class="carbon-icon  mr-2" />
 {:else if name === 'Lessons'}
   <IbmWatsonKnowledgeCatalog size={20} class="carbon-icon mr-2" />
 {:else if name === 'Attendance'}

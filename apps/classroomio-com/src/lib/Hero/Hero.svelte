@@ -1,6 +1,31 @@
 <script>
-  // import ImageCompare from './ImageCompare.svelte';
+  import { onMount } from 'svelte';
   import { PUBLIC_ENABLE_USERS_COMPANIES } from '$env/static/public';
+
+  let width = '710';
+  let height = '710';
+
+  onMount(() => {
+    const handleResize = () => {
+      const screenWidth = window.innerWidth;
+      if (screenWidth < 768) {
+        // Mobile view
+        width = '1920';
+        height = '1440';
+      } else {
+        // Desktop view
+        width = '710';
+        height = '710';
+      }
+    };
+
+    handleResize(); // Call it initially
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  });
 </script>
 
 <div class="text-center mt-[30%] md:mt-36 border-b-2 relative">
@@ -11,14 +36,14 @@
       href="https://github.com/rotimi-best/classroomio"
       style="color: rgb(75, 85, 99);"
       class="border border-gray-300 rounded-full px-4 py-1 text-sm font-medium hover:underline"
-      >Give us a <span class="text-blue-700 hover:bg-blue-800">star</span> on github</a
+      >Give us a <span class="text-blue-700">star</span> on github</a
     >
   </div>
   <h1
     class="mx-auto text-3xl md:text-4xl lg:text-6xl font-normal leading-[1.5] text-slate-900 flex flex-col items-center"
   >
     <span>Launch Your Online Bootcamp</span>
-    <span class="text-blue-700 hover:bg-blue-800 relative"
+    <span class="text-blue-700 relative"
       >In Minutes
       <svg
         aria-hidden="true"
@@ -70,9 +95,12 @@
     </video> -->
 
     <img
-      src="./cio-hero-imac.png"
+      loading="eager"
+      {width}
+      {height}
+      src="./cio-hero-imac.webp"
       alt="hero section with dark vs light mode"
-      class="floating w-[85%] lg:w-[70%] mx-auto rounded-lg shadow-lg"
+      class="hidden md:block lg:block floating mx-auto rounded-lg shadow-lg"
     />
   </div>
 
@@ -80,11 +108,11 @@
     <div class="px-[15%] mb-[10%]">
       <h2 class="text-base lg:text-xl font-semibold text-gray-900">Used at</h2>
       <div class="w-full flex flex-wrap flex-row gap-5 justify-between items-center py-[5%]">
-        <img src="/hero-1.svg" alt="" class="w-[30%] lg:w-[13%]" />
-        <img src="/hero-2.svg" alt="" class="w-[30%] lg:w-[13%]" />
-        <img src="/hero-3.svg" alt="" class="w-[30%] lg:w-[13%]" />
-        <img src="/hero-4.svg" alt="" class="w-[30%] lg:w-[13%]" />
-        <img src="/hero-5.svg" alt="" class="w-[30%] lg:w-[13%]" />
+        <img loading="lazy" src="/hero-1.svg" alt="" class="w-[30%] lg:w-[13%]" />
+        <img loading="lazy" src="/hero-2.svg" alt="" class="w-[30%] lg:w-[13%]" />
+        <img loading="lazy" src="/hero-3.svg" alt="" class="w-[30%] lg:w-[13%]" />
+        <img loading="lazy" src="/hero-4.svg" alt="" class="w-[30%] lg:w-[13%]" />
+        <img loading="lazy" src="/hero-5.svg" alt="" class="w-[30%] lg:w-[13%]" />
       </div>
     </div>
   {/if}

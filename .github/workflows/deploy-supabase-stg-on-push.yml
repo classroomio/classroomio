@@ -1,0 +1,26 @@
+name: Deploy Supabase Staging on Push
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.DB_PASSWORD_STG }}
+      PROJECT_ID: uwzgscaxncunqjcsuaib
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - run: SUPABASE_DB_PASSWORD=$SUPABASE_DB_PASSWORD supabase link --project-ref $PROJECT_ID
+      - run: supabase db push --include-all

@@ -1,12 +1,12 @@
 import { json } from '@sveltejs/kit';
-import { getSupabase } from '$lib/utils/functions/supabase';
-import { sendEmail } from '$lib/utils/services/notification/send';
+// import { getSupabase } from '$lib/utils/functions/supabase';
+import sendEmail from '$defer/sendEmail';
 
-const supabase = getSupabase();
+// const supabase = getSupabase();
 
 export async function POST({ request }) {
   const { to, courseName, studentEmail, studentFullname } = await request.json();
-  const accessToken = request.headers.get('Authorization') || '';
+  // const accessToken = request.headers.get('Authorization') || '';
   console.log(
     '/POST api/email/course/teacher_student_buycourse',
     to,
@@ -19,20 +19,20 @@ export async function POST({ request }) {
     return json({ success: false, message: 'Missing required fields' }, { status: 400 });
   }
 
-  let user;
-  try {
-    const { data } = await supabase.auth.getUser(accessToken);
-    user = data.user;
-  } catch (error) {
-    console.error(error);
-  }
+  // let user;
+  // try {
+  //   const { data } = await supabase.auth.getUser(accessToken);
+  //   user = data.user;
+  // } catch (error) {
+  //   console.error(error);
+  // }
 
-  if (!user) {
-    return json({ success: false, message: 'Unauthenticated user' }, { status: 401 });
-  }
+  // if (!user) {
+  //   return json({ success: false, message: 'Unauthenticated user' }, { status: 401 });
+  // }
 
   await sendEmail({
-    from: `ClassroomIO" <help@classroomio.com>`,
+    from: `ClassroomIO" <notify@classroomio.com>`,
     to,
     subject: `[${courseName}] Request to Join Course!`,
     content: `
