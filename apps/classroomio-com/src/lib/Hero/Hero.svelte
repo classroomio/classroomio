@@ -100,7 +100,7 @@
       {height}
       src="./cio-hero-imac.webp"
       alt="hero section with dark vs light mode"
-      class="floating mx-auto rounded-lg shadow-lg"
+      class="floating mx-auto w-[85%] rounded-lg shadow-lg lg:w-[70%]"
     />
   </div>
 
