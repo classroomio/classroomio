@@ -12,6 +12,7 @@
   // import { Tabs, Tab } from 'carbon-components-svelte';
   // import TabContent from 'carbon-components-svelte/src/Tabs/TabContent.svelte';
   import StudentCertificate from '$lib/components/Course/components/Ceritficate/StudentCertificate/Index.svelte';
+  import { t } from '$lib/utils/functions/translations';
 
   export let courseId: string = '';
 </script>
@@ -19,7 +20,7 @@
 <IssueCertificateModal />
 
 <CourseContainer bind:courseId>
-  <PageNav title="Certificates" disableSticky={true}>
+  <PageNav title={$t('course.navItem.certificates.title')} disableSticky={true}>
     <slot:fragment slot="widget">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
         <!-- Hide Functionality For V1 -->

@@ -25,6 +25,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import { course } from '$lib/components/Course/store';
+  import { t } from '$lib/utils/functions/translations';
 
   export let editMode = false;
   export let courseData: Course;
@@ -115,7 +116,7 @@
           {get(courseData, 'metadata.instructor.name', '')}
         </p>
         <PrimaryButton
-          label="Start Course"
+          label={$t('course.navItem.landing_page.start_course')}
           className="px-6 py-5 mt-6 sm:w-fit hidden md:block"
           onClick={() => {
             if (editMode) return;
@@ -205,7 +206,9 @@
 
         <!-- Sections - Requirement -->
         <section id="requirement" class="border-b border-gray-300 mt-8 pb-10">
-          <h3 class="text-2xl font-bold mt-0 mb-3">Requirement</h3>
+          <h3 class="text-2xl font-bold mt-0 mb-3">
+            {$t('course.navItem.landing_page.requirement')}
+          </h3>
           <ul class="list font-light">
             <HtmlRender content={get(courseData, 'metadata.requirements', '')} />
           </ul>
@@ -213,7 +216,9 @@
 
         <!-- Sections - Course Description -->
         <section id="description" class="border-b border-gray-300 mt-8 pb-10">
-          <h3 class="text-2xl font-bold mt-0 mb-3">Course Description</h3>
+          <h3 class="text-2xl font-bold mt-0 mb-3">
+            {$t('course.navItem.landing_page.description')}
+          </h3>
           <HtmlRender
             className="dark:text-white text-sm font-light"
             content={get(courseData, 'metadata.description', '')}
@@ -222,7 +227,7 @@
 
         <!-- Sections - Goal -->
         <section id="goals" class="mt-8 pb-10">
-          <h3 class="text-2xl font-bold mt-0 mb-3">What you'll learn</h3>
+          <h3 class="text-2xl font-bold mt-0 mb-3">{$t('course.navItem.landing_page.learn')}</h3>
           <ul class="list font-light">
             <HtmlRender content={get(courseData, 'metadata.goals', '')} />
           </ul>
@@ -230,10 +235,9 @@
 
         <!-- Sections - Certificate -->
         <section class="border-b border-gray-300 mt-8 pb-10">
-          <h3 class="text-2xl font-bold mt-0">Certificate</h3>
+          <h3 class="text-2xl font-bold mt-0">{$t('course.navItem.landing_page.certificate')}</h3>
           <p class="dark:text-white text-sm font-light mb-3">
-            When you complete all of the courses in the program, you'll earn a Certificate to share
-            with your professional network.
+            {$t('course.navItem.landing_page.certificate_text')}
           </p>
           <img src="/images/certificate-template.svg" alt="certificate template" />
         </section>
@@ -241,7 +245,9 @@
         <!-- Sections - Lessons -->
         <section id="lessons" class="border-b border-gray-300 mt-8 pb-10">
           <div class="flex items-center justify-between w-full mb-3">
-            <h3 class="text-2xl font-bold mt-0 mb-3">Course Content</h3>
+            <h3 class="text-2xl font-bold mt-0 mb-3">
+              {$t('course.navItem.landing_page.content')}
+            </h3>
             <p class="dark:text-white text-sm font-light">
               <!-- {lessons.length} lessons -->
               {pluralize('lesson', lessons.length, true)}
@@ -263,22 +269,24 @@
                 <div class="flex items-center">
                   {#if lesson.slide_url}
                     <span class="text-sm font-light flex w-2/4"
-                      ><PresentationFile size={16} class="mr-1" />1 slide</span
+                      ><PresentationFile size={16} class="mr-1" />{$t(
+                        'course.navItem.landing_page.slide'
+                      )}</span
                     >
                   {/if}
                   {#if lesson.note}
                     <span class="text-sm font-light flex w-2/4"
-                      ><Notebook size={16} class="mr-1" />note</span
+                      ><Notebook size={16} class="mr-1" />{$t(
+                        'course.navItem.landing_page.note'
+                      )}</span
                     >
                   {/if}
                 </div>
                 <div class="flex items-center">
                   {#if lesson.videos}
                     <span class="text-sm font-light flex w-2/4"
-                      ><Video size={16} class="mr-1" />{lesson.videos.length} video{lesson.videos
-                        .length > 1
-                        ? 's'
-                        : ''}
+                      ><Video size={16} class="mr-1" />{lesson.videos.length}
+                      {$t('course.navItem.landing_page.video')}{lesson.videos.length > 1 ? 's' : ''}
                     </span>
                   {/if}
                   {#if get(lesson, 'totalExercises[0].count')}
@@ -299,7 +307,9 @@
         <!-- Sections - Reviews -->
         {#if reviews && reviews.length > 0}
           <section id="reviews">
-            <h2 class="my-16 mr-0 mb-6 ml-0 font-semibold">Reviews</h2>
+            <h2 class="my-16 mr-0 mb-6 ml-0 font-semibold">
+              {$t('course.navItem.landing_page.reviews')}
+            </h2>
             <div class="flex flex-wrap">
               {#each reviews.slice(0, 4) as review, id}
                 {#if !review.hide}
@@ -346,7 +356,7 @@
             </div>
             {#if reviews.length > 4}
               <PrimaryButton
-                label="See All"
+                label={$t('course.navItem.landing_page.see_all')}
                 className="w-3/12 p-4 mt-2"
                 variant={VARIANTS.OUTLINED}
                 onClick={() => ($reviewsModalStore.open = true)}
@@ -358,16 +368,18 @@
               onClose={() => ($reviewsModalStore.open = false)}
               bind:open={$reviewsModalStore.open}
               width="w-9/12"
-              modalHeading="Reviews"
+              modalHeading={$t('course.navItem.landing_page.reviews_modal.title')}
             >
               <div class="flex">
                 <!-- ratings -->
                 <div class="w-1/3">
                   <h2 class="text-xl font-bold">
-                    {averageRating} Rating
+                    {averageRating}
+                    {$t('course.navItem.landing_page.reviews_modal.rating')}
                   </h2>
                   <h2 class="text-lg font-semibold mt-2">
-                    {reviews.length} Ratings
+                    {reviews.length}
+                    {$t('course.navItem.landing_page.reviews_modal.ratings')}
                   </h2>
                 </div>
                 <!-- reviews -->
@@ -409,7 +421,9 @@
 
         <!-- Sections - Instructor -->
         <section id="instructor" class="mt-8 pb-10">
-          <h3 class="text-2xl font-bold mt-0 mb-3">Instructor</h3>
+          <h3 class="text-2xl font-bold mt-0 mb-3">
+            {$t('course.navItem.landing_page.instructor')}
+          </h3>
           <div class="flex items-center mb-4">
             <img
               alt="Author Avatar"
@@ -425,7 +439,10 @@
               </p>
               <p class="dark:text-white text-md font-light flex items-center">
                 <PlayFilled size={16} class="text-primary-700" />
-                <span class="ml-1">{get(instructor, 'courseNo', '')} courses</span>
+                <span class="ml-1"
+                  >{get(instructor, 'courseNo', '')}
+                  {$t('course.navItem.landing_page.courses')}</span
+                >
               </p>
             </div>
           </div>

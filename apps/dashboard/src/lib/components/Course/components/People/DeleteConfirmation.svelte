@@ -4,6 +4,7 @@
 
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { deleteMemberModal } from './store';
+  import { t } from '$lib/utils/functions/translations';
 
   export let email;
   export let deletePerson = () => {};
@@ -18,24 +19,24 @@
   onClose={() => ($deleteMemberModal.open = false)}
   bind:open={$deleteMemberModal.open}
   width="w-96"
-  modalHeading="Delete"
+  modalHeading={$t('course.navItem.people.delete_confirmation.title')}
 >
   <div>
     <h1 class="dark:text-white text-lg">
-      Are you sure you want to delete <strong>{email}</strong>?
+      {$t('course.navItem.people.delete_confirmation.sure')} <strong>{email}</strong>?
     </h1>
 
     <div class="mt-5 flex items-center justify-between">
       <PrimaryButton
         className="px-6 py-3"
         variant={VARIANTS.OUTLINED}
-        label="No"
+        label={$t('course.navItem.people.delete_confirmation.no')}
         onClick={() => ($deleteMemberModal.open = false)}
       />
       <PrimaryButton
         className="px-6 py-3"
         variant={VARIANTS.OUTLINED}
-        label="Yes"
+        label={$t('course.navItem.people.delete_confirmation.yes')}
         onClick={handleDelete}
       />
     </div>

@@ -25,6 +25,7 @@
   import type { GroupPerson, Lesson } from '$lib/utils/types/index';
   import { browser } from '$app/environment';
   import { globalStore } from '$lib/utils/store/app';
+  import { t } from '$lib/utils/functions/translations.js';
 
   export let data;
 
@@ -137,7 +138,7 @@
 </script>
 
 <CourseContainer bind:courseId={data.courseId}>
-  <PageNav title="Attendance" />
+  <PageNav title={$t('course.navItem.attendance.title')} />
   <PageBody width="w-full max-w-6xl md:w-11/12">
     <section class="flex items-center mx-2 lg:mx-9 my-5">
       <div
@@ -145,16 +146,18 @@
       >
         <div class="flex">
           <p class="flex items-center mr-5">
-            <Checkbox checked disabled /> Present
+            <Checkbox checked disabled />
+            {$t('course.navItem.attendance.present')}
           </p>
           <p class="flex items-center">
-            <Checkbox disabled /> Absent
+            <Checkbox disabled />
+            {$t('course.navItem.attendance.absent')}
           </p>
         </div>
         <div>
           <Search
             class="dark:text-slate-950"
-            placeholder="Search students"
+            placeholder={$t('course.navItem.attendance.search_students')}
             bind:value={searchValue}
           />
         </div>
@@ -166,10 +169,14 @@
         <!-- Moved the lesson headers outside the students loop -->
         <StructuredListHead class="bg-primary-100">
           <StructuredListRow head class="mx-7">
-            <StructuredListCell head class="text-primary-600 py-3">Student</StructuredListCell>
+            <StructuredListCell head class="text-primary-600 py-3"
+              >{$t('course.navItem.attendance.student')}</StructuredListCell
+            >
             {#each $lessons as lesson, index}
               <StructuredListCell head class="text-primary-600 py-3"
-                >Lesson 0{getLectureNo(index + 1)}</StructuredListCell
+                >{$t('course.navItem.attendance.lesson')} 0{getLectureNo(
+                  index + 1
+                )}</StructuredListCell
               >
             {/each}
           </StructuredListRow>
@@ -206,7 +213,9 @@
       {#if students.length === 0}
         <Box className="h-[300px] w-full">
           <AudioConsoleIcon size={32} class="carbon-icon w-80" />
-          <h3 class="text-3xl text-gray-500 dark:text-white text-center">No Student Added</h3>
+          <h3 class="text-3xl text-gray-500 dark:text-white text-center">
+            {$t('course.navItem.attendance.no_student')}
+          </h3>
         </Box>
       {/if}
       {#if students.length !== 0}

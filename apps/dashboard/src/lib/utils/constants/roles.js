@@ -1,3 +1,5 @@
+// import { t } from '../functions/translations.ts';
+
 export const ROLE = {
   ADMIN: 1,
   TUTOR: 2,

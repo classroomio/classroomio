@@ -1,3 +1,5 @@
+//   import { t } from '$lib/utils/functions/translations';
+
 export const SECTION_KEYS = {
   HEADER: 'header',
   REQUIREMENT: '#requirement',

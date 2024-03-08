@@ -266,6 +266,17 @@
         "no_tutor": "No tutor added",
         "body_header": "No lessons yet",
         "body_content": "Share your knowledge with the world by creating engaging lessons. Start by clicking on the Add button.",
+        "lesson_nav": {
+          "materials": "Materials",
+          "exercises": "Exercises"
+        },
+        "download_pdf": "Download PDF",
+        "autosaving": "Autosaving...",
+        "done": "Done",
+        "edit": "Edit",
+        "mark_as": "Mark as",
+        "incomplete": "Incomplete",
+        "complete": "Complete",
 
         "materials": {
           "body_heading": "No note, video or slide added for this lesson yet",
@@ -304,7 +315,253 @@
             }
           },
           "button_done": "Done"
+        },
+
+        "exercises": {
+          "heading": "All Exercises",
+          "add_button": "Add",
+          "no_exercises": "No exercises added for this lesson",
+          "no_assigned_exercises": "Your tutor hasn't assigned any exercise to this lesson. For the main time, you can",
+          "chill": "chill with the big boys",
+          "add_exercise": "Share your knowledge with the world by creating engaging exercises. Add an exercise now.",
+          "new_exercise_modal": {
+            "heading": "New Exercise",
+            "options": {
+              "1": "From Scratch",
+              "subtitle_1": "Create your exercise from scratch if you have your questions already prepared",
+              "2": "Use a Template",
+              "subtitle_2": "Select from 100+ templates of predefined exercise to help you get started",
+              "3": "Use AI",
+              "subtitle_3": "You can generate an exercise with AI from your notes"
+            },
+            "how": "How do you want to create your exercise",
+            "coming_soon": "Coming soon",
+            "next": "Next",
+            "title": "Give your exercise a title",
+            "title_placeholder": "Exercise name",
+            "finish": "Finish",
+            "select_template": "Select a template",
+            "questions": "Questions",
+            "points": "Points",
+            "back": "Back",
+            "create_exercises": "Create exercises from Notes with AI",
+            "choose_questions": "Choose how many questions and options you want and AI will help you create an exercise out of your note. Let's go.",
+            "how_many_questions": "How many questions do you want to create?",
+            "how_many_options": "How many options per questions do you want?",
+            "add_note": "Please add a note to use this feature",
+            "generate": "Generate",
+            "completion": "AI Generation Complete",
+            "click_generate": "Click 'Generate' for some magic"
+          }
         }
+      },
+
+      "attendance": {
+        "title": "Attendance",
+        "present": "Present",
+        "absent": "Absent",
+        "search_students": "Search Students",
+        "student": "Student",
+        "lesson": "Lesson",
+        "no_student": "No Student Added"
+      },
+
+      "submissions": {
+        "title": "Submitted Exercises",
+        "submission_status": {
+          "1": "Submitted",
+          "2": "In Progress",
+          "3": "Graded"
+        }
+      },
+
+      "marks": {
+        "title": "Marks",
+        "student": "Student",
+        "total": "Total",
+        "no_student": "No Student Added"
+      },
+
+      "people": {
+        "title": "People",
+        "add": "Add",
+        "search": "Search people",
+        "you": "You",
+        "pending": "Pending",
+        "name": "Name",
+        "role": "Role",
+        "action": "Action",
+        "feedback": "Copied Email to clipboard",
+        "invite_modal": {
+          "title": "Invite people",
+          "invite": "Invite Tutors",
+          "select": "Select tutors in organization...",
+          "to_add": "To add tutor to your organization,",
+          "go_to": "go to organization settings",
+          "invite_students": "Invite Students",
+          "via_link": "You can invite students via an invite link",
+          "copy_link": "Copy link",
+          "success": "Copied Successfully",
+          "finish": "Finish"
+        },
+        "delete_confirmation": {
+          "title": "Delete",
+          "sure": "Are you sure you want to delete",
+          "no": "No",
+          "yes": "Yes"
+        },
+        "roles": {
+          "admin": "Admin",
+          "tutor": "Tutor",
+          "student": "Student"
+        }
+      },
+
+      "certificates": {
+        "title": "Certificates",
+        "certificate_settings": "Certificate Settings",
+        "theme": "Choose a theme",
+        "logo": "Brand Logo",
+        "to_update": "To update your brand image, go to",
+        "settings": "Settings &gt; Organisation settings",
+        "and_upload": "and upload your brand logo",
+        "goto_settings": "Go to Settings",
+        "description": "Course Description",
+        "placeholder": "a little description about the course",
+        "allow": "Allow students download certificate",
+        "locked": "Locked",
+        "unlocked": "Unlocked",
+        "save": "Save Changes",
+        "unlocked_certificate": "Certificate is now available",
+        "locked_certificate": "Certificates not available",
+        "locked_certificate_body_1": "Your instructor needs to unlock your certificate.",
+        "locked_certificate_body_2": "If you need your certificate, please contact your instructor.",
+        "download_certificate": "DownLoad Certificate"
+      },
+
+      "landing_page": {
+        "editor": {
+          "title": {
+            "1": "Header",
+            "2": "Requirement",
+            "3": "Description",
+            "4": "Goals",
+            "5": "Reviews",
+            "6": "Instructor",
+            "7": "Pricing"
+          },
+
+          "save": "Save",
+          "page_builder": "Page Builder",
+          "section": "section",
+
+          "header_form": {
+            "title": "Title",
+            "description": "Description",
+            "short_video": "Short Video",
+            "replace_cover": "Replace cover image",
+            "replace": "Replace"
+          },
+
+          "reviews_form": {
+            "add_reviews": "Add Reviews",
+            "fullname": "Full Name",
+            "description": "Description",
+            "rating": "Rating",
+            "hide": "Hide Review"
+          },
+
+          "instructor_form": {
+            "upload": "Instructor Logo",
+            "name": "Instructor name",
+            "name_placeholder": "Your company name",
+            "role": "Instructor Role",
+            "about": "About Instructor",
+            "about_placeholder": "A short background about the instructure",
+            "total": "Total number of courses"
+          },
+
+          "pricing_form": {
+            "currency": "Currency",
+            "cost": "Cost",
+            "payment": "Payment Link",
+            "discount": "Discount",
+            "no": "No",
+            "yes": "Yes",
+            "percent": "Discount Percent",
+            "gift": "About Gift"
+          }
+        },
+
+        "upload_widget": {
+          "title": "Banner Widget",
+          "width": "Images wider than 1500 pixels work best.",
+          "size": "The maximum size per file is 500kb.",
+          "submit": "Submit",
+          "no_images": "No images available."
+        },
+
+        "pricing_section": {
+          "free": "Free",
+          "not_accepting": "This course is currently not accepting new students.",
+          "discount": "Discount",
+          "enroll": "Enroll Now",
+          "buy": "Buy Now",
+          "bird": "Early bird offer. Buy ASAP"
+        },
+
+        "start_course": "Start Course",
+        "requirement": "Requirement",
+        "description": "Course Description",
+        "learn": "What you'll learn",
+        "certificate": "Certificate",
+        "certificate_text": "When you complete all of the courses in the program, you'll earn a Certificate to share with your professional network.",
+        "content": "Course Content",
+        "slide": "1 slide",
+        "note": "note",
+        "video": "video",
+        "reviews": "Reviews",
+        "see_all": "See All",
+        "reviews_modal": {
+          "title": "Reviews",
+          "rating": "Rating",
+          "ratings": "Ratings"
+        },
+        "instructor": "Instructor",
+        "courses": "courses"
+      },
+
+      "settings": {
+        "heading": "Settings",
+        "cover_image": "Cover Image",
+        "optional_image": "This optional image will show up on your welcome page. If you include one, it should be at least 280 x 200",
+        "replace": "Replace",
+        "del": "Delete",
+        "course_details": "Course Details",
+        "course_title": "Course title",
+        "course_description": "Course Description",
+        "placeholder": "Write your course description here",
+        "link": "Course Link",
+        "grading": "Grading",
+        "reports": "Make grading reports available for lessons",
+        "disabled": "Disabled",
+        "enabled": "Enabled",
+        "order": "Order Lessons Tab",
+        "drag": "Drag and drop the labels to re-order your material tabs",
+        "lesson_download": "Lessons DownLoad",
+        "available": "Make the Lesson available for Download in pdf for registered students",
+        "course_download": "Course Downlaod",
+        "course_avail": "Make the Course available for Download for registered students",
+        "download": "Downlaod",
+        "allow": "Allow New Students",
+        "access": "Allow new students to access this course",
+        "publish": "Publish Course",
+        "determines": "This determines if your course displays on your landing page",
+        "published": "Published",
+        "unpublished": "Unpublished",
+        "delete": "Delete Course",
+        "delete_text": "Delete this course,this action cannot be undone",
+        "save": "Save Changes"
       }
     }
   },

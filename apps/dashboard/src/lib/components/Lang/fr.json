@@ -267,6 +267,18 @@
         "body_header": "Pas encore de cours",
         "body_content": "Partagez vos connaissances avec le monde en créant des leçons engageantes. Commencez par cliquer sur le bouton Ajouter.",
 
+        "lesson_nav": {
+          "materials": "Matériaux",
+          "exercises": "Des exercices"
+        },
+        "download_pdf": "Télécharger le PDF",
+        "autosaving": "Sauvegarde automatique...",
+        "done": "Fait",
+        "edit": "Modifier",
+        "mark_as": "Marquer comme",
+        "incomplete": "Incomplète",
+        "complete": "Complète",
+
         "materials": {
           "body_heading": "Aucune note, vidéo ou diapositive ajoutée pour cette leçon pour le moment",
           "body_content": "Partagez vos connaissances avec vos élèves en créant du contenu engageant. Commencez par cliquer sur",
@@ -304,7 +316,253 @@
             }
           },
           "button_done": "Fait"
+        },
+
+        "exercises": {
+          "heading": "Tous les exercices",
+          "add_button": "Ajouter",
+          "no_exercises": "Aucun exercice ajouté pour cette leçon",
+          "no_assigned_exercises": "Votre tuteur n'a assigné aucun exercice à cette leçon. Pour la plupart, vous pouvez",
+          "chill": "chill avec les grands",
+          "add_exercise": "Partagez vos connaissances avec le monde en créant des exercices engageants. Ajoutez un exercice maintenant.",
+          "new_exercise_modal": {
+            "heading": "Nouvel exercice",
+            "options": {
+              "1": "De zéro",
+              "subtitle_1": "Créez votre exercice à partir de zéro si vous avez déjà préparé vos questions",
+              "2": "Utiliser un modèle",
+              "subtitle_2": "Choisissez parmi plus de 100 modèles d'exercices prédéfinis pour vous aider à démarrer",
+              "3": "Use AI",
+              "subtitle_3": "Vous pouvez générer un exercice avec l'IA à partir de vos notes"
+            },
+            "how": "Comment voulez-vous créer votre exercice",
+            "coming_soon": "À venir",
+            "next": "Suivante",
+            "title": "Donnez un titre à votre exercice",
+            "title_placeholder": "Nom de l'exercice",
+            "finish": "Finition",
+            "select_template": "Sélectionnez un modèle",
+            "questions": "Des questions",
+            "points": "Points",
+            "back": "Dos",
+            "create_exercises": "Créez des exercices à partir de Notes avec l'IA",
+            "choose_questions": "Choisissez le nombre de questions et d'options que vous souhaitez et l'IA vous aidera à créer un exercice à partir de votre note. Allons-y.",
+            "how_many_questions": "Combien de questions souhaitez-vous créer ?",
+            "how_many_options": "Combien d’options par question souhaitez-vous ?",
+            "add_note": "Veuillez ajouter une note pour utiliser cette fonctionnalité",
+            "generate": "Générer",
+            "completion": "Génération d'IA terminée",
+            "click_generate": "Cliquez sur « Générer » pour un peu de magie"
+          }
         }
+      },
+
+      "attendance": {
+        "title": "Présence",
+        "present": "Présente",
+        "absent": "Absente",
+        "search_students": "Rechercher des étudiants",
+        "student": "Étudiante",
+        "lesson": "Leçon",
+        "no_student": "Aucun étudiant ajouté"
+      },
+
+      "submissions": {
+        "title": "Exercices soumis",
+        "submission_status": {
+          "1": "Soumise",
+          "2": "En cours",
+          "3": "Noté"
+        }
+      },
+
+      "marks": {
+        "title": "Des marques",
+        "student": "Étudiante",
+        "total": "Totale",
+        "no_student": "Aucun étudiant ajouté"
+      },
+
+      "people": {
+        "title": "Personnes",
+        "add": "Ajouter",
+        "search": "Rechercher des personnes",
+        "you": "Toi",
+        "pending": "En attente",
+        "name": "Nom",
+        "role": "Rôle",
+        "action": "Action",
+        "feedback": "E-mail copié dans le presse-papiers",
+        "invite_modal": {
+          "title": "Inviter des gens",
+          "invite": "Inviter des tuteurs",
+          "select": "Sélectionner des tuteurs dans l'organisation...",
+          "to_add": "Pour ajouter un tuteur à votre organisation,",
+          "go_to": "accéder aux paramètres de l'organisation",
+          "invite_students": "Inviter des étudiants",
+          "via_link": "Vous pouvez inviter des étudiants via un lien d'invitation",
+          "copy_link": "Copier le lien",
+          "success": "Copié avec succès",
+          "finish": "Finition"
+        },
+        "delete_confirmation": {
+          "title": "Supprimer",
+          "sure": "Etes-vous sûr que vous voulez supprimer",
+          "no": "Non",
+          "yes": "Oui"
+        },
+        "roles": {
+          "admin": "Administratrice",
+          "tutor": "Tutrice",
+          "student": "Étudiante"
+        }
+      },
+
+      "certificates": {
+        "title": "Certificats",
+        "certificate_settings": "Paramètres du certificat",
+        "theme": "Choisissez un thème",
+        "logo": "Logo de la marque",
+        "to_update": "Pour mettre à jour votre image de marque, rendez-vous sur",
+        "settings": "Paramètres &gt; Paramètres de l'organisation",
+        "and_upload": "et téléchargez le logo de votre marque",
+        "goto_settings": "Aller aux paramètres",
+        "description": "Description du cours",
+        "placeholder": "une petite description du cours",
+        "allow": "Autoriser les étudiants à télécharger le certificat",
+        "locked": "Fermé à clé",
+        "unlocked": "Débloqué",
+        "save": "Sauvegarder les modifications",
+        "unlocked_certificate": "Le certificat est maintenant disponible",
+        "locked_certificate": "Certificats non disponibles",
+        "locked_certificate_body_1": "Votre instructeur doit débloquer votre certificat.",
+        "locked_certificate_body_2": "Si vous avez besoin de votre certificat, veuillez contacter votre instructeur.",
+        "download_certificate": "Télécharger le certificat"
+      },
+
+      "landing_page": {
+        "editor": {
+          "title": {
+            "1": "Entête",
+            "2": "Exigence",
+            "3": "Description",
+            "4": "Objectifs",
+            "5": "Commentaires",
+            "6": "Instructrice",
+            "7": "Tarifs"
+          },
+
+          "save": "Sauvegarder",
+          "page_builder": "Générateur de pages",
+          "section": "section",
+
+          "header_form": {
+            "title": "Titre",
+            "description": "Description",
+            "short_video": "Courte vidéo",
+            "replace_cover": "Remplacer l'image de couverture",
+            "replace": "Remplacer"
+          },
+
+          "reviews_form": {
+            "add_reviews": "Ajouter des avis",
+            "fullname": "Nom et prénom",
+            "description": "Description",
+            "rating": "Notation",
+            "hide": "Masquer l'avis"
+          },
+
+          "instructor_form": {
+            "upload": "Logo de l'instructeur",
+            "name": "Nom de l'instructeur",
+            "name_placeholder": "Le nom de votre société",
+            "role": "Rôle d'instructeur",
+            "about": "À propos de l'instructeur",
+            "about_placeholder": "Un bref aperçu de l'instructure",
+            "total": "Nombre total de cours"
+          },
+
+          "pricing_form": {
+            "currency": "Devise",
+            "cost": "Coût",
+            "payment": "Lien de paiement",
+            "discount": "Rabais",
+            "no": "Non",
+            "yes": "Oui",
+            "percent": "Pourcentage de remise",
+            "gift": "À propos du cadeau"
+          }
+        },
+
+        "upload_widget": {
+          "title": "Widget de bannière",
+          "width": "Les images plus larges que 1500 pixels fonctionnent mieux.",
+          "size": "La taille maximale par fichier est de 500 Kb.",
+          "submit": "Soumettre",
+          "no_images": "Aucune image disponible."
+        },
+
+        "pricing_section": {
+          "free": "Free",
+          "not_accepting": "This course is currently not accepting new students.",
+          "discount": "Rabais",
+          "enroll": "Enroll Now",
+          "buy": "Buy Now",
+          "bird": "Early bird offer. Buy ASAP"
+        },
+
+        "start_course": "Commencer le cours",
+        "requirement": "Exigence",
+        "description": "Description du cours",
+        "learn": "Ce que vous apprendrez",
+        "certificate": "Certificat",
+        "certificate_text": "Lorsque vous aurez terminé tous les cours du programme, vous obtiendrez un certificat à partager avec votre réseau professionnel.",
+        "content": "Le contenu des cours",
+        "slide": "1 diapositive",
+        "note": "note",
+        "video": "vidéo",
+        "reviews": "Commentaires",
+        "see_all": "Voir tout",
+        "reviews_modal": {
+          "title": "Commentaires",
+          "rating": "Notation",
+          "ratings": "Notes"
+        },
+        "instructor": "Instructrice",
+        "courses": "cours"
+      },
+
+      "settings": {
+        "heading": "Paramètres",
+        "cover_image": "Image de couverture",
+        "optional_image": "Cette image facultative apparaîtra sur votre page d'accueil. Si vous en incluez un, il doit mesurer au moins 280 x 200.",
+        "replace": "Remplacer",
+        "del": "Supprimer",
+        "course_details": "Détails du cours",
+        "course_title": "Titre de cours",
+        "course_description": "Description du cours",
+        "placeholder": "Écrivez ici la description de votre cours",
+        "link": "Lien du cours",
+        "grading": "Classement",
+        "reports": "Rendre les rapports de notation disponibles pour les leçons",
+        "disabled": "Désactivé",
+        "enabled": "Activé",
+        "order": "Onglet Commander des leçons",
+        "drag": "Faites glisser et déposez les étiquettes pour réorganiser vos onglets de matériaux",
+        "lesson_download": "Téléchargement des leçons",
+        "available": "Rendre la leçon disponible en téléchargement en pdf pour les étudiants inscrits",
+        "course_download": "Téléchargement du cours",
+        "course_avail": "Rendre le cours disponible en téléchargement pour les étudiants inscrits",
+        "download": "Téléchargements",
+        "allow": "Autoriser les nouveaux étudiants",
+        "access": "Autoriser les nouveaux étudiants à accéder à ce cours",
+        "publish": "Publier le cours",
+        "determines": "Cela détermine si votre cours s'affiche sur votre page de destination",
+        "published": "Publié",
+        "unpublished": "Inédite",
+        "delete": "Supprimer un cours",
+        "delete_text": "Supprimer ce cours, cette action est irréversible",
+        "save": "Sauvegarder les modifications"
       }
     }
   },

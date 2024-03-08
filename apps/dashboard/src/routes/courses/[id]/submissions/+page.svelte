@@ -25,6 +25,7 @@
   } from '$lib/utils/services/notification/notification';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { browser } from '$app/environment';
+  import { t } from '$lib/utils/functions/translations.js';
 
   type items = {
     id: number;
@@ -62,27 +63,27 @@
   let openExercise = false;
 
   const submissionStatus: { [key: number]: string } = {
-    1: 'Submitted',
-    2: 'In Progress',
-    3: 'Graded'
+    1: $t('course.navItem.submissions.submission_status.1'),
+    2: $t('course.navItem.submissions.submission_status.2'),
+    3: $t('course.navItem.submissions.submission_status.3')
   };
 
   let sections: sectionType[] = [
     {
       id: 1,
-      title: 'Submitted',
+      title: $t('course.navItem.submissions.submission_status.1'),
       value: 0,
       items: []
     },
     {
       id: 2,
-      title: 'In Progress',
+      title: $t('course.navItem.submissions.submission_status.2'),
       value: 0,
       items: []
     },
     {
       id: 3,
-      title: 'Graded',
+      title: $t('course.navItem.submissions.submission_status.3'),
       value: 10,
       items: []
     }
@@ -337,7 +338,7 @@
 
 <RoleBasedSecurity allowedRoles={[1, 2]}>
   <CourseContainer bind:courseId={data.courseId}>
-    <PageNav title="Submitted Exercises" />
+    <PageNav title={$t('course.navItem.submissions.title')} />
 
     <PageBody width="w-full max-w-6xl md:w-11/12 overflow-x-auto">
       <div class="flex items-center w-full">

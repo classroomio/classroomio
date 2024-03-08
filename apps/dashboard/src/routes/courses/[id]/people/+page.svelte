@@ -33,6 +33,7 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import type { GroupPerson } from '$lib/utils/types';
+  import { t } from '$lib/utils/functions/translations.js';
 
   export let data;
 
@@ -121,12 +122,12 @@
 />
 
 <CourseContainer bind:courseId={data.courseId}>
-  <PageNav title="People" disableSticky={true}>
+  <PageNav title={$t('course.navItem.people.title')} disableSticky={true}>
     <slot:fragment slot="widget">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
         <PrimaryButton
           className="mr-2"
-          label="Add"
+          label={$t('course.navItem.people.add')}
           onClick={() => ($invitationModal.open = true)}
         />
       </RoleBasedSecurity>
@@ -140,7 +141,7 @@
         <div class="max-w-[320px]">
           <Search
             class="dark:text-slate-950 border-0 bg-zinc-100 w-full"
-            placeholder="Search people"
+            placeholder={$t('course.navItem.people.search')}
             bind:value={searchValue}
           />
         </div>
@@ -167,13 +168,13 @@
         >
           <StructuredListRow head class="mx-7">
             <StructuredListCell head class="text-primary-700 py-3 dark:text-white"
-              >Name</StructuredListCell
+              >{$t('course.navItem.people.name')}</StructuredListCell
             >
             <StructuredListCell head class="text-primary-700 py-3 dark:text-white"
-              >Role</StructuredListCell
+              >{$t('course.navItem.people.role')}</StructuredListCell
             >
             <StructuredListCell head class="text-primary-700 py-3 dark:text-white"
-              >Action</StructuredListCell
+              >{$t('course.navItem.people.action')}</StructuredListCell
             >
             <RoleBasedSecurity allowedRoles={[1, 2]}>
               <p class="dark:text-white hidden lg:block text-lg w-20" />
@@ -212,7 +213,7 @@
                           />
                         </RoleBasedSecurity>
                         {#if person.profile_id == $profile.id}
-                          <ComingSoon label="You" />
+                          <ComingSoon label={$t('course.navItem.people.you')} />
                         {/if}
                       </div>
                     </div>
@@ -232,11 +233,14 @@
                     </a>
                     <div class="flex items-center justify-between">
                       <RoleBasedSecurity allowedRoles={[1, 2]}>
-                        <CopyButton text={getEmail(person)} feedback="Copied Email to clipboard" />
+                        <CopyButton
+                          text={getEmail(person)}
+                          feedback={$t('course.navItem.people.feedback')}
+                        />
                       </RoleBasedSecurity>
 
                       <TextChip
-                        value="Pending"
+                        value={$t('course.navItem.people.pending')}
                         className="text-xs bg-yellow-200 text-yellow-700 h-fit"
                         size="sm"
                       />

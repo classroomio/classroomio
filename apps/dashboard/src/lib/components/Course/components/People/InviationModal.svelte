@@ -19,6 +19,7 @@
     NOTIFICATION_NAME
   } from '$lib/utils/services/notification/notification';
   import { snackbar } from '$lib/components/Snackbar/store';
+  import { t } from '$lib/utils/functions/translations';
 
   interface Tutor {
     id: number;
@@ -140,14 +141,14 @@
   bind:open={$invitationModal.open}
   width="w-4/5 md:w-2/5"
   maxWidth="max-w-lg"
-  modalHeading="Invite people"
+  modalHeading={$t('course.navItem.people.invite_modal.title')}
 >
   <form on:submit|preventDefault={onSubmit}>
     <div class="mb-8">
-      <p class="text-base mb-1 font-semibold">Invite Tutors</p>
+      <p class="text-base mb-1 font-semibold">{$t('course.navItem.people.invite_modal.invite')}</p>
       <MultiSelect
         disabled={isLoadingTutors}
-        label="Select tutors in organization..."
+        label={$t('course.navItem.people.invite_modal.select')}
         bind:selectedIds
         items={tutors}
       />
@@ -157,12 +158,12 @@
         </span>
       {:else}
         <span>
-          To add tutor to your organization,
+          {$t('course.navItem.people.invite_modal.to_add')}
           <a
             href={`/org/${$currentOrg.siteName}/settings/teams`}
             class="underline text-primary-600"
           >
-            go to organization settings
+            {$t('course.navItem.people.invite_modal.go_to')}
           </a>
         </span>
       {/if}
@@ -170,8 +171,10 @@
 
     <div class="mb-8 w-[90%] flex justify-between items-center">
       <div class="w-3/5">
-        <p class="text-base mb-1 font-semibold">Invite Students</p>
-        <p class=" text-sm">You can invite students via an invite link</p>
+        <p class="text-base mb-1 font-semibold">
+          {$t('course.navItem.people.invite_modal.invite_students')}
+        </p>
+        <p class=" text-sm">{$t('course.navItem.people.invite_modal.via_link')}</p>
       </div>
 
       <div class="relative">
@@ -182,16 +185,20 @@
           onClick={copyLink}
         >
           <Link size={16} class="mr-1" />
-          Copy link
+          {$t('course.navItem.people.invite_modal.copy_link')}
         </PrimaryButton>
         <Popover caret open={copied} align="bottom">
-          <div style="padding: 5px">Copied Successfully</div>
+          <div style="padding: 5px">{$t('course.navItem.people.invite_modal.success')}</div>
         </Popover>
       </div>
     </div>
 
     <div class="mt-5 flex items-center flex-row-reverse">
-      <PrimaryButton className="px-6 py-3" label="Finish" type="submit" />
+      <PrimaryButton
+        className="px-6 py-3"
+        label={$t('course.navItem.people.invite_modal.finish')}
+        type="submit"
+      />
     </div>
   </form>
 </Modal>

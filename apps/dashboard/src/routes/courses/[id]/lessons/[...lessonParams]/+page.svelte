@@ -32,6 +32,7 @@
   import type { LessonCompletion } from '$lib/utils/types';
   import { profile } from '$lib/utils/store/user';
   import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
+  import { t } from '$lib/utils/functions/translations.js';
 
   export let data;
 
@@ -228,12 +229,12 @@
     bind:hideOnMobile={isStudent}
     navItems={[
       {
-        label: 'Materials',
+        label: $t('course.navItem.lessons.lesson_nav.materials'),
         isActive: data.isMaterialsTabActive,
         href: path
       },
       {
-        label: 'Exercises',
+        label: $t('course.navItem.lessons.lesson_nav.exercises'),
         badgeValue: data.isMaterialsTabActive ? $lesson.totalExercises : $lesson.exercises.length,
         isActive: !data.isMaterialsTabActive,
         href: `${path}/exercises`
@@ -263,16 +264,18 @@
                 {isLoading}
               >
                 <Download size={16} class="mr-2" />
-                Download PDF
+                {$t('course.navItem.lessons.download_pdf')}
               </PrimaryButton>
             {/if}
 
             <PrimaryButton className="mr-2" variant={VARIANTS.OUTLINED} onClick={toggleMode}>
               {#if isSaving}
                 <Loading withOverlay={false} small />
-                <span class="text-sm ml-2 italic">Autosaving...</span>
+                <span class="text-sm ml-2 italic"> {$t('course.navItem.lessons.autosaving')}</span>
               {:else}
-                {mode === MODES.edit ? 'Done' : 'Edit'}
+                {mode === MODES.edit
+                  ? $t('course.navItem.lessons.done')
+                  : $t('course.navItem.lessons.edit')}
               {/if}
             </PrimaryButton>
           </div>
@@ -313,7 +316,10 @@
             {:else}
               <CheckmarkOutlineIcon size={24} class="carbon-icon mr-2" />
             {/if}
-            Mark as {isLessonComplete ? 'Incomplete' : 'Complete'}
+            {$t('course.navItem.lessons.mark_as')}
+            {isLessonComplete
+              ? $t('course.navItem.lessons.incomplete')
+              : $t('course.navItem.lessons.complete')}
           </PrimaryButton>
         </div>
       {/if}
