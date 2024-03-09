@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import axios from 'axios';
   import { PUBLIC_SERVER_URL } from '$env/static/public';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -54,7 +54,7 @@
       console.log('Upload res', formRes);
       isLoading = false;
       isLoaded = false;
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error uploading video', err, '\n\n', err.response);
       if (err.response) {
         formRes = err.response.data;

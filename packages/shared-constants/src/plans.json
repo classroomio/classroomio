@@ -1,5 +1,7 @@
 {
-  "FREE": {
+  "BASIC": {
+    "NAME": "Basic",
+    "DESCRIPTION": "For personal use, no credit card required.",
     "PRICE": {
       "MONTHLY": "0",
       "YEARLY": "0",
@@ -7,42 +9,54 @@
     },
     "FEATURES": [
       "Unlimited Courses",
-      "Unlimited Conversations",
+      "Unlimited Q/A",
       "50 Students",
       "AI Course Builder (no video upload)",
-      "Course Landing Page",
-      "Live chat & polls",
-      "20 AI Prompts"
-    ]
+      "Live chat & polls"
+    ],
+    "CTA": {
+      "LABEL": "Signup Now",
+      "LINK": "/signup?plan=free"
+    }
   },
-  "PRO": {
+  "EARLY_ADOPTER": {
+    "NAME": "Early Adopters",
+    "DESCRIPTION": "For fast growing teaching businesses that aim to scale.",
     "PRICE": {
-      "MONTHLY": "30",
-      "YEARLY": "25",
+      "MONTHLY": "35",
+      "YEARLY": "350",
       "IS_PREMIUM": false
     },
     "FEATURES": [
-      "Everything in Free",
-      "3000 Students",
+      "Everything in Basic",
+      "Unlimited Admins",
+      "10K Students",
       "Advanced AI Course Builder (Video upload & Certificate)",
-      "Lesson/Course PDF Download",
-      "2000 AI Prompts",
-      "Remove ClassroomIO Branding",
-      "Email Support"
-    ]
+      "Custom Branding",
+      "Includes all Upcoming Features"
+    ],
+    "CTA": {
+      "LABEL": "I want in 🚀",
+      "LINK": "/signup?plan=early-adopter"
+    }
   },
-  "TEAM": {
+  "ENTERPRISE": {
+    "NAME": "Enterprise",
+    "DESCRIPTION": "Best suited for larger businesses that need more control",
     "PRICE": {
-      "MONTHLY": "99",
-      "YEARLY": "85",
+      "MONTHLY": "",
+      "YEARLY": "",
       "IS_PREMIUM": true
     },
     "FEATURES": [
-      "Everything in Pro",
+      "Everything in Early Adopters plus:",
       "Unlimited students",
-      "Unlimited AI Prompts",
       "Custom Domain",
       "24/7 Support"
-    ]
+    ],
+    "CTA": {
+      "LABEL": "Contact Us",
+      "LINK": "https://cal.com/classroomio/enterprise"
+    }
   }
 }
