@@ -2,7 +2,7 @@
 
 <!-- Please include a summary of the change and which issue is fixed. Please also include relevant motivation and context. List any dependencies that are required for this change. -->
 
-Fixes # (issue)
+Fixes # (place issue number here without bracket)
 
 <!-- Please provide a screenshots or upload a video for visual changes to speed up reviews -->
 

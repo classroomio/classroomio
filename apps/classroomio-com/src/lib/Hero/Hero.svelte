@@ -28,22 +28,22 @@
   });
 </script>
 
-<div class="text-center mt-[30%] md:mt-36 border-b-2 relative">
-  <div class="mb-10 flex items-center justify-center w-full">
+<div class="relative mt-[30%] border-b-2 text-center md:mt-36">
+  <div class="mb-10 flex w-full items-center justify-center">
     <a
       target="_blank"
       rel="noopener noreferrer nofollow"
       href="https://github.com/rotimi-best/classroomio"
       style="color: rgb(75, 85, 99);"
-      class="border border-gray-300 rounded-full px-4 py-1 text-sm font-medium hover:underline"
+      class="rounded-full border border-gray-300 px-4 py-1 text-sm font-medium hover:underline"
       >Give us a <span class="text-blue-700">star</span> on github</a
     >
   </div>
   <h1
-    class="mx-auto text-3xl md:text-4xl lg:text-6xl font-normal leading-[1.5] text-slate-900 flex flex-col items-center"
+    class="mx-auto flex flex-col items-center text-3xl font-normal leading-[1.5] text-slate-900 md:text-4xl lg:text-6xl"
   >
     <span>Launch Your Online Bootcamp</span>
-    <span class="text-blue-700 relative"
+    <span class="relative text-blue-700"
       >In Minutes
       <svg
         aria-hidden="true"
@@ -58,13 +58,13 @@
     </span>
   </h1>
 
-  <p class="mx-auto mt-10 lg:mt-6 px-4 lg:p-0 text-md md:text-lg text-slate-700 lg:w-2/4">
+  <p class="text-md mx-auto mt-10 px-4 text-slate-700 md:text-lg lg:mt-6 lg:w-2/4 lg:p-0">
     Meet a better collaboration tool for teachers and students. ClassroomIO is a no-code tool that
     allows you build and scale your own teaching platform with ease.
   </p>
-  <div class="mt-10 flex gap-4 items-center justify-center flex-col md:flex-row">
+  <div class="mt-10 flex flex-col items-center justify-center gap-4 md:flex-row">
     <a
-      class="font-medium lg:font-semibold text-sm md:text-md w-11/12 md:w-fit text-white px-6 py-3 lg:px-6 lg:py-5 bg-blue-700 rounded-md hover:bg-blue-800 hover:shadow-xl transition-all delay-100"
+      class="md:text-md w-11/12 rounded-md bg-blue-700 px-6 py-3 text-sm font-medium text-white transition-all delay-100 hover:bg-blue-800 hover:shadow-xl md:w-fit lg:px-6 lg:py-5 lg:font-semibold"
       href="/signup"
       rel="noopener noreferrer nofollow"
     >
@@ -100,14 +100,14 @@
       {height}
       src="./cio-hero-imac.webp"
       alt="hero section with dark vs light mode"
-      class="hidden md:block lg:block floating mx-auto rounded-lg shadow-lg"
+      class="floating mx-auto w-[85%] rounded-lg shadow-lg lg:w-[70%]"
     />
   </div>
 
   {#if PUBLIC_ENABLE_USERS_COMPANIES}
-    <div class="px-[15%] mb-[10%]">
-      <h2 class="text-base lg:text-xl font-semibold text-gray-900">Used at</h2>
-      <div class="w-full flex flex-wrap flex-row gap-5 justify-between items-center py-[5%]">
+    <div class="mb-[10%] px-[15%]">
+      <h2 class="text-base font-semibold text-gray-900 lg:text-xl">Used at</h2>
+      <div class="flex w-full flex-row flex-wrap items-center justify-between gap-5 py-[5%]">
         <img loading="lazy" src="/hero-1.svg" alt="" class="w-[30%] lg:w-[13%]" />
         <img loading="lazy" src="/hero-2.svg" alt="" class="w-[30%] lg:w-[13%]" />
         <img loading="lazy" src="/hero-3.svg" alt="" class="w-[30%] lg:w-[13%]" />
