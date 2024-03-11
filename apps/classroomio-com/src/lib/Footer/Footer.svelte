@@ -15,11 +15,11 @@
         class="w-[10%] lg:w-[5%] mb-5 lg:mb-10"
       />
       <p class="text-sm lg:text-md tracking-wide leading-7 lg:leading-7 text-gray-600 mb-5 mr-2">
-        Launch Your Online Bootcamp In Minutes
+        Launch Your Teaching Platform In Minutes
         <br />
-        Making teaching and learning seamless for tech bootcamps
+        The easiest way to launch and scale your teaching platform
       </p>
-      <a
+      <!-- <a
         href="https://www.producthunt.com/posts/classroomio?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-classroomio"
         target="_blank"
         ><img
@@ -30,7 +30,7 @@
           width="250"
           height="54"
         /></a
-      >
+      > -->
       <div class="flex items-center mt-5 lg:mt-10 gap-3 lg:gap-7">
         <a href="https://www.facebook.com/classroomiohq" target="_blank" aria-label="Facebook Link">
           <LogoFacebook

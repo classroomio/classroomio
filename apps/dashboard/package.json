@@ -49,6 +49,7 @@
     "openai-edge": "^1.2.2",
     "pluralize": "^8.0.0",
     "posthog-js": "^1.103.0",
+    "shared-constants": "workspace:*",
     "sirv": "^2.0.3",
     "svelte-email": "^0.0.4",
     "svelte-ui": "workspace:*",

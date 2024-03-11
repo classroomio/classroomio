@@ -22,28 +22,28 @@ const config: DocsThemeConfig = {
         href={`${process.env.imagePath}/img/logo-32.png`}
       />
 
-      <title>ClassroomIO – Launch Your Online Bootcamp In Minutes</title>
+      <title>ClassroomIO – Launch Your Teaching Platform In Minutes</title>
       <meta
         name="description"
-        content="ClassroomIO is a no-code tool that allows you build and scale your own teaching platform with ease."
+        content="ClassroomIO is the easiest place to launch and scale your teaching platform."
       />
 
       <meta property="og:url" content="https://classroomio.com/docs" />
       <meta property="og:type" content="website" />
-      <meta property="og:title" content="ClassroomIO – Launch Your Online Bootcamp In Minutes" />
+      <meta property="og:title" content="ClassroomIO – Launch Your Teaching Platform In Minutes" />
       <meta
         property="og:description"
-        content="ClassroomIO is a no-code tool that allows you build and scale your own teaching platform with ease."
+        content="ClassroomIO is the easiest place to launch and scale your teaching platform."
       />
       <meta property="og:image" content="https://classroomio.com/classroomio-opengraph-image.png" />
 
       <meta name="twitter:card" content="summary_large_image" />
       <meta property="twitter:domain" content="classroomio.com" />
       <meta property="twitter:url" content="https://classroomio.com/docs" />
-      <meta name="twitter:title" content="ClassroomIO – Launch Your Online Bootcamp In Minutes" />
+      <meta name="twitter:title" content="ClassroomIO – Launch Your Teaching Platform In Minutes" />
       <meta
         name="twitter:description"
-        content="ClassroomIO is a no-code tool that allows you build and scale your own teaching platform with ease."
+        content="ClassroomIO is the easiest place to launch and scale your teaching platform."
       />
       <meta name="twitter:creator" content="@classroomio" />
       <meta
@@ -88,8 +88,7 @@ const config: DocsThemeConfig = {
       openGraph: {
         siteName: 'ClassroomIO Docs',
         title: 'ClassroomIO Documentation',
-        description:
-          'ClassroomIO is a no-code tool that allows you build and scale your own teaching platform with ease.',
+        description: 'ClassroomIO is the easiest place to launch and scale your teaching platform.',
         images: [
           {
             url: `${process.env.imagePath}/img/logo-16.png`,

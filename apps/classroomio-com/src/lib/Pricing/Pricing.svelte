@@ -46,90 +46,96 @@
     </div>
 
     <div class="isolate mt-10 grid grid-cols-1 gap-10 lg:grid-cols-3">
-      <!-- card 1 -->
+      <!-- Card 1 -->
       <div class="max-w-xl rounded-3xl p-8 ring-1 ring-gray-200 lg:max-w-sm xl:p-9">
-        <p class="text-lg font-semibold leading-8 text-gray-900 lg:text-xl">Hobby</p>
+        <p class="text-lg font-semibold leading-8 text-gray-900 lg:text-xl">
+          {PLANS.BASIC.NAME}
+        </p>
         <p class="lg:text-md mt-4 text-sm font-light leading-6 text-gray-500 lg:leading-6">
-          For personal use. Hobby plan is free for up to 5 courses forever, no credit card required.
+          {PLANS.BASIC.DESCRIPTION}
         </p>
         <p class="mt-6 flex items-baseline gap-x-1 text-4xl font-medium lg:text-4xl">
-          ${PLANS.FREE.PRICE.MONTHLY} <sub class="text-base">/mo</sub>
+          ${PLANS.BASIC.PRICE.MONTHLY}
+          <!-- <sub class="text-base">/mo</sub> -->
         </p>
-        <button
-          class="text-md mt-10 w-full rounded-md bg-slate-900 py-3 font-medium text-white hover:bg-slate-700 lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
-          data-cal-config={"{'layout':'month_view'}"}
-          data-cal-link="classroomio/demo"
+        <a
+          class="block text-center text-md mt-10 w-full rounded-md bg-slate-900 py-3 font-medium text-white hover:bg-slate-700 lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
+          href={PLANS.BASIC.CTA.LINK}
+          target="_blank"
         >
-          Get started
-        </button>
+          {PLANS.BASIC.CTA.LABEL}
+        </a>
         <ul class="mt-8 space-y-2 text-sm text-gray-600 lg:space-y-5 xl:mt-10">
-          {#each PLANS.FREE.FEATURES as freeFeature}
+          {#each PLANS.BASIC.FEATURES as feature}
             <li class="flex items-center">
               <Checkmark
                 size={24}
                 fill="#1D4EE2"
                 class="mr-2 scale-[70%] lg:mr-3 lg:scale-[100%]"
               />
-              {freeFeature}
+              {feature}
             </li>
           {/each}
         </ul>
       </div>
 
-      <!-- card 2 -->
+      <!-- Card 2 -->
       <div class="max-w-xl rounded-3xl bg-gray-900 p-8 lg:max-w-lg xl:p-9">
-        <p class="text-lg font-semibold leading-8 text-white lg:text-xl">Pro</p>
+        <p class="text-lg font-semibold leading-8 text-white lg:text-xl">
+          {PLANS.EARLY_ADOPTER.NAME}
+        </p>
         <p class="lg:text-md mt-4 text-sm font-light leading-6 text-white lg:leading-6">
-          Advanced features for small teaching businesses. Built for scale.
+          {PLANS.EARLY_ADOPTER.DESCRIPTION}
         </p>
         <p class="mt-6 flex items-baseline gap-x-1 text-4xl font-medium text-white lg:text-4xl">
-          ${isYearlyPlan ? PLANS.PRO.PRICE.YEARLY : PLANS.PRO.PRICE.MONTHLY}
-          <sub class="text-base">/member</sub>
+          ${isYearlyPlan ? PLANS.EARLY_ADOPTER.PRICE.YEARLY : PLANS.EARLY_ADOPTER.PRICE.MONTHLY}
+          <!-- <sub class="text-base">/mo</sub> -->
         </p>
-        <button
-          class="text-md mt-10 w-full rounded-md bg-white py-3 font-medium text-slate-900 hover:bg-indigo-50 lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
-          data-cal-config={"{'layout':'month_view'}"}
-          data-cal-link="classroomio/demo"
+        <a
+          class="block text-center text-md mt-10 w-full rounded-md bg-white py-3 font-medium text-slate-900 hover:bg-indigo-50 lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
+          href={PLANS.EARLY_ADOPTER.CTA.LINK}
+          target="_blank"
         >
-          Get Started
-        </button>
+          {PLANS.EARLY_ADOPTER.CTA.LABEL}
+        </a>
         <ul class="mt-8 space-y-3 text-sm font-light text-white lg:space-y-5 xl:mt-10">
-          {#each PLANS.PRO.FEATURES as proFeature}
+          {#each PLANS.EARLY_ADOPTER.FEATURES as features}
             <li class="flex items-center">
               <Checkmark size={24} fill="#fff" class="mr-2 scale-[70%] lg:mr-3 lg:scale-[100%]" />
-              {proFeature}
+              {features}
             </li>
           {/each}
         </ul>
       </div>
 
-      <!-- card 3 -->
+      <!-- Card 3 -->
       <div class="max-w-xl rounded-3xl p-8 ring-1 ring-gray-200 lg:max-w-sm xl:p-9">
-        <p class="text-lg font-semibold leading-8 text-gray-900 lg:text-xl">Team</p>
-        <p class="lg:text-md mt-4 text-sm font-light leading-6 text-gray-500 lg:leading-6">
-          Best suited for teams and larger businesses that need more control.
+        <p class="text-lg font-semibold leading-8 text-gray-900 lg:text-xl">
+          {PLANS.ENTERPRISE.NAME}
         </p>
-        <p class="mt-6 flex items-baseline gap-x-1 text-4xl font-medium lg:mt-6 lg:text-4xl">
-          ${isYearlyPlan ? PLANS.TEAM.PRICE.YEARLY : PLANS.TEAM.PRICE.MONTHLY}
-          <sub class="text-base">/member</sub>
+        <p class="lg:text-md mt-4 text-sm font-light leading-6 text-gray-500 lg:leading-6">
+          {PLANS.ENTERPRISE.DESCRIPTION}
+        </p>
+        <p class="mt-6 flex items-baseline gap-x-1 text-xl font-medium lg:mt-6 lg:text-xl">
+          Request Pricing
         </p>
         <button
           class="text-md mt-10 w-full rounded-md bg-slate-900 py-3 font-medium text-white hover:bg-slate-700 lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
           data-cal-config={"{'layout':'month_view'}"}
-          data-cal-link="classroomio/demo"
+          data-cal-link="classroomio/enterprise"
         >
-          Get started
+          {PLANS.ENTERPRISE.CTA.LABEL}
         </button>
 
         <ul class="mt-8 space-y-2 text-sm text-gray-600 lg:space-y-5 xl:mt-10">
-          {#each PLANS.TEAM.FEATURES as teamFeature}
+          {#each PLANS.ENTERPRISE.FEATURES as features}
             <li class="flex items-center">
               <Checkmark
                 size={24}
                 fill="#1D4EE2"
                 class="mr-2 scale-[70%] lg:mr-3 lg:scale-[100%]"
               />
-              {teamFeature}
+              {features}
             </li>
           {/each}
         </ul>
@@ -149,7 +155,7 @@
           class="m-0 lg:mt-1 text-md leading-7 lg:leading-6 text-gray-600"
         >
           For personal use. Hobby plan is free for up to 5 courses forever, no
-          credit card required.
+          credit Card required.
         </p>
       </div>
         <button

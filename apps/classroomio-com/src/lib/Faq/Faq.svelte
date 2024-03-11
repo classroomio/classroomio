@@ -36,7 +36,7 @@
     class="floating relative mt-[10%] grad w-[100%] h-[61vh] lg:h-[54vh] flex items-center flex-col justify-center lg:w-[70%] mx-auto py-[12%] px-[6%] text-center shadow-2xl lg:rounded-3xl"
   >
     <h1 class="mt-3 lg:mt-2 text-3xl lg:text-4xl font-bold font-display tracking-tight text-white">
-      Supercharge your Classroom Today
+      Launch Today
     </h1>
     <p class="mt-6 text-xl lg:text-lg text-gray-300">
       Try before you buy. No credit card required.
