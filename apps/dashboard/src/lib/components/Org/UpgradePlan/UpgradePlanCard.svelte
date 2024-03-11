@@ -3,12 +3,14 @@
   import PLANS from '../../../../../../../packages/shared-constants/src/plans.json';
 </script>
 
-<section id="pricing" class="-mb-20">
+<section id="pricing">
   <div class="flex flex-col items-center justify-center">
-    <div class="isolate grid grid-cols-1 lg:grid-cols-3">
+    <div class="isolate grid gap-1 grid-cols-1 lg:grid-cols-3">
       <!-- card 1 -->
-      <div class="max-w-xl p-4 ring-1 ring-gray-200 lg:max-w-sm">
-        <p class="text-lg font-semibold leading-8 text-gray-900 lg:text-xl">{PLANS.BASIC.NAME}</p>
+      <div class="max-w-xl p-4 ring-1 ring-gray-200 lg:max-w-sm rounded-xl">
+        <p class="text-lg font-semibold leading-8 text-gray-900 lg:text-xl mb-2">
+          {PLANS.BASIC.NAME}
+        </p>
         <p class="flex items-baseline gap-x-1 font-medium text-baseline">
           USD ${PLANS.BASIC.PRICE.MONTHLY}
         </p>
@@ -37,8 +39,8 @@
       </div>
 
       <!-- card 2 -->
-      <div class="max-w-xl bg-gray-900 ring-1 ring-gray-200 p-4 lg:max-w-sm">
-        <p class="text-lg font-semibold leading-8 text-white lg:text-xl">
+      <div class="max-w-xl bg-gray-900 ring-1 rounded-xl ring-gray-200 p-4 lg:max-w-sm">
+        <p class="text-lg font-semibold leading-8 text-white lg:text-xl mb-2">
           {PLANS.EARLY_ADOPTER.NAME}
         </p>
         <p class="flex items-baseline gap-x-1 text-baseline text-white font-medium">
@@ -69,8 +71,8 @@
       </div>
 
       <!-- card 3 -->
-      <div class="max-w-xl p-4 ring-1 ring-gray-200 lg:max-w-sm">
-        <p class="text-lg font-semibold leading-8 text-gray-900 lg:text-xl">
+      <div class="max-w-xl p-4 ring-1 rounded-xl ring-gray-200 lg:max-w-sm">
+        <p class="text-lg font-semibold leading-8 text-gray-900 lg:text-xl mb-2">
           {PLANS.ENTERPRISE.NAME}
         </p>
         <p class="flex items-baseline gap-x-1 font-medium text-baseline">Request Pricing</p>
