@@ -1,7 +1,7 @@
 {
   "BASIC": {
     "NAME": "Basic",
-    "DESCRIPTION": "For personal use, no credit card required.",
+    "DESCRIPTION": "Free tier plan for personal use, no credit card required.",
     "PRICE": {
       "MONTHLY": "0",
       "YEARLY": "0",
