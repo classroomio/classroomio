@@ -55,7 +55,8 @@
           {PLANS.BASIC.DESCRIPTION}
         </p>
         <p class="mt-6 flex items-baseline gap-x-1 text-4xl font-medium lg:text-4xl">
-          ${PLANS.BASIC.PRICE.MONTHLY} <sub class="text-base">/mo</sub>
+          ${PLANS.BASIC.PRICE.MONTHLY}
+          <!-- <sub class="text-base">/mo</sub> -->
         </p>
         <a
           class="block text-center text-md mt-10 w-full rounded-md bg-slate-900 py-3 font-medium text-white hover:bg-slate-700 lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
@@ -88,7 +89,7 @@
         </p>
         <p class="mt-6 flex items-baseline gap-x-1 text-4xl font-medium text-white lg:text-4xl">
           ${isYearlyPlan ? PLANS.EARLY_ADOPTER.PRICE.YEARLY : PLANS.EARLY_ADOPTER.PRICE.MONTHLY}
-          <!-- <sub class="text-base">/member</sub> -->
+          <!-- <sub class="text-base">/mo</sub> -->
         </p>
         <a
           class="block text-center text-md mt-10 w-full rounded-md bg-white py-3 font-medium text-slate-900 hover:bg-indigo-50 lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"

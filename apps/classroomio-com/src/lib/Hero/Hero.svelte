@@ -42,7 +42,9 @@
   <h1
     class="mx-auto flex flex-col items-center text-3xl font-normal leading-[1.5] text-slate-900 md:text-4xl lg:text-6xl"
   >
-    <span>Launch Your Online Bootcamp</span>
+    <span class="mb-2"
+      >Launch <span class="relative text-blue-700">Your</span> Teaching Platform</span
+    >
     <span class="relative text-blue-700"
       >In Minutes
       <svg
@@ -59,8 +61,8 @@
   </h1>
 
   <p class="text-md mx-auto mt-10 px-4 text-slate-700 md:text-lg lg:mt-6 lg:w-2/4 lg:p-0">
-    Meet a better collaboration tool for teachers and students. ClassroomIO is a no-code tool that
-    allows you build and scale your own teaching platform with ease.
+    Meet a better learning management system (LMS) for teachers and students. ClassroomIO allows you
+    launch and scale your own teaching platform with ease.
   </p>
   <div class="mt-10 flex flex-col items-center justify-center gap-4 md:flex-row">
     <a
