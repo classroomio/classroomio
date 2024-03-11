@@ -2,6 +2,8 @@ import { preprocessMeltUI } from '@melt-ui/pp';
 import sequence from 'svelte-sequential-preprocessor';
 import adapter from '@sveltejs/adapter-auto';
 import { vitePreprocess } from '@sveltejs/kit/vite';
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 import { mdsvex, escapeSvelte } from 'mdsvex';
 import shiki from 'shiki';
 import remarkUnwrapImages from 'remark-unwrap-images';
@@ -14,7 +16,7 @@ import rehypeSlug from 'rehype-slug';
 const mdsvexOptions = {
   extensions: ['.md'],
   layout: {
-    _: './src/mdsvex.svelte'
+    _: dirname(fileURLToPath(import.meta.url)) + '/src/mdsvex.svelte'
   },
   highlight: {
     highlighter: async (code, lang = 'text') => {
