@@ -2,7 +2,7 @@
   import { page } from '$app/stores';
   import HelpIcon from 'carbon-icons-svelte/lib/Help.svelte';
   import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
-
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import TextChip from '$lib/components/Chip/Text.svelte';
   import OrgSelector from '$lib/components/OrgSelector/OrgSelector.svelte';
   import HomeIcon from '$lib/components/Icons/HomeIcon.svelte';
@@ -15,6 +15,8 @@
   import { profile } from '$lib/utils/store/user';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
   import { sideBar } from './store';
+  import { isUpgradeModalOpen } from './UpgradePlan/store';
+  import UpgradePlanModal from './UpgradePlan/UpgradePlanModal.svelte';
 
   const menuItems = [
     {
@@ -56,8 +58,13 @@
   const toggleSidebar = () => {
     $sideBar.hidden = !$sideBar.hidden;
   };
+
+  const openModal = () => {
+    $isUpgradeModalOpen = true;
+  };
 </script>
 
+<UpgradePlanModal />
 <aside
   class={`${
     $sideBar.hidden
@@ -66,7 +73,7 @@
   } overflow-y-auto transition w-[250px] min-w-[250px] bg-gray-100 dark:bg-neutral-900 h-[calc(100vh-48px)] border border-l-0 border-t-0 border-b-0 border-r-1`}
 >
   <div class="h-full flex flex-col">
-    <div class="border-b border-gray-200 pt-5 px-4">
+    <div class=" pt-5 px-4">
       {#if $currentOrg.avatar_url && $currentOrg.name}
         <Avatar
           src={$currentOrg.avatar_url}
@@ -117,6 +124,17 @@
           </a>
         {/each}
       </ul>
+    </div>
+
+    <div
+      class="flex flex-col gap-4 items-center justify-center text-center border border-[#BCB4FF] rounded-2xl p-2 mx-4"
+    >
+      <img src="/upgrade.png" alt="upgrade" class="w-16 h-16" />
+      <span class="flex flex-col gap-1">
+        <p class="font-semibold text-base">Unlock pro features</p>
+        <p class="text-xs">Enjoy unlimited features better customization with pro</p>
+      </span>
+      <PrimaryButton label="Upgrade Now" onClick={openModal} className="font-normal" />
     </div>
     <span class="flex-grow" />
     <ul class="my-5 pb-5 px-4">
