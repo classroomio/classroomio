@@ -106,7 +106,7 @@
   <PageBody width="max-w-6xl" padding="p-0">
     {#if $lessons.length}
       <section
-        class="w-full lg:w-11/12 p-3 lg:px-4 m-auto"
+        class="m-auto w-full p-3 lg:w-11/12 lg:px-4"
         use:dndzone={{
           items: $lessons,
           flipDurationMs,
@@ -121,7 +121,7 @@
       >
         {#each $lessons as lesson (lesson.id)}
           <div
-            class="relative m-auto max-w-xl rounded-md border-2 border-gray-200 p-5 mb-4 flex items-center dark:bg-neutral-800 dark:border-neutral-700 hover:scale-95 transition-all ease-in-out"
+            class="relative m-auto mb-4 flex max-w-xl items-center rounded-md border-2 border-gray-200 p-5 dark:border-neutral-700 dark:bg-neutral-800"
           >
             <!-- Number Chip -->
             <div class="mr-5">
@@ -139,12 +139,12 @@
               {#if lessonEditing === lesson.id}
                 <TextField bind:value={lesson.title} autoFocus={true} className="max-w-lg" />
               {:else}
-                <h3 class="dark:text-white text-lg m-0 flex items-center">
+                <h3 class="m-0 flex items-center text-lg dark:text-white">
                   <a
                     href={isStudent && !lesson.is_unlocked
                       ? $page.url.pathname
                       : '/courses/' + $course.id + '/lessons/' + lesson.id}
-                    class="dark:text-white no-underline hover:underline font-medium text-black {isStudent &&
+                    class="font-medium text-black no-underline hover:underline dark:text-white {isStudent &&
                     !lesson.is_unlocked
                       ? 'cursor-not-allowed'
                       : ''}"
@@ -156,7 +156,7 @@
 
               <!-- Lesson Educator -->
               <div
-                class="flex items-start justify-between flex-col lg:flex-row lg:items-center mt-2 w-4/5"
+                class="mt-2 flex w-4/5 flex-col items-start justify-between lg:flex-row lg:items-center"
               >
                 <div class="lg:mb-0">
                   {#if lessonEditing === lesson.id}
@@ -167,15 +167,15 @@
                       className="sm:my-1 w-[100%]"
                     />
                   {:else if !lesson.profile}
-                    <p class="dark:text-white ml-2 text-sm mb-3">No tutor added</p>
+                    <p class="mb-3 ml-2 text-sm dark:text-white">No tutor added</p>
                   {:else}
-                    <a href="." class="flex items-center hover:underline mb-2">
+                    <a href="." class="mb-2 flex items-center hover:underline">
                       <Avatar
                         className="w-6 h-6"
                         src={lesson.profile.avatar_url}
                         name="Avatar placeholder"
                       />
-                      <p class="dark:text-white ml-2 text-sm">
+                      <p class="ml-2 text-sm dark:text-white">
                         {lesson.profile.fullname}
                       </p>
                     </a>
@@ -191,9 +191,9 @@
                       onChange={(e) => (lesson.lesson_at = e.target.value)}
                     />
                   {:else}
-                    <div class="flex mb-2">
+                    <div class="mb-2 flex">
                       <Calendar size={20} class="carbon-icon text-gray-400 dark:text-white" />
-                      <p class="dark:text-white text-sm ml-2">
+                      <p class="ml-2 text-sm dark:text-white">
                         {new Date(lesson.lesson_at || '').toDateString()}
                       </p>
                     </div>
@@ -201,7 +201,7 @@
                 </div>
 
                 <!-- Lesson Call url -->
-                <div class="flex items-center mb-3 lg:mb-0">
+                <div class="mb-3 flex items-center lg:mb-0">
                   {#if lessonEditing === lesson.id}
                     <TextField
                       bind:value={lesson.call_url}
@@ -211,9 +211,9 @@
                     />
                   {:else}
                     <div class="flex">
-                      <Video size={20} class="carbon-icon text-gray-400 dark:text-white ml-0.5" />
+                      <Video size={20} class="carbon-icon ml-0.5 text-gray-400 dark:text-white" />
                       <a
-                        class="text-sm ml-2 text-primary-600"
+                        class="text-primary-600 ml-2 text-sm"
                         href={lesson.call_url || '#'}
                         target="_blank"
                       >
@@ -228,7 +228,7 @@
             <!-- 3 dot edit -->
             <div class="flex flex-row">
               <RoleBasedSecurity allowedRoles={[1, 2]}>
-                <OverflowMenu flipped size="xl" class="absolute top-0 right-0">
+                <OverflowMenu size="xl" class="absolute right-0 top-0">
                   <OverflowMenuItem
                     disabled={isStudent}
                     text={lesson.is_unlocked ? 'Lock' : 'Unlock'}
@@ -268,10 +268,10 @@
       </section>
     {:else}
       <Box className="w-full lg:w-11/12 lg:px-4 m-auto">
-        <div class="flex justify-between flex-col items-center">
-          <img src="/images/empty-lesson-icon.svg" alt="Lesson" class="my-2.5 mx-auto" />
-          <h2 class="text-xl my-1.5 font-normal">No lessons yet</h2>
-          <p class="text-sm text-center text-slate-500">
+        <div class="flex flex-col items-center justify-between">
+          <img src="/images/empty-lesson-icon.svg" alt="Lesson" class="mx-auto my-2.5" />
+          <h2 class="my-1.5 text-xl font-normal">No lessons yet</h2>
+          <p class="text-center text-sm text-slate-500">
             Share your knowledge with the world by creating engaging lessons. Start by clicking on
             the Add button.
           </p>

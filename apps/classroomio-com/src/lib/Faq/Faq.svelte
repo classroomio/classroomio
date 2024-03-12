@@ -7,14 +7,14 @@
     <h1 class="mt-2 text-4xl lg:text-4xl font-medium tracking-tight text-gray-900">
       Questions & Answers
     </h1>
-    <h3
-      class="lg:px-[20%] mt-4 text-lg lg:text-xl text-gray-500 font-normal tracking-normal lg:tracking-wide"
+    <p
+      class="lg:px-[20%] mt-4 text-lg lg:text-xl text-gray-600 font-normal tracking-normal lg:tracking-wide"
     >
       Can’t find the answer you’re looking for?
-      <a class="text-blue-700" href="mailto:help@classroomio.com" target="_blank"
+      <a class="text-blue-700 font-semibold" href="mailto:help@classroomio.com" target="_blank"
         >Shoot us an email</a
       > and we’ll get back to you ASAP.
-    </h3>
+    </p>
   </header>
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-20 lg:px-[13%] mt-[20%] lg:m-0">

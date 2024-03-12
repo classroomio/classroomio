@@ -20,68 +20,65 @@
   export let editFeed: Feed;
 
   let newPost = '';
+  let isLoading = false;
   let createdFeed;
 
   const onPost = async () => {
     if (!newPost) return;
-
-    // Edit state
-    if (edit) {
-      onEdit(editFeed.id, newPost);
-
-      snackbar.success('Feed edited successfully');
-
-      edit = false;
-      newPost = '';
-      $isNewFeedModal.open = false;
-
-      return;
-    }
-
-    // Create state
+    isLoading = true;
     try {
-      const {
-        response: { data }
-      } = await createNewFeed({
-        content: newPost,
-        author_id: author.id,
-        course_id: courseId,
-        reaction: {
-          smile: [],
-          thumbsup: [],
-          thumbsdown: [],
-          clap: []
-        }
-      });
+      if (edit) {
+        onEdit(editFeed.id, newPost);
+        snackbar.success('Feed edited successfully');
 
-      if (!data) return;
+        edit = false;
+        newPost = '';
+        $isNewFeedModal.open = false;
+      } else {
+        const {
+          response: { data }
+        } = await createNewFeed({
+          content: newPost,
+          author_id: author.id,
+          course_id: courseId,
+          reaction: {
+            smile: [],
+            thumbsup: [],
+            thumbsdown: [],
+            clap: []
+          }
+        });
 
-      createdFeed = data[0];
+        if (!data) return;
+
+        createdFeed = data[0];
+
+        if (!createdFeed) return;
+
+        onSave({
+          id: createdFeed.id,
+          content: newPost,
+          author: {
+            profile: { ...author }
+          },
+          created_at: createdFeed.created_at,
+          comment: [],
+          reaction: createdFeed.reaction,
+          isPinned: false
+        });
+
+        snackbar.success('New feed added successfully');
+        triggerSendEmail(NOTIFICATION_NAME.NEWSFEED, {
+          authorId: createdFeed.author_id,
+          feedId: createdFeed.id
+        });
+        resetEditor();
+      }
     } catch (error) {
-      return snackbar.error('An error occurred while creating feed');
+      snackbar.error('An error occurred while ' + (edit ? 'editing feed' : 'creating feed'));
+    } finally {
+      isLoading = false;
     }
-
-    if (!createdFeed) return;
-
-    onSave({
-      id: createdFeed.id,
-      content: newPost,
-      author: {
-        profile: { ...author }
-      },
-      created_at: createdFeed.created_at,
-      comment: [],
-      reaction: createdFeed.reaction,
-      isPinned: false
-    });
-
-    snackbar.success('New feed added successfully');
-    triggerSendEmail(NOTIFICATION_NAME.NEWSFEED, {
-      authorId: createdFeed.author_id,
-      feedId: createdFeed.id
-    });
-
-    resetEditor();
   };
 
   const resetEditor = () => {
@@ -110,12 +107,8 @@
     />
     <div class="flex items-center justify-end py-2">
       <div class="flex gap-2">
-        <PrimaryButton
-          label="Cancel"
-          variant={VARIANTS.OUTLINED}
-          onClick={() => ($isNewFeedModal.open = false)}
-        />
-        <PrimaryButton label="Post" onClick={onPost} />
+        <PrimaryButton label="Cancel" variant={VARIANTS.OUTLINED} onClick={resetEditor} />
+        <PrimaryButton {isLoading} label="Post" onClick={onPost} />
       </div>
     </div>
   </section>

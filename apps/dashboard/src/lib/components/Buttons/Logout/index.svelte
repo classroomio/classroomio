@@ -10,7 +10,10 @@
 
   async function logout() {
     const { error } = await supabase.auth.signOut();
-    console.error('Error logging out: ', error);
+
+    if (error) {
+      console.error('Error logging out: ', error);
+    }
 
     currentOrg.set(defaultCurrentOrgState);
     orgs.set([]);

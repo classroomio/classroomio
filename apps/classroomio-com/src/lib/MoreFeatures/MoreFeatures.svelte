@@ -12,7 +12,7 @@
       title: 'Customizable Landing Page',
       description:
         'A minimalistic landing page template out of the box to share your courses with the world',
-      image: '/landing-page-builder.png'
+      image: '/landing-page-builder.webp'
     },
     {
       icon: team,
@@ -71,10 +71,17 @@
             }}
           >
             <div class="flex gap-1 items-center">
-              <img src={moreFeature.icon} alt="" class="w-8" />
-              <h4 class="text-lg font-semibold">
+              <img
+                loading="lazy"
+                width="32"
+                height="32"
+                src={moreFeature.icon}
+                alt=""
+                class="w-8"
+              />
+              <p class="text-lg font-semibold">
                 {moreFeature.title}
-              </h4>
+              </p>
             </div>
             <p>{moreFeature.description}</p>
           </button>
@@ -85,6 +92,9 @@
       <div class="h-full w-full p-3 lg:w-2/3 lg:p-0">
         {#key selected}
           <img
+            width="100%"
+            height="100%"
+            loading="lazy"
             id="image"
             in:fly={{ y: 100, duration: 1000 }}
             class="w-full flex flex-col items-center"
