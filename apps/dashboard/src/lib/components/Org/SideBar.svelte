@@ -68,12 +68,12 @@
 <aside
   class={`${
     $sideBar.hidden
-      ? '-translate-x-[100%] absolute md:translate-x-0 md:relative z-40'
-      : 'translate-x-0 absolute md:relative z-40'
-  } overflow-y-auto transition w-[250px] min-w-[250px] bg-gray-100 dark:bg-neutral-900 h-[calc(100vh-48px)] border border-l-0 border-t-0 border-b-0 border-r-1`}
+      ? 'absolute z-40 -translate-x-[100%] md:relative md:translate-x-0'
+      : 'absolute z-40 translate-x-0 md:relative'
+  } border-r-1 h-[calc(100vh-48px)] w-[250px] min-w-[250px] overflow-y-auto border border-b-0 border-l-0 border-t-0 bg-gray-100 transition dark:bg-neutral-900`}
 >
-  <div class="h-full flex flex-col">
-    <div class=" pt-5 px-4">
+  <div class="flex h-full flex-col">
+    <div class=" px-4 pt-5">
       {#if $currentOrg.avatar_url && $currentOrg.name}
         <Avatar
           src={$currentOrg.avatar_url}
@@ -99,7 +99,7 @@
             on:click={toggleSidebar}
           >
             <li
-              class="flex items-center py-3 px-4 mb-2 {NavClasses.item} {isActive(
+              class="mb-2 flex items-center px-4 py-3 {NavClasses.item} {isActive(
                 $page.url.pathname,
                 `${$currentOrgPath}${menuItem.path}`
               )
@@ -113,7 +113,7 @@
               {:else if menuItem.path === '/site'}
                 <SiteSettingsIcon />
               {:else if menuItem.path === '/community'}
-                <ForumIcon size={24} class="carbon-icon dark:fill-[#fff] fill-[#000]" />
+                <ForumIcon size={24} class="carbon-icon fill-[#000] dark:fill-[#fff]" />
               {:else if menuItem.path === '/quiz'}
                 <QuizIcon />
               {:else if menuItem.path === '/audience'}
@@ -127,26 +127,27 @@
     </div>
 
     <div
-      class="flex flex-col gap-4 items-center justify-center text-center border border-[#BCB4FF] rounded-2xl p-2 mx-4"
+      class="border-primary-200 mx-4 flex flex-col items-center justify-center gap-4 rounded-md border px-2 py-6 text-center"
     >
-      <img src="/upgrade.png" alt="upgrade" class="w-16 h-16" />
+      <img src="/upgrade.png" alt="upgrade" class="h-16 w-16" />
       <span class="flex flex-col gap-1">
-        <p class="font-semibold text-base">Unlock pro features</p>
+        <p class="text-base font-semibold">Unlock pro features</p>
         <p class="text-xs">Enjoy unlimited features better customization with pro</p>
       </span>
       <PrimaryButton label="Upgrade Now" onClick={openModal} className="font-normal" />
     </div>
+
     <span class="flex-grow" />
-    <ul class="my-5 pb-5 px-4">
+    <ul class="my-5 px-4 pb-5">
       <a href={$currentOrgPath} class="text-black no-underline" on:click={toggleSidebar}>
-        <li class="flex items-center py-3 px-4 mb-2 rounded">
+        <li class="mb-2 flex items-center rounded px-4 py-3">
           <HelpIcon size={20} class="carbon-icon dark:text-white" />
-          <p class="dark:text-white ml-2">Help</p>
+          <p class="ml-2 dark:text-white">Help</p>
         </li>
       </a>
       <a href="{$currentOrgPath}/settings" class="text-black no-underline" on:click={toggleSidebar}>
         <li
-          class="flex items-center py-3 px-4 mb-2 {NavClasses.item} {isActive(
+          class="mb-2 flex items-center px-4 py-3 {NavClasses.item} {isActive(
             $page.url.pathname,
             `${$currentOrgPath}/settings`
           )

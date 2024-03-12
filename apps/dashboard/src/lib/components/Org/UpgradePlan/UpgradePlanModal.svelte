@@ -7,7 +7,7 @@
 <Modal
   onClose={() => ($isUpgradeModalOpen = false)}
   bind:open={$isUpgradeModalOpen}
-  width="w-4/5 h-[80vh]"
+  width="w-4/5"
   maxWidth="max-w-full"
   containerClass="!max-h-full h-[90%]"
   modalHeading="Upgrade Plan"
