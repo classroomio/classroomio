@@ -45,60 +45,66 @@ const S3 = new S3Client({
 //   redis: { tls: { rejectUnauthorized: false } },
 // });
 
+const { UploadController } = require('../controller/multiPartFileController');
+
+router.post('/initializeMultipartUpload', UploadController.initializeMultipartUpload);
+router.post('/getMultipartPreSignedUrls', UploadController.getMultipartPreSignedUrls);
+router.post('/finalizeMultipartUpload', UploadController.finalizeMultipartUpload);
+
 // MAIN UPLOAD VIDEO
-router.post('/', upload.single('videoFile'), async (req, res) => {
-  const {
-    file,
-    query: { lessonId }
-  } = req;
+// router.post('/', upload.single('videoFile'), async (req, res) => {
+//   const {
+//     file,
+//     query: { lessonId }
+//   } = req;
 
-  if (!file?.fieldname || !file?.fieldname) {
-    return res.status(400).json({
-      success: false,
-      message: 'You must provide a file to upload'
-    });
-  }
+//   if (!file?.fieldname || !file?.fieldname) {
+//     return res.status(400).json({
+//       success: false,
+//       message: 'You must provide a file to upload'
+//     });
+//   }
 
-  if (file?.size > 30 * 1024 * 1024) {
-    return res.status(400).json({
-      success: false,
-      type: 'FILE_TOO_LARGE',
-      message: 'File is too large'
-    });
-  }
-  const fileData = fs.readFileSync(file.path);
+//   if (file?.size > 30 * 1024 * 1024) {
+//     return res.status(400).json({
+//       success: false,
+//       type: 'FILE_TOO_LARGE',
+//       message: 'File is too large'
+//     });
+//   }
+//   const fileData = fs.readFileSync(file.path);
 
-  const fileName = `${genUniqueId()}-${file.originalname}`;
-  const params = {
-    Bucket: 'videos',
-    Key: fileName,
-    Body: fileData
-  };
+//   const fileName = `${genUniqueId()}-${file.originalname}`;
+//   const params = {
+//     Bucket: 'videos',
+//     Key: fileName,
+//     Body: fileData
+//   };
 
-  const fileUrl = `https://pub-${CLOUDFLARE_PUBLIC_ACCOUNT_ID}.r2.dev/${fileName}`;
-  let metadata = {};
+//   const fileUrl = `https://pub-${CLOUDFLARE_PUBLIC_ACCOUNT_ID}.r2.dev/${fileName}`;
+//   let metadata = {};
 
-  try {
-    const s3UploadRes = await S3.send(new PutObjectCommand(params));
-    // Delete file saved by mutler in file
-    unlinkAsync(file.path);
+//   try {
+//     const s3UploadRes = await S3.send(new PutObjectCommand(params));
+//     // Delete file saved by mutler in file
+//     unlinkAsync(file.path);
 
-    console.log('s3UploadRes', s3UploadRes);
+//     console.log('s3UploadRes', s3UploadRes);
 
-    res.json({
-      success: true,
-      url: fileUrl,
-      metadata,
-      message: 'Uploaded successfully'
-    });
-  } catch (error) {
-    console.error('Error uploading file', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to compress video'
-    });
-  }
-});
+//     res.json({
+//       success: true,
+//       url: fileUrl,
+//       metadata,
+//       message: 'Uploaded successfully'
+//     });
+//   } catch (error) {
+//     console.error('Error uploading file', error);
+//     res.status(500).json({
+//       success: false,
+//       message: 'Failed to compress video'
+//     });
+//   }
+// });
 
 // UPLOAD VIDEO IN PARALLEL CHUNKS
 // router.post('/', upload.single('videoFile'), UploadFileController);

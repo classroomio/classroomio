@@ -21,6 +21,7 @@
     "@aws-sdk/client-s3": "^3.388.0",
     "@aws-sdk/lib-storage": "^3.525.1",
     "@supabase/supabase-js": "^2.32.0",
+    "aws-sdk": "^2.1576.0",
     "axios": "^1.4.0",
     "body-parser": "^1.20.2",
     "bull": "^4.11.3",

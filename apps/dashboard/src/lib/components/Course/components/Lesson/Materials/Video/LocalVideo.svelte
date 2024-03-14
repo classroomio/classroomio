@@ -8,12 +8,15 @@
     uploadCourseVideoStore
   } from '$lib/components/Course/components/Lesson/store/lessons';
   import { Moon } from 'svelte-loading-spinners';
+  import { Uploader } from './uploader';
 
   export let lessonId = '';
 
   let formRes;
   let isLoaded = false;
+  let uploader;
   let fileInput;
+  let file;
   let submit;
   let uploadedFileUrl = '';
   let isLoading = false;
@@ -54,49 +57,79 @@
     return { success: true };
   }
 
-  async function onUpload(e) {
+  async function onUpload() {
     isLoading = true;
     if (!fileInput) return;
 
-    const file = fileInput.files[0];
+    file = fileInput.files[0];
+    const videoUploaderOptions = {
+      fileName: 'foo',
+      file: file
+    };
 
-    // Validate file
-    const validationResult = validateFile(file);
-    if (!validationResult.success) {
-      formRes = validationResult;
-      isLoading = false;
-      isLoaded = true;
-      return;
-    }
+    uploader = new Uploader(videoUploaderOptions);
 
-    const formData = new FormData();
-    formData.append('videoFile', file);
-
-    try {
-      const response = await axios({
-        method: 'POST',
-        url: PUBLIC_SERVER_URL + '/uploadVideo?lessonId=' + lessonId,
-        data: formData,
-        maxContentLength: Infinity,
-        maxBodyLength: Infinity,
-        headers: {
-          'Content-Type': 'multipart/form-data; boundary=MyBoundary'
-        }
+    uploader
+      .onProgress(({ percentage }) => {
+        console.log(`${percentage}%`);
+      })
+      .onError((error) => {
+        console.error(error);
+        file = undefined;
       });
 
-      formRes = response.data;
-      console.log('Upload res', formRes);
-      isLoading = false;
-      isLoaded = false;
-    } catch (err) {
-      console.error('Error uploading video', err, '\n\n', err.response);
-      if (err.response) {
-        formRes = err.response.data;
-        console.log('formRes', formRes);
-      }
-    }
-    isLoaded = true;
+    uploader.start();
   }
+
+  const onCancel = () => {
+    if (uploader) {
+      uploader.abort();
+      file = undefined;
+    }
+  };
+  // async function onUpload(e) {
+  //   isLoading = true;
+  //   if (!fileInput) return;
+
+  //   const file = fileInput.files[0];
+
+  //   // Validate file
+  //   const validationResult = validateFile(file);
+  //   if (!validationResult.success) {
+  //     formRes = validationResult;
+  //     isLoading = false;
+  //     isLoaded = true;
+  //     return;
+  //   }
+
+  //   const formData = new FormData();
+  //   formData.append('videoFile', file);
+
+  //   try {
+  //     const response = await axios({
+  //       method: 'POST',
+  //       url: PUBLIC_SERVER_URL + '/uploadVideo?lessonId=' + lessonId,
+  //       data: formData,
+  //       maxContentLength: Infinity,
+  //       maxBodyLength: Infinity,
+  //       headers: {
+  //         'Content-Type': 'multipart/form-data; boundary=MyBoundary'
+  //       }
+  //     });
+
+  //     formRes = response.data;
+  //     console.log('Upload res', formRes);
+  //     isLoading = false;
+  //     isLoaded = false;
+  //   } catch (err) {
+  //     console.error('Error uploading video', err, '\n\n', err.response);
+  //     if (err.response) {
+  //       formRes = err.response.data;
+  //       console.log('formRes', formRes);
+  //     }
+  //   }
+  //   isLoaded = true;
+  // }
 
   async function isDoneUploading(response) {
     uploadedFileUrl = response?.success && response?.url;
