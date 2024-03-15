@@ -1,6 +1,23 @@
 <script>
   import Checkmark from 'carbon-icons-svelte/lib/Checkmark.svelte';
-  import PLANS from 'shared-constants/src/plans.json';
+  import PLANS from 'shared-constants/src/plans/data.json';
+  import { profile } from '$lib/utils/store/user';
+  import { currentOrg } from '$lib/utils/store/org';
+
+  function getPlanLink(plan) {
+    if (plan.CTA.IS_DISABLED) {
+      return;
+    }
+
+    const link = plan.CTA.DASHBOARD_LINK;
+
+    if (plan.CTA.DASHBOARD_ADD_TO_LINK) {
+      return `${link}?checkout[email]=${$profile.email}&checkout[name]=${$profile.fullname}&checkout[custom][profile_id]=${$profile.id}&checkout[custom][org_id]=${$currentOrg.id}
+      `;
+    }
+
+    return link;
+  }
 
   $: planNames = Object.keys(PLANS);
 </script>
@@ -10,7 +27,7 @@
     {#each planNames as planName}
       <div
         class="max-w-xl rounded-xl {planName === 'EARLY_ADOPTER' &&
-          'bg-primary-900'} p-4 ring-1 ring-gray-600 lg:max-w-sm"
+          'bg-primary-900'} p-4 ring-1 ring-gray-200 lg:max-w-sm"
       >
         <p
           class="mb-2 text-lg font-semibold leading-8 {planName === 'EARLY_ADOPTER'
@@ -45,7 +62,7 @@
               ? 'bg-gray-300 text-gray-400 hover:cursor-not-allowed'
               : 'bg-primary-900 hover:bg-primary-700 text-white'} py-3 text-center font-medium hover:no-underline lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
           target="_blank"
-          href={PLANS[planName].CTA.IS_DISABLED ? undefined : PLANS[planName].CTA.DASHBOARD_LINK}
+          href={getPlanLink(PLANS[planName])}
         >
           {PLANS[planName].CTA.DASHBOARD_LABEL}
         </a>

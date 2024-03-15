@@ -127,7 +127,7 @@
     </div>
 
     <div
-      class="border-primary-200 mx-4 flex flex-col items-center justify-center gap-4 rounded-md border px-2 py-6 text-center"
+      class="border-primary-400 mx-4 flex flex-col items-center justify-center gap-4 rounded-md border px-2 py-6 text-center"
     >
       <img src="/upgrade.png" alt="upgrade" class="h-16 w-16" />
       <span class="flex flex-col gap-1">

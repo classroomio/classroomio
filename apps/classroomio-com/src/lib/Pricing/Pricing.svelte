@@ -1,6 +1,6 @@
 <script>
   import Checkmark from 'carbon-icons-svelte/lib/Checkmark.svelte';
-  import PLANS from 'shared-constants/src/plans.json';
+  import PLANS from 'shared-constants/src/plans/data.json';
 
   let isYearlyPlan = false;
 
@@ -59,7 +59,7 @@
           <!-- <sub class="text-base">/mo</sub> -->
         </p>
         <a
-          class="block text-center text-md mt-10 w-full rounded-md bg-slate-900 py-3 font-medium text-white hover:bg-slate-700 lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
+          class="text-md mt-10 block w-full rounded-md bg-slate-900 py-3 text-center font-medium text-white hover:bg-slate-700 lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
           href={PLANS.BASIC.CTA.LINK}
           target="_blank"
         >
@@ -92,7 +92,7 @@
           <!-- <sub class="text-base">/mo</sub> -->
         </p>
         <a
-          class="block text-center text-md mt-10 w-full rounded-md bg-white py-3 font-medium text-slate-900 hover:bg-indigo-50 lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
+          class="text-md mt-10 block w-full rounded-md bg-white py-3 text-center font-medium text-slate-900 hover:bg-indigo-50 lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
           href={PLANS.EARLY_ADOPTER.CTA.LINK}
           target="_blank"
         >

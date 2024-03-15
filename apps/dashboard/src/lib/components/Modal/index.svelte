@@ -23,7 +23,7 @@
 
 {#if open}
   <div
-    class="dialog fixed overflow-x-hidden overflow-y-auto inset-0 flex justify-center items-center z-50 bg-gray-100 bg-opacity-50"
+    class="dialog fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-gray-100 bg-opacity-50"
     on:click={onClose}
     role="presentation"
   >
@@ -31,12 +31,14 @@
     <div
       class="{maxWidth || 'container'} {size === 'sm'
         ? 'small'
-        : ''} bg-white dark:bg-neutral-800 mx-auto {width} shadow-lg p-5 pt-2 rounded-md"
+        : ''} mx-auto bg-white dark:bg-neutral-800 {width} rounded-md pt-2 shadow-lg"
       on:click={(e) => e.stopPropagation()}
       role="presentation"
     >
-      <div class="flex items-center justify-between mb-4">
-        <p class="dark:text-white text-md font-medium m-0">
+      <div
+        class="mb-4 flex items-center justify-between border border-l-0 border-r-0 border-t-0 border-gray-100 p-4 px-5"
+      >
+        <p class="text-md m-0 font-medium dark:text-white">
           {modalHeading}
         </p>
         <div class="rounded-full">
@@ -44,7 +46,7 @@
         </div>
       </div>
 
-      <div class="body p-1 h-4/5 overflow-y-auto {containerClass}">
+      <div class="body h-4/5 overflow-y-auto p-6 {containerClass}">
         <slot />
       </div>
     </div>
