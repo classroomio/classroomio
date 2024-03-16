@@ -1,10 +1,9 @@
-name: backend_deploy
+name: Deploy Backend
 
 on: workflow_dispatch
 
 jobs:
   deploy:
-    name: Deploy backend
     runs-on: ubuntu-latest
     concurrency: deploy-group # optional: ensure only one action runs at a time
     steps:
