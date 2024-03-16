@@ -21,8 +21,9 @@
 
   const uploadingTexts = [
     'Sending your video to our server...',
+    'Breaking video into chunks',
+    'Compressing the video...',
     'Generating a link to your video...',
-    'Generating transcription for your video...',
     'Wrapping things up'
   ];
   let uploadingLoadingText = uploadingTexts[0];
@@ -36,7 +37,10 @@
     if (!fileInput) return;
 
     const formData = new FormData();
-    formData.append('videoFile', fileInput.files[0]);
+    const videoFile = fileInput.files[0];
+    formData.append('videoFile', videoFile);
+
+    console.log({ size: videoFile?.size });
 
     try {
       const response = await axios({
@@ -97,7 +101,7 @@
           console.log('uploadingLoadingText', next);
           uploadingLoadingText = next;
         }
-      }, 5000);
+      }, 30000);
     } else if (timeoutkey) {
       console.log('clearTimeout');
       clearTimeout(timeoutkey);
@@ -112,11 +116,11 @@
   <button
     type="button"
     on:click={() => (fileInput && !isLoading ? fileInput.click() : null)}
-    class="w-full h-full"
+    class="h-full w-full"
     disabled={isLoading || !PUBLIC_SERVER_URL}
   >
     <form
-      class="h-full w-full flex flex-col items-center justify-center border border-primary-300 border-dashed rounded-xl"
+      class="border-primary-300 flex h-full w-full flex-col items-center justify-center rounded-xl border border-dashed"
       on:submit|preventDefault={onUpload}
     >
       {#if isLoading}
@@ -129,7 +133,7 @@
           <p class=" text-center text-sm font-normal">
             Select file( Mp4, MOV, AVI) to upload to your lesson.
           </p>
-          <p>(Max 80 MB)</p>
+          <p>(Max 500 MB)</p>
         </span>
       {/if}
       <input
@@ -145,9 +149,9 @@
     </form>
   </button>
 {:else if formRes?.type === 'FILE_TOO_LARGE'}
-  <div class="h-full w-full flex flex-col items-center justify-center rounded-xl">
+  <div class="flex h-full w-full flex-col items-center justify-center rounded-xl">
     <img src="/video-upload-error.svg" alt="upload error" />
-    <span class="pt-3 pb-2">
+    <span class="pb-2 pt-3">
       <h3 class="text-center text-base font-normal dark:text-white">
         Oops 😬, couldn’t upload video
       </h3>
@@ -158,9 +162,9 @@
     <PrimaryButton label="Try another file" onClick={tryAgain} />
   </div>
 {:else if !formRes?.success}
-  <div class="h-full w-full flex flex-col items-center justify-center rounded-xl">
+  <div class="flex h-full w-full flex-col items-center justify-center rounded-xl">
     <img src="/video-upload-error.svg" alt="upload error" />
-    <span class="pt-3 pb-2">
+    <span class="pb-2 pt-3">
       <h3 class="text-center text-base font-normal dark:text-white">
         Oops 😬, couldn’t upload video
       </h3>
@@ -172,11 +176,11 @@
     <PrimaryButton label="Please try again" onClick={tryAgain} />
   </div>
 {:else}
-  <div class="flex flex-col w-full h-full items-start justify-between">
-    <div class="h-auto w-full border rounded-md px-8 py-3">
+  <div class="flex h-full w-full flex-col items-start justify-between">
+    <div class="h-auto w-full rounded-md border px-8 py-3">
       <div class="flex items-center justify-between">
         <span class="flex items-center gap-2">
-          <div class="rounded-sm overflow-hidden">
+          <div class="overflow-hidden rounded-sm">
             <video class="w-[200px]">
               <source src={uploadedFileUrl} type="video/mp4" />
               <!-- <source src="/path/to/video.webm" type="video/webm" /> -->

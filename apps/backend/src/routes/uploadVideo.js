@@ -1,11 +1,12 @@
 const express = require('express');
 const FormData = require('form-data');
 const axios = require('axios');
+
 const { promisify } = require('util');
 const fs = require('fs');
-
 const unlinkAsync = promisify(fs.unlink);
 
+const { Upload } = require('@aws-sdk/lib-storage');
 const {
   S3Client,
   PutObjectCommand
@@ -42,6 +43,9 @@ const S3 = new S3Client({
 // });
 
 router.post('/', upload.single('videoFile'), async (req, res) => {
+  // Set timeout for this request to 15 minutes
+  req.setTimeout(900000);
+
   const {
     file,
     query: { lessonId }
@@ -56,7 +60,10 @@ router.post('/', upload.single('videoFile'), async (req, res) => {
     });
   }
 
-  if (file?.size > 1000 * 1024 * 1024) {
+  // File upload limit is 500MB
+  const fileSizeInMegabytes = file?.size / (1024 * 1024);
+
+  if (fileSizeInMegabytes > 500) {
     return res.status(400).json({
       success: false,
       type: 'FILE_TOO_LARGE',
@@ -66,19 +73,36 @@ router.post('/', upload.single('videoFile'), async (req, res) => {
   const fileData = fs.readFileSync(file.path);
 
   const fileName = `${genUniqueId()}-${file.originalname.split(' ').join('-')}`;
-  const params = {
-    Bucket: 'videos',
-    Key: fileName,
-    Body: fileData
-  };
 
   const fileUrl = `https://pub-${CLOUDFLARE_PUBLIC_ACCOUNT_ID}.r2.dev/${fileName}`;
-  let metadata = {};
+  let metadata = {
+    sizeInMb: fileSizeInMegabytes
+  };
 
   try {
     console.log('Upload starting');
-    const s3UploadRes = await S3.send(new PutObjectCommand(params));
-    console.log('s3UploadRes', s3UploadRes);
+
+    console.time('upload');
+    const parallelUploads3 = new Upload({
+      client: S3,
+      queueSize: 5,
+      partSize: 1024 * 1024 * 20,
+      leavePartsOnError: false, // optional manually handle dropped parts
+      params: {
+        Bucket: 'videos',
+        Key: fileName,
+        Body: fileData
+      }
+    });
+
+    parallelUploads3.on('httpUploadProgress', (progress) => {
+      console.log(progress);
+    });
+
+    await parallelUploads3.done();
+
+    console.log('Upload to done');
+    console.timeEnd('upload');
 
     unlinkAsync(file.path);
 
