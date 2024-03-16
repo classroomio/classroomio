@@ -43,8 +43,8 @@ const S3 = new S3Client({
 // });
 
 router.post('/', upload.single('videoFile'), async (req, res) => {
-  // Set timeout for this request to 10 minutes
-  req.setTimeout(600000);
+  // Set timeout for this request to 15 minutes
+  req.setTimeout(900000);
 
   const {
     file,
