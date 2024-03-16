@@ -1,8 +1,7 @@
-name: Deloy Backend to Flyio
-on:
-  push:
-    branches:
-      - main
+name: backend_deploy
+
+on: workflow_dispatch
+
 jobs:
   deploy:
     name: Deploy backend
