@@ -97,22 +97,26 @@
     totalRatings = reviews?.reduce((acc = 0, review) => acc + (review?.rating || 0), 0);
     averageRating = totalRatings / reviews?.length;
   }
+  $: {
+    let imgurl = get(instructor, 'imgUrl', $currentOrg.avatar_url);
+    console.log({ imgurl, instructor, org: $currentOrg });
+  }
 </script>
 
-<div class="w-full bg-white dark:bg-black flex flex-col items-center">
+<div class="flex w-full flex-col items-center bg-white dark:bg-black">
   <!-- Header Section -->
-  <header id="header" class="banner w-full flex items-center justify-center p-">
-    <div class="md:w-5/6 w-full flex items-center justify-between flex-col-reverse md:flex-row">
+  <header id="header" class="banner p- flex w-full items-center justify-center">
+    <div class="flex w-full flex-col-reverse items-center justify-between md:w-5/6 md:flex-row">
       <!-- Course Description -->
-      <div class="md:w-2/5 w-11/12 py-10">
-        <h1 class="dark:text-white text-5xl text-white my-4 font-bold">
+      <div class="w-11/12 py-10 md:w-2/5">
+        <h1 class="my-4 text-5xl font-bold text-white dark:text-white">
           {get(courseData, 'title', '')}
         </h1>
-        <p class="dark:text-white text-md text-white mb-6">
+        <p class="text-md mb-6 text-white dark:text-white">
           {get(courseData, 'description', '')}
         </p>
 
-        <p class="dark:text-white author my-3 text-sm">
+        <p class="author my-3 text-sm dark:text-white">
           {get(courseData, 'metadata.instructor.name', '')}
         </p>
         <PrimaryButton
@@ -131,7 +135,7 @@
 
       <!-- Banner Image getEmbedId(videoUrl) -->
       {#if video}
-        <div class="banner-image md:w-2/3 w-full flex">
+        <div class="banner-image flex w-full md:w-2/3">
           <div
             bind:this={player}
             id="player"
@@ -149,12 +153,12 @@
           />
         </div> -->
       {:else}
-        <div class="banner-image md:w-2/3 relative rounded-md overflow-hidden">
+        <div class="banner-image relative overflow-hidden rounded-md md:w-2/3">
           <img
             style="min-width:280px; min-height:200px"
             alt="About us"
             src={bannerImage ? bannerImage : '/images/classroomio-course-img-template.jpg'}
-            class="mt-2 md:mt-0 rounded-md w-full h-full max-w-[500px] max-h-[400px] relative"
+            class="relative mt-2 h-full max-h-[400px] w-full max-w-[500px] rounded-md md:mt-0"
           />
         </div>
 
@@ -181,23 +185,23 @@
     </div>
   </header>
   <!-- Body -->
-  <div class="bg-white dark:bg-black w-full">
+  <div class="w-full bg-white dark:bg-black">
     <div
-      class="lg:py-8 lg:w-11/12 w-full mx-0 my-2 lg:m-auto flex flex-col-reverse lg:flex-row items-center lg:items-start justify-between max-w-[1200px]"
+      class="mx-0 my-2 flex w-full max-w-[1200px] flex-col-reverse items-center justify-between lg:m-auto lg:w-11/12 lg:flex-row lg:items-start lg:py-8"
     >
       <!-- Course Details -->
-      <div class="course-content w-full p-3 lg:w-10/12 lg:mr-10">
+      <div class="course-content w-full p-3 lg:mr-10 lg:w-10/12">
         <!-- Navigation -->
 
         <nav
-          class="flex items-center border-b border-gray-300 py-3 sticky top-0 {!editMode &&
+          class="sticky top-0 flex items-center border-b border-gray-300 py-3 {!editMode &&
             'lg:top-11'} bg-white dark:bg-neutral-800"
         >
           {#each NAV_ITEMS as navItem}
             <a
               href="{$page.url.pathname}{navItem.key}"
               class="{navItem.key === activeNav &&
-                'active text-primary-700'} rounded-lg px-2 mr-6 text-slate-700 font-normal hover:bg-gray-200 dark:hover:text-slate-900 dark:text-white z-0"
+                'active text-primary-700'} z-0 mr-6 rounded-lg px-2 font-normal text-slate-700 hover:bg-gray-200 dark:text-white dark:hover:text-slate-900"
             >
               {navItem.label}
             </a>
@@ -205,20 +209,18 @@
         </nav>
 
         <!-- Sections - Requirement -->
-        <section id="requirement" class="border-b border-gray-300 mt-8 pb-10">
-          <h3 class="text-2xl font-bold mt-0 mb-3">
-            {$t('course.navItem.landing_page.requirement')}
-          </h3>
+        <section id="requirement" class="mt-8 border-b border-gray-300 pb-10">
+          <h3 class="mb-3 mt-0 text-2xl font-bold">{$t('course.navItem.landing_page.requirement')}</h3>
+
           <ul class="list font-light">
             <HtmlRender content={get(courseData, 'metadata.requirements', '')} />
           </ul>
         </section>
 
         <!-- Sections - Course Description -->
-        <section id="description" class="border-b border-gray-300 mt-8 pb-10">
-          <h3 class="text-2xl font-bold mt-0 mb-3">
-            {$t('course.navItem.landing_page.description')}
-          </h3>
+        <section id="description" class="mt-8 border-b border-gray-300 pb-10">
+          <h3 class="mb-3 mt-0 text-2xl font-bold">$t('course.navItem.landing_page.description')</h3>
+
           <HtmlRender
             className="dark:text-white text-sm font-light"
             content={get(courseData, 'metadata.description', '')}
@@ -254,13 +256,13 @@
             </p>
           </div>
           {#each lessons as lesson, index}
-            <div class="w-full flex md:items-center justify-between mb-6 flex-col md:flex-row">
-              <div class="flex items-center mb-3">
+            <div class="mb-6 flex w-full flex-col justify-between md:flex-row md:items-center">
+              <div class="mb-3 flex items-center">
                 <Chip
                   value={getLectureNo(index + 1, '0')}
                   className="bg-primary-100 text-primary-700"
                 />
-                <p class="dark:text-white ml-2 text-sm font-light">
+                <p class="ml-2 text-sm font-light dark:text-white">
                   {lesson.title}
                 </p>
               </div>
@@ -278,8 +280,7 @@
                     <span class="text-sm font-light flex w-2/4"
                       ><Notebook size={16} class="mr-1" />{$t(
                         'course.navItem.landing_page.note'
-                      )}</span
-                    >
+                      )}</span>
                   {/if}
                 </div>
                 <div class="flex items-center">
@@ -290,7 +291,7 @@
                     </span>
                   {/if}
                   {#if get(lesson, 'totalExercises[0].count')}
-                    <span class="text-sm font-light flex w-2/4"
+                    <span class="flex w-2/4 text-sm font-light"
                       ><PageNumber size={16} class="mr-1" />{pluralize(
                         'exercise',
                         get(lesson, 'totalExercises[0].count', 0),
@@ -314,38 +315,38 @@
               {#each reviews.slice(0, 4) as review, id}
                 {#if !review.hide}
                   <!-- review -->
-                  <div class="flex flex-row item-start w-2/4 my-2">
+                  <div class="item-start my-2 flex w-2/4 flex-row">
                     <!-- image container -->
                     {#if review.avatar_url}
                       <Avatar src={review.avatar_url} name="Avatar" className="mt-1" />
                     {/if}
 
                     <!-- profile content -->
-                    <div class="pl-2.5 w-11/12">
+                    <div class="w-11/12 pl-2.5">
                       <p class="mb-0.5 font-medium">{review.name}</p>
                       <!-- ratings -->
                       <div class="flex flex-row items-center">
                         {#if review.rating}
-                          <img src={ratingsImg[review.rating - 1]} class="w-24 mr-4 mt-1" alt="" />
+                          <img src={ratingsImg[review.rating - 1]} class="mr-4 mt-1 w-24" alt="" />
                         {/if}
                       </div>
                       <div
                         class="read-more-content mb-2"
                         style="max-height: {expandDescription[id] ? 'none' : '50px'}"
                       >
-                        <p class="text-sm my-2 leading-5 text-gray-600">
+                        <p class="my-2 text-sm leading-5 text-gray-600">
                           {review.description}
                         </p>
                       </div>
                       {#if !expandDescription[id] && review.description.split(' ').length > 9}
                         <button
-                          class="underline text-primary-700 mt-2 font-normal"
+                          class="text-primary-700 mt-2 font-normal underline"
                           on:click={() => toggleDescription(id)}>See More</button
                         >
                       {/if}
                       {#if expandDescription[id]}
                         <button
-                          class="underline text-primary-700 mt-2 font-normal"
+                          class="text-primary-700 mt-2 font-normal underline"
                           on:click={() => toggleDescription(id)}>See Less</button
                         >
                       {/if}
@@ -383,17 +384,17 @@
                   </h2>
                 </div>
                 <!-- reviews -->
-                <div class="flex flex-wrap w-4/6">
+                <div class="flex w-4/6 flex-wrap">
                   {#each reviews as review, id}
                     <!-- review -->
-                    <div class="flex flex-row item-start w-full my-2">
+                    <div class="item-start my-2 flex w-full flex-row">
                       <!-- image container -->
                       {#if review.avatar_url}
                         <Avatar src={review.avatar_url} name={review.name} className="mt-1" />
                       {/if}
 
                       <!-- profile content -->
-                      <div class="pl-2.5 w-11/12">
+                      <div class="w-11/12 pl-2.5">
                         <p class="mb-0.5 font-medium">{review.name}</p>
                         <!-- ratings -->
                         <div class="flex flex-row">
@@ -406,7 +407,7 @@
                           class="read-more-content mb-2"
                           style="max-height: {expandDescription[id] ? 'none' : '50px'}"
                         >
-                          <p class="text-sm my-2 leading-5 text-gray-600">
+                          <p class="my-2 text-sm leading-5 text-gray-600">
                             {review.description}
                           </p>
                         </div>
@@ -427,17 +428,17 @@
           <div class="flex items-center mb-4">
             <img
               alt="Author Avatar"
-              class="block rounded-full h-20 w-20 mr-3"
-              src={get(instructor, 'imgUrl', $currentOrg.avatar_url)}
+              class="mr-3 block h-20 w-20 rounded-full"
+              src={get(instructor, 'imgUrl', $currentOrg.avatar_url || '/logo-512.png')}
             />
             <div>
-              <p class="dark:text-white text-md font-light">
-                {get(instructor, 'name', '')}
+              <p class="text-md font-light dark:text-white">
+                {get(instructor, 'name', $currentOrg.name)}
               </p>
-              <p class="dark:text-white text-xs font-light">
+              <p class="text-xs font-light dark:text-white">
                 {get(instructor, 'role', '')}
               </p>
-              <p class="dark:text-white text-md font-light flex items-center">
+              <p class="text-md flex items-center font-light dark:text-white">
                 <PlayFilled size={16} class="text-primary-700" />
                 <span class="ml-1"
                   >{get(instructor, 'courseNo', '')}
@@ -447,7 +448,7 @@
             </div>
           </div>
 
-          <p class="dark:text-white text-sm font-light">
+          <p class="text-sm font-light dark:text-white">
             {get(instructor, 'description', '')}
           </p>
         </section>
