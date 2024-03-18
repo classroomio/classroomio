@@ -8,6 +8,11 @@
     uploadCourseVideoStore
   } from '$lib/components/Course/components/Lesson/store/lessons';
   import { Moon } from 'svelte-loading-spinners';
+  import io from 'socket.io-client';
+  import { onMount } from 'svelte';
+
+  let socket = io(PUBLIC_SERVER_URL);
+  let uploadProgress = 0;
 
   export let lessonId = '';
 
@@ -51,7 +56,8 @@
         maxBodyLength: Infinity,
         headers: {
           'Content-Type': 'multipart/form-data; boundary=MyBoundary'
-        }
+        },
+        onUploadProgress: (progressEvent) => console.log(progressEvent.loaded)
       });
 
       formRes = response.data;
@@ -90,6 +96,18 @@
     isLoading = false;
   }
 
+  // onMount(() => {
+  //   // Connect to the Socket.IO server
+  //  // Adjust the URL accordingly
+
+  //   // Listen for progress updates
+
+  // });
+
+  socket.on('uploadProgress', (newProgress) => {
+    uploadProgress = newProgress;
+  });
+
   $: {
     if (isLoading) {
       timeoutkey = setTimeout(() => {
@@ -126,6 +144,7 @@
       {#if isLoading}
         <Moon size="40" color="#1d4ed8" unit="px" duration="1s" />
         <p class="mt-5">{uploadingLoadingText}</p>
+        <p class="mt-5">{uploadProgress}</p>
       {:else}
         <img src="/upload-video.svg" alt="upload" />
         <span class="pt-3">

@@ -2,6 +2,7 @@ const express = require('express');
 const FormData = require('form-data');
 const axios = require('axios');
 
+const socketIo = require('socket.io');
 const { promisify } = require('util');
 const fs = require('fs');
 const unlinkAsync = promisify(fs.unlink);
@@ -16,6 +17,19 @@ const {
 // const { getSupabase } = require('../utils/supabase');
 const genUniqueId = require('../utils/genUniqueId');
 const upload = require('../utils/upload');
+
+const io = socketIo({
+  cors: {
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST']
+  }
+});
+
+io.on('connection', (socket) => {
+  console.log('Client connected');
+});
+
+let uploadProgress = 0;
 
 const {
   CLOUDFLARE_ACCESS_KEY,
@@ -96,7 +110,12 @@ router.post('/', upload.single('videoFile'), async (req, res) => {
     });
 
     parallelUploads3.on('httpUploadProgress', (progress) => {
-      console.log(progress);
+      const Uploadprogress = Math.round((progress.loaded / progress.total) * 100);
+      // Emit progress to connected sockets
+      uploadProgress = progress;
+      io.emit('uploadProgress', Uploadprogress);
+
+      console.log('progress', uploadProgress);
     });
 
     await parallelUploads3.done();
@@ -260,4 +279,7 @@ async function uploadToMuseNow(fileData, fileName) {
 //   console.log('error on queue', error);
 // });
 
-module.exports = router;
+module.exports = {
+  router,
+  io // Export Socket.IO instance for use in the main server file
+};
