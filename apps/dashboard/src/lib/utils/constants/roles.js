@@ -1,5 +1,3 @@
-// import { t } from '../functions/translations.ts';
-
 export const ROLE = {
   ADMIN: 1,
   TUTOR: 2,
@@ -7,14 +5,14 @@ export const ROLE = {
 };
 
 export const ROLE_LABEL = {
-  [ROLE.ADMIN]: 'Admin',
-  [ROLE.TUTOR]: 'Tutor',
-  [ROLE.STUDENT]: 'Student'
+  [ROLE.ADMIN]: 'course.navItem.people.roles.admin',
+  [ROLE.TUTOR]: 'course.navItem.people.roles.tutor',
+  [ROLE.STUDENT]: 'course.navItem.people.roles.student'
 };
 
 export const ROLES = [
   {
-    label: 'Filter',
+    label: 'course.navItem.people.roles.filter',
     value: 'all'
   },
   {

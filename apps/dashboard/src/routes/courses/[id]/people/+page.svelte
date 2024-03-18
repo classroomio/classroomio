@@ -104,7 +104,7 @@
   }
 
   function copyToClipboard(studentAssignedId: string | null) {
-    snackbar.success(`Copied to clipboard`);
+    snackbar.success(`snackbar.people.success.copied`);
 
     if (studentAssignedId) {
       copy(studentAssignedId);
@@ -148,7 +148,7 @@
         <div class="mb-3">
           <Select
             bind:value={filterBy}
-            options={ROLES}
+            options={ROLES.map((role) => ({ label: $t(role.label), value: role.value }))}
             className="dark:text-black mt-3 max-w-[80px]"
           />
           <!-- <select bind:value={filterBy} class="mt-3">
@@ -252,7 +252,7 @@
               <!-- second column -->
               <StructuredListCell class="w-1/4 px-3">
                 <p class=" dark:text-white font-normal text-center text-base w-1/4">
-                  {ROLE_LABEL[person.role_id]}
+                  {$t(ROLE_LABEL[person.role_id])}
                 </p>
               </StructuredListCell>
 

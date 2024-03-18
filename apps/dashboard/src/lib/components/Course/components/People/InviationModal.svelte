@@ -115,8 +115,8 @@
 
   function copyLink() {
     if (!$currentOrgDomain) {
-      snackbar.error('Org data missing, please reload the page');
-      console.error('No current org domain');
+      snackbar.error('snackbar.people.error.missing_data');
+      console.error('snackbar.people.error.no');
       return;
     }
 

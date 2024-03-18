@@ -7,9 +7,9 @@ export const settings = writable({
   grading: false,
   allow_new_students: false,
   tabs: [
-    { id: 1, name: 'Note' },
-    { id: 2, name: 'Slide' },
-    { id: 3, name: 'Video' }
+    { id: 1, name: 'course.navItem.lessons.materials.tabs.note.title' },
+    { id: 2, name: 'course.navItem.lessons.materials.tabs.slide.title' },
+    { id: 3, name: 'course.navItem.lessons.materials.tabs.video.title' }
   ],
   lesson_download: false,
   is_published: false

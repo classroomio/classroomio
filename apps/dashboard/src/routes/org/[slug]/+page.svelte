@@ -20,6 +20,7 @@
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
   import { getGreeting } from '$lib/utils/functions/date';
   import { globalStore } from '$lib/utils/store/app';
+  import { t } from '$lib/utils/functions/translations.js';
 
   export let data;
 
@@ -187,7 +188,7 @@
 <div class="py-10 px-5 w-full max-w-7xl mx-auto">
   <div class="flex items-center justify-between mb-10">
     <h1 class="dark:text-white text-2xl md:text-3xl font-bold mb-3">
-      {getGreeting()}
+      {$t(getGreeting())}
       {$profile.fullname}!
     </h1>
     <div class="flex items-center">
@@ -200,7 +201,7 @@
         {#if $isMobile}
           <Add size={24} />
         {:else}
-          Create Course
+          {$t('dashboard.create_course')}
         {/if}
       </PrimaryButton>
 
@@ -213,11 +214,10 @@
   >
     <span>
       <p class="w-full md:w-[75%] lg:w-[80%] text-white text-xs lg:text-xl font-normal mb-5">
-        Thank you for what you do ❤️. You are changing lives one classroom at a time and thanks to
-        you, the world is a better place. 😊
+        {$t('dashboard.hero_content')}
       </p>
       <PrimaryButton
-        label="Keep Building 🚀"
+        label={$t('dashboard.hero_button')}
         variant={VARIANTS.CONTAINED_WHITE}
         onClick={() => goto(`${$currentOrgPath}/courses`)}
       />
@@ -243,7 +243,7 @@
   <div class="w-full">
     <!-- Your Schedule -->
     <div class="w-full xl:w-auto container">
-      <p class="dark:text-white font-bold mt-7 mb-4">Your Schedule</p>
+      <p class="dark:text-white font-bold mt-7 mb-4">{$t('dashboard.your_schedule')}</p>
       <div
         class="rounded border border-gray-200 gap-3 flex flex-col md:flex-row items-start px-2 md:px-5 py-5 w-full"
       >
@@ -305,16 +305,16 @@
                   href={!!lessonData.call_url ? lessonData.call_url : undefined}
                   target="_blank"
                   title={!!lessonData.call_url
-                    ? 'Click to join the call'
-                    : 'No call link was added for this lesson. Ask your trainer'}
+                    ? $t('dashboard.click_to_join')
+                    : $t('dashboard.no_call_link')}
                 >
-                  Join call
+                  {$t('dashboard.join_call')}
                 </a>
               {/if}
             </div>
           {:else}
             <p class="dark:text-white flex items-center justify-center w-full no-data">
-              No lesson on this day
+              {$t('dashboard.no_schedule')}
             </p>
           {/each}
         </div>

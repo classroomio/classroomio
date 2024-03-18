@@ -27,7 +27,12 @@
   let dropdownItems = [
     { id: 'en', text: 'English' },
     { id: 'hi', text: 'Hindi' },
-    { id: 'fr', text: 'French' }
+    { id: 'fr', text: 'French' },
+    { id: 'pt', text: 'Portuguese' },
+    { id: 'gr', text: 'German' },
+    { id: 'vt', text: 'Vietnamese' },
+    { id: 'rs', text: 'Russian' },
+    { id: 'sn', text: 'Spanish' }
   ];
 
   let selectedId = 'en';

@@ -108,7 +108,7 @@
       <a href="/lms" class="text-black" on:click={toggleSidebar}>
         <li class="flex items-center py-3 px-4 mb-2 rounded">
           <HelpIcon size={20} class="carbon-icon dark:text-white" />
-          <p class="dark:text-white ml-2">{$t('navigation.help')}</p>
+          <p class="dark:text-white ml-2">{$t('lms_navigation.help')}</p>
         </li>
       </a>
       <a href="/lms/settings" class="text-black" on:click={toggleSidebar}>
@@ -119,7 +119,7 @@
           ) && NavClasses.active}"
         >
           <Settings size={20} class="carbon-icon dark:text-white" />
-          <p class="dark:text-white ml-2">{$t('navigation.settings')}</p>
+          <p class="dark:text-white ml-2">{$t('lms_navigation.settings')}</p>
         </li>
       </a>
     </ul>

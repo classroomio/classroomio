@@ -2,6 +2,7 @@
   import TextField from '../Form/TextField.svelte';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
+  import { t } from '$lib/utils/functions/translations';
 
   export let isTitle = false;
   export let onClose = () => {};
@@ -41,9 +42,9 @@
       class="flex justify-between items-center border-gray border-t-2 border-r-0 border-b-0 border-l-0 p-2"
     >
       <div class="flex items-center w-40">
-        <p class="dark:text-white text-sm mr-2">Points:</p>
+        <p class="dark:text-white text-sm mr-2">{$t('course.navItem.lessons.exercises.new_exercise_modal.points')}:</p>
         <TextField
-          placeholder="Points"
+          placeholder={$t('course.navItem.lessons.exercises.new_exercise_modal.points')}
           bind:value={points}
           type="number"
           onChange={onPointsChange}

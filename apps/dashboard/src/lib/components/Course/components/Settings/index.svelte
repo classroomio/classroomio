@@ -86,9 +86,9 @@
       a.click();
       a.remove();
 
-      snackbar.success('Download Complete');
+      snackbar.success('snackbar.course_settings.success.download');
     } catch (error) {
-      snackbar.error("Something's not right - Please try later");
+      snackbar.error('snackbar.course_settings.error.not_right');
     }
     isLoading = false;
   };
@@ -104,18 +104,18 @@
       isDeleting = false;
       goto($currentOrgPath + '/courses');
     } catch (error) {
-      snackbar.error('Something went wrong - Please try later');
+      snackbar.error('snackbar.course_settings.error.went_wrong');
       isDeleting = false;
     }
   }
 
   const handleSave = async () => {
     if (!$settings.course_title) {
-      errors.title = 'title cannot be empty';
+      errors.title = $t('snackbar.course_settings.error.title');
       return;
     }
     if (!$settings.course_description) {
-      errors.description = 'description cannot be empty';
+      errors.description = $t('snackbar.course_settings.error.description');
       return;
     }
     isSaving = true;
@@ -156,7 +156,7 @@
         lessonDownload: lesson_download,
         allowNewStudent: allow_new_students
       };
-      snackbar.success('Saved successfully');
+      snackbar.success('snackbar.course_settings.success.saved');
     } catch (error) {
       snackbar.error();
     }

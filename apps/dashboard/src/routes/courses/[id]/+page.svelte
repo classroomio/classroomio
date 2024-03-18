@@ -67,7 +67,7 @@
       comment: feed.comment.filter((comment) => comment.id !== id)
     }));
 
-    return snackbar.success('Comment Deleted');
+    return snackbar.success('snackbar.course.success.comment_deleted');
   };
 
   const addNewReaction = async (reactionType: string, feedId: string, authorId: string) => {
@@ -100,7 +100,7 @@
       .eq('id', feedId);
 
     if (response.error) {
-      return snackbar.error('An error occurred while reacting to news feed');
+      return snackbar.error('snackbar.course.error.reaction_error');
     }
 
     $newsFeed = $newsFeed.map((feed) => {
@@ -120,7 +120,7 @@
     });
 
     if (response.error) {
-      return snackbar.error('An error occurred while creating comment');
+      return snackbar.error('snackbar.course.error.commenting_error');
     }
 
     if (!response.data) return;
@@ -144,7 +144,7 @@
           content: comment
         };
 
-        snackbar.success('Comment added');
+        snackbar.success('snackbar.course.success.comment_added');
 
         return {
           ...feed,
@@ -161,12 +161,16 @@
     const { response } = await toggleFeedIsPinned(feedId, newIsPinned);
 
     if (response.error) {
-      return snackbar.error('Failed to toggle pinned feed');
+      return snackbar.error('snackbar.course.error.toggle_error');
     }
 
     $newsFeed = $newsFeed.map((feed) => {
       if (feed.id === feedId) {
-        snackbar.success(`${newIsPinned ? 'Pinned' : 'Unpinned'} Successfully`);
+        snackbar.success(
+          `${
+            newIsPinned ? 'snackbar.course.success.pinned' : 'snackbar.course.success.unpinned'
+          } snackbar.course.success.successfully`
+        );
 
         feed.isPinned = newIsPinned;
         return feed;
@@ -180,7 +184,7 @@
     deleteNewsFeed(id);
 
     const deletedFeed = $newsFeed.filter((feed) => feed.id !== id);
-    snackbar.success('Feed deleted successfully');
+    snackbar.success('snackbar.course.success.feed_delete_success');
 
     $newsFeed = deletedFeed;
   };
@@ -191,7 +195,7 @@
       isLoading = true;
       const { data, error } = await fetchNewsFeeds(courseId);
       if (error) {
-        snackbar.error('Failed to fetch news feeds');
+        snackbar.error('snackbar.course.error.news_feed_fail');
       }
       if (data) {
         $newsFeed = data.map((feedItem) => ({
@@ -200,7 +204,7 @@
         }));
       }
     } catch (error) {
-      snackbar.error('An error occured while fetching feed');
+      snackbar.error('snackbar.course.error.feed_fetch_error');
     } finally {
       isLoading = false;
     }

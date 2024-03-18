@@ -34,7 +34,7 @@
   }[] = [];
   let fileInput: HTMLInputElement;
 
-  let label = 'Upload Image';
+  let label = $t('snackbar.landing_page_settings.error.label');
 
   const onChange = (tabValue: string) => () => (currentTab = tabValue);
 
@@ -47,8 +47,8 @@
     const file = fileInput?.files?.[0];
     const sizeInkb = file?.size! / 1024;
     if (sizeInkb > 500) {
-      snackbar.error('File Size must not be greater than 500kb');
-      label = 'Try Again';
+      snackbar.error('snackbar.landing_page_settings.error.file_size');
+      label = $t('snackbar.landing_page_settings.error.try_again');
       return;
     }
     if (file) {
@@ -77,7 +77,7 @@
     }
     isUploading = false;
 
-    snackbar.success(`Complete :)`);
+    snackbar.success(`snackbar.landing_page_settings.success.complete`);
     $handleOpenWidget.open = false;
   };
 
@@ -89,7 +89,7 @@
     try {
       unsplashImages = await queryUnsplash(searchQuery || 'rocks');
     } catch (error) {
-      snackbar.error('Error fetching images from Unsplash');
+      snackbar.error('snackbar.landing_page_settings.error.fetch_error');
       console.error('Error fetching images from Unsplash:', error);
     }
   }

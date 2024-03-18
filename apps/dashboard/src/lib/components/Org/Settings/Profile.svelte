@@ -46,15 +46,15 @@
         ..._profile,
         ...updates
       }));
-      snackbar.success('Update successful');
+      snackbar.success('snackbar.course_settings.success.update_successful');
 
       if (error) throw error;
     } catch (error) {
       let message = error.message;
       if (message.includes('profile_username_key')) {
-        message = 'username already exists';
+        message = $t('snackbar.lms.error.username_exists');
       }
-      snackbar.success(`Update failed: ${message}`);
+      snackbar.error(`${$t('snackbar.lms.error.update')} ${message}`);
       loading = false;
     } finally {
       loading = false;

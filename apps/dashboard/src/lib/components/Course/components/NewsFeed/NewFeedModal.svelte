@@ -30,7 +30,7 @@
     try {
       if (edit) {
         onEdit(editFeed.id, newPost);
-        snackbar.success('Feed edited successfully');
+        snackbar.success('snackbar.newsfeed.success.edit');
 
         edit = false;
         newPost = '';
@@ -68,7 +68,7 @@
           isPinned: false
         });
 
-        snackbar.success('New feed added successfully');
+        snackbar.success('snackbar.newsfeed.success.add');
         triggerSendEmail(NOTIFICATION_NAME.NEWSFEED, {
           authorId: createdFeed.author_id,
           feedId: createdFeed.id
@@ -76,7 +76,10 @@
         resetEditor();
       }
     } catch (error) {
-      snackbar.error('An error occurred while ' + (edit ? 'editing feed' : 'creating feed'));
+      snackbar.error(
+        'snackbar.newsfeed.error.error ' +
+          (edit ? 'snackbar.newsfeed.error.editing' : 'snackbar.newsfeed.error.creating')
+      );
     } finally {
       isLoading = false;
     }

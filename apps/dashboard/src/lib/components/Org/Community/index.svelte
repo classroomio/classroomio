@@ -12,6 +12,7 @@
   import { fetchCourses } from '$lib/components/Courses/api';
   import { profile } from '$lib/utils/store/user';
   import { Search, Dropdown } from 'carbon-components-svelte';
+  import { t } from '$lib/utils/functions/translations';
 
   export let isLMS = false;
 
@@ -85,7 +86,7 @@
 
 <div class="flex justify-between">
   <Search
-    placeholder="Find Question"
+    placeholder={$t('community.find_question')}
     bind:value={searchValue}
     searchClass="mr-2"
     class=" bg-gray-100 dark:bg-neutral-800"
@@ -93,7 +94,7 @@
   <Dropdown
     class="w-[25%]"
     size="xl"
-    label="Select Course"
+    label={$t('community.ask.select_course')}
     items={allCourses.map((course) => ({ id: course.id, text: course.title }))}
     bind:selectedId
   />
@@ -137,8 +138,8 @@
     {:else}
       <Box className="w-screen">
         <CoursesEmptyIcon />
-        <h3 class="dark:text-white text-2xl my-5">No Questions asked</h3>
-        <p class="dark:text-white w-1/3 text-center">Ask a question to the community</p>
+        <h3 class="dark:text-white text-2xl my-5">{$t('community.no_question')}</h3>
+        <p class="dark:text-white w-1/3 text-center">{$t('community.ask_a_question')}</p>
       </Box>
     {/each}
   {/if}

@@ -39,7 +39,7 @@
     const { data: marks, error } = await fetchMarks(courseId);
     if (error) {
       console.error('Error fetching marks', error);
-      snackbar.error('Error fetching marks');
+      snackbar.error('snackbar.marks.error');
       return;
     }
 
@@ -164,7 +164,9 @@
       {:else}
         <Box>
           <AudioConsoleIcon size={32} class="carbon-icon w-80" />
-          <h3 class="text-3xl text-gray-500 dark:text-white">{$t('course.navItem.marks.no_student')}</h3>
+          <h3 class="text-3xl text-gray-500 dark:text-white">
+            {$t('course.navItem.marks.no_student')}
+          </h3>
         </Box>
       {/each}
     </div>

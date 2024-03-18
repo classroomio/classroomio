@@ -8,6 +8,7 @@
   import AuthUI from '$lib/components/AuthUI/index.svelte';
   import { currentOrg } from '$lib/utils/store/org';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
+  import { t } from '$lib/utils/functions/translations';
 
   let formRef: HTMLFormElement;
   let supabase = getSupabase();
@@ -53,9 +54,9 @@
 
 <AuthUI {supabase} isLogin={true} {handleSubmit} isLoading={loading} bind:formRef>
   <div class="mt-4 w-full">
-    <p class="dark:text-white text-lg font-semibold mb-6">Welcome back</p>
+    <p class="dark:text-white text-lg font-semibold mb-6">{$t('login.welcome')}</p>
     <TextField
-      label="Your email"
+      label={$t('login.email')}
       bind:value={fields.email}
       type="email"
       autoFocus={true}
@@ -66,7 +67,7 @@
       errorMessage={errors.email}
     />
     <TextField
-      label="Your password"
+      label={$t('login.password')}
       bind:value={fields.password}
       type="password"
       placeholder="************"
@@ -79,14 +80,14 @@
       <p class="text-sm text-red-500">{submitError}</p>
     {/if}
     <div class="w-full text-right">
-      <a class="text-md text-primary-700" href="/forgot"> Forgot password? </a>
+      <a class="text-md text-primary-700" href="/forgot"> {$t('login.forgot')} </a>
     </div>
   </div>
 
   <div class="my-4 w-full flex justify-end items-center">
     <!-- <a href="/login" class="text-primary-700 text-sm">Create an account</a> -->
     <PrimaryButton
-      label="Log In"
+      label={$t('login.login')}
       type="submit"
       className="sm:w-full w-full"
       isDisabled={loading}

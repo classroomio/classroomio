@@ -3,20 +3,30 @@
   import { Tabs, Tab, TabContent } from 'carbon-components-svelte';
   import Profile from '$lib/components/LMS/components/Profile.svelte';
   import Integrations from '$lib/components/Org/Settings/Integrations.svelte';
+  import Languages from '$lib/components/Org/Settings/Languages.svelte';
+  import { t } from '$lib/utils/functions/translations';
 
   let selected = 0;
-  const tabs = [
+  let tabs = [];
+  $: tabs = [
     {
       key: 0,
-      label: 'Profile',
+      label: $t('settings.tabs.1'),
       tabKey: '',
       href: $page.url.pathname
     },
     {
       key: 1,
-      label: 'Integrations',
+      label: $t('settings.tabs.4'),
       tabKey: 'integrations',
       href: `${$page.url.pathname}?tab=integrations`,
+      disabled: false
+    },
+    {
+      key: 2,
+      label: $t('settings.tabs.5'),
+      tabKey: 'languages',
+      href: `${$page.url.pathname}?tab=languages`,
       disabled: false
     }
   ];
@@ -25,7 +35,7 @@
 <section class="w-full max-w-6xl mx-auto">
   <div class="py-10 px-5">
     <div class="flex items-center justify-between mb-10">
-      <h1 class="dark:text-white text-3xl font-bold">Settings</h1>
+      <h1 class="dark:text-white text-3xl font-bold">{$t('settings.heading')}</h1>
     </div>
 
     <div class="">
@@ -39,6 +49,9 @@
           </TabContent>
           <TabContent>
             <Integrations />
+          </TabContent>
+          <TabContent>
+            <Languages />
           </TabContent>
         </svelte:fragment>
       </Tabs>

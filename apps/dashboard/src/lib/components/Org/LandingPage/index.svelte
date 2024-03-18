@@ -28,6 +28,7 @@
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import { goto } from '$app/navigation';
   import { landingPageSettings } from '$lib/components/Org/Settings/store';
+  import { t } from '$lib/utils/functions/translations';
 
   export let orgSiteName = '';
   export let org = {};
@@ -148,7 +149,7 @@
 
 <svelte:head>
   <title>
-    {!org.name ? '' : `${org.name}'s `}Landing Page
+    {!org.name ? '' : `${org.name}'s `}{$t('course.navItem.landing_page.landing_page')}
   </title>
 </svelte:head>
 
@@ -196,7 +197,7 @@
                 {#if isYouTubeLink($landingPageSettings.header?.banner?.video) && $landingPageSettings.header.banner.type === 'video'}
                   <div bind:this={player} id="player" style="width:100%; border-radius:12px">
                     <iframe
-                      title="Header video"
+                      title={$t('course.navItem.landing_page.header_video')}
                       src={$landingPageSettings.header?.banner?.video}
                       allowfullscreen
                       allowtransparency
@@ -309,9 +310,11 @@
         {:else}
           <Box>
             <CoursesEmptyIcon />
-            <h3 class="dark:text-white text-2xl my-5">No Course Published</h3>
+            <h3 class="dark:text-white text-2xl my-5">
+              {$t('course.navItem.landing_page.no_course_published')}
+            </h3>
             <p class="dark:text-white w-1/3 text-center">
-              We've got great courses coming your way, stay tuned!!!
+              {$t('course.navItem.landing_page.coming_your_way')}
             </p>
           </Box>
         {/if}
@@ -321,7 +324,9 @@
             <PrimaryButton
               variant={VARIANTS.OUTLINED}
               onClick={() => (viewAll = !viewAll)}
-              label={viewAll ? 'View Less' : 'View All'}
+              label={viewAll
+                ? $t('course.navItem.landing_page.view_less')
+                : $t('course.navItem.landing_page.view_all')}
               className="px-10 py-5 w-fit"
             />
           </div>
@@ -391,14 +396,14 @@
             <div class="mt-8 bg-white p-7 rounded-lg">
               {#if successContactSaved}
                 <div class="w-full flex items-center justify-center">
-                  Thank you for dropping a message, we will get back to you shortly
+                  {$t('course.navItem.landing_page.thank_you')}
                 </div>
               {:else}
                 <form on:submit|preventDefault={handleContactSubmit}>
                   <div class="w-full flex justify-between flex-col md:flex-row">
                     <div class="w-full md:w-2/4 mr-5">
                       <TextField
-                        label="Your Name"
+                        label={$t('course.navItem.landing_page.name')}
                         bind:value={contact.name}
                         errorMessage={contactError.name}
                         className="mb-5"
@@ -406,14 +411,14 @@
                         placeholder="Elon Musk"
                       />
                       <TextField
-                        label="Your Email"
+                        label={$t('course.navItem.landing_page.email')}
                         bind:value={contact.email}
                         errorMessage={contactError.email}
                         className="text-xs font-normal mb-5"
                         placeholder="musk@x.com"
                       />
                       <TextField
-                        label="Your Phone"
+                        label={$t('course.navItem.landing_page.phone')}
                         bind:value={contact.phone}
                         errorMessage={contactError.phone}
                         className="text-xs font-normal mb-5"
@@ -422,12 +427,12 @@
                     </div>
                     <div class="w-full md:w-2/4">
                       <TextArea
-                        label="Your Message"
+                        label={$t('course.navItem.landing_page.message')}
                         bind:value={contact.message}
                         errorMessage={contactError.message}
                         rows="9"
                         maxRows={15}
-                        placeholder="Your message here"
+                        placeholder={$t('course.navItem.landing_page.your_message')}
                       />
                     </div>
                   </div>
@@ -437,7 +442,7 @@
                     type="submit"
                     isLoading={isContactSubmiting}
                   >
-                    <span class="mr-2 text-md">Submit</span>
+                    <span class="mr-2 text-md">{$t('course.navItem.landing_page.submit')}</span>
                     <Rocket size={24} />
                   </PrimaryButton>
                 </form>
@@ -465,12 +470,12 @@
           <form on:submit|preventDefault={handleSubmit} class="my-4 w-full md:w-fit">
             <div class="flex items-center flex-col sm:flex-row">
               {#if success}
-                <p class="text-white">You have been added successfully. Thanks for subscribing.</p>
+                <p class="text-white">{$t('course.navItem.landing_page.successful_sub')}</p>
               {:else}
                 <TextField
                   bind:value={email}
                   type="email"
-                  placeholder="Enter your email.."
+                  placeholder={$t('course.navItem.landing_page.enter')}
                   className="sm:mr-3 my-0 w-full md:w-fit"
                   isRequired={true}
                   isDisabled={isAdding}
@@ -523,7 +528,7 @@
                 <a
                   href={$landingPageSettings.footer.facebook}
                   target="_blank"
-                  title="Facebook"
+                  title={$t('settings.landing_page.footer.facebook')}
                   id="logo-fb"
                   data-hveid="8"
                 >
@@ -536,7 +541,7 @@
                 <a
                   href={$landingPageSettings.footer.twitter}
                   target="_blank"
-                  title="Twitter"
+                  title={$t('settings.landing_page.footer.twitter')}
                   id="logo-tw"
                   data-hveid="8"
                 >
@@ -550,7 +555,7 @@
                 <a
                   href={$landingPageSettings.footer.linkedin}
                   target="_blank"
-                  title="Linkedin"
+                  title={$t('settings.landing_page.footer.linkedin')}
                   id="logo-ln"
                   data-hveid="8"
                 >
@@ -561,7 +566,7 @@
           </div>
         </ul>
         <p class="text-center mt-5">
-          Powered by
+          {$t('course.navItem.landing_page.powered_by')}
           <a class="text-primary-600 underline" href="https://classroomio.com" target="_blank"
             >ClassroomIO</a
           >

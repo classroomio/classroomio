@@ -92,7 +92,7 @@
     takeAttendance(_data).then((res) => {
       if (res.error) {
         console.error(`res.error`, res.error);
-        snackbar.error("Something isn't right.  Please reload and take attendance again");
+        snackbar.error('snackbar.attendance.error.reload');
       } else {
         // console.log('res', JSON.stringify(res));
         const { id, is_present } = res.data[0];

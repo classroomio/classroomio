@@ -102,7 +102,7 @@
     <div class="mt-3 flex items-center justify-between w-full">
       <PrimaryButton
         onClick={handlePrevious}
-        label="Previous"
+        label={$t('course.navItem.lessons.exercises.all_exercises.previous')}
         isDisabled={disablePreviousButton}
         variant={VARIANTS.OUTLINED}
       />

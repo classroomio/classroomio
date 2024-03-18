@@ -25,11 +25,11 @@
 
     if (error) {
       console.log(error);
-      snackbar.error('Integration Failed, please try again later');
+      snackbar.error('snackbar.course_settings.error.failed_integration');
     } else {
       $profile.telegram_chat_id = chatId;
       chatId = null;
-      snackbar.success('Integration successful');
+      snackbar.success('snackbar.course_settings.success.successful_integration');
     }
   }
 
@@ -40,11 +40,11 @@
       .match({ id: $profile.id });
 
     if (error) {
-      snackbar.error('Deletion Failed, please try again later');
+      snackbar.error('snackbar.course_settings.error.failed_deletion');
       console.log(error);
     } else {
       $profile.telegram_chat_id = null;
-      snackbar.success('Integration deleted');
+      snackbar.success('snackbar.course_settings.success.successful_deletion');
     }
   }
 </script>

@@ -252,7 +252,7 @@
       total: totalPoints
     }).then((res) => console.log('Updated submission', res));
 
-    snackbar.success('Grading saved and student notified');
+    snackbar.success('snackbar.submissions.success.grading');
 
     await Promise.all(updates);
   }

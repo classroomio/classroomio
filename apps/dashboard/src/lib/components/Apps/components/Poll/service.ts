@@ -45,7 +45,7 @@ export const updatePollStatus = async (pollId: string, status: PollType['status'
 
   if (error) {
     console.log(error);
-    snackbar.error('An error occurred while updating poll status');
+    snackbar.error('snackbar.poll.error.updating_poll');
     return;
   }
 };
@@ -64,7 +64,7 @@ export const togglePollSubmission = async (
     });
     if (error) {
       console.log(error);
-      snackbar.error('An error occurred while submitting poll');
+      snackbar.error('snackbar.poll.error.submitting_poll');
       return;
     }
   } else {
@@ -76,7 +76,7 @@ export const togglePollSubmission = async (
 
     if (error) {
       console.log(error);
-      snackbar.error('An error occurred while submitting poll');
+      snackbar.error('snackbar.poll.error.submitting_poll');
       return;
     }
   }
@@ -101,7 +101,7 @@ export function handleVote(pollId: string, groupmemberId: string, author: PollTy
           if (poll.id === pollId) {
             // Prevent user from voting on a poll that the status is not published
             if (poll.status !== 'published') {
-              snackbar.info('Poll is not published yet');
+              snackbar.info('snackbar.poll.info.not_published');
               return poll;
             }
 
@@ -109,7 +109,7 @@ export function handleVote(pollId: string, groupmemberId: string, author: PollTy
             if (
               poll.options.some((option) => isOptionSelectedByCurrentUser(option, groupmemberId))
             ) {
-              snackbar.info('You can only vote once');
+              snackbar.info('snackbar.poll.info.vote_once');
               return poll;
             }
 

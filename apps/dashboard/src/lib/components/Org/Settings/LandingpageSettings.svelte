@@ -92,8 +92,8 @@
       .match({ id: $currentOrg.id });
 
     if (error) {
-      const message = error?.message || 'Please try again';
-      snackbar.error(`Update failed: ${message}`);
+      const message = error?.message || 'snackbar.lms.error.try_again';
+      snackbar.error(`snackbar.lms.error.update ${message}`);
     } else {
       $currentOrg.landingpage = $landingPageSettings;
       snackbar.success();
@@ -130,13 +130,13 @@
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
       <TextField
         label={$t('settings.landing_page.title')}
-        placeholder="Write your title here"
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_title')}
         bind:value={$landingPageSettings.header.title}
         className="w-full mb-5"
       />
       <TextField
         label={$t('settings.landing_page.title_highlight')}
-        placeholder="Write your titlehighlight here"
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.highlight')}
         className="w-full mb-5"
         bind:value={$landingPageSettings.header.titleHighlight}
       />
@@ -144,7 +144,7 @@
       <TextArea
         label={$t('settings.landing_page.subtitle')}
         labelClassName="font-light"
-        placeholder="Write your subtitle here"
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_subtitle')}
         className="w-full mb-5"
         bind:value={$landingPageSettings.header.subtitle}
         isAIEnabled={true}
@@ -153,14 +153,14 @@
       <SectionTitle>{$t('settings.landing_page.actions.heading')}</SectionTitle>
       <TextField
         label={$t('settings.landing_page.actions.label')}
-        placeholder="Write your label here"
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.label')}
         className="w-full mt-3 mb-5"
         bind:value={$landingPageSettings.header.action.label}
       />
       <div class="gap-2 mb-5">
         <TextField
           label={$t('settings.landing_page.actions.link')}
-          placeholder="Write your link here"
+          placeholder={$t('course.navItem.lessons.exercises.all_exercises.link')}
           bind:value={$landingPageSettings.header.action.link}
         />
         <Toggle bind:toggled={$landingPageSettings.header.action.redirect} size="sm">
@@ -187,7 +187,7 @@
         <div class="gap-2 mt-3 mb-5">
           <TextField
             label={$t('settings.landing_page.actions.link')}
-            placeholder="Write your video link here"
+            placeholder={$t('course.navItem.lessons.exercises.all_exercises.video')}
             bind:value={$landingPageSettings.header.banner.video}
           />
         </div>
@@ -232,7 +232,7 @@
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
       <TextField
         label={$t('settings.landing_page.about.title')}
-        placeholder="Write your title here"
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_title')}
         bind:value={$landingPageSettings.aboutUs.title}
         className="mb-5"
       />
@@ -240,7 +240,7 @@
       <TextArea
         label={$t('settings.landing_page.about.content')}
         labelClassName="font-light"
-        placeholder="Write your Content here"
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.content')}
         className="mb-5"
         bind:value={$landingPageSettings.aboutUs.content}
         isAIEnabled={true}
@@ -283,18 +283,18 @@
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
       <TextField
         label={$t('settings.landing_page.courses.title')}
-        placeholder="Write your title here"
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_title')}
         bind:value={$landingPageSettings.courses.title}
       />
       <TextField
         label={$t('settings.landing_page.courses.title_highlight')}
-        placeholder="Write your title highlight here"
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.highlight')}
         bind:value={$landingPageSettings.courses.titleHighlight}
       />
       <TextArea
         label={$t('settings.landing_page.courses.subtitle')}
         labelClassName="font-light"
-        placeholder="Write your subtitle here"
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_subtitle')}
         bind:value={$landingPageSettings.courses.subtitle}
         isAIEnabled={true}
       />
@@ -314,7 +314,7 @@
     <Column sm={8} md={8} lg={8}>
       <TextField
         label={$t('settings.landing_page.faq.title')}
-        placeholder="Write your title here"
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_title')}
         bind:value={$landingPageSettings.faq.title}
         className="mb-5"
       />
@@ -322,14 +322,18 @@
         <div class="mb-3">
           <TextField
             label={$t('settings.landing_page.faq.question')}
-            placeholder="Write your question here"
+            placeholder={$t(
+              'course.navItem.lessons.exercises.all_exercises.write_your_question_here'
+            )}
             bind:value={item.title}
             className="mb-5"
           />
           <TextArea
             label={$t('settings.landing_page.faq.answer')}
             labelClassName="font-light"
-            placeholder="Write your answer here"
+            placeholder={$t(
+              'course.navItem.lessons.exercises.all_exercises.write_your_answer_here'
+            )}
             bind:value={item.content}
             className="mb-5"
             isAIEnabled={true}
@@ -342,14 +346,16 @@
       {#if creatingNewQuestion}
         <TextField
           label={$t('settings.landing_page.faq.question')}
-          placeholder="Write your question here"
+          placeholder={$t(
+            'course.navItem.lessons.exercises.all_exercises.write_your_question_here'
+          )}
           bind:value={newQuestion.title}
           className="mb-5"
         />
         <TextArea
           label={$t('settings.landing_page.faq.answer')}
           labelClassName="font-light"
-          placeholder="Write your answer here"
+          placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_answer_here')}
           bind:value={newQuestion.content}
           className="mb-5"
           isAIEnabled={true}
@@ -391,34 +397,34 @@
     <Column sm={8} md={8} lg={8}>
       <TextField
         label={$t('settings.landing_page.contact_us.title')}
-        placeholder="Write your title here"
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_title')}
         bind:value={$landingPageSettings.contact.title}
         className="mb-5"
       />
       <TextField
         label={$t('settings.landing_page.contact_us.title_highlight')}
         labelClassName="font-light"
-        placeholder="Write your title highlight here"
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.highlight')}
         className="mb-5"
         bind:value={$landingPageSettings.contact.titleHighlight}
       />
       <TextArea
         label={$t('settings.landing_page.contact_us.subtitle')}
         labelClassName="font-light"
-        placeholder="Write your subtitle here"
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_subtitle')}
         className="mt-3 mb-5"
         bind:value={$landingPageSettings.contact.subtitle}
         isAIEnabled={true}
       />
       <TextField
         label={$t('settings.landing_page.contact_us.phone_number')}
-        placeholder="Write your phone number here"
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.number')}
         className="mt-3 mb-5"
         bind:value={$landingPageSettings.contact.phone}
       />
       <TextField
         label={$t('settings.landing_page.contact_us.email')}
-        placeholder="Write your email here"
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.email')}
         className="mt-3 mb-5"
         bind:value={$landingPageSettings.contact.email}
       />
@@ -440,14 +446,14 @@
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
       <TextField
         label={$t('settings.landing_page.mailing_list.title')}
-        placeholder="Write your title here"
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_title')}
         bind:value={$landingPageSettings.mailinglist.title}
         className="mb-5"
       />
       <TextArea
         label={$t('settings.landing_page.mailing_list.subtitle')}
         labelClassName="font-light"
-        placeholder="Write your subtitle here"
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_subtitle')}
         className="mb-5"
         bind:value={$landingPageSettings.mailinglist.subtitle}
         isAIEnabled={true}
@@ -455,7 +461,7 @@
 
       <TextField
         label={$t('settings.landing_page.mailing_list.button_label')}
-        placeholder="Write your label here"
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.label')}
         className="mb-5"
         bind:value={$landingPageSettings.mailinglist.buttonLabel}
       />
@@ -477,7 +483,7 @@
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
       <TextField
         label={$t('settings.landing_page.footer.facebook')}
-        placeholder="Write your Facebook link here"
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.facebook')}
         bind:value={$landingPageSettings.footer.facebook}
         className="mb-5"
       />
@@ -489,13 +495,13 @@
       /> -->
       <TextField
         label={$t('settings.landing_page.footer.twitter')}
-        placeholder="Write your Twitter link here"
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.twitter')}
         className="mb-5"
         bind:value={$landingPageSettings.footer.twitter}
       />
       <TextField
         label={$t('settings.landing_page.footer.linkedin')}
-        placeholder="Write your Linkedin link here"
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.linkedin')}
         className="mb-5"
         bind:value={$landingPageSettings.footer.linkedin}
       />

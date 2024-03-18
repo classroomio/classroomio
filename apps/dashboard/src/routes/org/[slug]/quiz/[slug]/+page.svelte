@@ -146,10 +146,10 @@
     console.log('data', data);
     console.log('error', error);
     if (error) {
-      snackbar.error("Something's not right - Please try later");
+      snackbar.error('snackbar.course_settings.error.not_right');
       return;
     } else {
-      snackbar.success('Saved Successfully');
+      snackbar.success('snackbar.course_settings.success.saved');
     }
   }
 

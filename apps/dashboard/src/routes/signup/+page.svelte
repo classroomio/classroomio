@@ -55,7 +55,7 @@
       const emailCheckResponse = await emailCheck.json();
 
       if (emailCheckResponse.isDisposable === true) {
-        snackbar.error('The email you provided is disposable');
+        snackbar.error('snackbar.signup.disposable');
         return;
       }
 

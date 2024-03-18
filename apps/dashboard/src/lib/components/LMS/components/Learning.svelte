@@ -4,6 +4,7 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
   import { coursesInProgress } from '$lib/components/Courses/store';
+  import { t } from '$lib/utils/functions/translations';
 
   const gotoCourse = (id: string | undefined) => {
     if (!id) return;
@@ -12,7 +13,9 @@
 </script>
 
 <section class="h-full">
-  <p class="text-base font-semibold text-[#040F2D] pb-3 dark:text-white">Currently Learning</p>
+  <p class="text-base font-semibold text-[#040F2D] pb-3 dark:text-white">
+    {$t('dashboard.current_lesson')}
+  </p>
   <div
     class="flex items-center flex-col border border-[#EAEAEA] dark:bg-neutral-800 gap-2 rounded w-full lg:h-[40vh] p-3"
   >
@@ -33,7 +36,7 @@
                 </p>
               </div>
               <PrimaryButton
-                label="Continue"
+                label={$t('dashboard.continue')}
                 variant={VARIANTS.OUTLINED}
                 className="rounded-none text-[#0233BD]"
                 onClick={() => gotoCourse(course.id)}
@@ -51,8 +54,8 @@
     {:else}
       <div class="flex flex-col items-center">
         <CoursesEmptyIcon />
-        <h3 class="text-center">No courses in progress yet</h3>
-        <p class="w-[75%] text-center">Once you start a course, your progress will reflect here</p>
+        <h3 class="text-center">{$t('dashboard.no_courses')}</h3>
+        <p class="w-[75%] text-center">{$t('dashboard.start_course')}</p>
       </div>
     {/if}
   </div>

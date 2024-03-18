@@ -45,7 +45,7 @@
       );
 
       if (doesEmailExist) {
-        snackbar.error('User Already Exists');
+        snackbar.error('snackbar.team_members.user_exists');
         isLoading = false;
         return;
       }
@@ -64,7 +64,7 @@
         apiError = `${error}`;
 
         console.error('onSendInvite:', error);
-        snackbar.error(`Failed to send invite, please try again`);
+        snackbar.error(`snackbar.team_members.invite_fail`);
         isLoading = false;
         return;
       }
@@ -94,7 +94,7 @@
 
       const isLast = index === emails.length - 1;
       if (isLast) {
-        snackbar.success('Invite Sent!');
+        snackbar.success('snackbar.team_members.invite_sent');
 
         emailsStr = '';
         isLoading = false;
@@ -109,7 +109,7 @@
 
     if (error) {
       console.error('onRemove:', error);
-      snackbar.error('Failed to remove user, please try again');
+      snackbar.error('snackbar.team_members.remove_fail');
     } else {
       orgTeam.update((team) => [...team.filter((member) => member.id !== id)]);
     }

@@ -176,7 +176,7 @@
 
       if (error) {
         console.log('error saving lesson', error);
-        snackbar.error('We apologise, there was an error saving your lesson.');
+        snackbar.error('snackbar.materials.apology');
       }
       isSaving = false;
     }, 500);
@@ -201,15 +201,15 @@
 
   function getComponentOrder(tabs = CONSTANTS.tabs) {
     const componentMap = {
-      Video: ComponentVideo,
-      Slide: ComponentSlide,
-      Note: ComponentNote
+      '3': ComponentVideo,
+      '2': ComponentSlide,
+      '1': ComponentNote
     };
 
     const componentNames = tabs
       .map((tab) => {
         // @ts-ignore
-        const component = componentMap[tab.label];
+        const component = componentMap[tab.value];
         return component || null;
       })
       .filter(Boolean);
@@ -254,7 +254,10 @@
 {#if mode === MODES.edit}
   <Tabs {tabs} {currentTab} {onChange}>
     <slot:fragment slot="content">
-      <TabContent value={getValue('Note')} index={currentTab}>
+      <TabContent
+        value={getValue('course.navItem.lessons.materials.tabs.note.title')}
+        index={currentTab}
+      >
         <div bind:this={aiButtonRef} class="w-full flex flex-row-reverse">
           <PrimaryButton
             className="flex items-center relative"
@@ -304,7 +307,10 @@
         </div>
       </TabContent>
 
-      <TabContent value={getValue('Slide')} index={currentTab}>
+      <TabContent
+        value={getValue('course.navItem.lessons.materials.tabs.slide.title')}
+        index={currentTab}
+      >
         {#if mode === MODES.edit}
           <TextField
             label={$t('course.navItem.lessons.materials.tabs.slide.slide_link')}
@@ -313,7 +319,7 @@
           />
         {/if}
       </TabContent>
-      <TabContent value={getValue('Video')} index={currentTab}>
+      <TabContent value={getValue('course.navItem.lessons.materials.tabs.video.title')} index={currentTab}>
         <PrimaryButton
           label={$t('course.navItem.lessons.materials.tabs.video.button')}
           onClick={openAddVideoModal}

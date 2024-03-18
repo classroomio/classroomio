@@ -1,5 +1,7 @@
 <script lang="ts">
   import TextField from '$lib/components/Form/TextField.svelte';
+  import { t } from '$lib/utils/functions/translations';
+
   export let gradeMax = 0;
   export let disableGrading = false;
   export let grade: number | undefined;
@@ -8,7 +10,7 @@
 {#if typeof grade !== 'undefined'}
   <div class="flex items-center">
     <TextField
-      placeholder="Points"
+      placeholder={$t('course.navItem.lessons.exercises.new_exercise_modal.points')}
       bind:value={grade}
       type="number"
       className="w-12"

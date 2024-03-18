@@ -111,7 +111,7 @@
     });
 
     await updateLessonCompletion(completion);
-    snackbar.success('Marked as complete');
+    snackbar.success('snackbar.lessons.success.complete_marked');
     isMarkingComplete = false;
   }
 
@@ -161,10 +161,10 @@
       a.click();
       a.remove();
 
-      snackbar.success('Download Complete');
+      snackbar.success('snackbar.lessons.success.complete_download');
     } catch (error) {
       console.log('error downloading lesson', error);
-      snackbar.error("Something's not right - Please try later");
+      snackbar.error('snackbar.lessons.error.try_later');
     }
 
     isLoading = false;

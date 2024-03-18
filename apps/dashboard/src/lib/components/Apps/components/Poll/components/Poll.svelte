@@ -1,10 +1,11 @@
-<script lang="ts">
+<script script lang="ts">
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import Label from './Label.svelte';
   import Avatar from './Avatar.svelte';
   import type { PollType } from '../types';
   import { updatePollStatus } from '../service';
+  import { t } from '$lib/utils/functions/translations';
 
   export let poll: PollType;
   export let onSelect: (a: string) => void;
@@ -62,7 +63,7 @@
           {`<`}
         </button>
         <div class="flex-grow text-center">
-          <h3 class="dark:text-white font-bold">Voted</h3>
+          <h3 class="dark:text-white font-bold">{$t('course.navItem.lessons.poll.voted')}</h3>
         </div>
       </div>
       {#each selectedOptionToView.selectedBy as user}
@@ -81,13 +82,16 @@
           {poll.question}
         </h3>
         <p class="dark:text-white text-sm italic">
-          Created by <span class="text-primary-500">@{poll.author.username}</span>
+          {$t('course.navItem.lessons.poll.created_by')}
+          <span class="text-primary-500">@{poll.author.username}</span>
         </p>
       </div>
 
       {#if isAuthor}
         <div class="flex mb-3 justify-end items-center">
-          <label class="mr-2 font-bold" for="user-select">Status:</label>
+          <label class="mr-2 font-bold" for="user-select"
+            >{$t('course.navItem.lessons.poll.status')}:</label
+          >
 
           <select
             name="users"
@@ -95,8 +99,8 @@
             class="dark:text-white dark:bg-black"
             bind:value={poll.status}
           >
-            <option value="draft">Draft</option>
-            <option value="published">Publish</option>
+            <option value="draft">{$t('course.navItem.lessons.poll.draft')}</option>
+            <option value="published">{$t('course.navItem.lessons.poll.publish')}</option>
           </select>
         </div>
       {/if}
@@ -105,20 +109,20 @@
     {#if viewResult}
       <div class="flex items-center justify-between">
         <div class="mr-5">
-          <Label>Expiration</Label>
+          <Label>{$t('course.navItem.lessons.poll.expiration')}</Label>
           <p class="dark:text-white text-sm text-gray-600 mb-4">
             {poll.expiration || 'Today'}
           </p>
         </div>
         <div class="flex flex-col items-center">
-          <Label>Total Votes</Label>
+          <Label>{$t('course.navItem.lessons.poll.total_votes')}</Label>
           <p class="dark:text-white text-sm text-gray-600 mb-4">
             {totalVotes}
           </p>
         </div>
       </div>
 
-      <Label>Responses</Label>
+      <Label>{$t('course.navItem.lessons.poll.responses')}</Label>
       {#each poll.options as option}
         <div class="border-b p-5">
           <p class="dark:text-white">
@@ -176,11 +180,11 @@
       {/each}
       <div class="flex items-center">
         <p class="dark:text-white text-sm text-gray-600">
-          Expires: {poll.expiration || 'Today'}
+          {$t('course.navItem.lessons.poll.expires')}: {poll.expiration || 'Today'}
         </p>
         <span class="mx-2">|</span>
         <p class="dark:text-white text-sm text-gray-600">
-          Voted: {totalVotes}
+          {$t('course.navItem.lessons.poll.voted')}: {totalVotes}
         </p>
       </div>
     {/if}
@@ -188,10 +192,16 @@
     {#if isAuthor}
       <div class="w-full flex items-center mt-3">
         <PrimaryButton
-          label={viewResult ? 'Back' : 'Result'}
+          label={viewResult
+            ? $t('course.navItem.lessons.poll.back')
+            : $t('course.navItem.lessons.poll.result')}
           onClick={() => (viewResult = !viewResult)}
         />
-        <PrimaryButton label="Delete" variant={VARIANTS.TEXT_DANGER} onClick={handlePollDelete} />
+        <PrimaryButton
+          label={$t('course.navItem.lessons.poll.delete')}
+          variant={VARIANTS.TEXT_DANGER}
+          onClick={handlePollDelete}
+        />
       </div>
     {/if}
   {/if}

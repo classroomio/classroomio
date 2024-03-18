@@ -4,6 +4,7 @@
   import { isMobile } from '$lib/utils/store/useMobile';
   import { formatDate } from '$lib/utils/functions/routes/dashboard';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { t } from '$lib/utils/functions/translations';
 
   let store;
 
@@ -26,7 +27,7 @@
 </script>
 
 <section class="w-full h-full mt-2">
-  <p class="text-base font-semibold text-[#040F2D] pb-3 dark:text-white">Your Schedule</p>
+  <p class="text-base font-semibold text-[#040F2D] pb-3 dark:text-white">{$t('schedule.title')}</p>
 
   <div
     class="flex items-center flex-col border border-[#EAEAEA] dark:bg-neutral-800 rounded w-full h-fit lg:h-[40vh] p-3 overflow-y-auto"
@@ -57,17 +58,17 @@
         <div class="flex flex-col items-start gap-4">
           <span>
             <p class="text-lg font-semibold text-[#262626] dark:text-white">
-              The essence of design collaboration
+              {$t('schedule.essence')}
             </p>
             <a href="#" class="text-sm font-normal text-primary-700 dark:text-white"
-              >Figma Introduction</a
+              >{$t('schedule.figma')}</a
             >
           </span>
-          <PrimaryButton label="Join Call" variant={VARIANTS.OUTLINED} className="" />
+          <PrimaryButton label={$t('schedule.join')} variant={VARIANTS.OUTLINED} className="" />
         </div>
       </span>
     {:else}
-      <p>No Lesson on this day</p>
+      <p>{$t('schedule.no')}</p>
     {/if}
   </div>
 </section>

@@ -28,6 +28,31 @@ const config: Config<Partial<Params>> = {
 			key: '',
 			loader: async () => (await import('../../components/Lang/fr.json')).default
 		},
+		{
+			locale: 'pt',
+			key: '',
+			loader: async () => (await import('../../components/Lang/pt.json')).default
+		},
+		{
+			locale: 'gr',
+			key: '',
+			loader: async () => (await import('../../components/Lang/gr.json')).default
+		},
+		{
+			locale: 'vt',
+			key: '',
+			loader: async () => (await import('../../components/Lang/vt.json')).default
+		},
+		{
+			locale: 'rs',
+			key: '',
+			loader: async () => (await import('../../components/Lang/rs.json')).default
+		},
+		{
+			locale: 'sn',
+			key: '',
+			loader: async () => (await import('../../components/Lang/sn.json')).default
+		},
 	]
 };
 

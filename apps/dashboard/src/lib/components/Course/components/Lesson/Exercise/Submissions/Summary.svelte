@@ -14,6 +14,7 @@
   import { submissions } from './store';
   import '@carbon/charts-svelte/styles.css';
   import { Loading } from 'carbon-components-svelte';
+  import { t } from '$lib/utils/functions/translations';
 
   export let isLoading = true;
 
@@ -142,7 +143,9 @@
   <Loading withOverlay={true} />
 {:else if browser}
   <div>
-    <p class="text-2xl mb-3">Question Charts</p>
+    <p class="text-2xl mb-3">
+      {$t('course.navItem.lessons.exercise.all_exercises.analytics.summary.question_chart')}
+    </p>
     {#each transformedQuestions as q}
       <div class="mb-4">
         <p>{q.title}</p>

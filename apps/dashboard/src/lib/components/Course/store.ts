@@ -3,7 +3,6 @@ import type { Writable } from 'svelte/store';
 import { lessons } from './components/Lesson/store/lessons';
 import { ROLE } from '$lib/utils/constants/roles';
 import type { Course, GroupPerson } from '$lib/utils/types';
-import { t } from '$lib/utils/functions/translations';
 
 export const defaultCourse: Course = {
   id: '',
@@ -39,9 +38,9 @@ export const defaultCourse: Course = {
       imgUrl: ''
     },
     lessonTabsOrder: [
-      { id: 1, name: 'Note' },
-      { id: 2, name: 'Slide' },
-      { id: 3, name: 'Video' }
+      { id: 1, name: 'course.navItem.lessons.materials.tabs.note.title' },
+      { id: 2, name: 'course.navItem.lessons.materials.tabs.slide.title' },
+      { id: 3, name: 'course.navItem.lessons.materials.tabs.video.title' }
     ],
     grading: false,
     lessonDownload: true,

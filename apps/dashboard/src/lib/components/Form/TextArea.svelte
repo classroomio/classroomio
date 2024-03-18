@@ -1,10 +1,11 @@
 <script lang="ts">
   import CustomPromptBtn from '$lib/components/AI/AIButton/CustomPromptBtn.svelte';
   import type { PopoverProps } from 'carbon-components-svelte/types/Popover/Popover.svelte';
+  import { t } from '$lib/utils/functions/translations';
 
   export let label = '';
   export let disabled = false;
-  export let placeholder = 'Write your answer...';
+  export let placeholder = $t('course.navItem.lessons.exercises.all_exercises.write_your_answer');
   export let value = '';
   export let rows = 3;
   // export let maxRows = 3;

@@ -13,6 +13,7 @@
   import { currentOrgPath } from '$lib/utils/store/org';
   import { toggleBodyByMode } from '$lib/utils/functions/app';
   import { sideBar } from '../Org/store';
+  import { t } from '$lib/utils/functions/translations';
 
   export let title = '';
   export let navClass = '';
@@ -76,7 +77,9 @@
       {/if}
       <a
         href={coursesPath}
-        title="Go to {isCoursePage ? 'Courses' : 'ClassroomIO Home'}"
+        title="{$t('navigation.goto')} {isCoursePage
+          ? $t('navigation.courses')
+          : $t('navigation.classroomio_home')}"
         id="logo"
         class="text-lg line-clamp-1"
       >
