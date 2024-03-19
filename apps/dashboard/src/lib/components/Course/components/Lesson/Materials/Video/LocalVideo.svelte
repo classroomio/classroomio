@@ -8,11 +8,15 @@
     uploadCourseVideoStore
   } from '$lib/components/Course/components/Lesson/store/lessons';
   import { Moon } from 'svelte-loading-spinners';
+  import { ProgressBar } from 'carbon-components-svelte';
+
   import io from 'socket.io-client';
 
   let socket = io(PUBLIC_SERVER_URL);
-  let uploadProgress = 0;
-
+  let value = 0;
+  let max = 100;
+  let status = 'active';
+  let fileSize;
   export let lessonId = '';
 
   let formRes;
@@ -47,6 +51,7 @@
 
     console.log({ size: videoFile?.size });
 
+    fileSize = videoFile?.size / (1024 * 1024);
     try {
       const response = await axios({
         method: 'POST',
@@ -58,7 +63,7 @@
           'Content-Type': 'multipart/form-data; boundary=MyBoundary'
         },
         onUploadProgress: (progressEvent) => {
-          uploadProgress = Math.round((progressEvent.loaded * 100) / progressEvent?.total / 2);
+          value = Math.round((progressEvent.loaded * 100) / progressEvent?.total / 2);
         }
       });
 
@@ -99,9 +104,15 @@
   }
 
   socket.on('uploadProgress', (newProgress) => {
-    uploadProgress = uploadProgress + newProgress - prevProgress;
+    value = value + newProgress - prevProgress;
     prevProgress = newProgress;
   });
+
+  $: helperText = value + '%  of ' + max + 'MB';
+  $: if (value === max) {
+    helperText = 'Done';
+    status = 'finished';
+  }
 
   $: {
     if (isLoading) {
@@ -139,7 +150,7 @@
       {#if isLoading}
         <Moon size="40" color="#1d4ed8" unit="px" duration="1s" />
         <p class="mt-5">{uploadingLoadingText}</p>
-        <p class="mt-5">{uploadProgress} %</p>
+        <ProgressBar kind="inline" labelText="upload status" {value} {max} {helperText} {status} />
       {:else}
         <img src="/upload-video.svg" alt="upload" />
         <span class="pt-3">
