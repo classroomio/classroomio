@@ -9,7 +9,6 @@
   } from '$lib/components/Course/components/Lesson/store/lessons';
   import { Moon } from 'svelte-loading-spinners';
   import io from 'socket.io-client';
-  import { onMount } from 'svelte';
 
   let socket = io(PUBLIC_SERVER_URL);
   let uploadProgress = 0;
@@ -23,7 +22,7 @@
   let uploadedFileUrl = '';
   let isLoading = false;
   let timeoutkey;
-  let prev = 0;
+  let prevProgress = 0;
 
   const uploadingTexts = [
     'Sending your video to our server...',
@@ -102,17 +101,9 @@
     isLoading = false;
   }
 
-  // onMount(() => {
-  //   // Connect to the Socket.IO server
-  //  // Adjust the URL accordingly
-
-  //   // Listen for progress updates
-
-  // });
-
   socket.on('uploadProgress', (newProgress) => {
-    uploadProgress = uploadProgress + newProgress - prev;
-    prev = newProgress;
+    uploadProgress = uploadProgress + newProgress - prevProgress;
+    prevProgress = newProgress;
   });
 
   $: {

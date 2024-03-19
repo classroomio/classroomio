@@ -29,8 +29,6 @@ io.on('connection', (socket) => {
   console.log('Client connected');
 });
 
-let uploadProgress = 0;
-
 const {
   CLOUDFLARE_ACCESS_KEY,
   CLOUDFLARE_SECRET_ACCESS_KEY,
@@ -112,10 +110,7 @@ router.post('/', upload.single('videoFile'), async (req, res) => {
     parallelUploads3.on('httpUploadProgress', (progress) => {
       const Uploadprogress = Math.round(((progress.loaded / progress.total) * 100) / 2);
       // Emit progress to connected sockets
-      uploadProgress = progress;
       io.emit('uploadProgress', Uploadprogress);
-
-      console.log('progress', uploadProgress);
     });
 
     await parallelUploads3.done();
