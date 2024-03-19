@@ -110,7 +110,7 @@ router.post('/', upload.single('videoFile'), async (req, res) => {
     });
 
     parallelUploads3.on('httpUploadProgress', (progress) => {
-      const Uploadprogress = Math.round((progress.loaded / progress.total) * 100);
+      const Uploadprogress = Math.round(((progress.loaded / progress.total) * 100) / 2);
       // Emit progress to connected sockets
       uploadProgress = progress;
       io.emit('uploadProgress', Uploadprogress);

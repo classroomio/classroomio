@@ -23,6 +23,7 @@
   let uploadedFileUrl = '';
   let isLoading = false;
   let timeoutkey;
+  let prev = 0;
 
   const uploadingTexts = [
     'Sending your video to our server...',
@@ -57,7 +58,12 @@
         headers: {
           'Content-Type': 'multipart/form-data; boundary=MyBoundary'
         },
-        onUploadProgress: (progressEvent) => console.log(progressEvent.loaded)
+        onUploadProgress: (progressEvent) => {
+          console.log(progressEvent.loaded);
+          console.log('total', progressEvent.total);
+
+          uploadProgress = Math.round((progressEvent.loaded * 100) / progressEvent?.total / 2);
+        }
       });
 
       formRes = response.data;
@@ -105,7 +111,8 @@
   // });
 
   socket.on('uploadProgress', (newProgress) => {
-    uploadProgress = newProgress;
+    uploadProgress = uploadProgress + newProgress - prev;
+    prev = newProgress;
   });
 
   $: {
@@ -144,7 +151,7 @@
       {#if isLoading}
         <Moon size="40" color="#1d4ed8" unit="px" duration="1s" />
         <p class="mt-5">{uploadingLoadingText}</p>
-        <p class="mt-5">{uploadProgress}</p>
+        <p class="mt-5">{uploadProgress} %</p>
       {:else}
         <img src="/upload-video.svg" alt="upload" />
         <span class="pt-3">
