@@ -34,24 +34,24 @@ const config: Config<Partial<Params>> = {
 			loader: async () => (await import('../../components/Lang/pt.json')).default
 		},
 		{
-			locale: 'gr',
+			locale: 'de',
 			key: '',
-			loader: async () => (await import('../../components/Lang/gr.json')).default
+			loader: async () => (await import('../../components/Lang/de.json')).default
 		},
 		{
-			locale: 'vt',
+			locale: 'vi',
 			key: '',
-			loader: async () => (await import('../../components/Lang/vt.json')).default
+			loader: async () => (await import('../../components/Lang/vi.json')).default
 		},
 		{
-			locale: 'rs',
+			locale: 'ru',
 			key: '',
-			loader: async () => (await import('../../components/Lang/rs.json')).default
+			loader: async () => (await import('../../components/Lang/ru.json')).default
 		},
 		{
-			locale: 'sn',
+			locale: 'es',
 			key: '',
-			loader: async () => (await import('../../components/Lang/sn.json')).default
+			loader: async () => (await import('../../components/Lang/es.json')).default
 		},
 	]
 };

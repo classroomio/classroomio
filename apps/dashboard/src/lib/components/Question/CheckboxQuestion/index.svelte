@@ -5,6 +5,7 @@
   import Checkbox from '$lib/components/Form/Checkbox.svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import Grade from '$lib/components/Question/Grade.svelte';
+  import { t } from '$lib/utils/functions/translations';
 
   export let title = '';
   export let index = 1;

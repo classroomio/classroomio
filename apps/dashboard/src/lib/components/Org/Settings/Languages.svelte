@@ -29,10 +29,10 @@
     { id: 'hi', text: 'Hindi' },
     { id: 'fr', text: 'French' },
     { id: 'pt', text: 'Portuguese' },
-    { id: 'gr', text: 'German' },
-    { id: 'vt', text: 'Vietnamese' },
-    { id: 'rs', text: 'Russian' },
-    { id: 'sn', text: 'Spanish' }
+    { id: 'de', text: 'German' },
+    { id: 'vi', text: 'Vietnamese' },
+    { id: 'ru', text: 'Russian' },
+    { id: 'es', text: 'Spanish' }
   ];
 
   let selectedId = 'en';

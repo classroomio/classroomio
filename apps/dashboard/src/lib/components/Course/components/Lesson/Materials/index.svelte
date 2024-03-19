@@ -1,5 +1,6 @@
 <script lang="ts">
   import isEmpty from 'lodash/isEmpty';
+  import { onMount, onDestroy } from 'svelte';
   import { useCompletion } from 'ai/svelte';
   import MODES from '$lib/utils/constants/mode.js';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
@@ -38,6 +39,7 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import { t } from '$lib/utils/functions/translations';
+  import { supabase } from '$lib/utils/functions/supabase';
 
   export let mode = MODES.view;
   export let prevMode = '';
@@ -45,6 +47,10 @@
   export let isSaving = false;
   export let toggleMode = () => {};
 
+  let translations = [];
+  let currentLanguage = '';
+  let selectedLanguage = 'English';
+  let selectedLanguageContent = '';
   let lessonTitle = '';
   let initAutoSave = false;
   let timeoutId: NodeJS.Timeout;
@@ -61,6 +67,16 @@
   let aiButtonClass =
     'flex items-center px-5 py-2 border border-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md w-full mb-2';
 
+  const languages = [
+    'English',
+    'Spanish',
+    'French',
+    'German',
+    'Hindi',
+    'Portuguese',
+    'Vietnamese',
+    'Russian'
+  ];
   const onChange =
     (tab = 0) =>
     () =>
@@ -70,6 +86,73 @@
     const tabValue = tabs.find((tab) => tab.label === label)?.value;
     return tabValue;
   };
+
+  async function fetchTranslations(selectedLanguage) {
+    const { data, error } = await supabase
+      .from('lesson_language')
+      .select('*')
+      .eq('lesson_id', lessonId)
+      .eq('lang', selectedLanguage);
+
+    translations = data;
+    translations.map((translation) => (selectedLanguageContent = translation.content || ''));
+    console.log('translation:', translations);
+
+    if (error) {
+      console.error('Error fetching translations:', error.message);
+      // Handle error appropriately (e.g., show error message to the user)
+      return [];
+    } else {
+      return data || [];
+    }
+  }
+
+  async function saveOrUpdateTranslation(lang, lessonId, content) {
+    // Check if translation for the given language already exists
+    const { data, error } = await supabase
+      .from('lesson_language')
+      .select('*')
+      .eq('lesson_id', lessonId)
+      .eq('lang', lang);
+
+    if (error) {
+      console.error('Error checking translation:', error.message);
+      return;
+    }
+
+    // If translation exists, update it; otherwise, insert a new translation
+    if (data && data.length > 0) {
+      // Update existing translation
+      const { error: updateError } = await supabase
+        .from('lesson_language')
+        .update({ content })
+        .eq('lesson_id', lessonId)
+        .eq('lang', lang);
+
+      if (updateError) {
+        console.error('Error updating translation:', updateError.message);
+      }
+    } else {
+      // Insert new translation
+      const { error: insertError } = await supabase.from('lesson_language').insert([
+        {
+          lang,
+          lesson_id: lessonId,
+          content
+        }
+      ]);
+
+      if (insertError) {
+        console.error('Error inserting translation:', insertError.message);
+      }
+    }
+  }
+
+  function handleLanguageChange(event) {
+    currentLanguage = event.target.value;
+    handleInputChange();
+  }
+
   async function saveLesson(materials?: LessonPage['materials']) {
     const _lesson = !!materials
       ? {
@@ -182,8 +265,25 @@
     }, 500);
   }
 
+  async function saveTranslation(lang, content) {
+    await saveOrUpdateTranslation(lang, lessonId, content);
+  }
+
+  async function updateTranslation(lang, content) {
+    await saveOrUpdateTranslation(lang, lessonId, content);
+  }
+
   function handleInputChange() {
     $isLessonDirty = true;
+
+    const translation = translations.find((t) => t.lang === selectedLanguage);
+
+    // If translation exists, update it; otherwise, save a new translation
+    if (translation) {
+      updateTranslation(selectedLanguage, $lesson.materials.note);
+    } else {
+      saveTranslation(selectedLanguage, $lesson.materials.note);
+    }
   }
 
   function onLessonIdChange(_lid: string) {
@@ -216,6 +316,15 @@
 
     return componentNames;
   }
+
+  onMount(async () => {
+    translations = await fetchTranslations(selectedLanguage);
+    console.log(translations);
+  });
+
+  $: fetchTranslations(selectedLanguage);
+
+  $: $lesson.materials.note = selectedLanguageContent;
 
   $: autoSave($lesson.materials, $isLoading, lessonId);
 
@@ -258,42 +367,51 @@
         value={getValue('course.navItem.lessons.materials.tabs.note.title')}
         index={currentTab}
       >
-        <div bind:this={aiButtonRef} class="w-full flex flex-row-reverse">
-          <PrimaryButton
-            className="flex items-center relative"
-            onClick={() => {
-              openPopover = !openPopover;
-            }}
-            isLoading={$isLoading}
-            isDisabled={$isLoading}
-            variant={VARIANTS.OUTLINED}
-          >
-            <MagicWandFilled size={20} class="carbon-icon mr-3" />
-            AI
-            <Popover
-              caret
-              align="left"
-              bind:open={openPopover}
-              on:click:outside={({ detail }) => {
-                openPopover = aiButtonRef?.contains(detail.target);
+        <div class="flex gap-1 justify-end">
+          <div>
+            <select bind:value={selectedLanguage} on:change={handleLanguageChange}>
+              {#each languages as language}
+                <option value={language}>{language}</option>
+              {/each}
+            </select>
+          </div>
+          <div bind:this={aiButtonRef} class="flex flex-row-reverse">
+            <PrimaryButton
+              className="flex items-center relative"
+              onClick={() => {
+                openPopover = !openPopover;
               }}
+              isLoading={$isLoading}
+              isDisabled={$isLoading}
+              variant={VARIANTS.OUTLINED}
             >
-              <div class="p-2">
-                <button class={aiButtonClass} on:click={() => callAI('outline')}>
-                  <ListIcon class="carbon-icon mr-2" />
-                  Generate Lesson Outline
-                </button>
-                <button class={aiButtonClass} on:click={() => callAI('note')}>
-                  <AlignBoxTopLeftIcon class="carbon-icon mr-2" />
-                  Generate Lesson Note
-                </button>
-                <button class={aiButtonClass} on:click={() => callAI('activities')}>
-                  <IbmWatsonKnowledgeStudioIcon class="carbon-icon mr-2" />
-                  Generate Lesson Activities
-                </button>
-              </div>
-            </Popover>
-          </PrimaryButton>
+              <MagicWandFilled size={20} class="carbon-icon mr-3" />
+              AI
+              <Popover
+                caret
+                align="left"
+                bind:open={openPopover}
+                on:click:outside={({ detail }) => {
+                  openPopover = aiButtonRef?.contains(detail.target);
+                }}
+              >
+                <div class="p-2">
+                  <button class={aiButtonClass} on:click={() => callAI('outline')}>
+                    <ListIcon class="carbon-icon mr-2" />
+                    Generate Lesson Outline
+                  </button>
+                  <button class={aiButtonClass} on:click={() => callAI('note')}>
+                    <AlignBoxTopLeftIcon class="carbon-icon mr-2" />
+                    Generate Lesson Note
+                  </button>
+                  <button class={aiButtonClass} on:click={() => callAI('activities')}>
+                    <IbmWatsonKnowledgeStudioIcon class="carbon-icon mr-2" />
+                    Generate Lesson Activities
+                  </button>
+                </div>
+              </Popover>
+            </PrimaryButton>
+          </div>
         </div>
 
         <div class="h-[60vh] mt-5">
@@ -301,7 +419,10 @@
             id={lessonId}
             bind:editorWindowRef
             value={$lesson.materials.note}
-            onChange={(html) => ($lesson.materials.note = html)}
+            onChange={(html) => {
+              $lesson.materials.note = html;
+              handleInputChange();
+            }}
             placeholder={$t('course.navItem.lessons.materials.tabs.note.placeholder')}
           />
         </div>
@@ -319,7 +440,10 @@
           />
         {/if}
       </TabContent>
-      <TabContent value={getValue('course.navItem.lessons.materials.tabs.video.title')} index={currentTab}>
+      <TabContent
+        value={getValue('course.navItem.lessons.materials.tabs.video.title')}
+        index={currentTab}
+      >
         <PrimaryButton
           label={$t('course.navItem.lessons.materials.tabs.video.button')}
           onClick={openAddVideoModal}
