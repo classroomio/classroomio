@@ -58,9 +58,6 @@
           'Content-Type': 'multipart/form-data; boundary=MyBoundary'
         },
         onUploadProgress: (progressEvent) => {
-          console.log(progressEvent.loaded);
-          console.log('total', progressEvent.total);
-
           uploadProgress = Math.round((progressEvent.loaded * 100) / progressEvent?.total / 2);
         }
       });
