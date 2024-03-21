@@ -23,7 +23,7 @@ app.use(cors());
 // Rate limiting middleware
 const limiter = rateLimit({
   windowMs: 1000,
-  max: 10,
+  max: 10
 });
 
 app.use(limiter);
@@ -34,9 +34,9 @@ app.use('/downloadCourse', downloadCourse);
 app.use('/uploadVideo', uploadVideo);
 
 app.get('/', (req, res) => {
-  res.send('Hello ClassroomIO');
+  res.send('Welcome to ClassroomIO');
 });
 
 app.listen(port, () => {
-  console.log(`HelloNode app listening on port ${port}!`);
+  console.log(`ClassroomIO Backend listening on port ${port}!`);
 });
