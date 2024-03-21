@@ -252,9 +252,6 @@ importers:
       posthog-js:
         specifier: ^1.103.0
         version: 1.103.1
-      registry.npmjs.org:
-        specifier: link:registry=https:/registry.npmjs.org
-        version: link:registry=https:/registry.npmjs.org
       shared-constants:
         specifier: workspace:*
         version: link:../../packages/shared-constants
