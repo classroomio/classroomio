@@ -1,15 +1,15 @@
 const express = require('express');
 const FormData = require('form-data');
 const axios = require('axios');
-// const Queue = require('bull');
+
 const { promisify } = require('util');
 const fs = require('fs');
-
 const unlinkAsync = promisify(fs.unlink);
 
+const { Upload } = require('@aws-sdk/lib-storage');
 const {
   S3Client,
-  PutObjectCommand,
+  PutObjectCommand
   // GetObjectCommand,
 } = require('@aws-sdk/client-s3');
 
@@ -22,7 +22,7 @@ const {
   CLOUDFLARE_SECRET_ACCESS_KEY,
   CLOUDFLARE_ACCOUNT_ID,
   CLOUDFLARE_PUBLIC_ACCOUNT_ID,
-  MUSE_API_KEY,
+  MUSE_API_KEY
 } = process.env;
 
 const router = express.Router();
@@ -32,8 +32,8 @@ const S3 = new S3Client({
   endpoint: `https://${CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
   credentials: {
     accessKeyId: CLOUDFLARE_ACCESS_KEY,
-    secretAccessKey: CLOUDFLARE_SECRET_ACCESS_KEY,
-  },
+    secretAccessKey: CLOUDFLARE_SECRET_ACCESS_KEY
+  }
 });
 
 // const supabase = getSupabase();
@@ -43,9 +43,12 @@ const S3 = new S3Client({
 // });
 
 router.post('/', upload.single('videoFile'), async (req, res) => {
+  // Set timeout for this request to 15 minutes
+  req.setTimeout(900000);
+
   const {
     file,
-    query: { lessonId },
+    query: { lessonId }
   } = req;
   console.log('lessonId', lessonId);
   console.log('file', file);
@@ -53,67 +56,76 @@ router.post('/', upload.single('videoFile'), async (req, res) => {
   if (!file?.fieldname || !file?.fieldname) {
     return res.status(400).json({
       success: false,
-      message: 'You must provide a file to upload',
+      message: 'You must provide a file to upload'
     });
   }
 
-  if (file?.size > 30 * 1024 * 1024) {
+  // File upload limit is 500MB
+  const fileSizeInMegabytes = file?.size / (1024 * 1024);
+
+  if (fileSizeInMegabytes > 500) {
     return res.status(400).json({
       success: false,
       type: 'FILE_TOO_LARGE',
-      message: 'File is too large',
+      message: 'File is too large'
     });
   }
   const fileData = fs.readFileSync(file.path);
 
-  const fileName = `${genUniqueId()}-${file.originalname}`;
-  const params = {
-    Bucket: 'videos',
-    Key: fileName,
-    Body: fileData,
-  };
+  const fileName = `${genUniqueId()}-${file.originalname.split(' ').join('-')}`;
 
   const fileUrl = `https://pub-${CLOUDFLARE_PUBLIC_ACCOUNT_ID}.r2.dev/${fileName}`;
-  let metadata = {};
+  let metadata = {
+    sizeInMb: fileSizeInMegabytes
+  };
 
   try {
-    const s3Upload = S3.send(new PutObjectCommand(params));
-    const museUpload = uploadToMuseNow(fileData, file.originalname);
+    console.log('Upload starting');
 
-    Promise.all([s3Upload, museUpload]).then((values) => {
-      const [s3UploadRes, museUploadRes] = values;
-
-      // Delete file saved by mutler in file
-      unlinkAsync(file.path);
-
-      console.log('s3UploadRes', s3UploadRes);
-      console.log('museUploadRes', museUploadRes);
-
-      if (museUploadRes.metadata) {
-        metadata = museUploadRes.metadata;
+    console.time('upload');
+    const parallelUploads3 = new Upload({
+      client: S3,
+      queueSize: 5,
+      partSize: 1024 * 1024 * 20,
+      leavePartsOnError: false, // optional manually handle dropped parts
+      params: {
+        Bucket: 'videos',
+        Key: fileName,
+        Body: fileData
       }
+    });
 
-      res.json({
-        success: true,
-        url: fileUrl,
-        metadata,
-        message: 'Uploaded successfully',
-      });
+    parallelUploads3.on('httpUploadProgress', (progress) => {
+      console.log(progress);
+    });
+
+    await parallelUploads3.done();
+
+    console.log('Upload to done');
+    console.timeEnd('upload');
+
+    unlinkAsync(file.path);
+
+    res.json({
+      success: true,
+      url: fileUrl,
+      metadata,
+      message: 'Uploaded successfully'
     });
   } catch (error) {
     // error handling.
     const { requestId, cfId, extendedRequestId } = error.$$metadata || {};
 
-    console.error('Error uploading file', error);
+    console.error('Upload failed', error);
     console.log({ requestId, cfId, extendedRequestId });
 
     res.json({
       success: false,
-      message: 'Uploaded failed: ' + error,
+      message: 'Uploaded failed: ' + error
     });
   } finally {
     // finally.
-    console.log('File upload complete');
+    console.log('Upload complete');
 
     // console.log('Add muse queue');
     // museUploadQueue.add({
@@ -144,12 +156,12 @@ async function uploadToMuseNow(fileData, fileName) {
       maxContentLength: Infinity,
       maxBodyLength: Infinity,
       headers: {
-        Key: MUSE_API_KEY,
-      },
+        Key: MUSE_API_KEY
+      }
     });
 
     return {
-      metadata: response.data,
+      metadata: response.data
     };
   } catch (error) {
     console.log('Upload to Muse failed', error?.response?.data);
