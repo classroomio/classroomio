@@ -187,7 +187,11 @@
           name: fields.fullname
         });
       }
-
+      triggerSendEmail(NOTIFICATION_NAME.VERIFY_EMAIL, {
+        to: $profile.email,
+        profileId: $profile.email,
+        orgSiteName: fields.siteName
+      });
       console.log('data', data);
       console.log('error', error);
       $welcomeModalStore.open = true;

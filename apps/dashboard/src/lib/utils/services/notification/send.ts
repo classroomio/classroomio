@@ -24,11 +24,14 @@ export const getTransporter = async (
 
     transporter = nodemailer.createTransport({
       host: SMTP_HOST,
-      port: 465,
-      secure: true,
+      port: 587,
+      secure: false,
       auth: {
         user: isPersonal ? SMTP_USER : SMTP_USER_NOTIFY,
         pass: isPersonal ? SMTP_PASSWORD : SMTP_PASSWORD_NOTIFY
+      },
+      tls: {
+        ciphers: 'SSLv3'
       }
     });
 
