@@ -51,6 +51,13 @@
   <title>Welcome back to {$currentOrg.name || 'ClassroomIO'}</title>
 </svelte:head>
 
+<div
+  class="senja-embed"
+  data-id="aa054658-1e15-4d00-8920-91f424326c4e"
+  data-lazyload="false"
+  data-spinner="false"
+></div>
+
 <AuthUI {supabase} isLogin={true} {handleSubmit} isLoading={loading} bind:formRef>
   <div class="mt-4 w-full">
     <p class="dark:text-white text-lg font-semibold mb-6">Welcome back</p>
