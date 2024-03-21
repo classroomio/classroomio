@@ -127,12 +127,12 @@
     </div>
 
     <div
-      class="border-primary-400 mx-4 flex flex-col items-center justify-center gap-4 rounded-md border px-2 py-6 text-center"
+      class="border-primary-700 mx-4 flex flex-col items-center justify-center gap-4 rounded-md border px-2 py-6 text-center hover:scale-95 transition-all ease-in-out"
     >
       <img src="/upgrade.png" alt="upgrade" class="h-16 w-16" />
       <span class="flex flex-col gap-1">
-        <p class="text-base font-semibold">Unlock pro features</p>
-        <p class="text-xs">Enjoy unlimited features better customization with pro</p>
+        <p class="text-base font-semibold">Become an Early Adopter</p>
+        <p class="text-xs">Unlock unlimited features and invest in our future</p>
       </span>
       <PrimaryButton label="Upgrade Now" onClick={openModal} className="font-normal" />
     </div>

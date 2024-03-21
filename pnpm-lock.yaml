@@ -210,6 +210,9 @@ importers:
       copy-to-clipboard:
         specifier: ^3.3.3
         version: 3.3.3
+      crypto:
+        specifier: ^1.0.1
+        version: 1.0.1
       d3:
         specifier: ^7.8.5
         version: 7.8.5
@@ -246,6 +249,9 @@ importers:
       posthog-js:
         specifier: ^1.103.0
         version: 1.103.1
+      registry.npmjs.org:
+        specifier: link:registry=https:/registry.npmjs.org
+        version: link:registry=https:/registry.npmjs.org
       shared-constants:
         specifier: workspace:*
         version: link:../../packages/shared-constants
@@ -7694,6 +7700,11 @@ packages:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
+
+  /crypto@1.0.1:
+    resolution: {integrity: sha512-VxBKmeNcqQdiUQUW2Tzq0t377b54N2bMtXO/qiLa+6eRRmmC4qT3D4OnTGoT/U6O9aklQ/jTwbOtRMTTY8G0Ig==}
+    deprecated: This package is no longer supported. It's now a built-in Node module. If you've depended on crypto, you should switch to the one that's built-in.
+    dev: false
 
   /css-tree@2.3.1:
     resolution: {integrity: sha512-6Fv1DV/TYw//QF5IzQdqsNDjx/wc8TrMBZsqjL9eW01tWb7R7k/mq+/VXfJCl7SoD5emsJop9cOByJZfs8hYIw==}

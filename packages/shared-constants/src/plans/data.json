@@ -44,9 +44,9 @@
       "LABEL": "I want in 😍",
       "LINK": "/signup?plan=early-adopter",
       "DASHBOARD_LABEL": "Support us 😍",
-      "DASHBOARD_LINK": "https://cio.lemonsqueezy.com/checkout/buy/7a6a8bc5-19c3-4edb-a800-cd3cb0d8e775",
+      "DASHBOARD_LINK": "",
       "IS_DISABLED": false,
-      "DASHBOARD_ADD_TO_LINK": true
+      "PRODUCT_ID": "297248"
     }
   },
   "ENTERPRISE": {

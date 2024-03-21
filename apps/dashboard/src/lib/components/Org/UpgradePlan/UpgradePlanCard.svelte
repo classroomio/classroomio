@@ -1,22 +1,45 @@
-<script>
+<script lang="ts">
   import Checkmark from 'carbon-icons-svelte/lib/Checkmark.svelte';
   import PLANS from 'shared-constants/src/plans/data.json';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
+  import { subscribeToProduct } from '$lib/utils/services/lemonsqueezy/subscribe';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import { Loading } from 'carbon-components-svelte';
 
-  function getPlanLink(plan) {
-    if (plan.CTA.IS_DISABLED) {
+  const disabledClass = 'bg-gray-300 text-gray-400 hover:cursor-not-allowed';
+
+  let isLoadingPlan: string | null = null;
+
+  async function handleClick(plan, planName: string) {
+    if (plan.CTA.IS_DISABLED || !$profile.id) {
       return;
     }
 
-    const link = plan.CTA.DASHBOARD_LINK;
-
-    if (plan.CTA.DASHBOARD_ADD_TO_LINK) {
-      return `${link}?checkout[email]=${$profile.email}&checkout[name]=${$profile.fullname}&checkout[custom][profile_id]=${$profile.id}&checkout[custom][org_id]=${$currentOrg.id}
-      `;
+    if (!plan.CTA.PRODUCT_ID && plan.CTA.DASHBOARD_LINK) {
+      window.open(plan.CTA.DASHBOARD_LINK, '_blank');
+      return;
     }
 
-    return link;
+    isLoadingPlan = planName;
+
+    try {
+      const { checkoutURL } = await subscribeToProduct({
+        productId: plan.CTA.PRODUCT_ID,
+        email: $profile.email,
+        name: $profile.fullname,
+        profileId: $profile.id,
+        orgId: $currentOrg.id
+      });
+
+      window.open(checkoutURL, '_blank');
+    } catch (error) {
+      console.error('Error subscribing', error);
+
+      snackbar.error('Failed, please try again later');
+    }
+
+    isLoadingPlan = null;
   }
 
   $: planNames = Object.keys(PLANS);
@@ -55,17 +78,25 @@
           {PLANS[planName].DESCRIPTION}
         </p>
 
-        <a
-          class=" text-md mt-4 block w-full rounded-md {planName === 'EARLY_ADOPTER'
+        <button
+          class="text-md mt-4 block w-full rounded-md {isLoadingPlan === planName &&
+            disabledClass} {planName === 'EARLY_ADOPTER'
             ? 'bg-white text-slate-900 hover:bg-indigo-50'
             : PLANS[planName].CTA.IS_DISABLED
-              ? 'bg-gray-300 text-gray-400 hover:cursor-not-allowed'
-              : 'bg-primary-900 hover:bg-primary-700 text-white'} py-3 text-center font-medium hover:no-underline lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
-          target="_blank"
-          href={getPlanLink(PLANS[planName])}
+              ? disabledClass
+              : 'bg-primary-900 hover:bg-primary-700 text-white'} py-3 text-center font-medium hover:no-underline lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold flex items-center justify-center"
+          on:click={() => {
+            if (isLoadingPlan === planName) return;
+
+            handleClick(PLANS[planName], planName);
+          }}
         >
-          {PLANS[planName].CTA.DASHBOARD_LABEL}
-        </a>
+          {#if isLoadingPlan === planName}
+            <Loading withOverlay={false} small />
+          {:else}
+            {PLANS[planName].CTA.DASHBOARD_LABEL}
+          {/if}
+        </button>
 
         <ul
           class="mt-4 space-y-2 text-sm {planName === 'EARLY_ADOPTER'
