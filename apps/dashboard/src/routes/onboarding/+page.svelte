@@ -1,6 +1,7 @@
 <script lang="ts">
   import { PUBLIC_IP_REGISTRY_KEY } from '$env/static/public';
   import { goto } from '$app/navigation';
+  import { Dropdown } from 'carbon-components-svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import UserProfileIcon from '$lib/components/Icons/UserProfileIcon.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -24,6 +25,7 @@
     siteName?: string;
     goal?: string;
     source?: string;
+    language?: string;
     metadata?: {};
   }
 
@@ -36,13 +38,26 @@
   let fields: OnboardingField = {
     fullname: '',
     orgName: '',
-    siteName: ''
+    siteName: '',
+    language: ''
   };
   let errors: OnboardingField = {};
   let progress = 50;
   let step = 1;
   let loading = false;
   let isSiteNameTouched = false;
+  let selectedId = '';
+
+  let dropdownItems = [
+    { id: 'en', text: 'English' },
+    { id: 'hi', text: 'Hindi' },
+    { id: 'fr', text: 'French' },
+    { id: 'pt', text: 'Portuguese' },
+    { id: 'de', text: 'German' },
+    { id: 'vi', text: 'Vietnamese' },
+    { id: 'ru', text: 'Russian' },
+    { id: 'es', text: 'Spanish' }
+  ];
 
   const educatorGoals: Goal[] = [
     {
@@ -81,6 +96,11 @@
       value: 'friends-family'
     }
   ];
+
+  function handleSelect(event) {
+    const newSelectedId = event.detail.selectedId;
+    fields.language = newSelectedId;
+  }
 
   async function setMetaData() {
     if (!PUBLIC_IP_REGISTRY_KEY) return;
@@ -271,6 +291,7 @@
               isRequired
             />
           </div>
+          |
         {:else}
           <!-- Goal/Source Question -->
           <div id="goal-question" class="flex items-center flex-col mb-6">
@@ -328,6 +349,15 @@
                   </p>
                 {/if}
               </div>
+
+              <!-- Language Picker -->
+              <span>{$t('content.toggle_label')}: </span>
+              <Dropdown
+                items={dropdownItems}
+                {selectedId}
+                on:select={handleSelect}
+                class="w-[30%]"
+              />
             </div>
           </div>
         {/if}

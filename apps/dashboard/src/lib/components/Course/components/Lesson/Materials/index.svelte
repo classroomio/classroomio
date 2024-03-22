@@ -44,13 +44,12 @@
   export let mode = MODES.view;
   export let prevMode = '';
   export let lessonId = '';
+  export let selectedLanguage = '';
+  export let selectedLanguageContent = '';
   export let isSaving = false;
   export let toggleMode = () => {};
 
   let translations = [];
-  let currentLanguage = '';
-  let selectedLanguage = 'English';
-  let selectedLanguageContent = '';
   let lessonTitle = '';
   let initAutoSave = false;
   let timeoutId: NodeJS.Timeout;
@@ -67,16 +66,6 @@
   let aiButtonClass =
     'flex items-center px-5 py-2 border border-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md w-full mb-2';
 
-  const languages = [
-    'English',
-    'Spanish',
-    'French',
-    'German',
-    'Hindi',
-    'Portuguese',
-    'Vietnamese',
-    'Russian'
-  ];
   const onChange =
     (tab = 0) =>
     () =>
@@ -94,16 +83,14 @@
       .eq('lesson_id', lessonId)
       .eq('lang', selectedLanguage);
 
-    translations = data;
-    translations.map((translation) => (selectedLanguageContent = translation.content || ''));
-    console.log('translation:', translations);
+    if (data) {
+      translations = data;
+      translations.map((translation) => (selectedLanguageContent = translation.content || ''));
+      console.log('translation:', translations);
+    }
 
     if (error) {
       console.error('Error fetching translations:', error.message);
-      // Handle error appropriately (e.g., show error message to the user)
-      return [];
-    } else {
-      return data || [];
     }
   }
 
@@ -146,11 +133,6 @@
         console.error('Error inserting translation:', insertError.message);
       }
     }
-  }
-
-  function handleLanguageChange(event) {
-    currentLanguage = event.target.value;
-    handleInputChange();
   }
 
   async function saveLesson(materials?: LessonPage['materials']) {
@@ -322,9 +304,9 @@
     console.log(translations);
   });
 
-  $: fetchTranslations(selectedLanguage);
-
-  $: $lesson.materials.note = selectedLanguageContent;
+  $: fetchTranslations(selectedLanguage).then(() => {
+    selectedLanguageContent = $lesson.materials.note;
+  });
 
   $: autoSave($lesson.materials, $isLoading, lessonId);
 
@@ -368,13 +350,13 @@
         index={currentTab}
       >
         <div class="flex gap-1 justify-end">
-          <div>
+          <!-- <div>
             <select bind:value={selectedLanguage} on:change={handleLanguageChange}>
               {#each languages as language}
                 <option value={language}>{language}</option>
               {/each}
             </select>
-          </div>
+          </div> -->
           <div bind:this={aiButtonRef} class="flex flex-row-reverse">
             <PrimaryButton
               className="flex items-center relative"
@@ -418,7 +400,7 @@
           <TextEditor
             id={lessonId}
             bind:editorWindowRef
-            value={$lesson.materials.note}
+            value={selectedLanguageContent}
             onChange={(html) => {
               $lesson.materials.note = html;
               handleInputChange();
@@ -506,7 +488,7 @@
 {:else if !isMaterialsEmpty($lesson.materials)}
   <div class="w-full">
     {#each componentsToRender as Component}
-      <svelte:component this={Component} />
+      <svelte:component this={Component} {lessonId} {selectedLanguage} />
     {/each}
   </div>
 {:else}

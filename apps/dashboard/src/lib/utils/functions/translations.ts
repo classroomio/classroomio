@@ -1,5 +1,32 @@
 import { writable } from 'svelte/store';
 import i18n, { type Config } from 'sveltekit-i18n';
+import { profile } from '$lib/utils/store/user';
+// import { supabase } from './supabase';
+// import { onMount } from 'svelte';
+
+// async function fetchProfile() {
+// 	const { data, error } = await supabase
+// 		.from('profile')
+// 		.select('*')
+
+// 	if (data) {
+// 		const profileData = data;
+// 		profileData.map((data) => (data = data.language || ''));
+// 		console.log('profileData:', profileData);
+// 	}
+
+// 	if (error) {
+// 		console.error('Error fetching profileData:', error.message);
+// 	}
+// }
+
+// onMount(() => {
+// 	fetchProfile()
+// })
+
+let userLanguage: any;
+
+profile.subscribe((value) => (userLanguage = value));
 
 interface Params {
 	dateValue: number;
@@ -10,7 +37,7 @@ interface Params {
 }
 
 const config: Config<Partial<Params>> = {
-	initLocale: 'en',
+	initLocale: userLanguage.language,
 	// parser: parser(),
 	loaders: [
 		{
@@ -59,7 +86,7 @@ const config: Config<Partial<Params>> = {
 export const { t, loading, locales, locale, initialized, translations, loadTranslations } =
 	new i18n(config);
 
-export const selectedLocale = writable<string>('en');
+export const selectedLocale = writable<string>(userLanguage.language);
 
 // Translations logs
 loading.subscribe(async ($loading) => {

@@ -35,6 +35,8 @@
   import { t } from '$lib/utils/functions/translations.js';
 
   export let data;
+  export let selectedLanguage = 'English';
+  export let currentLanguage = '';
 
   let path = '';
   let mode = MODES.view;
@@ -46,6 +48,21 @@
   let isSaving = false;
   let isStudent = true;
   let isLessonComplete = false;
+
+  const languages = [
+    'English',
+    'Spanish',
+    'French',
+    'German',
+    'Hindi',
+    'Portuguese',
+    'Vietnamese',
+    'Russian'
+  ];
+
+  function handleLanguageChange(event) {
+    currentLanguage = event.target.value;
+  }
 
   function getLessonOrder(id: string) {
     const index = $lessons.findIndex((lesson) => lesson.id === id);
@@ -268,6 +285,18 @@
               </PrimaryButton>
             {/if}
 
+            <div class="mr-2">
+              <select
+                class="rounded-md border-blue-500 dark:bg-black dark:text-white text-sm"
+                bind:value={selectedLanguage}
+                on:change={handleLanguageChange}
+              >
+                {#each languages as language}
+                  <option value={language}>{language}</option>
+                {/each}
+              </select>
+            </div>
+
             <PrimaryButton className="mr-2" variant={VARIANTS.OUTLINED} onClick={toggleMode}>
               {#if isSaving}
                 <Loading withOverlay={false} small />
@@ -301,7 +330,14 @@
       width="lg:w-full xl:w-11/12"
       className="overflow-x-hidden"
     >
-      <Materials lessonId={data.lessonId} {mode} {prevMode} {toggleMode} bind:isSaving />
+      <Materials
+        lessonId={data.lessonId}
+        {selectedLanguage}
+        {mode}
+        {prevMode}
+        {toggleMode}
+        bind:isSaving
+      />
       {#if isStudent}
         <div class="w-full hidden lg:flex flex-row-reverse mt-10">
           <PrimaryButton
