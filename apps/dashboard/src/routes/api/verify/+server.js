@@ -2,7 +2,7 @@ import { redirect, json } from '@sveltejs/kit';
 import { getServerSupabase } from '$lib/utils/functions/supabase.server';
 
 export const GET = async ({ url }) => {
-  const supabase = await getServerSupabase();
+  const supabase = getServerSupabase();
 
   const data = url.searchParams.get('data');
   if (!data) return json({ message: 'data is not found' }, { status: 404 });
