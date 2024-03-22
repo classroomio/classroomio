@@ -1,6 +1,4 @@
 <script>
-  {
-  }
   import Modal from '$lib/components/Modal/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
@@ -14,6 +12,7 @@
   const WAIT_SEC = 120;
   const WAIT_TIME = WAIT_SEC * 1000;
 
+  let open = false;
   let loading = false;
   let isSent = false;
 
@@ -47,15 +46,11 @@
       clearInterval(interval);
     }, WAIT_TIME);
   };
+
+  $: open = Boolean(!$profile.is_email_verified && !!$currentOrg.id);
 </script>
 
-<Modal
-  open={!$profile.is_email_verified}
-  isCloseable={false}
-  width="w-4/5"
-  maxWidth="w-[500px]"
-  containerClass="p-4"
->
+<Modal {open} isCloseable={false} width="w-4/5" maxWidth="w-[500px]" containerClass="p-4">
   <div class="flex flex-col items-center space-y-6 text-center">
     <img src="/verify-email.svg" alt="email verification" />
     <p class="font-bold text-xl">Verify your Email</p>
