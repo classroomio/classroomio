@@ -22,6 +22,8 @@ interface ProfileStore {
   source: string;
   telegram_chat_id: number | null;
   language: string;
+  is_email_verified: boolean;
+  verified_at: string;
 }
 
 export const defaultUserState: UserStore = {
@@ -43,7 +45,9 @@ export const defaultProfileState: ProfileStore = {
   goal: '',
   source: '',
   telegram_chat_id: null,
-  language: 'hi'
+  language: 'hi',
+  is_email_verified: false,
+  verified_at: ''
 };
 
 export const user = writable<UserStore>(defaultUserState);

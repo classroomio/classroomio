@@ -55,6 +55,8 @@
   };
 
   const handleAddNewComment = (event) => {
+    if (!comment) return;
+
     if (event.key === 'Enter' || event.type === 'click') {
       event.preventDefault();
       addNewComment(comment, feed.id, author.id);
@@ -217,6 +219,7 @@
           on:keydown={handleAddNewComment}
           placeholder="Add class comment"
           class="w-full bg-transparent border border-gray-200 rounded-3xl"
+          required
         />
       </div>
       <button on:click={handleAddNewComment}>

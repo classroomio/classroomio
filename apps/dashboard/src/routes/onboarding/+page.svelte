@@ -10,7 +10,6 @@
   import { onboardingValidation } from '$lib/utils/functions/validator';
   import { supabase } from '$lib/utils/functions/supabase';
   import { blockedSubdomain } from '$lib/utils/constants/app';
-  import { welcomeModalStore } from '$lib/components/WelcomeModal/store';
   import { getOrganizations } from '$lib/utils/services/org';
   import { generateSitename } from '$lib/utils/functions/org';
   import {
@@ -202,16 +201,13 @@
 
       if (fields.fullname) {
         $profile.fullname = fields.fullname;
-
-        triggerSendEmail(NOTIFICATION_NAME.WELCOME_TO_APP, {
-          to: $profile.email,
-          name: fields.fullname
-        });
       }
+      triggerSendEmail(NOTIFICATION_NAME.VERIFY_EMAIL, {
+        to: $profile.email,
+        profileId: $profile.id,
+        orgSiteName: fields.siteName
+      });
 
-      console.log('data', data);
-      console.log('error', error);
-      $welcomeModalStore.open = true;
       return goto(`/org/${fields.siteName}`);
     }
 

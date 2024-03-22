@@ -332,6 +332,7 @@
             onClick={handleBack}
           />
           <PrimaryButton
+            isDisabled={$isLoading || !note}
             className="px-6 py-3"
             label={$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
             onClick={handleAddExercise}

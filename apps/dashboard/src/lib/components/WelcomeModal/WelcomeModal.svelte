@@ -1,22 +1,32 @@
 <script>
   import Modal from '../Modal/index.svelte';
-  import { writable } from 'svelte/store';
-  import { onMount, onDestroy } from 'svelte';
-  import { welcomeModalStore } from './store';
+  import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { currentOrgPath } from '$lib/utils/store/org';
+  import {
+    triggerSendEmail,
+    NOTIFICATION_NAME
+  } from '$lib/utils/services/notification/notification';
+  import { profile } from '$lib/utils/store/user';
+
+  let query = new URLSearchParams($page.url.search);
+  let welcomePopup = query.get('welcomePopup');
   import { t } from '$lib/utils/functions/translations';
 
   const closeModal = () => {
-    $welcomeModalStore.open = false;
+    triggerSendEmail(NOTIFICATION_NAME.WELCOME_TO_APP, {
+      to: $profile.email,
+      name: $profile.fullname
+    });
     goto($currentOrgPath + '/courses?create=true');
   };
 </script>
 
 <Modal
   onClose={closeModal}
-  bind:open={$welcomeModalStore.open}
+  open={welcomePopup === 'true'}
   width="w-9/12"
+  maxWidth="w-[800px]"
   modalHeading="Welcome"
 >
   <p class="text-black dark:text-white text-sm md:text-base lg:text-lg">
