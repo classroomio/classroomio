@@ -22,7 +22,7 @@
   import showAppsSideBar from '$lib/utils/functions/showAppsSideBar';
   import isPublicRoute from '$lib/utils/functions/routes/isPublicRoute';
   import { user, profile } from '$lib/utils/store/user';
-  import { getSupabase, isSupabaseTokenInLocalStorage } from '$lib/utils/functions/supabase';
+  import { getSupabase } from '$lib/utils/functions/supabase';
   import { isMobile } from '$lib/utils/store/useMobile';
   import { ROUTE } from '$lib/utils/constants/routes';
   import { getOrganizations } from '$lib/utils/services/org';
@@ -41,6 +41,7 @@
 
   let supabase = getSupabase();
   let path = $page.url?.pathname?.replace('/', '');
+  let queryParam = $page.url?.search;
   let carbonTheme: CarbonTheme = 'white';
 
   const delayedPreloading = derived(navigating, (currentPreloading, set) => {
@@ -82,7 +83,7 @@
     console.log('Get user', authUser);
 
     if (!authUser && !isPublicRoute($page.url?.pathname)) {
-      return goto('/login?redirect=/' + path);
+      return goto('/login?redirect=/' + path + queryParam);
     }
 
     // Skip refetching profile, if already in store

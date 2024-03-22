@@ -1,6 +1,7 @@
 import nodemailer from 'nodemailer';
 import {
   SMTP_HOST,
+  SMTP_PORT,
   SMTP_USER,
   SMTP_PASSWORD,
   SMTP_USER_NOTIFY,
@@ -24,7 +25,7 @@ export const getTransporter = async (
 
     transporter = nodemailer.createTransport({
       host: SMTP_HOST,
-      port: 465,
+      port: parseInt(SMTP_PORT),
       secure: true,
       auth: {
         user: isPersonal ? SMTP_USER : SMTP_USER_NOTIFY,
