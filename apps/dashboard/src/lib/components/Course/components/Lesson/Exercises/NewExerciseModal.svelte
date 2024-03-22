@@ -309,7 +309,12 @@
             variant={VARIANTS.TEXT}
             onClick={handleBack}
           />
-          <PrimaryButton className="px-6 py-3" label="Finish" onClick={handleAddExercise} />
+          <PrimaryButton
+            isDisabled={$isLoading || !note}
+            className="px-6 py-3"
+            label="Finish"
+            onClick={handleAddExercise}
+          />
         </div>
       </div>
     {/if}
