@@ -1,44 +1,29 @@
 import { redirect, json } from '@sveltejs/kit';
-import { getSupabase, supabase } from '$lib/utils/functions/supabase';
+import { getServerSupabase } from '$lib/utils/functions/supabase.server';
 
 export const GET = async ({ url }) => {
-  if (!supabase) {
-    await getSupabase();
-  }
+  const supabase = await getServerSupabase();
 
   const data = url.searchParams.get('data');
   if (!data) return json({ message: 'data is not found' }, { status: 404 });
-  try {
-    const hashData = decodeURIComponent(data);
-    console.log('hashData', hashData);
 
-    const decodedData = atob(hashData);
-    console.log('decodedData', decodedData);
+  const hashData = decodeURIComponent(data);
+  console.log('hashData', hashData);
 
-    const { profileId, orgSiteName } = JSON.parse(decodedData);
+  const decodedData = atob(hashData);
+  console.log('decodedData', decodedData);
 
-    const { data: updatedProfileData, error } = await supabase
-      .from('profile')
-      .update({ is_email_verified: true, verified_at: new Date().toDateString() })
-      .eq('id', profileId)
-      .select();
+  const { profileId, orgSiteName } = JSON.parse(decodedData);
 
-    if (error) {
-      console.log('profile not found');
-      throw redirect(307, '/404');
-    }
+  const { error } = await supabase
+    .from('profile')
+    .update({ is_email_verified: true, verified_at: new Date().toDateString() })
+    .match({ id: profileId });
 
-    console.log('updatedProfileData', updatedProfileData);
-    console.log('profile data', profileId);
-
-    return json(null, {
-      status: 302,
-      headers: {
-        Location: `/org/${orgSiteName}`
-      }
-    });
-  } catch (error) {
-    console.error('Error decoding inviteLink', error);
+  if (error) {
+    console.log('profile not found', error);
     throw redirect(307, '/404');
   }
+
+  throw redirect(307, `/org/${orgSiteName}?welcomePopup=true`);
 };
