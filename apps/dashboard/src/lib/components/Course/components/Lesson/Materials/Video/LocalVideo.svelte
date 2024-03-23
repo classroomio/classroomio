@@ -137,7 +137,6 @@
             {$t('course.navItem.lessons.materials.tabs.video.add_video.select_file')}
           </p>
           <p>{$t('course.navItem.lessons.materials.tabs.video.add_video.size')}</p>
-          <p>(Max 500 MB)</p>
         </span>
       {/if}
       <input

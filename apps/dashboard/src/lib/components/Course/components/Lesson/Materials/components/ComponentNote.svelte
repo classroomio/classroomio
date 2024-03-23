@@ -3,12 +3,13 @@
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import { supabase } from '$lib/utils/functions/supabase';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
+  import { onMount } from 'svelte';
 
-  export let selectedLanguage = '';
+  export let selectedLanguage = 'English';
   export let lessonId = '';
 
   let translations = [];
-  let selectedLanguageContent = '';
+  let selectedLanguageContent;
 
   async function fetchTranslations(selectedLanguage) {
     const { data, error } = await supabase
@@ -20,20 +21,23 @@
     if (data) {
       translations = data;
       translations.map((translation) => (selectedLanguageContent = translation.content || ''));
-      console.log('translation:', translations);
     }
 
     if (error) {
       console.error('Error fetching translations:', error.message);
-      // Handle error appropriately (e.g., show error message to the user)
-      return [];
     }
   }
 
-  $: fetchTranslations(selectedLanguage);
+  onMount(() => {
+    fetchTranslations(selectedLanguage);
+  });
+
+  $: {
+    fetchTranslations(selectedLanguage);
+  }
 </script>
 
-{#if !isHtmlValueEmpty($lesson.materials?.note)}
+{#if !isHtmlValueEmpty(selectedLanguageContent)}
   <HtmlRender className="m-auto">
     <svelte:fragment slot="content">
       <div>

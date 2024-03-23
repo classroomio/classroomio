@@ -1,4 +1,16 @@
 {
+  "verify_email_modal": {
+    "heading": "Verify your Email",
+    "sent_verification": "We've sent a verification email to",
+    "to_confirm": "to confirm the validity of the email provided.",
+    "kindly_verify": "Kindly verify your email to continue using ClassroomIO.",
+    "loading": "Loading...",
+    "resend": "Resend Verification Code",
+    "resend_in": "Resend verification in",
+    "seconds": "seconds",
+    "snackbar_error": "error while sending code"
+  },
+
   "onboarding": {
     "sell": "Sell courses online",
     "teach": "Teach my current students online",
@@ -264,6 +276,8 @@
     "hero_button": "Keep Building 🚀",
     "your_schedule": "Your Schedule",
     "today": "Today",
+    "yesterday": "Yesterday",
+    "tomorrow": "Tomorrow",
     "no_schedule": "No lesson on this day",
     "join_call": "Join call",
     "click_to_join": "Click to join the call",
@@ -418,8 +432,8 @@
                 "add_video": "Add Video",
                 "upload_video": "Upload Video",
                 "select_file": "Select file( Mp4, MOV, AVI) to upload to your lesson.",
-                "size": "(Max 80 MB)",
-                "oops": "Oops 😬, couldn’t upload video",
+                "size": "(Max 500 MB)",
+                "oops": "Oops `😬, couldn’t upload video",
                 "sorry": "Sorry we video wasn’t uploaded. The file size is too big,",
                 "sorry_2": "maximum size is 30 MB. Try again!",
                 "button": "Try another file",

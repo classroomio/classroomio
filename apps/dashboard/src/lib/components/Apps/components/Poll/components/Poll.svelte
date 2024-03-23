@@ -6,6 +6,7 @@
   import type { PollType } from '../types';
   import { updatePollStatus } from '../service';
   import { t } from '$lib/utils/functions/translations';
+  import { Dashboard } from 'carbon-icons-svelte';
 
   export let poll: PollType;
   export let onSelect: (a: string) => void;
@@ -111,7 +112,7 @@
         <div class="mr-5">
           <Label>{$t('course.navItem.lessons.poll.expiration')}</Label>
           <p class="dark:text-white text-sm text-gray-600 mb-4">
-            {poll.expiration || 'Today'}
+            {poll.expiration || $t('dashboard.today')}
           </p>
         </div>
         <div class="flex flex-col items-center">
@@ -180,7 +181,7 @@
       {/each}
       <div class="flex items-center">
         <p class="dark:text-white text-sm text-gray-600">
-          {$t('course.navItem.lessons.poll.expires')}: {poll.expiration || 'Today'}
+          {$t('course.navItem.lessons.poll.expires')}: {poll.expiration || $t('dashboard.today')}
         </p>
         <span class="mx-2">|</span>
         <p class="dark:text-white text-sm text-gray-600">

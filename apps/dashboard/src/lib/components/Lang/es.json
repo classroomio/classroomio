@@ -1,4 +1,16 @@
 {
+  "verify_email_modal": {
+    "heading": "Verifica tu correo electrónico",
+    "sent_verification": "Hemos enviado un correo electrónico de verificación a",
+    "to_confirm": "para confirmar la validez del correo electrónico proporcionado.",
+    "kindly_verify": "Por favor verifique su correo electrónico para continuar usando ClassroomIO.",
+    "loading": "Cargando...",
+    "resend": "Vuelva a enviar el código de verificación",
+    "resend_in": "Reenviar verificación en",
+    "seconds": "segundos",
+    "snackbar_error": "error al enviar código"
+  },
+
   "onboarding": {
     "sell": "Vender cursos en línea",
     "teach": "Enseñar a mis estudiantes actuales en línea",
@@ -264,6 +276,8 @@
     "hero_button": "Sigue Construyendo 🚀",
     "your_schedule": "Tu Horario",
     "today": "Hoy",
+    "yesterday": "Ayer",
+    "tomorrow": "Mañana",
     "no_schedule": "No hay lección este día",
     "join_call": "Unirse a la Llamada",
     "click_to_join": "Haz clic para unirte a la llamada",
@@ -418,7 +432,7 @@
                 "add_video": "Agregar Video",
                 "upload_video": "Subir Video",
                 "select_file": "Seleccionar archivo (Mp4, MOV, AVI) para cargar en tu lección.",
-                "size": "(Máx. 80 MB)",
+                "size": "(Máx. 500 MB)",
                 "oops": "¡Ups 😬, no se pudo cargar el video!",
                 "sorry": "Lo siento, el video no se pudo cargar. El tamaño del archivo es demasiado grande,",
                 "sorry_2": "el tamaño máximo es de 30 MB. ¡Inténtalo de nuevo!",

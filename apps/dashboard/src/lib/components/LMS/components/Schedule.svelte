@@ -52,7 +52,7 @@
         {formatDate($store?.selected)}
       </p>
     {/if}
-    {#if formatDate($store?.selected) == 'Today'}
+    {#if formatDate($store?.selected) == $t('dashboard.today')}
       <span class="flex flex-col md:flex-row items-baseline justify-center gap-10 mt-5">
         <p class="text-xs font-normal text-[#656565] dark:text-white">2:30pm</p>
         <div class="flex flex-col items-start gap-4">

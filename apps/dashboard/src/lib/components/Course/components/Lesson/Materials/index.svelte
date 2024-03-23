@@ -40,6 +40,7 @@
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import { t } from '$lib/utils/functions/translations';
   import { supabase } from '$lib/utils/functions/supabase';
+  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
 
   export let mode = MODES.view;
   export let prevMode = '';
@@ -86,7 +87,6 @@
     if (data) {
       translations = data;
       translations.map((translation) => (selectedLanguageContent = translation.content || ''));
-      console.log('translation:', translations);
     }
 
     if (error) {
@@ -299,14 +299,11 @@
     return componentNames;
   }
 
-  onMount(async () => {
-    translations = await fetchTranslations(selectedLanguage);
-    console.log(translations);
+  onMount(() => {
+    fetchTranslations(selectedLanguage);
   });
 
-  $: fetchTranslations(selectedLanguage).then(() => {
-    selectedLanguageContent = $lesson.materials.note;
-  });
+  $: fetchTranslations(selectedLanguage);
 
   $: autoSave($lesson.materials, $isLoading, lessonId);
 
@@ -350,13 +347,6 @@
         index={currentTab}
       >
         <div class="flex gap-1 justify-end">
-          <!-- <div>
-            <select bind:value={selectedLanguage} on:change={handleLanguageChange}>
-              {#each languages as language}
-                <option value={language}>{language}</option>
-              {/each}
-            </select>
-          </div> -->
           <div bind:this={aiButtonRef} class="flex flex-row-reverse">
             <PrimaryButton
               className="flex items-center relative"
@@ -497,15 +487,18 @@
     <h3 class="text-xl font-normal dark:text-white py-2">
       {$t('course.navItem.lessons.materials.body_heading')}
     </h3>
-    <p class="text-sm text-center font-normal py-2">
-      {$t('course.navItem.lessons.materials.body_content')}
-      <strong>{$t('course.navItem.lessons.materials.get_started')}</strong>
-      {$t('course.navItem.lessons.materials.button')}.
-    </p>
-    <PrimaryButton
-      label={$t('course.navItem.lessons.materials.get_started')}
-      className="rounded-md"
-      onClick={toggleMode}
-    />
+
+    <RoleBasedSecurity allowedRoles={[1, 2]}>
+      <p class="text-sm text-center font-normal py-2">
+        {$t('course.navItem.lessons.materials.body_content')}
+        <strong>{$t('course.navItem.lessons.materials.get_started')}</strong>
+        {$t('course.navItem.lessons.materials.button')}.
+      </p>
+      <PrimaryButton
+        label={$t('course.navItem.lessons.materials.get_started')}
+        className="rounded-md"
+        onClick={toggleMode}
+      />
+    </RoleBasedSecurity>
   </Box>
 {/if}

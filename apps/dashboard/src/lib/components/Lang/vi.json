@@ -1,4 +1,16 @@
 {
+  "verify_email_modal": {
+    "heading": "Xác nhận email của bạn",
+    "sent_verification": "Chúng tôi đã gửi email xác minh tới",
+    "to_confirm": "để xác nhận tính hợp lệ của email được cung cấp.",
+    "kindly_verify": "Vui lòng xác minh email của bạn để tiếp tục sử dụng ClassroomIO.",
+    "loading": "Đang tải...",
+    "resend": "Gửi lại mã xác minh",
+    "resend_in": "Gửi lại xác minh trong",
+    "seconds": "giây",
+    "snackbar_error": "lỗi khi gửi mã"
+  },
+
   "onboarding": {
     "sell": "Bán khóa học trực tuyến",
     "teach": "Dạy học sinh hiện tại của tôi trực tuyến",
@@ -264,6 +276,8 @@
     "hero_button": "Tiếp tục Xây dựng 🚀",
     "your_schedule": "Lịch của bạn",
     "today": "Hôm nay",
+    "yesterday": "Hôm qua",
+    "tomorrow": "Ngày mai",
     "no_schedule": "Không có bài học vào ngày này",
     "join_call": "Tham gia cuộc gọi",
     "click_to_join": "Nhấp để tham gia cuộc gọi",
@@ -418,7 +432,7 @@
                 "add_video": "Thêm Video",
                 "upload_video": "Tải lên Video",
                 "select_file": "Chọn tệp (Mp4, MOV, AVI) để tải lên bài học của bạn.",
-                "size": "(Tối đa 80 MB)",
+                "size": "(Tối đa 500 MB)",
                 "oops": "Oops 😬, không thể tải lên video",
                 "sorry": "Xin lỗi, video không được tải lên. Kích thước tệp quá lớn,",
                 "sorry_2": "kích thước tối đa là 30 MB. Thử lại!",

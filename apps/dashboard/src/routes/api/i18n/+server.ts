@@ -3,7 +3,7 @@ import { json, type RequestHandler } from "@sveltejs/kit";
 
 export const POST = (async ({ request }) => {
   try {
-    const body = await request.json(); // await new Response(request.body).json();
+    const body = await request.json();
     selectedLocale.set(body.locale);
   } catch(e) {
     selectedLocale.set('en');

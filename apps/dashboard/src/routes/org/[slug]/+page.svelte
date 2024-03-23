@@ -1,20 +1,20 @@
 <script lang="ts">
   import { profile } from '$lib/utils/store/user';
-  // import { supabase } from '$lib/utils/functions/supabase';
+  import { onMount } from 'svelte';
+  import { Add } from 'carbon-icons-svelte';
   import { goto } from '$app/navigation';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import UnlockedIcon from 'carbon-icons-svelte/lib/Unlocked.svelte';
   import LockedIcon from 'carbon-icons-svelte/lib/Locked.svelte';
-  // import Avatar from '$lib/components/Avatar/index.svelte';
   import { InlineCalendar, Datepicker } from 'svelte-calendar';
+  // import { supabase } from '$lib/utils/functions/supabase';
+  // import Avatar from '$lib/components/Avatar/index.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { formatUserUpcomingData, formatDate } from '$lib/utils/functions/routes/dashboard';
   import { user } from '$lib/utils/store/user';
   import { fetchUserUpcomingData } from '$lib/utils/services/dashboard';
   import { isMobile } from '$lib/utils/store/useMobile';
   import type { UserLessonDataType, LessonsByMonthIndexType } from '$lib/utils/types';
   import WelcomeModal from '$lib/components/WelcomeModal/WelcomeModal.svelte';
-  import { onMount } from 'svelte';
-  import { Add } from 'carbon-icons-svelte';
   import { isOrgAdmin, currentOrgPath, currentOrg, userUpcomingData } from '$lib/utils/store/org';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';

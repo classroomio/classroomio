@@ -1,4 +1,16 @@
 {
+  "verify_email_modal": {
+    "heading": "Bestätigen Sie Ihre E-Mail",
+    "sent_verification": "Wir haben eine Bestätigungs-E-Mail an gesendet",
+    "to_confirm": "um die Gültigkeit der angegebenen E-Mail zu bestätigen.",
+    "kindly_verify": "Bitte bestätigen Sie Ihre E-Mail-Adresse, um ClassroomIO weiterhin nutzen zu können.",
+    "loading": "Wird geladen...",
+    "resend": "Bestätigungscode nochmal versenden",
+    "resend_in": "Bestätigung erneut senden",
+    "seconds": "sekunden",
+    "snackbar_error": "fehler beim Senden des Codes"
+  },
+
   "onboarding": {
     "sell": "Kurse online verkaufen",
     "teach": "Meine aktuellen Schüler online unterrichten",
@@ -264,6 +276,8 @@
     "hero_button": "Weiter so 🚀",
     "your_schedule": "Ihr Zeitplan",
     "today": "Heute",
+    "yesterday": "Gestern",
+    "tomorrow": "Morgen",
     "no_schedule": "Keine Lektion an diesem Tag",
     "join_call": "Anruf beitreten",
     "click_to_join": "Klicken Sie hier, um dem Anruf beizutreten",
@@ -418,7 +432,7 @@
                 "add_video": "Video hinzufügen",
                 "upload_video": "Video hochladen",
                 "select_file": "Wählen Sie die Datei (Mp4, MOV, AVI) aus, die Sie Ihrer Lektion hinzufügen möchten.",
-                "size": "(Maximal 80 MB)",
+                "size": "(Maximal 500 MB)",
                 "oops": "Ups 😬, das Video konnte nicht hochgeladen werden",
                 "sorry": "Entschuldigung, das Video wurde nicht hochgeladen. Die Dateigröße ist zu groß,",
                 "sorry_2": "die maximale Größe beträgt 30 MB. Versuchen Sie es erneut!",

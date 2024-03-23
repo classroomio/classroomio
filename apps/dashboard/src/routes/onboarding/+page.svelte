@@ -45,7 +45,7 @@
   let step = 1;
   let loading = false;
   let isSiteNameTouched = false;
-  let selectedId = '';
+  let selectedId = 'en';
 
   let dropdownItems = [
     { id: 'en', text: 'English' },
@@ -167,8 +167,7 @@
 
         if (error) {
           console.log('Error: create organisation member', error);
-          errors.siteName =
-            'Something went wrong while creating this organization. Please reload and try again';
+          errors.siteName = $t('add_org.error_organization');
 
           // Delete organization so it can be recreated.
           await supabase.from('organization').delete().match({ siteName: fields.siteName });
@@ -347,13 +346,15 @@
               </div>
 
               <!-- Language Picker -->
-              <span>{$t('content.toggle_label')}: </span>
-              <Dropdown
-                items={dropdownItems}
-                {selectedId}
-                on:select={handleSelect}
-                class="w-[30%]"
-              />
+              <div class="mt-10">
+                <span>{$t('content.toggle_label')}: </span>
+                <Dropdown
+                  items={dropdownItems}
+                  {selectedId}
+                  on:select={handleSelect}
+                  class="w-full"
+                />
+              </div>
             </div>
           </div>
         {/if}
