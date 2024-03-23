@@ -9,6 +9,7 @@
   export let maxWidth = '';
   export let containerClass = '';
   export let size = '';
+  export let isCloseable = true;
 
   afterUpdate(() => {
     if (open) {
@@ -41,9 +42,11 @@
         <p class="text-md m-0 font-medium dark:text-white">
           {modalHeading}
         </p>
-        <div class="rounded-full">
-          <CloseButton onClick={onClose} contained={true} size="small" />
-        </div>
+        {#if isCloseable}
+          <div class="rounded-full">
+            <CloseButton onClick={onClose} contained={true} size="small" />
+          </div>
+        {/if}
       </div>
 
       <div class="body h-4/5 overflow-y-auto p-6 {containerClass}">
