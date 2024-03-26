@@ -5,7 +5,7 @@ const rateLimit = require('express-rate-limit');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 
-const { router: uploadVideo, io: uploadVideoIo } = require('./src/routes/uploadVideo');
+const uploadVideo = require('./src/routes/uploadVideo');
 const downloadCertificate = require('./src/routes/downloadCertificate');
 const downloadLesson = require('./src/routes/downloadLesson');
 const downloadCourse = require('./src/routes/downloadCourse');
@@ -37,8 +37,6 @@ app.get('/', (req, res) => {
   res.send('Welcome to ClassroomIO');
 });
 
-const server = app.listen(port, () => {
+app.listen(port, () => {
   console.log(`ClassroomIO Backend listening on port ${port}!`);
 });
-
-uploadVideoIo.attach(server);

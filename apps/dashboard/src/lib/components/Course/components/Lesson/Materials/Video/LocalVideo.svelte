@@ -7,16 +7,19 @@
     deleteLessonVideo,
     uploadCourseVideoStore
   } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { onMount, onDestroy } from 'svelte';
   import { Moon } from 'svelte-loading-spinners';
   import { ProgressBar } from 'carbon-components-svelte';
 
-  import io from 'socket.io-client';
+  import { getSupabase } from '$lib/utils/functions/supabase';
 
-  let socket = io(PUBLIC_SERVER_URL);
+  const supabase = getSupabase();
+
   let value = 0;
   let max = 100;
   let status = 'active';
   let fileSize;
+
   export let lessonId = '';
 
   let formRes;
@@ -27,6 +30,8 @@
   let isLoading = false;
   let timeoutkey;
   let prevProgress = 0;
+
+  let uploadChannel;
 
   const uploadingTexts = [
     'Sending your video to our server...',
@@ -103,9 +108,19 @@
     isLoading = false;
   }
 
-  socket.on('uploadProgress', (newProgress) => {
-    value = value + newProgress - prevProgress;
-    prevProgress = newProgress;
+  onMount(async () => {
+    uploadChannel = supabase
+      .channel('upload-progress')
+      .on('broadcast', { event: lessonId }, (payload) => {
+        console.log('The progress of the upload', payload);
+        value = value + payload?.payload - prevProgress;
+        prevProgress = payload.payload;
+      })
+      .subscribe();
+  });
+
+  onDestroy(() => {
+    supabase.removeChannel(uploadChannel);
   });
 
   $: helperText = value + '%  of ' + max + 'MB';
@@ -150,7 +165,10 @@
       {#if isLoading}
         <Moon size="40" color="#1d4ed8" unit="px" duration="1s" />
         <p class="mt-5">{uploadingLoadingText}</p>
-        <ProgressBar kind="inline" labelText="upload status" {value} {max} {helperText} {status} />
+        <div class="flex gap-2">
+          <ProgressBar kind="inline" labelText="upload status" {value} {max} {status} />
+          <p class="text-sm">{helperText}</p>
+        </div>
       {:else}
         <img src="/upload-video.svg" alt="upload" />
         <span class="pt-3">

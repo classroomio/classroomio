@@ -2,7 +2,6 @@ const express = require('express');
 const FormData = require('form-data');
 const axios = require('axios');
 
-const socketIo = require('socket.io');
 const { promisify } = require('util');
 const fs = require('fs');
 const unlinkAsync = promisify(fs.unlink);
@@ -14,20 +13,10 @@ const {
   // GetObjectCommand,
 } = require('@aws-sdk/client-s3');
 
-// const { getSupabase } = require('../utils/supabase');
+const { getSupabase } = require('../utils/supabase');
+
 const genUniqueId = require('../utils/genUniqueId');
 const upload = require('../utils/upload');
-
-const io = socketIo({
-  cors: {
-    origin: 'http://localhost:5173',
-    methods: ['GET', 'POST']
-  }
-});
-
-io.on('connection', (socket) => {
-  console.log('Client connected');
-});
 
 const {
   CLOUDFLARE_ACCESS_KEY,
@@ -48,7 +37,7 @@ const S3 = new S3Client({
   }
 });
 
-// const supabase = getSupabase();
+const supabase = getSupabase();
 
 // const museUploadQueue = new Queue('video', process.env.REDIS_API_KEY, {
 //   redis: { tls: { rejectUnauthorized: false } },
@@ -109,8 +98,16 @@ router.post('/', upload.single('videoFile'), async (req, res) => {
 
     parallelUploads3.on('httpUploadProgress', (progress) => {
       const Uploadprogress = Math.round(((progress.loaded / progress.total) * 100) / 2);
-      // Emit progress to connected sockets
-      io.emit('uploadProgress', Uploadprogress);
+      const channel = supabase.channel('upload-progress');
+      channel.subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          channel.send({
+            type: 'broadcast',
+            event: lessonId,
+            payload: Uploadprogress
+          });
+        }
+      });
     });
 
     await parallelUploads3.done();
@@ -274,7 +271,4 @@ async function uploadToMuseNow(fileData, fileName) {
 //   console.log('error on queue', error);
 // });
 
-module.exports = {
-  router,
-  io // Export Socket.IO instance for use in the main server file
-};
+module.exports = router;
