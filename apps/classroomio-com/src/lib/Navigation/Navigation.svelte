@@ -51,8 +51,6 @@
               block: 'start',
               inline: 'nearest'
             });
-          } else {
-            console.log('Element still not found after goto:', key);
           }
         }, 200);
       }
