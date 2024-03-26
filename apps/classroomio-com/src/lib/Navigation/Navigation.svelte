@@ -32,13 +32,31 @@
 
   function scroll(key = '') {
     const el = document.getElementById(key);
+    console.log('Scrolling to element:', el);
     setTimeout(() => {
-      el?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-        inline: 'nearest'
-      });
-    }, 50);
+      if (el) {
+        el.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+          inline: 'nearest'
+        });
+      } else {
+        // goto('/') if element not found, then try scrolling again
+        goto('/');
+        setTimeout(() => {
+          const elAfterGoto = document.getElementById(key);
+          if (elAfterGoto) {
+            elAfterGoto.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start',
+              inline: 'nearest'
+            });
+          } else {
+            console.log('Element still not found after goto:', key);
+          }
+        }, 200);
+      }
+    }, 200);
   }
 
   const superpowers = [
@@ -98,7 +116,6 @@
               use:melt={$item}
               class="flex justify-between items-center w-full rounded-lg hover:bg-slate-100 p-5 mb-4"
               on:m-click={() => {
-                goto('/');
                 setTimeout(() => scroll(superpower.key), 200);
               }}
             >
