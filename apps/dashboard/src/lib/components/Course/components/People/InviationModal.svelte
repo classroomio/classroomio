@@ -1,8 +1,8 @@
 <script lang="ts">
+  import copy from 'copy-to-clipboard';
   import { Popover } from 'carbon-components-svelte';
   import Link from 'carbon-icons-svelte/lib/Link.svelte';
   import Modal from '$lib/components/Modal/index.svelte';
-  import copy from 'copy-to-clipboard';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { ROLE } from '$lib/utils/constants/roles';
   import { addGroupMember, fetchGroup } from '$lib/utils/services/courses';
@@ -127,6 +127,20 @@
     }, 1000);
   }
 
+  // remove the query parameter from the URL
+  function removeQueryParam() {
+    const url = new URL(window.location.href);
+    const urlParams = new URLSearchParams(url.search);
+    urlParams.delete('add');
+    url.search = urlParams.toString();
+    window.history.pushState({}, '', url);
+  }
+
+  function closeModal() {
+    removeQueryParam();
+    resetForm();
+  }
+
   $: {
     selectedTutors = formatSelected(selectedIds);
     console.log('selectedTutors', selectedTutors);
@@ -136,7 +150,7 @@
 </script>
 
 <Modal
-  onClose={resetForm}
+  onClose={() => closeModal()}
   bind:open={$invitationModal.open}
   width="w-4/5 md:w-2/5"
   maxWidth="max-w-lg"

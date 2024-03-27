@@ -1,6 +1,4 @@
 <script lang="ts">
-  import TextChip from '$lib/components/Chip/Text.svelte';
-  import ComingSoon from '$lib/components/ComingSoon/index.svelte';
   import copy from 'copy-to-clipboard';
   import {
     CopyButton,
@@ -11,6 +9,8 @@
     StructuredListHead,
     StructuredListRow
   } from 'carbon-components-svelte';
+  import TextChip from '$lib/components/Chip/Text.svelte';
+  import ComingSoon from '$lib/components/ComingSoon/index.svelte';
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
   import { deleteGroupMember, updatedGroupMember } from '$lib/utils/services/courses';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
@@ -110,6 +110,24 @@
     }
   }
 
+  function checkQueryParamAndOpenModal() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('add') && urlParams.get('add') === 'true') {
+      $invitationModal.open = true;
+    }
+  }
+
+  function addQueryParam() {
+    const browserUrl = new URL(window.location.href);
+    browserUrl.searchParams.set('add', 'true');
+    window.history.pushState({}, '', browserUrl);
+  }
+
+  function handleClick() {
+    addQueryParam();
+    checkQueryParamAndOpenModal();
+  }
+
   $: sortAndFilterPeople($group.people, filterBy);
 </script>
 
@@ -124,11 +142,7 @@
   <PageNav title="People" disableSticky={true}>
     <slot:fragment slot="widget">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
-        <PrimaryButton
-          className="mr-2"
-          label="Add"
-          onClick={() => ($invitationModal.open = true)}
-        />
+        <PrimaryButton className="mr-2" label="Add" onClick={() => handleClick()} />
       </RoleBasedSecurity>
     </slot:fragment>
   </PageNav>
