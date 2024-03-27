@@ -13,15 +13,6 @@
   let showsubNav = false;
   let showNav = false;
 
-  const {
-    elements: { menu, item, trigger, arrow }
-  } = createDropdownMenu({
-    positioning: {
-      placement: 'bottom-start',
-      fitViewport: true
-    }
-  });
-
   function handleShow() {
     showsubNav = !showsubNav;
   }
@@ -40,7 +31,8 @@
         inline: 'nearest'
       });
     } else {
-      // goto('/') if element not found, then try scrolling again
+      console.log('Element not found with key:', key);
+      // Run goto('/') if element not found, then try scrolling again
       goto('/');
       setTimeout(() => {
         const elAfterGoto = document.getElementById(key);
@@ -50,6 +42,8 @@
             block: 'start',
             inline: 'nearest'
           });
+        } else {
+          console.log('Element still not found after goto:', key);
         }
       }, 200);
     }
@@ -99,42 +93,45 @@
   <nav class="w-[40%] hidden md:hidden lg:block">
     <ul class="flex items-center justify-between w-full gap-2">
       <!--  -->
-      <li class="text-gray-800 font-semibold text-sm cursor-pointer">
-        <button use:melt={$trigger} class="flex items-center"
+      <li class="text-gray-800 font-semibold text-sm cursor-pointer relative">
+        <button class="flex items-center" on:click={() => (showNav = !showNav)}
           >Our Superpowers <ChevronDown class="ml-2" /></button
         >
-        <div
-          use:melt={$menu}
-          class="w-[28%] border px-5 py-5 rounded-[30px] shadow-slate-700 mt-2 z-[3001] ml-[-30px] bg-white"
-        >
-          {#each superpowers as superpower}
-            <button
-              use:melt={$item}
-              class="flex justify-between items-center w-full rounded-lg hover:bg-slate-100 p-5 mb-4"
-              on:m-click={() => scroll(superpower.key)}
-            >
-              {#if superpower.key === 'coursemanagement'}
-                <CourseIcon />
-              {:else if superpower.key === 'customization'}
-                <MapCenter size={24} />
-              {:else if superpower.key === 'collaboration'}
-                <ForumIcon size={24} />
-              {:else if superpower.key === 'ai'}
-                <MachineLearningModel size={24} />
-              {/if}
-              <div class="w-[86%] text-start">
-                <h3 class="font-semibold text-sm text-gray-700">
-                  {superpower.title}
-                </h3>
-                <p class="font-normal text-sm text-gray-600">
-                  {superpower.subtitle}
-                </p>
-              </div>
-            </button>
-          {/each}
+        {#if showNav}
+          <div
+            class="absolute w-[24rem] top-10 -left-10 border px-5 py-5 rounded-[30px] shadow-slate-700 z-[3001] bg-white"
+          >
+            {#each superpowers as superpower}
+              <button
+                class="flex justify-between items-center w-full rounded-lg hover:bg-slate-100 p-5 mb-4"
+                on:click={() => {
+                  handleShowNav();
+                  scroll(superpower.key);
+                }}
+              >
+                {#if superpower.key === 'coursemanagement'}
+                  <CourseIcon />
+                {:else if superpower.key === 'customization'}
+                  <MapCenter size={24} />
+                {:else if superpower.key === 'collaboration'}
+                  <ForumIcon size={24} />
+                {:else if superpower.key === 'ai'}
+                  <MachineLearningModel size={24} />
+                {/if}
+                <div class="w-[86%] text-start">
+                  <h3 class="font-semibold text-sm text-gray-700">
+                    {superpower.title}
+                  </h3>
+                  <p class="font-normal text-sm text-gray-600">
+                    {superpower.subtitle}
+                  </p>
+                </div>
+              </button>
+            {/each}
 
-          <div use:melt={$arrow} />
-        </div>
+            <!-- <div use:melt={$arrow} /> -->
+          </div>
+        {/if}
       </li>
       <!-- More Features -->
       <!-- <a href="/#morefeatures">
