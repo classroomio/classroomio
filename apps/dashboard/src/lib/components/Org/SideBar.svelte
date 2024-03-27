@@ -15,6 +15,7 @@
   import { profile } from '$lib/utils/store/user';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
   import { sideBar } from './store';
+  import { SettingsAdjust } from 'carbon-icons-svelte';
 
   const menuItems = [
     {
@@ -40,6 +41,10 @@
     {
       path: '/audience',
       label: 'Audience'
+    },
+    {
+      path: '/setup',
+      label: 'Setup'
     }
   ];
 
@@ -111,6 +116,8 @@
                 <QuizIcon />
               {:else if menuItem.path === '/audience'}
                 <AudienceIcon />
+              {:else if menuItem.path === '/setup'}
+                <SettingsAdjust size={24} class="carbon-icon dark:fill-[#fff] fill-[#000]" />
               {/if}
               <p class=" ml-2">{menuItem.label}</p>
             </li>
