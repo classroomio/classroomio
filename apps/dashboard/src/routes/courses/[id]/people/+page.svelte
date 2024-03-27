@@ -128,7 +128,7 @@
   <PageNav title="People" disableSticky={true}>
     <slot:fragment slot="widget">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
-        <PrimaryButton className="mr-2" label="Add" onClick={() => handleClick()} />
+        <PrimaryButton className="mr-2" label="Add" onClick={handleClick} />
       </RoleBasedSecurity>
     </slot:fragment>
   </PageNav>
