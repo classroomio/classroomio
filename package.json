@@ -18,7 +18,7 @@
 		"prettier-plugin-svelte": "^3.1.2",
 		"prettier-plugin-tailwindcss": "^0.5.7",
 		"standard-version": "^9.5.0",
-		"supabase": "^1.112.0",
+		"supabase": "^1.151.1",
 		"tsconfig": "workspace:*",
 		"turbo": "^1.10.16",
 		"typescript": "^5.1.6"
