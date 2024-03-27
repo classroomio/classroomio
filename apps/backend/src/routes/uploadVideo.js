@@ -97,14 +97,14 @@ router.post('/', upload.single('videoFile'), async (req, res) => {
     });
 
     parallelUploads3.on('httpUploadProgress', (progress) => {
-      const Uploadprogress = Math.round(((progress.loaded / progress.total) * 100) / 2);
+      const uploadProgress = Math.round(((progress.loaded / progress.total) * 100) / 2);
       const channel = supabase.channel('upload-progress');
       channel.subscribe((status) => {
         if (status === 'SUBSCRIBED') {
           channel.send({
             type: 'broadcast',
             event: lessonId,
-            payload: Uploadprogress
+            payload: uploadProgress
           });
         }
       });

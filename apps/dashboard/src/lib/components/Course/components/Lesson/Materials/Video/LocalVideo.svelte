@@ -123,7 +123,7 @@
     supabase.removeChannel(uploadChannel);
   });
 
-  $: helperText = value + '%  of ' + max + 'MB';
+  $: helperText = value + '%  of ' + Math.round(fileSize) + 'MB';
   $: if (value === max) {
     helperText = 'Done';
     status = 'finished';
