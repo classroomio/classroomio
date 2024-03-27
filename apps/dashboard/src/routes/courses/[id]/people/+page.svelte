@@ -21,18 +21,17 @@
   import IconButton from '$lib/components/IconButton/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import { group } from '$lib/components/Course/store';
-  import InviationModal from '$lib/components/Course/components/People/InviationModal.svelte';
+  import InvitationModal from '$lib/components/Course/components/People/InvitationModal.svelte';
   import DeleteConfirmation from '$lib/components/Course/components/People/DeleteConfirmation.svelte';
-  import {
-    invitationModal,
-    deleteMemberModal
-  } from '$lib/components/Course/components/People/store';
+  import { deleteMemberModal } from '$lib/components/Course/components/People/store';
   import type { Person, ProfileRole } from '$lib/components/Course/components/People/types';
   import { ROLE_LABEL, ROLES } from '$lib/utils/constants/roles';
   import { profile } from '$lib/utils/store/user';
   import { snackbar } from '$lib/components/Snackbar/store';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import type { GroupPerson } from '$lib/utils/types';
+  import { page } from '$app/stores';
+  import { goto } from '$app/navigation';
 
   export let data;
 
@@ -110,28 +109,15 @@
     }
   }
 
-  function checkQueryParamAndOpenModal() {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('add') && urlParams.get('add') === 'true') {
-      $invitationModal.open = true;
-    }
-  }
-
-  function addQueryParam() {
-    const browserUrl = new URL(window.location.href);
-    browserUrl.searchParams.set('add', 'true');
-    window.history.pushState({}, '', browserUrl);
-  }
-
-  function handleClick() {
-    addQueryParam();
-    checkQueryParamAndOpenModal();
-  }
+  const handleClick = () => {
+    const url = $page.url.href + '?add=true';
+    goto(url);
+  };
 
   $: sortAndFilterPeople($group.people, filterBy);
 </script>
 
-<InviationModal />
+<InvitationModal />
 
 <DeleteConfirmation
   email={member.email || (member.profile && member.profile.email)}
