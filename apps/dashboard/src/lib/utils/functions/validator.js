@@ -9,7 +9,7 @@ const getSiteNameValidation = () =>
   z.string().min(5, { message: 'Site name must contain 5 or more characters' });
 
 const getNewsfeedValidation = () =>
-  z.string().min(5, { message: 'input must contain 5 or more characters' });
+  z.string().min(5, { message: 'Field must contain 5 or more characters' });
 
 const createQuizValidationSchema = z.object({
   title: z.string().min(6, {
