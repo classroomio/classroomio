@@ -8,7 +8,6 @@
     uploadCourseVideoStore
   } from '$lib/components/Course/components/Lesson/store/lessons';
   import { onMount, onDestroy } from 'svelte';
-  import { Moon } from 'svelte-loading-spinners';
   import { ProgressBar } from 'carbon-components-svelte';
 
   import { getSupabase } from '$lib/utils/functions/supabase';
@@ -28,19 +27,8 @@
   let submit;
   let uploadedFileUrl = '';
   let isLoading = false;
-  let timeoutkey;
   let prevProgress = 0;
-
   let uploadChannel;
-
-  const uploadingTexts = [
-    'Sending your video to our server...',
-    'Breaking video into chunks',
-    'Compressing the video...',
-    'Generating a link to your video...',
-    'Wrapping things up'
-  ];
-  let uploadingLoadingText = uploadingTexts[0];
 
   function isVideoAdded(link) {
     return $lesson.materials?.videos?.find((v) => v.link === link);
@@ -129,25 +117,6 @@
     status = 'finished';
   }
 
-  $: {
-    if (isLoading) {
-      timeoutkey = setTimeout(() => {
-        console.log('timeout');
-        const i = uploadingTexts.findIndex((text) => text === uploadingLoadingText);
-        const next = uploadingTexts[i + 1];
-
-        if (next) {
-          console.log('uploadingLoadingText', next);
-          uploadingLoadingText = next;
-        }
-      }, 30000);
-    } else if (timeoutkey) {
-      console.log('clearTimeout');
-      clearTimeout(timeoutkey);
-      uploadingLoadingText = uploadingTexts[0];
-    }
-  }
-
   $: isDoneUploading(formRes);
 </script>
 
@@ -163,10 +132,9 @@
       on:submit|preventDefault={onUpload}
     >
       {#if isLoading}
-        <Moon size="40" color="#1d4ed8" unit="px" duration="1s" />
-        <p class="mt-5">{uploadingLoadingText}</p>
-        <div class="flex gap-2">
-          <ProgressBar kind="inline" labelText="upload status" {value} {max} {status} />
+        <div class="flex flex-col gap-5 max-w-[500px] w-[60%] justify-center">
+          <p class="mt-5 text-center">Uploading...</p>
+          <ProgressBar class="w-full" {value} {max} {status} />
           <p class="text-sm">{helperText}</p>
         </div>
       {:else}

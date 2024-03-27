@@ -98,6 +98,7 @@ router.post('/', upload.single('videoFile'), async (req, res) => {
 
     parallelUploads3.on('httpUploadProgress', (progress) => {
       const uploadProgress = Math.round(((progress.loaded / progress.total) * 100) / 2);
+      console.log({ uploadProgress });
       const channel = supabase.channel('upload-progress');
       channel.subscribe((status) => {
         if (status === 'SUBSCRIBED') {
