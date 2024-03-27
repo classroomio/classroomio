@@ -14,6 +14,7 @@
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import pluralize from 'pluralize';
   import { onMount } from 'svelte';
+  import { addNewsfeedCommentValidation } from '$lib/utils/functions/validator';
 
   export let feed: Feed;
   export let editFeed: Feed;
@@ -29,6 +30,7 @@
   let comment = '';
   let areCommentsExpanded = false;
   let isDeleteFeedModal = false;
+  let errors = {};
 
   let reactions = {
     smile: '😀',
@@ -55,9 +57,11 @@
   };
 
   const handleAddNewComment = (event) => {
-    if (!comment) return;
-
     if (event.key === 'Enter' || event.type === 'click') {
+      errors = addNewsfeedCommentValidation(comment);
+      if (Object.keys(errors).length) {
+        return;
+      }
       event.preventDefault();
       addNewComment(comment, feed.id, author.id);
       comment = '';
@@ -226,6 +230,9 @@
         <Send size={24} />
       </button>
     </div>
+    {#if errors.newComment}
+      <p class="text-sm text-red-500">{errors.newComment}</p>
+    {/if}
   </section>
   <DeleteFeedConfirmation bind:openDeleteModal={isDeleteFeedModal} deleteFeed={handleDeleteFeed} />
 </div>
