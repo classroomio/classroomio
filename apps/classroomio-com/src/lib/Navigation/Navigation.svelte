@@ -33,28 +33,26 @@
   function scroll(key = '') {
     const el = document.getElementById(key);
     console.log('Scrolling to element:', el);
-    setTimeout(() => {
-      if (el) {
-        el.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
-          inline: 'nearest'
-        });
-      } else {
-        // goto('/') if element not found, then try scrolling again
-        goto('/');
-        setTimeout(() => {
-          const elAfterGoto = document.getElementById(key);
-          if (elAfterGoto) {
-            elAfterGoto.scrollIntoView({
-              behavior: 'smooth',
-              block: 'start',
-              inline: 'nearest'
-            });
-          }
-        }, 200);
-      }
-    }, 200);
+    if (el) {
+      el.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+        inline: 'nearest'
+      });
+    } else {
+      // goto('/') if element not found, then try scrolling again
+      goto('/');
+      setTimeout(() => {
+        const elAfterGoto = document.getElementById(key);
+        if (elAfterGoto) {
+          elAfterGoto.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+            inline: 'nearest'
+          });
+        }
+      }, 200);
+    }
   }
 
   const superpowers = [
@@ -113,9 +111,7 @@
             <button
               use:melt={$item}
               class="flex justify-between items-center w-full rounded-lg hover:bg-slate-100 p-5 mb-4"
-              on:m-click={() => {
-                setTimeout(() => scroll(superpower.key), 200);
-              }}
+              on:m-click={() => scroll(superpower.key)}
             >
               {#if superpower.key === 'coursemanagement'}
                 <CourseIcon />
