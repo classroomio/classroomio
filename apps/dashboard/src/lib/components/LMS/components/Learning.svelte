@@ -1,14 +1,57 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { goto } from '$app/navigation';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
   import { coursesInProgress } from '$lib/components/Courses/store';
+  import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
+
+  let nextLessonId: string;
 
   const gotoCourse = (id: string | undefined) => {
     if (!id) return;
-    goto(`/courses/${id}`);
+    goto(`/courses/${id}/lessons/${nextLessonId}`);
   };
+
+  function getNextLesson(lessons) {
+    let nextLesson = null;
+
+    for (let i = 0; i < lessons.length; i++) {
+      const lesson = lessons[i];
+      const completion =
+        lesson.lesson_completion.length > 0 ? lesson.lesson_completion[0].is_complete : false;
+
+      if (completion) {
+        // If current lesson is completed, look for the next incomplete lesson
+        let j = i + 1;
+        while (j < lessons.length) {
+          const next = lessons[j];
+          if (next.lesson_completion.length === 0 || !next.lesson_completion[0].is_complete) {
+            // Found the next incomplete lesson
+            nextLesson = next;
+            break;
+          }
+          j++;
+        }
+        if (nextLesson) {
+          break; // Exit loop if next incomplete lesson is found
+        }
+      }
+    }
+
+    return nextLesson;
+  }
+
+  onMount(() => {
+    const nextLesson = getNextLesson($lessons);
+    // For the possibility of all the courses being incomplete
+    if (nextLesson?.id === undefined) {
+      nextLessonId = $lessons[0].id;
+    } else {
+      nextLessonId = nextLesson?.id;
+    }
+  });
 </script>
 
 <section class="h-full">
