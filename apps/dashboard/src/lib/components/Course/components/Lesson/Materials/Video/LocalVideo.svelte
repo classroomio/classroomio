@@ -11,8 +11,6 @@
   import { ProgressBar } from 'carbon-components-svelte';
   import { supabase } from '$lib/utils/functions/supabase';
 
-  
-
   let value = 0;
   let max = 100;
   let status = 'active';
