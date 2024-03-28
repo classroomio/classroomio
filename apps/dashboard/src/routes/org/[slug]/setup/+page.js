@@ -2,27 +2,27 @@ export const load = ({ params = { slug: '' } }) => {
   const data = [
     {
       title: 'Create Course',
-      desc: 'create a course that you will share with your students',
-      isCompleted: false,
+      desc: 'Create a course that you will share with your students',
+      isCompleted: true,
       buttonLabel: 'Create Course'
     },
     {
       title: 'Upload a profile picture and update username',
-      desc: 'personalize and a human touch making interactions more personal and memorable',
+      desc: 'Personalize and a human touch making interactions more personal and memorable',
       isCompleted: false,
       buttonLabel: 'Update Profile'
     },
     {
       title: 'Update organisation profile picture',
       desc: 'Establish a professional and recognizable identity for your organization',
-      isCompleted: false,
+      isCompleted: true,
       buttonLabel: 'Update Org Profile'
     },
     {
       title: 'Create a lesson',
       desc: 'Break your course into lesson that your students can easily understand',
       isCompleted: false,
-      buttonLabel: 'Create lesson'
+      buttonLabel: 'Create Lesson'
     },
     {
       title: 'Create an exercise',
@@ -34,7 +34,7 @@ export const load = ({ params = { slug: '' } }) => {
       title: 'Publish a course',
       desc: 'Make your course public and purchaseable ',
       isCompleted: false,
-      buttonLabel: 'Publish course'
+      buttonLabel: 'Publish Course'
     }
   ];
 
