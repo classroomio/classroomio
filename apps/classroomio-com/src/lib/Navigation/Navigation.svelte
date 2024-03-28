@@ -7,7 +7,6 @@
   import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
   import CourseIcon from '$lib/Icons/CourseIcon.svelte';
   import MapCenter from 'carbon-icons-svelte/lib/MapCenter.svelte';
-  import { goto } from '$app/navigation';
 
   let showsubNav = false;
   let showNav = false;
@@ -18,34 +17,6 @@
 
   function handleShowNav() {
     showNav = !showNav;
-  }
-
-  function scroll(key = '') {
-    const el = document.getElementById(key);
-    console.log('Scrolling to element:', el);
-    if (el) {
-      el.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-        inline: 'nearest'
-      });
-    } else {
-      console.log('Element not found with key:', key);
-      // Run goto('/') if element not found, then try scrolling again
-      goto('/');
-      setTimeout(() => {
-        const elAfterGoto = document.getElementById(key);
-        if (elAfterGoto) {
-          elAfterGoto.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start',
-            inline: 'nearest'
-          });
-        } else {
-          console.log('Element still not found after goto:', key);
-        }
-      }, 200);
-    }
   }
 
   const superpowers = [
@@ -101,12 +72,10 @@
             class="absolute w-[24rem] top-10 -left-10 border px-5 py-5 rounded-[30px] shadow-slate-700 z-[3001] bg-white"
           >
             {#each superpowers as superpower}
-              <button
+              <a
                 class="flex justify-between items-center w-full rounded-lg hover:bg-slate-100 p-5 mb-4"
-                on:click={() => {
-                  handleShowNav();
-                  scroll(superpower.key);
-                }}
+                href="/#{superpower.key}"
+                on:click={() => (showNav = !showNav)}
               >
                 {#if superpower.key === 'coursemanagement'}
                   <CourseIcon />
@@ -125,7 +94,7 @@
                     {superpower.subtitle}
                   </p>
                 </div>
-              </button>
+              </a>
             {/each}
           </div>
         {/if}
