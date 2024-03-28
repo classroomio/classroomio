@@ -13,7 +13,7 @@
 
 <section>
   <div class="py-2 md:py-10 px-2 md:px-5">
-    <div class="flex items-baseline gap-2">
+    <div class="flex items-center gap-2">
       <h1 class="dark:text-white text-2xl md:text-3xl font-bold">Get Started</h1>
       <Chip
         value={`${completed}/${setupList.length}`}
