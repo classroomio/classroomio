@@ -9,10 +9,9 @@
   } from '$lib/components/Course/components/Lesson/store/lessons';
   import { onMount, onDestroy } from 'svelte';
   import { ProgressBar } from 'carbon-components-svelte';
+  import { supabase } from '$lib/utils/functions/supabase';
 
-  import { getSupabase } from '$lib/utils/functions/supabase';
-
-  const supabase = getSupabase();
+  
 
   let value = 0;
   let max = 100;
