@@ -64,7 +64,7 @@
   </p>
   <div class="mt-10 flex flex-col items-center justify-center gap-4 md:flex-row">
     <a
-      class="md:text-md w-11/12 rounded-md bg-blue-700 px-6 py-3 text-sm font-medium text-white transition-all delay-100 hover:bg-blue-800 hover:shadow-xl md:w-fit lg:px-6 lg:py-5 lg:font-semibold"
+      class="md:text-md w-11/12 rounded-md bg-blue-700 px-6 py-3 text-sm font-medium text-white text-center transition-all delay-100 hover:bg-blue-800 hover:shadow-xl md:w-fit lg:px-6 lg:py-5 lg:font-semibold"
       href="/signup"
       rel="noopener noreferrer nofollow"
     >

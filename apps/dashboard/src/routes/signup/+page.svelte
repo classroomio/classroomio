@@ -14,7 +14,6 @@
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
-  import { snackbar } from '$lib/components/Snackbar/store';
 
   let supabase = getSupabase();
   let fields = Object.assign({}, SIGNUP_FIELDS);
@@ -43,21 +42,6 @@
 
     try {
       loading = true;
-
-      // Check if the email address is disposable
-      const emailCheck = await fetch('https://is-disposable-email.ephraimduncan68.workers.dev/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email: fields.email })
-      });
-      const emailCheckResponse = await emailCheck.json();
-
-      if (emailCheckResponse.isDisposable === true) {
-        snackbar.error('The email you provided is disposable');
-        return;
-      }
 
       const {
         data: { session },
@@ -130,6 +114,13 @@
 <svelte:head>
   <title>Join ClassroomIO</title>
 </svelte:head>
+
+<div
+  class="senja-embed"
+  data-id="aa054658-1e15-4d00-8920-91f424326c4e"
+  data-lazyload="false"
+  data-spinner="false"
+></div>
 
 <AuthUI {supabase} isLogin={false} {handleSubmit} isLoading={loading} bind:formRef>
   <div class="mt-4 w-full">
