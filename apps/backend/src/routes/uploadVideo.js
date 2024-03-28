@@ -13,7 +13,8 @@ const {
   // GetObjectCommand,
 } = require('@aws-sdk/client-s3');
 
-// const { getSupabase } = require('../utils/supabase');
+const { getSupabase } = require('../utils/supabase');
+
 const genUniqueId = require('../utils/genUniqueId');
 const upload = require('../utils/upload');
 
@@ -36,7 +37,7 @@ const S3 = new S3Client({
   }
 });
 
-// const supabase = getSupabase();
+const supabase = getSupabase();
 
 // const museUploadQueue = new Queue('video', process.env.REDIS_API_KEY, {
 //   redis: { tls: { rejectUnauthorized: false } },
@@ -96,7 +97,18 @@ router.post('/', upload.single('videoFile'), async (req, res) => {
     });
 
     parallelUploads3.on('httpUploadProgress', (progress) => {
-      console.log(progress);
+      const uploadProgress = Math.round(((progress.loaded / progress.total) * 100) / 2);
+      console.log({ uploadProgress });
+      const channel = supabase.channel('upload-progress');
+      channel.subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          channel.send({
+            type: 'broadcast',
+            event: lessonId,
+            payload: uploadProgress
+          });
+        }
+      });
     });
 
     await parallelUploads3.done();
