@@ -1,5 +1,4 @@
 <script>
-  import { createDropdownMenu, melt } from '@melt-ui/svelte';
   import ChevronDown from 'carbon-icons-svelte/lib/ChevronDown.svelte';
   import TextAlignJustify from 'carbon-icons-svelte/lib/TextAlignJustify.svelte';
   import CloseLarge from 'carbon-icons-svelte/lib/CloseLarge.svelte';
@@ -128,8 +127,6 @@
                 </div>
               </button>
             {/each}
-
-            <!-- <div use:melt={$arrow} /> -->
           </div>
         {/if}
       </li>
