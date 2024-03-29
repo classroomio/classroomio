@@ -163,7 +163,7 @@
       case StepsEnum.PUBLISH_COURSE:
         if (hasCourse()) {
           const courseId = coursesList[0].id;
-          goto(`/courses/${courseId}`);
+          goto(`/courses/${courseId}/settings`);
         } else {
           snackbar.error('You need to creat a course');
         }
