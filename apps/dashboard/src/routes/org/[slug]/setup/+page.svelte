@@ -152,8 +152,8 @@
           // we need to navigate to the first lesson,but what if the lesson is locked?
           // then we navigate to the next availale unlocked lesson and if there is none, throw an error
           if (hasLesson(course)) {
-            const id = course.lessons?.[0].id;
-            goto(`/courses/${id}`);
+            const id = course.id;
+            goto(`/courses/${id}/lessons`);
           } else {
             snackbar.error('You Need to Create a lesson');
           }
@@ -184,7 +184,12 @@
   onMount(async () => {
     await updateCompletion();
   });
-  $: console.log('data', data);
+  $: console.log(
+    'data',
+    data,
+    'lessons',
+    coursesList.map((course) => course?.lessons?.map((l) => l))
+  );
 </script>
 
 <section>
