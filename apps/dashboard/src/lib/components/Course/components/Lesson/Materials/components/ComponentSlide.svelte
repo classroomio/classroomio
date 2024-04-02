@@ -1,11 +1,30 @@
-<script>
+<script lang="ts">
   import { lesson } from '../../store/lessons';
+
+  let url = '';
+
+  function canvaHandler(_url): string {
+    if (_url.includes('?embed')) return _url;
+
+    return `${_url}?embed`;
+  }
+
+  function getUrl(_url): string {
+    console.log({ _url });
+    if (_url.includes('www.canva.com')) {
+      return canvaHandler(_url);
+    }
+
+    return _url;
+  }
+
+  $: url = getUrl($lesson.materials.slide_url);
 </script>
 
-{#if $lesson.materials.slide_url}
+{#if url}
   <iframe
     title="Embeded Slides"
-    src={$lesson.materials.slide_url}
+    src={url}
     frameborder="0"
     width="100%"
     height="569"

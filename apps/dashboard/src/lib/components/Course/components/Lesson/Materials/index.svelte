@@ -309,6 +309,7 @@
             label="Slide link"
             bind:value={$lesson.materials.slide_url}
             onInputChange={handleInputChange}
+            helperMessage="You can embed Google Slides or Canva Presentation"
           />
         {/if}
       </TabContent>
