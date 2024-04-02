@@ -9,7 +9,9 @@
     return `${_url}?embed`;
   }
 
-  function getUrl(_url): string {
+  function getUrl(_url: string | null): string | undefined {
+    if (!_url) return;
+
     console.log({ _url });
     if (_url.includes('www.canva.com')) {
       return canvaHandler(_url);
