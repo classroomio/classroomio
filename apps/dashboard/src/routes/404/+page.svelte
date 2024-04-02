@@ -8,6 +8,14 @@
   const src = './bg-404.png';
   let query = new URLSearchParams($page.url.search);
   let isOrg = query.get('type') === 'org';
+
+  function handleClick() {
+    if (!isOrg) {
+      return goto('/')
+    }
+
+    return goto('/home')
+  }
 </script>
 
 <div
@@ -27,7 +35,7 @@
       the meantime, here's a joke to make you laugh:<br />
       What do you call a fish with no eyes? Fsh!
     </p>
-    <PrimaryButton label="Go to Home" className="rounded-md" onClick={() => goto('/')} />
+    <PrimaryButton label="Go to Home" className="rounded-md" onClick={handleClick} />
   </div>
 
   <img src="/classroom-404.png" alt="classroomio_error_image" class="errorImg" />

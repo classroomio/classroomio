@@ -11,6 +11,8 @@
     NOTIFICATION_NAME,
     triggerSendEmail
   } from '$lib/utils/services/notification/notification';
+  import { createNewsfeedValidation } from '$lib/utils/functions/validator';
+  import { getTextFromHTML } from '$lib/utils/functions/toHtml';
 
   export let author: Author | any = {};
   export let courseId = '';
@@ -22,9 +24,14 @@
   let newPost = '';
   let isLoading = false;
   let createdFeed;
+  let errors = {};
 
   const onPost = async () => {
-    if (!newPost) return;
+    errors = createNewsfeedValidation(getTextFromHTML(newPost));
+
+    if (Object.keys(errors).length) {
+      return;
+    }
     isLoading = true;
     try {
       if (edit) {
@@ -105,6 +112,9 @@
       placeholder="Share an update with your students"
       maxHeight={400}
     />
+    {#if errors.newPost}
+      <p class="text-sm text-red-500">{errors.newPost}</p>
+    {/if}
     <div class="flex items-center justify-end py-2">
       <div class="flex gap-2">
         <PrimaryButton label="Cancel" variant={VARIANTS.OUTLINED} onClick={resetEditor} />

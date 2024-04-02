@@ -11,8 +11,6 @@
     "prepare": "svelte-kit sync"
   },
   "devDependencies": {
-    "@melt-ui/pp": "^0.1.2",
-    "@melt-ui/svelte": "^0.43.0",
     "@sveltejs/adapter-auto": "^2.0.0",
     "@sveltejs/kit": "^1.20.4",
     "autoprefixer": "^10.4.15",
