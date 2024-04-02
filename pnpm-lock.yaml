@@ -244,8 +244,8 @@ importers:
         specifier: ^8.0.0
         version: 8.0.0
       posthog-js:
-        specifier: ^1.103.0
-        version: 1.103.1
+        specifier: ^1.116.6
+        version: 1.116.6
       shared-constants:
         specifier: workspace:*
         version: link:../../packages/shared-constants
@@ -13683,8 +13683,8 @@ packages:
       source-map-js: 1.2.0
     dev: false
 
-  /posthog-js@1.103.1:
-    resolution: {integrity: sha512-cFXFU4Z4kl/+RUUV4ju1DlfM7dwCGi6H9xWsfhljIhGcBbT8UfS4JGgZGXl9ABQDdgDPb9xciqnysFSsUQshTA==}
+  /posthog-js@1.116.6:
+    resolution: {integrity: sha512-rvt8HxzJD4c2B/xsUa4jle8ApdqljeBI2Qqjp4XJMohQf18DXRyM6b96H5/UMs8jxYuZG14Er0h/kEIWeU6Fmw==}
     dependencies:
       fflate: 0.4.8
       preact: 10.19.3
