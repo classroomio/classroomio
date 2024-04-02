@@ -5,7 +5,12 @@ const supabase = getSupabase();
 
 async function getGenericData(
   orgSlug: string
-): Promise<{ isCoursePublished: boolean; isCourseCreated: boolean; orgHasAvatarUrl: boolean }> {
+): Promise<{
+  isCoursePublished: boolean;
+  isCourseCreated: boolean;
+  orgHasAvatarUrl: boolean;
+  courseData: any;
+}> {
   const { data } = await supabase
     .from('course')
     .select(
@@ -24,16 +29,19 @@ async function getGenericData(
 
   const result = data || [];
 
-  console.log({ result });
+  console.log('courseData', result);
 
   return {
     isCoursePublished: result.find((c) => !!c.is_published),
     isCourseCreated: result.length > 0,
-    orgHasAvatarUrl: !!get(result[0], 'group.organization.avatar_url', '')
+    orgHasAvatarUrl: !!get(result[0], 'group.organization.avatar_url', ''),
+    courseData: result
   };
 }
 
-async function getIsLessonCreated(orgSlug: string): Promise<boolean> {
+async function getIsLessonCreated(
+  orgSlug: string
+): Promise<{ isLessonCreated: boolean; lessonData: any }> {
   const { data } = await supabase
     .from('lesson')
     .select(
@@ -49,7 +57,11 @@ async function getIsLessonCreated(orgSlug: string): Promise<boolean> {
   `
     )
     .eq('course.group.organization.siteName', orgSlug);
-  return data?.length > 0;
+  console.log('lessonsData', data);
+  return {
+    isLessonCreated: data?.length > 0,
+    lessonData: data
+  };
 }
 
 async function getIsExerciseCreated(orgSlug: string): Promise<boolean> {
@@ -74,8 +86,10 @@ async function getIsExerciseCreated(orgSlug: string): Promise<boolean> {
 }
 
 export const load = async ({ params = { slug: '' } }) => {
-  const { isCourseCreated, isCoursePublished, orgHasAvatarUrl } = await getGenericData(params.slug);
-  const isLessonCreated = await getIsLessonCreated(params.slug);
+  const { isCourseCreated, isCoursePublished, orgHasAvatarUrl, courseData } = await getGenericData(
+    params.slug
+  );
+  const { isLessonCreated, lessonData } = await getIsLessonCreated(params.slug);
   const isExerciseCreated = await getIsExerciseCreated(params.slug);
 
   const data = [
@@ -125,6 +139,8 @@ export const load = async ({ params = { slug: '' } }) => {
 
   return {
     orgSiteName: params.slug,
-    setup: data
+    setup: data,
+    courses: courseData,
+    lessons: lessonData
   };
 };

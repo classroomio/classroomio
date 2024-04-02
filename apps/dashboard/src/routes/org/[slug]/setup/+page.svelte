@@ -3,12 +3,10 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import StepDoneIcon from '$lib/components/Icons/StepDoneIcon.svelte';
 
-  import { courses } from '$lib/components/Courses/store';
   import { currentOrg } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
   import { snackbar } from '$lib/components/Snackbar/store.js';
   import { profile } from '$lib/utils/store/user';
-  import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
 
   export let data;
   let setupList = data.setup || [];
@@ -35,7 +33,7 @@
 
       case StepsEnum.CREATE_LESSON:
         if (isCompleted('course')) {
-          const courseId = $courses[0].id;
+          const courseId = data?.courses[0].id;
           goto(`/courses/${courseId}/lessons`);
         } else {
           snackbar.info('You need to create a course');
@@ -44,8 +42,8 @@
 
       case StepsEnum.CREATE_EXERCISE:
         if (isCompleted('lesson')) {
-          const courseId = $courses[0].id;
-          const lessonId = $lessons[0].id;
+          const courseId = data?.courses[0].id;
+          const lessonId = data?.lessons[0].id;
           goto(`/courses/${courseId}/lessons/${lessonId}`);
         } else {
           snackbar.info('You Need to Create a lesson');
@@ -54,7 +52,7 @@
 
       case StepsEnum.PUBLISH_COURSE:
         if (isCompleted('course')) {
-          const courseId = $courses[0].id;
+          const courseId = data?.courses[0].id;
           goto(`/courses/${courseId}/settings`);
         } else {
           snackbar.info('You need to create a course');
