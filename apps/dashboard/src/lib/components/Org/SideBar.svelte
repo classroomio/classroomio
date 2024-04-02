@@ -12,6 +12,7 @@
   import AudienceIcon from '$lib/components/Icons/AudienceIcon.svelte';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
+  import { isOrgAdmin } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
   import { sideBar } from './store';
@@ -91,37 +92,39 @@
 
       <ul class="my-5">
         {#each menuItems as menuItem}
-          <a
-            href="{$currentOrgPath}{menuItem.path}"
-            class="text-black no-underline"
-            on:click={toggleSidebar}
-          >
-            <li
-              class="flex items-center py-3 px-4 mb-2 {NavClasses.item} {isActive(
-                $page.url.pathname,
-                `${$currentOrgPath}${menuItem.path}`
-              )
-                ? NavClasses.active
-                : 'dark:text-white'}"
+          {#if menuItem.path !== '/setup' || $isOrgAdmin}
+            <a
+              href="{$currentOrgPath}{menuItem.path}"
+              class="text-black no-underline"
+              on:click={toggleSidebar}
             >
-              {#if menuItem.path === ''}
-                <HomeIcon />
-              {:else if menuItem.path === '/courses'}
-                <CourseIcon />
-              {:else if menuItem.path === '/site'}
-                <SiteSettingsIcon />
-              {:else if menuItem.path === '/community'}
-                <ForumIcon size={24} class="carbon-icon dark:fill-[#fff] fill-[#000]" />
-              {:else if menuItem.path === '/quiz'}
-                <QuizIcon />
-              {:else if menuItem.path === '/audience'}
-                <AudienceIcon />
-              {:else if menuItem.path === '/setup'}
-                <SettingsAdjust size={24} class="carbon-icon dark:fill-[#fff] fill-[#000]" />
-              {/if}
-              <p class=" ml-2">{menuItem.label}</p>
-            </li>
-          </a>
+              <li
+                class="flex items-center py-3 px-4 mb-2 {NavClasses.item} {isActive(
+                  $page.url.pathname,
+                  `${$currentOrgPath}${menuItem.path}`
+                )
+                  ? NavClasses.active
+                  : 'dark:text-white'}"
+              >
+                {#if menuItem.path === ''}
+                  <HomeIcon />
+                {:else if menuItem.path === '/courses'}
+                  <CourseIcon />
+                {:else if menuItem.path === '/site'}
+                  <SiteSettingsIcon />
+                {:else if menuItem.path === '/community'}
+                  <ForumIcon size={24} class="carbon-icon dark:fill-[#fff] fill-[#000]" />
+                {:else if menuItem.path === '/quiz'}
+                  <QuizIcon />
+                {:else if menuItem.path === '/audience'}
+                  <AudienceIcon />
+                {:else if menuItem.path === '/setup'}
+                  <SettingsAdjust size={24} class="carbon-icon dark:fill-[#fff] fill-[#000]" />
+                {/if}
+                <p class="ml-2">{menuItem.label}</p>
+              </li>
+            </a>
+          {/if}
         {/each}
       </ul>
     </div>
