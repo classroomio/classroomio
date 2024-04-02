@@ -22,7 +22,7 @@
         class={`w-full px-4 py-3 my-1 border ${
           currentTab === item.value
             ? 'border border-[#0233BD] bg-[#F5F8FE] dark:text-black'
-            : 'border border-gray-200'
+            : 'border border-gray-200 dark:border-neutral-600'
         } rounded-md cursor-pointer flex flex-row items-center justify-start gap-2 whitespace-nowrap`}
       >
         <svelte:component

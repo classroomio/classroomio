@@ -4,7 +4,7 @@ interface SubscriptionData {
   productId: string;
   email: string;
   name: string;
-  profileId: string;
+  triggeredBy: string;
   orgId: string;
 }
 

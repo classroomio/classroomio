@@ -4,6 +4,12 @@ export const PLAN = {
   ENTERPRISE: 'ENTERPRISE'
 };
 
+export const PLAN_NAMES = {
+  [PLAN.BASIC]: 'Free',
+  [PLAN.EARLY_ADOPTER]: 'Early Adopter',
+  [PLAN.ENTERPRISE]: 'Enterprise',
+}
+
 export const FEATURES = {
   BACIC_STUDENTS_50: 'BACIC_STUDENTS_50',
   EA_STUDENTS_10000: 'EA_STUDENTS_10000',

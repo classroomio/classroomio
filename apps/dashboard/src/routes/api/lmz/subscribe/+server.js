@@ -4,7 +4,7 @@ import { LEMON_SQUEEZY_STORE_ID } from '$env/static/private';
 import { configureLemonSqueezy } from '$lib/utils/services/lemonsqueezy';
 
 export async function POST({ request }) {
-  const { email, name, orgId, productId, profileId } = await request.json();
+  const { email, name, orgId, productId, triggeredBy } = await request.json();
 
   await configureLemonSqueezy();
 
@@ -17,7 +17,7 @@ export async function POST({ request }) {
     name: name,
     custom: {
       org_id: orgId,
-      profile_id: profileId
+      triggered_by: `${triggeredBy}`
     }
   };
 

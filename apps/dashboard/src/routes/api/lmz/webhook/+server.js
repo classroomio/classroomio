@@ -1,6 +1,8 @@
 import { json } from '@sveltejs/kit';
 import crypto from 'crypto';
 import { LEMON_SQUEEZY_WEBHOOK_SECRET } from '$env/static/private';
+import { createOrgPlan, cancelOrgPlan } from '$lib/utils/services/org';
+import { PLAN } from 'shared-constants/src/plans/constants';
 
 export async function POST({ request }) {
   try {
@@ -22,16 +24,43 @@ export async function POST({ request }) {
     console.log(body);
 
     // Logic according to event
-    if (eventType === 'order_created') {
+    if (eventType === 'order_created' || eventType === 'subscription_resumed') {
       const orgId = body.meta.custom_data.org_id;
-      const profileId = body.meta.custom_data.profile_id;
+      const triggeredBy = body.meta.custom_data.triggered_by;
       const isSuccessful = body.data.attributes.status === 'paid';
 
       console.log({
         orgId,
-        profileId,
+        triggeredBy,
         isSuccessful
       });
+
+      if (isSuccessful && orgId) {
+        const { data, error } = await createOrgPlan({
+          orgId,
+          triggeredBy: parseInt(triggeredBy),
+          planName: PLAN.EARLY_ADOPTER,
+          data: body.data
+        });
+
+        if (error) console.error('Error creating org plan', error);
+        console.log('Create plan', data);
+      }
+    }
+
+    if (
+      ['subscription_cancelled', 'subscription_expired', 'subscription_payment_refunded'].includes(
+        `${eventType}`
+      )
+    ) {
+      const orgId = body.meta.custom_data.org_id;
+      const { data, error } = await cancelOrgPlan({
+        orgId,
+        planName: PLAN.EARLY_ADOPTER
+      });
+
+      if (error) console.error('Error canceling org plan', error);
+      console.log('Cancel plan', data);
     }
 
     return json({ message: 'Webhook received' });

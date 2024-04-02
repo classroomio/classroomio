@@ -7,9 +7,13 @@ export interface CurrentOrg {
   memberId: string;
   role_id: string;
   landingpage: {
-    [key: string]: any;
+    [key: string]: unknown;
   };
   theme: string;
+  organization_plan: {
+    plan_name: string;
+    is_active: boolean;
+  }[]
 }
 
 export interface OrgTeamMember {

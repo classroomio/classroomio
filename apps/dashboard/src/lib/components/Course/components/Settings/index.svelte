@@ -186,7 +186,7 @@
   $: setDefault($course);
 </script>
 
-<Grid class="border-c rounded border-gray-200">
+<Grid class="border-c rounded border-gray-200 dark:border-neutral-600">
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={8} md={8} lg={8}>
       <SectionTitle>Cover Image</SectionTitle>

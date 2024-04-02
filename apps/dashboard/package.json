@@ -53,6 +53,7 @@
     "posthog-js": "^1.103.0",
     "shared-constants": "workspace:*",
     "sirv": "^2.0.3",
+    "stripe": "^14.22.0",
     "svelte-email": "^0.0.4",
     "svelte-ui": "workspace:*",
     "unsplash-js": "^7.0.18",

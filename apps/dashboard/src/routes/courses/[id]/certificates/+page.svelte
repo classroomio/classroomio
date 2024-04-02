@@ -40,7 +40,7 @@
       <StudentCertificate />
     </RoleBasedSecurity>
 
-    <!-- <Tabs autoWidth class="border-b border-gray-200">
+    <!-- <Tabs autoWidth class="border-b border-gray-200 dark:border-neutral-600">
       <Tab label="Design" />
       <Tab label="Reports" />
       <svelte:fragment slot="content">

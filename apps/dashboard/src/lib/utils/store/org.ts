@@ -15,7 +15,8 @@ export const defaultCurrentOrgState: CurrentOrg = {
   memberId: '',
   role_id: '',
   landingpage: {},
-  theme: ''
+  theme: '',
+  organization_plan: []
 };
 
 export const orgs = writable<CurrentOrg[]>([]);
@@ -26,6 +27,10 @@ export const isOrgAdmin = derived(
   currentOrg,
   ($currentOrg) => parseInt($currentOrg.role_id) === ROLE.ADMIN
 );
+export const currentOrgPlan = derived(
+  currentOrg,
+  ($currentOrg) => $currentOrg.organization_plan.find(p => p.is_active)
+)
 export const currentOrgPath = derived(currentOrg, ($currentOrg) =>
   $currentOrg.siteName ? `/org/${$currentOrg.siteName}` : ''
 );

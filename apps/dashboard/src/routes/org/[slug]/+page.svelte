@@ -184,7 +184,7 @@
 
 <WelcomeModal />
 
-<div class="py-10 px-5 w-full max-w-7xl mx-auto">
+<div class="py-10 px-5 w-full max-w-5xl md:mx-auto">
   <div class="flex items-center justify-between mb-10">
     <h1 class="dark:text-white text-2xl md:text-3xl font-bold mb-3">
       {getGreeting()}
@@ -232,7 +232,7 @@
   <!-- <div class="flex items-start flex-wrap">
     {#each boxes as box}
       <div
-        class="w-full md:w-[246px] h-[165px] flex flex-col rounded border border-gray-200 justify-center px-5 md:mr-5 mb-5"
+        class="w-full md:w-[246px] h-[165px] flex flex-col rounded border border-gray-200 dark:border-neutral-600 justify-center px-5 md:mr-5 mb-5"
       >
         <p class="dark:text-white mb-2 text-sm">{box.label}</p>
         <p class="dark:text-white text-xl font-bold">{box.value}</p>
@@ -245,7 +245,7 @@
     <div class="w-full xl:w-auto container">
       <p class="dark:text-white font-bold mt-7 mb-4">Your Schedule</p>
       <div
-        class="rounded border border-gray-200 gap-3 flex flex-col md:flex-row items-start px-2 md:px-5 py-5 w-full"
+        class="rounded border border-gray-200 dark:border-neutral-600 gap-3 flex flex-col md:flex-row items-start px-2 md:px-5 py-5 w-full"
       >
         {#if !$isMobile}
           <div id="calendar" class="flex justify-center mt-5 w-2/5 min-w-[250px]">
@@ -326,10 +326,10 @@
     <!-- <div class="w-full">
       <p class="dark:text-white font-bold mb-7">Your Activities</p>
       <div
-        class="rounded border border-gray-200 md:min-w-[450px] activities-box py-4 px-2 md:px-5 w-full"
+        class="rounded border border-gray-200 dark:border-neutral-600 md:min-w-[450px] activities-box py-4 px-2 md:px-5 w-full"
       >
         {#each activities as activity}
-          <div class="flex mb-3 pb-3 border-b border-gray-200">
+          <div class="flex mb-3 pb-3 border-b border-gray-200 dark:border-neutral-600">
             <Avatar src={activity.avatar} name="avatar" />
             <div class="ml-2 flex flex-col xl:flex-row">
               <div class="mr-2">

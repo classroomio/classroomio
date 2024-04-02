@@ -28,9 +28,14 @@
         productId: plan.CTA.PRODUCT_ID,
         email: $profile.email,
         name: $profile.fullname,
-        profileId: $profile.id,
+        triggeredBy: $currentOrg.memberId,
         orgId: $currentOrg.id
       });
+
+      if (!checkoutURL) {
+        snackbar.error('Failed to generate success');
+        return;
+      }
 
       window.open(checkoutURL, '_blank');
     } catch (error) {
