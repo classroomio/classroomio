@@ -30,6 +30,7 @@
     "express": "^4.17.1",
     "express-rate-limit": "^6.9.0",
     "form-data": "^4.0.0",
+    "katex": "^0.16.10",
     "marked": "^7.0.3",
     "multer": "^1.4.3",
     "nodemon": "^3.0.1",
