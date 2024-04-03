@@ -3,9 +3,7 @@ import get from 'lodash/get';
 
 const supabase = getSupabase();
 
-async function getGenericData(
-  orgSlug: string
-): Promise<{
+async function getGenericData(orgSlug: string): Promise<{
   isCoursePublished: boolean;
   isCourseCreated: boolean;
   orgHasAvatarUrl: boolean;
@@ -32,7 +30,7 @@ async function getGenericData(
   console.log('courseData', result);
 
   return {
-    isCoursePublished: result.find((c) => !!c.is_published),
+    isCoursePublished: result.some((c) => c.is_published === true),
     isCourseCreated: result.length > 0,
     orgHasAvatarUrl: !!get(result[0], 'group.organization.avatar_url', ''),
     courseData: result

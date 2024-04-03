@@ -109,7 +109,7 @@
             <p class={`text-sm`}>{list.desc}</p>
           </div>
           <div class="w-fit ml-auto lg:w-[15vw]">
-            {#if list.is_completed}
+            {#if list.is_completed === true}
               <div class="w-full flex justify-center">
                 <StepDoneIcon />
               </div>
