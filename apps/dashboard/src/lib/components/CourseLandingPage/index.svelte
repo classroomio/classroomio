@@ -1,6 +1,7 @@
 <script lang="ts">
   import get from 'lodash/get';
   import { onMount, onDestroy } from 'svelte';
+  import Badge from '$lib/components/Badge/index.svelte';
   import pluralize from 'pluralize';
   import { page } from '$app/stores';
   import Notebook from 'carbon-icons-svelte/lib/Notebook.svelte'; //note
@@ -457,6 +458,9 @@
         className="w-full"
       />
     {/if}
+  </div>
+  <div class="absolute bottom-4 right-6">
+    <Badge />
   </div>
 </div>
 
