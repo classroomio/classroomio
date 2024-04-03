@@ -28,6 +28,7 @@
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import { goto } from '$app/navigation';
   import { landingPageSettings } from '$lib/components/Org/Settings/store';
+  import Badge from '$lib/components/Badge/index.svelte';
 
   export let orgSiteName = '';
   export let org = {};
@@ -560,12 +561,15 @@
             {/if}
           </div>
         </ul>
-        <p class="text-center mt-5">
+        <!-- <p class="text-center mt-5">
           Powered by
           <a class="text-primary-600 underline" href="https://classroomio.com" target="_blank"
             >ClassroomIO</a
           >
-        </p>
+        </p> -->
+        <div class="flex items-center justify-center">
+          <Badge />
+        </div>
       </footer>
     {/if}
   </main>

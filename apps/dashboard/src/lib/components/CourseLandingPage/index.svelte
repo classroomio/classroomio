@@ -459,7 +459,7 @@
       />
     {/if}
   </div>
-  <div class="absolute bottom-4 right-6">
+  <div class="fixed bottom-4 right-6">
     <Badge />
   </div>
 </div>

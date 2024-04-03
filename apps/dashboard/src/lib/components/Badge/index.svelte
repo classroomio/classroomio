@@ -3,7 +3,7 @@
 
 <div>
   <span
-    class="flex items-center gap-2 dark:text-black dark:bg-white bg-gray-100 rounded-md p-3 font-semibold"
+    class="flex items-center gap-2 dark:text-black dark:bg-white bg-gray-100 rounded-md p-3 font-semibold shadow-md"
   >
     Made with
     <span class="flex items-center">
