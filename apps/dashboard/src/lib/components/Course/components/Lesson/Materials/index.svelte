@@ -42,6 +42,7 @@
   export let prevMode = '';
   export let lessonId = '';
   export let isSaving = false;
+  export let isStudent = false;
   export let toggleMode = () => {};
 
   let lessonTitle = '';
@@ -343,6 +344,17 @@
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowfullscreen
                       />
+                    {:else if video.type === 'generic'}
+                      <iframe
+                        width="100%"
+                        height="569"
+                        class="iframe"
+                        src={video.link}
+                        title="Embeded Video player"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen
+                      />
                     {:else if video.metadata?.svid}
                       <div style="position:relative;padding-bottom:51.416579%">
                         <iframe
@@ -381,10 +393,12 @@
     <h3 class="text-xl font-normal dark:text-white py-2">
       No note, video or slide added for this lesson yet
     </h3>
-    <p class="text-sm text-center font-normal py-2">
-      Share your knowledge with your students by creating engaging content<br />
-      Start by clicking on <strong>Get started</strong> button.
-    </p>
-    <PrimaryButton label="Get started" className="rounded-md" onClick={toggleMode} />
+    {#if !isStudent}
+      <p class="text-sm text-center font-normal py-2">
+        Share your knowledge with your students by creating engaging content<br />
+        Start by clicking on <strong>Get started</strong> button.
+      </p>
+      <PrimaryButton label="Get started" className="rounded-md" onClick={toggleMode} />
+    {/if}
   </Box>
 {/if}
