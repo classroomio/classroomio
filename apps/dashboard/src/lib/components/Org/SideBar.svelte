@@ -45,7 +45,8 @@
     },
     {
       path: '/setup',
-      label: 'Setup'
+      label: 'Setup',
+      isAdminOnly: true
     }
   ];
 
@@ -92,7 +93,7 @@
 
       <ul class="my-5">
         {#each menuItems as menuItem}
-          {#if menuItem.path !== '/setup' || $isOrgAdmin}
+          {#if !menuItem.isAdminOnly || $isOrgAdmin}
             <a
               href="{$currentOrgPath}{menuItem.path}"
               class="text-black no-underline"
