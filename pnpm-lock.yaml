@@ -47,6 +47,9 @@ importers:
       '@supabase/supabase-js':
         specifier: ^2.32.0
         version: 2.39.6
+      '@types/nodemailer':
+        specifier: ^6.4.11
+        version: 6.4.11
       axios:
         specifier: ^1.4.0
         version: 1.6.2
@@ -80,6 +83,9 @@ importers:
       multer:
         specifier: ^1.4.3
         version: 1.4.4
+      nodemailer:
+        specifier: ^6.9.5
+        version: 6.9.5
       nodemon:
         specifier: ^3.0.1
         version: 3.0.3
@@ -6066,7 +6072,6 @@ packages:
     resolution: {integrity: sha512-Ld2c0frwpGT4VseuoeboCXQ7UJIkK3X7Lx/4YsZEiUHtHsthWAOCYtf6PAiLhMtfwV0cWJRabLBS3+LD8x6Nrw==}
     dependencies:
       '@types/node': 18.11.10
-    dev: true
 
   /@types/normalize-package-data@2.4.4:
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
