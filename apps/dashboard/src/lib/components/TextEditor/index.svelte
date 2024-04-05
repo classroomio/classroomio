@@ -2,6 +2,7 @@
   import { PUBLIC_TINYMCE_API_KEY } from '$env/static/public';
   import Editor from '@tinymce/tinymce-svelte';
   import { globalStore } from '$lib/utils/store/app';
+  import { addMathPlugin } from '$lib/utils/functions/tinymce/plugins';
 
   export let id = '';
   export let value: string | undefined = '';
@@ -13,12 +14,19 @@
 
   const apiKey = PUBLIC_TINYMCE_API_KEY;
 
-  let tinmycEditor: any;
   let unmount = false;
+
+  function getTinymce() {
+    const getSink = () => {
+      return typeof window !== 'undefined' ? window : global;
+    };
+    const sink = getSink();
+    return sink && sink.tinymce ? sink.tinymce : null;
+  }
 
   // editor configuration
   let conf = {
-    plugins: 'lists, link, emoticons, code, media',
+    plugins: 'lists, link, emoticons, code, media, eqneditor',
     toolbar: [
       { name: 'history', items: ['undo', 'redo'] },
       { name: 'styles', items: ['styles'] },
@@ -29,7 +37,8 @@
       { name: 'link', items: ['link'] },
       { name: 'insert', items: ['emoticons'] },
       { name: 'code', items: ['code'] },
-      { name: 'media', items: ['media'] }
+      { name: 'media', items: ['media'] },
+      { name: 'eqneditor', items: ['eqneditor'] }
     ],
     lists_indent_on_tab: false,
     min_height: height,
@@ -37,10 +46,13 @@
     placeholder: placeholder,
     skin: 'oxide-dark',
     content_css: 'dark',
+    extended_valid_elements: '*[.*]',
+    setup: () => {
+      addMathPlugin(getTinymce());
+    },
     init_instance_callback: function (editor: any) {
       editorWindowRef = editor.iframeElement?.contentWindow;
 
-      tinmycEditor = editor;
       editor.on('Change', function () {
         const html = editor.getContent();
         if (onChange) {

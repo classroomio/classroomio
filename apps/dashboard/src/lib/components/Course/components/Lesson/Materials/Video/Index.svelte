@@ -1,6 +1,7 @@
 <script>
   import YoutubeVideo from './YoutubeVideo.svelte';
   import LocalVideo from './LocalVideo.svelte';
+  import EmbedLink from './EmbedLink.svelte';
   import * as CONSTANTS from './constants';
 
   export let lessonId = '';
@@ -37,6 +38,8 @@
   <main class="w-full h-full">
     {#if currentTab === 1}
       <YoutubeVideo />
+    {:else if currentTab === 2}
+      <EmbedLink />
     {:else}
       <LocalVideo {lessonId} />
     {/if}

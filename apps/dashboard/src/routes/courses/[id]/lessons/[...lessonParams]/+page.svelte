@@ -298,7 +298,16 @@
       width="lg:w-full xl:w-11/12"
       className="overflow-x-hidden"
     >
-      <Materials lessonId={data.lessonId} {mode} {prevMode} {toggleMode} bind:isSaving />
+      <!-- Shows Lesson Note / Slides / Video -->
+      <Materials
+        lessonId={data.lessonId}
+        {mode}
+        {prevMode}
+        {toggleMode}
+        bind:isSaving
+        {isStudent}
+      />
+
       {#if isStudent}
         <div class="w-full hidden lg:flex flex-row-reverse mt-10">
           <PrimaryButton
