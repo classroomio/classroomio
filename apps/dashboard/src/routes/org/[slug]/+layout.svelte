@@ -10,7 +10,7 @@
 
   export let data;
 
-  $: if ($currentOrg.id) {
+  $: if ($currentOrg.id && data.orgName === '*') {
     goto(`/org/${$currentOrg.siteName}`);
   }
 </script>

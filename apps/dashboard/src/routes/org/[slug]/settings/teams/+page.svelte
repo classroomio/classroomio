@@ -2,7 +2,6 @@
   import TeamMembers from '$lib/components/Org/Settings/TeamMembers.svelte';
   import { currentOrgPath } from '$lib/utils/store/org';
   import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
-  import { isFreePlan } from '$lib/utils/store/org';
 </script>
 
 <svelte:head>
@@ -18,9 +17,7 @@
       <h1 class="dark:text-white text-3xl font-bold">Team members</h1>
     </div>
 
-    {#if $isFreePlan}
-      <UpgradeBanner>Upgrade your plan to add team members</UpgradeBanner>
-    {/if}
+    <UpgradeBanner>Upgrade your plan to add team members</UpgradeBanner>
     <TeamMembers />
   </div>
 </section>

@@ -121,11 +121,9 @@
   $: isDisabled = isLoading || !PUBLIC_SERVER_URL || $isFreePlan;
 </script>
 
-{#if $isFreePlan}
-  <UpgradeBanner className="mb-3" onClick={() => ($uploadCourseVideoStore.isModalOpen = false)}>
-    Upgrade your plan to upload vidoes
-  </UpgradeBanner>
-{/if}
+<UpgradeBanner className="mb-3" onClick={() => ($uploadCourseVideoStore.isModalOpen = false)}>
+  Upgrade your plan to upload vidoes
+</UpgradeBanner>
 
 {#if !isLoaded}
   <button
