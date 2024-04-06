@@ -1,6 +1,7 @@
 <script>
   import { goto } from '$app/navigation';
   import { Grid, Row, Column } from 'carbon-components-svelte';
+  import FlashFilled from 'carbon-icons-svelte/lib/FlashFilled.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
@@ -9,6 +10,7 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import SectionTitle from '../SectionTitle.svelte';
+  import { isFreePlan } from '$lib/utils/store/org';
 
   let avatar;
   let loading = false;
@@ -175,7 +177,7 @@
       </p>
       <PrimaryButton
         label="Edit domain"
-        className="my-7 py-5 px-10 text-primary-700"
+        className="my-7 py-5 px-10"
         variant={VARIANTS.OUTLINED}
         onClick={() => gotoSetting('/domains')}
       />
@@ -189,11 +191,15 @@
         Add team mates to your organization so you can both collaborate on projects.
       </p>
       <PrimaryButton
-        label="Manage Team"
-        className="my-7 py-5 px-10 text-primary-700"
+        className="my-7 py-5 px-10 flex items-center gap-2 justify-center"
         variant={VARIANTS.OUTLINED}
         onClick={() => gotoSetting('/teams')}
-      />
+      >
+        {#if $isFreePlan}
+          <FlashFilled size={16} class="text-blue-700" />
+        {/if}
+        Manage Team
+      </PrimaryButton>
     </Column>
   </Row>
 </Grid>

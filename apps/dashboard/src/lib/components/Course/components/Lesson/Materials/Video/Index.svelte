@@ -2,6 +2,8 @@
   import YoutubeVideo from './YoutubeVideo.svelte';
   import LocalVideo from './LocalVideo.svelte';
   import * as CONSTANTS from './constants';
+  import { isFreePlan } from '$lib/utils/store/org';
+  import FlashFilled from 'carbon-icons-svelte/lib/FlashFilled.svelte';
 
   export let lessonId = '';
 
@@ -25,11 +27,15 @@
             : 'border border-gray-200 dark:border-neutral-600'
         } rounded-md cursor-pointer flex flex-row items-center justify-start gap-2 whitespace-nowrap`}
       >
-        <svelte:component
-          this={item.icon}
-          size={20}
-          color={`${currentTab === item.value ? 'dark:invert-0' : 'dark:invert'}`}
-        />
+        {#if $isFreePlan && item.value === 2}
+          <FlashFilled size={20} class="text-blue-700" />
+        {:else}
+          <svelte:component
+            this={item.icon}
+            size={20}
+            color={`${currentTab === item.value ? 'dark:invert-0' : 'dark:invert'}`}
+          />
+        {/if}
         <p>{item.title}</p>
       </button>
     {/each}

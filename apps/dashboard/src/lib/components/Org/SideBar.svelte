@@ -10,13 +10,11 @@
   import SiteSettingsIcon from '$lib/components/Icons/SiteSettingsIcon.svelte';
   import AudienceIcon from '$lib/components/Icons/AudienceIcon.svelte';
   import Avatar from '$lib/components/Avatar/index.svelte';
-  import { currentOrgPath, currentOrgPlan } from '$lib/utils/store/org';
+  import { currentOrgPath, currentOrgPlan, isFreePlan } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
   import { sideBar } from './store';
-  import { isUpgradeModalOpen } from './UpgradePlan/store';
-  import UpgradePlanModal from '$lib/components/Org/UpgradePlan/UpgradePlanModal.svelte';
-  import { isFreePlan } from 'shared-constants/src/plans/utils';
+  import { goto } from '$app/navigation';
 
   const menuItems = [
     {
@@ -60,11 +58,10 @@
   };
 
   const openModal = () => {
-    $isUpgradeModalOpen = true;
+    goto(window.location.pathname + '?upgrade=true');
   };
 </script>
 
-<UpgradePlanModal />
 <aside
   class={`${
     $sideBar.hidden
@@ -112,7 +109,7 @@
     </div>
     <span class="flex-grow" />
 
-    {#if isFreePlan($currentOrgPlan)}
+    {#if $isFreePlan}
       <div
         class="border-primary-700 mx-4 flex flex-col items-center justify-center gap-4 rounded-md border px-2 py-6 text-center hover:scale-95 transition-all ease-in-out"
       >
