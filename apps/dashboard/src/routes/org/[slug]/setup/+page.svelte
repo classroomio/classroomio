@@ -1,7 +1,9 @@
 <script>
   import Chip from '$lib/components/Chip/Text.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import StepDoneIcon from '$lib/components/Icons/StepDoneIcon.svelte';
+  import CheckmarkOutline from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
 
   import { currentOrg } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
@@ -79,7 +81,7 @@
   $: completed = setupList.filter((list) => list.is_completed).length;
 </script>
 
-<section>
+<section class="w-full md:max-w-4xl mx-auto">
   <div class="py-2 md:py-10 px-2 md:px-5">
     <div class="flex items-center gap-2">
       <h1 class="dark:text-white text-2xl md:text-3xl font-bold">Get Started</h1>
@@ -95,31 +97,29 @@
         <div
           class="flex flex-col lg:flex-row lg:items-center justify-between gap-2 w-full py-8 border-b border-gray-300"
         >
-          <div class={`${list.is_completed ? 'text-[#656565]' : ''} space-y-2 flex-1`}>
+          <div class={`space-y-2 flex-1 ${list.is_completed ? 'opacity-50' : ''}  max-w-[50%]`}>
             <div class="flex items-center gap-2">
               <Chip
                 value={i + 1}
-                className={`${
-                  list.is_completed ? 'bg-gray-400' : ''
-                } text-[10px] font-semibold !py-1 `}
+                className={`text-[10px] font-semibold !py-1 `}
                 shape="rounded-full"
               />
-              <p class="font-semibold text-xl">{list.title}</p>
+              <p class="font-medium text-lg">{list.title}</p>
             </div>
             <p class={`text-sm`}>{list.desc}</p>
           </div>
-          <div class="w-fit ml-auto lg:w-[15vw]">
-            {#if list.is_completed === true}
-              <div class="w-full flex justify-center">
-                <StepDoneIcon />
-              </div>
-            {:else}
-              <PrimaryButton
-                label={list.button_label}
-                className="!w-full font-normal text-sm"
-                onClick={() => handleClick(list.title)}
-              />
-            {/if}
+          <div class="w-[30%]">
+            <PrimaryButton
+              variant={list.is_completed ? VARIANTS.CONTAINED_DARK : VARIANTS.OUTLINED}
+              className="!w-full font-normal text-sm flex items-center gap-2"
+              onClick={() => handleClick(list.title)}
+              isDisabled={list.is_completed}
+            >
+              {#if list.is_completed}
+                <CheckmarkOutline />
+              {/if}
+              {list.button_label}
+            </PrimaryButton>
           </div>
         </div>
       {/each}

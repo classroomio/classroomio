@@ -18,7 +18,11 @@
   import { sideBar } from './store';
   import { goto } from '$app/navigation';
 
-  let menuItems = [];
+  let menuItems: {
+    path: string;
+    label: string;
+    show: boolean;
+  }[] = [];
 
   function isActive(pagePath: string, itemPath: string) {
     const pageLinkItems = pagePath.split('/');
@@ -38,43 +42,43 @@
     goto(window.location.pathname + '?upgrade=true');
   };
 
-	$: {
-		menuItems = [
-	    {
-	      path: '',
-	      label: 'Dashboard',
-	      show: true
-	    },
-	    // {
-	    //   path: '/quiz',
-	    //   label: 'Quizzes'
-	    // },
-	    {
-	      path: '/courses',
-	      label: 'Courses',
-	      show: true
-	    },
-	    {
-	      path: '/community',
-	      label: 'Community',
-	      show: true
-	    },
-	    // {
-	    //   path: '/site',
-	    //   label: 'Site settings',
-	    // },
-	    {
-	      path: '/audience',
-	      label: 'Audience',
-	      show: true
-	    },
-	    {
-	      path: '/setup',
-	      label: 'Setup',
-	      show: $isOrgAdmin
-	    }
-	  ]
-	}
+  $: {
+    menuItems = [
+      {
+        path: '',
+        label: 'Dashboard',
+        show: true
+      },
+      // {
+      //   path: '/quiz',
+      //   label: 'Quizzes'
+      // },
+      {
+        path: '/courses',
+        label: 'Courses',
+        show: true
+      },
+      {
+        path: '/community',
+        label: 'Community',
+        show: true
+      },
+      // {
+      //   path: '/site',
+      //   label: 'Site settings',
+      // },
+      {
+        path: '/audience',
+        label: 'Audience',
+        show: true
+      },
+      {
+        path: '/setup',
+        label: 'Setup',
+        show: $isOrgAdmin
+      }
+    ];
+  }
 </script>
 
 <aside
@@ -116,6 +120,8 @@
                   <QuizIcon />
                 {:else if menuItem.path === '/audience'}
                   <AudienceIcon />
+                {:else if menuItem.path === '/setup'}
+                  <SettingsAdjust />
                 {/if}
                 <p class="text-sm font-medium">{menuItem.label}</p>
               </li>

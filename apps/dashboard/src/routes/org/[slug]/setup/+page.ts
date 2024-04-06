@@ -11,7 +11,8 @@ async function getGenericData(orgSlug: string): Promise<{
 }> {
   const { data } = await supabase
     .from('course')
-    .select(`
+    .select(
+      `
 	    id,
 	    is_published,
 	    group:group_id!inner(
@@ -20,7 +21,8 @@ async function getGenericData(orgSlug: string): Promise<{
 	        siteName
 	      )
 	    )
-	  `)
+	  `
+    )
     .eq('group.organization.siteName', orgSlug);
 
   const result = data || [];
@@ -40,7 +42,8 @@ async function getIsLessonCreated(
 ): Promise<{ isLessonCreated: boolean; lessonData: any }> {
   const { data } = await supabase
     .from('lesson')
-    .select(`
+    .select(
+      `
 	    id,
 	    course:course_id!inner(
 	      group:group_id!inner(
@@ -49,11 +52,13 @@ async function getIsLessonCreated(
 	        )
 	      )
 	    )
-	  `)
+	  `
+    )
     .eq('course.group.organization.siteName', orgSlug);
   console.log('lessonsData', data);
+
   return {
-    isLessonCreated: data?.length > 0,
+    isLessonCreated: Array.isArray(data) ? data.length > 0 : false,
     lessonData: data
   };
 }
@@ -61,7 +66,8 @@ async function getIsLessonCreated(
 async function getIsExerciseCreated(orgSlug: string): Promise<boolean> {
   const { data } = await supabase
     .from('exercise')
-    .select(`
+    .select(
+      `
 	    id,
 	    lesson:lesson_id!inner(
 	      course:course_id!inner(
@@ -72,9 +78,11 @@ async function getIsExerciseCreated(orgSlug: string): Promise<boolean> {
 	        )
 	      )
 	    )
-	  `)
+	  `
+    )
     .eq('lesson.course.group.organization.siteName', orgSlug);
-  return data?.length > 0;
+
+  return Array.isArray(data) ? data?.length > 0 : false;
 }
 
 export const load = async ({ params = { slug: '' } }) => {
