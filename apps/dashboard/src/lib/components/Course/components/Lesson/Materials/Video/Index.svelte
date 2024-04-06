@@ -28,7 +28,7 @@
             : 'border border-gray-200 dark:border-neutral-600'
         } rounded-md cursor-pointer flex flex-row items-center justify-start gap-2 whitespace-nowrap`}
       >
-        {#if $isFreePlan && item.value === 2}
+        {#if $isFreePlan && item.value === 3}
           <FlashFilled size={20} class="text-blue-700" />
         {:else}
           <svelte:component
