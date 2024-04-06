@@ -20,8 +20,28 @@
   import UpgradePlanModal from '$lib/components/Org/UpgradePlan/UpgradePlanModal.svelte';
   import { isFreePlan } from 'shared-constants/src/plans/utils';
 
+  let menuItems = [];
 
-  const menuItems = [
+  function isActive(pagePath: string, itemPath: string) {
+    const pageLinkItems = pagePath.split('/');
+    const itemLinkItems = itemPath.split('/');
+
+    if (itemLinkItems.length !== pageLinkItems.length) {
+      return false;
+    }
+
+    return pagePath.includes(itemPath);
+  }
+  const toggleSidebar = () => {
+    $sideBar.hidden = !$sideBar.hidden;
+  };
+
+  const openModal = () => {
+    $isUpgradeModalOpen = true;
+  };
+
+$: {
+	menuItems = [
     {
       path: '',
       label: 'Dashboard',
@@ -55,25 +75,8 @@
       label: 'Setup',
       show: $isOrgAdmin
     }
-  ];
-
-  function isActive(pagePath: string, itemPath: string) {
-    const pageLinkItems = pagePath.split('/');
-    const itemLinkItems = itemPath.split('/');
-
-    if (itemLinkItems.length !== pageLinkItems.length) {
-      return false;
-    }
-
-    return pagePath.includes(itemPath);
-  }
-  const toggleSidebar = () => {
-    $sideBar.hidden = !$sideBar.hidden;
-  };
-
-  const openModal = () => {
-    $isUpgradeModalOpen = true;
-  };
+  ]
+}
 </script>
 
 <UpgradePlanModal />
