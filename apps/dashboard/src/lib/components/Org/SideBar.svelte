@@ -40,43 +40,43 @@
     $isUpgradeModalOpen = true;
   };
 
-$: {
-	menuItems = [
-    {
-      path: '',
-      label: 'Dashboard',
-      show: true
-    },
-    // {
-    //   path: '/quiz',
-    //   label: 'Quizzes'
-    // },
-    {
-      path: '/courses',
-      label: 'Courses',
-      show: true
-    },
-    {
-      path: '/community',
-      label: 'Community',
-      show: true
-    },
-    // {
-    //   path: '/site',
-    //   label: 'Site settings',
-    // },
-    {
-      path: '/audience',
-      label: 'Audience',
-      show: true
-    },
-    {
-      path: '/setup',
-      label: 'Setup',
-      show: $isOrgAdmin
-    }
-  ]
-}
+	$: {
+		menuItems = [
+	    {
+	      path: '',
+	      label: 'Dashboard',
+	      show: true
+	    },
+	    // {
+	    //   path: '/quiz',
+	    //   label: 'Quizzes'
+	    // },
+	    {
+	      path: '/courses',
+	      label: 'Courses',
+	      show: true
+	    },
+	    {
+	      path: '/community',
+	      label: 'Community',
+	      show: true
+	    },
+	    // {
+	    //   path: '/site',
+	    //   label: 'Site settings',
+	    // },
+	    {
+	      path: '/audience',
+	      label: 'Audience',
+	      show: true
+	    },
+	    {
+	      path: '/setup',
+	      label: 'Setup',
+	      show: $isOrgAdmin
+	    }
+	  ]
+	}
 </script>
 
 <UpgradePlanModal />
