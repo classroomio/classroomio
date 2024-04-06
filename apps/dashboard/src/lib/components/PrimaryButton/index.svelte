@@ -22,10 +22,7 @@
   ]} {!disablePadding &&
     'py-[0.5rem] px-6'} rounded-md {className} w-fit min-h-[36px] justify-center sm:w-auto {isLoading &&
     'py-[1rem] border-primary-700'} {variant !== VARIANTS.TEXT &&
-    'hover:shadow-xl'} transition delay-150 duration-300 ease-in-out {variant !==
-  VARIANTS.CONTAINED_WHITE
-    ? 'dark:text-white'
-    : ''}"
+    'hover:shadow-xl'} transition delay-150 duration-300 ease-in-out"
   on:click={onClick}
   {name}
   {type}

@@ -219,12 +219,12 @@
     transition w-[90vw] md:w-[300px] lg:w-[350px] bg-gray-100 dark:bg-black h-[calc(100vh-48px)] 
   
   ${
-    resize && 'border-r-8 border-r-blue-500'
+    resize ? 'border-r-8 border-r-blue-500' : 'dark:border-r-neutral-600'
   } overflow-y-auto border border-l-0 border-t-0 border-b-0 border-r-1`}
   style={$sideBar.hidden === true ? 'width:0' : 'width:300px'}
   bind:this={sidebarRef}
 >
-  <div class="sidebar-contenth-full flex flex-col">
+  <div class="flex flex-col">
     <ul
       class="sidebar-content my-5"
       bind:this={menuContentRef}
