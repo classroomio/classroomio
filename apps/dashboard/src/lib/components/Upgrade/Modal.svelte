@@ -3,7 +3,7 @@
   import type { OrganizationPlan } from '$lib/utils/types';
   import { supabase } from '$lib/utils/functions/supabase';
   import { goto } from '$app/navigation';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import { page } from '$app/stores';
   import Checkmark from 'carbon-icons-svelte/lib/Checkmark.svelte';
   import PLANS from 'shared-constants/src/plans/data.json';
@@ -12,13 +12,19 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import { Loading } from 'carbon-components-svelte';
   import Modal from '$lib/components/Modal/index.svelte';
+  import StepDoneIcon from '$lib/components/Icons/StepDoneIcon.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import type { RealtimeChannel, RealtimePostgresChangesPayload } from '@supabase/supabase-js';
+  import Confetti from '$lib/components/Confetti/index.svelte';
+  import { toggleConfetti } from '$lib/components/Confetti/store';
 
   const disabledClass = 'bg-gray-300 text-gray-400 hover:cursor-not-allowed';
 
   let isLoadingPlan: string | null = null;
   let orgPlanChannel: RealtimeChannel;
   let open = false;
+  let upgraded = false;
 
   async function handleClick(plan, planName: string) {
     if (plan.CTA.IS_DISABLED || !$profile.id) {
@@ -62,8 +68,25 @@
     console.log('A new plan was inserted');
     // If plan was successfully generated
     if (newPlan.org_id === $currentOrg.id && newPlan.is_active) {
-      window.location.reload();
+      upgraded = true;
+      toggleConfetti();
+
+      setTimeout(() => {
+        toggleConfetti();
+      }, 1000);
     }
+  }
+
+  function onClose() {
+    if (upgraded) {
+      window.location.href = $currentOrgPath;
+    } else {
+      goto($page.url.pathname);
+    }
+  }
+
+  function onLearnMore() {
+    window.open('https://classroomio.com/blog/early-adopter', '_blank');
   }
 
   onMount(() => {
@@ -90,14 +113,31 @@
   $: planNames = Object.keys(PLANS);
 </script>
 
+{#if upgraded}
+  <Confetti />
+{/if}
+
 <Modal
-  onClose={() => goto($page.url.pathname)}
+  {onClose}
   {open}
   width="w-4/5"
-  containerClass=""
+  maxWidth={upgraded ? 'max-w-[600px]' : undefined}
   modalHeading="Upgrade Plan"
 >
-  <div>
+  {#if upgraded}
+    <div class="flex flex-col items-center justify-center mb-4 w-full relative">
+      <StepDoneIcon />
+      <h4 class="text-2xl">Thank you for your support</h4>
+      <p class="mb-4 text-center">
+        Your plan comes with cool perks and benefits including access to all future features we
+        release.
+      </p>
+      <div class="flex items-center gap-4">
+        <PrimaryButton label="Close" variant={VARIANTS.OUTLINED} onClick={onClose} />
+        <PrimaryButton label="Learn more" variant={VARIANTS.CONTAINED_DARK} onClick={onLearnMore} />
+      </div>
+    </div>
+  {:else}
     <div class="flex flex-col items-center justify-center">
       <div class="isolate grid grid-cols-1 gap-3 lg:grid-cols-3">
         {#each planNames as planName}
@@ -176,5 +216,5 @@
         {/each}
       </div>
     </div>
-  </div>
+  {/if}
 </Modal>
