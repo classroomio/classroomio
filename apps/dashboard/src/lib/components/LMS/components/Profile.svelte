@@ -61,7 +61,7 @@
   }
 </script>
 
-<Grid class="border-c rounded border-gray-200 w-full mt-5">
+<Grid class="border-c rounded border-gray-200 dark:border-neutral-600 w-full mt-5">
   <Row class="flex flex-col lg:flex-row items-center lg:items-start py-7 border-bottom-c ">
     <Column sm={4} md={8} lg={4} class="mt-2 md:mt-0">
       <p class="dark:text-white font-bold">Profile Picture</p>

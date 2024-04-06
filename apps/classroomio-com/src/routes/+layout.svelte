@@ -1,6 +1,8 @@
 <script>
-  import { Footer, Navigation } from '$lib';
+  import Navigation from '$lib/Navigation/Navigation.svelte';
+  import Footer from '$lib/Footer/Footer.svelte';
   import PageTransition from './transition.svelte';
+
   import '../app.css';
 
   export let data;

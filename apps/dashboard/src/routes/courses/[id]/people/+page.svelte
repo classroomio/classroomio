@@ -1,6 +1,4 @@
 <script lang="ts">
-  import TextChip from '$lib/components/Chip/Text.svelte';
-  import ComingSoon from '$lib/components/ComingSoon/index.svelte';
   import copy from 'copy-to-clipboard';
   import {
     CopyButton,
@@ -11,6 +9,8 @@
     StructuredListHead,
     StructuredListRow
   } from 'carbon-components-svelte';
+  import TextChip from '$lib/components/Chip/Text.svelte';
+  import ComingSoon from '$lib/components/ComingSoon/index.svelte';
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
   import { deleteGroupMember, updatedGroupMember } from '$lib/utils/services/courses';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
@@ -21,18 +21,17 @@
   import IconButton from '$lib/components/IconButton/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import { group } from '$lib/components/Course/store';
-  import InviationModal from '$lib/components/Course/components/People/InviationModal.svelte';
+  import InvitationModal from '$lib/components/Course/components/People/InvitationModal.svelte';
   import DeleteConfirmation from '$lib/components/Course/components/People/DeleteConfirmation.svelte';
-  import {
-    invitationModal,
-    deleteMemberModal
-  } from '$lib/components/Course/components/People/store';
+  import { deleteMemberModal } from '$lib/components/Course/components/People/store';
   import type { Person, ProfileRole } from '$lib/components/Course/components/People/types';
   import { ROLE_LABEL, ROLES } from '$lib/utils/constants/roles';
   import { profile } from '$lib/utils/store/user';
   import { snackbar } from '$lib/components/Snackbar/store';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import type { GroupPerson } from '$lib/utils/types';
+  import { page } from '$app/stores';
+  import { goto } from '$app/navigation';
 
   export let data;
 
@@ -110,10 +109,15 @@
     }
   }
 
+  const handleClick = () => {
+    const url = $page.url.href + '?add=true';
+    goto(url);
+  };
+
   $: sortAndFilterPeople($group.people, filterBy);
 </script>
 
-<InviationModal />
+<InvitationModal />
 
 <DeleteConfirmation
   email={member.email || (member.profile && member.profile.email)}
@@ -124,11 +128,7 @@
   <PageNav title="People" disableSticky={true}>
     <slot:fragment slot="widget">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
-        <PrimaryButton
-          className="mr-2"
-          label="Add"
-          onClick={() => ($invitationModal.open = true)}
-        />
+        <PrimaryButton className="mr-2" label="Add" onClick={handleClick} />
       </RoleBasedSecurity>
     </slot:fragment>
   </PageNav>

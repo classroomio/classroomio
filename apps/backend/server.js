@@ -9,6 +9,7 @@ const uploadVideo = require('./src/routes/uploadVideo');
 const downloadCertificate = require('./src/routes/downloadCertificate');
 const downloadLesson = require('./src/routes/downloadLesson');
 const downloadCourse = require('./src/routes/downloadCourse');
+const katex = require('./src/routes/katex');
 
 // Express server
 const app = express();
@@ -32,6 +33,7 @@ app.use('/downloadCertificate', downloadCertificate);
 app.use('/downloadLesson', downloadLesson);
 app.use('/downloadCourse', downloadCourse);
 app.use('/uploadVideo', uploadVideo);
+app.use('/katex', katex);
 
 app.get('/', (req, res) => {
   res.send('Welcome to ClassroomIO');

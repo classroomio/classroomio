@@ -1,15 +1,16 @@
 <script lang="ts">
+  import copy from 'copy-to-clipboard';
   import { Popover } from 'carbon-components-svelte';
   import Link from 'carbon-icons-svelte/lib/Link.svelte';
+  import { page } from '$app/stores';
+  import { goto } from '$app/navigation';
   import Modal from '$lib/components/Modal/index.svelte';
-  import copy from 'copy-to-clipboard';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { ROLE } from '$lib/utils/constants/roles';
   import { addGroupMember, fetchGroup } from '$lib/utils/services/courses';
-  import { invitationModal, resetForm } from './store';
   import { course, setCourse } from '$lib/components/Course/store';
   import { MultiSelect, Loading } from 'carbon-components-svelte';
-  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
+  import { currentOrg, currentOrgDomain, currentOrgPath } from '$lib/utils/store/org';
   import { getOrgTeam } from '$lib/utils/services/org';
   import type { OrgTeamMember } from '$lib/utils/types/org';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
@@ -26,6 +27,8 @@
     email: string;
     profileId?: string;
   }
+
+  let addPeopleParm;
   let tutors: Tutor[] = [];
   let selectedIds: Array<number> = [];
   let selectedTutors: Tutor[] = [];
@@ -40,7 +43,7 @@
 
   function onSubmit() {
     if (!selectedTutors.length) {
-      resetForm();
+      goto($page.url.pathname);
       return;
     }
 
@@ -76,7 +79,7 @@
         false
       );
 
-      resetForm();
+      goto($page.url.pathname);
     });
   }
 
@@ -96,7 +99,7 @@
       }));
   }
 
-  async function setTutors(orgId: string | undefined, _open: boolean) {
+  async function setTutors(orgId: string | undefined) {
     if (!orgId) return;
 
     isLoadingTutors = true;
@@ -127,17 +130,23 @@
     }, 1000);
   }
 
+  function closeModal() {
+    goto($page.url.pathname);
+  }
+
   $: {
     selectedTutors = formatSelected(selectedIds);
     console.log('selectedTutors', selectedTutors);
+    const query = new URLSearchParams($page.url.search);
+    addPeopleParm = query.get('add');
   }
 
-  $: setTutors($currentOrg.id, $invitationModal.open);
+  $: setTutors($currentOrg.id);
 </script>
 
 <Modal
-  onClose={resetForm}
-  bind:open={$invitationModal.open}
+  onClose={() => closeModal()}
+  open={addPeopleParm === 'true'}
   width="w-4/5 md:w-2/5"
   maxWidth="max-w-lg"
   modalHeading="Invite people"

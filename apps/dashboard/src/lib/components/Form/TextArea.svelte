@@ -59,7 +59,7 @@
     bind:value
     bind:this={ref}
     required={isRequired}
-    class="form-textarea border-l-0 border-r-0 border-t-0 border-b-2 border-gray-200 focus:border-l-0 focus:border-r-0 rounded-t-md focus:border-t-0 focus:border-b-2 focus:border-primary-600 mt-1 block w-full
+    class="form-textarea border-l-0 border-r-0 border-t-0 border-b-2 border-gray-200 dark:border-neutral-600 focus:border-l-0 focus:border-r-0 rounded-t-md focus:border-t-0 focus:border-b-2 focus:border-primary-600 mt-1 block w-full
     {bgColor} {!!errorMessage ? 'border-red-500' : 'border-gray-300'}"
     on:change={onChange}
   />

@@ -1,5 +1,4 @@
 <script>
-  import { createDropdownMenu, melt } from '@melt-ui/svelte';
   import ChevronDown from 'carbon-icons-svelte/lib/ChevronDown.svelte';
   import TextAlignJustify from 'carbon-icons-svelte/lib/TextAlignJustify.svelte';
   import CloseLarge from 'carbon-icons-svelte/lib/CloseLarge.svelte';
@@ -8,19 +7,9 @@
   import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
   import CourseIcon from '$lib/Icons/CourseIcon.svelte';
   import MapCenter from 'carbon-icons-svelte/lib/MapCenter.svelte';
-  import { goto } from '$app/navigation';
 
   let showsubNav = false;
   let showNav = false;
-
-  const {
-    elements: { menu, item, trigger, arrow }
-  } = createDropdownMenu({
-    positioning: {
-      placement: 'bottom-start',
-      fitViewport: true
-    }
-  });
 
   function handleShow() {
     showsubNav = !showsubNav;
@@ -28,17 +17,6 @@
 
   function handleShowNav() {
     showNav = !showNav;
-  }
-
-  function scroll(key = '') {
-    const el = document.getElementById(key);
-    setTimeout(() => {
-      el?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-        inline: 'nearest'
-      });
-    }, 50);
   }
 
   const superpowers = [
@@ -85,45 +63,41 @@
   <nav class="w-[40%] hidden md:hidden lg:block">
     <ul class="flex items-center justify-between w-full gap-2">
       <!--  -->
-      <li class="text-gray-800 font-semibold text-sm cursor-pointer">
-        <button use:melt={$trigger} class="flex items-center"
+      <li class="text-gray-800 font-semibold text-sm cursor-pointer relative">
+        <button class="flex items-center" on:click={() => (showNav = !showNav)}
           >Our Superpowers <ChevronDown class="ml-2" /></button
         >
-        <div
-          use:melt={$menu}
-          class="w-[28%] border px-5 py-5 rounded-[30px] shadow-slate-700 mt-2 z-[3001] ml-[-30px] bg-white"
-        >
-          {#each superpowers as superpower}
-            <button
-              use:melt={$item}
-              class="flex justify-between items-center w-full rounded-lg hover:bg-slate-100 p-5 mb-4"
-              on:m-click={() => {
-                goto('/');
-                setTimeout(() => scroll(superpower.key), 200);
-              }}
-            >
-              {#if superpower.key === 'coursemanagement'}
-                <CourseIcon />
-              {:else if superpower.key === 'customization'}
-                <MapCenter size={24} />
-              {:else if superpower.key === 'collaboration'}
-                <ForumIcon size={24} />
-              {:else if superpower.key === 'ai'}
-                <MachineLearningModel size={24} />
-              {/if}
-              <div class="w-[86%] text-start">
-                <h3 class="font-semibold text-sm text-gray-700">
-                  {superpower.title}
-                </h3>
-                <p class="font-normal text-sm text-gray-600">
-                  {superpower.subtitle}
-                </p>
-              </div>
-            </button>
-          {/each}
-
-          <div use:melt={$arrow} />
-        </div>
+        {#if showNav}
+          <div
+            class="absolute w-[24rem] top-10 -left-10 border px-5 py-5 rounded-[30px] shadow-slate-700 z-[3001] bg-white"
+          >
+            {#each superpowers as superpower}
+              <a
+                class="flex justify-between items-center w-full rounded-lg hover:bg-slate-100 p-5 mb-4"
+                href="/#{superpower.key}"
+                on:click={() => (showNav = !showNav)}
+              >
+                {#if superpower.key === 'coursemanagement'}
+                  <CourseIcon />
+                {:else if superpower.key === 'customization'}
+                  <MapCenter size={24} />
+                {:else if superpower.key === 'collaboration'}
+                  <ForumIcon size={24} />
+                {:else if superpower.key === 'ai'}
+                  <MachineLearningModel size={24} />
+                {/if}
+                <div class="w-[86%] text-start">
+                  <h3 class="font-semibold text-sm text-gray-700">
+                    {superpower.title}
+                  </h3>
+                  <p class="font-normal text-sm text-gray-600">
+                    {superpower.subtitle}
+                  </p>
+                </div>
+              </a>
+            {/each}
+          </div>
+        {/if}
       </li>
       <!-- More Features -->
       <!-- <a href="/#morefeatures">

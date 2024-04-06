@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import axios from 'axios';
   import { PUBLIC_SERVER_URL } from '$env/static/public';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -7,7 +7,14 @@
     deleteLessonVideo,
     uploadCourseVideoStore
   } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { Moon } from 'svelte-loading-spinners';
+  import { onMount, onDestroy } from 'svelte';
+  import { ProgressBar } from 'carbon-components-svelte';
+  import { supabase } from '$lib/utils/functions/supabase';
+
+  let value = 0;
+  let max = 100;
+  let status = 'active';
+  let fileSize;
 
   export let lessonId = '';
 
@@ -17,16 +24,8 @@
   let submit;
   let uploadedFileUrl = '';
   let isLoading = false;
-  let timeoutkey;
-
-  const uploadingTexts = [
-    'Sending your video to our server...',
-    'Breaking video into chunks',
-    'Compressing the video...',
-    'Generating a link to your video...',
-    'Wrapping things up'
-  ];
-  let uploadingLoadingText = uploadingTexts[0];
+  let prevProgress = 0;
+  let uploadChannel;
 
   function isVideoAdded(link) {
     return $lesson.materials?.videos?.find((v) => v.link === link);
@@ -42,6 +41,7 @@
 
     console.log({ size: videoFile?.size });
 
+    fileSize = videoFile?.size / (1024 * 1024);
     try {
       const response = await axios({
         method: 'POST',
@@ -51,6 +51,9 @@
         maxBodyLength: Infinity,
         headers: {
           'Content-Type': 'multipart/form-data; boundary=MyBoundary'
+        },
+        onUploadProgress: (progressEvent) => {
+          value = Math.round((progressEvent.loaded * 100) / progressEvent?.total / 2);
         }
       });
 
@@ -58,7 +61,7 @@
       console.log('Upload res', formRes);
       isLoading = false;
       isLoaded = false;
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error uploading video', err, '\n\n', err.response);
       if (err.response) {
         formRes = err.response.data;
@@ -90,23 +93,25 @@
     isLoading = false;
   }
 
-  $: {
-    if (isLoading) {
-      timeoutkey = setTimeout(() => {
-        console.log('timeout');
-        const i = uploadingTexts.findIndex((text) => text === uploadingLoadingText);
-        const next = uploadingTexts[i + 1];
+  onMount(async () => {
+    uploadChannel = supabase
+      .channel('upload-progress')
+      .on('broadcast', { event: lessonId }, (payload) => {
+        console.log('The progress of the upload', payload);
+        value = value + payload?.payload - prevProgress;
+        prevProgress = payload.payload;
+      })
+      .subscribe();
+  });
 
-        if (next) {
-          console.log('uploadingLoadingText', next);
-          uploadingLoadingText = next;
-        }
-      }, 30000);
-    } else if (timeoutkey) {
-      console.log('clearTimeout');
-      clearTimeout(timeoutkey);
-      uploadingLoadingText = uploadingTexts[0];
-    }
+  onDestroy(() => {
+    supabase.removeChannel(uploadChannel);
+  });
+
+  $: helperText = value + '%  of ' + Math.round(fileSize) + 'MB';
+  $: if (value === max) {
+    helperText = 'Done';
+    status = 'finished';
   }
 
   $: isDoneUploading(formRes);
@@ -124,8 +129,11 @@
       on:submit|preventDefault={onUpload}
     >
       {#if isLoading}
-        <Moon size="40" color="#1d4ed8" unit="px" duration="1s" />
-        <p class="mt-5">{uploadingLoadingText}</p>
+        <div class="flex flex-col gap-5 max-w-[500px] w-[60%] justify-center">
+          <p class="mt-5 text-center">Uploading...</p>
+          <ProgressBar class="w-full" {value} {max} {status} />
+          <p class="text-sm">{helperText}</p>
+        </div>
       {:else}
         <img src="/upload-video.svg" alt="upload" />
         <span class="pt-3">

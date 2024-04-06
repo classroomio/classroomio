@@ -21,6 +21,7 @@
     "@aws-sdk/client-s3": "^3.386.0",
     "@carbon/charts-svelte": "^1.13.6",
     "@defer/client": "^2.2.0",
+    "@lemonsqueezy/lemonsqueezy.js": "^2.2.0",
     "@sentry/browser": "^7.61.0",
     "@sentry/integrations": "^7.61.0",
     "@sentry/vite-plugin": "^2.6.2",
@@ -37,6 +38,7 @@
     "canvas-confetti": "^1.6.0",
     "cookie-parser": "^1.4.6",
     "copy-to-clipboard": "^3.3.3",
+    "crypto": "^1.0.1",
     "d3": "^7.8.5",
     "d3-cloud": "^1.2.7",
     "d3-sankey": "^0.12.3",
@@ -48,8 +50,10 @@
     "nodemailer": "^6.9.5",
     "openai-edge": "^1.2.2",
     "pluralize": "^8.0.0",
-    "posthog-js": "^1.103.0",
+    "posthog-js": "^1.116.6",
+    "shared-constants": "workspace:*",
     "sirv": "^2.0.3",
+    "stripe": "^14.22.0",
     "svelte-email": "^0.0.4",
     "svelte-ui": "workspace:*",
     "unsplash-js": "^7.0.18",
@@ -80,7 +84,6 @@
     "postcss": "^8.4.24",
     "postcss-load-config": "^4.0.1",
     "sass": "^1.64.2",
-    "supabase": "^1.112.0",
     "svelte": "^4.1.2",
     "svelte-calendar": "^3.1.6",
     "svelte-dnd-action": "^0.9.24",
@@ -98,5 +101,8 @@
   "type": "module",
   "engines": {
     "node": "18.x"
+  },
+  "browser": {
+    "crypto": false
   }
 }
