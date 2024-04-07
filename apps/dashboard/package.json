@@ -20,7 +20,6 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.386.0",
     "@carbon/charts-svelte": "^1.13.6",
-    "@defer/client": "^2.2.0",
     "@sentry/browser": "^7.61.0",
     "@sentry/integrations": "^7.61.0",
     "@sentry/vite-plugin": "^2.6.2",
