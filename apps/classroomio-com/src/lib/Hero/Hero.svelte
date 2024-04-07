@@ -128,8 +128,8 @@
     </h1>
 
     <p class="text-md mx-auto mt-10 px-4 text-slate-700 md:text-lg lg:mt-6 lg:w-[42%] lg:p-0">
-      Meet a better collaboration tool for teachers and students. ClassroomIO is a no-code tool that
-      allows you build and scale your own teaching platform with ease.
+      Meet a better learning management system (LMS) for teachers and students. ClassroomIO allows
+      you to launch and scale your online bootcamp with ease.
     </p>
 
     <div class="justify-between w-[90%] absolute top-[25%] left-[4%] hidden lg:flex">
