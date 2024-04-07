@@ -1,5 +1,4 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -14,11 +13,6 @@ body::-webkit-scrollbar {
 
 li {
   font-family: 'Inter', sans-serif;
-}
-
-.inter {
-  font-family: "Inter", sans-serif; 
-  font-weight: 800;
 }
 
 .floating {
