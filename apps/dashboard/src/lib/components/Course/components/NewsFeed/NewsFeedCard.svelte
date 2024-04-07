@@ -100,7 +100,7 @@
   id={feed.id}
   class="flex flex-col gap-5 {isActive
     ? 'border-2 border-primary-700'
-    : 'border border-gray-200'} rounded-md mb-7 max-w-3xl"
+    : 'border border-gray-200 dark:border-neutral-600'} rounded-md mb-7 max-w-3xl"
 >
   <section>
     <div class="p-3 pb-0">
@@ -162,7 +162,7 @@
     </div>
   </section>
 
-  <section class="border-t border-gray-200 p-3">
+  <section class="border-t border-gray-200 dark:border-neutral-600 p-3">
     {#if feed.comment.length > 0}
       <button
         on:click={expandComment}
@@ -222,7 +222,7 @@
           bind:value={comment}
           on:keydown={handleAddNewComment}
           placeholder="Add class comment"
-          class="w-full bg-transparent border border-gray-200 rounded-3xl"
+          class="w-full bg-transparent border border-gray-200 dark:border-neutral-600 rounded-3xl"
           required
         />
       </div>

@@ -6,8 +6,10 @@
   import { SkeletonText } from 'carbon-components-svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
+  import FlashFilled from 'carbon-icons-svelte/lib/FlashFilled.svelte';
   import { handleAddLessonWidget } from './store';
   import NavIcons from './NavIcons.svelte';
+  import { isFreePlan } from '$lib/utils/store/org';
 
   export let handleClick = () => {};
   export let label = '';
@@ -17,6 +19,7 @@
   export let isLoading = true;
   export let isLesson = false;
   export let isStudent = true;
+  export let isPaidFeature = false;
   // export let subMenuItems = [];
 
   function addLesson() {
@@ -54,6 +57,9 @@
     {/if}
     <span class="grow" />
 
+    {#if isPaidFeature && $isFreePlan}
+      <FlashFilled size={20} class="text-blue-700" />
+    {/if}
     {#if isLesson && !isLoading}
       {#if !isStudent}
         <IconButton onClick={() => addLesson()} size="small">

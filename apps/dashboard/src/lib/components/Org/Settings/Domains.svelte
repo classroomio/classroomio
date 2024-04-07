@@ -72,7 +72,7 @@
   $: setSiteName($currentOrg.siteName);
 </script>
 
-<Grid class="border rounded border-gray-200 w-full mt-5">
+<Grid class="border rounded border-gray-200 dark:border-neutral-600 w-full mt-5">
   <Row class="py-7 border-bottom-c">
     <Column sm={2} md={2} lg={4} class="text-lg"><SectionTitle>Add</SectionTitle></Column>
     <Column sm={2} md={6} lg={8}>

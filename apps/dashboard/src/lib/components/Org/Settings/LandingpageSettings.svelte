@@ -117,7 +117,7 @@
   $: setDefault($currentOrg?.landingpage as OrgLandingPageJson);
 </script>
 
-<Grid class="border-c rounded border-gray-200 w-full mt-5 relative">
+<Grid class="border-c rounded border-gray-200 dark:border-neutral-600 w-full mt-5 relative">
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={4} md={4} lg={4}>
       <SectionTitle>Landing Page</SectionTitle>
