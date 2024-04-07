@@ -561,13 +561,7 @@
             {/if}
           </div>
         </ul>
-        <!-- <p class="text-center mt-5">
-          Powered by
-          <a class="text-primary-600 underline" href="https://classroomio.com" target="_blank"
-            >ClassroomIO</a
-          >
-        </p> -->
-        <div class="flex items-center justify-center">
+        <div class="sticky bottom-2 left-6 ml-auto">
           <Badge />
         </div>
       </footer>

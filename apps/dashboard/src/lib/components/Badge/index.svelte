@@ -1,14 +1,8 @@
-<script>
-</script>
-
 <div>
   <span
-    class="flex items-center gap-2 dark:text-black dark:bg-white bg-gray-100 rounded-md p-3 font-semibold shadow-md"
+    class="flex items-center gap-2 dark:text-black dark:bg-white border border-gray-100 rounded-md p-3 font-semibold"
   >
-    Made with
-    <span class="flex items-center">
-      <img src="/logo-32.png" alt="logo" class="h-[24px]" />
-      ClassroomIO
-    </span>
+    <img src="/logo-192.png" alt="logo" class="h-[24px]" />
+    Powered by ClassroomIO
   </span>
 </div>

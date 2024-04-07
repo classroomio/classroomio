@@ -439,6 +439,9 @@
             {get(instructor, 'description', '')}
           </p>
         </section>
+        <div class="fixed bottom-4 right-6">
+          <Badge />
+        </div>
       </div>
 
       <!-- Pricing Details -->
@@ -458,9 +461,6 @@
         className="w-full"
       />
     {/if}
-  </div>
-  <div class="fixed bottom-4 right-6">
-    <Badge />
   </div>
 </div>
 
