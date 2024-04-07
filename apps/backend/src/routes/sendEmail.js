@@ -1,34 +1,42 @@
 const express = require('express');
-const getTransporter = require('../utils/getTransporter');
-const withEmailTemplate = require('../utils/withEmailTemplate');
+const { getTransporter } = require('../utils/getTransporter');
+const { withEmailTemplate } = require('../utils/withEmailTemplate');
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
-  const { from, to, subject, content, isPersonalEmail, replyTo } = await req.json();
+router.post('/', async (req, res) => {
   try {
-    const transporter = await getTransporter(isPersonalEmail);
+    const emailDataArray = req.body;
 
-    if (!transporter) {
-      return;
+    const emailInfoArray = [];
+
+    for (const emailData of emailDataArray) {
+      const { from, to, subject, content, isPersonalEmail, replyTo } = emailData;
+
+      const transporter = await getTransporter(isPersonalEmail);
+
+      if (!transporter) {
+        continue;
+      }
+
+      const info = await transporter.sendMail({
+        from: from || '"Best from ClassroomIO" <best@classroomio.com>',
+        to,
+        subject,
+        replyTo,
+        html: withEmailTemplate(content)
+      });
+
+      console.log('Message sent: %s', info.messageId);
+      emailInfoArray.push(info);
     }
 
-    const info = await transporter.sendMail({
-      from: from || '"Best from ClassroomIO" <best@classroomio.com>', // sender address
-      to, // list of receivers
-      subject, // Subject line
-      replyTo,
-      html: withEmailTemplate(content) // html body
-    });
-
-    console.log('Message sent: %s', info.messageId);
-
-    return info;
+    console.log('sendmail');
+    return res.json({ info: emailInfoArray });
   } catch (error) {
-    console.error({ error });
-
-    return error;
+    console.error('Error sending emails:', error);
+    return res.status(500).json({ error: 'Internal Server Error' });
   }
-  console.log('sendmail');
 });
+
 module.exports = router;

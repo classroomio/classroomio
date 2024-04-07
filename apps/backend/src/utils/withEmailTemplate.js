@@ -1,4 +1,4 @@
-export const withEmailTemplate = (content: string) =>
+const withEmailTemplate = (content) =>
   `<!DOCTYPE html>
 <html>
   <head>
@@ -217,3 +217,4 @@ export const withEmailTemplate = (content: string) =>
   </body>
 </html>
 `;
+module.exports = { withEmailTemplate };
