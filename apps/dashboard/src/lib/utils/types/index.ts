@@ -105,6 +105,17 @@ export interface Organization {
   name: any; // type unknown;
 }
 
+export interface OrganizationPlan {
+  id: number;
+  activated_at: string;
+  deactivated_at: string;
+  org_id: string;
+  plan_name: string;
+  is_active: boolean;
+  updated_at: string;
+  lmz_data: unknown;
+}
+
 export interface Profile {
   id: string /* primary key */;
   fullname: string;

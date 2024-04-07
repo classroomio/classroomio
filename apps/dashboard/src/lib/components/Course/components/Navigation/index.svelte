@@ -15,7 +15,7 @@
   import { sideBar } from '$lib/components/Org/store';
   import { profile } from '$lib/utils/store/user';
   import { getIsLessonComplete } from '../Lesson/functions';
-  import { globalStore } from '$lib/utils/store/app';
+  import { isFreePlan } from '$lib/utils/store/org';
 
   export let path: string;
   export let isStudent: boolean = false;
@@ -25,6 +25,7 @@
     to: string;
     hideSortIcon: boolean;
     isLesson?: boolean;
+    isPaidFeature: boolean;
     show?: () => boolean;
   }
 
@@ -148,23 +149,27 @@
       {
         label: 'News Feed',
         to: getNavItemRoute($course.id),
-        hideSortIcon: true
+        hideSortIcon: true,
+        isPaidFeature: false
       },
       {
         label: 'Lessons',
         to: getLessonsRoute($course.id),
         hideSortIcon: false,
+        isPaidFeature: false,
         isLesson: true
       },
       {
         label: 'Attendance',
         to: getNavItemRoute($course.id, 'attendance'),
+        isPaidFeature: false,
         hideSortIcon: true
       },
       {
         label: 'Submissions',
         to: getNavItemRoute($course.id, 'submissions'),
         hideSortIcon: true,
+        isPaidFeature: false,
         show() {
           return !isStudent;
         }
@@ -172,27 +177,33 @@
       {
         label: 'Marks',
         to: getNavItemRoute($course.id, 'marks'),
+        isPaidFeature: false,
         hideSortIcon: true
       },
-      // {
-      //   label: 'Scoreboard',
-      //   to: getNavItemRoute($course.id, 'scoreboard'),
-      //   hideSortIcon: true,
-      // },
       {
         label: 'People',
         to: getNavItemRoute($course.id, 'people'),
+        isPaidFeature: false,
         hideSortIcon: true
       },
       {
         label: 'Certificates',
         to: getNavItemRoute($course.id, 'certificates'),
-        hideSortIcon: true
+        hideSortIcon: true,
+        isPaidFeature: true,
+        show() {
+          // Dont show students if org on free plan
+          if (isStudent && $isFreePlan) {
+            return false;
+          }
+          return true;
+        }
       },
       {
         label: 'Landing Page',
         to: getNavItemRoute($course.id, 'landingpage'),
         hideSortIcon: true,
+        isPaidFeature: false,
         show() {
           return !isStudent;
         }
@@ -201,6 +212,7 @@
         label: 'Settings',
         to: getNavItemRoute($course.id, 'settings'),
         hideSortIcon: true,
+        isPaidFeature: false,
         show() {
           return !isStudent;
         }
@@ -219,12 +231,12 @@
     transition w-[90vw] md:w-[300px] lg:w-[350px] bg-gray-100 dark:bg-black h-[calc(100vh-48px)] 
   
   ${
-    resize && 'border-r-8 border-r-blue-500'
+    resize ? 'border-r-8 border-r-blue-500' : 'dark:border-r-neutral-600'
   } overflow-y-auto border border-l-0 border-t-0 border-b-0 border-r-1`}
   style={$sideBar.hidden === true ? 'width:0' : 'width:300px'}
   bind:this={sidebarRef}
 >
-  <div class="sidebar-contenth-full flex flex-col">
+  <div class="flex flex-col">
     <ul
       class="sidebar-content my-5"
       bind:this={menuContentRef}
@@ -240,6 +252,7 @@
             total={navItem.isLesson ? ($lessons || []).length : 0}
             isLoading={!$course.id}
             isLesson={navItem.isLesson}
+            isPaidFeature={navItem.isPaidFeature}
             {isStudent}
           >
             {#if navItem.isLesson}
