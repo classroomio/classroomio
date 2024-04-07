@@ -26,13 +26,19 @@
   import { course, group } from '$lib/components/Course/store';
   import DateField from '$lib/components/Form/Date.svelte';
   import type { Lesson } from '$lib/utils/types';
+  import { goto } from '$app/navigation';
+  import { onMount } from 'svelte';
 
   export let data;
 
   let lessonEditing: string | undefined;
   let lessonToDelete: Lesson | undefined;
-  let isStudent = true;
-  let openDeleteModal = false;
+  let isStudent: boolean = true;
+  let openDeleteModal: boolean = false;
+  let nextQueryKey: any;
+  let isFetching: boolean = false;
+  let loadedLessons: any = [];
+  let isInitialLoad: boolean = true;
 
   const flipDurationMs = 300;
 
@@ -81,6 +87,47 @@
       return index + 1;
     }
   }
+
+  function findFirstIncompleteLesson() {
+    return $lessons.find(
+      (lesson) => lesson.lesson_completion.length === 0 && lesson.is_unlocked === true
+    );
+  }
+
+  onMount(() => {
+    // Update loaded lessons when $lessons store changes
+    lessons.subscribe((value) => {
+      loadedLessons = value;
+      // Check if it's the initial load
+      if (isInitialLoad) {
+        isInitialLoad = false;
+      }
+    });
+  });
+
+  $: {
+    let query = new URLSearchParams($page.url.search);
+    nextQueryKey = query.get('next') || '';
+
+    if (nextQueryKey === 'true' && !isFetching) {
+      console.log('lesson in reactive', $lessons);
+    }
+
+    if ($lessons.length > 0) {
+      let incompleteLesson = findFirstIncompleteLesson();
+
+      if (incompleteLesson) {
+        console.log('incompleteLesson', incompleteLesson);
+
+        if (!isInitialLoad) {
+          goto(`/courses/${data.courseId}/lessons/${incompleteLesson.id}`);
+        }
+      } else {
+        console.log('All lessons are complete.');
+        goto(`/courses/${data.courseId}/lessons`);
+      }
+    }
+  }
 </script>
 
 {#if $handleAddLessonWidget}
@@ -94,7 +141,7 @@
 />
 
 <!-- TODO: Refactor usage of two way binding isStudent, rather use $globalStore.isStudent -->
-<CourseContainer bind:isStudent bind:courseId={data.courseId}>
+<CourseContainer bind:isFetching bind:isStudent bind:courseId={data.courseId}>
   <PageNav title="Lessons">
     <div slot="widget">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
@@ -104,7 +151,9 @@
   </PageNav>
 
   <PageBody width="max-w-6xl" padding="p-0">
-    {#if $lessons.length}
+    {#if nextQueryKey === 'true'}
+      <p>Going to next lesson...</p>
+    {:else if $lessons.length}
       <section
         class="m-auto w-full p-3 lg:w-11/12 lg:px-4"
         use:dndzone={{
