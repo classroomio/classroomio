@@ -11,9 +11,10 @@ export interface CurrentOrg {
   };
   theme: string;
   organization_plan: {
+    subscriptionId: string;
     plan_name: string;
     is_active: boolean;
-  }[]
+  }[];
 }
 
 export interface OrgTeamMember {

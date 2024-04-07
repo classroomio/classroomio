@@ -24,10 +24,10 @@ export async function POST({ request }) {
     console.log(body);
 
     // Logic according to event
-    if (eventType === 'order_created' || eventType === 'subscription_resumed') {
+    if (eventType === 'subscription_created' || eventType === 'subscription_resumed') {
       const orgId = body.meta.custom_data.org_id;
       const triggeredBy = body.meta.custom_data.triggered_by;
-      const isSuccessful = body.data.attributes.status === 'paid';
+      const isSuccessful = body.data.attributes.status === 'active';
 
       console.log({
         orgId,

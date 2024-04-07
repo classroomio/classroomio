@@ -82,7 +82,8 @@ export async function getOrganizations(userId: string) {
         created_at,
         organization_plan(
           plan_name,
-          is_active
+          is_active,
+          subscriptionId:lmz_data->id
         )
       )
     `
