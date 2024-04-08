@@ -1,17 +1,23 @@
 <script>
-  import { isCourseFree } from '$lib/utils/functions/course';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { currentOrg, isFreePlan } from '$lib/utils/store/org';
+  import { ArrowUpRight } from 'carbon-icons-svelte';
 </script>
 
-{#if isCourseFree}
+{#if $isFreePlan}
   <a
     href={`https://classroomio.com?utm_source=${$currentOrg.siteName}.classroomio.com`}
-    class="fixed bottom-2 right-6 z-50"
+    class="group fixed bottom-2 right-6 z-50 hover:no-underline"
   >
     <span
-      class="flex items-center gap-2 dark:text-black dark:bg-white border border-gray-100 rounded-md p-3 font-semibold"
+      class="overflow-hidden transition shadow-md duration-500 group-hover:bg-blue-600 group-hover:text-white flex items-center gap-2 dark:text-black dark:bg-white border border-gray-100 rounded-md p-3 font-semibold"
     >
-      <img src="/logo-192.png" alt="logo" class="h-[24px]" />
+      <ArrowUpRight
+        class="
+            absolute group-hover:opacity-100 group-hover:translate-y-0 group-hover:translate-x-0
+            opacity-0 translate-y-full -translate-x-full transition duration-500 text-white"
+        size={24}
+      />
+      <img src="/logo-192.png" alt="logo" class="group-hover:opacity-0 opacity-100 h-[24px]" />
       Powered by ClassroomIO
     </span>
   </a>
