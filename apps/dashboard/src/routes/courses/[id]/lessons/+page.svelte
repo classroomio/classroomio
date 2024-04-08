@@ -90,8 +90,34 @@
 
   function findFirstIncompleteLesson() {
     return $lessons.find(
-      (lesson) => lesson.lesson_completion.length === 0 && lesson.is_unlocked === true
+      (lesson) =>
+        lesson.lesson_completion &&
+        lesson.lesson_completion.length === 0 &&
+        lesson.is_unlocked === true
     );
+  }
+
+  function handleLessons(lessons, nextQueryKey) {
+    let incompleteLesson;
+
+    if (nextQueryKey === 'true' && !isFetching) {
+      console.log('lesson in reactive', lessons);
+    }
+
+    if (lessons.length > 0) {
+      incompleteLesson = findFirstIncompleteLesson();
+
+      if (incompleteLesson) {
+        console.log('incompleteLesson', incompleteLesson);
+
+        if (!isInitialLoad) {
+          goto(`/courses/${data.courseId}/lessons/${incompleteLesson.id}`);
+        }
+      } else {
+        console.log('All lessons are complete.');
+        goto(`/courses/${data.courseId}/lessons`);
+      }
+    }
   }
 
   onMount(() => {
@@ -106,27 +132,7 @@
   });
 
   $: {
-    let query = new URLSearchParams($page.url.search);
-    nextQueryKey = query.get('next') || '';
-
-    if (nextQueryKey === 'true' && !isFetching) {
-      console.log('lesson in reactive', $lessons);
-    }
-
-    if ($lessons.length > 0) {
-      let incompleteLesson = findFirstIncompleteLesson();
-
-      if (incompleteLesson) {
-        console.log('incompleteLesson', incompleteLesson);
-
-        if (!isInitialLoad) {
-          goto(`/courses/${data.courseId}/lessons/${incompleteLesson.id}`);
-        }
-      } else {
-        console.log('All lessons are complete.');
-        goto(`/courses/${data.courseId}/lessons`);
-      }
-    }
+    handleLessons($lessons, nextQueryKey);
   }
 </script>
 
