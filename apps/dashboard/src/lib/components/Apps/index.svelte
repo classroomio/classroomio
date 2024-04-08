@@ -50,7 +50,7 @@
 
   function getAppClass(appName: string, selected: string | undefined) {
     return `transition duration-500 delay-150 ease-in-out border-t-0 border-b-0 border-r-0 ${
-      appName === selected ? 'border-l-4 border-indigo-600 focus:border-indigo-600' : 'border-l-0'
+      appName === selected ? 'border-l-4 border-primary-600 focus:border-primary-600' : 'border-l-0'
     }`;
   }
 

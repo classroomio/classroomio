@@ -48,7 +48,7 @@
   }
 </script>
 
-<Grid class="border-c rounded border-gray-200 w-full mt-5">
+<Grid class="border-c rounded border-gray-200 dark:border-neutral-600 w-full mt-5">
   <Row class="flex lg:flex-row flex-col justify-center lg:justify-start py-7 border-bottom-c">
     <Column sm={4} md={4} lg={4} class="flex items-center justify-center">
       <img src="/telegram-svg.svg" alt="" class="w-10 mr-2" />

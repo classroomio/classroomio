@@ -13,6 +13,7 @@
   import { isOrgAdmin } from '$lib/utils/store/org';
   import type { Course } from '$lib/utils/types';
   import { browser } from '$app/environment';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
 
   export let data;
   let { cantFetch } = data;
@@ -93,6 +94,7 @@
       {:else}
         <PrimaryButton
           label="Create Course"
+          variant={VARIANTS.CONTAINED_DARK}
           isDisabled={!$isOrgAdmin}
           onClick={() => ($createCourseModal.open = true)}
         />

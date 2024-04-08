@@ -3,7 +3,6 @@
   import PageNav from '$lib/components/PageNav/index.svelte';
   import PageBody from '$lib/components/PageBody/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import { setCourse, course } from '$lib/components/Course/store';
   import IssueCertificateModal from '$lib/components/Course/components/Ceritficate/IssueCertificateModal.svelte';
   // import DeleteConfirmation from '$lib/components/Course/components/People/DeleteConfirmation.svelte';
   import Design from '$lib/components/Course/components/Ceritficate/Design.svelte';
@@ -40,7 +39,7 @@
       <StudentCertificate />
     </RoleBasedSecurity>
 
-    <!-- <Tabs autoWidth class="border-b border-gray-200">
+    <!-- <Tabs autoWidth class="border-b border-gray-200 dark:border-neutral-600">
       <Tab label="Design" />
       <Tab label="Reports" />
       <svelte:fragment slot="content">
