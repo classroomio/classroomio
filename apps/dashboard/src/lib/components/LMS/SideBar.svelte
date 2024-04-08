@@ -56,7 +56,7 @@
   } overflow-y-auto transition w-[250px] min-w-[250px] bg-gray-100 dark:bg-neutral-900 h-[calc(100vh-48px)]`}
 >
   <div class="h-full flex flex-col">
-    <div class="border-b border-gray-200 pt-5 px-4">
+    <div class="border-b border-gray-200 dark:border-neutral-600 pt-5 px-4">
       <div class="w-full flex flex-col items-center">
         <Avatar
           src={$profile.avatar_url}

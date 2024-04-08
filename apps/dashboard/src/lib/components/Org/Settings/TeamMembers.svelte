@@ -18,6 +18,7 @@
     triggerSendEmail,
     NOTIFICATION_NAME
   } from '$lib/utils/services/notification/notification';
+  import { isFreePlan } from '$lib/utils/store/org';
   import type { OrgTeamMember } from '$lib/utils/types/org';
 
   let emailsStr = '';
@@ -132,7 +133,7 @@
   $: fetchTeam($currentOrg.id);
 </script>
 
-<Grid class="border rounded border-gray-200 w-full mt-5">
+<Grid class="border rounded border-gray-200 dark:border-neutral-600 w-full mt-5 relative">
   <Row class="py-7 border-bottom-c">
     <Column sm={2} md={2} lg={4} class="text-lg"><SectionTitle>Add</SectionTitle></Column>
     <Column sm={2} md={6} lg={8}>
@@ -146,10 +147,11 @@
           placeholder="email comma separated"
           bind:value={emailsStr}
           className="mb-3"
+          isDisabled={$isFreePlan}
           {errorMessage}
         />
 
-        <Select labelText="Role" bind:selected={role} class="mb-5 w-40">
+        <Select labelText="Role" bind:selected={role} class="mb-5 w-40" disabled={$isFreePlan}>
           <!-- <SelectItem value={ROLE.ADMIN} text={ROLE_LABEL[ROLE.ADMIN]} /> -->
           <SelectItem value={ROLE.TUTOR} text={ROLE_LABEL[ROLE.TUTOR]} />
         </Select>
@@ -158,7 +160,7 @@
           label="Send Invite"
           onClick={onSendInvite}
           {isLoading}
-          isDisabled={isLoading}
+          isDisabled={isLoading || $isFreePlan}
         />
       </div>
     </Column>

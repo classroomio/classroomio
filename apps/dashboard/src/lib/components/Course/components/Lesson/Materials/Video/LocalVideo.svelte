@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import axios from 'axios';
   import { PUBLIC_SERVER_URL } from '$env/static/public';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -10,11 +10,14 @@
   import { onMount, onDestroy } from 'svelte';
   import { ProgressBar } from 'carbon-components-svelte';
   import { supabase } from '$lib/utils/functions/supabase';
+  import { isFreePlan } from '$lib/utils/store/org';
+  import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
 
   let value = 0;
   let max = 100;
   let status = 'active';
   let fileSize;
+  let isDisabled = false;
 
   export let lessonId = '';
 
@@ -61,7 +64,7 @@
       console.log('Upload res', formRes);
       isLoading = false;
       isLoaded = false;
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error uploading video', err, '\n\n', err.response);
       if (err.response) {
         formRes = err.response.data;
@@ -115,14 +118,19 @@
   }
 
   $: isDoneUploading(formRes);
+  $: isDisabled = isLoading || !PUBLIC_SERVER_URL || $isFreePlan;
 </script>
+
+<UpgradeBanner className="mb-3" onClick={() => ($uploadCourseVideoStore.isModalOpen = false)}>
+  Upgrade your plan to upload vidoes
+</UpgradeBanner>
 
 {#if !isLoaded}
   <button
     type="button"
     on:click={() => (fileInput && !isLoading ? fileInput.click() : null)}
-    class="h-full w-full"
-    disabled={isLoading || !PUBLIC_SERVER_URL}
+    class="h-full w-full {isDisabled && 'hover:cursor-not-allowed opacity-50'}"
+    disabled={isDisabled}
   >
     <form
       class="border-primary-300 flex h-full w-full flex-col items-center justify-center rounded-xl border border-dashed"

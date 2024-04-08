@@ -1,0 +1,75 @@
+{
+  "BASIC": {
+    "NAME": "Basic",
+    "DESCRIPTION": "Free tier plan for personal use, no credit card required.",
+    "PRICE": {
+      "CURRENCY": "$",
+      "MONTHLY": "0",
+      "YEARLY": "0",
+      "IS_PREMIUM": false
+    },
+    "FEATURES": [
+      "Unlimited Courses",
+      "Unlimited Q/A",
+      "50 Students",
+      "AI Course Builder (no video upload)",
+      "Live chat & polls"
+    ],
+    "CTA": {
+      "LABEL": "Signup Now",
+      "LINK": "/signup?plan=free",
+      "DASHBOARD_LABEL": "Downgrade",
+      "DASHBOARD_LINK": "#disabled",
+      "IS_DISABLED": true
+    }
+  },
+  "EARLY_ADOPTER": {
+    "NAME": "Early Adopters",
+    "DESCRIPTION": "For fast growing teaching businesses that aim to scale.",
+    "PRICE": {
+      "CURRENCY": "$",
+      "MONTHLY": "35",
+      "YEARLY": "350",
+      "IS_PREMIUM": false
+    },
+    "FEATURES": [
+      "Everything in Basic",
+      "Unlimted Teachers",
+      "10K Students",
+      "Advanced AI Course Builder (Video upload & Certificate)",
+      "Custom Branding",
+      "Includes all Upcoming Features"
+    ],
+    "CTA": {
+      "LABEL": "I want in 😍",
+      "LINK": "/signup?plan=early-adopter",
+      "DASHBOARD_LABEL": "Support us 😍",
+      "DASHBOARD_LINK": "",
+      "IS_DISABLED": false,
+      "PRODUCT_ID": "331121"
+    }
+  },
+  "ENTERPRISE": {
+    "NAME": "Enterprise",
+    "DESCRIPTION": "Best suited for larger businesses that need more control",
+    "PRICE": {
+      "CURRENCY": "",
+      "MONTHLY": "Request Pricing",
+      "YEARLY": "Request Pricing",
+      "IS_PREMIUM": true
+    },
+    "FEATURES": [
+      "Everything in Early Adopters plus:",
+      "Unlimited students",
+      "Custom Domain",
+      "24/7 Support"
+    ],
+    "CTA": {
+      "LABEL": "Contact Us",
+      "LINK": "https://cal.com/classroomio/enterprise",
+      "DASHBOARD_LABEL": "Contact Us",
+      "DASHBOARD_LINK": "https://cal.com/classroomio/enterprise",
+      "IS_DISABLED": false
+    }
+  }
+}

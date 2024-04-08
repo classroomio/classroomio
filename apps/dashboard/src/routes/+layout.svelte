@@ -34,6 +34,7 @@
   import shouldRedirectOnAuth from '$lib/utils/functions/routes/shouldRedirectOnAuth';
   import { identifyPosthogUser, initPosthog } from '$lib/utils/services/posthog';
   import { initSentry, setSentryUser } from '$lib/utils/services/sentry';
+  import UpgradeModal from '$lib/components/Upgrade/Modal.svelte';
 
   import '../app.postcss';
 
@@ -165,7 +166,7 @@
       // Set user in sentry
       setAnalyticsUser();
 
-      const orgRes = await getOrganizations(profileData.id);
+      const orgRes = await getOrganizations(profileData.id, data.isOrgSite, data.orgSiteName);
 
       // student redirect
       if (data.isOrgSite) {
@@ -281,6 +282,7 @@
 
 <Theme bind:theme={carbonTheme} />
 
+<UpgradeModal />
 <Snackbar />
 
 {#if data.skipAuth}
