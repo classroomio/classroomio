@@ -15,9 +15,10 @@
 
 <div class="relative">
   <button
-    class="{disabled &&
-      'opacity-25'} flex items-center text-start w-[14rem] py-2 px-3 {hasDivider &&
-      'border-b border-gray-100'} {active && 'bg-primary-100 dark:bg-gray-500'}"
+    class="w-full {disabled &&
+      'opacity-25'} flex items-center text-start w-[14rem] py-1.5 px-2.5 {hasDivider &&
+      'border-b border-gray-100 dark:border-neutral-600'} {active &&
+      'bg-gray-200 dark:bg-neutral-700 dark:text-white'}"
     on:click={disabled ? undefined : onClick}
   >
     {#if avatar}
@@ -25,14 +26,14 @@
         src={avatar}
         name={text}
         shape="rounded-md"
-        width="w-7"
-        height="h-7"
+        width="w-[1.2rem]"
+        height="h-[1.2rem]"
         className="mr-2"
       />
     {:else if avatarText}
       <TextChip
         value={avatarText}
-        className="mr-2 bg-primary-200 font-bold dark:bg-gray-600"
+        className="mr-2 bg-primary-200 font-medium text-xs dark:text-black"
         {size}
       />
     {/if}

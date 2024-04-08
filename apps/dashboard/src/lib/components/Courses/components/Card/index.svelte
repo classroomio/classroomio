@@ -1,11 +1,18 @@
 <script lang="ts">
-  import { Tag, ImageLoader, SkeletonPlaceholder, ContextMenu, ContextMenuDivider, ContextMenuOption, } from 'carbon-components-svelte';
+  import {
+    Tag,
+    ImageLoader,
+    SkeletonPlaceholder,
+    ContextMenu,
+    ContextMenuDivider,
+    ContextMenuOption
+  } from 'carbon-components-svelte';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import CopyFile from "carbon-icons-svelte/lib/CopyFile.svelte";
-  import Share from "carbon-icons-svelte/lib/Share.svelte";
-  import UserFollow from "carbon-icons-svelte/lib/UserFollow.svelte";
+  import CopyFile from 'carbon-icons-svelte/lib/CopyFile.svelte';
+  import Share from 'carbon-icons-svelte/lib/Share.svelte';
+  import UserFollow from 'carbon-icons-svelte/lib/UserFollow.svelte';
 
   export let bannerImage: string | undefined;
   export let id = '';
@@ -52,7 +59,7 @@
     <ContextMenuOption indented labelText="Share" icon={Share} on:click={handleShareCourse} />
     <ContextMenuOption indented labelText="Invite" icon={UserFollow} on:click={handleInvite} />
     <ContextMenuDivider />
-    <ContextMenuOption kind="danger" labelText="Delete"  on:click={handleDeleteCourse} />
+    <ContextMenuOption kind="danger" labelText="Delete" on:click={handleDeleteCourse} />
   </ContextMenu>
 {/if}
 
@@ -60,14 +67,14 @@
   rel="prefetch"
   bind:this={target}
   href={isOnLandingPage ? `/course/${slug}` : `/courses/${id}`}
-  class="text-black border border-gray rounded w-full max-w-[320px] relative hover:scale-95 transition-all ease-in-out"
+  class="text-black border border-gray dark:border-neutral-600 rounded w-full max-w-[320px] relative hover:scale-95 transition-all ease-in-out"
 >
   <div class="p-4">
     <div class=" mb-5">
       <ImageLoader
         src={bannerImage}
         alt="Course Logo"
-        class="h-[200px] w-full rounded dark:border dark:border-white"
+        class="h-[200px] w-full rounded dark:border dark:border-neutral-600"
       >
         <svelte:fragment slot="loading">
           <SkeletonPlaceholder style="width: 100%; height: 200px;" />
@@ -83,7 +90,7 @@
   </div>
 
   <div
-    class="px-4 border border-gray border-b-0 border-l-0 border-r-0 flex justify-between {isLMS &&
+    class="px-4 border border-gray dark:border-neutral-600 border-b-0 border-l-0 border-r-0 flex justify-between {isLMS &&
       'items-center'}"
   >
     <div>

@@ -2,6 +2,7 @@
   import { Grid, Row, Column } from 'carbon-components-svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
   import { supabase } from '$lib/utils/functions/supabase';
   import { profile } from '$lib/utils/store/user';
@@ -61,7 +62,7 @@
   }
 </script>
 
-<Grid class="border-c rounded border-gray-200 w-full mt-5">
+<Grid class="border-c rounded border-gray-200 dark:border-neutral-600 w-full mt-5">
   <Row class="flex flex-col lg:flex-row items-center lg:items-start py-7 border-bottom-c ">
     <Column sm={4} md={8} lg={4} class="mt-2 md:mt-0">
       <p class="dark:text-white font-bold">Profile Picture</p>
@@ -83,6 +84,7 @@
   <Row class="m-5 w-full flex items-center gap-2 lg:justify-center">
     <PrimaryButton
       label="Update Profile"
+      variant={VARIANTS.CONTAINED_DARK}
       className="mr-5"
       isLoading={loading}
       isDisabled={loading}

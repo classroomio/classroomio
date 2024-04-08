@@ -1,5 +1,6 @@
 export const VARIANTS = {
   CONTAINED: 'CONTAINED',
+  CONTAINED_DARK: 'CONTAINED_DARK',
   CONTAINED_LIGHT: 'CONTAINED_LIGHT',
   CONTAINED_INFO: 'CONTAINED_INFO',
   CONTAINED_WHITE: 'CONTAINED_WHITE',
@@ -14,6 +15,8 @@ export const VARIANTS = {
 
 export const VARIANTS_CLASS = {
   [VARIANTS.CONTAINED]: 'border-none bg-primary-700 hover:bg-primary-900 text-white font-bold',
+  [VARIANTS.CONTAINED_DARK]:
+    'border-none bg-black hover:bg-neutral-600 text-white dark:bg-white dark:text-black font-bold',
   [VARIANTS.CONTAINED_LIGHT]:
     'border-none bg-primary-600 hover:bg-primary-900 text-white font-bold',
   [VARIANTS.CONTAINED_WHITE]:
@@ -22,7 +25,7 @@ export const VARIANTS_CLASS = {
   [VARIANTS.CONTAINED_SUCCESS]: 'bg-green-700 hover:bg-green-900 text-white',
   [VARIANTS.CONTAINED_DANGER]: 'bg-red-700 hover:bg-red-900 text-white',
   [VARIANTS.OUTLINED]:
-    'border border-primary-700 hover:border-black-300 hover:bg-primary-700 text-black dark:text-white',
+    'border border-black hover:bg-neutral-600 hover:text-white text-black dark:text-white',
   [VARIANTS.NONE]:
     'border-none hover:border-black-300 hover:bg-gray-200 dark:hover:bg-neutral-800 text-black',
   [VARIANTS.TEXT]: 'text-black hover:underline',

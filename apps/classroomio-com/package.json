@@ -30,6 +30,7 @@
     "rehype-slug": "^6.0.0",
     "remark-toc": "^9.0.0",
     "remark-unwrap-images": "^4.0.0",
+    "shared-constants": "workspace:*",
     "shiki": "^0.14.7"
   }
 }
