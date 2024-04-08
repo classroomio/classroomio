@@ -439,9 +439,8 @@
             {get(instructor, 'description', '')}
           </p>
         </section>
-        <div class="fixed bottom-4 right-6">
-          <Badge />
-        </div>
+
+        <Badge />
       </div>
 
       <!-- Pricing Details -->

@@ -495,7 +495,7 @@
     {#if $landingPageSettings.footer.show}
       <footer
         id="footer"
-        class="flex justify-center flex-col mt-10 w-full px-5 py-10 md:py-3 border-b-0 border-r-0 border-t border-l-0 border-gray-300"
+        class="flex justify-center flex-col mt-10 mb-10 w-full px-5 py-10 md:py-3 border-b-0 border-r-0 border-t border-l-0 border-gray-300"
       >
         <ul class="flex w-11/12 items-center flex-col sm:flex-row">
           <div class="logo">
@@ -561,11 +561,9 @@
             {/if}
           </div>
         </ul>
-        <div class="sticky bottom-2 left-6 ml-auto">
-          <Badge />
-        </div>
       </footer>
     {/if}
+    <Badge />
   </main>
 {/if}
 
