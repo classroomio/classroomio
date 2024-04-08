@@ -23,11 +23,11 @@
   import { getSupabase } from '$lib/utils/functions/supabase';
   import { courses, courseMetaDeta } from '$lib/components/Courses/store';
   import { getCourseBySiteName } from '$lib/utils/services/org';
-  import { currentOrg } from '$lib/utils/store/org';
   import { validateEmail } from '$lib/utils/functions/validateEmail';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import { goto } from '$app/navigation';
   import { landingPageSettings } from '$lib/components/Org/Settings/store';
+  import PoweredBy from '$lib/components/Upgrade/PoweredBy.svelte';
 
   export let orgSiteName = '';
   export let org = {};
@@ -151,6 +151,8 @@
     {!org.name ? '' : `${org.name}'s `}Landing Page
   </title>
 </svelte:head>
+
+<PoweredBy />
 
 {#if !org.landingpage}
   <PageLoader />
@@ -494,7 +496,7 @@
     {#if $landingPageSettings.footer.show}
       <footer
         id="footer"
-        class="flex justify-center flex-col mt-10 w-full px-5 py-10 md:py-3 border-b-0 border-r-0 border-t border-l-0 border-gray-300"
+        class="flex justify-center items-center flex-col my-10 w-full px-5 py-10 md:py-3 border-b-0 border-r-0 border-t border-l-0 border-gray-300"
       >
         <ul class="flex w-11/12 items-center flex-col sm:flex-row">
           <div class="logo">
@@ -517,9 +519,9 @@
 
           <span class="flex-grow" />
 
-          <div class="flex mt-5 sm:mt-0">
+          <div class="flex mt-5 sm:mt-0 gap-2">
             {#if $landingPageSettings.footer.facebook}
-              <li class="mx-2">
+              <li>
                 <a
                   href={$landingPageSettings.footer.facebook}
                   target="_blank"
@@ -532,7 +534,7 @@
               </li>
             {/if}
             {#if $landingPageSettings.footer.twitter}
-              <li class="mx-2">
+              <li>
                 <a
                   href={$landingPageSettings.footer.twitter}
                   target="_blank"
@@ -546,7 +548,7 @@
             {/if}
 
             {#if $landingPageSettings.footer.linkedin}
-              <li class="mx-2">
+              <li>
                 <a
                   href={$landingPageSettings.footer.linkedin}
                   target="_blank"
@@ -560,12 +562,6 @@
             {/if}
           </div>
         </ul>
-        <p class="text-center mt-5">
-          Powered by
-          <a class="text-primary-600 underline" href="https://classroomio.com" target="_blank"
-            >ClassroomIO</a
-          >
-        </p>
       </footer>
     {/if}
   </main>

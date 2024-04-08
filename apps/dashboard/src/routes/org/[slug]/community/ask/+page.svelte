@@ -4,6 +4,7 @@
   import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
   import { currentOrgPath, currentOrg } from '$lib/utils/store/org';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { askCommunityValidation } from '$lib/utils/functions/validator';
   import { supabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
@@ -86,7 +87,7 @@
     </a>
     <div class="flex items-center gap-12 justify-between">
       <h1 class="dark:text-white text-2xl md:text-3xl font-bold">Ask the community</h1>
-      <PrimaryButton label="Publish" onClick={handleSave} />
+      <PrimaryButton label="Publish" variant={VARIANTS.CONTAINED_DARK} onClick={handleSave} />
     </div>
   </div>
 
