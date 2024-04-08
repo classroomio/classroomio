@@ -1,7 +1,7 @@
 <script lang="ts">
   import get from 'lodash/get';
   import { onMount, onDestroy } from 'svelte';
-  import Badge from '$lib/components/Badge/index.svelte';
+  import PoweredBy from '$lib/components/Upgrade/PoweredBy.svelte';
   import pluralize from 'pluralize';
   import { page } from '$app/stores';
   import Notebook from 'carbon-icons-svelte/lib/Notebook.svelte'; //note
@@ -102,6 +102,10 @@
     console.log({ imgurl, instructor, org: $currentOrg });
   }
 </script>
+
+{#if !editMode}
+  <PoweredBy />
+{/if}
 
 <div class="flex w-full flex-col items-center bg-white dark:bg-black">
   <!-- Header Section -->
@@ -439,8 +443,6 @@
             {get(instructor, 'description', '')}
           </p>
         </section>
-
-        <Badge />
       </div>
 
       <!-- Pricing Details -->
