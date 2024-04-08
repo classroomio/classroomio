@@ -10,7 +10,7 @@
     class="group fixed bottom-6 right-9 z-50 hover:no-underline"
   >
     <span
-      class="overflow-hidden transition shadow-md duration-500 group-hover:bg-blue-600 group-hover:text-white flex items-center gap-2 dark:text-black bg-white border border-gray-50 group-hover:border-blue-600 rounded-md p-3 text-sm font-medium"
+      class="overflow-hidden transition shadow-md duration-500 group-hover:bg-blue-600 group-hover:text-white flex items-center gap-2 dark:text-black bg-white border border-gray-50 group-hover:border-blue-600 rounded-md p-3 text-black text-sm font-medium"
     >
       <ArrowUpRight
         class="
