@@ -56,7 +56,6 @@
     <p class="font-bold text-xl">Verify your Email</p>
     <p class="text-sm w-[70%] text-gray-700">
       We've sent a verification email to {$profile.email} to confirm the validity of the email provided.
-      Kindly verify your email to continue using ClassroomIO.
     </p>
 
     <div class="flex items-center flex-col">

@@ -167,7 +167,7 @@
       // Set extra metadata based off location
       await setMetaData();
 
-      let { data, error } = await supabase
+      await supabase
         .from('profile')
         .update({
           ...fields,

@@ -5,6 +5,7 @@
   import LandingpageSettings from './LandingpageSettings.svelte';
   // import Account from './Account.svelte';
   import OrgSettings from './OrgSettings.svelte';
+  import Billing from './Billing.svelte';
   import { onMount } from 'svelte';
   import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
@@ -64,6 +65,13 @@
       },
       {
         key: 3,
+        label: 'Billing',
+        tabKey: 'billing',
+        href: `${$page.url.pathname}?tab=billing`,
+        disabled: !$isOrgAdmin
+      },
+      {
+        key: 4,
         label: 'Integrations',
         tabKey: 'integrations',
         href: `${$page.url.pathname}?tab=integrations`,
@@ -90,6 +98,9 @@
     </TabContent>
     <TabContent class="w-full p-0">
       <LandingpageSettings />
+    </TabContent>
+    <TabContent class="w-full p-0">
+      <Billing />
     </TabContent>
     <TabContent class="w-full p-0">
       <Integrations />

@@ -9,25 +9,24 @@
   } from '$lib/utils/services/notification/notification';
   import { profile } from '$lib/utils/store/user';
 
-  let query = new URLSearchParams($page.url.search);
-  let welcomePopup = query.get('welcomePopup');
+  let open = false;
 
   const closeModal = () => {
     triggerSendEmail(NOTIFICATION_NAME.WELCOME_TO_APP, {
       to: $profile.email,
       name: $profile.fullname
     });
-    goto($currentOrgPath + '/courses?create=true');
+
+    goto($currentOrgPath + '/setup');
   };
+
+  $: {
+    const query = new URLSearchParams($page.url.search);
+    open = query.get('welcomePopup') === 'true';
+  }
 </script>
 
-<Modal
-  onClose={closeModal}
-  open={welcomePopup === 'true'}
-  width="w-9/12"
-  maxWidth="w-[800px]"
-  modalHeading="Welcome"
->
+<Modal onClose={closeModal} {open} width="w-9/12" maxWidth="w-[800px]" modalHeading="Welcome">
   <p class="text-black dark:text-white text-sm md:text-base lg:text-lg">
     We at <a
       href="https://app.classroomio.com/"

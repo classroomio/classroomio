@@ -7,7 +7,7 @@
   <title>Custom domain - ClassroomIO</title>
 </svelte:head>
 
-<section class="w-full max-w-6xl mx-auto">
+<section class="w-full md:max-w-4xl mx-auto">
   <div class="py-10 px-3 md:px-5">
     <a class="text-gray-500 dark:text-white text-md" href={`${$currentOrgPath}/settings?tab=org`}
       >Back to Settings</a

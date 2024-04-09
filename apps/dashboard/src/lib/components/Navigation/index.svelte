@@ -58,7 +58,7 @@
       {#if isOrgSite}
         <li><a class="block" href="/lms"> Go to LMS </a></li>
       {/if}
-    {:else}
+    {:else if !$page.url.pathname?.includes('/404')}
       <li>
         <div class="flex">
           <PrimaryButton

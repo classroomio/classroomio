@@ -34,27 +34,9 @@ INSERT INTO "auth"."identities" ("provider_id", "user_id", "identity_data", "pro
 -- Data for Name: sessions; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
 --
 
-INSERT INTO "auth"."sessions" ("id", "user_id", "created_at", "updated_at", "factor_id", "aal", "not_after") VALUES
-	('9c1cd604-6be9-4e29-98df-eae1ca10b84b', '7ac00503-8519-43c8-a5ea-b79aeca900b1', '2023-12-16 14:04:38.318145+00', '2023-12-16 14:04:38.318145+00', NULL, 'aal1', NULL),
-	('e8e00899-d977-4aff-ba2a-5db2e0b5a5fc', '7ac00503-8519-43c8-a5ea-b79aeca900b1', '2023-12-18 07:27:12.925094+00', '2023-12-18 07:27:12.925094+00', NULL, 'aal1', NULL),
-	('ef166ee2-ae51-487c-9173-bb2e81d0a5a3', '0c256e75-aa40-4f62-8d30-0217ca1c60d9', '2023-12-18 17:08:57.422438+00', '2023-12-18 17:08:57.422438+00', NULL, 'aal1', NULL),
-	('a9f27ecd-7f94-4bfa-be34-ba5405bac3c2', '0c256e75-aa40-4f62-8d30-0217ca1c60d9', '2023-12-18 17:10:06.331876+00', '2023-12-18 17:10:06.331876+00', NULL, 'aal1', NULL),
-	('a332f016-e8aa-47f0-a75e-88a1d7ba0093', '7ac00503-8519-43c8-a5ea-b79aeca900b1', '2023-12-19 18:21:06.601317+00', '2023-12-19 18:21:06.601317+00', NULL, 'aal1', NULL),
-	('b477694b-8834-4ca8-8aa8-7131c0ccc97f', '0c256e75-aa40-4f62-8d30-0217ca1c60d9', '2023-12-19 18:22:55.359116+00', '2023-12-19 18:22:55.359116+00', NULL, 'aal1', NULL);
-
-
 --
 -- Data for Name: mfa_amr_claims; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
 --
-
-INSERT INTO "auth"."mfa_amr_claims" ("session_id", "created_at", "updated_at", "authentication_method", "id") VALUES
-	('9c1cd604-6be9-4e29-98df-eae1ca10b84b', '2023-12-16 14:04:38.326467+00', '2023-12-16 14:04:38.326467+00', 'password', '5cae357e-4e64-4378-8c06-9f0f6c04c949'),
-	('e8e00899-d977-4aff-ba2a-5db2e0b5a5fc', '2023-12-18 07:27:12.960775+00', '2023-12-18 07:27:12.960775+00', 'password', 'dbd1a18c-6823-4ca0-867e-332baa980f88'),
-	('ef166ee2-ae51-487c-9173-bb2e81d0a5a3', '2023-12-18 17:08:57.431423+00', '2023-12-18 17:08:57.431423+00', 'password', '79f20fbc-4428-49b2-a1d7-e79c80c01908'),
-	('a9f27ecd-7f94-4bfa-be34-ba5405bac3c2', '2023-12-18 17:10:06.336665+00', '2023-12-18 17:10:06.336665+00', 'password', '1a55c794-56c2-4ebb-81dd-51fe5aa31c3d'),
-	('a332f016-e8aa-47f0-a75e-88a1d7ba0093', '2023-12-19 18:21:06.628295+00', '2023-12-19 18:21:06.628295+00', 'password', 'c8adcf10-d3ac-4f63-949c-917de90d5047'),
-	('b477694b-8834-4ca8-8aa8-7131c0ccc97f', '2023-12-19 18:22:55.364346+00', '2023-12-19 18:22:55.364346+00', 'password', 'b2252824-3d0e-4f00-b166-31e4b7317247');
-
 
 --
 -- Data for Name: mfa_factors; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
@@ -71,24 +53,6 @@ INSERT INTO "auth"."mfa_amr_claims" ("session_id", "created_at", "updated_at", "
 --
 -- Data for Name: refresh_tokens; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
 --
-
-INSERT INTO "auth"."refresh_tokens" ("instance_id", "id", "token", "user_id", "revoked", "created_at", "updated_at", "parent", "session_id") VALUES
-	('00000000-0000-0000-0000-000000000000', 69, 'LB9oL5Z2Q7Mg-vsW5kNjCQ', '7ac00503-8519-43c8-a5ea-b79aeca900b1', false, '2023-12-16 14:04:38.320519+00', '2023-12-16 14:04:38.320519+00', NULL, '9c1cd604-6be9-4e29-98df-eae1ca10b84b'),
-	('00000000-0000-0000-0000-000000000000', 70, '2DUv5tujvKjUGkX6M9rDhw', '7ac00503-8519-43c8-a5ea-b79aeca900b1', true, '2023-12-18 07:27:12.938363+00', '2023-12-18 16:08:48.28529+00', NULL, 'e8e00899-d977-4aff-ba2a-5db2e0b5a5fc'),
-	('00000000-0000-0000-0000-000000000000', 71, 'fYnKEVnVc5Cf1zk__OndZQ', '7ac00503-8519-43c8-a5ea-b79aeca900b1', true, '2023-12-18 16:08:48.289763+00', '2023-12-18 17:07:27.19134+00', '2DUv5tujvKjUGkX6M9rDhw', 'e8e00899-d977-4aff-ba2a-5db2e0b5a5fc'),
-	('00000000-0000-0000-0000-000000000000', 73, 'j0pHvBB6tNVAL6bth-Qlbw', '0c256e75-aa40-4f62-8d30-0217ca1c60d9', false, '2023-12-18 17:08:57.428366+00', '2023-12-18 17:08:57.428366+00', NULL, 'ef166ee2-ae51-487c-9173-bb2e81d0a5a3'),
-	('00000000-0000-0000-0000-000000000000', 72, 'wXmtWozOlxtx2DbCgwJ_gQ', '7ac00503-8519-43c8-a5ea-b79aeca900b1', true, '2023-12-18 17:07:27.193554+00', '2023-12-18 18:09:13.521543+00', 'fYnKEVnVc5Cf1zk__OndZQ', 'e8e00899-d977-4aff-ba2a-5db2e0b5a5fc'),
-	('00000000-0000-0000-0000-000000000000', 108, 'Wpa844Wq5DzYJChQZ-cpVA', '7ac00503-8519-43c8-a5ea-b79aeca900b1', false, '2023-12-19 18:21:06.612042+00', '2023-12-19 18:21:06.612042+00', NULL, 'a332f016-e8aa-47f0-a75e-88a1d7ba0093'),
-	('00000000-0000-0000-0000-000000000000', 109, 'u9O720ZfnjDlZfEmMpXAdQ', '0c256e75-aa40-4f62-8d30-0217ca1c60d9', false, '2023-12-19 18:22:55.360924+00', '2023-12-19 18:22:55.360924+00', NULL, 'b477694b-8834-4ca8-8aa8-7131c0ccc97f'),
-	('00000000-0000-0000-0000-000000000000', 74, 'U92MVeZW-lzMTyR3P3z-Jw', '0c256e75-aa40-4f62-8d30-0217ca1c60d9', true, '2023-12-18 17:10:06.332675+00', '2023-12-20 21:03:07.760753+00', NULL, 'a9f27ecd-7f94-4bfa-be34-ba5405bac3c2'),
-	('00000000-0000-0000-0000-000000000000', 75, 'Ei9IxN6lMJYCaZTcpa9k9A', '7ac00503-8519-43c8-a5ea-b79aeca900b1', true, '2023-12-18 18:09:13.522362+00', '2023-12-20 21:03:07.994582+00', 'wXmtWozOlxtx2DbCgwJ_gQ', 'e8e00899-d977-4aff-ba2a-5db2e0b5a5fc'),
-	('00000000-0000-0000-0000-000000000000', 111, 'UFi64I37otDTujQJH_SyLw', '7ac00503-8519-43c8-a5ea-b79aeca900b1', true, '2023-12-20 21:03:07.994928+00', '2024-01-22 18:40:36.465046+00', 'Ei9IxN6lMJYCaZTcpa9k9A', 'e8e00899-d977-4aff-ba2a-5db2e0b5a5fc'),
-	('00000000-0000-0000-0000-000000000000', 110, 'urM3ighvEecObLTvdG0qOA', '0c256e75-aa40-4f62-8d30-0217ca1c60d9', true, '2023-12-20 21:03:07.765846+00', '2024-01-22 18:44:00.751021+00', 'U92MVeZW-lzMTyR3P3z-Jw', 'a9f27ecd-7f94-4bfa-be34-ba5405bac3c2'),
-	('00000000-0000-0000-0000-000000000000', 113, 'YiBKQiVmhr2qdhb-hp4BSA', '0c256e75-aa40-4f62-8d30-0217ca1c60d9', true, '2024-01-22 18:44:00.768516+00', '2024-01-22 19:48:40.908832+00', 'urM3ighvEecObLTvdG0qOA', 'a9f27ecd-7f94-4bfa-be34-ba5405bac3c2'),
-	('00000000-0000-0000-0000-000000000000', 114, 'gk8gaphdyJwYZGJG5QtcLw', '0c256e75-aa40-4f62-8d30-0217ca1c60d9', false, '2024-01-22 19:48:40.91058+00', '2024-01-22 19:48:40.91058+00', 'YiBKQiVmhr2qdhb-hp4BSA', 'a9f27ecd-7f94-4bfa-be34-ba5405bac3c2'),
-	('00000000-0000-0000-0000-000000000000', 112, 'oarfsEblC4qdlGocQDiyPg', '7ac00503-8519-43c8-a5ea-b79aeca900b1', true, '2024-01-22 18:40:36.470644+00', '2024-01-22 19:48:43.849219+00', 'UFi64I37otDTujQJH_SyLw', 'e8e00899-d977-4aff-ba2a-5db2e0b5a5fc'),
-	('00000000-0000-0000-0000-000000000000', 115, '8XFK7KAiMd6NqIofNTLvbg', '7ac00503-8519-43c8-a5ea-b79aeca900b1', false, '2024-01-22 19:48:43.850147+00', '2024-01-22 19:48:43.850147+00', 'oarfsEblC4qdlGocQDiyPg', 'e8e00899-d977-4aff-ba2a-5db2e0b5a5fc');
-
 
 --
 -- Data for Name: sso_providers; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
@@ -157,8 +121,8 @@ Through a carefully crafted curriculum, you''ll learn the core concepts of MVC, 
 --
 
 INSERT INTO "public"."course" ("title", "description", "overview", "id", "created_at", "updated_at", "group_id", "is_template", "logo", "slug", "metadata", "cost", "currency", "banner_image", "is_published", "is_certificate_downloadable", "certificate_theme", "status") VALUES
-	('Building express apps', 'This shows how to build an express app', 'Welcome to this amazing course 🚀 ', '2e845a61-98a4-4a78-a8db-f140d14f451b', '2023-11-22 10:16:06.854875+00', '2023-11-22 10:16:06.854875+00', 'c0ab7c5b-db2e-46e7-9853-9308c8ccb2cd', true, '', NULL, '{"gols": "", "description": "", "requirements": ""}', 0, 'NGN', NULL, false, false, NULL, 'ACTIVE'),
-	('Data Science with Python and Pandas', 'Unlock the power of data with our "Data Science with Python and Pandas" course. Dive into Python programming fundamentals and then journey into the world of Pandas for efficient data manipulation and analysis. Learn essential data cleaning and preprocessing techniques before venturing into statistical analysis using Pandas. Cap off your exploration with data visualization using Matplotlib and Seaborn. Gain the skills to derive meaningful insights from data and communicate them effectively, positioning yourself as a proficient data scientist in the dynamic field of data analytics.', 'Welcome to this amazing course 🚀 ', 'f0a85d18-aff4-412f-b8e6-3b34ef098dce', '2023-12-16 14:41:15.294951+00', '2023-12-16 14:41:15.294951+00', '0789ced2-b8f3-472c-97ff-bdde1e80dddf', true, 'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w1MTE1NTV8MHwxfHNlYXJjaHwxOHx8ZGF0YSUyMHNjaWVuY2V8ZW58MHx8fHwxNzA3Nzk5MzMwfDA&ixlib=rb-4.0.3&q=80&w=1080', 'data-science-with-python-and-pandas-1702919269375', '{"gols": "", "grading": true, "description": "", "requirements": "", "lessonDownload": true, "allowNewStudent": true, "lessonTabsOrder": [{"id": 1, "name": "Note"}, {"id": 2, "name": "Slide"}, {"id": 3, "name": "Video"}]}', 0, 'NGN', NULL, true, false, NULL, 'ACTIVE'),
+	('Building express apps', 'This shows how to build an express app', 'Welcome to this amazing course 🚀 ', '2e845a61-98a4-4a78-a8db-f140d14f451b', '2023-11-22 10:16:06.854875+00', '2023-11-22 10:16:06.854875+00', 'c0ab7c5b-db2e-46e7-9853-9308c8ccb2cd', true, '', 'build-express-apps', '{"goals": "", "description": "", "requirements": ""}', 0, 'NGN', NULL, false, false, NULL, 'ACTIVE'),
+	('Data Science with Python and Pandas', 'Unlock the power of data with our "Data Science with Python and Pandas" course. Dive into Python programming fundamentals and then journey into the world of Pandas for efficient data manipulation and analysis. Learn essential data cleaning and preprocessing techniques before venturing into statistical analysis using Pandas. Cap off your exploration with data visualization using Matplotlib and Seaborn. Gain the skills to derive meaningful insights from data and communicate them effectively, positioning yourself as a proficient data scientist in the dynamic field of data analytics.', 'Welcome to this amazing course 🚀 ', 'f0a85d18-aff4-412f-b8e6-3b34ef098dce', '2023-12-16 14:41:15.294951+00', '2023-12-16 14:41:15.294951+00', '0789ced2-b8f3-472c-97ff-bdde1e80dddf', true, 'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w1MTE1NTV8MHwxfHNlYXJjaHwxOHx8ZGF0YSUyMHNjaWVuY2V8ZW58MHx8fHwxNzA3Nzk5MzMwfDA&ixlib=rb-4.0.3&q=80&w=1080', 'data-science-with-python-and-pandas-1702919269375', '{"goals": "", "grading": true, "description": "", "requirements": "", "lessonDownload": true, "allowNewStudent": true, "lessonTabsOrder": [{"id": 1, "name": "Note"}, {"id": 2, "name": "Slide"}, {"id": 3, "name": "Video"}]}', 0, 'NGN', NULL, true, false, NULL, 'ACTIVE'),
 	('Getting started with MVC', 'Embark on a comprehensive journey into the world of Model-View-Controller (MVC) architecture with our course, "Getting Started with MVC." Designed for beginners and aspiring developers, this course provides a solid foundation for understanding the principles and practices behind MVC, a widely adopted design pattern in software development.
 
 Through a carefully crafted curriculum, you''ll learn the core concepts of MVC, exploring how it enhances the organization, scalability, and maintainability of your code', '<p>"Getting Started with MVC. is designed for beginners and aspiring developers, this course provides a solid foundation for understanding the principles and practices behind MVC, a widely adopted design pattern in software development.</p>
@@ -198,8 +162,8 @@ Through a carefully crafted curriculum, you''ll learn the core concepts of MVC, 
 </div>
 </div>
 </div>
-</div>', '98e6e798-f0bd-4f9d-a6f5-ce0816a4f97e', '2023-12-16 14:11:16.672983+00', '2023-12-16 14:11:16.672983+00', 'c6b022fd-fff3-4f09-8960-c9cb06819761', true, '', NULL, '{"gols": "", "grading": false, "description": "", "requirements": "", "lessonDownload": false, "allowNewStudent": true, "lessonTabsOrder": [{"id": 1, "name": "Note"}, {"id": 2, "name": "Slide"}, {"id": 3, "name": "Video"}]}', 0, 'NGN', NULL, true, false, NULL, 'ACTIVE'),
-	('Modern Web Development with React', 'By the end of this course, you''ll be equipped to build interactive and responsive web applications, making you a proficient React developer ready for the demands of today''s web development landscape.', 'Welcome to this amazing course 🚀 ', '16e3bc8d-5d1b-4708-988e-93abae288ccf', '2023-12-16 14:40:15.374067+00', '2023-12-16 14:40:15.374067+00', '04a250f1-bcb9-4e0d-a3d4-a01096e7a105', true, 'https://images.unsplash.com/photo-1565843708714-52ecf69ab81f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w1MTE1NTV8MHwxfHNlYXJjaHwxOHx8cmVhY3QlMjBkZXZ8ZW58MHx8fHwxNzA3Nzk5NDMyfDA&ixlib=rb-4.0.3&q=80&w=1080', NULL, '{"gols": "", "grading": true, "description": "", "requirements": "", "lessonDownload": false, "allowNewStudent": true, "lessonTabsOrder": [{"id": 1, "name": "Note"}, {"id": 2, "name": "Slide"}, {"id": 3, "name": "Video"}]}', 0, 'NGN', NULL, true, false, NULL, 'ACTIVE');
+</div>', '98e6e798-f0bd-4f9d-a6f5-ce0816a4f97e', '2023-12-16 14:11:16.672983+00', '2023-12-16 14:11:16.672983+00', 'c6b022fd-fff3-4f09-8960-c9cb06819761', true, '', 'getting-started-with-mvc', '{"goals": "", "grading": false, "description": "", "requirements": "", "lessonDownload": false, "allowNewStudent": true, "lessonTabsOrder": [{"id": 1, "name": "Note"}, {"id": 2, "name": "Slide"}, {"id": 3, "name": "Video"}]}', 0, 'NGN', NULL, true, false, NULL, 'ACTIVE'),
+	('Modern Web Development with React', 'By the end of this course, you''ll be equipped to build interactive and responsive web applications, making you a proficient React developer ready for the demands of today''s web development landscape.', 'Welcome to this amazing course 🚀 ', '16e3bc8d-5d1b-4708-988e-93abae288ccf', '2023-12-16 14:40:15.374067+00', '2023-12-16 14:40:15.374067+00', '04a250f1-bcb9-4e0d-a3d4-a01096e7a105', true, 'https://images.unsplash.com/photo-1565843708714-52ecf69ab81f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w1MTE1NTV8MHwxfHNlYXJjaHwxOHx8cmVhY3QlMjBkZXZ8ZW58MHx8fHwxNzA3Nzk5NDMyfDA&ixlib=rb-4.0.3&q=80&w=1080', 'modern-web-development, '{"goals": "", "grading": true, "description": "", "requirements": "", "lessonDownload": false, "allowNewStudent": true, "lessonTabsOrder": [{"id": 1, "name": "Note"}, {"id": 2, "name": "Slide"}, {"id": 3, "name": "Video"}]}', 0, 'NGN', NULL, true, false, NULL, 'ACTIVE');
 
 
 --

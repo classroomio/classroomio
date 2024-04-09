@@ -35,6 +35,17 @@
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen
               />
+            {:else if video.type === 'generic'}
+              <iframe
+                width="100%"
+                height="569"
+                class="iframe"
+                src={video.link}
+                title="Embeded Video player"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+              />
             {:else if video.metadata?.svid}
               <div style="position:relative;padding-bottom:51.416579%">
                 <iframe

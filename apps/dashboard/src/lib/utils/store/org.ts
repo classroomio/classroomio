@@ -5,6 +5,7 @@ import type { Writable } from 'svelte/store';
 import type { CurrentOrg, OrgTeamMember, OrgAudience } from '../types/org';
 import { ROLE } from '$lib/utils/constants/roles';
 import type { UserLessonDataType } from '$lib/utils/types';
+import { PLAN } from 'shared-constants/src/plans/constants';
 
 export const defaultCurrentOrgState: CurrentOrg = {
   id: '',
@@ -15,7 +16,8 @@ export const defaultCurrentOrgState: CurrentOrg = {
   memberId: '',
   role_id: '',
   landingpage: {},
-  theme: ''
+  theme: '',
+  organization_plan: []
 };
 
 export const orgs = writable<CurrentOrg[]>([]);
@@ -25,6 +27,9 @@ export const orgTeam = writable<OrgTeamMember[]>([]);
 export const isOrgAdmin = derived(
   currentOrg,
   ($currentOrg) => parseInt($currentOrg.role_id) === ROLE.ADMIN
+);
+export const currentOrgPlan = derived(currentOrg, ($currentOrg) =>
+  $currentOrg.organization_plan.find((p) => p.is_active)
 );
 export const currentOrgPath = derived(currentOrg, ($currentOrg) =>
   $currentOrg.siteName ? `/org/${$currentOrg.siteName}` : ''
@@ -37,6 +42,21 @@ export const currentOrgDomain = derived(currentOrg, ($currentOrg) => {
       ? `https://${$currentOrg.siteName}.classroomio.com`
       : '';
 });
+
+// Utility org store
+export const isFreePlan = derived(
+  currentOrgPlan,
+  ($plan) => !$plan || $plan.plan_name === PLAN.BASIC
+);
+export const currentOrgMaxAudience = derived(currentOrgPlan, ($plan) =>
+  !$plan
+    ? 50
+    : $plan.plan_name === PLAN.EARLY_ADOPTER
+      ? 10000
+      : $plan.plan_name === PLAN.ENTERPRISE
+        ? Number.MAX_SAFE_INTEGER
+        : 50
+);
 
 // Quiz
 export const createQuizModal = writable({
