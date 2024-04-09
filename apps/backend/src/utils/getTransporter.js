@@ -19,7 +19,7 @@ const getTransporter = async (isPersonal = false) => {
   try {
     const transporter = nodemailer.createTransport({
       host: SMTP_HOST,
-      port: parseInt(SMTP_PORT || '465'),
+      port: parseInt(SMTP_PORT || '465', 10),
       secure: true,
       auth: {
         user: isPersonal ? SMTP_USER : SMTP_USER_NOTIFY,
