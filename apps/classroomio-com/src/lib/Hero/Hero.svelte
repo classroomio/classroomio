@@ -9,30 +9,29 @@
   let height = '710';
   let animate = false;
 
-  // onMount(() => {
-  //   const handleResize = () => {
-  //     const screenWidth = window.innerWidth;
-  //     if (screenWidth < 768) {
-  //       // Mobile view
-  //       width = '1920';
-  //       height = '1440';
-  //     } else {
-  //       // Desktop view
-  //       width = '710';
-  //       height = '710';
-  //     }
-  //   };
+  onMount(() => {
+    const handleResize = () => {
+      const screenWidth = window.innerWidth;
+      if (screenWidth < 768) {
+        // Mobile view
+        width = '1920';
+        height = '1440';
+      } else {
+        // Desktop view
+        width = '710';
+        height = '710';
+      }
+    };
 
-  //   handleResize();
-  //   setTimeout(() => {
-  //     animate = true;
-  //   }, 70);
+    setTimeout(() => {
+      animate = true;
+    }, 70);
 
-  //   window.addEventListener('resize', handleResize);
-  //   return () => {
-  //     window.removeEventListener('resize', handleResize);
-  //   };
-  // });
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  });
 </script>
 
 <div
