@@ -25,7 +25,7 @@ export const VARIANTS_CLASS = {
   [VARIANTS.CONTAINED_SUCCESS]: 'bg-green-700 hover:bg-green-900 text-white',
   [VARIANTS.CONTAINED_DANGER]: 'bg-red-700 hover:bg-red-900 text-white',
   [VARIANTS.OUTLINED]:
-    'border border-black hover:bg-neutral-600 hover:text-white text-black dark:text-white',
+    'border border-black dark:border-white hover:bg-neutral-600 hover:text-white text-black dark:text-white',
   [VARIANTS.NONE]:
     'border-none hover:border-black-300 hover:bg-gray-200 dark:hover:bg-neutral-800 text-black',
   [VARIANTS.TEXT]: 'text-black hover:underline',
