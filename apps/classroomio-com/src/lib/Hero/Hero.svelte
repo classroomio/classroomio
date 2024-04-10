@@ -186,7 +186,6 @@
 
     <div class="relative my-5 md:my-10">
       <img
-        loading="eager"
         {width}
         {height}
         src="./cio-hero.webp"
