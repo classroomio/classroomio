@@ -35,9 +35,9 @@
 </script>
 
 <div
-  class="relative border-b-2 text-center bg-[#F5F8FE] h-[110vh] lg:h-[200vh] mt-[6.5%] overflow-hidden"
+  class="relative border-b-2 text-center bg-[#F5F8FE] h-[110vh] lg:h-[150vh] mt-[5%] overflow-hidden"
 >
-  <div class="overflow-hidden absolute h-full -top-[8%] z-0">
+  <div class="overflow-hidden absolute h-full top-0 z-0">
     <svg
       width="1444"
       height="1628"
@@ -82,7 +82,10 @@
 
     <div class="justify-between w-[90%] absolute top-[3%] left-[4%] hidden lg:flex">
       {#if animate}
-        <div class="relative" transition:fly={{ y: 100, delay: 0, easing: sineInOut }}>
+        <div
+          class="relative transition-all hover:scale-110 rotate-12"
+          transition:fly={{ y: 100, delay: 0, easing: sineInOut }}
+        >
           <a
             href="/#collaboration"
             class="px-6 py-2 border-[1.5px] border-[#3ADFEC] rounded-[4px] bg-white text-[#3ADFEC] text-lg font-bold"
@@ -99,10 +102,11 @@
             <rect width="10.9223" height="10.9223" fill="#3ADFEC" />
           </svg>
         </div>
-      {/if}
 
-      {#if animate}
-        <div class="relative" transition:fly={{ x: 100, delay: 50, easing: sineInOut }}>
+        <div
+          class="relative transition-all hover:scale-110 -rotate-12"
+          transition:fly={{ x: 100, delay: 50, easing: sineInOut }}
+        >
           <a
             href="/github"
             target="_blank"
@@ -136,7 +140,10 @@
 
     <div class="justify-between w-[90%] absolute top-[25%] left-[4%] hidden lg:flex">
       {#if animate}
-        <div class="relative" transition:fly={{ x: -100, delay: 100, easing: sineInOut }}>
+        <div
+          class="relative transition-all hover:scale-110 -rotate-12"
+          transition:fly={{ x: -100, delay: 100, easing: sineInOut }}
+        >
           <a
             href="/#customization"
             class="px-6 py-2 border-[1.5px] border-[#0233BD] rounded-[4px] bg-white text-[#0233BD] text-lg font-bold"
@@ -154,10 +161,10 @@
             <rect width="10.9223" height="10.9223" fill="#0233BD" />
           </svg>
         </div>
-      {/if}
-
-      {#if animate}
-        <div class="relative" transition:fly={{ y: 100, delay: 150, easing: sineInOut }}>
+        <div
+          class="relative transition-all hover:scale-110 rotate-12"
+          transition:fly={{ y: 100, delay: 150, easing: sineInOut }}
+        >
           <a
             href="/#ai"
             class="px-6 py-2 border-[1.5px] border-[#9747FF] rounded-[4px] bg-white text-[#9747FF] text-lg font-bold"
@@ -180,11 +187,18 @@
 
     <div class="my-10 flex flex-col items-center justify-center gap-4 md:flex-row">
       <a
-        class="md:text-base w-11/12 rounded-md bg-blue-700 px-6 py-3 text-sm font-medium text-white text-center transition-all delay-100 hover:bg-blue-800 hover:shadow-xl md:w-fit lg:px-6 lg:py-4 lg:font-semibold"
+        class="md:text-base w-11/12 rounded-md border-gray-200 border-2 px-6 py-3 text-sm font-medium text-center transition-all delay-100 hover:bg-black hover:text-white hover:shadow-xl hover:scale-95 md:w-fit lg:px-6 lg:py-4 lg:font-semibold"
+        href="/demo"
+        rel="noopener noreferrer nofollow"
+      >
+        Book a demo
+      </a>
+      <a
+        class="md:text-base w-11/12 rounded-md bg-blue-700 px-6 py-3 text-sm font-medium text-white text-center transition-all delay-100 hover:bg-blue-800 hover:shadow-xl hover:scale-95 md:w-fit lg:px-6 lg:py-4 lg:font-semibold"
         href="/signup"
         rel="noopener noreferrer nofollow"
       >
-        Get Started for Free 🚀
+        Get Started for Free
       </a>
       <!-- <a
       class="font-medium lg:font-semibold text-sm md:text-md w-11/12 md:w-fit border px-6 py-3 lg:px-10 lg:py-5 rounded-md"
@@ -197,26 +211,13 @@
     </div>
 
     <div class="relative my-5 md:my-10">
-      <!-- <video
-      class="floating w-[85%] lg:w-[70%] mx-auto rounded-lg shadow-lg"
-      autoplay
-      loop
-      muted
-      defaultMuted
-      playsinline
-      preload="auto"
-    >
-      <source src="./dark-light-mode.mp4" type="video/mp4" />
-      <track kind="captions" />
-    </video> -->
-
       <img
         loading="eager"
         {width}
         {height}
         src="./cio-hero.webp"
         alt="hero section with dark vs light mode"
-        class="floating mx-auto w-[85%] rounded-lg shadow-lg lg:w-[70%]"
+        class="mx-auto w-[85%] rounded-lg shadow-lg lg:w-[70%]"
       />
     </div>
 
