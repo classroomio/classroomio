@@ -1,5 +1,5 @@
 <script>
-  import { onMount } from 'svelte';
+  // import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
   import { sineInOut } from 'svelte/easing';
   import { PUBLIC_ENABLE_USERS_COMPANIES } from '$env/static/public';
@@ -9,30 +9,30 @@
   let height = '710';
   let animate = false;
 
-  onMount(() => {
-    const handleResize = () => {
-      const screenWidth = window.innerWidth;
-      if (screenWidth < 768) {
-        // Mobile view
-        width = '1920';
-        height = '1440';
-      } else {
-        // Desktop view
-        width = '710';
-        height = '710';
-      }
-    };
+  // onMount(() => {
+  //   const handleResize = () => {
+  //     const screenWidth = window.innerWidth;
+  //     if (screenWidth < 768) {
+  //       // Mobile view
+  //       width = '1920';
+  //       height = '1440';
+  //     } else {
+  //       // Desktop view
+  //       width = '710';
+  //       height = '710';
+  //     }
+  //   };
 
-    handleResize();
-    setTimeout(() => {
-      animate = true;
-    }, 70);
+  //   handleResize();
+  //   setTimeout(() => {
+  //     animate = true;
+  //   }, 70);
 
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  });
+  //   window.addEventListener('resize', handleResize);
+  //   return () => {
+  //     window.removeEventListener('resize', handleResize);
+  //   };
+  // });
 </script>
 
 <div
