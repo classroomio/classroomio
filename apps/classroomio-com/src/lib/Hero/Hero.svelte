@@ -9,40 +9,40 @@
   let height = '710';
   let animate = false;
 
-  onMount(() => {
-    const handleResize = () => {
-      const screenWidth = window.innerWidth;
-      if (screenWidth < 768) {
-        // Mobile view
-        width = '1920';
-        height = '1440';
-      } else {
-        // Desktop view
-        width = '710';
-        height = '710';
-      }
-    };
+  // onMount(() => {
+  //   const handleResize = () => {
+  //     const screenWidth = window.innerWidth;
+  //     if (screenWidth < 768) {
+  //       // Mobile view
+  //       width = '1920';
+  //       height = '1440';
+  //     } else {
+  //       // Desktop view
+  //       width = '710';
+  //       height = '710';
+  //     }
+  //   };
 
-    handleResize();
-    setTimeout(() => {
-      animate = true;
-    }, 70);
+  //   handleResize();
+  //   setTimeout(() => {
+  //     animate = true;
+  //   }, 70);
 
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  });
+  //   window.addEventListener('resize', handleResize);
+  //   return () => {
+  //     window.removeEventListener('resize', handleResize);
+  //   };
+  // });
 </script>
 
 <div
-  class="relative border-b-2 text-center bg-[#F5F8FE] h-[110vh] lg:h-[150vh] mt-[5%] overflow-hidden"
+  class="relative border-b-2 text-center bg-[#F5F8FE] h-[110vh] lg:h-[150vh] mt-[5%] overflow-hidden w-full"
 >
   <!-- <div class="overflow-hidden absolute h-full top-0 z-0">
     <HeroBackground />
   </div> -->
 
-  <div class="z-30 absolute top-[13%] lg:top-[4%]">
+  <div class="z-30 absolute top-[13%] lg:top-[4%] w-full">
     <div class="mb-10 ml-[5%] lg:ml-0 flex w-full items-center justify-start lg:justify-center">
       <a
         target="_blank"
