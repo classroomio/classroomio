@@ -14,6 +14,7 @@
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import pluralize from 'pluralize';
   import { onMount } from 'svelte';
+  import { addNewsfeedCommentValidation } from '$lib/utils/functions/validator';
 
   export let feed: Feed;
   export let editFeed: Feed;
@@ -29,6 +30,7 @@
   let comment = '';
   let areCommentsExpanded = false;
   let isDeleteFeedModal = false;
+  let errors = {};
 
   let reactions = {
     smile: '😀',
@@ -55,9 +57,11 @@
   };
 
   const handleAddNewComment = (event) => {
-    if (!comment) return;
-
     if (event.key === 'Enter' || event.type === 'click') {
+      errors = addNewsfeedCommentValidation(comment);
+      if (Object.keys(errors).length) {
+        return;
+      }
       event.preventDefault();
       addNewComment(comment, feed.id, author.id);
       comment = '';
@@ -96,7 +100,7 @@
   id={feed.id}
   class="flex flex-col gap-5 {isActive
     ? 'border-2 border-primary-700'
-    : 'border border-gray-200'} rounded-md mb-7 max-w-3xl"
+    : 'border border-gray-200 dark:border-neutral-600'} rounded-md mb-7 max-w-3xl"
 >
   <section>
     <div class="p-3 pb-0">
@@ -158,7 +162,7 @@
     </div>
   </section>
 
-  <section class="border-t border-gray-200 p-3">
+  <section class="border-t border-gray-200 dark:border-neutral-600 p-3">
     {#if feed.comment.length > 0}
       <button
         on:click={expandComment}
@@ -218,7 +222,7 @@
           bind:value={comment}
           on:keydown={handleAddNewComment}
           placeholder="Add class comment"
-          class="w-full bg-transparent border border-gray-200 rounded-3xl"
+          class="w-full bg-transparent border border-gray-200 dark:border-neutral-600 rounded-3xl"
           required
         />
       </div>
@@ -226,6 +230,9 @@
         <Send size={24} />
       </button>
     </div>
+    {#if errors.newComment}
+      <p class="text-sm text-red-500">{errors.newComment}</p>
+    {/if}
   </section>
   <DeleteFeedConfirmation bind:openDeleteModal={isDeleteFeedModal} deleteFeed={handleDeleteFeed} />
 </div>

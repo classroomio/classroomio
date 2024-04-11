@@ -1,6 +1,7 @@
 <script>
   import { goto } from '$app/navigation';
   import { Grid, Row, Column } from 'carbon-components-svelte';
+  import FlashFilled from 'carbon-icons-svelte/lib/FlashFilled.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
@@ -10,6 +11,7 @@
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import SectionTitle from '../SectionTitle.svelte';
   import { t } from '$lib/utils/functions/translations';
+  import { isFreePlan } from '$lib/utils/store/org';
 
   let avatar;
   let loading = false;
@@ -95,7 +97,7 @@
   }
 </script>
 
-<Grid class="border-c rounded border-gray-200 w-full mt-5">
+<Grid class="border-c rounded border-gray-200 dark:border-neutral-600 w-full mt-5">
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('settings.organization.organization_profile.heading')}</SectionTitle
@@ -190,7 +192,7 @@
       </p>
       <PrimaryButton
         label={$t('settings.organization.organization_profile.custom_domain.button')}
-        className="my-7 py-5 px-10 text-primary-700"
+        className="my-7 py-5 px-10"
         variant={VARIANTS.OUTLINED}
         onClick={() => gotoSetting('/domains')}
       />
@@ -209,11 +211,15 @@
         {$t('settings.organization.organization_profile.team.body')}
       </p>
       <PrimaryButton
-        label={$t('settings.organization.organization_profile.team.button')}
-        className="my-7 py-5 px-10 text-primary-700"
+        className="my-7 py-5 px-10 flex items-center gap-2 justify-center"
         variant={VARIANTS.OUTLINED}
         onClick={() => gotoSetting('/teams')}
-      />
+      >
+        {#if $isFreePlan}
+          <FlashFilled size={16} class="text-blue-700" />
+        {/if}
+        Manage Team
+      </PrimaryButton>
     </Column>
   </Row>
 </Grid>

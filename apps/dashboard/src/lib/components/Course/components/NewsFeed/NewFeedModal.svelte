@@ -12,6 +12,8 @@
     triggerSendEmail
   } from '$lib/utils/services/notification/notification';
   import { t } from '$lib/utils/functions/translations';
+  import { createNewsfeedValidation } from '$lib/utils/functions/validator';
+  import { getTextFromHTML } from '$lib/utils/functions/toHtml';
 
   export let author: Author | any = {};
   export let courseId = '';
@@ -23,9 +25,14 @@
   let newPost = '';
   let isLoading = false;
   let createdFeed;
+  let errors = {};
 
   const onPost = async () => {
-    if (!newPost) return;
+    errors = createNewsfeedValidation(getTextFromHTML(newPost));
+
+    if (Object.keys(errors).length) {
+      return;
+    }
     isLoading = true;
     try {
       if (edit) {
@@ -111,6 +118,9 @@
       placeholder={$t('course.navItem.news_feed.heading_button.placeholder')}
       maxHeight={400}
     />
+    {#if errors.newPost}
+      <p class="text-sm text-red-500">{errors.newPost}</p>
+    {/if}
     <div class="flex items-center justify-end py-2">
       <div class="flex gap-2">
         <PrimaryButton

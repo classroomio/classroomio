@@ -64,7 +64,7 @@
       {#if isOrgSite}
         <li><a class="block" href="/lms"> {$t('navigation.goto_lms')} </a></li>
       {/if}
-    {:else}
+    {:else if !$page.url.pathname?.includes('/404')}
       <li>
         <div class="flex">
           <PrimaryButton

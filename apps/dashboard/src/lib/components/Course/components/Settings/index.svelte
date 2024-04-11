@@ -15,13 +15,14 @@
   import { course } from '$lib/components/Course/store';
   import type { Course } from '$lib/utils/types';
   import { updateCourse, deleteCourse } from '$lib/utils/services/courses';
-  import { currentOrgPath } from '$lib/utils/store/org';
+  import { currentOrgPath, isFreePlan } from '$lib/utils/store/org';
   import { isObject } from '$lib/utils/functions/isObject';
   import { lessons } from '../Lesson/store/lessons';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { snackbar } from '$lib/components/Snackbar/store';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
+  import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import generateSlug from '$lib/utils/functions/generateSlug';
   import { t } from '$lib/utils/functions/translations';
@@ -186,7 +187,7 @@
   $: setDefault($course);
 </script>
 
-<Grid class="border-c rounded border-gray-200">
+<Grid class="border-c rounded border-gray-200 dark:border-neutral-600">
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={8} md={8} lg={8}>
       <SectionTitle>{$t('course.navItem.settings.cover_image')}</SectionTitle>
@@ -286,10 +287,14 @@
       <p>{$t('course.navItem.settings.available')}</p>
     </Column>
     <Column sm={8} md={8} lg={8}>
-      <Toggle size="sm" bind:toggled={$settings.lesson_download}>
-        <span slot="labelA" style="color: gray">{$t('course.navItem.settings.disabled')}</span>
-        <span slot="labelB" style="color: gray">{$t('course.navItem.settings.enabled')}</span>
-      </Toggle>
+      {#if $isFreePlan}
+        <UpgradeBanner>Upgrade to download lessons</UpgradeBanner>
+      {:else}
+        <Toggle size="sm" bind:toggled={$settings.lesson_download}>
+          <span slot="labelA" style="color: gray">{$t('course.navItem.settings.disabled')}</span>
+          <span slot="labelB" style="color: gray">{$t('course.navItem.settings.enabled')}</span>
+        </Toggle>
+      {/if}
     </Column>
   </Row>
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
@@ -298,13 +303,17 @@
       <p>{$t('course.navItem.settings.course_avail')}</p>
     </Column>
     <Column sm={8} md={8} lg={8}>
-      <PrimaryButton
-        variant={VARIANTS.OUTLINED}
-        label={$t('course.navItem.settings.download')}
-        onClick={downloadCourse}
-        isDisabled={isLoading || !PUBLIC_SERVER_URL}
-        {isLoading}
-      />
+      {#if $isFreePlan}
+        <UpgradeBanner>Upgrade to download course</UpgradeBanner>
+      {:else}
+        <PrimaryButton
+          variant={VARIANTS.OUTLINED}
+          label={$t('course.navItem.settings.download')}
+          onClick={downloadCourse}
+          isDisabled={isLoading || !PUBLIC_SERVER_URL}
+          {isLoading}
+        />
+      {/if}
     </Column>
   </Row>
 

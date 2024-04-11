@@ -25,7 +25,7 @@
 <section class="width-fit p-3 flex flex-col items-center">
   <div
     class="avatar-container {widthHeight ||
-      'setwidthheight'} pointer border-2 border-gray-200 relative {shape}"
+      'setwidthheight'} pointer border-2 border-gray-200 dark:border-neutral-600 relative {shape}"
   >
     {#if src}
       <img class="w-full h-full {shape}" {src} alt="Avatar" />

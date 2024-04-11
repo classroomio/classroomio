@@ -4,13 +4,15 @@
   import { updateCourse } from '$lib/utils/services/courses';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import Professional from './certificates/Professional.svelte';
   import Plain from './certificates/Plain.svelte';
   import { course } from '$lib/components/Course/store';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { currentOrg, isFreePlan } from '$lib/utils/store/org';
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
+  import FlashFilled from 'carbon-icons-svelte/lib/FlashFilled.svelte';
 
   const studentNamePlaceholder = 'Name of student';
   const themes = ['professional', 'plain'];
@@ -45,7 +47,9 @@
   />
 </svelte:head>
 
-<main class="md:-ml-3 md:-mr-3 px-2">
+<UpgradeBanner>Upgrade your plan to generate certificates</UpgradeBanner>
+
+<main class="md:-ml-3 md:-mr-3 px-2 mt-2">
   <div class="flex-1 flex flex-col lg:flex-row justify-between gap-3 w-full mb-3 h-4/5">
     <section class="w-full lg:w-2/5 h-full">
       <strong class="my-2 text-base font-semibold text-black dark:text-gray-100"
@@ -54,7 +58,11 @@
       <p class="text-xs font-normal my-4 dark:text-gray-100">
         {$t('course.navItem.certificates.theme')}
       </p>
-      <RadioButtonGroup bind:selected={$course.certificate_theme} class="mb-10">
+      <RadioButtonGroup
+        bind:selected={$course.certificate_theme}
+        class="mb-10"
+        disabled={$isFreePlan}
+      >
         {#each themes as theme}
           <div class="flex mr-3">
             <RadioButton value={theme} />
@@ -76,11 +84,12 @@
             <strong class="font-semibold">{$t('course.navItem.certificates.settings')}</strong>
             {$t('course.navItem.certificates.and_upload')}
           </p>
+
           <PrimaryButton
             label={$t('course.navItem.certificates.goto_settings')}
             variant={VARIANTS.OUTLINED}
             className="rounded-md mt-3"
-            onClick={() => goto(`org/${$currentOrg.siteName}/settings`)}
+            onClick={() => goto(`/org/${$currentOrg.siteName}/settings`)}
           />
         </div>
         <span class="my-4">
@@ -93,6 +102,7 @@
             bgColor="bg-gray-100"
             bind:value={$course.description}
             errorMessage={errors.description}
+            disabled={$isFreePlan}
           />
         </span>
         <Toggle
@@ -100,6 +110,7 @@
           bind:toggled={$course.is_certificate_downloadable}
           class="my-4"
           size="sm"
+          disabled={$isFreePlan}
         >
           <span slot="labelA" style={$globalStore.isDark ? 'color: white' : 'color: #161616'}
             >{$t('course.navItem.certificates.locked')}</span
@@ -124,11 +135,17 @@
   </div>
   <div class="h-1/5">
     <PrimaryButton
-      label={$t('course.navItem.certificates.save')}
-      className="rounded-md"
+      className="rounded-md flex gap-2 items-center"
+      variant={VARIANTS.CONTAINED_DARK}
       onClick={saveCertificate}
       isLoading={isSaving}
-    />
+      isDisabled={$isFreePlan}
+    >
+      {#if $isFreePlan}
+        <FlashFilled size={16} class="text-blue-700" />
+      {/if}
+      Save Changes
+    </PrimaryButton>
   </div>
 </main>
 

@@ -2,6 +2,7 @@
   import { goto } from '$app/navigation';
   import Community from '$lib/components/Org/Community/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { currentOrgPath } from '$lib/utils/store/org';
   import { isMobile } from '$lib/utils/store/useMobile';
   import Add from 'carbon-icons-svelte/lib/Add.svelte';
@@ -25,7 +26,11 @@
           <Add size={24} />
         </PrimaryButton>
       {:else}
-        <PrimaryButton label={$t('community.ask_button')} onClick={askCommunity} />
+        <PrimaryButton
+          label={$t('community.ask_button')}
+          variant={VARIANTS.CONTAINED_DARK}
+          onClick={askCommunity}
+        />
       {/if}
     </div>
     <Community />

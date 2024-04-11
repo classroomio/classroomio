@@ -14,6 +14,7 @@
   import type { Course } from '$lib/utils/types';
   import { browser } from '$app/environment';
   import { t } from '$lib/utils/functions/translations.js';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
 
   export let data;
   let { cantFetch } = data;
@@ -94,6 +95,7 @@
       {:else}
         <PrimaryButton
           label={$t('courses.heading_button')}
+          variant={VARIANTS.CONTAINED_DARK}
           isDisabled={!$isOrgAdmin}
           onClick={() => ($createCourseModal.open = true)}
         />

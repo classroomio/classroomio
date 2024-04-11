@@ -40,7 +40,7 @@ export async function POST({ request }) {
     subject: '[ClassroomIO]: Verify your email',
     content: `
     <p>Thank you for signing up</p>
-    <p>To verify your email, please click the <strong>Verify</strong> button below /p>
+    <p>To verify your email, please click the <strong>Verify</strong> button below </p>
     <div>
     <a class="button" href="${verificationLink}">Verify</a>
   </div>

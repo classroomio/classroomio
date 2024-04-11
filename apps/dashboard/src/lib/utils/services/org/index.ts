@@ -1,11 +1,11 @@
-import isEmpty from 'lodash/isEmpty';
 import { get } from 'svelte/store';
 
 import { goto } from '$app/navigation';
 import { supabase } from '$lib/utils/functions/supabase';
 import { orgs, currentOrg, orgAudience, orgTeam } from '$lib/utils/store/org';
 import { ROLE, ROLE_LABEL } from '$lib/utils/constants/roles';
-import type { CurrentOrg, OrgTeamMember, OrgAudience } from '$lib/utils/types/org';
+import type { CurrentOrg, OrgTeamMember } from '$lib/utils/types/org';
+import type { OrganizationPlan } from '$lib/utils/types';
 
 export async function getOrgTeam(orgId: string) {
   const { data, error } = await supabase
@@ -63,7 +63,7 @@ export async function getOrgTeam(orgId: string) {
   };
 }
 
-export async function getOrganizations(userId: string) {
+export async function getOrganizations(userId: string, isOrgSite?: boolean, orgSiteName?: string) {
   const { data, error } = await supabase
     .from('organizationmember')
     .select(
@@ -79,7 +79,12 @@ export async function getOrganizations(userId: string) {
         avatar_url,
         landingpage,
         theme,
-        created_at
+        created_at,
+        organization_plan(
+          plan_name,
+          is_active,
+          subscriptionId:lmz_data->id
+        )
       )
     `
     )
@@ -108,25 +113,37 @@ export async function getOrganizations(userId: string) {
         avatar_url: orgMember?.organization?.avatar_url,
         memberId: orgMember?.id,
         role_id: orgMember?.role_id,
-        landingpage: orgMember?.organization?.landingpage
+        landingpage: orgMember?.organization?.landingpage,
+        organization_plan: orgMember?.organization?.organization_plan
       });
     });
 
     orgs.set(orgsArray);
 
-    if (localStorage) {
-      const lastOrgSiteName = localStorage.getItem('classroomio_org_sitename');
+    // If this is a student dashboard
+    if (isOrgSite && orgSiteName) {
+      const orgData = orgsArray.find((org) => org.siteName === orgSiteName);
 
-      const lastOrg = orgsArray.find((org) => org.siteName === lastOrgSiteName);
-
-      if (lastOrg) {
-        currentOrg.set(lastOrg);
+      if (orgData) {
+        currentOrg.set(orgData);
       }
-    }
+    } else {
+      // Check if org was last visited in localhost
+      if (localStorage) {
+        const lastOrgSiteName = localStorage.getItem('classroomio_org_sitename');
 
-    const _currentOrg = get(currentOrg);
-    if (!_currentOrg.siteName) {
-      currentOrg.set(orgsArray[0]);
+        const lastOrg = orgsArray.find((org) => org.siteName === lastOrgSiteName);
+
+        if (lastOrg) {
+          currentOrg.set(lastOrg);
+        }
+      }
+
+      // Default to setting the first org in the array of orgs
+      const _currentOrg = get(currentOrg);
+      if (!_currentOrg.siteName) {
+        currentOrg.set(orgsArray[0]);
+      }
     }
   }
 
@@ -200,7 +217,6 @@ export async function getCourseBySiteName(siteName: string) {
 }
 
 export async function getCurrentOrg(siteName: string, justGet = false) {
-  
   const { data, error } = await supabase
     .from('organization')
     .select(
@@ -210,14 +226,17 @@ export async function getCurrentOrg(siteName: string, justGet = false) {
       siteName,
       avatar_url,
       landingpage,
-      theme
+      theme,
+      organization_plan(
+        plan_name,
+        is_active
+      )
     `
     )
     .eq('siteName', siteName)
     .returns<CurrentOrg[]>();
   console.log('data =', data);
   console.log('error =', error);
-  
 
   const isDataEmpty = !data?.[0];
 
@@ -233,4 +252,33 @@ export async function getCurrentOrg(siteName: string, justGet = false) {
   } else if (!isDataEmpty) {
     return data[0];
   }
+}
+
+export async function createOrgPlan(params: {
+  orgId: string;
+  planName: string;
+  triggeredBy: number;
+  data: OrganizationPlan['lmz_data'];
+}) {
+  return await supabase.from('organization_plan').insert({
+    activated_at: new Date().toDateString(),
+    org_id: params.orgId,
+    triggered_by: params.triggeredBy,
+    plan_name: params.planName,
+    is_active: true,
+    lmz_data: params.data
+  });
+}
+
+export async function cancelOrgPlan(params: { orgId: string; planName: string }) {
+  return await supabase
+    .from('organization_plan')
+    .update({
+      is_active: false,
+      deactivated_at: new Date().toDateString()
+    })
+    .match({
+      plan_name: params.planName,
+      org_id: params.orgId
+    });
 }

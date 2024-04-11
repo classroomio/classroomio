@@ -3,7 +3,7 @@
 </script>
 
 <div
-  class="h-[70px] w-full border border-gray-100 dark:bg-neutral-800 mx-4 my-2 rounded-md transition ease-in-out relative flex pt-3 px-3"
+  class="h-[70px] w-full border border-gray-100 dark:border-neutral-600 dark:bg-neutral-800 mx-4 my-2 rounded-md transition ease-in-out relative flex pt-3 px-3"
 >
   <div class="w-10 flex justify-evenly flex-col px-1 mr-2 rounded-md">
     <SkeletonPlaceholder style="width: 100%; height: 40%; border-radius: 4px;" />

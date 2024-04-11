@@ -9,22 +9,19 @@ const getSupabase = (config) => {
 
   config = {
     supabaseConfig: {
-      bucketPath:
-        'https://koxqonvbkeakwvmdegcf.supabase.in/storage/v1/object/sign/',
+      bucketPath: 'https://koxqonvbkeakwvmdegcf.supabase.in/storage/v1/object/sign/',
       url: PUBLIC_SUPABASE_URL || '',
-      anonKey: PUBLIC_SUPABASE_ANON_KEY || '',
-    },
+      anonKey: PUBLIC_SUPABASE_ANON_KEY || ''
+    }
   };
 
-  supabase = createClient(
-    config.supabaseConfig.url,
-    config.supabaseConfig.anonKey,
-    { auth: { persistSession: false } }
-  );
+  supabase = createClient(config.supabaseConfig.url, config.supabaseConfig.anonKey, {
+    auth: { persistSession: false }
+  });
 
   return supabase;
 };
 
 module.exports = {
-  getSupabase,
+  getSupabase
 };

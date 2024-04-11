@@ -1,6 +1,5 @@
 <script lang="ts">
-  import posthog from 'posthog-js';
-  import { goto } from '$app/navigation';
+  import { logout } from '$lib/utils/functions/logout';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { supabase } from '$lib/utils/functions/supabase';

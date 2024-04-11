@@ -56,10 +56,7 @@
     <img src="/verify-email.svg" alt="email verification" />
     <p class="font-bold text-xl">{$t('verify_email_modal.heading')}</p>
     <p class="text-sm w-[70%] text-gray-700">
-      {$t('verify_email_modal.sent_verification')}
-      {$profile.email}
-      {$t('verify_email_modal.to_confirm')}
-      {$t('verify_email_modal.kindly_verify')}
+      We've sent a verification email to {$profile.email} to confirm the validity of the email provided.
     </p>
 
     <div class="flex items-center flex-col">

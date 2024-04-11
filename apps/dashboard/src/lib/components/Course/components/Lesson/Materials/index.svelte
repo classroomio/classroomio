@@ -48,6 +48,7 @@
   export let selectedLanguage = '';
   export let selectedLanguageContent = '';
   export let isSaving = false;
+  export let isStudent = false;
   export let toggleMode = () => {};
 
   let translations = [];
@@ -356,7 +357,8 @@
               isLoading={$isLoading}
               isDisabled={$isLoading}
               variant={VARIANTS.OUTLINED}
-            >
+              disableScale
+          >
               <MagicWandFilled size={20} class="carbon-icon mr-3" />
               AI
               <Popover
@@ -409,6 +411,7 @@
             label={$t('course.navItem.lessons.materials.tabs.slide.slide_link')}
             bind:value={$lesson.materials.slide_url}
             onInputChange={handleInputChange}
+            helperMessage="You can embed Google Slides or Canva Presentation"
           />
         {/if}
       </TabContent>
@@ -445,6 +448,17 @@
                         class="iframe"
                         src={formatYoutubeVideo(video.link, errors)}
                         title="YouTube video player"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen
+                      />
+                    {:else if video.type === 'generic'}
+                      <iframe
+                        width="100%"
+                        height="569"
+                        class="iframe"
+                        src={video.link}
+                        title="Embeded Video player"
                         frameborder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowfullscreen
@@ -489,16 +503,18 @@
     </h3>
 
     <RoleBasedSecurity allowedRoles={[1, 2]}>
+      {#if !isStudent}
       <p class="text-sm text-center font-normal py-2">
-        {$t('course.navItem.lessons.materials.body_content')}
-        <strong>{$t('course.navItem.lessons.materials.get_started')}</strong>
+          {$t('course.navItem.lessons.materials.body_content')}
+          <strong>{$t('course.navItem.lessons.materials.get_started')}</strong>
         {$t('course.navItem.lessons.materials.button')}.
-      </p>
-      <PrimaryButton
+        </p>
+        <PrimaryButton
         label={$t('course.navItem.lessons.materials.get_started')}
         className="rounded-md"
         onClick={toggleMode}
       />
     </RoleBasedSecurity>
+    {/if}
   </Box>
 {/if}

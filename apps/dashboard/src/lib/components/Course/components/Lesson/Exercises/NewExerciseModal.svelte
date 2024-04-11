@@ -125,7 +125,7 @@
             class="w-[261px] h-[240px] p-5 rounded-md dark:bg-neutral-700 border-2 {option.type ===
             type
               ? 'border-primary-400'
-              : `border-gray-200 dark:border-gray-400 ${
+              : `border-gray-200 dark:border-neutral-600 dark:border-gray-400 ${
                   !option.isDisabled && 'hover:scale-95'
                 }`} flex flex-col {option.isDisabled &&
               'cursor-not-allowed opacity-60'} transition-all ease-in-out"
@@ -222,7 +222,7 @@
                 class="w-[161px] h-[140px] hover:scale-95 p-5 rounded-md dark:bg-neutral-700 border-2 {template.id ===
                 selectedTemplateId
                   ? 'border-primary-400'
-                  : `border-gray-200 dark:border-gray-400`} flex flex-col transition-all ease-in-out"
+                  : `border-gray-200 dark:border-neutral-600 dark:border-gray-400`} flex flex-col transition-all ease-in-out"
                 type="button"
                 on:click={() => (selectedTemplateId = template.id)}
               >

@@ -53,6 +53,15 @@
   onMount(() => {
     getLang();
   });
+  import Box from '$lib/components/Box/index.svelte';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { goto } from '$app/navigation';
+
+  export let data;
+
+  $: if ($currentOrg.id && data.orgName === '*') {
+    goto(`/org/${$currentOrg.siteName}`);
+  }
 </script>
 
 <AddOrgModal />
@@ -62,6 +71,10 @@
     <OrgSideBar />
   {/if}
   <div class="org-slot bg-white dark:bg-black w-full">
-    <slot />
+    {#if data.orgName === '*'}
+      <Box>Taking you to your organization...</Box>
+    {:else}
+      <slot />
+    {/if}
   </div>
 </div>

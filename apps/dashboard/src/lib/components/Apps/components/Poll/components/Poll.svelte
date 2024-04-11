@@ -154,7 +154,7 @@
     {:else}
       {#each poll.options as option, index}
         <button
-          class="bg-white dark:bg-black rounded-md border-2 border-gray-100 h-[50px] {didUserSelect(
+          class="bg-white dark:bg-black rounded-md border-2 border-gray-100 dark:border-neutral-600 h-[50px] {didUserSelect(
             option,
             currentUserId
           ) &&
