@@ -9,7 +9,7 @@
   taglineIcon="simplified"
   title="Advanced Course Management"
   description="ClassroomIO simplifies teaching tasks, boosts the educational experience, and is beneficial for both educators and students, providing a user-friendly platform for assessment, grading, attendance, and scorebook management."
-  video="https://pub-84d7e4713a8a4957b055fa24383220cd.r2.dev/course-management.mp4"
+  video="https://brand.cdn.clsrio.com/course-management.mp4"
   rightToLeft={true}
 />
 <Section
@@ -19,7 +19,7 @@
   title="Customization at its Core"
   description="ClassroomIO offers organizations the ability to tailor our LMS to their specific requirements. With our customizable features, you can create a personalized learning environment that aligns with your organization's goals"
   rightToLeft={true}
-  video="https://pub-84d7e4713a8a4957b055fa24383220cd.r2.dev/lms-customization.mp4"
+  video="https://brand.cdn.clsrio.com/lms-customization.mp4"
 />
 <Section
   id="collaboration"
@@ -27,7 +27,7 @@
   taglineIcon="collaboration"
   title="Your Knowledge Base"
   description="Our platform includes a forum-like feature where students and teachers can ask and answer questions, creating a collaborative learning environment. This fosters engagement and knowledge sharing among the community"
-  video="https://pub-84d7e4713a8a4957b055fa24383220cd.r2.dev/community.mp4"
+  video="https://brand.cdn.clsrio.com/community.mp4"
   rightToLeft={true}
 />
 <Section
@@ -37,7 +37,7 @@
   title="AI Integration for Lesson Planning"
   description="Our platform integrates AI to simplify lesson outline generation, streamline lesson planning and spark creative ideas. With ClassroomIO, educators can focus on what matters most: teaching."
   rightToLeft={true}
-  video="https://pub-84d7e4713a8a4957b055fa24383220cd.r2.dev/ai-lesson.mp4"
+  video="https://brand.cdn.clsrio.com/ai-lesson.mp4"
 />
 
 <!-- body section 5 -->

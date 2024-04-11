@@ -8,8 +8,8 @@ const unlinkAsync = promisify(fs.unlink);
 
 const { Upload } = require('@aws-sdk/lib-storage');
 const {
-  S3Client,
-  PutObjectCommand
+  S3Client
+  // PutObjectCommand
   // GetObjectCommand,
 } = require('@aws-sdk/client-s3');
 
@@ -19,6 +19,7 @@ const genUniqueId = require('../utils/genUniqueId');
 const upload = require('../utils/upload');
 
 const {
+  CLOUDFLARE_BUCKET_DOMAIN,
   CLOUDFLARE_ACCESS_KEY,
   CLOUDFLARE_SECRET_ACCESS_KEY,
   CLOUDFLARE_ACCOUNT_ID,
@@ -75,7 +76,10 @@ router.post('/', upload.single('videoFile'), async (req, res) => {
 
   const fileName = `${genUniqueId()}-${file.originalname.split(' ').join('-')}`;
 
-  const fileUrl = `https://pub-${CLOUDFLARE_PUBLIC_ACCOUNT_ID}.r2.dev/${fileName}`;
+  const fileOrigin =
+    CLOUDFLARE_BUCKET_DOMAIN ?? `https://pub-${CLOUDFLARE_PUBLIC_ACCOUNT_ID}.r2.dev`;
+
+  const fileUrl = `${fileOrigin}/${fileName}`;
   let metadata = {
     sizeInMb: fileSizeInMegabytes
   };
