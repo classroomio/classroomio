@@ -123,7 +123,7 @@
 </script>
 
 <UpgradeBanner className="mb-3" onClick={() => ($uploadCourseVideoStore.isModalOpen = false)}>
-  Upgrade your plan to upload vidoes
+  {$t('course.navItem.lessons.materials.tabs.video.add_video.upgrade')}
 </UpgradeBanner>
 
 {#if !isLoaded}
@@ -139,7 +139,9 @@
     >
       {#if isLoading}
         <div class="flex flex-col gap-5 max-w-[500px] w-[60%] justify-center">
-          <p class="mt-5 text-center">Uploading...</p>
+          <p class="mt-5 text-center">
+            {$t('course.navItem.lessons.materials.tabs.video.add_video.uploading')}
+          </p>
           <ProgressBar class="w-full" {value} {max} {status} />
           <p class="text-sm">{helperText}</p>
         </div>

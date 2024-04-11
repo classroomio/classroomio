@@ -40,7 +40,6 @@
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import { t } from '$lib/utils/functions/translations';
   import { supabase } from '$lib/utils/functions/supabase';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
 
   export let mode = MODES.view;
   export let prevMode = '';
@@ -411,7 +410,7 @@
             label={$t('course.navItem.lessons.materials.tabs.slide.slide_link')}
             bind:value={$lesson.materials.slide_url}
             onInputChange={handleInputChange}
-            helperMessage="You can embed Google Slides or Canva Presentation"
+            helperMessage={$t('course.navItem.lessons.materials.tabs.slide.helper_message')}
           />
         {/if}
       </TabContent>

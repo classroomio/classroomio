@@ -52,8 +52,9 @@
       "1": "Profil",
       "2": "Organisation",
       "3": "Landing Page",
-      "4": "Integrationen",
-      "5": "Sprache"
+      "4": "Abrechnung",
+      "5": "Integrationen",
+      "6": "Sprache"
     },
     "profile": {
       "profile_picture": {
@@ -177,16 +178,123 @@
       "button_2": "Verbinden",
       "success_message": "Integration erfolgreich",
       "disconnect": "Trennen"
+    },
+    "billing": {
+      "sub_title": "Rechnungsdetails",
+      "manage": "Verwalten Sie Ihre Abrechnung",
+      "active": "Sie haben keine aktive Abrechnung",
+      "lemonsqueezy": "Wir verwenden Lemonsqueezy, um Sie bei der Verwaltung Ihrer Abrechnung zu unterstützen",
+      "open_billing": "Abrechnung öffnen"
     }
   },
 
   "org_navigation": {
-    "dashboard": "Dashboard",
+    "dashboard": "Armaturenbrett",
     "courses": "Kurse",
-    "community": "Community",
+    "community": "Gemeinschaft",
     "audience": "Zielgruppe",
+    "setup": "Aufstellen",
     "help": "Hilfe",
-    "settings": "Einstellungen"
+    "settings": "Einstellungen",
+    "early_adopter": "Werden Sie ein Early Adopter",
+    "unlock": "Schalten Sie unbegrenzte Funktionen frei und investieren Sie in unsere Zukunft",
+    "upgrade": "Jetzt upgraden"
+  },
+
+  "pricing": {
+    "modal": {
+      "heading": "Upgrade Plan",
+      "thanks": "Danke für Ihre Unterstützung",
+      "plan": "Ihr Plan beinhaltet coole Vergünstigungen und Vorteile, einschließlich Zugriff auf alle zukünftigen Funktionen, die wir veröffentlichen.",
+      "close": "Schließen",
+      "learn": "Erfahren Sie mehr",
+      "month": "Monat"
+    },
+    "data": {
+      "1": {
+        "name": "Basic",
+        "description": "Kostenloser Tarifplan für den persönlichen Gebrauch, keine Kreditkarte erforderlich.",
+        "features": {
+          "1": "Unbegrenzte Kurse",
+          "2": "Unbegrenzte Fragen/Antworten",
+          "3": "50 Studenten",
+          "4": "AI Course Builder (kein Video-Upload)",
+          "5": "Live-Chat und Umfragen"
+        },
+        "cta": {
+          "label": "Jetzt registrieren",
+          "dashboard_label": "Downgrade"
+        }
+      },
+      "2": {
+        "name": "Frühzeitige Anwender",
+        "description": "Für schnell wachsende Lehrunternehmen, die skalieren möchten.",
+        "features": {
+          "1": "Alles in Basic",
+          "2": "Unbegrenzte Anzahl an Lehrern",
+          "3": "10K Studenten",
+          "4": "Advanced AI Course Builder (Video-Upload und Zertifikat)",
+          "5": "Individuelles Branding",
+          "6": "Beinhaltet alle kommenden Funktionen"
+        },
+        "cta": {
+          "label": "ich möchte rein 😍",
+          "dashboard_label": "Unterstütze uns 😍"
+        }
+      },
+      "3": {
+        "name": "Unternehmen",
+        "description": "Am besten geeignet für größere Unternehmen, die mehr Kontrolle benötigen",
+        "price": {
+          "monthly": "Preis anfordern",
+          "yearly": "Preis anfordern"
+        },
+        "features": {
+          "1": "Alles in Early Adopters plus:",
+          "2": "Unbegrenzte Anzahl an Studenten",
+          "3": "Benutzerdefinierten Domain",
+          "4": "24/7 Unterstützung"
+        },
+        "cta": {
+          "label": "Kontaktiere uns",
+          "dashboard_label": "Kontaktiere uns"
+        }
+      }
+    }
+  },
+
+  "setup": {
+    "get_started": "Loslegen",
+    "1": {
+      "title": "Profilbild hochladen und Benutzernamen aktualisieren",
+      "desc": "Personalisieren Sie und verleihen Sie Interaktionen eine persönlichere und einprägsamere Note",
+      "button_label": "Profil aktualisieren"
+    },
+    "2": {
+      "title": "Organisationsprofilbild aktualisieren",
+      "desc": "Etablieren Sie eine professionelle und erkennbare Identität für Ihre Organisation",
+      "button_label": "Organisationsprofil aktualisieren"
+    },
+    "3": {
+      "title": "Kurs erstellen",
+      "desc": "Erstellen Sie einen Kurs, den Sie mit Ihren Schülern teilen werden",
+      "button_label": "Kurs erstellen"
+    },
+    "4": {
+      "title": "Lektion erstellen",
+      "desc": "Unterteilen Sie Ihren Kurs in Lektionen, die Ihre Schüler leicht verstehen können",
+      "button_label": "Lektion erstellen"
+    },
+    "5": {
+      "title": "Übung erstellen",
+      "desc": "Testen Sie Ihre Schüler und ermöglichen Sie es ihnen, ihr Verständnis des Lehrstoffes zu demonstrieren",
+      "button_label": "Aufgabe erstellen"
+    },
+    "6": {
+      "title": "Kurs veröffentlichen",
+      "desc": "Machen Sie Ihren Kurs öffentlich und käuflich erwerbbar",
+      "button_label": "Kurs veröffentlichen"
+    }
   },
 
   "add_org": {
@@ -203,7 +311,7 @@
     "courses": "Kurse",
     "home": "Startseite",
     "classroomio_home": "ClassroomIO Startseite",
-    "dashboard": "Dashboard",
+    "dashboard": "Armaturenbrett",
     "discussion": "Diskussion",
     "people": "Personen",
     "goto_lms": "Zum LMS gehen",
@@ -418,7 +526,8 @@
             },
             "slide": {
               "title": "Folie",
-              "slide_link": "Folienlink"
+              "slide_link": "Folienlink",
+              "helper_message": "Sie können Google Slides oder Canva-Präsentationen einbetten"
             },
             "video": {
               "title": "Video",
@@ -440,7 +549,9 @@
                 "button": "Versuchen Sie eine andere Datei",
                 "try_again": "Bitte versuchen Sie es erneut",
                 "sorry_3": "Entschuldigung, das Video wurde nicht hochgeladen, das Dateiformat wird nicht unterstützt oder es ist ein Fehler auf dem Server aufgetreten.",
-                "sorry_4": "Laden Sie MP4-, MOV- und AVI-Dateien hoch."
+                "sorry_4": "Laden Sie MP4-, MOV- und AVI-Dateien hoch.",
+                "upgrade": "Aktualisieren Sie Ihren Plan, um Videos hochzuladen",
+                "uploading": "Hochladen..."
               }
             }
           },
@@ -919,6 +1030,16 @@
 
     "signup": {
       "disposable": "Die von Ihnen angegebene E-Mail-Adresse ist Wegwerf-Email"
+    },
+
+    "upgrade": {
+      "generate_fail": "Generierung fehlgeschlagen",
+      "failed": "Fehlgeschlagen, bitte versuchen Sie es später erneut"
+    },
+
+    "setup": {
+      "info_lesson": "Sie müssen eine Lektion erstellen",
+      "info_course": "Sie müssen einen Kurs erstellen"
     }
   },
 

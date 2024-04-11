@@ -52,8 +52,9 @@
       "1": "Hồ sơ",
       "2": "Tổ chức",
       "3": "Trang đích",
-      "4": "Tích hợp",
-      "5": "Ngôn ngữ"
+      "4": "Thanh toán",
+      "5": "Tích hợp",
+      "6": "Ngôn ngữ"
     },
     "profile": {
       "profile_picture": {
@@ -177,6 +178,13 @@
       "button_2": "Kết nối",
       "success_message": "Tích hợp thành công",
       "disconnect": "Ngắt kết nối"
+    },
+    "billing": {
+      "sub_title": "Chi tiết thanh toán",
+      "manage": "Quản lý thanh toán của bạn",
+      "active": "Bạn không có bất kỳ thanh toán nào đang hoạt động",
+      "lemonsqueezy": "Chúng tôi sử dụng Lemonsqueezy để giúp quản lý hóa đơn của bạn",
+      "open_billing": "Thanh toán mở"
     }
   },
 
@@ -185,8 +193,108 @@
     "courses": "Các khóa học",
     "community": "Cộng đồng",
     "audience": "Đối tượng",
+    "setup": "Cài đặt",
     "help": "Trợ giúp",
-    "settings": "Cài đặt"
+    "settings": "Cài đặt",
+    "early_adopter": "Trở thành người áp dụng sớm",
+    "unlock": "Mở khóa các tính năng không giới hạn và đầu tư vào tương lai của chúng tôi",
+    "upgrade": "Nâng cấp ngay bây giờ"
+  },
+
+  "pricing": {
+    "modal": {
+      "heading": "Nâng cấp Gói",
+      "thanks": "Cảm ơn bạn đã ủng hộ",
+      "plan": "Gói của bạn đi kèm với những ưu đãi và lợi ích thú vị bao gồm việc truy cập vào tất cả các tính năng tương lai chúng tôi phát hành.",
+      "close": "Đóng",
+      "learn": "Tìm hiểu thêm",
+      "month": "tháng"
+    },
+    "data": {
+      "1": {
+        "name": "Cơ bản",
+        "description": "Gói miễn phí dành cho việc sử dụng cá nhân, không cần thẻ tín dụng.",
+        "features": {
+          "1": "Khóa học Không giới hạn",
+          "2": "Hỏi/Đáp Không giới hạn",
+          "3": "50 Học viên",
+          "4": "Công cụ Xây dựng Khóa học AI (không tải lên video)",
+          "5": "Trò chuyện trực tuyến & thăm dò ý kiến"
+        },
+        "cta": {
+          "label": "Đăng ký Ngay",
+          "dashboard_label": "Hạ cấp"
+        }
+      },
+      "2": {
+        "name": "Người sử dụng sớm",
+        "description": "Dành cho các doanh nghiệp giảng dạy đang phát triển nhanh muốn mở rộng.",
+        "features": {
+          "1": "Mọi thứ trong Cơ bản",
+          "2": "Giáo viên Không giới hạn",
+          "3": "10K Học viên",
+          "4": "Công cụ Xây dựng Khóa học AI Tiên tiến (Tải lên video & Chứng chỉ)",
+          "5": "Thương hiệu Tùy chỉnh",
+          "6": "Bao gồm tất cả các Tính năng Sắp tới"
+        },
+        "cta": {
+          "label": "Tôi muốn tham gia 😍",
+          "dashboard_label": "Hỗ trợ chúng tôi 😍"
+        }
+      },
+      "3": {
+        "name": "Doanh nghiệp",
+        "description": "Phù hợp nhất cho các doanh nghiệp lớn cần nhiều kiểm soát hơn",
+        "price": {
+          "monthly": "Yêu cầu Giá",
+          "yearly": "Yêu cầu Giá"
+        },
+        "features": {
+          "1": "Mọi thứ trong Người sử dụng sớm cộng thêm:",
+          "2": "Học viên Không giới hạn",
+          "3": "Tên Miền Tùy chỉnh",
+          "4": "Hỗ trợ 24/7"
+        },
+        "cta": {
+          "label": "Liên hệ với chúng tôi",
+          "dashboard_label": "Liên hệ với chúng tôi"
+        }
+      }
+    }
+  },
+
+  "setup": {
+    "get_started": "Bắt đầu",
+    "1": {
+      "title": "Tải lên hình đại diện và cập nhật tên người dùng",
+      "desc": "Cá nhân hóa và thêm một chút sự nhân ái để làm cho tương tác trở nên cá nhân hơn và đáng nhớ hơn",
+      "button_label": "Cập nhật Hồ sơ"
+    },
+    "2": {
+      "title": "Cập nhật hình đại diện của tổ chức",
+      "desc": "Thiết lập một danh tính chuyên nghiệp và dễ nhận biết cho tổ chức của bạn",
+      "button_label": "Cập nhật Hồ sơ Tổ chức"
+    },
+    "3": {
+      "title": "Tạo Khóa học",
+      "desc": "Tạo một khóa học mà bạn sẽ chia sẻ với sinh viên của mình",
+      "button_label": "Tạo Khóa học"
+    },
+    "4": {
+      "title": "Tạo một bài học",
+      "desc": "Chia khóa học của bạn thành các bài học mà sinh viên của bạn có thể dễ dàng hiểu",
+      "button_label": "Tạo Bài học"
+    },
+    "5": {
+      "title": "Tạo một bài tập",
+      "desc": "Kiểm tra sinh viên của bạn và cho phép họ thể hiện hiểu biết của mình về chủ đề",
+      "button_label": "Tạo Bài tập"
+    },
+    "6": {
+      "title": "Xuất bản một khóa học",
+      "desc": "Biến khóa học của bạn thành công cộng và có thể mua",
+      "button_label": "Xuất bản Khóa học"
+    }
   },
 
   "add_org": {
@@ -418,7 +526,8 @@
             },
             "slide": {
               "title": "Slide",
-              "slide_link": "Liên kết Slide"
+              "slide_link": "Liên kết Slide",
+              "helper_message": "Bạn có thể nhúng Google Trang trình bày hoặc Bản trình bày Canva"
             },
             "video": {
               "title": "Video",
@@ -440,7 +549,9 @@
                 "button": "Thử tệp khác",
                 "try_again": "Vui lòng thử lại",
                 "sorry_3": "Xin lỗi, video không được tải lên, định dạng tệp không được hỗ trợ hoặc có lỗi xảy ra trên máy chủ.",
-                "sorry_4": "Tải lên các tệp MP4, MOV và AVI."
+                "sorry_4": "Tải lên các tệp MP4, MOV và AVI.",
+                "upgrade": "Nâng cấp kế hoạch tải video lên của bạn",
+                "uploading": "Đang tải lên..."
               }
             }
           },
@@ -992,6 +1103,16 @@
 
     "signup": {
       "disposable": "Email bạn cung cấp là email tạm thời"
+    },
+
+    "upgrade": {
+      "generate_fail": "Không thể tạo thành công",
+      "failed": "Thất bại, vui lòng thử lại sau"
+    },
+
+    "setup": {
+      "info_lesson": "Bạn cần tạo một bài học",
+      "info_course": "Bạn cần tạo một khóa học"
     }
   },
 

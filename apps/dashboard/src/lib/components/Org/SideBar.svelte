@@ -22,28 +22,10 @@
   interface menuItems {
     label: string;
     path: string;
+    show: boolean;
   }
 
   let menuItems: menuItems[] = [];
-
-  $: menuItems = [
-    {
-      path: '',
-      label: $t('org_navigation.dashboard')
-    },
-    {
-      path: '/courses',
-      label: $t('org_navigation.courses')
-    },
-    {
-      path: '/community',
-      label: $t('org_navigation.community')
-    },
-    {
-      path: '/audience',
-      label: $t('org_navigation.audience')
-    }
-  ];
 
   function isActive(pagePath: string, itemPath: string) {
     const pageLinkItems = pagePath.split('/');
@@ -63,43 +45,70 @@
     goto(window.location.pathname + '?upgrade=true');
   };
 
-  $: {
-    menuItems = [
-      {
-        path: '',
-        label: 'Dashboard',
-        show: true
-      },
-      // {
-      //   path: '/quiz',
-      //   label: 'Quizzes'
-      // },
-      {
-        path: '/courses',
-        label: 'Courses',
-        show: true
-      },
-      {
-        path: '/community',
-        label: 'Community',
-        show: true
-      },
-      // {
-      //   path: '/site',
-      //   label: 'Site settings',
-      // },
-      {
-        path: '/audience',
-        label: 'Audience',
-        show: true
-      },
-      {
-        path: '/setup',
-        label: 'Setup',
-        show: $isOrgAdmin
-      }
-    ];
-  }
+  // $: {
+  //   menuItems = [
+  //     {
+  //       path: '',
+  //       label: 'Dashboard',
+  //       show: true
+  //     },
+  //     // {
+  //     //   path: '/quiz',
+  //     //   label: 'Quizzes'
+  //     // },
+  //     {
+  //       path: '/courses',
+  //       label: 'Courses',
+  //       show: true
+  //     },
+  //     {
+  //       path: '/community',
+  //       label: 'Community',
+  //       show: true
+  //     },
+  //     // {
+  //     //   path: '/site',
+  //     //   label: 'Site settings',
+  //     // },
+  //     {
+  //       path: '/audience',
+  //       label: 'Audience',
+  //       show: true
+  //     },
+  //     {
+  //       path: '/setup',
+  //       label: 'Setup',
+  //       show: $isOrgAdmin
+  //     }
+  //   ];
+  // }
+  $: menuItems = [
+    {
+      path: '',
+      label: $t('org_navigation.dashboard'),
+      show: true
+    },
+    {
+      path: '/courses',
+      label: $t('org_navigation.courses'),
+      show: true
+    },
+    {
+      path: '/community',
+      label: $t('org_navigation.community'),
+      show: true
+    },
+    {
+      path: '/audience',
+      label: $t('org_navigation.audience'),
+      show: true
+    },
+    {
+      path: '/setup',
+      label: $t('org_navigation.setup'),
+      show: $isOrgAdmin
+    }
+  ];
 </script>
 
 <aside
@@ -159,10 +168,14 @@
       >
         <img src="/upgrade.png" alt="upgrade" class="h-16 w-16" />
         <span class="flex flex-col gap-1">
-          <p class="text-base font-semibold">Become an Early Adopter</p>
-          <p class="text-xs">Unlock unlimited features and invest in our future</p>
+          <p class="text-base font-semibold">{$t('org_navigation.early_adopter')}</p>
+          <p class="text-xs">{$t('org_navigation.unlock')}</p>
         </span>
-        <PrimaryButton label="Upgrade Now" onClick={openModal} className="font-normal" />
+        <PrimaryButton
+          label={$t('org_navigation.upgrade')}
+          onClick={openModal}
+          className="font-normal"
+        />
       </div>
     {/if}
 

@@ -208,14 +208,16 @@
               class="{navItem.key === activeNav &&
                 'active text-primary-700'} z-0 mr-6 rounded-lg px-2 font-normal text-slate-700 hover:bg-gray-200 dark:text-white dark:hover:text-slate-900"
             >
-              {navItem.label}
+              {$t(navItem.label)}
             </a>
           {/each}
         </nav>
 
         <!-- Sections - Requirement -->
         <section id="requirement" class="mt-8 border-b border-gray-300 pb-10">
-          <h3 class="mb-3 mt-0 text-2xl font-bold">{$t('course.navItem.landing_page.requirement')}</h3>
+          <h3 class="mb-3 mt-0 text-2xl font-bold">
+            {$t('course.navItem.landing_page.requirement')}
+          </h3>
 
           <ul class="list font-light">
             <HtmlRender content={get(courseData, 'metadata.requirements', '')} />
@@ -224,7 +226,9 @@
 
         <!-- Sections - Course Description -->
         <section id="description" class="mt-8 border-b border-gray-300 pb-10">
-          <h3 class="mb-3 mt-0 text-2xl font-bold">$t('course.navItem.landing_page.description')</h3>
+          <h3 class="mb-3 mt-0 text-2xl font-bold">
+            {$t('course.navItem.landing_page.description')}
+          </h3>
 
           <HtmlRender
             className="dark:text-white text-sm font-light"
@@ -285,7 +289,8 @@
                     <span class="text-sm font-light flex w-2/4"
                       ><Notebook size={16} class="mr-1" />{$t(
                         'course.navItem.landing_page.note'
-                      )}</span>
+                      )}</span
+                    >
                   {/if}
                 </div>
                 <div class="flex items-center">

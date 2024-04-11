@@ -52,8 +52,9 @@
       "1": "Profil",
       "2": "Organisation",
       "3": "Page de destination",
-      "4": "Intégrations",
-      "5": "Langue"
+      "4": "Facturation",
+      "5": "Intégrations",
+      "6": "Langue"
     },
     "profile": {
       "profile_picture": {
@@ -177,6 +178,13 @@
       "button_2": "Connecter",
       "success_message": "Intégration réussie",
       "disconnect": "Déconnecter"
+    },
+    "billing": {
+      "sub_title": "Détails de la facturation",
+      "manage": "Gérez votre facturation",
+      "active": "Vous n'avez aucune facturation active",
+      "lemonsqueezy": "Nous utilisons Lemonsqueezy pour vous aider à gérer votre facturation",
+      "open_billing": "Facturation ouverte"
     }
   },
 
@@ -185,8 +193,108 @@
     "courses": "Cours",
     "community": "Communauté",
     "audience": "Public",
+    "setup": "Installation",
     "help": "Aide",
-    "settings": "Paramètres"
+    "settings": "Paramètres",
+    "early_adopter": "Devenez un adopteur précoce",
+    "unlock": "Débloquez des fonctionnalités illimitées et investissez dans notre avenir",
+    "upgrade": "Mettre à jour maintenant"
+  },
+
+  "pricing": {
+    "modal": {
+      "heading": "Mise à Niveau du Plan",
+      "thanks": "Merci pour votre soutien",
+      "plan": "Votre plan est accompagné d'avantages intéressants, y compris l'accès à toutes les fonctionnalités futures que nous publierons.",
+      "close": "Fermer",
+      "learn": "En savoir plus",
+      "month": "mois"
+    },
+    "data": {
+      "1": {
+        "name": "Basique",
+        "description": "Plan gratuit pour un usage personnel, aucune carte de crédit requise.",
+        "features": {
+          "1": "Cours Illimités",
+          "2": "Questions/Réponses Illimitées",
+          "3": "50 Étudiants",
+          "4": "Constructeur de Cours IA (sans téléchargement de vidéo)",
+          "5": "Chat en Direct et Sondages"
+        },
+        "cta": {
+          "label": "Inscrivez-vous maintenant",
+          "dashboard_label": "Rétrograder"
+        }
+      },
+      "2": {
+        "name": "Premiers Utilisateurs",
+        "description": "Pour les entreprises d'enseignement en croissance rapide qui visent à se développer.",
+        "features": {
+          "1": "Tout en Basique",
+          "2": "Enseignants Illimités",
+          "3": "10K Étudiants",
+          "4": "Constructeur de Cours IA Avancé (Téléchargement de Vidéo & Certificat)",
+          "5": "Personnalisation de Marque",
+          "6": "Inclut toutes les Fonctionnalités à Venir"
+        },
+        "cta": {
+          "label": "Je veux participer 😍",
+          "dashboard_label": "Soutenez-nous 😍"
+        }
+      },
+      "3": {
+        "name": "Entreprise",
+        "description": "Le mieux adapté aux entreprises plus importantes qui ont besoin de plus de contrôle.",
+        "price": {
+          "monthly": "Demandez les Prix",
+          "yearly": "Demandez les Prix"
+        },
+        "features": {
+          "1": "Tout en Premiers Utilisateurs plus :",
+          "2": "Étudiants Illimités",
+          "3": "Domaine Personnalisé",
+          "4": "Support 24/7"
+        },
+        "cta": {
+          "label": "Contactez-nous",
+          "dashboard_label": "Contactez-nous"
+        }
+      }
+    }
+  },
+
+  "setup": {
+    "get_started": "Commencer",
+    "1": {
+      "title": "Télécharger une photo de profil et mettre à jour le nom d'utilisateur",
+      "desc": "Personnaliser et ajouter une touche humaine pour rendre les interactions plus personnelles et mémorables",
+      "button_label": "Mettre à jour le profil"
+    },
+    "2": {
+      "title": "Mettre à jour la photo de profil de l'organisation",
+      "desc": "Établir une identité professionnelle et reconnaissable pour votre organisation",
+      "button_label": "Mettre à jour le profil de l'org"
+    },
+    "3": {
+      "title": "Créer un cours",
+      "desc": "Créer un cours que vous partagerez avec vos étudiants",
+      "button_label": "Créer un cours"
+    },
+    "4": {
+      "title": "Créer une leçon",
+      "desc": "Divisez votre cours en leçons que vos étudiants peuvent comprendre facilement",
+      "button_label": "Créer une leçon"
+    },
+    "5": {
+      "title": "Créer un exercice",
+      "desc": "Testez vos étudiants et permettez-leur de démontrer leur compréhension du sujet",
+      "button_label": "Créer une tâche"
+    },
+    "6": {
+      "title": "Publier un cours",
+      "desc": "Rendez votre cours public et achetable",
+      "button_label": "Publier le cours"
+    }
   },
 
   "add_org": {
@@ -418,7 +526,8 @@
             },
             "slide": {
               "title": "Glisser",
-              "slide_link": "Lien de diapositive"
+              "slide_link": "Lien de diapositive",
+              "helper_message": "Vous pouvez intégrer Google Slides ou Canva Présentation"
             },
             "video": {
               "title": "Vidéo",
@@ -440,7 +549,9 @@
                 "button": "Essayez un autre fichier",
                 "try_again": "Veuillez réessayer",
                 "sorry_3": "Désolé, notre vidéo n'a pas été téléchargée, le format de fichier n'est pas pris en charge ou quelque chose s'est mal passé sur le serveur.",
-                "sorry_4": "Téléchargez des fichiers MP4, MOV et AVI."
+                "sorry_4": "Téléchargez des fichiers MP4, MOV et AVI.",
+                "upgrade": "Mettez à niveau votre forfait pour télécharger des vidéos",
+                "uploading": "Téléchargement..."
               }
             }
           },
@@ -750,12 +861,12 @@
         },
 
         "pricing_section": {
-          "free": "Free",
-          "not_accepting": "This course is currently not accepting new students.",
+          "free": "Gratuite",
+          "not_accepting": "Ce cours n'accepte actuellement pas de nouveaux étudiants.",
           "discount": "Rabais",
-          "enroll": "Enroll Now",
-          "buy": "Buy Now",
-          "bird": "Early bird offer. Buy ASAP"
+          "enroll": "Inscrivez-vous maintenant",
+          "buy": "Acheter maintenant",
+          "bird": "Offre pour inscription anticipée. Achetez dès que possible"
         },
 
         "start_course": "Commencer le cours",
@@ -1062,6 +1173,16 @@
 
     "signup": {
       "disposable": "L'e-mail que vous avez fourni est jetable"
+    },
+
+    "upgrade": {
+      "generate_fail": "Échec de la génération du succès",
+      "failed": "Échec, veuillez réessayer plus tard"
+    },
+
+    "setup": {
+      "info_lesson": "Vous devez créer une leçon",
+      "info_course": "Vous devez créer un cours"
     }
   },
 

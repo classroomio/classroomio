@@ -38,7 +38,7 @@
             color={`${currentTab === item.value ? 'dark:invert-0' : 'dark:invert'}`}
           />
         {/if}
-        <p>{item.title}</p>
+        <p>{$t(item.title)}</p>
       </button>
     {/each}
   </div>

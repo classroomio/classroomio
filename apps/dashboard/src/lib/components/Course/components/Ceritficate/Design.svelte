@@ -144,7 +144,7 @@
       {#if $isFreePlan}
         <FlashFilled size={16} class="text-blue-700" />
       {/if}
-      Save Changes
+      {$t('course.navItem.certificates.save')}
     </PrimaryButton>
   </div>
 </main>

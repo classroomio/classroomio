@@ -67,6 +67,5 @@ loading.subscribe(async ($loading) => {
 		console.log('Loading translations...');
 
 		await loading.toPromise();
-		console.log('Updated translations', translations.get());
 	}
 });

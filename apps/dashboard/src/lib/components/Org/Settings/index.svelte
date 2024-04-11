@@ -67,21 +67,21 @@
       },
       {
         key: 3,
-        label: 'Billing',
+        label: $t('settings.tabs.4'),
         tabKey: 'billing',
         href: `${$page.url.pathname}?tab=billing`,
         disabled: !$isOrgAdmin
       },
       {
         key: 4,
-        label: $t('settings.tabs.4'),
+        label: $t('settings.tabs.5'),
         tabKey: 'integrations',
         href: `${$page.url.pathname}?tab=integrations`,
         disabled: false
       },
       {
         key: 5,
-        label: $t('settings.tabs.5'),
+        label: $t('settings.tabs.6'),
         tabKey: 'languages',
         href: `${$page.url.pathname}?tab=languages`,
         disabled: false

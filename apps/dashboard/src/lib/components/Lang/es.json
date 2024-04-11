@@ -52,8 +52,9 @@
       "1": "Perfil",
       "2": "Organización",
       "3": "Página de inicio",
-      "4": "Integraciones",
-      "5": "Idioma"
+      "4": "Facturación",
+      "5": "Integraciones",
+      "6": "Idioma"
     },
     "profile": {
       "profile_picture": {
@@ -177,6 +178,13 @@
       "button_2": "Conectar",
       "success_message": "Integración exitosa",
       "disconnect": "Desconectar"
+    },
+    "billing": {
+      "sub_title": "Detalles de facturación",
+      "manage": "Gestiona tu facturación",
+      "active": "No tienes ninguna facturación activa",
+      "lemonsqueezy": "Usamos Lemonsqueezy para ayudarlo a administrar su facturación",
+      "open_billing": "Facturación abierta"
     }
   },
 
@@ -185,8 +193,108 @@
     "courses": "Cursos",
     "community": "Comunidad",
     "audience": "Audiencia",
+    "setup": "Configuración",
     "help": "Ayuda",
-    "settings": "Configuración"
+    "settings": "Configuración",
+    "early_adopter": "Conviértase en uno de los primeros en adoptar",
+    "unlock": "Desbloquee funciones ilimitadas e invierta en nuestro futuro",
+    "upgrade": "Actualizar ahora"
+  },
+
+  "pricing": {
+    "modal": {
+      "heading": "Actualizar Plan",
+      "thanks": "Gracias por tu apoyo",
+      "plan": "Tu plan viene con beneficios increíbles, incluido el acceso a todas las características futuras que lancemos.",
+      "close": "Cerrar",
+      "learn": "Más información",
+      "month": "mes"
+    },
+    "data": {
+      "1": {
+        "name": "Básico",
+        "description": "Plan gratuito para uso personal, no se requiere tarjeta de crédito.",
+        "features": {
+          "1": "Cursos ilimitados",
+          "2": "Preguntas y respuestas ilimitadas",
+          "3": "50 Estudiantes",
+          "4": "Constructor de cursos con IA (sin carga de videos)",
+          "5": "Chat en vivo y encuestas"
+        },
+        "cta": {
+          "label": "Registrarse ahora",
+          "dashboard_label": "Degradar"
+        }
+      },
+      "2": {
+        "name": "Adoptadores Tempranos",
+        "description": "Para empresas de enseñanza en rápido crecimiento que buscan escalar.",
+        "features": {
+          "1": "Todo en Básico",
+          "2": "Profesores ilimitados",
+          "3": "10K Estudiantes",
+          "4": "Constructor de cursos con IA avanzada (carga de videos y certificado)",
+          "5": "Marca personalizada",
+          "6": "Incluye todas las características futuras"
+        },
+        "cta": {
+          "label": "¡Quiero entrar 😍!",
+          "dashboard_label": "Apóyanos 😍"
+        }
+      },
+      "3": {
+        "name": "Empresa",
+        "description": "La mejor opción para empresas más grandes que necesitan más control.",
+        "price": {
+          "monthly": "Solicitar precios",
+          "yearly": "Solicitar precios"
+        },
+        "features": {
+          "1": "Todo en Adoptadores Tempranos más:",
+          "2": "Estudiantes ilimitados",
+          "3": "Dominio personalizado",
+          "4": "Soporte 24/7"
+        },
+        "cta": {
+          "label": "Contáctanos",
+          "dashboard_label": "Contáctanos"
+        }
+      }
+    }
+  },
+
+  "setup": {
+    "get_started": "Empezar",
+    "1": {
+      "title": "Subir una foto de perfil y actualizar el nombre de usuario",
+      "desc": "Personaliza y añade un toque humano para que las interacciones sean más personales y memorables",
+      "button_label": "Actualizar Perfil"
+    },
+    "2": {
+      "title": "Actualizar foto de perfil de la organización",
+      "desc": "Establecer una identidad profesional y reconocible para tu organización",
+      "button_label": "Actualizar Perfil de Org"
+    },
+    "3": {
+      "title": "Crear Curso",
+      "desc": "Crea un curso que compartirás con tus estudiantes",
+      "button_label": "Crear Curso"
+    },
+    "4": {
+      "title": "Crear una lección",
+      "desc": "Divide tu curso en lecciones que tus estudiantes puedan entender fácilmente",
+      "button_label": "Crear Lección"
+    },
+    "5": {
+      "title": "Crear un ejercicio",
+      "desc": "Prueba a tus estudiantes y permíteles demostrar su comprensión del tema",
+      "button_label": "Crear Tarea"
+    },
+    "6": {
+      "title": "Publicar un curso",
+      "desc": "Haz que tu curso sea público y disponible para la compra",
+      "button_label": "Publicar Curso"
+    }
   },
 
   "add_org": {
@@ -418,7 +526,8 @@
             },
             "slide": {
               "title": "Diapositiva",
-              "slide_link": "Enlace de la diapositiva"
+              "slide_link": "Enlace de la diapositiva",
+              "helper_message": "Puede incrustar presentaciones de Google Slides o Canva"
             },
             "video": {
               "title": "Video",
@@ -440,7 +549,9 @@
                 "button": "Intentar con otro archivo",
                 "try_again": "Por favor, inténtalo de nuevo",
                 "sorry_3": "Lo siento, el video no se pudo cargar, el formato de archivo no es compatible o algo salió mal en el servidor.",
-                "sorry_4": "Sube archivos MP4, MOV y AVI."
+                "sorry_4": "Sube archivos MP4, MOV y AVI.",
+                "upgrade": "Actualiza tu plan para subir videos",
+                "uploading": "Subiendo..."
               }
             }
           },
@@ -944,6 +1055,16 @@
 
     "signup": {
       "disposable": "El correo electrónico que proporcionaste es desechable"
+    },
+
+    "upgrade": {
+      "generate_fail": "Fallo al generar éxito",
+      "failed": "Fallo, por favor inténtalo de nuevo más tarde"
+    },
+
+    "setup": {
+      "info_lesson": "Necesitas crear una lección",
+      "info_course": "Necesitas crear un curso"
     }
   },
 

@@ -52,8 +52,9 @@
       "1": "Profile",
       "2": "Organization",
       "3": "Landing Page",
-      "4": "Integrations",
-      "5": "Language"
+      "4": "Billing",
+      "5": "Integrations",
+      "6": "Language"
     },
     "profile": {
       "profile_picture": {
@@ -177,6 +178,13 @@
       "button_2": "Connect",
       "success_message": "Integration Successful",
       "disconnect": "Disconnect"
+    },
+    "billing": {
+      "sub_title": "Billing details",
+      "manage": "Manage your billing",
+      "active": "You don't have any active billing",
+      "lemonsqueezy": "We use Lemonsqueezy to help manage your billing",
+      "open_billing": "Open billing"
     }
   },
 
@@ -185,8 +193,116 @@
     "courses": "Courses",
     "community": "Community",
     "audience": "Audience",
+    "setup": "Setup",
     "help": "Help",
-    "settings": "Settings"
+    "settings": "Settings",
+    "early_adopter": "Become an Early Adopter",
+    "unlock": "Unlock unlimited features and invest in our future",
+    "upgrade": "Upgrade Now"
+  },
+
+  "pricing": {
+    "modal": {
+      "heading": "Upgrade Plan",
+      "thanks": "Thank you for your support",
+      "plan": "Your plan comes with cool perks and benefits including access to all future features we release.",
+      "close": "Close",
+      "learn": "Learn more",
+      "month": "month"
+    },
+    "data": {
+      "1": {
+        "name": "Basic",
+        "description": "Free tier plan for personal use, no credit card required.",
+        "price": {
+          "monthly": "0",
+          "yearly": "0"
+        },
+        "features": {
+          "1": "Unlimited Courses",
+          "2": "Unlimited Q/A",
+          "3": "50 Students",
+          "4": "AI Course Builder (no video upload)",
+          "5": "Live chat & polls"
+        },
+        "cta": {
+          "label": "Signup Now",
+          "dashboard_label": "Downgrade"
+        }
+      },
+      "2": {
+        "name": "Early Adopters",
+        "description": "For fast growing teaching businesses that aim to scale.",
+        "price": {
+          "monthly": "35",
+          "yearly": "350"
+        },
+        "features": {
+          "1": "Everything in Basic",
+          "2": "Unlimted Teachers",
+          "3": "10K Students",
+          "4": "Advanced AI Course Builder (Video upload & Certificate)",
+          "5": "Custom Branding",
+          "6": "Includes all Upcoming Features"
+        },
+        "cta": {
+          "label": "I want in 😍",
+          "dashboard_label": "Support us 😍"
+        }
+      },
+      "3": {
+        "name": "Enterprise",
+        "description": "Best suited for larger businesses that need more control",
+        "price": {
+          "monthly": "Request Pricing",
+          "yearly": "Request Pricing"
+        },
+        "features": {
+          "1": "Everything in Early Adopters plus:",
+          "2": "Unlimited students",
+          "3": "Custom Domain",
+          "4": "24/7 Support"
+        },
+        "cta": {
+          "label": "Contact Us",
+          "dashboard_label": "Contact Us"
+        }
+      }
+    }
+  },
+
+  "setup": {
+    "get_started": "Get Started",
+    "1": {
+      "title": "Upload a profile picture and update username",
+      "desc": "Personalize and a human touch making interactions more personal and memorable",
+      "button_label": "Update Profile"
+    },
+    "2": {
+      "title": "Update organisation profile picture",
+      "desc": "Establish a professional and recognizable identity for your organization",
+      "button_label": "Update Org Profile"
+    },
+    "3": {
+      "title": "Create Course",
+      "desc": "Create a course that you will share with your students",
+      "button_label": "Create Course"
+    },
+    "4": {
+      "title": "Create a lesson",
+      "desc": "Break your course into lesson that your students can easily understand",
+      "button_label": "Create Lesson"
+    },
+    "5": {
+      "title": "Create an exercise",
+      "desc": "Test your students allow them to demonstarte their understanding of the subject matter",
+      "button_label": "Create Assignment"
+    },
+    "6": {
+      "title": "Publish a course",
+      "desc": "Make your course public and purchaseable",
+      "button_label": "Publish Course"
+    }
   },
 
   "add_org": {
@@ -418,7 +534,8 @@
             },
             "slide": {
               "title": "Slide",
-              "slide_link": "Slide Link"
+              "slide_link": "Slide Link",
+              "helper_message": "You can embed Google Slides or Canva Presentation"
             },
             "video": {
               "title": "Video",
@@ -440,7 +557,9 @@
                 "button": "Try another file",
                 "try_again": "Please try again",
                 "sorry_3": "Sorry we video wasn’t uploaded, the file format isn’t supported or something went wrong on the server.",
-                "sorry_4": "Upload MP4, MOV and AVI files."
+                "sorry_4": "Upload MP4, MOV and AVI files.",
+                "upgrade": "Upgrade your plan to upload vidoes",
+                "uploading": "Uploading..."
               }
             }
           },
@@ -1062,6 +1181,16 @@
 
     "signup": {
       "disposable": "The email you provided is disposable"
+    },
+
+    "upgrade": {
+      "generate_fail": "Failed to generate success",
+      "failed": "Failed, please try again later"
+    },
+
+    "setup": {
+      "info_lesson": "You Need to Create a lesson",
+      "info_course": "You need to create a course"
     }
   },
 
