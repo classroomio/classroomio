@@ -11,11 +11,11 @@
     Our customers love us. Here's why you will too:
   </p>
   <a
-    class="md:text-md w-11/12 rounded-md bg-blue-700 px-6 py-3 text-sm font-medium text-white text-center transition-all delay-100 hover:bg-blue-800 hover:shadow-xl md:w-fit lg:px-6 lg:py-5 lg:font-semibold"
+    class="md:text-md w-11/12 rounded-md bg-blue-700 px-6 py-3 text-sm font-medium text-white text-center transition-all delay-100 hover:bg-blue-800 hover:shadow-xl hover:scale-95 md:w-fit lg:px-6 lg:py-5 lg:font-semibold"
     href="/signup"
     rel="noopener noreferrer nofollow"
   >
-    Get Started for Free 🚀
+    Get Started for Free
   </a>
 
   <div class="relative my-5 md:my-10 w-[85%] lg:w-[70%]">

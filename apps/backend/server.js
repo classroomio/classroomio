@@ -44,3 +44,7 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log(`ClassroomIO Backend listening on port ${port}!`);
 });
+
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught error, err');
+});
