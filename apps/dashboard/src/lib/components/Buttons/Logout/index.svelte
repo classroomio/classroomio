@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { logout } from '$lib/utils/functions/logout';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { supabase } from '$lib/utils/functions/supabase';
@@ -7,6 +6,8 @@
   import { currentOrg, orgs, defaultCurrentOrgState } from '$lib/utils/store/org';
   import { user, profile, defaultProfileState, defaultUserState } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
+  import posthog from 'posthog-js';
+  import { goto } from '$app/navigation';
 
   async function logout() {
     const { error } = await supabase.auth.signOut();

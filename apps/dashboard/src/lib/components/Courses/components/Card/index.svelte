@@ -7,14 +7,6 @@
     ContextMenuDivider,
     ContextMenuOption
   } from 'carbon-components-svelte';
-  import {
-    Tag,
-    ImageLoader,
-    SkeletonPlaceholder,
-    ContextMenu,
-    ContextMenuDivider,
-    ContextMenuOption
-  } from 'carbon-components-svelte';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
