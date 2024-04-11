@@ -466,3 +466,8 @@ INSERT INTO "storage"."buckets" ("id", "name", "owner", "created_at", "updated_a
 --
 -- Data for Name: objects; Type: TABLE DATA; Schema: storage; Owner: supabase_storage_admin
 --
+
+-- Get the sequence name from supabase database
+SELECT PG_GET_SERIAL_SEQUENCE('organizationmember', 'id');
+-- In my case i got "public.organizationmember_id_seq"
+SELECT setval('public.organizationmember_id_seq', COALESCE((SELECT MAX(id)+1 FROM organizationmember), 1), false);

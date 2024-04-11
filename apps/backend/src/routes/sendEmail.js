@@ -33,20 +33,22 @@ router.post('/', async (req, res) => {
             return;
           }
 
-          await transporter.sendMail({
+          const res = await transporter.sendMail({
             from: from || '"Best from ClassroomIO" <best@classroomio.com>',
             to,
             subject,
             replyTo,
             html: withEmailTemplate(content)
           });
+
+          console.log('Email status', res);
         } catch (error) {
           console.error('Error sending email', error);
         }
       })
     );
 
-    console.log('sendmail');
+    console.log('Email sent');
     return res.json({ success: true });
   } catch (error) {
     console.error('Error sending emails:', error);
