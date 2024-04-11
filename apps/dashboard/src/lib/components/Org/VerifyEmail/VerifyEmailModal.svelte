@@ -54,7 +54,7 @@
   <div class="flex flex-col items-center space-y-6 text-center">
     <img src="/verify-email.svg" alt="email verification" />
     <p class="font-bold text-xl">Verify your Email</p>
-    <p class="text-sm w-[70%] text-gray-700">
+    <p class="text-sm w-[70%] text-gray-500">
       We've sent a verification email to {$profile.email} to confirm the validity of the email provided.
     </p>
 
