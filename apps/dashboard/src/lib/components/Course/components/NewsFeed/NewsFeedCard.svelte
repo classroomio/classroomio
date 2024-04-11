@@ -140,13 +140,13 @@
       {/if}
     </div>
 
-    <div class="flex gap-4 px-3">
-      <div class="flex gap-4 px-3">
+    <div class="flex items-center gap-4 px-3">
+      <div class="flex items-center gap-4 px-3">
         {#each Object.keys(feed.reaction) as reactionType}
           {#if reactions[reactionType]}
             <button
               on:click={() => handleAddNewReaction(reactionType)}
-              class={`flex transition ${
+              class={`flex items-center transition ${
                 feed.reaction[reactionType].length >= 1 &&
                 `${getClassIfSelectedByAuthor(reactionType)} dark:text-black border rounded-full`
               }`}
