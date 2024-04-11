@@ -3,7 +3,6 @@
     "heading": "Verifica tu correo electrónico",
     "sent_verification": "Hemos enviado un correo electrónico de verificación a",
     "to_confirm": "para confirmar la validez del correo electrónico proporcionado.",
-    "kindly_verify": "Por favor verifique su correo electrónico para continuar usando ClassroomIO.",
     "loading": "Cargando...",
     "resend": "Vuelva a enviar el código de verificación",
     "resend_in": "Reenviar verificación en",
@@ -423,6 +422,8 @@
             },
             "video": {
               "title": "Video",
+              "embed_link": "Insertar enlace",
+              "upload": "Subir",
               "button": "Agregar/Editar Video(s)",
               "add_video": {
                 "title": "Agregar un Video",

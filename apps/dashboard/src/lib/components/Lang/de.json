@@ -3,7 +3,6 @@
     "heading": "Bestätigen Sie Ihre E-Mail",
     "sent_verification": "Wir haben eine Bestätigungs-E-Mail an gesendet",
     "to_confirm": "um die Gültigkeit der angegebenen E-Mail zu bestätigen.",
-    "kindly_verify": "Bitte bestätigen Sie Ihre E-Mail-Adresse, um ClassroomIO weiterhin nutzen zu können.",
     "loading": "Wird geladen...",
     "resend": "Bestätigungscode nochmal versenden",
     "resend_in": "Bestätigung erneut senden",
@@ -423,6 +422,8 @@
             },
             "video": {
               "title": "Video",
+              "embed_link": "Link einbetten",
+              "upload": "Hochladen",
               "button": "Video(s) hinzufügen / bearbeiten",
               "add_video": {
                 "title": "Video hinzufügen",

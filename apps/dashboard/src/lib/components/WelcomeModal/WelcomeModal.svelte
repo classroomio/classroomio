@@ -18,17 +18,17 @@
       to: $profile.email,
       name: $profile.fullname
     });
-
-    goto($currentOrgPath + '/setup');
+    goto($currentOrgPath + '/courses?create=true');
   };
-
-  $: {
-    const query = new URLSearchParams($page.url.search);
-    open = query.get('welcomePopup') === 'true';
-  }
 </script>
 
-<Modal onClose={closeModal} {open} width="w-9/12" maxWidth="w-[800px]" modalHeading="Welcome">
+<Modal
+  onClose={closeModal}
+  open={welcomePopup === 'true'}
+  width="w-9/12"
+  maxWidth="w-[800px]"
+  modalHeading="Welcome"
+>
   <p class="text-black dark:text-white text-sm md:text-base lg:text-lg">
     {$t('welcome_modal.we_at')}
     <a href="https://app.classroomio.com/" class="text-primary-700 no-underline hover:no-underline"

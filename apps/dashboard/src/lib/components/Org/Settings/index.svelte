@@ -80,7 +80,7 @@
         disabled: false
       },
       {
-        key: 4,
+        key: 5,
         label: $t('settings.tabs.5'),
         tabKey: 'languages',
         href: `${$page.url.pathname}?tab=languages`,

@@ -1,6 +1,6 @@
 <script lang="ts">
   import isEmpty from 'lodash/isEmpty';
-  import { onMount, onDestroy } from 'svelte';
+  import { onMount } from 'svelte';
   import { useCompletion } from 'ai/svelte';
   import MODES from '$lib/utils/constants/mode.js';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
@@ -40,7 +40,6 @@
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import { t } from '$lib/utils/functions/translations';
   import { supabase } from '$lib/utils/functions/supabase';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
 
   export let mode = MODES.view;
   export let prevMode = '';
@@ -358,7 +357,7 @@
               isDisabled={$isLoading}
               variant={VARIANTS.OUTLINED}
               disableScale
-          >
+            >
               <MagicWandFilled size={20} class="carbon-icon mr-3" />
               AI
               <Popover
@@ -502,19 +501,17 @@
       {$t('course.navItem.lessons.materials.body_heading')}
     </h3>
 
-    <RoleBasedSecurity allowedRoles={[1, 2]}>
-      {#if !isStudent}
+    {#if !isStudent}
       <p class="text-sm text-center font-normal py-2">
-          {$t('course.navItem.lessons.materials.body_content')}
-          <strong>{$t('course.navItem.lessons.materials.get_started')}</strong>
+        {$t('course.navItem.lessons.materials.body_content')}
+        <strong>{$t('course.navItem.lessons.materials.get_started')}</strong>
         {$t('course.navItem.lessons.materials.button')}.
-        </p>
-        <PrimaryButton
+      </p>
+      <PrimaryButton
         label={$t('course.navItem.lessons.materials.get_started')}
         className="rounded-md"
         onClick={toggleMode}
       />
-    </RoleBasedSecurity>
     {/if}
   </Box>
 {/if}

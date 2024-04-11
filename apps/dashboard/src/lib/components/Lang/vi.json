@@ -3,7 +3,6 @@
     "heading": "Xác nhận email của bạn",
     "sent_verification": "Chúng tôi đã gửi email xác minh tới",
     "to_confirm": "để xác nhận tính hợp lệ của email được cung cấp.",
-    "kindly_verify": "Vui lòng xác minh email của bạn để tiếp tục sử dụng ClassroomIO.",
     "loading": "Đang tải...",
     "resend": "Gửi lại mã xác minh",
     "resend_in": "Gửi lại xác minh trong",
@@ -423,6 +422,8 @@
             },
             "video": {
               "title": "Video",
+              "embed_link": "Nhúng liên kết",
+              "upload": "Tải lên",
               "button": "Thêm / Chỉnh sửa Video(s)",
               "add_video": {
                 "title": "Thêm Video",

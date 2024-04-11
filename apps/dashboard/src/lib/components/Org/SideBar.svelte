@@ -17,6 +17,7 @@
   import { NavClasses } from '$lib/utils/constants/reusableClass';
   import { sideBar } from './store';
   import { t } from '$lib/utils/functions/translations';
+  import { goto } from '$app/navigation';
 
   interface menuItems {
     label: string;
