@@ -34,14 +34,12 @@
   });
 </script>
 
-<div
-  class="relative border-b-2 text-center bg-[#F5F8FE] h-[110vh] lg:h-[150vh] mt-[5%] overflow-hidden w-full"
->
+<div class="relative border-b-2 text-center bg-[#F5F8FE] h-[100%] mt-[5%] overflow-hidden w-full">
   <!-- <div class="overflow-hidden absolute h-full top-0 z-0">
     <HeroBackground />
   </div> -->
 
-  <div class="z-30 absolute top-[13%] lg:top-[4%] w-full">
+  <div class="mt-[15%] lg:mt-[5%] w-full">
     <div class="mb-10 ml-[5%] lg:ml-0 flex w-full items-center justify-start lg:justify-center">
       <a
         target="_blank"
@@ -53,7 +51,7 @@
       >
     </div>
 
-    <div class="justify-between w-[90%] absolute top-[3%] left-[4%] hidden lg:flex">
+    <div class="justify-between w-[90%] absolute top-[5%] left-[4%] hidden lg:flex">
       {#if animate}
         <div
           class="relative transition-all hover:scale-110 rotate-12"
