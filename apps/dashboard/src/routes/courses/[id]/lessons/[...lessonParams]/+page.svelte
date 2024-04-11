@@ -345,6 +345,7 @@
         {toggleMode}
         bind:isSaving
         {isStudent}
+        {selectedLanguage}
       />
 
       {#if isStudent}

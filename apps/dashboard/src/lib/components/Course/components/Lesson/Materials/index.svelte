@@ -1,6 +1,6 @@
 <script lang="ts">
   import isEmpty from 'lodash/isEmpty';
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import { useCompletion } from 'ai/svelte';
   import MODES from '$lib/utils/constants/mode.js';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
@@ -40,6 +40,7 @@
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import { t } from '$lib/utils/functions/translations';
   import { supabase } from '$lib/utils/functions/supabase';
+  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
 
   export let mode = MODES.view;
   export let prevMode = '';
