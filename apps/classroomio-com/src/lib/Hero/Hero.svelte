@@ -3,46 +3,18 @@
   import { fly } from 'svelte/transition';
   import { sineInOut } from 'svelte/easing';
   import { PUBLIC_ENABLE_USERS_COMPANIES } from '$env/static/public';
-  import HeroBackground from '$lib/Hero/HeroBackground.svelte';
 
-  let width = '710';
-  let height = '710';
   let animate = false;
 
   onMount(() => {
-    const handleResize = () => {
-      const screenWidth = window.innerWidth;
-      if (screenWidth < 768) {
-        // Mobile view
-        width = '1920';
-        height = '1440';
-      } else {
-        // Desktop view
-        width = '710';
-        height = '710';
-      }
-    };
-
-    handleResize();
     setTimeout(() => {
       animate = true;
     }, 70);
-
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
   });
 </script>
 
-<div
-  class="relative border-b-2 text-center bg-[#F5F8FE] h-[110vh] lg:h-[150vh] mt-[5%] overflow-hidden"
->
-  <div class="overflow-hidden absolute h-full top-0 z-0">
-    <HeroBackground />
-  </div>
-
-  <div class="z-30 absolute top-[13%] lg:top-[4%]">
+<div class="root relative border-b-2 text-center bg-[#F5F8FE] h-full mt-[5%] w-full">
+  <div class="pt-24 w-full">
     <div class="mb-10 ml-[5%] lg:ml-0 flex w-full items-center justify-start lg:justify-center">
       <a
         target="_blank"
@@ -54,7 +26,7 @@
       >
     </div>
 
-    <div class="justify-between w-[90%] absolute top-[3%] left-[4%] hidden lg:flex">
+    <div class="justify-between w-[90%] absolute top-[5%] left-[4%] hidden lg:flex">
       {#if animate}
         <div
           class="relative transition-all hover:scale-110 rotate-12"
@@ -101,16 +73,18 @@
       {/if}
     </div>
 
-    <h1
-      class="mx-auto w-[89%] pr-20 lg:pr-0 lg:w-[60%] text-left lg:text-center font-bold md:leading-[1.5] text-slate-900 text-5xl lg:text-7xl"
-    >
-      Launch Your Online Bootcamp <span class="text-blue-700">In Minutes </span>
-    </h1>
+    <div class="w-full flex flex-col">
+      <h1
+        class="mx-auto w-[89%] pr-20 lg:pr-0 lg:w-[60%] text-left lg:text-center font-bold md:leading-[1.5] text-slate-900 text-5xl lg:text-7xl"
+      >
+        Launch Your Online Bootcamp <span class="text-blue-700">In Minutes </span>
+      </h1>
 
-    <p class="text-md mx-auto mt-10 px-4 text-slate-700 md:text-lg lg:mt-6 lg:w-[42%] lg:p-0">
-      Meet a better learning management system (LMS) for teachers and students. ClassroomIO allows
-      you to launch and scale your online bootcamp with ease.
-    </p>
+      <p class="text-md mx-auto mt-10 px-4 text-slate-700 md:text-lg lg:mt-6 lg:w-[42%] lg:p-0">
+        Meet a better learning management system (LMS) for teachers and students. ClassroomIO allows
+        you to launch and scale your online bootcamp with ease.
+      </p>
+    </div>
 
     <div class="justify-between w-[90%] absolute top-[25%] left-[4%] hidden lg:flex">
       {#if animate}
@@ -161,7 +135,7 @@
 
     <div class="my-10 flex flex-col items-center justify-center gap-4 md:flex-row">
       <a
-        class="md:text-base w-11/12 rounded-md border-gray-200 border-2 px-6 py-3 text-sm font-medium text-center transition-all delay-100 hover:bg-black hover:text-white hover:shadow-xl hover:scale-95 md:w-fit lg:px-6 lg:py-4 lg:font-semibold"
+        class="md:text-base w-11/12 rounded-md border-gray-200 border-2 px-6 py-3 text-sm font-medium text-center transition-all delay-100 hover:bg-gray-200 hover:shadow-xl hover:scale-95 md:w-fit lg:px-6 lg:py-4 lg:font-semibold"
         href="/demo"
         rel="noopener noreferrer nofollow"
       >
@@ -186,8 +160,8 @@
 
     <div class="relative my-5 md:my-10">
       <img
-        {width}
-        {height}
+        width="710"
+        height="710"
         src="./cio-hero.webp"
         alt="hero section with dark vs light mode"
         class="mx-auto w-[85%] rounded-lg shadow-lg lg:w-[70%]"
@@ -208,3 +182,9 @@
     {/if}
   </div>
 </div>
+
+<style>
+  .root {
+    background-image: url('/hero-bg.svg');
+  }
+</style>
