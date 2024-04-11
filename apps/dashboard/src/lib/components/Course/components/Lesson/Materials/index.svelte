@@ -264,6 +264,7 @@
             isLoading={$isLoading}
             isDisabled={$isLoading}
             variant={VARIANTS.OUTLINED}
+            disableScale
           >
             <MagicWandFilled size={20} class="carbon-icon mr-3" />
             AI

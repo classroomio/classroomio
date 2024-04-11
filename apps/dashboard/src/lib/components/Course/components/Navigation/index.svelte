@@ -26,11 +26,10 @@
     hideSortIcon: boolean;
     isLesson?: boolean;
     isPaidFeature: boolean;
+    isExpanded?: boolean;
     show?: () => boolean;
   }
 
-  let show: boolean = false;
-  let isLessonActive: boolean = false;
   let resize = false;
   let isDragging = false;
   let startX: number;
@@ -51,11 +50,6 @@
   }
 
   let navItems: NavItem[] = [];
-
-  function handleMobileChange(isMobile: boolean) {
-    if (isMobile) show = false;
-    else show = true;
-  }
 
   function handleCursor(event: MouseEvent) {
     if (!resize && sidebarRef) {
@@ -140,10 +134,6 @@
     }
   });
 
-  $: handleMobileChange($isMobile);
-
-  $: isLessonActive = $page.url.pathname.includes('/lessons');
-
   $: {
     navItems = [
       {
@@ -157,7 +147,8 @@
         to: getLessonsRoute($course.id),
         hideSortIcon: false,
         isPaidFeature: false,
-        isLesson: true
+        isLesson: true,
+        isExpanded: isStudent ? true : $page.url.pathname.includes('/lessons')
       },
       {
         label: 'Attendance',
@@ -184,7 +175,10 @@
         label: 'People',
         to: getNavItemRoute($course.id, 'people'),
         isPaidFeature: false,
-        hideSortIcon: true
+        hideSortIcon: true,
+        show() {
+          return !isStudent;
+        }
       },
       {
         label: 'Certificates',
@@ -248,11 +242,11 @@
             label={navItem.label}
             handleClick={handleMainGroupClick(navItem.to)}
             isGroupActive={(path || $page.url.pathname) === navItem.to}
-            isExpanded={isLessonActive}
             total={navItem.isLesson ? ($lessons || []).length : 0}
             isLoading={!$course.id}
             isLesson={navItem.isLesson}
             isPaidFeature={navItem.isPaidFeature}
+            isExpanded={navItem.isExpanded}
             {isStudent}
           >
             {#if navItem.isLesson}
