@@ -69,15 +69,3 @@
     {/each}
   </div>
 {/if}
-
-<style>
-  .iframe {
-    width: 100%;
-    height: 450px;
-  }
-  @media (max-width: 760px) {
-    .iframe {
-      height: 209px;
-    }
-  }
-</style>
