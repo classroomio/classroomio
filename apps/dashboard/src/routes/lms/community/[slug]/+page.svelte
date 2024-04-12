@@ -263,7 +263,8 @@
       const { error } = await supabase
         .from('community_question')
         .update({
-          ...editContent,
+          title: editContent.title,
+          body: editContent.body,
           course_id: editContent.courseId
         })
         .match({ id: question.id });
@@ -394,7 +395,7 @@
             errorMessage={errors.title}
           />
           <Dropdown
-            class="w-[25%] h-fit"
+            class="w-[25%] h-full"
             size="xl"
             label="Select Course"
             items={fetchedCourses.map((course) => ({ id: course.id, text: course.title }))}

@@ -64,7 +64,12 @@
   {#if $initialized}
     <div class="flex flex-row gap-5 items-center h-[10%]">
       <span>{$t('content.toggle_label')}: </span>
-      <Dropdown items={dropdownItems} {selectedId} on:select={handleSelect} class="w-[30%]" />
+      <Dropdown
+        items={dropdownItems}
+        {selectedId}
+        on:select={handleSelect}
+        class="w-[30%] h-full"
+      />
     </div>
   {/if}
 </div>

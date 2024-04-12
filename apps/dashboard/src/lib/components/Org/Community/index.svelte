@@ -92,7 +92,7 @@
     class=" bg-gray-100 dark:bg-neutral-800"
   />
   <Dropdown
-    class="w-[25%]"
+    class="w-[25%] h-full"
     size="xl"
     label={$t('community.ask.select_course')}
     items={allCourses.map((course) => ({ id: course.id, text: course.title }))}

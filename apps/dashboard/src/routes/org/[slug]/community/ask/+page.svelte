@@ -27,10 +27,12 @@
     courseId: ''
   };
 
-  let fetchedCourses = [];
+  let fetchedCourses: any[] = [];
 
   async function getCourses(userId: string | null, orgId: string) {
     const coursesResults = await fetchCourses(userId, orgId);
+    if (!coursesResults) return;
+
     fetchedCourses = coursesResults.allCourses;
   }
 
@@ -105,7 +107,7 @@
       className="w-[75%]"
     />
     <Dropdown
-      class="w-[25%]"
+      class="w-[25%] h-full"
       size="xl"
       label={$t('community.ask.select_course')}
       invalid={!!errors.courseId}

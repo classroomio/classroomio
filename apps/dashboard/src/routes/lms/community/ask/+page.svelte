@@ -95,7 +95,7 @@
       className="w-[75%]"
     />
     <Dropdown
-      class="w-[25%]"
+      class="w-[25%] h-full"
       size="xl"
       label={$t('community.ask.select_course')}
       invalid={!!errors.courseId}
