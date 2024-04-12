@@ -16,8 +16,8 @@
     "paths": {
       "$lib": ["./src/lib"],
       "$lib/*": ["./src/lib/*"],
-      "$nodemailer": ["./src/nodemailer"],
-      "$nodemailer/*": ["./src/nodemailer/*"]
+      "$mail": ["./src/mail"],
+      "$mail/*": ["./src/mail/*"]
     }
   }
 

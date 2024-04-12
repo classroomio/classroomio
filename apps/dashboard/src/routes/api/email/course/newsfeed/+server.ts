@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { getSupabase } from '$lib/utils/functions/supabase';
 import { getFeedForNotification } from '$lib/utils/services/newsfeed/index';
-import sendEmail from '$nodemailer/sendEmail';
+import sendEmail from '$mail/sendEmail';
 
 const supabase = getSupabase();
 

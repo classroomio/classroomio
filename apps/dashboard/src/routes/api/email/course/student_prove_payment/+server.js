@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 // import { getSupabase } from '$lib/utils/functions/supabase';
-import sendEmail from '$nodemailer/sendEmail';
+import sendEmail from '$mail/sendEmail';
 
 // const supabase = getSupabase();
 
