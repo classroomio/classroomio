@@ -5,6 +5,17 @@ const { withEmailTemplate } = require('../utils/withEmailTemplate');
 
 const router = express.Router();
 
+let personalTransporter;
+let defaultTransporter;
+
+// Initialize transporters
+getTransporter(true).then((t) => {
+  personalTransporter = t;
+});
+getTransporter(false).then((t) => {
+  defaultTransporter = t;
+});
+
 router.post('/', async (req, res) => {
   try {
     const mySchema = zod.array(
@@ -27,7 +38,7 @@ router.post('/', async (req, res) => {
         try {
           const { from, to, subject, content, isPersonalEmail, replyTo } = emailData;
 
-          const transporter = await getTransporter(isPersonalEmail);
+          const transporter = isPersonalEmail ? personalTransporter : defaultTransporter;
 
           if (!transporter) {
             return;
