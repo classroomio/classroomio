@@ -28,7 +28,7 @@ export const VARIANTS_CLASS = {
     'border border-black dark:border-white hover:bg-neutral-600 hover:text-white text-black dark:text-white',
   [VARIANTS.NONE]:
     'border-none hover:border-black-300 hover:bg-gray-200 dark:hover:bg-neutral-800 text-black',
-  [VARIANTS.TEXT]: 'text-black hover:underline',
+  [VARIANTS.TEXT]: 'text-black dark:text-white hover:underline',
   [VARIANTS.LINK]: 'text-primary-500 dark:text-primary-500 hover:underline',
   [VARIANTS.TEXT_DANGER]:
     'text-red-500 hover:border border-t-0 border-l-0 border-r-0 border-red-300'

@@ -10,6 +10,7 @@ const downloadCertificate = require('./src/routes/downloadCertificate');
 const downloadLesson = require('./src/routes/downloadLesson');
 const downloadCourse = require('./src/routes/downloadCourse');
 const katex = require('./src/routes/katex');
+const sendEmail = require('./src/routes/sendEmail');
 
 // Express server
 const app = express();
@@ -34,6 +35,7 @@ app.use('/downloadLesson', downloadLesson);
 app.use('/downloadCourse', downloadCourse);
 app.use('/uploadVideo', uploadVideo);
 app.use('/katex', katex);
+app.use('/sendEmail', sendEmail);
 
 app.get('/', (req, res) => {
   res.send('Welcome to ClassroomIO');
@@ -41,4 +43,8 @@ app.get('/', (req, res) => {
 
 app.listen(port, () => {
   console.log(`ClassroomIO Backend listening on port ${port}!`);
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught error, err');
 });

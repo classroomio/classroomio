@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { slide } from 'svelte/transition';
   import ChevronDownIcon from 'carbon-icons-svelte/lib/ChevronDown.svelte';
   import ChevronUpIcon from 'carbon-icons-svelte/lib/ChevronUp.svelte';
@@ -14,7 +14,7 @@
   export let handleClick = () => {};
   export let label = '';
   export let isGroupActive = false;
-  export let isExpanded = true;
+  export let isExpanded: boolean | undefined;
   export let total = 0;
   export let isLoading = true;
   export let isLesson = false;

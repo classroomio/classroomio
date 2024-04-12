@@ -98,8 +98,8 @@
         <div
           class="flex flex-col lg:flex-row lg:items-center justify-between gap-2 w-full py-8 border-b border-gray-300"
         >
-          <div class={`space-y-2 flex-1 ${list.is_completed ? 'opacity-50' : ''}  max-w-[50%]`}>
-            <div class="flex items-center gap-2">
+          <div class={`space-y-1 flex-1 ${list.is_completed ? 'opacity-50' : ''}  lg:max-w-[50%]`}>
+            <div class="flex items-center gap-3">
               <Chip
                 value={i + 1}
                 className={`text-[10px] font-semibold !py-1 `}
@@ -109,7 +109,7 @@
             </div>
             <p class={`text-sm`}></p>
           </div>
-          <div class="w-[30%]">
+          <div class="w-full lg:w-[30%]">
             <PrimaryButton
               variant={list.is_completed ? VARIANTS.CONTAINED_DARK : VARIANTS.OUTLINED}
               className="!w-full font-normal text-sm flex items-center gap-2"
