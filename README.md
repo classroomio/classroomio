@@ -189,6 +189,10 @@ To get the environmental variables for supabase continue to step(5)
    - **dashboard**: `pnpm dev --filter=dashboard`
    - **docs**: `pnpm dev --filter=docs`
 
-10. Login into `dashboard`.
+10. Login into `dashboard`
 
-To learn how to login into the dashboard please [go here](https://classroomio.com/docs/contributor-guides/demo-accounts)
+    - Visit [http://localhost:5173/login](http://localhost:5173/login)
+    - Enter email: `admin@test.com`
+    - Enter password: `123456`
+     
+    To learn more about how to login with a dummy account, [go here](https://classroomio.com/docs/contributor-guides/demo-accounts)
