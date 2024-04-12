@@ -25,7 +25,6 @@
     triggerSendEmail
   } from '$lib/utils/services/notification/notification';
   import { lesson } from '../store/lessons';
-  import { onMount } from 'svelte';
   import { browser } from '$app/environment';
 
   export let preview: false;

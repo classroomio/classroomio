@@ -12,7 +12,7 @@ const config = {
     adapter: vercelAdapter(),
     alias: {
       $lib: path.resolve('./src/lib'),
-      $defer: path.resolve('./src/defer')
+      $nodemailer: path.resolve('./src/nodemailer')
     }
   }
 };

@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { getSupabase } from '$lib/utils/functions/supabase';
-import sendEmail from '$defer/sendEmail';
+import sendEmail from '$nodemailer/sendEmail';
 
 const supabase = getSupabase();
 
@@ -42,18 +42,21 @@ export async function POST({ request }) {
   const inviteLink = `${origin}/invite/t/${encodeURIComponent(btoa(inviteData))}`;
   console.log('inviteData', inviteData);
 
-  await sendEmail({
-    to: email,
-    subject: `Join ${name} on ClassroomIO 😃`,
-    content: `
+  const emailData = [
+    {
+      to: email,
+      subject: `Join ${name} on ClassroomIO 😃`,
+      content: `
     <p>Hey there,</p>
       <p> You have been invited to join ${name} on ClassroomIO 🎉🎉🎉.</p>
       <div>
         <a class="button" href="${inviteLink}">Accept Invitation</a>
       </div>
     `,
-    isPersonalEmail: true
-  });
+      isPersonalEmail: true
+    }
+  ];
+  await sendEmail(emailData);
 
   return json({
     success: true,

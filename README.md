@@ -76,7 +76,7 @@ Here is what you need to be able to run ClassroomIO.com
 This repo is a mono repo that consists of 3 projects:
 
 1. `classroomio-com`: The landing page of ClassroomIO hosted [here](https://classroomio.com)
-2. `backend`: The backend service that handles PDF & video processing.
+2. `backend`: The backend service that handles PDF, video processing, Emailing and Notifications.
 3. `dashboard`: The web application that runs the learning management system hosted [here](https://app.classroomio.com).
 4. `docs`: Official documentation of ClassroomIO hosted [here](https://classroomio.com/docs)
 
@@ -122,8 +122,11 @@ This repo is a mono repo that consists of 3 projects:
 
 4. Set up your `.env` file
 
-   - Go to `apps/classroomio-com` and `apps/dashboard`
+   - Go to `apps/classroomio-com`, `apps/dashboard` and `apps/backend`.
    - Duplicate the `.env.example` file and rename it to `.env`
+   - Populate your .env files with the neccessary variables
+
+To get the environmental variables for supabase continue to step(5)
 
 5. Setup Supabase.
 
