@@ -158,14 +158,29 @@
     </a> -->
     </div>
 
-    <div class="relative my-5 md:my-10">
+    <!-- <div class="relative my-5 md:my-10">
       <img
         width="710"
         height="710"
         src="./cio-hero.webp"
         alt="hero section with dark vs light mode"
-        class="mx-auto w-[85%] rounded-lg shadow-lg lg:w-[70%]"
+        class=""
       />
+      
+    </div> -->
+    <div
+      style="position: relative; padding-bottom: calc(50% + 42px);"
+      class="mx-auto w-[85%] lg:w-[70%]"
+    >
+      <iframe
+        src="https://app.supademo.com/embed/cluw8chyy06nhq2s9m697a680"
+        allow="clipboard-write"
+        frameborder="0"
+        webkitallowfullscreen="true"
+        mozallowfullscreen="true"
+        allowfullscreen
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+      ></iframe>
     </div>
 
     {#if PUBLIC_ENABLE_USERS_COMPANIES}
