@@ -21,13 +21,6 @@
       tabKey: 'integrations',
       href: `${$page.url.pathname}?tab=integrations`,
       disabled: false
-    },
-    {
-      key: 2,
-      label: $t('settings.tabs.5'),
-      tabKey: 'languages',
-      href: `${$page.url.pathname}?tab=languages`,
-      disabled: false
     }
   ];
 </script>
@@ -49,9 +42,6 @@
           </TabContent>
           <TabContent>
             <Integrations />
-          </TabContent>
-          <TabContent>
-            <Languages />
           </TabContent>
         </svelte:fragment>
       </Tabs>

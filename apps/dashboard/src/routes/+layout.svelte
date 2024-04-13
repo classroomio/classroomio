@@ -35,6 +35,7 @@
   import { identifyPosthogUser, initPosthog } from '$lib/utils/services/posthog';
   import { initSentry, setSentryUser } from '$lib/utils/services/sentry';
   import UpgradeModal from '$lib/components/Upgrade/Modal.svelte';
+  import { handleLocaleChange } from '$lib/utils/functions/translations';
 
   import '../app.postcss';
 
@@ -124,6 +125,9 @@
 
         setAnalyticsUser();
 
+        // Fetch language
+        handleLocaleChange($profile.locale);
+
         if (data.isOrgSite) {
           const { data, error } = await supabase
             .from('organizationmember')
@@ -165,6 +169,9 @@
 
       // Set user in sentry
       setAnalyticsUser();
+
+      // Fetch language
+      handleLocaleChange($profile.locale);
 
       const orgRes = await getOrganizations(profileData.id, data.isOrgSite, data.orgSiteName);
 

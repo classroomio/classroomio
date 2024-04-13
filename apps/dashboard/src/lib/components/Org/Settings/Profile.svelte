@@ -11,18 +11,24 @@
   import LogoutButton from '$lib/components/Buttons/Logout/index.svelte';
   import generateUUID from '$lib/utils/functions/generateUUID';
   import { t } from '$lib/utils/functions/translations';
+  import LanguagePicker from './LanguagePicker.svelte';
+  import { handleLocaleChange } from '$lib/utils/functions/translations';
 
   let avatar = '';
   let loading = false;
+  let hasLangChanged = false;
+  let locale = '';
 
   async function handleUpdate() {
     try {
+      console.log({ hasLangChanged });
       loading = true;
 
       const updates = {
         fullname: $profile.fullname,
         username: $profile.username,
-        email: $profile.email
+        email: $profile.email,
+        locale
       };
 
       if (avatar) {
@@ -49,6 +55,10 @@
       }));
       snackbar.success('snackbar.course_settings.success.update_successful');
 
+      if (hasLangChanged) {
+        handleLocaleChange(locale);
+      }
+
       if (error) throw error;
     } catch (error) {
       let message = error.message;
@@ -61,6 +71,8 @@
       loading = false;
     }
   }
+
+  $: locale = !locale ? $profile.locale : locale;
 </script>
 
 <Grid class="border-c rounded border-gray-200 dark:border-neutral-600 w-full mt-5">
@@ -92,8 +104,10 @@
         bind:value={$profile.email}
         className="w-full lg:w-60 mb-4"
       />
+      <LanguagePicker bind:hasLangChanged bind:value={locale} className="w-full lg:w-60 mb-4" />
     </Column>
   </Row>
+
   <Row class="m-5 w-full flex items-center gap-2 lg:justify-center">
     <PrimaryButton
       label={$t('settings.profile.update_profile')}

@@ -11,7 +11,6 @@
   import { goto } from '$app/navigation';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import Integrations from './Integrations.svelte';
-  import Languages from './Languages.svelte';
   import { t } from '$lib/utils/functions/translations';
 
   let selected = 0;
@@ -78,13 +77,6 @@
         tabKey: 'integrations',
         href: `${$page.url.pathname}?tab=integrations`,
         disabled: false
-      },
-      {
-        key: 5,
-        label: $t('settings.tabs.6'),
-        tabKey: 'languages',
-        href: `${$page.url.pathname}?tab=languages`,
-        disabled: false
       }
     ];
   }
@@ -113,9 +105,6 @@
     </TabContent>
     <TabContent class="w-full p-0">
       <Integrations />
-    </TabContent>
-    <TabContent class="w-full p-0">
-      <Languages />
     </TabContent>
   </svelte:fragment>
 </Tabs>

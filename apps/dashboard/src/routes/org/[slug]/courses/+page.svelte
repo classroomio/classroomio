@@ -102,7 +102,7 @@
       {/if}
     </div>
     <div class="flex flex-row-reverse mb-5">
-      <div class="flex items-end justify-start">
+      <div class="filter-containter flex items-end justify-start">
         <Search
           placeholder={$t('courses.search_placeholder')}
           bind:value={searchValue}
@@ -128,7 +128,7 @@
 </section>
 
 <style>
-  :global(.bx--dropdown) {
+  .filter-containter :global(.bx--dropdown) {
     max-height: unset;
     height: 100%;
   }

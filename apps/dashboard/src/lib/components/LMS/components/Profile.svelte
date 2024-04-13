@@ -10,9 +10,13 @@
   import LogoutButton from '$lib/components/Buttons/Logout/index.svelte';
   import generateUUID from '$lib/utils/functions/generateUUID';
   import { t } from '$lib/utils/functions/translations';
+  import LanguagePicker from '$lib/components/Org/Settings/LanguagePicker.svelte';
+  import { handleLocaleChange } from '$lib/utils/functions/translations';
 
   let avatar = '';
   let loading = false;
+  let hasLangChanged = false;
+  let locale = '';
 
   async function handleUpdate() {
     try {
@@ -21,7 +25,8 @@
       const updates = {
         fullname: $profile.fullname,
         username: $profile.username,
-        email: $profile.email
+        email: $profile.email,
+        locale
       };
 
       if (avatar) {
@@ -48,6 +53,10 @@
       }));
       snackbar.success();
 
+      if (hasLangChanged) {
+        handleLocaleChange(locale);
+      }
+
       if (error) throw error;
     } catch (error) {
       let message = error.message;
@@ -61,6 +70,8 @@
       loading = false;
     }
   }
+
+  $: locale = $profile.locale;
 </script>
 
 <Grid class="border-c rounded border-gray-200 dark:border-neutral-600 w-full mt-5">
@@ -90,6 +101,12 @@
       <TextField
         label={$t('settings.profile.personal_information.email')}
         bind:value={$profile.email}
+        className="w-full lg:w-60 mb-4"
+      />
+
+      <LanguagePicker
+        bind:hasLangChanged
+        bind:value={$profile.locale}
         className="w-full lg:w-60 mb-4"
       />
     </Column>

@@ -24,7 +24,7 @@
     siteName?: string;
     goal?: string;
     source?: string;
-    language?: string;
+    locale?: string;
     metadata?: {};
   }
 
@@ -38,7 +38,7 @@
     fullname: '',
     orgName: '',
     siteName: '',
-    language: ''
+    locale: ''
   };
   let errors: OnboardingField = {};
   let progress = 50;
@@ -98,7 +98,7 @@
 
   function handleSelect(event) {
     const newSelectedId = event.detail.selectedId;
-    fields.language = newSelectedId;
+    fields.locale = newSelectedId;
   }
 
   async function setMetaData() {

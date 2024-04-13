@@ -1,11 +1,11 @@
-import { selectedLocale } from "$lib/utils/functions/translations";
-import { json, type RequestHandler } from "@sveltejs/kit";
+import { selectedLocale } from '$lib/utils/functions/translations';
+import { json, type RequestHandler } from '@sveltejs/kit';
 
 export const POST = (async ({ request }) => {
   try {
     const body = await request.json();
     selectedLocale.set(body.locale);
-  } catch(e) {
+  } catch (e) {
     selectedLocale.set('en');
   }
 

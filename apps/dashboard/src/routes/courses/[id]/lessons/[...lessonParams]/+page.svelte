@@ -12,7 +12,7 @@
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { Loading } from 'carbon-components-svelte';
+  import { Dropdown, Loading } from 'carbon-components-svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
   import PageBody from '$lib/components/PageBody/index.svelte';
@@ -41,8 +41,6 @@
   let path = '';
   let mode = MODES.view;
   let prevMode = '';
-  let prevLessonId = '';
-  let isFetching = false;
   let isMarkingComplete = false;
   let isLoading = false;
   let isSaving = false;
@@ -75,21 +73,15 @@
   }
 
   async function fetchReqData(lessonId = '', isMaterialsTabActive: boolean) {
-    isFetching = true;
-
     let lessonData;
     if (isMaterialsTabActive) {
       const lesson = await fetchLesson(lessonId);
       lessonData = lesson.data;
     }
 
-    console.log('lessonData', lessonData);
-    prevLessonId = lessonId;
-
     const totalExercises = lessonData?.totalExercises?.[0] && lessonData.totalExercises[0].count;
     const totalComments = lessonData?.totalComments?.[0] && lessonData.totalComments[0].count;
     setLesson(lessonData, totalExercises || 0, totalComments || 0);
-    isFetching = false;
   }
 
   async function markLessonComplete(lessonId: string) {
@@ -129,6 +121,7 @@
 
     await updateLessonCompletion(completion);
     snackbar.success('snackbar.lessons.success.complete_marked');
+
     isMarkingComplete = false;
   }
 
@@ -232,9 +225,7 @@
     fetchReqData(data.lessonId, data.isMaterialsTabActive);
   }
 
-  $: {
-    console.log('selectedLanguage:', selectedLanguage);
-  }
+  $: console.log('selectedLanguage:', selectedLanguage);
 
   $: isLessonComplete = getIsLessonComplete($lesson.lesson_completion, $profile.id);
 </script>
@@ -274,6 +265,14 @@
               <option value={language}>{language}</option>
             {/each}
           </select>
+
+          <!-- <Dropdown
+            titleText={$t('content.toggle_label')}
+            items={dropdownItems}
+            {selectedId}
+            on:select={handleSelect}
+            class="h-full"
+          /> -->
         </div>
         <RoleBasedSecurity allowedRoles={[1, 2]}>
           {#if data.isMaterialsTabActive}
@@ -285,23 +284,18 @@
             <div
               class={`flex-row ${
                 $apps.dropdown && $apps.open
-                  ? 'absolute lg:relative top-[85px] lg:top-0 right-14 lg:right-0 z-40 dark:bg-neutral-800 p-3 lg:p-0'
+                  ? 'absolute lg:relative top-[85px] lg:top-0 right-14 lg:right-0 z-40 rounded-md bg-gray-100 dark:bg-neutral-800 p-3 lg:p-0'
                   : 'hidden'
               } lg:flex items-center`}
             >
-              {#if $course.metadata.lessonDownload && !!PUBLIC_SERVER_URL}
-                <PrimaryButton
-                  className="mb-2 lg:mb-0 mr-2"
-                  variant={VARIANTS.OUTLINED}
-                  onClick={downloadLesson}
-                  {isLoading}
-                >
-                  <Download size={16} class="mr-2" />
-                  {$t('course.navItem.lessons.download_pdf')}
-                </PrimaryButton>
-              {/if}
-
-              <PrimaryButton className="mr-2" variant={VARIANTS.OUTLINED} onClick={toggleMode}>
+              <PrimaryButton
+                className="mb-2 lg:mb-0 mr-2"
+                variant={VARIANTS.OUTLINED}
+                onClick={() => {
+                  $apps.dropdown = false;
+                  toggleMode();
+                }}
+              >
                 {#if isSaving}
                   <Loading withOverlay={false} small />
                   <span class="text-sm ml-2 italic">
@@ -313,6 +307,17 @@
                     : $t('course.navItem.lessons.edit')}
                 {/if}
               </PrimaryButton>
+
+              {#if $course.metadata.lessonDownload && !!PUBLIC_SERVER_URL}
+                <PrimaryButton
+                  className="mr-"
+                  variant={VARIANTS.OUTLINED}
+                  onClick={downloadLesson}
+                  {isLoading}
+                >
+                  <Download size={16} />
+                </PrimaryButton>
+              {/if}
             </div>
           {/if}
         </RoleBasedSecurity>
