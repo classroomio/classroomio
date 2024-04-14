@@ -18,7 +18,7 @@
             opacity-0 translate-y-full -translate-x-full transition duration-500 text-white"
         size={24}
       />
-      <img src="/logo-192.png" alt="logo" class="group-hover:opacity-0 opacity-100 h-[16px]" />
+      <img src="/new-logo.svg" alt="logo" class="group-hover:opacity-0 opacity-100 h-[16px]" />
       Powered by ClassroomIO
     </span>
   </a>

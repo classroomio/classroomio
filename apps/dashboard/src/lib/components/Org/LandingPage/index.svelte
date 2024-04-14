@@ -508,7 +508,7 @@
               class="flex items-center"
             >
               <img
-                src={org.avatar_url || '/logo-192.png'}
+                src={org.avatar_url || '/new-logo.svg'}
                 alt={`${org.name} logo`}
                 class="rounded h-10 w-10 inline-block mx-auto"
                 data-atf="1"

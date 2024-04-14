@@ -5,7 +5,7 @@
   export let studentName = '';
   let borderwidth = 'border-4';
   let bordercolor = 'border-pink-700';
-  let logo = '/logo-512.png';
+  let logo = '/new-logo.svg';
 </script>
 
 <div

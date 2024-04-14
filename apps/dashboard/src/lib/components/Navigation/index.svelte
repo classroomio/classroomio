@@ -26,7 +26,7 @@
     <div class="logo">
       <a href="/" title={`Go to ${orgName || 'ClassroomIO'} Home`} id="logo" data-hveid="8">
         <img
-          src={logo || '/logo-192.png'}
+          src={logo || '/new-logo.svg'}
           alt={`${orgName || 'ClassroomIO'} logo`}
           class="rounded h-9 w-9 inline-block mx-auto"
           data-atf="1"

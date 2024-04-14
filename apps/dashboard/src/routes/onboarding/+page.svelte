@@ -206,7 +206,7 @@
       <!-- Header With Logo -->
       <div class="flex flex-col items-center">
         <div class="flex items-center w-full justify-center mb-4">
-          <img src="/logo-192.png" alt="ClassroomIO logo" height="50" width="50" data-atf="1" />
+          <img src="/new-logo.svg" alt="ClassroomIO logo" height="50" width="50" data-atf="1" />
           <h4 class="dark:text-white text-xl">ClassroomIO</h4>
         </div>
 

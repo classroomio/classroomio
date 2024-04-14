@@ -10,7 +10,7 @@
         width="32"
         height="32"
         loading="lazy"
-        src="/logo-192.png"
+        src="/new-logo.svg"
         alt="classroomio logo"
         class="mb-5 w-[10%] lg:mb-10 lg:w-[5%]"
       />
