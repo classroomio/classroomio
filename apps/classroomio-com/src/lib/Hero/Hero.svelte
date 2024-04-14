@@ -1,15 +1,29 @@
 <script>
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import { fly } from 'svelte/transition';
   import { sineInOut } from 'svelte/easing';
   import { PUBLIC_ENABLE_USERS_COMPANIES } from '$env/static/public';
 
   let animate = false;
+  const names = ['Bootcamp', 'Courses', 'Training', 'School'];
+  let titleIndex = 0;
+  let title = names[titleIndex];
+
+  let timeout;
 
   onMount(() => {
     setTimeout(() => {
       animate = true;
     }, 70);
+    timeout = setInterval(() => {
+      const nextIndex = titleIndex + 1;
+      titleIndex = names[nextIndex] ? nextIndex : 0;
+      title = names[titleIndex];
+    }, 3000);
+  });
+
+  onDestroy(() => {
+    clearTimeout(timeout);
   });
 </script>
 
@@ -73,12 +87,17 @@
       {/if}
     </div>
 
-    <div class="w-full flex flex-col">
-      <h1
-        class="mx-auto w-[89%] pr-20 lg:pr-0 lg:w-[60%] text-left lg:text-center font-bold md:leading-[1.5] text-slate-900 text-5xl lg:text-7xl"
-      >
-        Launch Your Online Bootcamp <span class="text-blue-700">In Minutes </span>
-      </h1>
+    <div class="w-full">
+      <div class="font-bold md:leading-[1.5] text-slate-900 text-5xl lg:text-7xl">
+        <span>Launch Your Online</span> <br />
+        <span class="overflow-hidden w-[28%] h-[90px] -mb-5 relative inline-block">
+          {#key titleIndex}
+            <span class="absolute left-4" transition:fly={{ y: 100, delay: 0, easing: sineInOut }}>
+              {title}
+            </span>
+          {/key}
+        </span>
+      </div>
 
       <p class="text-md mx-auto mt-10 px-4 text-slate-700 md:text-lg lg:mt-6 lg:w-[42%] lg:p-0">
         Meet a better learning management system (LMS) for teachers and students. ClassroomIO allows
