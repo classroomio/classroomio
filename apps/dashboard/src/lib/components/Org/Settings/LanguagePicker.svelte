@@ -1,22 +1,14 @@
 <script>
   import { Dropdown } from 'carbon-components-svelte';
   import { t, initialized } from '$lib/utils/functions/translations';
+  import { LANGUAGES } from '$lib/utils/constants/translation';
+  import { LOCALE } from '$lib/utils/types';
 
   export let className = '';
-  export let value = 'en';
+  export let value = LOCALE.EN;
   export let hasLangChanged = false;
 
-  let dropdownItems = [
-    { id: '', text: 'Pick a Language' },
-    { id: 'en', text: 'English' },
-    { id: 'hi', text: 'Hindi' },
-    { id: 'fr', text: 'French' },
-    { id: 'pt', text: 'Portuguese' },
-    { id: 'de', text: 'German' },
-    { id: 'vi', text: 'Vietnamese' },
-    { id: 'ru', text: 'Russian' },
-    { id: 'es', text: 'Spanish' }
-  ];
+  const dropdownItems = [{ id: '', text: 'Pick a Language' }, ...LANGUAGES];
 
   function handleSelect(event) {
     value = event.detail.selectedId;

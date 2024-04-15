@@ -2,6 +2,7 @@ import { writable } from 'svelte/store';
 import type { Writable, Updater } from 'svelte/store';
 import { createLesson, updateLesson, deleteLesson } from '$lib/utils/services/courses';
 import type { Lesson, Course, LessonPage, LessonComment } from '$lib/utils/types';
+import { LOCALE } from '$lib/utils/types';
 import { snackbar } from '$lib/components/Snackbar/store';
 
 export const uploadCourseVideoStore = writable({
@@ -12,6 +13,7 @@ export const lessons: Writable<Lesson[]> = writable([]);
 
 export const lesson = writable<LessonPage>({
   id: null,
+  locale: LOCALE.EN,
   totalExercises: 0,
   totalComments: 0,
   isSaving: false,
@@ -24,7 +26,9 @@ export const lesson = writable<LessonPage>({
   lesson_completion: []
 });
 
-export let lessonComments = writable<LessonComment[]>([]);
+export const lessonContentByLocale = writable<Record<LOCALE, ''>>();
+
+export const lessonComments = writable<LessonComment[]>([]);
 
 export const isLessonDirty = writable(false);
 

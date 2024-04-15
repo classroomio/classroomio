@@ -9,8 +9,8 @@
     badgeValue?: number;
   }
   export let tabs: Tab[] = [];
-  export let currentTab: string;
-  export let onChange = (v: string) => () => {};
+  export let currentTab: string | number;
+  export let onChange = (v: string | number) => () => {};
 </script>
 
 <div class="w-full flex flex-col">

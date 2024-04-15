@@ -1,6 +1,17 @@
 export * from './config';
 export * from './dashboard';
 
+export enum LOCALE {
+  EN = 'en',
+  HI = 'hi',
+  FR = 'fr',
+  PT = 'pt',
+  DE = 'de',
+  VI = 'vi',
+  RU = 'ru',
+  ES = 'es'
+}
+
 //===============Custom Type===============
 export interface GroupPerson {
   assigned_student_id: number | null;
@@ -248,7 +259,8 @@ export interface LessonPage {
   id?: string | null;
   totalExercises: number;
   totalComments: number;
-  isSaving: Boolean;
+  locale: LOCALE;
+  isSaving: boolean;
   materials: {
     note: string;
     slide_url: string;

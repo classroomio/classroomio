@@ -1,5 +1,6 @@
 import { writable } from 'svelte/store';
 import type { User } from '@supabase/supabase-js';
+import { LOCALE } from '../types';
 
 interface UserStore {
   openAuthModal: boolean;
@@ -21,7 +22,7 @@ interface ProfileStore {
   goal: string;
   source: string;
   telegram_chat_id: number | null;
-  locale: string;
+  locale: LOCALE;
   is_email_verified: boolean;
   verified_at: string;
 }
@@ -45,7 +46,7 @@ export const defaultProfileState: ProfileStore = {
   goal: '',
   source: '',
   telegram_chat_id: null,
-  locale: '',
+  locale: LOCALE.EN,
   is_email_verified: false,
   verified_at: ''
 };

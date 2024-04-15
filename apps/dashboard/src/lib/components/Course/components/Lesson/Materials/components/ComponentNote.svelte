@@ -1,47 +1,20 @@
 <script lang="ts">
-  import { lesson } from '$lib/components/Course/components/Lesson/store/lessons';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
-  import { supabase } from '$lib/utils/functions/supabase';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
-  import { onMount } from 'svelte';
+  import type { LOCALE } from '$lib/utils/types';
+  import { lesson } from '$lib/components/Course/components/Lesson/store/lessons';
 
-  export let selectedLanguage = 'English';
-  export let lessonId = '';
+  export let noteByLocale: Record<LOCALE, string>;
 
-  let translations = [];
-  let selectedLanguageContent;
-
-  async function fetchTranslations(selectedLanguage) {
-    const { data, error } = await supabase
-      .from('lesson_language')
-      .select('*')
-      .eq('lesson_id', lessonId)
-      .eq('lang', selectedLanguage);
-
-    if (data) {
-      translations = data;
-      translations.map((translation) => (selectedLanguageContent = translation.content || ''));
-    }
-
-    if (error) {
-      console.error('Error fetching translations:', error.message);
-    }
-  }
-
-  onMount(() => {
-    fetchTranslations(selectedLanguage);
-  });
-
-  $: {
-    fetchTranslations(selectedLanguage);
-  }
+  $: content = noteByLocale && noteByLocale[$lesson.locale];
+  $: console.log({ locale: $lesson.locale, content, noteByLocale });
 </script>
 
-{#if !isHtmlValueEmpty(selectedLanguageContent)}
+{#if !isHtmlValueEmpty(content)}
   <HtmlRender className="m-auto">
     <svelte:fragment slot="content">
       <div>
-        {@html selectedLanguageContent}
+        {@html content}
       </div>
     </svelte:fragment>
   </HtmlRender>

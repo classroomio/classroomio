@@ -2,7 +2,6 @@
   import Chip from '$lib/components/Chip/Text.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import StepDoneIcon from '$lib/components/Icons/StepDoneIcon.svelte';
   import CheckmarkOutline from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
 
   import { currentOrg } from '$lib/utils/store/org';
@@ -25,7 +24,7 @@
   };
 
   const isCompleted = (id) => {
-    return setupList?.find((c) => c.id === id).is_completed == true;
+    return setupList?.find((c) => c.id === id)?.is_completed == true;
   };
 
   const handleClick = (title) => {
@@ -107,7 +106,9 @@
               />
               <p class="font-medium text-lg">{$t(list.title)}</p>
             </div>
-            <p class={`text-sm`}></p>
+            <p class={`text-sm`}>
+              {$t(list.desc)}
+            </p>
           </div>
           <div class="w-full lg:w-[30%]">
             <PrimaryButton

@@ -3,7 +3,6 @@
   import { Tabs, Tab, TabContent } from 'carbon-components-svelte';
   import Profile from '$lib/components/LMS/components/Profile.svelte';
   import Integrations from '$lib/components/Org/Settings/Integrations.svelte';
-  import Languages from '$lib/components/Org/Settings/Languages.svelte';
   import { t } from '$lib/utils/functions/translations';
 
   let selected = 0;

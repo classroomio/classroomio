@@ -1,6 +1,6 @@
 <script lang="ts">
   import isEmpty from 'lodash/isEmpty';
-  import { onMount, onDestroy } from 'svelte';
+  import { onMount } from 'svelte';
   import { useCompletion } from 'ai/svelte';
   import MODES from '$lib/utils/constants/mode.js';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
@@ -40,17 +40,29 @@
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import { t } from '$lib/utils/functions/translations';
   import { supabase } from '$lib/utils/functions/supabase';
+  import { LOCALE } from '$lib/utils/types';
 
   export let mode = MODES.view;
   export let prevMode = '';
   export let lessonId = '';
-  export let selectedLanguage = '';
-  export let selectedLanguageContent = '';
   export let isSaving = false;
   export let isStudent = false;
   export let toggleMode = () => {};
 
-  let translations = [];
+  let translations: {
+    content: string;
+    locale: LOCALE;
+  }[] = [];
+  let noteByLocale: Record<LOCALE, string> = {
+    [LOCALE.EN]: '',
+    [LOCALE.HI]: '',
+    [LOCALE.FR]: '',
+    [LOCALE.PT]: '',
+    [LOCALE.DE]: '',
+    [LOCALE.VI]: '',
+    [LOCALE.RU]: '',
+    [LOCALE.ES]: ''
+  };
   let lessonTitle = '';
   let initAutoSave = false;
   let timeoutId: NodeJS.Timeout;
@@ -67,70 +79,71 @@
   let aiButtonClass =
     'flex items-center px-5 py-2 border border-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md w-full mb-2';
 
-  const onChange =
-    (tab = 0) =>
-    () =>
-      (currentTab = tab);
+  const onChange = (tab) => {
+    return () => {
+      currentTab = tab;
+    };
+  };
 
   const getValue = (label: string) => {
     const tabValue = tabs.find((tab) => tab.label === label)?.value;
     return tabValue;
   };
 
-  async function fetchTranslations(selectedLanguage) {
+  async function fetchTranslations() {
     const { data, error } = await supabase
       .from('lesson_language')
       .select('*')
-      .eq('lesson_id', lessonId)
-      .eq('lang', selectedLanguage);
-
-    if (data) {
-      translations = data;
-      translations.map((translation) => (selectedLanguageContent = translation.content || ''));
-    }
+      .eq('lesson_id', lessonId);
 
     if (error) {
       console.error('Error fetching translations:', error.message);
     }
+
+    if (!data) return;
+
+    translations = data;
+
+    noteByLocale = data.reduce((acc, cur) => {
+      acc[cur.locale] = cur.content;
+      return acc;
+    }, {});
   }
 
-  async function saveOrUpdateTranslation(lang, lessonId, content) {
-    // Check if translation for the given language already exists
-    const { data, error } = await supabase
-      .from('lesson_language')
-      .select('*')
-      .eq('lesson_id', lessonId)
-      .eq('lang', lang);
+  async function saveOrUpdateTranslation(locale, lessonId, content) {
+    const translation = translations.find((t) => t.locale === locale);
 
-    if (error) {
-      console.error('Error checking translation:', error.message);
-      return;
-    }
-
-    // If translation exists, update it; otherwise, insert a new translation
-    if (data && data.length > 0) {
-      // Update existing translation
+    if (translation) {
       const { error: updateError } = await supabase
         .from('lesson_language')
         .update({ content })
         .eq('lesson_id', lessonId)
-        .eq('lang', lang);
+        .eq('locale', locale);
 
       if (updateError) {
         console.error('Error updating translation:', updateError.message);
+        snackbar.error('Updating translations failed');
       }
     } else {
-      // Insert new translation
-      const { error: insertError } = await supabase.from('lesson_language').insert([
-        {
-          lang,
-          lesson_id: lessonId,
-          content
+      const { error: insertError } = await supabase.from('lesson_language').insert({
+        locale,
+        lesson_id: lessonId,
+        content
+      });
+
+      translations = translations.map((t) => {
+        console.log('update translations');
+        if (t.locale === locale) {
+          console.log('change content');
+          t.content = content;
         }
-      ]);
+
+        return t;
+      });
 
       if (insertError) {
         console.error('Error inserting translation:', insertError.message);
+        snackbar.error('Creating new translations failed');
       }
     }
   }
@@ -201,8 +214,10 @@
     $input = JSON.stringify({
       type,
       lessonTitle: _lesson?.title || '',
-      courseTitle: $course.title
+      courseTitle: $course.title,
+      locale: $lesson.locale
     });
+
     setTimeout(() => {
       handleSubmit({ preventDefault: () => {} });
     }, 500);
@@ -238,6 +253,7 @@
     isSaving = true;
     timeoutId = setTimeout(async () => {
       const { error } = await saveLesson(updatedMaterials);
+      await saveOrUpdateTranslation($lesson.locale, lessonId, $lesson.materials.note);
 
       if (error) {
         console.log('error saving lesson', error);
@@ -247,34 +263,19 @@
     }, 500);
   }
 
-  async function saveTranslation(lang, content) {
-    await saveOrUpdateTranslation(lang, lessonId, content);
-  }
-
-  async function updateTranslation(lang, content) {
-    await saveOrUpdateTranslation(lang, lessonId, content);
-  }
-
   function handleInputChange() {
     $isLessonDirty = true;
-
-    const translation = translations.find((t) => t.lang === selectedLanguage);
-
-    // If translation exists, update it; otherwise, save a new translation
-    if (translation) {
-      updateTranslation(selectedLanguage, $lesson.materials.note);
-    } else {
-      saveTranslation(selectedLanguage, $lesson.materials.note);
-    }
   }
 
-  function onLessonIdChange(_lid: string) {
+  async function onLessonIdChange(_lid: string) {
     initAutoSave = false;
     isSaving = false;
 
     tabs = orderedTabs(tabs, $course.metadata?.lessonTabsOrder);
     currentTab = tabs[0].value;
     componentsToRender = getComponentOrder(tabs);
+
+    await fetchTranslations();
   }
 
   const onClose = () => {
@@ -283,9 +284,9 @@
 
   function getComponentOrder(tabs = CONSTANTS.tabs) {
     const componentMap = {
-      '3': ComponentVideo,
+      '1': ComponentNote,
       '2': ComponentSlide,
-      '1': ComponentNote
+      '3': ComponentVideo
     };
 
     const componentNames = tabs
@@ -299,12 +300,6 @@
     return componentNames;
   }
 
-  onMount(() => {
-    fetchTranslations(selectedLanguage);
-  });
-
-  $: fetchTranslations(selectedLanguage);
-
   $: autoSave($lesson.materials, $isLoading, lessonId);
 
   $: onLessonIdChange(lessonId);
@@ -312,8 +307,6 @@
   $: handleSave(prevMode);
 
   $: addBadgeValueToTab($lesson.materials);
-
-  $: console.log('$lesson.materials', $lesson.materials);
 
   $: updateNoteByCompletion($completion);
 
@@ -391,9 +384,11 @@
           <TextEditor
             id={lessonId}
             bind:editorWindowRef
-            value={selectedLanguageContent}
+            value={noteByLocale[$lesson.locale] || noteByLocale[LOCALE.EN]}
             onChange={(html) => {
               $lesson.materials.note = html;
+
+              noteByLocale[$lesson.locale] = html;
               handleInputChange();
             }}
             placeholder={$t('course.navItem.lessons.materials.tabs.note.placeholder')}
@@ -491,7 +486,7 @@
 {:else if !isMaterialsEmpty($lesson.materials)}
   <div class="w-full">
     {#each componentsToRender as Component}
-      <svelte:component this={Component} {lessonId} {selectedLanguage} />
+      <svelte:component this={Component} {lessonId} {noteByLocale} />
     {/each}
   </div>
 {:else}

@@ -33,10 +33,10 @@
   import { profile } from '$lib/utils/store/user';
   import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
   import { t } from '$lib/utils/functions/translations.js';
+  import { LANGUAGES } from '$lib/utils/constants/translation';
 
   export let data;
   export let selectedLanguage = 'English';
-  export let currentLanguage = '';
 
   let path = '';
   let mode = MODES.view;
@@ -46,21 +46,6 @@
   let isSaving = false;
   let isStudent = true;
   let isLessonComplete = false;
-
-  const languages = [
-    'English',
-    'Spanish',
-    'French',
-    'German',
-    'Hindi',
-    'Portuguese',
-    'Vietnamese',
-    'Russian'
-  ];
-
-  function handleLanguageChange(event) {
-    currentLanguage = event.target.value;
-  }
 
   function getLessonOrder(id: string) {
     const index = $lessons.findIndex((lesson) => lesson.id === id);
@@ -200,7 +185,8 @@
         slide_url: lessonData.slide_url
       },
       lesson_completion,
-      exercises: []
+      exercises: [],
+      locale: $profile.locale
     }));
   }
 
@@ -225,8 +211,6 @@
     fetchReqData(data.lessonId, data.isMaterialsTabActive);
   }
 
-  $: console.log('selectedLanguage:', selectedLanguage);
-
   $: isLessonComplete = getIsLessonComplete($lesson.lesson_completion, $profile.id);
 </script>
 
@@ -234,7 +218,7 @@
 <CourseContainer
   bind:isStudent
   {path}
-  isExercisePage={!data.isMaterialsTabActive && data.exerciseId}
+  isExercisePage={!data.isMaterialsTabActive && !!data.exerciseId}
   bind:courseId={data.courseId}
 >
   <PageNav
@@ -256,23 +240,7 @@
     <svelte:fragment slot="widget">
       <div class="flex">
         <div class="mr-5">
-          <select
-            class="rounded-md border-blue-500 dark:bg-black dark:text-white text-sm"
-            bind:value={selectedLanguage}
-            on:change={handleLanguageChange}
-          >
-            {#each languages as language}
-              <option value={language}>{language}</option>
-            {/each}
-          </select>
-
-          <!-- <Dropdown
-            titleText={$t('content.toggle_label')}
-            items={dropdownItems}
-            {selectedId}
-            on:select={handleSelect}
-            class="h-full"
-          /> -->
+          <Dropdown items={LANGUAGES} selectedId={$lesson.locale} class="h-full" />
         </div>
         <RoleBasedSecurity allowedRoles={[1, 2]}>
           {#if data.isMaterialsTabActive}
@@ -350,7 +318,6 @@
         {toggleMode}
         bind:isSaving
         {isStudent}
-        {selectedLanguage}
       />
 
       {#if isStudent}
