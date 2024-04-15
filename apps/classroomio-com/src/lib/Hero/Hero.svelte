@@ -119,7 +119,7 @@
       </p>
     </div>
 
-    <div class="justify-between w-[90%] absolute top-[35%] left-[4%] hidden lg:flex">
+    <div class="justify-between w-[90%] absolute top-[30%] left-[4%] hidden lg:flex">
       {#if animate}
         <div
           class="relative transition-all hover:scale-110 -rotate-12"
@@ -179,7 +179,7 @@
         href="/signup"
         rel="noopener noreferrer nofollow"
       >
-        Get Started for Free
+        Sign Up for Free
       </a>
       <!-- <a
       class="font-medium lg:font-semibold text-sm md:text-md w-11/12 md:w-fit border px-6 py-3 lg:px-10 lg:py-5 rounded-md"
@@ -206,6 +206,7 @@
       class="mx-auto w-[85%] lg:w-[70%]"
     >
       <iframe
+        title="ClassroomIO Live Demo"
         src="https://app.supademo.com/embed/cluw8chyy06nhq2s9m697a680"
         allow="clipboard-write"
         frameborder="0"

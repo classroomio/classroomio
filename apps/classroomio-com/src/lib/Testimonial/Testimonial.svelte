@@ -15,7 +15,7 @@
     href="/signup"
     rel="noopener noreferrer nofollow"
   >
-    Get Started for Free
+    Sign Up for Free
   </a>
 
   <div class="relative my-5 md:my-10 w-[85%] lg:w-[70%]">
