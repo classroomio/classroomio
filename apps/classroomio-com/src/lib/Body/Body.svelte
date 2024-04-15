@@ -6,38 +6,34 @@
 <Section
   id="coursemanagement"
   tagline="Simplified"
-  taglineIcon="simplified"
-  title="Advanced Course Management"
+  title="Course Management"
   description="ClassroomIO simplifies teaching tasks, boosts the educational experience, and is beneficial for both educators and students, providing a user-friendly platform for assessment, grading, attendance, and scorebook management."
   video="https://brand.cdn.clsrio.com/course-management.mp4"
   rightToLeft={true}
 />
 <Section
+  id="ai"
+  tagline="Efficient"
+  title="AI Support"
+  description="Our platform integrates AI to simplify lesson outline generation, streamline lesson planning and spark creative ideas. With ClassroomIO, educators can focus on what matters most: teaching."
+  rightToLeft={false}
+  video="https://brand.cdn.clsrio.com/ai-lesson.mp4"
+/>
+<Section
   id="customization"
   tagline="Flexible"
-  taglineIcon="flexible"
-  title="Customization at its Core"
+  title="Dashboard Customization"
   description="ClassroomIO offers organizations the ability to tailor our LMS to their specific requirements. With our customizable features, you can create a personalized learning environment that aligns with your organization's goals"
   rightToLeft={true}
   video="https://brand.cdn.clsrio.com/lms-customization.mp4"
 />
 <Section
   id="collaboration"
-  tagline="Collaboration"
-  taglineIcon="collaboration"
-  title="Your Knowledge Base"
+  tagline="Collaborative"
+  title="Student and Teacher Community"
   description="Our platform includes a forum-like feature where students and teachers can ask and answer questions, creating a collaborative learning environment. This fosters engagement and knowledge sharing among the community"
   video="https://brand.cdn.clsrio.com/community.mp4"
-  rightToLeft={true}
-/>
-<Section
-  id="ai"
-  tagline="Productivity"
-  taglineIcon="productivity"
-  title="AI Integration for Lesson Planning"
-  description="Our platform integrates AI to simplify lesson outline generation, streamline lesson planning and spark creative ideas. With ClassroomIO, educators can focus on what matters most: teaching."
-  rightToLeft={true}
-  video="https://brand.cdn.clsrio.com/ai-lesson.mp4"
+  rightToLeft={false}
 />
 
 <!-- body section 5 -->

@@ -2,13 +2,13 @@
   <h1
     class="mx-auto text-3xl md:text-4xl lg:text-6xl font-normal leading-[1.5] flex flex-col items-center gap-4"
   >
-    Our Testimonials
+    Hear from Happy ClassroomIO Users
   </h1>
 
   <p
     class="mx-auto text-center my-5 lg:mt-6 px-4 lg:p-0 text-md tracking-wide leading-6 text-gray-400 lg:w-2/4"
   >
-    Our customers love us. Here's why you will too:
+    See what excites them about building and managing bootcamps with ClassroomIO.
   </p>
   <a
     class="md:text-md w-11/12 rounded-md bg-blue-700 px-6 py-3 text-sm font-medium text-white text-center transition-all delay-100 hover:bg-blue-800 hover:shadow-xl hover:scale-95 md:w-fit lg:px-6 lg:py-5 lg:font-semibold"

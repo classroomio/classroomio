@@ -23,22 +23,22 @@
     {
       key: 'coursemanagement',
       title: 'Course Management',
-      subtitle: 'Advanced course management tools '
+      subtitle: 'Simple course management tools '
+    },
+    {
+      key: 'ai',
+      title: 'AI Support',
+      subtitle: 'Double your productivity with AI'
     },
     {
       key: 'customization',
-      title: 'Customizations',
+      title: 'Dashboard Customization',
       subtitle: 'Customize your classroom to your needs'
     },
     {
       key: 'collaboration',
-      title: 'Forum',
+      title: 'Community',
       subtitle: 'Seamlessly collaborate with your students'
-    },
-    {
-      key: 'ai',
-      title: 'AI Lesson Planner',
-      subtitle: "10x Educator's productivity with AI"
     }
   ];
 </script>
