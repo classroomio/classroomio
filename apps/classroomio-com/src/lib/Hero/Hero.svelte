@@ -5,9 +5,15 @@
   import { PUBLIC_ENABLE_USERS_COMPANIES } from '$env/static/public';
 
   let animate = false;
-  const names = ['Bootcamp', 'Courses', 'Training', 'School'];
+  const names = [
+    ['Bootcamp', '#3ADFEC'],
+    ['Courses', '#BF0696'],
+    ['Training', '#0233BD'],
+    ['School', '#9747FF']
+  ];
   let titleIndex = 0;
-  let title = names[titleIndex];
+  let title = names[titleIndex][0];
+  let titleColor = names[titleIndex][1];
 
   let timeout;
 
@@ -18,7 +24,8 @@
     timeout = setInterval(() => {
       const nextIndex = titleIndex + 1;
       titleIndex = names[nextIndex] ? nextIndex : 0;
-      title = names[titleIndex];
+      title = names[titleIndex][0];
+      titleColor = names[titleIndex][1];
     }, 3000);
   });
 
@@ -90,9 +97,13 @@
     <div class="w-full">
       <div class="font-bold md:leading-[1.5] text-slate-900 text-5xl lg:text-7xl">
         <span>Launch Your Online</span> <br />
-        <span class="overflow-hidden w-[28%] h-[90px] -mb-5 relative inline-block">
+        <span class="overflow-hidden w-[30%] h-[90px] -mb-4 relative inline-block">
           {#key titleIndex}
-            <span class="absolute left-4" transition:fly={{ y: 100, delay: 0, easing: sineInOut }}>
+            <span
+              class="absolute left-10"
+              style="color: {titleColor}"
+              transition:fly={{ y: 100, delay: 0, easing: sineInOut }}
+            >
               {title}
             </span>
           {/key}
