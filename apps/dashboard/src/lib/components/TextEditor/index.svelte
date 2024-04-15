@@ -47,6 +47,7 @@
     skin: 'oxide-dark',
     content_css: 'dark',
     extended_valid_elements: '*[.*]',
+    license_key: 'gpl',
     setup: () => {
       addMathPlugin(getTinymce());
     },
