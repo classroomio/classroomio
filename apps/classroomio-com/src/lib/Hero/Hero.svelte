@@ -1,31 +1,27 @@
-<script>
+<script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   import { fly } from 'svelte/transition';
   import { sineInOut } from 'svelte/easing';
   import { PUBLIC_ENABLE_USERS_COMPANIES } from '$env/static/public';
 
-  let animate = false;
   const names = [
-    ['Bootcamp', '#3ADFEC'],
-    ['Courses', '#BF0696'],
-    ['Training', '#0233BD'],
-    ['School', '#9747FF']
+    { label: 'Bootcamp', color: '#3ADFEC' },
+    { label: 'Course', color: '#BF0696' },
+    { label: 'Training', color: '#0233BD' },
+    { label: 'Academy', color: '#9747FF' }
   ];
+  let animate = false;
   let titleIndex = 0;
-  let title = names[titleIndex][0];
-  let titleColor = names[titleIndex][1];
-
-  let timeout;
+  let timeout: NodeJS.Timer;
 
   onMount(() => {
     setTimeout(() => {
       animate = true;
     }, 70);
+
     timeout = setInterval(() => {
       const nextIndex = titleIndex + 1;
       titleIndex = names[nextIndex] ? nextIndex : 0;
-      title = names[titleIndex][0];
-      titleColor = names[titleIndex][1];
     }, 3000);
   });
 
@@ -96,23 +92,25 @@
 
     <div class="w-full">
       <div
-        class="font-bold md:leading-[1.5] text-left lg:text-center ml-6 text-slate-900 text-5xl lg:text-7xl"
+        class="font-bold md:leading-[1.5] text-left lg:text-center ml-6 text-slate-900 text-4xl lg:text-7xl"
       >
         <span>Launch Your Online</span> <br />
-        <span
-          class="overflow-hidden w-full lg:w-[48%] h-[60px] lg:h-[90px] mb-0 mt-2 lg:mt-0 lg:-mb-4 relative inline-block"
-        >
-          {#key titleIndex}
-            <span
-              class="absolute left-0 lg:left-[36%]"
-              style="color: {titleColor}"
-              transition:fly={{ y: 100, delay: 0, easing: sineInOut }}
-            >
-              {title}
-            </span>
-          {/key}
-        </span>
-        <span>In Minutes</span>
+        <div class="flex-wrap flex items-center lg:gap-3">
+          <span
+            class="w-full lg:w-[48%] h-[40px] md:h-[50px] lg:h-[90px] mb-0 mt-1 md:mt-0 lg:-mb-4 relative inline-block"
+          >
+            {#key titleIndex}
+              <span
+                class="absolute left-0 right-[unset] lg:right-0 lg:left-[unset]"
+                style="color: {names[titleIndex].color}"
+                transition:fly={{ y: 100, delay: 0, easing: sineInOut }}
+              >
+                {names[titleIndex].label}
+              </span>
+            {/key}
+          </span>
+          <span>In Minutes</span>
+        </div>
       </div>
 
       <p class="text-md mx-auto mt-10 px-4 text-slate-700 md:text-lg lg:mt-6 lg:w-[42%] lg:p-0">
