@@ -100,7 +100,7 @@
       >
         <span>Launch Your Online</span> <br />
         <span
-          class="overflow-hidden w-full h-[60px] lg:h-[90px] mb-0 mt-2 lg:mt-0 lg:-mb-4 relative inline-block"
+          class="overflow-hidden w-full lg:w-[48%] h-[60px] lg:h-[90px] mb-0 mt-2 lg:mt-0 lg:-mb-4 relative inline-block"
         >
           {#key titleIndex}
             <span
@@ -112,7 +112,6 @@
             </span>
           {/key}
         </span>
-        <br />
         <span>In Minutes</span>
       </div>
 
