@@ -95,12 +95,16 @@
     </div>
 
     <div class="w-full">
-      <div class="font-bold md:leading-[1.5] text-slate-900 text-5xl lg:text-7xl">
+      <div
+        class="font-bold md:leading-[1.5] text-left lg:text-center ml-6 text-slate-900 text-5xl lg:text-7xl"
+      >
         <span>Launch Your Online</span> <br />
-        <span class="overflow-hidden w-[30%] h-[90px] -mb-4 relative inline-block">
+        <span
+          class="overflow-hidden w-full h-[60px] lg:h-[90px] mb-0 mt-2 lg:mt-0 lg:-mb-4 relative inline-block"
+        >
           {#key titleIndex}
             <span
-              class="absolute left-4"
+              class="absolute left-0 lg:left-[36%]"
               style="color: {titleColor}"
               transition:fly={{ y: 100, delay: 0, easing: sineInOut }}
             >
