@@ -9,6 +9,14 @@
     if (!id) return;
     goto(`/courses/${id}`);
   };
+
+  function calcProgressRate(progressRate?: number, totalLessons?: number): number {
+    if (!progressRate || !totalLessons) {
+      return 0;
+    }
+
+    return Math.round((progressRate / totalLessons) * 100);
+  }
 </script>
 
 <section class="h-full">
@@ -41,7 +49,7 @@
             </span>
             <div class="relative bg-[#EAEAEA] w-full h-1">
               <div
-                style="width:{course.progress_rate}%"
+                style="width:{calcProgressRate(course?.progress_rate, course?.total_lessons)}%"
                 class={`absolute top-0 left-0 bg-primary-700 h-full`}
               />
             </div>
