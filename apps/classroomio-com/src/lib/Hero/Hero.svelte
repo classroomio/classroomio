@@ -100,7 +100,7 @@
         <span class="overflow-hidden w-[30%] h-[90px] -mb-4 relative inline-block">
           {#key titleIndex}
             <span
-              class="absolute left-10"
+              class="absolute left-4"
               style="color: {titleColor}"
               transition:fly={{ y: 100, delay: 0, easing: sineInOut }}
             >
@@ -108,6 +108,8 @@
             </span>
           {/key}
         </span>
+        <br />
+        <span>In Minutes</span>
       </div>
 
       <p class="text-md mx-auto mt-10 px-4 text-slate-700 md:text-lg lg:mt-6 lg:w-[42%] lg:p-0">
