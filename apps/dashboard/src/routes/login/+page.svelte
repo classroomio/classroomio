@@ -8,6 +8,7 @@
   import AuthUI from '$lib/components/AuthUI/index.svelte';
   import { currentOrg } from '$lib/utils/store/org';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
+  import { globalStore } from '$lib/utils/store/app';
 
   let formRef: HTMLFormElement;
   let supabase = getSupabase();
@@ -40,6 +41,12 @@
       capturePosthogEvent('login', {
         email: fields.email
       });
+
+      if ($globalStore.isOrgSite) {
+        capturePosthogEvent('student_login', {
+          email: fields.email
+        });
+      }
     } catch (error) {
       submitError = error.error_description || error.message;
       loading = false;

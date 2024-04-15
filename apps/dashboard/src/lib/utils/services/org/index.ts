@@ -63,7 +63,7 @@ export async function getOrgTeam(orgId: string) {
   };
 }
 
-export async function getOrganizations(userId: string) {
+export async function getOrganizations(userId: string, isOrgSite?: boolean, orgSiteName?: string) {
   const { data, error } = await supabase
     .from('organizationmember')
     .select(
@@ -120,19 +120,30 @@ export async function getOrganizations(userId: string) {
 
     orgs.set(orgsArray);
 
-    if (localStorage) {
-      const lastOrgSiteName = localStorage.getItem('classroomio_org_sitename');
+    // If this is a student dashboard
+    if (isOrgSite && orgSiteName) {
+      const orgData = orgsArray.find((org) => org.siteName === orgSiteName);
 
-      const lastOrg = orgsArray.find((org) => org.siteName === lastOrgSiteName);
-
-      if (lastOrg) {
-        currentOrg.set(lastOrg);
+      if (orgData) {
+        currentOrg.set(orgData);
       }
-    }
+    } else {
+      // Check if org was last visited in localhost
+      if (localStorage) {
+        const lastOrgSiteName = localStorage.getItem('classroomio_org_sitename');
 
-    const _currentOrg = get(currentOrg);
-    if (!_currentOrg.siteName) {
-      currentOrg.set(orgsArray[0]);
+        const lastOrg = orgsArray.find((org) => org.siteName === lastOrgSiteName);
+
+        if (lastOrg) {
+          currentOrg.set(lastOrg);
+        }
+      }
+
+      // Default to setting the first org in the array of orgs
+      const _currentOrg = get(currentOrg);
+      if (!_currentOrg.siteName) {
+        currentOrg.set(orgsArray[0]);
+      }
     }
   }
 

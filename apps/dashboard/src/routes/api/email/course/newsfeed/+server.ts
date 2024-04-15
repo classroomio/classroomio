@@ -1,8 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { getSupabase } from '$lib/utils/functions/supabase';
 import { getFeedForNotification } from '$lib/utils/services/newsfeed/index';
-import sendEmail from '$defer/sendEmail';
-import sendEmails from '$defer/sendEmails';
+import sendEmail from '$mail/sendEmail';
 
 const supabase = getSupabase();
 
@@ -13,20 +12,25 @@ const sendEmailNotification = async (feedId: string, authorId: string, comment?:
   const postLink = `https://${feed.org.siteName}.classroomio.com/courses/${feed.courseId}?feedId=${feed.id}`;
 
   if (comment) {
-    // send only to teacher
-    await sendEmail({
-      from: `"${feed.org.name} - ClassroomIO" <notify@classroomio.com>`,
-      to: feed.teacherEmail,
-      subject: `[${feed.courseTitle}] - News feed comment`,
-      content: `
+    const emailData = [
+      {
+        from: `"${feed.org.name} - ClassroomIO" <notify@classroomio.com>`,
+        to: feed.teacherEmail,
+        subject: `[${feed.courseTitle}] - News feed comment`,
+        content: `
       <p>A student left you a comment on your newsfeed post</p>
       
       <div style="font-style: italic; margin-top: 10px;">${comment}</div>
       <div>
         <a class="button" href="${postLink}">View comment</a>
       </div>
-      `
-    });
+      `,
+        isPersonalEmail: false,
+        replyTo: 'noreply@classroomio.com'
+      }
+    ];
+
+    await sendEmail(emailData);
 
     // dont continue
     return;
@@ -37,7 +41,7 @@ const sendEmailNotification = async (feedId: string, authorId: string, comment?:
   }
 
   // else send to everyone except the author of the post
-  const emails = feed.courseMembers.map((member) => ({
+  const emailsData = feed.courseMembers.map((member) => ({
     from: `"${feed.org.name} - ClassroomIO" <notify@classroomio.com>`,
     to: member.email,
     replyTo: feed.teacherEmail,
@@ -53,8 +57,8 @@ const sendEmailNotification = async (feedId: string, authorId: string, comment?:
   }));
   console.log('Sending emails to all students', feed.courseMembers.length);
 
-  // This is the defer function with a loop
-  await sendEmails(emails);
+  // This is the email sending function with a loop
+  await sendEmail(emailsData);
 };
 
 export async function POST({ request }) {

@@ -166,7 +166,7 @@
       // Set user in sentry
       setAnalyticsUser();
 
-      const orgRes = await getOrganizations(profileData.id);
+      const orgRes = await getOrganizations(profileData.id, data.isOrgSite, data.orgSiteName);
 
       // student redirect
       if (data.isOrgSite) {

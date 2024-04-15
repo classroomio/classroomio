@@ -14,6 +14,7 @@
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
+  import { globalStore } from '$lib/utils/store/app';
 
   let supabase = getSupabase();
   let fields = Object.assign({}, SIGNUP_FIELDS);
@@ -91,6 +92,15 @@
         username: regexUsernameMatch[1],
         metadata
       });
+
+      if ($globalStore.isOrgSite) {
+        capturePosthogEvent('student_signed_up', {
+          distinct_id: $profile.id || '',
+          email: authUser.email,
+          username: regexUsernameMatch[1],
+          metadata
+        });
+      }
 
       if (redirect) {
         goto(redirect);

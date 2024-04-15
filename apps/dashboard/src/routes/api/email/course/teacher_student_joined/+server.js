@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { getSupabase } from '$lib/utils/functions/supabase';
-import sendEmail from '$defer/sendEmail';
+import sendEmail from '$mail/sendEmail';
 
 const supabase = getSupabase();
 
@@ -25,18 +25,22 @@ export async function POST({ request }) {
     return json({ success: false, message: 'Unauthenticated user' }, { status: 401 });
   }
 
-  await sendEmail({
-    from: `"ClassroomIO" <notify@classroomio.com>`,
-    to,
-    subject: `[${courseName}] You've got a new student 🎉!`,
-    content: `
+  const emailData = [
+    {
+      from: `"ClassroomIO" <notify@classroomio.com>`,
+      to,
+      subject: `[${courseName}] You've got a new student 🎉!`,
+      content: `
       <p>Hi amazing tutor,</p>
       <p>Congratulations 🎉, a new student has joined a course you are teaching: ${courseName}</p>
       <p>We hope they have a great experience learning from the best (YOU).</p>
       <p>If you run into any issues, please don’t fail to reach out to us, we’d love to make your teaching
       experience as easy as possible.</p>
     `
-  });
+    }
+  ];
+
+  await sendEmail(emailData);
 
   return json({
     success: true,
