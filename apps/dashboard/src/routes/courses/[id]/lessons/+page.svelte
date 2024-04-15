@@ -27,16 +27,15 @@
   import DateField from '$lib/components/Form/Date.svelte';
   import type { Lesson } from '$lib/utils/types';
   import { goto } from '$app/navigation';
-  import { onMount } from 'svelte';
 
   export let data;
+
+  const query = new URLSearchParams($page.url.search);
 
   let lessonEditing: string | undefined;
   let lessonToDelete: Lesson | undefined;
   let isStudent: boolean = true;
   let openDeleteModal: boolean = false;
-  let nextQueryKey;
-  let incompleteLesson;
   let isFetching: boolean = false;
 
   const flipDurationMs = 300;
@@ -96,12 +95,9 @@
     );
   }
 
-  function handleLessons(lessons, nextQueryKey) {
-    const query = new URLSearchParams($page.url.search);
-    nextQueryKey = query.get('next');
-
-    if (nextQueryKey === 'true' && !isFetching && lessons.length > 0) {
-      incompleteLesson = findFirstIncompleteLesson();
+  function onNextQuery(lessons) {
+    if (!isFetching && lessons.length > 0) {
+      const incompleteLesson = findFirstIncompleteLesson();
 
       if (incompleteLesson) {
         goto(`/courses/${data.courseId}/lessons/${incompleteLesson.id}`);
@@ -111,14 +107,8 @@
     }
   }
 
-  onMount(() => {
-    handleLessons($lessons, nextQueryKey);
-  });
-
-  $: {
-    handleLessons($lessons, nextQueryKey);
-    console.log($lessons.length);
-  }
+  $: shouldGoToNextLesson = query.get('next') === 'true';
+  $: shouldGoToNextLesson && onNextQuery($lessons);
 </script>
 
 {#if $handleAddLessonWidget}
@@ -142,7 +132,7 @@
   </PageNav>
 
   <PageBody width="max-w-6xl" padding="p-0">
-    {#if nextQueryKey === 'true'}
+    {#if shouldGoToNextLesson}
       <Box className="w-full lg:w-11/12 lg:px-4 m-auto">
         <div class="flex flex-col items-center justify-between">
           <img src="/images/empty-lesson-icon.svg" alt="Lesson" class="mx-auto my-2.5" />
