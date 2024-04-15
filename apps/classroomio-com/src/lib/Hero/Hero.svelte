@@ -43,7 +43,7 @@
       >
     </div>
 
-    <div class="justify-between w-[90%] absolute top-[10%] left-[4%] hidden lg:flex">
+    <div class="justify-between w-[90%] absolute top-[10%] left-[5%] hidden lg:flex">
       {#if animate}
         <div
           class="relative transition-all hover:scale-110 rotate-12"
