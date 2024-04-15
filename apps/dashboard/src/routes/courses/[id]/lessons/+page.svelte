@@ -35,10 +35,9 @@
   let lessonToDelete: Lesson | undefined;
   let isStudent: boolean = true;
   let openDeleteModal: boolean = false;
-  let nextQueryKey: any;
+  let nextQueryKey;
+  let incompleteLesson;
   let isFetching: boolean = false;
-  let loadedLessons: any = [];
-  let isInitialLoad: boolean = true;
 
   const flipDurationMs = 300;
 
@@ -98,41 +97,27 @@
   }
 
   function handleLessons(lessons, nextQueryKey) {
-    let incompleteLesson;
+    const query = new URLSearchParams($page.url.search);
+    nextQueryKey = query.get('next');
 
-    if (nextQueryKey === 'true' && !isFetching) {
-      console.log('lesson in reactive', lessons);
-    }
-
-    if (lessons.length > 0) {
+    if (nextQueryKey === 'true' && !isFetching && lessons.length > 0) {
       incompleteLesson = findFirstIncompleteLesson();
 
       if (incompleteLesson) {
-        console.log('incompleteLesson', incompleteLesson);
-
-        if (!isInitialLoad) {
-          goto(`/courses/${data.courseId}/lessons/${incompleteLesson.id}`);
-        }
+        goto(`/courses/${data.courseId}/lessons/${incompleteLesson.id}`);
       } else {
-        console.log('All lessons are complete.');
         goto(`/courses/${data.courseId}/lessons`);
       }
     }
   }
 
   onMount(() => {
-    // Update loaded lessons when $lessons store changes
-    lessons.subscribe((value) => {
-      loadedLessons = value;
-      // Check if it's the initial load
-      if (isInitialLoad) {
-        isInitialLoad = false;
-      }
-    });
+    handleLessons($lessons, nextQueryKey);
   });
 
   $: {
     handleLessons($lessons, nextQueryKey);
+    console.log($lessons.length);
   }
 </script>
 
@@ -158,7 +143,16 @@
 
   <PageBody width="max-w-6xl" padding="p-0">
     {#if nextQueryKey === 'true'}
-      <p>Going to next lesson...</p>
+      <Box className="w-full lg:w-11/12 lg:px-4 m-auto">
+        <div class="flex flex-col items-center justify-between">
+          <img src="/images/empty-lesson-icon.svg" alt="Lesson" class="mx-auto my-2.5" />
+          <h2 class="my-1.5 text-xl font-normal">No lessons yet</h2>
+          <p class="text-center text-sm text-slate-500">
+            Share your knowledge with the world by creating engaging lessons. Start by clicking on
+            the Add button.
+          </p>
+        </div>
+      </Box>
     {:else if $lessons.length}
       <section
         class="m-auto w-full p-3 lg:w-11/12 lg:px-4"
