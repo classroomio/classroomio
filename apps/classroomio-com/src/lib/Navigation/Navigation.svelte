@@ -52,7 +52,7 @@
         loading="lazy"
         width="28"
         height="28"
-        src="new-logo.svg"
+        src="/logo-512.svg"
         alt="classroomio logo"
         class="w-[40%] lg:w-[15%]"
       />
@@ -167,7 +167,7 @@
           loading="lazy"
           width="20"
           height="20"
-          src="new-logo.svg"
+          src="/logo-512.svg"
           alt="classroomio logo"
           class="w-[15%]"
         />
