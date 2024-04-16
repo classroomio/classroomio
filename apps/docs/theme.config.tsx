@@ -13,13 +13,13 @@ const config: DocsThemeConfig = {
         rel="icon"
         type="image/x-icon"
         sizes="16x16"
-        href={`${process.env.imagePath}/img/logo-16.png`}
+        href={`${process.env.imagePath}/img/logo-16.svg`}
       />
       <link
         rel="icon"
         type="image/x-icon"
         sizes="32x32"
-        href={`${process.env.imagePath}/img/logo-32.png`}
+        href={`${process.env.imagePath}/img/logo-32.svg`}
       />
 
       <title>ClassroomIO – Launch Your Online Bootcamp In Minutes</title>
@@ -55,7 +55,7 @@ const config: DocsThemeConfig = {
   logo: (
     <div style={{ display: 'flex', alignItems: 'center' }}>
       <img
-        src={`${process.env.imagePath}/img/logo-512.png`}
+        src={`${process.env.imagePath}/img/logo-512.svg`}
         alt={'ClassroomIO logo'}
         width={32}
         height={32}
@@ -91,28 +91,28 @@ const config: DocsThemeConfig = {
         description: 'ClassroomIO is the easiest place to launch and scale your online bootcamp.',
         images: [
           {
-            url: `${process.env.imagePath}/img/logo-16.png`,
+            url: `${process.env.imagePath}/img/logo-16.svg`,
             width: 16,
             height: 16,
             alt: 'ClassroomIO Docs Og Image Alt',
             type: 'image/png'
           },
           {
-            url: `${process.env.imagePath}/img/logo-32.png`,
+            url: `${process.env.imagePath}/img/logo-32.svg`,
             width: 32,
             height: 32,
             alt: 'ClassroomIO Docs Og Image Alt',
             type: 'image/png'
           },
           {
-            url: `${process.env.imagePath}/img/logo-192.png`,
+            url: `${process.env.imagePath}/img/logo-192.svg`,
             width: 192,
             height: 192,
             alt: 'ClassroomIO Docs Og Image Alt',
             type: 'image/png'
           },
           {
-            url: `${process.env.imagePath}/img/logo-512.png`,
+            url: `${process.env.imagePath}/img/logo-512.svg`,
             width: 512,
             height: 512,
             alt: 'ClassroomIO Docs Og Image Alt',

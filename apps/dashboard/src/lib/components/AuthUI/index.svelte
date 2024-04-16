@@ -53,7 +53,7 @@
       {#if !showOnlyContent || showLogo}
         <div class="flex flex-col items-center justify-center w-full pt-2">
           <Avatar
-            src={$currentOrg.avatar_url ? $currentOrg.avatar_url : '/logo-192.png'}
+            src={$currentOrg.avatar_url ? $currentOrg.avatar_url : '/logo-192.svg'}
             name={$currentOrg.name ? $currentOrg.name : 'ClassroomIO'}
             shape="rounded-md"
             width="w-10"

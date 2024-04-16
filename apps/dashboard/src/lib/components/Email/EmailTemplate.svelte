@@ -27,7 +27,7 @@
   <Section style={main}>
     <Container style={container}>
       <Img
-        src="https://app.classroomio.com/logo-512.png"
+        src="https://app.classroomio.com/logo-512.svg"
         alt="ClassroomIO logo"
         style={logo}
         width="50"

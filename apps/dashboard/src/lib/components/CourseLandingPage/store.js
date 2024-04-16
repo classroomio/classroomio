@@ -48,7 +48,7 @@ export const landingPageStore = writable({
       id: 1,
       show: true,
       name: 'Adeyemi Adetunji',
-      avatar_url: '/logo-192.png',
+      avatar_url: '/logo-192.svg',
       rating: 1,
       created_at: new Date(),
       description: 'rice ventore officiis maxime laudantium recusandae sit dolor.'

@@ -54,7 +54,7 @@
 <div class="md:h-[93vh] w-screen flex items-center justify-center flex-col m-2 sm:m-0 font-sans">
   <!--
     <img
-      src="/logo-192.png"
+      src="/logo-192.svg"
       alt="ClassroomIO logo"
       class="rounded inline-block mx-auto w-20 h-20 sm:w-auto sm:h-auto"
       data-atf="1"

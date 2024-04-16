@@ -22,10 +22,10 @@ function createWindow() {
     },
     // Use this in development mode.
     icon: isDev()
-      ? path.join(process.cwd(), 'static/logo-512.png')
-      : path.join(__dirname, '__sapper__/export/logo-512.png'),
+      ? path.join(process.cwd(), 'static/logo-512.svg')
+      : path.join(__dirname, '__sapper__/export/logo-512.svg'),
     // Use this in production mode.
-    // icon: path.join(__dirname, '__sapper__/export/logo-512.png'),
+    // icon: path.join(__dirname, '__sapper__/export/logo-512.svg'),
     show: false
   });
 

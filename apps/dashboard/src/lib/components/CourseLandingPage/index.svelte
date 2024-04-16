@@ -423,7 +423,7 @@
             <img
               alt="Author Avatar"
               class="mr-3 block h-20 w-20 rounded-full"
-              src={get(instructor, 'imgUrl', $currentOrg.avatar_url || '/logo-512.png')}
+              src={get(instructor, 'imgUrl', $currentOrg.avatar_url || '/logo-512.svg')}
             />
             <div>
               <p class="text-md font-light dark:text-white">
