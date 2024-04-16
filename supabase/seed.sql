@@ -326,12 +326,6 @@ INSERT INTO "public"."lesson_comment" ("id", "created_at", "updated_at", "lesson
 -- Data for Name: lesson_completion; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO "public"."lesson_completion" ("id", "created_at", "lesson_id", "profile_id", "is_complete", "updated_at") VALUES
-	(1, '2023-12-18 00:00:00+00', '5e5c8221-4c11-4c40-8664-11743bb79579', '0c256e75-aa40-4f62-8d30-0217ca1c60d9', true, '2023-12-18 00:00:00+00'),
-	(2, '2023-12-18 00:00:00+00', '829da386-8ccd-4c81-b2fb-b9891102c83c', '0c256e75-aa40-4f62-8d30-0217ca1c60d9', true, '2023-12-18 00:00:00+00'),
-	(3, '2023-12-19 00:00:00+00', '829da386-8ccd-4c81-b2fb-b9891102c83c', '0c256e75-aa40-4f62-8d30-0217ca1c60d9', true, '2023-12-19 00:00:00+00'),
-	(4, '2023-12-19 00:00:00+00', '829da386-8ccd-4c81-b2fb-b9891102c83c', '0c256e75-aa40-4f62-8d30-0217ca1c60d9', true, '2023-12-19 00:00:00+00');
-
 
 --
 -- Data for Name: lesson_progress; Type: TABLE DATA; Schema: public; Owner: postgres

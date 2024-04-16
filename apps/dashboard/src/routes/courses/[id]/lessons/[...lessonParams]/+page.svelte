@@ -32,6 +32,7 @@
   import type { LessonCompletion } from '$lib/utils/types';
   import { profile } from '$lib/utils/store/user';
   import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
+  import { captureMessage } from '@sentry/browser';
 
   export let data;
 
@@ -75,29 +76,38 @@
   }
 
   async function markLessonComplete(lessonId: string) {
-    let found = false;
     isMarkingComplete = true;
 
-    let completion: LessonCompletion = {
+    let newCompletion: LessonCompletion = {
       is_complete: true,
       profile_id: $profile.id || '',
       lesson_id: lessonId,
       created_at: new Date().toDateString(),
       updated_at: new Date().toDateString()
     };
-    const completions: LessonCompletion[] = $lesson.lesson_completion.map((_completion) => {
-      if (_completion.profile_id === $profile.id) {
-        found = true;
+    let updatedCompletion: LessonCompletion;
+
+    const completions: LessonCompletion[] = $lesson.lesson_completion.map((completion) => {
+      if (completion.profile_id === $profile.id) {
+        console.log('shouldUpdate');
+
         completion = {
           ...completion,
-          is_complete: _completion.is_complete
+          is_complete: !completion.is_complete
         };
+
+        updatedCompletion = completion;
       }
 
-      return _completion;
+      return completion;
     });
-    if (!found) {
-      completions.push(completion);
+
+    // @ts-ignore
+    if (updatedCompletion) {
+      await updateLessonCompletion(updatedCompletion, true);
+    } else {
+      completions.push(newCompletion);
+      await updateLessonCompletion(newCompletion, false);
     }
 
     $lesson.lesson_completion = completions;
@@ -108,8 +118,6 @@
 
       return l;
     });
-
-    await updateLessonCompletion(completion);
     snackbar.success('Marked as complete');
     isMarkingComplete = false;
   }

@@ -175,8 +175,17 @@ export function updateLesson(lesson: any, lessonId: Lesson['id']) {
     .match({ id: lessonId });
 }
 
-export function updateLessonCompletion(completion: LessonCompletion) {
-  return supabase.from('lesson_completion').upsert(completion);
+export function updateLessonCompletion(completion: LessonCompletion, shouldUpdate: boolean) {
+  if (shouldUpdate) {
+    return supabase
+      .from('lesson_completion')
+      .update({
+        is_complete: completion.is_complete
+      })
+      .eq('id', completion.id);
+  } else {
+    return supabase.from('lesson_completion').insert(completion);
+  }
 }
 
 export function deleteLesson(lessonId: Lesson['id']) {
