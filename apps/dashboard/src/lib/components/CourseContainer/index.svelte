@@ -9,6 +9,7 @@
   import { profile } from '$lib/utils/store/user';
   import { fetchCourse } from '$lib/utils/services/courses';
   import { globalStore } from '$lib/utils/store/app';
+  import { lessons } from '../Course/components/Lesson/store/lessons';
 
   export let courseId = '';
   export let path = '';
@@ -23,6 +24,7 @@
 
     isFetching = true;
     course.set(defaultCourse);
+    lessons.set([]);
 
     const { data: _data } = await fetchCourse(courseId);
 

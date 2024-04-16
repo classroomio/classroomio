@@ -8,7 +8,7 @@
 
   const gotoCourse = (id: string | undefined) => {
     if (!id) return;
-    goto(`/courses/${id}`);
+    goto(`/courses/${id}/lessons?next=true`);
   };
 </script>
 
@@ -44,7 +44,9 @@
             </span>
             <div class="relative bg-[#EAEAEA] w-full h-1">
               <div
-                style="width:{course.progress_rate}%"
+                style="width: {Math.round(
+                  ((course?.progress_rate ?? 0) / (course?.total_lessons ?? 0)) * 100
+                ) || 0}%"
                 class={`absolute top-0 left-0 bg-primary-700 h-full`}
               />
             </div>

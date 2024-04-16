@@ -99,7 +99,6 @@
           <TextArea
             rows={6}
             placeholder={$t('course.navItem.certificates.placeholder')}
-            bgColor="bg-gray-100"
             bind:value={$course.description}
             errorMessage={errors.description}
             disabled={$isFreePlan}

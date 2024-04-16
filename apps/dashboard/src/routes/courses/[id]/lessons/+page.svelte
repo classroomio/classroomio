@@ -27,13 +27,17 @@
   import DateField from '$lib/components/Form/Date.svelte';
   import type { Lesson } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations.js';
+  import { goto } from '$app/navigation';
 
   export let data;
 
+  const query = new URLSearchParams($page.url.search);
+
   let lessonEditing: string | undefined;
   let lessonToDelete: Lesson | undefined;
-  let isStudent = true;
-  let openDeleteModal = false;
+  let isStudent: boolean = true;
+  let openDeleteModal: boolean = false;
+  let isFetching: boolean = false;
 
   const flipDurationMs = 300;
 
@@ -82,6 +86,30 @@
       return index + 1;
     }
   }
+
+  function findFirstIncompleteLesson() {
+    return $lessons.find(
+      (lesson) =>
+        lesson.lesson_completion &&
+        lesson.lesson_completion.length === 0 &&
+        lesson.is_unlocked === true
+    );
+  }
+
+  function onNextQuery(lessons) {
+    if (!isFetching && lessons.length > 0) {
+      const incompleteLesson = findFirstIncompleteLesson();
+
+      if (incompleteLesson) {
+        goto(`/courses/${data.courseId}/lessons/${incompleteLesson.id}`);
+      } else {
+        goto(`/courses/${data.courseId}/lessons`);
+      }
+    }
+  }
+
+  $: shouldGoToNextLesson = query.get('next') === 'true';
+  $: shouldGoToNextLesson && onNextQuery($lessons);
 </script>
 
 {#if $handleAddLessonWidget}
@@ -95,7 +123,7 @@
 />
 
 <!-- TODO: Refactor usage of two way binding isStudent, rather use $globalStore.isStudent -->
-<CourseContainer bind:isStudent bind:courseId={data.courseId}>
+<CourseContainer bind:isFetching bind:isStudent bind:courseId={data.courseId}>
   <PageNav title={$t('course.navItem.lessons.heading')}>
     <div slot="widget">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
@@ -109,7 +137,18 @@
   </PageNav>
 
   <PageBody width="max-w-6xl" padding="p-0">
-    {#if $lessons.length}
+    {#if shouldGoToNextLesson}
+      <Box className="w-full lg:w-11/12 lg:px-4 m-auto">
+        <div class="flex flex-col items-center justify-between">
+          <img src="/images/empty-lesson-icon.svg" alt="Lesson" class="mx-auto my-2.5" />
+          <h2 class="my-1.5 text-xl font-normal">No lessons yet</h2>
+          <p class="text-center text-sm text-slate-500">
+            Share your knowledge with the world by creating engaging lessons. Start by clicking on
+            the Add button.
+          </p>
+        </div>
+      </Box>
+    {:else if $lessons.length}
       <section
         class="m-auto w-full p-3 lg:w-11/12 lg:px-4"
         use:dndzone={{

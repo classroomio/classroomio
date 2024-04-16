@@ -1,15 +1,32 @@
-<script>
-  import { onMount } from 'svelte';
+<script lang="ts">
+  import { onMount, onDestroy } from 'svelte';
   import { fly } from 'svelte/transition';
   import { sineInOut } from 'svelte/easing';
   import { PUBLIC_ENABLE_USERS_COMPANIES } from '$env/static/public';
 
+  const names = [
+    { label: 'Bootcamp', color: '#3ADFEC' },
+    { label: 'Course', color: '#BF0696' },
+    { label: 'Training', color: '#0233BD' },
+    { label: 'Academy', color: '#9747FF' }
+  ];
   let animate = false;
+  let titleIndex = 0;
+  let timeout: NodeJS.Timer;
 
   onMount(() => {
     setTimeout(() => {
       animate = true;
     }, 70);
+
+    timeout = setInterval(() => {
+      const nextIndex = titleIndex + 1;
+      titleIndex = names[nextIndex] ? nextIndex : 0;
+    }, 3000);
+  });
+
+  onDestroy(() => {
+    clearTimeout(timeout);
   });
 </script>
 
@@ -26,7 +43,7 @@
       >
     </div>
 
-    <div class="justify-between w-[90%] absolute top-[10%] left-[4%] hidden lg:flex">
+    <div class="justify-between w-[90%] absolute top-[10%] left-[5%] hidden lg:flex">
       {#if animate}
         <div
           class="relative transition-all hover:scale-110 rotate-12"
@@ -73,12 +90,28 @@
       {/if}
     </div>
 
-    <div class="w-full flex flex-col">
-      <h1
-        class="mx-auto w-[89%] pr-20 lg:pr-0 lg:w-[60%] text-left lg:text-center font-bold md:leading-[1.5] text-slate-900 text-5xl lg:text-7xl"
+    <div class="w-full">
+      <div
+        class="font-bold md:leading-[1.5] text-left lg:text-center ml-6 text-slate-900 text-4xl lg:text-7xl"
       >
-        Launch Your Online Bootcamp <span class="text-blue-700">In Minutes </span>
-      </h1>
+        <span>Launch Your Online</span> <br />
+        <div class="flex-wrap flex items-center lg:gap-3">
+          <span
+            class="w-full lg:w-[48%] h-[40px] md:h-[50px] lg:h-[90px] mb-0 mt-1 md:mt-0 lg:-mb-4 relative inline-block"
+          >
+            {#key titleIndex}
+              <span
+                class="absolute left-0 right-[unset] lg:right-0 lg:left-[unset]"
+                style="color: {names[titleIndex].color}"
+                transition:fly={{ y: 100, delay: 0, easing: sineInOut }}
+              >
+                {names[titleIndex].label}
+              </span>
+            {/key}
+          </span>
+          <span>In Minutes</span>
+        </div>
+      </div>
 
       <p class="text-md mx-auto mt-10 px-4 text-slate-700 md:text-lg lg:mt-6 lg:w-[42%] lg:p-0">
         Meet a better learning management system (LMS) for teachers and students. ClassroomIO allows
@@ -86,7 +119,7 @@
       </p>
     </div>
 
-    <div class="justify-between w-[90%] absolute top-[35%] left-[4%] hidden lg:flex">
+    <div class="justify-between w-[90%] absolute top-[30%] left-[5%] hidden lg:flex">
       {#if animate}
         <div
           class="relative transition-all hover:scale-110 -rotate-12"
@@ -146,7 +179,7 @@
         href="/signup"
         rel="noopener noreferrer nofollow"
       >
-        Get Started for Free
+        Sign Up for Free
       </a>
       <!-- <a
       class="font-medium lg:font-semibold text-sm md:text-md w-11/12 md:w-fit border px-6 py-3 lg:px-10 lg:py-5 rounded-md"
@@ -158,14 +191,30 @@
     </a> -->
     </div>
 
-    <div class="relative my-5 md:my-10">
+    <!-- <div class="relative my-5 md:my-10">
       <img
         width="710"
         height="710"
         src="./cio-hero.webp"
         alt="hero section with dark vs light mode"
-        class="mx-auto w-[85%] rounded-lg shadow-lg lg:w-[70%]"
+        class=""
       />
+      
+    </div> -->
+    <div
+      style="position: relative; padding-bottom: calc(50% + 42px);"
+      class="mx-auto w-[85%] lg:w-[70%]"
+    >
+      <iframe
+        title="ClassroomIO Live Demo"
+        src="https://app.supademo.com/embed/cluw8chyy06nhq2s9m697a680"
+        allow="clipboard-write"
+        frameborder="0"
+        webkitallowfullscreen="true"
+        mozallowfullscreen="true"
+        allowfullscreen
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+      ></iframe>
     </div>
 
     {#if PUBLIC_ENABLE_USERS_COMPANIES}

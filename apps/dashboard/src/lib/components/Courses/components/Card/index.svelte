@@ -86,7 +86,7 @@
 <a
   rel="prefetch"
   bind:this={target}
-  href={isOnLandingPage ? `/course/${slug}` : `/courses/${id}`}
+  href={isOnLandingPage ? `/course/${slug}` : `/courses/${id}${isLMS ? '/lessons?next=true' : ''}`}
   class="text-black border border-gray dark:border-neutral-600 rounded w-full max-w-[320px] relative hover:scale-95 transition-all ease-in-out"
 >
   <div class="p-4">
