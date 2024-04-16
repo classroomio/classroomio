@@ -116,7 +116,7 @@ const config: DocsThemeConfig = {
             width: 512,
             height: 512,
             alt: 'ClassroomIO Docs Og Image Alt',
-            type: 'image/png'
+            type: 'image/svg'
           },
           { url: `${process.env.imagePath}/img/og-image.png'` }
         ],
