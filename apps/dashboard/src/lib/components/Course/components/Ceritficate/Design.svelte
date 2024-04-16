@@ -92,7 +92,6 @@
           <TextArea
             rows={6}
             placeholder="a little description about the course"
-            bgColor="bg-gray-100"
             bind:value={$course.description}
             errorMessage={errors.description}
             disabled={$isFreePlan}
