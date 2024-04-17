@@ -20,12 +20,17 @@
   } from 'carbon-components-svelte';
   import CheckmarkFilled from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
   import { CopyFile, OverflowMenuVertical, Share, UserFollow } from 'carbon-icons-svelte';
+  import { goto } from '$app/navigation';
   export let courses: Course[] = [];
   export let emptyTitle = 'No Courses Created';
   export let view: string = 'block';
   export let emptyDescription =
     'Share your knowledge with the world by creating engaging courses for your students.';
   let target;
+
+  let isOnLandingPage = false;
+  let slug = '';
+
   function calcProgressRate(progressRate?: number, totalLessons?: number): number {
     if (!progressRate || !totalLessons) {
       return 0;
@@ -58,7 +63,7 @@
 
 <!-- <CopyCourseModal /> -->
 
-<div class={`w-full border border-red-500  my-4 mx-auto`}>
+<div class={`w-full my-4 mx-auto`}>
   {#if $courseMetaDeta.isLoading}
     <section class={`${$courseMetaDeta.isLoading || courses ? 'cards-container' : ''} `}>
       <CardLoader />
@@ -70,17 +75,33 @@
       <StructuredListHead>
         <StructuredListRow head>
           <StructuredListCell head>Title</StructuredListCell>
+          <StructuredListCell head>Description</StructuredListCell>
           <StructuredListCell head>Lessons</StructuredListCell>
           <StructuredListCell head>Students</StructuredListCell>
           <StructuredListCell head>Published</StructuredListCell>
-          <StructuredListCell head>Updated at</StructuredListCell>
           <StructuredListCell head>{''}</StructuredListCell>
         </StructuredListRow>
       </StructuredListHead>
       <StructuredListBody>
         {#each courses as courseData, key (courseData.id)}
-          <StructuredListRow label for="row-{key}" bind:this={target}>
-            <StructuredListCell>{courseData.title}</StructuredListCell>
+          <StructuredListRow
+            label
+            for="row-{key}"
+            on:click={() =>
+              goto(
+                `${
+                  isOnLandingPage
+                    ? `/course/${slug}`
+                    : `/courses/${courseData.id}${
+                        $globalStore.isOrgSite ? '/lessons?next=true' : ''
+                      }`
+                }`
+              )}
+          >
+            <StructuredListCell class="font-semibold">{courseData.title}</StructuredListCell>
+            <StructuredListCell>
+              {courseData.description}
+            </StructuredListCell>
             <StructuredListCell>{courseData.total_lessons}</StructuredListCell>
             <StructuredListCell>{courseData.total_students}</StructuredListCell>
             <StructuredListCell>
@@ -91,9 +112,6 @@
                   Unpublished
                 {/if}
               </Tag>
-            </StructuredListCell>
-            <StructuredListCell>
-              {courseData.updated_at}
             </StructuredListCell>
 
             <StructuredListCell>
