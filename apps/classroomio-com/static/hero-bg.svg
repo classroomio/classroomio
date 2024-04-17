@@ -7,15 +7,15 @@
 >
   <style type="text/css">
   #dash { 
-    stroke-dasharray: 1000;
-    stroke-dashoffset: 1000;
+    stroke-dasharray: 300;
+    stroke-dashoffset: 100;
     animation: dash 5s linear alternate infinite;
   }
 
           
   @keyframes dash {
     from {
-      stroke-dashoffset: 900;
+      stroke-dashoffset: 500;
     }
     to {
       stroke-dashoffset: 0;
