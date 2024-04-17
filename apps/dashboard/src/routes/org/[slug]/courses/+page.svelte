@@ -8,12 +8,14 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { courses, createCourseModal, courseMetaDeta } from '$lib/components/Courses/store';
   import { currentOrg } from '$lib/utils/store/org';
-  import { Add } from 'carbon-icons-svelte';
+  import { Add, Application } from 'carbon-icons-svelte';
   import { isMobile } from '$lib/utils/store/useMobile';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import type { Course } from '$lib/utils/types';
   import { browser } from '$app/environment';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import TableOfContents from 'carbon-icons-svelte/lib/TableOfContents.svelte';
+  import IconButton from '$lib/components/IconButton/index.svelte';
 
   export let data;
   let { cantFetch } = data;
@@ -21,6 +23,7 @@
   let selectedId: string;
   let filteredCourses: Course[];
   let hasFetched = false;
+  let view: string = 'block';
 
   const urlParams = new URLSearchParams($page.url.search);
 
@@ -117,12 +120,20 @@
             { id: '2', text: 'Lessons' }
           ]}
         />
+        {#if view === 'list'}
+          <IconButton onClick={() => (view = 'block')}>
+            <Application size={24} />
+          </IconButton>
+        {:else}
+          <IconButton onClick={() => (view = 'list')}>
+            <TableOfContents size={24} />
+          </IconButton>
+        {/if}
       </div>
     </div>
 
     <NewCourseModal />
-
-    <Courses bind:courses={filteredCourses} />
+    <Courses {view} bind:courses={filteredCourses} />
   </div>
 </section>
 
