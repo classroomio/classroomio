@@ -104,7 +104,7 @@
         <li class="text-gray-800 font-semibold text-sm cursor-pointer">More features</li>
       </a> -->
       <!-- Pricing -->
-      <a href="/#pricing">
+      <a href="/pricing">
         <li class="text-gray-800 font-semibold text-sm cursor-pointer">Pricing</li>
       </a>
       <!-- Docs -->

@@ -1,5 +1,6 @@
 <script>
   import { faqs } from './faqs';
+  import Card from '../Card/Card.svelte';
 </script>
 
 <div class="mb-[15%] mt-[5%]">
@@ -32,29 +33,11 @@
     {/each}
   </div>
 
-  <div
-    class="floating grad relative mx-auto mt-[10%] flex h-[61vh] w-[100%] flex-col items-center justify-center px-[6%] py-[12%] text-center shadow-2xl lg:h-[54vh] lg:w-[70%] lg:rounded-3xl"
-  >
-    <h1 class="font-display mt-3 text-3xl font-bold tracking-tight text-white lg:mt-2 lg:text-4xl">
-      Launch Your Bootcamp Today
-    </h1>
-    <p class="mt-6 text-xl text-gray-300 lg:text-lg">
-      Try before you buy. No credit card required.
-    </p>
-    <button
-      class="text-md mt-10 rounded-md bg-white px-6 py-4 font-semibold text-gray-900 lg:px-7 lg:py-3 lg:text-lg"
-      data-cal-config={"{'layout':'month_view'}"}
-      data-cal-link="classroomio/demo"
-    >
-      Book a demo
-    </button>
-  </div>
+  <Card
+    header="Launch Your Bootcamp Today"
+    subText="Try before you buy. No credit card required."
+    buttonText="Book a demo"
+    buttonLink="classroomio/demo"
+    buttonConfig="'layout':'month_view'"
+  />
 </div>
-
-<style>
-  .grad {
-    background: rgb(51, 16, 71);
-    background: radial-gradient(circle at 50% 100%, rgba(51, 16, 71, 1) 1%, rgba(2, 0, 36, 1) 100%);
-    background-size: cover;
-  }
-</style>
