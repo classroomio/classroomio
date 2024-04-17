@@ -15,8 +15,7 @@
   <section id="pricing" class="pt-[10%]">
     <div class="flex flex-col items-center justify-center px-[6%]">
       <div class="mb-[3%] text-center">
-        <h1 id="pricing" class="text-md font-semibold tracking-wide text-blue-700">Pricing</h1>
-        <h2 class="my-5 text-3xl font-semibold tracking-tight text-gray-900 lg:my-4 lg:text-4xl">
+        <h2 class="my-5 text-4xl font-bold tracking-tight text-gray-900 lg:my-4 lg:text-4xl">
           For teams and individuals
         </h2>
         <p class="mt-4 text-lg tracking-normal text-gray-500 lg:tracking-wide">
