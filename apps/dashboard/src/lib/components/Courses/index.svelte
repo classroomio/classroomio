@@ -1,9 +1,10 @@
 <script lang="ts">
   import Box from '../Box/index.svelte';
   import Card from './components/Card/index.svelte';
+  import List from './components/List/index.svelte';
   import CardLoader from './components/Card/Loader.svelte';
   import CoursesEmptyIcon from '../Icons/CoursesEmptyIcon.svelte';
-  import { courseMetaDeta } from './store';
+  import { courseMetaDeta, view } from './store';
   import type { Course } from '$lib/utils/types';
   import { globalStore } from '$lib/utils/store/app';
   import {
@@ -11,25 +12,15 @@
     StructuredListHead,
     StructuredListRow,
     StructuredListCell,
-    StructuredListBody,
-    StructuredListInput,
-    Tag,
-    ContextMenuOption,
-    ContextMenu,
-    ContextMenuDivider
+    StructuredListBody
   } from 'carbon-components-svelte';
-  import CheckmarkFilled from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
-  import { CopyFile, OverflowMenuVertical, Share, UserFollow } from 'carbon-icons-svelte';
-  import { goto } from '$app/navigation';
+  import { isMobile } from '$lib/utils/store/useMobile';
+
   export let courses: Course[] = [];
   export let emptyTitle = 'No Courses Created';
-  export let view: string = 'block';
+
   export let emptyDescription =
     'Share your knowledge with the world by creating engaging courses for your students.';
-  let target;
-
-  let isOnLandingPage = false;
-  let slug = '';
 
   function calcProgressRate(progressRate?: number, totalLessons?: number): number {
     if (!progressRate || !totalLessons) {
@@ -70,76 +61,35 @@
       <CardLoader />
       <CardLoader />
     </section>
-  {:else if view === 'list'}
+  {:else if $view === 'list'}
     <StructuredList selection class="w-full">
       <StructuredListHead>
         <StructuredListRow head>
           <StructuredListCell head>Title</StructuredListCell>
           <StructuredListCell head>Description</StructuredListCell>
-          <StructuredListCell head>Lessons</StructuredListCell>
-          <StructuredListCell head>Students</StructuredListCell>
-          <StructuredListCell head>Published</StructuredListCell>
+          {#if !$isMobile}
+            <StructuredListCell head>Lessons</StructuredListCell>
+            <StructuredListCell head>Students</StructuredListCell>
+            <StructuredListCell head>Published</StructuredListCell>
+          {/if}
           <StructuredListCell head>{''}</StructuredListCell>
         </StructuredListRow>
       </StructuredListHead>
       <StructuredListBody>
-        {#each courses as courseData, key (courseData.id)}
-          <StructuredListRow
-            label
-            for="row-{key}"
-            on:click={() =>
-              goto(
-                `${
-                  isOnLandingPage
-                    ? `/course/${slug}`
-                    : `/courses/${courseData.id}${
-                        $globalStore.isOrgSite ? '/lessons?next=true' : ''
-                      }`
-                }`
-              )}
-          >
-            <StructuredListCell class="font-semibold">{courseData.title}</StructuredListCell>
-            <StructuredListCell>
-              {courseData.description}
-            </StructuredListCell>
-            <StructuredListCell>{courseData.total_lessons}</StructuredListCell>
-            <StructuredListCell>{courseData.total_students}</StructuredListCell>
-            <StructuredListCell>
-              <Tag type={courseData.is_published ? 'green' : 'cool-gray'}>
-                {#if courseData.is_published}
-                  Published
-                {:else}
-                  Unpublished
-                {/if}
-              </Tag>
-            </StructuredListCell>
-
-            <StructuredListCell>
-              <OverflowMenuVertical size={24} />
-              <ContextMenu {target}>
-                <ContextMenuOption
-                  indented
-                  labelText="Clone"
-                  icon={CopyFile}
-                  on:click={handleCloneCourse}
-                />
-                <ContextMenuOption
-                  indented
-                  labelText="Share"
-                  icon={Share}
-                  on:click={handleShareCourse}
-                />
-                <ContextMenuOption
-                  indented
-                  labelText="Invite"
-                  icon={UserFollow}
-                  on:click={handleInvite}
-                />
-                <ContextMenuDivider />
-                <ContextMenuOption kind="danger" labelText="Delete" on:click={handleDeleteCourse} />
-              </ContextMenu>
-            </StructuredListCell>
-          </StructuredListRow>
+        {#each courses as courseData}
+          <List
+            showContextMenu
+            id={courseData.id}
+            title={courseData.title}
+            description={courseData.description}
+            isPublished={courseData.is_published}
+            cost={courseData.cost}
+            currency={courseData.currency}
+            totalLessons={courseData.total_lessons}
+            totalStudents={courseData.total_students}
+            isLMS={$globalStore.isOrgSite}
+            progressRate={calcProgressRate(courseData.progress_rate, courseData.total_lessons)}
+          />
         {/each}
       </StructuredListBody>
     </StructuredList>
