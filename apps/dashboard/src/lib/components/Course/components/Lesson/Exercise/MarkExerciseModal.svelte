@@ -138,6 +138,7 @@
         <PrimaryButton
           onClick={() => {
             handleSave(data);
+            onClose();
           }}
           label="Submit Grades"
           variant={VARIANTS.CONTAINED_SUCCESS}
