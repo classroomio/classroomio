@@ -29,27 +29,6 @@
 
     return Math.round((progressRate / totalLessons) * 100);
   }
-
-  //TODO put them in the utility file
-  function handleCloneCourse() {
-    // TODO: Clone course functionality
-    alert('WIP: Clone course');
-  }
-
-  function handleShareCourse() {
-    // TODO: Share course functionality
-    alert('WIP: Share course');
-  }
-
-  function handleInvite() {
-    // TODO: Invite functionality
-    alert('WIP: Invite people to course');
-  }
-
-  function handleDeleteCourse() {
-    // TODO: Delete course functionality
-    alert('WIP: Delete course');
-  }
 </script>
 
 <!-- <CopyCourseModal /> -->
@@ -83,12 +62,9 @@
             title={courseData.title}
             description={courseData.description}
             isPublished={courseData.is_published}
-            cost={courseData.cost}
-            currency={courseData.currency}
             totalLessons={courseData.total_lessons}
             totalStudents={courseData.total_students}
             isLMS={$globalStore.isOrgSite}
-            progressRate={calcProgressRate(courseData.progress_rate, courseData.total_lessons)}
           />
         {/each}
       </StructuredListBody>

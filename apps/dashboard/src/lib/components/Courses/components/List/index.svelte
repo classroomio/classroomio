@@ -14,7 +14,6 @@
   import { CopyFile, OverflowMenuVertical, Share, UserFollow } from 'carbon-icons-svelte';
   import { isMobile } from '$lib/utils/store/useMobile';
   import IconButton from '$lib/components/IconButton/index.svelte';
-  import { globalStore } from '$lib/utils/store/app';
   import { goto } from '$app/navigation';
 
   export let id = '';
