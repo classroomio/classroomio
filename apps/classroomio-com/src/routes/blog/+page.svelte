@@ -8,10 +8,12 @@
   <title>Blog | ClassroomIO</title>
 </svelte:head>
 
-<div class=" mt-[10%] md:mt-16">
-  <header class="pt-24 pb-16 w-full flex flex-col items-center text-center">
+<div class="mt-[10%] md:mt-16">
+  <header
+    class="root pt-24 pb-16 w-full flex flex-col items-center text-center border-b border-slate-400"
+  >
     <h1
-      class="mx-auto text-3xl md:text-4xl lg:text-6xl font-normal leading-[1.5] text-slate-900 flex flex-col items-center"
+      class="mx-auto text-4xl md:text-7xl lg:text-6xl font-bold text-slate-900 flex flex-col items-center"
     >
       <span>What's new on</span>
       <span class="text-blue-700 relative"
@@ -35,7 +37,7 @@
   <div class="w-full flex items-center justify-center">
     <ul class="flex flex-col items-start justify-start gap-2 w-[90%] md:w-[50%]">
       {#each data.posts as post}
-        <li class=" border-t border-slate-400 py-14 w-full">
+        <li class=" py-14 w-full">
           <div class="flex md:flex-row flex-col md:items-center gap-2">
             <!-- Date -->
             <p class="text-sm text-slate-500">{formatDate(post.date)}</p>
@@ -67,3 +69,9 @@
     </ul>
   </div>
 </div>
+
+<style>
+  .root {
+    background-image: url('/hero-bg.svg');
+  }
+</style>
