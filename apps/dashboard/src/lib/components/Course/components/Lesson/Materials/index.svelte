@@ -1,6 +1,5 @@
 <script lang="ts">
   import isEmpty from 'lodash/isEmpty';
-  import { onMount } from 'svelte';
   import { useCompletion } from 'ai/svelte';
   import MODES from '$lib/utils/constants/mode.js';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
@@ -21,6 +20,7 @@
   import {
     lesson,
     lessons,
+    lessonByLocaleNote,
     handleUpdateLessonMaterials,
     isLessonDirty,
     uploadCourseVideoStore,
@@ -40,7 +40,7 @@
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import { t } from '$lib/utils/functions/translations';
   import { supabase } from '$lib/utils/functions/supabase';
-  import { LOCALE } from '$lib/utils/types';
+  import type { LOCALE } from '$lib/utils/types';
 
   export let mode = MODES.view;
   export let prevMode = '';
@@ -49,20 +49,7 @@
   export let isStudent = false;
   export let toggleMode = () => {};
 
-  let translations: {
-    content: string;
-    locale: LOCALE;
-  }[] = [];
-  let noteByLocale: Record<LOCALE, string> = {
-    [LOCALE.EN]: '',
-    [LOCALE.HI]: '',
-    [LOCALE.FR]: '',
-    [LOCALE.PT]: '',
-    [LOCALE.DE]: '',
-    [LOCALE.VI]: '',
-    [LOCALE.RU]: '',
-    [LOCALE.ES]: ''
-  };
+  let localeExists: Record<string, boolean> = {};
   let lessonTitle = '';
   let initAutoSave = false;
   let timeoutId: NodeJS.Timeout;
@@ -91,6 +78,10 @@
   };
 
   async function fetchTranslations() {
+    // If we already fetched translations for lesson, don't refetch for performance
+    if ($lessonByLocaleNote[lessonId]) {
+      return;
+    }
     const { data, error } = await supabase
       .from('lesson_language')
       .select('*')
@@ -102,18 +93,39 @@
 
     if (!data) return;
 
-    translations = data;
+    console.log('fetching translations');
 
-    noteByLocale = data.reduce((acc, cur) => {
-      acc[cur.locale] = cur.content;
-      return acc;
-    }, {});
+    lessonByLocaleNote.update((locales) => {
+      return {
+        ...locales,
+        [lessonId]: data.reduce(
+          (acc, cur) => {
+            acc[cur.locale] = cur.content;
+            return acc;
+          },
+          {
+            en: ''
+          }
+        )
+      };
+    });
   }
 
-  async function saveOrUpdateTranslation(locale, lessonId, content) {
-    const translation = translations.find((t) => t.locale === locale);
+  async function saveOrUpdateTranslation(locale, lessonId) {
+    const content = $lessonByLocaleNote[lessonId][locale];
 
-    if (translation) {
+    if (typeof localeExists[locale] === 'undefined') {
+      const { data } = await supabase
+        .from('lesson_language')
+        .select(`id`)
+        .eq('lesson_id', lessonId)
+        .eq('locale', locale)
+        .maybeSingle();
+
+      localeExists[locale] = !!(data && data?.id);
+    }
+
+    if (localeExists[locale]) {
       const { error: updateError } = await supabase
         .from('lesson_language')
         .update({ content })
@@ -131,16 +143,6 @@
         content
       });
 
-      translations = translations.map((t) => {
-        console.log('update translations');
-        if (t.locale === locale) {
-          console.log('change content');
-          t.content = content;
-        }
-
-        return t;
-      });
-
       if (insertError) {
         console.error('Error inserting translation:', insertError.message);
         snackbar.error('Creating new translations failed');
@@ -155,7 +157,13 @@
           materials
         }
       : $lesson;
-    return handleUpdateLessonMaterials(_lesson, lessonId);
+
+    const [lessonRes] = await Promise.all([
+      handleUpdateLessonMaterials(_lesson, lessonId),
+      saveOrUpdateTranslation($lesson.locale, lessonId)
+    ]);
+
+    return lessonRes;
   }
 
   function isMaterialsEmpty(materials: LessonPage['materials']) {
@@ -197,9 +205,11 @@
   });
 
   function updateNoteByCompletion(completion: string) {
-    $lesson.materials.note = completion;
+    if ($lessonByLocaleNote[lessonId]) {
+      $lessonByLocaleNote[lessonId][$lesson.locale] = completion;
+    }
 
-    autoSave($lesson.materials);
+    autoSave($lesson.materials, $lessonByLocaleNote[lessonId]);
 
     if (editorWindowRef) {
       const tmceBody = editorWindowRef?.document?.querySelector('body');
@@ -237,6 +247,7 @@
 
   function autoSave(
     updatedMaterials: LessonPage['materials'],
+    localeNotes: Record<LOCALE, string>,
     _isLoading?: boolean,
     lessonId?: string
   ) {
@@ -244,7 +255,7 @@
     if (mode === MODES.view) return;
 
     if (timeoutId) clearTimeout(timeoutId);
-    console.log('autosaving');
+
     if (!initAutoSave) {
       initAutoSave = true;
       return;
@@ -253,7 +264,6 @@
     isSaving = true;
     timeoutId = setTimeout(async () => {
       const { error } = await saveLesson(updatedMaterials);
-      await saveOrUpdateTranslation($lesson.locale, lessonId, $lesson.materials.note);
 
       if (error) {
         console.log('error saving lesson', error);
@@ -300,7 +310,7 @@
     return componentNames;
   }
 
-  $: autoSave($lesson.materials, $isLoading, lessonId);
+  $: autoSave($lesson.materials, $lessonByLocaleNote[lessonId], $isLoading, lessonId);
 
   $: onLessonIdChange(lessonId);
 
@@ -313,6 +323,8 @@
   $: initPlyr(player, $lesson.materials.videos);
 
   $: lessonTitle = $lessons.find((les) => les.id === $lesson.id)?.title || '';
+
+  $: editorValue = $lessonByLocaleNote[lessonId]?.[$lesson.locale] ?? $lesson.materials.note;
 </script>
 
 <Modal
@@ -384,11 +396,10 @@
           <TextEditor
             id={lessonId}
             bind:editorWindowRef
-            value={noteByLocale[$lesson.locale] || noteByLocale[LOCALE.EN]}
+            value={editorValue}
             onChange={(html) => {
-              $lesson.materials.note = html;
-
-              noteByLocale[$lesson.locale] = html;
+              if (mode === MODES.view) return;
+              $lessonByLocaleNote[lessonId][$lesson.locale] = html;
               handleInputChange();
             }}
             placeholder={$t('course.navItem.lessons.materials.tabs.note.placeholder')}
@@ -486,7 +497,7 @@
 {:else if !isMaterialsEmpty($lesson.materials)}
   <div class="w-full">
     {#each componentsToRender as Component}
-      <svelte:component this={Component} {lessonId} {noteByLocale} />
+      <svelte:component this={Component} {lessonId} />
     {/each}
   </div>
 {:else}

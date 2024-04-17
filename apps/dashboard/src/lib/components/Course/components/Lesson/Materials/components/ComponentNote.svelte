@@ -1,13 +1,16 @@
 <script lang="ts">
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
-  import type { LOCALE } from '$lib/utils/types';
-  import { lesson } from '$lib/components/Course/components/Lesson/store/lessons';
+  import {
+    lesson,
+    lessonByLocaleNote
+  } from '$lib/components/Course/components/Lesson/store/lessons';
 
-  export let noteByLocale: Record<LOCALE, string>;
+  export let lessonId: string;
 
-  $: content = noteByLocale && noteByLocale[$lesson.locale];
-  $: console.log({ locale: $lesson.locale, content, noteByLocale });
+  $: content = $lessonByLocaleNote[lessonId]
+    ? $lessonByLocaleNote[lessonId][$lesson.locale]
+    : $lesson.materials.note;
 </script>
 
 {#if !isHtmlValueEmpty(content)}

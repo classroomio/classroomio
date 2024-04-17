@@ -26,7 +26,9 @@ export const lesson = writable<LessonPage>({
   lesson_completion: []
 });
 
-export const lessonContentByLocale = writable<Record<LOCALE, ''>>();
+export const lessonByLocaleNote = writable<{
+  [key: string]: Record<LOCALE, string>;
+}>({});
 
 export const lessonComments = writable<LessonComment[]>([]);
 

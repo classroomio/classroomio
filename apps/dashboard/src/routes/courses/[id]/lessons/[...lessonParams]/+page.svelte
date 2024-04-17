@@ -36,7 +36,6 @@
   import { LANGUAGES } from '$lib/utils/constants/translation';
 
   export let data;
-  export let selectedLanguage = 'English';
 
   let path = '';
   let mode = MODES.view;
@@ -246,7 +245,7 @@
     <svelte:fragment slot="widget">
       <div class="flex">
         <div class="mr-5">
-          <Dropdown items={LANGUAGES} selectedId={$lesson.locale} class="h-full" />
+          <Dropdown items={LANGUAGES} bind:selectedId={$lesson.locale} class="h-full" />
         </div>
         <RoleBasedSecurity allowedRoles={[1, 2]}>
           {#if data.isMaterialsTabActive}
@@ -269,17 +268,11 @@
                   $apps.dropdown = false;
                   toggleMode();
                 }}
+                isDisabled={isSaving}
               >
-                {#if isSaving}
-                  <Loading withOverlay={false} small />
-                  <span class="text-sm ml-2 italic">
-                    {$t('course.navItem.lessons.autosaving')}</span
-                  >
-                {:else}
-                  {mode === MODES.edit
-                    ? $t('course.navItem.lessons.done')
-                    : $t('course.navItem.lessons.edit')}
-                {/if}
+                {mode === MODES.edit
+                  ? $t('course.navItem.lessons.done')
+                  : $t('course.navItem.lessons.edit')}
               </PrimaryButton>
 
               {#if $course.metadata.lessonDownload && !!PUBLIC_SERVER_URL}
