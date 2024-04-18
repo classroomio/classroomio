@@ -25,7 +25,11 @@
   import { apps } from '$lib/components/Apps/store';
   import APPS_CONSTANTS from '$lib/components/Apps/constants';
   import IconButton from '$lib/components/IconButton/index.svelte';
-  import { lesson, lessons } from '$lib/components/Course/components/Lesson/store/lessons';
+  import {
+    lesson,
+    lessons,
+    lessonByTranslation
+  } from '$lib/components/Course/components/Lesson/store/lessons';
   import { browser } from '$app/environment';
   import { currentOrg } from '$lib/utils/store/org';
   import { snackbar } from '$lib/components/Snackbar/store';
@@ -57,15 +61,19 @@
   }
 
   async function fetchReqData(lessonId = '', isMaterialsTabActive: boolean) {
+    $lesson.isFetching = true;
     let lessonData;
     if (isMaterialsTabActive) {
       const lesson = await fetchLesson(lessonId);
       lessonData = lesson.data;
     }
 
+    console.log({ lessonData });
+
     const totalExercises = lessonData?.totalExercises?.[0] && lessonData.totalExercises[0].count;
     const totalComments = lessonData?.totalComments?.[0] && lessonData.totalComments[0].count;
     setLesson(lessonData, totalExercises || 0, totalComments || 0);
+    $lesson.isFetching = false;
   }
 
   async function markLessonComplete(lessonId: string) {
@@ -179,6 +187,7 @@
       lesson_completion = [...lessonData.lesson_completion];
     }
 
+    console.log('profile locale', $profile.locale);
     lesson.update((l) => ({
       ...l,
       id: data.lessonId,
@@ -193,6 +202,23 @@
       exercises: [],
       locale: $profile.locale
     }));
+
+    if (Array.isArray(lessonData.lesson_language)) {
+      lessonByTranslation.update((lessLocales) => {
+        return {
+          ...lessLocales,
+          [data.lessonId]: lessonData.lesson_language.reduce(
+            (acc, cur) => {
+              acc[cur.locale] = cur.content;
+              return acc;
+            },
+            {
+              en: ''
+            }
+          )
+        };
+      });
+    }
   }
 
   const toggleApps = () => {

@@ -3,13 +3,16 @@
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import {
     lesson,
-    lessonByLocaleNote
+    lessonByTranslation
   } from '$lib/components/Course/components/Lesson/store/lessons';
+  import Box from '$lib/components/Box/index.svelte';
+  import { t } from '$lib/utils/functions/translations';
+  import AlignBoxTopLeft from 'carbon-icons-svelte/lib/AlignBoxTopLeft.svelte';
 
   export let lessonId: string;
 
-  $: content = $lessonByLocaleNote[lessonId]
-    ? $lessonByLocaleNote[lessonId][$lesson.locale]
+  $: content = $lessonByTranslation[lessonId]
+    ? $lessonByTranslation[lessonId][$lesson.locale]
     : $lesson.materials.note;
 </script>
 
@@ -21,4 +24,11 @@
       </div>
     </svelte:fragment>
   </HtmlRender>
+{:else}
+  <Box className="text-center">
+    <AlignBoxTopLeft class="carbon-icon" size={32} />
+    <h3 class="text-xl font-normal dark:text-white py-2">
+      {$t('course.navItem.lessons.materials.no_translation')}
+    </h3>
+  </Box>
 {/if}

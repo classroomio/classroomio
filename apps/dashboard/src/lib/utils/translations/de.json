@@ -517,12 +517,18 @@
         "materials": {
           "body_heading": "Für diese Lektion wurden noch keine Notizen, Videos oder Folien hinzugefügt",
           "body_content": "Teilen Sie Ihr Wissen mit Ihren Schülern, indem Sie ansprechende Inhalte erstellen. Beginnen Sie, indem Sie auf",
+          "no_translation": "Keine Übersetzung für die ausgewählte Sprache",
           "get_started": "Loslegen",
           "button": "Schaltfläche",
           "tabs": {
             "note": {
               "title": "Notiz",
-              "placeholder": "Schreiben Sie hier Ihre Lektionsnotiz"
+              "placeholder": "Schreiben Sie hier Ihre Lektionsnotiz",
+              "ai": {
+                "outline": "Erstellen Sie eine Unterrichtsübersicht",
+                "note": "Unterrichtsnotizen erstellen",
+                "activities": "Unterrichtsaktivitäten erstellen"
+              }
             },
             "slide": {
               "title": "Folie",

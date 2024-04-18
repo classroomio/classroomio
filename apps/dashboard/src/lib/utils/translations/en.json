@@ -526,11 +526,17 @@
           "body_heading": "No note, video or slide added for this lesson yet",
           "body_content": "Share your knowledge with your students by creating engaging content. Start by clicking on",
           "get_started": "Get Started",
+          "no_translation": "No translation for the selected language",
           "button": "button",
           "tabs": {
             "note": {
               "title": "Note",
-              "placeholder": "Write your lesson note here"
+              "placeholder": "Write your lesson note here",
+              "ai": {
+                "outline": "Generate Lesson Outline",
+                "note": "Generate Lesson Note",
+                "activities": "Generate Lesson Activities"
+              }
             },
             "slide": {
               "title": "Slide",

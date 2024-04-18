@@ -17,6 +17,7 @@ export const lesson = writable<LessonPage>({
   totalExercises: 0,
   totalComments: 0,
   isSaving: false,
+  isFetching: false,
   materials: {
     note: '',
     slide_url: '',
@@ -26,7 +27,7 @@ export const lesson = writable<LessonPage>({
   lesson_completion: []
 });
 
-export const lessonByLocaleNote = writable<{
+export const lessonByTranslation = writable<{
   [key: string]: Record<LOCALE, string>;
 }>({});
 

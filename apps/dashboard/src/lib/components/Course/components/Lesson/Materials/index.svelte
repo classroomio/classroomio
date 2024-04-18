@@ -20,7 +20,7 @@
   import {
     lesson,
     lessons,
-    lessonByLocaleNote,
+    lessonByTranslation,
     handleUpdateLessonMaterials,
     isLessonDirty,
     uploadCourseVideoStore,
@@ -41,6 +41,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { supabase } from '$lib/utils/functions/supabase';
   import type { LOCALE } from '$lib/utils/types';
+  import Loader from './Loader.svelte';
 
   export let mode = MODES.view;
   export let prevMode = '';
@@ -77,44 +78,16 @@
     return tabValue;
   };
 
-  async function fetchTranslations() {
-    // If we already fetched translations for lesson, don't refetch for performance
-    if ($lessonByLocaleNote[lessonId]) {
-      return;
-    }
-    const { data, error } = await supabase
-      .from('lesson_language')
-      .select('*')
-      .eq('lesson_id', lessonId);
-
-    if (error) {
-      console.error('Error fetching translations:', error.message);
-    }
-
-    if (!data) return;
-
-    console.log('fetching translations');
-
-    lessonByLocaleNote.update((locales) => {
-      return {
-        ...locales,
-        [lessonId]: data.reduce(
-          (acc, cur) => {
-            acc[cur.locale] = cur.content;
-            return acc;
-          },
-          {
-            en: ''
-          }
-        )
-      };
-    });
-  }
-
   async function saveOrUpdateTranslation(locale, lessonId) {
-    const content = $lessonByLocaleNote[lessonId][locale];
+    const content = $lessonByTranslation[lessonId][locale];
+    console.log('saveOrUpdateTranslation', {
+      lessonId,
+      locale,
+      translationByLocale: $lessonByTranslation[lessonId]
+    });
 
     if (typeof localeExists[locale] === 'undefined') {
+      console.log('find the language');
       const { data } = await supabase
         .from('lesson_language')
         .select(`id`)
@@ -126,6 +99,8 @@
     }
 
     if (localeExists[locale]) {
+      console.log('update the language');
+
       const { error: updateError } = await supabase
         .from('lesson_language')
         .update({ content })
@@ -137,6 +112,7 @@
         snackbar.error('Updating translations failed');
       }
     } else {
+      console.log('create the language');
       const { error: insertError } = await supabase.from('lesson_language').insert({
         locale,
         lesson_id: lessonId,
@@ -146,7 +122,10 @@
       if (insertError) {
         console.error('Error inserting translation:', insertError.message);
         snackbar.error('Creating new translations failed');
+        return;
       }
+
+      localeExists[locale] = true;
     }
   }
 
@@ -166,10 +145,21 @@
     return lessonRes;
   }
 
-  function isMaterialsEmpty(materials: LessonPage['materials']) {
+  function isMaterialsEmpty(
+    materials: LessonPage['materials'],
+    translation: Record<LOCALE, string>
+  ) {
+    console.log('isMaterialsEmpty', {
+      translation
+    });
     const { slide_url, videos, note } = materials;
 
-    return isHtmlValueEmpty(note) && !slide_url && isEmpty(videos);
+    return (
+      isHtmlValueEmpty(note) &&
+      !slide_url &&
+      isEmpty(videos) &&
+      Object.values(translation || {}).every((t) => isHtmlValueEmpty(t))
+    );
   }
 
   function handleSave(prevMode: string) {
@@ -205,11 +195,11 @@
   });
 
   function updateNoteByCompletion(completion: string) {
-    if ($lessonByLocaleNote[lessonId]) {
-      $lessonByLocaleNote[lessonId][$lesson.locale] = completion;
+    if ($lessonByTranslation[lessonId]) {
+      $lessonByTranslation[lessonId][$lesson.locale] = completion;
     }
 
-    autoSave($lesson.materials, $lessonByLocaleNote[lessonId]);
+    autoSave($lesson.materials, $lessonByTranslation[lessonId], false, lessonId);
 
     if (editorWindowRef) {
       const tmceBody = editorWindowRef?.document?.querySelector('body');
@@ -247,10 +237,15 @@
 
   function autoSave(
     updatedMaterials: LessonPage['materials'],
-    localeNotes: Record<LOCALE, string>,
+    translation: Record<LOCALE, string>,
     _isLoading?: boolean,
     lessonId?: string
   ) {
+    console.log('autosave', {
+      translation,
+      lessonId,
+      isFetching: $lesson.isFetching
+    });
     // don't autosave on view mode
     if (mode === MODES.view) return;
 
@@ -263,6 +258,7 @@
 
     isSaving = true;
     timeoutId = setTimeout(async () => {
+      console.log('autosaving');
       const { error } = await saveLesson(updatedMaterials);
 
       if (error) {
@@ -270,7 +266,7 @@
         snackbar.error('snackbar.materials.apology');
       }
       isSaving = false;
-    }, 500);
+    }, 1000);
   }
 
   function handleInputChange() {
@@ -284,8 +280,6 @@
     tabs = orderedTabs(tabs, $course.metadata?.lessonTabsOrder);
     currentTab = tabs[0].value;
     componentsToRender = getComponentOrder(tabs);
-
-    await fetchTranslations();
   }
 
   const onClose = () => {
@@ -310,7 +304,7 @@
     return componentNames;
   }
 
-  $: autoSave($lesson.materials, $lessonByLocaleNote[lessonId], $isLoading, lessonId);
+  $: autoSave($lesson.materials, $lessonByTranslation[lessonId], $isLoading, lessonId);
 
   $: onLessonIdChange(lessonId);
 
@@ -324,7 +318,7 @@
 
   $: lessonTitle = $lessons.find((les) => les.id === $lesson.id)?.title || '';
 
-  $: editorValue = $lessonByLocaleNote[lessonId]?.[$lesson.locale] ?? $lesson.materials.note;
+  $: editorValue = $lessonByTranslation[lessonId]?.[$lesson.locale] ?? $lesson.materials.note;
 </script>
 
 <Modal
@@ -344,7 +338,9 @@
   </svelte:fragment>
 </HtmlRender>
 
-{#if mode === MODES.edit}
+{#if $lesson.isFetching}
+  <Loader />
+{:else if mode === MODES.edit}
   <Tabs {tabs} {currentTab} {onChange}>
     <slot:fragment slot="content">
       <TabContent
@@ -376,15 +372,15 @@
                 <div class="p-2">
                   <button class={aiButtonClass} on:click={() => callAI('outline')}>
                     <ListIcon class="carbon-icon mr-2" />
-                    Generate Lesson Outline
+                    {$t('course.navItem.lessons.materials.tabs.note.ai.outline')}
                   </button>
                   <button class={aiButtonClass} on:click={() => callAI('note')}>
                     <AlignBoxTopLeftIcon class="carbon-icon mr-2" />
-                    Generate Lesson Note
+                    {$t('course.navItem.lessons.materials.tabs.note.ai.note')}
                   </button>
                   <button class={aiButtonClass} on:click={() => callAI('activities')}>
                     <IbmWatsonKnowledgeStudioIcon class="carbon-icon mr-2" />
-                    Generate Lesson Activities
+                    {$t('course.navItem.lessons.materials.tabs.note.ai.activities')}
                   </button>
                 </div>
               </Popover>
@@ -399,7 +395,7 @@
             value={editorValue}
             onChange={(html) => {
               if (mode === MODES.view) return;
-              $lessonByLocaleNote[lessonId][$lesson.locale] = html;
+              $lessonByTranslation[lessonId][$lesson.locale] = html;
               handleInputChange();
             }}
             placeholder={$t('course.navItem.lessons.materials.tabs.note.placeholder')}
@@ -494,7 +490,7 @@
       </TabContent>
     </slot:fragment>
   </Tabs>
-{:else if !isMaterialsEmpty($lesson.materials)}
+{:else if !isMaterialsEmpty($lesson.materials, $lessonByTranslation[lessonId])}
   <div class="w-full">
     {#each componentsToRender as Component}
       <svelte:component this={Component} {lessonId} />

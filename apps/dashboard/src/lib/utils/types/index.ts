@@ -261,6 +261,7 @@ export interface LessonPage {
   totalComments: number;
   locale: LOCALE;
   isSaving: boolean;
+  isFetching: boolean;
   materials: {
     note: string;
     slide_url: string;

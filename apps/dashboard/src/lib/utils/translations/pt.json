@@ -513,12 +513,18 @@
         "materials": {
           "body_heading": "Nenhuma nota, vídeo ou slide adicionado para esta lição ainda",
           "body_content": "Compartilhe seu conhecimento com seus alunos criando conteúdo envolvente. Comece clicando em",
+          "no_translation": "Nenhuma tradução para o idioma selecionado",
           "get_started": "Comece",
           "button": "botão",
           "tabs": {
             "note": {
               "title": "Nota",
-              "placeholder": "Escreva sua nota da lição aqui"
+              "placeholder": "Escreva sua nota da lição aqui",
+              "ai": {
+                "outline": "Gerar esboço da lição",
+                "note": "Gerar nota de aula",
+                "activities": "Gerar atividades de aula"
+              }
             },
             "slide": {
               "title": "Slide",

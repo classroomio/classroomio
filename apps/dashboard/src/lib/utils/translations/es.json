@@ -517,12 +517,18 @@
         "materials": {
           "body_heading": "Aún no se ha agregado ninguna nota, video o diapositiva para esta lección",
           "body_content": "Comparte tu conocimiento con tus estudiantes creando contenido interesante. Comienza haciendo clic en",
+          "no_translation": "No hay traducción para el idioma seleccionado.",
           "get_started": "Empezar",
           "button": "botón",
           "tabs": {
             "note": {
               "title": "Nota",
-              "placeholder": "Escribe tu nota de lección aquí"
+              "placeholder": "Escribe tu nota de lección aquí",
+              "ai": {
+                "outline": "Generar esquema de lección",
+                "note": "Generar nota de lección",
+                "activities": "Generar actividades lectivas"
+              }
             },
             "slide": {
               "title": "Diapositiva",

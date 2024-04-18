@@ -517,12 +517,18 @@
         "materials": {
           "body_heading": "Chưa có ghi chú, video hoặc slide nào được thêm cho bài học này",
           "body_content": "Chia sẻ kiến thức của bạn với học sinh của bạn bằng cách tạo nội dung hấp dẫn. Bắt đầu bằng cách nhấp vào",
+          "no_translation": "Không có bản dịch cho ngôn ngữ đã chọn",
           "get_started": "Bắt đầu",
           "button": "nút",
           "tabs": {
             "note": {
               "title": "Ghi chú",
-              "placeholder": "Viết ghi chú bài học của bạn ở đây"
+              "placeholder": "Viết ghi chú bài học của bạn ở đây",
+              "ai": {
+                "outline": "Tạo dàn ý bài học",
+                "note": "Tạo ghi chú bài học",
+                "activities": "Tạo hoạt động bài học"
+              }
             },
             "slide": {
               "title": "Slide",

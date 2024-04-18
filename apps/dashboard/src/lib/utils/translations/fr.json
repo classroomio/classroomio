@@ -517,12 +517,18 @@
         "materials": {
           "body_heading": "Aucune note, vidéo ou diapositive ajoutée pour cette leçon pour le moment",
           "body_content": "Partagez vos connaissances avec vos élèves en créant du contenu engageant. Commencez par cliquer sur",
+          "no_translation": "Aucune traduction pour la langue sélectionnée",
           "get_started": "Commencer",
           "button": "bouton",
           "tabs": {
             "note": {
               "title": "Note",
-              "placeholder": "Écrivez votre note de cours ici"
+              "placeholder": "Écrivez votre note de cours ici",
+              "ai": {
+                "outline": "Générer un plan de leçon",
+                "note": "Générer une note de cours",
+                "activities": "Générer des activités de cours"
+              }
             },
             "slide": {
               "title": "Glisser",
