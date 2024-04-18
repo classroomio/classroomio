@@ -8,12 +8,15 @@
   import Box from '$lib/components/Box/index.svelte';
   import { t } from '$lib/utils/functions/translations';
   import AlignBoxTopLeft from 'carbon-icons-svelte/lib/AlignBoxTopLeft.svelte';
+  import { lessonFallbackNote } from '$lib/utils/functions/translations';
 
   export let lessonId: string;
 
-  $: content = $lessonByTranslation[lessonId]
-    ? $lessonByTranslation[lessonId][$lesson.locale]
-    : $lesson.materials.note;
+  $: content = lessonFallbackNote(
+    $lesson.materials.note,
+    $lessonByTranslation[lessonId],
+    $lesson.locale
+  );
 </script>
 
 {#if !isHtmlValueEmpty(content)}

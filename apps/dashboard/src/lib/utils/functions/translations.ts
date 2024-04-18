@@ -1,5 +1,6 @@
 import { writable } from 'svelte/store';
 import i18n, { type Config } from 'sveltekit-i18n';
+import { LOCALE } from '$lib/utils/types';
 
 interface Params {
   dateValue: number;
@@ -81,4 +82,23 @@ export async function handleLocaleChange(newLocale) {
     body: JSON.stringify({ locale: newLocale }),
     method: 'POST'
   });
+}
+
+export function lessonFallbackNote(
+  note: string,
+  translation: Record<LOCALE, string>,
+  locale: LOCALE
+) {
+  if (!translation) {
+    return note;
+  }
+
+  const content = translation[locale];
+
+  // if locale is english and no translated content for english but note exists
+  if (locale === LOCALE.EN && !content && note?.length) {
+    return note;
+  }
+
+  return content;
 }

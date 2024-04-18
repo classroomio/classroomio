@@ -38,7 +38,7 @@
   import type { LessonPage } from '$lib/utils/types';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
-  import { t } from '$lib/utils/functions/translations';
+  import { t, lessonFallbackNote } from '$lib/utils/functions/translations';
   import { supabase } from '$lib/utils/functions/supabase';
   import type { LOCALE } from '$lib/utils/types';
   import Loader from './Loader.svelte';
@@ -318,7 +318,11 @@
 
   $: lessonTitle = $lessons.find((les) => les.id === $lesson.id)?.title || '';
 
-  $: editorValue = $lessonByTranslation[lessonId]?.[$lesson.locale] ?? $lesson.materials.note;
+  $: editorValue = lessonFallbackNote(
+    $lesson.materials.note,
+    $lessonByTranslation[lessonId],
+    $lesson.locale
+  );
 </script>
 
 <Modal
