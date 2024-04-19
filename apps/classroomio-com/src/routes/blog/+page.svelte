@@ -1,6 +1,8 @@
 <script>
   import Chip from '$lib/Chip/Chip.svelte';
   import { formatDate } from '$lib/utils/formatDate';
+  import PageSignupCTA from '$lib/PageSignupCTA/index.svelte';
+
   export let data;
 </script>
 
@@ -10,7 +12,7 @@
 
 <div class="mt-[10%] md:mt-16">
   <header
-    class="root lg:min-h-[30rem] pt-24 pb-16 w-full flex flex-col items-center justify-center text-center border-b border-slate-100"
+    class="hero-bg lg:min-h-[30rem] pt-24 pb-16 w-full flex flex-col items-center justify-center text-center border-b border-slate-100"
   >
     <h1
       class="mx-auto text-4xl md:text-7xl lg:text-6xl font-bold text-slate-900 flex flex-col items-center"
@@ -56,10 +58,12 @@
       {/each}
     </ul>
   </div>
-</div>
 
-<style>
-  .root {
-    background-image: url('/hero-bg.svg');
-  }
-</style>
+  <PageSignupCTA
+    header="Ready To Launch Your First Training?"
+    subText="It's free to sign up and start getting value out of the product."
+    btnLabel="Sign me up"
+    link="/signup"
+    demo={false}
+  />
+</div>
