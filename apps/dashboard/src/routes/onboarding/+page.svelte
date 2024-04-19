@@ -16,7 +16,8 @@
     triggerSendEmail,
     NOTIFICATION_NAME
   } from '$lib/utils/services/notification/notification';
-  import { t } from '$lib/utils/functions/translations';
+  import { handleLocaleChange, t } from '$lib/utils/functions/translations';
+  import { LOCALE } from '$lib/utils/types';
 
   interface OnboardingField {
     fullname?: string;
@@ -203,6 +204,10 @@
       }
       if (fields.locale) {
         $profile.locale = fields.locale;
+
+        if (fields.locale !== LOCALE.EN) {
+          handleLocaleChange(fields.locale);
+        }
       }
       triggerSendEmail(NOTIFICATION_NAME.VERIFY_EMAIL, {
         to: $profile.email,
