@@ -97,7 +97,7 @@
         <span>Launch Your Online</span> <br />
         <div class="flex-wrap flex items-center lg:gap-3">
           <span
-            class="w-full lg:w-[48%] h-[40px] md:h-[50px] lg:h-[90px] mb-0 mt-1 md:mt-0 lg:-mb-4 relative inline-block"
+            class="w-full lg:w-[48%] h-[40px] md:h-[50px] lg:h-[90px] mb-0 mt-1 md:mt-0 lg:-mb-4 relative inline-block overflow-hidden"
           >
             {#key titleIndex}
               <span
