@@ -1,6 +1,6 @@
 describe('classroomio dashboard', () => {
   beforeEach(() => {
-    cy.visit('http://localhost:5173');
+    cy.visit('http://localhost:4173');
   });
 
   it('shows the signup and login button', () => {
@@ -21,11 +21,11 @@ describe('classroomio dashboard', () => {
   });
 
   it('can redirect to signup page', () => {
-    cy.get('nav button').first().contains('Signup').click();
+    cy.get('nav button').contains('Sign Up').click();
 
     cy.url().should('contain', '/signup');
 
-    cy.contains('Welcome back').should('be.visible');
+    cy.contains('Create a free account').should('be.visible');
 
     cy.get('form button[type="submit"]').contains('Create Account');
   });

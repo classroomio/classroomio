@@ -29,7 +29,7 @@ jobs:
           # https://docs.cypress.io/guides/continuous-integration/introduction#Boot-your-server
           command: pnpm ci
           start: pnpm --dir apps/dashboard/ ci
-          wait-on: 'http://localhost:5173' # Waits for above
+          wait-on: 'http://localhost:4173' # Waits for above
           # Records to Cypress Cloud
           # https://docs.cypress.io/guides/cloud/projects#Set-up-a-project-to-record
           record: true
