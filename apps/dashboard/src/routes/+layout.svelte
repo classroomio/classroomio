@@ -218,11 +218,8 @@
       $globalStore.isDark = localStorage.getItem('mode') === 'dark';
       toggleBodyByMode($globalStore.isDark);
 
-      const theme = localStorage.getItem('theme');
       if (data.isOrgSite && data.org?.theme) {
         setTheme(data.org?.theme);
-      } else if (theme) {
-        setTheme(theme);
       }
     }
 
