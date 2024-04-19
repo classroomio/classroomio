@@ -18,13 +18,10 @@ jobs:
           version: 6
           # Only install what we need to run the client in-action and tests against it
           # format:    `--filter <packagename>...`
-          run_install: |
-            - args: [--filter apps/dashboard...]
       - name: Cypress run
         # Uses the official Cypress GitHub action https://github.com/cypress-io/github-action
         uses: cypress-io/github-action@v6
         with:
-          install: true
           # Starts web server for E2E tests - replace with your own server invocation
           # https://docs.cypress.io/guides/continuous-integration/introduction#Boot-your-server
           command: pnpm --dir / ci
