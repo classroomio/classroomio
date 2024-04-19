@@ -8,7 +8,7 @@ export const getSupabase = (config?: ConfigType) => {
   if (supabase) return supabase;
   config = {
     supabaseConfig: {
-      url: PUBLIC_SUPABASE_URL || '',
+      url: PUBLIC_SUPABASE_URL || 'http://localhost:54321',
       anonKey: PUBLIC_SUPABASE_ANON_KEY || ''
     }
   };
