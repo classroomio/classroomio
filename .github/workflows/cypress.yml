@@ -25,7 +25,7 @@ jobs:
           # Starts web server for E2E tests - replace with your own server invocation
           # https://docs.cypress.io/guides/continuous-integration/introduction#Boot-your-server
           command: pnpm ci
-          start: pnpm install && pnpm --dir apps/dashboard/ dev
+          start: pnpm --dir apps/dashboard/ install && pnpm --dir apps/dashboard/ dev
           wait-on: 'http://localhost:5173' # Waits for above
           # Records to Cypress Cloud
           # https://docs.cypress.io/guides/cloud/projects#Set-up-a-project-to-record
