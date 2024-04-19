@@ -15,7 +15,8 @@
     "start": "node build",
     "prepare": "svelte-kit sync",
     "test": "jest",
-    "test:watch": "pnpm run test --watch"
+    "test:watch": "pnpm run test --watch",
+    "ci": "vite build && vite prepare"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.386.0",
