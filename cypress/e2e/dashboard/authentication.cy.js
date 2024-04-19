@@ -11,7 +11,7 @@ describe('classroomio dashboard', () => {
   });
 
   it('can redirect to login page', () => {
-    cy.get('nav button').first().contains('Login').click();
+    cy.get('nav button').contains('Login').click();
 
     cy.url().should('contain', '/login');
 
