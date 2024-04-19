@@ -13,6 +13,7 @@
   import TextField from '$lib/components/Form/TextField.svelte';
   import { profile } from '$lib/utils/store/user';
   import { fetchCourses } from '$lib/components/Courses/api';
+  import { t } from '$lib/utils/functions/translations.js';
 
   export let data;
 
@@ -26,10 +27,12 @@
     courseId: ''
   };
 
-  let fetchedCourses = [];
+  let fetchedCourses: any[] = [];
 
   async function getCourses(userId: string | null, orgId: string) {
     const coursesResults = await fetchCourses(userId, orgId);
+    if (!coursesResults) return;
+
     fetchedCourses = coursesResults.allCourses;
   }
 
@@ -56,12 +59,12 @@
 
     if (error) {
       console.error('Error: asking question', error);
-      snackbar.error('Error - Please try again later');
+      snackbar.error('snackbar.community.error.try_again');
     } else {
       const slug = question[0]?.slug;
 
       console.log('Success: asking question', question, slug);
-      snackbar.success('Question Submitted!');
+      snackbar.success('snackbar.community.success.question_submitted');
       goto(`${$currentOrgPath}/community/${slug}`);
     }
   }
@@ -83,25 +86,30 @@
       class="text-gray-500 dark:text-white text-md flex items-center"
       href={`${$currentOrgPath}/community`}
     >
-      <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" /> Go Back
+      <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" />
+      {$t('community.ask.go_back')}
     </a>
     <div class="flex items-center gap-12 justify-between">
-      <h1 class="dark:text-white text-2xl md:text-3xl font-bold">Ask the community</h1>
-      <PrimaryButton label="Publish" variant={VARIANTS.CONTAINED_DARK} onClick={handleSave} />
+      <h1 class="dark:text-white text-2xl md:text-3xl font-bold">{$t('community.ask.ask_the')}</h1>
+      <PrimaryButton
+        label={$t('community.ask.publish')}
+        variant={VARIANTS.CONTAINED_DARK}
+        onClick={handleSave}
+      />
     </div>
   </div>
 
   <div class="mb-3 p-2 flex gap-x-5 justify-between">
     <TextField
       bind:value={fields.title}
-      placeholder="Title"
+      placeholder={$t('community.ask.title')}
       errorMessage={errors.title}
       className="w-[75%]"
     />
     <Dropdown
-      class="w-[25%]"
+      class="w-[25%] h-full"
       size="xl"
-      label="Select Course"
+      label={$t('community.ask.select_course')}
       invalid={!!errors.courseId}
       invalidText={errors.courseId}
       items={fetchedCourses.map((course) => ({ id: course.id, text: course.title }))}
@@ -111,7 +119,7 @@
   <div class="px-2">
     <TextEditor
       bind:value={fields.body}
-      placeholder="Ask the community any question you might have"
+      placeholder={$t('community.ask.ask_community')}
       onChange={(html) => (fields.body = html)}
     />
   </div>

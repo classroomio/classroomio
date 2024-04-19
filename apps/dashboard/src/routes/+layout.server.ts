@@ -1,8 +1,9 @@
-import { dev } from '$app/environment';
+import { dev, browser } from '$app/environment';
 import { redirect } from '@sveltejs/kit';
 import { blockedSubdomain } from '$lib/utils/constants/app';
 import { getCurrentOrg } from '$lib/utils/services/org';
 import { getSupabase, supabase } from '$lib/utils/functions/supabase';
+import { loadTranslations } from '$lib/utils/functions/translations';
 import type { CurrentOrg } from '$lib/utils/types/org';
 
 if (!supabase) {
@@ -53,5 +54,23 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
     throw redirect(307, 'https://app.classroomio.com');
   }
 
+  // Load translations
+  const { pathname } = url;
+  const initLocale = getInitialLocale();
+  await loadTranslations(initLocale, pathname);
+
   return response;
 };
+
+// Define getInitialLocale function
+function getInitialLocale(): string {
+  if (browser) {
+    try {
+      return window.navigator.language.split('-')[0];
+    } catch(e) {
+      return 'en';
+    }
+  }
+
+  return 'en';
+}

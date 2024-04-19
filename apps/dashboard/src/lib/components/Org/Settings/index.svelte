@@ -11,6 +11,7 @@
   import { goto } from '$app/navigation';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import Integrations from './Integrations.svelte';
+  import { t } from '$lib/utils/functions/translations';
 
   let selected = 0;
   let query = new URLSearchParams($page.url.search);
@@ -44,35 +45,35 @@
     tabs = [
       {
         key: 0,
-        label: 'Profile',
+        label: $t('settings.tabs.1'),
         tabKey: '',
         href: $page.url.pathname,
         disabled: false
       },
       {
         key: 1,
-        label: 'Organization',
+        label: $t('settings.tabs.2'),
         tabKey: 'org',
         href: `${$page.url.pathname}?tab=org`,
         disabled: !$isOrgAdmin
       },
       {
         key: 2,
-        label: 'LandingPage',
+        label: $t('settings.tabs.3'),
         tabKey: 'landingpage',
         href: `${$page.url.pathname}?tab=landingpage`,
         disabled: !$isOrgAdmin
       },
       {
         key: 3,
-        label: 'Billing',
+        label: $t('settings.tabs.4'),
         tabKey: 'billing',
         href: `${$page.url.pathname}?tab=billing`,
         disabled: !$isOrgAdmin
       },
       {
         key: 4,
-        label: 'Integrations',
+        label: $t('settings.tabs.5'),
         tabKey: 'integrations',
         href: `${$page.url.pathname}?tab=integrations`,
         disabled: false

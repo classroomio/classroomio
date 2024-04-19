@@ -5,6 +5,7 @@
   import { profile } from '$lib/utils/store/user';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import Box from '$lib/components/Box/index.svelte';
+  import { t } from '$lib/utils/functions/translations';
 
   let isLoading = false;
 
@@ -44,9 +45,11 @@
 <Box>
   <div class="flex flex-col items-center justify-center w-max h-full gap-5">
     <img src="/professional.png" alt="Certificate" />
-    <p class="text-xl font-normal text-center">Certificate is now available</p>
+    <p class="text-xl font-normal text-center">
+      {$t('course.navItem.certificates.unlocked_certificate')}
+    </p>
     <PrimaryButton
-      label="DownLoad Certificate"
+      label={$t('course.navItem.certificates.download_certificate')}
       className="rounded-md"
       onClick={downLoadCertificate}
       isDisabled={!PUBLIC_SERVER_URL}

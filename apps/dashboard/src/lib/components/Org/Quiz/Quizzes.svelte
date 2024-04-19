@@ -7,6 +7,7 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import { supabase } from '$lib/utils/functions/supabase';
   import { currentOrg, quizesStore } from '$lib/utils/store/org';
+  import { t } from '$lib/utils/functions/translations';
 
   let isLoading = false;
 
@@ -43,9 +44,9 @@
     {:else}
       <Box>
         <CoursesEmptyIcon />
-        <h3 class="dark:text-white text-2xl my-5">No Quiz Created</h3>
+        <h3 class="dark:text-white text-2xl my-5">{$t('components.quiz.no_quizz')}</h3>
         <p class="dark:text-white w-1/3 text-center">
-          Create interactive quizzes with scoreboard for your students.
+          {$t('components.quiz.interactive')}
         </p>
       </Box>
     {/each}

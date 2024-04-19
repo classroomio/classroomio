@@ -33,6 +33,7 @@
   import { filterOutDeleted } from './functions';
   import { deleteExercise } from '$lib/utils/services/courses';
   import { lesson } from '../store/lessons';
+  import { t } from '$lib/utils/functions/translations';
 
   const initialQuestionsLength = $questionnaire.questions.length;
 
@@ -95,23 +96,27 @@
   onClose={() => (shouldDeleteExercise = false)}
   bind:open={shouldDeleteExercise}
   width="w-2/4"
-  modalHeading="Delete Modal"
+  modalHeading={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.delete_modal')}
 >
   <form on:submit|preventDefault>
-    <h1 class="dark:text-white text-xl">Are you sure you want to delete this exercise?</h1>
+    <h1 class="dark:text-white text-xl">
+      {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.sure')}
+    </h1>
 
     <div class="mt-5 flex items-center justify-between">
       <PrimaryButton
         className="px-6 py-3"
         variant={VARIANTS.OUTLINED}
-        label="No, cancel"
+        label={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.no')}
         type="submit"
         onClick={() => (shouldDeleteExercise = false)}
       />
       <PrimaryButton
         className="px-6 py-3"
         variant={VARIANTS.CONTAINED}
-        label={isDeleting ? 'Deleting...' : 'Yes, delete'}
+        label={isDeleting
+          ? $t('course.navItem.lessons.exercises.all_exercises.edit_mode.deleting')
+          : $t('course.navItem.lessons.exercises.all_exercises.edit_mode.yes')}
         isDisabled={isDeleting}
         onClick={handleDelete}
       />
@@ -122,7 +127,9 @@
 <div class="w-full">
   {#if Object.values(errors).length}
     <div class="w-full flex justify-center mb-4">
-      <ErrorMessage message="You have some errors" />
+      <ErrorMessage
+        message={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.error')}
+      />
     </div>
   {/if}
   <div class="questions pt-6 px-6">
@@ -140,7 +147,7 @@
         <div class="flex justify-between items-center">
           <div class="mr-5 w-3/5">
             <TextField
-              placeholder="Question"
+              placeholder={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.question')}
               bind:value={question.title}
               isRequired={true}
               onChange={() => {
@@ -160,14 +167,18 @@
             }}
           >
             {#each QUESTION_TYPES as type}
-              <SelectItem value={type.id} text={type.label} />
+              <SelectItem value={type.id} text={$t(type.label)} />
             {/each}
           </Select>
         </div>
 
         {#if typeof question.code === 'string'}
           <div class="flex justify-between items-center my-3 w-3/5">
-            <TextArea bind:value={question.code} rows="2" placeholder="Write your code" />
+            <TextArea
+              bind:value={question.code}
+              rows="2"
+              placeholder={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.write')}
+            />
             <IconButton value="write-code" onClick={() => handleCode(question.id, false)}>
               <TrashCanIcon size={24} class="carbon-icon dark:text-white" />
             </IconButton>
@@ -255,7 +266,9 @@
               onClick={handleAddOption(question.id)}
             >
               <AddFilledIcon size={24} class="carbon-icon dark:text-white" />
-              <p class="dark:text-white ml-2">Add option</p>
+              <p class="dark:text-white ml-2">
+                {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.option')}
+              </p>
             </PrimaryButton>
           </div>
         {/if}

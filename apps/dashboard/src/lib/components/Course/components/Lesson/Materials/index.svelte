@@ -20,6 +20,7 @@
   import {
     lesson,
     lessons,
+    lessonByTranslation,
     handleUpdateLessonMaterials,
     isLessonDirty,
     uploadCourseVideoStore,
@@ -37,6 +38,10 @@
   import type { LessonPage } from '$lib/utils/types';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
+  import { t, lessonFallbackNote } from '$lib/utils/functions/translations';
+  import { supabase } from '$lib/utils/functions/supabase';
+  import type { LOCALE } from '$lib/utils/types';
+  import Loader from './Loader.svelte';
 
   export let mode = MODES.view;
   export let prevMode = '';
@@ -45,7 +50,9 @@
   export let isStudent = false;
   export let toggleMode = () => {};
 
+  let localeExists: Record<string, boolean> = {};
   let lessonTitle = '';
+  let prevContent = '';
   let initAutoSave = false;
   let timeoutId: NodeJS.Timeout;
   let tabs = CONSTANTS.tabs;
@@ -61,15 +68,60 @@
   let aiButtonClass =
     'flex items-center px-5 py-2 border border-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md w-full mb-2';
 
-  const onChange =
-    (tab = 0) =>
-    () =>
-      (currentTab = tab);
+  const onChange = (tab) => {
+    return () => {
+      currentTab = tab;
+    };
+  };
 
   const getValue = (label: string) => {
     const tabValue = tabs.find((tab) => tab.label === label)?.value;
     return tabValue;
   };
+
+  async function saveOrUpdateTranslation(locale, lessonId) {
+    const content = $lessonByTranslation[lessonId][locale];
+
+    if (typeof localeExists[locale] === 'undefined') {
+      console.log('find the language');
+      const { data } = await supabase
+        .from('lesson_language')
+        .select(`id`)
+        .eq('lesson_id', lessonId)
+        .eq('locale', locale)
+        .maybeSingle();
+
+      localeExists[locale] = !!(data && data?.id);
+    }
+
+    if (localeExists[locale]) {
+      const { error: updateError } = await supabase
+        .from('lesson_language')
+        .update({ content })
+        .eq('lesson_id', lessonId)
+        .eq('locale', locale);
+
+      if (updateError) {
+        console.error('Error updating translation:', updateError.message);
+        snackbar.error('Updating translations failed');
+      }
+    } else {
+      const { error: insertError } = await supabase.from('lesson_language').insert({
+        locale,
+        lesson_id: lessonId,
+        content
+      });
+
+      if (insertError) {
+        console.error('Error inserting translation:', insertError.message);
+        snackbar.error('Creating new translations failed');
+        return;
+      }
+
+      localeExists[locale] = true;
+    }
+  }
+
   async function saveLesson(materials?: LessonPage['materials']) {
     const _lesson = !!materials
       ? {
@@ -77,13 +129,30 @@
           materials
         }
       : $lesson;
-    return handleUpdateLessonMaterials(_lesson, lessonId);
+
+    const [lessonRes] = await Promise.all([
+      handleUpdateLessonMaterials(_lesson, lessonId),
+      saveOrUpdateTranslation($lesson.locale, lessonId)
+    ]);
+
+    return lessonRes;
   }
 
-  function isMaterialsEmpty(materials: LessonPage['materials']) {
+  function isMaterialsEmpty(
+    materials: LessonPage['materials'],
+    translation: Record<LOCALE, string>
+  ) {
+    console.log('isMaterialsEmpty', {
+      translation
+    });
     const { slide_url, videos, note } = materials;
 
-    return isHtmlValueEmpty(note) && !slide_url && isEmpty(videos);
+    return (
+      isHtmlValueEmpty(note) &&
+      !slide_url &&
+      isEmpty(videos) &&
+      Object.values(translation || {}).every((t) => isHtmlValueEmpty(t))
+    );
   }
 
   function handleSave(prevMode: string) {
@@ -119,9 +188,13 @@
   });
 
   function updateNoteByCompletion(completion: string) {
-    $lesson.materials.note = completion;
+    if (!completion) return;
 
-    autoSave($lesson.materials);
+    if ($lessonByTranslation[lessonId]) {
+      $lessonByTranslation[lessonId][$lesson.locale] = `${prevContent}${completion}`;
+    }
+
+    autoSave($lesson.materials, $lessonByTranslation[lessonId], false, lessonId);
 
     if (editorWindowRef) {
       const tmceBody = editorWindowRef?.document?.querySelector('body');
@@ -132,12 +205,16 @@
   }
 
   function callAI(type = '') {
+    prevContent = $lessonByTranslation[lessonId]?.[$lesson.locale] || '';
+
     const _lesson = $lessons.find((les) => les.id === $lesson.id);
     $input = JSON.stringify({
       type,
       lessonTitle: _lesson?.title || '',
-      courseTitle: $course.title
+      courseTitle: $course.title,
+      locale: $lesson.locale
     });
+
     setTimeout(() => {
       handleSubmit({ preventDefault: () => {} });
     }, 500);
@@ -157,14 +234,14 @@
 
   function autoSave(
     updatedMaterials: LessonPage['materials'],
+    translation: Record<LOCALE, string>,
     _isLoading?: boolean,
     lessonId?: string
   ) {
-    // don't autosave on view mode
     if (mode === MODES.view) return;
 
     if (timeoutId) clearTimeout(timeoutId);
-    console.log('autosaving');
+
     if (!initAutoSave) {
       initAutoSave = true;
       return;
@@ -172,21 +249,18 @@
 
     isSaving = true;
     timeoutId = setTimeout(async () => {
+      console.log('autosaving');
       const { error } = await saveLesson(updatedMaterials);
 
       if (error) {
         console.log('error saving lesson', error);
-        snackbar.error('We apologise, there was an error saving your lesson.');
+        snackbar.error('snackbar.materials.apology');
       }
       isSaving = false;
-    }, 500);
+    }, 1000);
   }
 
-  function handleInputChange() {
-    $isLessonDirty = true;
-  }
-
-  function onLessonIdChange(_lid: string) {
+  async function onLessonIdChange(_lid: string) {
     initAutoSave = false;
     isSaving = false;
 
@@ -201,15 +275,15 @@
 
   function getComponentOrder(tabs = CONSTANTS.tabs) {
     const componentMap = {
-      Video: ComponentVideo,
-      Slide: ComponentSlide,
-      Note: ComponentNote
+      '1': ComponentNote,
+      '2': ComponentSlide,
+      '3': ComponentVideo
     };
 
     const componentNames = tabs
       .map((tab) => {
         // @ts-ignore
-        const component = componentMap[tab.label];
+        const component = componentMap[tab.value];
         return component || null;
       })
       .filter(Boolean);
@@ -217,7 +291,7 @@
     return componentNames;
   }
 
-  $: autoSave($lesson.materials, $isLoading, lessonId);
+  $: autoSave($lesson.materials, $lessonByTranslation[lessonId], $isLoading, lessonId);
 
   $: onLessonIdChange(lessonId);
 
@@ -225,20 +299,24 @@
 
   $: addBadgeValueToTab($lesson.materials);
 
-  $: console.log('$lesson.materials', $lesson.materials);
-
   $: updateNoteByCompletion($completion);
 
   $: initPlyr(player, $lesson.materials.videos);
 
   $: lessonTitle = $lessons.find((les) => les.id === $lesson.id)?.title || '';
+
+  $: editorValue = lessonFallbackNote(
+    $lesson.materials.note,
+    $lessonByTranslation[lessonId],
+    $lesson.locale
+  );
 </script>
 
 <Modal
   {onClose}
   bind:open={$uploadCourseVideoStore.isModalOpen}
   width="w-4/5 w-[90%] h-[80%] md:h-[566px]"
-  modalHeading="Add a Video"
+  modalHeading={$t('course.navItem.lessons.materials.tabs.video.add_video.title')}
 >
   <VideoUploader {lessonId} />
 </Modal>
@@ -251,72 +329,93 @@
   </svelte:fragment>
 </HtmlRender>
 
-{#if mode === MODES.edit}
+{#if $lesson.isFetching}
+  <Loader />
+{:else if mode === MODES.edit}
   <Tabs {tabs} {currentTab} {onChange}>
     <slot:fragment slot="content">
-      <TabContent value={getValue('Note')} index={currentTab}>
-        <div bind:this={aiButtonRef} class="w-full flex flex-row-reverse">
-          <PrimaryButton
-            className="flex items-center relative"
-            onClick={() => {
-              openPopover = !openPopover;
-            }}
-            isLoading={$isLoading}
-            isDisabled={$isLoading}
-            variant={VARIANTS.OUTLINED}
-            disableScale
-          >
-            <MagicWandFilled size={20} class="carbon-icon mr-3" />
-            AI
-            <Popover
-              caret
-              align="left"
-              bind:open={openPopover}
-              on:click:outside={({ detail }) => {
-                openPopover = aiButtonRef?.contains(detail.target);
+      <TabContent
+        value={getValue('course.navItem.lessons.materials.tabs.note.title')}
+        index={currentTab}
+      >
+        <div class="flex gap-1 justify-end">
+          <div bind:this={aiButtonRef} class="flex flex-row-reverse">
+            <PrimaryButton
+              className="flex items-center relative"
+              onClick={() => {
+                openPopover = !openPopover;
               }}
+              isLoading={$isLoading}
+              isDisabled={$isLoading}
+              variant={VARIANTS.OUTLINED}
+              disableScale
             >
-              <div class="p-2">
-                <button class={aiButtonClass} on:click={() => callAI('outline')}>
-                  <ListIcon class="carbon-icon mr-2" />
-                  Generate Lesson Outline
-                </button>
-                <button class={aiButtonClass} on:click={() => callAI('note')}>
-                  <AlignBoxTopLeftIcon class="carbon-icon mr-2" />
-                  Generate Lesson Note
-                </button>
-                <button class={aiButtonClass} on:click={() => callAI('activities')}>
-                  <IbmWatsonKnowledgeStudioIcon class="carbon-icon mr-2" />
-                  Generate Lesson Activities
-                </button>
-              </div>
-            </Popover>
-          </PrimaryButton>
+              <MagicWandFilled size={20} class="carbon-icon mr-3" />
+              AI
+              <Popover
+                caret
+                align="left"
+                bind:open={openPopover}
+                on:click:outside={({ detail }) => {
+                  openPopover = aiButtonRef?.contains(detail.target);
+                }}
+              >
+                <div class="p-2">
+                  <button class={aiButtonClass} on:click={() => callAI('outline')}>
+                    <ListIcon class="carbon-icon mr-2" />
+                    {$t('course.navItem.lessons.materials.tabs.note.ai.outline')}
+                  </button>
+                  <button class={aiButtonClass} on:click={() => callAI('note')}>
+                    <AlignBoxTopLeftIcon class="carbon-icon mr-2" />
+                    {$t('course.navItem.lessons.materials.tabs.note.ai.note')}
+                  </button>
+                  <button class={aiButtonClass} on:click={() => callAI('activities')}>
+                    <IbmWatsonKnowledgeStudioIcon class="carbon-icon mr-2" />
+                    {$t('course.navItem.lessons.materials.tabs.note.ai.activities')}
+                  </button>
+                </div>
+              </Popover>
+            </PrimaryButton>
+          </div>
         </div>
 
         <div class="h-[60vh] mt-5">
           <TextEditor
             id={lessonId}
             bind:editorWindowRef
-            value={$lesson.materials.note}
-            onChange={(html) => ($lesson.materials.note = html)}
-            placeholder="Write your lesson note here"
+            value={editorValue}
+            onChange={(html) => {
+              if (mode === MODES.view) return;
+              $lessonByTranslation[lessonId][$lesson.locale] = html;
+              $isLessonDirty = true;
+            }}
+            placeholder={$t('course.navItem.lessons.materials.tabs.note.placeholder')}
           />
         </div>
       </TabContent>
 
-      <TabContent value={getValue('Slide')} index={currentTab}>
+      <TabContent
+        value={getValue('course.navItem.lessons.materials.tabs.slide.title')}
+        index={currentTab}
+      >
         {#if mode === MODES.edit}
           <TextField
-            label="Slide link"
+            label={$t('course.navItem.lessons.materials.tabs.slide.slide_link')}
             bind:value={$lesson.materials.slide_url}
-            onInputChange={handleInputChange}
-            helperMessage="You can embed Google Slides or Canva Presentation"
+            onInputChange={() => ($isLessonDirty = true)}
+            helperMessage={$t('course.navItem.lessons.materials.tabs.slide.helper_message')}
           />
         {/if}
       </TabContent>
-      <TabContent value={getValue('Video')} index={currentTab}>
-        <PrimaryButton label="Add/Edit Video(s)" onClick={openAddVideoModal} className="mb-2" />
+      <TabContent
+        value={getValue('course.navItem.lessons.materials.tabs.video.title')}
+        index={currentTab}
+      >
+        <PrimaryButton
+          label={$t('course.navItem.lessons.materials.tabs.video.button')}
+          onClick={openAddVideoModal}
+          className="mb-2"
+        />
         {#if $lesson.materials.videos.length}
           <div class="flex flex-col items-start w-full h-full">
             {#each $lesson.materials.videos as video, index}
@@ -382,24 +481,30 @@
       </TabContent>
     </slot:fragment>
   </Tabs>
-{:else if !isMaterialsEmpty($lesson.materials)}
+{:else if !isMaterialsEmpty($lesson.materials, $lessonByTranslation[lessonId])}
   <div class="w-full">
     {#each componentsToRender as Component}
-      <svelte:component this={Component} />
+      <svelte:component this={Component} {lessonId} />
     {/each}
   </div>
 {:else}
   <Box className="text-center">
     <img src="/no-video.svg" alt="Video not found" />
     <h3 class="text-xl font-normal dark:text-white py-2">
-      No note, video or slide added for this lesson yet
+      {$t('course.navItem.lessons.materials.body_heading')}
     </h3>
+
     {#if !isStudent}
       <p class="text-sm text-center font-normal py-2">
-        Share your knowledge with your students by creating engaging content<br />
-        Start by clicking on <strong>Get started</strong> button.
+        {$t('course.navItem.lessons.materials.body_content')}
+        <strong>{$t('course.navItem.lessons.materials.get_started')}</strong>
+        {$t('course.navItem.lessons.materials.button')}.
       </p>
-      <PrimaryButton label="Get started" className="rounded-md" onClick={toggleMode} />
+      <PrimaryButton
+        label={$t('course.navItem.lessons.materials.get_started')}
+        className="rounded-md"
+        onClick={toggleMode}
+      />
     {/if}
   </Box>
 {/if}

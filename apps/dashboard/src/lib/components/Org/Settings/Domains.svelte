@@ -12,6 +12,7 @@
   import SectionTitle from '../SectionTitle.svelte';
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
   import { updateOrgSiteNameValidation } from '$lib/utils/functions/validator';
+  import { t } from '$lib/utils/functions/translations';
 
   type Error = {
     siteName: string;
@@ -45,7 +46,7 @@
     console.log('Updating organisation', org);
     if (error) {
       console.log('Error: create organisation', error);
-      errors.siteName = 'Sitename already exists.';
+      errors.siteName = $t('add_org.sitename');
     } else {
       snackbar.success();
       $currentOrg.siteName = siteName;
@@ -74,10 +75,12 @@
 
 <Grid class="border rounded border-gray-200 dark:border-neutral-600 w-full mt-5">
   <Row class="py-7 border-bottom-c">
-    <Column sm={2} md={2} lg={4} class="text-lg"><SectionTitle>Add</SectionTitle></Column>
+    <Column sm={2} md={2} lg={4} class="text-lg"
+      ><SectionTitle>{$t('components.settings.domains.add')}</SectionTitle></Column
+    >
     <Column sm={2} md={6} lg={8}>
       <p class="text-md text-gray-500 dark:text-white mb-5">
-        Add your team mates or collaborators to your organization. Start working together
+        {$t('components.settings.domains.work_together')}
       </p>
 
       <div>
@@ -94,7 +97,7 @@
         />
         <div class="flex items-center mb-6">
           <PrimaryButton
-            label="Update Domain"
+            label={$t('components.settings.domains.update')}
             className="py-4"
             variant={VARIANTS.OUTLINED}
             onClick={handleChangeDomain}
@@ -108,10 +111,12 @@
   </Row>
 
   <Row class="py-7 border-bottom-c">
-    <Column sm={2} md={2} lg={4} class="text-lg"><SectionTitle>Custom domain</SectionTitle></Column>
+    <Column sm={2} md={2} lg={4} class="text-lg"
+      ><SectionTitle>{$t('components.settings.domains.custom')}</SectionTitle></Column
+    >
     <Column sm={2} md={6} lg={8}>
       <div class="flex items-center">
-        <p class="dark:text-white mr-3">Add your own domain name</p>
+        <p class="dark:text-white mr-3">{$t('components.settings.domains.domain')}</p>
         <ComingSoon />
       </div>
     </Column>

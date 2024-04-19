@@ -1,5 +1,6 @@
 <script>
-  export let label = 'Coming soon';
+  import { t } from '$lib/utils/functions/translations';
+  export let label = $t('course.navItem.lessons.exercises.new_exercise_modal.coming_soon');
 </script>
 
 <p

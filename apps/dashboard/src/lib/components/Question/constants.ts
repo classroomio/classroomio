@@ -7,15 +7,15 @@ export const QUESTION_TYPE = {
 export const QUESTION_TYPES = [
   {
     id: QUESTION_TYPE.RADIO,
-    label: 'Single answer'
+    label: 'course.navItem.lessons.exercises.all_exercises.edit_mode.question_types.single'
   },
   {
     id: QUESTION_TYPE.CHECKBOX,
-    label: 'Multiple answers'
+    label: 'course.navItem.lessons.exercises.all_exercises.edit_mode.question_types.multiple'
   },
   {
     id: QUESTION_TYPE.TEXTAREA,
-    label: 'Paragraph'
+    label: 'course.navItem.lessons.exercises.all_exercises.edit_mode.question_types.paragraph'
   }
 ];
 

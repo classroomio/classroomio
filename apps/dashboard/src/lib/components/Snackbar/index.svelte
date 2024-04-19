@@ -5,6 +5,7 @@
 
   import { SNACKBAR_SEVERITY } from './constants';
   import { snackbarStore, snackbarStoreInitialState } from './store';
+  import { t } from '$lib/utils/functions/translations';
 
   let timeoutId: NodeJS.Timeout | undefined;
   let kind: 'error' | 'info' | 'info-square' | 'success' | 'warning' | 'warning-alt' = 'info';
@@ -41,8 +42,8 @@
     $snackbarStore.severity === SNACKBAR_SEVERITY.SUCCESS
       ? 'success'
       : $snackbarStore.severity === SNACKBAR_SEVERITY.ERROR
-      ? 'error'
-      : 'info';
+        ? 'error'
+        : 'info';
 </script>
 
 {#if $snackbarStore.open}
@@ -51,7 +52,7 @@
       <InlineNotification
         {kind}
         title={capitalizeFirstLetter(kind || '')}
-        subtitle={$snackbarStore.message}
+        subtitle={$t($snackbarStore.message)}
         on:close={(e) => {
           e.preventDefault();
           handleClose();

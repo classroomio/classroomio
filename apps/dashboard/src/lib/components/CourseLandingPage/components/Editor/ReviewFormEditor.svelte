@@ -7,6 +7,7 @@
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import { uploadAvatar } from '$lib/utils/services/courses';
+  import { t } from '$lib/utils/functions/translations';
 
   export let courseId;
   export let reviews = [];
@@ -42,7 +43,7 @@
   <TextField
     className="mt-2 w-full"
     labelClassName="font-normal"
-    label="Full Name"
+    label={$t('course.navItem.landing_page.editor.reviews_form.fullname')}
     placeholder=""
     type="text"
     bind:value={review.name}
@@ -51,7 +52,7 @@
 
   <!-- Description -->
   <TextArea
-    label="Description"
+    label={$t('course.navItem.landing_page.editor.reviews_form.description')}
     rows="4"
     className="mt-2 w-full"
     labelClassName="font-normal"
@@ -68,7 +69,7 @@
     <TextField
       className="mt-2 w-20"
       labelClassName="font-normal"
-      label="Rating"
+      label={$t('course.navItem.landing_page.editor.reviews_form.rating')}
       type="number"
       min={1}
       max={5}
@@ -78,7 +79,11 @@
 
     <!-- Toggle -->
     <div class="w-24">
-      <Toggle labelText="Hide Review" size="sm" bind:toggled={review.hide} />
+      <Toggle
+        labelText={$t('course.navItem.landing_page.editor.reviews_form.hide')}
+        size="sm"
+        bind:toggled={review.hide}
+      />
     </div>
   </div>
 

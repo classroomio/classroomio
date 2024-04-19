@@ -95,45 +95,45 @@ export const load = async ({ params = { slug: '' } }) => {
   const data = [
     {
       id: 'profile',
-      title: 'Upload a profile picture and update username',
-      desc: 'Personalize and a human touch making interactions more personal and memorable',
+      title: 'setup.1.title',
+      desc: 'setup.1.desc',
       is_completed: false,
-      button_label: 'Update Profile'
+      button_label: 'setup.1.button_label'
     },
     {
       id: 'organization',
-      title: 'Update organisation profile picture',
-      desc: 'Establish a professional and recognizable identity for your organization',
+      title: 'setup.2.title',
+      desc: 'setup.2.desc',
       is_completed: orgHasAvatarUrl,
-      button_label: 'Update Org Profile'
+      button_label: 'setup.2.button_label'
     },
     {
       id: 'course',
-      title: 'Create Course',
-      desc: 'Create a course that you will share with your students',
+      title: 'setup.3.title',
+      desc: 'setup.4.desc',
       is_completed: isCourseCreated,
-      button_label: 'Create Course'
+      button_label: 'setup.3.button_label'
     },
     {
       id: 'lesson',
-      title: 'Create a lesson',
-      desc: 'Break your course into lesson that your students can easily understand',
+      title: 'setup.4.title',
+      desc: 'setup.4.desc',
       is_completed: isLessonCreated,
-      button_label: 'Create Lesson'
+      button_label: 'setup.4.button_label'
     },
     {
       id: 'exercise',
-      title: 'Create an exercise',
-      desc: 'Test your students allow them to demonstarte their understanding of the subject matter',
+      title: 'setup.5.title',
+      desc: 'setup.5.desc',
       is_completed: isExerciseCreated,
-      button_label: 'Create Assignment'
+      button_label: 'setup.5.button_label'
     },
     {
       id: 'publish',
-      title: 'Publish a course',
-      desc: 'Make your course public and purchaseable ',
+      title: 'setup.6.title',
+      desc: 'setup.6.desc',
       is_completed: isCoursePublished,
-      button_label: 'Publish Course'
+      button_label: 'setup.6.button_label'
     }
   ];
 

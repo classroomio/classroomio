@@ -15,6 +15,7 @@
   import { course } from '$lib/components/Course/store';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { globalStore } from '$lib/utils/store/app';
+  import { t } from '$lib/utils/functions/translations.js';
 
   export let data;
 
@@ -38,7 +39,7 @@
     const { data: marks, error } = await fetchMarks(courseId);
     if (error) {
       console.error('Error fetching marks', error);
-      snackbar.error('Error fetching marks');
+      snackbar.error('snackbar.marks.error');
       return;
     }
 
@@ -86,13 +87,13 @@
 </script>
 
 <CourseContainer bind:courseId={data.courseId}>
-  <PageNav title="Marks" />
+  <PageNav title={$t('course.navItem.marks.title')} />
 
   <PageBody width="w-full max-w-6xl md:w-11/12">
     <div class="table rounded-md border border-gray-300 w-full">
       <div class="flex items-center {borderBottomGrey}">
         <div class="box flex items-center p-3">
-          <p class="dark:text-white w-40">Student</p>
+          <p class="dark:text-white w-40">{$t('course.navItem.marks.student')}</p>
         </div>
         {#each $lessons as lesson, index}
           {#if lessonMapping[lesson.id]}
@@ -117,7 +118,7 @@
           {/if}
         {/each}
         <div class="box flex items-center {borderleftGrey}">
-          <p class="dark:text-white w-20 text-center">Total</p>
+          <p class="dark:text-white w-20 text-center">{$t('course.navItem.marks.total')}</p>
         </div>
       </div>
 
@@ -163,7 +164,9 @@
       {:else}
         <Box>
           <AudioConsoleIcon size={32} class="carbon-icon w-80" />
-          <h3 class="text-3xl text-gray-500 dark:text-white">No Student Added</h3>
+          <h3 class="text-3xl text-gray-500 dark:text-white">
+            {$t('course.navItem.marks.no_student')}
+          </h3>
         </Box>
       {/each}
     </div>

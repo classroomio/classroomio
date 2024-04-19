@@ -10,6 +10,7 @@
   import type { Course } from '$lib/utils/types';
   import { ROLE } from '$lib/utils/constants/roles';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
+  import { t } from '$lib/utils/functions/translations';
 
   export let className = '';
   export let editMode = false;
@@ -92,12 +93,14 @@
             <p class="dark:text-white font-medium text-sm flex items-center gap-1">
               {formatter?.format(calculatedCost) || calculatedCost}
               {#if isFree}
-                <span class="text-xs">(Free)</span>
+                <span class="text-xs"
+                  >({$t('course.navItem.landing_page.pricing_section.free')})</span
+                >
               {/if}
             </p>
             {#if courseData?.metadata?.showDiscount}
               <p class="dark:text-white font-light text-sm text-gray-500">
-                {discount}% Discount.
+                {discount}% {$t('course.navItem.landing_page.pricing_section.discount')}.
                 <span class="line-through"
                   >{formatter?.format(courseData?.cost || 0) || courseData.cost}</span
                 >
@@ -105,7 +108,7 @@
             {/if}
           {:else}
             <p class="dark:text-white text-lg">
-              This course is currently not accepting new students.
+              {$t('course.navItem.landing_page.pricing_section.not_accepting')}
             </p>
           {/if}
         </div>
@@ -113,7 +116,9 @@
         <!-- Call To Action Buttons -->
         <div class="flex flex-col w-full h-full items-center">
           <PrimaryButton
-            label={isFree ? 'Enroll Now' : 'Buy Now'}
+            label={isFree
+              ? $t('course.navItem.landing_page.pricing_section.enroll')
+              : $t('course.navItem.landing_page.pricing_section.buy')}
             className="w-full sm:w-full h-[40px]"
             onClick={handleJoinCourse}
             isDisabled={!courseData.metadata.allowNewStudent}
@@ -135,12 +140,13 @@
           <p class="dark:text-white font-medium text-lg">
             {formatter?.format(calculatedCost) || calculatedCost}
             {#if isFree}
-              <span class="text-sm">(Free)</span>
+              <span class="text-sm">({$t('course.navItem.landing_page.pricing_section.free')})</span
+              >
             {/if}
           </p>
           {#if courseData?.metadata?.showDiscount}
             <p class="dark:text-white font-light text-sm text-gray-500">
-              {discount}% Discount.
+              {discount}% {$t('course.navItem.landing_page.pricing_section.discount')}.
               <span class="line-through"
                 >{formatter?.format(courseData?.cost || 0) || courseData.cost}</span
               >
@@ -148,7 +154,7 @@
           {/if}
         {:else}
           <p class="dark:text-white text-lg">
-            This course is currently not accepting new students.
+            {$t('course.navItem.landing_page.pricing_section.not_accepting')}
           </p>
         {/if}
       </div>
@@ -156,13 +162,15 @@
       <!-- Call To Action Buttons -->
       <div class="flex flex-col w-full items-center">
         <PrimaryButton
-          label={isFree ? 'Enroll Now' : 'Buy Now'}
+          label={isFree
+            ? $t('course.navItem.landing_page.pricing_section.enroll')
+            : $t('course.navItem.landing_page.pricing_section.buy')}
           className="w-full sm:w-full py-3 mb-3"
           onClick={handleJoinCourse}
           isDisabled={!courseData.metadata.allowNewStudent}
         />
         {#if courseData?.metadata?.showDiscount && courseData.metadata.allowNewStudent}
-          <p class="dark:text-white font-light text-sm text-gray-500">Early bird offer. Buy ASAP</p>
+          <p class="dark:text-white font-light text-sm text-gray-500">{$t('course.navItem.landing_page.pricing_section.bird')}</p>
         {/if}
       </div>
     </div>
