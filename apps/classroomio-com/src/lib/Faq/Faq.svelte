@@ -1,6 +1,6 @@
 <script>
   import { faqs } from './faqs';
-  import Card from '../Card/Card.svelte';
+  import PageSignupCTA from '$lib/PageSignupCTA/index.svelte';
 </script>
 
 <div class="mb-[15%] mt-[5%]">
@@ -33,11 +33,10 @@
     {/each}
   </div>
 
-  <Card
+  <PageSignupCTA
     header="Launch Your Bootcamp Today"
     subText="Try before you buy. No credit card required."
-    buttonText="Book a demo"
-    buttonLink="classroomio/demo"
-    buttonConfig="'layout':'month_view'"
+    btnLabel="Book a demo"
+    link="classroomio/demo"
   />
 </div>

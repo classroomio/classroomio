@@ -101,3 +101,7 @@ li {
   padding: none;
   text-align: center;
 }
+
+.hero-bg {
+  background-image: url('/hero-bg.svg');
+}

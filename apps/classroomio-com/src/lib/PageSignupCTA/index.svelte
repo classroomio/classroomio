@@ -1,9 +1,9 @@
 <script>
   export let header = '';
   export let subText = '';
-  export let buttonText = '';
-  export let buttonLink = '';
-  export let buttonConfig = '';
+  export let btnLabel = '';
+  export let link = '';
+  export let demo = true;
 </script>
 
 <div
@@ -17,13 +17,25 @@
       {subText}
     </p>
   </div>
-  <button
-    class="text-md mt-10 rounded-md bg-white px-6 py-4 font-semibold text-gray-900 lg:px-7 lg:py-3 lg:text-lg"
-    data-cal-config={`{${buttonConfig}}`}
-    data-cal-link={buttonLink}
-  >
-    {buttonText}
-  </button>
+
+  {#if demo}
+    <button
+      class="text-md mt-10 rounded-md bg-white px-6 py-4 font-semibold text-gray-900 lg:px-7 lg:py-3 lg:text-lg"
+      data-cal-config="'layout':'month_view'"
+      data-cal-link="classroomio/demo"
+    >
+      {btnLabel}
+    </button>
+  {:else}
+    <a
+      class="text-md mt-10 rounded-md bg-white px-6 py-4 font-semibold text-gray-900 lg:px-7 lg:py-3 lg:text-lg"
+      href={link}
+      target="_blank"
+      rel="noopener noreferrer nofollow"
+    >
+      {btnLabel}
+    </a>
+  {/if}
 </div>
 
 <style>
