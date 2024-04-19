@@ -17,7 +17,7 @@ describe('classroomio dashboard', () => {
 
     cy.contains('Welcome back').should('be.visible');
 
-    cy.get('form button[type="submit"]').contains('Log In');
+    cy.get('form button[type="submit"]').contains('Log In').should('be.visible');
   });
 
   it('can redirect to signup page', () => {
@@ -27,6 +27,6 @@ describe('classroomio dashboard', () => {
 
     cy.contains('Create a free account').should('be.visible');
 
-    cy.get('form button[type="submit"]').contains('Create Account');
+    cy.get('form button[type="submit"]').contains('Create Account').should('be.visible');
   });
 });
