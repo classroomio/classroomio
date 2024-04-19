@@ -147,7 +147,7 @@
       <PrimaryButton
         label={$t('courses.lesson_card.continue_course')}
         variant={VARIANTS.OUTLINED}
-        className="rounded-none text-primary-600"
+        className="rounded-none"
       />
     {:else if !isOnLandingPage}
       <div class="flex flex-col justify-between">
