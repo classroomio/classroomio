@@ -86,7 +86,7 @@
         </p>
         <ul class="space-y-2 lg:space-y-4">
           <li class="lg:text-md text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900">
-            <a href="/blog"> Blog </a>
+            <a href="/teachers"> Teachers </a>
           </li>
           <li class="lg:text-md text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900">
             <a target="_blank" href="https://classroomio.com/docs/"> Help center </a>
