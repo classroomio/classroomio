@@ -33,6 +33,8 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
   const matches = url.host.match(/([a-z 0-9 -]+).*classroomio[.]com/);
   const subdomain = matches?.[1] ?? '';
 
+  const isDev = dev || url.host.includes('localhost');
+
   if (!url.host.includes('.classroomio.com') && !url.host.includes('localhost')) {
     // TODO: We can verify if custom domain here
     return response;
@@ -45,12 +47,12 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
     response.orgSiteName = debugMode ? _orgSiteName : subdomain;
     response.org = (await getCurrentOrg(response.orgSiteName, true)) || null;
 
-    if (!response.org && !dev) {
+    if (!response.org && !isDev) {
       throw redirect(307, 'https://app.classroomio.com/404?type=org');
     }
   } else if (subdomain === 'play' || debugPlay === 'true') {
     response.skipAuth = true;
-  } else if (PRIVATE_APP_SUBDOMAINS.split(',').includes(subdomain) && !dev) {
+  } else if (PRIVATE_APP_SUBDOMAINS.split(',').includes(subdomain) && !isDev) {
     throw redirect(307, 'https://app.classroomio.com');
   }
 
