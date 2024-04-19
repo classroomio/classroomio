@@ -201,6 +201,9 @@
       if (fields.fullname) {
         $profile.fullname = fields.fullname;
       }
+      if (fields.locale) {
+        $profile.locale = fields.locale;
+      }
       triggerSendEmail(NOTIFICATION_NAME.VERIFY_EMAIL, {
         to: $profile.email,
         profileId: $profile.id,
@@ -286,7 +289,6 @@
               isRequired
             />
           </div>
-          |
         {:else}
           <!-- Goal/Source Question -->
           <div id="goal-question" class="flex items-center flex-col mb-6">
