@@ -16,7 +16,7 @@
     },
     {
       key: 1,
-      label: $t('settings.tabs.4'),
+      label: $t('settings.tabs.5'),
       tabKey: 'integrations',
       href: `${$page.url.pathname}?tab=integrations`,
       disabled: false
