@@ -17,11 +17,11 @@
     <h1
       class="mx-auto text-4xl md:text-7xl lg:text-6xl font-bold text-slate-900 flex flex-col items-center"
     >
-      <span>There is a room for</span>
+      <span>There is room for</span>
       <span class="text-blue-700 relative">Everyone.</span>
     </h1>
     <p class="w-[90%] md:w-[60%] text-center font-normal text-lg text-slate-700 mt-10 lg:mt-7">
-      Customizable LMS, AI integration for productive educators and many more...
+      You get a customizable LMS, AI integration for productive educators and many more...
     </p>
     <div class="relative mt-10 flex items-center rounded-[30px] border-[2px] p-[2px] lg:scale-100">
       <button
