@@ -52,6 +52,7 @@
 
   let localeExists: Record<string, boolean> = {};
   let lessonTitle = '';
+  let prevContent = '';
   let initAutoSave = false;
   let timeoutId: NodeJS.Timeout;
   let tabs = CONSTANTS.tabs;
@@ -80,11 +81,6 @@
 
   async function saveOrUpdateTranslation(locale, lessonId) {
     const content = $lessonByTranslation[lessonId][locale];
-    console.log('saveOrUpdateTranslation', {
-      lessonId,
-      locale,
-      translationByLocale: $lessonByTranslation[lessonId]
-    });
 
     if (typeof localeExists[locale] === 'undefined') {
       console.log('find the language');
@@ -99,8 +95,6 @@
     }
 
     if (localeExists[locale]) {
-      console.log('update the language');
-
       const { error: updateError } = await supabase
         .from('lesson_language')
         .update({ content })
@@ -112,7 +106,6 @@
         snackbar.error('Updating translations failed');
       }
     } else {
-      console.log('create the language');
       const { error: insertError } = await supabase.from('lesson_language').insert({
         locale,
         lesson_id: lessonId,
@@ -195,8 +188,10 @@
   });
 
   function updateNoteByCompletion(completion: string) {
+    if (!completion) return;
+
     if ($lessonByTranslation[lessonId]) {
-      $lessonByTranslation[lessonId][$lesson.locale] = completion;
+      $lessonByTranslation[lessonId][$lesson.locale] = `${prevContent}${completion}`;
     }
 
     autoSave($lesson.materials, $lessonByTranslation[lessonId], false, lessonId);
@@ -210,6 +205,8 @@
   }
 
   function callAI(type = '') {
+    prevContent = $lessonByTranslation[lessonId]?.[$lesson.locale] || '';
+
     const _lesson = $lessons.find((les) => les.id === $lesson.id);
     $input = JSON.stringify({
       type,
@@ -241,12 +238,6 @@
     _isLoading?: boolean,
     lessonId?: string
   ) {
-    console.log('autosave', {
-      translation,
-      lessonId,
-      isFetching: $lesson.isFetching
-    });
-    // don't autosave on view mode
     if (mode === MODES.view) return;
 
     if (timeoutId) clearTimeout(timeoutId);
@@ -267,10 +258,6 @@
       }
       isSaving = false;
     }, 1000);
-  }
-
-  function handleInputChange() {
-    $isLessonDirty = true;
   }
 
   async function onLessonIdChange(_lid: string) {
@@ -400,7 +387,7 @@
             onChange={(html) => {
               if (mode === MODES.view) return;
               $lessonByTranslation[lessonId][$lesson.locale] = html;
-              handleInputChange();
+              $isLessonDirty = true;
             }}
             placeholder={$t('course.navItem.lessons.materials.tabs.note.placeholder')}
           />
@@ -415,7 +402,7 @@
           <TextField
             label={$t('course.navItem.lessons.materials.tabs.slide.slide_link')}
             bind:value={$lesson.materials.slide_url}
-            onInputChange={handleInputChange}
+            onInputChange={() => ($isLessonDirty = true)}
             helperMessage={$t('course.navItem.lessons.materials.tabs.slide.helper_message')}
           />
         {/if}
