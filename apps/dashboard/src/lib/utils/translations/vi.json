@@ -873,7 +873,7 @@
         "no_polls_in_class": "Không có bình chọn nào được thực hiện trong lớp học này."
       },
 
-      "assignments": {
+      "submission": {
         "heading": "Bài tập",
         "no_assignments": "Không có bài tập nào",
         "no_assignments_in_class": "Không có bài tập nào được giao trong lớp học này."
