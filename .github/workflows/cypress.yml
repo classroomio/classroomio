@@ -8,8 +8,7 @@ jobs:
     # Also see warning here https://github.com/cypress-io/github-action#parallel
     strategy:
       fail-fast: false # https://github.com/cypress-io/github-action/issues/48
-      matrix:
-        containers: [1, 2] # Uses 2 parallel instances
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,8 +27,7 @@ jobs:
           install: false
           # Starts web server for E2E tests - replace with your own server invocation
           # https://docs.cypress.io/guides/continuous-integration/introduction#Boot-your-server
-          command: pnpm install
-          start: pnpm --dir apps/dashboard/ dev
+          start: pnpm install && pnpm --dir apps/dashboard/ dev
           wait-on: 'http://localhost:5173' # Waits for above
           # Records to Cypress Cloud
           # https://docs.cypress.io/guides/cloud/projects#Set-up-a-project-to-record
