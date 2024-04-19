@@ -28,6 +28,7 @@ jobs:
           install: false
           # Starts web server for E2E tests - replace with your own server invocation
           # https://docs.cypress.io/guides/continuous-integration/introduction#Boot-your-server
+          command: pnpm install
           start: pnpm --dir apps/dashboard/ dev
           wait-on: 'http://localhost:5173' # Waits for above
           # Records to Cypress Cloud
