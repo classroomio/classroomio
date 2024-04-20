@@ -15,8 +15,13 @@
   import { browser } from '$app/environment';
   import { t } from '$lib/utils/functions/translations.js';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import IconButton from '$lib/components/IconButton/index.svelte';
+  import Grid from 'carbon-icons-svelte/lib/Grid.svelte';
+  import List from 'carbon-icons-svelte/lib/List.svelte';
+  import { onMount } from 'svelte';
 
   export let data;
+
   let { cantFetch } = data;
   let searchValue = '';
   let selectedId: string;
@@ -29,7 +34,7 @@
     $createCourseModal.open = true;
   }
 
-  async function getCourses(userId: string | null, orgId: string) {
+  async function getCourses(userId: string | undefined, orgId: string) {
     if (cantFetch && typeof cantFetch === 'boolean' && orgId && !hasFetched) {
       // only show is loading when fetching for the first time
       if (!$courses.length) {
@@ -76,6 +81,19 @@
     }
   }
 
+  const setViewPreference = (preference: 'grid' | 'list') => {
+    $courseMetaDeta.view = preference;
+    localStorage.setItem('courseView', preference);
+  };
+
+  onMount(() => {
+    const courseView = localStorage.getItem('courseView') as 'grid' | 'list' | null;
+
+    if (courseView) {
+      $courseMetaDeta.view = courseView;
+    }
+  });
+
   $: filterCourses(searchValue, selectedId, $courses);
   $: getCourses($profile.id, $currentOrg.id);
 </script>
@@ -118,11 +136,19 @@
             { id: '2', text: $t('courses.course_filter.lessons') }
           ]}
         />
+        {#if $courseMetaDeta.view === 'list'}
+          <IconButton onClick={() => setViewPreference('grid')}>
+            <Grid size={24} />
+          </IconButton>
+        {:else}
+          <IconButton onClick={() => setViewPreference('list')}>
+            <List size={24} />
+          </IconButton>
+        {/if}
       </div>
     </div>
 
     <NewCourseModal />
-
     <Courses bind:courses={filteredCourses} />
   </div>
 </section>
