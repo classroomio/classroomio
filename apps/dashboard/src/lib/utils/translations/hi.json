@@ -409,7 +409,7 @@
       "published": "प्रकाशित",
       "lessons": "पाठ"
     },
-    "lesson_card": {
+    "course_card": {
       "empty_title": "कोई पाठ्यक्रम नहीं बनाया गया",
       "empty_description": "अपने छात्रों के लिए आकर्षक पाठ्यक्रम बनाकर अपना ज्ञान दुनिया के साथ साझा करें।",
       "context_menu": {
@@ -423,7 +423,14 @@
       "students": "छात्र",
       "published": "प्रकाशित",
       "unpublished": "अप्रकाशित",
-      "continue_course": "पाठ्यक्रम जारी रखें"
+      "continue_course": "पाठ्यक्रम जारी रखें",
+      "list_view": {
+        "title": "शीर्षक",
+        "description": "विवरण",
+        "lessons": "सबक",
+        "students": "छात्र",
+        "published": "प्रकाशित"
+      }
     },
     "new_course_modal": {
       "heading": "एक कोर्स बनाएं",

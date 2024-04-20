@@ -53,9 +53,9 @@
     <StructuredListCell>
       <Tag class="break-normal" type={isPublished ? 'green' : 'cool-gray'}>
         {#if isPublished}
-          Published
+          {$t('courses.course_card.published')}
         {:else}
-          Unpublished
+          {$t('courses.course_card.unpublished')}
         {/if}
       </Tag>
     </StructuredListCell>
@@ -69,20 +69,20 @@
       }}
     >
       <OverflowMenuItem
-        text={$t('courses.lesson_card.context_menu.clone')}
+        text={$t('courses.course_card.context_menu.clone')}
         on:click={handleCloneCourse}
       />
       <OverflowMenuItem
-        text={$t('courses.lesson_card.context_menu.share')}
+        text={$t('courses.course_card.context_menu.share')}
         on:click={handleShareCourse}
       />
       <OverflowMenuItem
-        text={$t('courses.lesson_card.context_menu.invite')}
+        text={$t('courses.course_card.context_menu.invite')}
         on:click={handleInvite}
       />
       <OverflowMenuItem
         danger
-        text={$t('courses.lesson_card.context_menu.delete')}
+        text={$t('courses.course_card.context_menu.delete')}
         on:click={handleDeleteCourse}
       />
     </OverflowMenu>

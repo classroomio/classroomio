@@ -409,7 +409,7 @@
       "published": "Publicado",
       "lessons": "Aulas"
     },
-    "lesson_card": {
+    "course_card": {
       "empty_title": "Nenhum Curso Criado",
       "empty_description": "Compartilhe seu conhecimento com o mundo criando cursos envolventes para seus alunos.",
       "context_menu": {
@@ -423,7 +423,14 @@
       "students": "alunos",
       "published": "Publicado",
       "unpublished": "Não publicado",
-      "continue_course": "Continuar Curso"
+      "continue_course": "Continuar Curso",
+      "list_view": {
+        "title": "Título",
+        "description": "Descrição",
+        "lessons": "Lições",
+        "students": "Alunos",
+        "published": "Publicado"
+      }
     },
     "new_course_modal": {
       "heading": "Criar um Curso",

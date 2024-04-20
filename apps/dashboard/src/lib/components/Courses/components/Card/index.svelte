@@ -63,26 +63,26 @@
   <ContextMenu {target}>
     <ContextMenuOption
       indented
-      labelText={$t('courses.lesson_card.context_menu.clone')}
+      labelText={$t('courses.course_card.context_menu.clone')}
       icon={CopyFile}
       on:click={handleCloneCourse}
     />
     <ContextMenuOption
       indented
-      labelText={$t('courses.lesson_card.context_menu.share')}
+      labelText={$t('courses.course_card.context_menu.share')}
       icon={Share}
       on:click={handleShareCourse}
     />
     <ContextMenuOption
       indented
-      labelText={$t('courses.lesson_card.context_menu.invite')}
+      labelText={$t('courses.course_card.context_menu.invite')}
       icon={UserFollow}
       on:click={handleInvite}
     />
     <ContextMenuDivider />
     <ContextMenuOption
       kind="danger"
-      labelText={$t('courses.lesson_card.context_menu.delete')}
+      labelText={$t('courses.course_card.context_menu.delete')}
       on:click={handleDeleteCourse}
     />
   </ContextMenu>
@@ -104,7 +104,7 @@
         <svelte:fragment slot="loading">
           <SkeletonPlaceholder style="width: 100%; height: 200px;" />
         </svelte:fragment>
-        <svelte:fragment slot="error">{$t('courses.lesson_card.error_message')}</svelte:fragment>
+        <svelte:fragment slot="error">{$t('courses.course_card.error_message')}</svelte:fragment>
       </ImageLoader>
     </div>
 
@@ -121,7 +121,7 @@
     <div>
       <p class="text-xs pt-2 {!isLMS && 'pl-2'} dark:text-white">
         {totalLessons}
-        {$t('courses.lesson_card.lessons_number')}
+        {$t('courses.course_card.lessons_number')}
       </p>
       <p class="text-xs py-2">
         {#if isOnLandingPage}
@@ -139,9 +139,9 @@
         {:else}
           <Tag type={isPublished ? 'green' : 'cool-gray'}>
             {#if isPublished}
-              {$t('courses.lesson_card.published')}
+              {$t('courses.course_card.published')}
             {:else}
-              {$t('courses.lesson_card.unpublished')}
+              {$t('courses.course_card.unpublished')}
             {/if}
           </Tag>
         {/if}
@@ -150,7 +150,7 @@
 
     {#if isLMS}
       <PrimaryButton
-        label={$t('courses.lesson_card.continue_course')}
+        label={$t('courses.course_card.continue_course')}
         variant={VARIANTS.OUTLINED}
         className="rounded-none"
       />
@@ -158,7 +158,7 @@
       <div class="flex flex-col justify-between">
         <p class="text-xs pt-2 pl-2 dark:text-white">
           {totalStudents}
-          {$t('courses.lesson_card.students')}
+          {$t('courses.course_card.students')}
         </p>
         <div></div>
       </div>

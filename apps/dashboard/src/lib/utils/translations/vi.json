@@ -409,7 +409,7 @@
       "published": "Đã Xuất bản",
       "lessons": "Bài học"
     },
-    "lesson_card": {
+    "course_card": {
       "empty_title": "Chưa có Khóa học nào được tạo",
       "empty_description": "Chia sẻ kiến thức của bạn với thế giới bằng cách tạo các khóa học hấp dẫn cho học sinh của bạn.",
       "context_menu": {
@@ -423,7 +423,14 @@
       "students": "học viên",
       "published": "Đã Xuất bản",
       "unpublished": "Chưa Xuất bản",
-      "continue_course": "Tiếp tục Khóa học"
+      "continue_course": "Tiếp tục Khóa học",
+      "list_view": {
+        "title": "Tiêu đề",
+        "description": "Mô tả",
+        "lessons": "Bài học",
+        "students": "Sinh viên",
+        "published": "Đã xuất bản"
+      }
     },
     "new_course_modal": {
       "heading": "Tạo một Khóa học",

@@ -14,12 +14,11 @@
     StructuredListCell,
     StructuredListBody
   } from 'carbon-components-svelte';
-  import { isMobile } from '$lib/utils/store/useMobile';
   import { t } from '$lib/utils/functions/translations';
 
   export let courses: Course[] = [];
-  export let emptyTitle = $t('courses.lesson_card.empty_title');
-  export let emptyDescription = $t('courses.lesson_card.empty_description');
+  export let emptyTitle = $t('courses.course_card.empty_title');
+  export let emptyDescription = $t('courses.course_card.empty_description');
 
   function calcProgressRate(progressRate?: number, totalLessons?: number): number {
     if (!progressRate || !totalLessons) {
@@ -43,13 +42,21 @@
     <StructuredList selection class="w-full">
       <StructuredListHead>
         <StructuredListRow head>
-          <StructuredListCell head>Title</StructuredListCell>
-          <StructuredListCell head>Description</StructuredListCell>
-          {#if !$isMobile}
-            <StructuredListCell head>Lessons</StructuredListCell>
-            <StructuredListCell head>Students</StructuredListCell>
-            <StructuredListCell head>Published</StructuredListCell>
-          {/if}
+          <StructuredListCell head>
+            {$t('courses.course_card.list_view.title')}
+          </StructuredListCell>
+          <StructuredListCell head>
+            {$t('courses.course_card.list_view.description')}
+          </StructuredListCell>
+          <StructuredListCell head>
+            {$t('courses.course_card.list_view.lessons')}
+          </StructuredListCell>
+          <StructuredListCell head>
+            {$t('courses.course_card.list_view.students')}
+          </StructuredListCell>
+          <StructuredListCell head>
+            {$t('courses.course_card.list_view.published')}
+          </StructuredListCell>
           <StructuredListCell head>{''}</StructuredListCell>
         </StructuredListRow>
       </StructuredListHead>

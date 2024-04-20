@@ -409,7 +409,7 @@
       "published": "Опубликовано",
       "lessons": "Уроки"
     },
-    "lesson_card": {
+    "course_card": {
       "empty_title": "Курсы не созданы",
       "empty_description": "Поделитесь своими знаниями с миром, создавая увлекательные курсы для ваших студентов.",
       "context_menu": {
@@ -423,7 +423,14 @@
       "students": "студентов",
       "published": "Опубликовано",
       "unpublished": "Не опубликовано",
-      "continue_course": "Продолжить курс"
+      "continue_course": "Продолжить курс",
+      "list_view": {
+        "title": "Название",
+        "description": "Описание",
+        "lessons": "Уроки",
+        "students": "Студенты",
+        "published": "Опубликовано"
+      }
     },
     "new_course_modal": {
       "heading": "Создать курс",

@@ -409,7 +409,7 @@
       "published": "Publié",
       "lessons": "Cours"
     },
-    "lesson_card": {
+    "course_card": {
       "empty_title": "Aucun cours créé",
       "empty_description": "Partagez vos connaissances avec le monde en créant des cours attrayants pour vos étudiants.",
       "context_menu": {
@@ -423,7 +423,14 @@
       "students": "étudiants",
       "published": "Publié",
       "unpublished": "Inédit",
-      "continue_course": "Continuer le cours"
+      "continue_course": "Continuer le cours",
+      "list_view": {
+        "title": "Titre",
+        "description": "Description",
+        "lessons": "Leçons",
+        "students": "Étudiants",
+        "published": "Publié"
+      }
     },
     "new_course_modal": {
       "heading": "Créer un cours",

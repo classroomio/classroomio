@@ -417,7 +417,7 @@
       "published": "Published",
       "lessons": "Lessons"
     },
-    "lesson_card": {
+    "course_card": {
       "empty_title": "No Courses Created",
       "empty_description": "Share your knowledge with the world by creating engaging courses for your students.",
       "context_menu": {
@@ -431,7 +431,14 @@
       "students": "students",
       "published": "Published",
       "unpublished": "Unpublished",
-      "continue_course": "Continue Course"
+      "continue_course": "Continue Course",
+      "list_view": {
+        "title": "Title",
+        "description": "Description",
+        "lessons": "Lessons",
+        "students": "Students",
+        "published": "Published"
+      }
     },
     "new_course_modal": {
       "heading": "Create a Course",

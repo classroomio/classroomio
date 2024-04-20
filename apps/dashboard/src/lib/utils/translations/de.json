@@ -409,7 +409,7 @@
       "published": "Veröffentlicht",
       "lessons": "Lektionen"
     },
-    "lesson_card": {
+    "course_card": {
       "empty_title": "Keine Kurse erstellt",
       "empty_description": "Teilen Sie Ihr Wissen mit der Welt, indem Sie ansprechende Kurse für Ihre Schüler erstellen.",
       "context_menu": {
@@ -423,7 +423,14 @@
       "students": "Schüler",
       "published": "Veröffentlicht",
       "unpublished": "Nicht veröffentlicht",
-      "continue_course": "Kurs fortsetzen"
+      "continue_course": "Kurs fortsetzen",
+      "list_view": {
+        "title": "Titel",
+        "description": "Beschreibung",
+        "lessons": "Lektionen",
+        "students": "Studenten",
+        "published": "Veröffentlicht"
+      }
     },
     "new_course_modal": {
       "heading": "Kurs erstellen",
