@@ -83,7 +83,6 @@
     const content = $lessonByTranslation[lessonId][locale];
 
     if (typeof localeExists[locale] === 'undefined') {
-      console.log('find the language');
       const { data } = await supabase
         .from('lesson_language')
         .select(`id`)
@@ -142,9 +141,6 @@
     materials: LessonPage['materials'],
     translation: Record<LOCALE, string>
   ) {
-    console.log('isMaterialsEmpty', {
-      translation
-    });
     const { slide_url, videos, note } = materials;
 
     return (
@@ -249,11 +245,10 @@
 
     isSaving = true;
     timeoutId = setTimeout(async () => {
-      console.log('autosaving');
       const { error } = await saveLesson(updatedMaterials);
 
       if (error) {
-        console.log('error saving lesson', error);
+        console.error('error saving lesson', error);
         snackbar.error('snackbar.materials.apology');
       }
       isSaving = false;
