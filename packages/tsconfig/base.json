@@ -16,7 +16,7 @@
     "skipLibCheck": true,
     "strict": true,
     "strictNullChecks": true,
-    "lib": ["ES2016"]
+    "lib": ["ES2016", "DOM"]
   },
   "exclude": ["node_modules"]
 }

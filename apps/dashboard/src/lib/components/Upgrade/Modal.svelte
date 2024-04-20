@@ -6,7 +6,7 @@
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import { page } from '$app/stores';
   import Checkmark from 'carbon-icons-svelte/lib/Checkmark.svelte';
-  import PLANS from 'shared-constants/src/plans/data.json';
+  import PLANS from 'shared/src/plans/data.json';
   import { profile } from '$lib/utils/store/user';
   import { subscribeToProduct } from '$lib/utils/services/lemonsqueezy/subscribe';
   import { snackbar } from '$lib/components/Snackbar/store';

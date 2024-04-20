@@ -5,7 +5,7 @@ import type { Writable } from 'svelte/store';
 import type { CurrentOrg, OrgTeamMember, OrgAudience } from '../types/org';
 import { ROLE } from '$lib/utils/constants/roles';
 import type { UserLessonDataType } from '$lib/utils/types';
-import { PLAN } from 'shared-constants/src/plans/constants';
+import { PLAN } from 'shared/src/plans/constants';
 
 export const defaultCurrentOrgState: CurrentOrg = {
   id: '',

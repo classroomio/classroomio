@@ -54,7 +54,7 @@
         height="28"
         src="/logo-512.svg"
         alt="classroomio logo"
-        class="w-[40%] lg:w-[15%]"
+        class="w-6 md:w-10"
       />
       <h1 class="text-xs md:text-lg font-medium ml-2">ClassroomIO</h1>
     </div>
@@ -108,9 +108,9 @@
         <li class="text-gray-800 font-semibold text-sm cursor-pointer">Pricing</li>
       </a>
       <!-- Docs -->
-      <a href="/docs" target="_blank">
+      <!-- <a href="/docs" target="_blank">
         <li class="text-gray-800 font-semibold text-sm cursor-pointer">Docs</li>
-      </a>
+      </a> -->
       <!-- Blog -->
       <a href="/blog">
         <li class="text-gray-800 font-semibold text-sm cursor-pointer">Blog</li>
@@ -186,7 +186,7 @@
             {#if showsubNav}
               <div in:fly={{ y: -20, duration: 700 }} out:fly={{ y: 20, duration: 400 }}>
                 {#each superpowers as superpower}
-                  <a href="/#{superpower.key}">
+                  <a href="/#{superpower.key}" on:click={handleShowNav}>
                     <p
                       class="font-normal text-xs text-gray-700 hover:bg-gray-100 rounded-lg py-2.5 pl-5"
                     >
@@ -198,32 +198,39 @@
             {/if}
           </li>
           <!-- Pricing -->
-          <li
+          <a
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full"
+            on:click={handleShowNav}
+            href="/pricing"
           >
-            <a on:click={handleShowNav} href="/#pricing"> Pricing </a>
-          </li>
-
+            <li>Pricing</li>
+          </a>
           <!-- Docs -->
-          <li
+          <!-- <a
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
+            on:click={handleShowNav}
+            href="/docs"
+            target="_blank"
           >
-            <a on:click={handleShowNav} href="/docs" target="_blank"> Docs </a>
-          </li>
+            <li>Docs</li>
+          </a> -->
 
           <!-- Blog -->
-          <li
+          <a
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
+            on:click={handleShowNav}
+            href="/blog"
           >
-            <a on:click={handleShowNav} href="/blog"> Blog </a>
-          </li>
-
+            <li>Blog</li>
+          </a>
           <!-- More Features -->
-          <li
+          <a
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
+            on:click={handleShowNav}
+            href="/#morefeatures"
           >
-            <a on:click={handleShowNav} href="/#morefeatures"> More features </a>
-          </li>
+            <li>More features</li>
+          </a>
         </ul>
       </nav>
       <div class="flex items-start flex-col gap-y-2 mt-5 border-t-[1px] pt-5">

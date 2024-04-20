@@ -2,7 +2,7 @@ import { json } from '@sveltejs/kit';
 import crypto from 'crypto';
 import { LEMON_SQUEEZY_WEBHOOK_SECRET } from '$env/static/private';
 import { createOrgPlan, cancelOrgPlan } from '$lib/utils/services/org';
-import { PLAN } from 'shared-constants/src/plans/constants';
+import { PLAN } from 'shared/src/plans/constants';
 
 export async function POST({ request }) {
   try {
