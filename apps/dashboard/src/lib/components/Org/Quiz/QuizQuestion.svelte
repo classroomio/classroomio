@@ -4,6 +4,7 @@
   import { optionImage } from '$lib/utils/constants/quiz';
   import TextField from '$lib/components/Form/TextField.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
+  import { t } from '$lib/utils/functions/translations';
 
   export let currentQuestion = {
     label: ''
@@ -17,10 +18,10 @@
   <h1 class="text-white mb-5 font-bold">{currentQuestion.label}</h1>
 {:else}
   <TextField
-    placeholder="Start typing your question"
+    placeholder={$t('components.quiz.start_typing')}
     bind:value={currentQuestion.label}
     className="w-full my-4"
-    errorMessage={currentError.isLabelEmpty && 'This field is required'}
+    errorMessage={currentError.isLabelEmpty && $t('components.quiz.required_field')}
     isRequired={true}
     bgColor="bg-white"
   />
@@ -37,11 +38,12 @@
       {:else}
         <TextField
           bind:value={option.label}
-          placeholder="Type answer"
+          placeholder={$t('components.quiz.type_answer')}
           bgColor="bg-white"
           className="mt-3"
           isDisabled={currentQuestion.type === 'boolean'}
-          errorMessage={optionHasError(option.id, currentError.options) && 'Please enter a label'}
+          errorMessage={optionHasError(option.id, currentError.options) &&
+            $t('components.quiz.label')}
         />
         <div class="flex justify-end absolute top-2 right-2">
           <IconButton

@@ -24,6 +24,7 @@
   import { calDateDiff } from '$lib/utils/functions/date';
   import { browser } from '$app/environment';
   import { fetchCourses } from '$lib/components/Courses/api.js';
+  import { t } from '$lib/utils/functions/translations.js';
 
   export let data;
   const { slug } = data;
@@ -177,11 +178,11 @@
 
     if (error) {
       console.error('Error: commenting', error);
-      snackbar.error('Error - Please try again later');
+      snackbar.error('snackbar.community.error.try_again');
     } else {
       console.log('Success: commenting', data);
 
-      snackbar.success('Comment Submitted!');
+      snackbar.success('snackbar.community.success.comment_submitted');
 
       // Add to comment
       const _c = data?.[0];
@@ -229,7 +230,7 @@
     const { error } = await supabase.from(table).update({ votes }).match({ id: matchId });
     if (error) {
       console.error('Error: upvoteQuestion', error);
-      snackbar.error('Error - Please try again later');
+      snackbar.error('snackbar.community.error.try_again');
     } else {
       if (isQuestion) {
         voted.question = true;
@@ -262,13 +263,14 @@
       const { error } = await supabase
         .from('community_question')
         .update({
-          ...editContent,
+          title: editContent.title,
+          body: editContent.body,
           course_id: editContent.courseId
         })
         .match({ id: question.id });
       if (error) {
         console.error('Error: handleQuestionEdit', error);
-        snackbar.error('Error - Please try again later');
+        snackbar.error('snackbar.community.error.try_again');
       } else {
         question.title = editContent.title;
         question.body = editContent.body;
@@ -297,11 +299,11 @@
       deleteComment.isDeleting = false;
 
       if (error) {
-        snackbar.error('Error deleting comments');
+        snackbar.error('snackbar.community.error.deleting_comments');
         console.log('Error deleting comments', error);
         return;
       }
-      snackbar.success('Deleted successfully');
+      snackbar.success('snackbar.community.success.success_delete');
 
       question.comments = question.comments.filter((c) => c.id !== deleteComment.commentId);
       deleteComment.shouldDelete = false;
@@ -318,7 +320,7 @@
       .match({ question_id: deleteQuestion.questionId });
 
     if (commentDeleteError) {
-      snackbar.error('Error deleting comments');
+      snackbar.error('snackbar.community.error.deleting_comments');
       console.log('Error deleting comments', commentDeleteError);
 
       deleteQuestion.isDeleting = false;
@@ -331,12 +333,12 @@
       .match({ id: deleteQuestion.questionId });
 
     if (questionDeleteError) {
-      snackbar.error('Error deleting question');
+      snackbar.error('snackbar.community.error.deleting_question');
       console.log('Error deleting question', questionDeleteError);
       return;
     }
 
-    snackbar.success('Deleted successfully');
+    snackbar.success('snackbar.community.success.success_delete');
     goto(`${$currentOrgPath}/community`);
     deleteQuestion.isDeleting = false;
   }
@@ -350,7 +352,7 @@
 </script>
 
 <svelte:head>
-  <title>{question?.title || 'Question'}</title>
+  <title>{question?.title || $t('community.ask.question')}</title>
 </svelte:head>
 
 <DeleteModal
@@ -398,7 +400,7 @@
           <Dropdown
             class="w-[25%] h-full"
             size="xl"
-            label="Select Course"
+            label={$t('community.ask.select_course')}
             items={fetchedCourses.map((course) => ({ id: course.id, text: course.title }))}
             bind:selectedId={editContent.courseId}
           />
@@ -415,14 +417,14 @@
 
         {#if question.author.id === $profile.id}
           <PrimaryButton
-            label={isEditMode ? 'Save' : 'Edit'}
+            label={isEditMode ? $t('community.ask.save') : $t('community.ask.edit')}
             variant={VARIANTS.OUTLINED}
             onClick={handleQuestionEdit}
             className="h-fit"
           />
           {#if isEditMode}
             <PrimaryButton
-              label="Cancel"
+              label={$t('community.ask.cancel')}
               variant={VARIANTS.TEXT}
               onClick={() => (isEditMode = !isEditMode)}
               className="py-3 px-6 rounded-sm h-fit"
@@ -461,7 +463,7 @@
           <div class="my-2">
             <TextEditor
               bind:value={editContent.body}
-              placeholder="Give an answer"
+              placeholder={$t('community.ask.give')}
               onChange={(html) => (editContent.body = html)}
             />
           </div>
@@ -522,13 +524,13 @@
         {#if !editorInstance}
           <TextEditor
             bind:value={comment}
-            placeholder="Give an answer"
+            placeholder={$t('community.ask.give')}
             onChange={(html) => (comment = html)}
           />
         {/if}
 
         <div class="flex justify-end mr-2">
-          <PrimaryButton label="Comment" onClick={submitComment} />
+          <PrimaryButton label={$t('community.ask.comment')} onClick={submitComment} />
         </div>
       </div>
     </div>

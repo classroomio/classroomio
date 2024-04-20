@@ -20,6 +20,7 @@
     RealtimePostgresChangesPayload,
     PostgrestSingleResponse
   } from '@supabase/supabase-js';
+  import { t } from '$lib/utils/functions/translations';
 
   export let handleClose = () => {};
 
@@ -62,7 +63,7 @@
 
     if (error || !data) {
       console.log(error);
-      snackbar.error('An error occurred while creating poll');
+      snackbar.error('snackbar.poll.error.creating_poll');
       return;
     }
 
@@ -78,7 +79,7 @@
 
     if (appsPollOptionsError || !appsPollOptionsData) {
       console.log({ appsPollOptionsError });
-      snackbar.error('An error occurred while creating poll');
+      snackbar.error('snackbar.poll.error.creating_poll');
       return;
     }
 
@@ -229,12 +230,12 @@
     );
     tabs = [
       {
-        label: 'Active polls',
+        label: $t('course.navItem.lessons.polls.active_polls'),
         value: 0,
         number: activePolls.length
       },
       {
-        label: 'Expired polls',
+        label: $t('course.navItem.lessons.polls.expired_polls'),
         value: 1,
         number: expiredPolls.length
       }
@@ -242,7 +243,11 @@
   }
 </script>
 
-<PageNav title="Poll" overidableStyle="padding: 0 10px" paddingClass="w-full">
+<PageNav
+  title={$t('course.navItem.lessons.polls.title')}
+  overidableStyle="padding: 0 10px"
+  paddingClass="w-full"
+>
   <div slot="widget">
     <CloseButton onClick={handleClose} />
   </div>
@@ -260,7 +265,7 @@
       <Tabs {tabs} bind:selectedTab onCreate={() => (openCreatePollForm = !openCreatePollForm)} />
 
       {#if isLoading}
-        Loading...
+        {$t('course.navItem.lessons.polls.loading')}...
       {:else}
         {#each selectedTab === tabs[0].value ? activePolls : expiredPolls as poll}
           <Poll
@@ -273,7 +278,7 @@
           <div
             class="bg-gray-100 dark:bg-neutral-800 border rounded-md h-60 flex items-center justify-center"
           >
-            <h2 class="text-xl font-bold">No polls to display</h2>
+            <h2 class="text-xl font-bold">{$t('course.navItem.lessons.polls.no_polls')}</h2>
           </div>
         {/each}
       {/if}

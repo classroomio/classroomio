@@ -1,6 +1,7 @@
 <script lang="ts">
   import { PUBLIC_IP_REGISTRY_KEY } from '$env/static/public';
   import { goto } from '$app/navigation';
+  import { Dropdown } from 'carbon-components-svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import UserProfileIcon from '$lib/components/Icons/UserProfileIcon.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -15,6 +16,8 @@
     triggerSendEmail,
     NOTIFICATION_NAME
   } from '$lib/utils/services/notification/notification';
+  import { handleLocaleChange, t } from '$lib/utils/functions/translations';
+  import { LOCALE } from '$lib/utils/types';
 
   interface OnboardingField {
     fullname?: string;
@@ -22,6 +25,7 @@
     siteName?: string;
     goal?: string;
     source?: string;
+    locale?: string;
     metadata?: {};
   }
 
@@ -34,51 +38,69 @@
   let fields: OnboardingField = {
     fullname: '',
     orgName: '',
-    siteName: ''
+    siteName: '',
+    locale: ''
   };
   let errors: OnboardingField = {};
   let progress = 50;
   let step = 1;
   let loading = false;
   let isSiteNameTouched = false;
+  let selectedId = 'en';
+
+  let dropdownItems = [
+    { id: 'en', text: 'English' },
+    { id: 'hi', text: 'Hindi' },
+    { id: 'fr', text: 'French' },
+    { id: 'pt', text: 'Portuguese' },
+    { id: 'de', text: 'German' },
+    { id: 'vi', text: 'Vietnamese' },
+    { id: 'ru', text: 'Russian' },
+    { id: 'es', text: 'Spanish' }
+  ];
 
   const educatorGoals: Goal[] = [
     {
-      label: 'Sell courses online',
+      label: $t('onboarding.sell'),
       value: 'sell-online'
     },
     {
-      label: 'Teach my current students online',
+      label: $t('onboarding.teach'),
       value: 'teach-online'
     },
     {
-      label: 'On another platform, expanding here',
+      label: $t('onboarding.expanding'),
       value: 'expanding-platform'
     },
     {
-      label: 'Just here to explore',
+      label: $t('onboarding.explore'),
       value: 'explore'
     }
   ];
 
   const sources = [
     {
-      label: 'Articles',
+      label: $t('onboarding.articles'),
       value: 'articles'
     },
     {
-      label: 'Search engine',
+      label: $t('onboarding.search'),
       value: 'search-engine'
     },
     {
-      label: 'Social media',
+      label: $t('onboarding.social'),
       value: 'social-media'
     },
     {
-      label: 'Friends and family',
+      label: $t('onboarding.friends'),
       value: 'friends-family'
     }
   ];
+
+  function handleSelect(event) {
+    const newSelectedId = event.detail.selectedId;
+    fields.locale = newSelectedId;
+  }
 
   async function setMetaData() {
     if (!PUBLIC_IP_REGISTRY_KEY) return;
@@ -146,8 +168,7 @@
 
         if (error) {
           console.log('Error: create organisation member', error);
-          errors.siteName =
-            'Something went wrong while creating this organization. Please reload and try again';
+          errors.siteName = $t('add_org.error_organization');
 
           // Delete organization so it can be recreated.
           await supabase.from('organization').delete().match({ siteName: fields.siteName });
@@ -180,6 +201,13 @@
 
       if (fields.fullname) {
         $profile.fullname = fields.fullname;
+      }
+      if (fields.locale) {
+        $profile.locale = fields.locale;
+
+        if (fields.locale !== LOCALE.EN) {
+          handleLocaleChange(fields.locale);
+        }
       }
       triggerSendEmail(NOTIFICATION_NAME.VERIFY_EMAIL, {
         to: $profile.email,
@@ -225,7 +253,7 @@
           <div id="role-question" class="flex items-start flex-col mb-6">
             <!-- Full name -->
             <TextField
-              label="Full Name"
+              label={$t('onboarding.fullname')}
               bind:value={fields.fullname}
               name="fullname"
               type="text"
@@ -238,7 +266,7 @@
 
             <!-- Org name -->
             <TextField
-              label="Name of Organization"
+              label={$t('onboarding.name')}
               bind:value={fields.orgName}
               name="orgname"
               type="text"
@@ -251,7 +279,7 @@
 
             <!-- Org Site Name -->
             <TextField
-              label="Organisation Site name"
+              label={$t('onboarding.organisation_sitename')}
               helperMessage={`https://${fields.siteName || ''}.classroomio.com`}
               bind:value={fields.siteName}
               name="sitename"
@@ -273,7 +301,7 @@
               <!-- Goal Question -->
               <div class="w-full flex items-start flex-col justify-between mb-10">
                 <label for="text-field" class="dark:text-white m-0 text-lg font-normal mb-3">
-                  What brings you to ClassroomIO?
+                  {$t('onboarding.what_brings')}
                 </label>
 
                 <!-- Loop through Goals -->
@@ -300,7 +328,7 @@
               <!-- Source Question -->
               <div class="w-full flex items-start flex-col justify-between">
                 <label for="text-field" class="dark:text-white m-0 text-lg font-normal mb-3">
-                  How did you hear about us?
+                  {$t('onboarding.how')}
                 </label>
 
                 <!-- Loop through Goals -->
@@ -323,6 +351,17 @@
                   </p>
                 {/if}
               </div>
+
+              <!-- Language Picker -->
+              <div class="mt-10">
+                <span>{$t('content.toggle_label')}: </span>
+                <Dropdown
+                  items={dropdownItems}
+                  {selectedId}
+                  on:select={handleSelect}
+                  class="w-full"
+                />
+              </div>
             </div>
           </div>
         {/if}
@@ -340,14 +379,14 @@
         <div class="flex">
           {#if step > 1}
             <PrimaryButton
-              label="Back"
+              label={$t('onboarding.back')}
               variant={VARIANTS.NONE}
               className="py-3 px-6 mr-2 text-primary-700"
               onClick={() => (step = step - 1)}
             />
           {/if}
           <PrimaryButton
-            label="Continue"
+            label={$t('onboarding.continue')}
             variant={VARIANTS.CONTAINED}
             type="button"
             className="px-5 py-3"

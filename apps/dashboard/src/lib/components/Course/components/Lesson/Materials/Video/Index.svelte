@@ -3,6 +3,7 @@
   import LocalVideo from './LocalVideo.svelte';
   import EmbedLink from './EmbedLink.svelte';
   import * as CONSTANTS from './constants';
+  import { t } from '$lib/utils/functions/translations';
   import { isFreePlan } from '$lib/utils/store/org';
   import FlashFilled from 'carbon-icons-svelte/lib/FlashFilled.svelte';
 
@@ -17,7 +18,7 @@
 <section class="w-full h-full flex flex-col md:flex-row items-start gap-3">
   <div class="flex flex-row md:flex-col gap-2 items-center">
     <p class="text-sm font-normal text-start text-[#4F4B4B] dark:text-[#b0a9a9] mb-3 w-full">
-      Add By
+      {$t('course.navItem.lessons.materials.tabs.video.add_video.add_by')}
     </p>
     {#each tabs as item (item.value)}
       <button
@@ -37,7 +38,7 @@
             color={`${currentTab === item.value ? 'dark:invert-0' : 'dark:invert'}`}
           />
         {/if}
-        <p>{item.title}</p>
+        <p>{$t(item.title)}</p>
       </button>
     {/each}
   </div>

@@ -5,6 +5,7 @@
   import Checkbox from '$lib/components/Form/Checkbox.svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import Grade from '$lib/components/Question/Grade.svelte';
+  import { t } from '$lib/utils/functions/translations';
 
   export let title = '';
   export let index = 1;
@@ -102,7 +103,7 @@
     <div class="mt-3 flex items-center justify-between w-full">
       <PrimaryButton
         onClick={handlePrevious}
-        label="Previous"
+        label={$t('course.navItem.lessons.exercises.all_exercises.previous')}
         isDisabled={disablePreviousButton}
         variant={VARIANTS.OUTLINED}
       />

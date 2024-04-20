@@ -14,6 +14,7 @@
   import { group } from '$lib/components/Course/store';
   import { profile } from '$lib/utils/store/user';
   import { calDateDiff } from '$lib/utils/functions/date';
+  import { t } from '$lib/utils/functions/translations';
 
   export let handleClose = () => {};
 
@@ -49,7 +50,7 @@
       ...comments,
       {
         comment: comment,
-        name: 'You',
+        name: $t('course.navItem.lessons.comments.you'),
         avatar: $profile.avatar_url,
         commentAt: new Date()
       }
@@ -165,7 +166,7 @@
         commentAt: lessonComment.created_at,
         name:
           lessonComment.groupmember.id === groupmember?.id
-            ? 'You'
+            ? $t('course.navItem.lessons.comments.you')
             : lessonComment.groupmember.profile.fullname
       };
     });
@@ -191,7 +192,7 @@
   $: !isFetched && fetchComments($group.people, $lesson.id);
 </script>
 
-<PageNav title="Comments" overidableStyle="padding: 0 10px">
+<PageNav title={$t('course.navItem.lessons.comments.title')} overidableStyle="padding: 0 10px">
   <div slot="widget">
     <CloseButton onClick={handleClose} />
   </div>
@@ -224,7 +225,7 @@
 
 <div class="footer">
   <TextField
-    placeholder="Say something"
+    placeholder={$t('course.navItem.lessons.comments.placeholder')}
     bind:value={comment}
     onKeyDown={handleKeyDown}
     isDisabled={isSaving}

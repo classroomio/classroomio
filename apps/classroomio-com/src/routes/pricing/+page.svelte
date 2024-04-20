@@ -10,6 +10,10 @@
   }
 </script>
 
+<svelte:head>
+  <title>Pricing | ClassroomIO</title>
+</svelte:head>
+
 <section class="mt-[10%] md:mt-16">
   <header
     class="hero-bg lg:min-h-[30rem] pt-24 pb-16 w-full flex flex-col items-center justify-center text-center border-b border-slate-100"

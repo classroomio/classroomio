@@ -1,17 +1,10 @@
-import { PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } from '$env/static/public';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import type { ConfigType } from '../types';
+import { config } from '$lib/config';
 
 export let supabase: SupabaseClient;
 
-export const getSupabase = (config?: ConfigType) => {
+export const getSupabase = () => {
   if (supabase) return supabase;
-  config = {
-    supabaseConfig: {
-      url: PUBLIC_SUPABASE_URL || '',
-      anonKey: PUBLIC_SUPABASE_ANON_KEY || ''
-    }
-  };
 
   supabase = createClient(config.supabaseConfig.url, config.supabaseConfig.anonKey);
 

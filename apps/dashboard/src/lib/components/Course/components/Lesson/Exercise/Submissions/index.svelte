@@ -4,12 +4,19 @@
   import Summary from './Summary.svelte';
   import Individual from './Individual.svelte';
   import { submissions } from './store';
+  import { t } from '$lib/utils/functions/translations';
 
   export let exerciseId: string;
 
   const tabs = [
-    { label: 'Summary', value: 'summary' },
-    { label: 'Individual', value: 'individual' }
+    {
+      label: $t('course.navItem.lessons.exercise.all_exercises.analytics.summary.heading'),
+      value: 'summary'
+    },
+    {
+      label: $t('course.navItem.lessons.exercise.all_exercises.analytics.individual.heading'),
+      value: 'individual'
+    }
   ];
   let currentTab = tabs[0].value;
 
@@ -38,7 +45,10 @@
 <div class="w-full flex flex-col">
   <div class="border rounded-md mb-2 px-4">
     <div class="mt-4">
-      <p class="text-lg">{$submissions.length} Submissions</p>
+      <p class="text-lg">
+        {$submissions.length}
+        {$t('course.navItem.lessons.exercise.all_exercises.analytics.submissions')}
+      </p>
     </div>
     <div class="flex items-center justify-center overflow-x-auto">
       {#each tabs as tab}

@@ -1,4 +1,6 @@
 <script>
+  import { t } from '$lib/utils/functions/translations';
+
   export let value;
   export let placeholder = ``;
   const activeClassName = 'border-b-2 border-primary-700';
@@ -15,13 +17,13 @@
       on:click={handleTabClick(1)}
       class="focus:outline-none p-2 {isWriteMode && `${activeClassName}`}"
     >
-      Write
+      {$t('markdown_editor.write')}
     </button>
     <button
       on:click={handleTabClick(2)}
       class="focus:outline-none p-2 {!isWriteMode && `${activeClassName}`}"
     >
-      Preview
+      {$t('markdown_editor.preview')}
     </button>
   </div>
 

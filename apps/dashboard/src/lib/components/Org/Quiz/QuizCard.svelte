@@ -9,6 +9,7 @@
   import { onRename, onDelete } from '$lib/utils/services/org/quiz';
   import { themeImages } from '$lib/utils/constants/quiz';
   import { calDateDiff } from '$lib/utils/functions/date';
+  import { t } from '$lib/utils/functions/translations';
 
   export let quiz;
   export let totalQuestions;
@@ -28,7 +29,7 @@
       //   onClick: onReport(quiz),
       // },
       {
-        label: 'Rename',
+        label: $t('components.quiz.rename'),
         onClick() {
           onRename(quiz);
         }
@@ -40,7 +41,7 @@
       //   },
       // },
       {
-        label: 'Delete',
+        label: $t('components.quiz.delete'),
         onClick() {
           onDelete(quiz);
         }
@@ -77,13 +78,13 @@
       <div class="flex md:flex-row flex-col justify-between">
         <div>
           <p class="mb-2">{pluralize('question', totalQuestions, true)}</p>
-          <p class="mb-2 md:mb-0">Updated {calDateDiff(quiz.updated_at)}</p>
+          <p class="mb-2 md:mb-0">{$t('components.quiz.updated')} {calDateDiff(quiz.updated_at)}</p>
         </div>
 
         <PrimaryButton
           className="px-6 py-3"
           variant={VARIANTS.OUTLINED}
-          label="Start Quiz"
+          label={$t('components.quiz.start')}
           onClick={startQuiz}
         />
       </div>
