@@ -6,22 +6,22 @@
   import Courses from '$lib/components/Courses/index.svelte';
   import NewCourseModal from '$lib/components/Courses/components/NewCourseModal/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { courses, createCourseModal, courseMetaDeta, view } from '$lib/components/Courses/store';
+  import { courses, createCourseModal, courseMetaDeta } from '$lib/components/Courses/store';
   import { currentOrg } from '$lib/utils/store/org';
-  import { Add, Application } from 'carbon-icons-svelte';
+  import { Add } from 'carbon-icons-svelte';
   import { isMobile } from '$lib/utils/store/useMobile';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import type { Course } from '$lib/utils/types';
   import { browser } from '$app/environment';
   import { t } from '$lib/utils/functions/translations.js';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import TableOfContents from 'carbon-icons-svelte/lib/TableOfContents.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import Grid from 'carbon-icons-svelte/lib/Grid.svelte';
   import List from 'carbon-icons-svelte/lib/List.svelte';
   import { onMount } from 'svelte';
 
   export let data;
+
   let { cantFetch } = data;
   let searchValue = '';
   let selectedId: string;
@@ -34,7 +34,7 @@
     $createCourseModal.open = true;
   }
 
-  async function getCourses(userId: string | null, orgId: string) {
+  async function getCourses(userId: string | undefined, orgId: string) {
     if (cantFetch && typeof cantFetch === 'boolean' && orgId && !hasFetched) {
       // only show is loading when fetching for the first time
       if (!$courses.length) {
@@ -81,15 +81,16 @@
     }
   }
 
-  const setViewPreference = (preference: string) => {
-    $view = preference;
-    localStorage.setItem('view', preference);
+  const setViewPreference = (preference: 'grid' | 'list') => {
+    $courseMetaDeta.view = preference;
+    localStorage.setItem('courseView', preference);
   };
 
   onMount(() => {
-    const storedView = localStorage.getItem('view');
-    if (storedView) {
-      $view = storedView;
+    const courseView = localStorage.getItem('courseView') as 'grid' | 'list' | null;
+
+    if (courseView) {
+      $courseMetaDeta.view = courseView;
     }
   });
 
@@ -135,7 +136,7 @@
             { id: '2', text: $t('courses.course_filter.lessons') }
           ]}
         />
-        {#if $view === 'list'}
+        {#if $courseMetaDeta.view === 'list'}
           <IconButton onClick={() => setViewPreference('grid')}>
             <Grid size={24} />
           </IconButton>

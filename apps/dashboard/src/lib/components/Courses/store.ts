@@ -13,8 +13,12 @@ export const coursesComplete = derived(courses, ($courses) =>
       })
     : []
 );
-export const courseMetaDeta = writable({
-  isLoading: true
+export const courseMetaDeta = writable<{
+  isLoading: boolean;
+  view: 'grid' | 'list';
+}>({
+  isLoading: true,
+  view: 'grid'
 });
 
 export const createCourseModal = writable({

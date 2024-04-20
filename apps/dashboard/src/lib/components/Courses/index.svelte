@@ -4,7 +4,7 @@
   import List from './components/List/index.svelte';
   import CardLoader from './components/Card/Loader.svelte';
   import CoursesEmptyIcon from '../Icons/CoursesEmptyIcon.svelte';
-  import { courseMetaDeta, view } from './store';
+  import { courseMetaDeta } from './store';
   import type { Course } from '$lib/utils/types';
   import { globalStore } from '$lib/utils/store/app';
   import {
@@ -39,7 +39,7 @@
       <CardLoader />
       <CardLoader />
     </section>
-  {:else if $view === 'list'}
+  {:else if $courseMetaDeta.view === 'list'}
     <StructuredList selection class="w-full">
       <StructuredListHead>
         <StructuredListRow head>
