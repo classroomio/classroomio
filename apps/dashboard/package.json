@@ -50,7 +50,7 @@
     "openai-edge": "^1.2.2",
     "pluralize": "^8.0.0",
     "posthog-js": "^1.116.6",
-    "shared-constants": "workspace:*",
+    "shared": "workspace:*",
     "sirv": "^2.0.3",
     "stripe": "^14.22.0",
     "svelte-email": "^0.0.4",

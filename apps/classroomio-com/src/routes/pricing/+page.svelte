@@ -1,6 +1,6 @@
 <script>
   import Checkmark from 'carbon-icons-svelte/lib/Checkmark.svelte';
-  import PLANS from 'shared-constants/src/plans/data.json';
+  import PLANS from 'shared/src/plans/data.json';
   import PageSignupCTA from '$lib/PageSignupCTA/index.svelte';
 
   let isYearlyPlan = false;

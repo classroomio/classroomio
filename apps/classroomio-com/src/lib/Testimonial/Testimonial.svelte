@@ -1,3 +1,7 @@
+<script>
+  import SenjaEmbed from '$lib/Senja/Embed.svelte';
+</script>
+
 <section id="testimonial" class="flex flex-col items-center py-[5%] px-3 lg:px-0">
   <h1
     class="mx-auto text-3xl md:text-4xl lg:text-6xl font-normal leading-[1.5] flex flex-col items-center gap-4"
@@ -19,10 +23,6 @@
   </a>
 
   <div class="relative my-5 md:my-10 w-[85%] lg:w-[70%]">
-    <div
-      class="senja-embed"
-      data-id="3e847d7a-13d3-483e-8a71-5b35273dcc6c"
-      data-lazyload="false"
-    ></div>
+    <SenjaEmbed id="3e847d7a-13d3-483e-8a71-5b35273dcc6c" />
   </div>
 </section>

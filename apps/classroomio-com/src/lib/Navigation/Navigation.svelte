@@ -54,7 +54,7 @@
         height="28"
         src="/logo-512.svg"
         alt="classroomio logo"
-        class="w-[40%] lg:w-[15%]"
+        class="w-6 md:w-10"
       />
       <h1 class="text-xs md:text-lg font-medium ml-2">ClassroomIO</h1>
     </div>
