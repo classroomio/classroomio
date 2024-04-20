@@ -56,14 +56,12 @@
       <StructuredListBody>
         {#each courses as courseData}
           <List
-            showContextMenu
             id={courseData.id}
             title={courseData.title}
             description={courseData.description}
             isPublished={courseData.is_published}
             totalLessons={courseData.total_lessons}
             totalStudents={courseData.total_students}
-            isLMS={$globalStore.isOrgSite}
           />
         {/each}
       </StructuredListBody>
@@ -73,7 +71,6 @@
       {#each courses as courseData}
         {#key courseData.id}
           <Card
-            showContextMenu
             id={courseData.id}
             bannerImage={courseData.logo || '/images/classroomio-course-img-template.jpg'}
             title={courseData.title}

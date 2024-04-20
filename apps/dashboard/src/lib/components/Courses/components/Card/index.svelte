@@ -14,6 +14,7 @@
   import Share from 'carbon-icons-svelte/lib/Share.svelte';
   import UserFollow from 'carbon-icons-svelte/lib/UserFollow.svelte';
   import { t } from '$lib/utils/functions/translations';
+  import { onDestroy } from 'svelte';
 
   export let bannerImage: string | undefined;
   export let id = '';
@@ -28,7 +29,7 @@
   export let isOnLandingPage = false;
   export let isLMS = false;
   export let progressRate = 45;
-  export let showContextMenu = false;
+
   let target: any;
 
   $: formatter = getCurrencyFormatter(currency);
@@ -52,9 +53,13 @@
     // TODO: Delete course functionality
     alert('WIP: Delete course');
   }
+
+  onDestroy(() => {
+    console.log('unmounting card');
+  });
 </script>
 
-{#if showContextMenu}
+{#if !isLMS && !isOnLandingPage}
   <ContextMenu {target}>
     <ContextMenuOption
       indented
