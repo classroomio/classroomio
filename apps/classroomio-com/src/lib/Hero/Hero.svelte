@@ -30,7 +30,7 @@
   });
 </script>
 
-<div class="root relative border-b-2 text-center bg-[#F5F8FE] h-full mt-[5%] w-full">
+<div class="hero-bg relative border-b-2 text-center bg-[#F5F8FE] h-full mt-[5%] w-full">
   <div class="pt-24 w-full">
     <div class="mb-10 ml-[5%] lg:ml-0 flex w-full items-center justify-start lg:justify-center">
       <a
@@ -97,7 +97,7 @@
         <span>Launch Your Online</span> <br />
         <div class="flex-wrap flex items-center lg:gap-3">
           <span
-            class="w-full lg:w-[48%] h-[40px] md:h-[50px] lg:h-[90px] mb-0 mt-1 md:mt-0 lg:-mb-4 relative inline-block"
+            class="w-full lg:w-[48%] h-[40px] md:h-[50px] lg:h-[90px] mb-0 mt-1 md:mt-0 lg:-mb-4 relative inline-block overflow-hidden"
           >
             {#key titleIndex}
               <span
@@ -231,9 +231,3 @@
     {/if}
   </div>
 </div>
-
-<style>
-  .root {
-    background-image: url('/hero-bg.svg');
-  }
-</style>

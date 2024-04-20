@@ -25,6 +25,7 @@
   import { isMobile } from '$lib/utils/store/useMobile';
   import CustomPromptBtn from '$lib/components/AI/AIButton/CustomPromptBtn.svelte';
   import type { Course } from '$lib/utils/types';
+  import { t } from '$lib/utils/functions/translations';
 
   export let course: Course;
   export let courseId: string;
@@ -46,43 +47,43 @@
     {
       key: 1,
       path: '',
-      title: 'Header'
+      title: $t('course.navItem.landing_page.editor.title.1')
     },
     {
       key: 2,
       path: 'metadata.requirements',
-      title: 'Requirement',
+      title: $t('course.navItem.landing_page.editor.title.2'),
       enableAIWriter: true,
       initPrompt: 'Please write few requirements needed to take this course:'
     },
     {
       key: 3,
       path: 'metadata.description',
-      title: 'Description',
+      title: $t('course.navItem.landing_page.editor.title.3'),
       enableAIWriter: true,
       initPrompt: 'Please write a detailed course description for this course:'
     },
     {
       key: 4,
       path: 'metadata.goals',
-      title: 'Goals',
+      title: $t('course.navItem.landing_page.editor.title.4'),
       enableAIWriter: true,
       initPrompt: 'What should a student expect to learn from this course:'
     },
     {
       key: 5,
       path: '',
-      title: 'Reviews'
+      title: $t('course.navItem.landing_page.editor.title.5')
     },
     {
       key: 6,
       path: '',
-      title: 'Instructor'
+      title: $t('course.navItem.landing_page.editor.title.6')
     },
     {
       key: 7,
       path: '',
-      title: 'Pricing'
+      title: $t('course.navItem.landing_page.editor.title.7')
     }
   ];
   let selectedSection: Section | null = null;
@@ -168,7 +169,7 @@
         <CloseButton onClick={handleClose} />
         <div class="flex items-center">
           <PrimaryButton
-            label="Save"
+            label={$t('course.navItem.landing_page.editor.save')}
             type="button"
             className="mr-1"
             variant={VARIANTS.OUTLINED}
@@ -181,7 +182,7 @@
         </div>
       </div>
       <div class="flex justify-between items-center px-2 w-full mb-2">
-        <h3 class="dark:text-white">Page Builder</h3>
+        <h3 class="dark:text-white">{$t('course.navItem.landing_page.editor.page_builder')}</h3>
       </div>
       {#each sections as section, index}
         <button
@@ -189,7 +190,10 @@
             sections.length && 'border-b-0'} border-gray-300"
           on:click={handleSectionSelect(section.key)}
         >
-          <p class="dark:text-white mr-2">{section.title} section</p>
+          <p class="dark:text-white mr-2">
+            {section.title}
+            {$t('course.navItem.landing_page.editor.section')}
+          </p>
           <ChevronRightIcon size={24} class="carbon-class" />
         </button>
       {/each}

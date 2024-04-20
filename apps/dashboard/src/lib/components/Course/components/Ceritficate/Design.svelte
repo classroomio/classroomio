@@ -11,6 +11,7 @@
   import { course } from '$lib/components/Course/store';
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
   import { globalStore } from '$lib/utils/store/app';
+  import { t } from '$lib/utils/functions/translations';
   import FlashFilled from 'carbon-icons-svelte/lib/FlashFilled.svelte';
 
   const studentNamePlaceholder = 'Name of student';
@@ -52,9 +53,11 @@
   <div class="flex-1 flex flex-col lg:flex-row justify-between gap-3 w-full mb-3 h-4/5">
     <section class="w-full lg:w-2/5 h-full">
       <strong class="my-2 text-base font-semibold text-black dark:text-gray-100"
-        >Certificate settings</strong
+        >{$t('course.navItem.certificates.certificate_settings')}</strong
       >
-      <p class="text-xs font-normal my-4 dark:text-gray-100">Choose a theme</p>
+      <p class="text-xs font-normal my-4 dark:text-gray-100">
+        {$t('course.navItem.certificates.theme')}
+      </p>
       <RadioButtonGroup
         bind:selected={$course.certificate_theme}
         class="mb-10"
@@ -72,42 +75,48 @@
         {/each}
       </RadioButtonGroup>
       <div>
-        <p class="text-xs font-normal text-black my-2 dark:text-gray-100">Brand Logo</p>
+        <p class="text-xs font-normal text-black my-2 dark:text-gray-100">
+          {$t('course.navItem.certificates.logo')}
+        </p>
         <div>
           <p class="text-base mt-1 dark:text-gray-100">
-            To update your brand image, go to <strong class="font-semibold"
-              >Settings &gt; Organisation settings</strong
-            > and upload your brand logo
+            {$t('course.navItem.certificates.to_update')}
+            <strong class="font-semibold">{$t('course.navItem.certificates.settings')}</strong>
+            {$t('course.navItem.certificates.and_upload')}
           </p>
 
           <PrimaryButton
-            label="Go to Settings"
+            label={$t('course.navItem.certificates.goto_settings')}
             variant={VARIANTS.OUTLINED}
             className="rounded-md mt-3"
             onClick={() => goto(`/org/${$currentOrg.siteName}/settings`)}
           />
         </div>
         <span class="my-4">
-          <p class="dark:text-gray-100 text-xs font-normal mt-4 mb-2">Course Description</p>
+          <p class="dark:text-gray-100 text-xs font-normal mt-4 mb-2">
+            {$t('course.navItem.certificates.description')}
+          </p>
           <TextArea
             rows={6}
-            placeholder="a little description about the course"
+            placeholder={$t('course.navItem.certificates.placeholder')}
             bind:value={$course.description}
             errorMessage={errors.description}
             disabled={$isFreePlan}
           />
         </span>
         <Toggle
-          labelText="Allow students download certificate"
+          labelText={$t('course.navItem.certificates.allow')}
           bind:toggled={$course.is_certificate_downloadable}
           class="my-4"
           size="sm"
           disabled={$isFreePlan}
         >
           <span slot="labelA" style={$globalStore.isDark ? 'color: white' : 'color: #161616'}
-            >Locked</span
+            >{$t('course.navItem.certificates.locked')}</span
           >
-          <span slot="labelB" style="color: green">Unlocked</span>
+          <span slot="labelB" style="color: green"
+            >{$t('course.navItem.certificates.unlocked')}</span
+          >
         </Toggle>
       </div>
     </section>
@@ -134,7 +143,7 @@
       {#if $isFreePlan}
         <FlashFilled size={16} class="text-blue-700" />
       {/if}
-      Save Changes
+      {$t('course.navItem.certificates.save')}
     </PrimaryButton>
   </div>
 </main>

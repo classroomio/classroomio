@@ -15,6 +15,7 @@
   const apiKey = PUBLIC_TINYMCE_API_KEY;
 
   let unmount = false;
+  let editorChangeHandlerId;
 
   function getTinymce() {
     const getSink = () => {
@@ -54,16 +55,20 @@
     init_instance_callback: function (editor: any) {
       editorWindowRef = editor.iframeElement?.contentWindow;
 
-      editor.on('Change', function () {
-        const html = editor.getContent();
-        if (onChange) {
-          onChange(html);
-        }
+      editor.on('Paste Change input Undo Redo', function () {
+        clearTimeout(editorChangeHandlerId);
 
-        // backup in case the data doesn't get to our backend, we should store the note to avoid data loss
-        if (id) {
-          localStorage.setItem(id, html);
-        }
+        editorChangeHandlerId = setTimeout(function () {
+          console.log('changed');
+          const html = editor.getContent();
+          if (onChange) {
+            onChange(html);
+          }
+
+          if (id) {
+            localStorage.setItem(id, html);
+          }
+        }, 1000);
       });
     }
   };

@@ -178,11 +178,11 @@
 
     if (error) {
       console.error('Error: commenting', error);
-      snackbar.error('Error - Please try again later');
+      snackbar.error('snackbar.community.error.try_again');
     } else {
       console.log('Success: commenting', data);
 
-      snackbar.success('Comment Submitted!');
+      snackbar.success('snackbar.community.success.comment_submitted');
 
       // Add to comment
       const _c = data?.[0];
@@ -230,7 +230,7 @@
     const { error } = await supabase.from(table).update({ votes }).match({ id: matchId });
     if (error) {
       console.error('Error: upvoteQuestion', error);
-      snackbar.error('Error - Please try again later');
+      snackbar.error('snackbar.community.error.try_again');
     } else {
       if (isQuestion) {
         voted.question = true;
@@ -263,13 +263,14 @@
       const { error } = await supabase
         .from('community_question')
         .update({
-          ...editContent,
+          title: editContent.title,
+          body: editContent.body,
           course_id: editContent.courseId
         })
         .match({ id: question.id });
       if (error) {
         console.error('Error: handleQuestionEdit', error);
-        snackbar.error('Error - Please try again later');
+        snackbar.error('snackbar.community.error.try_again');
       } else {
         question.title = editContent.title;
         question.body = editContent.body;
@@ -298,11 +299,11 @@
       deleteComment.isDeleting = false;
 
       if (error) {
-        snackbar.error('Error deleting comments');
+        snackbar.error('snackbar.community.error.deleting_comments');
         console.log('Error deleting comments', error);
         return;
       }
-      snackbar.success('Deleted successfully');
+      snackbar.success('snackbar.community.success.success_delete');
 
       question.comments = question.comments.filter((c) => c.id !== deleteComment.commentId);
       deleteComment.shouldDelete = false;
@@ -319,7 +320,7 @@
       .match({ question_id: deleteQuestion.questionId });
 
     if (commentDeleteError) {
-      snackbar.error('Error deleting comments');
+      snackbar.error('snackbar.community.error.deleting_comments');
       console.log('Error deleting comments', commentDeleteError);
 
       deleteQuestion.isDeleting = false;
@@ -332,12 +333,12 @@
       .match({ id: deleteQuestion.questionId });
 
     if (questionDeleteError) {
-      snackbar.error('Error deleting question');
+      snackbar.error('snackbar.community.error.deleting_question');
       console.log('Error deleting question', questionDeleteError);
       return;
     }
 
-    snackbar.success('Deleted successfully');
+    snackbar.success('snackbar.community.success.success_delete');
     goto(`/lms/community`);
     deleteQuestion.isDeleting = false;
   }
@@ -394,7 +395,7 @@
             errorMessage={errors.title}
           />
           <Dropdown
-            class="w-[25%] h-fit"
+            class="w-[25%] h-full"
             size="xl"
             label="Select Course"
             items={fetchedCourses.map((course) => ({ id: course.id, text: course.title }))}

@@ -9,6 +9,7 @@
   import { courses, courseMetaDeta } from '$lib/components/Courses/store';
   import type { Course } from '$lib/utils/types';
   import { getGreeting } from '$lib/utils/functions/date';
+  import { t } from '$lib/utils/functions/translations';
 
   let hasFetched = false;
   let progressPercentage = 0;
@@ -52,7 +53,7 @@
 <section class="max-w-6xl gap-5 mx-auto">
   <div class="m-5">
     <h1 class="dark:text-white text-2xl md:text-3xl font-bold mb-3">
-      {getGreeting()}
+      {$t(getGreeting())}
       {$profile.fullname}!
     </h1>
     <div
@@ -60,11 +61,10 @@
     >
       <span>
         <p class="w-full md:w-[75%] lg:w-[80%] text-white text-xs lg:text-xl font-normal mb-5">
-          Today is another day to bring you closer to your learning goals. Don’t give up, the more
-          you learn the better you get.
+          {$t('dashboard.lms_dashboard_hero')}
         </p>
         <PrimaryButton
-          label="Don't give up"
+          label={$t('dashboard.dont')}
           variant={VARIANTS.CONTAINED_WHITE}
           onClick={() => goto('/lms/mylearning')}
         />
@@ -80,7 +80,9 @@
         <Learning />
       </div>
       <div class="mt-10 xl:mt-2 w-full lg:w-[50%]">
-        <p class="text-base font-semibold text-[#040F2D] pb-3 dark:text-white">Your Progress</p>
+        <p class="text-base font-semibold text-[#040F2D] pb-3 dark:text-white">
+          {$t('dashboard.your_progress')}
+        </p>
         <div
           class="flex items-center justify-center border border-[#EAEAEA] dark:bg-neutral-800 gap-2 rounded h-fit lg:h-[40vh] lg:overflow-y-auto p-3"
         >
@@ -92,14 +94,17 @@
             </div>
             <span class="text-center xl:text-start">
               <p class="text-base font-semibold py-2 text-[#040F2D] dark:text-white">
-                Your Progress
+                {$t('dashboard.your_progress')}
               </p>
               {#if totalLessons > 0}
                 <p class="text-xs font-normal text-[#656565] dark:text-white">
-                  {totalCompleted}/{totalLessons} lessons completed
+                  {totalCompleted}/{totalLessons}
+                  {$t('dashboard.lessons_completed')}
                 </p>
               {:else}
-                <p class="text-xs font-normal text-[#656565] dark:text-white">No courses started</p>
+                <p class="text-xs font-normal text-[#656565] dark:text-white">
+                  {$t('dashboard.No_courses_started')}
+                </p>
               {/if}
             </span>
             <h1

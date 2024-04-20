@@ -8,6 +8,7 @@
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
   import { queryUnsplash } from './utils';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { t } from '$lib/utils/functions/translations';
 
   export let imageURL = '';
 
@@ -33,7 +34,7 @@
   }[] = [];
   let fileInput: HTMLInputElement;
 
-  let label = "Upload Image"
+  let label = $t('snackbar.landing_page_settings.error.label');
 
   const onChange = (tabValue: string) => () => (currentTab = tabValue);
 
@@ -45,9 +46,9 @@
   const onFileSelected = () => {
     const file = fileInput?.files?.[0];
     const sizeInkb = file?.size! / 1024;
-    if (sizeInkb > 500){
-      snackbar.error("File Size must not be greater than 500kb")
-      label = "Try Again"
+    if (sizeInkb > 500) {
+      snackbar.error('snackbar.landing_page_settings.error.file_size');
+      label = $t('snackbar.landing_page_settings.error.try_again');
       return;
     }
     if (file) {
@@ -76,7 +77,7 @@
     }
     isUploading = false;
 
-    snackbar.success(`Complete :)`);
+    snackbar.success(`snackbar.landing_page_settings.success.complete`);
     $handleOpenWidget.open = false;
   };
 
@@ -88,7 +89,7 @@
     try {
       unsplashImages = await queryUnsplash(searchQuery || 'rocks');
     } catch (error) {
-      snackbar.error('Error fetching images from Unsplash');
+      snackbar.error('snackbar.landing_page_settings.error.fetch_error');
       console.error('Error fetching images from Unsplash:', error);
     }
   }
@@ -101,7 +102,7 @@
   bind:open={$handleOpenWidget.open}
   width="w-3/5"
   maxWidth=""
-  modalHeading="Banner Widget"
+  modalHeading={$t('course.navItem.landing_page.upload_widget.title')}
 >
   <div class="w-full bg-white dark:bg-inherit p-5">
     <Tabs {tabs} {currentTab} {onChange}>
@@ -117,15 +118,17 @@
               disabled={isUploading}
             />
             <PrimaryButton
-              label={label}
+              {label}
               onClick={handleUpload}
               isLoading={isUploading}
               className="w-full font-semibold m-auto"
             />
             <p class="text-center text-sm text-gray-500 my-2">
-              Images wider than 1500 pixels work best.
+              {$t('course.navItem.landing_page.upload_widget.width')}
             </p>
-            <p class="text-center text-sm text-gray-500">The maximum size per file is 500kb.</p>
+            <p class="text-center text-sm text-gray-500">
+              {$t('course.navItem.landing_page.upload_widget.size')}
+            </p>
           </div>
         </TabContent>
         <TabContent value={tabs[0].value} index={currentTab}>
@@ -142,7 +145,7 @@
               <button
                 type="submit"
                 class="px-3 py-1 bg-white rounded-lg border-[1px] border-gray-500 text-black"
-                >Submit</button
+                >{$t('course.navItem.landing_page.upload_widget.submit')}</button
               >
             </form>
             {#if unsplashImages && unsplashImages.length > 0}
@@ -173,7 +176,9 @@
                 {/each}
               </div>
             {:else}
-              <p class="text-center pt-7">No images available.</p>
+              <p class="text-center pt-7">
+                {$t('course.navItem.landing_page.upload_widget.no_images')}
+              </p>
             {/if}
           </div>
         </TabContent>

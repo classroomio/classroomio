@@ -1,0 +1,1091 @@
+{
+  "verify_email_modal": {
+    "heading": "Verifica tu correo electrónico",
+    "sent_verification": "Hemos enviado un correo electrónico de verificación a",
+    "to_confirm": "para confirmar la validez del correo electrónico proporcionado.",
+    "loading": "Cargando...",
+    "resend": "Vuelva a enviar el código de verificación",
+    "resend_in": "Reenviar verificación en",
+    "seconds": "segundos",
+    "snackbar_error": "error al enviar código"
+  },
+
+  "onboarding": {
+    "sell": "Vender cursos en línea",
+    "teach": "Enseñar a mis estudiantes actuales en línea",
+    "expanding": "En otra plataforma, expandiéndome aquí",
+    "explore": "Solo aquí para explorar",
+    "articles": "Artículos",
+    "search": "Motor de búsqueda",
+    "social": "Redes sociales",
+    "friends": "Amigos y familiares",
+    "fullname": "Nombre completo",
+    "name": "Nombre de la organización",
+    "organisation_sitename": "Nombre del sitio de la organización",
+    "what_brings": "¿Qué te trae a",
+    "how": "¿Cómo nos has conocido?",
+    "back": "Volver",
+    "continue": "Continuar"
+  },
+
+  "welcome_modal": {
+    "we_at": "Nosotros en",
+    "content_1": "somos un equipo pequeño con una gran misión de empoderar a los educadores con una gran tecnología para ayudarles a capacitar a la próxima generación. La educación es el regalo más poderoso que puedes dar a cualquier persona, y tiene mucho sentido darte todas las herramientas que necesitas para darle este REGALO a más personas.",
+    "content_2": "Gracias por elegirnos",
+    "content_3": "lo apreciamos profundamente y estamos a tu servicio."
+  },
+
+  "login": {
+    "welcome": "Bienvenido de nuevo",
+    "email": "Tu correo electrónico",
+    "password": "Tu contraseña",
+    "forgot": "¿Olvidaste tu contraseña?",
+    "login": "Iniciar sesión"
+  },
+
+  "settings": {
+    "heading": "Configuración",
+    "subheadings": {
+      "view_site": "Ver sitio"
+    },
+    "tabs": {
+      "1": "Perfil",
+      "2": "Organización",
+      "3": "Página de inicio",
+      "4": "Facturación",
+      "5": "Integraciones",
+      "6": "Idioma"
+    },
+    "profile": {
+      "profile_picture": {
+        "heading": "Foto de perfil",
+        "upload_image": "Subir imagen"
+      },
+      "personal_information": {
+        "heading": "Información personal",
+        "full_name": "Nombre completo",
+        "username": "Nombre de usuario",
+        "email": "Correo electrónico"
+      },
+      "update_profile": "Actualizar perfil",
+      "logout": "Cerrar sesión"
+    },
+    "organization": {
+      "organization_profile": {
+        "heading": "Perfil de la organización",
+        "organization_name": "Nombre de la organización",
+        "upload_image": "Subir imagen",
+        "update_organization": "Actualizar organización",
+        "theme": {
+          "heading": "Tema",
+          "sub_heading": "Configura tu color de marca"
+        },
+        "custom_domain": {
+          "heading": "Dominio personalizado",
+          "sub_heading": "Personaliza tu dominio",
+          "body": "Crea una URL personalizada para que tu audiencia pueda acceder fácilmente a tu organización",
+          "button": "Editar dominio"
+        },
+        "team": {
+          "heading": "Equipo",
+          "sub_heading": "Configura tu sitio web",
+          "body": "Agrega compañeros de equipo a tu organización para que puedan colaborar en proyectos juntos.",
+          "button": "Administrar equipo"
+        }
+      }
+    },
+    "landing_page": {
+      "heading": "Página de inicio",
+      "show_section": "Mostrar sección",
+      "hide_section": "Ocultar sección",
+      "title": "Título",
+      "title_highlight": "Título destacado",
+      "subtitle": "Subtítulo",
+      "actions": {
+        "heading": "Acciones",
+        "label": "Etiqueta",
+        "link": "Enlace",
+        "no_redirect": "Sin redirección",
+        "redirect": "Redirigir",
+        "banner_type": {
+          "heading": "Tipo de banner",
+          "video": "Video",
+          "image": "Imagen"
+        },
+        "show_banner": "Mostrar banner",
+        "hide_banner": "Ocultar banner"
+      },
+      "about": {
+        "heading": "Acerca de",
+        "title": "Título",
+        "content": "Contenido",
+        "upload_an_image": "Subir una imagen",
+        "select_image": "Seleccionar imagen"
+      },
+      "courses": {
+        "heading": "Cursos",
+        "show_section": "Mostrar sección",
+        "hide_section": "Ocultar sección",
+        "title": "Título",
+        "title_highlight": "Título destacado",
+        "subtitle": "Subtítulo"
+      },
+      "faq": {
+        "heading": "Preguntas frecuentes",
+        "show_section": "Mostrar sección",
+        "hide_section": "Ocultar sección",
+        "title": "Título",
+        "question": "Pregunta",
+        "answer": "Respuesta",
+        "button": "Agregar nueva pregunta frecuente",
+        "save": "Guardar",
+        "cancel": "Cancelar"
+      },
+      "contact_us": {
+        "heading": "Contáctanos",
+        "show_section": "Mostrar sección",
+        "hide_section": "Ocultar sección",
+        "title": "Título",
+        "title_highlight": "Título destacado",
+        "subtitle": "Subtítulo",
+        "phone_number": "Número de teléfono",
+        "email": "Correo electrónico"
+      },
+      "mailing_list": {
+        "heading": "Lista de correo",
+        "show_section": "Mostrar sección",
+        "hide_section": "Ocultar sección",
+        "title": "Título",
+        "subtitle": "Subtítulo",
+        "button_label": "Etiqueta del botón"
+      },
+      "footer": {
+        "heading": "Pie de página",
+        "show_section": "Mostrar sección",
+        "hide_section": "Ocultar sección",
+        "facebook": "Facebook",
+        "twitter": "Twitter",
+        "linkedin": "LinkedIn"
+      },
+      "save_changes": "Guardar cambios"
+    },
+    "integrations": {
+      "heading": "Integraciones de Telegram",
+      "sub_heading": "Conecta tu cuenta a Telegram para recibir notificaciones de cualquier cambio dentro de la aplicación.",
+      "step_1": "Paso 1: Autentica tu cuenta a través del bot de ClassroomIO.",
+      "button_1": "Abrir bot",
+      "step_2": "Paso 2: Ingresa el ID de chat que te dio el bot.",
+      "button_2": "Conectar",
+      "success_message": "Integración exitosa",
+      "disconnect": "Desconectar"
+    },
+    "billing": {
+      "sub_title": "Detalles de facturación",
+      "manage": "Gestiona tu facturación",
+      "active": "No tienes ninguna facturación activa",
+      "lemonsqueezy": "Usamos Lemonsqueezy para ayudarlo a administrar su facturación",
+      "open_billing": "Facturación abierta"
+    }
+  },
+
+  "org_navigation": {
+    "dashboard": "Tablero",
+    "courses": "Cursos",
+    "community": "Comunidad",
+    "audience": "Audiencia",
+    "setup": "Configuración",
+    "help": "Ayuda",
+    "settings": "Configuración",
+    "early_adopter": "Conviértase en uno de los primeros en adoptar",
+    "unlock": "Desbloquee funciones ilimitadas e invierta en nuestro futuro",
+    "upgrade": "Actualizar ahora"
+  },
+
+  "pricing": {
+    "modal": {
+      "heading": "Actualizar Plan",
+      "thanks": "Gracias por tu apoyo",
+      "plan": "Tu plan viene con beneficios increíbles, incluido el acceso a todas las características futuras que lancemos.",
+      "close": "Cerrar",
+      "learn": "Más información",
+      "month": "mes"
+    },
+    "data": {
+      "1": {
+        "name": "Básico",
+        "description": "Plan gratuito para uso personal, no se requiere tarjeta de crédito.",
+        "features": {
+          "1": "Cursos ilimitados",
+          "2": "Preguntas y respuestas ilimitadas",
+          "3": "50 Estudiantes",
+          "4": "Constructor de cursos con IA (sin carga de videos)",
+          "5": "Chat en vivo y encuestas"
+        },
+        "cta": {
+          "label": "Registrarse ahora",
+          "dashboard_label": "Degradar"
+        }
+      },
+      "2": {
+        "name": "Adoptadores Tempranos",
+        "description": "Para empresas de enseñanza en rápido crecimiento que buscan escalar.",
+        "features": {
+          "1": "Todo en Básico",
+          "2": "Profesores ilimitados",
+          "3": "10K Estudiantes",
+          "4": "Constructor de cursos con IA avanzada (carga de videos y certificado)",
+          "5": "Marca personalizada",
+          "6": "Incluye todas las características futuras"
+        },
+        "cta": {
+          "label": "¡Quiero entrar 😍!",
+          "dashboard_label": "Apóyanos 😍"
+        }
+      },
+      "3": {
+        "name": "Empresa",
+        "description": "La mejor opción para empresas más grandes que necesitan más control.",
+        "price": {
+          "monthly": "Solicitar precios",
+          "yearly": "Solicitar precios"
+        },
+        "features": {
+          "1": "Todo en Adoptadores Tempranos más:",
+          "2": "Estudiantes ilimitados",
+          "3": "Dominio personalizado",
+          "4": "Soporte 24/7"
+        },
+        "cta": {
+          "label": "Contáctanos",
+          "dashboard_label": "Contáctanos"
+        }
+      }
+    }
+  },
+
+  "setup": {
+    "get_started": "Empezar",
+    "1": {
+      "title": "Subir una foto de perfil y actualizar el nombre de usuario",
+      "desc": "Personaliza y añade un toque humano para que las interacciones sean más personales y memorables",
+      "button_label": "Actualizar Perfil"
+    },
+    "2": {
+      "title": "Actualizar foto de perfil de la organización",
+      "desc": "Establecer una identidad profesional y reconocible para tu organización",
+      "button_label": "Actualizar Perfil de Org"
+    },
+    "3": {
+      "title": "Crear Curso",
+      "desc": "Crea un curso que compartirás con tus estudiantes",
+      "button_label": "Crear Curso"
+    },
+    "4": {
+      "title": "Crear una lección",
+      "desc": "Divide tu curso en lecciones que tus estudiantes puedan entender fácilmente",
+      "button_label": "Crear Lección"
+    },
+    "5": {
+      "title": "Crear un ejercicio",
+      "desc": "Prueba a tus estudiantes y permíteles demostrar su comprensión del tema",
+      "button_label": "Crear Tarea"
+    },
+    "6": {
+      "title": "Publicar un curso",
+      "desc": "Haz que tu curso sea público y disponible para la compra",
+      "button_label": "Publicar Curso"
+    }
+  },
+
+  "add_org": {
+    "create_org": "Crear organización",
+    "name": "Nombre de la organización",
+    "org_sitename": "Nombre del sitio de la organización",
+    "create": "Crear",
+    "sitename": "El nombre del sitio ya existe",
+    "error_organization": "Hubo un problema al crear esta organización. Por favor, recargue e intente nuevamente."
+  },
+
+  "navigation": {
+    "goto": "Ir a",
+    "courses": "Cursos",
+    "home": "Inicio",
+    "classroomio_home": "Inicio de ClassroomIO",
+    "dashboard": "Tablero",
+    "discussion": "Discusión",
+    "people": "Personas",
+    "goto_lms": "Ir a LMS",
+    "goto_home": "Ir al inicio de ClassroomIO",
+    "login": "Iniciar sesión",
+    "signup": "Registrarse"
+  },
+
+  "markdown_editor": {
+    "write": "Escribir",
+    "preview": "Vista previa"
+  },
+
+  "components": {
+    "quiz": {
+      "title": "Cuestionarios",
+      "second": "Segundo(s)",
+      "answer": "Respuesta(s)",
+      "question_delete": "Eliminar pregunta",
+      "quiz_delete": "Eliminar cuestionario",
+      "delete_question": "¿Estás seguro de que quieres eliminar esta pregunta?",
+      "delete_quiz": "¿Estás seguro de que quieres eliminar este cuestionario?",
+      "lose_content": "Perderás tu contenido y esta acción no se puede deshacer.",
+      "delete": "Eliminar",
+      "update": "Actualizar",
+      "create": "Crear",
+      "a_quiz": "un cuestionario",
+      "quiz_title": "Título del cuestionario",
+      "placeholder": "Título de tu cuestionario",
+      "save": "Guardar cambios",
+      "continue": "Continuar",
+      "rename": "Renombrar",
+      "updated": "Actualizado",
+      "start": "Comenzar cuestionario",
+      "start_typing": "Empieza a escribir tu pregunta",
+      "required_field": "Este campo es obligatorio",
+      "type_answer": "Escribe la respuesta",
+      "label": "Por favor, ingresa una etiqueta",
+      "no_quizz": "No se ha creado ningún cuestionario",
+      "interactive": "Crea cuestionarios interactivos con marcador para tus estudiantes."
+    },
+    "settings": {
+      "domains": {
+        "add": "Agregar",
+        "work_together": "Agrega a tus compañeros de equipo o colaboradores a tu organización. Comienza a trabajar juntos",
+        "url": "URL",
+        "update": "Actualizar dominio",
+        "custom": "Dominio personalizado",
+        "domain": "Agrega tu propio nombre de dominio"
+      }
+    }
+  },
+
+  "schedule": {
+    "title": "Tu Horario",
+    "essence": "La esencia de la colaboración en diseño",
+    "figma": "Introducción a Figma",
+    "join": "Unirse a la Llamada",
+    "no": "No hay lección este día"
+  },
+
+  "dashboard": {
+    "morning_heading": "Buenos Días",
+    "afternoon_heading": "Buenas Tardes",
+    "evening_heading": "Buenas Noches",
+    "create_course": "Crear Curso",
+    "view_site": "Ver Sitio",
+    "hero_content": "Gracias por lo que haces ❤️. Estás cambiando vidas una clase a la vez y gracias a ti, el mundo es un lugar mejor. 😊",
+    "hero_button": "Sigue Construyendo 🚀",
+    "your_schedule": "Tu Horario",
+    "today": "Hoy",
+    "yesterday": "Ayer",
+    "tomorrow": "Mañana",
+    "no_schedule": "No hay lección este día",
+    "join_call": "Unirse a la Llamada",
+    "click_to_join": "Haz clic para unirte a la llamada",
+    "no_call_link": "No se agregó un enlace de llamada para esta lección. Pregunta a tu instructor",
+    "current_lesson": "Actualmente Aprendiendo",
+    "your_progress": "Tu Progreso",
+    "continue": "Continuar",
+    "no_courses": "Todavía no hay cursos en progreso",
+    "start_course": "Una vez que comiences un curso, tu progreso se reflejará aquí",
+    "lms_dashboard_hero": "Hoy es otro día para acercarte a tus objetivos de aprendizaje. No te rindas, cuanto más aprendas, mejor te volverás.",
+    "dont": "No te rindas",
+    "lessons_completed": "Lecciones completadas",
+    "No_courses_started": "No se han iniciado cursos"
+  },
+
+  "courses": {
+    "heading": "Cursos",
+    "heading_button": "Crear Curso",
+    "search_placeholder": "Buscar Curso",
+    "course_filter": {
+      "date_created": "Fecha de Creación",
+      "published": "Publicado",
+      "lessons": "Lecciones"
+    },
+    "lesson_card": {
+      "empty_title": "No se han creado cursos",
+      "empty_description": "Comparte tu conocimiento con el mundo creando cursos atractivos para tus estudiantes.",
+      "context_menu": {
+        "clone": "Clonar",
+        "share": "Compartir",
+        "invite": "Invitar",
+        "delete": "Eliminar"
+      },
+      "error_message": "Se produjo un error.",
+      "lessons_number": "lecciones",
+      "students": "estudiantes",
+      "published": "Publicado",
+      "unpublished": "No Publicado",
+      "continue_course": "Continuar Curso"
+    },
+    "new_course_modal": {
+      "heading": "Crear un Curso",
+      "course_name": "Nombre del Curso",
+      "course_name_placeholder": "Nombre de tu curso",
+      "short_description": "Descripción Corta",
+      "short_description_placeholder": "Una breve descripción sobre este curso",
+      "button": "Terminar"
+    }
+  },
+
+  "course": {
+    "navItems": {
+      "1": "Noticias",
+      "2": "Lecciones",
+      "3": "Asistencia",
+      "4": "Envíos",
+      "5": "Calificaciones",
+      "6": "Personas",
+      "7": "Certificados",
+      "8": "Página de Inicio",
+      "9": "Configuraciones"
+    },
+
+    "navItem": {
+      "news_feed": {
+        "heading": "Noticias",
+        "heading_button": {
+          "title": "Agregar",
+          "edit_post": "Editar Publicación",
+          "make_a_post": "Hacer una Publicación",
+          "placeholder": "Comparte una actualización con tus estudiantes",
+          "cancel": "Cancelar",
+          "post": "Publicar"
+        },
+        "body_header": "Sin publicaciones aún",
+        "body_content": "Haz una publicación para tu clase. Comienza haciendo clic en el botón Agregar.",
+        "pinned": "Fijado",
+        "snackbar": {
+          "comment_deleted": "Comentario Eliminado",
+          "reaction_error": "Se produjo un error al reaccionar a las noticias",
+          "comment_creation_error": "Se produjo un error al crear un comentario",
+          "add_comment_success": "Comentario agregado",
+          "toggle_pin_error": "Error al alternar las noticias fijadas",
+          "unpinned": "Desfijado",
+          "successfully": "Exitosamente",
+          "feed_delete_success": "Publicación eliminada exitosamente",
+          "fetch_feed_fail": "Error al obtener las noticias",
+          "fetching_error": "Se produjo un error al obtener las noticias"
+        }
+      },
+
+      "lessons": {
+        "heading": "Lecciones",
+        "add_lesson": {
+          "button_title": "Agregar",
+          "modal_heading": "Agregar Nueva Lección",
+          "lesson_title": "Título de la Lección",
+          "click_to": "Haz clic para",
+          "lock": "bloquear",
+          "unlock": "desbloquear",
+          "fullname": "nombre completo",
+          "save": "Guardar",
+          "edit": "Editar",
+          "delete": "Eliminar"
+        },
+        "delete_lesson": {
+          "modal_heading": "Eliminar",
+          "content": "¿Estás seguro de que deseas eliminar:",
+          "no": "No",
+          "yes": "Sí"
+        },
+        "join_lesson": "Unirse a la lección",
+        "no_link": "Sin enlace",
+        "no_tutor": "No se ha agregado tutor",
+        "body_header": "Todavía no hay lecciones",
+        "body_content": "Comparte tu conocimiento con el mundo creando lecciones interesantes. Comienza haciendo clic en el botón Agregar.",
+
+        "lesson_nav": {
+          "materials": "Materiales",
+          "exercises": "Ejercicios"
+        },
+        "download_pdf": "Descargar PDF",
+        "autosaving": "Autoguardando...",
+        "done": "Hecho",
+        "edit": "Editar",
+        "mark_as": "Marcar como",
+        "incomplete": "Incompleto",
+        "complete": "Completo",
+
+        "materials": {
+          "body_heading": "Aún no se ha agregado ninguna nota, video o diapositiva para esta lección",
+          "body_content": "Comparte tu conocimiento con tus estudiantes creando contenido interesante. Comienza haciendo clic en",
+          "no_translation": "No hay traducción para el idioma seleccionado.",
+          "get_started": "Empezar",
+          "button": "botón",
+          "tabs": {
+            "note": {
+              "title": "Nota",
+              "placeholder": "Escribe tu nota de lección aquí",
+              "ai": {
+                "outline": "Generar esquema de lección",
+                "note": "Generar nota de lección",
+                "activities": "Generar actividades lectivas"
+              }
+            },
+            "slide": {
+              "title": "Diapositiva",
+              "slide_link": "Enlace de la diapositiva",
+              "helper_message": "Puede incrustar presentaciones de Google Slides o Canva"
+            },
+            "video": {
+              "title": "Video",
+              "embed_link": "Insertar enlace",
+              "upload": "Subir",
+              "button": "Agregar/Editar Video(s)",
+              "add_video": {
+                "title": "Agregar un Video",
+                "add_by": "Agregar Por",
+                "youtube_link": "Enlace de Youtube",
+                "videos_added": "Videos Agregados",
+                "add_video": "Agregar Video",
+                "upload_video": "Subir Video",
+                "select_file": "Seleccionar archivo (Mp4, MOV, AVI) para cargar en tu lección.",
+                "size": "(Máx. 500 MB)",
+                "oops": "¡Ups 😬, no se pudo cargar el video!",
+                "sorry": "Lo siento, el video no se pudo cargar. El tamaño del archivo es demasiado grande,",
+                "sorry_2": "el tamaño máximo es de 30 MB. ¡Inténtalo de nuevo!",
+                "button": "Intentar con otro archivo",
+                "try_again": "Por favor, inténtalo de nuevo",
+                "sorry_3": "Lo siento, el video no se pudo cargar, el formato de archivo no es compatible o algo salió mal en el servidor.",
+                "sorry_4": "Sube archivos MP4, MOV y AVI.",
+                "upgrade": "Actualiza tu plan para subir videos",
+                "uploading": "Subiendo..."
+              }
+            }
+          },
+          "button_done": "Hecho"
+        },
+
+        "exercises": {
+          "heading": "Todos los Ejercicios",
+          "add_button": "Agregar",
+          "no_exercises": "No se han agregado ejercicios para esta lección",
+          "no_assigned_exercises": "Tu tutor no ha asignado ningún ejercicio a esta lección. Por ahora, puedes",
+          "chill": "relajarte con los grandes",
+          "add_exercise": "Comparte tu conocimiento con el mundo creando ejercicios interesantes. Agrega un ejercicio ahora.",
+          "new_exercise_modal": {
+            "heading": "Nuevo Ejercicio",
+            "options": {
+              "1": "Desde Cero",
+              "subtitle_1": "Crea tu ejercicio desde cero si ya tienes tus preguntas preparadas",
+              "2": "Usar una Plantilla",
+              "subtitle_2": "Selecciona entre 100+ plantillas de ejercicios predefinidas para ayudarte a empezar",
+              "3": "Usar IA",
+              "subtitle_3": "Puedes generar un ejercicio con IA a partir de tus notas"
+            },
+            "how": "¿Cómo quieres crear tu ejercicio?",
+            "coming_soon": "Próximamente",
+            "next": "Siguiente",
+            "title": "Dale un título a tu ejercicio",
+            "title_placeholder": "Nombre del ejercicio",
+            "finish": "Terminar",
+            "select_template": "Seleccionar una plantilla",
+            "questions": "Preguntas",
+            "points": "Puntos",
+            "back": "Atrás",
+            "create_exercises": "Crear ejercicios a partir de Notas con IA",
+            "choose_questions": "Elige cuántas preguntas y opciones quieres y la IA te ayudará a crear un ejercicio a partir de tus notas. ¡Vamos!",
+            "how_many_questions": "¿Cuántas preguntas quieres crear?",
+            "how_many_options": "¿Cuántas opciones por pregunta quieres?",
+            "add_note": "Por favor, añade una nota para usar esta función",
+            "generate": "Generar",
+            "completion": "Generación de IA Completa",
+            "click_generate": "Haz clic en 'Generar' para algo de magia"
+          },
+          "all_exercises": {
+            "heading": "Todos los Ejercicios",
+            "questions": "Preguntas",
+            "submissions": "Envíos",
+            "save": "Guardar",
+            "preview": "Vista previa",
+            "reorder": "Reordenar Preguntas",
+            "delete_exercise": "Eliminar Ejercicio",
+            "order_questions": "Ordenar preguntas",
+            "write_your_answer": "Escribe tu respuesta",
+            "write_your_answer_here": "Escribe tu respuesta aquí",
+            "write_your_question_here": "Escribe tu pregunta aquí",
+            "write_your_title": "Escribe tu título aquí",
+            "write_your_subtitle": "Escribe tu subtítulo aquí",
+            "highlight": "Escribe tu resaltado de título aquí",
+            "content": "Escribe tu contenido aquí",
+            "video": "Escribe tu enlace de video aquí",
+            "link": "Escribe tu enlace aquí",
+            "label": "Escribe tu etiqueta aquí",
+            "email": "Escribe tu correo electrónico aquí",
+            "facebook": "Escribe tu enlace de Facebook aquí",
+            "twitter": "Escribe tu enlace de Twitter aquí",
+            "linkedin": "Escribe tu enlace de LinkedIn aquí",
+            "number": "Escribe tu número de teléfono aquí",
+            "previous": "Anterior",
+            "finish": "Terminar",
+            "next": "Siguiente",
+            "description": {
+              "title": "Título",
+              "heading": "Descripción",
+              "describe": "Describe el ejercicio a tu estudiante",
+              "no": "Sin descripción"
+            },
+            "delete_confirmation": {
+              "title": "Eliminar pregunta",
+              "sure": "¿Estás seguro de que quieres eliminar esta pregunta?",
+              "no": "No, por favor no",
+              "yes": "Sí, eliminar"
+            },
+            "edit_mode": {
+              "delete_modal": "Modal de Eliminación",
+              "sure": "¿Estás seguro de que quieres eliminar este ejercicio?",
+              "no": "No, cancelar",
+              "yes": "Sí, eliminar",
+              "deleting": "Eliminando...",
+              "error": "Tienes algunos errores",
+              "question": "Pregunta",
+              "write": "Escribe tu código",
+              "option": "Agregar opción",
+              "question_types": {
+                "single": "Respuesta única",
+                "multiple": "Respuestas múltiples",
+                "paragraph": "Párrafo"
+              }
+            },
+            "view_mode": {
+              "no_question": "No se ha agregado ninguna pregunta para este ejercicio",
+              "edit": "Editar",
+              "button": "botón para agregar",
+              "questions": "preguntas",
+              "points": "puntos",
+              "all": "Todos requeridos",
+              "due": "Vencimiento",
+              "no_description": "Sin descripción",
+              "start": "Comienzo",
+              "graded": "Calificado",
+              "pending": "Pendiente"
+            },
+            "analytics": {
+              "summary": {
+                "heading": "Resumen",
+                "question_chart": "Gráficos de Preguntas"
+              },
+              "individual": {
+                "heading": "Individual",
+                "answers": "Respuestas Individuales",
+                "no": "No se proporcionó ninguna respuesta"
+              },
+              "submissions": "Envíos"
+            }
+          }
+        },
+
+        "comments": {
+          "title": "Comentarios",
+          "you": "Tú",
+          "placeholder": "Di algo"
+        },
+
+        "polls": {
+          "title": "Encuesta",
+          "active_polls": "Encuestas Activas",
+          "expired_polls": "Encuestas Expiradas",
+          "loading": "Cargando...",
+          "no_polls": "No hay encuestas para mostrar"
+        },
+
+        "poll": {
+          "voted": "Votado",
+          "created_by": "Creado por",
+          "status": "Estado",
+          "draft": "Borrador",
+          "publish": "Publicar",
+          "expiration": "Caducidad",
+          "total_voted": "Total de Votos",
+          "responses": "Respuestas",
+          "expires": "Expira",
+          "today": "Hoy",
+          "back": "Atrás",
+          "result": "Resultado",
+          "delete": "Eliminar",
+          "create_poll": "Crear encuesta",
+          "question": "Pregunta",
+          "options": "Opciones",
+          "option_label": "Etiqueta de la opción",
+          "cancel": "Cancelar",
+          "poll_question": "Pregunta de la Encuesta"
+        }
+      },
+
+      "attendance": {
+        "title": "Asistencia",
+        "present": "Presente",
+        "absent": "Ausente",
+        "search_students": "Buscar Estudiantes",
+        "student": "Estudiante",
+        "lesson": "Lección",
+        "no_student": "No se ha agregado ningún estudiante"
+      },
+
+      "submissions": {
+        "title": "Ejercicios Enviados",
+        "submission_status": {
+          "1": "Enviado",
+          "2": "En Progreso",
+          "3": "Calificado"
+        }
+      },
+
+      "marks": {
+        "title": "Calificaciones",
+        "student": "Estudiante",
+        "total": "Total",
+        "no_student": "No se ha agregado ningún estudiante"
+      },
+
+      "people": {
+        "title": "Personas",
+        "add": "Agregar",
+        "search": "Buscar personas",
+        "you": "Tú",
+        "pending": "Pendiente",
+        "name": "Nombre",
+        "role": "Rol",
+        "action": "Acción",
+        "feedback": "Correo electrónico copiado al portapapeles",
+        "invite_modal": {
+          "title": "Invitar personas",
+          "invite": "Invitar Tutores",
+          "select": "Selecciona tutores en la organización...",
+          "to_add": "Para agregar un tutor a tu organización,",
+          "go_to": "ve a la configuración de la organización",
+          "invite_students": "Invitar Estudiantes",
+          "via_link": "Puedes invitar estudiantes a través de un enlace de invitación",
+          "copy_link": "Copiar enlace",
+          "success": "Copiado exitosamente",
+          "finish": "Finalizar"
+        },
+        "delete_confirmation": {
+          "title": "Eliminar",
+          "sure": "¿Estás seguro de que quieres eliminar",
+          "no": "No",
+          "yes": "Sí"
+        },
+        "roles": {
+          "admin": "Administrador",
+          "tutor": "Tutor",
+          "student": "Estudiante",
+          "filter": "Filtrar"
+        }
+      },
+
+      "certificates": {
+        "title": "Certificados",
+        "certificate_settings": "Configuración de Certificados",
+        "theme": "Elige un tema",
+        "logo": "Logotipo de la Marca",
+        "to_update": "Para actualizar tu imagen de marca, ve a",
+        "settings": "Configuraciones &gt; Configuración de la Organización",
+        "and_upload": "y carga tu logotipo de marca",
+        "goto_settings": "Ir a Configuraciones",
+        "description": "Descripción del Curso",
+        "placeholder": "una pequeña descripción sobre el curso",
+        "allow": "Permitir a los estudiantes descargar el certificado",
+        "locked": "Bloqueado",
+        "unlocked": "Desbloqueado",
+        "save": "Guardar Cambios",
+        "unlocked_certificate": "El certificado está disponible ahora",
+        "locked_certificate": "Certificados no disponibles",
+        "locked_certificate_body_1": "Tu instructor necesita desbloquear tu certificado.",
+        "locked_certificate_body_2": "Si necesitas tu certificado, por favor contacta a tu tutor.",
+        "unlocked_certificate_body_1": "¡Tu certificado está listo!",
+        "unlocked_certificate_body_2": "Puedes descargarlo ahora."
+      },
+
+      "settings": {
+        "title": "Configuraciones",
+        "organization_settings": "Configuraciones de la Organización",
+        "name": "Nombre de la Organización",
+        "description": "Descripción",
+        "logo": "Logotipo",
+        "upload": "Subir",
+        "theme_color": "Color del Tema",
+        "allow_students": "Permitir a los estudiantes crear su propia clase",
+        "add": "Agregar",
+        "tutor": "Tutor",
+        "admin": "Administrador",
+        "delete": "Eliminar",
+        "update": "Actualizar",
+        "change_password": "Cambiar Contraseña",
+        "old_password": "Contraseña Antigua",
+        "new_password": "Contraseña Nueva",
+        "confirm_password": "Confirmar Contraseña",
+        "logout": "Cerrar Sesión",
+        "remove_organization": "Eliminar Organización",
+        "remove_warning": "¡Cuidado! Al eliminar la organización, se eliminarán todos los cursos y datos relacionados",
+        "remove_confirm": "Por favor, confirma que deseas eliminar esta organización",
+        "cancel": "Cancelar",
+        "confirm": "Confirmar"
+      }
+    }
+  },
+
+  "community": {
+    "title": "Comunidad",
+    "ask_button": "Hacer una pregunta",
+    "ask": {
+      "go_back": "Volver",
+      "ask_the": "Preguntar a la comunidad",
+      "publish": "Publicar",
+      "title": "Título",
+      "select_course": "Seleccionar Curso",
+      "ask_community": "Pregunta a la comunidad cualquier pregunta que puedas tener",
+      "question": "Pregunta",
+      "save": "Guardar",
+      "edit": "Editar",
+      "cancel": "Cancelar",
+      "give": "Dar una respuesta",
+      "comment": "Comentar"
+    },
+    "find_question": "Buscar Pregunta",
+    "asked": "preguntado",
+    "no_question": "No hay preguntas realizadas",
+    "ask_a_question": "Haz una pregunta a la comunidad",
+    "delete": {
+      "title": "Eliminar",
+      "question": "pregunta",
+      "comment": "comentario",
+      "sure": "¿Estás seguro de que quieres eliminar esto",
+      "no": "No, déjalo",
+      "yes": "Sí, eliminar"
+    }
+  },
+
+  "audience": {
+    "title": "Audiencia",
+    "export": "Exportar",
+    "no_audience": "No hay audiencia para gestionar",
+    "manage": "Administra a todos tus estudiantes aquí y mantente conectado con ellos",
+    "name": "Nombre",
+    "email": "Correo Electrónico",
+    "date_joined": "Fecha de Ingreso"
+  },
+
+  "lms_navigation": {
+    "home": "Inicio",
+    "my_learning": "Mi Aprendizaje",
+    "exercise": "Ejercicio",
+    "community": "Comunidad",
+    "help": "Ayuda",
+    "settings": "Configuraciones"
+  },
+
+  "my_learning": {
+    "heading": "Mi Aprendizaje",
+    "progress": "En progreso",
+    "complete": "Completo",
+    "search": "Buscar cursos",
+    "not_in_progress": "Ningún curso en progreso",
+    "any_progress": "Cualquier curso que comiences se mostrará aquí",
+    "not_completed": "Ningún curso completado",
+    "any_course": "Cualquier curso que completes se mostrará aquí"
+  },
+
+  "exercises": {
+    "heading": "Ejercicios",
+    "not_submitted": "No Enviado",
+    "submitted": "Enviado",
+    "in_progress": "Calificación en progreso",
+    "graded": "Calificado",
+    "lesson": "Lección"
+  },
+
+  "snackbar": {
+    "success": "Éxito",
+    "something": "Algo salió mal, por favor inténtalo más tarde",
+    "update": "Actualizar",
+
+    "poll": {
+      "error": {
+        "creating_poll": "Se produjo un error al crear la encuesta",
+        "updating_poll": "Se produjo un error al actualizar el estado de la encuesta",
+        "submitting_poll": "Se produjo un error al enviar la encuesta"
+      },
+      "info": {
+        "not_published": "La encuesta aún no está publicada",
+        "vote_once": "Solo puedes votar una vez"
+      }
+    },
+
+    "exercise": {
+      "success": "Guardado exitosamente",
+      "submission_updated": "Envío actualizado a",
+      "error_fetching": "Error al recuperar ejercicios, por favor recarga la página"
+    },
+
+    "materials": {
+      "apology": "Pedimos disculpas, hubo un error al guardar tu lección."
+    },
+
+    "newsfeed": {
+      "success": {
+        "edit": "Feed editado exitosamente",
+        "add": "Nuevo feed agregado exitosamente"
+      },
+      "error": {
+        "error": "Se produjo un error mientras",
+        "editing": "editando feed",
+        "creating": "creando feed"
+      }
+    },
+
+    "people": {
+      "error": {
+        "missing_data": "Datos de la organización faltantes, por favor recarga la página",
+        "no": "No hay un dominio de organización actual"
+      },
+      "success": {
+        "copied": "Copiado al portapapeles"
+      }
+    },
+
+    "course_settings": {
+      "success": {
+        "download": "Descarga completa",
+        "saved": "Guardado exitosamente",
+        "successful_integration": "Integración exitosa",
+        "successful_deletion": "Integración eliminada",
+        "update_successful": "Actualización exitosa"
+      },
+      "error": {
+        "not_right": "Algo no está bien, por favor inténtalo más tarde",
+        "went_wrong": "Algo salió mal, por favor inténtalo más tarde",
+        "title": "el título no puede estar vacío",
+        "description": "la descripción no puede estar vacía",
+        "failed_integration": "Falló la integración, por favor inténtalo de nuevo más tarde",
+        "failed_deletion": "Falló la eliminación, por favor inténtalo de nuevo más tarde"
+      }
+    },
+
+    "lms": {
+      "error": {
+        "username_exists": "nombre de usuario ya existe",
+        "update": "Error al actualizar:",
+        "try_again": "Por favor inténtalo de nuevo"
+      }
+    },
+
+    "team_members": {
+      "invite_sent": "¡Invitación enviada!",
+      "user_exists": "El usuario ya existe",
+      "invite_fail": "Error al enviar la invitación, por favor inténtalo de nuevo",
+      "remove_fail": "Error al eliminar usuario, por favor inténtalo de nuevo"
+    },
+
+    "landing_page_settings": {
+      "error": {
+        "file_size": "El tamaño del archivo no debe ser mayor a 500 kb",
+        "try_again": "Inténtalo de nuevo",
+        "label": "Cargar imagen",
+        "fetch_error": "Error al recuperar imágenes de Unsplash"
+      },
+      "success": {
+        "complete": "Completo :)"
+      }
+    },
+
+    "course": {
+      "success": {
+        "comment_deleted": "Comentario eliminado",
+        "comment_added": "Comentario añadido",
+        "pinned": "Anclado",
+        "unpinned": "Desanclado",
+        "successfully": "Exitosamente",
+        "feed_delete_success": "Feed eliminado exitosamente"
+      },
+      "error": {
+        "reaction_error": "Se produjo un error al reaccionar al feed de noticias",
+        "commenting_error": "Se produjo un error al crear el comentario",
+        "toggle_error": "Error al alternar el feed anclado",
+        "news_feed_fail": "Error al recuperar feeds de noticias",
+        "feed_fetch_error": "Se produjo un error al recuperar el feed"
+      }
+    },
+
+    "attendance": {
+      "error": {
+        "reload": "Algo no está bien. Por favor recarga e intenta tomar asistencia nuevamente"
+      }
+    },
+
+    "lessons": {
+      "success": {
+        "complete_marked": "Marcado como completo",
+        "complete_download": "Descarga completa"
+      },
+      "error": {
+        "try_later": "Algo no está bien, por favor inténtalo más tarde"
+      }
+    },
+
+    "marks": {
+      "error": "Error al recuperar las notas"
+    },
+
+    "submissions": {
+      "success": {
+        "grading": "Calificación guardada y estudiante notificado"
+      }
+    },
+
+    "invite": {
+      "failed_join": "Error al unirse, por favor contacta a tu administrador"
+    },
+
+    "community": {
+      "error": {
+        "try_again": "Error - Por favor inténtalo de nuevo más tarde",
+        "deleting_comments": "Error al eliminar comentarios",
+        "deleting_question": "Error al eliminar pregunta"
+      },
+
+      "success": {
+        "comment_submitted": "¡Comentario enviado!",
+        "success_delete": "Eliminado exitosamente",
+        "question_submitted": "¡Pregunta enviada!"
+      }
+    },
+
+    "signup": {
+      "disposable": "El correo electrónico que proporcionaste es desechable"
+    },
+
+    "upgrade": {
+      "generate_fail": "Fallo al generar éxito",
+      "failed": "Fallo, por favor inténtalo de nuevo más tarde"
+    },
+
+    "setup": {
+      "info_lesson": "Necesitas crear una lección",
+      "info_course": "Necesitas crear un curso"
+    }
+  },
+
+  "content": {
+    "heading": "Internacionalización en SvelteKit",
+    "toggle_label": "Seleccionar Idioma Preferido",
+    "button_labels": {
+      "0": "{{value:number}}",
+      "1": "{{value:number}}",
+      "2": "{{value:number}}"
+    },
+    "body_text": "Este es un pequeño ejemplo para demostrar la funcionalidad de internacionalización en SvelteKit utilizando la biblioteca sveltekit-i18n. sveltekit-i18n es una biblioteca pequeña sin dependencias externas, construida para Svelte y SvelteKit. Une @sveltekit-i18n/base y @sveltekit-i18n/parser-default para proporcionarte la solución de internacionalización más sencilla para SvelteKit. El número total de descargas de npm por semana hasta el {{dateValue:date}} es de {{download:number}}.",
+    "awards": "¡Has {{award:gt; 0: {{award; 1:ganado exactamente {{award}} premio; default:ganado {{award}} premios}}; default:no ganado ningún premio}}!",
+    "date": "{{val:date}}",
+    "time": "Solo el formateador 'time' no está disponible, debe ser un formateador DateTime",
+    "number": "{{value:currency}}"
+  }
+}

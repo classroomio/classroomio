@@ -16,7 +16,9 @@
 </script>
 
 <AddOrgModal />
+
 <VerifyEmailModal />
+
 <div class="org-root w-full flex items-center justify-between">
   {#if !isQuizPage($page.url?.pathname)}
     <OrgSideBar />

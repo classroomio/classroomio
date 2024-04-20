@@ -13,6 +13,7 @@
   import { isOrgAdmin } from '$lib/utils/store/org';
   import type { Course } from '$lib/utils/types';
   import { browser } from '$app/environment';
+  import { t } from '$lib/utils/functions/translations.js';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import TableOfContents from 'carbon-icons-svelte/lib/TableOfContents.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
@@ -103,14 +104,14 @@
 <section class="w-full md:max-w-6xl md:mx-auto">
   <div class="py-2 md:py-10 px-2 md:px-5">
     <div class="flex items-center justify-between mb-5">
-      <h1 class="dark:text-white text-2xl md:text-3xl font-bold">Courses</h1>
+      <h1 class="dark:text-white text-2xl md:text-3xl font-bold">{$t('courses.heading')}</h1>
       {#if $isMobile}
         <PrimaryButton isDisabled={!$isOrgAdmin} onClick={() => ($createCourseModal.open = true)}>
           <Add size={24} />
         </PrimaryButton>
       {:else}
         <PrimaryButton
-          label="Create Course"
+          label={$t('courses.heading_button')}
           variant={VARIANTS.CONTAINED_DARK}
           isDisabled={!$isOrgAdmin}
           onClick={() => ($createCourseModal.open = true)}
@@ -118,9 +119,9 @@
       {/if}
     </div>
     <div class="flex flex-row-reverse mb-5">
-      <div class="flex items-end justify-start">
+      <div class="filter-containter flex items-end justify-start">
         <Search
-          placeholder="Find course"
+          placeholder={$t('courses.search_placeholder')}
           bind:value={searchValue}
           searchClass="mr-2"
           class=" bg-gray-100 dark:bg-neutral-800"
@@ -129,9 +130,9 @@
           class="h-full"
           bind:selectedId
           items={[
-            { id: '0', text: 'Date Created' },
-            { id: '1', text: 'Published' },
-            { id: '2', text: 'Lessons' }
+            { id: '0', text: $t('courses.course_filter.date_created') },
+            { id: '1', text: $t('courses.course_filter.published') },
+            { id: '2', text: $t('courses.course_filter.lessons') }
           ]}
         />
         {#if $view === 'list'}
@@ -152,7 +153,7 @@
 </section>
 
 <style>
-  :global(.bx--dropdown) {
+  .filter-containter :global(.bx--dropdown) {
     max-height: unset;
     height: 100%;
   }

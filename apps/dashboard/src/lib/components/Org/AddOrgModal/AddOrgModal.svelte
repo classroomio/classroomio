@@ -11,6 +11,7 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import { createOrgValidation } from '$lib/utils/functions/validator';
   import { goto } from '$app/navigation';
+  import { t } from '$lib/utils/functions/translations';
 
   type Error = {
     orgName: string;
@@ -84,8 +85,7 @@
 
       if (error) {
         console.log('Error: create organisation member', error);
-        errors.siteName =
-          'Something went wrong while creating this organization. Please reload and try again';
+        errors.siteName = $t('add_org.error_organization');
 
         // Delete organization so it can be recreated.
         await supabase.from('organization').delete().match({ siteName });
@@ -109,11 +109,11 @@
   onClose={() => ($newOrgModal.open = false)}
   bind:open={$newOrgModal.open}
   width="w-96"
-  modalHeading="Create Organization"
+  modalHeading={$t('add_org.create_org')}
 >
   <form on:submit|preventDefault={createNewOrg} class="px-2">
     <TextField
-      label="Name of Organization"
+      label={$t('add_org.name')}
       bind:value={orgName}
       autoFocus={true}
       placeholder="e.g Pepsi Co"
@@ -124,7 +124,7 @@
     />
     <!-- Org Site Name -->
     <TextField
-      label="Organisation Site name"
+      label={$t('add_org.org_sitename')}
       helperMessage={`https://${siteName || ''}.classroomio.com`}
       bind:value={siteName}
       name="sitename"
@@ -137,7 +137,12 @@
     />
 
     <div class="mt-5 flex items-center flex-row-reverse">
-      <PrimaryButton className="px-6 py-3" label="Create" type="submit" isLoading={loading} />
+      <PrimaryButton
+        className="px-6 py-3"
+        label={$t('add_org.create')}
+        type="submit"
+        isLoading={loading}
+      />
     </div>
   </form>
 </Modal>

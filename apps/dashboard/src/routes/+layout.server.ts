@@ -1,9 +1,11 @@
-import { dev } from '$app/environment';
+import { dev, browser } from '$app/environment';
 import { redirect } from '@sveltejs/kit';
 import { blockedSubdomain } from '$lib/utils/constants/app';
 import { getCurrentOrg } from '$lib/utils/services/org';
 import { getSupabase, supabase } from '$lib/utils/functions/supabase';
+import { loadTranslations } from '$lib/utils/functions/translations';
 import type { CurrentOrg } from '$lib/utils/types/org';
+import { PRIVATE_APP_SUBDOMAINS } from '$env/static/private';
 
 if (!supabase) {
   getSupabase();
@@ -31,6 +33,8 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
   const matches = url.host.match(/([a-z 0-9 -]+).*classroomio[.]com/);
   const subdomain = matches?.[1] ?? '';
 
+  const isDev = dev || url.host.includes('localhost');
+
   if (!url.host.includes('.classroomio.com') && !url.host.includes('localhost')) {
     // TODO: We can verify if custom domain here
     return response;
@@ -42,16 +46,33 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
     response.isOrgSite = debugMode || answer;
     response.orgSiteName = debugMode ? _orgSiteName : subdomain;
     response.org = (await getCurrentOrg(response.orgSiteName, true)) || null;
-    
 
-    if (!response.org && !dev) {
+    if (!response.org && !isDev) {
       throw redirect(307, 'https://app.classroomio.com/404?type=org');
     }
   } else if (subdomain === 'play' || debugPlay === 'true') {
     response.skipAuth = true;
-  } else if (subdomain !== 'app' && !dev) {
+  } else if (PRIVATE_APP_SUBDOMAINS.split(',').includes(subdomain) && !isDev) {
     throw redirect(307, 'https://app.classroomio.com');
   }
 
+  // Load translations
+  const { pathname } = url;
+  const initLocale = getInitialLocale();
+  await loadTranslations(initLocale, pathname);
+
   return response;
 };
+
+// Define getInitialLocale function
+function getInitialLocale(): string {
+  if (browser) {
+    try {
+      return window.navigator.language.split('-')[0];
+    } catch (e) {
+      return 'en';
+    }
+  }
+
+  return 'en';
+}

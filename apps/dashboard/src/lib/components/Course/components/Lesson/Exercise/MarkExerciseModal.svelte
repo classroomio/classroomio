@@ -38,7 +38,7 @@
       total
     });
 
-    snackbar.success(`Submission updated to '${status.label}'`);
+    snackbar.success(`snackbar.exercise.submission_updated '${status.label}'`);
   }
 
   function setStatus(data) {
@@ -138,6 +138,7 @@
         <PrimaryButton
           onClick={() => {
             handleSave(data);
+            onClose();
           }}
           label="Submit Grades"
           variant={VARIANTS.CONTAINED_SUCCESS}

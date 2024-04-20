@@ -8,11 +8,14 @@
 		"lint": "turbo run lint",
 		"clean": "turbo clean && rm -rf node_modules",
 		"format": "prettier . --write",
-		"release": "standard-version"
+		"release": "standard-version",
+		"ci": "cypress run"
 	},
 	"license": "MIT",
 	"packageManager": "pnpm@8.6.13",
 	"devDependencies": {
+		"concurrently": "^8.2.2",
+		"cypress": "^13.8.0",
 		"eslint": "^8.54.0",
 		"prettier": "^3.1.0",
 		"prettier-plugin-svelte": "^3.1.2",

@@ -9,6 +9,7 @@
 
   import { questionnaireOrder, questionnaire } from '../store/exercise';
   import { filterOutDeleted } from './functions';
+  import { t } from '$lib/utils/functions/translations';
 
   const flipDurationMs = 300;
 
@@ -54,7 +55,7 @@
   onClose={handleClose}
   bind:open={$questionnaireOrder.open}
   width="w-96"
-  modalHeading="Order questions"
+  modalHeading={$t('course.navItem.lessons.exercises.all_exercises.order_questions')}
 >
   <section
     use:dndzone={{
