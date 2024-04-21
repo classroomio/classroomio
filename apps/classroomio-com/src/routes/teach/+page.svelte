@@ -1,5 +1,7 @@
-<script>
+<script lang="ts">
   import { slide } from 'svelte/transition';
+  import PageSignupCTA from '$lib/PageSignupCTA/index.svelte';
+  import PageHeader from '$lib/PageHeader/PageHeader.svelte';
 
   const whyStart = [
     {
@@ -81,36 +83,41 @@
     }
   ];
 
-  function toggleAnswer(index) {
+  function toggleAnswer(index: number) {
     faqs[index].showAnswer = !faqs[index].showAnswer;
   }
 </script>
 
 <svelte:head>
-  <title>Teacher | ClassroomIO</title>
+  <title>Teach | ClassroomIO</title>
 </svelte:head>
 
-<div class="mt-[10%] md:mt-16">
-  <header class="root bg-[#F5F8FE] px-[10%] border-4 pt-14 w-full flex flex-wrap text-left">
-    <div class="lg:max-w-2/4 pt-[6%] pb-8">
+<section>
+  <PageHeader className="flex items-center justify-evenly px-5 flex-wrap text-left">
+    <div>
       <h1 class="text-5xl font-bold">Teach with us</h1>
       <p class="my-5 lg:w-[77%] lg:text-left text-center">
         With ClassroomIO, you can make side income while teaching the subject you love
       </p>
-      <button type="button" class="w-full lg:w-[30%] py-3 rounded-md text-white bg-[#1D4ED8]"
-        >Register</button
+
+      <a
+        href="/teach/register"
+        target="_blank"
+        class="w-full block text-center lg:w-[30%] py-3 text-md text-white rounded-md bg-[#1D4ED8]"
       >
+        Register
+      </a>
     </div>
 
-    <div class="lg:max-w-[40%] z-20">
-      <img src="/teacher-hero.png" alt="" class="w-full z-20" />
+    <div class=" ">
+      <img src="/teacher-hero.png" alt="" class="w-full" />
     </div>
-  </header>
+  </PageHeader>
 
   <div class="mt-10 mx-auto">
-    <div class="px-[10%]">
-      <h1 class="text-2xl text-center font-bold flex gap-3 justify-center items-center">
-        Why you should start with us <img src="/star.svg" alt="" />
+    <div class="px-[10%] pb-10 border-b border-slate-100">
+      <h1 class="text-4xl pb-28 text-center font-bold flex gap-3 justify-center items-center">
+        Why you should teach with us? <img src="/star.svg" alt="" />
       </h1>
 
       <div class="flex flex-wrap justify-center lg:justify-between mt-10">
@@ -120,8 +127,8 @@
           >
             <img src={why.src} alt="" class="w-[80px] h-[80px]" />
             <figcaption>
-              <h1 class="font-bold text-sm">{why.header}</h1>
-              <p class="text-xs mt-1">
+              <h1 class="font-bold text-md">{why.header}</h1>
+              <p class="text-sm mt-1">
                 {why.subText}
               </p>
             </figcaption>
@@ -131,14 +138,14 @@
     </div>
 
     <div class="px-[10%] mt-10 py-10">
-      <h1 class="text-2xl text-center font-bold flex gap-3 justify-center items-center">
+      <h1 class="text-4xl mb-28 text-center font-bold flex gap-3 justify-center items-center">
         How to get started <img src="/thumbs-up.svg" alt="" />
       </h1>
 
       <div class="flex flex-wrap justify-between gap-y-10 mx-auto mt-5">
         {#each steps as step, i}
           <div class="lg:max-w-[40%] px-10 py-5">
-            <h1 class="font-bold">
+            <h1 class="font-bold text-xl">
               <span class="px-2 py-1 mr-3 bg-[#F7F7F7] rounded-md">{i + 1}</span>
               {step.title}
             </h1>
@@ -148,12 +155,14 @@
           </div>
         {/each}
       </div>
-      <div class="flex justify-end px-[5%] mt-3">
-        <button
-          type="button"
-          class="w-full lg:max-w-[20%] py-3 text-xs text-white rounded-md bg-[#1D4ED8]"
-          >Click here to register</button
+      <div class="flex justify-center px-[5%] mt-3">
+        <a
+          href="/teach/register"
+          target="_blank"
+          class="w-full lg:max-w-[20%] py-3 text-md text-white rounded-md bg-[#1D4ED8] text-center"
         >
+          Get Started
+        </a>
       </div>
     </div>
 
@@ -174,43 +183,25 @@
             <div>
               <button
                 type="button"
-                class="w-full font-bold text-xs lg:text-sm my-2 flex justify-between"
+                class="w-full font-medium text-lg my-2 flex justify-between"
                 on:click={() => toggleAnswer(index)}
               >
                 {faq.question} <span>{faq.showAnswer ? '-' : '+'}</span>
               </button>
             </div>
             {#if faq.showAnswer}
-              <div transition:slide class="text-[10px] lg:text-xs leading-5">{faq.answer}</div>
+              <div transition:slide class="text-md font-light leading-5">{faq.answer}</div>
             {/if}
           </div>
         {/each}
       </div>
     </div>
 
-    <div
-      class="p-[5%] py-[7%] lg:py-[3%] lg:px-[10%] w-[85%] rounded-md my-10 mx-auto bg-[#1D4ED8] flex flex-wrap item-center gap-5 justify-between"
-    >
-      <div class="text-white lg:max-w-2/4 text-center lg:text-left">
-        <h1 class="text-3xl font-medium lg:font-bold">Get paid to teach online</h1>
-        <p class="text-sm lg:w-[70%] mt-6">
-          Earn over N100,000 naira monthly as side income while teaching the subject you love
-        </p>
-      </div>
-
-      <div class="w-full lg:w-[30%] flex justify-center items-center">
-        <button
-          type="button"
-          class="w-full py-3 text-sm lg:text-xs font-bold text-black rounded-md bg-white"
-          >Create a tutor profile now</button
-        >
-      </div>
-    </div>
+    <PageSignupCTA
+      header="Skyrocket Your Teaching Career"
+      subText="Don't wait, let's get you started."
+      btnLabel="Register"
+      link="/teach/register"
+    />
   </div>
-</div>
-
-<style>
-  .root {
-    background-image: url('/hero-bg.svg');
-  }
-</style>
+</section>

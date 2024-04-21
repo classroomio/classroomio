@@ -2,6 +2,7 @@
   import Checkmark from 'carbon-icons-svelte/lib/Checkmark.svelte';
   import PLANS from 'shared/src/plans/data.json';
   import PageSignupCTA from '$lib/PageSignupCTA/index.svelte';
+  import PageHeader from '$lib/PageHeader/PageHeader.svelte';
 
   let isYearlyPlan = false;
 
@@ -14,10 +15,8 @@
   <title>Pricing | ClassroomIO</title>
 </svelte:head>
 
-<section class="mt-[10%] md:mt-16">
-  <header
-    class="hero-bg lg:min-h-[30rem] pt-24 pb-16 w-full flex flex-col items-center justify-center text-center border-b border-slate-100"
-  >
+<section>
+  <PageHeader className="flex flex-col items-center justify-center text-center">
     <h1
       class="mx-auto text-4xl md:text-7xl lg:text-6xl font-bold text-slate-900 flex flex-col items-center"
     >
@@ -48,7 +47,8 @@
         Save 2 months
       </div>
     </div>
-  </header>
+  </PageHeader>
+
   <div class="flex flex-col items-center justify-center px-[6%]">
     <div class="isolate mt-10 grid grid-cols-1 gap-10 lg:grid-cols-3">
       <!-- Card 1 -->
