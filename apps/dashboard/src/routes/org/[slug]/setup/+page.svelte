@@ -2,13 +2,13 @@
   import Chip from '$lib/components/Chip/Text.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import StepDoneIcon from '$lib/components/Icons/StepDoneIcon.svelte';
   import CheckmarkOutline from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
 
   import { currentOrg } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
   import { snackbar } from '$lib/components/Snackbar/store.js';
   import { profile } from '$lib/utils/store/user';
+  import { t } from '$lib/utils/functions/translations';
 
   export let data;
   let setupList = data.setup || [];
@@ -24,7 +24,7 @@
   };
 
   const isCompleted = (id) => {
-    return setupList?.find((c) => c.id === id).is_completed == true;
+    return setupList?.find((c) => c.id === id)?.is_completed == true;
   };
 
   const handleClick = (title) => {
@@ -38,7 +38,7 @@
           const courseId = data?.courses[0].id;
           goto(`/courses/${courseId}/lessons`);
         } else {
-          snackbar.info('You need to create a course');
+          snackbar.info('setup.info_course');
         }
         break;
 
@@ -48,7 +48,7 @@
           const lessonId = data?.lessons[0].id;
           goto(`/courses/${courseId}/lessons/${lessonId}`);
         } else {
-          snackbar.info('You Need to Create a lesson');
+          snackbar.info('setup.info_lesson');
         }
         break;
 
@@ -57,7 +57,7 @@
           const courseId = data?.courses[0].id;
           goto(`/courses/${courseId}/settings`);
         } else {
-          snackbar.info('You need to create a course');
+          snackbar.info('setup.info_course');
         }
         break;
 
@@ -84,7 +84,7 @@
 <section class="w-full md:max-w-4xl mx-auto">
   <div class="py-2 md:py-10 px-2 md:px-5">
     <div class="flex items-center gap-2">
-      <h1 class="dark:text-white text-2xl md:text-3xl font-bold">Get Started</h1>
+      <h1 class="dark:text-white text-2xl md:text-3xl font-bold">{$t('setup.get_started')}</h1>
       <Chip
         value={`${completed}/${setupList.length}`}
         className="text-[10px] font-semibold px-3 !py-1"
@@ -104,9 +104,11 @@
                 className={`text-[10px] font-semibold !py-1 `}
                 shape="rounded-full"
               />
-              <p class="font-medium text-lg">{list.title}</p>
+              <p class="font-medium text-lg">{$t(list.title)}</p>
             </div>
-            <p class={`text-sm`}>{list.desc}</p>
+            <p class={`text-sm`}>
+              {$t(list.desc)}
+            </p>
           </div>
           <div class="w-full lg:w-[30%]">
             <PrimaryButton
@@ -118,7 +120,7 @@
               {#if list.is_completed}
                 <CheckmarkOutline />
               {/if}
-              {list.button_label}
+              {$t(list.button_label)}
             </PrimaryButton>
           </div>
         </div>

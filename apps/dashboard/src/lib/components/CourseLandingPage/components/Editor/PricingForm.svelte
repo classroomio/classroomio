@@ -9,6 +9,7 @@
   import TextEditor from '$lib/components/TextEditor/index.svelte';
   import { isCourseFree } from '$lib/utils/functions/course';
   import type { Course } from '$lib/utils/types';
+  import { t } from '$lib/utils/functions/translations';
 
   export let course: Course;
 
@@ -53,7 +54,10 @@
 </script>
 
 {#if typeof course !== 'undefined'}
-  <Select labelText="Currency" bind:selected={course.currency}>
+  <Select
+    labelText={$t('course.navItem.landing_page.editor.pricing_form.currency')}
+    bind:selected={course.currency}
+  >
     <SelectItem value="NGN" />
     <SelectItem value="USD" />
   </Select>
@@ -61,7 +65,7 @@
   <TextField
     className="mt-5"
     labelClassName="font-bold"
-    label="Cost"
+    label={$t('course.navItem.landing_page.editor.pricing_form.cost')}
     type="number"
     bind:value={course.cost}
   />
@@ -70,7 +74,7 @@
     <TextField
       className="mt-5"
       labelClassName="font-bold"
-      label="Payment Link"
+      label={$t('course.navItem.landing_page.editor.pricing_form.payment')}
       helperMessage="Stripe, Lemon Squeezy or any payment link"
       bind:value={paymentLink}
     />
@@ -78,9 +82,12 @@
 
   <div class="mt-5">
     <!-- <label for="text-field" class="m-0 font-bold mb-2">Discount</label> -->
-    <Toggle labelText="Discount" bind:toggled={showDiscount}>
-      <span slot="labelA">No</span>
-      <span slot="labelB">Yes</span>
+    <Toggle
+      labelText={$t('course.navItem.landing_page.editor.pricing_form.discount')}
+      bind:toggled={showDiscount}
+    >
+      <span slot="labelA">{$t('course.navItem.landing_page.editor.pricing_form.no')}</span>
+      <span slot="labelB">{$t('course.navItem.landing_page.editor.pricing_form.yes')}</span>
     </Toggle>
   </div>
 
@@ -88,7 +95,7 @@
     <TextField
       className="mt-5"
       labelClassName="font-bold"
-      label="Discout Percent"
+      label={$t('course.navItem.landing_page.editor.pricing_form.percent')}
       type="number"
       bind:value={discount}
       helperMessage="In Percentage %"
@@ -98,13 +105,15 @@
   <div class="mt-5">
     <!-- <label for="text-field" class="m-0 font-bold mb-2">Discount</label> -->
     <Toggle labelText="Gift on Completion" bind:toggled={giftToggled}>
-      <span slot="labelA">No</span>
-      <span slot="labelB">Yes</span>
+      <span slot="labelA">{$t('course.navItem.landing_page.editor.pricing_form.no')}</span>
+      <span slot="labelB">{$t('course.navItem.landing_page.editor.pricing_form.yes')}</span>
     </Toggle>
   </div>
 
   {#if giftToggled}
-    <p class="dark:text-white font-bold mt-5">About Gift</p>
+    <p class="dark:text-white font-bold mt-5">
+      {$t('course.navItem.landing_page.editor.pricing_form.gift')}
+    </p>
 
     <div class="h-2/5">
       <TextEditor value={get(course, 'metadata.reward.description', '')} onChange={handleChange} />

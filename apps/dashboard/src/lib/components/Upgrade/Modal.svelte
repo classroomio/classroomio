@@ -6,7 +6,7 @@
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import { page } from '$app/stores';
   import Checkmark from 'carbon-icons-svelte/lib/Checkmark.svelte';
-  import PLANS from 'shared-constants/src/plans/data.json';
+  import PLANS from 'shared/src/plans/data.json';
   import { profile } from '$lib/utils/store/user';
   import { subscribeToProduct } from '$lib/utils/services/lemonsqueezy/subscribe';
   import { snackbar } from '$lib/components/Snackbar/store';
@@ -18,6 +18,7 @@
   import type { RealtimeChannel, RealtimePostgresChangesPayload } from '@supabase/supabase-js';
   import Confetti from '$lib/components/Confetti/index.svelte';
   import { toggleConfetti } from '$lib/components/Confetti/store';
+  import { t } from '$lib/utils/functions/translations';
 
   const disabledClass = 'bg-gray-300 text-gray-400 hover:cursor-not-allowed';
 
@@ -48,7 +49,7 @@
       });
 
       if (!checkoutURL) {
-        snackbar.error('Failed to generate success');
+        snackbar.error('upgrade.generate_fail');
         return;
       }
 
@@ -56,7 +57,7 @@
     } catch (error) {
       console.error('Error subscribing', error);
 
-      snackbar.error('Failed, please try again later');
+      snackbar.error('upgrade.failed');
     }
 
     isLoadingPlan = null;
@@ -122,19 +123,26 @@
   {open}
   width="w-4/5"
   maxWidth={upgraded ? 'max-w-[600px]' : undefined}
-  modalHeading="Upgrade Plan"
+  modalHeading={$t('pricing.modal.heading')}
 >
   {#if upgraded}
     <div class="flex flex-col items-center justify-center mb-4 w-full relative">
       <StepDoneIcon />
-      <h4 class="text-2xl">Thank you for your support</h4>
+      <h4 class="text-2xl">{$t('pricing.modal.thanks')}</h4>
       <p class="mb-4 text-center">
-        Your plan comes with cool perks and benefits including access to all future features we
-        release.
+        {$t('pricing.modal.plan')}
       </p>
       <div class="flex items-center gap-4">
-        <PrimaryButton label="Close" variant={VARIANTS.OUTLINED} onClick={onClose} />
-        <PrimaryButton label="Learn more" variant={VARIANTS.CONTAINED_DARK} onClick={onLearnMore} />
+        <PrimaryButton
+          label={$t('pricing.modal.close')}
+          variant={VARIANTS.OUTLINED}
+          onClick={onClose}
+        />
+        <PrimaryButton
+          label={$t('pricing.modal.learn')}
+          variant={VARIANTS.CONTAINED_DARK}
+          onClick={onLearnMore}
+        />
       </div>
     </div>
   {:else}
@@ -150,7 +158,7 @@
                 ? 'text-white'
                 : 'text-gray-900'} dark:text-white lg:text-xl"
             >
-              {PLANS[planName].NAME}
+              {$t(PLANS[planName].NAME)}
             </p>
             <p
               class="text-baseline flex items-baseline gap-x-1 font-medium {planName ===
@@ -159,9 +167,9 @@
                 : 'text-black'} dark:text-gray-300"
             >
               {PLANS[planName].PRICE.CURRENCY}
-              {PLANS[planName].PRICE.MONTHLY}
+              {$t(PLANS[planName].PRICE.MONTHLY)}
               {#if !PLANS[planName].PRICE.IS_PREMIUM}
-                /month
+                /{$t('pricing.modal.month')}
               {/if}
             </p>
             <p
@@ -169,7 +177,7 @@
                 ? 'text-white'
                 : 'text-black'} dark:text-gray-300 lg:leading-6"
             >
-              {PLANS[planName].DESCRIPTION}
+              {$t(PLANS[planName].DESCRIPTION)}
             </p>
 
             <button
@@ -188,7 +196,7 @@
               {#if isLoadingPlan === planName}
                 <Loading withOverlay={false} small />
               {:else}
-                {PLANS[planName].CTA.DASHBOARD_LABEL}
+                {$t(PLANS[planName].CTA.DASHBOARD_LABEL)}
               {/if}
             </button>
 
@@ -207,7 +215,7 @@
                     />
                   </div>
                   <p class="text-sm">
-                    {features}
+                    {$t(features)}
                   </p>
                 </li>
               {/each}

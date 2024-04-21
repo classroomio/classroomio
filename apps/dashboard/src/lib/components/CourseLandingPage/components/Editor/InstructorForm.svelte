@@ -8,6 +8,7 @@
   import UploadImage from '$lib/components/UploadImage/index.svelte';
   import { uploadAvatar } from '$lib/utils/services/courses';
   import type { Course } from '$lib/utils/types';
+  import { t } from '$lib/utils/functions/translations';
 
   export let course: Course;
   let name: string | undefined;
@@ -60,29 +61,31 @@
 </script>
 
 <div class="mt-5">
-  <label for="upload" class="font-bold">Instructor Logo</label>
+  <label for="upload" class="font-bold"
+    >{$t('course.navItem.landing_page.editor.instructure_form.upload')}</label
+  >
   <UploadImage bind:avatar src={imgUrl} />
 </div>
 
 <TextField
   className="mt-5"
   labelClassName="font-bold"
-  label="Instructor name"
-  placeholder="Your company name"
+  label={$t('course.navItem.landing_page.editor.instructure_form.name')}
+  placeholder={$t('course.navItem.landing_page.editor.instructure_form.name_placeholder')}
   bind:value={name}
 />
 
 <TextField
   className="mt-5"
   labelClassName="font-bold"
-  label="Instructor Role"
+  label={$t('course.navItem.landing_page.editor.instructure_form.role')}
   placeholder="e.g Software developer"
   bind:value={role}
 />
 
 <TextArea
-  label="About instructor"
-  placeholder="A short background about the instructor"
+  label={$t('course.navItem.landing_page.editor.instructure_form.about')}
+  placeholder={$t('course.navItem.landing_page.editor.instructure_form.about_placeholder')}
   rows={6}
   className="mt-5"
   labelClassName="font-bold"
@@ -92,7 +95,7 @@
 <TextField
   className="mt-5"
   labelClassName="font-bold"
-  label="Total number of courses"
+  label={$t('course.navItem.landing_page.editor.instructure_form.total')}
   type="number"
   bind:value={courseNo}
 />

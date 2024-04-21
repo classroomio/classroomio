@@ -9,6 +9,7 @@
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import SectionTitle from '../SectionTitle.svelte';
   import ArrowUpRightIcon from '$lib/components/Icons/ArrowTopRight.svelte';
+  import { t } from '$lib/utils/functions/translations';
 
   let chatId: number | null;
 
@@ -24,11 +25,11 @@
 
     if (error) {
       console.log(error);
-      snackbar.error('Integration Failed, please try again later');
+      snackbar.error('snackbar.course_settings.error.failed_integration');
     } else {
       $profile.telegram_chat_id = chatId;
       chatId = null;
-      snackbar.success('Integration successful');
+      snackbar.success('snackbar.course_settings.success.successful_integration');
     }
   }
 
@@ -39,11 +40,11 @@
       .match({ id: $profile.id });
 
     if (error) {
-      snackbar.error('Deletion Failed, please try again later');
+      snackbar.error('snackbar.course_settings.error.failed_deletion');
       console.log(error);
     } else {
       $profile.telegram_chat_id = null;
-      snackbar.success('Integration deleted');
+      snackbar.success('snackbar.course_settings.success.successful_deletion');
     }
   }
 </script>
@@ -52,7 +53,7 @@
   <Row class="flex lg:flex-row flex-col justify-center lg:justify-start py-7 border-bottom-c">
     <Column sm={4} md={4} lg={4} class="flex items-center justify-center">
       <img src="/telegram-svg.svg" alt="" class="w-10 mr-2" />
-      <SectionTitle>Telegram</SectionTitle></Column
+      <SectionTitle>{$t('settings.integrations.heading')}</SectionTitle></Column
     >
 
     <Column sm={8} md={8} lg={8} class="mt-2 lg:mt-0 flex flex-col items-center lg:items-start">
@@ -60,25 +61,26 @@
         <div class="flex flex-col items-center w-full">
           <div class="flex items-center">
             <CheckmarkFilled size={32} class="mr-2" style="fill: green;" />
-            <SectionTitle>Integration Successful</SectionTitle>
+            <SectionTitle>{$t('settings.integrations.success_message')}</SectionTitle>
           </div>
           <PrimaryButton className="mt-3" variant={VARIANTS.CONTAINED_DANGER} onClick={deleteChatId}
-            >Disconnect</PrimaryButton
+            >{$t('settings.integrations.disconnect')}</PrimaryButton
           >
         </div>
       {:else}
         <div>
           <h3 class="font-normal text-lg">
-            Connect your account to telegram to get notified of any change within the application.
+            {$t('settings.integrations.sub_heading')}
           </h3>
-          <h4 class="font-normal">Step 1: Authenticate your account via the ClassroomIO bot.</h4>
+          <h4 class="font-normal">{$t('settings.integrations.step_1')}</h4>
           <PrimaryButton
             className="mb-5"
             variant={VARIANTS.OUTLINED}
             onClick={() => window.open('https://t.me/classroomio_bot', '_blank')}
-            ><span class="mr-2">Open Bot</span> <ArrowUpRightIcon /></PrimaryButton
+            ><span class="mr-2">{$t('settings.integrations.button_1')}</span>
+            <ArrowUpRightIcon /></PrimaryButton
           >
-          <h4 class="font-normal">Step 2: Enter the Chat ID given to you by the bot.</h4>
+          <h4 class="font-normal">{$t('settings.integrations.step_2')}</h4>
           <TextField
             bind:value={chatId}
             placeholder="360111"
@@ -86,7 +88,7 @@
             type="number"
             isRequired
           />
-          <PrimaryButton onClick={addChatId}>Connect</PrimaryButton>
+          <PrimaryButton onClick={addChatId}>{$t('settings.integrations.button_2')}</PrimaryButton>
         </div>
       {/if}
     </Column>

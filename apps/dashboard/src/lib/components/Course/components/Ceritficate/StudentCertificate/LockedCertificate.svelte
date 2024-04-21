@@ -1,14 +1,17 @@
 <script>
   import Box from '$lib/components/Box/index.svelte';
+  import { t } from '$lib/utils/functions/translations';
 </script>
 
 <Box>
   <div class="flex flex-col items-center justify-center w-max h-full gap-2">
     <img src="/professional.png" alt="Certificate" />
-    <p class="text-xl font-normal text-center">Certificates not available</p>
+    <p class="text-xl font-normal text-center">
+      {$t('course.navItem.certificates.locked_certificate')}
+    </p>
     <p class="text-sm font-normal text-center">
-      Your instructor needs to unlock your certificate. <br /> If you need your certificate, please contact
-      your instructor.
+      {$t('course.navItem.certificates.locked_certificate_body_1')} <br />
+      {$t('course.navItem.certificates.locked_certificate_body_2')}
     </p>
   </div>
 </Box>

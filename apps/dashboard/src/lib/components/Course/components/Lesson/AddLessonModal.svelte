@@ -14,6 +14,7 @@
   import Modal from '$lib/components/Modal/index.svelte';
   import { goto } from '$app/navigation';
   import { handleAddLessonWidget } from '../Navigation/store';
+  import { t } from '$lib/utils/functions/translations';
 
   export let isStudent = false;
   let errors = {
@@ -56,9 +57,9 @@
 <Modal
   onClose={() => ($handleAddLessonWidget.open = false)}
   bind:open={$handleAddLessonWidget.open}
-  width="w-[80%] md:w-[60%]"
+  width="w-[80%] md:w-[65%]"
   containerClass="overflow-hidden"
-  modalHeading="Add New Lesson"
+  modalHeading={$t('course.navItem.lessons.add_lesson.modal_heading')}
 >
   <div
     class="sm:min-h-[245px] md:min-h-[100px] lg:min-h-[190px] relative m-auto rounded-md border-2 border-gray-200 dark:border-neutral-600 py-2 md:py-3 px-2 md:px-5 mb-2 md:mb-4 flex flex-wrap items-center dark:bg-neutral-800"
@@ -75,7 +76,7 @@
     <div class="w-full md:w-4/5">
       <div class="flex flex-row gap-1 md:gap-2">
         <TextField
-          label="Lesson title"
+          label={$t('course.navItem.lessons.add_lesson.lesson_title')}
           bind:value={lesson.title}
           autofocus={true}
           className="flex-1 min-w-lg max-w-lg"
@@ -87,7 +88,11 @@
           toolTipProps={isStudent
             ? {}
             : {
-                title: `Click to ${lesson.is_unlocked ? 'lock' : 'unlock'}`,
+                title: `${$t('course.navItem.lessons.add_lesson.click_to')} ${
+                  lesson.is_unlocked
+                    ? $t('course.navItem.lessons.add_lesson.lock')
+                    : $t('course.navItem.lessons.add_lesson.unlock')
+                }`,
                 direction: 'right'
               }}
         >
@@ -131,5 +136,5 @@
       </div>
     </div>
   </div>
-  <PrimaryButton label="Save" onClick={handleSave} />
+  <PrimaryButton label={$t('course.navItem.lessons.add_lesson.save')} onClick={handleSave} />
 </Modal>

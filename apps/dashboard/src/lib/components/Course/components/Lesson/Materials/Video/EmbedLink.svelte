@@ -5,6 +5,7 @@
   import TextField from '$lib/components/Form/TextField.svelte';
   import { lesson, isLessonDirty } from '$lib/components/Course/components/Lesson/store/lessons';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { t } from '$lib/utils/functions/translations';
 
   let genericLinks = '';
   let error = '';
@@ -48,7 +49,7 @@
 
 <div class="w-full flex items-{error ? 'center' : 'end'} justify-between gap-5">
   <TextField
-    label="Embed link"
+    label={$t('course.navItem.lessons.materials.tabs.video.embed_link')}
     bind:value={genericLinks}
     className="flex-1 text-left "
     inputClassName="text-sm"
@@ -56,10 +57,15 @@
     placeholder="https://www.videoplayer.com/"
     errorMessage={error}
   />
-  <PrimaryButton label="Add Video" className="rounded-md" onClick={addVideo} />
+  <PrimaryButton
+    label={$t('course.navItem.lessons.materials.tabs.video.add_video.add_video')}
+    className="rounded-md"
+    onClick={addVideo}
+  />
 </div>
 <p class="mt-4 pl-2 text-sm">
-  Videos added: <strong>
+  {$t('course.navItem.lessons.materials.tabs.video.add_video.videos_added')}:
+  <strong>
     {$lesson?.materials?.videos.filter((v) => v.type === 'generic').length || 0}
   </strong>
 </p>

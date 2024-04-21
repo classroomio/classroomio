@@ -13,6 +13,8 @@
   import CopyFile from 'carbon-icons-svelte/lib/CopyFile.svelte';
   import Share from 'carbon-icons-svelte/lib/Share.svelte';
   import UserFollow from 'carbon-icons-svelte/lib/UserFollow.svelte';
+  import { t } from '$lib/utils/functions/translations';
+  import { onDestroy } from 'svelte';
 
   export let bannerImage: string | undefined;
   export let id = '';
@@ -27,7 +29,7 @@
   export let isOnLandingPage = false;
   export let isLMS = false;
   export let progressRate = 45;
-  export let showContextMenu = false;
+
   let target: any;
 
   $: formatter = getCurrencyFormatter(currency);
@@ -51,15 +53,38 @@
     // TODO: Delete course functionality
     alert('WIP: Delete course');
   }
+
+  onDestroy(() => {
+    console.log('unmounting card');
+  });
 </script>
 
-{#if showContextMenu}
+{#if !isLMS && !isOnLandingPage}
   <ContextMenu {target}>
-    <ContextMenuOption indented labelText="Clone" icon={CopyFile} on:click={handleCloneCourse} />
-    <ContextMenuOption indented labelText="Share" icon={Share} on:click={handleShareCourse} />
-    <ContextMenuOption indented labelText="Invite" icon={UserFollow} on:click={handleInvite} />
+    <ContextMenuOption
+      indented
+      labelText={$t('courses.course_card.context_menu.clone')}
+      icon={CopyFile}
+      on:click={handleCloneCourse}
+    />
+    <ContextMenuOption
+      indented
+      labelText={$t('courses.course_card.context_menu.share')}
+      icon={Share}
+      on:click={handleShareCourse}
+    />
+    <ContextMenuOption
+      indented
+      labelText={$t('courses.course_card.context_menu.invite')}
+      icon={UserFollow}
+      on:click={handleInvite}
+    />
     <ContextMenuDivider />
-    <ContextMenuOption kind="danger" labelText="Delete" on:click={handleDeleteCourse} />
+    <ContextMenuOption
+      kind="danger"
+      labelText={$t('courses.course_card.context_menu.delete')}
+      on:click={handleDeleteCourse}
+    />
   </ContextMenu>
 {/if}
 
@@ -79,7 +104,7 @@
         <svelte:fragment slot="loading">
           <SkeletonPlaceholder style="width: 100%; height: 200px;" />
         </svelte:fragment>
-        <svelte:fragment slot="error">An error occurred.</svelte:fragment>
+        <svelte:fragment slot="error">{$t('courses.course_card.error_message')}</svelte:fragment>
       </ImageLoader>
     </div>
 
@@ -94,7 +119,10 @@
       'items-center'}"
   >
     <div>
-      <p class="text-xs pt-2 {!isLMS && 'pl-2'} dark:text-white">{totalLessons} lessons</p>
+      <p class="text-xs pt-2 {!isLMS && 'pl-2'} dark:text-white">
+        {totalLessons}
+        {$t('courses.course_card.lessons_number')}
+      </p>
       <p class="text-xs py-2">
         {#if isOnLandingPage}
           <span class="px-2">{!cost ? 'Free' : formatter.format(cost)}</span>
@@ -111,9 +139,9 @@
         {:else}
           <Tag type={isPublished ? 'green' : 'cool-gray'}>
             {#if isPublished}
-              Published
+              {$t('courses.course_card.published')}
             {:else}
-              Unpublished
+              {$t('courses.course_card.unpublished')}
             {/if}
           </Tag>
         {/if}
@@ -122,13 +150,16 @@
 
     {#if isLMS}
       <PrimaryButton
-        label="Continue Course"
+        label={$t('courses.course_card.continue_course')}
         variant={VARIANTS.OUTLINED}
-        className="rounded-none text-primary-600"
+        className="rounded-none"
       />
     {:else if !isOnLandingPage}
       <div class="flex flex-col justify-between">
-        <p class="text-xs pt-2 pl-2 dark:text-white">{totalStudents} students</p>
+        <p class="text-xs pt-2 pl-2 dark:text-white">
+          {totalStudents}
+          {$t('courses.course_card.students')}
+        </p>
         <div></div>
       </div>
     {/if}

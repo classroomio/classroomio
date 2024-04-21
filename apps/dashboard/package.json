@@ -15,7 +15,8 @@
     "start": "node build",
     "prepare": "svelte-kit sync",
     "test": "jest",
-    "test:watch": "pnpm run test --watch"
+    "test:watch": "pnpm run test --watch",
+    "ci": "cp .env.example .env && vite build && vite preview"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.386.0",
@@ -49,11 +50,12 @@
     "openai-edge": "^1.2.2",
     "pluralize": "^8.0.0",
     "posthog-js": "^1.116.6",
-    "shared-constants": "workspace:*",
+    "shared": "workspace:*",
     "sirv": "^2.0.3",
     "stripe": "^14.22.0",
     "svelte-email": "^0.0.4",
     "svelte-ui": "workspace:*",
+    "sveltekit-i18n": "^2.4.2",
     "unsplash-js": "^7.0.18",
     "wait-on": "^7.0.1",
     "zod": "^3.21.4"

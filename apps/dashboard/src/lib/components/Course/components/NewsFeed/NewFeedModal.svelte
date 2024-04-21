@@ -11,6 +11,7 @@
     NOTIFICATION_NAME,
     triggerSendEmail
   } from '$lib/utils/services/notification/notification';
+  import { t } from '$lib/utils/functions/translations';
   import { createNewsfeedValidation } from '$lib/utils/functions/validator';
   import { getTextFromHTML } from '$lib/utils/functions/toHtml';
 
@@ -36,7 +37,7 @@
     try {
       if (edit) {
         onEdit(editFeed.id, newPost);
-        snackbar.success('Feed edited successfully');
+        snackbar.success('snackbar.newsfeed.success.edit');
 
         edit = false;
         newPost = '';
@@ -74,7 +75,7 @@
           isPinned: false
         });
 
-        snackbar.success('New feed added successfully');
+        snackbar.success('snackbar.newsfeed.success.add');
         triggerSendEmail(NOTIFICATION_NAME.NEWSFEED, {
           authorId: createdFeed.author_id,
           feedId: createdFeed.id
@@ -82,7 +83,10 @@
         resetEditor();
       }
     } catch (error) {
-      snackbar.error('An error occurred while ' + (edit ? 'editing feed' : 'creating feed'));
+      snackbar.error(
+        'snackbar.newsfeed.error.error ' +
+          (edit ? 'snackbar.newsfeed.error.editing' : 'snackbar.newsfeed.error.creating')
+      );
     } finally {
       isLoading = false;
     }
@@ -101,7 +105,9 @@
   bind:open={$isNewFeedModal.open}
   width="w-4/5"
   maxWidth="max-w-lg"
-  modalHeading={edit === true ? 'Edit Post' : 'Make a Post'}
+  modalHeading={edit === true
+    ? $t('course.navItem.news_feed.heading_button.edit_post')
+    : $t('course.navItem.news_feed.heading_button.make_a_post')}
 >
   <section class="flex flex-col rounded-xl pb-3 h-full w-2/">
     <TextEditor
@@ -109,7 +115,7 @@
       onChange={(text) => {
         newPost = text;
       }}
-      placeholder="Share an update with your students"
+      placeholder={$t('course.navItem.news_feed.heading_button.placeholder')}
       maxHeight={400}
     />
     {#if errors.newPost}
@@ -117,8 +123,16 @@
     {/if}
     <div class="flex items-center justify-end py-2">
       <div class="flex gap-2">
-        <PrimaryButton label="Cancel" variant={VARIANTS.OUTLINED} onClick={resetEditor} />
-        <PrimaryButton {isLoading} label="Post" onClick={onPost} />
+        <PrimaryButton
+          label={$t('course.navItem.news_feed.heading_button.cancel')}
+          variant={VARIANTS.OUTLINED}
+          onClick={resetEditor}
+        />
+        <PrimaryButton
+          {isLoading}
+          label={$t('course.navItem.news_feed.heading_button.post')}
+          onClick={onPost}
+        />
       </div>
     </div>
   </section>

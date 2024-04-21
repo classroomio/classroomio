@@ -15,6 +15,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { globalStore } from '$lib/utils/store/app';
+  import SenjaEmbed from '$lib/components/Senja/Embed.svelte';
 
   let supabase = getSupabase();
   let fields = Object.assign({}, SIGNUP_FIELDS);
@@ -125,12 +126,7 @@
   <title>Join ClassroomIO</title>
 </svelte:head>
 
-<div
-  class="senja-embed"
-  data-id="aa054658-1e15-4d00-8920-91f424326c4e"
-  data-lazyload="false"
-  data-spinner="false"
-></div>
+<SenjaEmbed id="aa054658-1e15-4d00-8920-91f424326c4e" />
 
 <AuthUI {supabase} isLogin={false} {handleSubmit} isLoading={loading} bind:formRef>
   <div class="mt-4 w-full">
