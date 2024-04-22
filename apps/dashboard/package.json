@@ -22,6 +22,7 @@
     "@aws-sdk/client-s3": "^3.386.0",
     "@carbon/charts-svelte": "^1.13.6",
     "@defer/client": "^2.2.0",
+    "@google-cloud/translate": "^8.2.0",
     "@lemonsqueezy/lemonsqueezy.js": "^2.2.0",
     "@sentry/browser": "^7.61.0",
     "@sentry/integrations": "^7.61.0",
