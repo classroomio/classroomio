@@ -4,6 +4,7 @@
   import AudienceEmptyIcon from '$lib/components/Icons/AudienceEmptyIcon.svelte';
   import { getOrgAudience } from '$lib/utils/services/org';
   import { orgAudience, currentOrg } from '$lib/utils/store/org';
+  import { t } from '$lib/utils/functions/translations';
 
   let isLoading = false;
 
@@ -24,9 +25,9 @@
   {:else}
     <Box>
       <AudienceEmptyIcon />
-      <h3 class="dark:text-white text-2xl text-center my-5">No audience to manage!</h3>
+      <h3 class="dark:text-white text-2xl text-center my-5">{$t('audience.no_audience')}!</h3>
       <p class="dark:text-white w-1/3 text-center">
-        Manage all your students here and stay connected with them.
+        {$t('audience.manage')}.
       </p>
     </Box>
   {/if}

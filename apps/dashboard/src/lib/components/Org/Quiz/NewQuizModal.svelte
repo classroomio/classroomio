@@ -7,6 +7,7 @@
   import { supabase } from '$lib/utils/functions/supabase';
   import { currentOrg, createQuizModal, currentOrgPath, quizesStore } from '$lib/utils/store/org';
   import { createQuizValidation } from '$lib/utils/functions/validator';
+  import { t } from '$lib/utils/functions/translations';
 
   let open = false;
   let errors = {
@@ -97,21 +98,23 @@
 </script>
 
 <svelte:head>
-  <title>Quizzes - ClassroomIO</title>
+  <title>{$t('components.quiz.title')} - ClassroomIO</title>
 </svelte:head>
 
 <Modal
   onClose={handleClose}
   bind:open
   width="w-4/5 md:w-2/5"
-  modalHeading="{$createQuizModal.openEdit ? 'Update' : 'Create'} a Quiz"
+  modalHeading="{$createQuizModal.openEdit
+    ? $t('components.quiz.update')
+    : $t('components.quiz.create')} {$t('components.quiz.a_quiz')}"
 >
   <form on:submit|preventDefault={createQuiz}>
     <TextField
-      label="Quiz Title"
+      label={$t('components.quiz.quiz_title')}
       bind:value={$createQuizModal.title}
       autofocus={true}
-      placeholder="Your quiz title"
+      placeholder={$t('components.quiz.placehoolder')}
       className="mb-4"
       isRequired={true}
       errorMessage={errors.title}
@@ -121,7 +124,9 @@
     <div class="mt-5 flex items-center justify-end">
       <PrimaryButton
         className="px-6 py-3"
-        label={$createQuizModal.openEdit ? 'Save Changes' : 'Continue'}
+        label={$createQuizModal.openEdit
+          ? $t('components.quiz.save')
+          : $t('components.quiz.continue')}
         type="submit"
         isDisabled={isLoading}
         {isLoading}

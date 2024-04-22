@@ -8,6 +8,7 @@
   import TextField from '$lib/components/Form/TextField.svelte';
   import { Add, TrashCan } from 'carbon-icons-svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
+  import { t } from '$lib/utils/functions/translations';
 
   export let title = 'Poll';
   export let isSaving = false;
@@ -20,7 +21,7 @@
     question: '',
     expiration: new Date().toDateString(),
     isPublic: false,
-    status: 'draft',
+    status: $t('course.navItem.lessons.poll.draft'),
     author: {
       id: $profile.id || '',
       username: $profile.username || '',
@@ -70,14 +71,14 @@
   </div>
   <div class="p-3">
     <TextField
-      label="Question"
+      label={$t('course.navItem.lessons.poll.question')}
       className="w-full mb-3"
       bind:value={poll.question}
-      placeholder="Poll question"
+      placeholder={$t('course.navItem.lessons.poll.poll_question')}
       isRequired={true}
     />
     <DateTime
-      label="Expiration"
+      label={$t('course.navItem.lessons.poll.expiration')}
       className="w-full mb-3"
       bind:value={poll.expiration}
       isRequired={true}
@@ -85,7 +86,7 @@
 
     <div>
       <p class="dark:text-white p-0 m-0 mb-1 text-md flex items-center gap-2">
-        Options
+        {$t('course.navItem.lessons.poll.options')}
 
         <IconButton onClick={handleAddOptions} contained={true} size="small">
           <Add size={16} />
@@ -99,7 +100,7 @@
           label=""
           className="w-full"
           bind:value={option.label}
-          placeholder="Option Label"
+          placeholder={$t('course.navItem.lessons.poll.option_label')}
           isRequired={true}
         />
         <IconButton onClick={handleRemoveOptions(index)} contained={true} size="small">
@@ -111,11 +112,15 @@
 
   <div class="w-full flex justify-center gap-2 mb-3">
     <PrimaryButton
-      label="Create poll"
+      label={$t('course.navItem.lessons.poll.create_poll')}
       onClick={finishPoll}
       isLoading={isSaving}
       isDisabled={isCreateDisabled}
     />
-    <PrimaryButton label="Cancel" variant={VARIANTS.OUTLINED} onClick={onCancel} />
+    <PrimaryButton
+      label={$t('course.navItem.lessons.poll.cancel')}
+      variant={VARIANTS.OUTLINED}
+      onClick={onCancel}
+    />
   </div>
 </div>

@@ -13,6 +13,7 @@
   import { sideBar } from '$lib/components/Org/store';
   import { currentOrg } from '$lib/utils/store/org';
   import { toggleBodyByMode } from '$lib/utils/functions/app';
+  import { t } from '$lib/utils/functions/translations';
 
   export let navClass = '';
 
@@ -48,7 +49,7 @@
     <div class="">
       <a
         href={$page.url.pathname}
-        title="Go to ClassroomIO Home"
+        title={$t('navigation.goto_home')}
         id="logo"
         class="text-lg flex items-center"
       >

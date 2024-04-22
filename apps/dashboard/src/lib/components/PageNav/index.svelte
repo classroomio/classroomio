@@ -2,6 +2,7 @@
   import NewButton from '../PrimaryContainedButton/index.svelte';
   import TextField from '../Form/TextField.svelte';
   import Chip from '../Chip/index.svelte';
+  import { t } from '$lib/utils/functions/translations';
 
   export let title = '';
   export let overidableStyle = '';
@@ -43,7 +44,7 @@
         {:else}
           <TextField
             bind:value={title}
-            placeholder="Course title"
+            placeholder={$t('course.navItem.settings.course_title')}
             onChange={() => {
               enterEditTitleMode = false;
 

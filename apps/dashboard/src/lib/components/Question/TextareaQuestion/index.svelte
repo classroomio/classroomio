@@ -5,6 +5,7 @@
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import Grade from '$lib/components/Question/Grade.svelte';
+  import { t } from '$lib/utils/functions/translations';
 
   export let title = '';
   export let index = 1;
@@ -57,7 +58,11 @@
         {defaultValue}
       </div>
     {:else}
-      <TextArea bind:value={defaultValue} rows="5" placeholder="Write your answer here" />
+      <TextArea
+        bind:value={defaultValue}
+        rows="5"
+        placeholder={$t('course.navItem.lessons.exercise.all_exercises.write_your_answer_here')}
+      />
     {/if}
   </div>
 
@@ -72,7 +77,9 @@
       <PrimaryButton
         variant={VARIANTS.OUTLINED}
         type="submit"
-        label={isLast ? 'Finish' : 'Next'}
+        label={isLast
+          ? $t('course.navItem.lessons.exercise.all_exercises.finish')
+          : $t('course.navItem.lessons.exercise.all_exercises.next')}
         {name}
       />
     </div>

@@ -12,7 +12,7 @@
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { Loading } from 'carbon-components-svelte';
+  import { Dropdown, Loading } from 'carbon-components-svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
   import PageBody from '$lib/components/PageBody/index.svelte';
@@ -25,22 +25,25 @@
   import { apps } from '$lib/components/Apps/store';
   import APPS_CONSTANTS from '$lib/components/Apps/constants';
   import IconButton from '$lib/components/IconButton/index.svelte';
-  import { lesson, lessons } from '$lib/components/Course/components/Lesson/store/lessons';
+  import {
+    lesson,
+    lessons,
+    lessonByTranslation
+  } from '$lib/components/Course/components/Lesson/store/lessons';
   import { browser } from '$app/environment';
   import { currentOrg } from '$lib/utils/store/org';
   import { snackbar } from '$lib/components/Snackbar/store';
   import type { LessonCompletion } from '$lib/utils/types';
   import { profile } from '$lib/utils/store/user';
   import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
-  import { captureMessage } from '@sentry/browser';
+  import { t } from '$lib/utils/functions/translations.js';
+  import { LANGUAGES } from '$lib/utils/constants/translation';
 
   export let data;
 
   let path = '';
   let mode = MODES.view;
   let prevMode = '';
-  let prevLessonId = '';
-  let isFetching = false;
   let isMarkingComplete = false;
   let isLoading = false;
   let isSaving = false;
@@ -58,21 +61,19 @@
   }
 
   async function fetchReqData(lessonId = '', isMaterialsTabActive: boolean) {
-    isFetching = true;
-
+    $lesson.isFetching = true;
     let lessonData;
     if (isMaterialsTabActive) {
       const lesson = await fetchLesson(lessonId);
       lessonData = lesson.data;
     }
 
-    console.log('lessonData', lessonData);
-    prevLessonId = lessonId;
+    console.log({ lessonData });
 
     const totalExercises = lessonData?.totalExercises?.[0] && lessonData.totalExercises[0].count;
     const totalComments = lessonData?.totalComments?.[0] && lessonData.totalComments[0].count;
     setLesson(lessonData, totalExercises || 0, totalComments || 0);
-    isFetching = false;
+    $lesson.isFetching = false;
   }
 
   async function markLessonComplete(lessonId: string) {
@@ -118,7 +119,7 @@
 
       return l;
     });
-    snackbar.success('Marked as complete');
+    snackbar.success('snackbar.lessons.success.complete_marked');
     isMarkingComplete = false;
   }
 
@@ -168,10 +169,10 @@
       a.click();
       a.remove();
 
-      snackbar.success('Download Complete');
+      snackbar.success('snackbar.lessons.success.complete_download');
     } catch (error) {
       console.log('error downloading lesson', error);
-      snackbar.error("Something's not right - Please try later");
+      snackbar.error('snackbar.lessons.error.try_later');
     }
 
     isLoading = false;
@@ -186,6 +187,7 @@
       lesson_completion = [...lessonData.lesson_completion];
     }
 
+    console.log('profile locale', $profile.locale);
     lesson.update((l) => ({
       ...l,
       id: data.lessonId,
@@ -197,8 +199,26 @@
         slide_url: lessonData.slide_url
       },
       lesson_completion,
-      exercises: []
+      exercises: [],
+      locale: $profile.locale
     }));
+
+    if (Array.isArray(lessonData.lesson_language)) {
+      lessonByTranslation.update((lessLocales) => {
+        return {
+          ...lessLocales,
+          [data.lessonId]: lessonData.lesson_language.reduce(
+            (acc, cur) => {
+              acc[cur.locale] = cur.content;
+              return acc;
+            },
+            {
+              en: ''
+            }
+          )
+        };
+      });
+    }
   }
 
   const toggleApps = () => {
@@ -229,19 +249,19 @@
 <CourseContainer
   bind:isStudent
   {path}
-  isExercisePage={!data.isMaterialsTabActive && data.exerciseId}
+  isExercisePage={!data.isMaterialsTabActive && !!data.exerciseId}
   bind:courseId={data.courseId}
 >
   <PageNav
     bind:hideOnMobile={isStudent}
     navItems={[
       {
-        label: 'Materials',
+        label: $t('course.navItem.lessons.lesson_nav.materials'),
         isActive: data.isMaterialsTabActive,
         href: path
       },
       {
-        label: 'Exercises',
+        label: $t('course.navItem.lessons.lesson_nav.exercises'),
         badgeValue: data.isMaterialsTabActive ? $lesson.totalExercises : $lesson.exercises.length,
         isActive: !data.isMaterialsTabActive,
         href: `${path}/exercises`
@@ -249,43 +269,52 @@
     ]}
   >
     <svelte:fragment slot="widget">
-      <RoleBasedSecurity allowedRoles={[1, 2]}>
-        {#if data.isMaterialsTabActive}
-          <div class="tab">
-            <IconButton onClick={toggleApps} buttonClassName="">
-              <OverflowMenuVertical size={24} />
-            </IconButton>
-          </div>
-          <div
-            class={`flex-row ${
-              $apps.dropdown && $apps.open
-                ? 'absolute lg:relative top-[85px] lg:top-0 right-14 lg:right-0 z-40 dark:bg-neutral-800 p-3 lg:p-0'
-                : 'hidden'
-            } lg:flex items-center`}
-          >
-            {#if $course.metadata.lessonDownload && !!PUBLIC_SERVER_URL}
+      <div class="flex">
+        <div class="mr-5">
+          <Dropdown items={LANGUAGES} bind:selectedId={$lesson.locale} class="h-full" />
+        </div>
+        <RoleBasedSecurity allowedRoles={[1, 2]}>
+          {#if data.isMaterialsTabActive}
+            <div class="tab">
+              <IconButton onClick={toggleApps} buttonClassName="">
+                <OverflowMenuVertical size={24} />
+              </IconButton>
+            </div>
+            <div
+              class={`flex-row ${
+                $apps.dropdown && $apps.open
+                  ? 'absolute lg:relative top-[85px] lg:top-0 right-14 lg:right-0 z-40 rounded-md bg-gray-100 dark:bg-neutral-800 p-3 lg:p-0'
+                  : 'hidden'
+              } lg:flex items-center`}
+            >
               <PrimaryButton
                 className="mb-2 lg:mb-0 mr-2"
                 variant={VARIANTS.OUTLINED}
-                onClick={downloadLesson}
-                {isLoading}
+                onClick={() => {
+                  $apps.dropdown = false;
+                  toggleMode();
+                }}
+                isDisabled={isSaving}
               >
-                <Download size={16} class="mr-2" />
-                Download PDF
+                {mode === MODES.edit
+                  ? $t('course.navItem.lessons.done')
+                  : $t('course.navItem.lessons.edit')}
               </PrimaryButton>
-            {/if}
 
-            <PrimaryButton className="mr-2" variant={VARIANTS.OUTLINED} onClick={toggleMode}>
-              {#if isSaving}
-                <Loading withOverlay={false} small />
-                <span class="text-sm ml-2 italic">Autosaving...</span>
-              {:else}
-                {mode === MODES.edit ? 'Done' : 'Edit'}
+              {#if $course.metadata.lessonDownload && !!PUBLIC_SERVER_URL}
+                <PrimaryButton
+                  className="mr-"
+                  variant={VARIANTS.OUTLINED}
+                  onClick={downloadLesson}
+                  {isLoading}
+                >
+                  <Download size={16} />
+                </PrimaryButton>
               {/if}
-            </PrimaryButton>
-          </div>
-        {/if}
-      </RoleBasedSecurity>
+            </div>
+          {/if}
+        </RoleBasedSecurity>
+      </div>
     </svelte:fragment>
   </PageNav>
 
@@ -330,7 +359,10 @@
             {:else}
               <CheckmarkOutlineIcon size={24} class="carbon-icon mr-2" />
             {/if}
-            Mark as {isLessonComplete ? 'Incomplete' : 'Complete'}
+            {$t('course.navItem.lessons.mark_as')}
+            {isLessonComplete
+              ? $t('course.navItem.lessons.incomplete')
+              : $t('course.navItem.lessons.complete')}
           </PrimaryButton>
         </div>
       {/if}

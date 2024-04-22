@@ -17,6 +17,7 @@
   import NewExerciseModal from '$lib/components/Course/components/Lesson/Exercises/NewExerciseModal.svelte';
   import type { ExerciseTemplate } from '$lib/utils/types';
   import { formatDate } from '$lib/utils/functions/routes/dashboard';
+  import { t } from '$lib/utils/functions/translations';
 
   export let path = '';
   export let exerciseId = '';
@@ -163,10 +164,15 @@
   <PageBody bind:isPageNavHidden={isStudent}>
     <slot:fragment slot="header">
       <Breadcrumb class="my-2">
-        <BreadcrumbItem href={path}>All Exercises</BreadcrumbItem>
+        <BreadcrumbItem href={path}>{$t('course.navItem.lessons.exercises.heading')}</BreadcrumbItem
+        >
       </Breadcrumb>
       <RoleBasedSecurity allowedRoles={[1, 2]}>
-        <PrimaryButton className="mr-2 my-2" label="Add" onClick={() => (open = !open)} />
+        <PrimaryButton
+          className="mr-2 my-2"
+          label={$t('course.navItem.lessons.exercises.add_button')}
+          onClick={() => (open = !open)}
+        />
       </RoleBasedSecurity>
     </slot:fragment>
 
@@ -183,14 +189,15 @@
         <Box className="mt-3 text-center">
           <div class="flex justify-between flex-col items-center w-[80%] md:w-96">
             <img src="/images/empty-exercise-icon.svg" alt="Exercise" class="my-2.5 mx-auto" />
-            <h2 class="text-xl my-1.5 font-normal">No exercises added for this lesson</h2>
+            <h2 class="text-xl my-1.5 font-normal">
+              {$t('course.navItem.lessons.exercises.no_exercises')}
+            </h2>
             <p class="text-sm text-center text-slate-500">
               {#if isStudent}
-                Your tutor hasn't assigned any exercise to this lesson. For the main time, you can
-                <strong>chill with the big boys :)</strong>
+                {$t('course.navItem.lessons.exercises.no_assigned_exercises')}
+                <strong> {$t('course.navItem.lessons.exercises.chill')} :)</strong>
               {:else}
-                Share your knowledge with the world by creating engaging exercises. Add an exercise
-                now.
+                {$t('course.navItem.lessons.exercises.add_exercise')}
               {/if}
             </p>
           </div>

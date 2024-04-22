@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { CodeSnippet, Grid, Row, Column, Toggle } from 'carbon-components-svelte';
+  import { Restart } from 'carbon-icons-svelte';
   import { PUBLIC_SERVER_URL } from '$env/static/public';
 
   import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
@@ -22,10 +23,9 @@
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
   import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
-
-  import { Restart } from 'carbon-icons-svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import generateSlug from '$lib/utils/functions/generateSlug';
+  import { t } from '$lib/utils/functions/translations';
 
   let isSaving = false;
   let isLoading = false;
@@ -87,9 +87,9 @@
       a.click();
       a.remove();
 
-      snackbar.success('Download Complete');
+      snackbar.success('snackbar.course_settings.success.download');
     } catch (error) {
-      snackbar.error("Something's not right - Please try later");
+      snackbar.error('snackbar.course_settings.error.not_right');
     }
     isLoading = false;
   };
@@ -105,18 +105,18 @@
       isDeleting = false;
       goto($currentOrgPath + '/courses');
     } catch (error) {
-      snackbar.error('Something went wrong - Please try later');
+      snackbar.error('snackbar.course_settings.error.went_wrong');
       isDeleting = false;
     }
   }
 
   const handleSave = async () => {
     if (!$settings.course_title) {
-      errors.title = 'title cannot be empty';
+      errors.title = $t('snackbar.course_settings.error.title');
       return;
     }
     if (!$settings.course_description) {
-      errors.description = 'description cannot be empty';
+      errors.description = $t('snackbar.course_settings.error.description');
       return;
     }
     isSaving = true;
@@ -157,7 +157,7 @@
         lessonDownload: lesson_download,
         allowNewStudent: allow_new_students
       };
-      snackbar.success('Saved successfully');
+      snackbar.success('snackbar.course_settings.success.saved');
     } catch (error) {
       snackbar.error();
     }
@@ -190,21 +190,20 @@
 <Grid class="border-c rounded border-gray-200 dark:border-neutral-600">
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={8} md={8} lg={8}>
-      <SectionTitle>Cover Image</SectionTitle>
+      <SectionTitle>{$t('course.navItem.settings.cover_image')}</SectionTitle>
       <p>
-        This optional image will show up on your welcome page. If you include one, it should be at
-        least 280 x 200"
+        {$t('course.navItem.settings.optional_image')}
       </p>
       <span class="flex items-center justify-start">
         <PrimaryButton
           variant={VARIANTS.OUTLINED}
-          label="Replace"
+          label={$t('course.navItem.settings.replace')}
           className="mr-2"
           onClick={widgetControl}
         />
         <PrimaryButton
           variant={VARIANTS.CONTAINED_DANGER}
-          label="Delete"
+          label={$t('course.navItem.settings.del')}
           onClick={deleteBannerImage}
         />
       </span>
@@ -227,27 +226,27 @@
 
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={8} md={8} lg={8}>
-      <SectionTitle>Course details</SectionTitle>
+      <SectionTitle>{$t('course.navItem.settings.course_details')}</SectionTitle>
     </Column>
 
     <Column sm={8} md={8} lg={8}>
       <TextField
-        label="Course title"
+        label={$t('course.navItem.settings.course_title')}
         placeholder="Write the course title here"
         className="w-full mb-5"
         bind:value={$settings.course_title}
         errorMessage={errors.title}
       />
       <TextArea
-        label="Course description"
-        placeholder="Write your course description here"
+        label={$t('course.navItem.settings.course_description')}
+        placeholder={$t('course.navItem.settings.placeholder')}
         className="w-full mb-5"
         bind:value={$settings.course_description}
         errorMessage={errors.description}
       />
       <div class="">
         <p class="text-md flex items-center gap-2 mb-2">
-          Course Link
+          {$t('course.navItem.settings.link')}
           <IconButton contained={true} size="small" onClick={generateNewCourseLink}>
             <Restart size={16} />
           </IconButton>
@@ -262,21 +261,21 @@
   </Row>
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={8} md={8} lg={8}>
-      <SectionTitle>Grading</SectionTitle>
-      <p>Make grading reports available for lessons</p>
+      <SectionTitle>{$t('course.navItem.settings.grading')}</SectionTitle>
+      <p>{$t('course.navItem.settings.reports')}</p>
     </Column>
     <Column sm={8} md={8} lg={8}>
       <Toggle size="sm" bind:toggled={$settings.grading}>
-        <span slot="labelA" style="color: gray">Disabled</span>
-        <span slot="labelB" style="color: gray">Enabled</span>
+        <span slot="labelA" style="color: gray">{$t('course.navItem.settings.disabled')}</span>
+        <span slot="labelB" style="color: gray">{$t('course.navItem.settings.enabled')}</span>
       </Toggle>
     </Column>
   </Row>
 
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={8} md={8} lg={8}>
-      <SectionTitle>Order Lessons Tab</SectionTitle>
-      <p>Drag and drop the labels to re-order your material tabs</p>
+      <SectionTitle>{$t('course.navItem.settings.order')}</SectionTitle>
+      <p>{$t('course.navItem.settings.drag')}</p>
     </Column>
     <Column sm={8} md={8} lg={8}>
       <DragAndDrop />
@@ -284,24 +283,24 @@
   </Row>
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={8} md={8} lg={8}>
-      <SectionTitle>Lesson Download</SectionTitle>
-      <p>Make the Lesson available for Download in pdf for registered students</p>
+      <SectionTitle>{$t('course.navItem.settings.lesson_download')}</SectionTitle>
+      <p>{$t('course.navItem.settings.available')}</p>
     </Column>
     <Column sm={8} md={8} lg={8}>
       {#if $isFreePlan}
         <UpgradeBanner>Upgrade to download lessons</UpgradeBanner>
       {:else}
         <Toggle size="sm" bind:toggled={$settings.lesson_download}>
-          <span slot="labelA" style="color: gray">Disabled</span>
-          <span slot="labelB" style="color: gray">Enabled</span>
+          <span slot="labelA" style="color: gray">{$t('course.navItem.settings.disabled')}</span>
+          <span slot="labelB" style="color: gray">{$t('course.navItem.settings.enabled')}</span>
         </Toggle>
       {/if}
     </Column>
   </Row>
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={8} md={8} lg={8}>
-      <SectionTitle>Course Download</SectionTitle>
-      <p>Make the Course available for Download for registered students</p>
+      <SectionTitle>{$t('course.navItem.settings.course_download')}</SectionTitle>
+      <p>{$t('course.navItem.settings.course_avail')}</p>
     </Column>
     <Column sm={8} md={8} lg={8}>
       {#if $isFreePlan}
@@ -309,7 +308,7 @@
       {:else}
         <PrimaryButton
           variant={VARIANTS.OUTLINED}
-          label="Download"
+          label={$t('course.navItem.settings.download')}
           onClick={downloadCourse}
           isDisabled={isLoading || !PUBLIC_SERVER_URL}
           {isLoading}
@@ -320,13 +319,13 @@
 
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={8} md={8} lg={8}>
-      <SectionTitle>Allow New Students</SectionTitle>
-      <p>Allow new students to access this course</p>
+      <SectionTitle>{$t('course.navItem.settings.allow')}</SectionTitle>
+      <p>{$t('course.navItem.settings.access')}</p>
     </Column>
     <Column sm={8} md={8} lg={8}>
       <Toggle size="sm" bind:toggled={$settings.allow_new_students}>
-        <span slot="labelA" style="color: gray">Disabled</span>
-        <span slot="labelB" style="color: gray">Enabled</span>
+        <span slot="labelA" style="color: gray">{$t('course.navItem.settings.disabled')}</span>
+        <span slot="labelB" style="color: gray">{$t('course.navItem.settings.enabled')}</span>
       </Toggle>
     </Column>
   </Row>
@@ -334,8 +333,8 @@
   <!-- Publish Course -->
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={8} md={8} lg={8}>
-      <SectionTitle>Publish Course</SectionTitle>
-      <p>This determines if your course displays on your landing page</p>
+      <SectionTitle>{$t('course.navItem.settings.publish')}</SectionTitle>
+      <p>{$t('course.navItem.settings.determines')}</p>
     </Column>
     <Column sm={8} md={8} lg={8}>
       <Toggle
@@ -349,21 +348,21 @@
           }
         }}
       >
-        <span slot="labelA" style="color: gray">Unpublished</span>
-        <span slot="labelB" style="color: gray">Published</span>
+        <span slot="labelA" style="color: gray">{$t('course.navItem.settings.unpublished')}</span>
+        <span slot="labelB" style="color: gray">{$t('course.navItem.settings.published')}</span>
       </Toggle>
     </Column>
   </Row>
 
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={8} md={8} lg={8}>
-      <SectionTitle>Delete course</SectionTitle>
-      <p>Delete this course,this action cannot be undone</p>
+      <SectionTitle>{$t('course.navItem.settings.delete')}</SectionTitle>
+      <p>{$t('course.navItem.settings.delete_text')}</p>
     </Column>
     <Column sm={8} md={8} lg={8}>
       <PrimaryButton
         variant={VARIANTS.CONTAINED_DANGER}
-        label="Delete Course"
+        label={$t('course.navItem.settings.delete')}
         onClick={handleDeleteCourse}
         isLoading={isDeleting}
         isDisabled={isDeleting}
@@ -372,7 +371,7 @@
   </Row>
   <Row class="p-5 w-full flex items-center justify-end">
     <PrimaryButton
-      label="Save Changes"
+      label={$t('course.navItem.settings.save')}
       isLoading={isSaving}
       isDisabled={isSaving}
       onClick={handleSave}

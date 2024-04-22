@@ -10,6 +10,13 @@
   import { profile } from '$lib/utils/store/user';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
   import { sideBar } from '$lib/components/Org/store';
+  import { t } from '$lib/utils/functions/translations';
+
+  interface sideLinks {
+    name: string;
+    icon: any;
+    link: string;
+  }
 
   function isActive(pagePath: string, itemPath: string) {
     const pageLinkItems = pagePath.split('/');
@@ -21,24 +28,27 @@
 
     return pagePath.includes(itemPath);
   }
-  let sideLinks = [
+
+  let sideLinks: sideLinks[] = [];
+
+  $: sideLinks = [
     {
-      name: 'Home',
+      name: $t('lms_navigation.home'),
       icon: HomeIcon,
       link: '/lms'
     },
     {
-      name: 'My Learning',
+      name: $t('lms_navigation.my_learning'),
       icon: CourseIcon,
       link: '/lms/mylearning'
     },
     {
-      name: 'Exercise',
+      name: $t('lms_navigation.exercise'),
       icon: LicenseDraft,
       link: '/lms/exercises'
     },
     {
-      name: 'Community',
+      name: $t('lms_navigation.community'),
       icon: CommunityIcon,
       link: '/lms/community'
     }
@@ -98,7 +108,7 @@
       <a href="/lms" class="text-black" on:click={toggleSidebar}>
         <li class="flex items-center py-3 px-4 mb-2 rounded">
           <HelpIcon size={20} class="carbon-icon dark:text-white" />
-          <p class="dark:text-white ml-2">Help</p>
+          <p class="dark:text-white ml-2">{$t('lms_navigation.help')}</p>
         </li>
       </a>
       <a href="/lms/settings" class="text-black" on:click={toggleSidebar}>
@@ -109,7 +119,7 @@
           ) && NavClasses.active}"
         >
           <Settings size={20} class="carbon-icon dark:text-white" />
-          <p class="dark:text-white ml-2">Settings</p>
+          <p class="dark:text-white ml-2">{$t('lms_navigation.settings')}</p>
         </li>
       </a>
     </ul>

@@ -8,14 +8,15 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { courses, courseMetaDeta, coursesComplete } from '$lib/components/Courses/store';
   import { browser } from '$app/environment';
+  import { t } from '$lib/utils/functions/translations';
 
   const tabs = [
     {
-      label: 'In progress',
+      label: $t('my_learning.progress'),
       value: 1
     },
     {
-      label: 'Complete',
+      label: $t('my_learning.complete'),
       value: 2
     }
   ];
@@ -55,23 +56,23 @@
 <section class="max-w-6xl mx-auto">
   <div class="m-2 md:m-5">
     <div role="searchbox" class=" bg-gray-100 w-full md:w-[60%] lg:w-[30%]">
-      <Search placeholder="Search courses" class="dark:text-black" />
+      <Search placeholder={$t('my_learning.search')} class="dark:text-black" />
     </div>
-    <h1 class="text-3xl font-semibold my-4">My Learning</h1>
+    <h1 class="text-3xl font-semibold my-4">{$t('my_learning.heading')}</h1>
     <Tabs {tabs} {currentTab} {onChange}>
       <slot:fragment slot="content">
         <TabContent value={tabs[0].value} index={currentTab}>
           <Courses
             courses={$courses}
-            emptyTitle="No Course In progress"
-            emptyDescription="Any course that you start will be displayed here"
+            emptyTitle={$t('my_learning.not_in_progress')}
+            emptyDescription={$t('my_learning.any_progress')}
           />
         </TabContent>
         <TabContent value={tabs[1].value} index={currentTab}>
           <Courses
             courses={$coursesComplete}
-            emptyTitle="No Course Completed"
-            emptyDescription="Any course that you complete will be displayed here"
+            emptyTitle={$t('my_learning.not_completed')}
+            emptyDescription={$t('my_learning.any_course')}
           />
         </TabContent>
       </slot:fragment>

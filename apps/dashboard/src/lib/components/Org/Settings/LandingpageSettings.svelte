@@ -16,13 +16,14 @@
   import type { OrgLandingPageJson } from './store';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
+  import { t } from '$lib/utils/functions/translations';
 
   let isSaving = false;
   let creatingNewQuestion = false;
   let widgetKey = '';
   const banner = [
-    { value: 'video', label: 'Video' },
-    { value: 'image', label: 'Image' }
+    { value: 'video', label: `${$t('settings.landing_page.actions.banner_type.video')}` },
+    { value: 'image', label: `${$t('settings.landing_page.actions.banner_type.image')}` }
   ];
   const supabase = getSupabase();
 
@@ -91,8 +92,8 @@
       .match({ id: $currentOrg.id });
 
     if (error) {
-      const message = error?.message || 'Please try again';
-      snackbar.error(`Update failed: ${message}`);
+      const message = error?.message || 'snackbar.lms.error.try_again';
+      snackbar.error(`snackbar.lms.error.update ${message}`);
     } else {
       $currentOrg.landingpage = $landingPageSettings;
       snackbar.success();
@@ -120,57 +121,61 @@
 <Grid class="border-c rounded border-gray-200 dark:border-neutral-600 w-full mt-5 relative">
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={4} md={4} lg={4}>
-      <SectionTitle>Landing Page</SectionTitle>
+      <SectionTitle>{$t('settings.landing_page.heading')}</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.header.show} size="sm">
-        <span slot="labelA" style="color: gray">Hide section</span>
-        <span slot="labelB" style="color: gray">Show section</span>
+        <span slot="labelA" style="color: gray">{$t('settings.landing_page.hide_section')}</span>
+        <span slot="labelB" style="color: gray">{$t('settings.landing_page.show_section')}</span>
       </Toggle>
     </Column>
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
       <TextField
-        label="Title"
-        placeholder="Write your title here"
+        label={$t('settings.landing_page.title')}
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_title')}
         bind:value={$landingPageSettings.header.title}
         className="w-full mb-5"
       />
       <TextField
-        label="Title-Highlight"
-        placeholder="Write your titlehighlight here"
+        label={$t('settings.landing_page.title_highlight')}
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.highlight')}
         className="w-full mb-5"
         bind:value={$landingPageSettings.header.titleHighlight}
       />
 
       <TextArea
-        label="Subtitle"
+        label={$t('settings.landing_page.subtitle')}
         labelClassName="font-light"
-        placeholder="Write your subtitle here"
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_subtitle')}
         className="w-full mb-5"
         bind:value={$landingPageSettings.header.subtitle}
         isAIEnabled={true}
       />
 
-      <SectionTitle>Actions</SectionTitle>
+      <SectionTitle>{$t('settings.landing_page.actions.heading')}</SectionTitle>
       <TextField
-        label="Label"
-        placeholder="Write your label here"
+        label={$t('settings.landing_page.actions.label')}
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.label')}
         className="w-full mt-3 mb-5"
         bind:value={$landingPageSettings.header.action.label}
       />
       <div class="gap-2 mb-5">
         <TextField
-          label="Link"
-          placeholder="Write your link here"
+          label={$t('settings.landing_page.actions.link')}
+          placeholder={$t('course.navItem.lessons.exercises.all_exercises.link')}
           bind:value={$landingPageSettings.header.action.link}
         />
         <Toggle bind:toggled={$landingPageSettings.header.action.redirect} size="sm">
-          <span slot="labelA" style="color: gray">No redirect</span>
-          <span slot="labelB" style="color: gray">Redirect</span>
+          <span slot="labelA" style="color: gray"
+            >{$t('settings.landing_page.actions.no_redirect')}</span
+          >
+          <span slot="labelB" style="color: gray"
+            >{$t('settings.landing_page.actions.redirect')}</span
+          >
         </Toggle>
       </div>
 
       <div />
       <RadioButtonGroup
-        legendText="Banner Type"
+        legendText={$t('settings.landing_page.actions.banner_type.heading')}
         bind:selected={$landingPageSettings.header.banner.type}
         class="mt-10 mb-5"
       >
@@ -181,15 +186,15 @@
       {#if $landingPageSettings.header.banner.type === 'video'}
         <div class="gap-2 mt-3 mb-5">
           <TextField
-            label="Link"
-            placeholder="Write your video link here"
+            label={$t('settings.landing_page.actions.link')}
+            placeholder={$t('course.navItem.lessons.exercises.all_exercises.video')}
             bind:value={$landingPageSettings.header.banner.video}
           />
         </div>
       {:else}
         <PrimaryButton
           variant={VARIANTS.OUTLINED}
-          label="Select Image"
+          label={$t('settings.landing_page.about.select_image')}
           className="mt-3"
           onClick={() => widgetControl('banner')}
         />
@@ -203,8 +208,12 @@
       {/if}
 
       <Toggle bind:toggled={$landingPageSettings.header.banner.show} size="sm">
-        <span slot="labelA" style="color: gray">Hide banner</span>
-        <span slot="labelB" style="color: gray">Show banner</span>
+        <span slot="labelA" style="color: gray"
+          >{$t('settings.landing_page.actions.hide_banner')}</span
+        >
+        <span slot="labelB" style="color: gray"
+          >{$t('settings.landing_page.actions.show_banner')}</span
+        >
       </Toggle>
       {#if $handleOpenWidget.open && widgetKey === 'banner'}
         <UploadWidget bind:imageURL={$landingPageSettings.header.banner.image} />
@@ -214,34 +223,34 @@
 
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={4} md={4} lg={4}
-      ><SectionTitle>About</SectionTitle>
+      ><SectionTitle>{$t('settings.landing_page.about.heading')}</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.aboutUs.show} size="sm">
-        <span slot="labelA" style="color: gray">Hide section</span>
-        <span slot="labelB" style="color: gray">Show section</span>
+        <span slot="labelA" style="color: gray">{$t('settings.landing_page.hide_section')}</span>
+        <span slot="labelB" style="color: gray">{$t('settings.landing_page.show_section')}</span>
       </Toggle></Column
     >
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
       <TextField
-        label="Title"
-        placeholder="Write your title here"
+        label={$t('settings.landing_page.about.title')}
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_title')}
         bind:value={$landingPageSettings.aboutUs.title}
         className="mb-5"
       />
 
       <TextArea
-        label="Content"
+        label={$t('settings.landing_page.about.content')}
         labelClassName="font-light"
-        placeholder="Write your Content here"
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.content')}
         className="mb-5"
         bind:value={$landingPageSettings.aboutUs.content}
         isAIEnabled={true}
       />
 
       <div>
-        <p class="font-bold">Upload an image</p>
+        <p class="font-bold">{$t('settings.landing_page.about.upload_an_image')}</p>
         <PrimaryButton
           variant={VARIANTS.OUTLINED}
-          label="Select Image"
+          label={$t('settings.landing_page.about.select_image')}
           className="mt-3"
           onClick={() => widgetControl('about-us')}
         />
@@ -261,27 +270,31 @@
 
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={4} md={4} lg={4}
-      ><SectionTitle>Courses</SectionTitle>
+      ><SectionTitle>{$t('settings.landing_page.courses.heading')}</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.courses.show} size="sm">
-        <span slot="labelA" style="color: gray">Hide section</span>
-        <span slot="labelB" style="color: gray">Show section</span>
+        <span slot="labelA" style="color: gray"
+          >{$t('settings.landing_page.courses.hide_section')}</span
+        >
+        <span slot="labelB" style="color: gray"
+          >{$t('settings.landing_page.courses.show_section')}</span
+        >
       </Toggle>
     </Column>
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
       <TextField
-        label="Title"
-        placeholder="Write your title here"
+        label={$t('settings.landing_page.courses.title')}
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_title')}
         bind:value={$landingPageSettings.courses.title}
       />
       <TextField
-        label="Title-Highlight"
-        placeholder="Write your title highlight here"
+        label={$t('settings.landing_page.courses.title_highlight')}
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.highlight')}
         bind:value={$landingPageSettings.courses.titleHighlight}
       />
       <TextArea
-        label="Subtitle"
+        label={$t('settings.landing_page.courses.subtitle')}
         labelClassName="font-light"
-        placeholder="Write your subtitle here"
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_subtitle')}
         bind:value={$landingPageSettings.courses.subtitle}
         isAIEnabled={true}
       />
@@ -290,31 +303,37 @@
 
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={4} md={4} lg={4}
-      ><SectionTitle>Frequently Asked Questions</SectionTitle>
+      ><SectionTitle>{$t('settings.landing_page.faq.heading')}</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.faq.show} size="sm">
-        <span slot="labelA" style="color: gray">Hide section</span>
-        <span slot="labelB" style="color: gray">Show section</span>
+        <span slot="labelA" style="color: gray">{$t('settings.landing_page.faq.hide_section')}</span
+        >
+        <span slot="labelB" style="color: gray">{$t('settings.landing_page.faq.show_section')}</span
+        >
       </Toggle>
     </Column>
     <Column sm={8} md={8} lg={8}>
       <TextField
-        label="Title"
-        placeholder="Write your title here"
+        label={$t('settings.landing_page.faq.title')}
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_title')}
         bind:value={$landingPageSettings.faq.title}
         className="mb-5"
       />
       {#each $landingPageSettings.faq.questions as item (item.id)}
         <div class="mb-3">
           <TextField
-            label="Question"
-            placeholder="Write your question here"
+            label={$t('settings.landing_page.faq.question')}
+            placeholder={$t(
+              'course.navItem.lessons.exercises.all_exercises.write_your_question_here'
+            )}
             bind:value={item.title}
             className="mb-5"
           />
           <TextArea
-            label="Answer"
+            label={$t('settings.landing_page.faq.answer')}
             labelClassName="font-light"
-            placeholder="Write your answer here"
+            placeholder={$t(
+              'course.navItem.lessons.exercises.all_exercises.write_your_answer_here'
+            )}
             bind:value={item.content}
             className="mb-5"
             isAIEnabled={true}
@@ -326,68 +345,86 @@
       {/each}
       {#if creatingNewQuestion}
         <TextField
-          label="Question"
-          placeholder="Write your question here"
+          label={$t('settings.landing_page.faq.question')}
+          placeholder={$t(
+            'course.navItem.lessons.exercises.all_exercises.write_your_question_here'
+          )}
           bind:value={newQuestion.title}
           className="mb-5"
         />
         <TextArea
-          label="Answer"
+          label={$t('settings.landing_page.faq.answer')}
           labelClassName="font-light"
-          placeholder="Write your answer here"
+          placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_answer_here')}
           bind:value={newQuestion.content}
           className="mb-5"
           isAIEnabled={true}
         />
         <div class="flex items-center gap-2">
-          <PrimaryButton variant={VARIANTS.OUTLINED} label="Save" onClick={saveNewFAQ} />
-          <PrimaryButton variant={VARIANTS.OUTLINED} label="Cancel" onClick={cancelNewFAQ} />
+          <PrimaryButton
+            variant={VARIANTS.OUTLINED}
+            label={$t('settings.landing_page.faq.save')}
+            onClick={saveNewFAQ}
+          />
+          <PrimaryButton
+            variant={VARIANTS.OUTLINED}
+            label={$t('settings.landing_page.faq.cancel')}
+            onClick={cancelNewFAQ}
+          />
         </div>
       {:else}
-        <PrimaryButton variant={VARIANTS.OUTLINED} label="Add New Faq" onClick={createNewFaq} />
+        <PrimaryButton
+          variant={VARIANTS.OUTLINED}
+          label={$t('settings.landing_page.faq.button')}
+          onClick={createNewFaq}
+        />
       {/if}
     </Column>
   </Row>
 
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={4} md={4} lg={4}
-      ><SectionTitle>Contact us</SectionTitle>
+      ><SectionTitle>{$t('settings.landing_page.contact_us.heading')}</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.contact.show} size="sm">
-        <span slot="labelA" style="color: gray">Hide section</span>
-        <span slot="labelB" style="color: gray">Show section</span>
+        <span slot="labelA" style="color: gray"
+          >{$t('settings.landing_page.contact_us.hide_section')}</span
+        >
+        <span slot="labelB" style="color: gray"
+          >{$t('settings.landing_page.contact_us.show_section')}</span
+        >
       </Toggle>
     </Column>
     <Column sm={8} md={8} lg={8}>
       <TextField
-        label="Title"
-        placeholder="Write your title here"
+        label={$t('settings.landing_page.contact_us.title')}
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_title')}
         bind:value={$landingPageSettings.contact.title}
         className="mb-5"
       />
       <TextField
-        label="Title-highlight"
+        label={$t('settings.landing_page.contact_us.title_highlight')}
         labelClassName="font-light"
-        placeholder="Write your title highlight here"
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.highlight')}
         className="mb-5"
         bind:value={$landingPageSettings.contact.titleHighlight}
       />
       <TextArea
-        label="Subtitle"
+        label={$t('settings.landing_page.contact_us.subtitle')}
         labelClassName="font-light"
-        placeholder="Write your subtitle here"
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_subtitle')}
         className="mt-3 mb-5"
         bind:value={$landingPageSettings.contact.subtitle}
         isAIEnabled={true}
       />
       <TextField
-        label="Phone number"
-        placeholder="Write your phone number here"
+        label={$t('settings.landing_page.contact_us.phone_number')}
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.number')}
         className="mt-3 mb-5"
         bind:value={$landingPageSettings.contact.phone}
       />
       <TextField
-        label="Email"
-        placeholder="Write your email here"
+        label={$t('settings.landing_page.contact_us.email')}
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.email')}
         className="mt-3 mb-5"
         bind:value={$landingPageSettings.contact.email}
       />
@@ -396,31 +433,35 @@
 
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={4} md={4} lg={4}
-      ><SectionTitle>Mailing List</SectionTitle>
+      ><SectionTitle>{$t('settings.landing_page.mailing_list.heading')}</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.mailinglist.show} size="sm">
-        <span slot="labelA" style="color: gray">Hide section</span>
-        <span slot="labelB" style="color: gray">Show section</span>
+        <span slot="labelA" style="color: gray"
+          >{$t('settings.landing_page.mailing_list.hide_section')}</span
+        >
+        <span slot="labelB" style="color: gray"
+          >{$t('settings.landing_page.mailing_list.show_section')}</span
+        >
       </Toggle>
     </Column>
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
       <TextField
-        label="Title"
-        placeholder="Write your title here"
+        label={$t('settings.landing_page.mailing_list.title')}
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_title')}
         bind:value={$landingPageSettings.mailinglist.title}
         className="mb-5"
       />
       <TextArea
-        label="Subtitle"
+        label={$t('settings.landing_page.mailing_list.subtitle')}
         labelClassName="font-light"
-        placeholder="Write your subtitle here"
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_subtitle')}
         className="mb-5"
         bind:value={$landingPageSettings.mailinglist.subtitle}
         isAIEnabled={true}
       />
 
       <TextField
-        label="Button-label"
-        placeholder="Write your label here"
+        label={$t('settings.landing_page.mailing_list.button_label')}
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.label')}
         className="mb-5"
         bind:value={$landingPageSettings.mailinglist.buttonLabel}
       />
@@ -429,16 +470,20 @@
 
   <Row class="flex lg:flex-row flex-col py-7">
     <Column sm={4} md={4} lg={4}
-      ><SectionTitle>Footer</SectionTitle>
+      ><SectionTitle>{$t('settings.landing_page.footer.heading')}</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.footer.show} size="sm">
-        <span slot="labelA" style="color: gray">Hide section</span>
-        <span slot="labelB" style="color: gray">Show section</span>
+        <span slot="labelA" style="color: gray"
+          >{$t('settings.landing_page.footer.hide_section')}</span
+        >
+        <span slot="labelB" style="color: gray"
+          >{$t('settings.landing_page.footer.show_section')}</span
+        >
       </Toggle>
     </Column>
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
       <TextField
-        label="Facebook"
-        placeholder="Write your Facebook link here"
+        label={$t('settings.landing_page.footer.facebook')}
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.facebook')}
         bind:value={$landingPageSettings.footer.facebook}
         className="mb-5"
       />
@@ -449,14 +494,14 @@
         bind:value={$landingPageSettings.footer.instagram}
       /> -->
       <TextField
-        label="Twitter"
-        placeholder="Write your Twitter link here"
+        label={$t('settings.landing_page.footer.twitter')}
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.twitter')}
         className="mb-5"
         bind:value={$landingPageSettings.footer.twitter}
       />
       <TextField
-        label="Linkedin"
-        placeholder="Write your Linkedin link here"
+        label={$t('settings.landing_page.footer.linkedin')}
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.linkedin')}
         className="mb-5"
         bind:value={$landingPageSettings.footer.linkedin}
       />
@@ -464,7 +509,7 @@
   </Row>
   <div class="sticky desktop float-right bottom-12 mr-2 z-[120]">
     <PrimaryButton
-      label="Save Changes"
+      label={$t('settings.landing_page.save_changes')}
       isLoading={isSaving}
       isDisabled={isSaving}
       onClick={handleSave}
