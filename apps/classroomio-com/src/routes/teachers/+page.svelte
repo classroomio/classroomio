@@ -3,19 +3,19 @@
 
   const whyStart = [
     {
-      src: '/why-1.svg',
+      src: '/teach/teach-from-anywhere.svg',
       header: 'Fully Online; Teach from anywhere',
       subText:
         ' Facilitate a subject from the comfort of your space, engaging students from highly diverse background'
     },
     {
-      src: '/why-2.svg',
+      src: '/teach/get-paid.svg',
       header: 'Get paid extra commission',
       subText:
         'Get paid for the course you design and earn extra comission based on course perfomance'
     },
     {
-      src: '/why-3.svg',
+      src: '/teach/inspire-learners.svg',
       header: 'Inspire learners',
       subText:
         'Your opportunity to inspire thousands of learners to achieve dreams and academic pursue exellence'
@@ -102,15 +102,15 @@
       >
     </div>
 
-    <div class="lg:max-w-[40%] z-20">
-      <img src="/teacher-hero.png" alt="" class="w-full z-20" />
+    <div class="lg:max-w-[40%]">
+      <img src="/teach/teacher-hero.png" alt="" class="w-full" />
     </div>
   </header>
 
   <div class="mt-10 mx-auto">
     <div class="px-[10%]">
       <h1 class="text-2xl text-center font-bold flex gap-3 justify-center items-center">
-        Why you should start with us <img src="/star.svg" alt="" />
+        Why you should start with us <img src="/teach/star.svg" alt="" />
       </h1>
 
       <div class="flex flex-wrap justify-center lg:justify-between mt-10">
@@ -132,7 +132,7 @@
 
     <div class="px-[10%] mt-10 py-10">
       <h1 class="text-2xl text-center font-bold flex gap-3 justify-center items-center">
-        How to get started <img src="/thumbs-up.svg" alt="" />
+        How to get started <img src="/teach/thumbs-up.svg" alt="" />
       </h1>
 
       <div class="flex flex-wrap justify-between gap-y-10 mx-auto mt-5">
@@ -162,7 +162,20 @@
         Word from our fufilled facilitators
       </h1>
 
-      <img src="/facilitator-1.png" class="lg:w-2/4 mt-10 mx-auto" alt="" />
+      <div
+        class="mt-10 w-[50%] mx-auto border shadow-sm bg-white rounded-md text-center py-6 relative before:w-[4.5%] before:absolute before:left-0 before:top-0 before:h-full before:bg-[#0233BD] before:rounded-tl-md before:rounded-bl-md"
+      >
+        <h1 class="text-base font-medium leading-5 w-[77%] mx-auto">
+          With ClassroomIO, I am training over 100 students. I am making more money than expected
+          with little effort and my students are happy. Love the product
+        </h1>
+        <div class="flex flex-row gap-4 justify-center items-center mt-3">
+          <img src="/teach/user-profile.png" alt="" class="w-8" />
+          <p class="text-sm">
+            <span class="font-semibold mr-2"> Zulaikha Elebute M. </span> English tutor
+          </p>
+        </div>
+      </div>
     </div>
 
     <div class="px-[10%] lg:px-[15%] lg:max-w-[65%] my-10 mt-10 mx-auto">
@@ -208,9 +221,3 @@
     </div>
   </div>
 </div>
-
-<style>
-  .root {
-    background-image: url('/hero-bg.svg');
-  }
-</style>
