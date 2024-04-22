@@ -1,9 +1,9 @@
 name: Cypress Tests
+
 on:
   push:
     branches:
-      - cyprus
-  workflow_dispatch:
+      - cypress # Only trigger on update to this branch
 
 jobs:
   cypress-run:
