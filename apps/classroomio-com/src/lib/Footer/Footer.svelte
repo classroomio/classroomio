@@ -14,7 +14,7 @@
         alt="classroomio logo"
         class="mb-5 w-[10%] lg:mb-10 lg:w-[5%]"
       />
-      <p class="lg:text-md mb-5 mr-2 text-sm leading-7 tracking-wide text-gray-600 lg:leading-7">
+      <p class="lg:text-base mb-5 mr-2 text-sm leading-7 tracking-wide text-gray-600 lg:leading-7">
         Launch Your Online Bootcamp In Minutes
         <br />
         The easiest way to launch and scale your online bootcamp
@@ -61,61 +61,83 @@
       class="mt-16 flex w-full flex-col items-start justify-between gap-3 space-y-6 lg:mt-0 lg:w-2/4 lg:flex-row lg:space-y-0"
     >
       <div>
-        <p class="lg:text-md mb-3 text-base font-semibold leading-6 text-gray-900 lg:mb-10">
+        <p class="lg:text-base mb-3 text-base font-semibold leading-6 text-gray-900 lg:mb-10">
           Product
         </p>
         <ul class="space-y-2 lg:space-y-4">
-          <li class="lg:text-md text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900">
+          <li
+            class="lg:text-base text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900"
+          >
             <a href="/#coursemanagement"> Course Management </a>
           </li>
-          <li class="lg:text-md text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900">
+          <li
+            class="lg:text-base text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900"
+          >
             <a href="/#customization"> Customizations </a>
           </li>
-          <li class="lg:text-md text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900">
+          <li
+            class="lg:text-base text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900"
+          >
             <a href="/#collaboration"> Forum </a>
           </li>
-          <li class="lg:text-md text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900">
+          <li
+            class="lg:text-base text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900"
+          >
             <a href="/#ai"> AI Lesson Planner </a>
           </li>
         </ul>
       </div>
 
       <div>
-        <p class="lg:text-md mb-3 text-base font-semibold leading-6 text-gray-900 lg:mb-10">
+        <p class="lg:text-base mb-3 text-base font-semibold leading-6 text-gray-900 lg:mb-10">
           Resources
         </p>
         <ul class="space-y-2 lg:space-y-4">
-          <li class="lg:text-md text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900">
+          <li
+            class="lg:text-base text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900"
+          >
             <a href="/teach">Teach with us</a>
           </li>
-          <li class="lg:text-md text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900">
+          <li
+            class="lg:text-base text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900"
+          >
             <a target="_blank" href="https://classroomio.com/docs/"> Help center </a>
           </li>
-          <li class="lg:text-md text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900">
+          <li
+            class="lg:text-base text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900"
+          >
             <a target="_blank" href="https://classroomio.com/docs/what-is-classroomio">
               What is ClassroomIO?
             </a>
           </li>
-          <li class="lg:text-md text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900">
+          <li
+            class="lg:text-base text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900"
+          >
             <a target="_blank" href="https://classroomio.com/docs/quickstart/signup">
               Getting Started
             </a>
           </li>
-          <li class="lg:text-md text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900">
+          <li
+            class="lg:text-base text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900"
+          >
             <a href="/oss-friends"> OSS Friends </a>
           </li>
         </ul>
       </div>
 
       <div>
-        <p class="lg:text-md mb-3 text-base font-semibold leading-6 text-gray-900 lg:mb-10">
+        <p class="lg:text-base mb-3 text-base font-semibold leading-6 text-gray-900 lg:mb-10">
           Company
         </p>
         <ul class="space-y-2 lg:space-y-4">
-          <li class="lg:text-md text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900">
+          <li
+            class="lg:text-base text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900"
+          >
             <a href="mailto:help@classroomio.com" target="_blank"> Contact us </a>
           </li>
-          <li class="lg:text-md text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900">
+          <li
+            class="lg:text-base text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900"
+          >
             <a
               href="https://app.enzuzo.com/policies/privacy/958fc978-5477-11ee-a03b-7b111830c594"
               target="_blank"
@@ -123,12 +145,16 @@
               Privacy policy
             </a>
           </li>
-          <li class="lg:text-md text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900">
+          <li
+            class="lg:text-base text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900"
+          >
             <a target="_blank" href="https://classroomio.com/docs/quickstart/signup">
               Getting Started
             </a>
           </li>
-          <li class="lg:text-md text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900">
+          <li
+            class="lg:text-base text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900"
+          >
             <a
               href="https://app.enzuzo.com/policies/tos/958fc978-5477-11ee-a03b-7b111830c594"
               target="_blank"
@@ -141,7 +167,7 @@
     </nav>
   </div>
   <footer
-    class="lg:text-md border-t-[1px] py-[3%] text-center text-xs font-light leading-5 text-gray-500 lg:text-left"
+    class="lg:text-base border-t-[1px] py-[3%] text-center text-xs font-light leading-5 text-gray-500 lg:text-left"
   >
     <p>All rights reserved.</p>
     <p class="flex items-center">

@@ -42,7 +42,7 @@
             class="inline-block w-full"
           >
             <button
-              class="font-semibold text-md text-white bg-gray-800 hover:bg-gray-900 hover:shadow-xl transition-all delay-100 px-4 py-3 rounded-md"
+              class="font-semibold text-base text-white bg-gray-800 hover:bg-gray-900 hover:shadow-xl transition-all delay-100 px-4 py-3 rounded-md"
             >
               Learn more
             </button>

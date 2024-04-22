@@ -103,7 +103,7 @@
       <a
         href="/teach/register"
         target="_blank"
-        class="w-full block text-center lg:w-[30%] py-3 text-md text-white rounded-md bg-[#1D4ED8]"
+        class="w-full block text-center lg:w-[30%] py-3 text-base text-white rounded-md bg-[#1D4ED8]"
       >
         Register
       </a>
@@ -127,7 +127,7 @@
           >
             <img src={why.src} alt="" class="w-[80px] h-[80px]" />
             <figcaption>
-              <h1 class="font-bold text-md">{why.header}</h1>
+              <h1 class="font-bold text-base">{why.header}</h1>
               <p class="text-sm mt-1">
                 {why.subText}
               </p>
@@ -159,7 +159,7 @@
         <a
           href="/teach/register"
           target="_blank"
-          class="w-full lg:max-w-[20%] py-3 text-md text-white rounded-md bg-[#1D4ED8] text-center"
+          class="w-full lg:max-w-[20%] py-3 text-base text-white rounded-md bg-[#1D4ED8] text-center"
         >
           Get Started
         </a>
@@ -190,7 +190,7 @@
               </button>
             </div>
             {#if faq.showAnswer}
-              <div transition:slide class="text-md font-light leading-5">{faq.answer}</div>
+              <div transition:slide class="text-base font-light leading-5">{faq.answer}</div>
             {/if}
           </div>
         {/each}
