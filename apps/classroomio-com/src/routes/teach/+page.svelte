@@ -202,6 +202,7 @@
       subText="Don't wait, let's get you started."
       btnLabel="Register"
       link="/teach/register"
+      demo={false}
     />
   </div>
 </section>
