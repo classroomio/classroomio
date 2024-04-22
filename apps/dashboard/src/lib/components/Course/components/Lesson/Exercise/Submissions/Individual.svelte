@@ -69,7 +69,7 @@
               ? student.submitted_by.profile.avatar_url
               : defaultImg}
             alt="student"
-            class={`w-10 h-10 rounded-full bg-white m-1`}
+            class={`w-10 max-h-10 rounded-full bg-white m-1`}
           />
         </div>
         <p class="line-clamp-2 w-20 whitespace-pre-wrap leading-4">
