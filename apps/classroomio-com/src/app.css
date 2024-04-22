@@ -14,10 +14,6 @@ li {
   font-family: 'Inter', sans-serif;
 }
 
-.root {
-  background-image: url('/hero-bg.svg');
-}
-
 .floating {
   -webkit-animation: floating 2.5s linear infinite;
   animation: floating 2.5s linear infinite;
