@@ -12,7 +12,7 @@
         loading="lazy"
         src="/logo-192.png"
         alt="classroomio logo"
-        class="mb-5 w-[10%] lg:mb-10 lg:w-[5%]"
+        class="mb-5"
       />
       <p class="lg:text-base mb-5 mr-2 text-sm leading-7 tracking-wide text-gray-600 lg:leading-7">
         Launch Your Online Bootcamp In Minutes

@@ -52,7 +52,7 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
     }
   } else if (subdomain === 'play' || debugPlay === 'true') {
     response.skipAuth = true;
-  } else if (PRIVATE_APP_SUBDOMAINS.split(',').includes(subdomain) && !isDev) {
+  } else if (!PRIVATE_APP_SUBDOMAINS.split(',').includes(subdomain) && !isDev) {
     throw redirect(307, 'https://app.classroomio.com');
   }
 

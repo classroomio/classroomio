@@ -515,7 +515,7 @@
               <img
                 src={org.avatar_url || '/logo-192.png'}
                 alt={`${org.name} logo`}
-                class="rounded h-10 w-10 inline-block mx-auto"
+                class="rounded max-h-10 w-10 inline-block mx-auto"
                 data-atf="1"
               />
               <h3 class="text-black ml-3 text-xl">{org.name}</h3>

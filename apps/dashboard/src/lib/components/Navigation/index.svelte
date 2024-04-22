@@ -34,7 +34,7 @@
         <img
           src={logo || '/logo-192.png'}
           alt={`${orgName || 'ClassroomIO'} logo`}
-          class="rounded h-9 w-9 inline-block mx-auto"
+          class="rounded w-9 inline-block mx-auto"
           data-atf="1"
         />
       </a>
