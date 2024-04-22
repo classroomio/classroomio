@@ -44,41 +44,28 @@
     }
   ];
 
-  const faqs = [
+  let faqs = [
     {
-      question: 'What kind of tutors does classroomIO look for?',
+      question: 'What kind of tutors does ClassroomIO look for?',
       answer:
-        'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Similique deleniti saepe non fuga cupiditate eaque culpa natus tempore tenetur. Quaerat, adipisci similique? Quidem aspernatur ratione quasi exercitationem iure dignissimos velit!',
+        'We are looking for all kinds of tutors. The most important thing is that you have some experience teaching and you have proven track record of excellent communication',
       showAnswer: false
     },
     {
-      question: 'How can I get my profile approved quickly?',
-      answer:
-        'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Similique deleniti saepe non fuga cupiditate eaque culpa natus tempore tenetur. Quaerat, adipisci similique? Quidem aspernatur ratione quasi exercitationem iure dignissimos velit!',
+      question: 'What equipment do I need to teach on ClassroomIO?',
+      answer: 'You just need internet access and a laptop.',
       showAnswer: false
     },
     {
-      question: 'How can I get my profile approved quickly?',
+      question: 'What happens after I apply?',
       answer:
-        'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Similique deleniti saepe non fuga cupiditate eaque culpa natus tempore tenetur. Quaerat, adipisci similique? Quidem aspernatur ratione quasi exercitationem iure dignissimos velit!',
+        'We will get your application and review it. You should get a response from us within 2-5 working days depending on the volume of applications',
       showAnswer: false
     },
     {
-      question: 'Why should I teach on classroomio?',
+      question: 'How much can I earn?',
       answer:
-        'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Similique deleniti saepe non fuga cupiditate eaque culpa natus tempore tenetur. Quaerat, adipisci similique? Quidem aspernatur ratione quasi exercitationem iure dignissimos velit!',
-      showAnswer: false
-    },
-    {
-      question: 'What equipment do I need to teach on classroomio?',
-      answer:
-        'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Similique deleniti saepe non fuga cupiditate eaque culpa natus tempore tenetur. Quaerat, adipisci similique? Quidem aspernatur ratione quasi exercitationem iure dignissimos velit!',
-      showAnswer: false
-    },
-    {
-      question: 'How much can I earn on classroomio?',
-      answer:
-        'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Similique deleniti saepe non fuga cupiditate eaque culpa natus tempore tenetur. Quaerat, adipisci similique? Quidem aspernatur ratione quasi exercitationem iure dignissimos velit!',
+        'That depends on how much your course sells for and how many students buy your course. Your income is limitless, you can keep making money while you sleep.',
       showAnswer: false
     }
   ];
@@ -145,11 +132,11 @@
       <div class="flex flex-wrap justify-between gap-y-10 mx-auto mt-5">
         {#each steps as step, i}
           <div class="lg:max-w-[40%] px-10 py-5">
-            <h1 class="font-bold text-xl">
+            <h1 class="font-bold text-2xl">
               <span class="px-2 py-1 mr-3 bg-[#F7F7F7] rounded-md">{i + 1}</span>
               {step.title}
             </h1>
-            <p class="text-xs text-gray-600 mt-5">
+            <p class="text-base text-gray-600 mt-5">
               {step.subText}
             </p>
           </div>
@@ -181,7 +168,7 @@
         <div class="flex flex-row gap-4 justify-center items-center mt-3">
           <img src="/teach/user-profile.png" alt="" class="w-8" />
           <p class="text-sm">
-            <span class="font-semibold mr-2"> Zulaikha Elebute M. </span> English tutor
+            <span class="font-semibold mr-2"> Bilik Diana </span> English tutor
           </p>
         </div>
       </div>
