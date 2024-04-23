@@ -46,7 +46,7 @@
       (ans: { question_id: number }) => ans.question_id === q.id
     );
     if (filteredAnswer.some((ans: { open_answer: string }) => ans.open_answer == '')) {
-      return $t('course.navItem.lessons.exercise.all_exercises.analytics.individual.no');
+      return $t('course.navItem.lessons.exercises.all_exercises.analytics.individual.no');
     } else {
       return filteredAnswer.map((ans: { open_answer: any }) => ans.open_answer);
     }
@@ -81,7 +81,7 @@
 
   <p class="font-medium mb-2">
     {$submissions[studentSelected].submitted_by.profile.fullname}'s {$t(
-      'course.navItem.lessons.exercise.all_exercises.analytics.individual.answers'
+      'course.navItem.lessons.exercises.all_exercises.analytics.individual.answers'
     )}
   </p>
   {#if $submissions[studentSelected]}
