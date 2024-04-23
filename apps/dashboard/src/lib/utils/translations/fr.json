@@ -2,14 +2,13 @@
   "verify_email_modal": {
     "heading": "Vérifiez votre e-mail",
     "sent_verification": "Nous avons envoyé un e-mail de vérification à",
-    "to_confirm": "pour confirmer la validité de l'email fourni.",
+    "to_confirm": "pour confirmer la validité de l'e-mail fourni.",
     "loading": "Chargement...",
     "resend": "Renvoyer le code de vérification",
     "resend_in": "Renvoyer la vérification dans",
     "seconds": "secondes",
     "snackbar_error": "erreur lors de l'envoi du code"
   },
-
   "onboarding": {
     "sell": "Vendre des cours en ligne",
     "teach": "Enseigner en ligne à mes étudiants actuels",
@@ -27,14 +26,12 @@
     "back": "Dos",
     "continue": "Continuer"
   },
-
   "welcome_modal": {
     "we_at": "Nous à",
     "content_1": "est une petite équipe avec une grande mission : doter les éducateurs d'une technologie de pointe pour les aider à former la génération future. L’éducation est le cadeau le plus puissant que vous puissiez offrir à quiconque, et il est tout à fait logique de vous donner tous les outils dont vous avez besoin pour offrir ce CADEAU à davantage de personnes.",
     "content_2": "Merci de nous avoir choisi",
     "content_3": "nous l'apprécions profondément et sommes à votre service."
   },
-
   "login": {
     "welcome": "Content de te revoir",
     "email": "Votre email",
@@ -42,7 +39,6 @@
     "forgot": "Mot de passe oublié?",
     "login": "Se connecter"
   },
-
   "settings": {
     "heading": "Paramètres",
     "subheadings": {
@@ -137,7 +133,7 @@
         "title": "Titre",
         "question": "Question",
         "answer": "Répondre",
-        "button": "Ajouter une nouvelle Faq",
+        "button": "Ajouter une nouvelle FAQ",
         "save": "Sauvegarder",
         "cancel": "Annuler"
       },
@@ -149,7 +145,7 @@
         "title_highlight": "Titre-Point culminant",
         "subtitle": "Sous-titre",
         "phone_number": "Numéro de téléphone",
-        "email": "Email"
+        "email": "E-mail"
       },
       "mailing_list": {
         "heading": "Liste de diffusion",
@@ -174,7 +170,7 @@
       "sub_heading": "Connectez votre compte à Telegram pour être informé de tout changement dans l'application.",
       "step_1": "Étape 1 : Authentifiez votre compte via le bot ClassroomIO.",
       "button_1": "Ouvrir le robot",
-      "step_2": "Étape 2 : Saisissez l'ID de chat qui vous a été fourni par le bot.",
+      "step_2": "Étape 2 : Saisissez l’ID de chat qui vous a été fourni par le bot.",
       "button_2": "Connecter",
       "success_message": "Intégration réussie",
       "disconnect": "Déconnecter"
@@ -187,7 +183,6 @@
       "open_billing": "Facturation ouverte"
     }
   },
-
   "org_navigation": {
     "dashboard": "Tableau de bord",
     "courses": "Cours",
@@ -200,60 +195,67 @@
     "unlock": "Débloquez des fonctionnalités illimitées et investissez dans notre avenir",
     "upgrade": "Mettre à jour maintenant"
   },
-
   "pricing": {
     "modal": {
-      "heading": "Mise à Niveau du Plan",
+      "heading": "Plan de mise à niveau",
       "thanks": "Merci pour votre soutien",
-      "plan": "Votre plan est accompagné d'avantages intéressants, y compris l'accès à toutes les fonctionnalités futures que nous publierons.",
+      "plan": "Votre forfait s'accompagne d'avantages et d'avantages intéressants, notamment l'accès à toutes les futures fonctionnalités que nous publions.",
       "close": "Fermer",
-      "learn": "En savoir plus",
+      "learn": "Apprendre encore plus",
       "month": "mois"
     },
     "data": {
       "1": {
         "name": "Basique",
-        "description": "Plan gratuit pour un usage personnel, aucune carte de crédit requise.",
+        "description": "Plan de niveau gratuit pour un usage personnel, aucune carte de crédit requise.",
+        "price": {
+          "monthly": "0",
+          "yearly": "0"
+        },
         "features": {
-          "1": "Cours Illimités",
-          "2": "Questions/Réponses Illimitées",
-          "3": "50 Étudiants",
-          "4": "Constructeur de Cours IA (sans téléchargement de vidéo)",
-          "5": "Chat en Direct et Sondages"
+          "1": "Cours illimités",
+          "2": "Questions/Réponses illimitées",
+          "3": "50 étudiants",
+          "4": "AI Course Builder (pas de téléchargement de vidéo)",
+          "5": "Chat en direct et sondages"
         },
         "cta": {
-          "label": "Inscrivez-vous maintenant",
+          "label": "S'inscrire maintenant",
           "dashboard_label": "Rétrograder"
         }
       },
       "2": {
-        "name": "Premiers Utilisateurs",
-        "description": "Pour les entreprises d'enseignement en croissance rapide qui visent à se développer.",
+        "name": "Adopteurs précoces",
+        "description": "Pour les entreprises d’enseignement à croissance rapide qui visent à évoluer.",
+        "price": {
+          "monthly": "35",
+          "yearly": "350"
+        },
         "features": {
-          "1": "Tout en Basique",
-          "2": "Enseignants Illimités",
-          "3": "10K Étudiants",
-          "4": "Constructeur de Cours IA Avancé (Téléchargement de Vidéo & Certificat)",
-          "5": "Personnalisation de Marque",
-          "6": "Inclut toutes les Fonctionnalités à Venir"
+          "1": "Tout en Basic",
+          "2": "Enseignants illimités",
+          "3": "10 000 étudiants",
+          "4": "Générateur de cours avancé sur l'IA (téléchargement vidéo et certificat)",
+          "5": "Image de marque personnalisée",
+          "6": "Comprend toutes les fonctionnalités à venir"
         },
         "cta": {
-          "label": "Je veux participer 😍",
+          "label": "Je veux entrer 😍",
           "dashboard_label": "Soutenez-nous 😍"
         }
       },
       "3": {
         "name": "Entreprise",
-        "description": "Le mieux adapté aux entreprises plus importantes qui ont besoin de plus de contrôle.",
+        "description": "Idéal pour les grandes entreprises qui ont besoin de plus de contrôle",
         "price": {
-          "monthly": "Demandez les Prix",
-          "yearly": "Demandez les Prix"
+          "monthly": "Demander un prix",
+          "yearly": "Demander un prix"
         },
         "features": {
-          "1": "Tout en Premiers Utilisateurs plus :",
-          "2": "Étudiants Illimités",
-          "3": "Domaine Personnalisé",
-          "4": "Support 24/7"
+          "1": "Tout dans Early Adopters plus :",
+          "2": "Étudiants illimités",
+          "3": "Domaine personnalisé",
+          "4": "Assistance 24h/24 et 7j/7"
         },
         "cta": {
           "label": "Contactez-nous",
@@ -262,41 +264,39 @@
       }
     }
   },
-
   "setup": {
-    "get_started": "Commencer",
     "1": {
-      "title": "Télécharger une photo de profil et mettre à jour le nom d'utilisateur",
-      "desc": "Personnaliser et ajouter une touche humaine pour rendre les interactions plus personnelles et mémorables",
+      "title": "Téléchargez une photo de profil et mettez à jour le nom d'utilisateur",
+      "desc": "Personnaliser et apporter une touche humaine rendant les interactions plus personnelles et mémorables",
       "button_label": "Mettre à jour le profil"
     },
     "2": {
       "title": "Mettre à jour la photo de profil de l'organisation",
-      "desc": "Établir une identité professionnelle et reconnaissable pour votre organisation",
-      "button_label": "Mettre à jour le profil de l'org"
+      "desc": "Établissez une identité professionnelle et reconnaissable pour votre organisation",
+      "button_label": "Mettre à jour le profil de l'organisation"
     },
     "3": {
       "title": "Créer un cours",
-      "desc": "Créer un cours que vous partagerez avec vos étudiants",
+      "desc": "Créez un cours que vous partagerez avec vos étudiants",
       "button_label": "Créer un cours"
     },
     "4": {
       "title": "Créer une leçon",
-      "desc": "Divisez votre cours en leçons que vos étudiants peuvent comprendre facilement",
+      "desc": "Divisez votre cours en leçons que vos élèves peuvent facilement comprendre",
       "button_label": "Créer une leçon"
     },
     "5": {
       "title": "Créer un exercice",
-      "desc": "Testez vos étudiants et permettez-leur de démontrer leur compréhension du sujet",
-      "button_label": "Créer une tâche"
+      "desc": "Testez vos élèves pour leur permettre de démontrer leur compréhension du sujet",
+      "button_label": "Créer une affectation"
     },
     "6": {
       "title": "Publier un cours",
-      "desc": "Rendez votre cours public et achetable",
+      "desc": "Rendre votre cours public et achetable",
       "button_label": "Publier le cours"
-    }
+    },
+    "get_started": "Commencer"
   },
-
   "add_org": {
     "create_org": "Créer une organisation",
     "name": "Nom de l'organisation",
@@ -305,34 +305,31 @@
     "sitename": "Le nom du site existe déjà",
     "error_organization": "Quelque chose s'est mal passé lors de la création de cette organisation. Veuillez recharger et réessayer"
   },
-
   "navigation": {
     "goto": "Aller à",
     "courses": "Cours",
     "home": "Maison",
-    "classroomio_home": "ClassroomIO Maison",
+    "classroomio_home": "Accueil ClassroomIO",
     "dashboard": "Tableau de bord",
     "discussion": "Discussion",
     "people": "Personnes",
-    "goto_lms": "Aller à LMS",
-    "goto_home": "Aller à ClassroomIO Maison",
+    "goto_lms": "Aller au LMS",
+    "goto_home": "Accéder à l'accueil ClassroomIO",
     "login": "Se connecter",
     "signup": "S'inscrire"
   },
-
   "markdown_editor": {
     "write": "Écrire",
     "preview": "Aperçu"
   },
-
   "components": {
     "quiz": {
       "title": "Quiz",
-      "second": "Secondes)",
+      "second": "Seconde(s)",
       "answer": "Réponses)",
       "question_delete": "Supprimer la question",
       "quiz_delete": "Supprimer le questionnaire",
-      "delete_question": "Êtes-vous sûr de vouloir supprimer cette question?",
+      "delete_question": "Êtes-vous sûr de vouloir supprimer cette question ?",
       "delete_quiz": "Êtes-vous sûr de vouloir supprimer ce quiz ?",
       "lose_content": "Vous perdrez votre contenu et cette action ne pourra pas être annulée.",
       "delete": "Supprimer",
@@ -364,7 +361,6 @@
       }
     }
   },
-
   "schedule": {
     "title": "Votre emploi du temps",
     "essence": "L’essence de la collaboration en matière de conception",
@@ -372,7 +368,6 @@
     "join": "Rejoindre l'appel",
     "no": "Pas de cours ce jour"
   },
-
   "dashboard": {
     "morning_heading": "Bonjour",
     "afternoon_heading": "Bon après-midi",
@@ -380,7 +375,7 @@
     "create_course": "Créer un cours",
     "view_site": "Voir le site",
     "hero_content": "Merci pour ce que vous faites ❤️. Vous changez des vies, une classe à la fois et grâce à vous, le monde est meilleur. 😊",
-    "hero_button": "Continuer à construire 🚀",
+    "hero_button": "Continuez à construire 🚀",
     "your_schedule": "Votre emploi du temps",
     "today": "Aujourd'hui",
     "yesterday": "Hier",
@@ -399,7 +394,6 @@
     "lessons_completed": "Leçons terminées",
     "No_courses_started": "Aucun cours n'a commencé"
   },
-
   "courses": {
     "heading": "Cours",
     "heading_button": "Créer un cours",
@@ -419,7 +413,7 @@
         "delete": "Supprimer"
       },
       "error_message": "Une erreur s'est produite.",
-      "lessons_number": "course",
+      "lessons_number": "cours",
       "students": "étudiants",
       "published": "Publié",
       "unpublished": "Inédit",
@@ -427,7 +421,7 @@
       "list_view": {
         "title": "Titre",
         "description": "Description",
-        "lessons": "Leçons",
+        "lessons": "Cours",
         "students": "Étudiants",
         "published": "Publié"
       }
@@ -441,7 +435,6 @@
       "button": "Finition"
     }
   },
-
   "course": {
     "navItems": {
       "1": "Fil d'actualité",
@@ -454,7 +447,6 @@
       "8": "Page de destination",
       "9": "Paramètres"
     },
-
     "navItem": {
       "news_feed": {
         "heading": "Fil d'actualité",
@@ -475,14 +467,13 @@
           "comment_creation_error": "Une erreur s'est produite lors de la création du commentaire",
           "add_comment_success": "Commentaire ajouté",
           "toggle_pin_error": "Échec de l'activation du flux épinglé",
-          "unpinned": "Échec de l'activation du flux épinglé",
+          "unpinned": "Désépinglé",
           "successfully": "Avec succès",
           "feed_delete_success": "Flux supprimé avec succès",
           "fetch_feed_fail": "Échec de la récupération des flux d'actualités",
           "fetching_error": "Une erreur s'est produite lors de la récupération du flux"
         }
       },
-
       "lessons": {
         "heading": "Cours",
         "add_lesson": {
@@ -490,10 +481,10 @@
           "modal_heading": "Ajouter une nouvelle leçon",
           "lesson_title": "Titre de la leçon",
           "click_to": "Cliquez pour",
-          "lock": "fermer",
+          "lock": "verrouillage",
           "unlock": "ouvrir",
           "fullname": "nom et prénom",
-          "save": "sauvegarder",
+          "save": "Sauvegarder",
           "edit": "Modifier",
           "delete": "Supprimer"
         },
@@ -508,7 +499,6 @@
         "no_tutor": "Aucun tuteur ajouté",
         "body_header": "Pas encore de cours",
         "body_content": "Partagez vos connaissances avec le monde en créant des leçons engageantes. Commencez par cliquer sur le bouton Ajouter.",
-
         "lesson_nav": {
           "materials": "Matériaux",
           "exercises": "Des exercices"
@@ -518,14 +508,13 @@
         "done": "Fait",
         "edit": "Modifier",
         "mark_as": "Marquer comme",
-        "incomplete": "Incomplète",
-        "complete": "Complète",
-
+        "incomplete": "Incomplet",
+        "complete": "Complet",
         "materials": {
           "body_heading": "Aucune note, vidéo ou diapositive ajoutée pour cette leçon pour le moment",
           "body_content": "Partagez vos connaissances avec vos élèves en créant du contenu engageant. Commencez par cliquer sur",
-          "no_translation": "Aucune traduction pour la langue sélectionnée",
           "get_started": "Commencer",
+          "no_translation": "Aucune traduction pour la langue sélectionnée",
           "button": "bouton",
           "tabs": {
             "note": {
@@ -555,8 +544,8 @@
                 "add_video": "Ajouter une vidéo",
                 "upload_video": "Télécharger une video",
                 "select_file": "Sélectionnez le fichier (Mp4, MOV, AVI) à télécharger dans votre leçon.",
-                "size": "(500 Mo maximum)",
-                "oops": "Oups 😬, impossible de télécharger la vidéo",
+                "size": "(Maximum 500 Mo)",
+                "oops": "Oups 😬, impossible de télécharger la vidéo",
                 "sorry": "Désolé, la vidéo n'a pas été téléchargée. La taille du fichier est trop grande,",
                 "sorry_2": "la taille maximale est de 30 Mo. Essayer à nouveau!",
                 "button": "Essayez un autre fichier",
@@ -570,7 +559,6 @@
           },
           "button_done": "Fait"
         },
-
         "exercises": {
           "heading": "Tous les exercices",
           "add_button": "Ajouter",
@@ -582,15 +570,15 @@
             "heading": "Nouvel exercice",
             "options": {
               "1": "De zéro",
-              "subtitle_1": "Créez votre exercice à partir de zéro si vous avez déjà préparé vos questions",
               "2": "Utiliser un modèle",
+              "3": "Utiliser l'IA",
+              "subtitle_1": "Créez votre exercice à partir de zéro si vous avez déjà préparé vos questions",
               "subtitle_2": "Choisissez parmi plus de 100 modèles d'exercices prédéfinis pour vous aider à démarrer",
-              "3": "Use AI",
               "subtitle_3": "Vous pouvez générer un exercice avec l'IA à partir de vos notes"
             },
             "how": "Comment voulez-vous créer votre exercice",
             "coming_soon": "À venir",
-            "next": "Suivante",
+            "next": "Suivant",
             "title": "Donnez un titre à votre exercice",
             "title_placeholder": "Nom de l'exercice",
             "finish": "Finition",
@@ -600,12 +588,12 @@
             "back": "Dos",
             "create_exercises": "Créez des exercices à partir de Notes avec l'IA",
             "choose_questions": "Choisissez le nombre de questions et d'options que vous souhaitez et l'IA vous aidera à créer un exercice à partir de votre note. Allons-y.",
-            "how_many_questions": "Combien de questions souhaitez-vous créer ?",
-            "how_many_options": "Combien d’options par question souhaitez-vous ?",
+            "how_many_questions": "Combien de questions souhaitez-vous créer ?",
+            "how_many_options": "Combien d’options par question souhaitez-vous ?",
             "add_note": "Veuillez ajouter une note pour utiliser cette fonctionnalité",
             "generate": "Générer",
             "completion": "Génération d'IA terminée",
-            "click_generate": "Cliquez sur « Générer » pour un peu de magie"
+            "click_generate": "Cliquez sur « Générer » pour un peu de magie"
           },
           "all_exercises": {
             "heading": "Tous les exercices",
@@ -631,9 +619,9 @@
             "twitter": "Écrivez votre lien Twitter ici",
             "linkedin": "Écrivez votre lien LinkedIn ici",
             "number": "Écrivez votre numéro de téléphone ici",
-            "previous": "Précédente",
+            "previous": "Précédent",
             "finish": "Finition",
-            "next": "Suivante",
+            "next": "Suivant",
             "description": {
               "title": "Titre",
               "heading": "Description",
@@ -648,7 +636,7 @@
             },
             "edit_mode": {
               "delete_modal": "Supprimer le modal",
-              "sure": "Etes-vous sûr de vouloir supprimer cet exercice?",
+              "sure": "Êtes-vous sûr de vouloir supprimer cet exercice ?",
               "no": "Non, annule",
               "yes": "Oui, supprimer",
               "deleting": "Suppression...",
@@ -681,21 +669,19 @@
                 "question_chart": "Tableaux de questions"
               },
               "individual": {
-                "heading": "Individuelle",
+                "heading": "Individuel",
                 "answers": "Réponses individuelles",
                 "no": "Aucune réponse n'a été fournie"
               },
-              "submissions": "प्रविष्टियों"
+              "submissions": "Soumissions"
             }
           }
         },
-
         "comments": {
-          "title": "Commentaires",
+          "title": "commentaires",
           "you": "Toi",
           "placeholder": "Dire quelque chose"
         },
-
         "polls": {
           "title": "Sondage",
           "active_polls": "Sondages actifs",
@@ -703,7 +689,6 @@
           "loading": "Chargement...",
           "no_polls": "Aucun sondage à afficher"
         },
-
         "poll": {
           "voted": "Voté",
           "created_by": "Créé par",
@@ -726,33 +711,29 @@
           "poll_question": "Question de sondage"
         }
       },
-
       "attendance": {
         "title": "Présence",
-        "present": "Présente",
-        "absent": "Absente",
+        "present": "Présent",
+        "absent": "Absent",
         "search_students": "Rechercher des étudiants",
-        "student": "Étudiante",
+        "student": "Étudiant",
         "lesson": "Leçon",
         "no_student": "Aucun étudiant ajouté"
       },
-
       "submissions": {
         "title": "Exercices soumis",
         "submission_status": {
-          "1": "Soumise",
+          "1": "Soumis",
           "2": "En cours",
           "3": "Noté"
         }
       },
-
       "marks": {
         "title": "Des marques",
-        "student": "Étudiante",
-        "total": "Totale",
+        "student": "Étudiant",
+        "total": "Total",
         "no_student": "Aucun étudiant ajouté"
       },
-
       "people": {
         "title": "Personnes",
         "add": "Ajouter",
@@ -766,7 +747,7 @@
         "invite_modal": {
           "title": "Inviter des gens",
           "invite": "Inviter des tuteurs",
-          "select": "Sélectionner des tuteurs dans l'organisation...",
+          "select": "Sélectionnez les tuteurs dans l'organisation...",
           "to_add": "Pour ajouter un tuteur à votre organisation,",
           "go_to": "accéder aux paramètres de l'organisation",
           "invite_students": "Inviter des étudiants",
@@ -782,20 +763,19 @@
           "yes": "Oui"
         },
         "roles": {
-          "admin": "Administratrice",
-          "tutor": "Tutrice",
-          "student": "Étudiante",
+          "admin": "Administrateur",
+          "tutor": "Tuteur",
+          "student": "Étudiant",
           "filter": "Filtre"
         }
       },
-
       "certificates": {
         "title": "Certificats",
         "certificate_settings": "Paramètres du certificat",
         "theme": "Choisissez un thème",
         "logo": "Logo de la marque",
         "to_update": "Pour mettre à jour votre image de marque, rendez-vous sur",
-        "settings": "Paramètres &gt; Paramètres de l'organisation",
+        "settings": "Paramètres > Paramètres de l'organisation",
         "and_upload": "et téléchargez le logo de votre marque",
         "goto_settings": "Aller aux paramètres",
         "description": "Description du cours",
@@ -810,7 +790,6 @@
         "locked_certificate_body_2": "Si vous avez besoin de votre certificat, veuillez contacter votre instructeur.",
         "download_certificate": "Télécharger le certificat"
       },
-
       "landing_page": {
         "editor": {
           "title": {
@@ -819,14 +798,12 @@
             "3": "Description",
             "4": "Objectifs",
             "5": "Commentaires",
-            "6": "Instructrice",
+            "6": "Instructeur",
             "7": "Tarifs"
           },
-
           "save": "Sauvegarder",
           "page_builder": "Générateur de pages",
           "section": "section",
-
           "header_form": {
             "title": "Titre",
             "description": "Description",
@@ -834,7 +811,6 @@
             "replace_cover": "Remplacer l'image de couverture",
             "replace": "Remplacer"
           },
-
           "reviews_form": {
             "add_reviews": "Ajouter des avis",
             "fullname": "Nom et prénom",
@@ -842,7 +818,6 @@
             "rating": "Notation",
             "hide": "Masquer l'avis"
           },
-
           "instructor_form": {
             "upload": "Logo de l'instructeur",
             "name": "Nom de l'instructeur",
@@ -852,7 +827,6 @@
             "about_placeholder": "Un bref aperçu de l'instructure",
             "total": "Nombre total de cours"
           },
-
           "pricing_form": {
             "currency": "Devise",
             "cost": "Coût",
@@ -864,24 +838,21 @@
             "gift": "À propos du cadeau"
           }
         },
-
         "upload_widget": {
           "title": "Widget de bannière",
-          "width": "Les images plus larges que 1500 pixels fonctionnent mieux.",
-          "size": "La taille maximale par fichier est de 500 Kb.",
+          "width": "Les images plus larges que 1 500 pixels fonctionnent mieux.",
+          "size": "La taille maximale par fichier est de 500 Ko.",
           "submit": "Soumettre",
           "no_images": "Aucune image disponible."
         },
-
         "pricing_section": {
-          "free": "Gratuite",
+          "free": "Gratuit",
           "not_accepting": "Ce cours n'accepte actuellement pas de nouveaux étudiants.",
           "discount": "Rabais",
           "enroll": "Inscrivez-vous maintenant",
           "buy": "Acheter maintenant",
           "bird": "Offre pour inscription anticipée. Achetez dès que possible"
         },
-
         "start_course": "Commencer le cours",
         "requirement": "Exigence",
         "description": "Description du cours",
@@ -896,7 +867,7 @@
         "see_all": "Voir tout",
         "header_video": "Vidéo d'en-tête",
         "no_course_published": "Aucun cours publié",
-        "coming_your_way": "Nous avons d'excellents cours à venir, restez à l'écoute!!!",
+        "coming_your_way": "Nous avons d'excellents cours à venir, restez à l'écoute !!!",
         "view_less": "Voir moins",
         "view_all": "Voir tout",
         "thank_you": "Merci d'avoir laissé un message, nous vous répondrons sous peu",
@@ -913,16 +884,14 @@
         "explore": "Explorer les cours",
         "find": "Trouvez des cours que vous allez adorer dispensés par les meilleurs professeurs du monde entier",
         "find_course": "Trouver un cours...",
-
         "reviews_modal": {
           "title": "Commentaires",
           "rating": "Notation",
           "ratings": "Notes"
         },
-        "instructor": "Instructrice",
+        "instructor": "Instructeur",
         "courses": "cours"
       },
-
       "settings": {
         "heading": "Paramètres",
         "cover_image": "Image de couverture",
@@ -944,20 +913,19 @@
         "available": "Rendre la leçon disponible en téléchargement en pdf pour les étudiants inscrits",
         "course_download": "Téléchargement du cours",
         "course_avail": "Rendre le cours disponible en téléchargement pour les étudiants inscrits",
-        "download": "Téléchargements",
+        "download": "Télécharger",
         "allow": "Autoriser les nouveaux étudiants",
         "access": "Autoriser les nouveaux étudiants à accéder à ce cours",
-        "publish": "Publier le cours",
+        "publish": "Publier un cours",
         "determines": "Cela détermine si votre cours s'affiche sur votre page de destination",
         "published": "Publié",
-        "unpublished": "Inédite",
+        "unpublished": "Inédit",
         "delete": "Supprimer un cours",
         "delete_text": "Supprimer ce cours, cette action est irréversible",
         "save": "Sauvegarder les modifications"
       }
     }
   },
-
   "community": {
     "title": "Communauté",
     "ask_button": "Demander à la communauté",
@@ -976,7 +944,7 @@
       "comment": "Commentaire"
     },
     "find_question": "Rechercher une question",
-    "asked": "demandée",
+    "asked": "demandé",
     "no_question": "Aucune question posée",
     "ask_a_question": "Poser une question à la communauté",
     "delete": {
@@ -988,7 +956,6 @@
       "yes": "Oui, supprimer"
     }
   },
-
   "audience": {
     "title": "Public",
     "export": "Exporter",
@@ -998,41 +965,36 @@
     "email": "E-mail",
     "date_joined": "Date d'adhésion"
   },
-
   "lms_navigation": {
     "home": "Maison",
     "my_learning": "Mon apprentissage",
-    "exercise": "Exercise",
+    "exercise": "Exercice",
     "community": "Communauté",
     "help": "Aide",
     "settings": "Paramètres"
   },
-
   "my_learning": {
     "heading": "Mon apprentissage",
     "progress": "En cours",
-    "complete": "Complète",
+    "complete": "Complet",
     "search": "Rechercher des cours",
     "not_in_progress": "Aucun cours en cours",
     "any_progress": "Tout cours que vous commencez sera affiché ici",
     "not_completed": "Aucun cours terminé",
     "any_course": "Tout cours que vous terminez sera affiché ici"
   },
-
   "exercises": {
     "heading": "Des exercices",
     "not_submitted": "Pas transmis",
-    "submitted": "Soumise",
+    "submitted": "Soumis",
     "in_progress": "Classement en cours",
     "graded": "Noté",
     "lesson": "Leçon"
   },
-
   "snackbar": {
     "success": "Succès",
     "something": "Quelque chose s'est mal passé - Veuillez réessayer plus tard",
     "update": "Mise à jour",
-
     "poll": {
       "error": {
         "creating_poll": "Une erreur s'est produite lors de la création du sondage",
@@ -1044,17 +1006,14 @@
         "vote_once": "Vous pouvez voter seulement une fois"
       }
     },
-
     "exercise": {
       "success": "Enregistré avec succès",
       "submission_updated": "Soumission mise à jour pour",
       "error_fetching": "La récupération des exercices a échoué, veuillez recharger la page"
     },
-
     "materials": {
       "apology": "Nous nous excusons, une erreur s'est produite lors de l'enregistrement de votre leçon."
     },
-
     "newsfeed": {
       "success": {
         "edit": "Flux modifié avec succès",
@@ -1066,7 +1025,6 @@
         "creating": "création de flux"
       }
     },
-
     "people": {
       "error": {
         "missing_data": "Données de l'organisation manquantes, veuillez recharger la page",
@@ -1076,7 +1034,6 @@
         "copied": "Copié dans le presse-papier"
       }
     },
-
     "course_settings": {
       "success": {
         "download": "Téléchargement complet",
@@ -1086,15 +1043,14 @@
         "update_successful": "Mise à jour réussie"
       },
       "error": {
-        "not_right": "Quelque chose ne va pas - Veuillez réessayer plus tard",
-        "went_wrong": "Quelque chose s'est mal passé - Veuillez réessayer plus tard ",
+        "not_right": "Quelque chose ne va pas – Veuillez réessayer plus tard",
+        "went_wrong": "Quelque chose s'est mal passé - Veuillez réessayer plus tard",
         "title": "le titre ne peut pas être vide",
         "description": "la description ne peut pas être vide",
         "failed_integration": "Échec de l'intégration, veuillez réessayer plus tard",
         "failed_deletion": "Échec de la suppression, veuillez réessayer plus tard"
       }
     },
-
     "lms": {
       "error": {
         "username_exists": "Ce nom d'utilisateur existe déjà",
@@ -1102,17 +1058,15 @@
         "try_again": "Veuillez réessayer"
       }
     },
-
     "team_members": {
       "invite_sent": "Invitation envoyée!",
       "user_exists": "L'utilisateur existe déjà",
       "invite_fail": "Échec de l'envoi de l'invitation, veuillez réessayer",
       "remove_fail": "Échec de la suppression de l'utilisateur, veuillez réessayer"
     },
-
     "landing_page_settings": {
       "error": {
-        "file_size": "La taille du fichier ne doit pas dépasser 500 Ko+",
+        "file_size": "La taille du fichier ne doit pas dépasser 500 Ko",
         "try_again": "Essayer à nouveau",
         "label": "Télécharger une image",
         "fetch_error": "Erreur lors de la récupération des images depuis Unsplash"
@@ -1121,7 +1075,6 @@
         "complete": "Complet :)"
       }
     },
-
     "course": {
       "success": {
         "comment_deleted": "Commentaire supprimé",
@@ -1139,78 +1092,67 @@
         "feed_fetch_error": "Une erreur s'est produite lors de la récupération du flux"
       }
     },
-
     "attendance": {
       "error": {
         "reload": "Quelque chose ne va pas. Veuillez recharger et reprendre la participation"
       }
     },
-
     "lessons": {
       "success": {
         "complete_marked": "Marqué comme terminé",
         "complete_download": "Téléchargement complet"
       },
       "error": {
-        "try_later": "Quelque chose ne va pas - Veuillez réessayer plus tard"
+        "try_later": "Quelque chose ne va pas – Veuillez réessayer plus tard"
       }
     },
-
     "marks": {
       "error": "Erreur lors de la récupération des marques"
     },
-
     "submissions": {
       "success": {
         "grading": "Note enregistrée et élève averti"
       }
     },
-
     "invite": {
       "failed_join": "Échec de l'adhésion, veuillez contacter votre administrateur"
     },
-
     "community": {
       "error": {
         "try_again": "Erreur - Veuillez réessayer plus tard",
         "deleting_comments": "Erreur lors de la suppression des commentaires",
         "deleting_question": "Erreur lors de la suppression de la question"
       },
-
       "success": {
-        "comment_submitted": "Commentaire soumis!",
+        "comment_submitted": "Commentaire soumis !",
         "success_delete": "Supprimé avec succès",
-        "question_submitted": "Question soumise !"
+        "question_submitted": "Question soumise !"
       }
     },
-
     "signup": {
       "disposable": "L'e-mail que vous avez fourni est jetable"
     },
-
     "upgrade": {
-      "generate_fail": "Échec de la génération du succès",
+      "generate_fail": "N'a pas réussi à générer du succès",
       "failed": "Échec, veuillez réessayer plus tard"
     },
-
     "setup": {
       "info_lesson": "Vous devez créer une leçon",
       "info_course": "Vous devez créer un cours"
     }
   },
-
   "content": {
     "heading": "Internationalisation dans SvelteKit",
     "toggle_label": "Sélectionnez la langue préférée",
     "button_labels": {
-      "0": "{{value:number}}",
-      "1": "{{value:number}}",
-      "2": "{{value:number}}"
+      "0": "{{valeur : numéro}}",
+      "1": "{{valeur : numéro}}",
+      "2": "{{valeur : numéro}}"
     },
-    "body_text": "Ceci est un petit exemple pour démontrer la fonctionnalité d'i18n dans SvelteKit en utilisant la bibliothèque sveltekit-i18n. sveltekit-i18n est une petite bibliothèque sans dépendances externes, conçue pour Svelte et SvelteKit. Elle assemble @sveltekit-i18n/base et @sveltekit-i18n/parser-default pour vous fournir la solution sveltekit-i18n la plus simple. Le nombre total de téléchargements npm par semaine à partir de {{dateValue:date}} est de {{download:number}}.",
-    "awards": "Vous avez {{award:gt; 0: {{award; 1:remporté exactement {{award}} prix; default:remporté {{award}} prix}}; default:aucun prix remporté}}!",
+    "body_text": "Ceci est un petit exemple pour démontrer la fonctionnalité i18n dans SvelteKit à l'aide de la bibliothèque sveltekit-i18n. sveltekit-i18n est une petite bibliothèque sans dépendances externes, conçue pour Svelte et SvelteKit. Il colle @sveltekit-i18n/base et @sveltekit-i18n/parser-default ensemble pour vous fournir la solution sveltekit-i18n la plus simple. Le nombre total de téléchargements npm par semaine au {{dateValue:date}} est de {{download:number}}.",
+    "awards": "Vous avez {{award:gt; 0 : {{prix ; 1 : a remporté exactement le prix {{award}} ; par défaut : a remporté {{award}} récompenses}} ; par défaut : je n'ai remporté aucun prix}} !",
     "date": "{{val:date}}",
-    "time": "Seul le format 'heure' n'est pas disponible, il doit s'agir d'un formateur DateTime",
-    "number": "{{value:currency}}"
+    "time": "Seul le formateur « heure » ​​n'est pas disponible, il doit s'agir du formateur DateTime",
+    "number": "{{valeur : monnaie}}"
   }
 }
