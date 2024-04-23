@@ -57,7 +57,7 @@
             name={$currentOrg.name ? $currentOrg.name : 'ClassroomIO'}
             shape="rounded-md"
             width="w-10"
-            height="h-10"
+            height="max-h-10"
             className="mr-2"
           />
           <a href="/">

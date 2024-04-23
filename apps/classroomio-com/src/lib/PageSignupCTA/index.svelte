@@ -20,7 +20,7 @@
 
   {#if demo}
     <button
-      class="text-md mt-10 rounded-md bg-white px-6 py-4 font-semibold text-gray-900 lg:px-7 lg:py-3 lg:text-lg"
+      class="text-base mt-10 rounded-md bg-white px-6 py-4 font-semibold text-gray-900 lg:px-7 lg:py-3 lg:text-lg"
       data-cal-config="'layout':'month_view'"
       data-cal-link="classroomio/demo"
     >
@@ -28,7 +28,7 @@
     </button>
   {:else}
     <a
-      class="text-md mt-10 rounded-md bg-white px-6 py-4 font-semibold text-gray-900 lg:px-7 lg:py-3 lg:text-lg"
+      class="text-base mt-10 rounded-md bg-white px-6 py-4 font-semibold text-gray-900 lg:px-7 lg:py-3 lg:text-lg"
       href={link}
       target="_blank"
       rel="noopener noreferrer nofollow"
