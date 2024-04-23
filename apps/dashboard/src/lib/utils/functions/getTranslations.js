@@ -15,12 +15,10 @@ const languageFiles = {
   es: '../translations/es.json'
 };
 
-// Sleep function
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-// Function to translate text from English to a specified language with a delay
 const translateTextWithDelay = async (fromLanguage, toLanguage, outputFilePath, delay) => {
-  await wait(delay); // Introduce delay before each translation request
+  await wait(delay);
   await translateText(fromLanguage, toLanguage, outputFilePath);
 };
 
@@ -61,6 +59,8 @@ const translateText = async (fromLanguage, toLanguage, outputFilePath) => {
 };
 
 // Function to flatten the JSON object
+// (This is because .stringify method doesn't get nested objects, the api recieves `[Object]`
+// instead so i flatten to sent to the api then unflatted my response so an object data is gotten back.)
 const flattenJSON = (obj, prefix = '') => {
   let flattened = {};
   for (const key in obj) {
@@ -96,6 +96,5 @@ const translateToLanguagesWithDelay = async (delay) => {
   }
 };
 
-// Start the translation process with a specified delay (in milliseconds)
-const delayInMilliseconds = 2000; // Adjust as needed
+const delayInMilliseconds = 2000;
 translateToLanguagesWithDelay(delayInMilliseconds);
