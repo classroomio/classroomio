@@ -1,20 +1,25 @@
-import axios from 'axios';
-import fs from 'fs';
+/* eslint-disable @typescript-eslint/no-var-requires */
 
-const API_KEY = process.env.RAPID_API_KEY;
+const axios = require('axios');
+const dotenv = require('dotenv');
+const fs = require('fs');
+const path = require('path');
+const english = require('../src/lib/utils/translations/en.json');
 
-// Import English translations
-import english from '../translations/en.json' assert { type: 'json' };
+// Load env variables
+dotenv.config();
+
+const SCRIPT_WAIT_TIME = 2000;
 
 // Define file paths for each language
 const languageFiles = {
-  hi: './src/lib/utils/translations/hi.json',
-  fr: './src/lib/utils/translations/fr.json',
-  pt: './src/lib/utils/translations/pt.json',
-  de: './src/lib/utils/translations/de.json',
-  vi: './src/lib/utils/translations/vi.json',
-  ru: './src/lib/utils/translations/re.json',
-  es: './src/lib/utils/translations/es.json'
+  hi: path.resolve(__dirname, '../src/lib/utils/translations/hi.json'),
+  fr: path.resolve(__dirname, '../src/lib/utils/translations/fr.json'),
+  pt: path.resolve(__dirname, '../src/lib/utils/translations/pt.json'),
+  de: path.resolve(__dirname, '../src/lib/utils/translations/de.json'),
+  vi: path.resolve(__dirname, '../src/lib/utils/translations/vi.json'),
+  ru: path.resolve(__dirname, '../src/lib/utils/translations/re.json'),
+  es: path.resolve(__dirname, '../src/lib/utils/translations/es.json')
 };
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -39,7 +44,7 @@ const translateText = async (fromLanguage, toLanguage, outputFilePath) => {
     url: 'https://google-translate113.p.rapidapi.com/api/v1/translator/json',
     headers: {
       'content-type': 'application/x-www-form-urlencoded',
-      'X-RapidAPI-Key': API_KEY,
+      'X-RapidAPI-Key': process.env.RAPID_API_KEY,
       'X-RapidAPI-Host': 'google-translate113.p.rapidapi.com'
     },
     data: encodedParams
@@ -92,11 +97,10 @@ const unflattenJSON = (obj) => {
 };
 
 // Loop through each language and translate the English text with a delay
-const translateToLanguagesWithDelay = async (delay) => {
+const translate = async (delay) => {
   for (const [language, filePath] of Object.entries(languageFiles)) {
     await translateTextWithDelay('en', language, filePath, delay);
   }
 };
 
-const delayInMilliseconds = 2000;
-translateToLanguagesWithDelay(delayInMilliseconds);
+translate(SCRIPT_WAIT_TIME);

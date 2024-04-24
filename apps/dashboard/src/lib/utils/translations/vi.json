@@ -226,7 +226,7 @@
       },
       "2": {
         "name": "Người áp dụng sớm",
-        "description": "Dành cho các doanh nghiệp giảng dạy đang phát triển nhanh nhằm mở rộng quy mô.",
+        "description": "Dành cho các doanh nghiệp giảng dạy đang phát triển nhanh chóng nhằm mở rộng quy mô.",
         "price": {
           "monthly": "35",
           "yearly": "350"
@@ -421,7 +421,7 @@
       "lessons_number": "Những bài học",
       "students": "sinh viên",
       "published": "Được phát hành",
-      "unpublished": "Chưa được xuất bản",
+      "unpublished": "Chưa xuất bản",
       "continue_course": "Tiếp tục khóa học",
       "list_view": {
         "title": "Tiêu đề",
@@ -445,7 +445,7 @@
       "1": "Nguồn cấp tin tức",
       "2": "Những bài học",
       "3": "Sự tham dự",
-      "4": "bài nộp",
+      "4": "Bài nộp",
       "5": "Điểm",
       "6": "Mọi người",
       "7": "Chứng chỉ",
@@ -605,7 +605,7 @@
           "all_exercises": {
             "heading": "Tất cả bài tập",
             "questions": "Câu hỏi",
-            "submissions": "bài nộp",
+            "submissions": "Bài nộp",
             "save": "Cứu",
             "preview": "Xem trước",
             "reorder": "Sắp xếp lại câu hỏi",
@@ -680,7 +680,7 @@
                 "answers": "Câu trả lời cá nhân",
                 "no": "Không có câu trả lời nào được đưa ra"
               },
-              "submissions": "bài nộp"
+              "submissions": "Bài nộp"
             }
           }
         },

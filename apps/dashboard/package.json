@@ -17,7 +17,7 @@
     "test": "jest",
     "test:watch": "pnpm run test --watch",
     "ci": "cp .env.example .env && vite build && vite preview",
-    "translate": "node ./src/lib/utils/functions/getTranslations.js"
+    "script:translate": "node ./scripts/translate.cjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.386.0",

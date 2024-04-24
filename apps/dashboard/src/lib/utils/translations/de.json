@@ -787,7 +787,7 @@
         "goto_settings": "Gehe zu den Einstellungen",
         "description": "Kursbeschreibung",
         "placeholder": "eine kleine Beschreibung zum Kurs",
-        "allow": "Erlauben Sie Schülern, Zertifikate herunterzuladen",
+        "allow": "Erlauben Sie Schülern, das Zertifikat herunterzuladen",
         "locked": "Gesperrt",
         "unlocked": "Entsperrt",
         "save": "Änderungen speichern",
@@ -831,7 +831,7 @@
             "name_placeholder": "Ihr Firmenname",
             "role": "Rolle des Ausbilders",
             "about": "Über den Lehrer",
-            "about_placeholder": "Ein kurzer Hintergrund zur Struktur",
+            "about_placeholder": "Ein kurzer Hintergrund zur Ausbildung",
             "total": "Gesamtzahl der Kurse"
           },
           "pricing_form": {
@@ -1056,7 +1056,7 @@
         "title": "Der Titel darf nicht leer sein",
         "description": "Beschreibung darf nicht leer sein",
         "failed_integration": "Die Integration ist fehlgeschlagen. Bitte versuchen Sie es später noch einmal",
-        "failed_deletion": "Fehler beim Löschen. Bitte versuchen Sie es später noch einmal"
+        "failed_deletion": "Der Löschvorgang ist fehlgeschlagen. Bitte versuchen Sie es später noch einmal"
       }
     },
     "lms": {
@@ -1138,7 +1138,7 @@
       }
     },
     "signup": {
-      "disposable": "Die von Ihnen angegebene E-Mail-Adresse ist wegwerfbar"
+      "disposable": "Die von Ihnen angegebene E-Mail-Adresse ist entbehrlich"
     },
     "upgrade": {
       "generate_fail": "Es konnte kein Erfolg generiert werden",

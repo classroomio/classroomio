@@ -267,7 +267,7 @@
   "setup": {
     "1": {
       "title": "Sube una foto de perfil y actualiza el nombre de usuario",
-      "desc": "Personalización y un toque humano que hacen que las interacciones sean más personales y memorables.",
+      "desc": "Personalización y un toque humano que hace que las interacciones sean más personales y memorables.",
       "button_label": "Actualización del perfil"
     },
     "2": {
@@ -639,13 +639,13 @@
               "title": "Eliminar pregunta",
               "sure": "¿Estás seguro de que quieres eliminar esta pregunta?",
               "no": "No, por favor no",
-              "yes": "Si, borrar"
+              "yes": "Si, eliminar"
             },
             "edit_mode": {
               "delete_modal": "Eliminar modal",
               "sure": "¿Estás seguro de que deseas eliminar este ejercicio?",
               "no": "No, cancelar",
-              "yes": "Si, borrar",
+              "yes": "Si, eliminar",
               "deleting": "Eliminando...",
               "error": "Tienes algunos errores",
               "question": "Pregunta",
@@ -961,7 +961,7 @@
       "comment": "comentario",
       "sure": "Estás seguro que quieres eliminar esto",
       "no": "No, mantenlo",
-      "yes": "Si, borrar"
+      "yes": "Si, eliminar"
     }
   },
   "audience": {

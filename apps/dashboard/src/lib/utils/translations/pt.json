@@ -69,6 +69,7 @@
     "organization": {
       "organization_profile": {
         "heading": "Perfil da organização",
+        "heading": "Perfil da organização",
         "organization_name": "Nome da organização",
         "upload_image": "Enviar Imagem",
         "update_organization": "Atualizar organização",
@@ -336,6 +337,7 @@
       "quiz_delete": "Excluir questionário",
       "delete_question": "Tem certeza de que deseja excluir esta pergunta?",
       "delete_quiz": "Tem certeza de que deseja excluir este teste?",
+      "delete_quiz": "Tem certeza de que deseja excluir este teste?",
       "lose_content": "Você perderá seu conteúdo e esta ação não poderá ser desfeita.",
       "delete": "Excluir",
       "update": "Atualizar",
@@ -549,7 +551,7 @@
                 "add_video": "Adicionar vídeo",
                 "upload_video": "Envio vídeo",
                 "select_file": "Selecione o arquivo (Mp4, MOV, AVI) para enviar para sua aula.",
-                "size": "(Máximo de 500 MB)",
+                "size": "(Máximo de 500MB)",
                 "oops": "Ops `😬, não foi possível enviar o vídeo",
                 "sorry": "Desculpe, o vídeo não foi enviado. O tamanho do arquivo é muito grande,",
                 "sorry_2": "o tamanho máximo é 30 MB. Tente novamente!",
@@ -691,7 +693,7 @@
         },
         "polls": {
           "title": "Enquete",
-          "active_polls": "Enquetes Ativas",
+          "active_polls": "Enquetes ativas",
           "expired_polls": "Enquetes expiradas",
           "loading": "Carregando...",
           "no_polls": "Nenhuma enquete para exibir"
