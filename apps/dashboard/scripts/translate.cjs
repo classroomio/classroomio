@@ -1,10 +1,12 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-
 const axios = require('axios');
 const dotenv = require('dotenv');
 const fs = require('fs');
 const path = require('path');
 const english = require('../src/lib/utils/translations/en.json');
+const keys = require('all-object-keys');
+const jessy = require('jessy');
+const set = require('lodash/set');
+const nessy = require('nessy');
 
 // Load env variables
 dotenv.config();
@@ -13,25 +15,56 @@ const SCRIPT_WAIT_TIME = 2000;
 
 // Define file paths for each language
 const languageFiles = {
-  hi: path.resolve(__dirname, '../src/lib/utils/translations/hi.json'),
-  fr: path.resolve(__dirname, '../src/lib/utils/translations/fr.json'),
-  pt: path.resolve(__dirname, '../src/lib/utils/translations/pt.json'),
-  de: path.resolve(__dirname, '../src/lib/utils/translations/de.json'),
-  vi: path.resolve(__dirname, '../src/lib/utils/translations/vi.json'),
-  ru: path.resolve(__dirname, '../src/lib/utils/translations/re.json'),
-  es: path.resolve(__dirname, '../src/lib/utils/translations/es.json')
+  hi: path.resolve(__dirname, '../src/lib/utils/translations/hi.json')
+  // fr: path.resolve(__dirname, '../src/lib/utils/translations/fr.json'),
+  // pt: path.resolve(__dirname, '../src/lib/utils/translations/pt.json'),
+  // de: path.resolve(__dirname, '../src/lib/utils/translations/de.json'),
+  // vi: path.resolve(__dirname, '../src/lib/utils/translations/vi.json'),
+  // ru: path.resolve(__dirname, '../src/lib/utils/translations/re.json'),
+  // es: path.resolve(__dirname, '../src/lib/utils/translations/es.json')
 };
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const translateTextWithDelay = async (fromLanguage, toLanguage, outputFilePath, delay) => {
-  await wait(delay);
-  await translateText(fromLanguage, toLanguage, outputFilePath);
+const getMissingTranslations = async (toLanguage, outputFilePath) => {
+  const englishKeys = keys(require('../src/lib/utils/translations/en.json'));
+  const targetTranslations = require(outputFilePath); // Load target language translations
+  const targetKeys = keys(targetTranslations);
+
+  const missingKeys = englishKeys.filter((key) => !targetKeys.includes(key));
+
+  const englishTranslations = require('../src/lib/utils/translations/en.json');
+
+  const missingKeysWithDetails = {};
+  missingKeys.forEach((key) => {
+    const value = jessy(key, englishTranslations);
+    if (value !== undefined) {
+      missingKeysWithDetails[key] = value;
+    }
+  });
+
+  console.log(`Details of missing keys in ${toLanguage.toUpperCase()}:`);
+  console.log(missingKeysWithDetails, 'missingKeysWithDetails');
+
+  // Check if there are missing translations, if not, stop the process
+  if (!missingKeysWithDetails) {
+    console.log(
+      `No missing translations for ${toLanguage.toUpperCase()}. Stopping translation process.`
+    );
+    return;
+  }
+
+  return missingKeysWithDetails;
 };
 
-// Function to translate text from English to a specified language
 const translateText = async (fromLanguage, toLanguage, outputFilePath) => {
-  const flattenedEnglish = flattenJSON(english);
+  // Check if there are missing translations
+  const missingTranslations = await getMissingTranslations(toLanguage, outputFilePath);
+
+  const targetTranslations = require(outputFilePath); // Load target language translations
+
+  console.log('targetTranslations', targetTranslations);
+  const flattenedEnglish = flattenJSON(missingTranslations);
   const jsonString = JSON.stringify(flattenedEnglish);
 
   const encodedParams = new URLSearchParams();
@@ -55,7 +88,15 @@ const translateText = async (fromLanguage, toLanguage, outputFilePath) => {
     const { trans } = response.data;
     if (trans) {
       const unflattenedTranslatedData = unflattenJSON(trans);
-      fs.writeFileSync(outputFilePath, JSON.stringify(unflattenedTranslatedData, null, 2));
+      // console.log('unflattenedTranslatedData', unflattenedTranslatedData);
+
+      // Merge the translated data into the target translations object
+      // mergeTranslations(targetTranslations, unflattenedTranslatedData);
+      for (const key in unflattenedTranslatedData) {
+        nessy(key, unflattenedTranslatedData[key], '.', targetTranslations);
+      }
+
+      fs.writeFileSync(outputFilePath, JSON.stringify(targetTranslations, null, 2));
       console.log(`${toLanguage.toUpperCase()} translations updated successfully.`);
     } else {
       console.log(`Failed to update ${toLanguage.toUpperCase()} translations.`);
@@ -65,9 +106,22 @@ const translateText = async (fromLanguage, toLanguage, outputFilePath) => {
   }
 };
 
+// const mergeTranslations = (targetTranslations, translatedData, prefix = '') => {
+//   console.log('targetTranslations', targetTranslations);
+//   console.log('translatedData', translatedData);
+
+//   for (const key in translatedData) {
+//     if (typeof translatedData[key] === 'object') {
+//       // Recursively merge nested objects
+//       mergeTranslations(targetTranslations, translatedData[key], `${prefix}${key}.`);
+//     } else {
+//       // Update the target translations with the translated data
+//       targetTranslations[`${prefix}${key}`] = translatedData[key];
+//     }
+//   }
+// };
+
 // Function to flatten the JSON object
-// (This is because .stringify method doesn't get nested objects, the api recieves `[Object]`
-// instead so i flatten to sent to the api then unflatted my response so an object data is gotten back.)
 const flattenJSON = (obj, prefix = '') => {
   let flattened = {};
   for (const key in obj) {
@@ -83,23 +137,26 @@ const flattenJSON = (obj, prefix = '') => {
 
 // Function to unflatten the JSON object
 const unflattenJSON = (obj) => {
-  let unflattened = {};
+  const result = {};
   for (const key in obj) {
     const keys = key.split('.');
-    let nested = unflattened;
+    let nested = result;
     for (let i = 0; i < keys.length - 1; i++) {
-      nested[keys[i]] = nested[keys[i]] || {};
+      if (!nested[keys[i]]) {
+        nested[keys[i]] = {};
+      }
       nested = nested[keys[i]];
     }
     nested[keys[keys.length - 1]] = obj[key];
   }
-  return unflattened;
+  return result;
 };
 
 // Loop through each language and translate the English text with a delay
 const translate = async (delay) => {
   for (const [language, filePath] of Object.entries(languageFiles)) {
-    await translateTextWithDelay('en', language, filePath, delay);
+    await wait(delay);
+    await translateText('en', language, filePath);
   }
 };
 
