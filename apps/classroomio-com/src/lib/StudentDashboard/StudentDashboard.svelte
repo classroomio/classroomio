@@ -13,7 +13,7 @@
   </h1>
 
   <p
-    class="mx-auto mt-10 lg:mt-6 px-4 lg:p-0 text-md tracking-wide leading-6 text-gray-400 lg:w-2/4"
+    class="mx-auto mt-10 lg:mt-6 px-4 lg:p-0 text-base tracking-wide leading-6 text-gray-400 lg:w-2/4"
   >
     Once you create an account, you get a dedicated dashboard where your students can access all
     their courses, assignments, and more.

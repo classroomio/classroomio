@@ -113,7 +113,7 @@
         </div>
       </div>
 
-      <p class="text-md mx-auto mt-10 px-4 text-slate-700 md:text-lg lg:mt-6 lg:w-[42%] lg:p-0">
+      <p class="text-base mx-auto mt-10 px-4 text-slate-700 md:text-lg lg:mt-6 lg:w-[42%] lg:p-0">
         Meet a better learning management system (LMS) for teachers and students. ClassroomIO allows
         you to launch and scale your online bootcamp with ease.
       </p>
@@ -182,7 +182,7 @@
         Sign Up for Free
       </a>
       <!-- <a
-      class="font-medium lg:font-semibold text-sm md:text-md w-11/12 md:w-fit border px-6 py-3 lg:px-10 lg:py-5 rounded-md"
+      class="font-medium lg:font-semibold text-sm md:text-base w-11/12 md:w-fit border px-6 py-3 lg:px-10 lg:py-5 rounded-md"
       href="/github"
       target="_blank"
       rel="noopener noreferrer nofollow"

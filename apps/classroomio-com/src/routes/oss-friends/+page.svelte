@@ -1,15 +1,15 @@
 <script>
-  export let data;
+  import PageHeader from '$lib/PageHeader/PageHeader.svelte';
 
-  let { friends } = data;
+  export let data;
 </script>
 
 <svelte:head>
   <title>Our Open-source Friends | ClassroomIO</title>
 </svelte:head>
 
-<div class=" mt-[10%] md:mt-16">
-  <header class="pt-24 pb-16 w-full flex flex-col items-center text-center">
+<section>
+  <PageHeader className="flex flex-col items-center justify-center text-center">
     <h1
       class="mx-auto text-3xl md:text-4xl lg:text-6xl font-normal leading-[1.5] text-slate-900 items-center"
     >
@@ -19,9 +19,10 @@
       In ClassroomIO, we are committed to building a commercial open source company and here are
       some of our friends on the same mission.
     </p>
-  </header>
+  </PageHeader>
+
   <ul role="list" class="m-4 mt-12 grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-3 xl:gap-x-8">
-    {#each friends as friend}
+    {#each data.friends as friend}
       <li
         class="overflow-hidden rounded-md border border-gray-200 flex flex-col justify-between py-6"
       >
@@ -41,7 +42,7 @@
             class="inline-block w-full"
           >
             <button
-              class="font-semibold text-md text-white bg-gray-800 hover:bg-gray-900 hover:shadow-xl transition-all delay-100 px-4 py-3 rounded-md"
+              class="font-semibold text-base text-white bg-gray-800 hover:bg-gray-900 hover:shadow-xl transition-all delay-100 px-4 py-3 rounded-md"
             >
               Learn more
             </button>
@@ -50,4 +51,4 @@
       </li>
     {/each}
   </ul>
-</div>
+</section>
