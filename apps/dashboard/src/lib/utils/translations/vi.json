@@ -316,7 +316,10 @@
     "goto_lms": "Đi tới LMS",
     "goto_home": "Đi tới Lớp họcIO Trang chủ",
     "login": "Đăng nhập",
-    "signup": "Đăng ký"
+    "signup": "Đăng ký",
+    "redirecting": "Chuyển hướng",
+    "loading_state": "Đang đưa bạn đến trang tiếp theo, vui lòng đợi.",
+    "org_loading_state": "Đưa bạn đến tổ chức của bạn..."
   },
   "markdown_editor": {
     "write": "Viết",
@@ -328,6 +331,8 @@
       "second": "(Các) giây",
       "answer": "(Các) câu trả lời",
       "question_delete": "Xóa câu hỏi",
+      "add_more": "+ Thêm câu trả lời khác",
+      "remove_last": "- Xóa câu trả lời cuối cùng",
       "quiz_delete": "Xóa bài kiểm tra",
       "delete_question": "Bạn có chắc chắn muốn xóa câu hỏi này?",
       "delete_quiz": "Bạn có chắc chắn muốn xóa bài kiểm tra này không?",
@@ -553,7 +558,9 @@
                 "sorry_3": "Rất tiếc, video của chúng tôi không được tải lên, định dạng tệp không được hỗ trợ hoặc đã xảy ra lỗi trên máy chủ.",
                 "sorry_4": "Tải lên các tệp MP4, MOV và AVI.",
                 "upgrade": "Nâng cấp kế hoạch tải video lên của bạn",
-                "uploading": "Đang tải lên..."
+                "uploading": "Đang tải lên...",
+                "invalid_youtube": "(Các) liên kết YouTube không hợp lệ",
+                "invalid_link": "(Các) liên kết không hợp lệ"
               }
             }
           },
@@ -751,7 +758,7 @@
           "to_add": "Để thêm gia sư vào tổ chức của bạn,",
           "go_to": "đi tới cài đặt tổ chức",
           "invite_students": "Mời sinh viên",
-          "via_link": "Bạn có thể mời sinh viên thông qua một liên kết mời",
+          "via_link": "Bạn có thể mời sinh viên thông qua liên kết mời",
           "copy_link": "Sao chép đường dẫn",
           "success": "Đã sao chép thành công",
           "finish": "Hoàn thành"
@@ -945,6 +952,7 @@
     },
     "find_question": "Tìm câu hỏi",
     "asked": "yêu cầu",
+    "answers": "câu trả lời",
     "no_question": "Không có câu hỏi nào được hỏi",
     "ask_a_question": "Đặt câu hỏi cho cộng đồng",
     "delete": {

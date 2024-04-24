@@ -28,9 +28,9 @@
   },
   "welcome_modal": {
     "we_at": "Nós em",
-    "content_1": "somos uma pequena equipe com a grande missão de capacitar educadores com excelente tecnologia para ajudá-los a treinar a geração futura. A educação é o presente mais poderoso que você pode dar a alguém, e faz muito sentido dar a você todas as ferramentas necessárias para dar esse PRESENTE a mais pessoas.",
+    "content_1": "somos uma pequena equipe com a grande missão de capacitar educadores com excelente tecnologia para ajudá-los a treinar a geração futura. A educação é o presente mais poderoso que você pode dar a alguém, e faz muito sentido fornecer todas as ferramentas necessárias para dar esse PRESENTE a mais pessoas.",
     "content_2": "Obrigado por nos escolher",
-    "content_3": "agradecemos profundamente e estamos ao seu dispor."
+    "content_3": "agradecemos profundamente e estamos ao seu serviço."
   },
   "login": {
     "welcome": "bem vindo de volta",
@@ -68,7 +68,7 @@
     },
     "organization": {
       "organization_profile": {
-        "heading": "Perfil da Organização",
+        "heading": "Perfil da organização",
         "organization_name": "Nome da organização",
         "upload_image": "Enviar Imagem",
         "update_organization": "Atualizar organização",
@@ -104,11 +104,11 @@
         "no_redirect": "Sem redirecionamento",
         "redirect": "Redirecionar",
         "banner_type": {
-          "heading": "Tipo de banner",
+          "heading": "Tipo de faixa",
           "video": "Vídeo",
           "image": "Imagem"
         },
-        "show_banner": "Mostrar banner",
+        "show_banner": "Mostrar bandeira",
         "hide_banner": "Ocultar banner"
       },
       "about": {
@@ -316,7 +316,10 @@
     "goto_lms": "Acesse o LMS",
     "goto_home": "Vá para a página inicial do ClassroomIO",
     "login": "Conecte-se",
-    "signup": "Inscrever-se"
+    "signup": "Inscrever-se",
+    "redirecting": "Redirecionando",
+    "loading_state": "Levando você para a próxima página, aguarde.",
+    "org_loading_state": "Levando você para sua organização..."
   },
   "markdown_editor": {
     "write": "Escrever",
@@ -328,9 +331,11 @@
       "second": "Segundo(s)",
       "answer": "Respostas)",
       "question_delete": "Excluir pergunta",
+      "add_more": "+ Adicione mais respostas",
+      "remove_last": "- Remover última resposta",
       "quiz_delete": "Excluir questionário",
       "delete_question": "Tem certeza de que deseja excluir esta pergunta?",
-      "delete_quiz": "Tem certeza de que deseja excluir este questionário?",
+      "delete_quiz": "Tem certeza de que deseja excluir este teste?",
       "lose_content": "Você perderá seu conteúdo e esta ação não poderá ser desfeita.",
       "delete": "Excluir",
       "update": "Atualizar",
@@ -519,7 +524,7 @@
           "tabs": {
             "note": {
               "title": "Observação",
-              "placeholder": "Escreva sua nota de aula aqui",
+              "placeholder": "Escreva aqui sua nota de aula",
               "ai": {
                 "outline": "Gerar esboço da lição",
                 "note": "Gerar nota de aula",
@@ -553,7 +558,9 @@
                 "sorry_3": "Desculpe, o vídeo não foi enviado, o formato do arquivo não é compatível ou algo deu errado no servidor.",
                 "sorry_4": "Carregue arquivos MP4, MOV e AVI.",
                 "upgrade": "Atualize seu plano para enviar vídeos",
-                "uploading": "Enviando..."
+                "uploading": "Enviando...",
+                "invalid_youtube": "Links inválidos do YouTube",
+                "invalid_link": "Links inválidos"
               }
             }
           },
@@ -945,6 +952,7 @@
     },
     "find_question": "Encontrar pergunta",
     "asked": "perguntado",
+    "answers": "respostas",
     "no_question": "Sem perguntas",
     "ask_a_question": "Faça uma pergunta para a comunidade",
     "delete": {

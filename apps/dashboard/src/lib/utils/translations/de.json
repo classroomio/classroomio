@@ -316,7 +316,10 @@
     "goto_lms": "Gehen Sie zu LMS",
     "goto_home": "Gehen Sie zur ClassroomIO-Startseite",
     "login": "Anmeldung",
-    "signup": "Melden Sie sich an"
+    "signup": "Melden Sie sich an",
+    "redirecting": "Umleiten",
+    "loading_state": "Bitte warten Sie, um zur nächsten Seite zu gelangen.",
+    "org_loading_state": "Wir bringen Sie zu Ihrer Organisation..."
   },
   "markdown_editor": {
     "write": "Schreiben",
@@ -328,6 +331,8 @@
       "second": "Sekunde(n)",
       "answer": "Antwort(en)",
       "question_delete": "Frage löschen",
+      "add_more": "+ Weitere Antworten hinzufügen",
+      "remove_last": "- Letzte Antwort entfernen",
       "quiz_delete": "Quiz löschen",
       "delete_question": "Sind Sie sicher, dass Sie diese Frage löschen möchten?",
       "delete_quiz": "Möchten Sie dieses Quiz wirklich löschen?",
@@ -553,7 +558,9 @@
                 "sorry_3": "Es tut uns leid, dass das Video nicht hochgeladen wurde, das Dateiformat nicht unterstützt wird oder auf dem Server ein Fehler aufgetreten ist.",
                 "sorry_4": "Laden Sie MP4-, MOV- und AVI-Dateien hoch.",
                 "upgrade": "Aktualisieren Sie Ihren Plan, um Videos hochzuladen",
-                "uploading": "Hochladen..."
+                "uploading": "Hochladen...",
+                "invalid_youtube": "Ungültige YouTube-Link(s)",
+                "invalid_link": "Ungültige Links"
               }
             }
           },
@@ -945,6 +952,7 @@
     },
     "find_question": "Frage finden",
     "asked": "fragte",
+    "answers": "Antworten",
     "no_question": "Keine Fragen gefragt",
     "ask_a_question": "Stellen Sie der Community eine Frage",
     "delete": {

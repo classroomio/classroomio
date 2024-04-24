@@ -388,7 +388,8 @@
         class="text-gray-500 dark:text-white text-md flex items-center"
         href={`${$currentOrgPath}/community`}
       >
-        <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" /> Go Back
+        <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" />
+        {$t('community.ask.go_back')}
       </a>
       <div class="my-5 flex justify-between items-center">
         {#if isEditMode}
@@ -475,7 +476,7 @@
       </div>
 
       <div class="my-8 font-bold">
-        {pluralize('answers', question.totalComments, true)}
+        {pluralize($t('community.answers'), question.totalComments, true)}
       </div>
 
       {#each question.comments as comment}

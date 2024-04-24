@@ -30,7 +30,7 @@
     "we_at": "nosotros en",
     "content_1": "Somos un pequeño equipo con la gran misión de capacitar a los educadores con excelente tecnología para ayudarlos a capacitar a la generación futura. La educación es el regalo más poderoso que le puedes dar a alguien, y tiene mucho sentido brindarte todas las herramientas que necesitas para brindarle a más personas este REGALO.",
     "content_2": "Gracias por elegirnos",
-    "content_3": "lo agradecemos profundamente y estamos a su servicio."
+    "content_3": "lo apreciamos profundamente y estamos a su servicio."
   },
   "login": {
     "welcome": "Bienvenido de nuevo",
@@ -316,7 +316,10 @@
     "goto_lms": "Ir a LMS",
     "goto_home": "Ir a la página de inicio de ClassroomIO",
     "login": "Acceso",
-    "signup": "Inscribirse"
+    "signup": "Inscribirse",
+    "redirecting": "Redireccionando",
+    "loading_state": "Lo llevamos a la página siguiente, espere.",
+    "org_loading_state": "Llevándote a tu organización..."
   },
   "markdown_editor": {
     "write": "Escribir",
@@ -328,6 +331,8 @@
       "second": "Segundos)",
       "answer": "Respuesta(s)",
       "question_delete": "Eliminar pregunta",
+      "add_more": "+ Agregar más respuestas",
+      "remove_last": "- Eliminar la última respuesta",
       "quiz_delete": "Eliminar cuestionario",
       "delete_question": "¿Estás seguro de que deseas eliminar esta pregunta?",
       "delete_quiz": "¿Estás seguro de que deseas eliminar este cuestionario?",
@@ -353,7 +358,7 @@
     "settings": {
       "domains": {
         "add": "Agregar",
-        "work_together": "Agregue sus compañeros de equipo o colaboradores a su organización. Empezar a trabajar juntos",
+        "work_together": "Agregue a sus compañeros de equipo o colaboradores a su organización. Empezar a trabajar juntos",
         "url": "URL",
         "update": "Actualizar dominio",
         "custom": "Dominio personalizado",
@@ -553,7 +558,9 @@
                 "sorry_3": "Lo sentimos, el video no se subió, el formato de archivo no es compatible o algo salió mal en el servidor.",
                 "sorry_4": "Sube archivos MP4, MOV y AVI.",
                 "upgrade": "Actualiza tu plan para subir videos",
-                "uploading": "Subiendo..."
+                "uploading": "Subiendo...",
+                "invalid_youtube": "Enlace(s) de YouTube no válido(s)",
+                "invalid_link": "Enlace(s) no válido(s)"
               }
             }
           },
@@ -858,7 +865,7 @@
         "description": "Descripción del curso",
         "learn": "lo que aprenderás",
         "certificate": "Certificado",
-        "certificate_text": "Cuando complete todos los cursos del programa, obtendrá un Certificado para compartir con su red profesional.",
+        "certificate_text": "Cuando completes todos los cursos del programa, obtendrás un Certificado para compartir con tu red profesional.",
         "content": "Contenido del curso",
         "slide": "1 diapositiva",
         "note": "nota",
@@ -934,7 +941,7 @@
       "ask_the": "pregunta a la comunidad",
       "publish": "Publicar",
       "title": "Título",
-      "select_course": "Seleccionar Curso",
+      "select_course": "Seleccionar curso",
       "ask_community": "Pregunta a la comunidad cualquier duda que tengas",
       "question": "Pregunta",
       "save": "Ahorrar",
@@ -945,6 +952,7 @@
     },
     "find_question": "Buscar pregunta",
     "asked": "preguntó",
+    "answers": "respuestas",
     "no_question": "No se hicieron preguntas",
     "ask_a_question": "Haz una pregunta a la comunidad.",
     "delete": {

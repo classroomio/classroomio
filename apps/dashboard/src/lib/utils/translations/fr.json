@@ -199,7 +199,7 @@
     "modal": {
       "heading": "Plan de mise à niveau",
       "thanks": "Merci pour votre soutien",
-      "plan": "Votre forfait s'accompagne d'avantages et d'avantages intéressants, notamment l'accès à toutes les futures fonctionnalités que nous publions.",
+      "plan": "Votre forfait s'accompagne d'avantages et d'avantages intéressants, notamment l'accès à toutes les futures fonctionnalités que nous publierons.",
       "close": "Fermer",
       "learn": "Apprendre encore plus",
       "month": "mois"
@@ -293,7 +293,7 @@
     "6": {
       "title": "Publier un cours",
       "desc": "Rendre votre cours public et achetable",
-      "button_label": "Publier le cours"
+      "button_label": "Publier un cours"
     },
     "get_started": "Commencer"
   },
@@ -316,7 +316,10 @@
     "goto_lms": "Aller au LMS",
     "goto_home": "Accéder à l'accueil ClassroomIO",
     "login": "Se connecter",
-    "signup": "S'inscrire"
+    "signup": "S'inscrire",
+    "redirecting": "Redirection",
+    "loading_state": "Vous passez à la page suivante, veuillez patienter.",
+    "org_loading_state": "Vous emmener dans votre organisation..."
   },
   "markdown_editor": {
     "write": "Écrire",
@@ -328,6 +331,8 @@
       "second": "Seconde(s)",
       "answer": "Réponses)",
       "question_delete": "Supprimer la question",
+      "add_more": "+ Ajouter plus de réponses",
+      "remove_last": "- Supprimer la dernière réponse",
       "quiz_delete": "Supprimer le questionnaire",
       "delete_question": "Êtes-vous sûr de vouloir supprimer cette question ?",
       "delete_quiz": "Êtes-vous sûr de vouloir supprimer ce quiz ?",
@@ -454,7 +459,7 @@
           "title": "Ajouter",
           "edit_post": "Modifier le message",
           "make_a_post": "Créer un message",
-          "placeholder": "Partagez une mise à jour avec vos étudiants",
+          "placeholder": "Partagez une mise à jour avec vos élèves",
           "cancel": "Annuler",
           "post": "Poste"
         },
@@ -539,7 +544,7 @@
               "add_video": {
                 "title": "Ajouter une vidéo",
                 "add_by": "Ajouter par",
-                "youtube_link": "Lien Youtube",
+                "youtube_link": "Lien YouTube",
                 "videos_added": "Vidéos ajoutées",
                 "add_video": "Ajouter une vidéo",
                 "upload_video": "Télécharger une video",
@@ -553,7 +558,9 @@
                 "sorry_3": "Désolé, notre vidéo n'a pas été téléchargée, le format de fichier n'est pas pris en charge ou quelque chose s'est mal passé sur le serveur.",
                 "sorry_4": "Téléchargez des fichiers MP4, MOV et AVI.",
                 "upgrade": "Mettez à niveau votre forfait pour télécharger des vidéos",
-                "uploading": "Téléchargement..."
+                "uploading": "Téléchargement...",
+                "invalid_youtube": "Lien(s) YouTube invalide(s)",
+                "invalid_link": "Lien(s) invalide(s)"
               }
             }
           },
@@ -916,7 +923,7 @@
         "download": "Télécharger",
         "allow": "Autoriser les nouveaux étudiants",
         "access": "Autoriser les nouveaux étudiants à accéder à ce cours",
-        "publish": "Publier un cours",
+        "publish": "Publier le cours",
         "determines": "Cela détermine si votre cours s'affiche sur votre page de destination",
         "published": "Publié",
         "unpublished": "Inédit",
@@ -945,6 +952,7 @@
     },
     "find_question": "Rechercher une question",
     "asked": "demandé",
+    "answers": "réponses",
     "no_question": "Aucune question posée",
     "ask_a_question": "Poser une question à la communauté",
     "delete": {

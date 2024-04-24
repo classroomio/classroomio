@@ -1,18 +1,20 @@
 import axios from 'axios';
 import fs from 'fs';
 
+const API_KEY = process.env.RAPID_API_KEY;
+
 // Import English translations
 import english from '../translations/en.json' assert { type: 'json' };
 
 // Define file paths for each language
 const languageFiles = {
-  hi: '../translations/hi.json',
-  fr: '../translations/fr.json',
-  pt: '../translations/pt.json',
-  de: '../translations/de.json',
-  vi: '../translations/vi.json',
-  ru: '../translations/re.json',
-  es: '../translations/es.json'
+  hi: './src/lib/utils/translations/hi.json',
+  fr: './src/lib/utils/translations/fr.json',
+  pt: './src/lib/utils/translations/pt.json',
+  de: './src/lib/utils/translations/de.json',
+  vi: './src/lib/utils/translations/vi.json',
+  ru: './src/lib/utils/translations/re.json',
+  es: './src/lib/utils/translations/es.json'
 };
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -37,7 +39,7 @@ const translateText = async (fromLanguage, toLanguage, outputFilePath) => {
     url: 'https://google-translate113.p.rapidapi.com/api/v1/translator/json',
     headers: {
       'content-type': 'application/x-www-form-urlencoded',
-      'X-RapidAPI-Key': process.env.RAPID_API_KEY,
+      'X-RapidAPI-Key': API_KEY,
       'X-RapidAPI-Host': 'google-translate113.p.rapidapi.com'
     },
     data: encodedParams

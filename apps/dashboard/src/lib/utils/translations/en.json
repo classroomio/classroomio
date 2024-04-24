@@ -325,7 +325,10 @@
     "goto_lms": "Go to LMS",
     "goto_home": "Go to ClassroomIO Home",
     "login": "Login",
-    "signup": "Sign Up"
+    "signup": "Sign Up",
+    "redirecting": "Redirecting",
+    "loading_state": "Taking you to the next page, please wait.",
+    "org_loading_state": "Taking you to your organization..."
   },
 
   "markdown_editor": {
@@ -339,6 +342,8 @@
       "second": "Second(s)",
       "answer": "Answer(s)",
       "question_delete": "Delete Question",
+      "add_more": "+ Add more answers",
+      "remove_last": "- Remove last answer",
       "quiz_delete": "Delete Quiz",
       "delete_question": "Are you sure you want to delete this question?",
       "delete_quiz": "Are you sure you want to delete this quiz?",
@@ -572,7 +577,9 @@
                 "sorry_3": "Sorry we video wasn’t uploaded, the file format isn’t supported or something went wrong on the server.",
                 "sorry_4": "Upload MP4, MOV and AVI files.",
                 "upgrade": "Upgrade your plan to upload vidoes",
-                "uploading": "Uploading..."
+                "uploading": "Uploading...",
+                "invalid_youtube": "Invalid YouTube link(s)",
+                "invalid_link": "Invalid link(s)"
               }
             }
           },
@@ -985,6 +992,7 @@
     },
     "find_question": "Find Question",
     "asked": "asked",
+    "answers": "answers",
     "no_question": "No Questions asked",
     "ask_a_question": "Ask a question to the community",
     "delete": {
