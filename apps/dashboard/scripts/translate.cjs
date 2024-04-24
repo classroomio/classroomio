@@ -6,15 +6,10 @@ const fs = require('fs');
 const path = require('path');
 const english = require('../src/lib/utils/translations/en.json');
 
-// Import English translations
-// import english from '../src/lib/utils/translations/en.json' assert { type: 'json' };
-
 // Load env variables
 dotenv.config();
 
 const SCRIPT_WAIT_TIME = 2000;
-
-console.log('dirname', __dirname, path.resolve(__dirname, '../src/lib/utils/translations/hi.json'));
 
 // Define file paths for each language
 const languageFiles = {
