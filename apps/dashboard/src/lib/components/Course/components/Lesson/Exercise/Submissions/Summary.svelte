@@ -144,7 +144,7 @@
 {:else if browser}
   <div>
     <p class="text-2xl mb-3">
-      {$t('course.navItem.lessons.exercise.all_exercises.analytics.summary.question_chart')}
+      {$t('course.navItem.lessons.exercises.all_exercises.analytics.summary.question_chart')}
     </p>
     {#each transformedQuestions as q}
       <div class="mb-4">

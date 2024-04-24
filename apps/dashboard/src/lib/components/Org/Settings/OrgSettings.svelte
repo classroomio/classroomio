@@ -218,7 +218,7 @@
         {#if $isFreePlan}
           <FlashFilled size={16} class="text-blue-700" />
         {/if}
-        Manage Team
+        {$t('settings.organization.organization_profile.team.button')}
       </PrimaryButton>
     </Column>
   </Row>

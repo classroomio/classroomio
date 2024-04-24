@@ -10,11 +10,11 @@
 
   const tabs = [
     {
-      label: $t('course.navItem.lessons.exercise.all_exercises.analytics.summary.heading'),
+      label: $t('course.navItem.lessons.exercises.all_exercises.analytics.summary.heading'),
       value: 'summary'
     },
     {
-      label: $t('course.navItem.lessons.exercise.all_exercises.analytics.individual.heading'),
+      label: $t('course.navItem.lessons.exercises.all_exercises.analytics.individual.heading'),
       value: 'individual'
     }
   ];
@@ -47,7 +47,7 @@
     <div class="mt-4">
       <p class="text-lg">
         {$submissions.length}
-        {$t('course.navItem.lessons.exercise.all_exercises.analytics.submissions')}
+        {$t('course.navItem.lessons.exercises.all_exercises.analytics.submissions')}
       </p>
     </div>
     <div class="flex items-center justify-center overflow-x-auto">

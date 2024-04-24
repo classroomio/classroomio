@@ -19,7 +19,7 @@
     const validLinks = links.filter(isValidYouTubeLink);
 
     if (validLinks.length === 0) {
-      error = 'Invalid YouTube link(s)';
+      error = $t('course.navItem.lessons.materials.tabs.video.add_video.invalid_youtube');
     } else {
       const existingLinks = $lesson?.materials?.videos || [];
 
