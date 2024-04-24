@@ -18,7 +18,7 @@
   import QuizQuestion from '$lib/components/Org/Quiz/QuizQuestion.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { supabase } from '$lib/utils/functions/supabase';
-  import { t } from '$lib/utils/functions/translations.js';
+  import { t } from '$lib/utils/functions/translations';
 
   export let data;
   const { quizId } = data;
