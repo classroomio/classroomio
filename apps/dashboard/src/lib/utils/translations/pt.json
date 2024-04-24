@@ -69,7 +69,6 @@
     "organization": {
       "organization_profile": {
         "heading": "Perfil da organização",
-        "heading": "Perfil da organização",
         "organization_name": "Nome da organização",
         "upload_image": "Enviar Imagem",
         "update_organization": "Atualizar organização",
@@ -336,7 +335,6 @@
       "remove_last": "- Remover última resposta",
       "quiz_delete": "Excluir questionário",
       "delete_question": "Tem certeza de que deseja excluir esta pergunta?",
-      "delete_quiz": "Tem certeza de que deseja excluir este teste?",
       "delete_quiz": "Tem certeza de que deseja excluir este teste?",
       "lose_content": "Você perderá seu conteúdo e esta ação não poderá ser desfeita.",
       "delete": "Excluir",

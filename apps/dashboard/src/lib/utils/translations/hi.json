@@ -58,10 +58,10 @@
         "upload_image": "तस्विर अपलोड करना"
       },
       "personal_information": {
-        "heading": "व्यक्तिगत जानकारी",
-        "full_name": "पूरा नाम",
         "username": "उपयोगकर्ता नाम",
-        "email": "ईमेल"
+        "email": "ईमेल",
+        "heading": "व्यक्तिगत जानकारी",
+        "full_name": "पूरा नाम"
       },
       "update_profile": "प्रोफ़ाइल अपडेट करें",
       "logout": "लॉग आउट"

@@ -1,12 +1,14 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+
 const axios = require('axios');
 const dotenv = require('dotenv');
 const fs = require('fs');
 const path = require('path');
-const english = require('../src/lib/utils/translations/en.json');
 const keys = require('all-object-keys');
 const jessy = require('jessy');
 const set = require('lodash/set');
-const nessy = require('nessy');
+
+const englishTranslations = require('../src/lib/utils/translations/en.json');
 
 // Load env variables
 dotenv.config();
@@ -15,25 +17,23 @@ const SCRIPT_WAIT_TIME = 2000;
 
 // Define file paths for each language
 const languageFiles = {
-  hi: path.resolve(__dirname, '../src/lib/utils/translations/hi.json')
-  // fr: path.resolve(__dirname, '../src/lib/utils/translations/fr.json'),
-  // pt: path.resolve(__dirname, '../src/lib/utils/translations/pt.json'),
-  // de: path.resolve(__dirname, '../src/lib/utils/translations/de.json'),
-  // vi: path.resolve(__dirname, '../src/lib/utils/translations/vi.json'),
-  // ru: path.resolve(__dirname, '../src/lib/utils/translations/re.json'),
-  // es: path.resolve(__dirname, '../src/lib/utils/translations/es.json')
+  hi: path.resolve(__dirname, '../src/lib/utils/translations/hi.json'),
+  fr: path.resolve(__dirname, '../src/lib/utils/translations/fr.json'),
+  pt: path.resolve(__dirname, '../src/lib/utils/translations/pt.json'),
+  de: path.resolve(__dirname, '../src/lib/utils/translations/de.json'),
+  vi: path.resolve(__dirname, '../src/lib/utils/translations/vi.json'),
+  ru: path.resolve(__dirname, '../src/lib/utils/translations/re.json'),
+  es: path.resolve(__dirname, '../src/lib/utils/translations/es.json')
 };
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const getMissingTranslations = async (toLanguage, outputFilePath) => {
-  const englishKeys = keys(require('../src/lib/utils/translations/en.json'));
+  const englishKeys = keys(englishTranslations);
   const targetTranslations = require(outputFilePath); // Load target language translations
   const targetKeys = keys(targetTranslations);
 
   const missingKeys = englishKeys.filter((key) => !targetKeys.includes(key));
-
-  const englishTranslations = require('../src/lib/utils/translations/en.json');
 
   const missingKeysWithDetails = {};
   missingKeys.forEach((key) => {
@@ -57,13 +57,18 @@ const getMissingTranslations = async (toLanguage, outputFilePath) => {
   return missingKeysWithDetails;
 };
 
-const translateText = async (fromLanguage, toLanguage, outputFilePath) => {
+const translateLanguage = async (fromLanguage, toLanguage, outputFilePath) => {
   // Check if there are missing translations
   const missingTranslations = await getMissingTranslations(toLanguage, outputFilePath);
+  console.log('Missing translations', missingTranslations);
+
+  if (!Object.keys(missingTranslations).length) {
+    console.log('No missing translation skip');
+    return;
+  }
 
   const targetTranslations = require(outputFilePath); // Load target language translations
 
-  console.log('targetTranslations', targetTranslations);
   const flattenedEnglish = flattenJSON(missingTranslations);
   const jsonString = JSON.stringify(flattenedEnglish);
 
@@ -84,16 +89,16 @@ const translateText = async (fromLanguage, toLanguage, outputFilePath) => {
   };
 
   try {
+    console.log('Calling API');
     const response = await axios.request(options);
     const { trans } = response.data;
-    if (trans) {
-      const unflattenedTranslatedData = unflattenJSON(trans);
-      // console.log('unflattenedTranslatedData', unflattenedTranslatedData);
 
-      // Merge the translated data into the target translations object
-      // mergeTranslations(targetTranslations, unflattenedTranslatedData);
-      for (const key in unflattenedTranslatedData) {
-        nessy(key, unflattenedTranslatedData[key], '.', targetTranslations);
+    console.log('Translation gotten', trans);
+
+    if (trans) {
+      for (const key in trans) {
+        const value = trans[key];
+        set(targetTranslations, key, value);
       }
 
       fs.writeFileSync(outputFilePath, JSON.stringify(targetTranslations, null, 2));
@@ -105,21 +110,6 @@ const translateText = async (fromLanguage, toLanguage, outputFilePath) => {
     console.error(`Error translating to ${toLanguage.toUpperCase()}:`, error);
   }
 };
-
-// const mergeTranslations = (targetTranslations, translatedData, prefix = '') => {
-//   console.log('targetTranslations', targetTranslations);
-//   console.log('translatedData', translatedData);
-
-//   for (const key in translatedData) {
-//     if (typeof translatedData[key] === 'object') {
-//       // Recursively merge nested objects
-//       mergeTranslations(targetTranslations, translatedData[key], `${prefix}${key}.`);
-//     } else {
-//       // Update the target translations with the translated data
-//       targetTranslations[`${prefix}${key}`] = translatedData[key];
-//     }
-//   }
-// };
 
 // Function to flatten the JSON object
 const flattenJSON = (obj, prefix = '') => {
@@ -135,29 +125,17 @@ const flattenJSON = (obj, prefix = '') => {
   return flattened;
 };
 
-// Function to unflatten the JSON object
-const unflattenJSON = (obj) => {
-  const result = {};
-  for (const key in obj) {
-    const keys = key.split('.');
-    let nested = result;
-    for (let i = 0; i < keys.length - 1; i++) {
-      if (!nested[keys[i]]) {
-        nested[keys[i]] = {};
-      }
-      nested = nested[keys[i]];
-    }
-    nested[keys[keys.length - 1]] = obj[key];
-  }
-  return result;
-};
-
 // Loop through each language and translate the English text with a delay
-const translate = async (delay) => {
+const translate = async () => {
   for (const [language, filePath] of Object.entries(languageFiles)) {
-    await wait(delay);
-    await translateText('en', language, filePath);
+    console.log(`============FROM: EN================`);
+    console.log(`============TO: ${language.toUpperCase()}================`);
+
+    await wait(SCRIPT_WAIT_TIME);
+    await translateLanguage('en', language, filePath);
+
+    console.log(`============COMPLETE================\n\n`);
   }
 };
 
-translate(SCRIPT_WAIT_TIME);
+translate();
