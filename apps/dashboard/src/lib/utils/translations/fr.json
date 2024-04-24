@@ -199,7 +199,7 @@
     "modal": {
       "heading": "Plan de mise à niveau",
       "thanks": "Merci pour votre soutien",
-      "plan": "Votre forfait s'accompagne d'avantages et d'avantages intéressants, notamment l'accès à toutes les futures fonctionnalités que nous publions.",
+      "plan": "Votre forfait s'accompagne d'avantages et d'avantages intéressants, notamment l'accès à toutes les futures fonctionnalités que nous publierons.",
       "close": "Fermer",
       "learn": "Apprendre encore plus",
       "month": "mois"
@@ -293,7 +293,7 @@
     "6": {
       "title": "Publier un cours",
       "desc": "Rendre votre cours public et achetable",
-      "button_label": "Publier le cours"
+      "button_label": "Publier un cours"
     },
     "get_started": "Commencer"
   },
@@ -454,7 +454,7 @@
           "title": "Ajouter",
           "edit_post": "Modifier le message",
           "make_a_post": "Créer un message",
-          "placeholder": "Partagez une mise à jour avec vos étudiants",
+          "placeholder": "Partagez une mise à jour avec vos élèves",
           "cancel": "Annuler",
           "post": "Poste"
         },

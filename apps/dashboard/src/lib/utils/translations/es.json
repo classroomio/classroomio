@@ -30,7 +30,7 @@
     "we_at": "nosotros en",
     "content_1": "Somos un pequeño equipo con la gran misión de capacitar a los educadores con excelente tecnología para ayudarlos a capacitar a la generación futura. La educación es el regalo más poderoso que le puedes dar a alguien, y tiene mucho sentido brindarte todas las herramientas que necesitas para brindarle a más personas este REGALO.",
     "content_2": "Gracias por elegirnos",
-    "content_3": "lo agradecemos profundamente y estamos a su servicio."
+    "content_3": "lo apreciamos profundamente y estamos a su servicio."
   },
   "login": {
     "welcome": "Bienvenido de nuevo",
@@ -267,7 +267,7 @@
   "setup": {
     "1": {
       "title": "Sube una foto de perfil y actualiza el nombre de usuario",
-      "desc": "Personalización y un toque humano que hacen que las interacciones sean más personales y memorables.",
+      "desc": "Personalización y un toque humano que hace que las interacciones sean más personales y memorables.",
       "button_label": "Actualización del perfil"
     },
     "2": {
@@ -353,7 +353,7 @@
     "settings": {
       "domains": {
         "add": "Agregar",
-        "work_together": "Agregue sus compañeros de equipo o colaboradores a su organización. Empezar a trabajar juntos",
+        "work_together": "Agregue a sus compañeros de equipo o colaboradores a su organización. Empezar a trabajar juntos",
         "url": "URL",
         "update": "Actualizar dominio",
         "custom": "Dominio personalizado",
@@ -632,13 +632,13 @@
               "title": "Eliminar pregunta",
               "sure": "¿Estás seguro de que quieres eliminar esta pregunta?",
               "no": "No, por favor no",
-              "yes": "Si, borrar"
+              "yes": "Si, eliminar"
             },
             "edit_mode": {
               "delete_modal": "Eliminar modal",
               "sure": "¿Estás seguro de que deseas eliminar este ejercicio?",
               "no": "No, cancelar",
-              "yes": "Si, borrar",
+              "yes": "Si, eliminar",
               "deleting": "Eliminando...",
               "error": "Tienes algunos errores",
               "question": "Pregunta",
@@ -858,7 +858,7 @@
         "description": "Descripción del curso",
         "learn": "lo que aprenderás",
         "certificate": "Certificado",
-        "certificate_text": "Cuando complete todos los cursos del programa, obtendrá un Certificado para compartir con su red profesional.",
+        "certificate_text": "Cuando completes todos los cursos del programa, obtendrás un Certificado para compartir con tu red profesional.",
         "content": "Contenido del curso",
         "slide": "1 diapositiva",
         "note": "nota",
@@ -934,7 +934,7 @@
       "ask_the": "pregunta a la comunidad",
       "publish": "Publicar",
       "title": "Título",
-      "select_course": "Seleccionar Curso",
+      "select_course": "Seleccionar curso",
       "ask_community": "Pregunta a la comunidad cualquier duda que tengas",
       "question": "Pregunta",
       "save": "Ahorrar",
@@ -953,7 +953,7 @@
       "comment": "comentario",
       "sure": "Estás seguro que quieres eliminar esto",
       "no": "No, mantenlo",
-      "yes": "Si, borrar"
+      "yes": "Si, eliminar"
     }
   },
   "audience": {

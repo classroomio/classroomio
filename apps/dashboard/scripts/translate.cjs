@@ -1,18 +1,30 @@
-import axios from 'axios';
-import fs from 'fs';
+/* eslint-disable @typescript-eslint/no-var-requires */
+
+const axios = require('axios');
+const dotenv = require('dotenv');
+const fs = require('fs');
+const path = require('path');
+const english = require('../src/lib/utils/translations/en.json');
 
 // Import English translations
-import english from '../translations/en.json' assert { type: 'json' };
+// import english from '../src/lib/utils/translations/en.json' assert { type: 'json' };
+
+// Load env variables
+dotenv.config();
+
+const SCRIPT_WAIT_TIME = 2000;
+
+console.log('dirname', __dirname, path.resolve(__dirname, '../src/lib/utils/translations/hi.json'));
 
 // Define file paths for each language
 const languageFiles = {
-  hi: '../translations/hi.json',
-  fr: '../translations/fr.json',
-  pt: '../translations/pt.json',
-  de: '../translations/de.json',
-  vi: '../translations/vi.json',
-  ru: '../translations/re.json',
-  es: '../translations/es.json'
+  hi: path.resolve(__dirname, '../src/lib/utils/translations/hi.json'),
+  fr: path.resolve(__dirname, '../src/lib/utils/translations/fr.json'),
+  pt: path.resolve(__dirname, '../src/lib/utils/translations/pt.json'),
+  de: path.resolve(__dirname, '../src/lib/utils/translations/de.json'),
+  vi: path.resolve(__dirname, '../src/lib/utils/translations/vi.json'),
+  ru: path.resolve(__dirname, '../src/lib/utils/translations/re.json'),
+  es: path.resolve(__dirname, '../src/lib/utils/translations/es.json')
 };
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -90,11 +102,10 @@ const unflattenJSON = (obj) => {
 };
 
 // Loop through each language and translate the English text with a delay
-const translateToLanguagesWithDelay = async (delay) => {
+const translate = async (delay) => {
   for (const [language, filePath] of Object.entries(languageFiles)) {
     await translateTextWithDelay('en', language, filePath, delay);
   }
 };
 
-const delayInMilliseconds = 2000;
-translateToLanguagesWithDelay(delayInMilliseconds);
+translate(SCRIPT_WAIT_TIME);
