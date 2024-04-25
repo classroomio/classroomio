@@ -11,6 +11,7 @@
   import ReviewFormEditor from './ReviewFormEditor.svelte';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import { processErrors } from '$lib/utils/functions/validator';
+  import { t } from '$lib/utils/functions/translations';
 
   export let course = {};
 
@@ -125,7 +126,7 @@
 
     <!-- create reviews button -->
     <PrimaryButton
-      label="Add Reviews"
+      label={$t('course.navItem.landing_page.editor.reviews_form.add_reviews')}
       variant={VARIANTS.CONTAINED}
       onClick={addReviewForm}
       className="w-5 rounded-md mt-8"

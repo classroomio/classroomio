@@ -1162,5 +1162,14 @@
     "date": "{{val:date}}",
     "time": "Nur der Formatierer „Zeit“ ist nicht verfügbar, es muss sich um einen DateTime-Formatierer handeln",
     "number": "{{value:currency}}"
+  },
+  "ai": {
+    "help_me": "Hilf mir zu schreiben",
+    "placeholder": "Helfen Sie mir, eine kurze Beschreibung zu schreiben",
+    "text": "Anfangen zu tippen...",
+    "reset": "Zurücksetzen",
+    "rephrase": "Umformulieren",
+    "insert": "Einfügen",
+    "can_you": "Können Sie das bitte umformulieren?"
   }
 }

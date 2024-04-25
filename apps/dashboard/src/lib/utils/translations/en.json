@@ -413,6 +413,16 @@
     "No_courses_started": "No courses started"
   },
 
+  "ai": {
+    "help_me": "Help me write",
+    "placeholder": "Help me write a short description",
+    "text": "Start typing...",
+    "reset": "Reset",
+    "rephrase": "Rephrase",
+    "insert": "Insert",
+    "can_you": "Can you please rephrase this"
+  },
+
   "courses": {
     "heading": "Courses",
     "heading_button": "Create Course",

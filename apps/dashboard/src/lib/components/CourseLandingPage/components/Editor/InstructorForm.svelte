@@ -62,7 +62,7 @@
 
 <div class="mt-5">
   <label for="upload" class="font-bold"
-    >{$t('course.navItem.landing_page.editor.instructure_form.upload')}</label
+    >{$t('course.navItem.landing_page.editor.instructor_form.upload')}</label
   >
   <UploadImage bind:avatar src={imgUrl} />
 </div>
@@ -70,22 +70,22 @@
 <TextField
   className="mt-5"
   labelClassName="font-bold"
-  label={$t('course.navItem.landing_page.editor.instructure_form.name')}
-  placeholder={$t('course.navItem.landing_page.editor.instructure_form.name_placeholder')}
+  label={$t('course.navItem.landing_page.editor.instructor_form.name')}
+  placeholder={$t('course.navItem.landing_page.editor.instructor_form.name_placeholder')}
   bind:value={name}
 />
 
 <TextField
   className="mt-5"
   labelClassName="font-bold"
-  label={$t('course.navItem.landing_page.editor.instructure_form.role')}
+  label={$t('course.navItem.landing_page.editor.instructor_form.role')}
   placeholder="e.g Software developer"
   bind:value={role}
 />
 
 <TextArea
-  label={$t('course.navItem.landing_page.editor.instructure_form.about')}
-  placeholder={$t('course.navItem.landing_page.editor.instructure_form.about_placeholder')}
+  label={$t('course.navItem.landing_page.editor.instructor_form.about')}
+  placeholder={$t('course.navItem.landing_page.editor.instructor_form.about_placeholder')}
   rows={6}
   className="mt-5"
   labelClassName="font-bold"
@@ -95,7 +95,7 @@
 <TextField
   className="mt-5"
   labelClassName="font-bold"
-  label={$t('course.navItem.landing_page.editor.instructure_form.total')}
+  label={$t('course.navItem.landing_page.editor.instructor_form.total')}
   type="number"
   bind:value={courseNo}
 />

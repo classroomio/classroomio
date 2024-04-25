@@ -1162,5 +1162,14 @@
     "date": "{{val:date}}",
     "time": "Chỉ có bộ định dạng 'thời gian' là không có sẵn, nó phải là bộ định dạng DateTime",
     "number": "{{giá trị:tiền tệ}}"
+  },
+  "ai": {
+    "help_me": "Giúp tôi viết",
+    "placeholder": "Giúp tôi viết một mô tả ngắn",
+    "text": "Bắt đầu gõ...",
+    "reset": "Cài lại",
+    "rephrase": "Diễn đạt lại",
+    "insert": "Chèn",
+    "can_you": "Bạn có thể vui lòng diễn đạt lại điều này"
   }
 }

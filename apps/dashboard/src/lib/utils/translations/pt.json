@@ -1162,5 +1162,14 @@
     "date": "{{val:data}}",
     "time": "Apenas o formatador 'hora' não está disponível, deve ser o formatador DateTime",
     "number": "{{valor:moeda}}"
+  },
+  "ai": {
+    "help_me": "Ajude-me a escrever",
+    "placeholder": "Ajude-me a escrever uma breve descrição",
+    "text": "Começe a digitar...",
+    "reset": "Reiniciar",
+    "rephrase": "Reformular",
+    "insert": "Inserir",
+    "can_you": "Você pode reformular isso"
   }
 }
