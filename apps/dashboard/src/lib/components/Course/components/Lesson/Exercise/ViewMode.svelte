@@ -26,6 +26,8 @@
   } from '$lib/utils/services/notification/notification';
   import { lesson } from '../store/lessons';
   import { browser } from '$app/environment';
+  import { Close, CloseFilled } from 'carbon-icons-svelte';
+  import IconButton from '$lib/components/IconButton/index.svelte';
 
   export let preview: false;
   export let exerciseId = '';
@@ -36,6 +38,7 @@
   let hasSubmission = false;
   let isLoadingAutoSavedData = false;
   let alreadyCheckedAutoSavedData = false;
+  let gradedExerciseComment = false;
 
   function handleStart() {
     $questionnaireMetaData.currentQuestionIndex += 1;
@@ -194,6 +197,10 @@
     alreadyCheckedAutoSavedData = true;
   }
 
+  const toggleComments = () => {
+    gradedExerciseComment = !gradedExerciseComment;
+  };
+
   $: browser && !alreadyCheckedAutoSavedData && getAutoSavedData();
 
   // Reactive code
@@ -281,18 +288,18 @@
 {:else if $questionnaireMetaData.isFinished}
   {#if !isLoadingAutoSavedData}
     <div class="flex items-center justify-between">
-      <div class="flex flex-col justify-between w-full">
-        <h2 class="text-xl mb-2 mt-0">{$questionnaire.title}</h2>
+      <div class="flex items-center space-x-4 w-full">
+        <h2 class="text-xl font-normal">{$questionnaire.title}</h2>
         {#if STATUS.GRADED === $questionnaireMetaData.status}
           <span
-            class="status-text bg-green-700 text-white rounded-full py-3 px-6 text-center"
+            class="status-text bg-green-700 text-white py-1 px-2 text-center"
             title="Status: Pending Review"
           >
             Graded
           </span>
         {:else}
           <span
-            class="status-text bg-yellow-600 text-white rounded-full py-3 px-6 text-center"
+            class="status-text bg-yellow-600 text-white py-1 px-2 text-center"
             title="Status: Pending Review"
           >
             Pending
@@ -301,19 +308,37 @@
       </div>
       {#if STATUS.GRADED === $questionnaireMetaData.status}
         <span
-          class="p-5 border-2 border-gray-700 rounded-full h-24 w-24 flex items-center justify-center text-2xl"
+          class="p-6 border-2 border-gray-300 bg-[#F5F8FE] rounded-full h-10 w-10 flex items-center justify-center text-[#2751DA] text-sm font-semibold"
           title="Status: Pending Review"
         >
           {$questionnaireMetaData.finalTotalGrade}/{$questionnaireMetaData.totalPossibleGrade}
         </span>
       {/if}
     </div>
+
     <Preview
       questions={$questionnaire.questions.sort((a, b) => a.order - b.order)}
       questionnaireMetaData={$questionnaireMetaData}
       grades={$questionnaireMetaData.grades}
       disableGrading={true}
     />
+
+    {#if gradedExerciseComment}
+      <div class="flex justify-end fixed right-14 bottom-4">
+        <button on:click={toggleComments}>
+          <img src="/comment.svg" alt="comment" class="w-20 h-20" />
+        </button>
+      </div>
+    {:else}
+      <div
+        class="flex items-center justify-between sticky -bottom-14 bg-primary-700 px-4 py-1 text-white font-semibold rounded-sm"
+      >
+        <span> Lorem ipsum dolor, sit amet consectetur adipisicing elit. Atque, magnam. </span>
+        <IconButton onClick={toggleComments}>
+          <CloseFilled size={24} class="fill-white" />
+        </IconButton>
+      </div>
+    {/if}
   {/if}
 {:else if currentQuestion && currentQuestion?.id}
   {#key currentQuestion.id}

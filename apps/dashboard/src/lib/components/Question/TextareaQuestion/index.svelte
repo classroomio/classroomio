@@ -54,9 +54,38 @@
 
   <div class="ml-4">
     {#if disabled}
-      <div class="bg-gray-200 dark:bg-gray-500 p-5 rounded-md mb-3">
-        {defaultValue}
-      </div>
+      {#if disableGrading}
+        <div class="bg-gray-200 dark:bg-gray-500 py-3 px-5 rounded-md mb-3">
+          {defaultValue}
+        </div>
+      {:else}
+        <div class="border-2 rounded-md">
+          <div class="bg-gray-200 dark:bg-gray-500 py-3 px-5 rounded-md mb-3">
+            {defaultValue}
+          </div>
+          <div class="flex items-start px-2 py-4">
+            <div class="flex items-center space-x-4">
+              <img src="/ai.svg" alt="alt" />
+              <p class="font-normal text-sm">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus distinctio ex atque
+                facilis ea non pariatur deleniti blanditiis aliquid molestias.
+              </p>
+            </div>
+            <div class="flex space-x-2">
+              <button
+                class="border rounded-sm hover:bg-green-400 hover:text-white border-green-400 text-green-400 text-sm font-normal px-2"
+              >
+                Accept
+              </button>
+              <button
+                class="border rounded-sm border-red-400 hover:bg-red-400 hover:text-white text-red-400 text-sm font-normal px-2"
+              >
+                Reject
+              </button>
+            </div>
+          </div>
+        </div>
+      {/if}
     {:else}
       <TextArea
         bind:value={defaultValue}

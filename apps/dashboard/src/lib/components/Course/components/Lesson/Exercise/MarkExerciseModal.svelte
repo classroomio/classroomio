@@ -7,6 +7,8 @@
   import Preview from './Preview.svelte';
   import { SELECTABLE_STATUS } from './constants';
   import { snackbar } from '$lib/components/Snackbar/store';
+  import TextArea from '$lib/components/Form/TextArea.svelte';
+  import { Tag } from 'carbon-components-svelte';
 
   export let open = false;
   export let onClose = () => {};
@@ -27,7 +29,7 @@
 
   function calculateTotal(grades) {
     if (!grades) return 0;
-    return Object.values(grades).reduce((acc, grade) => acc + parseInt(grade), 0);
+    return Object.values(grades).reduce((acc, grade) => acc + parseInt(grade || 0), 0);
   }
 
   function handleStatusChange() {
@@ -72,10 +74,12 @@
   modalHeading={data.title}
   bind:open
   {onClose}
-  width="w-4/5"
-  containerClass="flex items-start"
+  width="w-4/5 h-[90%]"
+  containerClass="flex items-start !max-h-full h-[85%] py-0 px-4"
+  headerClass="py-2"
+  labelClass="text-base font-semibold"
 >
-  <div class="w-full">
+  <div class="w-full h-full">
     <Preview
       questions={Array.isArray(data.questions)
         ? data.questions.sort((a, b) => a.order - b.order)
@@ -88,12 +92,12 @@
     />
   </div>
   <div class="ml-4 w-2/5 sticky top-0">
-    <div class="border border-gray-300 rounded-md mt-2">
+    <div class="border border-gray-300 rounded-md">
       <div
         class="hover:bg-gray-100 dark:bg-neutral-800 border-b border-t-0 border-l-0 border-r-0 border-gray-300 p-3"
       >
-        <p class="dark:text-white font-bold text-lg">
-          Details
+        <p class="dark:text-white font-bold text-base">
+          Details:
           {#if data.isEarly}
             <span class="ml-2 text-sm badge rounded-sm px-2 bg-green-500 text-white"> early </span>
           {:else}
@@ -102,9 +106,12 @@
         </p>
       </div>
 
-      <div class="flex items-center text-sm p-3">
-        <p class="dark:text-white font-bold w-2/5">Total grade</p>
-        <p class="dark:text-white">{total} / {maxPoints}</p>
+      <div class="flex items-center space-x-4 text-sm px-3 py-2">
+        <p class="dark:text-white text-sm text-gray-500 font-semibold">Total grade:</p>
+
+        <Tag class="dark:text-white font-semibold text-black bg-gray-300 rounded-md w-fit">
+          {total}/{maxPoints}
+        </Tag>
       </div>
       <!-- <div class="flex items-center text-sm p-3">
         <p class="dark:text-white font-bold w-1/2">Status</p>
@@ -113,35 +120,67 @@
           <p class="dark:text-white">Grading</p>
         </div>
       </div> -->
-      <div class="flex items-center text-sm p-3">
-        <p class="dark:text-white font-bold w-2/5">Student</p>
+      <div class="flex items-center space-x-4 text-sm px-3 py-2">
+        <p class="dark:text-white text-sm text-gray-500 font-semibold">Student:</p>
         {#if data.student}
-          <img
-            alt="Student avatar"
-            class="block rounded-full h-6 w-6"
-            src={data.student.avatar_url}
-          />
-          <p class="dark:text-white ml-2 text-sm">{data.student.fullname}</p>
+          <div class="flex flex-row justify-center items-center bg-gray-300 rounded-md p-[6px]">
+            <img
+              alt="Student avatar"
+              class="flex rounded-full h-5 w-5"
+              src={data.student.avatar_url}
+            />
+            <p class="dark:text-white font-semibold ml-2 text-sm line-clamp-1">
+              {data.student.fullname}
+            </p>
+          </div>
         {/if}
       </div>
-      <div class="flex items-center text-sm p-3">
-        <p class="dark:text-white font-bold w-2/5">Status</p>
+      <div class="flex items-center space-x-4 text-sm px-3 py-2">
+        <p class="dark:text-white text-sm text-gray-500 font-semibold">Assesment Type:</p>
+        <Tag class="dark:text-white font-semibold bg-gray-300 rounded-md text-black w-fit"
+          >Paragraph</Tag
+        >
+      </div>
+
+      <div class="flex flex-col items-start text-sm px-3 py-2">
+        <p class="dark:text-white text-gray-500 font-semibold">Status:</p>
         <Select
           bind:value={status}
           options={SELECTABLE_STATUS}
-          selectClassName={getStatusColor(status)}
+          selectClassName="bg-gray-300 w-full border-none text-sm"
           onChange={handleStatusChange}
-          className="w-full"
+          className="w-full "
         />
       </div>
-      <div class="flex items-center justify-center w-full p-3">
+
+      <div class="flex flex-col items-start text-sm px-3 py-2">
+        <p class="dark:text-white text-gray-500 font-semibold">Add comment:</p>
+        <TextArea
+          bgColor="bg-gray-300"
+          className="font-semibold"
+          placeholder="write your comments"
+        />
+      </div>
+
+      <div class="flex flex-col w-full space-y-3 px-3 py-2">
+        <PrimaryButton
+          onClick={() => {
+            handleSave(data);
+            onClose();
+          }}
+          variant={VARIANTS.OUTLINED}
+          className="space-x-3 py-3 px-8 w-full "
+        >
+          <img src="/ai.svg" alt="ai" />
+          <p class="font-semibold text-primary-700 text-sm">Grade with AI</p>
+        </PrimaryButton>
         <PrimaryButton
           onClick={() => {
             handleSave(data);
             onClose();
           }}
           label="Submit Grades"
-          variant={VARIANTS.CONTAINED_SUCCESS}
+          variant={VARIANTS.CONTAINED}
           className="py-3 px-8 w-full"
         />
       </div>
