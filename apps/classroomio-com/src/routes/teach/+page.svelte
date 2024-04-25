@@ -30,11 +30,11 @@
       subText: 'Create a free account on our platform by going to classroomio.com/signup'
     },
     {
-      title: 'Record course & Plan exercise',
+      title: 'Record a course',
       subText: 'Prepare your content however you want and then upload them onto our platform.'
     },
     {
-      title: 'Launch your course',
+      title: 'Launch the course',
       subText: 'Polish your course, make sure it is ready for students. Then publish it.'
     },
     {
@@ -221,7 +221,7 @@
     </div>
 
     <PageSignupCTA
-      header="Skyrocket Your Teaching Career"
+      header="Scale your Teaching Business in Minutes"
       subText="Don't wait, let's get you started."
       btnLabel="Register"
       link="/teach/register"
