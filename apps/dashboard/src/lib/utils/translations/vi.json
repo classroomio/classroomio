@@ -397,7 +397,8 @@
     "lms_dashboard_hero": "Hôm nay là một ngày khác để đưa bạn đến gần hơn với mục tiêu học tập của mình. Đừng bỏ cuộc, bạn càng học nhiều thì bạn càng tiến bộ hơn.",
     "dont": "Đừng bỏ cuộc",
     "lessons_completed": "Bài học đã hoàn thành",
-    "No_courses_started": "Không có khóa học nào bắt đầu"
+    "No_courses_started": "Không có khóa học nào bắt đầu",
+    "visit_site": "Truy cập trang web"
   },
   "courses": {
     "heading": "Khóa học",

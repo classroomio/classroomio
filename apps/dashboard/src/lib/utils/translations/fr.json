@@ -397,7 +397,8 @@
     "lms_dashboard_hero": "Aujourd'hui est un autre jour pour vous rapprocher de vos objectifs d'apprentissage. N'abandonnez pas, plus vous apprenez, mieux vous vous améliorez.",
     "dont": "N'abandonne pas",
     "lessons_completed": "Leçons terminées",
-    "No_courses_started": "Aucun cours n'a commencé"
+    "No_courses_started": "Aucun cours n'a commencé",
+    "visit_site": "Visitez le site Web"
   },
   "courses": {
     "heading": "Cours",

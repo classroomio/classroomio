@@ -397,7 +397,8 @@
     "lms_dashboard_hero": "Heute ist ein weiterer Tag, um Sie Ihren Lernzielen näher zu bringen. Geben Sie nicht auf, je mehr Sie lernen, desto besser werden Sie.",
     "dont": "Gib nicht auf",
     "lessons_completed": "Lektionen abgeschlossen",
-    "No_courses_started": "Es wurden keine Kurse gestartet"
+    "No_courses_started": "Es wurden keine Kurse gestartet",
+    "visit_site": "Besuche die Website"
   },
   "courses": {
     "heading": "Kurse",
