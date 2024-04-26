@@ -252,7 +252,7 @@
         "lesson_download": "Lecciones DescargarCargar",
         "available": "Haga que la lección esté disponible para descargar en pdf para estudiantes registrados",
         "course_download": "Descarga del curso",
-        "course_avail": "Hacer que el curso esté disponible para descarga para estudiantes registrados",
+        "course_avail": "Hacer que el curso esté disponible para su descarga para los estudiantes registrados",
         "download": "Descargar",
         "allow": "Permitir nuevos estudiantes",
         "access": "Permitir que nuevos estudiantes accedan a este curso",
@@ -353,7 +353,8 @@
             "description": "Descripción",
             "short_video": "Video corto",
             "replace_cover": "Reemplazar imagen de portada",
-            "replace": "Reemplazar"
+            "replace": "Reemplazar",
+            "helper": "Introduce un enlace a un vídeo de youtube."
           },
           "title": {
             "header": "Encabezamiento",
@@ -383,8 +384,8 @@
         "save": "Guardar cambios",
         "unlocked_certificate": "El certificado ya está disponible",
         "locked_certificate": "Certificados no disponibles",
-        "locked_certificate_body_1": "Su instructor necesita desbloquear su certificado.",
-        "locked_certificate_body_2": "Si necesita su certificado, comuníquese con su instructor.",
+        "instructor_unlock": "Su instructor necesita desbloquear su certificado.",
+        "contact_instructor": "Si necesita su certificado, comuníquese con su instructor.",
         "download_certificate": "Descargar certificado"
       },
       "people": {
@@ -601,12 +602,12 @@
             "completion": "Generación de IA completa",
             "click_generate": "Haga clic en 'Generar' para algo de magia",
             "options": {
-              "title_1": "Desde cero",
-              "subtitle_1": "Crea tu ejercicio desde cero si ya tienes tus preguntas preparadas",
-              "title_2": "Utilice una plantilla",
-              "subtitle_2": "Seleccione entre más de 100 plantillas de ejercicios predefinidos para ayudarle a comenzar",
-              "title_3": "Usa IA",
-              "subtitle_3": "Puedes generar un ejercicio con IA a partir de tus notas"
+              "from_scratch": "Desde cero",
+              "from_scratch_subtitle": "Crea tu ejercicio desde cero si ya tienes tus preguntas preparadas",
+              "use_template": "Utilice una plantilla",
+              "use_template_subtitle": "Seleccione entre más de 100 plantillas de ejercicios predefinidos para ayudarle a comenzar",
+              "use_ai": "Usa IA",
+              "use_ai_subtitle": "Puedes generar un ejercicio con IA a partir de tus notas"
             }
           }
         },
@@ -633,12 +634,12 @@
                 "select_file": "Seleccione el archivo (Mp4, MOV, AVI) para cargarlo en su lección.",
                 "size": "(Máximo 500 MB)",
                 "oops": "Ups `😬, no se pudo subir el video",
-                "sorry": "Lo sentimos, el video no fue subido. El tamaño del archivo es demasiado grande,",
-                "sorry_2": "el tamaño máximo es 30 MB. ¡Intentar otra vez!",
+                "big_file": "Lo sentimos, el video no fue subido. El tamaño del archivo es demasiado grande,",
+                "maximum_size": "el tamaño máximo es 30 MB. ¡Intentar otra vez!",
                 "button": "Prueba con otro archivo",
                 "try_again": "Inténtalo de nuevo",
-                "sorry_3": "Lo sentimos, el video no se subió, el formato de archivo no es compatible o algo salió mal en el servidor.",
-                "sorry_4": "Sube archivos MP4, MOV y AVI.",
+                "unsupported_format": "Lo sentimos, el video no se subió, el formato de archivo no es compatible o algo salió mal en el servidor.",
+                "format": "Sube archivos MP4, MOV y AVI.",
                 "upgrade": "Actualiza tu plan para subir videos",
                 "uploading": "Subiendo...",
                 "invalid_youtube": "Enlace(s) de YouTube no válido(s)",
@@ -712,15 +713,15 @@
       }
     },
     "navItems": {
-      "nav_1": "Noticias",
-      "nav_2": "Lecciones",
-      "nav_3": "Asistencia",
-      "nav_4": "Envíos",
-      "nav_5": "Marcas",
-      "nav_6": "Gente",
-      "nav_7": "Certificados",
-      "nav_8": "Página de destino",
-      "nav_9": "Ajustes"
+      "nav_news_feed": "Noticias",
+      "nav_lessons": "Lecciones",
+      "nav_attendance": "Asistencia",
+      "nav_submissions": "Envíos",
+      "nav_marks": "Marcas",
+      "nav_people": "Gente",
+      "nav_certificates": "Certificados",
+      "nav_landing_page": "Página de destino",
+      "nav_settings": "Ajustes"
     }
   },
   "courses": {
@@ -771,7 +772,10 @@
     "reset": "Reiniciar",
     "rephrase": "Expresar de otro modo",
     "insert": "Insertar",
-    "can_you": "¿Puedes reformular esto?"
+    "can_you": "¿Puedes reformular esto?",
+    "requirements": "Por favor escriba algunos requisitos necesarios para tomar este curso:",
+    "description": "Por favor escriba una descripción detallada del curso para este curso:",
+    "expectation": "¿Qué debe esperar un estudiante aprender de este curso?"
   },
   "dashboard": {
     "morning_heading": "Buen día",
@@ -811,7 +815,7 @@
     "settings": {
       "domains": {
         "add": "Agregar",
-        "work_together": "Agregue a sus compañeros de equipo o colaboradores a su organización. Empezar a trabajar juntos",
+        "work_together": "Agregue sus compañeros de equipo o colaboradores a su organización. Empezar a trabajar juntos",
         "url": "URL",
         "update": "Actualizar dominio",
         "custom": "Dominio personalizado",
@@ -878,98 +882,39 @@
     "error_organization": "Algo salió mal al crear esta organización. Por favor recarga e intenta nuevamente"
   },
   "setup": {
-    "1": {
-      "title": "Sube una foto de perfil y actualiza el nombre de usuario",
-      "desc": "Personalización y un toque humano que hace que las interacciones sean más personales y memorables.",
-      "button_label": "Actualización del perfil"
-    },
-    "2": {
-      "title": "Actualizar la imagen de perfil de la organización",
-      "desc": "Establezca una identidad profesional y reconocible para su organización.",
-      "button_label": "Actualizar perfil de organización"
-    },
-    "3": {
-      "title": "Crear curso",
-      "desc": "Crea un curso que compartirás con tus alumnos",
-      "button_label": "Crear curso"
-    },
-    "4": {
-      "title": "crear una lección",
-      "desc": "Divida su curso en lecciones que sus estudiantes puedan entender fácilmente",
-      "button_label": "Crear lección"
-    },
-    "5": {
-      "title": "Crea un ejercicio",
-      "desc": "Pon a prueba a tus estudiantes, permíteles demostrar su comprensión del tema.",
-      "button_label": "Crear tarea"
-    },
-    "6": {
+    "get_started": "Empezar",
+    "publish_course": {
       "title": "Publicar un curso",
       "desc": "Haz que tu curso sea público y adquirible",
       "button_label": "Publicar curso"
     },
-    "get_started": "Empezar"
+    "exercise": {
+      "title": "Crea un ejercicio",
+      "desc": "Pon a prueba a tus estudiantes, permíteles demostrar su comprensión del tema.",
+      "button_label": "Crear tarea"
+    },
+    "lesson": {
+      "title": "crear una lección",
+      "desc": "Divida su curso en lecciones que sus estudiantes puedan entender fácilmente",
+      "button_label": "Crear lección"
+    },
+    "course": {
+      "title": "Crear curso",
+      "desc": "Crea un curso que compartirás con tus alumnos",
+      "button_label": "Crear curso"
+    },
+    "organization_profile": {
+      "title": "Actualizar la imagen de perfil de la organización",
+      "desc": "Establezca una identidad profesional y reconocible para su organización.",
+      "button_label": "Actualizar perfil de organización"
+    },
+    "personal_profile": {
+      "title": "Sube una foto de perfil y actualiza el nombre de usuario",
+      "desc": "Personalización y un toque humano que hacen que las interacciones sean más personales y memorables.",
+      "button_label": "Actualización del perfil"
+    }
   },
   "pricing": {
-    "data": {
-      "data_3": {
-        "name": "Empresa",
-        "description": "Más adecuado para empresas más grandes que necesitan más control",
-        "cta": {
-          "label": "Contáctenos",
-          "dashboard_label": "Contáctenos"
-        },
-        "features": {
-          "enterprise_1": "Todo lo que encontrarás en Early Adopters más:",
-          "enterprise_2": "Estudiantes ilimitados",
-          "enterprise_3": "Dominio personalizado",
-          "enterprise_4": "Soporte 24 horas al día, 7 días a la semana"
-        },
-        "price": {
-          "monthly": "Solicitar precio",
-          "yearly": "Solicitar precio"
-        }
-      },
-      "data_2": {
-        "name": "Los primeros en adoptar",
-        "description": "Para empresas de enseñanza de rápido crecimiento que apuntan a escalar.",
-        "cta": {
-          "label": "quiero entrar 😍",
-          "dashboard_label": "Apoyanos 😍"
-        },
-        "features": {
-          "early_1": "Todo en Básico",
-          "early_2": "Maestros ilimitados",
-          "early_3": "Estudiantes de 10K",
-          "early_4": "Creador de cursos de IA avanzado (carga de vídeo y certificado)",
-          "early_5": "Marca personalizada",
-          "early_6": "Incluye todas las próximas funciones"
-        },
-        "price": {
-          "monthly": "35",
-          "yearly": "350"
-        }
-      },
-      "data_1": {
-        "name": "Básico",
-        "description": "Plan de nivel gratuito para uso personal, no se requiere tarjeta de crédito.",
-        "cta": {
-          "label": "Regístrate ahora",
-          "dashboard_label": "Degradar"
-        },
-        "features": {
-          "basic_1": "Cursos ilimitados",
-          "basic_2": "Preguntas y respuestas ilimitadas",
-          "basic_3": "50 estudiantes",
-          "basic_": "Creador de cursos de IA (sin carga de vídeo)",
-          "basic_5": "Chat en vivo y encuestas"
-        },
-        "price": {
-          "monthly": "0",
-          "yearly": "0"
-        }
-      }
-    },
     "modal": {
       "heading": "Plan de actualización",
       "thanks": "Gracias por tu apoyo",
@@ -1008,10 +953,10 @@
     "integrations": {
       "heading": "Telegrama",
       "sub_heading": "Conecte su cuenta a Telegram para recibir notificaciones de cualquier cambio dentro de la aplicación.",
-      "step_1": "Paso 1: autentica tu cuenta a través del bot ClassroomIO.",
-      "button_1": "Abrir robot",
-      "step_2": "Paso 2: Ingrese el ID de chat que le proporcionó el bot.",
-      "button_2": "Conectar",
+      "step_authenticate": "Paso 1: autentica tu cuenta a través del bot ClassroomIO.",
+      "open_bot_button": "Abrir robot",
+      "step_chatId": "Paso 2: Ingrese el ID de chat que le proporcionó el bot.",
+      "connect_button": "Conectar",
       "success_message": "Integración exitosa",
       "disconnect": "Desconectar"
     },
@@ -1129,12 +1074,12 @@
       }
     },
     "tabs": {
-      "tabs_1": "Perfil",
-      "tabs_2": "Organización",
-      "tabs_3": "Página de destino",
-      "tabs_4": "Facturación",
-      "tabs_5": "Integraciones",
-      "tabs_6": "Idioma"
+      "profile_tab": "Perfil",
+      "organization_tab": "Organización",
+      "landing_page_tab": "Página de destino",
+      "billing_tab": "Facturación",
+      "integrations_tab": "Integraciones",
+      "language_tab": "Idioma"
     },
     "subheadings": {
       "view_site": "Ver sitio"
@@ -1149,9 +1094,9 @@
   },
   "welcome_modal": {
     "we_at": "nosotros en",
-    "content_1": "Somos un pequeño equipo con la gran misión de capacitar a los educadores con excelente tecnología para ayudarlos a capacitar a la generación futura. La educación es el regalo más poderoso que le puedes dar a alguien, y tiene mucho sentido brindarte todas las herramientas que necesitas para brindarle a más personas este REGALO.",
-    "content_2": "Gracias por elegirnos",
-    "content_3": "lo agradecemos profundamente y estamos a su servicio."
+    "small_team": "Somos un pequeño equipo con la gran misión de capacitar a los educadores con excelente tecnología para ayudarlos a capacitar a la generación futura. La educación es el regalo más poderoso que le puedes dar a alguien, y tiene mucho sentido brindarte todas las herramientas que necesitas para brindarle a más personas este REGALO.",
+    "thank_you": "Gracias por elegirnos",
+    "deeply_appreciate": "lo apreciamos profundamente y estamos a su servicio."
   },
   "onboarding": {
     "sell": "Vender cursos en línea",

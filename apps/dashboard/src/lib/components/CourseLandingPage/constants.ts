@@ -25,7 +25,7 @@ export const NAV_ITEMS = [
   },
   {
     key: SECTION_KEYS.LESSONS,
-    label: 'course.navItems.nav_2'
+    label: 'course.navItems.nav_lessons'
   },
   {
     key: SECTION_KEYS.REVIEWS,

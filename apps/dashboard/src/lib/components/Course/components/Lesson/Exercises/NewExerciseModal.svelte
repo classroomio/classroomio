@@ -41,20 +41,24 @@
 
   const options = [
     {
-      title: $t('course.navItem.lessons.exercises.new_exercise_modal.options.title_1'),
-      subtitle: $t('course.navItem.lessons.exercises.new_exercise_modal.options.subtitle_1'),
+      title: $t('course.navItem.lessons.exercises.new_exercise_modal.options.from_scratch'),
+      subtitle: $t(
+        'course.navItem.lessons.exercises.new_exercise_modal.options.from_scratch_subtitle'
+      ),
       type: Type.SCRATCH,
       isDisabled: false
     },
     {
-      title: $t('course.navItem.lessons.exercises.new_exercise_modal.options.title_2'),
-      subtitle: $t('course.navItem.lessons.exercises.new_exercise_modal.options.subtitle_2'),
+      title: $t('course.navItem.lessons.exercises.new_exercise_modal.options.use_template'),
+      subtitle: $t(
+        'course.navItem.lessons.exercises.new_exercise_modal.options.use_template_subtitle'
+      ),
       type: Type.TEMPLATE,
       isDisabled: false
     },
     {
-      title: $t('course.navItem.lessons.exercises.new_exercise_modal.options.title_3'),
-      subtitle: $t('course.navItem.lessons.exercises.new_exercise_modal.options.subtitle_3'),
+      title: $t('course.navItem.lessons.exercises.new_exercise_modal.options.use_ai'),
+      subtitle: $t('course.navItem.lessons.exercises.new_exercise_modal.options.use_ai_subtitle'),
       type: Type.AI,
       isDisabled: false
     }

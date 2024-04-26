@@ -353,7 +353,8 @@
             "description": "Sự miêu tả",
             "short_video": "Video ngắn",
             "replace_cover": "Thay thế ảnh bìa",
-            "replace": "Thay thế"
+            "replace": "Thay thế",
+            "helper": "Nhập liên kết tới video youtube"
           },
           "title": {
             "header": "tiêu đề",
@@ -383,8 +384,8 @@
         "save": "Lưu thay đổi",
         "unlocked_certificate": "Chứng chỉ hiện có sẵn",
         "locked_certificate": "Chứng chỉ không có sẵn",
-        "locked_certificate_body_1": "Người hướng dẫn của bạn cần mở khóa chứng chỉ của bạn.",
-        "locked_certificate_body_2": "Nếu bạn cần chứng chỉ của mình, vui lòng liên hệ với người hướng dẫn của bạn.",
+        "instructor_unlock": "Người hướng dẫn của bạn cần mở khóa chứng chỉ của bạn.",
+        "contact_instructor": "Nếu bạn cần chứng chỉ của mình, vui lòng liên hệ với người hướng dẫn của bạn.",
         "download_certificate": "Tải xuống chứng chỉ"
       },
       "people": {
@@ -496,7 +497,7 @@
           "heading": "Tất cả các bài tập",
           "add_button": "Thêm vào",
           "no_exercises": "Không có bài tập nào được thêm vào cho bài học này",
-          "no_assigned_exercises": "Gia sư của bạn chưa giao bài tập nào cho bài học này. Trong thời gian chính, bạn có thể",
+          "no_assigned_exercises": "Gia sư của bạn chưa giao bất kỳ bài tập nào cho bài học này. Trong thời gian chính, bạn có thể",
           "chill": "thư giãn với các chàng trai lớn",
           "add_exercise": "Chia sẻ kiến ​​thức của bạn với thế giới bằng cách tạo ra các bài tập hấp dẫn. Thêm một bài tập bây giờ.",
           "all_exercises": {
@@ -601,12 +602,12 @@
             "completion": "Thế hệ AI hoàn chỉnh",
             "click_generate": "Nhấp vào 'Tạo' để có một số phép thuật",
             "options": {
-              "title_1": "Từ đầu",
-              "subtitle_1": "Tạo bài tập của bạn từ đầu nếu bạn đã chuẩn bị sẵn câu hỏi của mình",
-              "title_2": "Sử dụng mẫu",
-              "subtitle_2": "Chọn từ hơn 100 mẫu bài tập được xác định trước để giúp bạn bắt đầu",
-              "title_3": "Sử dụng AI",
-              "subtitle_3": "Bạn có thể tạo bài tập với AI từ ghi chú của mình"
+              "from_scratch": "Từ đầu",
+              "from_scratch_subtitle": "Tạo bài tập của bạn từ đầu nếu bạn đã chuẩn bị sẵn câu hỏi của mình",
+              "use_template": "Sử dụng mẫu",
+              "use_template_subtitle": "Chọn từ hơn 100 mẫu bài tập được xác định trước để giúp bạn bắt đầu",
+              "use_ai": "Sử dụng AI",
+              "use_ai_subtitle": "Bạn có thể tạo bài tập với AI từ ghi chú của mình"
             }
           }
         },
@@ -633,12 +634,12 @@
                 "select_file": "Chọn tệp (Mp4, MOV, AVI) để tải lên bài học của bạn.",
                 "size": "(Tối đa 500 MB)",
                 "oops": "Rất tiếc `😬, không thể tải video lên",
-                "sorry": "Rất tiếc, video của chúng tôi chưa được tải lên. Kích thước tập tin quá lớn,",
-                "sorry_2": "kích thước tối đa là 30 MB. Thử lại!",
+                "big_file": "Rất tiếc, video của chúng tôi chưa được tải lên. Kích thước tập tin quá lớn,",
+                "maximum_size": "kích thước tối đa là 30 MB. Thử lại!",
                 "button": "Hãy thử một tập tin khác",
                 "try_again": "Vui lòng thử lại",
-                "sorry_3": "Rất tiếc, video của chúng tôi không được tải lên, định dạng tệp không được hỗ trợ hoặc đã xảy ra lỗi trên máy chủ.",
-                "sorry_4": "Tải lên các tệp MP4, MOV và AVI.",
+                "unsupported_format": "Rất tiếc, video của chúng tôi không được tải lên, định dạng tệp không được hỗ trợ hoặc đã xảy ra lỗi trên máy chủ.",
+                "format": "Tải lên các tệp MP4, MOV và AVI.",
                 "upgrade": "Nâng cấp kế hoạch tải video lên của bạn",
                 "uploading": "Đang tải lên...",
                 "invalid_youtube": "(Các) liên kết YouTube không hợp lệ",
@@ -712,15 +713,15 @@
       }
     },
     "navItems": {
-      "nav_1": "Nguồn cấp tin tức",
-      "nav_2": "Những bài học",
-      "nav_3": "Sự tham dự",
-      "nav_4": "bài nộp",
-      "nav_5": "Điểm",
-      "nav_6": "Mọi người",
-      "nav_7": "Chứng chỉ",
-      "nav_8": "Trang đích",
-      "nav_9": "Cài đặt"
+      "nav_news_feed": "Nguồn cấp tin tức",
+      "nav_lessons": "Những bài học",
+      "nav_attendance": "Sự tham dự",
+      "nav_submissions": "bài nộp",
+      "nav_marks": "Điểm",
+      "nav_people": "Mọi người",
+      "nav_certificates": "Chứng chỉ",
+      "nav_landing_page": "Trang đích",
+      "nav_settings": "Cài đặt"
     }
   },
   "courses": {
@@ -771,7 +772,10 @@
     "reset": "Cài lại",
     "rephrase": "diễn đạt lại",
     "insert": "Chèn",
-    "can_you": "Bạn có thể vui lòng diễn đạt lại điều này"
+    "can_you": "Bạn có thể vui lòng diễn đạt lại điều này",
+    "requirements": "Vui lòng viết một số yêu cầu cần thiết để tham gia khóa học này:",
+    "description": "Vui lòng viết mô tả khóa học chi tiết cho khóa học này:",
+    "expectation": "Học viên nên mong đợi học được gì từ khóa học này:"
   },
   "dashboard": {
     "morning_heading": "Chào buổi sáng",
@@ -878,98 +882,39 @@
     "error_organization": "Đã xảy ra lỗi khi tạo tổ chức này. Vui lòng tải lại và thử lại"
   },
   "setup": {
-    "1": {
-      "title": "Tải lên ảnh hồ sơ và cập nhật tên người dùng",
-      "desc": "Cá nhân hóa và mang tính nhân văn giúp cho các tương tác trở nên cá nhân và đáng nhớ hơn",
-      "button_label": "Cập nhật hồ sơ"
-    },
-    "2": {
-      "title": "Cập nhật ảnh hồ sơ tổ chức",
-      "desc": "Thiết lập nhận diện chuyên nghiệp và dễ nhận biết cho tổ chức của bạn",
-      "button_label": "Cập nhật hồ sơ tổ chức"
-    },
-    "3": {
-      "title": "Tạo khóa học",
-      "desc": "Tạo một khóa học mà bạn sẽ chia sẻ với học viên của mình",
-      "button_label": "Tạo khóa học"
-    },
-    "4": {
-      "title": "Tạo một bài học",
-      "desc": "Chia khóa học của bạn thành bài học mà học sinh có thể dễ dàng hiểu được",
-      "button_label": "Tạo bài học"
-    },
-    "5": {
-      "title": "Tạo một bài tập",
-      "desc": "Kiểm tra học sinh của bạn cho phép họ thể hiện sự hiểu biết của mình về vấn đề này",
-      "button_label": "Tạo bài tập"
-    },
-    "6": {
+    "get_started": "Bắt đầu",
+    "publish_course": {
       "title": "Xuất bản một khóa học",
       "desc": "Làm cho khóa học của bạn trở nên công khai và có thể mua được",
       "button_label": "Xuất bản khóa học"
     },
-    "get_started": "Bắt đầu"
+    "exercise": {
+      "title": "Tạo một bài tập",
+      "desc": "Kiểm tra học sinh của bạn cho phép họ thể hiện sự hiểu biết của mình về vấn đề này",
+      "button_label": "Tạo bài tập"
+    },
+    "lesson": {
+      "title": "Tạo một bài học",
+      "desc": "Chia khóa học của bạn thành bài học mà học sinh có thể dễ dàng hiểu được",
+      "button_label": "Tạo bài học"
+    },
+    "course": {
+      "title": "Tạo khóa học",
+      "desc": "Tạo một khóa học mà bạn sẽ chia sẻ với học viên của mình",
+      "button_label": "Tạo khóa học"
+    },
+    "organization_profile": {
+      "title": "Cập nhật ảnh hồ sơ tổ chức",
+      "desc": "Thiết lập nhận diện chuyên nghiệp và dễ nhận biết cho tổ chức của bạn",
+      "button_label": "Cập nhật hồ sơ tổ chức"
+    },
+    "personal_profile": {
+      "title": "Tải lên ảnh hồ sơ và cập nhật tên người dùng",
+      "desc": "Cá nhân hóa và mang tính nhân văn giúp cho các tương tác trở nên cá nhân và đáng nhớ hơn",
+      "button_label": "Cập nhật hồ sơ"
+    }
   },
   "pricing": {
-    "data": {
-      "data_3": {
-        "name": "doanh nghiệp",
-        "description": "Phù hợp nhất cho các doanh nghiệp lớn hơn cần kiểm soát nhiều hơn",
-        "cta": {
-          "label": "Liên hệ chúng tôi",
-          "dashboard_label": "Liên hệ chúng tôi"
-        },
-        "features": {
-          "enterprise_1": "Mọi thứ trong chương trình Áp dụng sớm cộng thêm:",
-          "enterprise_2": "Không giới hạn sinh viên",
-          "enterprise_3": "Tên miền tùy chọn",
-          "enterprise_4": "Hỗ trợ 24/7"
-        },
-        "price": {
-          "monthly": "Yêu cầu giá",
-          "yearly": "Yêu cầu giá"
-        }
-      },
-      "data_2": {
-        "name": "Người áp dụng sớm",
-        "description": "Dành cho các doanh nghiệp giảng dạy đang phát triển nhanh chóng nhằm mở rộng quy mô.",
-        "cta": {
-          "label": "Tôi muốn vào 😍",
-          "dashboard_label": "Hãy ủng hộ chúng tôi 😍"
-        },
-        "features": {
-          "early_1": "Mọi thứ ở mức cơ bản",
-          "early_2": "Giáo viên không giới hạn",
-          "early_3": "10K học sinh",
-          "early_4": "Trình tạo khóa học AI nâng cao (Tải lên video và chứng chỉ)",
-          "early_5": "Xây dựng thương hiệu tùy chỉnh",
-          "early_6": "Bao gồm tất cả các tính năng sắp tới"
-        },
-        "price": {
-          "monthly": "35",
-          "yearly": "350"
-        }
-      },
-      "data_1": {
-        "name": "Nền tảng",
-        "description": "Gói cấp miễn phí cho mục đích sử dụng cá nhân, không cần thẻ tín dụng.",
-        "cta": {
-          "label": "Đăng ký ngay",
-          "dashboard_label": "Hạ cấp"
-        },
-        "features": {
-          "basic_1": "Khóa học không giới hạn",
-          "basic_2": "Hỏi/Đáp không giới hạn",
-          "basic_3": "50 học sinh",
-          "basic_": "Trình tạo khóa học AI (không tải lên video)",
-          "basic_5": "Trò chuyện trực tiếp và thăm dò ý kiến"
-        },
-        "price": {
-          "monthly": "0",
-          "yearly": "0"
-        }
-      }
-    },
     "modal": {
       "heading": "Kế hoạch nâng cấp",
       "thanks": "cảm ơn sự hỗ trợ của bạn",
@@ -981,7 +926,7 @@
     "plan_names": {
       "free": "Miễn phí",
       "early": "Áp dụng sớm",
-      "enterprise": "doanh nghiệp"
+      "enterprise": "Doanh nghiệp"
     }
   },
   "org_navigation": {
@@ -1008,10 +953,10 @@
     "integrations": {
       "heading": "điện tín",
       "sub_heading": "Kết nối tài khoản của bạn với điện tín để nhận thông báo về bất kỳ thay đổi nào trong ứng dụng.",
-      "step_1": "Bước 1: Xác thực tài khoản của bạn thông qua bot ClassroomIO.",
-      "button_1": "Mở Bot",
-      "step_2": "Bước 2: Nhập ID trò chuyện được bot cung cấp cho bạn.",
-      "button_2": "Kết nối",
+      "step_authenticate": "Bước 1: Xác thực tài khoản của bạn thông qua bot ClassroomIO.",
+      "open_bot_button": "Mở Bot",
+      "step_chatId": "Bước 2: Nhập ID trò chuyện được bot cung cấp cho bạn.",
+      "connect_button": "Kết nối",
       "success_message": "Tích hợp thành công",
       "disconnect": "Ngắt kết nối"
     },
@@ -1129,12 +1074,12 @@
       }
     },
     "tabs": {
-      "tabs_1": "Hồ sơ",
-      "tabs_2": "Tổ chức",
-      "tabs_3": "Trang đích",
-      "tabs_4": "Thanh toán",
-      "tabs_5": "Tích hợp",
-      "tabs_6": "Ngôn ngữ"
+      "profile_tab": "Hồ sơ",
+      "organization_tab": "Tổ chức",
+      "landing_page_tab": "Trang đích",
+      "billing_tab": "Thanh toán",
+      "integrations_tab": "Tích hợp",
+      "language_tab": "Ngôn ngữ"
     },
     "subheadings": {
       "view_site": "Xem trang web"
@@ -1149,9 +1094,9 @@
   },
   "welcome_modal": {
     "we_at": "Chúng tôi ở",
-    "content_1": "là một nhóm nhỏ có sứ mệnh lớn là hỗ trợ các nhà giáo dục bằng công nghệ tuyệt vời để giúp họ đào tạo thế hệ tương lai. Giáo dục là món quà mạnh mẽ nhất mà bạn có thể tặng cho bất kỳ ai và thật ý nghĩa khi cung cấp cho bạn tất cả các công cụ bạn cần để tặng QUÀ TẶNG này cho nhiều người hơn.",
-    "content_2": "Cảm ơn vì đã chọn chúng tôi",
-    "content_3": "chúng tôi đánh giá cao điều đó và sẵn sàng phục vụ bạn."
+    "small_team": "là một nhóm nhỏ có sứ mệnh lớn là hỗ trợ các nhà giáo dục bằng công nghệ tuyệt vời để giúp họ đào tạo thế hệ tương lai. Giáo dục là món quà mạnh mẽ nhất mà bạn có thể tặng cho bất kỳ ai và thật ý nghĩa khi cung cấp cho bạn tất cả các công cụ bạn cần để tặng QUÀ TẶNG này cho nhiều người hơn.",
+    "thank_you": "Cảm ơn vì đã chọn chúng tôi",
+    "deeply_appreciate": "chúng tôi đánh giá cao điều đó và sẵn sàng phục vụ bạn."
   },
   "onboarding": {
     "sell": "Bán các khóa học trực tuyến",

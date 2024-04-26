@@ -5,9 +5,9 @@ export const PLAN = {
 };
 
 export const PLAN_NAMES = {
-  [PLAN.BASIC]: 'pricing.plan_names.free',
-  [PLAN.EARLY_ADOPTER]: 'pricing.plan_names.early',
-  [PLAN.ENTERPRISE]: 'pricing.plan_names.enterprise',
+  [PLAN.BASIC]: 'Free',
+  [PLAN.EARLY_ADOPTER]: 'Early Adopter',
+  [PLAN.ENTERPRISE]: 'Enterprise',
 }
 
 export const FEATURES = {

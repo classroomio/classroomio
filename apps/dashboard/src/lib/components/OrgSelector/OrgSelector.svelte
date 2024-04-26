@@ -66,11 +66,7 @@
             {$currentOrg.name}
           </p>
 
-          <Plan
-            name={$currentOrgPlan
-              ? $t(PLAN_NAMES[$currentOrgPlan.plan_name])
-              : $t(PLAN_NAMES.BASIC)}
-          />
+          <Plan name={$currentOrgPlan ? PLAN_NAMES[$currentOrgPlan.plan_name] : PLAN_NAMES.BASIC} />
         </div>
         <ChevronSort size={16} />
       </div>

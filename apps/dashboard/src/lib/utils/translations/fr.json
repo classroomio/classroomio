@@ -98,7 +98,7 @@
     },
     "course_settings": {
       "error": {
-        "not_right": "Quelque chose ne va pas – Veuillez réessayer plus tard",
+        "not_right": "Quelque chose ne va pas - Veuillez réessayer plus tard",
         "went_wrong": "Quelque chose s'est mal passé - Veuillez réessayer plus tard",
         "title": "le titre ne peut pas être vide",
         "description": "la description ne peut pas être vide",
@@ -353,7 +353,8 @@
             "description": "Description",
             "short_video": "Courte vidéo",
             "replace_cover": "Remplacer l'image de couverture",
-            "replace": "Remplacer"
+            "replace": "Remplacer",
+            "helper": "Entrez un lien vers une vidéo YouTube"
           },
           "title": {
             "header": "Entête",
@@ -383,8 +384,8 @@
         "save": "Sauvegarder les modifications",
         "unlocked_certificate": "Le certificat est maintenant disponible",
         "locked_certificate": "Certificats non disponibles",
-        "locked_certificate_body_1": "Votre instructeur doit débloquer votre certificat.",
-        "locked_certificate_body_2": "Si vous avez besoin de votre certificat, veuillez contacter votre instructeur.",
+        "instructor_unlock": "Votre instructeur doit débloquer votre certificat.",
+        "contact_instructor": "Si vous avez besoin de votre certificat, veuillez contacter votre instructeur.",
         "download_certificate": "Télécharger le certificat"
       },
       "people": {
@@ -601,12 +602,12 @@
             "completion": "Génération d'IA terminée",
             "click_generate": "Cliquez sur « Générer » pour un peu de magie",
             "options": {
-              "title_1": "De zéro",
-              "subtitle_1": "Créez votre exercice à partir de zéro si vous avez déjà préparé vos questions",
-              "title_2": "Utiliser un modèle",
-              "subtitle_2": "Choisissez parmi plus de 100 modèles d'exercices prédéfinis pour vous aider à démarrer",
-              "title_3": "Utiliser l'IA",
-              "subtitle_3": "Vous pouvez générer un exercice avec l'IA à partir de vos notes"
+              "from_scratch": "De zéro",
+              "from_scratch_subtitle": "Créez votre exercice à partir de zéro si vous avez déjà préparé vos questions",
+              "use_template": "Utiliser un modèle",
+              "use_template_subtitle": "Choisissez parmi plus de 100 modèles d'exercices prédéfinis pour vous aider à démarrer",
+              "use_ai": "Utiliser l'IA",
+              "use_ai_subtitle": "Vous pouvez générer un exercice avec l'IA à partir de vos notes"
             }
           }
         },
@@ -626,19 +627,19 @@
               "add_video": {
                 "title": "Ajouter une vidéo",
                 "add_by": "Ajouter par",
-                "youtube_link": "Lien YouTube",
+                "youtube_link": "Lien Youtube",
                 "videos_added": "Vidéos ajoutées",
                 "add_video": "Ajouter une vidéo",
                 "upload_video": "Télécharger une video",
                 "select_file": "Sélectionnez le fichier (Mp4, MOV, AVI) à télécharger dans votre leçon.",
                 "size": "(Maximum 500 Mo)",
                 "oops": "Oups 😬, impossible de télécharger la vidéo",
-                "sorry": "Désolé, la vidéo n'a pas été téléchargée. La taille du fichier est trop grande,",
-                "sorry_2": "la taille maximale est de 30 Mo. Essayer à nouveau!",
+                "big_file": "Désolé, la vidéo n'a pas été téléchargée. La taille du fichier est trop grande,",
+                "maximum_size": "la taille maximale est de 30 Mo. Essayer à nouveau!",
                 "button": "Essayez un autre fichier",
                 "try_again": "Veuillez réessayer",
-                "sorry_3": "Désolé, notre vidéo n'a pas été téléchargée, le format de fichier n'est pas pris en charge ou quelque chose s'est mal passé sur le serveur.",
-                "sorry_4": "Téléchargez des fichiers MP4, MOV et AVI.",
+                "unsupported_format": "Désolé, notre vidéo n'a pas été téléchargée, le format de fichier n'est pas pris en charge ou quelque chose s'est mal passé sur le serveur.",
+                "format": "Téléchargez des fichiers MP4, MOV et AVI.",
                 "upgrade": "Mettez à niveau votre forfait pour télécharger des vidéos",
                 "uploading": "Téléchargement...",
                 "invalid_youtube": "Lien(s) YouTube invalide(s)",
@@ -712,15 +713,15 @@
       }
     },
     "navItems": {
-      "nav_1": "Fil d'actualité",
-      "nav_2": "Cours",
-      "nav_3": "Présence",
-      "nav_4": "Soumissions",
-      "nav_5": "Des marques",
-      "nav_6": "Personnes",
-      "nav_7": "Certificats",
-      "nav_8": "Page de destination",
-      "nav_9": "Paramètres"
+      "nav_news_feed": "Fil d'actualité",
+      "nav_lessons": "Cours",
+      "nav_attendance": "Présence",
+      "nav_submissions": "Soumissions",
+      "nav_marks": "Des marques",
+      "nav_people": "Personnes",
+      "nav_certificates": "Certificats",
+      "nav_landing_page": "Page de destination",
+      "nav_settings": "Paramètres"
     }
   },
   "courses": {
@@ -771,7 +772,10 @@
     "reset": "Réinitialiser",
     "rephrase": "Reformuler",
     "insert": "Insérer",
-    "can_you": "Pouvez-vous s'il vous plaît reformuler ceci"
+    "can_you": "Pouvez-vous s'il vous plaît reformuler ceci",
+    "requirements": "Veuillez écrire quelques exigences nécessaires pour suivre ce cours :",
+    "description": "Veuillez rédiger une description détaillée de ce cours :",
+    "expectation": "Que doit espérer apprendre un étudiant de ce cours :"
   },
   "dashboard": {
     "morning_heading": "Bonjour",
@@ -827,7 +831,7 @@
       "remove_last": "- Supprimer la dernière réponse",
       "quiz_delete": "Supprimer le questionnaire",
       "delete_question": "Êtes-vous sûr de vouloir supprimer cette question ?",
-      "delete_quiz": "Êtes-vous sûr de vouloir supprimer ce quiz ?",
+      "delete_quiz": "Etes-vous sûr de vouloir supprimer ce quiz ?",
       "lose_content": "Vous perdrez votre contenu et cette action ne pourra pas être annulée.",
       "delete": "Supprimer",
       "update": "Mise à jour",
@@ -878,98 +882,39 @@
     "error_organization": "Quelque chose s'est mal passé lors de la création de cette organisation. Veuillez recharger et réessayer"
   },
   "setup": {
-    "1": {
-      "title": "Téléchargez une photo de profil et mettez à jour le nom d'utilisateur",
-      "desc": "Personnaliser et apporter une touche humaine rendant les interactions plus personnelles et mémorables",
-      "button_label": "Mettre à jour le profil"
+    "get_started": "Commencer",
+    "publish_course": {
+      "title": "Publier un cours",
+      "desc": "Rendre votre cours public et achetable",
+      "button_label": "Publier un cours"
     },
-    "2": {
-      "title": "Mettre à jour la photo de profil de l'organisation",
-      "desc": "Établissez une identité professionnelle et reconnaissable pour votre organisation",
-      "button_label": "Mettre à jour le profil de l'organisation"
-    },
-    "3": {
-      "title": "Créer un cours",
-      "desc": "Créez un cours que vous partagerez avec vos étudiants",
-      "button_label": "Créer un cours"
-    },
-    "4": {
-      "title": "Créer une leçon",
-      "desc": "Divisez votre cours en leçons que vos élèves peuvent facilement comprendre",
-      "button_label": "Créer une leçon"
-    },
-    "5": {
+    "exercise": {
       "title": "Créer un exercice",
       "desc": "Testez vos élèves pour leur permettre de démontrer leur compréhension du sujet",
       "button_label": "Créer une affectation"
     },
-    "6": {
-      "title": "Publier un cours",
-      "desc": "Rendre votre cours public et achetable",
-      "button_label": "Publier le cours"
+    "lesson": {
+      "title": "Créer une leçon",
+      "desc": "Divisez votre cours en leçons que vos élèves peuvent facilement comprendre",
+      "button_label": "Créer une leçon"
     },
-    "get_started": "Commencer"
+    "course": {
+      "title": "Créer un cours",
+      "desc": "Créez un cours que vous partagerez avec vos étudiants",
+      "button_label": "Créer un cours"
+    },
+    "organization_profile": {
+      "title": "Mettre à jour la photo de profil de l'organisation",
+      "desc": "Établissez une identité professionnelle et reconnaissable pour votre organisation",
+      "button_label": "Mettre à jour le profil de l'organisation"
+    },
+    "personal_profile": {
+      "title": "Téléchargez une photo de profil et mettez à jour le nom d'utilisateur",
+      "desc": "Personnaliser et apporter une touche humaine rendant les interactions plus personnelles et mémorables",
+      "button_label": "Mettre à jour le profil"
+    }
   },
   "pricing": {
-    "data": {
-      "data_3": {
-        "name": "Entreprise",
-        "description": "Idéal pour les grandes entreprises qui ont besoin de plus de contrôle",
-        "cta": {
-          "label": "Contactez-nous",
-          "dashboard_label": "Contactez-nous"
-        },
-        "features": {
-          "enterprise_1": "Tout dans Early Adopters plus :",
-          "enterprise_2": "Étudiants illimités",
-          "enterprise_3": "Domaine personnalisé",
-          "enterprise_4": "Assistance 24h/24 et 7j/7"
-        },
-        "price": {
-          "monthly": "Demander un prix",
-          "yearly": "Demander un prix"
-        }
-      },
-      "data_2": {
-        "name": "Adopteurs précoces",
-        "description": "Pour les entreprises d’enseignement à croissance rapide qui visent à évoluer.",
-        "cta": {
-          "label": "Je veux entrer 😍",
-          "dashboard_label": "Soutenez-nous 😍"
-        },
-        "features": {
-          "early_1": "Tout en Basic",
-          "early_2": "Enseignants illimités",
-          "early_3": "10 000 étudiants",
-          "early_4": "Générateur de cours avancé sur l'IA (téléchargement vidéo et certificat)",
-          "early_5": "Image de marque personnalisée",
-          "early_6": "Comprend toutes les fonctionnalités à venir"
-        },
-        "price": {
-          "monthly": "35",
-          "yearly": "350"
-        }
-      },
-      "data_1": {
-        "name": "Basique",
-        "description": "Plan de niveau gratuit pour un usage personnel, aucune carte de crédit requise.",
-        "cta": {
-          "label": "S'inscrire maintenant",
-          "dashboard_label": "Rétrograder"
-        },
-        "features": {
-          "basic_1": "Cours illimités",
-          "basic_2": "Questions/Réponses illimitées",
-          "basic_3": "50 étudiants",
-          "basic_": "AI Course Builder (pas de téléchargement de vidéo)",
-          "basic_5": "Chat en direct et sondages"
-        },
-        "price": {
-          "monthly": "0",
-          "yearly": "0"
-        }
-      }
-    },
     "modal": {
       "heading": "Plan de mise à niveau",
       "thanks": "Merci pour votre soutien",
@@ -1008,10 +953,10 @@
     "integrations": {
       "heading": "Télégramme",
       "sub_heading": "Connectez votre compte à Telegram pour être informé de tout changement dans l'application.",
-      "step_1": "Étape 1 : Authentifiez votre compte via le bot ClassroomIO.",
-      "button_1": "Ouvrir le robot",
-      "step_2": "Étape 2 : Saisissez l’ID de chat qui vous a été fourni par le bot.",
-      "button_2": "Connecter",
+      "step_authenticate": "Étape 1 : Authentifiez votre compte via le bot ClassroomIO.",
+      "open_bot_button": "Ouvrir le robot",
+      "step_chatId": "Étape 2 : Saisissez l’ID de chat qui vous a été fourni par le bot.",
+      "connect_button": "Connecter",
       "success_message": "Intégration réussie",
       "disconnect": "Déconnecter"
     },
@@ -1129,12 +1074,12 @@
       }
     },
     "tabs": {
-      "tabs_1": "Profil",
-      "tabs_2": "Organisation",
-      "tabs_3": "Page de destination",
-      "tabs_4": "Facturation",
-      "tabs_5": "Intégrations",
-      "tabs_6": "Langue"
+      "profile_tab": "Profil",
+      "organization_tab": "Organisation",
+      "landing_page_tab": "Page de destination",
+      "billing_tab": "Facturation",
+      "integrations_tab": "Intégrations",
+      "language_tab": "Langue"
     },
     "subheadings": {
       "view_site": "Voir le site"
@@ -1149,9 +1094,9 @@
   },
   "welcome_modal": {
     "we_at": "Nous à",
-    "content_1": "est une petite équipe avec une grande mission : doter les éducateurs d'une technologie de pointe pour les aider à former la génération future. L’éducation est le cadeau le plus puissant que vous puissiez offrir à quiconque, et il est tout à fait logique de vous donner tous les outils dont vous avez besoin pour offrir ce CADEAU à davantage de personnes.",
-    "content_2": "Merci de nous avoir choisi",
-    "content_3": "nous l'apprécions profondément et sommes à votre service."
+    "small_team": "est une petite équipe avec une grande mission : doter les éducateurs d'une technologie de pointe pour les aider à former la génération future. L’éducation est le cadeau le plus puissant que vous puissiez offrir à quiconque, et il est tout à fait logique de vous donner tous les outils dont vous avez besoin pour offrir ce CADEAU à davantage de personnes.",
+    "thank_you": "Merci de nous avoir choisi",
+    "deeply_appreciate": "nous l'apprécions profondément et sommes à votre service."
   },
   "onboarding": {
     "sell": "Vendre des cours en ligne",

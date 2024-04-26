@@ -10,8 +10,8 @@
       {$t('course.navItem.certificates.locked_certificate')}
     </p>
     <p class="text-sm font-normal text-center">
-      {$t('course.navItem.certificates.locked_certificate_body_1')} <br />
-      {$t('course.navItem.certificates.locked_certificate_body_2')}
+      {$t('course.navItem.certificates.instructor_unlock')} <br />
+      {$t('course.navItem.certificates.contact_instructor')}
     </p>
   </div>
 </Box>

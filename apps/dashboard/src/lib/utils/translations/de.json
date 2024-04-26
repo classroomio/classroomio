@@ -353,7 +353,8 @@
             "description": "Beschreibung",
             "short_video": "Kurzes Video",
             "replace_cover": "Titelbild ersetzen",
-            "replace": "Ersetzen"
+            "replace": "Ersetzen",
+            "helper": "Geben Sie einen Link zu einem YouTube-Video ein"
           },
           "title": {
             "header": "Header",
@@ -383,8 +384,8 @@
         "save": "Änderungen speichern",
         "unlocked_certificate": "Zertifikat ist jetzt verfügbar",
         "locked_certificate": "Zertifikate nicht verfügbar",
-        "locked_certificate_body_1": "Ihr Dozent muss Ihr Zertifikat entsperren.",
-        "locked_certificate_body_2": "Wenn Sie Ihr Zertifikat benötigen, wenden Sie sich bitte an Ihren Dozenten.",
+        "instructor_unlock": "Ihr Dozent muss Ihr Zertifikat entsperren.",
+        "contact_instructor": "Wenn Sie Ihr Zertifikat benötigen, wenden Sie sich bitte an Ihren Dozenten.",
         "download_certificate": "Zertifikat herunterladen"
       },
       "people": {
@@ -601,12 +602,12 @@
             "completion": "KI-Generierung abgeschlossen",
             "click_generate": "Klicken Sie für etwas Magie auf „Generieren“.",
             "options": {
-              "title_1": "Von Grund auf neu",
-              "subtitle_1": "Erstellen Sie Ihre Übung von Grund auf, wenn Sie Ihre Fragen bereits vorbereitet haben",
-              "title_2": "Verwenden Sie eine Vorlage",
-              "subtitle_2": "Wählen Sie aus über 100 Vorlagen vordefinierter Übungen, um Ihnen den Einstieg zu erleichtern",
-              "title_3": "Nutzen Sie KI",
-              "subtitle_3": "Sie können aus Ihren Notizen eine Übung mit KI generieren"
+              "from_scratch": "Von Grund auf neu",
+              "from_scratch_subtitle": "Erstellen Sie Ihre Übung von Grund auf, wenn Sie Ihre Fragen bereits vorbereitet haben",
+              "use_template": "Verwenden Sie eine Vorlage",
+              "use_template_subtitle": "Wählen Sie aus über 100 Vorlagen vordefinierter Übungen, um Ihnen den Einstieg zu erleichtern",
+              "use_ai": "Nutzen Sie KI",
+              "use_ai_subtitle": "Sie können aus Ihren Notizen eine Übung mit KI generieren"
             }
           }
         },
@@ -633,12 +634,12 @@
                 "select_file": "Wählen Sie die Datei (MP4, MOV, AVI) aus, die Sie in Ihre Lektion hochladen möchten.",
                 "size": "(Max. 500 MB)",
                 "oops": "Hoppla 😬, Video konnte nicht hochgeladen werden",
-                "sorry": "Es tut uns leid, dass das Video nicht hochgeladen wurde. Die Dateigröße ist zu groß,",
-                "sorry_2": "Die maximale Größe beträgt 30 MB. Versuchen Sie es erneut!",
+                "big_file": "Es tut uns leid, dass das Video nicht hochgeladen wurde. Die Dateigröße ist zu groß,",
+                "maximum_size": "Die maximale Größe beträgt 30 MB. Versuchen Sie es erneut!",
                 "button": "Versuchen Sie es mit einer anderen Datei",
                 "try_again": "Bitte versuche es erneut",
-                "sorry_3": "Es tut uns leid, dass das Video nicht hochgeladen wurde, das Dateiformat nicht unterstützt wird oder auf dem Server ein Fehler aufgetreten ist.",
-                "sorry_4": "Laden Sie MP4-, MOV- und AVI-Dateien hoch.",
+                "unsupported_format": "Es tut uns leid, dass das Video nicht hochgeladen wurde, das Dateiformat nicht unterstützt wird oder auf dem Server ein Fehler aufgetreten ist.",
+                "format": "Laden Sie MP4-, MOV- und AVI-Dateien hoch.",
                 "upgrade": "Aktualisieren Sie Ihren Plan, um Videos hochzuladen",
                 "uploading": "Hochladen...",
                 "invalid_youtube": "Ungültige YouTube-Link(s)",
@@ -712,15 +713,15 @@
       }
     },
     "navItems": {
-      "nav_1": "Neuigkeiten",
-      "nav_2": "Unterricht",
-      "nav_3": "Teilnahme",
-      "nav_4": "Einsendungen",
-      "nav_5": "Markierungen",
-      "nav_6": "Menschen",
-      "nav_7": "Zertifikate",
-      "nav_8": "Landingpage",
-      "nav_9": "Einstellungen"
+      "nav_news_feed": "Neuigkeiten",
+      "nav_lessons": "Unterricht",
+      "nav_attendance": "Teilnahme",
+      "nav_submissions": "Einsendungen",
+      "nav_marks": "Markierungen",
+      "nav_people": "Menschen",
+      "nav_certificates": "Zertifikate",
+      "nav_landing_page": "Landingpage",
+      "nav_settings": "Einstellungen"
     }
   },
   "courses": {
@@ -771,7 +772,10 @@
     "reset": "Zurücksetzen",
     "rephrase": "Umformulieren",
     "insert": "Einfügen",
-    "can_you": "Können Sie das bitte umformulieren?"
+    "can_you": "Können Sie das bitte umformulieren?",
+    "requirements": "Bitte schreiben Sie einige Anforderungen auf, die für die Teilnahme an diesem Kurs erforderlich sind:",
+    "description": "Bitte verfassen Sie eine ausführliche Kursbeschreibung für diesen Kurs:",
+    "expectation": "Was sollte ein Student von diesem Kurs erwarten:"
   },
   "dashboard": {
     "morning_heading": "Guten Morgen",
@@ -845,7 +849,7 @@
       "type_answer": "Antwort eingeben",
       "label": "Bitte geben Sie eine Bezeichnung ein",
       "no_quizz": "Kein Quiz erstellt",
-      "interactive": "Erstellen Sie interaktive Quizze mit Scoreboard für Ihre Schüler."
+      "interactive": "Erstellen Sie interaktive Tests mit Punktestand für Ihre Schüler."
     }
   },
   "markdown_editor": {
@@ -878,98 +882,39 @@
     "error_organization": "Beim Erstellen dieser Organisation ist ein Fehler aufgetreten. Bitte laden Sie es neu und versuchen Sie es erneut"
   },
   "setup": {
-    "1": {
-      "title": "Laden Sie ein Profilbild hoch und aktualisieren Sie den Benutzernamen",
-      "desc": "Personalisierung und eine menschliche Note machen Interaktionen persönlicher und unvergesslicher",
-      "button_label": "Profil aktualisieren"
-    },
-    "2": {
-      "title": "Aktualisieren Sie das Profilbild der Organisation",
-      "desc": "Schaffen Sie eine professionelle und wiedererkennbare Identität für Ihr Unternehmen",
-      "button_label": "Organisationsprofil aktualisieren"
-    },
-    "3": {
-      "title": "Kurs erstellen",
-      "desc": "Erstellen Sie einen Kurs, den Sie mit Ihren Schülern teilen",
-      "button_label": "Kurs erstellen"
-    },
-    "4": {
-      "title": "Erstellen Sie eine Lektion",
-      "desc": "Teilen Sie Ihren Kurs in Lektionen auf, die Ihre Schüler leicht verstehen können",
-      "button_label": "Lektion erstellen"
-    },
-    "5": {
-      "title": "Erstellen Sie eine Übung",
-      "desc": "Testen Sie Ihre Schüler und lassen Sie sie ihr Verständnis des Themas unter Beweis stellen",
-      "button_label": "Aufgabe erstellen"
-    },
-    "6": {
+    "get_started": "Loslegen",
+    "publish_course": {
       "title": "Veröffentlichen Sie einen Kurs",
       "desc": "Machen Sie Ihren Kurs öffentlich und käuflich",
       "button_label": "Kurs veröffentlichen"
     },
-    "get_started": "Loslegen"
+    "exercise": {
+      "title": "Erstellen Sie eine Übung",
+      "desc": "Testen Sie Ihre Schüler und lassen Sie sie ihr Verständnis des Themas unter Beweis stellen",
+      "button_label": "Aufgabe erstellen"
+    },
+    "lesson": {
+      "title": "Erstellen Sie eine Lektion",
+      "desc": "Teilen Sie Ihren Kurs in Lektionen auf, die Ihre Schüler leicht verstehen können",
+      "button_label": "Lektion erstellen"
+    },
+    "course": {
+      "title": "Kurs erstellen",
+      "desc": "Erstellen Sie einen Kurs, den Sie mit Ihren Schülern teilen",
+      "button_label": "Kurs erstellen"
+    },
+    "organization_profile": {
+      "title": "Aktualisieren Sie das Profilbild der Organisation",
+      "desc": "Schaffen Sie eine professionelle und wiedererkennbare Identität für Ihr Unternehmen",
+      "button_label": "Organisationsprofil aktualisieren"
+    },
+    "personal_profile": {
+      "title": "Laden Sie ein Profilbild hoch und aktualisieren Sie den Benutzernamen",
+      "desc": "Personalisierung und eine menschliche Note machen Interaktionen persönlicher und unvergesslicher",
+      "button_label": "Profil aktualisieren"
+    }
   },
   "pricing": {
-    "data": {
-      "data_3": {
-        "name": "Unternehmen",
-        "description": "Am besten geeignet für größere Unternehmen, die mehr Kontrolle benötigen",
-        "cta": {
-          "label": "Kontaktiere uns",
-          "dashboard_label": "Kontaktiere uns"
-        },
-        "features": {
-          "enterprise_1": "Alles in Early Adopters plus:",
-          "enterprise_2": "Unbegrenzte Anzahl an Studenten",
-          "enterprise_3": "Benutzerdefinierten Domain",
-          "enterprise_4": "24/7-Support"
-        },
-        "price": {
-          "monthly": "Preis anfordern",
-          "yearly": "Preis anfordern"
-        }
-      },
-      "data_2": {
-        "name": "Frühzeitige Anwender",
-        "description": "Für schnell wachsende Lehrunternehmen, die skalieren möchten.",
-        "cta": {
-          "label": "Ich will rein 😍",
-          "dashboard_label": "Unterstützen Sie uns 😍"
-        },
-        "features": {
-          "early_1": "Alles in Basic",
-          "early_2": "Unbegrenzte Lehrer",
-          "early_3": "10.000 Studenten",
-          "early_4": "Advanced AI Course Builder (Video-Upload und Zertifikat)",
-          "early_5": "Individuelles Branding",
-          "early_6": "Beinhaltet alle kommenden Funktionen"
-        },
-        "price": {
-          "monthly": "35",
-          "yearly": "350"
-        }
-      },
-      "data_1": {
-        "name": "Basic",
-        "description": "Kostenloser Tarifplan für den persönlichen Gebrauch, keine Kreditkarte erforderlich.",
-        "cta": {
-          "label": "Jetzt registrieren",
-          "dashboard_label": "Downgrade"
-        },
-        "features": {
-          "basic_1": "Unbegrenzte Kurse",
-          "basic_2": "Unbegrenzte Fragen/Antworten",
-          "basic_3": "50 Studenten",
-          "basic_": "AI Course Builder (kein Video-Upload)",
-          "basic_5": "Live-Chat und Umfragen"
-        },
-        "price": {
-          "monthly": "0",
-          "yearly": "0"
-        }
-      }
-    },
     "modal": {
       "heading": "Upgrade-Plan",
       "thanks": "Danke für Ihre Unterstützung",
@@ -1008,10 +953,10 @@
     "integrations": {
       "heading": "Telegramm",
       "sub_heading": "Verbinden Sie Ihr Konto mit Telegram, um über jede Änderung innerhalb der Anwendung benachrichtigt zu werden.",
-      "step_1": "Schritt 1: Authentifizieren Sie Ihr Konto über den ClassroomIO-Bot.",
-      "button_1": "Bot öffnen",
-      "step_2": "Schritt 2: Geben Sie die Chat-ID ein, die Ihnen der Bot gegeben hat.",
-      "button_2": "Verbinden",
+      "step_authenticate": "Schritt 1: Authentifizieren Sie Ihr Konto über den ClassroomIO-Bot.",
+      "open_bot_button": "Bot öffnen",
+      "step_chatId": "Schritt 2: Geben Sie die Chat-ID ein, die Ihnen der Bot gegeben hat.",
+      "connect_button": "Verbinden",
       "success_message": "Integration erfolgreich",
       "disconnect": "Trennen"
     },
@@ -1129,12 +1074,12 @@
       }
     },
     "tabs": {
-      "tabs_1": "Profil",
-      "tabs_2": "Organisation",
-      "tabs_3": "Landingpage",
-      "tabs_4": "Abrechnung",
-      "tabs_5": "Integrationen",
-      "tabs_6": "Sprache"
+      "profile_tab": "Profil",
+      "organization_tab": "Organisation",
+      "landing_page_tab": "Landingpage",
+      "billing_tab": "Abrechnung",
+      "integrations_tab": "Integrationen",
+      "language_tab": "Sprache"
     },
     "subheadings": {
       "view_site": "Website ansehen"
@@ -1149,9 +1094,9 @@
   },
   "welcome_modal": {
     "we_at": "Wir bei",
-    "content_1": "sind ein kleines Team mit der großen Mission, Pädagogen mit großartiger Technologie auszustatten, um ihnen bei der Ausbildung der zukünftigen Generation zu helfen. Bildung ist das größte Geschenk, das Sie jedem machen können, und es macht so viel Sinn, Ihnen alle Werkzeuge an die Hand zu geben, die Sie brauchen, um mehr Menschen dieses GESCHENK zu machen.",
-    "content_2": "Danke, daß Sie uns gewählt haben",
-    "content_3": "Wir wissen das sehr zu schätzen und stehen Ihnen gerne zur Verfügung."
+    "small_team": "sind ein kleines Team mit der großen Mission, Pädagogen mit großartiger Technologie auszustatten, um ihnen bei der Ausbildung der zukünftigen Generation zu helfen. Bildung ist das größte Geschenk, das Sie jedem machen können, und es macht so viel Sinn, Ihnen alle Werkzeuge an die Hand zu geben, die Sie brauchen, um mehr Menschen dieses GESCHENK zu machen.",
+    "thank_you": "Danke, daß Sie uns gewählt haben",
+    "deeply_appreciate": "Wir wissen das sehr zu schätzen und stehen Ihnen gerne zur Verfügung."
   },
   "onboarding": {
     "sell": "Kurse online verkaufen",
