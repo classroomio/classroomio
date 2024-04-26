@@ -5,9 +5,7 @@
     lesson,
     lessonByTranslation
   } from '$lib/components/Course/components/Lesson/store/lessons';
-  import Box from '$lib/components/Box/index.svelte';
   import { t } from '$lib/utils/functions/translations';
-  import AlignBoxTopLeft from 'carbon-icons-svelte/lib/AlignBoxTopLeft.svelte';
   import { lessonFallbackNote } from '$lib/utils/functions/translations';
 
   export let lessonId: string;
@@ -31,10 +29,9 @@
     </svelte:fragment>
   </HtmlRender>
 {:else if hasAtLeastOneTranslation}
-  <Box className="text-center">
-    <AlignBoxTopLeft class="carbon-icon" size={32} />
-    <h3 class="text-lg font-normal dark:text-white py-2">
+  <div class="flex items-center justify-center flex-col text-center">
+    <h3 class="text-lg font-normal italic dark:text-white py-2">
       {$t('course.navItem.lessons.materials.no_translation')}
     </h3>
-  </Box>
+  </div>
 {/if}

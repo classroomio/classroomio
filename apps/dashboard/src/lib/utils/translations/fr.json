@@ -3,6 +3,7 @@
     "heading": "Vérifiez votre e-mail",
     "sent_verification": "Nous avons envoyé un e-mail de vérification à",
     "to_confirm": "pour confirmer la validité de l'e-mail fourni.",
+    "to_confirm": "pour confirmer la validité de l'e-mail fourni.",
     "loading": "Chargement...",
     "resend": "Renvoyer le code de vérification",
     "resend_in": "Renvoyer la vérification dans",
@@ -134,6 +135,7 @@
         "question": "Question",
         "answer": "Répondre",
         "button": "Ajouter une nouvelle FAQ",
+        "button": "Ajouter une nouvelle FAQ",
         "save": "Sauvegarder",
         "cancel": "Annuler"
       },
@@ -145,6 +147,7 @@
         "title_highlight": "Titre-Point culminant",
         "subtitle": "Sous-titre",
         "phone_number": "Numéro de téléphone",
+        "email": "E-mail"
         "email": "E-mail"
       },
       "mailing_list": {
@@ -170,6 +173,7 @@
       "sub_heading": "Connectez votre compte à Telegram pour être informé de tout changement dans l'application.",
       "step_1": "Étape 1 : Authentifiez votre compte via le bot ClassroomIO.",
       "button_1": "Ouvrir le robot",
+      "step_2": "Étape 2 : Saisissez l’ID de chat qui vous a été fourni par le bot.",
       "step_2": "Étape 2 : Saisissez l’ID de chat qui vous a été fourni par le bot.",
       "button_2": "Connecter",
       "success_message": "Intégration réussie",
@@ -198,9 +202,12 @@
   "pricing": {
     "modal": {
       "heading": "Plan de mise à niveau",
+      "heading": "Plan de mise à niveau",
       "thanks": "Merci pour votre soutien",
       "plan": "Votre forfait s'accompagne d'avantages et d'avantages intéressants, notamment l'accès à toutes les futures fonctionnalités que nous publierons.",
+      "plan": "Votre forfait s'accompagne d'avantages et d'avantages intéressants, notamment l'accès à toutes les futures fonctionnalités que nous publierons.",
       "close": "Fermer",
+      "learn": "Apprendre encore plus",
       "learn": "Apprendre encore plus",
       "month": "mois"
     },
@@ -212,7 +219,17 @@
           "monthly": "0",
           "yearly": "0"
         },
+        "description": "Plan de niveau gratuit pour un usage personnel, aucune carte de crédit requise.",
+        "price": {
+          "monthly": "0",
+          "yearly": "0"
+        },
         "features": {
+          "1": "Cours illimités",
+          "2": "Questions/Réponses illimitées",
+          "3": "50 étudiants",
+          "4": "AI Course Builder (pas de téléchargement de vidéo)",
+          "5": "Chat en direct et sondages"
           "1": "Cours illimités",
           "2": "Questions/Réponses illimitées",
           "3": "50 étudiants",
@@ -221,10 +238,17 @@
         },
         "cta": {
           "label": "S'inscrire maintenant",
+          "label": "S'inscrire maintenant",
           "dashboard_label": "Rétrograder"
         }
       },
       "2": {
+        "name": "Adopteurs précoces",
+        "description": "Pour les entreprises d’enseignement à croissance rapide qui visent à évoluer.",
+        "price": {
+          "monthly": "35",
+          "yearly": "350"
+        },
         "name": "Adopteurs précoces",
         "description": "Pour les entreprises d’enseignement à croissance rapide qui visent à évoluer.",
         "price": {
@@ -238,8 +262,15 @@
           "4": "Générateur de cours avancé sur l'IA (téléchargement vidéo et certificat)",
           "5": "Image de marque personnalisée",
           "6": "Comprend toutes les fonctionnalités à venir"
+          "1": "Tout en Basic",
+          "2": "Enseignants illimités",
+          "3": "10 000 étudiants",
+          "4": "Générateur de cours avancé sur l'IA (téléchargement vidéo et certificat)",
+          "5": "Image de marque personnalisée",
+          "6": "Comprend toutes les fonctionnalités à venir"
         },
         "cta": {
+          "label": "Je veux entrer 😍",
           "label": "Je veux entrer 😍",
           "dashboard_label": "Soutenez-nous 😍"
         }
@@ -247,11 +278,18 @@
       "3": {
         "name": "Entreprise",
         "description": "Idéal pour les grandes entreprises qui ont besoin de plus de contrôle",
+        "description": "Idéal pour les grandes entreprises qui ont besoin de plus de contrôle",
         "price": {
+          "monthly": "Demander un prix",
+          "yearly": "Demander un prix"
           "monthly": "Demander un prix",
           "yearly": "Demander un prix"
         },
         "features": {
+          "1": "Tout dans Early Adopters plus :",
+          "2": "Étudiants illimités",
+          "3": "Domaine personnalisé",
+          "4": "Assistance 24h/24 et 7j/7"
           "1": "Tout dans Early Adopters plus :",
           "2": "Étudiants illimités",
           "3": "Domaine personnalisé",
@@ -268,20 +306,26 @@
     "1": {
       "title": "Téléchargez une photo de profil et mettez à jour le nom d'utilisateur",
       "desc": "Personnaliser et apporter une touche humaine rendant les interactions plus personnelles et mémorables",
+      "title": "Téléchargez une photo de profil et mettez à jour le nom d'utilisateur",
+      "desc": "Personnaliser et apporter une touche humaine rendant les interactions plus personnelles et mémorables",
       "button_label": "Mettre à jour le profil"
     },
     "2": {
       "title": "Mettre à jour la photo de profil de l'organisation",
       "desc": "Établissez une identité professionnelle et reconnaissable pour votre organisation",
       "button_label": "Mettre à jour le profil de l'organisation"
+      "desc": "Établissez une identité professionnelle et reconnaissable pour votre organisation",
+      "button_label": "Mettre à jour le profil de l'organisation"
     },
     "3": {
       "title": "Créer un cours",
+      "desc": "Créez un cours que vous partagerez avec vos étudiants",
       "desc": "Créez un cours que vous partagerez avec vos étudiants",
       "button_label": "Créer un cours"
     },
     "4": {
       "title": "Créer une leçon",
+      "desc": "Divisez votre cours en leçons que vos élèves peuvent facilement comprendre",
       "desc": "Divisez votre cours en leçons que vos élèves peuvent facilement comprendre",
       "button_label": "Créer une leçon"
     },
@@ -289,9 +333,16 @@
       "title": "Créer un exercice",
       "desc": "Testez vos élèves pour leur permettre de démontrer leur compréhension du sujet",
       "button_label": "Créer une affectation"
+      "desc": "Testez vos élèves pour leur permettre de démontrer leur compréhension du sujet",
+      "button_label": "Créer une affectation"
     },
     "6": {
       "title": "Publier un cours",
+      "desc": "Rendre votre cours public et achetable",
+      "button_label": "Publier un cours"
+    },
+    "get_started": "Commencer"
+  },
       "desc": "Rendre votre cours public et achetable",
       "button_label": "Publier un cours"
     },
@@ -310,12 +361,19 @@
     "courses": "Cours",
     "home": "Maison",
     "classroomio_home": "Accueil ClassroomIO",
+    "classroomio_home": "Accueil ClassroomIO",
     "dashboard": "Tableau de bord",
     "discussion": "Discussion",
     "people": "Personnes",
     "goto_lms": "Aller au LMS",
     "goto_home": "Accéder à l'accueil ClassroomIO",
+    "goto_lms": "Aller au LMS",
+    "goto_home": "Accéder à l'accueil ClassroomIO",
     "login": "Se connecter",
+    "signup": "S'inscrire",
+    "redirecting": "Redirection",
+    "loading_state": "Vous passez à la page suivante, veuillez patienter.",
+    "org_loading_state": "Vous emmener dans votre organisation..."
     "signup": "S'inscrire",
     "redirecting": "Redirection",
     "loading_state": "Vous passez à la page suivante, veuillez patienter.",
@@ -329,11 +387,15 @@
     "quiz": {
       "title": "Quiz",
       "second": "Seconde(s)",
+      "second": "Seconde(s)",
       "answer": "Réponses)",
       "question_delete": "Supprimer la question",
       "add_more": "+ Ajouter plus de réponses",
       "remove_last": "- Supprimer la dernière réponse",
+      "add_more": "+ Ajouter plus de réponses",
+      "remove_last": "- Supprimer la dernière réponse",
       "quiz_delete": "Supprimer le questionnaire",
+      "delete_question": "Êtes-vous sûr de vouloir supprimer cette question ?",
       "delete_question": "Êtes-vous sûr de vouloir supprimer cette question ?",
       "delete_quiz": "Êtes-vous sûr de vouloir supprimer ce quiz ?",
       "lose_content": "Vous perdrez votre contenu et cette action ne pourra pas être annulée.",
@@ -381,6 +443,7 @@
     "view_site": "Voir le site",
     "hero_content": "Merci pour ce que vous faites ❤️. Vous changez des vies, une classe à la fois et grâce à vous, le monde est meilleur. 😊",
     "hero_button": "Continuez à construire 🚀",
+    "hero_button": "Continuez à construire 🚀",
     "your_schedule": "Votre emploi du temps",
     "today": "Aujourd'hui",
     "yesterday": "Hier",
@@ -397,7 +460,8 @@
     "lms_dashboard_hero": "Aujourd'hui est un autre jour pour vous rapprocher de vos objectifs d'apprentissage. N'abandonnez pas, plus vous apprenez, mieux vous vous améliorez.",
     "dont": "N'abandonne pas",
     "lessons_completed": "Leçons terminées",
-    "No_courses_started": "Aucun cours n'a commencé"
+    "No_courses_started": "Aucun cours n'a commencé",
+    "visit_site": "Visitez le site Web"
   },
   "courses": {
     "heading": "Cours",
@@ -419,6 +483,7 @@
       },
       "error_message": "Une erreur s'est produite.",
       "lessons_number": "cours",
+      "lessons_number": "cours",
       "students": "étudiants",
       "published": "Publié",
       "unpublished": "Inédit",
@@ -426,6 +491,7 @@
       "list_view": {
         "title": "Titre",
         "description": "Description",
+        "lessons": "Cours",
         "lessons": "Cours",
         "students": "Étudiants",
         "published": "Publié"
@@ -460,6 +526,7 @@
           "edit_post": "Modifier le message",
           "make_a_post": "Créer un message",
           "placeholder": "Partagez une mise à jour avec vos élèves",
+          "placeholder": "Partagez une mise à jour avec vos élèves",
           "cancel": "Annuler",
           "post": "Poste"
         },
@@ -472,6 +539,7 @@
           "comment_creation_error": "Une erreur s'est produite lors de la création du commentaire",
           "add_comment_success": "Commentaire ajouté",
           "toggle_pin_error": "Échec de l'activation du flux épinglé",
+          "unpinned": "Désépinglé",
           "unpinned": "Désépinglé",
           "successfully": "Avec succès",
           "feed_delete_success": "Flux supprimé avec succès",
@@ -487,8 +555,10 @@
           "lesson_title": "Titre de la leçon",
           "click_to": "Cliquez pour",
           "lock": "verrouillage",
+          "lock": "verrouillage",
           "unlock": "ouvrir",
           "fullname": "nom et prénom",
+          "save": "Sauvegarder",
           "save": "Sauvegarder",
           "edit": "Modifier",
           "delete": "Supprimer"
@@ -515,10 +585,13 @@
         "mark_as": "Marquer comme",
         "incomplete": "Incomplet",
         "complete": "Complet",
+        "incomplete": "Incomplet",
+        "complete": "Complet",
         "materials": {
           "body_heading": "Aucune note, vidéo ou diapositive ajoutée pour cette leçon pour le moment",
           "body_content": "Partagez vos connaissances avec vos élèves en créant du contenu engageant. Commencez par cliquer sur",
           "get_started": "Commencer",
+          "no_translation": "Aucune traduction pour la langue sélectionnée",
           "no_translation": "Aucune traduction pour la langue sélectionnée",
           "button": "bouton",
           "tabs": {
@@ -545,10 +618,13 @@
                 "title": "Ajouter une vidéo",
                 "add_by": "Ajouter par",
                 "youtube_link": "Lien YouTube",
+                "youtube_link": "Lien YouTube",
                 "videos_added": "Vidéos ajoutées",
                 "add_video": "Ajouter une vidéo",
                 "upload_video": "Télécharger une video",
                 "select_file": "Sélectionnez le fichier (Mp4, MOV, AVI) à télécharger dans votre leçon.",
+                "size": "(Maximum 500 Mo)",
+                "oops": "Oups 😬, impossible de télécharger la vidéo",
                 "size": "(Maximum 500 Mo)",
                 "oops": "Oups 😬, impossible de télécharger la vidéo",
                 "sorry": "Désolé, la vidéo n'a pas été téléchargée. La taille du fichier est trop grande,",
@@ -558,6 +634,9 @@
                 "sorry_3": "Désolé, notre vidéo n'a pas été téléchargée, le format de fichier n'est pas pris en charge ou quelque chose s'est mal passé sur le serveur.",
                 "sorry_4": "Téléchargez des fichiers MP4, MOV et AVI.",
                 "upgrade": "Mettez à niveau votre forfait pour télécharger des vidéos",
+                "uploading": "Téléchargement...",
+                "invalid_youtube": "Lien(s) YouTube invalide(s)",
+                "invalid_link": "Lien(s) invalide(s)"
                 "uploading": "Téléchargement...",
                 "invalid_youtube": "Lien(s) YouTube invalide(s)",
                 "invalid_link": "Lien(s) invalide(s)"
@@ -580,11 +659,14 @@
               "2": "Utiliser un modèle",
               "3": "Utiliser l'IA",
               "subtitle_1": "Créez votre exercice à partir de zéro si vous avez déjà préparé vos questions",
+              "3": "Utiliser l'IA",
+              "subtitle_1": "Créez votre exercice à partir de zéro si vous avez déjà préparé vos questions",
               "subtitle_2": "Choisissez parmi plus de 100 modèles d'exercices prédéfinis pour vous aider à démarrer",
               "subtitle_3": "Vous pouvez générer un exercice avec l'IA à partir de vos notes"
             },
             "how": "Comment voulez-vous créer votre exercice",
             "coming_soon": "À venir",
+            "next": "Suivant",
             "next": "Suivant",
             "title": "Donnez un titre à votre exercice",
             "title_placeholder": "Nom de l'exercice",
@@ -597,9 +679,12 @@
             "choose_questions": "Choisissez le nombre de questions et d'options que vous souhaitez et l'IA vous aidera à créer un exercice à partir de votre note. Allons-y.",
             "how_many_questions": "Combien de questions souhaitez-vous créer ?",
             "how_many_options": "Combien d’options par question souhaitez-vous ?",
+            "how_many_questions": "Combien de questions souhaitez-vous créer ?",
+            "how_many_options": "Combien d’options par question souhaitez-vous ?",
             "add_note": "Veuillez ajouter une note pour utiliser cette fonctionnalité",
             "generate": "Générer",
             "completion": "Génération d'IA terminée",
+            "click_generate": "Cliquez sur « Générer » pour un peu de magie"
             "click_generate": "Cliquez sur « Générer » pour un peu de magie"
           },
           "all_exercises": {
@@ -627,7 +712,9 @@
             "linkedin": "Écrivez votre lien LinkedIn ici",
             "number": "Écrivez votre numéro de téléphone ici",
             "previous": "Précédent",
+            "previous": "Précédent",
             "finish": "Finition",
+            "next": "Suivant",
             "next": "Suivant",
             "description": {
               "title": "Titre",
@@ -643,6 +730,7 @@
             },
             "edit_mode": {
               "delete_modal": "Supprimer le modal",
+              "sure": "Êtes-vous sûr de vouloir supprimer cet exercice ?",
               "sure": "Êtes-vous sûr de vouloir supprimer cet exercice ?",
               "no": "Non, annule",
               "yes": "Oui, supprimer",
@@ -677,14 +765,17 @@
               },
               "individual": {
                 "heading": "Individuel",
+                "heading": "Individuel",
                 "answers": "Réponses individuelles",
                 "no": "Aucune réponse n'a été fournie"
               },
+              "submissions": "Soumissions"
               "submissions": "Soumissions"
             }
           }
         },
         "comments": {
+          "title": "commentaires",
           "title": "commentaires",
           "you": "Toi",
           "placeholder": "Dire quelque chose"
@@ -722,7 +813,10 @@
         "title": "Présence",
         "present": "Présent",
         "absent": "Absent",
+        "present": "Présent",
+        "absent": "Absent",
         "search_students": "Rechercher des étudiants",
+        "student": "Étudiant",
         "student": "Étudiant",
         "lesson": "Leçon",
         "no_student": "Aucun étudiant ajouté"
@@ -731,12 +825,15 @@
         "title": "Exercices soumis",
         "submission_status": {
           "1": "Soumis",
+          "1": "Soumis",
           "2": "En cours",
           "3": "Noté"
         }
       },
       "marks": {
         "title": "Des marques",
+        "student": "Étudiant",
+        "total": "Total",
         "student": "Étudiant",
         "total": "Total",
         "no_student": "Aucun étudiant ajouté"
@@ -754,6 +851,7 @@
         "invite_modal": {
           "title": "Inviter des gens",
           "invite": "Inviter des tuteurs",
+          "select": "Sélectionnez les tuteurs dans l'organisation...",
           "select": "Sélectionnez les tuteurs dans l'organisation...",
           "to_add": "Pour ajouter un tuteur à votre organisation,",
           "go_to": "accéder aux paramètres de l'organisation",
@@ -773,6 +871,9 @@
           "admin": "Administrateur",
           "tutor": "Tuteur",
           "student": "Étudiant",
+          "admin": "Administrateur",
+          "tutor": "Tuteur",
+          "student": "Étudiant",
           "filter": "Filtre"
         }
       },
@@ -782,6 +883,7 @@
         "theme": "Choisissez un thème",
         "logo": "Logo de la marque",
         "to_update": "Pour mettre à jour votre image de marque, rendez-vous sur",
+        "settings": "Paramètres > Paramètres de l'organisation",
         "settings": "Paramètres > Paramètres de l'organisation",
         "and_upload": "et téléchargez le logo de votre marque",
         "goto_settings": "Aller aux paramètres",
@@ -805,6 +907,7 @@
             "3": "Description",
             "4": "Objectifs",
             "5": "Commentaires",
+            "6": "Instructeur",
             "6": "Instructeur",
             "7": "Tarifs"
           },
@@ -849,10 +952,13 @@
           "title": "Widget de bannière",
           "width": "Les images plus larges que 1 500 pixels fonctionnent mieux.",
           "size": "La taille maximale par fichier est de 500 Ko.",
+          "width": "Les images plus larges que 1 500 pixels fonctionnent mieux.",
+          "size": "La taille maximale par fichier est de 500 Ko.",
           "submit": "Soumettre",
           "no_images": "Aucune image disponible."
         },
         "pricing_section": {
+          "free": "Gratuit",
           "free": "Gratuit",
           "not_accepting": "Ce cours n'accepte actuellement pas de nouveaux étudiants.",
           "discount": "Rabais",
@@ -875,6 +981,7 @@
         "header_video": "Vidéo d'en-tête",
         "no_course_published": "Aucun cours publié",
         "coming_your_way": "Nous avons d'excellents cours à venir, restez à l'écoute !!!",
+        "coming_your_way": "Nous avons d'excellents cours à venir, restez à l'écoute !!!",
         "view_less": "Voir moins",
         "view_all": "Voir tout",
         "thank_you": "Merci d'avoir laissé un message, nous vous répondrons sous peu",
@@ -896,6 +1003,7 @@
           "rating": "Notation",
           "ratings": "Notes"
         },
+        "instructor": "Instructeur",
         "instructor": "Instructeur",
         "courses": "cours"
       },
@@ -921,11 +1029,13 @@
         "course_download": "Téléchargement du cours",
         "course_avail": "Rendre le cours disponible en téléchargement pour les étudiants inscrits",
         "download": "Télécharger",
+        "download": "Télécharger",
         "allow": "Autoriser les nouveaux étudiants",
         "access": "Autoriser les nouveaux étudiants à accéder à ce cours",
         "publish": "Publier le cours",
         "determines": "Cela détermine si votre cours s'affiche sur votre page de destination",
         "published": "Publié",
+        "unpublished": "Inédit",
         "unpublished": "Inédit",
         "delete": "Supprimer un cours",
         "delete_text": "Supprimer ce cours, cette action est irréversible",
@@ -953,6 +1063,8 @@
     "find_question": "Rechercher une question",
     "asked": "demandé",
     "answers": "réponses",
+    "asked": "demandé",
+    "answers": "réponses",
     "no_question": "Aucune question posée",
     "ask_a_question": "Poser une question à la communauté",
     "delete": {
@@ -977,6 +1089,7 @@
     "home": "Maison",
     "my_learning": "Mon apprentissage",
     "exercise": "Exercice",
+    "exercise": "Exercice",
     "community": "Communauté",
     "help": "Aide",
     "settings": "Paramètres"
@@ -984,6 +1097,7 @@
   "my_learning": {
     "heading": "Mon apprentissage",
     "progress": "En cours",
+    "complete": "Complet",
     "complete": "Complet",
     "search": "Rechercher des cours",
     "not_in_progress": "Aucun cours en cours",
@@ -994,6 +1108,7 @@
   "exercises": {
     "heading": "Des exercices",
     "not_submitted": "Pas transmis",
+    "submitted": "Soumis",
     "submitted": "Soumis",
     "in_progress": "Classement en cours",
     "graded": "Noté",
@@ -1053,6 +1168,8 @@
       "error": {
         "not_right": "Quelque chose ne va pas – Veuillez réessayer plus tard",
         "went_wrong": "Quelque chose s'est mal passé - Veuillez réessayer plus tard",
+        "not_right": "Quelque chose ne va pas – Veuillez réessayer plus tard",
+        "went_wrong": "Quelque chose s'est mal passé - Veuillez réessayer plus tard",
         "title": "le titre ne peut pas être vide",
         "description": "la description ne peut pas être vide",
         "failed_integration": "Échec de l'intégration, veuillez réessayer plus tard",
@@ -1074,6 +1191,7 @@
     },
     "landing_page_settings": {
       "error": {
+        "file_size": "La taille du fichier ne doit pas dépasser 500 Ko",
         "file_size": "La taille du fichier ne doit pas dépasser 500 Ko",
         "try_again": "Essayer à nouveau",
         "label": "Télécharger une image",
@@ -1112,6 +1230,7 @@
       },
       "error": {
         "try_later": "Quelque chose ne va pas – Veuillez réessayer plus tard"
+        "try_later": "Quelque chose ne va pas – Veuillez réessayer plus tard"
       }
     },
     "marks": {
@@ -1133,7 +1252,9 @@
       },
       "success": {
         "comment_submitted": "Commentaire soumis !",
+        "comment_submitted": "Commentaire soumis !",
         "success_delete": "Supprimé avec succès",
+        "question_submitted": "Question soumise !"
         "question_submitted": "Question soumise !"
       }
     },
@@ -1141,6 +1262,7 @@
       "disposable": "L'e-mail que vous avez fourni est jetable"
     },
     "upgrade": {
+      "generate_fail": "N'a pas réussi à générer du succès",
       "generate_fail": "N'a pas réussi à générer du succès",
       "failed": "Échec, veuillez réessayer plus tard"
     },
@@ -1156,7 +1278,12 @@
       "0": "{{valeur : numéro}}",
       "1": "{{valeur : numéro}}",
       "2": "{{valeur : numéro}}"
+      "0": "{{valeur : numéro}}",
+      "1": "{{valeur : numéro}}",
+      "2": "{{valeur : numéro}}"
     },
+    "body_text": "Ceci est un petit exemple pour démontrer la fonctionnalité i18n dans SvelteKit à l'aide de la bibliothèque sveltekit-i18n. sveltekit-i18n est une petite bibliothèque sans dépendances externes, conçue pour Svelte et SvelteKit. Il colle @sveltekit-i18n/base et @sveltekit-i18n/parser-default ensemble pour vous fournir la solution sveltekit-i18n la plus simple. Le nombre total de téléchargements npm par semaine au {{dateValue:date}} est de {{download:number}}.",
+    "awards": "Vous avez {{award:gt; 0 : {{prix ; 1 : a remporté exactement le prix {{award}} ; par défaut : a remporté {{award}} récompenses}} ; par défaut : je n'ai remporté aucun prix}} !",
     "body_text": "Ceci est un petit exemple pour démontrer la fonctionnalité i18n dans SvelteKit à l'aide de la bibliothèque sveltekit-i18n. sveltekit-i18n est une petite bibliothèque sans dépendances externes, conçue pour Svelte et SvelteKit. Il colle @sveltekit-i18n/base et @sveltekit-i18n/parser-default ensemble pour vous fournir la solution sveltekit-i18n la plus simple. Le nombre total de téléchargements npm par semaine au {{dateValue:date}} est de {{download:number}}.",
     "awards": "Vous avez {{award:gt; 0 : {{prix ; 1 : a remporté exactement le prix {{award}} ; par défaut : a remporté {{award}} récompenses}} ; par défaut : je n'ai remporté aucun prix}} !",
     "date": "{{val:date}}",
