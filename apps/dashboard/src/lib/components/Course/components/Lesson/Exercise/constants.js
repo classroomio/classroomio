@@ -6,15 +6,15 @@ export const STATUS = {
 
 export const SELECTABLE_STATUS = [
   {
-    label: 'Submitted',
-    value: STATUS.SUBMITTED
+    id: STATUS.SUBMITTED,
+    text: 'Submitted'
   },
   {
-    label: 'In progress',
-    value: STATUS.IN_PROGRESS
+    id: STATUS.IN_PROGRESS,
+    text: 'In progress'
   },
   {
-    label: 'Graded',
-    value: STATUS.GRADED
+    id: STATUS.GRADED,
+    text: 'Graded'
   }
 ];

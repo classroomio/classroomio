@@ -21,6 +21,9 @@
   export let grade: number | undefined;
   export let gradeMax = 0;
   export let disableGrading = false;
+  export let isGradeWithAI = false;
+
+  let gradeWithAI = false;
 
   function handleFormSubmit(event) {
     if (isPreview) return;
@@ -32,6 +35,18 @@
   function handlePrevious(event) {
     event.preventDefault();
     onPrevious();
+  }
+
+  function acceptGrade() {
+    gradeWithAI = false;
+  }
+  function rejectGrade() {
+    gradeWithAI = false;
+    grade = 0;
+  }
+
+  $: {
+    gradeWithAI = isGradeWithAI;
   }
 </script>
 
@@ -54,12 +69,12 @@
 
   <div class="ml-4">
     {#if disabled}
-      {#if disableGrading}
+      {#if !gradeWithAI}
         <div class="bg-gray-200 dark:bg-gray-500 py-3 px-5 rounded-md mb-3">
           {defaultValue}
         </div>
       {:else}
-        <div class="border-2 rounded-md">
+        <div class="border rounded-md">
           <div class="bg-gray-200 dark:bg-gray-500 py-3 px-5 rounded-md mb-3">
             {defaultValue}
           </div>
@@ -72,16 +87,20 @@
               </p>
             </div>
             <div class="flex space-x-2">
-              <button
-                class="border rounded-sm hover:bg-green-400 hover:text-white border-green-400 text-green-400 text-sm font-normal px-2"
-              >
-                Accept
-              </button>
-              <button
-                class="border rounded-sm border-red-400 hover:bg-red-400 hover:text-white text-red-400 text-sm font-normal px-2"
-              >
-                Reject
-              </button>
+              <PrimaryButton
+                variant={VARIANTS.CONTAINED_SUCCESS}
+                label="Accept"
+                className="rounded-none py-1 px-2"
+                disablePadding={true}
+                onClick={acceptGrade}
+              />
+              <PrimaryButton
+                variant={VARIANTS.CONTAINED_DANGER}
+                label="Reject"
+                className="rounded-none py-1 px-2"
+                disablePadding={true}
+                onClick={rejectGrade}
+              />
             </div>
           </div>
         </div>

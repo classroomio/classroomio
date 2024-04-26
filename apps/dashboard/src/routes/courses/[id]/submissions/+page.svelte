@@ -26,6 +26,7 @@
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { browser } from '$app/environment';
   import { t } from '$lib/utils/functions/translations.js';
+  import { isGradeWithAI } from '$lib/components/Course/components/Lesson/Exercise/store.js';
 
   type items = {
     id: number;
@@ -176,6 +177,7 @@
   }
 
   function handleModalClose() {
+    $isGradeWithAI = false;
     goto($page.url.pathname);
   }
 

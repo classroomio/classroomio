@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import Modal from '$lib/components/Modal/index.svelte';
   import Select from '$lib/components/Form/Select.svelte';
@@ -8,7 +8,8 @@
   import { SELECTABLE_STATUS } from './constants';
   import { snackbar } from '$lib/components/Snackbar/store';
   import TextArea from '$lib/components/Form/TextArea.svelte';
-  import { Tag } from 'carbon-components-svelte';
+  import { Dropdown, Tag } from 'carbon-components-svelte';
+  // import { isGradeWithAI } from './store';
 
   export let open = false;
   export let onClose = () => {};
@@ -19,6 +20,9 @@
   export let updateStatus = () => {};
 
   let status = SELECTABLE_STATUS[0];
+  let selectedId = status.id;
+  let questionPoint = {};
+  let isGradeWithAI = false;
 
   let total = 0;
   let maxPoints = 0;
@@ -32,26 +36,54 @@
     return Object.values(grades).reduce((acc, grade) => acc + parseInt(grade || 0), 0);
   }
 
-  function handleStatusChange() {
+  function handleStatusChange(event) {
+    const newSelectedId = event.detail.selectedId;
+
+    setStatus({
+      status_id: newSelectedId
+    });
+
     updateStatus({
       submissionId: data.id,
       prevStatusId: data.status_id,
-      nextStatusId: status.value,
+      nextStatusId: status.id,
       total
     });
 
-    snackbar.success(`snackbar.exercise.submission_updated '${status.label}'`);
+    snackbar.success(`snackbar.exercise.submission_updated '${status.text}'`);
   }
 
   function setStatus(data) {
-    status = SELECTABLE_STATUS.find((status) => status.value === data.status_id);
+    const statusBySelectedId = SELECTABLE_STATUS.find((status) => status.id === data.status_id);
+
+    if (!statusBySelectedId) {
+      return;
+    }
+
+    status = statusBySelectedId;
+
+    if (data.status_id !== selectedId) {
+      selectedId = data.status_id;
+    }
+  }
+  const generateRandomPoints = (id, point) => {
+    data.questionAnswerByPoint[id] = Math.floor(Math.random() * point);
+    return data.questionAnswerByPoint[id];
+  };
+
+  function gradeWithAI() {
+    isGradeWithAI = true;
+
+    const newPoint = data?.questions.map((q) => generateRandomPoints(q.id, q.points));
+    console.log('data', newPoint);
+    console.log('data', data);
   }
 
   function getStatusColor(status) {
     // if (!status)
     return '';
 
-    // switch (status.value) {
+    // switch (status.id) {
     //   case STATUS.SUBMITTED:
     //     return '';
     //   case STATUS.IN_PROGRESS:
@@ -60,10 +92,6 @@
     //     return 'text-white bg-green-700';
     // }
   }
-
-  onMount(() => {
-    console.log('mounting');
-  });
 
   $: total = calculateTotal(data.questionAnswerByPoint);
   $: maxPoints = getMaxPoints(data.questions);
@@ -89,6 +117,7 @@
         isFinished: true
       }}
       bind:grades={data.questionAnswerByPoint}
+      bind:isGradeWithAI
     />
   </div>
   <div class="ml-4 w-2/5 sticky top-0">
@@ -109,7 +138,9 @@
       <div class="flex items-center space-x-4 text-sm px-3 py-2">
         <p class="dark:text-white text-sm text-gray-500 font-semibold">Total grade:</p>
 
-        <Tag class="dark:text-white font-semibold text-black bg-gray-300 rounded-md w-fit">
+        <Tag
+          class="dark:text-white font-semibold text-black bg-gray-100 dark:bg-neutral-700 rounded-md w-fit"
+        >
           {total}/{maxPoints}
         </Tag>
       </div>
@@ -123,7 +154,9 @@
       <div class="flex items-center space-x-4 text-sm px-3 py-2">
         <p class="dark:text-white text-sm text-gray-500 font-semibold">Student:</p>
         {#if data.student}
-          <div class="flex flex-row justify-center items-center bg-gray-300 rounded-md p-[6px]">
+          <div
+            class="flex flex-row justify-center items-center bg-gray-100 dark:bg-neutral-700 rounded-md p-[6px]"
+          >
             <img
               alt="Student avatar"
               class="flex rounded-full h-5 w-5"
@@ -135,28 +168,28 @@
           </div>
         {/if}
       </div>
-      <div class="flex items-center space-x-4 text-sm px-3 py-2">
+      <!-- <div class="flex items-center space-x-4 text-sm px-3 py-2">
         <p class="dark:text-white text-sm text-gray-500 font-semibold">Assesment Type:</p>
-        <Tag class="dark:text-white font-semibold bg-gray-300 rounded-md text-black w-fit"
+        <Tag
+          class="dark:text-white font-semibold bg-gray-100 dark:bg-neutral-700 rounded-md text-black w-fit"
           >Paragraph</Tag
         >
-      </div>
+      </div> -->
 
       <div class="flex flex-col items-start text-sm px-3 py-2">
         <p class="dark:text-white text-gray-500 font-semibold">Status:</p>
-        <Select
-          bind:value={status}
-          options={SELECTABLE_STATUS}
-          selectClassName="bg-gray-300 w-full border-none text-sm"
-          onChange={handleStatusChange}
-          className="w-full "
+        <Dropdown
+          bind:selectedId
+          items={SELECTABLE_STATUS}
+          class="w-full"
+          on:select={handleStatusChange}
         />
       </div>
 
       <div class="flex flex-col items-start text-sm px-3 py-2">
         <p class="dark:text-white text-gray-500 font-semibold">Add comment:</p>
         <TextArea
-          bgColor="bg-gray-300"
+          bgColor="bg-gray-100 dark:bg-neutral-700"
           className="font-semibold"
           placeholder="write your comments"
         />
@@ -164,15 +197,12 @@
 
       <div class="flex flex-col w-full space-y-3 px-3 py-2">
         <PrimaryButton
-          onClick={() => {
-            handleSave(data);
-            onClose();
-          }}
+          onClick={gradeWithAI}
           variant={VARIANTS.OUTLINED}
           className="space-x-3 py-3 px-8 w-full "
         >
           <img src="/ai.svg" alt="ai" />
-          <p class="font-semibold text-primary-700 text-sm">Grade with AI</p>
+          <p class="font-semibold text-sm">Grade with AI</p>
         </PrimaryButton>
         <PrimaryButton
           onClick={() => {

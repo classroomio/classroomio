@@ -12,6 +12,7 @@
   export let onPrevious = () => {};
   export let handleGrade = () => {};
   export let disableGrading = false;
+  export let isGradeWithAI = false;
 </script>
 
 {#each questions as currentQuestion, currentQuestionIndex}
@@ -27,6 +28,7 @@
         true
       )}
       bind:grade={grades[currentQuestion.id]}
+      bind:isGradeWithAI
       gradeMax={currentQuestion.points}
       handleGrade={handleGrade(currentQuestion.id)}
       {disableGrading}
@@ -44,6 +46,7 @@
         true
       )}
       bind:grade={grades[currentQuestion.id]}
+      bind:isGradeWithAI
       gradeMax={currentQuestion.points}
       handleGrade={handleGrade(currentQuestion.id)}
       {disableGrading}
@@ -61,6 +64,7 @@
         true
       )}
       bind:grade={grades[currentQuestion.id]}
+      bind:isGradeWithAI
       gradeMax={currentQuestion.points}
       handleGrade={handleGrade(currentQuestion.id)}
       {disableGrading}

@@ -24,6 +24,9 @@
   export let disableGrading = false;
   export let labelClassName = '';
   export let disableOptContainerMargin = false;
+  export let isGradeWithAI = false;
+
+  let gradeWithAI = false;
 
   function getRadioVal(form, name) {
     let val;
@@ -61,6 +64,18 @@
 
     return '';
   }
+
+  function acceptGrade() {
+    gradeWithAI = false;
+  }
+  function rejectGrade() {
+    gradeWithAI = false;
+    grade = 0;
+  }
+
+  $: {
+    gradeWithAI = isGradeWithAI;
+  }
 </script>
 
 <form on:submit|preventDefault={handleFormSubmit}>
@@ -80,25 +95,74 @@
     <CodeSnippet {code} />
   {/if}
 
-  <div class={!disableOptContainerMargin && 'ml-4'}>
-    {#each options as option}
-      <button
-        class="cursor-pointer text-left my-2 border-2 border-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-neutral-800 w-full {getValidationClassName(
-          option
-        )}"
-        type="button"
-      >
-        <RadioItem
-          className="p-2"
-          {name}
-          value={option.value}
-          checked={defaultValue.includes(option.value) && option.is_correct}
-          label={option.label || option.value}
-          {disabled}
-        />
-      </button>
-    {/each}
-  </div>
+  {#if !gradeWithAI}
+    <div class={!disableOptContainerMargin && 'ml-4'}>
+      {#each options as option}
+        <button
+          class="cursor-pointer text-left my-2 border-2 border-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-neutral-800 w-full {getValidationClassName(
+            option
+          )}"
+          type="button"
+        >
+          <RadioItem
+            className="p-2"
+            {name}
+            value={option.value}
+            checked={defaultValue.includes(option.value) && option.is_correct}
+            label={option.label || option.value}
+            {disabled}
+          />
+        </button>
+      {/each}
+    </div>
+  {:else}
+    <div class="ml-4 border rounded-md">
+      <div>
+        {#each options as option}
+          <button
+            class="cursor-pointer text-left mb-4 border-2 border-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-neutral-800 w-full {getValidationClassName(
+              option
+            )}"
+            type="button"
+          >
+            <RadioItem
+              className="p-2"
+              {name}
+              value={option.value}
+              checked={defaultValue.includes(option.value) && option.is_correct}
+              label={option.label || option.value}
+              {disabled}
+            />
+          </button>
+        {/each}
+      </div>
+      <div class="flex items-start px-2 py-4">
+        <div class="flex items-center space-x-4">
+          <img src="/ai.svg" alt="alt" />
+          <p class="font-normal text-sm">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus distinctio ex atque
+            facilis ea non pariatur deleniti blanditiis aliquid molestias.
+          </p>
+        </div>
+        <div class="flex space-x-2">
+          <PrimaryButton
+            variant={VARIANTS.CONTAINED_SUCCESS}
+            label="Accept"
+            className="rounded-none py-1 px-2"
+            disablePadding={true}
+            onClick={acceptGrade}
+          />
+          <PrimaryButton
+            variant={VARIANTS.CONTAINED_DANGER}
+            label="Reject"
+            className="rounded-none py-1 px-2"
+            disablePadding={true}
+            onClick={rejectGrade}
+          />
+        </div>
+      </div>
+    </div>
+  {/if}
 
   {#if !isPreview}
     <div class="mt-3 flex items-center justify-between w-full">
