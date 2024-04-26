@@ -41,19 +41,19 @@
 
   const options = [
     {
-      title: $t('course.navItem.lessons.exercises.new_exercise_modal.options.1'),
+      title: $t('course.navItem.lessons.exercises.new_exercise_modal.options.title_1'),
       subtitle: $t('course.navItem.lessons.exercises.new_exercise_modal.options.subtitle_1'),
       type: Type.SCRATCH,
       isDisabled: false
     },
     {
-      title: $t('course.navItem.lessons.exercises.new_exercise_modal.options.2'),
+      title: $t('course.navItem.lessons.exercises.new_exercise_modal.options.title_2'),
       subtitle: $t('course.navItem.lessons.exercises.new_exercise_modal.options.subtitle_2'),
       type: Type.TEMPLATE,
       isDisabled: false
     },
     {
-      title: $t('course.navItem.lessons.exercises.new_exercise_modal.options.3'),
+      title: $t('course.navItem.lessons.exercises.new_exercise_modal.options.title_3'),
       subtitle: $t('course.navItem.lessons.exercises.new_exercise_modal.options.subtitle_3'),
       type: Type.AI,
       isDisabled: false

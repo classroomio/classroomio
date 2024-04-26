@@ -47,43 +47,43 @@
     {
       key: 1,
       path: '',
-      title: $t('course.navItem.landing_page.editor.title.1')
+      title: $t('course.navItem.landing_page.editor.title.header')
     },
     {
       key: 2,
       path: 'metadata.requirements',
-      title: $t('course.navItem.landing_page.editor.title.2'),
+      title: $t('course.navItem.landing_page.editor.title.requirement'),
       enableAIWriter: true,
       initPrompt: 'Please write few requirements needed to take this course:'
     },
     {
       key: 3,
       path: 'metadata.description',
-      title: $t('course.navItem.landing_page.editor.title.3'),
+      title: $t('course.navItem.landing_page.editor.title.description'),
       enableAIWriter: true,
       initPrompt: 'Please write a detailed course description for this course:'
     },
     {
       key: 4,
       path: 'metadata.goals',
-      title: $t('course.navItem.landing_page.editor.title.4'),
+      title: $t('course.navItem.landing_page.editor.title.goals'),
       enableAIWriter: true,
       initPrompt: 'What should a student expect to learn from this course:'
     },
     {
       key: 5,
       path: '',
-      title: $t('course.navItem.landing_page.editor.title.5')
+      title: $t('course.navItem.landing_page.editor.title.reviews')
     },
     {
       key: 6,
       path: '',
-      title: $t('course.navItem.landing_page.editor.title.6')
+      title: $t('course.navItem.landing_page.editor.title.instructor')
     },
     {
       key: 7,
       path: '',
-      title: $t('course.navItem.landing_page.editor.title.7')
+      title: $t('course.navItem.landing_page.editor.title.pricing')
     }
   ];
   let selectedSection: Section | null = null;

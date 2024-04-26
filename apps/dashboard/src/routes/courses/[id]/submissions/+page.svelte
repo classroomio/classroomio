@@ -63,27 +63,27 @@
   let openExercise = false;
 
   const submissionStatus: { [key: number]: string } = {
-    1: $t('course.navItem.submissions.submission_status.1'),
-    2: $t('course.navItem.submissions.submission_status.2'),
-    3: $t('course.navItem.submissions.submission_status.3')
+    1: $t('course.navItem.submissions.submission_status.submitted'),
+    2: $t('course.navItem.submissions.submission_status.in_progress'),
+    3: $t('course.navItem.submissions.submission_status.graded')
   };
 
   let sections: sectionType[] = [
     {
       id: 1,
-      title: $t('course.navItem.submissions.submission_status.1'),
+      title: $t('course.navItem.submissions.submission_status.submitted'),
       value: 0,
       items: []
     },
     {
       id: 2,
-      title: $t('course.navItem.submissions.submission_status.2'),
+      title: $t('course.navItem.submissions.submission_status.in_progress'),
       value: 0,
       items: []
     },
     {
       id: 3,
-      title: $t('course.navItem.submissions.submission_status.3'),
+      title: $t('course.navItem.submissions.submission_status.graded'),
       value: 10,
       items: []
     }

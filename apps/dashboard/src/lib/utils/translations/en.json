@@ -49,12 +49,12 @@
       "view_site": "View site"
     },
     "tabs": {
-      "1": "Profile",
-      "2": "Organization",
-      "3": "Landing Page",
-      "4": "Billing",
-      "5": "Integrations",
-      "6": "Language"
+      "tabs_1": "Profile",
+      "tabs_2": "Organization",
+      "tabs_3": "Landing Page",
+      "tabs_4": "Billing",
+      "tabs_5": "Integrations",
+      "tabs_6": "Language"
     },
     "profile": {
       "profile_picture": {
@@ -202,6 +202,11 @@
   },
 
   "pricing": {
+    "plan_names": {
+      "free": "Free",
+      "early": "Early Adopter",
+      "enterprise": "Enterprise"
+    },
     "modal": {
       "heading": "Upgrade Plan",
       "thanks": "Thank you for your support",
@@ -211,7 +216,7 @@
       "month": "month"
     },
     "data": {
-      "1": {
+      "data_1": {
         "name": "Basic",
         "description": "Free tier plan for personal use, no credit card required.",
         "price": {
@@ -219,18 +224,18 @@
           "yearly": "0"
         },
         "features": {
-          "1": "Unlimited Courses",
-          "2": "Unlimited Q/A",
-          "3": "50 Students",
-          "4": "AI Course Builder (no video upload)",
-          "5": "Live chat & polls"
+          "basic_1": "Unlimited Courses",
+          "basic_2": "Unlimited Q/A",
+          "basic_3": "50 Students",
+          "basic_": "AI Course Builder (no video upload)",
+          "basic_5": "Live chat & polls"
         },
         "cta": {
           "label": "Signup Now",
           "dashboard_label": "Downgrade"
         }
       },
-      "2": {
+      "data_2": {
         "name": "Early Adopters",
         "description": "For fast growing teaching businesses that aim to scale.",
         "price": {
@@ -238,19 +243,19 @@
           "yearly": "350"
         },
         "features": {
-          "1": "Everything in Basic",
-          "2": "Unlimted Teachers",
-          "3": "10K Students",
-          "4": "Advanced AI Course Builder (Video upload & Certificate)",
-          "5": "Custom Branding",
-          "6": "Includes all Upcoming Features"
+          "early_1": "Everything in Basic",
+          "early_2": "Unlimted Teachers",
+          "early_3": "10K Students",
+          "early_4": "Advanced AI Course Builder (Video upload & Certificate)",
+          "early_5": "Custom Branding",
+          "early_6": "Includes all Upcoming Features"
         },
         "cta": {
           "label": "I want in 😍",
           "dashboard_label": "Support us 😍"
         }
       },
-      "3": {
+      "data_3": {
         "name": "Enterprise",
         "description": "Best suited for larger businesses that need more control",
         "price": {
@@ -258,10 +263,10 @@
           "yearly": "Request Pricing"
         },
         "features": {
-          "1": "Everything in Early Adopters plus:",
-          "2": "Unlimited students",
-          "3": "Custom Domain",
-          "4": "24/7 Support"
+          "enterprise_1": "Everything in Early Adopters plus:",
+          "enterprise_2": "Unlimited students",
+          "enterprise_3": "Custom Domain",
+          "enterprise_4": "24/7 Support"
         },
         "cta": {
           "label": "Contact Us",
@@ -328,7 +333,8 @@
     "signup": "Sign Up",
     "redirecting": "Redirecting",
     "loading_state": "Taking you to the next page, please wait.",
-    "org_loading_state": "Taking you to your organization..."
+    "org_loading_state": "Taking you to your organization...",
+    "add_organization": "+ Add Organization"
   },
 
   "markdown_editor": {
@@ -468,15 +474,15 @@
 
   "course": {
     "navItems": {
-      "1": "News Feed",
-      "2": "Lessons",
-      "3": "Attendance",
-      "4": "Submissions",
-      "5": "Marks",
-      "6": "People",
-      "7": "Certificates",
-      "8": "Landing Page",
-      "9": "Settings"
+      "nav_1": "News Feed",
+      "nav_2": "Lessons",
+      "nav_3": "Attendance",
+      "nav_4": "Submissions",
+      "nav_5": "Marks",
+      "nav_6": "People",
+      "nav_7": "Certificates",
+      "nav_8": "Landing Page",
+      "nav_9": "Settings"
     },
 
     "navItem": {
@@ -607,11 +613,11 @@
           "new_exercise_modal": {
             "heading": "New Exercise",
             "options": {
-              "1": "From Scratch",
+              "title_1": "From Scratch",
               "subtitle_1": "Create your exercise from scratch if you have your questions already prepared",
-              "2": "Use a Template",
+              "title_2": "Use a Template",
               "subtitle_2": "Select from 100+ templates of predefined exercise to help you get started",
-              "3": "Use AI",
+              "title_3": "Use AI",
               "subtitle_3": "You can generate an exercise with AI from your notes"
             },
             "how": "How do you want to create your exercise",
@@ -766,9 +772,9 @@
       "submissions": {
         "title": "Submitted Exercises",
         "submission_status": {
-          "1": "Submitted",
-          "2": "In Progress",
-          "3": "Graded"
+          "submitted": "Submitted",
+          "in_progress": "In Progress",
+          "graded": "Graded"
         }
       },
 
@@ -840,13 +846,13 @@
       "landing_page": {
         "editor": {
           "title": {
-            "1": "Header",
-            "2": "Requirement",
-            "3": "Description",
-            "4": "Goals",
-            "5": "Reviews",
-            "6": "Instructor",
-            "7": "Pricing"
+            "header": "Header",
+            "requirement": "Requirement",
+            "description": "Description",
+            "goals": "Goals",
+            "reviews": "Reviews",
+            "instructor": "Instructor",
+            "pricing": "Pricing"
           },
 
           "save": "Save",
@@ -1023,7 +1029,17 @@
     "manage": "Manage all your students here and stay connected with them",
     "name": "Name",
     "email": "Email",
-    "date_joined": "Date Joined"
+    "date_joined": "Date Joined",
+    "upgrade": "Upgrade your plan to invite more students"
+  },
+
+  "upgrade": {
+    "certificate": "Upgrade your plan to generate certificates",
+    "team": "Upgrade your plan to add team members",
+    "team_members": "Team members",
+    "back": "Back to Settings",
+    "download_lessons": "Upgrade to download lessons",
+    "download_course": "Upgrade to download course"
   },
 
   "lms_navigation": {
@@ -1079,7 +1095,9 @@
     },
 
     "materials": {
-      "apology": "We apologise, there was an error saving your lesson."
+      "apology": "We apologise, there was an error saving your lesson.",
+      "update_translations": "Updating translations failed",
+      "creating_new": "Creating new translations failed"
     },
 
     "newsfeed": {
@@ -1228,16 +1246,6 @@
 
   "content": {
     "heading": "Internationalization in SvelteKit",
-    "toggle_label": "Select Preferred Language",
-    "button_labels": {
-      "0": "{{value:number}}",
-      "1": "{{value:number}}",
-      "2": "{{value:number}}"
-    },
-    "body_text": "This is a small example to demonstrate i18n functionality in SvelteKit using sveltekit-i18n library. sveltekit-i18n is a tiny library with no external dependencies, built for Svelte and SvelteKit. It glues @sveltekit-i18n/base and @sveltekit-i18n/parser-default together to provide you the most straightforward sveltekit-i18n solution. Total number of npm downloads per week as of {{dateValue:date}} are {{download:number}}.",
-    "awards": "You have {{award:gt; 0: {{award; 1:won exactly {{award}} award; default:won {{award}} awards}}; default:not won any awards}}!",
-    "date": "{{val:date}}",
-    "time": "Only 'time' formatter is not available, it must be DateTime formatter",
-    "number": "{{value:currency}}"
+    "toggle_label": "Select Preferred Language"
   }
 }

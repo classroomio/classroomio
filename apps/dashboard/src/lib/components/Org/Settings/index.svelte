@@ -45,35 +45,35 @@
     tabs = [
       {
         key: 0,
-        label: $t('settings.tabs.1'),
+        label: $t('settings.tabs.tabs_1'),
         tabKey: '',
         href: $page.url.pathname,
         disabled: false
       },
       {
         key: 1,
-        label: $t('settings.tabs.2'),
+        label: $t('settings.tabs.tabs_2'),
         tabKey: 'org',
         href: `${$page.url.pathname}?tab=org`,
         disabled: !$isOrgAdmin
       },
       {
         key: 2,
-        label: $t('settings.tabs.3'),
+        label: $t('settings.tabs.tabs_3'),
         tabKey: 'landingpage',
         href: `${$page.url.pathname}?tab=landingpage`,
         disabled: !$isOrgAdmin
       },
       {
         key: 3,
-        label: $t('settings.tabs.4'),
+        label: $t('settings.tabs.tabs_4'),
         tabKey: 'billing',
         href: `${$page.url.pathname}?tab=billing`,
         disabled: !$isOrgAdmin
       },
       {
         key: 4,
-        label: $t('settings.tabs.5'),
+        label: $t('settings.tabs.tabs_5'),
         tabKey: 'integrations',
         href: `${$page.url.pathname}?tab=integrations`,
         disabled: false

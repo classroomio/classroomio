@@ -125,7 +125,11 @@
       </p>
       <p class="text-xs py-2">
         {#if isOnLandingPage}
-          <span class="px-2">{!cost ? 'Free' : formatter.format(cost)}</span>
+          <span class="px-2"
+            >{!cost
+              ? $t('course.navItem.landing_page.pricing_section')
+              : formatter.format(cost)}</span
+          >
         {:else if isLMS}
           <div class="flex items-center gap-2">
             <div class=" relative bg-[#EAEAEA] w-[50px] h-1">

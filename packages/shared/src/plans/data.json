@@ -1,7 +1,7 @@
 {
   "BASIC": {
-    "NAME": "Basic",
-    "DESCRIPTION": "Free tier plan for personal use, no credit card required.",
+    "NAME": "pricing.data.data_1.name",
+    "DESCRIPTION": "pricing.data.data_1.description",
     "PRICE": {
       "CURRENCY": "$",
       "MONTHLY": "0",
@@ -9,23 +9,23 @@
       "IS_PREMIUM": false
     },
     "FEATURES": [
-      "Unlimited Courses",
-      "Unlimited Q/A",
-      "50 Students",
-      "AI Course Builder (no video upload)",
-      "Live chat & polls"
+      "pricing.data.basic_1.features.1",
+      "pricing.data.basic_1.features.2",
+      "pricing.data.basic_1.features.3",
+      "pricing.data.basic_1.features.4",
+      "pricing.data.basic_1.features.5"
     ],
     "CTA": {
-      "LABEL": "Signup Now",
+      "LABEL": "pricing.data.data_1.cta.label",
       "LINK": "/signup?plan=free",
-      "DASHBOARD_LABEL": "Downgrade",
+      "DASHBOARD_LABEL": "pricing.data.data_1.cta.dashboard_label",
       "DASHBOARD_LINK": "#disabled",
       "IS_DISABLED": true
     }
   },
   "EARLY_ADOPTER": {
-    "NAME": "Early Adopters",
-    "DESCRIPTION": "For fast growing teaching businesses that aim to scale.",
+    "NAME": "pricing.data.data_2.name",
+    "DESCRIPTION": "pricing.data.data_2.description",
     "PRICE": {
       "CURRENCY": "$",
       "MONTHLY": "35",
@@ -33,41 +33,41 @@
       "IS_PREMIUM": false
     },
     "FEATURES": [
-      "Everything in Basic",
-      "Unlimted Teachers",
-      "10K Students",
-      "Advanced AI Course Builder (Video upload & Certificate)",
-      "Custom Branding",
-      "Includes all Upcoming Features"
+      "pricing.data.2.features.early_1",
+      "pricing.data.2.features.early_2",
+      "pricing.data.2.features.early_3",
+      "pricing.data.2.features.early_4",
+      "pricing.data.2.features.early_5",
+      "pricing.data.2.features.early_6"
     ],
     "CTA": {
-      "LABEL": "I want in 😍",
+      "LABEL": "pricing.data.data_2.cta.label",
       "LINK": "/signup?plan=early-adopter",
-      "DASHBOARD_LABEL": "Support us 😍",
+      "DASHBOARD_LABEL": "pricing.data.data_2.cta.dashboard_label",
       "DASHBOARD_LINK": "",
       "IS_DISABLED": false,
       "PRODUCT_ID": "331121"
     }
   },
   "ENTERPRISE": {
-    "NAME": "Enterprise",
-    "DESCRIPTION": "Best suited for larger businesses that need more control",
+    "NAME": "pricing.data.data_3.name",
+    "DESCRIPTION": "pricing.data.data_3.description",
     "PRICE": {
       "CURRENCY": "",
-      "MONTHLY": "Request Pricing",
-      "YEARLY": "Request Pricing",
+      "MONTHLY": "pricing.data.data_3.price.monthly",
+      "YEARLY": "pricing.data.data_3.price.yearly",
       "IS_PREMIUM": true
     },
     "FEATURES": [
-      "Everything in Early Adopters plus:",
-      "Unlimited students",
-      "Custom Domain",
-      "24/7 Support"
+      "pricing.data.data_3.features.enterprise_1",
+      "pricing.data.data_3.features.enterprise_2",
+      "pricing.data.data_3.features.enterprise_3",
+      "pricing.data.data_3.features.enterprise_4"
     ],
     "CTA": {
-      "LABEL": "Contact Us",
+      "LABEL": "pricing.data.data_3.cta.label",
       "LINK": "https://cal.com/classroomio/enterprise",
-      "DASHBOARD_LABEL": "Contact Us",
+      "DASHBOARD_LABEL": "pricing.data.data_3.cta.dashboard_label",
       "DASHBOARD_LINK": "https://cal.com/classroomio/enterprise",
       "IS_DISABLED": false
     }

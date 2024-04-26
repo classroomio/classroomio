@@ -49,7 +49,7 @@
       });
 
       if (!checkoutURL) {
-        snackbar.error('upgrade.generate_fail');
+        snackbar.error('snackbar.upgrade.generate_fail');
         return;
       }
 
@@ -57,7 +57,7 @@
     } catch (error) {
       console.error('Error subscribing', error);
 
-      snackbar.error('upgrade.failed');
+      snackbar.error('snackbar.upgrade.failed');
     }
 
     isLoadingPlan = null;

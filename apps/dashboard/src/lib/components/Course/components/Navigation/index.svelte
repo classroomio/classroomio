@@ -138,13 +138,13 @@
   $: {
     navItems = [
       {
-        label: $t('course.navItems.1'),
+        label: $t('course.navItems.nav_1'),
         to: getNavItemRoute($course.id),
         hideSortIcon: true,
         isPaidFeature: false
       },
       {
-        label: $t('course.navItems.2'),
+        label: $t('course.navItems.nav_2'),
         to: getLessonsRoute($course.id),
         hideSortIcon: false,
         isPaidFeature: false,
@@ -152,13 +152,13 @@
         isExpanded: isStudent ? true : $page.url.pathname.includes('/lessons')
       },
       {
-        label: $t('course.navItems.3'),
+        label: $t('course.navItems.nav_3'),
         to: getNavItemRoute($course.id, 'attendance'),
         isPaidFeature: false,
         hideSortIcon: true
       },
       {
-        label: $t('course.navItems.4'),
+        label: $t('course.navItems.nav_4'),
         to: getNavItemRoute($course.id, 'submissions'),
         hideSortIcon: true,
         isPaidFeature: false,
@@ -167,13 +167,13 @@
         }
       },
       {
-        label: $t('course.navItems.5'),
+        label: $t('course.navItems.nav_5'),
         to: getNavItemRoute($course.id, 'marks'),
         isPaidFeature: false,
         hideSortIcon: true
       },
       {
-        label: $t('course.navItems.6'),
+        label: $t('course.navItems.nav_6'),
         to: getNavItemRoute($course.id, 'people'),
         isPaidFeature: false,
         hideSortIcon: true,
@@ -182,7 +182,7 @@
         }
       },
       {
-        label: $t('course.navItems.7'),
+        label: $t('course.navItems.nav_7'),
         to: getNavItemRoute($course.id, 'certificates'),
         hideSortIcon: true,
         isPaidFeature: true,
@@ -195,7 +195,7 @@
         }
       },
       {
-        label: $t('course.navItems.8'),
+        label: $t('course.navItems.nav_8'),
         to: getNavItemRoute($course.id, 'landingpage'),
         hideSortIcon: true,
         isPaidFeature: false,
@@ -204,7 +204,7 @@
         }
       },
       {
-        label: $t('course.navItems.9'),
+        label: $t('course.navItems.nav_9'),
         to: getNavItemRoute($course.id, 'settings'),
         hideSortIcon: true,
         isPaidFeature: false,

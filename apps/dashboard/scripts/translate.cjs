@@ -22,7 +22,7 @@ const languageFiles = {
   pt: path.resolve(__dirname, '../src/lib/utils/translations/pt.json'),
   de: path.resolve(__dirname, '../src/lib/utils/translations/de.json'),
   vi: path.resolve(__dirname, '../src/lib/utils/translations/vi.json'),
-  ru: path.resolve(__dirname, '../src/lib/utils/translations/re.json'),
+  ru: path.resolve(__dirname, '../src/lib/utils/translations/ru.json'),
   es: path.resolve(__dirname, '../src/lib/utils/translations/es.json')
 };
 
@@ -98,6 +98,8 @@ const translateLanguage = async (fromLanguage, toLanguage, outputFilePath) => {
     if (trans) {
       for (const key in trans) {
         const value = trans[key];
+        console.log('key', key);
+        console.log('value', value);
         set(targetTranslations, key, value);
       }
 

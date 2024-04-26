@@ -10,13 +10,13 @@
   $: tabs = [
     {
       key: 0,
-      label: $t('settings.tabs.1'),
+      label: $t('settings.tabs.tabs_1'),
       tabKey: '',
       href: $page.url.pathname
     },
     {
       key: 1,
-      label: $t('settings.tabs.5'),
+      label: $t('settings.tabs.tabs_5'),
       tabKey: 'integrations',
       href: `${$page.url.pathname}?tab=integrations`,
       disabled: false

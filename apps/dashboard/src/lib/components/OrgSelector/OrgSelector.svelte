@@ -11,6 +11,7 @@
   import TextChip from '$lib/components/Chip/Text.svelte';
   import Plan from '$lib/components/Chip/Plan.svelte';
   import { PLAN_NAMES } from 'shared/src/plans/constants';
+  import { t } from '$lib/utils/functions/translations';
 
   export let canAddOrg = true;
 
@@ -65,7 +66,11 @@
             {$currentOrg.name}
           </p>
 
-          <Plan name={$currentOrgPlan ? PLAN_NAMES[$currentOrgPlan.plan_name] : PLAN_NAMES.BASIC} />
+          <Plan
+            name={$currentOrgPlan
+              ? $t(PLAN_NAMES[$currentOrgPlan.plan_name])
+              : $t(PLAN_NAMES.BASIC)}
+          />
         </div>
         <ChevronSort size={16} />
       </div>
@@ -90,7 +95,12 @@
         />
       {/each}
 
-      <OrgSelectorItem disabled={true} size="" text=" + Add Organization" onClick={handleAddOrg} />
+      <OrgSelectorItem
+        disabled={true}
+        size=""
+        text={$t('navigation.add_organization')}
+        onClick={handleAddOrg}
+      />
     </Popover>
   {/if}
 </div>
