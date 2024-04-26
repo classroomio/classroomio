@@ -176,13 +176,13 @@
       </div>
     </div>
 
-    <div class="px-[12%] bg-[#F5F8FE] my-10 py-12 h-[75%] lg:h-[80%]">
+    <div class="px-2 lg:px-[12%] bg-[#F5F8FE] my-10 py-12 h-[75%] lg:h-[80%]">
       <h1 class="text-2xl text-center font-bold flex gap-3 justify-center items-center">
         Word from our fufilled facilitators
       </h1>
 
       <div
-        class="mt-10 w-[50%] mx-auto border shadow-sm bg-white rounded-md text-center py-6 relative before:w-[4.5%] before:absolute before:left-0 before:top-0 before:h-full before:bg-[#0233BD] before:rounded-tl-md before:rounded-bl-md"
+        class="mt-10 w-full md:w-2/4 mx-auto border shadow-sm bg-white rounded-md text-center py-6 relative before:w-[4.5%] before:absolute before:left-0 before:top-0 before:h-full before:bg-[#0233BD] before:rounded-tl-md before:rounded-bl-md"
       >
         <h1 class="text-base font-medium leading-5 w-[77%] mx-auto">
           With ClassroomIO, I am training over 100 students. I am making more money than expected
@@ -197,7 +197,7 @@
       </div>
     </div>
 
-    <div class="px-[10%] lg:px-[15%] lg:max-w-[65%] my-10 mt-10 mx-auto">
+    <div class="px-10 lg:px-[15%] lg:max-w-[65%] my-10 mt-10 mx-auto">
       <h1 class="text-2xl text-center font-bold">Frequently asked questions</h1>
 
       <div class="mt-10">
@@ -206,7 +206,7 @@
             <div>
               <button
                 type="button"
-                class="w-full font-medium text-lg my-2 flex justify-between"
+                class="w-full font-medium text-sm md:text-lg my-2 flex justify-between text-left md:text-center"
                 on:click={() => toggleAnswer(index)}
               >
                 {faq.question} <span>{faq.showAnswer ? '-' : '+'}</span>
