@@ -13,26 +13,26 @@ export const SECTION_KEYS = {
 export const NAV_ITEMS = [
   {
     key: SECTION_KEYS.REQUIREMENT,
-    label: 'course.navItem.landing_page.editor.title.2'
+    label: 'course.navItem.landing_page.editor.title.requirement'
   },
   {
     key: SECTION_KEYS.DESCRIPTION,
-    label: 'course.navItem.landing_page.editor.title.3'
+    label: 'course.navItem.landing_page.editor.title.description'
   },
   {
     key: SECTION_KEYS.GOALS,
-    label: 'course.navItem.landing_page.editor.title.4'
+    label: 'course.navItem.landing_page.editor.title.goals'
   },
   {
     key: SECTION_KEYS.LESSONS,
-    label: 'course.navItems.2'
+    label: 'course.navItems.nav_lessons'
   },
   {
     key: SECTION_KEYS.REVIEWS,
-    label: 'course.navItem.landing_page.editor.title.5'
+    label: 'course.navItem.landing_page.editor.title.reviews'
   },
   {
     key: SECTION_KEYS.INSTRUCTOR,
-    label: 'course.navItem.landing_page.editor.title.6'
+    label: 'course.navItem.landing_page.editor.title.instructor'
   }
 ];

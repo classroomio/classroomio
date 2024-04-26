@@ -33,7 +33,7 @@
   labelClassName="font-bold"
   label={$t('course.navItem.landing_page.editor.header_form.short_video')}
   placeholder="www.youtube.com/watch?v=uYRq60G5XTk"
-  helperMessage="Enter a link to a youtube video"
+  helperMessage={$t('course.navItem.landing_page.editor.header_form.helper')}
   type="text"
   bind:value={course.metadata.videoUrl}
 />

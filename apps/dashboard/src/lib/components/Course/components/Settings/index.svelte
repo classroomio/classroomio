@@ -288,7 +288,7 @@
     </Column>
     <Column sm={8} md={8} lg={8}>
       {#if $isFreePlan}
-        <UpgradeBanner>Upgrade to download lessons</UpgradeBanner>
+        <UpgradeBanner>{$t('upgrade.download_lessons')}</UpgradeBanner>
       {:else}
         <Toggle size="sm" bind:toggled={$settings.lesson_download}>
           <span slot="labelA" style="color: gray">{$t('course.navItem.settings.disabled')}</span>
@@ -304,7 +304,7 @@
     </Column>
     <Column sm={8} md={8} lg={8}>
       {#if $isFreePlan}
-        <UpgradeBanner>Upgrade to download course</UpgradeBanner>
+        <UpgradeBanner>{$t('upgrade.download_course')}</UpgradeBanner>
       {:else}
         <PrimaryButton
           variant={VARIANTS.OUTLINED}

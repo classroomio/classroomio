@@ -95,45 +95,45 @@ export const load = async ({ params = { slug: '' } }) => {
   const data = [
     {
       id: 'profile',
-      title: 'setup.1.title',
-      desc: 'setup.1.desc',
+      title: 'setup.personal_profile.title',
+      desc: 'setup.personal_profile.desc',
       is_completed: false,
-      button_label: 'setup.1.button_label'
+      button_label: 'setup.personal_profile.button_label'
     },
     {
       id: 'organization',
-      title: 'setup.2.title',
-      desc: 'setup.2.desc',
+      title: 'setup.organization_profile.title',
+      desc: 'setup.organization_profile.desc',
       is_completed: orgHasAvatarUrl,
-      button_label: 'setup.2.button_label'
+      button_label: 'setup.organization_profile.button_label'
     },
     {
       id: 'course',
-      title: 'setup.3.title',
-      desc: 'setup.4.desc',
+      title: 'setup.course.title',
+      desc: 'setup.course.desc',
       is_completed: isCourseCreated,
-      button_label: 'setup.3.button_label'
+      button_label: 'setup.course.button_label'
     },
     {
       id: 'lesson',
-      title: 'setup.4.title',
-      desc: 'setup.4.desc',
+      title: 'setup.lesson.title',
+      desc: 'setup.lesson.desc',
       is_completed: isLessonCreated,
-      button_label: 'setup.4.button_label'
+      button_label: 'setup.lesson.button_label'
     },
     {
       id: 'exercise',
-      title: 'setup.5.title',
-      desc: 'setup.5.desc',
+      title: 'setup.exercise.title',
+      desc: 'setup.exercise.desc',
       is_completed: isExerciseCreated,
-      button_label: 'setup.5.button_label'
+      button_label: 'setup.exercise.button_label'
     },
     {
       id: 'publish',
-      title: 'setup.6.title',
-      desc: 'setup.6.desc',
+      title: 'setup.publish_course.title',
+      desc: 'setup.publish_course.desc',
       is_completed: isCoursePublished,
-      button_label: 'setup.6.button_label'
+      button_label: 'setup.publish_course.button_label'
     }
   ];
 

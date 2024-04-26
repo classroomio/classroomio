@@ -30,9 +30,9 @@
 
   "welcome_modal": {
     "we_at": "We at",
-    "content_1": "are a small team with a large mission to empower educators with great technology to help them train the future generation. Education is the most powerful gift you can give anyone, and it makes so much sense to give you all the tools you need to give more people this GIFT.",
-    "content_2": "Thank you for choosing us",
-    "content_3": "we deeply appreciate it and are at your service."
+    "small_team": "are a small team with a large mission to empower educators with great technology to help them train the future generation. Education is the most powerful gift you can give anyone, and it makes so much sense to give you all the tools you need to give more people this GIFT.",
+    "thank_you": "Thank you for choosing us",
+    "deeply_appreciate": "we deeply appreciate it and are at your service."
   },
 
   "login": {
@@ -49,12 +49,12 @@
       "view_site": "View site"
     },
     "tabs": {
-      "1": "Profile",
-      "2": "Organization",
-      "3": "Landing Page",
-      "4": "Billing",
-      "5": "Integrations",
-      "6": "Language"
+      "profile_tab": "Profile",
+      "organization_tab": "Organization",
+      "landing_page_tab": "Landing Page",
+      "billing_tab": "Billing",
+      "integrations_tab": "Integrations",
+      "language_tab": "Language"
     },
     "profile": {
       "profile_picture": {
@@ -172,10 +172,10 @@
     "integrations": {
       "heading": "Telegram",
       "sub_heading": "Connect your account to telegram to get notified of any change within the application.",
-      "step_1": "Step 1: Authenticate your account via the ClassroomIO bot.",
-      "button_1": "Open Bot",
-      "step_2": "Step 2: Enter the Chat ID given to you by the bot.",
-      "button_2": "Connect",
+      "step_authenticate": "Step 1: Authenticate your account via the ClassroomIO bot.",
+      "open_bot_button": "Open Bot",
+      "step_chatId": "Step 2: Enter the Chat ID given to you by the bot.",
+      "connect_button": "Connect",
       "success_message": "Integration Successful",
       "disconnect": "Disconnect"
     },
@@ -202,6 +202,11 @@
   },
 
   "pricing": {
+    "plan_names": {
+      "free": "Free",
+      "early": "Early Adopter",
+      "enterprise": "Enterprise"
+    },
     "modal": {
       "heading": "Upgrade Plan",
       "thanks": "Thank you for your support",
@@ -209,96 +214,37 @@
       "close": "Close",
       "learn": "Learn more",
       "month": "month"
-    },
-    "data": {
-      "1": {
-        "name": "Basic",
-        "description": "Free tier plan for personal use, no credit card required.",
-        "price": {
-          "monthly": "0",
-          "yearly": "0"
-        },
-        "features": {
-          "1": "Unlimited Courses",
-          "2": "Unlimited Q/A",
-          "3": "50 Students",
-          "4": "AI Course Builder (no video upload)",
-          "5": "Live chat & polls"
-        },
-        "cta": {
-          "label": "Signup Now",
-          "dashboard_label": "Downgrade"
-        }
-      },
-      "2": {
-        "name": "Early Adopters",
-        "description": "For fast growing teaching businesses that aim to scale.",
-        "price": {
-          "monthly": "35",
-          "yearly": "350"
-        },
-        "features": {
-          "1": "Everything in Basic",
-          "2": "Unlimted Teachers",
-          "3": "10K Students",
-          "4": "Advanced AI Course Builder (Video upload & Certificate)",
-          "5": "Custom Branding",
-          "6": "Includes all Upcoming Features"
-        },
-        "cta": {
-          "label": "I want in 😍",
-          "dashboard_label": "Support us 😍"
-        }
-      },
-      "3": {
-        "name": "Enterprise",
-        "description": "Best suited for larger businesses that need more control",
-        "price": {
-          "monthly": "Request Pricing",
-          "yearly": "Request Pricing"
-        },
-        "features": {
-          "1": "Everything in Early Adopters plus:",
-          "2": "Unlimited students",
-          "3": "Custom Domain",
-          "4": "24/7 Support"
-        },
-        "cta": {
-          "label": "Contact Us",
-          "dashboard_label": "Contact Us"
-        }
-      }
     }
   },
 
   "setup": {
     "get_started": "Get Started",
-    "1": {
+    "personal_profile": {
       "title": "Upload a profile picture and update username",
       "desc": "Personalize and a human touch making interactions more personal and memorable",
       "button_label": "Update Profile"
     },
-    "2": {
+    "organization_profile": {
       "title": "Update organisation profile picture",
       "desc": "Establish a professional and recognizable identity for your organization",
       "button_label": "Update Org Profile"
     },
-    "3": {
+    "course": {
       "title": "Create Course",
       "desc": "Create a course that you will share with your students",
       "button_label": "Create Course"
     },
-    "4": {
+    "lesson": {
       "title": "Create a lesson",
       "desc": "Break your course into lesson that your students can easily understand",
       "button_label": "Create Lesson"
     },
-    "5": {
+    "exercise": {
       "title": "Create an exercise",
       "desc": "Test your students allow them to demonstarte their understanding of the subject matter",
       "button_label": "Create Assignment"
     },
-    "6": {
+    "publish_course": {
       "title": "Publish a course",
       "desc": "Make your course public and purchaseable",
       "button_label": "Publish Course"
@@ -328,7 +274,8 @@
     "signup": "Sign Up",
     "redirecting": "Redirecting",
     "loading_state": "Taking you to the next page, please wait.",
-    "org_loading_state": "Taking you to your organization..."
+    "org_loading_state": "Taking you to your organization...",
+    "add_organization": "+ Add Organization"
   },
 
   "markdown_editor": {
@@ -414,6 +361,16 @@
     "No_courses_started": "No courses started"
   },
 
+  "ai": {
+    "help_me": "Help me write",
+    "placeholder": "Help me write a short description",
+    "text": "Start typing...",
+    "reset": "Reset",
+    "rephrase": "Rephrase",
+    "insert": "Insert",
+    "can_you": "Can you please rephrase this"
+  },
+
   "courses": {
     "heading": "Courses",
     "heading_button": "Create Course",
@@ -458,15 +415,15 @@
 
   "course": {
     "navItems": {
-      "1": "News Feed",
-      "2": "Lessons",
-      "3": "Attendance",
-      "4": "Submissions",
-      "5": "Marks",
-      "6": "People",
-      "7": "Certificates",
-      "8": "Landing Page",
-      "9": "Settings"
+      "nav_news_feed": "News Feed",
+      "nav_lessons": "Lessons",
+      "nav_attendance": "Attendance",
+      "nav_submissions": "Submissions",
+      "nav_marks": "Marks",
+      "nav_people": "People",
+      "nav_certificates": "Certificates",
+      "nav_landing_page": "Landing Page",
+      "nav_settings": "Settings"
     },
 
     "navItem": {
@@ -571,12 +528,12 @@
                 "select_file": "Select file( Mp4, MOV, AVI) to upload to your lesson.",
                 "size": "(Max 500 MB)",
                 "oops": "Oops `😬, couldn’t upload video",
-                "sorry": "Sorry we video wasn’t uploaded. The file size is too big,",
-                "sorry_2": "maximum size is 30 MB. Try again!",
+                "big_file": "Sorry we video wasn’t uploaded. The file size is too big,",
+                "maximum_size": "maximum size is 30 MB. Try again!",
                 "button": "Try another file",
                 "try_again": "Please try again",
-                "sorry_3": "Sorry we video wasn’t uploaded, the file format isn’t supported or something went wrong on the server.",
-                "sorry_4": "Upload MP4, MOV and AVI files.",
+                "unsupported_format": "Sorry we video wasn’t uploaded, the file format isn’t supported or something went wrong on the server.",
+                "format": "Upload MP4, MOV and AVI files.",
                 "upgrade": "Upgrade your plan to upload vidoes",
                 "uploading": "Uploading...",
                 "invalid_youtube": "Invalid YouTube link(s)",
@@ -597,12 +554,12 @@
           "new_exercise_modal": {
             "heading": "New Exercise",
             "options": {
-              "1": "From Scratch",
-              "subtitle_1": "Create your exercise from scratch if you have your questions already prepared",
-              "2": "Use a Template",
-              "subtitle_2": "Select from 100+ templates of predefined exercise to help you get started",
-              "3": "Use AI",
-              "subtitle_3": "You can generate an exercise with AI from your notes"
+              "from_scratch": "From Scratch",
+              "from_scratch_subtitle": "Create your exercise from scratch if you have your questions already prepared",
+              "use_template": "Use a Template",
+              "use_template_subtitle": "Select from 100+ templates of predefined exercise to help you get started",
+              "use_ai": "Use AI",
+              "use_ai_subtitle": "You can generate an exercise with AI from your notes"
             },
             "how": "How do you want to create your exercise",
             "coming_soon": "Coming soon",
@@ -756,9 +713,9 @@
       "submissions": {
         "title": "Submitted Exercises",
         "submission_status": {
-          "1": "Submitted",
-          "2": "In Progress",
-          "3": "Graded"
+          "submitted": "Submitted",
+          "in_progress": "In Progress",
+          "graded": "Graded"
         }
       },
 
@@ -822,21 +779,21 @@
         "save": "Save Changes",
         "unlocked_certificate": "Certificate is now available",
         "locked_certificate": "Certificates not available",
-        "locked_certificate_body_1": "Your instructor needs to unlock your certificate.",
-        "locked_certificate_body_2": "If you need your certificate, please contact your instructor.",
+        "instructor_unlock": "Your instructor needs to unlock your certificate.",
+        "contact_instructor": "If you need your certificate, please contact your instructor.",
         "download_certificate": "DownLoad Certificate"
       },
 
       "landing_page": {
         "editor": {
           "title": {
-            "1": "Header",
-            "2": "Requirement",
-            "3": "Description",
-            "4": "Goals",
-            "5": "Reviews",
-            "6": "Instructor",
-            "7": "Pricing"
+            "header": "Header",
+            "requirement": "Requirement",
+            "description": "Description",
+            "goals": "Goals",
+            "reviews": "Reviews",
+            "instructor": "Instructor",
+            "pricing": "Pricing"
           },
 
           "save": "Save",
@@ -848,7 +805,8 @@
             "description": "Description",
             "short_video": "Short Video",
             "replace_cover": "Replace cover image",
-            "replace": "Replace"
+            "replace": "Replace",
+            "helper": "Enter a link to a youtube video"
           },
 
           "reviews_form": {
@@ -1013,7 +971,17 @@
     "manage": "Manage all your students here and stay connected with them",
     "name": "Name",
     "email": "Email",
-    "date_joined": "Date Joined"
+    "date_joined": "Date Joined",
+    "upgrade": "Upgrade your plan to invite more students"
+  },
+
+  "upgrade": {
+    "certificate": "Upgrade your plan to generate certificates",
+    "team": "Upgrade your plan to add team members",
+    "team_members": "Team members",
+    "back": "Back to Settings",
+    "download_lessons": "Upgrade to download lessons",
+    "download_course": "Upgrade to download course"
   },
 
   "lms_navigation": {
@@ -1069,7 +1037,9 @@
     },
 
     "materials": {
-      "apology": "We apologise, there was an error saving your lesson."
+      "apology": "We apologise, there was an error saving your lesson.",
+      "update_translations": "Updating translations failed",
+      "creating_new": "Creating new translations failed"
     },
 
     "newsfeed": {
@@ -1218,16 +1188,6 @@
 
   "content": {
     "heading": "Internationalization in SvelteKit",
-    "toggle_label": "Select Preferred Language",
-    "button_labels": {
-      "0": "{{value:number}}",
-      "1": "{{value:number}}",
-      "2": "{{value:number}}"
-    },
-    "body_text": "This is a small example to demonstrate i18n functionality in SvelteKit using sveltekit-i18n library. sveltekit-i18n is a tiny library with no external dependencies, built for Svelte and SvelteKit. It glues @sveltekit-i18n/base and @sveltekit-i18n/parser-default together to provide you the most straightforward sveltekit-i18n solution. Total number of npm downloads per week as of {{dateValue:date}} are {{download:number}}.",
-    "awards": "You have {{award:gt; 0: {{award; 1:won exactly {{award}} award; default:won {{award}} awards}}; default:not won any awards}}!",
-    "date": "{{val:date}}",
-    "time": "Only 'time' formatter is not available, it must be DateTime formatter",
-    "number": "{{value:currency}}"
+    "toggle_label": "Select Preferred Language"
   }
 }
