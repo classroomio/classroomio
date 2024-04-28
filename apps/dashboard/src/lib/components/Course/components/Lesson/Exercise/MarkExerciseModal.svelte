@@ -21,7 +21,6 @@
 
   let status = SELECTABLE_STATUS[0];
   let selectedId = status.id;
-  let questionPoint = {};
   let isGradeWithAI = false;
 
   let total = 0;
@@ -66,17 +65,25 @@
       selectedId = data.status_id;
     }
   }
-  const generateRandomPoints = (id, point) => {
-    data.questionAnswerByPoint[id] = Math.floor(Math.random() * point);
-    return data.questionAnswerByPoint[id];
+  const generateRandomPoints = (id, point, type) => {
+    if (type !== 'Paragraph') {
+      const answer = data.questionAnswers.find((q) => q.question_id === id);
+      return (data.questionAnswerByPoint[id] = point / answer.answers.length);
+    } else {
+      data.questionAnswerByPoint[id] = Math.floor(Math.random() * point);
+      console.log('question type is paragraph', type);
+      return data.questionAnswerByPoint[id];
+    }
   };
 
   function gradeWithAI() {
     isGradeWithAI = true;
-
-    const newPoint = data?.questions.map((q) => generateRandomPoints(q.id, q.points));
+    const newPoint = data?.questions.map((q) => {
+      generateRandomPoints(q.id, q.points, q.question_type.label);
+    });
     console.log('data', newPoint);
     console.log('data', data);
+    console.log('answers', data.questionAnswers);
   }
 
   function getStatusColor(status) {
