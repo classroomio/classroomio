@@ -36,6 +36,7 @@ app.use('/downloadCourse', downloadCourse);
 app.use('/uploadVideo', uploadVideo);
 app.use('/katex', katex);
 app.use('/sendEmail', sendEmail);
+app.use(express.static(__dirname + './static'));
 
 app.get('/', (req, res) => {
   res.send('Welcome to ClassroomIO');
