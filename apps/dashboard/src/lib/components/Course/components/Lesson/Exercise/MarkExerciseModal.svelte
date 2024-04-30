@@ -9,6 +9,8 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import { Dropdown, Tag } from 'carbon-components-svelte';
+  import { useCompletion } from 'ai/svelte';
+  import { QUESTION_TYPE } from '$lib/components/Question/constants';
   // import { isGradeWithAI } from './store';
 
   export let open = false;
@@ -22,7 +24,9 @@
   let status = SELECTABLE_STATUS[0];
   let selectedId = status.id;
   let isGradeWithAI = false;
-
+  let reasons = {};
+  let isLoading = false;
+  let hasCalled = false;
   let total = 0;
   let maxPoints = 0;
 
@@ -65,25 +69,76 @@
       selectedId = data.status_id;
     }
   }
-  const generateRandomPoints = (id, point, type) => {
-    if (type !== 'Paragraph') {
-      const answer = data.questionAnswers.find((q) => q.question_id === id);
-      return (data.questionAnswerByPoint[id] = point / answer.answers.length);
-    } else {
-      data.questionAnswerByPoint[id] = Math.floor(Math.random() * point);
-      console.log('question type is paragraph', type);
-      return data.questionAnswerByPoint[id];
+
+  const { input, handleSubmit, completion } = useCompletion({
+    api: '/api/completion/gradingprompt',
+    onFinish: async () => {
+      console.log('response', $completion);
+      isLoading = true;
+      // try {
+      //   const aiResponses = JSON.parse($completion);
+
+      //   // if (!Array.isArray(aiResponses)) {
+      //   //   console.error();
+      //   //   return;
+      //   // }
+      //   console.log('response', aiResponses);
+      // } catch (error) {
+      //   console.error('Error', error);
+      // } finally {
+      //   isLoading = false;
+      // }
     }
-  };
+  });
+
+  // const generateReasonAndPoints = async (id, question, point, type) => {
+  //   // this function would receive the oncompletion
+  //   try {
+  //     // this would be an foreach loop
+  //     const answer = data.questionAnswers.find((q) => q.question_id === id);
+
+  //     if (type !== 'Paragraph') {
+  //       reasons = {
+  //         ...reasons,
+  //         [id]: `This grade was allocated because he got the answer after ${answer.answers.length} tries`
+  //       };
+  //       return (data.questionAnswerByPoint[id] = point / answer.answers.length);
+  //     } else if (!hasCalled) {
+  //       $input = JSON.stringify({ question, answer: answer.open_answer, point });
+
+  //       handleSubmit({ preventDefault: () => {} });
+  //       hasCalled = true;
+  //       data.questionAnswerByPoint[id] = Math.floor(Math.random() * point);
+
+  //       reasons = {
+  //         ...reasons,
+  //         [id]: `This reason would be given by ai for question with id ${id}`
+  //       };
+  //       return data.questionAnswerByPoint[id];
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   function gradeWithAI() {
     isGradeWithAI = true;
-    const newPoint = data?.questions.map((q) => {
-      generateRandomPoints(q.id, q.points, q.question_type.label);
-    });
-    console.log('data', newPoint);
-    console.log('data', data);
-    console.log('answers', data.questionAnswers);
+    isLoading = true;
+    const paragraphAiInput = data.questions
+      .filter((q) => q.question_type_id === QUESTION_TYPE.TEXTAREA)
+      .map((q) => {
+        const answer = data.questionAnswers.find((qA) => qA.question_id === q.id); // { open_answer: '' }
+        return {
+          id: q.id,
+          question: q.title,
+          answer: answer?.open_answer,
+          point: q.points
+        };
+      });
+    console.log(paragraphAiInput);
+    $input = JSON.stringify(paragraphAiInput);
+    console.log('input value', $input);
+    handleSubmit({ preventDefault: () => {} });
   }
 
   function getStatusColor(status) {
@@ -114,6 +169,11 @@
   headerClass="py-2"
   labelClass="text-base font-semibold"
 >
+  {#if isLoading}
+    <div class="absolute w-full h-full bg-black/60">
+      <p>Grading...</p>
+    </div>
+  {/if}
   <div class="w-full h-full">
     <Preview
       questions={Array.isArray(data.questions)
@@ -124,6 +184,7 @@
         isFinished: true
       }}
       bind:grades={data.questionAnswerByPoint}
+      bind:reasons
       bind:isGradeWithAI
     />
   </div>

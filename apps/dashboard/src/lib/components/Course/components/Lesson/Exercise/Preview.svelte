@@ -13,6 +13,7 @@
   export let handleGrade = () => {};
   export let disableGrading = false;
   export let isGradeWithAI = false;
+  export let reasons = {};
 </script>
 
 {#each questions as currentQuestion, currentQuestionIndex}
@@ -29,6 +30,7 @@
       )}
       bind:grade={grades[currentQuestion.id]}
       bind:isGradeWithAI
+      bind:reason={reasons[currentQuestion.id]}
       gradeMax={currentQuestion.points}
       handleGrade={handleGrade(currentQuestion.id)}
       {disableGrading}
@@ -47,6 +49,7 @@
       )}
       bind:grade={grades[currentQuestion.id]}
       bind:isGradeWithAI
+      bind:reason={reasons[currentQuestion.id]}
       gradeMax={currentQuestion.points}
       handleGrade={handleGrade(currentQuestion.id)}
       {disableGrading}
@@ -65,6 +68,7 @@
       )}
       bind:grade={grades[currentQuestion.id]}
       bind:isGradeWithAI
+      bind:reason={reasons[currentQuestion.id]}
       gradeMax={currentQuestion.points}
       handleGrade={handleGrade(currentQuestion.id)}
       {disableGrading}

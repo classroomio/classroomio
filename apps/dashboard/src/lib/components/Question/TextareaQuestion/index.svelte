@@ -22,6 +22,7 @@
   export let gradeMax = 0;
   export let disableGrading = false;
   export let isGradeWithAI = false;
+  export let reason;
 
   let gradeWithAI = false;
 
@@ -82,8 +83,7 @@
             <div class="flex items-center space-x-4">
               <img src="/ai.svg" alt="alt" />
               <p class="font-normal text-sm">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus distinctio ex atque
-                facilis ea non pariatur deleniti blanditiis aliquid molestias.
+                {reason}
               </p>
             </div>
             <div class="flex space-x-2">
