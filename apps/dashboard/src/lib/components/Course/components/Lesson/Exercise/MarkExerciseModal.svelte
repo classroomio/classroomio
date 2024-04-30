@@ -74,7 +74,7 @@
     api: '/api/completion/gradingprompt',
     onFinish: async () => {
       console.log('response', $completion);
-      isLoading = true;
+      isLoading = false;
       // try {
       //   const aiResponses = JSON.parse($completion);
 
