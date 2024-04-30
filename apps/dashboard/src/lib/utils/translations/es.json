@@ -421,6 +421,18 @@
           "copy_link": "Copiar link",
           "success": "Copiado correctamente",
           "finish": "Finalizar"
+        },
+        "teams": {
+          "add": "Agregar",
+          "add_team": "Agregue sus compañeros de equipo o colaboradores a su organización. Empezar a trabajar juntos",
+          "invite": "Invitar",
+          "placeholder": "correo electrónico separado por comas",
+          "role": "Role",
+          "send_invite": "Enviar invitación",
+          "members": "Miembros",
+          "invite_sent": "Invitar enviado",
+          "you": "Tú",
+          "remove": "Eliminar"
         }
       },
       "marks": {

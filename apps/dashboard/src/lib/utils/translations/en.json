@@ -759,6 +759,18 @@
           "tutor": "Tutor",
           "student": "Student",
           "filter": "Filter"
+        },
+        "teams": {
+          "add": "Add",
+          "add_team": "Add your team mates or collaborators to your organization. Start working together",
+          "invite": "Invite",
+          "placeholder": "email comma separated",
+          "role": "Role",
+          "send_invite": "Send Invite",
+          "members": "Members",
+          "invite_sent": "Invite Sent",
+          "you": "You",
+          "remove": "Remove"
         }
       },
 

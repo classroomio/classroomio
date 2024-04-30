@@ -421,6 +421,18 @@
           "copy_link": "Sao chép đường dẫn",
           "success": "Đã sao chép thành công",
           "finish": "Hoàn thành"
+        },
+        "teams": {
+          "add": "Thêm vào",
+          "add_team": "Thêm đồng đội hoặc cộng tác viên vào tổ chức của bạn. Bắt đầu làm việc cùng nhau",
+          "invite": "Mời",
+          "placeholder": "email được phân tách bằng dấu phẩy",
+          "role": "Vai trò",
+          "send_invite": "Gửi lời mời",
+          "members": "Các thành viên",
+          "invite_sent": "Lời mời đã gửi",
+          "you": "Bạn",
+          "remove": "Di dời"
         }
       },
       "marks": {
