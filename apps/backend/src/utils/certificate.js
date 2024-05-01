@@ -270,7 +270,7 @@ function getPurpleProfessionalBadgePattern({
 
     <div class="pl-10 text-lg font-bold mt-[10%]">
       <h2>This certificate is awarded to</h2>
-      <h1 class="text-3xl">${studentName}</h1>
+      <h1 class="text-3xl text-fuchsia-800">${studentName}</h1>
     </div>
 
     <div class="pl-10 text-lg font-bold mt-10 w-[70%]">
@@ -327,7 +327,7 @@ function getBlueProfessionalBadgePattern({
 
       <div class="pl-10 text-lg font-bold mt-[10%]">
         <h2>This certificate is awarded to</h2>
-        <h1 class="text-3xl">${studentName}</h1>
+        <h1 class="text-3xl text-blue-800">${studentName}</h1>
       </div>
 
       <div class="pl-10 text-lg font-bold mt-10 w-[70%]">
