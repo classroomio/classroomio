@@ -262,7 +262,7 @@ function getPurpleProfessionalBadgePattern({
     alt=""
     class="absolute -top-1 left-0 w-full z-10"
   />
-  <div class="absolute z-20 left-[10%] top-16 w-[90%]">
+  <div class="absolute z-20 left-[5%] top-16 w-[90%]">
     <header class="w-full flex justify-center items-center pt-10 gap-3 text-3xl font-bold">
       <img src="${orgLogoUrl}" alt="" />
       <h1>${orgName}</h1>
@@ -319,7 +319,7 @@ function getBlueProfessionalBadgePattern({
       alt=""
       class="absolute -top-1 left-0 w-full z-10"
     />
-    <div class="absolute z-20 left-[10%] top-16 w-[90%]">
+    <div class="absolute z-20 left-[5%] top-16 w-[90%]">
       <header class="w-full flex justify-center items-center pt-10 gap-3 text-3xl font-bold">
         <img src="${orgLogoUrl}" alt="" />
         <h1>${orgName}</h1>
