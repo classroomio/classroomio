@@ -421,6 +421,18 @@
           "copy_link": "Copier le lien",
           "success": "Copié avec succès",
           "finish": "Finition"
+        },
+        "teams": {
+          "add": "Ajouter",
+          "add_team": "Ajoutez vos coéquipiers ou collaborateurs à votre organisation. Commencez à travailler ensemble",
+          "invite": "Inviter",
+          "placeholder": "email séparé par des virgules",
+          "role": "Rôle",
+          "send_invite": "Envoyer une invitation",
+          "members": "Membres",
+          "invite_sent": "Invitation envoyée",
+          "you": "Toi",
+          "remove": "Retirer"
         }
       },
       "marks": {

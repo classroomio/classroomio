@@ -3,6 +3,7 @@
   import { settings } from './store';
   import { dndzone } from 'svelte-dnd-action';
   import Draggable from 'carbon-icons-svelte/lib/Draggable.svelte';
+  import { t } from '$lib/utils/functions/translations';
 
   const flipDurationMs = 300;
 
@@ -34,7 +35,7 @@
       class="flex items-center justify-start text-center text-xs md:text-base gap-1 md:gap-2 dark:text-white bg-slate-100 dark:bg-slate-700 p-2 rounded-md"
     >
       <Draggable size={16} />
-      {item.name}
+      {$t(item.name)}
     </div>
   {/each}
 </section>
