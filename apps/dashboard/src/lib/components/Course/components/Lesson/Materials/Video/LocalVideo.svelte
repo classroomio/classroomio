@@ -177,8 +177,8 @@
         {$t('course.navItem.lessons.materials.tabs.video.add_video.oops')}
       </h3>
       <p class="text-center text-xs font-normal text-[#ADADAD]">
-        {$t('course.navItem.lessons.materials.tabs.video.add_video.sorry')}<br />
-        {$t('course.navItem.lessons.materials.tabs.video.add_video.sorry_2')}
+        {$t('course.navItem.lessons.materials.tabs.video.add_video.big_file')}<br />
+        {$t('course.navItem.lessons.materials.tabs.video.add_video.maximum_size')}
       </p>
     </span>
     <PrimaryButton
@@ -194,8 +194,8 @@
         {$t('course.navItem.lessons.materials.tabs.video.add_video.oops')}
       </h3>
       <p class="text-center text-xs font-normal text-[#ADADAD]">
-        {$t('course.navItem.lessons.materials.tabs.video.add_video.sorry_3')}<br />
-        {$t('course.navItem.lessons.materials.tabs.video.add_video.sorry_4')}
+        {$t('course.navItem.lessons.materials.tabs.video.add_video.unsupported_format')}<br />
+        {$t('course.navItem.lessons.materials.tabs.video.add_video.format')}
       </p>
     </span>
     <PrimaryButton

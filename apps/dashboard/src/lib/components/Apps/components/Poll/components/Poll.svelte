@@ -116,7 +116,7 @@
           </p>
         </div>
         <div class="flex flex-col items-center">
-          <Label>{$t('course.navItem.lessons.poll.total_votes')}</Label>
+          <Label>{$t('course.navItem.lessons.poll.total_voted')}</Label>
           <p class="dark:text-white text-sm text-gray-600 mb-4">
             {totalVotes}
           </p>

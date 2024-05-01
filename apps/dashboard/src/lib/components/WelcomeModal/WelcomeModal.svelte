@@ -34,9 +34,9 @@
     <a href="https://app.classroomio.com/" class="text-primary-700 no-underline hover:no-underline"
       >ClassroomIO</a
     >
-    {$t('welcome_modal.content_1')}
-    <span class="text-primary-700">{$t('welcome_modal.content_2')};</span>
-    {$t('welcome_modal.content_3')}
+    {$t('welcome_modal.small_team')}
+    <span class="text-primary-700">{$t('welcome_modal.thank_you')};</span>
+    {$t('welcome_modal.deeply_appreciate')}
   </p>
   <img src="/images/welcome-img.svg" alt="A welcome banner" class="w-full my-6" />
 </Modal>

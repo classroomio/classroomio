@@ -1,7 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import Modal from '$lib/components/Modal/index.svelte';
-  import Select from '$lib/components/Form/Select.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import Preview from './Preview.svelte';
@@ -11,6 +9,7 @@
   import { Dropdown, Tag } from 'carbon-components-svelte';
   import { useCompletion } from 'ai/svelte';
   import { QUESTION_TYPE } from '$lib/components/Question/constants';
+  import { t } from '$lib/utils/functions/translations';
   // import { isGradeWithAI } from './store';
 
   export let open = false;
@@ -53,7 +52,7 @@
       total
     });
 
-    snackbar.success(`snackbar.exercise.submission_updated '${status.text}'`);
+    snackbar.success(`${$t('snackbar.exercise.submission_updated')} '${status.label}'`);
   }
 
   function setStatus(data) {

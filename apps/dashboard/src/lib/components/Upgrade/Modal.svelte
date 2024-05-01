@@ -49,7 +49,7 @@
       });
 
       if (!checkoutURL) {
-        snackbar.error('upgrade.generate_fail');
+        snackbar.error('snackbar.upgrade.generate_fail');
         return;
       }
 
@@ -57,7 +57,7 @@
     } catch (error) {
       console.error('Error subscribing', error);
 
-      snackbar.error('upgrade.failed');
+      snackbar.error('snackbar.upgrade.failed');
     }
 
     isLoadingPlan = null;
@@ -158,7 +158,7 @@
                 ? 'text-white'
                 : 'text-gray-900'} dark:text-white lg:text-xl"
             >
-              {$t(PLANS[planName].NAME)}
+              {PLANS[planName].NAME}
             </p>
             <p
               class="text-baseline flex items-baseline gap-x-1 font-medium {planName ===
@@ -167,9 +167,9 @@
                 : 'text-black'} dark:text-gray-300"
             >
               {PLANS[planName].PRICE.CURRENCY}
-              {$t(PLANS[planName].PRICE.MONTHLY)}
+              {PLANS[planName].PRICE.MONTHLY}
               {#if !PLANS[planName].PRICE.IS_PREMIUM}
-                /{$t('pricing.modal.month')}
+                /month
               {/if}
             </p>
             <p
@@ -177,7 +177,7 @@
                 ? 'text-white'
                 : 'text-black'} dark:text-gray-300 lg:leading-6"
             >
-              {$t(PLANS[planName].DESCRIPTION)}
+              {PLANS[planName].DESCRIPTION}
             </p>
 
             <button
@@ -196,7 +196,7 @@
               {#if isLoadingPlan === planName}
                 <Loading withOverlay={false} small />
               {:else}
-                {$t(PLANS[planName].CTA.DASHBOARD_LABEL)}
+                {PLANS[planName].CTA.DASHBOARD_LABEL}
               {/if}
             </button>
 
@@ -215,7 +215,7 @@
                     />
                   </div>
                   <p class="text-sm">
-                    {$t(features)}
+                    {features}
                   </p>
                 </li>
               {/each}

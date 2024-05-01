@@ -26,6 +26,15 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
     org: null
   };
 
+  const isLocalHost = url.host.includes('localhost');
+
+  const tempSiteName = url.searchParams.get('org');
+
+  if (isLocalHost && tempSiteName) {
+    console.log('setting sitename temp');
+    cookies.set('_orgSiteName', tempSiteName);
+  }
+
   const _orgSiteName = cookies.get('_orgSiteName');
   const debugPlay = cookies.get('debugPlay');
   const debugMode = _orgSiteName && _orgSiteName !== 'false';
@@ -33,9 +42,9 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
   const matches = url.host.match(/([a-z 0-9 -]+).*classroomio[.]com/);
   const subdomain = matches?.[1] ?? '';
 
-  const isDev = dev || url.host.includes('localhost');
+  const isDev = dev || isLocalHost;
 
-  if (!url.host.includes('.classroomio.com') && !url.host.includes('localhost')) {
+  if (!url.host.includes('.classroomio.com') && !isLocalHost) {
     // TODO: We can verify if custom domain here
     return response;
   }
@@ -49,6 +58,8 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
 
     if (!response.org && !isDev) {
       throw redirect(307, 'https://app.classroomio.com/404?type=org');
+    } else if (!response.org && _orgSiteName) {
+      cookies.delete('_orgSiteName');
     }
   } else if (subdomain === 'play' || debugPlay === 'true') {
     response.skipAuth = true;

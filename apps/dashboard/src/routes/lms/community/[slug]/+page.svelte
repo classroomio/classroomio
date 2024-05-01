@@ -24,6 +24,7 @@
   import { calDateDiff } from '$lib/utils/functions/date';
   import { browser } from '$app/environment';
   import { fetchCourses } from '$lib/components/Courses/api.js';
+  import { t } from '$lib/utils/functions/translations.js';
 
   export let data;
   const { slug } = data;
@@ -385,7 +386,8 @@
   {:else}
     <div class="py-10 px-5">
       <a class="text-gray-500 dark:text-white text-md flex items-center" href={`/lms/community`}>
-        <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" /> Go Back
+        <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" />
+        {$t('community.ask.go_back')}
       </a>
       <div class="my-5 flex justify-between items-center">
         {#if isEditMode}
@@ -472,7 +474,7 @@
       </div>
 
       <div class="my-8 font-bold">
-        {pluralize('answers', question.totalComments, true)}
+        {pluralize($t('community.answers'), question.totalComments, true)}
       </div>
 
       {#each question.comments as comment}

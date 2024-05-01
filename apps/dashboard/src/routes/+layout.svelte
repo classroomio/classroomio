@@ -323,7 +323,7 @@
       {/if}
     {/if}
 
-    <div class="flex justify-between">
+    <div class={path.includes('home') ? '' : 'flex justify-between'}>
       <slot />
 
       {#if showAppsSideBar(path)}

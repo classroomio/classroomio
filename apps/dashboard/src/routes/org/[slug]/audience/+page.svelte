@@ -39,7 +39,7 @@
     </div>
 
     {#if $orgAudience.length >= $currentOrgMaxAudience}
-      <UpgradeBanner>Upgrade your plan to invite more students</UpgradeBanner>
+      <UpgradeBanner>{$t('audience.upgrade')}</UpgradeBanner>
     {/if}
     <Audience />
   </div>

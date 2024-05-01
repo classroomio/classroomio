@@ -18,6 +18,7 @@
   import QuizQuestion from '$lib/components/Org/Quiz/QuizQuestion.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { supabase } from '$lib/utils/functions/supabase';
+  import { t } from '$lib/utils/functions/translations';
 
   export let data;
   const { quizId } = data;
@@ -250,7 +251,7 @@
           <div class="w-full flex justify-center mb-4">
             {#if currentQuestion.options.length < allOptions.length}
               <PrimaryButton
-                label="+ Add more answers"
+                label={$t('components.quiz.add_more')}
                 variant={VARIANTS.CONTAINED_WHITE}
                 onClick={addOption}
                 className="mr-5"
@@ -258,7 +259,7 @@
             {/if}
             {#if currentQuestion.options.length > 0}
               <PrimaryButton
-                label="- Remove last answer"
+                label={$t('components.quiz.remove_last')}
                 variant={VARIANTS.CONTAINED_WHITE}
                 onClick={deleteOption}
               />
