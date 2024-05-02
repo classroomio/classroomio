@@ -46,7 +46,7 @@
 <div
   class="flex w-full justify-between items-center py-6 border-b-[1px] md:px-12 px-5 fixed top-0 z-[3000] filter backdrop-blur-xl shadow-sm bg-white"
 >
-  <a href="/" class="w-[20%]">
+  <a href="/" class="w-[10%]">
     <div class="flex items-center w-full">
       <img
         loading="lazy"
@@ -60,7 +60,7 @@
     </div>
   </a>
 
-  <nav class="w-[40%] hidden md:hidden lg:block">
+  <nav class="w-[50%] hidden md:hidden lg:block">
     <ul class="flex items-center justify-between w-full gap-2">
       <!--  -->
       <li class="text-gray-800 font-semibold text-sm cursor-pointer relative">
@@ -106,6 +106,9 @@
       <!-- Pricing -->
       <a href="/pricing">
         <li class="text-gray-800 font-semibold text-sm cursor-pointer">Pricing</li>
+      </a>
+      <a href="/free-tools">
+        <li class="text-gray-800 font-semibold text-sm cursor-pointer">Free Tools</li>
       </a>
       <!-- Docs -->
       <a href="/docs" target="_blank">
