@@ -20,10 +20,6 @@ function getHtmlTemplate(body) {
           width: 1123px;
           height: 390px;
         }
-    
-        .student-name {
-          font-family: 'Qwitcher Grypen', cursive;
-        }
       </style>
     </head>
     <body>
@@ -43,7 +39,7 @@ function getProfessionalTheme({ studentName, courseName, courseDescription, orgL
           </p>
           <div class="border-b border-gray-500 mb-4">
             <p class="text-xl text-black font-normal">This is to certify that</p>
-            <p class="student-name text-center text-9xl">${studentName}</p>
+            <p class=" text-center text-9xl">${studentName}</p>
           </div>
           <div class="mb-2">
             <p class="text-xl text-black font-normal">
@@ -99,7 +95,7 @@ function getPlainTheme({ studentName, courseName, courseDescription, orgLogoUrl,
         </p>
         <div class="border-b border-gray-500 mb-4">
           <p class="text-xl text-black font-normal">This is to certify that</p>
-          <p class="student-name text-center text-8xl">${studentName}</p>
+          <p class=" text-center text-8xl">${studentName}</p>
         </div>
         <div class="mb-2">
           <p class="text-xl text-black font-normal">
