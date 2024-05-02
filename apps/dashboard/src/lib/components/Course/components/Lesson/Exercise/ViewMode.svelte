@@ -38,7 +38,7 @@
   let hasSubmission = false;
   let isLoadingAutoSavedData = false;
   let alreadyCheckedAutoSavedData = false;
-  let gradedExerciseComment = false;
+  let gradedComment = true;
 
   function handleStart() {
     $questionnaireMetaData.currentQuestionIndex += 1;
@@ -113,13 +113,14 @@
       $questionnaireMetaData.status = 1;
       $questionnaireMetaData.totalPossibleGrade = getTotalPossibleGrade($questionnaire.questions);
       $questionnaireMetaData.grades = {};
-      submitExercise(
-        $questionnaireMetaData.answers,
-        questions,
-        exerciseId,
-        $course.id,
-        getGroupMemberId($group.people, $profile.id)
-      );
+      ($questionnaireMetaData.comment = ''),
+        submitExercise(
+          $questionnaireMetaData.answers,
+          questions,
+          exerciseId,
+          $course.id,
+          getGroupMemberId($group.people, $profile.id)
+        );
       notifyEducator();
     }
   }
@@ -171,6 +172,7 @@
       $questionnaireMetaData.isFinished = true;
       $questionnaireMetaData.status = submission.status_id;
       $questionnaireMetaData.finalTotalGrade = 0;
+      $questionnaireMetaData.comment = submission.feedback;
       $questionnaireMetaData.grades = submission.answers.reduce((acc, answer) => {
         acc[answer.question_id] = answer.point;
         $questionnaireMetaData.finalTotalGrade += answer.point;
@@ -198,7 +200,7 @@
   }
 
   const toggleComments = () => {
-    gradedExerciseComment = !gradedExerciseComment;
+    gradedComment = !gradedComment;
   };
 
   $: browser && !alreadyCheckedAutoSavedData && getAutoSavedData();
@@ -288,7 +290,7 @@
 {:else if $questionnaireMetaData.isFinished}
   {#if !isLoadingAutoSavedData}
     <div class="flex items-center justify-between">
-      <div class="flex items-center space-x-4 w-full">
+      <div class="flex flex-col lg:flex-row items-start lg:items-center lg:space-x-4 w-full">
         <h2 class="text-xl font-normal">{$questionnaire.title}</h2>
         {#if STATUS.GRADED === $questionnaireMetaData.status}
           <span
@@ -322,22 +324,23 @@
       grades={$questionnaireMetaData.grades}
       disableGrading={true}
     />
-
-    {#if gradedExerciseComment}
-      <div class="flex justify-end fixed right-14 bottom-4">
-        <button on:click={toggleComments}>
-          <img src="/comment.svg" alt="comment" class="w-20 h-20" />
-        </button>
-      </div>
-    {:else}
-      <div
-        class="flex items-center justify-between sticky -bottom-14 bg-primary-700 px-4 py-1 text-white font-semibold rounded-sm"
-      >
-        <span> Lorem ipsum dolor, sit amet consectetur adipisicing elit. Atque, magnam. </span>
-        <IconButton onClick={toggleComments}>
-          <CloseFilled size={24} class="fill-white" />
-        </IconButton>
-      </div>
+    {#if STATUS.GRADED === $questionnaireMetaData.status}
+      {#if gradedComment}
+        <div
+          class="z-50 flex items-center justify-between sticky bottom-12 lg:-bottom-14 bg-primary-700 px-4 py-1 text-white font-semibold rounded-sm"
+        >
+          <span> {$questionnaireMetaData.comment ?? `No comments available`}</span>
+          <IconButton onClick={toggleComments}>
+            <CloseFilled size={24} class="fill-white" />
+          </IconButton>
+        </div>
+      {:else}
+        <div class="z-50 flex justify-end fixed right-2 lg:right-14 -bottom-2 lg:bottom-4">
+          <button on:click={toggleComments}>
+            <img src="/comment.svg" alt="comment" class="w-20 h-20" />
+          </button>
+        </div>
+      {/if}
     {/if}
   {/if}
 {:else if currentQuestion && currentQuestion?.id}

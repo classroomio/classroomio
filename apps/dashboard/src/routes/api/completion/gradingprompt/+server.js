@@ -14,9 +14,8 @@ export const config = {
 };
 
 export async function POST({ request }) {
-  const paragraph = await request.json();
+  const { prompt } = await request.json();
 
-  console.log('paragraph backend', paragraph);
   const response = await openai.createChatCompletion({
     model: 'gpt-3.5-turbo',
     messages: [
@@ -28,7 +27,7 @@ export async function POST({ request }) {
       {
         role: 'user',
         content: `
-        Given this array of objects below, there are 4 keys , id, question, answer and  points. You are required to come up with a score between 0 and the point for each answer provided to the question and a simple explanation for giving that score,boldy stating the question and answer in your explanation, you are to return an array of object in json with the following keys; id which is the id provided for that object in the initial array, score which is the value you gave for that question and then your explanation in this format below:
+        Given this array of objects below, there are 4 keys , id, question, answer and  points. You are required to come up with a score between 0 and the point for each answer provided to the question and a simple explanation for giving that score, you are to return an array of object in json with the following keys; id which is the id provided for that object in the initial array, score which is the value you gave for that question and then your explanation in this format below:
 
         {
           id,
@@ -39,7 +38,7 @@ export async function POST({ request }) {
         IMPORTANT: DO NOT GIVE ANY OTHER TEXT EXCEPT THE JSON
 
         The array you need to grade is below: 
-        ${paragraph}
+        ${prompt}
 
         `
       }
@@ -47,10 +46,7 @@ export async function POST({ request }) {
     stream: true
   });
 
-  // Extract grade and reason from the result
-  // Convert the response into a friendly text-stream
   const stream = OpenAIStream(response);
-  // Respond with the stream
 
   return new StreamingTextResponse(stream);
 }

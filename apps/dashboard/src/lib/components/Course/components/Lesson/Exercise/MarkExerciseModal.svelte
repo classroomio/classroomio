@@ -73,53 +73,41 @@
   const { input, handleSubmit, completion } = useCompletion({
     api: '/api/completion/gradingprompt',
     onFinish: async () => {
-      console.log('response', $completion);
-      isLoading = false;
-      // try {
-      //   const aiResponses = JSON.parse($completion);
+      try {
+        const responseData = $completion.replace('```json', '').replace('```', '');
 
-      //   // if (!Array.isArray(aiResponses)) {
-      //   //   console.error();
-      //   //   return;
-      //   // }
-      //   console.log('response', aiResponses);
-      // } catch (error) {
-      //   console.error('Error', error);
-      // } finally {
-      //   isLoading = false;
-      // }
+        // Parse the modified response data as JSON
+        const aiResponses = JSON.parse(responseData);
+
+        if (!Array.isArray(aiResponses)) {
+          return;
+        }
+        data?.questions.forEach((question) => {
+          const { id, points, question_type_id } = question;
+
+          if (question_type_id !== QUESTION_TYPE.TEXTAREA) {
+            const answer = data.questionAnswers.find((q) => q.question_id === id);
+            reasons = {
+              ...reasons,
+              [id]: `This grade was allocated because he got the answer after ${answer.answers.length} tries`
+            };
+            data.questionAnswerByPoint[id] = points / answer.answers.length;
+          } else {
+            const graded = aiResponses.find((res) => res.id === id);
+            reasons = {
+              ...reasons,
+              [id]: `${graded?.explanation}`
+            };
+            data.questionAnswerByPoint[id] = graded.score;
+          }
+        });
+      } catch (error) {
+        console.error('Error', error);
+      } finally {
+        isLoading = false;
+      }
     }
   });
-
-  // const generateReasonAndPoints = async (id, question, point, type) => {
-  //   // this function would receive the oncompletion
-  //   try {
-  //     // this would be an foreach loop
-  //     const answer = data.questionAnswers.find((q) => q.question_id === id);
-
-  //     if (type !== 'Paragraph') {
-  //       reasons = {
-  //         ...reasons,
-  //         [id]: `This grade was allocated because he got the answer after ${answer.answers.length} tries`
-  //       };
-  //       return (data.questionAnswerByPoint[id] = point / answer.answers.length);
-  //     } else if (!hasCalled) {
-  //       $input = JSON.stringify({ question, answer: answer.open_answer, point });
-
-  //       handleSubmit({ preventDefault: () => {} });
-  //       hasCalled = true;
-  //       data.questionAnswerByPoint[id] = Math.floor(Math.random() * point);
-
-  //       reasons = {
-  //         ...reasons,
-  //         [id]: `This reason would be given by ai for question with id ${id}`
-  //       };
-  //       return data.questionAnswerByPoint[id];
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
 
   function gradeWithAI() {
     isGradeWithAI = true;
@@ -135,9 +123,8 @@
           point: q.points
         };
       });
-    console.log(paragraphAiInput);
+
     $input = JSON.stringify(paragraphAiInput);
-    console.log('input value', $input);
     handleSubmit({ preventDefault: () => {} });
   }
 
@@ -169,11 +156,6 @@
   headerClass="py-2"
   labelClass="text-base font-semibold"
 >
-  {#if isLoading}
-    <div class="absolute w-full h-full bg-black/60">
-      <p>Grading...</p>
-    </div>
-  {/if}
   <div class="w-full h-full">
     <Preview
       questions={Array.isArray(data.questions)
@@ -186,6 +168,7 @@
       bind:grades={data.questionAnswerByPoint}
       bind:reasons
       bind:isGradeWithAI
+      bind:isLoading
     />
   </div>
   <div class="ml-4 w-2/5 sticky top-0">
@@ -260,6 +243,7 @@
           bgColor="bg-gray-100 dark:bg-neutral-700"
           className="font-semibold"
           placeholder="write your comments"
+          bind:value={data.feedback}
         />
       </div>
 

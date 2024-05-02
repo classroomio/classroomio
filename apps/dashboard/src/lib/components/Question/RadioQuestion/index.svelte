@@ -6,6 +6,7 @@
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import Grade from '$lib/components/Question/Grade.svelte';
   import { t } from '$lib/utils/functions/translations';
+  import GradeLoader from '../GradeLoader.svelte';
 
   export let title = '';
   export let index = 1;
@@ -26,6 +27,7 @@
   export let disableOptContainerMargin = false;
   export let isGradeWithAI = false;
   export let reason;
+  export let isLoading = false;
 
   let gradeWithAI = false;
 
@@ -137,30 +139,34 @@
           </button>
         {/each}
       </div>
-      <div class="flex items-start px-2 py-4">
-        <div class="flex items-center space-x-4">
-          <img src="/ai.svg" alt="alt" />
-          <p class="font-normal text-sm">
-            {reason}
-          </p>
+      {#if isLoading}
+        <GradeLoader />
+      {:else}
+        <div class="flex items-start justify-between px-2 py-4">
+          <div class="flex items-center space-x-4">
+            <img src="/ai.svg" alt="alt" />
+            <p class="font-normal text-sm">
+              {reason}
+            </p>
+          </div>
+          <div class="flex space-x-2">
+            <PrimaryButton
+              variant={VARIANTS.CONTAINED_SUCCESS}
+              label="Accept"
+              className="rounded-none py-1 px-2"
+              disablePadding={true}
+              onClick={acceptGrade}
+            />
+            <PrimaryButton
+              variant={VARIANTS.CONTAINED_DANGER}
+              label="Reject"
+              className="rounded-none py-1 px-2"
+              disablePadding={true}
+              onClick={rejectGrade}
+            />
+          </div>
         </div>
-        <div class="flex space-x-2">
-          <PrimaryButton
-            variant={VARIANTS.CONTAINED_SUCCESS}
-            label="Accept"
-            className="rounded-none py-1 px-2"
-            disablePadding={true}
-            onClick={acceptGrade}
-          />
-          <PrimaryButton
-            variant={VARIANTS.CONTAINED_DANGER}
-            label="Reject"
-            className="rounded-none py-1 px-2"
-            disablePadding={true}
-            onClick={rejectGrade}
-          />
-        </div>
-      </div>
+      {/if}
     </div>
   {/if}
 
