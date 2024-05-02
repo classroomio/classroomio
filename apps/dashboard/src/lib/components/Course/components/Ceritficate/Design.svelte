@@ -47,7 +47,7 @@
   />
 </svelte:head>
 
-<UpgradeBanner>Upgrade your plan to generate certificates</UpgradeBanner>
+<UpgradeBanner>{$t('upgrade.certificate')}</UpgradeBanner>
 
 <main class="md:-ml-3 md:-mr-3 px-2 mt-2">
   <div class="flex-1 flex flex-col lg:flex-row justify-between gap-3 w-full mb-3 h-4/5">

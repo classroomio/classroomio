@@ -19,7 +19,7 @@
     const validLinks = links.filter(isValidLink);
 
     if (validLinks.length === 0) {
-      error = 'Invalid link(s)';
+      error = $t('course.navItem.lessons.materials.tabs.video.add_video.invalid_link');
     } else {
       const existingLinks = $lesson?.materials?.videos || [];
 

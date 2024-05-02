@@ -106,13 +106,6 @@
           <li
             class="lg:text-base text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900"
           >
-            <a target="_blank" href="https://classroomio.com/docs/what-is-classroomio">
-              What is ClassroomIO?
-            </a>
-          </li>
-          <li
-            class="lg:text-base text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900"
-          >
             <a target="_blank" href="https://classroomio.com/docs/quickstart/signup">
               Getting Started
             </a>

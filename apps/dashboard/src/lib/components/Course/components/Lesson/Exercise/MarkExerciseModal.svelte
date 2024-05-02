@@ -10,6 +10,7 @@
   import { Dropdown, Tag } from 'carbon-components-svelte';
   import { useCompletion } from 'ai/svelte';
   import { QUESTION_TYPE } from '$lib/components/Question/constants';
+  import { t } from '$lib/utils/functions/translations';
 
   export let open = false;
   export let onClose = () => {};

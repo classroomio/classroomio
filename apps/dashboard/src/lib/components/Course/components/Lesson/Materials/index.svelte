@@ -102,7 +102,7 @@
 
       if (updateError) {
         console.error('Error updating translation:', updateError.message);
-        snackbar.error('Updating translations failed');
+        snackbar.error('snackbar.materials.update_translations');
       }
     } else {
       const { error: insertError } = await supabase.from('lesson_language').insert({
@@ -113,7 +113,7 @@
 
       if (insertError) {
         console.error('Error inserting translation:', insertError.message);
-        snackbar.error('Creating new translations failed');
+        snackbar.error('snackbar.materials.creating_new');
         return;
       }
 

@@ -109,18 +109,22 @@
     return youtubeRegex.test(link.trim());
   }
 
-  onMount(async () => {
-    if (!orgSiteName) return;
+  $: loadData(orgSiteName);
+
+  async function loadData(siteName) {
+    if (!siteName) return;
+
     try {
-      console.log('sitename', orgSiteName);
+      console.log('sitename', siteName);
       $courseMetaDeta.isLoading = true;
-      const coursesResult = await getCourseBySiteName(orgSiteName);
+      const coursesResult = await getCourseBySiteName(siteName);
       courses.set(coursesResult);
       $courseMetaDeta.isLoading = false;
     } catch (error) {
       console.log('error', error);
     }
-  });
+  }
+
   function initPlyr(_player: any, _video: string | undefined) {
     if (!player) return;
 
@@ -162,7 +166,13 @@
     <!-- Header Section -->
     {#if $landingPageSettings.header.show}
       <header id="header" class="banner w-full h-[100vh] md:h-[90vh] mb-10 relative">
-        <Navigation logo={org.avatar_url} orgName={org.name} disableSignup={true} />
+        <Navigation
+          logo={org.avatar_url}
+          orgName={org.name}
+          disableSignup={true}
+          isOrgSite={true}
+        />
+
         <div class="absolute h-[100vh] md:h-[90vh] top-0 w-full opacity-80 z-10 bg-white" />
         {#if $landingPageSettings.header.banner.show}
           <div class="flex items-center justify-center md:h-full py-2">

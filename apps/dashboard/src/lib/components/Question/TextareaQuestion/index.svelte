@@ -115,7 +115,7 @@
       <TextArea
         bind:value={defaultValue}
         rows="5"
-        placeholder={$t('course.navItem.lessons.exercise.all_exercises.write_your_answer_here')}
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_answer_here')}
       />
     {/if}
   </div>
@@ -132,8 +132,8 @@
         variant={VARIANTS.OUTLINED}
         type="submit"
         label={isLast
-          ? $t('course.navItem.lessons.exercise.all_exercises.finish')
-          : $t('course.navItem.lessons.exercise.all_exercises.next')}
+          ? $t('course.navItem.lessons.exercises.all_exercises.finish')
+          : $t('course.navItem.lessons.exercises.all_exercises.next')}
         {name}
       />
     </div>

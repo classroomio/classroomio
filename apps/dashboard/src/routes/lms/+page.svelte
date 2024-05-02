@@ -10,6 +10,7 @@
   import type { Course } from '$lib/utils/types';
   import { getGreeting } from '$lib/utils/functions/date';
   import { t } from '$lib/utils/functions/translations';
+  import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
 
   let hasFetched = false;
   let progressPercentage = 0;
@@ -52,10 +53,15 @@
 
 <section class="max-w-6xl gap-5 mx-auto">
   <div class="m-5">
-    <h1 class="dark:text-white text-2xl md:text-3xl font-bold mb-3">
-      {$t(getGreeting())}
-      {$profile.fullname}!
-    </h1>
+    <div class="flex items-center justify-between mb-10">
+      <h1 class="dark:text-white text-2xl md:text-3xl font-bold">
+        {$t(getGreeting())}
+        {$profile.fullname}!
+      </h1>
+
+      <VisitOrgSiteButton isLMS={true} />
+    </div>
+
     <div
       class="w-full h-fit lg:h-[265px] flex md:items-center justify-between flex-col-reverse md:flex-row p-5 lg:p-10 rounded-md bg-primary-900 my-2"
     >

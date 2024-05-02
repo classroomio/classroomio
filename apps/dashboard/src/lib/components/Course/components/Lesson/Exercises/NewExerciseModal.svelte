@@ -9,7 +9,7 @@
   import { Tag } from 'carbon-components-svelte';
   import { TEMPLATES, TAGS } from '$lib/mocks';
   import type { ExerciseTemplate } from '$lib/utils/types';
-  import { lesson } from '../store/lessons';
+  import { lesson, lessonByTranslation } from '../store/lessons';
   import { useCompletion } from 'ai/svelte';
   import Confetti from '$lib/components/Confetti/index.svelte';
   import { toggleConfetti } from '$lib/components/Confetti/store';
@@ -18,6 +18,7 @@
   import { writable } from 'svelte/store';
   import { Circle3 } from 'svelte-loading-spinners';
   import { t } from '$lib/utils/functions/translations';
+  import { lessonFallbackNote } from '$lib/utils/functions/translations';
 
   export let open = false;
   export let handleAddExercise = () => {};
@@ -41,20 +42,24 @@
 
   const options = [
     {
-      title: $t('course.navItem.lessons.exercises.new_exercise_modal.options.1'),
-      subtitle: $t('course.navItem.lessons.exercises.new_exercise_modal.options.subtitle_1'),
+      title: $t('course.navItem.lessons.exercises.new_exercise_modal.options.from_scratch'),
+      subtitle: $t(
+        'course.navItem.lessons.exercises.new_exercise_modal.options.from_scratch_subtitle'
+      ),
       type: Type.SCRATCH,
       isDisabled: false
     },
     {
-      title: $t('course.navItem.lessons.exercises.new_exercise_modal.options.2'),
-      subtitle: $t('course.navItem.lessons.exercises.new_exercise_modal.options.subtitle_2'),
+      title: $t('course.navItem.lessons.exercises.new_exercise_modal.options.use_template'),
+      subtitle: $t(
+        'course.navItem.lessons.exercises.new_exercise_modal.options.use_template_subtitle'
+      ),
       type: Type.TEMPLATE,
       isDisabled: false
     },
     {
-      title: $t('course.navItem.lessons.exercises.new_exercise_modal.options.3'),
-      subtitle: $t('course.navItem.lessons.exercises.new_exercise_modal.options.subtitle_3'),
+      title: $t('course.navItem.lessons.exercises.new_exercise_modal.options.use_ai'),
+      subtitle: $t('course.navItem.lessons.exercises.new_exercise_modal.options.use_ai_subtitle'),
       type: Type.AI,
       isDisabled: false
     }
@@ -100,7 +105,12 @@
     }, 500);
   }
 
-  $: note = browser ? getTextFromHTML($lesson?.materials?.note || '') : '';
+  $: content = lessonFallbackNote(
+    $lesson.materials.note,
+    $lessonByTranslation[$lesson.id || ''],
+    $lesson.locale
+  );
+  $: note = browser ? getTextFromHTML(content) : '';
 </script>
 
 <Modal
@@ -125,7 +135,7 @@
             class="w-[261px] h-[240px] p-5 rounded-md dark:bg-neutral-700 border-2 {option.type ===
             type
               ? 'border-primary-400'
-              : `border-gray-200 dark:border-neutral-600 dark:border-gray-400 ${
+              : `border-gray-200 dark:border-neutral-600 ${
                   !option.isDisabled && 'hover:scale-95'
                 }`} flex flex-col {option.isDisabled &&
               'cursor-not-allowed opacity-60'} transition-all ease-in-out"
@@ -222,7 +232,7 @@
                 class="w-[161px] h-[140px] hover:scale-95 p-5 rounded-md dark:bg-neutral-700 border-2 {template.id ===
                 selectedTemplateId
                   ? 'border-primary-400'
-                  : `border-gray-200 dark:border-neutral-600 dark:border-gray-400`} flex flex-col transition-all ease-in-out"
+                  : `border-gray-200 dark:border-neutral-600 `} flex flex-col transition-all ease-in-out"
                 type="button"
                 on:click={() => (selectedTemplateId = template.id)}
               >

@@ -72,15 +72,15 @@
           <h3 class="font-normal text-lg">
             {$t('settings.integrations.sub_heading')}
           </h3>
-          <h4 class="font-normal">{$t('settings.integrations.step_1')}</h4>
+          <h4 class="font-normal">{$t('settings.integrations.step_authenticate')}</h4>
           <PrimaryButton
             className="mb-5"
             variant={VARIANTS.OUTLINED}
             onClick={() => window.open('https://t.me/classroomio_bot', '_blank')}
-            ><span class="mr-2">{$t('settings.integrations.button_1')}</span>
+            ><span class="mr-2">{$t('settings.integrations.open_bot_button')}</span>
             <ArrowUpRightIcon /></PrimaryButton
           >
-          <h4 class="font-normal">{$t('settings.integrations.step_2')}</h4>
+          <h4 class="font-normal">{$t('settings.integrations.step_chatId')}</h4>
           <TextField
             bind:value={chatId}
             placeholder="360111"
@@ -88,7 +88,9 @@
             type="number"
             isRequired
           />
-          <PrimaryButton onClick={addChatId}>{$t('settings.integrations.button_2')}</PrimaryButton>
+          <PrimaryButton onClick={addChatId}
+            >{$t('settings.integrations.connect_button')}</PrimaryButton
+          >
         </div>
       {/if}
     </Column>

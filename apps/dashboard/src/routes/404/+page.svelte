@@ -11,10 +11,10 @@
 
   function handleClick() {
     if (!isOrg) {
-      return goto('/')
+      return goto('/');
     }
 
-    return goto('/home')
+    return goto('https://classroomio.com');
   }
 </script>
 
