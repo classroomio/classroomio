@@ -367,27 +367,6 @@
           }
         }
       },
-      "certificates": {
-        "title": "Certificats",
-        "certificate_settings": "Paramètres du certificat",
-        "theme": "Choisissez un thème",
-        "logo": "Logo de la marque",
-        "to_update": "Pour mettre à jour votre image de marque, rendez-vous sur",
-        "settings": "Paramètres > Paramètres de l'organisation",
-        "and_upload": "et téléchargez le logo de votre marque",
-        "goto_settings": "Aller aux paramètres",
-        "description": "Description du cours",
-        "placeholder": "une petite description du cours",
-        "allow": "Autoriser les étudiants à télécharger le certificat",
-        "locked": "Fermé à clé",
-        "unlocked": "Débloqué",
-        "save": "Sauvegarder les modifications",
-        "unlocked_certificate": "Le certificat est maintenant disponible",
-        "locked_certificate": "Certificats non disponibles",
-        "instructor_unlock": "Votre instructeur doit débloquer votre certificat.",
-        "contact_instructor": "Si vous avez besoin de votre certificat, veuillez contacter votre instructeur.",
-        "download_certificate": "Télécharger le certificat"
-      },
       "people": {
         "title": "Personnes",
         "add": "Ajouter",
@@ -710,6 +689,27 @@
           "cancel": "Annuler",
           "post": "Poste"
         }
+      },
+      "certificates": {
+        "title": "Certificats",
+        "certificate_settings": "Paramètres du certificat",
+        "theme": "Choisissez un thème",
+        "logo": "Logo de la marque",
+        "to_update": "Pour mettre à jour votre image de marque, rendez-vous sur",
+        "settings": "Paramètres > Paramètres de l'organisation",
+        "and_upload": "et téléchargez le logo de votre marque",
+        "goto_settings": "Aller aux paramètres",
+        "description": "Description du cours",
+        "placeholder": "une petite description du cours",
+        "allow": "Autoriser les étudiants à télécharger le certificat",
+        "locked": "Fermé à clé",
+        "unlocked": "Débloqué",
+        "save": "Sauvegarder les modifications",
+        "unlocked_certificate": "Le certificat est maintenant disponible",
+        "locked_certificate": "Certificats non disponibles",
+        "instructor_unlock": "Votre instructeur doit débloquer votre certificat.",
+        "contact_instructor": "Si vous avez besoin de votre certificat, veuillez contacter votre instructeur.",
+        "download_certificate": "Télécharger le certificat"
       }
     },
     "navItems": {

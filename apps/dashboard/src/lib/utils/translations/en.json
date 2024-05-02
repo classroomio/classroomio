@@ -768,7 +768,7 @@
         "theme": "Choose a theme",
         "logo": "Brand Logo",
         "to_update": "To update your brand image, go to",
-        "settings": "Settings &gt; Organisation settings",
+        "settings": "Settings > Organisation settings",
         "and_upload": "and upload your brand logo",
         "goto_settings": "Go to Settings",
         "description": "Course Description",
@@ -781,7 +781,7 @@
         "locked_certificate": "Certificates not available",
         "instructor_unlock": "Your instructor needs to unlock your certificate.",
         "contact_instructor": "If you need your certificate, please contact your instructor.",
-        "download_certificate": "DownLoad Certificate"
+        "download_certificate": "Download Certificate"
       },
 
       "landing_page": {

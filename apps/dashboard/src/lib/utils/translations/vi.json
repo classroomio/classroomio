@@ -367,27 +367,6 @@
           }
         }
       },
-      "certificates": {
-        "title": "Chứng chỉ",
-        "certificate_settings": "Cài đặt chứng chỉ",
-        "theme": "Chọn một chủ đề",
-        "logo": "Biểu tượng thương hiệu",
-        "to_update": "Để cập nhật hình ảnh thương hiệu của bạn, hãy truy cập",
-        "settings": "Cài đặt > Cài đặt tổ chức",
-        "and_upload": "và tải lên logo thương hiệu của bạn",
-        "goto_settings": "Đi tới Cài đặt",
-        "description": "Mô tả khóa học",
-        "placeholder": "một chút mô tả về khóa học",
-        "allow": "Cho phép sinh viên tải xuống chứng chỉ",
-        "locked": "Đã khóa",
-        "unlocked": "Đã mở khóa",
-        "save": "Lưu thay đổi",
-        "unlocked_certificate": "Chứng chỉ hiện có sẵn",
-        "locked_certificate": "Chứng chỉ không có sẵn",
-        "instructor_unlock": "Người hướng dẫn của bạn cần mở khóa chứng chỉ của bạn.",
-        "contact_instructor": "Nếu bạn cần chứng chỉ của mình, vui lòng liên hệ với người hướng dẫn của bạn.",
-        "download_certificate": "Tải xuống chứng chỉ"
-      },
       "people": {
         "title": "Mọi người",
         "add": "Thêm vào",
@@ -710,6 +689,27 @@
           "cancel": "Hủy bỏ",
           "post": "Bưu kiện"
         }
+      },
+      "certificates": {
+        "title": "Chứng chỉ",
+        "certificate_settings": "Cài đặt chứng chỉ",
+        "theme": "Chọn một chủ đề",
+        "logo": "Biểu tượng thương hiệu",
+        "to_update": "Để cập nhật hình ảnh thương hiệu của bạn, hãy truy cập",
+        "settings": "Cài đặt > Cài đặt tổ chức",
+        "and_upload": "và tải lên logo thương hiệu của bạn",
+        "goto_settings": "Đi tới Cài đặt",
+        "description": "Mô tả khóa học",
+        "placeholder": "một chút mô tả về khóa học",
+        "allow": "Cho phép sinh viên tải xuống chứng chỉ",
+        "locked": "Đã khóa",
+        "unlocked": "Đã mở khóa",
+        "save": "Lưu thay đổi",
+        "unlocked_certificate": "Chứng chỉ hiện có sẵn",
+        "locked_certificate": "Chứng chỉ không có sẵn",
+        "instructor_unlock": "Người hướng dẫn của bạn cần mở khóa chứng chỉ của bạn.",
+        "contact_instructor": "Nếu bạn cần chứng chỉ của mình, vui lòng liên hệ với người hướng dẫn của bạn.",
+        "download_certificate": "Tải xuống chứng chỉ"
       }
     },
     "navItems": {
