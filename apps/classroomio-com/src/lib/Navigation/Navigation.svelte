@@ -208,6 +208,14 @@
           >
             <li>Pricing</li>
           </a>
+          <!-- Free Tools -->
+          <a
+            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full"
+            on:click={handleShowNav}
+            href="/free-tools"
+          >
+            <li>Free Tools</li>
+          </a>
           <!-- Docs -->
           <a
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"

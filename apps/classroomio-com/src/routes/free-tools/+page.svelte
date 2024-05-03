@@ -54,41 +54,43 @@
 
 <section>
   <PageHeader>
-    <div class="text-center w-2/4 mx-auto">
-      <h1 class="text-6xl font-bold">Explore our free <span class="text-[#1D4ED8]">tools</span></h1>
-      <p class="my-8">
+    <div class="text-left lg:text-center lg:w-2/4 px-7 lg:p-0 mx-auto">
+      <h1 class="text-5xl lg:text-6xl font-bold">
+        Explore our free <span class="text-[#1D4ED8]">tools</span>
+      </h1>
+      <p class="my-4 lg:my-8">
         Innovative tools to help you aid you example preparation, as well as making learning more
         fun for students and educator looking for engaging resources.
       </p>
 
-      <div class="flex relative w-[50%] mt-10 mx-auto">
+      <div class="flex relative lg:w-[50%] my-3 lg:mt-10 mx-auto">
         <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-0 z-0"
           src="/free-tools/waec.svg"
           alt=""
         />
         <img
-          class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[3rem] z-10"
+          class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[50px] z-10"
           src="/free-tools/question-of-the-day.svg"
           alt=""
         />
         <img
-          class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[6rem] z-20"
+          class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[100px] z-20"
           src="/free-tools/activity-timer.svg"
           alt=""
         />
         <img
-          class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[9rem] z-30"
+          class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[150px] z-30"
           src="/free-tools/name-picker.svg"
           alt=""
         />
         <img
-          class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[12rem] z-40"
+          class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[200px] z-40"
           src="/free-tools/tic-tac.svg"
           alt=""
         />
         <img
-          class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[15rem] z-50"
+          class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[250px] z-50"
           src="/free-tools/jamb.svg"
           alt=""
         />
@@ -96,16 +98,16 @@
     </div>
   </PageHeader>
 
-  <div class="py-10">
+  <div class="p-10 lg:px-0">
     <h1 class="text-center font-bold text-3xl">Featured Tools</h1>
 
-    <div class="flex justify-between gap-y-8 flex-wrap w-[70%] mt-10 mx-auto">
+    <div class="flex justify-between gap-y-8 flex-wrap w-full lg:w-[70%] mt-10 mx-auto">
       {#each tools as tool}
-        <figure class="flex max-w-[370px] rounded-md shadow-sm">
+        <figure class="w-full flex lg:max-w-[370px] border rounded-md shadow-sm">
           <img class="w-[30%] rounded-l-md" src={tool.src} alt="" />
           <figcaption class="bg-[#F5F8FE] p-5 rounded-r-md">
-            <h1 class="font-bold text-base">{tool.title}</h1>
-            <p class="text-xs mt-1.5">
+            <h1 class="font-bold text-sm lg:text-base">{tool.title}</h1>
+            <p class="text-xs text-gray-600 mt-1.5">
               {tool.subText}
             </p>
           </figcaption>
