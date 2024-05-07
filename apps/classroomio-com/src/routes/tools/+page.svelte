@@ -6,6 +6,7 @@
       src: '/free-tools/name-picker.svg',
       title: 'Random Name Picker',
       subText: 'Effortlessly choose names for class participation or group activities',
+      slug: 'random-name-picker',
       show: true
     },
     {
@@ -13,6 +14,7 @@
       title: 'Timed Activity Timer',
       subText:
         'Stay on track and enhance productivity with our customizable timer for timed tasks, quizzes, and study sessions',
+      slug: 'timer',
       show: true
     },
     {
@@ -20,6 +22,7 @@
       title: 'Tic tac toe game',
       subText:
         "More than just a game; it's an educational ool that teaches pattern recognition, and decision-making.",
+      slug: 'tic-tac-toe',
       show: true
     },
     {
@@ -27,12 +30,14 @@
       title: 'Question of the day ',
       subText:
         "Find thought-provoking 'Question of the Day' to spark discussions and promote critical thinking",
+      slug: 'question-of-the-day',
       show: true
     },
     {
       src: '/free-tools/waec.svg',
       title: 'WAEC Practice tool',
       subText: 'Ace your WAEC exams with comprehensive study materials, past questions',
+      slug: 'waec',
       show: false
     },
     {
@@ -40,6 +45,7 @@
       title: 'JAMB Practice tool',
       subText:
         'Prepare for JAMB with past questions and instant feedback for effective exam readiness',
+      slug: 'jamb',
       show: false
     }
   ].filter((item) => item.show);
