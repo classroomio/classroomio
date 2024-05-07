@@ -85,32 +85,32 @@
         <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-0 z-0"
           src="/free-tools/waec.svg"
-          alt=""
+          alt="Waec logo"
         />
         <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[50px] z-10"
           src="/free-tools/question-of-the-day.svg"
-          alt=""
+          alt="Question of the day logo"
         />
         <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[100px] z-20"
           src="/free-tools/activity-timer.svg"
-          alt=""
+          alt="Activity timer logo"
         />
         <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[150px] z-30"
           src="/free-tools/name-picker.svg"
-          alt=""
+          alt="Name picker logo"
         />
         <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[200px] z-40"
           src="/free-tools/tic-tac.svg"
-          alt=""
+          alt="Tic tac logo"
         />
         <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[250px] z-50"
           src="/free-tools/jamb.svg"
-          alt=""
+          alt="Jamb logo"
         />
       </div>
     </div>
@@ -121,15 +121,18 @@
 
     <div class="flex justify-evenly gap-y-8 flex-wrap w-full md:w-[70%] mt-10 mx-auto">
       {#each tools as tool}
-        <figure class="w-full flex md:max-w-[370px] border rounded-md shadow-sm">
+        <a
+          href="/tools/{tool.slug}"
+          class="w-full flex md:max-w-[370px] border rounded-md shadow-sm"
+        >
           <img class="w-[30%] rounded-l-md" src={tool.src} alt="" />
-          <figcaption class="bg-[#F5F8FE] p-5 rounded-r-md">
+          <div class="bg-[#F5F8FE] p-5 rounded-r-md">
             <h1 class="font-bold text-sm md:text-base">{tool.title}</h1>
             <p class="text-xs text-gray-600 mt-1.5">
               {tool.subText}
             </p>
-          </figcaption>
-        </figure>
+          </div>
+        </a>
       {/each}
     </div>
   </div>
