@@ -113,7 +113,7 @@
       <a
         href="/teach/register"
         target="_blank"
-        class="w-full block text-center lg:w-[30%] py-3 text-base text-white rounded-md bg-[#1D4ED8]"
+        class="w-full block text-center lg:w-[30%] py-3 text-base text-white rounded-md bg-blue-700"
       >
         Register
       </a>
@@ -169,7 +169,7 @@
         <a
           href="/teach/register"
           target="_blank"
-          class="w-full lg:max-w-[20%] py-3 text-base text-white rounded-md bg-[#1D4ED8] text-center"
+          class="w-full lg:max-w-[20%] py-3 text-base text-white rounded-md bg-blue-700 text-center"
         >
           Get Started
         </a>
