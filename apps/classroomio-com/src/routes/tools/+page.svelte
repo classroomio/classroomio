@@ -3,125 +3,133 @@
 
   const tools = [
     {
-      slug: 'random-name-picker',
       src: '/free-tools/name-picker.svg',
       title: 'Random Name Picker',
-      subText: 'Effortlessly choose names for class participation or group activities'
+      subText: 'Effortlessly choose names for class participation or group activities',
+      slug: 'random-name-picker',
+      show: true
     },
     {
-      slug: 'timed-activity-timer',
       src: '/free-tools/activity-timer.svg',
       title: 'Timed Activity Timer',
       subText:
-        'Stay on track and enhance productivity with our customizable timer for timed tasks, quizzes, and study sessions'
+        'Stay on track and enhance productivity with our customizable timer for timed tasks, quizzes, and study sessions',
+      slug: 'timer',
+      show: true
     },
     {
-      slug: 'question-of-the-day',
-      src: '/free-tools/question-of-the-day.svg',
-      title: 'Question of the day ',
-      subText:
-        "Find thought-provoking 'Question of the Day' to spark discussions and promote critical thinking"
-    },
-    {
-      slug: 'waec-practice-tool',
-      src: '/free-tools/waec.svg',
-      title: 'WAEC Practice tool',
-      subText: 'Ace your WAEC exams with comprehensive study materials, past questions'
-    },
-
-    {
-      slug: 'jamb-practice-tool',
-      src: '/free-tools/jamb.svg',
-      title: 'JAMB Practice tool',
-      subText:
-        'Prepare for JAMB with past questions and instant feedback for effective exam readiness'
-    },
-    {
-      slug: 'tic-tac-toe',
       src: '/free-tools/tic-tac.svg',
       title: 'Tic tac toe game',
       subText:
-        "More than just a game; it's an educational ool that teaches pattern recognition, and decision-making."
+        "More than just a game; it's an educational ool that teaches pattern recognition, and decision-making.",
+      slug: 'tic-tac-toe',
+      show: true
+    },
+    {
+      src: '/free-tools/question-of-the-day.svg',
+      title: 'Question of the day ',
+      subText:
+        "Find thought-provoking 'Question of the Day' to spark discussions and promote critical thinking",
+      slug: 'question-of-the-day',
+      show: true
+    },
+    {
+      src: '/free-tools/waec.svg',
+      title: 'WAEC Practice tool',
+      subText: 'Ace your WAEC exams with comprehensive study materials, past questions',
+      slug: 'waec',
+      show: false
+    },
+    {
+      src: '/free-tools/jamb.svg',
+      title: 'JAMB Practice tool',
+      subText:
+        'Prepare for JAMB with past questions and instant feedback for effective exam readiness',
+      slug: 'jamb',
+      show: false
     }
-  ];
+  ].filter((item) => item.show);
 </script>
 
 <svelte:head>
   <title>Free Tools | ClassroomIO</title>
   <meta property="og:image" itemprop="image" content="" />
   <meta property="og:title" content="Free Tools" />
-  <meta property="og:description" content="On ClassroomIO you have access to free tools." />
+  <meta
+    property="og:description"
+    content="At ClassroomIO, we have built a suit of tools for anyone to use freely when training their students"
+  />
 
   <meta property="og:image:secure_url" itemprop="image" content="" />
 
   <meta name="twitter:title" content="Free Tools" />
-  <meta name="twitter:description" content="On ClassroomIO you have access to free tools." />
+  <meta
+    name="twitter:description"
+    content="At ClassroomIO, we have built a suit of tools for anyone to use freely when training their students"
+  />
   <meta name="twitter:image" content="" />
 </svelte:head>
 
 <section>
   <PageHeader>
-    <div class="text-left lg:text-center lg:w-2/4 px-7 lg:p-0 mx-auto">
-      <h1 class="text-5xl lg:text-6xl font-bold">
-        Explore our free <span class="text-[#1D4ED8]">tools</span>
+    <div class="text-left md:text-center md:w-2/4 px-7 md:p-0 mx-auto">
+      <h1 class="text-5xl md:text-6xl font-bold">
+        Explore our free <span class="text-blue-700">tools</span>
       </h1>
-      <p class="my-4 lg:my-8">
+      <p class="my-4 md:my-8">
         Innovative tools to help you aid you example preparation, as well as making learning more
         fun for students and educator looking for engaging resources.
       </p>
 
-      <div class="flex relative lg:w-[50%] my-3 lg:mt-10 mx-auto">
+      <div class="flex relative md:w-[50%] my-3 md:mt-10 mx-auto">
         <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-0 z-0"
           src="/free-tools/waec.svg"
-          alt="Waec logo"
+          alt=""
         />
         <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[50px] z-10"
           src="/free-tools/question-of-the-day.svg"
-          alt="Question of the day logo"
+          alt=""
         />
         <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[100px] z-20"
           src="/free-tools/activity-timer.svg"
-          alt="Activity timer logo"
+          alt=""
         />
         <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[150px] z-30"
           src="/free-tools/name-picker.svg"
-          alt="Name Picker logo"
+          alt=""
         />
         <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[200px] z-40"
           src="/free-tools/tic-tac.svg"
-          alt="Tic-tac logo"
+          alt=""
         />
         <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[250px] z-50"
           src="/free-tools/jamb.svg"
-          alt="Jamb logo"
+          alt=""
         />
       </div>
     </div>
   </PageHeader>
 
-  <div class="p-10 lg:px-0">
+  <div class="p-10 px-2 md:px-0">
     <h1 class="text-center font-bold text-3xl">Featured Tools</h1>
 
-    <div class="flex justify-between gap-y-8 flex-wrap w-full lg:w-[70%] mt-10 mx-auto">
+    <div class="flex justify-evenly gap-y-8 flex-wrap w-full md:w-[70%] mt-10 mx-auto">
       {#each tools as tool}
-        <a
-          href="/tools/${tool.slug}"
-          class="w-full flex lg:max-w-[370px] border rounded-md shadow-sm"
-        >
+        <figure class="w-full flex md:max-w-[370px] border rounded-md shadow-sm">
           <img class="w-[30%] rounded-l-md" src={tool.src} alt="" />
-          <div class="bg-[#F5F8FE] p-5 rounded-r-md">
-            <h1 class="font-bold text-sm lg:text-base">{tool.title}</h1>
+          <figcaption class="bg-[#F5F8FE] p-5 rounded-r-md">
+            <h1 class="font-bold text-sm md:text-base">{tool.title}</h1>
             <p class="text-xs text-gray-600 mt-1.5">
               {tool.subText}
             </p>
-          </div>
-        </a>
+          </figcaption>
+        </figure>
       {/each}
     </div>
   </div>

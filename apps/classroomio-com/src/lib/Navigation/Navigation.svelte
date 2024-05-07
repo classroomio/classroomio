@@ -104,16 +104,16 @@
         <li class="text-gray-800 font-semibold text-sm cursor-pointer">More features</li>
       </a> -->
       <!-- Pricing -->
+      <a href="/tools">
+        <li class="text-gray-800 font-semibold text-sm cursor-pointer">Free Tools</li>
+      </a>
       <a href="/pricing">
         <li class="text-gray-800 font-semibold text-sm cursor-pointer">Pricing</li>
       </a>
-      <a href="/free-tools">
-        <li class="text-gray-800 font-semibold text-sm cursor-pointer">Free Tools</li>
-      </a>
-      <!-- Docs -->
+      <!-- Docs 
       <a href="/docs" target="_blank">
         <li class="text-gray-800 font-semibold text-sm cursor-pointer">Docs</li>
-      </a>
+      </a>-->
       <!-- Blog -->
       <a href="/blog">
         <li class="text-gray-800 font-semibold text-sm cursor-pointer">Blog</li>
@@ -200,6 +200,14 @@
               </div>
             {/if}
           </li>
+          <!-- Free Tools -->
+          <a
+            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full"
+            on:click={handleShowNav}
+            href="/tools"
+          >
+            <li>Free Tools</li>
+          </a>
           <!-- Pricing -->
           <a
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full"
@@ -208,15 +216,7 @@
           >
             <li>Pricing</li>
           </a>
-          <!-- Free Tools -->
-          <a
-            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full"
-            on:click={handleShowNav}
-            href="/free-tools"
-          >
-            <li>Free Tools</li>
-          </a>
-          <!-- Docs -->
+          <!-- Docs
           <a
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
             on:click={handleShowNav}
@@ -224,7 +224,7 @@
             target="_blank"
           >
             <li>Docs</li>
-          </a>
+          </a> -->
 
           <!-- Blog -->
           <a
