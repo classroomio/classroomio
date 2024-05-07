@@ -6,7 +6,7 @@
       src: '/free-tools/name-picker.svg',
       title: 'Random Name Picker',
       subText: 'Effortlessly choose names for class participation or group activities',
-      slug: 'random-name-picker',
+      slug: 'name-picker',
       show: true
     },
     {

@@ -1,4 +1,6 @@
 <script>
+  import { PUBLIC_DICEBEAR_BASEURL } from '$env/static/public';
+
   let namesInput = '';
   let numNames = 0;
   let wordCount = 0;
@@ -75,7 +77,7 @@
 
   // function to generate a random avatar
   async function generateRandomAvatar(styleName, format = 'svg') {
-    const baseUrl = 'https://api.dicebear.com/8.x/';
+    const baseUrl = PUBLIC_DICEBEAR_BASEURL;
     const randomSeed = Math.random().toString(36).substring(7);
 
     try {
@@ -94,18 +96,22 @@
   }
 </script>
 
-<section class="mt-[30%] px-5 lg:px-0 lg:mt-[10%]">
-  <header class="lg:w-2/4 mx-auto text-center">
-    <img src="/free-tools/name-picker.svg" class="w-[15%] lg:w-[10%] mx-auto" alt="" />
-    <h1 class="text-4xl lg:text-6xl font-bold text-[#040F2D] my-3">Random Name Picker</h1>
-    <p class="text-[13px] text-[#656565] font-light w-[90%] mx-auto">
+<section class="mt-[30%] px-5 md:px-0 md:mt-[10%]">
+  <header class="md:w-2/4 mx-auto text-center">
+    <img
+      src="/free-tools/name-picker.svg"
+      class="w-[15%] md:w-[10%] mx-auto border rounded-full"
+      alt=""
+    />
+    <h1 class="text-4xl md:text-6xl font-bold text-[#040F2D] my-3">Random Name Picker</h1>
+    <p class="text-[13px] text-[#656565] font-light md:font-normal w-[90%] mx-auto">
       Use this online name picker to draw a random name from a list of names, or to draw several
       names randomly out of a list. You can use it as a name randomizer for a class activities.
     </p>
   </header>
 
-  <div class="border rounded-md lg:w-[60%] my-10 py-8 lg:py-[3%] mx-auto shadow-md">
-    <div class="w-[85%] lg:w-[70%] mx-auto">
+  <div class="border rounded-md md:w-[60%] my-10 py-8 md:py-[3%] mx-auto shadow-md">
+    <div class="w-[85%] md:w-[70%] mx-auto">
       <h1 class="font-bold text-sm">List of names</h1>
 
       <!-- container -->
@@ -113,7 +119,7 @@
         class="relative focus-within:border-[#0233BD] border-2 mt-5 h-[12rem] pl-3 pt-2 overflow-hidden rounded-sm bg-[#F1F2F4]"
       >
         <!-- sidebar -->
-        <div class="flex flex-col gap-y-3 absolute right-2 lg:right-7 top-3">
+        <div class="flex flex-col gap-y-3 absolute right-2 md:right-7 top-3">
           <button
             type="button"
             on:click={sortRandom}
@@ -137,7 +143,7 @@
             tabindex={0}
             contenteditable
             bind:textContent={namesInput}
-            class="w-full pr-9 overflow-y-scroll text-xs block border-0 outline-none overflow-hidden resize h-full"
+            class="w-full pr-9 md:pr-14 overflow-y-auto text-xs block border-0 outline-none h-full"
           ></span>
         </div>
 
@@ -157,12 +163,12 @@
           <input
             type="number"
             bind:value={numNames}
-            class="px-3 py-2 text-sm w-full lg:w-2/4 border-2 rounded-sm outline focus:border-[#0233BD] bg-[#F1F2F4] outline-none"
+            class="px-3 py-2 text-sm w-full md:w-2/4 border-2 rounded-sm outline focus:border-[#0233BD] bg-[#F1F2F4] outline-none"
           />
           <button
             type="button"
             on:click={selectName}
-            class="bg-[#0F62FE] rounded-md text-sm py-3 lg:py-0 text-white w-[70%] lg:w-[35%]"
+            class="bg-[#0F62FE] rounded-md text-sm py-3 md:py-0 text-white w-[70%] md:w-[35%]"
             >Select name(s) at random</button
           >
         </div>
@@ -170,7 +176,7 @@
 
       <!-- footer logo -->
       <div class="py-3 mt-10 mb-5 bg-[#F1F6FF] flex justify-center items-center gap-3">
-        <img src="/free-tools/name-picker.svg" class="w-[12%] lg:w-[9%]" alt="" />
+        <img src="/free-tools/name-picker.svg" class="w-[12%] md:w-[9%]" alt="" />
         {#if selectedNames.length > 0}
           <h1 class="text-[#0233BD] text-xl font-bold">Selected Names</h1>
         {/if}
@@ -189,10 +195,10 @@
           <ul>
             {#each selectedNames as name, index}
               <li class="py-2 border-b">
-                <div class="flex item-center gap-3 lg:gap-5 justify-center">
+                <div class="flex item-center gap-3 md:gap-5 justify-center">
                   <img src={avatarUrls[index]} alt="" class="w-7" />
                   <p
-                    class="font-medium text-sm lg:text-base w-[20%] lg:w-[10%] flex justify-center items-center"
+                    class="font-medium text-sm md:text-base w-[20%] md:w-[10%] flex justify-center items-center"
                   >
                     {name}
                   </p>
@@ -201,17 +207,17 @@
             {/each}
           </ul>
 
-          <div class="flex flex-wrap justify-between lg:justify-center items-center lg:gap-3 mt-3">
+          <div class="flex flex-wrap justify-between md:justify-center items-center md:gap-3 mt-3">
             <button
               type="button"
               on:click={resetEntry}
-              class="py-2 border text-xs lg:text-sm rounded-md w-[45%] lg:w-[20%]"
+              class="py-2 border text-xs md:text-sm rounded-md w-[45%] md:w-[20%]"
               >Reset Entries</button
             >
             <button
               type="button"
               on:click={selectName}
-              class="py-2 bg-[#0F62FE] rounded-md text-xs lg:text-sm text-white w-[45%] lg:w-[27%]"
+              class="py-2 bg-[#0F62FE] rounded-md text-xs md:text-sm text-white w-[45%] md:w-[27%]"
               >Select other names</button
             >
           </div>
