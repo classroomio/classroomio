@@ -3,34 +3,41 @@
 
   const tools = [
     {
+      slug: 'random-name-picker',
       src: '/free-tools/name-picker.svg',
       title: 'Random Name Picker',
       subText: 'Effortlessly choose names for class participation or group activities'
     },
     {
+      slug: 'timed-activity-timer',
       src: '/free-tools/activity-timer.svg',
       title: 'Timed Activity Timer',
       subText:
         'Stay on track and enhance productivity with our customizable timer for timed tasks, quizzes, and study sessions'
     },
     {
+      slug: 'question-of-the-day',
       src: '/free-tools/question-of-the-day.svg',
       title: 'Question of the day ',
       subText:
         "Find thought-provoking 'Question of the Day' to spark discussions and promote critical thinking"
     },
     {
+      slug: 'waec-practice-tool',
       src: '/free-tools/waec.svg',
       title: 'WAEC Practice tool',
       subText: 'Ace your WAEC exams with comprehensive study materials, past questions'
     },
+
     {
+      slug: 'jamb-practice-tool',
       src: '/free-tools/jamb.svg',
       title: 'JAMB Practice tool',
       subText:
         'Prepare for JAMB with past questions and instant feedback for effective exam readiness'
     },
     {
+      slug: 'tic-tac-toe',
       src: '/free-tools/tic-tac.svg',
       title: 'Tic tac toe game',
       subText:
@@ -67,32 +74,32 @@
         <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-0 z-0"
           src="/free-tools/waec.svg"
-          alt=""
+          alt="Waec logo"
         />
         <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[50px] z-10"
           src="/free-tools/question-of-the-day.svg"
-          alt=""
+          alt="Question of the day logo"
         />
         <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[100px] z-20"
           src="/free-tools/activity-timer.svg"
-          alt=""
+          alt="Activity timer logo"
         />
         <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[150px] z-30"
           src="/free-tools/name-picker.svg"
-          alt=""
+          alt="Name Picker logo"
         />
         <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[200px] z-40"
           src="/free-tools/tic-tac.svg"
-          alt=""
+          alt="Tic-tac logo"
         />
         <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[250px] z-50"
           src="/free-tools/jamb.svg"
-          alt=""
+          alt="Jamb logo"
         />
       </div>
     </div>
@@ -103,15 +110,18 @@
 
     <div class="flex justify-between gap-y-8 flex-wrap w-full lg:w-[70%] mt-10 mx-auto">
       {#each tools as tool}
-        <figure class="w-full flex lg:max-w-[370px] border rounded-md shadow-sm">
+        <a
+          href="/tools/${tool.slug}"
+          class="w-full flex lg:max-w-[370px] border rounded-md shadow-sm"
+        >
           <img class="w-[30%] rounded-l-md" src={tool.src} alt="" />
-          <figcaption class="bg-[#F5F8FE] p-5 rounded-r-md">
+          <div class="bg-[#F5F8FE] p-5 rounded-r-md">
             <h1 class="font-bold text-sm lg:text-base">{tool.title}</h1>
             <p class="text-xs text-gray-600 mt-1.5">
               {tool.subText}
             </p>
-          </figcaption>
-        </figure>
+          </div>
+        </a>
       {/each}
     </div>
   </div>
