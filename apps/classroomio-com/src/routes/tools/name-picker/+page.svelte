@@ -1,6 +1,4 @@
 <script>
-  import { PUBLIC_DICEBEAR_BASEURL } from '$env/static/public';
-
   let namesInput = '';
   let numNames = 0;
   let wordCount = 0;
@@ -77,7 +75,7 @@
 
   // function to generate a random avatar
   async function generateRandomAvatar(styleName, format = 'svg') {
-    const baseUrl = PUBLIC_DICEBEAR_BASEURL;
+    const baseUrl = 'https://api.dicebear.com/8.x/';
     const randomSeed = Math.random().toString(36).substring(7);
 
     try {
