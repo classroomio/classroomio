@@ -832,6 +832,58 @@
         "update": "Atualizar domínio",
         "custom": "Domínio personalizado",
         "domain": "Adicione seu próprio nome de domínio"
+      },
+      "customize-lms": {
+        "title": "Personalizar LMS",
+        "disabled": "desabilitado",
+        "enabled": "Habilitado",
+        "save": "Salvar alterações",
+        "apps": {
+          "title": "Aplicativos",
+          "poll": "Enquete",
+          "live_comment": "Comentários ao vivo"
+        },
+        "course": {
+          "title": "Curso",
+          "newsfeed": "Notícias",
+          "grading": "Classificação"
+        },
+        "dashboard": {
+          "title": "Painel",
+          "community": "Comunidade",
+          "exercises": "Exercícios",
+          "banner_image": "Imagem do banner",
+          "banner_image_btn": "Atualizar imagem do banner",
+          "banner_text": "Texto do banner",
+          "banner_text_label": "Atualizar texto do banner",
+          "banner_text_placeholder": "Escreva o texto aqui"
+        }
+      },
+      "customize_lms": {
+        "title": "Personalizar LMS",
+        "disabled": "desabilitado",
+        "enabled": "Habilitado",
+        "save": "Salvar alterações",
+        "apps": {
+          "title": "Aplicativos",
+          "poll": "Enquete",
+          "live_comment": "Comentários ao vivo"
+        },
+        "course": {
+          "title": "Curso",
+          "newsfeed": "Notícias",
+          "grading": "Classificação"
+        },
+        "dashboard": {
+          "title": "Painel",
+          "community": "Comunidade",
+          "exercises": "Exercícios",
+          "banner_image": "Imagem do banner",
+          "banner_image_btn": "Atualizar imagem do banner",
+          "banner_text": "Texto do banner",
+          "banner_text_label": "Atualizar texto do banner",
+          "banner_text_placeholder": "Escreva o texto aqui"
+        }
       }
     },
     "quiz": {
@@ -1068,6 +1120,12 @@
         "theme": {
           "heading": "Tema",
           "sub_heading": "Defina a cor da sua marca"
+        },
+        "customize_lms": {
+          "heading": "Personalizar LMS",
+          "sub_heading": "Personalize o LMS da sua organização",
+          "body": "Controle a experiência de aprendizagem dos seus alunos, explore o poder de ativar ou desativar guias e páginas, atualize o banner do LMS e os comentários no aplicativo para uma experiência de aprendizagem aprimorada",
+          "button": "Personalizar LMS"
         }
       }
     },

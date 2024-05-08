@@ -16,6 +16,7 @@ export const defaultCurrentOrgState: CurrentOrg = {
   memberId: '',
   role_id: '',
   landingpage: {},
+  customization: {},
   theme: '',
   organization_plan: []
 };

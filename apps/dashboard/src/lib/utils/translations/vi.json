@@ -832,6 +832,58 @@
         "update": "Cập nhật tên miền",
         "custom": "Tên miền tùy chọn",
         "domain": "Thêm tên miền của riêng bạn"
+      },
+      "customize-lms": {
+        "title": "Tùy chỉnh LMS",
+        "disabled": "tàn tật",
+        "enabled": "Đã bật",
+        "save": "Lưu thay đổi",
+        "apps": {
+          "title": "Ứng dụng",
+          "poll": "Thăm dò ý kiến",
+          "live_comment": "Bình luận trực tiếp"
+        },
+        "course": {
+          "title": "Khóa học",
+          "newsfeed": "Nguồn cấp tin tức",
+          "grading": "Chấm điểm"
+        },
+        "dashboard": {
+          "title": "bảng điều khiển",
+          "community": "Cộng đồng",
+          "exercises": "Bài tập",
+          "banner_image": "Hình ảnh biểu ngữ",
+          "banner_image_btn": "Cập nhật hình ảnh biểu ngữ",
+          "banner_text": "Văn bản biểu ngữ",
+          "banner_text_label": "Cập nhật văn bản biểu ngữ",
+          "banner_text_placeholder": "Viết văn bản ở đây"
+        }
+      },
+      "customize_lms": {
+        "title": "Tùy chỉnh LMS",
+        "disabled": "tàn tật",
+        "enabled": "Đã bật",
+        "save": "Lưu thay đổi",
+        "apps": {
+          "title": "Ứng dụng",
+          "poll": "Thăm dò ý kiến",
+          "live_comment": "Bình luận trực tiếp"
+        },
+        "course": {
+          "title": "Khóa học",
+          "newsfeed": "Nguồn cấp tin tức",
+          "grading": "Chấm điểm"
+        },
+        "dashboard": {
+          "title": "bảng điều khiển",
+          "community": "Cộng đồng",
+          "exercises": "Bài tập",
+          "banner_image": "Hình ảnh biểu ngữ",
+          "banner_image_btn": "Cập nhật hình ảnh biểu ngữ",
+          "banner_text": "Văn bản biểu ngữ",
+          "banner_text_label": "Cập nhật văn bản biểu ngữ",
+          "banner_text_placeholder": "Viết văn bản ở đây"
+        }
       }
     },
     "quiz": {
@@ -1068,6 +1120,12 @@
         "theme": {
           "heading": "chủ đề",
           "sub_heading": "Đặt màu thương hiệu của bạn"
+        },
+        "customize_lms": {
+          "heading": "Tùy chỉnh LMS",
+          "sub_heading": "Cá nhân hóa tổ chức của bạn LMS",
+          "body": "Kiểm soát trải nghiệm học tập của học sinh, khám phá khả năng bật hoặc tắt các tab và trang, cập nhật biểu ngữ LMS và nhận xét trong ứng dụng để cải thiện trải nghiệm học tập",
+          "button": "Tùy chỉnh LMS"
         }
       }
     },

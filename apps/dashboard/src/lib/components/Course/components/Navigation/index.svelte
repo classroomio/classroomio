@@ -15,7 +15,7 @@
   import { sideBar } from '$lib/components/Org/store';
   import { profile } from '$lib/utils/store/user';
   import { getIsLessonComplete } from '../Lesson/functions';
-  import { isFreePlan } from '$lib/utils/store/org';
+  import { currentOrg, isFreePlan } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
 
   export let path: string;
@@ -141,7 +141,10 @@
         label: $t('course.navItems.nav_news_feed'),
         to: getNavItemRoute($course.id),
         hideSortIcon: true,
-        isPaidFeature: false
+        isPaidFeature: false,
+        show() {
+          return isStudent ? $currentOrg?.customization?.course?.newsfeed : true;
+        }
       },
       {
         label: $t('course.navItems.nav_lessons'),
@@ -170,7 +173,10 @@
         label: $t('course.navItems.nav_marks'),
         to: getNavItemRoute($course.id, 'marks'),
         isPaidFeature: false,
-        hideSortIcon: true
+        hideSortIcon: true,
+        show() {
+          return isStudent ? $currentOrg?.customization?.course?.grading : true;
+        }
       },
       {
         label: $t('course.navItems.nav_people'),

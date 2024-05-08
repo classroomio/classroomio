@@ -832,6 +832,58 @@
         "update": "Domäne aktualisieren",
         "custom": "Benutzerdefinierten Domain",
         "domain": "Fügen Sie Ihren eigenen Domainnamen hinzu"
+      },
+      "customize-lms": {
+        "title": "LMS anpassen",
+        "disabled": "deaktiviert",
+        "enabled": "Ermöglicht",
+        "save": "Änderungen speichern",
+        "apps": {
+          "title": "Apps",
+          "poll": "Umfrage",
+          "live_comment": "Live-Kommentare"
+        },
+        "course": {
+          "title": "Kurs",
+          "newsfeed": "Neuigkeiten",
+          "grading": "Benotung"
+        },
+        "dashboard": {
+          "title": "Armaturenbrett",
+          "community": "Gemeinschaft",
+          "exercises": "Übungen",
+          "banner_image": "Bannerbild",
+          "banner_image_btn": "Bannerbild aktualisieren",
+          "banner_text": "Bannertext",
+          "banner_text_label": "Bannertext aktualisieren",
+          "banner_text_placeholder": "Schreiben Sie hier den Text"
+        }
+      },
+      "customize_lms": {
+        "title": "LMS anpassen",
+        "disabled": "deaktiviert",
+        "enabled": "Ermöglicht",
+        "save": "Änderungen speichern",
+        "apps": {
+          "title": "Apps",
+          "poll": "Umfrage",
+          "live_comment": "Live-Kommentare"
+        },
+        "course": {
+          "title": "Kurs",
+          "newsfeed": "Neuigkeiten",
+          "grading": "Benotung"
+        },
+        "dashboard": {
+          "title": "Armaturenbrett",
+          "community": "Gemeinschaft",
+          "exercises": "Übungen",
+          "banner_image": "Bannerbild",
+          "banner_image_btn": "Bannerbild aktualisieren",
+          "banner_text": "Bannertext",
+          "banner_text_label": "Bannertext aktualisieren",
+          "banner_text_placeholder": "Schreiben Sie hier den Text"
+        }
       }
     },
     "quiz": {
@@ -1068,6 +1120,12 @@
         "theme": {
           "heading": "Thema",
           "sub_heading": "Legen Sie Ihre Markenfarbe fest"
+        },
+        "customize_lms": {
+          "heading": "LMS anpassen",
+          "sub_heading": "Personalisieren Sie Ihr Organisations-LMS",
+          "body": "Kontrollieren Sie die Lernerfahrung Ihrer Schüler, entdecken Sie die Möglichkeit, Registerkarten und Seiten zu aktivieren oder zu deaktivieren, LMS-Banner und In-App-Kommentare zu aktualisieren, um die Lernerfahrung zu verbessern",
+          "button": "LMS anpassen"
         }
       }
     },

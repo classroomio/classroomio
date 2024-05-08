@@ -63,6 +63,41 @@ export interface OrgLandingPageJson {
     show: boolean;
   };
 }
+
+export interface OrgCustomLMS {
+  dashboard: {
+    community: boolean;
+    exercise: boolean;
+    bannerImage: string;
+    bannerText: string;
+  };
+  course: {
+    newsfeed: boolean;
+    grading: boolean;
+  };
+  apps: {
+    poll: boolean;
+    comments: boolean;
+  };
+}
+
+export let customLMSSettings: Writable<OrgCustomLMS> = writable({
+  dashboard: {
+    community: false,
+    exercise: false,
+    bannerImage: '',
+    bannerText: ''
+  },
+  course: {
+    newsfeed: false,
+    grading: false
+  },
+  apps: {
+    poll: true,
+    comments: false
+  }
+});
+
 export let landingPageSettings: Writable<OrgLandingPageJson> = writable({
   header: {
     title: 'Web Development Courses for',

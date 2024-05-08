@@ -17,6 +17,7 @@
   import { browser } from '$app/environment';
   import { course } from '$lib/components/Course/store';
   import { lesson } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { currentOrg } from '$lib/utils/store/org';
 
   let appBarRef: HTMLDivElement;
   let appContentRef: HTMLDivElement;
@@ -77,34 +78,38 @@
         <Settings size={24} class="carbon-icon dark:text-white lg:hidden" />
       </IconButton>
     </div>
+    {#if !$globalStore.isOrgSite || $currentOrg.customization.apps.comments}
+      <div class="mb-2 relative {getAppClass(APPS_CONSTANTS.APPS.COMMENTS, $apps.selectedApp)}">
+        <IconButton
+          toolTipProps={{ title: 'Comments', hotkeys: ['Ctrl/Command', '1'] }}
+          value={APPS_CONSTANTS.APPS.COMMENTS}
+          onClick={handleAppClick}
+          buttonClassName="relative"
+        >
+          <Chip
+            value={$lesson.totalComments}
+            className="absolute -top-1 right-0 bg-gray-100 text-gray-600 dark:bg-neutral-700 dark:text-white"
+          />
+          <SendAlt size={24} class="carbon-icon dark:text-white" />
+        </IconButton>
+      </div>
+    {/if}
 
-    <div class="mb-2 relative {getAppClass(APPS_CONSTANTS.APPS.COMMENTS, $apps.selectedApp)}">
-      <IconButton
-        toolTipProps={{ title: 'Comments', hotkeys: ['Ctrl/Command', '1'] }}
-        value={APPS_CONSTANTS.APPS.COMMENTS}
-        onClick={handleAppClick}
-        buttonClassName="relative"
-      >
-        <Chip
-          value={$lesson.totalComments}
-          className="absolute -top-1 right-0 bg-gray-100 text-gray-600 dark:bg-neutral-700 dark:text-white"
-        />
-        <SendAlt size={24} class="carbon-icon dark:text-white" />
-      </IconButton>
-    </div>
-    <div class="mb-2 {getAppClass(APPS_CONSTANTS.APPS.POLL, $apps.selectedApp)}">
-      <IconButton
-        toolTipProps={{ title: 'Poll', hotkeys: ['Ctrl/Command', '2'] }}
-        value={APPS_CONSTANTS.APPS.POLL}
-        onClick={handleAppClick}
-      >
-        <Chip
-          value={$course.polls.length}
-          className="absolute -top-1 right-0 bg-gray-100 text-gray-600 dark:bg-neutral-700 dark:text-white"
-        />
-        <ChartPie size={24} class="carbon-icon dark:text-white" />
-      </IconButton>
-    </div>
+    {#if !$globalStore.isOrgSite || $currentOrg.customization.apps.poll}
+      <div class="mb-2 {getAppClass(APPS_CONSTANTS.APPS.POLL, $apps.selectedApp)}">
+        <IconButton
+          toolTipProps={{ title: 'Poll', hotkeys: ['Ctrl/Command', '2'] }}
+          value={APPS_CONSTANTS.APPS.POLL}
+          onClick={handleAppClick}
+        >
+          <Chip
+            value={$course.polls.length}
+            className="absolute -top-1 right-0 bg-gray-100 text-gray-600 dark:bg-neutral-700 dark:text-white"
+          />
+          <ChartPie size={24} class="carbon-icon dark:text-white" />
+        </IconButton>
+      </div>
+    {/if}
     <!-- <div class="mb-2">
       <IconButton
         toolTipProps={{ title: 'QandA', hotkeys: ['A', '3'] }}

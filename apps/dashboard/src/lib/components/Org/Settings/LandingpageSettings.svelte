@@ -115,7 +115,7 @@
     }
   }
 
-  $: setDefault($currentOrg?.landingpage as OrgLandingPageJson);
+  $: setDefault($currentOrg?.landingpage as unknown as OrgLandingPageJson);
 </script>
 
 <Grid class="border-c rounded border-gray-200 dark:border-neutral-600 w-full mt-5 relative">

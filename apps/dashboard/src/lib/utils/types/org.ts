@@ -9,6 +9,7 @@ export interface CurrentOrg {
   landingpage: {
     [key: string]: unknown;
   };
+  customization: any;
   theme: string;
   organization_plan: {
     subscriptionId: string;

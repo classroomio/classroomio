@@ -11,11 +11,13 @@
   import { NavClasses } from '$lib/utils/constants/reusableClass';
   import { sideBar } from '$lib/components/Org/store';
   import { t } from '$lib/utils/functions/translations';
+  import { currentOrg } from '$lib/utils/store/org';
 
   interface sideLinks {
     name: string;
     icon: any;
     link: string;
+    enabled: boolean;
   }
 
   function isActive(pagePath: string, itemPath: string) {
@@ -35,22 +37,26 @@
     {
       name: $t('lms_navigation.home'),
       icon: HomeIcon,
-      link: '/lms'
+      link: '/lms',
+      enabled: true
     },
     {
       name: $t('lms_navigation.my_learning'),
       icon: CourseIcon,
-      link: '/lms/mylearning'
+      link: '/lms/mylearning',
+      enabled: true
     },
     {
       name: $t('lms_navigation.exercise'),
       icon: LicenseDraft,
-      link: '/lms/exercises'
+      link: '/lms/exercises',
+      enabled: $currentOrg?.customization?.dashboard?.exercise
     },
     {
       name: $t('lms_navigation.community'),
       icon: CommunityIcon,
-      link: '/lms/community'
+      link: '/lms/community',
+      enabled: $currentOrg?.customization?.dashboard?.community
     }
   ];
   const toggleSidebar = () => {
@@ -87,19 +93,21 @@
 
       <ul class="my-5">
         {#each sideLinks as item (item.name)}
-          <a href={item.link} class="text-black" on:click={toggleSidebar}>
-            <li
-              class="flex items-center py-3 px-4 mb-2 {NavClasses.item} {isActive(
-                $page.url.pathname,
-                `${item.link}`
-              )
-                ? NavClasses.active
-                : 'dark:text-white'}"
-            >
-              <svelte:component this={item.icon} size={24} class="carbon-icon dark:fill-[#fff]" />
-              <p class="dark:text-white ml-2">{item.name}</p>
-            </li>
-          </a>
+          {#if item.enabled}
+            <a href={item.link} class="text-black" on:click={toggleSidebar}>
+              <li
+                class="flex items-center py-3 px-4 mb-2 {NavClasses.item} {isActive(
+                  $page.url.pathname,
+                  `${item.link}`
+                )
+                  ? NavClasses.active
+                  : 'dark:text-white'}"
+              >
+                <svelte:component this={item.icon} size={24} class="carbon-icon dark:fill-[#fff]" />
+                <p class="dark:text-white ml-2">{item.name}</p>
+              </li>
+            </a>
+          {/if}
         {/each}
       </ul>
     </div>
