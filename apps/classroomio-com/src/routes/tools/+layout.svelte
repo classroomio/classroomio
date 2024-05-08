@@ -32,7 +32,7 @@
 <slot />
 
 <PageSignupCTA
-  header="Launch a Bootcamp in Minutes"
+  header="Launch Your Bootcamp in Minutes"
   subText="Don't wait, let's get you started."
   btnLabel="Sign me up"
   link="/signup"
