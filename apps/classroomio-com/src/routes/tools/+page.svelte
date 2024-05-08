@@ -51,25 +51,6 @@
   ].filter((item) => item.show);
 </script>
 
-<svelte:head>
-  <title>Free Tools | ClassroomIO</title>
-  <meta property="og:image" itemprop="image" content="" />
-  <meta property="og:title" content="Free Tools" />
-  <meta
-    property="og:description"
-    content="At ClassroomIO, we have built a suit of tools for anyone to use freely when training their students"
-  />
-
-  <meta property="og:image:secure_url" itemprop="image" content="" />
-
-  <meta name="twitter:title" content="Free Tools" />
-  <meta
-    name="twitter:description"
-    content="At ClassroomIO, we have built a suit of tools for anyone to use freely when training their students"
-  />
-  <meta name="twitter:image" content="" />
-</svelte:head>
-
 <section>
   <PageHeader>
     <div class="text-left md:text-center md:w-2/4 px-7 md:p-0 mx-auto">

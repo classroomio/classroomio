@@ -77,11 +77,7 @@
 
 <svelte:head>
   <title>Teach | ClassroomIO</title>
-  <meta
-    property="og:image"
-    itemprop="image"
-    content="https://classroomio.com/teach/teacher-banner.png"
-  />
+  <meta property="og:image" itemprop="image" content="https://brand.cdn.clsrio.com/og/teach.png" />
   <meta property="og:title" content="Teach on ClassroomIO" />
   <meta
     property="og:description"
@@ -91,7 +87,7 @@
   <meta
     property="og:image:secure_url"
     itemprop="image"
-    content="https://classroomio.com/teach/teacher-banner.png"
+    content="https://brand.cdn.clsrio.com/og/teach.png"
   />
 
   <meta name="twitter:title" content="Teach on ClassroomIO" />
@@ -99,7 +95,7 @@
     name="twitter:description"
     content="On ClassroomIO you can make side income while doing what you love."
   />
-  <meta name="twitter:image" content="https://classroomio.com/teach/teacher-banner.png" />
+  <meta name="twitter:image" content="https://brand.cdn.clsrio.com/og/teach.png" />
 </svelte:head>
 
 <section>
