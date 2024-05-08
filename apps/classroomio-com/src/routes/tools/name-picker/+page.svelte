@@ -99,6 +99,33 @@
   $: wordCount = namesInput?.split(',').filter((name) => name.trim())?.length ?? 0;
 </script>
 
+<svelte:head>
+  <title>Random Name Picker | ClassroomIO</title>
+  <meta
+    property="og:image"
+    itemprop="image"
+    content="https://brand.cdn.clsrio.com/og/free-tools.png"
+  />
+  <meta property="og:title" content="Random Name Picker" />
+  <meta
+    property="og:description"
+    content="Use this online name picker to draw a random name from a list of names."
+  />
+
+  <meta
+    property="og:image:secure_url"
+    itemprop="image"
+    content="https://brand.cdn.clsrio.com/og/free-tools.png"
+  />
+
+  <meta name="twitter:title" content="Random Name Picker" />
+  <meta
+    name="twitter:description"
+    content="Use this online name picker to draw a random name from a list of names."
+  />
+  <meta name="twitter:image" content="https://brand.cdn.clsrio.com/og/free-tools.png" />
+</svelte:head>
+
 <section class="mt-[30%] px-5 md:px-0 md:mt-[10%]">
   <header class="md:w-2/4 mx-auto text-center">
     <img
