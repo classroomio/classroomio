@@ -51,6 +51,7 @@
 
     wordCount = namesArray.length;
     const shuffledNames = shuffleArray(namesArray);
+
     selectedNames = shuffledNames.slice(0, numNames);
     avatarUrls = []; // reset avatar URLs
     avatarUrlsFetched = false; // reset avatarUrlsFetched flag
@@ -94,6 +95,8 @@
       return null;
     }
   }
+
+  $: wordCount = namesInput?.split(',').filter((name) => name.trim())?.length ?? 0;
 </script>
 
 <section class="mt-[30%] px-5 md:px-0 md:mt-[10%]">
@@ -151,7 +154,7 @@
         <p
           class="rounded-xl w-[80px] mt-1 py-1 bg-[#D9E0F5] text-center text-[#0F62FE] text-[10px] font-semibold"
         >
-          word count: {wordCount}
+          name count: {wordCount}
         </p>
       </div>
       <p class="py-4 border-b text-xs">Each name must be separated by a comma</p>

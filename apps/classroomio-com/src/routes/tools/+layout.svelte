@@ -1,3 +1,7 @@
+<script>
+  import PageSignupCTA from '$lib/PageSignupCTA/index.svelte';
+</script>
+
 <svelte:head>
   <title>Free Tools | ClassroomIO</title>
   <meta
@@ -24,3 +28,13 @@
   />
   <meta name="twitter:image" content="https://brand.cdn.clsrio.com/og/free-tools.png" />
 </svelte:head>
+
+<slot />
+
+<PageSignupCTA
+  header="Launch a Bootcamp in Minutes"
+  subText="Don't wait, let's get you started."
+  btnLabel="Sign me up"
+  link="/signup"
+  demo={false}
+/>

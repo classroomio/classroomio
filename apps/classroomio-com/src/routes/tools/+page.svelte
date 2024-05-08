@@ -63,11 +63,11 @@
       </p>
 
       <div class="flex relative md:w-[50%] my-3 md:mt-10 mx-auto">
-        <img
+        <!-- <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-0 z-0"
           src="/free-tools/waec.svg"
           alt="Waec logo"
-        />
+        /> -->
         <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[50px] z-10"
           src="/free-tools/question-of-the-day.svg"
@@ -88,11 +88,11 @@
           src="/free-tools/tic-tac.svg"
           alt="Tic tac logo"
         />
-        <img
+        <!-- <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[250px] z-50"
           src="/free-tools/jamb.svg"
           alt="Jamb logo"
-        />
+        /> -->
       </div>
     </div>
   </PageHeader>
@@ -104,7 +104,7 @@
       {#each tools as tool}
         <a
           href="/tools/{tool.slug}"
-          class="w-full flex md:max-w-[370px] border rounded-md shadow-sm"
+          class="w-full flex md:max-w-[370px] border rounded-md shadow-sm hover:scale-95 transition-all ease-in-out"
         >
           <img class="w-[30%] rounded-l-md" src={tool.src} alt="" />
           <div class="bg-[#F5F8FE] p-5 rounded-r-md">
