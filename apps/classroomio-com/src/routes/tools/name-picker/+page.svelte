@@ -1,13 +1,13 @@
-<script>
+<script lang="ts">
   let namesInput = '';
   let numNames = 0;
   let wordCount = 0;
-  let selectedNames = [];
-  let avatarUrls = [];
+  let selectedNames: string[] = [];
+  let avatarUrls: string[] = [];
   let avatarUrlsFetched = false;
 
   // function to shuffle an array
-  const shuffleArray = (array) => {
+  const shuffleArray = (array: string[]) => {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [array[i], array[j]] = [array[j], array[i]];
@@ -62,19 +62,21 @@
       // generate avatar for each selected name
       for (const name of selectedNames) {
         const avatarUrl = await generateRandomAvatar('pixel-art');
-        avatarUrls.push(avatarUrl);
+        if (avatarUrl) {
+          avatarUrls.push(avatarUrl);
+        }
       }
 
       // set avatarUrlsFetched to true after avatars are fetched
       avatarUrlsFetched = true;
     } catch (error) {
-      console.error('Error fetching avatars:', error.message);
+      console.error('Error fetching avatars:', error);
       avatarUrlsFetched = true;
     }
   };
 
   // function to generate a random avatar
-  async function generateRandomAvatar(styleName, format = 'svg') {
+  async function generateRandomAvatar(styleName: string, format = 'svg') {
     const baseUrl = 'https://api.dicebear.com/8.x/';
     const randomSeed = Math.random().toString(36).substring(7);
 
@@ -88,7 +90,7 @@
 
       return response.url;
     } catch (error) {
-      console.error('Error generating random avatar:', error.message);
+      console.error('Error generating random avatar:', error);
       return null;
     }
   }
