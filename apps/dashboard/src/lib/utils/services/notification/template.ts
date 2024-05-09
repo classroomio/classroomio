@@ -145,7 +145,7 @@ export const withEmailTemplate = (content: string) =>
     <div class="gutter" style="padding: 30px">
       <a href="https://classroomio.com" target="_blank">
         <img
-          src="https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/classroomio-logo-full.png"
+          src="https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/cio-logo-full.png"
           alt="ClassroomIO Logo"
       /></a>
     </div>
