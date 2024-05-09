@@ -2,6 +2,7 @@
   import { VARIANTS } from '../PrimaryButton/constants';
   import GradeLoader from './GradeLoader.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { t } from '$lib/utils/functions/translations';
 
   export let reason = '';
   export let isLoading = false;
@@ -22,14 +23,14 @@
     <div class="flex space-x-2">
       <PrimaryButton
         variant={VARIANTS.CONTAINED_SUCCESS}
-        label="Accept"
+        label={$t('course.navItem.submissions.grading_modal.accept_grade')}
         className="rounded-none py-1 px-2"
         disablePadding={true}
         onClick={acceptGrade}
       />
       <PrimaryButton
         variant={VARIANTS.CONTAINED_DANGER}
-        label="Reject"
+        label={$t('course.navItem.submissions.grading_modal.reject_grade')}
         className="rounded-none py-1 px-2"
         disablePadding={true}
         onClick={rejectGrade}

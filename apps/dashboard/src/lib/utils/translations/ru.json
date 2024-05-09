@@ -447,6 +447,20 @@
           "submitted": "Поданный",
           "in_progress": "В ходе выполнения",
           "graded": "Оцененный"
+        },
+        "grading_modal": {
+          "details": "Подробности",
+          "early": "Рано",
+          "late": "Поздно",
+          "total_grade": "Общая оценка",
+          "student": "Студент",
+          "status": "Положение дел",
+          "add_comment": "Добавить комментарий",
+          "add_comment_placeholder": "напишите свои комментарии",
+          "grade_with_ai": "Оценка с помощью ИИ",
+          "submit_grades": "Отправить оценки",
+          "accept_grade": "Принимать",
+          "reject_grade": "Отклонять"
         }
       },
       "attendance": {

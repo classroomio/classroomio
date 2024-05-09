@@ -4,7 +4,7 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import Preview from './Preview.svelte';
-  import { SELECTABLE_STATUS } from './constants';
+  import { STATUS } from './constants';
   import { snackbar } from '$lib/components/Snackbar/store';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import { Dropdown, Tag } from 'carbon-components-svelte';
@@ -20,6 +20,21 @@
   // export let submissionId;
   export let data = {};
   export let updateStatus = () => {};
+
+  const SELECTABLE_STATUS = [
+    {
+      id: STATUS.SUBMITTED,
+      text: $t('course.navItem.submissions.submission_status.submitted')
+    },
+    {
+      id: STATUS.IN_PROGRESS,
+      text: $t('course.navItem.submissions.submission_status.in_progress')
+    },
+    {
+      id: STATUS.GRADED,
+      text: $t('course.navItem.submissions.submission_status.graded')
+    }
+  ];
 
   let status = SELECTABLE_STATUS[0];
   let selectedId = status.id;
@@ -88,7 +103,9 @@
             const answer = data.questionAnswers.find((q) => q.question_id === id);
             reasons = {
               ...reasons,
-              [id]: `This grade was allocated because he got the answer after ${answer.answers.length} tries`
+              [id]: `This grade was allocated because he got the answer after ${
+                answer.answers.length
+              } ${answer.answers.length > 1 ? 'tries' : 'try'} `
             };
             data.questionAnswerByPoint[id] = points / answer.answers.length;
           } else {
@@ -176,17 +193,23 @@
         class="hover:bg-gray-100 dark:bg-neutral-800 border-b border-t-0 border-l-0 border-r-0 border-gray-300 p-3"
       >
         <p class="dark:text-white font-bold text-base">
-          Details:
+          {$t('course.navItem.submissions.grading_modal.details')}
           {#if data.isEarly}
-            <span class="ml-2 text-sm badge rounded-sm px-2 bg-green-500 text-white"> early </span>
+            <span class="ml-2 text-sm badge rounded-sm px-2 bg-green-500 text-white">
+              {$t('course.navItem.submissions.grading_modal.early')}</span
+            >
           {:else}
-            <span class="ml-2 badge text-sm rounded-sm px-2 bg-red-500 text-white"> late </span>
+            <span class="ml-2 badge text-sm rounded-sm px-2 bg-red-500 text-white">
+              {$t('course.navItem.submissions.grading_modal.late')}
+            </span>
           {/if}
         </p>
       </div>
 
       <div class="flex items-center space-x-4 text-sm px-3 py-2">
-        <p class="dark:text-white text-sm text-gray-500 font-semibold">Total grade:</p>
+        <p class="dark:text-white text-sm text-gray-500 font-semibold">
+          {$t('course.navItem.submissions.grading_modal.total_grade')}:
+        </p>
 
         <Tag
           class="dark:text-white font-semibold text-black bg-gray-100 dark:bg-neutral-700 rounded-md w-fit"
@@ -202,7 +225,9 @@
         </div>
       </div> -->
       <div class="flex items-center space-x-4 text-sm px-3 py-2">
-        <p class="dark:text-white text-sm text-gray-500 font-semibold">Student:</p>
+        <p class="dark:text-white text-sm text-gray-500 font-semibold">
+          {$t('course.navItem.submissions.grading_modal.student')}:
+        </p>
         {#if data.student}
           <div
             class="flex flex-row justify-center items-center bg-gray-100 dark:bg-neutral-700 rounded-md p-[6px]"
@@ -227,7 +252,9 @@
       </div> -->
 
       <div class="flex flex-col items-start text-sm px-3 py-2">
-        <p class="dark:text-white text-gray-500 font-semibold">Status:</p>
+        <p class="dark:text-white text-gray-500 font-semibold">
+          {$t('course.navItem.submissions.grading_modal.status')}:
+        </p>
         <Dropdown
           bind:selectedId
           items={SELECTABLE_STATUS}
@@ -237,11 +264,13 @@
       </div>
 
       <div class="flex flex-col items-start text-sm px-3 py-2">
-        <p class="dark:text-white text-gray-500 font-semibold">Add comment:</p>
+        <p class="dark:text-white text-gray-500 font-semibold">
+          {$t('course.navItem.submissions.grading_modal.add_comment')}:
+        </p>
         <TextArea
           bgColor="bg-gray-100 dark:bg-neutral-700"
           className="font-semibold"
-          placeholder="write your comments"
+          placeholder={$t('course.navItem.submissions.grading_modal.add_comment_placeholder')}
           bind:value={data.feedback}
         />
       </div>
@@ -253,14 +282,16 @@
           className="space-x-3 py-3 px-8 w-full "
         >
           <img src="/ai.svg" alt="ai" />
-          <p class="font-semibold text-sm">Grade with AI</p>
+          <p class="font-semibold text-sm">
+            {$t('course.navItem.submissions.grading_modal.grade_with_ai')}
+          </p>
         </PrimaryButton>
         <PrimaryButton
           onClick={() => {
             handleSave(data);
             onClose();
           }}
-          label="Submit Grades"
+          label={$t('course.navItem.submissions.grading_modal.submit_grades')}
           variant={VARIANTS.CONTAINED}
           className="py-3 px-8 w-full"
         />

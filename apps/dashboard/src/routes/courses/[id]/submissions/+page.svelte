@@ -344,7 +344,7 @@
   {handleSave}
   {updateStatus}
   {submissionId}
-  {isGradeWithAI}
+  bind:isGradeWithAI
 />
 
 <RoleBasedSecurity allowedRoles={[1, 2]}>

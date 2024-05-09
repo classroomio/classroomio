@@ -447,6 +447,20 @@
           "submitted": "Submetido",
           "in_progress": "Em andamento",
           "graded": "Classificado"
+        },
+        "grading_modal": {
+          "details": "Detalhes",
+          "early": "Cedo",
+          "late": "Tarde",
+          "total_grade": "Nota total",
+          "student": "Estudante",
+          "status": "Status",
+          "add_comment": "Adicionar comentário",
+          "add_comment_placeholder": "escreva seus comentários",
+          "grade_with_ai": "Nota com IA",
+          "submit_grades": "Enviar notas",
+          "accept_grade": "Aceitar",
+          "reject_grade": "Rejeitar"
         }
       },
       "attendance": {

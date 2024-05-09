@@ -447,6 +447,20 @@
           "submitted": "प्रस्तुत",
           "in_progress": "प्रगति पर है",
           "graded": "ग्रेड दिया गया"
+        },
+        "grading_modal": {
+          "details": "विवरण",
+          "early": "जल्दी",
+          "late": "देर",
+          "total_grade": "कुल ग्रेड",
+          "student": "विद्यार्थी",
+          "status": "स्थिति",
+          "add_comment": "टिप्पणी जोड़ना",
+          "add_comment_placeholder": "अपनी टिप्पणियाँ लिखें",
+          "grade_with_ai": "एआई के साथ ग्रेड",
+          "submit_grades": "ग्रेड जमा करें",
+          "accept_grade": "स्वीकार करना",
+          "reject_grade": "अस्वीकार करना"
         }
       },
       "attendance": {
