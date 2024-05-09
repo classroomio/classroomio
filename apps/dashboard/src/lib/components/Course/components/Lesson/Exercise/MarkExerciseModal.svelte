@@ -15,6 +15,7 @@
   export let open = false;
   export let onClose = () => {};
   export let handleSave = () => {};
+  export let isGradeWithAI = false;
 
   // export let submissionId;
   export let data = {};
@@ -22,7 +23,6 @@
 
   let status = SELECTABLE_STATUS[0];
   let selectedId = status.id;
-  let isGradeWithAI = false;
   let reasons = {};
   let isLoading = false;
   let hasCalled = false;

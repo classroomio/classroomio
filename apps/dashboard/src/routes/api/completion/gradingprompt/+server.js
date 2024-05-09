@@ -39,7 +39,6 @@ export async function POST({ request }) {
 
         The array you need to grade is below: 
         ${prompt}
-
         `
       }
     ],

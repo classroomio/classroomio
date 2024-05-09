@@ -26,7 +26,6 @@
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { browser } from '$app/environment';
   import { t } from '$lib/utils/functions/translations.js';
-  import { isGradeWithAI } from '$lib/components/Course/components/Lesson/Exercise/store.js';
 
   type items = {
     id: number;
@@ -62,6 +61,7 @@
   let submissionIdData: { [key: number]: any } = {};
   let submissionId: string | number | null;
   let openExercise = false;
+  let isGradeWithAI = false;
 
   const submissionStatus: { [key: number]: string } = {
     1: $t('course.navItem.submissions.submission_status.submitted'),
@@ -177,7 +177,7 @@
   }
 
   function handleModalClose() {
-    $isGradeWithAI = false;
+    isGradeWithAI = false;
     goto($page.url.pathname);
   }
 
@@ -344,6 +344,7 @@
   {handleSave}
   {updateStatus}
   {submissionId}
+  {isGradeWithAI}
 />
 
 <RoleBasedSecurity allowedRoles={[1, 2]}>
