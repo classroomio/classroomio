@@ -26,7 +26,6 @@
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { browser } from '$app/environment';
   import { t } from '$lib/utils/functions/translations.js';
-  import { isGradeWithAI } from '$lib/components/Course/components/Lesson/Exercise/store.js';
 
   type items = {
     id: number;
@@ -62,6 +61,7 @@
   let submissionIdData: { [key: number]: any } = {};
   let submissionId: string | number | null;
   let openExercise = false;
+  let isGradeWithAI = false;
 
   const submissionStatus: { [key: number]: string } = {
     1: $t('course.navItem.submissions.submission_status.submitted'),
@@ -177,7 +177,7 @@
   }
 
   function handleModalClose() {
-    $isGradeWithAI = false;
+    isGradeWithAI = false;
     goto($page.url.pathname);
   }
 
@@ -232,8 +232,12 @@
     }
   }
 
-  async function handleSave(submission: { questionAnswerByPoint: any; questionAnswers: any }) {
-    const { questionAnswerByPoint, questionAnswers } = submission;
+  async function handleSave(submission: {
+    questionAnswerByPoint: any;
+    questionAnswers: any;
+    feedback: any;
+  }) {
+    const { questionAnswerByPoint, questionAnswers, feedback } = submission;
 
     let totalPoints = 0;
 
@@ -251,7 +255,8 @@
 
     updateSubmission({
       id: submissionId,
-      total: totalPoints
+      total: totalPoints,
+      feedback: feedback
     }).then((res) => console.log('Updated submission', res));
 
     snackbar.success('snackbar.submissions.success.grading');
@@ -270,7 +275,8 @@
     const sectionById: { [key: number]: sectionType[] } = {};
     if (submissions) {
       for (const submission of submissions) {
-        const { id, created_at, exercise, course, answers, groupmember, status_id } = submission;
+        const { id, created_at, exercise, course, answers, groupmember, status_id, feedback } =
+          submission;
 
         const isEarly = isSubmissionEarly(created_at, exercise.due_by);
 
@@ -278,6 +284,7 @@
           id,
           statusId: status_id,
           isEarly,
+          feedback,
           submittedAt: formatDate(created_at),
           exercise: {
             id: exercise.id,
@@ -298,6 +305,7 @@
         submissionIdData[id] = {
           id,
           status_id,
+          feedback,
           isEarly,
           title: exercise.title,
           student: submissionItem.student,
@@ -336,6 +344,7 @@
   {handleSave}
   {updateStatus}
   {submissionId}
+  bind:isGradeWithAI
 />
 
 <RoleBasedSecurity allowedRoles={[1, 2]}>

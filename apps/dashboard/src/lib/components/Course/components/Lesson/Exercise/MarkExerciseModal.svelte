@@ -3,26 +3,40 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import Preview from './Preview.svelte';
-  import { SELECTABLE_STATUS } from './constants';
+  import { STATUS } from './constants';
   import { snackbar } from '$lib/components/Snackbar/store';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import { Dropdown, Tag } from 'carbon-components-svelte';
   import { useCompletion } from 'ai/svelte';
   import { QUESTION_TYPE } from '$lib/components/Question/constants';
   import { t } from '$lib/utils/functions/translations';
-  // import { isGradeWithAI } from './store';
 
   export let open = false;
   export let onClose = () => {};
   export let handleSave = () => {};
+  export let isGradeWithAI = false;
 
   // export let submissionId;
   export let data = {};
   export let updateStatus = () => {};
 
+  const SELECTABLE_STATUS = [
+    {
+      id: STATUS.SUBMITTED,
+      text: $t('course.navItem.submissions.submission_status.submitted')
+    },
+    {
+      id: STATUS.IN_PROGRESS,
+      text: $t('course.navItem.submissions.submission_status.in_progress')
+    },
+    {
+      id: STATUS.GRADED,
+      text: $t('course.navItem.submissions.submission_status.graded')
+    }
+  ];
+
   let status = SELECTABLE_STATUS[0];
   let selectedId = status.id;
-  let isGradeWithAI = false;
   let reasons = {};
   let isLoading = false;
   let hasCalled = false;
@@ -52,7 +66,7 @@
       total
     });
 
-    snackbar.success(`${$t('snackbar.exercise.submission_updated')} '${status.label}'`);
+    snackbar.success(`snackbar.exercise.submission_updated '${status.text}'`);
   }
 
   function setStatus(data) {
@@ -72,53 +86,43 @@
   const { input, handleSubmit, completion } = useCompletion({
     api: '/api/completion/gradingprompt',
     onFinish: async () => {
-      console.log('response', $completion);
-      isLoading = false;
-      // try {
-      //   const aiResponses = JSON.parse($completion);
+      try {
+        const responseData = $completion.replace('```json', '').replace('```', '');
 
-      //   // if (!Array.isArray(aiResponses)) {
-      //   //   console.error();
-      //   //   return;
-      //   // }
-      //   console.log('response', aiResponses);
-      // } catch (error) {
-      //   console.error('Error', error);
-      // } finally {
-      //   isLoading = false;
-      // }
+        // Parse the modified response data as JSON
+        const aiResponses = JSON.parse(responseData);
+
+        if (!Array.isArray(aiResponses)) {
+          return;
+        }
+        data?.questions.forEach((question) => {
+          const { id, points, question_type_id } = question;
+
+          if (question_type_id !== QUESTION_TYPE.TEXTAREA) {
+            const answer = data.questionAnswers.find((q) => q.question_id === id);
+            reasons = {
+              ...reasons,
+              [id]: `This grade was allocated because he got the answer after ${
+                answer.answers.length
+              } ${answer.answers.length > 1 ? 'tries' : 'try'} `
+            };
+            data.questionAnswerByPoint[id] = points / answer.answers.length;
+          } else {
+            const graded = aiResponses.find((res) => res.id === id);
+            reasons = {
+              ...reasons,
+              [id]: `${graded?.explanation}`
+            };
+            data.questionAnswerByPoint[id] = graded.score;
+          }
+        });
+      } catch (error) {
+        console.error('Error', error);
+      } finally {
+        isLoading = false;
+      }
     }
   });
-
-  // const generateReasonAndPoints = async (id, question, point, type) => {
-  //   // this function would receive the oncompletion
-  //   try {
-  //     // this would be an foreach loop
-  //     const answer = data.questionAnswers.find((q) => q.question_id === id);
-
-  //     if (type !== 'Paragraph') {
-  //       reasons = {
-  //         ...reasons,
-  //         [id]: `This grade was allocated because he got the answer after ${answer.answers.length} tries`
-  //       };
-  //       return (data.questionAnswerByPoint[id] = point / answer.answers.length);
-  //     } else if (!hasCalled) {
-  //       $input = JSON.stringify({ question, answer: answer.open_answer, point });
-
-  //       handleSubmit({ preventDefault: () => {} });
-  //       hasCalled = true;
-  //       data.questionAnswerByPoint[id] = Math.floor(Math.random() * point);
-
-  //       reasons = {
-  //         ...reasons,
-  //         [id]: `This reason would be given by ai for question with id ${id}`
-  //       };
-  //       return data.questionAnswerByPoint[id];
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
 
   function gradeWithAI() {
     isGradeWithAI = true;
@@ -134,9 +138,8 @@
           point: q.points
         };
       });
-    console.log(paragraphAiInput);
+
     $input = JSON.stringify(paragraphAiInput);
-    console.log('input value', $input);
     handleSubmit({ preventDefault: () => {} });
   }
 
@@ -168,11 +171,6 @@
   headerClass="py-2"
   labelClass="text-base font-semibold"
 >
-  {#if isLoading}
-    <div class="absolute w-full h-full bg-black/60">
-      <p>Grading...</p>
-    </div>
-  {/if}
   <div class="w-full h-full">
     <Preview
       questions={Array.isArray(data.questions)
@@ -185,6 +183,7 @@
       bind:grades={data.questionAnswerByPoint}
       bind:reasons
       bind:isGradeWithAI
+      bind:isLoading
     />
   </div>
   <div class="ml-4 w-2/5 sticky top-0">
@@ -193,17 +192,23 @@
         class="hover:bg-gray-100 dark:bg-neutral-800 border-b border-t-0 border-l-0 border-r-0 border-gray-300 p-3"
       >
         <p class="dark:text-white font-bold text-base">
-          Details:
+          {$t('course.navItem.submissions.grading_modal.details')}
           {#if data.isEarly}
-            <span class="ml-2 text-sm badge rounded-sm px-2 bg-green-500 text-white"> early </span>
+            <span class="ml-2 text-sm badge rounded-sm px-2 bg-green-500 text-white">
+              {$t('course.navItem.submissions.grading_modal.early')}</span
+            >
           {:else}
-            <span class="ml-2 badge text-sm rounded-sm px-2 bg-red-500 text-white"> late </span>
+            <span class="ml-2 badge text-sm rounded-sm px-2 bg-red-500 text-white">
+              {$t('course.navItem.submissions.grading_modal.late')}
+            </span>
           {/if}
         </p>
       </div>
 
       <div class="flex items-center space-x-4 text-sm px-3 py-2">
-        <p class="dark:text-white text-sm text-gray-500 font-semibold">Total grade:</p>
+        <p class="dark:text-white text-sm text-gray-500 font-semibold">
+          {$t('course.navItem.submissions.grading_modal.total_grade')}:
+        </p>
 
         <Tag
           class="dark:text-white font-semibold text-black bg-gray-100 dark:bg-neutral-700 rounded-md w-fit"
@@ -219,7 +224,9 @@
         </div>
       </div> -->
       <div class="flex items-center space-x-4 text-sm px-3 py-2">
-        <p class="dark:text-white text-sm text-gray-500 font-semibold">Student:</p>
+        <p class="dark:text-white text-sm text-gray-500 font-semibold">
+          {$t('course.navItem.submissions.grading_modal.student')}:
+        </p>
         {#if data.student}
           <div
             class="flex flex-row justify-center items-center bg-gray-100 dark:bg-neutral-700 rounded-md p-[6px]"
@@ -244,7 +251,9 @@
       </div> -->
 
       <div class="flex flex-col items-start text-sm px-3 py-2">
-        <p class="dark:text-white text-gray-500 font-semibold">Status:</p>
+        <p class="dark:text-white text-gray-500 font-semibold">
+          {$t('course.navItem.submissions.grading_modal.status')}:
+        </p>
         <Dropdown
           bind:selectedId
           items={SELECTABLE_STATUS}
@@ -254,11 +263,14 @@
       </div>
 
       <div class="flex flex-col items-start text-sm px-3 py-2">
-        <p class="dark:text-white text-gray-500 font-semibold">Add comment:</p>
+        <p class="dark:text-white text-gray-500 font-semibold">
+          {$t('course.navItem.submissions.grading_modal.add_comment')}:
+        </p>
         <TextArea
           bgColor="bg-gray-100 dark:bg-neutral-700"
           className="font-semibold"
-          placeholder="write your comments"
+          placeholder={$t('course.navItem.submissions.grading_modal.add_comment_placeholder')}
+          bind:value={data.feedback}
         />
       </div>
 
@@ -269,14 +281,16 @@
           className="space-x-3 py-3 px-8 w-full "
         >
           <img src="/ai.svg" alt="ai" />
-          <p class="font-semibold text-sm">Grade with AI</p>
+          <p class="font-semibold text-sm">
+            {$t('course.navItem.submissions.grading_modal.grade_with_ai')}
+          </p>
         </PrimaryButton>
         <PrimaryButton
           onClick={() => {
             handleSave(data);
             onClose();
           }}
-          label="Submit Grades"
+          label={$t('course.navItem.submissions.grading_modal.submit_grades')}
           variant={VARIANTS.CONTAINED}
           className="py-3 px-8 w-full"
         />

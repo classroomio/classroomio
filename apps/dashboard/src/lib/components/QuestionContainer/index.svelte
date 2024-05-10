@@ -42,7 +42,9 @@
       class="flex justify-between items-center border-gray border-t-2 border-r-0 border-b-0 border-l-0 p-2"
     >
       <div class="flex items-center w-40">
-        <p class="dark:text-white text-sm mr-2">{$t('course.navItem.lessons.exercises.new_exercise_modal.points')}:</p>
+        <p class="dark:text-white text-sm mr-2">
+          {$t('course.navItem.lessons.exercises.new_exercise_modal.points')}:
+        </p>
         <TextField
           placeholder={$t('course.navItem.lessons.exercises.new_exercise_modal.points')}
           bind:value={points}

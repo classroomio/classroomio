@@ -447,6 +447,20 @@
           "submitted": "Enviado",
           "in_progress": "En curso",
           "graded": "Calificado"
+        },
+        "grading_modal": {
+          "details": "Detalles",
+          "early": "Temprano",
+          "late": "Tarde",
+          "total_grade": "Nota total",
+          "student": "Alumno",
+          "status": "Estado",
+          "add_comment": "Agregar comentario",
+          "add_comment_placeholder": "escribe tus comentarios",
+          "grade_with_ai": "Calificar con IA",
+          "submit_grades": "Enviar calificaciones",
+          "accept_grade": "Aceptar",
+          "reject_grade": "Rechazar"
         }
       },
       "attendance": {
