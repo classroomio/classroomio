@@ -27,6 +27,7 @@
       triggerSendEmail(NOTIFICATION_NAME.VERIFY_EMAIL, {
         to: $profile.email,
         profileId: $profile.id,
+        fullname: $profile.fullname,
         orgSiteName: $currentOrg.siteName
       });
 

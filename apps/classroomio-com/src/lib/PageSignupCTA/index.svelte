@@ -40,8 +40,11 @@
 
 <style>
   .grad {
-    background: rgb(51, 16, 71);
-    background: radial-gradient(circle at 50% 100%, rgba(51, 16, 71, 1) 1%, rgba(2, 0, 36, 1) 100%);
+    /* background: rgb(2, 51, 189);
+    background: radial-gradient(circle at 50% 100%, rgba(2, 51, 189, 1) 1%, rgb(4, 2, 56) 100%); */
     background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-image: url('https://brand.cdn.clsrio.com/cta-bg.png');
   }
 </style>

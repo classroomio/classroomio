@@ -25,7 +25,7 @@
     siteName?: string;
     goal?: string;
     source?: string;
-    locale?: string;
+    locale?: LOCALE;
     metadata?: {};
   }
 
@@ -39,7 +39,7 @@
     fullname: '',
     orgName: '',
     siteName: '',
-    locale: ''
+    locale: LOCALE.EN
   };
   let errors: OnboardingField = {};
   let progress = 50;
@@ -212,6 +212,7 @@
       triggerSendEmail(NOTIFICATION_NAME.VERIFY_EMAIL, {
         to: $profile.email,
         profileId: $profile.id,
+        fullname: $profile.fullname,
         orgSiteName: fields.siteName
       });
 
