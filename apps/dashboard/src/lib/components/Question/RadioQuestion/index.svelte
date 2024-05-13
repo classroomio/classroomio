@@ -6,6 +6,7 @@
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import Grade from '$lib/components/Question/Grade.svelte';
   import { t } from '$lib/utils/functions/translations';
+  import ReasonBox from '../ReasonBox.svelte';
 
   export let title = '';
   export let index = 1;
@@ -24,6 +25,12 @@
   export let disableGrading = false;
   export let labelClassName = '';
   export let disableOptContainerMargin = false;
+  export let isGradeWithAI = false;
+  export let reason;
+  export let isLoading = false;
+  export let hideGrading = false;
+
+  let gradeWithAI = false;
 
   function getRadioVal(form, name) {
     let val;
@@ -61,6 +68,18 @@
 
     return '';
   }
+
+  function acceptGrade() {
+    gradeWithAI = false;
+  }
+  function rejectGrade() {
+    gradeWithAI = false;
+    grade = 0;
+  }
+
+  $: {
+    gradeWithAI = isGradeWithAI;
+  }
 </script>
 
 <form on:submit|preventDefault={handleFormSubmit}>
@@ -73,14 +92,16 @@
         </span>
       </svelte:fragment>
     </HtmlRender>
-    <Grade {gradeMax} bind:grade {disableGrading} />
+    {#if !hideGrading}
+      <Grade {gradeMax} bind:grade {disableGrading} />
+    {/if}
   </div>
 
   {#if code}
     <CodeSnippet {code} />
   {/if}
 
-  <div class={!disableOptContainerMargin && 'ml-4'}>
+  <div class={disableOptContainerMargin ? '' : 'ml-4'}>
     {#each options as option}
       <button
         class="cursor-pointer text-left my-2 border-2 border-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-neutral-800 w-full {getValidationClassName(
@@ -99,6 +120,9 @@
       </button>
     {/each}
   </div>
+  {#if gradeWithAI}
+    <ReasonBox {reason} {isLoading} {acceptGrade} {rejectGrade} />
+  {/if}
 
   {#if !isPreview}
     <div class="mt-3 flex items-center justify-between w-full">

@@ -161,7 +161,7 @@
             class="w-[50px]"
             bind:selected={question.question_type.id}
             on:change={(e) => {
-              const id = parseInt(e.target.value);
+              const id = parseInt(e.target?.value);
               question.question_type = QUESTION_TYPES.find((q) => q.id === id);
               question.is_dirty = true;
             }}
@@ -176,7 +176,7 @@
           <div class="flex justify-between items-center my-3 w-3/5">
             <TextArea
               bind:value={question.code}
-              rows="2"
+              rows={2}
               placeholder={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.write')}
             />
             <IconButton value="write-code" onClick={() => handleCode(question.id, false)}>

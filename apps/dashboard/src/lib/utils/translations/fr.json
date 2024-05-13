@@ -447,6 +447,19 @@
           "submitted": "Soumis",
           "in_progress": "En cours",
           "graded": "Noté"
+        },
+        "grading_modal": {
+          "details": "Détails",
+          "early": "Tôt",
+          "late": "En retard",
+          "total_grade": "Note totale",
+          "student": "Étudiant",
+          "status": "Statut",
+          "add_comment": "Ajouter un commentaire",
+          "grade_with_ai": "Noter avec l'IA",
+          "submit_grades": "Soumettre les notes",
+          "accept_grade": "Accepter",
+          "reject_grade": "Rejeter"
         }
       },
       "attendance": {

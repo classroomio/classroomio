@@ -447,6 +447,21 @@
           "submitted": "Eingereicht",
           "in_progress": "Im Gange",
           "graded": "Benotet"
+        },
+        "grading_modal": {
+          "details": "Einzelheiten",
+          "early": "Früh",
+          "late": "Spät",
+          "total_grade": "Gesamtnote",
+          "student": "Student",
+          "status": "Status",
+          "add_comment": "Einen Kommentar hinzufügen",
+          "grade_with_ai": "Benoten Sie mit KI",
+          "submit_grades": "Noten einreichen",
+          "accept_grade": "Akzeptieren",
+          "reject_grade": "Ablehnen",
+          "add_comment_placeholder": "Hinterlasse einen Kommentar",
+          "questions_tried": "Diese Punktzahl wurde aufgrund der Gesamtzahl der Versuche vergeben:"
         }
       },
       "attendance": {
