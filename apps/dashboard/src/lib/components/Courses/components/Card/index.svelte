@@ -14,8 +14,6 @@
   import Share from 'carbon-icons-svelte/lib/Share.svelte';
   import UserFollow from 'carbon-icons-svelte/lib/UserFollow.svelte';
   import { t } from '$lib/utils/functions/translations';
-  import { onDestroy } from 'svelte';
-  import { currentOrg } from '$lib/utils/store/org';
 
   export let bannerImage: string | undefined;
   export let id = '';
@@ -60,10 +58,6 @@
       ? `/course/${slug}`
       : `/courses/${id}${isLMS ? '/lessons?next=true' : ''}`;
   }
-
-  onDestroy(() => {
-    console.log('unmounting card');
-  });
 </script>
 
 {#if !isLMS && !isOnLandingPage}

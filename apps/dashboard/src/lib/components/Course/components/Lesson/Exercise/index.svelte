@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onDestroy } from 'svelte';
   import { goto } from '$app/navigation';
   import AddAltIcon from 'carbon-icons-svelte/lib/AddAlt.svelte';
@@ -36,8 +36,9 @@
   export let path = '';
   export let goBack = () => {};
   export let isStudent = true;
+  export let isFetching = false;
 
-  let preview = false;
+  let preview: boolean = false;
   let shouldDeleteExercise = false;
   let isSaving = false;
   let selectedIndex = 0;
@@ -78,12 +79,11 @@
   });
 
   $: $questionnaire?.questions?.length < 1 && handleAddQuestion();
-  console.log('question', $questionnaire.questions);
 </script>
 
 <PageBody bind:isPageNavHidden={isStudent} padding="px-4 overflow-x-hidden">
   <div class="bg-gray-100 dark:bg-neutral-800 top-0 z-10 sticky p-2 mb-3">
-    <Breadcrumb noTrailingSlash class="mb-5">
+    <Breadcrumb noTrailingSlash>
       <BreadcrumbItem href={path}
         >{$t('course.navItem.lessons.exercises.all_exercises.heading')}</BreadcrumbItem
       >
@@ -157,7 +157,7 @@
     {#if !isStudent && !preview}
       <EditMode bind:shouldDeleteExercise {exerciseId} {goBack} />
     {:else}
-      <ViewMode {preview} {exerciseId} />
+      <ViewMode {preview} {exerciseId} isFetchingExercise={isFetching} />
     {/if}
   {:else if selectedIndex === 1}
     <Analytics bind:exerciseId />

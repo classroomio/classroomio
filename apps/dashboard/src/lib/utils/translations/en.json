@@ -749,6 +749,21 @@
           "submitted": "Submitted",
           "in_progress": "In Progress",
           "graded": "Graded"
+        },
+        "grading_modal": {
+          "details": "Details",
+          "early": "Early",
+          "late": "Late",
+          "total_grade": "Total grade",
+          "student": "Student",
+          "status": "Status",
+          "add_comment": "Add comment",
+          "add_comment_placeholder": "Leave a comment",
+          "grade_with_ai": "Grade with AI",
+          "submit_grades": "Submit Grades",
+          "accept_grade": "Accept",
+          "reject_grade": "Reject",
+          "questions_tried": "Allocated this score because of total tries:"
         }
       },
 
