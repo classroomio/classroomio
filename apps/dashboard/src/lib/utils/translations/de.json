@@ -456,11 +456,12 @@
           "student": "Student",
           "status": "Status",
           "add_comment": "Einen Kommentar hinzufügen",
-          "add_comment_placeholder": "Schreiben Sie Ihre Kommentare",
           "grade_with_ai": "Benoten Sie mit KI",
           "submit_grades": "Noten einreichen",
           "accept_grade": "Akzeptieren",
-          "reject_grade": "Ablehnen"
+          "reject_grade": "Ablehnen",
+          "add_comment_placeholder": "Hinterlasse einen Kommentar",
+          "questions_tried": "Diese Punktzahl wurde aufgrund der Gesamtzahl der Versuche vergeben:"
         }
       },
       "attendance": {

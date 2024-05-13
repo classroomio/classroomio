@@ -26,6 +26,7 @@
   export let isGradeWithAI = false;
   export let reason;
   export let isLoading = false;
+  export let hideGrading = false;
 
   let gradeWithAI = false;
 
@@ -90,56 +91,36 @@
         </span>
       </svelte:fragment>
     </HtmlRender>
-    <Grade {gradeMax} bind:grade {disableGrading} />
+    {#if !hideGrading}
+      <Grade {gradeMax} bind:grade {disableGrading} />
+    {/if}
   </div>
 
   {#if code}
     <CodeSnippet {code} />
   {/if}
 
-  {#if !gradeWithAI}
-    <div class="ml-4">
-      {#each options as option}
-        <button
-          class="cursor-pointer text-left my-2 border-2 border-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-neutral-800 w-full {getValidationClassName(
-            option
-          )}"
-          type="button"
-        >
-          <Checkbox
-            {name}
-            className="p-2"
-            value={option.value}
-            checked={defaultValue.includes(option.value)}
-            label={option.label || option.value}
-            {disabled}
-          />
-        </button>
-      {/each}
-    </div>
-  {:else}
-    <div class="ml-4 border rounded-md">
-      <div>
-        {#each options as option}
-          <button
-            class="cursor-pointer text-left mb-4 border-2 border-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-neutral-800 w-full {getValidationClassName(
-              option
-            )}"
-            type="button"
-          >
-            <Checkbox
-              {name}
-              className="p-2"
-              value={option.value}
-              checked={defaultValue.includes(option.value)}
-              label={option.label || option.value}
-              {disabled}
-            />
-          </button>
-        {/each}
-      </div>
-      <ReasonBox {reason} {isLoading} {acceptGrade} {rejectGrade} />
-    </div>
+  <div class="ml-4">
+    {#each options as option}
+      <button
+        class="cursor-pointer text-left my-2 border-2 border-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-neutral-800 w-full {getValidationClassName(
+          option
+        )}"
+        type="button"
+      >
+        <Checkbox
+          {name}
+          className="p-2"
+          value={option.value}
+          checked={defaultValue.includes(option.value)}
+          label={option.label || option.value}
+          {disabled}
+        />
+      </button>
+    {/each}
+  </div>
+  {#if gradeWithAI}
+    <ReasonBox {reason} {isLoading} {acceptGrade} {rejectGrade} />
   {/if}
 
   {#if !isPreview}

@@ -456,7 +456,6 @@
           "student": "Étudiant",
           "status": "Statut",
           "add_comment": "Ajouter un commentaire",
-          "add_comment_placeholder": "écrivez vos commentaires",
           "grade_with_ai": "Noter avec l'IA",
           "submit_grades": "Soumettre les notes",
           "accept_grade": "Accepter",

@@ -11,7 +11,7 @@
   export let onSubmit = () => {};
   export let onPrevious = () => {};
   export let handleGrade = () => {};
-  export let disableGrading = false;
+  export let disableGrading = true;
   export let isGradeWithAI = false;
   export let isLoading = false;
   export let reasons = {};

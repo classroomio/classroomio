@@ -456,11 +456,12 @@
           "student": "Alumno",
           "status": "Estado",
           "add_comment": "Agregar comentario",
-          "add_comment_placeholder": "escribe tus comentarios",
           "grade_with_ai": "Calificar con IA",
           "submit_grades": "Enviar calificaciones",
           "accept_grade": "Aceptar",
-          "reject_grade": "Rechazar"
+          "reject_grade": "Rechazar",
+          "add_comment_placeholder": "Deja un comentario",
+          "questions_tried": "Se asignó esta puntuación debido al total de intentos:"
         }
       },
       "attendance": {

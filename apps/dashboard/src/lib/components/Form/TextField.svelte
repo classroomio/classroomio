@@ -17,8 +17,8 @@
   export let autoFocus = false;
   export let isRequired = false;
   export let isDisabled = false;
-  export let min = undefined;
-  export let max = undefined;
+  export let min: string | number | null | undefined = undefined;
+  export let max: string | number | null | undefined = undefined;
   export let errorMessage = '';
   export let helperMessage = '';
   export let autoComplete = true;

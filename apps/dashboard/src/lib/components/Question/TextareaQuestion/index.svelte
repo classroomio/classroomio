@@ -25,6 +25,7 @@
   export let isGradeWithAI = false;
   export let reason;
   export let isLoading = false;
+  export let hideGrading = false;
 
   let gradeWithAI = false;
 
@@ -63,7 +64,9 @@
         </span>
       </svelte:fragment>
     </HtmlRender>
-    <Grade {gradeMax} bind:grade {disableGrading} />
+    {#if !hideGrading}
+      <Grade {gradeMax} bind:grade {disableGrading} />
+    {/if}
   </div>
 
   {#if code}
@@ -72,17 +75,11 @@
 
   <div class="ml-4">
     {#if disabled}
-      {#if !gradeWithAI}
-        <div class="bg-gray-200 dark:bg-gray-500 py-3 px-5 rounded-md mb-3">
-          {defaultValue}
-        </div>
-      {:else}
-        <div class="border rounded-md">
-          <div class="bg-gray-200 dark:bg-gray-500 py-3 px-5 rounded-md mb-3">
-            {defaultValue}
-          </div>
-          <ReasonBox {reason} {isLoading} {acceptGrade} {rejectGrade} />
-        </div>
+      <div class="bg-gray-200 dark:bg-gray-500 py-3 px-5 rounded-md mb-3">
+        {defaultValue}
+      </div>
+      {#if gradeWithAI}
+        <ReasonBox {reason} {isLoading} {acceptGrade} {rejectGrade} />
       {/if}
     {:else}
       <TextArea

@@ -456,11 +456,12 @@
           "student": "Студент",
           "status": "Положение дел",
           "add_comment": "Добавить комментарий",
-          "add_comment_placeholder": "напишите свои комментарии",
           "grade_with_ai": "Оценка с помощью ИИ",
           "submit_grades": "Отправить оценки",
           "accept_grade": "Принимать",
-          "reject_grade": "Отклонять"
+          "reject_grade": "Отклонять",
+          "add_comment_placeholder": "Оставить комментарий",
+          "questions_tried": "Присвоен этот балл из-за общего количества попыток:"
         }
       },
       "attendance": {

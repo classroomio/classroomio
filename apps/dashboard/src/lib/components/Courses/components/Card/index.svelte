@@ -53,10 +53,6 @@
     // TODO: Delete course functionality
     alert('WIP: Delete course');
   }
-
-  onDestroy(() => {
-    console.log('unmounting card');
-  });
 </script>
 
 {#if !isLMS && !isOnLandingPage}

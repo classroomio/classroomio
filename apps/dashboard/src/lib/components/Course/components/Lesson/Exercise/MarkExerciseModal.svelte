@@ -16,7 +16,6 @@
   export let handleSave = () => {};
   export let isGradeWithAI = false;
 
-  // export let submissionId;
   export let data = {};
   export let updateStatus = () => {};
 
@@ -39,7 +38,6 @@
   let selectedId = status.id;
   let reasons = {};
   let isLoading = false;
-  let hasCalled = false;
   let total = 0;
   let maxPoints = 0;
 
@@ -47,9 +45,9 @@
     return (questions || []).reduce((acc, question) => acc + question.points, 0);
   }
 
-  function calculateTotal(grades) {
+  function calculateTotal(grades: Record<string, string>): number {
     if (!grades) return 0;
-    return Object.values(grades).reduce((acc, grade) => acc + parseInt(grade || 0), 0);
+    return Object.values(grades).reduce((acc, grade) => acc + parseInt(grade || '0'), 0);
   }
 
   function handleStatusChange(event) {
@@ -66,7 +64,7 @@
       total
     });
 
-    snackbar.success(`snackbar.exercise.submission_updated '${status.text}'`);
+    snackbar.success(`${$t('snackbar.exercise.submission_updated')} '${status.text}'`);
   }
 
   function setStatus(data) {
@@ -89,30 +87,35 @@
       try {
         const responseData = $completion.replace('```json', '').replace('```', '');
 
-        // Parse the modified response data as JSON
-        const aiResponses = JSON.parse(responseData);
-
-        if (!Array.isArray(aiResponses)) {
-          return;
+        let aiResponses = [];
+        try {
+          // Parse the modified response data as JSON
+          aiResponses = JSON.parse(responseData);
+        } catch (error) {
+          console.error('Error parsing AI response', error);
         }
+
         data?.questions.forEach((question) => {
           const { id, points, question_type_id } = question;
 
           if (question_type_id !== QUESTION_TYPE.TEXTAREA) {
             const answer = data.questionAnswers.find((q) => q.question_id === id);
+
             reasons = {
               ...reasons,
-              [id]: `This grade was allocated because he got the answer after ${
+              [id]: `${$t('course.navItem.submissions.grading_modal.questions_tried')} ${
                 answer.answers.length
-              } ${answer.answers.length > 1 ? 'tries' : 'try'} `
+              } `
             };
             data.questionAnswerByPoint[id] = points / answer.answers.length;
-          } else {
+          } else if (aiResponses.length) {
             const graded = aiResponses.find((res) => res.id === id);
+
             reasons = {
               ...reasons,
               [id]: `${graded?.explanation}`
             };
+
             data.questionAnswerByPoint[id] = graded.score;
           }
         });
@@ -143,20 +146,6 @@
     handleSubmit({ preventDefault: () => {} });
   }
 
-  function getStatusColor(status) {
-    // if (!status)
-    return '';
-
-    // switch (status.id) {
-    //   case STATUS.SUBMITTED:
-    //     return '';
-    //   case STATUS.IN_PROGRESS:
-    //     return 'text-white bg-primary-700';
-    //   case STATUS.GRADED:
-    //     return 'text-white bg-green-700';
-    // }
-  }
-
   $: total = calculateTotal(data.questionAnswerByPoint);
   $: maxPoints = getMaxPoints(data.questions);
   $: setStatus(data);
@@ -184,6 +173,7 @@
       bind:reasons
       bind:isGradeWithAI
       bind:isLoading
+      disableGrading={false}
     />
   </div>
   <div class="ml-4 w-2/5 sticky top-0">

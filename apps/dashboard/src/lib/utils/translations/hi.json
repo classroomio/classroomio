@@ -456,11 +456,12 @@
           "student": "विद्यार्थी",
           "status": "स्थिति",
           "add_comment": "टिप्पणी जोड़ना",
-          "add_comment_placeholder": "अपनी टिप्पणियाँ लिखें",
           "grade_with_ai": "एआई के साथ ग्रेड",
           "submit_grades": "ग्रेड जमा करें",
           "accept_grade": "स्वीकार करना",
-          "reject_grade": "अस्वीकार करना"
+          "reject_grade": "अस्वीकार करना",
+          "add_comment_placeholder": "एक टिप्पणी छोड़ें",
+          "questions_tried": "कुल प्रयासों के कारण यह स्कोर आवंटित किया गया:"
         }
       },
       "attendance": {

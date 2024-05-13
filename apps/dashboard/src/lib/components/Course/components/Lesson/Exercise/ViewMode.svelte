@@ -26,11 +26,12 @@
   } from '$lib/utils/services/notification/notification';
   import { lesson } from '../store/lessons';
   import { browser } from '$app/environment';
-  import { Close, CloseFilled } from 'carbon-icons-svelte';
+  import { CloseFilled } from 'carbon-icons-svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
 
-  export let preview: false;
+  export let preview: boolean = false;
   export let exerciseId = '';
+  export let isFetchingExercise = false;
 
   let currentQuestion = {};
   let renderProps = {};
@@ -144,7 +145,7 @@
     }, 0);
   }
 
-  async function checkForSubmission(people, profileId: string, courseId: string) {
+  async function checkForSubmission(people, profileId?: string, courseId?: string) {
     if (!Array.isArray(people) || !profileId || !courseId || !!submission) {
       return;
     }
@@ -161,6 +162,7 @@
 
     if (Array.isArray(data) && data.length) {
       submission = data[0];
+
       $questionnaireMetaData.answers = formatAnswers({
         questions: $questionnaire.questions,
         answers: submission.answers
@@ -227,7 +229,8 @@
       $questionnaireMetaData.currentQuestionIndex
     );
   }
-  $: checkForSubmission($group.people, $profile.id, $course.id);
+
+  $: !isFetchingExercise && checkForSubmission($group.people, $profile.id, $course.id);
 </script>
 
 {#if !preview && $questionnaire.questions.length && !$questionnaireMetaData.isFinished}
@@ -318,41 +321,30 @@
       {/if}
     </div>
 
+    {#if $questionnaireMetaData.status === STATUS.GRADED && $questionnaireMetaData.comment}
+      <div
+        class="flex items-center justify-between bg-primary-700 p-4 text-white font-semibold rounded-sm mt-3"
+      >
+        <span> {$questionnaireMetaData.comment}</span>
+      </div>
+    {/if}
     <Preview
       questions={$questionnaire.questions.sort((a, b) => a.order - b.order)}
       questionnaireMetaData={$questionnaireMetaData}
       grades={$questionnaireMetaData.grades}
       disableGrading={true}
     />
-    {#if STATUS.GRADED === $questionnaireMetaData.status}
-      {#if gradedComment}
-        <div
-          class="z-50 flex items-center justify-between sticky bottom-12 lg:-bottom-14 bg-primary-700 px-4 py-1 text-white font-semibold rounded-sm"
-        >
-          <span> {$questionnaireMetaData.comment ?? `No comments available`}</span>
-          <IconButton onClick={toggleComments}>
-            <CloseFilled size={24} class="fill-white" />
-          </IconButton>
-        </div>
-      {:else}
-        <div class="z-50 flex justify-end fixed right-2 lg:right-14 -bottom-2 lg:bottom-4">
-          <button on:click={toggleComments}>
-            <img src="/comment.svg" alt="comment" class="w-20 h-20" />
-          </button>
-        </div>
-      {/if}
-    {/if}
   {/if}
 {:else if currentQuestion && currentQuestion?.id}
   {#key currentQuestion.id}
     <!-- <div transition:fade id="question"> -->
     <div in:fly={{ x: 500, duration: 1000 }} id="question">
       {#if QUESTION_TYPE.RADIO === currentQuestion.question_type.id}
-        <RadioQuestion {...renderProps} key={currentQuestion.id} />
+        <RadioQuestion {...renderProps} key={currentQuestion.id} hideGrading={true} />
       {:else if QUESTION_TYPE.CHECKBOX === currentQuestion.question_type.id}
-        <CheckboxQuestion {...renderProps} key={currentQuestion.id} />
+        <CheckboxQuestion {...renderProps} key={currentQuestion.id} hideGrading={true} />
       {:else if QUESTION_TYPE.TEXTAREA === currentQuestion.question_type.id}
-        <TextareaQuestion {...renderProps} key={currentQuestion.id} />
+        <TextareaQuestion {...renderProps} key={currentQuestion.id} hideGrading={true} />
       {/if}
     </div>
   {/key}
