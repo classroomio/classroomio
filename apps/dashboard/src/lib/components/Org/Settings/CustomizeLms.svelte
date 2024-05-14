@@ -36,10 +36,11 @@
 
     if (error) {
       const message = error?.message || 'snackbar.lms.error.try_again';
-      snackbar.error(`snackbar.lms.error.update ${message}`);
+      console.error('Error updating customizations', message);
+      snackbar.error('snackbar.lms.error.update');
     } else {
       $currentOrg.customization = $customLMSSettings;
-      snackbar.success();
+      snackbar.success('snackbar.success_update');
     }
 
     isSaving = false;

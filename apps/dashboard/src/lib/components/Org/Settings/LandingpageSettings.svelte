@@ -96,7 +96,7 @@
       snackbar.error(`snackbar.lms.error.update ${message}`);
     } else {
       $currentOrg.landingpage = $landingPageSettings;
-      snackbar.success();
+      snackbar.success('snackbar.success_update');
     }
 
     isSaving = false;

@@ -153,7 +153,8 @@
         "updating_poll": "Đã xảy ra lỗi khi cập nhật trạng thái cuộc thăm dò ý kiến",
         "submitting_poll": "Đã xảy ra lỗi khi gửi cuộc thăm dò ý kiến"
       }
-    }
+    },
+    "success_update": "Cập nhật thành công"
   },
   "exercises": {
     "heading": "Bài tập",

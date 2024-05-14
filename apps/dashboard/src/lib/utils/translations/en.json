@@ -1075,6 +1075,7 @@
 
   "snackbar": {
     "success": "Success",
+    "success_update": "Updated successfully",
     "something": "Something went wrong - Please try later",
     "update": "Update",
 

@@ -153,7 +153,8 @@
         "updating_poll": "Beim Aktualisieren des Umfragestatus ist ein Fehler aufgetreten",
         "submitting_poll": "Beim Absenden der Umfrage ist ein Fehler aufgetreten"
       }
-    }
+    },
+    "success_update": "Erfolgreich geupdated"
   },
   "exercises": {
     "heading": "Übungen",

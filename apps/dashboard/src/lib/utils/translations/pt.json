@@ -153,7 +153,8 @@
         "updating_poll": "Ocorreu um erro ao atualizar o status da enquete",
         "submitting_poll": "Ocorreu um erro ao enviar a enquete"
       }
-    }
+    },
+    "success_update": "Atualizado com sucesso"
   },
   "exercises": {
     "heading": "Exercícios",
