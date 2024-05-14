@@ -2,6 +2,7 @@ import { writable, derived } from 'svelte/store';
 import type { Course } from '$lib/utils/types';
 
 export const courses = writable<Course[]>([]);
+
 export const view = writable('grid');
 export const coursesInProgress = derived(courses, ($courses) =>
   $courses.length > 0 ? $courses.slice(0, 3) : []
@@ -24,6 +25,7 @@ export const courseMetaDeta = writable<{
 export const createCourseModal = writable({
   open: false,
   title: '',
+  course_type: '',
   description: '',
   emails: '',
   tutors: '',

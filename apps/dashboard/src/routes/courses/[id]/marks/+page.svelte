@@ -22,7 +22,6 @@
   let borderBottomGrey = 'border-r-0 border-t-0 border-b border-l-0 border-gray-300';
   let borderleftGrey = 'border-r-0 border-t-0 border-b-0 border-l border-gray-300';
   let students = [];
-
   let lessonMapping = {}; // { lessonId: { exerciseId: exerciseTitle, ... }, ... }
   let studentMarksByExerciseId = {}; // { groupMemberId: { exerciseId: `total_gotten/points`, ... }, ... }
 
@@ -78,6 +77,7 @@
       }
     });
   }
+  // TODO WRITE A REDIRECT FUNCTION FOR THIS THIS PAGE
 
   $: students = $globalStore.isStudent
     ? $group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)

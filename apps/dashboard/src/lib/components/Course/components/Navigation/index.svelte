@@ -17,6 +17,7 @@
   import { getIsLessonComplete } from '../Lesson/functions';
   import { isFreePlan } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
+  import { COURSE_TYPE_ENUM } from '$lib/components/Courses/constants';
 
   export let path: string;
   export let isStudent: boolean = false;
@@ -163,14 +164,25 @@
         hideSortIcon: true,
         isPaidFeature: false,
         show() {
-          return !isStudent;
+          if (!isStudent && $course.course_type == COURSE_TYPE_ENUM.LIVE_CLASS) {
+            return true;
+          } else {
+            return false;
+          }
         }
       },
       {
         label: $t('course.navItems.nav_marks'),
         to: getNavItemRoute($course.id, 'marks'),
         isPaidFeature: false,
-        hideSortIcon: true
+        hideSortIcon: true,
+        show() {
+          if ($course.course_type == COURSE_TYPE_ENUM.LIVE_CLASS) {
+            return true;
+          } else {
+            return false;
+          }
+        }
       },
       {
         label: $t('course.navItems.nav_people'),

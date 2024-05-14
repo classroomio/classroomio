@@ -3,6 +3,7 @@
   import Modal from '$lib/components/Modal/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
+  import { Dropdown } from 'carbon-components-svelte';
   import { courses, createCourseModal } from '$lib/components/Courses/store';
   import { validateForm } from '$lib/components/Courses/functions';
   import { ROLE } from '$lib/utils/constants/roles';
@@ -13,6 +14,7 @@
   import { goto } from '$app/navigation';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { t } from '$lib/utils/functions/translations';
+  import { COURSE_TYPE_ENUM } from '../../constants';
 
   let isLoading = false;
   let errors = {
@@ -20,6 +22,19 @@
     description: ''
   };
 
+  const COURSE_TYPE = [
+    {
+      id: COURSE_TYPE_ENUM.LIVE_CLASS,
+      text: 'live class'
+    },
+    {
+      id: COURSE_TYPE_ENUM.SELF_PACED,
+      text: 'self paced'
+    }
+  ];
+
+  let type = COURSE_TYPE[0];
+  let selectedId = type.id;
   let userPrompt = '';
 
   function onClose() {
@@ -27,6 +42,7 @@
       open: false,
       title: '',
       description: '',
+      course_type: '',
       emails: '',
       tutors: '',
       students: ''
@@ -40,7 +56,7 @@
     errors = fieldErrors;
     if (hasError) return;
 
-    const { title, description } = $createCourseModal;
+    const { title, description, course_type } = $createCourseModal;
     // 1. Create group
     const { data: newGroup } = await supabase
       .from('group')
@@ -62,6 +78,7 @@
       .insert({
         title,
         description,
+        course_type: selectedId,
         group_id
       })
       .select();
@@ -122,15 +139,18 @@
   modalHeading={$t('courses.new_course_modal.heading')}
 >
   <form on:submit|preventDefault={createCourse}>
-    <TextField
-      label={$t('courses.new_course_modal.course_name')}
-      bind:value={$createCourseModal.title}
-      placeholder={$t('courses.new_course_modal.course_name_placeholder')}
-      className="mb-4"
-      isRequired={true}
-      errorMessage={errors.title}
-      autoComplete={false}
-    />
+    <div class="flex items-end space-x-2 mb-4">
+      <TextField
+        label={$t('courses.new_course_modal.course_name')}
+        bind:value={$createCourseModal.title}
+        placeholder={$t('courses.new_course_modal.course_name_placeholder')}
+        className="w-full "
+        isRequired={true}
+        errorMessage={errors.title}
+        autoComplete={false}
+      />
+      <Dropdown titleText="Course type" bind:selectedId items={COURSE_TYPE} size="xl" class="" />
+    </div>
 
     <TextArea
       label={$t('courses.new_course_modal.short_description')}

@@ -30,6 +30,7 @@ export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']
       `
       id,
       title,
+      course_type,
       description,
       overview,
       logo,
@@ -61,6 +62,7 @@ export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']
   const { data, error } = response;
 
   console.log(`error`, error);
+  console.log(`data`, data);
   if (!data || error) {
     console.log(`data`, data);
     console.log(`fetchCourse => error`, error);

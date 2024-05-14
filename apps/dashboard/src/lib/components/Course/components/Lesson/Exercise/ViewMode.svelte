@@ -76,6 +76,10 @@
     });
   };
 
+  function automaticGrading(data) {
+    return console.log('question data on finished', data);
+  }
+
   function onSubmit(id, value, moveToNextQuestion = false) {
     const { answers } = $questionnaireMetaData;
     const { questions } = $questionnaire;
@@ -105,11 +109,24 @@
     );
 
     // If last question send to server
+    // TODO: this is where we actually get to mark the questions automatically if it is a self paced course
     if (isFinished) {
       localStorage.removeItem(`autosave-exercise-${exerciseId}`);
       $questionnaireMetaData.status = 1;
       $questionnaireMetaData.totalPossibleGrade = getTotalPossibleGrade($questionnaire.questions);
       $questionnaireMetaData.grades = {};
+
+      // we will set the grades for each question before sending to the server
+      // We are going to use the total accumulated valued to calculate the finalTotalgrades
+
+      // This is function to achieve it
+
+      /* $questionnaireMetaData.grades = submission.answers.reduce((acc, answer) => {
+        acc[answer.question_id] = answer.point;
+        $questionnaireMetaData.finalTotalGrade += answer.point;
+
+        return acc;*/
+      automaticGrading($questionnaireMetaData);
       submitExercise(
         $questionnaireMetaData.answers,
         questions,

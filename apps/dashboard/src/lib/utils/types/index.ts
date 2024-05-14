@@ -184,6 +184,7 @@ export interface Waitinglist {
 export interface Course {
   title?: any; // type unknown;
   description: string; // type unknown;
+  course_type: string;
   overview?: any; // type unknown;
   id?: string /* primary key */;
   created_at: string;

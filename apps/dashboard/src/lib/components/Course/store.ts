@@ -8,6 +8,7 @@ export const defaultCourse: Course = {
   id: '',
   title: '',
   description: '',
+  course_type: '',
   cost: 0,
   currency: '',
   status: 'ACTIVE',

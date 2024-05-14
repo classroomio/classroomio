@@ -15,6 +15,7 @@
   import { goto } from '$app/navigation';
   import { handleAddLessonWidget } from '../Navigation/store';
   import { t } from '$lib/utils/functions/translations';
+  import { COURSE_TYPE_ENUM } from '$lib/components/Courses/constants';
 
   export let isStudent = false;
   let errors = {
@@ -111,29 +112,32 @@
           </button>
         </IconButton>
       </div>
+      {#if $course.course_type == COURSE_TYPE_ENUM.LIVE_CLASS}
+        <div
+          class="flex items-start justify-between flex-col lg:flex-row lg:items-center mt-2 w-4/5"
+        >
+          <div class="lg:mb-0">
+            <Select
+              bind:value={lesson.profile}
+              options={$group.tutors}
+              labelKey="fullname"
+              className="sm:my-1 w-[100%]"
+            />
+          </div>
 
-      <div class="flex items-start justify-between flex-col lg:flex-row lg:items-center mt-2 w-4/5">
-        <div class="lg:mb-0">
-          <Select
-            bind:value={lesson.profile}
-            options={$group.tutors}
-            labelKey="fullname"
-            className="sm:my-1 w-[100%]"
-          />
-        </div>
+          <div class="flex items-center lg:mb-0">
+            <input
+              type="date"
+              name="lesson-date-picker"
+              class="p-2 my-2 rounded-md sm:w-[179px] dark:bg-neutral-800 dark:text-white"
+            />
+          </div>
 
-        <div class="flex items-center lg:mb-0">
-          <input
-            type="date"
-            name="lesson-date-picker"
-            class="p-2 my-2 rounded-md sm:w-[179px] dark:bg-neutral-800 dark:text-white"
-          />
+          <div class="flex items-center mb-3 lg:mb-0">
+            <TextField className="w-[179px]" placeholder="https://meet.google.com/mga-dsjs-fmb" />
+          </div>
         </div>
-
-        <div class="flex items-center mb-3 lg:mb-0">
-          <TextField className="w-[179px]" placeholder="https://meet.google.com/mga-dsjs-fmb" />
-        </div>
-      </div>
+      {/if}
     </div>
   </div>
   <PrimaryButton label={$t('course.navItem.lessons.add_lesson.save')} onClick={handleSave} />
