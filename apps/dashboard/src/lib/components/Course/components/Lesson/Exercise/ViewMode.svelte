@@ -26,9 +26,12 @@
   } from '$lib/utils/services/notification/notification';
   import { lesson } from '../store/lessons';
   import { browser } from '$app/environment';
+  import { CloseFilled } from 'carbon-icons-svelte';
+  import IconButton from '$lib/components/IconButton/index.svelte';
 
-  export let preview: false;
+  export let preview: boolean = false;
   export let exerciseId = '';
+  export let isFetchingExercise = false;
 
   let currentQuestion = {};
   let renderProps = {};
@@ -36,6 +39,7 @@
   let hasSubmission = false;
   let isLoadingAutoSavedData = false;
   let alreadyCheckedAutoSavedData = false;
+  let gradedComment = true;
 
   function handleStart() {
     $questionnaireMetaData.currentQuestionIndex += 1;
@@ -127,13 +131,14 @@
 
         return acc;*/
       automaticGrading($questionnaireMetaData);
-      submitExercise(
-        $questionnaireMetaData.answers,
-        questions,
-        exerciseId,
-        $course.id,
-        getGroupMemberId($group.people, $profile.id)
-      );
+      ($questionnaireMetaData.comment = ''),
+        submitExercise(
+          $questionnaireMetaData.answers,
+          questions,
+          exerciseId,
+          $course.id,
+          getGroupMemberId($group.people, $profile.id)
+        );
       notifyEducator();
     }
   }
@@ -157,7 +162,7 @@
     }, 0);
   }
 
-  async function checkForSubmission(people, profileId: string, courseId: string) {
+  async function checkForSubmission(people, profileId?: string, courseId?: string) {
     if (!Array.isArray(people) || !profileId || !courseId || !!submission) {
       return;
     }
@@ -174,6 +179,7 @@
 
     if (Array.isArray(data) && data.length) {
       submission = data[0];
+
       $questionnaireMetaData.answers = formatAnswers({
         questions: $questionnaire.questions,
         answers: submission.answers
@@ -185,6 +191,7 @@
       $questionnaireMetaData.isFinished = true;
       $questionnaireMetaData.status = submission.status_id;
       $questionnaireMetaData.finalTotalGrade = 0;
+      $questionnaireMetaData.comment = submission.feedback;
       $questionnaireMetaData.grades = submission.answers.reduce((acc, answer) => {
         acc[answer.question_id] = answer.point;
         $questionnaireMetaData.finalTotalGrade += answer.point;
@@ -211,6 +218,10 @@
     alreadyCheckedAutoSavedData = true;
   }
 
+  const toggleComments = () => {
+    gradedComment = !gradedComment;
+  };
+
   $: browser && !alreadyCheckedAutoSavedData && getAutoSavedData();
 
   // Reactive code
@@ -235,7 +246,8 @@
       $questionnaireMetaData.currentQuestionIndex
     );
   }
-  $: checkForSubmission($group.people, $profile.id, $course.id);
+
+  $: !isFetchingExercise && checkForSubmission($group.people, $profile.id, $course.id);
 </script>
 
 {#if !preview && $questionnaire.questions.length && !$questionnaireMetaData.isFinished}
@@ -298,18 +310,18 @@
 {:else if $questionnaireMetaData.isFinished}
   {#if !isLoadingAutoSavedData}
     <div class="flex items-center justify-between">
-      <div class="flex flex-col justify-between w-full">
-        <h2 class="text-xl mb-2 mt-0">{$questionnaire.title}</h2>
+      <div class="flex flex-col lg:flex-row items-start lg:items-center lg:space-x-4 w-full">
+        <h2 class="text-xl font-normal">{$questionnaire.title}</h2>
         {#if STATUS.GRADED === $questionnaireMetaData.status}
           <span
-            class="status-text bg-green-700 text-white rounded-full py-3 px-6 text-center"
+            class="status-text bg-green-700 text-white py-1 px-2 text-center"
             title="Status: Pending Review"
           >
             Graded
           </span>
         {:else}
           <span
-            class="status-text bg-yellow-600 text-white rounded-full py-3 px-6 text-center"
+            class="status-text bg-yellow-600 text-white py-1 px-2 text-center"
             title="Status: Pending Review"
           >
             Pending
@@ -318,13 +330,21 @@
       </div>
       {#if STATUS.GRADED === $questionnaireMetaData.status}
         <span
-          class="p-5 border-2 border-gray-700 rounded-full h-24 w-24 flex items-center justify-center text-2xl"
+          class="p-6 border-2 border-gray-300 bg-[#F5F8FE] rounded-full h-10 w-10 flex items-center justify-center text-[#2751DA] text-sm font-semibold"
           title="Status: Pending Review"
         >
           {$questionnaireMetaData.finalTotalGrade}/{$questionnaireMetaData.totalPossibleGrade}
         </span>
       {/if}
     </div>
+
+    {#if $questionnaireMetaData.status === STATUS.GRADED && $questionnaireMetaData.comment}
+      <div
+        class="flex items-center justify-between bg-primary-700 p-4 text-white font-semibold rounded-sm mt-3"
+      >
+        <span> {$questionnaireMetaData.comment}</span>
+      </div>
+    {/if}
     <Preview
       questions={$questionnaire.questions.sort((a, b) => a.order - b.order)}
       questionnaireMetaData={$questionnaireMetaData}
@@ -337,11 +357,11 @@
     <!-- <div transition:fade id="question"> -->
     <div in:fly={{ x: 500, duration: 1000 }} id="question">
       {#if QUESTION_TYPE.RADIO === currentQuestion.question_type.id}
-        <RadioQuestion {...renderProps} key={currentQuestion.id} />
+        <RadioQuestion {...renderProps} key={currentQuestion.id} hideGrading={true} />
       {:else if QUESTION_TYPE.CHECKBOX === currentQuestion.question_type.id}
-        <CheckboxQuestion {...renderProps} key={currentQuestion.id} />
+        <CheckboxQuestion {...renderProps} key={currentQuestion.id} hideGrading={true} />
       {:else if QUESTION_TYPE.TEXTAREA === currentQuestion.question_type.id}
-        <TextareaQuestion {...renderProps} key={currentQuestion.id} />
+        <TextareaQuestion {...renderProps} key={currentQuestion.id} hideGrading={true} />
       {/if}
     </div>
   {/key}

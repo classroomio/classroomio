@@ -11,7 +11,10 @@
   export let onSubmit = () => {};
   export let onPrevious = () => {};
   export let handleGrade = () => {};
-  export let disableGrading = false;
+  export let disableGrading = true;
+  export let isGradeWithAI = false;
+  export let isLoading = false;
+  export let reasons = {};
 </script>
 
 {#each questions as currentQuestion, currentQuestionIndex}
@@ -27,6 +30,9 @@
         true
       )}
       bind:grade={grades[currentQuestion.id]}
+      bind:isGradeWithAI
+      bind:reason={reasons[currentQuestion.id]}
+      bind:isLoading
       gradeMax={currentQuestion.points}
       handleGrade={handleGrade(currentQuestion.id)}
       {disableGrading}
@@ -44,6 +50,9 @@
         true
       )}
       bind:grade={grades[currentQuestion.id]}
+      bind:isGradeWithAI
+      bind:reason={reasons[currentQuestion.id]}
+      bind:isLoading
       gradeMax={currentQuestion.points}
       handleGrade={handleGrade(currentQuestion.id)}
       {disableGrading}
@@ -61,6 +70,9 @@
         true
       )}
       bind:grade={grades[currentQuestion.id]}
+      bind:isGradeWithAI
+      bind:reason={reasons[currentQuestion.id]}
+      bind:isLoading
       gradeMax={currentQuestion.points}
       handleGrade={handleGrade(currentQuestion.id)}
       {disableGrading}

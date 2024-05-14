@@ -22,7 +22,8 @@
 </script>
 
 <div
-  class="header dark:bg-black dark:border-neutral-600 bg-white {!disableSticky &&
+  class="{hideOnMobile &&
+    'hideOnMobile'} header dark:bg-black dark:border-neutral-600 bg-white {!disableSticky &&
     'sticky'} {dynamicRootClass}"
   style={overidableStyle}
 >
@@ -125,9 +126,13 @@
     padding: 10px;
   }
 
-  @media (max-width: 760px) {
+  @media (max-width: 1024px) {
     .title {
       width: fit-content;
+    }
+
+    .hideOnMobile {
+      display: none;
     }
   }
 </style>

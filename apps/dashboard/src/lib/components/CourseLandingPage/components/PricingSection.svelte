@@ -170,7 +170,9 @@
           isDisabled={!courseData.metadata.allowNewStudent}
         />
         {#if courseData?.metadata?.showDiscount && courseData.metadata.allowNewStudent}
-          <p class="dark:text-white font-light text-sm text-gray-500">{$t('course.navItem.landing_page.pricing_section.bird')}</p>
+          <p class="dark:text-white font-light text-sm text-gray-500">
+            {$t('course.navItem.landing_page.pricing_section.bird')}
+          </p>
         {/if}
       </div>
     </div>

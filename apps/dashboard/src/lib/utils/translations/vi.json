@@ -447,6 +447,19 @@
           "submitted": "Đã gửi",
           "in_progress": "Trong tiến trình",
           "graded": "Đã chấm điểm"
+        },
+        "grading_modal": {
+          "details": "Chi tiết",
+          "early": "Sớm",
+          "late": "Muộn",
+          "total_grade": "Tổng điểm",
+          "student": "Học sinh",
+          "status": "Trạng thái",
+          "add_comment": "Thêm bình luận",
+          "grade_with_ai": "Chấm điểm bằng AI",
+          "submit_grades": "Gửi điểm",
+          "accept_grade": "Chấp nhận",
+          "reject_grade": "Từ chối"
         }
       },
       "attendance": {
