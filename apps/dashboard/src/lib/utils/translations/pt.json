@@ -846,7 +846,8 @@
         "url": "URL",
         "update": "Atualizar domínio",
         "custom": "Domínio personalizado",
-        "domain": "Adicione seu próprio nome de domínio"
+        "domain": "Adicione seu próprio nome de domínio",
+        "title": "Domínio personalizado"
       },
       "customize-lms": {
         "title": "Personalizar LMS",
@@ -876,7 +877,6 @@
       },
       "customize_lms": {
         "title": "Personalizar LMS",
-        "disabled": "desabilitado",
         "enabled": "Habilitado",
         "save": "Salvar alterações",
         "apps": {
@@ -898,7 +898,8 @@
           "banner_text": "Texto do banner",
           "banner_text_label": "Atualizar texto do banner",
           "banner_text_placeholder": "Escreva o texto aqui"
-        }
+        },
+        "disabled": "Desabilitado"
       }
     },
     "quiz": {
@@ -1139,8 +1140,8 @@
         "customize_lms": {
           "heading": "Personalizar LMS",
           "sub_heading": "Personalize o LMS da sua organização",
-          "body": "Controle a experiência de aprendizagem dos seus alunos, explore o poder de ativar ou desativar guias e páginas, atualize o banner do LMS e os comentários no aplicativo para uma experiência de aprendizagem aprimorada",
-          "button": "Personalizar LMS"
+          "button": "Personalizar LMS",
+          "body": "Controle a experiência de aprendizagem de seus alunos. Você pode ativar ou desativar guias e páginas, atualizar o banner do LMS e os comentários no aplicativo de acordo com os requisitos da sua organização"
         }
       }
     },

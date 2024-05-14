@@ -83,7 +83,7 @@
         "customize_lms": {
           "heading": "Customize LMS",
           "sub_heading": "Personalize Your Organization LMS",
-          "body": "Control your students learning experience explore the power to enable or disable tabs and pages, update LMS banner and in-app comments for an improved learning experience",
+          "body": "Control your students learning experience. You can enable or disable tabs and pages, update LMS banner and in-app comments to your organization requirements",
           "button": "Customize LMS"
         },
         "custom_domain": {
@@ -331,7 +331,7 @@
       },
       "customize_lms": {
         "title": "Customize LMS",
-        "disabled": "disabled",
+        "disabled": "Disabled",
         "enabled": "Enabled",
         "save": "Save Changes",
         "dashboard": {

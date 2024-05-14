@@ -846,7 +846,8 @@
         "url": "URL",
         "update": "Domäne aktualisieren",
         "custom": "Benutzerdefinierten Domain",
-        "domain": "Fügen Sie Ihren eigenen Domainnamen hinzu"
+        "domain": "Fügen Sie Ihren eigenen Domainnamen hinzu",
+        "title": "Benutzerdefinierten Domain"
       },
       "customize-lms": {
         "title": "LMS anpassen",
@@ -876,7 +877,6 @@
       },
       "customize_lms": {
         "title": "LMS anpassen",
-        "disabled": "deaktiviert",
         "enabled": "Ermöglicht",
         "save": "Änderungen speichern",
         "apps": {
@@ -898,7 +898,8 @@
           "banner_text": "Bannertext",
           "banner_text_label": "Bannertext aktualisieren",
           "banner_text_placeholder": "Schreiben Sie hier den Text"
-        }
+        },
+        "disabled": "Deaktiviert"
       }
     },
     "quiz": {
@@ -1139,8 +1140,8 @@
         "customize_lms": {
           "heading": "LMS anpassen",
           "sub_heading": "Personalisieren Sie Ihr Organisations-LMS",
-          "body": "Kontrollieren Sie die Lernerfahrung Ihrer Schüler, entdecken Sie die Möglichkeit, Registerkarten und Seiten zu aktivieren oder zu deaktivieren, LMS-Banner und In-App-Kommentare zu aktualisieren, um die Lernerfahrung zu verbessern",
-          "button": "LMS anpassen"
+          "button": "LMS anpassen",
+          "body": "Kontrollieren Sie die Lernerfahrung Ihrer Schüler. Sie können Registerkarten und Seiten aktivieren oder deaktivieren, LMS-Banner und In-App-Kommentare entsprechend den Anforderungen Ihres Unternehmens aktualisieren"
         }
       }
     },
