@@ -711,7 +711,8 @@
           "save": "Cứu",
           "edit": "Biên tập",
           "delete": "Xóa bỏ"
-        }
+        },
+        "disabled": "tính năng này bị vô hiệu hóa"
       },
       "news_feed": {
         "heading": "Nguồn cấp tin tức",

@@ -10,7 +10,6 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { getSupabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import { customLMSSettings } from './store';
   import type { OrgCustomLMS } from './store';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
@@ -20,6 +19,22 @@
 
   let widgetKey = '';
   let isSaving = false;
+  let customLMSSettings: OrgCustomLMS = {
+    dashboard: {
+      community: true,
+      exercise: true,
+      bannerImage: '',
+      bannerText: ''
+    },
+    course: {
+      newsfeed: true,
+      grading: true
+    },
+    apps: {
+      poll: true,
+      comments: true
+    }
+  };
 
   function widgetControl(key: string) {
     widgetKey = key;
@@ -31,7 +46,7 @@
 
     const { error } = await supabase
       .from('organization')
-      .update({ customization: $customLMSSettings })
+      .update({ customization: customLMSSettings })
       .match({ id: $currentOrg.id });
 
     if (error) {
@@ -39,7 +54,7 @@
       console.error('Error updating customizations', message);
       snackbar.error('snackbar.lms.error.update');
     } else {
-      $currentOrg.customization = $customLMSSettings;
+      $currentOrg.customization = customLMSSettings;
       snackbar.success('snackbar.success_update');
     }
 
@@ -50,7 +65,7 @@
     if (customlms && Object.keys(customlms).length) {
       // Added new key, support backward compatibility
 
-      $customLMSSettings = {
+      customLMSSettings = {
         ...customlms
       };
     }
@@ -67,7 +82,7 @@
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
       <div>
         <p>{$t('components.settings.customize_lms.dashboard.community')}</p>
-        <Toggle size="sm" class="mb-3" bind:toggled={$customLMSSettings.dashboard.community}>
+        <Toggle size="sm" class="mb-3" bind:toggled={customLMSSettings.dashboard.community}>
           <span slot="labelA" style="color: gray"
             >{$t('components.settings.customize_lms.disabled')}</span
           >
@@ -79,7 +94,7 @@
 
       <div>
         <p>{$t('components.settings.customize_lms.dashboard.exercises')}</p>
-        <Toggle size="sm" class="mb-3" bind:toggled={$customLMSSettings.dashboard.exercise}>
+        <Toggle size="sm" class="mb-3" bind:toggled={customLMSSettings.dashboard.exercise}>
           <span slot="labelA" style="color: gray"
             >{$t('components.settings.customize_lms.disabled')}</span
           >
@@ -97,15 +112,15 @@
           className="mt-3"
           onClick={() => widgetControl('banner-image')}
         />
-        {#if $customLMSSettings.dashboard.bannerImage}
+        {#if customLMSSettings.dashboard.bannerImage}
           <img
             alt="Banner"
-            src={$customLMSSettings.dashboard.bannerImage}
+            src={customLMSSettings.dashboard.bannerImage}
             class="mt-2 rounded-md w-full"
           />
         {/if}
         {#if $handleOpenWidget.open && widgetKey === 'banner-image'}
-          <UploadWidget bind:imageURL={$customLMSSettings.dashboard.bannerImage} />
+          <UploadWidget bind:imageURL={customLMSSettings.dashboard.bannerImage} />
         {/if}
       </div>
 
@@ -115,7 +130,7 @@
           label={$t('components.settings.customize_lms.dashboard.banner_text_label')}
           placeholder={$t('components.settings.customize_lms.dashboard.banner_text_placeholder')}
           className="mb-5"
-          bind:value={$customLMSSettings.dashboard.bannerText}
+          bind:value={customLMSSettings.dashboard.bannerText}
         />
       </div>
     </Column>
@@ -128,7 +143,7 @@
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
       <div>
         <p>{$t('components.settings.customize_lms.course.newsfeed')}</p>
-        <Toggle size="sm" class="mb-3" bind:toggled={$customLMSSettings.course.newsfeed}>
+        <Toggle size="sm" class="mb-3" bind:toggled={customLMSSettings.course.newsfeed}>
           <span slot="labelA" style="color: gray"
             >{$t('components.settings.customize_lms.disabled')}</span
           >
@@ -140,7 +155,7 @@
 
       <div>
         <p>{$t('components.settings.customize_lms.course.grading')}</p>
-        <Toggle size="sm" class="mb-3" bind:toggled={$customLMSSettings.course.grading}>
+        <Toggle size="sm" class="mb-3" bind:toggled={customLMSSettings.course.grading}>
           <span slot="labelA" style="color: gray"
             >{$t('components.settings.customize_lms.disabled')}</span
           >
@@ -159,7 +174,7 @@
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
       <div>
         <p>{$t('components.settings.customize_lms.apps.poll')}</p>
-        <Toggle size="sm" class="mb-3" bind:toggled={$customLMSSettings.apps.poll}>
+        <Toggle size="sm" class="mb-3" bind:toggled={customLMSSettings.apps.poll}>
           <span slot="labelA" style="color: gray"
             >{$t('components.settings.customize_lms.disabled')}</span
           >
@@ -170,7 +185,7 @@
       </div>
       <div>
         <p>{$t('components.settings.customize_lms.apps.live_comment')}</p>
-        <Toggle size="sm" class="mb-3" bind:toggled={$customLMSSettings.apps.comments}>
+        <Toggle size="sm" class="mb-3" bind:toggled={customLMSSettings.apps.comments}>
           <span slot="labelA" style="color: gray"
             >{$t('components.settings.customize_lms.disabled')}</span
           >

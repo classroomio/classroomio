@@ -81,22 +81,7 @@ export interface OrgCustomLMS {
   };
 }
 
-export let customLMSSettings: Writable<OrgCustomLMS> = writable({
-  dashboard: {
-    community: false,
-    exercise: false,
-    bannerImage: '',
-    bannerText: ''
-  },
-  course: {
-    newsfeed: false,
-    grading: false
-  },
-  apps: {
-    poll: true,
-    comments: false
-  }
-});
+
 
 export let landingPageSettings: Writable<OrgLandingPageJson> = writable({
   header: {

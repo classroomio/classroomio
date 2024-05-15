@@ -711,7 +711,8 @@
           "save": "Speichern",
           "edit": "Bearbeiten",
           "delete": "Löschen"
-        }
+        },
+        "disabled": "Diese Funktion ist deaktiviert"
       },
       "news_feed": {
         "heading": "Neuigkeiten",

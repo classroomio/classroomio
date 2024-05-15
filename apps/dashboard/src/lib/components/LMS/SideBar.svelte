@@ -17,7 +17,7 @@
     name: string;
     icon: any;
     link: string;
-    enabled: boolean;
+    show?: () => boolean;
   }
 
   function isActive(pagePath: string, itemPath: string) {
@@ -37,26 +37,28 @@
     {
       name: $t('lms_navigation.home'),
       icon: HomeIcon,
-      link: '/lms',
-      enabled: true
+      link: '/lms'
     },
     {
       name: $t('lms_navigation.my_learning'),
       icon: CourseIcon,
-      link: '/lms/mylearning',
-      enabled: true
+      link: '/lms/mylearning'
     },
     {
       name: $t('lms_navigation.exercise'),
       icon: LicenseDraft,
       link: '/lms/exercises',
-      enabled: $currentOrg?.customization?.dashboard?.exercise
+      show() {
+        return $currentOrg?.customization?.dashboard?.exercise;
+      }
     },
     {
       name: $t('lms_navigation.community'),
       icon: CommunityIcon,
       link: '/lms/community',
-      enabled: $currentOrg?.customization?.dashboard?.community
+      show() {
+        return $currentOrg?.customization?.dashboard?.community;
+      }
     }
   ];
   const toggleSidebar = () => {
@@ -93,7 +95,7 @@
 
       <ul class="my-5">
         {#each sideLinks as item (item.name)}
-          {#if item.enabled}
+          {#if !item.show || (typeof item.show === 'function' && item.show())}
             <a href={item.link} class="text-black" on:click={toggleSidebar}>
               <li
                 class="flex items-center py-3 px-4 mb-2 {NavClasses.item} {isActive(

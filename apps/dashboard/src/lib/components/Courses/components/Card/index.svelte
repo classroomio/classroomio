@@ -53,7 +53,7 @@
     alert('WIP: Delete course');
   }
 
-  function navigateToCourse() {
+  function getCourseUrl() {
     return isOnLandingPage
       ? `/course/${slug}`
       : `/courses/${id}${isLMS ? '/lessons?next=true' : ''}`;
@@ -92,7 +92,7 @@
 <a
   rel="prefetch"
   bind:this={target}
-  href={navigateToCourse()}
+  href={getCourseUrl()}
   class="text-black border border-gray dark:border-neutral-600 rounded w-full max-w-[320px] relative hover:scale-95 transition-all ease-in-out"
 >
   <div class="p-4">

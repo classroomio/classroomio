@@ -711,7 +711,8 @@
           "save": "Ahorrar",
           "edit": "Editar",
           "delete": "Borrar"
-        }
+        },
+        "disabled": "esta característica está deshabilitada"
       },
       "news_feed": {
         "heading": "Noticias",

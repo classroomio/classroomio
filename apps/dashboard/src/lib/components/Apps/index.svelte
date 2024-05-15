@@ -78,38 +78,52 @@
         <Settings size={24} class="carbon-icon dark:text-white lg:hidden" />
       </IconButton>
     </div>
-    {#if !$globalStore.isOrgSite || $currentOrg.customization.apps.comments}
-      <div class="mb-2 relative {getAppClass(APPS_CONSTANTS.APPS.COMMENTS, $apps.selectedApp)}">
-        <IconButton
-          toolTipProps={{ title: 'Comments', hotkeys: ['Ctrl/Command', '1'] }}
-          value={APPS_CONSTANTS.APPS.COMMENTS}
-          onClick={handleAppClick}
-          buttonClassName="relative"
-        >
-          <Chip
-            value={$lesson.totalComments}
-            className="absolute -top-1 right-0 bg-gray-100 text-gray-600 dark:bg-neutral-700 dark:text-white"
-          />
-          <SendAlt size={24} class="carbon-icon dark:text-white" />
-        </IconButton>
-      </div>
-    {/if}
 
-    {#if !$globalStore.isOrgSite || $currentOrg.customization.apps.poll}
-      <div class="mb-2 {getAppClass(APPS_CONSTANTS.APPS.POLL, $apps.selectedApp)}">
-        <IconButton
-          toolTipProps={{ title: 'Poll', hotkeys: ['Ctrl/Command', '2'] }}
-          value={APPS_CONSTANTS.APPS.POLL}
-          onClick={handleAppClick}
-        >
-          <Chip
-            value={$course.polls.length}
-            className="absolute -top-1 right-0 bg-gray-100 text-gray-600 dark:bg-neutral-700 dark:text-white"
-          />
-          <ChartPie size={24} class="carbon-icon dark:text-white" />
-        </IconButton>
-      </div>
-    {/if}
+    <div class="mb-2 relative {getAppClass(APPS_CONSTANTS.APPS.COMMENTS, $apps.selectedApp)}">
+      <IconButton
+        toolTipProps={{
+          title: `${
+            $globalStore.isOrgSite && !$currentOrg.customization.apps.comments
+              ? 'course.navItem.lessons.disabled'
+              : 'course.navItem.lessons.comments.title'
+          } `,
+          hotkeys: ['Ctrl/Command', '1']
+        }}
+        value={APPS_CONSTANTS.APPS.COMMENTS}
+        onClick={handleAppClick}
+        buttonClassName="relative"
+        disabled={$globalStore.isOrgSite && !$currentOrg.customization.apps.comments}
+      >
+        <Chip
+          value={$lesson.totalComments}
+          className="absolute -top-1 right-0 bg-gray-100 text-gray-600 dark:bg-neutral-700 dark:text-white"
+        />
+        <SendAlt size={24} class="carbon-icon dark:text-white" />
+      </IconButton>
+    </div>
+
+    <div class="mb-2 {getAppClass(APPS_CONSTANTS.APPS.POLL, $apps.selectedApp)}">
+      <IconButton
+        toolTipProps={{
+          title: `${
+            $globalStore.isOrgSite && !$currentOrg.customization.apps.poll
+              ? 'course.navItem.lessons.disabled'
+              : 'course.navItem.lessons.polls.title'
+          } `,
+          hotkeys: ['Ctrl/Command', '2']
+        }}
+        value={APPS_CONSTANTS.APPS.POLL}
+        onClick={handleAppClick}
+        disabled={$globalStore.isOrgSite && !$currentOrg.customization.apps.poll}
+      >
+        <Chip
+          value={$course.polls.length}
+          className="absolute -top-1 right-0 bg-gray-100 text-gray-600 dark:bg-neutral-700 dark:text-white"
+        />
+        <ChartPie size={24} class="carbon-icon dark:text-white" />
+      </IconButton>
+    </div>
+
     <!-- <div class="mb-2">
       <IconButton
         toolTipProps={{ title: 'QandA', hotkeys: ['A', '3'] }}

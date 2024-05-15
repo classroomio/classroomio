@@ -695,7 +695,7 @@
             }
           }
         },
-
+        "disabled": "this feature is disabled",
         "comments": {
           "title": "Comments",
           "you": "You",

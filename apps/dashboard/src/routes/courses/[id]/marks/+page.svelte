@@ -87,7 +87,6 @@
     : $group.people.filter((person) => !!person.profile && person.role_id === ROLE.STUDENT);
 
   $: redirectToLesson($currentOrg?.customization?.course?.grading, data.courseId);
-  $: console.log('grading', $currentOrg.customization);
   $: browser && $course.id && firstRender($course.id);
 </script>
 
