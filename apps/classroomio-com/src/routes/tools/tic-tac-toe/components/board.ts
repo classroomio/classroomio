@@ -10,7 +10,7 @@ changeToComputer.subscribe((value) => {
   }
 });
 
-export function TicTacToe({ onWin, onTie }) {
+export function TicTacToe({ onWin, onTie }: { onWin: (winner: any) => void, onTie: () => void }) {
   const board = [
     ['', '', ''],
     ['', '', ''],
@@ -23,7 +23,7 @@ export function TicTacToe({ onWin, onTie }) {
   return {
     board,
 
-    click(rowIndex, columnIndex) {
+    click(rowIndex:number, columnIndex:number) {
       if (!done && !board[rowIndex][columnIndex]) {
         board[rowIndex][columnIndex] = turn;
         turn = turn === 'X' ? 'O' : 'X';
@@ -42,21 +42,26 @@ export function TicTacToe({ onWin, onTie }) {
         } else {
           if (activateComp) {
             const aiMove = getBestMove(board);
-            board[aiMove.row][aiMove.column] = 'O';
-            turn = 'X';
-
-            const aiWinner = getWinner(board);
-            if (aiWinner) {
-              onWin(aiWinner);
-              done = true;
-            } else if (isBoardFull(board)) {
-              onTie();
-              scores.update((currentScores) => {
-                return { ...currentScores, draw: currentScores.draw + 1 };
-              });
-              done = true;
+            if (aiMove) {
+                board[aiMove.row][aiMove.column] = 'O';
+                turn = 'X';
+        
+                const aiWinner = getWinner(board);
+                if (aiWinner) {
+                    onWin(aiWinner);
+                    done = true;
+                } else if (isBoardFull(board)) {
+                    onTie();
+                    scores.update((currentScores) => {
+                        return { ...currentScores, draw: currentScores.draw + 1 };
+                    });
+                    done = true;
+                }
+            } else {
+                console.error("AI could not find a valid move.");
             }
-          }
+        }
+        
         }
       }
 
@@ -65,7 +70,7 @@ export function TicTacToe({ onWin, onTie }) {
   };
 }
 
-function getWinner(board) {
+function getWinner(board: string[][]) {
   // check rows
   for (let row = 0; row < 3; row++) {
     if (board[row][0] === board[row][1] && board[row][0] === board[row][2] && board[row][0]) {
@@ -97,7 +102,7 @@ function getWinner(board) {
   return null;
 }
 
-function isBoardFull(board) {
+function isBoardFull(board: string[][]) {
   for (let row = 0; row < 3; row++) {
     for (let column = 0; column < 3; column++) {
       if (!board[row][column]) {
@@ -109,7 +114,7 @@ function isBoardFull(board) {
   return true;
 }
 
-function getBestMove(board) {
+function getBestMove(board: string[][]) {
   let bestScore = -Infinity;
   let move;
 
@@ -131,7 +136,7 @@ function getBestMove(board) {
   return move;
 }
 
-function minimax(board, depth, isMaximizing) {
+function minimax(board: string[][], depth: number, isMaximizing: boolean) {
   const result = getWinner(board);
   if (result !== null) {
     if (result.symbol === 'O') {

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { fade } from 'svelte/transition';
   export let winner: Winner | null = null;
 
   interface Winner {
@@ -19,6 +20,7 @@
 
 {#if winner}
   <div
+    transition:fade={{ delay: 500, duration: 2 }}
     class="winning-line absolute bg-[#ffc300] z-[100]"
     class:horizontal-line={winner.direction === 'horizontal'}
     class:vertical-line={winner.direction === 'vertical'}

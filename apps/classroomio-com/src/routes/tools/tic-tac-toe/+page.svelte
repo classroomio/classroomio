@@ -24,19 +24,18 @@
         winner = winnerInfo;
 
         scores.update((currentScores) => {
-          if (winner.symbol === 'X') {
+          if (winner!.symbol === 'X') {
             return { ...currentScores, X: currentScores.X + 1 };
-          } else if (winner.symbol === 'O') {
+          } else if (winner!.symbol === 'O') {
             return { ...currentScores, O: currentScores.O + 1 };
           }
           return currentScores;
         });
-        if (winner.symbol === 'O') {
+
+        if (winner!.symbol === 'O') {
           message = `Winner: Player 2 wins the round`;
-        } else if (winner.symbol === 'X') {
+        } else if (winner!.symbol === 'X') {
           message = `Winner: Player 1 wins the round`;
-        } else if (onTie()) {
-          message = `Tie game!`;
         }
       },
 
@@ -89,7 +88,7 @@
   <meta name="twitter:image" content="" />
 </svelte:head>
 
-<section class="mt-[30%] px-5 md:px-0 md:mt-[10%]">
+<section class="mt-[30%] md:px-0 md:mt-[10%]">
   <header class="flex justify-center items-center gap-5 mb-10">
     <img
       src="/free-tools/tic-tac.svg"
@@ -100,12 +99,12 @@
   </header>
 
   <div
-    class="relative tic-tac-bg text-white w-[95%] h-[55vh] md:w-[59%] md:h-[82vh] border-8 border-black mx-auto flex justify-center items-center"
+    class="overflow-hidden relative tic-tac-bg text-white w-full h-[55vh] md:w-[59%] md:h-[82vh] border-8 border-black mx-auto flex justify-center items-center"
   >
     <!-- congratulatory message -->
     {#if message}
       <div
-        transition:fly={{ x: -100, delay: 5, easing: sineInOut }}
+        transition:fly={{ x: -100, delay: 600, easing: sineInOut }}
         class="absolute w-full top-[43%] flex flex-col justify-center items-center z-[150]"
       >
         <div
@@ -132,14 +131,19 @@
         <header class="flex w-full items-center justify-between">
           <button
             on:click={changePlayer}
-            class="text-[10px] md:text-xs w-[30%] md:w-28 flex flex-row items-center leading-3 font-medium"
+            class="text-[10px] md:text-xs w-[35%] gap-2 md:w-28 flex flex-row items-center leading-3 font-medium"
           >
             <img
               src="/free-tools/tic-tac/computer-icon.svg"
               alt="Computer icon"
               class="w-4 md:w-6"
-            /> Change to computer</button
-          >
+            />
+            {#if $changeToComputer.change}
+              Play two players
+            {:else}
+              Change to computer
+            {/if}
+          </button>
           <button
             on:click={newGame}
             class="text-[10px] w-24 flex flex-col gap-1 p-2 shadow-md rounded-md items-center leading-3 font-medium border text-[#0542CC] bg-white"
@@ -187,12 +191,12 @@
               startTicTac();
             }}
             class="mt-5 px-[3.3rem] pt-1 pb-1.5 border border-white text-sm font-bold rounded-md bg-[#0F62FE]"
-            >Play with computer</button
+          >
+            Play with computer</button
           >
           <button
             type="button"
             on:click={() => {
-              newGame();
               startTicTac();
             }}
             class="px-16 pt-1 pb-1.5 border border-white text-sm font-bold rounded-md bg-[#0F62FE]"

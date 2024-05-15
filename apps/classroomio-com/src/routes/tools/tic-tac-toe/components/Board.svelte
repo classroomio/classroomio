@@ -2,6 +2,7 @@
   import { sineInOut } from 'svelte/easing';
   import { fly } from 'svelte/transition';
   import WinningLine from './WinningLine.svelte';
+  import { changeToComputer } from './store';
 
   interface Game {
     board: Array<Array<string>>;
@@ -10,6 +11,16 @@
 
   export let game: Game;
   export let winner = null;
+
+  let customDelay: number;
+
+  $: {
+    if ($changeToComputer.change) {
+      customDelay = 400;
+    } else {
+      customDelay = 0;
+    }
+  }
 </script>
 
 <div class="relative">
@@ -32,7 +43,7 @@
                 />
               {:else if column === 'O'}
                 <img
-                  transition:fly={{ y: 100, delay: 0, easing: sineInOut }}
+                  transition:fly={{ y: 100, delay: customDelay, easing: sineInOut }}
                   src="/free-tools/tic-tac/tic-tac-o.svg"
                   alt="O icon"
                 />
