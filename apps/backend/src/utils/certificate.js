@@ -1,5 +1,11 @@
 const { getPdfBuffer } = require('./puppeteer');
 
+function getCurrentDate() {
+  const date = new Date();
+  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  return date.toLocaleDateString(undefined, options);
+}
+
 function getHtmlTemplate(body) {
   return `
   <!DOCTYPE html>
@@ -33,7 +39,15 @@ function getHtmlTemplate(body) {
   `;
 }
 
-function getProfessionalTheme({ studentName, courseName, courseDescription, orgLogoUrl, orgName }) {
+function getProfessionalTheme({
+  studentName,
+  courseName,
+  courseDescription,
+  orgLogoUrl,
+  orgName,
+  facilitator,
+  dateIssued
+}) {
   const themeBody = `
     <div class="h-[794px] flex items-center justify-center border border-dashed border-blue-400 w-full">
       <div class="w-full h-full flex border-l-8 border-blue-800">
@@ -61,13 +75,14 @@ function getProfessionalTheme({ studentName, courseName, courseDescription, orgL
           <div class="flex justify-between w-[70%] mx-auto text-center my-14">
             <div>
               <h1 class="h-2/4">DATE ISSUED:</h1>
-              <p class="border-b border-black font-bold">02,May 2024</p>
+              <p class="border-b border-black font-bold">${dateIssued}</p>
             </div>
 
-            <div>
+            
+            <!-- <div>
               <h1 class="h-2/4">FACILITATOR:</h1>
-              <p class="font-bold">ROTIMI BEST</p>
-            </div>
+              <p class="font-bold">${facilitator}</p>
+            </div>-->
 
             <div class="w-[20%]">
               <h1 class="h-2/4 border-b border-black"></h1>
@@ -86,7 +101,15 @@ function getProfessionalTheme({ studentName, courseName, courseDescription, orgL
   return getHtmlTemplate(themeBody);
 }
 
-function getPlainTheme({ studentName, courseName, courseDescription, orgLogoUrl, orgName }) {
+function getPlainTheme({
+  studentName,
+  courseName,
+  courseDescription,
+  orgLogoUrl,
+  orgName,
+  facilitator,
+  dateIssued
+}) {
   const themeBody = `
     <div class="h-[794px] flex flex-col items-center justify-center border-4 border-pink-700 py-3 w-full">
       <div class="flex items-center gap-1 my-2 mb-10">
@@ -104,7 +127,7 @@ function getPlainTheme({ studentName, courseName, courseDescription, orgLogoUrl,
         <div class="mb-2">
           <p class="text-xl text-black font-normal">
             has successfully completed a courses in
-          </p>
+          // </p>
           <div class="my-10">
             <p class="bg-transparent font-semibold text-pink-700 text-center uppercase text-3xl">
             ${courseName}
@@ -113,15 +136,15 @@ function getPlainTheme({ studentName, courseName, courseDescription, orgLogoUrl,
         </div>
         <p class="text-xl text-center text-gray-500 font-light">${courseDescription}</p>
         <div class="flex justify-between w-[70%] mx-auto text-center my-14">
-          <div>
-            <h1 class="h-2/4">DATE ISSUED:</h1>
-            <p class="border-b border-black font-bold">02,May 2024</p>
-          </div>
+        <div>
+          <h1 class="h-2/4">DATE ISSUED:</h1>
+          <p class="border-b border-black font-bold">${dateIssued}</p>
+        </div>
 
-          <div>
-            <h1 class="h-2/4">FACILITATOR:</h1>
-            <p class="font-bold">ROTIMI BEST</p>
-          </div>
+        <!-- <div>
+        <h1 class="h-2/4">FACILITATOR:</h1>
+        <p class="font-bold">${facilitator}</p>
+        </div>-->
 
           <div class="w-[20%]">
             <h1 class="h-2/4 border-b border-black"></h1>
@@ -140,7 +163,9 @@ function getPurpleProfessionalBadge({
   courseName,
   courseDescription,
   orgLogoUrl,
-  orgName
+  orgName,
+  facilitator,
+  dateIssued
 }) {
   const themeBody = `
     <img
@@ -169,13 +194,13 @@ function getPurpleProfessionalBadge({
       <div class="flex justify-between w-[70%] text-center my-[10%]">
         <div>
           <h1 class="h-2/4">DATE ISSUED:</h1>
-          <p class="border-b-2 border-black font-bold">02,May 2024</p>
+          <p class="border-b-2 border-black font-bold">${dateIssued}</p>
         </div>
 
-        <div>
-          <h1 class="h-2/4">FACILITATOR:</h1>
-          <p class="font-bold">ROTIMI BEST</p>
-        </div>
+        <!-- <div>
+        <h1 class="h-2/4">FACILITATOR:</h1>
+        <p class="font-bold">${facilitator}</p>
+        </div>-->
 
         <div class="w-[20%]">
           <h1 class="h-2/4 border-b-2 border-black"></h1>
@@ -197,7 +222,9 @@ function getBlueProfessionalBadge({
   courseName,
   courseDescription,
   orgLogoUrl,
-  orgName
+  orgName,
+  facilitator,
+  dateIssued
 }) {
   const themeBody = `
     <img
@@ -226,13 +253,13 @@ function getBlueProfessionalBadge({
       <div class="flex justify-between w-[70%] text-center my-[10%]">
         <div>
           <h1 class="h-2/4">DATE ISSUED:</h1>
-          <p class="border-b-2 border-black font-bold">02,May 2024</p>
+          <p class="border-b-2 border-black font-bold">${dateIssued}</p>
         </div>
 
-        <div>
-          <h1 class="h-2/4">FACILITATOR:</h1>
-          <p class="font-bold">ROTIMI BEST</p>
-        </div>
+        <!-- <div>
+        <h1 class="h-2/4">FACILITATOR:</h1>
+        <p class="font-bold">${facilitator}</p>
+        </div>-->
 
         <div class="w-[20%]">
           <h1 class="h-2/4 border-b-2 border-black"></h1>
@@ -254,7 +281,9 @@ function getPurpleProfessionalBadgePattern({
   courseName,
   courseDescription,
   orgLogoUrl,
-  orgName
+  orgName,
+  facilitator,
+  dateIssued
 }) {
   const themeBody = `
   <img
@@ -283,13 +312,13 @@ function getPurpleProfessionalBadgePattern({
     <div class="pl-10 flex justify-between w-[70%] text-center my-[10%]">
       <div>
         <h1 class="h-2/4">DATE ISSUED:</h1>
-        <p class="border-b-2 border-black font-bold">02,May 2024</p>
+        <p class="border-b-2 border-black font-bold">${dateIssued}</p>
       </div>
 
-      <div>
-        <h1 class="h-2/4">FACILITATOR:</h1>
-        <p class="font-bold">ROTIMI BEST</p>
-      </div>
+      <!-- <div>
+      <h1 class="h-2/4">FACILITATOR:</h1>
+      <p class="font-bold">${facilitator}</p>
+      </div>-->
 
       <div class="w-[20%]">
         <h1 class="h-2/4 border-b-2 border-black"></h1>
@@ -311,7 +340,9 @@ function getBlueProfessionalBadgePattern({
   courseName,
   courseDescription,
   orgLogoUrl,
-  orgName
+  orgName,
+  facilitator,
+  dateIssued
 }) {
   const themeBody = `
     <img
@@ -340,13 +371,13 @@ function getBlueProfessionalBadgePattern({
       <div class="pl-10 flex justify-between w-[70%] text-center my-[10%]">
         <div>
           <h1 class="h-2/4">DATE ISSUED:</h1>
-          <p class="border-b-2 border-black font-bold">02,May 2024</p>
+          <p class="border-b-2 border-black font-bold">${dateIssued}</p>
         </div>
 
-        <div>
-          <h1 class="h-2/4">FACILITATOR:</h1>
-          <p class="font-bold">ROTIMI BEST</p>
-        </div>
+        <!-- <div>
+        <h1 class="h-2/4">FACILITATOR:</h1>
+        <p class="font-bold">${facilitator}</p>
+        </div>-->
 
         <div class="w-[20%]">
           <h1 class="h-2/4 border-b-2 border-black"></h1>
@@ -371,12 +402,15 @@ const generateCertificate = async ({
   orgLogoUrl,
   orgName
 }) => {
+  const dateIssued = getCurrentDate();
+
   const params = {
     studentName,
     courseName,
     courseDescription,
     orgLogoUrl,
-    orgName
+    orgName,
+    dateIssued
   };
   console.log('theme', theme);
 
