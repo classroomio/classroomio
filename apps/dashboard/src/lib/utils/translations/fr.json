@@ -367,6 +367,27 @@
           }
         }
       },
+      "certificates": {
+        "title": "Certificats",
+        "certificate_settings": "Paramètres du certificat",
+        "theme": "Choisissez un thème",
+        "logo": "Logo de la marque",
+        "to_update": "Pour mettre à jour votre image de marque, rendez-vous sur",
+        "settings": "Paramètres > Paramètres de l'organisation",
+        "and_upload": "et téléchargez le logo de votre marque",
+        "goto_settings": "Aller aux paramètres",
+        "description": "Description du cours",
+        "placeholder": "une petite description du cours",
+        "allow": "Autoriser les étudiants à télécharger le certificat",
+        "locked": "Fermé à clé",
+        "unlocked": "Débloqué",
+        "save": "Sauvegarder les modifications",
+        "unlocked_certificate": "Le certificat est maintenant disponible",
+        "locked_certificate": "Certificats non disponibles",
+        "instructor_unlock": "Votre instructeur doit débloquer votre certificat.",
+        "contact_instructor": "Si vous avez besoin de votre certificat, veuillez contacter votre instructeur.",
+        "download_certificate": "Télécharger le certificat"
+      },
       "people": {
         "title": "Personnes",
         "add": "Ajouter",
@@ -400,6 +421,18 @@
           "copy_link": "Copier le lien",
           "success": "Copié avec succès",
           "finish": "Finition"
+        },
+        "teams": {
+          "add": "Ajouter",
+          "add_team": "Ajoutez vos coéquipiers ou collaborateurs à votre organisation. Commencez à travailler ensemble",
+          "invite": "Inviter",
+          "placeholder": "email séparé par des virgules",
+          "role": "Rôle",
+          "send_invite": "Envoyer une invitation",
+          "members": "Membres",
+          "invite_sent": "Invitation envoyée",
+          "you": "Toi",
+          "remove": "Retirer"
         }
       },
       "marks": {
@@ -414,6 +447,19 @@
           "submitted": "Soumis",
           "in_progress": "En cours",
           "graded": "Noté"
+        },
+        "grading_modal": {
+          "details": "Détails",
+          "early": "Tôt",
+          "late": "En retard",
+          "total_grade": "Note totale",
+          "student": "Étudiant",
+          "status": "Statut",
+          "add_comment": "Ajouter un commentaire",
+          "grade_with_ai": "Noter avec l'IA",
+          "submit_grades": "Soumettre les notes",
+          "accept_grade": "Accepter",
+          "reject_grade": "Rejeter"
         }
       },
       "attendance": {
@@ -689,27 +735,6 @@
           "cancel": "Annuler",
           "post": "Poste"
         }
-      },
-      "certificates": {
-        "title": "Certificats",
-        "certificate_settings": "Paramètres du certificat",
-        "theme": "Choisissez un thème",
-        "logo": "Logo de la marque",
-        "to_update": "Pour mettre à jour votre image de marque, rendez-vous sur",
-        "settings": "Paramètres > Paramètres de l'organisation",
-        "and_upload": "et téléchargez le logo de votre marque",
-        "goto_settings": "Aller aux paramètres",
-        "description": "Description du cours",
-        "placeholder": "une petite description du cours",
-        "allow": "Autoriser les étudiants à télécharger le certificat",
-        "locked": "Fermé à clé",
-        "unlocked": "Débloqué",
-        "save": "Sauvegarder les modifications",
-        "unlocked_certificate": "Le certificat est maintenant disponible",
-        "locked_certificate": "Certificats non disponibles",
-        "instructor_unlock": "Votre instructeur doit débloquer votre certificat.",
-        "contact_instructor": "Si vous avez besoin de votre certificat, veuillez contacter votre instructeur.",
-        "download_certificate": "Télécharger le certificat"
       }
     },
     "navItems": {

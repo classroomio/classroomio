@@ -14,7 +14,7 @@ import { STATUS } from '$lib/utils/constants/course';
 import type { PostgrestSingleResponse } from '@supabase/supabase-js';
 
 export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']) {
-  let match: { slug?: string; id?: string; status?: string } = {};
+  const match: { slug?: string; id?: string; status?: string } = {};
 
   if (slug) {
     match.slug = slug;

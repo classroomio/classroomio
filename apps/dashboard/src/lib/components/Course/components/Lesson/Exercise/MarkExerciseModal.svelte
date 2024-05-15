@@ -1,23 +1,43 @@
-<script>
-  import { onMount } from 'svelte';
+<script lang="ts">
   import Modal from '$lib/components/Modal/index.svelte';
-  import Select from '$lib/components/Form/Select.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import Preview from './Preview.svelte';
-  import { SELECTABLE_STATUS } from './constants';
+  import { STATUS } from './constants';
   import { snackbar } from '$lib/components/Snackbar/store';
+  import TextArea from '$lib/components/Form/TextArea.svelte';
+  import { Dropdown, Tag } from 'carbon-components-svelte';
+  import { useCompletion } from 'ai/svelte';
+  import { QUESTION_TYPE } from '$lib/components/Question/constants';
+  import { t } from '$lib/utils/functions/translations';
 
   export let open = false;
   export let onClose = () => {};
   export let handleSave = () => {};
+  export let isGradeWithAI = false;
 
-  // export let submissionId;
   export let data = {};
   export let updateStatus = () => {};
 
-  let status = SELECTABLE_STATUS[0];
+  const SELECTABLE_STATUS = [
+    {
+      id: STATUS.SUBMITTED,
+      text: $t('course.navItem.submissions.submission_status.submitted')
+    },
+    {
+      id: STATUS.IN_PROGRESS,
+      text: $t('course.navItem.submissions.submission_status.in_progress')
+    },
+    {
+      id: STATUS.GRADED,
+      text: $t('course.navItem.submissions.submission_status.graded')
+    }
+  ];
 
+  let status = SELECTABLE_STATUS[0];
+  let selectedId = status.id;
+  let reasons = {};
+  let isLoading = false;
   let total = 0;
   let maxPoints = 0;
 
@@ -25,43 +45,106 @@
     return (questions || []).reduce((acc, question) => acc + question.points, 0);
   }
 
-  function calculateTotal(grades) {
+  function calculateTotal(grades: Record<string, string>): number {
     if (!grades) return 0;
-    return Object.values(grades).reduce((acc, grade) => acc + parseInt(grade), 0);
+    return Object.values(grades).reduce((acc, grade) => acc + parseInt(grade || '0'), 0);
   }
 
-  function handleStatusChange() {
+  function handleStatusChange(event) {
+    const newSelectedId = event.detail.selectedId;
+
+    setStatus({
+      status_id: newSelectedId
+    });
+
     updateStatus({
       submissionId: data.id,
       prevStatusId: data.status_id,
-      nextStatusId: status.value,
+      nextStatusId: status.id,
       total
     });
 
-    snackbar.success(`snackbar.exercise.submission_updated '${status.label}'`);
+    snackbar.success(`${$t('snackbar.exercise.submission_updated')} '${status.text}'`);
   }
 
   function setStatus(data) {
-    status = SELECTABLE_STATUS.find((status) => status.value === data.status_id);
+    const statusBySelectedId = SELECTABLE_STATUS.find((status) => status.id === data.status_id);
+
+    if (!statusBySelectedId) {
+      return;
+    }
+
+    status = statusBySelectedId;
+
+    if (data.status_id !== selectedId) {
+      selectedId = data.status_id;
+    }
   }
 
-  function getStatusColor(status) {
-    // if (!status)
-    return '';
+  const { input, handleSubmit, completion } = useCompletion({
+    api: '/api/completion/gradingprompt',
+    onFinish: async () => {
+      try {
+        const responseData = $completion.replace('```json', '').replace('```', '');
 
-    // switch (status.value) {
-    //   case STATUS.SUBMITTED:
-    //     return '';
-    //   case STATUS.IN_PROGRESS:
-    //     return 'text-white bg-primary-700';
-    //   case STATUS.GRADED:
-    //     return 'text-white bg-green-700';
-    // }
-  }
+        let aiResponses = [];
+        try {
+          // Parse the modified response data as JSON
+          aiResponses = JSON.parse(responseData);
+        } catch (error) {
+          console.error('Error parsing AI response', error);
+        }
 
-  onMount(() => {
-    console.log('mounting');
+        data?.questions.forEach((question) => {
+          const { id, points, question_type_id } = question;
+
+          if (question_type_id !== QUESTION_TYPE.TEXTAREA) {
+            const answer = data.questionAnswers.find((q) => q.question_id === id);
+
+            reasons = {
+              ...reasons,
+              [id]: `${$t('course.navItem.submissions.grading_modal.questions_tried')} ${
+                answer.answers.length
+              } `
+            };
+            data.questionAnswerByPoint[id] = points / answer.answers.length;
+          } else if (aiResponses.length) {
+            const graded = aiResponses.find((res) => res.id === id);
+
+            reasons = {
+              ...reasons,
+              [id]: `${graded?.explanation}`
+            };
+
+            data.questionAnswerByPoint[id] = graded.score;
+          }
+        });
+      } catch (error) {
+        console.error('Error', error);
+      } finally {
+        isLoading = false;
+      }
+    }
   });
+
+  function gradeWithAI() {
+    isGradeWithAI = true;
+    isLoading = true;
+    const paragraphAiInput = data.questions
+      .filter((q) => q.question_type_id === QUESTION_TYPE.TEXTAREA)
+      .map((q) => {
+        const answer = data.questionAnswers.find((qA) => qA.question_id === q.id); // { open_answer: '' }
+        return {
+          id: q.id,
+          question: q.title,
+          answer: answer?.open_answer,
+          point: q.points
+        };
+      });
+
+    $input = JSON.stringify(paragraphAiInput);
+    handleSubmit({ preventDefault: () => {} });
+  }
 
   $: total = calculateTotal(data.questionAnswerByPoint);
   $: maxPoints = getMaxPoints(data.questions);
@@ -72,10 +155,12 @@
   modalHeading={data.title}
   bind:open
   {onClose}
-  width="w-4/5"
-  containerClass="flex items-start"
+  width="w-4/5 h-[90%]"
+  containerClass="flex items-start !max-h-full h-[85%] py-0 px-4"
+  headerClass="py-2"
+  labelClass="text-base font-semibold"
 >
-  <div class="w-full">
+  <div class="w-full h-full">
     <Preview
       questions={Array.isArray(data.questions)
         ? data.questions.sort((a, b) => a.order - b.order)
@@ -85,26 +170,41 @@
         isFinished: true
       }}
       bind:grades={data.questionAnswerByPoint}
+      bind:reasons
+      bind:isGradeWithAI
+      bind:isLoading
+      disableGrading={false}
     />
   </div>
   <div class="ml-4 w-2/5 sticky top-0">
-    <div class="border border-gray-300 rounded-md mt-2">
+    <div class="border border-gray-300 rounded-md">
       <div
         class="hover:bg-gray-100 dark:bg-neutral-800 border-b border-t-0 border-l-0 border-r-0 border-gray-300 p-3"
       >
-        <p class="dark:text-white font-bold text-lg">
-          Details
+        <p class="dark:text-white font-bold text-base">
+          {$t('course.navItem.submissions.grading_modal.details')}
           {#if data.isEarly}
-            <span class="ml-2 text-sm badge rounded-sm px-2 bg-green-500 text-white"> early </span>
+            <span class="ml-2 text-sm badge rounded-sm px-2 bg-green-500 text-white">
+              {$t('course.navItem.submissions.grading_modal.early')}</span
+            >
           {:else}
-            <span class="ml-2 badge text-sm rounded-sm px-2 bg-red-500 text-white"> late </span>
+            <span class="ml-2 badge text-sm rounded-sm px-2 bg-red-500 text-white">
+              {$t('course.navItem.submissions.grading_modal.late')}
+            </span>
           {/if}
         </p>
       </div>
 
-      <div class="flex items-center text-sm p-3">
-        <p class="dark:text-white font-bold w-2/5">Total grade</p>
-        <p class="dark:text-white">{total} / {maxPoints}</p>
+      <div class="flex items-center space-x-4 text-sm px-3 py-2">
+        <p class="dark:text-white text-sm text-gray-500 font-semibold">
+          {$t('course.navItem.submissions.grading_modal.total_grade')}:
+        </p>
+
+        <Tag
+          class="dark:text-white font-semibold text-black bg-gray-100 dark:bg-neutral-700 rounded-md w-fit"
+        >
+          {total}/{maxPoints}
+        </Tag>
       </div>
       <!-- <div class="flex items-center text-sm p-3">
         <p class="dark:text-white font-bold w-1/2">Status</p>
@@ -113,35 +213,75 @@
           <p class="dark:text-white">Grading</p>
         </div>
       </div> -->
-      <div class="flex items-center text-sm p-3">
-        <p class="dark:text-white font-bold w-2/5">Student</p>
+      <div class="flex items-center space-x-4 text-sm px-3 py-2">
+        <p class="dark:text-white text-sm text-gray-500 font-semibold">
+          {$t('course.navItem.submissions.grading_modal.student')}:
+        </p>
         {#if data.student}
-          <img
-            alt="Student avatar"
-            class="block rounded-full h-6 w-6"
-            src={data.student.avatar_url}
-          />
-          <p class="dark:text-white ml-2 text-sm">{data.student.fullname}</p>
+          <div
+            class="flex flex-row justify-center items-center bg-gray-100 dark:bg-neutral-700 rounded-md p-[6px]"
+          >
+            <img
+              alt="Student avatar"
+              class="flex rounded-full h-5 w-5"
+              src={data.student.avatar_url}
+            />
+            <p class="dark:text-white font-semibold ml-2 text-sm line-clamp-1">
+              {data.student.fullname}
+            </p>
+          </div>
         {/if}
       </div>
-      <div class="flex items-center text-sm p-3">
-        <p class="dark:text-white font-bold w-2/5">Status</p>
-        <Select
-          bind:value={status}
-          options={SELECTABLE_STATUS}
-          selectClassName={getStatusColor(status)}
-          onChange={handleStatusChange}
-          className="w-full"
+      <!-- <div class="flex items-center space-x-4 text-sm px-3 py-2">
+        <p class="dark:text-white text-sm text-gray-500 font-semibold">Assesment Type:</p>
+        <Tag
+          class="dark:text-white font-semibold bg-gray-100 dark:bg-neutral-700 rounded-md text-black w-fit"
+          >Paragraph</Tag
+        >
+      </div> -->
+
+      <div class="flex flex-col items-start text-sm px-3 py-2">
+        <p class="dark:text-white text-gray-500 font-semibold">
+          {$t('course.navItem.submissions.grading_modal.status')}:
+        </p>
+        <Dropdown
+          bind:selectedId
+          items={SELECTABLE_STATUS}
+          class="w-full"
+          on:select={handleStatusChange}
         />
       </div>
-      <div class="flex items-center justify-center w-full p-3">
+
+      <div class="flex flex-col items-start text-sm px-3 py-2">
+        <p class="dark:text-white text-gray-500 font-semibold">
+          {$t('course.navItem.submissions.grading_modal.add_comment')}:
+        </p>
+        <TextArea
+          bgColor="bg-gray-100 dark:bg-neutral-700"
+          className="font-semibold"
+          placeholder={$t('course.navItem.submissions.grading_modal.add_comment_placeholder')}
+          bind:value={data.feedback}
+        />
+      </div>
+
+      <div class="flex flex-col w-full space-y-3 px-3 py-2">
+        <PrimaryButton
+          onClick={gradeWithAI}
+          variant={VARIANTS.OUTLINED}
+          className="space-x-3 py-3 px-8 w-full "
+        >
+          <img src="/ai.svg" alt="ai" />
+          <p class="font-semibold text-sm">
+            {$t('course.navItem.submissions.grading_modal.grade_with_ai')}
+          </p>
+        </PrimaryButton>
         <PrimaryButton
           onClick={() => {
             handleSave(data);
             onClose();
           }}
-          label="Submit Grades"
-          variant={VARIANTS.CONTAINED_SUCCESS}
+          label={$t('course.navItem.submissions.grading_modal.submit_grades')}
+          variant={VARIANTS.CONTAINED}
           className="py-3 px-8 w-full"
         />
       </div>

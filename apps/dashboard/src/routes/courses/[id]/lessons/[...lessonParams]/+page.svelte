@@ -270,11 +270,11 @@
   >
     <svelte:fragment slot="widget">
       <div class="flex">
-        <div class="mr-5">
-          <Dropdown items={LANGUAGES} bind:selectedId={$lesson.locale} class="h-full" />
-        </div>
         <RoleBasedSecurity allowedRoles={[1, 2]}>
           {#if data.isMaterialsTabActive}
+            <div class="mr-5">
+              <Dropdown items={LANGUAGES} bind:selectedId={$lesson.locale} class="h-full" />
+            </div>
             <div class="tab">
               <IconButton onClick={toggleApps} buttonClassName="">
                 <OverflowMenuVertical size={24} />
@@ -368,9 +368,8 @@
       {/if}
     </PageBody>
   {/if}
-
   <!-- Mobile Navigation -->
-  <div class="fixed bottom-5 w-[90%] flex items-center justify-center lg:hidden">
+  <div class="sticky bottom-5 flex items-center justify-center lg:hidden">
     <div
       class="flex items-center gap-2 w-fit rounded-full shadow-xl bg-gray-100 dark:bg-neutral-700 px-5 py-1"
     >

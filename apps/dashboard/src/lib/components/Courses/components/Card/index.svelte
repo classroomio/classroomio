@@ -53,10 +53,6 @@
     // TODO: Delete course functionality
     alert('WIP: Delete course');
   }
-
-  onDestroy(() => {
-    console.log('unmounting card');
-  });
 </script>
 
 {#if !isLMS && !isOnLandingPage}
@@ -127,7 +123,7 @@
         {#if isOnLandingPage}
           <span class="px-2"
             >{!cost
-              ? $t('course.navItem.landing_page.pricing_section')
+              ? $t('course.navItem.landing_page.pricing_section.free')
               : formatter.format(cost)}</span
           >
         {:else if isLMS}

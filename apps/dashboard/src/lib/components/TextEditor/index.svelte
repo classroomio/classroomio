@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { PUBLIC_TINYMCE_API_KEY } from '$env/static/public';
-  import Editor from '@tinymce/tinymce-svelte';
+  import Editor from './TinymceSvelte/index.svelte';
   import { globalStore } from '$lib/utils/store/app';
   import { addMathPlugin } from '$lib/utils/functions/tinymce/plugins';
 
@@ -12,8 +11,6 @@
   export let editorWindowRef: Window | undefined = undefined;
   export let maxHeight: number | undefined = undefined;
 
-  const apiKey = PUBLIC_TINYMCE_API_KEY;
-
   let unmount = false;
   let editorChangeHandlerId;
 
@@ -22,7 +19,9 @@
       return typeof window !== 'undefined' ? window : global;
     };
     const sink = getSink();
-    return sink && sink.tinymce ? sink.tinymce : null;
+    const res = sink && sink.tinymce ? sink.tinymce : null;
+    console.log({ res });
+    return res;
   }
 
   // editor configuration
@@ -93,8 +92,12 @@
   $: handleModeChange($globalStore.isDark);
 </script>
 
+<svelte:head>
+  <link rel="stylesheet" href="https://unpkg.com/katex@0.12.0/dist/katex.min.css" />
+</svelte:head>
+
 <div>
   {#if !unmount}
-    <Editor bind:value {apiKey} bind:conf />
+    <Editor bind:value bind:conf />
   {/if}
 </div>

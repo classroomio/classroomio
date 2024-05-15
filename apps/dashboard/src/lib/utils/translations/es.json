@@ -367,6 +367,27 @@
           }
         }
       },
+      "certificates": {
+        "title": "Certificados",
+        "certificate_settings": "Configuración del certificado",
+        "theme": "Elige un tema",
+        "logo": "Logotipo",
+        "to_update": "Para actualizar su imagen de marca, vaya a",
+        "settings": "Configuración > Configuración de la organización",
+        "and_upload": "y sube el logo de tu marca",
+        "goto_settings": "Ir a la configuración",
+        "description": "Descripción del curso",
+        "placeholder": "una pequeña descripción sobre el curso",
+        "allow": "Permitir a los estudiantes descargar el certificado",
+        "locked": "bloqueado",
+        "unlocked": "desbloqueado",
+        "save": "Guardar cambios",
+        "unlocked_certificate": "El certificado ya está disponible",
+        "locked_certificate": "Certificados no disponibles",
+        "instructor_unlock": "Su instructor necesita desbloquear su certificado.",
+        "contact_instructor": "Si necesita su certificado, comuníquese con su instructor.",
+        "download_certificate": "Descargar certificado"
+      },
       "people": {
         "title": "Gente",
         "add": "Agregar",
@@ -400,6 +421,18 @@
           "copy_link": "Copiar link",
           "success": "Copiado correctamente",
           "finish": "Finalizar"
+        },
+        "teams": {
+          "add": "Agregar",
+          "add_team": "Agregue sus compañeros de equipo o colaboradores a su organización. Empezar a trabajar juntos",
+          "invite": "Invitar",
+          "placeholder": "correo electrónico separado por comas",
+          "role": "Role",
+          "send_invite": "Enviar invitación",
+          "members": "Miembros",
+          "invite_sent": "Invitar enviado",
+          "you": "Tú",
+          "remove": "Eliminar"
         }
       },
       "marks": {
@@ -414,6 +447,21 @@
           "submitted": "Enviado",
           "in_progress": "En curso",
           "graded": "Calificado"
+        },
+        "grading_modal": {
+          "details": "Detalles",
+          "early": "Temprano",
+          "late": "Tarde",
+          "total_grade": "Nota total",
+          "student": "Alumno",
+          "status": "Estado",
+          "add_comment": "Agregar comentario",
+          "grade_with_ai": "Calificar con IA",
+          "submit_grades": "Enviar calificaciones",
+          "accept_grade": "Aceptar",
+          "reject_grade": "Rechazar",
+          "add_comment_placeholder": "Deja un comentario",
+          "questions_tried": "Se asignó esta puntuación debido al total de intentos:"
         }
       },
       "attendance": {
@@ -689,27 +737,6 @@
           "cancel": "Cancelar",
           "post": "Correo"
         }
-      },
-      "certificates": {
-        "title": "Certificados",
-        "certificate_settings": "Configuración del certificado",
-        "theme": "Elige un tema",
-        "logo": "Logotipo",
-        "to_update": "Para actualizar su imagen de marca, vaya a",
-        "settings": "Configuración > Configuración de la organización",
-        "and_upload": "y sube el logo de tu marca",
-        "goto_settings": "Ir a la configuración",
-        "description": "Descripción del curso",
-        "placeholder": "una pequeña descripción sobre el curso",
-        "allow": "Permitir a los estudiantes descargar el certificado",
-        "locked": "bloqueado",
-        "unlocked": "desbloqueado",
-        "save": "Guardar cambios",
-        "unlocked_certificate": "El certificado ya está disponible",
-        "locked_certificate": "Certificados no disponibles",
-        "instructor_unlock": "Su instructor necesita desbloquear su certificado.",
-        "contact_instructor": "Si necesita su certificado, comuníquese con su instructor.",
-        "download_certificate": "Descargar Certificado"
       }
     },
     "navItems": {

@@ -24,6 +24,7 @@ export function fetchSubmissions(course_id: string) {
       )
     ),
     status_id,
+    feedback,
     course:course_id(*),
     groupmember:submitted_by(
       profile(*)
@@ -66,6 +67,7 @@ export async function fetchSubmission({
       id,
       answers:question_answer(*),
       status_id,
+      feedback,
       submitted_by:groupmember!inner(
         profile!inner(
           id,
@@ -80,14 +82,21 @@ export async function fetchSubmission({
 }
 
 export async function updateSubmission(
-  { id, status_id, total }: { id?: number; status_id?: number; total?: number },
+  {
+    id,
+    status_id,
+    total,
+    feedback
+  }: { id?: number; status_id?: number; total?: number; feedback?: string },
   otherArgs?: any
 ) {
   const toUpdate: {
     status_id?: number;
     total?: number;
+    feedback?: string;
   } = {
-    status_id
+    status_id,
+    feedback
   };
 
   if (typeof total === 'number') {

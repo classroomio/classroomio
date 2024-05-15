@@ -5,7 +5,7 @@ import sendEmail from '$mail/sendEmail';
 const supabase = getSupabase();
 
 export async function POST({ request }) {
-  const { to, profileId, orgSiteName } = await request.json();
+  const { to, profileId, orgSiteName, fullname } = await request.json();
   const accessToken = request.headers.get('Authorization');
   console.log('/POST api/email/verify_email', to, profileId);
 
@@ -38,13 +38,15 @@ export async function POST({ request }) {
   const emailData = [
     {
       to,
-      subject: '[ClassroomIO]: Verify your email',
+      subject: 'Action Required: Confirm your email',
       content: `
-  <p>Thank you for signing up</p>
-  <p>To verify your email, please click the <strong>Verify</strong> button below </p>
+  <p><strong>Hi ${fullname} 👋</strong></p>
+  <p>Welcome to ClassroomIO, new friend! In order to get your account ready for usage, we need to verify your email. </p>
+  <p>We do this to make sure we don't get fake user emails in our signup. To get the best out of our product, we'll need you to verify your email by clicking the <strong>Verify</strong> button below
+  </p>
   <div>
   <a class="button" href="${verificationLink}">Verify</a>
-</div>
+  </div>
   `,
       isPersonalEmail: true
     }

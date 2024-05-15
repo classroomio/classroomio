@@ -108,9 +108,9 @@
         <li class="text-gray-800 font-semibold text-sm cursor-pointer">Pricing</li>
       </a>
       <!-- Docs -->
-      <!-- <a href="/docs" target="_blank">
+      <a href="/docs" target="_blank">
         <li class="text-gray-800 font-semibold text-sm cursor-pointer">Docs</li>
-      </a> -->
+      </a>
       <!-- Blog -->
       <a href="/blog">
         <li class="text-gray-800 font-semibold text-sm cursor-pointer">Blog</li>
@@ -206,14 +206,14 @@
             <li>Pricing</li>
           </a>
           <!-- Docs -->
-          <!-- <a
+          <a
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
             on:click={handleShowNav}
             href="/docs"
             target="_blank"
           >
             <li>Docs</li>
-          </a> -->
+          </a>
 
           <!-- Blog -->
           <a

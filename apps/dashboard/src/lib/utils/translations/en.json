@@ -716,6 +716,21 @@
           "submitted": "Submitted",
           "in_progress": "In Progress",
           "graded": "Graded"
+        },
+        "grading_modal": {
+          "details": "Details",
+          "early": "Early",
+          "late": "Late",
+          "total_grade": "Total grade",
+          "student": "Student",
+          "status": "Status",
+          "add_comment": "Add comment",
+          "add_comment_placeholder": "Leave a comment",
+          "grade_with_ai": "Grade with AI",
+          "submit_grades": "Submit Grades",
+          "accept_grade": "Accept",
+          "reject_grade": "Reject",
+          "questions_tried": "Allocated this score because of total tries:"
         }
       },
 
@@ -759,6 +774,18 @@
           "tutor": "Tutor",
           "student": "Student",
           "filter": "Filter"
+        },
+        "teams": {
+          "add": "Add",
+          "add_team": "Add your team mates or collaborators to your organization. Start working together",
+          "invite": "Invite",
+          "placeholder": "email comma separated",
+          "role": "Role",
+          "send_invite": "Send Invite",
+          "members": "Members",
+          "invite_sent": "Invite Sent",
+          "you": "You",
+          "remove": "Remove"
         }
       },
 
@@ -781,7 +808,7 @@
         "locked_certificate": "Certificates not available",
         "instructor_unlock": "Your instructor needs to unlock your certificate.",
         "contact_instructor": "If you need your certificate, please contact your instructor.",
-        "download_certificate": "Download Certificate"
+        "download_certificate": "DownLoad Certificate"
       },
 
       "landing_page": {
