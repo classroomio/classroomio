@@ -412,7 +412,11 @@ export async function submitExercise(
   }
 
   const res = await supabase.from('question_answer').insert(questionAnswers).select();
-  console.log(`res`, res);
+  console.log(`res`, res, 'submission', submission);
+  return {
+    submission,
+    res
+  };
 }
 
 export async function deleteExercise(questions: Array<{ id: string }>, exerciseId: Exercise['id']) {

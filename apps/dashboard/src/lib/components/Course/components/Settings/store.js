@@ -1,3 +1,4 @@
+import { COURSE_TYPE_ENUM } from '$lib/components/Courses/constants';
 import { writable } from 'svelte/store';
 
 export const settings = writable({
@@ -5,6 +6,7 @@ export const settings = writable({
   course_title: '',
   course_description: '',
   grading: false,
+  course_type: COURSE_TYPE_ENUM.LIVE_CLASS,
   allow_new_students: false,
   tabs: [
     { id: 1, name: 'course.navItem.lessons.materials.tabs.note.title' },
