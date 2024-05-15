@@ -400,7 +400,8 @@ const generateCertificate = async ({
   courseName,
   courseDescription,
   orgLogoUrl,
-  orgName
+  orgName,
+  facilitator
 }) => {
   const dateIssued = getCurrentDate();
 
@@ -410,6 +411,7 @@ const generateCertificate = async ({
     courseDescription,
     orgLogoUrl,
     orgName,
+    facilitator,
     dateIssued
   };
   console.log('theme', theme);
