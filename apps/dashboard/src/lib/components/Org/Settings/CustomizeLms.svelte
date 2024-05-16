@@ -183,7 +183,7 @@
 >
   <span>
     <IconButton onClick={handleSave} disabled={isSaving}>
-      <Save size={40} class=" bg-blue-700 SectionTitle-1 rounded-full" />
+      <Save size={24} class=" bg-blue-700 SectionTitle-1 rounded-full" />
     </IconButton>
   </span>
 </div>

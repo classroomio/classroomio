@@ -712,7 +712,7 @@
           "edit": "Modifier",
           "delete": "Supprimer"
         },
-        "disabled": "cette fonctionnalité est désactivée"
+        "disabled": "La fonctionnalité est désactivée"
       },
       "news_feed": {
         "heading": "Fil d'actualité",
