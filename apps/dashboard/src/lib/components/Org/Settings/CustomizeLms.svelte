@@ -19,22 +19,7 @@
 
   let widgetKey = '';
   let isSaving = false;
-  let customLMSSettings: OrgCustomLMS = {
-    dashboard: {
-      community: true,
-      exercise: true,
-      bannerImage: '',
-      bannerText: ''
-    },
-    course: {
-      newsfeed: true,
-      grading: true
-    },
-    apps: {
-      poll: true,
-      comments: true
-    }
-  };
+  let customLMSSettings: OrgCustomLMS = {};
 
   function widgetControl(key: string) {
     widgetKey = key;

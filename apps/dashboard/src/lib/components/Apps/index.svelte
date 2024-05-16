@@ -18,6 +18,7 @@
   import { course } from '$lib/components/Course/store';
   import { lesson } from '$lib/components/Course/components/Lesson/store/lessons';
   import { currentOrg } from '$lib/utils/store/org';
+  import { t } from '$lib/utils/functions/translations';
 
   let appBarRef: HTMLDivElement;
   let appContentRef: HTMLDivElement;
@@ -84,9 +85,9 @@
         toolTipProps={{
           title: `${
             $globalStore.isOrgSite && !$currentOrg.customization.apps.comments
-              ? 'course.navItem.lessons.disabled'
-              : 'course.navItem.lessons.comments.title'
-          } `,
+              ? $t('course.navItem.lessons.disabled')
+              : $t('course.navItem.lessons.comments.title')
+          }`,
           hotkeys: ['Ctrl/Command', '1']
         }}
         value={APPS_CONSTANTS.APPS.COMMENTS}
@@ -107,8 +108,8 @@
         toolTipProps={{
           title: `${
             $globalStore.isOrgSite && !$currentOrg.customization.apps.poll
-              ? 'course.navItem.lessons.disabled'
-              : 'course.navItem.lessons.polls.title'
+              ? $t('course.navItem.lessons.disabled')
+              : $t('course.navItem.lessons.polls.title')
           } `,
           hotkeys: ['Ctrl/Command', '2']
         }}
