@@ -154,7 +154,6 @@
   });
 
   function automaticGrading(answers, questions) {
-    isLoading = true;
     const paragraphAiInput = questions
       .filter((q) => q.question_type_id === QUESTION_TYPE.TEXTAREA)
       .map((q) => {
@@ -171,6 +170,10 @@
   }
 
   async function onSubmit(id, value, moveToNextQuestion = false) {
+    if ($course.course_type === COURSE_TYPE_ENUM.SELF_PACED) {
+      isLoading = true;
+    }
+
     const { answers } = $questionnaireMetaData;
     const { questions } = $questionnaire;
     const prevAnswer = answers[id] || [];
