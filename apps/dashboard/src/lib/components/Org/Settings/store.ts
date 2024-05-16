@@ -64,25 +64,6 @@ export interface OrgLandingPageJson {
   };
 }
 
-export interface OrgCustomLMS {
-  dashboard: {
-    community: boolean;
-    exercise: boolean;
-    bannerImage: string;
-    bannerText: string;
-  };
-  course: {
-    newsfeed: boolean;
-    grading: boolean;
-  };
-  apps: {
-    poll: boolean;
-    comments: boolean;
-  };
-}
-
-
-
 export let landingPageSettings: Writable<OrgLandingPageJson> = writable({
   header: {
     title: 'Web Development Courses for',

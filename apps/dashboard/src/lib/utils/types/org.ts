@@ -1,3 +1,20 @@
+export interface OrgCustomization {
+  dashboard: {
+    community: boolean;
+    exercise: boolean;
+    bannerImage: string;
+    bannerText: string;
+  };
+  course: {
+    newsfeed: boolean;
+    grading: boolean;
+  };
+  apps: {
+    poll: boolean;
+    comments: boolean;
+  };
+}
+
 export interface CurrentOrg {
   id: string;
   name: string;
@@ -9,7 +26,7 @@ export interface CurrentOrg {
   landingpage: {
     [key: string]: unknown;
   };
-  customization: any;
+  customization: OrgCustomization;
   theme: string;
   organization_plan: {
     subscriptionId: string;

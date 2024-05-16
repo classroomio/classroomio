@@ -16,7 +16,11 @@ export const defaultCurrentOrgState: CurrentOrg = {
   memberId: '',
   role_id: '',
   landingpage: {},
-  customization: {},
+  customization: {
+    apps: { poll: true, comments: true },
+    course: { grading: true, newsfeed: true },
+    dashboard: { exercise: true, community: true, bannerText: '', bannerImage: '' }
+  },
   theme: '',
   organization_plan: []
 };
