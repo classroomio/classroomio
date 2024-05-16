@@ -262,7 +262,11 @@
         "unpublished": "Não publicado",
         "delete": "Excluir curso",
         "delete_text": "Exclua este curso, esta ação não pode ser desfeita",
-        "save": "Salvar alterações"
+        "save": "Salvar alterações",
+        "course_type": "Tipo de curso",
+        "course_type_desc": "Atualize o tipo de curso para uma experiência mais personalizada",
+        "live_class": "Aula ao vivo",
+        "self_paced": "Individualizado"
       },
       "landing_page": {
         "start_course": "Iniciar curso",

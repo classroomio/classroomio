@@ -262,7 +262,11 @@
         "unpublished": "Chưa được xuất bản",
         "delete": "Xóa khóa học",
         "delete_text": "Xóa khóa học này, hành động này không thể hoàn tác",
-        "save": "Lưu thay đổi"
+        "save": "Lưu thay đổi",
+        "course_type": "Loại khóa học",
+        "course_type_desc": "Cập nhật loại khóa học để có trải nghiệm cá nhân hóa hơn",
+        "live_class": "Lớp học trực tiếp",
+        "self_paced": "Tự nhịp độ"
       },
       "landing_page": {
         "start_course": "Bắt đầu khóa học",
@@ -459,7 +463,9 @@
           "grade_with_ai": "Chấm điểm bằng AI",
           "submit_grades": "Gửi điểm",
           "accept_grade": "Chấp nhận",
-          "reject_grade": "Từ chối"
+          "reject_grade": "Từ chối",
+          "add_comment_placeholder": "Để lại một bình luận",
+          "questions_tried": "Phân bổ số điểm này dựa trên tổng số lần thử:"
         }
       },
       "attendance": {

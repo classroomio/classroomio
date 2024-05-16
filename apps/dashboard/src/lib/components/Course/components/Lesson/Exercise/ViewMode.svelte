@@ -154,6 +154,7 @@
   });
 
   function automaticGrading(answers, questions) {
+    isLoading = true;
     const paragraphAiInput = questions
       .filter((q) => q.question_type_id === QUESTION_TYPE.TEXTAREA)
       .map((q) => {
@@ -170,7 +171,6 @@
   }
 
   async function onSubmit(id, value, moveToNextQuestion = false) {
-    isLoading = true;
     const { answers } = $questionnaireMetaData;
     const { questions } = $questionnaire;
     const prevAnswer = answers[id] || [];

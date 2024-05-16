@@ -221,7 +221,7 @@
     "get_started": "Get Started",
     "personal_profile": {
       "title": "Upload a profile picture and update username",
-      "desc": "Personalize and a human touch making interactions more personal and memorable",
+      "desc": "Personalize and add a human touch making interactions more personal and memorable",
       "button_label": "Update Profile"
     },
     "organization_profile": {
@@ -620,7 +620,7 @@
               "yes": "Yes, delete"
             },
             "edit_mode": {
-              "delete_modal": "Delete Modal",
+              "delete_modal": "Delete Exercise",
               "sure": "Are you sure you want to delete this exercise?",
               "no": "No, cancel",
               "yes": "Yes, delete",
@@ -945,13 +945,17 @@
         "available": "Make the Lesson available for Download in pdf for registered students",
         "course_download": "Course Downlaod",
         "course_avail": "Make the Course available for Download for registered students",
-        "download": "Downlaod",
+        "download": "Download",
         "allow": "Allow New Students",
         "access": "Allow new students to access this course",
         "publish": "Publish Course",
         "determines": "This determines if your course displays on your landing page",
         "published": "Published",
         "unpublished": "Unpublished",
+        "course_type": "Course type",
+        "course_type_desc": "Update the course type for a more personalized experience",
+        "live_class": "Live class",
+        "self_paced": "Self paced",
         "delete": "Delete Course",
         "delete_text": "Delete this course,this action cannot be undone",
         "save": "Save Changes"

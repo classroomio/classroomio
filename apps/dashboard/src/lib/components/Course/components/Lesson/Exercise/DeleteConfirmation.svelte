@@ -19,18 +19,18 @@
   onClose={() => ($deleteConfirmation.open = false)}
   bind:open={$deleteConfirmation.open}
   width="w-96"
-  modalHeading={$t('course.navItem.lessons.exercises.all_exercises.delete_confirmation')}
+  modalHeading={$t('course.navItem.lessons.exercises.all_exercises.delete_confirmation.title')}
 >
   <div>
     <h1 class="dark:text-white text-lg">
-      {$t('course.navItem.lessons.exercises.all_exercises.sure')}
+      {$t('course.navItem.lessons.exercises.all_exercises.delete_confirmation.sure')}
     </h1>
 
     <div class="mt-5 flex items-center justify-between">
       <PrimaryButton
         className="px-6 py-3"
         variant={VARIANTS.OUTLINED}
-        label={$t('course.navItem.lessons.exercises.all_exercises.no')}
+        label={$t('course.navItem.lessons.exercises.all_exercises.delete_confirmation.no')}
         onClick={() => {
           $deleteConfirmation.open = false;
           onCancel();
@@ -39,7 +39,7 @@
       <PrimaryButton
         className="px-6 py-3"
         variant={VARIANTS.CONTAINED}
-        label={$t('course.navItem.lessons.exercises.all_exercises.yes')}
+        label={$t('course.navItem.lessons.exercises.all_exercises.delete_confirmation.yes')}
         onClick={() => {
           onDelete();
           $deleteConfirmation.open = false;

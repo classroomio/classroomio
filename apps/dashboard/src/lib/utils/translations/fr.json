@@ -262,7 +262,11 @@
         "unpublished": "Inédit",
         "delete": "Supprimer un cours",
         "delete_text": "Supprimer ce cours, cette action est irréversible",
-        "save": "Sauvegarder les modifications"
+        "save": "Sauvegarder les modifications",
+        "course_type": "Type de cours",
+        "course_type_desc": "Mettez à jour le type de cours pour une expérience plus personnalisée",
+        "live_class": "Cours en direct",
+        "self_paced": "À votre rythme"
       },
       "landing_page": {
         "start_course": "Commencer le cours",
@@ -459,7 +463,9 @@
           "grade_with_ai": "Noter avec l'IA",
           "submit_grades": "Soumettre les notes",
           "accept_grade": "Accepter",
-          "reject_grade": "Rejeter"
+          "reject_grade": "Rejeter",
+          "add_comment_placeholder": "laissez un commentaire",
+          "questions_tried": "Attribué ce score en raison du nombre total d'essais :"
         }
       },
       "attendance": {

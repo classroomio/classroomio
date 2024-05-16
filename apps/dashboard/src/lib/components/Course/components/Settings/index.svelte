@@ -337,8 +337,14 @@
     </Column>
     <Column sm={8} md={8} lg={8}>
       <RadioButtonGroup hideLegend bind:selected={$settings.course_type}>
-        <RadioButton labelText="live class" value={COURSE_TYPE_ENUM.LIVE_CLASS} />
-        <RadioButton labelText="self paced" value={COURSE_TYPE_ENUM.SELF_PACED} />
+        <RadioButton
+          labelText={$t('course.navItem.settings.live_class')}
+          value={COURSE_TYPE_ENUM.LIVE_CLASS}
+        />
+        <RadioButton
+          labelText={$t('course.navItem.settings.self_paced')}
+          value={COURSE_TYPE_ENUM.SELF_PACED}
+        />
       </RadioButtonGroup>
     </Column>
   </Row>

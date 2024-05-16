@@ -262,7 +262,11 @@
         "unpublished": "Unveröffentlicht",
         "delete": "Kurs löschen",
         "delete_text": "Löschen Sie diesen Kurs. Diese Aktion kann nicht rückgängig gemacht werden",
-        "save": "Änderungen speichern"
+        "save": "Änderungen speichern",
+        "course_type": "Kurstyp",
+        "course_type_desc": "Aktualisieren Sie den Kurstyp für ein persönlicheres Erlebnis",
+        "live_class": "Live-Klasse",
+        "self_paced": "Eigenständig"
       },
       "landing_page": {
         "start_course": "Kurs starten",
