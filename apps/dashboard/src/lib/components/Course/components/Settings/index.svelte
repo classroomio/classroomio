@@ -34,7 +34,7 @@
   import IconButton from '$lib/components/IconButton/index.svelte';
   import generateSlug from '$lib/utils/functions/generateSlug';
   import { t } from '$lib/utils/functions/translations';
-  import { COURSE_TYPE_ENUM } from '$lib/components/Courses/constants';
+  import { COURSE_TYPE } from '$lib/components/Courses/constants';
 
   let isSaving = false;
   let isLoading = false;
@@ -332,18 +332,18 @@
 
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={8} md={8} lg={8}>
-      <SectionTitle>Course type</SectionTitle>
-      <p>Update the course type for a more personalized experience</p>
+      <SectionTitle>{$t('course.navItem.settings.course_type')}</SectionTitle>
+      <p>{$t('course.navItem.settings.course_type_desc')}</p>
     </Column>
     <Column sm={8} md={8} lg={8}>
       <RadioButtonGroup hideLegend bind:selected={$settings.course_type}>
         <RadioButton
           labelText={$t('course.navItem.settings.live_class')}
-          value={COURSE_TYPE_ENUM.LIVE_CLASS}
+          value={COURSE_TYPE.LIVE_CLASS}
         />
         <RadioButton
           labelText={$t('course.navItem.settings.self_paced')}
-          value={COURSE_TYPE_ENUM.SELF_PACED}
+          value={COURSE_TYPE.SELF_PACED}
         />
       </RadioButtonGroup>
     </Column>

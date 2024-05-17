@@ -765,7 +765,10 @@
       "course_name_placeholder": "आपके पाठ्यक्रम का नाम",
       "short_description": "संक्षिप्त वर्णन",
       "short_description_placeholder": "इस कोर्स के बारे में थोड़ा विवरण",
-      "button": "खत्म करना"
+      "button": "खत्म करना",
+      "course_type": "कोर्स का प्रकार",
+      "live_class": "लाइव क्लास",
+      "self_paced": "स्वयं गति"
     },
     "course_card": {
       "empty_title": "कोई पाठ्यक्रम नहीं बनाया गया",

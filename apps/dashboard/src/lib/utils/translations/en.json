@@ -406,6 +406,9 @@
     "new_course_modal": {
       "heading": "Create a Course",
       "course_name": "Course name",
+      "course_type": "Course type",
+      "live_class": "Live class",
+      "self_paced": "Self paced",
       "course_name_placeholder": "Your course name",
       "short_description": "Short Description",
       "short_description_placeholder": "A little description about this course",

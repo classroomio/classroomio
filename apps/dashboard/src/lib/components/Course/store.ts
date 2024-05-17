@@ -3,13 +3,13 @@ import type { Writable } from 'svelte/store';
 import { lessons } from './components/Lesson/store/lessons';
 import { ROLE } from '$lib/utils/constants/roles';
 import type { Course, GroupPerson } from '$lib/utils/types';
-import { COURSE_TYPE_ENUM } from '../Courses/constants';
+import { COURSE_TYPE } from '../Courses/constants';
 
 export const defaultCourse: Course = {
   id: '',
   title: '',
   description: '',
-  course_type: COURSE_TYPE_ENUM.LIVE_CLASS,
+  course_type: COURSE_TYPE.LIVE_CLASS,
   cost: 0,
   currency: '',
   status: 'ACTIVE',

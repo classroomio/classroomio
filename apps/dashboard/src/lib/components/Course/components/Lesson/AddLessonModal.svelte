@@ -15,7 +15,7 @@
   import { goto } from '$app/navigation';
   import { handleAddLessonWidget } from '../Navigation/store';
   import { t } from '$lib/utils/functions/translations';
-  import { COURSE_TYPE_ENUM } from '$lib/components/Courses/constants';
+  import { COURSE_TYPE } from '$lib/components/Courses/constants';
 
   export let isStudent = false;
   let errors = {
@@ -112,7 +112,7 @@
           </button>
         </IconButton>
       </div>
-      {#if $course.course_type == COURSE_TYPE_ENUM.LIVE_CLASS}
+      {#if $course.course_type == COURSE_TYPE.LIVE_CLASS}
         <div
           class="flex items-start justify-between flex-col lg:flex-row lg:items-center mt-2 w-4/5"
         >

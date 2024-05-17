@@ -9,7 +9,7 @@ export const statuses = [
   }
 ];
 
-export const COURSE_TYPE_ENUM = {
+export const COURSE_TYPE = {
   SELF_PACED: 'SELF_PACED',
   LIVE_CLASS: 'LIVE_CLASS'
 };

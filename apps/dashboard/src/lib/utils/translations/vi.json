@@ -765,7 +765,10 @@
       "course_name_placeholder": "Tên khóa học của bạn",
       "short_description": "Mô tả ngắn",
       "short_description_placeholder": "Một chút mô tả về khóa học này",
-      "button": "Hoàn thành"
+      "button": "Hoàn thành",
+      "course_type": "Loại khóa học",
+      "live_class": "Lớp học trực tiếp",
+      "self_paced": "Tự nhịp độ"
     },
     "course_card": {
       "empty_title": "Không có khóa học nào được tạo",

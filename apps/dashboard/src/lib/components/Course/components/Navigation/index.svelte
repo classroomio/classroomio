@@ -17,7 +17,7 @@
   import { getIsLessonComplete } from '../Lesson/functions';
   import { isFreePlan } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
-  import { COURSE_TYPE_ENUM } from '$lib/components/Courses/constants';
+  import { COURSE_TYPE } from '$lib/components/Courses/constants';
 
   export let path: string;
   export let isStudent: boolean = false;
@@ -164,7 +164,7 @@
         hideSortIcon: true,
         isPaidFeature: false,
         show() {
-          if (!isStudent && $course.course_type == COURSE_TYPE_ENUM.LIVE_CLASS) {
+          if (!isStudent && $course.course_type == COURSE_TYPE.LIVE_CLASS) {
             return true;
           } else {
             return false;
@@ -177,7 +177,7 @@
         isPaidFeature: false,
         hideSortIcon: true,
         show() {
-          if ($course.course_type == COURSE_TYPE_ENUM.LIVE_CLASS) {
+          if ($course.course_type == COURSE_TYPE.LIVE_CLASS) {
             return true;
           } else {
             return false;

@@ -765,7 +765,10 @@
       "course_name_placeholder": "Nombre de tu curso",
       "short_description": "Breve descripción",
       "short_description_placeholder": "Una pequeña descripción sobre este curso.",
-      "button": "Finalizar"
+      "button": "Finalizar",
+      "course_type": "Tipo de curso",
+      "live_class": "clase en vivo",
+      "self_paced": "Ritmo propio"
     },
     "course_card": {
       "empty_title": "No hay cursos creados",

@@ -765,7 +765,10 @@
       "course_name_placeholder": "Le nom de votre cours",
       "short_description": "brève description",
       "short_description_placeholder": "Une petite description de ce cours",
-      "button": "Finition"
+      "button": "Finition",
+      "course_type": "Type de cours",
+      "live_class": "Cours en direct",
+      "self_paced": "À votre rythme"
     },
     "course_card": {
       "empty_title": "Aucun cours créé",

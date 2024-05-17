@@ -33,7 +33,7 @@
   import { CloseFilled } from 'carbon-icons-svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { useCompletion } from 'ai/svelte';
-  import { COURSE_TYPE_ENUM } from '$lib/components/Courses/constants';
+  import { COURSE_TYPE } from '$lib/components/Courses/constants';
   import { SkeletonText } from 'carbon-components-svelte';
   import GradingLoader from './GradingLoader.svelte';
 
@@ -170,7 +170,7 @@
   }
 
   async function onSubmit(id, value, moveToNextQuestion = false) {
-    if ($course.course_type === COURSE_TYPE_ENUM.SELF_PACED) {
+    if ($course.course_type === COURSE_TYPE.SELF_PACED) {
       isLoading = true;
     }
 
@@ -221,7 +221,7 @@
         submissionId = submissionResponse.submission[0]?.id;
       }
 
-      if ($course.course_type === COURSE_TYPE_ENUM.SELF_PACED) {
+      if ($course.course_type === COURSE_TYPE.SELF_PACED) {
         automaticGrading($questionnaireMetaData, $questionnaire.questions);
       }
 

@@ -765,7 +765,10 @@
       "course_name_placeholder": "Название вашего курса",
       "short_description": "Краткое описание",
       "short_description_placeholder": "Небольшое описание этого курса",
-      "button": "Заканчивать"
+      "button": "Заканчивать",
+      "course_type": "Тип курса",
+      "live_class": "Живой урок",
+      "self_paced": "Самостоятельный темп"
     },
     "course_card": {
       "empty_title": "Курсы не созданы",

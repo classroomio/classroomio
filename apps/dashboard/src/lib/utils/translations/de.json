@@ -765,7 +765,10 @@
       "course_name_placeholder": "Ihr Kursname",
       "short_description": "kurze Beschreibung",
       "short_description_placeholder": "Eine kleine Beschreibung zu diesem Kurs",
-      "button": "Beenden"
+      "button": "Beenden",
+      "course_type": "Kurstyp",
+      "live_class": "Live-Klasse",
+      "self_paced": "Eigenständig"
     },
     "course_card": {
       "empty_title": "Keine Kurse erstellt",

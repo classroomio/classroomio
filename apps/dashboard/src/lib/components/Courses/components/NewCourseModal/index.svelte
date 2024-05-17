@@ -14,7 +14,7 @@
   import { goto } from '$app/navigation';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { t } from '$lib/utils/functions/translations';
-  import { COURSE_TYPE_ENUM } from '../../constants';
+  import { COURSE_TYPE } from '../../constants';
 
   let isLoading = false;
   let errors = {
@@ -22,18 +22,18 @@
     description: ''
   };
 
-  const COURSE_TYPE = [
+  const COURSE_TYPES = [
     {
-      id: COURSE_TYPE_ENUM.LIVE_CLASS,
-      text: 'live class'
+      id: COURSE_TYPE.LIVE_CLASS,
+      text: $t('courses.new_course_modal.live_class')
     },
     {
-      id: COURSE_TYPE_ENUM.SELF_PACED,
-      text: 'self paced'
+      id: COURSE_TYPE.SELF_PACED,
+      text: $t('courses.new_course_modal.self_paced')
     }
   ];
 
-  let type = COURSE_TYPE[0];
+  let type = COURSE_TYPES[0];
   let selectedId = type.id;
   let userPrompt = '';
 
@@ -149,7 +149,13 @@
         errorMessage={errors.title}
         autoComplete={false}
       />
-      <Dropdown titleText="Course type" bind:selectedId items={COURSE_TYPE} size="xl" class="" />
+      <Dropdown
+        titleText={$t('courses.new_course_modal.course_type')}
+        bind:selectedId
+        items={COURSE_TYPES}
+        size="xl"
+        class=""
+      />
     </div>
 
     <TextArea
