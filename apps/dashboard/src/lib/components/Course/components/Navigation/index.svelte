@@ -143,7 +143,7 @@
         hideSortIcon: true,
         isPaidFeature: false,
         show() {
-          return isStudent ? $currentOrg?.customization?.course?.newsfeed : true;
+          return isStudent ? $currentOrg.customization.course.newsfeed : true;
         }
       },
       {
@@ -175,7 +175,7 @@
         isPaidFeature: false,
         hideSortIcon: true,
         show() {
-          return isStudent ? $currentOrg?.customization?.course?.grading : true;
+          return isStudent ? $currentOrg.customization.course.grading : true;
         }
       },
       {

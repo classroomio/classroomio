@@ -60,7 +60,8 @@
         return $currentOrg?.customization?.dashboard?.community;
       }
     }
-  ];
+  ].filter((link) => (link.show ? link.show() : true));
+
   const toggleSidebar = () => {
     $sideBar.hidden = !$sideBar.hidden;
   };
@@ -95,21 +96,19 @@
 
       <ul class="my-5">
         {#each sideLinks as item (item.name)}
-          {#if !item.show || (typeof item.show === 'function' && item.show())}
-            <a href={item.link} class="text-black" on:click={toggleSidebar}>
-              <li
-                class="flex items-center py-3 px-4 mb-2 {NavClasses.item} {isActive(
-                  $page.url.pathname,
-                  `${item.link}`
-                )
-                  ? NavClasses.active
-                  : 'dark:text-white'}"
-              >
-                <svelte:component this={item.icon} size={24} class="carbon-icon dark:fill-[#fff]" />
-                <p class="dark:text-white ml-2">{item.name}</p>
-              </li>
-            </a>
-          {/if}
+          <a href={item.link} class="text-black" on:click={toggleSidebar}>
+            <li
+              class="flex items-center py-3 px-4 mb-2 {NavClasses.item} {isActive(
+                $page.url.pathname,
+                `${item.link}`
+              )
+                ? NavClasses.active
+                : 'dark:text-white'}"
+            >
+              <svelte:component this={item.icon} size={24} class="carbon-icon dark:fill-[#fff]" />
+              <p class="dark:text-white ml-2">{item.name}</p>
+            </li>
+          </a>
         {/each}
       </ul>
     </div>

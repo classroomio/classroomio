@@ -1,11 +1,11 @@
 import { goto } from '$app/navigation';
-import { globalStore } from './store/app';
+import { globalStore } from '$lib/utils/store/app';
 import { get } from 'svelte/store';
 
 export function redirectToLesson(settings, courseId) {
-  let isOrg = get(globalStore);
+  const globalStoreVal = get(globalStore);
 
-  if (!settings && isOrg.isOrgSite) {
+  if (!settings && globalStoreVal.isOrgSite) {
     goto(`${courseId}/lessons?next=true`);
   }
 }

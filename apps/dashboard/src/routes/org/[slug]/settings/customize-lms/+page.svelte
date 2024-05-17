@@ -1,11 +1,11 @@
 <script>
-  import CustomizeLms from '$lib/components/Org/Settings/CustomizeLms.svelte';
+  import CustomizeLMS from '$lib/components/Org/Settings/CustomizeLMS.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrgPath } from '$lib/utils/store/org';
 </script>
 
 <svelte:head>
-  <title>Custom lms - ClassroomIO</title>
+  <title>Customize LMS - ClassroomIO</title>
 </svelte:head>
 
 <section class="w-full md:max-w-4xl mx-auto">
@@ -19,6 +19,6 @@
       </h1>
     </div>
 
-    <CustomizeLms />
+    <CustomizeLMS />
   </div>
 </section>

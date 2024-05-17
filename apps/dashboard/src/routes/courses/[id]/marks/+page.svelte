@@ -86,11 +86,11 @@
     ? $group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
     : $group.people.filter((person) => !!person.profile && person.role_id === ROLE.STUDENT);
 
-  $: redirectToLesson($currentOrg?.customization?.course?.grading, data.courseId);
+  $: redirectToLesson($currentOrg.customization.course.grading, data.courseId);
   $: browser && $course.id && firstRender($course.id);
 </script>
 
-<RoleBasedSecurity allowedRoles={[1, 2, $currentOrg?.customization?.course?.grading ? 3 : 0]}>
+<RoleBasedSecurity allowedRoles={[1, 2, $currentOrg.customization.course.grading ? 3 : 0]}>
   <CourseContainer bind:courseId={data.courseId}>
     <PageNav title={$t('course.navItem.marks.title')} />
 
