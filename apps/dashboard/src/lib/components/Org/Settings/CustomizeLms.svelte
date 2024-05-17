@@ -167,7 +167,7 @@
     </Column>
   </Row>
 
-  <div class="sticky desktop float-right bottom-12 mr-2 z-[120]">
+  <div class="hidden md:block sticky float-right bottom-12 mr-2 z-[120]">
     <PrimaryButton
       label={$t('components.settings.customize_lms.save')}
       onClick={handleSave}
@@ -177,32 +177,8 @@
   </div>
 </Grid>
 
-<div
-  class="absolute
-   mobile right-6 bottom-8 z-[120]"
->
-  <span>
-    <IconButton onClick={handleSave} disabled={isSaving}>
-      <Save size={24} class=" bg-blue-700 SectionTitle-1 rounded-full" />
-    </IconButton>
-  </span>
+<div class="absolute block md:hidden right-6 bottom-8 z-[120]">
+  <PrimaryButton onClick={handleSave} isLoading={isSaving} isDisabled={isSaving}>
+    <Save size={24} class="" />
+  </PrimaryButton>
 </div>
-
-<style>
-  @media screen and (min-width: 769px) {
-    .desktop {
-      display: block;
-    }
-    .mobile {
-      display: none;
-    }
-  }
-  @media screen and (max-width: 768px) {
-    .desktop {
-      display: none;
-    }
-    .mobile {
-      display: flex;
-    }
-  }
-</style>
