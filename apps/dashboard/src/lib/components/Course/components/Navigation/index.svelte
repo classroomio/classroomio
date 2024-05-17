@@ -15,7 +15,7 @@
   import { sideBar } from '$lib/components/Org/store';
   import { profile } from '$lib/utils/store/user';
   import { getIsLessonComplete } from '../Lesson/functions';
-  import { isFreePlan } from '$lib/utils/store/org';
+  import { currentOrg, isFreePlan } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
   import { COURSE_TYPE_ENUM } from '$lib/components/Courses/constants';
 
@@ -142,7 +142,10 @@
         label: $t('course.navItems.nav_news_feed'),
         to: getNavItemRoute($course.id),
         hideSortIcon: true,
-        isPaidFeature: false
+        isPaidFeature: false,
+        show() {
+          return isStudent ? $currentOrg.customization.course.newsfeed : true;
+        }
       },
       {
         label: $t('course.navItems.nav_lessons'),
@@ -178,7 +181,7 @@
         hideSortIcon: true,
         show() {
           if ($course.course_type == COURSE_TYPE_ENUM.LIVE_CLASS) {
-            return true;
+            return isStudent ? $currentOrg.customization.course.grading : true;
           } else {
             return false;
           }

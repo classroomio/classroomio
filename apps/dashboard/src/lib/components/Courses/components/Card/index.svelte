@@ -14,7 +14,6 @@
   import Share from 'carbon-icons-svelte/lib/Share.svelte';
   import UserFollow from 'carbon-icons-svelte/lib/UserFollow.svelte';
   import { t } from '$lib/utils/functions/translations';
-  import { onDestroy } from 'svelte';
 
   export let bannerImage: string | undefined;
   export let id = '';
@@ -53,6 +52,12 @@
     // TODO: Delete course functionality
     alert('WIP: Delete course');
   }
+
+  function getCourseUrl() {
+    return isOnLandingPage
+      ? `/course/${slug}`
+      : `/courses/${id}${isLMS ? '/lessons?next=true' : ''}`;
+  }
 </script>
 
 {#if !isLMS && !isOnLandingPage}
@@ -87,7 +92,7 @@
 <a
   rel="prefetch"
   bind:this={target}
-  href={isOnLandingPage ? `/course/${slug}` : `/courses/${id}${isLMS ? '/lessons?next=true' : ''}`}
+  href={getCourseUrl()}
   class="text-black border border-gray dark:border-neutral-600 rounded w-full max-w-[320px] relative hover:scale-95 transition-all ease-in-out"
 >
   <div class="p-4">

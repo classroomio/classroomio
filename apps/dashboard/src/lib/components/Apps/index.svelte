@@ -17,6 +17,8 @@
   import { browser } from '$app/environment';
   import { course } from '$lib/components/Course/store';
   import { lesson } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { t } from '$lib/utils/functions/translations';
 
   let appBarRef: HTMLDivElement;
   let appContentRef: HTMLDivElement;
@@ -80,10 +82,18 @@
 
     <div class="mb-2 relative {getAppClass(APPS_CONSTANTS.APPS.COMMENTS, $apps.selectedApp)}">
       <IconButton
-        toolTipProps={{ title: 'Comments', hotkeys: ['Ctrl/Command', '1'] }}
+        toolTipProps={{
+          title: `${
+            $globalStore.isOrgSite && !$currentOrg.customization.apps.comments
+              ? $t('course.navItem.lessons.disabled')
+              : $t('course.navItem.lessons.comments.title')
+          }`,
+          hotkeys: ['Ctrl/Command', '1']
+        }}
         value={APPS_CONSTANTS.APPS.COMMENTS}
         onClick={handleAppClick}
         buttonClassName="relative"
+        disabled={$globalStore.isOrgSite && !$currentOrg.customization.apps.comments}
       >
         <Chip
           value={$lesson.totalComments}
@@ -92,11 +102,20 @@
         <SendAlt size={24} class="carbon-icon dark:text-white" />
       </IconButton>
     </div>
+
     <div class="mb-2 {getAppClass(APPS_CONSTANTS.APPS.POLL, $apps.selectedApp)}">
       <IconButton
-        toolTipProps={{ title: 'Poll', hotkeys: ['Ctrl/Command', '2'] }}
+        toolTipProps={{
+          title: `${
+            $globalStore.isOrgSite && !$currentOrg.customization.apps.poll
+              ? $t('course.navItem.lessons.disabled')
+              : $t('course.navItem.lessons.polls.title')
+          } `,
+          hotkeys: ['Ctrl/Command', '2']
+        }}
         value={APPS_CONSTANTS.APPS.POLL}
         onClick={handleAppClick}
+        disabled={$globalStore.isOrgSite && !$currentOrg.customization.apps.poll}
       >
         <Chip
           value={$course.polls.length}
@@ -105,6 +124,7 @@
         <ChartPie size={24} class="carbon-icon dark:text-white" />
       </IconButton>
     </div>
+
     <!-- <div class="mb-2">
       <IconButton
         toolTipProps={{ title: 'QandA', hotkeys: ['A', '3'] }}

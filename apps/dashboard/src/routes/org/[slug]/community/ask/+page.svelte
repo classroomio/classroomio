@@ -15,8 +15,6 @@
   import { fetchCourses } from '$lib/components/Courses/api';
   import { t } from '$lib/utils/functions/translations.js';
 
-  export let data;
-
   let errors: {
     title?: string;
     courseId?: string;
