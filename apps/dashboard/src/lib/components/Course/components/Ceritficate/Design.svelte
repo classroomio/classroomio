@@ -13,9 +13,20 @@
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import FlashFilled from 'carbon-icons-svelte/lib/FlashFilled.svelte';
+  import PurpleProfessionalBadge from './certificates/PurpleProfessionalBadge.svelte';
+  import BlueProfessionalBadge from './certificates/BlueProfessionalBadge.svelte';
+  import PurpleBadgePattern from './certificates/PurpleBadgePattern.svelte';
+  import BlueBadgePattern from './certificates/BlueBadgePattern.svelte';
 
   const studentNamePlaceholder = 'Name of student';
-  const themes = ['professional', 'plain'];
+  const themes = [
+    'professional',
+    'plain',
+    'purpleProfessionalBadge',
+    'blueProfessionalBadge',
+    'purpleBadgePattern',
+    'blueBadgePattern'
+  ];
 
   let isSaving = false;
   let errors = {
@@ -63,16 +74,18 @@
         class="mb-10"
         disabled={$isFreePlan}
       >
-        {#each themes as theme}
-          <div class="flex mr-3">
-            <RadioButton value={theme} />
-            <img
-              src={`/images/certificate_theme_${theme}.png`}
-              alt="themes"
-              class="w-[110px] h-[82px]"
-            />
-          </div>
-        {/each}
+        <div class="flex flex-wrap justify-between gap-y-5">
+          {#each themes as theme}
+            <div class="flex mr-3">
+              <RadioButton value={theme} />
+              <img
+                src={`/images/certificate_theme_${theme}.png`}
+                alt="themes"
+                class="w-[110px] h-[82px]"
+              />
+            </div>
+          {/each}
+        </div>
       </RadioButtonGroup>
       <div>
         <p class="text-xs font-normal text-black my-2 dark:text-gray-100">
@@ -126,8 +139,16 @@
       <div class="certificate-container flex justify-center items-center h-5/6">
         {#if $course.certificate_theme === 'professional'}
           <Professional studentName={studentNamePlaceholder} />
-        {:else}
+        {:else if $course.certificate_theme === 'plain'}
           <Plain studentName={studentNamePlaceholder} />
+        {:else if $course.certificate_theme === 'purpleProfessionalBadge'}
+          <PurpleProfessionalBadge studentName={studentNamePlaceholder} />
+        {:else if $course.certificate_theme === 'blueProfessionalBadge'}
+          <BlueProfessionalBadge studentName={studentNamePlaceholder} />
+        {:else if $course.certificate_theme === 'purpleBadgePattern'}
+          <PurpleBadgePattern studentName={studentNamePlaceholder} />
+        {:else if $course.certificate_theme === 'blueBadgePattern'}
+          <BlueBadgePattern studentName={studentNamePlaceholder} />
         {/if}
       </div>
     </section>
