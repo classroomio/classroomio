@@ -382,11 +382,12 @@
         "locked": "Fermé à clé",
         "unlocked": "Débloqué",
         "save": "Sauvegarder les modifications",
-        "unlocked_certificate": "Le certificat est maintenant disponible",
         "locked_certificate": "Certificats non disponibles",
         "instructor_unlock": "Votre instructeur doit débloquer votre certificat.",
         "contact_instructor": "Si vous avez besoin de votre certificat, veuillez contacter votre instructeur.",
-        "download_certificate": "Télécharger le certificat"
+        "download_certificate": "Télécharger le certificat",
+        "unlocked_certificate": "Bravo! 🎉 votre attestation est prête",
+        "unlocked_certificate_subtitle": "Vous avez terminé ce cours et votre dévouement est évident. Téléchargez le certificat et partagez-le avec votre réseau comme preuve de vos compétences nouvellement acquises"
       },
       "people": {
         "title": "Personnes",
@@ -459,7 +460,9 @@
           "grade_with_ai": "Noter avec l'IA",
           "submit_grades": "Soumettre les notes",
           "accept_grade": "Accepter",
-          "reject_grade": "Rejeter"
+          "reject_grade": "Rejeter",
+          "add_comment_placeholder": "laissez un commentaire",
+          "questions_tried": "Attribué ce score en raison du nombre total d'essais :"
         }
       },
       "attendance": {

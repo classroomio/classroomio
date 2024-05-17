@@ -804,11 +804,12 @@
         "locked": "Locked",
         "unlocked": "Unlocked",
         "save": "Save Changes",
-        "unlocked_certificate": "Certificate is now available",
+        "unlocked_certificate": "Congrats! 🎉 your certificate is ready",
+        "unlocked_certificate_subtitle": "You have completed this course, and your dedication is evident. Download certificate and share with your network as a prove of your newly acquired skill",
         "locked_certificate": "Certificates not available",
         "instructor_unlock": "Your instructor needs to unlock your certificate.",
         "contact_instructor": "If you need your certificate, please contact your instructor.",
-        "download_certificate": "DownLoad Certificate"
+        "download_certificate": "Download Certificate"
       },
 
       "landing_page": {

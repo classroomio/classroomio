@@ -17,6 +17,7 @@
   import BlueProfessionalBadge from './certificates/BlueProfessionalBadge.svelte';
   import PurpleBadgePattern from './certificates/PurpleBadgePattern.svelte';
   import BlueBadgePattern from './certificates/BlueBadgePattern.svelte';
+  import { snackbar } from '$lib/components/Snackbar/store';
 
   const studentNamePlaceholder = 'Name of student';
   const themes = [
@@ -46,6 +47,8 @@
       certificate_theme: $course.certificate_theme || ''
     });
     isSaving = false;
+
+    snackbar.success('snackbar.course_settings.success.saved');
   };
 </script>
 

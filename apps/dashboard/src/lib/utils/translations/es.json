@@ -382,11 +382,12 @@
         "locked": "bloqueado",
         "unlocked": "desbloqueado",
         "save": "Guardar cambios",
-        "unlocked_certificate": "El certificado ya está disponible",
         "locked_certificate": "Certificados no disponibles",
         "instructor_unlock": "Su instructor necesita desbloquear su certificado.",
         "contact_instructor": "Si necesita su certificado, comuníquese con su instructor.",
-        "download_certificate": "Descargar certificado"
+        "download_certificate": "Descargar certificado",
+        "unlocked_certificate": "¡Felicitaciones! 🎉 tu certificado está listo",
+        "unlocked_certificate_subtitle": "Has completado este curso y tu dedicación es evidente. Descargue el certificado y compártalo con su red como prueba de su habilidad recién adquirida"
       },
       "people": {
         "title": "Gente",

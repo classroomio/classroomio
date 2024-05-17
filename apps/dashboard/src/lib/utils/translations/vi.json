@@ -382,11 +382,12 @@
         "locked": "Đã khóa",
         "unlocked": "Đã mở khóa",
         "save": "Lưu thay đổi",
-        "unlocked_certificate": "Chứng chỉ hiện có sẵn",
         "locked_certificate": "Chứng chỉ không có sẵn",
         "instructor_unlock": "Người hướng dẫn của bạn cần mở khóa chứng chỉ của bạn.",
         "contact_instructor": "Nếu bạn cần chứng chỉ của mình, vui lòng liên hệ với người hướng dẫn của bạn.",
-        "download_certificate": "Tải xuống chứng chỉ"
+        "download_certificate": "Tải xuống chứng chỉ",
+        "unlocked_certificate": "Chúc mừng! 🎉 chứng chỉ của bạn đã sẵn sàng",
+        "unlocked_certificate_subtitle": "Bạn đã hoàn thành khóa học này và sự cống hiến của bạn là điều hiển nhiên. Tải xuống chứng chỉ và chia sẻ với mạng của bạn như một bằng chứng về kỹ năng mới có được của bạn"
       },
       "people": {
         "title": "Mọi người",
@@ -459,7 +460,9 @@
           "grade_with_ai": "Chấm điểm bằng AI",
           "submit_grades": "Gửi điểm",
           "accept_grade": "Chấp nhận",
-          "reject_grade": "Từ chối"
+          "reject_grade": "Từ chối",
+          "add_comment_placeholder": "Để lại một bình luận",
+          "questions_tried": "Phân bổ số điểm này dựa trên tổng số lần thử:"
         }
       },
       "attendance": {
