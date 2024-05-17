@@ -1,16 +1,13 @@
 <script>
-  import UnlockedIcon from 'carbon-icons-svelte/lib/Unlocked.svelte';
-  import LockedIcon from 'carbon-icons-svelte/lib/Locked.svelte';
+  import { Toggle } from 'carbon-components-svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
   import Select from '$lib/components/Form/Select.svelte';
   import {
     lessons,
     handleSaveLesson
   } from '$lib/components/Course/components/Lesson/store/lessons';
   import { course, group } from '$lib/components/Course/store';
-  import TextChip from '$lib/components/Chip/Text.svelte';
   import Modal from '$lib/components/Modal/index.svelte';
   import { goto } from '$app/navigation';
   import { handleAddLessonWidget } from '../Navigation/store';
@@ -59,59 +56,34 @@
   onClose={() => ($handleAddLessonWidget.open = false)}
   bind:open={$handleAddLessonWidget.open}
   width="w-[80%] md:w-[65%]"
+  maxWidth="max-w-2xl"
   containerClass="overflow-hidden"
   modalHeading={$t('course.navItem.lessons.add_lesson.modal_heading')}
 >
   <div
-    class="sm:min-h-[245px] md:min-h-[100px] lg:min-h-[190px] relative m-auto rounded-md border-2 border-gray-200 dark:border-neutral-600 py-2 md:py-3 px-2 md:px-5 mb-2 md:mb-4 flex flex-wrap items-center dark:bg-neutral-800"
+    class="relative m-auto py-2 md:py-3 px-2 md:px-5 mb-2 md:mb-4 flex flex-wrap items-center dark:bg-neutral-800"
   >
-    <div class="mr-5">
-      <TextChip
-        value={getLessonOrder('', $lessons.length)}
-        size="sm"
-        shape="rounded-full"
-        className="bg-primary-200 text-primary-600 text-xs"
+    <div class="w-full">
+      <TextField
+        label={$t('course.navItem.lessons.add_lesson.lesson_title')}
+        bind:value={lesson.title}
+        autoFocus={true}
+        className="flex-1 min-w-lg max-w-lg"
+        isRequired={true}
+        errorMessage={errors.title}
       />
-    </div>
-
-    <div class="w-full md:w-4/5">
-      <div class="flex flex-row gap-1 md:gap-2">
-        <TextField
-          label={$t('course.navItem.lessons.add_lesson.lesson_title')}
-          bind:value={lesson.title}
-          autofocus={true}
-          className="flex-1 min-w-lg max-w-lg"
-          isRequired={true}
-          errorMessage={errors.title}
-        />
-        <IconButton
-          disabled={isStudent}
-          toolTipProps={isStudent
-            ? {}
-            : {
-                title: `${$t('course.navItem.lessons.add_lesson.click_to')} ${
-                  lesson.is_unlocked
-                    ? $t('course.navItem.lessons.add_lesson.lock')
-                    : $t('course.navItem.lessons.add_lesson.unlock')
-                }`,
-                direction: 'right'
-              }}
-        >
-          <button
-            on:click={() => {
-              lesson.is_unlocked = !lesson.is_unlocked;
-              handleSaveLesson(lesson, $course.id);
-            }}
-            class="p-1"
-          >
-            {#if lesson.is_unlocked}
-              <UnlockedIcon size={24} class="carbon-icon dark:text-white" />
-            {:else}
-              <LockedIcon size={24} class="carbon-icon dark:text-white" />
-            {/if}
-          </button>
-        </IconButton>
-      </div>
+      <Toggle
+        disabled={isStudent}
+        size="sm"
+        bind:toggled={lesson.is_unlocked}
+        on:click={() => {
+          lesson.is_unlocked = !lesson.is_unlocked;
+          handleSaveLesson(lesson, $course.id);
+        }}
+      >
+        <span slot="labelA" style="color: gray">{$t('generic.locked')}</span>
+        <span slot="labelB" style="color: gray">{$t('generic.unlocked')}</span>
+      </Toggle>
       {#if $course.course_type == COURSE_TYPE.LIVE_CLASS}
         <div
           class="flex items-start justify-between flex-col lg:flex-row lg:items-center mt-2 w-4/5"
@@ -140,5 +112,8 @@
       {/if}
     </div>
   </div>
-  <PrimaryButton label={$t('course.navItem.lessons.add_lesson.save')} onClick={handleSave} />
+
+  <div class="flex flex-row-reverse">
+    <PrimaryButton label={$t('course.navItem.lessons.add_lesson.save')} onClick={handleSave} />
+  </div>
 </Modal>

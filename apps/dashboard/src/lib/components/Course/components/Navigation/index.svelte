@@ -144,7 +144,11 @@
         hideSortIcon: true,
         isPaidFeature: false,
         show() {
-          return isStudent ? $currentOrg.customization.course.newsfeed : true;
+          if ($course.course_type == COURSE_TYPE.LIVE_CLASS) {
+            return isStudent ? $currentOrg.customization.course.newsfeed : true;
+          }
+
+          return false;
         }
       },
       {
@@ -159,7 +163,12 @@
         label: $t('course.navItems.nav_attendance'),
         to: getNavItemRoute($course.id, 'attendance'),
         isPaidFeature: false,
-        hideSortIcon: true
+        hideSortIcon: true,
+        show() {
+          if ($course.course_type !== COURSE_TYPE.LIVE_CLASS) return false;
+
+          return true;
+        }
       },
       {
         label: $t('course.navItems.nav_submissions'),
@@ -167,11 +176,11 @@
         hideSortIcon: true,
         isPaidFeature: false,
         show() {
-          if (!isStudent && $course.course_type == COURSE_TYPE.LIVE_CLASS) {
-            return true;
-          } else {
-            return false;
-          }
+          if (isStudent) return false;
+
+          if ($course.course_type !== COURSE_TYPE.LIVE_CLASS) return false;
+
+          return true;
         }
       },
       {
@@ -182,9 +191,9 @@
         show() {
           if ($course.course_type == COURSE_TYPE.LIVE_CLASS) {
             return isStudent ? $currentOrg.customization.course.grading : true;
-          } else {
-            return false;
           }
+
+          return false;
         }
       },
       {

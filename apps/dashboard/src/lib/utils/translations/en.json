@@ -1257,5 +1257,10 @@
   "content": {
     "heading": "Internationalization in SvelteKit",
     "toggle_label": "Select Preferred Language"
+  },
+
+  "generic": {
+    "locked": "Locked",
+    "unlocked": "Unlocked"
   }
 }

@@ -112,11 +112,9 @@
           disabled={$isFreePlan}
         >
           <span slot="labelA" style={$globalStore.isDark ? 'color: white' : 'color: #161616'}
-            >{$t('course.navItem.certificates.locked')}</span
+            >{$t('generic.locked')}</span
           >
-          <span slot="labelB" style="color: green"
-            >{$t('course.navItem.certificates.unlocked')}</span
-          >
+          <span slot="labelB" style="color: green">{$t('generic.unlocked')}</span>
         </Toggle>
       </div>
     </section>
