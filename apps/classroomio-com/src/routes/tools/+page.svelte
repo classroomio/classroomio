@@ -14,7 +14,7 @@
       title: 'Timed Activity Timer',
       subText:
         'Stay on track and enhance productivity with our customizable timer for timed tasks, quizzes, and study sessions',
-      slug: 'timer',
+      slug: 'activity-timer',
       show: true
     },
     {
