@@ -3,9 +3,9 @@
   import { currentOrg } from '$lib/utils/store/org';
 
   export let studentName = '';
-  let borderwidth = 'border-l-8';
-  let bordercolor = 'border-primary-800';
-  let logo = '/logo-512.png';
+  const borderwidth = 'border-l-8';
+  const bordercolor = 'border-primary-800';
+  const logo = '/logo-512.png';
 </script>
 
 <div
