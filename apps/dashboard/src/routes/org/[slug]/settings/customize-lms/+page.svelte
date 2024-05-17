@@ -1,5 +1,5 @@
 <script>
-  import CustomizeLMS from '$lib/components/Org/Settings/CustomizeLMS.svelte';
+  import CustomizeLMS from '$lib/components/Org/Settings/Customizelms.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrgPath } from '$lib/utils/store/org';
 </script>
