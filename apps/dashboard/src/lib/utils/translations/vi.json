@@ -153,7 +153,8 @@
         "updating_poll": "Đã xảy ra lỗi khi cập nhật trạng thái cuộc thăm dò ý kiến",
         "submitting_poll": "Đã xảy ra lỗi khi gửi cuộc thăm dò ý kiến"
       }
-    }
+    },
+    "success_update": "Cập nhật thành công"
   },
   "exercises": {
     "heading": "Bài tập",
@@ -714,7 +715,8 @@
           "save": "Cứu",
           "edit": "Biên tập",
           "delete": "Xóa bỏ"
-        }
+        },
+        "disabled": "Tính năng bị vô hiệu hóa"
       },
       "news_feed": {
         "heading": "Nguồn cấp tin tức",
@@ -853,7 +855,60 @@
         "url": "URL",
         "update": "Cập nhật tên miền",
         "custom": "Tên miền tùy chọn",
-        "domain": "Thêm tên miền của riêng bạn"
+        "domain": "Thêm tên miền của riêng bạn",
+        "title": "Tên miền tùy chọn"
+      },
+      "customize-lms": {
+        "title": "Tùy chỉnh LMS",
+        "disabled": "tàn tật",
+        "enabled": "Đã bật",
+        "save": "Lưu thay đổi",
+        "apps": {
+          "title": "Ứng dụng",
+          "poll": "Thăm dò ý kiến",
+          "live_comment": "Bình luận trực tiếp"
+        },
+        "course": {
+          "title": "Khóa học",
+          "newsfeed": "Nguồn cấp tin tức",
+          "grading": "Chấm điểm"
+        },
+        "dashboard": {
+          "title": "bảng điều khiển",
+          "community": "Cộng đồng",
+          "exercises": "Bài tập",
+          "banner_image": "Hình ảnh biểu ngữ",
+          "banner_image_btn": "Cập nhật hình ảnh biểu ngữ",
+          "banner_text": "Văn bản biểu ngữ",
+          "banner_text_label": "Cập nhật văn bản biểu ngữ",
+          "banner_text_placeholder": "Viết văn bản ở đây"
+        }
+      },
+      "customize_lms": {
+        "title": "Tùy chỉnh LMS",
+        "enabled": "Đã bật",
+        "save": "Lưu thay đổi",
+        "apps": {
+          "title": "Ứng dụng",
+          "poll": "Thăm dò ý kiến",
+          "live_comment": "Bình luận trực tiếp"
+        },
+        "course": {
+          "title": "Khóa học",
+          "newsfeed": "Nguồn cấp tin tức",
+          "grading": "Chấm điểm"
+        },
+        "dashboard": {
+          "title": "bảng điều khiển",
+          "community": "Cộng đồng",
+          "exercises": "Bài tập",
+          "banner_image": "Hình ảnh biểu ngữ",
+          "banner_image_btn": "Cập nhật hình ảnh biểu ngữ",
+          "banner_text": "Văn bản biểu ngữ",
+          "banner_text_label": "Cập nhật văn bản biểu ngữ",
+          "banner_text_placeholder": "Viết văn bản ở đây"
+        },
+        "disabled": "Tàn tật"
       }
     },
     "quiz": {
@@ -1090,6 +1145,12 @@
         "theme": {
           "heading": "chủ đề",
           "sub_heading": "Đặt màu thương hiệu của bạn"
+        },
+        "customize_lms": {
+          "heading": "Tùy chỉnh LMS",
+          "sub_heading": "Cá nhân hóa tổ chức của bạn LMS",
+          "button": "Tùy chỉnh LMS",
+          "body": "Kiểm soát trải nghiệm học tập của học sinh. Bạn có thể bật hoặc tắt các tab và trang, cập nhật biểu ngữ LMS và nhận xét trong ứng dụng theo yêu cầu của tổ chức"
         }
       }
     },

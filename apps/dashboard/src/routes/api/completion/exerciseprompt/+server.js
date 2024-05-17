@@ -61,7 +61,7 @@ I am a teacher and I need your help evaluating my students after I have taught a
 NB: Ask a mixture of ${optionNumber} options and ${questionNumber} DIFFERENT Question Types(RADIO, CHECKBOX AND TEXTAREA), mark the correct answer.`;
 
   const response = await openai.createChatCompletion({
-    model: 'gpt-3.5-turbo',
+    model: 'gpt-4o',
     messages: [
       {
         role: 'system',

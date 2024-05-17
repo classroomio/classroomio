@@ -153,7 +153,8 @@
         "updating_poll": "Se produjo un error al actualizar el estado de la encuesta.",
         "submitting_poll": "Se produjo un error al enviar la encuesta."
       }
-    }
+    },
+    "success_update": "Actualizado exitosamente"
   },
   "exercises": {
     "heading": "Ejercicios",
@@ -714,7 +715,8 @@
           "save": "Ahorrar",
           "edit": "Editar",
           "delete": "Borrar"
-        }
+        },
+        "disabled": "La característica está deshabilitada"
       },
       "news_feed": {
         "heading": "Noticias",
@@ -853,7 +855,60 @@
         "url": "URL",
         "update": "Actualizar dominio",
         "custom": "Dominio personalizado",
-        "domain": "Añade tu propio nombre de dominio"
+        "domain": "Añade tu propio nombre de dominio",
+        "title": "Dominio personalizado"
+      },
+      "customize-lms": {
+        "title": "Personalizar LMS",
+        "disabled": "desactivado",
+        "enabled": "Activado",
+        "save": "Guardar cambios",
+        "apps": {
+          "title": "Aplicaciones",
+          "poll": "Encuesta",
+          "live_comment": "Comentarios en vivo"
+        },
+        "course": {
+          "title": "Curso",
+          "newsfeed": "Noticias",
+          "grading": "Calificación"
+        },
+        "dashboard": {
+          "title": "Panel",
+          "community": "Comunidad",
+          "exercises": "Ejercicios",
+          "banner_image": "Imagen de banner",
+          "banner_image_btn": "Actualizar imagen de banner",
+          "banner_text": "Texto del cartel",
+          "banner_text_label": "Actualizar texto del banner",
+          "banner_text_placeholder": "Escribe el texto aquí"
+        }
+      },
+      "customize_lms": {
+        "title": "Personalizar LMS",
+        "enabled": "Activado",
+        "save": "Guardar cambios",
+        "apps": {
+          "title": "Aplicaciones",
+          "poll": "Encuesta",
+          "live_comment": "Comentarios en vivo"
+        },
+        "course": {
+          "title": "Curso",
+          "newsfeed": "Noticias",
+          "grading": "Calificación"
+        },
+        "dashboard": {
+          "title": "Panel",
+          "community": "Comunidad",
+          "exercises": "Ejercicios",
+          "banner_image": "Imagen de banner",
+          "banner_image_btn": "Actualizar imagen de banner",
+          "banner_text": "Texto del cartel",
+          "banner_text_label": "Actualizar texto del banner",
+          "banner_text_placeholder": "Escribe el texto aquí"
+        },
+        "disabled": "Desactivado"
       }
     },
     "quiz": {
@@ -1090,6 +1145,12 @@
         "theme": {
           "heading": "Tema",
           "sub_heading": "Establece el color de tu marca"
+        },
+        "customize_lms": {
+          "heading": "Personalizar LMS",
+          "sub_heading": "Personalice el LMS de su organización",
+          "button": "Personalizar LMS",
+          "body": "Controle la experiencia de aprendizaje de sus estudiantes. Puede habilitar o deshabilitar pestañas y páginas, actualizar el banner de LMS y los comentarios en la aplicación según los requisitos de su organización."
         }
       }
     },

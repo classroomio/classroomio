@@ -153,7 +153,8 @@
         "updating_poll": "Beim Aktualisieren des Umfragestatus ist ein Fehler aufgetreten",
         "submitting_poll": "Beim Absenden der Umfrage ist ein Fehler aufgetreten"
       }
-    }
+    },
+    "success_update": "Erfolgreich geupdated"
   },
   "exercises": {
     "heading": "Übungen",
@@ -714,7 +715,8 @@
           "save": "Speichern",
           "edit": "Bearbeiten",
           "delete": "Löschen"
-        }
+        },
+        "disabled": "Funktion ist deaktiviert"
       },
       "news_feed": {
         "heading": "Neuigkeiten",
@@ -853,7 +855,60 @@
         "url": "URL",
         "update": "Domäne aktualisieren",
         "custom": "Benutzerdefinierten Domain",
-        "domain": "Fügen Sie Ihren eigenen Domainnamen hinzu"
+        "domain": "Fügen Sie Ihren eigenen Domainnamen hinzu",
+        "title": "Benutzerdefinierten Domain"
+      },
+      "customize-lms": {
+        "title": "LMS anpassen",
+        "disabled": "deaktiviert",
+        "enabled": "Ermöglicht",
+        "save": "Änderungen speichern",
+        "apps": {
+          "title": "Apps",
+          "poll": "Umfrage",
+          "live_comment": "Live-Kommentare"
+        },
+        "course": {
+          "title": "Kurs",
+          "newsfeed": "Neuigkeiten",
+          "grading": "Benotung"
+        },
+        "dashboard": {
+          "title": "Armaturenbrett",
+          "community": "Gemeinschaft",
+          "exercises": "Übungen",
+          "banner_image": "Bannerbild",
+          "banner_image_btn": "Bannerbild aktualisieren",
+          "banner_text": "Bannertext",
+          "banner_text_label": "Bannertext aktualisieren",
+          "banner_text_placeholder": "Schreiben Sie hier den Text"
+        }
+      },
+      "customize_lms": {
+        "title": "LMS anpassen",
+        "enabled": "Ermöglicht",
+        "save": "Änderungen speichern",
+        "apps": {
+          "title": "Apps",
+          "poll": "Umfrage",
+          "live_comment": "Live-Kommentare"
+        },
+        "course": {
+          "title": "Kurs",
+          "newsfeed": "Neuigkeiten",
+          "grading": "Benotung"
+        },
+        "dashboard": {
+          "title": "Armaturenbrett",
+          "community": "Gemeinschaft",
+          "exercises": "Übungen",
+          "banner_image": "Bannerbild",
+          "banner_image_btn": "Bannerbild aktualisieren",
+          "banner_text": "Bannertext",
+          "banner_text_label": "Bannertext aktualisieren",
+          "banner_text_placeholder": "Schreiben Sie hier den Text"
+        },
+        "disabled": "Deaktiviert"
       }
     },
     "quiz": {
@@ -1090,6 +1145,12 @@
         "theme": {
           "heading": "Thema",
           "sub_heading": "Legen Sie Ihre Markenfarbe fest"
+        },
+        "customize_lms": {
+          "heading": "LMS anpassen",
+          "sub_heading": "Personalisieren Sie Ihr Organisations-LMS",
+          "button": "LMS anpassen",
+          "body": "Kontrollieren Sie die Lernerfahrung Ihrer Schüler. Sie können Registerkarten und Seiten aktivieren oder deaktivieren, LMS-Banner und In-App-Kommentare entsprechend den Anforderungen Ihres Unternehmens aktualisieren"
         }
       }
     },

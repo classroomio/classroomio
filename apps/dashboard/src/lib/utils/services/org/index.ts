@@ -78,6 +78,7 @@ export async function getOrganizations(userId: string, isOrgSite?: boolean, orgS
         siteName,
         avatar_url,
         landingpage,
+        customization,
         theme,
         created_at,
         organization_plan(
@@ -114,6 +115,7 @@ export async function getOrganizations(userId: string, isOrgSite?: boolean, orgS
         memberId: orgMember?.id,
         role_id: orgMember?.role_id,
         landingpage: orgMember?.organization?.landingpage,
+        customization: orgMember?.organization?.customization,
         organization_plan: orgMember?.organization?.organization_plan
       });
     });
@@ -226,6 +228,7 @@ export async function getCurrentOrg(siteName: string, justGet = false) {
       siteName,
       avatar_url,
       landingpage,
+      customization,
       theme,
       organization_plan(
         plan_name,
