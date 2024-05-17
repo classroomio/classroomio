@@ -80,6 +80,12 @@
           "heading": "Theme",
           "sub_heading": "Set your brand color"
         },
+        "customize_lms": {
+          "heading": "Customize LMS",
+          "sub_heading": "Personalize Your Organization LMS",
+          "body": "Control your students learning experience. You can enable or disable tabs and pages, update LMS banner and in-app comments to your organization requirements",
+          "button": "Customize LMS"
+        },
         "custom_domain": {
           "heading": "Custom Domain",
           "sub_heading": "Customise your Domain",
@@ -315,12 +321,39 @@
     },
     "settings": {
       "domains": {
+        "title": "Custom domain",
         "add": "Add",
         "work_together": "Add your team mates or collaborators to your organization. Start working together",
         "url": "URL",
         "update": "Update Domain",
         "custom": "Custom domain",
         "domain": "Add your own domain name"
+      },
+      "customize_lms": {
+        "title": "Customize LMS",
+        "disabled": "Disabled",
+        "enabled": "Enabled",
+        "save": "Save Changes",
+        "dashboard": {
+          "title": "Dashboard",
+          "community": "Community",
+          "exercises": "Exercises",
+          "banner_image": "Banner Image",
+          "banner_image_btn": "Update banner image",
+          "banner_text": "Banner Text",
+          "banner_text_label": "Update banner text",
+          "banner_text_placeholder": "Write the text here"
+        },
+        "course": {
+          "title": "Course",
+          "newsfeed": "Newsfeed",
+          "grading": "Grading"
+        },
+        "apps": {
+          "title": "Apps",
+          "poll": "Poll",
+          "live_comment": "Live comments"
+        }
       }
     }
   },
@@ -662,7 +695,7 @@
             }
           }
         },
-
+        "disabled": "Feature is disabled",
         "comments": {
           "title": "Comments",
           "you": "You",
@@ -1042,6 +1075,7 @@
 
   "snackbar": {
     "success": "Success",
+    "success_update": "Updated successfully",
     "something": "Something went wrong - Please try later",
     "update": "Update",
 

@@ -31,11 +31,11 @@
 
 <ToolTip
   title={toolTipProps.title}
-  hotkeys={toolTipProps.hotkeys}
+  hotkeys={disabled ? [] : toolTipProps.hotkeys}
   direction={toolTipProps.direction}
 >
   <button
-    class="root {color} {selected && 'active'} {size} {contained &&
+    class="root {color} {selected && 'active'} {disabled && 'disabled'} {size} {contained &&
       'contained dark:bg-neutral-700'} {buttonClassName}"
     {disabled}
     {type}
@@ -64,6 +64,11 @@
     -webkit-appearance: none;
     -webkit-tap-highlight-color: transparent;
     width: fit-content;
+
+    &.disabled {
+      cursor: not-allowed;
+      color: rgba(0, 0, 0, 0.07);
+    }
 
     &:hover {
       background-color: rgba(0, 0, 0, 0.04);
