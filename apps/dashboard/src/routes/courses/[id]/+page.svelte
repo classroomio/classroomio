@@ -229,6 +229,7 @@
   $: setAuthor($group, $profile.id);
 
   $: $newsFeed = $newsFeed.sort((a, b) => Number(b.isPinned) - Number(a.isPinned));
+  $: console.log('courses page.svelte');
 </script>
 
 <RoleBasedSecurity allowedRoles={[1, 2, $currentOrg?.customization?.course?.newsfeed ? 3 : 0]}>

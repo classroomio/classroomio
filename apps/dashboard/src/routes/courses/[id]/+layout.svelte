@@ -50,6 +50,7 @@
       }
     });
   });
+  $: console.log('courses layout.svelte');
 </script>
 
 <slot />
