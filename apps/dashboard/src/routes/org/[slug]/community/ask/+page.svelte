@@ -12,8 +12,8 @@
   import TextEditor from '$lib/components/TextEditor/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import { profile } from '$lib/utils/store/user';
-  import { fetchCourses } from '$lib/components/Courses/api';
   import { t } from '$lib/utils/functions/translations.js';
+  import { fetchCourses } from '$lib/utils/services/courses';
 
   let errors: {
     title?: string;

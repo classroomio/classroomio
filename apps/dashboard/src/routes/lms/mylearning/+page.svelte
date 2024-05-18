@@ -3,7 +3,7 @@
   import Tabs from '$lib/components/Tabs/index.svelte';
   import TabContent from '$lib/components/TabContent/index.svelte';
   import Courses from '$lib/components/Courses/index.svelte';
-  import { fetchCourses } from '$lib/components/Courses/api';
+  import { fetchCourses } from '$lib/utils/services/courses';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
   import { courses, courseMetaDeta, coursesComplete } from '$lib/components/Courses/store';

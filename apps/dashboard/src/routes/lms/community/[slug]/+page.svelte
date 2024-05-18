@@ -23,7 +23,7 @@
   import TextEditor from '$lib/components/TextEditor/index.svelte';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { browser } from '$app/environment';
-  import { fetchCourses } from '$lib/components/Courses/api.js';
+  import { fetchCourses } from '$lib/utils/services/courses';
   import { t } from '$lib/utils/functions/translations.js';
 
   export let data;
