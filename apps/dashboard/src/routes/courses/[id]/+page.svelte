@@ -232,8 +232,8 @@
   $: console.log('courses page.svelte');
 </script>
 
-<RoleBasedSecurity allowedRoles={[1, 2, $currentOrg?.customization?.course?.newsfeed ? 3 : 0]}>
-  <CourseContainer bind:courseId={data.courseId}>
+<CourseContainer bind:courseId={data.courseId}>
+  <RoleBasedSecurity allowedRoles={[1, 2, $currentOrg?.customization?.course?.newsfeed ? 3 : 0]}>
     <PageNav title={$t('course.navItem.news_feed.heading')} disableSticky={true}>
       <slot:fragment slot="widget">
         <RoleBasedSecurity allowedRoles={[1, 2]}>
@@ -299,5 +299,5 @@
         {/each}
       {/if}
     </PageBody>
-  </CourseContainer>
-</RoleBasedSecurity>
+  </RoleBasedSecurity>
+</CourseContainer>

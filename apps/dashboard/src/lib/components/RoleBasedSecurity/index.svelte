@@ -19,7 +19,14 @@
   }
 
   $: console.log({ group: $group });
-  $: console.log('is allowed', allowedRoles.includes(userRole), 'roles', userRole);
+  $: console.log(
+    'is allowed',
+    allowedRoles.includes(userRole),
+    'roles',
+    userRole,
+    'allowedRoles',
+    allowedRoles
+  );
 </script>
 
 {#if allowedRoles.includes(userRole)}
