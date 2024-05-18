@@ -229,11 +229,10 @@
   $: setAuthor($group, $profile.id);
 
   $: $newsFeed = $newsFeed.sort((a, b) => Number(b.isPinned) - Number(a.isPinned));
-  $: console.log('courses page.svelte');
 </script>
 
 <CourseContainer bind:courseId={data.courseId}>
-  <RoleBasedSecurity allowedRoles={[1, 2, $currentOrg?.customization?.course?.newsfeed ? 3 : 0]}>
+  <RoleBasedSecurity allowedRoles={[1, 2, $currentOrg.customization.course.newsfeed ? 3 : 0]}>
     <PageNav title={$t('course.navItem.news_feed.heading')} disableSticky={true}>
       <slot:fragment slot="widget">
         <RoleBasedSecurity allowedRoles={[1, 2]}>
