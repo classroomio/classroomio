@@ -90,8 +90,8 @@
   $: browser && $course.id && firstRender($course.id);
 </script>
 
-<RoleBasedSecurity allowedRoles={[1, 2, $currentOrg.customization.course.grading ? 3 : 0]}>
-  <CourseContainer bind:courseId={data.courseId}>
+<CourseContainer bind:courseId={data.courseId}>
+  <RoleBasedSecurity allowedRoles={[1, 2, $currentOrg.customization.course.grading ? 3 : 0]}>
     <PageNav title={$t('course.navItem.marks.title')} />
 
     <PageBody width="w-full max-w-6xl md:w-11/12">
@@ -176,8 +176,8 @@
         {/each}
       </div>
     </PageBody>
-  </CourseContainer>
-</RoleBasedSecurity>
+  </RoleBasedSecurity>
+</CourseContainer>
 
 <style>
   .col {
