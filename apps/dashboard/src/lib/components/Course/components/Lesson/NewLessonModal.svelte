@@ -1,5 +1,4 @@
-<script>
-  import { Toggle } from 'carbon-components-svelte';
+<script lang="ts">
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import Select from '$lib/components/Form/Select.svelte';
@@ -13,41 +12,36 @@
   import { handleAddLessonWidget } from '../Navigation/store';
   import { t } from '$lib/utils/functions/translations';
   import { COURSE_TYPE } from '$lib/components/Courses/constants';
+  import type { Lesson } from '$lib/utils/types';
 
-  export let isStudent = false;
   let errors = {
     title: ''
   };
-  let lesson = {
-    id: null,
+  let lesson: Lesson = {
+    id: '',
+    course_id: $course.id || '',
     title: '',
     profile: undefined,
     call_url: undefined,
-    lesson_at: new Date(),
-    is_unlocked: false
+    lesson_at: new Date().toDateString(),
+    is_unlocked: true,
+    lesson_completion: []
   };
 
-  function getLessonOrder(id = '', fallbackIndex) {
-    const index = fallbackIndex || $lessons.findIndex((lesson) => lesson.id === id);
-    if (index < 9) {
-      return '0' + (index + 1);
-    } else {
-      return index + 1;
-    }
-  }
-
   const handleSave = async () => {
-    if (lesson.title.trim() === '') {
+    if (!lesson.title.trim()) {
       errors.title = 'title cannot be empty';
       return;
     }
     const savedLesson = await handleSaveLesson(lesson, $course.id);
+
     if (Array.isArray(savedLesson) && savedLesson[0]) {
       const newLesson = savedLesson[0];
       lesson.id = newLesson.id;
       $lessons = [...$lessons, lesson];
       goto('/courses/' + $course.id + '/lessons/' + lesson.id);
     }
+
     $handleAddLessonWidget.open = false;
   };
 </script>
@@ -72,21 +66,9 @@
         isRequired={true}
         errorMessage={errors.title}
       />
-      <Toggle
-        disabled={isStudent}
-        size="sm"
-        bind:toggled={lesson.is_unlocked}
-        on:click={() => {
-          lesson.is_unlocked = !lesson.is_unlocked;
-          handleSaveLesson(lesson, $course.id);
-        }}
-      >
-        <span slot="labelA" style="color: gray">{$t('generic.locked')}</span>
-        <span slot="labelB" style="color: gray">{$t('generic.unlocked')}</span>
-      </Toggle>
       {#if $course.course_type == COURSE_TYPE.LIVE_CLASS}
         <div
-          class="flex items-start justify-between flex-col lg:flex-row lg:items-center mt-2 w-4/5"
+          class="flex items-start justify-evenly gap-1 flex-col lg:flex-row lg:items-center mt-2 w-4/5"
         >
           <div class="lg:mb-0">
             <Select

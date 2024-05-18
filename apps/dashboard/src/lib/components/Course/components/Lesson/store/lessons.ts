@@ -80,7 +80,7 @@ export async function handleSaveLesson(lesson: Lesson, course_id: Course['id']) 
 
   let newLessonData: any[] | null = null;
 
-  if (typeof lesson.id === 'string') {
+  if (!!lesson.id) {
     // No need to get the result of update cause we have all in local state
     await updateLesson(newLesson, lesson.id);
   } else {

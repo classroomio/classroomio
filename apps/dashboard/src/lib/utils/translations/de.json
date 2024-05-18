@@ -769,8 +769,9 @@
       "short_description_placeholder": "Eine kleine Beschreibung zu diesem Kurs",
       "button": "Beenden",
       "course_type": "Kurstyp",
-      "live_class": "Live-Klasse",
-      "self_paced": "Eigenständig"
+      "type_selector_title": "Welche Art von Kurs suchen Sie?",
+      "back": "Zurück",
+      "next": "Nächste"
     },
     "course_card": {
       "empty_title": "Keine Kurse erstellt",
@@ -1219,5 +1220,9 @@
     "resend_in": "Bestätigung erneut senden",
     "seconds": "Sekunden",
     "snackbar_error": "Fehler beim Senden des Codes"
+  },
+  "generic": {
+    "locked": "Gesperrt",
+    "unlocked": "Entsperrt"
   }
 }

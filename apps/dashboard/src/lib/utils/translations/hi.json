@@ -769,8 +769,9 @@
       "short_description_placeholder": "इस कोर्स के बारे में थोड़ा विवरण",
       "button": "खत्म करना",
       "course_type": "कोर्स का प्रकार",
-      "live_class": "लाइव क्लास",
-      "self_paced": "स्वयं गति"
+      "type_selector_title": "आप किस प्रकार का कोर्स देख रहे हैं?",
+      "back": "पीछे",
+      "next": "अगला"
     },
     "course_card": {
       "empty_title": "कोई पाठ्यक्रम नहीं बनाया गया",
@@ -1219,5 +1220,9 @@
     "resend_in": "सत्यापन पुनः भेजें",
     "seconds": "सेकंड",
     "snackbar_error": "कोड भेजते समय त्रुटि"
+  },
+  "generic": {
+    "locked": "बंद",
+    "unlocked": "अनलॉक किया"
   }
 }

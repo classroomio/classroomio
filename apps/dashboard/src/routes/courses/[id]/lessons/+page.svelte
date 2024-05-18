@@ -14,7 +14,7 @@
   } from '$lib/components/Course/components/Lesson/store/lessons';
   import PageBody from '$lib/components/PageBody/index.svelte';
 
-  import AddLessonModal from '$lib/components/Course/components/Lesson/AddLessonModal.svelte';
+  import NewLessonModal from '$lib/components/Course/components/Lesson/NewLessonModal.svelte';
   import DeleteLessonConfirmation from '$lib/components/Course/components/Lesson/DeleteLessonConfirmation.svelte';
   import { handleAddLessonWidget } from '$lib/components/Course/components/Navigation/store';
   import { Video, Calendar } from 'carbon-icons-svelte';
@@ -114,7 +114,7 @@
 </script>
 
 {#if $handleAddLessonWidget}
-  <AddLessonModal {isStudent} />
+  <NewLessonModal {isStudent} />
 {/if}
 
 <DeleteLessonConfirmation

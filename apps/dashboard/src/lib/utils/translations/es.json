@@ -769,8 +769,9 @@
       "short_description_placeholder": "Una pequeña descripción sobre este curso.",
       "button": "Finalizar",
       "course_type": "Tipo de curso",
-      "live_class": "clase en vivo",
-      "self_paced": "Ritmo propio"
+      "type_selector_title": "¿Qué tipo de curso estás mirando?",
+      "back": "Atrás",
+      "next": "Próximo"
     },
     "course_card": {
       "empty_title": "No hay cursos creados",
@@ -1219,5 +1220,9 @@
     "resend_in": "Reenviar verificación en",
     "seconds": "segundos",
     "snackbar_error": "error al enviar código"
+  },
+  "generic": {
+    "locked": "bloqueado",
+    "unlocked": "desbloqueado"
   }
 }

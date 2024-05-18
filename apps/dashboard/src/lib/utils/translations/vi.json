@@ -769,8 +769,9 @@
       "short_description_placeholder": "Một chút mô tả về khóa học này",
       "button": "Hoàn thành",
       "course_type": "Loại khóa học",
-      "live_class": "Lớp học trực tiếp",
-      "self_paced": "Tự nhịp độ"
+      "type_selector_title": "Bạn đang xem loại khóa học nào?",
+      "back": "Mặt sau",
+      "next": "Kế tiếp"
     },
     "course_card": {
       "empty_title": "Không có khóa học nào được tạo",
@@ -1219,5 +1220,9 @@
     "resend_in": "Gửi lại xác minh trong",
     "seconds": "giây",
     "snackbar_error": "lỗi khi gửi mã"
+  },
+  "generic": {
+    "locked": "Đã khóa",
+    "unlocked": "Đã mở khóa"
   }
 }

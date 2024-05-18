@@ -1,9 +1,11 @@
-<script>
+<script lang="ts">
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import Modal from '$lib/components/Modal/index.svelte';
+  import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
+  import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
-  import { Dropdown } from 'carbon-components-svelte';
   import { courses, createCourseModal } from '$lib/components/Courses/store';
   import { validateForm } from '$lib/components/Courses/functions';
   import { ROLE } from '$lib/utils/constants/roles';
@@ -15,27 +17,32 @@
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { t } from '$lib/utils/functions/translations';
   import { COURSE_TYPE } from '../../constants';
+  import ComingSoon from '$lib/components/ComingSoon/index.svelte';
 
   let isLoading = false;
   let errors = {
     title: '',
     description: ''
   };
+  let step = 0;
 
-  const COURSE_TYPES = [
+  const options = [
     {
-      id: COURSE_TYPE.LIVE_CLASS,
-      text: $t('courses.new_course_modal.live_class')
+      title: 'Live Class',
+      subtitle:
+        'This course type is ideal for bootcamps where lessons are time based and you need attendance and grading',
+      type: COURSE_TYPE.LIVE_CLASS,
+      isDisabled: false
     },
     {
-      id: COURSE_TYPE.SELF_PACED,
-      text: $t('courses.new_course_modal.self_paced')
+      title: 'Self Paced',
+      subtitle:
+        'This course type is ideal for courses where students can take lessons on their own pace without a teacher',
+      type: COURSE_TYPE.SELF_PACED,
+      isDisabled: false
     }
   ];
-
-  let type = COURSE_TYPES[0];
-  let selectedId = type.id;
-  let userPrompt = '';
+  let type = options[0].type;
 
   function onClose() {
     createCourseModal.update(() => ({
@@ -56,7 +63,7 @@
     errors = fieldErrors;
     if (hasError) return;
 
-    const { title, description, course_type } = $createCourseModal;
+    const { title, description } = $createCourseModal;
     // 1. Create group
     const { data: newGroup } = await supabase
       .from('group')
@@ -69,16 +76,13 @@
 
     const { id: group_id } = newGroup[0];
 
-    // Set userPrompt to the description
-    userPrompt = description;
-
     // 2. Create course with group_id
     const { data: newCourse } = await supabase
       .from('course')
       .insert({
         title,
         description,
-        course_type: selectedId,
+        course_type: type,
         group_id
       })
       .select();
@@ -138,46 +142,99 @@
   width="w-4/5 md:w-2/5"
   modalHeading={$t('courses.new_course_modal.heading')}
 >
-  <form on:submit|preventDefault={createCourse}>
-    <div class="flex items-end space-x-2 mb-4">
-      <TextField
-        label={$t('courses.new_course_modal.course_name')}
-        bind:value={$createCourseModal.title}
-        placeholder={$t('courses.new_course_modal.course_name_placeholder')}
-        className="w-full "
+  {#if step === 0}
+    <div>
+      <h2 class="text-xl font-medium my-5">
+        {$t('courses.new_course_modal.type_selector_title')}
+      </h2>
+
+      <div class="flex gap-2 justify-between my-8">
+        {#each options as option}
+          <button
+            class="w-[261px] h-[240px] p-5 rounded-md dark:bg-neutral-700 border-2 {option.type ===
+            type
+              ? 'border-primary-400'
+              : `border-gray-200 dark:border-neutral-600 ${
+                  !option.isDisabled && 'hover:scale-95'
+                }`} flex flex-col {option.isDisabled &&
+              'cursor-not-allowed opacity-60'} transition-all ease-in-out"
+            type="button"
+            on:click={!option.isDisabled ? () => (type = option.type) : undefined}
+          >
+            <div class="w-full flex flex-row-reverse h-[70%]">
+              {#if option.type === type}
+                <CheckmarkFilledIcon
+                  size={16}
+                  class="carbon-icon text-primary-600 dark:text-primary-200"
+                />
+              {:else if !option.isDisabled}
+                <CheckmarkOutlineIcon size={16} class="carbon-icon" />
+              {/if}
+            </div>
+
+            <div>
+              <p class="font-bold text-start flex items-center">
+                <span class="mr-2 text-sm">{option.title}</span>
+                {#if option.isDisabled}
+                  <ComingSoon />
+                {/if}
+              </p>
+              <p class="text-xs font-light text-start">{option.subtitle}</p>
+            </div>
+          </button>
+        {/each}
+      </div>
+
+      <div class="mt-8 flex items-center flex-row-reverse">
+        <PrimaryButton
+          className="px-6 py-3"
+          label={$t('courses.new_course_modal.next')}
+          onClick={() => (step = 1)}
+          isDisabled={!type}
+        />
+      </div>
+    </div>
+  {:else}
+    <form on:submit|preventDefault={createCourse}>
+      <div class="flex items-end space-x-2 mb-4">
+        <TextField
+          label={$t('courses.new_course_modal.course_name')}
+          bind:value={$createCourseModal.title}
+          placeholder={$t('courses.new_course_modal.course_name_placeholder')}
+          className="w-full "
+          isRequired={true}
+          errorMessage={errors.title}
+          autoComplete={false}
+        />
+      </div>
+
+      <TextArea
+        label={$t('courses.new_course_modal.short_description')}
+        bind:value={$createCourseModal.description}
+        rows={4}
+        placeholder={$t('courses.new_course_modal.short_description_placeholder')}
+        className="mb-4"
         isRequired={true}
-        errorMessage={errors.title}
-        autoComplete={false}
+        errorMessage={errors.description}
+        isAIEnabled={true}
+        initAIPrompt="Write a 30 word description for a course titled: {$createCourseModal.title}"
       />
-      <Dropdown
-        titleText={$t('courses.new_course_modal.course_type')}
-        bind:selectedId
-        items={COURSE_TYPES}
-        size="xl"
-        class=""
-      />
-    </div>
 
-    <TextArea
-      label={$t('courses.new_course_modal.short_description')}
-      bind:value={$createCourseModal.description}
-      rows={4}
-      placeholder={$t('courses.new_course_modal.short_description_placeholder')}
-      className="mb-4"
-      isRequired={true}
-      errorMessage={errors.description}
-      isAIEnabled={true}
-      initAIPrompt="Write a 30 word description for a course titled: {$createCourseModal.title}"
-    />
-
-    <div class="mt-5 flex items-center">
-      <PrimaryButton
-        className="px-6 py-3"
-        label={$t('courses.new_course_modal.button')}
-        type="submit"
-        isDisabled={isLoading}
-        {isLoading}
-      />
-    </div>
-  </form>
+      <div class="mt-5 flex items-center justify-between">
+        <PrimaryButton
+          className="px-6 py-3"
+          label={$t('courses.new_course_modal.back')}
+          variant={VARIANTS.OUTLINED}
+          onClick={() => (step = 0)}
+        />
+        <PrimaryButton
+          className="px-6 py-3"
+          label={$t('courses.new_course_modal.button')}
+          type="submit"
+          isDisabled={isLoading}
+          {isLoading}
+        />
+      </div>
+    </form>
+  {/if}
 </Modal>
