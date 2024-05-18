@@ -180,6 +180,28 @@
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle
+        >{$t('settings.organization.organization_profile.customize_lms.heading')}</SectionTitle
+      ></Column
+    >
+    <Column sm={8} md={8} lg={8}>
+      <h4 class="dark:text-white lg:mt-0">
+        {$t('settings.organization.organization_profile.customize_lms.sub_heading')}
+      </h4>
+      <p class="text-sm text-gray-500 dark:text-white">
+        {$t('settings.organization.organization_profile.customize_lms.body')}
+      </p>
+      <PrimaryButton
+        className="my-7 py-5 px-10 flex items-center gap-2 justify-center"
+        variant={VARIANTS.OUTLINED}
+        onClick={() => gotoSetting('/customize-lms')}
+      >
+        {$t('settings.organization.organization_profile.customize_lms.button')}
+      </PrimaryButton>
+    </Column>
+  </Row>
+  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+    <Column sm={4} md={4} lg={4}
+      ><SectionTitle
         >{$t('settings.organization.organization_profile.custom_domain.heading')}</SectionTitle
       ></Column
     >

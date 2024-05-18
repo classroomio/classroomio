@@ -165,7 +165,7 @@
       >
         {#each $lessons as lesson (lesson.id)}
           <div
-            class="relative m-auto mb-4 flex max-w-xl items-center rounded-md border-2 border-gray-200 dark:border-neutral-600 p-5 dark:border-neutral-700 dark:bg-neutral-800"
+            class="relative m-auto mb-4 flex max-w-xl items-center rounded-md border-2 border-gray-200 dark:border-neutral-600 p-5 dark:bg-neutral-800"
           >
             <!-- Number Chip -->
             <div class="mr-5">

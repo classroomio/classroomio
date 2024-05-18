@@ -153,7 +153,8 @@
         "updating_poll": "Une erreur s'est produite lors de la mise à jour de l'état du sondage",
         "submitting_poll": "Une erreur s'est produite lors de la soumission du sondage"
       }
-    }
+    },
+    "success_update": "Mis à jour avec succés"
   },
   "exercises": {
     "heading": "Des exercices",
@@ -711,7 +712,8 @@
           "save": "Sauvegarder",
           "edit": "Modifier",
           "delete": "Supprimer"
-        }
+        },
+        "disabled": "La fonctionnalité est désactivée"
       },
       "news_feed": {
         "heading": "Fil d'actualité",
@@ -847,7 +849,60 @@
         "url": "URL",
         "update": "Mettre à jour le domaine",
         "custom": "Domaine personnalisé",
-        "domain": "Ajoutez votre propre nom de domaine"
+        "domain": "Ajoutez votre propre nom de domaine",
+        "title": "Domaine personnalisé"
+      },
+      "customize-lms": {
+        "title": "Personnaliser le LMS",
+        "disabled": "désactivé",
+        "enabled": "Activé",
+        "save": "Sauvegarder les modifications",
+        "apps": {
+          "title": "applications",
+          "poll": "Sondage",
+          "live_comment": "Commentaires en direct"
+        },
+        "course": {
+          "title": "Cours",
+          "newsfeed": "Fil d'actualité",
+          "grading": "Classement"
+        },
+        "dashboard": {
+          "title": "Tableau de bord",
+          "community": "Communauté",
+          "exercises": "Des exercices",
+          "banner_image": "Image de la bannière",
+          "banner_image_btn": "Mettre à jour l'image de la bannière",
+          "banner_text": "Texte de la bannière",
+          "banner_text_label": "Mettre à jour le texte de la bannière",
+          "banner_text_placeholder": "Écrivez le texte ici"
+        }
+      },
+      "customize_lms": {
+        "title": "Personnaliser le LMS",
+        "enabled": "Activé",
+        "save": "Sauvegarder les modifications",
+        "apps": {
+          "title": "applications",
+          "poll": "Sondage",
+          "live_comment": "Commentaires en direct"
+        },
+        "course": {
+          "title": "Cours",
+          "newsfeed": "Fil d'actualité",
+          "grading": "Classement"
+        },
+        "dashboard": {
+          "title": "Tableau de bord",
+          "community": "Communauté",
+          "exercises": "Des exercices",
+          "banner_image": "Image de la bannière",
+          "banner_image_btn": "Mettre à jour l'image de la bannière",
+          "banner_text": "Texte de la bannière",
+          "banner_text_label": "Mettre à jour le texte de la bannière",
+          "banner_text_placeholder": "Écrivez le texte ici"
+        },
+        "disabled": "Désactivé"
       }
     },
     "quiz": {
@@ -1084,6 +1139,12 @@
         "theme": {
           "heading": "Thème",
           "sub_heading": "Définissez la couleur de votre marque"
+        },
+        "customize_lms": {
+          "heading": "Personnaliser le LMS",
+          "sub_heading": "Personnalisez le LMS de votre organisation",
+          "button": "Personnaliser le LMS",
+          "body": "Contrôlez l’expérience d’apprentissage de vos étudiants. Vous pouvez activer ou désactiver les onglets et les pages, mettre à jour la bannière LMS et les commentaires dans l'application en fonction des besoins de votre organisation."
         }
       }
     },

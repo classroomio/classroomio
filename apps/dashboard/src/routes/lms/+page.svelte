@@ -65,18 +65,22 @@
     <div
       class="w-full h-fit lg:h-[265px] flex md:items-center justify-between flex-col-reverse md:flex-row p-5 lg:p-10 rounded-md bg-primary-900 my-2"
     >
-      <span>
-        <p class="w-full md:w-[75%] lg:w-[80%] text-white text-xs lg:text-xl font-normal mb-5">
-          {$t('dashboard.lms_dashboard_hero')}
+      <div class="w-full md:w-[75%] lg:w-[80%]">
+        <p class=" text-white text-xs lg:text-xl font-normal mb-5">
+          {$currentOrg.customization.dashboard.bannerText
+            ? $currentOrg.customization.dashboard.bannerText
+            : $t('dashboard.lms_dashboard_hero')}
         </p>
         <PrimaryButton
           label={$t('dashboard.dont')}
           variant={VARIANTS.CONTAINED_WHITE}
           onClick={() => goto('/lms/mylearning')}
         />
-      </span>
+      </div>
       <img
-        src="/images/student-learning.svg"
+        src={$currentOrg.customization.dashboard.bannerImage
+          ? $currentOrg.customization.dashboard.bannerImage
+          : '/images/student-learning.svg'}
         alt="student Learning Pictogram"
         class="w-28 md:block md:w-1/3 lg:w-[275px] lg:h-[205px] mb-3 md:mb-0"
       />
