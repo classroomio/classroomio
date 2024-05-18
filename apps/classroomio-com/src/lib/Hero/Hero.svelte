@@ -38,8 +38,8 @@
         rel="noopener noreferrer nofollow"
         href="/github"
         style="color: rgb(75, 85, 99);"
-        class="rounded-full border-2 border-[#C2D2FF] px-4 py-1 text-sm font-medium bg-[#DCE5FF] text-[#4B5563]"
-        >Give us a <span class="text-blue-700">star</span> on github</a
+        class="rounded-full border-2 border-[#C2D2FF] px-4 py-1 text-sm font-medium bg-[#DCE5FF] text-[#4B5563] hover:underline"
+        >We are <span class="text-blue-700">100%</span> open source</a
       >
     </div>
 
