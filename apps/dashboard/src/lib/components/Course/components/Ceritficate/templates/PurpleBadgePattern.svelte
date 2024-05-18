@@ -6,17 +6,6 @@
   const logo = '/logo-512.png';
 
   const dateIssued = new Date().toLocaleDateString();
-
-  // function to shorten the description
-  function truncateDescription(description, maxLength) {
-    if (description.length > maxLength) {
-      return description.slice(0, maxLength) + '...';
-    }
-    return description;
-  }
-
-  // truncated description with max 200 characters
-  $: truncatedDescription = truncateDescription($course.description, 200);
 </script>
 
 <div class="w-full md:w-[70%] dark:text-black relative mx-auto">
@@ -56,7 +45,7 @@
       </div>
 
       <footer class="text-[6px] font-bold w-[90%] desc">
-        {truncatedDescription}
+        {$course.description}
       </footer>
     </div>
 

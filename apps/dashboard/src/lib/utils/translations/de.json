@@ -388,7 +388,9 @@
         "contact_instructor": "Wenn Sie Ihr Zertifikat benötigen, wenden Sie sich bitte an Ihren Dozenten.",
         "download_certificate": "Zertifikat herunterladen",
         "unlocked_certificate": "Glückwunsch! 🎉 Dein Zertifikat ist fertig",
-        "unlocked_certificate_subtitle": "Sie haben diesen Kurs abgeschlossen und Ihr Engagement ist offensichtlich. Laden Sie das Zertifikat herunter und teilen Sie es mit Ihrem Netzwerk als Beweis für Ihre neu erworbenen Fähigkeiten"
+        "unlocked_certificate_subtitle": "Sie haben diesen Kurs abgeschlossen und Ihr Engagement ist offensichtlich. Laden Sie das Zertifikat herunter und teilen Sie es mit Ihrem Netzwerk als Beweis für Ihre neu erworbenen Fähigkeiten",
+        "complete_to_download_subtitle": "Ihr Zertifikat ist verfügbar, sobald Sie alle Lektionen und Übungen dieses Kurses abgeschlossen haben",
+        "complete_to_download_title": "Kurs nicht abgeschlossen 😔"
       },
       "people": {
         "title": "Menschen",

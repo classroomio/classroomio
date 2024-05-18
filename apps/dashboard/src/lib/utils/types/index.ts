@@ -13,6 +13,14 @@ export enum LOCALE {
 }
 
 //===============Custom Type===============
+
+export interface ProfileCourseProgress {
+  exercises_completed: number;
+  exercises_count: number;
+  lessons_completed: number;
+  lessons_count: number;
+}
+
 export interface GroupPerson {
   assigned_student_id: number | null;
   created_at: string;

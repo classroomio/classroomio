@@ -11,7 +11,8 @@ import type {
   ExerciseTemplate
 } from '$lib/utils/types';
 import { STATUS } from '$lib/utils/constants/course';
-import type { PostgrestSingleResponse } from '@supabase/supabase-js';
+import type { PostgrestSingleResponse, PostgrestError } from '@supabase/supabase-js';
+import type { ProfileCourseProgress } from '$lib/utils/types';
 
 export async function fetchCourses(profileId, orgId) {
   if (!orgId || !profileId) return;
@@ -32,6 +33,23 @@ export async function fetchCourses(profileId, orgId) {
   }
 
   return { allCourses };
+}
+
+export async function fetchProfileCourseProgress(
+  courseId,
+  profileId
+): Promise<{
+  data: ProfileCourseProgress[] | null;
+  error: PostgrestError | null;
+}> {
+  const { data, error } = await supabase
+    .rpc('get_course_progress', {
+      course_id_arg: courseId,
+      profile_id_arg: profileId
+    })
+    .returns<ProfileCourseProgress[]>();
+
+  return { data, error };
 }
 
 export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']) {

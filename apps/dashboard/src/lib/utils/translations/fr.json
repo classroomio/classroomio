@@ -388,7 +388,9 @@
         "contact_instructor": "Si vous avez besoin de votre certificat, veuillez contacter votre instructeur.",
         "download_certificate": "Télécharger le certificat",
         "unlocked_certificate": "Bravo! 🎉 votre attestation est prête",
-        "unlocked_certificate_subtitle": "Vous avez terminé ce cours et votre dévouement est évident. Téléchargez le certificat et partagez-le avec votre réseau comme preuve de vos compétences nouvellement acquises"
+        "unlocked_certificate_subtitle": "Vous avez terminé ce cours et votre dévouement est évident. Téléchargez le certificat et partagez-le avec votre réseau comme preuve de vos compétences nouvellement acquises",
+        "complete_to_download_subtitle": "Votre certificat sera disponible une fois que vous aurez terminé toutes les leçons et exercices de ce cours.",
+        "complete_to_download_title": "Cours non terminé 😔"
       },
       "people": {
         "title": "Personnes",

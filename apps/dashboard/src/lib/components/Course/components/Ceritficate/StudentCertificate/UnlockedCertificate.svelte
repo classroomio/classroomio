@@ -1,4 +1,5 @@
-<script>
+<script lang="ts">
+  import { onMount } from 'svelte';
   import Download from 'carbon-icons-svelte/lib/Download.svelte';
 
   import { PUBLIC_SERVER_URL } from '$env/static/public';
@@ -9,10 +10,16 @@
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import Box from '$lib/components/Box/index.svelte';
   import { t } from '$lib/utils/functions/translations';
+  import { fetchProfileCourseProgress } from '$lib/utils/services/courses';
+  import type { ProfileCourseProgress } from '$lib/utils/types';
 
   let isLoading = false;
+  let isCourseComplete = false;
+  let progress: ProfileCourseProgress | undefined;
 
   const downLoadCertificate = async () => {
+    if (!isCourseComplete) return;
+
     isLoading = true;
     const response = await fetch(PUBLIC_SERVER_URL + '/downloadCertificate', {
       method: 'POST',
@@ -43,22 +50,48 @@
 
     isLoading = false;
   };
+
+  const hasUserCompletedCourse = async () => {
+    isLoading = true;
+
+    const { data } = await fetchProfileCourseProgress($course.id, $profile.id);
+    progress = data?.[0] || undefined;
+
+    if (progress) {
+      isCourseComplete =
+        progress.lessons_count === progress.lessons_completed &&
+        progress.exercises_count === progress.exercises_completed;
+    }
+
+    isLoading = false;
+  };
+
+  onMount(() => {
+    hasUserCompletedCourse();
+  });
+
+  $: title = isCourseComplete
+    ? 'course.navItem.certificates.unlocked_certificate'
+    : 'course.navItem.certificates.complete_to_download_title';
+  $: subtitle = isCourseComplete
+    ? 'course.navItem.certificates.unlocked_certificate_subtitle'
+    : 'course.navItem.certificates.complete_to_download_subtitle';
 </script>
 
 <Box>
   <div class="flex flex-col items-center justify-center w-max h-full gap-5">
     <img src="/images/student-certificate-preview.png" alt="Certificate" class="max-w-[218px]" />
     <p class="text-xl font-normal text-center">
-      {$t('course.navItem.certificates.unlocked_certificate')}
+      {$t(title)}
     </p>
     <p class="text-sm font-normal text-center max-w-md">
-      {$t('course.navItem.certificates.unlocked_certificate_subtitle')}
+      {$t(subtitle)}
     </p>
     <PrimaryButton
       className="flex items-center gap-2"
       onClick={downLoadCertificate}
       variant={VARIANTS.CONTAINED_DARK}
-      isDisabled={!PUBLIC_SERVER_URL}
+      isDisabled={!PUBLIC_SERVER_URL || !isCourseComplete}
       {isLoading}
     >
       <Download size={16} />

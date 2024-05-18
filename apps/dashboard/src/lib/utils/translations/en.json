@@ -842,7 +842,9 @@
         "locked_certificate": "Certificates not available",
         "instructor_unlock": "Your instructor needs to unlock your certificate.",
         "contact_instructor": "If you need your certificate, please contact your instructor.",
-        "download_certificate": "Download Certificate"
+        "download_certificate": "Download Certificate",
+        "complete_to_download_title": "Course not complete 😔",
+        "complete_to_download_subtitle": "Your certificate will be available once you complete all lesson and exercises in this course"
       },
 
       "landing_page": {

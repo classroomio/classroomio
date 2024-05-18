@@ -6,17 +6,17 @@
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
-  import Professional from './certificates/Professional.svelte';
-  import Plain from './certificates/Plain.svelte';
+  import Professional from './templates/Professional.svelte';
+  import Plain from './templates/Plain.svelte';
   import { course } from '$lib/components/Course/store';
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import FlashFilled from 'carbon-icons-svelte/lib/FlashFilled.svelte';
-  import PurpleProfessionalBadge from './certificates/PurpleProfessionalBadge.svelte';
-  import BlueProfessionalBadge from './certificates/BlueProfessionalBadge.svelte';
-  import PurpleBadgePattern from './certificates/PurpleBadgePattern.svelte';
-  import BlueBadgePattern from './certificates/BlueBadgePattern.svelte';
+  import PurpleProfessionalBadge from './templates/PurpleProfessionalBadge.svelte';
+  import BlueProfessionalBadge from './templates/BlueProfessionalBadge.svelte';
+  import PurpleBadgePattern from './templates/PurpleBadgePattern.svelte';
+  import BlueBadgePattern from './templates/BlueBadgePattern.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
 
   const studentNamePlaceholder = 'Name of student';
