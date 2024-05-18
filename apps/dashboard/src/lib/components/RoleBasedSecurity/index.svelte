@@ -17,6 +17,9 @@
       userRole = user.role_id;
     }
   }
+
+  $: console.log({ group: $group });
+  $: console.log('is allowed', allowedRoles.includes(userRole), 'roles', userRole);
 </script>
 
 {#if allowedRoles.includes(userRole)}
