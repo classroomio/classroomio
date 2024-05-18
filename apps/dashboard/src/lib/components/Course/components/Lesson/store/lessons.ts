@@ -4,6 +4,20 @@ import { createLesson, updateLesson, deleteLesson } from '$lib/utils/services/co
 import type { Lesson, Course, LessonPage, LessonComment } from '$lib/utils/types';
 import { LOCALE } from '$lib/utils/types';
 import { snackbar } from '$lib/components/Snackbar/store';
+import { z } from 'zod';
+import { lessonValidation } from '$lib/utils/functions/validator';
+
+const lessonSchema = z.object({
+  title: z.string().nonempty({ message: 'Title cannot be empty' }),
+  lesson_at: z.string().optional(),
+  call_url: z.string().nullable().optional(),
+  profile: z
+    .object({
+      id: z.string().optional()
+    })
+    .optional(),
+  is_unlocked: z.boolean()
+});
 
 export const uploadCourseVideoStore = writable({
   isModalOpen: false
@@ -68,6 +82,12 @@ export async function handleDelete(lessonId: Lesson['id'] | undefined) {
 }
 
 export async function handleSaveLesson(lesson: Lesson, course_id: Course['id']) {
+  const result = lessonValidation(lesson);
+
+  if (Object.keys(result).length) {
+    return result;
+  }
+
   console.log(`handleSaveLesson lesson`, lesson);
   const newLesson = {
     title: lesson.title,
