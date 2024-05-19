@@ -347,8 +347,8 @@
   bind:isGradeWithAI
 />
 
-<RoleBasedSecurity allowedRoles={[1, 2]}>
-  <CourseContainer bind:courseId={data.courseId}>
+<CourseContainer bind:courseId={data.courseId}>
+  <RoleBasedSecurity allowedRoles={[1, 2]}>
     <PageNav title={$t('course.navItem.submissions.title')} />
 
     <PageBody width="w-full max-w-6xl md:w-11/12 overflow-x-auto">
@@ -424,8 +424,8 @@
         {/each}
       </div>
     </PageBody>
-  </CourseContainer>
-</RoleBasedSecurity>
+  </RoleBasedSecurity>
+</CourseContainer>
 
 <style>
   .section {

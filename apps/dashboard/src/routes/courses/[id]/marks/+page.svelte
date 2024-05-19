@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import AudioConsoleIcon from 'carbon-icons-svelte/lib/AudioConsole.svelte';
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
@@ -16,15 +17,16 @@
   import { course } from '$lib/components/Course/store';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { globalStore } from '$lib/utils/store/app';
-  import { t } from '$lib/utils/functions/translations.js';
+  import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
-  import { redirectToLesson } from '$lib/utils/redirect.js';
+  import type { CurrentOrg } from '$lib/utils/types/org';
+  import type { GroupPerson } from '$lib/utils/types';
 
   export let data;
 
   let borderBottomGrey = 'border-r-0 border-t-0 border-b border-l-0 border-gray-300';
   let borderleftGrey = 'border-r-0 border-t-0 border-b-0 border-l border-gray-300';
-  let students = [];
+  let students: GroupPerson[] = [];
 
   let lessonMapping = {}; // { lessonId: { exerciseId: exerciseTitle, ... }, ... }
   let studentMarksByExerciseId = {}; // { groupMemberId: { exerciseId: `total_gotten/points`, ... }, ... }
@@ -33,7 +35,7 @@
     if (!studentExerciseData) return 0;
 
     return Object.values(studentExerciseData).reduce(
-      (total, point) => (total += parseInt(point)),
+      (total: number, point) => (total += parseInt(point as string)),
       0
     );
   }
@@ -82,16 +84,30 @@
     });
   }
 
+  function getPageRoles(org: CurrentOrg) {
+    const roles = [1, 2];
+
+    if (org.customization.course.grading) {
+      roles.push(3);
+    }
+
+    return roles;
+  }
+
   $: students = $globalStore.isStudent
     ? $group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
     : $group.people.filter((person) => !!person.profile && person.role_id === ROLE.STUDENT);
 
-  $: redirectToLesson($currentOrg.customization.course.grading, data.courseId);
   $: browser && $course.id && firstRender($course.id);
 </script>
 
 <CourseContainer bind:courseId={data.courseId}>
-  <RoleBasedSecurity allowedRoles={[1, 2, $currentOrg.customization.course.grading ? 3 : 0]}>
+  <RoleBasedSecurity
+    allowedRoles={getPageRoles($currentOrg)}
+    onDenied={() => {
+      goto(`/courses/${data.courseId}/lessons?next=true`);
+    }}
+  >
     <PageNav title={$t('course.navItem.marks.title')} />
 
     <PageBody width="w-full max-w-6xl md:w-11/12">
