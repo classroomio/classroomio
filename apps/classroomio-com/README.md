@@ -1,5 +1,5 @@
 <a href="https://classroomio.com/">
-  <img alt="ClassroomIO is the easiest place to launch and scale your online bootcamp." src="https://classroomio.com/classroomio-opengraph-image.png" />
+  <img alt="Launch your bootcamp quickly and affordably with ClassroomIO, the customizable online teaching platform." src="https://classroomio.com/classroomio-opengraph-image.png" />
   <h1 align="center">ClassroomIO</h1>
 </a>
 

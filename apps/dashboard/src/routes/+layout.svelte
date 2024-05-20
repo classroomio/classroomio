@@ -307,7 +307,7 @@
 {:else}
   <main class="dark:bg-black">
     {#if $navigating && $delayedPreloading}
-      <Backdrop disableCenteredContent={true} className="opacity-90">
+      <Backdrop disableCenteredContent={true} className="">
         <div class="h-full w-full relative" transition:fly={{ x: -200, duration: 500 }}>
           <ToastNotification kind="info-square" class="absolute bottom-5 left-5">
             <span slot="title" class="flex items-center">

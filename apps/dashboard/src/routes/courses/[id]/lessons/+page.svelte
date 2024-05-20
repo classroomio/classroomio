@@ -25,7 +25,7 @@
   import Avatar from '$lib/components/Apps/components/Poll/components/Avatar.svelte';
   import { course, group } from '$lib/components/Course/store';
   import DateField from '$lib/components/Form/Date.svelte';
-  import type { Lesson } from '$lib/utils/types';
+  import type { Course, Lesson } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations.js';
   import { goto } from '$app/navigation';
   import { COURSE_TYPE } from '$lib/components/Courses/constants';
@@ -41,6 +41,19 @@
   let isFetching: boolean = false;
 
   const flipDurationMs = 300;
+
+  let errors: Record<string, string> = {};
+
+  async function saveLesson(lesson: Lesson, courseId: Course['id']) {
+    const validationRes = await handleSaveLesson(lesson, courseId);
+
+    if (validationRes && Object.keys(validationRes).length) {
+      errors = validationRes;
+    } else {
+      errors = {};
+      lessonEditing = undefined;
+    }
+  }
 
   function addLesson() {
     $handleAddLessonWidget.open = true;
@@ -182,7 +195,12 @@
             <div class="w-4/5">
               <!-- Lesson Title -->
               {#if lessonEditing === lesson.id}
-                <TextField bind:value={lesson.title} autoFocus={true} className="max-w-lg" />
+                <TextField
+                  bind:value={lesson.title}
+                  autoFocus={true}
+                  className="max-w-lg"
+                  errorMessage={errors?.title}
+                />
               {:else}
                 <h3 class="m-0 flex items-center text-lg dark:text-white">
                   <a
@@ -296,8 +314,7 @@
                       : $t('course.navItem.lessons.add_lesson.edit')}
                     on:click={() => {
                       if (lessonEditing === lesson.id) {
-                        lessonEditing = undefined;
-                        handleSaveLesson(lesson, $course.id);
+                        saveLesson(lesson, $course.id);
                       } else {
                         lessonEditing = lesson.id;
                       }

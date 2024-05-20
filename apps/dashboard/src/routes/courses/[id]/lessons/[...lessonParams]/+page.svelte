@@ -187,7 +187,6 @@
       lesson_completion = [...lessonData.lesson_completion];
     }
 
-    console.log('profile locale', $profile.locale);
     lesson.update((l) => ({
       ...l,
       id: data.lessonId,
