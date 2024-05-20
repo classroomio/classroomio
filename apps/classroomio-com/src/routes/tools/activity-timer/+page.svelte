@@ -11,11 +11,6 @@
   let isPaused: boolean = false;
   let soundOn: boolean = true;
 
-  $: {
-    console.log('soundOn', soundOn);
-    console.log('isPaused', isPaused);
-  }
-
   let hours: number = 0;
   let minutes: number = 0;
   let seconds: number = 0;
