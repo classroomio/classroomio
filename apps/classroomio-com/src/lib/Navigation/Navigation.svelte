@@ -12,7 +12,6 @@
   let showsubNav = false;
   let showNav = false;
   let activeLink = '';
-  let activeHash = '';
 
   function handleShow() {
     showsubNav = !showsubNav;
@@ -46,8 +45,7 @@
   ];
 
   $: activeLink = $page.url.pathname;
-  $: activeHash = $page.url.hash;
-  $: isSuperpowersActive = superpowers.some((sp) => activeHash.includes(sp.key));
+  $: isSuperpowersActive = superpowers.some((sp) => $page.url.hash.includes(sp.key));
 </script>
 
 <div
