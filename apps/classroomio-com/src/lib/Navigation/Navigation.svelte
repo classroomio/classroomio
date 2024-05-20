@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import ChevronDown from 'carbon-icons-svelte/lib/ChevronDown.svelte';
   import TextAlignJustify from 'carbon-icons-svelte/lib/TextAlignJustify.svelte';
   import CloseLarge from 'carbon-icons-svelte/lib/CloseLarge.svelte';
@@ -7,9 +7,11 @@
   import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
   import CourseIcon from '$lib/Icons/CourseIcon.svelte';
   import MapCenter from 'carbon-icons-svelte/lib/MapCenter.svelte';
+  import { onMount } from 'svelte';
 
   let showsubNav = false;
   let showNav = false;
+  let activeLink = '';
 
   function handleShow() {
     showsubNav = !showsubNav;
@@ -19,11 +21,16 @@
     showNav = !showNav;
   }
 
+  function setActiveLink(link: string) {
+    activeLink = link;
+    localStorage.setItem('activeLink', link);
+  }
+
   const superpowers = [
     {
       key: 'coursemanagement',
       title: 'Course Management',
-      subtitle: 'Simple course management tools '
+      subtitle: 'Simple course management tools'
     },
     {
       key: 'ai',
@@ -41,12 +48,21 @@
       subtitle: 'Seamlessly collaborate with your students'
     }
   ];
+
+  onMount(() => {
+    const storedActiveLink = localStorage.getItem('activeLink');
+    if (storedActiveLink) {
+      activeLink = storedActiveLink;
+    }
+  });
+
+  $: isSuperpowersActive = superpowers.some((sp) => sp.key === activeLink);
 </script>
 
 <div
   class="flex w-full justify-between items-center py-6 border-b-[1px] md:px-12 px-5 fixed top-0 z-[3000] filter backdrop-blur-xl shadow-sm bg-white"
 >
-  <a href="/" class="w-[20%]">
+  <a href="/" class="w-[20%]" on:click={() => setActiveLink('home')}>
     <div class="flex items-center w-full">
       <img
         loading="lazy"
@@ -62,20 +78,26 @@
 
   <nav class="w-[40%] hidden md:hidden lg:block">
     <ul class="flex items-center justify-between w-full gap-2">
-      <!--  -->
       <li class="text-gray-800 font-semibold text-sm cursor-pointer relative">
-        <button class="flex items-center" on:click={() => (showNav = !showNav)}
-          >Our Superpowers <ChevronDown class="ml-2" /></button
+        <button
+          class={`flex items-center hover:bg-gray-100 px-4 py-2 rounded-md`}
+          on:click={() => (showNav = !showNav)}
+          class:active={isSuperpowersActive}
         >
+          Our Superpowers <ChevronDown class="ml-2" />
+        </button>
         {#if showNav}
           <div
             class="absolute w-[24rem] top-10 -left-10 border px-5 py-5 rounded-[30px] shadow-slate-700 z-[3001] bg-white"
           >
             {#each superpowers as superpower}
               <a
-                class="flex justify-between items-center w-full rounded-lg hover:bg-slate-100 p-5 mb-4"
+                class="flex justify-between items-center w-full rounded-lg hover:bg-gray-100 p-5 mb-4"
                 href="/#{superpower.key}"
-                on:click={() => (showNav = !showNav)}
+                on:click={() => {
+                  showNav = !showNav;
+                  setActiveLink(superpower.key);
+                }}
               >
                 {#if superpower.key === 'coursemanagement'}
                   <CourseIcon />
@@ -99,31 +121,36 @@
           </div>
         {/if}
       </li>
-      <!-- More Features -->
-      <!-- <a href="/#morefeatures">
-        <li class="text-gray-800 font-semibold text-sm cursor-pointer">More features</li>
-      </a> -->
-      <!-- Pricing -->
-      <a href="/pricing">
-        <li class="text-gray-800 font-semibold text-sm cursor-pointer">Pricing</li>
+      <a
+        href="/pricing"
+        class="text-gray-800 font-semibold text-sm cursor-pointer"
+        class:active={activeLink === 'pricing'}
+        on:click={() => setActiveLink('pricing')}
+      >
+        <li class="hover:bg-gray-100 px-4 py-2 rounded-md">Pricing</li>
       </a>
-      <!-- Docs -->
-      <a href="/docs" target="_blank">
-        <li class="text-gray-800 font-semibold text-sm cursor-pointer">Docs</li>
+      <a
+        href="/docs"
+        target="_blank"
+        class="text-gray-800 font-semibold text-sm cursor-pointer"
+        class:active={activeLink === 'docs'}
+        on:click={() => setActiveLink('docs')}
+      >
+        <li class="hover:bg-gray-100 px-4 py-2 rounded-md">Docs</li>
       </a>
-      <!-- Blog -->
-      <a href="/blog">
-        <li class="text-gray-800 font-semibold text-sm cursor-pointer">Blog</li>
+
+      <a
+        href="/blog"
+        class="text-gray-800 font-semibold text-sm cursor-pointer"
+        class:active={activeLink === 'blog'}
+        on:click={() => setActiveLink('blog')}
+      >
+        <li class="hover:bg-gray-100 px-4 py-2 rounded-md">Blog</li>
       </a>
     </ul>
   </nav>
 
   <div class="justify-between items-center flex-row hidden md:hidden lg:flex">
-    <!-- <button
-      class="bg-blue-700 text-white text-sm font-medium px-4 py-1.5 rounded-md mr-5"
-    >
-      Sign Up
-    </button> -->
     <a href="/discord" target="_blank">
       <img
         loading="lazy"
@@ -155,7 +182,6 @@
     on:click={handleShowNav}><TextAlignJustify size={24} /></button
   >
 
-  <!-- burger menu -->
   {#if showNav}
     <div
       in:fly={{ x: 20, duration: 700 }}
@@ -173,20 +199,27 @@
         />
         <button on:click={handleShowNav}><CloseLarge size={24} class="mr-5" /></button>
       </div>
-      <nav class="">
+      <nav>
         <ul class="flex items-center flex-col lg:flex-row justify-between w-full">
-          <!--  -->
           <li class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer w-full">
             <button
               class="w-full flex items-center justify-between hover:bg-gray-100 py-3 px-4 rounded-lg"
               on:click={handleShow}
+              class:active={isSuperpowersActive}
             >
               Our Superpowers <ChevronDown />
             </button>
             {#if showsubNav}
               <div in:fly={{ y: -20, duration: 700 }} out:fly={{ y: 20, duration: 400 }}>
                 {#each superpowers as superpower}
-                  <a href="/#{superpower.key}" on:click={handleShowNav}>
+                  <a
+                    href="/#{superpower.key}"
+                    on:click={() => {
+                      handleShowNav();
+                      setActiveLink(superpower.key);
+                    }}
+                    class:active={activeLink === superpower.key}
+                  >
                     <p
                       class="font-normal text-xs text-gray-700 hover:bg-gray-100 rounded-lg py-2.5 pl-5"
                     >
@@ -197,36 +230,47 @@
               </div>
             {/if}
           </li>
-          <!-- Pricing -->
           <a
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full"
-            on:click={handleShowNav}
+            on:click={() => {
+              handleShowNav();
+              setActiveLink('pricing');
+            }}
             href="/pricing"
+            class:active={activeLink === 'pricing'}
           >
             <li>Pricing</li>
           </a>
-          <!-- Docs -->
           <a
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
-            on:click={handleShowNav}
+            on:click={() => {
+              handleShowNav();
+              setActiveLink('docs');
+            }}
+            class:active={activeLink === 'docs'}
             href="/docs"
             target="_blank"
           >
             <li>Docs</li>
           </a>
-
-          <!-- Blog -->
           <a
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
-            on:click={handleShowNav}
+            on:click={() => {
+              handleShowNav();
+              setActiveLink('blog');
+            }}
+            class:active={activeLink === 'blog'}
             href="/blog"
           >
             <li>Blog</li>
           </a>
-          <!-- More Features -->
           <a
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
-            on:click={handleShowNav}
+            on:click={() => {
+              handleShowNav();
+              setActiveLink('morefeatures');
+            }}
+            class:active={activeLink === 'morefeatures'}
             href="/#morefeatures"
           >
             <li>More features</li>
@@ -234,10 +278,6 @@
         </ul>
       </nav>
       <div class="flex items-start flex-col gap-y-2 mt-5 border-t-[1px] pt-5">
-        <!-- <button
-          class="text-black font-semibold rounded-md mr-10 w-full text-left py-4 px-4 hover:bg-gray-100 text-sm md:text-lg"
-          >Sign Up</button
-        > -->
         <a
           href="/discord"
           target="_blank"
@@ -274,3 +314,10 @@
     </div>
   {/if}
 </div>
+
+<style>
+  .active {
+    background-color: #f3f4f6;
+    border-radius: 6px;
+  }
+</style>
