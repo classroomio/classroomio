@@ -4,6 +4,7 @@
   import Board from './components/Board.svelte';
   import { TicTacToe } from './components/board';
   import { scores, changeToComputer } from './components/store';
+  import ToolsHeader from '$lib/ToolsHeader/ToolsHeader.svelte';
 
   let startGame = false;
   let message: string | null = null;
@@ -88,15 +89,15 @@
   <meta name="twitter:image" content="" />
 </svelte:head>
 
-<section class="mt-[30%] md:px-0 md:mt-[10%]">
-  <header class="flex justify-center items-center gap-5 mb-10">
+<section class="mt-[30%] px-5 md:px-0 md:mt-[7%]">
+  <ToolsHeader className="mb-10">
     <img
       src="/free-tools/tic-tac.svg"
-      class="w-14 md:w-[5%] border rounded-full"
+      class="w-14 md:w-[5%] mx-auto border rounded-full"
       alt="Tic Tac Icon"
     />
     <h1 class="text-4xl md:text-5xl font-bold text-[#040F2D]">Tic-Tac game</h1>
-  </header>
+  </ToolsHeader>
 
   <div
     class="overflow-hidden relative tic-tac-bg text-white w-full h-[55vh] md:w-[59%] md:h-[82vh] border-8 border-black mx-auto flex justify-center items-center"

@@ -105,3 +105,7 @@ li {
 .hero-bg {
   background-image: url('/hero-bg.svg');
 }
+
+.tools-hero-bg {
+  background-image: url('/tools-hero-bg.svg');
+}

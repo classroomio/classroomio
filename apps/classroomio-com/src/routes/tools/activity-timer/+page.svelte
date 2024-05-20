@@ -3,6 +3,7 @@
   import { fly } from 'svelte/transition';
   import { sineInOut } from 'svelte/easing';
   import Timer from './components/Timer.svelte';
+  import ToolsHeader from '$lib/ToolsHeader/ToolsHeader.svelte';
 
   let timer: NodeJS.Timeout;
   let buzzSound: HTMLAudioElement;
@@ -120,19 +121,19 @@
   <meta name="twitter:image" content="" />
 </svelte:head>
 
-<section class="mt-[30%] px-5 md:px-0 md:mt-[10%]">
-  <header class="md:w-2/4 mx-auto text-center">
+<section class="mt-[30%] px-5 md:px-0 md:mt-[7%]">
+  <ToolsHeader>
     <img
       src="/free-tools/name-picker.svg"
-      class="w-[15%] md:w-[10%] mx-auto border rounded-full"
+      class="w-[15%] md:w-[5%] mx-auto border rounded-full"
       alt=""
     />
     <h1 class="text-4xl md:text-6xl font-bold text-[#040F2D] my-3">Timed Activity Timer</h1>
-    <p class="text-[13px] text-[#656565] font-light md:font-normal w-[90%] mx-auto">
+    <p class="text-[13px] text-[#656565] font-light md:font-normal md:w-[45%] mx-auto">
       Use this online name picker to draw a random name from a list of names, or to draw several
       names randomly out of a list. You can use it as a name randomizer for a class activities.
     </p>
-  </header>
+  </ToolsHeader>
 
   <div class="w-full md:w-2/4 my-10 mx-auto border rounded-md overflow-hidden">
     <!-- countdown setter -->

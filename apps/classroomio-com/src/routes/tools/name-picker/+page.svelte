@@ -1,4 +1,6 @@
 <script lang="ts">
+  import ToolsHeader from '$lib/ToolsHeader/ToolsHeader.svelte';
+
   let namesInput = '';
   let numNames = 0;
   let wordCount = 0;
@@ -126,19 +128,19 @@
   <meta name="twitter:image" content="https://brand.cdn.clsrio.com/og/free-tools.png" />
 </svelte:head>
 
-<section class="mt-[30%] px-5 md:px-0 md:mt-[10%]">
-  <header class="md:w-2/4 mx-auto text-center">
+<section class="mt-[30%] px-5 md:px-0 md:mt-[7%]">
+  <ToolsHeader>
     <img
       src="/free-tools/name-picker.svg"
-      class="w-[15%] md:w-[10%] mx-auto border rounded-full"
+      class="w-[15%] md:w-[5%] mx-auto border rounded-full"
       alt=""
     />
     <h1 class="text-4xl md:text-6xl font-bold text-[#040F2D] my-3">Random Name Picker</h1>
-    <p class="text-[13px] text-[#656565] font-light md:font-normal w-[90%] mx-auto">
+    <p class="text-[13px] text-[#656565] font-light md:font-normal md:w-[45%] mx-auto">
       Use this online name picker to draw a random name from a list of names, or to draw several
       names randomly out of a list. You can use it as a name randomizer for a class activities.
     </p>
-  </header>
+  </ToolsHeader>
 
   <div class="border rounded-md md:w-[60%] my-10 py-8 md:py-[3%] mx-auto shadow-md">
     <div class="w-[85%] md:w-[70%] mx-auto">
