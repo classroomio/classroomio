@@ -12,6 +12,7 @@
 
   export let id = '';
   export let title = '';
+  export let type = '';
   export let description = '';
   export let isPublished = false;
   export let totalLessons = 0;
@@ -48,6 +49,7 @@
     <p class="line-clamp-2">{description}</p>
   </StructuredListCell>
   {#if !$isMobile}
+    <StructuredListCell>{type}</StructuredListCell>
     <StructuredListCell>{totalLessons}</StructuredListCell>
     <StructuredListCell>{totalStudents}</StructuredListCell>
     <StructuredListCell>

@@ -11,7 +11,8 @@
   export let data;
 
   $: if ($currentOrg.id && data.orgName === '*') {
-    goto(`/org/${$currentOrg.siteName}`);
+    const newUrl = $page.url.pathname.replace('*', $currentOrg.siteName);
+    goto(newUrl + $page.url.search);
   }
 </script>
 

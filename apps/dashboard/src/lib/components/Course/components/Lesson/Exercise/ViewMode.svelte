@@ -17,7 +17,11 @@
   import { getPropsForQuestion, filterOutDeleted } from './functions';
   import { formatAnswers, getGroupMemberId } from '$lib/components/Course/function';
   import { submitExercise } from '$lib/utils/services/courses';
-  import { fetchSubmission } from '$lib/utils/services/submissions';
+  import {
+    fetchSubmission,
+    updateQuestionAnswer,
+    updateSubmission
+  } from '$lib/utils/services/submissions';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
   import {
@@ -26,8 +30,9 @@
   } from '$lib/utils/services/notification/notification';
   import { lesson } from '../store/lessons';
   import { browser } from '$app/environment';
-  import { CloseFilled } from 'carbon-icons-svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { useCompletion } from 'ai/svelte';
+  import { COURSE_TYPE } from '$lib/utils/types';
+  import GradingLoader from './GradingLoader.svelte';
 
   export let preview: boolean = false;
   export let exerciseId = '';
@@ -40,6 +45,9 @@
   let isLoadingAutoSavedData = false;
   let alreadyCheckedAutoSavedData = false;
   let gradedComment = true;
+  let isLoading = false;
+  let submissionResponse;
+  let submissionId;
 
   function handleStart() {
     $questionnaireMetaData.currentQuestionIndex += 1;
@@ -80,7 +88,89 @@
     });
   };
 
-  function onSubmit(id, value, moveToNextQuestion = false) {
+  const { input, handleSubmit, completion } = useCompletion({
+    api: '/api/completion/gradingprompt',
+    onFinish: async () => {
+      try {
+        const responseData = $completion.replace('```json', '').replace('```', '');
+
+        let aiResponses = [];
+        try {
+          // Parse the modified response data as JSON
+          aiResponses = JSON.parse(responseData);
+        } catch (error) {
+          console.error('Error parsing AI response', error);
+        }
+
+        $questionnaire.questions.forEach((question) => {
+          const { id, points, question_type_id } = question;
+          let questionAnswer = submissionResponse?.res?.data.find(
+            (answer) => answer.question_id === id
+          );
+
+          console.log('this is the question answer', questionAnswer);
+          if (question_type_id !== QUESTION_TYPE.TEXTAREA) {
+            const answer = $questionnaireMetaData.answers[question.name];
+            let score = points / answer.length;
+            $questionnaireMetaData.grades = {
+              ...$questionnaireMetaData.grades,
+              [id]: score
+            };
+            updateQuestionAnswer({ point: score }, { id: questionAnswer?.id });
+          } else if (aiResponses.length) {
+            const graded = aiResponses.find((res) => res.id === id);
+
+            $questionnaireMetaData.grades = {
+              ...$questionnaireMetaData.grades,
+              [id]: graded.score
+            };
+            updateQuestionAnswer({ point: graded.score }, { id: questionAnswer?.id });
+          }
+        });
+
+        $questionnaireMetaData.finalTotalGrade = Object.values(
+          $questionnaireMetaData.grades
+        ).reduce((acc, answer): number => {
+          return acc + answer;
+        }, 0);
+
+        updateSubmission({
+          id: submissionId,
+          status_id: STATUS.GRADED,
+          total: $questionnaireMetaData.finalTotalGrade
+        });
+
+        $questionnaireMetaData.status = STATUS.GRADED;
+        console.log('grade', $questionnaireMetaData.finalTotalGrade);
+      } catch (error) {
+        console.error('Error', error);
+      } finally {
+        isLoading = false;
+      }
+    }
+  });
+
+  function automaticGrading(answers, questions) {
+    const paragraphAiInput = questions
+      .filter((q) => q.question_type_id === QUESTION_TYPE.TEXTAREA)
+      .map((q) => {
+        const answer = answers?.answers[q.name]; // { open_answer: '' }
+        return {
+          id: q.id,
+          question: q.title,
+          answer: answer,
+          point: q.points
+        };
+      });
+    $input = JSON.stringify(paragraphAiInput);
+    handleSubmit({ preventDefault: () => {} });
+  }
+
+  async function onSubmit(id, value, moveToNextQuestion = false) {
+    if ($course.type === COURSE_TYPE.SELF_PACED) {
+      isLoading = true;
+    }
+
     const { answers } = $questionnaireMetaData;
     const { questions } = $questionnaire;
     const prevAnswer = answers[id] || [];
@@ -114,14 +204,24 @@
       $questionnaireMetaData.status = 1;
       $questionnaireMetaData.totalPossibleGrade = getTotalPossibleGrade($questionnaire.questions);
       $questionnaireMetaData.grades = {};
-      ($questionnaireMetaData.comment = ''),
-        submitExercise(
-          $questionnaireMetaData.answers,
-          questions,
-          exerciseId,
-          $course.id,
-          getGroupMemberId($group.people, $profile.id)
-        );
+
+      $questionnaireMetaData.comment = '';
+      let response = await submitExercise(
+        $questionnaireMetaData.answers,
+        questions,
+        exerciseId,
+        $course.id,
+        getGroupMemberId($group.people, $profile.id)
+      );
+      if (response) {
+        submissionResponse = response;
+        submissionId = submissionResponse.submission[0]?.id;
+      }
+
+      if ($course.type === COURSE_TYPE.SELF_PACED) {
+        automaticGrading($questionnaireMetaData, $questionnaire.questions);
+      }
+
       notifyEducator();
     }
   }
@@ -291,7 +391,9 @@
     </div>
   </RoleBasedSecurity>
 {:else if $questionnaireMetaData.isFinished}
-  {#if !isLoadingAutoSavedData}
+  {#if isLoading}
+    <GradingLoader />
+  {:else if !isLoading && !isLoadingAutoSavedData}
     <div class="flex items-center justify-between">
       <div class="flex flex-col lg:flex-row items-start lg:items-center lg:space-x-4 w-full">
         <h2 class="text-xl font-normal">{$questionnaire.title}</h2>

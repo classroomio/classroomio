@@ -227,7 +227,7 @@
     "get_started": "Get Started",
     "personal_profile": {
       "title": "Upload a profile picture and update username",
-      "desc": "Personalize and a human touch making interactions more personal and memorable",
+      "desc": "Personalize and add a human touch making interactions more personal and memorable",
       "button_label": "Update Profile"
     },
     "organization_profile": {
@@ -433,16 +433,21 @@
         "description": "Description",
         "lessons": "Lessons",
         "students": "Students",
-        "published": "Published"
+        "published": "Published",
+        "type": "Type"
       }
     },
     "new_course_modal": {
       "heading": "Create a Course",
       "course_name": "Course name",
+      "type": "Course type",
       "course_name_placeholder": "Your course name",
       "short_description": "Short Description",
       "short_description_placeholder": "A little description about this course",
-      "button": "Finish"
+      "type_selector_title": "What type of course are you looking at?",
+      "button": "Finish",
+      "back": "Back",
+      "next": "Next"
     }
   },
 
@@ -653,7 +658,7 @@
               "yes": "Yes, delete"
             },
             "edit_mode": {
-              "delete_modal": "Delete Modal",
+              "delete_modal": "Delete Exercise",
               "sure": "Are you sure you want to delete this exercise?",
               "no": "No, cancel",
               "yes": "Yes, delete",
@@ -978,13 +983,17 @@
         "available": "Make the Lesson available for Download in pdf for registered students",
         "course_download": "Course Downlaod",
         "course_avail": "Make the Course available for Download for registered students",
-        "download": "Downlaod",
+        "download": "Download",
         "allow": "Allow New Students",
         "access": "Allow new students to access this course",
         "publish": "Publish Course",
         "determines": "This determines if your course displays on your landing page",
         "published": "Published",
         "unpublished": "Unpublished",
+        "type": "Course type",
+        "course_type_desc": "Update the course type for a more personalized experience",
+        "live_class": "Live class",
+        "self_paced": "Self paced",
         "delete": "Delete Course",
         "delete_text": "Delete this course,this action cannot be undone",
         "save": "Save Changes"
@@ -1247,8 +1256,17 @@
     }
   },
 
+  "specialization": {
+    "course_tag": "Specialization"
+  },
+
   "content": {
     "heading": "Internationalization in SvelteKit",
     "toggle_label": "Select Preferred Language"
+  },
+
+  "generic": {
+    "locked": "Locked",
+    "unlocked": "Unlocked"
   }
 }

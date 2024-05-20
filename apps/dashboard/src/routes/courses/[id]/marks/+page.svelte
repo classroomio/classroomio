@@ -83,6 +83,7 @@
       }
     });
   }
+  // TODO WRITE A REDIRECT FUNCTION FOR THIS THIS PAGE
 
   function getPageRoles(org: CurrentOrg) {
     const roles = [1, 2];

@@ -6,24 +6,18 @@
   import { fetchCourses } from '$lib/components/Courses/api';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
-  import { courses, courseMetaDeta, coursesComplete } from '$lib/components/Courses/store';
+  import {
+    courses,
+    courseMetaDeta,
+    coursesComplete,
+    coursesInProgress
+  } from '$lib/components/Courses/store';
   import { browser } from '$app/environment';
   import { t } from '$lib/utils/functions/translations';
 
-  const tabs = [
-    {
-      label: $t('my_learning.progress'),
-      value: 1
-    },
-    {
-      label: $t('my_learning.complete'),
-      value: 2
-    }
-  ];
-  let currentTab = tabs[0].value;
   let hasFetched = false;
 
-  function onChange(tab: 0) {
+  function onChange(tab) {
     return () => (currentTab = tab);
   }
 
@@ -51,6 +45,18 @@
   $: if (browser && $profile.id && $currentOrg.id) {
     getCourses($profile.id, $currentOrg.id);
   }
+
+  $: tabs = [
+    {
+      label: `${$t('my_learning.progress')} (${$coursesInProgress.length})`,
+      value: '1'
+    },
+    {
+      label: `${$t('my_learning.complete')} (${$coursesComplete.length})`,
+      value: '2'
+    }
+  ];
+  $: currentTab = tabs[0].value;
 </script>
 
 <section class="max-w-6xl mx-auto">
@@ -63,7 +69,7 @@
       <slot:fragment slot="content">
         <TabContent value={tabs[0].value} index={currentTab}>
           <Courses
-            courses={$courses}
+            courses={$coursesInProgress}
             emptyTitle={$t('my_learning.not_in_progress')}
             emptyDescription={$t('my_learning.any_progress')}
           />

@@ -263,7 +263,11 @@
         "unpublished": "Unveröffentlicht",
         "delete": "Kurs löschen",
         "delete_text": "Löschen Sie diesen Kurs. Diese Aktion kann nicht rückgängig gemacht werden",
-        "save": "Änderungen speichern"
+        "save": "Änderungen speichern",
+        "type": "Kurstyp",
+        "course_type_desc": "Aktualisieren Sie den Kurstyp für ein persönlicheres Erlebnis",
+        "live_class": "Live-Klasse",
+        "self_paced": "Eigenständig"
       },
       "landing_page": {
         "start_course": "Kurs starten",
@@ -763,7 +767,11 @@
       "course_name_placeholder": "Ihr Kursname",
       "short_description": "kurze Beschreibung",
       "short_description_placeholder": "Eine kleine Beschreibung zu diesem Kurs",
-      "button": "Beenden"
+      "button": "Beenden",
+      "type": "Kurstyp",
+      "type_selector_title": "Welche Art von Kurs suchen Sie?",
+      "back": "Zurück",
+      "next": "Nächste"
     },
     "course_card": {
       "empty_title": "Keine Kurse erstellt",
@@ -779,7 +787,8 @@
         "description": "Beschreibung",
         "lessons": "Unterricht",
         "students": "Studenten",
-        "published": "Veröffentlicht"
+        "published": "Veröffentlicht",
+        "type": "Typ"
       },
       "context_menu": {
         "clone": "Klon",
@@ -1212,5 +1221,12 @@
     "resend_in": "Bestätigung erneut senden",
     "seconds": "Sekunden",
     "snackbar_error": "Fehler beim Senden des Codes"
+  },
+  "generic": {
+    "locked": "Gesperrt",
+    "unlocked": "Entsperrt"
+  },
+  "specialization": {
+    "course_tag": "Spezialisierung"
   }
 }
