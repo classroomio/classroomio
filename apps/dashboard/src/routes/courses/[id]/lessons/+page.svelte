@@ -43,8 +43,8 @@
 
   let errors: Record<string, string> = {};
 
-  async function saveLesson(lesson: Lesson, course_id: Course['id']) {
-    const validationRes = await handleSaveLesson(lesson, course_id);
+  async function saveLesson(lesson: Lesson, courseId: Course['id']) {
+    const validationRes = await handleSaveLesson(lesson, courseId);
 
     if (validationRes && Object.keys(validationRes).length) {
       errors = validationRes;
