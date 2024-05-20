@@ -280,7 +280,7 @@
                       size="sm"
                       shape="rounded-full"
                     />
-                    <span>{item.title}</span>
+                    <span class="w-[70%] text-ellipsis line-clamp-2">{item.title}</span>
                     <span class="grow" />
                     {#if !item.is_unlocked}
                       <span class="text-md ml-2" title="This lesson is locked.">

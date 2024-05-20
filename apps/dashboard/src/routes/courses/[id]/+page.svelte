@@ -237,7 +237,6 @@
   $: initNewsFeed(data.courseId);
 
   $: setAuthor($group, $profile.id);
-
   $: $newsFeed = $newsFeed.sort((a, b) => Number(b.isPinned) - Number(a.isPinned));
 </script>
 
