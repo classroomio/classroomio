@@ -187,7 +187,6 @@
       lesson_completion = [...lessonData.lesson_completion];
     }
 
-    console.log('profile locale', $profile.locale);
     lesson.update((l) => ({
       ...l,
       id: data.lessonId,
@@ -231,6 +230,12 @@
   }
 
   function handleAppClick(appName: string) {
+    if ($apps.selectedApp === appName) {
+      $apps.selectedApp = undefined;
+      $apps.open = false;
+      return;
+    }
+
     $apps.selectedApp = appName;
     $apps.open = true;
   }
@@ -345,7 +350,7 @@
         {isStudent}
       />
 
-      {#if isStudent}
+      <!-- {#if isStudent}
         <div class="w-full hidden lg:flex flex-row-reverse mt-10">
           <PrimaryButton
             onClick={() => markLessonComplete(data.lessonId)}
@@ -365,12 +370,11 @@
               : $t('course.navItem.lessons.complete')}
           </PrimaryButton>
         </div>
-      {/if}
+      {/if} -->
     </PageBody>
   {/if}
-
   <!-- Mobile Navigation -->
-  <div class="fixed bottom-5 w-[90%] flex items-center justify-center lg:hidden">
+  <div class="sticky bottom-5 flex items-center justify-center">
     <div
       class="flex items-center gap-2 w-fit rounded-full shadow-xl bg-gray-100 dark:bg-neutral-700 px-5 py-1"
     >
@@ -391,8 +395,9 @@
         </button>
       {/if}
       <button
-        class="px-2 my-2 pr-4 border-t-0 border-b-0 border-l-0 border border-gray-300 flex items-center"
+        class="px-2 my-2 pr-4 border-t-0 border-b-0 border-l-0 border border-gray-300 flex items-center disabled:opacity-10 disabled:cursor-not-allowed"
         on:click={() => handleAppClick(APPS_CONSTANTS.APPS.COMMENTS)}
+        disabled={isStudent && !$currentOrg.customization.apps.comments}
       >
         <SendAlt size={24} class="carbon-icon" />
         <span class="ml-1">{$lesson.totalComments}</span>

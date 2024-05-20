@@ -15,8 +15,9 @@
   import { sideBar } from '$lib/components/Org/store';
   import { profile } from '$lib/utils/store/user';
   import { getIsLessonComplete } from '../Lesson/functions';
-  import { isFreePlan } from '$lib/utils/store/org';
+  import { currentOrg, isFreePlan } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
+  import { COURSE_TYPE } from '$lib/utils/types';
 
   export let path: string;
   export let isStudent: boolean = false;
@@ -141,7 +142,10 @@
         label: $t('course.navItems.nav_news_feed'),
         to: getNavItemRoute($course.id),
         hideSortIcon: true,
-        isPaidFeature: false
+        isPaidFeature: false,
+        show() {
+          return isStudent ? $currentOrg.customization.course.newsfeed : true;
+        }
       },
       {
         label: $t('course.navItems.nav_lessons'),
@@ -155,7 +159,12 @@
         label: $t('course.navItems.nav_attendance'),
         to: getNavItemRoute($course.id, 'attendance'),
         isPaidFeature: false,
-        hideSortIcon: true
+        hideSortIcon: true,
+        show() {
+          if ($course.type !== COURSE_TYPE.LIVE_CLASS) return false;
+
+          return true;
+        }
       },
       {
         label: $t('course.navItems.nav_submissions'),
@@ -163,22 +172,24 @@
         hideSortIcon: true,
         isPaidFeature: false,
         show() {
-          return !isStudent;
+          if (isStudent) return false;
+
+          if ($course.type !== COURSE_TYPE.LIVE_CLASS) return false;
+
+          return true;
         }
       },
       {
         label: $t('course.navItems.nav_marks'),
         to: getNavItemRoute($course.id, 'marks'),
         isPaidFeature: false,
-        hideSortIcon: true
-      },
-      {
-        label: $t('course.navItems.nav_people'),
-        to: getNavItemRoute($course.id, 'people'),
-        isPaidFeature: false,
         hideSortIcon: true,
         show() {
-          return !isStudent;
+          if ($course.type == COURSE_TYPE.LIVE_CLASS) {
+            return isStudent ? $currentOrg.customization.course.grading : true;
+          }
+
+          return false;
         }
       },
       {
@@ -199,6 +210,15 @@
         to: getNavItemRoute($course.id, 'landingpage'),
         hideSortIcon: true,
         isPaidFeature: false,
+        show() {
+          return !isStudent;
+        }
+      },
+      {
+        label: $t('course.navItems.nav_people'),
+        to: getNavItemRoute($course.id, 'people'),
+        isPaidFeature: false,
+        hideSortIcon: true,
         show() {
           return !isStudent;
         }
@@ -274,7 +294,7 @@
                       size="sm"
                       shape="rounded-full"
                     />
-                    <span>{item.title}</span>
+                    <span class="w-[70%] text-ellipsis line-clamp-2">{item.title}</span>
                     <span class="grow" />
                     {#if !item.is_unlocked}
                       <span class="text-md ml-2" title="This lesson is locked.">

@@ -11,6 +11,18 @@ const getSiteNameValidation = () =>
 const getNewsfeedValidation = () =>
   z.string().min(5, { message: 'Field must contain 5 or more characters' });
 
+const lessonSchema = z.object({
+  title: z.string().nonempty({ message: 'Title cannot be empty' }),
+  lesson_at: z.string().optional(),
+  call_url: z.string().nullable().optional(),
+  profile: z
+    .object({
+      id: z.string().optional()
+    })
+    .optional(),
+  is_unlocked: z.boolean()
+});
+
 const createQuizValidationSchema = z.object({
   title: z.string().min(6, {
     message: 'Must be 6 or more characters long',
@@ -143,7 +155,11 @@ export const processErrors = (error, mapToId) => {
 
 export const authValidation = (fields = {}) => {
   const { error } = authValidationSchema.safeParse(fields);
+  return processErrors(error);
+};
 
+export const lessonValidation = (lesson = {}) => {
+  const { error } = lessonSchema.safeParse(lesson);
   return processErrors(error);
 };
 

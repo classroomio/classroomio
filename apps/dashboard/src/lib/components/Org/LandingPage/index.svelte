@@ -309,8 +309,8 @@
                 slug={courseData.slug}
                 bannerImage={courseData.logo || '/images/classroomio-course-img-template.jpg'}
                 title={courseData.title}
+                type={courseData.type}
                 description={courseData.description}
-                role_id={courseData.role_id}
                 isPublished={courseData.is_published}
                 cost={courseData.cost}
                 currency={courseData.currency}

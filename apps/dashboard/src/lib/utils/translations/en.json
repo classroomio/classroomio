@@ -80,6 +80,12 @@
           "heading": "Theme",
           "sub_heading": "Set your brand color"
         },
+        "customize_lms": {
+          "heading": "Customize LMS",
+          "sub_heading": "Personalize Your Organization LMS",
+          "body": "Control your students learning experience. You can enable or disable tabs and pages, update LMS banner and in-app comments to your organization requirements",
+          "button": "Customize LMS"
+        },
         "custom_domain": {
           "heading": "Custom Domain",
           "sub_heading": "Customise your Domain",
@@ -221,7 +227,7 @@
     "get_started": "Get Started",
     "personal_profile": {
       "title": "Upload a profile picture and update username",
-      "desc": "Personalize and a human touch making interactions more personal and memorable",
+      "desc": "Personalize and add a human touch making interactions more personal and memorable",
       "button_label": "Update Profile"
     },
     "organization_profile": {
@@ -315,12 +321,39 @@
     },
     "settings": {
       "domains": {
+        "title": "Custom domain",
         "add": "Add",
         "work_together": "Add your team mates or collaborators to your organization. Start working together",
         "url": "URL",
         "update": "Update Domain",
         "custom": "Custom domain",
         "domain": "Add your own domain name"
+      },
+      "customize_lms": {
+        "title": "Customize LMS",
+        "disabled": "Disabled",
+        "enabled": "Enabled",
+        "save": "Save Changes",
+        "dashboard": {
+          "title": "Dashboard",
+          "community": "Community",
+          "exercises": "Exercises",
+          "banner_image": "Banner Image",
+          "banner_image_btn": "Update banner image",
+          "banner_text": "Banner Text",
+          "banner_text_label": "Update banner text",
+          "banner_text_placeholder": "Write the text here"
+        },
+        "course": {
+          "title": "Course",
+          "newsfeed": "Newsfeed",
+          "grading": "Grading"
+        },
+        "apps": {
+          "title": "Apps",
+          "poll": "Poll",
+          "live_comment": "Live comments"
+        }
       }
     }
   },
@@ -400,16 +433,21 @@
         "description": "Description",
         "lessons": "Lessons",
         "students": "Students",
-        "published": "Published"
+        "published": "Published",
+        "type": "Type"
       }
     },
     "new_course_modal": {
       "heading": "Create a Course",
       "course_name": "Course name",
+      "type": "Course type",
       "course_name_placeholder": "Your course name",
       "short_description": "Short Description",
       "short_description_placeholder": "A little description about this course",
-      "button": "Finish"
+      "type_selector_title": "What type of course are you looking at?",
+      "button": "Finish",
+      "back": "Back",
+      "next": "Next"
     }
   },
 
@@ -620,7 +658,7 @@
               "yes": "Yes, delete"
             },
             "edit_mode": {
-              "delete_modal": "Delete Modal",
+              "delete_modal": "Delete Exercise",
               "sure": "Are you sure you want to delete this exercise?",
               "no": "No, cancel",
               "yes": "Yes, delete",
@@ -662,7 +700,7 @@
             }
           }
         },
-
+        "disabled": "Feature is disabled",
         "comments": {
           "title": "Comments",
           "you": "You",
@@ -716,6 +754,21 @@
           "submitted": "Submitted",
           "in_progress": "In Progress",
           "graded": "Graded"
+        },
+        "grading_modal": {
+          "details": "Details",
+          "early": "Early",
+          "late": "Late",
+          "total_grade": "Total grade",
+          "student": "Student",
+          "status": "Status",
+          "add_comment": "Add comment",
+          "add_comment_placeholder": "Leave a comment",
+          "grade_with_ai": "Grade with AI",
+          "submit_grades": "Submit Grades",
+          "accept_grade": "Accept",
+          "reject_grade": "Reject",
+          "questions_tried": "Allocated this score because of total tries:"
         }
       },
 
@@ -930,13 +983,17 @@
         "available": "Make the Lesson available for Download in pdf for registered students",
         "course_download": "Course Downlaod",
         "course_avail": "Make the Course available for Download for registered students",
-        "download": "Downlaod",
+        "download": "Download",
         "allow": "Allow New Students",
         "access": "Allow new students to access this course",
         "publish": "Publish Course",
         "determines": "This determines if your course displays on your landing page",
         "published": "Published",
         "unpublished": "Unpublished",
+        "type": "Course type",
+        "course_type_desc": "Update the course type for a more personalized experience",
+        "live_class": "Live class",
+        "self_paced": "Self paced",
         "delete": "Delete Course",
         "delete_text": "Delete this course,this action cannot be undone",
         "save": "Save Changes"
@@ -1027,6 +1084,7 @@
 
   "snackbar": {
     "success": "Success",
+    "success_update": "Updated successfully",
     "something": "Something went wrong - Please try later",
     "update": "Update",
 
@@ -1198,8 +1256,17 @@
     }
   },
 
+  "specialization": {
+    "course_tag": "Specialization"
+  },
+
   "content": {
     "heading": "Internationalization in SvelteKit",
     "toggle_label": "Select Preferred Language"
+  },
+
+  "generic": {
+    "locked": "Locked",
+    "unlocked": "Unlocked"
   }
 }

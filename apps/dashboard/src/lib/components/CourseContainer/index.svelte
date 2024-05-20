@@ -29,6 +29,7 @@
     const { data: _data } = await fetchCourse(courseId);
 
     if (_data) {
+      $course.type = _data.type;
       setCourse(_data);
     }
 

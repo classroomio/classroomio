@@ -153,7 +153,8 @@
         "updating_poll": "Une erreur s'est produite lors de la mise à jour de l'état du sondage",
         "submitting_poll": "Une erreur s'est produite lors de la soumission du sondage"
       }
-    }
+    },
+    "success_update": "Mis à jour avec succés"
   },
   "exercises": {
     "heading": "Des exercices",
@@ -262,7 +263,11 @@
         "unpublished": "Inédit",
         "delete": "Supprimer un cours",
         "delete_text": "Supprimer ce cours, cette action est irréversible",
-        "save": "Sauvegarder les modifications"
+        "save": "Sauvegarder les modifications",
+        "type": "Type de cours",
+        "course_type_desc": "Mettez à jour le type de cours pour une expérience plus personnalisée",
+        "live_class": "Cours en direct",
+        "self_paced": "À votre rythme"
       },
       "landing_page": {
         "start_course": "Commencer le cours",
@@ -447,6 +452,21 @@
           "submitted": "Soumis",
           "in_progress": "En cours",
           "graded": "Noté"
+        },
+        "grading_modal": {
+          "details": "Détails",
+          "early": "Tôt",
+          "late": "En retard",
+          "total_grade": "Note totale",
+          "student": "Étudiant",
+          "status": "Statut",
+          "add_comment": "Ajouter un commentaire",
+          "grade_with_ai": "Noter avec l'IA",
+          "submit_grades": "Soumettre les notes",
+          "accept_grade": "Accepter",
+          "reject_grade": "Rejeter",
+          "add_comment_placeholder": "laissez un commentaire",
+          "questions_tried": "Attribué ce score en raison du nombre total d'essais :"
         }
       },
       "attendance": {
@@ -695,7 +715,8 @@
           "save": "Sauvegarder",
           "edit": "Modifier",
           "delete": "Supprimer"
-        }
+        },
+        "disabled": "La fonctionnalité est désactivée"
       },
       "news_feed": {
         "heading": "Fil d'actualité",
@@ -746,7 +767,11 @@
       "course_name_placeholder": "Le nom de votre cours",
       "short_description": "brève description",
       "short_description_placeholder": "Une petite description de ce cours",
-      "button": "Finition"
+      "button": "Finition",
+      "type": "Type de cours",
+      "type_selector_title": "Quel type de cours envisagez-vous ?",
+      "back": "Dos",
+      "next": "Suivant"
     },
     "course_card": {
       "empty_title": "Aucun cours créé",
@@ -762,7 +787,8 @@
         "description": "Description",
         "lessons": "Cours",
         "students": "Étudiants",
-        "published": "Publié"
+        "published": "Publié",
+        "type": "Taper"
       },
       "context_menu": {
         "clone": "Cloner",
@@ -831,7 +857,60 @@
         "url": "URL",
         "update": "Mettre à jour le domaine",
         "custom": "Domaine personnalisé",
-        "domain": "Ajoutez votre propre nom de domaine"
+        "domain": "Ajoutez votre propre nom de domaine",
+        "title": "Domaine personnalisé"
+      },
+      "customize-lms": {
+        "title": "Personnaliser le LMS",
+        "disabled": "désactivé",
+        "enabled": "Activé",
+        "save": "Sauvegarder les modifications",
+        "apps": {
+          "title": "applications",
+          "poll": "Sondage",
+          "live_comment": "Commentaires en direct"
+        },
+        "course": {
+          "title": "Cours",
+          "newsfeed": "Fil d'actualité",
+          "grading": "Classement"
+        },
+        "dashboard": {
+          "title": "Tableau de bord",
+          "community": "Communauté",
+          "exercises": "Des exercices",
+          "banner_image": "Image de la bannière",
+          "banner_image_btn": "Mettre à jour l'image de la bannière",
+          "banner_text": "Texte de la bannière",
+          "banner_text_label": "Mettre à jour le texte de la bannière",
+          "banner_text_placeholder": "Écrivez le texte ici"
+        }
+      },
+      "customize_lms": {
+        "title": "Personnaliser le LMS",
+        "enabled": "Activé",
+        "save": "Sauvegarder les modifications",
+        "apps": {
+          "title": "applications",
+          "poll": "Sondage",
+          "live_comment": "Commentaires en direct"
+        },
+        "course": {
+          "title": "Cours",
+          "newsfeed": "Fil d'actualité",
+          "grading": "Classement"
+        },
+        "dashboard": {
+          "title": "Tableau de bord",
+          "community": "Communauté",
+          "exercises": "Des exercices",
+          "banner_image": "Image de la bannière",
+          "banner_image_btn": "Mettre à jour l'image de la bannière",
+          "banner_text": "Texte de la bannière",
+          "banner_text_label": "Mettre à jour le texte de la bannière",
+          "banner_text_placeholder": "Écrivez le texte ici"
+        },
+        "disabled": "Désactivé"
       }
     },
     "quiz": {
@@ -1068,6 +1147,12 @@
         "theme": {
           "heading": "Thème",
           "sub_heading": "Définissez la couleur de votre marque"
+        },
+        "customize_lms": {
+          "heading": "Personnaliser le LMS",
+          "sub_heading": "Personnalisez le LMS de votre organisation",
+          "button": "Personnaliser le LMS",
+          "body": "Contrôlez l’expérience d’apprentissage de vos étudiants. Vous pouvez activer ou désactiver les onglets et les pages, mettre à jour la bannière LMS et les commentaires dans l'application en fonction des besoins de votre organisation."
         }
       }
     },
@@ -1136,5 +1221,12 @@
     "resend_in": "Renvoyer la vérification dans",
     "seconds": "secondes",
     "snackbar_error": "erreur lors de l'envoi du code"
+  },
+  "generic": {
+    "locked": "Fermé à clé",
+    "unlocked": "Débloqué"
+  },
+  "specialization": {
+    "course_tag": "Spécialisation"
   }
 }

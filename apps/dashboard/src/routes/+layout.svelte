@@ -28,7 +28,7 @@
   import { getOrganizations } from '$lib/utils/services/org';
   import { toggleBodyByMode } from '$lib/utils/functions/app';
   import { globalStore } from '$lib/utils/store/app';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { setTheme } from '$lib/utils/functions/theme';
   import hideNavByRoute from '$lib/utils/functions/routes/hideNavByRoute';
   import shouldRedirectOnAuth from '$lib/utils/functions/routes/shouldRedirectOnAuth';
@@ -38,6 +38,7 @@
   import { handleLocaleChange } from '$lib/utils/functions/translations';
 
   import '../app.postcss';
+  import { ROLE } from '$lib/utils/constants/roles';
 
   export let data;
 
@@ -175,6 +176,8 @@
 
       const orgRes = await getOrganizations(profileData.id, data.isOrgSite, data.orgSiteName);
 
+      const isStudentAccount = parseInt(orgRes.currentOrg.role_id) === ROLE.STUDENT;
+
       // student redirect
       if (data.isOrgSite) {
         if (params.has('redirect')) {
@@ -183,8 +186,16 @@
           goto('/lms');
         }
       } else {
-        // Not on invite page or no org, go to onboarding
-        if (isEmpty(orgRes.orgs) && !path.includes('invite')) {
+        if (isStudentAccount) {
+          // Check if the student logged into the dashboard.
+          console.log('Student logged into dashboard');
+          if (dev) {
+            goto('/lms');
+          } else {
+            window.location.replace(`${$currentOrgDomain}/lms`);
+          }
+        } else if (isEmpty(orgRes.orgs) && !path.includes('invite')) {
+          // Not on invite page or no org, go to onboarding
           goto(ROUTE.ONBOARDING);
         } else if (params.has('redirect')) {
           goto(params.get('redirect') || '');
@@ -296,7 +307,7 @@
 {:else}
   <main class="dark:bg-black">
     {#if $navigating && $delayedPreloading}
-      <Backdrop disableCenteredContent={true} className="opacity-90">
+      <Backdrop disableCenteredContent={true} className="">
         <div class="h-full w-full relative" transition:fly={{ x: -200, duration: 500 }}>
           <ToastNotification kind="info-square" class="absolute bottom-5 left-5">
             <span slot="title" class="flex items-center">

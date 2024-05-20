@@ -14,7 +14,11 @@
   import Share from 'carbon-icons-svelte/lib/Share.svelte';
   import UserFollow from 'carbon-icons-svelte/lib/UserFollow.svelte';
   import { t } from '$lib/utils/functions/translations';
-  import { onDestroy } from 'svelte';
+  import { COURSE_TYPE } from '$lib/utils/types';
+  import RadioButtonChecked from 'carbon-icons-svelte/lib/RadioButtonChecked.svelte';
+  import GrowthIcon from 'carbon-icons-svelte/lib/Growth.svelte';
+  import CourseIcon from 'carbon-icons-svelte/lib/Course.svelte';
+  import UserProfileIcon from 'carbon-icons-svelte/lib/UserProfile.svelte';
 
   export let bannerImage: string | undefined;
   export let id = '';
@@ -29,6 +33,7 @@
   export let isOnLandingPage = false;
   export let isLMS = false;
   export let progressRate = 45;
+  export let type: COURSE_TYPE;
 
   let target: any;
 
@@ -54,9 +59,39 @@
     alert('WIP: Delete course');
   }
 
-  onDestroy(() => {
-    console.log('unmounting card');
-  });
+  function getCourseUrl() {
+    return isOnLandingPage
+      ? `/course/${slug}`
+      : `/courses/${id}${isLMS ? '/lessons?next=true' : ''}`;
+  }
+
+  const COURSE_TAG: Record<
+    string,
+    {
+      style: string;
+      label: string;
+      icon: any;
+      iconStyle?: string;
+    }
+  > = {
+    [COURSE_TYPE.LIVE_CLASS]: {
+      style: '',
+      label: $t('course.navItem.settings.live_class'),
+      icon: RadioButtonChecked,
+      iconStyle: 'text-red-700'
+    },
+    [COURSE_TYPE.SELF_PACED]: {
+      style: '',
+      label: $t('course.navItem.settings.self_paced'),
+      icon: UserProfileIcon,
+      iconStyle: 'text-primary-700'
+    },
+    SPECIALIZATION: {
+      style: '',
+      label: $t('specialization.course_tag'),
+      icon: GrowthIcon
+    }
+  };
 </script>
 
 {#if !isLMS && !isOnLandingPage}
@@ -91,21 +126,30 @@
 <a
   rel="prefetch"
   bind:this={target}
-  href={isOnLandingPage ? `/course/${slug}` : `/courses/${id}${isLMS ? '/lessons?next=true' : ''}`}
+  href={getCourseUrl()}
   class="text-black border border-gray dark:border-neutral-600 rounded w-full max-w-[320px] relative hover:scale-95 transition-all ease-in-out"
 >
   <div class="p-4">
-    <div class=" mb-5">
+    <div class="relative mb-5">
       <ImageLoader
         src={bannerImage}
         alt="Course Logo"
-        class="h-[200px] w-full rounded dark:border dark:border-neutral-600"
+        class="h-[200px] w-full rounded dark:border dark:border-neutral-600 relative"
       >
         <svelte:fragment slot="loading">
           <SkeletonPlaceholder style="width: 100%; height: 200px;" />
         </svelte:fragment>
         <svelte:fragment slot="error">{$t('courses.course_card.error_message')}</svelte:fragment>
       </ImageLoader>
+      {#if type}
+        {@const tag = COURSE_TAG[type]}
+        <span
+          class="absolute bottom-2 left-2 z-10 text-xs capitalize bg-primary-50 rounded-sm p-1 flex items-center gap-1 font-mono"
+        >
+          <svelte:component this={tag.icon} size={16} class={tag.iconStyle} />
+          {tag.label}
+        </span>
+      {/if}
     </div>
 
     <h3 class="text-xl dark:text-white title">{title}</h3>
