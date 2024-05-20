@@ -11,6 +11,11 @@
   let isPaused: boolean = false;
   let soundOn: boolean = true;
 
+  $: {
+    console.log('soundOn', soundOn);
+    console.log('isPaused', isPaused);
+  }
+
   let hours: number = 0;
   let minutes: number = 0;
   let seconds: number = 0;
@@ -50,6 +55,10 @@
       isPaused = true;
     }
     isNextStep = true;
+  }
+
+  function toggleSound() {
+    soundOn = !soundOn;
   }
 
   function updateDisplayTime() {
@@ -98,7 +107,7 @@
   }
 
   onMount(() => {
-    buzzSound = new Audio('/free-tools/timer/buzz-sound.wav');
+    buzzSound = new Audio('https://assets.cdn.clsrio.com/buzz-sound.wav');
   });
 </script>
 
@@ -207,6 +216,7 @@
         {displayTime}
         {resetTimer}
         {toggleTimer}
+        {toggleSound}
         {restartTimer}
         {isPaused}
         {soundOn}

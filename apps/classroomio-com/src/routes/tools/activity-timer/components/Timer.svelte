@@ -6,10 +6,11 @@
   export let formattedTime: string;
   export let displayTime: string;
   export let resetTimer: () => void;
+  export let toggleSound: () => void;
   export let toggleTimer: () => void;
   export let restartTimer: () => void;
   export let isPaused: boolean;
-  export let soundOn: boolean = true;
+  export let soundOn: boolean;
 </script>
 
 <div transition:fly={{ y: 100, delay: 0, easing: sineInOut }}>
@@ -35,13 +36,13 @@
   <div class="flex">
     <button
       type="button"
-      on:click={() => (soundOn = !soundOn)}
+      on:click={toggleSound}
       class="bg-[#F7F7F7] w-[34%] flex flex-col gap-1 items-center uppercase text-[10px] py-5 md:py-10 rounded-bl-md hover:bg-[#F1F6FF] transition-all duration-500"
     >
       {#if soundOn}
-        <img src="/free-tools/timer/no-speaker-icon.svg" alt="" class="w-7 md:w-12" />
-      {:else}
         <img src="/free-tools/timer/speaker-icon.svg" alt="" class="w-7 md:w-12" />
+      {:else}
+        <img src="/free-tools/timer/no-speaker-icon.svg" alt="" class="w-7 md:w-12" />
       {/if}
       buzzer</button
     >
