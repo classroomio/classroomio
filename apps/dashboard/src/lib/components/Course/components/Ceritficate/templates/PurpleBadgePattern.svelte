@@ -8,20 +8,20 @@
   const dateIssued = new Date().toLocaleDateString();
 </script>
 
-<div class="w-full dark:text-black relative">
+<div class="w-full relative dark:text-black">
   <img
     src="/images/purple-badge-pattern-background.svg"
     alt=""
     class="w-full h-full absolute z-0 object-cover"
   />
-  <div class="relative bg-white flex z-20 m-2">
-    <div class="w-full pl-3">
+  <div class="relative md:h-[47vh] bg-white flex justify-between z-20 m-2">
+    <div class="w-[70%] pl-3">
       <header class="flex justify-end items-center gap-1 text-sm font-bold">
         <img src={$currentOrg.avatar_url ? $currentOrg.avatar_url : logo} alt="logo" class="w-5" />
         <h1 class="text-sm">{$currentOrg.name}</h1>
       </header>
 
-      <div class="font-bold mt-12">
+      <div class="font-bold mt-8">
         <h2 class="text-[7px] m-0">This certificate is awarded to</h2>
         <h1 class="text-lg m-0 mt-0.5 leading-3 text-[#914397]">{studentName}</h1>
       </div>
@@ -49,11 +49,11 @@
       </footer>
     </div>
 
-    <div class="max-w-[40%] flex justify-center items-center">
+    <div class="overflow-hidden flex justify-center items-center">
       <img
         src="/images/purple-badge-pattern-badge.svg"
         alt="A badge"
-        class="w-full object-contain"
+        class="max-w-none w-[8rem] md:w-[10rem]"
       />
     </div>
   </div>
