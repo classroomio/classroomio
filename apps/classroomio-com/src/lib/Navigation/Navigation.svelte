@@ -7,11 +7,12 @@
   import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
   import CourseIcon from '$lib/Icons/CourseIcon.svelte';
   import MapCenter from 'carbon-icons-svelte/lib/MapCenter.svelte';
-  import { onMount } from 'svelte';
+  import { page } from '$app/stores';
 
   let showsubNav = false;
   let showNav = false;
   let activeLink = '';
+  let activeHash = '';
 
   function handleShow() {
     showsubNav = !showsubNav;
@@ -19,11 +20,6 @@
 
   function handleShowNav() {
     showNav = !showNav;
-  }
-
-  function setActiveLink(link: string) {
-    activeLink = link;
-    localStorage.setItem('activeLink', link);
   }
 
   const superpowers = [
@@ -49,20 +45,15 @@
     }
   ];
 
-  onMount(() => {
-    const storedActiveLink = localStorage.getItem('activeLink');
-    if (storedActiveLink) {
-      activeLink = storedActiveLink;
-    }
-  });
-
-  $: isSuperpowersActive = superpowers.some((sp) => sp.key === activeLink);
+  $: activeLink = $page.url.pathname;
+  $: activeHash = $page.url.hash;
+  $: isSuperpowersActive = superpowers.some((sp) => activeHash.includes(sp.key));
 </script>
 
 <div
   class="flex w-full justify-between items-center py-6 border-b-[1px] md:px-12 px-5 fixed top-0 z-[3000] filter backdrop-blur-xl shadow-sm bg-white"
 >
-  <a href="/" class="w-[20%]" on:click={() => setActiveLink('home')}>
+  <a href="/" class="w-[20%]">
     <div class="flex items-center w-full">
       <img
         loading="lazy"
@@ -80,7 +71,7 @@
     <ul class="flex items-center justify-between w-full gap-2">
       <li class="text-gray-800 font-semibold text-sm cursor-pointer relative">
         <button
-          class={`flex items-center hover:bg-gray-100 px-4 py-2 rounded-md`}
+          class="flex items-center hover:bg-gray-100 px-4 py-2 rounded-md"
           on:click={() => (showNav = !showNav)}
           class:active={isSuperpowersActive}
         >
@@ -96,7 +87,6 @@
                 href="/#{superpower.key}"
                 on:click={() => {
                   showNav = !showNav;
-                  setActiveLink(superpower.key);
                 }}
               >
                 {#if superpower.key === 'coursemanagement'}
@@ -124,8 +114,7 @@
       <a
         href="/pricing"
         class="text-gray-800 font-semibold text-sm cursor-pointer"
-        class:active={activeLink === 'pricing'}
-        on:click={() => setActiveLink('pricing')}
+        class:active={activeLink.startsWith('/pricing')}
       >
         <li class="hover:bg-gray-100 px-4 py-2 rounded-md">Pricing</li>
       </a>
@@ -133,8 +122,7 @@
         href="/docs"
         target="_blank"
         class="text-gray-800 font-semibold text-sm cursor-pointer"
-        class:active={activeLink === 'docs'}
-        on:click={() => setActiveLink('docs')}
+        class:active={activeLink.startsWith('/docs')}
       >
         <li class="hover:bg-gray-100 px-4 py-2 rounded-md">Docs</li>
       </a>
@@ -142,8 +130,7 @@
       <a
         href="/blog"
         class="text-gray-800 font-semibold text-sm cursor-pointer"
-        class:active={activeLink === 'blog'}
-        on:click={() => setActiveLink('blog')}
+        class:active={activeLink.startsWith('/blog')}
       >
         <li class="hover:bg-gray-100 px-4 py-2 rounded-md">Blog</li>
       </a>
@@ -216,9 +203,7 @@
                     href="/#{superpower.key}"
                     on:click={() => {
                       handleShowNav();
-                      setActiveLink(superpower.key);
                     }}
-                    class:active={activeLink === superpower.key}
                   >
                     <p
                       class="font-normal text-xs text-gray-700 hover:bg-gray-100 rounded-lg py-2.5 pl-5"
@@ -234,10 +219,9 @@
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full"
             on:click={() => {
               handleShowNav();
-              setActiveLink('pricing');
             }}
             href="/pricing"
-            class:active={activeLink === 'pricing'}
+            class:active={activeLink.startsWith('/pricing')}
           >
             <li>Pricing</li>
           </a>
@@ -245,9 +229,8 @@
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
             on:click={() => {
               handleShowNav();
-              setActiveLink('docs');
             }}
-            class:active={activeLink === 'docs'}
+            class:active={activeLink.startsWith('/docs')}
             href="/docs"
             target="_blank"
           >
@@ -257,9 +240,8 @@
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
             on:click={() => {
               handleShowNav();
-              setActiveLink('blog');
             }}
-            class:active={activeLink === 'blog'}
+            class:active={activeLink.startsWith('/blog')}
             href="/blog"
           >
             <li>Blog</li>
@@ -268,9 +250,8 @@
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
             on:click={() => {
               handleShowNav();
-              setActiveLink('morefeatures');
             }}
-            class:active={activeLink === 'morefeatures'}
+            class:active={activeHash.includes('morefeatures')}
             href="/#morefeatures"
           >
             <li>More features</li>
