@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/stores';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import Modal from '$lib/components/Modal/index.svelte';
@@ -45,8 +46,9 @@
   let type = options[0].type;
 
   function onClose() {
+    goto($page.url.pathname);
+
     createCourseModal.update(() => ({
-      open: false,
       title: '',
       description: '',
       course_type: '',
@@ -130,6 +132,8 @@
     onClose();
     isLoading = false;
   }
+
+  $: open = new URLSearchParams($page.url.search).get('create') === 'true';
 </script>
 
 <svelte:head>
@@ -138,7 +142,7 @@
 
 <Modal
   {onClose}
-  bind:open={$createCourseModal.open}
+  bind:open
   width="w-4/5 md:w-2/5 md:min-w-[500px]"
   modalHeading={$t('courses.new_course_modal.heading')}
 >

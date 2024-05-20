@@ -23,7 +23,6 @@ export const courseMetaDeta = writable<{
 });
 
 export const createCourseModal = writable({
-  open: false,
   title: '',
   course_type: '',
   description: '',
