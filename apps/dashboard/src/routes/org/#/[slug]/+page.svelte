@@ -1,1 +1,0 @@
-On the organization page
