@@ -225,10 +225,10 @@
   }
 
   function getPageRoles(org: CurrentOrg) {
-    const roles = [1, 2];
+    const roles: number[] = [1, 2];
 
     if (org.customization.course.newsfeed) {
-      roles.push(3);
+      roles.concat([3]);
     }
 
     return roles;
@@ -237,7 +237,6 @@
   $: initNewsFeed(data.courseId);
 
   $: setAuthor($group, $profile.id);
-
   $: $newsFeed = $newsFeed.sort((a, b) => Number(b.isPinned) - Number(a.isPinned));
 </script>
 

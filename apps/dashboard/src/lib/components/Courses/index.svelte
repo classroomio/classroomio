@@ -49,6 +49,9 @@
             {$t('courses.course_card.list_view.description')}
           </StructuredListCell>
           <StructuredListCell head>
+            {$t('courses.course_card.list_view.type')}
+          </StructuredListCell>
+          <StructuredListCell head>
             {$t('courses.course_card.list_view.lessons')}
           </StructuredListCell>
           <StructuredListCell head>
@@ -65,6 +68,7 @@
           <List
             id={courseData.id}
             title={courseData.title}
+            type={$t(`course.navItem.settings.${courseData.type.toLowerCase()}`)}
             description={courseData.description}
             isPublished={courseData.is_published}
             totalLessons={courseData.total_lessons}
@@ -84,6 +88,7 @@
             description={courseData.description}
             isPublished={courseData.is_published}
             cost={courseData.cost}
+            type={courseData.type}
             currency={courseData.currency}
             totalLessons={courseData.total_lessons}
             totalStudents={courseData.total_students}
