@@ -139,7 +139,7 @@
 <Modal
   {onClose}
   bind:open={$createCourseModal.open}
-  width="w-4/5 md:w-2/5"
+  width="w-4/5 md:w-2/5 md:min-w-[500px]"
   modalHeading={$t('courses.new_course_modal.heading')}
 >
   {#if step === 0}
