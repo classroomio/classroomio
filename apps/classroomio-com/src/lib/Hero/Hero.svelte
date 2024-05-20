@@ -114,8 +114,8 @@
       </div>
 
       <p class="text-base mx-auto mt-10 px-4 text-slate-700 md:text-lg lg:mt-6 lg:w-[42%] lg:p-0">
-        Meet a better learning management system (LMS) for teachers and students. ClassroomIO allows
-        you to launch and scale your online bootcamp with ease.
+        ClassroomIO is an open source learning management system for small and medium bootcamps that
+        wants to set up a fully customizable online teaching platform quickly.
       </p>
     </div>
 
