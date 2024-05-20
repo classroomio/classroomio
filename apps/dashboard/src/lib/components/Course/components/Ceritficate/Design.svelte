@@ -18,6 +18,7 @@
   import PurpleBadgePattern from './templates/PurpleBadgePattern.svelte';
   import BlueBadgePattern from './templates/BlueBadgePattern.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
+  import { z } from 'zod';
 
   const studentNamePlaceholder = 'Name of student';
   const themes = [
@@ -33,23 +34,43 @@
   let errors = {
     description: ''
   };
+  let helperText = '';
+
+  const courseSchema = z.object({
+    description: z.string().max(200, 'Description cannot exceed 200 characters'),
+    is_certificate_downloadable: z.boolean(),
+    certificate_theme: z.string()
+  });
 
   const saveCertificate = async () => {
     isSaving = true;
-    if (!$course.description) {
-      errors.description = 'Description cannot be empty';
-      isSaving = false;
-      return;
-    }
-    await updateCourse($course.id, undefined, {
-      description: $course.description || '',
-      is_certificate_downloadable: $course.is_certificate_downloadable || false,
-      certificate_theme: $course.certificate_theme || ''
-    });
-    isSaving = false;
 
-    snackbar.success('snackbar.course_settings.success.saved');
+    try {
+      courseSchema.parse({
+        description: $course.description || '',
+        is_certificate_downloadable: $course.is_certificate_downloadable || false,
+        certificate_theme: $course.certificate_theme || ''
+      });
+      errors.description = '';
+
+      await updateCourse($course.id, undefined, {
+        description: $course.description || '',
+        is_certificate_downloadable: $course.is_certificate_downloadable || false,
+        certificate_theme: $course.certificate_theme || ''
+      });
+      snackbar.success('snackbar.course_settings.success.saved');
+    } catch (error) {
+      if (error.errors && error.errors[0].message) {
+        errors.description = error.errors[0].message;
+      } else {
+        errors.description = 'An unexpected error occurred';
+      }
+    } finally {
+      isSaving = false;
+    }
   };
+
+  $: helperText = `${$course.description?.length || 0}/200 characters`;
 </script>
 
 <svelte:head>
@@ -119,6 +140,7 @@
             errorMessage={errors.description}
             disabled={$isFreePlan}
           />
+          <p class="text-sm">{helperText}</p>
         </span>
         <Toggle
           labelText={$t('course.navItem.certificates.allow')}
@@ -139,7 +161,7 @@
     <section
       class="bg-gray-100 dark:bg-neutral-800 flex justify-center items-center rounded-md w-full lg:w-3/5"
     >
-      <div class="certificate-container flex justify-center items-center h-5/6">
+      <div class="certificate-container flex justify-center items-center">
         {#if $course.certificate_theme === 'professional'}
           <Professional studentName={studentNamePlaceholder} />
         {:else if $course.certificate_theme === 'plain'}

@@ -8,7 +8,7 @@
   const dateIssued = new Date().toLocaleDateString();
 </script>
 
-<div class="w-full relative dark:text-black mx-auto">
+<div class="w-full relative dark:text-black">
   <img
     src="/images/blue-badge-pattern-background.svg"
     alt=""
@@ -23,12 +23,12 @@
 
       <div class="font-bold mt-12">
         <h2 class="text-[7px] m-0">This certificate is awarded to</h2>
-        <h1 class="text-[13px] m-0 mt-0.5 leading-3 text-[#2D499F]">{studentName}</h1>
+        <h1 class="text-lg m-0 mt-0.5 leading-3 text-[#2D499F]">{studentName}</h1>
       </div>
 
       <div class="font-bold mt-3 w-[90%]">
         <h1 class="text-[7px]">has successfully completed training on</h1>
-        <h2 class="text-[13px] m-0">
+        <h2 class="text-lg m-0">
           {$course.title}
         </h2>
       </div>
@@ -44,7 +44,7 @@
         </div>
       </div>
 
-      <footer class="text-[6px] font-bold w-[90%] desc">
+      <footer class="text-[8px] font-bold w-[90%] desc">
         {$course.description}
       </footer>
     </div>

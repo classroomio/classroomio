@@ -8,13 +8,13 @@
   const dateIssued = new Date().toLocaleDateString();
 </script>
 
-<div class="w-full md:w-[70%] dark:text-black relative mx-auto">
+<div class="w-full dark:text-black relative">
   <img
     src="/images/purple-badge-pattern-background.svg"
     alt=""
     class="w-full h-full absolute z-0 object-cover"
   />
-  <div class="relative bg-white flex z-20 my-2 w-[90%] mx-auto">
+  <div class="relative bg-white flex z-20 m-2">
     <div class="w-full pl-3">
       <header class="flex justify-end items-center gap-1 text-sm font-bold">
         <img src={$currentOrg.avatar_url ? $currentOrg.avatar_url : logo} alt="logo" class="w-5" />
@@ -23,12 +23,12 @@
 
       <div class="font-bold mt-12">
         <h2 class="text-[7px] m-0">This certificate is awarded to</h2>
-        <h1 class="text-[13px] m-0 mt-0.5 leading-3 text-[#914397]">{studentName}</h1>
+        <h1 class="text-lg m-0 mt-0.5 leading-3 text-[#914397]">{studentName}</h1>
       </div>
 
       <div class="font-bold mt-3 w-[90%]">
         <h1 class="text-[7px]">has successfully completed training on</h1>
-        <h2 class="text-[13px] m-0">
+        <h2 class="text-lg m-0">
           {$course.title}
         </h2>
       </div>
@@ -44,7 +44,7 @@
         </div>
       </div>
 
-      <footer class="text-[6px] font-bold w-[90%] desc">
+      <footer class="text-[8px] font-bold w-[90%] desc">
         {$course.description}
       </footer>
     </div>
