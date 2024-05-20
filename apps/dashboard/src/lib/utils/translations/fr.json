@@ -264,7 +264,7 @@
         "delete": "Supprimer un cours",
         "delete_text": "Supprimer ce cours, cette action est irréversible",
         "save": "Sauvegarder les modifications",
-        "course_type": "Type de cours",
+        "type": "Type de cours",
         "course_type_desc": "Mettez à jour le type de cours pour une expérience plus personnalisée",
         "live_class": "Cours en direct",
         "self_paced": "À votre rythme"
@@ -768,7 +768,7 @@
       "short_description": "brève description",
       "short_description_placeholder": "Une petite description de ce cours",
       "button": "Finition",
-      "course_type": "Type de cours",
+      "type": "Type de cours",
       "type_selector_title": "Quel type de cours envisagez-vous ?",
       "back": "Dos",
       "next": "Suivant"
@@ -787,7 +787,8 @@
         "description": "Description",
         "lessons": "Cours",
         "students": "Étudiants",
-        "published": "Publié"
+        "published": "Publié",
+        "type": "Taper"
       },
       "context_menu": {
         "clone": "Cloner",
@@ -1224,5 +1225,8 @@
   "generic": {
     "locked": "Fermé à clé",
     "unlocked": "Débloqué"
+  },
+  "specialization": {
+    "course_tag": "Spécialisation"
   }
 }

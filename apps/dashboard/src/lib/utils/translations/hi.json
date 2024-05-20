@@ -264,7 +264,7 @@
         "delete": "पाठ्यक्रम हटाएँ",
         "delete_text": "इस कोर्स को हटा दें, इस कार्रवाई को पूर्ववत नहीं किया जा सकता",
         "save": "परिवर्तनों को सुरक्षित करें",
-        "course_type": "कोर्स का प्रकार",
+        "type": "कोर्स का प्रकार",
         "course_type_desc": "अधिक वैयक्तिकृत अनुभव के लिए पाठ्यक्रम प्रकार को अपडेट करें",
         "live_class": "लाइव क्लास",
         "self_paced": "स्वयं गति"
@@ -768,7 +768,7 @@
       "short_description": "संक्षिप्त वर्णन",
       "short_description_placeholder": "इस कोर्स के बारे में थोड़ा विवरण",
       "button": "खत्म करना",
-      "course_type": "कोर्स का प्रकार",
+      "type": "कोर्स का प्रकार",
       "type_selector_title": "आप किस प्रकार का कोर्स देख रहे हैं?",
       "back": "पीछे",
       "next": "अगला"
@@ -787,7 +787,8 @@
         "description": "विवरण",
         "lessons": "पाठ",
         "students": "छात्र",
-        "published": "प्रकाशित"
+        "published": "प्रकाशित",
+        "type": "प्रकार"
       },
       "context_menu": {
         "clone": "क्लोन",
@@ -1224,5 +1225,8 @@
   "generic": {
     "locked": "बंद",
     "unlocked": "अनलॉक किया"
+  },
+  "specialization": {
+    "course_tag": "विशेषज्ञता"
   }
 }

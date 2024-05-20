@@ -17,7 +17,7 @@
   import { getIsLessonComplete } from '../Lesson/functions';
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
-  import { COURSE_TYPE } from '$lib/components/Courses/constants';
+  import { COURSE_TYPE } from '$lib/utils/types';
 
   export let path: string;
   export let isStudent: boolean = false;
@@ -144,11 +144,7 @@
         hideSortIcon: true,
         isPaidFeature: false,
         show() {
-          if ($course.course_type == COURSE_TYPE.LIVE_CLASS) {
-            return isStudent ? $currentOrg.customization.course.newsfeed : true;
-          }
-
-          return false;
+          return isStudent ? $currentOrg.customization.course.newsfeed : true;
         }
       },
       {
@@ -165,7 +161,7 @@
         isPaidFeature: false,
         hideSortIcon: true,
         show() {
-          if ($course.course_type !== COURSE_TYPE.LIVE_CLASS) return false;
+          if ($course.type !== COURSE_TYPE.LIVE_CLASS) return false;
 
           return true;
         }
@@ -178,7 +174,7 @@
         show() {
           if (isStudent) return false;
 
-          if ($course.course_type !== COURSE_TYPE.LIVE_CLASS) return false;
+          if ($course.type !== COURSE_TYPE.LIVE_CLASS) return false;
 
           return true;
         }
@@ -189,20 +185,11 @@
         isPaidFeature: false,
         hideSortIcon: true,
         show() {
-          if ($course.course_type == COURSE_TYPE.LIVE_CLASS) {
+          if ($course.type == COURSE_TYPE.LIVE_CLASS) {
             return isStudent ? $currentOrg.customization.course.grading : true;
           }
 
           return false;
-        }
-      },
-      {
-        label: $t('course.navItems.nav_people'),
-        to: getNavItemRoute($course.id, 'people'),
-        isPaidFeature: false,
-        hideSortIcon: true,
-        show() {
-          return !isStudent;
         }
       },
       {
@@ -223,6 +210,15 @@
         to: getNavItemRoute($course.id, 'landingpage'),
         hideSortIcon: true,
         isPaidFeature: false,
+        show() {
+          return !isStudent;
+        }
+      },
+      {
+        label: $t('course.navItems.nav_people'),
+        to: getNavItemRoute($course.id, 'people'),
+        isPaidFeature: false,
+        hideSortIcon: true,
         show() {
           return !isStudent;
         }

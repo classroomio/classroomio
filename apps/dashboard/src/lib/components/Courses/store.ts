@@ -5,7 +5,11 @@ export const courses = writable<Course[]>([]);
 
 export const view = writable('grid');
 export const coursesInProgress = derived(courses, ($courses) =>
-  $courses.length > 0 ? $courses.slice(0, 3) : []
+  $courses.length > 0
+    ? $courses.filter((course) => {
+        return course.total_lessons !== course.progress_rate;
+      })
+    : []
 );
 export const coursesComplete = derived(courses, ($courses) =>
   $courses.length > 0
@@ -24,7 +28,7 @@ export const courseMetaDeta = writable<{
 
 export const createCourseModal = writable({
   title: '',
-  course_type: '',
+  type: '',
   description: '',
   emails: '',
   tutors: '',

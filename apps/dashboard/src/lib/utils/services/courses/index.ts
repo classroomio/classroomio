@@ -30,7 +30,7 @@ export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']
       `
       id,
       title,
-      course_type,
+      type,
       description,
       overview,
       logo,

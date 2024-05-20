@@ -433,13 +433,14 @@
         "description": "Description",
         "lessons": "Lessons",
         "students": "Students",
-        "published": "Published"
+        "published": "Published",
+        "type": "Type"
       }
     },
     "new_course_modal": {
       "heading": "Create a Course",
       "course_name": "Course name",
-      "course_type": "Course type",
+      "type": "Course type",
       "course_name_placeholder": "Your course name",
       "short_description": "Short Description",
       "short_description_placeholder": "A little description about this course",
@@ -989,7 +990,7 @@
         "determines": "This determines if your course displays on your landing page",
         "published": "Published",
         "unpublished": "Unpublished",
-        "course_type": "Course type",
+        "type": "Course type",
         "course_type_desc": "Update the course type for a more personalized experience",
         "live_class": "Live class",
         "self_paced": "Self paced",
@@ -1253,6 +1254,10 @@
       "info_lesson": "You Need to Create a lesson",
       "info_course": "You need to create a course"
     }
+  },
+
+  "specialization": {
+    "course_tag": "Specialization"
   },
 
   "content": {

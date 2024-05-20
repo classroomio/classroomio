@@ -11,7 +11,7 @@
   import { goto } from '$app/navigation';
   import { handleAddLessonWidget } from '../Navigation/store';
   import { t } from '$lib/utils/functions/translations';
-  import { COURSE_TYPE } from '$lib/components/Courses/constants';
+  import { COURSE_TYPE } from '$lib/utils/types';
   import type { Lesson } from '$lib/utils/types';
 
   let errors = {
@@ -66,7 +66,7 @@
         isRequired={true}
         errorMessage={errors.title}
       />
-      {#if $course.course_type == COURSE_TYPE.LIVE_CLASS}
+      {#if $course.type == COURSE_TYPE.LIVE_CLASS}
         <div
           class="flex items-start justify-evenly gap-1 flex-col lg:flex-row lg:items-center mt-2 w-4/5"
         >

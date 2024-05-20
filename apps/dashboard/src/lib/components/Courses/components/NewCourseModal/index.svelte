@@ -17,7 +17,7 @@
   import { goto } from '$app/navigation';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { t } from '$lib/utils/functions/translations';
-  import { COURSE_TYPE } from '../../constants';
+  import { COURSE_TYPE } from '$lib/utils/types';
   import ComingSoon from '$lib/components/ComingSoon/index.svelte';
 
   let isLoading = false;
@@ -51,7 +51,7 @@
     createCourseModal.update(() => ({
       title: '',
       description: '',
-      course_type: '',
+      type: '',
       emails: '',
       tutors: '',
       students: ''
@@ -84,7 +84,7 @@
       .insert({
         title,
         description,
-        course_type: type,
+        type: type,
         group_id
       })
       .select();
@@ -143,7 +143,7 @@
 <Modal
   {onClose}
   bind:open
-  width="w-4/5 md:w-2/5 md:min-w-[500px]"
+  width="w-4/5 md:w-2/5 md:min-w-[600px]"
   modalHeading={$t('courses.new_course_modal.heading')}
 >
   {#if step === 0}
@@ -152,10 +152,10 @@
         {$t('courses.new_course_modal.type_selector_title')}
       </h2>
 
-      <div class="flex gap-2 justify-between my-8">
+      <div class="flex flex-col md:flex-row gap-2 justify-between items-center my-8">
         {#each options as option}
           <button
-            class="w-[261px] h-[240px] p-5 rounded-md dark:bg-neutral-700 border-2 {option.type ===
+            class="w-11/12 md:w-[261px] md:h-[240px] p-5 rounded-md dark:bg-neutral-700 border-2 {option.type ===
             type
               ? 'border-primary-400'
               : `border-gray-200 dark:border-neutral-600 ${

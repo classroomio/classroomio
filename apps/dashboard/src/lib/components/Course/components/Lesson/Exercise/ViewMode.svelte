@@ -30,11 +30,8 @@
   } from '$lib/utils/services/notification/notification';
   import { lesson } from '../store/lessons';
   import { browser } from '$app/environment';
-  import { CloseFilled } from 'carbon-icons-svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
   import { useCompletion } from 'ai/svelte';
-  import { COURSE_TYPE } from '$lib/components/Courses/constants';
-  import { SkeletonText } from 'carbon-components-svelte';
+  import { COURSE_TYPE } from '$lib/utils/types';
   import GradingLoader from './GradingLoader.svelte';
 
   export let preview: boolean = false;
@@ -170,7 +167,7 @@
   }
 
   async function onSubmit(id, value, moveToNextQuestion = false) {
-    if ($course.course_type === COURSE_TYPE.SELF_PACED) {
+    if ($course.type === COURSE_TYPE.SELF_PACED) {
       isLoading = true;
     }
 
@@ -221,7 +218,7 @@
         submissionId = submissionResponse.submission[0]?.id;
       }
 
-      if ($course.course_type === COURSE_TYPE.SELF_PACED) {
+      if ($course.type === COURSE_TYPE.SELF_PACED) {
         automaticGrading($questionnaireMetaData, $questionnaire.questions);
       }
 

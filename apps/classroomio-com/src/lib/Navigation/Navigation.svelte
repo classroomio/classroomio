@@ -45,7 +45,8 @@
   ];
 
   $: activeLink = $page.url.pathname;
-  $: isSuperpowersActive = superpowers.some((sp) => $page.url.hash.includes(sp.key));
+  $: activeHash = $page.url.hash;
+  $: isSuperpowersActive = superpowers.some((sp) => activeHash.includes(sp.key));
 </script>
 
 <div

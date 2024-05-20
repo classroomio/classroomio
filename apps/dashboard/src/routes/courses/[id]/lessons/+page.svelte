@@ -28,7 +28,7 @@
   import type { Course, Lesson } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations.js';
   import { goto } from '$app/navigation';
-  import { COURSE_TYPE } from '$lib/components/Courses/constants';
+  import { COURSE_TYPE } from '$lib/utils/types';
 
   export let data;
 
@@ -218,7 +218,7 @@
               {/if}
 
               <!-- Lesson Educator -->
-              {#if $course.course_type === COURSE_TYPE.LIVE_CLASS}
+              {#if $course.type === COURSE_TYPE.LIVE_CLASS}
                 <div
                   class="mt-2 flex w-4/5 flex-col items-start justify-between lg:flex-row lg:items-center"
                 >

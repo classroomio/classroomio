@@ -264,7 +264,7 @@
         "delete": "Kurs löschen",
         "delete_text": "Löschen Sie diesen Kurs. Diese Aktion kann nicht rückgängig gemacht werden",
         "save": "Änderungen speichern",
-        "course_type": "Kurstyp",
+        "type": "Kurstyp",
         "course_type_desc": "Aktualisieren Sie den Kurstyp für ein persönlicheres Erlebnis",
         "live_class": "Live-Klasse",
         "self_paced": "Eigenständig"
@@ -768,7 +768,7 @@
       "short_description": "kurze Beschreibung",
       "short_description_placeholder": "Eine kleine Beschreibung zu diesem Kurs",
       "button": "Beenden",
-      "course_type": "Kurstyp",
+      "type": "Kurstyp",
       "type_selector_title": "Welche Art von Kurs suchen Sie?",
       "back": "Zurück",
       "next": "Nächste"
@@ -787,7 +787,8 @@
         "description": "Beschreibung",
         "lessons": "Unterricht",
         "students": "Studenten",
-        "published": "Veröffentlicht"
+        "published": "Veröffentlicht",
+        "type": "Typ"
       },
       "context_menu": {
         "clone": "Klon",
@@ -1224,5 +1225,8 @@
   "generic": {
     "locked": "Gesperrt",
     "unlocked": "Entsperrt"
+  },
+  "specialization": {
+    "course_tag": "Spezialisierung"
   }
 }

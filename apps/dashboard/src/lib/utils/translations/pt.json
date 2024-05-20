@@ -264,7 +264,7 @@
         "delete": "Excluir curso",
         "delete_text": "Exclua este curso, esta ação não pode ser desfeita",
         "save": "Salvar alterações",
-        "course_type": "Tipo de curso",
+        "type": "Tipo de curso",
         "course_type_desc": "Atualize o tipo de curso para uma experiência mais personalizada",
         "live_class": "Aula ao vivo",
         "self_paced": "Individualizado"
@@ -768,7 +768,7 @@
       "short_description": "Pequena descrição",
       "short_description_placeholder": "Uma pequena descrição sobre este curso",
       "button": "Terminar",
-      "course_type": "Tipo de curso",
+      "type": "Tipo de curso",
       "type_selector_title": "Que tipo de curso você está procurando?",
       "back": "Voltar",
       "next": "Próximo"
@@ -787,7 +787,8 @@
         "description": "Descrição",
         "lessons": "Lições",
         "students": "Alunos",
-        "published": "Publicados"
+        "published": "Publicados",
+        "type": "Tipo"
       },
       "context_menu": {
         "clone": "Clone",
@@ -1224,5 +1225,8 @@
   "generic": {
     "locked": "Bloqueado",
     "unlocked": "Desbloqueado"
+  },
+  "specialization": {
+    "course_tag": "Especialização"
   }
 }

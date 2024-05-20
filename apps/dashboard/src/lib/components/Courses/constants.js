@@ -8,8 +8,3 @@ export const statuses = [
     chipLabel: 'Completed'
   }
 ];
-
-export const COURSE_TYPE = {
-  SELF_PACED: 'SELF_PACED',
-  LIVE_CLASS: 'LIVE_CLASS'
-};
