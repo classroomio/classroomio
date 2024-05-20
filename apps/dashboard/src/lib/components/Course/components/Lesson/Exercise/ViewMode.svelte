@@ -14,7 +14,7 @@
   import { removeDuplicate } from '$lib/utils/functions/removeDuplicate';
   import { QUESTION_TYPE } from '$lib/components/Question/constants';
   import { STATUS } from './constants';
-  import { getPropsForQuestion, filterOutDeleted } from './functions';
+  import { getPropsForQuestion, filterOutDeleted, wasCorrectAnswerSelected } from './functions';
   import { formatAnswers, getGroupMemberId } from '$lib/components/Course/function';
   import { submitExercise } from '$lib/utils/services/courses';
   import { fetchSubmission } from '$lib/utils/services/submissions';
@@ -228,6 +228,11 @@
     $questionnaireMetaData.progressValue = getProgressValue(
       $questionnaireMetaData.currentQuestionIndex
     );
+    wasCorrectAnswerSelected(
+      currentQuestion,
+      $questionnaireMetaData,
+      $questionnaireMetaData.isFinished
+    ) && console.log('yea next');
   }
 
   $: !isFetchingExercise && checkForSubmission($group.people, $profile.id, $course.id);

@@ -25,8 +25,8 @@ export function wasCorrectAnswerSelected(currentQuestion, answers, isFinished) {
 
   if (isCorrect && !isFinished) {
     toggleConfetti();
-
     setTimeout(toggleConfetti, 1500);
+    // SUBMIT AND MOVE TO NEXT QUESTION
   }
 
   return isCorrect;
@@ -74,18 +74,13 @@ export function getPropsForQuestion(
     nextButtonProps: isOpenQuesiton
       ? {
           label: 'Next',
-          isActive: true
+          isActive: isOpenQuesiton || isCorrect
         }
-      : isCorrect
-        ? {
-            label: isLast ? 'Finish' : 'Next',
-            isActive: true,
-            disableOptionSelect: true
-          }
-        : {
-            label: 'Check',
-            isActive: false
-          }
+      : {
+          label: isLast ? 'Finish' : 'Check',
+          isActive: isCorrect,
+          disableOptionSelect: !isCorrect
+        }
   };
 }
 
