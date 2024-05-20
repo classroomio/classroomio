@@ -38,8 +38,8 @@
         rel="noopener noreferrer nofollow"
         href="/github"
         style="color: rgb(75, 85, 99);"
-        class="rounded-full border-2 border-[#C2D2FF] px-4 py-1 text-sm font-medium bg-[#DCE5FF] text-[#4B5563]"
-        >Give us a <span class="text-blue-700">star</span> on github</a
+        class="rounded-full border-2 border-[#C2D2FF] px-4 py-1 text-sm font-medium bg-[#DCE5FF] text-[#4B5563] hover:underline"
+        >We are <span class="text-blue-700">100%</span> open source</a
       >
     </div>
 
@@ -114,8 +114,8 @@
       </div>
 
       <p class="text-base mx-auto mt-10 px-4 text-slate-700 md:text-lg lg:mt-6 lg:w-[42%] lg:p-0">
-        Meet a better learning management system (LMS) for teachers and students. ClassroomIO allows
-        you to launch and scale your online bootcamp with ease.
+        ClassroomIO is an open source learning management system for small and medium bootcamps that
+        wants to set up a fully customizable online teaching platform quickly.
       </p>
     </div>
 

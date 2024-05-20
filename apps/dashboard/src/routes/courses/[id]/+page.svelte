@@ -30,9 +30,10 @@
     triggerSendEmail
   } from '$lib/utils/services/notification/notification';
   import NewsFeedLoader from '$lib/components/Course/components/NewsFeed/NewsFeedLoader.svelte';
-  import { t } from '$lib/utils/functions/translations.js';
-  import { currentOrg } from '$lib/utils/store/org.js';
-  import { redirectToLesson } from '$lib/utils/redirect.js';
+  import { t } from '$lib/utils/functions/translations';
+  import { currentOrg } from '$lib/utils/store/org';
+  import type { CurrentOrg } from '$lib/utils/types/org';
+  import { goto } from '$app/navigation';
 
   export let data;
 
@@ -223,7 +224,16 @@
     };
   }
 
-  $: redirectToLesson($currentOrg?.customization?.course?.newsfeed, data.courseId);
+  function getPageRoles(org: CurrentOrg) {
+    const roles = [1, 2];
+
+    if (org.customization.course.newsfeed) {
+      roles.push(3);
+    }
+
+    return roles;
+  }
+
   $: initNewsFeed(data.courseId);
 
   $: setAuthor($group, $profile.id);
@@ -231,8 +241,13 @@
   $: $newsFeed = $newsFeed.sort((a, b) => Number(b.isPinned) - Number(a.isPinned));
 </script>
 
-<RoleBasedSecurity allowedRoles={[1, 2, $currentOrg?.customization?.course?.newsfeed ? 3 : 0]}>
-  <CourseContainer bind:courseId={data.courseId}>
+<CourseContainer bind:courseId={data.courseId}>
+  <RoleBasedSecurity
+    allowedRoles={getPageRoles($currentOrg)}
+    onDenied={() => {
+      goto(`/courses/${data.courseId}/lessons?next=true`);
+    }}
+  >
     <PageNav title={$t('course.navItem.news_feed.heading')} disableSticky={true}>
       <slot:fragment slot="widget">
         <RoleBasedSecurity allowedRoles={[1, 2]}>
@@ -298,5 +313,5 @@
         {/each}
       {/if}
     </PageBody>
-  </CourseContainer>
-</RoleBasedSecurity>
+  </RoleBasedSecurity>
+</CourseContainer>
