@@ -63,6 +63,7 @@ export interface OrgLandingPageJson {
     show: boolean;
   };
 }
+
 export let landingPageSettings: Writable<OrgLandingPageJson> = writable({
   header: {
     title: 'Web Development Courses for',

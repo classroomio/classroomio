@@ -151,7 +151,7 @@
         {#each planNames as planName}
           <div
             class="max-w-xl rounded-xl {planName === 'EARLY_ADOPTER' &&
-              'bg-primary-900'} p-4 ring-1 ring-gray-200 lg:max-w-sm"
+              'cio-bg-blue'} p-4 ring-1 ring-gray-200 lg:max-w-sm"
           >
             <p
               class="mb-2 text-lg font-semibold leading-8 {planName === 'EARLY_ADOPTER'

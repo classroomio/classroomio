@@ -4,6 +4,7 @@
   import Board from './components/Board.svelte';
   import { TicTacToe } from './components/board';
   import { scores, changeToComputer } from './components/store';
+  import ToolsHeader from '$lib/ToolsHeader/ToolsHeader.svelte';
 
   let startGame = false;
   let message: string | null = null;
@@ -77,26 +78,40 @@
 
 <svelte:head>
   <title>Tic Tac Toe | ClassroomIO</title>
-  <meta property="og:image" itemprop="image" content="" />
-  <meta property="og:title" content="Random Name Picker" />
-  <meta property="og:description" content="A simple tic tac toe game to play." />
+  <meta
+    property="og:image"
+    itemprop="image"
+    content="https://brand.cdn.clsrio.com/og/free-tools.png"
+  />
+  <meta property="og:title" content="Tic Tac Toe | ClassroomIO" />
+  <meta
+    property="og:description"
+    content="A simple and free tic tac toe game to play to your friends in class or outside the classroom."
+  />
 
-  <meta property="og:image:secure_url" itemprop="image" content="" />
+  <meta
+    property="og:image:secure_url"
+    itemprop="image"
+    content="https://brand.cdn.clsrio.com/og/free-tools.png"
+  />
 
-  <meta name="twitter:title" content="Tic Tac Toe" />
-  <meta name="twitter:description" content="A simple tic tac toe game to play." />
-  <meta name="twitter:image" content="" />
+  <meta name="twitter:title" content="Tic Tac Toe | ClassroomIO" />
+  <meta
+    name="twitter:description"
+    content="A simple and free tic tac toe game to play to your friends in class or outside the classroom."
+  />
+  <meta name="twitter:image" content="https://brand.cdn.clsrio.com/og/free-tools.png" />
 </svelte:head>
 
-<section class="mt-[30%] md:px-0 md:mt-[10%]">
-  <header class="flex justify-center items-center gap-5 mb-10">
+<section class="mt-[30%] px-5 md:px-0 md:mt-[5%]">
+  <ToolsHeader className="mb-10">
     <img
       src="/free-tools/tic-tac.svg"
-      class="w-14 md:w-[5%] border rounded-full"
+      class="w-14 md:w-[5%] mx-auto border rounded-full"
       alt="Tic Tac Icon"
     />
     <h1 class="text-4xl md:text-5xl font-bold text-[#040F2D]">Tic-Tac game</h1>
-  </header>
+  </ToolsHeader>
 
   <div
     class="overflow-hidden relative tic-tac-bg text-white w-full h-[55vh] md:w-[59%] md:h-[82vh] border-8 border-black mx-auto flex justify-center items-center"

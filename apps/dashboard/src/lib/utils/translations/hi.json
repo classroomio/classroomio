@@ -153,7 +153,8 @@
         "updating_poll": "मतदान स्थिति अद्यतन करते समय एक त्रुटि उत्पन्न हुई",
         "submitting_poll": "मतदान सबमिट करते समय एक त्रुटि उत्पन्न हुई"
       }
-    }
+    },
+    "success_update": "सफलतापूर्वक अपडेट किया गया"
   },
   "exercises": {
     "heading": "अभ्यास",
@@ -262,7 +263,11 @@
         "unpublished": "अप्रकाशित",
         "delete": "पाठ्यक्रम हटाएँ",
         "delete_text": "इस कोर्स को हटा दें, इस कार्रवाई को पूर्ववत नहीं किया जा सकता",
-        "save": "परिवर्तनों को सुरक्षित करें"
+        "save": "परिवर्तनों को सुरक्षित करें",
+        "type": "कोर्स का प्रकार",
+        "course_type_desc": "अधिक वैयक्तिकृत अनुभव के लिए पाठ्यक्रम प्रकार को अपडेट करें",
+        "live_class": "लाइव क्लास",
+        "self_paced": "स्वयं गति"
       },
       "landing_page": {
         "start_course": "कोर्स प्रारंभ करें",
@@ -447,6 +452,21 @@
           "submitted": "प्रस्तुत",
           "in_progress": "प्रगति पर है",
           "graded": "ग्रेड दिया गया"
+        },
+        "grading_modal": {
+          "details": "विवरण",
+          "early": "जल्दी",
+          "late": "देर",
+          "total_grade": "कुल ग्रेड",
+          "student": "विद्यार्थी",
+          "status": "स्थिति",
+          "add_comment": "टिप्पणी जोड़ना",
+          "grade_with_ai": "एआई के साथ ग्रेड",
+          "submit_grades": "ग्रेड जमा करें",
+          "accept_grade": "स्वीकार करना",
+          "reject_grade": "अस्वीकार करना",
+          "add_comment_placeholder": "एक टिप्पणी छोड़ें",
+          "questions_tried": "कुल प्रयासों के कारण यह स्कोर आवंटित किया गया:"
         }
       },
       "attendance": {
@@ -695,7 +715,8 @@
           "save": "बचाना",
           "edit": "संपादन करना",
           "delete": "मिटाना"
-        }
+        },
+        "disabled": "सुविधा अक्षम है"
       },
       "news_feed": {
         "heading": "समाचार फ़ीड",
@@ -746,7 +767,11 @@
       "course_name_placeholder": "आपके पाठ्यक्रम का नाम",
       "short_description": "संक्षिप्त वर्णन",
       "short_description_placeholder": "इस कोर्स के बारे में थोड़ा विवरण",
-      "button": "खत्म करना"
+      "button": "खत्म करना",
+      "type": "कोर्स का प्रकार",
+      "type_selector_title": "आप किस प्रकार का कोर्स देख रहे हैं?",
+      "back": "पीछे",
+      "next": "अगला"
     },
     "course_card": {
       "empty_title": "कोई पाठ्यक्रम नहीं बनाया गया",
@@ -762,7 +787,8 @@
         "description": "विवरण",
         "lessons": "पाठ",
         "students": "छात्र",
-        "published": "प्रकाशित"
+        "published": "प्रकाशित",
+        "type": "प्रकार"
       },
       "context_menu": {
         "clone": "क्लोन",
@@ -831,7 +857,60 @@
         "url": "यूआरएल",
         "update": "डोमेन अद्यतन करें",
         "custom": "कस्टम डोमेन",
-        "domain": "अपना स्वयं का डोमेन नाम जोड़ें"
+        "domain": "अपना स्वयं का डोमेन नाम जोड़ें",
+        "title": "कस्टम डोमेन"
+      },
+      "customize-lms": {
+        "title": "एलएमएस को अनुकूलित करें",
+        "disabled": "अक्षम",
+        "enabled": "सक्रिय",
+        "save": "परिवर्तनों को सुरक्षित करें",
+        "apps": {
+          "title": "ऐप्स",
+          "poll": "मतदान",
+          "live_comment": "लाइव टिप्पणियाँ"
+        },
+        "course": {
+          "title": "अवधि",
+          "newsfeed": "समाचार फ़ीड",
+          "grading": "ग्रेडिंग"
+        },
+        "dashboard": {
+          "title": "डैशबोर्ड",
+          "community": "समुदाय",
+          "exercises": "अभ्यास",
+          "banner_image": "बैनर छवि",
+          "banner_image_btn": "बैनर छवि अपडेट करें",
+          "banner_text": "बैनर पाठ",
+          "banner_text_label": "बैनर टेक्स्ट अपडेट करें",
+          "banner_text_placeholder": "यहां पाठ लिखें"
+        }
+      },
+      "customize_lms": {
+        "title": "एलएमएस को अनुकूलित करें",
+        "enabled": "सक्रिय",
+        "save": "परिवर्तनों को सुरक्षित करें",
+        "apps": {
+          "title": "ऐप्स",
+          "poll": "मतदान",
+          "live_comment": "लाइव टिप्पणियाँ"
+        },
+        "course": {
+          "title": "अवधि",
+          "newsfeed": "समाचार फ़ीड",
+          "grading": "ग्रेडिंग"
+        },
+        "dashboard": {
+          "title": "डैशबोर्ड",
+          "community": "समुदाय",
+          "exercises": "अभ्यास",
+          "banner_image": "बैनर छवि",
+          "banner_image_btn": "बैनर छवि अपडेट करें",
+          "banner_text": "बैनर पाठ",
+          "banner_text_label": "बैनर टेक्स्ट अपडेट करें",
+          "banner_text_placeholder": "यहां पाठ लिखें"
+        },
+        "disabled": "अक्षम"
       }
     },
     "quiz": {
@@ -1068,6 +1147,12 @@
         "theme": {
           "heading": "विषय",
           "sub_heading": "अपना ब्रांड रंग सेट करें"
+        },
+        "customize_lms": {
+          "heading": "एलएमएस को अनुकूलित करें",
+          "sub_heading": "अपने संगठन एलएमएस को वैयक्तिकृत करें",
+          "button": "एलएमएस को अनुकूलित करें",
+          "body": "अपने विद्यार्थियों के सीखने के अनुभव को नियंत्रित करें। आप टैब और पेजों को सक्षम या अक्षम कर सकते हैं, एलएमएस बैनर और इन-ऐप टिप्पणियों को अपने संगठन की आवश्यकताओं के अनुसार अपडेट कर सकते हैं"
         }
       }
     },
@@ -1136,5 +1221,12 @@
     "resend_in": "सत्यापन पुनः भेजें",
     "seconds": "सेकंड",
     "snackbar_error": "कोड भेजते समय त्रुटि"
+  },
+  "generic": {
+    "locked": "बंद",
+    "unlocked": "अनलॉक किया"
+  },
+  "specialization": {
+    "course_tag": "विशेषज्ञता"
   }
 }

@@ -11,11 +11,13 @@
   import { NavClasses } from '$lib/utils/constants/reusableClass';
   import { sideBar } from '$lib/components/Org/store';
   import { t } from '$lib/utils/functions/translations';
+  import { currentOrg } from '$lib/utils/store/org';
 
   interface sideLinks {
     name: string;
     icon: any;
     link: string;
+    show?: () => boolean;
   }
 
   function isActive(pagePath: string, itemPath: string) {
@@ -45,14 +47,21 @@
     {
       name: $t('lms_navigation.exercise'),
       icon: LicenseDraft,
-      link: '/lms/exercises'
+      link: '/lms/exercises',
+      show() {
+        return $currentOrg?.customization?.dashboard?.exercise;
+      }
     },
     {
       name: $t('lms_navigation.community'),
       icon: CommunityIcon,
-      link: '/lms/community'
+      link: '/lms/community',
+      show() {
+        return $currentOrg?.customization?.dashboard?.community;
+      }
     }
-  ];
+  ].filter((link) => (link.show ? link.show() : true));
+
   const toggleSidebar = () => {
     $sideBar.hidden = !$sideBar.hidden;
   };

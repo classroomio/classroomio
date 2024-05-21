@@ -1,20 +1,20 @@
 <script lang="ts">
-  // import { ROLE } from '$lib/utils/constants/roles';
   import { profile } from '$lib/utils/store/user';
   import { group } from '../Course/store';
-  import type { Person } from '../Course/components/People/types';
+  import type { GroupPerson } from '$lib/utils/types';
 
   export let allowedRoles: number[] = [];
+  export let onDenied = () => {};
 
   let userRole: number = 0;
 
   $: {
-    const user: Person = $group.people.find(
-      (person: { profile_id: number }) => person.profile_id === $profile.id
-    )!;
+    const user: GroupPerson = $group.people.find((person) => person.profile_id === $profile.id)!;
 
-    if (user) {
-      userRole = user.role_id;
+    userRole = user ? user.role_id : userRole;
+
+    if ($group.people.length && !allowedRoles.includes(userRole)) {
+      onDenied();
     }
   }
 </script>

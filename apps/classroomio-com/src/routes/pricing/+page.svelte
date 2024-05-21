@@ -85,7 +85,7 @@
       </div>
 
       <!-- Card 2 -->
-      <div class="max-w-xl rounded-3xl bg-gray-900 p-8 lg:max-w-lg xl:p-9">
+      <div class="cio-bg-blue max-w-xl rounded-3xl p-8 lg:max-w-lg xl:p-9">
         <p class="text-lg font-semibold leading-8 text-white lg:text-xl">
           {PLANS.EARLY_ADOPTER.NAME}
         </p>
@@ -173,9 +173,9 @@
 </section>
 
 <PageSignupCTA
-  header="Launch Your First Training in Minutes"
+  header="Bring your bootcamp vision online"
   subText="Try before you buy. No credit card required."
-  btnLabel="Sign up"
+  btnLabel="Sign up for free"
   link="/signup"
   demo={false}
 />

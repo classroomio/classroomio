@@ -5,6 +5,8 @@
   export let open = false;
   export let onClose = () => {};
   export let modalHeading = '';
+  export let headerClass = '';
+  export let labelClass = '';
   export let width = '';
   export let maxWidth = '';
   export let containerClass = '';
@@ -37,9 +39,9 @@
       role="presentation"
     >
       <div
-        class="flex items-center justify-between border border-l-0 border-r-0 border-t-0 border-gray-100 dark:border-neutral-600 p-4 px-5"
+        class="flex items-center justify-between border border-l-0 border-r-0 border-t-0 border-gray-100 dark:border-neutral-600 p-4 px-5 {headerClass}"
       >
-        <p class="text-md m-0 font-medium dark:text-white">
+        <p class="text-md m-0 font-medium dark:text-white {labelClass}">
           {modalHeading}
         </p>
         {#if isCloseable}

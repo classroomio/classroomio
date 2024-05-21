@@ -30,7 +30,10 @@
     triggerSendEmail
   } from '$lib/utils/services/notification/notification';
   import NewsFeedLoader from '$lib/components/Course/components/NewsFeed/NewsFeedLoader.svelte';
-  import { t } from '$lib/utils/functions/translations.js';
+  import { t } from '$lib/utils/functions/translations';
+  import { currentOrg } from '$lib/utils/store/org';
+  import type { CurrentOrg } from '$lib/utils/types/org';
+  import { goto } from '$app/navigation';
 
   export let data;
 
@@ -221,77 +224,93 @@
     };
   }
 
+  function getPageRoles(org: CurrentOrg) {
+    const roles: number[] = [1, 2];
+
+    if (org.customization.course.newsfeed) {
+      roles.concat([3]);
+    }
+
+    return roles;
+  }
+
   $: initNewsFeed(data.courseId);
 
   $: setAuthor($group, $profile.id);
-
   $: $newsFeed = $newsFeed.sort((a, b) => Number(b.isPinned) - Number(a.isPinned));
 </script>
 
 <CourseContainer bind:courseId={data.courseId}>
-  <PageNav title={$t('course.navItem.news_feed.heading')} disableSticky={true}>
-    <slot:fragment slot="widget">
+  <RoleBasedSecurity
+    allowedRoles={getPageRoles($currentOrg)}
+    onDenied={() => {
+      goto(`/courses/${data.courseId}/lessons?next=true`);
+    }}
+  >
+    <PageNav title={$t('course.navItem.news_feed.heading')} disableSticky={true}>
+      <slot:fragment slot="widget">
+        <RoleBasedSecurity allowedRoles={[1, 2]}>
+          <PrimaryButton
+            className="mr-2"
+            label={$t('course.navItem.news_feed.heading_button.title')}
+            onClick={() => ($isNewFeedModal.open = true)}
+          />
+        </RoleBasedSecurity>
+      </slot:fragment>
+    </PageNav>
+
+    <PageBody width="max-w-4xl px-3">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
-        <PrimaryButton
-          className="mr-2"
-          label={$t('course.navItem.news_feed.heading_button.title')}
-          onClick={() => ($isNewFeedModal.open = true)}
-        />
-      </RoleBasedSecurity>
-    </slot:fragment>
-  </PageNav>
-
-  <PageBody width="max-w-4xl px-3">
-    <RoleBasedSecurity allowedRoles={[1, 2]}>
-      <NewFeedModal
-        courseId={data.courseId}
-        {author}
-        bind:edit
-        bind:editFeed
-        onSave={(newFeed) => {
-          $newsFeed = [newFeed, ...$newsFeed];
-        }}
-        {onEdit}
-      />
-    </RoleBasedSecurity>
-    {#if isLoading}
-      <div>
-        <NewsFeedLoader />
-        <NewsFeedLoader />
-        <NewsFeedLoader />
-      </div>
-    {:else if !$newsFeed.length}
-      <Box>
-        <div class="flex justify-between flex-col items-center w-[90%] md:w-96">
-          <img src="/images/empty-lesson-icon.svg" alt="Lesson" class="my-2.5 mx-auto" />
-          <h2 class="text-xl my-1.5 font-normal">{$t('course.navItem.news_feed.body_header')}</h2>
-          <p class="text-sm text-center text-slate-500">
-            {$t('course.navItem.news_feed.body_content')}
-          </p>
-        </div>
-      </Box>
-    {:else}
-      {#each $newsFeed as feed}
-        {#if feed.isPinned}
-          <div class="flex items-center gap-2 mb-3">
-            <PinFilled size={16} />
-
-            <p class="text-sm">{$t('course.navItem.news_feed.pinned')}</p>
-          </div>
-        {/if}
-        <NewsFeedCard
-          {feed}
-          {deleteFeed}
-          {addNewComment}
-          {deleteComment}
-          {addNewReaction}
-          {onPin}
+        <NewFeedModal
+          courseId={data.courseId}
           {author}
           bind:edit
           bind:editFeed
-          isActive={feedId === feed.id}
+          onSave={(newFeed) => {
+            $newsFeed = [newFeed, ...$newsFeed];
+          }}
+          {onEdit}
         />
-      {/each}
-    {/if}
-  </PageBody>
+      </RoleBasedSecurity>
+      {#if isLoading}
+        <div>
+          <NewsFeedLoader />
+          <NewsFeedLoader />
+          <NewsFeedLoader />
+        </div>
+      {:else if !$newsFeed.length}
+        <Box>
+          <div class="flex justify-between flex-col items-center w-[90%] md:w-96">
+            <img src="/images/empty-lesson-icon.svg" alt="Lesson" class="my-2.5 mx-auto" />
+            <h2 class="text-xl my-1.5 font-normal">{$t('course.navItem.news_feed.body_header')}</h2>
+            <p class="text-sm text-center text-slate-500">
+              {$t('course.navItem.news_feed.body_content')}
+            </p>
+          </div>
+        </Box>
+      {:else}
+        {#each $newsFeed as feed}
+          {#if feed.isPinned}
+            <div class="flex items-center gap-2 mb-3">
+              <PinFilled size={16} />
+
+              <p class="text-sm">{$t('course.navItem.news_feed.pinned')}</p>
+            </div>
+          {/if}
+          <NewsFeedCard
+            {feed}
+            {deleteFeed}
+            {addNewComment}
+            {deleteComment}
+            {addNewReaction}
+            {onPin}
+            {author}
+            bind:edit
+            bind:editFeed
+            isActive={feedId === feed.id}
+          />
+        {/each}
+      {/if}
+    </PageBody>
+  </RoleBasedSecurity>
 </CourseContainer>

@@ -14,7 +14,7 @@ import { STATUS } from '$lib/utils/constants/course';
 import type { PostgrestSingleResponse } from '@supabase/supabase-js';
 
 export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']) {
-  let match: { slug?: string; id?: string; status?: string } = {};
+  const match: { slug?: string; id?: string; status?: string } = {};
 
   if (slug) {
     match.slug = slug;
@@ -30,6 +30,7 @@ export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']
       `
       id,
       title,
+      type,
       description,
       overview,
       logo,
@@ -61,6 +62,7 @@ export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']
   const { data, error } = response;
 
   console.log(`error`, error);
+  console.log(`data`, data);
   if (!data || error) {
     console.log(`data`, data);
     console.log(`fetchCourse => error`, error);
@@ -410,7 +412,11 @@ export async function submitExercise(
   }
 
   const res = await supabase.from('question_answer').insert(questionAnswers).select();
-  console.log(`res`, res);
+  console.log(`res`, res, 'submission', submission);
+  return {
+    submission,
+    res
+  };
 }
 
 export async function deleteExercise(questions: Array<{ id: string }>, exerciseId: Exercise['id']) {

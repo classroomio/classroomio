@@ -151,7 +151,7 @@
 {/if}
 
 {#if exerciseId}
-  <Exercise {exerciseId} {goBack} bind:path bind:isStudent />
+  <Exercise {exerciseId} {goBack} bind:path bind:isStudent {isFetching} />
 {:else}
   <NewExerciseModal
     bind:open
