@@ -10,18 +10,18 @@
       show: true
     },
     {
-      src: '/free-tools/activity-timer.svg',
-      title: 'Timed Activity Timer',
+      src: '/free-tools/activity-stopwatch.svg',
+      title: 'Activity Stopwatch',
       subText:
-        'Stay on track and enhance productivity with our customizable timer for timed tasks, quizzes, and study sessions',
-      slug: 'activity-timer',
+        'Stay on track and enhance productivity with our customizable stopwatch for timed tasks, quizzes, and study sessions',
+      slug: 'activity-stopwatch',
       show: true
     },
     {
       src: '/free-tools/tic-tac.svg',
       title: 'Tic tac toe game',
       subText:
-        "More than just a game; it's an educational ool that teaches pattern recognition, and decision-making.",
+        "More than just a game; it's an educational tool that teaches pattern recognition, and decision-making.",
       slug: 'tic-tac-toe',
       show: true
     },
@@ -75,8 +75,8 @@
         />
         <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[100px] z-20"
-          src="/free-tools/activity-timer.svg"
-          alt="Activity timer logo"
+          src="/free-tools/activity-stopwatch.svg"
+          alt="Activity Stopwatch logo"
         />
         <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[150px] z-30"

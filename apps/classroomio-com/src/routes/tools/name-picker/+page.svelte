@@ -108,10 +108,10 @@
     itemprop="image"
     content="https://brand.cdn.clsrio.com/og/free-tools.png"
   />
-  <meta property="og:title" content="Random Name Picker" />
+  <meta property="og:title" content="Random Name Picker | ClassroomIO" />
   <meta
     property="og:description"
-    content="Use this online name picker to draw a random name from a list of names."
+    content="Use this online name picker to draw a random name from a list of names for your online or physical classroom."
   />
 
   <meta
@@ -120,10 +120,10 @@
     content="https://brand.cdn.clsrio.com/og/free-tools.png"
   />
 
-  <meta name="twitter:title" content="Random Name Picker" />
+  <meta name="twitter:title" content="Random Name Picker | ClassroomIO" />
   <meta
     name="twitter:description"
-    content="Use this online name picker to draw a random name from a list of names."
+    content="Use this online name picker to draw a random name from a list of names for your online or physical classroom."
   />
   <meta name="twitter:image" content="https://brand.cdn.clsrio.com/og/free-tools.png" />
 </svelte:head>

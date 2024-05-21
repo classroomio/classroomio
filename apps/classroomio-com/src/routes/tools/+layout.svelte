@@ -32,8 +32,8 @@
 <slot />
 
 <PageSignupCTA
-  header="Launch Your Bootcamp in Minutes"
-  subText="Don't wait, let's get you started."
+  header="Forget the hassle of complex LMS systems"
+  subText="ClassroomIO gives small and medium bootcamps the power of online learning, simplified."
   btnLabel="Sign me up"
   link="/signup"
   demo={false}

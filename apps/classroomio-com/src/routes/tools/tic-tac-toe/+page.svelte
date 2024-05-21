@@ -78,15 +78,29 @@
 
 <svelte:head>
   <title>Tic Tac Toe | ClassroomIO</title>
-  <meta property="og:image" itemprop="image" content="" />
-  <meta property="og:title" content="Random Name Picker" />
-  <meta property="og:description" content="A simple tic tac toe game to play." />
+  <meta
+    property="og:image"
+    itemprop="image"
+    content="https://brand.cdn.clsrio.com/og/free-tools.png"
+  />
+  <meta property="og:title" content="Tic Tac Toe | ClassroomIO" />
+  <meta
+    property="og:description"
+    content="A simple and free tic tac toe game to play to your friends in class or outside the classroom."
+  />
 
-  <meta property="og:image:secure_url" itemprop="image" content="" />
+  <meta
+    property="og:image:secure_url"
+    itemprop="image"
+    content="https://brand.cdn.clsrio.com/og/free-tools.png"
+  />
 
-  <meta name="twitter:title" content="Tic Tac Toe" />
-  <meta name="twitter:description" content="A simple tic tac toe game to play." />
-  <meta name="twitter:image" content="" />
+  <meta name="twitter:title" content="Tic Tac Toe | ClassroomIO" />
+  <meta
+    name="twitter:description"
+    content="A simple and free tic tac toe game to play to your friends in class or outside the classroom."
+  />
+  <meta name="twitter:image" content="https://brand.cdn.clsrio.com/og/free-tools.png" />
 </svelte:head>
 
 <section class="mt-[30%] px-5 md:px-0 md:mt-[7%]">
