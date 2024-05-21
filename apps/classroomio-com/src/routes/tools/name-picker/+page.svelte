@@ -128,7 +128,7 @@
   <meta name="twitter:image" content="https://brand.cdn.clsrio.com/og/free-tools.png" />
 </svelte:head>
 
-<section class="mt-[30%] px-5 md:px-0 md:mt-[7%]">
+<section class="mt-[30%] px-5 md:px-0 md:mt-[5%]">
   <ToolsHeader>
     <img
       src="/free-tools/name-picker.svg"

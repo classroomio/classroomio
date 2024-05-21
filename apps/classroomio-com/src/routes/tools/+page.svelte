@@ -31,7 +31,7 @@
       subText:
         "Find thought-provoking 'Question of the Day' to spark discussions and promote critical thinking",
       slug: 'question-of-the-day',
-      show: true
+      show: false
     },
     {
       src: '/free-tools/waec.svg',

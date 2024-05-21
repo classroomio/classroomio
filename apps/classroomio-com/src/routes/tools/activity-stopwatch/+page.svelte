@@ -50,6 +50,10 @@
       isPaused = true;
     }
     isNextStep = true;
+  }
+
+  function startTimer() {
+    toggleTimer();
     totalSeconds = hours * 3600 + minutes * 60 + seconds;
     updateDisplayTime();
   }
@@ -65,7 +69,10 @@
     displayTime = `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(
       secs
     ).padStart(2, '0')}`;
-    formattedTime = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+    if (formattedTime === '00:00') {
+      formattedTime = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
   }
 
   function restartTimer() {
@@ -135,7 +142,7 @@
   <meta name="twitter:image" content="https://brand.cdn.clsrio.com/og/free-tools.png" />
 </svelte:head>
 
-<section class="mt-[30%] px-5 md:px-0 md:mt-[7%]">
+<section class="mt-[30%] px-5 md:px-0 md:mt-[5%]">
   <ToolsHeader>
     <img
       src="/free-tools/name-picker.svg"
@@ -153,7 +160,7 @@
     <!-- countdown setter -->
     {#if !isNextStep}
       <div transition:fly={{ y: -300, delay: 0, easing: sineInOut }} class="px-6 py-8">
-        <form on:submit|preventDefault={toggleTimer}>
+        <form on:submit|preventDefault={startTimer}>
           <div>
             <h1 class="font-bold text-sm">Name of activity</h1>
             <input
