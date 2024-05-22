@@ -48,7 +48,7 @@
   function handleFormSubmit(event) {
     if (isPreview) return;
     const value = getRadioVal(event.target, name);
-    onSubmit(name, [value], nextButtonProps.isActive);
+    onSubmit(name, [value]);
     event.target.reset();
   }
 

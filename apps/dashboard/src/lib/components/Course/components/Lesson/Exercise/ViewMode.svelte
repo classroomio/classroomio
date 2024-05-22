@@ -166,7 +166,7 @@
     handleSubmit({ preventDefault: () => {} });
   }
 
-  async function onSubmit(id, value, moveToNextQuestion = false) {
+  async function onSubmit(id, value) {
     if ($course.type === COURSE_TYPE.SELF_PACED) {
       isLoading = true;
     }

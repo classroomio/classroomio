@@ -46,7 +46,7 @@
   function handleFormSubmit(event) {
     if (isPreview) return;
     const values = getVal(event.target, name);
-    onSubmit(name, values, nextButtonProps.isActive);
+    onSubmit(name, values);
     event.target.reset();
   }
 
