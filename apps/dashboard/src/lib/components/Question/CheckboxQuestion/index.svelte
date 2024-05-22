@@ -7,6 +7,8 @@
   import Grade from '$lib/components/Question/Grade.svelte';
   import { t } from '$lib/utils/functions/translations';
   import ReasonBox from '../ReasonBox.svelte';
+  import { course } from '$lib/components/Course/store';
+  import { COURSE_TYPE } from '$lib/utils/types';
 
   export let title = '';
   export let index = 1;
@@ -91,7 +93,7 @@
         </span>
       </svelte:fragment>
     </HtmlRender>
-    {#if !hideGrading}
+    {#if $course.type !== COURSE_TYPE.SELF_PACED && !hideGrading}
       <Grade {gradeMax} bind:grade {disableGrading} />
     {/if}
   </div>

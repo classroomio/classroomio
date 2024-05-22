@@ -7,6 +7,8 @@
   import Grade from '$lib/components/Question/Grade.svelte';
   import { t } from '$lib/utils/functions/translations';
   import ReasonBox from '../ReasonBox.svelte';
+  import { course } from '$lib/components/Course/store';
+  import { COURSE_TYPE } from '$lib/utils/types';
 
   export let title = '';
   export let index = 1;
@@ -64,7 +66,7 @@
         </span>
       </svelte:fragment>
     </HtmlRender>
-    {#if !hideGrading}
+    {#if $course.type !== COURSE_TYPE.SELF_PACED && !hideGrading}
       <Grade {gradeMax} bind:grade {disableGrading} />
     {/if}
   </div>
@@ -76,7 +78,7 @@
   <div class="ml-4">
     {#if disabled}
       <div class="bg-gray-200 dark:bg-gray-500 py-3 px-5 rounded-md mb-3">
-        {defaultValue}
+        {defaultValue === '' ? 'No answer was provided' : defaultValue}
       </div>
       {#if gradeWithAI}
         <ReasonBox {reason} {isLoading} {acceptGrade} {rejectGrade} />
