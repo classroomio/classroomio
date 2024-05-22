@@ -256,6 +256,7 @@
   {path}
   isExercisePage={!data.isMaterialsTabActive && !!data.exerciseId}
   bind:courseId={data.courseId}
+  containerClass="relative"
 >
   <PageNav
     bind:hideOnMobile={isStudent}
@@ -373,8 +374,9 @@
       {/if} -->
     </PageBody>
   {/if}
-  <!-- Mobile Navigation -->
-  <div class="sticky bottom-5 flex items-center justify-center">
+
+  <!-- Bottom Lesson Widget -->
+  <div class="absolute w-full bottom-5 flex items-center justify-center">
     <div
       class="flex items-center gap-2 w-fit rounded-full shadow-xl bg-gray-100 dark:bg-neutral-700 px-5 py-1"
     >

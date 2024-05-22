@@ -16,6 +16,7 @@
   export let isExercisePage = false;
   export let isStudent = false;
   export let isFetching = false;
+  export let containerClass = '';
 
   let prevCourseId = '';
 
@@ -71,7 +72,7 @@
 
 <div class="root">
   <Navigation {path} {isStudent} />
-  <div class="rightBar" class:isMobile={$isMobile}>
+  <div class="rightBar {containerClass}" class:isMobile={$isMobile}>
     {#if isExercisePage}
       <Confetti />
     {/if}
