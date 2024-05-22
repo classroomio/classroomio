@@ -29,7 +29,6 @@
   let hasFetched = false;
 
   async function getCourses(userId: string | undefined, orgId: string) {
-    console.log({ org: $currentOrg });
     if (cantFetch && typeof cantFetch === 'boolean' && orgId && !hasFetched) {
       // only show is loading when fetching for the first time
       if (!$courses.length) {
