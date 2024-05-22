@@ -26,7 +26,7 @@ export function wasCorrectAnswerSelected(currentQuestion, answers, isFinished) {
   if (isCorrect && !isFinished) {
     toggleConfetti();
 
-    setTimeout(toggleConfetti, 1500);
+    setTimeout(toggleConfetti, 100);
   }
 
   return isCorrect;
