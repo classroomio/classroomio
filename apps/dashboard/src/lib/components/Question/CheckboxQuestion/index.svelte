@@ -135,6 +135,7 @@
         variant={nextButtonProps.isActive ? VARIANTS.CONTAINED : VARIANTS.OUTLINED}
         type="submit"
         label={nextButtonProps.label}
+        isDisabled={nextButtonProps.isDisabled}
         {name}
       />
     </div>

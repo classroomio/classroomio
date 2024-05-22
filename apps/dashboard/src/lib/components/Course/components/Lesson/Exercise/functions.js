@@ -80,7 +80,8 @@ export function getPropsForQuestion(
         ? {
             label: isLast ? 'Finish' : 'Next',
             isActive: true,
-            disableOptionSelect: true
+            disableOptionSelect: true,
+            isDisabled: isLast ? false : true // Disable Next button because auto next is enabled
           }
         : {
             label: 'Check',
