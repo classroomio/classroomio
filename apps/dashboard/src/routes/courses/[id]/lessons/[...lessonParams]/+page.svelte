@@ -36,7 +36,7 @@
   import type { LessonCompletion } from '$lib/utils/types';
   import { profile } from '$lib/utils/store/user';
   import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
-  import { t } from '$lib/utils/functions/translations.js';
+  import { t } from '$lib/utils/functions/translations';
   import { LANGUAGES } from '$lib/utils/constants/translation';
 
   export let data;

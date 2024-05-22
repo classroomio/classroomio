@@ -12,7 +12,7 @@
   import { isOrgAdmin } from '$lib/utils/store/org';
   import type { Course } from '$lib/utils/types';
   import { browser } from '$app/environment';
-  import { t } from '$lib/utils/functions/translations.js';
+  import { t } from '$lib/utils/functions/translations';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import Grid from 'carbon-icons-svelte/lib/Grid.svelte';
@@ -29,6 +29,7 @@
   let hasFetched = false;
 
   async function getCourses(userId: string | undefined, orgId: string) {
+    console.log({ org: $currentOrg });
     if (cantFetch && typeof cantFetch === 'boolean' && orgId && !hasFetched) {
       // only show is loading when fetching for the first time
       if (!$courses.length) {

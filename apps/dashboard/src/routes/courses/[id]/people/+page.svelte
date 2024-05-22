@@ -30,7 +30,7 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import type { GroupPerson } from '$lib/utils/types';
-  import { t } from '$lib/utils/functions/translations.js';
+  import { t } from '$lib/utils/functions/translations';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
 

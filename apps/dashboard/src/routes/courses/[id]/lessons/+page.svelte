@@ -26,7 +26,7 @@
   import { course, group } from '$lib/components/Course/store';
   import DateField from '$lib/components/Form/Date.svelte';
   import type { Course, Lesson } from '$lib/utils/types';
-  import { t } from '$lib/utils/functions/translations.js';
+  import { t } from '$lib/utils/functions/translations';
   import { goto } from '$app/navigation';
   import { COURSE_TYPE } from '$lib/utils/types';
 

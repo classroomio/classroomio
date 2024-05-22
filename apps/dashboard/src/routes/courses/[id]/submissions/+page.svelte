@@ -25,7 +25,7 @@
   } from '$lib/utils/services/notification/notification';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { browser } from '$app/environment';
-  import { t } from '$lib/utils/functions/translations.js';
+  import { t } from '$lib/utils/functions/translations';
 
   type items = {
     id: number;
