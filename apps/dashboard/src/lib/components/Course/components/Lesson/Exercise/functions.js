@@ -79,7 +79,7 @@ export function getPropsForQuestion(
       : {
           label: isLast ? 'Finish' : 'Check',
           isActive: isCorrect,
-          disableOptionSelect: !isCorrect
+          disableOptionSelect: isCorrect
         }
   };
 }

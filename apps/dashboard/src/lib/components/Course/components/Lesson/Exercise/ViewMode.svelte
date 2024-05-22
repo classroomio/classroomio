@@ -28,6 +28,7 @@
   import { browser } from '$app/environment';
   import { CloseFilled } from 'carbon-icons-svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
+  import { toggleConfetti } from '$lib/components/Confetti/store';
 
   export let preview: boolean = false;
   export let exerciseId = '';
@@ -228,11 +229,6 @@
     $questionnaireMetaData.progressValue = getProgressValue(
       $questionnaireMetaData.currentQuestionIndex
     );
-    wasCorrectAnswerSelected(
-      currentQuestion,
-      $questionnaireMetaData,
-      $questionnaireMetaData.isFinished
-    ) && console.log('yea next');
   }
 
   $: !isFetchingExercise && checkForSubmission($group.people, $profile.id, $course.id);

@@ -7,6 +7,7 @@
   import Grade from '$lib/components/Question/Grade.svelte';
   import { t } from '$lib/utils/functions/translations';
   import ReasonBox from '../ReasonBox.svelte';
+  import { toggleConfetti } from '$lib/components/Confetti/store';
 
   export let title = '';
   export let index = 1;
@@ -44,10 +45,25 @@
   }
 
   function handleFormSubmit(event) {
+    console.log('checking');
     if (isPreview) return;
+
     const values = getVal(event.target, name);
-    onSubmit(name, values, nextButtonProps.isActive);
-    event.target.reset();
+    console.log('checking5', values, options);
+    const correct = options.some((option) => values.includes(option.value) && option.is_correct);
+    console.log('checkin otpion', correct);
+    if (correct) {
+      toggleConfetti();
+      console.log('checkin otpion2', correct);
+      setTimeout(() => {
+        onSubmit(name, values, true);
+        toggleConfetti();
+      }, 1500);
+    } else {
+      console.log('checkin otpion3', correct);
+      onSubmit(name, values, false);
+      event.target.reset();
+    }
   }
 
   function handlePrevious(event) {

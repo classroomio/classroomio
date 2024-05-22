@@ -7,6 +7,7 @@
   import Grade from '$lib/components/Question/Grade.svelte';
   import { t } from '$lib/utils/functions/translations';
   import ReasonBox from '../ReasonBox.svelte';
+  import { toggleConfetti } from '$lib/components/Confetti/store';
 
   export let title = '';
   export let index = 1;
@@ -47,8 +48,19 @@
 
   function handleFormSubmit(event) {
     if (isPreview) return;
+
     const value = getRadioVal(event.target, name);
-    onSubmit(name, [value], nextButtonProps.isActive);
+    const correct = options.some((option) => defaultValue.includes(value) && option.is_correct);
+
+    if (correct) {
+      toggleConfetti();
+      setTimeout(() => {
+        onSubmit(name, [value], true);
+        toggleConfetti();
+      }, 1500);
+    } else {
+      onSubmit(name, [value], false);
+    }
     event.target.reset();
   }
 
