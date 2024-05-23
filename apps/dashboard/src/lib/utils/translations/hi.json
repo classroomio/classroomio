@@ -582,7 +582,11 @@
               "no_description": "कोई विवरण नहीं",
               "start": "शुरू",
               "graded": "ग्रेड दिया गया",
-              "pending": "लंबित"
+              "pending": "लंबित",
+              "submitted": "प्रस्तुत",
+              "status_pending": "स्थिति: समीक्षा लंबित",
+              "status_graded": "स्थिति: समीक्षा पूरी हुई",
+              "status_submitted": "स्थिति: सबमिट किया गया"
             },
             "edit_mode": {
               "delete_modal": "मोडल हटाएँ",
@@ -611,7 +615,9 @@
               "heading": "विवरण",
               "describe": "अपने विद्यार्थी को व्यायाम का वर्णन करें",
               "no": "कोई विवरण नहीं"
-            }
+            },
+            "no_answer": "कोई उत्तर नहीं दिया गया",
+            "check": "जाँच करना"
           },
           "new_exercise_modal": {
             "heading": "नया व्यायाम",

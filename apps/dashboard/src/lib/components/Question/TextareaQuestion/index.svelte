@@ -66,7 +66,7 @@
         </span>
       </svelte:fragment>
     </HtmlRender>
-    {#if $course.type !== COURSE_TYPE.SELF_PACED && !hideGrading}
+    {#if !hideGrading}
       <Grade {gradeMax} bind:grade {disableGrading} />
     {/if}
   </div>
@@ -78,7 +78,9 @@
   <div class="ml-4">
     {#if disabled}
       <div class="bg-gray-200 dark:bg-gray-500 py-3 px-5 rounded-md mb-3">
-        {defaultValue === '' ? 'No answer was provided' : defaultValue}
+        {defaultValue === ''
+          ? $t('course.navItem.lessons.exercises.all_exercises.no_answer')
+          : defaultValue}
       </div>
       {#if gradeWithAI}
         <ReasonBox {reason} {isLoading} {acceptGrade} {rejectGrade} />
@@ -97,7 +99,7 @@
       <PrimaryButton
         variant={VARIANTS.OUTLINED}
         onClick={handlePrevious}
-        label="Previous"
+        label={$t('course.navItem.lessons.exercises.all_exercises.previous')}
         isDisabled={disablePreviousButton}
       />
       <PrimaryButton

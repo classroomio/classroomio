@@ -19,6 +19,7 @@
   export let onPrevious = () => {};
   export let defaultValue = [];
   export let disablePreviousButton = false;
+  export let isLast = false;
   export let disabled = false;
   export let isPreview = false;
   export let nextButtonProps = {};
@@ -93,7 +94,7 @@
         </span>
       </svelte:fragment>
     </HtmlRender>
-    {#if $course.type !== COURSE_TYPE.SELF_PACED && !hideGrading}
+    {#if !hideGrading}
       <Grade {gradeMax} bind:grade {disableGrading} />
     {/if}
   </div>
@@ -136,7 +137,9 @@
       <PrimaryButton
         variant={nextButtonProps.isActive ? VARIANTS.CONTAINED : VARIANTS.OUTLINED}
         type="submit"
-        label={nextButtonProps.label}
+        label={isLast
+          ? $t('course.navItem.lessons.exercises.all_exercises.finish')
+          : $t('course.navItem.lessons.exercises.all_exercises.next')}
         {name}
       />
     </div>

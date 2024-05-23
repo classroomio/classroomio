@@ -27,6 +27,7 @@
   import { lesson } from '../store/lessons';
   import { browser } from '$app/environment';
   import { COURSE_TYPE } from '$lib/utils/types';
+  import { t } from '$lib/utils/functions/translations';
 
   export let preview: boolean = false;
   export let exerciseId = '';
@@ -299,30 +300,30 @@
         {#if STATUS.GRADED === $questionnaireMetaData.status}
           <span
             class="status-text bg-green-700 text-white py-1 px-2 text-center"
-            title="Status: Review completed"
+            title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_graded')}
           >
-            Graded
+            {$t('course.navItem.lessons.exercises.all_exercises.view_mode.graded')}
           </span>
         {:else if $course.type === COURSE_TYPE.SELF_PACED}
           <span
             class="status-text bg-green-700 text-white py-1 px-2 text-center"
-            title="Status: Submitted"
+            title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_submitted')}
           >
-            Submitted
+            {$t('course.navItem.lessons.exercises.all_exercises.view_mode.submitted')}
           </span>
         {:else}
           <span
             class="status-text bg-yellow-600 text-white py-1 px-2 text-center"
-            title="Status: Pending Review"
+            title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_pending')}
           >
-            Pending
+            {$t('course.navItem.lessons.exercises.all_exercises.view_mode.pending')}
           </span>
         {/if}
       </div>
       {#if STATUS.GRADED === $questionnaireMetaData.status && $course.type !== COURSE_TYPE.SELF_PACED}
         <span
           class="p-6 border-2 border-gray-300 bg-[#F5F8FE] rounded-full h-10 w-10 flex items-center justify-center text-[#2751DA] text-sm font-semibold"
-          title="Status: Pending Review"
+          title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_graded')}
         >
           {$questionnaireMetaData.finalTotalGrade}/{$questionnaireMetaData.totalPossibleGrade}
         </span>
