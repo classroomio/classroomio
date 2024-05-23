@@ -755,6 +755,11 @@
       "nav_certificates": "Сертификаты",
       "nav_landing_page": "Целевая страница",
       "nav_settings": "Настройки"
+    },
+    "not_permitted": {
+      "header": "Нет разрешения",
+      "body": "К сожалению, у вас нет доступа к этому курсу.",
+      "button": "Иди домой"
     }
   },
   "courses": {

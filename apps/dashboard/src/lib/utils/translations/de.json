@@ -755,6 +755,11 @@
       "nav_certificates": "Zertifikate",
       "nav_landing_page": "Landingpage",
       "nav_settings": "Einstellungen"
+    },
+    "not_permitted": {
+      "header": "Keine Erlaubnis",
+      "body": "Leider haben Sie keinen Zugriff auf diesen Kurs.",
+      "button": "Nach Hause gehen"
     }
   },
   "courses": {
