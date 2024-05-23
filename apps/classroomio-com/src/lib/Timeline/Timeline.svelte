@@ -2,11 +2,13 @@
   export let items = [];
 </script>
 
-<div class="relative w-fit flex justify-center space-x-5 md:space-x-10">
-  <div class="w-[3px] md:w-[2px] bg-blue-600 mt-10" />
+<div class="relative w-fit flex justify-center space-x-8 md:space-x-10">
+  <div
+    class="w-[3px] md:w-[2px] bg-blue-600 mt-10 before:bg-gradient-to-t before:from-white before:to-transparent before:w-[4px] before:h-[9rem] before:absolute before:bottom-0"
+  />
   <div class="space-y-8">
     {#each items as card, index}
-      <div class="md:w-[40rem] w-full border rounded-md px-4 py-8 space-y-4">
+      <div class="md:w-[35rem] w-full border-2 rounded-lg px-4 py-8 space-y-4 bg-white">
         <div class="flex items-center">
           <div
             class={`z-50 absolute -left-3 ${
@@ -18,7 +20,7 @@
           </div>
           <h1 class="text-2xl font-bold text-blue-800">{card.title}</h1>
         </div>
-        <p class="text-sm text-gray-500">
+        <p class="text-base text-gray-500">
           {card.desc}
         </p>
       </div>
