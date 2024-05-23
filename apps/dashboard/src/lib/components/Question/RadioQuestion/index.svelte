@@ -48,7 +48,7 @@
   function handleFormSubmit(event) {
     if (isPreview) return;
     const value = getRadioVal(event.target, name);
-    onSubmit(name, [value], nextButtonProps.isActive);
+    onSubmit(name, [value]);
     event.target.reset();
   }
 
@@ -136,6 +136,7 @@
         variant={nextButtonProps.isActive ? VARIANTS.CONTAINED : VARIANTS.OUTLINED}
         type="submit"
         label={nextButtonProps.label}
+        isDisabled={nextButtonProps.isDisabled}
         {name}
       />
     </div>

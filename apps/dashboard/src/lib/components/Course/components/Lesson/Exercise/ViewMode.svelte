@@ -14,7 +14,7 @@
   import { removeDuplicate } from '$lib/utils/functions/removeDuplicate';
   import { QUESTION_TYPE } from '$lib/components/Question/constants';
   import { STATUS } from './constants';
-  import { getPropsForQuestion, filterOutDeleted } from './functions';
+  import { getPropsForQuestion, filterOutDeleted, wasCorrectAnswerSelected } from './functions';
   import { formatAnswers, getGroupMemberId } from '$lib/components/Course/function';
   import { submitExercise } from '$lib/utils/services/courses';
   import {
@@ -166,7 +166,7 @@
     handleSubmit({ preventDefault: () => {} });
   }
 
-  async function onSubmit(id, value, moveToNextQuestion = false) {
+  async function onSubmit(id, value) {
     if ($course.type === COURSE_TYPE.SELF_PACED) {
       isLoading = true;
     }
@@ -183,47 +183,62 @@
       [id]: formattedAnswer
     };
 
-    if (moveToNextQuestion) {
-      $questionnaireMetaData.currentQuestionIndex += 1;
-      localStorage.setItem(
-        `autosave-exercise-${exerciseId}`,
-        JSON.stringify($questionnaireMetaData)
-      );
-    }
+    const isCorrect = wasCorrectAnswerSelected(currentQuestion, $questionnaireMetaData.answers);
+    console.log({ isCorrect });
 
-    const isFinished = !questions[$questionnaireMetaData.currentQuestionIndex - 1];
+    const isFinished = !questions[$questionnaireMetaData.currentQuestionIndex];
     console.log(`isFinished`, isFinished);
     console.log(
       `$questionnaireMetaData.currentQuestionIndex`,
       $questionnaireMetaData.currentQuestionIndex
     );
 
-    // If last question send to server
-    if (isFinished) {
-      localStorage.removeItem(`autosave-exercise-${exerciseId}`);
-      $questionnaireMetaData.status = 1;
-      $questionnaireMetaData.totalPossibleGrade = getTotalPossibleGrade($questionnaire.questions);
-      $questionnaireMetaData.grades = {};
+    if (isCorrect) {
+      setTimeout(async () => {
+        $questionnaireMetaData.currentQuestionIndex += 1;
+        localStorage.setItem(
+          `autosave-exercise-${exerciseId}`,
+          JSON.stringify($questionnaireMetaData)
+        );
 
-      $questionnaireMetaData.comment = '';
-      let response = await submitExercise(
-        $questionnaireMetaData.answers,
-        questions,
-        exerciseId,
-        $course.id,
-        getGroupMemberId($group.people, $profile.id)
-      );
-      if (response) {
-        submissionResponse = response;
-        submissionId = submissionResponse.submission[0]?.id;
-      }
+        // If last question send to server
+        if (isFinished) {
+          localStorage.removeItem(`autosave-exercise-${exerciseId}`);
+          $questionnaireMetaData.status = 1;
+          $questionnaireMetaData.totalPossibleGrade = getTotalPossibleGrade(
+            $questionnaire.questions
+          );
+          $questionnaireMetaData.grades = {};
 
-      if ($course.type === COURSE_TYPE.SELF_PACED) {
-        automaticGrading($questionnaireMetaData, $questionnaire.questions);
-      }
+          $questionnaireMetaData.comment = '';
+          let response = await submitExercise(
+            $questionnaireMetaData.answers,
+            questions,
+            exerciseId,
+            $course.id,
+            getGroupMemberId($group.people, $profile.id)
+          );
+          if (response) {
+            submissionResponse = response;
+            submissionId = submissionResponse.submission[0]?.id;
+          }
 
-      notifyEducator();
+          if ($course.type === COURSE_TYPE.SELF_PACED) {
+            automaticGrading($questionnaireMetaData, $questionnaire.questions);
+          }
+
+          notifyEducator();
+        }
+      }, 1000);
     }
+
+    // if (moveToNextQuestion) {
+    //   $questionnaireMetaData.currentQuestionIndex += 1;
+    //   localStorage.setItem(
+    //     `autosave-exercise-${exerciseId}`,
+    //     JSON.stringify($questionnaireMetaData)
+    //   );
+    // }
   }
 
   function onPrevious() {
