@@ -1,6 +1,7 @@
 <script>
   import PageHeader from '$lib/PageHeader/PageHeader.svelte';
   import Timeline from '$lib/Timeline/Timeline.svelte';
+  import PageSignupCTA from '$lib/PageSignupCTA/index.svelte';
 
   let newFeatures = [
     {
@@ -17,7 +18,7 @@
     },
     {
       title: 'LMS Customization',
-      desc: 'Meet our LMS newsfeed centralizes updates, announcements, and interactions, enhancing communication, engagement, and real-time access to course information.'
+      desc: "LMS customization allows educators and administrators to tailor the platform's features, interface, and content to meet specific educational needs and preferences."
     },
     {
       title: 'More certificate option',
@@ -45,10 +46,10 @@
   <title>Roadmap | ClassroomIO</title>
 </svelte:head>
 <PageHeader
-  className="h-screen flex flex-col items-center justify-center   space-y-10 bg-[#F5F8FE]"
+  className="h-screen flex flex-col items-start px-8 md:items-center justify-center space-y-10 bg-[#F5F8FE]"
 >
-  <h1 class="text-center text-5xl md:text-7xl font-bold">Roadmap</h1>
-  <p class="text-center w-[80%] md:w-[40%] text-gray-500">
+  <h1 class="text-start md:text-center text-5xl md:text-7xl font-bold">Roadmap</h1>
+  <p class="text-start md:text-center w-[80%] md:w-[40%] text-gray-500">
     This is a live document, and will be updated regularly. To submit an idea, or to view a list of
     feature requests and ideas that we're considering, check out our <a
       href="https://github.com/rotimi-best/classroomio/discussion"
@@ -79,19 +80,11 @@
 </section>
 
 <section class="flex items-center justify-center py-16">
-  <div
-    class="w-[70%] flex flex-col xl:flex-row gap-y-8 text-center xl:text-start rounded-lg p-8 items-center justify-between bg-blue-800"
-  >
-    <div class="flex flex-col justify-between items-center xl:items-start space-y-8">
-      <h1 class="text-white text-2xl md:text-4xl font-semibold md:font-bold">
-        Launch Your Online Bootcamp In Minutes
-      </h1>
-      <p class="text-white text-base md:text-xl font-light">
-        Meet a better collaboration tool for teachers and students
-      </p>
-    </div>
-    <button class="bg-white text-base px-12 py-4 rounded-lg whitespace-nowrap font-semibold">
-      Get started for free
-    </button>
-  </div>
+  <PageSignupCTA
+    header="  Launch Your Online Bootcamp In Minutes"
+    subText="Meet a better collaboration tool for teachers and students."
+    btnLabel="Get started for free"
+    link="/signup"
+    demo={false}
+  />
 </section>
