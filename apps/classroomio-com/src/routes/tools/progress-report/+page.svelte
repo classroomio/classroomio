@@ -1,0 +1,294 @@
+<script lang="ts">
+  import { toPng } from 'html-to-image';
+  import Mood from './components/Mood.svelte';
+  import {
+    openMoodModal,
+    openAvatarModal,
+    openBackgroundModal,
+    htmlBody,
+    nodeStore,
+    type HtmlBody
+  } from './components/store';
+  import ToolsHeader from '$lib/ToolsHeader/ToolsHeader.svelte';
+  import Avatar from './components/Avatar.svelte';
+  import Background from './components/Background.svelte';
+  import Report from './components/Report.svelte';
+  import FullView from './components/FullView.svelte';
+
+  function handleInputChange(event: any, property: keyof HtmlBody) {
+    $htmlBody[property] = event.target.value;
+  }
+
+  function convertToPng() {
+    if ($nodeStore) {
+      toPng($nodeStore)
+        .then((dataUrl) => {
+          const link = document.createElement('a');
+          link.download = 'my-image.png';
+          link.href = dataUrl;
+          // link.href = imageUrl;
+          link.click();
+          console.log('dataUrl', dataUrl);
+
+          console.log('link', link);
+        })
+        .catch((error) => {
+          console.error('Oops, something went wrong!', error);
+        });
+    } else {
+      console.error('Node is not defined');
+    }
+  }
+
+  function shareOnTwitter() {
+    if ($nodeStore) {
+      toPng($nodeStore)
+        .then((dataUrl) => {
+          const imageUrl = dataUrl;
+          window.open(
+            `http://twitter.com/share?text=Im Sharing on Twitter&url=${imageUrl}&hashtags=classroomIO,progressReport`
+          );
+        })
+        .catch((error) => {
+          console.error('Oops, something went wrong!', error);
+        });
+    } else {
+      console.error('Node is not defined');
+    }
+  }
+</script>
+
+<svelte:head>
+  <title>Random Name Picker | ClassroomIO</title>
+  <meta
+    property="og:image"
+    itemprop="image"
+    content="https://brand.cdn.clsrio.com/og/free-tools.png"
+  />
+  <meta property="og:title" content="Random Name Picker | ClassroomIO" />
+  <meta
+    property="og:description"
+    content="Use this online name picker to draw a random name from a list of names for your online or physical classroom."
+  />
+
+  <meta
+    property="og:image:secure_url"
+    itemprop="image"
+    content="https://brand.cdn.clsrio.com/og/free-tools.png"
+  />
+
+  <meta name="twitter:title" content="Random Name Picker | ClassroomIO" />
+  <meta
+    name="twitter:description"
+    content="Use this online name picker to draw a random name from a list of names for your online or physical classroom."
+  />
+  <meta name="twitter:image" content="https://brand.cdn.clsrio.com/og/free-tools.png" />
+</svelte:head>
+
+<section class="mt-[30%] px-5 md:px-0 md:mt-[5%]">
+  <ToolsHeader>
+    <img
+      src="/free-tools/progress-report.svg"
+      class="w-[15%] md:w-[5%] mx-auto border rounded-full"
+      alt=""
+    />
+    <h1 class="text-4xl md:text-6xl font-bold text-[#040F2D] my-3">Progress Report</h1>
+    <p class="text-[13px] text-[#656565] font-light md:font-normal md:w-[45%] mx-auto">
+      Generate cool reports & monitor progress in real-time. Share reports with your network for
+      collaborative learning
+    </p>
+  </ToolsHeader>
+
+  <Avatar />
+  <Mood />
+  <Background />
+  <FullView />
+
+  <div
+    class="border rounded-md w-full md:w-[80%] lg:w-[60%] my-10 mx-auto shadow-md flex md:flex-row flex-col justify-between"
+  >
+    <div class="w-[48%] p-5">
+      <div>
+        <p class="text-sm text-[#656565]">Add your name</p>
+        <input
+          type="text"
+          bind:value={$htmlBody.name}
+          on:input={(event) => handleInputChange(event, 'name')}
+          placeholder="Enter your name here"
+          class="w-full border my-3 py-2 px-3 outline-none rounded-sm bg-[#F1F2F4] text-xs placeholder:text-sm placeholder:text-[#ADADAD]"
+        />
+      </div>
+
+      <div class="mt-3">
+        <p class="text-sm text-[#656565]">What are you learning?</p>
+        <textarea
+          bind:value={$htmlBody.learning}
+          on:input={(event) => handleInputChange(event, 'learning')}
+          placeholder="Tell us what you are learning"
+          class="w-full h-[17vh] border my-3 py-2 px-3 outline-none rounded-sm bg-[#F1F2F4] text-sm placeholder:text-sm placeholder:text-[#ADADAD]"
+        ></textarea>
+      </div>
+
+      <div class="mt-3">
+        <p class="text-sm text-[#656565] pb-4">Estimate your progress</p>
+        <div class="flex justify-between items-center">
+          <input
+            type="range"
+            min="0"
+            max="100"
+            bind:value={$htmlBody.progress}
+            class="range-input"
+            on:input={(event) => handleInputChange(event, 'progress')}
+            style="background: linear-gradient(to right, #0F62FE {$htmlBody.progress}%, #ccc {$htmlBody.progress}%);"
+          />
+          <p class="text-sm font-semibold">{$htmlBody.progress}%</p>
+        </div>
+      </div>
+
+      <div class="mt-5">
+        <p class="text-sm text-[#656565]">Select your mood</p>
+        <button
+          type="button"
+          on:click={openMoodModal}
+          class="w-full text-left border my-3 py-2 px-3 outline-none rounded-sm bg-[#F1F2F4] text-gray-400 text-sm"
+          >What feeling describes you?</button
+        >
+      </div>
+
+      <div class="flex justify-between items-center mt-3">
+        <div class="w-2/4">
+          <p class="text-sm text-[#656565]">Choose your avatar</p>
+          <button
+            type="button"
+            on:click={openAvatarModal}
+            class="bg-[#F7F7F7] py-1.5 mt-3 flex w-[65%] items-center justify-center gap-2"
+          >
+            <img
+              src="/free-tools/progress-report/choose-your-avatar.svg"
+              alt="An avatar"
+              class="w-[30%]"
+            />
+            <img
+              src="/free-tools/progress-report/question-mark.svg"
+              alt="A question mark"
+              class="w-[30%]"
+            />
+          </button>
+        </div>
+
+        <div class="w-2/4">
+          <p class="text-sm text-[#656565]">Choose your background</p>
+          <button
+            type="button"
+            on:click={openBackgroundModal}
+            class="bg-[#F7F7F7] py-1.5 mt-3 flex w-[65%] items-center justify-center gap-2"
+          >
+            <img
+              src="/free-tools/progress-report/choose-your-background.svg"
+              alt="An avatar"
+              class="w-[30%]"
+            />
+            <img
+              src="/free-tools/progress-report/question-mark.svg"
+              alt="A question mark"
+              class="w-[30%]"
+            />
+          </button>
+        </div>
+      </div>
+
+      <!--  -->
+    </div>
+
+    <!--  -->
+    <div class="w-[48%] p-5 border-l">
+      <Report />
+
+      <!--  -->
+      <div class="mt-9 pt-8 px-2 h-auto border-t">
+        <button
+          type="button"
+          on:click={convertToPng}
+          class="bg-[#0233BD] text-white text-xs font-semibold w-full py-3 rounded-md"
+          >Download Image</button
+        >
+
+        <div class="w-[70%] mx-auto mt-5">
+          <h1 class="text-sm font-semibold text-center">Share on image on social media:</h1>
+
+          <div class="flex justify-between border rounded-xl w-[80%] px-5 py-2 mt-2 mx-auto">
+            <button type="button" class="w-5 hover:scale-[1.2] transition-all duration-300">
+              <img src="/free-tools/progress-report/instagram.svg" alt="Instagram" />
+            </button>
+            <button type="button" class="w-5 hover:scale-[1.2] transition-all duration-300">
+              <img src="/free-tools/progress-report/linkedin.svg" alt="Instagram" />
+            </button>
+            <button
+              type="button"
+              on:click={shareOnTwitter}
+              class="w-5 hover:scale-[1.2] transition-all duration-300"
+            >
+              <img src="/free-tools/progress-report/x.svg" alt="Instagram" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .range-input {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 80%;
+    cursor: pointer;
+    outline: none;
+    border-radius: 15px;
+    height: 1rem;
+  }
+
+  .range-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 1.5rem;
+    width: 1.5rem;
+    background-color: #0f62fe;
+    border-radius: 50%;
+    border: none;
+    transition: 0.2s ease-in-out;
+  }
+
+  .range-input::-moz-range-thumb {
+    height: 1rem;
+    width: 1rem;
+    background-color: yellow;
+    border-radius: 50%;
+    transition: 0.2s ease-in-out;
+  }
+
+  .range-input:active::-webkit-slider-thumb {
+    border: 3px solid #fff;
+    filter: drop-shadow(0px 1px 1px #000000);
+  }
+
+  .range-input:focus::-webkit-slider-thumb {
+    border: 3px solid #fff;
+    filter: drop-shadow(0px 1px 1px #000000);
+  }
+
+  .range-input::-moz-range-thumb:hover {
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 10px rgba(255, 85, 0, 0.1);
+  }
+
+  .range-input:active::-moz-range-thumb {
+    border: 3px solid #fff;
+    filter: drop-shadow(0px 1px 1px #000000);
+  }
+
+  .range-input:focus::-moz-range-thumb {
+    border: 3px solid #fff;
+    filter: drop-shadow(0px 1px 1px #000000);
+  }
+</style>

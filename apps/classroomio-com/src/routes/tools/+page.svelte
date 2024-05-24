@@ -3,6 +3,13 @@
 
   const tools = [
     {
+      src: '/free-tools/progress-report.svg',
+      title: 'Progress Report',
+      subText: 'Monitor your progress with a system to check and share your progress with others',
+      slug: 'progress-report',
+      show: true
+    },
+    {
       src: '/free-tools/name-picker.svg',
       title: 'Random Name Picker',
       subText: 'Effortlessly choose names for class participation or group activities',
@@ -24,14 +31,6 @@
         "More than just a game; it's an educational tool that teaches pattern recognition, and decision-making.",
       slug: 'tic-tac-toe',
       show: true
-    },
-    {
-      src: '/free-tools/question-of-the-day.svg',
-      title: 'Question of the day ',
-      subText:
-        "Find thought-provoking 'Question of the Day' to spark discussions and promote critical thinking",
-      slug: 'question-of-the-day',
-      show: false
     },
     {
       src: '/free-tools/waec.svg',
@@ -62,16 +61,16 @@
         fun for students and educator looking for engaging resources.
       </p>
 
-      <div class="flex relative md:w-[50%] my-3 md:mt-10 mx-auto">
+      <div class="flex relative w-[90%] md:w-[50%] my-3 md:mt-10 mx-auto">
         <!-- <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-0 z-0"
           src="/free-tools/waec.svg"
           alt="Waec logo"
         /> -->
         <img
-          class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[50px] z-10"
-          src="/free-tools/question-of-the-day.svg"
-          alt="Question of the day logo"
+          class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[55px] z-10"
+          src="/free-tools/progress-report.svg"
+          alt="Progress Report"
         />
         <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[100px] z-20"
