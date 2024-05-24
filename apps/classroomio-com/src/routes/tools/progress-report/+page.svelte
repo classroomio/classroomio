@@ -15,8 +15,15 @@
   import Report from './components/Report.svelte';
   import FullView from './components/FullView.svelte';
 
+  const MAX_CHARS = 164;
+  let remainingChars = MAX_CHARS;
+
   function handleInputChange(event: any, property: keyof HtmlBody) {
     $htmlBody[property] = event.target.value;
+
+    if (property === 'learning') {
+      remainingChars = MAX_CHARS - event.target.value.length;
+    }
   }
 
   function convertToPng() {
@@ -123,10 +130,12 @@
         <p class="text-sm text-[#656565]">What are you learning?</p>
         <textarea
           bind:value={$htmlBody.learning}
+          maxlength={MAX_CHARS}
           on:input={(event) => handleInputChange(event, 'learning')}
           placeholder="Tell us what you are learning"
           class="w-full h-[17vh] border my-3 py-2 px-3 outline-none rounded-sm bg-[#F1F2F4] text-sm placeholder:text-sm placeholder:text-[#ADADAD]"
         ></textarea>
+        <p class="text-xs text-right text-[#656565]">{remainingChars} characters remaining</p>
       </div>
 
       <div class="mt-3">

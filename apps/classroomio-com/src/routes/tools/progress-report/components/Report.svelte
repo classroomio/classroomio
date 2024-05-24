@@ -40,7 +40,7 @@
   {/if}
 
   <div class="absolute top-[18%] left-[20%] rounded-lg shadow-md bg-white z-20 w-[61%] h-[33vh]">
-    <div class="relative w-full h-full flex flex-col justify-center items-center px-5">
+    <div class="relative w-full h-full flex flex-col justify-center items-center px-2">
       {#if $htmlBody.avatar}
         <img
           src="/free-tools/progress-report/avatars/{$htmlBody.avatar}.svg"
@@ -55,25 +55,33 @@
         />
       {/if}
 
-      <p
-        class="px-3 py-0.5 border border-[#EDEDED] bg-[#F1F6FF] rounded-2xl mt-3 font-medium text-[9px]"
-      >
-        {$htmlBody.name != '' ? $htmlBody.name : 'Add your name'}
-      </p>
+      {#if $htmlBody.name}
+        <div
+          class="px-3 py-0.5 border border-[#EDEDED] bg-[#F1F6FF] rounded-2xl -mt-1 font-medium text-[9px] flex items-center justify-between"
+        >
+          <span class="mr-0.5">{$htmlBody.name}</span>
+
+          {#if $htmlBody.mood.text != ''}
+            <span class="flex gap-1 items-center">
+              <p class="font-semibold text-[9px]">is {$htmlBody.mood.text}</p>
+              <img
+                src="/free-tools/progress-report/emojis/{$htmlBody.mood.iconSrc}.png"
+                alt={$htmlBody.mood.text}
+                class="w-3"
+              />
+            </span>
+          {/if}
+        </div>
+      {:else}
+        <p
+          class="px-3 py-0.5 border border-[#EDEDED] bg-[#F1F6FF] rounded-2xl mt-3 font-medium text-[9px]"
+        >
+          Add your name
+        </p>
+      {/if}
 
       {#if $htmlBody.mood.text === ''}
         <p class="text-[10px] my-2">Add your mood</p>
-      {:else}
-        <div
-          class="my-2 flex gap-3 items-center shadow-sm rounded-full px-4 py-1 bg-[#F1F6FF] hover:bg-[#0233BD] hover:text-white transition-all duration-700"
-        >
-          <p class="font-semibold text-[9px]">{$htmlBody.mood.text}</p>
-          <img
-            src="/free-tools/progress-report/emojis/{$htmlBody.mood.iconSrc}.png"
-            alt={$htmlBody.mood.text}
-            class="w-4"
-          />
-        </div>
       {/if}
 
       <span
@@ -81,7 +89,7 @@
         tabindex={0}
         contenteditable
         bind:textContent={$htmlBody.learning}
-        class="w-full p-1 overflow-hidden text-[10px] text-center block outline-none h-[10vh]"
+        class="w-full mt-2 p-1 overflow-hidden text-[10px] text-center block outline-none h-[10vh]"
       ></span>
 
       <div class="flex flex-col justify-center items-center">
