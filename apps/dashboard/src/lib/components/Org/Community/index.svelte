@@ -13,6 +13,7 @@
   import { profile } from '$lib/utils/store/user';
   import { Search, Dropdown } from 'carbon-components-svelte';
   import { t } from '$lib/utils/functions/translations';
+  import { courses } from '$lib/components/Courses/store';
 
   export let isLMS = false;
 
@@ -26,8 +27,12 @@
     if (!orgId || !profileId) return;
     isLoading = true;
 
-    const courseResult = (await fetchCourses(profileId, orgId)) || { allCourses: [] };
-    allCourses = courseResult.allCourses;
+    if ($courses.length) {
+      allCourses = [...$courses];
+    } else {
+      const courseResult = (await fetchCourses(profileId, orgId)) || { allCourses: [] };
+      allCourses = courseResult.allCourses;
+    }
 
     const courseIds = allCourses.map((course) => course.id);
     const courseIdsFilter = `(${courseIds.join(',')})`;

@@ -13,7 +13,9 @@
   import TextField from '$lib/components/Form/TextField.svelte';
   import { profile } from '$lib/utils/store/user';
   import { fetchCourses } from '$lib/components/Courses/api';
-  import { t } from '$lib/utils/functions/translations.js';
+  import { t } from '$lib/utils/functions/translations';
+  import { courses } from '$lib/components/Courses/store';
+  import type { Course } from '$lib/utils/types';
 
   let errors: {
     title?: string;
@@ -25,9 +27,14 @@
     courseId: ''
   };
 
-  let fetchedCourses: any[] = [];
+  let fetchedCourses: Course[] = [];
 
   async function getCourses(userId: string | null, orgId: string) {
+    if ($courses.length) {
+      fetchedCourses = [...$courses];
+      return;
+    }
+
     const coursesResults = await fetchCourses(userId, orgId);
     if (!coursesResults) return;
 

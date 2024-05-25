@@ -14,7 +14,7 @@ export const defaultCurrentOrgState: CurrentOrg = {
   siteName: '',
   avatar_url: '',
   memberId: '',
-  role_id: '',
+  role_id: 3,
   landingpage: {},
   customization: {
     apps: { poll: true, comments: true },
@@ -29,10 +29,8 @@ export const orgs = writable<CurrentOrg[]>([]);
 export const currentOrg: Writable<CurrentOrg> = writable(defaultCurrentOrgState);
 export const orgAudience = writable<OrgAudience[]>([]);
 export const orgTeam = writable<OrgTeamMember[]>([]);
-export const isOrgAdmin = derived(
-  currentOrg,
-  ($currentOrg) => parseInt($currentOrg.role_id) === ROLE.ADMIN
-);
+export const isOrgAdmin = derived(currentOrg, ($currentOrg) => $currentOrg.role_id === ROLE.ADMIN);
+
 export const currentOrgPlan = derived(currentOrg, ($currentOrg) =>
   $currentOrg.organization_plan.find((p) => p.is_active)
 );
