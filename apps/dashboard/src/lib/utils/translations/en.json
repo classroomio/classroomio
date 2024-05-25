@@ -499,8 +499,8 @@
           "modal_heading": "Add New Lesson",
           "lesson_title": "Lesson Title",
           "click_to": "Click to",
-          "lock": "lock",
-          "unlock": "unlock",
+          "lock": "Lock",
+          "unlock": "Unlock",
           "fullname": "fullname",
           "save": "Save",
           "edit": "Edit",
@@ -629,6 +629,7 @@
             "order_questions": "Order questions",
             "write_your_answer": "Write your answer",
             "write_your_answer_here": "Write your answer here",
+            "no_answer": "No answer was provided",
             "write_your_question_here": "Write your question here",
             "write_your_title": "Write your title here",
             "write_your_subtitle": "Write your subtitle here",
@@ -645,6 +646,7 @@
             "previous": "Previous",
             "finish": "Finish",
             "next": "Next",
+            "check": "Check",
             "description": {
               "title": "Title",
               "heading": "Description",
@@ -684,7 +686,11 @@
               "no_description": "No description",
               "start": "Start",
               "graded": "Graded",
-              "pending": "Pending"
+              "pending": "Pending",
+              "submitted": "Submitted",
+              "status_pending": "Status: Pending Review",
+              "status_graded": "Status: Review Completed",
+              "status_submitted": "Status: Submitted"
             },
             "analytics": {
               "summary": {

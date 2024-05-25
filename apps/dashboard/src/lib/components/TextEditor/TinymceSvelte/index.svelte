@@ -76,8 +76,12 @@
 
   $: {
     if (editorRef && lastVal !== value) {
-      editorRef.setContent(value);
-      text = editorRef.getContent({ format: 'text' });
+      try {
+        editorRef.setContent(value);
+        text = editorRef.getContent({ format: 'text' });
+      } catch (error) {
+        console.error('Error setting default value', error);
+      }
     }
     if (editorRef && disabled !== disablindCache) {
       disablindCache = disabled;

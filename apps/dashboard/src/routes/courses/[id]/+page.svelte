@@ -228,7 +228,7 @@
     const roles: number[] = [1, 2];
 
     if (org.customization.course.newsfeed) {
-      roles.concat([3]);
+      roles.push(3);
     }
 
     return roles;

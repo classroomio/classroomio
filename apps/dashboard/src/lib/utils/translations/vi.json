@@ -582,7 +582,11 @@
               "no_description": "Không có mô tả",
               "start": "Bắt đầu",
               "graded": "Đã chấm điểm",
-              "pending": "Chưa giải quyết"
+              "pending": "Chưa giải quyết",
+              "submitted": "Đã gửi",
+              "status_pending": "Trạng thái: Đang chờ xem xét",
+              "status_graded": "Trạng thái: Đánh giá đã hoàn thành",
+              "status_submitted": "Trạng thái: Đã gửi"
             },
             "edit_mode": {
               "delete_modal": "Xóa phương thức",
@@ -611,7 +615,9 @@
               "heading": "Sự miêu tả",
               "describe": "Mô tả bài tập cho học sinh của bạn",
               "no": "Không có mô tả"
-            }
+            },
+            "no_answer": "Không có câu trả lời nào được đưa ra",
+            "check": "Kiểm tra"
           },
           "new_exercise_modal": {
             "heading": "Bài tập mới",
@@ -709,12 +715,12 @@
           "modal_heading": "Thêm bài học mới",
           "lesson_title": "Tiêu đề bài học",
           "click_to": "Bấm vào để",
-          "lock": "khóa",
-          "unlock": "mở khóa",
           "fullname": "Họ và tên",
           "save": "Cứu",
           "edit": "Biên tập",
-          "delete": "Xóa bỏ"
+          "delete": "Xóa bỏ",
+          "lock": "Khóa",
+          "unlock": "Mở khóa"
         },
         "disabled": "Tính năng bị vô hiệu hóa"
       },

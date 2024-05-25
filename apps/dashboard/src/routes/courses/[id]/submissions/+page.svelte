@@ -208,7 +208,6 @@
 
       return true;
     });
-    console.log(`itemToWithNewStatus`, itemToWithNewStatus);
     // Move to right column
     if (itemToWithNewStatus) {
       sections[nextStatusId - 1].items = [...sections[nextStatusId - 1].items, itemToWithNewStatus];
@@ -245,7 +244,6 @@
       const questionAnswer = questionAnswers.find(
         (answer: { question_id: string }) => answer.question_id == questionId
       );
-      console.log('this is the question answer in the admin side', questionAnswer);
       const point = questionAnswerByPoint[questionId];
 
       totalPoints += parseInt(point, 10);

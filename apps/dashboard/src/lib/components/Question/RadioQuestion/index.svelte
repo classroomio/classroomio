@@ -7,6 +7,8 @@
   import Grade from '$lib/components/Question/Grade.svelte';
   import { t } from '$lib/utils/functions/translations';
   import ReasonBox from '../ReasonBox.svelte';
+  import { COURSE_TYPE } from '$lib/utils/types';
+  import { course } from '$lib/components/Course/store';
 
   export let title = '';
   export let index = 1;
@@ -20,6 +22,7 @@
   export let disabled = false;
   export let isPreview = false;
   export let nextButtonProps = {};
+  export let isLast = false;
   export let grade: number;
   export let gradeMax = 0;
   export let disableGrading = false;
@@ -135,7 +138,9 @@
       <PrimaryButton
         variant={nextButtonProps.isActive ? VARIANTS.CONTAINED : VARIANTS.OUTLINED}
         type="submit"
-        label={nextButtonProps.label}
+        label={isLast
+          ? $t('course.navItem.lessons.exercises.all_exercises.finish')
+          : $t('course.navItem.lessons.exercises.all_exercises.next')}
         isDisabled={nextButtonProps.isDisabled}
         {name}
       />

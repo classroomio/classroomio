@@ -582,7 +582,11 @@
               "no_description": "Sem descrição",
               "start": "Começar",
               "graded": "Classificado",
-              "pending": "Pendente"
+              "pending": "Pendente",
+              "submitted": "Submetido",
+              "status_pending": "Status: revisão pendente",
+              "status_graded": "Status: Revisão concluída",
+              "status_submitted": "Status: Enviado"
             },
             "edit_mode": {
               "delete_modal": "Excluir Modal",
@@ -611,7 +615,9 @@
               "heading": "Descrição",
               "describe": "Descreva o exercício para seu aluno",
               "no": "Sem descrição"
-            }
+            },
+            "no_answer": "Nenhuma resposta foi fornecida",
+            "check": "Verificar"
           },
           "new_exercise_modal": {
             "heading": "Novo exercício",
@@ -709,12 +715,12 @@
           "modal_heading": "Adicionar nova lição",
           "lesson_title": "Título da lição",
           "click_to": "Clique para",
-          "lock": "trancar",
-          "unlock": "desbloquear",
           "fullname": "nome completo",
           "save": "Salvar",
           "edit": "Editar",
-          "delete": "Excluir"
+          "delete": "Excluir",
+          "lock": "Trancar",
+          "unlock": "Desbloquear"
         },
         "disabled": "O recurso está desativado"
       },

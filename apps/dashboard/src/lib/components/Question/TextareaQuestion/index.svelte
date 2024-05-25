@@ -7,6 +7,8 @@
   import Grade from '$lib/components/Question/Grade.svelte';
   import { t } from '$lib/utils/functions/translations';
   import ReasonBox from '../ReasonBox.svelte';
+  import { course } from '$lib/components/Course/store';
+  import { COURSE_TYPE } from '$lib/utils/types';
 
   export let title = '';
   export let index = 1;
@@ -76,7 +78,9 @@
   <div class="ml-4">
     {#if disabled}
       <div class="bg-gray-200 dark:bg-gray-500 py-3 px-5 rounded-md mb-3">
-        {defaultValue}
+        {defaultValue === ''
+          ? $t('course.navItem.lessons.exercises.all_exercises.no_answer')
+          : defaultValue}
       </div>
       {#if gradeWithAI}
         <ReasonBox {reason} {isLoading} {acceptGrade} {rejectGrade} />
@@ -95,7 +99,7 @@
       <PrimaryButton
         variant={VARIANTS.OUTLINED}
         onClick={handlePrevious}
-        label="Previous"
+        label={$t('course.navItem.lessons.exercises.all_exercises.previous')}
         isDisabled={disablePreviousButton}
       />
       <PrimaryButton

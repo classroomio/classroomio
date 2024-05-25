@@ -582,7 +582,11 @@
               "no_description": "Pas de description",
               "start": "Commencer",
               "graded": "Noté",
-              "pending": "En attente"
+              "pending": "En attente",
+              "submitted": "Soumis",
+              "status_pending": "Statut : En attente d'examen",
+              "status_graded": "Statut : Examen terminé",
+              "status_submitted": "Statut : Soumis"
             },
             "edit_mode": {
               "delete_modal": "Supprimer le modal",
@@ -611,7 +615,9 @@
               "heading": "Description",
               "describe": "Décrivez l'exercice à votre élève",
               "no": "Pas de description"
-            }
+            },
+            "no_answer": "Aucune réponse n'a été fournie",
+            "check": "Vérifier"
           },
           "new_exercise_modal": {
             "heading": "Nouvel exercice",
@@ -709,12 +715,12 @@
           "modal_heading": "Ajouter une nouvelle leçon",
           "lesson_title": "Titre de la leçon",
           "click_to": "Cliquez pour",
-          "lock": "verrouillage",
-          "unlock": "ouvrir",
           "fullname": "nom et prénom",
           "save": "Sauvegarder",
           "edit": "Modifier",
-          "delete": "Supprimer"
+          "delete": "Supprimer",
+          "lock": "Verrouillage",
+          "unlock": "Ouvrir"
         },
         "disabled": "La fonctionnalité est désactivée"
       },
