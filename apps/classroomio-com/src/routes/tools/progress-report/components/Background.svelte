@@ -3,7 +3,7 @@
 
   let backgrounds = [
     {
-      src: 'blue_tertiary_background'
+      src: 'blue_tetiary_background'
     },
     {
       src: 'blue_secondary_background'
@@ -12,7 +12,7 @@
       src: 'blue_primary_background'
     },
     {
-      src: 'purple_tertiary_background'
+      src: 'purple_tetiary_background'
     },
     {
       src: 'purple_secondary_background'
@@ -21,7 +21,7 @@
       src: 'purple_primary_background'
     },
     {
-      src: 'black_tertiary_background'
+      src: 'black_tetiary_background'
     },
     {
       src: 'black_secondary_background'
@@ -30,7 +30,7 @@
       src: 'black_primary_background'
     },
     {
-      src: 'yellow_tertiary_background'
+      src: 'yellow_tetiary_background'
     },
     {
       src: 'yellow_secondary_background'
@@ -49,7 +49,7 @@
   <div class="relative">
     <div class="fixed z-[3000] top-0 left-0 w-full h-full bg-black opacity-[0.7]"></div>
     <div
-      class="fixed top-[5%] left-[35%] z-[3001] md:w-[35%] bg-white rounded-md mx-auto py-6 px-7"
+      class="fixed top-[20%] left-10 md:left-[30%] z-[3001] w-[80%] md:w-[38%] h-full max-h-[60vh] overflow-hidden bg-white rounded-md mx-auto py-6 px-7"
     >
       <!--  -->
       <div class="flex justify-between">
@@ -63,7 +63,10 @@
         </button>
       </div>
 
-      <div class="flex flex-wrap justify-between gap-y-3 mt-3">
+      <!--  -->
+      <div
+        class="flex flex-wrap justify-between gap-y-3 mt-3 overflow-y-auto overflow-x-hidden h-[85%]"
+      >
         {#each backgrounds as background}
           <button
             on:click={() => {
@@ -73,7 +76,7 @@
             class="flex w-[30%] items-center shadow-sm hover:scale-110 transition-all duration-300"
           >
             <img
-              src="/free-tools/progress-report/backgrounds/{background.src}.webp"
+              src="https://assets.cdn.clsrio.com/progress-report/backgrounds/{background.src}.png"
               alt=""
               class=""
             />

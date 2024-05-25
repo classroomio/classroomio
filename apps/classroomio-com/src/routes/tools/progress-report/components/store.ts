@@ -1,4 +1,3 @@
-import { toPng } from 'html-to-image';
 import { writable } from 'svelte/store';
 import type {Writable} from 'svelte/store'
 
@@ -26,7 +25,7 @@ export interface HtmlBody {
   }
 }
 
-// html
+// report html
 export const htmlBody: Writable<HtmlBody> = writable({
   name: "",
   learning: "Tell us what you are learning",
@@ -38,6 +37,9 @@ export const htmlBody: Writable<HtmlBody> = writable({
     iconSrc: ""
   }
 })
+
+// store for the node binded to the report component for the component to image conversion
+export const nodeStore = writable(null);
 
 export const OpenMood: Writable<Modal> = writable({
   open: false
@@ -114,5 +116,3 @@ export function toggleFullscreenModal() {
     return store;
   });
 }
-
-export const nodeStore = writable(null);

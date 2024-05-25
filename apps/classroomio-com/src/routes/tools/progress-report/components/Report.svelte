@@ -6,7 +6,8 @@
   $: nodeStore.set(node);
 </script>
 
-<div class="h-[50vh] w-full border relative" bind:this={node}>
+<div class="md:h-[50vh] w-full border relative" bind:this={node}>
+  <!-- fullscreen button -->
   {#if $OpenFullscreen.open}
     <button
       type="button"
@@ -25,52 +26,55 @@
     </button>
   {/if}
 
+  <!-- background image -->
   {#if $htmlBody.background}
     <img
-      src="/free-tools/progress-report/backgrounds/{$htmlBody.background}.webp"
+      src="https://assets.cdn.clsrio.com/progress-report/backgrounds/{$htmlBody.background}.png"
       alt=""
       class="absoute z-10 h-full w-full object-cover"
     />
   {:else}
     <img
-      src="/free-tools/progress-report/background-icon.svg"
+      src="https://assets.cdn.clsrio.com/progress-report/backgrounds/blue_tetiary_background.png"
       alt=""
       class="absoute z-10 h-full w-full object-cover"
     />
   {/if}
 
-  <div class="absolute top-[18%] left-[20%] rounded-lg shadow-md bg-white z-20 w-[61%] h-[33vh]">
+  <div
+    class="absolute top-[18%] left-[20%] rounded-lg shadow-md bg-white z-20 w-[61%] h-[65%] md:h-[33vh]"
+  >
     <div class="relative w-full h-full flex flex-col justify-center items-center px-2">
+      <!-- avatar -->
       {#if $htmlBody.avatar}
         <img
-          src="/free-tools/progress-report/avatars/{$htmlBody.avatar}.svg"
+          src="https://assets.cdn.clsrio.com/progress-report/avatars/{$htmlBody.avatar}.svg"
           alt=""
           class="absolute top-0 w-[33%] ml-2 -mt-[2.5rem]"
         />
       {:else}
         <img
-          src="/free-tools/progress-report/avatars/avatar_l.svg"
+          src="https://assets.cdn.clsrio.com/progress-report/avatars/avatar_l.svg"
           alt=""
           class="absolute top-0 w-[33%] ml-2 -mt-[2.5rem]"
         />
       {/if}
 
-      {#if $htmlBody.name}
+      <!-- mood -->
+      {#if $htmlBody.name || $htmlBody.mood.text}
         <div
-          class="px-3 py-0.5 border border-[#EDEDED] bg-[#F1F6FF] rounded-2xl -mt-1 font-medium text-[9px] flex items-center justify-between"
+          class="px-3 py-0.5 border border-[#EDEDED] bg-[#F1F6FF] rounded-2xl -mt-1 font-medium text-[7px] md:text-[9px] flex items-center justify-between"
         >
           <span class="mr-0.5">{$htmlBody.name}</span>
-
-          {#if $htmlBody.mood.text != ''}
-            <span class="flex gap-1 items-center">
-              <p class="font-semibold text-[9px]">is {$htmlBody.mood.text}</p>
-              <img
-                src="/free-tools/progress-report/emojis/{$htmlBody.mood.iconSrc}.png"
-                alt={$htmlBody.mood.text}
-                class="w-3"
-              />
-            </span>
-          {/if}
+          <span class="flex gap-1 items-center">
+            <p class="font-semibold text-[7px] md:text-[9px]">is {$htmlBody.mood.text}</p>
+            <img
+              src="https://assets.cdn.clsrio.com/progress-report/emojis/{$htmlBody.mood
+                .iconSrc}.png"
+              alt={$htmlBody.mood.text}
+              class="w-3"
+            />
+          </span>
         </div>
       {:else}
         <p
@@ -79,19 +83,20 @@
           Add your name
         </p>
       {/if}
-
       {#if $htmlBody.mood.text === ''}
         <p class="text-[10px] my-2">Add your mood</p>
       {/if}
 
+      <!-- learning -->
       <span
         role="textbox"
         tabindex={0}
         contenteditable
         bind:textContent={$htmlBody.learning}
-        class="w-full mt-2 p-1 overflow-hidden text-[10px] text-center block outline-none h-[10vh]"
+        class="w-full md:mt-2 p-1 overflow-hidden text-[10px] text-center block outline-none h-[10vh]"
       ></span>
 
+      <!-- progress -->
       <div class="flex flex-col justify-center items-center">
         <input
           type="range"
@@ -108,6 +113,7 @@
   </div>
 </div>
 
+<!-- stying for the custom range input -->
 <style>
   .progress-range {
     -webkit-appearance: none;

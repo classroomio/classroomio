@@ -33,11 +33,7 @@
           const link = document.createElement('a');
           link.download = 'my-image.png';
           link.href = dataUrl;
-          // link.href = imageUrl;
           link.click();
-          console.log('dataUrl', dataUrl);
-
-          console.log('link', link);
         })
         .catch((error) => {
           console.error('Oops, something went wrong!', error);
@@ -48,20 +44,24 @@
   }
 
   function shareOnTwitter() {
-    if ($nodeStore) {
-      toPng($nodeStore)
-        .then((dataUrl) => {
-          const imageUrl = dataUrl;
-          window.open(
-            `http://twitter.com/share?text=Im Sharing on Twitter&url=${imageUrl}&hashtags=classroomIO,progressReport`
-          );
-        })
-        .catch((error) => {
-          console.error('Oops, something went wrong!', error);
-        });
-    } else {
-      console.error('Node is not defined');
-    }
+    const text = encodeURIComponent(
+      `I'm sharing my progress here on Twitter, I'm learning ${$htmlBody.learning} and I'm ${$htmlBody.mood.text}`
+    );
+    const hashtags = encodeURIComponent('classroomIO,progressReport');
+    const url = `https://x.com/intent/post?text=${text}&hashtags=${hashtags}`;
+    window.open(url);
+  }
+
+  function shareOnInstagram() {
+    window.open('  http://instagram.com/###?ref=badge');
+  }
+
+  function shareOnLinkedIn() {
+    const text = encodeURIComponent(
+      `I'm sharing my progress on LinkedIn, I'm learning ${$htmlBody.learning} and I'm ${$htmlBody.mood.text}`
+    );
+    const url = `http://www.linkedin.com/shareArticle?summary=${text}&text=${text}`;
+    window.open(url);
   }
 </script>
 
@@ -106,6 +106,7 @@
     </p>
   </ToolsHeader>
 
+  <!-- modals -->
   <Avatar />
   <Mood />
   <Background />
@@ -114,7 +115,9 @@
   <div
     class="border rounded-md w-full md:w-[80%] lg:w-[60%] my-10 mx-auto shadow-md flex md:flex-row flex-col justify-between"
   >
-    <div class="w-[48%] p-5">
+    <!-- left side -->
+    <div class="w-full md:w-[48%] p-5">
+      <!-- name input -->
       <div>
         <p class="text-sm text-[#656565]">Add your name</p>
         <input
@@ -126,6 +129,7 @@
         />
       </div>
 
+      <!-- learning input -->
       <div class="mt-3">
         <p class="text-sm text-[#656565]">What are you learning?</p>
         <textarea
@@ -138,6 +142,7 @@
         <p class="text-xs text-right text-[#656565]">{remainingChars} characters remaining</p>
       </div>
 
+      <!-- range input -->
       <div class="mt-3">
         <p class="text-sm text-[#656565] pb-4">Estimate your progress</p>
         <div class="flex justify-between items-center">
@@ -154,26 +159,29 @@
         </div>
       </div>
 
+      <!-- mood input -->
       <div class="mt-5">
         <p class="text-sm text-[#656565]">Select your mood</p>
         <button
           type="button"
           on:click={openMoodModal}
-          class="w-full text-left border my-3 py-2 px-3 outline-none rounded-sm bg-[#F1F2F4] text-gray-400 text-sm"
-          >What feeling describes you?</button
-        >
+          class="w-full flex justify-between items-center border my-3 py-2 px-3 outline-none rounded-sm bg-[#F1F2F4] text-gray-400 text-sm"
+          >What feeling describes you?
+          <span>+</span>
+        </button>
       </div>
 
+      <!-- avatar button -->
       <div class="flex justify-between items-center mt-3">
         <div class="w-2/4">
-          <p class="text-sm text-[#656565]">Choose your avatar</p>
+          <p class="text-[12px] md:text-sm text-[#656565]">Choose your avatar</p>
           <button
             type="button"
             on:click={openAvatarModal}
             class="bg-[#F7F7F7] py-1.5 mt-3 flex w-[65%] items-center justify-center gap-2"
           >
             <img
-              src="/free-tools/progress-report/choose-your-avatar.svg"
+              src="https://assets.cdn.clsrio.com/progress-report/avatars/avatar_l.svg"
               alt="An avatar"
               class="w-[30%]"
             />
@@ -185,15 +193,16 @@
           </button>
         </div>
 
+        <!-- & background -->
         <div class="w-2/4">
-          <p class="text-sm text-[#656565]">Choose your background</p>
+          <p class="text-[12px] md:text-sm text-[#656565]">Choose your background</p>
           <button
             type="button"
             on:click={openBackgroundModal}
             class="bg-[#F7F7F7] py-1.5 mt-3 flex w-[65%] items-center justify-center gap-2"
           >
             <img
-              src="/free-tools/progress-report/choose-your-background.svg"
+              src="https://assets.cdn.clsrio.com/progress-report/backgrounds/blue_tetiary_background.png"
               alt="An avatar"
               class="w-[30%]"
             />
@@ -205,15 +214,13 @@
           </button>
         </div>
       </div>
-
-      <!--  -->
     </div>
 
-    <!--  -->
-    <div class="w-[48%] p-5 border-l">
+    <!-- right side -->
+    <div class="w-full md:w-[48%] p-5 border-l">
       <Report />
 
-      <!--  -->
+      <!-- download & share button -->
       <div class="mt-9 pt-8 px-2 h-auto border-t">
         <button
           type="button"
@@ -222,14 +229,25 @@
           >Download Image</button
         >
 
-        <div class="w-[70%] mx-auto mt-5">
+        <!-- share button -->
+        <div class="w-full md:w-[70%] mx-auto mt-5">
           <h1 class="text-sm font-semibold text-center">Share on image on social media:</h1>
 
-          <div class="flex justify-between border rounded-xl w-[80%] px-5 py-2 mt-2 mx-auto">
-            <button type="button" class="w-5 hover:scale-[1.2] transition-all duration-300">
+          <div
+            class="flex justify-evenly border rounded-xl gap-5 w-[60%] md:w-[80%] px-5 py-2 mt-2 mx-auto"
+          >
+            <button
+              type="button"
+              on:click={shareOnInstagram}
+              class="w-5 hover:scale-[1.2] transition-all duration-300"
+            >
               <img src="/free-tools/progress-report/instagram.svg" alt="Instagram" />
             </button>
-            <button type="button" class="w-5 hover:scale-[1.2] transition-all duration-300">
+            <button
+              type="button"
+              on:click={shareOnLinkedIn}
+              class="w-5 hover:scale-[1.2] transition-all duration-300"
+            >
               <img src="/free-tools/progress-report/linkedin.svg" alt="Instagram" />
             </button>
             <button

@@ -61,8 +61,10 @@
 {#if $OpenMood.open}
   <div class="relative">
     <div class="fixed z-[3000] top-0 left-0 w-full h-full bg-black opacity-[0.7]"></div>
-    <div class="fixed top-[30%] left-[30%] z-[3001] w-[43%] bg-white rounded-md mx-auto py-6 px-7">
-      <!--  -->
+    <div
+      class="fixed top-[10%] md:top-[30%] left-5 lg:left-[30%] z-[3001] w-[90%] lg:w-[43%] bg-white rounded-md mx-auto py-6 px-7"
+    >
+      <!-- header -->
       <div class="flex justify-between">
         <h1 class="text-sm font-semibold">Choose your Mood</h1>
         <button
@@ -74,6 +76,7 @@
         </button>
       </div>
 
+      <!-- mapping -->
       <div class="flex flex-wrap justify-between gap-y-3 mt-3">
         {#each moods as mood}
           <button
@@ -83,9 +86,9 @@
             }}
             class="flex gap-3 items-center shadow-sm rounded-full px-4 py-1 bg-[#F1F6FF] hover:bg-[#0233BD] hover:text-white transition-all duration-700"
           >
-            <p class="text-sm font-semibold">{mood.text}</p>
+            <p class="text-xs md:text-sm font-semibold">{mood.text}</p>
             <img
-              src="/free-tools/progress-report/emojis/{mood.iconSrc}.png"
+              src="https://assets.cdn.clsrio.com/progress-report/emojis/{mood.iconSrc}.png"
               alt={mood.text}
               class="w-4"
             />
