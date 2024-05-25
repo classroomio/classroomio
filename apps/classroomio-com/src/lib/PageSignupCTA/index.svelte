@@ -7,10 +7,12 @@
 </script>
 
 <div
-  class="floating grad relative mx-auto mt-[10%] flex h-[61vh] w-[100%] flex-col items-center justify-center px-[6%] py-[12%] text-center shadow-2xl lg:h-[54vh] lg:w-[70%] lg:rounded-3xl"
+  class="floating grad relative mx-auto my-[5%] flex h-[61vh] w-[100%] flex-col items-center justify-center px-[6%] py-[12%] text-center shadow-2xl lg:h-[54vh] lg:w-[70%] lg:rounded-3xl"
 >
   <div>
-    <h1 class="font-display mt-3 text-3xl font-bold tracking-tight text-white lg:mt-2 lg:text-4xl">
+    <h1
+      class="font-display mt-3 text-3xl font-bold tracking-tight text-white lg:mt-2 lg:text-4xl max-w-2xl"
+    >
       {header}
     </h1>
     <p class="mt-6 text-xl text-gray-300 lg:text-lg">
