@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import { Moon } from 'svelte-loading-spinners';
   import { browser } from '$app/environment';
   import Navigation from '../Course/components/Navigation/index.svelte';
@@ -10,14 +11,18 @@
   import { fetchCourse } from '$lib/utils/services/courses';
   import { globalStore } from '$lib/utils/store/app';
   import { lessons } from '../Course/components/Lesson/store/lessons';
+  import Modal from '$lib/components/Modal/index.svelte';
+  import { t } from '$lib/utils/functions/translations';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   export let courseId = '';
   export let path = '';
   export let isExercisePage = false;
-  export let isStudent = false;
   export let isFetching = false;
+  export let containerClass = '';
 
   let prevCourseId = '';
+  let isPermitted = true;
 
   async function onCourseIdChange(courseId = '') {
     if (!courseId || prevCourseId === courseId || !browser || $course.id === courseId) return;
@@ -45,17 +50,16 @@
 
   $: onCourseIdChange(courseId);
 
-  $: if (typeof $globalStore.isStudent !== 'boolean') {
+  $: {
     const user = $group.people.find((person) => person.profile_id === $profile.id);
-
     if (user) {
-      isStudent = user.role_id === 3;
-      $globalStore.isStudent = isStudent;
+      $globalStore.isStudent = user.role_id === 3;
 
-      filterPollsByStatus(isStudent);
+      filterPollsByStatus($globalStore.isStudent);
+    } else if ($profile.id && $group.people.length) {
+      // Current User doesn't have permission to view
+      isPermitted = false;
     }
-  } else {
-    isStudent = $globalStore.isStudent;
   }
 </script>
 
@@ -69,13 +73,35 @@
   </Backdrop>
 {/if}
 
+<Modal open={!isPermitted} width="w-96" modalHeading={$t('course.not_permitted.header')}>
+  <div>
+    <p class="dark:text-white text-md text-center">
+      {$t('course.not_permitted.body')}
+    </p>
+
+    <div class="mt-5 flex justify-center">
+      <PrimaryButton
+        className="px-6 py-3"
+        label={$t('course.not_permitted.button')}
+        onClick={() => {
+          goto('/org/*');
+        }}
+      />
+    </div>
+  </div>
+</Modal>
+
 <div class="root">
-  <Navigation {path} {isStudent} />
-  <div class="rightBar" class:isMobile={$isMobile}>
+  <Navigation {path} isStudent={$globalStore.isStudent} />
+  <div class="rightBar {containerClass}" class:isMobile={$isMobile}>
     {#if isExercisePage}
       <Confetti />
     {/if}
-    <slot />
+
+    <!-- Show only if permitted -->
+    {#if isPermitted}
+      <slot />
+    {/if}
   </div>
 </div>
 

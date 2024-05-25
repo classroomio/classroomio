@@ -582,7 +582,11 @@
               "no_description": "Sin descripción",
               "start": "Comenzar",
               "graded": "Calificado",
-              "pending": "Pendiente"
+              "pending": "Pendiente",
+              "submitted": "Enviado",
+              "status_pending": "Estado: Pendiente de revisión",
+              "status_graded": "Estado: Revisión completada",
+              "status_submitted": "Estado: Enviado"
             },
             "edit_mode": {
               "delete_modal": "Eliminar modal",
@@ -611,7 +615,9 @@
               "heading": "Descripción",
               "describe": "Describe el ejercicio a tu estudiante.",
               "no": "Sin descripción"
-            }
+            },
+            "no_answer": "No se proporcionó respuesta",
+            "check": "Controlar"
           },
           "new_exercise_modal": {
             "heading": "Nuevo ejercicio",
@@ -709,12 +715,12 @@
           "modal_heading": "Agregar nueva lección",
           "lesson_title": "Título de la lección",
           "click_to": "Haga clic para",
-          "lock": "cerrar",
-          "unlock": "desbloquear",
           "fullname": "nombre completo",
           "save": "Ahorrar",
           "edit": "Editar",
-          "delete": "Borrar"
+          "delete": "Borrar",
+          "lock": "Cerrar",
+          "unlock": "desbloquear"
         },
         "disabled": "La característica está deshabilitada"
       },
@@ -755,6 +761,11 @@
       "nav_certificates": "Certificados",
       "nav_landing_page": "Página de destino",
       "nav_settings": "Ajustes"
+    },
+    "not_permitted": {
+      "header": "Sin autorización",
+      "body": "Lamentablemente no tienes acceso a este curso.",
+      "button": "Vete a casa"
     }
   },
   "courses": {

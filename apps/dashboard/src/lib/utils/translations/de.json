@@ -582,7 +582,11 @@
               "no_description": "Keine Beschreibung",
               "start": "Start",
               "graded": "Benotet",
-              "pending": "Ausstehend"
+              "pending": "Ausstehend",
+              "submitted": "Eingereicht",
+              "status_pending": "Status: Ausstehende Überprüfung",
+              "status_graded": "Status: Überprüfung abgeschlossen",
+              "status_submitted": "Status: Eingereicht"
             },
             "edit_mode": {
               "delete_modal": "Modal löschen",
@@ -611,7 +615,9 @@
               "heading": "Beschreibung",
               "describe": "Beschreiben Sie Ihrem Schüler die Übung",
               "no": "Keine Beschreibung"
-            }
+            },
+            "no_answer": "Es wurde keine Antwort gegeben",
+            "check": "Überprüfen"
           },
           "new_exercise_modal": {
             "heading": "Neue Übung",
@@ -709,12 +715,12 @@
           "modal_heading": "Neue Lektion hinzufügen",
           "lesson_title": "Titel der Lektion",
           "click_to": "Klicke um",
-          "lock": "sperren",
-          "unlock": "Freischalten",
           "fullname": "vollständiger Name",
           "save": "Speichern",
           "edit": "Bearbeiten",
-          "delete": "Löschen"
+          "delete": "Löschen",
+          "lock": "Sperren",
+          "unlock": "Freischalten"
         },
         "disabled": "Funktion ist deaktiviert"
       },
@@ -755,6 +761,11 @@
       "nav_certificates": "Zertifikate",
       "nav_landing_page": "Landingpage",
       "nav_settings": "Einstellungen"
+    },
+    "not_permitted": {
+      "header": "Keine Erlaubnis",
+      "body": "Leider haben Sie keinen Zugriff auf diesen Kurs.",
+      "button": "Nach Hause gehen"
     }
   },
   "courses": {

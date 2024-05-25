@@ -18,11 +18,11 @@
   import type { ExerciseTemplate } from '$lib/utils/types';
   import { formatDate } from '$lib/utils/functions/routes/dashboard';
   import { t } from '$lib/utils/functions/translations';
+  import { globalStore } from '$lib/utils/store/app';
 
   export let path = '';
   export let exerciseId = '';
   export let lessonId = '';
-  export let isStudent = true;
 
   let open = false;
   let isFetching = false;
@@ -151,7 +151,7 @@
 {/if}
 
 {#if exerciseId}
-  <Exercise {exerciseId} {goBack} bind:path bind:isStudent {isFetching} />
+  <Exercise {exerciseId} {goBack} bind:path {isFetching} />
 {:else}
   <NewExerciseModal
     bind:open
@@ -161,7 +161,7 @@
     bind:title={newExercise.title}
   />
 
-  <PageBody bind:isPageNavHidden={isStudent}>
+  <PageBody bind:isPageNavHidden={$globalStore.isStudent}>
     <slot:fragment slot="header">
       <Breadcrumb class="my-2">
         <BreadcrumbItem href={path}>{$t('course.navItem.lessons.exercises.heading')}</BreadcrumbItem
@@ -193,7 +193,7 @@
               {$t('course.navItem.lessons.exercises.no_exercises')}
             </h2>
             <p class="text-sm text-center text-slate-500">
-              {#if isStudent}
+              {#if $globalStore.isStudent}
                 {$t('course.navItem.lessons.exercises.no_assigned_exercises')}
                 <strong> {$t('course.navItem.lessons.exercises.chill')} :)</strong>
               {:else}

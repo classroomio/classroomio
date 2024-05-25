@@ -6,6 +6,7 @@ export type BlogPost = {
   description: string;
   tags: string[];
   author: string;
+  imageUrl: string;
   role: string;
   avatar: string;
   date: string;

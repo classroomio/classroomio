@@ -49,7 +49,7 @@
     "lodash": "^4.17.21",
     "openai-edge": "^1.2.2",
     "pluralize": "^8.0.0",
-    "posthog-js": "^1.116.6",
+    "posthog-js": "^1.132.0",
     "shared": "workspace:*",
     "sirv": "^2.0.3",
     "stripe": "^14.22.0",

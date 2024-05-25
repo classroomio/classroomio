@@ -26,7 +26,7 @@ export function wasCorrectAnswerSelected(currentQuestion, answers, isFinished) {
   if (isCorrect && !isFinished) {
     toggleConfetti();
 
-    setTimeout(toggleConfetti, 1500);
+    setTimeout(toggleConfetti, 100);
   }
 
   return isCorrect;
@@ -80,7 +80,8 @@ export function getPropsForQuestion(
         ? {
             label: isLast ? 'Finish' : 'Next',
             isActive: true,
-            disableOptionSelect: true
+            disableOptionSelect: true,
+            isDisabled: isLast ? false : true // Disable Next button because auto next is enabled
           }
         : {
             label: 'Check',
