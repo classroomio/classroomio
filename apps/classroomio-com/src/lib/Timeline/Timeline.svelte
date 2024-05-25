@@ -1,5 +1,8 @@
-<script>
-  export let items = [];
+<script lang="ts">
+  export let items: {
+    title: string;
+    desc: string;
+  }[] = [];
 </script>
 
 <div class="relative w-fit flex justify-center space-x-8 md:space-x-10">

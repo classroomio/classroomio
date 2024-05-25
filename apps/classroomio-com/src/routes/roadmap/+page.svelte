@@ -3,41 +3,41 @@
   import Timeline from '$lib/Timeline/Timeline.svelte';
   import PageSignupCTA from '$lib/PageSignupCTA/index.svelte';
 
-  let newFeatures = [
-    {
-      title: 'Course Newsfeed',
-      desc: 'Meet our LMS newsfeed centralizes updates, announcements, and interactions, enhancing communication, engagement, and real-time access to course information.'
-    },
-    {
-      title: 'Security RLS',
-      desc: 'Row-Level Security (RLS) enhances data security by restricting access to specific rows in a database based on user roles or attributes.'
-    },
-    {
-      title: 'Increased video limit',
-      desc: 'Increasing video limits in an LMS allows for longer, more comprehensive instructional videos, enhancing the depth and quality of educational content.'
-    },
+  const newFeatures = [
     {
       title: 'LMS Customization',
-      desc: "LMS customization allows educators and administrators to tailor the platform's features, interface, and content to meet specific educational needs and preferences."
+      desc: 'Right in your settings you can customize what you students see in their dashboard in few clicks.'
     },
     {
-      title: 'More certificate option',
-      desc: 'Meet our LMS newsfeed centralizes updates, announcements, and interactions, enhancing communication, engagement, and real-time access to course information.'
+      title: 'Course Newsfeed',
+      desc: 'You can now send a broadcast message to all the students participating in your course right from our dashboard.'
     },
     {
       title: 'Multi language support',
-      desc: 'Multi-language support in an LMS enables users to access content and interface options in their preferred language, promoting inclusivity and global accessibility.'
+      desc: 'Our dashboard now supports 7 new languages. In addition, we allow you create course content in those any of those languages.'
+    },
+    {
+      title: 'Security RLS',
+      desc: "All the tables we've created now have role level security enabled by default"
+    },
+    {
+      title: 'Increased video limit',
+      desc: 'You can now upload a single video of about 500mb without interruption.'
+    },
+    {
+      title: 'More certificate templates',
+      desc: 'We have shipped 4 more certificate templates in which you can choose from right within your course dashboard'
     }
   ];
 
-  let upcomingFeatures = [
+  const upcomingFeatures = [
     {
-      title: 'Learning path',
-      desc: 'A learning path in an LMS structures curses and materials sequentially, guiding learners through a tailored educational journey to achieve specific learning goals.'
+      title: 'Pathways',
+      desc: 'This feature gives you the ability to group courses into folder which we are calling - Pathways. Students can complete a series of courses before getting a certificate'
     },
     {
       title: 'Landing page builder',
-      desc: 'A landing page builder in an LMS enables educators to design personalized, engaging course entry points, enhancing user experience and promoting learning paths.'
+      desc: 'With more templates and pages, we will allow educators create simple web pages using our platform to showcase their programs and offerings.'
     }
   ];
 </script>
@@ -45,11 +45,12 @@
 <svelte:head>
   <title>Roadmap | ClassroomIO</title>
 </svelte:head>
-<PageHeader
-  className="h-screen flex flex-col items-start px-8 md:items-center justify-center space-y-10 bg-[#F5F8FE]"
->
-  <h1 class="text-start md:text-center text-5xl md:text-7xl font-bold">Roadmap</h1>
-  <p class="text-start md:text-center w-[80%] md:w-[40%] text-gray-500">
+
+<PageHeader className="flex flex-col items-center justify-center text-center">
+  <h1 class="text-start md:text-center text-5xl md:text-7xl font-bold text-slate-900">
+    Product Roadmap
+  </h1>
+  <p class="text-start md:text-center w-[80%] md:w-[40%] text-slate-700 mt-10">
     This is a live document, and will be updated regularly. To submit an idea, or to view a list of
     feature requests and ideas that we're considering, check out our <a
       href="https://github.com/rotimi-best/classroomio/discussion"
@@ -79,12 +80,10 @@
   </div>
 </section>
 
-<section class="flex items-center justify-center py-16">
-  <PageSignupCTA
-    header="  Launch Your Online Bootcamp In Minutes"
-    subText="Meet a better collaboration tool for teachers and students."
-    btnLabel="Get started for free"
-    link="/signup"
-    demo={false}
-  />
-</section>
+<PageSignupCTA
+  header="Share Your First Course With Your Audience In Minutes"
+  subText="In about 4 Clicks you can already start creating courses."
+  btnLabel="Get started for free"
+  link="/signup"
+  demo={false}
+/>
