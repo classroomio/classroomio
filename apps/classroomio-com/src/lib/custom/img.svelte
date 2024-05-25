@@ -8,6 +8,6 @@
     {src}
     {alt}
     loading="lazy"
-    class="max-w-full w-full h-[400px] object-cover my-2 rounded-lg"
+    class="max-w-full w-full min-h-[400px] object-cover my-2 rounded-lg"
   />
 </figure>

@@ -1,6 +1,7 @@
 ---
 title: 'Teach with Data and Analytics'
 description: 'Insights to how students are picking up the concepts you teach are very crucial and we think you should track that metric to enhance your students learning outcome.'
+imageUrl: 'https://classroomio.com/blog/analytics-classroom-by-dalle3-classroomio.jpeg'
 date: '2024-01-02'
 author: Rotimi Best
 avatar: /blog/best.jpg
