@@ -8,7 +8,7 @@ export async function fetchCourses(profileId, orgId) {
   const match = {};
   // Filter by profile_id if role isn't admin within organization
   if (!get(isOrgAdmin)) {
-    match.profile_id = profileId;
+    match.member_profile_id = profileId;
   }
 
   // Gets courses for a particular organisation where the current logged in user is a groupmember

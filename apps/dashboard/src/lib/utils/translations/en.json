@@ -1004,6 +1004,12 @@
         "delete_text": "Delete this course,this action cannot be undone",
         "save": "Save Changes"
       }
+    },
+
+    "not_permitted": {
+      "header": "No Permission",
+      "body": "Unfortunately you don't have access to this course.",
+      "button": "Go home"
     }
   },
 

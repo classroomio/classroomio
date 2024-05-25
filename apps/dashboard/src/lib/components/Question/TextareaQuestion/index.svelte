@@ -34,7 +34,7 @@
   function handleFormSubmit(event) {
     if (isPreview) return;
 
-    onSubmit(name, defaultValue, true);
+    onSubmit(name, defaultValue);
     // event.target.reset();
   }
 

@@ -13,6 +13,7 @@
     handleSaveLesson
   } from '$lib/components/Course/components/Lesson/store/lessons';
   import PageBody from '$lib/components/PageBody/index.svelte';
+  import { globalStore } from '$lib/utils/store/app';
 
   import NewLessonModal from '$lib/components/Course/components/Lesson/NewLessonModal.svelte';
   import DeleteLessonConfirmation from '$lib/components/Course/components/Lesson/DeleteLessonConfirmation.svelte';
@@ -36,7 +37,6 @@
 
   let lessonEditing: string | undefined;
   let lessonToDelete: Lesson | undefined;
-  let isStudent: boolean = true;
   let openDeleteModal: boolean = false;
   let isFetching: boolean = false;
 
@@ -127,7 +127,7 @@
 </script>
 
 {#if $handleAddLessonWidget}
-  <NewLessonModal {isStudent} />
+  <NewLessonModal />
 {/if}
 
 <DeleteLessonConfirmation
@@ -136,8 +136,7 @@
   deleteLesson={() => handleDelete(lessonToDelete?.id)}
 />
 
-<!-- TODO: Refactor usage of two way binding isStudent, rather use $globalStore.isStudent -->
-<CourseContainer bind:isFetching bind:isStudent bind:courseId={data.courseId}>
+<CourseContainer bind:isFetching bind:courseId={data.courseId}>
   <PageNav title={$t('course.navItem.lessons.heading')}>
     <div slot="widget">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
@@ -168,7 +167,7 @@
         use:dndzone={{
           items: $lessons,
           flipDurationMs,
-          dragDisabled: isStudent,
+          dragDisabled: $globalStore.isStudent,
           dropTargetStyle: {
             border: '2px #1d4ed8 solid',
             'border-style': 'dashed'
@@ -204,10 +203,10 @@
               {:else}
                 <h3 class="m-0 flex items-center text-lg dark:text-white">
                   <a
-                    href={isStudent && !lesson.is_unlocked
+                    href={$globalStore.isStudent && !lesson.is_unlocked
                       ? $page.url.pathname
                       : '/courses/' + $course.id + '/lessons/' + lesson.id}
-                    class="font-medium text-black no-underline hover:underline dark:text-white {isStudent &&
+                    class="font-medium text-black no-underline hover:underline dark:text-white {$globalStore.isStudent &&
                     !lesson.is_unlocked
                       ? 'cursor-not-allowed'
                       : ''}"
@@ -299,7 +298,7 @@
               <RoleBasedSecurity allowedRoles={[1, 2]}>
                 <OverflowMenu size="xl" class={`absolute right-0 top-0`}>
                   <OverflowMenuItem
-                    disabled={isStudent}
+                    disabled={$globalStore.isStudent}
                     text={lesson.is_unlocked
                       ? $t('course.navItem.lessons.add_lesson.lock')
                       : $t('course.navItem.lessons.add_lesson.unlock')}

@@ -31,11 +31,11 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import Analytics from './Submissions/index.svelte';
   import { t } from '$lib/utils/functions/translations';
+  import { globalStore } from '$lib/utils/store/app';
 
   export let exerciseId = '';
   export let path = '';
   export let goBack = () => {};
-  export let isStudent = true;
   export let isFetching = false;
 
   let preview: boolean = false;
@@ -44,7 +44,7 @@
   let selectedIndex = 0;
 
   async function handleSave() {
-    if (isStudent) return;
+    if ($globalStore.isStudent) return;
 
     const errors = validateQuestionnaire($questionnaire.questions);
     if (Object.values(errors).length > 0) {
@@ -81,7 +81,7 @@
   $: $questionnaire?.questions?.length < 1 && handleAddQuestion();
 </script>
 
-<PageBody bind:isPageNavHidden={isStudent} padding="px-4 overflow-x-hidden">
+<PageBody bind:isPageNavHidden={$globalStore.isStudent} padding="px-4 overflow-x-hidden">
   <div class="bg-gray-100 dark:bg-neutral-800 top-0 z-10 sticky p-2 mb-3">
     <Breadcrumb noTrailingSlash>
       <BreadcrumbItem href={path}
@@ -154,7 +154,7 @@
     <RoleBasedSecurity allowedRoles={[1, 2]}>
       <UpdateDescription {preview} />
     </RoleBasedSecurity>
-    {#if !isStudent && !preview}
+    {#if !$globalStore.isStudent && !preview}
       <EditMode bind:shouldDeleteExercise {exerciseId} {goBack} />
     {:else}
       <ViewMode {preview} {exerciseId} isFetchingExercise={isFetching} />

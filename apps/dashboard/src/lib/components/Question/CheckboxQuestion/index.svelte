@@ -49,7 +49,7 @@
   function handleFormSubmit(event) {
     if (isPreview) return;
     const values = getVal(event.target, name);
-    onSubmit(name, values, nextButtonProps.isActive);
+    onSubmit(name, values);
     event.target.reset();
   }
 
@@ -140,6 +140,7 @@
         label={isLast
           ? $t('course.navItem.lessons.exercises.all_exercises.finish')
           : $t('course.navItem.lessons.exercises.all_exercises.next')}
+        isDisabled={nextButtonProps.isDisabled}
         {name}
       />
     </div>

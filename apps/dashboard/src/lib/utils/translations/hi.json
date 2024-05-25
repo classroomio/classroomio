@@ -761,6 +761,11 @@
       "nav_certificates": "प्रमाण पत्र",
       "nav_landing_page": "लैंडिंग पृष्ठ",
       "nav_settings": "समायोजन"
+    },
+    "not_permitted": {
+      "header": "अनुमति नहीं",
+      "body": "दुर्भाग्य से आपके पास इस पाठ्यक्रम तक पहुंच नहीं है।",
+      "button": "घर जाओ"
     }
   },
   "courses": {

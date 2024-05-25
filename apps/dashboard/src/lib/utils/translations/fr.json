@@ -761,6 +761,11 @@
       "nav_certificates": "Certificats",
       "nav_landing_page": "Page de destination",
       "nav_settings": "Paramètres"
+    },
+    "not_permitted": {
+      "header": "Aucune autorisation",
+      "body": "Malheureusement, vous n'avez pas accès à ce cours.",
+      "button": "rentrer chez soi"
     }
   },
   "courses": {

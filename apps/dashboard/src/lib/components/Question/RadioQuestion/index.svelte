@@ -51,7 +51,7 @@
   function handleFormSubmit(event) {
     if (isPreview) return;
     const value = getRadioVal(event.target, name);
-    onSubmit(name, [value], nextButtonProps.isActive);
+    onSubmit(name, [value]);
     event.target.reset();
   }
 
@@ -141,6 +141,7 @@
         label={isLast
           ? $t('course.navItem.lessons.exercises.all_exercises.finish')
           : $t('course.navItem.lessons.exercises.all_exercises.next')}
+        isDisabled={nextButtonProps.isDisabled}
         {name}
       />
     </div>

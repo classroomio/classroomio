@@ -761,6 +761,11 @@
       "nav_certificates": "Chứng chỉ",
       "nav_landing_page": "Trang đích",
       "nav_settings": "Cài đặt"
+    },
+    "not_permitted": {
+      "header": "Không cho phép",
+      "body": "Rất tiếc, bạn không có quyền truy cập vào khóa học này.",
+      "button": "Về nhà"
     }
   },
   "courses": {
