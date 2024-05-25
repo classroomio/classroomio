@@ -715,12 +715,12 @@
           "modal_heading": "Adicionar nova lição",
           "lesson_title": "Título da lição",
           "click_to": "Clique para",
-          "lock": "trancar",
-          "unlock": "desbloquear",
           "fullname": "nome completo",
           "save": "Salvar",
           "edit": "Editar",
-          "delete": "Excluir"
+          "delete": "Excluir",
+          "lock": "Trancar",
+          "unlock": "Desbloquear"
         },
         "disabled": "O recurso está desativado"
       },

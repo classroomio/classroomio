@@ -130,11 +130,6 @@
           );
           if (response) {
             submissionResponse = response;
-            submissionId = submissionResponse.submission[0]?.id;
-          }
-
-          if ($course.type === COURSE_TYPE.SELF_PACED) {
-            automaticGrading($questionnaireMetaData, $questionnaire.questions);
           }
 
           notifyEducator();
@@ -351,9 +346,7 @@
     </div>
 
     {#if $questionnaireMetaData.status === STATUS.GRADED && $questionnaireMetaData.comment && $course.type !== COURSE_TYPE.SELF_PACED}
-      <div
-        class="flex items-center justify-between bg-primary-700 p-4 text-white font-semibold rounded-sm mt-3"
-      >
+      <div class="flex items-center justify-between bg-primary-700 p-4 text-white rounded-sm mt-3">
         <span> {$questionnaireMetaData.comment}</span>
       </div>
     {/if}

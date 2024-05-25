@@ -15,11 +15,6 @@ const lessonSchema = z.object({
   title: z.string().nonempty({ message: 'Title cannot be empty' }),
   lesson_at: z.string().optional(),
   call_url: z.string().nullable().optional(),
-  profile: z
-    .object({
-      id: z.string().optional()
-    })
-    .optional(),
   is_unlocked: z.boolean()
 });
 

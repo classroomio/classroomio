@@ -715,12 +715,12 @@
           "modal_heading": "Ajouter une nouvelle leçon",
           "lesson_title": "Titre de la leçon",
           "click_to": "Cliquez pour",
-          "lock": "verrouillage",
-          "unlock": "ouvrir",
           "fullname": "nom et prénom",
           "save": "Sauvegarder",
           "edit": "Modifier",
-          "delete": "Supprimer"
+          "delete": "Supprimer",
+          "lock": "Verrouillage",
+          "unlock": "Ouvrir"
         },
         "disabled": "La fonctionnalité est désactivée"
       },

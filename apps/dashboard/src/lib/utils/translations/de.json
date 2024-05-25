@@ -715,12 +715,12 @@
           "modal_heading": "Neue Lektion hinzufügen",
           "lesson_title": "Titel der Lektion",
           "click_to": "Klicke um",
-          "lock": "sperren",
-          "unlock": "Freischalten",
           "fullname": "vollständiger Name",
           "save": "Speichern",
           "edit": "Bearbeiten",
-          "delete": "Löschen"
+          "delete": "Löschen",
+          "lock": "Sperren",
+          "unlock": "Freischalten"
         },
         "disabled": "Funktion ist deaktiviert"
       },

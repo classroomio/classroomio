@@ -296,7 +296,7 @@
             <!-- 3 dot edit -->
             <div class="flex flex-row">
               <RoleBasedSecurity allowedRoles={[1, 2]}>
-                <OverflowMenu size="xl" class={`absolute right-0 top-0`}>
+                <OverflowMenu size="xl">
                   <OverflowMenuItem
                     disabled={$globalStore.isStudent}
                     text={lesson.is_unlocked

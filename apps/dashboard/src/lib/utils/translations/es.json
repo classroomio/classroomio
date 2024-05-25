@@ -715,12 +715,12 @@
           "modal_heading": "Agregar nueva lección",
           "lesson_title": "Título de la lección",
           "click_to": "Haga clic para",
-          "lock": "cerrar",
-          "unlock": "desbloquear",
           "fullname": "nombre completo",
           "save": "Ahorrar",
           "edit": "Editar",
-          "delete": "Borrar"
+          "delete": "Borrar",
+          "lock": "Cerrar",
+          "unlock": "desbloquear"
         },
         "disabled": "La característica está deshabilitada"
       },

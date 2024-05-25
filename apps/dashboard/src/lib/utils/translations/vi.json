@@ -715,12 +715,12 @@
           "modal_heading": "Thêm bài học mới",
           "lesson_title": "Tiêu đề bài học",
           "click_to": "Bấm vào để",
-          "lock": "khóa",
-          "unlock": "mở khóa",
           "fullname": "Họ và tên",
           "save": "Cứu",
           "edit": "Biên tập",
-          "delete": "Xóa bỏ"
+          "delete": "Xóa bỏ",
+          "lock": "Khóa",
+          "unlock": "Mở khóa"
         },
         "disabled": "Tính năng bị vô hiệu hóa"
       },

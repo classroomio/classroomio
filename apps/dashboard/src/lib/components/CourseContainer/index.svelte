@@ -18,7 +18,6 @@
   export let courseId = '';
   export let path = '';
   export let isExercisePage = false;
-  export let isStudent = false;
   export let isFetching = false;
   export let containerClass = '';
 
@@ -51,20 +50,16 @@
 
   $: onCourseIdChange(courseId);
 
-  $: if (typeof $globalStore.isStudent !== 'boolean') {
+  $: {
     const user = $group.people.find((person) => person.profile_id === $profile.id);
-
     if (user) {
-      isStudent = user.role_id === 3;
-      $globalStore.isStudent = isStudent;
+      $globalStore.isStudent = user.role_id === 3;
 
-      filterPollsByStatus(isStudent);
+      filterPollsByStatus($globalStore.isStudent);
     } else if ($profile.id && $group.people.length) {
       // Current User doesn't have permission to view
       isPermitted = false;
     }
-  } else {
-    isStudent = $globalStore.isStudent;
   }
 </script>
 
@@ -97,7 +92,7 @@
 </Modal>
 
 <div class="root">
-  <Navigation {path} {isStudent} />
+  <Navigation {path} isStudent={$globalStore.isStudent} />
   <div class="rightBar {containerClass}" class:isMobile={$isMobile}>
     {#if isExercisePage}
       <Confetti />
