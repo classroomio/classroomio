@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { OpenAvatar, closeAvatarModal, htmlBody, type Source } from './store';
+  import { openAvatar, closeAvatarModal, htmlBody, type Source } from './store';
 
   let isAddIcon = false;
   let hoveredIndex: number | null = null;
@@ -32,7 +32,7 @@
   }
 </script>
 
-{#if $OpenAvatar.open}
+{#if $openAvatar.open}
   <div class="relative">
     <!-- black background -->
     <div class="fixed z-[3000] top-0 left-0 w-full h-full bg-black opacity-[0.7]"></div>

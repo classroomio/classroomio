@@ -150,7 +150,7 @@
       alt=""
     />
     <h1 class="text-4xl md:text-6xl font-bold text-[#040F2D] my-3">Activity Stopwatch</h1>
-    <p class="text-[13px] text-[#656565] font-light md:font-normal md:w-[45%] mx-auto">
+    <p class="text-md text-[#656565] font-light md:font-normal md:w-[45%] mx-auto">
       Stay on track and enhance productivity with our customizable stopwatch for timed tasks,
       quizzes, and study sessions.
     </p>

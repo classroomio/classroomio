@@ -100,8 +100,8 @@
       alt=""
     />
     <h1 class="text-4xl md:text-6xl font-bold text-[#040F2D] my-3">Progress Report</h1>
-    <p class="text-[13px] text-[#656565] font-light md:font-normal md:w-[45%] mx-auto">
-      Generate cool reports & monitor progress in real-time. Share reports with your network for
+    <p class="text-md text-[#656565] font-light md:font-normal md:w-[45%] mx-auto">
+      Generate cool reports of your learning progress. Share reports with your network for
       collaborative learning
     </p>
   </ToolsHeader>
@@ -113,10 +113,10 @@
   <FullView />
 
   <div
-    class="border rounded-md w-full md:w-[80%] lg:w-[60%] my-10 mx-auto shadow-md flex md:flex-row flex-col justify-between"
+    class="border rounded-md w-full md:w-11/12 lg:w-[80%] my-10 mx-auto shadow-md flex md:flex-row flex-col justify-evenly"
   >
     <!-- left side -->
-    <div class="w-full md:w-[48%] p-5">
+    <div class="w-full mx-auto md:w-[48%] max-w-[500px] p-5 md:border-r">
       <!-- name input -->
       <div>
         <p class="text-sm text-[#656565]">Add your name</p>
@@ -129,8 +129,20 @@
         />
       </div>
 
-      <!-- learning input -->
+      <!-- mood input -->
       <div class="mt-3">
+        <p class="text-sm text-[#656565]">Select your mood</p>
+        <button
+          type="button"
+          on:click={openMoodModal}
+          class="w-full flex justify-between items-center border my-3 py-2 px-3 outline-none rounded-sm bg-[#F1F2F4] text-gray-400 text-sm"
+          >What feeling describes you?
+          <span>+</span>
+        </button>
+      </div>
+
+      <!-- learning input -->
+      <div class="mt-5">
         <p class="text-sm text-[#656565]">What are you learning?</p>
         <textarea
           bind:value={$htmlBody.learning}
@@ -157,18 +169,6 @@
           />
           <p class="text-sm font-semibold">{$htmlBody.progress}%</p>
         </div>
-      </div>
-
-      <!-- mood input -->
-      <div class="mt-5">
-        <p class="text-sm text-[#656565]">Select your mood</p>
-        <button
-          type="button"
-          on:click={openMoodModal}
-          class="w-full flex justify-between items-center border my-3 py-2 px-3 outline-none rounded-sm bg-[#F1F2F4] text-gray-400 text-sm"
-          >What feeling describes you?
-          <span>+</span>
-        </button>
       </div>
 
       <!-- avatar button -->
@@ -217,7 +217,7 @@
     </div>
 
     <!-- right side -->
-    <div class="w-full md:w-[48%] p-5 border-l">
+    <div class="w-full mx-auto md:w-[48%] md:min-w-[300px] md:max-w-[500px] p-5">
       <Report />
 
       <!-- download & share button -->
@@ -248,14 +248,14 @@
               on:click={shareOnLinkedIn}
               class="w-5 hover:scale-[1.2] transition-all duration-300"
             >
-              <img src="/free-tools/progress-report/linkedin.svg" alt="Instagram" />
+              <img src="/free-tools/progress-report/linkedin.svg" alt="Linkedin" />
             </button>
             <button
               type="button"
               on:click={shareOnTwitter}
               class="w-5 hover:scale-[1.2] transition-all duration-300"
             >
-              <img src="/free-tools/progress-report/x.svg" alt="Instagram" />
+              <img src="/free-tools/progress-report/x.svg" alt="X.com" />
             </button>
           </div>
         </div>

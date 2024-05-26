@@ -6,7 +6,7 @@
       src: '/free-tools/progress-report.svg',
       title: 'Progress Report',
       subText: 'Monitor your progress with a system to check and share your progress with others',
-      slug: 'progress-report',
+      slug: 'progress',
       show: true
     },
     {

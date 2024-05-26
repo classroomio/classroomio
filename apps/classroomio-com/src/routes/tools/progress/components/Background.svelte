@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { OpenBackground, closeBackgroundModal, htmlBody, type Source } from './store';
+  import { openBackground, closeBackgroundModal, htmlBody, type Source } from './store';
 
   let backgrounds = [
     {
@@ -45,7 +45,7 @@
   }
 </script>
 
-{#if $OpenBackground.open}
+{#if $openBackground.open}
   <div class="relative">
     <div class="fixed z-[3000] top-0 left-0 w-full h-full bg-black opacity-[0.7]"></div>
     <div

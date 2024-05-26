@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { OpenMood, closeMoodModal, htmlBody, type Mood } from './store';
+  import { openMood, closeMoodModal, htmlBody, type Mood } from './store';
 
   let moods = [
     {
@@ -58,7 +58,7 @@
   }
 </script>
 
-{#if $OpenMood.open}
+{#if $openMood.open}
   <div class="relative">
     <div class="fixed z-[3000] top-0 left-0 w-full h-full bg-black opacity-[0.7]"></div>
     <div
