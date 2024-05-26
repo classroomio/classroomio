@@ -92,7 +92,7 @@
   <meta name="twitter:image" content="https://brand.cdn.clsrio.com/og/free-tools.png" />
 </svelte:head>
 
-<section class="mt-[30%] px-5 md:px-0 md:mt-[5%]">
+<section class="mt-[30%] px-1 md:px-0 md:mt-[5%] w-fit md:w-full">
   <ToolsHeader>
     <img
       src="/free-tools/progress-report.svg"
@@ -217,7 +217,7 @@
     </div>
 
     <!-- right side -->
-    <div class="w-full mx-auto md:w-[48%] md:min-w-[300px] md:max-w-[500px] p-5">
+    <div class="w-full mx-auto md:w-[48%] min-w-[400px] md:max-w-[500px] px-1 md:p-5">
       <Report />
 
       <!-- download & share button -->

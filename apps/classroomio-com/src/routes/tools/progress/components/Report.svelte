@@ -11,7 +11,7 @@
 </script>
 
 <div
-  class="h-full max-h-[500px] md:h-[60vh] w-full border relative flex items-center justify-center"
+  class="h-full min-h-[500px] max-h-[500px] md:h-[60vh] w-full border relative flex items-center justify-center"
   style={`background-image: url('${rootBgImage}')`}
   bind:this={node}
 >
@@ -34,9 +34,7 @@
     </button>
   {/if}
 
-  <div
-    class="rounded-lg shadow-md bg-white border-4 border-gray-100 z-20 w-[65%] h-[65%] md:h-[33vh]"
-  >
+  <div class="rounded-lg shadow-md bg-white border-4 border-gray-100 z-20 w-[33vh] h-[33vh]">
     <div class="relative w-full h-full flex flex-col justify-center gap-3 items-center px-2">
       <!-- avatar -->
       <img
@@ -44,7 +42,7 @@
           $htmlBody.avatar || 'avatar_l'
         }.svg`}
         alt=""
-        class="absolute top-0 w-[30%] ml-2 -mt-[2.5rem]"
+        class="absolute top-0 w-14 h-14 ml-2 -mt-[2rem]"
       />
 
       <!-- mood -->
