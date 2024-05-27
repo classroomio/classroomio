@@ -26,19 +26,7 @@
 
 <div class="org-root w-full flex items-center justify-between">
   {#if !isQuizPage($page.url?.pathname)}
-    <div bind:this={ref} style:position="relative">
-      <OrgSideBar />
-      <Popover
-        bind:open={$popUp.open}
-        align="right"
-        on:click:outside={({ detail }) => {
-          console.log('on:click:outside');
-          $popUp.open = ref.contains(detail.target);
-        }}
-      >
-        <div class="p-8">Content</div>
-      </Popover>
-    </div>
+    <OrgSideBar />
   {/if}
   <div class="org-slot bg-white dark:bg-black w-full">
     {#if data.orgName === '*'}

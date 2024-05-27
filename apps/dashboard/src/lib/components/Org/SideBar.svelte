@@ -2,7 +2,13 @@
   import { page } from '$app/stores';
   import HelpIcon from 'carbon-icons-svelte/lib/Help.svelte';
   import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
-  import { ChevronRight, SettingsAdjust } from 'carbon-icons-svelte';
+  import {
+    ChevronDown,
+    ChevronRight,
+    ListDropdown,
+    Settings,
+    SettingsAdjust
+  } from 'carbon-icons-svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import OrgSelector from '$lib/components/OrgSelector/OrgSelector.svelte';
   import HomeIcon from '$lib/components/Icons/HomeIcon.svelte';
@@ -19,6 +25,10 @@
   import { sideBar, popUp } from './store';
   import { t } from '$lib/utils/functions/translations';
   import { goto } from '$app/navigation';
+  import { Popover } from 'carbon-components-svelte';
+  import { VARIANTS } from '../PrimaryButton/constants';
+  import { globalStore } from '$lib/utils/store/app';
+  import MenuPopup from '$lib/components/Org/MenuPopup/index.svelte';
 
   interface menuItems {
     label: string;
@@ -27,7 +37,7 @@
   }
 
   let menuItems: menuItems[] = [];
-
+  let ref = null;
   function isActive(pagePath: string, itemPath: string) {
     const pageLinkItems = pagePath.split('/');
     const itemLinkItems = itemPath.split('/');
@@ -112,98 +122,110 @@
   ];
 </script>
 
-<aside
-  class={`${
-    $sideBar.hidden
-      ? 'absolute z-40 -translate-x-[100%] md:relative md:translate-x-0'
-      : 'absolute z-40 translate-x-0 md:relative'
-  } border-r-1 h-[calc(100vh-48px)] w-[250px] min-w-[250px] overflow-y-auto border border-b-0 border-l-0 border-t-0 border-gray-100 dark:border-neutral-600 bg-gray-100 transition dark:bg-neutral-900`}
->
-  <div class="flex h-full flex-col">
-    <div class="">
-      <OrgSelector />
+<div bind:this={ref} class="static md:relative">
+  <aside
+    class={`${
+      $sideBar.hidden
+        ? 'absolute z-40 -translate-x-[100%] md:relative md:translate-x-0'
+        : 'absolute z-40 translate-x-0 md:relative'
+    } border-r-1 h-[calc(100vh-48px)] w-[250px] min-w-[250px] overflow-y-auto border border-b-0 border-l-0 border-t-0 border-gray-100 dark:border-neutral-600 bg-gray-100 transition dark:bg-neutral-900`}
+  >
+    <div class="flex h-full flex-col">
+      <div class="">
+        <OrgSelector />
 
-      <ul class="mt-4 my-2 px-4">
-        {#each menuItems as menuItem}
-          {#if menuItem.show}
-            <a
-              href="{$currentOrgPath}{menuItem.path}"
-              class="text-black no-underline"
-              on:click={toggleSidebar}
-            >
-              <li
-                class="mb-1 flex items-center gap-2.5 px-2.5 py-2 {NavClasses.item} {isActive(
-                  $page.url.pathname,
-                  `${$currentOrgPath}${menuItem.path}`
-                )
-                  ? NavClasses.active
-                  : 'dark:text-white'}"
+        <ul class="mt-4 my-2 px-4">
+          {#each menuItems as menuItem}
+            {#if menuItem.show}
+              <a
+                href="{$currentOrgPath}{menuItem.path}"
+                class="text-black no-underline"
+                on:click={toggleSidebar}
               >
-                {#if menuItem.path === ''}
-                  <HomeIcon />
-                {:else if menuItem.path === '/courses'}
-                  <CourseIcon />
-                {:else if menuItem.path === '/site'}
-                  <SiteSettingsIcon />
-                {:else if menuItem.path === '/community'}
-                  <ForumIcon size={20} class="carbon-icon fill-[#000] dark:fill-[#fff]" />
-                {:else if menuItem.path === '/quiz'}
-                  <QuizIcon />
-                {:else if menuItem.path === '/audience'}
-                  <AudienceIcon />
-                {:else if menuItem.path === '/setup'}
-                  <SettingsAdjust />
-                {/if}
-                <p class="text-sm font-medium">{menuItem.label}</p>
-              </li>
-            </a>
-          {/if}
-        {/each}
+                <li
+                  class="mb-1 flex items-center gap-2.5 px-2.5 py-2 {NavClasses.item} {isActive(
+                    $page.url.pathname,
+                    `${$currentOrgPath}${menuItem.path}`
+                  )
+                    ? NavClasses.active
+                    : 'dark:text-white'}"
+                >
+                  {#if menuItem.path === ''}
+                    <HomeIcon />
+                  {:else if menuItem.path === '/courses'}
+                    <CourseIcon />
+                  {:else if menuItem.path === '/site'}
+                    <SiteSettingsIcon />
+                  {:else if menuItem.path === '/community'}
+                    <ForumIcon size={20} class="carbon-icon fill-[#000] dark:fill-[#fff]" />
+                  {:else if menuItem.path === '/quiz'}
+                    <QuizIcon />
+                  {:else if menuItem.path === '/audience'}
+                    <AudienceIcon />
+                  {:else if menuItem.path === '/setup'}
+                    <SettingsAdjust />
+                  {/if}
+                  <p class="text-sm font-medium">{menuItem.label}</p>
+                </li>
+              </a>
+            {/if}
+          {/each}
+        </ul>
+      </div>
+      <span class="flex-grow" />
+
+      {#if $isFreePlan}
+        <div
+          class="border-primary-700 mx-4 flex flex-col items-center justify-center gap-4 rounded-md border px-2 py-6 text-center hover:scale-95 transition-all ease-in-out"
+        >
+          <img src="/upgrade.png" alt="upgrade" class="h-16 w-16" />
+          <span class="flex flex-col gap-1">
+            <p class="text-base font-semibold">{$t('org_navigation.early_adopter')}</p>
+            <p class="text-xs">{$t('org_navigation.unlock')}</p>
+          </span>
+          <PrimaryButton
+            label={$t('org_navigation.upgrade')}
+            onClick={openModal}
+            className="font-normal"
+          />
+        </div>
+      {/if}
+
+      <ul class="my-5 px-4 pb-5">
+        <a href={$currentOrgPath} class="text-black no-underline" on:click={toggleSidebar}>
+          <li class="mb-2 flex items-center rounded px-2.5 py-1.5">
+            <HelpIcon size={20} class="carbon-icon dark:text-white" />
+            <p class="ml-2.5 dark:text-white text-sm font-medium">{$t('org_navigation.help')}</p>
+          </li>
+        </a>
+
+        <div
+          class="text-black no-underline cursor-pointer flex items-center justify-between mb-2 px-2.5 py-1.5 {NavClasses.item}"
+        >
+          <li class="flex items-center" on:click={() => ($popUp.open = !$popUp.open)}>
+            <Avatar
+              src={$profile.avatar_url}
+              name={$profile.username}
+              width="w-[1.2rem]"
+              height="h-[1.2rem]"
+            />
+            <p class="ml-2.5 text-sm font-medium line-clamp-1">Nwosu Ifeanyi Emmanuel</p>
+          </li>
+          <div>
+            <ChevronRight />
+          </div>
+        </div>
       </ul>
     </div>
-    <span class="flex-grow" />
-
-    {#if $isFreePlan}
-      <div
-        class="border-primary-700 mx-4 flex flex-col items-center justify-center gap-4 rounded-md border px-2 py-6 text-center hover:scale-95 transition-all ease-in-out"
-      >
-        <img src="/upgrade.png" alt="upgrade" class="h-16 w-16" />
-        <span class="flex flex-col gap-1">
-          <p class="text-base font-semibold">{$t('org_navigation.early_adopter')}</p>
-          <p class="text-xs">{$t('org_navigation.unlock')}</p>
-        </span>
-        <PrimaryButton
-          label={$t('org_navigation.upgrade')}
-          onClick={openModal}
-          className="font-normal"
-        />
-      </div>
-    {/if}
-
-    <ul class="my-5 px-4 pb-5">
-      <a href={$currentOrgPath} class="text-black no-underline" on:click={toggleSidebar}>
-        <li class="mb-2 flex items-center rounded px-2.5 py-1.5">
-          <HelpIcon size={20} class="carbon-icon dark:text-white" />
-          <p class="ml-2.5 dark:text-white text-sm font-medium">{$t('org_navigation.help')}</p>
-        </li>
-      </a>
-
-      <div
-        class="text-black no-underline cursor-pointer flex items-center justify-between mb-2 px-2.5 py-1.5 {NavClasses.item}"
-      >
-        <li class="flex items-center" on:click={() => ($popUp.open = !$popUp.open)}>
-          <Avatar
-            src={$profile.avatar_url}
-            name={$profile.username}
-            width="w-[1.2rem]"
-            height="h-[1.2rem]"
-          />
-          <p class="ml-2.5 text-sm font-medium line-clamp-1">Nwosu Ifeanyi Emmanuel</p>
-        </li>
-        <div>
-          <ChevronRight />
-        </div>
-      </div>
-    </ul>
-  </div>
-</aside>
+  </aside>
+  <Popover
+    bind:open={$popUp.open}
+    align="right"
+    on:click:outside={({ detail }) => {
+      console.log('on:click:outside');
+      $popUp.open = ref.contains(detail.target);
+    }}
+  >
+    <MenuPopup />
+  </Popover>
+</div>
