@@ -20,7 +20,7 @@
 
   const MAX_CHARS = 164;
   let remainingChars = MAX_CHARS;
-  let showReport = true;
+  let showReport = false;
   let showSetter = true;
 
   function handleInputChange(event: any, property: keyof HtmlBody) {
@@ -183,7 +183,11 @@
               </div>
             {:else}
               What feeling describes you?
-              <span>+</span>
+              <img
+                src="/free-tools/progress-report/smiley-face-icon.svg"
+                alt="smiley face"
+                class="w-3"
+              />
             {/if}
           </button>
         </div>
@@ -219,76 +223,68 @@
         </div>
 
         <!-- avatar button -->
-        <div class="flex justify-between items-center mt-3">
-          <div class="w-2/4">
+        <div class="flex flex-wrap justify-between items-center mt-3">
+          <div class="w-full md:w-2/4">
             <p class="text-[12px] md:text-sm text-[#656565]">Choose your avatar</p>
             <button
               type="button"
               on:click={openAvatarModal}
-              class="bg-[#F7F7F7] py-1.5 mt-3 flex w-[65%] items-center justify-center gap-2"
+              class="bg-[#F7F7F7] w-full py-1.5 px-5 md:px-0 mt-3 flex md:w-[65%] items-center justify-between md:justify-center gap-2"
             >
               <img
                 src={`https://assets.cdn.clsrio.com/progress-report/avatars/${
                   $htmlBody.avatar || 'avatar_l'
                 }.svg`}
                 alt=""
-                class="w-[30%]"
+                class="w-[15%] md:w-[30%]"
               />
               <img
                 src="/free-tools/progress-report/question-mark.svg"
                 alt="A question mark"
-                class="w-[30%]"
+                class="w-[15%] md:w-[30%]"
               />
             </button>
           </div>
 
           <!-- & background -->
-          <div class="w-2/4">
+          <div class="w-full md:w-2/4">
             <p class="text-[12px] md:text-sm text-[#656565]">Choose your background</p>
             <button
               type="button"
               on:click={openBackgroundModal}
-              class="bg-[#F7F7F7] py-1.5 mt-3 flex w-[65%] items-center justify-center gap-2"
+              class="bg-[#F7F7F7] w-full py-1.5 px-5 md:px-0 mt-3 flex md:w-[65%] items-center justify-between md:justify-center gap-2"
             >
               <img
                 src={`https://assets.cdn.clsrio.com/progress-report/backgrounds/${
                   $htmlBody.background || 'blue_tetiary_background'
                 }.webp`}
                 alt="An avatar"
-                class="w-[30%]"
+                class="w-[15%] md:w-[30%]"
               />
               <img
                 src="/free-tools/progress-report/question-mark.svg"
                 alt="A question mark"
-                class="w-[30%]"
+                class="w-[15%] md:w-[30%]"
               />
             </button>
           </div>
         </div>
+        <button
+          type="button"
+          on:click={convertToPng}
+          class="bg-[#0233BD] text-white text-xs font-semibold w-full py-3 mt-5 rounded-md"
+          >Generate progress Report</button
+        >
       </div>
     {/if}
 
     <!-- right side -->
-    {#if showReport}
-      <div
-        transition:fly={{ y: 100, easing: sineInOut }}
-        class="w-full mx-auto md:w-[48%] min-w-[400px] md:max-w-[500px] px-5 md:px-1 md:mt-0 mt-5 md:p-5"
-      >
-        <!-- hide button -->
-        <div class="flex md:hidden justify-end mb-5">
-          <button
-            type="button"
-            on:click={() => {
-              showReport = false;
-              showSetter = true;
-            }}
-            class="flex justify-between items-center gap-2 px-3 py-1 rounded-full text-white text-xs bg-[#0233BD]"
-          >
-            <img src="/free-tools/progress-report/hide-icon.svg" alt="preview icon" class="w-4" />
-            Close
-          </button>
-        </div>
 
+    <div
+      transition:fly={{ y: 100, easing: sineInOut }}
+      class="w-full mx-auto md:w-[48%] min-w-[400px] md:max-w-[500px] px-5 md:px-1 md:mt-0 mt-5 md:p-5"
+    >
+      <div class="hidden md:block">
         <Report />
 
         <!-- download & share button -->
@@ -332,7 +328,66 @@
           </div>
         </div>
       </div>
-    {/if}
+
+      {#if showReport}
+        <!-- hide button -->
+        <div class="flex justify-end mb-5">
+          <button
+            type="button"
+            on:click={() => {
+              showReport = false;
+              showSetter = true;
+            }}
+            class="flex justify-between items-center gap-2 px-3 py-1 rounded-full text-white text-xs bg-[#0233BD]"
+          >
+            <img src="/free-tools/progress-report/hide-icon.svg" alt="preview icon" class="w-4" />
+            Close
+          </button>
+        </div>
+        <Report />
+
+        <!-- download & share button -->
+        <div class="mt-9 pt-8 px-2 h-auto border-t">
+          <button
+            type="button"
+            on:click={convertToPng}
+            class="bg-[#0233BD] text-white text-xs font-semibold w-full py-3 rounded-md"
+            >Download Image</button
+          >
+
+          <!-- share button -->
+          <div class="w-full md:w-[70%] mx-auto my-5">
+            <h1 class="text-sm font-semibold text-center">Share on image on social media:</h1>
+
+            <div
+              class="flex justify-evenly border rounded-xl gap-5 w-[60%] md:w-[80%] px-5 py-2 mt-2 mx-auto"
+            >
+              <button
+                type="button"
+                on:click={shareOnFacebook}
+                class="w-10 hover:scale-[1.2] transition-all duration-300"
+              >
+                <LogoFacebook size={32} />
+              </button>
+              <button
+                type="button"
+                on:click={shareOnLinkedIn}
+                class="w-10 hover:scale-[1.2] transition-all duration-300"
+              >
+                <LogoLinkedin size={32} />
+              </button>
+              <button
+                type="button"
+                on:click={shareOnTwitter}
+                class="w-5 hover:scale-[1.2] transition-all duration-300"
+              >
+                <img src="/twitter_logo.png" alt="X.com" />
+              </button>
+            </div>
+          </div>
+        </div>
+      {/if}
+    </div>
   </div>
 </section>
 
