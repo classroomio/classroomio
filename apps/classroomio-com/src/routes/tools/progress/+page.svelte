@@ -1,5 +1,7 @@
 <script lang="ts">
   import { toPng } from 'html-to-image';
+  import { fly } from 'svelte/transition';
+  import { sineInOut } from 'svelte/easing';
   import Mood from './components/Mood.svelte';
   import {
     openMoodModal,
@@ -14,9 +16,12 @@
   import Background from './components/Background.svelte';
   import Report from './components/Report.svelte';
   import FullView from './components/FullView.svelte';
+  import { LogoFacebook, LogoLinkedin } from 'carbon-icons-svelte';
 
   const MAX_CHARS = 164;
   let remainingChars = MAX_CHARS;
+  let showReport = true;
+  let showSetter = true;
 
   function handleInputChange(event: any, property: keyof HtmlBody) {
     $htmlBody[property] = event.target.value;
@@ -52,8 +57,8 @@
     window.open(url);
   }
 
-  function shareOnInstagram() {
-    window.open('  http://instagram.com/###?ref=badge');
+  function shareOnFacebook() {
+    window.open('https://www.facebook.com/');
   }
 
   function shareOnLinkedIn() {
@@ -116,151 +121,218 @@
     class="border rounded-md w-full md:w-11/12 lg:w-[80%] my-10 mx-auto shadow-md flex md:flex-row flex-col justify-evenly"
   >
     <!-- left side -->
-    <div class="w-full mx-auto md:w-[48%] max-w-[500px] p-5 md:border-r">
-      <!-- name input -->
-      <div>
-        <p class="text-sm text-[#656565]">Add your name</p>
-        <input
-          type="text"
-          bind:value={$htmlBody.name}
-          on:input={(event) => handleInputChange(event, 'name')}
-          placeholder="Enter your name here"
-          class="w-full border my-3 py-2 px-3 outline-none rounded-sm bg-[#F1F2F4] text-xs placeholder:text-sm placeholder:text-[#ADADAD]"
-        />
-      </div>
+    {#if showSetter}
+      <div
+        transition:fly={{ y: 100, easing: sineInOut }}
+        class="w-full mx-auto md:w-[48%] max-w-[500px] p-5 md:border-r"
+      >
+        <!-- preview button -->
+        <div class="flex md:hidden justify-end mb-5">
+          <button
+            type="button"
+            on:click={() => {
+              showSetter = false;
+              showReport = true;
+            }}
+            class="flex justify-between items-center gap-2 px-3 py-1 rounded-full text-white text-xs bg-[#0233BD]"
+          >
+            <img
+              src="/free-tools/progress-report/preview-icon.svg"
+              alt="preview icon"
+              class="w-4"
+            />
+            Preview
+          </button>
+        </div>
 
-      <!-- mood input -->
-      <div class="mt-3">
-        <p class="text-sm text-[#656565]">Select your mood</p>
-        <button
-          type="button"
-          on:click={openMoodModal}
-          class="w-full flex justify-between items-center border my-3 py-2 px-3 outline-none rounded-sm bg-[#F1F2F4] text-gray-400 text-sm"
-          >What feeling describes you?
-          <span>+</span>
-        </button>
-      </div>
-
-      <!-- learning input -->
-      <div class="mt-5">
-        <p class="text-sm text-[#656565]">What are you learning?</p>
-        <textarea
-          bind:value={$htmlBody.learning}
-          maxlength={MAX_CHARS}
-          on:input={(event) => handleInputChange(event, 'learning')}
-          placeholder="Tell us what you are learning"
-          class="w-full h-[17vh] border my-3 py-2 px-3 outline-none rounded-sm bg-[#F1F2F4] text-sm placeholder:text-sm placeholder:text-[#ADADAD]"
-        ></textarea>
-        <p class="text-xs text-right text-[#656565]">{remainingChars} characters remaining</p>
-      </div>
-
-      <!-- range input -->
-      <div class="mt-3">
-        <p class="text-sm text-[#656565] pb-4">Estimate your progress</p>
-        <div class="flex justify-between items-center">
+        <!-- name input -->
+        <div>
+          <p class="text-sm text-[#656565]">Add your name</p>
           <input
-            type="range"
-            min="0"
-            max="100"
-            bind:value={$htmlBody.progress}
-            class="range-input"
-            on:input={(event) => handleInputChange(event, 'progress')}
-            style="background: linear-gradient(to right, #0F62FE {$htmlBody.progress}%, #ccc {$htmlBody.progress}%);"
+            type="text"
+            bind:value={$htmlBody.name}
+            on:input={(event) => handleInputChange(event, 'name')}
+            placeholder="Enter your name here"
+            class="w-full border my-3 py-2 px-3 outline-none rounded-sm bg-[#F1F2F4] text-xs placeholder:text-sm placeholder:text-[#ADADAD]"
           />
-          <p class="text-sm font-semibold">{$htmlBody.progress}%</p>
         </div>
-      </div>
 
-      <!-- avatar button -->
-      <div class="flex justify-between items-center mt-3">
-        <div class="w-2/4">
-          <p class="text-[12px] md:text-sm text-[#656565]">Choose your avatar</p>
+        <!-- mood input -->
+        <div class="mt-3">
+          <p class="text-sm text-[#656565]">Select your mood</p>
           <button
             type="button"
-            on:click={openAvatarModal}
-            class="bg-[#F7F7F7] py-1.5 mt-3 flex w-[65%] items-center justify-center gap-2"
+            on:click={openMoodModal}
+            class="w-full flex justify-between items-center border my-3 py-2 px-3 outline-none rounded-sm bg-[#F1F2F4] text-gray-400 text-sm"
           >
-            <img
-              src="https://assets.cdn.clsrio.com/progress-report/avatars/avatar_l.svg"
-              alt="An avatar"
-              class="w-[30%]"
-            />
-            <img
-              src="/free-tools/progress-report/question-mark.svg"
-              alt="A question mark"
-              class="w-[30%]"
-            />
+            {#if $htmlBody.mood.text}
+              <div
+                class="px-3 py-1 border border-[#EDEDED] text-white bg-blue-500 rounded-2xl font-semibold text-[7px] md:text-xs flex items-center justify-between"
+              >
+                {#if $htmlBody.mood.text}
+                  <span class="flex gap-1 items-center">
+                    <p class="font-semibold text-[9px] md:text-xs">is {$htmlBody.mood.text}</p>
+                    <img
+                      src="https://assets.cdn.clsrio.com/progress-report/emojis/{$htmlBody.mood
+                        .iconSrc}.png"
+                      alt={$htmlBody.mood.text}
+                      class="w-3"
+                    />
+                  </span>
+                {/if}
+              </div>
+            {:else}
+              What feeling describes you?
+              <span>+</span>
+            {/if}
           </button>
         </div>
 
-        <!-- & background -->
-        <div class="w-2/4">
-          <p class="text-[12px] md:text-sm text-[#656565]">Choose your background</p>
-          <button
-            type="button"
-            on:click={openBackgroundModal}
-            class="bg-[#F7F7F7] py-1.5 mt-3 flex w-[65%] items-center justify-center gap-2"
-          >
-            <img
-              src="https://assets.cdn.clsrio.com/progress-report/backgrounds/blue_tetiary_background.png"
-              alt="An avatar"
-              class="w-[30%]"
-            />
-            <img
-              src="/free-tools/progress-report/question-mark.svg"
-              alt="A question mark"
-              class="w-[30%]"
-            />
-          </button>
+        <!-- learning input -->
+        <div class="mt-5">
+          <p class="text-sm text-[#656565]">What are you learning?</p>
+          <textarea
+            bind:value={$htmlBody.learning}
+            maxlength={MAX_CHARS}
+            on:input={(event) => handleInputChange(event, 'learning')}
+            placeholder="Tell us what you are learning"
+            class="w-full h-[17vh] border my-3 py-2 px-3 outline-none rounded-sm bg-[#F1F2F4] text-sm placeholder:text-sm placeholder:text-[#ADADAD]"
+          ></textarea>
+          <p class="text-xs text-right text-[#656565]">{remainingChars} characters remaining</p>
         </div>
-      </div>
-    </div>
 
-    <!-- right side -->
-    <div class="w-full mx-auto md:w-[48%] min-w-[400px] md:max-w-[500px] px-1 md:p-5">
-      <Report />
+        <!-- range input -->
+        <div class="mt-3">
+          <p class="text-sm text-[#656565] pb-4">Estimate your progress</p>
+          <div class="flex justify-between items-center">
+            <input
+              type="range"
+              min="0"
+              max="100"
+              bind:value={$htmlBody.progress}
+              class="range-input"
+              on:input={(event) => handleInputChange(event, 'progress')}
+              style="background: linear-gradient(to right, #0F62FE {$htmlBody.progress}%, #ccc {$htmlBody.progress}%);"
+            />
+            <p class="text-sm font-semibold">{$htmlBody.progress}%</p>
+          </div>
+        </div>
 
-      <!-- download & share button -->
-      <div class="mt-9 pt-8 px-2 h-auto border-t">
-        <button
-          type="button"
-          on:click={convertToPng}
-          class="bg-[#0233BD] text-white text-xs font-semibold w-full py-3 rounded-md"
-          >Download Image</button
-        >
-
-        <!-- share button -->
-        <div class="w-full md:w-[70%] mx-auto mt-5">
-          <h1 class="text-sm font-semibold text-center">Share on image on social media:</h1>
-
-          <div
-            class="flex justify-evenly border rounded-xl gap-5 w-[60%] md:w-[80%] px-5 py-2 mt-2 mx-auto"
-          >
+        <!-- avatar button -->
+        <div class="flex justify-between items-center mt-3">
+          <div class="w-2/4">
+            <p class="text-[12px] md:text-sm text-[#656565]">Choose your avatar</p>
             <button
               type="button"
-              on:click={shareOnInstagram}
-              class="w-5 hover:scale-[1.2] transition-all duration-300"
+              on:click={openAvatarModal}
+              class="bg-[#F7F7F7] py-1.5 mt-3 flex w-[65%] items-center justify-center gap-2"
             >
-              <img src="/free-tools/progress-report/instagram.svg" alt="Instagram" />
+              <img
+                src={`https://assets.cdn.clsrio.com/progress-report/avatars/${
+                  $htmlBody.avatar || 'avatar_l'
+                }.svg`}
+                alt=""
+                class="w-[30%]"
+              />
+              <img
+                src="/free-tools/progress-report/question-mark.svg"
+                alt="A question mark"
+                class="w-[30%]"
+              />
             </button>
+          </div>
+
+          <!-- & background -->
+          <div class="w-2/4">
+            <p class="text-[12px] md:text-sm text-[#656565]">Choose your background</p>
             <button
               type="button"
-              on:click={shareOnLinkedIn}
-              class="w-5 hover:scale-[1.2] transition-all duration-300"
+              on:click={openBackgroundModal}
+              class="bg-[#F7F7F7] py-1.5 mt-3 flex w-[65%] items-center justify-center gap-2"
             >
-              <img src="/free-tools/progress-report/linkedin.svg" alt="Linkedin" />
-            </button>
-            <button
-              type="button"
-              on:click={shareOnTwitter}
-              class="w-5 hover:scale-[1.2] transition-all duration-300"
-            >
-              <img src="/free-tools/progress-report/x.svg" alt="X.com" />
+              <img
+                src={`https://assets.cdn.clsrio.com/progress-report/backgrounds/${
+                  $htmlBody.background || 'blue_tetiary_background'
+                }.webp`}
+                alt="An avatar"
+                class="w-[30%]"
+              />
+              <img
+                src="/free-tools/progress-report/question-mark.svg"
+                alt="A question mark"
+                class="w-[30%]"
+              />
             </button>
           </div>
         </div>
       </div>
-    </div>
+    {/if}
+
+    <!-- right side -->
+    {#if showReport}
+      <div
+        transition:fly={{ y: 100, easing: sineInOut }}
+        class="w-full mx-auto md:w-[48%] min-w-[400px] md:max-w-[500px] px-5 md:px-1 md:mt-0 mt-5 md:p-5"
+      >
+        <!-- hide button -->
+        <div class="flex md:hidden justify-end mb-5">
+          <button
+            type="button"
+            on:click={() => {
+              showReport = false;
+              showSetter = true;
+            }}
+            class="flex justify-between items-center gap-2 px-3 py-1 rounded-full text-white text-xs bg-[#0233BD]"
+          >
+            <img src="/free-tools/progress-report/hide-icon.svg" alt="preview icon" class="w-4" />
+            Close
+          </button>
+        </div>
+
+        <Report />
+
+        <!-- download & share button -->
+        <div class="mt-9 pt-8 px-2 h-auto border-t">
+          <button
+            type="button"
+            on:click={convertToPng}
+            class="bg-[#0233BD] text-white text-xs font-semibold w-full py-3 rounded-md"
+            >Download Image</button
+          >
+
+          <!-- share button -->
+          <div class="w-full md:w-[70%] mx-auto my-5">
+            <h1 class="text-sm font-semibold text-center">Share on image on social media:</h1>
+
+            <div
+              class="flex justify-evenly border rounded-xl gap-5 w-[60%] md:w-[80%] px-5 py-2 mt-2 mx-auto"
+            >
+              <button
+                type="button"
+                on:click={shareOnFacebook}
+                class="w-10 hover:scale-[1.2] transition-all duration-300"
+              >
+                <LogoFacebook size={32} />
+              </button>
+              <button
+                type="button"
+                on:click={shareOnLinkedIn}
+                class="w-10 hover:scale-[1.2] transition-all duration-300"
+              >
+                <LogoLinkedin size={32} />
+              </button>
+              <button
+                type="button"
+                on:click={shareOnTwitter}
+                class="w-5 hover:scale-[1.2] transition-all duration-300"
+              >
+                <img src="/twitter_logo.png" alt="X.com" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    {/if}
   </div>
 </section>
 

@@ -1,7 +1,11 @@
 <script lang="ts">
   import { openBackground, closeBackgroundModal, htmlBody, type Source } from './store';
 
-  let backgrounds = [
+  interface Background {
+    src: string;
+  }
+
+  let backgrounds: Background[] = [
     {
       src: 'blue_tetiary_background'
     },
@@ -76,7 +80,7 @@
             class="flex w-[30%] items-center shadow-sm hover:scale-110 transition-all duration-300"
           >
             <img
-              src="https://assets.cdn.clsrio.com/progress-report/backgrounds/{background.src}.png"
+              src="https://assets.cdn.clsrio.com/progress-report/backgrounds/{background.src}.webp"
               alt=""
               class=""
             />
