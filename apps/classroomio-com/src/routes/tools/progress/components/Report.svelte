@@ -74,11 +74,18 @@
           style="background-color: {$backgroundColor}; color: white"
           class="px-3 py-0.5 border border-[#EDEDED] rounded-2xl mt-5 font-semibold text-[7px] md:text-[10px] flex items-center justify-between"
         >
-          <span class="mr-0.5">{$htmlBody.name}</span>
+          <span class="mr-0.5" style="color: {$backgroundColor === '#F1F6FF' ? 'black' : 'white'};"
+            >{$htmlBody.name}</span
+          >
 
           {#if $htmlBody.mood.text}
             <span class="flex gap-1 items-center">
-              <p class="font-semibold text-[7px] md:text-[10px]">is {$htmlBody.mood.text}</p>
+              <p
+                class="font-semibold text-[7px] md:text-[10px]"
+                style="color: {$backgroundColor === '#F1F6FF' ? 'black' : 'white'};"
+              >
+                is {$htmlBody.mood.text}
+              </p>
               <img
                 src="https://assets.cdn.clsrio.com/progress-report/emojis/{$htmlBody.mood
                   .iconSrc}.png"
@@ -90,9 +97,7 @@
         </div>
       {:else}
         <p
-          style="background-color: {$backgroundColor}; color: {$backgroundColor === '#F1F6FF'
-            ? 'black'
-            : 'white'};"
+          style="background-color: {$backgroundColor}"
           class="px-3 py-0.5 border border-[#EDEDED] rounded-2xl mt-3 font-medium text-[9px]"
         >
           Add your name
