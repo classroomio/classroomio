@@ -2,7 +2,7 @@
   import { page } from '$app/stores';
   import HelpIcon from 'carbon-icons-svelte/lib/Help.svelte';
   import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
-  import { SettingsAdjust } from 'carbon-icons-svelte';
+  import { ChevronRight, SettingsAdjust } from 'carbon-icons-svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import OrgSelector from '$lib/components/OrgSelector/OrgSelector.svelte';
   import HomeIcon from '$lib/components/Icons/HomeIcon.svelte';
@@ -12,10 +12,11 @@
   import AudienceIcon from '$lib/components/Icons/AudienceIcon.svelte';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import { currentOrgPath, currentOrgPlan, isFreePlan } from '$lib/utils/store/org';
+
   import { isOrgAdmin } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
-  import { sideBar } from './store';
+  import { sideBar, popUp } from './store';
   import { t } from '$lib/utils/functions/translations';
   import { goto } from '$app/navigation';
 
@@ -186,24 +187,23 @@
           <p class="ml-2.5 dark:text-white text-sm font-medium">{$t('org_navigation.help')}</p>
         </li>
       </a>
-      <a href="{$currentOrgPath}/settings" class="text-black no-underline" on:click={toggleSidebar}>
-        <li
-          class="mb-2 flex items-center px-2.5 py-1.5 {NavClasses.item} {isActive(
-            $page.url.pathname,
-            `${$currentOrgPath}/settings`
-          )
-            ? NavClasses.active
-            : 'dark:text-white'}"
-        >
+
+      <div
+        class="text-black no-underline cursor-pointer flex items-center justify-between mb-2 px-2.5 py-1.5 {NavClasses.item}"
+      >
+        <li class="flex items-center" on:click={() => ($popUp.open = !$popUp.open)}>
           <Avatar
             src={$profile.avatar_url}
             name={$profile.username}
             width="w-[1.2rem]"
             height="h-[1.2rem]"
           />
-          <p class="ml-2.5 text-sm font-medium">{$t('org_navigation.settings')}</p>
+          <p class="ml-2.5 text-sm font-medium line-clamp-1">Nwosu Ifeanyi Emmanuel</p>
         </li>
-      </a>
+        <div>
+          <ChevronRight />
+        </div>
+      </div>
     </ul>
   </div>
 </aside>

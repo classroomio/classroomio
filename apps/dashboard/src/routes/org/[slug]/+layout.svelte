@@ -7,8 +7,12 @@
   import Box from '$lib/components/Box/index.svelte';
   import { currentOrg } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
+  import { Popover } from 'carbon-components-svelte';
+  import { popUp } from '$lib/components/Org/store.js';
 
   export let data;
+
+  let ref = null;
 
   $: if ($currentOrg.id && data.orgName === '*') {
     const newUrl = $page.url.pathname.replace('*', $currentOrg.siteName);
@@ -22,7 +26,19 @@
 
 <div class="org-root w-full flex items-center justify-between">
   {#if !isQuizPage($page.url?.pathname)}
-    <OrgSideBar />
+    <div bind:this={ref} style:position="relative">
+      <OrgSideBar />
+      <Popover
+        bind:open={$popUp.open}
+        align="right"
+        on:click:outside={({ detail }) => {
+          console.log('on:click:outside');
+          $popUp.open = ref.contains(detail.target);
+        }}
+      >
+        <div class="p-8">Content</div>
+      </Popover>
+    </div>
   {/if}
   <div class="org-slot bg-white dark:bg-black w-full">
     {#if data.orgName === '*'}

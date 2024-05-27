@@ -7,3 +7,7 @@ export const newOrgModal = writable({
 export const sideBar = writable({
   hidden: true
 });
+
+export const popUp = writable({
+  open: false
+});
