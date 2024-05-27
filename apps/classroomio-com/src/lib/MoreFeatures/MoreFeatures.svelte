@@ -36,6 +36,31 @@
     }
   ];
 
+  const tools = [
+    {
+      src: '/free-tools/progress-report.svg',
+      title: 'Progress Report',
+      subText:
+        'Generate cool reports & monitor progress in real-time. Share reports with your network for collaborative learning',
+      show: true
+    },
+
+    {
+      src: '/free-tools/activity-stopwatch.svg',
+      title: 'Activity Timer',
+      subText:
+        'Stay on track and enhance productivity with our customizable timer for timed tasks, quizzes, and study sessions',
+      show: true
+    },
+    {
+      src: '/free-tools/tic-tac.svg',
+      title: 'Tic tac toe game',
+      subText:
+        "More than just a game; it's an educational tool that teaches pattern recognition, and decision-making.",
+      show: true
+    }
+  ];
+
   onMount(() => {
     if (window.innerWidth > 768) {
       interval = setInterval(() => {
@@ -102,6 +127,32 @@
             alt={moreFeatures[selected].title}
           />
         {/key}
+      </div>
+    </div>
+
+    <!-- free tools section -->
+    <div>
+      <div class="flex justify-evenly gap-y-8 flex-wrap w-full mt-10 mx-auto">
+        {#each tools as tool}
+          <div
+            class="w-full flex flex-col gap-3 max-w-[400px] md:max-w-[300px] p-5 border rounded-md bg-[#F7F7F7] shadow-sm hover:scale-95 transition-all ease-in-out"
+          >
+            <img class="w-[30%] rounded-full border border-[#EAEAEA]" src={tool.src} alt="" />
+            <div class="bg-[#fff] rounded-r-md p-3">
+              <h1 class="font-bold text-sm md:text-base">{tool.title}</h1>
+              <p class="text-xs text-gray-600 mt-1.5">
+                {tool.subText}
+              </p>
+            </div>
+          </div>
+        {/each}
+      </div>
+      <div class="flex justify-center items-center mt-20">
+        <a
+          href="/tools"
+          class="bg-blue-600 text-white w-full rounded-md max-w-[400px] md:max-w-[300px] py-3 text-xs text-center"
+          >View More</a
+        >
       </div>
     </div>
   </div>
