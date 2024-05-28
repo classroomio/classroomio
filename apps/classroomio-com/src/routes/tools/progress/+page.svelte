@@ -18,7 +18,7 @@
   import FullView from './components/FullView.svelte';
   import { LogoFacebook, LogoLinkedin } from 'carbon-icons-svelte';
 
-  const MAX_CHARS = 164;
+  const MAX_CHARS = 160;
   let remainingChars = MAX_CHARS;
   let showReport = false;
   let showSetter = true;

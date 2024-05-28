@@ -72,7 +72,7 @@
       {#if $htmlBody.name || $htmlBody.mood.text}
         <div
           style="background-color: {$backgroundColor}; color: white"
-          class="px-3 py-0.5 border border-[#EDEDED] rounded-2xl mt-5 font-semibold text-[7px] md:text-[10px] flex items-center justify-between"
+          class="px-3 py-0.5 border border-[#EDEDED] rounded-2xl mt-5 font-semibold text-[10px] md:text-[0.7rem] flex items-center justify-between"
         >
           <span class="mr-0.5" style="color: {$backgroundColor === '#F1F6FF' ? 'black' : 'white'};"
             >{$htmlBody.name}</span
@@ -81,7 +81,7 @@
           {#if $htmlBody.mood.text}
             <span class="flex gap-1 items-center">
               <p
-                class="font-semibold text-[7px] md:text-[10px]"
+                class="font-semibold text-[10px] md:text-[0.7rem]"
                 style="color: {$backgroundColor === '#F1F6FF' ? 'black' : 'white'};"
               >
                 is {$htmlBody.mood.text}
@@ -106,7 +106,7 @@
 
       <!-- learning -->
       <span
-        class="w-full md:mt-2 p-1 overflow-hidden text-[0.6rem] text-center outline-none h-[12vh]"
+        class="w-full md:mt-2 p-1 overflow-hidden text-[0.8rem] text-center outline-none h-[12vh]"
       >
         {$htmlBody.learning}
       </span>
