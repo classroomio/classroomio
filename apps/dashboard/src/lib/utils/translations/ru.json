@@ -154,7 +154,11 @@
         "submitting_poll": "Произошла ошибка при отправке опроса"
       }
     },
-    "success_update": "Успешно Обновлено"
+    "success_update": "Успешно Обновлено",
+    "generic": {
+      "success_delete": "Удален успешно",
+      "try_again": "Ошибка. Повторите попытку позже."
+    }
   },
   "exercises": {
     "heading": "Упражнения",

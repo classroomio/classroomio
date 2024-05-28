@@ -322,7 +322,10 @@
                   <OverflowMenuItem
                     danger
                     text={$t('course.navItem.lessons.add_lesson.delete')}
-                    on:click={() => handleDelete(lesson.id)}
+                    on:click={() => {
+                      lessonToDelete = lesson;
+                      openDeleteModal = true;
+                    }}
                   />
                 </OverflowMenu>
               </RoleBasedSecurity>
