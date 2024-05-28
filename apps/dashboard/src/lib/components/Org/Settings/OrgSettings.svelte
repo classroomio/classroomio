@@ -15,7 +15,6 @@
   import { updateOrgNameValidation } from '$lib/utils/functions/validator';
 
   let avatar;
-  let orgName = '';
 
   type Error = {
     orgName: string;
@@ -53,7 +52,7 @@
   }
 
   async function handleUpdate() {
-    errors = updateOrgNameValidation(orgName) as Error;
+    errors = updateOrgNameValidation($currentOrg.name) as Error;
 
     if (Object.values(errors).length) {
       loading = false;
@@ -64,12 +63,12 @@
       loading = true;
 
       const updates = {
-        name: orgName,
+        name: $currentOrg.name,
         avatar_url: avatar
       };
 
       if (avatar) {
-        const filename = `user/${orgName + Date.now()}.webp`;
+        const filename = `user/${$currentOrg.name + Date.now()}.webp`;
 
         const { data } = await supabase.storage.from('avatars').upload(filename, avatar, {
           cacheControl: '3600',
@@ -115,20 +114,13 @@
     goto(`${$currentOrgPath}/settings${pathname}`);
   }
 
-  function setOrgName(_orgName: string) {
-    if (!orgName) {
-      orgName = _orgName;
-    }
-  }
-
   function resetErrors(_orgName: string) {
     if (errors.orgName) {
       errors.orgName = '';
     }
   }
 
-  $: resetErrors(orgName);
-  $: setOrgName($currentOrg.name);
+  $: resetErrors($currentOrg.name);
 </script>
 
 <Grid class="border-c rounded border-gray-200 dark:border-neutral-600 w-full mt-5">
@@ -140,7 +132,7 @@
     <Column sm={8} md={8} lg={8} class="mt-2 lg:mt-0 flex flex-col items-center lg:items-start">
       <TextField
         label={$t('settings.organization.organization_profile.organization_name')}
-        bind:value={orgName}
+        bind:value={$currentOrg.name}
         className="w-full lg:w-60 mb-5"
         errorMessage={errors.orgName}
       />
