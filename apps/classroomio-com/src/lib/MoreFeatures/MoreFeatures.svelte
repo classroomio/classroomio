@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
   import { folder, globe, team, transcription } from '$lib/emojis';
+  import { tools } from '$lib/constants/tools';
 
   let selected = 0;
   let interval: NodeJS.Timer;
@@ -36,30 +37,7 @@
     }
   ];
 
-  const tools = [
-    {
-      src: '/free-tools/progress-report.svg',
-      title: 'Progress Report',
-      subText:
-        'Generate cool reports & monitor progress in real-time. Share reports with your network for collaborative learning',
-      show: true
-    },
-
-    {
-      src: '/free-tools/activity-stopwatch.svg',
-      title: 'Activity Timer',
-      subText:
-        'Stay on track and enhance productivity with our customizable timer for timed tasks, quizzes, and study sessions',
-      show: true
-    },
-    {
-      src: '/free-tools/tic-tac.svg',
-      title: 'Tic tac toe game',
-      subText:
-        "More than just a game; it's an educational tool that teaches pattern recognition, and decision-making.",
-      show: true
-    }
-  ];
+  const freeTools = tools.filter((item) => item.showFeature);
 
   onMount(() => {
     if (window.innerWidth > 768) {
@@ -133,7 +111,7 @@
     <!-- free tools section -->
     <div>
       <div class="flex justify-evenly gap-y-8 flex-wrap w-full mt-10 mx-auto">
-        {#each tools as tool}
+        {#each freeTools as tool}
           <div
             class="w-full flex flex-col gap-3 max-w-[400px] md:max-w-[300px] p-5 border rounded-md bg-[#F7F7F7] shadow-sm hover:scale-95 transition-all ease-in-out"
           >
