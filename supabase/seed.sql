@@ -329,12 +329,6 @@ INSERT INTO "public"."lesson_comment" ("id", "created_at", "updated_at", "lesson
 --
 
 
---
--- Data for Name: lesson_progress; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-
-
 
 INSERT INTO "public"."question" ("id", "question_type_id", "title", "created_at", "updated_at", "exercise_id", "name", "points", "order") VALUES
 	(1, 2, 'What does MVC stand for', '2023-12-16 14:51:49.433261+00', '2023-12-16 14:51:49.433261+00', 'e2ea9fb8-6448-4f6c-a1d5-02c2b12cf862', 'd7316838-284f-4096-bf55-e51db9a98d47', 0, 0),

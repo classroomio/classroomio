@@ -154,7 +154,11 @@
         "submitting_poll": "Đã xảy ra lỗi khi gửi cuộc thăm dò ý kiến"
       }
     },
-    "success_update": "Cập nhật thành công"
+    "success_update": "Cập nhật thành công",
+    "generic": {
+      "success_delete": "Đã xoá thành công",
+      "try_again": "Lỗi - Vui lòng thử lại sau"
+    }
   },
   "exercises": {
     "heading": "Bài tập",

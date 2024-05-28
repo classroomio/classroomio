@@ -154,7 +154,11 @@
         "submitting_poll": "Ocorreu um erro ao enviar a enquete"
       }
     },
-    "success_update": "Atualizado com sucesso"
+    "success_update": "Atualizado com sucesso",
+    "generic": {
+      "success_delete": "Apagado com sucesso",
+      "try_again": "Erro - Tente novamente mais tarde"
+    }
   },
   "exercises": {
     "heading": "Exercícios",

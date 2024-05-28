@@ -154,7 +154,11 @@
         "submitting_poll": "Une erreur s'est produite lors de la soumission du sondage"
       }
     },
-    "success_update": "Mis à jour avec succés"
+    "success_update": "Mis à jour avec succés",
+    "generic": {
+      "success_delete": "Supprimé avec succès",
+      "try_again": "Erreur - Veuillez réessayer plus tard"
+    }
   },
   "exercises": {
     "heading": "Des exercices",

@@ -76,7 +76,8 @@
       if (!$lesson.id) return;
 
       toggleConfetti();
-      const template: ExerciseTemplate = JSON.parse($completion);
+      const responseData = $completion.replace('```json', '').replace('```', '');
+      const template: ExerciseTemplate = JSON.parse(responseData);
       await handleTemplateCreate(template);
       toggleConfetti();
       $isLoading = false;

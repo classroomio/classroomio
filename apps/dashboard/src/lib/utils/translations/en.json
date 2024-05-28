@@ -1266,6 +1266,11 @@
     "setup": {
       "info_lesson": "You Need to Create a lesson",
       "info_course": "You need to create a course"
+    },
+
+    "generic": {
+      "success_delete": "Deleted successfully",
+      "try_again": "Error - Please try again later"
     }
   },
 

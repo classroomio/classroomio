@@ -154,7 +154,11 @@
         "submitting_poll": "Beim Absenden der Umfrage ist ein Fehler aufgetreten"
       }
     },
-    "success_update": "Erfolgreich geupdated"
+    "success_update": "Erfolgreich geupdated",
+    "generic": {
+      "success_delete": "Erfolgreich gelöscht",
+      "try_again": "Fehler – Bitte versuchen Sie es später noch einmal"
+    }
   },
   "exercises": {
     "heading": "Übungen",
