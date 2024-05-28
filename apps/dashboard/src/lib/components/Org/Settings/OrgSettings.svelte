@@ -64,7 +64,6 @@
 
       const updates = {
         name: $currentOrg.name,
-        avatar_url: avatar
       };
 
       if (avatar) {
