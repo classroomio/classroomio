@@ -13,10 +13,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
   import { ChevronRight } from 'carbon-icons-svelte';
-  import { Popover } from 'carbon-components-svelte';
-  import MenuPopup from '$lib/components/Org/MenuPopup/index.svelte';
-  import { isMobile } from '$lib/utils/store/useMobile';
-  import Modal from '$lib/components/Modal/index.svelte';
+  import BottomMenu from '$lib/components/Org/BottomMenu/index.svelte';
 
   interface sideLinks {
     name: string;
@@ -24,8 +21,6 @@
     link: string;
     show?: () => boolean;
   }
-
-  let ref = null;
 
   function isActive(pagePath: string, itemPath: string) {
     const pageLinkItems = pagePath.split('/');
@@ -74,13 +69,13 @@
   };
 </script>
 
-<div bind:this={ref} class="static md:relative">
+<div bind:this={$popUp.ref} class="static md:relative">
   <aside
     class={`${
       $sideBar.hidden
         ? '-translate-x-[100%] absolute md:translate-x-0 md:relative z-40 top-[48px] md:top-0'
         : 'translate-x-0 absolute md:relative z-40 top-[48px] md:top-0'
-    } border border-red-500 overflow-y-auto transition w-[250px] min-w-[250px] bg-gray-100 dark:bg-neutral-900 h-[calc(100vh-48px)]`}
+    }  overflow-y-auto transition w-[250px] min-w-[250px] bg-gray-100 dark:bg-neutral-900 h-[calc(100vh-48px)]`}
   >
     <div class="h-full flex flex-col">
       <div class="border-b border-gray-200 dark:border-neutral-600 pt-5 px-4">
@@ -128,51 +123,26 @@
             <p class="dark:text-white ml-2">{$t('lms_navigation.help')}</p>
           </li>
         </a>
-        <div
-          class="text-black no-underline cursor-pointer flex items-center justify-between mb-2 px-2.5 py-1.5 {NavClasses.item}"
+        <button
+          class="text-black no-underline cursor-pointer flex items-center justify-between mb-2 px-2.5 py-1.5 w-full {NavClasses.item}"
+          on:click={() => ($popUp.open = !$popUp.open)}
         >
-          <button
-            class="flex text-ellipsis text-start items-center justify-start space-x-1 w-[80%]"
-            on:click={() => ($popUp.open = !$popUp.open)}
-          >
+          <div class="flex text-start items-center justify-start space-x-1 w-[80%]">
             <Avatar
               src={$profile.avatar_url}
-              name={$profile.fullname}
+              name={$profile.username}
               width="w-[1.2rem]"
               height="h-[1.2rem]"
             />
-            <p class="text-sm font-medium truncate max-w-full">
-              {$profile.fullname}
-            </p>
-          </button>
+            <p class="text-sm font-medium truncate max-w-full">{$profile.fullname}</p>
+          </div>
           <div>
             <ChevronRight />
           </div>
-        </div>
+        </button>
       </ul>
     </div>
   </aside>
 
-  {#if $isMobile}
-    <Modal
-      bind:open={$popUp.open}
-      onClose={() => ($popUp.open = false)}
-      width="w-4/5"
-      containerClass="h-full !max-h-[70vh] pt-0 pb-2"
-      headerClass="py-1"
-    >
-      <MenuPopup />
-    </Modal>
-  {:else}
-    <Popover
-      bind:open={$popUp.open}
-      align="right"
-      on:click:outside={({ detail }) => {
-        console.log('on:click:outside');
-        $popUp.open = ref.contains(detail.target);
-      }}
-    >
-      <MenuPopup />
-    </Popover>
-  {/if}
+  <BottomMenu />
 </div>

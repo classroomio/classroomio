@@ -25,13 +25,7 @@
   import { sideBar, popUp } from './store';
   import { t } from '$lib/utils/functions/translations';
   import { goto } from '$app/navigation';
-  import { Popover } from 'carbon-components-svelte';
-  import { VARIANTS } from '../PrimaryButton/constants';
-  import { globalStore } from '$lib/utils/store/app';
-  import MenuPopup from '$lib/components/Org/MenuPopup/index.svelte';
-  import Modal from '$lib/components/Modal/index.svelte';
-
-  import { isMobile } from '$lib/utils/store/useMobile';
+  import BottomMenu from '$lib/components/Org/BottomMenu/index.svelte';
 
   interface menuItems {
     label: string;
@@ -40,7 +34,7 @@
   }
 
   let menuItems: menuItems[] = [];
-  let ref = null;
+
   function isActive(pagePath: string, itemPath: string) {
     const pageLinkItems = pagePath.split('/');
     const itemLinkItems = itemPath.split('/');
@@ -125,7 +119,7 @@
   ];
 </script>
 
-<div bind:this={ref} class="static md:relative">
+<div bind:this={$popUp.ref} class="static md:relative">
   <aside
     class={`${
       $sideBar.hidden
@@ -202,19 +196,11 @@
           </li>
         </a>
 
-        <div
-          class="text-black no-underline cursor-pointer flex items-center justify-between mb-2 px-2.5 py-1.5 {NavClasses.item}"
+        <button
+          class="text-black no-underline cursor-pointer flex items-center justify-between mb-2 px-2.5 py-1.5 w-full {NavClasses.item}"
+          on:click={() => ($popUp.open = !$popUp.open)}
         >
-          <button
-            class="flex text-start items-center justify-start space-x-1
-            
-            
-            
-            
-            
-            w-[80%]"
-            on:click={() => ($popUp.open = !$popUp.open)}
-          >
+          <div class="flex text-start items-center justify-start space-x-1 w-[80%]">
             <Avatar
               src={$profile.avatar_url}
               name={$profile.username}
@@ -222,35 +208,14 @@
               height="h-[1.2rem]"
             />
             <p class="text-sm font-medium truncate max-w-full">{$profile.fullname}</p>
-          </button>
+          </div>
           <div>
             <ChevronRight />
           </div>
-        </div>
+        </button>
       </ul>
     </div>
   </aside>
 
-  {#if $isMobile}
-    <Modal
-      bind:open={$popUp.open}
-      onClose={() => ($popUp.open = false)}
-      width="w-4/5"
-      containerClass="h-full !max-h-[70vh] pt-0 pb-2"
-      headerClass="py-1"
-    >
-      <MenuPopup />
-    </Modal>
-  {:else}
-    <Popover
-      bind:open={$popUp.open}
-      align="right"
-      on:click:outside={({ detail }) => {
-        console.log('on:click:outside');
-        $popUp.open = ref.contains(detail.target);
-      }}
-    >
-      <MenuPopup />
-    </Popover>
-  {/if}
+  <BottomMenu />
 </div>

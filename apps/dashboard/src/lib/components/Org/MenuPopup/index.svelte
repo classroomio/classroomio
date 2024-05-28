@@ -1,98 +1,142 @@
 <script>
-  import { VARIANTS } from '../../PrimaryButton/constants';
   import { globalStore } from '$lib/utils/store/app';
-  import { profile } from '$lib/utils/store/user';
-  import { currentOrg } from '$lib/utils/store/org';
-  import { currentOrgDomain, currentOrgPath } from '$lib/utils/store/org';
-
+  import { user, profile, defaultProfileState, defaultUserState } from '$lib/utils/store/user';
+  import {
+    currentOrg,
+    orgs,
+    defaultCurrentOrgState,
+    currentOrgDomain,
+    currentOrgPath
+  } from '$lib/utils/store/org';
   import { ChevronDown, Settings } from 'carbon-icons-svelte';
   import Logout from 'carbon-icons-svelte/lib/Logout.svelte';
   import Rocket from 'carbon-icons-svelte/lib/Rocket.svelte';
   import NewTab from 'carbon-icons-svelte/lib/NewTab.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { goto } from '$app/navigation';
+  import { sideBar, popUp } from '../store';
+  import { supabase } from '$lib/utils/functions/supabase';
+  import { capturePosthogEvent } from '$lib/utils/services/posthog';
+  import { NavClasses } from '$lib/utils/constants/reusableClass';
+  import { t } from '$lib/utils/functions/translations';
+  import posthog from 'posthog-js';
 
-  const handleNavigate = (url) => {
-    goto(url);
-  };
+  async function logout() {
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      console.error('Error logging out: ', error);
+    }
+
+    currentOrg.set(defaultCurrentOrgState);
+    orgs.set([]);
+    user.set(defaultUserState);
+    profile.set(defaultProfileState);
+
+    capturePosthogEvent('user_logged_out');
+    posthog.reset();
+    goto('/login');
+  }
 </script>
 
-<div class="md:px-4 md:py-4 py-2 px-2 rounded-md cursor-pointer">
+<div
+  class="md:px-4 md:py-4 py-2 px-2 rounded-md cursor-pointer"
+  on:click={() => ($popUp.open = false)}
+>
   <div class="border-b py-3 space-y-4">
-    <p class="text-xs font-semibold text-gray-500">PROFILE</p>
-    <a href={`${$currentOrgPath}/settings`} class="flex items-center justify-between gap-8">
-      <span class="flex items-center gap-2">
+    <p class="text-xs font-semibold text-gray-500">{$t('popup.profile')}</p>
+    <a
+      href={`${!$globalStore.isOrgSite ? $currentOrgPath : '/lms'}/settings`}
+      class="flex items-center justify-between hover:no-underline"
+    >
+      <span class="flex items-center gap-2 max-w-[70%]">
         <img src={$profile.avatar_url} alt="profile" class="h-8 w-8 rounded-full" />
         <div>
-          <p class="text-sm font-semibold">{$profile.fullname}</p>
-          <p class="text-xs">{$profile.email}</p>
+          <p class="text-sm font-semibold w-[80%] truncate">{$profile.fullname}</p>
+          <p class="text-xs w-[80%] truncate">{$profile.email}</p>
         </div>
       </span>
-      <Settings size={20} />
+      <div>
+        <Settings size={20} />
+      </div>
     </a>
   </div>
   {#if !$globalStore.isOrgSite}
     <div class="border-b py-3 space-y-4">
-      <p class="text-xs font-semibold text-gray-500">CURRENT ORGANIZATION</p>
+      <p class="text-xs font-semibold text-gray-500">{$t('popup.current_org')}</p>
       <a
         href={`${$currentOrgPath}/settings?tab=org`}
-        class="flex items-center justify-between gap-8"
+        class="flex items-center justify-between hover:no-underline"
       >
-        <span class="flex items-center gap-2">
+        <span class="flex items-center gap-2 max-w-[70%]">
           <div
-            class="flex items-center justify-center h-8 w-8 bg-blue-900 text-white font-semibold rounded-lg"
+            class="flex items-center justify-center h-8 w-8 p-4 bg-blue-900 text-white font-semibold rounded-lg"
           >
             {$currentOrg.shortName}
           </div>
           <div>
-            <p class="text-sm font-semibold">{$currentOrg.name}</p>
-            <p class="text-xs">{`${$currentOrg.siteName || ''}.classroomio.com/`}</p>
+            <p class="text-sm font-semibold w-[80%] truncate">{$currentOrg.name}</p>
+            <p class="text-xs w-[80%] truncate">
+              {`${$currentOrg.siteName || ''}.classroomio.com/`}
+            </p>
           </div>
         </span>
-        <Settings size={20} />
+        <div>
+          <Settings size={20} />
+        </div>
       </a>
     </div>
   {/if}
 
   <div class="border-b py-3 space-y-4">
-    <p class="text-xs font-semibold text-gray-500">FREE TOOLS</p>
-    <span class="flex items-center gap-2">
+    <p class="text-xs font-semibold text-gray-500">{$t('popup.free_tools')}</p>
+    <a
+      href="https://classroomio.com/tools/progress"
+      class="hover:no-underline flex items-center gap-2"
+    >
       <img src="/progress.svg" alt="" class="h-6 w-6 rounded-full" />
-      <p class="text-sm font-semibold">Progress report</p>
-    </span>
-    <span class="flex items-center gap-2">
+      <p class="text-sm font-semibold">{$t('popup.progress')}</p>
+    </a>
+    <a
+      href="https://classroomio.com/tools/activity-stopwatch"
+      class="hover:no-underline flex items-center gap-2"
+    >
       <img src="/timer.svg" alt="" class="h-6 w-6 rounded-full" />
-      <p class="text-sm font-semibold">Activity timer</p>
-    </span>
-    <span class="flex items-center gap-2">
+      <p class="text-sm font-semibold">{$t('popup.timer')}</p>
+    </a>
+    <a
+      href="https://classroomio.com/tools/tic-tac-toe"
+      class="hover:no-underline flex items-center gap-2"
+    >
       <img src="/tictac.svg" alt="" class="h-6 w-6 rounded-full" />
-      <p class="text-sm font-semibold">Tictac toe</p>
-    </span>
-    <div class="flex items-center justify-end">
-      <PrimaryButton variant={VARIANTS.TEXT} className="text-blue-900 font-semibold text-xs ">
-        See more
+      <p class="text-sm font-semibold">{$t('popup.tic_tac')}</p>
+    </a>
+    <a href="https://classroomio.com/tools" class="flex ml-auto w-fit items-center justify-end">
+      <div class="text-blue-900 font-semibold text-xs flex items-center gap-1">
+        {$t('popup.see_more')}
         <ChevronDown class="text-blue-900" />
-      </PrimaryButton>
-    </div>
+      </div>
+    </a>
   </div>
   {#if !$globalStore.isOrgSite}
     <div class="border-b py-3 space-y-4">
-      <span class="flex items-center gap-2">
+      <a href="https://classroomio.com/roadmap" class="hover:no-underline flex items-center gap-2">
         <NewTab />
-        <p class="text-sm font-semibold">Whats new?</p>
-      </span>
-
-      <span class="flex items-center gap-2">
+        <p class="text-sm font-semibold">{$t('popup.whats_new')}</p>
+      </a>
+      <a
+        href="https://classroomio.com/tools/blog/launch-week"
+        class="hover:no-underline flex items-center gap-2"
+      >
         <Rocket />
-        <p class="text-sm font-semibold">Launch week</p>
-      </span>
+        <p class="text-sm font-semibold">{$t('popup.launch_week')}</p>
+      </a>
     </div>
   {/if}
 
-  <div class="border-b py-3 space-y-4">
+  <button on:click={logout} class="border-b py-3 space-y-4">
     <span class="flex items-center gap-2">
       <Logout />
-      <p class="text-sm font-semibold">Logout</p>
+      <p class="text-sm font-semibold">{$t('settings.profile.logout')}</p>
     </span>
-  </div>
+  </button>
 </div>

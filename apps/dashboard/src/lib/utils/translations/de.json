@@ -1239,5 +1239,16 @@
   },
   "specialization": {
     "course_tag": "Spezialisierung"
+  },
+  "popup": {
+    "profile": "PROFIL",
+    "current_org": "AKTUELLE ORGANISATION",
+    "free_tools": "KOSTENLOSE WERKZEUGE",
+    "progress": "Fortschrittsbericht",
+    "timer": "Aktivitätstimer",
+    "tic_tac": "Tictac-Zehe",
+    "see_more": "Mehr sehen",
+    "whats_new": "Was ist neu",
+    "launch_week": "Startwoche"
   }
 }

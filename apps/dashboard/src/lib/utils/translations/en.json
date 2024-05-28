@@ -42,7 +42,18 @@
     "forgot": "Forgot password?",
     "login": "Log In"
   },
+  "popup": {
+    "profile": "PROFILE",
+    "current_org": "CURRENT ORGANIZATION",
+    "free_tools": "FREE TOOLS",
+    "progress": "Progress report",
+    "timer": "Activity timer",
+    "tic_tac": "Tictac toe",
+    "see_more": "See more",
 
+    "whats_new": "What's new",
+    "launch_week": "Launch week"
+  },
   "settings": {
     "heading": "Settings",
     "subheadings": {

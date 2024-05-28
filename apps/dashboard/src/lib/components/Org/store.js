@@ -9,5 +9,6 @@ export const sideBar = writable({
 });
 
 export const popUp = writable({
+  ref: null,
   open: false
 });

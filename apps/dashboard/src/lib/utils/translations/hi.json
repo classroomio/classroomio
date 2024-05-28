@@ -1239,5 +1239,16 @@
   },
   "specialization": {
     "course_tag": "विशेषज्ञता"
+  },
+  "popup": {
+    "profile": "प्रोफ़ाइल",
+    "current_org": "वर्तमान संघ",
+    "free_tools": "मुफ़्त उपकरण",
+    "progress": "प्रगति रिपोर्ट",
+    "timer": "गतिविधि टाइमर",
+    "tic_tac": "टिक टीएसी को पैर की अंगुली",
+    "see_more": "और देखें",
+    "whats_new": "नया क्या है",
+    "launch_week": "लॉन्च सप्ताह"
   }
 }

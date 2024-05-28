@@ -1239,5 +1239,16 @@
   },
   "specialization": {
     "course_tag": "Especialización"
+  },
+  "popup": {
+    "profile": "PERFIL",
+    "current_org": "ORGANIZACIÓN ACTUAL",
+    "free_tools": "HERRAMIENTAS GRATUITAS",
+    "progress": "Informe de progreso",
+    "timer": "Temporizador de actividad",
+    "tic_tac": "dedo del pie tres en raya",
+    "see_more": "Ver más",
+    "whats_new": "Qué hay de nuevo",
+    "launch_week": "Semana de lanzamiento"
   }
 }
