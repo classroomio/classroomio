@@ -85,7 +85,7 @@
   $: filteredDiscussions = discussions.filter(
     (discussion) =>
       discussion.title.toLowerCase().includes(searchValue.toLowerCase()) &&
-      (!selectedId || selectedId === '' || discussion.courseId === selectedId)
+      (!selectedId || discussion.courseId === selectedId)
   );
 </script>
 
