@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
   import { folder, globe, team, transcription } from '$lib/emojis';
-  import { tools } from '$lib/constants/tools';
+  import { tools } from '$lib/utils/constants/tools';
 
   let selected = 0;
   let interval: NodeJS.Timer;

@@ -1,6 +1,6 @@
 <script>
   import PageHeader from '$lib/PageHeader/PageHeader.svelte';
-  import { tools } from '$lib/constants/tools';
+  import { tools } from '$lib/utils/constants/tools';
 
   const freeTools = tools.filter((item) => item.show);
 </script>
