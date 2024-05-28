@@ -113,14 +113,6 @@
   function gotoSetting(pathname) {
     goto(`${$currentOrgPath}/settings${pathname}`);
   }
-
-  function resetErrors(_orgName: string) {
-    if (errors.orgName) {
-      errors.orgName = '';
-    }
-  }
-
-  $: resetErrors($currentOrg.name);
 </script>
 
 <Grid class="border-c rounded border-gray-200 dark:border-neutral-600 w-full mt-5">
