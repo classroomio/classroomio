@@ -85,7 +85,7 @@
   $: filteredDiscussions = discussions.filter(
     (discussion) =>
       discussion.title.toLowerCase().includes(searchValue.toLowerCase()) &&
-      (!selectedId || discussion.courseId === selectedId)
+      (!selectedId || selectedId === '' || discussion.courseId === selectedId)
   );
 </script>
 
@@ -100,7 +100,10 @@
     class="w-[25%] h-full"
     size="xl"
     label={$t('community.ask.select_course')}
-    items={allCourses.map((course) => ({ id: course.id, text: course.title }))}
+    items={[
+      { id: '', text: $t('community.all') },
+      ...allCourses.map((course) => ({ id: course.id, text: course.title }))
+    ]}
     bind:selectedId
   />
 </div>
