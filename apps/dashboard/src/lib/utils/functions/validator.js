@@ -252,6 +252,14 @@ export const createOrgValidation = (fields = {}) => {
   return processErrors(error);
 };
 
+export const updateOrgNameValidation = (orgName) => {
+  const schema = z.object({
+    orgName: getOrgNameValidation()
+  });
+  const { error } = schema.safeParse({ orgName });
+
+  return processErrors(error);
+};
 export const updateOrgSiteNameValidation = (siteName) => {
   const schema = z.object({
     siteName: getSiteNameValidation()
