@@ -29,6 +29,9 @@
   import { VARIANTS } from '../PrimaryButton/constants';
   import { globalStore } from '$lib/utils/store/app';
   import MenuPopup from '$lib/components/Org/MenuPopup/index.svelte';
+  import Modal from '$lib/components/Modal/index.svelte';
+
+  import { isMobile } from '$lib/utils/store/useMobile';
 
   interface menuItems {
     label: string;
@@ -126,8 +129,8 @@
   <aside
     class={`${
       $sideBar.hidden
-        ? 'absolute z-40 -translate-x-[100%] md:relative md:translate-x-0'
-        : 'absolute z-40 translate-x-0 md:relative'
+        ? 'absolute z-40 -translate-x-[100%] md:relative md:translate-x-0 top-[48px] md:top-0'
+        : 'absolute z-40 translate-x-0 md:relative top-[48px] md:top-0'
     } border-r-1 h-[calc(100vh-48px)] w-[250px] min-w-[250px] overflow-y-auto border border-b-0 border-l-0 border-t-0 border-gray-100 dark:border-neutral-600 bg-gray-100 transition dark:bg-neutral-900`}
   >
     <div class="flex h-full flex-col">
@@ -202,15 +205,24 @@
         <div
           class="text-black no-underline cursor-pointer flex items-center justify-between mb-2 px-2.5 py-1.5 {NavClasses.item}"
         >
-          <li class="flex items-center" on:click={() => ($popUp.open = !$popUp.open)}>
+          <button
+            class="flex text-start items-center justify-start space-x-1
+            
+            
+            
+            
+            
+            w-[80%]"
+            on:click={() => ($popUp.open = !$popUp.open)}
+          >
             <Avatar
               src={$profile.avatar_url}
               name={$profile.username}
               width="w-[1.2rem]"
               height="h-[1.2rem]"
             />
-            <p class="ml-2.5 text-sm font-medium line-clamp-1">Nwosu Ifeanyi Emmanuel</p>
-          </li>
+            <p class="text-sm font-medium truncate max-w-full">{$profile.fullname}</p>
+          </button>
           <div>
             <ChevronRight />
           </div>
@@ -218,14 +230,27 @@
       </ul>
     </div>
   </aside>
-  <Popover
-    bind:open={$popUp.open}
-    align="right"
-    on:click:outside={({ detail }) => {
-      console.log('on:click:outside');
-      $popUp.open = ref.contains(detail.target);
-    }}
-  >
-    <MenuPopup />
-  </Popover>
+
+  {#if $isMobile}
+    <Modal
+      bind:open={$popUp.open}
+      onClose={() => ($popUp.open = false)}
+      width="w-4/5"
+      containerClass="h-full !max-h-[70vh] pt-0 pb-2"
+      headerClass="py-1"
+    >
+      <MenuPopup />
+    </Modal>
+  {:else}
+    <Popover
+      bind:open={$popUp.open}
+      align="right"
+      on:click:outside={({ detail }) => {
+        console.log('on:click:outside');
+        $popUp.open = ref.contains(detail.target);
+      }}
+    >
+      <MenuPopup />
+    </Popover>
+  {/if}
 </div>

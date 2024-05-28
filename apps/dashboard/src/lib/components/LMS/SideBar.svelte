@@ -15,6 +15,8 @@
   import { ChevronRight } from 'carbon-icons-svelte';
   import { Popover } from 'carbon-components-svelte';
   import MenuPopup from '$lib/components/Org/MenuPopup/index.svelte';
+  import { isMobile } from '$lib/utils/store/useMobile';
+  import Modal from '$lib/components/Modal/index.svelte';
 
   interface sideLinks {
     name: string;
@@ -130,7 +132,7 @@
           class="text-black no-underline cursor-pointer flex items-center justify-between mb-2 px-2.5 py-1.5 {NavClasses.item}"
         >
           <button
-            class="flex items-center justify-start"
+            class="flex text-ellipsis text-start items-center justify-start space-x-1 w-[80%]"
             on:click={() => ($popUp.open = !$popUp.open)}
           >
             <Avatar
@@ -139,7 +141,9 @@
               width="w-[1.2rem]"
               height="h-[1.2rem]"
             />
-            <p class="ml-2.5 text-sm font-medium line-clamp-1">{$profile.fullname}</p>
+            <p class="text-sm font-medium truncate max-w-full">
+              {$profile.fullname}
+            </p>
           </button>
           <div>
             <ChevronRight />
@@ -149,14 +153,26 @@
     </div>
   </aside>
 
-  <Popover
-    bind:open={$popUp.open}
-    align="right"
-    on:click:outside={({ detail }) => {
-      console.log('on:click:outside');
-      $popUp.open = ref.contains(detail.target);
-    }}
-  >
-    <MenuPopup />
-  </Popover>
+  {#if $isMobile}
+    <Modal
+      bind:open={$popUp.open}
+      onClose={() => ($popUp.open = false)}
+      width="w-4/5"
+      containerClass="h-full !max-h-[70vh] pt-0 pb-2"
+      headerClass="py-1"
+    >
+      <MenuPopup />
+    </Modal>
+  {:else}
+    <Popover
+      bind:open={$popUp.open}
+      align="right"
+      on:click:outside={({ detail }) => {
+        console.log('on:click:outside');
+        $popUp.open = ref.contains(detail.target);
+      }}
+    >
+      <MenuPopup />
+    </Popover>
+  {/if}
 </div>
