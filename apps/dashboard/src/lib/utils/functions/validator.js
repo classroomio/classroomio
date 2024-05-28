@@ -3,10 +3,20 @@ import z from 'zod';
 import { validateEmail } from './validateEmail';
 
 const getOrgNameValidation = () =>
-  z.string().min(5, { message: 'Organization must contain 5 or more characters' });
+  z
+    .string()
+    .min(5, { message: 'Organization must contain 5 or more characters' })
+    .refine((val) => !/^[-]|[-]$/.test(val), {
+      message: 'Organization name cannot start or end with a hyphen'
+    });
 
 const getSiteNameValidation = () =>
-  z.string().min(5, { message: 'Site name must contain 5 or more characters' });
+  z
+    .string()
+    .min(5, { message: 'Site name must contain 5 or more characters' })
+    .refine((val) => !/^[-]|[-]$/.test(val), {
+      message: 'Site name cannot start or end with a hyphen'
+    });
 
 const getNewsfeedValidation = () =>
   z.string().min(5, { message: 'Field must contain 5 or more characters' });
