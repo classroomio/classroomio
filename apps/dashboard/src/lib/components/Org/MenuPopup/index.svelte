@@ -93,21 +93,21 @@
       href="https://classroomio.com/tools/progress"
       class="hover:no-underline flex items-center gap-2"
     >
-      <img src="/progress.svg" alt="" class="h-6 w-6 rounded-full" />
+      <img src="/progress.svg" alt="progress" class="h-6 w-6 rounded-full" />
       <p class="text-sm font-semibold">{$t('popup.progress')}</p>
     </a>
     <a
       href="https://classroomio.com/tools/activity-stopwatch"
       class="hover:no-underline flex items-center gap-2"
     >
-      <img src="/timer.svg" alt="" class="h-6 w-6 rounded-full" />
+      <img src="/timer.svg" alt="timer" class="h-6 w-6 rounded-full" />
       <p class="text-sm font-semibold">{$t('popup.timer')}</p>
     </a>
     <a
       href="https://classroomio.com/tools/tic-tac-toe"
       class="hover:no-underline flex items-center gap-2"
     >
-      <img src="/tictac.svg" alt="" class="h-6 w-6 rounded-full" />
+      <img src="/tictac.svg" alt="tic_tac_toe" class="h-6 w-6 rounded-full" />
       <p class="text-sm font-semibold">{$t('popup.tic_tac')}</p>
     </a>
     <a href="https://classroomio.com/tools" class="flex ml-auto w-fit items-center justify-end">
