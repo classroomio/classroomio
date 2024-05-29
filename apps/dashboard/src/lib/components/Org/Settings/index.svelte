@@ -27,7 +27,7 @@
   function changeRouteOnTabChange(key = 0) {
     const tab = tabs.find((t) => t.key === key);
     if (tab) {
-      return goto(tab.href);
+      goto(tab.href);
     }
   }
 
@@ -35,10 +35,11 @@
     selected = getSelectedByTab(tabKey);
   });
 
-  $: {
-    if (browser) {
-      changeRouteOnTabChange(selected);
-    }
+  $: if (browser) {
+    // query = new URLSearchParams($page.url.search);
+    // tabKey = query.get('tab') || '';
+    //   selected = getSelectedByTab(tabKey);
+    changeRouteOnTabChange(selected);
   }
 
   $: {
@@ -80,6 +81,7 @@
       }
     ];
   }
+  $: console.log(tabKey);
 </script>
 
 <Tabs autoWidth bind:selected>

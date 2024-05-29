@@ -122,7 +122,13 @@
             <p class="dark:text-white ml-2">{$t('lms_navigation.help')}</p>
           </li>
         </a>
-        <button class="absolute w-[87%]" on:click={() => ($popUp.open = !$popUp.open)}>
+        <button
+          class="absolute w-[87%]"
+          on:click={() => {
+            $popUp.open = !$popUp.open;
+            $sideBar.hidden = true;
+          }}
+        >
           <div
             class="text-black no-underline cursor-pointer flex items-center justify-between mb-2 px-2.5 py-1.5 w-full {NavClasses.item}"
           >
