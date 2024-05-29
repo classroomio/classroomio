@@ -111,9 +111,19 @@
     <!-- free tools section -->
     <div>
       <div class="flex justify-evenly gap-y-8 flex-wrap w-full mt-10 mx-auto">
+        <div class="text-center">
+          <h1 class="text-3xl md:text-5xl font-bold">
+            Explore our free <span class="text-[#0233BD]">tools</span>
+          </h1>
+          <p class="text-sm md:text-base text-[#334155] md:w-[65%] mt-5 md:mt-10 mx-auto">
+            Innovative tools to help you aid you example preparation, as well as making learning
+            more fun for students and educator looking for engaging resources.
+          </p>
+        </div>
+
         {#each freeTools as tool}
           <div
-            class="w-full flex flex-col gap-3 max-w-[400px] md:max-w-[300px] p-5 border rounded-md bg-[#F7F7F7] shadow-sm hover:scale-95 transition-all ease-in-out"
+            class="w-full flex flex-col gap-3 max-w-[400px] md:max-w-[300px] mt-5 p-5 border rounded-md bg-[#F7F7F7] shadow-sm hover:scale-95 transition-all ease-in-out"
           >
             <img class="w-[30%] rounded-full border border-[#EAEAEA]" src={tool.src} alt="" />
             <div class="bg-[#fff] rounded-r-md p-3">
@@ -127,10 +137,12 @@
       </div>
       <div class="flex justify-center items-center mt-20">
         <a
+          class="md:text-base w-full md:max-w-[300px] max-w-[400px] rounded-md bg-blue-700 px-6 py-3 lg:px-6 lg:py-3 text-sm font-medium text-white text-center transition-all delay-100 hover:bg-blue-800 hover:shadow-xl hover:scale-95 lg:font-semibold"
           href="/tools"
-          class="bg-blue-600 text-white w-full rounded-md max-w-[400px] md:max-w-[300px] py-3 text-xs text-center"
-          >View More</a
+          rel="noopener noreferrer nofollow"
         >
+          More Tools
+        </a>
       </div>
     </div>
   </div>
