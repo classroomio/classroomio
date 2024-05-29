@@ -122,21 +122,22 @@
             <p class="dark:text-white ml-2">{$t('lms_navigation.help')}</p>
           </li>
         </a>
-        <button
-          class="text-black no-underline cursor-pointer flex items-center justify-between mb-2 px-2.5 py-1.5 w-full {NavClasses.item}"
-          on:click={() => ($popUp.open = !$popUp.open)}
-        >
-          <div class="flex text-start items-center justify-start space-x-1 w-[80%]">
-            <Avatar
-              src={$profile.avatar_url}
-              name={$profile.username}
-              width="w-[1.2rem]"
-              height="h-[1.2rem]"
-            />
-            <p class="text-sm font-medium truncate max-w-full">{$profile.fullname}</p>
-          </div>
-          <div>
-            <ChevronRight />
+        <button class="absolute w-[87%]" on:click={() => ($popUp.open = !$popUp.open)}>
+          <div
+            class="text-black no-underline cursor-pointer flex items-center justify-between mb-2 px-2.5 py-1.5 w-full {NavClasses.item}"
+          >
+            <div class="flex text-start items-center justify-start space-x-1">
+              <Avatar
+                src={$profile.avatar_url}
+                name={$profile.username}
+                width="w-[1.2rem]"
+                height="h-[1.2rem]"
+              />
+              <p class="text-sm font-medium truncate max-w-full">{$profile.fullname}</p>
+            </div>
+            <div>
+              <ChevronRight />
+            </div>
           </div>
         </button>
       </ul>

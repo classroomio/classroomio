@@ -19,7 +19,8 @@
 {:else}
   <Popover
     bind:open={$popUp.open}
-    align="right"
+    align="right-bottom"
+    caret={true}
     on:click:outside={({ detail }) => {
       console.log('on:click:outside');
       $popUp.open = $popUp.ref.contains(detail.target);

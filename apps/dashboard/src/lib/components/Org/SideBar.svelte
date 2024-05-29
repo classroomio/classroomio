@@ -190,21 +190,22 @@
           </li>
         </a>
 
-        <button
-          class="text-black no-underline cursor-pointer flex items-center justify-between mb-2 px-2.5 py-1.5 w-full {NavClasses.item}"
-          on:click={() => ($popUp.open = !$popUp.open)}
-        >
-          <div class="flex text-start items-center justify-start space-x-1 w-[80%]">
-            <Avatar
-              src={$profile.avatar_url}
-              name={$profile.username}
-              width="w-[1.2rem]"
-              height="h-[1.2rem]"
-            />
-            <p class="text-sm font-medium truncate max-w-full">{$profile.fullname}</p>
-          </div>
-          <div>
-            <ChevronRight />
+        <button class="absolute w-[87%]" on:click={() => ($popUp.open = !$popUp.open)}>
+          <div
+            class="text-black no-underline cursor-pointer flex items-center justify-between gap-2.5 px-2.5 py-2 mb-2 {NavClasses.item}"
+          >
+            <div class="flex text-start items-center justify-start space-x-1 w-full">
+              <Avatar
+                src={$profile.avatar_url}
+                name={$profile.username}
+                width="w-[1.2rem]"
+                height="h-[1.2rem]"
+              />
+              <p class="text-sm font-medium truncate max-w-full">{$profile.fullname}</p>
+            </div>
+            <div>
+              <ChevronRight />
+            </div>
           </div>
         </button>
       </ul>

@@ -38,15 +38,13 @@
   }
 </script>
 
-<div
-  class="md:px-4 md:py-4 py-2 px-2 rounded-md cursor-pointer"
-  on:click={() => ($popUp.open = false)}
->
+<div class="md:px-4 md:py-4 py-2 px-2 rounded-md cursor-pointer">
   <div class="border-b py-3 space-y-4">
     <p class="text-xs font-semibold text-gray-500">{$t('popup.profile')}</p>
     <a
       href={`${!$globalStore.isOrgSite ? $currentOrgPath : '/lms'}/settings`}
       class="flex items-center justify-between hover:no-underline"
+      on:click={() => ($popUp.open = false)}
     >
       <span class="flex items-center gap-2 max-w-[70%]">
         <img src={$profile.avatar_url} alt="profile" class="h-8 w-8 rounded-full" />
@@ -66,6 +64,7 @@
       <a
         href={`${$currentOrgPath}/settings?tab=org`}
         class="flex items-center justify-between hover:no-underline"
+        on:click={() => ($popUp.open = false)}
       >
         <span class="flex items-center gap-2 max-w-[70%]">
           <div
@@ -91,26 +90,37 @@
     <p class="text-xs font-semibold text-gray-500">{$t('popup.free_tools')}</p>
     <a
       href="https://classroomio.com/tools/progress"
-      class="hover:no-underline flex items-center gap-2"
+      target="_blank"
+      class="flex items-center gap-2"
+      on:click={() => ($popUp.open = true)}
     >
       <img src="/progress.svg" alt="progress" class="h-6 w-6 rounded-full" />
       <p class="text-sm font-semibold">{$t('popup.progress')}</p>
     </a>
     <a
       href="https://classroomio.com/tools/activity-stopwatch"
-      class="hover:no-underline flex items-center gap-2"
+      target="_blank"
+      class=" flex items-center gap-2"
+      on:click={() => ($popUp.open = true)}
     >
       <img src="/timer.svg" alt="timer" class="h-6 w-6 rounded-full" />
       <p class="text-sm font-semibold">{$t('popup.timer')}</p>
     </a>
     <a
       href="https://classroomio.com/tools/tic-tac-toe"
-      class="hover:no-underline flex items-center gap-2"
+      target="_blank"
+      class=" flex items-center gap-2"
+      on:click={() => ($popUp.open = true)}
     >
       <img src="/tictac.svg" alt="tic_tac_toe" class="h-6 w-6 rounded-full" />
       <p class="text-sm font-semibold">{$t('popup.tic_tac')}</p>
     </a>
-    <a href="https://classroomio.com/tools" class="flex ml-auto w-fit items-center justify-end">
+    <a
+      href="https://classroomio.com/tools"
+      on:click={() => ($popUp.open = true)}
+      target="_blank"
+      class="flex ml-auto w-fit items-center justify-end"
+    >
       <div class="text-blue-900 font-semibold text-xs flex items-center gap-1">
         {$t('popup.see_more')}
         <ChevronDown class="text-blue-900" />
@@ -119,12 +129,18 @@
   </div>
   {#if !$globalStore.isOrgSite}
     <div class="border-b py-3 space-y-4">
-      <a href="https://classroomio.com/roadmap" class="hover:no-underline flex items-center gap-2">
+      <a
+        href="https://classroomio.com/roadmap"
+        on:click={() => ($popUp.open = true)}
+        target="_blank"
+        class="hover:no-underline flex items-center gap-2"
+      >
         <NewTab />
         <p class="text-sm font-semibold">{$t('popup.whats_new')}</p>
       </a>
       <a
         href="https://classroomio.com/tools/blog/launch-week"
+        target="_blank"
         class="hover:no-underline flex items-center gap-2"
       >
         <Rocket />
@@ -133,7 +149,7 @@
     </div>
   {/if}
 
-  <button on:click={logout} class="border-b py-3 space-y-4">
+  <button on:click={logout} class="border-b w-full py-3 space-y-4">
     <span class="flex items-center gap-2">
       <Logout />
       <p class="text-sm font-semibold">{$t('settings.profile.logout')}</p>
