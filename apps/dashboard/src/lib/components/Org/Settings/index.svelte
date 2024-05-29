@@ -21,25 +21,21 @@
 
   function getSelectedByTab(tabKey = '') {
     const tab = tabs.find((t) => t.tabKey === tabKey);
-
     return tab ? tab.key : 0;
   }
-  function changeRouteOnTabChange(key = 0) {
+
+  function onTabChange(e) {
+    const key = e.detail;
     const tab = tabs.find((t) => t.key === key);
     if (tab) {
       goto(tab.href);
     }
   }
 
-  onMount(() => {
-    selected = getSelectedByTab(tabKey);
-  });
-
   $: if (browser) {
-    // query = new URLSearchParams($page.url.search);
-    // tabKey = query.get('tab') || '';
-    //   selected = getSelectedByTab(tabKey);
-    changeRouteOnTabChange(selected);
+    query = new URLSearchParams($page.url.search);
+    tabKey = query.get('tab') || '';
+    selected = getSelectedByTab(tabKey);
   }
 
   $: {
@@ -81,10 +77,9 @@
       }
     ];
   }
-  $: console.log(tabKey);
 </script>
 
-<Tabs autoWidth bind:selected>
+<Tabs autoWidth bind:selected on:change={onTabChange}>
   {#each tabs as tab}
     <Tab label={tab.label} href={tab.href} disabled={tab.disabled} />
   {/each}
