@@ -1,3 +1,4 @@
+import { get } from 'lodash';
 import { supabase } from '$lib/utils/functions/supabase';
 import { isUUID } from '$lib/utils/functions/isUUID';
 import { QUESTION_TYPE } from '$lib/components/Question/constants';
@@ -13,9 +14,17 @@ import type {
 import { STATUS } from '$lib/utils/constants/course';
 import type { PostgrestSingleResponse, PostgrestError } from '@supabase/supabase-js';
 import type { ProfileCourseProgress } from '$lib/utils/types';
+import { isOrgAdmin } from '$lib/utils/store/org';
+
 
 export async function fetchCourses(profileId, orgId) {
   if (!orgId || !profileId) return;
+
+  const match = {};
+  // Filter by profile_id if role isn't admin within organization
+  if (!get(isOrgAdmin)) {
+    match.member_profile_id = profileId;
+  }
 
   // Gets courses for a particular organisation where the current logged in user is a groupmember
   const { data: allCourses } = await supabase
@@ -23,7 +32,7 @@ export async function fetchCourses(profileId, orgId) {
       org_id_arg: orgId,
       profile_id_arg: profileId
     })
-    .eq('profile_id', profileId);
+    .match(match);
 
   console.log(`allCourses`, allCourses);
   if (!Array.isArray(allCourses)) {
@@ -34,6 +43,7 @@ export async function fetchCourses(profileId, orgId) {
 
   return { allCourses };
 }
+
 
 export async function fetchProfileCourseProgress(
   courseId,
