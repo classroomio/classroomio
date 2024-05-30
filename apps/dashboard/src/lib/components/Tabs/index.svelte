@@ -2,13 +2,12 @@
   import TextChip from '$lib/components/Chip/Text.svelte';
   import { t } from '$lib/utils/functions/translations';
 
-  interface Tab {
+  export let tabs: {
     icon?: any;
     label: string;
     value: string;
     badgeValue?: number;
-  }
-  export let tabs: Tab[] = [];
+  }[] = [];
   export let currentTab: string | number;
   export let onChange = (v: string | number) => () => {};
 </script>

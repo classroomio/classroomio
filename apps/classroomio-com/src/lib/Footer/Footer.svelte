@@ -85,6 +85,11 @@
           >
             <a href="/#ai"> AI Lesson Planner </a>
           </li>
+          <li
+            class="lg:text-base text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900"
+          >
+            <a href="/#student-dashboard"> Student Dashboard </a>
+          </li>
         </ul>
       </div>
 
@@ -126,7 +131,12 @@
           <li
             class="lg:text-base text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900"
           >
-            <a href="mailto:help@classroomio.com" target="_blank"> Contact us </a>
+            <a href="/roadmap"> Roadmap </a>
+          </li>
+          <li
+            class="lg:text-base text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900"
+          >
+            <a href="mailto:help@classroomio.com" target="_blank"> Support </a>
           </li>
           <li
             class="lg:text-base text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900"

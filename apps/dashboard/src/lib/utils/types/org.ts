@@ -22,7 +22,7 @@ export interface CurrentOrg {
   siteName: string;
   avatar_url: string;
   memberId: string;
-  role_id: string;
+  role_id: number;
   landingpage: {
     [key: string]: unknown;
   };

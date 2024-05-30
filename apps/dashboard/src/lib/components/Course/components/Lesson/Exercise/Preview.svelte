@@ -4,6 +4,8 @@
   import TextareaQuestion from '$lib/components/Question/TextareaQuestion/index.svelte';
   import { QUESTION_TYPE } from '$lib/components/Question/constants';
   import { getPropsForQuestion } from './functions';
+  import { course } from '$lib/components/Course/store';
+  import { COURSE_TYPE } from '$lib/utils/types';
 
   export let questions = [];
   export let questionnaireMetaData = {};
@@ -37,6 +39,7 @@
       handleGrade={handleGrade(currentQuestion.id)}
       {disableGrading}
       disabled={true}
+      hideGrading={$course.type === COURSE_TYPE.SELF_PACED}
     />
   {:else if QUESTION_TYPE.CHECKBOX === currentQuestion.question_type.id}
     <CheckboxQuestion
@@ -57,6 +60,7 @@
       handleGrade={handleGrade(currentQuestion.id)}
       {disableGrading}
       disabled={true}
+      hideGrading={$course.type === COURSE_TYPE.SELF_PACED}
     />
   {:else if QUESTION_TYPE.TEXTAREA === currentQuestion.question_type.id}
     <TextareaQuestion
@@ -77,6 +81,7 @@
       handleGrade={handleGrade(currentQuestion.id)}
       {disableGrading}
       disabled={true}
+      hideGrading={$course.type === COURSE_TYPE.SELF_PACED}
     />
   {/if}
 {/each}

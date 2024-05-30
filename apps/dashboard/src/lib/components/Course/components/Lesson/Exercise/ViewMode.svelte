@@ -14,7 +14,7 @@
   import { removeDuplicate } from '$lib/utils/functions/removeDuplicate';
   import { QUESTION_TYPE } from '$lib/components/Question/constants';
   import { STATUS } from './constants';
-  import { getPropsForQuestion, filterOutDeleted } from './functions';
+  import { getPropsForQuestion, filterOutDeleted, wasCorrectAnswerSelected } from './functions';
   import { formatAnswers, getGroupMemberId } from '$lib/components/Course/function';
   import { submitExercise } from '$lib/utils/services/courses';
   import { fetchSubmission } from '$lib/utils/services/submissions';
@@ -26,8 +26,8 @@
   } from '$lib/utils/services/notification/notification';
   import { lesson } from '../store/lessons';
   import { browser } from '$app/environment';
-  import { CloseFilled } from 'carbon-icons-svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { COURSE_TYPE } from '$lib/utils/types';
+  import { t } from '$lib/utils/functions/translations';
 
   export let preview: boolean = false;
   export let exerciseId = '';
@@ -39,7 +39,7 @@
   let hasSubmission = false;
   let isLoadingAutoSavedData = false;
   let alreadyCheckedAutoSavedData = false;
-  let gradedComment = true;
+  let submissionResponse;
 
   function handleStart() {
     $questionnaireMetaData.currentQuestionIndex += 1;
@@ -80,7 +80,7 @@
     });
   };
 
-  function onSubmit(id, value, moveToNextQuestion = false) {
+  async function onSubmit(id, value) {
     const { answers } = $questionnaireMetaData;
     const { questions } = $questionnaire;
     const prevAnswer = answers[id] || [];
@@ -93,37 +93,57 @@
       [id]: formattedAnswer
     };
 
-    if (moveToNextQuestion) {
-      $questionnaireMetaData.currentQuestionIndex += 1;
-      localStorage.setItem(
-        `autosave-exercise-${exerciseId}`,
-        JSON.stringify($questionnaireMetaData)
-      );
-    }
+    const isCorrect = wasCorrectAnswerSelected(currentQuestion, $questionnaireMetaData.answers);
+    console.log({ isCorrect });
 
-    const isFinished = !questions[$questionnaireMetaData.currentQuestionIndex - 1];
+    const isFinished = !questions[$questionnaireMetaData.currentQuestionIndex];
     console.log(`isFinished`, isFinished);
     console.log(
       `$questionnaireMetaData.currentQuestionIndex`,
       $questionnaireMetaData.currentQuestionIndex
     );
 
-    // If last question send to server
-    if (isFinished) {
-      localStorage.removeItem(`autosave-exercise-${exerciseId}`);
-      $questionnaireMetaData.status = 1;
-      $questionnaireMetaData.totalPossibleGrade = getTotalPossibleGrade($questionnaire.questions);
-      $questionnaireMetaData.grades = {};
-      ($questionnaireMetaData.comment = ''),
-        submitExercise(
-          $questionnaireMetaData.answers,
-          questions,
-          exerciseId,
-          $course.id,
-          getGroupMemberId($group.people, $profile.id)
+    if (isCorrect) {
+      setTimeout(async () => {
+        $questionnaireMetaData.currentQuestionIndex += 1;
+        localStorage.setItem(
+          `autosave-exercise-${exerciseId}`,
+          JSON.stringify($questionnaireMetaData)
         );
-      notifyEducator();
+
+        // If last question send to server
+        if (isFinished) {
+          localStorage.removeItem(`autosave-exercise-${exerciseId}`);
+          $questionnaireMetaData.status = 1;
+          $questionnaireMetaData.totalPossibleGrade = getTotalPossibleGrade(
+            $questionnaire.questions
+          );
+          $questionnaireMetaData.grades = {};
+
+          $questionnaireMetaData.comment = '';
+          let response = await submitExercise(
+            $questionnaireMetaData.answers,
+            questions,
+            exerciseId,
+            $course.id,
+            getGroupMemberId($group.people, $profile.id)
+          );
+          if (response) {
+            submissionResponse = response;
+          }
+
+          notifyEducator();
+        }
+      }, 1000);
     }
+
+    // if (moveToNextQuestion) {
+    //   $questionnaireMetaData.currentQuestionIndex += 1;
+    //   localStorage.setItem(
+    //     `autosave-exercise-${exerciseId}`,
+    //     JSON.stringify($questionnaireMetaData)
+    //   );
+    // }
   }
 
   function onPrevious() {
@@ -200,10 +220,6 @@
     isLoadingAutoSavedData = false;
     alreadyCheckedAutoSavedData = true;
   }
-
-  const toggleComments = () => {
-    gradedComment = !gradedComment;
-  };
 
   $: browser && !alreadyCheckedAutoSavedData && getAutoSavedData();
 
@@ -295,36 +311,42 @@
     <div class="flex items-center justify-between">
       <div class="flex flex-col lg:flex-row items-start lg:items-center lg:space-x-4 w-full">
         <h2 class="text-xl font-normal">{$questionnaire.title}</h2>
+
         {#if STATUS.GRADED === $questionnaireMetaData.status}
           <span
             class="status-text bg-green-700 text-white py-1 px-2 text-center"
-            title="Status: Pending Review"
+            title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_graded')}
           >
-            Graded
+            {$t('course.navItem.lessons.exercises.all_exercises.view_mode.graded')}
+          </span>
+        {:else if $course.type === COURSE_TYPE.SELF_PACED}
+          <span
+            class="status-text bg-green-700 text-white py-1 px-2 text-center"
+            title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_submitted')}
+          >
+            {$t('course.navItem.lessons.exercises.all_exercises.view_mode.submitted')}
           </span>
         {:else}
           <span
             class="status-text bg-yellow-600 text-white py-1 px-2 text-center"
-            title="Status: Pending Review"
+            title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_pending')}
           >
-            Pending
+            {$t('course.navItem.lessons.exercises.all_exercises.view_mode.pending')}
           </span>
         {/if}
       </div>
-      {#if STATUS.GRADED === $questionnaireMetaData.status}
+      {#if STATUS.GRADED === $questionnaireMetaData.status && $course.type !== COURSE_TYPE.SELF_PACED}
         <span
           class="p-6 border-2 border-gray-300 bg-[#F5F8FE] rounded-full h-10 w-10 flex items-center justify-center text-[#2751DA] text-sm font-semibold"
-          title="Status: Pending Review"
+          title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_graded')}
         >
           {$questionnaireMetaData.finalTotalGrade}/{$questionnaireMetaData.totalPossibleGrade}
         </span>
       {/if}
     </div>
 
-    {#if $questionnaireMetaData.status === STATUS.GRADED && $questionnaireMetaData.comment}
-      <div
-        class="flex items-center justify-between bg-primary-700 p-4 text-white font-semibold rounded-sm mt-3"
-      >
+    {#if $questionnaireMetaData.status === STATUS.GRADED && $questionnaireMetaData.comment && $course.type !== COURSE_TYPE.SELF_PACED}
+      <div class="flex items-center justify-between bg-primary-700 p-4 text-white rounded-sm mt-3">
         <span> {$questionnaireMetaData.comment}</span>
       </div>
     {/if}

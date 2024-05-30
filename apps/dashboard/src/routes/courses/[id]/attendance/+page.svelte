@@ -25,7 +25,7 @@
   import type { GroupPerson, Lesson } from '$lib/utils/types/index';
   import { browser } from '$app/environment';
   import { globalStore } from '$lib/utils/store/app';
-  import { t } from '$lib/utils/functions/translations.js';
+  import { t } from '$lib/utils/functions/translations';
 
   export let data;
 

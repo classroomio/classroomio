@@ -189,9 +189,14 @@ export interface Waitinglist {
   created_at?: string;
 }
 
+export enum COURSE_TYPE {
+  SELF_PACED = 'SELF_PACED',
+  LIVE_CLASS = 'LIVE_CLASS'
+}
 export interface Course {
   title?: any; // type unknown;
   description: string; // type unknown;
+  type: COURSE_TYPE;
   overview?: any; // type unknown;
   id?: string /* primary key */;
   created_at: string;

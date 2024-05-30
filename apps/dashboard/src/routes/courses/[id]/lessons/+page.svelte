@@ -13,8 +13,9 @@
     handleSaveLesson
   } from '$lib/components/Course/components/Lesson/store/lessons';
   import PageBody from '$lib/components/PageBody/index.svelte';
+  import { globalStore } from '$lib/utils/store/app';
 
-  import AddLessonModal from '$lib/components/Course/components/Lesson/AddLessonModal.svelte';
+  import NewLessonModal from '$lib/components/Course/components/Lesson/NewLessonModal.svelte';
   import DeleteLessonConfirmation from '$lib/components/Course/components/Lesson/DeleteLessonConfirmation.svelte';
   import { handleAddLessonWidget } from '$lib/components/Course/components/Navigation/store';
   import { Video, Calendar } from 'carbon-icons-svelte';
@@ -25,9 +26,10 @@
   import Avatar from '$lib/components/Apps/components/Poll/components/Avatar.svelte';
   import { course, group } from '$lib/components/Course/store';
   import DateField from '$lib/components/Form/Date.svelte';
-  import type { Lesson } from '$lib/utils/types';
-  import { t } from '$lib/utils/functions/translations.js';
+  import type { Course, Lesson } from '$lib/utils/types';
+  import { t } from '$lib/utils/functions/translations';
   import { goto } from '$app/navigation';
+  import { COURSE_TYPE } from '$lib/utils/types';
 
   export let data;
 
@@ -35,11 +37,23 @@
 
   let lessonEditing: string | undefined;
   let lessonToDelete: Lesson | undefined;
-  let isStudent: boolean = true;
   let openDeleteModal: boolean = false;
   let isFetching: boolean = false;
 
   const flipDurationMs = 300;
+
+  let errors: Record<string, string> = {};
+
+  async function saveLesson(lesson: Lesson, courseId: Course['id']) {
+    const validationRes = await handleSaveLesson(lesson, courseId);
+
+    if (validationRes && Object.keys(validationRes).length) {
+      errors = validationRes;
+    } else {
+      errors = {};
+      lessonEditing = undefined;
+    }
+  }
 
   function addLesson() {
     $handleAddLessonWidget.open = true;
@@ -113,7 +127,7 @@
 </script>
 
 {#if $handleAddLessonWidget}
-  <AddLessonModal {isStudent} />
+  <NewLessonModal />
 {/if}
 
 <DeleteLessonConfirmation
@@ -122,8 +136,7 @@
   deleteLesson={() => handleDelete(lessonToDelete?.id)}
 />
 
-<!-- TODO: Refactor usage of two way binding isStudent, rather use $globalStore.isStudent -->
-<CourseContainer bind:isFetching bind:isStudent bind:courseId={data.courseId}>
+<CourseContainer bind:isFetching bind:courseId={data.courseId}>
   <PageNav title={$t('course.navItem.lessons.heading')}>
     <div slot="widget">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
@@ -154,7 +167,7 @@
         use:dndzone={{
           items: $lessons,
           flipDurationMs,
-          dragDisabled: isStudent,
+          dragDisabled: $globalStore.isStudent,
           dropTargetStyle: {
             border: '2px #1d4ed8 solid',
             'border-style': 'dashed'
@@ -181,14 +194,19 @@
             <div class="w-4/5">
               <!-- Lesson Title -->
               {#if lessonEditing === lesson.id}
-                <TextField bind:value={lesson.title} autoFocus={true} className="max-w-lg" />
+                <TextField
+                  bind:value={lesson.title}
+                  autoFocus={true}
+                  className="max-w-lg"
+                  errorMessage={errors?.title}
+                />
               {:else}
                 <h3 class="m-0 flex items-center text-lg dark:text-white">
                   <a
-                    href={isStudent && !lesson.is_unlocked
+                    href={$globalStore.isStudent && !lesson.is_unlocked
                       ? $page.url.pathname
                       : '/courses/' + $course.id + '/lessons/' + lesson.id}
-                    class="font-medium text-black no-underline hover:underline dark:text-white {isStudent &&
+                    class="font-medium text-black no-underline hover:underline dark:text-white {$globalStore.isStudent &&
                     !lesson.is_unlocked
                       ? 'cursor-not-allowed'
                       : ''}"
@@ -199,86 +217,88 @@
               {/if}
 
               <!-- Lesson Educator -->
-              <div
-                class="mt-2 flex w-4/5 flex-col items-start justify-between lg:flex-row lg:items-center"
-              >
-                <div class="lg:mb-0">
-                  {#if lessonEditing === lesson.id}
-                    <Select
-                      bind:value={lesson.profile}
-                      options={$group.tutors}
-                      labelKey="fullname"
-                      className="sm:my-1 w-[100%]"
-                    />
-                  {:else if !lesson.profile}
-                    <p class="dark:text-white ml-2 text-sm mb-3">
-                      {$t('course.navItem.lessons.no_tutor')}
-                    </p>
-                  {:else}
-                    <a href="." class="mb-2 flex items-center hover:underline">
-                      <Avatar
-                        className="w-6 h-6"
-                        src={lesson.profile.avatar_url}
-                        name="Avatar placeholder"
+              {#if $course.type === COURSE_TYPE.LIVE_CLASS}
+                <div
+                  class="mt-2 flex w-4/5 flex-col items-start justify-between lg:flex-row lg:items-center"
+                >
+                  <div class="lg:mb-0">
+                    {#if lessonEditing === lesson.id}
+                      <Select
+                        bind:value={lesson.profile}
+                        options={$group.tutors}
+                        labelKey="fullname"
+                        className="sm:my-1 w-[100%]"
                       />
-                      <p class="ml-2 text-sm dark:text-white">
-                        {lesson.profile.fullname}
+                    {:else if !lesson.profile}
+                      <p class="dark:text-white ml-2 text-sm mb-3">
+                        {$t('course.navItem.lessons.no_tutor')}
                       </p>
-                    </a>
-                  {/if}
-                </div>
-
-                <!-- Lesson Date -->
-                <div class="flex items-center lg:mb-0">
-                  {#if lessonEditing === lesson.id}
-                    <DateField
-                      value={formatDate(lesson.lesson_at)}
-                      className="p-2 my-2 rounded-md sm:w-[179px] dark:bg-neutral-800 dark:text-white"
-                      onChange={(e) => (lesson.lesson_at = e.target.value)}
-                    />
-                  {:else}
-                    <div class="mb-2 flex">
-                      <Calendar size={20} class="carbon-icon text-gray-400 dark:text-white" />
-                      <p class="ml-2 text-sm dark:text-white">
-                        {new Date(lesson.lesson_at || '').toDateString()}
-                      </p>
-                    </div>
-                  {/if}
-                </div>
-
-                <!-- Lesson Call url -->
-                <div class="mb-3 flex items-center lg:mb-0">
-                  {#if lessonEditing === lesson.id}
-                    <TextField
-                      bind:value={lesson.call_url}
-                      autoFocus={true}
-                      className="w-[179px]"
-                      placeholder="https://meet.google.com/mga-dsjs-fmb"
-                    />
-                  {:else}
-                    <div class="flex">
-                      <Video size={20} class="carbon-icon ml-0.5 text-gray-400 dark:text-white" />
-                      <a
-                        class="text-primary-600 ml-2 text-sm"
-                        href={lesson.call_url || '#'}
-                        target="_blank"
-                      >
-                        {lesson.call_url
-                          ? $t('course.navItem.lessons.join_lesson')
-                          : $t('course.navItem.lessons.no_link')}
+                    {:else}
+                      <a href="." class="mb-2 flex items-center hover:underline">
+                        <Avatar
+                          className="w-6 h-6"
+                          src={lesson.profile.avatar_url}
+                          name="Avatar placeholder"
+                        />
+                        <p class="ml-2 text-sm dark:text-white">
+                          {lesson.profile.fullname}
+                        </p>
                       </a>
-                    </div>
-                  {/if}
+                    {/if}
+                  </div>
+
+                  <!-- Lesson Date -->
+                  <div class="flex items-center lg:mb-0">
+                    {#if lessonEditing === lesson.id}
+                      <DateField
+                        value={formatDate(lesson.lesson_at)}
+                        className="p-2 my-2 rounded-md sm:w-[179px] dark:bg-neutral-800 dark:text-white"
+                        onChange={(e) => (lesson.lesson_at = e.target.value)}
+                      />
+                    {:else}
+                      <div class="mb-2 flex">
+                        <Calendar size={20} class="carbon-icon text-gray-400 dark:text-white" />
+                        <p class="ml-2 text-sm dark:text-white">
+                          {new Date(lesson.lesson_at || '').toDateString()}
+                        </p>
+                      </div>
+                    {/if}
+                  </div>
+
+                  <!-- Lesson Call url -->
+                  <div class="mb-3 flex items-center lg:mb-0">
+                    {#if lessonEditing === lesson.id}
+                      <TextField
+                        bind:value={lesson.call_url}
+                        autoFocus={true}
+                        className="w-[179px]"
+                        placeholder="https://meet.google.com/mga-dsjs-fmb"
+                      />
+                    {:else}
+                      <div class="flex">
+                        <Video size={20} class="carbon-icon ml-0.5 text-gray-400 dark:text-white" />
+                        <a
+                          class="text-primary-600 ml-2 text-sm"
+                          href={lesson.call_url || '#'}
+                          target="_blank"
+                        >
+                          {lesson.call_url
+                            ? $t('course.navItem.lessons.join_lesson')
+                            : $t('course.navItem.lessons.no_link')}
+                        </a>
+                      </div>
+                    {/if}
+                  </div>
                 </div>
-              </div>
+              {/if}
             </div>
 
             <!-- 3 dot edit -->
             <div class="flex flex-row">
               <RoleBasedSecurity allowedRoles={[1, 2]}>
-                <OverflowMenu size="xl" class="absolute right-0 top-0">
+                <OverflowMenu size="xl">
                   <OverflowMenuItem
-                    disabled={isStudent}
+                    disabled={$globalStore.isStudent}
                     text={lesson.is_unlocked
                       ? $t('course.navItem.lessons.add_lesson.lock')
                       : $t('course.navItem.lessons.add_lesson.unlock')}
@@ -293,8 +313,7 @@
                       : $t('course.navItem.lessons.add_lesson.edit')}
                     on:click={() => {
                       if (lessonEditing === lesson.id) {
-                        lessonEditing = undefined;
-                        handleSaveLesson(lesson, $course.id);
+                        saveLesson(lesson, $course.id);
                       } else {
                         lessonEditing = lesson.id;
                       }
@@ -303,7 +322,10 @@
                   <OverflowMenuItem
                     danger
                     text={$t('course.navItem.lessons.add_lesson.delete')}
-                    on:click={() => handleDelete(lesson.id)}
+                    on:click={() => {
+                      lessonToDelete = lesson;
+                      openDeleteModal = true;
+                    }}
                   />
                 </OverflowMenu>
               </RoleBasedSecurity>

@@ -154,7 +154,11 @@
         "submitting_poll": "Ocorreu um erro ao enviar a enquete"
       }
     },
-    "success_update": "Atualizado com sucesso"
+    "success_update": "Atualizado com sucesso",
+    "generic": {
+      "success_delete": "Apagado com sucesso",
+      "try_again": "Erro - Tente novamente mais tarde"
+    }
   },
   "exercises": {
     "heading": "Exercícios",
@@ -229,7 +233,8 @@
       "cancel": "Cancelar",
       "give": "Dê uma resposta",
       "comment": "Comente"
-    }
+    },
+    "all": "Todos"
   },
   "course": {
     "navItem": {
@@ -263,7 +268,11 @@
         "unpublished": "Não publicado",
         "delete": "Excluir curso",
         "delete_text": "Exclua este curso, esta ação não pode ser desfeita",
-        "save": "Salvar alterações"
+        "save": "Salvar alterações",
+        "type": "Tipo de curso",
+        "course_type_desc": "Atualize o tipo de curso para uma experiência mais personalizada",
+        "live_class": "Aula ao vivo",
+        "self_paced": "Individualizado"
       },
       "landing_page": {
         "start_course": "Iniciar curso",
@@ -581,7 +590,11 @@
               "no_description": "Sem descrição",
               "start": "Começar",
               "graded": "Classificado",
-              "pending": "Pendente"
+              "pending": "Pendente",
+              "submitted": "Submetido",
+              "status_pending": "Status: revisão pendente",
+              "status_graded": "Status: Revisão concluída",
+              "status_submitted": "Status: Enviado"
             },
             "edit_mode": {
               "delete_modal": "Excluir Modal",
@@ -610,7 +623,9 @@
               "heading": "Descrição",
               "describe": "Descreva o exercício para seu aluno",
               "no": "Sem descrição"
-            }
+            },
+            "no_answer": "Nenhuma resposta foi fornecida",
+            "check": "Verificar"
           },
           "new_exercise_modal": {
             "heading": "Novo exercício",
@@ -708,12 +723,12 @@
           "modal_heading": "Adicionar nova lição",
           "lesson_title": "Título da lição",
           "click_to": "Clique para",
-          "lock": "trancar",
-          "unlock": "desbloquear",
           "fullname": "nome completo",
           "save": "Salvar",
           "edit": "Editar",
-          "delete": "Excluir"
+          "delete": "Excluir",
+          "lock": "Trancar",
+          "unlock": "Desbloquear"
         },
         "disabled": "O recurso está desativado"
       },
@@ -754,6 +769,11 @@
       "nav_certificates": "Certificados",
       "nav_landing_page": "Página inicial",
       "nav_settings": "Configurações"
+    },
+    "not_permitted": {
+      "header": "Sem permissão",
+      "body": "Infelizmente você não tem acesso a este curso.",
+      "button": "Ir para casa"
     }
   },
   "courses": {
@@ -766,7 +786,11 @@
       "course_name_placeholder": "Nome do seu curso",
       "short_description": "Pequena descrição",
       "short_description_placeholder": "Uma pequena descrição sobre este curso",
-      "button": "Terminar"
+      "button": "Terminar",
+      "type": "Tipo de curso",
+      "type_selector_title": "Que tipo de curso você está procurando?",
+      "back": "Voltar",
+      "next": "Próximo"
     },
     "course_card": {
       "empty_title": "Nenhum curso criado",
@@ -782,7 +806,8 @@
         "description": "Descrição",
         "lessons": "Lições",
         "students": "Alunos",
-        "published": "Publicados"
+        "published": "Publicados",
+        "type": "Tipo"
       },
       "context_menu": {
         "clone": "Clone",
@@ -1215,5 +1240,12 @@
     "resend_in": "Reenviar verificação em",
     "seconds": "segundos",
     "snackbar_error": "erro ao enviar código"
+  },
+  "generic": {
+    "locked": "Bloqueado",
+    "unlocked": "Desbloqueado"
+  },
+  "specialization": {
+    "course_tag": "Especialização"
   }
 }

@@ -1,6 +1,14 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { CodeSnippet, Grid, Row, Column, Toggle } from 'carbon-components-svelte';
+  import {
+    CodeSnippet,
+    Grid,
+    Row,
+    Column,
+    Toggle,
+    RadioButtonGroup,
+    RadioButton
+  } from 'carbon-components-svelte';
   import { Restart } from 'carbon-icons-svelte';
   import { PUBLIC_SERVER_URL } from '$env/static/public';
 
@@ -26,6 +34,7 @@
   import IconButton from '$lib/components/IconButton/index.svelte';
   import generateSlug from '$lib/utils/functions/generateSlug';
   import { t } from '$lib/utils/functions/translations';
+  import { COURSE_TYPE } from '$lib/utils/types';
 
   let isSaving = false;
   let isLoading = false;
@@ -124,6 +133,7 @@
       const {
         course_title,
         course_description,
+        type,
         logo,
         tabs,
         grading,
@@ -134,6 +144,7 @@
       await updateCourse($course.id, avatar, {
         title: course_title,
         description: course_description,
+        type: type,
         logo: logo,
         is_published,
         metadata: {
@@ -148,6 +159,7 @@
 
       $course.title = course_title;
       $course.description = course_description;
+      $course.type = type;
       $course.logo = logo;
       $course.is_published = is_published;
       $course.metadata = {
@@ -169,6 +181,7 @@
     if (course && Object.keys(course).length && $settings.course_title !== course.title) {
       $settings = {
         course_title: course.title,
+        type: course.type,
         course_description: course.description,
         logo: course.logo || '',
         tabs: course.metadata.lessonTabsOrder || $settings.tabs,
@@ -259,7 +272,7 @@
       </div>
     </Column>
   </Row>
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <!-- <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={8} md={8} lg={8}>
       <SectionTitle>{$t('course.navItem.settings.grading')}</SectionTitle>
       <p>{$t('course.navItem.settings.reports')}</p>
@@ -270,7 +283,7 @@
         <span slot="labelB" style="color: gray">{$t('course.navItem.settings.enabled')}</span>
       </Toggle>
     </Column>
-  </Row>
+  </Row> -->
 
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={8} md={8} lg={8}>
@@ -314,6 +327,25 @@
           {isLoading}
         />
       {/if}
+    </Column>
+  </Row>
+
+  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+    <Column sm={8} md={8} lg={8}>
+      <SectionTitle>{$t('course.navItem.settings.type')}</SectionTitle>
+      <p>{$t('course.navItem.settings.course_type_desc')}</p>
+    </Column>
+    <Column sm={8} md={8} lg={8}>
+      <RadioButtonGroup hideLegend bind:selected={$settings.type}>
+        <RadioButton
+          labelText={$t('course.navItem.settings.live_class')}
+          value={COURSE_TYPE.LIVE_CLASS}
+        />
+        <RadioButton
+          labelText={$t('course.navItem.settings.self_paced')}
+          value={COURSE_TYPE.SELF_PACED}
+        />
+      </RadioButtonGroup>
     </Column>
   </Row>
 
