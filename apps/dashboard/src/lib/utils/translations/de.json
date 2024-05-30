@@ -154,7 +154,11 @@
         "submitting_poll": "Beim Absenden der Umfrage ist ein Fehler aufgetreten"
       }
     },
-    "success_update": "Erfolgreich geupdated"
+    "success_update": "Erfolgreich geupdated",
+    "generic": {
+      "success_delete": "Erfolgreich gelöscht",
+      "try_again": "Fehler – Bitte versuchen Sie es später noch einmal"
+    }
   },
   "exercises": {
     "heading": "Übungen",
@@ -229,7 +233,8 @@
       "cancel": "Stornieren",
       "give": "Eine Antwort geben",
       "comment": "Kommentar"
-    }
+    },
+    "all": "Alle"
   },
   "course": {
     "navItem": {
@@ -263,7 +268,11 @@
         "unpublished": "Unveröffentlicht",
         "delete": "Kurs löschen",
         "delete_text": "Löschen Sie diesen Kurs. Diese Aktion kann nicht rückgängig gemacht werden",
-        "save": "Änderungen speichern"
+        "save": "Änderungen speichern",
+        "type": "Kurstyp",
+        "course_type_desc": "Aktualisieren Sie den Kurstyp für ein persönlicheres Erlebnis",
+        "live_class": "Live-Klasse",
+        "self_paced": "Eigenständig"
       },
       "landing_page": {
         "start_course": "Kurs starten",
@@ -581,7 +590,11 @@
               "no_description": "Keine Beschreibung",
               "start": "Start",
               "graded": "Benotet",
-              "pending": "Ausstehend"
+              "pending": "Ausstehend",
+              "submitted": "Eingereicht",
+              "status_pending": "Status: Ausstehende Überprüfung",
+              "status_graded": "Status: Überprüfung abgeschlossen",
+              "status_submitted": "Status: Eingereicht"
             },
             "edit_mode": {
               "delete_modal": "Modal löschen",
@@ -610,7 +623,9 @@
               "heading": "Beschreibung",
               "describe": "Beschreiben Sie Ihrem Schüler die Übung",
               "no": "Keine Beschreibung"
-            }
+            },
+            "no_answer": "Es wurde keine Antwort gegeben",
+            "check": "Überprüfen"
           },
           "new_exercise_modal": {
             "heading": "Neue Übung",
@@ -708,12 +723,12 @@
           "modal_heading": "Neue Lektion hinzufügen",
           "lesson_title": "Titel der Lektion",
           "click_to": "Klicke um",
-          "lock": "sperren",
-          "unlock": "Freischalten",
           "fullname": "vollständiger Name",
           "save": "Speichern",
           "edit": "Bearbeiten",
-          "delete": "Löschen"
+          "delete": "Löschen",
+          "lock": "Sperren",
+          "unlock": "Freischalten"
         },
         "disabled": "Funktion ist deaktiviert"
       },
@@ -754,6 +769,11 @@
       "nav_certificates": "Zertifikate",
       "nav_landing_page": "Landingpage",
       "nav_settings": "Einstellungen"
+    },
+    "not_permitted": {
+      "header": "Keine Erlaubnis",
+      "body": "Leider haben Sie keinen Zugriff auf diesen Kurs.",
+      "button": "Nach Hause gehen"
     }
   },
   "courses": {
@@ -766,7 +786,11 @@
       "course_name_placeholder": "Ihr Kursname",
       "short_description": "kurze Beschreibung",
       "short_description_placeholder": "Eine kleine Beschreibung zu diesem Kurs",
-      "button": "Beenden"
+      "button": "Beenden",
+      "type": "Kurstyp",
+      "type_selector_title": "Welche Art von Kurs suchen Sie?",
+      "back": "Zurück",
+      "next": "Nächste"
     },
     "course_card": {
       "empty_title": "Keine Kurse erstellt",
@@ -782,7 +806,8 @@
         "description": "Beschreibung",
         "lessons": "Unterricht",
         "students": "Studenten",
-        "published": "Veröffentlicht"
+        "published": "Veröffentlicht",
+        "type": "Typ"
       },
       "context_menu": {
         "clone": "Klon",
@@ -1215,5 +1240,12 @@
     "resend_in": "Bestätigung erneut senden",
     "seconds": "Sekunden",
     "snackbar_error": "Fehler beim Senden des Codes"
+  },
+  "generic": {
+    "locked": "Gesperrt",
+    "unlocked": "Entsperrt"
+  },
+  "specialization": {
+    "course_tag": "Spezialisierung"
   }
 }

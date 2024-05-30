@@ -1,24 +1,24 @@
 <script lang="ts">
   import { Search, Dropdown } from 'carbon-components-svelte';
-  import { page } from '$app/stores';
   import { profile } from '$lib/utils/store/user';
   import { fetchCourses } from '$lib/utils/services/courses';
   import Courses from '$lib/components/Courses/index.svelte';
   import NewCourseModal from '$lib/components/Courses/components/NewCourseModal/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { courses, createCourseModal, courseMetaDeta } from '$lib/components/Courses/store';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { courses, courseMetaDeta } from '$lib/components/Courses/store';
+  import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import { Add } from 'carbon-icons-svelte';
   import { isMobile } from '$lib/utils/store/useMobile';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import type { Course } from '$lib/utils/types';
   import { browser } from '$app/environment';
-  import { t } from '$lib/utils/functions/translations.js';
+  import { t } from '$lib/utils/functions/translations';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import Grid from 'carbon-icons-svelte/lib/Grid.svelte';
   import List from 'carbon-icons-svelte/lib/List.svelte';
   import { onMount } from 'svelte';
+  import { goto } from '$app/navigation';
 
   export let data;
 
@@ -27,12 +27,6 @@
   let selectedId: string;
   let filteredCourses: Course[];
   let hasFetched = false;
-
-  const urlParams = new URLSearchParams($page.url.search);
-
-  if (urlParams.get('create') === 'true') {
-    $createCourseModal.open = true;
-  }
 
   async function getCourses(userId: string | undefined, orgId: string) {
     if (cantFetch && typeof cantFetch === 'boolean' && orgId && !hasFetched) {
@@ -86,6 +80,10 @@
     localStorage.setItem('courseView', preference);
   };
 
+  const openNewCourseModal = () => {
+    goto($currentOrgPath + '/courses?create=true');
+  };
+
   onMount(() => {
     const courseView = localStorage.getItem('courseView') as 'grid' | 'list' | null;
 
@@ -107,7 +105,7 @@
     <div class="flex items-center justify-between mb-5">
       <h1 class="dark:text-white text-2xl md:text-3xl font-bold">{$t('courses.heading')}</h1>
       {#if $isMobile}
-        <PrimaryButton isDisabled={!$isOrgAdmin} onClick={() => ($createCourseModal.open = true)}>
+        <PrimaryButton isDisabled={!$isOrgAdmin} onClick={openNewCourseModal}>
           <Add size={24} />
         </PrimaryButton>
       {:else}
@@ -115,7 +113,7 @@
           label={$t('courses.heading_button')}
           variant={VARIANTS.CONTAINED_DARK}
           isDisabled={!$isOrgAdmin}
-          onClick={() => ($createCourseModal.open = true)}
+          onClick={openNewCourseModal}
         />
       {/if}
     </div>

@@ -154,7 +154,11 @@
         "submitting_poll": "मतदान सबमिट करते समय एक त्रुटि उत्पन्न हुई"
       }
     },
-    "success_update": "सफलतापूर्वक अपडेट किया गया"
+    "success_update": "सफलतापूर्वक अपडेट किया गया",
+    "generic": {
+      "success_delete": "सफलतापूर्वक मिटाया गया",
+      "try_again": "त्रुटि - कृपया बाद में पुनः प्रयास करें"
+    }
   },
   "exercises": {
     "heading": "अभ्यास",
@@ -229,7 +233,8 @@
       "cancel": "रद्द करना",
       "give": "एक उत्तर दें",
       "comment": "टिप्पणी"
-    }
+    },
+    "all": "सभी"
   },
   "course": {
     "navItem": {
@@ -263,7 +268,11 @@
         "unpublished": "अप्रकाशित",
         "delete": "पाठ्यक्रम हटाएँ",
         "delete_text": "इस कोर्स को हटा दें, इस कार्रवाई को पूर्ववत नहीं किया जा सकता",
-        "save": "परिवर्तनों को सुरक्षित करें"
+        "save": "परिवर्तनों को सुरक्षित करें",
+        "type": "कोर्स का प्रकार",
+        "course_type_desc": "अधिक वैयक्तिकृत अनुभव के लिए पाठ्यक्रम प्रकार को अपडेट करें",
+        "live_class": "लाइव क्लास",
+        "self_paced": "स्वयं गति"
       },
       "landing_page": {
         "start_course": "कोर्स प्रारंभ करें",
@@ -581,7 +590,11 @@
               "no_description": "कोई विवरण नहीं",
               "start": "शुरू",
               "graded": "ग्रेड दिया गया",
-              "pending": "लंबित"
+              "pending": "लंबित",
+              "submitted": "प्रस्तुत",
+              "status_pending": "स्थिति: समीक्षा लंबित",
+              "status_graded": "स्थिति: समीक्षा पूरी हुई",
+              "status_submitted": "स्थिति: सबमिट किया गया"
             },
             "edit_mode": {
               "delete_modal": "मोडल हटाएँ",
@@ -610,7 +623,9 @@
               "heading": "विवरण",
               "describe": "अपने विद्यार्थी को व्यायाम का वर्णन करें",
               "no": "कोई विवरण नहीं"
-            }
+            },
+            "no_answer": "कोई उत्तर नहीं दिया गया",
+            "check": "जाँच करना"
           },
           "new_exercise_modal": {
             "heading": "नया व्यायाम",
@@ -708,12 +723,12 @@
           "modal_heading": "नया पाठ जोड़ें",
           "lesson_title": "पाठ का शीर्षक",
           "click_to": "के लिए क्लिक करें",
-          "lock": "ताला",
-          "unlock": "अनलॉक",
           "fullname": "पूरा नाम",
           "save": "बचाना",
           "edit": "संपादन करना",
-          "delete": "मिटाना"
+          "delete": "मिटाना",
+          "lock": "ताला",
+          "unlock": "अनलॉक"
         },
         "disabled": "सुविधा अक्षम है"
       },
@@ -754,6 +769,11 @@
       "nav_certificates": "प्रमाण पत्र",
       "nav_landing_page": "लैंडिंग पृष्ठ",
       "nav_settings": "समायोजन"
+    },
+    "not_permitted": {
+      "header": "अनुमति नहीं",
+      "body": "दुर्भाग्य से आपके पास इस पाठ्यक्रम तक पहुंच नहीं है।",
+      "button": "घर जाओ"
     }
   },
   "courses": {
@@ -766,7 +786,11 @@
       "course_name_placeholder": "आपके पाठ्यक्रम का नाम",
       "short_description": "संक्षिप्त वर्णन",
       "short_description_placeholder": "इस कोर्स के बारे में थोड़ा विवरण",
-      "button": "खत्म करना"
+      "button": "खत्म करना",
+      "type": "कोर्स का प्रकार",
+      "type_selector_title": "आप किस प्रकार का कोर्स देख रहे हैं?",
+      "back": "पीछे",
+      "next": "अगला"
     },
     "course_card": {
       "empty_title": "कोई पाठ्यक्रम नहीं बनाया गया",
@@ -782,7 +806,8 @@
         "description": "विवरण",
         "lessons": "पाठ",
         "students": "छात्र",
-        "published": "प्रकाशित"
+        "published": "प्रकाशित",
+        "type": "प्रकार"
       },
       "context_menu": {
         "clone": "क्लोन",
@@ -1215,5 +1240,12 @@
     "resend_in": "सत्यापन पुनः भेजें",
     "seconds": "सेकंड",
     "snackbar_error": "कोड भेजते समय त्रुटि"
+  },
+  "generic": {
+    "locked": "बंद",
+    "unlocked": "अनलॉक किया"
+  },
+  "specialization": {
+    "course_tag": "विशेषज्ञता"
   }
 }

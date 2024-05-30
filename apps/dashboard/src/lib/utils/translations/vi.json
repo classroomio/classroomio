@@ -154,7 +154,11 @@
         "submitting_poll": "Đã xảy ra lỗi khi gửi cuộc thăm dò ý kiến"
       }
     },
-    "success_update": "Cập nhật thành công"
+    "success_update": "Cập nhật thành công",
+    "generic": {
+      "success_delete": "Đã xoá thành công",
+      "try_again": "Lỗi - Vui lòng thử lại sau"
+    }
   },
   "exercises": {
     "heading": "Bài tập",
@@ -229,7 +233,8 @@
       "cancel": "Hủy bỏ",
       "give": "Đưa ra một câu trả lời",
       "comment": "Bình luận"
-    }
+    },
+    "all": "Tất cả"
   },
   "course": {
     "navItem": {
@@ -263,7 +268,11 @@
         "unpublished": "Chưa được xuất bản",
         "delete": "Xóa khóa học",
         "delete_text": "Xóa khóa học này, hành động này không thể hoàn tác",
-        "save": "Lưu thay đổi"
+        "save": "Lưu thay đổi",
+        "type": "Loại khóa học",
+        "course_type_desc": "Cập nhật loại khóa học để có trải nghiệm cá nhân hóa hơn",
+        "live_class": "Lớp học trực tiếp",
+        "self_paced": "Tự nhịp độ"
       },
       "landing_page": {
         "start_course": "Bắt đầu khóa học",
@@ -581,7 +590,11 @@
               "no_description": "Không có mô tả",
               "start": "Bắt đầu",
               "graded": "Đã chấm điểm",
-              "pending": "Chưa giải quyết"
+              "pending": "Chưa giải quyết",
+              "submitted": "Đã gửi",
+              "status_pending": "Trạng thái: Đang chờ xem xét",
+              "status_graded": "Trạng thái: Đánh giá đã hoàn thành",
+              "status_submitted": "Trạng thái: Đã gửi"
             },
             "edit_mode": {
               "delete_modal": "Xóa phương thức",
@@ -610,7 +623,9 @@
               "heading": "Sự miêu tả",
               "describe": "Mô tả bài tập cho học sinh của bạn",
               "no": "Không có mô tả"
-            }
+            },
+            "no_answer": "Không có câu trả lời nào được đưa ra",
+            "check": "Kiểm tra"
           },
           "new_exercise_modal": {
             "heading": "Bài tập mới",
@@ -708,12 +723,12 @@
           "modal_heading": "Thêm bài học mới",
           "lesson_title": "Tiêu đề bài học",
           "click_to": "Bấm vào để",
-          "lock": "khóa",
-          "unlock": "mở khóa",
           "fullname": "Họ và tên",
           "save": "Cứu",
           "edit": "Biên tập",
-          "delete": "Xóa bỏ"
+          "delete": "Xóa bỏ",
+          "lock": "Khóa",
+          "unlock": "Mở khóa"
         },
         "disabled": "Tính năng bị vô hiệu hóa"
       },
@@ -754,6 +769,11 @@
       "nav_certificates": "Chứng chỉ",
       "nav_landing_page": "Trang đích",
       "nav_settings": "Cài đặt"
+    },
+    "not_permitted": {
+      "header": "Không cho phép",
+      "body": "Rất tiếc, bạn không có quyền truy cập vào khóa học này.",
+      "button": "Về nhà"
     }
   },
   "courses": {
@@ -766,7 +786,11 @@
       "course_name_placeholder": "Tên khóa học của bạn",
       "short_description": "Mô tả ngắn",
       "short_description_placeholder": "Một chút mô tả về khóa học này",
-      "button": "Hoàn thành"
+      "button": "Hoàn thành",
+      "type": "Loại khóa học",
+      "type_selector_title": "Bạn đang xem loại khóa học nào?",
+      "back": "Mặt sau",
+      "next": "Kế tiếp"
     },
     "course_card": {
       "empty_title": "Không có khóa học nào được tạo",
@@ -782,7 +806,8 @@
         "description": "Sự miêu tả",
         "lessons": "Những bài học",
         "students": "Sinh viên",
-        "published": "Được phát hành"
+        "published": "Được phát hành",
+        "type": "Kiểu"
       },
       "context_menu": {
         "clone": "Dòng vô tính",
@@ -1215,5 +1240,12 @@
     "resend_in": "Gửi lại xác minh trong",
     "seconds": "giây",
     "snackbar_error": "lỗi khi gửi mã"
+  },
+  "generic": {
+    "locked": "Đã khóa",
+    "unlocked": "Đã mở khóa"
+  },
+  "specialization": {
+    "course_tag": "Chuyên môn"
   }
 }

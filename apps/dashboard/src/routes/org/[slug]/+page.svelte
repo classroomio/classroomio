@@ -20,7 +20,7 @@
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
   import { getGreeting } from '$lib/utils/functions/date';
   import { globalStore } from '$lib/utils/store/app';
-  import { t } from '$lib/utils/functions/translations.js';
+  import { t } from '$lib/utils/functions/translations';
 
   export let data;
 

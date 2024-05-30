@@ -4,6 +4,7 @@ import { createLesson, updateLesson, deleteLesson } from '$lib/utils/services/co
 import type { Lesson, Course, LessonPage, LessonComment } from '$lib/utils/types';
 import { LOCALE } from '$lib/utils/types';
 import { snackbar } from '$lib/components/Snackbar/store';
+import { lessonValidation } from '$lib/utils/functions/validator';
 
 export const uploadCourseVideoStore = writable({
   isModalOpen: false
@@ -62,12 +63,20 @@ export async function handleDelete(lessonId: Lesson['id'] | undefined) {
     }
 
     lessons.update((_lessons) => _lessons.filter((lesson) => lesson.id !== lessonId));
+
+    snackbar.success('snackbar.generic.success_delete');
   }
 
   console.log(`lessonId`, lessonId);
 }
 
 export async function handleSaveLesson(lesson: Lesson, course_id: Course['id']) {
+  const result = lessonValidation(lesson);
+
+  if (Object.keys(result).length) {
+    return result;
+  }
+
   console.log(`handleSaveLesson lesson`, lesson);
   const newLesson = {
     title: lesson.title,
@@ -80,7 +89,7 @@ export async function handleSaveLesson(lesson: Lesson, course_id: Course['id']) 
 
   let newLessonData: any[] | null = null;
 
-  if (typeof lesson.id === 'string') {
+  if (!!lesson.id) {
     // No need to get the result of update cause we have all in local state
     await updateLesson(newLesson, lesson.id);
   } else {

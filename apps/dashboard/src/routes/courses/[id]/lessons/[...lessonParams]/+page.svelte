@@ -7,6 +7,7 @@
   import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
   import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
   import ListChecked from 'carbon-icons-svelte/lib/ListChecked.svelte';
+  import { globalStore } from '$lib/utils/store/app';
 
   import SendAlt from 'carbon-icons-svelte/lib/SendAlt.svelte';
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
@@ -36,7 +37,7 @@
   import type { LessonCompletion } from '$lib/utils/types';
   import { profile } from '$lib/utils/store/user';
   import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
-  import { t } from '$lib/utils/functions/translations.js';
+  import { t } from '$lib/utils/functions/translations';
   import { LANGUAGES } from '$lib/utils/constants/translation';
 
   export let data;
@@ -47,7 +48,6 @@
   let isMarkingComplete = false;
   let isLoading = false;
   let isSaving = false;
-  let isStudent = true;
   let isLessonComplete = false;
 
   function getLessonOrder(id: string) {
@@ -250,15 +250,14 @@
   $: isLessonComplete = getIsLessonComplete($lesson.lesson_completion, $profile.id);
 </script>
 
-<!-- TODO: Refactor usage of two way binding isStudent, rather use $globalStore.isStudent -->
 <CourseContainer
-  bind:isStudent
   {path}
   isExercisePage={!data.isMaterialsTabActive && !!data.exerciseId}
   bind:courseId={data.courseId}
+  containerClass="relative"
 >
   <PageNav
-    bind:hideOnMobile={isStudent}
+    bind:hideOnMobile={$globalStore.isStudent}
     navItems={[
       {
         label: $t('course.navItem.lessons.lesson_nav.materials'),
@@ -324,15 +323,10 @@
   </PageNav>
 
   {#if !data.isMaterialsTabActive}
-    <Exercises
-      bind:isStudent
-      lessonId={data.lessonId}
-      exerciseId={data.exerciseId}
-      path={`${path}/exercises`}
-    />
+    <Exercises lessonId={data.lessonId} exerciseId={data.exerciseId} path={`${path}/exercises`} />
   {:else if !!data.lessonId}
     <PageBody
-      bind:isPageNavHidden={isStudent}
+      bind:isPageNavHidden={$globalStore.isStudent}
       onClick={() => {
         $apps.open = false;
         $apps.dropdown = false;
@@ -347,10 +341,10 @@
         {prevMode}
         {toggleMode}
         bind:isSaving
-        {isStudent}
+        isStudent={$globalStore.isStudent}
       />
 
-      <!-- {#if isStudent}
+      <!-- {#if $globalStore.isStudent}
         <div class="w-full hidden lg:flex flex-row-reverse mt-10">
           <PrimaryButton
             onClick={() => markLessonComplete(data.lessonId)}
@@ -373,8 +367,9 @@
       {/if} -->
     </PageBody>
   {/if}
-  <!-- Mobile Navigation -->
-  <div class="sticky bottom-5 flex items-center justify-center">
+
+  <!-- Bottom Lesson Widget -->
+  <div class="absolute w-full bottom-5 flex items-center justify-center">
     <div
       class="flex items-center gap-2 w-fit rounded-full shadow-xl bg-gray-100 dark:bg-neutral-700 px-5 py-1"
     >
@@ -397,7 +392,7 @@
       <button
         class="px-2 my-2 pr-4 border-t-0 border-b-0 border-l-0 border border-gray-300 flex items-center disabled:opacity-10 disabled:cursor-not-allowed"
         on:click={() => handleAppClick(APPS_CONSTANTS.APPS.COMMENTS)}
-        disabled={isStudent && !$currentOrg.customization.apps.comments}
+        disabled={$globalStore.isStudent && !$currentOrg.customization.apps.comments}
       >
         <SendAlt size={24} class="carbon-icon" />
         <span class="ml-1">{$lesson.totalComments}</span>

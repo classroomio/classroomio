@@ -3,13 +3,30 @@ import z from 'zod';
 import { validateEmail } from './validateEmail';
 
 const getOrgNameValidation = () =>
-  z.string().min(5, { message: 'Organization must contain 5 or more characters' });
+  z
+    .string()
+    .min(5, { message: 'Organization must contain 5 or more characters' })
+    .refine((val) => !/^[-]|[-]$/.test(val), {
+      message: 'Organization name cannot start or end with a hyphen'
+    });
 
 const getSiteNameValidation = () =>
-  z.string().min(5, { message: 'Site name must contain 5 or more characters' });
+  z
+    .string()
+    .min(5, { message: 'Site name must contain 5 or more characters' })
+    .refine((val) => !/^[-]|[-]$/.test(val), {
+      message: 'Site name cannot start or end with a hyphen'
+    });
 
 const getNewsfeedValidation = () =>
   z.string().min(5, { message: 'Field must contain 5 or more characters' });
+
+const lessonSchema = z.object({
+  title: z.string().nonempty({ message: 'Title cannot be empty' }),
+  lesson_at: z.string().optional(),
+  call_url: z.string().nullable().optional(),
+  is_unlocked: z.boolean()
+});
 
 const createQuizValidationSchema = z.object({
   title: z.string().min(6, {
@@ -143,7 +160,11 @@ export const processErrors = (error, mapToId) => {
 
 export const authValidation = (fields = {}) => {
   const { error } = authValidationSchema.safeParse(fields);
+  return processErrors(error);
+};
 
+export const lessonValidation = (lesson = {}) => {
+  const { error } = lessonSchema.safeParse(lesson);
   return processErrors(error);
 };
 
@@ -231,6 +252,14 @@ export const createOrgValidation = (fields = {}) => {
   return processErrors(error);
 };
 
+export const updateOrgNameValidation = (orgName) => {
+  const schema = z.object({
+    orgName: getOrgNameValidation()
+  });
+  const { error } = schema.safeParse({ orgName });
+
+  return processErrors(error);
+};
 export const updateOrgSiteNameValidation = (siteName) => {
   const schema = z.object({
     siteName: getSiteNameValidation()

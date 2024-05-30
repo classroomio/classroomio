@@ -39,6 +39,17 @@ export function validateQuestionnaire(questions) {
     }
     const qErrors = errors[question.id] || {};
 
+    if (question.question_type.id !== QUESTION_TYPE.TEXTAREA) {
+      const hasEmptyOptionLabel = question.options
+        .filter((option) => !option.deleted_at)
+        .some((option) => option.label.trim() === '');
+
+      if (hasEmptyOptionLabel) {
+        qErrors.option = 'Please enter a label for all options';
+        errors[question.id] = { ...qErrors };
+      }
+    }
+
     const hasAnswer = question.options
       .filter((o) => !o.deleted_at)
       .some((option) => option.is_correct);
