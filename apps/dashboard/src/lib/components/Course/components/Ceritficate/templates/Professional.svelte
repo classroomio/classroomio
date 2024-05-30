@@ -9,9 +9,9 @@
 </script>
 
 <div
-  class="certificate-bg flex items-center justify-center border border-dashed border-primary-400"
+  class="certificate-bg w-full flex items-center justify-center border border-dashed border-primary-400"
 >
-  <div class="{borderwidth} {bordercolor}">
+  <div class="{borderwidth} {bordercolor} w-full">
     <div class="w-full px-5 py-3">
       <p class="text-sm font-normal my-2 uppercase text-gray-500">
         Certificate<br /> of completion
