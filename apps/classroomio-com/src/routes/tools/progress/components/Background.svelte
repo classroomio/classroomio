@@ -1,6 +1,6 @@
 <script lang="ts">
-  import Modal from './Modal.svelte';
-  import { htmlBody, type Source, openModal } from './store';
+  import Modal from '$lib/Modal/Modal.svelte';
+  import { htmlBody, openModal } from './store';
 
   interface Background {
     src: string;
@@ -45,14 +45,14 @@
     }
   ];
 
-  function selectBackground(background: Source) {
+  function selectBackground(background: Background) {
     $htmlBody.background = background.src;
     $openModal.background = false;
   }
 </script>
 
 {#if $openModal.background}
-  <Modal className="h-full max-h-[60vh]">
+  <Modal className="h-full max-h-[60vh]" top="top-10 md:top-[20%]">
     <!--  -->
     <div class="flex justify-between">
       <h1 class="text-sm font-semibold">Choose your Background</h1>

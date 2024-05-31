@@ -1,11 +1,15 @@
 <script lang="ts">
-  import { openModal, htmlBody, type Source } from './store';
-  import Modal from './Modal.svelte';
+  import { openModal, htmlBody } from './store';
+  import Modal from '$lib/Modal/Modal.svelte';
+
+  interface Avatar {
+    src: string;
+  }
 
   let isAddIcon = false;
   let hoveredIndex: number | null = null;
 
-  let avatars = [
+  let avatars: Avatar[] = [
     { src: 'avatar_a' },
     { src: 'avatar_u' },
     { src: 'avatar_b' },
@@ -28,7 +32,7 @@
     { src: 'avatar_t' }
   ];
 
-  function selectAvatar(avatar: Source) {
+  function selectAvatar(avatar: Avatar) {
     $htmlBody.avatar = avatar.src;
     $openModal.avatar = false;
   }

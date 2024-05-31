@@ -1,8 +1,13 @@
 <script lang="ts">
-  import Modal from './Modal.svelte';
-  import { htmlBody, type Mood, openModal } from './store';
+  import Modal from '$lib/Modal/Modal.svelte';
+  import { htmlBody, openModal } from './store';
 
-  let moods = [
+  interface Mood {
+    text: string;
+    iconSrc: string;
+  }
+
+  let moods: Mood[] = [
     {
       text: 'Unmotivated',
       iconSrc: 'unmotivated'
@@ -61,7 +66,7 @@
 </script>
 
 {#if $openModal.mood}
-  <Modal>
+  <Modal top="top-10 md:top-[20%]">
     <!-- header -->
     <div class="flex justify-between">
       <h1 class="text-sm font-semibold">Choose your Mood</h1>
