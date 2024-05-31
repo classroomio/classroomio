@@ -21,7 +21,7 @@
       title: 'Activity Stopwatch',
       subText:
         'Stay on track and enhance productivity with our customizable stopwatch for timed tasks, quizzes, and study sessions',
-      slug: 'activity-stopwatch',
+      slug: 'stopwatch',
       show: true
     },
     {
