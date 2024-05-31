@@ -18,6 +18,7 @@
   import PurpleBadgePattern from './templates/PurpleBadgePattern.svelte';
   import BlueBadgePattern from './templates/BlueBadgePattern.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
+  import { courseValidation } from '$lib/utils/functions/validator';
   import { z } from 'zod';
 
   const studentNamePlaceholder = 'Name of student';
@@ -36,21 +37,21 @@
   };
   let helperText = '';
 
-  const courseSchema = z.object({
-    description: z.string().max(200, 'Description cannot exceed 200 characters'),
-    is_certificate_downloadable: z.boolean(),
-    certificate_theme: z.string()
-  });
-
   const saveCertificate = async () => {
     isSaving = true;
 
     try {
-      courseSchema.parse({
+      const result = courseValidation({
         description: $course.description || '',
         is_certificate_downloadable: $course.is_certificate_downloadable || false,
         certificate_theme: $course.certificate_theme || ''
       });
+
+      if (result && Object.keys(result).length > 0) {
+        errors.description = result.description || 'Description cannot exceed 200 characters';
+        throw new Error(errors.description);
+      }
+
       errors.description = '';
 
       await updateCourse($course.id, undefined, {
@@ -60,8 +61,8 @@
       });
       snackbar.success('snackbar.course_settings.success.saved');
     } catch (error) {
-      if (error.errors && error.errors[0].message) {
-        errors.description = error.errors[0].message;
+      if (error.message) {
+        errors.description = error.message;
       } else {
         errors.description = 'An unexpected error occurred';
       }
