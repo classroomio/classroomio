@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { openFullscreen, htmlBody, toggleFullscreenModal, nodeStore } from './store';
+  import { htmlBody, nodeStore, openModal } from './store';
 
   import { derived } from 'svelte/store';
 
@@ -39,10 +39,10 @@
   bind:this={node}
 >
   <!-- fullscreen button -->
-  {#if $openFullscreen.open}
+  {#if $openModal.fullscreen}
     <button
       type="button"
-      on:click={toggleFullscreenModal}
+      on:click={() => ($openModal.fullscreen = !$openModal.fullscreen)}
       class="absolute top-4 right-4 p-1.5 rounded-full hover:scale-90 transition-all duration-300 bg-white"
     >
       <img src="/free-tools/progress-report/close-icon.svg" alt="" class="" />
@@ -50,7 +50,7 @@
   {:else}
     <button
       type="button"
-      on:click={toggleFullscreenModal}
+      on:click={() => ($openModal.fullscreen = !$openModal.fullscreen)}
       class="absolute top-4 right-4 w-7 hover:scale-90 transition-all duration-300"
     >
       <img src="/free-tools/progress-report/full-screen-icon.svg" alt="" class="" />

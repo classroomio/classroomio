@@ -1,16 +1,11 @@
-import { writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 import type { Writable } from 'svelte/store';
 
-export interface Mood {
-  text: string;
-  iconSrc: string;
-}
-export interface Source {
-  src: string;
-}
-
-interface Modal {
-  open: boolean;
+interface OpenModal {
+  avatar: boolean;
+  background: boolean;
+  fullscreen: boolean;
+  mood: boolean;
 }
 
 export interface HtmlBody {
@@ -25,6 +20,16 @@ export interface HtmlBody {
   };
 }
 
+// store for the node binded to the report component for the component to image conversion
+export const nodeStore = writable(null);
+
+export const openModal: Writable<OpenModal> = writable({
+  avatar: false,
+  background: false,
+  fullscreen: false,
+  mood: false,
+});
+
 // report html
 export const htmlBody: Writable<HtmlBody> = writable({
   name: '',
@@ -38,81 +43,13 @@ export const htmlBody: Writable<HtmlBody> = writable({
   }
 });
 
-// store for the node binded to the report component for the component to image conversion
-export const nodeStore = writable(null);
-
-export const openMood: Writable<Modal> = writable({
-  open: false
+  // a mini validation for the htmlBody store that ensures all fields are filled
+export const isFormComplete = derived(htmlBody, $htmlBody => {
+  return $htmlBody.name.trim() !== '' &&
+    $htmlBody.learning.trim() !== 'Tell us what you are learning' &&
+    $htmlBody.progress > 0 &&
+    $htmlBody.avatar.trim() !== '' &&
+    $htmlBody.background.trim() !== '' &&
+    $htmlBody.mood.text.trim() !== '' &&
+    $htmlBody.mood.iconSrc.trim() !== '';
 });
-
-export const openAvatar: Writable<Modal> = writable({
-  open: false
-});
-
-export const openBackground: Writable<Modal> = writable({
-  open: false
-});
-
-export const openFullscreen: Writable<Modal> = writable({
-  open: false
-});
-
-// mood functions
-export function closeMoodModal() {
-  openMood.update((store) => {
-    store.open = false;
-    return store;
-  });
-}
-
-export function openMoodModal() {
-  openMood.update((store) => {
-    store.open = true;
-    return store;
-  });
-}
-
-// avatar functions
-export function closeAvatarModal() {
-  openAvatar.update((store) => {
-    store.open = false;
-    return store;
-  });
-}
-
-export function openAvatarModal() {
-  openAvatar.update((store) => {
-    store.open = true;
-    return store;
-  });
-}
-
-// background functions
-export function closeBackgroundModal() {
-  openBackground.update((store) => {
-    store.open = false;
-    return store;
-  });
-}
-
-export function openBackgroundModal() {
-  openBackground.update((store) => {
-    store.open = true;
-    return store;
-  });
-}
-
-// fullscreen functions
-export function closeFullscreenModal() {
-  openFullscreen.update((store) => {
-    store.open = false;
-    return store;
-  });
-}
-
-export function toggleFullscreenModal() {
-  openFullscreen.update((store) => {
-    store.open = !store.open;
-    return store;
-  });
-}

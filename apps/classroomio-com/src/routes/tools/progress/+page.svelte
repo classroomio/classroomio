@@ -4,12 +4,11 @@
   import { sineInOut } from 'svelte/easing';
   import Mood from './components/Mood.svelte';
   import {
-    openMoodModal,
-    openAvatarModal,
-    openBackgroundModal,
     htmlBody,
     nodeStore,
-    type HtmlBody
+    type HtmlBody,
+    openModal,
+    isFormComplete
   } from './components/store';
   import ToolsHeader from '$lib/ToolsHeader/ToolsHeader.svelte';
   import Avatar from './components/Avatar.svelte';
@@ -17,11 +16,19 @@
   import Report from './components/Report.svelte';
   import FullView from './components/FullView.svelte';
   import { LogoFacebook, LogoLinkedin } from 'carbon-icons-svelte';
+  import { onDestroy } from 'svelte';
 
   const MAX_CHARS = 160;
   let remainingChars = MAX_CHARS;
   let showReport = false;
   let showSetter = true;
+  let isDownloading: boolean = false;
+  let isDisabled: boolean;
+
+  // sets the result of the mini validation for the htmlBody store
+  const unsubscribe = isFormComplete.subscribe((value) => {
+    isDisabled = value;
+  });
 
   function handleInputChange(event: any, property: keyof HtmlBody) {
     $htmlBody[property] = event.target.value;
@@ -32,6 +39,9 @@
   }
 
   function convertToPng() {
+    isDownloading = true;
+    console.log('isDownloading', isDownloading);
+
     if ($nodeStore) {
       toPng($nodeStore)
         .then((dataUrl) => {
@@ -42,6 +52,10 @@
         })
         .catch((error) => {
           console.error('Oops, something went wrong!', error);
+        })
+        .finally(() => {
+          isDownloading = false;
+          console.log('isDownloading', isDownloading);
         });
     } else {
       console.error('Node is not defined');
@@ -68,6 +82,10 @@
     const url = `http://www.linkedin.com/shareArticle?summary=${text}&text=${text}`;
     window.open(url);
   }
+
+  onDestroy(() => {
+    unsubscribe();
+  });
 </script>
 
 <svelte:head>
@@ -162,7 +180,7 @@
           <p class="text-sm text-[#656565]">Select your mood</p>
           <button
             type="button"
-            on:click={openMoodModal}
+            on:click={() => ($openModal.mood = true)}
             class="w-full flex justify-between items-center border my-3 py-2 px-3 outline-none rounded-sm bg-[#F1F2F4] text-gray-400 text-sm"
           >
             {#if $htmlBody.mood.text}
@@ -228,7 +246,7 @@
             <p class="text-[12px] md:text-sm text-[#656565]">Choose your avatar</p>
             <button
               type="button"
-              on:click={openAvatarModal}
+              on:click={() => ($openModal.avatar = true)}
               class="bg-[#F7F7F7] w-full py-1.5 px-5 md:px-0 mt-3 flex md:w-[65%] items-center justify-between md:justify-center gap-2"
             >
               <img
@@ -251,7 +269,7 @@
             <p class="text-[12px] md:text-sm text-[#656565]">Choose your background</p>
             <button
               type="button"
-              on:click={openBackgroundModal}
+              on:click={() => ($openModal.background = true)}
               class="bg-[#F7F7F7] w-full py-1.5 px-5 md:px-0 mt-3 flex md:w-[65%] items-center justify-between md:justify-center gap-2"
             >
               <img
@@ -272,7 +290,7 @@
         <button
           type="button"
           on:click={convertToPng}
-          class="bg-[#0233BD] text-white text-xs font-semibold w-full py-3 mt-5 rounded-md"
+          class="bg-[#0233BD] block md:hidden text-white text-xs font-semibold w-full py-3 mt-5 rounded-md"
           >Generate progress Report</button
         >
       </div>
@@ -291,9 +309,12 @@
         <div class="mt-9 pt-8 px-2 h-auto border-t">
           <button
             type="button"
+            disabled={isDownloading || !isDisabled ? true : false}
             on:click={convertToPng}
-            class="bg-[#0233BD] text-white text-xs font-semibold w-full py-3 rounded-md"
-            >Download Image</button
+            class=" {isDownloading || !isDisabled
+              ? 'bg-gray-500'
+              : 'bg-[#0233BD]'} text-white text-xs font-semibold w-full py-3 rounded-md"
+            >{isDownloading ? 'Loading...' : 'Download Image'}</button
           >
 
           <!-- share button -->

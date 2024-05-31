@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { openAvatar, closeAvatarModal, htmlBody, type Source } from './store';
+  import { openModal, htmlBody, type Source } from './store';
+  import Modal from './Modal.svelte';
 
   let isAddIcon = false;
   let hoveredIndex: number | null = null;
@@ -29,63 +30,57 @@
 
   function selectAvatar(avatar: Source) {
     $htmlBody.avatar = avatar.src;
+    $openModal.avatar = false;
   }
 </script>
 
-{#if $openAvatar.open}
-  <div class="relative">
-    <!-- black background -->
-    <div class="fixed z-[3000] top-0 left-0 w-full h-full bg-black opacity-[0.7]"></div>
-    <div
-      class="fixed top-[20%] left-10 md:left-[30%] z-[3001] w-[80%] md:w-[43%] bg-white rounded-md mx-auto py-6 px-7"
-    >
-      <!-- heading -->
-      <div class="flex justify-between">
-        <h1 class="text-sm font-semibold">Choose your Avatars</h1>
-        <button
-          type="button"
-          on:click={closeAvatarModal}
-          class="p-2 bg-[#F1F6FF] hover:scale-110 transition-all duration-300 rounded-full w-6"
-        >
-          <img src="/free-tools/progress-report/close-icon.svg" alt="Close icon" />
-        </button>
-      </div>
-
-      <!-- map for each avatar -->
-      <div class="flex flex-wrap justify-between gap-y-3 mt-3">
-        {#each avatars as avatar, index}
-          <button
-            on:click={() => {
-              selectAvatar(avatar);
-              closeAvatarModal();
-            }}
-            on:mouseenter={() => {
-              hoveredIndex = index;
-              isAddIcon = true;
-            }}
-            on:mouseleave={() => {
-              hoveredIndex = null;
-              isAddIcon = false;
-            }}
-            class="relative w-[17%] flex justify-center items-center shadow-sm rounded-full hover:scale-110 transition-all duration-300"
-          >
-            <!-- + icon overlay -->
-            {#if isAddIcon && hoveredIndex === index}
-              <div
-                class="w-full h-full flex justify-center items-center bg-white border absolute rounded-full opacity-[0.7] blur-md"
-              ></div>
-              <img src="/free-tools/progress-report/hover-plus-icon.svg" alt="" class="absolute" />
-            {/if}
-            <!-- avatar -->
-            <img
-              src="https://assets.cdn.clsrio.com/progress-report/avatars/{avatar.src}.svg"
-              alt=""
-              class="w-full"
-            />
-          </button>
-        {/each}
-      </div>
-      <!--  -->
+{#if $openModal.avatar}
+  <Modal>
+    <!-- heading -->
+    <div class="flex justify-between">
+      <h1 class="text-sm font-semibold">Choose your Avatars</h1>
+      <button
+        type="button"
+        on:click={() => ($openModal.avatar = false)}
+        class="p-2 bg-[#F1F6FF] hover:scale-110 transition-all duration-300 rounded-full w-6"
+      >
+        <img src="/free-tools/progress-report/close-icon.svg" alt="Close icon" />
+      </button>
     </div>
-  </div>
+
+    <!-- map for each avatar -->
+    <div class="flex flex-wrap justify-between gap-y-3 mt-3">
+      {#each avatars as avatar, index}
+        <button
+          on:click={() => {
+            selectAvatar(avatar);
+          }}
+          on:mouseenter={() => {
+            hoveredIndex = index;
+            isAddIcon = true;
+          }}
+          on:mouseleave={() => {
+            hoveredIndex = null;
+            isAddIcon = false;
+          }}
+          class="relative w-[17%] flex justify-center items-center shadow-sm rounded-full hover:scale-110 transition-all duration-300"
+        >
+          <!-- + icon overlay -->
+          {#if isAddIcon && hoveredIndex === index}
+            <div
+              class="w-full h-full flex justify-center items-center bg-white border absolute rounded-full opacity-[0.7] blur-md"
+            ></div>
+            <img src="/free-tools/progress-report/hover-plus-icon.svg" alt="" class="absolute" />
+          {/if}
+          <!-- avatar -->
+          <img
+            src="https://assets.cdn.clsrio.com/progress-report/avatars/{avatar.src}.svg"
+            alt=""
+            class="w-full"
+          />
+        </button>
+      {/each}
+    </div>
+    <!--  -->
+  </Modal>
 {/if}
