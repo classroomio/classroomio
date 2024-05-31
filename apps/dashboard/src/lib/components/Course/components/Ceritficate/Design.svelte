@@ -1,5 +1,6 @@
 <script>
   import { RadioButtonGroup, RadioButton, Toggle } from 'carbon-components-svelte';
+  import FlashFilled from 'carbon-icons-svelte/lib/FlashFilled.svelte';
   import { goto } from '$app/navigation';
   import { updateCourse } from '$lib/utils/services/courses';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -12,14 +13,12 @@
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
-  import FlashFilled from 'carbon-icons-svelte/lib/FlashFilled.svelte';
   import PurpleProfessionalBadge from './templates/PurpleProfessionalBadge.svelte';
   import BlueProfessionalBadge from './templates/BlueProfessionalBadge.svelte';
   import PurpleBadgePattern from './templates/PurpleBadgePattern.svelte';
   import BlueBadgePattern from './templates/BlueBadgePattern.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { courseValidation } from '$lib/utils/functions/validator';
-  import { z } from 'zod';
 
   const studentNamePlaceholder = 'Name of student';
   const themes = [
@@ -48,7 +47,8 @@
       });
 
       if (result && Object.keys(result).length > 0) {
-        errors.description = result.description || 'Description cannot exceed 200 characters';
+        errors.description =
+          $t(result.description) || $t('course.navItem.certificates.description_error');
         throw new Error(errors.description);
       }
 
@@ -64,14 +64,16 @@
       if (error.message) {
         errors.description = error.message;
       } else {
-        errors.description = 'An unexpected error occurred';
+        errors.description = $t('course.navItem.certificates.unexpected_error');
       }
     } finally {
       isSaving = false;
     }
   };
 
-  $: helperText = `${$course.description?.length || 0}/200 characters`;
+  $: helperText = `${$course.description?.length || 0}/200 ${$t(
+    'course.navItem.certificates.characters'
+  )}`;
 </script>
 
 <svelte:head>

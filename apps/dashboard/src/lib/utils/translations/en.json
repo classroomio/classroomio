@@ -855,7 +855,10 @@
         "contact_instructor": "If you need your certificate, please contact your instructor.",
         "download_certificate": "Download Certificate",
         "complete_to_download_title": "Course not complete 😔",
-        "complete_to_download_subtitle": "Your certificate will be available once you complete all lesson and exercises in this course"
+        "complete_to_download_subtitle": "Your certificate will be available once you complete all lesson and exercises in this course",
+        "description_error": "Description cannot exceed 200 characters",
+        "characters": "characters",
+        "unexpected_error": "An unexpected error occurred"
       },
 
       "landing_page": {

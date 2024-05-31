@@ -399,7 +399,10 @@
         "unlocked_certificate": "¡Felicitaciones! 🎉 tu certificado está listo",
         "unlocked_certificate_subtitle": "Has completado este curso y tu dedicación es evidente. Descargue el certificado y compártalo con su red como prueba de su habilidad recién adquirida",
         "complete_to_download_subtitle": "Su certificado estará disponible una vez que complete todas las lecciones y ejercicios de este curso.",
-        "complete_to_download_title": "Curso no completo 😔"
+        "complete_to_download_title": "Curso no completo 😔",
+        "description_error": "La descripción no puede exceder los 200 caracteres.",
+        "characters": "caracteres",
+        "unexpected_error": "ocurrió un error inesperado"
       },
       "people": {
         "title": "Gente",

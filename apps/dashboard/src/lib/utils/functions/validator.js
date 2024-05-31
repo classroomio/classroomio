@@ -123,7 +123,7 @@ const onboardingValidationSchema = {
 };
 
 const courseSchema = z.object({
-  description: z.string().max(200, 'Description cannot exceed 200 characters'),
+  description: z.string().max(200, 'course.navItem.certificates.description_error'),
   is_certificate_downloadable: z.boolean(),
   certificate_theme: z.string()
 });
