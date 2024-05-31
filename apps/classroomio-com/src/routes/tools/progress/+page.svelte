@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { LogoFacebook, LogoLinkedin } from 'carbon-icons-svelte';
+  import { onDestroy } from 'svelte';
   import { toPng } from 'html-to-image';
   import { fly } from 'svelte/transition';
   import { sineInOut } from 'svelte/easing';
@@ -15,8 +17,6 @@
   import Background from './components/Background.svelte';
   import Report from './components/Report.svelte';
   import FullView from './components/FullView.svelte';
-  import { LogoFacebook, LogoLinkedin } from 'carbon-icons-svelte';
-  import { onDestroy } from 'svelte';
 
   const MAX_CHARS = 160;
   let remainingChars = MAX_CHARS;
@@ -40,7 +40,6 @@
 
   function convertToPng() {
     isDownloading = true;
-    console.log('isDownloading', isDownloading);
 
     if ($nodeStore) {
       toPng($nodeStore)
@@ -55,7 +54,6 @@
         })
         .finally(() => {
           isDownloading = false;
-          console.log('isDownloading', isDownloading);
         });
     } else {
       console.error('Node is not defined');
@@ -115,7 +113,7 @@
   <meta name="twitter:image" content="https://brand.cdn.clsrio.com/og/free-tools.png" />
 </svelte:head>
 
-<section class="mt-[30%] px-1 md:px-0 md:mt-[5%] w-fit md:w-full">
+<section class="mt-[30%] px-1 md:px-0 md:mt-[5%] w-full md:w-full">
   <ToolsHeader>
     <img
       src="/free-tools/progress-report.svg"
@@ -142,7 +140,7 @@
     {#if showSetter}
       <div
         transition:fly={{ y: 100, easing: sineInOut }}
-        class="w-full mx-auto md:w-[48%] max-w-[500px] p-5 md:border-r"
+        class="w-full mx-auto md:w-[48%] md:max-w-[500px] p-5 md:border-r"
       >
         <!-- preview button -->
         <div class="flex md:hidden justify-end mb-5">
@@ -289,9 +287,12 @@
         </div>
         <button
           type="button"
+          disabled={isDownloading || !isDisabled ? true : false}
           on:click={convertToPng}
-          class="bg-[#0233BD] block md:hidden text-white text-xs font-semibold w-full py-3 mt-5 rounded-md"
-          >Generate progress Report</button
+          class=" {isDownloading || !isDisabled
+            ? 'bg-gray-500'
+            : 'bg-[#0233BD]'} block md:hidden mt-10 text-white text-xs font-semibold w-full py-3 rounded-md"
+          >{isDownloading ? 'Loading...' : 'Generate progress Report'}</button
         >
       </div>
     {/if}
@@ -300,7 +301,7 @@
 
     <div
       transition:fly={{ y: 100, easing: sineInOut }}
-      class="w-full mx-auto md:w-[48%] min-w-[400px] md:max-w-[500px] px-5 md:px-1 md:mt-0 mt-5 md:p-5"
+      class="w-full mx-auto md:w-[48%] md:min-w-[400px] md:max-w-[500px] px-5 md:px-1 md:mt-0 mt-5 md:p-5"
     >
       <div class="hidden md:block">
         <Report />
@@ -371,9 +372,12 @@
         <div class="mt-9 pt-8 px-2 h-auto border-t">
           <button
             type="button"
+            disabled={isDownloading || !isDisabled ? true : false}
             on:click={convertToPng}
-            class="bg-[#0233BD] text-white text-xs font-semibold w-full py-3 rounded-md"
-            >Download Image</button
+            class=" {isDownloading || !isDisabled
+              ? 'bg-gray-500'
+              : 'bg-[#0233BD]'} text-white text-xs font-semibold w-full py-3 rounded-md"
+            >{isDownloading ? 'Loading...' : 'Generate progress Report'}</button
           >
 
           <!-- share button -->
