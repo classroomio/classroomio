@@ -15,7 +15,6 @@
 <Testimonial />
 <MoreFeatures />
 
-
 {#if PUBLIC_ENABLE_FAQ}
   <Faq />
 {/if}
