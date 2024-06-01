@@ -14,7 +14,7 @@
       const dataUrl = await toPng(qrContainer);
       const link = document.createElement('a');
       link.href = dataUrl;
-      link.download = 'qr-code.png';
+      link.download = `${$course.slug}-qr-code.png`;
       link.click();
     } catch (error) {
       console.error('Failed to capture image:', error);
