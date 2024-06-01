@@ -38,8 +38,8 @@
   id="qr-container"
   class="flex flex-col items-center justify-center h-screen bg-blue-900 mt-10"
 >
-  <div class="bg-white pb-3 p-4 rounded-lg text-center">
-    <div class="font-bold text-xl p-2 bg-gray-100 my-4 rounded-md">Scan QR</div>
+  <div class="bg-white pb-3 p-6 rounded-3xl text-center">
+    <div class="font-bold text-xl p-2 bg-gray-100 my-4 rounded-xl">Scan QR</div>
     <QR
       id="qr-code"
       data={getStudentInviteLink($course, $currentOrg.siteName, $currentOrgDomain)}
