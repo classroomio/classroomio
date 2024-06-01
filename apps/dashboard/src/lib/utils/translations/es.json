@@ -356,7 +356,22 @@
             "fullname": "Nombre completo",
             "description": "Descripción",
             "rating": "Clasificación",
-            "hide": "Ocultar reseña"
+            "hide": "Ocultar reseña",
+            "validations": {
+              "invalid_type_error": "No debe estar vacío",
+              "description": {
+                "min_char": "'La descripción es demasiado corta, mínimo de 5 caracteres."
+              },
+              "rating": {
+                "message": "La calificación debe ser del 1 al 5."
+              },
+              "avatar_url": {
+                "message": "Subir una imagen"
+              },
+              "name": {
+                "min_char": "El nombre es demasiado corto, mínimo de 5 caracteres."
+              }
+            }
           },
           "header_form": {
             "title": "Título",
@@ -1250,5 +1265,98 @@
   },
   "specialization": {
     "course_tag": "Especialización"
+  },
+  "validations": {
+    "invalid_type_error": "No debe estar vacío",
+    "email": {
+      "not_valid": "Correo electrónico no válido"
+    },
+    "course_payment": {
+      "email": {
+        "invalid_email": "Dirección de correo electrónico no válida"
+      },
+      "full_name": {
+        "min_char": "Debe tener 6 o más caracteres"
+      }
+    },
+    "confirm_password": {
+      "not_match": "No coincide con la contraseña"
+    },
+    "onboarding": {
+      "step_two": {
+        "source": {
+          "required": "Seleccione una opción"
+        },
+        "goal": {
+          "required": "Seleccione una opción"
+        }
+      },
+      "step_one": {
+        "full_name": {
+          "min_char": "El nombre completo debe contener 5 o más caracteres."
+        }
+      }
+    },
+    "reset": {
+      "password": {
+        "min_char": "Debe tener 6 o más caracteres"
+      }
+    },
+    "auth": {
+      "password": {
+        "min_char": "Debe tener 6 o más caracteres"
+      },
+      "email": {
+        "invalid_email": "Dirección de correo electrónico no válida"
+      }
+    },
+    "forgot": {
+      "invalid_email": "Dirección de correo electrónico no válida"
+    },
+    "org_landing_page": {
+      "message": {
+        "min_char": "Debe tener 10 o más caracteres"
+      },
+      "phone": {
+        "min_char": "Debe tener 6 o más caracteres"
+      },
+      "email": {
+        "invalid_email": "Dirección de correo electrónico no válida"
+      },
+      "name": {
+        "min_char": "Debe tener 6 o más caracteres"
+      }
+    },
+    "comment_in_community": {
+      "min_char": "Debe tener 6 o más caracteres"
+    },
+    "ask_community": {
+      "course_id": {
+        "select_course": "Seleccione un curso"
+      },
+      "body": {
+        "min_char": "Debe tener 10 o más caracteres"
+      },
+      "title": {
+        "min_char": "Debe tener 6 o más caracteres"
+      }
+    },
+    "create_quiz": {
+      "min_char": "Debe tener 6 o más caracteres"
+    },
+    "lesson_schema": {
+      "empty_title": "El título no puede estar vacío."
+    },
+    "news_feed": {
+      "min_char": "El campo debe contener 5 o más caracteres."
+    },
+    "site_name": {
+      "min_char": "El nombre del sitio debe contener 5 o más caracteres.",
+      "hyphen_rule": "El nombre del sitio no puede comenzar ni terminar con un guión."
+    },
+    "organization_name": {
+      "min_char": "La organización debe contener 5 o más caracteres.",
+      "hyphen_rule": "El nombre de la organización no puede comenzar ni terminar con un guión."
+    }
   }
 }
