@@ -1,7 +1,7 @@
 <script lang="ts">
   import copy from 'copy-to-clipboard';
+  import { writable } from 'svelte/store';
   import { Popover } from 'carbon-components-svelte';
-  import Link from 'carbon-icons-svelte/lib/Link.svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import Modal from '$lib/components/Modal/index.svelte';
@@ -10,11 +10,12 @@
   import { addGroupMember, fetchGroup } from '$lib/utils/services/courses';
   import { course, setCourse } from '$lib/components/Course/store';
   import { MultiSelect, Loading } from 'carbon-components-svelte';
-  import { currentOrg, currentOrgDomain, currentOrgPath } from '$lib/utils/store/org';
+  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { getOrgTeam } from '$lib/utils/services/org';
   import type { OrgTeamMember } from '$lib/utils/types/org';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import QR from '@svelte-put/qr/svg/QR.svelte';
   import { getStudentInviteLink } from '$lib/utils/functions/course';
+  import ShareQrImage from './ShareQRImage.svelte';
   import {
     triggerSendEmail,
     NOTIFICATION_NAME
@@ -35,6 +36,7 @@
   let selectedTutors: Tutor[] = [];
   let isLoadingTutors = false;
   let copied = false;
+  const downloadTrigger = writable(false);
 
   function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
     return value !== null && value !== undefined;
@@ -135,6 +137,11 @@
     goto($page.url.pathname);
   }
 
+  function handleQRDownload() {
+    snackbar.success('course.navItem.people.invite_modal.qr_downloading_snackbar');
+    downloadTrigger.set(true);
+  }
+
   $: {
     selectedTutors = formatSelected(selectedIds);
     console.log('selectedTutors', selectedTutors);
@@ -178,7 +185,7 @@
       {/if}
     </div>
 
-    <div class="mb-8 w-[90%] flex justify-between items-center">
+    <div class="mb-8 w-full flex justify-between items-center">
       <div class="w-3/5">
         <p class="text-base mb-1 font-semibold">
           {$t('course.navItem.people.invite_modal.invite_students')}
@@ -187,19 +194,44 @@
       </div>
 
       <div class="relative">
-        <PrimaryButton
-          disablePadding={true}
-          className="text-sm py-2 px-3"
-          variant={VARIANTS.OUTLINED}
-          onClick={copyLink}
+        <button
+          type="button"
+          on:click={() => copyLink()}
+          class="underline text-primary-800 font-bold cursor-pointer capitalize"
         >
-          <Link size={16} class="mr-1" />
           {$t('course.navItem.people.invite_modal.copy_link')}
-        </PrimaryButton>
-        <Popover caret open={copied} align="bottom">
+        </button>
+
+        <Popover caret open={copied} align="left">
           <div style="padding: 5px">{$t('course.navItem.people.invite_modal.success')}</div>
         </Popover>
       </div>
+    </div>
+
+    <div class="flex justify-between p-4 w-full border rounded-md">
+      <div class="flex flex-col justify-between">
+        <span class="font-medium text-base">
+          {$t('course.navItem.people.invite_modal.via_qr')}
+        </span>
+
+        <PrimaryButton
+          onClick={handleQRDownload}
+          label={$t('course.navItem.people.invite_modal.download_qr')}
+        />
+      </div>
+
+      <div class="w-28">
+        <QR
+          data={getStudentInviteLink($course, $currentOrg.siteName, $currentOrgDomain)}
+          moduleFill="black"
+          anchorOuterFill="black"
+          anchorInnerFill="blue"
+        />
+      </div>
+    </div>
+
+    <div class="absolute left-[-1000px] w-[35rem]">
+      <ShareQrImage {downloadTrigger} />
     </div>
 
     <div class="mt-5 flex items-center flex-row-reverse">
