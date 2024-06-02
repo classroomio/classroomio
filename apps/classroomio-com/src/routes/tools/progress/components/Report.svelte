@@ -21,7 +21,7 @@
   type ColorMapKey = keyof typeof colorMap;
 
   const backgroundColor = derived(htmlBody, ($htmlBody) => {
-    return colorMap[$htmlBody.background as ColorMapKey] || '#F1F6FF';
+    return colorMap[$htmlBody.background as ColorMapKey] || '#1e5ed2';
   });
 
   let node: any;
@@ -74,16 +74,11 @@
           style="background-color: {$backgroundColor}; color: white"
           class="px-3 py-0.5 border border-[#EDEDED] rounded-2xl mt-5 font-semibold text-[10px] md:text-[0.7rem] flex items-center justify-between"
         >
-          <span class="mr-0.5" style="color: {$backgroundColor === '#F1F6FF' ? 'black' : 'white'};"
-            >{$htmlBody.name}</span
-          >
+          <span class="mr-0.5">{$htmlBody.name}</span>
 
           {#if $htmlBody.mood.text}
             <span class="flex gap-1 items-center">
-              <p
-                class="font-semibold text-[10px] md:text-[0.7rem]"
-                style="color: {$backgroundColor === '#F1F6FF' ? 'black' : 'white'};"
-              >
+              <p class="font-semibold text-[10px] md:text-[0.7rem]">
                 is {$htmlBody.mood.text}
               </p>
               <img
@@ -98,7 +93,7 @@
       {:else}
         <p
           style="background-color: {$backgroundColor}"
-          class="px-3 py-0.5 border border-[#EDEDED] rounded-2xl mt-3 font-medium text-[9px]"
+          class="px-3 py-0.5 border border-[#EDEDED] text-white rounded-2xl mt-3 font-medium text-[9px]"
         >
           Add your name
         </p>
@@ -120,7 +115,7 @@
           max="100"
           bind:value={$htmlBody.progress}
           class=" progress-range"
-          style="background: linear-gradient(to right, #0F62FE {$htmlBody.progress}%, #ccc {$htmlBody.progress}%);"
+          style="background: linear-gradient(to right, {$backgroundColor} {$htmlBody.progress}%, #ccc {$htmlBody.progress}%);"
         />
         <p class="text-[12px] font-semibold mt-1">Progress Achieved: {$htmlBody.progress}%</p>
       </div>

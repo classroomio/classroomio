@@ -65,38 +65,36 @@
   }
 </script>
 
-{#if $openModal.mood}
-  <Modal top="top-10 md:top-[20%]">
-    <!-- header -->
-    <div class="flex justify-between">
-      <h1 class="text-sm font-semibold">Choose your Mood</h1>
-      <button
-        type="button"
-        on:click={() => ($openModal.mood = false)}
-        class="p-2 bg-[#F1F6FF] hover:scale-110 transition-all duration-300 rounded-full w-6"
-      >
-        <img src="/free-tools/progress-report/close-icon.svg" alt="Close icon" />
-      </button>
-    </div>
+<Modal bind:open={$openModal.mood}>
+  <!-- header -->
+  <div class="flex justify-between">
+    <h1 class="text-sm font-semibold">Choose your Mood</h1>
+    <button
+      type="button"
+      on:click={() => ($openModal.mood = false)}
+      class="p-2 bg-[#F1F6FF] hover:scale-110 transition-all duration-300 rounded-full w-6"
+    >
+      <img src="/free-tools/progress-report/close-icon.svg" alt="Close icon" />
+    </button>
+  </div>
 
-    <!-- mapping -->
-    <div class="flex flex-wrap justify-between gap-y-3 mt-3">
-      {#each moods as mood}
-        <button
-          on:click={() => {
-            selectMood(mood);
-          }}
-          class="flex gap-3 items-center shadow-sm rounded-full px-4 py-1 bg-[#F1F6FF] hover:bg-[#0233BD] hover:text-white transition-all duration-700"
-        >
-          <p class="text-xs md:text-sm font-semibold">{mood.text}</p>
-          <img
-            src="https://assets.cdn.clsrio.com/progress-report/emojis/{mood.iconSrc}.png"
-            alt={mood.text}
-            class="w-4"
-          />
-        </button>
-      {/each}
-    </div>
-    <!--  -->
-  </Modal>
-{/if}
+  <!-- mapping -->
+  <div class="flex flex-wrap justify-between gap-y-3 mt-3">
+    {#each moods as mood}
+      <button
+        on:click={() => {
+          selectMood(mood);
+        }}
+        class="flex gap-3 items-center shadow-sm rounded-full px-4 py-1 bg-[#F1F6FF] hover:bg-[#0233BD] hover:text-white transition-all duration-700"
+      >
+        <p class="text-xs md:text-sm font-semibold">{mood.text}</p>
+        <img
+          src="https://assets.cdn.clsrio.com/progress-report/emojis/{mood.iconSrc}.png"
+          alt={mood.text}
+          class="w-4"
+        />
+      </button>
+    {/each}
+  </div>
+  <!--  -->
+</Modal>

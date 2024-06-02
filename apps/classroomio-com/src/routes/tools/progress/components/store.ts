@@ -27,13 +27,15 @@ export const openModal: Writable<OpenModal> = writable({
   avatar: false,
   background: false,
   fullscreen: false,
-  mood: false,
+  mood: false
 });
+
+const placeholderLearning = 'Tell us what you are learning';
 
 // report html
 export const htmlBody: Writable<HtmlBody> = writable({
   name: '',
-  learning: 'Tell us what you are learning',
+  learning: placeholderLearning,
   progress: 10,
   avatar: '',
   background: '',
@@ -43,13 +45,15 @@ export const htmlBody: Writable<HtmlBody> = writable({
   }
 });
 
-  // a mini validation for the htmlBody store that ensures all fields are filled
-export const isFormComplete = derived(htmlBody, $htmlBody => {
-  return $htmlBody.name.trim() !== '' &&
-    $htmlBody.learning.trim() !== 'Tell us what you are learning' &&
+// a mini validation for the htmlBody store that ensures all fields are filled
+export const isFormComplete = derived(htmlBody, ($htmlBody) => {
+  return !!(
+    $htmlBody.name.trim() &&
+    $htmlBody.learning.trim() !== placeholderLearning &&
     $htmlBody.progress > 0 &&
-    $htmlBody.avatar.trim() !== '' &&
-    $htmlBody.background.trim() !== '' &&
-    $htmlBody.mood.text.trim() !== '' &&
-    $htmlBody.mood.iconSrc.trim() !== '';
+    $htmlBody.avatar.trim() &&
+    $htmlBody.background.trim() &&
+    $htmlBody.mood.text.trim() &&
+    $htmlBody.mood.iconSrc.trim()
+  );
 });

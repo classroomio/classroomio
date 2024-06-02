@@ -22,7 +22,7 @@
   let remainingChars = MAX_CHARS;
   let showReport = false;
   let showSetter = true;
-  let isDownloading: boolean = false;
+  let isDownloading = false;
   let isDisabled: boolean;
 
   // sets the result of the mini validation for the htmlBody store
@@ -40,24 +40,29 @@
 
   function convertToPng() {
     isDownloading = true;
+    console.log('convert clicked', isDownloading);
 
-    if ($nodeStore) {
-      toPng($nodeStore)
-        .then((dataUrl) => {
-          const link = document.createElement('a');
-          link.download = 'my-image.png';
-          link.href = dataUrl;
-          link.click();
-        })
-        .catch((error) => {
-          console.error('Oops, something went wrong!', error);
-        })
-        .finally(() => {
-          isDownloading = false;
-        });
-    } else {
-      console.error('Node is not defined');
-    }
+    setTimeout(() => {
+      const fileName = `${$htmlBody.name} - ${$htmlBody.mood.text} (ClassroomIO_com)`;
+
+      if ($nodeStore) {
+        toPng($nodeStore)
+          .then((dataUrl) => {
+            const link = document.createElement('a');
+            link.download = fileName;
+            link.href = dataUrl;
+            link.click();
+          })
+          .catch((error) => {
+            console.error('Oops, something went wrong!', error);
+          })
+          .finally(() => {
+            isDownloading = false;
+          });
+      } else {
+        console.error('Node is not defined');
+      }
+    }, 100);
   }
 
   function shareOnTwitter() {
@@ -286,14 +291,14 @@
           </div>
         </div>
         <button
-          type="button"
           disabled={isDownloading || !isDisabled ? true : false}
           on:click={convertToPng}
-          class=" {isDownloading || !isDisabled
+          class="{isDownloading || !isDisabled
             ? 'bg-gray-500'
-            : 'bg-[#0233BD]'} block md:hidden mt-10 text-white text-xs font-semibold w-full py-3 rounded-md"
-          >{isDownloading ? 'Loading...' : 'Generate progress Report'}</button
+            : 'bg-[#0233BD]'} transition-all delay-100 block md:hidden mt-10 text-white text-xs font-semibold w-full py-3 rounded-md"
         >
+          {isDownloading ? 'Loading...' : 'Generate progress Report'}
+        </button>
       </div>
     {/if}
 
@@ -313,8 +318,8 @@
             disabled={isDownloading || !isDisabled ? true : false}
             on:click={convertToPng}
             class=" {isDownloading || !isDisabled
-              ? 'bg-gray-500'
-              : 'bg-[#0233BD]'} text-white text-xs font-semibold w-full py-3 rounded-md"
+              ? 'bg-gray-200 cursor-not-allowed text-gray-600'
+              : 'bg-[#0233BD] text-white'}  text-xs font-semibold w-full py-3 rounded-md"
             >{isDownloading ? 'Loading...' : 'Download Image'}</button
           >
 

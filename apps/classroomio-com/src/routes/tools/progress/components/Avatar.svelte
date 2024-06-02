@@ -38,53 +38,51 @@
   }
 </script>
 
-{#if $openModal.avatar}
-  <Modal>
-    <!-- heading -->
-    <div class="flex justify-between">
-      <h1 class="text-sm font-semibold">Choose your Avatars</h1>
-      <button
-        type="button"
-        on:click={() => ($openModal.avatar = false)}
-        class="p-2 bg-[#F1F6FF] hover:scale-110 transition-all duration-300 rounded-full w-6"
-      >
-        <img src="/free-tools/progress-report/close-icon.svg" alt="Close icon" />
-      </button>
-    </div>
+<Modal bind:open={$openModal.avatar}>
+  <!-- heading -->
+  <div class="flex justify-between">
+    <h1 class="text-sm font-semibold">Choose your Avatars</h1>
+    <button
+      type="button"
+      on:click={() => ($openModal.avatar = false)}
+      class="p-2 bg-[#F1F6FF] hover:scale-110 transition-all duration-300 rounded-full w-6"
+    >
+      <img src="/free-tools/progress-report/close-icon.svg" alt="Close icon" />
+    </button>
+  </div>
 
-    <!-- map for each avatar -->
-    <div class="flex flex-wrap justify-between gap-y-3 mt-3">
-      {#each avatars as avatar, index}
-        <button
-          on:click={() => {
-            selectAvatar(avatar);
-          }}
-          on:mouseenter={() => {
-            hoveredIndex = index;
-            isAddIcon = true;
-          }}
-          on:mouseleave={() => {
-            hoveredIndex = null;
-            isAddIcon = false;
-          }}
-          class="relative w-[17%] flex justify-center items-center shadow-sm rounded-full hover:scale-110 transition-all duration-300"
-        >
-          <!-- + icon overlay -->
-          {#if isAddIcon && hoveredIndex === index}
-            <div
-              class="w-full h-full flex justify-center items-center bg-white border absolute rounded-full opacity-[0.7] blur-md"
-            ></div>
-            <img src="/free-tools/progress-report/hover-plus-icon.svg" alt="" class="absolute" />
-          {/if}
-          <!-- avatar -->
-          <img
-            src="https://assets.cdn.clsrio.com/progress-report/avatars/{avatar.src}.svg"
-            alt=""
-            class="w-full"
-          />
-        </button>
-      {/each}
-    </div>
-    <!--  -->
-  </Modal>
-{/if}
+  <!-- map for each avatar -->
+  <div class="flex flex-wrap justify-evenly gap-y-3 mt-3">
+    {#each avatars as avatar, index}
+      <button
+        on:click={() => {
+          selectAvatar(avatar);
+        }}
+        on:mouseenter={() => {
+          hoveredIndex = index;
+          isAddIcon = true;
+        }}
+        on:mouseleave={() => {
+          hoveredIndex = null;
+          isAddIcon = false;
+        }}
+        class="relative w-[17%] flex justify-center items-center shadow-sm rounded-full hover:scale-110 transition-all duration-300"
+      >
+        <!-- + icon overlay -->
+        {#if isAddIcon && hoveredIndex === index}
+          <div
+            class="w-full h-full flex justify-center items-center bg-white border absolute rounded-full opacity-[0.7] blur-md"
+          ></div>
+          <img src="/free-tools/progress-report/hover-plus-icon.svg" alt="" class="absolute" />
+        {/if}
+        <!-- avatar -->
+        <img
+          src="https://assets.cdn.clsrio.com/progress-report/avatars/{avatar.src}.svg"
+          alt=""
+          class="w-full"
+        />
+      </button>
+    {/each}
+  </div>
+  <!--  -->
+</Modal>
