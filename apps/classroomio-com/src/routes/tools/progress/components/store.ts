@@ -8,6 +8,8 @@ interface OpenModal {
   mood: boolean;
 }
 
+const learningPlaceholder:string = "Tell us what you are learning"
+
 export interface HtmlBody {
   name: string;
   learning: string;
@@ -33,7 +35,7 @@ export const openModal: Writable<OpenModal> = writable({
 // report html
 export const htmlBody: Writable<HtmlBody> = writable({
   name: '',
-  learning: 'Tell us what you are learning',
+  learning: learningPlaceholder,
   progress: 10,
   avatar: '',
   background: '',
@@ -46,7 +48,7 @@ export const htmlBody: Writable<HtmlBody> = writable({
   // a mini validation for the htmlBody store that ensures all fields are filled
 export const isFormComplete = derived(htmlBody, $htmlBody => {
   return $htmlBody.name.trim() !== '' &&
-    $htmlBody.learning.trim() !== 'Tell us what you are learning' &&
+    $htmlBody.learning.trim() !== learningPlaceholder &&
     $htmlBody.progress > 0 &&
     $htmlBody.avatar.trim() !== '' &&
     $htmlBody.background.trim() !== '' &&

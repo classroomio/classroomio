@@ -1,22 +1,16 @@
 <script lang="ts">
   import { LogoFacebook, LogoLinkedin } from 'carbon-icons-svelte';
   import { onDestroy } from 'svelte';
-  import { toPng } from 'html-to-image';
   import { fly } from 'svelte/transition';
   import { sineInOut } from 'svelte/easing';
   import Mood from './components/Mood.svelte';
-  import {
-    htmlBody,
-    nodeStore,
-    type HtmlBody,
-    openModal,
-    isFormComplete
-  } from './components/store';
+  import { htmlBody, type HtmlBody, openModal, isFormComplete } from './components/store';
   import ToolsHeader from '$lib/ToolsHeader/ToolsHeader.svelte';
   import Avatar from './components/Avatar.svelte';
   import Background from './components/Background.svelte';
   import Report from './components/Report.svelte';
   import FullView from './components/FullView.svelte';
+  import DownloadButton from './components/DownloadButton.svelte';
 
   const MAX_CHARS = 160;
   let remainingChars = MAX_CHARS;
@@ -38,28 +32,6 @@
     }
   }
 
-  function convertToPng() {
-    isDownloading = true;
-
-    if ($nodeStore) {
-      toPng($nodeStore)
-        .then((dataUrl) => {
-          const link = document.createElement('a');
-          link.download = 'my-image.png';
-          link.href = dataUrl;
-          link.click();
-        })
-        .catch((error) => {
-          console.error('Oops, something went wrong!', error);
-        })
-        .finally(() => {
-          isDownloading = false;
-        });
-    } else {
-      console.error('Node is not defined');
-    }
-  }
-
   function shareOnTwitter() {
     const text = encodeURIComponent(
       `I'm sharing my progress here on Twitter, I'm learning ${$htmlBody.learning} and I'm ${$htmlBody.mood.text}`
@@ -70,7 +42,12 @@
   }
 
   function shareOnFacebook() {
-    window.open('https://www.facebook.com/');
+    const text = encodeURIComponent(
+      `I'm sharing my progress here on Facebook, I'm learning ${$htmlBody.learning} and I'm ${$htmlBody.mood.text}`
+    );
+    window.open(
+      `https://www.facebook.com/dialog/share?app_id=145634995501895&display=popup&href=https%3A%2F%2Fclassroomio.com%2Fdocs%2F&redirect_uri=https%3A%2F%2Fclassroomio.com%2Ftools%2Fexplorer&hashtag=${text}`
+    );
   }
 
   function shareOnLinkedIn() {
@@ -285,15 +262,7 @@
             </button>
           </div>
         </div>
-        <button
-          type="button"
-          disabled={isDownloading || !isDisabled ? true : false}
-          on:click={convertToPng}
-          class=" {isDownloading || !isDisabled
-            ? 'bg-gray-500'
-            : 'bg-[#0233BD]'} block md:hidden mt-10 text-white text-xs font-semibold w-full py-3 rounded-md"
-          >{isDownloading ? 'Loading...' : 'Generate progress Report'}</button
-        >
+        <DownloadButton {isDisabled} {isDownloading} />
       </div>
     {/if}
 
@@ -308,15 +277,7 @@
 
         <!-- download & share button -->
         <div class="mt-9 pt-8 px-2 h-auto border-t">
-          <button
-            type="button"
-            disabled={isDownloading || !isDisabled ? true : false}
-            on:click={convertToPng}
-            class=" {isDownloading || !isDisabled
-              ? 'bg-gray-500'
-              : 'bg-[#0233BD]'} text-white text-xs font-semibold w-full py-3 rounded-md"
-            >{isDownloading ? 'Loading...' : 'Download Image'}</button
-          >
+          <DownloadButton {isDisabled} {isDownloading} text="Download Image" />
 
           <!-- share button -->
           <div class="w-full md:w-[70%] mx-auto my-5">
@@ -370,15 +331,7 @@
 
         <!-- download & share button -->
         <div class="mt-9 pt-8 px-2 h-auto border-t">
-          <button
-            type="button"
-            disabled={isDownloading || !isDisabled ? true : false}
-            on:click={convertToPng}
-            class=" {isDownloading || !isDisabled
-              ? 'bg-gray-500'
-              : 'bg-[#0233BD]'} text-white text-xs font-semibold w-full py-3 rounded-md"
-            >{isDownloading ? 'Loading...' : 'Generate progress Report'}</button
-          >
+          <DownloadButton {isDisabled} {isDownloading} />
 
           <!-- share button -->
           <div class="w-full md:w-[70%] mx-auto my-5">
