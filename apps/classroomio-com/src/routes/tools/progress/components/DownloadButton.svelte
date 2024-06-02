@@ -32,9 +32,10 @@
   type="button"
   disabled={isDownloading || !isDisabled ? true : false}
   on:click={convertToPng}
-  class=" {isDownloading || !isDisabled ? 'bg-gray-500' : 'bg-[#0233BD]'} {text ===
-  'Generate Progress Report'
+  class="{isDownloading || !isDisabled
+    ? 'bg-gray-200 cursor-not-allowed text-gray-600'
+    : 'bg-[#0233BD] text-white'} {text === 'Generate Progress Report'
     ? 'block md:hidden'
-    : ''} mt-5 text-white text-xs font-semibold w-full py-3 rounded-md"
+    : ''} mt-5 transition-all delay-100 text-white text-xs font-semibold w-full py-3 rounded-md"
   >{isDownloading ? 'Loading...' : text}</button
 >
