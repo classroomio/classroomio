@@ -51,39 +51,37 @@
   }
 </script>
 
-{#if $openModal.background}
-  <Modal className="h-full max-h-[60vh]" top="top-10 md:top-[20%]">
-    <!--  -->
-    <div class="flex justify-between">
-      <h1 class="text-sm font-semibold">Choose your Background</h1>
-      <button
-        type="button"
-        on:click={() => ($openModal.background = false)}
-        class="p-2 bg-[#F1F6FF] hover:scale-110 transition-all duration-300 rounded-full w-6"
-      >
-        <img src="/free-tools/progress-report/close-icon.svg" alt="Close icon" />
-      </button>
-    </div>
-
-    <!--  -->
-    <div
-      class="flex flex-wrap justify-between gap-y-3 mt-3 overflow-y-auto overflow-x-hidden h-[85%]"
+<Modal className="h-full max-h-[60vh]" bind:open={$openModal.background}>
+  <!--  -->
+  <div class="flex justify-between">
+    <h1 class="text-sm font-semibold">Choose your Background</h1>
+    <button
+      type="button"
+      on:click={() => ($openModal.background = false)}
+      class="p-2 bg-[#F1F6FF] hover:scale-110 transition-all duration-300 rounded-full w-6"
     >
-      {#each backgrounds as background}
-        <button
-          on:click={() => {
-            selectBackground(background);
-          }}
-          class="flex w-[30%] items-center shadow-sm hover:scale-110 transition-all duration-300"
-        >
-          <img
-            src="https://assets.cdn.clsrio.com/progress-report/backgrounds/{background.src}.webp"
-            alt=""
-            class=""
-          />
-        </button>
-      {/each}
-    </div>
-    <!--  -->
-  </Modal>
-{/if}
+      <img src="/free-tools/progress-report/close-icon.svg" alt="Close icon" />
+    </button>
+  </div>
+
+  <!--  -->
+  <div
+    class="flex flex-wrap justify-between gap-y-3 mt-3 overflow-y-auto overflow-x-hidden h-[85%]"
+  >
+    {#each backgrounds as background}
+      <button
+        on:click={() => {
+          selectBackground(background);
+        }}
+        class="flex w-[30%] items-center shadow-sm hover:scale-110 transition-all duration-300"
+      >
+        <img
+          src="https://assets.cdn.clsrio.com/progress-report/backgrounds/{background.src}.webp"
+          alt=""
+          class=""
+        />
+      </button>
+    {/each}
+  </div>
+  <!--  -->
+</Modal>

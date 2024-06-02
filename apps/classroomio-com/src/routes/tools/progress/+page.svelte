@@ -16,7 +16,7 @@
   let remainingChars = MAX_CHARS;
   let showReport = false;
   let showSetter = true;
-  let isDownloading: boolean = false;
+  let isDownloading = false;
   let isDisabled: boolean;
 
   // sets the result of the mini validation for the htmlBody store
