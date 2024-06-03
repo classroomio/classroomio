@@ -62,7 +62,7 @@
   <div class="mt-20">
     <!-- using both md & lg for the width here because the lib doesn't consider md to be medium screens and above, using md alone will make the output break on desktop so i had to also specify for large screens -->
     <div
-      class="rounded-lg shadow-md bg-white border-4 border-gray-100 z-20 mx-auto flex justify-center items-center w-[60%] md:w-[53%] lg:w-[53%] h-[15rem]"
+      class="rounded-lg shadow-md bg-white border-4 border-gray-100 z-20 mx-auto flex justify-center items-center w-[15rem] md:w-[15rem] lg:w-[15rem] h-[15rem]"
     >
       <div class="relative w-full h-full flex flex-col justify-center gap-3 items-center px-2">
         <!-- avatar -->
@@ -114,9 +114,7 @@
 
         <!-- progress -->
         <div class="flex flex-col justify-center items-center mb-2 md:mb-0">
-          <div
-            class="border border-[#d9e0f5] w-full h-4 rounded-full pb-[1px] pt-[1.5px] px-[1.5px] bg-[#f1f6ff]"
-          >
+          <div class="border border-[#d9e0f5] w-full h-4 rounded-full p-0.5 bg-[#f1f6ff]">
             <div
               class="progress-range rounded-full w-full h-full"
               style="background: {$backgroundColor}; width: {$htmlBody.progress}%"
@@ -129,7 +127,7 @@
 
     <div
       style="display: flex;"
-      class="border mt-20 bottom-5 md:w-[25%] w-[33%] mx-auto flex gap-1 items-center justify-center bg-white rounded-md px-2 py-1"
+      class="border mt-20 bottom-5 w-[50%] mx-auto flex gap-1 items-center justify-center bg-white rounded-md px-2 py-1"
     >
       <img src="/logo-192.png" alt="classroomio logo" class="w-4" />
       <p class="text-[10px] font-bold">ClassroomIO.com</p>
