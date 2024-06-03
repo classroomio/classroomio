@@ -49,8 +49,12 @@ const withEmailTemplate = (content) =>
       table tr {
         display: flex;
         align-items: center;
-        justify-content: center;
         flex-direction: row;
+      }
+      table td a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       .socialicons {
         max-width: 200px;
@@ -168,40 +172,50 @@ const withEmailTemplate = (content) =>
         /></a>
       </div>
       <div class="wrap">
-      ${content}
+        ${content}
       </div>
       <footer>
         <p>Find us on</p>
         <table class="socialicons">
           <tr>
             <td>
-              <a target="_blank" href="https://twitter.com/classroomio"
+              <a target="_blank" href="https://www.facebook.com/classroomiohq"
                 ><img
-                  title="X"
-                  src="https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/classroomio-x.png"
+                  title="Facebook"
+                  src="https://brand.cdn.clsrio.com/socials/facebook.svg"
+                  alt="Facebook"
+                  width="24"
+                  height="24"
+              /></a>
+            </td>
+            <td>
+              <a target="_blank" href="https://www.linkedin.com/company/classroomio/"
+                ><img
+                  title="linkedin"
+                  src="https://brand.cdn.clsrio.com/socials/linkedin.svg"
                   alt="X"
-                  width="32"
-                  height="32"
+                  width="24"
+                  height="24"
               /></a>
             </td>
             <td>
               <a target="_blank" href="https://www.youtube.com/@ClassroomIO"
                 ><img
                   title="Youtube"
-                  src="https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/classroomio-youtube.png"
+                  src="https://brand.cdn.clsrio.com/socials/youtube.svg"
                   alt="Youtube"
-                  width="32"
-                  height="32"
+                  width="24"
+                  height="24"
               /></a>
             </td>
             <td>
-              <a target="_blank" href="https://www.facebook.com/classroomiohq"
+              <a target="_blank" href="https://twitter.com/classroomio"
                 ><img
-                  title="Facebook"
-                  src="https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/classroomio-facebook.png"
-                  alt="Facebook"
-                  width="32"
-                  height="32"
+                  title="X"
+                  src="https://brand.cdn.clsrio.com/socials/twitter.svg"
+                  alt="X"
+                  width="24"
+                  height="24"
               /></a>
             </td>
           </tr>
@@ -226,5 +240,6 @@ const withEmailTemplate = (content) =>
     </div>
   </body>
 </html>
+
 `;
 module.exports = { withEmailTemplate };
