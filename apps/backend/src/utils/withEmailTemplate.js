@@ -240,6 +240,5 @@ const withEmailTemplate = (content) =>
     </div>
   </body>
 </html>
-
 `;
 module.exports = { withEmailTemplate };
