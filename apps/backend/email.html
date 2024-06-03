@@ -1,5 +1,4 @@
-const withEmailTemplate = (content) =>
-  `<!doctype html>
+<!doctype html>
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -168,8 +167,28 @@ const withEmailTemplate = (content) =>
         /></a>
       </div>
       <div class="wrap">
-      ${content}
+        <h3>Hello there,</h3>
+        <p>
+          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Odit recusandae officia alias
+          deserunt quod ab quam cupiditate explicabo ex, dolor sequi hic debitis repellat aliquid
+          minima sed fuga unde. Consequatur voluptates natus quos dignissimos fugit asperiores
+          numquam
+        </p>
+        <p>
+          aperiam blanditiis recusandae natus? Fuga iure sit saepe provident neque velit enim,
+          voluptates tempore. Expedita repellat pariatur ipsam nostrum doloremque,
+          <a href="#">best@classroomio.com</a>
+        </p>
+
+        <p>
+          alias voluptatibus dolor nesciunt natus, dolorem blanditiis commodi sint debitis quod sunt
+          ipsum libero deleniti sequi suscipit. Doloremque harum modi animi dolorum distinctio,
+          commodi ea hic eum quae, voluptatum voluptatibus molestiae tempore, maiores reiciendis.
+          Dolor, fugiat facere?
+        </p>
+        <button class="button">Go to Dashboard</button>
       </div>
+
       <footer>
         <p>Find us on</p>
         <table class="socialicons">
@@ -226,5 +245,3 @@ const withEmailTemplate = (content) =>
     </div>
   </body>
 </html>
-`;
-module.exports = { withEmailTemplate };
