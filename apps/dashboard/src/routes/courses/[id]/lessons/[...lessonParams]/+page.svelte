@@ -39,6 +39,7 @@
   import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
   import { t } from '$lib/utils/functions/translations';
   import { LANGUAGES } from '$lib/utils/constants/translation';
+  import { ChevronLeft, ChevronRight } from 'carbon-icons-svelte';
 
   export let data;
 
@@ -240,6 +241,40 @@
     $apps.open = true;
   }
 
+  const goToNextLesson = () => {
+    const currentLessonIdx = $lessons.findIndex((lesson) => lesson.id === data.lessonId);
+
+    if (currentLessonIdx !== -1 && currentLessonIdx + 1 < $lessons.length) {
+      const nextLesson = $lessons[currentLessonIdx + 1];
+      console.log('next lesson', nextLesson);
+
+      fetchReqData(nextLesson.id, true);
+      const nextLessonUrl =
+        $globalStore.isStudent && !nextLesson.is_unlocked
+          ? $page.url.pathname
+          : `/courses/${$course.id}/lessons/${nextLesson.id}`;
+
+      goto(nextLessonUrl);
+    }
+  };
+
+  const goToPrevLesson = () => {
+    const currentLessonIdx = $lessons.findIndex((lesson) => lesson.id === data.lessonId);
+
+    if (currentLessonIdx !== -1 && currentLessonIdx - 1 >= 0) {
+      const prevLesson = $lessons[currentLessonIdx - 1];
+      console.log('next lesson', prevLesson);
+
+      fetchReqData(prevLesson.id, true);
+      const prevLessonUrl =
+        $globalStore.isStudent && !prevLesson.is_unlocked
+          ? $page.url.pathname
+          : `/courses/${$course.id}/lessons/${prevLesson.id}`;
+
+      goto(prevLessonUrl);
+    }
+  };
+
   $: path = $page.url?.pathname?.replace(/\/exercises[\/ 0-9 a-z -]*/, '');
 
   $: if (data.courseId && browser) {
@@ -373,6 +408,12 @@
     <div
       class="flex items-center gap-2 w-fit rounded-full shadow-xl bg-gray-100 dark:bg-neutral-700 px-5 py-1"
     >
+      <button
+        class="px-2 my-2 pr-4 border-t-0 border-b-0 border-l-0 border border-gray-300 flex items-center"
+        on:click={goToPrevLesson}
+      >
+        <ChevronLeft size={24} />
+      </button>
       {#if data.isMaterialsTabActive}
         <button
           class="px-2 my-2 pr-4 border-t-0 border-b-0 border-l-0 border border-gray-300 flex items-center"
@@ -398,7 +439,7 @@
         <span class="ml-1">{$lesson.totalComments}</span>
       </button>
       <button
-        class="px-2 my-2"
+        class="px-2 my-2 pr-4 border-t-0 border-b-0 border-l-0 border border-gray-300 flex items-center"
         on:click={() => markLessonComplete(data.lessonId)}
         disabled={isMarkingComplete}
       >
@@ -407,6 +448,9 @@
         {:else}
           <CheckmarkOutlineIcon size={24} class="carbon-icon" />
         {/if}
+      </button>
+      <button class="px-2 my-2 flex items-center" on:click={goToNextLesson}>
+        <ChevronRight size={24} />
       </button>
     </div>
   </div>
