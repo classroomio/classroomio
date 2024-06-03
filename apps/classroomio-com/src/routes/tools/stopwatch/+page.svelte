@@ -111,7 +111,7 @@
   }
 
   onMount(() => {
-    buzzSound = new Audio('https://assets.cdn.clsrio.com/buzz-sound.wav');
+    buzzSound = new Audio('https://assets.cdn.clsrio.com/beeping-sound.mp3');
   });
 </script>
 

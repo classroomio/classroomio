@@ -4,19 +4,19 @@
   import { fly } from 'svelte/transition';
   import { sineInOut } from 'svelte/easing';
   import Mood from './components/Mood.svelte';
-  import { htmlBody, type HtmlBody, openModal, isFormComplete } from './components/store';
   import ToolsHeader from '$lib/ToolsHeader/ToolsHeader.svelte';
   import Avatar from './components/Avatar.svelte';
   import Background from './components/Background.svelte';
   import Report from './components/Report.svelte';
   import FullView from './components/FullView.svelte';
   import DownloadButton from './components/DownloadButton.svelte';
+  import { htmlBody, type HtmlBody, openModal, isFormComplete } from './components/store';
 
   const MAX_CHARS = 160;
   let remainingChars = MAX_CHARS;
-  let showReport = false;
-  let showSetter = true;
-  let isDownloading = false;
+  let showReport: boolean = false;
+  let showSetter: boolean = true;
+  let isDownloading: boolean = false;
   let isDisabled: boolean;
 
   // sets the result of the mini validation for the htmlBody store

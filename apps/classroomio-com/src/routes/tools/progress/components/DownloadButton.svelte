@@ -1,27 +1,38 @@
 <script lang="ts">
-  import { toPng } from 'html-to-image';
-  import { nodeStore } from './store';
+  import { getFontEmbedCSS, toPng } from 'html-to-image';
+  import { nodeStore, htmlBody, openModal } from './store';
+
   export let isDisabled: boolean;
   export let isDownloading: boolean;
   export let text: string = 'Generate Progress Report';
 
   function convertToPng() {
     isDownloading = true;
+    $openModal.showFullscreenButton = false;
+
+    const fileName = `${$htmlBody.name} - ${$htmlBody.mood.text} (ClassroomIO_com)`;
 
     if ($nodeStore) {
-      toPng($nodeStore)
-        .then((dataUrl) => {
-          const link = document.createElement('a');
-          link.download = 'my-image.png';
-          link.href = dataUrl;
-          link.click();
+      setTimeout(() => {
+        toPng($nodeStore, {
+          width: 500,
+          height: 500,
+          quality: 0.5
         })
-        .catch((error) => {
-          console.error('Oops, something went wrong!', error);
-        })
-        .finally(() => {
-          isDownloading = false;
-        });
+          .then((dataUrl) => {
+            const link = document.createElement('a');
+            link.download = fileName;
+            link.href = dataUrl;
+            link.click();
+          })
+          .catch((error) => {
+            console.error('Oops, something went wrong!', error);
+          })
+          .finally(() => {
+            isDownloading = false;
+            $openModal.showFullscreenButton = true;
+          });
+      }, 300);
     } else {
       console.error('Node is not defined');
     }

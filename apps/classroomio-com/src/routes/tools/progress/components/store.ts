@@ -5,10 +5,9 @@ interface OpenModal {
   avatar: boolean;
   background: boolean;
   fullscreen: boolean;
+  showFullscreenButton: boolean;
   mood: boolean;
 }
-
-const learningPlaceholder:string = "Tell us what you are learning"
 
 export interface HtmlBody {
   name: string;
@@ -29,6 +28,7 @@ export const openModal: Writable<OpenModal> = writable({
   avatar: false,
   background: false,
   fullscreen: false,
+  showFullscreenButton: true,
   mood: false
 });
 
