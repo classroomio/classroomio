@@ -50,6 +50,10 @@
   let isLoading = false;
   let isSaving = false;
   let isLessonComplete = false;
+  let disabled = {
+    next: false,
+    prev: false
+  };
 
   function getLessonOrder(id: string) {
     const index = $lessons.findIndex((lesson) => lesson.id === id);
@@ -275,6 +279,16 @@
     }
   };
 
+  $: {
+    const currentLessonIdx = $lessons.findIndex((lesson) => lesson.id === data.lessonId);
+    disabled.next =
+      currentLessonIdx === -1 ||
+      $lessons.slice(currentLessonIdx + 1).every((lesson) => !lesson.is_unlocked);
+    disabled.prev =
+      currentLessonIdx === -1 ||
+      $lessons.slice(0, currentLessonIdx).every((lesson) => !lesson.is_unlocked);
+  }
+
   $: path = $page.url?.pathname?.replace(/\/exercises[\/ 0-9 a-z -]*/, '');
 
   $: if (data.courseId && browser) {
@@ -409,7 +423,10 @@
       class="flex items-center gap-2 w-fit rounded-full shadow-xl bg-gray-100 dark:bg-neutral-700 px-5 py-1"
     >
       <button
-        class="px-2 my-2 pr-4 border-t-0 border-b-0 border-l-0 border border-gray-300 flex items-center"
+        disabled={disabled.prev}
+        class={`px-2 my-2 pr-4 border-t-0 border-b-0 border-l-0 border border-gray-300 flex items-center ${
+          disabled.prev && 'cursor-not-allowed'
+        }`}
         on:click={goToPrevLesson}
       >
         <ChevronLeft size={24} />
@@ -449,7 +466,11 @@
           <CheckmarkOutlineIcon size={24} class="carbon-icon" />
         {/if}
       </button>
-      <button class="px-2 my-2 flex items-center" on:click={goToNextLesson}>
+      <button
+        disabled={disabled.next}
+        class={`px-2 my-2 flex items-center ${disabled.next && 'cursor-not-allowed'}`}
+        on:click={goToNextLesson}
+      >
         <ChevronRight size={24} />
       </button>
     </div>
