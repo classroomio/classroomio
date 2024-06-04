@@ -38,6 +38,7 @@
   let isLoadingTutors = false;
   let copied = false;
   let qrImage = '';
+  let isLoadingQRDownload = false;
 
   function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
     return value !== null && value !== undefined;
@@ -140,6 +141,7 @@
 
   function handleQRDownload() {
     if ($qrInviteNodeStore) {
+      isLoadingQRDownload = true;
       setTimeout(() => {
         toPng($qrInviteNodeStore)
           .then((dataUrl) => {
@@ -149,7 +151,11 @@
             link.click();
           })
           .catch((error) => {
+            isLoadingQRDownload = false;
             console.error('Oops, something went wrong!', error);
+          })
+          .finally(() => {
+            isLoadingQRDownload = false;
           });
       }, 300);
     } else {
@@ -239,6 +245,7 @@
         </span>
 
         <PrimaryButton
+          isLoading={isLoadingQRDownload}
           onClick={handleQRDownload}
           label={$t('course.navItem.people.invite_modal.download_qr')}
         />
