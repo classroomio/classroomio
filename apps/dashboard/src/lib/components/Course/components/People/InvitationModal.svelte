@@ -12,7 +12,7 @@
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { getOrgTeam } from '$lib/utils/services/org';
   import type { OrgTeamMember } from '$lib/utils/types/org';
-  import QR from '@svelte-put/qr/svg/QR.svelte';
+  import QRCode from 'qrcode';
   import { toPng } from 'html-to-image';
   import { qrInviteNodeStore } from './store';
   import { getStudentInviteLink } from '$lib/utils/functions/course';
@@ -37,6 +37,7 @@
   let selectedTutors: Tutor[] = [];
   let isLoadingTutors = false;
   let copied = false;
+  let qrImage = '';
 
   function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
     return value !== null && value !== undefined;
@@ -156,6 +157,14 @@
     }
   }
 
+  async function generateQR(text) {
+    try {
+      qrImage = await QRCode.toDataURL(text);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   $: {
     selectedTutors = formatSelected(selectedIds);
     console.log('selectedTutors', selectedTutors);
@@ -164,6 +173,7 @@
   }
 
   $: setTutors($currentOrg.id);
+  $: generateQR(getStudentInviteLink($course, $currentOrg.siteName, $currentOrgDomain));
 </script>
 
 <Modal
@@ -235,21 +245,12 @@
       </div>
 
       <div class="w-28">
-        <QR
-          data={getStudentInviteLink($course, $currentOrg.siteName, $currentOrgDomain)}
-          moduleFill="black"
-          anchorOuterFill="black"
-          anchorInnerFill="blue"
-        />
+        <img src={qrImage} alt="link qrcode" />
       </div>
     </div>
 
     <div class="absolute left-[-1000px] w-[40rem]">
-      <ShareQrImage
-        course={$course}
-        currentOrg={$currentOrg}
-        qrLink={getStudentInviteLink($course, $currentOrg.siteName, $currentOrgDomain)}
-      />
+      <ShareQrImage {qrImage} course={$course} currentOrg={$currentOrg} />
     </div>
 
     <div class="mt-5 flex items-center flex-row-reverse">
