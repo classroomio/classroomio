@@ -40,6 +40,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { LANGUAGES } from '$lib/utils/constants/translation';
   import { ChevronLeft, ChevronRight } from 'carbon-icons-svelte';
+  import { isMobile } from '$lib/utils/store/useMobile';
 
   export let data;
 
@@ -430,6 +431,9 @@
         on:click={goToPrevLesson}
       >
         <ChevronLeft size={24} />
+        {#if !$isMobile}
+          <span> Prev </span>
+        {/if}
       </button>
       {#if data.isMaterialsTabActive}
         <button
@@ -471,6 +475,9 @@
         class={`px-2 my-2 flex items-center ${disabled.next && 'cursor-not-allowed'}`}
         on:click={goToNextLesson}
       >
+        {#if !$isMobile}
+          <span> Next </span>
+        {/if}
         <ChevronRight size={24} />
       </button>
     </div>
