@@ -1,61 +1,42 @@
-<script>
-  import { onDestroy } from 'svelte';
-  import { toPng } from 'html-to-image';
-  export let downloadTrigger;
+<script lang="ts">
   import QR from '@svelte-put/qr/svg/QR.svelte';
-  import { getStudentInviteLink } from '$lib/utils/functions/course';
-  import { course } from '$lib/components/Course/store';
-  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
+  import type { CurrentOrg } from '$lib/utils/types/org.ts';
+  import type { Course } from '$lib/utils/types/index.ts';
+  import { isFreePlan } from '$lib/utils/store/org';
+  import { qrInviteNodeStore } from './store';
 
-  let qrContainer;
+  let node: any;
 
-  const captureAndDownload = async () => {
-    try {
-      const dataUrl = await toPng(qrContainer);
-      const link = document.createElement('a');
-      link.href = dataUrl;
-      link.download = `${$course.slug}-qr-code.png`;
-      link.click();
-    } catch (error) {
-      console.error('Failed to capture image:', error);
-    }
-  };
+  $: qrInviteNodeStore.set(node);
 
-  const unsubscribe = downloadTrigger.subscribe((value) => {
-    if (value) {
-      captureAndDownload();
-      downloadTrigger.set(false);
-    }
-  });
-
-  onDestroy(() => {
-    unsubscribe();
-  });
+  export let qrLink: string;
+  export let currentOrg: CurrentOrg;
+  export let course: Course;
 </script>
 
 <div
-  bind:this={qrContainer}
+  bind:this={node}
   id="qr-container"
-  class="flex flex-col items-center justify-center h-screen bg-blue-900 mt-10"
+  class="flex flex-col items-center justify-center h-screen pb-10 bg-blue-900 rounded-xl"
 >
   <div class="bg-white pb-3 p-6 rounded-3xl text-center">
     <div class="font-bold text-xl p-2 bg-gray-100 my-4 rounded-xl">Scan QR</div>
     <QR
+      data={qrLink}
       id="qr-code"
-      data={getStudentInviteLink($course, $currentOrg.siteName, $currentOrgDomain)}
       moduleFill="black"
       anchorOuterFill="black"
       anchorInnerFill="blue"
     />
     <div class="pb-4 pt-1">
-      <p class="mt-2 font-bold text-xl text-primary-600">{$course.title}</p>
-      <a
-        href={`${$currentOrgDomain}/course/${$course.slug}`}
-        target="_blank"
-        class="text-blue-500 hover:underline"
-      >
-        {`${$currentOrgDomain}/course/${$course.slug}`}
-      </a>
+      <p class="mt-2 font-bold text-xl text-primary-600">{course.title}</p>
+      <p class="mt-1 font-semibold text-base text-black">{currentOrg.name}</p>
     </div>
   </div>
+  {#if $isFreePlan}
+    <div class="bg-white flex items-center gap-x-2 px-4 py-2 rounded-md relative top-16">
+      <img src="/logo.svg" alt="logo" />
+      <span class="font-bold text-base">ClassroomIO.com</span>
+    </div>
+  {/if}
 </div>
