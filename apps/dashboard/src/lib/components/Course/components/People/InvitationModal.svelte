@@ -1,6 +1,5 @@
 <script lang="ts">
   import copy from 'copy-to-clipboard';
-  import { writable } from 'svelte/store';
   import { Popover } from 'carbon-components-svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
@@ -14,6 +13,8 @@
   import { getOrgTeam } from '$lib/utils/services/org';
   import type { OrgTeamMember } from '$lib/utils/types/org';
   import QR from '@svelte-put/qr/svg/QR.svelte';
+  import { toPng } from 'html-to-image';
+  import { qrInviteNodeStore } from './store';
   import { getStudentInviteLink } from '$lib/utils/functions/course';
   import ShareQrImage from './ShareQRImage.svelte';
   import {
@@ -36,7 +37,6 @@
   let selectedTutors: Tutor[] = [];
   let isLoadingTutors = false;
   let copied = false;
-  const downloadTrigger = writable(false);
 
   function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
     return value !== null && value !== undefined;
@@ -138,8 +138,22 @@
   }
 
   function handleQRDownload() {
-    snackbar.success('course.navItem.people.invite_modal.qr_downloading_snackbar');
-    downloadTrigger.set(true);
+    if ($qrInviteNodeStore) {
+      setTimeout(() => {
+        toPng($qrInviteNodeStore)
+          .then((dataUrl) => {
+            const link = document.createElement('a');
+            link.download = `${$course.slug}-qr-code.png`;
+            link.href = dataUrl;
+            link.click();
+          })
+          .catch((error) => {
+            console.error('Oops, something went wrong!', error);
+          });
+      }, 300);
+    } else {
+      console.error('Node is not defined');
+    }
   }
 
   $: {
@@ -230,8 +244,12 @@
       </div>
     </div>
 
-    <div class="absolute left-[-1000px] w-[35rem]">
-      <ShareQrImage {downloadTrigger} />
+    <div class="absolute left-[-1000px] w-[40rem]">
+      <ShareQrImage
+        course={$course}
+        currentOrg={$currentOrg}
+        qrLink={getStudentInviteLink($course, $currentOrg.siteName, $currentOrgDomain)}
+      />
     </div>
 
     <div class="mt-5 flex items-center flex-row-reverse">
