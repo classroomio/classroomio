@@ -50,7 +50,7 @@
       return;
     }
 
-    let membersStack = [];
+    let membersStack: { profile_id?: string; group_id?: string; role_id: number }[] = [];
     console.log(`$course`, $course);
 
     for (const tutor of selectedTutors) {
