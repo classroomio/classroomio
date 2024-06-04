@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { getFontEmbedCSS, toPng } from 'html-to-image';
+  import { toPng } from 'html-to-image';
   import { nodeStore, htmlBody, openModal } from './store';
 
   export let isDisabled: boolean;
@@ -17,7 +17,7 @@
         toPng($nodeStore, {
           width: 500,
           height: 500,
-          quality: 0.5
+          quality: 1
         })
           .then((dataUrl) => {
             const link = document.createElement('a');
