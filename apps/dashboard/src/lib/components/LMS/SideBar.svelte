@@ -2,6 +2,7 @@
   import { page } from '$app/stores';
   import HelpIcon from 'carbon-icons-svelte/lib/Help.svelte';
   import LicenseDraft from 'carbon-icons-svelte/lib/LicenseDraft.svelte';
+  import Explore from 'carbon-icons-svelte/lib/Explore.svelte';
   import Settings from 'carbon-icons-svelte/lib/Settings.svelte';
   import HomeIcon from '$lib/components/Icons/HomeIcon.svelte';
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
@@ -59,6 +60,11 @@
       show() {
         return $currentOrg?.customization?.dashboard?.community;
       }
+    },
+    {
+      name: 'Explore',
+      icon: Explore,
+      link: '/lms/explore'
     }
   ].filter((link) => (link.show ? link.show() : true));
 
