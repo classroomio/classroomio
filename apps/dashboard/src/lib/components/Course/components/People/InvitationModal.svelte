@@ -238,9 +238,11 @@
       </div>
     </div>
 
-    <div class="flex justify-between p-4 w-full border rounded-md">
-      <div class="flex flex-col justify-between">
-        <span class="font-medium text-base">
+    <div
+      class="flex gap-5 flex-col-reverse md:flex-row justify-between items-center md:items-stretch p-4 w-full border rounded-md"
+    >
+      <div class="flex flex-col gap-3 items-center md:items-start justify-between">
+        <span class="font-medium text-sm">
           {$t('course.navItem.people.invite_modal.via_qr')}
         </span>
 
@@ -248,11 +250,12 @@
           isLoading={isLoadingQRDownload}
           onClick={handleQRDownload}
           label={$t('course.navItem.people.invite_modal.download_qr')}
+          className="font-medium"
         />
       </div>
 
-      <div class="w-28">
-        <img src={qrImage} alt="link qrcode" />
+      <div class="w-full md:w-28 border-4 p-1 border-[#f7f7f7]">
+        <img src={qrImage} alt="link qrcode" class="w-full h-full" />
       </div>
     </div>
 
