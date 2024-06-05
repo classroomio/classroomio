@@ -151,14 +151,12 @@
           onClick={addLesson}
           isDisabled={!!lessonEditing}
         />
-        {#if isSelfPaced}
-          <PrimaryButton
-            label="Reorder"
-            variant={VARIANTS.OUTLINED}
-            onClick={reorderHighlight}
-            isDisabled={!!lessonEditing}
-          />
-        {/if}
+        <PrimaryButton
+          label="Reorder"
+          variant={VARIANTS.OUTLINED}
+          onClick={reorderHighlight}
+          isDisabled={!!lessonEditing}
+        />
       </RoleBasedSecurity>
     </div>
   </PageNav>
