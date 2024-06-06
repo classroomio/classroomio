@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "main": "main.js",
   "scripts": {
-    "dev": "vite dev",
+    "dev": "vite dev --port 5173",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint ./src",
