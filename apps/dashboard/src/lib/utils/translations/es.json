@@ -742,7 +742,9 @@
           "lock": "Cerrar",
           "unlock": "desbloquear"
         },
-        "disabled": "La característica está deshabilitada"
+        "disabled": "La característica está deshabilitada",
+        "next": "Próximo",
+        "prev": "Anterior"
       },
       "news_feed": {
         "heading": "Noticias",

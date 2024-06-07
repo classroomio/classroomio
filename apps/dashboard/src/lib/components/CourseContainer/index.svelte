@@ -61,7 +61,6 @@
       isPermitted = false;
     }
   }
-  $: console.log('this is the lesson', $lessons);
 </script>
 
 <svelte:head>

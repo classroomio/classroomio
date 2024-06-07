@@ -51,10 +51,6 @@
   let isLoading = false;
   let isSaving = false;
   let isLessonComplete = false;
-  let disabled = {
-    next: false,
-    prev: false
-  };
 
   function getLessonOrder(id: string) {
     const index = $lessons.findIndex((lesson) => lesson.id === id);
@@ -246,49 +242,28 @@
     $apps.open = true;
   }
 
-  const goToNextLesson = () => {
-    const currentLessonIdx = $lessons.findIndex((lesson) => lesson.id === data.lessonId);
+  const isNextOrPrevDisabled = (lessonId: string, isPrev: boolean) => {
+    const index = $lessons.findIndex((lesson) => lesson.id === lessonId);
 
-    if (currentLessonIdx !== -1 && currentLessonIdx + 1 < $lessons.length) {
-      const nextLesson = $lessons[currentLessonIdx + 1];
-      console.log('next lesson', nextLesson);
-
-      fetchReqData(nextLesson.id, true);
-      const nextLessonUrl =
-        $globalStore.isStudent && !nextLesson.is_unlocked
-          ? $page.url.pathname
-          : `/courses/${$course.id}/lessons/${nextLesson.id}`;
-
-      goto(nextLessonUrl);
-    }
+    return isPrev ? !$lessons[index - 1] : !$lessons[index + 1];
   };
 
-  const goToPrevLesson = () => {
-    const currentLessonIdx = $lessons.findIndex((lesson) => lesson.id === data.lessonId);
+  const goToNextOrPrevLesson = (lessonId: string, isPrev: boolean) => {
+    const isDisabled = isNextOrPrevDisabled(lessonId, isPrev);
 
-    if (currentLessonIdx !== -1 && currentLessonIdx - 1 >= 0) {
-      const prevLesson = $lessons[currentLessonIdx - 1];
-      console.log('next lesson', prevLesson);
+    // Always use early return
+    if (isDisabled) return;
 
-      fetchReqData(prevLesson.id, true);
-      const prevLessonUrl =
-        $globalStore.isStudent && !prevLesson.is_unlocked
-          ? $page.url.pathname
-          : `/courses/${$course.id}/lessons/${prevLesson.id}`;
+    const index = $lessons.findIndex((lesson) => lesson.id === lessonId);
+    const nextOrPrevLesson = isPrev ? $lessons[index - 1] : $lessons[index + 1];
 
-      goto(prevLessonUrl);
-    }
+    const isLocked = $globalStore.isStudent && !nextOrPrevLesson.is_unlocked;
+
+    if (isLocked) return;
+
+    const path = `/courses/${$course.id}/lessons/${nextOrPrevLesson.id}`;
+    goto(path);
   };
-
-  $: {
-    const currentLessonIdx = $lessons.findIndex((lesson) => lesson.id === data.lessonId);
-    disabled.next =
-      currentLessonIdx === -1 ||
-      $lessons.slice(currentLessonIdx + 1).every((lesson) => !lesson.is_unlocked);
-    disabled.prev =
-      currentLessonIdx === -1 ||
-      $lessons.slice(0, currentLessonIdx).every((lesson) => !lesson.is_unlocked);
-  }
 
   $: path = $page.url?.pathname?.replace(/\/exercises[\/ 0-9 a-z -]*/, '');
 
@@ -424,16 +399,15 @@
       class="flex items-center gap-2 w-fit rounded-full shadow-xl bg-gray-100 dark:bg-neutral-700 px-5 py-1"
     >
       <button
-        disabled={disabled.prev}
+        disabled={isNextOrPrevDisabled(data.lessonId, true)}
         class={`px-2 my-2 pr-4 border-t-0 border-b-0 border-l-0 border border-gray-300 flex items-center ${
-          disabled.prev && 'cursor-not-allowed'
+          isNextOrPrevDisabled(data.lessonId, true) && 'cursor-not-allowed'
         }`}
-        on:click={goToPrevLesson}
+        on:click={() => goToNextOrPrevLesson(data.lessonId, true)}
       >
         <ChevronLeft size={24} />
-        {#if !$isMobile}
-          <span> Prev </span>
-        {/if}
+
+        <span class="hidden md:block">{$t('course.navItem.lessons.prev')}</span>
       </button>
       {#if data.isMaterialsTabActive}
         <button
@@ -471,13 +445,13 @@
         {/if}
       </button>
       <button
-        disabled={disabled.next}
-        class={`px-2 my-2 flex items-center ${disabled.next && 'cursor-not-allowed'}`}
-        on:click={goToNextLesson}
+        disabled={isNextOrPrevDisabled(data.lessonId, false)}
+        class={`px-2 my-2 flex items-center ${
+          isNextOrPrevDisabled(data.lessonId, false) && 'cursor-not-allowed'
+        }`}
+        on:click={() => goToNextOrPrevLesson(data.lessonId, false)}
       >
-        {#if !$isMobile}
-          <span> Next </span>
-        {/if}
+        <span class="hidden md:block">{$t('course.navItem.lessons.next')}</span>
         <ChevronRight size={24} />
       </button>
     </div>

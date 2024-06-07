@@ -742,7 +742,9 @@
           "lock": "Verrouillage",
           "unlock": "Ouvrir"
         },
-        "disabled": "La fonctionnalité est désactivée"
+        "disabled": "La fonctionnalité est désactivée",
+        "next": "Suivant",
+        "prev": "Précédent"
       },
       "news_feed": {
         "heading": "Fil d'actualité",
