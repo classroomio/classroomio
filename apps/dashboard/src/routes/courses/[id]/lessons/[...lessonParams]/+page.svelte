@@ -40,7 +40,6 @@
   import { t } from '$lib/utils/functions/translations';
   import { LANGUAGES } from '$lib/utils/constants/translation';
   import { ChevronLeft, ChevronRight } from 'carbon-icons-svelte';
-  import { isMobile } from '$lib/utils/store/useMobile';
 
   export let data;
 
