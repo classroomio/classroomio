@@ -725,9 +725,13 @@
           "edit": "Editar",
           "delete": "Borrar",
           "lock": "Cerrar",
-          "unlock": "desbloquear"
+          "unlock": "desbloquear",
+          "reorder_button": "Reordenar"
         },
-        "disabled": "La característica está deshabilitada"
+        "disabled": "La característica está deshabilitada",
+        "drag": "arrastra una tarjeta para reordenar",
+        "no_lesson": "Aún no hay lecciones",
+        "share_your_knowledge": "Comparta sus conocimientos con el mundo creando lecciones interesantes. Comience haciendo clic en el botón Agregar."
       },
       "news_feed": {
         "heading": "Noticias",

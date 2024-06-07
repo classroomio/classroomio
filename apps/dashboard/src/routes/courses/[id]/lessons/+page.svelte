@@ -112,9 +112,6 @@
     );
   }
 
-  function reorderHighlight() {
-    reorder = !reorder;
-  }
   function onNextQuery(lessons) {
     if (!isFetching && lessons.length > 0) {
       const incompleteLesson = findFirstIncompleteLesson();
@@ -152,9 +149,9 @@
           isDisabled={!!lessonEditing}
         />
         <PrimaryButton
-          label="Reorder"
+          label={$t('course.navItem.lessons.add_lesson.reorder_button')}
           variant={VARIANTS.OUTLINED}
-          onClick={reorderHighlight}
+          onClick={() => (reorder = !reorder)}
           isDisabled={!!lessonEditing}
         />
       </RoleBasedSecurity>
@@ -166,17 +163,16 @@
       <Box className="w-full lg:w-11/12 lg:px-4 m-auto">
         <div class="flex flex-col items-center justify-between">
           <img src="/images/empty-lesson-icon.svg" alt="Lesson" class="mx-auto my-2.5" />
-          <h2 class="my-1.5 text-xl font-normal">No lessons yet</h2>
+          <h2 class="my-1.5 text-xl font-normal">{$t('course.navItem.lessons.no_lesson')}</h2>
           <p class="text-center text-sm text-slate-500">
-            Share your knowledge with the world by creating engaging lessons. Start by clicking on
-            the Add button.
+            {$t('course.navItem.lessons.share_your_knowledge')}
           </p>
         </div>
       </Box>
     {:else if $lessons.length}
       {#if reorder}
         <p class="text-gray-400 text-center dark:text-white italic text-xs">
-          drag a card to reorder
+          {$t('course.navItem.lessons.drag')}
         </p>
       {/if}
       <section
@@ -317,7 +313,8 @@
                   <div class="mb-3 flex items-center lg:mb-0">
                     <ScreenMap size={20} class="carbon-icon dark:text-white" />
                     <p class="ml-2 text-sm text-gray-500 dark:text-white">
-                      {lesson?.totalExercises ? lesson?.totalExercises?.map((c) => c.count) : 0} Exercises
+                      {lesson?.totalExercises ? lesson?.totalExercises?.map((c) => c.count) : 0}
+                      {$t('exercises.heading')}
                     </p>
                   </div>
                 </div>

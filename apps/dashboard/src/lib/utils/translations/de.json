@@ -725,9 +725,13 @@
           "edit": "Bearbeiten",
           "delete": "Löschen",
           "lock": "Sperren",
-          "unlock": "Freischalten"
+          "unlock": "Freischalten",
+          "reorder_button": "Neu anordnen"
         },
-        "disabled": "Funktion ist deaktiviert"
+        "disabled": "Funktion ist deaktiviert",
+        "drag": "Ziehen Sie eine Karte, um sie neu anzuordnen",
+        "no_lesson": "Noch kein Unterricht",
+        "share_your_knowledge": "Teilen Sie Ihr Wissen mit der Welt, indem Sie ansprechende Lektionen erstellen. Klicken Sie zunächst auf die Schaltfläche „Hinzufügen“."
       },
       "news_feed": {
         "heading": "Neuigkeiten",

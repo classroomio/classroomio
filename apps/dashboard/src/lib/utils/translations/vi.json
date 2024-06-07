@@ -725,9 +725,13 @@
           "edit": "Biên tập",
           "delete": "Xóa bỏ",
           "lock": "Khóa",
-          "unlock": "Mở khóa"
+          "unlock": "Mở khóa",
+          "reorder_button": "Sắp xếp lại"
         },
-        "disabled": "Tính năng bị vô hiệu hóa"
+        "disabled": "Tính năng bị vô hiệu hóa",
+        "drag": "kéo thẻ để sắp xếp lại",
+        "no_lesson": "Chưa có bài học nào",
+        "share_your_knowledge": "Chia sẻ kiến ​​thức của bạn với thế giới bằng cách tạo ra những bài học hấp dẫn. Bắt đầu bằng cách nhấp vào nút Thêm."
       },
       "news_feed": {
         "heading": "Nguồn cấp tin tức",
