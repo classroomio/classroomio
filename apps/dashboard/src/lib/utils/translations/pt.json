@@ -826,7 +826,8 @@
         "share": "Compartilhar",
         "invite": "Convidar",
         "delete": "Excluir"
-      }
+      },
+      "get_course": "Obter curso"
     },
     "course_filter": {
       "date_created": "Data Criada",

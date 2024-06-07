@@ -41,6 +41,7 @@
     $courseMetaDeta.isLoading = false;
     if (!coursesResult) return;
 
+    // console.log('courses', coursesResult.allCourses, 'user', userId, 'org', orgId);
     courses.set(coursesResult.allCourses);
     hasFetched = true;
   }
@@ -67,8 +68,6 @@
         (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
       );
     } else if (_selectedId === '1') {
-      exploreCourses = exploreCourses.sort((a, b) => b.is_published - a.is_published);
-    } else if (_selectedId === '2') {
       exploreCourses = exploreCourses.sort((a, b) => b.total_lessons - a.total_lessons);
     }
   }
@@ -109,8 +108,7 @@
           bind:selectedId
           items={[
             { id: '0', text: $t('courses.course_filter.date_created') },
-            { id: '1', text: $t('courses.course_filter.published') },
-            { id: '2', text: $t('courses.course_filter.lessons') }
+            { id: '1', text: $t('courses.course_filter.lessons') }
           ]}
         />
 
@@ -129,6 +127,7 @@
       bind:courses={exploreCourses}
       emptyTitle={'No course available'}
       emptyDescription={'No available course found'}
+      isExplore={true}
     />
   </div>
 </section>

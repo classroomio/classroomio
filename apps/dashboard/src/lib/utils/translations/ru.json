@@ -826,7 +826,8 @@
         "share": "Делиться",
         "invite": "Приглашать",
         "delete": "Удалить"
-      }
+      },
+      "get_course": "Получить курс"
     },
     "course_filter": {
       "date_created": "Дата создания",

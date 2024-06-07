@@ -826,7 +826,8 @@
         "share": "Aktie",
         "invite": "Einladen",
         "delete": "Löschen"
-      }
+      },
+      "get_course": "Holen Sie sich Kurs"
     },
     "course_filter": {
       "date_created": "Datum erstellt",

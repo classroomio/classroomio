@@ -826,7 +826,8 @@
         "share": "Chia sẻ",
         "invite": "Mời",
         "delete": "Xóa bỏ"
-      }
+      },
+      "get_course": "Nhận khóa học"
     },
     "course_filter": {
       "date_created": "Ngày tạo",
