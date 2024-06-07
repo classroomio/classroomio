@@ -13,10 +13,9 @@
   import Rocket from 'carbon-icons-svelte/lib/Rocket.svelte';
   import NewTab from 'carbon-icons-svelte/lib/NewTab.svelte';
   import { goto } from '$app/navigation';
-  import { sideBar, popUp } from '../store';
+  import { popUp } from '../store';
   import { supabase } from '$lib/utils/functions/supabase';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
-  import { NavClasses } from '$lib/utils/constants/reusableClass';
   import { t } from '$lib/utils/functions/translations';
   import posthog from 'posthog-js';
 
@@ -75,7 +74,7 @@
           <div>
             <p class="text-sm font-semibold w-[80%] truncate">{$currentOrg.name}</p>
             <p class="text-xs w-[80%] truncate">
-              {`${$currentOrg.siteName || ''}.classroomio.com/`}
+              {$currentOrgDomain}
             </p>
           </div>
         </span>
