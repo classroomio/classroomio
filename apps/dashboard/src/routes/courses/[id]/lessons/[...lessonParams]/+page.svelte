@@ -62,11 +62,15 @@
   }
 
   async function fetchReqData(lessonId = '', isMaterialsTabActive: boolean) {
-    $lesson.isFetching = true;
+    const timeout = setTimeout(() => {
+      $lesson.isFetching = true;
+    }, 1000);
     let lessonData;
     if (isMaterialsTabActive) {
       const lesson = await fetchLesson(lessonId);
       lessonData = lesson.data;
+
+      clearTimeout(timeout);
     }
 
     console.log({ lessonData });
@@ -272,6 +276,8 @@
   }
 
   $: isLessonComplete = getIsLessonComplete($lesson.lesson_completion, $profile.id);
+  $: isPrevDisabled = isNextOrPrevDisabled(data.lessonId, true);
+  $: isNextDisabled = isNextOrPrevDisabled(data.lessonId, false);
 </script>
 
 <CourseContainer
@@ -367,28 +373,6 @@
         bind:isSaving
         isStudent={$globalStore.isStudent}
       />
-
-      <!-- {#if $globalStore.isStudent}
-        <div class="w-full hidden lg:flex flex-row-reverse mt-10">
-          <PrimaryButton
-            onClick={() => markLessonComplete(data.lessonId)}
-            isLoading={isMarkingComplete}
-            isDisabled={isMarkingComplete}
-            variant={VARIANTS.OUTLINED}
-            className="mt-10"
-          >
-            {#if isLessonComplete}
-              <CheckmarkFilledIcon size={24} class="carbon-icon text-primary-600 mr-2" />
-            {:else}
-              <CheckmarkOutlineIcon size={24} class="carbon-icon mr-2" />
-            {/if}
-            {$t('course.navItem.lessons.mark_as')}
-            {isLessonComplete
-              ? $t('course.navItem.lessons.incomplete')
-              : $t('course.navItem.lessons.complete')}
-          </PrimaryButton>
-        </div>
-      {/if} -->
     </PageBody>
   {/if}
 
@@ -398,9 +382,9 @@
       class="flex items-center gap-2 w-fit rounded-full shadow-xl bg-gray-100 dark:bg-neutral-700 px-5 py-1"
     >
       <button
-        disabled={isNextOrPrevDisabled(data.lessonId, true)}
+        disabled={isPrevDisabled}
         class={`px-2 my-2 pr-4 border-t-0 border-b-0 border-l-0 border border-gray-300 flex items-center ${
-          isNextOrPrevDisabled(data.lessonId, true) && 'cursor-not-allowed'
+          isPrevDisabled && 'opacity-25 cursor-not-allowed'
         }`}
         on:click={() => goToNextOrPrevLesson(data.lessonId, true)}
       >
@@ -444,10 +428,8 @@
         {/if}
       </button>
       <button
-        disabled={isNextOrPrevDisabled(data.lessonId, false)}
-        class={`px-2 my-2 flex items-center ${
-          isNextOrPrevDisabled(data.lessonId, false) && 'cursor-not-allowed'
-        }`}
+        disabled={isNextDisabled}
+        class={`px-2 my-2 flex items-center ${isNextDisabled && 'opacity-25 cursor-not-allowed'}`}
         on:click={() => goToNextOrPrevLesson(data.lessonId, false)}
       >
         <span class="hidden md:block">{$t('course.navItem.lessons.next')}</span>

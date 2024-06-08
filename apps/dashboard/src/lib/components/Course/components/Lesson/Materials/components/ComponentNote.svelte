@@ -15,7 +15,7 @@
     $lessonByTranslation[lessonId],
     $lesson.locale
   );
-  $: hasAtLeastOneTranslation = Object.values($lessonByTranslation[lessonId]).some(
+  $: hasAtLeastOneTranslation = Object.values($lessonByTranslation[lessonId] || {}).some(
     (c) => !!c.length
   );
 </script>
