@@ -533,7 +533,8 @@
         "mark_as": "Mark as",
         "incomplete": "Incomplete",
         "complete": "Complete",
-
+        "next": "Next",
+        "prev": "Prev",
         "materials": {
           "body_heading": "No note, video or slide added for this lesson yet",
           "body_content": "Share your knowledge with your students by creating engaging content. Start by clicking on",
@@ -807,6 +808,9 @@
           "go_to": "go to organization settings",
           "invite_students": "Invite Students",
           "via_link": "You can invite students via an invite link",
+          "via_qr": "You can invite students via QR",
+          "download_qr": "Download QR code",
+          "qr_downloading_snackbar": "QR code generated successfully, please wait while it downloads",
           "copy_link": "Copy link",
           "success": "Copied Successfully",
           "finish": "Finish"
@@ -889,7 +893,22 @@
             "fullname": "Full Name",
             "description": "Description",
             "rating": "Rating",
-            "hide": "Hide Review"
+            "hide": "Hide Review",
+            "validations": {
+              "invalid_type_error": "Must not be empty",
+              "name": {
+                "min_char": "Name is too short, min of 5 character"
+              },
+              "avatar_url": {
+                "message": "Upload an image"
+              },
+              "rating": {
+                "message": "Rating must be from 1-5"
+              },
+              "description": {
+                "min_char": "'Description is too short, min of 5 characters"
+              }
+            }
           },
 
           "instructor_form": {
@@ -1290,5 +1309,99 @@
   "generic": {
     "locked": "Locked",
     "unlocked": "Unlocked"
+  },
+
+  "validations": {
+    "organization_name": {
+      "min_char": "Organization must contain 5 or more characters",
+      "hyphen_rule": "Organization name cannot start or end with a hyphen"
+    },
+    "site_name": {
+      "min_char": "Site name must contain 5 or more characters",
+      "hyphen_rule": "Site name cannot start or end with a hyphen"
+    },
+    "news_feed": {
+      "min_char": "Field must contain 5 or more characters"
+    },
+    "lesson_schema": {
+      "empty_title": "Title cannot be empty"
+    },
+    "create_quiz": {
+      "min_char": "Must be 6 or more characters long"
+    },
+    "ask_community": {
+      "title": {
+        "min_char": "Must be 6 or more characters long"
+      },
+      "body": {
+        "min_char": "Must be 10 or more characters long"
+      },
+      "course_id": {
+        "select_course": "Select a Course"
+      }
+    },
+    "comment_in_community": {
+      "min_char": "Must be 6 or more characters long"
+    },
+    "org_landing_page": {
+      "name": {
+        "min_char": "Must be 6 or more characters long"
+      },
+      "email": {
+        "invalid_email": "Invalid email address"
+      },
+      "phone": {
+        "min_char": "Must be 6 or more characters long"
+      },
+      "message": {
+        "min_char": "Must be 10 or more characters long"
+      }
+    },
+    "forgot": {
+      "invalid_email": "Invalid email address"
+    },
+    "auth": {
+      "email": {
+        "invalid_email": "Invalid email address"
+      },
+      "password": {
+        "min_char": "Must be 6 or more characters long"
+      }
+    },
+    "reset": {
+      "password": {
+        "min_char": "Must be 6 or more characters long"
+      }
+    },
+    "onboarding": {
+      "step_one": {
+        "full_name": {
+          "min_char": "Fullname must contain 5 or more characters"
+        }
+      },
+      "step_two": {
+        "goal": {
+          "required": "Select an option"
+        },
+        "source": {
+          "required": "Select an option"
+        }
+      }
+    },
+    "confirm_password": {
+      "not_match": "Does not match password"
+    },
+    "course_payment": {
+      "full_name": {
+        "min_char": "Must be 6 or more characters long"
+      },
+      "email": {
+        "invalid_email": "Invalid email address"
+      }
+    },
+    "email": {
+      "not_valid": "Not valid email"
+    },
+    "invalid_type_error": "Must not be empty"
   }
 }

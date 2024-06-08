@@ -1,5 +1,6 @@
 <script lang="ts">
   import isEmpty from 'lodash/isEmpty';
+  import { fade } from 'svelte/transition';
   import { useCompletion } from 'ai/svelte';
   import MODES from '$lib/utils/constants/mode.js';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
@@ -477,11 +478,13 @@
     </slot:fragment>
   </Tabs>
 {:else if !isMaterialsEmpty($lesson.materials, $lessonByTranslation[lessonId])}
-  <div class="w-full">
-    {#each componentsToRender as Component}
-      <svelte:component this={Component} {lessonId} />
-    {/each}
-  </div>
+  {#key lessonId}
+    <div class="w-full" in:fade={{ delay: 500 }} out:fade>
+      {#each componentsToRender as Component}
+        <svelte:component this={Component} {lessonId} />
+      {/each}
+    </div>
+  {/key}
 {:else}
   <Box className="text-center">
     <img src="/no-video.svg" alt="Video not found" />

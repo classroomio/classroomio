@@ -356,7 +356,22 @@
             "fullname": "Nom et prénom",
             "description": "Description",
             "rating": "Notation",
-            "hide": "Masquer l'avis"
+            "hide": "Masquer l'avis",
+            "validations": {
+              "invalid_type_error": "Ne doit pas être vide",
+              "description": {
+                "min_char": "'La description est trop courte, minimum 5 caractères"
+              },
+              "rating": {
+                "message": "La note doit être comprise entre 1 et 5"
+              },
+              "avatar_url": {
+                "message": "Télécharger une image"
+              },
+              "name": {
+                "min_char": "Le nom est trop court, minimum 5 caractères"
+              }
+            }
           },
           "header_form": {
             "title": "Titre",
@@ -430,7 +445,10 @@
           "via_link": "Vous pouvez inviter des étudiants via un lien d'invitation",
           "copy_link": "Copier le lien",
           "success": "Copié avec succès",
-          "finish": "Finition"
+          "finish": "Finition",
+          "via_qr": "Vous pouvez inviter des étudiants via QR",
+          "download_qr": "Télécharger le code QR",
+          "qr_downloading_snackbar": "Code QR généré avec succès, veuillez patienter pendant le téléchargement"
         },
         "teams": {
           "add": "Ajouter",
@@ -729,6 +747,8 @@
           "reorder_button": "Réorganiser"
         },
         "disabled": "La fonctionnalité est désactivée",
+        "next": "Suivant",
+        "prev": "Précédent",
         "drag": "faites glisser une carte pour réorganiser",
         "no_lesson": "Pas encore de cours",
         "share_your_knowledge": "Partagez vos connaissances avec le monde en créant des leçons engageantes. Commencez par cliquer sur le bouton Ajouter."
@@ -1248,5 +1268,98 @@
   },
   "specialization": {
     "course_tag": "Spécialisation"
+  },
+  "validations": {
+    "invalid_type_error": "Ne doit pas être vide",
+    "email": {
+      "not_valid": "E-mail non valide"
+    },
+    "course_payment": {
+      "email": {
+        "invalid_email": "Adresse e-mail invalide"
+      },
+      "full_name": {
+        "min_char": "Doit contenir au moins 6 caractères"
+      }
+    },
+    "confirm_password": {
+      "not_match": "Ne correspond pas au mot de passe"
+    },
+    "onboarding": {
+      "step_two": {
+        "source": {
+          "required": "Choisir une option"
+        },
+        "goal": {
+          "required": "Choisir une option"
+        }
+      },
+      "step_one": {
+        "full_name": {
+          "min_char": "Le nom complet doit contenir 5 caractères ou plus"
+        }
+      }
+    },
+    "reset": {
+      "password": {
+        "min_char": "Doit contenir au moins 6 caractères"
+      }
+    },
+    "auth": {
+      "password": {
+        "min_char": "Doit contenir au moins 6 caractères"
+      },
+      "email": {
+        "invalid_email": "Adresse e-mail invalide"
+      }
+    },
+    "forgot": {
+      "invalid_email": "Adresse e-mail invalide"
+    },
+    "org_landing_page": {
+      "message": {
+        "min_char": "Doit contenir au moins 10 caractères"
+      },
+      "phone": {
+        "min_char": "Doit contenir au moins 6 caractères"
+      },
+      "email": {
+        "invalid_email": "Adresse e-mail invalide"
+      },
+      "name": {
+        "min_char": "Doit contenir au moins 6 caractères"
+      }
+    },
+    "comment_in_community": {
+      "min_char": "Doit contenir au moins 6 caractères"
+    },
+    "ask_community": {
+      "course_id": {
+        "select_course": "Sélectionnez un cours"
+      },
+      "body": {
+        "min_char": "Doit contenir au moins 10 caractères"
+      },
+      "title": {
+        "min_char": "Doit contenir au moins 6 caractères"
+      }
+    },
+    "create_quiz": {
+      "min_char": "Doit contenir au moins 6 caractères"
+    },
+    "lesson_schema": {
+      "empty_title": "Le titre ne peut pas être vide"
+    },
+    "news_feed": {
+      "min_char": "Le champ doit contenir 5 caractères ou plus"
+    },
+    "site_name": {
+      "min_char": "Le nom du site doit contenir 5 caractères ou plus",
+      "hyphen_rule": "Le nom du site ne peut pas commencer ou se terminer par un trait d'union"
+    },
+    "organization_name": {
+      "min_char": "L'organisation doit contenir 5 caractères ou plus",
+      "hyphen_rule": "Le nom de l'organisation ne peut pas commencer ou se terminer par un trait d'union"
+    }
   }
 }
