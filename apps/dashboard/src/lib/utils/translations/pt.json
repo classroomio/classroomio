@@ -445,7 +445,10 @@
           "via_link": "Você pode convidar alunos por meio de um link de convite",
           "copy_link": "Link de cópia",
           "success": "Copiado com sucesso",
-          "finish": "Terminar"
+          "finish": "Terminar",
+          "via_qr": "Você pode convidar alunos via QR",
+          "download_qr": "Baixe o código QR",
+          "qr_downloading_snackbar": "Código QR gerado com sucesso. Aguarde enquanto o download"
         },
         "teams": {
           "add": "Adicionar",

@@ -15,20 +15,20 @@
   let completed = 0;
 
   const StepsEnum = {
-    UPDATE_PROFILE: 'Upload a profile picture and update username',
-    UPDATE_ORG_PROFILE: 'Update organisation profile picture',
-    CREATE_COURSE: 'Create Course',
-    CREATE_LESSON: 'Create a lesson',
-    CREATE_EXERCISE: 'Create an exercise',
-    PUBLISH_COURSE: 'Publish a course'
+    UPDATE_PROFILE: 'profile',
+    UPDATE_ORG_PROFILE: 'organization',
+    CREATE_COURSE: 'course',
+    CREATE_LESSON: 'lesson',
+    CREATE_EXERCISE: 'exercise',
+    PUBLISH_COURSE: 'publish'
   };
 
   const isCompleted = (id) => {
     return setupList?.find((c) => c.id === id)?.is_completed == true;
   };
 
-  const handleClick = (title) => {
-    switch (title) {
+  const handleClick = (id) => {
+    switch (id) {
       case StepsEnum.CREATE_COURSE:
         goto(`/org/${$currentOrg.siteName}/courses?create=true`);
         break;
@@ -114,7 +114,7 @@
             <PrimaryButton
               variant={list.is_completed ? VARIANTS.CONTAINED_DARK : VARIANTS.OUTLINED}
               className="!w-full font-normal text-sm flex items-center gap-2"
-              onClick={() => handleClick(list.title)}
+              onClick={() => handleClick(list.id)}
               isDisabled={list.is_completed}
             >
               {#if list.is_completed}

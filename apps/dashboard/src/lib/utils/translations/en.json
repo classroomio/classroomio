@@ -804,6 +804,9 @@
           "go_to": "go to organization settings",
           "invite_students": "Invite Students",
           "via_link": "You can invite students via an invite link",
+          "via_qr": "You can invite students via QR",
+          "download_qr": "Download QR code",
+          "qr_downloading_snackbar": "QR code generated successfully, please wait while it downloads",
           "copy_link": "Copy link",
           "success": "Copied Successfully",
           "finish": "Finish"

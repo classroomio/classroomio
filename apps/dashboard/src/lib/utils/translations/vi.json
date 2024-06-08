@@ -445,7 +445,10 @@
           "via_link": "Bạn có thể mời sinh viên thông qua liên kết mời",
           "copy_link": "Sao chép đường dẫn",
           "success": "Đã sao chép thành công",
-          "finish": "Hoàn thành"
+          "finish": "Hoàn thành",
+          "via_qr": "Bạn có thể mời sinh viên qua QR",
+          "download_qr": "Tải xuống mã QR",
+          "qr_downloading_snackbar": "Mã QR được tạo thành công, vui lòng đợi trong khi tải xuống"
         },
         "teams": {
           "add": "Thêm vào",
