@@ -204,7 +204,7 @@
     {#if isLMS}
       <PrimaryButton
         label={isExplore
-          ? $t('courses.course_card.get_course')
+          ? $t('courses.course_card.learn_more')
           : $t('courses.course_card.continue_course')}
         variant={VARIANTS.OUTLINED}
         className="rounded-none"

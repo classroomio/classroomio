@@ -428,7 +428,7 @@
       "published": "Published",
       "unpublished": "Unpublished",
       "continue_course": "Continue Course",
-      "get_course": "Get course",
+      "learn_more": "Learn more",
       "list_view": {
         "title": "Title",
         "description": "Description",
@@ -1087,6 +1087,7 @@
     "my_learning": "My Learning",
     "exercise": "Exercise",
     "community": "Community",
+    "explore": "Explore",
     "help": "Help",
     "settings": "Settings"
   },
@@ -1109,6 +1110,12 @@
     "in_progress": "Grading In Progress",
     "graded": "Graded",
     "lesson": "Lesson"
+  },
+
+  "explore": {
+    "heading": "Explore",
+    "empty_heading": "No course available",
+    "empty_description": "There are currently no published course available"
   },
 
   "snackbar": {

@@ -62,7 +62,7 @@
       }
     },
     {
-      name: 'Explore',
+      name: $t('lms_navigation.explore'),
       icon: Explore,
       link: '/lms/explore'
     }

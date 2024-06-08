@@ -184,7 +184,8 @@
     "exercise": "Exercício",
     "community": "Comunidade",
     "help": "Ajuda",
-    "settings": "Configurações"
+    "settings": "Configurações",
+    "explore": "Explorar"
   },
   "upgrade": {
     "certificate": "Atualize seu plano para gerar certificados",
@@ -827,7 +828,8 @@
         "invite": "Convidar",
         "delete": "Excluir"
       },
-      "get_course": "Obter curso"
+      "get_course": "Obter curso",
+      "learn_more": "Saber mais"
     },
     "course_filter": {
       "date_created": "Data Criada",
@@ -1353,5 +1355,10 @@
       "min_char": "A organização deve conter 5 ou mais caracteres",
       "hyphen_rule": "O nome da organização não pode começar ou terminar com um hífen"
     }
+  },
+  "explore": {
+    "heading": "Explorar",
+    "empty_heading": "Nenhum curso disponível",
+    "empty_description": "Atualmente não há nenhum curso publicado disponível"
   }
 }

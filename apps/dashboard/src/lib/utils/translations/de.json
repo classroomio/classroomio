@@ -184,7 +184,8 @@
     "exercise": "Übung",
     "community": "Gemeinschaft",
     "help": "Helfen",
-    "settings": "Einstellungen"
+    "settings": "Einstellungen",
+    "explore": "Erkunden"
   },
   "upgrade": {
     "certificate": "Aktualisieren Sie Ihren Plan, um Zertifikate zu generieren",
@@ -827,7 +828,8 @@
         "invite": "Einladen",
         "delete": "Löschen"
       },
-      "get_course": "Holen Sie sich Kurs"
+      "get_course": "Holen Sie sich Kurs",
+      "learn_more": "Erfahren Sie mehr"
     },
     "course_filter": {
       "date_created": "Datum erstellt",
@@ -1353,5 +1355,10 @@
       "min_char": "Die Organisation muss 5 oder mehr Zeichen enthalten",
       "hyphen_rule": "Der Name der Organisation darf nicht mit einem Bindestrich beginnen oder enden"
     }
+  },
+  "explore": {
+    "heading": "Erkunden",
+    "empty_heading": "Kein Kurs verfügbar",
+    "empty_description": "Derzeit sind keine veröffentlichten Kurse verfügbar"
   }
 }
