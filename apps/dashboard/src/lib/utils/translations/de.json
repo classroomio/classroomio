@@ -445,7 +445,10 @@
           "via_link": "Sie können Studierende über einen Einladungslink einladen",
           "copy_link": "Link kopieren",
           "success": "Erfolgreich kopiert",
-          "finish": "Beenden"
+          "finish": "Beenden",
+          "via_qr": "Sie können Studierende per QR einladen",
+          "download_qr": "Laden Sie den QR-Code herunter",
+          "qr_downloading_snackbar": "Der QR-Code wurde erfolgreich generiert. Bitte warten Sie, während er heruntergeladen wird"
         },
         "teams": {
           "add": "Hinzufügen",

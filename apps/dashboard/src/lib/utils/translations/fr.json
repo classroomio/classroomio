@@ -445,7 +445,10 @@
           "via_link": "Vous pouvez inviter des étudiants via un lien d'invitation",
           "copy_link": "Copier le lien",
           "success": "Copié avec succès",
-          "finish": "Finition"
+          "finish": "Finition",
+          "via_qr": "Vous pouvez inviter des étudiants via QR",
+          "download_qr": "Télécharger le code QR",
+          "qr_downloading_snackbar": "Code QR généré avec succès, veuillez patienter pendant le téléchargement"
         },
         "teams": {
           "add": "Ajouter",
