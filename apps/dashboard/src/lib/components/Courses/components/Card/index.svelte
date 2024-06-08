@@ -61,11 +61,9 @@
   }
 
   function getCourseUrl() {
-    return isOnLandingPage
+    return isOnLandingPage || isExplore
       ? `/course/${slug}`
-      : isExplore
-        ? `/course/${slug}`
-        : `/courses/${id}${isLMS ? '/lessons?next=true' : ''}`;
+      : `/courses/${id}${isLMS ? '/lessons?next=true' : ''}`;
   }
 
   const COURSE_TAG: Record<
