@@ -3,7 +3,7 @@ name: Deploy Supabase on Push
 on:
   push:
     branches:
-      - staging
+      - main
   workflow_dispatch:
 
 jobs:
