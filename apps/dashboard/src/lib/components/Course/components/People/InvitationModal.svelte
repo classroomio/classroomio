@@ -3,6 +3,9 @@
   import { Popover } from 'carbon-components-svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
+  import QRCode from 'qrcode';
+  import { toPng } from 'html-to-image';
+
   import Modal from '$lib/components/Modal/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { ROLE } from '$lib/utils/constants/roles';
@@ -12,8 +15,6 @@
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { getOrgTeam } from '$lib/utils/services/org';
   import type { OrgTeamMember } from '$lib/utils/types/org';
-  import QRCode from 'qrcode';
-  import { toPng } from 'html-to-image';
   import { qrInviteNodeStore } from './store';
   import { getStudentInviteLink } from '$lib/utils/functions/course';
   import ShareQrImage from './ShareQRImage.svelte';
@@ -140,27 +141,28 @@
   }
 
   function handleQRDownload() {
-    if ($qrInviteNodeStore) {
-      isLoadingQRDownload = true;
-      setTimeout(() => {
-        toPng($qrInviteNodeStore)
-          .then((dataUrl) => {
-            const link = document.createElement('a');
-            link.download = `${$course.slug}-qr-code.png`;
-            link.href = dataUrl;
-            link.click();
-          })
-          .catch((error) => {
-            isLoadingQRDownload = false;
-            console.error('Oops, something went wrong!', error);
-          })
-          .finally(() => {
-            isLoadingQRDownload = false;
-          });
-      }, 300);
-    } else {
-      console.error('Node is not defined');
-    }
+    if (!$qrInviteNodeStore) {
+			console.error('Node is not defined');
+			return;
+		}
+
+		isLoadingQRDownload = true;
+		setTimeout(() => {
+			toPng($qrInviteNodeStore)
+				.then((dataUrl) => {
+					const link = document.createElement('a');
+					link.download = `${$course.slug}-qr-code.png`;
+					link.href = dataUrl;
+					link.click();
+				})
+				.catch((error) => {
+					isLoadingQRDownload = false;
+					console.error('Oops, something went wrong!', error);
+				})
+				.finally(() => {
+					isLoadingQRDownload = false;
+				});
+		}, 300);
   }
 
   async function generateQR(text) {
@@ -173,7 +175,6 @@
 
   $: {
     selectedTutors = formatSelected(selectedIds);
-    console.log('selectedTutors', selectedTutors);
     const query = new URLSearchParams($page.url.search);
     addPeopleParm = query.get('add');
   }
@@ -226,7 +227,7 @@
       <div class="relative">
         <button
           type="button"
-          on:click={() => copyLink()}
+          on:click={copyLink}
           class="underline text-primary-800 font-bold cursor-pointer capitalize"
         >
           {$t('course.navItem.people.invite_modal.copy_link')}
