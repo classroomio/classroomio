@@ -14,7 +14,7 @@ export const defaultCurrentOrgState: CurrentOrg = {
   siteName: '',
   avatar_url: '',
   memberId: '',
-  role_id: 3,
+  role_id: 0,
   landingpage: {},
   customization: {
     apps: { poll: true, comments: true },
