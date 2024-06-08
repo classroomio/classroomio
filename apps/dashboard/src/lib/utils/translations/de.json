@@ -745,7 +745,9 @@
           "lock": "Sperren",
           "unlock": "Freischalten"
         },
-        "disabled": "Funktion ist deaktiviert"
+        "disabled": "Funktion ist deaktiviert",
+        "next": "Nächste",
+        "prev": "Vorher"
       },
       "news_feed": {
         "heading": "Neuigkeiten",

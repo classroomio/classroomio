@@ -745,7 +745,9 @@
           "lock": "Khóa",
           "unlock": "Mở khóa"
         },
-        "disabled": "Tính năng bị vô hiệu hóa"
+        "disabled": "Tính năng bị vô hiệu hóa",
+        "next": "Kế tiếp",
+        "prev": "Trước đó"
       },
       "news_feed": {
         "heading": "Nguồn cấp tin tức",

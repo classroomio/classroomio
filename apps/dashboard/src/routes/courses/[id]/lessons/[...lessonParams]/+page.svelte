@@ -39,6 +39,7 @@
   import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
   import { t } from '$lib/utils/functions/translations';
   import { LANGUAGES } from '$lib/utils/constants/translation';
+  import { ChevronLeft, ChevronRight } from 'carbon-icons-svelte';
 
   export let data;
 
@@ -61,11 +62,15 @@
   }
 
   async function fetchReqData(lessonId = '', isMaterialsTabActive: boolean) {
-    $lesson.isFetching = true;
+    const timeout = setTimeout(() => {
+      $lesson.isFetching = true;
+    }, 1000);
     let lessonData;
     if (isMaterialsTabActive) {
       const lesson = await fetchLesson(lessonId);
       lessonData = lesson.data;
+
+      clearTimeout(timeout);
     }
 
     console.log({ lessonData });
@@ -240,6 +245,29 @@
     $apps.open = true;
   }
 
+  const isNextOrPrevDisabled = (lessonId: string, isPrev: boolean) => {
+    const index = $lessons.findIndex((lesson) => lesson.id === lessonId);
+
+    return isPrev ? !$lessons[index - 1] : !$lessons[index + 1];
+  };
+
+  const goToNextOrPrevLesson = (lessonId: string, isPrev: boolean) => {
+    const isDisabled = isNextOrPrevDisabled(lessonId, isPrev);
+
+    // Always use early return
+    if (isDisabled) return;
+
+    const index = $lessons.findIndex((lesson) => lesson.id === lessonId);
+    const nextOrPrevLesson = isPrev ? $lessons[index - 1] : $lessons[index + 1];
+
+    const isLocked = $globalStore.isStudent && !nextOrPrevLesson.is_unlocked;
+
+    if (isLocked) return;
+
+    const path = `/courses/${$course.id}/lessons/${nextOrPrevLesson.id}`;
+    goto(path);
+  };
+
   $: path = $page.url?.pathname?.replace(/\/exercises[\/ 0-9 a-z -]*/, '');
 
   $: if (data.courseId && browser) {
@@ -248,6 +276,8 @@
   }
 
   $: isLessonComplete = getIsLessonComplete($lesson.lesson_completion, $profile.id);
+  $: isPrevDisabled = isNextOrPrevDisabled(data.lessonId, true);
+  $: isNextDisabled = isNextOrPrevDisabled(data.lessonId, false);
 </script>
 
 <CourseContainer
@@ -343,28 +373,6 @@
         bind:isSaving
         isStudent={$globalStore.isStudent}
       />
-
-      <!-- {#if $globalStore.isStudent}
-        <div class="w-full hidden lg:flex flex-row-reverse mt-10">
-          <PrimaryButton
-            onClick={() => markLessonComplete(data.lessonId)}
-            isLoading={isMarkingComplete}
-            isDisabled={isMarkingComplete}
-            variant={VARIANTS.OUTLINED}
-            className="mt-10"
-          >
-            {#if isLessonComplete}
-              <CheckmarkFilledIcon size={24} class="carbon-icon text-primary-600 mr-2" />
-            {:else}
-              <CheckmarkOutlineIcon size={24} class="carbon-icon mr-2" />
-            {/if}
-            {$t('course.navItem.lessons.mark_as')}
-            {isLessonComplete
-              ? $t('course.navItem.lessons.incomplete')
-              : $t('course.navItem.lessons.complete')}
-          </PrimaryButton>
-        </div>
-      {/if} -->
     </PageBody>
   {/if}
 
@@ -373,6 +381,17 @@
     <div
       class="flex items-center gap-2 w-fit rounded-full shadow-xl bg-gray-100 dark:bg-neutral-700 px-5 py-1"
     >
+      <button
+        disabled={isPrevDisabled}
+        class={`px-2 my-2 pr-4 border-t-0 border-b-0 border-l-0 border border-gray-300 flex items-center ${
+          isPrevDisabled && 'opacity-25 cursor-not-allowed'
+        }`}
+        on:click={() => goToNextOrPrevLesson(data.lessonId, true)}
+      >
+        <ChevronLeft size={24} />
+
+        <span class="hidden md:block">{$t('course.navItem.lessons.prev')}</span>
+      </button>
       {#if data.isMaterialsTabActive}
         <button
           class="px-2 my-2 pr-4 border-t-0 border-b-0 border-l-0 border border-gray-300 flex items-center"
@@ -398,7 +417,7 @@
         <span class="ml-1">{$lesson.totalComments}</span>
       </button>
       <button
-        class="px-2 my-2"
+        class="px-2 my-2 pr-4 border-t-0 border-b-0 border-l-0 border border-gray-300 flex items-center"
         on:click={() => markLessonComplete(data.lessonId)}
         disabled={isMarkingComplete}
       >
@@ -407,6 +426,14 @@
         {:else}
           <CheckmarkOutlineIcon size={24} class="carbon-icon" />
         {/if}
+      </button>
+      <button
+        disabled={isNextDisabled}
+        class={`px-2 my-2 flex items-center ${isNextDisabled && 'opacity-25 cursor-not-allowed'}`}
+        on:click={() => goToNextOrPrevLesson(data.lessonId, false)}
+      >
+        <span class="hidden md:block">{$t('course.navItem.lessons.next')}</span>
+        <ChevronRight size={24} />
       </button>
     </div>
   </div>

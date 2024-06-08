@@ -529,7 +529,8 @@
         "mark_as": "Mark as",
         "incomplete": "Incomplete",
         "complete": "Complete",
-
+        "next": "Next",
+        "prev": "Prev",
         "materials": {
           "body_heading": "No note, video or slide added for this lesson yet",
           "body_content": "Share your knowledge with your students by creating engaging content. Start by clicking on",
