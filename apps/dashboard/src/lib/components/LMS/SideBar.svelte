@@ -13,7 +13,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
 
-  interface sideLinks {
+  interface SideLinks {
     name: string;
     icon: any;
     link: string;
@@ -31,7 +31,7 @@
     return pagePath.includes(itemPath);
   }
 
-  let sideLinks: sideLinks[] = [];
+  let sideLinks: SideLinks[] = [];
 
   $: sideLinks = [
     {
@@ -95,7 +95,7 @@
       </div>
 
       <ul class="my-5">
-        {#each sideLinks as item (item.name)}
+        {#each sideLinks as item (item.link)}
           <a href={item.link} class="text-black" on:click={toggleSidebar}>
             <li
               class="flex items-center py-3 px-4 mb-2 {NavClasses.item} {isActive(
