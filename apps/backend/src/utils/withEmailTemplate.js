@@ -13,7 +13,7 @@ const withEmailTemplate = (content) =>
       font-family: "Poppins", "Helvetica Neue", "Segoe UI", Helvetica,
         sans-serif;
       font-size: 15px;
-      font-weight: 500;
+      font-weight: 400;
       line-height: 26px;
       margin: 0;
     }
@@ -44,6 +44,7 @@ const withEmailTemplate = (content) =>
       padding: 5px;
       width: initial;
       margin: 0 auto;
+      max-width: 200px;
     }
 
     .brandcolor {
