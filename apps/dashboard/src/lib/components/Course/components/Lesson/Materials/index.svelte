@@ -130,6 +130,7 @@
         }
       : $lesson;
 
+    console.log('updating lesson');
     const [lessonRes] = await Promise.all([
       handleUpdateLessonMaterials(_lesson, lessonId),
       saveOrUpdateTranslation($lesson.locale, lessonId)
@@ -383,6 +384,10 @@
             onChange={(html) => {
               if (mode === MODES.view) return;
               $lessonByTranslation[lessonId][$lesson.locale] = html;
+              try {
+                // Backup locale of lesson content
+                localStorage.setItem(`lesson-${lessonId}-${$lesson.locale}`, html);
+              } catch (error) {}
               $isLessonDirty = true;
             }}
             placeholder={$t('course.navItem.lessons.materials.tabs.note.placeholder')}
