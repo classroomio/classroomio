@@ -745,7 +745,9 @@
           "lock": "Trancar",
           "unlock": "Desbloquear"
         },
-        "disabled": "O recurso está desativado"
+        "disabled": "O recurso está desativado",
+        "next": "Próximo",
+        "prev": "Anterior"
       },
       "news_feed": {
         "heading": "Notícias",
