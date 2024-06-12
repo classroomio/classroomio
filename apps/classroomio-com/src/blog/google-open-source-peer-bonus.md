@@ -1,6 +1,6 @@
 ---
 title: 'Google Open Source Peer Bonus'
-description: 'I am happy to announce that we got selected to the 2024 Google Peer Open Source Bonus'
+description: 'I am happy to announce that we were selected for the 2024 Google Peer Open Source Bonus'
 date: '2024-05-25'
 author: Rotimi Best
 avatar: /blog/best.jpg
@@ -32,3 +32,6 @@ I received the award letter this week and the official blog post will be made on
 _OS Peer Bonus H1 2024 - Best Ibitoye-Rotimi - OSPB Award Letter_
 
 As regards the financial bonus, I have no idea how much Google is giving out to each person that was selected however we've been told to setup a Pionner account and in few days the payout will be made. Once I receive it, I will share exactly how much we received 😉.
+
+**Update:**
+I received confirmation of acceptance on May 23rd, 2024. The payout was sent to my Payoneer account on June 10th 2024, taking about two weeks to process.
