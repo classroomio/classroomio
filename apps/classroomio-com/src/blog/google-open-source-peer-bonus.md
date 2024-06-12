@@ -34,4 +34,4 @@ _OS Peer Bonus H1 2024 - Best Ibitoye-Rotimi - OSPB Award Letter_
 As regards the financial bonus, I have no idea how much Google is giving out to each person that was selected however we've been told to setup a Pionner account and in few days the payout will be made. Once I receive it, I will share exactly how much we received 😉.
 
 **Update:**
-I received confirmation of acceptance on May 23rd, 2024. The payout was sent to my Payoneer account on June 10th 2024, taking about two weeks to process.
+I received confirmation of acceptance on May 23rd, 2024. The payout with the sum of $250 was sent to my Payoneer account on June 10th 2024, taking about two weeks to process.
