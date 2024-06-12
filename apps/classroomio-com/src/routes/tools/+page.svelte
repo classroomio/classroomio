@@ -46,6 +46,14 @@
         'Prepare for JAMB with past questions and instant feedback for effective exam readiness',
       slug: 'jamb',
       show: false
+    },
+    {
+      src: '/free-tools/promodoro.svg',
+      title: 'Promodoro Timer',
+      subText:
+        'Make your workday more engaging and effective with the Pomodoro timer, break work into 25-minute focused intervals called "pomodoros".',
+      slug: 'promodoro',
+      show: true
     }
   ].filter((item) => item.show);
 </script>
@@ -86,6 +94,11 @@
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[200px] z-40"
           src="/free-tools/tic-tac.svg"
           alt="Tic tac logo"
+        />
+        <img
+          class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[250px] z-50 bg-white"
+          src="/free-tools/promodoro.svg"
+          alt="Promodoro Timer logo"
         />
         <!-- <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[250px] z-50"

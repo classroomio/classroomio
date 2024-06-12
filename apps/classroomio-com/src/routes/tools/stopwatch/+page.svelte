@@ -20,7 +20,7 @@
   let totalSeconds: number = 0;
   let formattedTime: string = '00:00';
 
-  function toggleTimer() {
+  export function toggleTimer() {
     if (isPaused) {
       // Start or resume the timer
       isPaused = false;
@@ -52,7 +52,7 @@
     isNextStep = true;
   }
 
-  function startTimer() {
+  export function startTimer() {
     toggleTimer();
     totalSeconds = hours * 3600 + minutes * 60 + seconds;
     updateDisplayTime();
