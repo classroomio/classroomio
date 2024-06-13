@@ -1,88 +1,113 @@
 <script lang="ts">
+  import { fly } from 'svelte/transition';
+  import { onMount } from 'svelte';
   import ToolsHeader from '$lib/ToolsHeader/ToolsHeader.svelte';
+  import { sineInOut } from 'svelte/easing';
 
   interface TodoItem {
     content: string;
-    isEditing: boolean;
     time: string;
     isPaused: boolean;
+    isEditing: boolean;
+    isDone: boolean;
+    isVisible: boolean;
   }
 
+  let buzzSound: HTMLAudioElement;
   let todoList: TodoItem[] = [];
-  let timers: NodeJS.Timeout[] = [];
-  let currentTimer: NodeJS.Timeout | null = null;
-  let currentTaskIndex: number | null = null;
-  let countdownDisplay: string = '00:00:00';
+
+  let countdownTime: number = 25 * 60;
+  let countdownDisplay: string = '25:00';
+  let timerState: string = 'pomodoro';
+
+  let isPaused: boolean = true;
+  let timerInterval: any = null;
+  let isVisible: boolean = false;
 
   function setEditing(i: number, isEditing: boolean) {
     todoList[i].isEditing = isEditing;
   }
 
   function deleteTodo(i: number) {
-    clearInterval(timers[i]);
-    timers.splice(i, 1);
     todoList.splice(i, 1);
     todoList = todoList;
-
-    if (currentTaskIndex === i) {
-      clearInterval(currentTimer);
-      currentTimer = null;
-      countdownDisplay = '00:00:00';
-    }
+    isVisible = false;
   }
 
-  function pauseAndPlay(i: number, isPaused: boolean) {
-    if (currentTaskIndex !== null && currentTaskIndex !== i) {
-      clearInterval(currentTimer); // Clear the current timer if it's running
-      todoList[currentTaskIndex].isPaused = true; // Pause the previously selected task
-    }
-
-    if (!isPaused) {
-      // If the task is not paused, start the timer
-      startTimer(i);
-    } else {
-      // If the task is paused, clear its timer
-      clearInterval(timers[i]);
-      timers[i] = null;
-    }
-
-    todoList[i].isPaused = !isPaused; // Toggle the pause state for the selected task
-    currentTaskIndex = isPaused ? null : i; // Update the currentTaskIndex if the task is not paused
+  function markTodoAsDone(i: number) {
+    todoList[i].isDone = true;
+    todoList = [...todoList];
+    todoList[i].isVisible = false;
   }
 
   function addTodo() {
-    todoList = [...todoList, { content: '', isEditing: true, time: '0:45:30', isPaused: false }];
-    timers.push(null);
-  }
-
-  function startTimer(index: number) {
-    clearInterval(currentTimer);
-    currentTimer = setInterval(() => {
-      let totalSeconds = timeStringToSeconds(todoList[index].time);
-      if (totalSeconds > 0 && todoList[index].isPaused) {
-        totalSeconds--;
-        todoList[index].time = secondsToTimeString(totalSeconds);
-        countdownDisplay = todoList[index].time;
-      } else {
-        clearInterval(currentTimer);
+    todoList = [
+      ...todoList,
+      {
+        content: '',
+        isEditing: true,
+        time: '25:00',
+        isPaused: false,
+        isDone: false,
+        isVisible: false
       }
-    }, 1000);
+    ];
   }
 
-  function timeStringToSeconds(time: string): number {
-    const [hours, minutes, seconds] = time.split(':').map(Number);
-    return hours * 3600 + minutes * 60 + seconds;
+  function startCountdown() {
+    if (isPaused) {
+      isPaused = false;
+      timerInterval = setInterval(() => {
+        if (countdownTime > 0) {
+          countdownTime--;
+          updateCountdownDisplay();
+        } else {
+          clearInterval(timerInterval);
+          countdownDisplay = '00:00';
+          buzzSound.play();
+        }
+      }, 1000);
+    }
   }
 
-  function secondsToTimeString(seconds: number): string {
-    const hours = Math.floor(seconds / 3600);
-    seconds %= 3600;
-    const minutes = Math.floor(seconds / 60);
-    seconds = seconds % 60;
-    return `${String(hours).padStart(1, '0')}:${String(minutes).padStart(2, '0')}:${String(
-      seconds
-    ).padStart(2, '0')}`;
+  function pauseCountdown() {
+    if (!isPaused) {
+      isPaused = true;
+      clearInterval(timerInterval);
+    }
   }
+
+  function resetCountdown() {
+    clearInterval(timerInterval);
+    switch (timerState) {
+      case 'pomodoro':
+        countdownTime = 25 * 60;
+        break;
+      case 'short-break':
+        countdownTime = 15 * 60;
+        break;
+      case 'long-break':
+        countdownTime = 5 * 60;
+        break;
+    }
+    isPaused = true;
+    updateCountdownDisplay();
+  }
+
+  function updateCountdownDisplay() {
+    const minutes = Math.floor(countdownTime / 60);
+    const seconds = countdownTime % 60;
+    countdownDisplay = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  }
+
+  function setTimerState(state: string) {
+    timerState = state;
+    resetCountdown();
+  }
+
+  onMount(() => {
+    buzzSound = new Audio('https://assets.cdn.clsrio.com/beeping-sound.mp3');
+  });
 </script>
 
 <svelte:head>
@@ -119,57 +144,108 @@
     </p>
   </ToolsHeader>
 
-  <div class="w-full h-[80vh] flex justify-between px-10 text-white text-center">
+  <div
+    class="body w-full md:h-[80vh] flex flex-col gap-y-10 md:flex-row justify-between px-5 md:px-10 text-white text-center"
+  >
     <!-- left side -->
-    <div class="w-[62%] bg-[#0D4CFF] rounded-2xl p-10 flex flex-col justify-between">
+    <div
+      class="w-full md:w-[62%] bg-[#0D4CFF] rounded-lg md:rounded-2xl py-7 px-5 md:p-10 flex flex-col gap-y-16 md:gap-y-0 justify-between"
+    >
       <!-- types -->
       <div class="flex item-center justify-evenly">
-        <button type="button" class="bg-[#3ADFECED] italic py-1.5 px-7 font-medium rounded-md"
+        <button
+          type="button"
+          on:click={() => setTimerState('pomodoro')}
+          class:bg-[#3ADFECED]={timerState === 'pomodoro'}
+          class:bg-[#0233BD]={timerState !== 'pomodoro'}
+          class="transition-all duration-500 italic py-1.5 md:py-2 w-[25%] text-xs md:text-sm md:font-medium rounded-md hover:bg-[#3ADFECED]"
           >Promodoro</button
         >
-        <button type="button" class="bg-[#0233BD] italic py-1.5 px-7 font-medium rounded-md"
+        <button
+          type="button"
+          on:click={() => setTimerState('long-break')}
+          class:bg-[#3ADFECED]={timerState === 'long-break'}
+          class:bg-[#0233BD]={timerState !== 'long-break'}
+          class="transition-all duration-500 italic py-1.5 md:py-2 w-[25%] text-xs md:text-sm md:font-medium rounded-md hover:bg-[#3ADFECED]"
           >Short Break
         </button>
-        <button type="button" class="bg-[#0233BD] italic py-1.5 px-7 font-medium rounded-md"
+        <button
+          type="button"
+          on:click={() => setTimerState('short-break')}
+          class:bg-[#3ADFECED]={timerState === 'short-break'}
+          class:bg-[#0233BD]={timerState !== 'short-break'}
+          class="transition-all duration-500 italic py-1.5 md:py-2 w-[25%] text-xs md:text-sm md:font-medium rounded-md hover:bg-[#3ADFECED]"
           >Long Break
         </button>
       </div>
 
       <!-- countdown -->
-      <h1 class="text-9xl font-bold">{countdownDisplay}</h1>
+      <h1 class="text-7xl md:text-9xl font-bold">{countdownDisplay}</h1>
 
       <!-- controls -->
       <div class="flex items-center justify-center gap-7">
-        <button type="button"
-          ><img
-            src="/free-tools/promodoro/restart-icon.svg"
-            alt="Restart Icon"
-            class="w-7"
-          /></button
-        >
+        <!-- reset -->
+        <button type="button" on:click={resetCountdown}>
+          {#if timerState !== 'pomodoro'}
+            <img
+              src="/free-tools/promodoro/settings-icon.svg"
+              alt="Restart Icon"
+              class="w-7 hover:scale-110 transition-all duration-300"
+            />
+          {:else}
+            <img
+              src="/free-tools/promodoro/restart-icon.svg"
+              alt="Restart Icon"
+              class="w-7 hover:scale-110 transition-all duration-300"
+            />
+          {/if}
+        </button>
+
+        <!-- start (i intentionally disabled this button once the user clicks start so they can use the pause button to actually pause the countdown) -->
         <button
           type="button"
-          class="bg-white text-[#0542CC] text-base font-bold uppercase py-3 px-14 rounded-md"
-          >Start</button
+          on:click={startCountdown}
+          disabled={!isPaused}
+          class="bg-white text-[#0542CC] border text-base font-bold uppercase py-3 px-14 rounded-md hover:bg-transparent hover:text-white hover:border-white hover:border transition-all duration-300"
+          >{isPaused ? 'Start' : 'Pause'}</button
         >
-        <button type="button"
-          ><img
-            src="/free-tools/promodoro/timer-play-icon.svg"
-            alt="Play Icon"
-            class="w-7"
-          /></button
-        >
+
+        <!-- pause -->
+        <button type="button" on:click={pauseCountdown}>
+          {#if isPaused}
+            <img
+              src="/free-tools/promodoro/timer-play-icon.svg"
+              alt="Play Icon"
+              class="w-7 hover:scale-110 transition-all duration-300"
+            />
+          {:else}
+            <img
+              src="/free-tools/promodoro/pause-icon.svg"
+              alt="Pause Icon"
+              class="w-7 hover:scale-110 transition-all duration-300"
+            />
+          {/if}
+        </button>
       </div>
     </div>
 
     <!-- right side -->
-    <div class="w-[36%] relative">
-      <h1 class="bg-[#040F2D] uppercase text-xl font-bold py-3">to do list</h1>
+    <div class="w-full md:w-[36%] relative">
+      <h1
+        class="bg-[#040F2D] uppercase text-xl font-bold py-4"
+        style="clip-path: polygon(0 0, 100% 1%, 100% 65%, 0% 100%);"
+      >
+        to do list
+      </h1>
 
-      <div class="border overflow-hidden">
-        <div class="overflow-y-auto max-h-[60vh]">
+      <div class="overflow-hidden">
+        <!-- todos -->
+        <div class="overflow-y-auto mt-3 max-h-[40vh] md:max-h-[60vh]">
           {#each todoList as todo, i}
-            <div class="border text-black p-5">
+            <div
+              transition:fly={{ y: 300, delay: 0, easing: sineInOut }}
+              class="border text-black p-5"
+            >
               {#if todo.isEditing}
                 <p class="text-xs text-left text-[#656565] font-semibold">Promodoro name</p>
                 <input
@@ -196,7 +272,7 @@
                     <p class="text-sm font-medium">{todo.content}</p>
 
                     <!-- pen and menu icon -->
-                    <div class="flex justify-between w-[15%]">
+                    <div class="relative flex justify-between w-[15%]">
                       <button type="button" on:click={() => setEditing(i, true)}
                         ><img
                           src="/free-tools/promodoro/pen-icon.svg"
@@ -204,13 +280,32 @@
                           class="w-5"
                         /></button
                       >
-                      <button type="button"
-                        ><img
+
+                      <button type="button" on:click={() => (todo.isVisible = !todo.isVisible)}>
+                        <img
                           src="/free-tools/promodoro/menu-icon.svg"
                           alt="Menu icon"
                           class="w-5"
                         /></button
                       >
+
+                      {#if todo.isVisible}
+                        <ul
+                          class="z-40 absolute top-6 -right-3 text-xs w-[8rem] bg-white border shadow-md rounded-[5px]"
+                        >
+                          <button
+                            type="button"
+                            on:click={() => markTodoAsDone(i)}
+                            class="w-full font-medium text-left py-3 px-5">Mark as done</button
+                          >
+                          <button
+                            type="button"
+                            on:click={() => deleteTodo(i)}
+                            class="w-full font-medium text-left py-3 px-5 bg-red-600 text-white rounded-b-[5px]"
+                            >Delete</button
+                          >
+                        </ul>
+                      {/if}
                     </div>
                   </div>
 
@@ -223,17 +318,24 @@
 
                     <button
                       type="button"
-                      on:click={() => pauseAndPlay(i, todo.isPaused)}
-                      class="{todo.isPaused
-                        ? 'bg-[#0D4CFF] text-white'
-                        : ' text-[#0D4CFF]'} flex items-center border-2 border-[#0D4CFF] justify-center gap-2 py-1.5 px-4 rounded-[4px] text-xs font-medium uppercase"
+                      on:click={isPaused ? startCountdown : pauseCountdown}
+                      class="{todo.isDone
+                        ? 'bg-[#00D06C] border-none text-white'
+                        : isPaused
+                          ? 'bg-white text-[#0D4CFF] border-[#0D4CFF]'
+                          : 'bg-[#0D4CFF] text-white border-none'} 
+                          
+                          flex items-center border-2 justify-center gap-2 py-1.5 px-4 rounded-[4px] text-xs font-bold uppercase"
                     >
-                      {#if todo.isPaused}
-                        <img src="/free-tools/promodoro/pause-icon.svg" alt="Pause icon" />
-                        pause task
-                      {:else}
+                      {#if todo.isDone}
+                        <img src="/free-tools/promodoro/done-icon.svg" alt="Done icon" />
+                        done
+                      {:else if isPaused}
                         <img src="/free-tools/promodoro/list-play-icon.svg" alt="Play icon" />
                         play task
+                      {:else}
+                        <img src="/free-tools/promodoro/pause-icon.svg" alt="Pause icon" />
+                        pause task
                       {/if}
                     </button>
                   </div>
@@ -247,7 +349,7 @@
         <button
           type="button"
           on:click={addTodo}
-          class="bg-[#1D4ED8] rounded-md text-center mt-10 py-3 w-full flex justify-center items-center gap-3"
+          class="bg-[#1D4ED8] rounded-md text-center font-medium mt-10 py-3 w-full flex justify-center items-center gap-3"
           >Add new item
           <img src="/free-tools/promodoro/add-icon.svg" alt="Add icon" class="w-3" />
         </button>
@@ -255,3 +357,11 @@
     </div>
   </div>
 </section>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
+  .body {
+    font-family: 'Inter', sans-serif;
+  }
+</style>
