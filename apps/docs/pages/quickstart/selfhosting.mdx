@@ -2,6 +2,234 @@ import { Callout } from "nextra/components";
 
 # Self hosting
 
-<Callout emoji='🚨'>
-	This page is a work in progress. Help us expand it by contributing!
-</Callout>
+Here is a step by step guide to deploy Classroom.IO dashboard. This tutorial focuses on deployment on Vercel, however the same process can be used to deploy on other platforms.  We are working to deploy Classroom.IO on Cloudflare. If you have successfully deployed on Cloudflare please get in touch.
+
+## Introduction
+
+Deploying SvelteKit applications to production is a streamlined process that ensures your web applications are optimized, secure, and ready to serve your users at scale. Leveraging the capabilities of Vite and SvelteKit, developers can efficiently prepare their applications for various hosting environments, including serverless platforms like Vercel and traditional server setups. This guide will walk you through deploying the Classroom.IO dashboard, focusing on Vercel, but the principles can be applied to other platforms as well.
+
+The deployment process begins with Vite creating an optimized production build of your server code and client-side JavaScript. This optimization is crucial for performance and security, employing techniques like tree shaking, minification, and efficient bundling. Additionally, SvelteKit may prerender your application's routes to improve SEO and loading times, generating static HTML files for each route.
+
+## Deploy Classroom.IO Dashboard
+
+### Step 1: Setup Supabase Cloud
+
+Ensure Supabase is running on your server or in the cloud by following this tutorial  [Classroom.IO Supabase Cloud Setup](https://www.classroomio.com/docs/contributor-guides/supabase-cloud).
+
+### Step 2. Collect Your Environment Variables
+
+If you have already setup your project locally you can find your environment variables in your `.env` file. Simply copy and paste the text from the file below.
+
+If you haven't setup your project already this guide will walk you through how to find the correct values for each service.
+
+#### Supabase - Required
+
+1. **PUBLIC_SUPABASE_PROJECT_REF**: This is a unique identifier for your Supabase project.
+   - Find it in your project's URL on Supabase. For example, in `https://myproject.supabase.co`, `myproject` is your project ref.
+
+2. **PUBLIC_SUPABASE_URL**: The base URL for your Supabase project.
+   - Located in the Supabase project dashboard under `Settings` > `API`.
+
+3. **PUBLIC_SUPABASE_ANON_KEY**: A public API key for accessing your Supabase project.
+   - Found under `Settings` > `API` in the Supabase dashboard, listed as the "anon" key.
+
+4. **PRIVATE_SUPABASE_SERVICE_ROLE**: A private key with elevated permissions, used for server-side operations.
+   - Also under `Settings` > `API` in the Supabase dashboard, listed as the "service_role" key.
+
+### Unsplash
+
+1. **Sign Up/Login**: Go to the [Unsplash Developers](https://unsplash.com/developers) page and sign in or create an account.
+2. Confirm your email
+3. **Create New Application**: Navigate to "Your Apps", then click "New Application". Agree to the terms and fill in the necessary details about your application.
+4. **Get API Key**: Once your application is created, you'll find the "Access Key" and "Secret Key" in the application details. Use the "Access Key" as your `UNSPLASH_API_KEY`.
+
+### TinyMCE
+
+1. **Sign Up/Login**: Visit the [TinyMCE](https://www.tiny.cloud/) website and sign up or log in.
+2. **Get API Key**: Upon signing up, you'll be prompted to create a new site to get an API key. Follow the steps, and you'll be provided with an API key. This is your `PUBLIC_TINYMCE_API_KEY`.
+
+### OpenAI
+
+1. **Sign Up/Login**: Visit [OpenAI](https://openai.com/) and sign up for an account or log in.
+2. **API Access**: Go to the API section and select "View API keys". You may need to apply for access if you haven't already.
+3. **Get API Key**: Once you have access, create a new API key. This will serve as your `OPENAI_API_KEY`.
+
+### Sentry
+
+To integrate Sentry with your project for error tracking and monitoring, you'll need to set up a few environment variables. Here's how to obtain each one:
+
+#### VITE_SENTRY_AUTH_TOKEN
+
+1. **Log In to Sentry**: Visit [Sentry](https://sentry.io) and log in to your account.
+2. **Access Auth Tokens**: Navigate to your organization's settings by clicking on your avatar in the bottom left corner, then selecting your organization. Alternatively, you can directly go to `https://sentry.io/settings/<your-organization-slug>/developer-settings/`.
+3. **Developer Settings**: In the sidebar, click on `Developer Settings`.
+4. **Auth Tokens**: Click on `Auth Tokens`. Here, you can see existing tokens or create a new one by clicking "Create New Token".
+5. **Create/Select Token**: If creating a new one, select the appropriate scopes for your token. Scopes determine what actions the token can perform. Once done, click "Create Token".
+6. **Copy Token**: Copy the generated token. This is your `VITE_SENTRY_AUTH_TOKEN`.
+
+#### VITE_SENTRY_ORG_NAME
+
+1. **Organization Settings**: From the Sentry dashboard, click on your organization name in the top left corner, then select `Settings` from the dropdown.
+2. **General Settings**: In the sidebar, click `General Settings`.
+3. **Organization Slug**: Here, you'll find the "Slug" for your organization. This is a unique identifier used in URLs and API calls.
+4. **Copy Slug**: Copy the organization slug. This is your `VITE_SENTRY_ORG_NAME`.
+
+#### VITE_SENTRY_PROJECT_NAME
+
+1. **Projects**: From the Sentry dashboard, access the list of projects by clicking on `Projects` in the sidebar or navigating directly through the main dashboard.
+2. **Select Project**: Click on the project you're integrating with.
+3. **Project Name**: Once you're in the project's settings, the name at the top or in the URL is your project name. Note that for environment variables, you might need the project slug, which is typically the project name in lowercase, separated by dashes if it consists of multiple words.
+4. **Copy Project Name/Slug**: This is your `VITE_SENTRY_PROJECT_NAME`.
+
+### Lemon Squeezy
+# How to Obtain Lemon Squeezy Environment Variables
+
+Integrating Lemon Squeezy into your project requires setting up several environment variables to securely connect and interact with their API. Here’s a step-by-step guide to obtaining the necessary `.env` variables for Lemon Squeezy: `LEMON_SQUEEZY_API_KEY`, `LEMON_SQUEEZY_STORE_ID`, and `LEMON_SQUEEZY_WEBHOOK_SECRET`.
+
+#### Sign Up or Log In to Lemon Squeezy
+
+1. **Access Lemon Squeezy**: Go to the [Lemon Squeezy website](https://lemonsqueezy.com/) and either sign up for a new account or log in if you already have one.
+
+#### Create or Select Your Store
+
+1. **Dashboard**: Once logged in, you'll be taken to your dashboard. If you haven't created a store yet, follow the prompts to set one up.
+2. **Select Store**: If you have multiple stores, navigate to the store you wish to integrate with your project.
+
+#### Obtain Your Store ID
+
+1. **Store Settings**: In your store dashboard, navigate to the store settings https://app.lemonsqueezy.com/settings/stores .
+2. **Find Store ID**: You will see a list of your stores, your store ID begins with # and should look something like this #93834.
+3. **Copy Store ID**: This value is your `LEMON_SQUEEZY_STORE_ID`.
+
+#### Generate an API Key
+
+1. **API Settings**: Within the same settings area, click on API, it's a place where you can manage API keys.
+2. **Generate API Key**: If you don't already have an API key generated, look for an option to create or generate a new one.
+3. **Copy API Key**: Once generated, copy the API key. This is your `LEMON_SQUEEZY_API_KEY`.
+
+#### Setup Webhook
+
+For your application to get real-time updates or notifications from Lemon Squeezy, setting up a webhook might is necessary.
+
+1. **Webhook Settings**: In the dashboard, find the section dedicated to webhooks. You can access it directly by clicking here https://app.lemonsqueezy.com/settings/webhooks.
+2. **Create Webhook**: Click add new webhook You will need to provide a URL from your application that Lemon Squeezy can send notifications to. <font color="#c00000">Todo: What's the URL?</font>
+3. **Webhook Secret**: While you are creating a webhook, you will be asked to create a secret  (password). This is used to verify that incoming requests are from Lemon Squeezy. Create a secret.
+4. **Copy Webhook Secret**: This value is your `LEMON_SQUEEZY_WEBHOOK_SECRET`.
+5. Check all the boxes foe what updates should we send?
+6. Save your webhook
+
+### Public Server URL
+
+* **PUBLIC_SERVER_URL**: This is the URL of your backend server for URL for video uploads or PDF downloads. You will need to deploy the code in /apps/backend to a Node JS server and link to it's domain.
+
+#### Public Registry Key
+
+- **PUBLIC_IP_REGISTRY_KEY**: For fetching metadata for signup users. <font color="#c00000">Todo: What's this?</font>
+
+#### Subdomains
+
+- **PRIVATE_APP_SUBDOMAINS**: <font color="#c00000">Todo: How to setup subdomains?</font>
+
+
+### Step 3: Adapt Your Project for Deployment
+
+SvelteKit adapters are designed to make deploying your SvelteKit applications as seamless and flexible as possible. These adapters allow you to take the application you've developed and prepare it for deployment on a variety of platforms without having to worry about the specifics of each deployment environment. Here's an overview of how SvelteKit adapters work, the types available, and how to use them.
+
+#### What are SvelteKit Adapters?
+
+SvelteKit, operates on the principle of being universally adaptable. This means it aims to support deployment across different environments, from static sites to serverless functions and full-blown node servers. Adapters are plugins that take the output of your SvelteKit application and optimize it for different hosting providers or environments.
+
+#### How Adapters Work
+
+When you build a SvelteKit application (`npm run build`), SvelteKit generates an optimized version of your app. This optimized version is a universal, intermediate representation that isn't tied to any specific deployment target. Adapters then take this intermediate representation and perform additional steps required to run your app in different environments. This could include generating static files for a static site host, creating serverless functions, or setting up a Node.js server.
+
+#### Types of Adapters
+
+SvelteKit offers a range of official adapters for popular hosting platforms, as well as community-contributed adapters for other environments. Some of the most commonly used adapters include:
+
+- **Adapter-Static**: For generating static websites that can be hosted on any static site hosting service (this does not work for Classroom.IO)
+- **Adapter-Node**: For creating a Node.js server that serves your SvelteKit application.
+- **Adapter-Netlify**: Optimized for deploying to Netlify, automatically setting up serverless functions for dynamic rendering.
+- **Adapter-Vercel**: Tailored for deployment on Vercel, handling both static and server-rendered pages.
+- **Adapter-Cloudflare**: For deploying directly to Cloudflare Workers, utilizing Cloudflare's edge network for performance.
+
+#### Choosing an Adapter
+
+The choice of adapter depends on your deployment target and the requirements of your application. For serverless environments, you would choose an adapter like `adapter-netlify` or `adapter-vercel`. If you need more control over the server environment, `adapter-node` could be the way to go.
+
+#### Using an Adapter
+
+To use an adapter, you first need to install it as a development dependency in your SvelteKit project. For example, to use `adapter-vercel`, you would run:
+
+```bash
+npm install -D @sveltejs/adapter-vercel
+```
+
+Then, you configure your `svelte.config.js` to use the adapter:
+
+```javascript
+import adapter from '@sveltejs/adapter-vercel';
+export default {
+  kit: {
+    adapter: adapter(),
+    // other configurations...
+  }
+};
+```
+
+Repeat this process with the appropriate adapter for your target deployment environment.
+
+#### Adapter Auto
+
+The `adapter-auto` is a significant advancement in the SvelteKit ecosystem, streamlining the deployment process across various environments. This adapter intelligently detects the hosting environment you are deploying to and automatically selects and uses the appropriate adapter for that environment. Here's a closer look at how `adapter-auto` works and its benefits.
+
+When you build your SvelteKit application for production, `adapter-auto` analyzes your deployment target based on environment variables or deployment configurations. It then dynamically loads the corresponding adapter for that environment from the following supported adapters:
+
+- **Cloudflare Pages**: Uses `@sveltejs/adapter-cloudflare`.
+- **Netlify**: Utilizes `@sveltejs/adapter-netlify`.
+- **Vercel**: Employs `@sveltejs/adapter-vercel`.
+- **Azure Static Web Apps**: Leverages `svelte-adapter-azure-swa`.
+- **AWS via SST (Serverless Stack Toolkit)**: Applies `svelte-kit-sst`.
+- **Google Cloud Run**: Engages `@sveltejs/adapter-node`.
+
+This automatic detection and adaptation significantly simplify the deployment process, allowing developers to focus on building their applications without worrying about the specifics of deployment adapters.
+
+Classroom.IO is setup to use `adapter-auto` by default. If you want to deploy to a platform that is not supported such as a Node JS server you will need to install it manually. You can find a list of adapters here https://www.sveltesociety.dev/packages?category=sveltekit-adapters
+
+### Step 4: Deploy to Vercel
+
+Let's deploy Classroom.IO dashboard on Vercel. Follow a similar process to deploy elsewhere.
+
+1. **Initialize a Git repository** if not already done:
+
+   ```bash
+   git init
+   git add .
+   git commit -m "Initial commit"
+   ```
+
+2. **Create a new repository on GitHub** and push your code:
+
+   ```bash
+   git remote add origin https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME.git
+   git branch -M main
+   git push -u origin main
+   ```
+
+3. **Deploy to Vercel**:
+   - Sign in to [Vercel](https://vercel.com/).
+   - Click "New Project", select your repository, and "Import".
+   - Vercel detects it's a SvelteKit project and deploys it using `adapter-auto`.
+
+4. **Configure Project**
+* Give your project a name
+* Make sure the Framework Preset is Sveltekit
+* Edit the root directory to be **apps/dashboard**
+* Add your Environment Variables
+* Deploy
+
+
+### Step 5: Verify Deployment
+
+After Vercel completes the deployment, visit the provided URL to see your application live. Ensure all functionalities, are working correctly.
+
