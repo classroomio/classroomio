@@ -24,6 +24,8 @@
   let timerInterval: any = null;
   let isVisible: boolean = false;
 
+  const timerSequence = ['pomodoro', 'long-break', 'short-break'];
+
   function setEditing(i: number, isEditing: boolean) {
     todoList[i].isEditing = isEditing;
   }
@@ -94,6 +96,12 @@
     updateCountdownDisplay();
   }
 
+  function nextTimerState() {
+    const currentIndex = timerSequence.indexOf(timerState);
+    const nextIndex = (currentIndex + 1) % timerSequence.length;
+    setTimerState(timerSequence[nextIndex]);
+  }
+
   function updateCountdownDisplay() {
     const minutes = Math.floor(countdownTime / 60);
     const seconds = countdownTime % 60;
@@ -111,9 +119,9 @@
 </script>
 
 <svelte:head>
-  <title>Promodoro Timer | ClassroomIO</title>
+  <title>Pomodoro Timer | ClassroomIO</title>
   <meta property="og:image" itemprop="image" content="" />
-  <meta property="og:title" content="Promodoro Timer | ClassroomIO" />
+  <meta property="og:title" content="Pomodoro Timer | ClassroomIO" />
   <meta
     property="og:description"
     content="Make your workday more engaging and effective with the Pomodoro timer, break work into 25-minute focused intervals called 'pomodoros', followed by 5-minute breaks"
@@ -121,7 +129,7 @@
 
   <meta property="og:image:secure_url" itemprop="image" content="" />
 
-  <meta name="twitter:title" content="Promodoro Timer | ClassroomIO" />
+  <meta name="twitter:title" content="Pomodoro Timer | ClassroomIO" />
   <meta
     name="twitter:description"
     content="Make your workday more engaging and effective with the Pomodoro timer, break work into 25-minute focused intervals called 'pomodoros', followed by 5-minute breaks"
@@ -132,7 +140,7 @@
 <section class="mt-[30%] px-1 md:px-0 md:mt-[5%] w-full md:w-full">
   <ToolsHeader>
     <img
-      src="/free-tools/promodoro.svg"
+      src="/free-tools/pomodoro.svg"
       class="w-[15%] md:w-[5%] mx-auto border rounded-full"
       alt=""
     />
@@ -159,7 +167,7 @@
           class:bg-[#3ADFECED]={timerState === 'pomodoro'}
           class:bg-[#0233BD]={timerState !== 'pomodoro'}
           class="transition-all duration-500 italic py-1.5 md:py-2 w-[25%] text-xs md:text-sm md:font-medium rounded-md hover:bg-[#3ADFECED]"
-          >Promodoro</button
+          >Pomodoro</button
         >
         <button
           type="button"
@@ -186,45 +194,28 @@
       <div class="flex items-center justify-center gap-7">
         <!-- reset -->
         <button type="button" on:click={resetCountdown}>
-          {#if timerState !== 'pomodoro'}
-            <img
-              src="/free-tools/promodoro/settings-icon.svg"
-              alt="Restart Icon"
-              class="w-7 hover:scale-110 transition-all duration-300"
-            />
-          {:else}
-            <img
-              src="/free-tools/promodoro/restart-icon.svg"
-              alt="Restart Icon"
-              class="w-7 hover:scale-110 transition-all duration-300"
-            />
-          {/if}
+          <img
+            src="/free-tools/pomodoro/restart-icon.svg"
+            alt="Restart Icon"
+            class="w-7 hover:scale-110 transition-all duration-300"
+          />
         </button>
 
         <!-- start (i intentionally disabled this button once the user clicks start so they can use the pause button to actually pause the countdown) -->
         <button
           type="button"
-          on:click={startCountdown}
-          disabled={!isPaused}
+          on:click={isPaused ? startCountdown : pauseCountdown}
           class="bg-white text-[#0542CC] border text-base font-bold uppercase py-3 px-14 rounded-md hover:bg-transparent hover:text-white hover:border-white hover:border transition-all duration-300"
           >{isPaused ? 'Start' : 'Pause'}</button
         >
 
-        <!-- pause -->
-        <button type="button" on:click={pauseCountdown}>
-          {#if isPaused}
-            <img
-              src="/free-tools/promodoro/timer-play-icon.svg"
-              alt="Play Icon"
-              class="w-7 hover:scale-110 transition-all duration-300"
-            />
-          {:else}
-            <img
-              src="/free-tools/promodoro/pause-icon.svg"
-              alt="Pause Icon"
-              class="w-7 hover:scale-110 transition-all duration-300"
-            />
-          {/if}
+        <!-- next -->
+        <button type="button" on:click={nextTimerState}>
+          <img
+            src="/free-tools/pomodoro/timer-play-icon.svg"
+            alt="Play Icon"
+            class="w-7 hover:scale-110 transition-all duration-300"
+          />
         </button>
       </div>
     </div>
@@ -247,7 +238,7 @@
               class="border text-black p-5"
             >
               {#if todo.isEditing}
-                <p class="text-xs text-left text-[#656565] font-semibold">Promodoro name</p>
+                <p class="text-xs text-left text-[#656565] font-semibold">Pomodoro name</p>
                 <input
                   type="text"
                   bind:value={todo.content}
@@ -275,7 +266,7 @@
                     <div class="relative flex justify-between w-[15%]">
                       <button type="button" on:click={() => setEditing(i, true)}
                         ><img
-                          src="/free-tools/promodoro/pen-icon.svg"
+                          src="/free-tools/pomodoro/pen-icon.svg"
                           alt="Pen icon"
                           class="w-5"
                         /></button
@@ -283,7 +274,7 @@
 
                       <button type="button" on:click={() => (todo.isVisible = !todo.isVisible)}>
                         <img
-                          src="/free-tools/promodoro/menu-icon.svg"
+                          src="/free-tools/pomodoro/menu-icon.svg"
                           alt="Menu icon"
                           class="w-5"
                         /></button
@@ -328,13 +319,13 @@
                           flex items-center border-2 justify-center gap-2 py-1.5 px-4 rounded-[4px] text-xs font-bold uppercase"
                     >
                       {#if todo.isDone}
-                        <img src="/free-tools/promodoro/done-icon.svg" alt="Done icon" />
+                        <img src="/free-tools/pomodoro/done-icon.svg" alt="Done icon" />
                         done
                       {:else if isPaused}
-                        <img src="/free-tools/promodoro/list-play-icon.svg" alt="Play icon" />
+                        <img src="/free-tools/pomodoro/list-play-icon.svg" alt="Play icon" />
                         play task
                       {:else}
-                        <img src="/free-tools/promodoro/pause-icon.svg" alt="Pause icon" />
+                        <img src="/free-tools/pomodoro/pause-icon.svg" alt="Pause icon" />
                         pause task
                       {/if}
                     </button>
@@ -351,7 +342,7 @@
           on:click={addTodo}
           class="bg-[#1D4ED8] rounded-md text-center font-medium mt-10 py-3 w-full flex justify-center items-center gap-3"
           >Add new item
-          <img src="/free-tools/promodoro/add-icon.svg" alt="Add icon" class="w-3" />
+          <img src="/free-tools/pomodoro/add-icon.svg" alt="Add icon" class="w-3" />
         </button>
       </div>
     </div>

@@ -48,11 +48,11 @@
       show: false
     },
     {
-      src: '/free-tools/promodoro.svg',
-      title: 'Promodoro Timer',
+      src: '/free-tools/pomodoro.svg',
+      title: 'Pomodoro Timer',
       subText:
         'Make your workday more engaging and effective with the Pomodoro timer, break work into 25-minute focused intervals called "pomodoros".',
-      slug: 'promodoro',
+      slug: 'pomodoro',
       show: true
     }
   ].filter((item) => item.show);
@@ -97,8 +97,8 @@
         />
         <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[250px] z-50 bg-white"
-          src="/free-tools/promodoro.svg"
-          alt="Promodoro Timer logo"
+          src="/free-tools/pomodoro.svg"
+          alt="Pomodoro Timer logo"
         />
         <!-- <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[250px] z-50"
