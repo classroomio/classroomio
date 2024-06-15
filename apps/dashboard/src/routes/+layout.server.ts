@@ -60,8 +60,7 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
   const debugPlay = cookies.get('debugPlay');
   const debugMode = _orgSiteName && _orgSiteName !== 'false';
 
-  const matches = url.host.match(/([a-z 0-9 -]+).*classroomio[.]com/);
-  const subdomain = matches?.[1] ?? '';
+  const subdomain = getSubdomain(url) || '';
 
   const isDev = dev || isLocalHost;
 
@@ -71,7 +70,7 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
   }
 
   if (!blockedSubdomain.includes(subdomain)) {
-    const answer = Array.isArray(matches) ? !!subdomain && subdomain !== 'www' : false;
+    const answer = !!subdomain;
 
     response.isOrgSite = debugMode || answer;
     response.orgSiteName = debugMode ? _orgSiteName : subdomain;
@@ -111,9 +110,12 @@ function getInitialLocale(): string {
 }
 
 function getSubdomain(url: URL) {
-  const parts = url.host.split('.');
-  if (url.host.endsWith(PRIVATE_APP_HOST)) {
+  const host = url.host.replace('www.', '');
+  const parts = host.split('.');
+
+  if (host.endsWith(PRIVATE_APP_HOST)) {
     return parts.length >= 3 ? parts[0] : null;
   }
+
   return null;
 }
