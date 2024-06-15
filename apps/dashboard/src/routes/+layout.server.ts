@@ -5,7 +5,7 @@ import { getCurrentOrg } from '$lib/utils/services/org';
 import { getSupabase, supabase } from '$lib/utils/functions/supabase';
 import { loadTranslations } from '$lib/utils/functions/translations';
 import type { CurrentOrg } from '$lib/utils/types/org';
-import { PRIVATE_APP_SUBDOMAINS } from '$env/static/private';
+import { PRIVATE_APP_SUBDOMAINS, IS_SELFHOSTED, PRIVATE_APP_HOST } from '$env/static/private';
 
 if (!supabase) {
   getSupabase();
@@ -25,6 +25,27 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
     skipAuth: false,
     org: null
   };
+
+  // Selfhosted usecase would be here
+  if (IS_SELFHOSTED === 'true') {
+    const subdomain = getSubdomain(url);
+
+    // Student dashboard
+    if (subdomain) {
+      const org = (await getCurrentOrg(subdomain, true)) || null;
+
+      // Organization by subdomain not found
+      if (!org) {
+        return response;
+      }
+
+      response.org = org;
+      response.isOrgSite = true;
+      response.orgSiteName = subdomain;
+    }
+
+    return response;
+  }
 
   const isLocalHost = url.host.includes('localhost');
 
@@ -64,6 +85,7 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
   } else if (subdomain === 'play' || debugPlay === 'true') {
     response.skipAuth = true;
   } else if (!PRIVATE_APP_SUBDOMAINS.split(',').includes(subdomain) && !isDev) {
+    // This case is for anything in our blockedSubdomains
     throw redirect(307, 'https://app.classroomio.com');
   }
 
@@ -86,4 +108,12 @@ function getInitialLocale(): string {
   }
 
   return 'en';
+}
+
+function getSubdomain(url: URL) {
+  const parts = url.host.split('.');
+  if (url.host.endsWith(PRIVATE_APP_HOST)) {
+    return parts.length >= 3 ? parts[0] : null;
+  }
+  return null;
 }
