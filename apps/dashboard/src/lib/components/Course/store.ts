@@ -68,12 +68,15 @@ export const mockGroupMember = {
   }
 };
 
-export const group = writable<{
+type GroupStore = {
   id: number | null;
   tutors: GroupPerson[];
   students: GroupPerson[];
   people: GroupPerson[];
-}>({
+  members?: GroupPerson[];
+};
+
+export const group = writable<GroupStore>({
   id: null,
   tutors: [],
   students: [],
@@ -86,46 +89,36 @@ export async function setCourse(data: Course, setLesson = true) {
 
   if (data.group) {
     const groupData = Object.assign(data.group, {
+      id: null,
       tutors: [],
       students: [],
       people: []
-    });
+    }) as GroupStore;
 
-    // @ts-ignore
     if (Array.isArray(groupData.members)) {
-      // @ts-ignore
       for (const member of groupData.members) {
         if (member.role_id === ROLE.STUDENT) {
-          // @ts-ignore
           groupData.students.push(member);
         } else if (member.profile) {
-          // @ts-ignore
           groupData.tutors.push({
             ...member.profile,
             memberId: member.id
           });
-
-          // tutorsById[member.profile.id] = member.profile;
         }
       }
 
-      // @ts-ignore
       groupData.people = groupData.members;
     }
 
-    // @ts-ignore
     delete groupData.members;
-    // @ts-ignore
+
     group.set(groupData);
   }
 
   if (setLesson) {
-    // @ts-ignore
     const orderedLessons = (data.lessons || [])
-      // @ts-ignore
-      .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
-      // @ts-ignore
-      .sort((a, b) => a.order - b.order);
+      .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     // .map((lesson) => ({
     //   ...lesson,
     //   profile: lesson.profile && tutorsById[lesson.profile.id],
@@ -133,7 +126,6 @@ export async function setCourse(data: Course, setLesson = true) {
     lessons.set(orderedLessons);
   }
 
-  //@ts-ignore
   delete data.lessons;
 
   if (data.metadata && !Object.values(data.metadata)) {

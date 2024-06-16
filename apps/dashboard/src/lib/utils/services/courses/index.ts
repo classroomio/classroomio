@@ -28,7 +28,7 @@ const SLUG_QUERY = `
   is_certificate_downloadable,
   certificate_theme,
   lessons:lesson(
-    id, title, public, lesson_at, call_url, is_unlocked, order, created_at
+    id, title, order
   )
 `;
 

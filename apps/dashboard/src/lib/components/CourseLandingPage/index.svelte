@@ -90,7 +90,9 @@
   $: video = get(courseData, 'metadata.videoUrl');
   $: allowNewStudent = get(courseData, 'metadata.allowNewStudent');
   $: bannerImage = get(courseData, 'logo');
-  $: lessons = get(courseData, 'lessons', []);
+  $: lessons = get(courseData, 'lessons', [])
+    .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   $: instructor = get(courseData, 'metadata.instructor') || {};
   $: initPlyr(player, video);
   $: {
