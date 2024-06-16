@@ -1,6 +1,0 @@
-name = "cio"
-account_id = "97a2feecc74084197a726ed737c4c508"
-
-build.command = "npm run build"
-
-compatibility_flags = [ "nodejs_compat" ]
