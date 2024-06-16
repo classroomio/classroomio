@@ -13,6 +13,54 @@ import type {
 import { STATUS } from '$lib/utils/constants/course';
 import type { PostgrestSingleResponse } from '@supabase/supabase-js';
 
+const SLUG_QUERY = `
+  id,
+  title,
+  type,
+  description,
+  overview,
+  logo,
+  is_published,
+  slug,
+  cost,
+  currency,
+  metadata,
+  is_certificate_downloadable,
+  certificate_theme,
+  lessons:lesson(
+    id, title, public, lesson_at, call_url, is_unlocked, order, created_at
+  )
+`;
+
+const ID_QUERY = `
+  id,
+  title,
+  type,
+  description,
+  overview,
+  logo,
+  is_published,
+  group(*,
+    members:groupmember(*,
+      profile(*)
+    )
+  ),
+  slug,
+  cost,
+  currency,
+  metadata,
+  is_certificate_downloadable,
+  certificate_theme,
+  lessons:lesson(
+    id, title,public, lesson_at, is_unlocked, order, created_at,
+    note, videos, slide_url, call_url, totalExercises:exercise(count), totalComments:lesson_comment(count),
+    profile:teacher_id(id, avatar_url, fullname),
+    lesson_completion(id, profile_id, is_complete)
+  ),
+  attendance:group_attendance(*),
+  polls:apps_poll(status)
+`;
+
 export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']) {
   const match: { slug?: string; id?: string; status?: string } = {};
 
@@ -26,36 +74,7 @@ export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']
 
   const response: PostgrestSingleResponse<Course | null> = await supabase
     .from('course')
-    .select(
-      `
-      id,
-      title,
-      type,
-      description,
-      overview,
-      logo,
-      is_published,
-      group(*,
-        members:groupmember(*,
-          profile(*)
-        )
-      ),
-      slug,
-      cost,
-      currency,
-      metadata,
-      is_certificate_downloadable,
-      certificate_theme,
-      lessons:lesson(
-        id, title,public, lesson_at, call_url, is_unlocked, order, created_at,
-        note, videos, slide_url, call_url, totalExercises:exercise(count), totalComments:lesson_comment(count),
-        profile:teacher_id(id, avatar_url, fullname),
-        lesson_completion(id, profile_id, is_complete)
-      ),
-      attendance:group_attendance(*),
-      polls:apps_poll(status)
-    `
-    )
+    .select(slug ? SLUG_QUERY : ID_QUERY)
     .match(match)
     .single();
 

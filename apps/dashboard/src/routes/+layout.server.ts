@@ -53,7 +53,9 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
 
   if (isLocalHost && tempSiteName) {
     console.log('setting sitename temp');
-    cookies.set('_orgSiteName', tempSiteName);
+    cookies.set('_orgSiteName', tempSiteName, {
+      path: '/'
+    });
   }
 
   const _orgSiteName = cookies.get('_orgSiteName');
