@@ -15,7 +15,8 @@ const nextConfig = {
   images: {
     unoptimized: true
   },
-  ...withNextra()
+  ...withNextra(),
+  output: 'export'
 };
 
 const millionConfig = {
