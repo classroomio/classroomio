@@ -24,7 +24,7 @@ The help docs of classroomio in Next.js live on [https://classroomio.com/docs](h
    pnpm i
    ```
 
-4. Run (in development mode)
+4. Run (in development mode).
 
    ```bash
    pnpm dev --filter=docs
