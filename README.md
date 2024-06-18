@@ -33,10 +33,9 @@ At ClassroomIO, our mission is to provide students with the best possible learni
 ### Roadmap Features
 
 1. **Forms:** Instead of using Google Forms to collect vital information from your students, you will be able to create forms directly within the dashboard.
-2. **Course Announcement:** You can send public announcements from the course dashboard to all your students.
-3. **Course Templates:** You can clone a full course or share templates with other people.
-4. **Analytics:** You can track data about your students across multiple courses.
-5. **Run Courses on Messengers:** Students can just join a channel on slack/discord/telegram and a bot automatically sends daily lesson content to your students without you doing anything.
+2. **Course Templates:** You can clone a full course or share templates with other people.
+3. **Analytics:** You can track data about your students across multiple courses.
+4. **Run Courses on Messengers:** Students can just join a channel on slack/discord/telegram and a bot automatically sends daily lesson content to your students without you doing anything.
 
 Please reach out to me on [twitter](https://x.com/rotimi_best) if you have any feature request.
 
