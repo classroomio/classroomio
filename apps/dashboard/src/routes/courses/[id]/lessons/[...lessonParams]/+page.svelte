@@ -321,8 +321,8 @@
               <Dropdown items={LANGUAGES} bind:selectedId={$lesson.locale} class="h-full" />
             </div>
             <!-- Version control -->
-            <div>
-              {#if mode === MODES.edit}
+            {#if mode === MODES.edit && window.innerWidth >= 1024}
+              <div>
                 <PrimaryButton
                   className="mb-2 lg:mb-0 mr-2 h-full"
                   variant={VARIANTS.OUTLINED}
@@ -330,8 +330,8 @@
                 >
                   <ResultOld size={20}></ResultOld>
                 </PrimaryButton>
-              {/if}
-            </div>
+              </div>
+            {/if}
 
             <div class="tab">
               <IconButton onClick={toggleApps} buttonClassName="">
@@ -463,7 +463,7 @@
   </div>
 
   <!-- Version Control Preview -->
-  {#if isVersionDrawerOpen}
+  {#if isVersionDrawerOpen && window.innerWidth >= 1024}
     <LanguageLessonVersionHistory
       open={isVersionDrawerOpen}
       on:drawerClose={() => refetchDataAfterVersionRestore()}
