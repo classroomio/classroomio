@@ -10,6 +10,7 @@
   import { diffLines } from 'diff';
   import { lesson, lessons } from '$lib/components/Course/components/Lesson/store/lessons';
   import { supabase } from '$lib/utils/functions/supabase';
+  import { t } from '$lib/utils/functions/translations';
 
   import { LOCALE } from '$lib/utils/types';
 
@@ -148,7 +149,7 @@
         {#if selectedVersionIndex != 0}
           <div class="">
             <PrimaryButton isLoading={contentRestoreLoading} onClick={restoreSelectedVersion}
-              >Restore this Version</PrimaryButton
+              >{$t('course.navItem.lessons.version_history.restore_version')}</PrimaryButton
             >
           </div>
         {/if}
@@ -179,7 +180,7 @@
     class="w-80 fixed right-0 top-0 min-h-screen h-full z-10 overflow-x-auto overflow-y-scroll bg-gray-100 dark:bg-neutral-800 py-10 space-y-6"
   >
     <p class="font-medium text-xl text-left flex items-start justify-start px-10">
-      Version History
+      {$t('course.navItem.lessons.version_history.title')}
     </p>
 
     <div>
@@ -197,14 +198,16 @@
               >{formatTimestamp(version.timestamp)}</span
             >
             {#if index == 0}
-              <span class="block italic text-xs text-start">Current Version</span>
+              <span class="block italic text-xs text-start"
+                >{$t('course.navItem.lessons.version_history.current_version')}</span
+              >
             {/if}
           </div>
         </button>
       {/each}
       <div class="flex items-center justify-start px-10 mt-2 h-10">
         <PrimaryButton className="h-full" isLoading={isMoreHistoryLoading} onClick={loadMoreHistory}
-          >Fetch more versions</PrimaryButton
+          >{$t('course.navItem.lessons.version_history.fetch_more_versions')}</PrimaryButton
         >
       </div>
     </div>

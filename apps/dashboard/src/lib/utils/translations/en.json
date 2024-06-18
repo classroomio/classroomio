@@ -742,6 +742,12 @@
           "option_label": "Option Label",
           "cancel": "Cancel",
           "poll_question": "Poll Question"
+        },
+        "version_history": {
+          "title": "Version history",
+          "fetch_more_versions": "Fetch more versions",
+          "current_version": "Current version",
+          "restore_version": "Restore this version"
         }
       },
 
