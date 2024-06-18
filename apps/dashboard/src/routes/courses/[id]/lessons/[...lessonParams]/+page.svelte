@@ -274,7 +274,7 @@
   const refetchDataAfterVersionRestore = () => {
     isVersionDrawerOpen = false;
     if (data.courseId && browser) {
-      mode = MODES.edit;
+      mode = MODES.view;
       fetchReqData(data.lessonId, data.isMaterialsTabActive);
     }
   };
