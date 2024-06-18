@@ -19,9 +19,11 @@
   import PageBody from '$lib/components/PageBody/index.svelte';
   import Materials from '$lib/components/Course/components/Lesson/Materials/index.svelte';
   import Exercises from '$lib/components/Course/components/Lesson/Exercises/index.svelte';
+  import LanguageLessonVersionHistory from '$lib/components/Course/components/Lesson/LanguageLessonVersionHistory.svelte';
   import MODES from '$lib/utils/constants/mode';
   import { course } from '$lib/components/Course/store';
   import Download from 'carbon-icons-svelte/lib/Download.svelte';
+  import ResultOld from 'carbon-icons-svelte/lib/ResultOld.svelte';
   import OverflowMenuVertical from 'carbon-icons-svelte/lib/OverflowMenuVertical.svelte';
   import { apps } from '$lib/components/Apps/store';
   import APPS_CONSTANTS from '$lib/components/Apps/constants';
@@ -50,6 +52,7 @@
   let isLoading = false;
   let isSaving = false;
   let isLessonComplete = false;
+  let isVersionDrawerOpen = false;
 
   function getLessonOrder(id: string) {
     const index = $lessons.findIndex((lesson) => lesson.id === id);
@@ -268,6 +271,14 @@
     goto(path);
   };
 
+  const refetchDataAfterVersionRestore = () => {
+    isVersionDrawerOpen = false;
+    if (data.courseId && browser) {
+      mode = MODES.edit;
+      fetchReqData(data.lessonId, data.isMaterialsTabActive);
+    }
+  };
+
   $: path = $page.url?.pathname?.replace(/\/exercises[\/ 0-9 a-z -]*/, '');
 
   $: if (data.courseId && browser) {
@@ -303,12 +314,25 @@
     ]}
   >
     <svelte:fragment slot="widget">
-      <div class="flex">
+      <div class="flex items-center">
         <RoleBasedSecurity allowedRoles={[1, 2]}>
           {#if data.isMaterialsTabActive}
             <div class="mr-5">
               <Dropdown items={LANGUAGES} bind:selectedId={$lesson.locale} class="h-full" />
             </div>
+            <!-- Version control -->
+            <div>
+              {#if mode === MODES.edit}
+                <PrimaryButton
+                  className="mb-2 lg:mb-0 mr-2 h-full"
+                  variant={VARIANTS.OUTLINED}
+                  onClick={() => (isVersionDrawerOpen = true)}
+                >
+                  <ResultOld size={20}></ResultOld>
+                </PrimaryButton>
+              {/if}
+            </div>
+
             <div class="tab">
               <IconButton onClick={toggleApps} buttonClassName="">
                 <OverflowMenuVertical size={24} />
@@ -437,6 +461,14 @@
       </button>
     </div>
   </div>
+
+  <!-- Version Control Preview -->
+  {#if isVersionDrawerOpen}
+    <LanguageLessonVersionHistory
+      open={isVersionDrawerOpen}
+      on:drawerClose={() => refetchDataAfterVersionRestore()}
+    ></LanguageLessonVersionHistory>
+  {/if}
 </CourseContainer>
 
 <style>
