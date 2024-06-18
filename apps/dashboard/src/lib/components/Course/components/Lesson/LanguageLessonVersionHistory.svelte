@@ -98,8 +98,13 @@
 
     diff.forEach((part) => {
       const span = document.createElement('span');
-      span.style.color = part.added ? 'green' : part.removed ? 'red' : 'black';
-      span.style.textDecoration = part.removed ? 'line-through' : '';
+      if (part.added) {
+        span.classList.add('text-green-500');
+      } else if (part.removed) {
+        span.classList.add('text-red-500', 'line-through');
+      } else {
+        span.classList.add('text-black', 'dark:text-white');
+      }
       span.innerHTML = part.value;
       fragment.appendChild(span);
     });
