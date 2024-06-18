@@ -66,14 +66,13 @@
   }
 
   async function fetchLessonHistory(lessonId: string, locale: string, endRange: number) {
-    lessonHistory = [];
     try {
       isMoreHistoryLoading = true;
       const { data, error } = await fetchLesssonLanguageHistory(lessonId, locale, endRange);
-      data.forEach((h) => {
-        lessonHistory.push(h);
-      });
-      lessonHistory = lessonHistory;
+      // Filter out duplicates based on timestamp
+      const existingTimestamps = new Set(lessonHistory.map((item) => item.timestamp));
+      const newEntries = data.filter((item) => !existingTimestamps.has(item.timestamp));
+      lessonHistory = [...lessonHistory, ...newEntries];
       updateContentVersion(lessonHistory[0], 0);
     } catch (error) {
       console.error(error);
@@ -135,7 +134,6 @@
   $: lessonTitle = $lessons.find((les) => les.id === $lesson.id)?.title || '';
   $: lessonId = $lesson.id;
   $: scrollLock(open);
-  // $: style = `--duration: ${duration}s;`;
   $: fetchLessonHistory(lessonId, $lesson.locale, versionsToFetch);
 </script>
 
@@ -177,13 +175,14 @@
     </div>
   </div>
   <div
-    class="w-80 fixed right-0 top-0 h-full overflow-x-hidden z-10 bg-gray-100 dark:bg-neutral-800 py-10 space-y-6"
+    id="scroll-container"
+    class="w-80 fixed right-0 top-0 min-h-screen h-full z-10 overflow-x-auto overflow-y-scroll bg-gray-100 dark:bg-neutral-800 py-10 space-y-6"
   >
     <p class="font-medium text-xl text-left flex items-start justify-start px-10">
       Version History
     </p>
 
-    <div class="">
+    <div>
       {#each lessonHistory as version, index}
         <button
           on:click={() => updateContentVersion(version, index)}
