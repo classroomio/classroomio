@@ -58,7 +58,7 @@
       minute: 'numeric',
       hour12: true
     };
-    const date = new Date(timestamp);
+    const date = new Date(timestamp + 'Z');
     return new Intl.DateTimeFormat('en-US', options).format(date);
   }
 
