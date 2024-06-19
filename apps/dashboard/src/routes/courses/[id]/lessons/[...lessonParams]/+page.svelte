@@ -277,6 +277,7 @@
       mode = MODES.view;
       fetchReqData(data.lessonId, data.isMaterialsTabActive);
     }
+    snackbar.success('snackbar.lessons.success.version_restored');
   };
 
   $: path = $page.url?.pathname?.replace(/\/exercises[\/ 0-9 a-z -]*/, '');

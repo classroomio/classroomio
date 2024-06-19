@@ -1244,7 +1244,8 @@
     "lessons": {
       "success": {
         "complete_marked": "Marked as complete",
-        "complete_download": "Download Complete"
+        "complete_download": "Download Complete",
+        "version_restored": "Version restored sucessfully"
       },
       "error": {
         "try_later": "Something's not right - Please try later"
