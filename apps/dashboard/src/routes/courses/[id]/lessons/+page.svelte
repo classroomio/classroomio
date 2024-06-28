@@ -126,7 +126,7 @@
 
   $: shouldGoToNextLesson = query.get('next') === 'true';
   $: shouldGoToNextLesson && onNextQuery($lessons);
-  $: isSelfPaced = $course.type === COURSE_TYPE.SELF_PACED;
+  $: isLiveClass = $course.type === COURSE_TYPE.LIVE_CLASS;
 </script>
 
 {#if $handleAddLessonWidget}
@@ -232,7 +232,7 @@
               {/if}
 
               <!-- Lesson Educator -->
-              {#if !isSelfPaced}
+              {#if isLiveClass}
                 <div
                   class="mt-2 flex w-4/5 flex-col items-start justify-between lg:flex-row lg:items-center"
                 >
