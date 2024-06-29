@@ -744,7 +744,8 @@
           "delete": "Excluir",
           "lock": "Trancar",
           "unlock": "Desbloquear",
-          "reorder_button": "Reordenar"
+          "start_reorder": "Reordenar",
+          "end_reorder": "Finalizar novo pedido"
         },
         "disabled": "O recurso está desativado",
         "next": "Próximo",

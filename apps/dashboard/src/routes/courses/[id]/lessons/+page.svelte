@@ -141,7 +141,7 @@
 
 <CourseContainer bind:isFetching bind:courseId={data.courseId}>
   <PageNav title={$t('course.navItem.lessons.heading')}>
-    <div slot="widget" class="flex gap-2">
+    <div slot="widget" class="flex w-full justify-end gap-2">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
         <PrimaryButton
           label={$t('course.navItem.lessons.add_lesson.button_title')}
@@ -149,7 +149,9 @@
           isDisabled={!!lessonEditing}
         />
         <PrimaryButton
-          label={$t('course.navItem.lessons.add_lesson.reorder_button')}
+          label={$t(
+            `course.navItem.lessons.add_lesson.${reorder ? 'end_reorder' : 'start_reorder'}`
+          )}
           variant={VARIANTS.OUTLINED}
           onClick={() => (reorder = !reorder)}
           isDisabled={!!lessonEditing}
@@ -180,7 +182,7 @@
         use:dndzone={{
           items: $lessons,
           flipDurationMs,
-          dragDisabled: $globalStore.isStudent,
+          dragDisabled: $globalStore.isStudent || !reorder,
           dropTargetStyle: {
             border: '2px #1d4ed8 solid',
             'border-style': 'dashed'

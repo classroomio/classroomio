@@ -744,7 +744,8 @@
           "delete": "Xóa bỏ",
           "lock": "Khóa",
           "unlock": "Mở khóa",
-          "reorder_button": "Sắp xếp lại"
+          "start_reorder": "Sắp xếp lại",
+          "end_reorder": "Kết thúc sắp xếp lại"
         },
         "disabled": "Tính năng bị vô hiệu hóa",
         "next": "Kế tiếp",

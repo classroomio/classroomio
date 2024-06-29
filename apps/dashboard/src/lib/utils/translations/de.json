@@ -744,7 +744,8 @@
           "delete": "Löschen",
           "lock": "Sperren",
           "unlock": "Freischalten",
-          "reorder_button": "Neu anordnen"
+          "start_reorder": "Neu anordnen",
+          "end_reorder": "Nachbestellung beenden"
         },
         "disabled": "Funktion ist deaktiviert",
         "next": "Nächste",

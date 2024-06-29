@@ -499,7 +499,8 @@
         "share_your_knowledge": "Share your knowledge with the world by creating engaging lessons. Start by clicking on the Add button.",
         "add_lesson": {
           "button_title": "Add",
-          "reorder_button": "Reorder",
+          "start_reorder": "Reorder",
+          "end_reorder": "End Reorder",
           "modal_heading": "Add New Lesson",
           "lesson_title": "Lesson Title",
           "click_to": "Click to",

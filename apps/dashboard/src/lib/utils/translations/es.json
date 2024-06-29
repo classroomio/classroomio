@@ -744,7 +744,8 @@
           "delete": "Borrar",
           "lock": "Cerrar",
           "unlock": "desbloquear",
-          "reorder_button": "Reordenar"
+          "start_reorder": "Reordenar",
+          "end_reorder": "Finalizar reorden"
         },
         "disabled": "La característica está deshabilitada",
         "next": "Próximo",

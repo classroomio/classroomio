@@ -744,7 +744,8 @@
           "delete": "Supprimer",
           "lock": "Verrouillage",
           "unlock": "Ouvrir",
-          "reorder_button": "Réorganiser"
+          "start_reorder": "Réorganiser",
+          "end_reorder": "Terminer la réapprovisionnement"
         },
         "disabled": "La fonctionnalité est désactivée",
         "next": "Suivant",
