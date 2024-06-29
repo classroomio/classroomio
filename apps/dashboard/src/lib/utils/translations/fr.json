@@ -743,11 +743,16 @@
           "edit": "Modifier",
           "delete": "Supprimer",
           "lock": "Verrouillage",
-          "unlock": "Ouvrir"
+          "unlock": "Ouvrir",
+          "start_reorder": "Réorganiser",
+          "end_reorder": "Terminer la réapprovisionnement"
         },
         "disabled": "La fonctionnalité est désactivée",
         "next": "Suivant",
-        "prev": "Précédent"
+        "prev": "Précédent",
+        "drag": "faites glisser une carte pour réorganiser",
+        "no_lesson": "Pas encore de cours",
+        "share_your_knowledge": "Partagez vos connaissances avec le monde en créant des leçons engageantes. Commencez par cliquer sur le bouton Ajouter."
       },
       "news_feed": {
         "heading": "Fil d'actualité",
