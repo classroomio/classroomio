@@ -41,7 +41,7 @@
   import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
   import { t } from '$lib/utils/functions/translations';
   import { LANGUAGES } from '$lib/utils/constants/translation';
-  import { ChevronLeft, ChevronRight } from 'carbon-icons-svelte';
+  import { ChevronLeft, ChevronRight, Edit, Save } from 'carbon-icons-svelte';
 
   export let data;
 
@@ -315,23 +315,14 @@
     ]}
   >
     <svelte:fragment slot="widget">
-      <div class="flex items-center">
+      <div class="flex items-center gap-1">
         <RoleBasedSecurity allowedRoles={[1, 2]}>
           {#if data.isMaterialsTabActive}
-            <div class="mr-5">
-              <Dropdown items={LANGUAGES} bind:selectedId={$lesson.locale} class="h-full" />
-            </div>
             <!-- Version control -->
             {#if mode === MODES.edit && window.innerWidth >= 1024}
-              <div>
-                <PrimaryButton
-                  className="mb-2 lg:mb-0 mr-2 h-full"
-                  variant={VARIANTS.OUTLINED}
-                  onClick={() => (isVersionDrawerOpen = true)}
-                >
-                  <ResultOld size={20}></ResultOld>
-                </PrimaryButton>
-              </div>
+              <IconButton onClick={() => (isVersionDrawerOpen = true)}>
+                <ResultOld size={24} />
+              </IconButton>
             {/if}
 
             <div class="tab">
@@ -346,19 +337,19 @@
                   : 'hidden'
               } lg:flex items-center`}
             >
-              <PrimaryButton
-                className="mb-2 lg:mb-0 mr-2"
-                variant={VARIANTS.OUTLINED}
+              <IconButton
                 onClick={() => {
                   $apps.dropdown = false;
                   toggleMode();
                 }}
-                isDisabled={isSaving}
+                disabled={isSaving}
               >
-                {mode === MODES.edit
-                  ? $t('course.navItem.lessons.done')
-                  : $t('course.navItem.lessons.edit')}
-              </PrimaryButton>
+                {#if mode === MODES.edit}
+                  <Save size={24} />
+                {:else}
+                  <Edit size={24} />
+                {/if}
+              </IconButton>
 
               {#if $course.metadata.lessonDownload && !!PUBLIC_SERVER_URL}
                 <PrimaryButton
@@ -371,6 +362,8 @@
                 </PrimaryButton>
               {/if}
             </div>
+
+            <Dropdown items={LANGUAGES} bind:selectedId={$lesson.locale} class="h-full" />
           {/if}
         </RoleBasedSecurity>
       </div>
@@ -467,8 +460,9 @@
   {#if isVersionDrawerOpen && window.innerWidth >= 1024}
     <LanguageLessonVersionHistory
       open={isVersionDrawerOpen}
-      on:drawerClose={() => refetchDataAfterVersionRestore()}
-    ></LanguageLessonVersionHistory>
+      on:close={() => (isVersionDrawerOpen = false)}
+      on:restore={() => refetchDataAfterVersionRestore()}
+    />
   {/if}
 </CourseContainer>
 

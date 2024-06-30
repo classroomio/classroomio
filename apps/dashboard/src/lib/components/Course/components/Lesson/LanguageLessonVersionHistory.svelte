@@ -13,6 +13,7 @@
   import { t } from '$lib/utils/functions/translations';
 
   import { LOCALE } from '$lib/utils/types';
+  import { snackbar } from '$lib/components/Snackbar/store';
 
   interface LessonHistory {
     new_content: string;
@@ -46,12 +47,14 @@
   function scrollLock(open) {
     if (mounted) {
       const body = document.querySelector('body');
+      if (!body) return;
+
       body.style.overflow = open ? 'hidden' : 'auto';
     }
   }
 
   function formatTimestamp(timestamp) {
-    const options = {
+    const options: Intl.DateTimeFormatOptions = {
       month: 'long',
       day: 'numeric',
       hour: 'numeric',
@@ -63,20 +66,42 @@
   }
 
   function handleDrawerClose() {
-    dispatch('drawerClose');
+    dispatch('close');
+  }
+
+  function getMinutes(time: Date) {
+    return new Date(time).getMinutes();
+  }
+
+  function removeDuplicate(history: LessonHistory[]) {
+    return history.filter(
+      (obj1, i, arr) =>
+        arr.findIndex((obj2) => getMinutes(obj2.timestamp) === getMinutes(obj1.timestamp)) === i
+    );
   }
 
   async function fetchLessonHistory(lessonId: string, locale: string, endRange: number) {
     try {
       isMoreHistoryLoading = true;
       const { data, error } = await fetchLesssonLanguageHistory(lessonId, locale, endRange);
+
+      if (!data) {
+        throw error;
+      }
+
       // Filter out duplicates based on timestamp
-      const existingTimestamps = new Set(lessonHistory.map((item) => item.timestamp));
-      const newEntries = data.filter((item) => !existingTimestamps.has(item.timestamp));
-      lessonHistory = [...lessonHistory, ...newEntries];
+      const existingTimestamps = new Set(
+        lessonHistory.map((item) => new Date(item.timestamp).getMinutes())
+      );
+      const newEntries = data.filter(
+        (item) => !existingTimestamps.has(new Date(item.timestamp).getMinutes())
+      );
+      lessonHistory = removeDuplicate([...lessonHistory, ...newEntries]);
+
       updateContentVersion(lessonHistory[0], 0);
     } catch (error) {
       console.error(error);
+      snackbar.error('Failed to fetch history');
     } finally {
       isMoreHistoryLoading = false;
     }
@@ -122,9 +147,10 @@
         .eq('locale', selectedVersion.locale);
     } catch (error) {
       console.error(error);
+      snackbar.error('Failed to restore');
     } finally {
       contentRestoreLoading = false;
-      dispatch('drawerClose');
+      dispatch('restore');
     }
   }
 
@@ -133,7 +159,7 @@
   }
 
   $: lessonTitle = $lessons.find((les) => les.id === $lesson.id)?.title || '';
-  $: lessonId = $lesson.id;
+  $: lessonId = $lesson.id || '';
   $: scrollLock(open);
   $: fetchLessonHistory(lessonId, $lesson.locale, versionsToFetch);
 </script>
