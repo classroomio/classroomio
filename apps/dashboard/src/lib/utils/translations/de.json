@@ -47,7 +47,8 @@
       },
       "success": {
         "complete_marked": "Als abgeschlossen markiert",
-        "complete_download": "Download abgeschlossen"
+        "complete_download": "Download abgeschlossen",
+        "version_restored": "Version erfolgreich wiederhergestellt"
       }
     },
     "attendance": {
@@ -750,6 +751,12 @@
         "disabled": "Funktion ist deaktiviert",
         "next": "Nächste",
         "prev": "Vorher",
+        "version_history": {
+          "title": "Versionsgeschichte",
+          "fetch_more_versions": "Weitere Versionen abrufen",
+          "current_version": "Aktuelle Version",
+          "restore_version": "Stellen Sie diese Version wieder her"
+        },
         "drag": "Ziehen Sie eine Karte, um sie neu anzuordnen",
         "no_lesson": "Noch kein Unterricht",
         "share_your_knowledge": "Teilen Sie Ihr Wissen mit der Welt, indem Sie ansprechende Lektionen erstellen. Klicken Sie zunächst auf die Schaltfläche „Hinzufügen“."

@@ -185,6 +185,16 @@ export function fetchLesson(lessonId: Lesson['id']) {
     .single();
 }
 
+export function fetchLesssonLanguageHistory(lessonId: string, locale: string, endRange: number) {
+  return supabase
+    .from('lesson_versions')
+    .select('*')
+    .range(0, endRange)
+    .eq('lesson_id', lessonId)
+    .eq('locale', locale)
+    .order('timestamp', { ascending: false });
+}
+
 export function createLesson(lesson: any) {
   return supabase.from('lesson').insert(lesson).select();
 }

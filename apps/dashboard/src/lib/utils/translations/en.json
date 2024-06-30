@@ -747,6 +747,12 @@
           "option_label": "Option Label",
           "cancel": "Cancel",
           "poll_question": "Poll Question"
+        },
+        "version_history": {
+          "title": "Version history",
+          "fetch_more_versions": "Fetch more versions",
+          "current_version": "Current version",
+          "restore_version": "Restore this version"
         }
       },
 
@@ -1243,7 +1249,8 @@
     "lessons": {
       "success": {
         "complete_marked": "Marked as complete",
-        "complete_download": "Download Complete"
+        "complete_download": "Download Complete",
+        "version_restored": "Version restored sucessfully"
       },
       "error": {
         "try_later": "Something's not right - Please try later"

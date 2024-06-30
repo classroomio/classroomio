@@ -19,9 +19,11 @@
   import PageBody from '$lib/components/PageBody/index.svelte';
   import Materials from '$lib/components/Course/components/Lesson/Materials/index.svelte';
   import Exercises from '$lib/components/Course/components/Lesson/Exercises/index.svelte';
+  import LanguageLessonVersionHistory from '$lib/components/Course/components/Lesson/LanguageLessonVersionHistory.svelte';
   import MODES from '$lib/utils/constants/mode';
   import { course } from '$lib/components/Course/store';
   import Download from 'carbon-icons-svelte/lib/Download.svelte';
+  import ResultOld from 'carbon-icons-svelte/lib/ResultOld.svelte';
   import OverflowMenuVertical from 'carbon-icons-svelte/lib/OverflowMenuVertical.svelte';
   import { apps } from '$lib/components/Apps/store';
   import APPS_CONSTANTS from '$lib/components/Apps/constants';
@@ -39,7 +41,7 @@
   import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
   import { t } from '$lib/utils/functions/translations';
   import { LANGUAGES } from '$lib/utils/constants/translation';
-  import { ChevronLeft, ChevronRight } from 'carbon-icons-svelte';
+  import { ChevronLeft, ChevronRight, Edit, Save } from 'carbon-icons-svelte';
 
   export let data;
 
@@ -50,6 +52,7 @@
   let isLoading = false;
   let isSaving = false;
   let isLessonComplete = false;
+  let isVersionDrawerOpen = false;
 
   function getLessonOrder(id: string) {
     const index = $lessons.findIndex((lesson) => lesson.id === id);
@@ -268,6 +271,15 @@
     goto(path);
   };
 
+  const refetchDataAfterVersionRestore = () => {
+    isVersionDrawerOpen = false;
+    if (data.courseId && browser) {
+      mode = MODES.view;
+      fetchReqData(data.lessonId, data.isMaterialsTabActive);
+    }
+    snackbar.success('snackbar.lessons.success.version_restored');
+  };
+
   $: path = $page.url?.pathname?.replace(/\/exercises[\/ 0-9 a-z -]*/, '');
 
   $: if (data.courseId && browser) {
@@ -303,12 +315,16 @@
     ]}
   >
     <svelte:fragment slot="widget">
-      <div class="flex">
+      <div class="flex items-center gap-1">
         <RoleBasedSecurity allowedRoles={[1, 2]}>
           {#if data.isMaterialsTabActive}
-            <div class="mr-5">
-              <Dropdown items={LANGUAGES} bind:selectedId={$lesson.locale} class="h-full" />
-            </div>
+            <!-- Version control -->
+            {#if mode === MODES.edit && window.innerWidth >= 1024}
+              <IconButton onClick={() => (isVersionDrawerOpen = true)}>
+                <ResultOld size={24} />
+              </IconButton>
+            {/if}
+
             <div class="tab">
               <IconButton onClick={toggleApps} buttonClassName="">
                 <OverflowMenuVertical size={24} />
@@ -321,19 +337,19 @@
                   : 'hidden'
               } lg:flex items-center`}
             >
-              <PrimaryButton
-                className="mb-2 lg:mb-0 mr-2"
-                variant={VARIANTS.OUTLINED}
+              <IconButton
                 onClick={() => {
                   $apps.dropdown = false;
                   toggleMode();
                 }}
-                isDisabled={isSaving}
+                disabled={isSaving}
               >
-                {mode === MODES.edit
-                  ? $t('course.navItem.lessons.done')
-                  : $t('course.navItem.lessons.edit')}
-              </PrimaryButton>
+                {#if mode === MODES.edit}
+                  <Save size={24} />
+                {:else}
+                  <Edit size={24} />
+                {/if}
+              </IconButton>
 
               {#if $course.metadata.lessonDownload && !!PUBLIC_SERVER_URL}
                 <PrimaryButton
@@ -346,6 +362,8 @@
                 </PrimaryButton>
               {/if}
             </div>
+
+            <Dropdown items={LANGUAGES} bind:selectedId={$lesson.locale} class="h-full" />
           {/if}
         </RoleBasedSecurity>
       </div>
@@ -437,6 +455,15 @@
       </button>
     </div>
   </div>
+
+  <!-- Version Control Preview -->
+  {#if isVersionDrawerOpen && window.innerWidth >= 1024}
+    <LanguageLessonVersionHistory
+      open={isVersionDrawerOpen}
+      on:close={() => (isVersionDrawerOpen = false)}
+      on:restore={refetchDataAfterVersionRestore}
+    />
+  {/if}
 </CourseContainer>
 
 <style>

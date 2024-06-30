@@ -47,7 +47,8 @@
       },
       "success": {
         "complete_marked": "Marqué comme terminé",
-        "complete_download": "Téléchargement complet"
+        "complete_download": "Téléchargement complet",
+        "version_restored": "Version restaurée avec succès"
       }
     },
     "attendance": {
@@ -750,6 +751,12 @@
         "disabled": "La fonctionnalité est désactivée",
         "next": "Suivant",
         "prev": "Précédent",
+        "version_history": {
+          "title": "Historique des versions",
+          "fetch_more_versions": "Récupérer plus de versions",
+          "current_version": "Version actuelle",
+          "restore_version": "Restaurer cette version"
+        },
         "drag": "faites glisser une carte pour réorganiser",
         "no_lesson": "Pas encore de cours",
         "share_your_knowledge": "Partagez vos connaissances avec le monde en créant des leçons engageantes. Commencez par cliquer sur le bouton Ajouter."
