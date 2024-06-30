@@ -461,7 +461,7 @@
     <LanguageLessonVersionHistory
       open={isVersionDrawerOpen}
       on:close={() => (isVersionDrawerOpen = false)}
-      on:restore={() => refetchDataAfterVersionRestore()}
+      on:restore={refetchDataAfterVersionRestore}
     />
   {/if}
 </CourseContainer>
