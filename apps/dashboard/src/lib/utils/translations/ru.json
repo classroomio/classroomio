@@ -47,7 +47,8 @@
       },
       "success": {
         "complete_marked": "Помечено как завершенное",
-        "complete_download": "Загрузка завершена"
+        "complete_download": "Загрузка завершена",
+        "version_restored": "Версия успешно восстановлена"
       }
     },
     "attendance": {
@@ -747,7 +748,13 @@
         },
         "disabled": "Функция отключена",
         "next": "Следующий",
-        "prev": "Предыдущий"
+        "prev": "Предыдущий",
+        "version_history": {
+          "title": "История версий",
+          "fetch_more_versions": "Получить больше версий",
+          "current_version": "Текущая версия",
+          "restore_version": "Восстановить эту версию"
+        }
       },
       "news_feed": {
         "heading": "Новостная лента",

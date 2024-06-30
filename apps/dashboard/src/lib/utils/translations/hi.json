@@ -47,7 +47,8 @@
       },
       "success": {
         "complete_marked": "पूर्ण के रूप में चिह्नित",
-        "complete_download": "डाउनलोड पूर्ण"
+        "complete_download": "डाउनलोड पूर्ण",
+        "version_restored": "संस्करण सफलतापूर्वक पुनर्स्थापित किया गया"
       }
     },
     "attendance": {
@@ -747,7 +748,13 @@
         },
         "disabled": "सुविधा अक्षम है",
         "next": "अगला",
-        "prev": "पिछला"
+        "prev": "पिछला",
+        "version_history": {
+          "title": "संस्करण इतिहास",
+          "fetch_more_versions": "अधिक संस्करण प्राप्त करें",
+          "current_version": "वर्तमान संस्करण",
+          "restore_version": "इस संस्करण को पुनर्स्थापित करें"
+        }
       },
       "news_feed": {
         "heading": "समाचार फ़ीड",

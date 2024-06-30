@@ -47,7 +47,8 @@
       },
       "success": {
         "complete_marked": "Được đánh dấu là hoàn thành",
-        "complete_download": "Hoan thanh tải"
+        "complete_download": "Hoan thanh tải",
+        "version_restored": "Đã khôi phục phiên bản thành công"
       }
     },
     "attendance": {
@@ -747,7 +748,13 @@
         },
         "disabled": "Tính năng bị vô hiệu hóa",
         "next": "Kế tiếp",
-        "prev": "Trước đó"
+        "prev": "Trước đó",
+        "version_history": {
+          "title": "Lịch sử phiên bản",
+          "fetch_more_versions": "Tìm nạp thêm phiên bản",
+          "current_version": "Phiên bản hiện tại",
+          "restore_version": "Khôi phục phiên bản này"
+        }
       },
       "news_feed": {
         "heading": "Nguồn cấp tin tức",

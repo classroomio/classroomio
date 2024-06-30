@@ -47,7 +47,8 @@
       },
       "success": {
         "complete_marked": "Marcado como completo",
-        "complete_download": "Descarga completa"
+        "complete_download": "Descarga completa",
+        "version_restored": "Versión restaurada exitosamente"
       }
     },
     "attendance": {
@@ -747,7 +748,13 @@
         },
         "disabled": "La característica está deshabilitada",
         "next": "Próximo",
-        "prev": "Anterior"
+        "prev": "Anterior",
+        "version_history": {
+          "title": "Historial de versiones",
+          "fetch_more_versions": "Obtener más versiones",
+          "current_version": "Versión actual",
+          "restore_version": "Restaurar esta versión"
+        }
       },
       "news_feed": {
         "heading": "Noticias",
