@@ -1,61 +1,8 @@
 <script>
   import PageHeader from '$lib/PageHeader/PageHeader.svelte';
+  import { tools } from '$lib/utils/constants/tools';
 
-  const tools = [
-    {
-      src: '/free-tools/progress-report.svg',
-      title: 'Progress Report',
-      subText: 'Monitor your progress with a system to check and share your progress with others',
-      slug: 'progress',
-      show: true
-    },
-    {
-      src: '/free-tools/name-picker.svg',
-      title: 'Random Name Picker',
-      subText: 'Effortlessly choose names for class participation or group activities',
-      slug: 'name-picker',
-      show: true
-    },
-    {
-      src: '/free-tools/activity-stopwatch.svg',
-      title: 'Activity Stopwatch',
-      subText:
-        'Stay on track and enhance productivity with our customizable stopwatch for timed tasks, quizzes, and study sessions',
-      slug: 'stopwatch',
-      show: true
-    },
-    {
-      src: '/free-tools/tic-tac.svg',
-      title: 'Tic tac toe game',
-      subText:
-        "More than just a game; it's an educational tool that teaches pattern recognition, and decision-making.",
-      slug: 'tic-tac-toe',
-      show: true
-    },
-    {
-      src: '/free-tools/waec.svg',
-      title: 'WAEC Practice tool',
-      subText: 'Ace your WAEC exams with comprehensive study materials, past questions',
-      slug: 'waec',
-      show: false
-    },
-    {
-      src: '/free-tools/jamb.svg',
-      title: 'JAMB Practice tool',
-      subText:
-        'Prepare for JAMB with past questions and instant feedback for effective exam readiness',
-      slug: 'jamb',
-      show: false
-    },
-    {
-      src: '/free-tools/pomodoro.svg',
-      title: 'Pomodoro Timer',
-      subText:
-        'Make your workday more engaging and effective with the Pomodoro timer, break work into 25-minute focused intervals called "pomodoros".',
-      slug: 'pomodoro',
-      show: true
-    }
-  ].filter((item) => item.show);
+  const freeTools = tools.filter((item) => item.show);
 </script>
 
 <section>
@@ -113,7 +60,7 @@
     <h1 class="text-center font-bold text-3xl">Featured Tools</h1>
 
     <div class="flex justify-evenly gap-y-8 flex-wrap w-full md:w-[70%] mt-10 mx-auto">
-      {#each tools as tool}
+      {#each freeTools as tool}
         <a
           href="/tools/{tool.slug}"
           class="w-full flex md:max-w-[370px] border rounded-md shadow-sm hover:scale-95 transition-all ease-in-out"

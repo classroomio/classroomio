@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Section from './Section.svelte';
+  import Section from './CoreFeatureSection.svelte';
   import { PUBLIC_ENABLE_STATS } from '$env/static/public';
 </script>
 
