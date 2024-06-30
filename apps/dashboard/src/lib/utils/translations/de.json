@@ -744,7 +744,9 @@
           "edit": "Bearbeiten",
           "delete": "Löschen",
           "lock": "Sperren",
-          "unlock": "Freischalten"
+          "unlock": "Freischalten",
+          "start_reorder": "Neu anordnen",
+          "end_reorder": "Nachbestellung beenden"
         },
         "disabled": "Funktion ist deaktiviert",
         "next": "Nächste",
@@ -754,7 +756,10 @@
           "fetch_more_versions": "Weitere Versionen abrufen",
           "current_version": "Aktuelle Version",
           "restore_version": "Stellen Sie diese Version wieder her"
-        }
+        },
+        "drag": "Ziehen Sie eine Karte, um sie neu anzuordnen",
+        "no_lesson": "Noch kein Unterricht",
+        "share_your_knowledge": "Teilen Sie Ihr Wissen mit der Welt, indem Sie ansprechende Lektionen erstellen. Klicken Sie zunächst auf die Schaltfläche „Hinzufügen“."
       },
       "news_feed": {
         "heading": "Neuigkeiten",

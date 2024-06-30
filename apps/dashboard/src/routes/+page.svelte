@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from 'svelte';
   import FlowStreamReferenceIcon from 'carbon-icons-svelte/lib/FlowStreamReference.svelte';
   import ChartClusterBarIcon from 'carbon-icons-svelte/lib/ChartClusterBar.svelte';
   import MachineLearningModelIcon from 'carbon-icons-svelte/lib/MachineLearningModel.svelte';
@@ -45,6 +46,10 @@
       email = '';
     }, 5000);
   }
+
+  onMount(() => {
+    console.log('Welcome to CIO');
+  });
 </script>
 
 <svelte:head>

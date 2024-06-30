@@ -45,8 +45,8 @@
   ];
   let type = options[0].type;
 
-  function onClose() {
-    goto($page.url.pathname);
+  function onClose(redirectTo = $page.url.pathname) {
+    goto(redirectTo);
 
     createCourseModal.update(() => ({
       title: '',
@@ -79,7 +79,7 @@
     const { id: group_id } = newGroup[0];
 
     // 2. Create course with group_id
-    const { data: newCourse } = await supabase
+    const { data: newCourseData } = await supabase
       .from('course')
       .insert({
         title,
@@ -88,16 +88,17 @@
         group_id
       })
       .select();
-    console.log(`newCourse`, newCourse);
+    console.log(`newCourse data`, newCourseData);
 
-    if (!newCourse) return;
+    if (!newCourseData) return;
 
-    courses.update((_courses) => [..._courses, newCourse[0]]);
+    const newCourse = newCourseData[0];
+    courses.update((_courses) => [..._courses, newCourse]);
 
     capturePosthogEvent('course_created', {
-      course_id: newCourse[0]?.id,
-      course_title: newCourse[0]?.title,
-      course_description: newCourse[0]?.description,
+      course_id: newCourse.id,
+      course_title: newCourse.title,
+      course_description: newCourse.description,
       organization_id: $currentOrg.id,
       organization_name: $currentOrg.name,
       user_id: $profile.id,
@@ -120,16 +121,13 @@
       await addDefaultNewsFeed({
         content: `<h2>Welcome to this course 🎉&nbsp;</h2>
 <p>Thank you for joining this course and I hope you get the best out of it.</p>`,
-        course_id: newCourse[0]?.id,
+        course_id: newCourse.id,
         is_pinned: true,
         author_id: authorId
       });
     }
 
-    if (newCourse[0] != null && newCourse[0].id) {
-      goto(`/courses/${newCourse[0]?.id}`);
-    }
-    onClose();
+    onClose(`/courses/${newCourse.id}`);
     isLoading = false;
   }
 

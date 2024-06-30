@@ -744,7 +744,9 @@
           "edit": "Editar",
           "delete": "Excluir",
           "lock": "Trancar",
-          "unlock": "Desbloquear"
+          "unlock": "Desbloquear",
+          "start_reorder": "Reordenar",
+          "end_reorder": "Finalizar novo pedido"
         },
         "disabled": "O recurso está desativado",
         "next": "Próximo",
@@ -754,7 +756,10 @@
           "fetch_more_versions": "Buscar mais versões",
           "current_version": "Versão Atual",
           "restore_version": "Restaurar esta versão"
-        }
+        },
+        "drag": "arraste um cartão para reordenar",
+        "no_lesson": "Ainda não há aulas",
+        "share_your_knowledge": "Compartilhe seu conhecimento com o mundo criando aulas envolventes. Comece clicando no botão Adicionar."
       },
       "news_feed": {
         "heading": "Notícias",

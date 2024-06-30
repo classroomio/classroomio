@@ -69,15 +69,16 @@ export const mockGroupMember = {
 };
 
 type GroupStore = {
-  id: number | null;
+  id: string;
   tutors: GroupPerson[];
   students: GroupPerson[];
   people: GroupPerson[];
   members?: GroupPerson[];
+  memberId?: string;
 };
 
 export const group = writable<GroupStore>({
-  id: null,
+  id: '',
   tutors: [],
   students: [],
   people: []
@@ -89,7 +90,6 @@ export async function setCourse(data: Course, setLesson = true) {
 
   if (data.group) {
     const groupData = Object.assign(data.group, {
-      id: null,
       tutors: [],
       students: [],
       people: []
