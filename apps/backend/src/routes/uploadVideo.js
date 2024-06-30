@@ -23,7 +23,7 @@ const {
   CLOUDFLARE_ACCESS_KEY,
   CLOUDFLARE_SECRET_ACCESS_KEY,
   CLOUDFLARE_ACCOUNT_ID,
-  CLOUDFLARE_PUBLIC_ACCOUNT_ID,
+  CLOUDFLARE_BUCKET_ID,
   MUSE_API_KEY
 } = process.env;
 
@@ -76,8 +76,7 @@ router.post('/', upload.single('videoFile'), async (req, res) => {
 
   const fileName = `${genUniqueId()}-${file.originalname.split(' ').join('-')}`;
 
-  const fileOrigin =
-    CLOUDFLARE_BUCKET_DOMAIN ?? `https://pub-${CLOUDFLARE_PUBLIC_ACCOUNT_ID}.r2.dev`;
+  const fileOrigin = CLOUDFLARE_BUCKET_DOMAIN ?? `https://pub-${CLOUDFLARE_BUCKET_ID}.r2.dev`;
 
   const fileUrl = `${fileOrigin}/${fileName}`;
   let metadata = {

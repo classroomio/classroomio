@@ -14,7 +14,7 @@
   } from '$lib/components/Course/components/Lesson/store/lessons';
   import PageBody from '$lib/components/PageBody/index.svelte';
   import { globalStore } from '$lib/utils/store/app';
-
+  import ScreenMap from 'carbon-icons-svelte/lib/ScreenMap.svelte';
   import NewLessonModal from '$lib/components/Course/components/Lesson/NewLessonModal.svelte';
   import DeleteLessonConfirmation from '$lib/components/Course/components/Lesson/DeleteLessonConfirmation.svelte';
   import { handleAddLessonWidget } from '$lib/components/Course/components/Navigation/store';
@@ -30,6 +30,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { goto } from '$app/navigation';
   import { COURSE_TYPE } from '$lib/utils/types';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants.js';
 
   export let data;
 
@@ -39,6 +40,7 @@
   let lessonToDelete: Lesson | undefined;
   let openDeleteModal: boolean = false;
   let isFetching: boolean = false;
+  let reorder = false;
 
   const flipDurationMs = 300;
 
@@ -124,6 +126,7 @@
 
   $: shouldGoToNextLesson = query.get('next') === 'true';
   $: shouldGoToNextLesson && onNextQuery($lessons);
+  $: isLiveClass = $course.type === COURSE_TYPE.LIVE_CLASS;
 </script>
 
 {#if $handleAddLessonWidget}
@@ -138,11 +141,19 @@
 
 <CourseContainer bind:isFetching bind:courseId={data.courseId}>
   <PageNav title={$t('course.navItem.lessons.heading')}>
-    <div slot="widget">
+    <div slot="widget" class="flex w-full justify-end gap-2">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
         <PrimaryButton
           label={$t('course.navItem.lessons.add_lesson.button_title')}
           onClick={addLesson}
+          isDisabled={!!lessonEditing}
+        />
+        <PrimaryButton
+          label={$t(
+            `course.navItem.lessons.add_lesson.${reorder ? 'end_reorder' : 'start_reorder'}`
+          )}
+          variant={VARIANTS.OUTLINED}
+          onClick={() => (reorder = !reorder)}
           isDisabled={!!lessonEditing}
         />
       </RoleBasedSecurity>
@@ -154,20 +165,24 @@
       <Box className="w-full lg:w-11/12 lg:px-4 m-auto">
         <div class="flex flex-col items-center justify-between">
           <img src="/images/empty-lesson-icon.svg" alt="Lesson" class="mx-auto my-2.5" />
-          <h2 class="my-1.5 text-xl font-normal">No lessons yet</h2>
+          <h2 class="my-1.5 text-xl font-normal">{$t('course.navItem.lessons.no_lesson')}</h2>
           <p class="text-center text-sm text-slate-500">
-            Share your knowledge with the world by creating engaging lessons. Start by clicking on
-            the Add button.
+            {$t('course.navItem.lessons.share_your_knowledge')}
           </p>
         </div>
       </Box>
     {:else if $lessons.length}
+      {#if reorder}
+        <p class="text-gray-400 text-center dark:text-white italic text-xs">
+          {$t('course.navItem.lessons.drag')}
+        </p>
+      {/if}
       <section
         class="m-auto w-full p-3 lg:w-11/12 lg:px-4"
         use:dndzone={{
           items: $lessons,
           flipDurationMs,
-          dragDisabled: $globalStore.isStudent,
+          dragDisabled: $globalStore.isStudent || !reorder,
           dropTargetStyle: {
             border: '2px #1d4ed8 solid',
             'border-style': 'dashed'
@@ -178,7 +193,9 @@
       >
         {#each $lessons as lesson (lesson.id)}
           <div
-            class="relative m-auto mb-4 flex max-w-xl items-center rounded-md border-2 border-gray-200 dark:border-neutral-600 p-5 dark:bg-neutral-800"
+            class={`relative m-auto mb-4 flex max-w-xl items-center rounded-md border-2 ${
+              reorder ? 'border-primary-400' : 'border-gray-200'
+            } border-gray-200 dark:border-neutral-600 p-5 dark:bg-neutral-800`}
           >
             <!-- Number Chip -->
             <div class="mr-5">
@@ -217,7 +234,7 @@
               {/if}
 
               <!-- Lesson Educator -->
-              {#if $course.type === COURSE_TYPE.LIVE_CLASS}
+              {#if isLiveClass}
                 <div
                   class="mt-2 flex w-4/5 flex-col items-start justify-between lg:flex-row lg:items-center"
                 >
@@ -288,6 +305,19 @@
                         </a>
                       </div>
                     {/if}
+                  </div>
+                </div>
+              {:else}
+                <div
+                  class="mt-2 flex w-4/5 flex-col items-start justify-between lg:flex-row lg:items-center"
+                >
+                  <!-- Lesson Length -->
+                  <div class="mb-3 flex items-center lg:mb-0">
+                    <ScreenMap size={20} class="carbon-icon dark:text-white" />
+                    <p class="ml-2 text-sm text-gray-500 dark:text-white">
+                      {lesson?.totalExercises ? lesson?.totalExercises?.map((c) => c.count) : 0}
+                      {$t('exercises.heading')}
+                    </p>
                   </div>
                 </div>
               {/if}

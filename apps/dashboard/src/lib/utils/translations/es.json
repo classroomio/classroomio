@@ -47,7 +47,8 @@
       },
       "success": {
         "complete_marked": "Marcado como completo",
-        "complete_download": "Descarga completa"
+        "complete_download": "Descarga completa",
+        "version_restored": "Versión restaurada exitosamente"
       }
     },
     "attendance": {
@@ -446,7 +447,10 @@
           "via_link": "Puede invitar a estudiantes a través de un enlace de invitación",
           "copy_link": "Copiar link",
           "success": "Copiado correctamente",
-          "finish": "Finalizar"
+          "finish": "Finalizar",
+          "via_qr": "Puedes invitar estudiantes a través de QR",
+          "download_qr": "Descargar código QR",
+          "qr_downloading_snackbar": "El código QR se generó correctamente. Espere mientras se descarga."
         },
         "teams": {
           "add": "Agregar",
@@ -741,9 +745,22 @@
           "edit": "Editar",
           "delete": "Borrar",
           "lock": "Cerrar",
-          "unlock": "desbloquear"
+          "unlock": "desbloquear",
+          "start_reorder": "Reordenar",
+          "end_reorder": "Finalizar reorden"
         },
-        "disabled": "La característica está deshabilitada"
+        "disabled": "La característica está deshabilitada",
+        "next": "Próximo",
+        "prev": "Anterior",
+        "version_history": {
+          "title": "Historial de versiones",
+          "fetch_more_versions": "Obtener más versiones",
+          "current_version": "Versión actual",
+          "restore_version": "Restaurar esta versión"
+        },
+        "drag": "arrastra una tarjeta para reordenar",
+        "no_lesson": "Aún no hay lecciones",
+        "share_your_knowledge": "Comparta sus conocimientos con el mundo creando lecciones interesantes. Comience haciendo clic en el botón Agregar."
       },
       "news_feed": {
         "heading": "Noticias",

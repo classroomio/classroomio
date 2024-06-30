@@ -47,7 +47,8 @@
       },
       "success": {
         "complete_marked": "Marcado como concluído",
-        "complete_download": "Download completo"
+        "complete_download": "Download completo",
+        "version_restored": "Versão restaurada com sucesso"
       }
     },
     "attendance": {
@@ -446,7 +447,10 @@
           "via_link": "Você pode convidar alunos por meio de um link de convite",
           "copy_link": "Link de cópia",
           "success": "Copiado com sucesso",
-          "finish": "Terminar"
+          "finish": "Terminar",
+          "via_qr": "Você pode convidar alunos via QR",
+          "download_qr": "Baixe o código QR",
+          "qr_downloading_snackbar": "Código QR gerado com sucesso. Aguarde enquanto o download"
         },
         "teams": {
           "add": "Adicionar",
@@ -741,9 +745,22 @@
           "edit": "Editar",
           "delete": "Excluir",
           "lock": "Trancar",
-          "unlock": "Desbloquear"
+          "unlock": "Desbloquear",
+          "start_reorder": "Reordenar",
+          "end_reorder": "Finalizar novo pedido"
         },
-        "disabled": "O recurso está desativado"
+        "disabled": "O recurso está desativado",
+        "next": "Próximo",
+        "prev": "Anterior",
+        "version_history": {
+          "title": "Histórico de versões",
+          "fetch_more_versions": "Buscar mais versões",
+          "current_version": "Versão Atual",
+          "restore_version": "Restaurar esta versão"
+        },
+        "drag": "arraste um cartão para reordenar",
+        "no_lesson": "Ainda não há aulas",
+        "share_your_knowledge": "Compartilhe seu conhecimento com o mundo criando aulas envolventes. Comece clicando no botão Adicionar."
       },
       "news_feed": {
         "heading": "Notícias",
