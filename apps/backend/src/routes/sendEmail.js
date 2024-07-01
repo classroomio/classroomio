@@ -63,7 +63,7 @@ router.post('/', async (req, res) => {
     return res.json({ success: true });
   } catch (error) {
     console.error('Error sending emails:', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    return res.status(400).json({ error: `Bad request - ${error.message}` });
   }
 });
 

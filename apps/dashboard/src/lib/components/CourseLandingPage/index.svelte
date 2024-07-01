@@ -90,7 +90,9 @@
   $: video = get(courseData, 'metadata.videoUrl');
   $: allowNewStudent = get(courseData, 'metadata.allowNewStudent');
   $: bannerImage = get(courseData, 'logo');
-  $: lessons = get(courseData, 'lessons', []);
+  $: lessons = get(courseData, 'lessons', [])
+    .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   $: instructor = get(courseData, 'metadata.instructor') || {};
   $: initPlyr(player, video);
   $: {
@@ -264,20 +266,20 @@
               {pluralize('lesson', lessons.length, true)}
             </p>
           </div>
-          {#each lessons as lesson, index}
-            <div class="mb-6 flex w-full flex-col justify-between md:flex-row md:items-center">
-              <div class="mb-3 flex items-center">
+
+          <div class="flex flex-wrap">
+            {#each lessons as lesson, index}
+            <div class="px-2 py-1 m-2 border rounded">
                 <Chip
                   value={getLectureNo(index + 1, '0')}
-                  className="bg-primary-100 text-primary-700"
+                  className="bg-primary-100 text-primary-700 inline "
                 />
-                <p class="ml-2 text-sm font-light dark:text-white">
+                <p class="ml-2 text-xs font-light dark:text-white inline">
                   {lesson.title}
                 </p>
-              </div>
 
-              <div class="w-2/4">
-                <div class="flex items-center">
+            
+                <!-- <div class="flex items-center">
                   {#if lesson.slide_url}
                     <span class="text-sm font-light flex w-2/4"
                       ><PresentationFile size={16} class="mr-1" />{$t(
@@ -292,8 +294,10 @@
                       )}</span
                     >
                   {/if}
-                </div>
-                <div class="flex items-center">
+                </div> -->
+
+                
+                <!-- <div class="flex items-center">
                   {#if lesson.videos}
                     <span class="text-sm font-light flex w-2/4"
                       ><Video size={16} class="mr-1" />{lesson.videos.length}
@@ -309,10 +313,10 @@
                       )}</span
                     >
                   {/if}
-                </div>
-              </div>
+                </div> -->
             </div>
           {/each}
+          </div>
         </section>
 
         <!-- Sections - Reviews -->
