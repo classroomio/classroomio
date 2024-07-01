@@ -7,6 +7,11 @@
   import Testimonial from '$lib/Home/Testimonial.svelte';
 
   import { PUBLIC_ENABLE_FAQ } from '$env/static/public';
+  import { onMount } from 'svelte';
+
+  onMount(() => {
+    console.log('Welcome to CIO');
+  });
 </script>
 
 <Hero />

@@ -14,7 +14,7 @@
   import { ChevronRight } from 'carbon-icons-svelte';
   import ProfileMenu from '$lib/components/Org/ProfileMenu/index.svelte';
 
-  interface sideLinks {
+  interface SideLinks {
     name: string;
     icon: any;
     link: string;
@@ -32,7 +32,7 @@
     return pagePath.includes(itemPath);
   }
 
-  let sideLinks: sideLinks[] = [];
+  let sideLinks: SideLinks[] = [];
 
   $: sideLinks = [
     {

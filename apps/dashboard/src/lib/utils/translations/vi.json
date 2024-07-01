@@ -47,7 +47,8 @@
       },
       "success": {
         "complete_marked": "Được đánh dấu là hoàn thành",
-        "complete_download": "Hoan thanh tải"
+        "complete_download": "Hoan thanh tải",
+        "version_restored": "Đã khôi phục phiên bản thành công"
       }
     },
     "attendance": {
@@ -445,7 +446,10 @@
           "via_link": "Bạn có thể mời sinh viên thông qua liên kết mời",
           "copy_link": "Sao chép đường dẫn",
           "success": "Đã sao chép thành công",
-          "finish": "Hoàn thành"
+          "finish": "Hoàn thành",
+          "via_qr": "Bạn có thể mời sinh viên qua QR",
+          "download_qr": "Tải xuống mã QR",
+          "qr_downloading_snackbar": "Mã QR được tạo thành công, vui lòng đợi trong khi tải xuống"
         },
         "teams": {
           "add": "Thêm vào",
@@ -740,9 +744,22 @@
           "edit": "Biên tập",
           "delete": "Xóa bỏ",
           "lock": "Khóa",
-          "unlock": "Mở khóa"
+          "unlock": "Mở khóa",
+          "start_reorder": "Sắp xếp lại",
+          "end_reorder": "Kết thúc sắp xếp lại"
         },
-        "disabled": "Tính năng bị vô hiệu hóa"
+        "disabled": "Tính năng bị vô hiệu hóa",
+        "next": "Kế tiếp",
+        "prev": "Trước đó",
+        "version_history": {
+          "title": "Lịch sử phiên bản",
+          "fetch_more_versions": "Tìm nạp thêm phiên bản",
+          "current_version": "Phiên bản hiện tại",
+          "restore_version": "Khôi phục phiên bản này"
+        },
+        "drag": "kéo thẻ để sắp xếp lại",
+        "no_lesson": "Chưa có bài học nào",
+        "share_your_knowledge": "Chia sẻ kiến ​​thức của bạn với thế giới bằng cách tạo ra những bài học hấp dẫn. Bắt đầu bằng cách nhấp vào nút Thêm."
       },
       "news_feed": {
         "heading": "Nguồn cấp tin tức",

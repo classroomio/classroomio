@@ -47,7 +47,8 @@
       },
       "success": {
         "complete_marked": "Als abgeschlossen markiert",
-        "complete_download": "Download abgeschlossen"
+        "complete_download": "Download abgeschlossen",
+        "version_restored": "Version erfolgreich wiederhergestellt"
       }
     },
     "attendance": {
@@ -445,7 +446,10 @@
           "via_link": "Sie können Studierende über einen Einladungslink einladen",
           "copy_link": "Link kopieren",
           "success": "Erfolgreich kopiert",
-          "finish": "Beenden"
+          "finish": "Beenden",
+          "via_qr": "Sie können Studierende per QR einladen",
+          "download_qr": "Laden Sie den QR-Code herunter",
+          "qr_downloading_snackbar": "Der QR-Code wurde erfolgreich generiert. Bitte warten Sie, während er heruntergeladen wird"
         },
         "teams": {
           "add": "Hinzufügen",
@@ -740,9 +744,22 @@
           "edit": "Bearbeiten",
           "delete": "Löschen",
           "lock": "Sperren",
-          "unlock": "Freischalten"
+          "unlock": "Freischalten",
+          "start_reorder": "Neu anordnen",
+          "end_reorder": "Nachbestellung beenden"
         },
-        "disabled": "Funktion ist deaktiviert"
+        "disabled": "Funktion ist deaktiviert",
+        "next": "Nächste",
+        "prev": "Vorher",
+        "version_history": {
+          "title": "Versionsgeschichte",
+          "fetch_more_versions": "Weitere Versionen abrufen",
+          "current_version": "Aktuelle Version",
+          "restore_version": "Stellen Sie diese Version wieder her"
+        },
+        "drag": "Ziehen Sie eine Karte, um sie neu anzuordnen",
+        "no_lesson": "Noch kein Unterricht",
+        "share_your_knowledge": "Teilen Sie Ihr Wissen mit der Welt, indem Sie ansprechende Lektionen erstellen. Klicken Sie zunächst auf die Schaltfläche „Hinzufügen“."
       },
       "news_feed": {
         "heading": "Neuigkeiten",
