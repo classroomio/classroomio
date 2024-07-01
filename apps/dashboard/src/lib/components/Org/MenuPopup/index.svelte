@@ -39,7 +39,7 @@
 
 <div class="md:px-4 md:py-4 py-2 px-2 rounded-md cursor-pointer">
   <div class="border-b py-3 space-y-4">
-    <p class="text-xs font-semibold text-gray-500">{$t('popup.profile')}</p>
+    <p class="text-xs font-semibold text-gray-500">{$t('bottomMenu.profile')}</p>
     <a
       href={`${!$globalStore.isOrgSite ? $currentOrgPath : '/lms'}/settings`}
       class="flex items-center justify-between hover:no-underline"
@@ -59,7 +59,7 @@
   </div>
   {#if !$globalStore.isOrgSite}
     <div class="border-b py-3 space-y-4">
-      <p class="text-xs font-semibold text-gray-500">{$t('popup.current_org')}</p>
+      <p class="text-xs font-semibold text-gray-500">{$t('bottomMenu.current_org')}</p>
       <a
         href={`${$currentOrgPath}/settings?tab=org`}
         class="flex items-center justify-between hover:no-underline"
@@ -86,7 +86,7 @@
   {/if}
 
   <div class="border-b py-3 space-y-4">
-    <p class="text-xs font-semibold text-gray-500">{$t('popup.free_tools')}</p>
+    <p class="text-xs font-semibold text-gray-500">{$t('bottomMenu.free_tools')}</p>
     <a
       href="https://classroomio.com/tools/progress"
       target="_blank"
@@ -94,7 +94,7 @@
       on:click={() => ($popUp.open = true)}
     >
       <img src="/progress.svg" alt="progress" class="h-6 w-6 rounded-full" />
-      <p class="text-sm font-semibold">{$t('popup.progress')}</p>
+      <p class="text-sm font-semibold">{$t('bottomMenu.progress')}</p>
     </a>
     <a
       href="https://classroomio.com/tools/activity-stopwatch"
@@ -103,7 +103,7 @@
       on:click={() => ($popUp.open = true)}
     >
       <img src="/timer.svg" alt="timer" class="h-6 w-6 rounded-full" />
-      <p class="text-sm font-semibold">{$t('popup.timer')}</p>
+      <p class="text-sm font-semibold">{$t('bottomMenu.timer')}</p>
     </a>
     <a
       href="https://classroomio.com/tools/tic-tac-toe"
@@ -112,7 +112,7 @@
       on:click={() => ($popUp.open = true)}
     >
       <img src="/tictac.svg" alt="tic_tac_toe" class="h-6 w-6 rounded-full" />
-      <p class="text-sm font-semibold">{$t('popup.tic_tac')}</p>
+      <p class="text-sm font-semibold">{$t('bottomMenu.tic_tac')}</p>
     </a>
     <a
       href="https://classroomio.com/tools"
@@ -121,7 +121,7 @@
       class="flex ml-auto w-fit items-center justify-end"
     >
       <div class="text-blue-900 font-semibold text-xs flex items-center gap-1">
-        {$t('popup.see_more')}
+        {$t('bottomMenu.see_more')}
         <ChevronDown class="text-blue-900" />
       </div>
     </a>
@@ -135,7 +135,7 @@
         class="hover:no-underline flex items-center gap-2"
       >
         <NewTab />
-        <p class="text-sm font-semibold">{$t('popup.whats_new')}</p>
+        <p class="text-sm font-semibold">{$t('bottomMenu.whats_new')}</p>
       </a>
       <a
         href="https://classroomio.com/tools/blog/launch-week"
@@ -143,7 +143,7 @@
         class="hover:no-underline flex items-center gap-2"
       >
         <Rocket />
-        <p class="text-sm font-semibold">{$t('popup.launch_week')}</p>
+        <p class="text-sm font-semibold">{$t('bottomMenu.launch_week')}</p>
       </a>
     </div>
   {/if}

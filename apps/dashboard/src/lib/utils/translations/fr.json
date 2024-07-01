@@ -1260,7 +1260,7 @@
   "specialization": {
     "course_tag": "Spécialisation"
   },
-  "popup": {
+  "bottomMenu": {
     "profile": "PROFIL",
     "current_org": "ORGANISATION ACTUELLE",
     "free_tools": "OUTILS GRATUITS",

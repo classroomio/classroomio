@@ -1260,7 +1260,7 @@
   "specialization": {
     "course_tag": "Spezialisierung"
   },
-  "popup": {
+  "bottomMenu": {
     "profile": "PROFIL",
     "current_org": "AKTUELLE ORGANISATION",
     "free_tools": "KOSTENLOSE WERKZEUGE",
