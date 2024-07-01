@@ -62,7 +62,7 @@
   <div class="mt-20">
     <!-- using both md & lg for the width here because the lib doesn't consider md to be medium screens and above, using md alone will make the output break on desktop so i had to also specify for large screens -->
     <div
-      class="rounded-lg shadow-md bg-white border-4 border-gray-100 z-20 mx-auto flex justify-center items-center w-[15rem] md:w-[15rem] lg:w-[15rem] h-[15rem]"
+      class="rounded-lg shadow-md bg-white border-4 border-gray-100 z-20 mx-auto flex justify-center items-center w-[16rem] h-[16rem]"
     >
       <div class="relative w-full h-full flex flex-col justify-center gap-3 items-center px-2">
         <!-- avatar -->
@@ -107,7 +107,7 @@
 
         <!-- learning -->
         <span
-          class="w-full md:my-2 p-1 overflow-hidden text-[0.7rem] md:text-[0.8rem] font-bold text-center outline-none h-[10vh] md:h-[12vh]"
+          class="w-full md:my-2 p-1 overflow-hidden text-[0.7rem] md:text-[0.8rem] font-normal text-center outline-none h-[10vh] md:h-[12vh]"
         >
           {$htmlBody.learning}
         </span>

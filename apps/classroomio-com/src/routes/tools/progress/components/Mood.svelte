@@ -28,10 +28,10 @@
       text: 'Feeling stuck',
       iconSrc: 'feeling-stuck'
     },
-    {
-      text: 'Believing in the process',
-      iconSrc: 'believing-in-the-process'
-    },
+    // {
+    //   text: 'Believing in the process',
+    //   iconSrc: 'believing-in-the-process'
+    // },
     {
       text: 'Curious',
       iconSrc: 'curious'
@@ -49,7 +49,7 @@
       iconSrc: 'reflecting'
     },
     {
-      text: 'Making alot of progress',
+      text: 'Making progress',
       iconSrc: 'progress'
     },
     {

@@ -5,6 +5,7 @@
   import { sineInOut } from 'svelte/easing';
 
   interface TodoItem {
+    id: number;
     content: string;
     time: string;
     isPaused: boolean;
@@ -13,6 +14,7 @@
     isVisible: boolean;
   }
 
+  let addInput: HTMLInputElement;
   let buzzSound: HTMLAudioElement;
   let todoList: TodoItem[] = [];
 
@@ -46,41 +48,52 @@
     todoList = [
       ...todoList,
       {
+        id: new Date().getMilliseconds(),
         content: '',
         isEditing: true,
         time: '25:00',
-        isPaused: false,
+        isPaused: true,
         isDone: false,
         isVisible: false
       }
     ];
+
+    setTimeout(() => {
+      addInput.focus();
+    }, 50);
   }
 
   function startCountdown() {
-    if (isPaused) {
-      isPaused = false;
-      timerInterval = setInterval(() => {
-        if (countdownTime > 0) {
-          countdownTime--;
-          updateCountdownDisplay();
-        } else {
-          clearInterval(timerInterval);
-          countdownDisplay = '00:00';
-          buzzSound.play();
-        }
-      }, 1000);
+    if (!isPaused) {
+      return;
     }
+
+    isPaused = false;
+
+    timerInterval = setInterval(() => {
+      if (countdownTime > 0) {
+        countdownTime--;
+        updateCountdownDisplay();
+      } else {
+        clearInterval(timerInterval);
+        countdownDisplay = '00:00';
+        buzzSound.play();
+      }
+    }, 1000);
   }
 
   function pauseCountdown() {
-    if (!isPaused) {
-      isPaused = true;
-      clearInterval(timerInterval);
+    if (isPaused) {
+      return;
     }
+
+    isPaused = true;
+    clearInterval(timerInterval);
   }
 
   function resetCountdown() {
     clearInterval(timerInterval);
+
     switch (timerState) {
       case 'pomodoro':
         countdownTime = 25 * 60;
@@ -92,7 +105,9 @@
         countdownTime = 5 * 60;
         break;
     }
+
     isPaused = true;
+
     updateCountdownDisplay();
   }
 
@@ -137,7 +152,7 @@
   <meta name="twitter:image" content="" />
 </svelte:head>
 
-<section class="mt-[30%] px-1 md:px-0 md:mt-[5%] w-full md:w-full">
+<section class="mt-[10%] md:mt-16 px-1 md:px-0 w-full md:w-full">
   <ToolsHeader>
     <img
       src="/free-tools/pomodoro.svg"
@@ -148,16 +163,16 @@
     <p class="text-sm mt-10 text-[#656565] font-light md:font-normal md:w-[45%] mx-auto">
       Make your workday more engaging and effective with the Pomodoro timer, break work into
       25-minute focused intervals called "pomodoros," followed by 5-minute breaks. take a longer
-      break. This method keeps you energized and productive throughout the day!
+      break.
     </p>
   </ToolsHeader>
 
   <div
-    class="body w-full md:h-[80vh] flex flex-col gap-y-10 md:flex-row justify-between px-5 md:px-10 text-white text-center"
+    class="body w-full md:h-[60vh] flex flex-col gap-y-10 md:flex-row justify-evenly px-5 md:px-10 my-10 text-white text-center"
   >
     <!-- left side -->
     <div
-      class="w-full md:w-[62%] bg-[#0D4CFF] rounded-lg md:rounded-2xl py-7 px-5 md:p-10 flex flex-col gap-y-16 md:gap-y-0 justify-between"
+      class="w-full md:w-[50%] bg-[#0D4CFF] rounded-lg md:rounded-2xl py-7 px-5 md:p-10 flex flex-col gap-y-16 md:gap-y-0 justify-between"
     >
       <!-- types -->
       <div class="flex item-center justify-evenly">
@@ -206,8 +221,9 @@
           type="button"
           on:click={isPaused ? startCountdown : pauseCountdown}
           class="bg-white text-[#0542CC] border text-base font-bold uppercase py-3 px-14 rounded-md hover:bg-transparent hover:text-white hover:border-white hover:border transition-all duration-300"
-          >{isPaused ? 'Start' : 'Pause'}</button
         >
+          {isPaused ? 'Start' : 'Pause'}
+        </button>
 
         <!-- next -->
         <button type="button" on:click={nextTimerState}>
@@ -226,37 +242,37 @@
         class="bg-[#040F2D] uppercase text-xl font-bold py-4"
         style="clip-path: polygon(0 0, 100% 1%, 100% 65%, 0% 100%);"
       >
-        to do list
+        To do list
       </h1>
 
       <div class="overflow-hidden">
         <!-- todos -->
-        <div class="overflow-y-auto mt-3 max-h-[40vh] md:max-h-[60vh]">
+        <div class="overflow-y-auto mt-3 max-h-[40vh] md:max-h-[50vh]">
           {#each todoList as todo, i}
-            <div
-              transition:fly={{ y: 300, delay: 0, easing: sineInOut }}
-              class="border text-black p-5"
-            >
+            <div in:fly={{ y: 100, delay: 0, easing: sineInOut }} class="border text-black p-5">
               {#if todo.isEditing}
-                <p class="text-xs text-left text-[#656565] font-semibold">Pomodoro name</p>
-                <input
-                  type="text"
-                  bind:value={todo.content}
-                  class="bg-[#F1F2F4] border-[#EAEAEA] w-full border mt-2 px-3 py-2 text-base font-semibold outline-none"
-                />
-                <div class="flex justify-end items-center gap-5 mt-5">
-                  <button
-                    type="button"
-                    on:click={() => deleteTodo(i)}
-                    class="rounded-sm py-2 px-5 text-xs font-semibold bg-[#F7F7F7]">Discard</button
-                  >
-                  <button
-                    type="button"
-                    on:click={() => setEditing(i, false)}
-                    class="rounded-sm py-2 px-5 text-xs font-semibold bg-[#0D4CFF] text-white"
-                    >Save</button
-                  >
-                </div>
+                <form on:submit|preventDefault={() => setEditing(i, false)}>
+                  <p class="text-xs text-left text-[#656565] font-semibold">Pomodoro name</p>
+                  <input
+                    type="text"
+                    bind:this={addInput}
+                    bind:value={todo.content}
+                    class="bg-[#F1F2F4] border-[#EAEAEA] w-full border mt-2 px-3 py-2 text-base outline-none"
+                  />
+                  <div class="flex justify-end items-center gap-5 mt-5">
+                    <button
+                      type="button"
+                      on:click={() => deleteTodo(i)}
+                      class="rounded-sm py-2 px-5 text-xs font-semibold bg-[#F7F7F7]"
+                      >Discard</button
+                    >
+                    <button
+                      type="submit"
+                      class="rounded-sm py-2 px-5 text-xs font-semibold bg-[#0D4CFF] text-white"
+                      >Save</button
+                    >
+                  </div>
+                </form>
               {:else}
                 <div class="">
                   <div class="flex justify-between">
@@ -264,21 +280,13 @@
 
                     <!-- pen and menu icon -->
                     <div class="relative flex justify-between w-[15%]">
-                      <button type="button" on:click={() => setEditing(i, true)}
-                        ><img
-                          src="/free-tools/pomodoro/pen-icon.svg"
-                          alt="Pen icon"
-                          class="w-5"
-                        /></button
-                      >
+                      <button type="button" on:click={() => setEditing(i, true)}>
+                        <img src="/free-tools/pomodoro/pen-icon.svg" alt="Pen icon" class="w-5" />
+                      </button>
 
                       <button type="button" on:click={() => (todo.isVisible = !todo.isVisible)}>
-                        <img
-                          src="/free-tools/pomodoro/menu-icon.svg"
-                          alt="Menu icon"
-                          class="w-5"
-                        /></button
-                      >
+                        <img src="/free-tools/pomodoro/menu-icon.svg" alt="Menu icon" class="w-5" />
+                      </button>
 
                       {#if todo.isVisible}
                         <ul
@@ -287,14 +295,17 @@
                           <button
                             type="button"
                             on:click={() => markTodoAsDone(i)}
-                            class="w-full font-medium text-left py-3 px-5">Mark as done</button
+                            class="w-full font-medium text-left py-3 px-5"
                           >
+                            Mark as done
+                          </button>
                           <button
                             type="button"
                             on:click={() => deleteTodo(i)}
                             class="w-full font-medium text-left py-3 px-5 bg-red-600 text-white rounded-b-[5px]"
-                            >Delete</button
                           >
+                            Delete
+                          </button>
                         </ul>
                       {/if}
                     </div>
@@ -309,10 +320,18 @@
 
                     <button
                       type="button"
-                      on:click={isPaused ? startCountdown : pauseCountdown}
+                      on:click={() => {
+                        if (todo.isPaused) {
+                          startCountdown();
+                        } else {
+                          pauseCountdown();
+                        }
+
+                        todo.isPaused = !todo.isPaused;
+                      }}
                       class="{todo.isDone
                         ? 'bg-[#00D06C] border-none text-white'
-                        : isPaused
+                        : todo.isPaused
                           ? 'bg-white text-[#0D4CFF] border-[#0D4CFF]'
                           : 'bg-[#0D4CFF] text-white border-none'} 
                           
@@ -321,7 +340,7 @@
                       {#if todo.isDone}
                         <img src="/free-tools/pomodoro/done-icon.svg" alt="Done icon" />
                         done
-                      {:else if isPaused}
+                      {:else if todo.isPaused}
                         <img src="/free-tools/pomodoro/list-play-icon.svg" alt="Play icon" />
                         play task
                       {:else}
@@ -341,7 +360,8 @@
           type="button"
           on:click={addTodo}
           class="bg-[#1D4ED8] rounded-md text-center font-medium mt-10 py-3 w-full flex justify-center items-center gap-3"
-          >Add new item
+        >
+          Add new item
           <img src="/free-tools/pomodoro/add-icon.svg" alt="Add icon" class="w-3" />
         </button>
       </div>

@@ -32,28 +32,28 @@
     }
   }
 
-  function shareOnTwitter() {
-    const text = encodeURIComponent(
-      `I'm sharing my progress here on Twitter, I'm learning ${$htmlBody.learning} and I'm ${$htmlBody.mood.text}`
+  function shareTemplate() {
+    return encodeURIComponent(
+      `Learning Progress Update: ${$htmlBody.learning} and I'm ${$htmlBody.mood.text}. \nGenerated yours on classroomio.com\n`
     );
+  }
+
+  function shareOnTwitter() {
+    const text = shareTemplate();
     const hashtags = encodeURIComponent('classroomIO,progressReport');
     const url = `https://x.com/intent/post?text=${text}&hashtags=${hashtags}`;
     window.open(url);
   }
 
   function shareOnFacebook() {
-    const text = encodeURIComponent(
-      `I'm sharing my progress here on Facebook, I'm learning ${$htmlBody.learning} and I'm ${$htmlBody.mood.text}`
-    );
+    const text = shareTemplate();
     window.open(
       `https://www.facebook.com/dialog/share?app_id=145634995501895&display=popup&href=https%3A%2F%2Fclassroomio.com%2Fdocs%2F&redirect_uri=https%3A%2F%2Fclassroomio.com%2Ftools%2Fexplorer&hashtag=${text}`
     );
   }
 
   function shareOnLinkedIn() {
-    const text = encodeURIComponent(
-      `I'm sharing my progress on LinkedIn, I'm learning ${$htmlBody.learning} and I'm ${$htmlBody.mood.text}`
-    );
+    const text = shareTemplate();
     const url = `http://www.linkedin.com/shareArticle?summary=${text}&text=${text}`;
     window.open(url);
   }
@@ -90,7 +90,7 @@
   <meta name="twitter:image" content="https://brand.cdn.clsrio.com/og/free-tools.png" />
 </svelte:head>
 
-<section class="mt-[30%] px-1 md:px-0 md:mt-[5%] w-full md:w-full">
+<section class="mt-[10%] md:mt-16 px-1 md:px-0 w-full md:w-full">
   <ToolsHeader>
     <img
       src="/free-tools/progress-report.svg"

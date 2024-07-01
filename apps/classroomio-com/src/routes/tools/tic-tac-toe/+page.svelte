@@ -103,7 +103,7 @@
   <meta name="twitter:image" content="https://brand.cdn.clsrio.com/og/free-tools.png" />
 </svelte:head>
 
-<section class="mt-[30%] px-5 md:px-0 md:mt-[5%]">
+<section class="mt-[10%] md:mt-16 px-5 md:px-0">
   <ToolsHeader className="mb-10">
     <img
       src="/free-tools/tic-tac.svg"

@@ -17,6 +17,15 @@ export const tools: Tool[] = [
     showFeature: true
   },
   {
+    src: '/free-tools/pomodoro.svg',
+    title: 'Pomodoro Timer',
+    subText:
+      'Make your workday more engaging and effective with the Pomodoro timer, break work into 25-minute focused intervals called "pomodoros".',
+    slug: 'pomodoro',
+    show: true,
+    showFeature: false
+  },
+  {
     src: '/free-tools/name-picker.svg',
     title: 'Random Name Picker',
     subText: 'Effortlessly choose names for class participation or group activities',
@@ -57,15 +66,6 @@ export const tools: Tool[] = [
       'Prepare for JAMB with past questions and instant feedback for effective exam readiness',
     slug: 'jamb',
     show: false,
-    showFeature: false
-  },
-  {
-    src: '/free-tools/pomodoro.svg',
-    title: 'Pomodoro Timer',
-    subText:
-      'Make your workday more engaging and effective with the Pomodoro timer, break work into 25-minute focused intervals called "pomodoros".',
-    slug: 'pomodoro',
-    show: true,
     showFeature: false
   }
 ];
