@@ -156,7 +156,7 @@
     </div>
   {/if}
 
-  <button on:click={logout} class="border-b w-full py-3 space-y-4">
+  <button on:click={logout} class="w-full pt-3 space-y-4">
     <span class="flex items-center gap-2">
       <Logout />
       <p class="text-sm font-semibold">{$t('settings.profile.logout')}</p>
