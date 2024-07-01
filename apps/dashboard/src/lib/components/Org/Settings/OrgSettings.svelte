@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { goto } from '$app/navigation';
   import { Grid, Row, Column } from 'carbon-components-svelte';
   import FlashFilled from 'carbon-icons-svelte/lib/FlashFilled.svelte';
@@ -12,8 +12,18 @@
   import SectionTitle from '../SectionTitle.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { isFreePlan } from '$lib/utils/store/org';
+  import { updateOrgNameValidation } from '$lib/utils/functions/validator';
 
   let avatar;
+
+  type Error = {
+    orgName: string;
+  };
+
+  let errors: Error = {
+    orgName: ''
+  };
+
   let loading = false;
   const themes = {
     rose: 'theme-rose',
@@ -42,11 +52,18 @@
   }
 
   async function handleUpdate() {
+    errors = updateOrgNameValidation($currentOrg.name) as Error;
+
+    if (Object.values(errors).length) {
+      loading = false;
+      return;
+    }
+
     try {
       loading = true;
 
       const updates = {
-        name: $currentOrg.name
+        name: $currentOrg.name,
       };
 
       if (avatar) {
@@ -108,6 +125,7 @@
         label={$t('settings.organization.organization_profile.organization_name')}
         bind:value={$currentOrg.name}
         className="w-full lg:w-60 mb-5"
+        errorMessage={errors.orgName}
       />
       <UploadImage
         bind:avatar

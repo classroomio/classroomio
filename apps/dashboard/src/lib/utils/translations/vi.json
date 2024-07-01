@@ -154,7 +154,11 @@
         "submitting_poll": "Đã xảy ra lỗi khi gửi cuộc thăm dò ý kiến"
       }
     },
-    "success_update": "Cập nhật thành công"
+    "success_update": "Cập nhật thành công",
+    "generic": {
+      "success_delete": "Đã xoá thành công",
+      "try_again": "Lỗi - Vui lòng thử lại sau"
+    }
   },
   "exercises": {
     "heading": "Bài tập",
@@ -229,7 +233,8 @@
       "cancel": "Hủy bỏ",
       "give": "Đưa ra một câu trả lời",
       "comment": "Bình luận"
-    }
+    },
+    "all": "Tất cả"
   },
   "course": {
     "navItem": {
@@ -351,7 +356,22 @@
             "fullname": "Họ và tên",
             "description": "Sự miêu tả",
             "rating": "Xếp hạng",
-            "hide": "Ẩn đánh giá"
+            "hide": "Ẩn đánh giá",
+            "validations": {
+              "invalid_type_error": "Không được để trống",
+              "description": {
+                "min_char": "'Mô tả quá ngắn, tối thiểu 5 ký tự"
+              },
+              "rating": {
+                "message": "Đánh giá phải từ 1-5"
+              },
+              "avatar_url": {
+                "message": "Tải lên một hình ảnh"
+              },
+              "name": {
+                "min_char": "Tên quá ngắn, tối thiểu 5 ký tự"
+              }
+            }
           },
           "header_form": {
             "title": "Tiêu đề",
@@ -1250,5 +1270,98 @@
     "see_more": "Xem thêm",
     "whats_new": "Có gì mới",
     "launch_week": "Tuần ra mắt"
+  },
+  "validations": {
+    "invalid_type_error": "Không được để trống",
+    "email": {
+      "not_valid": "Email không hợp lệ"
+    },
+    "course_payment": {
+      "email": {
+        "invalid_email": "địa chỉ email không hợp lệ"
+      },
+      "full_name": {
+        "min_char": "Phải dài từ 6 ký tự trở lên"
+      }
+    },
+    "confirm_password": {
+      "not_match": "Không khớp với mật khẩu"
+    },
+    "onboarding": {
+      "step_two": {
+        "source": {
+          "required": "Chọn một tùy chọn"
+        },
+        "goal": {
+          "required": "Chọn một tùy chọn"
+        }
+      },
+      "step_one": {
+        "full_name": {
+          "min_char": "Tên đầy đủ phải chứa 5 ký tự trở lên"
+        }
+      }
+    },
+    "reset": {
+      "password": {
+        "min_char": "Phải dài từ 6 ký tự trở lên"
+      }
+    },
+    "auth": {
+      "password": {
+        "min_char": "Phải dài từ 6 ký tự trở lên"
+      },
+      "email": {
+        "invalid_email": "địa chỉ email không hợp lệ"
+      }
+    },
+    "forgot": {
+      "invalid_email": "địa chỉ email không hợp lệ"
+    },
+    "org_landing_page": {
+      "message": {
+        "min_char": "Phải dài từ 10 ký tự trở lên"
+      },
+      "phone": {
+        "min_char": "Phải dài từ 6 ký tự trở lên"
+      },
+      "email": {
+        "invalid_email": "địa chỉ email không hợp lệ"
+      },
+      "name": {
+        "min_char": "Phải dài từ 6 ký tự trở lên"
+      }
+    },
+    "comment_in_community": {
+      "min_char": "Phải dài từ 6 ký tự trở lên"
+    },
+    "ask_community": {
+      "course_id": {
+        "select_course": "Chọn một khóa học"
+      },
+      "body": {
+        "min_char": "Phải dài từ 10 ký tự trở lên"
+      },
+      "title": {
+        "min_char": "Phải dài từ 6 ký tự trở lên"
+      }
+    },
+    "create_quiz": {
+      "min_char": "Phải dài từ 6 ký tự trở lên"
+    },
+    "lesson_schema": {
+      "empty_title": "Tiêu đề không được để trống"
+    },
+    "news_feed": {
+      "min_char": "Trường phải chứa 5 ký tự trở lên"
+    },
+    "site_name": {
+      "min_char": "Tên trang web phải chứa 5 ký tự trở lên",
+      "hyphen_rule": "Tên trang web không thể bắt đầu hoặc kết thúc bằng dấu gạch nối"
+    },
+    "organization_name": {
+      "min_char": "Tổ chức phải chứa 5 ký tự trở lên",
+      "hyphen_rule": "Tên tổ chức không thể bắt đầu hoặc kết thúc bằng dấu gạch nối"
+    }
   }
 }

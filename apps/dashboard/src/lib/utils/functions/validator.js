@@ -1,18 +1,29 @@
 import isNumber from 'lodash/isNumber';
 import z from 'zod';
 import { validateEmail } from './validateEmail';
+import { t } from '$lib/utils/functions/translations';
 
 const getOrgNameValidation = () =>
-  z.string().min(5, { message: 'Organization must contain 5 or more characters' });
+  z
+    .string()
+    .min(5, { message: `${t.get('validations.organization_name.min_char')}` })
+    .refine((val) => !/^[-]|[-]$/.test(val), {
+      message: `${t.get('validations.organization_name.hyphen_rule')}`
+    });
 
 const getSiteNameValidation = () =>
-  z.string().min(5, { message: 'Site name must contain 5 or more characters' });
+  z
+    .string()
+    .min(5, { message: `${t.get('validations.site_name.min_char')}` })
+    .refine((val) => !/^[-]|[-]$/.test(val), {
+      message: `${t.get('validations.site_name.hyphen_rule')}`
+    });
 
 const getNewsfeedValidation = () =>
-  z.string().min(5, { message: 'Field must contain 5 or more characters' });
+  z.string().min(5, { message: `${t.get('validations.news_feed.min_char')}` });
 
 const lessonSchema = z.object({
-  title: z.string().nonempty({ message: 'Title cannot be empty' }),
+  title: z.string().nonempty({ message: `${t.get('validations.lesson_schema.empty_title')}` }),
   lesson_at: z.string().optional(),
   call_url: z.string().nullable().optional(),
   is_unlocked: z.boolean()
@@ -21,92 +32,94 @@ const lessonSchema = z.object({
 const createQuizValidationSchema = z.object({
   title: z.string().min(6, {
     message: 'Must be 6 or more characters long',
-    invalid_type_error: 'Must not be empty'
+    invalid_type_error: `${t.get('validations.invalid_type_error')}`
   })
 });
 
 const askCommunityValidationSchema = z.object({
   title: z.string().min(6, {
-    message: 'Must be 6 or more characters long',
-    invalid_type_error: 'Must not be empty'
+    message: `${t.get('validations.ask_community.title.min_char')}`,
+    invalid_type_error: `${t.get('validations.invalid_type_error')}`
   }),
   body: z.string().min(20, {
-    message: 'Must be 10 or more characters long',
-    invalid_type_error: 'Must not be empty'
+    message: `${t.get('validations.ask_community.body.min_char')}`,
+    invalid_type_error: `${t.get('validations.invalid_type_error')}`
   }),
   courseId: z.string().min(36, {
-    message: 'Select a course',
-    invalid_type_error: 'Select a course'
+    message: `${t.get('validations.ask_community.course_id.select_course')}`,
+    invalid_type_error: `${t.get('validations.ask_community.course_id.select_course')}`
   })
 });
 const commentInCommunityValidationSchema = z.object({
   comment: z.string().min(6, {
-    message: 'Must be 6 or more characters long',
-    invalid_type_error: 'Must not be empty'
+    message: `${t.get('validations.comment_in_community.min_char')}`,
+    invalid_type_error: `${t.get('validations.invalid_type_error')}`
   })
 });
 
 const orgLandingpageValidationSchema = z.object({
   name: z.string().min(6, {
-    message: 'Must be 6 or more characters long',
-    invalid_type_error: 'Must not be empty'
+    message: `${t.get('validations.org_landing_page.name.min_char')}`,
+    invalid_type_error: `${t.get('validations.invalid_type_error')}`
   }),
   email: z.string().email({
-    message: 'Invalid email address',
-    invalid_type_error: 'Must not be empty'
+    message: `${t.get('validations.org_landing_page.email.invalid_email')}`,
+    invalid_type_error: `${t.get('validations.invalid_type_error')}`
   }),
   phone: z.string().min(6, {
-    message: 'Must be 6 or more characters long',
-    invalid_type_error: 'Must not be empty'
+    message: `${t.get('validations.org_landing_page.phone.min_char')}`,
+    invalid_type_error: `${t.get('validations.invalid_type_error')}`
   }),
   message: z.string().min(20, {
-    message: 'Must be 10 or more characters long',
-    invalid_type_error: 'Must not be empty'
+    message: `${t.get('validations.org_landing_page.message.min_char')}`,
+    invalid_type_error: `${t.get('validations.invalid_type_error')}`
   })
 });
 
 const forgotValidationSchema = z.object({
   email: z.string().email({
-    message: 'Invalid email address',
-    invalid_type_error: 'Must not be empty'
+    message: `${t.get('validations.forgot.invalid_email')}`,
+    invalid_type_error: `${t.get('validations.invalid_type_error')}`
   })
 });
 
 const authValidationSchema = z.object({
   email: z.string().email({
-    message: 'Invalid email address',
-    invalid_type_error: 'Must not be empty'
+    message: `${t.get('validations.auth.email.invalid_email')}`,
+    invalid_type_error: `${t.get('validations.invalid_type_error')}`
   }),
   password: z.string().min(6, {
-    message: 'Must be 6 or more characters long',
-    invalid_type_error: 'Must not be empty'
+    message: `${t.get('validations.auth.password.min_char')}`,
+    invalid_type_error: `${t.get('validations.invalid_type_error')}`
   })
 });
 
 const resetValidationSchema = z.object({
   password: z.string().min(6, {
-    message: 'Must be 6 or more characters long',
-    invalid_type_error: 'Must not be empty'
+    message: `${t.get('validations.reset.password.min_char')}`,
+    invalid_type_error: `${t.get('validations.invalid_type_error')}`
   })
 });
 
 const onboardingValidationSchema = {
   stepOne: z.object({
-    fullname: z.string().min(5, { message: 'Fullname must contain 5 or more characters' }),
+    fullname: z
+      .string()
+      .min(5, { message: `${t.get('validations.onboarding.step_one.full_name.min_char')}` }),
     orgName: getOrgNameValidation(),
     siteName: getSiteNameValidation()
   }),
   stepTwo: z.object({
     goal: z
       .string({
-        required_error: 'Select an option',
-        invalid_type_error: 'Select an option'
+        required_error: `${t.get('validations.onboarding.step_two.goal.required')}`,
+        invalid_type_error: `${t.get('validations.onboarding.step_two.goal.required')}`
       })
       .min(1),
     source: z
       .string({
-        required_error: 'Select an option',
-        invalid_type_error: 'Select an option'
+        required_error: `${t.get('validations.onboarding.step_two.source.required')}`,
+        invalid_type_error: `${t.get('validations.onboarding.step_two.source.required')}`
       })
       .min(1)
   })
@@ -114,7 +127,7 @@ const onboardingValidationSchema = {
 
 export const getConfirmPasswordError = ({ password, confirmPassword }) => {
   return password > 6 && confirmPassword > 6 && password !== confirmPassword
-    ? 'Does not match password'
+    ? `${t.get('validations.confirm_password.not_match')}`
     : undefined;
 };
 
@@ -161,12 +174,12 @@ export const lessonValidation = (lesson = {}) => {
 export const coursePaymentValidation = (fields = {}) => {
   const schema = z.object({
     fullname: z.string().min(6, {
-      message: 'Must be 6 or more characters long',
-      invalid_type_error: 'Must not be empty'
+      message: `${t.get('validations.course_payment.full_name.min_char')}`,
+      invalid_type_error: `${t.get('validations.invalid_type_error')}`
     }),
     email: z.string().email({
-      message: 'Invalid email address',
-      invalid_type_error: 'Must not be empty'
+      message: `${t.get('validations.course_payment.email.invalid_email')}`,
+      invalid_type_error: `${t.get('validations.invalid_type_error')}`
     })
   });
   const { error } = schema.safeParse(fields);
@@ -242,6 +255,14 @@ export const createOrgValidation = (fields = {}) => {
   return processErrors(error);
 };
 
+export const updateOrgNameValidation = (orgName) => {
+  const schema = z.object({
+    orgName: getOrgNameValidation()
+  });
+  const { error } = schema.safeParse({ orgName });
+
+  return processErrors(error);
+};
 export const updateOrgSiteNameValidation = (siteName) => {
   const schema = z.object({
     siteName: getSiteNameValidation()
@@ -290,7 +311,7 @@ export const validateEmailInString = (emailsStr) => {
 
     if (!validateEmail(email)) {
       hasError = true;
-      error += !error.length ? `Not valid email: ${email}` : `, ${email}`;
+      error += !error.length ? `${t.get('validations.email.not_valid')}: ${email}` : `, ${email}`;
     }
 
     return email;

@@ -272,7 +272,7 @@
       </div>
     </Column>
   </Row>
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <!-- <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={8} md={8} lg={8}>
       <SectionTitle>{$t('course.navItem.settings.grading')}</SectionTitle>
       <p>{$t('course.navItem.settings.reports')}</p>
@@ -283,7 +283,7 @@
         <span slot="labelB" style="color: gray">{$t('course.navItem.settings.enabled')}</span>
       </Toggle>
     </Column>
-  </Row>
+  </Row> -->
 
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={8} md={8} lg={8}>

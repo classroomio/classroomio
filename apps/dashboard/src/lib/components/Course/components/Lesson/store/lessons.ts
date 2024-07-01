@@ -63,6 +63,8 @@ export async function handleDelete(lessonId: Lesson['id'] | undefined) {
     }
 
     lessons.update((_lessons) => _lessons.filter((lesson) => lesson.id !== lessonId));
+
+    snackbar.success('snackbar.generic.success_delete');
   }
 
   console.log(`lessonId`, lessonId);

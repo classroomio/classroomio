@@ -111,13 +111,6 @@
         {/if}
       </li>
       <a
-        href="/pricing"
-        class="text-gray-800 font-semibold text-sm cursor-pointer"
-        class:active={activeLink.startsWith('/pricing')}
-      >
-        <li class="hover:bg-gray-100 px-4 py-2 rounded-md">Pricing</li>
-      </a>
-      <a
         href="/tools"
         class="text-gray-800 font-semibold text-sm cursor-pointer"
         class:active={activeLink.startsWith('/tools')}
@@ -139,6 +132,13 @@
         class:active={activeLink.startsWith('/blog')}
       >
         <li class="hover:bg-gray-100 px-4 py-2 rounded-md">Blog</li>
+      </a>
+      <a
+        href="/pricing"
+        class="text-gray-800 font-semibold text-sm cursor-pointer"
+        class:active={activeLink.startsWith('/pricing')}
+      >
+        <li class="hover:bg-gray-100 px-4 py-2 rounded-md">Pricing</li>
       </a>
     </ul>
   </nav>
@@ -229,17 +229,6 @@
           >
             <li>Free Tools</li>
           </a>
-          <!-- Pricing -->
-          <a
-            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full"
-            on:click={() => {
-              handleShowNav();
-            }}
-            href="/pricing"
-            class:active={activeLink.startsWith('/pricing')}
-          >
-            <li>Pricing</li>
-          </a>
           <!-- <a
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
             on:click={() => {
@@ -260,6 +249,17 @@
             href="/blog"
           >
             <li>Blog</li>
+          </a>
+          <!-- Pricing -->
+          <a
+            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full"
+            on:click={() => {
+              handleShowNav();
+            }}
+            href="/pricing"
+            class:active={activeLink.startsWith('/pricing')}
+          >
+            <li>Pricing</li>
           </a>
           <a
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
