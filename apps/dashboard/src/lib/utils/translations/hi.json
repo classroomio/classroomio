@@ -154,7 +154,11 @@
         "submitting_poll": "मतदान सबमिट करते समय एक त्रुटि उत्पन्न हुई"
       }
     },
-    "success_update": "सफलतापूर्वक अपडेट किया गया"
+    "success_update": "सफलतापूर्वक अपडेट किया गया",
+    "generic": {
+      "success_delete": "सफलतापूर्वक मिटाया गया",
+      "try_again": "त्रुटि - कृपया बाद में पुनः प्रयास करें"
+    }
   },
   "exercises": {
     "heading": "अभ्यास",
@@ -229,7 +233,8 @@
       "cancel": "रद्द करना",
       "give": "एक उत्तर दें",
       "comment": "टिप्पणी"
-    }
+    },
+    "all": "सभी"
   },
   "course": {
     "navItem": {
@@ -351,7 +356,22 @@
             "fullname": "पूरा नाम",
             "description": "विवरण",
             "rating": "रेटिंग",
-            "hide": "समीक्षा छिपाएँ"
+            "hide": "समीक्षा छिपाएँ",
+            "validations": {
+              "invalid_type_error": "खाली नहीं होना चाहिए",
+              "description": {
+                "min_char": "'विवरण बहुत छोटा है, न्यूनतम 5 अक्षर"
+              },
+              "rating": {
+                "message": "रेटिंग 1-5 तक होनी चाहिए"
+              },
+              "avatar_url": {
+                "message": "एक छवि अपलोड करें"
+              },
+              "name": {
+                "min_char": "नाम बहुत छोटा है, न्यूनतम 5 अक्षर है"
+              }
+            }
           },
           "header_form": {
             "title": "शीर्षक",
@@ -1239,5 +1259,98 @@
   },
   "specialization": {
     "course_tag": "विशेषज्ञता"
+  },
+  "validations": {
+    "invalid_type_error": "खाली नहीं होना चाहिए",
+    "email": {
+      "not_valid": "वैध ईमेल नहीं"
+    },
+    "course_payment": {
+      "email": {
+        "invalid_email": "अमान्य ईमेल पता"
+      },
+      "full_name": {
+        "min_char": "6 या अधिक अक्षर लंबा होना चाहिए"
+      }
+    },
+    "confirm_password": {
+      "not_match": "पासवर्ड से मेल नहीं खाता"
+    },
+    "onboarding": {
+      "step_two": {
+        "source": {
+          "required": "कोई विकल्प चुनें"
+        },
+        "goal": {
+          "required": "कोई विकल्प चुनें"
+        }
+      },
+      "step_one": {
+        "full_name": {
+          "min_char": "पूरे नाम में 5 या अधिक अक्षर होने चाहिए"
+        }
+      }
+    },
+    "reset": {
+      "password": {
+        "min_char": "6 या अधिक अक्षर लंबा होना चाहिए"
+      }
+    },
+    "auth": {
+      "password": {
+        "min_char": "6 या अधिक अक्षर लंबा होना चाहिए"
+      },
+      "email": {
+        "invalid_email": "अमान्य ईमेल पता"
+      }
+    },
+    "forgot": {
+      "invalid_email": "अमान्य ईमेल पता"
+    },
+    "org_landing_page": {
+      "message": {
+        "min_char": "10 या अधिक अक्षर लंबा होना चाहिए"
+      },
+      "phone": {
+        "min_char": "6 या अधिक अक्षर लंबा होना चाहिए"
+      },
+      "email": {
+        "invalid_email": "अमान्य ईमेल पता"
+      },
+      "name": {
+        "min_char": "6 या अधिक अक्षर लंबा होना चाहिए"
+      }
+    },
+    "comment_in_community": {
+      "min_char": "6 या अधिक अक्षर लंबा होना चाहिए"
+    },
+    "ask_community": {
+      "course_id": {
+        "select_course": "एक कोर्स चुनें"
+      },
+      "body": {
+        "min_char": "10 या अधिक अक्षर लंबा होना चाहिए"
+      },
+      "title": {
+        "min_char": "6 या अधिक अक्षर लंबा होना चाहिए"
+      }
+    },
+    "create_quiz": {
+      "min_char": "6 या अधिक अक्षर लंबा होना चाहिए"
+    },
+    "lesson_schema": {
+      "empty_title": "शीर्षक खाली नहीं हो सकता"
+    },
+    "news_feed": {
+      "min_char": "फ़ील्ड में 5 या अधिक वर्ण होने चाहिए"
+    },
+    "site_name": {
+      "min_char": "साइट नाम में 5 या अधिक अक्षर होने चाहिए",
+      "hyphen_rule": "साइट का नाम किसी हाइफ़न से प्रारंभ या समाप्त नहीं हो सकता"
+    },
+    "organization_name": {
+      "min_char": "संगठन में 5 या अधिक वर्ण होने चाहिए",
+      "hyphen_rule": "संगठन का नाम हाइफ़न से प्रारंभ या समाप्त नहीं हो सकता"
+    }
   }
 }

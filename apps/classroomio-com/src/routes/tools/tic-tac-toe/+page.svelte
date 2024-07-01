@@ -103,14 +103,18 @@
   <meta name="twitter:image" content="https://brand.cdn.clsrio.com/og/free-tools.png" />
 </svelte:head>
 
-<section class="mt-[30%] px-5 md:px-0 md:mt-[5%]">
+<section class="mt-[10%] md:mt-16 px-5 md:px-0">
   <ToolsHeader className="mb-10">
     <img
       src="/free-tools/tic-tac.svg"
       class="w-14 md:w-[5%] mx-auto border rounded-full"
       alt="Tic Tac Icon"
     />
-    <h1 class="text-4xl md:text-5xl font-bold text-[#040F2D]">Tic-Tac game</h1>
+    <h1 class="text-4xl md:text-6xl font-bold text-[#040F2D] my-3">Tic-Tac game</h1>
+    <p class="text-md text-[#656565] font-light md:font-normal md:w-[45%] mx-auto">
+      More than just a game; it's an educational tool that teaches pattern recognition, and
+      decision-making.
+    </p>
   </ToolsHeader>
 
   <div

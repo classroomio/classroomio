@@ -154,7 +154,11 @@
         "submitting_poll": "Beim Absenden der Umfrage ist ein Fehler aufgetreten"
       }
     },
-    "success_update": "Erfolgreich geupdated"
+    "success_update": "Erfolgreich geupdated",
+    "generic": {
+      "success_delete": "Erfolgreich gelöscht",
+      "try_again": "Fehler – Bitte versuchen Sie es später noch einmal"
+    }
   },
   "exercises": {
     "heading": "Übungen",
@@ -229,7 +233,8 @@
       "cancel": "Stornieren",
       "give": "Eine Antwort geben",
       "comment": "Kommentar"
-    }
+    },
+    "all": "Alle"
   },
   "course": {
     "navItem": {
@@ -351,7 +356,22 @@
             "fullname": "Vollständiger Name",
             "description": "Beschreibung",
             "rating": "Bewertung",
-            "hide": "Bewertung ausblenden"
+            "hide": "Bewertung ausblenden",
+            "validations": {
+              "invalid_type_error": "Darf nicht leer sein",
+              "description": {
+                "min_char": "„Beschreibung ist zu kurz, mindestens 5 Zeichen.“"
+              },
+              "rating": {
+                "message": "Die Bewertung muss zwischen 1 und 5 liegen"
+              },
+              "avatar_url": {
+                "message": "Lade ein Bild hoch"
+              },
+              "name": {
+                "min_char": "Der Name ist zu kurz, mindestens 5 Zeichen"
+              }
+            }
           },
           "header_form": {
             "title": "Titel",
@@ -1239,5 +1259,98 @@
   },
   "specialization": {
     "course_tag": "Spezialisierung"
+  },
+  "validations": {
+    "invalid_type_error": "Darf nicht leer sein",
+    "email": {
+      "not_valid": "Ungültige E-Mail-Adresse"
+    },
+    "course_payment": {
+      "email": {
+        "invalid_email": "Ungültige E-Mail-Adresse"
+      },
+      "full_name": {
+        "min_char": "Muss mindestens 6 Zeichen lang sein"
+      }
+    },
+    "confirm_password": {
+      "not_match": "Passt nicht zum Passwort"
+    },
+    "onboarding": {
+      "step_two": {
+        "source": {
+          "required": "Wähle eine Option"
+        },
+        "goal": {
+          "required": "Wähle eine Option"
+        }
+      },
+      "step_one": {
+        "full_name": {
+          "min_char": "Der vollständige Name muss mindestens 5 Zeichen enthalten"
+        }
+      }
+    },
+    "reset": {
+      "password": {
+        "min_char": "Muss mindestens 6 Zeichen lang sein"
+      }
+    },
+    "auth": {
+      "password": {
+        "min_char": "Muss mindestens 6 Zeichen lang sein"
+      },
+      "email": {
+        "invalid_email": "Ungültige E-Mail-Adresse"
+      }
+    },
+    "forgot": {
+      "invalid_email": "Ungültige E-Mail-Adresse"
+    },
+    "org_landing_page": {
+      "message": {
+        "min_char": "Muss mindestens 10 Zeichen lang sein"
+      },
+      "phone": {
+        "min_char": "Muss mindestens 6 Zeichen lang sein"
+      },
+      "email": {
+        "invalid_email": "Ungültige E-Mail-Adresse"
+      },
+      "name": {
+        "min_char": "Muss mindestens 6 Zeichen lang sein"
+      }
+    },
+    "comment_in_community": {
+      "min_char": "Muss mindestens 6 Zeichen lang sein"
+    },
+    "ask_community": {
+      "course_id": {
+        "select_course": "Wählen Sie einen Kurs aus"
+      },
+      "body": {
+        "min_char": "Muss mindestens 10 Zeichen lang sein"
+      },
+      "title": {
+        "min_char": "Muss mindestens 6 Zeichen lang sein"
+      }
+    },
+    "create_quiz": {
+      "min_char": "Muss mindestens 6 Zeichen lang sein"
+    },
+    "lesson_schema": {
+      "empty_title": "Der Titel darf nicht leer sein"
+    },
+    "news_feed": {
+      "min_char": "Das Feld muss 5 oder mehr Zeichen enthalten"
+    },
+    "site_name": {
+      "min_char": "Der Site-Name muss mindestens 5 Zeichen enthalten",
+      "hyphen_rule": "Der Site-Name darf nicht mit einem Bindestrich beginnen oder enden"
+    },
+    "organization_name": {
+      "min_char": "Die Organisation muss 5 oder mehr Zeichen enthalten",
+      "hyphen_rule": "Der Name der Organisation darf nicht mit einem Bindestrich beginnen oder enden"
+    }
   }
 }

@@ -32,7 +32,7 @@
 <slot />
 
 <PageSignupCTA
-  header="Launch your Online Bootcamp Today"
+  header="Start Teaching Online Today"
   subText="ClassroomIO gives small and medium bootcamps the power of online learning, simplified."
   btnLabel="Sign me up"
   link="/signup"

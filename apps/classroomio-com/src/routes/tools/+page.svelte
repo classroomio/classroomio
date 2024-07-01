@@ -16,16 +16,16 @@
         fun for students and educator looking for engaging resources.
       </p>
 
-      <div class="flex relative md:w-[50%] my-3 md:mt-10 mx-auto">
+      <div class="flex relative w-[90%] md:w-[50%] my-3 md:mt-10 mx-auto">
         <!-- <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-0 z-0"
           src="/free-tools/waec.svg"
           alt="Waec logo"
         /> -->
         <img
-          class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[50px] z-10"
-          src="/free-tools/question-of-the-day.svg"
-          alt="Question of the day logo"
+          class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[55px] z-10"
+          src="/free-tools/progress-report.svg"
+          alt="Progress Report"
         />
         <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[100px] z-20"
@@ -41,6 +41,11 @@
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[200px] z-40"
           src="/free-tools/tic-tac.svg"
           alt="Tic tac logo"
+        />
+        <img
+          class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[250px] z-50 bg-white"
+          src="/free-tools/pomodoro.svg"
+          alt="Pomodoro Timer logo"
         />
         <!-- <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-[250px] z-50"
@@ -61,7 +66,7 @@
           class="w-full flex md:max-w-[370px] border rounded-md shadow-sm hover:scale-95 transition-all ease-in-out"
         >
           <img class="w-[30%] rounded-l-md" src={tool.src} alt="" />
-          <div class="bg-[#F5F8FE] p-5 rounded-r-md">
+          <div class="bg-[#F5F8FE] p-5 rounded-r-md w-[70%]">
             <h1 class="font-bold text-sm md:text-base">{tool.title}</h1>
             <p class="text-xs text-gray-600 mt-1.5">
               {tool.subText}

@@ -128,7 +128,7 @@
   <meta name="twitter:image" content="https://brand.cdn.clsrio.com/og/free-tools.png" />
 </svelte:head>
 
-<section class="mt-[30%] px-5 md:px-0 md:mt-[5%]">
+<section class="mt-[10%] md:mt-16 px-5 md:px-0">
   <ToolsHeader>
     <img
       src="/free-tools/name-picker.svg"
@@ -136,7 +136,7 @@
       alt=""
     />
     <h1 class="text-4xl md:text-6xl font-bold text-[#040F2D] my-3">Random Name Picker</h1>
-    <p class="text-[13px] text-[#656565] font-light md:font-normal md:w-[45%] mx-auto">
+    <p class="text-md text-[#656565] font-light md:font-normal md:w-[45%] mx-auto">
       Use this online name picker to draw a random name from a list of names, or to draw several
       names randomly out of a list. You can use it as a name randomizer for a class activities.
     </p>
