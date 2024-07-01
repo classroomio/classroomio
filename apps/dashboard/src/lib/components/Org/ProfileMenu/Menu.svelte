@@ -13,7 +13,7 @@
   import Rocket from 'carbon-icons-svelte/lib/Rocket.svelte';
   import NewTab from 'carbon-icons-svelte/lib/NewTab.svelte';
   import { goto } from '$app/navigation';
-  import { popUp } from '../store';
+  import { profileMenu } from '../store';
   import { supabase } from '$lib/utils/functions/supabase';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { t } from '$lib/utils/functions/translations';
@@ -33,17 +33,24 @@
 
     capturePosthogEvent('user_logged_out');
     posthog.reset();
+
+    closeMenu();
+
     goto('/login');
+  }
+
+  function closeMenu() {
+    $profileMenu.open = false;
   }
 </script>
 
 <div class="md:px-4 md:py-4 py-2 px-2 rounded-md cursor-pointer">
   <div class="border-b py-3 space-y-4">
-    <p class="text-xs font-semibold text-gray-500">{$t('bottomMenu.profile')}</p>
+    <p class="text-xs font-semibold text-gray-500">{$t('profileMenu.profile')}</p>
     <a
       href={`${!$globalStore.isOrgSite ? $currentOrgPath : '/lms'}/settings`}
       class="flex items-center justify-between hover:no-underline"
-      on:click={() => ($popUp.open = false)}
+      on:click={closeMenu}
     >
       <span class="flex items-center gap-2 max-w-[70%]">
         <img src={$profile.avatar_url} alt="profile" class="h-8 w-8 rounded-full" />
@@ -59,11 +66,11 @@
   </div>
   {#if !$globalStore.isOrgSite}
     <div class="border-b py-3 space-y-4">
-      <p class="text-xs font-semibold text-gray-500">{$t('bottomMenu.current_org')}</p>
+      <p class="text-xs font-semibold text-gray-500">{$t('profileMenu.current_org')}</p>
       <a
         href={`${$currentOrgPath}/settings?tab=org`}
         class="flex items-center justify-between hover:no-underline"
-        on:click={() => ($popUp.open = false)}
+        on:click={closeMenu}
       >
         <span class="flex items-center gap-2 max-w-[70%]">
           <div
@@ -86,42 +93,42 @@
   {/if}
 
   <div class="border-b py-3 space-y-4">
-    <p class="text-xs font-semibold text-gray-500">{$t('bottomMenu.free_tools')}</p>
+    <p class="text-xs font-semibold text-gray-500">{$t('profileMenu.free_tools')}</p>
     <a
       href="https://classroomio.com/tools/progress"
       target="_blank"
       class="flex items-center gap-2"
-      on:click={() => ($popUp.open = true)}
+      on:click={closeMenu}
     >
       <img src="/progress.svg" alt="progress" class="h-6 w-6 rounded-full" />
-      <p class="text-sm font-semibold">{$t('bottomMenu.progress')}</p>
+      <p class="text-sm font-semibold">{$t('profileMenu.progress')}</p>
     </a>
     <a
       href="https://classroomio.com/tools/activity-stopwatch"
       target="_blank"
       class=" flex items-center gap-2"
-      on:click={() => ($popUp.open = true)}
+      on:click={closeMenu}
     >
       <img src="/timer.svg" alt="timer" class="h-6 w-6 rounded-full" />
-      <p class="text-sm font-semibold">{$t('bottomMenu.timer')}</p>
+      <p class="text-sm font-semibold">{$t('profileMenu.timer')}</p>
     </a>
     <a
       href="https://classroomio.com/tools/tic-tac-toe"
       target="_blank"
       class=" flex items-center gap-2"
-      on:click={() => ($popUp.open = true)}
+      on:click={closeMenu}
     >
       <img src="/tictac.svg" alt="tic_tac_toe" class="h-6 w-6 rounded-full" />
-      <p class="text-sm font-semibold">{$t('bottomMenu.tic_tac')}</p>
+      <p class="text-sm font-semibold">{$t('profileMenu.tic_tac')}</p>
     </a>
     <a
       href="https://classroomio.com/tools"
-      on:click={() => ($popUp.open = true)}
+      on:click={closeMenu}
       target="_blank"
       class="flex ml-auto w-fit items-center justify-end"
     >
       <div class="text-blue-900 font-semibold text-xs flex items-center gap-1">
-        {$t('bottomMenu.see_more')}
+        {$t('profileMenu.see_more')}
         <ChevronDown class="text-blue-900" />
       </div>
     </a>
@@ -130,20 +137,21 @@
     <div class="border-b py-3 space-y-4">
       <a
         href="https://classroomio.com/roadmap"
-        on:click={() => ($popUp.open = true)}
         target="_blank"
+        on:click={closeMenu}
         class="hover:no-underline flex items-center gap-2"
       >
         <NewTab />
-        <p class="text-sm font-semibold">{$t('bottomMenu.whats_new')}</p>
+        <p class="text-sm font-semibold">{$t('profileMenu.whats_new')}</p>
       </a>
       <a
-        href="https://classroomio.com/tools/blog/launch-week"
+        href="https://classroomio.com/blog/launch-week"
         target="_blank"
+        on:click={closeMenu}
         class="hover:no-underline flex items-center gap-2"
       >
         <Rocket />
-        <p class="text-sm font-semibold">{$t('bottomMenu.launch_week')}</p>
+        <p class="text-sm font-semibold">{$t('profileMenu.launch_week')}</p>
       </a>
     </div>
   {/if}

@@ -1260,7 +1260,7 @@
   "specialization": {
     "course_tag": "विशेषज्ञता"
   },
-  "bottomMenu": {
+  "profileMenu": {
     "profile": "प्रोफ़ाइल",
     "current_org": "वर्तमान संघ",
     "free_tools": "मुफ़्त उपकरण",

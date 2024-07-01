@@ -16,10 +16,10 @@
   import { isOrgAdmin } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
-  import { sideBar, popUp } from './store';
+  import { sideBar, profileMenu } from './store';
   import { t } from '$lib/utils/functions/translations';
   import { goto } from '$app/navigation';
-  import BottomMenu from '$lib/components/Org/BottomMenu/index.svelte';
+  import ProfileMenu from '$lib/components/Org/ProfileMenu/index.svelte';
 
   interface menuItems {
     label: string;
@@ -47,43 +47,6 @@
     goto(window.location.pathname + '?upgrade=true');
   };
 
-  // $: {
-  //   menuItems = [
-  //     {
-  //       path: '',
-  //       label: 'Dashboard',
-  //       show: true
-  //     },
-  //     // {
-  //     //   path: '/quiz',
-  //     //   label: 'Quizzes'
-  //     // },
-  //     {
-  //       path: '/courses',
-  //       label: 'Courses',
-  //       show: true
-  //     },
-  //     {
-  //       path: '/community',
-  //       label: 'Community',
-  //       show: true
-  //     },
-  //     // {
-  //     //   path: '/site',
-  //     //   label: 'Site settings',
-  //     // },
-  //     {
-  //       path: '/audience',
-  //       label: 'Audience',
-  //       show: true
-  //     },
-  //     {
-  //       path: '/setup',
-  //       label: 'Setup',
-  //       show: $isOrgAdmin
-  //     }
-  //   ];
-  // }
   $: menuItems = [
     {
       path: '',
@@ -113,7 +76,7 @@
   ];
 </script>
 
-<div bind:this={$popUp.ref} class="static md:relative">
+<div bind:this={$profileMenu.ref} class="static md:relative">
   <aside
     class={`${
       $sideBar.hidden
@@ -191,9 +154,9 @@
         </a>
 
         <button
-          class="absolute w-[87%]"
+          class="w-full"
           on:click={() => {
-            $popUp.open = !$popUp.open;
+            $profileMenu.open = !$profileMenu.open;
             $sideBar.hidden = true;
           }}
         >
@@ -218,5 +181,5 @@
     </div>
   </aside>
 
-  <BottomMenu />
+  <ProfileMenu />
 </div>

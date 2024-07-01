@@ -7,8 +7,6 @@
   import Box from '$lib/components/Box/index.svelte';
   import { currentOrg } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
-  import { Popover } from 'carbon-components-svelte';
-  import { popUp } from '$lib/components/Org/store.js';
 
   export let data;
 

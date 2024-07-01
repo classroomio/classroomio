@@ -42,7 +42,7 @@
     "forgot": "Forgot password?",
     "login": "Log In"
   },
-  "bottomMenu": {
+  "profileMenu": {
     "profile": "PROFILE",
     "current_org": "CURRENT ORGANIZATION",
     "free_tools": "FREE TOOLS",

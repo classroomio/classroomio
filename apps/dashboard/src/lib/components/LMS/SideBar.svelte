@@ -8,11 +8,11 @@
   import Avatar from '$lib/components/Avatar/index.svelte';
   import { profile } from '$lib/utils/store/user';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
-  import { popUp, sideBar } from '$lib/components/Org/store';
+  import { profileMenu, sideBar } from '$lib/components/Org/store';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
   import { ChevronRight } from 'carbon-icons-svelte';
-  import BottomMenu from '$lib/components/Org/BottomMenu/index.svelte';
+  import ProfileMenu from '$lib/components/Org/ProfileMenu/index.svelte';
 
   interface sideLinks {
     name: string;
@@ -68,7 +68,7 @@
   };
 </script>
 
-<div bind:this={$popUp.ref} class="static md:relative">
+<div bind:this={$profileMenu.ref} class="static md:relative">
   <aside
     class={`${
       $sideBar.hidden
@@ -123,9 +123,9 @@
           </li>
         </a>
         <button
-          class="absolute w-[87%]"
+          class="w-full"
           on:click={() => {
-            $popUp.open = !$popUp.open;
+            $profileMenu.open = !$profileMenu.open;
             $sideBar.hidden = true;
           }}
         >
@@ -150,5 +150,5 @@
     </div>
   </aside>
 
-  <BottomMenu />
+  <ProfileMenu />
 </div>

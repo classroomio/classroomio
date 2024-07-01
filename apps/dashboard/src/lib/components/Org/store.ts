@@ -8,7 +8,10 @@ export const sideBar = writable({
   hidden: true
 });
 
-export const popUp = writable({
-  ref: null,
+export const profileMenu = writable<{
+  ref?: HTMLDivElement;
+  open: boolean;
+}>({
+  ref: undefined,
   open: false
 });
