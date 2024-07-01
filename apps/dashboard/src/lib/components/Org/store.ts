@@ -7,3 +7,11 @@ export const newOrgModal = writable({
 export const sideBar = writable({
   hidden: true
 });
+
+export const profileMenu = writable<{
+  ref?: HTMLDivElement;
+  open: boolean;
+}>({
+  ref: undefined,
+  open: false
+});

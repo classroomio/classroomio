@@ -10,6 +10,8 @@
 
   export let data;
 
+  let ref = null;
+
   $: if ($currentOrg.id && data.orgName === '*') {
     const newUrl = $page.url.pathname.replace('*', $currentOrg.siteName);
     goto(newUrl + $page.url.search);
