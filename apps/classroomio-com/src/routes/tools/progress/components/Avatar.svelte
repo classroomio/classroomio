@@ -11,7 +11,6 @@
 
   let avatars: Avatar[] = [
     { src: 'avatar_a' },
-    { src: 'avatar_u' },
     { src: 'avatar_b' },
     { src: 'avatar_c' },
     { src: 'avatar_d' },
