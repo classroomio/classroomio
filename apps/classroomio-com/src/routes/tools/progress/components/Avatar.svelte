@@ -77,7 +77,7 @@
         {/if}
         <!-- avatar -->
         <img
-          src="https://assets.cdn.clsrio.com/progress-report/avatars/{avatar.src}.svg"
+          src="https://assets.cdn.clsrio.com/progress-report/avatar/{avatar.src}.svg"
           alt=""
           class="w-full"
         />
