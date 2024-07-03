@@ -15,6 +15,7 @@
     { src: 'avatar_c' },
     { src: 'avatar_d' },
     { src: 'avatar_e' },
+    { src: 'avatar_f' },
     { src: 'avatar_g' },
     { src: 'avatar_h' },
     { src: 'avatar_i' },
