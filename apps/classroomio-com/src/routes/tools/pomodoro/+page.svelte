@@ -28,20 +28,34 @@
 
   const timerSequence = ['pomodoro', 'long-break', 'short-break'];
 
+  function saveTodoList() {
+    localStorage.setItem('todoList', JSON.stringify(todoList));
+  }
+
+  function loadTodoList() {
+    const storedTodoList = localStorage.getItem('todoList');
+    if (storedTodoList) {
+      todoList = JSON.parse(storedTodoList);
+    }
+  }
+
   function setEditing(i: number, isEditing: boolean) {
     todoList[i].isEditing = isEditing;
+    saveTodoList();
   }
 
   function deleteTodo(i: number) {
     todoList.splice(i, 1);
     todoList = todoList;
     isVisible = false;
+    saveTodoList();
   }
 
   function markTodoAsDone(i: number) {
     todoList[i].isDone = true;
     todoList = [...todoList];
     todoList[i].isVisible = false;
+    saveTodoList();
   }
 
   function addTodo() {
@@ -61,6 +75,8 @@
     setTimeout(() => {
       addInput.focus();
     }, 50);
+
+    saveTodoList();
   }
 
   function startCountdown() {
@@ -130,6 +146,7 @@
 
   onMount(() => {
     buzzSound = new Audio('https://assets.cdn.clsrio.com/beeping-sound.mp3');
+    loadTodoList();
   });
 </script>
 
