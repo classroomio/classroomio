@@ -1,8 +1,6 @@
 <script lang="ts">
-  import { fly } from 'svelte/transition';
   import { onMount } from 'svelte';
   import ToolsHeader from '$lib/ToolsHeader/ToolsHeader.svelte';
-  import { sineInOut } from 'svelte/easing';
 
   interface TodoItem {
     id: number;
@@ -266,7 +264,7 @@
         <!-- todos -->
         <div class="overflow-y-auto mt-3 max-h-[40vh] md:max-h-[50vh]">
           {#each todoList as todo, i}
-            <div in:fly={{ y: 100, delay: 0, easing: sineInOut }} class="border text-black p-5">
+            <div class="border text-black p-5">
               {#if todo.isEditing}
                 <form on:submit|preventDefault={() => setEditing(i, false)}>
                   <p class="text-xs text-left text-[#656565] font-semibold">Pomodoro name</p>
