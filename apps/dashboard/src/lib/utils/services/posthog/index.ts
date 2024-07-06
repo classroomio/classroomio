@@ -16,7 +16,7 @@ export const identifyPosthogUser = (id: string, properties?: Record<string, unkn
 export const initPosthog = (): void => {
   if (dev) return;
 
-  posthog.init('phc_JfdHOZ6v0cVlGELBYx1Tmoen2nxNOrAzvgvrPA6Ksov', {
-    api_host: 'https://eu.posthog.com'
+  posthog.init('TZovFN838p7kmdjdCtEjTZNjjm90OshMJ6nLBS2xMqw', {
+    api_host: 'https://us.i.posthog.com'
   });
 };
