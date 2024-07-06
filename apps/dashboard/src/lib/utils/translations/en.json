@@ -494,8 +494,13 @@
 
       "lessons": {
         "heading": "Lessons",
+        "drag": "drag a card to reorder",
+        "no_lesson": "No lessons yet",
+        "share_your_knowledge": "Share your knowledge with the world by creating engaging lessons. Start by clicking on the Add button.",
         "add_lesson": {
           "button_title": "Add",
+          "start_reorder": "Reorder",
+          "end_reorder": "End Reorder",
           "modal_heading": "Add New Lesson",
           "lesson_title": "Lesson Title",
           "click_to": "Click to",
@@ -742,6 +747,12 @@
           "option_label": "Option Label",
           "cancel": "Cancel",
           "poll_question": "Poll Question"
+        },
+        "version_history": {
+          "title": "Version history",
+          "fetch_more_versions": "Fetch more versions",
+          "current_version": "Current version",
+          "restore_version": "Restore this version"
         }
       },
 
@@ -1238,7 +1249,8 @@
     "lessons": {
       "success": {
         "complete_marked": "Marked as complete",
-        "complete_download": "Download Complete"
+        "complete_download": "Download Complete",
+        "version_restored": "Version restored sucessfully"
       },
       "error": {
         "try_later": "Something's not right - Please try later"

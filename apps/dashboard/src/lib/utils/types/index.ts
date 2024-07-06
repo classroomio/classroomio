@@ -19,7 +19,8 @@ export interface GroupPerson {
   email: string | null;
   group_id: string;
   id: string;
-  profile: Profile;
+  memberId: string;
+  profile: Partial<Profile>;
   profile_id: string;
   role_id: Role['id'];
   fullname?: string;
@@ -297,7 +298,7 @@ export interface Lesson {
   slide_url?: any; // type unknown;
   course_id: string /* foreign key to course.id */;
   id: string /* primary key */;
-  created_at?: string;
+  created_at: string;
   updated_at?: string;
   title: string; // type unknown;
   public?: boolean;
