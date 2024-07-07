@@ -67,8 +67,8 @@
       <div class="relative w-full h-full flex flex-col justify-center gap-3 items-center px-2">
         <!-- avatar -->
         <img
-          src={`https://assets.cdn.clsrio.com/progress-report/avatars/${
-            $htmlBody.avatar || 'avatar_l'
+          src={`https://assets.cdn.clsrio.com/progress-report/avatar/${
+            $htmlBody.avatar || 'avatar_a'
           }.svg`}
           alt=""
           class="absolute top-0 w-[25%] h-[25%] ml-2 -mt-[2.2rem]"

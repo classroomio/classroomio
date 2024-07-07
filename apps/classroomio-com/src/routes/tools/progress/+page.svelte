@@ -226,7 +226,7 @@
             >
               <img
                 src={`https://assets.cdn.clsrio.com/progress-report/avatars/${
-                  $htmlBody.avatar || 'avatar_l'
+                  $htmlBody.avatar || 'avatar_m'
                 }.svg`}
                 alt=""
                 class="w-[15%] md:w-[30%]"

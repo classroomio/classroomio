@@ -11,11 +11,11 @@
 
   let avatars: Avatar[] = [
     { src: 'avatar_a' },
-    { src: 'avatar_u' },
     { src: 'avatar_b' },
     { src: 'avatar_c' },
     { src: 'avatar_d' },
     { src: 'avatar_e' },
+    { src: 'avatar_f' },
     { src: 'avatar_g' },
     { src: 'avatar_h' },
     { src: 'avatar_i' },
@@ -77,7 +77,7 @@
         {/if}
         <!-- avatar -->
         <img
-          src="https://assets.cdn.clsrio.com/progress-report/avatars/{avatar.src}.svg"
+          src="https://assets.cdn.clsrio.com/progress-report/avatar/{avatar.src}.svg"
           alt=""
           class="w-full"
         />
