@@ -160,11 +160,11 @@
   </div>
 
   <div
-    class="px-4 border border-gray dark:border-neutral-600 border-b-0 border-l-0 border-r-0 flex justify-between {isLMS &&
+    class="px-4 py-2 border border-gray dark:border-neutral-600 border-b-0 border-l-0 border-r-0 flex justify-between {isLMS &&
       'items-center'}"
   >
     <div>
-      <p class="text-xs pt-2 {!isLMS && 'pl-2'} dark:text-white">
+      <p class="text-xs {!isLMS && 'pl-2'} dark:text-white">
         {totalLessons}
         {$t('courses.course_card.lessons_number')}
       </p>
@@ -209,7 +209,7 @@
       />
     {:else if !isOnLandingPage}
       <div class="flex flex-col justify-between">
-        <p class="text-xs pt-2 pl-2 dark:text-white">
+        <p class="text-xs pl-2 dark:text-white">
           {totalStudents}
           {$t('courses.course_card.students')}
         </p>

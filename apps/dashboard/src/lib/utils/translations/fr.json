@@ -1374,7 +1374,6 @@
     }
   },
   "explore": {
-    "heading": "Explorer",
     "empty_heading": "Aucun cours disponible",
     "empty_description": "Il n'y a actuellement aucun cours publié disponible"
   }
