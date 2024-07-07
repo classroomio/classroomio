@@ -1,8 +1,6 @@
 <script lang="ts">
-  import { fly } from 'svelte/transition';
   import { onMount } from 'svelte';
   import ToolsHeader from '$lib/ToolsHeader/ToolsHeader.svelte';
-  import { sineInOut } from 'svelte/easing';
 
   interface TodoItem {
     id: number;
@@ -28,20 +26,34 @@
 
   const timerSequence = ['pomodoro', 'long-break', 'short-break'];
 
+  function saveTodoList() {
+    localStorage.setItem('todoList', JSON.stringify(todoList));
+  }
+
+  function loadTodoList() {
+    const storedTodoList = localStorage.getItem('todoList');
+    if (storedTodoList) {
+      todoList = JSON.parse(storedTodoList);
+    }
+  }
+
   function setEditing(i: number, isEditing: boolean) {
     todoList[i].isEditing = isEditing;
+    saveTodoList();
   }
 
   function deleteTodo(i: number) {
     todoList.splice(i, 1);
     todoList = todoList;
     isVisible = false;
+    saveTodoList();
   }
 
   function markTodoAsDone(i: number) {
     todoList[i].isDone = true;
     todoList = [...todoList];
     todoList[i].isVisible = false;
+    saveTodoList();
   }
 
   function addTodo() {
@@ -61,6 +73,8 @@
     setTimeout(() => {
       addInput.focus();
     }, 50);
+
+    saveTodoList();
   }
 
   function startCountdown() {
@@ -130,6 +144,7 @@
 
   onMount(() => {
     buzzSound = new Audio('https://assets.cdn.clsrio.com/beeping-sound.mp3');
+    loadTodoList();
   });
 </script>
 
@@ -249,7 +264,7 @@
         <!-- todos -->
         <div class="overflow-y-auto mt-3 max-h-[40vh] md:max-h-[50vh]">
           {#each todoList as todo, i}
-            <div in:fly={{ y: 100, delay: 0, easing: sineInOut }} class="border text-black p-5">
+            <div class="border text-black p-5">
               {#if todo.isEditing}
                 <form on:submit|preventDefault={() => setEditing(i, false)}>
                   <p class="text-xs text-left text-[#656565] font-semibold">Pomodoro name</p>
