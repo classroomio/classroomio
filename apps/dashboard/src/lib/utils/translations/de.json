@@ -1375,6 +1375,7 @@
   },
   "explore": {
     "empty_heading": "Kein Kurs verfügbar",
-    "empty_description": "Derzeit sind keine veröffentlichten Kurse verfügbar"
+    "empty_description": "Derzeit sind keine veröffentlichten Kurse verfügbar",
+    "heading": "Entdecken Sie unsere Kurse"
   }
 }

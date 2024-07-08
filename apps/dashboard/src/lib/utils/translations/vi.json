@@ -1375,6 +1375,7 @@
   },
   "explore": {
     "empty_heading": "Không có khóa học nào",
-    "empty_description": "Hiện tại chưa có khóa học nào được xuất bản"
+    "empty_description": "Hiện tại chưa có khóa học nào được xuất bản",
+    "heading": "Khám phá các khóa học của chúng tôi"
   }
 }

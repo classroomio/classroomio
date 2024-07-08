@@ -1375,6 +1375,7 @@
   },
   "explore": {
     "empty_heading": "No hay curso disponible",
-    "empty_description": "Actualmente no hay ningún curso publicado disponible"
+    "empty_description": "Actualmente no hay ningún curso publicado disponible",
+    "heading": "Explora nuestros cursos"
   }
 }
