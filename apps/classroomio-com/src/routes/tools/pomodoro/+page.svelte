@@ -24,6 +24,9 @@
   let timerInterval: any = null;
   let isVisible: boolean = false;
 
+  let startTime: number | null = null; // start time of the timer
+  let remainingTime: number = countdownTime; // the remaining time to keep track of pauses
+
   const timerSequence = ['pomodoro', 'long-break', 'short-break'];
 
   function saveTodoList() {
@@ -83,17 +86,8 @@
     }
 
     isPaused = false;
-
-    timerInterval = setInterval(() => {
-      if (countdownTime > 0) {
-        countdownTime--;
-        updateCountdownDisplay();
-      } else {
-        clearInterval(timerInterval);
-        countdownDisplay = '00:00';
-        buzzSound.play();
-      }
-    }, 1000);
+    startTime = performance.now();
+    requestAnimationFrame(updateTimer);
   }
 
   function pauseCountdown() {
@@ -102,11 +96,16 @@
     }
 
     isPaused = true;
-    clearInterval(timerInterval);
+    if (timerInterval) {
+      cancelAnimationFrame(timerInterval);
+    }
+    remainingTime = countdownTime;
   }
 
   function resetCountdown() {
-    clearInterval(timerInterval);
+    if (timerInterval) {
+      cancelAnimationFrame(timerInterval);
+    }
 
     switch (timerState) {
       case 'pomodoro':
@@ -121,6 +120,7 @@
     }
 
     isPaused = true;
+    remainingTime = countdownTime; // reset remaining time to countdown time
 
     updateCountdownDisplay();
   }
@@ -129,6 +129,24 @@
     const currentIndex = timerSequence.indexOf(timerState);
     const nextIndex = (currentIndex + 1) % timerSequence.length;
     setTimerState(timerSequence[nextIndex]);
+  }
+
+  // keep updating the timer using requestAnimationFrame
+  function updateTimer(currentTime: number) {
+    if (isPaused || !startTime) return;
+
+    const elapsedTime = (currentTime - startTime) / 1000;
+    countdownTime = remainingTime - Math.floor(elapsedTime);
+
+    if (countdownTime <= 0) {
+      countdownTime = 0;
+      showNotification();
+      pauseCountdown();
+    } else {
+      timerInterval = requestAnimationFrame(updateTimer);
+    }
+
+    updateCountdownDisplay();
   }
 
   function updateCountdownDisplay() {
@@ -142,9 +160,29 @@
     resetCountdown();
   }
 
+  // Show notification with sound
+  function showNotification() {
+    buzzSound.play();
+
+    if (Notification.permission === 'granted') {
+      const notification = new Notification('Pomodoro Timer', {
+        body: 'Time is up!'
+      });
+
+      notification.onclick = () => {
+        window.focus();
+        notification.close();
+      };
+    }
+  }
+
   onMount(() => {
     buzzSound = new Audio('https://assets.cdn.clsrio.com/beeping-sound.mp3');
     loadTodoList();
+
+    if (Notification.permission !== 'granted') {
+      Notification.requestPermission();
+    }
   });
 </script>
 
