@@ -20,6 +20,6 @@
   }
 </script>
 
-{#if allowedRoles.includes(userRole)}
+{#if allowedRoles.includes(userRole) || $isOrgAdmin}
   <slot />
 {/if}
