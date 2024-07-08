@@ -160,7 +160,7 @@
           class="mb-5 w-40"
           disabled={$isFreePlan}
         >
-          <!-- <SelectItem value={ROLE.ADMIN} text={ROLE_LABEL[ROLE.ADMIN]} /> -->
+          <SelectItem value={ROLE.ADMIN} text={ROLE_LABEL[ROLE.ADMIN]} />
           <SelectItem value={ROLE.TUTOR} text={$t(ROLE_LABEL[ROLE.TUTOR])} />
         </Select>
 
