@@ -12,9 +12,10 @@
   import AuthUI from '$lib/components/AuthUI/index.svelte';
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import { setTheme } from '$lib/utils/functions/theme';
-  import type { CurrentOrg } from '$lib/utils/types/org.js';
+  import type { CurrentOrg } from '$lib/utils/types/org';
   import { onMount } from 'svelte';
   import type { Profile } from '$lib/components/Course/components/People/types';
+  import { logout } from '$lib/utils/functions/logout';
 
   export let data;
 
@@ -128,6 +129,8 @@
 
   onMount(() => {
     setTheme(data.currentOrg?.theme || '');
+
+    logout(false);
   });
 
   $: errors.confirmPassword = getConfirmPasswordError(fields);
