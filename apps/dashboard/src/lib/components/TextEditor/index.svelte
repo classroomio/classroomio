@@ -56,10 +56,9 @@
 
       editor.on('Paste Change input Undo Redo', function () {
         clearTimeout(editorChangeHandlerId);
+        const html = editor.getContent();
 
         editorChangeHandlerId = setTimeout(function () {
-          console.log('changed');
-          const html = editor.getContent();
           if (onChange) {
             onChange(html);
           }
