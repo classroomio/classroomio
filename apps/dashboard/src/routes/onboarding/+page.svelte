@@ -161,7 +161,8 @@
           .insert({
             organization_id: orgData.id,
             profile_id: $profile.id,
-            role_id: 1
+            role_id: 1,
+            verified: true
           })
           .select();
         console.log('Create organisation member', data);
