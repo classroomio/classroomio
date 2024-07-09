@@ -28,3 +28,20 @@ export async function fetchCourses(profileId, orgId) {
 
   return { allCourses };
 }
+
+export async function fetchExploreCourses(profileId, orgId) {
+  if (!orgId || !profileId) return;
+
+  const { data: allCourses } = await supabase.rpc('get_explore_courses', {
+    org_id_arg: orgId,
+    profile_id_arg: profileId
+  });
+
+  if (!Array.isArray(allCourses)) {
+    return {
+      allCourses: []
+    };
+  }
+
+  return { allCourses };
+}
