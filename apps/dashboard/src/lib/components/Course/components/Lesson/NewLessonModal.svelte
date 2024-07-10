@@ -44,10 +44,7 @@
 
     $handleAddLessonWidget.open = false;
   };
-  const handleSubmit = (event: Event) => {
-    event.preventDefault();
-    handleSave();
-  };
+
 </script>
 
 <Modal
@@ -55,13 +52,13 @@
   onClose={() => ($handleAddLessonWidget.open = false)}
   bind:open={$handleAddLessonWidget.open}
   width="w-[80%] md:w-[65%]"
-  maxWidth="max-w-2xl "
+  maxWidth="max-w-2xl"
   containerClass="overflow-hidden"
   modalHeading={$t('course.navItem.lessons.add_lesson.modal_heading')}
 >
 
 <!-- used form to handle enter keydown event naturally -->
-<form on:submit={handleSubmit} class="relative m-auto py-2 md:py-3 px-2 md:px-5 mb-2 md:mb-4 flex flex-wrap items-center dark:bg-neutral-800 bg-yellow-500">
+<form on:submit|preventDefault={handleSave} class="relative m-auto py-2 md:py-3 px-2 md:px-5 mb-2 md:mb-4 flex flex-wrap items-center dark:bg-neutral-800">
     <div class="w-full">
       <TextField
         label={$t('course.navItem.lessons.add_lesson.lesson_title')}
