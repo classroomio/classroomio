@@ -5,7 +5,7 @@ import { currentOrg, orgs, defaultCurrentOrgState } from '$lib/utils/store/org';
 import { user, profile, defaultProfileState, defaultUserState } from '$lib/utils/store/user';
 import { goto } from '$app/navigation';
 
-export async function logout() {
+export async function logout(redirect = true) {
   const { error } = await supabase.auth.signOut();
 
   if (error) {
@@ -19,5 +19,8 @@ export async function logout() {
 
   capturePosthogEvent('user_logged_out');
   posthog.reset();
-  goto('/login');
+
+  if (redirect) {
+    goto('/login');
+  }
 }
