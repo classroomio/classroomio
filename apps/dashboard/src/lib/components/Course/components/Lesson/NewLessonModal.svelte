@@ -100,3 +100,4 @@
     <PrimaryButton label={$t('course.navItem.lessons.add_lesson.save')} onClick={handleSave} />
   </div>
 </Modal>
+
