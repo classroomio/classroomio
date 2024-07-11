@@ -34,16 +34,28 @@
       return goto(`/signup?redirect=${$page.url?.pathname || ''}`);
     }
 
+    const { data: courseData, error } = await supabase
+      .from('course')
+      .select('group_id')
+      .eq('id', data.id)
+      .single();
+
+    console.log({ courseData });
+    if (!courseData?.group_id) {
+      console.error('error getting group', error);
+      return;
+    }
+
     const member = {
       profile_id: $profile.id,
-      group_id: data.groupId,
+      group_id: courseData.group_id,
       role_id: ROLE.STUDENT
     };
 
     const teacherMembers = await supabase
       .from('groupmember')
       .select('id, profile(email)')
-      .eq('group_id', data.groupId)
+      .eq('group_id', courseData.group_id)
       .eq('role_id', ROLE.TUTOR)
       .returns<
         {
@@ -62,7 +74,7 @@
     addGroupMember(member).then((addedMember) => {
       loading = false;
       if (addedMember.error) {
-        console.error('Error adding student to group', data.groupId, addedMember.error);
+        console.error('Error adding student to group', courseData.group_id, addedMember.error);
         snackbar.error('snackbar.invite.failed_join');
         return;
       }

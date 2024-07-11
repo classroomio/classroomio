@@ -19,6 +19,7 @@
   export let courses: Course[] = [];
   export let emptyTitle = $t('courses.course_card.empty_title');
   export let emptyDescription = $t('courses.course_card.empty_description');
+  export let isExplore = false;
 
   function calcProgressRate(progressRate?: number, totalLessons?: number): number {
     if (!progressRate || !totalLessons) {
@@ -83,6 +84,7 @@
         {#key courseData.id}
           <Card
             id={courseData.id}
+            slug={courseData.slug}
             bannerImage={courseData.logo || '/images/classroomio-course-img-template.jpg'}
             title={courseData.title}
             description={courseData.description}
@@ -93,6 +95,7 @@
             totalLessons={courseData.total_lessons}
             totalStudents={courseData.total_students}
             isLMS={$globalStore.isOrgSite}
+            {isExplore}
             progressRate={calcProgressRate(courseData.progress_rate, courseData.total_lessons)}
           />
         {/key}

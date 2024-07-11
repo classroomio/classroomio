@@ -57,7 +57,7 @@
     }
 
     filteredCourses = courses.filter((course) => {
-      if (!searchValue || course.title.toLowerCase().includes(searchValue)) {
+      if (!searchValue || course.title.toLowerCase().includes(searchValue.toLowerCase())) {
         return true;
       }
 

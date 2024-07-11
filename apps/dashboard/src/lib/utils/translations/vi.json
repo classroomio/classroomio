@@ -185,7 +185,8 @@
     "exercise": "Bài tập",
     "community": "Cộng đồng",
     "help": "Giúp đỡ",
-    "settings": "Cài đặt"
+    "settings": "Cài đặt",
+    "explore": "Khám phá"
   },
   "upgrade": {
     "certificate": "Nâng cấp gói của bạn để tạo chứng chỉ",
@@ -843,7 +844,9 @@
         "share": "Chia sẻ",
         "invite": "Mời",
         "delete": "Xóa bỏ"
-      }
+      },
+      "get_course": "Nhận khóa học",
+      "learn_more": "Tìm hiểu thêm"
     },
     "course_filter": {
       "date_created": "Ngày tạo",
@@ -1369,5 +1372,10 @@
       "min_char": "Tổ chức phải chứa 5 ký tự trở lên",
       "hyphen_rule": "Tên tổ chức không thể bắt đầu hoặc kết thúc bằng dấu gạch nối"
     }
+  },
+  "explore": {
+    "empty_heading": "Không có khóa học nào",
+    "empty_description": "Hiện tại chưa có khóa học nào được xuất bản",
+    "heading": "Khám phá các khóa học của chúng tôi"
   }
 }
