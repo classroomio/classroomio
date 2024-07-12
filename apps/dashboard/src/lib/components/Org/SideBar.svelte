@@ -1,15 +1,8 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import HelpIcon from 'carbon-icons-svelte/lib/Help.svelte';
-  import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
-  import { SettingsAdjust } from 'carbon-icons-svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import OrgSelector from '$lib/components/OrgSelector/OrgSelector.svelte';
-  import HomeIcon from '$lib/components/Icons/HomeIcon.svelte';
-  import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
-  import QuizIcon from '$lib/components/Icons/QuizIcon.svelte';
-  import SiteSettingsIcon from '$lib/components/Icons/SiteSettingsIcon.svelte';
-  import AudienceIcon from '$lib/components/Icons/AudienceIcon.svelte';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import { currentOrgPath, currentOrgPlan, isFreePlan } from '$lib/utils/store/org';
   import { isOrgAdmin } from '$lib/utils/store/org';
@@ -18,23 +11,28 @@
   import { sideBar } from './store';
   import { t } from '$lib/utils/functions/translations';
   import { goto } from '$app/navigation';
+  import SidebarExpandeable from './sidebarExpandeable.svelte';
 
   interface menuItems {
     label: string;
-    path: string;
+    to: string;
+    isCourse?: boolean;
+    isExpanded?: boolean;
     show: boolean;
   }
 
   let menuItems: menuItems[] = [];
+  let path;
 
   function isActive(pagePath: string, itemPath: string) {
     const pageLinkItems = pagePath.split('/');
     const itemLinkItems = itemPath.split('/');
-
+    console.log(pagePath, itemPath);
     if (itemLinkItems.length !== pageLinkItems.length) {
+      console.log('false');
       return false;
     }
-
+    console.log('true');
     return pagePath.includes(itemPath);
   }
   const toggleSidebar = () => {
@@ -84,27 +82,29 @@
   // }
   $: menuItems = [
     {
-      path: '',
+      to: '',
       label: $t('org_navigation.dashboard'),
       show: true
     },
     {
-      path: '/courses',
+      to: '/courses',
+      isCourse: true,
+      isExpanded: true,
       label: $t('org_navigation.courses'),
       show: true
     },
     {
-      path: '/community',
+      to: '/community',
       label: $t('org_navigation.community'),
       show: true
     },
     {
-      path: '/audience',
+      to: '/audience',
       label: $t('org_navigation.audience'),
       show: true
     },
     {
-      path: '/setup',
+      to: '/setup',
       label: $t('org_navigation.setup'),
       show: $isOrgAdmin
     }
@@ -125,37 +125,25 @@
       <ul class="mt-4 my-2 px-4">
         {#each menuItems as menuItem}
           {#if menuItem.show}
-            <a
-              href="{$currentOrgPath}{menuItem.path}"
-              class="text-black no-underline"
-              on:click={toggleSidebar}
+            <SidebarExpandeable
+              label={menuItem.label}
+              href={`${$currentOrgPath}${menuItem.to}`}
+              handleClick={toggleSidebar}
+              isGroupActive={isActive($page.url.pathname, `${$currentOrgPath}${menuItem.to}`)}
+              isExpanded={menuItem.isExpanded}
+              isCourse={menuItem.isCourse}
             >
-              <li
-                class="mb-1 flex items-center gap-2.5 px-2.5 py-2 {NavClasses.item} {isActive(
-                  $page.url.pathname,
-                  `${$currentOrgPath}${menuItem.path}`
-                )
-                  ? NavClasses.active
-                  : 'dark:text-white'}"
-              >
-                {#if menuItem.path === ''}
-                  <HomeIcon />
-                {:else if menuItem.path === '/courses'}
-                  <CourseIcon />
-                {:else if menuItem.path === '/site'}
-                  <SiteSettingsIcon />
-                {:else if menuItem.path === '/community'}
-                  <ForumIcon size={20} class="carbon-icon fill-[#000] dark:fill-[#fff]" />
-                {:else if menuItem.path === '/quiz'}
-                  <QuizIcon />
-                {:else if menuItem.path === '/audience'}
-                  <AudienceIcon />
-                {:else if menuItem.path === '/setup'}
-                  <SettingsAdjust />
-                {/if}
-                <p class="text-sm font-medium">{menuItem.label}</p>
-              </li>
-            </a>
+              {#if menuItem.isCourse}
+                <a
+                  href="{$currentOrgPath}/courses"
+                  class={`${NavClasses.item} text-center w-full p-2`}>All courses</a
+                >
+                <a
+                  href="{$currentOrgPath}/pathway"
+                  class={`${NavClasses.item} text-center w-full p-2`}>Pathways</a
+                >
+              {/if}
+            </SidebarExpandeable>
           {/if}
         {/each}
       </ul>
