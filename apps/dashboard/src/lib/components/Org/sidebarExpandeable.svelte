@@ -15,9 +15,10 @@
   export let handleClick = () => {};
 
   function handleIsExpanded() {
-    handleClick();
     if (isCourse) {
       isExpanded = !isExpanded;
+    } else {
+      handleClick();
     }
   }
 </script>

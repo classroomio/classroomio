@@ -1,30 +1,34 @@
 <script lang="ts">
   import { Search, Dropdown } from 'carbon-components-svelte';
-  import Box from '$lib/components/Box/index.svelte';
-  import NewCourseModal from '$lib/components/Courses/components/NewCourseModal/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { courseMetaDeta } from '$lib/components/Courses/store';
   import { Add } from 'carbon-icons-svelte';
   import { isMobile } from '$lib/utils/store/useMobile';
-  import { isOrgAdmin } from '$lib/utils/store/org';
+  import { currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import Grid from 'carbon-icons-svelte/lib/Grid.svelte';
   import List from 'carbon-icons-svelte/lib/List.svelte';
   import { onMount } from 'svelte';
-
-  import PathwayEmptyIcon from '$lib/components/Icons/PathwayEmptyIcon.svelte';
+  import { goto } from '$app/navigation';
+  import NewPathwayModal from '$lib/components/Org/PathWay/NewPathwayModal.svelte';
+  import Pathway from '$lib/components/Org/PathWay/Pathway.svelte';
 
   export let data;
 
   let { cantFetch } = data;
   let searchValue = '';
   let selectedId: string = '0';
+  let collections = [1, 2, 3, 4, 5];
 
   const setViewPreference = (preference: 'grid' | 'list') => {
     $courseMetaDeta.view = preference;
     localStorage.setItem('courseView', preference);
+  };
+
+  const openNewPathwayModal = () => {
+    goto($currentOrgPath + '/pathway?new_pathway=true');
   };
 
   onMount(() => {
@@ -41,7 +45,7 @@
 </svelte:head>
 
 <section class="w-full md:max-w-6xl md:mx-auto">
-  <div class="py-2 md:py-10 px-2 md:px-5">
+  <div class="py-2 md:py-5 px-2 md:px-5">
     <div class="flex items-center justify-between mb-5">
       <h1 class="dark:text-white text-2xl md:text-3xl font-bold">Learning Paths</h1>
       {#if $isMobile}
@@ -53,7 +57,7 @@
           label="Create collection"
           variant={VARIANTS.CONTAINED_DARK}
           isDisabled={!$isOrgAdmin}
-          onClick={() => console.log('clicked')}
+          onClick={openNewPathwayModal}
         />
       {/if}
     </div>
@@ -71,7 +75,7 @@
           items={[
             { id: '0', text: $t('courses.course_filter.date_created') },
             { id: '1', text: $t('courses.course_filter.published') },
-            { id: '2', text: $t('courses.course_filter.lessons') }
+            { id: '2', text: 'Courses' }
           ]}
         />
         {#if $courseMetaDeta.view === 'list'}
@@ -86,17 +90,8 @@
       </div>
     </div>
 
-    <NewCourseModal />
-    <Box className="w-full">
-      <PathwayEmptyIcon />
-      <h3 class="dark:text-white text-2xl my-5">No Learning path yet</h3>
-      <p class="dark:text-white w-1/3 text-center mb-5">
-        Add a group of related courses to set students on a path to excellence in your fields
-      </p>
-      <PrimaryButton variant={VARIANTS.OUTLINED} className="font-normal text-sm px-4 w-fit">
-        Create collection
-      </PrimaryButton>
-    </Box>
+    <NewPathwayModal />
+    <Pathway pathways={collections} />
   </div>
 </section>
 

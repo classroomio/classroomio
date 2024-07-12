@@ -35,6 +35,7 @@
     console.log('true');
     return pagePath.includes(itemPath);
   }
+
   const toggleSidebar = () => {
     $sideBar.hidden = !$sideBar.hidden;
   };
@@ -42,6 +43,10 @@
   const openModal = () => {
     goto(window.location.pathname + '?upgrade=true');
   };
+
+  function isGroupActive(pagePath: string, itemPath: string, additionalPaths: string[] = []) {
+    return [itemPath, ...additionalPaths].some((path) => pagePath.startsWith(path));
+  }
 
   // $: {
   //   menuItems = [
@@ -129,18 +134,26 @@
               label={menuItem.label}
               href={`${$currentOrgPath}${menuItem.to}`}
               handleClick={toggleSidebar}
-              isGroupActive={isActive($page.url.pathname, `${$currentOrgPath}${menuItem.to}`)}
+              isGroupActive={menuItem.isCourse
+                ? isGroupActive($page.url.pathname, `${$currentOrgPath}${menuItem.to}`, [
+                    `${$currentOrgPath}/pathway`
+                  ])
+                : isActive($page.url.pathname, `${$currentOrgPath}${menuItem.to}`)}
               isExpanded={menuItem.isExpanded}
               isCourse={menuItem.isCourse}
             >
               {#if menuItem.isCourse}
                 <a
                   href="{$currentOrgPath}/courses"
-                  class={`${NavClasses.item} text-center w-full p-2`}>All courses</a
+                  class={`${NavClasses.item} w-full py-2 pl-10 pr-2 `}
+                  on:click={toggleSidebar}
                 >
+                  All courses
+                </a>
                 <a
                   href="{$currentOrgPath}/pathway"
-                  class={`${NavClasses.item} text-center w-full p-2`}>Pathways</a
+                  class={`${NavClasses.item} w-full py-2 pl-10 pr-2 `}
+                  on:click={toggleSidebar}>Pathways</a
                 >
               {/if}
             </SidebarExpandeable>
