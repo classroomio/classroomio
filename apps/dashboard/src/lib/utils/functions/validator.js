@@ -271,6 +271,14 @@ export const updateOrgSiteNameValidation = (siteName) => {
 
   return processErrors(error);
 };
+export const updateProfileEmailValidation = (email) => {
+  const schema = z.object({
+    email: z.string().email({ message: `${t.get('validations.user_profile.email')}` })
+  });
+  const { error } = schema.safeParse({ email });
+
+  return processErrors(error);
+};
 
 export const createQuizValidation = (fields = {}) => {
   const { error } = createQuizValidationSchema.safeParse(fields);
