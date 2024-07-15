@@ -16,6 +16,7 @@
   } from 'carbon-components-svelte';
   import { t } from '$lib/utils/functions/translations';
   import PathwayList from './PathwayList.svelte';
+  import { isMobile } from '$lib/utils/store/useMobile';
 
   export let pathways;
 
@@ -36,13 +37,15 @@
             <StructuredListCell head>
               {$t('courses.course_card.list_view.description')}
             </StructuredListCell>
-            <StructuredListCell head>Courses</StructuredListCell>
-            <StructuredListCell head>
-              {$t('courses.course_card.list_view.students')}
-            </StructuredListCell>
-            <StructuredListCell head>
-              {$t('courses.course_card.list_view.published')}
-            </StructuredListCell>
+            {#if !$isMobile}
+              <StructuredListCell head>Courses</StructuredListCell>
+              <StructuredListCell head>
+                {$t('courses.course_card.list_view.students')}
+              </StructuredListCell>
+              <StructuredListCell head>
+                {$t('courses.course_card.list_view.published')}
+              </StructuredListCell>
+            {/if}
             <StructuredListCell head>{''}</StructuredListCell>
           </StructuredListRow>
         </StructuredListHead>
@@ -53,7 +56,7 @@
         </StructuredListBody>
       </StructuredList>
     {:else}
-      <div class="grid grid-cols-2 gap-4">
+      <div class="grid md:grid-cols-2 gap-4">
         {#each pathways as pathway}
           <PathwayCard />
         {/each}

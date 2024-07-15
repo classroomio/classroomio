@@ -29,7 +29,7 @@
 <Modal
   onClose={() => onClose($page.url.pathname)}
   bind:open
-  width="w-4/5 md:w-3/5 md:min-w-[600px]"
+  width="w-4/5 md:w-2/5 md:min-w-[600px]"
   modalHeading="Create new Learning Path"
 >
   <form on:submit|preventDefault={createPathway}>

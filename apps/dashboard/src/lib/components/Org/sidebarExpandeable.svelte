@@ -7,15 +7,14 @@
   import SidebarIcons from './sidebarIcons.svelte';
 
   export let label = '';
-  export let href: string = '';
+  export let href: string | null = '';
   export let isGroupActive = false;
   export let isExpanded: boolean | undefined;
-
-  export let isCourse = false;
+  export let isDropdown = false;
   export let handleClick = () => {};
 
   function handleIsExpanded() {
-    if (isCourse) {
+    if (isDropdown) {
       isExpanded = !isExpanded;
     } else {
       handleClick();
@@ -28,7 +27,7 @@
     on:click={handleIsExpanded}
     class="item relative mb-1 flex items-center gap-2.5 px-2.5 py-2 cursor-pointer {NavClasses.item} {isGroupActive &&
       NavClasses.active} w-[95%]"
-    href={!isCourse ? href : null}
+    {href}
   >
     <SidebarIcons name={label} />
 
@@ -36,7 +35,7 @@
 
     <span class="grow" />
 
-    {#if isCourse}
+    {#if isDropdown}
       <IconButton size="small">
         {#if isExpanded}
           <ChevronUpIcon class="carbon-icon dark:text-white" />

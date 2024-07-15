@@ -15,6 +15,7 @@
     StructuredListBody
   } from 'carbon-components-svelte';
   import { t } from '$lib/utils/functions/translations';
+  import { isMobile } from '$lib/utils/store/useMobile';
 
   export let courses: Course[] = [];
   export let emptyTitle = $t('courses.course_card.empty_title');
@@ -49,18 +50,20 @@
           <StructuredListCell head>
             {$t('courses.course_card.list_view.description')}
           </StructuredListCell>
-          <StructuredListCell head>
-            {$t('courses.course_card.list_view.type')}
-          </StructuredListCell>
-          <StructuredListCell head>
-            {$t('courses.course_card.list_view.lessons')}
-          </StructuredListCell>
-          <StructuredListCell head>
-            {$t('courses.course_card.list_view.students')}
-          </StructuredListCell>
-          <StructuredListCell head>
-            {$t('courses.course_card.list_view.published')}
-          </StructuredListCell>
+          {#if !$isMobile}
+            <StructuredListCell head>
+              {$t('courses.course_card.list_view.type')}
+            </StructuredListCell>
+            <StructuredListCell head>
+              {$t('courses.course_card.list_view.lessons')}
+            </StructuredListCell>
+            <StructuredListCell head>
+              {$t('courses.course_card.list_view.students')}
+            </StructuredListCell>
+            <StructuredListCell head>
+              {$t('courses.course_card.list_view.published')}
+            </StructuredListCell>
+          {/if}
           <StructuredListCell head>{''}</StructuredListCell>
         </StructuredListRow>
       </StructuredListHead>

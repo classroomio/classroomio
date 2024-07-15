@@ -15,24 +15,20 @@
 
   interface menuItems {
     label: string;
-    to: string;
-    isCourse?: boolean;
+    to: string | string[];
+    isDropdown?: boolean;
     isExpanded?: boolean;
     show: boolean;
   }
 
   let menuItems: menuItems[] = [];
-  let path;
 
   function isActive(pagePath: string, itemPath: string) {
     const pageLinkItems = pagePath.split('/');
     const itemLinkItems = itemPath.split('/');
-    console.log(pagePath, itemPath);
     if (itemLinkItems.length !== pageLinkItems.length) {
-      console.log('false');
       return false;
     }
-    console.log('true');
     return pagePath.includes(itemPath);
   }
 
@@ -44,47 +40,16 @@
     goto(window.location.pathname + '?upgrade=true');
   };
 
-  function isGroupActive(pagePath: string, itemPath: string, additionalPaths: string[] = []) {
-    return [itemPath, ...additionalPaths].some((path) => pagePath.startsWith(path));
+  function isGroupActive(pagePath: string, itemPaths: string | string[]) {
+    if (typeof itemPaths === 'string') {
+      console.log('paths', pagePath, itemPaths);
+      return pagePath === itemPaths;
+    } else {
+      console.log('paths', pagePath, itemPaths);
+      return itemPaths.some((path) => pagePath.startsWith(path) && path !== '');
+    }
   }
 
-  // $: {
-  //   menuItems = [
-  //     {
-  //       path: '',
-  //       label: 'Dashboard',
-  //       show: true
-  //     },
-  //     // {
-  //     //   path: '/quiz',
-  //     //   label: 'Quizzes'
-  //     // },
-  //     {
-  //       path: '/courses',
-  //       label: 'Courses',
-  //       show: true
-  //     },
-  //     {
-  //       path: '/community',
-  //       label: 'Community',
-  //       show: true
-  //     },
-  //     // {
-  //     //   path: '/site',
-  //     //   label: 'Site settings',
-  //     // },
-  //     {
-  //       path: '/audience',
-  //       label: 'Audience',
-  //       show: true
-  //     },
-  //     {
-  //       path: '/setup',
-  //       label: 'Setup',
-  //       show: $isOrgAdmin
-  //     }
-  //   ];
-  // }
   $: menuItems = [
     {
       to: '',
@@ -92,8 +57,8 @@
       show: true
     },
     {
-      to: '/courses',
-      isCourse: true,
+      to: ['/courses', '/pathways'],
+      isDropdown: true,
       isExpanded: true,
       label: $t('org_navigation.courses'),
       show: true
@@ -132,29 +97,31 @@
           {#if menuItem.show}
             <SidebarExpandeable
               label={menuItem.label}
-              href={`${$currentOrgPath}${menuItem.to}`}
+              href={typeof menuItem.to === 'string' ? `${$currentOrgPath}${menuItem.to}` : null}
               handleClick={toggleSidebar}
-              isGroupActive={menuItem.isCourse
-                ? isGroupActive($page.url.pathname, `${$currentOrgPath}${menuItem.to}`, [
-                    `${$currentOrgPath}/pathway`
-                  ])
-                : isActive($page.url.pathname, `${$currentOrgPath}${menuItem.to}`)}
+              isGroupActive={isGroupActive(
+                $page.url.pathname,
+                typeof menuItem.to === 'string'
+                  ? `${$currentOrgPath}${menuItem.to}`
+                  : menuItem.to.map((path) => `${$currentOrgPath}${path}`)
+              )}
               isExpanded={menuItem.isExpanded}
-              isCourse={menuItem.isCourse}
+              isDropdown={menuItem.isDropdown}
             >
-              {#if menuItem.isCourse}
-                <a
-                  href="{$currentOrgPath}/courses"
-                  class={`${NavClasses.item} w-full py-2 pl-10 pr-2 `}
-                  on:click={toggleSidebar}
-                >
-                  All courses
-                </a>
-                <a
-                  href="{$currentOrgPath}/pathway"
-                  class={`${NavClasses.item} w-full py-2 pl-10 pr-2 `}
-                  on:click={toggleSidebar}>Pathways</a
-                >
+              {#if Array.isArray(menuItem.to)}
+                {#each menuItem.to as subPath}
+                  <a
+                    href="{$currentOrgPath}{subPath}"
+                    class={`${NavClasses.item} w-full py-2 pl-10 pr-2 `}
+                    on:click={toggleSidebar}
+                  >
+                    {#if subPath === '/courses'}
+                      All courses
+                    {:else if subPath === '/pathways'}
+                      Pathway
+                    {/if}
+                  </a>
+                {/each}
               {/if}
             </SidebarExpandeable>
           {/if}
