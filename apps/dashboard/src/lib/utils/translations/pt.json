@@ -1081,7 +1081,9 @@
     "settings": "Configurações",
     "early_adopter": "Torne-se um dos primeiros a adotar",
     "unlock": "Desbloqueie recursos ilimitados e invista em nosso futuro",
-    "upgrade": "Atualize agora"
+    "upgrade": "Atualize agora",
+    "all_courses": "Todos os cursos",
+    "pathway": "caminho"
   },
   "settings": {
     "heading": "Configurações",
@@ -1377,5 +1379,47 @@
     "empty_heading": "Nenhum curso disponível",
     "empty_description": "Atualmente não há nenhum curso publicado disponível",
     "heading": "Explore nossos cursos"
+  },
+  "pathway": {
+    "heading": "Caminhos de aprendizagem",
+    "heading_button": "Criar coleção",
+    "search_placeholder": "Encontrar coleção",
+    "empty_title": "Ainda não há caminho de aprendizagem",
+    "empty_description": "Adicione um grupo de cursos relacionados para colocar os alunos no caminho da excelência em suas áreas",
+    "new_pathway_modal": {
+      "heading": "Criar nova coleção",
+      "pathway_name": "Caminho de aprendizagem",
+      "pathway_name_placeholder": "Torne-se um designer UX profissional",
+      "short_description": "Pequena descrição",
+      "short_description_placeholder": "Um curso de especialização que inicia como designer ux",
+      "button": "Criar caminho"
+    },
+    "pathway_card": {
+      "error_message": "Um erro ocorreu.",
+      "students": "estudantes",
+      "published": "Publicados",
+      "unpublished": "Não publicado",
+      "continue_pathway": "Continuar caminho",
+      "learn_more": "Saber mais",
+      "list_view": {
+        "title": "Título",
+        "description": "Descrição",
+        "courses": "Cursos",
+        "students": "Alunos",
+        "published": "Publicados"
+      },
+      "context_menu": {
+        "clone": "Clone",
+        "share": "Compartilhar",
+        "invite": "Convidar",
+        "delete": "Excluir"
+      },
+      "courses": "cursos"
+    },
+    "pathway_filter": {
+      "date_created": "Data Criada",
+      "published": "Publicados",
+      "courses": "Cursos"
+    }
   }
 }

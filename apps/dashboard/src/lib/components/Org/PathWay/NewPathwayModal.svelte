@@ -8,6 +8,7 @@
   import { goto } from '$app/navigation';
 
   import { createPathwayModal } from '../store';
+  import { t } from '$lib/utils/functions/translations';
 
   let errors = {
     title: '',
@@ -30,14 +31,14 @@
   onClose={() => onClose($page.url.pathname)}
   bind:open
   width="w-4/5 md:w-2/5 md:min-w-[600px]"
-  modalHeading="Create new Learning Path"
+  modalHeading={$t('pathway.new_pathway_modal.heading')}
 >
   <form on:submit|preventDefault={createPathway}>
     <div class="flex items-end space-x-2 mb-4">
       <TextField
-        label="Learning Path"
+        label={$t('pathway.new_pathway_modal.pathway_name')}
         bind:value={$createPathwayModal.title}
-        placeholder="Become a professional UX designer"
+        placeholder={$t('pathway.new_pathway_modal.pathway_name_placeholder')}
         className="w-full "
         labelClassName="text-sm font-normal"
         isRequired={true}
@@ -47,10 +48,10 @@
     </div>
 
     <TextArea
-      label="Short description"
+      label={$t('pathway.new_pathway_modal.short_description')}
       bind:value={$createPathwayModal.description}
       rows={4}
-      placeholder="A sepcialization course that gets you started as a ux designer"
+      placeholder={$t('pathway.new_pathway_modal.short_description_placeholder')}
       className="mb-4"
       isRequired={true}
       errorMessage={errors.description}
@@ -60,7 +61,11 @@
     />
 
     <div class="mt-5">
-      <PrimaryButton className="px-6 py-3 font-normal" label="Create Path" type="submit" />
+      <PrimaryButton
+        className="px-6 py-3 font-normal"
+        label={$t('pathway.new_pathway_modal.button')}
+        type="submit"
+      />
     </div>
   </form>
 </Modal>

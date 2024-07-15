@@ -1081,7 +1081,9 @@
     "settings": "Paramètres",
     "early_adopter": "Devenez un adopteur précoce",
     "unlock": "Débloquez des fonctionnalités illimitées et investissez dans notre avenir",
-    "upgrade": "Mettre à jour maintenant"
+    "upgrade": "Mettre à jour maintenant",
+    "all_courses": "Tous les cours",
+    "pathway": "sentier"
   },
   "settings": {
     "heading": "Paramètres",
@@ -1377,5 +1379,47 @@
     "empty_heading": "Aucun cours disponible",
     "empty_description": "Il n'y a actuellement aucun cours publié disponible",
     "heading": "Découvrez nos cours"
+  },
+  "pathway": {
+    "heading": "Parcours d'apprentissage",
+    "heading_button": "Créer une collection",
+    "search_placeholder": "Trouver une collection",
+    "empty_title": "Pas encore de parcours d'apprentissage",
+    "empty_description": "Ajoutez un groupe de cours connexes pour mettre les étudiants sur la voie de l'excellence dans vos domaines",
+    "new_pathway_modal": {
+      "heading": "Créer une nouvelle collection",
+      "pathway_name": "Parcours d'apprentissage",
+      "pathway_name_placeholder": "Devenez un concepteur UX professionnel",
+      "short_description": "brève description",
+      "short_description_placeholder": "Un cours de spécialisation qui vous permet de démarrer en tant que concepteur ux",
+      "button": "Créer un chemin"
+    },
+    "pathway_card": {
+      "error_message": "Une erreur s'est produite.",
+      "students": "étudiants",
+      "published": "Publié",
+      "unpublished": "Inédit",
+      "continue_pathway": "Continuer le parcours",
+      "learn_more": "Apprendre encore plus",
+      "list_view": {
+        "title": "Titre",
+        "description": "Description",
+        "courses": "Cours",
+        "students": "Étudiants",
+        "published": "Publié"
+      },
+      "context_menu": {
+        "clone": "Cloner",
+        "share": "Partager",
+        "invite": "Inviter",
+        "delete": "Supprimer"
+      },
+      "courses": "cours"
+    },
+    "pathway_filter": {
+      "date_created": "date créée",
+      "published": "Publié",
+      "courses": "Cours"
+    }
   }
 }

@@ -32,18 +32,20 @@
         <StructuredListHead>
           <StructuredListRow head>
             <StructuredListCell head>
-              {$t('courses.course_card.list_view.title')}
+              {$t('pathway.pathway_card.list_view.title')}
             </StructuredListCell>
             <StructuredListCell head>
-              {$t('courses.course_card.list_view.description')}
+              {$t('pathway.pathway_card.list_view.description')}
             </StructuredListCell>
             {#if !$isMobile}
-              <StructuredListCell head>Courses</StructuredListCell>
               <StructuredListCell head>
-                {$t('courses.course_card.list_view.students')}
+                {$t('pathway.pathway_card.list_view.courses')}</StructuredListCell
+              >
+              <StructuredListCell head>
+                {$t('pathway.pathway_card.list_view.students')}
               </StructuredListCell>
               <StructuredListCell head>
-                {$t('courses.course_card.list_view.published')}
+                {$t('pathway.pathway_card.list_view.published')}
               </StructuredListCell>
             {/if}
             <StructuredListCell head>{''}</StructuredListCell>
@@ -65,16 +67,16 @@
   {:else}
     <Box className="w-full">
       <PathwayEmptyIcon />
-      <h3 class="dark:text-white text-2xl my-5">No Learning path yet</h3>
+      <h3 class="dark:text-white text-2xl my-5">{$t('pathway.empty_title')}</h3>
       <p class="dark:text-white w-1/3 text-center mb-5">
-        Add a group of related courses to set students on a path to excellence in your fields
+        {$t('pathway.empty_description')}
       </p>
       <PrimaryButton
         variant={VARIANTS.OUTLINED}
         className="font-normal text-sm px-4 w-fit"
         onClick={openNewPathwayModal}
       >
-        Create collection
+        {$t('pathway.heading_button')}
       </PrimaryButton>
     </Box>
   {/if}

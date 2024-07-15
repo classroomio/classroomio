@@ -1081,7 +1081,9 @@
     "settings": "Ajustes",
     "early_adopter": "Conviértase en uno de los primeros en adoptar",
     "unlock": "Desbloquee funciones ilimitadas e invierta en nuestro futuro",
-    "upgrade": "Actualizar ahora"
+    "upgrade": "Actualizar ahora",
+    "all_courses": "Todos los cursos",
+    "pathway": "ruta"
   },
   "settings": {
     "heading": "Ajustes",
@@ -1377,5 +1379,47 @@
     "empty_heading": "No hay curso disponible",
     "empty_description": "Actualmente no hay ningún curso publicado disponible",
     "heading": "Explora nuestros cursos"
+  },
+  "pathway": {
+    "heading": "Caminos de aprendizaje",
+    "heading_button": "Crear colección",
+    "search_placeholder": "encontrar colección",
+    "empty_title": "Aún no hay ruta de aprendizaje",
+    "empty_description": "Agregue un grupo de cursos relacionados para encaminar a los estudiantes hacia la excelencia en sus campos",
+    "new_pathway_modal": {
+      "heading": "Crear nueva colección",
+      "pathway_name": "Ruta de aprendizaje",
+      "pathway_name_placeholder": "Conviértete en un diseñador UX profesional",
+      "short_description": "Breve descripción",
+      "short_description_placeholder": "Un curso de especialización que te inicia como diseñador de ux",
+      "button": "Crear ruta"
+    },
+    "pathway_card": {
+      "error_message": "Ocurrió un error.",
+      "students": "estudiantes",
+      "published": "Publicado",
+      "unpublished": "Inédito",
+      "continue_pathway": "Continuar camino",
+      "learn_more": "Aprende más",
+      "list_view": {
+        "title": "Título",
+        "description": "Descripción",
+        "courses": "Cursos",
+        "students": "Estudiantes",
+        "published": "Publicado"
+      },
+      "context_menu": {
+        "clone": "Clon",
+        "share": "Compartir",
+        "invite": "Invitar",
+        "delete": "Borrar"
+      },
+      "courses": "cursos"
+    },
+    "pathway_filter": {
+      "date_created": "fecha de creacion",
+      "published": "Publicado",
+      "courses": "Cursos"
+    }
   }
 }

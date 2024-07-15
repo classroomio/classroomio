@@ -43,7 +43,7 @@
   }
 </script>
 
-<StructuredListRow label for="row-{id}" on:click={() => goto(`/courses/${id}`)}>
+<StructuredListRow label for="row-{id}" on:click={() => goto(`/pathway/${id}`)}>
   <StructuredListCell><p class="font-semibold">{title}</p></StructuredListCell>
   <StructuredListCell>
     <p class="line-clamp-2">{description}</p>
@@ -54,36 +54,36 @@
     <StructuredListCell>
       <Tag class="break-normal" type={isPublished ? 'green' : 'cool-gray'}>
         {#if isPublished}
-          {$t('courses.course_card.published')}
+          {$t('pathway.pathway_card.published')}
         {:else}
-          {$t('courses.course_card.unpublished')}
+          {$t('pathway.pathway_card.unpublished')}
         {/if}
       </Tag>
     </StructuredListCell>
   {/if}
   <StructuredListCell>
     <OverflowMenu
-      id="course-list"
+      id="pathway-list"
       flipped
       on:click={(e) => {
         e.stopPropagation();
       }}
     >
       <OverflowMenuItem
-        text={$t('courses.course_card.context_menu.clone')}
+        text={$t('pathway.pathway_card.context_menu.clone')}
         on:click={handleCloneCourse}
       />
       <OverflowMenuItem
-        text={$t('courses.course_card.context_menu.share')}
+        text={$t('pathway.pathway_card.context_menu.share')}
         on:click={handleShareCourse}
       />
       <OverflowMenuItem
-        text={$t('courses.course_card.context_menu.invite')}
+        text={$t('pathway.pathway_card.context_menu.invite')}
         on:click={handleInvite}
       />
       <OverflowMenuItem
         danger
-        text={$t('courses.course_card.context_menu.delete')}
+        text={$t('pathway.pathway_card.context_menu.delete')}
         on:click={handleDeleteCourse}
       />
     </OverflowMenu>

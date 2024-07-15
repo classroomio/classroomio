@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { t } from '$lib/utils/functions/translations';
   import { ImageLoader, SkeletonPlaceholder } from 'carbon-components-svelte';
 
   export let data = {
@@ -35,8 +36,12 @@
     <p class="text-sm">{data.description}</p>
 
     <span class="flex justify-between items-center">
-      <p class="text-xs">{data.courses.length} courses</p>
-      <p class="text-xs">{data.is_published ? 'Published' : 'Unpublished'}</p>
+      <p class="text-xs">{data.courses.length} {$t('pathway.pathway_card.courses')}</p>
+      {#if data.is_published}
+        <p class="text-xs">{$t('pathway.pathway_card.published')}</p>
+      {:else}
+        <p class="text-xs">{$t('pathway.pathway_card.unpublished')}</p>
+      {/if}
     </span>
   </div>
 </a>

@@ -197,6 +197,8 @@
   "org_navigation": {
     "dashboard": "Dashboard",
     "courses": "Courses",
+    "all_courses": "All courses",
+    "pathway": "pathway",
     "community": "Community",
     "audience": "Audience",
     "setup": "Setup",
@@ -449,6 +451,49 @@
       "button": "Finish",
       "back": "Back",
       "next": "Next"
+    }
+  },
+
+  "pathway": {
+    "heading": "Learning paths",
+    "heading_button": "Create collection",
+    "search_placeholder": "Find collection",
+    "pathway_filter": {
+      "date_created": "Date Created",
+      "published": "Published",
+      "courses": "Courses"
+    },
+    "empty_title": "No Learning path yet",
+    "empty_description": "Add a group of related courses to set students on a path to excellence in your fields",
+    "pathway_card": {
+      "courses": "courses",
+      "context_menu": {
+        "clone": "Clone",
+        "share": "Share",
+        "invite": "Invite",
+        "delete": "Delete"
+      },
+      "error_message": "An error occurred.",
+      "students": "students",
+      "published": "Published",
+      "unpublished": "Unpublished",
+      "continue_pathway": "Continue pathway",
+      "learn_more": "Learn more",
+      "list_view": {
+        "title": "Title",
+        "description": "Description",
+        "courses": "Courses",
+        "students": "Students",
+        "published": "Published"
+      }
+    },
+    "new_pathway_modal": {
+      "heading": "Create new collection",
+      "pathway_name": "Learning Path",
+      "pathway_name_placeholder": "Become a professional UX designer",
+      "short_description": "Short Description",
+      "short_description_placeholder": "A sepcialization course that gets you started as a ux designer",
+      "button": "Create Path"
     }
   },
 

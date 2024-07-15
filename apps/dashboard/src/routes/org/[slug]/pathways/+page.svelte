@@ -41,20 +41,20 @@
 </script>
 
 <svelte:head>
-  <title>Collections - ClassroomIO</title>
+  <title>Pathways - ClassroomIO</title>
 </svelte:head>
 
 <section class="w-full md:max-w-6xl md:mx-auto">
   <div class="py-2 md:py-5 px-2 md:px-5">
     <div class="flex items-center justify-between mb-5">
-      <h1 class="dark:text-white text-2xl md:text-3xl font-bold">Learning Paths</h1>
+      <h1 class="dark:text-white text-2xl md:text-3xl font-bold">{$t('pathway.heading')}</h1>
       {#if $isMobile}
         <PrimaryButton isDisabled={!$isOrgAdmin} onClick={() => console.log('clicked')}>
           <Add size={24} />
         </PrimaryButton>
       {:else}
         <PrimaryButton
-          label="Create collection"
+          label={$t('pathway.heading_button')}
           variant={VARIANTS.CONTAINED_DARK}
           isDisabled={!$isOrgAdmin}
           onClick={openNewPathwayModal}
@@ -64,7 +64,7 @@
     <div class="flex flex-row-reverse mb-5">
       <div class="filter-containter flex items-end justify-start">
         <Search
-          placeholder="Find collection"
+          placeholder={$t('pathway.search_placeholder')}
           bind:value={searchValue}
           searchClass="mr-2"
           class=" bg-gray-100 dark:bg-neutral-800"
@@ -73,9 +73,9 @@
           class="h-full"
           bind:selectedId
           items={[
-            { id: '0', text: $t('courses.course_filter.date_created') },
-            { id: '1', text: $t('courses.course_filter.published') },
-            { id: '2', text: 'Courses' }
+            { id: '0', text: $t('pathway.pathway_filter.date_created') },
+            { id: '1', text: $t('pathway.pathway_filter.published') },
+            { id: '2', text: $t('pathway.pathway_filter.courses') }
           ]}
         />
         {#if $courseMetaDeta.view === 'list'}

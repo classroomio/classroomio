@@ -1081,7 +1081,9 @@
     "settings": "Cài đặt",
     "early_adopter": "Trở thành người áp dụng sớm",
     "unlock": "Mở khóa các tính năng không giới hạn và đầu tư vào tương lai của chúng tôi",
-    "upgrade": "Nâng cấp ngay bây giờ"
+    "upgrade": "Nâng cấp ngay bây giờ",
+    "all_courses": "Tất cả các khóa học",
+    "pathway": "con đường"
   },
   "settings": {
     "heading": "Cài đặt",
@@ -1377,5 +1379,47 @@
     "empty_heading": "Không có khóa học nào",
     "empty_description": "Hiện tại chưa có khóa học nào được xuất bản",
     "heading": "Khám phá các khóa học của chúng tôi"
+  },
+  "pathway": {
+    "heading": "Lộ trình học tập",
+    "heading_button": "Tạo bộ sưu tập",
+    "search_placeholder": "Tìm bộ sưu tập",
+    "empty_title": "Chưa có lộ trình học tập",
+    "empty_description": "Thêm một nhóm các khóa học liên quan để giúp sinh viên đi đến con đường xuất sắc trong lĩnh vực của bạn",
+    "new_pathway_modal": {
+      "heading": "Tạo bộ sưu tập mới",
+      "pathway_name": "Con đường học tập",
+      "pathway_name_placeholder": "Trở thành nhà thiết kế UX chuyên nghiệp",
+      "short_description": "Mô tả ngắn",
+      "short_description_placeholder": "Khóa học phân biệt giúp bạn bắt đầu trở thành nhà thiết kế ux",
+      "button": "Tạo đường dẫn"
+    },
+    "pathway_card": {
+      "error_message": "Đã xảy ra lỗi.",
+      "students": "sinh viên",
+      "published": "Được phát hành",
+      "unpublished": "Chưa được xuất bản",
+      "continue_pathway": "Tiếp tục con đường",
+      "learn_more": "Tìm hiểu thêm",
+      "list_view": {
+        "title": "Tiêu đề",
+        "description": "Sự miêu tả",
+        "courses": "Khóa học",
+        "students": "Sinh viên",
+        "published": "Được phát hành"
+      },
+      "context_menu": {
+        "clone": "Dòng vô tính",
+        "share": "Chia sẻ",
+        "invite": "Mời",
+        "delete": "Xóa bỏ"
+      },
+      "courses": "các khóa học"
+    },
+    "pathway_filter": {
+      "date_created": "Ngày tạo",
+      "published": "Được phát hành",
+      "courses": "Khóa học"
+    }
   }
 }

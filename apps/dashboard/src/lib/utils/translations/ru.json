@@ -1081,7 +1081,9 @@
     "settings": "Настройки",
     "early_adopter": "Станьте ранним пользователем",
     "unlock": "Разблокируйте неограниченные возможности и инвестируйте в наше будущее",
-    "upgrade": "Обнови сейчас"
+    "upgrade": "Обнови сейчас",
+    "all_courses": "Все курсы",
+    "pathway": "путь"
   },
   "settings": {
     "heading": "Настройки",
@@ -1377,5 +1379,47 @@
     "empty_heading": "Нет доступных курсов",
     "empty_description": "На данный момент нет доступных опубликованных курсов",
     "heading": "Ознакомьтесь с нашими курсами"
+  },
+  "pathway": {
+    "heading": "Пути обучения",
+    "heading_button": "Создать коллекцию",
+    "search_placeholder": "Найти коллекцию",
+    "empty_title": "Пути обучения пока нет",
+    "empty_description": "Добавьте группу связанных курсов, чтобы помочь студентам достичь совершенства в ваших областях.",
+    "new_pathway_modal": {
+      "heading": "Создать новую коллекцию",
+      "pathway_name": "Путь обучения",
+      "pathway_name_placeholder": "Станьте профессиональным UX-дизайнером",
+      "short_description": "Краткое описание",
+      "short_description_placeholder": "Курс специализации, который поможет вам начать работу в качестве UX-дизайнера.",
+      "button": "Создать путь"
+    },
+    "pathway_card": {
+      "error_message": "Произошла ошибка.",
+      "students": "студенты",
+      "published": "Опубликовано",
+      "unpublished": "Неопубликовано",
+      "continue_pathway": "Продолжить путь",
+      "learn_more": "Узнать больше",
+      "list_view": {
+        "title": "Заголовок",
+        "description": "Описание",
+        "courses": "Курсы",
+        "students": "Студенты",
+        "published": "Опубликовано"
+      },
+      "context_menu": {
+        "clone": "Клонировать",
+        "share": "Делиться",
+        "invite": "Приглашать",
+        "delete": "Удалить"
+      },
+      "courses": "курсы"
+    },
+    "pathway_filter": {
+      "date_created": "Дата создания",
+      "published": "Опубликовано",
+      "courses": "Курсы"
+    }
   }
 }

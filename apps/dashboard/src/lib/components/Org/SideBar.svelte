@@ -116,9 +116,9 @@
                     on:click={toggleSidebar}
                   >
                     {#if subPath === '/courses'}
-                      All courses
+                      {$t('org_navigation.all_courses')}
                     {:else if subPath === '/pathways'}
-                      Pathway
+                      {$t('org_navigation.pathway')}
                     {/if}
                   </a>
                 {/each}

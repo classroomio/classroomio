@@ -6,22 +6,23 @@
   import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
   import { SettingsAdjust } from 'carbon-icons-svelte';
   import CourseIcon from '../Icons/CourseIcon.svelte';
+  import { t } from '$lib/utils/functions/translations';
 
   export let name = '';
 </script>
 
-{#if name === 'Dashboard'}
+{#if name === $t('org_navigation.dashboard')}
   <HomeIcon />
-{:else if name === 'Courses'}
+{:else if name === $t('org_navigation.courses')}
   <CourseIcon />
 {:else if name === 'Site'}
   <SiteSettingsIcon />
-{:else if name === 'Community'}
+{:else if name === $t('org_navigation.community')}
   <ForumIcon size={20} class="carbon-icon fill-[#000] dark:fill-[#fff]" />
 {:else if name === 'Quiz'}
   <QuizIcon />
-{:else if name === 'Audience'}
+{:else if name === $t('org_navigation.audience')}
   <AudienceIcon />
-{:else if name === 'Setup'}
+{:else if name === $t('org_navigation.setup')}
   <SettingsAdjust />
 {/if}
