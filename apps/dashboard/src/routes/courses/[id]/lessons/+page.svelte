@@ -31,6 +31,7 @@
   import { goto } from '$app/navigation';
   import { COURSE_TYPE } from '$lib/utils/types';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants.js';
+  import { profile } from '$lib/utils/store/user.js';
 
   export let data;
 
@@ -103,20 +104,19 @@
     }
   }
 
+  function hasUserCompletedLesson(completion) {
+    return completion?.find((c) => c.profile_id === $profile.id);
+  }
+
   function findFirstIncompleteLesson() {
-    console.log({ lessons: $lessons });
     return $lessons.find(
-      (lesson) =>
-        lesson.lesson_completion &&
-        lesson.lesson_completion.length === 0 &&
-        lesson.is_unlocked === true
+      (lesson) => !hasUserCompletedLesson(lesson.lesson_completion) && lesson.is_unlocked === true
     );
   }
 
   function onNextQuery(lessons) {
     if (!isFetching && lessons.length > 0) {
       const incompleteLesson = findFirstIncompleteLesson();
-      console.log({ incompleteLesson });
 
       if (incompleteLesson) {
         goto(`/courses/${data.courseId}/lessons/${incompleteLesson.id}`);
