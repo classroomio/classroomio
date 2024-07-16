@@ -485,7 +485,7 @@
   </Tabs>
 {:else if !isMaterialsEmpty($lesson.materials, $lessonByTranslation[lessonId])}
   {#key lessonId}
-    <div class="w-full mb-10" in:fade={{ delay: 500 }} out:fade>
+    <div class="w-full mb-20" in:fade={{ delay: 500 }} out:fade>
       {#each componentsToRender as Component}
         <svelte:component this={Component} {lessonId} />
       {/each}
