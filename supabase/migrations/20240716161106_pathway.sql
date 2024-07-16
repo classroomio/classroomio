@@ -16,6 +16,14 @@ CREATE TABLE IF NOT EXISTS "public"."pathway" (
     "is_published" boolean DEFAULT false,
     "status" "text" DEFAULT 'ACTIVE'::"text" NOT NULL
 );
+ALTER TABLE "public"."pathway" OWNER TO "postgres";
+ALTER TABLE ONLY "public"."pathway"
+    ADD CONSTRAINT "pathway_pkey" PRIMARY KEY ("id");
+    
+GRANT ALL ON TABLE "public"."pathway" TO "anon";
+GRANT ALL ON TABLE "public"."pathway" TO "authenticated";
+GRANT ALL ON TABLE "public"."pathway" TO "service_role";
+
 
 CREATE TABLE IF NOT EXISTS "public"."pathway_course" (
     "id" "uuid" DEFAULT "extensions"."uuid_generate_v4"() NOT NULL,
@@ -25,6 +33,13 @@ CREATE TABLE IF NOT EXISTS "public"."pathway_course" (
     "pathway_id" "uuid",
     "course_id" "uuid"
 );
+ALTER TABLE "public"."pathway_course" OWNER TO "postgres";
+ALTER TABLE ONLY "public"."pathway_course"
+    ADD CONSTRAINT "pathway_course_pkey" PRIMARY KEY ("id");
+
+GRANT ALL ON TABLE "public"."pathway_course" TO "anon";
+GRANT ALL ON TABLE "public"."pathway_course" TO "authenticated";
+GRANT ALL ON TABLE "public"."pathway_course" TO "service_role";
 
 ALTER TABLE ONLY "public"."pathway_course"
     ADD CONSTRAINT "pathway_course_pathway_id_fkey" FOREIGN KEY ("pathway_id") REFERENCES "public"."pathway"("id");
