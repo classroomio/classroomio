@@ -186,7 +186,6 @@
   });
 
   function updateNoteByCompletion(completion: string) {
-    
     if (!completion) return;
 
     if ($lessonByTranslation[lessonId]) {
