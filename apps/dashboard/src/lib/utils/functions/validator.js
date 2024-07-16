@@ -2,6 +2,7 @@ import isNumber from 'lodash/isNumber';
 import z from 'zod';
 import { validateEmail } from './validateEmail';
 import { t } from '$lib/utils/functions/translations';
+import { user } from '../store/user';
 
 const getOrgNameValidation = () =>
   z
@@ -279,7 +280,24 @@ export const updateProfileEmailValidation = (email) => {
 
   return processErrors(error);
 };
+export const updateProfileUsernameValidation = (username) => {
+  const schema = z.object({
+    username: z.string().nonempty({ message: `${t.get('validations.user_profile.username')}` })
+  });
+  const { error } = schema.safeParse({ username });
+  console.log('error', error);
 
+  return processErrors(error);
+};
+
+export const updateProfileFullnameValidation = (fullname) => {
+  const schema = z.object({
+    fullname: z.string().nonempty({ message: `${t.get('validations.user_profile.fullname')}` })
+  });
+  const { error } = schema.safeParse({ fullname });
+
+  return processErrors(error);
+};
 export const createQuizValidation = (fields = {}) => {
   const { error } = createQuizValidationSchema.safeParse(fields);
 

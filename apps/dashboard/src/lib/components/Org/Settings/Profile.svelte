@@ -13,7 +13,11 @@
   import { t } from '$lib/utils/functions/translations';
   import LanguagePicker from './LanguagePicker.svelte';
   import { handleLocaleChange } from '$lib/utils/functions/translations';
-  import { updateProfileEmailValidation } from '$lib/utils/functions/validator';
+  import {
+    updateProfileEmailValidation,
+    updateProfileFullnameValidation,
+    updateProfileUsernameValidation
+  } from '$lib/utils/functions/validator';
 
   let avatar = '';
   let loading = false;
@@ -21,13 +25,17 @@
   let locale = '';
 
   let errors = {
-    email: ''
-  }
+    email: '',
+    username: '',
+    fullname: ''
+  };
 
   async function handleUpdate() {
-    errors = updateProfileEmailValidation($profile.email)
+    errors.email = updateProfileEmailValidation($profile.email).email || '';
+    errors.username = updateProfileUsernameValidation($profile.username).username || '';
+    errors.fullname = updateProfileFullnameValidation($profile.fullname).fullname || '';
 
-    if (Object.values(errors).length) {
+    if (Object.values(errors).some((error) => error)) {
       loading = false;
       return;
     }
@@ -105,11 +113,13 @@
         label={$t('settings.profile.personal_information.full_name')}
         bind:value={$profile.fullname}
         className="w-full lg:w-60 mb-4"
+        errorMessage={errors.fullname}
       />
       <TextField
         label={$t('settings.profile.personal_information.username')}
         bind:value={$profile.username}
         className="w-full lg:w-60 mb-4"
+        errorMessage={errors.username}
       />
       <TextField
         label={$t('settings.profile.personal_information.email')}
