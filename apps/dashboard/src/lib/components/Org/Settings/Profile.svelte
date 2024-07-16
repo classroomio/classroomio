@@ -13,13 +13,25 @@
   import { t } from '$lib/utils/functions/translations';
   import LanguagePicker from './LanguagePicker.svelte';
   import { handleLocaleChange } from '$lib/utils/functions/translations';
+  import { updateProfileEmailValidation } from '$lib/utils/functions/validator';
 
   let avatar = '';
   let loading = false;
   let hasLangChanged = false;
   let locale = '';
 
+  let errors = {
+    email: ''
+  }
+
   async function handleUpdate() {
+    errors = updateProfileEmailValidation($profile.email)
+
+    if (Object.values(errors).length) {
+      loading = false;
+      return;
+    }
+
     try {
       console.log({ hasLangChanged });
       loading = true;
@@ -103,6 +115,7 @@
         label={$t('settings.profile.personal_information.email')}
         bind:value={$profile.email}
         className="w-full lg:w-60 mb-4"
+        errorMessage={errors.email}
       />
       <LanguagePicker bind:hasLangChanged bind:value={locale} className="w-full lg:w-60 mb-4" />
     </Column>

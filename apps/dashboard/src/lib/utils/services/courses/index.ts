@@ -179,7 +179,16 @@ export function fetchLesson(lessonId: Lesson['id']) {
   return supabase
     .from('lesson')
     .select(
-      `id, note, videos, slide_url, call_url, totalExercises:exercise(count), totalComments:lesson_comment(count), lesson_completion(id, profile_id, is_complete), lesson_language(id, content, locale)`
+      `id,
+      note,
+      videos,
+      slide_url,
+      call_url,
+      totalExercises:exercise(count),
+      totalComments:lesson_comment(count),
+      lesson_completion(id, profile_id, is_complete),
+      lesson_language(id, content, locale)
+    `
     )
     .eq('id', lessonId)
     .single();
