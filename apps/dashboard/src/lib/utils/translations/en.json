@@ -198,7 +198,7 @@
     "dashboard": "Dashboard",
     "courses": "Courses",
     "all_courses": "All courses",
-    "pathway": "pathway",
+    "pathway": "Learning Path",
     "community": "Community",
     "audience": "Audience",
     "setup": "Setup",
@@ -455,7 +455,7 @@
   },
 
   "pathway": {
-    "heading": "Learning paths",
+    "heading": "Learning Paths",
     "heading_button": "Create collection",
     "search_placeholder": "Find collection",
     "pathway_filter": {
@@ -488,7 +488,7 @@
       }
     },
     "new_pathway_modal": {
-      "heading": "Create new collection",
+      "heading": "Create new Learning Path",
       "pathway_name": "Learning Path",
       "pathway_name_placeholder": "Become a professional UX designer",
       "short_description": "Short Description",
