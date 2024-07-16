@@ -126,7 +126,7 @@
           class=" bg-gray-100 dark:bg-neutral-800"
         />
         <Dropdown
-          class="h-full"
+          class="h-full min-w-[150px]"
           bind:selectedId
           items={[
             { id: '0', text: $t('courses.course_filter.date_created') },
