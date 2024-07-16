@@ -104,6 +104,7 @@
   }
 
   function findFirstIncompleteLesson() {
+    console.log({ lessons: $lessons });
     return $lessons.find(
       (lesson) =>
         lesson.lesson_completion &&
@@ -115,6 +116,7 @@
   function onNextQuery(lessons) {
     if (!isFetching && lessons.length > 0) {
       const incompleteLesson = findFirstIncompleteLesson();
+      console.log({ incompleteLesson });
 
       if (incompleteLesson) {
         goto(`/courses/${data.courseId}/lessons/${incompleteLesson.id}`);
