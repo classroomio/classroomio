@@ -4,7 +4,7 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import OrgSelector from '$lib/components/OrgSelector/OrgSelector.svelte';
   import Avatar from '$lib/components/Avatar/index.svelte';
-  import { currentOrgPath, currentOrgPlan, isFreePlan } from '$lib/utils/store/org';
+  import { currentOrgPath, isFreePlan } from '$lib/utils/store/org';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
@@ -22,7 +22,6 @@
   }
 
   let menuItems: menuItems[] = [];
-  let path;
 
   function isActive(pagePath: string, itemPath: string) {
     const pageLinkItems = pagePath.split('/');
@@ -40,16 +39,6 @@
   const openModal = () => {
     goto(window.location.pathname + '?upgrade=true');
   };
-
-  function isGroupActive(pagePath: string, itemPaths: string | string[]) {
-    if (typeof itemPaths === 'string') {
-      console.log('paths', pagePath, itemPaths);
-      return pagePath === itemPaths;
-    } else {
-      console.log('paths', pagePath, itemPaths);
-      return itemPaths.some((path) => pagePath.startsWith(path) && path !== '');
-    }
-  }
 
   $: menuItems = [
     {

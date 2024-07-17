@@ -4,9 +4,7 @@
   import Modal from '$lib/components/Modal/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
-
   import { goto } from '$app/navigation';
-
   import { createPathwayModal } from '../store';
   import { t } from '$lib/utils/functions/translations';
 
@@ -24,7 +22,7 @@
 </script>
 
 <svelte:head>
-  <title>Create new collection</title>
+  <title>Create new Pathway</title>
 </svelte:head>
 
 <Modal
