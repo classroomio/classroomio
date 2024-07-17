@@ -198,7 +198,7 @@
     "dashboard": "Dashboard",
     "courses": "Courses",
     "all_courses": "All courses",
-    "pathway": "Learning Path",
+    "pathway": "Pathways",
     "community": "Community",
     "audience": "Audience",
     "setup": "Setup",
@@ -455,15 +455,15 @@
   },
 
   "pathway": {
-    "heading": "Learning Paths",
-    "heading_button": "Create collection",
-    "search_placeholder": "Find collection",
+    "heading": "Pathways",
+    "heading_button": "Create pathway",
+    "search_placeholder": "Find pathway",
     "pathway_filter": {
       "date_created": "Date Created",
       "published": "Published",
       "courses": "Courses"
     },
-    "empty_title": "No Learning path yet",
+    "empty_title": "No Pathway has been created yet",
     "empty_description": "Add a group of related courses to set students on a path to excellence in your fields",
     "pathway_card": {
       "courses": "courses",
@@ -488,12 +488,12 @@
       }
     },
     "new_pathway_modal": {
-      "heading": "Create new Learning Path",
-      "pathway_name": "Learning Path",
+      "heading": "Create new Pathway",
+      "pathway_name": "Pathway",
       "pathway_name_placeholder": "Become a professional UX designer",
       "short_description": "Short Description",
       "short_description_placeholder": "A sepcialization course that gets you started as a ux designer",
-      "button": "Create Path"
+      "button": "Create Pathway"
     }
   },
 

@@ -1083,7 +1083,7 @@
     "unlock": "Mở khóa các tính năng không giới hạn và đầu tư vào tương lai của chúng tôi",
     "upgrade": "Nâng cấp ngay bây giờ",
     "all_courses": "Tất cả các khóa học",
-    "pathway": "con đường"
+    "pathway": "Con đường"
   },
   "settings": {
     "heading": "Cài đặt",
@@ -1381,24 +1381,25 @@
     "heading": "Khám phá các khóa học của chúng tôi"
   },
   "pathway": {
-    "heading": "Lộ trình học tập",
-    "heading_button": "Tạo bộ sưu tập",
-    "search_placeholder": "Tìm bộ sưu tập",
-    "empty_title": "Chưa có lộ trình học tập",
+    "heading": "Con đường",
+    "heading_button": "Tạo lộ trình",
+    "search_placeholder": "Tìm con đường",
+    "empty_title": "Chưa có Con đường nào được tạo",
     "empty_description": "Thêm một nhóm các khóa học liên quan để giúp sinh viên đi đến con đường xuất sắc trong lĩnh vực của bạn",
     "new_pathway_modal": {
-      "heading": "Tạo bộ sưu tập mới",
-      "pathway_name": "Con đường học tập",
+      "heading": "Tạo lộ trình mới",
+      "pathway_name": "Con đường",
       "pathway_name_placeholder": "Trở thành nhà thiết kế UX chuyên nghiệp",
       "short_description": "Mô tả ngắn",
       "short_description_placeholder": "Khóa học phân biệt giúp bạn bắt đầu trở thành nhà thiết kế ux",
-      "button": "Tạo đường dẫn"
+      "button": "Tạo lộ trình"
     },
     "pathway_card": {
+      "courses": "các khóa học",
       "error_message": "Đã xảy ra lỗi.",
       "students": "sinh viên",
       "published": "Được phát hành",
-      "unpublished": "Chưa được xuất bản",
+      "unpublished": "Chưa xuất bản",
       "continue_pathway": "Tiếp tục con đường",
       "learn_more": "Tìm hiểu thêm",
       "list_view": {
@@ -1413,8 +1414,7 @@
         "share": "Chia sẻ",
         "invite": "Mời",
         "delete": "Xóa bỏ"
-      },
-      "courses": "các khóa học"
+      }
     },
     "pathway_filter": {
       "date_created": "Ngày tạo",

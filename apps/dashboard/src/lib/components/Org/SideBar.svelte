@@ -22,6 +22,7 @@
   }
 
   let menuItems: menuItems[] = [];
+  let path;
 
   function isActive(pagePath: string, itemPath: string) {
     const pageLinkItems = pagePath.split('/');
@@ -99,12 +100,8 @@
               label={menuItem.label}
               href={typeof menuItem.to === 'string' ? `${$currentOrgPath}${menuItem.to}` : null}
               handleClick={toggleSidebar}
-              isGroupActive={isGroupActive(
-                $page.url.pathname,
-                typeof menuItem.to === 'string'
-                  ? `${$currentOrgPath}${menuItem.to}`
-                  : menuItem.to.map((path) => `${$currentOrgPath}${path}`)
-              )}
+              isGroupActive={typeof menuItem.to === 'string' &&
+                isActive($page.url.pathname, `${$currentOrgPath}${menuItem.to}`)}
               isExpanded={menuItem.isExpanded}
               isDropdown={menuItem.isDropdown}
             >
@@ -112,7 +109,8 @@
                 {#each menuItem.to as subPath}
                   <a
                     href="{$currentOrgPath}{subPath}"
-                    class={`${NavClasses.item} w-full py-2 pl-10 pr-2 `}
+                    class="{NavClasses.item}  {$page.url.pathname.includes(subPath) &&
+                      NavClasses.active} w-full py-2 pl-10 pr-2"
                     on:click={toggleSidebar}
                   >
                     {#if subPath === '/courses'}

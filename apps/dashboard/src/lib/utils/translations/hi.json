@@ -1083,7 +1083,7 @@
     "unlock": "असीमित सुविधाएँ अनलॉक करें और हमारे भविष्य में निवेश करें",
     "upgrade": "अभी अपग्रेड करें",
     "all_courses": "सभी पाठ्यक्रम",
-    "pathway": "मार्ग"
+    "pathway": "रास्ते"
   },
   "settings": {
     "heading": "समायोजन",
@@ -1381,20 +1381,21 @@
     "heading": "हमारे पाठ्यक्रमों का अन्वेषण करें"
   },
   "pathway": {
-    "heading": "सीखने के रास्ते",
-    "heading_button": "संग्रह बनाएँ",
-    "search_placeholder": "संग्रह खोजें",
-    "empty_title": "अभी तक कोई सीखने का रास्ता नहीं",
+    "heading": "रास्ते",
+    "heading_button": "मार्ग बनाएँ",
+    "search_placeholder": "रास्ता खोजें",
+    "empty_title": "अभी तक कोई पाथवे नहीं बनाया गया है",
     "empty_description": "छात्रों को अपने क्षेत्रों में उत्कृष्टता की राह पर ले जाने के लिए संबंधित पाठ्यक्रमों का एक समूह जोड़ें",
     "new_pathway_modal": {
-      "heading": "नया संग्रह बनाएं",
-      "pathway_name": "शिक्षण मार्ग",
+      "heading": "नया मार्ग बनाएं",
+      "pathway_name": "मार्ग",
       "pathway_name_placeholder": "एक पेशेवर UX डिज़ाइनर बनें",
       "short_description": "संक्षिप्त वर्णन",
       "short_description_placeholder": "एक विशेषज्ञता पाठ्यक्रम जो आपको एक यूएक्स डिजाइनर के रूप में आरंभ करवाता है",
-      "button": "पथ बनाएँ"
+      "button": "मार्ग बनाएँ"
     },
     "pathway_card": {
+      "courses": "पाठ्यक्रम",
       "error_message": "एक त्रुटि पाई गई।",
       "students": "छात्र",
       "published": "प्रकाशित",
@@ -1413,8 +1414,7 @@
         "share": "शेयर करना",
         "invite": "आमंत्रित करना",
         "delete": "मिटाना"
-      },
-      "courses": "पाठ्यक्रम"
+      }
     },
     "pathway_filter": {
       "date_created": "बनाया गया दिनांक",

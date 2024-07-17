@@ -1083,7 +1083,7 @@
     "unlock": "Desbloquee funciones ilimitadas e invierta en nuestro futuro",
     "upgrade": "Actualizar ahora",
     "all_courses": "Todos los cursos",
-    "pathway": "ruta"
+    "pathway": "Caminos"
   },
   "settings": {
     "heading": "Ajustes",
@@ -1381,20 +1381,21 @@
     "heading": "Explora nuestros cursos"
   },
   "pathway": {
-    "heading": "Caminos de aprendizaje",
-    "heading_button": "Crear colección",
-    "search_placeholder": "encontrar colección",
-    "empty_title": "Aún no hay ruta de aprendizaje",
+    "heading": "Caminos",
+    "heading_button": "Crear camino",
+    "search_placeholder": "encontrar camino",
+    "empty_title": "Aún no se ha creado ningún camino",
     "empty_description": "Agregue un grupo de cursos relacionados para encaminar a los estudiantes hacia la excelencia en sus campos",
     "new_pathway_modal": {
-      "heading": "Crear nueva colección",
-      "pathway_name": "Ruta de aprendizaje",
+      "heading": "Crear nuevo camino",
+      "pathway_name": "Ruta",
       "pathway_name_placeholder": "Conviértete en un diseñador UX profesional",
       "short_description": "Breve descripción",
       "short_description_placeholder": "Un curso de especialización que te inicia como diseñador de ux",
-      "button": "Crear ruta"
+      "button": "Crear camino"
     },
     "pathway_card": {
+      "courses": "cursos",
       "error_message": "Ocurrió un error.",
       "students": "estudiantes",
       "published": "Publicado",
@@ -1413,8 +1414,7 @@
         "share": "Compartir",
         "invite": "Invitar",
         "delete": "Borrar"
-      },
-      "courses": "cursos"
+      }
     },
     "pathway_filter": {
       "date_created": "fecha de creacion",

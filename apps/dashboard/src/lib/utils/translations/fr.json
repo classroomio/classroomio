@@ -1083,7 +1083,7 @@
     "unlock": "Débloquez des fonctionnalités illimitées et investissez dans notre avenir",
     "upgrade": "Mettre à jour maintenant",
     "all_courses": "Tous les cours",
-    "pathway": "sentier"
+    "pathway": "Voies"
   },
   "settings": {
     "heading": "Paramètres",
@@ -1381,20 +1381,21 @@
     "heading": "Découvrez nos cours"
   },
   "pathway": {
-    "heading": "Parcours d'apprentissage",
-    "heading_button": "Créer une collection",
-    "search_placeholder": "Trouver une collection",
-    "empty_title": "Pas encore de parcours d'apprentissage",
+    "heading": "Voies",
+    "heading_button": "Créer un parcours",
+    "search_placeholder": "Trouver un chemin",
+    "empty_title": "Aucun parcours n'a encore été créé",
     "empty_description": "Ajoutez un groupe de cours connexes pour mettre les étudiants sur la voie de l'excellence dans vos domaines",
     "new_pathway_modal": {
-      "heading": "Créer une nouvelle collection",
-      "pathway_name": "Parcours d'apprentissage",
+      "heading": "Créer un nouveau parcours",
+      "pathway_name": "Sentier",
       "pathway_name_placeholder": "Devenez un concepteur UX professionnel",
       "short_description": "brève description",
       "short_description_placeholder": "Un cours de spécialisation qui vous permet de démarrer en tant que concepteur ux",
-      "button": "Créer un chemin"
+      "button": "Créer un parcours"
     },
     "pathway_card": {
+      "courses": "cours",
       "error_message": "Une erreur s'est produite.",
       "students": "étudiants",
       "published": "Publié",
@@ -1413,8 +1414,7 @@
         "share": "Partager",
         "invite": "Inviter",
         "delete": "Supprimer"
-      },
-      "courses": "cours"
+      }
     },
     "pathway_filter": {
       "date_created": "date créée",

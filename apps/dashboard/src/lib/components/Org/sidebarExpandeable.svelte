@@ -25,7 +25,7 @@
 <div class="">
   <a
     on:click={handleIsExpanded}
-    class="item relative mb-1 flex items-center gap-2.5 px-2.5 py-2 cursor-pointer {NavClasses.item} {isGroupActive &&
+    class="item relative my-1 flex items-center gap-2.5 px-2.5 py-2 cursor-pointer {NavClasses.item} {isGroupActive &&
       NavClasses.active} w-[95%]"
     {href}
   >
@@ -46,7 +46,7 @@
     {/if}
   </a>
   {#if isExpanded}
-    <div in:slide out:slide class="flex flex-col items-center w-[95%]">
+    <div in:slide out:slide class="flex flex-col items-center gap-1 w-[95%]">
       <slot />
     </div>
   {/if}

@@ -1083,7 +1083,7 @@
     "unlock": "Schalten Sie unbegrenzte Funktionen frei und investieren Sie in unsere Zukunft",
     "upgrade": "Jetzt upgraden",
     "all_courses": "Alle Kurse",
-    "pathway": "Weg"
+    "pathway": "Wege"
   },
   "settings": {
     "heading": "Einstellungen",
@@ -1381,20 +1381,21 @@
     "heading": "Entdecken Sie unsere Kurse"
   },
   "pathway": {
-    "heading": "Lernpfade",
-    "heading_button": "Sammlung erstellen",
-    "search_placeholder": "Sammlung finden",
-    "empty_title": "Noch kein Lernpfad",
+    "heading": "Wege",
+    "heading_button": "Weg erstellen",
+    "search_placeholder": "Weg finden",
+    "empty_title": "Es wurde noch kein Pfad erstellt",
     "empty_description": "Fügen Sie eine Gruppe verwandter Kurse hinzu, um Studenten auf den Weg zu Spitzenleistungen in Ihren Fachgebieten zu bringen",
     "new_pathway_modal": {
-      "heading": "Neue Sammlung erstellen",
-      "pathway_name": "Lernweg",
+      "heading": "Erstellen Sie einen neuen Pfad",
+      "pathway_name": "Weg",
       "pathway_name_placeholder": "Werden Sie ein professioneller UX-Designer",
       "short_description": "kurze Beschreibung",
       "short_description_placeholder": "Ein Spezialisierungskurs, der Ihnen den Einstieg als UX-Designer erleichtert",
       "button": "Pfad erstellen"
     },
     "pathway_card": {
+      "courses": "Kurse",
       "error_message": "Ein Fehler ist aufgetreten.",
       "students": "Studenten",
       "published": "Veröffentlicht",
@@ -1413,8 +1414,7 @@
         "share": "Aktie",
         "invite": "Einladen",
         "delete": "Löschen"
-      },
-      "courses": "Kurse"
+      }
     },
     "pathway_filter": {
       "date_created": "Datum erstellt",
