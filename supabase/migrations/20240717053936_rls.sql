@@ -1309,3 +1309,5 @@ as permissive
 for select
 to authenticated
 using (true);
+
+alter table "public"."course" alter column "currency" set default 'USD'::character varying;
