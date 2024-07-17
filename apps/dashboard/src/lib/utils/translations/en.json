@@ -1373,6 +1373,9 @@
   },
 
   "validations": {
+    "user_profile": {
+      "email": "Invalid email address"
+    },
     "organization_name": {
       "min_char": "Organization must contain 5 or more characters",
       "hyphen_rule": "Organization name cannot start or end with a hyphen"
