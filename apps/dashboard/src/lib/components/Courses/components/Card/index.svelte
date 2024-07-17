@@ -17,7 +17,6 @@
   import { COURSE_TYPE } from '$lib/utils/types';
   import RadioButtonChecked from 'carbon-icons-svelte/lib/RadioButtonChecked.svelte';
   import GrowthIcon from 'carbon-icons-svelte/lib/Growth.svelte';
-  import CourseIcon from 'carbon-icons-svelte/lib/Course.svelte';
   import UserProfileIcon from 'carbon-icons-svelte/lib/UserProfile.svelte';
 
   export let bannerImage: string | undefined;
