@@ -16,12 +16,12 @@
   />
   <div class="relative md:h-[47vh] bg-white flex justify-between z-20 m-2">
     <div class="w-[70%] pl-3">
-      <header class="flex justify-end items-center gap-1 text-sm font-bold">
+      <header class="absolute w-full flex justify-center items-center gap-1 text-sm font-bold">
         <img src={$currentOrg.avatar_url ? $currentOrg.avatar_url : logo} alt="logo" class="w-5" />
         <h1 class="text-sm">{$currentOrg.name}</h1>
       </header>
 
-      <div class="font-bold mt-8">
+      <div class="font-bold mt-16">
         <h2 class="text-[7px] m-0">This certificate is awarded to</h2>
         <h1 class="text-lg m-0 mt-0.5 leading-3 text-[#914397]">{studentName}</h1>
       </div>

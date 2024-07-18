@@ -23,6 +23,41 @@
   </head>
 
   <body>
+    <img
+      src="http://localhost:3002/blue-lined-background.png"
+      alt=""
+      class="absolute top-0 left-0 w-full h-[100vh] z-10"
+    />
+    <div class="absolute z-20 left-[5%] top-16 w-[90%]">
+      <header class="w-full flex justify-center items-center pt-10 gap-3 text-3xl font-bold">
+        <img src="${orgLogoUrl}" alt="" />
+        <h1>${orgName}</h1>
+      </header>
+
+      <div class="pl-10 text-lg font-bold mt-[10%]">
+        <h2>This certificate is awarded to</h2>
+        <h1 class="text-3xl text-blue-800">${studentName}</h1>
+      </div>
+
+      <div class="pl-10 text-lg font-bold mt-10 w-[70%]">
+        <h1>has succesfully completed training on</h1>
+        <h2 class="text-4xl leading-[2.5rem]">${courseName}</h2>
+      </div>
+
+      <div class="flex border justify-between w-[70%] mx-auto text-center items-end my-14">
+        <div>
+          <p class="font-bold">${dateIssued}</p>
+          <h1 class="border-t border-black h-2/4 font-bold">Date Issued</h1>
+        </div>
+
+        <div class="w-[20%]">
+          <h1 class="h-2/4 border-b border-black"></h1>
+          <p class="font-bold">Signature</p>
+        </div>
+      </div>
+
+      <footer class="text-sm pl-10 w-[90%] pb-10">${courseDescription}</footer>
+    </div>
     <!-- plain blueProfessionalBadgePattern -->
     <!-- <img
       src="http://localhost:3002/blue-professional-badge-background.png"

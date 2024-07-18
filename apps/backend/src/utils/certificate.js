@@ -72,10 +72,10 @@ function getProfessionalTheme({
           <p class="text-xl font-light mb-4 text-justify">
             ${courseDescription}
           </p>
-          <div class="flex justify-between w-[70%] mx-auto text-center my-14">
+          <div class="flex justify-between w-[70%] mx-auto text-center items-end my-14">
             <div>
-              <h1 class="h-2/4">DATE ISSUED:</h1>
-              <p class="border-b border-black font-bold">${dateIssued}</p>
+              <p class="font-bold">${dateIssued}</p>
+              <h1 class="border-t border-black h-2/4 font-bold">Date Issued</h1>
             </div>
 
             
@@ -135,16 +135,11 @@ function getPlainTheme({
           </div>
         </div>
         <p class="text-xl text-center text-gray-500 font-light">${courseDescription}</p>
-        <div class="flex justify-between w-[70%] mx-auto text-center my-14">
-        <div>
-          <h1 class="h-2/4">DATE ISSUED:</h1>
-          <p class="border-b border-black font-bold">${dateIssued}</p>
-        </div>
-
-        <!-- <div>
-        <h1 class="h-2/4">FACILITATOR:</h1>
-        <p class="font-bold">${facilitator}</p>
-        </div>-->
+        <div class="flex justify-between w-[70%] mx-auto text-center items-end my-14">
+          <div>
+            <p class="font-bold">${dateIssued}</p>
+            <h1 class="border-t border-black h-2/4 font-bold">Date Issued</h1>
+          </div>
 
           <div class="w-[20%]">
             <h1 class="h-2/4 border-b border-black"></h1>
@@ -191,19 +186,14 @@ function getPurpleProfessionalBadge({
         </h2>
       </div>
 
-      <div class="flex justify-between w-[70%] text-center my-[10%]">
+      <div class="flex justify-between w-[70%] mx-auto text-center items-end my-14">
         <div>
-          <h1 class="h-2/4">DATE ISSUED:</h1>
-          <p class="border-b-2 border-black font-bold">${dateIssued}</p>
+          <p class="font-bold">${dateIssued}</p>
+          <h1 class="border-t border-black h-2/4 font-bold">Date Issued</h1>
         </div>
 
-        <!-- <div>
-        <h1 class="h-2/4">FACILITATOR:</h1>
-        <p class="font-bold">${facilitator}</p>
-        </div>-->
-
         <div class="w-[20%]">
-          <h1 class="h-2/4 border-b-2 border-black"></h1>
+          <h1 class="h-2/4 border-b border-black"></h1>
           <p class="font-bold">Signature</p>
         </div>
       </div>
@@ -250,19 +240,14 @@ function getBlueProfessionalBadge({
         </h2>
       </div>
 
-      <div class="flex justify-between w-[70%] text-center my-[10%]">
+      <div class="flex border justify-between w-[70%] mx-auto text-center items-end my-14">
         <div>
-          <h1 class="h-2/4">DATE ISSUED:</h1>
-          <p class="border-b-2 border-black font-bold">${dateIssued}</p>
+          <p class="font-bold">${dateIssued}</p>
+          <h1 class="border-t border-black h-2/4 font-bold">Date Issued</h1>
         </div>
 
-        <!-- <div>
-        <h1 class="h-2/4">FACILITATOR:</h1>
-        <p class="font-bold">${facilitator}</p>
-        </div>-->
-
         <div class="w-[20%]">
-          <h1 class="h-2/4 border-b-2 border-black"></h1>
+          <h1 class="h-2/4 border-b border-black"></h1>
           <p class="font-bold">Signature</p>
         </div>
       </div>
@@ -292,12 +277,12 @@ function getPurpleProfessionalBadgePattern({
     class="absolute top-0 left-0 w-full h-[100vh] z-10"
   />
   <div class="absolute z-20 left-[5%] top-16 w-[90%]">
-    <header class="w-full flex justify-center items-center pt-10 gap-3 text-3xl font-bold">
+      <header class="absolute w-full flex justify-center items-center pt-10 gap-3 text-3xl font-bold">
       <img src="${orgLogoUrl}" alt="" />
       <h1>${orgName}</h1>
     </header>
 
-    <div class="pl-10 text-lg font-bold mt-[10%]">
+    <div class="pl-10 text-lg font-bold mt-[18%]">
       <h2>This certificate is awarded to</h2>
       <h1 class="text-3xl text-fuchsia-800">${studentName}</h1>
     </div>
@@ -309,19 +294,14 @@ function getPurpleProfessionalBadgePattern({
       </h2>
     </div>
 
-    <div class="pl-10 flex justify-between w-[70%] text-center my-[10%]">
+    <div class="flex border justify-between w-[70%] mx-auto text-center items-end my-14">
       <div>
-        <h1 class="h-2/4">DATE ISSUED:</h1>
-        <p class="border-b-2 border-black font-bold">${dateIssued}</p>
+        <p class="font-bold">${dateIssued}</p>
+        <h1 class="border-t border-black h-2/4 font-bold">Date Issued</h1>
       </div>
 
-      <!-- <div>
-      <h1 class="h-2/4">FACILITATOR:</h1>
-      <p class="font-bold">${facilitator}</p>
-      </div>-->
-
       <div class="w-[20%]">
-        <h1 class="h-2/4 border-b-2 border-black"></h1>
+        <h1 class="h-2/4 border-b border-black"></h1>
         <p class="font-bold">Signature</p>
       </div>
     </div>
@@ -351,12 +331,12 @@ function getBlueProfessionalBadgePattern({
       class="absolute top-0 left-0 w-full h-[100vh] z-10"
     />
     <div class="absolute z-20 left-[5%] top-16 w-[90%]">
-      <header class="w-full flex justify-center items-center pt-10 gap-3 text-3xl font-bold">
+      <header class="absolute w-full flex justify-center items-center pt-10 gap-3 text-3xl font-bold">
         <img src="${orgLogoUrl}" alt="" />
         <h1>${orgName}</h1>
       </header>
 
-      <div class="pl-10 text-lg font-bold mt-[10%]">
+      <div class="pl-10 text-lg font-bold mt-[18%]">
         <h2>This certificate is awarded to</h2>
         <h1 class="text-3xl text-blue-800">${studentName}</h1>
       </div>
@@ -368,19 +348,14 @@ function getBlueProfessionalBadgePattern({
         </h2>
       </div>
 
-      <div class="pl-10 flex justify-between w-[70%] text-center my-[10%]">
+      <div class="flex border justify-between w-[70%] mx-auto text-center items-end my-14">
         <div>
-          <h1 class="h-2/4">DATE ISSUED:</h1>
-          <p class="border-b-2 border-black font-bold">${dateIssued}</p>
+          <p class="font-bold">${dateIssued}</p>
+          <h1 class="border-t border-black h-2/4 font-bold">Date Issued</h1>
         </div>
 
-        <!-- <div>
-        <h1 class="h-2/4">FACILITATOR:</h1>
-        <p class="font-bold">${facilitator}</p>
-        </div>-->
-
         <div class="w-[20%]">
-          <h1 class="h-2/4 border-b-2 border-black"></h1>
+          <h1 class="h-2/4 border-b border-black"></h1>
           <p class="font-bold">Signature</p>
         </div>
       </div>
