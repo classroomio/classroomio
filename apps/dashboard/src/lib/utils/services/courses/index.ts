@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get } from 'svelte/store';
 import { supabase } from '$lib/utils/functions/supabase';
 import { isUUID } from '$lib/utils/functions/isUUID';
 import { QUESTION_TYPE } from '$lib/components/Question/constants';
@@ -15,7 +15,6 @@ import { STATUS } from '$lib/utils/constants/course';
 import type { PostgrestSingleResponse, PostgrestError } from '@supabase/supabase-js';
 import type { ProfileCourseProgress } from '$lib/utils/types';
 import { isOrgAdmin } from '$lib/utils/store/org';
-
 
 export async function fetchCourses(profileId, orgId) {
   if (!orgId || !profileId) return;
@@ -44,7 +43,6 @@ export async function fetchCourses(profileId, orgId) {
   return { allCourses };
 }
 
-
 export async function fetchProfileCourseProgress(
   courseId,
   profileId
@@ -62,6 +60,54 @@ export async function fetchProfileCourseProgress(
   return { data, error };
 }
 
+const SLUG_QUERY = `
+  id,
+  title,
+  type,
+  description,
+  overview,
+  logo,
+  is_published,
+  slug,
+  cost,
+  currency,
+  metadata,
+  is_certificate_downloadable,
+  certificate_theme,
+  lessons:lesson(
+    id, title, order
+  )
+`;
+
+const ID_QUERY = `
+  id,
+  title,
+  type,
+  description,
+  overview,
+  logo,
+  is_published,
+  group(*,
+    members:groupmember(*,
+      profile(*)
+    )
+  ),
+  slug,
+  cost,
+  currency,
+  metadata,
+  is_certificate_downloadable,
+  certificate_theme,
+  lessons:lesson(
+    id, title,public, lesson_at, is_unlocked, order, created_at,
+    note, videos, slide_url, call_url, totalExercises:exercise(count), totalComments:lesson_comment(count),
+    profile:teacher_id(id, avatar_url, fullname),
+    lesson_completion(id, profile_id, is_complete)
+  ),
+  attendance:group_attendance(*),
+  polls:apps_poll(status)
+`;
+
 export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']) {
   const match: { slug?: string; id?: string; status?: string } = {};
 
@@ -75,36 +121,7 @@ export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']
 
   const response: PostgrestSingleResponse<Course | null> = await supabase
     .from('course')
-    .select(
-      `
-      id,
-      title,
-      type,
-      description,
-      overview,
-      logo,
-      is_published,
-      group(*,
-        members:groupmember(*,
-          profile(*)
-        )
-      ),
-      slug,
-      cost,
-      currency,
-      metadata,
-      is_certificate_downloadable,
-      certificate_theme,
-      lessons:lesson(
-        id, title,public, lesson_at, call_url, is_unlocked, order, created_at,
-        note, videos, slide_url, call_url, totalExercises:exercise(count), totalComments:lesson_comment(count),
-        profile:teacher_id(id, avatar_url, fullname),
-        lesson_completion(id, profile_id, is_complete)
-      ),
-      attendance:group_attendance(*),
-      polls:apps_poll(status)
-    `
-    )
+    .select(slug ? SLUG_QUERY : ID_QUERY)
     .match(match)
     .single();
 
@@ -123,6 +140,23 @@ export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']
     data,
     error
   };
+}
+
+export async function fetchExploreCourses(profileId, orgId) {
+  if (!orgId || !profileId) return;
+
+  const { data: allCourses } = await supabase.rpc('get_explore_courses', {
+    org_id_arg: orgId,
+    profile_id_arg: profileId
+  });
+
+  if (!Array.isArray(allCourses)) {
+    return {
+      allCourses: []
+    };
+  }
+
+  return { allCourses };
 }
 
 export async function fetchGroup(groupId: Group['id']) {
@@ -209,10 +243,29 @@ export function fetchLesson(lessonId: Lesson['id']) {
   return supabase
     .from('lesson')
     .select(
-      `id, note, videos, slide_url, call_url, totalExercises:exercise(count), totalComments:lesson_comment(count), lesson_completion(id, profile_id, is_complete), lesson_language(id, content, locale)`
+      `id,
+      note,
+      videos,
+      slide_url,
+      call_url,
+      totalExercises:exercise(count),
+      totalComments:lesson_comment(count),
+      lesson_completion(id, profile_id, is_complete),
+      lesson_language(id, content, locale)
+    `
     )
     .eq('id', lessonId)
     .single();
+}
+
+export function fetchLesssonLanguageHistory(lessonId: string, locale: string, endRange: number) {
+  return supabase
+    .from('lesson_versions')
+    .select('*')
+    .range(0, endRange)
+    .eq('lesson_id', lessonId)
+    .eq('locale', locale)
+    .order('timestamp', { ascending: false });
 }
 
 export function createLesson(lesson: any) {

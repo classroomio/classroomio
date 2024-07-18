@@ -2,6 +2,7 @@
   import { profile } from '$lib/utils/store/user';
   import { group } from '../Course/store';
   import type { GroupPerson } from '$lib/utils/types';
+  import { isOrgAdmin } from '$lib/utils/store/org';
 
   export let allowedRoles: number[] = [];
   export let onDenied = () => {};
@@ -13,12 +14,12 @@
 
     userRole = user ? user.role_id : userRole;
 
-    if ($group.people.length && !allowedRoles.includes(userRole)) {
+    if (!$isOrgAdmin && $group.people.length && !allowedRoles.includes(userRole)) {
       onDenied();
     }
   }
 </script>
 
-{#if allowedRoles.includes(userRole)}
+{#if allowedRoles.includes(userRole) || $isOrgAdmin}
   <slot />
 {/if}

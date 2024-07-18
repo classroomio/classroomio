@@ -47,7 +47,8 @@
       },
       "success": {
         "complete_marked": "Marqué comme terminé",
-        "complete_download": "Téléchargement complet"
+        "complete_download": "Téléchargement complet",
+        "version_restored": "Version restaurée avec succès"
       }
     },
     "attendance": {
@@ -184,7 +185,8 @@
     "exercise": "Exercice",
     "community": "Communauté",
     "help": "Aide",
-    "settings": "Paramètres"
+    "settings": "Paramètres",
+    "explore": "Explorer"
   },
   "upgrade": {
     "certificate": "Mettez à niveau votre plan pour générer des certificats",
@@ -451,7 +453,10 @@
           "via_link": "Vous pouvez inviter des étudiants via un lien d'invitation",
           "copy_link": "Copier le lien",
           "success": "Copié avec succès",
-          "finish": "Finition"
+          "finish": "Finition",
+          "via_qr": "Vous pouvez inviter des étudiants via QR",
+          "download_qr": "Télécharger le code QR",
+          "qr_downloading_snackbar": "Code QR généré avec succès, veuillez patienter pendant le téléchargement"
         },
         "teams": {
           "add": "Ajouter",
@@ -746,9 +751,22 @@
           "edit": "Modifier",
           "delete": "Supprimer",
           "lock": "Verrouillage",
-          "unlock": "Ouvrir"
+          "unlock": "Ouvrir",
+          "start_reorder": "Réorganiser",
+          "end_reorder": "Terminer la réapprovisionnement"
         },
-        "disabled": "La fonctionnalité est désactivée"
+        "disabled": "La fonctionnalité est désactivée",
+        "next": "Suivant",
+        "prev": "Précédent",
+        "version_history": {
+          "title": "Historique des versions",
+          "fetch_more_versions": "Récupérer plus de versions",
+          "current_version": "Version actuelle",
+          "restore_version": "Restaurer cette version"
+        },
+        "drag": "faites glisser une carte pour réorganiser",
+        "no_lesson": "Pas encore de cours",
+        "share_your_knowledge": "Partagez vos connaissances avec le monde en créant des leçons engageantes. Commencez par cliquer sur le bouton Ajouter."
       },
       "news_feed": {
         "heading": "Fil d'actualité",
@@ -832,7 +850,9 @@
         "share": "Partager",
         "invite": "Inviter",
         "delete": "Supprimer"
-      }
+      },
+      "get_course": "Obtenir un cours",
+      "learn_more": "Apprendre encore plus"
     },
     "course_filter": {
       "date_created": "date créée",
@@ -1358,5 +1378,10 @@
       "min_char": "L'organisation doit contenir 5 caractères ou plus",
       "hyphen_rule": "Le nom de l'organisation ne peut pas commencer ou se terminer par un trait d'union"
     }
+  },
+  "explore": {
+    "empty_heading": "Aucun cours disponible",
+    "empty_description": "Il n'y a actuellement aucun cours publié disponible",
+    "heading": "Découvrez nos cours"
   }
 }

@@ -428,6 +428,7 @@
       "published": "Published",
       "unpublished": "Unpublished",
       "continue_course": "Continue Course",
+      "learn_more": "Learn more",
       "list_view": {
         "title": "Title",
         "description": "Description",
@@ -494,8 +495,13 @@
 
       "lessons": {
         "heading": "Lessons",
+        "drag": "drag a card to reorder",
+        "no_lesson": "No lessons yet",
+        "share_your_knowledge": "Share your knowledge with the world by creating engaging lessons. Start by clicking on the Add button.",
         "add_lesson": {
           "button_title": "Add",
+          "start_reorder": "Reorder",
+          "end_reorder": "End Reorder",
           "modal_heading": "Add New Lesson",
           "lesson_title": "Lesson Title",
           "click_to": "Click to",
@@ -529,7 +535,8 @@
         "mark_as": "Mark as",
         "incomplete": "Incomplete",
         "complete": "Complete",
-
+        "next": "Next",
+        "prev": "Prev",
         "materials": {
           "body_heading": "No note, video or slide added for this lesson yet",
           "body_content": "Share your knowledge with your students by creating engaging content. Start by clicking on",
@@ -741,6 +748,12 @@
           "option_label": "Option Label",
           "cancel": "Cancel",
           "poll_question": "Poll Question"
+        },
+        "version_history": {
+          "title": "Version history",
+          "fetch_more_versions": "Fetch more versions",
+          "current_version": "Current version",
+          "restore_version": "Restore this version"
         }
       },
 
@@ -803,6 +816,9 @@
           "go_to": "go to organization settings",
           "invite_students": "Invite Students",
           "via_link": "You can invite students via an invite link",
+          "via_qr": "You can invite students via QR",
+          "download_qr": "Download QR code",
+          "qr_downloading_snackbar": "QR code generated successfully, please wait while it downloads",
           "copy_link": "Copy link",
           "success": "Copied Successfully",
           "finish": "Finish"
@@ -1092,6 +1108,7 @@
     "my_learning": "My Learning",
     "exercise": "Exercise",
     "community": "Community",
+    "explore": "Explore",
     "help": "Help",
     "settings": "Settings"
   },
@@ -1114,6 +1131,12 @@
     "in_progress": "Grading In Progress",
     "graded": "Graded",
     "lesson": "Lesson"
+  },
+
+  "explore": {
+    "heading": "Explore our courses",
+    "empty_heading": "No course available",
+    "empty_description": "There are currently no published course available"
   },
 
   "snackbar": {
@@ -1240,7 +1263,8 @@
     "lessons": {
       "success": {
         "complete_marked": "Marked as complete",
-        "complete_download": "Download Complete"
+        "complete_download": "Download Complete",
+        "version_restored": "Version restored sucessfully"
       },
       "error": {
         "try_later": "Something's not right - Please try later"
@@ -1310,6 +1334,9 @@
   },
 
   "validations": {
+    "user_profile": {
+      "email": "Invalid email address"
+    },
     "organization_name": {
       "min_char": "Organization must contain 5 or more characters",
       "hyphen_rule": "Organization name cannot start or end with a hyphen"

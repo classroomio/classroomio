@@ -38,6 +38,10 @@
     {
       title: 'Landing page builder',
       desc: 'With more templates and pages, we will allow educators create simple web pages using our platform to showcase their programs and offerings.'
+    },
+    {
+      title: 'Analytics',
+      desc: 'Educators can easily track students course completion rating, understand what topics are not clearly understood and much more.'
     }
   ];
 </script>

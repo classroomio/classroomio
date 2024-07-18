@@ -54,7 +54,8 @@
   containerClass="overflow-hidden"
   modalHeading={$t('course.navItem.lessons.add_lesson.modal_heading')}
 >
-  <div
+  <form
+    on:submit|preventDefault={handleSave}
     class="relative m-auto py-2 md:py-3 px-2 md:px-5 mb-2 md:mb-4 flex flex-wrap items-center dark:bg-neutral-800"
   >
     <div class="w-full">
@@ -93,9 +94,10 @@
         </div>
       {/if}
     </div>
-  </div>
+  </form>
 
   <div class="flex flex-row-reverse">
     <PrimaryButton label={$t('course.navItem.lessons.add_lesson.save')} onClick={handleSave} />
   </div>
 </Modal>
+

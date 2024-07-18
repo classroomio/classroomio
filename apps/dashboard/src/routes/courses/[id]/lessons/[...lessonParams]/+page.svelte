@@ -19,9 +19,11 @@
   import PageBody from '$lib/components/PageBody/index.svelte';
   import Materials from '$lib/components/Course/components/Lesson/Materials/index.svelte';
   import Exercises from '$lib/components/Course/components/Lesson/Exercises/index.svelte';
+  import LanguageLessonVersionHistory from '$lib/components/Course/components/Lesson/LanguageLessonVersionHistory.svelte';
   import MODES from '$lib/utils/constants/mode';
   import { course } from '$lib/components/Course/store';
   import Download from 'carbon-icons-svelte/lib/Download.svelte';
+  import ResultOld from 'carbon-icons-svelte/lib/ResultOld.svelte';
   import OverflowMenuVertical from 'carbon-icons-svelte/lib/OverflowMenuVertical.svelte';
   import { apps } from '$lib/components/Apps/store';
   import APPS_CONSTANTS from '$lib/components/Apps/constants';
@@ -39,6 +41,7 @@
   import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
   import { t } from '$lib/utils/functions/translations';
   import { LANGUAGES } from '$lib/utils/constants/translation';
+  import { ChevronLeft, ChevronRight, Edit, Save } from 'carbon-icons-svelte';
 
   export let data;
 
@@ -49,6 +52,7 @@
   let isLoading = false;
   let isSaving = false;
   let isLessonComplete = false;
+  let isVersionDrawerOpen = false;
 
   function getLessonOrder(id: string) {
     const index = $lessons.findIndex((lesson) => lesson.id === id);
@@ -61,11 +65,15 @@
   }
 
   async function fetchReqData(lessonId = '', isMaterialsTabActive: boolean) {
-    $lesson.isFetching = true;
+    const timeout = setTimeout(() => {
+      $lesson.isFetching = true;
+    }, 1000);
     let lessonData;
     if (isMaterialsTabActive) {
       const lesson = await fetchLesson(lessonId);
       lessonData = lesson.data;
+
+      clearTimeout(timeout);
     }
 
     console.log({ lessonData });
@@ -240,6 +248,38 @@
     $apps.open = true;
   }
 
+  const isNextOrPrevDisabled = (lessonId: string, isPrev: boolean) => {
+    const index = $lessons.findIndex((lesson) => lesson.id === lessonId);
+
+    return isPrev ? !$lessons[index - 1] : !$lessons[index + 1];
+  };
+
+  const goToNextOrPrevLesson = (lessonId: string, isPrev: boolean) => {
+    const isDisabled = isNextOrPrevDisabled(lessonId, isPrev);
+
+    // Always use early return
+    if (isDisabled) return;
+
+    const index = $lessons.findIndex((lesson) => lesson.id === lessonId);
+    const nextOrPrevLesson = isPrev ? $lessons[index - 1] : $lessons[index + 1];
+
+    const isLocked = $globalStore.isStudent && !nextOrPrevLesson.is_unlocked;
+
+    if (isLocked) return;
+
+    const path = `/courses/${$course.id}/lessons/${nextOrPrevLesson.id}`;
+    goto(path);
+  };
+
+  const refetchDataAfterVersionRestore = () => {
+    isVersionDrawerOpen = false;
+    if (data.courseId && browser) {
+      mode = MODES.view;
+      fetchReqData(data.lessonId, data.isMaterialsTabActive);
+    }
+    snackbar.success('snackbar.lessons.success.version_restored');
+  };
+
   $: path = $page.url?.pathname?.replace(/\/exercises[\/ 0-9 a-z -]*/, '');
 
   $: if (data.courseId && browser) {
@@ -248,6 +288,8 @@
   }
 
   $: isLessonComplete = getIsLessonComplete($lesson.lesson_completion, $profile.id);
+  $: isPrevDisabled = isNextOrPrevDisabled(data.lessonId, true);
+  $: isNextDisabled = isNextOrPrevDisabled(data.lessonId, false);
 </script>
 
 <CourseContainer
@@ -273,12 +315,16 @@
     ]}
   >
     <svelte:fragment slot="widget">
-      <div class="flex">
+      <div class="flex items-center gap-1">
         <RoleBasedSecurity allowedRoles={[1, 2]}>
           {#if data.isMaterialsTabActive}
-            <div class="mr-5">
-              <Dropdown items={LANGUAGES} bind:selectedId={$lesson.locale} class="h-full" />
-            </div>
+            <!-- Version control -->
+            {#if mode === MODES.edit && window.innerWidth >= 1024}
+              <IconButton onClick={() => (isVersionDrawerOpen = true)}>
+                <ResultOld size={24} />
+              </IconButton>
+            {/if}
+
             <div class="tab">
               <IconButton onClick={toggleApps} buttonClassName="">
                 <OverflowMenuVertical size={24} />
@@ -291,19 +337,19 @@
                   : 'hidden'
               } lg:flex items-center`}
             >
-              <PrimaryButton
-                className="mb-2 lg:mb-0 mr-2"
-                variant={VARIANTS.OUTLINED}
+              <IconButton
                 onClick={() => {
                   $apps.dropdown = false;
                   toggleMode();
                 }}
-                isDisabled={isSaving}
+                disabled={isSaving}
               >
-                {mode === MODES.edit
-                  ? $t('course.navItem.lessons.done')
-                  : $t('course.navItem.lessons.edit')}
-              </PrimaryButton>
+                {#if mode === MODES.edit}
+                  <Save size={24} />
+                {:else}
+                  <Edit size={24} />
+                {/if}
+              </IconButton>
 
               {#if $course.metadata.lessonDownload && !!PUBLIC_SERVER_URL}
                 <PrimaryButton
@@ -316,6 +362,8 @@
                 </PrimaryButton>
               {/if}
             </div>
+
+            <Dropdown items={LANGUAGES} bind:selectedId={$lesson.locale} class="h-full" />
           {/if}
         </RoleBasedSecurity>
       </div>
@@ -343,28 +391,6 @@
         bind:isSaving
         isStudent={$globalStore.isStudent}
       />
-
-      <!-- {#if $globalStore.isStudent}
-        <div class="w-full hidden lg:flex flex-row-reverse mt-10">
-          <PrimaryButton
-            onClick={() => markLessonComplete(data.lessonId)}
-            isLoading={isMarkingComplete}
-            isDisabled={isMarkingComplete}
-            variant={VARIANTS.OUTLINED}
-            className="mt-10"
-          >
-            {#if isLessonComplete}
-              <CheckmarkFilledIcon size={24} class="carbon-icon text-primary-600 mr-2" />
-            {:else}
-              <CheckmarkOutlineIcon size={24} class="carbon-icon mr-2" />
-            {/if}
-            {$t('course.navItem.lessons.mark_as')}
-            {isLessonComplete
-              ? $t('course.navItem.lessons.incomplete')
-              : $t('course.navItem.lessons.complete')}
-          </PrimaryButton>
-        </div>
-      {/if} -->
     </PageBody>
   {/if}
 
@@ -373,6 +399,17 @@
     <div
       class="flex items-center gap-2 w-fit rounded-full shadow-xl bg-gray-100 dark:bg-neutral-700 px-5 py-1"
     >
+      <button
+        disabled={isPrevDisabled}
+        class={`px-2 my-2 pr-4 border-t-0 border-b-0 border-l-0 border border-gray-300 flex items-center ${
+          isPrevDisabled && 'opacity-25 cursor-not-allowed'
+        }`}
+        on:click={() => goToNextOrPrevLesson(data.lessonId, true)}
+      >
+        <ChevronLeft size={24} />
+
+        <span class="hidden md:block">{$t('course.navItem.lessons.prev')}</span>
+      </button>
       {#if data.isMaterialsTabActive}
         <button
           class="px-2 my-2 pr-4 border-t-0 border-b-0 border-l-0 border border-gray-300 flex items-center"
@@ -398,7 +435,7 @@
         <span class="ml-1">{$lesson.totalComments}</span>
       </button>
       <button
-        class="px-2 my-2"
+        class="px-2 my-2 pr-4 border-t-0 border-b-0 border-l-0 border border-gray-300 flex items-center"
         on:click={() => markLessonComplete(data.lessonId)}
         disabled={isMarkingComplete}
       >
@@ -408,8 +445,25 @@
           <CheckmarkOutlineIcon size={24} class="carbon-icon" />
         {/if}
       </button>
+      <button
+        disabled={isNextDisabled}
+        class={`px-2 my-2 flex items-center ${isNextDisabled && 'opacity-25 cursor-not-allowed'}`}
+        on:click={() => goToNextOrPrevLesson(data.lessonId, false)}
+      >
+        <span class="hidden md:block">{$t('course.navItem.lessons.next')}</span>
+        <ChevronRight size={24} />
+      </button>
     </div>
   </div>
+
+  <!-- Version Control Preview -->
+  {#if isVersionDrawerOpen && window.innerWidth >= 1024}
+    <LanguageLessonVersionHistory
+      open={isVersionDrawerOpen}
+      on:close={() => (isVersionDrawerOpen = false)}
+      on:restore={refetchDataAfterVersionRestore}
+    />
+  {/if}
 </CourseContainer>
 
 <style>

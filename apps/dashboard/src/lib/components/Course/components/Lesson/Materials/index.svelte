@@ -1,5 +1,6 @@
 <script lang="ts">
   import isEmpty from 'lodash/isEmpty';
+  import { fade } from 'svelte/transition';
   import { useCompletion } from 'ai/svelte';
   import MODES from '$lib/utils/constants/mode.js';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
@@ -129,6 +130,7 @@
         }
       : $lesson;
 
+    console.log('updating lesson');
     const [lessonRes] = await Promise.all([
       handleUpdateLessonMaterials(_lesson, lessonId),
       saveOrUpdateTranslation($lesson.locale, lessonId)
@@ -382,6 +384,10 @@
             onChange={(html) => {
               if (mode === MODES.view) return;
               $lessonByTranslation[lessonId][$lesson.locale] = html;
+              try {
+                // Backup locale of lesson content
+                localStorage.setItem(`lesson-${lessonId}-${$lesson.locale}`, html);
+              } catch (error) {}
               $isLessonDirty = true;
             }}
             placeholder={$t('course.navItem.lessons.materials.tabs.note.placeholder')}
@@ -477,11 +483,13 @@
     </slot:fragment>
   </Tabs>
 {:else if !isMaterialsEmpty($lesson.materials, $lessonByTranslation[lessonId])}
-  <div class="w-full">
-    {#each componentsToRender as Component}
-      <svelte:component this={Component} {lessonId} />
-    {/each}
-  </div>
+  {#key lessonId}
+    <div class="w-full mb-20" in:fade={{ delay: 500 }} out:fade>
+      {#each componentsToRender as Component}
+        <svelte:component this={Component} {lessonId} />
+      {/each}
+    </div>
+  {/key}
 {:else}
   <Box className="text-center">
     <img src="/no-video.svg" alt="Video not found" />

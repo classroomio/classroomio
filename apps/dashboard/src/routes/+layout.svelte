@@ -291,10 +291,6 @@
 
 <svelte:window on:resize={handleResize} />
 
-<svelte:head>
-  <link href="/css/carbon.css" rel="stylesheet" />
-</svelte:head>
-
 <Theme bind:theme={carbonTheme} />
 
 <UpgradeModal />

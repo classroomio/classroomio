@@ -2,6 +2,7 @@
   import { page } from '$app/stores';
   import HelpIcon from 'carbon-icons-svelte/lib/Help.svelte';
   import LicenseDraft from 'carbon-icons-svelte/lib/LicenseDraft.svelte';
+  import Explore from 'carbon-icons-svelte/lib/Explore.svelte';
   import Settings from 'carbon-icons-svelte/lib/Settings.svelte';
   import HomeIcon from '$lib/components/Icons/HomeIcon.svelte';
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
@@ -13,7 +14,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
 
-  interface sideLinks {
+  interface SideLinks {
     name: string;
     icon: any;
     link: string;
@@ -31,7 +32,7 @@
     return pagePath.includes(itemPath);
   }
 
-  let sideLinks: sideLinks[] = [];
+  let sideLinks: SideLinks[] = [];
 
   $: sideLinks = [
     {
@@ -59,6 +60,11 @@
       show() {
         return $currentOrg?.customization?.dashboard?.community;
       }
+    },
+    {
+      name: $t('lms_navigation.explore'),
+      icon: Explore,
+      link: '/lms/explore'
     }
   ].filter((link) => (link.show ? link.show() : true));
 
@@ -95,7 +101,7 @@
       </div>
 
       <ul class="my-5">
-        {#each sideLinks as item (item.name)}
+        {#each sideLinks as item (item.link)}
           <a href={item.link} class="text-black" on:click={toggleSidebar}>
             <li
               class="flex items-center py-3 px-4 mb-2 {NavClasses.item} {isActive(

@@ -1,20 +1,23 @@
 <script lang="ts">
   import copy from 'copy-to-clipboard';
   import { Popover } from 'carbon-components-svelte';
-  import Link from 'carbon-icons-svelte/lib/Link.svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
+  import QRCode from 'qrcode';
+  import { toPng } from 'html-to-image';
+
   import Modal from '$lib/components/Modal/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { ROLE } from '$lib/utils/constants/roles';
   import { addGroupMember, fetchGroup } from '$lib/utils/services/courses';
   import { course, setCourse } from '$lib/components/Course/store';
   import { MultiSelect, Loading } from 'carbon-components-svelte';
-  import { currentOrg, currentOrgDomain, currentOrgPath } from '$lib/utils/store/org';
+  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { getOrgTeam } from '$lib/utils/services/org';
   import type { OrgTeamMember } from '$lib/utils/types/org';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { qrInviteNodeStore } from './store';
   import { getStudentInviteLink } from '$lib/utils/functions/course';
+  import ShareQrImage from './ShareQRImage.svelte';
   import {
     triggerSendEmail,
     NOTIFICATION_NAME
@@ -35,6 +38,8 @@
   let selectedTutors: Tutor[] = [];
   let isLoadingTutors = false;
   let copied = false;
+  let qrImage = '';
+  let isLoadingQRDownload = false;
 
   function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
     return value !== null && value !== undefined;
@@ -48,7 +53,7 @@
       return;
     }
 
-    let membersStack = [];
+    let membersStack: { profile_id?: string; group_id?: string; role_id: number }[] = [];
     console.log(`$course`, $course);
 
     for (const tutor of selectedTutors) {
@@ -135,14 +140,47 @@
     goto($page.url.pathname);
   }
 
+  function handleQRDownload() {
+    if (!$qrInviteNodeStore) {
+			console.error('Node is not defined');
+			return;
+		}
+
+		isLoadingQRDownload = true;
+		setTimeout(() => {
+			toPng($qrInviteNodeStore)
+				.then((dataUrl) => {
+					const link = document.createElement('a');
+					link.download = `${$course.slug}-qr-code.png`;
+					link.href = dataUrl;
+					link.click();
+				})
+				.catch((error) => {
+					isLoadingQRDownload = false;
+					console.error('Oops, something went wrong!', error);
+				})
+				.finally(() => {
+					isLoadingQRDownload = false;
+				});
+		}, 300);
+  }
+
+  async function generateQR(text) {
+    try {
+      qrImage = await QRCode.toDataURL(text);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   $: {
     selectedTutors = formatSelected(selectedIds);
-    console.log('selectedTutors', selectedTutors);
     const query = new URLSearchParams($page.url.search);
     addPeopleParm = query.get('add');
   }
 
   $: setTutors($currentOrg.id);
+  $: generateQR(getStudentInviteLink($course, $currentOrg.siteName, $currentOrgDomain));
 </script>
 
 <Modal
@@ -178,7 +216,7 @@
       {/if}
     </div>
 
-    <div class="mb-8 w-[90%] flex justify-between items-center">
+    <div class="mb-8 w-full flex justify-between items-center">
       <div class="w-3/5">
         <p class="text-base mb-1 font-semibold">
           {$t('course.navItem.people.invite_modal.invite_students')}
@@ -187,19 +225,43 @@
       </div>
 
       <div class="relative">
-        <PrimaryButton
-          disablePadding={true}
-          className="text-sm py-2 px-3"
-          variant={VARIANTS.OUTLINED}
-          onClick={copyLink}
+        <button
+          type="button"
+          on:click={copyLink}
+          class="underline text-primary-800 font-bold cursor-pointer capitalize"
         >
-          <Link size={16} class="mr-1" />
           {$t('course.navItem.people.invite_modal.copy_link')}
-        </PrimaryButton>
-        <Popover caret open={copied} align="bottom">
+        </button>
+
+        <Popover caret open={copied} align="left">
           <div style="padding: 5px">{$t('course.navItem.people.invite_modal.success')}</div>
         </Popover>
       </div>
+    </div>
+
+    <div
+      class="flex gap-5 flex-col-reverse md:flex-row justify-between items-center md:items-stretch p-4 w-full border rounded-md"
+    >
+      <div class="flex flex-col gap-3 items-center md:items-start justify-between">
+        <span class="font-medium text-sm">
+          {$t('course.navItem.people.invite_modal.via_qr')}
+        </span>
+
+        <PrimaryButton
+          isLoading={isLoadingQRDownload}
+          onClick={handleQRDownload}
+          label={$t('course.navItem.people.invite_modal.download_qr')}
+          className="font-medium"
+        />
+      </div>
+
+      <div class="w-full md:w-28 border-4 p-1 border-[#f7f7f7]">
+        <img src={qrImage} alt="link qrcode" class="w-full h-full" />
+      </div>
+    </div>
+
+    <div class="absolute left-[-1000px] w-[40rem]">
+      <ShareQrImage {qrImage} course={$course} currentOrg={$currentOrg} />
     </div>
 
     <div class="mt-5 flex items-center flex-row-reverse">
