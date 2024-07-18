@@ -7,6 +7,7 @@
   import SidebarIcons from './sidebarIcons.svelte';
 
   export let label = '';
+  export let id;
   export let href: string | null = '';
   export let isGroupActive = false;
   export let isExpanded: boolean | undefined;
@@ -29,7 +30,7 @@
       NavClasses.active} w-[95%]"
     {href}
   >
-    <SidebarIcons name={label} />
+    <SidebarIcons iconId={id} />
 
     <span class="text-sm font-medium">{label}</span>
 
