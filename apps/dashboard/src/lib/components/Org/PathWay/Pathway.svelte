@@ -53,14 +53,27 @@
         </StructuredListHead>
         <StructuredListBody>
           {#each pathways as pathway}
-            <PathwayList />
+            <PathwayList
+              id=""
+              title="Become a Professional UX designer"
+              description="This is a full pathway to become a professional UX designer,with practical examples"
+              isPublished={false}
+              totalCourse={0}
+              totalStudents={0}
+            />
           {/each}
         </StructuredListBody>
       </StructuredList>
     {:else}
       <div class="grid md:grid-cols-2 gap-4">
         {#each pathways as pathway}
-          <PathwayCard />
+          <PathwayCard
+            title="Become a Professional UX designer"
+            description="This is a full pathway to become a professional UX designer,with practical examples"
+            banner_url=""
+            is_published={false}
+            courses={[]}
+          />
         {/each}
       </div>
     {/if}
