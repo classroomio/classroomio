@@ -13,28 +13,17 @@
   import { t } from '$lib/utils/functions/translations';
   import LanguagePicker from './LanguagePicker.svelte';
   import { handleLocaleChange } from '$lib/utils/functions/translations';
-  import {
-    updateProfileEmailValidation,
-    updateProfileFullnameValidation,
-    updateProfileUsernameValidation
-  } from '$lib/utils/functions/validator';
+  import { onSubmitValidation } from '$lib/utils/functions/validator';
 
   let avatar = '';
   let loading = false;
   let hasLangChanged = false;
   let locale = '';
 
-  let errors = {
-    email: '',
-    username: '',
-    fullname: ''
-  };
+  let errors = {};
 
   async function handleUpdate() {
-    errors.email = updateProfileEmailValidation($profile.email).email || '';
-    errors.username = updateProfileUsernameValidation($profile.username).username || '';
-    errors.fullname = updateProfileFullnameValidation($profile.fullname).fullname || '';
-
+    errors = onSubmitValidation($profile);
     if (Object.values(errors).some((error) => error)) {
       loading = false;
       return;
@@ -113,19 +102,19 @@
         label={$t('settings.profile.personal_information.full_name')}
         bind:value={$profile.fullname}
         className="w-full lg:w-60 mb-4"
-        errorMessage={errors.fullname}
+        errorMessage={$t(errors.fullname)}
       />
       <TextField
         label={$t('settings.profile.personal_information.username')}
         bind:value={$profile.username}
         className="w-full lg:w-60 mb-4"
-        errorMessage={errors.username}
+        errorMessage={$t(errors.username)}
       />
       <TextField
         label={$t('settings.profile.personal_information.email')}
         bind:value={$profile.email}
         className="w-full lg:w-60 mb-4"
-        errorMessage={errors.email}
+        errorMessage={$t(errors.email)}
       />
       <LanguagePicker bind:hasLangChanged bind:value={locale} className="w-full lg:w-60 mb-4" />
     </Column>

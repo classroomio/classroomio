@@ -2,7 +2,6 @@ import isNumber from 'lodash/isNumber';
 import z from 'zod';
 import { validateEmail } from './validateEmail';
 import { t } from '$lib/utils/functions/translations';
-import { user } from '../store/user';
 
 const getOrgNameValidation = () =>
   z
@@ -126,6 +125,12 @@ const onboardingValidationSchema = {
   })
 };
 
+const onSubmitValidationSchema = z.object({
+  email: z.string().email({ message: 'validations.user_profile.email' }),
+  username: z.string().nonempty({ message: 'validations.user_profile.username' }),
+  fullname: z.string().min(5, { message: 'validations.user_profile.fullname' })
+});
+
 export const getConfirmPasswordError = ({ password, confirmPassword }) => {
   return password > 6 && confirmPassword > 6 && password !== confirmPassword
     ? `${t.get('validations.confirm_password.not_match')}`
@@ -209,6 +214,13 @@ export const orgLandingpageValidation = (fields = {}) => {
 export const onboardingValidation = (fields = {}, step) => {
   const schema =
     step === 1 ? onboardingValidationSchema.stepOne : onboardingValidationSchema.stepTwo;
+  const { error } = schema.safeParse(fields);
+
+  return processErrors(error);
+};
+
+export const onSubmitValidation = (fields = {}) => {
+  const schema = onSubmitValidationSchema;
   const { error } = schema.safeParse(fields);
 
   return processErrors(error);
