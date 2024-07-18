@@ -36,10 +36,6 @@
       course.title.toLowerCase().includes(searchValue.toLowerCase()) &&
       (selectedId === '0' ? course.is_published : !course.is_published)
   );
-
-  $: {
-    console.log(selectedId);
-  }
 </script>
 
 <section class="w-full h-auto max-w-[90%] mx-auto">

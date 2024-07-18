@@ -44,7 +44,7 @@
   };
 
   const generateNewCourseLink = () => {
-    console.log('generate course link');
+    // console.log('generate course link');
   };
 
   const handleSave = async () => {
@@ -74,7 +74,7 @@
 
     // replace the response
     // } catch (error) {}
-    console.log('saved!');
+    // console.log('saved!');
 
     isSaving = false;
   };
