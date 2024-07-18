@@ -499,8 +499,8 @@
           "modal_heading": "Add New Lesson",
           "lesson_title": "Lesson Title",
           "click_to": "Click to",
-          "lock": "lock",
-          "unlock": "unlock",
+          "lock": "Lock",
+          "unlock": "Unlock",
           "fullname": "fullname",
           "save": "Save",
           "edit": "Edit",
@@ -629,6 +629,7 @@
             "order_questions": "Order questions",
             "write_your_answer": "Write your answer",
             "write_your_answer_here": "Write your answer here",
+            "no_answer": "No answer was provided",
             "write_your_question_here": "Write your question here",
             "write_your_title": "Write your title here",
             "write_your_subtitle": "Write your subtitle here",
@@ -645,6 +646,7 @@
             "previous": "Previous",
             "finish": "Finish",
             "next": "Next",
+            "check": "Check",
             "description": {
               "title": "Title",
               "heading": "Description",
@@ -684,7 +686,11 @@
               "no_description": "No description",
               "start": "Start",
               "graded": "Graded",
-              "pending": "Pending"
+              "pending": "Pending",
+              "submitted": "Submitted",
+              "status_pending": "Status: Pending Review",
+              "status_graded": "Status: Review Completed",
+              "status_submitted": "Status: Submitted"
             },
             "analytics": {
               "summary": {
@@ -849,7 +855,10 @@
         "contact_instructor": "If you need your certificate, please contact your instructor.",
         "download_certificate": "Download Certificate",
         "complete_to_download_title": "Course not complete 😔",
-        "complete_to_download_subtitle": "Your certificate will be available once you complete all lesson and exercises in this course"
+        "complete_to_download_subtitle": "Your certificate will be available once you complete all lesson and exercises in this course",
+        "description_error": "Description cannot exceed 200 characters",
+        "characters": "characters",
+        "unexpected_error": "An unexpected error occurred"
       },
 
       "landing_page": {
@@ -882,7 +891,22 @@
             "fullname": "Full Name",
             "description": "Description",
             "rating": "Rating",
-            "hide": "Hide Review"
+            "hide": "Hide Review",
+            "validations": {
+              "invalid_type_error": "Must not be empty",
+              "name": {
+                "min_char": "Name is too short, min of 5 character"
+              },
+              "avatar_url": {
+                "message": "Upload an image"
+              },
+              "rating": {
+                "message": "Rating must be from 1-5"
+              },
+              "description": {
+                "min_char": "'Description is too short, min of 5 characters"
+              }
+            }
           },
 
           "instructor_form": {
@@ -1001,6 +1025,12 @@
         "delete_text": "Delete this course,this action cannot be undone",
         "save": "Save Changes"
       }
+    },
+
+    "not_permitted": {
+      "header": "No Permission",
+      "body": "Unfortunately you don't have access to this course.",
+      "button": "Go home"
     }
   },
 
@@ -1033,7 +1063,8 @@
       "sure": "Are you sure you want to delete this",
       "no": "No, keep it",
       "yes": "Yes, delete"
-    }
+    },
+    "all": "All"
   },
 
   "audience": {
@@ -1256,6 +1287,11 @@
     "setup": {
       "info_lesson": "You Need to Create a lesson",
       "info_course": "You need to create a course"
+    },
+
+    "generic": {
+      "success_delete": "Deleted successfully",
+      "try_again": "Error - Please try again later"
     }
   },
 
@@ -1271,5 +1307,99 @@
   "generic": {
     "locked": "Locked",
     "unlocked": "Unlocked"
+  },
+
+  "validations": {
+    "organization_name": {
+      "min_char": "Organization must contain 5 or more characters",
+      "hyphen_rule": "Organization name cannot start or end with a hyphen"
+    },
+    "site_name": {
+      "min_char": "Site name must contain 5 or more characters",
+      "hyphen_rule": "Site name cannot start or end with a hyphen"
+    },
+    "news_feed": {
+      "min_char": "Field must contain 5 or more characters"
+    },
+    "lesson_schema": {
+      "empty_title": "Title cannot be empty"
+    },
+    "create_quiz": {
+      "min_char": "Must be 6 or more characters long"
+    },
+    "ask_community": {
+      "title": {
+        "min_char": "Must be 6 or more characters long"
+      },
+      "body": {
+        "min_char": "Must be 10 or more characters long"
+      },
+      "course_id": {
+        "select_course": "Select a Course"
+      }
+    },
+    "comment_in_community": {
+      "min_char": "Must be 6 or more characters long"
+    },
+    "org_landing_page": {
+      "name": {
+        "min_char": "Must be 6 or more characters long"
+      },
+      "email": {
+        "invalid_email": "Invalid email address"
+      },
+      "phone": {
+        "min_char": "Must be 6 or more characters long"
+      },
+      "message": {
+        "min_char": "Must be 10 or more characters long"
+      }
+    },
+    "forgot": {
+      "invalid_email": "Invalid email address"
+    },
+    "auth": {
+      "email": {
+        "invalid_email": "Invalid email address"
+      },
+      "password": {
+        "min_char": "Must be 6 or more characters long"
+      }
+    },
+    "reset": {
+      "password": {
+        "min_char": "Must be 6 or more characters long"
+      }
+    },
+    "onboarding": {
+      "step_one": {
+        "full_name": {
+          "min_char": "Fullname must contain 5 or more characters"
+        }
+      },
+      "step_two": {
+        "goal": {
+          "required": "Select an option"
+        },
+        "source": {
+          "required": "Select an option"
+        }
+      }
+    },
+    "confirm_password": {
+      "not_match": "Does not match password"
+    },
+    "course_payment": {
+      "full_name": {
+        "min_char": "Must be 6 or more characters long"
+      },
+      "email": {
+        "invalid_email": "Invalid email address"
+      }
+    },
+    "email": {
+      "not_valid": "Not valid email"
+    },
+    "invalid_type_error": "Must not be empty"
   }
 }

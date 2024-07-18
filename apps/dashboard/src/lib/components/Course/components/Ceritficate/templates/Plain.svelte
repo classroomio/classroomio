@@ -9,7 +9,7 @@
 </script>
 
 <div
-  class="certificate-bg flex flex-col items-center justify-center {borderwidth} {bordercolor} py-3"
+  class="certificate-bg w-full flex flex-col items-center justify-center {borderwidth} {bordercolor} py-3"
 >
   <div class="flex items-center gap-1 my-2">
     <img

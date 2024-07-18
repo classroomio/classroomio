@@ -26,7 +26,7 @@
   <div class="w-full flex items-center justify-center">
     <ul class="flex flex-col items-start justify-start gap-2 w-[90%] md:w-[50%]">
       {#each data.posts as post}
-        <li class=" py-14 w-full">
+        <li class="py-10 w-full border-b border-gray-200">
           <div class="flex md:flex-row flex-col md:items-center gap-2">
             <!-- Date -->
             <p class="text-sm text-slate-500">{formatDate(post.date)}</p>

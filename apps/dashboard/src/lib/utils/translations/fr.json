@@ -154,7 +154,11 @@
         "submitting_poll": "Une erreur s'est produite lors de la soumission du sondage"
       }
     },
-    "success_update": "Mis à jour avec succés"
+    "success_update": "Mis à jour avec succés",
+    "generic": {
+      "success_delete": "Supprimé avec succès",
+      "try_again": "Erreur - Veuillez réessayer plus tard"
+    }
   },
   "exercises": {
     "heading": "Des exercices",
@@ -229,7 +233,8 @@
       "cancel": "Annuler",
       "give": "Donnez une réponse",
       "comment": "Commentaire"
-    }
+    },
+    "all": "Tous"
   },
   "course": {
     "navItem": {
@@ -351,7 +356,22 @@
             "fullname": "Nom et prénom",
             "description": "Description",
             "rating": "Notation",
-            "hide": "Masquer l'avis"
+            "hide": "Masquer l'avis",
+            "validations": {
+              "invalid_type_error": "Ne doit pas être vide",
+              "description": {
+                "min_char": "'La description est trop courte, minimum 5 caractères"
+              },
+              "rating": {
+                "message": "La note doit être comprise entre 1 et 5"
+              },
+              "avatar_url": {
+                "message": "Télécharger une image"
+              },
+              "name": {
+                "min_char": "Le nom est trop court, minimum 5 caractères"
+              }
+            }
           },
           "header_form": {
             "title": "Titre",
@@ -394,7 +414,10 @@
         "unlocked_certificate": "Bravo! 🎉 votre attestation est prête",
         "unlocked_certificate_subtitle": "Vous avez terminé ce cours et votre dévouement est évident. Téléchargez le certificat et partagez-le avec votre réseau comme preuve de vos compétences nouvellement acquises",
         "complete_to_download_subtitle": "Votre certificat sera disponible une fois que vous aurez terminé toutes les leçons et exercices de ce cours.",
-        "complete_to_download_title": "Cours non terminé 😔"
+        "complete_to_download_title": "Cours non terminé 😔",
+        "description_error": "La description ne peut pas dépasser 200 caractères",
+        "characters": "personnages",
+        "unexpected_error": "une erreur inattendue est apparue"
       },
       "people": {
         "title": "Personnes",
@@ -585,7 +608,11 @@
               "no_description": "Pas de description",
               "start": "Commencer",
               "graded": "Noté",
-              "pending": "En attente"
+              "pending": "En attente",
+              "submitted": "Soumis",
+              "status_pending": "Statut : En attente d'examen",
+              "status_graded": "Statut : Examen terminé",
+              "status_submitted": "Statut : Soumis"
             },
             "edit_mode": {
               "delete_modal": "Supprimer le modal",
@@ -614,7 +641,9 @@
               "heading": "Description",
               "describe": "Décrivez l'exercice à votre élève",
               "no": "Pas de description"
-            }
+            },
+            "no_answer": "Aucune réponse n'a été fournie",
+            "check": "Vérifier"
           },
           "new_exercise_modal": {
             "heading": "Nouvel exercice",
@@ -712,12 +741,12 @@
           "modal_heading": "Ajouter une nouvelle leçon",
           "lesson_title": "Titre de la leçon",
           "click_to": "Cliquez pour",
-          "lock": "verrouillage",
-          "unlock": "ouvrir",
           "fullname": "nom et prénom",
           "save": "Sauvegarder",
           "edit": "Modifier",
-          "delete": "Supprimer"
+          "delete": "Supprimer",
+          "lock": "Verrouillage",
+          "unlock": "Ouvrir"
         },
         "disabled": "La fonctionnalité est désactivée"
       },
@@ -758,6 +787,11 @@
       "nav_certificates": "Certificats",
       "nav_landing_page": "Page de destination",
       "nav_settings": "Paramètres"
+    },
+    "not_permitted": {
+      "header": "Aucune autorisation",
+      "body": "Malheureusement, vous n'avez pas accès à ce cours.",
+      "button": "rentrer chez soi"
     }
   },
   "courses": {
@@ -1231,5 +1265,98 @@
   },
   "specialization": {
     "course_tag": "Spécialisation"
+  },
+  "validations": {
+    "invalid_type_error": "Ne doit pas être vide",
+    "email": {
+      "not_valid": "E-mail non valide"
+    },
+    "course_payment": {
+      "email": {
+        "invalid_email": "Adresse e-mail invalide"
+      },
+      "full_name": {
+        "min_char": "Doit contenir au moins 6 caractères"
+      }
+    },
+    "confirm_password": {
+      "not_match": "Ne correspond pas au mot de passe"
+    },
+    "onboarding": {
+      "step_two": {
+        "source": {
+          "required": "Choisir une option"
+        },
+        "goal": {
+          "required": "Choisir une option"
+        }
+      },
+      "step_one": {
+        "full_name": {
+          "min_char": "Le nom complet doit contenir 5 caractères ou plus"
+        }
+      }
+    },
+    "reset": {
+      "password": {
+        "min_char": "Doit contenir au moins 6 caractères"
+      }
+    },
+    "auth": {
+      "password": {
+        "min_char": "Doit contenir au moins 6 caractères"
+      },
+      "email": {
+        "invalid_email": "Adresse e-mail invalide"
+      }
+    },
+    "forgot": {
+      "invalid_email": "Adresse e-mail invalide"
+    },
+    "org_landing_page": {
+      "message": {
+        "min_char": "Doit contenir au moins 10 caractères"
+      },
+      "phone": {
+        "min_char": "Doit contenir au moins 6 caractères"
+      },
+      "email": {
+        "invalid_email": "Adresse e-mail invalide"
+      },
+      "name": {
+        "min_char": "Doit contenir au moins 6 caractères"
+      }
+    },
+    "comment_in_community": {
+      "min_char": "Doit contenir au moins 6 caractères"
+    },
+    "ask_community": {
+      "course_id": {
+        "select_course": "Sélectionnez un cours"
+      },
+      "body": {
+        "min_char": "Doit contenir au moins 10 caractères"
+      },
+      "title": {
+        "min_char": "Doit contenir au moins 6 caractères"
+      }
+    },
+    "create_quiz": {
+      "min_char": "Doit contenir au moins 6 caractères"
+    },
+    "lesson_schema": {
+      "empty_title": "Le titre ne peut pas être vide"
+    },
+    "news_feed": {
+      "min_char": "Le champ doit contenir 5 caractères ou plus"
+    },
+    "site_name": {
+      "min_char": "Le nom du site doit contenir 5 caractères ou plus",
+      "hyphen_rule": "Le nom du site ne peut pas commencer ou se terminer par un trait d'union"
+    },
+    "organization_name": {
+      "min_char": "L'organisation doit contenir 5 caractères ou plus",
+      "hyphen_rule": "Le nom de l'organisation ne peut pas commencer ou se terminer par un trait d'union"
+    }
   }
 }

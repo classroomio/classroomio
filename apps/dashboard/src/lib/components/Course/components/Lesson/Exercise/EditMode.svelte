@@ -124,7 +124,7 @@
   </form>
 </Modal>
 
-<div class="w-full">
+<div class="w-full mb-20">
   {#if Object.values(errors).length}
     <div class="w-full flex justify-center mb-4">
       <ErrorMessage

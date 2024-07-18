@@ -24,7 +24,9 @@
   import { calDateDiff } from '$lib/utils/functions/date';
   import { browser } from '$app/environment';
   import { fetchCourses } from '$lib/utils/services/courses';
-  import { t } from '$lib/utils/functions/translations.js';
+  import { t } from '$lib/utils/functions/translations';
+  import { courses } from '$lib/components/Courses/store';
+  import type { Course } from '$lib/utils/types';
 
   export let data;
   const { slug } = data;
@@ -86,7 +88,7 @@
   };
 
   let editorInstance = false;
-  let fetchedCourses = [];
+  let fetchedCourses: Course[] = [];
 
   function mapResToQuestion(data): Question {
     return {
@@ -115,8 +117,13 @@
   }
 
   async function getCourses(userId: string | null, orgId: string) {
+    if ($courses.length) {
+      fetchedCourses = [...$courses];
+      return;
+    }
+
     const coursesResults = await fetchCourses(userId, orgId);
-    fetchedCourses = coursesResults.allCourses;
+    fetchedCourses = coursesResults?.allCourses || [];
   }
 
   async function fetchCommunityQuestion(slug: string) {

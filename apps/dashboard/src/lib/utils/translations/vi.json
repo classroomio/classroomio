@@ -154,7 +154,11 @@
         "submitting_poll": "Đã xảy ra lỗi khi gửi cuộc thăm dò ý kiến"
       }
     },
-    "success_update": "Cập nhật thành công"
+    "success_update": "Cập nhật thành công",
+    "generic": {
+      "success_delete": "Đã xoá thành công",
+      "try_again": "Lỗi - Vui lòng thử lại sau"
+    }
   },
   "exercises": {
     "heading": "Bài tập",
@@ -229,7 +233,8 @@
       "cancel": "Hủy bỏ",
       "give": "Đưa ra một câu trả lời",
       "comment": "Bình luận"
-    }
+    },
+    "all": "Tất cả"
   },
   "course": {
     "navItem": {
@@ -351,7 +356,22 @@
             "fullname": "Họ và tên",
             "description": "Sự miêu tả",
             "rating": "Xếp hạng",
-            "hide": "Ẩn đánh giá"
+            "hide": "Ẩn đánh giá",
+            "validations": {
+              "invalid_type_error": "Không được để trống",
+              "description": {
+                "min_char": "'Mô tả quá ngắn, tối thiểu 5 ký tự"
+              },
+              "rating": {
+                "message": "Đánh giá phải từ 1-5"
+              },
+              "avatar_url": {
+                "message": "Tải lên một hình ảnh"
+              },
+              "name": {
+                "min_char": "Tên quá ngắn, tối thiểu 5 ký tự"
+              }
+            }
           },
           "header_form": {
             "title": "Tiêu đề",
@@ -394,7 +414,10 @@
         "unlocked_certificate": "Chúc mừng! 🎉 chứng chỉ của bạn đã sẵn sàng",
         "unlocked_certificate_subtitle": "Bạn đã hoàn thành khóa học này và sự cống hiến của bạn là điều hiển nhiên. Tải xuống chứng chỉ và chia sẻ với mạng của bạn như một bằng chứng về kỹ năng mới có được của bạn",
         "complete_to_download_subtitle": "Chứng chỉ của bạn sẽ có sau khi bạn hoàn thành tất cả bài học và bài tập trong khóa học này",
-        "complete_to_download_title": "Khóa học chưa hoàn thành 😔"
+        "complete_to_download_title": "Khóa học chưa hoàn thành 😔",
+        "description_error": "Mô tả không thể vượt quá 200 ký tự",
+        "characters": "nhân vật",
+        "unexpected_error": "Đã xảy ra lỗi không mong muốn"
       },
       "people": {
         "title": "Mọi người",
@@ -585,7 +608,11 @@
               "no_description": "Không có mô tả",
               "start": "Bắt đầu",
               "graded": "Đã chấm điểm",
-              "pending": "Chưa giải quyết"
+              "pending": "Chưa giải quyết",
+              "submitted": "Đã gửi",
+              "status_pending": "Trạng thái: Đang chờ xem xét",
+              "status_graded": "Trạng thái: Đánh giá đã hoàn thành",
+              "status_submitted": "Trạng thái: Đã gửi"
             },
             "edit_mode": {
               "delete_modal": "Xóa phương thức",
@@ -614,7 +641,9 @@
               "heading": "Sự miêu tả",
               "describe": "Mô tả bài tập cho học sinh của bạn",
               "no": "Không có mô tả"
-            }
+            },
+            "no_answer": "Không có câu trả lời nào được đưa ra",
+            "check": "Kiểm tra"
           },
           "new_exercise_modal": {
             "heading": "Bài tập mới",
@@ -712,12 +741,12 @@
           "modal_heading": "Thêm bài học mới",
           "lesson_title": "Tiêu đề bài học",
           "click_to": "Bấm vào để",
-          "lock": "khóa",
-          "unlock": "mở khóa",
           "fullname": "Họ và tên",
           "save": "Cứu",
           "edit": "Biên tập",
-          "delete": "Xóa bỏ"
+          "delete": "Xóa bỏ",
+          "lock": "Khóa",
+          "unlock": "Mở khóa"
         },
         "disabled": "Tính năng bị vô hiệu hóa"
       },
@@ -758,6 +787,11 @@
       "nav_certificates": "Chứng chỉ",
       "nav_landing_page": "Trang đích",
       "nav_settings": "Cài đặt"
+    },
+    "not_permitted": {
+      "header": "Không cho phép",
+      "body": "Rất tiếc, bạn không có quyền truy cập vào khóa học này.",
+      "button": "Về nhà"
     }
   },
   "courses": {
@@ -1231,5 +1265,98 @@
   },
   "specialization": {
     "course_tag": "Chuyên môn"
+  },
+  "validations": {
+    "invalid_type_error": "Không được để trống",
+    "email": {
+      "not_valid": "Email không hợp lệ"
+    },
+    "course_payment": {
+      "email": {
+        "invalid_email": "địa chỉ email không hợp lệ"
+      },
+      "full_name": {
+        "min_char": "Phải dài từ 6 ký tự trở lên"
+      }
+    },
+    "confirm_password": {
+      "not_match": "Không khớp với mật khẩu"
+    },
+    "onboarding": {
+      "step_two": {
+        "source": {
+          "required": "Chọn một tùy chọn"
+        },
+        "goal": {
+          "required": "Chọn một tùy chọn"
+        }
+      },
+      "step_one": {
+        "full_name": {
+          "min_char": "Tên đầy đủ phải chứa 5 ký tự trở lên"
+        }
+      }
+    },
+    "reset": {
+      "password": {
+        "min_char": "Phải dài từ 6 ký tự trở lên"
+      }
+    },
+    "auth": {
+      "password": {
+        "min_char": "Phải dài từ 6 ký tự trở lên"
+      },
+      "email": {
+        "invalid_email": "địa chỉ email không hợp lệ"
+      }
+    },
+    "forgot": {
+      "invalid_email": "địa chỉ email không hợp lệ"
+    },
+    "org_landing_page": {
+      "message": {
+        "min_char": "Phải dài từ 10 ký tự trở lên"
+      },
+      "phone": {
+        "min_char": "Phải dài từ 6 ký tự trở lên"
+      },
+      "email": {
+        "invalid_email": "địa chỉ email không hợp lệ"
+      },
+      "name": {
+        "min_char": "Phải dài từ 6 ký tự trở lên"
+      }
+    },
+    "comment_in_community": {
+      "min_char": "Phải dài từ 6 ký tự trở lên"
+    },
+    "ask_community": {
+      "course_id": {
+        "select_course": "Chọn một khóa học"
+      },
+      "body": {
+        "min_char": "Phải dài từ 10 ký tự trở lên"
+      },
+      "title": {
+        "min_char": "Phải dài từ 6 ký tự trở lên"
+      }
+    },
+    "create_quiz": {
+      "min_char": "Phải dài từ 6 ký tự trở lên"
+    },
+    "lesson_schema": {
+      "empty_title": "Tiêu đề không được để trống"
+    },
+    "news_feed": {
+      "min_char": "Trường phải chứa 5 ký tự trở lên"
+    },
+    "site_name": {
+      "min_char": "Tên trang web phải chứa 5 ký tự trở lên",
+      "hyphen_rule": "Tên trang web không thể bắt đầu hoặc kết thúc bằng dấu gạch nối"
+    },
+    "organization_name": {
+      "min_char": "Tổ chức phải chứa 5 ký tự trở lên",
+      "hyphen_rule": "Tên tổ chức không thể bắt đầu hoặc kết thúc bằng dấu gạch nối"
+    }
   }
 }
