@@ -1331,7 +1331,7 @@
     "user_profile": {
       "email": "Invalid email address",
       "username":"Username cannot be empty",
-      "fullname":"Name cannot be empty"
+      "fullname":"Name should be minimum of 5 characters"
     },
     "organization_name": {
       "min_char": "Organization must contain 5 or more characters",
