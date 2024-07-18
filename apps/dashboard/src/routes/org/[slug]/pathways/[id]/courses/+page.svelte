@@ -10,16 +10,19 @@
     StructuredListCell,
     StructuredListBody
   } from 'carbon-components-svelte';
+  import { Add } from 'carbon-icons-svelte';
   import Grid from 'carbon-icons-svelte/lib/Grid.svelte';
   import List from 'carbon-icons-svelte/lib/List.svelte';
 
+  import { t } from '$lib/utils/functions/translations';
+  import { isMobile } from '$lib/utils/store/useMobile';
+
+  import { collection } from '$lib/components/Pathways/store';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import CourseCard from '$lib/components/Pathways/CourseCard.svelte';
-  import { collection } from '../store';
-  import { isMobile } from '$lib/utils/store/useMobile';
-  import { Add } from 'carbon-icons-svelte';
+  import CourseCard from '$lib/components/Pathways/components/CourseCard.svelte';
+  import CourseContainer from '$lib/components/Pathways/components/CourseContainer.svelte';
 
   let searchValue: string = '';
   let selectedId: string = '1';
@@ -38,25 +41,29 @@
   );
 </script>
 
-<section class="w-full h-auto max-w-[90%] mx-auto">
+<CourseContainer border={false} maxHeight={false} className="w-full h-auto max-w-[90%] mx-auto">
   <!-- header -->
-  <div class="flex items-center justify-between">
-    <h1>Courses</h1>
 
-    <div class="flex gap-4 items-center">
+  <div class="flex items-center justify-between">
+    <h1>{$t('pathways.pages.course.title')}</h1>
+
+    <div class="flex gap-5 justify-end">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
         {#if $isMobile}
           <PrimaryButton onClick={() => console.log('Add Course')}>
             <Add size={24} />
           </PrimaryButton>
         {:else}
-          <PrimaryButton label="Add Course" onClick={() => console.log('Add Course')} />
+          <PrimaryButton
+            label={$t('pathways.pages.course.add_course')}
+            onClick={() => console.log('Add Course')}
+          />
         {/if}
       </RoleBasedSecurity>
       <OverflowMenu flipped>
-        <OverflowMenuItem text="Add / remove course" />
-        <OverflowMenuItem text="Order Courses" />
-        <OverflowMenuItem text="Publish collection" />
+        <OverflowMenuItem text={$t('pathways.pages.course.add_remove')} />
+        <OverflowMenuItem text={$t('pathways.pages.course.order')} />
+        <OverflowMenuItem text={$t('pathways.pages.course.publish')} />
       </OverflowMenu>
     </div>
   </div>
@@ -64,7 +71,7 @@
   <!-- filter container -->
   <div class="filter-containter flex items-end justify-end gap-2 mt-3">
     <Search
-      placeholder="Find Learning Path"
+      placeholder={$t('pathways.pages.course.search')}
       bind:value={searchValue}
       searchClass="md:w-[30%]"
       class=" bg-gray-100 dark:bg-neutral-800 text-sm"
@@ -73,8 +80,8 @@
       class="h-[3rem]"
       bind:selectedId
       items={[
-        { id: '0', text: 'Published' },
-        { id: '1', text: 'UnPublished' }
+        { id: '0', text: $t('pathways.pages.course.option_one') },
+        { id: '1', text: $t('pathways.pages.course.option_two') }
       ]}
     />
     {#if coursePreference === 'list'}
@@ -95,10 +102,11 @@
         <StructuredList>
           <StructuredListHead>
             <StructuredListRow head>
-              <StructuredListCell head>Title</StructuredListCell>
-              <StructuredListCell head>Description</StructuredListCell>
-              <StructuredListCell head>Students</StructuredListCell>
-              <StructuredListCell head>Lessons</StructuredListCell>
+              <StructuredListCell head>{$t('pathways.pages.course.body_title')}</StructuredListCell>
+              <StructuredListCell head>{$t('pathways.pages.course.description')}</StructuredListCell
+              >
+              <StructuredListCell head>{$t('pathways.pages.course.students')}</StructuredListCell>
+              <StructuredListCell head>{$t('pathways.pages.course.lessons')}</StructuredListCell>
             </StructuredListRow>
           </StructuredListHead>
           <StructuredListBody>
@@ -129,7 +137,7 @@
       </section>
     {/if}
   </div>
-</section>
+</CourseContainer>
 
 <style>
   .filter-containter :global(.bx--dropdown) {

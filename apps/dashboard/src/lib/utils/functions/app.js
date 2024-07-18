@@ -24,6 +24,10 @@ export function isQuizPage(path) {
   return /org\/[a-z 0-9 -]+\/quiz\/[a-z 0-9 -]/.test(path);
 }
 
+export function isPathwayPage(path) {
+  return /org\/[a-z 0-9 -]+\/pathways\/[a-z 0-9 -]/.test(path);
+}
+
 export function isLMSPage(path) {
   return /lms[\/a-z 0-9 -]*/.test(path);
 }

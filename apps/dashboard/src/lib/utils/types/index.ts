@@ -392,7 +392,7 @@ interface Tabs {
   name: string;
 }
 
-export interface CollectionCourse {
+export interface PathwayCourse {
   id: string;
   avatar: string;
   title: string;
@@ -404,7 +404,7 @@ export interface CollectionCourse {
   is_published: boolean;
 }
 
-export interface Collection {
+export interface Pathway {
   slug: string;
   title: string;
   avatar: string;
@@ -413,5 +413,5 @@ export interface Collection {
   is_published: boolean,
   lms_certificate: boolean,
   courses_certificate: string,
-  courses: CollectionCourse[]
+  courses: PathwayCourse[]
 }

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { t } from '$lib/utils/functions/translations';
+
   export let id: string;
   export let title: string;
   export let avatar: string;
@@ -23,8 +25,8 @@
     {description}
   </p>
   <div class="md:text-xs border-t mt-2 py-2 flex justify-between font-medium">
-    <span>{lessonNumber} lessons</span>
-    <span>{studentNumber} students</span>
+    <span>{lessonNumber} {$t('pathways.components.courseCard.lessons')}lessons</span>
+    <span>{studentNumber} {$t('pathways.components.courseCard.students')}students</span>
   </div>
 </a>
 

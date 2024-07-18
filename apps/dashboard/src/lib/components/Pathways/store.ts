@@ -1,8 +1,8 @@
 import { writable } from "svelte/store";
 import type { Writable } from 'svelte/store';
-import type { Collection } from "$lib/utils/types";
+import type { Pathway } from "$lib/utils/types";
 
-export const collection: Writable<Collection> = writable({
+export const collection: Writable<Pathway> = writable({
   slug: '',
   title: '',
   avatar: "",

@@ -1377,5 +1377,67 @@
     "empty_heading": "Không có khóa học nào",
     "empty_description": "Hiện tại chưa có khóa học nào được xuất bản",
     "heading": "Khám phá các khóa học của chúng tôi"
+  },
+  "pathways": {
+    "components": {
+      "sideBar": {
+        "news": "Nguồn cấp tin tức",
+        "courses": "Khóa học",
+        "people": "Mọi người",
+        "certificates": "Chứng chỉ",
+        "landing": "Trang đích",
+        "settings": "Cài đặt"
+      },
+      "courseCard": {
+        "lessons": "Những bài học",
+        "students": "sinh viên"
+      }
+    },
+    "pages": {
+      "settings": {
+        "page_title": "Cài đặt",
+        "title_error": "Vui lòng thêm tiêu đề bộ sưu tập",
+        "description_error": "Vui lòng thêm mô tả bộ sưu tập",
+        "cover_image": "Ảnh bìa",
+        "optional": "Hình ảnh tùy chọn này sẽ hiển thị trên trang chào mừng của bạn. Nếu bạn bao gồm một cái, nó phải có kích thước tối thiểu là 280 x 200",
+        "replace": "Thay thế",
+        "delete": "Xóa bỏ",
+        "details": "Chi tiết bộ sưu tập",
+        "title": "Tiêu đề bộ sưu tập",
+        "title_placeholder": "Viết tiêu đề khóa học ở đây",
+        "description": "Mô tả bộ sưu tập",
+        "description_placeholder": "Viết mô tả khóa học ở đây",
+        "link": "Liên kết bộ sưu tập",
+        "students": "Học viên có phải học theo thứ tự khuyến nghị?",
+        "yes": "nếu có, sinh viên phải học các môn theo thứ tự, nếu không, sinh viên có thể bắt đầu từ bất kỳ khóa học nào mình chọn",
+        "option_one": "Đúng",
+        "option_two": "KHÔNG",
+        "publish": "Xuất bản lộ trình học tập",
+        "allow": "Cho phép học viên mới tải các khóa học trong lộ trình học tập",
+        "enabled": "Đã bật",
+        "disabled": "Tàn tật",
+        "certificate": "Giấy chứng nhận",
+        "issue": "Cấp chứng chỉ trên LMS",
+        "issue_two": "Cấp chứng chỉ hoặc toàn bộ khóa học trong lộ trình học tập",
+        "option_three": "Không, chỉ dành cho đường dẫn",
+        "delete_path": "Xóa lộ trình học tập",
+        "delete_text": "Xóa toàn bộ Hướng dẫn Học tập",
+        "save": "Lưu thay đổi"
+      },
+      "course": {
+        "title": "Khóa học",
+        "add_course": "Một khóa học",
+        "add_remove": "Thêm/xóa khóa học",
+        "order": "Đặt hàng khóa học",
+        "publish": "Xuất bản bộ sưu tập",
+        "search": "Tìm lộ trình học tập",
+        "option_one": "Được phát hành",
+        "option_two": "Chưa được xuất bản",
+        "body_title": "Tiêu đề",
+        "description": "Sự miêu tả",
+        "students": "Sinh viên",
+        "lessons": "Những bài học"
+      }
+    }
   }
 }

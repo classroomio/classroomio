@@ -1,5 +1,0 @@
-<script></script>
-
-<section class="border-2 border-black flex justify-center items-center w-full h-full">
-  <p>News Feed o!</p>
-</section>

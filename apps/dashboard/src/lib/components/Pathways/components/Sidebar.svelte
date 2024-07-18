@@ -6,52 +6,56 @@
   import ChevronUpIcon from 'carbon-icons-svelte/lib/ChevronUp.svelte';
   import Certificate from 'carbon-icons-svelte/lib/Certificate.svelte';
   import Bullhorn from 'carbon-icons-svelte/lib/Bullhorn.svelte';
+  import DocumentAttachment from 'carbon-icons-svelte/lib/DocumentAttachment.svelte';
+  import Settings from 'carbon-icons-svelte/lib/Settings.svelte';
+  import Group from 'carbon-icons-svelte/lib/Group.svelte';
 
-  import { collection } from './../../../routes/org/[slug]/pathways/[id]/store';
+  import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
+  import { collection } from '$lib/components/Pathways/store';
+
   import IconButton from '$lib/components/IconButton/index.svelte';
+  import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
 
-  import CourseIcon from '../Icons/CourseIcon.svelte';
-  import People from '../Icons/People.svelte';
-  import LandingPage from '../Icons/LandingPage.svelte';
-  import Settings from '../Icons/Settings.svelte';
-  import { sideBar } from '../Org/store';
+  import { sideBar } from '../../Org/store';
 
-  const navigation = [
+  interface Navigation {
+    id: number;
+    title: string;
+    path: string;
+  }
+
+  let navigation: Navigation[] = [];
+
+  $: navigation = [
     {
       id: 1,
-      title: 'News Feed',
-      icon: Bullhorn,
+      title: $t('pathways.components.sideBar.news'),
       path: ''
     },
     {
       id: 2,
-      title: 'Courses',
-      icon: CourseIcon,
+      title: $t('pathways.components.sideBar.courses'),
       path: '/courses'
     },
     {
       id: 3,
-      title: 'People',
-      icon: People,
+      title: $t('pathways.components.sideBar.people'),
       path: '/people'
     },
     {
       id: 4,
-      title: 'Certificates',
-      icon: Certificate,
+      title: $t('pathways.components.sideBar.certificates'),
       path: '/certificates'
     },
     {
       id: 5,
-      title: 'Landing Page',
-      icon: LandingPage,
+      title: $t('pathways.components.sideBar.landing'),
       path: '/landing'
     },
     {
       id: 6,
-      title: 'Settings',
-      icon: Settings,
+      title: $t('pathways.components.sideBar.settings'),
       path: '/settings'
     }
   ];
@@ -111,7 +115,7 @@
             >
               <div class="flex gap-5 dark:text-white">
                 <CourseIcon />
-                <p class="text-sm font-bold">Courses</p>
+                <p class="text-sm font-bold">{$t('pathways.components.sideBar.courses')}</p>
               </div>
             </a>
 
@@ -164,13 +168,13 @@
               {#if nav.path === ''}
                 <Bullhorn size={20} />
               {:else if nav.path === '/people'}
-                <People />
+                <Group size={20} />
               {:else if nav.path === '/certificates'}
-                <Certificate />
+                <Certificate size={20} />
               {:else if nav.path === '/landing'}
-                <LandingPage />
+                <DocumentAttachment size={20} />
               {:else if nav.path === '/settings'}
-                <Settings />
+                <Settings size={20} />
               {/if}
               <span class="text-sm font-bold">{nav.title}</span>
             </li>

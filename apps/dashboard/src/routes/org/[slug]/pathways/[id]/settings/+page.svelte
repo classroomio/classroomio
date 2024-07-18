@@ -11,21 +11,21 @@
   } from 'carbon-components-svelte';
   import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
 
+  import { t } from '$lib/utils/functions/translations';
+  import { collection } from '$lib/components/Pathways/store';
+  // future function to handle the saving of collections
+  import { updateCollection } from '$lib/utils/services/pathways';
+  import { currentOrgDomain, currentOrg } from '$lib/utils/store/org';
+
   import PageNav from '$lib/components/PageNav/index.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { currentOrgDomain, currentOrg } from '$lib/utils/store/org';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
   import CustomToggle from '$lib/components/Pathways/Toggle.svelte';
-
-  import { collection } from '../store.js';
-
-  // future function to handle the saving of collections
-  import { updateCollection } from '$lib/utils/services/courses';
 
   let id: string;
   let isSaving = false;
@@ -49,11 +49,11 @@
 
   const handleSave = async () => {
     if (!$collection.title) {
-      errors.title = 'Please add a collection title';
+      errors.title = $t('pathways.pages.settings.title_error');
       return;
     }
     if (!$collection.description) {
-      errors.description = 'Please add a collection description';
+      errors.description = $t('pathways.pages.settings.title_description');
       return;
     }
     isSaving = true;
@@ -79,13 +79,11 @@
     isSaving = false;
   };
 
-  $: {
-    id = $page.params.id;
-  }
+  $: id = $page.params.id;
 </script>
 
 <section class="w-full h-full">
-  <PageNav title="Settings" />
+  <PageNav title={$t('pathways.pages.settings.page_title')} />
 
   <div
     class="border border-[#EAEAEA] max-w-[87%] max-h-[73vh] overflow-y-auto shadow-sm rounded-md w-full mx-auto my-10"
@@ -94,22 +92,21 @@
       <Row class="flex lg:flex-row flex-col my-4 md:py-7 border-bottom-c">
         <Column sm={8} md={8} lg={8} class="flex flex-col justify-between">
           <div>
-            <h1 class="text-lg font-semibold">Cover Image</h1>
+            <h1 class="text-lg font-semibold">{$t('pathways.pages.settings.cover_image')}</h1>
             <p class="mt-3 text-sm font-medium md:max-w-[67%]">
-              This optional image will show up on your welcome page. If you include one, it should
-              be at least 280 x 200
+              {$t('pathways.pages.settings.optional')}
             </p>
           </div>
           <span class="flex items-center justify-start mt-10 md:mt-0">
             <PrimaryButton
               variant={VARIANTS.OUTLINED}
-              label="Replace"
+              label={$t('pathways.pages.settings.replace')}
               className="mr-2"
               onClick={widgetControl}
             />
             <PrimaryButton
               variant={VARIANTS.CONTAINED_DANGER}
-              label="Delete"
+              label={$t('pathways.pages.settings.delete')}
               onClick={deleteBannerImage}
             />
           </span>
@@ -133,21 +130,21 @@
 
       <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
         <Column sm={8} md={8} lg={8}>
-          <h1 class="text-lg font-semibold">Collection Details</h1>
+          <h1 class="text-lg font-semibold">{$t('pathways.pages.settings.details')}</h1>
         </Column>
 
         <Column sm={8} md={8} lg={7}>
           <TextField
-            label="Collection Title"
-            placeholder="Write the course title here"
+            label={$t('pathways.pages.settings.title')}
+            placeholder={$t('pathways.pages.settings.title_placeholder')}
             className="w-full mb-5"
             labelClassName="font-medium mb-3"
             bind:value={$collection.title}
             errorMessage={errors.title}
           />
           <TextArea
-            label="Collection Description"
-            placeholder="Write the course description here"
+            label={$t('pathways.pages.settings.description')}
+            placeholder={$t('pathways.pages.settings.description_placeholder')}
             className="w-full mb-5"
             labelClassName="font-medium mb-3 text-sm"
             bind:value={$collection.description}
@@ -156,7 +153,7 @@
           />
           <div class="">
             <p class="text-sm font-medium flex items-center gap-2 mb-2">
-              Collection Link
+              {$t('pathways.pages.settings.link')}
               <IconButton contained={true} size="small" onClick={generateNewCourseLink}>
                 <Restart size={16} />
               </IconButton>
@@ -177,51 +174,60 @@
       <Row class="flex lg:flex-row flex-col py-7 gap-5 border-bottom-c">
         <Column sm={8} md={8} lg={8}>
           <h1 class="text-lg font-semibold leading-5">
-            Students must take course according to recommended order?
+            {$t('pathways.pages.settings.students')}
           </h1>
           <p class="mt-3 text-sm max-w-[80%]">
-            if yes, student must take cours according to order, if No, student can start from any
-            course of their choice
+            {$t('pathways.pages.settings.yes')}
           </p>
         </Column>
         <Column sm={8} md={8} lg={7} class="flex justify-center items-center">
           <RadioButtonGroup hideLegend bind:selected={$collection.prerequisite}>
-            <RadioButton labelText="Yes" value="true" />
-            <RadioButton labelText="No" value="false" />
+            <RadioButton labelText={$t('pathways.pages.settings.option_one')} value="true" />
+            <RadioButton labelText={$t('pathways.pages.settings.option_two')} value="false" />
           </RadioButtonGroup>
         </Column>
       </Row>
 
       <Row class="flex lg:flex-row flex-col gap-5 py-7 border-bottom-c overflow-hidden">
         <Column sm={8} md={8} lg={8}>
-          <h1 class="text-lg font-semibold leading-5">Publish learning Path</h1>
-          <p>Allow new student download courses in learning Path</p>
+          <h1 class="text-lg font-semibold leading-5">{$t('pathways.pages.settings.publish')}</h1>
+          <p>{$t('pathways.pages.settings.allow')}</p>
         </Column>
         <Column sm={8} md={8} lg={7} class="flex justify-start items-center">
           <div class="flex items-center gap-3">
             <CustomToggle on:toggle={(e) => (e.detail.isOn = $collection.is_published)} />
-            <p class="text-sm">{$collection.is_published ? 'Enabled' : 'Disabled'}</p>
+            <p class="text-sm">
+              {$collection.is_published
+                ? $t('pathways.pages.settings.enabled')
+                : $t('pathways.pages.settings.disabled')}
+            </p>
           </div>
         </Column>
       </Row>
 
       <Row class="flex flex-col w-[99%] mx-auto py-7 border-bottom-c">
-        <h1 class="text-lg font-semibold leading-5 m-0">Certificate</h1>
+        <h1 class="text-lg font-semibold leading-5 m-0">
+          {$t('pathways.pages.settings.certificate')}
+        </h1>
 
         <Row class="overflow-hidden justify-between w-full items-center gap-5 flex-col mt-5">
           <Column class="flex flex-col md:flex-row gap-7 items-start  md:items-center py-2">
-            <p class="md:w-[54%]">Issue certificate on LMS</p>
+            <p class="md:w-[54%]">{$t('pathways.pages.settings.issue')}</p>
             <div class="flex items-center gap-3">
               <CustomToggle on:toggle={(e) => (e.detail.isOn = $collection.lms_certificate)} />
-              <p class="text-sm">{$collection.lms_certificate ? 'Enabled' : 'Disabled'}</p>
+              <p class="text-sm">
+                {$collection.lms_certificate
+                  ? $t('pathways.pages.settings.enabled')
+                  : $t('pathways.pages.settings.disabled')}
+              </p>
             </div>
           </Column>
           <Column class="flex w-full flex-col md:flex-row items-start  md:items-center gap-5">
-            <p class="md:w-[54%]">Issue certificate or all course in learning path</p>
+            <p class="md:w-[54%]">{$t('pathways.pages.settings.issue_two')}</p>
             <div>
               <RadioButtonGroup hideLegend bind:selected={$collection.courses_certificate}>
-                <RadioButton labelText="Yes" value="true" />
-                <RadioButton labelText="No, for path only" value="false" />
+                <RadioButton labelText={$t('pathways.pages.settings.option_one')} value="true" />
+                <RadioButton labelText={$t('pathways.pages.settings.option_three')} value="false" />
               </RadioButtonGroup>
             </div>
           </Column>
@@ -230,8 +236,10 @@
 
       <Row class="flex lg:flex-row flex-col pt-7 pb-10 border-bottom-c overflow-hidden">
         <Column sm={8} md={8} lg={8}>
-          <h1 class="text-lg font-semibold leading-5">Delete learning Path</h1>
-          <p>Delete Learning Path as a whole</p>
+          <h1 class="text-lg font-semibold leading-5">
+            {$t('pathways.pages.settings.delete_path')}
+          </h1>
+          <p>{$t('pathways.pages.settings.delete_text')}</p>
         </Column>
         <Column sm={8} md={8} lg={8} class="mt-5">
           <button
@@ -240,14 +248,14 @@
             disabled={isSaving}
           >
             <TrashCan class="text-red-600" size={20} />
-            <p class="text-sm text-red-600 font-medium">Delete</p>
+            <p class="text-sm text-red-600 font-medium">{$t('pathways.pages.settings.delete')}</p>
           </button>
         </Column>
       </Row>
 
       <Row class="p-5 w-full flex items-center justify-end">
         <PrimaryButton
-          label="Save Changes"
+          label={$t('pathways.pages.settings.save')}
           isLoading={isSaving}
           isDisabled={isSaving}
           onClick={handleSave}

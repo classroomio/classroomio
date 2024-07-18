@@ -155,35 +155,6 @@ export async function updateCourse(
   return course.logo;
 }
 
-export async function updateCollection(
-  // collectionId: Course['id'],
-  // avatar: string | undefined,
-  // course: Partial<Course>
-) {
-  console.log('update successful');
-  
-  // if (avatar && collectionId) {
-  //   const filename = `course/${collectionId + Date.now()}.webp`;
-
-  //   const { data } = await supabase.storage.from('avatars').upload(filename, avatar, {
-  //     cacheControl: '3600',
-  //     upsert: false
-  //   });
-
-  //   if (data) {
-  //     const { data: response } = supabase.storage.from('avatars').getPublicUrl(filename);
-
-  //     if (!response.publicUrl) return;
-
-  //     course.logo = response.publicUrl;
-  //   }
-  // }
-
-  // await supabase.from('course').update(course).match({ id: collectionId });
-
-  // return course.logo;
-}
-
 export async function deleteCourse(courseId: Course['id']) {
   return await supabase.from('course').update({ status: 'DELETED' }).match({ id: courseId });
 }
