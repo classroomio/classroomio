@@ -12,6 +12,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { fetchProfileCourseProgress } from '$lib/utils/services/courses';
   import type { ProfileCourseProgress } from '$lib/utils/types';
+  import { snackbar } from '$lib/components/Snackbar/store';
 
   let isLoading = false;
   let isCourseComplete = false;
@@ -21,32 +22,37 @@
     if (!isCourseComplete) return;
 
     isLoading = true;
-    const response = await fetch(PUBLIC_SERVER_URL + '/downloadCertificate', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        theme: `${$course.certificate_theme}`,
-        studentName: `${$profile.fullname}`,
-        courseName: `${$course.title}`,
-        courseDescription: `${$course.description}`,
-        orgLogoUrl: `${$currentOrg.avatar_url}`,
-        orgName: `${$currentOrg.name}`
-      })
-    });
-    const data = await response.blob();
-    console.log(data);
-    const file = new Blob([data], { type: 'application/pdf' });
-    const fileURL = URL.createObjectURL(file);
+    try {
+      const response = await fetch(PUBLIC_SERVER_URL + '/downloadCertificate', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          theme: `${$course.certificate_theme}`,
+          studentName: `${$profile.fullname}`,
+          courseName: `${$course.title}`,
+          courseDescription: `${$course.description}`,
+          orgLogoUrl: `${$currentOrg.avatar_url}`,
+          orgName: `${$currentOrg.name}`
+        })
+      });
+      const data = await response.blob();
+      console.log(data);
+      const file = new Blob([data], { type: 'application/pdf' });
+      const fileURL = URL.createObjectURL(file);
 
-    let a = document.createElement('a');
-    document.body.append(a);
-    a.download = 'Certificate of Completion - ' + $currentOrg.name;
-    a.href = fileURL;
-    a.click();
-    a.remove();
+      let a = document.createElement('a');
+      document.body.append(a);
+      a.download = 'Certificate of Completion - ' + $currentOrg.name;
+      a.href = fileURL;
+      a.click();
+      a.remove();
+    } catch (error) {
+      console.error('Error downloading', error);
+      snackbar.error($t('course.navItem.certificates.unexpected_error'));
+    }
 
     isLoading = false;
   };

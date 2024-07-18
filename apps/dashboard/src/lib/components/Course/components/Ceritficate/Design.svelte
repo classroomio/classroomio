@@ -142,8 +142,8 @@
             bind:value={$course.description}
             errorMessage={errors.description}
             disabled={$isFreePlan}
+            helperMessage={helperText}
           />
-          <p class="text-sm">{helperText}</p>
         </span>
         <Toggle
           labelText={$t('course.navItem.certificates.allow')}
