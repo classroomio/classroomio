@@ -23,12 +23,10 @@
 <VerifyEmailModal />
 
 <div class="org-root w-full flex items-center justify-between">
-  <!-- this block switches the navigation from the existing one to the pathway's -->
-  {#if !isQuizPage($page.url?.pathname) && !isPathwayPage($page.url?.pathname)}
-    <OrgSideBar />
-  {/if}
   {#if isPathwayPage($page.url?.pathname)}
     <PathwaySidebar />
+  {:else if !isQuizPage($page.url?.pathname)}
+    <OrgSideBar />
   {/if}
   <div class="org-slot bg-white dark:bg-black w-full">
     {#if data.orgName === '*'}

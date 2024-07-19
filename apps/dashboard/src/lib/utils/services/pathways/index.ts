@@ -1,4 +1,4 @@
-export async function updateCollection(
+export async function updatePathway(
   // collectionId: Course['id'],
   // avatar: string | undefined,
   // course: Partial<Course>
