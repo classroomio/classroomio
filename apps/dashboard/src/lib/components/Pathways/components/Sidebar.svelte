@@ -12,7 +12,7 @@
 
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
-  import { collection } from '$lib/components/Pathways/store';
+  import { pathway } from '$lib/components/Pathways/store';
 
   import IconButton from '$lib/components/IconButton/index.svelte';
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
@@ -129,8 +129,8 @@
           </li>
 
           <div class="w-full {showCourses ? 'block' : 'hidden'}">
-            {#if $collection.courses.length > 0 && showCourses}
-              {#each $collection.courses as courses}
+            {#if $pathway.courses.length > 0 && showCourses}
+              {#each $pathway.courses as courses}
                 <a
                   href="/courses/{courses.id}"
                   on:click={toggleSidebar}

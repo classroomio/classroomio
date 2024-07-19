@@ -17,12 +17,12 @@
   import { t } from '$lib/utils/functions/translations';
   import { isMobile } from '$lib/utils/store/useMobile';
 
-  import { collection } from '$lib/components/Pathways/store';
+  import { pathway } from '$lib/components/Pathways/store';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import CourseCard from '$lib/components/Pathways/components/CourseCard.svelte';
-  import CourseContainer from '$lib/components/Pathways/components/CourseContainer.svelte';
+  import PathwayContainer from '$lib/components/Pathways/components/PathwayContainer.svelte';
 
   let searchValue: string = '';
   let selectedId: string = '1';
@@ -34,14 +34,14 @@
   };
 
   // Computed property to filter courses based on the search value
-  $: filteredCourses = $collection.courses.filter(
+  $: filteredCourses = $pathway.courses.filter(
     (course) =>
       course.title.toLowerCase().includes(searchValue.toLowerCase()) &&
       (selectedId === '0' ? course.is_published : !course.is_published)
   );
 </script>
 
-<CourseContainer border={false} maxHeight={false} className="w-full h-auto max-w-[90%] mx-auto">
+<PathwayContainer border={false} maxHeight={false} className="w-full h-auto max-w-[90%] mx-auto">
   <!-- header -->
 
   <div class="flex items-center justify-between">
@@ -137,7 +137,7 @@
       </section>
     {/if}
   </div>
-</CourseContainer>
+</PathwayContainer>
 
 <style>
   .filter-containter :global(.bx--dropdown) {

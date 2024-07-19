@@ -1,5 +1,9 @@
-<script></script>
+<script>
+  import PathwayContainer from '$lib/components/Pathways/components/PathwayContainer.svelte';
+</script>
 
-<section class="border-2 border-black flex justify-center items-center w-full h-full">
-  <p>Landing Page o!</p>
-</section>
+<PathwayContainer>
+  <div class="flex justify-center items-center h-full">
+    <p>Landing page o!</p>
+  </div>
+</PathwayContainer>

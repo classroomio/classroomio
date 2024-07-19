@@ -12,7 +12,7 @@
   import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
 
   import { t } from '$lib/utils/functions/translations';
-  import { collection } from '$lib/components/Pathways/store';
+  import { pathway } from '$lib/components/Pathways/store';
   // future function to handle the saving of collections
   import { updateCollection } from '$lib/utils/services/pathways';
   import { currentOrgDomain, currentOrg } from '$lib/utils/store/org';
@@ -40,7 +40,7 @@
   }
 
   const deleteBannerImage = () => {
-    $collection.avatar = '';
+    $pathway.avatar = '';
   };
 
   const generateNewCourseLink = () => {
@@ -48,11 +48,11 @@
   };
 
   const handleSave = async () => {
-    if (!$collection.title) {
+    if (!$pathway.title) {
       errors.title = $t('pathways.pages.settings.title_error');
       return;
     }
-    if (!$collection.description) {
+    if (!$pathway.description) {
       errors.description = $t('pathways.pages.settings.title_description');
       return;
     }
@@ -111,7 +111,7 @@
             />
           </span>
           {#if $handleOpenWidget.open}
-            <UploadWidget bind:imageURL={$collection.avatar} />
+            <UploadWidget bind:imageURL={$pathway.avatar} />
           {/if}
         </Column>
 
@@ -119,8 +119,8 @@
           <div class="max-w-full overflow-hidden my-5 md:my-0">
             <img
               alt="About us"
-              src={$collection.avatar
-                ? $collection.avatar
+              src={$pathway.avatar
+                ? $pathway.avatar
                 : '/images/classroomio-course-img-template.jpg'}
               class="w-full h-full object-cover hover:scale-110 transition-all duration-300"
             />
@@ -139,7 +139,7 @@
             placeholder={$t('pathways.pages.settings.title_placeholder')}
             className="w-full mb-5"
             labelClassName="font-medium mb-3"
-            bind:value={$collection.title}
+            bind:value={$pathway.title}
             errorMessage={errors.title}
           />
           <TextArea
@@ -147,7 +147,7 @@
             placeholder={$t('pathways.pages.settings.description_placeholder')}
             className="w-full mb-5"
             labelClassName="font-medium mb-3 text-sm"
-            bind:value={$collection.description}
+            bind:value={$pathway.description}
             rows={5}
             errorMessage={errors.description}
           />
@@ -181,7 +181,7 @@
           </p>
         </Column>
         <Column sm={8} md={8} lg={7} class="flex justify-center items-center">
-          <RadioButtonGroup hideLegend bind:selected={$collection.prerequisite}>
+          <RadioButtonGroup hideLegend bind:selected={$pathway.prerequisite}>
             <RadioButton labelText={$t('pathways.pages.settings.option_one')} value="true" />
             <RadioButton labelText={$t('pathways.pages.settings.option_two')} value="false" />
           </RadioButtonGroup>
@@ -195,9 +195,9 @@
         </Column>
         <Column sm={8} md={8} lg={7} class="flex justify-start items-center">
           <div class="flex items-center gap-3">
-            <CustomToggle on:toggle={(e) => (e.detail.isOn = $collection.is_published)} />
+            <CustomToggle on:toggle={(e) => (e.detail.isOn = $pathway.is_published)} />
             <p class="text-sm">
-              {$collection.is_published
+              {$pathway.is_published
                 ? $t('pathways.pages.settings.enabled')
                 : $t('pathways.pages.settings.disabled')}
             </p>
@@ -214,9 +214,9 @@
           <Column class="flex flex-col md:flex-row gap-7 items-start  md:items-center py-2">
             <p class="md:w-[54%]">{$t('pathways.pages.settings.issue')}</p>
             <div class="flex items-center gap-3">
-              <CustomToggle on:toggle={(e) => (e.detail.isOn = $collection.lms_certificate)} />
+              <CustomToggle on:toggle={(e) => (e.detail.isOn = $pathway.lms_certificate)} />
               <p class="text-sm">
-                {$collection.lms_certificate
+                {$pathway.lms_certificate
                   ? $t('pathways.pages.settings.enabled')
                   : $t('pathways.pages.settings.disabled')}
               </p>
@@ -225,7 +225,7 @@
           <Column class="flex w-full flex-col md:flex-row items-start  md:items-center gap-5">
             <p class="md:w-[54%]">{$t('pathways.pages.settings.issue_two')}</p>
             <div>
-              <RadioButtonGroup hideLegend bind:selected={$collection.courses_certificate}>
+              <RadioButtonGroup hideLegend bind:selected={$pathway.courses_certificate}>
                 <RadioButton labelText={$t('pathways.pages.settings.option_one')} value="true" />
                 <RadioButton labelText={$t('pathways.pages.settings.option_three')} value="false" />
               </RadioButtonGroup>
