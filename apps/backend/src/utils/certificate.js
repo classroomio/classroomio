@@ -218,7 +218,7 @@ function getBlueProfessionalBadge({
 }) {
   const themeBody = `
     <img
-      src="http://localhost:3002/blue-professional-badge-background.png"
+      src="https://assets.cdn.clsrio.com/certificates/blue-professional-badge-background.png"
       alt=""
       class="absolute top-0 left-0 w-full z-10"
     />
@@ -272,7 +272,7 @@ function getPurpleProfessionalBadgePattern({
 }) {
   const themeBody = `
   <img
-    src="http://localhost:3002/purple-lined-background.png"
+    src="https://assets.cdn.clsrio.com/certificates/purple-lined-background.png"
     alt=""
     class="absolute top-0 left-0 w-full h-[100vh] z-10"
   />
@@ -326,7 +326,7 @@ function getBlueProfessionalBadgePattern({
 }) {
   const themeBody = `
     <img
-      src="http://localhost:3002/blue-lined-background.png"
+      src="https://assets.cdn.clsrio.com/certificates/blue-lined-background.png"
       alt=""
       class="absolute top-0 left-0 w-full h-[100vh] z-10"
     />
