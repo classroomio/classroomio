@@ -164,7 +164,7 @@ function getPurpleProfessionalBadge({
 }) {
   const themeBody = `
     <img
-      src="http://localhost:3002/purple-professional-badge-background.png"
+      src="https://assets.cdn.clsrio.com/certificates/purple-professional-badge-background.png"
       alt=""
       class="absolute top-0 left-0 w-full z-10"
     />

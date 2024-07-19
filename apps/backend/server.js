@@ -36,8 +36,6 @@ app.use('/downloadCourse', downloadCourse);
 app.use('/uploadVideo', uploadVideo);
 app.use('/katex', katex);
 app.use('/sendEmail', sendEmail);
-// serve the images in the static folder
-app.use(express.static('static'));
 
 app.get('/', (req, res) => {
   res.send('Welcome to ClassroomIO');
