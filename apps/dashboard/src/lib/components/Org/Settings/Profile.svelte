@@ -13,7 +13,7 @@
   import { t } from '$lib/utils/functions/translations';
   import LanguagePicker from './LanguagePicker.svelte';
   import { handleLocaleChange } from '$lib/utils/functions/translations';
-  import { onSubmitValidation } from '$lib/utils/functions/validator';
+  import { updateProfileValidation } from '$lib/utils/functions/validator';
 
   let avatar = '';
   let loading = false;
@@ -23,7 +23,7 @@
   let errors = {};
 
   async function handleUpdate() {
-    errors = onSubmitValidation($profile);
+    errors = updateProfileValidation($profile);
     if (Object.values(errors).some((error) => error)) {
       loading = false;
       return;
