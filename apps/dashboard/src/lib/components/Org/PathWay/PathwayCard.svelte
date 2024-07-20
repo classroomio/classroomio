@@ -2,14 +2,12 @@
   import { t } from '$lib/utils/functions/translations';
   import { ImageLoader, SkeletonPlaceholder } from 'carbon-components-svelte';
 
-  export let data = {
-    title: 'Become a Professional UX designer',
-    description:
-      'This is a full pathway to become a professional UX designer,with practical examples',
-    avatar_url: '',
-    is_published: false,
-    courses: []
-  };
+  export let id;
+  export let title;
+  export let description;
+  export let banner_url;
+  export let is_published;
+  export let courses;
 
   const getPathwayUrl = () => {
     return '#';
@@ -22,7 +20,7 @@
   class="text-black flex items-center p-4 gap-4 border border-gray dark:border-neutral-600 rounded w-full max-w-[520px] relative hover:scale-95 transition-all ease-in-out"
 >
   <ImageLoader
-    src={data.avatar_url ? data.avatar_url : '/images/classroomio-course-img-template.jpg'}
+    src={banner_url ? banner_url : '/images/classroomio-course-img-template.jpg'}
     alt="Course Logo"
     class="h-[150px] !w-[30%]  dark:border dark:border-neutral-600 object-cover relative"
   >
@@ -32,12 +30,12 @@
     <!-- <svelte:fragment slot="error">{$t('courses.course_card.error_message')}</svelte:fragment> -->
   </ImageLoader>
   <div class="space-y-2 w-full">
-    <p class="text-xl font-medium">{data.title}</p>
-    <p class="text-sm">{data.description}</p>
+    <p class="text-xl font-medium">{title}</p>
+    <p class="text-sm">{description}</p>
 
     <span class="flex justify-between items-center">
-      <p class="text-xs">{data.courses.length} {$t('pathway.pathway_card.courses')}</p>
-      {#if data.is_published}
+      <p class="text-xs">{courses} {$t('pathway.pathway_card.courses')}</p>
+      {#if is_published}
         <p class="text-xs">{$t('pathway.pathway_card.published')}</p>
       {:else}
         <p class="text-xs">{$t('pathway.pathway_card.unpublished')}</p>

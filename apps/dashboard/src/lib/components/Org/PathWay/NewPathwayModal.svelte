@@ -7,13 +7,97 @@
   import { goto } from '$app/navigation';
   import { createPathwayModal } from '../store';
   import { t } from '$lib/utils/functions/translations';
+  import { validateForm } from '$lib/components/Courses/functions';
+  import { supabase } from '$lib/utils/functions/supabase';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { pathways } from './store';
+  import { profile } from '$lib/utils/store/user';
+  import { capturePosthogEvent } from '$lib/utils/services/posthog';
+  import { snackbar } from '$lib/components/Snackbar/store';
 
   let errors = {
     title: '',
     description: ''
   };
-  const createPathway = () => {
-    console.log('clicked create pathway');
+  let isLoading;
+
+  const createPathway = async () => {
+    try {
+      isLoading = true;
+      const { hasError, fieldErrors } = validateForm($createPathwayModal);
+
+      errors = fieldErrors;
+      if (hasError) return;
+
+      const { title, description } = $createPathwayModal;
+      // 1. Create group
+      const { data: newGroup } = await supabase
+        .from('group')
+        .insert({ name: title, description, organization_id: $currentOrg.id })
+        .select();
+
+      console.log(`newGroup`, newGroup);
+
+      if (!newGroup) return;
+
+      const { id: group_id } = newGroup[0];
+
+      // 2. Create course with group_id
+      const { data: newPathwayData } = await supabase
+        .from('pathway')
+        .insert({
+          title,
+          description,
+          group_id
+        })
+        .select();
+      console.log(`newPathway data`, newPathwayData);
+
+      if (!newPathwayData) return;
+
+      const newPathway = newPathwayData[0];
+      pathways.update((_pathways) => [..._pathways, newPathway]);
+
+      capturePosthogEvent('pathway_created', {
+        pathway_id: newPathway.id,
+        pathway_title: newPathway.title,
+        pathway_description: newPathway.description,
+        organization_id: $currentOrg.id,
+        organization_name: $currentOrg.name,
+        user_id: $profile.id,
+        user_email: $profile.email
+      });
+
+      // 3. Add group members
+      // const { data } = await addGroupMember({
+      //   profile_id: $profile.id,
+      //   email: $profile.email,
+      //   group_id,
+      //   role_id: ROLE.TUTOR
+      // });
+
+      // 4. Add default news feed.
+      //     if (Array.isArray(data) && data.length) {
+      //       const { id: authorId } = data[0];
+      //       console.log('Add news feed into pathway');
+
+      //       await addDefaultNewsFeed({
+      //         content: `<h2>Welcome to this course 🎉&nbsp;</h2>
+      // <p>Thank you for joining this course and I hope you get the best out of it.</p>`,
+      //         course_id: newPathway.id,
+      //         is_pinned: true,
+      //         author_id: authorId
+      //       });
+      //     }
+
+      // onClose(`/pathways/${newPathway.id}`);
+      onClose($page.url.pathname);
+      snackbar.success('Pathway created succesfully');
+    } catch (error) {
+      snackbar.error('error creating pathway');
+    } finally {
+      isLoading = false;
+    }
   };
   const onClose = (url) => {
     return goto(url);

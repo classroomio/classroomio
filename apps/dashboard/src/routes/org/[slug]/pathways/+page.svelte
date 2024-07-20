@@ -4,7 +4,7 @@
   import { courseMetaDeta } from '$lib/components/Courses/store';
   import { Add } from 'carbon-icons-svelte';
   import { isMobile } from '$lib/utils/store/useMobile';
-  import { currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
+  import { currentOrg, currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import IconButton from '$lib/components/IconButton/index.svelte';
@@ -14,6 +14,9 @@
   import { goto } from '$app/navigation';
   import NewPathwayModal from '$lib/components/Org/PathWay/NewPathwayModal.svelte';
   import Pathway from '$lib/components/Org/PathWay/Pathway.svelte';
+  import { pathwayMetaDeta, pathways } from '$lib/components/Org/PathWay/store.js';
+  import { fetchPathways } from '$lib/components/Org/PathWay/api.js';
+  import { profile } from '$lib/utils/store/user.js';
 
   export let data;
 
@@ -21,10 +24,31 @@
   let searchValue = '';
   let selectedId: string = '0';
   let collections = [1, 2, 3, 4, 5];
+  let hasFetched = false;
+  let filteredPathway = [];
+
+  async function getPathway(userId: string | undefined, orgId: string) {
+    if (cantFetch && typeof cantFetch === 'boolean' && orgId && !hasFetched) {
+      // only show is loading when fetching for the first time
+      if (!$pathways.length) {
+        $pathwayMetaDeta.isLoading = true;
+      }
+
+      const pathwayResult = await fetchPathways(userId, orgId);
+      console.log(`pathwayResult`, pathwayResult);
+
+      $pathwayMetaDeta.isLoading = false;
+      if (!pathwayResult) return;
+
+      // organizationId = pathwayResult.organizationId;
+      pathways.set(pathwayResult.allPathways);
+      hasFetched = true;
+    }
+  }
 
   const setViewPreference = (preference: 'grid' | 'list') => {
-    $courseMetaDeta.view = preference;
-    localStorage.setItem('courseView', preference);
+    $pathwayMetaDeta.view = preference;
+    localStorage.setItem('pathwayView', preference);
   };
 
   const openNewPathwayModal = () => {
@@ -32,12 +56,15 @@
   };
 
   onMount(() => {
-    const courseView = localStorage.getItem('courseView') as 'grid' | 'list' | null;
+    const pathwayView = localStorage.getItem('pathwayView') as 'grid' | 'list' | null;
 
-    if (courseView) {
-      $courseMetaDeta.view = courseView;
+    if (pathwayView) {
+      $pathwayMetaDeta.view = pathwayView;
     }
   });
+
+  // $: filterCourses(searchValue, selectedId, $courses);
+  $: getPathway($profile.id, $currentOrg.id);
 </script>
 
 <svelte:head>
@@ -78,7 +105,7 @@
             { id: '2', text: $t('pathway.pathway_filter.courses') }
           ]}
         />
-        {#if $courseMetaDeta.view === 'list'}
+        {#if $pathwayMetaDeta.view === 'list'}
           <IconButton onClick={() => setViewPreference('grid')}>
             <Grid size={24} />
           </IconButton>
@@ -91,7 +118,7 @@
     </div>
 
     <NewPathwayModal />
-    <Pathway pathways={collections} />
+    <Pathway pathways={$pathways} />
   </div>
 </section>
 
