@@ -1,7 +1,6 @@
 <script lang="ts">
   import { Search, Dropdown } from 'carbon-components-svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { courseMetaDeta } from '$lib/components/Courses/store';
   import { Add } from 'carbon-icons-svelte';
   import { isMobile } from '$lib/utils/store/useMobile';
   import { currentOrg, currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
@@ -14,16 +13,15 @@
   import { goto } from '$app/navigation';
   import NewPathwayModal from '$lib/components/Org/PathWay/NewPathwayModal.svelte';
   import Pathway from '$lib/components/Org/PathWay/Pathway.svelte';
-  import { pathwayMetaDeta, pathways } from '$lib/components/Org/PathWay/store.js';
-  import { fetchPathways } from '$lib/components/Org/PathWay/api.js';
-  import { profile } from '$lib/utils/store/user.js';
+  import { pathwayMetaDeta, pathways } from '$lib/components/Org/PathWay/store';
+  import { fetchPathways } from '$lib/components/Org/PathWay/api';
+  import { profile } from '$lib/utils/store/user';
 
   export let data;
 
   let { cantFetch } = data;
   let searchValue = '';
   let selectedId: string = '0';
-  let collections = [1, 2, 3, 4, 5];
   let hasFetched = false;
   let filteredPathway = [];
 
@@ -76,7 +74,7 @@
     <div class="flex items-center justify-between mb-5">
       <h1 class="dark:text-white text-2xl md:text-3xl font-bold">{$t('pathway.heading')}</h1>
       {#if $isMobile}
-        <PrimaryButton isDisabled={!$isOrgAdmin} onClick={() => console.log('clicked')}>
+        <PrimaryButton isDisabled={!$isOrgAdmin} onClick={openNewPathwayModal}>
           <Add size={24} />
         </PrimaryButton>
       {:else}
@@ -97,7 +95,7 @@
           class=" bg-gray-100 dark:bg-neutral-800"
         />
         <Dropdown
-          class="h-full"
+          class="h-full min-w-[150px]"
           bind:selectedId
           items={[
             { id: '0', text: $t('pathway.pathway_filter.date_created') },
@@ -118,7 +116,7 @@
     </div>
 
     <NewPathwayModal />
-    <Pathway pathways={$pathways} />
+    <Pathway bind:pathways={$pathways} />
   </div>
 </section>
 

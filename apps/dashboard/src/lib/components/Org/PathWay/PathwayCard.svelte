@@ -6,8 +6,8 @@
   export let title;
   export let description;
   export let banner_url;
-  export let is_published;
-  export let courses;
+  export let is_published = false;
+  export let courses = 0;
 
   const getPathwayUrl = () => {
     return '#';

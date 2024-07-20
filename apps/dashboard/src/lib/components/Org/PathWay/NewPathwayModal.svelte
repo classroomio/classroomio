@@ -14,12 +14,14 @@
   import { profile } from '$lib/utils/store/user';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { snackbar } from '$lib/components/Snackbar/store';
+  import { ROLE } from '$lib/utils/constants/roles';
+  import { addPathwayGroupMember } from '$lib/utils/services/pathways';
 
   let errors = {
     title: '',
     description: ''
   };
-  let isLoading;
+  let isLoading = false;
 
   const createPathway = async () => {
     try {
@@ -42,7 +44,7 @@
 
       const { id: group_id } = newGroup[0];
 
-      // 2. Create course with group_id
+      // 2. Create pathway with group_id
       const { data: newPathwayData } = await supabase
         .from('pathway')
         .insert({
@@ -69,26 +71,12 @@
       });
 
       // 3. Add group members
-      // const { data } = await addGroupMember({
-      //   profile_id: $profile.id,
-      //   email: $profile.email,
-      //   group_id,
-      //   role_id: ROLE.TUTOR
-      // });
-
-      // 4. Add default news feed.
-      //     if (Array.isArray(data) && data.length) {
-      //       const { id: authorId } = data[0];
-      //       console.log('Add news feed into pathway');
-
-      //       await addDefaultNewsFeed({
-      //         content: `<h2>Welcome to this course 🎉&nbsp;</h2>
-      // <p>Thank you for joining this course and I hope you get the best out of it.</p>`,
-      //         course_id: newPathway.id,
-      //         is_pinned: true,
-      //         author_id: authorId
-      //       });
-      //     }
+      const { data } = await addPathwayGroupMember({
+        profile_id: $profile.id,
+        email: $profile.email,
+        group_id,
+        role_id: ROLE.TUTOR
+      });
 
       // onClose(`/pathways/${newPathway.id}`);
       onClose($page.url.pathname);
@@ -147,6 +135,8 @@
         className="px-6 py-3 font-normal"
         label={$t('pathway.new_pathway_modal.button')}
         type="submit"
+        isDisabled={isLoading}
+        {isLoading}
       />
     </div>
   </form>

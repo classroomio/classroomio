@@ -10,10 +10,9 @@
   import { goto } from '$app/navigation';
   import { t } from '$lib/utils/functions/translations';
 
-  export let id = '';
-  export let title = 'Become a Professional UX designer';
-  export let description =
-    'This is a full pathway to become a professional UX designer,with practical examples';
+  export let id;
+  export let title;
+  export let description;
   export let isPublished = false;
   export let totalCourse = 0;
   export let totalStudents = 0;
