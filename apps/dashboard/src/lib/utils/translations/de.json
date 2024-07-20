@@ -1371,6 +1371,11 @@
     "organization_name": {
       "min_char": "Die Organisation muss 5 oder mehr Zeichen enthalten",
       "hyphen_rule": "Der Name der Organisation darf nicht mit einem Bindestrich beginnen oder enden"
+    },
+    "user_profile": {
+      "email": "Ungültige E-Mail-Adresse",
+      "username": "Benutzername darf nicht leer sein",
+      "fullname": "Der Name sollte mindestens 5 Zeichen lang sein"
     }
   },
   "explore": {

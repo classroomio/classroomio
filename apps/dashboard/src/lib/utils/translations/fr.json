@@ -1371,6 +1371,11 @@
     "organization_name": {
       "min_char": "L'organisation doit contenir 5 caractères ou plus",
       "hyphen_rule": "Le nom de l'organisation ne peut pas commencer ou se terminer par un trait d'union"
+    },
+    "user_profile": {
+      "email": "Adresse e-mail invalide",
+      "username": "Le nom d'utilisateur ne peut pas être vide",
+      "fullname": "Le nom doit comporter au minimum 5 caractères"
     }
   },
   "explore": {

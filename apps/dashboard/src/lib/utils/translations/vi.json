@@ -1371,6 +1371,11 @@
     "organization_name": {
       "min_char": "Tổ chức phải chứa 5 ký tự trở lên",
       "hyphen_rule": "Tên tổ chức không thể bắt đầu hoặc kết thúc bằng dấu gạch nối"
+    },
+    "user_profile": {
+      "email": "địa chỉ email không hợp lệ",
+      "username": "Tên ngươi dung không được để trông",
+      "fullname": "Tên phải có tối thiểu 5 ký tự"
     }
   },
   "explore": {
