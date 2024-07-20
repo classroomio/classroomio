@@ -125,7 +125,7 @@ const onboardingValidationSchema = {
   })
 };
 
-const onSubmitValidationSchema = z.object({
+const updateProfileValidationSchema = z.object({
   email: z.string().email({ message: 'validations.user_profile.email' }),
   username: z.string().nonempty({ message: 'validations.user_profile.username' }),
   fullname: z.string().min(5, { message: 'validations.user_profile.fullname' })
@@ -219,8 +219,8 @@ export const onboardingValidation = (fields = {}, step) => {
   return processErrors(error);
 };
 
-export const onSubmitValidation = (fields = {}) => {
-  const schema = onSubmitValidationSchema;
+export const updateProfileValidation = (fields = {}) => {
+  const schema = updateProfileValidationSchema;
   const { error } = schema.safeParse(fields);
 
   return processErrors(error);
