@@ -1377,5 +1377,67 @@
     "empty_heading": "Kein Kurs verfügbar",
     "empty_description": "Derzeit sind keine veröffentlichten Kurse verfügbar",
     "heading": "Entdecken Sie unsere Kurse"
+  },
+  "pathways": {
+    "components": {
+      "sideBar": {
+        "news": "Neuigkeiten",
+        "courses": "Kurse",
+        "people": "Menschen",
+        "certificates": "Zertifikate",
+        "landing": "Landingpage",
+        "settings": "Einstellungen"
+      },
+      "courseCard": {
+        "lessons": "Unterricht",
+        "students": "Studenten"
+      }
+    },
+    "pages": {
+      "settings": {
+        "page_title": "Einstellungen",
+        "title_error": "Bitte fügen Sie einen Sammlungstitel hinzu",
+        "description_error": "Bitte fügen Sie eine Sammlungsbeschreibung hinzu",
+        "cover_image": "Titelbild",
+        "optional": "Dieses optionale Bild wird auf Ihrer Begrüßungsseite angezeigt. Wenn Sie eines hinzufügen, sollte es mindestens 280 x 200 groß sein",
+        "replace": "Ersetzen",
+        "delete": "Löschen",
+        "details": "Details zur Sammlung",
+        "title": "Titel der Sammlung",
+        "title_placeholder": "Geben Sie hier den Kurstitel ein",
+        "description": "Sammlungsbeschreibung",
+        "description_placeholder": "Schreiben Sie hier die Kursbeschreibung",
+        "link": "Sammlungslink",
+        "students": "Müssen die Studierenden den Kurs in der empfohlenen Reihenfolge absolvieren?",
+        "yes": "Wenn ja, muss der Student die Kurse gemäß der Reihenfolge belegen, wenn nein, kann der Student mit jedem Kurs seiner Wahl beginnen",
+        "option_one": "Ja",
+        "option_two": "NEIN",
+        "publish": "Lernpfad veröffentlichen",
+        "allow": "Erlauben Sie neuen Studenten, Kurse im Lernpfad herunterzuladen",
+        "enabled": "Ermöglicht",
+        "disabled": "Deaktiviert",
+        "certificate": "Zertifikat",
+        "issue": "Zertifikat auf LMS ausstellen",
+        "issue_two": "Zertifikat oder alle Kurse im Lernpfad ausstellen",
+        "option_three": "Nein, nur für den Pfad",
+        "delete_path": "Lernpfad löschen",
+        "delete_text": "Lernpfad als Ganzes löschen",
+        "save": "Änderungen speichern"
+      },
+      "course": {
+        "title": "Kurse",
+        "add_course": "Ein Kurs",
+        "add_remove": "Kurs hinzufügen/entfernen",
+        "order": "Kurse bestellen",
+        "publish": "Sammlung veröffentlichen",
+        "search": "Lernpfad finden",
+        "option_one": "Veröffentlicht",
+        "option_two": "Unveröffentlicht",
+        "body_title": "Titel",
+        "description": "Beschreibung",
+        "students": "Studenten",
+        "lessons": "Unterricht"
+      }
+    }
   }
 }

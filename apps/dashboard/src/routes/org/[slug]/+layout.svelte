@@ -1,12 +1,14 @@
 <script>
   import { page } from '$app/stores';
+  import { goto } from '$app/navigation';
+  import { currentOrg } from '$lib/utils/store/org';
+
   import AddOrgModal from '$lib/components/Org/AddOrgModal/AddOrgModal.svelte';
-  import { isQuizPage } from '$lib/utils/functions/app';
+  import { isQuizPage, isPathwayPage } from '$lib/utils/functions/app';
   import OrgSideBar from '$lib/components/Org/SideBar.svelte';
   import VerifyEmailModal from '$lib/components/Org/VerifyEmail/VerifyEmailModal.svelte';
   import Box from '$lib/components/Box/index.svelte';
-  import { currentOrg } from '$lib/utils/store/org';
-  import { goto } from '$app/navigation';
+  import PathwaySidebar from '$lib/components/Pathways/components/Sidebar.svelte';
 
   export let data;
 
@@ -21,7 +23,9 @@
 <VerifyEmailModal />
 
 <div class="org-root w-full flex items-center justify-between">
-  {#if !isQuizPage($page.url?.pathname)}
+  {#if isPathwayPage($page.url?.pathname)}
+    <PathwaySidebar />
+  {:else if !isQuizPage($page.url?.pathname)}
     <OrgSideBar />
   {/if}
   <div class="org-slot bg-white dark:bg-black w-full">

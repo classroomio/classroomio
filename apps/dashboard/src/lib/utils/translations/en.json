@@ -1,4 +1,67 @@
 {
+  "pathways": {
+    "pages": {
+      "course": {
+        "title": "Courses",
+        "add_course": "A Course",
+        "add_remove": "Add / remove course",
+        "order": "Order Courses",
+        "publish": "Publish Collection",
+        "search": "Find Learning Path",
+        "option_one": "Published",
+        "option_two": "Unpublished",
+        "body_title": "Title",
+        "description": "Description",
+        "students": "Students",
+        "lessons": "Lessons"
+      },
+      "settings": {
+        "page_title": "Settings",
+        "title_error": "Please add a collection title",
+        "description_error": "Please add a collection description",
+        "cover_image": "Cover Image",
+        "optional": "This optional image will show up on your welcome page. If you include one, it should be at least 280 x 200",
+        "replace": "Replace",
+        "delete": "Delete",
+        "details": "Collection Details",
+        "title": "Collection Title",
+        "title_placeholder": "Write the course title here",
+        "description": "Collection Description",
+        "description_placeholder": "Write the course description here",
+        "link": "Collection Link",
+        "students": "Students must take course according to recommended order?",
+        "yes": "if yes, student must take cours according to order, if No, student can start from any course of their choice",
+        "option_one": "Yes",
+        "option_two": "No",
+        "publish": "Publish learning Path",
+        "allow": "Allow new student download courses in learning Path",
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "certificate": "Certificate",
+        "issue": "Issue certificate on LMS",
+        "issue_two": "Issue certificate or all course in learning path",
+        "option_three": "No, for path only",
+        "delete_path": "Delete learning Path",
+        "delete_text": "Delete Learning Path as a whole",
+        "save": "Save Changes"
+      }
+    },
+    "components": {
+      "courseCard": {
+        "lessons": "lessons",
+        "students": "students"
+      },
+      "sideBar": {
+        "news": "News Feed",
+        "courses": "Courses",
+        "people": "People",
+        "certificates": "Certificates",
+        "landing": "Landing Page",
+        "settings": "Settings"
+      }
+    }
+  },
+
   "verify_email_modal": {
     "heading": "Verify your Email",
     "sent_verification": "We've sent a verification email to",
