@@ -292,24 +292,7 @@ export const updateProfileEmailValidation = (email) => {
 
   return processErrors(error);
 };
-export const updateProfileUsernameValidation = (username) => {
-  const schema = z.object({
-    username: z.string().nonempty({ message: `${t.get('validations.user_profile.username')}` })
-  });
-  const { error } = schema.safeParse({ username });
-  console.log('error', error);
 
-  return processErrors(error);
-};
-
-export const updateProfileFullnameValidation = (fullname) => {
-  const schema = z.object({
-    fullname: z.string().nonempty({ message: `${t.get('validations.user_profile.fullname')}` })
-  });
-  const { error } = schema.safeParse({ fullname });
-
-  return processErrors(error);
-};
 export const createQuizValidation = (fields = {}) => {
   const { error } = createQuizValidationSchema.safeParse(fields);
 
