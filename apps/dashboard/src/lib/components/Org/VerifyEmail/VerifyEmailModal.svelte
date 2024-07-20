@@ -56,7 +56,7 @@
   <div class="flex flex-col items-center space-y-6 text-center">
     <img src="/verify-email.svg" alt="email verification" />
     <p class="font-bold text-xl">{$t('verify_email_modal.heading')}</p>
-    <p class="text-sm w-[70%] text-gray-700">
+    <p class="text-sm w-[70%] text-gray-700 dark:text-gray-200">
       {$t('verify_email_modal.sent_verification')}
       {$profile.email}
       {$t('verify_email_modal.to_confirm')}
