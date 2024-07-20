@@ -14,7 +14,7 @@
     alt=""
     class="w-full h-full absolute z-0 object-cover"
   />
-  <div class="relative md:h-[47vh] bg-white flex justify-between z-20 m-2">
+  <div class="relative md:h-[17rem] h-full bg-white flex justify-between z-20 m-2">
     <div class="w-[70%] pl-3">
       <header class="absolute w-full flex justify-center items-center gap-1 text-sm font-bold">
         <img src={$currentOrg.avatar_url ? $currentOrg.avatar_url : logo} alt="logo" class="w-5" />
