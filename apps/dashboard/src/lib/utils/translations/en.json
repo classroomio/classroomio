@@ -855,7 +855,7 @@
         "theme": "Choose a theme",
         "logo": "Brand Logo",
         "to_update": "To update your brand image, go to",
-        "settings": "Settings &gt; Organisation settings",
+        "settings": "Settings > Organisation settings",
         "and_upload": "and upload your brand logo",
         "goto_settings": "Go to Settings",
         "description": "Course Description",
@@ -864,11 +864,17 @@
         "locked": "Locked",
         "unlocked": "Unlocked",
         "save": "Save Changes",
-        "unlocked_certificate": "Certificate is now available",
+        "unlocked_certificate": "Congrats! 🎉 your certificate is ready",
+        "unlocked_certificate_subtitle": "You have completed this course, and your dedication is evident. Download certificate and share with your network as a prove of your newly acquired skill",
         "locked_certificate": "Certificates not available",
         "instructor_unlock": "Your instructor needs to unlock your certificate.",
         "contact_instructor": "If you need your certificate, please contact your instructor.",
-        "download_certificate": "DownLoad Certificate"
+        "download_certificate": "Download Certificate",
+        "complete_to_download_title": "Course not complete 😔",
+        "complete_to_download_subtitle": "Your certificate will be available once you complete all lesson and exercises in this course",
+        "description_error": "Description cannot exceed 200 characters",
+        "characters": "characters",
+        "unexpected_error": "An unexpected error occurred"
       },
 
       "landing_page": {

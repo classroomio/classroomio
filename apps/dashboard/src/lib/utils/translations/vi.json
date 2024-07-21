@@ -409,11 +409,17 @@
         "locked": "Đã khóa",
         "unlocked": "Đã mở khóa",
         "save": "Lưu thay đổi",
-        "unlocked_certificate": "Chứng chỉ hiện có sẵn",
         "locked_certificate": "Chứng chỉ không có sẵn",
         "instructor_unlock": "Người hướng dẫn của bạn cần mở khóa chứng chỉ của bạn.",
         "contact_instructor": "Nếu bạn cần chứng chỉ của mình, vui lòng liên hệ với người hướng dẫn của bạn.",
-        "download_certificate": "Tải xuống chứng chỉ"
+        "download_certificate": "Tải xuống chứng chỉ",
+        "unlocked_certificate": "Chúc mừng! 🎉 chứng chỉ của bạn đã sẵn sàng",
+        "unlocked_certificate_subtitle": "Bạn đã hoàn thành khóa học này và sự cống hiến của bạn là điều hiển nhiên. Tải xuống chứng chỉ và chia sẻ với mạng của bạn như một bằng chứng về kỹ năng mới có được của bạn",
+        "complete_to_download_subtitle": "Chứng chỉ của bạn sẽ có sau khi bạn hoàn thành tất cả bài học và bài tập trong khóa học này",
+        "complete_to_download_title": "Khóa học chưa hoàn thành 😔",
+        "description_error": "Mô tả không thể vượt quá 200 ký tự",
+        "characters": "nhân vật",
+        "unexpected_error": "Đã xảy ra lỗi không mong muốn"
       },
       "people": {
         "title": "Mọi người",

@@ -1,7 +1,5 @@
 {
   "deno.enable": false,
   "deno.lint": false,
-  "deno.unstable": false,
-  "spellright.language": [],
-  "spellright.documentTypes": ["latex", "plaintext"]
+  "deno.unstable": false
 }

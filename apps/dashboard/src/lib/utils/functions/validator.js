@@ -125,6 +125,17 @@ const onboardingValidationSchema = {
   })
 };
 
+const saveCertificateSchema = z.object({
+  description: z.string().max(200, 'course.navItem.certificates.description_error'),
+  is_certificate_downloadable: z.boolean(),
+  certificate_theme: z.string()
+});
+
+export const saveCertificateValidation = (fields = {}) => {
+  const { error } = saveCertificateSchema.safeParse(fields);
+  return processErrors(error);
+};
+
 const updateProfileValidationSchema = z.object({
   email: z.string().email({ message: 'validations.user_profile.email' }),
   username: z.string().nonempty({ message: 'validations.user_profile.username' }),
