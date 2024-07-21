@@ -18,7 +18,7 @@
   import PurpleBadgePattern from './templates/PurpleBadgePattern.svelte';
   import BlueBadgePattern from './templates/BlueBadgePattern.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import { courseValidation } from '$lib/utils/functions/validator';
+  import { saveCertificateValidation } from '$lib/utils/functions/validator';
 
   const studentNamePlaceholder = 'Name of student';
   const themes = [
@@ -40,7 +40,7 @@
     isSaving = true;
 
     try {
-      const result = courseValidation({
+      const result = saveCertificateValidation({
         description: $course.description || '',
         is_certificate_downloadable: $course.is_certificate_downloadable || false,
         certificate_theme: $course.certificate_theme || ''
