@@ -107,7 +107,6 @@ function getPlainTheme({
   courseDescription,
   orgLogoUrl,
   orgName,
-  facilitator,
   dateIssued
 }) {
   const themeBody = `
@@ -170,7 +169,7 @@ function getPurpleProfessionalBadge({
     />
     <div class="absolute w-full pl-20 top-10 z-20">
       <header class="w-full flex justify-start items-center pt-10 gap-3 text-3xl font-bold">
-        <img src="${orgLogoUrl}" />
+        <img src="${orgLogoUrl}" class="w-24 h-24 rounded-md" />
         <h1>${orgName}</h1>
       </header>
 
@@ -224,7 +223,7 @@ function getBlueProfessionalBadge({
     />
     <div class="absolute w-full pl-20 top-10 z-20">
       <header class="w-full flex justify-start items-center pt-10 gap-3 text-3xl font-bold">
-        <img src="${orgLogoUrl}" />
+        <img src="${orgLogoUrl}" class="w-24 h-24 rounded-md" />
         <h1>${orgName}</h1>
       </header>
 
@@ -267,7 +266,6 @@ function getPurpleProfessionalBadgePattern({
   courseDescription,
   orgLogoUrl,
   orgName,
-  facilitator,
   dateIssued
 }) {
   const themeBody = `
@@ -278,7 +276,7 @@ function getPurpleProfessionalBadgePattern({
   />
   <div class="absolute z-20 left-[5%] top-16 w-[90%]">
       <header class="absolute w-full flex justify-center items-center pt-10 gap-3 text-3xl font-bold">
-      <img src="${orgLogoUrl}" alt="" />
+      <img src="${orgLogoUrl}" alt="" class="w-24 h-24 rounded-md" />
       <h1>${orgName}</h1>
     </header>
 
@@ -321,7 +319,6 @@ function getBlueProfessionalBadgePattern({
   courseDescription,
   orgLogoUrl,
   orgName,
-  facilitator,
   dateIssued
 }) {
   const themeBody = `
@@ -332,7 +329,7 @@ function getBlueProfessionalBadgePattern({
     />
     <div class="absolute z-20 left-[5%] top-16 w-[90%]">
       <header class="absolute w-full flex justify-center items-center pt-10 gap-3 text-3xl font-bold">
-        <img src="${orgLogoUrl}" alt="" />
+        <img src="${orgLogoUrl}" alt="" class="w-24 h-24 rounded-md" />
         <h1>${orgName}</h1>
       </header>
 
@@ -394,8 +391,8 @@ const generateCertificate = async ({
   const themeFunctions = {
     plain: getPlainTheme,
     professional: getProfessionalTheme,
-    purpleBadge: getPurpleProfessionalBadge,
-    blueBadge: getBlueProfessionalBadge,
+    purpleProfessionalBadge: getPurpleProfessionalBadge,
+    blueProfessionalBadge: getBlueProfessionalBadge,
     purpleBadgePattern: getPurpleProfessionalBadgePattern,
     blueBadgePattern: getBlueProfessionalBadgePattern
   };

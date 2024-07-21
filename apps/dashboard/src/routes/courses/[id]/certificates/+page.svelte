@@ -32,11 +32,11 @@
     </slot:fragment>
   </PageNav>
 
-  <PageBody className="w-full mx-0" padding="px-3">
+  <PageBody className="w-full mx-0" padding="px-3 pb-10">
     <RoleBasedSecurity allowedRoles={[1, 2]}>
       <Design />
     </RoleBasedSecurity>
-    <RoleBasedSecurity allowedRoles={[3]}>
+    <RoleBasedSecurity onlyStudent>
       <StudentCertificate />
     </RoleBasedSecurity>
 
