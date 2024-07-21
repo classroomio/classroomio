@@ -13,21 +13,18 @@
   import { t } from '$lib/utils/functions/translations';
   import LanguagePicker from './LanguagePicker.svelte';
   import { handleLocaleChange } from '$lib/utils/functions/translations';
-  import { updateProfileEmailValidation } from '$lib/utils/functions/validator';
+  import { updateProfileValidation } from '$lib/utils/functions/validator';
 
   let avatar = '';
   let loading = false;
   let hasLangChanged = false;
   let locale = '';
 
-  let errors = {
-    email: ''
-  }
+  let errors = {};
 
   async function handleUpdate() {
-    errors = updateProfileEmailValidation($profile.email)
-
-    if (Object.values(errors).length) {
+    errors = updateProfileValidation($profile);
+    if (Object.values(errors).some((error) => error)) {
       loading = false;
       return;
     }
@@ -105,17 +102,19 @@
         label={$t('settings.profile.personal_information.full_name')}
         bind:value={$profile.fullname}
         className="w-full lg:w-60 mb-4"
+        errorMessage={$t(errors.fullname)}
       />
       <TextField
         label={$t('settings.profile.personal_information.username')}
         bind:value={$profile.username}
         className="w-full lg:w-60 mb-4"
+        errorMessage={$t(errors.username)}
       />
       <TextField
         label={$t('settings.profile.personal_information.email')}
         bind:value={$profile.email}
         className="w-full lg:w-60 mb-4"
-        errorMessage={errors.email}
+        errorMessage={$t(errors.email)}
       />
       <LanguagePicker bind:hasLangChanged bind:value={locale} className="w-full lg:w-60 mb-4" />
     </Column>
