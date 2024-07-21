@@ -1373,6 +1373,9 @@
     "organization_name": {
       "min_char": "A organização deve conter 5 ou mais caracteres",
       "hyphen_rule": "O nome da organização não pode começar ou terminar com um hífen"
+    },
+    "user_profile": {
+      "email": "Endereço de email invalido"
     }
   },
   "explore": {
@@ -1421,5 +1424,10 @@
       "published": "Publicados",
       "courses": "Cursos"
     }
+  },
+  "search": {
+    "no_courses": "Nenhum curso encontrado",
+    "no_pathway": "Nenhum caminho encontrado",
+    "no_course": "Nenhum curso encontrado"
   }
 }

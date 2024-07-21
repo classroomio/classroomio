@@ -1373,6 +1373,9 @@
     "organization_name": {
       "min_char": "Tổ chức phải chứa 5 ký tự trở lên",
       "hyphen_rule": "Tên tổ chức không thể bắt đầu hoặc kết thúc bằng dấu gạch nối"
+    },
+    "user_profile": {
+      "email": "địa chỉ email không hợp lệ"
     }
   },
   "explore": {
@@ -1421,5 +1424,10 @@
       "published": "Được phát hành",
       "courses": "Khóa học"
     }
+  },
+  "search": {
+    "no_courses": "Không tìm thấy khóa học",
+    "no_pathway": "Không tìm thấy con đường nào",
+    "no_course": "Không tìm thấy khóa học"
   }
 }

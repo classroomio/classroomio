@@ -12,10 +12,12 @@
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import NewPathwayModal from '$lib/components/Org/PathWay/NewPathwayModal.svelte';
-  import Pathway from '$lib/components/Org/PathWay/Pathway.svelte';
+  import Pathways from '$lib/components/Org/PathWay/Pathway.svelte';
+  import type { Pathway } from '$lib/utils/types';
   import { pathwayMetaDeta, pathways } from '$lib/components/Org/PathWay/store';
   import { fetchPathways } from '$lib/components/Org/PathWay/api';
   import { profile } from '$lib/utils/store/user';
+  import { browser } from '$app/environment';
 
   export let data;
 
@@ -23,7 +25,8 @@
   let searchValue = '';
   let selectedId: string = '0';
   let hasFetched = false;
-  let filteredPathway = [];
+  let filteredPathway: Pathway[] = [];
+  let searching = false;
 
   async function getPathway(userId: string | undefined, orgId: string) {
     if (cantFetch && typeof cantFetch === 'boolean' && orgId && !hasFetched) {
@@ -44,6 +47,34 @@
     }
   }
 
+  function filterPathways(searchValue: string, _selectedId: string, pathways: Pathway[]) {
+    if (browser) {
+      if (!selectedId) {
+        selectedId = localStorage.getItem('classroomio_filter_pathway_key') || '0';
+      } else {
+        localStorage.setItem('classroomio_filter_pathway_key', _selectedId);
+      }
+    }
+
+    filteredPathway = pathways.filter((pathway) => {
+      if (!searchValue || pathway.title.toLowerCase().includes(searchValue.toLowerCase())) {
+        return true;
+      }
+      searching = true;
+      return false;
+    });
+
+    if (_selectedId === '0') {
+      filteredPathway = filteredPathway.sort(
+        (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      );
+    } else if (_selectedId === '1') {
+      filteredPathway = filteredPathway.sort((a, b) => b.is_published - a.is_published);
+    } else if (_selectedId === '2') {
+      filteredPathway = filteredPathway.sort((a, b) => b.total_course - a.total_course);
+    }
+  }
+
   const setViewPreference = (preference: 'grid' | 'list') => {
     $pathwayMetaDeta.view = preference;
     localStorage.setItem('pathwayView', preference);
@@ -61,7 +92,7 @@
     }
   });
 
-  // $: filterCourses(searchValue, selectedId, $courses);
+  $: filterPathways(searchValue, selectedId, $pathways);
   $: getPathway($profile.id, $currentOrg.id);
 </script>
 
@@ -116,7 +147,7 @@
     </div>
 
     <NewPathwayModal />
-    <Pathway bind:pathways={$pathways} />
+    <Pathways bind:pathways={filteredPathway} {searching} />
   </div>
 </section>
 

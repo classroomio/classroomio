@@ -1373,6 +1373,9 @@
     "organization_name": {
       "min_char": "Die Organisation muss 5 oder mehr Zeichen enthalten",
       "hyphen_rule": "Der Name der Organisation darf nicht mit einem Bindestrich beginnen oder enden"
+    },
+    "user_profile": {
+      "email": "Ungültige E-Mail-Adresse"
     }
   },
   "explore": {
@@ -1421,5 +1424,10 @@
       "published": "Veröffentlicht",
       "courses": "Kurse"
     }
+  },
+  "search": {
+    "no_courses": "Kein Kurs gefunden",
+    "no_pathway": "Kein Weg gefunden",
+    "no_course": "Kein Kurs gefunden"
   }
 }

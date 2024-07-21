@@ -497,6 +497,11 @@
     }
   },
 
+  "search": {
+    "no_course": "No course found",
+    "no_pathway": "No pathway found"
+  },
+
   "course": {
     "navItems": {
       "nav_news_feed": "News Feed",

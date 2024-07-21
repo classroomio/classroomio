@@ -38,8 +38,6 @@
         .insert({ name: title, description, organization_id: $currentOrg.id })
         .select();
 
-      console.log(`newGroup`, newGroup);
-
       if (!newGroup) return;
 
       const { id: group_id } = newGroup[0];
@@ -77,7 +75,6 @@
         group_id,
         role_id: ROLE.TUTOR
       });
-
       // onClose(`/pathways/${newPathway.id}`);
       onClose($page.url.pathname);
       snackbar.success('Pathway created succesfully');

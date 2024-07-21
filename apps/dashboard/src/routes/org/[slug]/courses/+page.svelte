@@ -27,6 +27,7 @@
   let selectedId: string;
   let filteredCourses: Course[];
   let hasFetched = false;
+  let searching = false;
 
   async function getCourses(userId: string | undefined, orgId: string) {
     if (cantFetch && typeof cantFetch === 'boolean' && orgId && !hasFetched) {
@@ -60,7 +61,7 @@
       if (!searchValue || course.title.toLowerCase().includes(searchValue.toLowerCase())) {
         return true;
       }
-
+      searching = true;
       return false;
     });
 
@@ -147,7 +148,7 @@
     </div>
 
     <NewCourseModal />
-    <Courses bind:courses={filteredCourses} />
+    <Courses bind:courses={filteredCourses} {searching} />
   </div>
 </section>
 

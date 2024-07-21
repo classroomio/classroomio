@@ -22,6 +22,7 @@
   import { pathwayMetaDeta } from './store';
 
   export let pathways: Pathway[] = [];
+  export let searching = false;
 
   const openNewPathwayModal = () => {
     goto($currentOrgPath + '/pathway?new_pathway=true');
@@ -90,17 +91,21 @@
   {#if !$pathwayMetaDeta.isLoading && !pathways.length}
     <Box className="w-full">
       <PathwayEmptyIcon />
-      <h3 class="dark:text-white text-2xl my-5">{$t('pathway.empty_title')}</h3>
-      <p class="dark:text-white w-1/3 text-center mb-5">
-        {$t('pathway.empty_description')}
-      </p>
-      <PrimaryButton
-        variant={VARIANTS.OUTLINED}
-        className="font-normal text-sm px-4 w-fit"
-        onClick={openNewPathwayModal}
-      >
-        {$t('pathway.heading_button')}
-      </PrimaryButton>
+      {#if searching}
+        <h3 class="dark:text-white text-2xl my-5">{$t('search.no_pathway')}</h3>
+      {:else}
+        <h3 class="dark:text-white text-2xl my-5">{$t('pathway.empty_title')}</h3>
+        <p class="dark:text-white w-1/3 text-center mb-5">
+          {$t('pathway.empty_description')}
+        </p>
+        <PrimaryButton
+          variant={VARIANTS.OUTLINED}
+          className="font-normal text-sm px-4 w-fit"
+          onClick={openNewPathwayModal}
+        >
+          {$t('pathway.heading_button')}
+        </PrimaryButton>
+      {/if}
     </Box>
   {/if}
 </div>
