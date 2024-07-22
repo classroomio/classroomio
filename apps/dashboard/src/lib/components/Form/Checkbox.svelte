@@ -9,6 +9,7 @@
   export let disabled = false;
   export let className = '';
   export let onChange;
+  export let onInputChange = (e) => {};
 </script>
 
 <label
@@ -23,6 +24,7 @@
     {value}
     disabled={disabled || isEditable}
     bind:checked
+    on:change={(e) => onInputChange(e)}
   />
   {#if isEditable}
     <div class="w-2/4">

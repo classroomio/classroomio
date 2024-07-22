@@ -413,5 +413,6 @@ export interface Pathway {
   is_published: boolean,
   lms_certificate: boolean,
   courses_certificate: string,
-  courses: PathwayCourse[]
+  courses: PathwayCourse[],
+  selectedCourses: PathwayCourse[],
 }

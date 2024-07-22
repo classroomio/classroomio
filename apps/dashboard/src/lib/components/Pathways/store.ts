@@ -2,6 +2,10 @@ import { writable } from "svelte/store";
 import type { Writable } from 'svelte/store';
 import type { Pathway } from "$lib/utils/types";
 
+export const addCourseModal = writable({
+  open: false,
+});
+
 export const pathway: Writable<Pathway> = writable({
   slug: '',
   title: '',
@@ -67,5 +71,6 @@ export const pathway: Writable<Pathway> = writable({
       is_completed: false,
       is_published: true
     },
-  ]
+  ],
+  selectedCourses: []
 });

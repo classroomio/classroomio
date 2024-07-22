@@ -17,12 +17,13 @@
   import { t } from '$lib/utils/functions/translations';
   import { isMobile } from '$lib/utils/store/useMobile';
 
-  import { pathway } from '$lib/components/Pathways/store';
+  import { addCourseModal, pathway } from '$lib/components/Pathways/store';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import CourseCard from '$lib/components/Pathways/components/CourseCard.svelte';
   import PathwayContainer from '$lib/components/Pathways/components/PathwayContainer.svelte';
+  import AddCourseModal from '$lib/components/Pathways/components/AddCourseModal.svelte';
 
   let searchValue: string = '';
   let selectedId: string = '1';
@@ -42,21 +43,22 @@
 </script>
 
 <PathwayContainer border={false} maxHeight={false} className="w-full h-auto max-w-[90%] mx-auto">
-  <!-- header -->
+  <AddCourseModal />
 
+  <!-- header -->
   <div class="flex items-center justify-between">
     <h1>{$t('pathways.pages.course.title')}</h1>
 
     <div class="flex gap-5 justify-end">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
         {#if $isMobile}
-          <PrimaryButton onClick={() => console.log('Add Course')}>
+          <PrimaryButton onClick={() => ($addCourseModal.open = true)}>
             <Add size={24} />
           </PrimaryButton>
         {:else}
           <PrimaryButton
             label={$t('pathways.pages.course.add_course')}
-            onClick={() => console.log('Add Course')}
+            onClick={() => ($addCourseModal.open = true)}
           />
         {/if}
       </RoleBasedSecurity>
