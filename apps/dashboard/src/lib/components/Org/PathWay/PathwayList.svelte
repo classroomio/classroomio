@@ -42,7 +42,7 @@
   }
 </script>
 
-<StructuredListRow label for="row-{id}" on:click={() => goto(`/pathway/${id}`)}>
+<StructuredListRow label for="row-{id}" on:click={() => goto(`/pathways/${id}`)}>
   <StructuredListCell><p class="font-semibold">{title}</p></StructuredListCell>
   <StructuredListCell>
     <p class="line-clamp-2">{description}</p>
