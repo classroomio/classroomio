@@ -3,10 +3,10 @@
 
   export let id: string;
   export let title: string;
-  export let avatar: string;
+  export let banner_image: string;
   export let description: string;
-  export let lessonNumber: number;
-  export let studentNumber: number;
+  export let total_lessons: number;
+  export let total_students: number;
 </script>
 
 <a
@@ -15,7 +15,7 @@
 >
   <div class="max-h-2/4 overflow-hidden">
     <img
-      src={avatar}
+      src={banner_image ? banner_image : '/images/org-landingpage-our-story.jpeg'}
       alt="Course"
       class="h-full w-full object-cover hover:scale-125 transition-all duration-300"
     />
@@ -25,8 +25,8 @@
     {description}
   </p>
   <div class="md:text-xs border-t mt-2 py-2 flex justify-between font-medium">
-    <span>{lessonNumber} {$t('pathways.components.courseCard.lessons')}</span>
-    <span>{studentNumber} {$t('pathways.components.courseCard.students')}</span>
+    <span>{total_lessons} {$t('pathways.components.courseCard.lessons')}</span>
+    <span>{total_students} {$t('pathways.components.courseCard.students')}</span>
   </div>
 </a>
 

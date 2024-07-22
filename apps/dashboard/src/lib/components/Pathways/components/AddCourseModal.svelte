@@ -7,9 +7,13 @@
     StructuredListRow
   } from 'carbon-components-svelte';
 
-  import { addCourseModal, pathway } from '../store';
+  import { profile } from '$lib/utils/store/user';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { addCourseModal, pathway, courses } from '../store';
+
   import type { PathwayCourse } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
+  import { fetchCourses } from '$lib/components/Courses/api';
 
   import Tabs from '$lib/components/Tabs/index.svelte';
   import Modal from '$lib/components/Modal/index.svelte';
@@ -18,6 +22,7 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   let group: PathwayCourse[] = [];
+  let Courses;
   let searchValue = '';
 
   const onChange = (tab) => {
@@ -32,10 +37,14 @@
 
   function handleSave() {
     pathway.update((p) => {
-      p.selectedCourses = group;
+      const existingCoursesMap = new Map(p.courses.map((course) => [course.id, course]));
+      group.forEach((course) => existingCoursesMap.set(course.id, course));
+      p.courses = Array.from(existingCoursesMap.values());
+
       return p;
     });
     $addCourseModal.open = false;
+    console.log('pathway', $pathway);
   }
 
   function toggleCourseSelection(course: PathwayCourse, checked: boolean) {
@@ -46,7 +55,16 @@
     }
   }
 
-  $: filteredCourses = $pathway.courses.filter((course) =>
+  async function fetchCourse(userId?: string, orgId?: string) {
+    Courses = await fetchCourses(userId, orgId);
+    if (!Courses) return;
+
+    courses.set(Courses.allCourses);
+  }
+
+  $: fetchCourse($profile.id, $currentOrg.id);
+
+  $: filteredCourses = $courses.filter((course) =>
     course.title.toLowerCase().includes(searchValue.toLowerCase())
   );
 
@@ -99,23 +117,25 @@
                 {#each filteredCourses as course}
                   <StructuredListRow>
                     <StructuredListCell>
-                      <div class="flex items-center text-left gap-4">
-                        <Checkbox
-                          label=""
-                          name={course.title}
-                          className="w-2"
-                          value={course.id}
-                          checked={group.includes(course)}
-                          onInputChange={(e) => toggleCourseSelection(course, e.target?.checked)}
-                        />
-                        <p class="font-semibold text-black dark:text-white">
+                      <div class="flex items-center">
+                        <div class="flex justify-center items-center">
+                          <Checkbox
+                            label=""
+                            name={course.title}
+                            className="cursor-pointer"
+                            value={course.id}
+                            checked={group.includes(course)}
+                            onInputChange={(e) => toggleCourseSelection(course, e.target?.checked)}
+                          />
+                        </div>
+                        <p class="font-semibold w-full text-black dark:text-white">
                           {course.title}
                         </p>
                       </div>
                     </StructuredListCell>
                     <StructuredListCell>{course.description}</StructuredListCell>
-                    <StructuredListCell>{course.lessonNumber}</StructuredListCell>
-                    <StructuredListCell>{course.studentNumber}</StructuredListCell>
+                    <StructuredListCell>{course.total_lessons}</StructuredListCell>
+                    <StructuredListCell>{course.total_students}</StructuredListCell>
                   </StructuredListRow>
                 {/each}
               </StructuredListBody>
@@ -127,23 +147,25 @@
                 {#each filteredPickedCourses as course}
                   <StructuredListRow>
                     <StructuredListCell>
-                      <div class="flex items-center text-left gap-4">
-                        <Checkbox
-                          label=""
-                          name={course.title}
-                          className="w-2"
-                          value={course.id}
-                          checked={true}
-                          onInputChange={(e) => toggleCourseSelection(course, e.target?.checked)}
-                        />
+                      <div class="flex items-center">
+                        <div class="flex justify-center items-center">
+                          <Checkbox
+                            label=""
+                            name={course.title}
+                            className="cursor-pointer"
+                            value={course.id}
+                            checked={true}
+                            onInputChange={(e) => toggleCourseSelection(course, e.target?.checked)}
+                          />
+                        </div>
                         <p class="font-semibold text-black dark:text-white">
                           {course.title}
                         </p>
-                      </div>
-                    </StructuredListCell>
+                      </div></StructuredListCell
+                    >
                     <StructuredListCell>{course.description}</StructuredListCell>
-                    <StructuredListCell>{course.lessonNumber}</StructuredListCell>
-                    <StructuredListCell>{course.studentNumber}</StructuredListCell>
+                    <StructuredListCell>{course.total_lessons}</StructuredListCell>
+                    <StructuredListCell>{course.total_students}</StructuredListCell>
                   </StructuredListRow>
                 {/each}
               </StructuredListBody>

@@ -394,11 +394,11 @@ interface Tabs {
 
 export interface PathwayCourse {
   id: string;
-  avatar: string;
+  banner_image: string;
   title: string;
   description: string;
-  lessonNumber: number;
-  studentNumber: number;
+  total_lessons: number;
+  total_students: number;
   is_unlocked: boolean;
   is_completed: boolean;
   is_published: boolean;

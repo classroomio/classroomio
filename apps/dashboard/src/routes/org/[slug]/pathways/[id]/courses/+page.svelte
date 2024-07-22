@@ -120,12 +120,8 @@
                   </p></StructuredListCell
                 >
                 <StructuredListCell>{course.description}</StructuredListCell>
-                <StructuredListCell>
-                  {course.studentNumber}
-                </StructuredListCell>
-                <StructuredListCell>
-                  {course.lessonNumber}
-                </StructuredListCell>
+                <StructuredListCell>{course.total_lessons}</StructuredListCell>
+                <StructuredListCell>{course.total_students}</StructuredListCell>
               </StructuredListRow>
             {/each}
           </StructuredListBody>
