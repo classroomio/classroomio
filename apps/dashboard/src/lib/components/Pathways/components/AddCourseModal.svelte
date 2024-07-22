@@ -56,11 +56,11 @@
 
   $: tabs = [
     {
-      label: `All Courses`,
+      label: $t('pathways.components.addCourseModal.all_courses'),
       value: '1'
     },
     {
-      label: `Picked Courses`,
+      label: $t('pathways.components.addCourseModal.picked_courses'),
       value: '2'
     }
   ];
@@ -74,7 +74,7 @@
   width="w-3/5"
   showSearchBar={true}
   bind:value={searchValue}
-  modalHeading="Add Course to Learning Path"
+  modalHeading={$t('pathways.components.addCourseModal.modal_heading')}
 >
   <main>
     <Tabs tabSpacing="gap-14" {tabs} {currentTab} {onChange} alignCenter={true}>
@@ -152,9 +152,11 @@
 
           <div class="flex justify-end">
             <PrimaryButton
-              label={`Add ${group.length} ${
-                group.length === 1 ? 'Course' : 'Courses'
-              } to Learning Path`}
+              label={`${$t('pathways.components.addCourseModal.add')} ${group.length} ${
+                group.length === 1
+                  ? $t('pathways.components.addCourseModal.course')
+                  : $t('pathways.components.addCourseModal.courses')
+              } ${$t('pathways.components.addCourseModal.path')}`}
               onClick={handleSave}
             />
           </div>

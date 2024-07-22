@@ -1371,6 +1371,9 @@
     "organization_name": {
       "min_char": "Die Organisation muss 5 oder mehr Zeichen enthalten",
       "hyphen_rule": "Der Name der Organisation darf nicht mit einem Bindestrich beginnen oder enden"
+    },
+    "user_profile": {
+      "email": "Ungültige E-Mail-Adresse"
     }
   },
   "explore": {
@@ -1391,6 +1394,15 @@
       "courseCard": {
         "lessons": "Unterricht",
         "students": "Studenten"
+      },
+      "addCourseModal": {
+        "all_courses": "Alle Kurse",
+        "picked_courses": "Ausgewählte Kurse",
+        "modal_heading": "Kurs zum Lernpfad hinzufügen",
+        "add": "Hinzufügen",
+        "course": "Kurs",
+        "courses": "Kurse",
+        "path": "zum Lernpfad"
       }
     },
     "pages": {

@@ -1371,6 +1371,9 @@
     "organization_name": {
       "min_char": "Tổ chức phải chứa 5 ký tự trở lên",
       "hyphen_rule": "Tên tổ chức không thể bắt đầu hoặc kết thúc bằng dấu gạch nối"
+    },
+    "user_profile": {
+      "email": "địa chỉ email không hợp lệ"
     }
   },
   "explore": {
@@ -1391,6 +1394,15 @@
       "courseCard": {
         "lessons": "Những bài học",
         "students": "sinh viên"
+      },
+      "addCourseModal": {
+        "all_courses": "Tất cả các khóa học",
+        "picked_courses": "Các khóa học đã chọn",
+        "modal_heading": "Thêm khóa học vào lộ trình học tập",
+        "add": "Thêm vào",
+        "course": "Khóa học",
+        "courses": "Khóa học",
+        "path": "đến lộ trình học tập"
       }
     },
     "pages": {

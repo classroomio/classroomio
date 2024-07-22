@@ -1371,6 +1371,9 @@
     "organization_name": {
       "min_char": "संगठन में 5 या अधिक वर्ण होने चाहिए",
       "hyphen_rule": "संगठन का नाम हाइफ़न से प्रारंभ या समाप्त नहीं हो सकता"
+    },
+    "user_profile": {
+      "email": "अमान्य ईमेल पता"
     }
   },
   "explore": {
@@ -1391,6 +1394,15 @@
       "courseCard": {
         "lessons": "पाठ",
         "students": "छात्र"
+      },
+      "addCourseModal": {
+        "all_courses": "सभी पाठ्यक्रम",
+        "picked_courses": "चयनित पाठ्यक्रम",
+        "modal_heading": "सीखने के पथ में पाठ्यक्रम जोड़ें",
+        "add": "जोड़ना",
+        "course": "अवधि",
+        "courses": "पाठ्यक्रम",
+        "path": "सीखने के पथ के लिए"
       }
     },
     "pages": {

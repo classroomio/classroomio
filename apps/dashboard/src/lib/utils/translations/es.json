@@ -1371,6 +1371,9 @@
     "organization_name": {
       "min_char": "La organización debe contener 5 o más caracteres.",
       "hyphen_rule": "El nombre de la organización no puede comenzar ni terminar con un guión."
+    },
+    "user_profile": {
+      "email": "Dirección de correo electrónico no válida"
     }
   },
   "explore": {
@@ -1391,6 +1394,15 @@
       "courseCard": {
         "lessons": "lecciones",
         "students": "estudiantes"
+      },
+      "addCourseModal": {
+        "all_courses": "Todos los cursos",
+        "picked_courses": "Cursos elegidos",
+        "modal_heading": "Agregar curso a la ruta de aprendizaje",
+        "add": "Agregar",
+        "course": "Curso",
+        "courses": "Cursos",
+        "path": "al camino del aprendizaje"
       }
     },
     "pages": {

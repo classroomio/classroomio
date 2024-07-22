@@ -1371,6 +1371,9 @@
     "organization_name": {
       "min_char": "L'organisation doit contenir 5 caractères ou plus",
       "hyphen_rule": "Le nom de l'organisation ne peut pas commencer ou se terminer par un trait d'union"
+    },
+    "user_profile": {
+      "email": "Adresse e-mail invalide"
     }
   },
   "explore": {
@@ -1391,6 +1394,15 @@
       "courseCard": {
         "lessons": "cours",
         "students": "étudiants"
+      },
+      "addCourseModal": {
+        "all_courses": "Tous les cours",
+        "picked_courses": "Cours choisis",
+        "modal_heading": "Ajouter un cours au parcours d'apprentissage",
+        "add": "Ajouter",
+        "course": "Cours",
+        "courses": "Cours",
+        "path": "au parcours d'apprentissage"
       }
     },
     "pages": {
