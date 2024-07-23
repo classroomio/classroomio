@@ -16,14 +16,16 @@
 
   import { t } from '$lib/utils/functions/translations';
   import { isMobile } from '$lib/utils/store/useMobile';
-
   import { addCourseModal, pathway } from '$lib/components/Pathways/store';
+
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import CourseCard from '$lib/components/Pathways/components/CourseCard.svelte';
   import PathwayContainer from '$lib/components/Pathways/components/PathwayContainer.svelte';
   import AddCourseModal from '$lib/components/Pathways/components/AddCourseModal.svelte';
+  import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
 
   let searchValue: string = '';
   let selectedId: string = '1';
@@ -33,6 +35,12 @@
     coursePreference = preference;
     localStorage.setItem('pathwayCourseView', coursePreference);
   };
+
+  // opens the order section of the modal
+  function orderCourses() {
+    $addCourseModal.step = 1;
+    $addCourseModal.open = true;
+  }
 
   // Computed property to filter courses based on the search value
   $: filteredCourses = $pathway.courses.filter(
@@ -52,19 +60,27 @@
     <div class="flex gap-5 justify-end">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
         {#if $isMobile}
-          <PrimaryButton onClick={() => ($addCourseModal.open = true)}>
+          <PrimaryButton
+            onClick={() => {
+              $addCourseModal.open = true;
+              $addCourseModal.step = 0;
+            }}
+          >
             <Add size={24} />
           </PrimaryButton>
         {:else}
           <PrimaryButton
             label={$t('pathways.pages.course.add_course')}
-            onClick={() => ($addCourseModal.open = true)}
+            onClick={() => {
+              $addCourseModal.open = true;
+              $addCourseModal.step = 0;
+            }}
           />
         {/if}
       </RoleBasedSecurity>
       <OverflowMenu flipped>
         <OverflowMenuItem text={$t('pathways.pages.course.add_remove')} />
-        <OverflowMenuItem text={$t('pathways.pages.course.order')} />
+        <OverflowMenuItem text={$t('pathways.pages.course.order')} on:click={orderCourses} />
         <OverflowMenuItem text={$t('pathways.pages.course.publish')} />
       </OverflowMenu>
     </div>
@@ -99,40 +115,66 @@
 
   <!-- body -->
   <div>
-    {#if coursePreference === 'list'}
-      <div class="max-w overflow-x-auto">
-        <StructuredList>
-          <StructuredListHead>
-            <StructuredListRow head>
-              <StructuredListCell head>{$t('pathways.pages.course.body_title')}</StructuredListCell>
-              <StructuredListCell head>{$t('pathways.pages.course.description')}</StructuredListCell
-              >
-              <StructuredListCell head>{$t('pathways.pages.course.students')}</StructuredListCell>
-              <StructuredListCell head>{$t('pathways.pages.course.lessons')}</StructuredListCell>
-            </StructuredListRow>
-          </StructuredListHead>
-          <StructuredListBody>
-            {#each filteredCourses as course}
-              <StructuredListRow>
-                <StructuredListCell noWrap
-                  ><p class="font-semibold text-black dark:text-white">
-                    {course.title}
-                  </p></StructuredListCell
+    {#if filteredCourses.length > 0}
+      {#if coursePreference === 'list'}
+        <div class="max-w overflow-x-auto">
+          <StructuredList>
+            <StructuredListHead>
+              <StructuredListRow head>
+                <StructuredListCell head
+                  >{$t('pathways.pages.course.body_title')}</StructuredListCell
                 >
-                <StructuredListCell>{course.description}</StructuredListCell>
-                <StructuredListCell>{course.total_lessons}</StructuredListCell>
-                <StructuredListCell>{course.total_students}</StructuredListCell>
+                <StructuredListCell head
+                  >{$t('pathways.pages.course.description')}</StructuredListCell
+                >
+                <StructuredListCell head>{$t('pathways.pages.course.students')}</StructuredListCell>
+                <StructuredListCell head>{$t('pathways.pages.course.lessons')}</StructuredListCell>
               </StructuredListRow>
-            {/each}
-          </StructuredListBody>
-        </StructuredList>
-      </div>
+            </StructuredListHead>
+            <StructuredListBody>
+              {#each filteredCourses as course}
+                <StructuredListRow>
+                  <StructuredListCell noWrap
+                    ><p class="font-semibold text-black dark:text-white">
+                      {course.title}
+                    </p></StructuredListCell
+                  >
+                  <StructuredListCell>{course.description}</StructuredListCell>
+                  <StructuredListCell>{course.total_lessons}</StructuredListCell>
+                  <StructuredListCell>{course.total_students}</StructuredListCell>
+                </StructuredListRow>
+              {/each}
+            </StructuredListBody>
+          </StructuredList>
+        </div>
+      {:else}
+        <section class="flex flex-wrap gap-10 h-full mt-10">
+          {#each filteredCourses as course}
+            <CourseCard {...course} />
+          {/each}
+        </section>
+      {/if}
     {:else}
-      <section class="flex flex-wrap gap-10 h-full mt-10">
-        {#each filteredCourses as course}
-          <CourseCard {...course} />
-        {/each}
-      </section>
+      <!-- empty course state -->
+      <div
+        class="flex flex-col justify-center gap-3 items-center border rounded-md mt-5 px-10 text-center h-[60vh]"
+      >
+        <div class="scale-[5]">
+          <CourseIcon color="#0233BD" />
+        </div>
+        <span class="mt-10 font-medium text-lg"
+          >{$t('pathways.pages.course.empty_state_header')}</span
+        >
+        <p>{$t('pathways.pages.course.empty_state_text')}</p>
+
+        <div class="flex justify-center">
+          <PrimaryButton
+            variant={VARIANTS.OUTLINED}
+            label={$t('pathways.pages.course.empty_state_label')}
+            onClick={() => ($addCourseModal.open = true)}
+          />
+        </div>
+      </div>
     {/if}
   </div>
 </PathwayContainer>

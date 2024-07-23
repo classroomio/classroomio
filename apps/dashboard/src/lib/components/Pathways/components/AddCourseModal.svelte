@@ -9,7 +9,7 @@
 
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
-  import { addCourseModal, pathway, courses } from '../store';
+  import { addCourseModal, courses } from '../store';
 
   import type { PathwayCourse } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
@@ -20,6 +20,7 @@
   import Checkbox from '$lib/components/Form/Checkbox.svelte';
   import TabContent from '$lib/components/TabContent/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import DragAndDropModal from './DragAndDropModal.svelte';
 
   let group: PathwayCourse[] = [];
   let Courses;
@@ -33,18 +34,15 @@
 
   function close() {
     $addCourseModal.open = false;
+    $addCourseModal.step = 0;
+  }
+
+  function updateGroup(e) {
+    group = e.detail;
   }
 
   function handleSave() {
-    pathway.update((p) => {
-      const existingCoursesMap = new Map(p.courses.map((course) => [course.id, course]));
-      group.forEach((course) => existingCoursesMap.set(course.id, course));
-      p.courses = Array.from(existingCoursesMap.values());
-
-      return p;
-    });
-    $addCourseModal.open = false;
-    console.log('pathway', $pathway);
+    $addCourseModal.step = 1;
   }
 
   function toggleCourseSelection(course: PathwayCourse, checked: boolean) {
@@ -91,99 +89,114 @@
   bind:open={$addCourseModal.open}
   width="w-3/5"
   showSearchBar={true}
+  backButton={$addCourseModal.step === 1 && true}
+  buttonColor="blue"
+  buttonOnClick={() => ($addCourseModal.step = 0)}
   bind:value={searchValue}
-  modalHeading={$t('pathways.components.addCourseModal.modal_heading')}
+  modalHeading={$addCourseModal.step === 0
+    ? $t('pathways.components.addCourseModal.modal_heading')
+    : $t('pathways.components.dragAndDrop.title')}
 >
   <main>
-    <Tabs tabSpacing="gap-14" {tabs} {currentTab} {onChange} alignCenter={true}>
-      <slot:fragment slot="content">
-        <div class="max-w overflow-x-auto">
-          <StructuredList>
-            <StructuredListHead>
-              <StructuredListRow head>
-                <StructuredListCell head
-                  >{$t('pathways.pages.course.body_title')}</StructuredListCell
-                >
-                <StructuredListCell head
-                  >{$t('pathways.pages.course.description')}</StructuredListCell
-                >
-                <StructuredListCell head>{$t('pathways.pages.course.lessons')}</StructuredListCell>
-                <StructuredListCell head>{$t('pathways.pages.course.students')}</StructuredListCell>
-              </StructuredListRow>
-            </StructuredListHead>
-            <!--  -->
-            <TabContent value={tabs[0].value} index={currentTab}>
-              <StructuredListBody>
-                {#each filteredCourses as course}
-                  <StructuredListRow>
-                    <StructuredListCell>
-                      <div class="flex items-center">
-                        <div class="flex justify-center items-center">
-                          <Checkbox
-                            label=""
-                            name={course.title}
-                            className="cursor-pointer"
-                            value={course.id}
-                            checked={group.includes(course)}
-                            onInputChange={(e) => toggleCourseSelection(course, e.target?.checked)}
-                          />
-                        </div>
-                        <p class="font-semibold w-full text-black dark:text-white">
-                          {course.title}
-                        </p>
-                      </div>
-                    </StructuredListCell>
-                    <StructuredListCell>{course.description}</StructuredListCell>
-                    <StructuredListCell>{course.total_lessons}</StructuredListCell>
-                    <StructuredListCell>{course.total_students}</StructuredListCell>
-                  </StructuredListRow>
-                {/each}
-              </StructuredListBody>
-            </TabContent>
+    {#if $addCourseModal.step === 0}
+      <Tabs tabSpacing="gap-14" {tabs} {currentTab} {onChange} alignCenter={true}>
+        <slot:fragment slot="content">
+          <div class="max-w overflow-x-auto">
+            <StructuredList>
+              <StructuredListHead>
+                <StructuredListRow head>
+                  <StructuredListCell head
+                    >{$t('pathways.pages.course.body_title')}</StructuredListCell
+                  >
+                  <StructuredListCell head
+                    >{$t('pathways.pages.course.description')}</StructuredListCell
+                  >
+                  <StructuredListCell head>{$t('pathways.pages.course.lessons')}</StructuredListCell
+                  >
+                  <StructuredListCell head
+                    >{$t('pathways.pages.course.students')}</StructuredListCell
+                  >
+                </StructuredListRow>
+              </StructuredListHead>
 
-            <!--  -->
-            <TabContent value={tabs[1].value} index={currentTab}>
-              <StructuredListBody>
-                {#each filteredPickedCourses as course}
-                  <StructuredListRow>
-                    <StructuredListCell>
-                      <div class="flex items-center">
-                        <div class="flex justify-center items-center">
-                          <Checkbox
-                            label=""
-                            name={course.title}
-                            className="cursor-pointer"
-                            value={course.id}
-                            checked={true}
-                            onInputChange={(e) => toggleCourseSelection(course, e.target?.checked)}
-                          />
+              <!--  -->
+              <TabContent value={tabs[0].value} index={currentTab}>
+                <StructuredListBody>
+                  {#each filteredCourses as course}
+                    <StructuredListRow>
+                      <StructuredListCell>
+                        <div class="flex items-center">
+                          <div class="flex justify-center items-center">
+                            <Checkbox
+                              label=""
+                              name={course.title}
+                              className="cursor-pointer"
+                              value={course.id}
+                              checked={group.includes(course)}
+                              onInputChange={(e) =>
+                                toggleCourseSelection(course, e.target?.checked)}
+                            />
+                          </div>
+                          <p class="font-semibold w-full text-black dark:text-white">
+                            {course.title}
+                          </p>
                         </div>
-                        <p class="font-semibold text-black dark:text-white">
-                          {course.title}
-                        </p>
-                      </div></StructuredListCell
-                    >
-                    <StructuredListCell>{course.description}</StructuredListCell>
-                    <StructuredListCell>{course.total_lessons}</StructuredListCell>
-                    <StructuredListCell>{course.total_students}</StructuredListCell>
-                  </StructuredListRow>
-                {/each}
-              </StructuredListBody>
-            </TabContent>
-          </StructuredList>
+                      </StructuredListCell>
+                      <StructuredListCell>{course.description}</StructuredListCell>
+                      <StructuredListCell>{course.total_lessons}</StructuredListCell>
+                      <StructuredListCell>{course.total_students}</StructuredListCell>
+                    </StructuredListRow>
+                  {/each}
+                </StructuredListBody>
+              </TabContent>
 
-          <div class="flex justify-end">
-            <PrimaryButton
-              label={`${$t('pathways.components.addCourseModal.add')} ${group.length} ${
-                group.length === 1
-                  ? $t('pathways.components.addCourseModal.course')
-                  : $t('pathways.components.addCourseModal.courses')
-              } ${$t('pathways.components.addCourseModal.path')}`}
-              onClick={handleSave}
-            />
+              <!--  -->
+              <TabContent value={tabs[1].value} index={currentTab}>
+                <StructuredListBody>
+                  {#each filteredPickedCourses as course}
+                    <StructuredListRow>
+                      <StructuredListCell>
+                        <div class="flex items-center">
+                          <div class="flex justify-center items-center">
+                            <Checkbox
+                              label=""
+                              name={course.title}
+                              className="cursor-pointer"
+                              value={course.id}
+                              checked={true}
+                              onInputChange={(e) =>
+                                toggleCourseSelection(course, e.target?.checked)}
+                            />
+                          </div>
+                          <p class="font-semibold text-black dark:text-white">
+                            {course.title}
+                          </p>
+                        </div></StructuredListCell
+                      >
+                      <StructuredListCell>{course.description}</StructuredListCell>
+                      <StructuredListCell>{course.total_lessons}</StructuredListCell>
+                      <StructuredListCell>{course.total_students}</StructuredListCell>
+                    </StructuredListRow>
+                  {/each}
+                </StructuredListBody>
+              </TabContent>
+            </StructuredList>
+
+            <div class="flex justify-end">
+              <PrimaryButton
+                label={`${$t('pathways.components.addCourseModal.add')} ${group.length} ${
+                  group.length === 1
+                    ? $t('pathways.components.addCourseModal.course')
+                    : $t('pathways.components.addCourseModal.courses')
+                } ${$t('pathways.components.addCourseModal.path')}`}
+                onClick={handleSave}
+              />
+            </div>
           </div>
-        </div>
-      </slot:fragment>
-    </Tabs>
+        </slot:fragment>
+      </Tabs>
+    {:else if $addCourseModal.step === 1}
+      <DragAndDropModal bind:group on:update={updateGroup} />
+    {/if}
   </main>
 </Modal>

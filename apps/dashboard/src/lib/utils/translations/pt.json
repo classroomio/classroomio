@@ -1403,6 +1403,11 @@
         "course": "Curso",
         "courses": "Cursos",
         "path": "para o caminho de aprendizagem"
+      },
+      "dragAndDrop": {
+        "title": "Organizar cursos",
+        "header": "Organize o curso na sequência que o aluno deve fazer, começando com o primeiro no topo",
+        "label": "Confirmar pedido do curso"
       }
     },
     "pages": {
@@ -1448,7 +1453,10 @@
         "body_title": "Título",
         "description": "Descrição",
         "students": "Alunos",
-        "lessons": "Lições"
+        "lessons": "Lições",
+        "empty_state_header": "Ainda não há cursos",
+        "empty_state_text": "Você não adicionou nenhum curso a este caminho de aprendizagem",
+        "empty_state_label": "Adicionar curso a este caminho de aprendizagem"
       }
     }
   }

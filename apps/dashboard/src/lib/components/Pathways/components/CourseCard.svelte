@@ -11,7 +11,7 @@
 
 <a
   href="/courses/{id}"
-  class="border rounded-md cursor-pointer no-underline min-w-[250px] md:max-w-[28%] h-full w-full p-2.5"
+  class="border rounded-md cursor-pointer no-underline min-w-[250px] md:max-w-[28%] h-fit w-full p-2.5"
 >
   <div class="max-h-2/4 overflow-hidden">
     <img
