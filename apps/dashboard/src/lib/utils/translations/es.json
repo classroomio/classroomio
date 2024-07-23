@@ -1395,7 +1395,9 @@
       "pathway_name_placeholder": "Conviértete en un diseñador UX profesional",
       "short_description": "Breve descripción",
       "short_description_placeholder": "Un curso de especialización que te inicia como diseñador de ux",
-      "button": "Crear camino"
+      "button": "Crear camino",
+      "success": "Camino creado exitosamente",
+      "error": "Error al crear la ruta"
     },
     "pathway_card": {
       "courses": "cursos",

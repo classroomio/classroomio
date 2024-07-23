@@ -1395,7 +1395,9 @@
       "pathway_name_placeholder": "एक पेशेवर UX डिज़ाइनर बनें",
       "short_description": "संक्षिप्त वर्णन",
       "short_description_placeholder": "एक विशेषज्ञता पाठ्यक्रम जो आपको एक यूएक्स डिजाइनर के रूप में आरंभ करवाता है",
-      "button": "मार्ग बनाएँ"
+      "button": "मार्ग बनाएँ",
+      "success": "पाथवे सफलतापूर्वक बनाया गया",
+      "error": "पाथवे बनाने में त्रुटि"
     },
     "pathway_card": {
       "courses": "पाठ्यक्रम",

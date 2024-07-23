@@ -1395,7 +1395,9 @@
       "pathway_name_placeholder": "Werden Sie ein professioneller UX-Designer",
       "short_description": "kurze Beschreibung",
       "short_description_placeholder": "Ein Spezialisierungskurs, der Ihnen den Einstieg als UX-Designer erleichtert",
-      "button": "Pfad erstellen"
+      "button": "Pfad erstellen",
+      "success": "Pfad erfolgreich erstellt",
+      "error": "Fehler beim Erstellen des Pfads"
     },
     "pathway_card": {
       "courses": "Kurse",

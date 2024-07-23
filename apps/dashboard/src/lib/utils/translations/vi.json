@@ -1395,7 +1395,9 @@
       "pathway_name_placeholder": "Trở thành nhà thiết kế UX chuyên nghiệp",
       "short_description": "Mô tả ngắn",
       "short_description_placeholder": "Khóa học phân biệt giúp bạn bắt đầu trở thành nhà thiết kế ux",
-      "button": "Tạo lộ trình"
+      "button": "Tạo lộ trình",
+      "success": "Đường dẫn được tạo thành công",
+      "error": "Lỗi tạo đường dẫn"
     },
     "pathway_card": {
       "courses": "các khóa học",

@@ -1395,7 +1395,9 @@
       "pathway_name_placeholder": "Devenez un concepteur UX professionnel",
       "short_description": "brève description",
       "short_description_placeholder": "Un cours de spécialisation qui vous permet de démarrer en tant que concepteur ux",
-      "button": "Créer un parcours"
+      "button": "Créer un parcours",
+      "success": "Parcours créé avec succès",
+      "error": "Erreur lors de la création du chemin"
     },
     "pathway_card": {
       "courses": "cours",

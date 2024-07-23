@@ -493,6 +493,8 @@
       "pathway_name_placeholder": "Become a professional UX designer",
       "short_description": "Short Description",
       "short_description_placeholder": "A sepcialization course that gets you started as a ux designer",
+      "success": "Pathway created successfully",
+      "error": "Error creating pathway",
       "button": "Create Pathway"
     }
   },

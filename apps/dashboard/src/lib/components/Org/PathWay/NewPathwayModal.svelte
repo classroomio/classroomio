@@ -77,9 +77,14 @@
       });
       // onClose(`/pathways/${newPathway.id}`);
       onClose($page.url.pathname);
-      snackbar.success('Pathway created succesfully');
+      $createPathwayModal = {
+        title: '',
+        description: ''
+      };
+
+      snackbar.success($t('pathway.new_pathway_modal.success'));
     } catch (error) {
-      snackbar.error('error creating pathway');
+      snackbar.error($t('pathway.new_pathway_modal.error'));
     } finally {
       isLoading = false;
     }
