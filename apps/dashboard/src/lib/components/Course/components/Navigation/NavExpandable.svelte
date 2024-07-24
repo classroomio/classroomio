@@ -21,6 +21,7 @@
   export let isLesson = false;
   export let isStudent = true;
   export let isPaidFeature = false;
+  export let addIconClick: (() => void) | undefined;
   // export let subMenuItems = [];
 
   function addLesson() {
@@ -63,7 +64,7 @@
     {/if}
     {#if isLesson && !isLoading}
       {#if !isStudent}
-        <IconButton onClick={() => addLesson()} size="small">
+        <IconButton onClick={addIconClick ? addIconClick : addLesson} size="small">
           <Add />
         </IconButton>
       {/if}

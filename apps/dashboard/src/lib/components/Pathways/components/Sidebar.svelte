@@ -142,6 +142,8 @@
           isPaidFeature={nav.isPaidFeature}
           isExpanded={nav.isExpanded}
           isLoading={!$pathway.id}
+          {isStudent}
+          addIconClick={() => console.log('open add course modal')}
         >
           {#if nav.isLesson}
             {#each $pathway.courses as item, index}
