@@ -1,4 +1,5 @@
 export const ROUTES = {
   COURSES: 'courses',
-  LESSONS: 'lessons'
+  LESSONS: 'lessons',
+  PATHWAYS: 'pathways'
 };

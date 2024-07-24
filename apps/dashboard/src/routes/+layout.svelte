@@ -18,7 +18,7 @@
   import Apps from '$lib/components/Apps/index.svelte';
   import PlayQuiz from '$lib/components/Org/Quiz/Play/index.svelte';
   import { course } from '$lib/components/Course/store';
-  import { isCoursesPage, isOrgPage, isLMSPage } from '$lib/utils/functions/app';
+  import { isCoursesPage, isOrgPage, isLMSPage, isPathwayPage } from '$lib/utils/functions/app';
   import showAppsSideBar from '$lib/utils/functions/showAppsSideBar';
   import isPublicRoute from '$lib/utils/functions/routes/isPublicRoute';
   import { user, profile } from '$lib/utils/store/user';
@@ -39,8 +39,11 @@
 
   import '../app.postcss';
   import { ROLE } from '$lib/utils/constants/roles';
+  import { pathway } from '$lib/components/Pathways/store';
 
   export let data;
+
+  let headerTitle: string = '';
 
   let supabase = getSupabase();
   let path = $page.url?.pathname?.replace('/', '');
@@ -287,6 +290,11 @@
 
   $: path = $page.url?.pathname?.replace('/', '');
   $: carbonTheme = $globalStore.isDark ? 'g100' : 'white';
+  $: headerTitle = isCoursesPage(path)
+    ? $course.title
+    : isPathwayPage(path)
+      ? $pathway.title
+      : 'ClassroomIO';
 </script>
 
 <svelte:window on:resize={handleResize} />
@@ -316,8 +324,12 @@
       </Backdrop>
     {/if}
     {#if !hideNavByRoute($page.url?.pathname)}
-      {#if isOrgPage($page.url?.pathname) || $page.url?.pathname.includes('profile') || isCoursesPage(path)}
-        <OrgNavigation bind:title={$course.title} isCoursePage={isCoursesPage(path)} />
+      {#if isOrgPage($page.url?.pathname) || $page.url?.pathname.includes('profile') || isCoursesPage(path) || isPathwayPage(path)}
+        <OrgNavigation
+          bind:title={headerTitle}
+          isPathwayPage={isPathwayPage(path)}
+          isCoursePage={isCoursesPage(path)}
+        />
       {:else if isLMSPage($page.url?.pathname)}
         <LMSNavigation />
       {:else}

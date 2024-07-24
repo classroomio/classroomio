@@ -1,12 +1,41 @@
 <script lang="ts">
-  export let border: boolean = true;
+  import { Moon } from 'svelte-loading-spinners';
+
+  import { globalStore } from '$lib/utils/store/app';
+  import { pathway } from '$lib/components/Pathways/store';
+  import Backdrop from '$lib/components/Backdrop/index.svelte';
+  import PathwaySidebar from '$lib/components/Pathways/components/Sidebar.svelte';
+
+  export let path = '';
   export let className: string = '';
-  export let maxHeight: boolean = true;
+  export let isFetching = false;
 </script>
 
-<div
-  class="{className} {border && 'border border-[#EAEAEA] shadow-sm'} {maxHeight &&
-    'max-h-[73vh]'} max-w-[87%] overflow-y-auto rounded-md w-full h-full mx-auto my-10"
->
-  <slot />
+<svelte:head>
+  <title>{$pathway.title || 'ClassroomIO Pathway'}</title>
+</svelte:head>
+
+{#if isFetching}
+  <Backdrop>
+    <Moon size="60" color="#1d4ed8" unit="px" duration="1s" />
+  </Backdrop>
+{/if}
+
+<div class="root org-root">
+  <PathwaySidebar {path} isStudent={$globalStore.isStudent} />
+  <div class="{className} overflow-y-auto md:max-w-[70%] max-w-[95%] mx-auto rounded-md w-full">
+    <slot />
+  </div>
 </div>
+
+<style>
+  .root {
+    display: flex;
+    width: 100%;
+  }
+
+  .rightBar {
+    flex-grow: 1;
+    width: calc(100% - 360px);
+  }
+</style>

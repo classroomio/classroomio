@@ -8,6 +8,10 @@ export function toggleBodyByMode(isDark) {
   }
 }
 
+export function isPathwayPage(path) {
+  return /pathways\/[a-z 0-9 -]/.test(path);
+}
+
 export function isCoursesPage(path) {
   return /courses\/[a-z 0-9 -]/.test(path);
 }
@@ -22,10 +26,6 @@ export function isOrgPage(path) {
 
 export function isQuizPage(path) {
   return /org\/[a-z 0-9 -]+\/quiz\/[a-z 0-9 -]/.test(path);
-}
-
-export function isPathwayPage(path) {
-  return /org\/[a-z 0-9 -]+\/pathways\/[a-z 0-9 -]/.test(path);
 }
 
 export function isLMSPage(path) {
