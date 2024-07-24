@@ -14,31 +14,30 @@
   import NewPathwayModal from '$lib/components/Org/PathWay/NewPathwayModal.svelte';
   import Pathways from '$lib/components/Org/PathWay/Pathway.svelte';
   import type { Pathway } from '$lib/utils/types';
-  import { pathwayMetaDeta, pathways } from '$lib/components/Org/PathWay/store';
-  import { fetchPathways } from '$lib/components/Org/PathWay/api';
+  import { pathwayMetaData, pathways } from '$lib/components/Org/Pathway/store';
+  import { fetchPathways } from '$lib/components/Org/Pathway/api';
   import { profile } from '$lib/utils/store/user';
   import { browser } from '$app/environment';
 
   export let data;
 
   let { cantFetch } = data;
-  let searchValue = '';
+  let searchValue: string = '';
   let selectedId: string = '0';
-  let hasFetched = false;
+  let hasFetched: boolean = false;
   let filteredPathway: Pathway[] = [];
-  let searching = false;
+  let searching: boolean = false;
 
   async function getPathway(userId: string | undefined, orgId: string) {
     if (cantFetch && typeof cantFetch === 'boolean' && orgId && !hasFetched) {
       // only show is loading when fetching for the first time
       if (!$pathways.length) {
-        $pathwayMetaDeta.isLoading = true;
+        $pathwayMetaData.isLoading = true;
       }
 
       const pathwayResult = await fetchPathways(userId, orgId);
-      console.log(`pathwayResult`, pathwayResult);
 
-      $pathwayMetaDeta.isLoading = false;
+      $pathwayMetaData.isLoading = false;
       if (!pathwayResult) return;
 
       // organizationId = pathwayResult.organizationId;
@@ -69,14 +68,18 @@
         (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
       );
     } else if (_selectedId === '1') {
-      filteredPathway = filteredPathway.sort((a, b) => b.is_published - a.is_published);
+      filteredPathway = filteredPathway.sort(
+        (a, b) => (b.is_published ? 1 : 0) - (a.is_published ? 1 : 0)
+      );
     } else if (_selectedId === '2') {
-      filteredPathway = filteredPathway.sort((a, b) => b.total_course - a.total_course);
+      filteredPathway = filteredPathway.sort(
+        (a, b) => (b.total_course ?? 0) - (a.total_course ?? 0)
+      );
     }
   }
 
   const setViewPreference = (preference: 'grid' | 'list') => {
-    $pathwayMetaDeta.view = preference;
+    $pathwayMetaData.view = preference;
     localStorage.setItem('pathwayView', preference);
   };
 
@@ -88,7 +91,7 @@
     const pathwayView = localStorage.getItem('pathwayView') as 'grid' | 'list' | null;
 
     if (pathwayView) {
-      $pathwayMetaDeta.view = pathwayView;
+      $pathwayMetaData.view = pathwayView;
     }
   });
 
@@ -134,7 +137,7 @@
             { id: '2', text: $t('pathway.pathway_filter.courses') }
           ]}
         />
-        {#if $pathwayMetaDeta.view === 'list'}
+        {#if $pathwayMetaData.view === 'list'}
           <IconButton onClick={() => setViewPreference('grid')}>
             <Grid size={24} />
           </IconButton>

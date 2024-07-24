@@ -11,7 +11,7 @@
   import { sideBar } from './store';
   import { t } from '$lib/utils/functions/translations';
   import { goto } from '$app/navigation';
-  import SidebarExpandeable from './sidebarExpandeable.svelte';
+  import SideBarExpandeable from '$lib/components/Org/SideBarExpandeable.svelte';
 
   interface menuItems {
     label: string;
@@ -85,7 +85,7 @@
       <ul class="mt-4 my-2 px-4">
         {#each menuItems as menuItem}
           {#if menuItem.show}
-            <SidebarExpandeable
+            <SideBarExpandeable
               label={menuItem.label}
               href={typeof menuItem.to === 'string' ? `${$currentOrgPath}${menuItem.to}` : null}
               handleClick={toggleSidebar}
@@ -110,7 +110,7 @@
                   </a>
                 {/each}
               {/if}
-            </SidebarExpandeable>
+            </SideBarExpandeable>
           {/if}
         {/each}
       </ul>

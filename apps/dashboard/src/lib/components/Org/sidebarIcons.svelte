@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import HomeIcon from '../Icons/HomeIcon.svelte';
   import SiteSettingsIcon from '../Icons/SiteSettingsIcon.svelte';
   import QuizIcon from '../Icons/QuizIcon.svelte';
@@ -8,7 +8,7 @@
   import CourseIcon from '../Icons/CourseIcon.svelte';
   import { t } from '$lib/utils/functions/translations';
 
-  export let name = '';
+  export let name: string = '';
 </script>
 
 {#if name === $t('org_navigation.dashboard')}

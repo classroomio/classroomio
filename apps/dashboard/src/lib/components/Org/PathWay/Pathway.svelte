@@ -6,8 +6,7 @@
   import { goto } from '$app/navigation';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import CardLoader from '$lib/components/Courses/components/Card/Loader.svelte';
-  import PathwayCard from './PathwayCard.svelte';
-
+  import PathwayCard from '$lib/components/Org/Pathway/PathwayCard.svelte';
   import {
     StructuredList,
     StructuredListBody,
@@ -16,13 +15,13 @@
     StructuredListRow
   } from 'carbon-components-svelte';
   import { t } from '$lib/utils/functions/translations';
-  import PathwayList from './PathwayList.svelte';
+  import PathwayList from '$lib/components/Org/Pathway/PathwayList.svelte';
   import { isMobile } from '$lib/utils/store/useMobile';
   import type { Pathway } from '$lib/utils/types';
-  import { pathwayMetaDeta } from './store';
+  import { pathwayMetaData } from '$lib/components/Org/Pathway/store';
 
   export let pathways: Pathway[] = [];
-  export let searching = false;
+  export let searching: boolean = false;
 
   const openNewPathwayModal = () => {
     goto($currentOrgPath + '/pathway?new_pathway=true');
@@ -30,13 +29,13 @@
 </script>
 
 <div class="w-full">
-  {#if $pathwayMetaDeta.isLoading}
+  {#if $pathwayMetaData.isLoading}
     <section class="grid md:grid-cols-2 gap-4">
       <CardLoader />
       <CardLoader />
       <CardLoader />
     </section>
-  {:else if $pathwayMetaDeta.view === 'list'}
+  {:else if $pathwayMetaData.view === 'list'}
     <StructuredList selection class="w-full">
       <StructuredListHead>
         <StructuredListRow head>
@@ -88,7 +87,7 @@
     </div>
   {/if}
 
-  {#if !$pathwayMetaDeta.isLoading && !pathways.length}
+  {#if !$pathwayMetaData.isLoading && !pathways.length}
     <Box className="w-full">
       <PathwayEmptyIcon />
       {#if searching}

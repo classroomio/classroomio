@@ -1,11 +1,11 @@
-import { writable, derived } from 'svelte/store';
+import { writable } from 'svelte/store';
 import type { Pathway } from '$lib/utils/types';
 
 export const pathways = writable<Pathway[]>([]);
 
 export const view = writable('grid');
 
-export const pathwayMetaDeta = writable<{
+export const pathwayMetaData = writable<{
   isLoading: boolean;
   view: 'grid' | 'list';
 }>({

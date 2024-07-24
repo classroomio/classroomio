@@ -21,7 +21,8 @@
     title: '',
     description: ''
   };
-  let isLoading = false;
+
+  let isLoading: boolean = false;
 
   const createPathway = async () => {
     try {
@@ -51,7 +52,6 @@
           group_id
         })
         .select();
-      console.log(`newPathway data`, newPathwayData);
 
       if (!newPathwayData) return;
 
@@ -75,7 +75,8 @@
         group_id,
         role_id: ROLE.TUTOR
       });
-      // onClose(`/pathways/${newPathway.id}`);
+
+      // onClose(`/pathways/${newPathway.id}`);  // this is commented out because the page doesn't curently exist
       onClose($page.url.pathname);
       $createPathwayModal = {
         title: '',

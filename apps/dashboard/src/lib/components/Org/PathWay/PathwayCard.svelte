@@ -2,16 +2,15 @@
   import { t } from '$lib/utils/functions/translations';
   import { ImageLoader, SkeletonPlaceholder } from 'carbon-components-svelte';
 
-  export let id;
-  export let title;
-  export let description;
-  export let banner_url;
-  export let is_published = false;
-  export let courses = 0;
+  export let id: string = '';
+  export let title: string = '';
+  export let description: string = '';
+  export let banner_url: string = '';
+  export let is_published: boolean = false;
+  export let courses: number = 0;
 
   const getPathwayUrl = () => {
-    console.log(id);
-    return '#';
+    return `/pathways/${id}`;
   };
 </script>
 

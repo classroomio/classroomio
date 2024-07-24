@@ -70,9 +70,13 @@
         (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
       );
     } else if (_selectedId === '1') {
-      filteredCourses = filteredCourses.sort((a, b) => b.is_published - a.is_published);
+      filteredCourses = filteredCourses.sort(
+        (a, b) => (b.is_published ? 1 : 0) - (a.is_published ? 1 : 0)
+      );
     } else if (_selectedId === '2') {
-      filteredCourses = filteredCourses.sort((a, b) => b.total_lessons - a.total_lessons);
+      filteredCourses = filteredCourses.sort(
+        (a, b) => (b.total_lessons ?? 0) - (a.total_lessons ?? 0)
+      );
     }
   }
 

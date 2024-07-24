@@ -10,12 +10,12 @@
   import { goto } from '$app/navigation';
   import { t } from '$lib/utils/functions/translations';
 
-  export let id;
-  export let title;
-  export let description;
-  export let isPublished = false;
-  export let totalCourse = 0;
-  export let totalStudents = 0;
+  export let id: string = '';
+  export let title: string = '';
+  export let description: string = '';
+  export let isPublished: boolean = false;
+  export let totalCourse: number = 0;
+  export let totalStudents: number = 0;
 
   function handleCloneCourse(e) {
     e.stopPropagation();
