@@ -14,6 +14,7 @@
   import SideBarExpandeable from '$lib/components/Org/SideBarExpandeable.svelte';
 
   interface menuItems {
+    id: string;
     label: string;
     to: string | string[];
     isDropdown?: boolean;
@@ -42,11 +43,13 @@
 
   $: menuItems = [
     {
+      id: 'dashboard',
       to: '',
       label: $t('org_navigation.dashboard'),
       show: true
     },
     {
+      id: 'courses',
       to: ['/courses', '/pathways'],
       isDropdown: true,
       isExpanded: true,
@@ -54,16 +57,19 @@
       show: true
     },
     {
+      id: 'community',
       to: '/community',
       label: $t('org_navigation.community'),
       show: true
     },
     {
+      id: 'audience',
       to: '/audience',
       label: $t('org_navigation.audience'),
       show: true
     },
     {
+      id: 'setup',
       to: '/setup',
       label: $t('org_navigation.setup'),
       show: $isOrgAdmin
@@ -86,6 +92,7 @@
         {#each menuItems as menuItem}
           {#if menuItem.show}
             <SideBarExpandeable
+              id={menuItem.id}
               label={menuItem.label}
               href={typeof menuItem.to === 'string' ? `${$currentOrgPath}${menuItem.to}` : null}
               handleClick={toggleSidebar}
