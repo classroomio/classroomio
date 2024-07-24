@@ -5,12 +5,12 @@
   import TextField from '$lib/components/Form/TextField.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import { goto } from '$app/navigation';
-  import { createPathwayModal } from '../store';
+  import { createPathwayModal } from '$lib/components/Org/Pathway/store';
   import { t } from '$lib/utils/functions/translations';
   import { validateForm } from '$lib/components/Courses/functions';
   import { supabase } from '$lib/utils/functions/supabase';
   import { currentOrg } from '$lib/utils/store/org';
-  import { pathways } from './store';
+  import { pathways } from '$lib/components/Org/Pathway/store';
   import { profile } from '$lib/utils/store/user';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { snackbar } from '$lib/components/Snackbar/store';

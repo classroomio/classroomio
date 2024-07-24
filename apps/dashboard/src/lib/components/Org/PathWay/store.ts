@@ -15,10 +15,7 @@ export const pathwayMetaData = writable<{
 
 export const createPathwayModal = writable({
   title: '',
-  description: '',
-  emails: '',
-  tutors: '',
-  students: ''
+  description: ''
 });
 
 export const copyPathwayModalInitialState = {

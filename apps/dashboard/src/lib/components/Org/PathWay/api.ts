@@ -18,7 +18,6 @@ export async function fetchPathways(profileId: string | undefined, orgId: string
     })
     .match(match);
 
-  console.log(`pathways`, allPathways);
   if (!Array.isArray(allPathways)) {
     return {
       allPathways: []
