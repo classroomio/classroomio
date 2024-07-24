@@ -80,8 +80,8 @@
           title={pathway.title}
           description={pathway.description}
           banner_url={pathway.logo}
-          is_published={pathway.is_published}
-          courses={pathway.total_course}
+          isPublished={pathway.is_published}
+          totalCourse={pathway.total_course}
         />
       {/each}
     </div>

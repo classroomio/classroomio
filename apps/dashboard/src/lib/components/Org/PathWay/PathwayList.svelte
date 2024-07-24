@@ -17,28 +17,28 @@
   export let totalCourse: number = 0;
   export let totalStudents: number = 0;
 
-  function handleCloneCourse(e) {
+  function handleClonePathway(e) {
     e.stopPropagation();
-    // TODO: Clone course functionality
-    alert('WIP: Clone course');
+    // TODO: Clone Pathway functionality
+    alert('WIP: Clone Pathway');
   }
 
-  function handleShareCourse(e) {
+  function handleSharePathway(e) {
     e.stopPropagation();
-    // TODO: Share course functionality
-    alert('WIP: Share course');
+    // TODO: Share Pathway functionality
+    alert('WIP: Share Pathway');
   }
 
   function handleInvite(e) {
     e.stopPropagation();
     // TODO: Invite functionality
-    alert('WIP: Invite people to course');
+    alert('WIP: Invite people to Pathway');
   }
 
-  function handleDeleteCourse(e) {
+  function handleDeletePathway(e) {
     e.stopPropagation();
-    // TODO: Delete course functionality
-    alert('WIP: Delete course');
+    // TODO: Delete Pathway functionality
+    alert('WIP: Delete Pathway');
   }
 </script>
 
@@ -70,11 +70,11 @@
     >
       <OverflowMenuItem
         text={$t('pathway.pathway_card.context_menu.clone')}
-        on:click={handleCloneCourse}
+        on:click={handleClonePathway}
       />
       <OverflowMenuItem
         text={$t('pathway.pathway_card.context_menu.share')}
-        on:click={handleShareCourse}
+        on:click={handleSharePathway}
       />
       <OverflowMenuItem
         text={$t('pathway.pathway_card.context_menu.invite')}
@@ -83,7 +83,7 @@
       <OverflowMenuItem
         danger
         text={$t('pathway.pathway_card.context_menu.delete')}
-        on:click={handleDeleteCourse}
+        on:click={handleDeletePathway}
       />
     </OverflowMenu>
   </StructuredListCell>

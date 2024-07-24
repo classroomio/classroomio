@@ -6,8 +6,8 @@
   export let title: string = '';
   export let description: string = '';
   export let banner_url: string = '';
-  export let is_published: boolean = false;
-  export let courses: number = 0;
+  export let isPublished: boolean = false;
+  export let totalCourse: number = 0;
 
   const getPathwayUrl = () => {
     return `/pathways/${id}`;
@@ -34,8 +34,8 @@
     <p class="text-sm line-clamp-3">{description}</p>
 
     <span class="flex justify-between items-center">
-      <p class="text-xs">{courses} {$t('pathway.pathway_card.courses')}</p>
-      {#if is_published}
+      <p class="text-xs">{totalCourse} {$t('pathway.pathway_card.courses')}</p>
+      {#if isPublished}
         <p class="text-xs">{$t('pathway.pathway_card.published')}</p>
       {:else}
         <p class="text-xs">{$t('pathway.pathway_card.unpublished')}</p>
