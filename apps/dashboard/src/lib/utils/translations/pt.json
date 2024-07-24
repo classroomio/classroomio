@@ -1013,7 +1013,8 @@
     "redirecting": "Redirecionando",
     "loading_state": "Levando você para a próxima página, aguarde.",
     "org_loading_state": "Levando você para sua organização...",
-    "add_organization": "+ Adicionar organização"
+    "add_organization": "+ Adicionar organização",
+    "pathways": "Caminhos"
   },
   "add_org": {
     "create_org": "Criar organização",
@@ -1371,6 +1372,9 @@
     "organization_name": {
       "min_char": "A organização deve conter 5 ou mais caracteres",
       "hyphen_rule": "O nome da organização não pode começar ou terminar com um hífen"
+    },
+    "user_profile": {
+      "email": "Endereço de email invalido"
     }
   },
   "explore": {

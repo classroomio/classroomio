@@ -1,8 +1,13 @@
 import type { courseCompletion } from "$lib/utils/types";
 
-const ROUTES = {
-  COURSES: 'courses',
-  PATHWAYS: 'pathways'
+interface Routes {
+  courses: string;
+  pathways: string
+}
+
+const routes: Routes = {
+  courses: 'courses',
+  pathways: 'pathways'
 };
 
 export function getIsCourseComplete(
@@ -16,8 +21,8 @@ export function getIsCourseComplete(
 }
 
 
-export function getPathwayNavItemRoute(pathwayId, routeId) {
-  const path = `/${ROUTES.PATHWAYS}/${pathwayId}`;
+export function getPathwayNavItemRoute(pathwayId: string, routeId?: string) {
+  const path = `/${routes.pathways}/${pathwayId}`;
 
   if (!routeId) {
     return path;

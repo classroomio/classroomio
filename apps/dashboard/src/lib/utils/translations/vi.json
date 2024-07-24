@@ -1013,7 +1013,8 @@
     "redirecting": "Chuyển hướng",
     "loading_state": "Đang đưa bạn đến trang tiếp theo, vui lòng đợi.",
     "org_loading_state": "Đưa bạn đến tổ chức của bạn...",
-    "add_organization": "+ Thêm tổ chức"
+    "add_organization": "+ Thêm tổ chức",
+    "pathways": "Con đường"
   },
   "add_org": {
     "create_org": "Tạo tổ chức",
@@ -1371,6 +1372,9 @@
     "organization_name": {
       "min_char": "Tổ chức phải chứa 5 ký tự trở lên",
       "hyphen_rule": "Tên tổ chức không thể bắt đầu hoặc kết thúc bằng dấu gạch nối"
+    },
+    "user_profile": {
+      "email": "địa chỉ email không hợp lệ"
     }
   },
   "explore": {
