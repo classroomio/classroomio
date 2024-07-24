@@ -2,11 +2,11 @@
   import { t } from '$lib/utils/functions/translations';
   import { ImageLoader, SkeletonPlaceholder } from 'carbon-components-svelte';
 
-  export let title;
-  export let description;
-  export let banner_url;
-  export let is_published;
-  export let courses;
+  export let title: string;
+  export let description: string;
+  export let banner_url: string;
+  export let is_published: boolean;
+  export let courses: string;
 
   const getPathwayUrl = () => {
     return '#';
@@ -33,7 +33,7 @@
     <p class="text-sm">{description}</p>
 
     <span class="flex justify-between items-center">
-      <p class="text-xs">{courses.length} {$t('pathway.pathway_card.courses')}</p>
+      <p class="text-xs">{courses} {$t('pathway.pathway_card.courses')}</p>
       {#if is_published}
         <p class="text-xs">{$t('pathway.pathway_card.published')}</p>
       {:else}

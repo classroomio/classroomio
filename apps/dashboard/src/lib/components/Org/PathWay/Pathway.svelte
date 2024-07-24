@@ -58,8 +58,8 @@
               title="Become a Professional UX designer"
               description="This is a full pathway to become a professional UX designer,with practical examples"
               isPublished={false}
-              totalCourse={0}
-              totalStudents={0}
+              totalCourse="0"
+              totalStudents="0"
             />
           {/each}
         </StructuredListBody>
@@ -72,7 +72,7 @@
             description="This is a full pathway to become a professional UX designer,with practical examples"
             banner_url=""
             is_published={false}
-            courses={[]}
+            courses="0"
           />
         {/each}
       </div>

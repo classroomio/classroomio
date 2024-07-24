@@ -12,15 +12,15 @@
   import List from 'carbon-icons-svelte/lib/List.svelte';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
-  import NewPathwayModal from '$lib/components/Org/PathWay/NewPathwayModal.svelte';
-  import Pathway from '$lib/components/Org/PathWay/Pathway.svelte';
+  import NewPathwayModal from '$lib/components/Org/Pathway/NewPathwayModal.svelte';
+  import Pathway from '$lib/components/Org/Pathway/Pathway.svelte';
 
   export let data;
 
   let { cantFetch } = data;
-  let searchValue = '';
+  let searchValue: string = '';
   let selectedId: string = '0';
-  let collections = [1, 2, 3, 4, 5];
+  let pathway = [1, 2, 3, 4, 5];
 
   const setViewPreference = (preference: 'grid' | 'list') => {
     $courseMetaDeta.view = preference;
@@ -49,7 +49,7 @@
     <div class="flex items-center justify-between mb-5">
       <h1 class="dark:text-white text-2xl md:text-3xl font-bold">{$t('pathway.heading')}</h1>
       {#if $isMobile}
-        <PrimaryButton isDisabled={!$isOrgAdmin} onClick={() => console.log('clicked')}>
+        <PrimaryButton isDisabled={!$isOrgAdmin} onClick={openNewPathwayModal}>
           <Add size={24} />
         </PrimaryButton>
       {:else}
@@ -91,7 +91,7 @@
     </div>
 
     <NewPathwayModal />
-    <Pathway pathways={collections} />
+    <Pathway pathways={pathway} />
   </div>
 </section>
 

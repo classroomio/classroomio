@@ -1,15 +1,15 @@
-<script>
-  import HomeIcon from '../Icons/HomeIcon.svelte';
-  import SiteSettingsIcon from '../Icons/SiteSettingsIcon.svelte';
-  import QuizIcon from '../Icons/QuizIcon.svelte';
-  import AudienceIcon from '../Icons/AudienceIcon.svelte';
+<script lang="ts">
+  import HomeIcon from '$lib/components/Icons/HomeIcon.svelte';
+  import SiteSettingsIcon from '$lib/components/Icons/SiteSettingsIcon.svelte';
+  import QuizIcon from '$lib/components/Icons/QuizIcon.svelte';
+  import AudienceIcon from '$lib/components/Icons/AudienceIcon.svelte';
   import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
   import { SettingsAdjust } from 'carbon-icons-svelte';
-  import CourseIcon from '../Icons/CourseIcon.svelte';
+  import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
 
-  export let iconId;
+  export let iconId: string;
 
-  let ICON_CLASS = {
+  const ICON_CLASS = {
     dashboard: 'dashboard',
     courses: 'courses',
     community: 'community',
