@@ -4,7 +4,7 @@
   import ChevronUpIcon from 'carbon-icons-svelte/lib/ChevronUp.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
-  import SidebarIcons from './SideBarIcons.svelte';
+  import SideBarIcons from './SideBarIcons.svelte';
 
   export let label: string = '';
   export let id: string;
@@ -30,7 +30,7 @@
       NavClasses.active} w-[95%]"
     {href}
   >
-    <SidebarIcons iconId={id} />
+    <SideBarIcons iconId={id} />
 
     <span class="text-sm font-medium">{label}</span>
 
