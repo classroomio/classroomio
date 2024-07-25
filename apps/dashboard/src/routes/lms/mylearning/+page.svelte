@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Search } from 'carbon-components-svelte';
+  import { Dropdown, Search } from 'carbon-components-svelte';
   import Tabs from '$lib/components/Tabs/index.svelte';
   import TabContent from '$lib/components/TabContent/index.svelte';
   import Courses from '$lib/components/Courses/index.svelte';
@@ -16,6 +16,7 @@
   import { t } from '$lib/utils/functions/translations';
 
   let hasFetched = false;
+  let selectedId = '0';
 
   function onChange(tab) {
     return () => (currentTab = tab);
@@ -61,10 +62,28 @@
 
 <section class="max-w-6xl mx-auto">
   <div class="m-2 md:m-5">
-    <div role="searchbox" class=" bg-gray-100 w-full md:w-[60%] lg:w-[30%]">
-      <Search placeholder={$t('my_learning.search')} class="dark:text-black" />
+    <div class="flex items-center justify-between mb-5">
+      <h1 class="text-3xl font-semibold my-4">{$t('my_learning.heading')}</h1>
+
+      <div class="flex flex-row-reverse mb-5">
+        <div class="filter-containter flex items-end justify-start">
+          <Search
+            placeholder={$t('my_learning.search')}
+            class="dark:text-black"
+            searchClass="mr-2"
+          />
+          <Dropdown
+            class="h-full min-w-[150px]"
+            bind:selectedId
+            items={[
+              { id: '0', text: 'All Courses' },
+              { id: '1', text: 'Pathways' }
+            ]}
+          />
+        </div>
+      </div>
     </div>
-    <h1 class="text-3xl font-semibold my-4">{$t('my_learning.heading')}</h1>
+
     <Tabs {tabs} {currentTab} {onChange}>
       <slot:fragment slot="content">
         <TabContent value={tabs[0].value} index={currentTab}>
@@ -85,3 +104,10 @@
     </Tabs>
   </div>
 </section>
+
+<style>
+  .filter-containter :global(.bx--dropdown) {
+    max-height: unset;
+    height: 100%;
+  }
+</style>
