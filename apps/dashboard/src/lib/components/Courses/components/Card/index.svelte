@@ -17,7 +17,6 @@
   import { COURSE_TYPE } from '$lib/utils/types';
   import RadioButtonChecked from 'carbon-icons-svelte/lib/RadioButtonChecked.svelte';
   import GrowthIcon from 'carbon-icons-svelte/lib/Growth.svelte';
-  import CourseIcon from 'carbon-icons-svelte/lib/Course.svelte';
   import UserProfileIcon from 'carbon-icons-svelte/lib/UserProfile.svelte';
 
   export let bannerImage: string | undefined;
@@ -29,7 +28,7 @@
   export let cost = 0;
   export let totalLessons = 0;
   export let totalStudents = 0;
-  export let currency = 'NGN';
+  export let currency = 'USD';
   export let isOnLandingPage = false;
   export let isLMS = false;
   export let isExplore = false;

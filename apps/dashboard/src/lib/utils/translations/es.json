@@ -409,11 +409,17 @@
         "locked": "bloqueado",
         "unlocked": "desbloqueado",
         "save": "Guardar cambios",
-        "unlocked_certificate": "El certificado ya está disponible",
         "locked_certificate": "Certificados no disponibles",
         "instructor_unlock": "Su instructor necesita desbloquear su certificado.",
         "contact_instructor": "Si necesita su certificado, comuníquese con su instructor.",
-        "download_certificate": "Descargar certificado"
+        "download_certificate": "Descargar certificado",
+        "unlocked_certificate": "¡Felicitaciones! 🎉 tu certificado está listo",
+        "unlocked_certificate_subtitle": "Has completado este curso y tu dedicación es evidente. Descargue el certificado y compártalo con su red como prueba de su habilidad recién adquirida",
+        "complete_to_download_subtitle": "Su certificado estará disponible una vez que complete todas las lecciones y ejercicios de este curso.",
+        "complete_to_download_title": "Curso no completo 😔",
+        "description_error": "La descripción no puede exceder los 200 caracteres.",
+        "characters": "caracteres",
+        "unexpected_error": "ocurrió un error inesperado"
       },
       "people": {
         "title": "Gente",
@@ -1375,7 +1381,9 @@
       "hyphen_rule": "El nombre de la organización no puede comenzar ni terminar con un guión."
     },
     "user_profile": {
-      "email": "Dirección de correo electrónico no válida"
+      "email": "Dirección de correo electrónico no válida",
+      "username": "El nombre de usuario no puede estar vacío",
+      "fullname": "El nombre debe tener un mínimo de 5 caracteres."
     }
   },
   "explore": {
@@ -1425,10 +1433,69 @@
       "date_created": "fecha de creacion",
       "published": "Publicado",
       "courses": "Cursos"
+    },
+    "components": {
+      "sideBar": {
+        "news": "Noticias",
+        "courses": "Cursos",
+        "people": "Gente",
+        "certificates": "Certificados",
+        "landing": "Página de destino",
+        "settings": "Ajustes"
+      },
+      "courseCard": {
+        "lessons": "lecciones",
+        "students": "estudiantes"
+      }
+    },
+    "pages": {
+      "settings": {
+        "page_title": "Ajustes",
+        "title_error": "Por favor agregue un título de colección",
+        "description_error": "Por favor agregue una descripción de la colección.",
+        "cover_image": "Imagen de portada",
+        "optional": "Esta imagen opcional aparecerá en su página de bienvenida. Si incluyes uno, debe tener al menos 280 x 200",
+        "replace": "Reemplazar",
+        "delete": "Borrar",
+        "details": "Detalles de la colección",
+        "title": "Título de la colección",
+        "title_placeholder": "Escribe aquí el título del curso.",
+        "description": "Descripción de la colección",
+        "description_placeholder": "Escribe aquí la descripción del curso.",
+        "link": "Enlace de colección",
+        "students": "¿Los estudiantes deben tomar el curso según el orden recomendado?",
+        "yes": "En caso afirmativo, el estudiante debe tomar los cursos según el orden; en caso negativo, el estudiante puede comenzar desde cualquier curso de su elección.",
+        "option_one": "Sí",
+        "option_two": "No",
+        "publish": "Publicar ruta de aprendizaje",
+        "allow": "Permitir que los nuevos estudiantes descarguen cursos en la ruta de aprendizaje",
+        "enabled": "Activado",
+        "disabled": "Desactivado",
+        "certificate": "Certificado",
+        "issue": "Emitir certificado en LMS",
+        "issue_two": "Emitir certificado o todo el curso en la ruta de aprendizaje.",
+        "option_three": "No, solo para ruta",
+        "delete_path": "Eliminar ruta de aprendizaje",
+        "delete_text": "Eliminar la ruta de aprendizaje en su totalidad",
+        "save": "Guardar cambios"
+      },
+      "course": {
+        "title": "Cursos",
+        "add_course": "Un curso",
+        "add_remove": "Agregar/eliminar curso",
+        "order": "Ordenar cursos",
+        "publish": "Publicar colección",
+        "search": "Encuentre una ruta de aprendizaje",
+        "option_one": "Publicado",
+        "option_two": "Inédito",
+        "body_title": "Título",
+        "description": "Descripción",
+        "students": "Estudiantes",
+        "lessons": "Lecciones"
+      }
     }
   },
   "search": {
-    "no_courses": "No se encontró ningún curso",
     "no_pathway": "No se encontró ningún camino",
     "no_course": "No se encontró ningún curso"
   }

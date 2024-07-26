@@ -11,7 +11,7 @@
   import { sideBar } from './store';
   import { t } from '$lib/utils/functions/translations';
   import { goto } from '$app/navigation';
-  import SideBarExpandeable from '$lib/components/Org/SideBarExpandeable.svelte';
+  import SideBarExpandeable from '$lib/components/Org/SidebarExpandeable.svelte';
 
   interface menuItems {
     id: string;

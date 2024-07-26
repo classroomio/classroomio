@@ -409,11 +409,17 @@
         "locked": "Gesperrt",
         "unlocked": "Entsperrt",
         "save": "Änderungen speichern",
-        "unlocked_certificate": "Zertifikat ist jetzt verfügbar",
         "locked_certificate": "Zertifikate nicht verfügbar",
         "instructor_unlock": "Ihr Dozent muss Ihr Zertifikat entsperren.",
         "contact_instructor": "Wenn Sie Ihr Zertifikat benötigen, wenden Sie sich bitte an Ihren Dozenten.",
-        "download_certificate": "Zertifikat herunterladen"
+        "download_certificate": "Zertifikat herunterladen",
+        "unlocked_certificate": "Glückwunsch! 🎉 Dein Zertifikat ist fertig",
+        "unlocked_certificate_subtitle": "Sie haben diesen Kurs abgeschlossen und Ihr Engagement ist offensichtlich. Laden Sie das Zertifikat herunter und teilen Sie es mit Ihrem Netzwerk als Beweis für Ihre neu erworbenen Fähigkeiten",
+        "complete_to_download_subtitle": "Ihr Zertifikat ist verfügbar, sobald Sie alle Lektionen und Übungen dieses Kurses abgeschlossen haben",
+        "complete_to_download_title": "Kurs nicht abgeschlossen 😔",
+        "description_error": "Die Beschreibung darf 200 Zeichen nicht überschreiten",
+        "characters": "Figuren",
+        "unexpected_error": "Ein unerwarteter Fehler ist aufgetreten"
       },
       "people": {
         "title": "Menschen",
@@ -1375,7 +1381,9 @@
       "hyphen_rule": "Der Name der Organisation darf nicht mit einem Bindestrich beginnen oder enden"
     },
     "user_profile": {
-      "email": "Ungültige E-Mail-Adresse"
+      "email": "Ungültige E-Mail-Adresse",
+      "username": "Benutzername darf nicht leer sein",
+      "fullname": "Der Name sollte mindestens 5 Zeichen lang sein"
     }
   },
   "explore": {
@@ -1425,10 +1433,69 @@
       "date_created": "Datum erstellt",
       "published": "Veröffentlicht",
       "courses": "Kurse"
+    },
+    "components": {
+      "sideBar": {
+        "news": "Neuigkeiten",
+        "courses": "Kurse",
+        "people": "Menschen",
+        "certificates": "Zertifikate",
+        "landing": "Landingpage",
+        "settings": "Einstellungen"
+      },
+      "courseCard": {
+        "lessons": "Unterricht",
+        "students": "Studenten"
+      }
+    },
+    "pages": {
+      "settings": {
+        "page_title": "Einstellungen",
+        "title_error": "Bitte fügen Sie einen Sammlungstitel hinzu",
+        "description_error": "Bitte fügen Sie eine Sammlungsbeschreibung hinzu",
+        "cover_image": "Titelbild",
+        "optional": "Dieses optionale Bild wird auf Ihrer Begrüßungsseite angezeigt. Wenn Sie eines hinzufügen, sollte es mindestens 280 x 200 groß sein",
+        "replace": "Ersetzen",
+        "delete": "Löschen",
+        "details": "Details zur Sammlung",
+        "title": "Titel der Sammlung",
+        "title_placeholder": "Geben Sie hier den Kurstitel ein",
+        "description": "Sammlungsbeschreibung",
+        "description_placeholder": "Schreiben Sie hier die Kursbeschreibung",
+        "link": "Sammlungslink",
+        "students": "Müssen die Studierenden den Kurs in der empfohlenen Reihenfolge absolvieren?",
+        "yes": "Wenn ja, muss der Student die Kurse gemäß der Reihenfolge belegen, wenn nein, kann der Student mit jedem Kurs seiner Wahl beginnen",
+        "option_one": "Ja",
+        "option_two": "NEIN",
+        "publish": "Lernpfad veröffentlichen",
+        "allow": "Erlauben Sie neuen Studenten, Kurse im Lernpfad herunterzuladen",
+        "enabled": "Ermöglicht",
+        "disabled": "Deaktiviert",
+        "certificate": "Zertifikat",
+        "issue": "Zertifikat auf LMS ausstellen",
+        "issue_two": "Zertifikat oder alle Kurse im Lernpfad ausstellen",
+        "option_three": "Nein, nur für den Pfad",
+        "delete_path": "Lernpfad löschen",
+        "delete_text": "Lernpfad als Ganzes löschen",
+        "save": "Änderungen speichern"
+      },
+      "course": {
+        "title": "Kurse",
+        "add_course": "Ein Kurs",
+        "add_remove": "Kurs hinzufügen/entfernen",
+        "order": "Kurse bestellen",
+        "publish": "Sammlung veröffentlichen",
+        "search": "Lernpfad finden",
+        "option_one": "Veröffentlicht",
+        "option_two": "Unveröffentlicht",
+        "body_title": "Titel",
+        "description": "Beschreibung",
+        "students": "Studenten",
+        "lessons": "Unterricht"
+      }
     }
   },
   "search": {
-    "no_courses": "Kein Kurs gefunden",
     "no_pathway": "Kein Weg gefunden",
     "no_course": "Kein Kurs gefunden"
   }

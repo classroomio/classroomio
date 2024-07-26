@@ -11,8 +11,8 @@
   import List from 'carbon-icons-svelte/lib/List.svelte';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
-  import NewPathwayModal from '$lib/components/Org/PathWay/NewPathwayModal.svelte';
-  import Pathways from '$lib/components/Org/PathWay/Pathway.svelte';
+  import NewPathwayModal from '$lib/components/Org/Pathway/NewPathwayModal.svelte';
+  import Pathways from '$lib/components/Org/Pathway/Pathway.svelte';
   import type { Pathway } from '$lib/utils/types';
   import { pathwayMetaData, pathways } from '$lib/components/Org/Pathway/store';
   import { fetchPathways } from '$lib/components/Org/Pathway/api';
