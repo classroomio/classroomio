@@ -25,8 +25,8 @@
     {description}
   </p>
   <div class="md:text-xs border-t mt-2 py-2 flex justify-between font-medium">
-    <span>{lessonNumber} {$t('pathways.components.courseCard.lessons')}</span>
-    <span>{studentNumber} {$t('pathways.components.courseCard.students')}</span>
+    <span>{lessonNumber} {$t('pathway.components.courseCard.lessons')}</span>
+    <span>{studentNumber} {$t('pathway.components.courseCard.students')}</span>
   </div>
 </a>
 

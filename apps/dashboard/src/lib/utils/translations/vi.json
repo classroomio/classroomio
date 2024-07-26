@@ -1391,7 +1391,7 @@
     "empty_description": "Hiện tại chưa có khóa học nào được xuất bản",
     "heading": "Khám phá các khóa học của chúng tôi"
   },
-  "pathways": {
+  "pathway": {
     "heading": "Con đường",
     "heading_button": "Tạo lộ trình",
     "search_placeholder": "Tìm con đường",

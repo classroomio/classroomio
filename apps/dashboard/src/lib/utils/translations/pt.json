@@ -1391,7 +1391,7 @@
     "empty_description": "Atualmente não há nenhum curso publicado disponível",
     "heading": "Explore nossos cursos"
   },
-  "pathways": {
+  "pathway": {
     "heading": "Caminhos",
     "heading_button": "Criar caminho",
     "search_placeholder": "Encontrar caminho",

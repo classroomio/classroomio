@@ -1391,7 +1391,7 @@
     "empty_description": "वर्तमान में कोई प्रकाशित पाठ्यक्रम उपलब्ध नहीं है",
     "heading": "हमारे पाठ्यक्रमों का अन्वेषण करें"
   },
-  "pathways": {
+  "pathway": {
     "heading": "रास्ते",
     "heading_button": "मार्ग बनाएँ",
     "search_placeholder": "रास्ता खोजें",

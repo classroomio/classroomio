@@ -1391,7 +1391,7 @@
     "empty_description": "Derzeit sind keine veröffentlichten Kurse verfügbar",
     "heading": "Entdecken Sie unsere Kurse"
   },
-  "pathways": {
+  "pathway": {
     "heading": "Wege",
     "heading_button": "Weg erstellen",
     "search_placeholder": "Weg finden",

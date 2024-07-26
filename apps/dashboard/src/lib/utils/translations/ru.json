@@ -1391,7 +1391,7 @@
     "empty_description": "На данный момент нет доступных опубликованных курсов",
     "heading": "Ознакомьтесь с нашими курсами"
   },
-  "pathways": {
+  "pathway": {
     "heading": "Пути",
     "heading_button": "Создать путь",
     "search_placeholder": "Найти путь",

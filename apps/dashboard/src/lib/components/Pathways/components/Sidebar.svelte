@@ -30,32 +30,32 @@
   $: navigation = [
     {
       id: 1,
-      title: $t('pathways.components.sideBar.news'),
+      title: $t('pathway.components.sideBar.news'),
       path: ''
     },
     {
       id: 2,
-      title: $t('pathways.components.sideBar.courses'),
+      title: $t('pathway.components.sideBar.courses'),
       path: '/courses'
     },
     {
       id: 3,
-      title: $t('pathways.components.sideBar.people'),
+      title: $t('pathway.components.sideBar.people'),
       path: '/people'
     },
     {
       id: 4,
-      title: $t('pathways.components.sideBar.certificates'),
+      title: $t('pathway.components.sideBar.certificates'),
       path: '/certificates'
     },
     {
       id: 5,
-      title: $t('pathways.components.sideBar.landing'),
+      title: $t('pathway.components.sideBar.landing'),
       path: '/landing'
     },
     {
       id: 6,
-      title: $t('pathways.components.sideBar.settings'),
+      title: $t('pathway.components.sideBar.settings'),
       path: '/settings'
     }
   ];
@@ -115,7 +115,7 @@
             >
               <div class="flex gap-5 dark:text-white">
                 <CourseIcon />
-                <p class="text-sm font-bold">{$t('pathways.components.sideBar.courses')}</p>
+                <p class="text-sm font-bold">{$t('pathway.components.sideBar.courses')}</p>
               </div>
             </a>
 
