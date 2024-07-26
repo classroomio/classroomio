@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Search, Dropdown } from 'carbon-components-svelte';
   import { profile } from '$lib/utils/store/user';
-  import { fetchCourses } from '$lib/components/Courses/api';
+  import { fetchCourses } from '$lib/utils/services/courses';
   import Courses from '$lib/components/Courses/index.svelte';
   import NewCourseModal from '$lib/components/Courses/components/NewCourseModal/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';

@@ -4,7 +4,7 @@
   import ChevronUpIcon from 'carbon-icons-svelte/lib/ChevronUp.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
-  import SideBarIcons from '$lib/components/Org/SideBarIcons.svelte';
+  import SideBarIcons from '$lib/components/Org/SidebarIcons.svelte';
 
   export let label: string = '';
   export let id: string;
@@ -12,7 +12,7 @@
   export let isGroupActive: boolean = false;
   export let isExpanded: boolean | undefined;
   export let isDropdown: boolean = false;
-  export let handleClick: () => void = () => {};
+  export let handleClick = () => {};
 
   function handleIsExpanded() {
     if (isDropdown) {

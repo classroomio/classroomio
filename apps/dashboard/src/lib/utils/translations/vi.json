@@ -409,11 +409,17 @@
         "locked": "Đã khóa",
         "unlocked": "Đã mở khóa",
         "save": "Lưu thay đổi",
-        "unlocked_certificate": "Chứng chỉ hiện có sẵn",
         "locked_certificate": "Chứng chỉ không có sẵn",
         "instructor_unlock": "Người hướng dẫn của bạn cần mở khóa chứng chỉ của bạn.",
         "contact_instructor": "Nếu bạn cần chứng chỉ của mình, vui lòng liên hệ với người hướng dẫn của bạn.",
-        "download_certificate": "Tải xuống chứng chỉ"
+        "download_certificate": "Tải xuống chứng chỉ",
+        "unlocked_certificate": "Chúc mừng! 🎉 chứng chỉ của bạn đã sẵn sàng",
+        "unlocked_certificate_subtitle": "Bạn đã hoàn thành khóa học này và sự cống hiến của bạn là điều hiển nhiên. Tải xuống chứng chỉ và chia sẻ với mạng của bạn như một bằng chứng về kỹ năng mới có được của bạn",
+        "complete_to_download_subtitle": "Chứng chỉ của bạn sẽ có sau khi bạn hoàn thành tất cả bài học và bài tập trong khóa học này",
+        "complete_to_download_title": "Khóa học chưa hoàn thành 😔",
+        "description_error": "Mô tả không thể vượt quá 200 ký tự",
+        "characters": "nhân vật",
+        "unexpected_error": "Đã xảy ra lỗi không mong muốn"
       },
       "people": {
         "title": "Mọi người",
@@ -1375,7 +1381,9 @@
       "hyphen_rule": "Tên tổ chức không thể bắt đầu hoặc kết thúc bằng dấu gạch nối"
     },
     "user_profile": {
-      "email": "địa chỉ email không hợp lệ"
+      "email": "địa chỉ email không hợp lệ",
+      "username": "Tên ngươi dung không được để trông",
+      "fullname": "Tên phải có tối thiểu 5 ký tự"
     }
   },
   "explore": {
@@ -1425,10 +1433,69 @@
       "date_created": "Ngày tạo",
       "published": "Được phát hành",
       "courses": "Khóa học"
+    },
+    "components": {
+      "sideBar": {
+        "news": "Nguồn cấp tin tức",
+        "courses": "Khóa học",
+        "people": "Mọi người",
+        "certificates": "Chứng chỉ",
+        "landing": "Trang đích",
+        "settings": "Cài đặt"
+      },
+      "courseCard": {
+        "lessons": "Những bài học",
+        "students": "sinh viên"
+      }
+    },
+    "pages": {
+      "settings": {
+        "page_title": "Cài đặt",
+        "title_error": "Vui lòng thêm tiêu đề bộ sưu tập",
+        "description_error": "Vui lòng thêm mô tả bộ sưu tập",
+        "cover_image": "Ảnh bìa",
+        "optional": "Hình ảnh tùy chọn này sẽ hiển thị trên trang chào mừng của bạn. Nếu bạn bao gồm một cái, nó phải có kích thước tối thiểu là 280 x 200",
+        "replace": "Thay thế",
+        "delete": "Xóa bỏ",
+        "details": "Chi tiết bộ sưu tập",
+        "title": "Tiêu đề bộ sưu tập",
+        "title_placeholder": "Viết tiêu đề khóa học ở đây",
+        "description": "Mô tả bộ sưu tập",
+        "description_placeholder": "Viết mô tả khóa học ở đây",
+        "link": "Liên kết bộ sưu tập",
+        "students": "Học viên có phải học theo thứ tự khuyến nghị?",
+        "yes": "nếu có, sinh viên phải học các môn theo thứ tự, nếu không, sinh viên có thể bắt đầu từ bất kỳ khóa học nào mình chọn",
+        "option_one": "Đúng",
+        "option_two": "KHÔNG",
+        "publish": "Xuất bản lộ trình học tập",
+        "allow": "Cho phép học viên mới tải các khóa học trong lộ trình học tập",
+        "enabled": "Đã bật",
+        "disabled": "Tàn tật",
+        "certificate": "Giấy chứng nhận",
+        "issue": "Cấp chứng chỉ trên LMS",
+        "issue_two": "Cấp chứng chỉ hoặc toàn bộ khóa học trong lộ trình học tập",
+        "option_three": "Không, chỉ dành cho đường dẫn",
+        "delete_path": "Xóa lộ trình học tập",
+        "delete_text": "Xóa toàn bộ Hướng dẫn Học tập",
+        "save": "Lưu thay đổi"
+      },
+      "course": {
+        "title": "Khóa học",
+        "add_course": "Một khóa học",
+        "add_remove": "Thêm/xóa khóa học",
+        "order": "Đặt hàng khóa học",
+        "publish": "Xuất bản bộ sưu tập",
+        "search": "Tìm lộ trình học tập",
+        "option_one": "Được phát hành",
+        "option_two": "Chưa xuất bản",
+        "body_title": "Tiêu đề",
+        "description": "Sự miêu tả",
+        "students": "Sinh viên",
+        "lessons": "Những bài học"
+      }
     }
   },
   "search": {
-    "no_courses": "Không tìm thấy khóa học",
     "no_pathway": "Không tìm thấy con đường nào",
     "no_course": "Không tìm thấy khóa học"
   }

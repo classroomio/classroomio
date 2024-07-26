@@ -174,8 +174,6 @@
         show() {
           if (isStudent) return false;
 
-          if ($course.type !== COURSE_TYPE.LIVE_CLASS) return false;
-
           return true;
         }
       },

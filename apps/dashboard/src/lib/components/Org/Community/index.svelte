@@ -9,7 +9,7 @@
   import { currentOrgPath, currentOrg } from '$lib/utils/store/org';
   import { supabase } from '$lib/utils/functions/supabase';
   import { calDateDiff } from '$lib/utils/functions/date';
-  import { fetchCourses } from '$lib/components/Courses/api';
+  import { fetchCourses } from '$lib/utils/services/courses';
   import { profile } from '$lib/utils/store/user';
   import { Search, Dropdown } from 'carbon-components-svelte';
   import { t } from '$lib/utils/functions/translations';

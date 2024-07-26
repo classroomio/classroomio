@@ -7,3 +7,8 @@ export const newOrgModal = writable({
 export const sideBar = writable({
   hidden: true
 });
+
+export const createPathwayModal = writable({
+  title: '',
+  description: ''
+});

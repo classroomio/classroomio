@@ -1,4 +1,109 @@
 {
+  "pathway": {
+    "heading": "Pathways",
+    "heading_button": "Create pathway",
+    "search_placeholder": "Find pathway",
+    "pathway_filter": {
+      "date_created": "Date Created",
+      "published": "Published",
+      "courses": "Courses"
+    },
+    "empty_title": "No Pathway has been created yet",
+    "empty_description": "Add a group of related courses to set students on a path to excellence in your fields",
+    "pathway_card": {
+      "courses": "courses",
+      "context_menu": {
+        "clone": "Clone",
+        "share": "Share",
+        "invite": "Invite",
+        "delete": "Delete"
+      },
+      "error_message": "An error occurred.",
+      "students": "students",
+      "published": "Published",
+      "unpublished": "Unpublished",
+      "continue_pathway": "Continue pathway",
+      "learn_more": "Learn more",
+      "list_view": {
+        "title": "Title",
+        "description": "Description",
+        "courses": "Courses",
+        "students": "Students",
+        "published": "Published"
+      }
+    },
+    "new_pathway_modal": {
+      "heading": "Create new Pathway",
+      "pathway_name": "Pathway",
+      "pathway_name_placeholder": "Become a professional UX designer",
+      "short_description": "Short Description",
+      "short_description_placeholder": "A sepcialization course that gets you started as a ux designer",
+      "success": "Pathway created successfully",
+      "error": "Error creating pathway",
+      "button": "Create Pathway"
+    },
+    "pages": {
+      "course": {
+        "title": "Courses",
+        "add_course": "A Course",
+        "add_remove": "Add / remove course",
+        "order": "Order Courses",
+        "publish": "Publish Collection",
+        "search": "Find Learning Path",
+        "option_one": "Published",
+        "option_two": "Unpublished",
+        "body_title": "Title",
+        "description": "Description",
+        "students": "Students",
+        "lessons": "Lessons"
+      },
+      "settings": {
+        "page_title": "Settings",
+        "title_error": "Please add a collection title",
+        "description_error": "Please add a collection description",
+        "cover_image": "Cover Image",
+        "optional": "This optional image will show up on your welcome page. If you include one, it should be at least 280 x 200",
+        "replace": "Replace",
+        "delete": "Delete",
+        "details": "Collection Details",
+        "title": "Collection Title",
+        "title_placeholder": "Write the course title here",
+        "description": "Collection Description",
+        "description_placeholder": "Write the course description here",
+        "link": "Collection Link",
+        "students": "Students must take course according to recommended order?",
+        "yes": "if yes, student must take cours according to order, if No, student can start from any course of their choice",
+        "option_one": "Yes",
+        "option_two": "No",
+        "publish": "Publish learning Path",
+        "allow": "Allow new student download courses in learning Path",
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "certificate": "Certificate",
+        "issue": "Issue certificate on LMS",
+        "issue_two": "Issue certificate or all course in learning path",
+        "option_three": "No, for path only",
+        "delete_path": "Delete learning Path",
+        "delete_text": "Delete Learning Path as a whole",
+        "save": "Save Changes"
+      }
+    },
+    "components": {
+      "courseCard": {
+        "lessons": "lessons",
+        "students": "students"
+      },
+      "sideBar": {
+        "news": "News Feed",
+        "courses": "Courses",
+        "people": "People",
+        "certificates": "Certificates",
+        "landing": "Landing Page",
+        "settings": "Settings"
+      }
+    }
+  },
+
   "verify_email_modal": {
     "heading": "Verify your Email",
     "sent_verification": "We've sent a verification email to",
@@ -454,51 +559,6 @@
     }
   },
 
-  "pathway": {
-    "heading": "Pathways",
-    "heading_button": "Create pathway",
-    "search_placeholder": "Find pathway",
-    "pathway_filter": {
-      "date_created": "Date Created",
-      "published": "Published",
-      "courses": "Courses"
-    },
-    "empty_title": "No Pathway has been created yet",
-    "empty_description": "Add a group of related courses to set students on a path to excellence in your fields",
-    "pathway_card": {
-      "courses": "courses",
-      "context_menu": {
-        "clone": "Clone",
-        "share": "Share",
-        "invite": "Invite",
-        "delete": "Delete"
-      },
-      "error_message": "An error occurred.",
-      "students": "students",
-      "published": "Published",
-      "unpublished": "Unpublished",
-      "continue_pathway": "Continue pathway",
-      "learn_more": "Learn more",
-      "list_view": {
-        "title": "Title",
-        "description": "Description",
-        "courses": "Courses",
-        "students": "Students",
-        "published": "Published"
-      }
-    },
-    "new_pathway_modal": {
-      "heading": "Create new Pathway",
-      "pathway_name": "Pathway",
-      "pathway_name_placeholder": "Become a professional UX designer",
-      "short_description": "Short Description",
-      "short_description_placeholder": "A sepcialization course that gets you started as a ux designer",
-      "success": "Pathway created successfully",
-      "error": "Error creating pathway",
-      "button": "Create Pathway"
-    }
-  },
-
   "search": {
     "no_course": "No course found",
     "no_pathway": "No pathway found"
@@ -907,7 +967,7 @@
         "theme": "Choose a theme",
         "logo": "Brand Logo",
         "to_update": "To update your brand image, go to",
-        "settings": "Settings &gt; Organisation settings",
+        "settings": "Settings > Organisation settings",
         "and_upload": "and upload your brand logo",
         "goto_settings": "Go to Settings",
         "description": "Course Description",
@@ -916,11 +976,17 @@
         "locked": "Locked",
         "unlocked": "Unlocked",
         "save": "Save Changes",
-        "unlocked_certificate": "Certificate is now available",
+        "unlocked_certificate": "Congrats! 🎉 your certificate is ready",
+        "unlocked_certificate_subtitle": "You have completed this course, and your dedication is evident. Download certificate and share with your network as a prove of your newly acquired skill",
         "locked_certificate": "Certificates not available",
         "instructor_unlock": "Your instructor needs to unlock your certificate.",
         "contact_instructor": "If you need your certificate, please contact your instructor.",
-        "download_certificate": "DownLoad Certificate"
+        "download_certificate": "Download Certificate",
+        "complete_to_download_title": "Course not complete 😔",
+        "complete_to_download_subtitle": "Your certificate will be available once you complete all lesson and exercises in this course",
+        "description_error": "Description cannot exceed 200 characters",
+        "characters": "characters",
+        "unexpected_error": "An unexpected error occurred"
       },
 
       "landing_page": {
@@ -1381,7 +1447,9 @@
 
   "validations": {
     "user_profile": {
-      "email": "Invalid email address"
+      "email": "Invalid email address",
+      "username": "Username cannot be empty",
+      "fullname": "Name should be minimum of 5 characters"
     },
     "organization_name": {
       "min_char": "Organization must contain 5 or more characters",
