@@ -399,3 +399,27 @@ interface Tabs {
   id: number;
   name: string;
 }
+
+export interface PathwayCourse {
+  id: string;
+  avatar: string;
+  title: string;
+  description: string;
+  lessonNumber: number;
+  studentNumber: number;
+  is_unlocked: boolean;
+  is_completed: boolean;
+  is_published: boolean;
+}
+
+export interface Pathway {
+  slug: string;
+  title: string;
+  avatar: string;
+  description: string;
+  prerequisite: string,
+  is_published: boolean,
+  lms_certificate: boolean,
+  courses_certificate: string,
+  courses: PathwayCourse[]
+}

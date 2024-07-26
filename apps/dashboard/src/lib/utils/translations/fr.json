@@ -1391,12 +1391,72 @@
     "empty_description": "Il n'y a actuellement aucun cours publié disponible",
     "heading": "Découvrez nos cours"
   },
-  "pathway": {
+  "pathways": {
     "heading": "Voies",
     "heading_button": "Créer un parcours",
     "search_placeholder": "Trouver un chemin",
     "empty_title": "Aucun parcours n'a encore été créé",
     "empty_description": "Ajoutez un groupe de cours connexes pour mettre les étudiants sur la voie de l'excellence dans vos domaines",
+    "components": {
+      "sideBar": {
+        "news": "Fil d'actualité",
+        "courses": "Cours",
+        "people": "Personnes",
+        "certificates": "Certificats",
+        "landing": "Page de destination",
+        "settings": "Paramètres"
+      },
+      "courseCard": {
+        "lessons": "cours",
+        "students": "étudiants"
+      }
+    },
+    "pages": {
+      "settings": {
+        "page_title": "Paramètres",
+        "title_error": "Veuillez ajouter un titre de collection",
+        "description_error": "Veuillez ajouter une description de la collection",
+        "cover_image": "Image de couverture",
+        "optional": "Cette image facultative apparaîtra sur votre page d'accueil. Si vous en incluez un, il doit mesurer au moins 280 x 200.",
+        "replace": "Remplacer",
+        "delete": "Supprimer",
+        "details": "Détails de la collecte",
+        "title": "Titre de la collection",
+        "title_placeholder": "Écrivez le titre du cours ici",
+        "description": "Description de la collection",
+        "description_placeholder": "Écrivez la description du cours ici",
+        "link": "Lien de collecte",
+        "students": "Les étudiants doivent-ils suivre les cours selon l'ordre recommandé ?",
+        "yes": "si oui, l'étudiant doit suivre le cours selon l'ordre, si non, l'étudiant peut commencer par n'importe quel cours de son choix",
+        "option_one": "Oui",
+        "option_two": "Non",
+        "publish": "Publier le parcours d'apprentissage",
+        "allow": "Autoriser les nouveaux étudiants à télécharger des cours dans le parcours d'apprentissage",
+        "enabled": "Activé",
+        "disabled": "Désactivé",
+        "certificate": "Certificat",
+        "issue": "Émettre un certificat sur LMS",
+        "issue_two": "Délivrer un certificat ou tous les cours du parcours d'apprentissage",
+        "option_three": "Non, pour le chemin uniquement",
+        "delete_path": "Supprimer le parcours d'apprentissage",
+        "delete_text": "Supprimer le parcours de formation dans son intégralité",
+        "save": "Sauvegarder les modifications"
+      },
+      "course": {
+        "title": "Cours",
+        "add_course": "Un cours",
+        "add_remove": "Ajouter/supprimer un cours",
+        "order": "Commander des cours",
+        "publish": "Publier une collection",
+        "search": "Trouver un parcours d'apprentissage",
+        "option_one": "Publié",
+        "option_two": "Inédit",
+        "body_title": "Titre",
+        "description": "Description",
+        "students": "Étudiants",
+        "lessons": "Cours"
+      }
+    },
     "new_pathway_modal": {
       "heading": "Créer un nouveau parcours",
       "pathway_name": "Sentier",

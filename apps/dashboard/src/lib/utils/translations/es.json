@@ -1391,12 +1391,72 @@
     "empty_description": "Actualmente no hay ningún curso publicado disponible",
     "heading": "Explora nuestros cursos"
   },
-  "pathway": {
+  "pathways": {
     "heading": "Caminos",
     "heading_button": "Crear camino",
     "search_placeholder": "encontrar camino",
     "empty_title": "Aún no se ha creado ningún camino",
     "empty_description": "Agregue un grupo de cursos relacionados para encaminar a los estudiantes hacia la excelencia en sus campos",
+    "components": {
+      "sideBar": {
+        "news": "Noticias",
+        "courses": "Cursos",
+        "people": "Gente",
+        "certificates": "Certificados",
+        "landing": "Página de destino",
+        "settings": "Ajustes"
+      },
+      "courseCard": {
+        "lessons": "lecciones",
+        "students": "estudiantes"
+      }
+    },
+    "pages": {
+      "settings": {
+        "page_title": "Ajustes",
+        "title_error": "Por favor agregue un título de colección",
+        "description_error": "Por favor agregue una descripción de la colección.",
+        "cover_image": "Imagen de portada",
+        "optional": "Esta imagen opcional aparecerá en su página de bienvenida. Si incluyes uno, debe tener al menos 280 x 200",
+        "replace": "Reemplazar",
+        "delete": "Borrar",
+        "details": "Detalles de la colección",
+        "title": "Título de la colección",
+        "title_placeholder": "Escribe aquí el título del curso.",
+        "description": "Descripción de la colección",
+        "description_placeholder": "Escribe aquí la descripción del curso.",
+        "link": "Enlace de colección",
+        "students": "¿Los estudiantes deben tomar el curso según el orden recomendado?",
+        "yes": "En caso afirmativo, el estudiante debe tomar los cursos según el orden; en caso negativo, el estudiante puede comenzar desde cualquier curso de su elección.",
+        "option_one": "Sí",
+        "option_two": "No",
+        "publish": "Publicar ruta de aprendizaje",
+        "allow": "Permitir que los nuevos estudiantes descarguen cursos en la ruta de aprendizaje",
+        "enabled": "Activado",
+        "disabled": "Desactivado",
+        "certificate": "Certificado",
+        "issue": "Emitir certificado en LMS",
+        "issue_two": "Emitir certificado o todo el curso en la ruta de aprendizaje.",
+        "option_three": "No, solo para ruta",
+        "delete_path": "Eliminar ruta de aprendizaje",
+        "delete_text": "Eliminar la ruta de aprendizaje en su totalidad",
+        "save": "Guardar cambios"
+      },
+      "course": {
+        "title": "Cursos",
+        "add_course": "Un curso",
+        "add_remove": "Agregar/eliminar curso",
+        "order": "Ordenar cursos",
+        "publish": "Publicar colección",
+        "search": "Encuentre una ruta de aprendizaje",
+        "option_one": "Publicado",
+        "option_two": "Inédito",
+        "body_title": "Título",
+        "description": "Descripción",
+        "students": "Estudiantes",
+        "lessons": "Lecciones"
+      }
+    },
     "new_pathway_modal": {
       "heading": "Crear nuevo camino",
       "pathway_name": "Ruta",

@@ -1391,12 +1391,72 @@
     "empty_description": "Atualmente não há nenhum curso publicado disponível",
     "heading": "Explore nossos cursos"
   },
-  "pathway": {
+  "pathways": {
     "heading": "Caminhos",
     "heading_button": "Criar caminho",
     "search_placeholder": "Encontrar caminho",
     "empty_title": "Nenhum caminho foi criado ainda",
     "empty_description": "Adicione um grupo de cursos relacionados para colocar os alunos no caminho da excelência em suas áreas",
+    "components": {
+      "sideBar": {
+        "news": "Notícias",
+        "courses": "Cursos",
+        "people": "Pessoas",
+        "certificates": "Certificados",
+        "landing": "Página inicial",
+        "settings": "Configurações"
+      },
+      "courseCard": {
+        "lessons": "lições",
+        "students": "estudantes"
+      }
+    },
+    "pages": {
+      "settings": {
+        "page_title": "Configurações",
+        "title_error": "Adicione um título de coleção",
+        "description_error": "Adicione uma descrição da coleção",
+        "cover_image": "Imagem de capa",
+        "optional": "Esta imagem opcional aparecerá na sua página de boas-vindas. Se você incluir um, ele deverá ter pelo menos 280 x 200",
+        "replace": "Substituir",
+        "delete": "Excluir",
+        "details": "Detalhes da coleção",
+        "title": "Título da coleção",
+        "title_placeholder": "Escreva o título do curso aqui",
+        "description": "Descrição da coleção",
+        "description_placeholder": "Escreva a descrição do curso aqui",
+        "link": "Link da coleção",
+        "students": "Os alunos devem fazer o curso de acordo com a ordem recomendada?",
+        "yes": "se sim, o aluno deve fazer o curso de acordo com o pedido; se não, o aluno pode iniciar em qualquer curso de sua escolha",
+        "option_one": "Sim",
+        "option_two": "Não",
+        "publish": "Publicar caminho de aprendizagem",
+        "allow": "Permitir que novos alunos baixem cursos no Caminho de aprendizagem",
+        "enabled": "Habilitado",
+        "disabled": "Desabilitado",
+        "certificate": "Certificado",
+        "issue": "Emitir certificado no LMS",
+        "issue_two": "Emitir certificado ou todo o curso do roteiro de aprendizagem",
+        "option_three": "Não, apenas para caminho",
+        "delete_path": "Excluir caminho de aprendizagem",
+        "delete_text": "Excluir o caminho de aprendizagem como um todo",
+        "save": "Salvar alterações"
+      },
+      "course": {
+        "title": "Cursos",
+        "add_course": "Um curso",
+        "add_remove": "Adicionar/remover curso",
+        "order": "Encomendar cursos",
+        "publish": "Publicar coleção",
+        "search": "Encontre o caminho de aprendizagem",
+        "option_one": "Publicados",
+        "option_two": "Não publicado",
+        "body_title": "Título",
+        "description": "Descrição",
+        "students": "Alunos",
+        "lessons": "Lições"
+      }
+    },
     "new_pathway_modal": {
       "heading": "Criar novo caminho",
       "pathway_name": "Caminho",
