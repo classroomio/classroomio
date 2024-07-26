@@ -95,7 +95,9 @@
       // Send notification to teacher(s) that a student has joined the course.
       triggerSendEmail(NOTIFICATION_NAME.TEACHER_STUDENT_JOINED, {
         to: teachers[0],
-        courseName: data.name
+        courseName: data.name,
+        studentName: $profile.fullname,
+        studentEmail: $profile.email
       });
 
       // go to lms

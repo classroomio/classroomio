@@ -5,7 +5,7 @@
 
 <Box>
   <div class="flex flex-col items-center justify-center w-max h-full gap-2">
-    <img src="/professional.png" alt="Certificate" />
+    <img src="/images/student-certificate-preview.png" alt="Certificate" class="max-w-[218px]" />
     <p class="text-xl font-normal text-center">
       {$t('course.navItem.certificates.locked_certificate')}
     </p>

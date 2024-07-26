@@ -409,11 +409,17 @@
         "locked": "Gesperrt",
         "unlocked": "Entsperrt",
         "save": "Änderungen speichern",
-        "unlocked_certificate": "Zertifikat ist jetzt verfügbar",
         "locked_certificate": "Zertifikate nicht verfügbar",
         "instructor_unlock": "Ihr Dozent muss Ihr Zertifikat entsperren.",
         "contact_instructor": "Wenn Sie Ihr Zertifikat benötigen, wenden Sie sich bitte an Ihren Dozenten.",
-        "download_certificate": "Zertifikat herunterladen"
+        "download_certificate": "Zertifikat herunterladen",
+        "unlocked_certificate": "Glückwunsch! 🎉 Dein Zertifikat ist fertig",
+        "unlocked_certificate_subtitle": "Sie haben diesen Kurs abgeschlossen und Ihr Engagement ist offensichtlich. Laden Sie das Zertifikat herunter und teilen Sie es mit Ihrem Netzwerk als Beweis für Ihre neu erworbenen Fähigkeiten",
+        "complete_to_download_subtitle": "Ihr Zertifikat ist verfügbar, sobald Sie alle Lektionen und Übungen dieses Kurses abgeschlossen haben",
+        "complete_to_download_title": "Kurs nicht abgeschlossen 😔",
+        "description_error": "Die Beschreibung darf 200 Zeichen nicht überschreiten",
+        "characters": "Figuren",
+        "unexpected_error": "Ein unerwarteter Fehler ist aufgetreten"
       },
       "people": {
         "title": "Menschen",
@@ -1373,6 +1379,11 @@
     "organization_name": {
       "min_char": "Die Organisation muss 5 oder mehr Zeichen enthalten",
       "hyphen_rule": "Der Name der Organisation darf nicht mit einem Bindestrich beginnen oder enden"
+    },
+    "user_profile": {
+      "email": "Ungültige E-Mail-Adresse",
+      "username": "Benutzername darf nicht leer sein",
+      "fullname": "Der Name sollte mindestens 5 Zeichen lang sein"
     }
   },
   "explore": {

@@ -14,11 +14,12 @@ INSERT INTO "auth"."users" ("instance_id", "id", "aud", "role", "email", "encryp
 	('00000000-0000-0000-0000-000000000000', '01676a50-bb56-4c5e-8a61-fb9e9190fb10', 'authenticated', 'authenticated', 'test@test.com', '$2a$10$WmfPO84h.8SbkZWSzXAygead77QQQXdeO5XIMd8iXk8SFQKB3Udy2', '2023-11-22 10:09:32.250231+00', NULL, '', NULL, '', NULL, '', '', NULL, '2023-12-04 12:57:34.337219+00', '{"provider": "email", "providers": ["email"]}', '{}', NULL, '2023-11-22 10:09:32.171201+00', '2023-12-16 14:00:35.986845+00', NULL, NULL, '', '', NULL, '', 0, NULL, '', NULL, false, NULL);
 
 
+
 --
 -- Data for Name: identities; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
 --
 
-INSERT INTO "auth"."identities" ("provider_id", "user_id", "identity_data", "provider", "last_sign_in_at", "created_at", "updated_at") VALUES
+INSERT INTO "auth"."identities" ("id", "user_id", "identity_data", "provider", "last_sign_in_at", "created_at", "updated_at") VALUES
 	('01676a50-bb56-4c5e-8a61-fb9e9190fb10', '01676a50-bb56-4c5e-8a61-fb9e9190fb10', '{"sub": "01676a50-bb56-4c5e-8a61-fb9e9190fb10", "email": "test@test.com"}', 'email', '2023-11-22 10:09:32.225444+00', '2023-11-22 10:09:32.225521+00', '2023-11-22 10:09:32.225521+00'),
 	('7ac00503-8519-43c8-a5ea-b79aeca900b1', '7ac00503-8519-43c8-a5ea-b79aeca900b1', '{"sub": "7ac00503-8519-43c8-a5ea-b79aeca900b1", "email": "admin@test.com"}', 'email', '2023-12-16 14:04:38.302264+00', '2023-12-16 14:04:38.302326+00', '2023-12-16 14:04:38.302326+00'),
 	('0c256e75-aa40-4f62-8d30-0217ca1c60d9', '0c256e75-aa40-4f62-8d30-0217ca1c60d9', '{"sub": "0c256e75-aa40-4f62-8d30-0217ca1c60d9", "email": "student@test.com"}', 'email', '2023-12-18 17:08:57.410285+00', '2023-12-18 17:08:57.410344+00', '2023-12-18 17:08:57.410344+00');
@@ -172,10 +173,10 @@ Through a carefully crafted curriculum, you''ll learn the core concepts of MVC, 
 -- Data for Name: profile; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO "public"."profile" ("id", "fullname", "username", "avatar_url", "created_at", "updated_at", "email", "can_add_course", "role", "goal", "source", "metadata", "telegram_chat_id") VALUES
-	('01676a50-bb56-4c5e-8a61-fb9e9190fb10', 'Alice', 'alice1700647772421', 'https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/avatar.png', '2023-11-22 10:09:32.429935+00', '2023-11-22 10:09:32.429935+00', 'test@test.com', true, NULL, 'explore', 'friends-family', NULL, NULL),
-	('7ac00503-8519-43c8-a5ea-b79aeca900b1', 'Elon Gates', 'admin1702735478395', 'https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/avatar.png', '2023-12-16 14:04:38.401211+00', '2023-12-16 14:04:38.401211+00', 'admin@test.com', true, NULL, 'sell-online', 'articles', NULL, NULL),
-	('0c256e75-aa40-4f62-8d30-0217ca1c60d9', 'John Doe', 'student1702919337513', 'https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/avatar.png', '2023-12-18 17:08:57.517768+00', '2023-12-18 17:08:57.517768+00', 'student@test.com', true, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO "public"."profile" ("id", "fullname", "username", "avatar_url", "created_at", "updated_at", "email", "can_add_course", "role", "goal", "source", "metadata", "telegram_chat_id", "is_email_verified") VALUES
+	('01676a50-bb56-4c5e-8a61-fb9e9190fb10', 'Alice', 'alice1700647772421', 'https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/avatar.png', '2023-11-22 10:09:32.429935+00', '2023-11-22 10:09:32.429935+00', 'test@test.com', true, NULL, 'explore', 'friends-family', NULL, NULL, true),
+	('7ac00503-8519-43c8-a5ea-b79aeca900b1', 'Elon Gates', 'admin1702735478395', 'https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/avatar.png', '2023-12-16 14:04:38.401211+00', '2023-12-16 14:04:38.401211+00', 'admin@test.com', true, NULL, 'sell-online', 'articles', NULL, NULL, true),
+	('0c256e75-aa40-4f62-8d30-0217ca1c60d9', 'John Doe', 'student1702919337513', 'https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/avatar.png', '2023-12-18 17:08:57.517768+00', '2023-12-18 17:08:57.517768+00', 'student@test.com', true, NULL, NULL, NULL, NULL, NULL, true);
 
 
 

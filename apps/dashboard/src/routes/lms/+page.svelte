@@ -5,7 +5,7 @@
   import { goto } from '$app/navigation';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
-  import { fetchCourses } from '$lib/components/Courses/api';
+  import { fetchCourses } from '$lib/utils/services/courses';
   import { courses, courseMetaDeta } from '$lib/components/Courses/store';
   import type { Course } from '$lib/utils/types';
   import { getGreeting } from '$lib/utils/functions/date';
