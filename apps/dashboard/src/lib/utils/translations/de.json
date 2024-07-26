@@ -409,11 +409,17 @@
         "locked": "Gesperrt",
         "unlocked": "Entsperrt",
         "save": "Änderungen speichern",
-        "unlocked_certificate": "Zertifikat ist jetzt verfügbar",
         "locked_certificate": "Zertifikate nicht verfügbar",
         "instructor_unlock": "Ihr Dozent muss Ihr Zertifikat entsperren.",
         "contact_instructor": "Wenn Sie Ihr Zertifikat benötigen, wenden Sie sich bitte an Ihren Dozenten.",
-        "download_certificate": "Zertifikat herunterladen"
+        "download_certificate": "Zertifikat herunterladen",
+        "unlocked_certificate": "Glückwunsch! 🎉 Dein Zertifikat ist fertig",
+        "unlocked_certificate_subtitle": "Sie haben diesen Kurs abgeschlossen und Ihr Engagement ist offensichtlich. Laden Sie das Zertifikat herunter und teilen Sie es mit Ihrem Netzwerk als Beweis für Ihre neu erworbenen Fähigkeiten",
+        "complete_to_download_subtitle": "Ihr Zertifikat ist verfügbar, sobald Sie alle Lektionen und Übungen dieses Kurses abgeschlossen haben",
+        "complete_to_download_title": "Kurs nicht abgeschlossen 😔",
+        "description_error": "Die Beschreibung darf 200 Zeichen nicht überschreiten",
+        "characters": "Figuren",
+        "unexpected_error": "Ein unerwarteter Fehler ist aufgetreten"
       },
       "people": {
         "title": "Menschen",
@@ -1081,7 +1087,9 @@
     "settings": "Einstellungen",
     "early_adopter": "Werden Sie ein Early Adopter",
     "unlock": "Schalten Sie unbegrenzte Funktionen frei und investieren Sie in unsere Zukunft",
-    "upgrade": "Jetzt upgraden"
+    "upgrade": "Jetzt upgraden",
+    "all_courses": "Alle Kurse",
+    "pathway": "Wege"
   },
   "settings": {
     "heading": "Einstellungen",
@@ -1371,6 +1379,11 @@
     "organization_name": {
       "min_char": "Die Organisation muss 5 oder mehr Zeichen enthalten",
       "hyphen_rule": "Der Name der Organisation darf nicht mit einem Bindestrich beginnen oder enden"
+    },
+    "user_profile": {
+      "email": "Ungültige E-Mail-Adresse",
+      "username": "Benutzername darf nicht leer sein",
+      "fullname": "Der Name sollte mindestens 5 Zeichen lang sein"
     }
   },
   "explore": {
@@ -1379,6 +1392,11 @@
     "heading": "Entdecken Sie unsere Kurse"
   },
   "pathways": {
+    "heading": "Wege",
+    "heading_button": "Weg erstellen",
+    "search_placeholder": "Weg finden",
+    "empty_title": "Es wurde noch kein Pfad erstellt",
+    "empty_description": "Fügen Sie eine Gruppe verwandter Kurse hinzu, um Studenten auf den Weg zu Spitzenleistungen in Ihren Fachgebieten zu bringen",
     "components": {
       "sideBar": {
         "news": "Neuigkeiten",
@@ -1438,6 +1456,41 @@
         "students": "Studenten",
         "lessons": "Unterricht"
       }
+    },
+    "new_pathway_modal": {
+      "heading": "Erstellen Sie einen neuen Pfad",
+      "pathway_name": "Weg",
+      "pathway_name_placeholder": "Werden Sie ein professioneller UX-Designer",
+      "short_description": "kurze Beschreibung",
+      "short_description_placeholder": "Ein Spezialisierungskurs, der Ihnen den Einstieg als UX-Designer erleichtert",
+      "button": "Pfad erstellen"
+    },
+    "pathway_card": {
+      "courses": "Kurse",
+      "error_message": "Ein Fehler ist aufgetreten.",
+      "students": "Studenten",
+      "published": "Veröffentlicht",
+      "unpublished": "Unveröffentlicht",
+      "continue_pathway": "Den Weg fortsetzen",
+      "learn_more": "Erfahren Sie mehr",
+      "list_view": {
+        "title": "Titel",
+        "description": "Beschreibung",
+        "courses": "Kurse",
+        "students": "Studenten",
+        "published": "Veröffentlicht"
+      },
+      "context_menu": {
+        "clone": "Klon",
+        "share": "Aktie",
+        "invite": "Einladen",
+        "delete": "Löschen"
+      }
+    },
+    "pathway_filter": {
+      "date_created": "Datum erstellt",
+      "published": "Veröffentlicht",
+      "courses": "Kurse"
     }
   }
 }

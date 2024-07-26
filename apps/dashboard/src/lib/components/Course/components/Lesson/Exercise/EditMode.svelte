@@ -283,4 +283,8 @@
   :global(#dnd-action-dragged-el div) {
     z-index: 100;
   }
+
+  :global(select) {
+    background-image: none;
+  }
 </style>

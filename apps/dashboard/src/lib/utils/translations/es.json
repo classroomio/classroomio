@@ -409,11 +409,17 @@
         "locked": "bloqueado",
         "unlocked": "desbloqueado",
         "save": "Guardar cambios",
-        "unlocked_certificate": "El certificado ya está disponible",
         "locked_certificate": "Certificados no disponibles",
         "instructor_unlock": "Su instructor necesita desbloquear su certificado.",
         "contact_instructor": "Si necesita su certificado, comuníquese con su instructor.",
-        "download_certificate": "Descargar certificado"
+        "download_certificate": "Descargar certificado",
+        "unlocked_certificate": "¡Felicitaciones! 🎉 tu certificado está listo",
+        "unlocked_certificate_subtitle": "Has completado este curso y tu dedicación es evidente. Descargue el certificado y compártalo con su red como prueba de su habilidad recién adquirida",
+        "complete_to_download_subtitle": "Su certificado estará disponible una vez que complete todas las lecciones y ejercicios de este curso.",
+        "complete_to_download_title": "Curso no completo 😔",
+        "description_error": "La descripción no puede exceder los 200 caracteres.",
+        "characters": "caracteres",
+        "unexpected_error": "ocurrió un error inesperado"
       },
       "people": {
         "title": "Gente",
@@ -1081,7 +1087,9 @@
     "settings": "Ajustes",
     "early_adopter": "Conviértase en uno de los primeros en adoptar",
     "unlock": "Desbloquee funciones ilimitadas e invierta en nuestro futuro",
-    "upgrade": "Actualizar ahora"
+    "upgrade": "Actualizar ahora",
+    "all_courses": "Todos los cursos",
+    "pathway": "Caminos"
   },
   "settings": {
     "heading": "Ajustes",
@@ -1371,6 +1379,11 @@
     "organization_name": {
       "min_char": "La organización debe contener 5 o más caracteres.",
       "hyphen_rule": "El nombre de la organización no puede comenzar ni terminar con un guión."
+    },
+    "user_profile": {
+      "email": "Dirección de correo electrónico no válida",
+      "username": "El nombre de usuario no puede estar vacío",
+      "fullname": "El nombre debe tener un mínimo de 5 caracteres."
     }
   },
   "explore": {
@@ -1379,6 +1392,11 @@
     "heading": "Explora nuestros cursos"
   },
   "pathways": {
+    "heading": "Caminos",
+    "heading_button": "Crear camino",
+    "search_placeholder": "encontrar camino",
+    "empty_title": "Aún no se ha creado ningún camino",
+    "empty_description": "Agregue un grupo de cursos relacionados para encaminar a los estudiantes hacia la excelencia en sus campos",
     "components": {
       "sideBar": {
         "news": "Noticias",
@@ -1438,6 +1456,41 @@
         "students": "Estudiantes",
         "lessons": "Lecciones"
       }
+    },
+    "new_pathway_modal": {
+      "heading": "Crear nuevo camino",
+      "pathway_name": "Ruta",
+      "pathway_name_placeholder": "Conviértete en un diseñador UX profesional",
+      "short_description": "Breve descripción",
+      "short_description_placeholder": "Un curso de especialización que te inicia como diseñador de ux",
+      "button": "Crear camino"
+    },
+    "pathway_card": {
+      "courses": "cursos",
+      "error_message": "Ocurrió un error.",
+      "students": "estudiantes",
+      "published": "Publicado",
+      "unpublished": "Inédito",
+      "continue_pathway": "Continuar camino",
+      "learn_more": "Aprende más",
+      "list_view": {
+        "title": "Título",
+        "description": "Descripción",
+        "courses": "Cursos",
+        "students": "Estudiantes",
+        "published": "Publicado"
+      },
+      "context_menu": {
+        "clone": "Clon",
+        "share": "Compartir",
+        "invite": "Invitar",
+        "delete": "Borrar"
+      }
+    },
+    "pathway_filter": {
+      "date_created": "fecha de creacion",
+      "published": "Publicado",
+      "courses": "Cursos"
     }
   }
 }

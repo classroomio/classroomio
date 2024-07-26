@@ -3,23 +3,31 @@
   import { group } from '../Course/store';
   import type { GroupPerson } from '$lib/utils/types';
   import { isOrgAdmin } from '$lib/utils/store/org';
+  import { ROLE } from '$lib/utils/constants/roles';
 
   export let allowedRoles: number[] = [];
   export let onDenied = () => {};
+  export let onlyStudent = false;
 
   let userRole: number = 0;
+
+  function isAllowed(userRole) {
+    return allowedRoles.includes(userRole);
+  }
 
   $: {
     const user: GroupPerson = $group.people.find((person) => person.profile_id === $profile.id)!;
 
     userRole = user ? user.role_id : userRole;
 
-    if (!$isOrgAdmin && $group.people.length && !allowedRoles.includes(userRole)) {
+    if (!$isOrgAdmin && $group.people.length && !isAllowed(userRole)) {
       onDenied();
     }
   }
+
+  $: show = onlyStudent ? isAllowed(ROLE.STUDENT) : isAllowed(userRole) || $isOrgAdmin;
 </script>
 
-{#if allowedRoles.includes(userRole) || $isOrgAdmin}
+{#if show}
   <slot />
 {/if}

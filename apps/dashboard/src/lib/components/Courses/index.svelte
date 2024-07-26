@@ -15,6 +15,7 @@
     StructuredListBody
   } from 'carbon-components-svelte';
   import { t } from '$lib/utils/functions/translations';
+  import { isMobile } from '$lib/utils/store/useMobile';
 
   export let courses: Course[] = [];
   export let emptyTitle = $t('courses.course_card.empty_title');
@@ -40,16 +41,16 @@
       <CardLoader />
     </section>
   {:else if $courseMetaDeta.view === 'list'}
-    <div class="max-w overflow-x-auto">
-      <StructuredList selection class="w-full">
-        <StructuredListHead>
-          <StructuredListRow head>
-            <StructuredListCell head>
-              {$t('courses.course_card.list_view.title')}
-            </StructuredListCell>
-            <StructuredListCell head>
-              {$t('courses.course_card.list_view.description')}
-            </StructuredListCell>
+    <StructuredList selection class="w-full">
+      <StructuredListHead>
+        <StructuredListRow head>
+          <StructuredListCell head>
+            {$t('courses.course_card.list_view.title')}
+          </StructuredListCell>
+          <StructuredListCell head>
+            {$t('courses.course_card.list_view.description')}
+          </StructuredListCell>
+          {#if !$isMobile}
             <StructuredListCell head>
               {$t('courses.course_card.list_view.type')}
             </StructuredListCell>
@@ -62,24 +63,24 @@
             <StructuredListCell head>
               {$t('courses.course_card.list_view.published')}
             </StructuredListCell>
-            <StructuredListCell head>{''}</StructuredListCell>
-          </StructuredListRow>
-        </StructuredListHead>
-        <StructuredListBody>
-          {#each courses as courseData}
-            <List
-              id={courseData.id}
-              title={courseData.title}
-              type={$t(`course.navItem.settings.${courseData.type.toLowerCase()}`)}
-              description={courseData.description}
-              isPublished={courseData.is_published}
-              totalLessons={courseData.total_lessons}
-              totalStudents={courseData.total_students}
-            />
-          {/each}
-        </StructuredListBody>
-      </StructuredList>
-    </div>
+          {/if}
+          <StructuredListCell head>{''}</StructuredListCell>
+        </StructuredListRow>
+      </StructuredListHead>
+      <StructuredListBody>
+        {#each courses as courseData}
+          <List
+            id={courseData.id}
+            title={courseData.title}
+            type={$t(`course.navItem.settings.${courseData.type.toLowerCase()}`)}
+            description={courseData.description}
+            isPublished={courseData.is_published}
+            totalLessons={courseData.total_lessons}
+            totalStudents={courseData.total_students}
+          />
+        {/each}
+      </StructuredListBody>
+    </StructuredList>
   {:else}
     <section class={`${$courseMetaDeta.isLoading || courses ? 'cards-container' : ''} `}>
       {#each courses as courseData}
