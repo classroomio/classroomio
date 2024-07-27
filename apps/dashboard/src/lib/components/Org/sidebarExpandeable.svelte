@@ -4,7 +4,7 @@
   import ChevronUpIcon from 'carbon-icons-svelte/lib/ChevronUp.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
-  import SideBarIcons from './SideBarIcons.svelte';
+  import SideBarIcons from '$lib/components/Org/SidebarIcons.svelte';
 
   export let label: string = '';
   export let id: string;
@@ -23,7 +23,7 @@
   }
 </script>
 
-<div class="">
+<div>
   <a
     on:click={handleIsExpanded}
     class="item relative my-1 flex items-center gap-2.5 px-2.5 py-2 cursor-pointer {NavClasses.item} {isGroupActive &&

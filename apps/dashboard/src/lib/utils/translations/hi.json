@@ -1397,6 +1397,43 @@
     "search_placeholder": "रास्ता खोजें",
     "empty_title": "अभी तक कोई पाथवे नहीं बनाया गया है",
     "empty_description": "छात्रों को अपने क्षेत्रों में उत्कृष्टता की राह पर ले जाने के लिए संबंधित पाठ्यक्रमों का एक समूह जोड़ें",
+    "new_pathway_modal": {
+      "heading": "नया मार्ग बनाएं",
+      "pathway_name": "मार्ग",
+      "pathway_name_placeholder": "एक पेशेवर UX डिज़ाइनर बनें",
+      "short_description": "संक्षिप्त वर्णन",
+      "short_description_placeholder": "एक विशेषज्ञता पाठ्यक्रम जो आपको एक यूएक्स डिजाइनर के रूप में आरंभ करवाता है",
+      "button": "मार्ग बनाएँ",
+      "success": "पाथवे सफलतापूर्वक बनाया गया",
+      "error": "पाथवे बनाने में त्रुटि"
+    },
+    "pathway_card": {
+      "courses": "पाठ्यक्रम",
+      "error_message": "एक त्रुटि पाई गई।",
+      "students": "छात्र",
+      "published": "प्रकाशित",
+      "unpublished": "अप्रकाशित",
+      "continue_pathway": "मार्ग जारी रखें",
+      "learn_more": "और अधिक जानें",
+      "list_view": {
+        "title": "शीर्षक",
+        "description": "विवरण",
+        "courses": "पाठ्यक्रम",
+        "students": "छात्र",
+        "published": "प्रकाशित"
+      },
+      "context_menu": {
+        "clone": "क्लोन",
+        "share": "शेयर करना",
+        "invite": "आमंत्रित करना",
+        "delete": "मिटाना"
+      }
+    },
+    "pathway_filter": {
+      "date_created": "बनाया गया दिनांक",
+      "published": "प्रकाशित",
+      "courses": "पाठ्यक्रम"
+    },
     "components": {
       "sideBar": {
         "news": "समाचार फ़ीड",
@@ -1448,7 +1485,7 @@
         "add_remove": "पाठ्यक्रम जोड़ें/हटाएँ",
         "order": "आदेश पाठ्यक्रम",
         "publish": "संग्रह प्रकाशित करें",
-        "search": "सीखने का मार्ग खोजें",
+        "search": "सीखने का पथ खोजें",
         "option_one": "प्रकाशित",
         "option_two": "अप्रकाशित",
         "body_title": "शीर्षक",
@@ -1456,41 +1493,10 @@
         "students": "छात्र",
         "lessons": "पाठ"
       }
-    },
-    "new_pathway_modal": {
-      "heading": "नया मार्ग बनाएं",
-      "pathway_name": "मार्ग",
-      "pathway_name_placeholder": "एक पेशेवर UX डिज़ाइनर बनें",
-      "short_description": "संक्षिप्त वर्णन",
-      "short_description_placeholder": "एक विशेषज्ञता पाठ्यक्रम जो आपको एक यूएक्स डिजाइनर के रूप में आरंभ करवाता है",
-      "button": "मार्ग बनाएँ"
-    },
-    "pathway_card": {
-      "courses": "पाठ्यक्रम",
-      "error_message": "एक त्रुटि पाई गई।",
-      "students": "छात्र",
-      "published": "प्रकाशित",
-      "unpublished": "अप्रकाशित",
-      "continue_pathway": "मार्ग जारी रखें",
-      "learn_more": "और अधिक जानें",
-      "list_view": {
-        "title": "शीर्षक",
-        "description": "विवरण",
-        "courses": "पाठ्यक्रम",
-        "students": "छात्र",
-        "published": "प्रकाशित"
-      },
-      "context_menu": {
-        "clone": "क्लोन",
-        "share": "शेयर करना",
-        "invite": "आमंत्रित करना",
-        "delete": "मिटाना"
-      }
-    },
-    "pathway_filter": {
-      "date_created": "बनाया गया दिनांक",
-      "published": "प्रकाशित",
-      "courses": "पाठ्यक्रम"
     }
+  },
+  "search": {
+    "no_pathway": "कोई मार्ग नहीं मिला",
+    "no_course": "कोई पाठ्यक्रम नहीं मिला"
   }
 }

@@ -1397,6 +1397,43 @@
     "search_placeholder": "Encontrar caminho",
     "empty_title": "Nenhum caminho foi criado ainda",
     "empty_description": "Adicione um grupo de cursos relacionados para colocar os alunos no caminho da excelência em suas áreas",
+    "new_pathway_modal": {
+      "heading": "Criar novo caminho",
+      "pathway_name": "Caminho",
+      "pathway_name_placeholder": "Torne-se um designer UX profissional",
+      "short_description": "Pequena descrição",
+      "short_description_placeholder": "Um curso de especialização que inicia como designer ux",
+      "button": "Criar caminho",
+      "success": "Caminho criado com sucesso",
+      "error": "Erro ao criar caminho"
+    },
+    "pathway_card": {
+      "courses": "cursos",
+      "error_message": "Um erro ocorreu.",
+      "students": "estudantes",
+      "published": "Publicados",
+      "unpublished": "Não publicado",
+      "continue_pathway": "Continuar caminho",
+      "learn_more": "Saber mais",
+      "list_view": {
+        "title": "Título",
+        "description": "Descrição",
+        "courses": "Cursos",
+        "students": "Alunos",
+        "published": "Publicados"
+      },
+      "context_menu": {
+        "clone": "Clone",
+        "share": "Compartilhar",
+        "invite": "Convidar",
+        "delete": "Excluir"
+      }
+    },
+    "pathway_filter": {
+      "date_created": "Data Criada",
+      "published": "Publicados",
+      "courses": "Cursos"
+    },
     "components": {
       "sideBar": {
         "news": "Notícias",
@@ -1456,41 +1493,10 @@
         "students": "Alunos",
         "lessons": "Lições"
       }
-    },
-    "new_pathway_modal": {
-      "heading": "Criar novo caminho",
-      "pathway_name": "Caminho",
-      "pathway_name_placeholder": "Torne-se um designer UX profissional",
-      "short_description": "Pequena descrição",
-      "short_description_placeholder": "Um curso de especialização que inicia como designer ux",
-      "button": "Criar caminho"
-    },
-    "pathway_card": {
-      "courses": "cursos",
-      "error_message": "Um erro ocorreu.",
-      "students": "estudantes",
-      "published": "Publicados",
-      "unpublished": "Não publicado",
-      "continue_pathway": "Continuar caminho",
-      "learn_more": "Saber mais",
-      "list_view": {
-        "title": "Título",
-        "description": "Descrição",
-        "courses": "Cursos",
-        "students": "Alunos",
-        "published": "Publicados"
-      },
-      "context_menu": {
-        "clone": "Clone",
-        "share": "Compartilhar",
-        "invite": "Convidar",
-        "delete": "Excluir"
-      }
-    },
-    "pathway_filter": {
-      "date_created": "Data Criada",
-      "published": "Publicados",
-      "courses": "Cursos"
     }
+  },
+  "search": {
+    "no_pathway": "Nenhum caminho encontrado",
+    "no_course": "Nenhum curso encontrado"
   }
 }

@@ -1397,6 +1397,43 @@
     "search_placeholder": "Weg finden",
     "empty_title": "Es wurde noch kein Pfad erstellt",
     "empty_description": "Fügen Sie eine Gruppe verwandter Kurse hinzu, um Studenten auf den Weg zu Spitzenleistungen in Ihren Fachgebieten zu bringen",
+    "new_pathway_modal": {
+      "heading": "Erstellen Sie einen neuen Pfad",
+      "pathway_name": "Weg",
+      "pathway_name_placeholder": "Werden Sie ein professioneller UX-Designer",
+      "short_description": "kurze Beschreibung",
+      "short_description_placeholder": "Ein Spezialisierungskurs, der Ihnen den Einstieg als UX-Designer erleichtert",
+      "button": "Pfad erstellen",
+      "success": "Pfad erfolgreich erstellt",
+      "error": "Fehler beim Erstellen des Pfads"
+    },
+    "pathway_card": {
+      "courses": "Kurse",
+      "error_message": "Ein Fehler ist aufgetreten.",
+      "students": "Studenten",
+      "published": "Veröffentlicht",
+      "unpublished": "Unveröffentlicht",
+      "continue_pathway": "Den Weg fortsetzen",
+      "learn_more": "Erfahren Sie mehr",
+      "list_view": {
+        "title": "Titel",
+        "description": "Beschreibung",
+        "courses": "Kurse",
+        "students": "Studenten",
+        "published": "Veröffentlicht"
+      },
+      "context_menu": {
+        "clone": "Klon",
+        "share": "Aktie",
+        "invite": "Einladen",
+        "delete": "Löschen"
+      }
+    },
+    "pathway_filter": {
+      "date_created": "Datum erstellt",
+      "published": "Veröffentlicht",
+      "courses": "Kurse"
+    },
     "components": {
       "sideBar": {
         "news": "Neuigkeiten",
@@ -1456,41 +1493,10 @@
         "students": "Studenten",
         "lessons": "Unterricht"
       }
-    },
-    "new_pathway_modal": {
-      "heading": "Erstellen Sie einen neuen Pfad",
-      "pathway_name": "Weg",
-      "pathway_name_placeholder": "Werden Sie ein professioneller UX-Designer",
-      "short_description": "kurze Beschreibung",
-      "short_description_placeholder": "Ein Spezialisierungskurs, der Ihnen den Einstieg als UX-Designer erleichtert",
-      "button": "Pfad erstellen"
-    },
-    "pathway_card": {
-      "courses": "Kurse",
-      "error_message": "Ein Fehler ist aufgetreten.",
-      "students": "Studenten",
-      "published": "Veröffentlicht",
-      "unpublished": "Unveröffentlicht",
-      "continue_pathway": "Den Weg fortsetzen",
-      "learn_more": "Erfahren Sie mehr",
-      "list_view": {
-        "title": "Titel",
-        "description": "Beschreibung",
-        "courses": "Kurse",
-        "students": "Studenten",
-        "published": "Veröffentlicht"
-      },
-      "context_menu": {
-        "clone": "Klon",
-        "share": "Aktie",
-        "invite": "Einladen",
-        "delete": "Löschen"
-      }
-    },
-    "pathway_filter": {
-      "date_created": "Datum erstellt",
-      "published": "Veröffentlicht",
-      "courses": "Kurse"
     }
+  },
+  "search": {
+    "no_pathway": "Kein Weg gefunden",
+    "no_course": "Kein Kurs gefunden"
   }
 }

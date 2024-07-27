@@ -46,3 +46,29 @@ ALTER TABLE ONLY "public"."pathway_course"
 
 ALTER TABLE ONLY "public"."pathway_course"
     ADD CONSTRAINT "pathway_course_course_id_fkey" FOREIGN KEY ("course_id") REFERENCES "public"."course"("id");
+
+
+
+alter table "public"."pathway" add constraint "public_pathway_group_id_fkey" FOREIGN KEY (group_id) REFERENCES "group"(id) not valid;
+
+alter table "public"."pathway" validate constraint "public_pathway_group_id_fkey";
+
+set check_function_bodies = off;
+
+CREATE OR REPLACE FUNCTION public.get_pathways(org_id_arg uuid, profile_id_arg uuid)
+ RETURNS TABLE(id uuid, org_id uuid, title character varying, slug character varying, description character varying, logo text, banner_image text, cost bigint, currency character varying, is_published boolean, total_course bigint, total_students bigint, member_profile_id uuid)
+ LANGUAGE plpgsql
+AS $function$
+
+BEGIN
+  Return query
+  select pathway.id, organization.id AS org_id, pathway.title, pathway.slug, pathway.description, pathway.logo, pathway.banner_image, pathway.cost, pathway.currency, pathway.is_published, (select COUNT(*) from pathway_course as pc where pc.pathway_id = pathway.id) AS total_courses, (select COUNT(*) from groupmember as gm where gm.group_id = pathway.group_id AND gm.role_id = 3) as total_students, (select groupmember.profile_id from groupmember where groupmember.group_id = "group".id and groupmember.profile_id =  profile_id_arg) as member_profile_id
+  from pathway
+  join "group" on "group".id = pathway.group_id
+  join organization on organization.id = "group".organization_id
+  where pathway.status = 'ACTIVE' AND organization.id = org_id_arg
+  -- GROUP BY pathway.id, groupmember.profile_id
+  ORDER BY pathway.created_at DESC;
+END;
+$function$
+;

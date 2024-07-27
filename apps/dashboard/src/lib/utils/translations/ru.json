@@ -1397,6 +1397,43 @@
     "search_placeholder": "Найти путь",
     "empty_title": "Путь еще не создан",
     "empty_description": "Добавьте группу связанных курсов, чтобы помочь студентам достичь совершенства в ваших областях.",
+    "new_pathway_modal": {
+      "heading": "Создать новый путь",
+      "pathway_name": "Путь",
+      "pathway_name_placeholder": "Станьте профессиональным UX-дизайнером",
+      "short_description": "Краткое описание",
+      "short_description_placeholder": "Курс специализации, который поможет вам начать работу в качестве UX-дизайнера.",
+      "button": "Создать путь",
+      "success": "Путь успешно создан",
+      "error": "Ошибка при создании пути."
+    },
+    "pathway_card": {
+      "courses": "курсы",
+      "error_message": "Произошла ошибка.",
+      "students": "студенты",
+      "published": "Опубликовано",
+      "unpublished": "Неопубликовано",
+      "continue_pathway": "Продолжить путь",
+      "learn_more": "Узнать больше",
+      "list_view": {
+        "title": "Заголовок",
+        "description": "Описание",
+        "courses": "Курсы",
+        "students": "Студенты",
+        "published": "Опубликовано"
+      },
+      "context_menu": {
+        "clone": "Клонировать",
+        "share": "Делиться",
+        "invite": "Приглашать",
+        "delete": "Удалить"
+      }
+    },
+    "pathway_filter": {
+      "date_created": "Дата создания",
+      "published": "Опубликовано",
+      "courses": "Курсы"
+    },
     "components": {
       "sideBar": {
         "news": "Новостная лента",
@@ -1456,41 +1493,10 @@
         "students": "Студенты",
         "lessons": "Уроки"
       }
-    },
-    "new_pathway_modal": {
-      "heading": "Создать новый путь",
-      "pathway_name": "Путь",
-      "pathway_name_placeholder": "Станьте профессиональным UX-дизайнером",
-      "short_description": "Краткое описание",
-      "short_description_placeholder": "Курс специализации, который поможет вам начать работу в качестве UX-дизайнера.",
-      "button": "Создать путь"
-    },
-    "pathway_card": {
-      "courses": "курсы",
-      "error_message": "Произошла ошибка.",
-      "students": "студенты",
-      "published": "Опубликовано",
-      "unpublished": "Неопубликовано",
-      "continue_pathway": "Продолжить путь",
-      "learn_more": "Узнать больше",
-      "list_view": {
-        "title": "Заголовок",
-        "description": "Описание",
-        "courses": "Курсы",
-        "students": "Студенты",
-        "published": "Опубликовано"
-      },
-      "context_menu": {
-        "clone": "Клонировать",
-        "share": "Делиться",
-        "invite": "Приглашать",
-        "delete": "Удалить"
-      }
-    },
-    "pathway_filter": {
-      "date_created": "Дата создания",
-      "published": "Опубликовано",
-      "courses": "Курсы"
     }
+  },
+  "search": {
+    "no_pathway": "Путь не найден",
+    "no_course": "Курс не найден"
   }
 }

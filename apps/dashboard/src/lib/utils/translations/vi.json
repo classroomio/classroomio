@@ -1397,6 +1397,43 @@
     "search_placeholder": "Tìm con đường",
     "empty_title": "Chưa có Con đường nào được tạo",
     "empty_description": "Thêm một nhóm các khóa học liên quan để giúp sinh viên đi đến con đường xuất sắc trong lĩnh vực của bạn",
+    "new_pathway_modal": {
+      "heading": "Tạo lộ trình mới",
+      "pathway_name": "Con đường",
+      "pathway_name_placeholder": "Trở thành nhà thiết kế UX chuyên nghiệp",
+      "short_description": "Mô tả ngắn",
+      "short_description_placeholder": "Khóa học phân biệt giúp bạn bắt đầu trở thành nhà thiết kế ux",
+      "button": "Tạo lộ trình",
+      "success": "Đường dẫn được tạo thành công",
+      "error": "Lỗi tạo đường dẫn"
+    },
+    "pathway_card": {
+      "courses": "các khóa học",
+      "error_message": "Đã xảy ra lỗi.",
+      "students": "sinh viên",
+      "published": "Được phát hành",
+      "unpublished": "Chưa xuất bản",
+      "continue_pathway": "Tiếp tục con đường",
+      "learn_more": "Tìm hiểu thêm",
+      "list_view": {
+        "title": "Tiêu đề",
+        "description": "Sự miêu tả",
+        "courses": "Khóa học",
+        "students": "Sinh viên",
+        "published": "Được phát hành"
+      },
+      "context_menu": {
+        "clone": "Dòng vô tính",
+        "share": "Chia sẻ",
+        "invite": "Mời",
+        "delete": "Xóa bỏ"
+      }
+    },
+    "pathway_filter": {
+      "date_created": "Ngày tạo",
+      "published": "Được phát hành",
+      "courses": "Khóa học"
+    },
     "components": {
       "sideBar": {
         "news": "Nguồn cấp tin tức",
@@ -1420,7 +1457,7 @@
         "optional": "Hình ảnh tùy chọn này sẽ hiển thị trên trang chào mừng của bạn. Nếu bạn bao gồm một cái, nó phải có kích thước tối thiểu là 280 x 200",
         "replace": "Thay thế",
         "delete": "Xóa bỏ",
-        "details": "Chi tiết Bộ sưu tập",
+        "details": "Chi tiết bộ sưu tập",
         "title": "Tiêu đề bộ sưu tập",
         "title_placeholder": "Viết tiêu đề khóa học ở đây",
         "description": "Mô tả bộ sưu tập",
@@ -1456,41 +1493,10 @@
         "students": "Sinh viên",
         "lessons": "Những bài học"
       }
-    },
-    "new_pathway_modal": {
-      "heading": "Tạo lộ trình mới",
-      "pathway_name": "Con đường",
-      "pathway_name_placeholder": "Trở thành nhà thiết kế UX chuyên nghiệp",
-      "short_description": "Mô tả ngắn",
-      "short_description_placeholder": "Khóa học phân biệt giúp bạn bắt đầu trở thành nhà thiết kế ux",
-      "button": "Tạo lộ trình"
-    },
-    "pathway_card": {
-      "courses": "các khóa học",
-      "error_message": "Đã xảy ra lỗi.",
-      "students": "sinh viên",
-      "published": "Được phát hành",
-      "unpublished": "Chưa xuất bản",
-      "continue_pathway": "Tiếp tục con đường",
-      "learn_more": "Tìm hiểu thêm",
-      "list_view": {
-        "title": "Tiêu đề",
-        "description": "Sự miêu tả",
-        "courses": "Khóa học",
-        "students": "Sinh viên",
-        "published": "Được phát hành"
-      },
-      "context_menu": {
-        "clone": "Dòng vô tính",
-        "share": "Chia sẻ",
-        "invite": "Mời",
-        "delete": "Xóa bỏ"
-      }
-    },
-    "pathway_filter": {
-      "date_created": "Ngày tạo",
-      "published": "Được phát hành",
-      "courses": "Khóa học"
     }
+  },
+  "search": {
+    "no_pathway": "Không tìm thấy con đường nào",
+    "no_course": "Không tìm thấy khóa học"
   }
 }

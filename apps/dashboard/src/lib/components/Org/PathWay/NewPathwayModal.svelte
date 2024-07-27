@@ -5,15 +5,90 @@
   import TextField from '$lib/components/Form/TextField.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import { goto } from '$app/navigation';
-  import { createPathwayModal } from '../store';
+  import { createPathwayModal } from '$lib/components/Org/Pathway/store';
   import { t } from '$lib/utils/functions/translations';
+  import { validateForm } from '$lib/components/Courses/functions';
+  import { supabase } from '$lib/utils/functions/supabase';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { pathways } from '$lib/components/Org/Pathway/store';
+  import { profile } from '$lib/utils/store/user';
+  import { capturePosthogEvent } from '$lib/utils/services/posthog';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import { ROLE } from '$lib/utils/constants/roles';
+  import { addPathwayGroupMember } from '$lib/utils/services/pathways';
 
   let errors = {
     title: '',
     description: ''
   };
-  const createPathway = () => {
-    console.log('clicked create pathway');
+
+  let isLoading: boolean = false;
+
+  const createPathway = async () => {
+    try {
+      isLoading = true;
+      const { hasError, fieldErrors } = validateForm($createPathwayModal);
+
+      errors = fieldErrors;
+      if (hasError) return;
+
+      const { title, description } = $createPathwayModal;
+      // 1. Create group
+      const { data: newGroup } = await supabase
+        .from('group')
+        .insert({ name: title, description, organization_id: $currentOrg.id })
+        .select();
+
+      if (!newGroup) return;
+
+      const { id: group_id } = newGroup[0];
+
+      // 2. Create pathway with group_id
+      const { data: newPathwayData } = await supabase
+        .from('pathway')
+        .insert({
+          title,
+          description,
+          group_id
+        })
+        .select();
+
+      if (!newPathwayData) return;
+
+      const newPathway = newPathwayData[0];
+      pathways.update((_pathways) => [..._pathways, newPathway]);
+
+      capturePosthogEvent('pathway_created', {
+        pathway_id: newPathway.id,
+        pathway_title: newPathway.title,
+        pathway_description: newPathway.description,
+        organization_id: $currentOrg.id,
+        organization_name: $currentOrg.name,
+        user_id: $profile.id,
+        user_email: $profile.email
+      });
+
+      // 3. Add group members
+      const { data } = await addPathwayGroupMember({
+        profile_id: $profile.id,
+        email: $profile.email,
+        group_id,
+        role_id: ROLE.TUTOR
+      });
+
+      // onClose(`/pathways/${newPathway.id}`);  // this is commented out because the page doesn't curently exist
+      onClose($page.url.pathname);
+      $createPathwayModal = {
+        title: '',
+        description: ''
+      };
+
+      snackbar.success($t('pathway.new_pathway_modal.success'));
+    } catch (error) {
+      snackbar.error($t('pathway.new_pathway_modal.error'));
+    } finally {
+      isLoading = false;
+    }
   };
   const onClose = (url) => {
     return goto(url);
@@ -63,6 +138,8 @@
         className="px-6 py-3 font-normal"
         label={$t('pathway.new_pathway_modal.button')}
         type="submit"
+        isDisabled={isLoading}
+        {isLoading}
       />
     </div>
   </form>

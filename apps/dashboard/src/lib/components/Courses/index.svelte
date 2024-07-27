@@ -21,6 +21,7 @@
   export let emptyTitle = $t('courses.course_card.empty_title');
   export let emptyDescription = $t('courses.course_card.empty_description');
   export let isExplore = false;
+  export let searching = false;
 
   function calcProgressRate(progressRate?: number, totalLessons?: number): number {
     if (!progressRate || !totalLessons) {
@@ -109,9 +110,13 @@
 {#if !$courseMetaDeta.isLoading && !courses.length}
   <Box className="w-full">
     <CoursesEmptyIcon />
-    <h3 class="dark:text-white text-2xl my-5">{emptyTitle}</h3>
-    <p class="dark:text-white w-1/3 text-center">
-      {emptyDescription}
-    </p>
+    {#if searching}
+      <h3 class="dark:text-white text-2xl my-5">{$t('search.no_course')}</h3>
+    {:else}
+      <h3 class="dark:text-white text-2xl my-5">{emptyTitle}</h3>
+      <p class="dark:text-white w-1/3 text-center">
+        {emptyDescription}
+      </p>
+    {/if}
   </Box>
 {/if}

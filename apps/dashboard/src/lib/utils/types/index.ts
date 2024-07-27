@@ -104,6 +104,29 @@ interface CourseMetadata {
   allowNewStudent: boolean;
 }
 
+interface PathwayMetadata {
+  requirements?: string;
+  description?: string;
+  goals?: string;
+  videoUrl?: '';
+  showDiscount?: false;
+  discount?: 0;
+  paymentLink?: string;
+  reward?: {
+    show: boolean;
+    description: string;
+  };
+  instructor?: {
+    name: string;
+    role: string;
+    coursesNo: number;
+    description: string;
+    imgUrl: string;
+  };
+  reviews?: Array<Review>;
+  allowNewStudent: boolean;
+}
+
 export interface LessonCommentInsertPayload {
   id: number;
   created_at: string;
@@ -227,6 +250,31 @@ export interface Course {
   }[];
   lessons?: Lesson[];
   polls: { status: string }[];
+}
+
+export interface Pathway {
+  title?: any; // type unknown;
+  description: string; // type unknown;
+  overview?: any; // type unknown;
+  id?: string /* primary key */;
+  created_at: string;
+  updated_at: string;
+  group_id?: string /* foreign key to group.id */;
+  is_template?: boolean;
+  organization_id?: string /* foreign key to organization.id */;
+  logo?: string;
+  slug?: any; // type unknown;
+  metadata: PathwayMetadata;
+  cost: number;
+  currency?: string;
+  group?: Group;
+  organization?: Organization;
+  is_certificate_downloadable?: boolean;
+  certificate_theme?: string;
+  status: string;
+  is_published?: boolean;
+  total_course?: number;
+  total_students?: number;
 }
 
 export interface Groupmember {
