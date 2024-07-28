@@ -21,8 +21,7 @@
   import TabContent from '$lib/components/TabContent/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
-  let group: PathwayCourse[] = [];
-  let Courses;
+  let pathwayCourse: PathwayCourse[] = [];
   let searchValue = '';
 
   const onChange = (tab) => {
@@ -38,7 +37,7 @@
   function handleSave() {
     pathway.update((p) => {
       const existingCoursesMap = new Map(p.courses.map((course) => [course.id, course]));
-      group.forEach((course) => existingCoursesMap.set(course.id, course));
+      pathwayCourse.forEach((course) => existingCoursesMap.set(course.id, course));
       p.courses = Array.from(existingCoursesMap.values());
 
       return p;
@@ -49,17 +48,17 @@
 
   function toggleCourseSelection(course: PathwayCourse, checked: boolean) {
     if (checked) {
-      group = [...group, course];
+      pathwayCourse = [...pathwayCourse, course];
     } else {
-      group = group.filter((c) => c.id !== course.id);
+      pathwayCourse = pathwayCourse.filter((c) => c.id !== course.id);
     }
   }
 
   async function fetchCourse(userId?: string, orgId?: string) {
-    Courses = await fetchCourses(userId, orgId);
-    if (!Courses) return;
+    const response = await fetchCourses(userId, orgId);
+    if (!response) return;
 
-    courses.set(Courses.allCourses);
+    courses.set(response.allCourses);
   }
 
   $: fetchCourse($profile.id, $currentOrg.id);
@@ -68,7 +67,7 @@
     course.title.toLowerCase().includes(searchValue.toLowerCase())
   );
 
-  $: filteredPickedCourses = group.filter((course) =>
+  $: filteredPickedCourses = pathwayCourse.filter((course) =>
     course.title.toLowerCase().includes(searchValue.toLowerCase())
   );
 
@@ -124,7 +123,7 @@
                             name={course.title}
                             className="cursor-pointer"
                             value={course.id}
-                            checked={group.includes(course)}
+                            checked={pathwayCourse.includes(course)}
                             onInputChange={(e) => toggleCourseSelection(course, e.target?.checked)}
                           />
                         </div>
@@ -174,8 +173,8 @@
 
           <div class="flex justify-end">
             <PrimaryButton
-              label={`${$t('pathways.components.addCourseModal.add')} ${group.length} ${
-                group.length === 1
+              label={`${$t('pathways.components.addCourseModal.add')} ${pathwayCourse.length} ${
+                pathwayCourse.length === 1
                   ? $t('pathways.components.addCourseModal.course')
                   : $t('pathways.components.addCourseModal.courses')
               } ${$t('pathways.components.addCourseModal.path')}`}

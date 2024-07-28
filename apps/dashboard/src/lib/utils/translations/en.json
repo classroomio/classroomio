@@ -3,7 +3,7 @@
     "pages": {
       "course": {
         "title": "Courses",
-        "add_course": "A Course",
+        "add_course": "Add Course",
         "add_remove": "Add / remove course",
         "order": "Order Courses",
         "publish": "Publish Collection",
