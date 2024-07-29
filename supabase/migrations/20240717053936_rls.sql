@@ -1036,7 +1036,7 @@ on "public"."organizationmember"
 as permissive
 for select
 to public
-using ((auth.uid() = profile_id));
+using ((auth.uid() IS NOT NULL));
 
 
 create policy "Enable insert for authenticated users only"
