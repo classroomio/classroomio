@@ -13,12 +13,12 @@
   import StudentCertificate from '$lib/components/Course/components/Ceritficate/StudentCertificate/Index.svelte';
   import { t } from '$lib/utils/functions/translations';
 
-  export let courseId: string = '';
+  export let data;
 </script>
 
 <IssueCertificateModal />
 
-<CourseContainer bind:courseId>
+<CourseContainer bind:courseId={data.courseId}>
   <PageNav title={$t('course.navItem.certificates.title')} disableSticky={true}>
     <slot:fragment slot="widget">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
@@ -32,11 +32,11 @@
     </slot:fragment>
   </PageNav>
 
-  <PageBody className="w-full mx-0" padding="px-3">
+  <PageBody className="w-full mx-0" padding="px-3 pb-10">
     <RoleBasedSecurity allowedRoles={[1, 2]}>
       <Design />
     </RoleBasedSecurity>
-    <RoleBasedSecurity allowedRoles={[3]}>
+    <RoleBasedSecurity onlyStudent>
       <StudentCertificate />
     </RoleBasedSecurity>
 

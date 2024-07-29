@@ -1,14 +1,4 @@
-import type { CourseCompletion } from "$lib/utils/types";
-
-interface Routes {
-  courses: string;
-  pathways: string
-}
-
-const routes: Routes = {
-  courses: 'courses',
-  pathways: 'pathways'
-};
+import type { CourseCompletion } from '$lib/utils/types';
 
 export function getIsCourseComplete(
   completions: CourseCompletion[],
@@ -20,9 +10,8 @@ export function getIsCourseComplete(
   });
 }
 
-
-export function getPathwayNavItemRoute(pathwayId: string, routeId?: string) {
-  const path = `/${routes.pathways}/${pathwayId}`;
+export function getPathwayNavItemRoute(pathwayId = '', routeId?: string) {
+  const path = `/pathways/${pathwayId}`;
 
   if (!routeId) {
     return path;
