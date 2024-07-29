@@ -1,4 +1,4 @@
-import type { courseCompletion } from "$lib/utils/types";
+import type { CourseCompletion } from "$lib/utils/types";
 
 interface Routes {
   courses: string;
@@ -11,7 +11,7 @@ const routes: Routes = {
 };
 
 export function getIsCourseComplete(
-  completions: courseCompletion[],
+  completions: CourseCompletion[],
   profileId: string | undefined
 ): boolean {
   if (!Array.isArray(completions)) return false;
