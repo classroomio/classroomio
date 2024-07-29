@@ -17,6 +17,11 @@ export const pathway: Writable<Pathway> = writable({
   is_published: false,
   lms_certificate: false,
   courses_certificate: '',
+  cost: 3000,
+  status: 'Published',
+  created_at: '20, March, 2024',
+  updated_at: '20, March, 2024',
+  metadata: {},
   courses: [
     {
       id: "4653bss37a-b0c4-4cf1-9dab-1ec4614a8643",

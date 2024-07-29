@@ -252,6 +252,27 @@ export interface Course {
   polls: { status: string }[];
 }
 
+export interface CourseCompletion {
+  id?: number;
+  course_id: string;
+  profile_id: string;
+  is_complete: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PathwayCourse {
+  id: string;
+  banner_image: string;
+  title: string;
+  description: string;
+  total_lessons: number;
+  total_students: number;
+  is_unlocked: boolean;
+  is_completed: CourseCompletion[];
+  is_published: boolean;
+}
+
 export interface Pathway {
   title?: any; // type unknown;
   description: string; // type unknown;
@@ -275,6 +296,13 @@ export interface Pathway {
   is_published?: boolean;
   total_course?: number;
   total_students?: number;
+
+  avatar?: string;
+  prerequisite: string /* should students take certificates in order of the arrangement or not */;
+  courses: PathwayCourse[];
+  lms_certificate: boolean /* to issue certificate on LMS or not */;
+  courses_certificate: string /* to issue certificate for all courses in learning path */,
+  selectedCourses: PathwayCourse[];
 }
 
 export interface Groupmember {
@@ -448,36 +476,4 @@ interface Tabs {
   name: string;
 }
 
-export interface CourseCompletion {
-  id?: number;
-  course_id: string;
-  profile_id: string;
-  is_complete: boolean;
-  created_at: string;
-  updated_at: string;
-}
 
-export interface PathwayCourse {
-  id: string;
-  banner_image: string;
-  title: string;
-  description: string;
-  total_lessons: number;
-  total_students: number;
-  is_unlocked: boolean;
-  is_completed: CourseCompletion[];
-  is_published: boolean;
-}
-
-export interface Pathway {
-  id: string;
-  title: string;
-  avatar: string;
-  description: string;
-  prerequisite: string,
-  is_published: boolean,
-  lms_certificate: boolean,
-  courses_certificate: string,
-  courses: PathwayCourse[],
-  selectedCourses: PathwayCourse[],
-}
