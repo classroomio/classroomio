@@ -3,6 +3,7 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import Modal from '$lib/components/Modal/index.svelte';
+  import { t } from '$lib/utils/functions/translations';
 
   export let open = false;
   export let mockPathway;
@@ -15,7 +16,7 @@
 <Modal
   onClose={() => (open = false)}
   width="w-4/5 md:w-2/5 h-[70%]"
-  modalHeading="PATHWAY: {mockPathway.title}"
+  modalHeading="{$t('lms_pathway.pathway')}: {mockPathway.title}"
   labelClass="w-[80%] truncate text-xs font-semibold"
   containerClass="py-4 h-[70%]"
   buttonClass="flex justify-end"
@@ -28,7 +29,7 @@
           <p class="text-sm font-normal w-[60%] truncate">{course.title}</p>
           {#if course.isLocked}
             <p class="text-sm font-normal text-gray-500 bg-gray-300 w-fit px-1 rounded-sm">
-              Locked
+              {$t('lms_pathway.locked')}
             </p>
           {:else}
             <div class="flex items-center gap-2">
@@ -39,7 +40,9 @@
                 />
               </div>
               <p class="text-xs font-medium">
-                {course.course_progress === 100 ? 'Completed' : `${course.course_progress}%`}
+                {course.course_progress === 100
+                  ? `${$t('lms_pathway.completed')}`
+                  : `${course.course_progress}%`}
               </p>
             </div>
           {/if}
@@ -51,7 +54,7 @@
   <!-- Button -->
   <div slot="buttons">
     <PrimaryButton
-      label="Go to Pathway"
+      label={$t('lms_pathway.goto_pathway')}
       variant={VARIANTS.TEXT}
       className="text-primary-800 font-semibold"
     />

@@ -1179,6 +1179,16 @@
     "lesson": "Lesson"
   },
 
+  "lms_pathway": {
+    "pathway": "PATHWAY",
+    "continue": "Continue Path",
+    "course": "Courses",
+    "locked": "Locked",
+    "goto_pathway": "Go to Pathway",
+    "completed": "Completed",
+    "of": "of"
+  },
+
   "explore": {
     "heading": "Explore our courses",
     "empty_heading": "No course available",

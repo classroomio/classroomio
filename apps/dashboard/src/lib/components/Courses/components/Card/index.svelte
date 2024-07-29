@@ -17,7 +17,6 @@
   import { COURSE_TYPE } from '$lib/utils/types';
   import RadioButtonChecked from 'carbon-icons-svelte/lib/RadioButtonChecked.svelte';
   import GrowthIcon from 'carbon-icons-svelte/lib/Growth.svelte';
-  import CourseIcon from 'carbon-icons-svelte/lib/Course.svelte';
   import UserProfileIcon from 'carbon-icons-svelte/lib/UserProfile.svelte';
 
   export let bannerImage: string | undefined;
@@ -150,7 +149,7 @@
         <span
           class="absolute top-2 left-2 z-10 text-xs font-bold uppercase bg-white text-primary-600 rounded-sm p-1"
         >
-          LEARNING PATH
+          {$t('lms_pathway.pathway')}
         </span>
       {:else if type}
         {@const tag = COURSE_TAG[type]}
@@ -176,7 +175,7 @@
     <div>
       <p class="text-xs {!isLMS && 'pl-2'} font-normal dark:text-white">
         {#if isLearningPath && isLMS}
-          {completedCourse} / {totalCourse} Courses
+          {completedCourse} / {totalCourse} {$t('lms_pathway.course')}
         {:else}
           {totalLessons}
           {$t('courses.course_card.lessons_number')}
@@ -218,7 +217,7 @@
         label={isExplore
           ? $t('courses.course_card.learn_more')
           : isLearningPath
-            ? 'Continue Path'
+            ? $t('lms_pathway.continue')
             : $t('courses.course_card.continue_course')}
         variant={VARIANTS.OUTLINED}
         className="rounded-none"

@@ -13,17 +13,52 @@
   const mockPathway = {
     title: 'Become a ux expert',
     courses: [
-      { title: 'Intrduction to UX', course_progress: 40, isLocked: false },
-      { title: 'Hierarchy patterns', course_progress: 100, isLocked: false },
-      { title: 'Alignment and colour schemes', course_progress: 0, isLocked: true },
-      { title: 'Advanced design patterns', course_progress: 100, isLocked: false },
-      { title: 'Design sytems and patterns', course_progress: 40, isLocked: false }
+      {
+        id: '1',
+        title: 'Intrduction to UX',
+        description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium, quo.',
+        course_progress: 40,
+        isLocked: false
+      },
+      {
+        id: '2',
+        title: 'Hierarchy patterns',
+        description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium, quo.',
+        course_progress: 100,
+        isLocked: false
+      },
+      {
+        id: '3',
+        title: 'Alignment and colour schemes',
+        description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium, quo.',
+        course_progress: 0,
+        isLocked: true
+      },
+      {
+        id: '4',
+        title: 'Advanced design patterns',
+        description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium, quo.',
+        course_progress: 100,
+        isLocked: false
+      },
+      {
+        id: '5',
+        title: 'Design sytems and patterns',
+        description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium, quo.',
+        course_progress: 40,
+        isLocked: false
+      }
     ]
   };
 
   const completedCourse = mockPathway.courses.filter(
     (course) => course.course_progress === 100
   ).length;
+
+  // returns the first course that has not been completed
+  const currentPathwayCourse = mockPathway.courses.find(
+    (course) => course.isLocked !== true && course.course_progress !== 100
+  );
 
   const gotoCourse = (id: string | undefined) => {
     if (!id) return;
@@ -48,50 +83,81 @@
               <div
                 class="org-selector relative flex justify-between items-center text-primary-900 font-bold text-xs pb-3"
               >
-                <span class="uppercase">PATHWAY: {mockPathway.title}</span>
-                <!-- svelte-ignore a11y-no-static-element-interactions -->
-                <!-- svelte-ignore a11y-click-events-have-key-events -->
-                <span
-                  class="flex gap-2 items-center cursor-pointer"
+                <span class="uppercase">{$t('lms_pathway.pathway')}: {mockPathway.title}</span>
+                <button
+                  class="flex gap-2 items-center cursor-pointer lowercase"
                   on:click={(e) => {
                     e.stopPropagation();
                     open = !open;
                   }}
-                  >{completedCourse} of {mockPathway.courses.length} courses completed
+                  >{completedCourse}
+                  {$t('lms_pathway.of')}
+                  {mockPathway.courses.length}
+                  {$t('lms_pathway.completed')}
                   <ChevronDown />
-                </span>
+                </button>
               </div>
-              <CourseListModal {mockPathway} bind:open />
-            {/if}
 
-            <span class="flex flex-col lg:flex-row gap-3 items-start pb-5">
-              <img
-                src={course.logo || '/images/classroomio-course-img-template.jpg'}
-                alt="course"
-                class="hidden lg:block lg:w-[60px] lg:h-[60px]"
-              />
-              <div class="w-full">
-                <p class="text-base font-semibold dark:text-white">{course.title}</p>
-                <p class="line-clamp-2 text-xs font-normal text-[#656565] dark:text-white">
-                  {course.description}
-                </p>
-              </div>
-              <PrimaryButton
-                label={$t('dashboard.continue')}
-                variant={VARIANTS.OUTLINED}
-                className="rounded-none text-[#0233BD]"
-                onClick={() => gotoCourse(course.id)}
-              />
-            </span>
-            {#if course?.progress_rate && course?.progress_rate > 0}
-              <div class="relative bg-[#EAEAEA] w-full h-1">
-                <div
-                  style="width: {Math.round(
-                    ((course?.progress_rate ?? 0) / (course?.total_lessons ?? 0)) * 100
-                  ) || 0}%"
-                  class={`absolute top-0 left-0 bg-primary-700 h-full`}
+              <span class="flex flex-col lg:flex-row gap-3 items-start pb-5">
+                <img
+                  src={course.logo || '/images/classroomio-course-img-template.jpg'}
+                  alt="course"
+                  class="hidden lg:block lg:w-[60px] lg:h-[60px]"
                 />
-              </div>
+                <div class="w-full">
+                  <p class="text-base font-semibold dark:text-white">
+                    {currentPathwayCourse?.title}
+                  </p>
+                  <p class="line-clamp-2 text-xs font-normal text-[#656565] dark:text-white">
+                    {currentPathwayCourse?.description}
+                  </p>
+                </div>
+                <PrimaryButton
+                  label={$t('dashboard.continue')}
+                  variant={VARIANTS.OUTLINED}
+                  className="rounded-none text-[#0233BD]"
+                  onClick={() => gotoCourse(currentPathwayCourse?.id)}
+                />
+              </span>
+              {#if currentPathwayCourse?.course_progress && currentPathwayCourse?.course_progress > 0}
+                <div class="relative bg-[#EAEAEA] w-full h-1">
+                  <div
+                    style="width: {(currentPathwayCourse?.course_progress ?? 0) || 0}%"
+                    class={`absolute top-0 left-0 bg-primary-700 h-full`}
+                  />
+                </div>
+              {/if}
+              <CourseListModal {mockPathway} bind:open />
+            {:else}
+              <span class="flex flex-col lg:flex-row gap-3 items-start pb-5">
+                <img
+                  src={course.logo || '/images/classroomio-course-img-template.jpg'}
+                  alt="course"
+                  class="hidden lg:block lg:w-[60px] lg:h-[60px]"
+                />
+                <div class="w-full">
+                  <p class="text-base font-semibold dark:text-white">{course.title}</p>
+                  <p class="line-clamp-2 text-xs font-normal text-[#656565] dark:text-white">
+                    {course.description}
+                  </p>
+                </div>
+                <PrimaryButton
+                  label={$t('dashboard.continue')}
+                  variant={VARIANTS.OUTLINED}
+                  className="rounded-none text-[#0233BD]"
+                  onClick={() => gotoCourse(course.id)}
+                />
+              </span>
+              {#if course?.progress_rate && course?.progress_rate > 0}
+                <div class="relative bg-[#EAEAEA] w-full h-1">
+                  <div
+                    style="width: {Math.round(
+                      ((course?.progress_rate ?? 0) / (course?.total_lessons ?? 0)) * 100
+                    ) || 0}%"
+                    class={`absolute top-0 left-0 bg-primary-700 h-full`}
+                  />
+                </div>
+              {/if}
             {/if}
           </div>
         {/each}

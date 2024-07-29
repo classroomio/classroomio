@@ -1431,5 +1431,13 @@
     "no_courses": "Không tìm thấy khóa học",
     "no_pathway": "Không tìm thấy con đường nào",
     "no_course": "Không tìm thấy khóa học"
+  },
+  "lms_pathway": {
+    "pathway": "con đường",
+    "continue": "Tiếp tục con đường",
+    "course": "Khóa học",
+    "locked": "Đã khóa",
+    "goto_pathway": "Đi đến Con đường",
+    "of": "của"
   }
 }

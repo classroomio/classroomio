@@ -1431,5 +1431,13 @@
     "no_courses": "Nenhum curso encontrado",
     "no_pathway": "Nenhum caminho encontrado",
     "no_course": "Nenhum curso encontrado"
+  },
+  "lms_pathway": {
+    "pathway": "caminho",
+    "continue": "Continuar caminho",
+    "course": "Cursos",
+    "locked": "Bloqueado",
+    "goto_pathway": "Vá para o caminho",
+    "of": "de"
   }
 }

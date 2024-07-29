@@ -76,8 +76,8 @@
             class="h-full min-w-[150px]"
             bind:selectedId
             items={[
-              { id: '0', text: 'All Courses' },
-              { id: '1', text: 'Pathways' }
+              { id: '0', text: $t('org_navigation.all_courses') },
+              { id: '1', text: $t('org_navigation.pathway') }
             ]}
           />
         </div>
