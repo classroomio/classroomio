@@ -40,7 +40,7 @@
   let lessonEditing: string | undefined;
   let lessonToDelete: Lesson | undefined;
   let openDeleteModal: boolean = false;
-  let isFetching: boolean = false;
+  let isFetching: boolean = true;
   let reorder = false;
 
   const flipDurationMs = 300;
@@ -127,7 +127,7 @@
   }
 
   $: shouldGoToNextLesson = query.get('next') === 'true';
-  $: shouldGoToNextLesson && onNextQuery($lessons);
+  $: !isFetching && shouldGoToNextLesson && onNextQuery($lessons);
   $: isLiveClass = $course.type === COURSE_TYPE.LIVE_CLASS;
 </script>
 

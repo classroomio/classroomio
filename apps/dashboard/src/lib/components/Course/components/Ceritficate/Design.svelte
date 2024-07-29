@@ -1,41 +1,79 @@
 <script>
   import { RadioButtonGroup, RadioButton, Toggle } from 'carbon-components-svelte';
+  import FlashFilled from 'carbon-icons-svelte/lib/FlashFilled.svelte';
   import { goto } from '$app/navigation';
   import { updateCourse } from '$lib/utils/services/courses';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
-  import Professional from './certificates/Professional.svelte';
-  import Plain from './certificates/Plain.svelte';
+  import Professional from './templates/Professional.svelte';
+  import Plain from './templates/Plain.svelte';
   import { course } from '$lib/components/Course/store';
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
-  import FlashFilled from 'carbon-icons-svelte/lib/FlashFilled.svelte';
+  import PurpleProfessionalBadge from './templates/PurpleProfessionalBadge.svelte';
+  import BlueProfessionalBadge from './templates/BlueProfessionalBadge.svelte';
+  import PurpleBadgePattern from './templates/PurpleBadgePattern.svelte';
+  import BlueBadgePattern from './templates/BlueBadgePattern.svelte';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import { saveCertificateValidation } from '$lib/utils/functions/validator';
 
   const studentNamePlaceholder = 'Name of student';
-  const themes = ['professional', 'plain'];
+  const themes = [
+    'professional',
+    'plain',
+    'purpleProfessionalBadge',
+    'blueProfessionalBadge',
+    'purpleBadgePattern',
+    'blueBadgePattern'
+  ];
 
   let isSaving = false;
   let errors = {
     description: ''
   };
+  let helperText = '';
 
   const saveCertificate = async () => {
     isSaving = true;
-    if (!$course.description) {
-      errors.description = 'Description cannot be empty';
+
+    try {
+      const result = saveCertificateValidation({
+        description: $course.description || '',
+        is_certificate_downloadable: $course.is_certificate_downloadable || false,
+        certificate_theme: $course.certificate_theme || ''
+      });
+
+      if (result && Object.keys(result).length > 0) {
+        errors.description =
+          $t(result.description) || $t('course.navItem.certificates.description_error');
+        throw new Error(errors.description);
+      }
+
+      errors.description = '';
+
+      await updateCourse($course.id, undefined, {
+        description: $course.description || '',
+        is_certificate_downloadable: $course.is_certificate_downloadable || false,
+        certificate_theme: $course.certificate_theme || ''
+      });
+      snackbar.success('snackbar.course_settings.success.saved');
+    } catch (error) {
+      if (error.message) {
+        errors.description = error.message;
+      } else {
+        errors.description = $t('course.navItem.certificates.unexpected_error');
+      }
+    } finally {
       isSaving = false;
-      return;
     }
-    await updateCourse($course.id, undefined, {
-      description: $course.description || '',
-      is_certificate_downloadable: $course.is_certificate_downloadable || false,
-      certificate_theme: $course.certificate_theme || ''
-    });
-    isSaving = false;
   };
+
+  $: helperText = `${$course.description?.length || 0}/200 ${$t(
+    'course.navItem.certificates.characters'
+  )}`;
 </script>
 
 <svelte:head>
@@ -63,16 +101,18 @@
         class="mb-10"
         disabled={$isFreePlan}
       >
-        {#each themes as theme}
-          <div class="flex mr-3">
-            <RadioButton value={theme} />
-            <img
-              src={`/images/certificate_theme_${theme}.png`}
-              alt="themes"
-              class="w-[110px] h-[82px]"
-            />
-          </div>
-        {/each}
+        <div class="flex flex-wrap justify-between gap-y-5">
+          {#each themes as theme}
+            <div class="flex mr-3">
+              <RadioButton value={theme} />
+              <img
+                src={`/images/certificate_theme_${theme}.png`}
+                alt="themes"
+                class="w-[110px] h-[82px]"
+              />
+            </div>
+          {/each}
+        </div>
       </RadioButtonGroup>
       <div>
         <p class="text-xs font-normal text-black my-2 dark:text-gray-100">
@@ -102,6 +142,7 @@
             bind:value={$course.description}
             errorMessage={errors.description}
             disabled={$isFreePlan}
+            helperMessage={helperText}
           />
         </span>
         <Toggle
@@ -121,11 +162,19 @@
     <section
       class="bg-gray-100 dark:bg-neutral-800 flex justify-center items-center rounded-md w-full lg:w-3/5"
     >
-      <div class="certificate-container flex justify-center items-center h-5/6">
+      <div class="certificate-container flex justify-center items-center">
         {#if $course.certificate_theme === 'professional'}
           <Professional studentName={studentNamePlaceholder} />
-        {:else}
+        {:else if $course.certificate_theme === 'plain'}
           <Plain studentName={studentNamePlaceholder} />
+        {:else if $course.certificate_theme === 'purpleProfessionalBadge'}
+          <PurpleProfessionalBadge studentName={studentNamePlaceholder} />
+        {:else if $course.certificate_theme === 'blueProfessionalBadge'}
+          <BlueProfessionalBadge studentName={studentNamePlaceholder} />
+        {:else if $course.certificate_theme === 'purpleBadgePattern'}
+          <PurpleBadgePattern studentName={studentNamePlaceholder} />
+        {:else if $course.certificate_theme === 'blueBadgePattern'}
+          <BlueBadgePattern studentName={studentNamePlaceholder} />
         {/if}
       </div>
     </section>

@@ -409,11 +409,17 @@
         "locked": "Fermé à clé",
         "unlocked": "Débloqué",
         "save": "Sauvegarder les modifications",
-        "unlocked_certificate": "Le certificat est maintenant disponible",
         "locked_certificate": "Certificats non disponibles",
         "instructor_unlock": "Votre instructeur doit débloquer votre certificat.",
         "contact_instructor": "Si vous avez besoin de votre certificat, veuillez contacter votre instructeur.",
-        "download_certificate": "Télécharger le certificat"
+        "download_certificate": "Télécharger le certificat",
+        "unlocked_certificate": "Bravo! 🎉 votre attestation est prête",
+        "unlocked_certificate_subtitle": "Vous avez terminé ce cours et votre dévouement est évident. Téléchargez le certificat et partagez-le avec votre réseau comme preuve de vos compétences nouvellement acquises",
+        "complete_to_download_subtitle": "Votre certificat sera disponible une fois que vous aurez terminé toutes les leçons et exercices de ce cours.",
+        "complete_to_download_title": "Cours non terminé 😔",
+        "description_error": "La description ne peut pas dépasser 200 caractères",
+        "characters": "personnages",
+        "unexpected_error": "une erreur inattendue est apparue"
       },
       "people": {
         "title": "Personnes",
@@ -1013,7 +1019,8 @@
     "redirecting": "Redirection",
     "loading_state": "Vous passez à la page suivante, veuillez patienter.",
     "org_loading_state": "Vous emmener dans votre organisation...",
-    "add_organization": "+ Ajouter une organisation"
+    "add_organization": "+ Ajouter une organisation",
+    "pathways": "Voies"
   },
   "add_org": {
     "create_org": "Créer une organisation",
@@ -1081,7 +1088,9 @@
     "settings": "Paramètres",
     "early_adopter": "Devenez un adopteur précoce",
     "unlock": "Débloquez des fonctionnalités illimitées et investissez dans notre avenir",
-    "upgrade": "Mettre à jour maintenant"
+    "upgrade": "Mettre à jour maintenant",
+    "all_courses": "Tous les cours",
+    "pathway": "Voies"
   },
   "settings": {
     "heading": "Paramètres",
@@ -1373,7 +1382,9 @@
       "hyphen_rule": "Le nom de l'organisation ne peut pas commencer ou se terminer par un trait d'union"
     },
     "user_profile": {
-      "email": "Adresse e-mail invalide"
+      "email": "Adresse e-mail invalide",
+      "username": "Le nom d'utilisateur ne peut pas être vide",
+      "fullname": "Le nom doit comporter au minimum 5 caractères"
     }
   },
   "explore": {
@@ -1381,7 +1392,49 @@
     "empty_description": "Il n'y a actuellement aucun cours publié disponible",
     "heading": "Découvrez nos cours"
   },
-  "pathways": {
+  "pathway": {
+    "heading": "Voies",
+    "heading_button": "Créer un parcours",
+    "search_placeholder": "Trouver un chemin",
+    "empty_title": "Aucun parcours n'a encore été créé",
+    "empty_description": "Ajoutez un groupe de cours connexes pour mettre les étudiants sur la voie de l'excellence dans vos domaines",
+    "new_pathway_modal": {
+      "heading": "Créer un nouveau parcours",
+      "pathway_name": "Sentier",
+      "pathway_name_placeholder": "Devenez un concepteur UX professionnel",
+      "short_description": "brève description",
+      "short_description_placeholder": "Un cours de spécialisation qui vous permet de démarrer en tant que concepteur ux",
+      "button": "Créer un parcours",
+      "success": "Parcours créé avec succès",
+      "error": "Erreur lors de la création du chemin"
+    },
+    "pathway_card": {
+      "courses": "cours",
+      "error_message": "Une erreur s'est produite.",
+      "students": "étudiants",
+      "published": "Publié",
+      "unpublished": "Inédit",
+      "continue_pathway": "Continuer le parcours",
+      "learn_more": "Apprendre encore plus",
+      "list_view": {
+        "title": "Titre",
+        "description": "Description",
+        "courses": "Cours",
+        "students": "Étudiants",
+        "published": "Publié"
+      },
+      "context_menu": {
+        "clone": "Cloner",
+        "share": "Partager",
+        "invite": "Inviter",
+        "delete": "Supprimer"
+      }
+    },
+    "pathway_filter": {
+      "date_created": "date créée",
+      "published": "Publié",
+      "courses": "Cours"
+    },
     "components": {
       "sideBar": {
         "news": "Fil d'actualité",
@@ -1421,7 +1474,7 @@
         "description_placeholder": "Écrivez la description du cours ici",
         "link": "Lien de collecte",
         "students": "Les étudiants doivent-ils suivre les cours selon l'ordre recommandé ?",
-        "yes": "si oui, l'étudiant doit suivre les cours selon l'ordre, si non, l'étudiant peut commencer par n'importe quel cours de son choix",
+        "yes": "si oui, l'étudiant doit suivre le cours selon l'ordre, si non, l'étudiant peut commencer par n'importe quel cours de son choix",
         "option_one": "Oui",
         "option_two": "Non",
         "publish": "Publier le parcours d'apprentissage",
@@ -1451,5 +1504,9 @@
         "lessons": "Cours"
       }
     }
+  },
+  "search": {
+    "no_pathway": "Aucun chemin trouvé",
+    "no_course": "Aucun cours trouvé"
   }
 }

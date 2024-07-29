@@ -13,6 +13,14 @@ export enum LOCALE {
 }
 
 //===============Custom Type===============
+
+export interface ProfileCourseProgress {
+  exercises_completed: number;
+  exercises_count: number;
+  lessons_completed: number;
+  lessons_count: number;
+}
+
 export interface GroupPerson {
   assigned_student_id: number | null;
   created_at: string;
@@ -93,6 +101,29 @@ interface CourseMetadata {
   lessonTabsOrder?: Array<Tabs>;
   grading?: boolean;
   lessonDownload?: boolean;
+  allowNewStudent: boolean;
+}
+
+interface PathwayMetadata {
+  requirements?: string;
+  description?: string;
+  goals?: string;
+  videoUrl?: '';
+  showDiscount?: false;
+  discount?: 0;
+  paymentLink?: string;
+  reward?: {
+    show: boolean;
+    description: string;
+  };
+  instructor?: {
+    name: string;
+    role: string;
+    coursesNo: number;
+    description: string;
+    imgUrl: string;
+  };
+  reviews?: Array<Review>;
   allowNewStudent: boolean;
 }
 
@@ -219,6 +250,31 @@ export interface Course {
   }[];
   lessons?: Lesson[];
   polls: { status: string }[];
+}
+
+export interface Pathway {
+  title?: any; // type unknown;
+  description: string; // type unknown;
+  overview?: any; // type unknown;
+  id?: string /* primary key */;
+  created_at: string;
+  updated_at: string;
+  group_id?: string /* foreign key to group.id */;
+  is_template?: boolean;
+  organization_id?: string /* foreign key to organization.id */;
+  logo?: string;
+  slug?: any; // type unknown;
+  metadata: PathwayMetadata;
+  cost: number;
+  currency?: string;
+  group?: Group;
+  organization?: Organization;
+  is_certificate_downloadable?: boolean;
+  certificate_theme?: string;
+  status: string;
+  is_published?: boolean;
+  total_course?: number;
+  total_students?: number;
 }
 
 export interface Groupmember {
@@ -392,6 +448,15 @@ interface Tabs {
   name: string;
 }
 
+export interface CourseCompletion {
+  id?: number;
+  course_id: string;
+  profile_id: string;
+  is_complete: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface PathwayCourse {
   id: string;
   banner_image: string;
@@ -400,12 +465,12 @@ export interface PathwayCourse {
   total_lessons: number;
   total_students: number;
   is_unlocked: boolean;
-  is_completed: boolean;
+  is_completed: CourseCompletion[];
   is_published: boolean;
 }
 
 export interface Pathway {
-  slug: string;
+  id: string;
   title: string;
   avatar: string;
   description: string;

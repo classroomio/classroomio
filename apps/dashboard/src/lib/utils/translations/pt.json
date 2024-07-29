@@ -409,11 +409,17 @@
         "locked": "Bloqueado",
         "unlocked": "Desbloqueado",
         "save": "Salvar alterações",
-        "unlocked_certificate": "Certificado já está disponível",
         "locked_certificate": "Certificados não disponíveis",
         "instructor_unlock": "Seu instrutor precisa desbloquear seu certificado.",
         "contact_instructor": "Se precisar do seu certificado, entre em contato com seu instrutor.",
-        "download_certificate": "Certificado de download"
+        "download_certificate": "Certificado de download",
+        "unlocked_certificate": "Parabéns! 🎉 seu certificado está pronto",
+        "unlocked_certificate_subtitle": "Você concluiu este curso e sua dedicação é evidente. Baixe o certificado e compartilhe com sua rede como prova de sua habilidade recém-adquirida",
+        "complete_to_download_subtitle": "Seu certificado estará disponível assim que você concluir todas as lições e exercícios deste curso",
+        "complete_to_download_title": "Curso não concluído 😔",
+        "description_error": "A descrição não pode exceder 200 caracteres",
+        "characters": "personagens",
+        "unexpected_error": "Um erro inesperado ocorreu"
       },
       "people": {
         "title": "Pessoas",
@@ -1013,7 +1019,8 @@
     "redirecting": "Redirecionando",
     "loading_state": "Levando você para a próxima página, aguarde.",
     "org_loading_state": "Levando você para sua organização...",
-    "add_organization": "+ Adicionar organização"
+    "add_organization": "+ Adicionar organização",
+    "pathways": "Caminhos"
   },
   "add_org": {
     "create_org": "Criar organização",
@@ -1081,7 +1088,9 @@
     "settings": "Configurações",
     "early_adopter": "Torne-se um dos primeiros a adotar",
     "unlock": "Desbloqueie recursos ilimitados e invista em nosso futuro",
-    "upgrade": "Atualize agora"
+    "upgrade": "Atualize agora",
+    "all_courses": "Todos os cursos",
+    "pathway": "Caminhos"
   },
   "settings": {
     "heading": "Configurações",
@@ -1373,7 +1382,9 @@
       "hyphen_rule": "O nome da organização não pode começar ou terminar com um hífen"
     },
     "user_profile": {
-      "email": "Endereço de email invalido"
+      "email": "Endereço de email invalido",
+      "username": "O nome de usuário não pode ficar vazio",
+      "fullname": "O nome deve ter no mínimo 5 caracteres"
     }
   },
   "explore": {
@@ -1381,7 +1392,49 @@
     "empty_description": "Atualmente não há nenhum curso publicado disponível",
     "heading": "Explore nossos cursos"
   },
-  "pathways": {
+  "pathway": {
+    "heading": "Caminhos",
+    "heading_button": "Criar caminho",
+    "search_placeholder": "Encontrar caminho",
+    "empty_title": "Nenhum caminho foi criado ainda",
+    "empty_description": "Adicione um grupo de cursos relacionados para colocar os alunos no caminho da excelência em suas áreas",
+    "new_pathway_modal": {
+      "heading": "Criar novo caminho",
+      "pathway_name": "Caminho",
+      "pathway_name_placeholder": "Torne-se um designer UX profissional",
+      "short_description": "Pequena descrição",
+      "short_description_placeholder": "Um curso de especialização que inicia como designer ux",
+      "button": "Criar caminho",
+      "success": "Caminho criado com sucesso",
+      "error": "Erro ao criar caminho"
+    },
+    "pathway_card": {
+      "courses": "cursos",
+      "error_message": "Um erro ocorreu.",
+      "students": "estudantes",
+      "published": "Publicados",
+      "unpublished": "Não publicado",
+      "continue_pathway": "Continuar caminho",
+      "learn_more": "Saber mais",
+      "list_view": {
+        "title": "Título",
+        "description": "Descrição",
+        "courses": "Cursos",
+        "students": "Alunos",
+        "published": "Publicados"
+      },
+      "context_menu": {
+        "clone": "Clone",
+        "share": "Compartilhar",
+        "invite": "Convidar",
+        "delete": "Excluir"
+      }
+    },
+    "pathway_filter": {
+      "date_created": "Data Criada",
+      "published": "Publicados",
+      "courses": "Cursos"
+    },
     "components": {
       "sideBar": {
         "news": "Notícias",
@@ -1451,5 +1504,9 @@
         "lessons": "Lições"
       }
     }
+  },
+  "search": {
+    "no_pathway": "Nenhum caminho encontrado",
+    "no_course": "Nenhum curso encontrado"
   }
 }

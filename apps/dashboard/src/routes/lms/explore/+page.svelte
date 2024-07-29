@@ -2,10 +2,10 @@
   import { onMount } from 'svelte';
   import { Search, Dropdown } from 'carbon-components-svelte';
   import { profile } from '$lib/utils/store/user';
-  import { fetchExploreCourses } from '$lib/components/Courses/api';
+  import { fetchExploreCourses } from '$lib/utils/services/courses';
   import Courses from '$lib/components/Courses/index.svelte';
 
-  import { courses, courseMetaDeta } from '$lib/components/Courses/store';
+  import { courseMetaDeta } from '$lib/components/Courses/store';
   import { currentOrg } from '$lib/utils/store/org';
   import type { Course } from '$lib/utils/types';
   import { browser } from '$app/environment';
@@ -20,6 +20,7 @@
   let filteredExploreCourses: Course[];
   let hasFetched = false;
   let exploreCourseList: Course[] = [];
+
   async function getCourses(userId: string | null, orgId: string) {
     if (hasFetched || !userId || !orgId) {
       return;

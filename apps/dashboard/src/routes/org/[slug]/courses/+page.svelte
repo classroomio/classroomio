@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Search, Dropdown } from 'carbon-components-svelte';
   import { profile } from '$lib/utils/store/user';
-  import { fetchCourses } from '$lib/components/Courses/api';
+  import { fetchCourses } from '$lib/utils/services/courses';
   import Courses from '$lib/components/Courses/index.svelte';
   import NewCourseModal from '$lib/components/Courses/components/NewCourseModal/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -27,6 +27,7 @@
   let selectedId: string;
   let filteredCourses: Course[];
   let hasFetched = false;
+  let searching = false;
 
   async function getCourses(userId: string | undefined, orgId: string) {
     if (cantFetch && typeof cantFetch === 'boolean' && orgId && !hasFetched) {
@@ -60,7 +61,7 @@
       if (!searchValue || course.title.toLowerCase().includes(searchValue.toLowerCase())) {
         return true;
       }
-
+      searching = true;
       return false;
     });
 
@@ -69,9 +70,13 @@
         (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
       );
     } else if (_selectedId === '1') {
-      filteredCourses = filteredCourses.sort((a, b) => b.is_published - a.is_published);
+      filteredCourses = filteredCourses.sort(
+        (a, b) => (b.is_published ? 1 : 0) - (a.is_published ? 1 : 0)
+      );
     } else if (_selectedId === '2') {
-      filteredCourses = filteredCourses.sort((a, b) => b.total_lessons - a.total_lessons);
+      filteredCourses = filteredCourses.sort(
+        (a, b) => (b.total_lessons ?? 0) - (a.total_lessons ?? 0)
+      );
     }
   }
 
@@ -147,7 +152,7 @@
     </div>
 
     <NewCourseModal />
-    <Courses bind:courses={filteredCourses} />
+    <Courses bind:courses={filteredCourses} {searching} />
   </div>
 </section>
 

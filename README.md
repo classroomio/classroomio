@@ -125,9 +125,14 @@ This repo is a mono repo that consists of 3 projects:
 
 To get the environmental variables for supabase continue to step(5)
 
-5. Setup Supabase.
+5. Install all dependencies
 
-   - Make sure you've downloaded the [Supabase cli](https://github.com/supabase/cli)
+   ```bash
+   pnpm i
+   ```
+
+6. Setup Supabase.
+
    - Install and Start [docker](https://docs.docker.com/engine/install/)
    - Go to the project directory in your terminal and start Supabase
 
@@ -159,12 +164,6 @@ To get the environmental variables for supabase continue to step(5)
      ```
 
    - To view the Supabase studio, open the Studio URL from the result of `pnpm supabase start`
-
-6. Install the required dependencies
-
-   ```bash
-   pnpm i
-   ```
 
 7. Run all projects (in development mode)
 
