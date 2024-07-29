@@ -39,7 +39,6 @@
       handleGrade={handleGrade(currentQuestion.id)}
       {disableGrading}
       disabled={true}
-      hideGrading={$course.type === COURSE_TYPE.SELF_PACED}
     />
   {:else if QUESTION_TYPE.CHECKBOX === currentQuestion.question_type.id}
     <CheckboxQuestion
@@ -60,7 +59,6 @@
       handleGrade={handleGrade(currentQuestion.id)}
       {disableGrading}
       disabled={true}
-      hideGrading={$course.type === COURSE_TYPE.SELF_PACED}
     />
   {:else if QUESTION_TYPE.TEXTAREA === currentQuestion.question_type.id}
     <TextareaQuestion
@@ -81,7 +79,6 @@
       handleGrade={handleGrade(currentQuestion.id)}
       {disableGrading}
       disabled={true}
-      hideGrading={$course.type === COURSE_TYPE.SELF_PACED}
     />
   {/if}
 {/each}
