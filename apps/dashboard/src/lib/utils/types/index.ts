@@ -392,7 +392,7 @@ interface Tabs {
   name: string;
 }
 
-export interface courseCompletion {
+export interface CourseCompletion {
   id?: number;
   course_id: string;
   profile_id: string;
@@ -409,7 +409,7 @@ export interface PathwayCourse {
   lessonNumber: number;
   studentNumber: number;
   is_unlocked: boolean;
-  is_completed: courseCompletion[];
+  is_completed: CourseCompletion[];
   is_published: boolean;
 }
 
