@@ -1019,7 +1019,8 @@
     "redirecting": "Redirecionando",
     "loading_state": "Levando você para a próxima página, aguarde.",
     "org_loading_state": "Levando você para sua organização...",
-    "add_organization": "+ Adicionar organização"
+    "add_organization": "+ Adicionar organização",
+    "pathways": "Caminhos"
   },
   "add_org": {
     "create_org": "Criar organização",

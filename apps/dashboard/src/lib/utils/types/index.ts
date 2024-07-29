@@ -448,6 +448,15 @@ interface Tabs {
   name: string;
 }
 
+export interface CourseCompletion {
+  id?: number;
+  course_id: string;
+  profile_id: string;
+  is_complete: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface PathwayCourse {
   id: string;
   avatar: string;
@@ -456,12 +465,12 @@ export interface PathwayCourse {
   lessonNumber: number;
   studentNumber: number;
   is_unlocked: boolean;
-  is_completed: boolean;
+  is_completed: CourseCompletion[];
   is_published: boolean;
 }
 
 export interface Pathway {
-  slug: string;
+  id: string;
   title: string;
   avatar: string;
   description: string;

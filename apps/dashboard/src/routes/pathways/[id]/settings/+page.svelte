@@ -14,7 +14,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { pathway } from '$lib/components/Pathways/store';
   // future function to handle the saving of collections
-  import { updateCollection } from '$lib/utils/services/pathways';
+  // import { updateCollection } from '$lib/utils/services/pathways';
   import { currentOrgDomain, currentOrg } from '$lib/utils/store/org';
 
   import PageNav from '$lib/components/PageNav/index.svelte';
@@ -25,7 +25,8 @@
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
-  import CustomToggle from '$lib/components/Pathways/Toggle.svelte';
+  import CustomToggle from '$lib/components/Pathways/components/Toggle.svelte';
+  import PathwayContainer from '$lib/components/Pathways/components/PathwayContainer.svelte';
 
   let id: string;
   let isSaving = false;
@@ -82,12 +83,10 @@
   $: id = $page.params.id;
 </script>
 
-<section class="w-full h-full">
+<PathwayContainer>
   <PageNav title={$t('pathway.pages.settings.page_title')} />
 
-  <div
-    class="border border-[#EAEAEA] max-w-[87%] max-h-[73vh] overflow-y-auto shadow-sm rounded-md w-full mx-auto my-10"
-  >
+  <div class="border border-[#EAEAEA] max-w-[87%] shadow-sm rounded-md w-full mx-auto my-10">
     <Grid>
       <Row class="flex lg:flex-row flex-col my-4 md:py-7 border-bottom-c">
         <Column sm={8} md={8} lg={8} class="flex flex-col justify-between">
@@ -263,4 +262,4 @@
       </Row>
     </Grid>
   </div>
-</section>
+</PathwayContainer>

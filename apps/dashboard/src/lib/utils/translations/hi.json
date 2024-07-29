@@ -1019,7 +1019,8 @@
     "redirecting": "पुन: निर्देशित",
     "loading_state": "आपको अगले पृष्ठ पर ले जा रहा हूँ, कृपया प्रतीक्षा करें।",
     "org_loading_state": "आपको आपके संगठन में ले जा रहा हूँ...",
-    "add_organization": "+ संगठन जोड़ें"
+    "add_organization": "+ संगठन जोड़ें",
+    "pathways": "रास्ते"
   },
   "add_org": {
     "create_org": "संगठन बनाएं",
