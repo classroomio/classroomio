@@ -45,7 +45,7 @@
   <div class="overflow-y-auto max-h-[90vh]">
     <!-- header -->
     <div class="flex justify-between items-center">
-      <h1>{$t('pathways.pages.course.title')}</h1>
+      <h1>{$t('pathway.pages.course.title')}</h1>
 
       <div class="flex gap-5 justify-end">
         <RoleBasedSecurity allowedRoles={[1, 2]}>
@@ -55,15 +55,15 @@
             </PrimaryButton>
           {:else}
             <PrimaryButton
-              label={$t('pathways.pages.course.add_course')}
+              label={$t('pathway.pages.course.add_course')}
               onClick={() => console.log('Add Course')}
             />
           {/if}
         </RoleBasedSecurity>
         <OverflowMenu flipped>
-          <OverflowMenuItem text={$t('pathways.pages.course.add_remove')} />
-          <OverflowMenuItem text={$t('pathways.pages.course.order')} />
-          <OverflowMenuItem text={$t('pathways.pages.course.publish')} />
+          <OverflowMenuItem text={$t('pathway.pages.course.add_remove')} />
+          <OverflowMenuItem text={$t('pathway.pages.course.order')} />
+          <OverflowMenuItem text={$t('pathway.pages.course.publish')} />
         </OverflowMenu>
       </div>
     </div>
@@ -71,7 +71,7 @@
     <!-- filter container -->
     <div class="filter-containter flex items-end justify-end gap-2 mt-3">
       <Search
-        placeholder={$t('pathways.pages.course.search')}
+        placeholder={$t('pathway.pages.course.search')}
         bind:value={searchValue}
         searchClass="md:w-[30%]"
         class=" bg-gray-100 dark:bg-neutral-800 text-sm"
@@ -80,8 +80,8 @@
         class="h-[3rem]"
         bind:selectedId
         items={[
-          { id: '0', text: $t('pathways.pages.course.option_one') },
-          { id: '1', text: $t('pathways.pages.course.option_two') }
+          { id: '0', text: $t('pathway.pages.course.option_one') },
+          { id: '1', text: $t('pathway.pages.course.option_two') }
         ]}
       />
       {#if coursePreference === 'list'}
@@ -102,14 +102,13 @@
           <StructuredList>
             <StructuredListHead>
               <StructuredListRow head>
-                <StructuredListCell head
-                  >{$t('pathways.pages.course.body_title')}</StructuredListCell
+                <StructuredListCell head>{$t('pathway.pages.course.body_title')}</StructuredListCell
                 >
                 <StructuredListCell head
-                  >{$t('pathways.pages.course.description')}</StructuredListCell
+                  >{$t('pathway.pages.course.description')}</StructuredListCell
                 >
-                <StructuredListCell head>{$t('pathways.pages.course.students')}</StructuredListCell>
-                <StructuredListCell head>{$t('pathways.pages.course.lessons')}</StructuredListCell>
+                <StructuredListCell head>{$t('pathway.pages.course.students')}</StructuredListCell>
+                <StructuredListCell head>{$t('pathway.pages.course.lessons')}</StructuredListCell>
               </StructuredListRow>
             </StructuredListHead>
             <StructuredListBody>

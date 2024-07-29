@@ -141,7 +141,7 @@
   $: {
     navItems = [
       {
-        label: $t('pathways.components.sideBar.news'),
+        label: $t('pathway.components.sideBar.news'),
         to: getPathwayNavItemRoute($pathway.id),
         icon: 'News Feed',
         hideSortIcon: true,
@@ -151,7 +151,7 @@
         }
       },
       {
-        label: $t('pathways.components.sideBar.courses'),
+        label: $t('pathway.components.sideBar.courses'),
         to: getPathwayNavItemRoute($pathway.id, 'courses'),
         icon: 'Courses',
         hideSortIcon: false,
@@ -160,7 +160,7 @@
         isExpanded: isStudent ? true : $page.url.pathname.includes('/courses')
       },
       {
-        label: $t('pathways.components.sideBar.people'),
+        label: $t('pathway.components.sideBar.people'),
         to: getPathwayNavItemRoute($pathway.id, 'people'),
         icon: 'People',
         isPaidFeature: false,
@@ -170,7 +170,7 @@
         }
       },
       {
-        label: $t('pathways.components.sideBar.certificates'),
+        label: $t('pathway.components.sideBar.certificates'),
         to: getPathwayNavItemRoute($pathway.id, 'certificates'),
         icon: 'Certificates',
         hideSortIcon: true,
@@ -184,7 +184,7 @@
         }
       },
       {
-        label: $t('pathways.components.sideBar.landing'),
+        label: $t('pathway.components.sideBar.landing'),
         to: getPathwayNavItemRoute($pathway.id, 'landingpage'),
         icon: 'Pathway Landing Page',
         hideSortIcon: true,
@@ -194,7 +194,7 @@
         }
       },
       {
-        label: $t('pathways.components.sideBar.settings'),
+        label: $t('pathway.components.sideBar.settings'),
         to: getPathwayNavItemRoute($pathway.id, 'settings'),
         icon: 'Settings',
         hideSortIcon: true,
