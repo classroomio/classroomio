@@ -16,12 +16,13 @@
 
   import { t } from '$lib/utils/functions/translations';
   import { isMobile } from '$lib/utils/store/useMobile';
-  import { pathway } from '$lib/components/Pathways/store';
+  import { addCourseModal, pathway } from '$lib/components/Pathways/store';
 
   import IconButton from '$lib/components/IconButton/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import Card from '$lib/components/Courses/components/Card/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import AddCourseModal from '$lib/components/Pathways/components/AddCourseModal.svelte';
   import PathwayContainer from '$lib/components/Pathways/components/PathwayContainer.svelte';
 
   let searchValue: string = '';
@@ -43,6 +44,8 @@
 
 <PathwayContainer>
   <div class="overflow-y-auto max-h-[90vh]">
+    <AddCourseModal />
+
     <!-- header -->
     <div class="flex justify-between items-center">
       <h1>{$t('pathway.pages.course.title')}</h1>
@@ -50,13 +53,13 @@
       <div class="flex gap-5 justify-end">
         <RoleBasedSecurity allowedRoles={[1, 2]}>
           {#if $isMobile}
-            <PrimaryButton onClick={() => console.log('Add Course')}>
+            <PrimaryButton onClick={() => ($addCourseModal.open = true)}>
               <Add size={24} />
             </PrimaryButton>
           {:else}
             <PrimaryButton
               label={$t('pathway.pages.course.add_course')}
-              onClick={() => console.log('Add Course')}
+              onClick={() => ($addCourseModal.open = true)}
             />
           {/if}
         </RoleBasedSecurity>
@@ -121,10 +124,10 @@
                   >
                   <StructuredListCell>{course.description}</StructuredListCell>
                   <StructuredListCell>
-                    {course.studentNumber}
+                    {course.total_students}
                   </StructuredListCell>
                   <StructuredListCell>
-                    {course.lessonNumber}
+                    {course.total_lessons}
                   </StructuredListCell>
                 </StructuredListRow>
               {/each}
@@ -135,12 +138,12 @@
         <section class="flex items-center flex-wrap md:gap-28 gap-10">
           {#each filteredCourses as course}
             <Card
-              bannerImage={course.avatar}
+              bannerImage={course.banner_image}
               id={course.id}
               title={course.title}
               description={course.description}
-              totalLessons={course.lessonNumber}
-              totalStudents={course.studentNumber}
+              totalLessons={course.total_lessons}
+              totalStudents={course.total_students}
             />
           {/each}
         </section>

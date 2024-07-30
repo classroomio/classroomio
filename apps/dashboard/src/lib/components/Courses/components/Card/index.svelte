@@ -131,8 +131,11 @@
 >
   <div class="p-4">
     <div class="relative mb-5">
+      <!-- added a fallback image for cases where the banner isn't set because shows the broken image logo and the alt text -->
       <ImageLoader
-        src={bannerImage}
+        src={bannerImage
+          ? bannerImage
+          : 'https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/landingpage/riverside.jpeg'}
         alt="Course Logo"
         class="h-[200px] w-full rounded dark:border dark:border-neutral-600 relative"
       >

@@ -13,7 +13,7 @@
 
   import type { PathwayCourse } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
-  import { fetchCourses } from '$lib/components/Courses/api';
+  import { fetchCourses } from '$lib/utils/services/courses';
 
   import Tabs from '$lib/components/Tabs/index.svelte';
   import Modal from '$lib/components/Modal/index.svelte';
@@ -73,11 +73,11 @@
 
   $: tabs = [
     {
-      label: $t('pathways.components.addCourseModal.all_courses'),
+      label: $t('pathway.components.addCourseModal.all_courses'),
       value: '1'
     },
     {
-      label: $t('pathways.components.addCourseModal.picked_courses'),
+      label: $t('pathway.components.addCourseModal.picked_courses'),
       value: '2'
     }
   ];
@@ -91,7 +91,7 @@
   width="w-3/5"
   showSearchBar={true}
   bind:value={searchValue}
-  modalHeading={$t('pathways.components.addCourseModal.modal_heading')}
+  modalHeading={$t('pathway.components.addCourseModal.modal_heading')}
 >
   <main>
     <Tabs tabSpacing="gap-14" {tabs} {currentTab} {onChange} alignCenter={true}>
@@ -100,14 +100,13 @@
           <StructuredList>
             <StructuredListHead>
               <StructuredListRow head>
-                <StructuredListCell head
-                  >{$t('pathways.pages.course.body_title')}</StructuredListCell
+                <StructuredListCell head>{$t('pathway.pages.course.body_title')}</StructuredListCell
                 >
                 <StructuredListCell head
-                  >{$t('pathways.pages.course.description')}</StructuredListCell
+                  >{$t('pathway.pages.course.description')}</StructuredListCell
                 >
-                <StructuredListCell head>{$t('pathways.pages.course.lessons')}</StructuredListCell>
-                <StructuredListCell head>{$t('pathways.pages.course.students')}</StructuredListCell>
+                <StructuredListCell head>{$t('pathway.pages.course.lessons')}</StructuredListCell>
+                <StructuredListCell head>{$t('pathway.pages.course.students')}</StructuredListCell>
               </StructuredListRow>
             </StructuredListHead>
             <!--  -->
@@ -173,11 +172,11 @@
 
           <div class="flex justify-end">
             <PrimaryButton
-              label={`${$t('pathways.components.addCourseModal.add')} ${pathwayCourse.length} ${
+              label={`${$t('pathway.components.addCourseModal.add')} ${pathwayCourse.length} ${
                 pathwayCourse.length === 1
-                  ? $t('pathways.components.addCourseModal.course')
-                  : $t('pathways.components.addCourseModal.courses')
-              } ${$t('pathways.components.addCourseModal.path')}`}
+                  ? $t('pathway.components.addCourseModal.course')
+                  : $t('pathway.components.addCourseModal.courses')
+              } ${$t('pathway.components.addCourseModal.path')}`}
               onClick={handleSave}
             />
           </div>
