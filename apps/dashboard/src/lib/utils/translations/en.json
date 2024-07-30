@@ -55,7 +55,10 @@
         "body_title": "Title",
         "description": "Description",
         "students": "Students",
-        "lessons": "Lessons"
+        "lessons": "Lessons",
+        "empty_state_header": "No courses yet",
+        "empty_state_text": "You have not added any course to this learning path",
+        "empty_state_label": "Add course to this learning Path"
       },
       "settings": {
         "page_title": "Settings",
@@ -109,6 +112,11 @@
         "course": "Course",
         "courses": "Courses",
         "path": "to Learning Path"
+      },
+      "dragAndDrop": {
+        "title": "Arrange courses",
+        "header": "Arrange course in the sequence student must should take them start with first at the top",
+        "label": "Confirm course order"
       }
     }
   },
