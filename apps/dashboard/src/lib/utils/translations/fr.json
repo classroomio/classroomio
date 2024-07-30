@@ -1069,7 +1069,9 @@
       "plan": "Votre forfait s'accompagne d'avantages et d'avantages intéressants, notamment l'accès à toutes les futures fonctionnalités que nous publions.",
       "close": "Fermer",
       "learn": "Apprendre encore plus",
-      "month": "mois"
+      "month": "mois",
+      "monthly": "Mensuel",
+      "annually": "Annuellement"
     },
     "plan_names": {
       "free": "Gratuit",

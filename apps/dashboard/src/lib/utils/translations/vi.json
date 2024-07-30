@@ -1069,7 +1069,9 @@
       "plan": "Gói của bạn đi kèm với các đặc quyền và lợi ích thú vị, bao gồm quyền truy cập vào tất cả các tính năng trong tương lai mà chúng tôi sẽ phát hành.",
       "close": "Đóng",
       "learn": "Tìm hiểu thêm",
-      "month": "tháng"
+      "month": "tháng",
+      "monthly": "hàng tháng",
+      "annually": "Hàng năm"
     },
     "plan_names": {
       "free": "Miễn phí",

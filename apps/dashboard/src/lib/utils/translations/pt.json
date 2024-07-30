@@ -1069,7 +1069,9 @@
       "plan": "Seu plano vem com vantagens e benefícios interessantes, incluindo acesso a todos os recursos futuros que lançaremos.",
       "close": "Fechar",
       "learn": "Saber mais",
-      "month": "mês"
+      "month": "mês",
+      "monthly": "Por mês",
+      "annually": "Anualmente"
     },
     "plan_names": {
       "free": "Livre",
