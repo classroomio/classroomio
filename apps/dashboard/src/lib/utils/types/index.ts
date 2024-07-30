@@ -252,6 +252,27 @@ export interface Course {
   polls: { status: string }[];
 }
 
+export interface CourseCompletion {
+  id?: number;
+  course_id: string;
+  profile_id: string;
+  is_complete: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PathwayCourse {
+  id: string;
+  banner_image: string;
+  title: string;
+  description: string;
+  total_lessons: number;
+  total_students: number;
+  is_unlocked: boolean;
+  is_completed: CourseCompletion[];
+  is_published: boolean;
+}
+
 export interface Pathway {
   title?: any; // type unknown;
   description: string; // type unknown;
@@ -269,12 +290,18 @@ export interface Pathway {
   currency?: string;
   group?: Group;
   organization?: Organization;
-  is_certificate_downloadable?: boolean;
+  is_certificate_downloadable?: boolean; /* to issue certificate on LMS or not */
   certificate_theme?: string;
   status: string;
   is_published?: boolean;
   total_course?: number;
   total_students?: number;
+
+  avatar?: string;
+  courses_certificate: string /* to issue certificate for each courses or the learning path as a whole */,
+  prerequisite: string /* should students take certificates in order of the arrangement or not */;
+  courses: PathwayCourse[];
+  selectedCourses: PathwayCourse[];
 }
 
 export interface Groupmember {
@@ -446,37 +473,4 @@ export interface Review {
 interface Tabs {
   id: number;
   name: string;
-}
-
-export interface CourseCompletion {
-  id?: number;
-  course_id: string;
-  profile_id: string;
-  is_complete: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface PathwayCourse {
-  id: string;
-  avatar: string;
-  title: string;
-  description: string;
-  lessonNumber: number;
-  studentNumber: number;
-  is_unlocked: boolean;
-  is_completed: CourseCompletion[];
-  is_published: boolean;
-}
-
-export interface Pathway {
-  id: string;
-  title: string;
-  avatar: string;
-  description: string;
-  prerequisite: string,
-  is_published: boolean,
-  lms_certificate: boolean,
-  courses_certificate: string,
-  courses: PathwayCourse[]
 }
