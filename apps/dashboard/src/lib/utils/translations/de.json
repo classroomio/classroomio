@@ -491,7 +491,9 @@
           "accept_grade": "Akzeptieren",
           "reject_grade": "Ablehnen",
           "add_comment_placeholder": "Hinterlasse einen Kommentar",
-          "questions_tried": "Diese Punktzahl wurde aufgrund der Gesamtzahl der Versuche vergeben:"
+          "questions_tried": "Diese Punktzahl wurde aufgrund der Gesamtzahl der Versuche vergeben:",
+          "options_wrong": "und die Anzahl der falschen Auswahlen waren:",
+          "options_correct": "Es wurden die richtigen Optionen ausgewählt"
         }
       },
       "attendance": {
@@ -1438,6 +1440,7 @@
     "course": "Kurse",
     "locked": "Gesperrt",
     "goto_pathway": "Gehen Sie zu Pathway",
-    "of": "von"
+    "of": "von",
+    "completed": "Vollendet"
   }
 }

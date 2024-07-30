@@ -491,7 +491,9 @@
           "accept_grade": "Chấp nhận",
           "reject_grade": "Từ chối",
           "add_comment_placeholder": "Để lại một bình luận",
-          "questions_tried": "Phân bổ số điểm này dựa trên tổng số lần thử:"
+          "questions_tried": "Phân bổ số điểm này dựa trên tổng số lần thử:",
+          "options_wrong": "và số lựa chọn sai là:",
+          "options_correct": "các phương án đúng đã được chọn trong số"
         }
       },
       "attendance": {
@@ -1438,6 +1440,7 @@
     "course": "Khóa học",
     "locked": "Đã khóa",
     "goto_pathway": "Đi đến Con đường",
-    "of": "của"
+    "of": "của",
+    "completed": "Hoàn thành"
   }
 }

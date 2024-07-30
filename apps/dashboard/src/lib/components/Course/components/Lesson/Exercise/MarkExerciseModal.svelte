@@ -10,6 +10,7 @@
   import { useCompletion } from 'ai/svelte';
   import { QUESTION_TYPE } from '$lib/components/Question/constants';
   import { t } from '$lib/utils/functions/translations';
+  import { optionImage } from '$lib/utils/constants/quiz';
 
   export let open = false;
   export let onClose = () => {};
@@ -96,9 +97,8 @@
         }
 
         data?.questions.forEach((question) => {
-          const { id, points, question_type_id } = question;
-
-          if (question_type_id !== QUESTION_TYPE.TEXTAREA) {
+          const { id, points, question_type_id, options } = question;
+          if (question_type_id == QUESTION_TYPE.RADIO) {
             const answer = data.questionAnswers.find((q) => q.question_id === id);
 
             reasons = {
@@ -108,6 +108,37 @@
               } `
             };
             data.questionAnswerByPoint[id] = points / answer.answers.length;
+          } else if (question_type_id == QUESTION_TYPE.CHECKBOX) {
+            const answer = data.questionAnswers.find((q) => q.question_id === id);
+
+            const correctOptions = options
+              .filter((option) => option.is_correct)
+              .map((option) => option.value);
+
+            const correctSelections = answer.answers.filter((answer) =>
+              correctOptions.includes(answer)
+            ).length;
+
+            const incorrectSelections = answer.answers.filter(
+              (answer) => !correctOptions.includes(answer)
+            ).length;
+
+            const pointsEarned = (correctSelections / correctOptions.length) * points;
+
+            // for deductions
+            const deductionPerIncorrect = points / correctOptions.length;
+            const totalDeductions = incorrectSelections * deductionPerIncorrect;
+            const finalPoints = Math.max(pointsEarned - totalDeductions, 0);
+
+            reasons = {
+              ...reasons,
+              [id]: `${correctSelections} ${$t(
+                'course.navItem.submissions.grading_modal.options_correct'
+              )} ${correctOptions.length} ${$t(
+                'course.navItem.submissions.grading_modal.options_wrong'
+              )} ${incorrectSelections} `
+            };
+            data.questionAnswerByPoint[id] = finalPoints;
           } else if (aiResponses.length) {
             const graded = aiResponses.find((res) => res.id === id);
 
@@ -149,6 +180,7 @@
   $: total = calculateTotal(data.questionAnswerByPoint);
   $: maxPoints = getMaxPoints(data.questions);
   $: setStatus(data);
+  $: console.log('questions', data);
 </script>
 
 <Modal

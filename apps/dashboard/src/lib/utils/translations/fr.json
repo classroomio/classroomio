@@ -491,7 +491,9 @@
           "accept_grade": "Accepter",
           "reject_grade": "Rejeter",
           "add_comment_placeholder": "laissez un commentaire",
-          "questions_tried": "Attribué ce score en raison du nombre total d'essais :"
+          "questions_tried": "Attribué ce score en raison du nombre total d'essais :",
+          "options_wrong": "et le nombre de sélections incorrectes était :",
+          "options_correct": "les options correctes ont été sélectionnées parmi"
         }
       },
       "attendance": {
@@ -1438,6 +1440,7 @@
     "course": "Cours",
     "locked": "Fermé à clé",
     "goto_pathway": "Aller au parcours",
-    "of": "de"
+    "of": "de",
+    "completed": "Complété"
   }
 }

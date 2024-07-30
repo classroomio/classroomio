@@ -839,7 +839,9 @@
           "submit_grades": "Submit Grades",
           "accept_grade": "Accept",
           "reject_grade": "Reject",
-          "questions_tried": "Allocated this score because of total tries:"
+          "questions_tried": "Allocated this score because of total tries:",
+          "options_wrong": "and the number of incorrect selection were:",
+          "options_correct": "correct options were seleced out of"
         }
       },
 

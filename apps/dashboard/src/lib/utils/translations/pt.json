@@ -491,7 +491,9 @@
           "accept_grade": "Aceitar",
           "reject_grade": "Rejeitar",
           "add_comment_placeholder": "Deixe um comentário",
-          "questions_tried": "Alocada esta pontuação por causa do total de tentativas:"
+          "questions_tried": "Alocada esta pontuação por causa do total de tentativas:",
+          "options_wrong": "e o número de seleção incorreta foram:",
+          "options_correct": "as opções corretas foram selecionadas"
         }
       },
       "attendance": {
@@ -1438,6 +1440,7 @@
     "course": "Cursos",
     "locked": "Bloqueado",
     "goto_pathway": "Vá para o caminho",
-    "of": "de"
+    "of": "de",
+    "completed": "Concluído"
   }
 }
