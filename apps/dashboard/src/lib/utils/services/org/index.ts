@@ -262,8 +262,9 @@ export async function createOrgPlan(params: {
   planName: string;
   triggeredBy: number;
   data: OrganizationPlan['lmz_data'];
+  supabase: typeof supabase;
 }) {
-  return await supabase.from('organization_plan').insert({
+  return await params.supabase.from('organization_plan').insert({
     activated_at: new Date().toDateString(),
     org_id: params.orgId,
     triggered_by: params.triggeredBy,
