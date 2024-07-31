@@ -9,27 +9,33 @@
 
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
-  export let pathwayCourse = [];
+  export let pathwayCourses = [];
   const flipDurationMs = 300;
   const dispatch = createEventDispatcher();
 
   function handleDndConsider(e) {
-    pathwayCourse = e.detail.items;
-    dispatch('update', pathwayCourse);
+    pathwayCourses = e.detail.items;
+
+    dispatch('update', pathwayCourses);
   }
 
   function handleDndFinalize(e) {
-    pathwayCourse = e.detail.items;
-    dispatch('update', pathwayCourse);
+    pathwayCourses = e.detail.items;
+
+    dispatch('update', pathwayCourses);
   }
 
   function handleSave() {
     pathway.update((p) => {
       const existingCoursesMap = new Map(p.courses.map((course) => [course.id, course]));
-      pathwayCourse.forEach((course) => existingCoursesMap.set(course.id, course));
+
+      pathwayCourses.forEach((course) => existingCoursesMap.set(course.id, course));
+
       p.courses = Array.from(existingCoursesMap.values());
+
       return p;
     });
+
     $addCourseModal.open = false;
   }
 </script>
@@ -51,7 +57,7 @@
 
 <section
   use:dndzone={{
-    items: pathwayCourse,
+    items: pathwayCourses,
     flipDurationMs: 300,
     dropTargetStyle: {
       border: '2px #1d4ed8 solid',
@@ -61,7 +67,7 @@
   on:consider={handleDndConsider}
   on:finalize={handleDndFinalize}
 >
-  {#each pathwayCourse as course (course.id)}
+  {#each pathwayCourses as course (course.id)}
     <div
       animate:flip={{ duration: flipDurationMs }}
       class="w-full grid grid-cols-12 items-center py-4 border-b border-[#0233BD] px-10"

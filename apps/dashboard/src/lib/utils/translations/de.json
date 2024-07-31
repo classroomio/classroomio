@@ -1449,8 +1449,6 @@
         "students": "Studenten"
       },
       "addCourseModal": {
-        "all_courses": "Alle Kurse",
-        "picked_courses": "Ausgewählte Kurse",
         "modal_heading": "Kurs zum Lernpfad hinzufügen",
         "add": "Hinzufügen",
         "course": "Kurs",

@@ -1449,8 +1449,6 @@
         "students": "estudantes"
       },
       "addCourseModal": {
-        "all_courses": "Todos os cursos",
-        "picked_courses": "Cursos escolhidos",
         "modal_heading": "Adicionar curso ao caminho de aprendizagem",
         "add": "Adicionar",
         "course": "Curso",

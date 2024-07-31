@@ -105,8 +105,6 @@
         "settings": "Settings"
       },
       "addCourseModal": {
-        "all_courses": "All Courses",
-        "picked_courses": "Picked Courses",
         "modal_heading": "Add Course to Learning Path",
         "add": "Add",
         "course": "Course",

@@ -1,14 +1,8 @@
 <script>
   import { afterUpdate } from 'svelte';
-  import ArrowLeft from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
-
   import CloseButton from '../Buttons/Close/index.svelte';
-  import TextField from '../Form/TextField.svelte';
 
   export let open = false;
-  export let backButton = false;
-  export let buttonColor = '';
-  export let buttonOnClick = () => {};
   export let onClose = () => {};
   export let modalHeading = '';
   export let headerClass = '';
@@ -17,9 +11,7 @@
   export let maxWidth = '';
   export let containerClass = '';
   export let size = '';
-  export let value = '';
   export let isCloseable = true;
-  export let showSearchBar = false;
 
   afterUpdate(() => {
     if (open) {
@@ -50,25 +42,16 @@
         class="flex flex-wrap gap-3 md:gap-0 items-center justify-end md:justify-between border border-l-0 border-r-0 border-t-0 border-gray-100 dark:border-neutral-600 p-4 px-5 {headerClass}"
       >
         <div class="flex items-center gap-3">
-          {#if backButton}
-            <button
-              type="button"
-              on:click={buttonOnClick}
-              class="p-2 hover:bg-gray-100 rounded-full transition-all duration-300"
-            >
-              <ArrowLeft color={buttonColor} />
-            </button>
-          {/if}
+          <slot name="headerLeftBtn" />
+
           <p class="text-md m-0 font-medium dark:text-white {labelClass}">
             {modalHeading}
           </p>
         </div>
 
         <div class="flex items-center gap-5">
-          <!-- an option for modals with search inputs in the design -->
-          {#if showSearchBar}
-            <TextField onKeyDown={(e) => (value = e.target.value)} showSearchBar={true} />
-          {/if}
+          <slot name="headerRightBtn" />
+
           {#if isCloseable}
             <div class="rounded-full">
               <CloseButton onClick={onClose} contained={true} size="small" />

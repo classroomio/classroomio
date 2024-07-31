@@ -1,14 +1,14 @@
 <script>
   import TextField from '$lib/components/Form/TextField.svelte';
 
-  export let label;
+  export let label = '';
   export let value;
   export let checked;
   export let name;
   export let isEditable = false;
   export let disabled = false;
   export let className = '';
-  export let onChange;
+  export let onChange = (e) => {};
   export let onInputChange = (e) => {};
 </script>
 

@@ -1449,8 +1449,6 @@
         "students": "sinh viên"
       },
       "addCourseModal": {
-        "all_courses": "Tất cả các khóa học",
-        "picked_courses": "Các khóa học đã chọn",
         "modal_heading": "Thêm khóa học vào lộ trình học tập",
         "add": "Thêm vào",
         "course": "Khóa học",

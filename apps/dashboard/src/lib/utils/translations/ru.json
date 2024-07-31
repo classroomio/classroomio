@@ -1449,8 +1449,6 @@
         "students": "студенты"
       },
       "addCourseModal": {
-        "all_courses": "Все курсы",
-        "picked_courses": "Выбранные курсы",
         "modal_heading": "Добавить курс в схему обучения",
         "add": "Добавлять",
         "course": "Курс",

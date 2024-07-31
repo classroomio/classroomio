@@ -1449,8 +1449,6 @@
         "students": "छात्र"
       },
       "addCourseModal": {
-        "all_courses": "सभी पाठ्यक्रम",
-        "picked_courses": "चयनित पाठ्यक्रम",
         "modal_heading": "सीखने के पथ में पाठ्यक्रम जोड़ें",
         "add": "जोड़ना",
         "course": "अवधि",

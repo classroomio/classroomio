@@ -1449,8 +1449,6 @@
         "students": "estudiantes"
       },
       "addCourseModal": {
-        "all_courses": "Todos los cursos",
-        "picked_courses": "Cursos elegidos",
         "modal_heading": "Agregar curso a la ruta de aprendizaje",
         "add": "Agregar",
         "course": "Curso",

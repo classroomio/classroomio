@@ -1449,8 +1449,6 @@
         "students": "étudiants"
       },
       "addCourseModal": {
-        "all_courses": "Tous les cours",
-        "picked_courses": "Cours choisis",
         "modal_heading": "Ajouter un cours au parcours d'apprentissage",
         "add": "Ajouter",
         "course": "Cours",
