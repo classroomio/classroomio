@@ -10,7 +10,6 @@
   import { useCompletion } from 'ai/svelte';
   import { QUESTION_TYPE } from '$lib/components/Question/constants';
   import { t } from '$lib/utils/functions/translations';
-  import { optionImage } from '$lib/utils/constants/quiz';
 
   export let open = false;
   export let onClose = () => {};
