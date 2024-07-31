@@ -85,7 +85,9 @@
         "option_three": "No, for path only",
         "delete_path": "Delete learning Path",
         "delete_text": "Delete Learning Path as a whole",
-        "save": "Save Changes"
+        "save": "Save Changes",
+        "placeholder": "a little description about the pathway",
+        "pathway_description": "Pathway Description"
       }
     },
     "components": {

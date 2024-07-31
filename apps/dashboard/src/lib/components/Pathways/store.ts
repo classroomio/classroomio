@@ -7,10 +7,11 @@ export const pathway: Writable<Pathway> = writable({
   title: 'pathwayOne',
   avatar: '',
   description: '',
-  prerequisite: '',
-  is_published: false,
-  lms_certificate: false,
-  courses_certificate: '',
+  prerequisite: '', // should students take certificates in order of the arrangement or not
+  is_published: false, // is pathway published or not
+  is_certificate_downloadable: false, // to issue certificate on LMS or not
+  courses_certificate: '', // to issue certificate for each courses or the learning path as a whole
+  certificate_theme: 'professional', // certificate theme
   courses: [
     {
       id: '4653b37a-b0c4-4cf1-9dab-1ec4614a8643',

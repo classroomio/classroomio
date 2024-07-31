@@ -1478,7 +1478,9 @@
         "option_three": "Non, pour le chemin uniquement",
         "delete_path": "Supprimer le parcours d'apprentissage",
         "delete_text": "Supprimer le parcours de formation dans son intégralité",
-        "save": "Sauvegarder les modifications"
+        "save": "Sauvegarder les modifications",
+        "placeholder": "une petite description du parcours",
+        "pathway_description": "Description du parcours"
       },
       "course": {
         "title": "Cours",
