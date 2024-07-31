@@ -1485,7 +1485,9 @@
         "option_three": "Nein, nur für den Pfad",
         "delete_path": "Lernpfad löschen",
         "delete_text": "Lernpfad als Ganzes löschen",
-        "save": "Änderungen speichern"
+        "save": "Änderungen speichern",
+        "placeholder": "eine kleine Beschreibung des Weges",
+        "pathway_description": "Beschreibung des Pfades"
       },
       "course": {
         "title": "Kurse",

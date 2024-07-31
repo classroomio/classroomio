@@ -1485,7 +1485,9 @@
         "option_three": "No, solo para ruta",
         "delete_path": "Eliminar ruta de aprendizaje",
         "delete_text": "Eliminar la ruta de aprendizaje en su totalidad",
-        "save": "Guardar cambios"
+        "save": "Guardar cambios",
+        "placeholder": "una pequeña descripción sobre el camino",
+        "pathway_description": "Descripción de la ruta"
       },
       "course": {
         "title": "Cursos",

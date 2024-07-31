@@ -1485,7 +1485,9 @@
         "option_three": "Không, chỉ dành cho đường dẫn",
         "delete_path": "Xóa lộ trình học tập",
         "delete_text": "Xóa toàn bộ Hướng dẫn Học tập",
-        "save": "Lưu thay đổi"
+        "save": "Lưu thay đổi",
+        "placeholder": "một chút mô tả về con đường",
+        "pathway_description": "Mô tả lộ trình"
       },
       "course": {
         "title": "Khóa học",
