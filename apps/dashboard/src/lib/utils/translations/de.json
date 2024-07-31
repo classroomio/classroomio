@@ -1070,7 +1070,9 @@
       "plan": "Ihr Plan beinhaltet coole Vergünstigungen und Vorteile, einschließlich Zugriff auf alle zukünftigen Funktionen, die wir veröffentlichen.",
       "close": "Schließen",
       "learn": "Erfahren Sie mehr",
-      "month": "Monat"
+      "month": "Monat",
+      "monthly": "Monatlich",
+      "annually": "Jährlich"
     },
     "plan_names": {
       "free": "Frei",

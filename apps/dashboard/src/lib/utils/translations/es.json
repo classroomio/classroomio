@@ -1070,7 +1070,9 @@
       "plan": "Su plan viene con ventajas y beneficios interesantes, incluido el acceso a todas las funciones futuras que lancemos.",
       "close": "Cerca",
       "learn": "Aprende más",
-      "month": "mes"
+      "month": "mes",
+      "monthly": "Mensual",
+      "annually": "Anualmente"
     },
     "plan_names": {
       "free": "Gratis",

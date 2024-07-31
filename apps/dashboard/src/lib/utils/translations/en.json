@@ -343,7 +343,9 @@
       "plan": "Your plan comes with cool perks and benefits including access to all future features we release.",
       "close": "Close",
       "learn": "Learn more",
-      "month": "month"
+      "month": "month",
+      "monthly": "Monthly",
+      "annually": "Annually"
     }
   },
 

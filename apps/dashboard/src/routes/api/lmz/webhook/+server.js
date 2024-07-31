@@ -3,9 +3,12 @@ import crypto from 'crypto';
 import { LEMON_SQUEEZY_WEBHOOK_SECRET } from '$env/static/private';
 import { createOrgPlan, cancelOrgPlan } from '$lib/utils/services/org';
 import { PLAN } from 'shared/src/plans/constants';
+import { getServerSupabase } from '$lib/utils/functions/supabase.server';
 
 export async function POST({ request }) {
   try {
+    const supabase = getServerSupabase();
+
     // Catch the event type
     const clonedReq = request.clone();
     const eventType = request.headers.get('X-Event-Name');
@@ -37,6 +40,7 @@ export async function POST({ request }) {
 
       if (isSuccessful && orgId) {
         const { data, error } = await createOrgPlan({
+          supabase,
           orgId,
           triggeredBy: parseInt(triggeredBy),
           planName: PLAN.EARLY_ADOPTER,
