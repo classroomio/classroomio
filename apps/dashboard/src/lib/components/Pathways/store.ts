@@ -1,5 +1,4 @@
 import { writable } from 'svelte/store';
-import type { Writable } from 'svelte/store';
 import type { Pathway, PathwayCourse } from '$lib/utils/types';
 
 export const addCourseModal = writable({
