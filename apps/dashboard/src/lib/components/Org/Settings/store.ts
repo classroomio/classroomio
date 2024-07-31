@@ -64,7 +64,7 @@ export interface OrgLandingPageJson {
   };
 }
 
-export let landingPageSettings: Writable<OrgLandingPageJson> = writable({
+export const landingPageSettings: Writable<OrgLandingPageJson> = writable({
   header: {
     title: 'Web Development Courses for',
     titleHighlight: 'Everyone',

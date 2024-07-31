@@ -4,6 +4,7 @@ import type { Pathway, PathwayCourse } from '$lib/utils/types';
 
 export const addCourseModal = writable({
   open: false,
+  step: 0
 });
 
 export const courses = writable<PathwayCourse[]>([]);
