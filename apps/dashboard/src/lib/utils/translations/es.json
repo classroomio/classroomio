@@ -497,7 +497,11 @@
           "accept_grade": "Aceptar",
           "reject_grade": "Rechazar",
           "add_comment_placeholder": "Deja un comentario",
-          "questions_tried": "Se asignó esta puntuación debido al total de intentos:"
+          "allocated": "Asignó esta puntuación porque",
+          "total_try": "de intentos totales:",
+          "options_correct": "se seleccionaron las opciones correctas",
+          "out_of": "fuera de",
+          "options_wrong": "y el número de selecciones incorrectas fue"
         }
       },
       "attendance": {

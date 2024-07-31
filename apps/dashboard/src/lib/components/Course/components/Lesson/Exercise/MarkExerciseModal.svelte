@@ -10,13 +10,14 @@
   import { useCompletion } from 'ai/svelte';
   import { QUESTION_TYPE } from '$lib/components/Question/constants';
   import { t } from '$lib/utils/functions/translations';
+  import { optionImage } from '$lib/utils/constants/quiz';
 
   export let open = false;
   export let onClose = () => {};
   export let handleSave = () => {};
   export let isGradeWithAI = false;
 
-  export let data = {};
+  export let data: any = {};
   export let updateStatus = () => {};
 
   const SELECTABLE_STATUS = [
@@ -96,18 +97,53 @@
         }
 
         data?.questions.forEach((question) => {
-          const { id, points, question_type_id } = question;
-
-          if (question_type_id !== QUESTION_TYPE.TEXTAREA) {
+          const { id, points, question_type_id, options } = question;
+          if (question_type_id == QUESTION_TYPE.RADIO) {
             const answer = data.questionAnswers.find((q) => q.question_id === id);
 
             reasons = {
               ...reasons,
-              [id]: `${$t('course.navItem.submissions.grading_modal.questions_tried')} ${
-                answer.answers.length
-              } `
+              [id]: `${$t('course.navItem.submissions.grading_modal.allocated')} ${$t(
+                'course.navItem.submissions.grading_modal.total_try'
+              )} ${answer.answers.length} `
             };
             data.questionAnswerByPoint[id] = points / answer.answers.length;
+          } else if (question_type_id == QUESTION_TYPE.CHECKBOX) {
+            const answer = data.questionAnswers.find((q) => q.question_id === id);
+
+            const correctOptions = options
+              .filter((option) => option.is_correct)
+              .map((option) => option.value);
+
+            const correctSelections = answer.answers.filter((answer) =>
+              correctOptions.includes(answer)
+            ).length;
+
+            const incorrectSelections = answer.answers.filter(
+              (answer) => !correctOptions.includes(answer)
+            ).length;
+
+            const pointsEarned = (correctSelections / correctOptions.length) * points;
+
+            // for deductions
+            // HOW THIS WORKS: in a question of 2 correct options with 1 wrong option and max score of 4.
+            // if 1 correct option is selected and one wrong option is selected, points gets deducted for the wrong answer selected.
+            // so user gets 0 in this case
+            const deductionPerIncorrect = points / correctOptions.length;
+            const totalDeductions = incorrectSelections * deductionPerIncorrect;
+            const finalPoints = Math.max(pointsEarned - totalDeductions, 0);
+
+            reasons = {
+              ...reasons,
+              [id]: `${$t(
+                'course.navItem.submissions.grading_modal.allocated'
+              )} ${correctSelections} ${$t('course.navItem.submissions.grading_modal.out_of')} ${
+                correctOptions.length
+              } ${$t('course.navItem.submissions.grading_modal.options_correct')} ${$t(
+                'course.navItem.submissions.grading_modal.options_wrong'
+              )} ${incorrectSelections} `
+            };
+            data.questionAnswerByPoint[id] = finalPoints;
           } else if (aiResponses.length) {
             const graded = aiResponses.find((res) => res.id === id);
 

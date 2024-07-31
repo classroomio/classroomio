@@ -497,7 +497,11 @@
           "accept_grade": "Aceitar",
           "reject_grade": "Rejeitar",
           "add_comment_placeholder": "Deixe um comentário",
-          "questions_tried": "Alocada esta pontuação por causa do total de tentativas:"
+          "allocated": "Alocou esta pontuação porque",
+          "total_try": "do total de tentativas:",
+          "options_correct": "opções corretas foram selecionadas",
+          "out_of": "fora de",
+          "options_wrong": "e o número de seleções erradas foi"
         }
       },
       "attendance": {

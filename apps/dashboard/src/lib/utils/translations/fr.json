@@ -497,7 +497,11 @@
           "accept_grade": "Accepter",
           "reject_grade": "Rejeter",
           "add_comment_placeholder": "laissez un commentaire",
-          "questions_tried": "Attribué ce score en raison du nombre total d'essais :"
+          "allocated": "J'ai attribué ce score parce que",
+          "total_try": "du total d'essais :",
+          "options_correct": "les bonnes options ont été sélectionnées",
+          "out_of": "hors de",
+          "options_wrong": "et le nombre de mauvaises sélections était"
         }
       },
       "attendance": {
