@@ -1447,6 +1447,13 @@
       "courseCard": {
         "lessons": "पाठ",
         "students": "छात्र"
+      },
+      "addCourseModal": {
+        "modal_heading": "सीखने के पथ में पाठ्यक्रम जोड़ें",
+        "add": "जोड़ना",
+        "course": "अवधि",
+        "courses": "पाठ्यक्रम",
+        "path": "सीखने के पथ के लिए"
       }
     },
     "pages": {

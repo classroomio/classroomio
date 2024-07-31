@@ -1447,6 +1447,13 @@
       "courseCard": {
         "lessons": "Những bài học",
         "students": "sinh viên"
+      },
+      "addCourseModal": {
+        "modal_heading": "Thêm khóa học vào lộ trình học tập",
+        "add": "Thêm vào",
+        "course": "Khóa học",
+        "courses": "Khóa học",
+        "path": "đến lộ trình học tập"
       }
     },
     "pages": {

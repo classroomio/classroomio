@@ -1447,6 +1447,13 @@
       "courseCard": {
         "lessons": "cours",
         "students": "étudiants"
+      },
+      "addCourseModal": {
+        "modal_heading": "Ajouter un cours au parcours d'apprentissage",
+        "add": "Ajouter",
+        "course": "Cours",
+        "courses": "Cours",
+        "path": "au parcours d'apprentissage"
       }
     },
     "pages": {

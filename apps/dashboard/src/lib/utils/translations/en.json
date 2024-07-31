@@ -45,7 +45,7 @@
     "pages": {
       "course": {
         "title": "Courses",
-        "add_course": "A Course",
+        "add_course": "Add Course",
         "add_remove": "Add / remove course",
         "order": "Order Courses",
         "publish": "Publish Collection",
@@ -55,7 +55,10 @@
         "body_title": "Title",
         "description": "Description",
         "students": "Students",
-        "lessons": "Lessons"
+        "lessons": "Lessons",
+        "empty_state_header": "No courses yet",
+        "empty_state_text": "You have not added any course to this learning path",
+        "empty_state_label": "Add course to this learning Path"
       },
       "settings": {
         "page_title": "Settings",
@@ -102,6 +105,18 @@
         "certificates": "Certificates",
         "landing": "Landing Page",
         "settings": "Settings"
+      },
+      "addCourseModal": {
+        "modal_heading": "Add Course to Learning Path",
+        "add": "Add",
+        "course": "Course",
+        "courses": "Courses",
+        "path": "to Learning Path"
+      },
+      "dragAndDrop": {
+        "title": "Arrange courses",
+        "header": "Arrange course in the sequence student must should take them start with first at the top",
+        "label": "Confirm course order"
       }
     }
   },

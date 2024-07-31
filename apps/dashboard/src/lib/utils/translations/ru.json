@@ -1447,6 +1447,13 @@
       "courseCard": {
         "lessons": "уроки",
         "students": "студенты"
+      },
+      "addCourseModal": {
+        "modal_heading": "Добавить курс в схему обучения",
+        "add": "Добавлять",
+        "course": "Курс",
+        "courses": "Курсы",
+        "path": "к пути обучения"
       }
     },
     "pages": {

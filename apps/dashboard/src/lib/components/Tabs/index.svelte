@@ -8,12 +8,17 @@
     value: string;
     badgeValue?: number;
   }[] = [];
+  export let tabSpacing: string;
+  export let alignCenter: boolean = false;
   export let currentTab: string | number;
   export let onChange = (v: string | number) => () => {};
 </script>
 
 <div class="w-full flex flex-col">
-  <div class="flex items-center border-b w-full overflow-x-auto mb-2">
+  <div
+    class="flex items-center {alignCenter && 'justify-center'} {tabSpacing &&
+      tabSpacing} border-b w-full overflow-x-auto mb-2"
+  >
     {#each tabs as tab}
       {#if !tab.icon && !tab.badgeValue}
         <button

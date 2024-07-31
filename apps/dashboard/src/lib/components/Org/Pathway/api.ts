@@ -5,7 +5,9 @@ import { isOrgAdmin } from '$lib/utils/store/org';
 export async function fetchPathways(profileId: string | undefined, orgId: string | undefined) {
   if (!orgId || !profileId) return;
 
-  const match: any = {};
+  const match: {
+    member_profile_id?: string;
+  } = {};
   // Filter by profile_id if role isn't admin within organization
   if (!get(isOrgAdmin)) {
     match.member_profile_id = profileId;

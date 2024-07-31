@@ -39,16 +39,25 @@
       role="presentation"
     >
       <div
-        class="flex items-center justify-between border border-l-0 border-r-0 border-t-0 border-gray-100 dark:border-neutral-600 p-4 px-5 {headerClass}"
+        class="flex flex-wrap gap-3 md:gap-0 items-center justify-end md:justify-between border border-l-0 border-r-0 border-t-0 border-gray-100 dark:border-neutral-600 p-4 px-5 {headerClass}"
       >
-        <p class="text-md m-0 font-medium dark:text-white {labelClass}">
-          {modalHeading}
-        </p>
-        {#if isCloseable}
-          <div class="rounded-full">
-            <CloseButton onClick={onClose} contained={true} size="small" />
-          </div>
-        {/if}
+        <div class="flex items-center gap-3">
+          <slot name="headerLeftBtn" />
+
+          <p class="text-md m-0 font-medium dark:text-white {labelClass}">
+            {modalHeading}
+          </p>
+        </div>
+
+        <div class="flex items-center gap-5">
+          <slot name="headerRightBtn" />
+
+          {#if isCloseable}
+            <div class="rounded-full">
+              <CloseButton onClick={onClose} contained={true} size="small" />
+            </div>
+          {/if}
+        </div>
       </div>
 
       <div class="body h-4/5 overflow-y-auto p-6 {containerClass}">

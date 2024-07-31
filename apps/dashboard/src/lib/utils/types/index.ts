@@ -101,7 +101,7 @@ interface CourseMetadata {
   lessonTabsOrder?: Array<Tabs>;
   grading?: boolean;
   lessonDownload?: boolean;
-  allowNewStudent: boolean;
+  allowNewStudent?: boolean;
 }
 
 interface PathwayMetadata {
@@ -124,7 +124,7 @@ interface PathwayMetadata {
     imgUrl: string;
   };
   reviews?: Array<Review>;
-  allowNewStudent: boolean;
+  allowNewStudent?: boolean;
 }
 
 export interface LessonCommentInsertPayload {
@@ -290,7 +290,7 @@ export interface Pathway {
   currency?: string;
   group?: Group;
   organization?: Organization;
-  is_certificate_downloadable?: boolean; /* to issue certificate on LMS or not */
+  is_certificate_downloadable?: boolean /* to issue certificate on LMS or not */;
   certificate_theme?: string;
   status: string;
   is_published?: boolean;
@@ -298,7 +298,8 @@ export interface Pathway {
   total_students?: number;
 
   avatar?: string;
-  courses_certificate: string /* to issue certificate for each courses or the learning path as a whole */,
+  lms_certificate: boolean /* to issue certificate on LMS or not */;
+  courses_certificate: string /* to issue certificate for each courses or the learning path as a whole */;
   prerequisite: string /* should students take certificates in order of the arrangement or not */;
   courses: PathwayCourse[];
   selectedCourses: PathwayCourse[];

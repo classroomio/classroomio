@@ -24,7 +24,7 @@
   export let searching: boolean = false;
 
   const openNewPathwayModal = () => {
-    goto($currentOrgPath + '/pathway?new_pathway=true');
+    goto($currentOrgPath + '/pathways?new_pathway=true');
   };
 </script>
 

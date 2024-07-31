@@ -1447,6 +1447,13 @@
       "courseCard": {
         "lessons": "lecciones",
         "students": "estudiantes"
+      },
+      "addCourseModal": {
+        "modal_heading": "Agregar curso a la ruta de aprendizaje",
+        "add": "Agregar",
+        "course": "Curso",
+        "courses": "Cursos",
+        "path": "al camino del aprendizaje"
       }
     },
     "pages": {

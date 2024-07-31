@@ -1447,6 +1447,13 @@
       "courseCard": {
         "lessons": "Unterricht",
         "students": "Studenten"
+      },
+      "addCourseModal": {
+        "modal_heading": "Kurs zum Lernpfad hinzufügen",
+        "add": "Hinzufügen",
+        "course": "Kurs",
+        "courses": "Kurse",
+        "path": "zum Lernpfad"
       }
     },
     "pages": {
