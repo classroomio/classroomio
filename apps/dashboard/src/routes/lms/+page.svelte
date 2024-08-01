@@ -11,30 +11,68 @@
   import { getGreeting } from '$lib/utils/functions/date';
   import { t } from '$lib/utils/functions/translations';
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
+  import { lms_courses, lmsCourseMetaDeta } from '$lib/components/LMS/store';
+  import { fetchPathways } from '$lib/components/Org/PathWay/api';
 
   let hasFetched = false;
   let progressPercentage = 0;
   let totalLessons = 0;
   let totalCompleted = 0;
 
-  async function getCourses(userId: string | undefined, orgId: string) {
+  async function fetchPathwaysAndCourses(userId: string | undefined, orgId: string) {
     if (hasFetched || !userId || !orgId) {
       return;
     }
-    // only show is loading when fetching for the first time
-    if (!$courses.length) {
-      $courseMetaDeta.isLoading = true;
+    if (!$lms_courses.length) {
+      $lmsCourseMetaDeta.isLoading = true;
     }
 
-    const coursesResult = await fetchCourses(userId, orgId);
-    console.log(`coursesResult`, coursesResult);
+    try {
+      const [pathwayResult, coursesResult] = await Promise.all([
+        fetchPathways(userId, orgId),
+        fetchCourses(userId, orgId)
+      ]);
 
-    $courseMetaDeta.isLoading = false;
-    if (!coursesResult) return;
+      if (!pathwayResult || !coursesResult) return;
 
-    courses.set(coursesResult.allCourses);
-    hasFetched = true;
+      const pathwaysWithFlag = pathwayResult.allPathways.map((pathway) => ({
+        ...pathway,
+        isPathway: true
+      }));
+
+      const coursesWithFlag = coursesResult.allCourses.map((course) => ({
+        ...course,
+        isPathway: false
+      }));
+
+      const allResults = [...pathwaysWithFlag, ...coursesWithFlag];
+
+      lms_courses.set(allResults);
+      hasFetched = true;
+    } catch (error) {
+      console.error('Error fetching pathways and courses:', error);
+      $lmsCourseMetaDeta.isLoading = false;
+    }
   }
+
+  // async function getCourses(userId: string | undefined, orgId: string) {
+  //   if (hasFetched || !userId || !orgId) {
+  //     return;
+  //   }
+  //   // only show is loading when fetching for the first time
+  //   if (!$courses.length) {
+  //     $courseMetaDeta.isLoading = true;
+  //   }
+
+  //   const coursesResult = await fetchCourses(userId, orgId);
+  //   console.log(`coursesResult`, coursesResult);
+
+  //   $courseMetaDeta.isLoading = false;
+  //   if (!coursesResult) return;
+
+  //   courses.set(coursesResult.allCourses);
+  //   hasFetched = true;
+  // }
 
   function calcTotalProgress(courses: Course[]) {
     totalCompleted = courses.reduce((acc, cur) => acc + (cur.progress_rate || 0), 0);
@@ -43,8 +81,9 @@
     progressPercentage = Math.round((totalCompleted / totalLessons) * 100) || 0;
   }
 
-  $: getCourses($profile.id, $currentOrg.id);
-  $: calcTotalProgress($courses);
+  // $: getCourses($profile.id, $currentOrg.id);
+  $: fetchPathwaysAndCourses($profile.id, $currentOrg.id);
+  $: calcTotalProgress($lms_courses);
 </script>
 
 <svelte:head>

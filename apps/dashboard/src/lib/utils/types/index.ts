@@ -231,6 +231,7 @@ export interface Course {
   certificate_theme?: string;
   status: string;
   is_published?: boolean;
+  isPathway?: boolean;
   progress_rate?: number;
   total_lessons?: number;
   total_students?: number;
@@ -265,6 +266,9 @@ export interface Pathway {
   certificate_theme?: string;
   status: string;
   is_published?: boolean;
+  isPathway?: boolean;
+  progress_rate: number;
+  courses: Course[];
   total_course?: number;
   total_students?: number;
 }

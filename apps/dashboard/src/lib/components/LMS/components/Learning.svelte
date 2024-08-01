@@ -7,9 +7,11 @@
   import { t } from '$lib/utils/functions/translations';
   import { ChevronDown } from 'carbon-icons-svelte';
   import CourseListModal from '$lib/components/LMS/components/CourseListModal.svelte';
+  import { lms_courses } from '../store';
 
-  export let isLearningPath = true;
+  // export let isPathway = true;
   let open = false;
+
   const mockPathway = {
     title: 'Become a ux expert',
     courses: [
@@ -65,7 +67,7 @@
     goto(`/courses/${id}/lessons?next=true`);
   };
 
-  $: last3Courses = $courses.length > 0 ? $courses.slice(0, 3) : [];
+  $: last3Courses = $lms_courses.length > 0 ? $lms_courses.slice(0, 3) : [];
 </script>
 
 <section class="h-full">
@@ -79,7 +81,7 @@
       <div class=" w-full h-full flex flex-col justify-start overflow-y-auto">
         {#each last3Courses as course}
           <div class="p-3">
-            {#if isLearningPath}
+            {#if course.isPathway}
               <div
                 class="org-selector relative flex justify-between items-center text-primary-900 font-bold text-xs pb-3"
               >
@@ -127,7 +129,7 @@
                   />
                 </div>
               {/if}
-              <CourseListModal {mockPathway} bind:open />
+              <CourseListModal mockPathway={course.courses} bind:open />
             {:else}
               <span class="flex flex-col lg:flex-row gap-3 items-start pb-5">
                 <img

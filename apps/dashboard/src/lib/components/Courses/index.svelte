@@ -23,13 +23,19 @@
   export let isExplore = false;
   export let searching = false;
 
-  function calcProgressRate(progressRate?: number, totalLessons?: number): number {
-    if (!progressRate || !totalLessons) {
+  function calcProgressRate(progressRate?: number, totalItem?: number): number {
+    if (!progressRate || !totalItem) {
       return 0;
     }
 
-    return Math.round((progressRate / totalLessons) * 100);
+    return Math.round((progressRate / totalItem) * 100);
   }
+
+  const getCompleteCourses = (course) => {
+    if (!course.isPathway) return;
+    const completedCourse = course.courses.filter((course) => course?.progress_rate === 100).length;
+    return completedCourse;
+  };
 </script>
 
 <!-- <CopyCourseModal /> -->
@@ -95,15 +101,18 @@
             isPublished={courseData.is_published}
             cost={courseData.cost}
             type={courseData.type}
-            isLearningPath={true}
-            totalCourse={5}
-            completedCourse={2}
+            isLearningPath={courseData.isPathway}
+            totalCourse={courseData.total_course}
+            completedCourse={getCompleteCourses(courseData)}
             currency={courseData.currency}
             totalLessons={courseData.total_lessons}
             totalStudents={courseData.total_students}
             isLMS={$globalStore.isOrgSite}
             {isExplore}
-            progressRate={calcProgressRate(courseData.progress_rate, courseData.total_lessons)}
+            progressRate={calcProgressRate(
+              courseData.progress_rate,
+              courseData.isPathway ? courseData.total_course : courseData.total_lessons
+            )}
           />
         {/key}
       {/each}

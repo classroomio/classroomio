@@ -6,14 +6,16 @@
   import { fetchCourses } from '$lib/components/Courses/api';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
-  import {
-    courses,
-    courseMetaDeta,
-    coursesComplete,
-    coursesInProgress
-  } from '$lib/components/Courses/store';
+
   import { browser } from '$app/environment';
   import { t } from '$lib/utils/functions/translations';
+  import {
+    coursesComplete,
+    coursesInProgress,
+    lms_courses,
+    lmsCourseMetaDeta
+  } from '$lib/components/LMS/store';
+  import { fetchPathways } from '$lib/components/Org/PathWay/api';
 
   let hasFetched = false;
   let selectedId = '0';
@@ -22,29 +24,44 @@
     return () => (currentTab = tab);
   }
 
-  async function getCourses(userId: string | null, orgId: string) {
+  async function fetchPathwaysAndCourses(userId: string | undefined, orgId: string) {
     if (hasFetched || !userId || !orgId) {
       return;
     }
-    hasFetched = true;
-
-    // only show is loading when fetching for the first time
-    if (!$courses.length) {
-      $courseMetaDeta.isLoading = true;
+    if (!$lms_courses.length) {
+      $lmsCourseMetaDeta.isLoading = true;
     }
 
-    const coursesResult = await fetchCourses(userId, orgId);
-    console.log(`get courses result`, coursesResult);
+    try {
+      const [pathwayResult, coursesResult] = await Promise.all([
+        fetchPathways(userId, orgId),
+        fetchCourses(userId, orgId)
+      ]);
 
-    $courseMetaDeta.isLoading = false;
-    if (!coursesResult) return;
+      if (!pathwayResult || !coursesResult) return;
 
-    courses.set(coursesResult.allCourses);
-    hasFetched = true;
+      const pathwaysWithFlag = pathwayResult.allPathways.map((pathway) => ({
+        ...pathway,
+        isPathway: true
+      }));
+
+      const coursesWithFlag = coursesResult.allCourses.map((course) => ({
+        ...course,
+        isPathway: false
+      }));
+
+      const allResults = [...pathwaysWithFlag, ...coursesWithFlag];
+
+      lms_courses.set(allResults);
+      hasFetched = true;
+    } catch (error) {
+      console.error('Error fetching pathways and courses:', error);
+      $lmsCourseMetaDeta.isLoading = false;
+    }
   }
 
   $: if (browser && $profile.id && $currentOrg.id) {
-    getCourses($profile.id, $currentOrg.id);
+    fetchPathwaysAndCourses($profile.id, $currentOrg.id);
   }
 
   $: tabs = [
