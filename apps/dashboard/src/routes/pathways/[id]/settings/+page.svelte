@@ -41,7 +41,7 @@
   }
 
   const deleteBannerImage = () => {
-    $pathway.avatar = '';
+    $pathway.logo = '';
   };
 
   const generateNewCourseLink = () => {
@@ -110,7 +110,7 @@
             />
           </span>
           {#if $handleOpenWidget.open}
-            <UploadWidget bind:imageURL={$pathway.avatar} />
+            <UploadWidget bind:imageURL={$pathway.logo} />
           {/if}
         </Column>
 
@@ -118,9 +118,7 @@
           <div class="max-w-full overflow-hidden my-5 md:my-0">
             <img
               alt="About us"
-              src={$pathway.avatar
-                ? $pathway.avatar
-                : '/images/classroomio-course-img-template.jpg'}
+              src={$pathway.logo || '/images/classroomio-course-img-template.jpg'}
               class="w-full h-full object-cover hover:scale-110 transition-all duration-300"
             />
           </div>

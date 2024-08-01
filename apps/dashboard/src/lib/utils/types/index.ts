@@ -319,10 +319,9 @@ export interface Pathway {
   is_published?: boolean;
   total_course?: number;
   total_students?: number;
-  avatar?: string;
-  lms_certificate: boolean /* to issue certificate on LMS or not */;
-  courses_certificate: string /* to issue certificate for each courses or the learning path as a whole */;
-  prerequisite: string /* should students take certificates in order of the arrangement or not */;
+  lms_certificate: boolean;
+  courses_certificate: string;
+  prerequisite: string;
   courses: PathwayCourse[];
   selectedCourses: PathwayCourse[];
 }
