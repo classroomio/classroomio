@@ -14,7 +14,7 @@
     triggerSendEmail,
     NOTIFICATION_NAME
   } from '$lib/utils/services/notification/notification';
-  import { snackbar } from '$lib/components/Snackbar/store.js';
+  import { snackbar } from '$lib/components/Snackbar/store';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { page } from '$app/stores';
 
@@ -76,6 +76,9 @@
       if (addedMember.error) {
         console.error('Error adding student to group', courseData.group_id, addedMember.error);
         snackbar.error('snackbar.invite.failed_join');
+
+        // Full page load to lms if error joining, probably user already joined
+        window.location.href = '/lms';
         return;
       }
 

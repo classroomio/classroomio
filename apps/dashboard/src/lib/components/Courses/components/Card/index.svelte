@@ -31,6 +31,9 @@
   export let currency = 'USD';
   export let isOnLandingPage = false;
   export let isLMS = false;
+  export let isLearningPath = false;
+  export let totalCourse = 0;
+  export let completedCourse = 0;
   export let isExplore = false;
   export let progressRate = 45;
   export let type: COURSE_TYPE;
@@ -141,7 +144,14 @@
         </svelte:fragment>
         <svelte:fragment slot="error">{$t('courses.course_card.error_message')}</svelte:fragment>
       </ImageLoader>
-      {#if type}
+
+      {#if isLearningPath && isLMS}
+        <span
+          class="absolute top-2 left-2 z-10 text-xs font-bold uppercase bg-white text-primary-600 rounded-sm p-1"
+        >
+          {$t('lms_pathway.pathway')}
+        </span>
+      {:else if type}
         {@const tag = COURSE_TAG[type]}
         <span
           class="absolute bottom-2 left-2 z-10 text-xs capitalize bg-primary-50 rounded-sm p-1 flex items-center gap-1 font-mono"
@@ -163,9 +173,13 @@
       'items-center'}"
   >
     <div>
-      <p class="text-xs {!isLMS && 'pl-2'} dark:text-white">
-        {totalLessons}
-        {$t('courses.course_card.lessons_number')}
+      <p class="text-xs {!isLMS && 'pl-2'} font-normal dark:text-white">
+        {#if isLearningPath && isLMS}
+          {completedCourse} / {totalCourse} {$t('lms_pathway.course')}
+        {:else}
+          {totalLessons}
+          {$t('courses.course_card.lessons_number')}
+        {/if}
       </p>
       <p class="text-xs py-2">
         {#if isOnLandingPage}
@@ -202,7 +216,9 @@
       <PrimaryButton
         label={isExplore
           ? $t('courses.course_card.learn_more')
-          : $t('courses.course_card.continue_course')}
+          : isLearningPath
+            ? $t('lms_pathway.continue')
+            : $t('courses.course_card.continue_course')}
         variant={VARIANTS.OUTLINED}
         className="rounded-none"
       />

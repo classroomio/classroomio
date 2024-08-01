@@ -22,19 +22,16 @@
     // TODO: Clone Pathway functionality
     alert('WIP: Clone Pathway');
   }
-
   function handleSharePathway(e) {
     e.stopPropagation();
     // TODO: Share Pathway functionality
     alert('WIP: Share Pathway');
   }
-
   function handleInvite(e) {
     e.stopPropagation();
     // TODO: Invite functionality
     alert('WIP: Invite people to Pathway');
   }
-
   function handleDeletePathway(e) {
     e.stopPropagation();
     // TODO: Delete Pathway functionality

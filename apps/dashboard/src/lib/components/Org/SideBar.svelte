@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import { goto } from '$app/navigation';
   import HelpIcon from 'carbon-icons-svelte/lib/Help.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import OrgSelector from '$lib/components/OrgSelector/OrgSelector.svelte';
@@ -10,8 +11,7 @@
   import { NavClasses } from '$lib/utils/constants/reusableClass';
   import { sideBar } from './store';
   import { t } from '$lib/utils/functions/translations';
-  import { goto } from '$app/navigation';
-  import SideBarExpandeable from '$lib/components/Org/SidebarExpandeable.svelte';
+  import SidebarExpandeable from '$lib/components/Org/SidebarExpandeable.svelte';
 
   interface menuItems {
     id: string;
@@ -91,7 +91,7 @@
       <ul class="mt-4 my-2 px-4">
         {#each menuItems as menuItem}
           {#if menuItem.show}
-            <SideBarExpandeable
+            <SidebarExpandeable
               id={menuItem.id}
               label={menuItem.label}
               href={typeof menuItem.to === 'string' ? `${$currentOrgPath}${menuItem.to}` : null}
@@ -117,7 +117,7 @@
                   </a>
                 {/each}
               {/if}
-            </SideBarExpandeable>
+            </SidebarExpandeable>
           {/if}
         {/each}
       </ul>

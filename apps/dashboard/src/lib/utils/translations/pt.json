@@ -1070,7 +1070,9 @@
       "plan": "Seu plano vem com vantagens e benefícios interessantes, incluindo acesso a todos os recursos futuros que lançaremos.",
       "close": "Fechar",
       "learn": "Saber mais",
-      "month": "mês"
+      "month": "mês",
+      "monthly": "Por mês",
+      "annually": "Anualmente"
     },
     "plan_names": {
       "free": "Livre",
@@ -1447,6 +1449,13 @@
       "courseCard": {
         "lessons": "lições",
         "students": "estudantes"
+      },
+      "addCourseModal": {
+        "modal_heading": "Adicionar curso ao caminho de aprendizagem",
+        "add": "Adicionar",
+        "course": "Curso",
+        "courses": "Cursos",
+        "path": "para o caminho de aprendizagem"
       }
     },
     "pages": {
@@ -1478,7 +1487,9 @@
         "option_three": "Não, apenas para caminho",
         "delete_path": "Excluir caminho de aprendizagem",
         "delete_text": "Excluir o caminho de aprendizagem como um todo",
-        "save": "Salvar alterações"
+        "save": "Salvar alterações",
+        "placeholder": "uma pequena descrição sobre o caminho",
+        "pathway_description": "Descrição do caminho"
       },
       "course": {
         "title": "Cursos",

@@ -95,6 +95,9 @@
             isPublished={courseData.is_published}
             cost={courseData.cost}
             type={courseData.type}
+            isLearningPath={true}
+            totalCourse={5}
+            completedCourse={2}
             currency={courseData.currency}
             totalLessons={courseData.total_lessons}
             totalStudents={courseData.total_students}

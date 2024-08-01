@@ -55,7 +55,10 @@
         "body_title": "Title",
         "description": "Description",
         "students": "Students",
-        "lessons": "Lessons"
+        "lessons": "Lessons",
+        "empty_state_header": "No courses yet",
+        "empty_state_text": "You have not added any course to this learning path",
+        "empty_state_label": "Add course to this learning Path"
       },
       "settings": {
         "page_title": "Settings",
@@ -85,7 +88,9 @@
         "option_three": "No, for path only",
         "delete_path": "Delete learning Path",
         "delete_text": "Delete Learning Path as a whole",
-        "save": "Save Changes"
+        "save": "Save Changes",
+        "placeholder": "a little description about the pathway",
+        "pathway_description": "Pathway Description"
       }
     },
     "components": {
@@ -100,6 +105,18 @@
         "certificates": "Certificates",
         "landing": "Landing Page",
         "settings": "Settings"
+      },
+      "addCourseModal": {
+        "modal_heading": "Add Course to Learning Path",
+        "add": "Add",
+        "course": "Course",
+        "courses": "Courses",
+        "path": "to Learning Path"
+      },
+      "dragAndDrop": {
+        "title": "Arrange courses",
+        "header": "Arrange course in the sequence student must should take them start with first at the top",
+        "label": "Confirm course order"
       }
     }
   },
@@ -326,7 +343,9 @@
       "plan": "Your plan comes with cool perks and benefits including access to all future features we release.",
       "close": "Close",
       "learn": "Learn more",
-      "month": "month"
+      "month": "month",
+      "monthly": "Monthly",
+      "annually": "Annually"
     }
   },
 
@@ -1244,6 +1263,16 @@
     "in_progress": "Grading In Progress",
     "graded": "Graded",
     "lesson": "Lesson"
+  },
+
+  "lms_pathway": {
+    "pathway": "PATHWAY",
+    "continue": "Continue Path",
+    "course": "Courses",
+    "locked": "Locked",
+    "goto_pathway": "Go to Pathway",
+    "completed": "Completed",
+    "of": "of"
   },
 
   "explore": {

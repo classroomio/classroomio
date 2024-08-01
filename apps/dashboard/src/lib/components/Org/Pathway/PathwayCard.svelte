@@ -8,15 +8,11 @@
   export let banner_url: string = '';
   export let isPublished: boolean = false;
   export let totalCourse: number = 0;
-
-  const getPathwayUrl = () => {
-    return `/pathways/${id}`;
-  };
 </script>
 
 <a
   rel="prefetch"
-  href={getPathwayUrl()}
+  href="/pathways/{id}"
   class="text-black flex items-center p-4 gap-4 border border-gray dark:border-neutral-600 rounded w-full max-w-[520px] relative hover:scale-95 transition-all ease-in-out hover:no-underline"
 >
   <ImageLoader

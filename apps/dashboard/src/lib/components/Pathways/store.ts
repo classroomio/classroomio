@@ -1,8 +1,14 @@
 import { writable } from 'svelte/store';
-import type { Writable } from 'svelte/store';
-import type { Pathway } from '$lib/utils/types';
+import type { Pathway, PathwayCourse } from '$lib/utils/types';
 
-export const pathway: Writable<Pathway> = writable({
+export const addCourseModal = writable({
+  open: false,
+  step: 0
+});
+
+export const courses = writable<PathwayCourse[]>([]);
+
+export const pathway = writable<Pathway>({
   id: 'pathway-one',
   title: 'pathwayOne',
   avatar: '',
@@ -11,15 +17,22 @@ export const pathway: Writable<Pathway> = writable({
   is_published: false,
   lms_certificate: false,
   courses_certificate: '',
+  cost: 3000,
+  status: 'Published',
+  created_at: '20, March, 2024',
+  updated_at: '20, March, 2024',
+  metadata: {},
+  is_certificate_downloadable: false,
+  certificate_theme: 'professional',
   courses: [
     {
-      id: '4653b37a-b0c4-4cf1-9dab-1ec4614a8643',
-      avatar: '/images/org-landingpage-our-story.jpeg',
+      id: '4653bss37a-b0c4-4cf1-9dab-1ec4614a8643',
+      banner_image: '/images/org-landingpage-our-story.jpeg',
       title: 'Basic Fundamental of graphic design',
       description:
         'Begin with rudiment of  graphic design including typography, layouts, colours.....',
-      lessonNumber: 5,
-      studentNumber: 30,
+      total_lessons: 5,
+      total_students: 30,
       is_unlocked: true,
       is_completed: [
         {
@@ -34,13 +47,13 @@ export const pathway: Writable<Pathway> = writable({
       is_published: false
     },
     {
-      id: '73f92bda-f306-4c7b-88d3-d3a4ed37fb06',
-      avatar: '/images/org-landingpage-our-story.jpeg',
+      id: '73f9ascas2bda-f306-4c7b-88d3-d3a4ed37fb06',
+      banner_image: '/images/org-landingpage-our-story.jpeg',
       title: 'Establishing hierachy',
       description:
         'Begin with rudiment of  graphic design including typography, layouts, colours.....',
-      lessonNumber: 5,
-      studentNumber: 10,
+      total_lessons: 5,
+      total_students: 10,
       is_unlocked: false,
       is_completed: [
         {
@@ -55,13 +68,13 @@ export const pathway: Writable<Pathway> = writable({
       is_published: false
     },
     {
-      id: '41afd56e-938c-45be-8f71-e59465dacce1',
-      avatar: '/images/org-landingpage-our-story.jpeg',
+      id: '41afdjmh56e-938c-45be-8f71-e59465dacce1',
+      banner_image: '/images/org-landingpage-our-story.jpeg',
       title: 'Empathy',
       description:
         'Begin with rudiment of  graphic design including typography, layouts, colours.....',
-      lessonNumber: 5,
-      studentNumber: 3,
+      total_lessons: 5,
+      total_students: 3,
       is_unlocked: false,
       is_completed: [
         {
@@ -76,13 +89,13 @@ export const pathway: Writable<Pathway> = writable({
       is_published: false
     },
     {
-      id: 'ef15e6ee-018d-48ab-a195-8030366aae06',
-      avatar: '/images/org-landingpage-our-story.jpeg',
+      id: 'ef15evr6ee-018d-48ab-a195-8030366aae06',
+      banner_image: '/images/org-landingpage-our-story.jpeg',
       title: 'Learn Typography',
       description:
         'Begin with rudiment of  graphic design including typography, layouts, colours.....',
-      lessonNumber: 5,
-      studentNumber: 2,
+      total_lessons: 5,
+      total_students: 2,
       is_unlocked: false,
       is_completed: [
         {
@@ -97,13 +110,13 @@ export const pathway: Writable<Pathway> = writable({
       is_published: true
     },
     {
-      id: 'ef15e6ee-018d-48ab-a195-8030366aae06',
-      avatar: '/images/org-landingpage-our-story.jpeg',
+      id: 'ef15egcg6ee-018d-48ab-a195-8030366aae06',
+      banner_image: '/images/org-landingpage-our-story.jpeg',
       title: 'Learn colours',
       description:
         'Begin with rudiment of  graphic design including typography, layouts, colours.....',
-      lessonNumber: 5,
-      studentNumber: 30,
+      total_lessons: 5,
+      total_students: 30,
       is_unlocked: false,
       is_completed: [
         {
@@ -117,5 +130,6 @@ export const pathway: Writable<Pathway> = writable({
       ],
       is_published: true
     }
-  ]
+  ],
+  selectedCourses: []
 });

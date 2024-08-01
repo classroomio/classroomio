@@ -18,7 +18,7 @@ export const createPathwayModal = writable({
   description: ''
 });
 
-export const copyPathwayModalInitialState = {
+export const pathwayModalInitialState = {
   open: false,
   id: '',
   title: '',
@@ -26,4 +26,4 @@ export const copyPathwayModalInitialState = {
   error: null
 };
 
-export const copyCourseModal = writable({ ...copyPathwayModalInitialState });
+export const copyCourseModal = writable({ ...pathwayModalInitialState });

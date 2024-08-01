@@ -101,7 +101,30 @@ interface CourseMetadata {
   lessonTabsOrder?: Array<Tabs>;
   grading?: boolean;
   lessonDownload?: boolean;
-  allowNewStudent: boolean;
+  allowNewStudent?: boolean;
+}
+
+interface PathwayMetadata {
+  requirements?: string;
+  description?: string;
+  goals?: string;
+  videoUrl?: '';
+  showDiscount?: false;
+  discount?: 0;
+  paymentLink?: string;
+  reward?: {
+    show: boolean;
+    description: string;
+  };
+  instructor?: {
+    name: string;
+    role: string;
+    coursesNo: number;
+    description: string;
+    imgUrl: string;
+  };
+  reviews?: Array<Review>;
+  allowNewStudent?: boolean;
 }
 
 interface PathwayMetadata {
@@ -252,6 +275,27 @@ export interface Course {
   polls: { status: string }[];
 }
 
+export interface CourseCompletion {
+  id?: number;
+  course_id: string;
+  profile_id: string;
+  is_complete: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PathwayCourse {
+  id: string;
+  banner_image: string;
+  title: string;
+  description: string;
+  total_lessons: number;
+  total_students: number;
+  is_unlocked: boolean;
+  is_completed: CourseCompletion[];
+  is_published: boolean;
+}
+
 export interface Pathway {
   title?: any; // type unknown;
   description: string; // type unknown;
@@ -275,6 +319,11 @@ export interface Pathway {
   is_published?: boolean;
   total_course?: number;
   total_students?: number;
+  lms_certificate: boolean;
+  courses_certificate: string;
+  prerequisite: string;
+  courses: PathwayCourse[];
+  selectedCourses: PathwayCourse[];
 }
 
 export interface Groupmember {
@@ -446,37 +495,4 @@ export interface Review {
 interface Tabs {
   id: number;
   name: string;
-}
-
-export interface CourseCompletion {
-  id?: number;
-  course_id: string;
-  profile_id: string;
-  is_complete: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface PathwayCourse {
-  id: string;
-  avatar: string;
-  title: string;
-  description: string;
-  lessonNumber: number;
-  studentNumber: number;
-  is_unlocked: boolean;
-  is_completed: CourseCompletion[];
-  is_published: boolean;
-}
-
-export interface Pathway {
-  id: string;
-  title: string;
-  avatar: string;
-  description: string;
-  prerequisite: string,
-  is_published: boolean,
-  lms_certificate: boolean,
-  courses_certificate: string,
-  courses: PathwayCourse[]
 }

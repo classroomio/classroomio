@@ -1070,7 +1070,9 @@
       "plan": "Su plan viene con ventajas y beneficios interesantes, incluido el acceso a todas las funciones futuras que lancemos.",
       "close": "Cerca",
       "learn": "Aprende más",
-      "month": "mes"
+      "month": "mes",
+      "monthly": "Mensual",
+      "annually": "Anualmente"
     },
     "plan_names": {
       "free": "Gratis",
@@ -1447,6 +1449,13 @@
       "courseCard": {
         "lessons": "lecciones",
         "students": "estudiantes"
+      },
+      "addCourseModal": {
+        "modal_heading": "Agregar curso a la ruta de aprendizaje",
+        "add": "Agregar",
+        "course": "Curso",
+        "courses": "Cursos",
+        "path": "al camino del aprendizaje"
       }
     },
     "pages": {
@@ -1478,7 +1487,9 @@
         "option_three": "No, solo para ruta",
         "delete_path": "Eliminar ruta de aprendizaje",
         "delete_text": "Eliminar la ruta de aprendizaje en su totalidad",
-        "save": "Guardar cambios"
+        "save": "Guardar cambios",
+        "placeholder": "una pequeña descripción sobre el camino",
+        "pathway_description": "Descripción de la ruta"
       },
       "course": {
         "title": "Cursos",
