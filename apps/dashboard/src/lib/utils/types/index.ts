@@ -13,6 +13,14 @@ export enum LOCALE {
 }
 
 //===============Custom Type===============
+
+export interface ProfileCourseProgress {
+  exercises_completed: number;
+  exercises_count: number;
+  lessons_completed: number;
+  lessons_count: number;
+}
+
 export interface GroupPerson {
   assigned_student_id: number | null;
   created_at: string;
@@ -93,7 +101,30 @@ interface CourseMetadata {
   lessonTabsOrder?: Array<Tabs>;
   grading?: boolean;
   lessonDownload?: boolean;
-  allowNewStudent: boolean;
+  allowNewStudent?: boolean;
+}
+
+interface PathwayMetadata {
+  requirements?: string;
+  description?: string;
+  goals?: string;
+  videoUrl?: '';
+  showDiscount?: false;
+  discount?: 0;
+  paymentLink?: string;
+  reward?: {
+    show: boolean;
+    description: string;
+  };
+  instructor?: {
+    name: string;
+    role: string;
+    coursesNo: number;
+    description: string;
+    imgUrl: string;
+  };
+  reviews?: Array<Review>;
+  allowNewStudent?: boolean;
 }
 
 interface PathwayMetadata {
@@ -244,6 +275,27 @@ export interface Course {
   polls: { status: string }[];
 }
 
+export interface CourseCompletion {
+  id?: number;
+  course_id: string;
+  profile_id: string;
+  is_complete: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PathwayCourse {
+  id: string;
+  banner_image: string;
+  title: string;
+  description: string;
+  total_lessons: number;
+  total_students: number;
+  is_unlocked: boolean;
+  is_completed: CourseCompletion[];
+  is_published: boolean;
+}
+
 export interface Pathway {
   title?: any; // type unknown;
   description: string; // type unknown;
@@ -267,6 +319,12 @@ export interface Pathway {
   is_published?: boolean;
   total_course?: number;
   total_students?: number;
+  avatar?: string;
+  lms_certificate: boolean /* to issue certificate on LMS or not */;
+  courses_certificate: string /* to issue certificate for each courses or the learning path as a whole */;
+  prerequisite: string /* should students take certificates in order of the arrangement or not */;
+  courses: PathwayCourse[];
+  selectedCourses: PathwayCourse[];
 }
 
 export interface Groupmember {

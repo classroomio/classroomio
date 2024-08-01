@@ -409,11 +409,17 @@
         "locked": "Fermé à clé",
         "unlocked": "Débloqué",
         "save": "Sauvegarder les modifications",
-        "unlocked_certificate": "Le certificat est maintenant disponible",
         "locked_certificate": "Certificats non disponibles",
         "instructor_unlock": "Votre instructeur doit débloquer votre certificat.",
         "contact_instructor": "Si vous avez besoin de votre certificat, veuillez contacter votre instructeur.",
-        "download_certificate": "Télécharger le certificat"
+        "download_certificate": "Télécharger le certificat",
+        "unlocked_certificate": "Bravo! 🎉 votre attestation est prête",
+        "unlocked_certificate_subtitle": "Vous avez terminé ce cours et votre dévouement est évident. Téléchargez le certificat et partagez-le avec votre réseau comme preuve de vos compétences nouvellement acquises",
+        "complete_to_download_subtitle": "Votre certificat sera disponible une fois que vous aurez terminé toutes les leçons et exercices de ce cours.",
+        "complete_to_download_title": "Cours non terminé 😔",
+        "description_error": "La description ne peut pas dépasser 200 caractères",
+        "characters": "personnages",
+        "unexpected_error": "une erreur inattendue est apparue"
       },
       "people": {
         "title": "Personnes",
@@ -1013,7 +1019,8 @@
     "redirecting": "Redirection",
     "loading_state": "Vous passez à la page suivante, veuillez patienter.",
     "org_loading_state": "Vous emmener dans votre organisation...",
-    "add_organization": "+ Ajouter une organisation"
+    "add_organization": "+ Ajouter une organisation",
+    "pathways": "Voies"
   },
   "add_org": {
     "create_org": "Créer une organisation",
@@ -1063,7 +1070,9 @@
       "plan": "Votre forfait s'accompagne d'avantages et d'avantages intéressants, notamment l'accès à toutes les futures fonctionnalités que nous publions.",
       "close": "Fermer",
       "learn": "Apprendre encore plus",
-      "month": "mois"
+      "month": "mois",
+      "monthly": "Mensuel",
+      "annually": "Annuellement"
     },
     "plan_names": {
       "free": "Gratuit",
@@ -1375,7 +1384,9 @@
       "hyphen_rule": "Le nom de l'organisation ne peut pas commencer ou se terminer par un trait d'union"
     },
     "user_profile": {
-      "email": "Adresse e-mail invalide"
+      "email": "Adresse e-mail invalide",
+      "username": "Le nom d'utilisateur ne peut pas être vide",
+      "fullname": "Le nom doit comporter au minimum 5 caractères"
     }
   },
   "explore": {
@@ -1425,19 +1436,79 @@
       "date_created": "date créée",
       "published": "Publié",
       "courses": "Cours"
+    },
+    "components": {
+      "sideBar": {
+        "news": "Fil d'actualité",
+        "courses": "Cours",
+        "people": "Personnes",
+        "certificates": "Certificats",
+        "landing": "Page de destination",
+        "settings": "Paramètres"
+      },
+      "courseCard": {
+        "lessons": "cours",
+        "students": "étudiants"
+      },
+      "addCourseModal": {
+        "modal_heading": "Ajouter un cours au parcours d'apprentissage",
+        "add": "Ajouter",
+        "course": "Cours",
+        "courses": "Cours",
+        "path": "au parcours d'apprentissage"
+      }
+    },
+    "pages": {
+      "settings": {
+        "page_title": "Paramètres",
+        "title_error": "Veuillez ajouter un titre de collection",
+        "description_error": "Veuillez ajouter une description de la collection",
+        "cover_image": "Image de couverture",
+        "optional": "Cette image facultative apparaîtra sur votre page d'accueil. Si vous en incluez un, il doit mesurer au moins 280 x 200.",
+        "replace": "Remplacer",
+        "delete": "Supprimer",
+        "details": "Détails de la collecte",
+        "title": "Titre de la collection",
+        "title_placeholder": "Écrivez le titre du cours ici",
+        "description": "Description de la collection",
+        "description_placeholder": "Écrivez la description du cours ici",
+        "link": "Lien de collecte",
+        "students": "Les étudiants doivent-ils suivre les cours selon l'ordre recommandé ?",
+        "yes": "si oui, l'étudiant doit suivre le cours selon l'ordre, si non, l'étudiant peut commencer par n'importe quel cours de son choix",
+        "option_one": "Oui",
+        "option_two": "Non",
+        "publish": "Publier le parcours d'apprentissage",
+        "allow": "Autoriser les nouveaux étudiants à télécharger des cours dans le parcours d'apprentissage",
+        "enabled": "Activé",
+        "disabled": "Désactivé",
+        "certificate": "Certificat",
+        "issue": "Émettre un certificat sur LMS",
+        "issue_two": "Délivrer un certificat ou tous les cours du parcours d'apprentissage",
+        "option_three": "Non, pour le chemin uniquement",
+        "delete_path": "Supprimer le parcours d'apprentissage",
+        "delete_text": "Supprimer le parcours de formation dans son intégralité",
+        "save": "Sauvegarder les modifications",
+        "placeholder": "une petite description du parcours",
+        "pathway_description": "Description du parcours"
+      },
+      "course": {
+        "title": "Cours",
+        "add_course": "Un cours",
+        "add_remove": "Ajouter/supprimer un cours",
+        "order": "Commander des cours",
+        "publish": "Publier une collection",
+        "search": "Trouver un parcours d'apprentissage",
+        "option_one": "Publié",
+        "option_two": "Inédit",
+        "body_title": "Titre",
+        "description": "Description",
+        "students": "Étudiants",
+        "lessons": "Cours"
+      }
     }
   },
   "search": {
-    "no_courses": "Aucun cours trouvé",
     "no_pathway": "Aucun chemin trouvé",
     "no_course": "Aucun cours trouvé"
-  },
-  "lms_pathway": {
-    "pathway": "sentier",
-    "continue": "Continuer le chemin",
-    "course": "Cours",
-    "locked": "Fermé à clé",
-    "goto_pathway": "Aller au parcours",
-    "of": "de"
   }
 }

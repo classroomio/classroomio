@@ -13,6 +13,7 @@
 
   export let handleClick = () => {};
   export let label = '';
+  export let icon = '';
   export let isGroupActive = false;
   export let isExpanded: boolean | undefined;
   export let total = 0;
@@ -20,6 +21,7 @@
   export let isLesson = false;
   export let isStudent = true;
   export let isPaidFeature = false;
+  export let addIconClick: (() => void) | undefined;
   // export let subMenuItems = [];
 
   function addLesson() {
@@ -44,7 +46,7 @@
     on:click={onClick}
     disabled={isLoading}
   >
-    <NavIcons name={label} />
+    <NavIcons name={icon} />
     {#if isLoading}
       <div class="w-11/12 mx-auto">
         <SkeletonText class="rounded-md" style="margin: 0px; height: 30px;" />
@@ -62,7 +64,7 @@
     {/if}
     {#if isLesson && !isLoading}
       {#if !isStudent}
-        <IconButton onClick={() => addLesson()} size="small">
+        <IconButton onClick={addIconClick ? addIconClick : addLesson} size="small">
           <Add />
         </IconButton>
       {/if}

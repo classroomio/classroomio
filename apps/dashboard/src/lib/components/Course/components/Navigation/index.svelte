@@ -25,6 +25,7 @@
   interface NavItem {
     label: string;
     to: string;
+    icon: string;
     hideSortIcon: boolean;
     isLesson?: boolean;
     isPaidFeature: boolean;
@@ -141,6 +142,7 @@
       {
         label: $t('course.navItems.nav_news_feed'),
         to: getNavItemRoute($course.id),
+        icon: 'News Feed',
         hideSortIcon: true,
         isPaidFeature: false,
         show() {
@@ -150,6 +152,7 @@
       {
         label: $t('course.navItems.nav_lessons'),
         to: getLessonsRoute($course.id),
+        icon: 'Lessons',
         hideSortIcon: false,
         isPaidFeature: false,
         isLesson: true,
@@ -158,6 +161,7 @@
       {
         label: $t('course.navItems.nav_attendance'),
         to: getNavItemRoute($course.id, 'attendance'),
+        icon: 'Attendance',
         isPaidFeature: false,
         hideSortIcon: true,
         show() {
@@ -169,12 +173,11 @@
       {
         label: $t('course.navItems.nav_submissions'),
         to: getNavItemRoute($course.id, 'submissions'),
+        icon: 'Submissions',
         hideSortIcon: true,
         isPaidFeature: false,
         show() {
           if (isStudent) return false;
-
-          if ($course.type !== COURSE_TYPE.LIVE_CLASS) return false;
 
           return true;
         }
@@ -182,6 +185,7 @@
       {
         label: $t('course.navItems.nav_marks'),
         to: getNavItemRoute($course.id, 'marks'),
+        icon: 'Marks',
         isPaidFeature: false,
         hideSortIcon: true,
         show() {
@@ -195,6 +199,7 @@
       {
         label: $t('course.navItems.nav_certificates'),
         to: getNavItemRoute($course.id, 'certificates'),
+        icon: 'Certificates',
         hideSortIcon: true,
         isPaidFeature: true,
         show() {
@@ -208,6 +213,7 @@
       {
         label: $t('course.navItems.nav_landing_page'),
         to: getNavItemRoute($course.id, 'landingpage'),
+        icon: 'Landing Page',
         hideSortIcon: true,
         isPaidFeature: false,
         show() {
@@ -217,6 +223,7 @@
       {
         label: $t('course.navItems.nav_people'),
         to: getNavItemRoute($course.id, 'people'),
+        icon: 'People',
         isPaidFeature: false,
         hideSortIcon: true,
         show() {
@@ -226,6 +233,7 @@
       {
         label: $t('course.navItems.nav_settings'),
         to: getNavItemRoute($course.id, 'settings'),
+        icon: 'Settings',
         hideSortIcon: true,
         isPaidFeature: false,
         show() {
@@ -261,6 +269,7 @@
         {#if !navItem.show || (typeof navItem.show === 'function' && navItem.show())}
           <NavExpandable
             label={navItem.label}
+            icon={navItem.icon}
             handleClick={handleMainGroupClick(navItem.to)}
             isGroupActive={(path || $page.url.pathname) === navItem.to}
             total={navItem.isLesson ? ($lessons || []).length : 0}

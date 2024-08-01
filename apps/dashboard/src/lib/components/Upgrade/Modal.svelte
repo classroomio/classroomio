@@ -26,6 +26,7 @@
   let orgPlanChannel: RealtimeChannel;
   let open = false;
   let upgraded = false;
+  let isYearlyPlan = false;
 
   async function handleClick(plan, planName: string) {
     if (plan.CTA.IS_DISABLED || !$profile.id) {
@@ -41,7 +42,7 @@
 
     try {
       const { checkoutURL } = await subscribeToProduct({
-        productId: plan.CTA.PRODUCT_ID,
+        productId: isYearlyPlan ? plan.CTA.PRODUCT_ID_YEARLY : plan.CTA.PRODUCT_ID,
         email: $profile.email,
         name: $profile.fullname,
         triggeredBy: $currentOrg.memberId,
@@ -89,6 +90,9 @@
   function onLearnMore() {
     window.open('https://classroomio.com/blog/early-adopter', '_blank');
   }
+  function toggleIsYearlyPlan() {
+    isYearlyPlan = !isYearlyPlan;
+  }
 
   onMount(() => {
     orgPlanChannel = supabase
@@ -124,6 +128,7 @@
   width="w-4/5"
   maxWidth={upgraded ? 'max-w-[600px]' : undefined}
   modalHeading={$t('pricing.modal.heading')}
+  containerClass="pt-4"
 >
   {#if upgraded}
     <div class="flex flex-col items-center justify-center mb-4 w-full relative">
@@ -147,6 +152,29 @@
     </div>
   {:else}
     <div class="flex flex-col items-center justify-center">
+      <div class="relative mb-2 flex items-center rounded-[30px] border-[2px] p-[2px] lg:scale-100">
+        <button
+          style="background-color: {isYearlyPlan ? 'initial' : '#1D4EE2'}; color: {isYearlyPlan
+            ? '#5e636b'
+            : '#fff'}"
+          class="rounded-[30px] bg-blue-700 px-3 py-1 text-xs text-white lg:px-4 lg:py-2"
+          on:click={toggleIsYearlyPlan}>{$t('pricing.modal.monthly')}</button
+        >
+        <button
+          style="background-color: {isYearlyPlan ? '#1D4EE2' : ''}; color: {isYearlyPlan
+            ? '#fff'
+            : '#5e636b'}"
+          class="relative rounded-[30px] px-3 py-1 text-xs text-white lg:px-4 lg:py-2"
+          on:click={toggleIsYearlyPlan}
+        >
+          {$t('pricing.modal.annually')}
+          <div
+            class="absolute right-[-40%] -top-4 scale-[90%] rounded-full bg-[#006600] px-1.5 py-1 text-[0.7rem] text-white"
+          >
+            Save 2 months
+          </div>
+        </button>
+      </div>
       <div class="isolate grid grid-cols-1 gap-3 lg:grid-cols-3">
         {#each planNames as planName}
           <div
@@ -167,10 +195,7 @@
                 : 'text-black'} dark:text-gray-300"
             >
               {PLANS[planName].PRICE.CURRENCY}
-              {PLANS[planName].PRICE.MONTHLY}
-              {#if !PLANS[planName].PRICE.IS_PREMIUM}
-                /month
-              {/if}
+              {isYearlyPlan ? PLANS[planName].PRICE.YEARLY : PLANS[planName].PRICE.MONTHLY}
             </p>
             <p
               class=" mt-4 text-sm font-light leading-6 {planName === 'EARLY_ADOPTER'

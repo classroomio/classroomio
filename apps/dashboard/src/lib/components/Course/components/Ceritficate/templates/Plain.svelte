@@ -3,13 +3,13 @@
   import { currentOrg } from '$lib/utils/store/org';
 
   export let studentName = '';
-  let borderwidth = 'border-4';
-  let bordercolor = 'border-pink-700';
-  let logo = '/logo-512.png';
+  const borderwidth = 'border-4';
+  const bordercolor = 'border-pink-700';
+  const logo = '/logo-512.png';
 </script>
 
 <div
-  class="certificate-bg flex flex-col items-center justify-center {borderwidth} {bordercolor} py-3"
+  class="certificate-bg w-full flex flex-col items-center justify-center {borderwidth} {bordercolor} py-3"
 >
   <div class="flex items-center gap-1 my-2">
     <img

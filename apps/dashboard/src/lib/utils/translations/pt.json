@@ -409,11 +409,17 @@
         "locked": "Bloqueado",
         "unlocked": "Desbloqueado",
         "save": "Salvar alterações",
-        "unlocked_certificate": "Certificado já está disponível",
         "locked_certificate": "Certificados não disponíveis",
         "instructor_unlock": "Seu instrutor precisa desbloquear seu certificado.",
         "contact_instructor": "Se precisar do seu certificado, entre em contato com seu instrutor.",
-        "download_certificate": "Certificado de download"
+        "download_certificate": "Certificado de download",
+        "unlocked_certificate": "Parabéns! 🎉 seu certificado está pronto",
+        "unlocked_certificate_subtitle": "Você concluiu este curso e sua dedicação é evidente. Baixe o certificado e compartilhe com sua rede como prova de sua habilidade recém-adquirida",
+        "complete_to_download_subtitle": "Seu certificado estará disponível assim que você concluir todas as lições e exercícios deste curso",
+        "complete_to_download_title": "Curso não concluído 😔",
+        "description_error": "A descrição não pode exceder 200 caracteres",
+        "characters": "personagens",
+        "unexpected_error": "Um erro inesperado ocorreu"
       },
       "people": {
         "title": "Pessoas",
@@ -1013,7 +1019,8 @@
     "redirecting": "Redirecionando",
     "loading_state": "Levando você para a próxima página, aguarde.",
     "org_loading_state": "Levando você para sua organização...",
-    "add_organization": "+ Adicionar organização"
+    "add_organization": "+ Adicionar organização",
+    "pathways": "Caminhos"
   },
   "add_org": {
     "create_org": "Criar organização",
@@ -1063,7 +1070,9 @@
       "plan": "Seu plano vem com vantagens e benefícios interessantes, incluindo acesso a todos os recursos futuros que lançaremos.",
       "close": "Fechar",
       "learn": "Saber mais",
-      "month": "mês"
+      "month": "mês",
+      "monthly": "Por mês",
+      "annually": "Anualmente"
     },
     "plan_names": {
       "free": "Livre",
@@ -1375,7 +1384,9 @@
       "hyphen_rule": "O nome da organização não pode começar ou terminar com um hífen"
     },
     "user_profile": {
-      "email": "Endereço de email invalido"
+      "email": "Endereço de email invalido",
+      "username": "O nome de usuário não pode ficar vazio",
+      "fullname": "O nome deve ter no mínimo 5 caracteres"
     }
   },
   "explore": {
@@ -1425,19 +1436,79 @@
       "date_created": "Data Criada",
       "published": "Publicados",
       "courses": "Cursos"
+    },
+    "components": {
+      "sideBar": {
+        "news": "Notícias",
+        "courses": "Cursos",
+        "people": "Pessoas",
+        "certificates": "Certificados",
+        "landing": "Página inicial",
+        "settings": "Configurações"
+      },
+      "courseCard": {
+        "lessons": "lições",
+        "students": "estudantes"
+      },
+      "addCourseModal": {
+        "modal_heading": "Adicionar curso ao caminho de aprendizagem",
+        "add": "Adicionar",
+        "course": "Curso",
+        "courses": "Cursos",
+        "path": "para o caminho de aprendizagem"
+      }
+    },
+    "pages": {
+      "settings": {
+        "page_title": "Configurações",
+        "title_error": "Adicione um título de coleção",
+        "description_error": "Adicione uma descrição da coleção",
+        "cover_image": "Imagem de capa",
+        "optional": "Esta imagem opcional aparecerá na sua página de boas-vindas. Se você incluir um, ele deverá ter pelo menos 280 x 200",
+        "replace": "Substituir",
+        "delete": "Excluir",
+        "details": "Detalhes da coleção",
+        "title": "Título da coleção",
+        "title_placeholder": "Escreva o título do curso aqui",
+        "description": "Descrição da coleção",
+        "description_placeholder": "Escreva a descrição do curso aqui",
+        "link": "Link da coleção",
+        "students": "Os alunos devem fazer o curso de acordo com a ordem recomendada?",
+        "yes": "se sim, o aluno deve fazer o curso de acordo com o pedido; se não, o aluno pode iniciar em qualquer curso de sua escolha",
+        "option_one": "Sim",
+        "option_two": "Não",
+        "publish": "Publicar caminho de aprendizagem",
+        "allow": "Permitir que novos alunos baixem cursos no Caminho de aprendizagem",
+        "enabled": "Habilitado",
+        "disabled": "Desabilitado",
+        "certificate": "Certificado",
+        "issue": "Emitir certificado no LMS",
+        "issue_two": "Emitir certificado ou todo o curso do roteiro de aprendizagem",
+        "option_three": "Não, apenas para caminho",
+        "delete_path": "Excluir caminho de aprendizagem",
+        "delete_text": "Excluir o caminho de aprendizagem como um todo",
+        "save": "Salvar alterações",
+        "placeholder": "uma pequena descrição sobre o caminho",
+        "pathway_description": "Descrição do caminho"
+      },
+      "course": {
+        "title": "Cursos",
+        "add_course": "Um curso",
+        "add_remove": "Adicionar/remover curso",
+        "order": "Encomendar cursos",
+        "publish": "Publicar coleção",
+        "search": "Encontre o caminho de aprendizagem",
+        "option_one": "Publicados",
+        "option_two": "Não publicado",
+        "body_title": "Título",
+        "description": "Descrição",
+        "students": "Alunos",
+        "lessons": "Lições"
+      }
     }
   },
   "search": {
-    "no_courses": "Nenhum curso encontrado",
     "no_pathway": "Nenhum caminho encontrado",
     "no_course": "Nenhum curso encontrado"
-  },
-  "lms_pathway": {
-    "pathway": "caminho",
-    "continue": "Continuar caminho",
-    "course": "Cursos",
-    "locked": "Bloqueado",
-    "goto_pathway": "Vá para o caminho",
-    "of": "de"
   }
 }

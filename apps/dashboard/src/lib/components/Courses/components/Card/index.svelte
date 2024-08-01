@@ -28,7 +28,7 @@
   export let cost = 0;
   export let totalLessons = 0;
   export let totalStudents = 0;
-  export let currency = 'NGN';
+  export let currency = 'USD';
   export let isOnLandingPage = false;
   export let isLMS = false;
   export let isLearningPath = false;

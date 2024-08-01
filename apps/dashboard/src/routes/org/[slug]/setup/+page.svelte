@@ -6,7 +6,7 @@
 
   import { currentOrg } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
-  import { snackbar } from '$lib/components/Snackbar/store.js';
+  import { snackbar } from '$lib/components/Snackbar/store';
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
 
