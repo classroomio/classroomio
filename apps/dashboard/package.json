@@ -55,6 +55,7 @@
     "sirv": "^2.0.3",
     "stripe": "^14.22.0",
     "svelte-email": "^0.0.4",
+    "svelte-meta-tags": "^3.1.2",
     "svelte-ui": "workspace:*",
     "sveltekit-i18n": "^2.4.2",
     "unsplash-js": "^7.0.18",
