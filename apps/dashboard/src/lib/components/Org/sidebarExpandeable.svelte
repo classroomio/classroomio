@@ -4,13 +4,14 @@
   import ChevronUpIcon from 'carbon-icons-svelte/lib/ChevronUp.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
-  import SidebarIcons from './sidebarIcons.svelte';
+  import SideBarIcons from '$lib/components/Org/SidebarIcons.svelte';
 
-  export let label = '';
+  export let label: string = '';
+  export let id: string;
   export let href: string | null = '';
-  export let isGroupActive = false;
+  export let isGroupActive: boolean = false;
   export let isExpanded: boolean | undefined;
-  export let isDropdown = false;
+  export let isDropdown: boolean = false;
   export let handleClick = () => {};
 
   function handleIsExpanded() {
@@ -22,14 +23,14 @@
   }
 </script>
 
-<div class="">
+<div>
   <a
     on:click={handleIsExpanded}
     class="item relative my-1 flex items-center gap-2.5 px-2.5 py-2 cursor-pointer {NavClasses.item} {isGroupActive &&
       NavClasses.active} w-[95%]"
     {href}
   >
-    <SidebarIcons name={label} />
+    <SideBarIcons iconId={id} />
 
     <span class="text-sm font-medium">{label}</span>
 
