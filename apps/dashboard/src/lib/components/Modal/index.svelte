@@ -10,6 +10,7 @@
   export let width = '';
   export let maxWidth = '';
   export let containerClass = '';
+  export let buttonClass = '';
   export let size = '';
   export let isCloseable = true;
 
@@ -62,6 +63,10 @@
 
       <div class="body h-4/5 overflow-y-auto p-6 {containerClass}">
         <slot />
+      </div>
+
+      <div class="p-4 border-t border-gray-100 dark:border-neutral-600 {buttonClass}">
+        <slot name="buttons" />
       </div>
     </div>
   </div>

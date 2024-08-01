@@ -6,7 +6,6 @@
   import { pathway } from '../../store';
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
-  import { updatePathway } from '$lib/utils/services/courses';
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
   import { saveCertificateValidation } from '$lib/utils/functions/validator';
 
@@ -60,11 +59,8 @@
       errors.description = '';
       console.log('pathway', $pathway);
 
-      // await updatePathway($pathway.id, undefined, {
-      //   description: $pathway.description || '',
-      //   is_certificate_downloadable: $pathway.is_certificate_downloadable || false,
-      //   certificate_theme: $pathway.certificate_theme || ''
-      // });
+      // TODO: save pathway
+
       snackbar.success('snackbar.course_settings.success.saved');
     } catch (error) {
       if (error.message) {
