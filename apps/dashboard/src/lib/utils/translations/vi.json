@@ -1456,6 +1456,11 @@
         "course": "Khóa học",
         "courses": "Khóa học",
         "path": "đến lộ trình học tập"
+      },
+      "dragAndDrop": {
+        "title": "Sắp xếp các khóa học",
+        "header": "Sắp xếp khóa học theo trình tự học sinh phải học bắt đầu với phần đầu tiên ở trên cùng",
+        "label": "Xác nhận thứ tự khóa học"
       }
     },
     "pages": {
@@ -1502,12 +1507,25 @@
         "body_title": "Tiêu đề",
         "description": "Sự miêu tả",
         "students": "Sinh viên",
-        "lessons": "Những bài học"
+        "lessons": "Những bài học",
+        "search": "Tìm khóa học chuyển tiếp",
+        "empty_state_header": "Chưa có khóa học nào",
+        "empty_state_text": "Bạn chưa thêm bất kỳ khóa học nào vào lộ trình học tập này",
+        "empty_state_label": "Thêm khóa học vào lộ trình học tập này"
       }
     }
   },
   "search": {
     "no_pathway": "Không tìm thấy con đường nào",
     "no_course": "Không tìm thấy khóa học"
+  },
+  "lms_pathway": {
+    "pathway": "LỘ TRÌNH",
+    "continue": "Tiếp tục con đường",
+    "course": "Khóa học",
+    "locked": "Đã khóa",
+    "goto_pathway": "Đi đến Con đường",
+    "completed": "Hoàn thành",
+    "of": "của"
   }
 }
