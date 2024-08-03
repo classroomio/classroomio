@@ -497,7 +497,10 @@
           "accept_grade": "Принимать",
           "reject_grade": "Отклонять",
           "add_comment_placeholder": "Оставить комментарий",
-          "questions_tried": "Присвоен этот балл из-за общего количества попыток:"
+          "questions_tried": "Присвоен этот балл из-за общего количества попыток:",
+          "delete_prompt": "Удалить",
+          "delete_error": "Не удалось удалить отправку",
+          "delete_success": "Отправка успешно удалена"
         }
       },
       "attendance": {
@@ -734,12 +737,6 @@
         "lesson_nav": {
           "materials": "Материалы",
           "exercises": "Упражнения"
-        },
-        "delete_lesson": {
-          "modal_heading": "Удалить",
-          "content": "Вы уверены, что хотите удалить:",
-          "no": "Нет",
-          "yes": "Да"
         },
         "add_lesson": {
           "button_title": "Добавлять",
@@ -1390,5 +1387,11 @@
     "empty_heading": "Нет доступных курсов",
     "empty_description": "На данный момент нет доступных опубликованных курсов",
     "heading": "Ознакомьтесь с нашими курсами"
+  },
+  "delete_modal": {
+    "label": "Удалить",
+    "content": "Вы уверены?",
+    "no": "Нет",
+    "yes": "Да"
   }
 }

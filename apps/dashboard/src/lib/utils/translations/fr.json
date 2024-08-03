@@ -497,7 +497,10 @@
           "accept_grade": "Accepter",
           "reject_grade": "Rejeter",
           "add_comment_placeholder": "laissez un commentaire",
-          "questions_tried": "Attribué ce score en raison du nombre total d'essais :"
+          "questions_tried": "Attribué ce score en raison du nombre total d'essais :",
+          "delete_prompt": "Supprimer",
+          "delete_error": "Échec de la suppression de la soumission",
+          "delete_success": "Soumission supprimée avec succès"
         }
       },
       "attendance": {
@@ -734,12 +737,6 @@
         "lesson_nav": {
           "materials": "Matériaux",
           "exercises": "Des exercices"
-        },
-        "delete_lesson": {
-          "modal_heading": "Supprimer",
-          "content": "Etes-vous sûr que vous voulez supprimer:",
-          "no": "Non",
-          "yes": "Oui"
         },
         "add_lesson": {
           "button_title": "Ajouter",
@@ -1390,5 +1387,11 @@
     "empty_heading": "Aucun cours disponible",
     "empty_description": "Il n'y a actuellement aucun cours publié disponible",
     "heading": "Découvrez nos cours"
+  },
+  "delete_modal": {
+    "label": "Supprimer",
+    "content": "Es-tu sûr?",
+    "no": "Non",
+    "yes": "Oui"
   }
 }

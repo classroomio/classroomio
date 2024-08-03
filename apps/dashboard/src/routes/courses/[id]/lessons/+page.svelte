@@ -272,7 +272,9 @@
                       <DateField
                         value={formatDate(lesson.lesson_at)}
                         className="p-2 my-2 rounded-md sm:w-[179px] dark:bg-neutral-800 dark:text-white"
-                        onChange={(e) => (lesson.lesson_at = e.target.value)}
+                        onChange={(e) => {
+                          lesson.lesson_at = e?.target?.value;
+                        }}
                       />
                     {:else}
                       <div class="mb-2 flex">

@@ -497,7 +497,10 @@
           "accept_grade": "Chấp nhận",
           "reject_grade": "Từ chối",
           "add_comment_placeholder": "Để lại một bình luận",
-          "questions_tried": "Phân bổ số điểm này dựa trên tổng số lần thử:"
+          "questions_tried": "Phân bổ số điểm này dựa trên tổng số lần thử:",
+          "delete_prompt": "Xóa bỏ",
+          "delete_error": "Không thể xóa bài nộp",
+          "delete_success": "Đã xóa bài nộp thành công"
         }
       },
       "attendance": {
@@ -734,12 +737,6 @@
         "lesson_nav": {
           "materials": "Nguyên vật liệu",
           "exercises": "Bài tập"
-        },
-        "delete_lesson": {
-          "modal_heading": "Xóa bỏ",
-          "content": "Bạn có chắc chắn muốn xóa:",
-          "no": "KHÔNG",
-          "yes": "Đúng"
         },
         "add_lesson": {
           "button_title": "Thêm vào",
@@ -1390,5 +1387,11 @@
     "empty_heading": "Không có khóa học nào",
     "empty_description": "Hiện tại chưa có khóa học nào được xuất bản",
     "heading": "Khám phá các khóa học của chúng tôi"
+  },
+  "delete_modal": {
+    "label": "Xóa bỏ",
+    "content": "Bạn có chắc không?",
+    "no": "KHÔNG",
+    "yes": "Đúng"
   }
 }

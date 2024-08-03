@@ -18,24 +18,24 @@
   onClose={() => (openDeleteModal = false)}
   bind:open={openDeleteModal}
   width="w-96"
-  modalHeading={$t('course.navItem.lessons.delete_lesson.modal_heading')}
+  modalHeading={$t('delete_modal.label')}
 >
   <div>
     <h1 class="dark:text-white text-lg">
-      {$t('course.navItem.lessons.delete_lesson.content')} <strong>{lessonTitle}</strong>?
+      {$t('delete_modal.content')} <strong>{lessonTitle}</strong>?
     </h1>
 
     <div class="mt-5 flex items-center justify-between">
       <PrimaryButton
         className="px-6 py-3"
         variant={VARIANTS.OUTLINED}
-        label={$t('course.navItem.lessons.delete_lesson.no')}
+        label={$t('delete_modal.no')}
         onClick={() => (openDeleteModal = false)}
       />
       <PrimaryButton
         className="px-6 py-3"
         variant={VARIANTS.OUTLINED}
-        label={$t('course.navItem.lessons.delete_lesson.yes')}
+        label={$t('delete_modal.yes')}
         onClick={handleDelete}
       />
     </div>

@@ -35,7 +35,7 @@ export function getLectureNo(index, initNo = '0') {
 }
 
 export function formatAnswers(data) {
-  const answers = {};
+  const answers: Record<string, string> = {};
   const questionByIdAndName = {};
 
   for (const question of data.questions) {

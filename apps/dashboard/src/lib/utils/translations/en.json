@@ -10,6 +10,13 @@
     "snackbar_error": "error while sending code"
   },
 
+  "delete_modal": {
+    "label": "Delete",
+    "content": "Are you sure?",
+    "no": "No",
+    "yes": "Yes"
+  },
+
   "onboarding": {
     "sell": "Sell courses online",
     "teach": "Teach my current students online",
@@ -514,12 +521,6 @@
           "edit": "Edit",
           "delete": "Delete"
         },
-        "delete_lesson": {
-          "modal_heading": "Delete",
-          "content": "Are you sure you want to delete:",
-          "no": "No",
-          "yes": "Yes"
-        },
         "join_lesson": "Join lesson",
         "no_link": "No link",
         "no_tutor": "No tutor added",
@@ -789,7 +790,10 @@
           "submit_grades": "Submit Grades",
           "accept_grade": "Accept",
           "reject_grade": "Reject",
-          "questions_tried": "Allocated this score because of total tries:"
+          "questions_tried": "Allocated this score because of total tries:",
+          "delete_prompt": "Delete",
+          "delete_error": "Failed to delete submission",
+          "delete_success": "Successfully deleted submission"
         }
       },
 

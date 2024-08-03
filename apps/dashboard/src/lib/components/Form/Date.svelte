@@ -1,9 +1,9 @@
-<script>
+<script lang="ts">
   export let label = '';
   export let placeholder = '';
   export let value = '';
   export let className = '';
-  export let onChange = () => {}; // This is to know if element is 'dirty'
+  export let onChange = (e?: Event) => {}; // This is to know if element is 'dirty'
 </script>
 
 <label class="block {className}">

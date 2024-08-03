@@ -497,7 +497,10 @@
           "accept_grade": "स्वीकार करना",
           "reject_grade": "अस्वीकार करना",
           "add_comment_placeholder": "एक टिप्पणी छोड़ें",
-          "questions_tried": "कुल प्रयासों के कारण यह स्कोर आवंटित किया गया:"
+          "questions_tried": "कुल प्रयासों के कारण यह स्कोर आवंटित किया गया:",
+          "delete_prompt": "मिटाना",
+          "delete_error": "सबमिशन हटाने में विफल",
+          "delete_success": "सबमिशन सफलतापूर्वक हटा दिया गया"
         }
       },
       "attendance": {
@@ -734,12 +737,6 @@
         "lesson_nav": {
           "materials": "सामग्री",
           "exercises": "अभ्यास"
-        },
-        "delete_lesson": {
-          "modal_heading": "मिटाना",
-          "content": "क्या आप आश्वस्त है कि आपको डिलीट करना है:",
-          "no": "नहीं",
-          "yes": "हाँ"
         },
         "add_lesson": {
           "button_title": "जोड़ना",
@@ -1390,5 +1387,11 @@
     "empty_heading": "कोई पाठ्यक्रम उपलब्ध नहीं है",
     "empty_description": "वर्तमान में कोई प्रकाशित पाठ्यक्रम उपलब्ध नहीं है",
     "heading": "हमारे पाठ्यक्रमों का अन्वेषण करें"
+  },
+  "delete_modal": {
+    "label": "मिटाना",
+    "content": "क्या आपको यकीन है?",
+    "no": "नहीं",
+    "yes": "हाँ"
   }
 }

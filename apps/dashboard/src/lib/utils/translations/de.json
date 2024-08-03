@@ -497,7 +497,10 @@
           "accept_grade": "Akzeptieren",
           "reject_grade": "Ablehnen",
           "add_comment_placeholder": "Hinterlasse einen Kommentar",
-          "questions_tried": "Diese Punktzahl wurde aufgrund der Gesamtzahl der Versuche vergeben:"
+          "questions_tried": "Diese Punktzahl wurde aufgrund der Gesamtzahl der Versuche vergeben:",
+          "delete_prompt": "Löschen",
+          "delete_error": "Die Übermittlung konnte nicht gelöscht werden",
+          "delete_success": "Einreichung erfolgreich gelöscht"
         }
       },
       "attendance": {
@@ -734,12 +737,6 @@
         "lesson_nav": {
           "materials": "Materialien",
           "exercises": "Übungen"
-        },
-        "delete_lesson": {
-          "modal_heading": "Löschen",
-          "content": "Sind Sie sicher, dass Sie löschen möchten:",
-          "no": "NEIN",
-          "yes": "Ja"
         },
         "add_lesson": {
           "button_title": "Hinzufügen",
@@ -1390,5 +1387,11 @@
     "empty_heading": "Kein Kurs verfügbar",
     "empty_description": "Derzeit sind keine veröffentlichten Kurse verfügbar",
     "heading": "Entdecken Sie unsere Kurse"
+  },
+  "delete_modal": {
+    "label": "Löschen",
+    "content": "Bist du sicher?",
+    "no": "NEIN",
+    "yes": "Ja"
   }
 }

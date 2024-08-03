@@ -497,7 +497,10 @@
           "accept_grade": "Aceitar",
           "reject_grade": "Rejeitar",
           "add_comment_placeholder": "Deixe um comentário",
-          "questions_tried": "Alocada esta pontuação por causa do total de tentativas:"
+          "questions_tried": "Alocada esta pontuação por causa do total de tentativas:",
+          "delete_prompt": "Excluir",
+          "delete_error": "Falha ao excluir o envio",
+          "delete_success": "Envio excluído com sucesso"
         }
       },
       "attendance": {
@@ -734,12 +737,6 @@
         "lesson_nav": {
           "materials": "Materiais",
           "exercises": "Exercícios"
-        },
-        "delete_lesson": {
-          "modal_heading": "Excluir",
-          "content": "Tem certeza de que deseja excluir:",
-          "no": "Não",
-          "yes": "Sim"
         },
         "add_lesson": {
           "button_title": "Adicionar",
@@ -1390,5 +1387,11 @@
     "empty_heading": "Nenhum curso disponível",
     "empty_description": "Atualmente não há nenhum curso publicado disponível",
     "heading": "Explore nossos cursos"
+  },
+  "delete_modal": {
+    "label": "Excluir",
+    "content": "Tem certeza?",
+    "no": "Não",
+    "yes": "Sim"
   }
 }
