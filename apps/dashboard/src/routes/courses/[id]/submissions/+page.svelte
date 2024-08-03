@@ -3,6 +3,7 @@
   import { dndzone } from 'svelte-dnd-action';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
+  import { SkeletonPlaceholder } from 'carbon-components-svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import MarkExerciseModal from '$lib/components/Course/components/Lesson/Exercise/MarkExerciseModal.svelte';
@@ -45,6 +46,7 @@
   let submissionId: string;
   let openExercise = false;
   let isGradeWithAI = false;
+  let fetching = false;
 
   const submissionStatus: { [key: number]: string } = {
     1: $t('course.navItem.submissions.submission_status.submitted'),
@@ -268,6 +270,7 @@
   }
 
   async function firstRender(courseId: string) {
+    fetching = true;
     const { data: submissions } = await fetchSubmissions(courseId);
     const sectionById: { [key: number]: SubmissionSection[] } = {};
 
@@ -332,6 +335,7 @@
       value: Array.isArray(sectionById[index + 1]) ? sectionById[index + 1].length : 0,
       items: Array.isArray(sectionById[index + 1]) ? sectionById[index + 1] : []
     }));
+    fetching = false;
   }
 
   $: browser && $course.id && firstRender($course.id);
@@ -367,63 +371,69 @@
               <Chip value={items.length} className="bg-set dark:bg-neutral-800" />
               <p class="dark:text-white ml-2 font-bold">{title}</p>
             </div>
-            <div
-              class="content pr-2 overflow-y-auto mb-3"
-              use:dndzone={{
-                items,
-                flipDurationMs,
-                dropTargetStyle: { outline: 'blue' }
-              }}
-              on:consider={handleDndConsiderCards(idx)}
-              on:finalize={handleDndFinalizeCards(idx)}
-            >
-              {#each items as item (item.id)}
-                <div
-                  class="{item.isEarly
-                    ? 'border-none'
-                    : 'border border-red-700'} w-full my-2 mx-0 rounded-md bg-white dark:bg-neutral-800 py-3 px-3"
-                  animate:flip={{ duration: flipDurationMs }}
-                >
-                  <a
-                    class="flex w-full items-center cursor-pointer text-black mb-2"
-                    href={`${$page.url.pathname}?submissionId=${item.id}`}
+            {#if fetching}
+              <SkeletonPlaceholder style="width: 100%; height: 170px;" class="rounded-md my-2" />
+              <SkeletonPlaceholder style="width: 100%; height: 170px;" class="rounded-md my-2" />
+              <SkeletonPlaceholder style="width: 100%; height: 170px;" class="rounded-md my-2" />
+            {:else}
+              <div
+                class="content pr-2 overflow-y-auto mb-3"
+                use:dndzone={{
+                  items,
+                  flipDurationMs,
+                  dropTargetStyle: { outline: 'blue' }
+                }}
+                on:consider={handleDndConsiderCards(idx)}
+                on:finalize={handleDndFinalizeCards(idx)}
+              >
+                {#each items as item (item.id)}
+                  <div
+                    class="{item.isEarly
+                      ? 'border-none'
+                      : 'border border-red-700'} w-full my-2 mx-0 rounded-md bg-white dark:bg-neutral-800 py-3 px-3"
+                    animate:flip={{ duration: flipDurationMs }}
                   >
-                    <img
-                      alt="Student avatar"
-                      class="block rounded-full h-6 w-6"
-                      src={item.student.avatar_url}
-                    />
-                    <p class="dark:text-white ml-2 text-sm">
-                      {item.student.username}
+                    <a
+                      class="flex w-full items-center cursor-pointer text-black mb-2"
+                      href={`${$page.url.pathname}?submissionId=${item.id}`}
+                    >
+                      <img
+                        alt="Student avatar"
+                        class="block rounded-full h-6 w-6"
+                        src={item.student.avatar_url}
+                      />
+                      <p class="dark:text-white ml-2 text-sm">
+                        {item.student.username}
+                      </p>
+                    </a>
+                    <a
+                      class="text-primary-700 text-md font-bold"
+                      href="{$page.url.pathname}?submissionId={item.id}"
+                    >
+                      {item.exercise.title}
+                    </a>
+                    <a
+                      class="flex items-center no-underline hover:underline text-black my-2"
+                      href="{$page.url?.pathname?.replace('submissions', 'lessons')}/{item.lesson
+                        .id}/exercises/{item.exercise.id}"
+                    >
+                      <p class="dark:text-white text-grey text-sm">
+                        #{item.lesson.title}
+                      </p>
+                    </a>
+                    <p class="dark:text-white text-gray-500 text-xs">
+                      {item.submittedAt}
                     </p>
-                  </a>
-                  <a
-                    class="text-primary-700 text-md font-bold"
-                    href="{$page.url.pathname}?submissionId={item.id}"
-                  >
-                    {item.exercise.title}
-                  </a>
-                  <a
-                    class="flex items-center no-underline hover:underline text-black my-2"
-                    href="{$page.url?.pathname?.replace('submissions', 'lessons')}/{item.lesson
-                      .id}/exercises/{item.exercise.id}"
-                  >
-                    <p class="dark:text-white text-grey text-sm">
-                      #{item.lesson.title}
-                    </p>
-                  </a>
-                  <p class="dark:text-white text-gray-500 text-xs">
-                    {item.submittedAt}
-                  </p>
-                  <!-- <div class="badge rounded-md px-2 bg-green-500 text-white">
+                    <!-- <div class="badge rounded-md px-2 bg-green-500 text-white">
                     early
                   </div>
                   <div class="badge rounded-md px-2 bg-red-600 text-white">
                     late
                   </div> -->
-                </div>
-              {/each}
-            </div>
+                  </div>
+                {/each}
+              </div>
+            {/if}
           </div>
         {/each}
       </div>
