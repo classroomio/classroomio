@@ -5,7 +5,7 @@
 
   export let label = '';
   export let className = '';
-  export let onClick = () => {};
+  export let onClick = (e?: Event) => {};
   export let name = '';
   export let type: 'button' | 'submit' | 'reset' | null | undefined = 'button';
   export let variant = VARIANTS.CONTAINED;
