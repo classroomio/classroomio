@@ -1,9 +1,10 @@
 <script lang="ts">
   import { profile } from '$lib/utils/store/user';
-  import { group } from '../Course/store';
-  import type { GroupPerson } from '$lib/utils/types';
-  import { isOrgAdmin } from '$lib/utils/store/org';
   import { ROLE } from '$lib/utils/constants/roles';
+  import { isOrgAdmin } from '$lib/utils/store/org';
+  import type { GroupPerson } from '$lib/utils/types';
+  import { group as courseGroup } from '../Course/store';
+  import { group as pathwaysGroup } from '../Pathways/store';
 
   export let allowedRoles: number[] = [];
   export let onDenied = () => {};
@@ -11,16 +12,25 @@
 
   let userRole: number = 0;
 
-  function isAllowed(userRole) {
+  function isAllowed(userRole: number): boolean {
     return allowedRoles.includes(userRole);
   }
 
   $: {
-    const user: GroupPerson = $group.people.find((person) => person.profile_id === $profile.id)!;
+    const courseUser: GroupPerson = $courseGroup.people.find(
+      (person) => person.profile_id === $profile.id
+    )!;
+    const pathwaysUser: GroupPerson = $pathwaysGroup.people.find(
+      (person) => person.profile_id === $profile.id
+    )!;
 
-    userRole = user ? user.role_id : userRole;
+    userRole = courseUser ? courseUser.role_id : pathwaysUser ? pathwaysUser.role_id : userRole;
 
-    if (!$isOrgAdmin && $group.people.length && !isAllowed(userRole)) {
+    if (
+      !$isOrgAdmin &&
+      ($courseGroup.people.length || $pathwaysGroup.people.length) &&
+      !isAllowed(userRole)
+    ) {
       onDenied();
     }
   }
