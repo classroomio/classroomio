@@ -10,6 +10,7 @@
   export let onDenied = () => {};
   export let onlyStudent = false;
 
+  let show: boolean = false;
   let userRole: number = 0;
 
   function isAllowed(userRole: number): boolean {
@@ -35,7 +36,9 @@
     }
   }
 
-  $: show = onlyStudent ? isAllowed(ROLE.STUDENT) : isAllowed(userRole) || $isOrgAdmin;
+  $: {
+    show = onlyStudent ? isAllowed(ROLE.STUDENT) : isAllowed(userRole) || $isOrgAdmin;
+  }
 </script>
 
 {#if show}

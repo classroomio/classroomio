@@ -11,7 +11,6 @@ export const courses = writable<PathwayCourse[]>([]);
 export const pathway = writable<Pathway>({
   id: 'pathway-one',
   title: 'pathwayOne',
-  avatar: '',
   description: '',
   prerequisite: '',
   is_published: false,
@@ -138,7 +137,20 @@ export const group = writable<GroupStore>({
   id: '',
   tutors: [],
   students: [],
-  people: []
+  people: [
+    {
+      assigned_student_id: 1,
+      created_at: '',
+      email: '',
+      group_id: '',
+      id: '',
+      memberId: '',
+      profile: {},
+      profile_id: '3d207582-eaf8-4cff-9314-f265f548c0e7',
+      role_id: 3,
+      fullname: '',
+    }
+  ]
 });
 
 export async function setPathway(data: Pathway, setPathway = true) {

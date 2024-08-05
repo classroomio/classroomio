@@ -60,6 +60,17 @@
         "empty_state_text": "You have not added any course to this learning path",
         "empty_state_label": "Add course to this learning Path"
       },
+      "lmsCertificate": {
+        "unlocked": {
+          "title": "Congrats! 🎉 your certificate is ready",
+          "subtitle": "You have completed this learning path, and your dedication is evident. Download certificate and share with your network as a prove of your newly acquired skill"
+        },
+        "locked": {
+          "title": "Certificates not available yet",
+          "subtitle": "Certificate is available because you have not finish the learning path or your instructor have not approved it. Please contact your instructor"
+        },
+        "share": "Share Certificate"
+      },
       "settings": {
         "page_title": "Settings",
         "title_error": "Please add a collection title",
