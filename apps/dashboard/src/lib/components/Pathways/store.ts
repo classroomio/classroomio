@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import type { Pathway, PathwayCourse } from '$lib/utils/types';
+import type { Pathway, PathwayCourse, GroupStore } from '$lib/utils/types';
 
 export const addCourseModal = writable({
   open: false,
@@ -11,7 +11,6 @@ export const courses = writable<PathwayCourse[]>([]);
 export const pathway = writable<Pathway>({
   id: 'pathway-one',
   title: 'pathwayOne',
-  avatar: '',
   description: '',
   prerequisite: '',
   is_published: false,
@@ -132,4 +131,37 @@ export const pathway = writable<Pathway>({
     }
   ],
   selectedCourses: []
+});
+
+export const group = writable<GroupStore>({
+  id: '',
+  tutors: [],
+  students: [],
+  people: [
+    {
+      assigned_student_id: 1,
+      created_at: '',
+      email: 'testemail@gmail.com',
+      group_id: '3bdeddc4-aea9-4f7f-a099-9d094f031a39',
+      id: '3a4fbb86-0d44-4f8d-a903-54b4a7396f48',
+      memberId: '3a4fbb86-0d44-4f8d-a903-54b4a7396f48',
+      profile: {
+        avatar_url:
+          'https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/avatar.png',
+        can_add_course: true,
+        created_at: '2024-05-28T12:23:00.585402+00:00',
+        email: 'testemail@gmail.com',
+        fullname: 'Frank Ocean',
+        goal: '',
+        id: '5e3c306f-d1b0-4ccb-8d48-3ae140dc1f60',
+        role: '1',
+        source: 'search-engine',
+        updated_at: '2024-05-28T12:23:00.585402+00:00',
+        username: 'admin1716898979376'
+      },
+      profile_id: '3d207582-eaf8-4cff-9314-f265f548c0e7',
+      role_id: 3,
+      fullname: 'Frank Ocean'
+    }
+  ]
 });

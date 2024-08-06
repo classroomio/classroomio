@@ -34,6 +34,15 @@ export interface GroupPerson {
   fullname?: string;
 }
 
+export interface GroupStore {
+  id: string;
+  tutors: GroupPerson[];
+  students: GroupPerson[];
+  people: GroupPerson[];
+  members?: GroupPerson[];
+  memberId?: string;
+};
+
 export interface CustomQuestionType {
   id: number;
   label: any;
