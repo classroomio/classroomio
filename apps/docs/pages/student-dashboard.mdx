@@ -1,7 +1,98 @@
+import Image from 'next/image';
 import { Callout } from "nextra/components";
-
-# Student Dashboard
+import DashboardLogin from './student-dashboard-images/student dashboard login.png';
+import DashboardHomepage from './student-dashboard-images/student homepage.png';
+import StudentMyLearning from './student-dashboard-images/student-my-learning.png';
+import StudentCourse from './student-dashboard-images/student-course-specific.png';
+import StudentCourseAttencance from './student-dashboard-images/student-course-attendance.png';
+import StudentCourseMarks from './student-dashboard-images/student-course-marks.png';
+import StudentCourseLesson from './student-dashboard-images/student-course-lessons.png';
+import StudentTakeExercise from './student-dashboard-images/student-take-exercise.png';
+import StudentExercises from './student-dashboard-images/student-exercises.png';
 
 <Callout emoji='🚨'>
 	This page is a work in progress. Help us expand it by contributing!
 </Callout>
+
+# Student Dashboard
+
+This section will explore the different aspects of the student dashboard and show you how to access the necessary features for a great learning experience.
+
+## Accessing the Student Dashboard
+To access the student dashboard, navigate to the [dashboard page](https://app.classroomio.com/login) and fill out your login credentials.
+<br/>
+
+<Image src={DashboardLogin} alt="Dashboard login" quality="100" />
+
+<Callout type="info">
+	If you don't have an account, you should click on the [signup link](https://app.classroomio.com/signup) to create one.
+</Callout>
+
+After you fill out your credentials successfully, you will be redirected to the home page.
+
+## Navigating the Home page
+Being the entry point for the dashboard, the home page contains links and buttons to help you access other useful parts of the dashboard. After a successful login, you should see the following page:
+<br/>
+
+<Image src={DashboardHomepage} alt="Dashboard home page" quality="100" />
+On the home page, you have access to the following navigation options:
+	- **My Learning**
+	- **Exercise**
+	- **Community**
+	- **Settings**
+
+The home page will also show you the course(s) you're currently enrolled in and your learning progress.
+
+## Accessing Your Course(s)
+From the home page navigation menu, click on the **My Learning** option. This will take you to a page that lists all your courses.<br/> 
+By default, you will only see the courses that are in progress. To see completed courses, click on the option that says "Complete" at the top, below the search bar. <br/>
+To search for a specific course, use the search bar at the top of the page. 
+<br/>
+
+<Image src={StudentMyLearning} alt="My learning page" quality="100" />
+To access a specific course, simply click on the course. It should take you to the following page:
+<br/>
+<Image src={StudentCourse} alt="student course news feed" quality="100"/>
+On the left pane of the image above, you will see a list of all the lessons available in the course. Any lesson you have completed will have a checkmark in front of it.
+
+### Accessing Your Attendance and Marks
+From the image above, you can find the options for attendance and marks on the left pane. When you click on **Attendance**, it should show you what your attendance looks like for the lessons under the course:
+<br/>
+<Image src={StudentCourseAttencance} alt="attendance for lessons under a specific course" quality="100"/>
+
+From the course page explained above if you click on **Marks**, it will show you a page displaying your marks for each lesson under the course:
+<br/>
+<Image src={StudentCourseMarks} alt="marks for lessons under a specific course" quality="100"/>
+
+### Taking a lesson
+To take a lesson, select the course you're interested in. You will be redirected to the [course page](#accessing-your-courses) explained earlier. After that, click on the specific lesson you want to take from the list of lessons available on the left pane. The lesson page will look like this:
+<br/>
+<Image src={StudentCourseLesson} alt="a lesson page for a specific course" quality="100"/>
+On the page, there is a little navigation that lets you toggle between the learning material and the exercises available under that specific course.
+Below the learning material for the course, you will find some button options that allow you to do the following (in order):
+    1. Access a previous lesson
+	2. Access the exercises available for the lesson
+	3. Leave a comment or ask a question about the lesson
+	4. Mark the lesson as completed
+	5. Go to the next lesson
+
+On the top right of the page, you will find 2 buttons that let you leave a comment on the lesson or respond to a poll.
+
+### Taking an Exercise
+If you want to take an exercise after you complete a lesson, simply click on the "Exercises" tab at the top of the page and select the exercise you want to take. You should see a page like this:
+<br/>
+<Image src={StudentTakeExercise} alt="taking an exercise" quality="100"/>
+
+
+## Accessing All Your Exercises
+To access all the exercises in all your courses, navigate to the home page, and select the "Exercise" option from the left pane. You will be redirected to this page:
+<br/>
+<Image src={StudentExercises} alt="all exercises" quality="100"/>
+On the new page, you will see all your exercises categorized into the following sections:
+- Not submitted
+- Submitted
+- Grading In Progress
+- Graded
+
+To take an exercise, simply click on it and answer the questions.
+
