@@ -185,7 +185,8 @@
     "exercise": "Übung",
     "community": "Gemeinschaft",
     "help": "Helfen",
-    "settings": "Einstellungen"
+    "settings": "Einstellungen",
+    "explore": "Erkunden"
   },
   "upgrade": {
     "certificate": "Aktualisieren Sie Ihren Plan, um Zertifikate zu generieren",
@@ -408,11 +409,17 @@
         "locked": "Gesperrt",
         "unlocked": "Entsperrt",
         "save": "Änderungen speichern",
-        "unlocked_certificate": "Zertifikat ist jetzt verfügbar",
         "locked_certificate": "Zertifikate nicht verfügbar",
         "instructor_unlock": "Ihr Dozent muss Ihr Zertifikat entsperren.",
         "contact_instructor": "Wenn Sie Ihr Zertifikat benötigen, wenden Sie sich bitte an Ihren Dozenten.",
-        "download_certificate": "Zertifikat herunterladen"
+        "download_certificate": "Zertifikat herunterladen",
+        "unlocked_certificate": "Glückwunsch! 🎉 Dein Zertifikat ist fertig",
+        "unlocked_certificate_subtitle": "Sie haben diesen Kurs abgeschlossen und Ihr Engagement ist offensichtlich. Laden Sie das Zertifikat herunter und teilen Sie es mit Ihrem Netzwerk als Beweis für Ihre neu erworbenen Fähigkeiten",
+        "complete_to_download_subtitle": "Ihr Zertifikat ist verfügbar, sobald Sie alle Lektionen und Übungen dieses Kurses abgeschlossen haben",
+        "complete_to_download_title": "Kurs nicht abgeschlossen 😔",
+        "description_error": "Die Beschreibung darf 200 Zeichen nicht überschreiten",
+        "characters": "Figuren",
+        "unexpected_error": "Ein unerwarteter Fehler ist aufgetreten"
       },
       "people": {
         "title": "Menschen",
@@ -490,7 +497,10 @@
           "accept_grade": "Akzeptieren",
           "reject_grade": "Ablehnen",
           "add_comment_placeholder": "Hinterlasse einen Kommentar",
-          "questions_tried": "Diese Punktzahl wurde aufgrund der Gesamtzahl der Versuche vergeben:"
+          "questions_tried": "Diese Punktzahl wurde aufgrund der Gesamtzahl der Versuche vergeben:",
+          "delete_prompt": "Löschen",
+          "delete_error": "Die Übermittlung konnte nicht gelöscht werden",
+          "delete_success": "Einreichung erfolgreich gelöscht"
         }
       },
       "attendance": {
@@ -728,12 +738,6 @@
           "materials": "Materialien",
           "exercises": "Übungen"
         },
-        "delete_lesson": {
-          "modal_heading": "Löschen",
-          "content": "Sind Sie sicher, dass Sie löschen möchten:",
-          "no": "NEIN",
-          "yes": "Ja"
-        },
         "add_lesson": {
           "button_title": "Hinzufügen",
           "modal_heading": "Neue Lektion hinzufügen",
@@ -843,7 +847,9 @@
         "share": "Aktie",
         "invite": "Einladen",
         "delete": "Löschen"
-      }
+      },
+      "get_course": "Holen Sie sich Kurs",
+      "learn_more": "Erfahren Sie mehr"
     },
     "course_filter": {
       "date_created": "Datum erstellt",
@@ -1060,7 +1066,9 @@
       "plan": "Ihr Plan beinhaltet coole Vergünstigungen und Vorteile, einschließlich Zugriff auf alle zukünftigen Funktionen, die wir veröffentlichen.",
       "close": "Schließen",
       "learn": "Erfahren Sie mehr",
-      "month": "Monat"
+      "month": "Monat",
+      "monthly": "Monatlich",
+      "annually": "Jährlich"
     },
     "plan_names": {
       "free": "Frei",
@@ -1368,6 +1376,22 @@
     "organization_name": {
       "min_char": "Die Organisation muss 5 oder mehr Zeichen enthalten",
       "hyphen_rule": "Der Name der Organisation darf nicht mit einem Bindestrich beginnen oder enden"
+    },
+    "user_profile": {
+      "email": "Ungültige E-Mail-Adresse",
+      "username": "Benutzername darf nicht leer sein",
+      "fullname": "Der Name sollte mindestens 5 Zeichen lang sein"
     }
+  },
+  "explore": {
+    "empty_heading": "Kein Kurs verfügbar",
+    "empty_description": "Derzeit sind keine veröffentlichten Kurse verfügbar",
+    "heading": "Entdecken Sie unsere Kurse"
+  },
+  "delete_modal": {
+    "label": "Löschen",
+    "content": "Bist du sicher?",
+    "no": "NEIN",
+    "yes": "Ja"
   }
 }

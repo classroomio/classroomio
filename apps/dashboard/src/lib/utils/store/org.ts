@@ -53,12 +53,12 @@ export const isFreePlan = derived(
 );
 export const currentOrgMaxAudience = derived(currentOrgPlan, ($plan) =>
   !$plan
-    ? 50
+    ? 20
     : $plan.plan_name === PLAN.EARLY_ADOPTER
       ? 10000
       : $plan.plan_name === PLAN.ENTERPRISE
         ? Number.MAX_SAFE_INTEGER
-        : 50
+        : 20
 );
 
 // Quiz

@@ -3,15 +3,15 @@
   import { currentOrg } from '$lib/utils/store/org';
 
   export let studentName = '';
-  let borderwidth = 'border-l-8';
-  let bordercolor = 'border-primary-800';
-  let logo = '/logo-512.png';
+  const borderwidth = 'border-l-8';
+  const bordercolor = 'border-primary-800';
+  const logo = '/logo-512.png';
 </script>
 
 <div
-  class="certificate-bg flex items-center justify-center border border-dashed border-primary-400"
+  class="certificate-bg w-full flex items-center justify-center border border-dashed border-primary-400"
 >
-  <div class="{borderwidth} {bordercolor}">
+  <div class="{borderwidth} {bordercolor} w-full">
     <div class="w-full px-5 py-3">
       <p class="text-sm font-normal my-2 uppercase text-gray-500">
         Certificate<br /> of completion

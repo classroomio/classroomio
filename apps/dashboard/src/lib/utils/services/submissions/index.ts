@@ -1,4 +1,3 @@
-import type { PostgrestSingleResponse } from '@supabase/supabase-js';
 import { supabase } from '$lib/utils/functions/supabase';
 import type { ExerciseSubmissions } from '$lib/utils/types';
 
@@ -87,8 +86,8 @@ export async function updateSubmission(
     status_id,
     total,
     feedback
-  }: { id?: number; status_id?: number; total?: number; feedback?: string },
-  otherArgs?: any
+  }: { id: string; status_id?: number; total?: number; feedback?: string },
+  otherArgs?: Record<string, string>
 ) {
   const toUpdate: {
     status_id?: number;
@@ -106,6 +105,13 @@ export async function updateSubmission(
   return supabase.from('submission').update(toUpdate, otherArgs).match({ id });
 }
 
-export async function updateQuestionAnswer(update: any, match: any) {
+export async function deleteSubmission(id: string) {
+  return supabase.from('submission').delete().match({ id });
+}
+
+export async function updateQuestionAnswer(
+  update: Record<string, string>,
+  match: Record<string, string>
+) {
   return supabase.from('question_answer').update(update).match(match);
 }

@@ -14,6 +14,7 @@
   import Modal from '$lib/components/Modal/index.svelte';
   import { t } from '$lib/utils/functions/translations';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { isOrgAdmin } from '$lib/utils/store/org';
 
   export let courseId = '';
   export let path = '';
@@ -56,7 +57,7 @@
       $globalStore.isStudent = user.role_id === 3;
 
       filterPollsByStatus($globalStore.isStudent);
-    } else if ($profile.id && $group.people.length) {
+    } else if (!$isOrgAdmin && $profile.id && $group.people.length) {
       // Current User doesn't have permission to view
       isPermitted = false;
     }

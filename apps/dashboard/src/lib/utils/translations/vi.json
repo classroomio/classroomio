@@ -185,7 +185,8 @@
     "exercise": "Bài tập",
     "community": "Cộng đồng",
     "help": "Giúp đỡ",
-    "settings": "Cài đặt"
+    "settings": "Cài đặt",
+    "explore": "Khám phá"
   },
   "upgrade": {
     "certificate": "Nâng cấp gói của bạn để tạo chứng chỉ",
@@ -408,11 +409,17 @@
         "locked": "Đã khóa",
         "unlocked": "Đã mở khóa",
         "save": "Lưu thay đổi",
-        "unlocked_certificate": "Chứng chỉ hiện có sẵn",
         "locked_certificate": "Chứng chỉ không có sẵn",
         "instructor_unlock": "Người hướng dẫn của bạn cần mở khóa chứng chỉ của bạn.",
         "contact_instructor": "Nếu bạn cần chứng chỉ của mình, vui lòng liên hệ với người hướng dẫn của bạn.",
-        "download_certificate": "Tải xuống chứng chỉ"
+        "download_certificate": "Tải xuống chứng chỉ",
+        "unlocked_certificate": "Chúc mừng! 🎉 chứng chỉ của bạn đã sẵn sàng",
+        "unlocked_certificate_subtitle": "Bạn đã hoàn thành khóa học này và sự cống hiến của bạn là điều hiển nhiên. Tải xuống chứng chỉ và chia sẻ với mạng của bạn như một bằng chứng về kỹ năng mới có được của bạn",
+        "complete_to_download_subtitle": "Chứng chỉ của bạn sẽ có sau khi bạn hoàn thành tất cả bài học và bài tập trong khóa học này",
+        "complete_to_download_title": "Khóa học chưa hoàn thành 😔",
+        "description_error": "Mô tả không thể vượt quá 200 ký tự",
+        "characters": "nhân vật",
+        "unexpected_error": "Đã xảy ra lỗi không mong muốn"
       },
       "people": {
         "title": "Mọi người",
@@ -490,7 +497,10 @@
           "accept_grade": "Chấp nhận",
           "reject_grade": "Từ chối",
           "add_comment_placeholder": "Để lại một bình luận",
-          "questions_tried": "Phân bổ số điểm này dựa trên tổng số lần thử:"
+          "questions_tried": "Phân bổ số điểm này dựa trên tổng số lần thử:",
+          "delete_prompt": "Xóa bỏ",
+          "delete_error": "Không thể xóa bài nộp",
+          "delete_success": "Đã xóa bài nộp thành công"
         }
       },
       "attendance": {
@@ -728,12 +738,6 @@
           "materials": "Nguyên vật liệu",
           "exercises": "Bài tập"
         },
-        "delete_lesson": {
-          "modal_heading": "Xóa bỏ",
-          "content": "Bạn có chắc chắn muốn xóa:",
-          "no": "KHÔNG",
-          "yes": "Đúng"
-        },
         "add_lesson": {
           "button_title": "Thêm vào",
           "modal_heading": "Thêm bài học mới",
@@ -843,7 +847,9 @@
         "share": "Chia sẻ",
         "invite": "Mời",
         "delete": "Xóa bỏ"
-      }
+      },
+      "get_course": "Nhận khóa học",
+      "learn_more": "Tìm hiểu thêm"
     },
     "course_filter": {
       "date_created": "Ngày tạo",
@@ -1060,7 +1066,9 @@
       "plan": "Gói của bạn đi kèm với các đặc quyền và lợi ích thú vị, bao gồm quyền truy cập vào tất cả các tính năng trong tương lai mà chúng tôi sẽ phát hành.",
       "close": "Đóng",
       "learn": "Tìm hiểu thêm",
-      "month": "tháng"
+      "month": "tháng",
+      "monthly": "hàng tháng",
+      "annually": "Hàng năm"
     },
     "plan_names": {
       "free": "Miễn phí",
@@ -1368,6 +1376,22 @@
     "organization_name": {
       "min_char": "Tổ chức phải chứa 5 ký tự trở lên",
       "hyphen_rule": "Tên tổ chức không thể bắt đầu hoặc kết thúc bằng dấu gạch nối"
+    },
+    "user_profile": {
+      "email": "địa chỉ email không hợp lệ",
+      "username": "Tên ngươi dung không được để trông",
+      "fullname": "Tên phải có tối thiểu 5 ký tự"
     }
+  },
+  "explore": {
+    "empty_heading": "Không có khóa học nào",
+    "empty_description": "Hiện tại chưa có khóa học nào được xuất bản",
+    "heading": "Khám phá các khóa học của chúng tôi"
+  },
+  "delete_modal": {
+    "label": "Xóa bỏ",
+    "content": "Bạn có chắc không?",
+    "no": "KHÔNG",
+    "yes": "Đúng"
   }
 }

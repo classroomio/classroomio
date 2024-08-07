@@ -31,6 +31,7 @@
   import { goto } from '$app/navigation';
   import { COURSE_TYPE } from '$lib/utils/types';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants.js';
+  import { profile } from '$lib/utils/store/user.js';
 
   export let data;
 
@@ -39,7 +40,7 @@
   let lessonEditing: string | undefined;
   let lessonToDelete: Lesson | undefined;
   let openDeleteModal: boolean = false;
-  let isFetching: boolean = false;
+  let isFetching: boolean = true;
   let reorder = false;
 
   const flipDurationMs = 300;
@@ -103,12 +104,13 @@
     }
   }
 
+  function hasUserCompletedLesson(completion) {
+    return completion?.find((c) => c.profile_id === $profile.id);
+  }
+
   function findFirstIncompleteLesson() {
     return $lessons.find(
-      (lesson) =>
-        lesson.lesson_completion &&
-        lesson.lesson_completion.length === 0 &&
-        lesson.is_unlocked === true
+      (lesson) => !hasUserCompletedLesson(lesson.lesson_completion) && lesson.is_unlocked === true
     );
   }
 
@@ -125,7 +127,7 @@
   }
 
   $: shouldGoToNextLesson = query.get('next') === 'true';
-  $: shouldGoToNextLesson && onNextQuery($lessons);
+  $: !isFetching && shouldGoToNextLesson && onNextQuery($lessons);
   $: isLiveClass = $course.type === COURSE_TYPE.LIVE_CLASS;
 </script>
 
@@ -270,7 +272,9 @@
                       <DateField
                         value={formatDate(lesson.lesson_at)}
                         className="p-2 my-2 rounded-md sm:w-[179px] dark:bg-neutral-800 dark:text-white"
-                        onChange={(e) => (lesson.lesson_at = e.target.value)}
+                        onChange={(e) => {
+                          lesson.lesson_at = e?.target?.value;
+                        }}
                       />
                     {:else}
                       <div class="mb-2 flex">

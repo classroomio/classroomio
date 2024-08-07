@@ -10,7 +10,7 @@
   import { group } from '$lib/components/Course/store';
   import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
   import { fetchExercisesByMarks } from '$lib/utils/services/courses';
-  import { getLectureNo } from '$lib/components/Course/function';
+  import { getLectureNo } from '$lib/components/Course/function.js';
   import { fetchMarks } from '$lib/utils/services/marks';
   import { profile } from '$lib/utils/store/user';
   import { browser } from '$app/environment';

@@ -15,7 +15,7 @@
   import PageBody from '$lib/components/PageBody/index.svelte';
   import Box from '$lib/components/Box/index.svelte';
   import { course, group } from '$lib/components/Course/store';
-  import { getLectureNo } from '$lib/components/Course/function';
+  import { getLectureNo } from '$lib/components/Course/function.js';
   import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
   import { ROLE } from '$lib/utils/constants/roles';
   import { takeAttendance } from '$lib/utils/services/attendance';
@@ -117,7 +117,7 @@
   function searchStudents(query: string, _students: GroupPerson[]) {
     const lowercaseQuery = query.toLowerCase();
     return _students.filter((student) =>
-      student.profile.fullname.toLowerCase().includes(lowercaseQuery)
+      student.profile?.fullname?.toLowerCase()?.includes(lowercaseQuery)
     );
   }
 

@@ -125,6 +125,23 @@ const onboardingValidationSchema = {
   })
 };
 
+const saveCertificateSchema = z.object({
+  description: z.string().max(200, 'course.navItem.certificates.description_error'),
+  is_certificate_downloadable: z.boolean(),
+  certificate_theme: z.string()
+});
+
+export const saveCertificateValidation = (fields = {}) => {
+  const { error } = saveCertificateSchema.safeParse(fields);
+  return processErrors(error);
+};
+
+const updateProfileValidationSchema = z.object({
+  email: z.string().email({ message: 'validations.user_profile.email' }),
+  username: z.string().nonempty({ message: 'validations.user_profile.username' }),
+  fullname: z.string().min(5, { message: 'validations.user_profile.fullname' })
+});
+
 export const getConfirmPasswordError = ({ password, confirmPassword }) => {
   return password > 6 && confirmPassword > 6 && password !== confirmPassword
     ? `${t.get('validations.confirm_password.not_match')}`
@@ -213,6 +230,13 @@ export const onboardingValidation = (fields = {}, step) => {
   return processErrors(error);
 };
 
+export const updateProfileValidation = (fields = {}) => {
+  const schema = updateProfileValidationSchema;
+  const { error } = schema.safeParse(fields);
+
+  return processErrors(error);
+};
+
 // export const createTemplateExerciseValidation = (fields = {}) => {
 //   const schema = z.object({
 //     orgName: z.string().min(5, {
@@ -268,6 +292,14 @@ export const updateOrgSiteNameValidation = (siteName) => {
     siteName: getSiteNameValidation()
   });
   const { error } = schema.safeParse({ siteName });
+
+  return processErrors(error);
+};
+export const updateProfileEmailValidation = (email) => {
+  const schema = z.object({
+    email: z.string().email({ message: `${t.get('validations.user_profile.email')}` })
+  });
+  const { error } = schema.safeParse({ email });
 
   return processErrors(error);
 };

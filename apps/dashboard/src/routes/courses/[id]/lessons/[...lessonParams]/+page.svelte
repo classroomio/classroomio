@@ -19,7 +19,7 @@
   import PageBody from '$lib/components/PageBody/index.svelte';
   import Materials from '$lib/components/Course/components/Lesson/Materials/index.svelte';
   import Exercises from '$lib/components/Course/components/Lesson/Exercises/index.svelte';
-  import LanguageLessonVersionHistory from '$lib/components/Course/components/Lesson/LanguageLessonVersionHistory.svelte';
+  import LessonVersionHistory from '$lib/components/Course/components/Lesson/LessonVersionHistory.svelte';
   import MODES from '$lib/utils/constants/mode';
   import { course } from '$lib/components/Course/store';
   import Download from 'carbon-icons-svelte/lib/Download.svelte';
@@ -458,7 +458,7 @@
 
   <!-- Version Control Preview -->
   {#if isVersionDrawerOpen && window.innerWidth >= 1024}
-    <LanguageLessonVersionHistory
+    <LessonVersionHistory
       open={isVersionDrawerOpen}
       on:close={() => (isVersionDrawerOpen = false)}
       on:restore={refetchDataAfterVersionRestore}

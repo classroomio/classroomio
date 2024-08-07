@@ -6,7 +6,7 @@ export const getStudentInviteLink = (_course: Course, orgSiteName: string, origi
   const hash = encodeURIComponent(
     btoa(
       JSON.stringify({
-        groupId: _course.group?.id,
+        id: _course.id,
         name: _course.title,
         description: _course.description,
         orgSiteName

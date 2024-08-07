@@ -7,14 +7,13 @@
   import Grade from '$lib/components/Question/Grade.svelte';
   import { t } from '$lib/utils/functions/translations';
   import ReasonBox from '../ReasonBox.svelte';
-  import { course } from '$lib/components/Course/store';
-  import { COURSE_TYPE } from '$lib/utils/types';
+  import QuestionTitle from '../QuestionTitle.svelte';
 
   export let title = '';
   export let index = 1;
   export let code = '';
   export let name = '';
-  export let onSubmit = () => {};
+  export let onSubmit = (a: string, b: string) => {};
   export let onPrevious = () => {};
   export let defaultValue = '';
   export let disablePreviousButton = false;
@@ -51,19 +50,14 @@
     grade = 0;
   }
 
-  $: {
-    gradeWithAI = isGradeWithAI;
-  }
+  $: gradeWithAI = isGradeWithAI;
 </script>
 
 <form on:submit|preventDefault={handleFormSubmit}>
   <div class="flex items-center justify-between mb-2">
-    <HtmlRender className="mt-4">
+    <HtmlRender className="mt-4 {typeof grade === 'number' && 'w-4/5'}" disableMaxWidth>
       <svelte:fragment slot="content">
-        <span class={`${typeof grade === 'number' ? 'w-3/4' : ''} flex gap-1`}>
-          <h3>{index}</h3>
-          <h3>{title}</h3>
-        </span>
+        <QuestionTitle {index} {title} />
       </svelte:fragment>
     </HtmlRender>
     {#if !hideGrading}
@@ -88,7 +82,7 @@
     {:else}
       <TextArea
         bind:value={defaultValue}
-        rows="5"
+        rows={5}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_answer_here')}
       />
     {/if}

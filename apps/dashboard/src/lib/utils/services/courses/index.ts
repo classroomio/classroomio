@@ -1,3 +1,4 @@
+import { get } from 'svelte/store';
 import { supabase } from '$lib/utils/functions/supabase';
 import { isUUID } from '$lib/utils/functions/isUUID';
 import { QUESTION_TYPE } from '$lib/components/Question/constants';
@@ -11,7 +12,53 @@ import type {
   ExerciseTemplate
 } from '$lib/utils/types';
 import { STATUS } from '$lib/utils/constants/course';
-import type { PostgrestSingleResponse } from '@supabase/supabase-js';
+import type { PostgrestSingleResponse, PostgrestError } from '@supabase/supabase-js';
+import type { ProfileCourseProgress } from '$lib/utils/types';
+import { isOrgAdmin } from '$lib/utils/store/org';
+
+export async function fetchCourses(profileId, orgId) {
+  if (!orgId || !profileId) return;
+
+  const match = {};
+  // Filter by profile_id if role isn't admin within organization
+  if (!get(isOrgAdmin)) {
+    match.member_profile_id = profileId;
+  }
+
+  // Gets courses for a particular organisation where the current logged in user is a groupmember
+  const { data: allCourses } = await supabase
+    .rpc('get_courses', {
+      org_id_arg: orgId,
+      profile_id_arg: profileId
+    })
+    .match(match);
+
+  console.log(`allCourses`, allCourses);
+  if (!Array.isArray(allCourses)) {
+    return {
+      allCourses: []
+    };
+  }
+
+  return { allCourses };
+}
+
+export async function fetchProfileCourseProgress(
+  courseId,
+  profileId
+): Promise<{
+  data: ProfileCourseProgress[] | null;
+  error: PostgrestError | null;
+}> {
+  const { data, error } = await supabase
+    .rpc('get_course_progress', {
+      course_id_arg: courseId,
+      profile_id_arg: profileId
+    })
+    .returns<ProfileCourseProgress[]>();
+
+  return { data, error };
+}
 
 const SLUG_QUERY = `
   id,
@@ -93,6 +140,23 @@ export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']
     data,
     error
   };
+}
+
+export async function fetchExploreCourses(profileId, orgId) {
+  if (!orgId || !profileId) return;
+
+  const { data: allCourses } = await supabase.rpc('get_explore_courses', {
+    org_id_arg: orgId,
+    profile_id_arg: profileId
+  });
+
+  if (!Array.isArray(allCourses)) {
+    return {
+      allCourses: []
+    };
+  }
+
+  return { allCourses };
 }
 
 export async function fetchGroup(groupId: Group['id']) {
@@ -179,7 +243,16 @@ export function fetchLesson(lessonId: Lesson['id']) {
   return supabase
     .from('lesson')
     .select(
-      `id, note, videos, slide_url, call_url, totalExercises:exercise(count), totalComments:lesson_comment(count), lesson_completion(id, profile_id, is_complete), lesson_language(id, content, locale)`
+      `id,
+      note,
+      videos,
+      slide_url,
+      call_url,
+      totalExercises:exercise(count),
+      totalComments:lesson_comment(count),
+      lesson_completion(id, profile_id, is_complete),
+      lesson_language(id, content, locale)
+    `
     )
     .eq('id', lessonId)
     .single();

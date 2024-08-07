@@ -45,7 +45,7 @@
   ];
   let type = options[0].type;
 
-  function onClose(redirectTo = $page.url.pathname) {
+  function onClose(redirectTo) {
     goto(redirectTo);
 
     createCourseModal.update(() => ({
@@ -139,7 +139,7 @@
 </svelte:head>
 
 <Modal
-  {onClose}
+  onClose={() => onClose($page.url.pathname)}
   bind:open
   width="w-4/5 md:w-2/5 md:min-w-[600px]"
   modalHeading={$t('courses.new_course_modal.heading')}

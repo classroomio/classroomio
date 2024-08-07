@@ -10,6 +10,13 @@
     "snackbar_error": "error while sending code"
   },
 
+  "delete_modal": {
+    "label": "Delete",
+    "content": "Are you sure?",
+    "no": "No",
+    "yes": "Yes"
+  },
+
   "onboarding": {
     "sell": "Sell courses online",
     "teach": "Teach my current students online",
@@ -219,7 +226,9 @@
       "plan": "Your plan comes with cool perks and benefits including access to all future features we release.",
       "close": "Close",
       "learn": "Learn more",
-      "month": "month"
+      "month": "month",
+      "monthly": "Monthly",
+      "annually": "Annually"
     }
   },
 
@@ -428,6 +437,7 @@
       "published": "Published",
       "unpublished": "Unpublished",
       "continue_course": "Continue Course",
+      "learn_more": "Learn more",
       "list_view": {
         "title": "Title",
         "description": "Description",
@@ -510,12 +520,6 @@
           "save": "Save",
           "edit": "Edit",
           "delete": "Delete"
-        },
-        "delete_lesson": {
-          "modal_heading": "Delete",
-          "content": "Are you sure you want to delete:",
-          "no": "No",
-          "yes": "Yes"
         },
         "join_lesson": "Join lesson",
         "no_link": "No link",
@@ -786,7 +790,10 @@
           "submit_grades": "Submit Grades",
           "accept_grade": "Accept",
           "reject_grade": "Reject",
-          "questions_tried": "Allocated this score because of total tries:"
+          "questions_tried": "Allocated this score because of total tries:",
+          "delete_prompt": "Delete",
+          "delete_error": "Failed to delete submission",
+          "delete_success": "Successfully deleted submission"
         }
       },
 
@@ -854,7 +861,7 @@
         "theme": "Choose a theme",
         "logo": "Brand Logo",
         "to_update": "To update your brand image, go to",
-        "settings": "Settings &gt; Organisation settings",
+        "settings": "Settings > Organisation settings",
         "and_upload": "and upload your brand logo",
         "goto_settings": "Go to Settings",
         "description": "Course Description",
@@ -863,11 +870,17 @@
         "locked": "Locked",
         "unlocked": "Unlocked",
         "save": "Save Changes",
-        "unlocked_certificate": "Certificate is now available",
+        "unlocked_certificate": "Congrats! 🎉 your certificate is ready",
+        "unlocked_certificate_subtitle": "You have completed this course, and your dedication is evident. Download certificate and share with your network as a prove of your newly acquired skill",
         "locked_certificate": "Certificates not available",
         "instructor_unlock": "Your instructor needs to unlock your certificate.",
         "contact_instructor": "If you need your certificate, please contact your instructor.",
-        "download_certificate": "DownLoad Certificate"
+        "download_certificate": "Download Certificate",
+        "complete_to_download_title": "Course not complete 😔",
+        "complete_to_download_subtitle": "Your certificate will be available once you complete all lesson and exercises in this course",
+        "description_error": "Description cannot exceed 200 characters",
+        "characters": "characters",
+        "unexpected_error": "An unexpected error occurred"
       },
 
       "landing_page": {
@@ -1101,6 +1114,7 @@
     "my_learning": "My Learning",
     "exercise": "Exercise",
     "community": "Community",
+    "explore": "Explore",
     "help": "Help",
     "settings": "Settings"
   },
@@ -1123,6 +1137,12 @@
     "in_progress": "Grading In Progress",
     "graded": "Graded",
     "lesson": "Lesson"
+  },
+
+  "explore": {
+    "heading": "Explore our courses",
+    "empty_heading": "No course available",
+    "empty_description": "There are currently no published course available"
   },
 
   "snackbar": {
@@ -1320,6 +1340,11 @@
   },
 
   "validations": {
+    "user_profile": {
+      "email": "Invalid email address",
+      "username": "Username cannot be empty",
+      "fullname": "Name should be minimum of 5 characters"
+    },
     "organization_name": {
       "min_char": "Organization must contain 5 or more characters",
       "hyphen_rule": "Organization name cannot start or end with a hyphen"

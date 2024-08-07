@@ -185,7 +185,8 @@
     "exercise": "Ejercicio",
     "community": "Comunidad",
     "help": "Ayuda",
-    "settings": "Ajustes"
+    "settings": "Ajustes",
+    "explore": "Explorar"
   },
   "upgrade": {
     "certificate": "Actualice su plan para generar certificados",
@@ -408,11 +409,17 @@
         "locked": "bloqueado",
         "unlocked": "desbloqueado",
         "save": "Guardar cambios",
-        "unlocked_certificate": "El certificado ya está disponible",
         "locked_certificate": "Certificados no disponibles",
         "instructor_unlock": "Su instructor necesita desbloquear su certificado.",
         "contact_instructor": "Si necesita su certificado, comuníquese con su instructor.",
-        "download_certificate": "Descargar certificado"
+        "download_certificate": "Descargar certificado",
+        "unlocked_certificate": "¡Felicitaciones! 🎉 tu certificado está listo",
+        "unlocked_certificate_subtitle": "Has completado este curso y tu dedicación es evidente. Descargue el certificado y compártalo con su red como prueba de su habilidad recién adquirida",
+        "complete_to_download_subtitle": "Su certificado estará disponible una vez que complete todas las lecciones y ejercicios de este curso.",
+        "complete_to_download_title": "Curso no completo 😔",
+        "description_error": "La descripción no puede exceder los 200 caracteres.",
+        "characters": "caracteres",
+        "unexpected_error": "ocurrió un error inesperado"
       },
       "people": {
         "title": "Gente",
@@ -490,7 +497,10 @@
           "accept_grade": "Aceptar",
           "reject_grade": "Rechazar",
           "add_comment_placeholder": "Deja un comentario",
-          "questions_tried": "Se asignó esta puntuación debido al total de intentos:"
+          "questions_tried": "Se asignó esta puntuación debido al total de intentos:",
+          "delete_prompt": "Borrar",
+          "delete_error": "No se pudo eliminar el envío",
+          "delete_success": "Envío eliminado correctamente"
         }
       },
       "attendance": {
@@ -728,12 +738,6 @@
           "materials": "Materiales",
           "exercises": "Ejercicios"
         },
-        "delete_lesson": {
-          "modal_heading": "Borrar",
-          "content": "Estas seguro que quieres borrarlo:",
-          "no": "No",
-          "yes": "Sí"
-        },
         "add_lesson": {
           "button_title": "Agregar",
           "modal_heading": "Agregar nueva lección",
@@ -843,7 +847,9 @@
         "share": "Compartir",
         "invite": "Invitar",
         "delete": "Borrar"
-      }
+      },
+      "get_course": "Obtener curso",
+      "learn_more": "Aprende más"
     },
     "course_filter": {
       "date_created": "fecha de creacion",
@@ -1060,7 +1066,9 @@
       "plan": "Su plan viene con ventajas y beneficios interesantes, incluido el acceso a todas las funciones futuras que lancemos.",
       "close": "Cerca",
       "learn": "Aprende más",
-      "month": "mes"
+      "month": "mes",
+      "monthly": "Mensual",
+      "annually": "Anualmente"
     },
     "plan_names": {
       "free": "Gratis",
@@ -1368,6 +1376,22 @@
     "organization_name": {
       "min_char": "La organización debe contener 5 o más caracteres.",
       "hyphen_rule": "El nombre de la organización no puede comenzar ni terminar con un guión."
+    },
+    "user_profile": {
+      "email": "Dirección de correo electrónico no válida",
+      "username": "El nombre de usuario no puede estar vacío",
+      "fullname": "El nombre debe tener un mínimo de 5 caracteres."
     }
+  },
+  "explore": {
+    "empty_heading": "No hay curso disponible",
+    "empty_description": "Actualmente no hay ningún curso publicado disponible",
+    "heading": "Explora nuestros cursos"
+  },
+  "delete_modal": {
+    "label": "Borrar",
+    "content": "¿Está seguro?",
+    "no": "No",
+    "yes": "Sí"
   }
 }
