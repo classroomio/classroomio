@@ -49,6 +49,7 @@
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
     "openai-edge": "^1.2.2",
+    "papaparse": "^5.4.1",
     "pluralize": "^8.0.0",
     "posthog-js": "^1.141.4",
     "shared": "workspace:*",

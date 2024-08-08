@@ -9,7 +9,7 @@
   import { ROLE } from '$lib/utils/constants/roles';
   import { group } from '$lib/components/Course/store';
   import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { fetchExercisesByMarks } from '$lib/utils/services/courses';
+  import { fetchCourse, fetchExercisesByMarks } from '$lib/utils/services/courses';
   import { getLectureNo } from '$lib/components/Course/function.js';
   import { fetchMarks } from '$lib/utils/services/marks';
   import { profile } from '$lib/utils/store/user';
@@ -21,12 +21,15 @@
   import { currentOrg } from '$lib/utils/store/org';
   import type { CurrentOrg } from '$lib/utils/types/org';
   import type { GroupPerson } from '$lib/utils/types';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import Papa from 'papaparse';
 
   export let data;
 
   let borderBottomGrey = 'border-r-0 border-t-0 border-b border-l-0 border-gray-300';
   let borderleftGrey = 'border-r-0 border-t-0 border-b-0 border-l border-gray-300';
   let students: GroupPerson[] = [];
+  let isExporting = false;
 
   let lessonMapping = {}; // { lessonId: { exerciseId: exerciseTitle, ... }, ... }
   let studentMarksByExerciseId = {}; // { groupMemberId: { exerciseId: `total_gotten/points`, ... }, ... }
@@ -95,6 +98,45 @@
     return roles;
   }
 
+  const exportMarks = () => {
+    isExporting = true;
+    try {
+      let exportData = students.map((student) => {
+        let rowData = { name: student.profile.fullname };
+        let totalPoints = calculateStudentTotal(studentMarksByExerciseId[student.id]);
+
+        $lessons.forEach((lesson, lessonIndex) => {
+          const quizzes = lessonMapping[lesson.id];
+          const quizMark = studentMarksByExerciseId[student.id];
+
+          Object.keys(quizzes).forEach((quizId, quizIndex) => {
+            const quiz = quizzes[quizId];
+            const title = quiz.title;
+            rowData[`lesson_${lessonIndex + 1}_quiz_${quizIndex + 1}: ${title}`] =
+              quizMark[quizId] || '-';
+          });
+        });
+
+        rowData.total = totalPoints;
+        return rowData;
+      });
+
+      const csv = Papa.unparse(exportData);
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `${$course?.title}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      isExporting = false;
+    }
+  };
+
   $: students = $globalStore.isStudent
     ? $group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
     : $group.people.filter((person) => !!person.profile && person.role_id === ROLE.STUDENT);
@@ -109,7 +151,19 @@
       goto(`/courses/${data.courseId}/lessons?next=true`);
     }}
   >
-    <PageNav title={$t('course.navItem.marks.title')} />
+    <PageNav title={$t('course.navItem.marks.title')}>
+      <slot:fragment slot="widget">
+        <RoleBasedSecurity allowedRoles={[1, 2]}>
+          <PrimaryButton
+            className="mr-2"
+            label="Export"
+            onClick={exportMarks}
+            isDisabled={isExporting}
+            isLoading={isExporting}
+          />
+        </RoleBasedSecurity>
+      </slot:fragment>
+    </PageNav>
 
     <PageBody width="w-full max-w-6xl md:w-11/12">
       <div class="table rounded-md border border-gray-300 w-full">

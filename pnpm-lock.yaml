@@ -249,6 +249,9 @@ importers:
       openai-edge:
         specifier: ^1.2.2
         version: 1.2.2
+      papaparse:
+        specifier: ^5.4.1
+        version: 5.4.1
       pluralize:
         specifier: ^8.0.0
         version: 8.0.0
@@ -13874,6 +13877,10 @@ packages:
     dependencies:
       degenerator: 5.0.1
       netmask: 2.0.2
+    dev: false
+
+  /papaparse@5.4.1:
+    resolution: {integrity: sha512-HipMsgJkZu8br23pW15uvo6sib6wne/4woLZPlFf3rpDyMe9ywEXUsuD7+6K9PRkJlVT51j/sCOYDKGGS3ZJrw==}
     dev: false
 
   /parent-module@1.0.1:
