@@ -475,7 +475,8 @@
         "title": "Markierungen",
         "student": "Student",
         "total": "Gesamt",
-        "no_student": "Kein Student hinzugefügt"
+        "no_student": "Kein Student hinzugefügt",
+        "export": "Export"
       },
       "submissions": {
         "title": "Eingereichte Übungen",

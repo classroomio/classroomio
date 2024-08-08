@@ -801,6 +801,7 @@
         "title": "Marks",
         "student": "Student",
         "total": "Total",
+        "export": "Export",
         "no_student": "No Student Added"
       },
 

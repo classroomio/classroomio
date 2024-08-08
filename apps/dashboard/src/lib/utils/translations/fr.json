@@ -475,7 +475,8 @@
         "title": "Des marques",
         "student": "Étudiant",
         "total": "Total",
-        "no_student": "Aucun étudiant ajouté"
+        "no_student": "Aucun étudiant ajouté",
+        "export": "Exporter"
       },
       "submissions": {
         "title": "Exercices soumis",

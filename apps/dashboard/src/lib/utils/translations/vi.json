@@ -475,7 +475,8 @@
         "title": "Điểm",
         "student": "Học sinh",
         "total": "Tổng cộng",
-        "no_student": "Không có sinh viên nào được thêm vào"
+        "no_student": "Không có sinh viên nào được thêm vào",
+        "export": "Xuất khẩu"
       },
       "submissions": {
         "title": "Bài tập đã gửi",

@@ -156,7 +156,7 @@
         <RoleBasedSecurity allowedRoles={[1, 2]}>
           <PrimaryButton
             className="mr-2"
-            label="Export"
+            label={$t('course.navItem.marks.export')}
             onClick={exportMarks}
             isDisabled={isExporting}
             isLoading={isExporting}
