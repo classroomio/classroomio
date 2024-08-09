@@ -23,6 +23,9 @@
   import type { GroupPerson } from '$lib/utils/types';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import Papa from 'papaparse';
+  import html2pdf from 'html2pdf.js';
+  import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
+  import Download from 'carbon-icons-svelte/lib/Download.svelte';
 
   export let data;
 
@@ -137,6 +140,32 @@
     }
   };
 
+  function downloadPDF() {
+    const element = document.getElementById('tableContainer');
+
+    if (!element) {
+      console.error('Table container not found');
+      return;
+    }
+
+    const options = {
+      margin: 0.5,
+      filename: `${$course?.title}-marks.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } // Changed to A4 for a standard size
+    };
+
+    // Start the PDF generation
+    html2pdf()
+      .from(element)
+      .set(options)
+      .save()
+      .catch((error) => {
+        console.error('Error generating PDF:', error);
+      });
+  }
+
   $: students = $globalStore.isStudent
     ? $group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
     : $group.people.filter((person) => !!person.profile && person.role_id === ROLE.STUDENT);
@@ -154,19 +183,16 @@
     <PageNav title={$t('course.navItem.marks.title')}>
       <slot:fragment slot="widget">
         <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <PrimaryButton
-            className="mr-2"
-            label={$t('course.navItem.marks.export')}
-            onClick={exportMarks}
-            isDisabled={isExporting}
-            isLoading={isExporting}
-          />
+          <OverflowMenu icon={Download} flipped size="xl">
+            <OverflowMenuItem text={$t('course.navItem.marks.export.csv')} on:click={exportMarks} />
+            <OverflowMenuItem text={$t('course.navItem.marks.export.pdf')} on:click={downloadPDF} />
+          </OverflowMenu>
         </RoleBasedSecurity>
       </slot:fragment>
     </PageNav>
 
     <PageBody width="w-full max-w-6xl md:w-11/12">
-      <div class="table rounded-md border border-gray-300 w-full">
+      <div id="tableContainer" class="table rounded-md border border-gray-300 w-full">
         <div class="flex items-center {borderBottomGrey}">
           <div class="box flex items-center p-3">
             <p class="dark:text-white w-40">{$t('course.navItem.marks.student')}</p>

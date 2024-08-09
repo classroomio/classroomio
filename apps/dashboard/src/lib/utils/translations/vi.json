@@ -476,7 +476,10 @@
         "student": "Học sinh",
         "total": "Tổng cộng",
         "no_student": "Không có sinh viên nào được thêm vào",
-        "export": "Xuất khẩu"
+        "export": {
+          "csv": "xuất dưới dạng csv",
+          "pdf": "xuất dưới dạng pdf"
+        }
       },
       "submissions": {
         "title": "Bài tập đã gửi",

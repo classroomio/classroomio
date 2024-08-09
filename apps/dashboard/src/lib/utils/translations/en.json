@@ -801,7 +801,10 @@
         "title": "Marks",
         "student": "Student",
         "total": "Total",
-        "export": "Export",
+        "export": {
+          "csv": "export as csv",
+          "pdf": "export as pdf"
+        },
         "no_student": "No Student Added"
       },
 

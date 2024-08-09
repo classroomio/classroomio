@@ -46,6 +46,7 @@
     "form-data": "^4.0.0",
     "hotkeys-js": "^3.11.2",
     "html-to-image": "^1.11.11",
+    "html2pdf.js": "^0.10.2",
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
     "openai-edge": "^1.2.2",

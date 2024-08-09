@@ -476,7 +476,10 @@
         "student": "Student",
         "total": "Gesamt",
         "no_student": "Kein Student hinzugefügt",
-        "export": "Export"
+        "export": {
+          "csv": "als csv exportieren",
+          "pdf": "als PDF exportieren"
+        }
       },
       "submissions": {
         "title": "Eingereichte Übungen",
