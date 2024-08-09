@@ -32,7 +32,6 @@
   let borderBottomGrey = 'border-r-0 border-t-0 border-b border-l-0 border-gray-300';
   let borderleftGrey = 'border-r-0 border-t-0 border-b-0 border-l border-gray-300';
   let students: GroupPerson[] = [];
-  let isExporting = false;
 
   let lessonMapping = {}; // { lessonId: { exerciseId: exerciseTitle, ... }, ... }
   let studentMarksByExerciseId = {}; // { groupMemberId: { exerciseId: `total_gotten/points`, ... }, ... }
@@ -101,46 +100,39 @@
     return roles;
   }
 
-  const exportMarks = () => {
-    isExporting = true;
-    try {
-      let exportData = students.map((student) => {
-        let rowData = { name: student.profile.fullname };
-        let totalPoints = calculateStudentTotal(studentMarksByExerciseId[student.id]);
+  const downloadCSV = () => {
+    let exportData = students.map((student) => {
+      let rowData = { name: student.profile.fullname };
+      let totalPoints = calculateStudentTotal(studentMarksByExerciseId[student.id]);
 
-        $lessons.forEach((lesson, lessonIndex) => {
-          const quizzes = lessonMapping[lesson.id];
-          const quizMark = studentMarksByExerciseId[student.id];
+      $lessons.forEach((lesson, lessonIndex) => {
+        const quizzes = lessonMapping[lesson.id];
+        const quizMark = studentMarksByExerciseId[student.id];
 
-          Object.keys(quizzes).forEach((quizId, quizIndex) => {
-            const quiz = quizzes[quizId];
-            const title = quiz.title;
-            rowData[`lesson_${lessonIndex + 1}_quiz_${quizIndex + 1}: ${title}`] =
-              quizMark[quizId] || '-';
-          });
+        Object.keys(quizzes).forEach((quizId, quizIndex) => {
+          const quiz = quizzes[quizId];
+          const title = quiz.title;
+          rowData[`lesson_${lessonIndex + 1}_quiz_${quizIndex + 1}: ${title}`] =
+            quizMark[quizId] || '-';
         });
-
-        rowData.total = totalPoints;
-        return rowData;
       });
 
-      const csv = Papa.unparse(exportData);
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      const url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      link.setAttribute('download', `${$course?.title}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      isExporting = false;
-    }
+      rowData.total = totalPoints;
+      return rowData;
+    });
+
+    const csv = Papa.unparse(exportData);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${$course?.title}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
-  function downloadPDF() {
+  const downloadPDF = () => {
     const element = document.getElementById('tableContainer');
 
     if (!element) {
@@ -153,7 +145,7 @@
       filename: `${$course?.title}-marks.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2 },
-      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } // Changed to A4 for a standard size
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
 
     // Start the PDF generation
@@ -164,7 +156,7 @@
       .catch((error) => {
         console.error('Error generating PDF:', error);
       });
-  }
+  };
 
   $: students = $globalStore.isStudent
     ? $group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
@@ -184,7 +176,7 @@
       <slot:fragment slot="widget">
         <RoleBasedSecurity allowedRoles={[1, 2]}>
           <OverflowMenu icon={Download} flipped size="xl">
-            <OverflowMenuItem text={$t('course.navItem.marks.export.csv')} on:click={exportMarks} />
+            <OverflowMenuItem text={$t('course.navItem.marks.export.csv')} on:click={downloadCSV} />
             <OverflowMenuItem text={$t('course.navItem.marks.export.pdf')} on:click={downloadPDF} />
           </OverflowMenu>
         </RoleBasedSecurity>
