@@ -9,7 +9,7 @@
   import { ROLE } from '$lib/utils/constants/roles';
   import { group } from '$lib/components/Course/store';
   import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { fetchCourse, fetchExercisesByMarks } from '$lib/utils/services/courses';
+  import { fetchExercisesByMarks } from '$lib/utils/services/courses';
   import { getLectureNo } from '$lib/components/Course/function.js';
   import { fetchMarks } from '$lib/utils/services/marks';
   import { profile } from '$lib/utils/store/user';
@@ -21,7 +21,6 @@
   import { currentOrg } from '$lib/utils/store/org';
   import type { CurrentOrg } from '$lib/utils/types/org';
   import type { GroupPerson } from '$lib/utils/types';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import Papa from 'papaparse';
   import html2pdf from 'html2pdf.js';
   import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
