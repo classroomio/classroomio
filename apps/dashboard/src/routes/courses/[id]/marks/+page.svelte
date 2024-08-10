@@ -118,7 +118,7 @@
         });
       });
 
-      rowData.total = totalPoints;
+      rowData['Total'] = totalPoints;
       return rowData;
     });
 
