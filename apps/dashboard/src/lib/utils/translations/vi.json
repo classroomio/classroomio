@@ -477,8 +477,8 @@
         "total": "Tổng cộng",
         "no_student": "Không có sinh viên nào được thêm vào",
         "export": {
-          "csv": "xuất dưới dạng csv",
-          "pdf": "xuất dưới dạng pdf"
+          "csv": "Xuất dưới dạng CSV",
+          "pdf": "Xuất dưới dạng PDF"
         }
       },
       "submissions": {

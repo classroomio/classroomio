@@ -802,8 +802,8 @@
         "student": "Student",
         "total": "Total",
         "export": {
-          "csv": "export as csv",
-          "pdf": "export as pdf"
+          "csv": "Export as CSV",
+          "pdf": "Export as PDF"
         },
         "no_student": "No Student Added"
       },

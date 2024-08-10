@@ -477,8 +477,8 @@
         "total": "Total",
         "no_student": "Aucun étudiant ajouté",
         "export": {
-          "csv": "exporter au format CSV",
-          "pdf": "exporter en pdf"
+          "csv": "Exporter au format CSV",
+          "pdf": "Exporter au format PDF"
         }
       },
       "submissions": {
