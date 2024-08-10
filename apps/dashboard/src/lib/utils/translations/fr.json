@@ -475,7 +475,11 @@
         "title": "Des marques",
         "student": "Étudiant",
         "total": "Total",
-        "no_student": "Aucun étudiant ajouté"
+        "no_student": "Aucun étudiant ajouté",
+        "export": {
+          "csv": "Exporter au format CSV",
+          "pdf": "Exporter au format PDF"
+        }
       },
       "submissions": {
         "title": "Exercices soumis",
