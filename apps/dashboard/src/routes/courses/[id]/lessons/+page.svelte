@@ -40,7 +40,7 @@
   let lessonEditing: string | undefined;
   let lessonToDelete: Lesson | undefined;
   let openDeleteModal: boolean = false;
-  let isFetching: boolean = true;
+  let isFetching: boolean = false;
   let reorder = false;
 
   const flipDurationMs = 300;
