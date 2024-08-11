@@ -12,14 +12,18 @@
   import { isFreePlan } from '$lib/utils/store/org';
 
   export let handleClick = () => {};
+  export let name = '';
   export let label = '';
   export let isGroupActive = false;
   export let isExpanded: boolean | undefined;
   export let total = 0;
   export let isLoading = true;
   export let isLesson = false;
+  export let isSection = false;
   export let isStudent = true;
   export let isPaidFeature = false;
+  export let className = '';
+  export let btnPadding = 'py-3 px-4';
   // export let subMenuItems = [];
 
   function addLesson() {
@@ -27,6 +31,10 @@
   }
 
   function onClick() {
+    if (isSection) {
+      toggleIsExpanded();
+    }
+
     handleClick();
   }
 
@@ -35,16 +43,16 @@
   }
 </script>
 
-<div class="">
+<div class={className}>
   <button
-    class="item relative flex items-center py-3 px-4 ml-2 mb-1 {NavClasses.item} {isGroupActive &&
+    class="item relative flex items-center {btnPadding} ml-2 mb-1 {NavClasses.item} {isGroupActive &&
       !isLoading &&
       NavClasses.active} w-[95%]"
     tabindex="0"
     on:click={onClick}
     disabled={isLoading}
   >
-    <NavIcons name={label} />
+    <NavIcons {name} />
     {#if isLoading}
       <div class="w-11/12 mx-auto">
         <SkeletonText class="rounded-md" style="margin: 0px; height: 30px;" />
@@ -60,12 +68,10 @@
     {#if isPaidFeature && $isFreePlan}
       <FlashFilled size={20} class="text-blue-700" />
     {/if}
-    {#if isLesson && !isLoading}
-      {#if !isStudent}
-        <IconButton onClick={() => addLesson()} size="small">
-          <Add />
-        </IconButton>
-      {/if}
+    {#if (isLesson || isSection) && !isLoading && !isStudent}
+      <IconButton onClick={() => addLesson()} size="small">
+        <Add />
+      </IconButton>
       <IconButton size="small" stopPropagation={true} onClick={toggleIsExpanded}>
         {#if isExpanded}
           <ChevronUpIcon class="carbon-icon dark:text-white" />

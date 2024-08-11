@@ -9,28 +9,29 @@
   import IbmWatsonKnowledgeCatalog from 'carbon-icons-svelte/lib/IbmWatsonKnowledgeCatalog.svelte';
   import Settings from 'carbon-icons-svelte/lib/Settings.svelte';
   import Bullhorn from 'carbon-icons-svelte/lib/Bullhorn.svelte';
+  import { NAV_IDS } from './constants';
 
   export let name = '';
 </script>
 
-{#if name === 'Overview'}
+{#if name === NAV_IDS.SECTION}
   <TableOfContents size={20} class="carbon-icon  mr-2" />
-{:else if name === 'News Feed'}
+{:else if name === NAV_IDS.NEWS_FEED}
   <Bullhorn size={20} class="carbon-icon  mr-2" />
-{:else if name === 'Lessons'}
+{:else if name === NAV_IDS.LESSONS}
   <IbmWatsonKnowledgeCatalog size={20} class="carbon-icon mr-2" />
-{:else if name === 'Attendance'}
+{:else if name === NAV_IDS.ATTENDANCE}
   <ListChecked size={20} class="carbon-icon mr-2" />
-{:else if name === 'Submissions'}
+{:else if name === NAV_IDS.SUBMISSIONS}
   <Workspace size={20} class="carbon-icon mr-2" />
-{:else if name === 'Marks'}
+{:else if name === NAV_IDS.MARKS}
   <Result size={20} class="carbon-icon mr-2" />
-{:else if name === 'People'}
+{:else if name === NAV_IDS.PEOPLE}
   <Group size={20} class="carbon-icon mr-2" />
-{:else if name === 'Landing Page'}
+{:else if name === NAV_IDS.LANDING_PAGE}
   <ApplicationWeb size={20} class="carbon-icon mr-2" />
-{:else if name === 'Certificates'}
+{:else if name === NAV_IDS.CERTIFICATES}
   <Badge size={20} class="carbon-icon mr-2" />
-{:else if name === 'Settings'}
+{:else if name === NAV_IDS.SETTINGS}
   <Settings size={20} class="carbon-icon mr-2" />
 {/if}
