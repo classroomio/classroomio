@@ -5,6 +5,12 @@ export const isAnswerCorrect = (options, answer) => {
   return options.some((option) => option.is_correct && option.value === answer);
 };
 
+/*
+  GRADING RULES
+  Textarea = no validation
+  Single = only one should be correct
+  Multiple = all should be correct
+*/
 export function wasCorrectAnswerSelected(currentQuestion, answers, isFinished) {
   if (currentQuestion.question_type.id === QUESTION_TYPE.TEXTAREA) {
     return true;
@@ -13,15 +19,20 @@ export function wasCorrectAnswerSelected(currentQuestion, answers, isFinished) {
   const answer = answers[currentQuestion.name];
 
   const formattedAnswers = typeof answer === 'string' ? [answer] : answer;
-  const isCorrect =
-    formattedAnswers &&
-    formattedAnswers.some((answer) => {
-      if (isAnswerCorrect(currentQuestion.options, answer)) {
-        return true;
-      }
 
-      return false;
-    });
+  let isCorrect = false;
+
+  if (currentQuestion.question_type.id === QUESTION_TYPE.CHECKBOX) {
+    // Every correct answer should be in the selected answer
+    isCorrect = currentQuestion.options
+      .filter((o) => o.is_correct)
+      .every((option) => formattedAnswers?.includes(option.value));
+  } else if (currentQuestion.question_type.id === QUESTION_TYPE.RADIO) {
+    // At least one correct answer should be selected
+    isCorrect = formattedAnswers?.some((answer) =>
+      isAnswerCorrect(currentQuestion.options, answer)
+    );
+  }
 
   if (isCorrect && !isFinished) {
     toggleConfetti();

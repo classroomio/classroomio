@@ -47,6 +47,7 @@
   let openExercise = false;
   let isGradeWithAI = false;
   let fetching = false;
+  let isSaving = false;
 
   const submissionStatus: { [key: number]: string } = {
     1: $t('course.navItem.submissions.submission_status.submitted'),
@@ -243,30 +244,40 @@
     questionAnswers: any;
     feedback: any;
   }) {
+    isSaving = true;
     const { questionAnswerByPoint, questionAnswers, feedback } = submission;
 
     let totalPoints = 0;
 
-    const updates = Object.keys(questionAnswerByPoint).map((questionId) => {
-      const questionAnswer = questionAnswers.find(
-        (answer: { question_id: string }) => answer.question_id == questionId
-      );
-      const point = questionAnswerByPoint[questionId];
+    for (const questionId in questionAnswerByPoint) {
+      if (Object.prototype.hasOwnProperty.call(questionAnswerByPoint, questionId)) {
+        const questionAnswer = questionAnswers.find(
+          (answer: { question_id: string }) => answer.question_id == questionId
+        );
+        const point = questionAnswerByPoint[questionId];
 
-      totalPoints += parseInt(point, 10);
+        totalPoints += parseInt(point, 10);
 
-      return updateQuestionAnswer({ point }, { id: questionAnswer?.id });
-    });
+        const qaResponse = await updateQuestionAnswer({ point }, { id: questionAnswer?.id });
 
-    updateSubmission({
+        if (qaResponse.error) {
+          console.error('Error saving', qaResponse.error);
+          snackbar.error(`snackbar.something`);
+
+          return;
+        }
+      }
+    }
+
+    await updateSubmission({
       id: submissionId,
       total: totalPoints,
       feedback: feedback
-    }).then((res) => console.log('Updated submission', res));
+    });
 
     snackbar.success('snackbar.submissions.success.grading');
 
-    await Promise.all(updates);
+    isSaving = false;
   }
 
   async function firstRender(courseId: string) {
@@ -354,6 +365,7 @@
   {updateStatus}
   deleteSubmission={handleDeleteSubmission}
   bind:isGradeWithAI
+  {isSaving}
 />
 
 <CourseContainer bind:courseId={data.courseId}>
