@@ -194,10 +194,15 @@ export enum COURSE_TYPE {
   SELF_PACED = 'SELF_PACED',
   LIVE_CLASS = 'LIVE_CLASS'
 }
+export enum COURSE_VERSION {
+  V1 = 'V1', // with only lesson
+  V2 = 'V2' // lessons are grouped into sections
+}
 export interface Course {
   title?: any; // type unknown;
   description: string; // type unknown;
   type: COURSE_TYPE;
+  version: COURSE_VERSION;
   overview?: any; // type unknown;
   id?: string /* primary key */;
   created_at: string;

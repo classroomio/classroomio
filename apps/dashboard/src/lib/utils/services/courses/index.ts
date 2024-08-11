@@ -70,6 +70,7 @@ const SLUG_QUERY = `
   is_published,
   slug,
   cost,
+  version,
   currency,
   metadata,
   is_certificate_downloadable,
@@ -87,6 +88,7 @@ const ID_QUERY = `
   overview,
   logo,
   is_published,
+  version,
   group(*,
     members:groupmember(*,
       profile(*)
