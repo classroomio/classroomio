@@ -47,6 +47,19 @@
         Save 2 months
       </div>
     </div>
+
+    <script
+      src="https://widget.senja.io/widget/b43ac234-427e-4d6f-8c23-633208154e54/platform.js"
+      type="text/javascript"
+      async
+    ></script>
+    <div
+      class="senja-embed mt-5"
+      data-id="b43ac234-427e-4d6f-8c23-633208154e54"
+      data-mode="shadow"
+      data-lazyload="false"
+      style="display: block;"
+    ></div>
   </PageHeader>
 
   <div class="flex flex-col items-center justify-center px-[6%]">
