@@ -1512,6 +1512,54 @@
         "empty_state_header": "Ainda não há cursos",
         "empty_state_text": "Você não adicionou nenhum curso a este caminho de aprendizagem",
         "empty_state_label": "Adicionar curso a este caminho de aprendizagem"
+      },
+      "landingPage": {
+        "reviews": {
+          "students": "Veja o que os alunos dizem sobre esta coleção",
+          "readMore": "Leia mais",
+          "readLess": "Leia menos"
+        },
+        "courseList": {
+          "header": "Lista de cursos selecionados-",
+          "subheader": "Nossa lista de cursos selecionados apresenta tópicos essenciais, como pesquisa de usuário, wireframes, prototipagem, testes de usabilidade, design de interação e ferramentas padrão do setor. Desbloqueie seu potencial de UX hoje!",
+          "courses": "cursos",
+          "lessons": "lições",
+          "estimated": "estimado",
+          "hours": "horas",
+          "view": "Ver detalhes"
+        },
+        "subHeader": {
+          "button": "Inscreva-se agora - começa"
+        },
+        "certificate": {
+          "earn": "Ganhe um certificado",
+          "evidence": "Obtenha evidências de habilidades e compartilhe com sua rede profissional"
+        },
+        "main": {
+          "description": "Descrição do caminho de aprendizagem",
+          "objectives": "Objetivos do caminho de aprendizagem",
+          "pricing_win": "Conclua todas as lições com sucesso e tenha a chance de ganhar um ipad. Queremos dizer isso quando dizemos isso!",
+          "start": "Comece agora"
+        },
+        "banner": {
+          "courses": "Cursos",
+          "courses_text": "Cursos cuidadosamente selecionados para atingir seus objetivos",
+          "certificate": "Obter certificado",
+          "share": "Ganhe uma certificação e compartilhe com sua rede",
+          "rating": "Instrutor de curso experiente e altamente avaliado"
+        },
+        "header": {
+          "tag": "CAMINHO DE APRENDIZAGEM",
+          "button": "Inscreva-se agora"
+        },
+        "constants": {
+          "about": "SOBRE",
+          "objectives": "OBJETIVOS",
+          "courses": "CURSOS",
+          "review": "ANÁLISE",
+          "instructor": "INSTRUTOR(ES)",
+          "faq": "Perguntas frequentes"
+        }
       }
     }
   },

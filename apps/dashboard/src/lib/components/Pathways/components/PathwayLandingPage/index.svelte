@@ -112,7 +112,8 @@
         <div
           class="flex gap-2 items-center w-fit px-2 py-1 rounded-md font-medium text-[10px] tracking-widest bg-[#D9E0F5] border-[#0233BD] border"
         >
-          <img src="/learningpath-icon.svg" alt="" class="w-3.5" /> LEARNING PATH
+          <img src="/learningpath-icon.svg" alt="" class="w-3.5" />
+          {$t('pathway.pages.landingPage.header.tag')}
         </div>
         <h1 class="my-4 text-5xl font-bold text-[#040f2d] dark:text-white">
           {get(pathwayData, 'title', '')}
@@ -121,7 +122,7 @@
           {get(pathwayData, 'description', '')}
         </p>
         <PrimaryButton
-          label="Enroll Now"
+          label={$t('pathway.pages.landingPage.header.button')}
           className="px-6 py-5 mt-6 sm:w-fit hidden md:block"
           onClick={() => {
             if (editMode) return;
@@ -196,8 +197,13 @@
       </span>
 
       <div>
-        <h1 class="text-base m-0">{$pathway.courses.length} Courses</h1>
-        <p class="text-[12px] font-extralight">Carefully curated courses to achieve your goals</p>
+        <h1 class="text-base m-0">
+          {$pathway.courses.length}
+          {$t('pathway.pages.landingPage.banner.courses')}
+        </h1>
+        <p class="text-[12px] font-extralight">
+          {$t('pathway.pages.landingPage.banner.courses_text')}
+        </p>
       </div>
     </div>
 
@@ -207,8 +213,8 @@
       </span>
 
       <div>
-        <h1 class="text-base m-0">Get certificate</h1>
-        <p class="text-[12px] font-extralight">Earn a certification and share with your network</p>
+        <h1 class="text-base m-0">{$t('pathway.pages.landingPage.banner.certificate')}</h1>
+        <p class="text-[12px] font-extralight">{$t('pathway.pages.landingPage.banner.share')}</p>
       </div>
     </div>
 
@@ -222,7 +228,7 @@
           <h1 class="text-base m-0">4.8</h1>
           <img src="/starRating-icon.svg" alt="" class="w-28" />
         </div>
-        <p class="text-[12px] font-extralight">Experienced and highly rated course instructor</p>
+        <p class="text-[12px] font-extralight">{$t('pathway.pages.landingPage.banner.rating')}</p>
       </div>
     </div>
   </div>
@@ -254,7 +260,9 @@
           <div class="max-w-[55%]">
             <!-- Sections - About -->
             <section id="requirement" class="mt-8 border-gray-300">
-              <h3 class="mb-3 mt-0 text-2xl font-bold">Learning Path Description</h3>
+              <h3 class="mb-3 mt-0 text-2xl font-bold">
+                {$t('pathway.pages.landingPage.main.description')}
+              </h3>
 
               <ul class="font-light">
                 <HtmlRender content={get(pathwayData, 'metadata.about', '')} />
@@ -263,7 +271,9 @@
 
             <!-- Sections - Course Objectives -->
             <section id="description" class="mt-20 border-gray-300 landingpage-list">
-              <h3 class="mb-3 mt-0 text-2xl font-bold">Learning Path Objectives</h3>
+              <h3 class="mb-3 mt-0 text-2xl font-bold">
+                {$t('pathway.pages.landingPage.main.objectives')}
+              </h3>
 
               <div>
                 <HtmlRender
@@ -283,9 +293,11 @@
           class="border-gray-300 mt-8 flex justify-between max-w-[80%] mx-auto bg-[#F5F8FE] items-center px-8 py-4"
         >
           <div class="w-[50%]">
-            <h3 class="text-2xl font-bold m-0">Earn a certificate</h3>
+            <h3 class="text-2xl font-bold m-0">
+              {$t('pathway.pages.landingPage.certificate.earn')}
+            </h3>
             <p class="dark:text-white text-sm font-light mt-1">
-              Get an evidence of proof for skills and share with your fessional network
+              {$t('pathway.pages.landingPage.certificate.evidence')}
             </p>
           </div>
           <img src="/images/certificate-template.svg" alt="certificate template" />
@@ -295,7 +307,11 @@
         <div class="flex justify-between pl-12 pr-16 my-8 sticky top-0 bg-white py-6">
           <h1 class="text-lg">{get(pathwayData, 'title', '')}</h1>
           <PrimaryButton
-            label="Enroll Now-Starts May 2"
+            label="{$t('pathway.pages.landingPage.subHeader.button')} {get(
+              pathwayData,
+              'enrollment_date',
+              ''
+            )}"
             className="md:w-[30%] w-full py-3 mb-3 font-semibold"
             isDisabled={!pathwayData.metadata.allowNewStudent}
           />
@@ -303,11 +319,13 @@
 
         <!-- Sections - Course List -->
         <section class="text-center max-w-[80%] mx-auto">
-          <h1 class="mb-1">Curated course list- 6 courses</h1>
+          <h1 class="mb-1">
+            {$t('pathway.pages.landingPage.courseList.header')} 6 {$t(
+              'pathway.pages.landingPage.courseList.courses'
+            )}
+          </h1>
           <p class="text-sm text-[#656565] max-w-[83%] mx-auto">
-            Our curated course list features essential topics such as user research, wireframing,
-            prototyping, usability testing, interaction design, and industry-standard tools. Unlock
-            your UX potential today!
+            {$t('pathway.pages.landingPage.courseList.subheader')}
           </p>
 
           <!-- course list -->
@@ -320,18 +338,20 @@
                   <h1 class="underline text-base m-0">{course.title}</h1>
                   <div class="flex items-center gap-1 text-xs my-1">
                     <span>
-                      {course.total_lessons} lessons
+                      {course.total_lessons}
+                      {$t('pathway.pages.landingPage.courseList.lessons')}
                     </span>
                     -
                     <span>
-                      estimated
-                      {course.estimated_hours} hours
+                      {$t('pathway.pages.landingPage.courseList.estimated')}
+                      {course.estimated_hours}
+                      {$t('pathway.pages.landingPage.courseList.hours')}
                     </span>
                   </div>
                 </div>
 
                 <div class="flex items-center gap-2">
-                  <button type="button">View details</button>
+                  <button type="button">{$t('pathway.pages.landingPage.courseList.view')}</button>
                   <ChevronDown color="blue" />
                 </div>
               </div>
@@ -347,7 +367,9 @@
               <h2 class="m-0 mb-2 font-semibold">
                 {$t('course.navItem.landing_page.reviews')}
               </h2>
-              <p class="text-sm text-[#656565]">See what students are say about this collection</p>
+              <p class="text-sm text-[#656565]">
+                {$t('pathway.pages.landingPage.reviews.students')}
+              </p>
               <div class="flex flex-wrap gap-y-2 justify-between mt-5">
                 {#each reviews.slice(0, 4) as review, id}
                   {#if !review.hide}
@@ -365,13 +387,17 @@
                       {#if needsTruncation(review.description) && !expandDescription[id]}
                         <button
                           class="text-primary-700 text-xs underline"
-                          on:click={() => toggleDescription(id)}>Read more</button
+                          on:click={() => toggleDescription(id)}
+                        >
+                          {$t('pathway.pages.landingPage.reviews.readMore')}</button
                         >
                       {/if}
                       {#if expandDescription[id]}
                         <button
                           class="text-primary-700 text-xs underline"
-                          on:click={() => toggleDescription(id)}>Read less</button
+                          on:click={() => toggleDescription(id)}
+                        >
+                          {$t('pathway.pages.landingPage.reviews.readLess')}</button
                         >
                       {/if}
 

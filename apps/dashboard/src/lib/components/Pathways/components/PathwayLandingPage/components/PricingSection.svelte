@@ -187,10 +187,11 @@
       <div class="border-t px-2 pt-10 lg:px-10 text-center">
         <img src="/pricingCard-icon.svg" alt="Pricing Card" class="w-[85%] mx-auto" />
         <p class="dark:text-white font-light text-xs my-5 text-gray-500">
-          Complete all lessons successful & stand a chance to win an ipad. We mean it when we say
-          it!
+          {$t('pathway.pages.landingPage.main.pricing_win')}
         </p>
-        <a href="/#" class="text-xs underline text-blue-600 font-semibold">Start now</a>
+        <a href="/#" class="text-xs underline text-blue-600 font-semibold">
+          {$t('pathway.pages.landingPage.main.start')}
+        </a>
       </div>
     </div>
 

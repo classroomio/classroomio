@@ -1512,6 +1512,54 @@
         "empty_state_header": "Pas encore de cours",
         "empty_state_text": "Vous n'avez ajouté aucun cours à ce parcours d'apprentissage",
         "empty_state_label": "Ajouter un cours à ce parcours d'apprentissage"
+      },
+      "landingPage": {
+        "reviews": {
+          "students": "Découvrez ce que les étudiants pensent de cette collection",
+          "readMore": "En savoir plus",
+          "readLess": "Lire moins"
+        },
+        "courseList": {
+          "header": "Liste de cours organisée-",
+          "subheader": "Notre liste de cours organisée présente des sujets essentiels tels que la recherche sur les utilisateurs, le wireframing, le prototypage, les tests d'utilisabilité, la conception d'interactions et les outils standard de l'industrie. Libérez votre potentiel UX dès aujourd’hui !",
+          "courses": "cours",
+          "lessons": "leçons",
+          "estimated": "estimé",
+          "hours": "heures",
+          "view": "Afficher les détails"
+        },
+        "subHeader": {
+          "button": "S'inscrire maintenant-commence"
+        },
+        "certificate": {
+          "earn": "Gagnez un certificat",
+          "evidence": "Obtenez un justificatif de compétences et partagez-le avec votre réseau professionnel"
+        },
+        "main": {
+          "description": "Description du parcours d'apprentissage",
+          "objectives": "Objectifs du parcours d'apprentissage",
+          "pricing_win": "Terminez toutes les leçons avec succès et courez la chance de gagner un iPad. Nous le pensons quand nous le disons !",
+          "start": "Commencez maintenant"
+        },
+        "banner": {
+          "courses": "Cours",
+          "courses_text": "Des cours soigneusement sélectionnés pour atteindre vos objectifs",
+          "certificate": "Obtenir un certificat",
+          "share": "Obtenez une certification et partagez-la avec votre réseau",
+          "rating": "Instructeur de cours expérimenté et hautement coté"
+        },
+        "header": {
+          "tag": "PARCOURS D'APPRENTISSAGE",
+          "button": "Inscrivez-vous maintenant"
+        },
+        "constants": {
+          "about": "À PROPOS",
+          "objectives": "OBJECTIFS",
+          "courses": "COURS",
+          "review": "REVOIR",
+          "instructor": "INSTRUCTEUR(S)",
+          "faq": "FAQ"
+        }
       }
     }
   },

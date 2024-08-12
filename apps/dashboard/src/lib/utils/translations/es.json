@@ -1512,6 +1512,54 @@
         "empty_state_header": "Aún no hay cursos",
         "empty_state_text": "No has agregado ningún curso a esta ruta de aprendizaje.",
         "empty_state_label": "Agregar curso a esta ruta de aprendizaje"
+      },
+      "landingPage": {
+        "reviews": {
+          "students": "Vea lo que dicen los estudiantes sobre esta colección.",
+          "readMore": "Leer más",
+          "readLess": "Leer menos"
+        },
+        "courseList": {
+          "header": "Lista de cursos seleccionados",
+          "subheader": "Nuestra lista de cursos seleccionados presenta temas esenciales como investigación de usuarios, wireframing, creación de prototipos, pruebas de usabilidad, diseño de interacción y herramientas estándar de la industria. ¡Desbloquea tu potencial de UX hoy!",
+          "courses": "cursos",
+          "lessons": "lecciones",
+          "estimated": "estimado",
+          "hours": "horas",
+          "view": "Ver detalles"
+        },
+        "subHeader": {
+          "button": "Inscríbase ahora-comienza"
+        },
+        "certificate": {
+          "earn": "Gana un certificado",
+          "evidence": "Obtenga una evidencia de prueba de habilidades y compártala con su red profesional"
+        },
+        "main": {
+          "description": "Descripción de la ruta de aprendizaje",
+          "objectives": "Objetivos de la ruta de aprendizaje",
+          "pricing_win": "Complete todas las lecciones con éxito y tenga la oportunidad de ganar un ipad. ¡Lo decimos en serio cuando lo decimos!",
+          "start": "Empezar ahora"
+        },
+        "banner": {
+          "courses": "Cursos",
+          "courses_text": "Cursos cuidadosamente seleccionados para lograr tus objetivos.",
+          "certificate": "Obtener certificado",
+          "share": "Obtenga una certificación y compártala con su red",
+          "rating": "Instructor de curso experimentado y altamente calificado."
+        },
+        "header": {
+          "tag": "RUTA DE APRENDIZAJE",
+          "button": "Inscríbete ahora"
+        },
+        "constants": {
+          "about": "ACERCA DE",
+          "objectives": "OBJETIVOS",
+          "courses": "CURSOS",
+          "review": "REVISAR",
+          "instructor": "INSTRUCTOR(ES)",
+          "faq": "Preguntas frecuentes"
+        }
       }
     }
   },

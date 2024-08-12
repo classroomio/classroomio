@@ -13,26 +13,26 @@ export const SECTION_KEYS = {
 export const NAV_ITEMS = [
   {
     key: SECTION_KEYS.ABOUT,
-    label: 'ABOUT'
+    label: 'pathway.pages.landingPage.constants.about'
   },
   {
     key: SECTION_KEYS.OBJECTIVES,
-    label: 'OBJECTIVES'
+    label: 'pathway.pages.landingPage.constants.objectives'
   },
   {
     key: SECTION_KEYS.COURSES,
-    label: 'COURSES'
+    label: 'pathway.pages.landingPage.constants.courses'
   },
   {
     key: SECTION_KEYS.REVIEW,
-    label: 'REVIEW'
+    label: 'pathway.pages.landingPage.constants.review'
   },
   {
     key: SECTION_KEYS.INSTRUCTOR,
-    label: 'INSTRUCTOR(S)'
+    label: 'pathway.pages.landingPage.constants.instructor'
   },
   {
     key: SECTION_KEYS.FAQ,
-    label: 'FAQ'
+    label: 'pathway.pages.landingPage.constants.faq'
   }
 ];

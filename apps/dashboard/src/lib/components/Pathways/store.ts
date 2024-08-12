@@ -20,6 +20,7 @@ export const pathway = writable<Pathway>({
   cost: 3000,
   currency: 'NGN',
   status: 'Published',
+  enrollment_date: "May 2",
   created_at: '20, March, 2024',
   updated_at: '20, March, 2024',
   metadata: {
