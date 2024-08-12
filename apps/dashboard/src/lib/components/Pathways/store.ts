@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import type { Pathway, PathwayCourse } from '$lib/utils/types';
+import type { Pathway, PathwayCourse, GroupStore } from '$lib/utils/types';
 
 export const addCourseModal = writable({
   open: false,
@@ -8,10 +8,16 @@ export const addCourseModal = writable({
 
 export const courses = writable<PathwayCourse[]>([]);
 
-export const pathway = writable<Pathway>({
+export const group = writable<GroupStore>({
+  id: '',
+  tutors: [],
+  students: [],
+  people: []
+});
+
+export const defaultPathway: Pathway = {
   id: 'pathway-one',
   title: 'pathwayOne',
-  avatar: '',
   description: '',
   prerequisite: '',
   is_published: false,
@@ -44,7 +50,10 @@ export const pathway = writable<Pathway>({
           updated_at: ''
         }
       ],
-      is_published: false
+      is_published: false,
+      created_at: '',
+
+      updated_at: ''
     },
     {
       id: '73f9ascas2bda-f306-4c7b-88d3-d3a4ed37fb06',
@@ -65,7 +74,10 @@ export const pathway = writable<Pathway>({
           updated_at: ''
         }
       ],
-      is_published: false
+      is_published: false,
+      created_at: '',
+
+      updated_at: ''
     },
     {
       id: '41afdjmh56e-938c-45be-8f71-e59465dacce1',
@@ -86,7 +98,10 @@ export const pathway = writable<Pathway>({
           updated_at: ''
         }
       ],
-      is_published: false
+      is_published: false,
+      created_at: '',
+
+      updated_at: ''
     },
     {
       id: 'ef15evr6ee-018d-48ab-a195-8030366aae06',
@@ -107,7 +122,10 @@ export const pathway = writable<Pathway>({
           updated_at: ''
         }
       ],
-      is_published: true
+      is_published: true,
+      created_at: '',
+
+      updated_at: ''
     },
     {
       id: 'ef15egcg6ee-018d-48ab-a195-8030366aae06',
@@ -128,8 +146,87 @@ export const pathway = writable<Pathway>({
           updated_at: ''
         }
       ],
-      is_published: true
+      is_published: true,
+      created_at: '',
+
+      updated_at: ''
     }
   ],
   selectedCourses: []
-});
+}
+
+export const pathway = writable<Pathway>({ ... defaultPathway });
+
+export async function setPathway(data: Pathway, setCourse = true) {
+  if (!data || !(Object.values(data) && Object.values(data).length)) return;
+  // const tutorsById = {};
+
+  if (data.group) {
+    const groupData = Object.assign(data.group, {
+      tutors: [],
+      students: [],
+      people: []
+    }) as GroupStore;
+
+    if (Array.isArray(groupData.members)) {
+      for (const member of groupData.members) {
+        if (member.role_id === ROLE.STUDENT) {
+          groupData.students.push(member);
+        } else if (member.profile) {
+          groupData.tutors.push({
+            ...member.profile,
+            memberId: member.id
+          });
+        }
+      }
+
+      groupData.people = groupData.members;
+    }
+
+    delete groupData.members;
+
+    group.set(groupData);
+  }
+
+  if (setCourse) {
+    const orderedCourses = (data.courses || []).sort(
+      (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+    );
+    // .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    // .map((lesson) => ({
+    //   ...lesson,
+    //   profile: lesson.profile && tutorsById[lesson.profile.id],
+    // }));
+    courses.set(orderedCourses);
+  }
+
+  delete data.courses;
+
+  if (data.metadata && !Object.values(data.metadata)) {
+    data.metadata = {
+      requirements: '',
+      description: '',
+      goals: '',
+      videoUrl: '',
+      showDiscount: false,
+      discount: 0,
+      reward: {
+        show: false,
+        description: ''
+      },
+      instructor: {
+        name: '',
+        role: '',
+        coursesNo: 0,
+        description: '',
+        imgUrl: ''
+      },
+      allowNewStudent: false
+    };
+  }
+
+  if (!data.certificate_theme) {
+    data.certificate_theme = 'professional';
+  }
+  pathway.set(data);
+}

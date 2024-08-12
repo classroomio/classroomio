@@ -34,6 +34,15 @@ export interface GroupPerson {
   fullname?: string;
 }
 
+export interface GroupStore {
+  id: string;
+  tutors: GroupPerson[];
+  students: GroupPerson[];
+  people: GroupPerson[];
+  members?: GroupPerson[];
+  memberId?: string;
+};
+
 export interface CustomQuestionType {
   id: number;
   label: any;
@@ -294,6 +303,8 @@ export interface PathwayCourse {
   is_unlocked: boolean;
   is_completed: CourseCompletion[];
   is_published: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Pathway {
@@ -322,7 +333,7 @@ export interface Pathway {
   lms_certificate: boolean;
   courses_certificate: string;
   prerequisite: string;
-  courses: PathwayCourse[];
+  courses?: PathwayCourse[];
   selectedCourses: PathwayCourse[];
 }
 
