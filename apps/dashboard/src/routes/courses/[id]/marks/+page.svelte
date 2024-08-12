@@ -2,7 +2,6 @@
   import { goto } from '$app/navigation';
   import AudioConsoleIcon from 'carbon-icons-svelte/lib/AudioConsole.svelte';
   import Papa from 'papaparse';
-  import html2pdf from 'html2pdf.js';
   import { OverflowMenu, OverflowMenuItem, Loading } from 'carbon-components-svelte';
   import Download from 'carbon-icons-svelte/lib/Download.svelte';
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
