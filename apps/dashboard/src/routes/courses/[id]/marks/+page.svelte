@@ -188,7 +188,7 @@
     <PageNav title={$t('course.navItem.marks.title')}>
       <slot:fragment slot="widget">
         <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <OverflowMenu flipped style="background: #e5e5e5; border-radius: 50px">
+          <OverflowMenu flipped style="border-radius: 50px" class="bg-gray-100 dark:bg-neutral-800">
             <div slot="menu" style="">
               {#if isDownloading}
                 <Loading withOverlay={false} small />
