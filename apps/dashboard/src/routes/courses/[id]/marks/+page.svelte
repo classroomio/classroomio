@@ -103,7 +103,12 @@
     isDownloading = true;
 
     const exportData = students.map((student) => {
-      const rowData = { name: student.profile.fullname, Total: 0 };
+      const rowData = {
+        name: student.profile.fullname,
+        email: student.profile.email,
+        Total: 0
+      };
+
       const totalPoints = calculateStudentTotal(studentMarksByExerciseId[student.id]);
 
       $lessons.forEach((lesson, lessonIndex) => {
