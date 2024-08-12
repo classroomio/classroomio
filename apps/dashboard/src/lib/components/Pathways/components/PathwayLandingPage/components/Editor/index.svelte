@@ -14,17 +14,15 @@
   import AboutForm from './AboutForm.svelte';
   import ObjectivesForm from './ObjectivesForm.svelte';
   import PricingForm from './PricingForm.svelte';
-  import GoalsForm from './GoalsForm.svelte';
   import ReviewsForm from './ReviewsForm.svelte';
   import InstructorForm from './InstructorForm.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { updateCourse } from '$lib/utils/services/courses';
   import generateSlug from '$lib/utils/functions/generateSlug';
 
   import { isMobile } from '$lib/utils/store/useMobile';
   import CustomPromptBtn from '$lib/components/AI/AIButton/CustomPromptBtn.svelte';
-  import type { Course, Pathway } from '$lib/utils/types';
+  import type { Pathway } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
 
   export let pathway: Pathway;
@@ -54,28 +52,28 @@
       path: 'metadata.about',
       title: 'About',
       enableAIWriter: true,
-      initPrompt: $t('course.navItem.landing_page.editor.title.requirement')
+      initPrompt: 'Please write a detailed course requirement for this course:'
     },
     {
       key: 3,
       path: 'metadata.objectives',
       title: 'Objectives',
       enableAIWriter: true,
-      initPrompt: $t('course.navItem.landing_page.editor.title.requirement')
+      initPrompt: 'Please write educational objectives for this course:'
     },
     {
       key: 4,
-      path: '',
+      path: 'metadata.reviews',
       title: $t('course.navItem.landing_page.editor.title.reviews')
     },
     {
       key: 5,
-      path: '',
+      path: 'metadata.instructor',
       title: $t('course.navItem.landing_page.editor.title.instructor')
     },
     {
       key: 6,
-      path: '',
+      path: 'metadata.pricing',
       title: $t('course.navItem.landing_page.editor.title.pricing')
     }
   ];
