@@ -48,6 +48,8 @@
     "html-to-image": "^1.11.11",
     "html2pdf.js": "^0.10.2",
     "js-yaml": "^4.1.0",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.8.2",
     "lodash": "^4.17.21",
     "openai-edge": "^1.2.2",
     "papaparse": "^5.4.1",
