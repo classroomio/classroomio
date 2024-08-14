@@ -57,13 +57,14 @@
               title: lesson.title,
               order: newLessonSection.order,
               course_id: newLessonSection.course_id,
-              lessons: []
+              lessons: [],
+              created_at: ''
             }
           ];
         });
       }
     } else {
-      lesson.section_id = $handleAddLessonWidget.id;
+      lesson.section_id = $handleAddLessonWidget.id || undefined;
       const savedLesson = await handleSaveLesson(lesson, $course.id);
 
       if (Array.isArray(savedLesson) && savedLesson[0]) {

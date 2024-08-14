@@ -36,7 +36,8 @@
 
   function addLesson() {
     $handleAddLessonWidget.open = true;
-    $handleAddLessonWidget.isSection = true;
+
+    $handleAddLessonWidget.isSection = $course.version === COURSE_VERSION.V2;
   }
 
   function hasUserCompletedLesson(completion) {

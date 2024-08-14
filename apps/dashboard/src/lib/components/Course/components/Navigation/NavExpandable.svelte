@@ -9,6 +9,7 @@
   import { isFreePlan } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
   import { course } from '$lib/components/Course/store';
+  import { COURSE_VERSION } from '$lib/utils/types';
 
   export let handleClick = () => {};
   export let id = '';
@@ -28,11 +29,14 @@
   function addLesson() {
     goto('/courses/' + $course.id + '/lessons');
     $handleAddLessonWidget.open = true;
-    // If it is section, then add lesson to section
-    $handleAddLessonWidget.isSection = isSection ? false : true;
 
-    if (isSection) {
-      $handleAddLessonWidget.id = id;
+    if ($course.version === COURSE_VERSION.V2) {
+      // If it is section, then add lesson to section
+      $handleAddLessonWidget.isSection = isSection ? false : true;
+
+      if (isSection) {
+        $handleAddLessonWidget.id = id;
+      }
     }
   }
 

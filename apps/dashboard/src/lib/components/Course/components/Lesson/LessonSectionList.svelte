@@ -108,7 +108,7 @@
     {#each $lessonSections as section (section.id)}
       <div class="mb-3 border border-gray-200 rounded-md">
         <div
-          class="mb-2 px-3 py-1 border-b bg-gray-50 rounded-tl-md rounded-tr-md flex justify-between items-center"
+          class="mb-2 px-3 py-1 min-h-[50px] border-b bg-gray-50 rounded-tl-md rounded-tr-md flex justify-between items-center"
         >
           {#if lessonEditing === section.id}
             <TextField className="w-4/6" bind:value={section.title} errorMessage={errors?.title} />
