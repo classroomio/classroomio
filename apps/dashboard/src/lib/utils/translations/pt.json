@@ -1456,6 +1456,16 @@
         "course": "Curso",
         "courses": "Cursos",
         "path": "para o caminho de aprendizagem"
+      },
+      "not_permitted": {
+        "header": "Sem permissão",
+        "body": "Infelizmente você não tem acesso a esse caminho.",
+        "button": "Ir para casa"
+      },
+      "dragAndDrop": {
+        "title": "Organizar cursos",
+        "header": "Organize o curso na sequência que o aluno deve fazer, começando com o primeiro no topo",
+        "label": "Confirmar pedido do curso"
       }
     },
     "pages": {
@@ -1503,12 +1513,24 @@
         "body_title": "Título",
         "description": "Descrição",
         "students": "Alunos",
-        "lessons": "Lições"
+        "lessons": "Lições",
+        "empty_state_header": "Ainda não há cursos",
+        "empty_state_text": "Você não adicionou nenhum curso a este caminho de aprendizagem",
+        "empty_state_label": "Adicionar curso a este caminho de aprendizagem"
       }
     }
   },
   "search": {
     "no_pathway": "Nenhum caminho encontrado",
     "no_course": "Nenhum curso encontrado"
+  },
+  "lms_pathway": {
+    "pathway": "CAMINHO",
+    "continue": "Continuar caminho",
+    "course": "Cursos",
+    "locked": "Bloqueado",
+    "goto_pathway": "Vá para o caminho",
+    "completed": "Concluído",
+    "of": "de"
   }
 }

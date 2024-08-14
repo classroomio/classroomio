@@ -72,16 +72,20 @@
   </Backdrop>
 {/if}
 
-<Modal open={!isPermitted} width="w-96" modalHeading={$t('course.not_permitted.header')}>
+<Modal
+  open={!isPermitted}
+  width="w-96"
+  modalHeading={$t('pathway.components.not_permitted.header')}
+>
   <div>
     <p class="dark:text-white text-md text-center">
-      {$t('course.not_permitted.body')}
+      {$t('pathway.components.not_permitted.body')}
     </p>
 
     <div class="mt-5 flex justify-center">
       <PrimaryButton
         className="px-6 py-3"
-        label={$t('course.not_permitted.button')}
+        label={$t('pathway.components.not_permitted.button')}
         onClick={() => {
           goto('/org/*');
         }}

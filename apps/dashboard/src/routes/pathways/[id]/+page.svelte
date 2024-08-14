@@ -11,7 +11,7 @@
     handleEditFeed,
     toggleFeedIsPinned,
     fetchNewsFeedReaction
-  } from '$lib/utils/services/newsfeed';
+  } from '$lib/utils/services/pathways/newsfeed';
   import { t } from '$lib/utils/functions/translations';
   import {
     NOTIFICATION_NAME,
@@ -21,20 +21,20 @@
 
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
-  import { group } from '$lib/components/Course/store';
+  import { group } from '$lib/components/Pathways/store';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import { newsFeed } from '$lib/components/Course/components/NewsFeed/store';
+  import { newsFeed } from '$lib/components/Pathways/components/NewsFeed/store.js';
 
   import Box from '$lib/components/Box/index.svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
   import PageBody from '$lib/components/PageBody/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import { isNewFeedModal } from '$lib/components/Course/components/NewsFeed/store';
-  import NewsFeedCard from '$lib/components/Course/components/NewsFeed/NewsFeedCard.svelte';
-  import NewFeedModal from '$lib/components/Course/components/NewsFeed/NewFeedModal.svelte';
+  import { isNewFeedModal } from '$lib/components/Pathways/components/NewsFeed/store';
+  import NewsFeedCard from '$lib/components/Pathways/components/NewsFeed/NewsFeedCard.svelte';
+  import NewFeedModal from '$lib/components/Pathways/components/NewsFeed/NewFeedModal.svelte';
   import PathwayContainer from '$lib/components/Pathways/components/PathwayContainer.svelte';
-  import NewsFeedLoader from '$lib/components/Course/components/NewsFeed/NewsFeedLoader.svelte';
+  import NewsFeedLoader from '$lib/components/Pathways/components/NewsFeed/NewsFeedLoader.svelte';
 
   import type { Feed } from '$lib/utils/types/feed';
   import type { CurrentOrg } from '$lib/utils/types/org';
@@ -100,7 +100,7 @@
     };
 
     const response = await supabase
-      .from('course_newsfeed')
+      .from('pathway_newsfeed')
       .update({
         reaction: reactedFeed.reaction
       })
@@ -123,7 +123,7 @@
     const { response } = await createComment({
       content: comment,
       author_id: authorId,
-      course_newsfeed_id: feedId
+      pathway_newsfeed_id: feedId
     });
 
     if (response.error) {
@@ -168,15 +168,17 @@
     const { response } = await toggleFeedIsPinned(feedId, newIsPinned);
 
     if (response.error) {
-      return snackbar.error('snackbar.course.error.toggle_error');
+      return snackbar.error(`${$t('snackbar.course.error.toggle_error')}`);
     }
 
     $newsFeed = $newsFeed.map((feed) => {
       if (feed.id === feedId) {
         snackbar.success(
           `${
-            newIsPinned ? 'snackbar.course.success.pinned' : 'snackbar.course.success.unpinned'
-          } snackbar.course.success.successfully`
+            newIsPinned
+              ? $t('snackbar.course.success.pinned')
+              : $t('snackbar.course.success.unpinned')
+          } ${$t('snackbar.course.success.successfully')}`
         );
 
         feed.isPinned = newIsPinned;
@@ -196,11 +198,11 @@
     $newsFeed = deletedFeed;
   };
 
-  const initNewsFeed = async (courseId: string) => {
-    if (!courseId) return;
+  const initNewsFeed = async (pathwayId: string) => {
+    if (!pathwayId) return;
     try {
       isLoading = true;
-      const { data, error } = await fetchNewsFeeds(courseId);
+      const { data, error } = await fetchNewsFeeds(pathwayId);
       if (error) {
         snackbar.error('snackbar.course.error.news_feed_fail');
       }
@@ -219,7 +221,6 @@
 
   function setAuthor(groups, profileId) {
     const currentGroupMember = groups.people.find((person) => person.profile_id === profileId);
-
     author = {
       id: currentGroupMember?.id || '',
       username: $profile.username || '',
@@ -239,7 +240,6 @@
   }
 
   $: initNewsFeed(data.pathwayId);
-
   $: setAuthor($group, $profile.id);
   $: $newsFeed = $newsFeed.sort((a, b) => Number(b.isPinned) - Number(a.isPinned));
 </script>
@@ -266,7 +266,7 @@
     <PageBody width="max-w-4xl px-3">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
         <NewFeedModal
-          courseId={data.pathwayId}
+          pathwayId={data.pathwayId}
           {author}
           bind:edit
           bind:editFeed

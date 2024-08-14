@@ -1,4 +1,3 @@
-import { STATUS } from '$lib/components/Course/components/Lesson/Exercise/constants';
 import { supabase } from '$lib/utils/functions/supabase';
 import type { Pathway } from '$lib/utils/types';
 import type { PostgrestSingleResponse } from '@supabase/supabase-js';
@@ -11,7 +10,6 @@ export function addPathwayGroupMember(member: any) {
 const SLUG_QUERY = `
   id,
   title,
-  type,
   description,
   overview,
   logo,
@@ -20,7 +18,6 @@ const SLUG_QUERY = `
   cost,
   currency,
   metadata,
-  is_certificate_downloadable,
   certificate_theme,
   courses:course(
     id, title,
@@ -30,44 +27,35 @@ const SLUG_QUERY = `
 const ID_QUERY = `
   id,
   title,
-  type,
   description,
-  overview,
+  created_at,
+  updated_at,
+  group_id,
+  is_template,
   logo,
-  is_published,
-  group(*,
-    members:groupmember(*,
-      profile(*)
-    )
-  ),
   slug,
+  metadata,
+  settings,
   cost,
   currency,
-  metadata,
-  is_certificate_downloadable,
+  banner_image,
+  is_published,
+  status,
   certificate_theme,
-  courses:course(
-    id, title,public, lesson_at, is_unlocked, order, created_at,
-    note, videos, slide_url, call_url, totalExercises:exercise(count), totalComments:lesson_comment(count),
-    profile:teacher_id(id, avatar_url, fullname),
-    lesson_completion(id, profile_id, is_complete)
-  ),
-  attendance:group_attendance(*),
+  is_certificate_downloadable
 `;
 
-export async function fetchPathway(courseId?: Pathway['id'], slug?: Pathway['slug']) {
-  const match: { slug?: string; id?: string; status?: string } = {};
+export async function fetchPathway(pathwayId?: Pathway['id'], slug?: Pathway['slug']) {
+  const match: { slug?: string; id?: string } = {};
 
   if (slug) {
     match.slug = slug;
   } else {
-    match.id = courseId;
+    match.id = pathwayId;
   }
 
-  match.status = STATUS[STATUS.ACTIVE];
-
   const response: PostgrestSingleResponse<Pathway | null> = await supabase
-    .from('course')
+    .from('pathway')
     .select(slug ? SLUG_QUERY : ID_QUERY)
     .match(match)
     .single();
@@ -78,7 +66,7 @@ export async function fetchPathway(courseId?: Pathway['id'], slug?: Pathway['slu
   console.log(`data`, data);
   if (!data || error) {
     console.log(`data`, data);
-    console.log(`fetchCourse => error`, error);
+    console.log(`fetchPathway => error`, error);
     // return this.redirect(307, '/courses');
     return { data, error };
   }

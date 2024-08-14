@@ -117,6 +117,11 @@
         "title": "Arrange courses",
         "header": "Arrange course in the sequence student must should take them start with first at the top",
         "label": "Confirm course order"
+      },
+      "not_permitted": {
+        "header": "No Permission",
+        "body": "Unfortunately you don't have access to this pathway.",
+        "button": "Go home"
       }
     }
   },
@@ -1317,7 +1322,7 @@
         "add": "New feed added successfully"
       },
       "error": {
-        "error": "An error occurred while",
+        "error": "An error occurred while ",
         "editing": "editing feed",
         "creating": "creating feed"
       }

@@ -1456,6 +1456,16 @@
         "course": "Kurs",
         "courses": "Kurse",
         "path": "zum Lernpfad"
+      },
+      "not_permitted": {
+        "header": "Keine Erlaubnis",
+        "body": "Leider haben Sie keinen Zugriff auf diesen Weg.",
+        "button": "Nach Hause gehen"
+      },
+      "dragAndDrop": {
+        "title": "Kurse organisieren",
+        "header": "Ordnen Sie den Kurs in der Reihenfolge an, in der der Student ihn absolvieren muss, und beginnen Sie mit dem ersten ganz oben",
+        "label": "Kursbestellung bestätigen"
       }
     },
     "pages": {
@@ -1503,12 +1513,24 @@
         "body_title": "Titel",
         "description": "Beschreibung",
         "students": "Studenten",
-        "lessons": "Unterricht"
+        "lessons": "Unterricht",
+        "empty_state_header": "Noch keine Kurse",
+        "empty_state_text": "Sie haben diesem Lernpfad keinen Kurs hinzugefügt",
+        "empty_state_label": "Kurs zu diesem Lernpfad hinzufügen"
       }
     }
   },
   "search": {
     "no_pathway": "Kein Weg gefunden",
     "no_course": "Kein Kurs gefunden"
+  },
+  "lms_pathway": {
+    "pathway": "WEG",
+    "continue": "Pfad fortsetzen",
+    "course": "Kurse",
+    "locked": "Gesperrt",
+    "goto_pathway": "Gehen Sie zu Pathway",
+    "completed": "Vollendet",
+    "of": "von"
   }
 }

@@ -9,7 +9,7 @@ export const addCourseModal = writable({
 export const courses = writable<PathwayCourse[]>([]);
 
 export const group = writable<GroupStore>({
-  id: '',
+  id: "",
   tutors: [],
   students: [],
   people: []
