@@ -15,9 +15,9 @@
 </script>
 
 {#if name === NAV_IDS.SECTION}
-  <TableOfContents size={20} class="carbon-icon  mr-2" />
+  <TableOfContents size={20} class="carbon-icon mr-2" style="min-width: 20px;" />
 {:else if name === NAV_IDS.NEWS_FEED}
-  <Bullhorn size={20} class="carbon-icon  mr-2" />
+  <Bullhorn size={20} class="carbon-icon r-2" />
 {:else if name === NAV_IDS.LESSONS}
   <IbmWatsonKnowledgeCatalog size={20} class="carbon-icon mr-2" />
 {:else if name === NAV_IDS.ATTENDANCE}

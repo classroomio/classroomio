@@ -230,6 +230,7 @@ export interface Course {
     is_present: boolean;
     id: number;
   }[];
+  lesson_section?: LessonSection[];
   lessons?: Lesson[];
   polls: { status: string }[];
 }
@@ -276,6 +277,7 @@ export enum VideoType {
 
 export interface LessonPage {
   id?: string | null;
+  title: '';
   totalExercises: number;
   totalComments: number;
   locale: LOCALE;
@@ -310,6 +312,7 @@ export interface Lesson {
   videos?: []; // type unknown;
   slide_url?: any; // type unknown;
   course_id: string /* foreign key to course.id */;
+  section_id?: string /* foreign key to course.id */;
   id: string /* primary key */;
   created_at: string;
   updated_at?: string;
@@ -323,6 +326,16 @@ export interface Lesson {
   course?: Course;
   profile?: Profile;
   lesson_completion: LessonCompletion[];
+  totalExercises?: { count: number }[];
+}
+
+export interface LessonSection {
+  id: string;
+  title: string;
+  order: number;
+  course_id: string /* foreign key to course.id */;
+  lessons: Lesson[];
+  created_at: string;
 }
 
 export interface Exercise {

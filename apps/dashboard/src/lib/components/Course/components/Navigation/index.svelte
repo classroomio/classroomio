@@ -3,11 +3,12 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { browser } from '$app/environment';
+  import TextChip from '$lib/components/Chip/Text.svelte';
   import LockedIcon from 'carbon-icons-svelte/lib/Locked.svelte';
   import CheckmarkFilled from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
   import NavExpandable from './NavExpandable.svelte';
-  import { getNavItemRoute, getLessonsRoute } from '$lib/components/Course/function';
-  import { lessons } from '../Lesson/store/lessons';
+  import { getNavItemRoute, getLessonsRoute, getLectureNo } from '$lib/components/Course/function';
+  import { lessons, lessonSections } from '../Lesson/store/lessons';
   import { course } from '$lib/components/Course/store';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
   import { isMobile } from '$lib/utils/store/useMobile';
@@ -16,7 +17,7 @@
   import { getIsLessonComplete } from '../Lesson/functions';
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
-  import { COURSE_TYPE, type Lesson } from '$lib/utils/types';
+  import { COURSE_TYPE, COURSE_VERSION, type Lesson } from '$lib/utils/types';
   import { NAV_IDS } from './constants';
 
   export let path: string;
@@ -27,6 +28,7 @@
     order: number;
     label: string;
     lessons: Lesson[];
+    isExpanded?: boolean;
   }
   interface NavItem {
     id: string;
@@ -163,20 +165,11 @@
         hideSortIcon: false,
         isPaidFeature: false,
         isLesson: true,
-        sections: [
-          {
-            id: 'some-id',
-            order: 0,
-            label: 'Section 1',
-            lessons: $lessons.slice(0, 2)
-          },
-          {
-            id: 'some-id-1',
-            order: 1,
-            label: 'Section 2',
-            lessons: $lessons.slice(2, 4)
-          }
-        ],
+        sections: $lessonSections.map((section) => ({
+          ...section,
+          label: section.title,
+          isExpanded: true
+        })),
         isExpanded: isStudent ? true : $page.url.pathname.includes('/lessons')
       },
       {
@@ -289,6 +282,7 @@
       {#each navItems as navItem}
         {#if !navItem.show || (typeof navItem.show === 'function' && navItem.show())}
           <NavExpandable
+            id={navItem.id}
             name={navItem.id}
             label={navItem.label}
             handleClick={handleMainGroupClick(navItem.to)}
@@ -300,21 +294,61 @@
             isExpanded={navItem.isExpanded}
             {isStudent}
           >
-            {#if navItem.sections}
+            {#if $course.version === COURSE_VERSION.V1}
+              {#each $lessons as item, index}
+                <a
+                  class="pl-7 w-[95%] text-[0.80rem] mb-2 text-black dark:text-white {isStudent &&
+                  !item.is_unlocked
+                    ? 'cursor-not-allowed'
+                    : ''}"
+                  href={isStudent && !item.is_unlocked
+                    ? $page.url.pathname
+                    : getLessonsRoute($course.id, item.id)}
+                  on:click={toggleSidebarOnMobile}
+                  aria-disabled={!item.is_unlocked}
+                  title={item.title}
+                >
+                  <div
+                    class="flex items-center py-2 px-4 {NavClasses.item} {(
+                      path || $page.url.pathname
+                    ).includes(item.id) && NavClasses.active}"
+                  >
+                    <TextChip
+                      value={getLectureNo(index + 1)}
+                      className="bg-primary-200 text-primary-600 text-xs mr-2"
+                      size="sm"
+                      shape="rounded-full"
+                    />
+                    <span class="w-[85%] text-ellipsis line-clamp-2">{item.title}</span>
+                    <span class="grow" />
+                    {#if !item.is_unlocked}
+                      <span class="text-md ml-2" title="This lesson is locked.">
+                        <LockedIcon class="carbon-icon dark:text-white" />
+                      </span>
+                    {:else if getIsLessonComplete(item.lesson_completion, $profile.id)}
+                      <span class="ml-2" title="You have completed this lesson">
+                        <CheckmarkFilled class="carbon-icon dark:text-white" />
+                      </span>
+                    {/if}
+                  </div>
+                </a>
+              {/each}
+            {:else if navItem.sections}
               {#each navItem.sections as section}
                 <NavExpandable
+                  id={section.id}
                   name={NAV_IDS.SECTION}
                   label={section.label}
                   isLoading={!$course.id}
                   isSection={true}
-                  isExpanded={navItem.isExpanded}
+                  isExpanded={section.isExpanded}
                   className="ml-4"
                   btnPadding="py-2 px-3"
                   {isStudent}
                 >
                   {#each section.lessons as item}
                     <a
-                      class="pl-7 w-[95%] text-[0.80rem] mb-1 text-black dark:text-white {isStudent &&
+                      class="pl-7 w-[95%] text-[0.80rem] mb-2 text-black dark:text-white {isStudent &&
                       !item.is_unlocked
                         ? 'cursor-not-allowed'
                         : ''}"
@@ -326,7 +360,7 @@
                       title={item.title}
                     >
                       <div
-                        class="flex items-center py-3 px-4 {NavClasses.item} {(
+                        class="flex items-center py-2 px-4 {NavClasses.item} {(
                           path || $page.url.pathname
                         ).includes(item.id) && NavClasses.active}"
                       >

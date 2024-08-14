@@ -1,17 +1,17 @@
 <script lang="ts">
   import { slide } from 'svelte/transition';
-  import ChevronDownIcon from 'carbon-icons-svelte/lib/ChevronDown.svelte';
-  import ChevronUpIcon from 'carbon-icons-svelte/lib/ChevronUp.svelte';
-  import Add from 'carbon-icons-svelte/lib/Add.svelte';
+  import { ChevronDown, ChevronUp, Add, FlashFilled } from 'carbon-icons-svelte';
   import { SkeletonText } from 'carbon-components-svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
-  import FlashFilled from 'carbon-icons-svelte/lib/FlashFilled.svelte';
-  import { handleAddLessonWidget } from './store';
+  import { handleAddLessonWidget } from '../Lesson/store';
   import NavIcons from './NavIcons.svelte';
   import { isFreePlan } from '$lib/utils/store/org';
+  import { goto } from '$app/navigation';
+  import { course } from '$lib/components/Course/store';
 
   export let handleClick = () => {};
+  export let id = '';
   export let name = '';
   export let label = '';
   export let isGroupActive = false;
@@ -24,10 +24,16 @@
   export let isPaidFeature = false;
   export let className = '';
   export let btnPadding = 'py-3 px-4';
-  // export let subMenuItems = [];
 
   function addLesson() {
+    goto('/courses/' + $course.id + '/lessons');
     $handleAddLessonWidget.open = true;
+    // If it is section, then add lesson to section
+    $handleAddLessonWidget.isSection = isSection ? false : true;
+
+    if (isSection) {
+      $handleAddLessonWidget.id = id;
+    }
   }
 
   function onClick() {
@@ -58,7 +64,7 @@
         <SkeletonText class="rounded-md" style="margin: 0px; height: 30px;" />
       </div>
     {:else}
-      <span class="font-bold text-md">{label}</span>
+      <span class="font-bold text-md text-start leading-4 line-clamp-2">{label}</span>
       {#if total}
         <span class="ml-1">({total})</span>
       {/if}
@@ -69,14 +75,14 @@
       <FlashFilled size={20} class="text-blue-700" />
     {/if}
     {#if (isLesson || isSection) && !isLoading && !isStudent}
-      <IconButton onClick={() => addLesson()} size="small">
+      <IconButton stopPropagation={true} onClick={addLesson} size="small">
         <Add />
       </IconButton>
       <IconButton size="small" stopPropagation={true} onClick={toggleIsExpanded}>
         {#if isExpanded}
-          <ChevronUpIcon class="carbon-icon dark:text-white" />
+          <ChevronUp class="carbon-icon dark:text-white" />
         {:else}
-          <ChevronDownIcon class="carbon-icon dark:text-white" />
+          <ChevronDown class="carbon-icon dark:text-white" />
         {/if}
       </IconButton>
     {/if}

@@ -1,8 +1,8 @@
 import { writable } from 'svelte/store';
 import type { Writable } from 'svelte/store';
-import { lessons } from './components/Lesson/store/lessons';
+import { lessons, lessonSections } from './components/Lesson/store/lessons';
 import { ROLE } from '$lib/utils/constants/roles';
-import type { Course, GroupPerson } from '$lib/utils/types';
+import type { Course, GroupPerson, Lesson, LessonSection } from '$lib/utils/types';
 import { COURSE_TYPE } from '$lib/utils/types';
 
 export const defaultCourse: Course = {
@@ -116,17 +116,23 @@ export async function setCourse(data: Course, setLesson = true) {
   }
 
   if (setLesson) {
-    const orderedLessons = (data.lessons || [])
-      .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
-      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-    // .map((lesson) => ({
-    //   ...lesson,
-    //   profile: lesson.profile && tutorsById[lesson.profile.id],
-    // }));
+    const orderedLessons = sortLesson(data.lessons);
     lessons.set(orderedLessons);
+
+    if (data.lesson_section) {
+      console.log('Sections', data.lesson_section);
+      const sections = data.lesson_section?.map((section) => {
+        const lessons = (data.lessons || []).filter((lesson) => lesson.section_id === section.id);
+        section.lessons = sortLesson(lessons);
+        return section;
+      });
+
+      lessonSections.set(sortLessonSection(sections));
+    }
   }
 
   delete data.lessons;
+  delete data?.lesson_section;
 
   if (data.metadata && !Object.values(data.metadata)) {
     data.metadata = {
@@ -155,4 +161,16 @@ export async function setCourse(data: Course, setLesson = true) {
     data.certificate_theme = 'professional';
   }
   course.set(data);
+}
+
+function sortLesson(lessons: Lesson[] = []) {
+  return lessons
+    .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+}
+
+function sortLessonSection(sections: LessonSection[] = []) {
+  return sections
+    .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 }

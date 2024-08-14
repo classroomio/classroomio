@@ -1,15 +1,17 @@
 <script lang="ts">
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import Select from '$lib/components/Form/Select.svelte';
+  // import Select from '$lib/components/Form/Select.svelte';
   import {
     lessons,
-    handleSaveLesson
+    lessonSections,
+    handleSaveLesson,
+    handleSaveLessonSection
   } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { course, group } from '$lib/components/Course/store';
+  import { course } from '$lib/components/Course/store';
   import Modal from '$lib/components/Modal/index.svelte';
   import { goto } from '$app/navigation';
-  import { handleAddLessonWidget } from '../Navigation/store';
+  import { handleAddLessonWidget } from './store';
   import { t } from '$lib/utils/functions/translations';
   import { COURSE_TYPE } from '$lib/utils/types';
   import type { Lesson } from '$lib/utils/types';
@@ -25,7 +27,8 @@
     call_url: undefined,
     lesson_at: new Date().toDateString(),
     is_unlocked: true,
-    lesson_completion: []
+    lesson_completion: [],
+    created_at: ''
   };
 
   const handleSave = async () => {
@@ -33,26 +36,85 @@
       errors.title = 'title cannot be empty';
       return;
     }
-    const savedLesson = await handleSaveLesson(lesson, $course.id);
 
-    if (Array.isArray(savedLesson) && savedLesson[0]) {
-      const newLesson = savedLesson[0];
-      lesson.id = newLesson.id;
-      $lessons = [...$lessons, lesson];
-      goto('/courses/' + $course.id + '/lessons/' + lesson.id);
+    if ($handleAddLessonWidget.isSection) {
+      const savedSection = await handleSaveLessonSection(
+        {
+          title: lesson.title,
+          order: $lessonSections.length
+        },
+        $course.id
+      );
+
+      if (Array.isArray(savedSection) && savedSection[0]) {
+        const newLessonSection = savedSection[0];
+
+        lessonSections.update((sections) => {
+          return [
+            ...sections,
+            {
+              id: newLessonSection.id,
+              title: lesson.title,
+              order: newLessonSection.order,
+              course_id: newLessonSection.course_id,
+              lessons: []
+            }
+          ];
+        });
+      }
+    } else {
+      lesson.section_id = $handleAddLessonWidget.id;
+      const savedLesson = await handleSaveLesson(lesson, $course.id);
+
+      if (Array.isArray(savedLesson) && savedLesson[0]) {
+        const newLesson = savedLesson[0];
+        lesson.id = newLesson.id;
+        $lessons = [...$lessons, lesson];
+
+        lessonSections.update((sections) =>
+          sections.map((s) => {
+            if (s.id === newLesson.section_id) {
+              s.lessons = [...s.lessons, lesson];
+            }
+
+            return s;
+          })
+        );
+        goto('/courses/' + $course.id + '/lessons/' + lesson.id);
+      }
     }
 
-    $handleAddLessonWidget.open = false;
+    handleClose();
   };
+
+  function handleClose() {
+    $handleAddLessonWidget.open = false;
+
+    lesson = {
+      id: '',
+      course_id: $course.id || '',
+      title: '',
+      profile: undefined,
+      call_url: undefined,
+      lesson_at: new Date().toDateString(),
+      is_unlocked: true,
+      lesson_completion: [],
+      created_at: ''
+    };
+  }
 </script>
 
 <Modal
-  onClose={() => ($handleAddLessonWidget.open = false)}
+  onClose={handleClose}
   bind:open={$handleAddLessonWidget.open}
   width="w-[80%] md:w-[65%]"
   maxWidth="max-w-2xl"
   containerClass="overflow-hidden"
-  modalHeading={$t('course.navItem.lessons.add_lesson.modal_heading')}
+  modalHeading={$t(
+    `course.navItem.lessons.add_lesson.${
+      $handleAddLessonWidget.isSection ? 'modal_heading_section' : 'modal_heading'
+    }`
+  )}
 >
   <form
     on:submit|preventDefault={handleSave}
@@ -60,7 +122,11 @@
   >
     <div class="w-full">
       <TextField
-        label={$t('course.navItem.lessons.add_lesson.lesson_title')}
+        label={$t(
+          `course.navItem.lessons.add_lesson.${
+            $handleAddLessonWidget.isSection ? 'lesson_section_title' : 'lesson_title'
+          }`
+        )}
         bind:value={lesson.title}
         autoFocus={true}
         className="flex-1 min-w-lg max-w-lg"
@@ -68,7 +134,7 @@
         errorMessage={errors.title}
       />
       {#if $course.type == COURSE_TYPE.LIVE_CLASS}
-        <div
+        <!-- <div
           class="flex items-start justify-evenly gap-1 flex-col lg:flex-row lg:items-center mt-2 w-4/5"
         >
           <div class="lg:mb-0">
@@ -91,7 +157,7 @@
           <div class="flex items-center mb-3 lg:mb-0">
             <TextField className="w-[179px]" placeholder="https://meet.google.com/mga-dsjs-fmb" />
           </div>
-        </div>
+        </div> -->
       {/if}
     </div>
   </form>
@@ -100,4 +166,3 @@
     <PrimaryButton label={$t('course.navItem.lessons.add_lesson.save')} onClick={handleSave} />
   </div>
 </Modal>
-

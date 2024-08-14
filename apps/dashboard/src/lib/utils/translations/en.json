@@ -512,14 +512,17 @@
           "start_reorder": "Reorder",
           "end_reorder": "End Reorder",
           "modal_heading": "Add New Lesson",
+          "modal_heading_section": "Add New Section",
           "lesson_title": "Lesson Title",
+          "lesson_section_title": "Section Title",
           "click_to": "Click to",
           "lock": "Lock",
           "unlock": "Unlock",
           "fullname": "fullname",
           "save": "Save",
           "edit": "Edit",
-          "delete": "Delete"
+          "delete": "Delete",
+          "cancel": "Cancel"
         },
         "join_lesson": "Join lesson",
         "no_link": "No link",
