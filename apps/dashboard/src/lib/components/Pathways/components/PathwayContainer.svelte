@@ -23,7 +23,7 @@
 
 <div class="root org-root">
   <PathwaySidebar {path} isStudent={$globalStore.isStudent} />
-  <div class="{className} overflow-y-auto md:max-w-[70%] max-w-[95%] mx-auto rounded-md w-full">
+  <div class="{className} rightBar md:max-w-[70%] max-w-[95%] mx-auto rounded-md w-full">
     <slot />
   </div>
 </div>

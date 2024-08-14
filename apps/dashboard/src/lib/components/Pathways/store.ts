@@ -1,6 +1,11 @@
 import { writable } from 'svelte/store';
 import type { Pathway, PathwayCourse } from '$lib/utils/types';
 
+export const RADIO_VALUE = {
+  TRUE: 'true',
+  FALSE: 'false'
+};
+
 export const addCourseModal = writable({
   open: false,
   step: 0
@@ -8,15 +13,26 @@ export const addCourseModal = writable({
 
 export const courses = writable<PathwayCourse[]>([]);
 
+export const pathwaySettings = writable({
+  title: '',
+  logo: '',
+  description: '',
+  prerequisite: RADIO_VALUE.FALSE,
+  is_published: false,
+  lms_certificate: false,
+  courses_certificate: RADIO_VALUE.FALSE,
+  metadata: {}
+});
+
 export const pathway = writable<Pathway>({
   id: 'pathway-one',
   title: 'pathwayOne',
   avatar: '',
   description: '',
-  prerequisite: '',
+  prerequisite: RADIO_VALUE.FALSE,
   is_published: false,
   lms_certificate: false,
-  courses_certificate: '',
+  courses_certificate: RADIO_VALUE.FALSE,
   cost: 3000,
   status: 'Published',
   created_at: '20, March, 2024',

@@ -1456,6 +1456,11 @@
         "course": "Cours",
         "courses": "Cours",
         "path": "au parcours d'apprentissage"
+      },
+      "dragAndDrop": {
+        "title": "Organiser des cours",
+        "header": "Organiser les cours dans l'ordre que l'étudiant doit suivre en commençant par le premier en haut",
+        "label": "Confirmer l'ordre des cours"
       }
     },
     "pages": {
@@ -1503,12 +1508,24 @@
         "body_title": "Titre",
         "description": "Description",
         "students": "Étudiants",
-        "lessons": "Cours"
+        "lessons": "Cours",
+        "empty_state_header": "Pas encore de cours",
+        "empty_state_text": "Vous n'avez ajouté aucun cours à ce parcours d'apprentissage",
+        "empty_state_label": "Ajouter un cours à ce parcours d'apprentissage"
       }
     }
   },
   "search": {
     "no_pathway": "Aucun chemin trouvé",
     "no_course": "Aucun cours trouvé"
+  },
+  "lms_pathway": {
+    "pathway": "CHEMIN",
+    "continue": "Continuer le chemin",
+    "course": "Cours",
+    "locked": "Fermé",
+    "goto_pathway": "Aller au parcours",
+    "completed": "Complété",
+    "of": "de"
   }
 }
