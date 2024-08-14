@@ -754,7 +754,10 @@
           "lock": "Verrouillage",
           "unlock": "Ouvrir",
           "start_reorder": "Réorganiser",
-          "end_reorder": "Terminer la réapprovisionnement"
+          "end_reorder": "Terminer la réapprovisionnement",
+          "modal_heading_section": "Ajouter une nouvelle section",
+          "lesson_section_title": "Titre de la section",
+          "cancel": "Annuler"
         },
         "disabled": "La fonctionnalité est désactivée",
         "next": "Suivant",

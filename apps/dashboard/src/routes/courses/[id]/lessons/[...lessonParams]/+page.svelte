@@ -13,7 +13,7 @@
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { Dropdown, Loading } from 'carbon-components-svelte';
+  import { Dropdown } from 'carbon-components-svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
   import PageBody from '$lib/components/PageBody/index.svelte';
@@ -198,6 +198,7 @@
     lesson.update((l) => ({
       ...l,
       id: data.lessonId,
+      title: lessonData.title,
       totalExercises,
       totalComments: totalComments,
       materials: {

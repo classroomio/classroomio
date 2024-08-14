@@ -754,7 +754,10 @@
           "lock": "Cerrar",
           "unlock": "desbloquear",
           "start_reorder": "Reordenar",
-          "end_reorder": "Finalizar reorden"
+          "end_reorder": "Finalizar reorden",
+          "modal_heading_section": "Agregar nueva sección",
+          "lesson_section_title": "Título de la sección",
+          "cancel": "Cancelar"
         },
         "disabled": "La característica está deshabilitada",
         "next": "Próximo",

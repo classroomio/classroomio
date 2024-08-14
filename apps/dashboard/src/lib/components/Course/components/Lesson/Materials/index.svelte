@@ -300,7 +300,7 @@
 
   $: initPlyr(player, $lesson.materials.videos);
 
-  $: lessonTitle = $lessons.find((les) => les.id === $lesson.id)?.title || '';
+  $: lessonTitle = $lesson.title;
 
   $: editorValue = lessonFallbackNote(
     $lesson.materials.note,

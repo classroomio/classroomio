@@ -4,7 +4,6 @@
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { t } from '$lib/utils/functions/translations';
 
-  export let lessonTitle: string;
   export let openDeleteModal = false;
   export let deleteLesson = () => {};
 
@@ -18,11 +17,12 @@
   onClose={() => (openDeleteModal = false)}
   bind:open={openDeleteModal}
   width="w-96"
+  containerClass="px-6 pt-2 pb-6"
   modalHeading={$t('delete_modal.label')}
 >
   <div>
     <h1 class="dark:text-white text-lg">
-      {$t('delete_modal.content')} <strong>{lessonTitle}</strong>?
+      {$t('delete_modal.content')}?
     </h1>
 
     <div class="mt-5 flex items-center justify-between">

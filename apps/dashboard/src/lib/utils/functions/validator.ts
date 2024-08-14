@@ -26,7 +26,7 @@ const lessonSchema = z.object({
   title: z.string().nonempty({ message: `${t.get('validations.lesson_schema.empty_title')}` }),
   lesson_at: z.string().optional(),
   call_url: z.string().nullable().optional(),
-  is_unlocked: z.boolean()
+  is_unlocked: z.boolean().optional()
 });
 
 const createQuizValidationSchema = z.object({
@@ -148,8 +148,8 @@ export const getConfirmPasswordError = ({ password, confirmPassword }) => {
     : undefined;
 };
 
-export const processErrors = (error, mapToId) => {
-  const errors = {};
+export const processErrors = (error, mapToId?: boolean) => {
+  const errors: Record<string, string> = {};
 
   if (Array.isArray(error?.issues)) {
     for (const issue of error.issues) {
@@ -162,7 +162,6 @@ export const processErrors = (error, mapToId) => {
       if (mapToId) {
         let value = '';
         path.forEach((p, i) => {
-          const isLast = !path[i + 1];
           const formatP = isNumber(p) ? `[${p}]` : p;
 
           value += !value ? formatP : `.${formatP}`;

@@ -17,7 +17,7 @@
   import { goto } from '$app/navigation';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { t } from '$lib/utils/functions/translations';
-  import { COURSE_TYPE } from '$lib/utils/types';
+  import { COURSE_TYPE, COURSE_VERSION } from '$lib/utils/types';
   import ComingSoon from '$lib/components/ComingSoon/index.svelte';
 
   let isLoading = false;
@@ -85,6 +85,7 @@
         title,
         description,
         type: type,
+        version: COURSE_VERSION.V2,
         group_id
       })
       .select();
