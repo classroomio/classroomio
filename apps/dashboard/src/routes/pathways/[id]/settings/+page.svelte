@@ -85,6 +85,15 @@
         courses_certificate,
         slug: $pathway.slug
       });
+
+      $pathway.title = title;
+      $pathway.description = description;
+      $pathway.logo = logo;
+      $pathway.is_published = is_published;
+      $pathway.courses_certificate = courses_certificate;
+      $pathway.prerequisite = prerequisite;
+      $pathway.lms_certificate = lms_certificate;
+
       snackbar.success('snackbar.course_settings.success.saved');
     } catch (error) {
       console.log(error);
