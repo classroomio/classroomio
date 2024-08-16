@@ -19,3 +19,10 @@ export type OssFriend = {
   description: string;
   href: string;
 };
+
+export enum FORM_TYPE {
+  bug = 'bug',
+  help = 'help',
+  feature = 'feature',
+  feedback = 'feedback'
+}

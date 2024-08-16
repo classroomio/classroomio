@@ -2,77 +2,33 @@
   import { slide } from 'svelte/transition';
   import PageSignupCTA from '$lib/PageSignupCTA/index.svelte';
   import PageHeader from '$lib/PageHeader/PageHeader.svelte';
+  import Forms from '$lib/ContactUs/Forms/Index.svelte';
+  import { FORM_TYPE } from '$lib/types';
 
-  const whyStart = [
+  let currentForm: keyof typeof FORM_TYPE;
+
+  const formList = [
     {
-      src: '/teach/teach-from-anywhere.svg',
-      header: 'Fully Online; Teach from anywhere',
-      subText:
-        ' Facilitate a subject from the comfort of your space, engaging students from highly diverse background'
+      id: FORM_TYPE.bug,
+      title: '🐜  I want to report a bug'
     },
     {
-      src: '/teach/get-paid.svg',
-      header: 'Get paid extra commission',
-      subText:
-        'Get paid for the course you design and earn extra comission based on course perfomance'
+      id: FORM_TYPE.help,
+      title: '🙋‍♂️  I need help'
     },
     {
-      src: '/teach/inspire-learners.svg',
-      header: 'Inspire learners',
-      subText:
-        'Your opportunity to inspire thousands of learners to achieve dreams and academic pursue exellence'
+      id: FORM_TYPE.feature,
+      title: '📮  I want to request a feature'
+    },
+    {
+      id: FORM_TYPE.feedback,
+      title: '💭  I have feedback'
     }
   ];
 
-  const steps = [
-    {
-      title: 'Sign up',
-      subText: 'Create a free account on our platform by going to classroomio.com/signup'
-    },
-    {
-      title: 'Record a course',
-      subText: 'Prepare your content however you want and then upload them onto our platform.'
-    },
-    {
-      title: 'Launch the course',
-      subText: 'Polish your course, make sure it is ready for students. Then publish it.'
-    },
-    {
-      title: 'Start making sales',
-      subText:
-        'Share your course with your audience and on social media and start earning money on the courses you create'
-    }
-  ];
-
-  let faqs = [
-    {
-      question: 'What kind of tutors does ClassroomIO look for?',
-      answer:
-        'We are looking for all kinds of tutors. The most important thing is that you have some experience teaching and you have proven track record of excellent communication',
-      showAnswer: false
-    },
-    {
-      question: 'What equipment do I need to teach on ClassroomIO?',
-      answer: 'You just need internet access and a laptop.',
-      showAnswer: false
-    },
-    {
-      question: 'What happens after I apply?',
-      answer:
-        'We will get your application and review it. You should get a response from us within 2-5 working days depending on the volume of applications',
-      showAnswer: false
-    },
-    {
-      question: 'How much can I earn?',
-      answer:
-        'That depends on how much your course sells for and how many students buy your course. Your income is limitless, you can keep making money while you sleep.',
-      showAnswer: false
-    }
-  ];
-
-  function toggleAnswer(index: number) {
-    faqs[index].showAnswer = !faqs[index].showAnswer;
-  }
+  const handleChangeForm = (form: keyof typeof FORM_TYPE) => {
+    currentForm = form;
+  };
 </script>
 
 <svelte:head>
@@ -80,7 +36,7 @@
 </svelte:head>
 
 <section>
-  <PageHeader className="flex flex-col items-center justify-center text-center">
+  <PageHeader className="flex flex-col items-center justify-center bg-[#F5F8FE] text-center">
     <div class="mb-2 ml-[5%] lg:ml-0 flex w-full items-center justify-start lg:justify-center">
       <span
         style="color: rgb(75, 85, 99);"
@@ -102,15 +58,30 @@
     </p>
   </PageHeader>
 
-  <div class="mt-10 mx-auto">
+  <div class="my-20 mx-auto">
     <!-- Content here -->
+    <div class="mx-auto w-[60%] place-items-center grid grid-cols-2 gap-10">
+      {#each formList as list}
+        <button
+          on:click={() => handleChangeForm(list.id)}
+          class="text-start border-[1.5px] w-[90%] rounded-md p-3 {currentForm === list.id
+            ? `border-[#0233BD]`
+            : `border-gray-200`}"
+        >
+          <p class="text-xl text-slate-700 font-normal">{list.title}</p>
+        </button>
+      {/each}
+    </div>
 
-    <PageSignupCTA
+    {#if currentForm === FORM_TYPE[currentForm]}
+      <Forms {currentForm} />
+    {/if}
+    <!-- <PageSignupCTA
       header="Scale your Teaching Business in Minutes"
       subText="Don't wait, let's get you started."
       btnLabel="Register"
       link="/teach/register"
       demo={false}
-    />
+    /> -->
   </div>
 </section>
