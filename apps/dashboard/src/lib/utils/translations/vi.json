@@ -1502,7 +1502,6 @@
         "add_remove": "Thêm/xóa khóa học",
         "order": "Đặt hàng khóa học",
         "publish": "Xuất bản bộ sưu tập",
-        "search": "Tìm lộ trình học tập",
         "option_one": "Được phát hành",
         "option_two": "Chưa xuất bản",
         "body_title": "Tiêu đề",
@@ -1511,54 +1510,18 @@
         "lessons": "Những bài học",
         "empty_state_header": "Chưa có khóa học nào",
         "empty_state_text": "Bạn chưa thêm bất kỳ khóa học nào vào lộ trình học tập này",
-        "empty_state_label": "Thêm khóa học vào Lộ trình học tập này"
+        "empty_state_label": "Thêm khóa học vào lộ trình học tập này",
+        "search": "Tìm khóa học chuyển tiếp"
       },
-      "landingPage": {
-        "reviews": {
-          "students": "Xem sinh viên nói gì về bộ sưu tập này",
-          "readMore": "Đọc thêm",
-          "readLess": "Đọc ít hơn"
+      "lms_certificate": {
+        "share": "Chia sẻ chứng chỉ",
+        "locked": {
+          "title": "Chứng chỉ chưa có sẵn",
+          "subtitle": "Chứng chỉ được cấp vì bạn chưa hoàn thành lộ trình học tập hoặc người hướng dẫn của bạn chưa phê duyệt. Vui lòng liên hệ với người hướng dẫn của bạn"
         },
-        "courseList": {
-          "header": "Danh sách khóa học được tuyển chọn-",
-          "subheader": "Danh sách khóa học được tuyển chọn của chúng tôi có các chủ đề thiết yếu như nghiên cứu người dùng, wireframing, tạo nguyên mẫu, kiểm tra khả năng sử dụng, thiết kế tương tác và các công cụ tiêu chuẩn ngành. Hãy mở khóa tiềm năng UX của bạn ngay hôm nay!",
-          "courses": "các khóa học",
-          "lessons": "bài học",
-          "estimated": "ước lượng",
-          "hours": "giờ",
-          "view": "Xem chi tiết"
-        },
-        "subHeader": {
-          "button": "Đăng ký ngay-Bắt đầu"
-        },
-        "certificate": {
-          "earn": "Kiếm được chứng chỉ",
-          "evidence": "Nhận bằng chứng chứng minh kỹ năng và chia sẻ với mạng lưới chuyên môn của bạn"
-        },
-        "main": {
-          "description": "Mô tả lộ trình học tập",
-          "objectives": "Mục tiêu lộ trình học tập",
-          "pricing_win": "Hoàn thành tất cả các bài học và có cơ hội giành được một chiếc ipad. Chúng tôi có ý đó khi chúng tôi nói nó!",
-          "start": "Bắt đầu ngay bây giờ"
-        },
-        "banner": {
-          "courses": "Khóa học",
-          "courses_text": "Các khóa học được tuyển chọn cẩn thận để đạt được mục tiêu của bạn",
-          "certificate": "Nhận chứng chỉ",
-          "share": "Giành được chứng nhận và chia sẻ với mạng của bạn",
-          "rating": "Giảng viên giàu kinh nghiệm và được đánh giá cao"
-        },
-        "header": {
-          "tag": "CON ĐƯỜNG HỌC TẬP",
-          "button": "Đăng ký ngay"
-        },
-        "constants": {
-          "about": "VỀ",
-          "objectives": "MỤC TIÊU",
-          "courses": "KHÓA HỌC",
-          "review": "ÔN TẬP",
-          "instructor": "(Những) GIẢNG VIÊN",
-          "faq": "Câu hỏi thường gặp"
+        "unlocked": {
+          "title": "Xin chúc mừng! 🎉 chứng chỉ của bạn đã sẵn sàng",
+          "subtitle": "Bạn đã hoàn thành lộ trình học tập này và sự cống hiến của bạn được thể hiện rõ ràng. Tải xuống chứng chỉ và chia sẻ với mạng của bạn như một bằng chứng về kỹ năng mới có được của bạn"
         }
       }
     }
