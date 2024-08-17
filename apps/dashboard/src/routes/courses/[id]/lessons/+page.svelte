@@ -46,8 +46,22 @@
     return completion?.find((c) => c.profile_id === $profile.id);
   }
 
+  const getLessons = () => {
+    if ($course.version === COURSE_VERSION.V1) {
+      return $lessons;
+    } else {
+      const _lessons: Lesson[] = [];
+
+      $lessonSections.forEach((section) => {
+        _lessons.push(...section.lessons);
+      });
+
+      return _lessons;
+    }
+  };
+
   function findFirstIncompleteLesson() {
-    return $lessons.find(
+    return getLessons().find(
       (lesson) => !hasUserCompletedLesson(lesson.lesson_completion) && lesson.is_unlocked === true
     );
   }
