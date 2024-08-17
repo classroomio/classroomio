@@ -21,6 +21,15 @@ export interface ProfileCourseProgress {
   lessons_count: number;
 }
 
+export interface ProfilePathwayProgress {
+  exercises_completed: number;
+  exercises_count: number;
+  lessons_completed: number;
+  lessons_count: number;
+  courses_completed: number;
+  courses_count: number;
+}
+
 export interface GroupPerson {
   assigned_student_id: number | null;
   created_at: string;
@@ -41,7 +50,7 @@ export interface GroupStore {
   people: GroupPerson[];
   members?: GroupPerson[];
   memberId?: string;
-};
+}
 
 export interface CustomQuestionType {
   id: number;
@@ -113,18 +122,18 @@ interface CourseMetadata {
   allowNewStudent?: boolean;
 }
 
-interface PathwayMetadata {
-  requirements?: string;
-  description?: string;
-  goals?: string;
-  videoUrl?: '';
-  showDiscount?: false;
-  discount?: 0;
-  paymentLink?: string;
-  reward?: {
-    show: boolean;
+export interface PathwayMetadata {
+  header: {
+    title: string;
     description: string;
+    duration: string;
+    cost: number;
+    buttonLabel: string;
+    videoUrl?: '';
   };
+  about: string;
+  objectives: string;
+  reviews?: Array<Review>;
   instructor?: {
     name: string;
     role: string;
@@ -132,31 +141,12 @@ interface PathwayMetadata {
     description: string;
     imgUrl: string;
   };
-  reviews?: Array<Review>;
+  showDiscount?: boolean;
   allowNewStudent?: boolean;
-}
-
-interface PathwayMetadata {
-  requirements?: string;
-  description?: string;
-  goals?: string;
-  videoUrl?: '';
-  showDiscount?: false;
-  discount?: 0;
-  paymentLink?: string;
   reward?: {
     show: boolean;
     description: string;
   };
-  instructor?: {
-    name: string;
-    role: string;
-    coursesNo: number;
-    description: string;
-    imgUrl: string;
-  };
-  reviews?: Array<Review>;
-  allowNewStudent: boolean;
 }
 
 export interface LessonCommentInsertPayload {
@@ -300,11 +290,13 @@ export interface PathwayCourse {
   description: string;
   total_lessons: number;
   total_students: number;
+  estimated_hours: number;
   is_unlocked: boolean;
   is_completed: CourseCompletion[];
   is_published: boolean;
   created_at: string;
   updated_at: string;
+  order: string;
 }
 
 export interface Pathway {
@@ -327,11 +319,12 @@ export interface Pathway {
   is_certificate_downloadable?: boolean;
   certificate_theme?: string;
   status: string;
-  is_published?: boolean;
+  is_published: boolean;
   total_course?: number;
   total_students?: number;
   lms_certificate: boolean;
   courses_certificate: string;
+  progress_rate?: number;
   prerequisite: string;
   courses?: PathwayCourse[];
   selectedCourses: PathwayCourse[];
@@ -499,7 +492,7 @@ export interface Review {
   name: string;
   avatar_url: string;
   rating: number;
-  created_at: number;
+  created_at: number | string;
   description: string;
 }
 

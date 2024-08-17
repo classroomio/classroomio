@@ -1,4 +1,6 @@
 import { STATUS } from '$lib/components/Course/components/Lesson/Exercise/constants';
+import type { PostgrestError } from '@supabase/supabase-js';
+import type { ProfilePathwayProgress } from '$lib/utils/types';
 import { supabase } from '$lib/utils/functions/supabase';
 import type { Pathway } from '$lib/utils/types';
 import type { PostgrestSingleResponse } from '@supabase/supabase-js';
@@ -6,7 +8,6 @@ import type { PostgrestSingleResponse } from '@supabase/supabase-js';
 export function addPathwayGroupMember(member: any) {
   return supabase.from('groupmember').insert(member).select();
 }
-
 
 const SLUG_QUERY = `
   id,
@@ -87,4 +88,21 @@ export async function fetchPathway(courseId?: Pathway['id'], slug?: Pathway['slu
     data,
     error
   };
+}
+
+export async function fetchPathwayCourseProgress(
+  pathwayId,
+  profileId
+): Promise<{
+  data: ProfilePathwayProgress[] | null;
+  error: PostgrestError | null;
+}> {
+  const { data, error } = await supabase
+    .rpc('get_course_progress', {
+      pathway_id_arg: pathwayId,
+      profile_id_arg: profileId
+    })
+    .returns<ProfilePathwayProgress[]>();
+
+  return { data, error };
 }

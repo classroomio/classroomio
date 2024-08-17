@@ -7,7 +7,8 @@
     Row,
     CodeSnippet,
     RadioButtonGroup,
-    RadioButton
+    RadioButton,
+    Toggle
   } from 'carbon-components-svelte';
   import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
 
@@ -19,13 +20,13 @@
 
   import PageNav from '$lib/components/PageNav/index.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
+  import PageBody from '$lib/components/PageBody/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
-  import CustomToggle from '$lib/components/Pathways/components/Toggle.svelte';
   import PathwayContainer from '$lib/components/Pathways/components/PathwayContainer.svelte';
 
   let id: string;
@@ -86,7 +87,7 @@
 <PathwayContainer>
   <PageNav title={$t('pathway.pages.settings.page_title')} />
 
-  <div class="border border-[#EAEAEA] max-w-[87%] shadow-sm rounded-md w-full mx-auto my-10">
+  <PageBody>
     <Grid>
       <Row class="flex lg:flex-row flex-col my-4 md:py-7 border-bottom-c">
         <Column sm={8} md={8} lg={8} class="flex flex-col justify-between">
@@ -191,14 +192,14 @@
           <p>{$t('pathway.pages.settings.allow')}</p>
         </Column>
         <Column sm={8} md={8} lg={7} class="flex justify-start items-center">
-          <div class="flex items-center gap-3">
-            <CustomToggle on:toggle={(e) => (e.detail.isOn = $pathway.is_published)} />
-            <p class="text-sm">
-              {$pathway.is_published
-                ? $t('pathway.pages.settings.enabled')
-                : $t('pathway.pages.settings.disabled')}
-            </p>
-          </div>
+          <Toggle
+            size="sm"
+            bind:toggled={$pathway.is_published}
+            on:toggle={(e) => ($pathway.is_published = e.detail.toggled)}
+          >
+            <span slot="labelA" style="color: gray">{$t('pathway.pages.settings.enabled')}</span>
+            <span slot="labelB" style="color: gray">{$t('pathway.pages.settings.disabled')}</span>
+          </Toggle>
         </Column>
       </Row>
 
@@ -210,14 +211,14 @@
         <Row class="overflow-hidden justify-between w-full items-center gap-5 flex-col mt-5">
           <Column class="flex flex-col md:flex-row gap-7 items-start  md:items-center py-2">
             <p class="md:w-[54%]">{$t('pathway.pages.settings.issue')}</p>
-            <div class="flex items-center gap-3">
-              <CustomToggle on:toggle={(e) => (e.detail.isOn = $pathway.lms_certificate)} />
-              <p class="text-sm">
-                {$pathway.lms_certificate
-                  ? $t('pathway.pages.settings.enabled')
-                  : $t('pathway.pages.settings.disabled')}
-              </p>
-            </div>
+            <Toggle
+              size="sm"
+              bind:toggled={$pathway.lms_certificate}
+              on:toggle={(e) => ($pathway.lms_certificate = e.detail.toggled)}
+            >
+              <span slot="labelA" style="color: gray">{$t('pathway.pages.settings.enabled')}</span>
+              <span slot="labelB" style="color: gray">{$t('pathway.pages.settings.disabled')}</span>
+            </Toggle>
           </Column>
           <Column class="flex w-full flex-col md:flex-row items-start  md:items-center gap-5">
             <p class="md:w-[54%]">{$t('pathway.pages.settings.issue_two')}</p>
@@ -259,5 +260,5 @@
         />
       </Row>
     </Grid>
-  </div>
+  </PageBody>
 </PathwayContainer>

@@ -1,11 +1,11 @@
 <script>
-  import { course } from '$lib/components/Course/store';
+  import { pathway } from '$lib/components/Pathways/store';
   import UnlockedCertificate from './UnlockedCertificate.svelte';
   import LockedCertificate from './LockedCertificate.svelte';
 </script>
 
 <div>
-  {#if $course.is_certificate_downloadable == true}
+  {#if $pathway.is_certificate_downloadable}
     <UnlockedCertificate />
   {:else}
     <LockedCertificate />

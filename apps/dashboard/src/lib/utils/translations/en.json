@@ -49,7 +49,7 @@
         "add_remove": "Add / remove course",
         "order": "Order Courses",
         "publish": "Publish Collection",
-        "search": "Find Learning Path",
+        "search": "Find Pathway Course",
         "option_one": "Published",
         "option_two": "Unpublished",
         "body_title": "Title",
@@ -59,6 +59,17 @@
         "empty_state_header": "No courses yet",
         "empty_state_text": "You have not added any course to this learning path",
         "empty_state_label": "Add course to this learning Path"
+      },
+      "lms_certificate": {
+        "unlocked": {
+          "title": "Congrats! 🎉 your certificate is ready",
+          "subtitle": "You have completed this learning path, and your dedication is evident. Download certificate and share with your network as a prove of your newly acquired skill"
+        },
+        "locked": {
+          "title": "Certificates not available yet",
+          "subtitle": "Certificate is available because you have not finish the learning path or your instructor have not approved it. Please contact your instructor"
+        },
+        "share": "Share Certificate"
       },
       "settings": {
         "page_title": "Settings",
@@ -91,6 +102,54 @@
         "save": "Save Changes",
         "placeholder": "a little description about the pathway",
         "pathway_description": "Pathway Description"
+      },
+      "landingPage": {
+        "constants": {
+          "about": "ABOUT",
+          "objectives": "OBJECTIVES",
+          "courses": "COURSES",
+          "review": "REVIEW",
+          "instructor": "INSTRUCTOR(S)",
+          "faq": "FAQ"
+        },
+        "header": {
+          "tag": "LEARNING PATH",
+          "button": "Enroll Now"
+        },
+        "banner": {
+          "courses": "Courses",
+          "courses_text": "Carefully curated courses to achieve your goals",
+          "certificate": "Get certificate",
+          "share": "Earn a certification and share with your network",
+          "rating": "Experienced and highly rated course instructor"
+        },
+        "main": {
+          "description": "Learning Path Description",
+          "objectives": "Learning Path Objectives",
+          "pricing_win": "Complete all lessons successful & stand a chance to win an ipad. We mean it when we say it!",
+          "start": "Start now"
+        },
+        "certificate": {
+          "earn": "Earn a certificate",
+          "evidence": "Get an evidence of proof for skills and share with your fessional network"
+        },
+        "subHeader": {
+          "button": "Enroll Now-Starts"
+        },
+        "courseList": {
+          "header": "Curated course list-",
+          "subheader": "Our curated course list features essential topics such as user research, wireframing, prototyping, usability testing, interaction design, and industry-standard tools. Unlock your UX potential today!",
+          "courses": "courses",
+          "lessons": "lessons",
+          "estimated": "estimated",
+          "hours": "hours",
+          "view": "View details"
+        },
+        "reviews": {
+          "students": "See what students are say about this collection",
+          "readMore": "Read more",
+          "readLess": "Read less"
+        }
       }
     },
     "components": {

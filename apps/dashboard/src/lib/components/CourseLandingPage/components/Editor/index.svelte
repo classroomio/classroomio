@@ -54,7 +54,7 @@
       path: 'metadata.requirements',
       title: $t('course.navItem.landing_page.editor.title.requirement'),
       enableAIWriter: true,
-      initPrompt: $t('course.navItem.landing_page.editor.title.requirement')
+      initPrompt: 'Please write a detailed course requirement for this course:'
     },
     {
       key: 3,

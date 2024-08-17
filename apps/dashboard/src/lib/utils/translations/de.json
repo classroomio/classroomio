@@ -1456,6 +1456,11 @@
         "course": "Kurs",
         "courses": "Kurse",
         "path": "zum Lernpfad"
+      },
+      "dragAndDrop": {
+        "title": "Kurse organisieren",
+        "header": "Ordnen Sie den Kurs in der Reihenfolge an, in der der Student ihn absolvieren muss, und beginnen Sie mit dem ersten ganz oben",
+        "label": "Kursbestellung bestätigen"
       }
     },
     "pages": {
@@ -1497,18 +1502,41 @@
         "add_remove": "Kurs hinzufügen/entfernen",
         "order": "Kurse bestellen",
         "publish": "Sammlung veröffentlichen",
-        "search": "Lernpfad finden",
         "option_one": "Veröffentlicht",
         "option_two": "Unveröffentlicht",
         "body_title": "Titel",
         "description": "Beschreibung",
         "students": "Studenten",
-        "lessons": "Unterricht"
+        "lessons": "Unterricht",
+        "search": "Finden Sie den Pathway-Kurs",
+        "empty_state_header": "Noch keine Kurse",
+        "empty_state_text": "Sie haben diesem Lernpfad keinen Kurs hinzugefügt",
+        "empty_state_label": "Kurs zu diesem Lernpfad hinzufügen"
+      },
+      "lms_certificate": {
+        "share": "Aktienzertifikat",
+        "locked": {
+          "title": "Zertifikate sind noch nicht verfügbar",
+          "subtitle": "Das Zertifikat ist verfügbar, weil Sie den Lernpfad noch nicht abgeschlossen haben oder Ihr Lehrer es nicht genehmigt hat. Bitte wenden Sie sich an Ihren Dozenten"
+        },
+        "unlocked": {
+          "title": "Glückwunsch! 🎉 Dein Zertifikat ist fertig",
+          "subtitle": "Sie haben diesen Lernpfad abgeschlossen und Ihr Engagement ist offensichtlich. Laden Sie das Zertifikat herunter und teilen Sie es mit Ihrem Netzwerk als Beweis für Ihre neu erworbenen Fähigkeiten"
+        }
       }
     }
   },
   "search": {
     "no_pathway": "Kein Weg gefunden",
     "no_course": "Kein Kurs gefunden"
+  },
+  "lms_pathway": {
+    "pathway": "WEG",
+    "continue": "Pfad fortsetzen",
+    "course": "Kurse",
+    "locked": "Gesperrt",
+    "goto_pathway": "Gehen Sie zu Pathway",
+    "completed": "Vollendet",
+    "of": "von"
   }
 }
