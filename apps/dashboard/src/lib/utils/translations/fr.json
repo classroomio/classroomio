@@ -1466,20 +1466,6 @@
     "pages": {
       "settings": {
         "page_title": "Paramètres",
-        "title_error": "Veuillez ajouter un titre de collection",
-        "description_error": "Veuillez ajouter une description de la collection",
-        "cover_image": "Image de couverture",
-        "optional": "Cette image facultative apparaîtra sur votre page d'accueil. Si vous en incluez un, il doit mesurer au moins 280 x 200.",
-        "replace": "Remplacer",
-        "delete": "Supprimer",
-        "details": "Détails de la collecte",
-        "title": "Titre de la collection",
-        "title_placeholder": "Écrivez le titre du cours ici",
-        "description": "Description de la collection",
-        "description_placeholder": "Écrivez la description du cours ici",
-        "link": "Lien de collecte",
-        "students": "Les étudiants doivent-ils suivre les cours selon l'ordre recommandé ?",
-        "yes": "si oui, l'étudiant doit suivre le cours selon l'ordre, si non, l'étudiant peut commencer par n'importe quel cours de son choix",
         "option_one": "Oui",
         "option_two": "Non",
         "publish": "Publier le parcours d'apprentissage",
@@ -1494,24 +1480,48 @@
         "delete_text": "Supprimer le parcours de formation dans son intégralité",
         "save": "Sauvegarder les modifications",
         "placeholder": "une petite description du parcours",
-        "pathway_description": "Description du parcours"
+        "pathway_description": "Description du parcours",
+        "title_error": "Veuillez ajouter un titre de parcours",
+        "description_error": "Veuillez ajouter une description du parcours",
+        "cover_image": "Image de couverture",
+        "optional": "Cette image facultative apparaîtra sur votre page d'accueil. Si vous en incluez un, il doit mesurer au moins 280 x 200.",
+        "replace": "Remplacer",
+        "delete": "Supprimer",
+        "details": "Détails du parcours",
+        "title": "Titre du parcours",
+        "title_placeholder": "Écrivez le titre du cours ici",
+        "description": "Description du parcours",
+        "description_placeholder": "Écrivez la description du cours ici",
+        "link": "Lien vers le parcours",
+        "students": "Les étudiants doivent-ils suivre les cours selon l'ordre recommandé ?",
+        "yes": "si oui, l'étudiant doit suivre le cours selon l'ordre, si non, l'étudiant peut commencer par n'importe quel cours de son choix"
       },
       "course": {
         "title": "Cours",
         "add_course": "Un cours",
         "add_remove": "Ajouter/supprimer un cours",
         "order": "Commander des cours",
-        "publish": "Publier une collection",
-        "search": "Trouver un parcours d'apprentissage",
         "option_one": "Publié",
         "option_two": "Inédit",
         "body_title": "Titre",
         "description": "Description",
         "students": "Étudiants",
         "lessons": "Cours",
+        "search": "Trouver un cours Pathway",
         "empty_state_header": "Pas encore de cours",
         "empty_state_text": "Vous n'avez ajouté aucun cours à ce parcours d'apprentissage",
         "empty_state_label": "Ajouter un cours à ce parcours d'apprentissage"
+      },
+      "lms_certificate": {
+        "share": "Certificat d'actions",
+        "locked": {
+          "title": "Certificats pas encore disponibles",
+          "subtitle": "Le certificat est disponible parce que vous n'avez pas terminé le parcours d'apprentissage ou que votre instructeur ne l'a pas approuvé. Merci de contacter votre instructeur"
+        },
+        "unlocked": {
+          "title": "Bravo! 🎉 votre attestation est prête",
+          "subtitle": "Vous avez complété ce parcours d’apprentissage et votre dévouement est évident. Téléchargez le certificat et partagez-le avec votre réseau comme preuve de vos compétences nouvellement acquises"
+        }
       }
     }
   },
