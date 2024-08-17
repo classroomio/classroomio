@@ -32,7 +32,7 @@
   let prevPathwayId = '';
   let isPermitted = true;
 
-  async function onCourseIdChange(pathwayId = '') {
+  async function onPathwayIdChange(pathwayId = '') {
     if (!pathwayId || prevPathwayId === pathwayId || !browser || $pathway.id === pathwayId) return;
 
     isFetching = true;
@@ -49,7 +49,7 @@
     prevPathwayId = pathwayId;
   }
 
-  $: onCourseIdChange(pathwayId);
+  $: onPathwayIdChange(pathwayId);
 
   $: {
     const user = $group.people.find((person) => person.profile_id === $profile.id);
