@@ -316,7 +316,7 @@ export interface Pathway {
   is_certificate_downloadable?: boolean;
   certificate_theme?: string;
   status: string;
-  is_published?: boolean;
+  is_published: boolean;
   total_course?: number;
   total_students?: number;
   lms_certificate: boolean;

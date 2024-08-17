@@ -11,7 +11,6 @@ export const courses = writable<PathwayCourse[]>([]);
 export const pathway = writable<Pathway>({
   id: 'pathway-one',
   title: 'pathwayOne',
-  avatar: '',
   description: '',
   prerequisite: '',
   is_published: false,

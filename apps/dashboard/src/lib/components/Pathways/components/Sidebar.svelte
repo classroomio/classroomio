@@ -186,7 +186,7 @@
       {
         label: $t('pathway.components.sideBar.landing'),
         to: getPathwayNavItemRoute($pathway.id, 'landingpage'),
-        icon: 'Pathway Landing Page',
+        icon: 'Landing Page',
         hideSortIcon: true,
         isPaidFeature: false,
         show() {
