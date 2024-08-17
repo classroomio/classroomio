@@ -141,7 +141,7 @@
     isDownloading = false;
   };
 
-  async function downloadPDF() {
+  function downloadPDF() {
     isDownloading = true;
 
     try {
@@ -162,24 +162,20 @@
 
       // Construct Rows
       const body = students.map((student) => {
-        const row = [];
-        row.push(student.profile.fullname); // Student name
+        const row: string[] = [];
+        row.push(student?.profile?.fullname ?? ''); // Student name
 
         $lessons.forEach((lesson) => {
           if (lessonMapping[lesson.id]) {
             Object.keys(lessonMapping[lesson.id]).forEach((exerciseId) => {
-              const mark =
-                studentMarksByExerciseId[student.id] &&
-                studentMarksByExerciseId[student.id][exerciseId]
-                  ? studentMarksByExerciseId[student.id][exerciseId]
-                  : '-';
+              const mark: string = studentMarksByExerciseId?.[student.id]?.[exerciseId] || '-';
               row.push(mark);
             });
           }
         });
 
         // Calculate total
-        const total = calculateStudentTotal(studentMarksByExerciseId[student.id]);
+        const total = '' + calculateStudentTotal(studentMarksByExerciseId[student.id]);
         row.push(total);
 
         return row;
