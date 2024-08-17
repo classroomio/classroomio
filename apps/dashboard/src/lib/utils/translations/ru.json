@@ -801,14 +801,14 @@
     },
     "navItems": {
       "nav_news_feed": "Новостная лента",
-      "nav_lessons": "Уроки",
       "nav_attendance": "посещаемость",
       "nav_submissions": "Материалы",
       "nav_marks": "Метки",
       "nav_people": "Люди",
       "nav_certificates": "Сертификаты",
       "nav_landing_page": "Целевая страница",
-      "nav_settings": "Настройки"
+      "nav_settings": "Настройки",
+      "nav_content": "Содержание"
     },
     "not_permitted": {
       "header": "Нет разрешения",

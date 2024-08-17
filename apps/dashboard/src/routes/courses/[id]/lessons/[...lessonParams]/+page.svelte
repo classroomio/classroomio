@@ -31,12 +31,13 @@
   import {
     lesson,
     lessons,
-    lessonByTranslation
+    lessonByTranslation,
+    lessonSections
   } from '$lib/components/Course/components/Lesson/store/lessons';
   import { browser } from '$app/environment';
   import { currentOrg } from '$lib/utils/store/org';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import type { LessonCompletion } from '$lib/utils/types';
+  import { COURSE_VERSION, type LessonCompletion, type Lesson } from '$lib/utils/types';
   import { profile } from '$lib/utils/store/user';
   import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
   import { t } from '$lib/utils/functions/translations';
@@ -249,20 +250,36 @@
     $apps.open = true;
   }
 
-  const isNextOrPrevDisabled = (lessonId: string, isPrev: boolean) => {
-    const index = $lessons.findIndex((lesson) => lesson.id === lessonId);
+  const getLessons = () => {
+    if ($course.version === COURSE_VERSION.V1) {
+      return $lessons;
+    } else {
+      const _lessons: Lesson[] = [];
 
-    return isPrev ? !$lessons[index - 1] : !$lessons[index + 1];
+      $lessonSections.forEach((section) => {
+        _lessons.push(...section.lessons);
+      });
+
+      return _lessons;
+    }
+  };
+
+  const isNextOrPrevDisabled = (lessonId: string, isPrev: boolean) => {
+    const _lessons = getLessons();
+    const index = _lessons.findIndex((lesson) => lesson.id === lessonId);
+
+    return isPrev ? !_lessons[index - 1] : !_lessons[index + 1];
   };
 
   const goToNextOrPrevLesson = (lessonId: string, isPrev: boolean) => {
+    const _lessons = getLessons();
     const isDisabled = isNextOrPrevDisabled(lessonId, isPrev);
 
     // Always use early return
     if (isDisabled) return;
 
-    const index = $lessons.findIndex((lesson) => lesson.id === lessonId);
-    const nextOrPrevLesson = isPrev ? $lessons[index - 1] : $lessons[index + 1];
+    const index = _lessons.findIndex((lesson) => lesson.id === lessonId);
+    const nextOrPrevLesson = isPrev ? _lessons[index - 1] : _lessons[index + 1];
 
     const isLocked = $globalStore.isStudent && !nextOrPrevLesson.is_unlocked;
 

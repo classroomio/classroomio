@@ -160,7 +160,7 @@
       },
       {
         id: NAV_IDS.LESSONS,
-        label: $t('course.navItems.nav_lessons'),
+        label: $t('course.navItems.nav_content'),
         to: getLessonsRoute($course.id),
         hideSortIcon: false,
         isPaidFeature: false,
