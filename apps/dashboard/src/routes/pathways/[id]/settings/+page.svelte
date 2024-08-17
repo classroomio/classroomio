@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { Restart } from 'carbon-icons-svelte';
   import {
@@ -245,9 +244,13 @@
           <p>{$t('pathway.pages.settings.allow')}</p>
         </Column>
         <Column sm={8} md={8} lg={7} class="flex justify-start items-center">
-          <Toggle size="sm" bind:toggled={$pathwaySettings.is_published}>
-            <span slot="labelA" style="color: gray">{$t('pathway.pages.settings.disabled')}</span>
-            <span slot="labelB" style="color: gray">{$t('pathway.pages.settings.enabled')}</span>
+          <Toggle
+            size="sm"
+            bind:toggled={$pathwaySettings.is_published}
+            on:toggle={(e) => ($pathwaySettings.is_published = e.detail.toggled)}
+          >
+            <span slot="labelA" style="color: gray">{$t('pathway.pages.settings.enabled')}</span>
+            <span slot="labelB" style="color: gray">{$t('pathway.pages.settings.disabled')}</span>
           </Toggle>
         </Column>
       </Row>
@@ -259,10 +262,14 @@
 
         <Row class="overflow-hidden justify-between w-full items-center gap-5 flex-col mt-5">
           <Column class="flex flex-col md:flex-row gap-7 items-start  md:items-center py-2">
-            <p>{$t('pathway.pages.settings.issue')}</p>
-            <Toggle size="sm" bind:toggled={$pathwaySettings.lms_certificate}>
-              <span slot="labelA" style="color: gray">{$t('pathway.pages.settings.disabled')}</span>
-              <span slot="labelB" style="color: gray">{$t('pathway.pages.settings.enabled')}</span>
+            <p class="md:w-[54%]">{$t('pathway.pages.settings.issue')}</p>
+            <Toggle
+              size="sm"
+              bind:toggled={$pathwaySettings.lms_certificate}
+              on:toggle={(e) => ($pathwaySettings.lms_certificate = e.detail.toggled)}
+            >
+              <span slot="labelA" style="color: gray">{$t('pathway.pages.settings.enabled')}</span>
+              <span slot="labelB" style="color: gray">{$t('pathway.pages.settings.disabled')}</span>
             </Toggle>
           </Column>
           <Column class="flex w-full flex-col md:flex-row items-start  md:items-center gap-5">
