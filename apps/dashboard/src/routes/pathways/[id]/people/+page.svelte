@@ -16,7 +16,7 @@
   import { profile } from '$lib/utils/store/user';
   import type { GroupPerson } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
-  import { group } from '$lib/components/Pathways/store.js';
+  import { group } from '$lib/components/Pathways/store';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { ROLE_LABEL, ROLES } from '$lib/utils/constants/roles';
   import { deleteMemberModal } from '$lib/components/Course/components/People/store';
