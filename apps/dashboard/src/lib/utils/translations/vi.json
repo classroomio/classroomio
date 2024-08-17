@@ -1508,10 +1508,21 @@
         "description": "Sự miêu tả",
         "students": "Sinh viên",
         "lessons": "Những bài học",
-        "search": "Tìm khóa học chuyển tiếp",
         "empty_state_header": "Chưa có khóa học nào",
         "empty_state_text": "Bạn chưa thêm bất kỳ khóa học nào vào lộ trình học tập này",
-        "empty_state_label": "Thêm khóa học vào lộ trình học tập này"
+        "empty_state_label": "Thêm khóa học vào lộ trình học tập này",
+        "search": "Tìm khóa học chuyển tiếp"
+      },
+      "lms_certificate": {
+        "share": "Chia sẻ chứng chỉ",
+        "locked": {
+          "title": "Chứng chỉ chưa có sẵn",
+          "subtitle": "Chứng chỉ được cấp vì bạn chưa hoàn thành lộ trình học tập hoặc người hướng dẫn của bạn chưa phê duyệt. Vui lòng liên hệ với người hướng dẫn của bạn"
+        },
+        "unlocked": {
+          "title": "Xin chúc mừng! 🎉 chứng chỉ của bạn đã sẵn sàng",
+          "subtitle": "Bạn đã hoàn thành lộ trình học tập này và sự cống hiến của bạn được thể hiện rõ ràng. Tải xuống chứng chỉ và chia sẻ với mạng của bạn như một bằng chứng về kỹ năng mới có được của bạn"
+        }
       }
     }
   },

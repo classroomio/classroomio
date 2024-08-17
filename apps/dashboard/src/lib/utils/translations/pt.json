@@ -1512,6 +1512,17 @@
         "empty_state_header": "Ainda não há cursos",
         "empty_state_text": "Você não adicionou nenhum curso a este caminho de aprendizagem",
         "empty_state_label": "Adicionar curso a este caminho de aprendizagem"
+      },
+      "lms_certificate": {
+        "share": "Certificado de compartilhamento",
+        "locked": {
+          "title": "Certificados ainda não disponíveis",
+          "subtitle": "O certificado está disponível porque você não concluiu o caminho de aprendizagem ou seu instrutor não o aprovou. Entre em contato com seu instrutor"
+        },
+        "unlocked": {
+          "title": "Parabéns! 🎉 seu certificado está pronto",
+          "subtitle": "Você concluiu este caminho de aprendizagem e sua dedicação é evidente. Baixe o certificado e compartilhe com sua rede como prova de sua habilidade recém-adquirida"
+        }
       }
     }
   },

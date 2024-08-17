@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import type { Pathway, PathwayCourse } from '$lib/utils/types';
+import type { GroupStore, Pathway, PathwayCourse } from '$lib/utils/types';
 
 export const addCourseModal = writable({
   open: false,
@@ -21,7 +21,7 @@ export const pathway = writable<Pathway>({
   created_at: '20, March, 2024',
   updated_at: '20, March, 2024',
   metadata: {},
-  is_certificate_downloadable: false,
+  is_certificate_downloadable: true,
   certificate_theme: 'professional',
   courses: [
     {
@@ -132,3 +132,96 @@ export const pathway = writable<Pathway>({
   ],
   selectedCourses: []
 });
+
+export const group = writable<GroupStore>({
+  id: '',
+  tutors: [],
+  students: [],
+  people: [
+    {
+      assigned_student_id: 1,
+      created_at: '',
+      email: '',
+      group_id: '',
+      id: '',
+      memberId: '',
+      profile: {},
+      profile_id: '3d207582-eaf8-4cff-9314-f265f548c0e7',
+      role_id: 3,
+      fullname: '',
+    }
+  ]
+});
+
+export async function setPathway(data: Pathway, setPathway = true) {
+  // if (!data || !(Object.values(data) && Object.values(data).length)) return;
+  // // const tutorsById = {};
+
+  // if (data.group) {
+  //   const groupData = Object.assign(data.group, {
+  //     tutors: [],
+  //     students: [],
+  //     people: []
+  //   }) as GroupStore;
+
+  //   if (Array.isArray(groupData.members)) {
+  //     for (const member of groupData.members) {
+  //       if (member.role_id === ROLE.STUDENT) {
+  //         groupData.students.push(member);
+  //       } else if (member.profile) {
+  //         groupData.tutors.push({
+  //           ...member.profile,
+  //           memberId: member.id
+  //         });
+  //       }
+  //     }
+
+  //     groupData.people = groupData.members;
+  //   }
+
+  //   delete groupData.members;
+
+  //   group.set(groupData);
+  // }
+
+  // if (setLesson) {
+  //   const orderedLessons = (data.lessons || [])
+  //     .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+  //     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  //   // .map((lesson) => ({
+  //   //   ...lesson,
+  //   //   profile: lesson.profile && tutorsById[lesson.profile.id],
+  //   // }));
+  //   lessons.set(orderedLessons);
+  // }
+
+  // delete data.lessons;
+
+  // if (data.metadata && !Object.values(data.metadata)) {
+  //   data.metadata = {
+  //     requirements: '',
+  //     description: '',
+  //     goals: '',
+  //     videoUrl: '',
+  //     showDiscount: false,
+  //     discount: 0,
+  //     reward: {
+  //       show: false,
+  //       description: ''
+  //     },
+  //     instructor: {
+  //       name: '',
+  //       role: '',
+  //       coursesNo: 0,
+  //       description: '',
+  //       imgUrl: ''
+  //     },
+  //     allowNewStudent: false
+  //   };
+  // }
+
+  // if (!data.certificate_theme) {
+  //   data.certificate_theme = 'professional';
+  // }
+  // course.set(data);
+}

@@ -21,6 +21,15 @@ export interface ProfileCourseProgress {
   lessons_count: number;
 }
 
+export interface ProfilePathwayProgress {
+  exercises_completed: number;
+  exercises_count: number;
+  lessons_completed: number;
+  lessons_count: number;
+  courses_completed: number;
+  courses_count: number;
+}
+
 export interface GroupPerson {
   assigned_student_id: number | null;
   created_at: string;
@@ -33,6 +42,15 @@ export interface GroupPerson {
   role_id: Role['id'];
   fullname?: string;
 }
+
+export interface GroupStore {
+  id: string;
+  tutors: GroupPerson[];
+  students: GroupPerson[];
+  people: GroupPerson[];
+  members?: GroupPerson[];
+  memberId?: string;
+};
 
 export interface CustomQuestionType {
   id: number;

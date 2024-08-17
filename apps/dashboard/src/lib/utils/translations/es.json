@@ -1512,6 +1512,17 @@
         "empty_state_header": "Aún no hay cursos",
         "empty_state_text": "No has agregado ningún curso a esta ruta de aprendizaje.",
         "empty_state_label": "Agregar curso a esta ruta de aprendizaje"
+      },
+      "lms_certificate": {
+        "share": "Certificado de acciones",
+        "locked": {
+          "title": "Certificados aún no disponibles",
+          "subtitle": "El certificado está disponible porque no has terminado el camino de aprendizaje o tu instructor no lo ha aprobado. Por favor contacta a tu instructor"
+        },
+        "unlocked": {
+          "title": "¡Felicitaciones! 🎉 tu certificado está listo",
+          "subtitle": "Has completado este camino de aprendizaje y tu dedicación es evidente. Descargue el certificado y compártalo con su red como prueba de su habilidad recién adquirida"
+        }
       }
     }
   },
@@ -1520,7 +1531,7 @@
     "no_course": "No se encontró ningún curso"
   },
   "lms_pathway": {
-    "pathway": "RUTA",
+    "pathway": "CAMINO",
     "continue": "Continuar camino",
     "course": "Cursos",
     "locked": "bloqueado",

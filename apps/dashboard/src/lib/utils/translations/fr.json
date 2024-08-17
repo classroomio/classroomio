@@ -1512,6 +1512,17 @@
         "empty_state_header": "Pas encore de cours",
         "empty_state_text": "Vous n'avez ajouté aucun cours à ce parcours d'apprentissage",
         "empty_state_label": "Ajouter un cours à ce parcours d'apprentissage"
+      },
+      "lms_certificate": {
+        "share": "Certificat d'actions",
+        "locked": {
+          "title": "Certificats pas encore disponibles",
+          "subtitle": "Le certificat est disponible parce que vous n'avez pas terminé le parcours d'apprentissage ou que votre instructeur ne l'a pas approuvé. Merci de contacter votre instructeur"
+        },
+        "unlocked": {
+          "title": "Bravo! 🎉 votre attestation est prête",
+          "subtitle": "Vous avez complété ce parcours d’apprentissage et votre dévouement est évident. Téléchargez le certificat et partagez-le avec votre réseau comme preuve de vos compétences nouvellement acquises"
+        }
       }
     }
   },
@@ -1520,10 +1531,10 @@
     "no_course": "Aucun cours trouvé"
   },
   "lms_pathway": {
-    "pathway": "SENTIER",
+    "pathway": "CHEMIN",
     "continue": "Continuer le chemin",
     "course": "Cours",
-    "locked": "Fermé à clé",
+    "locked": "Fermé",
     "goto_pathway": "Aller au parcours",
     "completed": "Complété",
     "of": "de"
