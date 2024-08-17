@@ -1,12 +1,28 @@
 import { writable } from 'svelte/store';
 import type { Pathway, PathwayCourse, GroupStore } from '$lib/utils/types';
 
+export const RADIO_VALUE = {
+  TRUE: 'true',
+  FALSE: 'false'
+};
+
 export const addCourseModal = writable({
   open: false,
   step: 0
 });
 
 export const courses = writable<PathwayCourse[]>([]);
+
+export const pathwaySettings = writable({
+  title: '',
+  logo: '',
+  description: '',
+  prerequisite: RADIO_VALUE.FALSE,
+  is_published: false,
+  lms_certificate: false,
+  courses_certificate: RADIO_VALUE.FALSE,
+  metadata: {}
+});
 
 export const group = writable<GroupStore>({
   id: '',
@@ -24,7 +40,7 @@ export const defaultPathway: Pathway = {
   prerequisite: '',
   is_published: false,
   lms_certificate: false,
-  courses_certificate: '',
+  courses_certificate: RADIO_VALUE.FALSE,
   cost: 3000,
   currency: 'NGN',
   status: 'Published',
