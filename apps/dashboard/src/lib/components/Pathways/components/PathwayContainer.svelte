@@ -21,9 +21,9 @@
   </Backdrop>
 {/if}
 
-<div class="root org-root">
+<div class="root">
   <PathwaySidebar {path} isStudent={$globalStore.isStudent} />
-  <div class="{className} overflow-y-auto md:max-w-[70%] max-w-[95%] mx-auto rounded-md w-full">
+  <div class="{className} rightBar">
     <slot />
   </div>
 </div>

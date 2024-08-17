@@ -2,7 +2,7 @@ import { writable } from 'svelte/store';
 import type { Writable } from 'svelte/store';
 import { lessons } from './components/Lesson/store/lessons';
 import { ROLE } from '$lib/utils/constants/roles';
-import type { Course, GroupPerson } from '$lib/utils/types';
+import type { Course, GroupStore } from '$lib/utils/types';
 import { COURSE_TYPE } from '$lib/utils/types';
 
 export const defaultCourse: Course = {
@@ -66,15 +66,6 @@ export const mockGroupMember = {
     created_at: '2021-08-08T13:42:13+00:00',
     updated_at: '2021-08-08T13:42:13+00:00'
   }
-};
-
-type GroupStore = {
-  id: string;
-  tutors: GroupPerson[];
-  students: GroupPerson[];
-  people: GroupPerson[];
-  members?: GroupPerson[];
-  memberId?: string;
 };
 
 export const group = writable<GroupStore>({

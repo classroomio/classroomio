@@ -1456,6 +1456,11 @@
         "course": "Cours",
         "courses": "Cours",
         "path": "au parcours d'apprentissage"
+      },
+      "dragAndDrop": {
+        "title": "Organiser des cours",
+        "header": "Organiser les cours dans l'ordre que l'étudiant doit suivre en commençant par le premier en haut",
+        "label": "Confirmer l'ordre des cours"
       }
     },
     "pages": {
@@ -1497,18 +1502,41 @@
         "add_remove": "Ajouter/supprimer un cours",
         "order": "Commander des cours",
         "publish": "Publier une collection",
-        "search": "Trouver un parcours d'apprentissage",
         "option_one": "Publié",
         "option_two": "Inédit",
         "body_title": "Titre",
         "description": "Description",
         "students": "Étudiants",
-        "lessons": "Cours"
+        "lessons": "Cours",
+        "search": "Trouver un cours Pathway",
+        "empty_state_header": "Pas encore de cours",
+        "empty_state_text": "Vous n'avez ajouté aucun cours à ce parcours d'apprentissage",
+        "empty_state_label": "Ajouter un cours à ce parcours d'apprentissage"
+      },
+      "lms_certificate": {
+        "share": "Certificat d'actions",
+        "locked": {
+          "title": "Certificats pas encore disponibles",
+          "subtitle": "Le certificat est disponible parce que vous n'avez pas terminé le parcours d'apprentissage ou que votre instructeur ne l'a pas approuvé. Merci de contacter votre instructeur"
+        },
+        "unlocked": {
+          "title": "Bravo! 🎉 votre attestation est prête",
+          "subtitle": "Vous avez complété ce parcours d’apprentissage et votre dévouement est évident. Téléchargez le certificat et partagez-le avec votre réseau comme preuve de vos compétences nouvellement acquises"
+        }
       }
     }
   },
   "search": {
     "no_pathway": "Aucun chemin trouvé",
     "no_course": "Aucun cours trouvé"
+  },
+  "lms_pathway": {
+    "pathway": "CHEMIN",
+    "continue": "Continuer le chemin",
+    "course": "Cours",
+    "locked": "Fermé",
+    "goto_pathway": "Aller au parcours",
+    "completed": "Complété",
+    "of": "de"
   }
 }
