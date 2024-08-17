@@ -1502,7 +1502,6 @@
         "add_remove": "Thêm/xóa khóa học",
         "order": "Đặt hàng khóa học",
         "publish": "Xuất bản bộ sưu tập",
-        "search": "Tìm lộ trình học tập",
         "option_one": "Được phát hành",
         "option_two": "Chưa xuất bản",
         "body_title": "Tiêu đề",
@@ -1511,7 +1510,8 @@
         "lessons": "Những bài học",
         "empty_state_header": "Chưa có khóa học nào",
         "empty_state_text": "Bạn chưa thêm bất kỳ khóa học nào vào lộ trình học tập này",
-        "empty_state_label": "Thêm khóa học vào lộ trình học tập này"
+        "empty_state_label": "Thêm khóa học vào lộ trình học tập này",
+        "search": "Tìm khóa học chuyển tiếp"
       },
       "lms_certificate": {
         "share": "Chia sẻ chứng chỉ",
