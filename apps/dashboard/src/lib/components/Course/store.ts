@@ -3,7 +3,7 @@ import type { Writable } from 'svelte/store';
 import { lessons, lessonSections } from './components/Lesson/store/lessons';
 import { ROLE } from '$lib/utils/constants/roles';
 import type { Course, GroupPerson, Lesson, LessonSection } from '$lib/utils/types';
-import { COURSE_TYPE } from '$lib/utils/types';
+import { COURSE_TYPE, COURSE_VERSION } from '$lib/utils/types';
 
 export const defaultCourse: Course = {
   id: '',
@@ -20,6 +20,7 @@ export const defaultCourse: Course = {
   updated_at: new Date().toDateString(),
   attendance: [],
   polls: [],
+  version: COURSE_VERSION.V2,
   metadata: {
     requirements: '',
     description: '',
@@ -120,7 +121,6 @@ export async function setCourse(data: Course, setLesson = true) {
     lessons.set(orderedLessons);
 
     if (data.lesson_section) {
-      console.log('Sections', data.lesson_section);
       const sections = data.lesson_section?.map((section) => {
         const lessons = (data.lessons || []).filter((lesson) => lesson.section_id === section.id);
         section.lessons = sortLesson(lessons);

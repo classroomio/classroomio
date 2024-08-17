@@ -84,16 +84,14 @@
           onClick={addLesson}
           isDisabled={!!lessonEditing}
         />
-        {#if $course.version === COURSE_VERSION.V1}
-          <PrimaryButton
-            label={$t(
-              `course.navItem.lessons.add_lesson.${reorder ? 'end_reorder' : 'start_reorder'}`
-            )}
-            variant={VARIANTS.OUTLINED}
-            onClick={() => (reorder = !reorder)}
-            isDisabled={!!lessonEditing}
-          />
-        {/if}
+        <PrimaryButton
+          label={$t(
+            `course.navItem.lessons.add_lesson.${reorder ? 'end_reorder' : 'start_reorder'}`
+          )}
+          variant={VARIANTS.OUTLINED}
+          onClick={() => (reorder = !reorder)}
+          isDisabled={!!lessonEditing}
+        />
       </RoleBasedSecurity>
     </div>
   </PageNav>
@@ -119,7 +117,7 @@
       {#if $course.version === COURSE_VERSION.V1}
         <LessonList {reorder} {lessonEditing} bind:lessonToDelete bind:openDeleteModal />
       {:else if $course.version === COURSE_VERSION.V2}
-        <LessonSectionList {lessonEditing} />
+        <LessonSectionList {reorder} {lessonEditing} />
       {/if}
     {:else}
       <Box className="w-full lg:w-11/12 lg:px-4 m-auto">

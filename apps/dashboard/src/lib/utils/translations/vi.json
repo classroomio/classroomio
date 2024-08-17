@@ -801,14 +801,14 @@
     },
     "navItems": {
       "nav_news_feed": "Nguồn cấp tin tức",
-      "nav_lessons": "Những bài học",
       "nav_attendance": "Sự tham dự",
       "nav_submissions": "bài nộp",
       "nav_marks": "Điểm",
       "nav_people": "Mọi người",
       "nav_certificates": "Chứng chỉ",
       "nav_landing_page": "Trang đích",
-      "nav_settings": "Cài đặt"
+      "nav_settings": "Cài đặt",
+      "nav_content": "Nội dung"
     },
     "not_permitted": {
       "header": "Không cho phép",

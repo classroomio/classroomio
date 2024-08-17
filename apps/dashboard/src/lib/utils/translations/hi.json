@@ -801,14 +801,14 @@
     },
     "navItems": {
       "nav_news_feed": "समाचार फ़ीड",
-      "nav_lessons": "पाठ",
       "nav_attendance": "उपस्थिति",
       "nav_submissions": "प्रविष्टियों",
       "nav_marks": "निशान",
       "nav_people": "लोग",
       "nav_certificates": "प्रमाण पत्र",
       "nav_landing_page": "लैंडिंग पृष्ठ",
-      "nav_settings": "समायोजन"
+      "nav_settings": "समायोजन",
+      "nav_content": "सामग्री"
     },
     "not_permitted": {
       "header": "अनुमति नहीं",

@@ -801,14 +801,14 @@
     },
     "navItems": {
       "nav_news_feed": "Fil d'actualité",
-      "nav_lessons": "Cours",
       "nav_attendance": "Présence",
       "nav_submissions": "Soumissions",
       "nav_marks": "Des marques",
       "nav_people": "Personnes",
       "nav_certificates": "Certificats",
       "nav_landing_page": "Page de destination",
-      "nav_settings": "Paramètres"
+      "nav_settings": "Paramètres",
+      "nav_content": "Contenu"
     },
     "not_permitted": {
       "header": "Aucune autorisation",
