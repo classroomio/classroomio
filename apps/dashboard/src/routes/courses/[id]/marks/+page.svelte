@@ -2,7 +2,6 @@
   import { goto } from '$app/navigation';
   import AudioConsoleIcon from 'carbon-icons-svelte/lib/AudioConsole.svelte';
   import Papa from 'papaparse';
-  import html2pdf from 'html2pdf.js';
   import { OverflowMenu, OverflowMenuItem, Loading } from 'carbon-components-svelte';
   import Download from 'carbon-icons-svelte/lib/Download.svelte';
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
@@ -25,6 +24,8 @@
   import { currentOrg } from '$lib/utils/store/org';
   import type { CurrentOrg } from '$lib/utils/types/org';
   import type { GroupPerson } from '$lib/utils/types';
+  import jsPDF from 'jspdf';
+  import autoTable from 'jspdf-autotable';
 
   export let data;
 
@@ -140,36 +141,70 @@
     isDownloading = false;
   };
 
-  const downloadPDF = () => {
+  function downloadPDF() {
     isDownloading = true;
-    const element = document.getElementById('tableContainer');
 
-    if (!element) {
-      console.error('Table container not found');
-      return;
-    }
-
-    const options = {
-      margin: 0.5,
-      filename: `${$course?.title}-marks.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-    };
-
-    // Start the PDF generation
-    html2pdf()
-      .from(element)
-      .set(options)
-      .save()
-      .then(() => {
-        isDownloading = false;
-      })
-      .catch((error) => {
-        console.error('Error generating PDF:', error);
-        isDownloading = false;
+    try {
+      const doc = new jsPDF({
+        orientation: 'landscape'
       });
-  };
+
+      // Construct Headers
+      const head = [['Student']]; // Starting with 'Student' as the first header
+      $lessons.forEach((lesson, lessonIndex) => {
+        if (lessonMapping[lesson.id]) {
+          Object.values(lessonMapping[lesson.id]).forEach((exercise) => {
+            head[0].push(`${getLectureNo(lessonIndex + 1)} - ${exercise.title} (${lesson.title})`);
+          });
+        }
+      });
+      head[0].push('Total'); // Add 'Total' as the last header
+
+      // Construct Rows
+      const body = students.map((student) => {
+        const row: string[] = [];
+        row.push(student?.profile?.fullname ?? ''); // Student name
+
+        $lessons.forEach((lesson) => {
+          if (lessonMapping[lesson.id]) {
+            Object.keys(lessonMapping[lesson.id]).forEach((exerciseId) => {
+              const mark: string = studentMarksByExerciseId?.[student.id]?.[exerciseId] || '-';
+              row.push(mark);
+            });
+          }
+        });
+
+        // Calculate total
+        const total = '' + calculateStudentTotal(studentMarksByExerciseId[student.id]);
+        row.push(total);
+
+        return row;
+      });
+
+      // Generate the table in PDF
+      autoTable(doc, {
+        head,
+        body,
+        startY: 20,
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [22, 160, 133] },
+        footStyles: { fillColor: [22, 160, 133] },
+        didDrawPage: function (data) {
+          // Header
+          doc.setFontSize(14);
+          doc.setTextColor(40);
+          doc.text(`${$course?.title} - Marks`, data.settings.margin.left, 10);
+        }
+      });
+
+      // Save the PDF
+      doc.save(`${$course?.title}-marks.pdf`);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    } finally {
+      isDownloading = false;
+    }
+  }
 
   $: students = $globalStore.isStudent
     ? $group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
