@@ -50,7 +50,7 @@ export interface GroupStore {
   people: GroupPerson[];
   members?: GroupPerson[];
   memberId?: string;
-};
+}
 
 export interface CustomQuestionType {
   id: number;
@@ -122,18 +122,18 @@ interface CourseMetadata {
   allowNewStudent?: boolean;
 }
 
-interface PathwayMetadata {
-  requirements?: string;
-  description?: string;
-  goals?: string;
-  videoUrl?: '';
-  showDiscount?: false;
-  discount?: 0;
-  paymentLink?: string;
-  reward?: {
-    show: boolean;
+export interface PathwayMetadata {
+  header: {
+    title: string;
     description: string;
+    duration: string;
+    cost: number;
+    buttonLabel: string;
+    videoUrl?: '';
   };
+  about: string;
+  objectives: string;
+  reviews?: Array<Review>;
   instructor?: {
     name: string;
     role: string;
@@ -141,31 +141,12 @@ interface PathwayMetadata {
     description: string;
     imgUrl: string;
   };
-  reviews?: Array<Review>;
+  showDiscount?: boolean;
   allowNewStudent?: boolean;
-}
-
-interface PathwayMetadata {
-  requirements?: string;
-  description?: string;
-  goals?: string;
-  videoUrl?: '';
-  showDiscount?: false;
-  discount?: 0;
-  paymentLink?: string;
   reward?: {
     show: boolean;
     description: string;
   };
-  instructor?: {
-    name: string;
-    role: string;
-    coursesNo: number;
-    description: string;
-    imgUrl: string;
-  };
-  reviews?: Array<Review>;
-  allowNewStudent: boolean;
 }
 
 export interface LessonCommentInsertPayload {
@@ -309,9 +290,12 @@ export interface PathwayCourse {
   description: string;
   total_lessons: number;
   total_students: number;
+  estimated_hours: number;
   is_unlocked: boolean;
   is_completed: CourseCompletion[];
   is_published: boolean;
+  created_at: string;
+  order: string;
 }
 
 export interface Pathway {
@@ -507,7 +491,7 @@ export interface Review {
   name: string;
   avatar_url: string;
   rating: number;
-  created_at: number;
+  created_at: number | string;
   description: string;
 }
 

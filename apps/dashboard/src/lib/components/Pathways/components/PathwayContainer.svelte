@@ -1,6 +1,5 @@
 <script lang="ts">
   import { Moon } from 'svelte-loading-spinners';
-
   import { globalStore } from '$lib/utils/store/app';
   import { pathway } from '$lib/components/Pathways/store';
   import Backdrop from '$lib/components/Backdrop/index.svelte';
