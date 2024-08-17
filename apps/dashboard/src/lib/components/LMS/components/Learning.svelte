@@ -6,7 +6,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { ChevronDown } from 'carbon-icons-svelte';
   import CourseListModal from '$lib/components/LMS/components/CourseListModal.svelte';
-  import { lms_courses } from '$lib/components/LMS/store';
+  import { lmsCourses } from '$lib/components/LMS/store';
 
   let open = false;
 
@@ -26,7 +26,7 @@
     goto(`/courses/${id}/lessons?next=true`);
   };
 
-  $: last3Courses = $lms_courses.length > 0 ? $lms_courses.slice(0, 3) : [];
+  $: last3Courses = $lmsCourses.length > 0 ? $lmsCourses.slice(0, 3) : [];
 </script>
 
 <section class="h-full">

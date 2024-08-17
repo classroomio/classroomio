@@ -10,7 +10,7 @@
   import { getGreeting } from '$lib/utils/functions/date';
   import { t } from '$lib/utils/functions/translations';
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
-  import { lms_courses } from '$lib/components/LMS/store';
+  import { lmsCourses } from '$lib/components/LMS/store';
   import type { LmsCourse } from '$lib/components/LMS/store';
   import { fetchPathways } from '$lib/components/Org/Pathway/api';
 
@@ -23,7 +23,7 @@
     if (hasFetched || !userId || !orgId) {
       return;
     }
-    if (!$lms_courses.length) {
+    if (!$lmsCourses.length) {
       $courseMetaDeta.isLoading = true;
     }
 
@@ -48,7 +48,7 @@
       const allResults = [...pathwaysWithFlag, ...coursesWithFlag];
 
       console.log('all result', allResults);
-      lms_courses.set(allResults);
+      lmsCourses.set(allResults);
       hasFetched = true;
     } catch (error) {
       console.error('Error fetching pathways and courses:', error);
@@ -63,7 +63,7 @@
   }
 
   $: fetchPathwaysAndCourses($profile.id, $currentOrg.id);
-  $: calcTotalProgress($lms_courses);
+  $: calcTotalProgress($lmsCourses);
 </script>
 
 <svelte:head>

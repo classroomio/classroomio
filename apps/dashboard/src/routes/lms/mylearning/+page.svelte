@@ -8,7 +8,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { browser } from '$app/environment';
   import { t } from '$lib/utils/functions/translations';
-  import { lms_courses } from '$lib/components/LMS/store';
+  import { lmsCourses } from '$lib/components/LMS/store';
   import type { LmsCourse } from '$lib/components/LMS/store';
   import { fetchPathways } from '$lib/components/Org/Pathway/api';
   import { courseMetaDeta } from '$lib/components/Courses/store';
@@ -27,7 +27,7 @@
     if (hasFetched || !userId || !orgId) {
       return;
     }
-    if (!$lms_courses.length) {
+    if (!$lmsCourses.length) {
       $courseMetaDeta.isLoading = true;
     }
 
@@ -51,7 +51,7 @@
 
       const allResults: LmsCourse[] = [...pathwaysWithFlag, ...coursesWithFlag];
 
-      lms_courses.set(allResults);
+      lmsCourses.set(allResults);
       hasFetched = true;
       $courseMetaDeta.isLoading = false;
     } catch (error) {
@@ -90,7 +90,7 @@
 
   $: if (browser && $profile.id && $currentOrg.id) {
     fetchPathwaysAndCourses($profile.id, $currentOrg.id);
-    filterCourses(searchValue, selectedId, $lms_courses);
+    filterCourses(searchValue, selectedId, $lmsCourses);
   }
 
   $: coursesInProgress =
