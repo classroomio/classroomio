@@ -59,7 +59,7 @@
     <AddCourseModal />
 
     <!-- header -->
-    <div class="flex justify-between items-center">
+    <div class="flex justify-between items-center max-w-[95%] mx-auto">
       <h1>{$t('pathway.pages.course.title')}</h1>
 
       <div class="flex gap-5 justify-end">
@@ -84,7 +84,7 @@
     </div>
 
     <!-- filter container -->
-    <div class="filter-containter flex items-end justify-end gap-2 mt-3">
+    <div class="filter-containter flex items-end justify-end gap-2 mt-3 max-w-[90%] mx-auto">
       <Search
         placeholder={$t('pathway.pages.course.search')}
         bind:value={searchValue}
@@ -150,23 +150,25 @@
             </StructuredList>
           </div>
         {:else}
-          <section class="flex items-center flex-wrap md:gap-28 gap-10">
-            {#each filteredCourses as course}
-              <Card
-                bannerImage={course.banner_image}
-                id={course.id}
-                title={course.title}
-                description={course.description}
-                totalLessons={course.total_lessons}
-                totalStudents={course.total_students}
-              />
+          <section class="cards-container">
+            {#each filteredCourses as courseData}
+              {#key courseData.id}
+                <Card
+                  bannerImage={courseData.banner_image}
+                  id={courseData.id}
+                  title={courseData.title}
+                  description={courseData.description}
+                  totalLessons={courseData.total_lessons}
+                  totalStudents={courseData.total_students}
+                />
+              {/key}
             {/each}
           </section>
         {/if}
       {:else}
         <!-- empty course state -->
         <div
-          class="flex flex-col justify-center gap-3 items-center border rounded-md mt-5 px-10 text-center h-[60vh]"
+          class="flex flex-col justify-center gap-3 items-center border rounded-md max-w-[90%] mx-auto mt-5 px-10 text-center h-[60vh]"
         >
           <div class="scale-[5]">
             <CourseIcon color="#0233BD" />

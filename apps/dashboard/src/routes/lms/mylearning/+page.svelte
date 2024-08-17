@@ -6,54 +6,113 @@
   import { fetchCourses } from '$lib/utils/services/courses';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
-  import {
-    courses,
-    courseMetaDeta,
-    coursesComplete,
-    coursesInProgress
-  } from '$lib/components/Courses/store';
   import { browser } from '$app/environment';
   import { t } from '$lib/utils/functions/translations';
+  import { lmsCourses } from '$lib/components/LMS/store';
+  import type { LmsCourse } from '$lib/components/LMS/store';
+  import { fetchPathways } from '$lib/components/Org/Pathway/api';
+  import { courseMetaDeta } from '$lib/components/Courses/store';
 
   let hasFetched = false;
   let selectedId = '0';
+  let filteredCourses: LmsCourse[] | any[] = [];
+  let searching = false;
+  let searchValue = '';
 
   function onChange(tab) {
     return () => (currentTab = tab);
   }
 
-  async function getCourses(userId: string | null, orgId: string) {
+  async function fetchPathwaysAndCourses(userId: string | undefined, orgId: string) {
     if (hasFetched || !userId || !orgId) {
       return;
     }
-    hasFetched = true;
-
-    // only show is loading when fetching for the first time
-    if (!$courses.length) {
+    if (!$lmsCourses.length) {
       $courseMetaDeta.isLoading = true;
     }
 
-    const coursesResult = await fetchCourses(userId, orgId);
-    console.log(`get courses result`, coursesResult);
+    try {
+      const [pathwayResult, coursesResult] = await Promise.all([
+        fetchPathways(userId, orgId),
+        fetchCourses(userId, orgId)
+      ]);
 
-    $courseMetaDeta.isLoading = false;
-    if (!coursesResult) return;
+      if (!pathwayResult || !coursesResult) return;
 
-    courses.set(coursesResult.allCourses);
-    hasFetched = true;
+      const pathwaysWithFlag = pathwayResult.allPathways.map((pathway) => ({
+        ...pathway,
+        isPathway: true
+      }));
+
+      const coursesWithFlag = coursesResult.allCourses.map((course) => ({
+        ...course,
+        isPathway: false
+      }));
+
+      const allResults: LmsCourse[] = [...pathwaysWithFlag, ...coursesWithFlag];
+
+      lmsCourses.set(allResults);
+      hasFetched = true;
+      $courseMetaDeta.isLoading = false;
+    } catch (error) {
+      console.error('Error fetching pathways and courses:', error);
+      $courseMetaDeta.isLoading = false;
+    }
+  }
+
+  function filterCourses(searchValue: string, _selectedId: string, courses: any[]) {
+    if (browser) {
+      if (!selectedId) {
+        selectedId = localStorage.getItem('classroomio_filter_lms_mylearning_key') || '0';
+      } else {
+        localStorage.setItem('classroomio_filter_lms_mylearning_key', _selectedId);
+      }
+    }
+
+    filteredCourses = courses.filter((course) => {
+      if (!searchValue || course.title.toLowerCase().includes(searchValue.toLowerCase())) {
+        return true;
+      }
+      searching = true;
+      return false;
+    });
+
+    if (_selectedId === '0') {
+      filteredCourses = filteredCourses.sort(
+        (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      );
+    } else if (_selectedId === '1') {
+      filteredCourses = filteredCourses.sort(
+        (a, b) => (b.isPathway ? 1 : 0) - (a.isPathway ? 1 : 0)
+      );
+    }
   }
 
   $: if (browser && $profile.id && $currentOrg.id) {
-    getCourses($profile.id, $currentOrg.id);
+    fetchPathwaysAndCourses($profile.id, $currentOrg.id);
+    filterCourses(searchValue, selectedId, $lmsCourses);
   }
+
+  $: coursesInProgress =
+    filteredCourses.length > 0
+      ? filteredCourses.filter((course) => {
+          return course.total_lessons !== course.progress_rate;
+        })
+      : [];
+  $: coursesComplete =
+    filteredCourses.length > 0
+      ? filteredCourses.filter((course) => {
+          return course.total_lessons == course.progress_rate;
+        })
+      : [];
 
   $: tabs = [
     {
-      label: `${$t('my_learning.progress')} (${$coursesInProgress.length})`,
+      label: `${$t('my_learning.progress')} (${coursesInProgress.length})`,
       value: '1'
     },
     {
-      label: `${$t('my_learning.complete')} (${$coursesComplete.length})`,
+      label: `${$t('my_learning.complete')} (${coursesComplete.length})`,
       value: '2'
     }
   ];
@@ -70,6 +129,7 @@
           <Search
             placeholder={$t('my_learning.search')}
             class="dark:text-black"
+            bind:value={searchValue}
             searchClass="mr-2"
           />
           <Dropdown
@@ -88,14 +148,16 @@
       <slot:fragment slot="content">
         <TabContent value={tabs[0].value} index={currentTab}>
           <Courses
-            courses={$coursesInProgress}
+            {searching}
+            courses={coursesInProgress}
             emptyTitle={$t('my_learning.not_in_progress')}
             emptyDescription={$t('my_learning.any_progress')}
           />
         </TabContent>
         <TabContent value={tabs[1].value} index={currentTab}>
           <Courses
-            courses={$coursesComplete}
+            {searching}
+            courses={coursesComplete}
             emptyTitle={$t('my_learning.not_completed')}
             emptyDescription={$t('my_learning.any_course')}
           />

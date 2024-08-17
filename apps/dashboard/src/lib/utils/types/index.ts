@@ -21,6 +21,15 @@ export interface ProfileCourseProgress {
   lessons_count: number;
 }
 
+export interface ProfilePathwayProgress {
+  exercises_completed: number;
+  exercises_count: number;
+  lessons_completed: number;
+  lessons_count: number;
+  courses_completed: number;
+  courses_count: number;
+}
+
 export interface GroupPerson {
   assigned_student_id: number | null;
   created_at: string;
@@ -325,11 +334,12 @@ export interface Pathway {
   is_certificate_downloadable?: boolean;
   certificate_theme?: string;
   status: string;
-  is_published?: boolean;
+  is_published: boolean;
   total_course?: number;
   total_students?: number;
   lms_certificate: boolean;
   courses_certificate: string;
+  progress_rate?: number;
   prerequisite: string;
   courses: PathwayCourse[];
   selectedCourses: PathwayCourse[];

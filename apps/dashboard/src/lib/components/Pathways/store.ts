@@ -21,7 +21,7 @@ export const pathway = writable<Pathway>({
   created_at: '20, March, 2024',
   updated_at: '20, March, 2024',
   metadata: {},
-  is_certificate_downloadable: false,
+  is_certificate_downloadable: true,
   certificate_theme: 'professional',
   courses: [
     {
