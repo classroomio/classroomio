@@ -295,6 +295,7 @@ export interface PathwayCourse {
   is_completed: CourseCompletion[];
   is_published: boolean;
   created_at: string;
+  updated_at: string;
   order: string;
 }
 
@@ -325,7 +326,7 @@ export interface Pathway {
   courses_certificate: string;
   progress_rate?: number;
   prerequisite: string;
-  courses: PathwayCourse[];
+  courses?: PathwayCourse[];
   selectedCourses: PathwayCourse[];
 }
 
