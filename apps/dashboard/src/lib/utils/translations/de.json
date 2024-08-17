@@ -1523,6 +1523,54 @@
           "title": "Glückwunsch! 🎉 Dein Zertifikat ist fertig",
           "subtitle": "Sie haben diesen Lernpfad abgeschlossen und Ihr Engagement ist offensichtlich. Laden Sie das Zertifikat herunter und teilen Sie es mit Ihrem Netzwerk als Beweis für Ihre neu erworbenen Fähigkeiten"
         }
+      },
+      "landingPage": {
+        "reviews": {
+          "students": "Sehen Sie, was Studenten über diese Sammlung sagen",
+          "readMore": "Mehr lesen",
+          "readLess": "Weniger lesen"
+        },
+        "courseList": {
+          "header": "Kuratierte Kursliste-",
+          "subheader": "Unsere kuratierte Kursliste umfasst wichtige Themen wie Benutzerforschung, Wireframing, Prototyping, Usability-Tests, Interaktionsdesign und branchenübliche Tools. Schöpfen Sie noch heute Ihr UX-Potenzial aus!",
+          "courses": "Kurse",
+          "lessons": "Unterricht",
+          "estimated": "geschätzt",
+          "hours": "Std.",
+          "view": "Details anzeigen"
+        },
+        "subHeader": {
+          "button": "Melden Sie sich jetzt an – beginnt"
+        },
+        "certificate": {
+          "earn": "Verdienen Sie ein Zertifikat",
+          "evidence": "Holen Sie sich einen Nachweis Ihrer Fähigkeiten und teilen Sie ihn mit Ihrem beruflichen Netzwerk"
+        },
+        "main": {
+          "description": "Beschreibung des Lernpfads",
+          "objectives": "Ziele des Lernpfads",
+          "pricing_win": "Schließe alle Lektionen erfolgreich ab und habe die Chance, ein iPad zu gewinnen. Wir meinen es ernst, wenn wir es sagen!",
+          "start": "Beginnen Sie jetzt"
+        },
+        "banner": {
+          "courses": "Kurse",
+          "courses_text": "Sorgfältig zusammengestellte Kurse, um Ihre Ziele zu erreichen",
+          "certificate": "Zertifikat erhalten",
+          "share": "Erhalten Sie eine Zertifizierung und teilen Sie sie mit Ihrem Netzwerk",
+          "rating": "Erfahrener und hoch bewerteter Kursleiter"
+        },
+        "header": {
+          "tag": "LERNENWEG",
+          "button": "Melden Sie sich jetzt an"
+        },
+        "constants": {
+          "about": "UM",
+          "objectives": "ZIELE",
+          "courses": "KURSE",
+          "review": "REZENSION",
+          "instructor": "LEHRER",
+          "faq": "FAQ"
+        }
       }
     }
   },
