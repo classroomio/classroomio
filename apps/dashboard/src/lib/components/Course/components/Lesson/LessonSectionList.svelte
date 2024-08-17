@@ -2,9 +2,10 @@
   import { page } from '$app/stores';
   import { flip } from 'svelte/animate';
   import { dndzone } from 'svelte-dnd-action';
-  import { Add } from 'carbon-icons-svelte';
+  import { Add, ScreenMap } from 'carbon-icons-svelte';
   import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
+  import TextChip from '$lib/components/Chip/Text.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
@@ -113,7 +114,6 @@
   const flipDurationMs = 200;
 
   function handleDndConsiderColumns(e) {
-    console.log('dnd consider', e.detail.items);
     $lessonSections = e.detail.items;
   }
   function handleDndFinalizeColumns(e) {
@@ -161,8 +161,16 @@
         );
       }
     });
+  }
 
-    console.log('finalized lesson', $lessonSections[colIdx].title);
+  function getLessonOrder(lessons, id) {
+    const index = lessons.findIndex((lesson) => lesson.id === id);
+
+    if (index < 9) {
+      return '0' + (index + 1);
+    } else {
+      return index + 1;
+    }
   }
 </script>
 
@@ -185,7 +193,7 @@
 >
   {#each $lessonSections as section (section.id)}
     <div
-      class="mb-3 m-auto max-w-xl border-2 border-gray-200 ${reorder
+      class="mb-3 m-auto max-w-xl border-2 {reorder
         ? 'border-primary-400'
         : 'border-gray-200'}  dark:border-neutral-600 dark:bg-neutral-800 rounded-md"
     >
@@ -255,24 +263,44 @@
       >
         {#each section.lessons as lesson (lesson.id)}
           <div
-            class="border max-w-xl border-gray-200 px-3 py-1 min-h-[50px] rounded-md mb-2 flex items-center justify-between"
+            class="border max-w-xl {reorder
+              ? 'border-primary-400'
+              : 'border-gray-200'} px-3 py-1 min-h-[50px] rounded-md mb-2 flex items-center justify-between"
             animate:flip={{ duration: flipDurationMs }}
           >
             {#if lessonEditing === lesson.id}
               <TextField className="w-4/6" bind:value={lesson.title} errorMessage={errors?.title} />
             {:else}
-              <a
-                href={$globalStore.isStudent && !lesson.is_unlocked
-                  ? $page.url.pathname
-                  : `/courses/${$course.id}/lessons/${lesson.id}`}
-                class="w-4/5 text-black underline dark:text-white {$globalStore.isStudent &&
-                !lesson.is_unlocked
-                  ? 'cursor-not-allowed'
-                  : ''}"
-                data-sveltekit-preload-data="off"
-              >
-                {lesson.title}
-              </a>
+              <div class="w-4/5 flex items-center gap-2">
+                <TextChip
+                  value={getLessonOrder(section.lessons, lesson.id)}
+                  size="sm"
+                  shape="rounded-full"
+                  className="bg-primary-200 text-primary-600 text-xs"
+                />
+                <div>
+                  <a
+                    href={$globalStore.isStudent && !lesson.is_unlocked
+                      ? $page.url.pathname
+                      : `/courses/${$course.id}/lessons/${lesson.id}`}
+                    class=" text-black dark:text-white {$globalStore.isStudent &&
+                    !lesson.is_unlocked
+                      ? 'cursor-not-allowed'
+                      : ''}"
+                    data-sveltekit-preload-data="off"
+                  >
+                    {lesson.title}
+                  </a>
+
+                  <div class="mt-1 mb-3 flex items-center lg:mb-0">
+                    <ScreenMap size={16} class="carbon-icon dark:text-white" />
+                    <p class="ml-2 text-xs text-gray-500 dark:text-white">
+                      {lesson?.totalExercises ? lesson?.totalExercises?.map((c) => c.count) : 0}
+                      {$t('exercises.heading')}
+                    </p>
+                  </div>
+                </div>
+              </div>
             {/if}
 
             <RoleBasedSecurity allowedRoles={[1, 2]}>

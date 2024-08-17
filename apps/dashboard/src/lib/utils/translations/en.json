@@ -504,9 +504,18 @@
 
       "lessons": {
         "heading": "Lessons",
+        "heading_v2": "Content",
         "drag": "drag a card to reorder",
         "no_lesson": "No lessons yet",
         "share_your_knowledge": "Share your knowledge with the world by creating engaging lessons. Start by clicking on the Add button.",
+        "section_prompt": {
+          "cta": "Enable Sections",
+          "header": "Enable Sections",
+          "title": "We Launched Course Sections",
+          "description": "You can now group lessons into sections to organize your content and make learning smoother for your students.",
+          "activate": "Activate",
+          "cancel": "Cancel"
+        },
         "add_lesson": {
           "button_title": "Add",
           "start_reorder": "Reorder",
