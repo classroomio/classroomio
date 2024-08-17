@@ -9,7 +9,7 @@
   import IbmWatsonKnowledgeCatalog from 'carbon-icons-svelte/lib/IbmWatsonKnowledgeCatalog.svelte';
   import Settings from 'carbon-icons-svelte/lib/Settings.svelte';
   import Bullhorn from 'carbon-icons-svelte/lib/Bullhorn.svelte';
-  import { Certificate, DocumentAttachment } from 'carbon-icons-svelte';
+  import { Certificate } from 'carbon-icons-svelte';
 
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
 
@@ -42,6 +42,4 @@
   </span>
 {:else if name === 'Settings'}
   <Certificate size={20} class="carbon-icon mr-2" />
-{:else if name === 'Pathway Landing Page'}
-  <DocumentAttachment size={20} class="carbon-icon mr-2" />
 {/if}

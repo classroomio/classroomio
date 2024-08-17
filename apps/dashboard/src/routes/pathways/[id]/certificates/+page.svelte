@@ -38,7 +38,7 @@
     <RoleBasedSecurity allowedRoles={[1, 2]}>
       <Design />
     </RoleBasedSecurity>
-    <RoleBasedSecurity onlyStudent>
+    <RoleBasedSecurity allowedRoles={[3]} onlyStudent>
       <StudentCertificate />
     </RoleBasedSecurity>
 

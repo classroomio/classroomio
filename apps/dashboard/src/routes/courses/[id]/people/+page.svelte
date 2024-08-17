@@ -74,6 +74,7 @@
   }
 
   function sortAndFilterPeople(_people: Array<Person>, filterBy: ProfileRole) {
+    console.log('_people', _people);
     people = (_people || [])
       .filter((person) => {
         if (filterBy.value === 'all') return true;
