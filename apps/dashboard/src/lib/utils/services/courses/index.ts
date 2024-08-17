@@ -9,7 +9,8 @@ import type {
   Groupmember,
   Exercise,
   LessonCompletion,
-  ExerciseTemplate
+  ExerciseTemplate,
+  LessonSection
 } from '$lib/utils/types';
 import { STATUS } from '$lib/utils/constants/course';
 import type { PostgrestSingleResponse, PostgrestError } from '@supabase/supabase-js';
@@ -70,10 +71,12 @@ const SLUG_QUERY = `
   is_published,
   slug,
   cost,
+  version,
   currency,
   metadata,
   is_certificate_downloadable,
   certificate_theme,
+  lesson_section(id, title, order),
   lessons:lesson(
     id, title, order
   )
@@ -87,6 +90,7 @@ const ID_QUERY = `
   overview,
   logo,
   is_published,
+  version,
   group(*,
     members:groupmember(*,
       profile(*)
@@ -98,8 +102,9 @@ const ID_QUERY = `
   metadata,
   is_certificate_downloadable,
   certificate_theme,
+  lesson_section(id, title, order, created_at),
   lessons:lesson(
-    id, title,public, lesson_at, is_unlocked, order, created_at,
+    id, title, public, lesson_at, is_unlocked, order, created_at, section_id,
     note, videos, slide_url, call_url, totalExercises:exercise(count), totalComments:lesson_comment(count),
     profile:teacher_id(id, avatar_url, fullname),
     lesson_completion(id, profile_id, is_complete)
@@ -244,6 +249,7 @@ export function fetchLesson(lessonId: Lesson['id']) {
     .from('lesson')
     .select(
       `id,
+      title,
       note,
       videos,
       slide_url,
@@ -271,8 +277,17 @@ export function fetchLesssonLanguageHistory(lessonId: string, locale: string, en
 export function createLesson(lesson: any) {
   return supabase.from('lesson').insert(lesson).select();
 }
+export function createLessonSection(section: any) {
+  return supabase.from('lesson_section').insert(section).select();
+}
+export function updateLessonSection(section: any, sectionId: LessonSection['id']) {
+  return supabase
+    .from('lesson_section')
+    .update({ ...section, id: undefined })
+    .match({ id: sectionId });
+}
 
-export function updateLesson(lesson: any, lessonId: Lesson['id']) {
+export async function updateLesson(lesson: any, lessonId: Lesson['id']) {
   return supabase
     .from('lesson')
     .update({ ...lesson, id: undefined })
@@ -292,9 +307,22 @@ export function updateLessonCompletion(completion: LessonCompletion, shouldUpdat
   }
 }
 
+export const upsertLessons = (data: { id: string; order: number }[]) => {
+  return supabase.from('lesson').upsert(data);
+};
+
+export const upsertLessonSections = (data: { id: string; order: number }[]) => {
+  return supabase.from('lesson_section').upsert(data);
+};
+
 export function deleteLesson(lessonId: Lesson['id']) {
   // Need to implement soft delete
   return supabase.from('lesson').delete().match({ id: lessonId });
+}
+
+export function deleteLessonSection(id: LessonSection['id']) {
+  // Need to implement soft delete
+  return supabase.from('lesson_section').delete().match({ id });
 }
 
 export function createExercise(exercise: any) {

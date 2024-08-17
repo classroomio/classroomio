@@ -754,7 +754,10 @@
           "lock": "Sperren",
           "unlock": "Freischalten",
           "start_reorder": "Neu anordnen",
-          "end_reorder": "Nachbestellung beenden"
+          "end_reorder": "Nachbestellung beenden",
+          "modal_heading_section": "Neuen Abschnitt hinzufügen",
+          "lesson_section_title": "Abschnittstitel",
+          "cancel": "Stornieren"
         },
         "disabled": "Funktion ist deaktiviert",
         "next": "Nächste",
@@ -798,14 +801,14 @@
     },
     "navItems": {
       "nav_news_feed": "Neuigkeiten",
-      "nav_lessons": "Unterricht",
       "nav_attendance": "Teilnahme",
       "nav_submissions": "Einsendungen",
       "nav_marks": "Markierungen",
       "nav_people": "Menschen",
       "nav_certificates": "Zertifikate",
       "nav_landing_page": "Landingpage",
-      "nav_settings": "Einstellungen"
+      "nav_settings": "Einstellungen",
+      "nav_content": "Inhalt"
     },
     "not_permitted": {
       "header": "Keine Erlaubnis",

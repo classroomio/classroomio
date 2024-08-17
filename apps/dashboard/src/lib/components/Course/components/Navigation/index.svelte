@@ -3,12 +3,12 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { browser } from '$app/environment';
+  import TextChip from '$lib/components/Chip/Text.svelte';
   import LockedIcon from 'carbon-icons-svelte/lib/Locked.svelte';
   import CheckmarkFilled from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
   import NavExpandable from './NavExpandable.svelte';
   import { getNavItemRoute, getLessonsRoute, getLectureNo } from '$lib/components/Course/function';
-  import TextChip from '$lib/components/Chip/Text.svelte';
-  import { lessons } from '../Lesson/store/lessons';
+  import { lessons, lessonSections } from '../Lesson/store/lessons';
   import { course } from '$lib/components/Course/store';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
   import { isMobile } from '$lib/utils/store/useMobile';
@@ -17,18 +17,28 @@
   import { getIsLessonComplete } from '../Lesson/functions';
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
-  import { COURSE_TYPE } from '$lib/utils/types';
+  import { COURSE_TYPE, COURSE_VERSION, type Lesson } from '$lib/utils/types';
+  import { NAV_IDS } from './constants';
 
   export let path: string;
   export let isStudent: boolean = false;
 
+  interface Section {
+    id: string;
+    order: number;
+    label: string;
+    lessons: Lesson[];
+    isExpanded?: boolean;
+  }
   interface NavItem {
+    id: string;
     label: string;
     to: string;
     hideSortIcon: boolean;
     isLesson?: boolean;
     isPaidFeature: boolean;
     isExpanded?: boolean;
+    sections?: Section[];
     show?: () => boolean;
   }
 
@@ -139,6 +149,7 @@
   $: {
     navItems = [
       {
+        id: NAV_IDS.NEWS_FEED,
         label: $t('course.navItems.nav_news_feed'),
         to: getNavItemRoute($course.id),
         hideSortIcon: true,
@@ -148,14 +159,21 @@
         }
       },
       {
-        label: $t('course.navItems.nav_lessons'),
+        id: NAV_IDS.LESSONS,
+        label: $t('course.navItems.nav_content'),
         to: getLessonsRoute($course.id),
         hideSortIcon: false,
         isPaidFeature: false,
         isLesson: true,
+        sections: $lessonSections.map((section) => ({
+          ...section,
+          label: section.title,
+          isExpanded: true
+        })),
         isExpanded: isStudent ? true : $page.url.pathname.includes('/lessons')
       },
       {
+        id: NAV_IDS.ATTENDANCE,
         label: $t('course.navItems.nav_attendance'),
         to: getNavItemRoute($course.id, 'attendance'),
         isPaidFeature: false,
@@ -167,6 +185,7 @@
         }
       },
       {
+        id: NAV_IDS.SUBMISSIONS,
         label: $t('course.navItems.nav_submissions'),
         to: getNavItemRoute($course.id, 'submissions'),
         hideSortIcon: true,
@@ -178,6 +197,7 @@
         }
       },
       {
+        id: NAV_IDS.MARKS,
         label: $t('course.navItems.nav_marks'),
         to: getNavItemRoute($course.id, 'marks'),
         isPaidFeature: false,
@@ -191,6 +211,7 @@
         }
       },
       {
+        id: NAV_IDS.CERTIFICATES,
         label: $t('course.navItems.nav_certificates'),
         to: getNavItemRoute($course.id, 'certificates'),
         hideSortIcon: true,
@@ -204,6 +225,7 @@
         }
       },
       {
+        id: NAV_IDS.LANDING_PAGE,
         label: $t('course.navItems.nav_landing_page'),
         to: getNavItemRoute($course.id, 'landingpage'),
         hideSortIcon: true,
@@ -213,6 +235,7 @@
         }
       },
       {
+        id: NAV_IDS.PEOPLE,
         label: $t('course.navItems.nav_people'),
         to: getNavItemRoute($course.id, 'people'),
         isPaidFeature: false,
@@ -222,6 +245,7 @@
         }
       },
       {
+        id: NAV_IDS.SETTINGS,
         label: $t('course.navItems.nav_settings'),
         to: getNavItemRoute($course.id, 'settings'),
         hideSortIcon: true,
@@ -258,6 +282,8 @@
       {#each navItems as navItem}
         {#if !navItem.show || (typeof navItem.show === 'function' && navItem.show())}
           <NavExpandable
+            id={navItem.id}
+            name={navItem.id}
             label={navItem.label}
             handleClick={handleMainGroupClick(navItem.to)}
             isGroupActive={(path || $page.url.pathname) === navItem.to}
@@ -268,10 +294,10 @@
             isExpanded={navItem.isExpanded}
             {isStudent}
           >
-            {#if navItem.isLesson}
+            {#if $course.version === COURSE_VERSION.V1}
               {#each $lessons as item, index}
                 <a
-                  class="pl-7 w-[95%] text-[0.80rem] mb-1 text-black dark:text-white {isStudent &&
+                  class="pl-7 w-[95%] text-[0.80rem] mb-2 text-black dark:text-white {isStudent &&
                   !item.is_unlocked
                     ? 'cursor-not-allowed'
                     : ''}"
@@ -280,9 +306,10 @@
                     : getLessonsRoute($course.id, item.id)}
                   on:click={toggleSidebarOnMobile}
                   aria-disabled={!item.is_unlocked}
+                  title={item.title}
                 >
                   <div
-                    class="flex items-center py-3 px-4 {NavClasses.item} {(
+                    class="flex items-center py-2 px-4 {NavClasses.item} {(
                       path || $page.url.pathname
                     ).includes(item.id) && NavClasses.active}"
                   >
@@ -292,7 +319,7 @@
                       size="sm"
                       shape="rounded-full"
                     />
-                    <span class="w-[70%] text-ellipsis line-clamp-2">{item.title}</span>
+                    <span class="w-[85%] text-ellipsis line-clamp-2">{item.title}</span>
                     <span class="grow" />
                     {#if !item.is_unlocked}
                       <span class="text-md ml-2" title="This lesson is locked.">
@@ -305,6 +332,53 @@
                     {/if}
                   </div>
                 </a>
+              {/each}
+            {:else if navItem.sections}
+              {#each navItem.sections as section}
+                <NavExpandable
+                  id={section.id}
+                  name={NAV_IDS.SECTION}
+                  label={section.label}
+                  isLoading={!$course.id}
+                  isSection={true}
+                  isExpanded={section.isExpanded}
+                  className="ml-4"
+                  btnPadding="py-2 px-3"
+                  {isStudent}
+                >
+                  {#each section.lessons as item}
+                    <a
+                      class="pl-7 w-[95%] text-[0.80rem] mb-2 text-black dark:text-white {isStudent &&
+                      !item.is_unlocked
+                        ? 'cursor-not-allowed'
+                        : ''}"
+                      href={isStudent && !item.is_unlocked
+                        ? $page.url.pathname
+                        : getLessonsRoute($course.id, item.id)}
+                      on:click={toggleSidebarOnMobile}
+                      aria-disabled={!item.is_unlocked}
+                      title={item.title}
+                    >
+                      <div
+                        class="flex items-center py-2 px-4 {NavClasses.item} {(
+                          path || $page.url.pathname
+                        ).includes(item.id) && NavClasses.active}"
+                      >
+                        <span class="w-[85%] text-ellipsis line-clamp-2">{item.title}</span>
+                        <span class="grow" />
+                        {#if !item.is_unlocked}
+                          <span class="text-md ml-2" title="This lesson is locked.">
+                            <LockedIcon class="carbon-icon dark:text-white" />
+                          </span>
+                        {:else if getIsLessonComplete(item.lesson_completion, $profile.id)}
+                          <span class="ml-2" title="You have completed this lesson">
+                            <CheckmarkFilled class="carbon-icon dark:text-white" />
+                          </span>
+                        {/if}
+                      </div>
+                    </a>
+                  {/each}
+                </NavExpandable>
               {/each}
             {/if}
           </NavExpandable>

@@ -464,7 +464,7 @@
   "course": {
     "navItems": {
       "nav_news_feed": "News Feed",
-      "nav_lessons": "Lessons",
+      "nav_content": "Content",
       "nav_attendance": "Attendance",
       "nav_submissions": "Submissions",
       "nav_marks": "Marks",
@@ -504,22 +504,34 @@
 
       "lessons": {
         "heading": "Lessons",
+        "heading_v2": "Content",
         "drag": "drag a card to reorder",
         "no_lesson": "No lessons yet",
         "share_your_knowledge": "Share your knowledge with the world by creating engaging lessons. Start by clicking on the Add button.",
+        "section_prompt": {
+          "cta": "Enable Sections",
+          "header": "Enable Sections",
+          "title": "We Launched Course Sections",
+          "description": "You can now group lessons into sections to organize your content and make learning smoother for your students.",
+          "activate": "Activate",
+          "cancel": "Cancel"
+        },
         "add_lesson": {
           "button_title": "Add",
           "start_reorder": "Reorder",
           "end_reorder": "End Reorder",
           "modal_heading": "Add New Lesson",
+          "modal_heading_section": "Add New Section",
           "lesson_title": "Lesson Title",
+          "lesson_section_title": "Section Title",
           "click_to": "Click to",
           "lock": "Lock",
           "unlock": "Unlock",
           "fullname": "fullname",
           "save": "Save",
           "edit": "Edit",
-          "delete": "Delete"
+          "delete": "Delete",
+          "cancel": "Cancel"
         },
         "join_lesson": "Join lesson",
         "no_link": "No link",

@@ -754,7 +754,10 @@
           "lock": "Trancar",
           "unlock": "Desbloquear",
           "start_reorder": "Reordenar",
-          "end_reorder": "Finalizar novo pedido"
+          "end_reorder": "Finalizar novo pedido",
+          "modal_heading_section": "Adicionar nova seção",
+          "lesson_section_title": "Título da seção",
+          "cancel": "Cancelar"
         },
         "disabled": "O recurso está desativado",
         "next": "Próximo",
@@ -798,14 +801,14 @@
     },
     "navItems": {
       "nav_news_feed": "Notícias",
-      "nav_lessons": "Lições",
       "nav_attendance": "Comparecimento",
       "nav_submissions": "Envios",
       "nav_marks": "Marcas",
       "nav_people": "Pessoas",
       "nav_certificates": "Certificados",
       "nav_landing_page": "Página inicial",
-      "nav_settings": "Configurações"
+      "nav_settings": "Configurações",
+      "nav_content": "Contente"
     },
     "not_permitted": {
       "header": "Sem permissão",
