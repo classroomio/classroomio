@@ -60,7 +60,7 @@
         "empty_state_text": "You have not added any course to this learning path",
         "empty_state_label": "Add course to this learning Path"
       },
-      "lmsCertificate": {
+      "lms_certificate": {
         "unlocked": {
           "title": "Congrats! 🎉 your certificate is ready",
           "subtitle": "You have completed this learning path, and your dedication is evident. Download certificate and share with your network as a prove of your newly acquired skill"

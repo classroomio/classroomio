@@ -12,10 +12,10 @@
     />
     <div class="w-[50%]">
       <p class="text-xl font-medium">
-        {$t('pathway.pages.lmsCertificate.locked.title')}
+        {$t('pathway.pages.lms_certificate.locked.title')}
       </p>
       <p class="text-sm my-2 font-normal max-w-md">
-        {$t('pathway.pages.lmsCertificate.locked.subtitle')}
+        {$t('pathway.pages.lms_certificate.locked.subtitle')}
       </p>
     </div>
   </div>

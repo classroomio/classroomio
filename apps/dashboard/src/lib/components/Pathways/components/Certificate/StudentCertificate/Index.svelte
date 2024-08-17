@@ -5,7 +5,7 @@
 </script>
 
 <div>
-  {#if $pathway.is_certificate_downloadable == true}
+  {#if $pathway.is_certificate_downloadable}
     <UnlockedCertificate />
   {:else}
     <LockedCertificate />

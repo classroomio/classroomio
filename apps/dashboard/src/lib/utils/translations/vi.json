@@ -1456,6 +1456,11 @@
         "course": "Khóa học",
         "courses": "Khóa học",
         "path": "đến lộ trình học tập"
+      },
+      "dragAndDrop": {
+        "title": "Sắp xếp các khóa học",
+        "header": "Sắp xếp khóa học theo trình tự học sinh phải học bắt đầu với phần đầu tiên ở trên cùng",
+        "label": "Xác nhận thứ tự khóa học"
       }
     },
     "pages": {
@@ -1503,12 +1508,35 @@
         "body_title": "Tiêu đề",
         "description": "Sự miêu tả",
         "students": "Sinh viên",
-        "lessons": "Những bài học"
+        "lessons": "Những bài học",
+        "empty_state_header": "Chưa có khóa học nào",
+        "empty_state_text": "Bạn chưa thêm bất kỳ khóa học nào vào lộ trình học tập này",
+        "empty_state_label": "Thêm khóa học vào lộ trình học tập này"
+      },
+      "lms_certificate": {
+        "share": "Chia sẻ chứng chỉ",
+        "locked": {
+          "title": "Chứng chỉ chưa có sẵn",
+          "subtitle": "Chứng chỉ được cấp vì bạn chưa hoàn thành lộ trình học tập hoặc người hướng dẫn của bạn chưa phê duyệt. Vui lòng liên hệ với người hướng dẫn của bạn"
+        },
+        "unlocked": {
+          "title": "Xin chúc mừng! 🎉 chứng chỉ của bạn đã sẵn sàng",
+          "subtitle": "Bạn đã hoàn thành lộ trình học tập này và sự cống hiến của bạn được thể hiện rõ ràng. Tải xuống chứng chỉ và chia sẻ với mạng của bạn như một bằng chứng về kỹ năng mới có được của bạn"
+        }
       }
     }
   },
   "search": {
     "no_pathway": "Không tìm thấy con đường nào",
     "no_course": "Không tìm thấy khóa học"
+  },
+  "lms_pathway": {
+    "pathway": "LỘ TRÌNH",
+    "continue": "Tiếp tục con đường",
+    "course": "Khóa học",
+    "locked": "Đã khóa",
+    "goto_pathway": "Đi đến Con đường",
+    "completed": "Hoàn thành",
+    "of": "của"
   }
 }

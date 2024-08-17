@@ -79,11 +79,11 @@
   // });
 
   $: title = isPathwayComplete
-    ? 'pathway.pages.lmsCertificate.unlocked.title'
-    : 'pathway.pages.lmsCertificate.locked.title';
+    ? 'pathway.pages.lms_certificate.unlocked.title'
+    : 'pathway.pages.lms_certificate.locked.title';
   $: subtitle = isPathwayComplete
-    ? 'pathway.pages.lmsCertificate.unlocked.subtitle'
-    : 'pathway.pages.lmsCertificate.unlocked.subtitle';
+    ? 'pathway.pages.lms_certificate.unlocked.subtitle'
+    : 'pathway.pages.lms_certificate.unlocked.subtitle';
 </script>
 
 <Box className="h-auto">
@@ -118,7 +118,7 @@
           isDisabled={!PUBLIC_SERVER_URL || !isPathwayComplete}
           {isLoading}
         >
-          {$t('pathway.pages.lmsCertificate.share')}
+          {$t('pathway.pages.lms_certificate.share')}
         </PrimaryButton>
       </div>
     </div>
