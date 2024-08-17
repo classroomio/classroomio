@@ -339,6 +339,7 @@ export interface Pathway {
   total_students?: number;
   lms_certificate: boolean;
   courses_certificate: string;
+  progress_rate?: number;
   prerequisite: string;
   courses: PathwayCourse[];
   selectedCourses: PathwayCourse[];
