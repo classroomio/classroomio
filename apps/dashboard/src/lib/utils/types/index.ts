@@ -50,7 +50,7 @@ export interface GroupStore {
   people: GroupPerson[];
   members?: GroupPerson[];
   memberId?: string;
-};
+}
 
 export interface CustomQuestionType {
   id: number;
@@ -130,7 +130,7 @@ export interface PathwayMetadata {
     cost: number;
     buttonLabel: string;
     videoUrl?: '';
-  },
+  };
   about: string;
   objectives: string;
   reviews?: Array<Review>;
@@ -290,7 +290,7 @@ export interface PathwayCourse {
   description: string;
   total_lessons: number;
   total_students: number;
-  estimated_hours: number,
+  estimated_hours: number;
   is_unlocked: boolean;
   is_completed: CourseCompletion[];
   is_published: boolean;
@@ -491,7 +491,7 @@ export interface Review {
   name: string;
   avatar_url: string;
   rating: number;
-  created_at: number;
+  created_at: number | string;
   description: string;
 }
 
