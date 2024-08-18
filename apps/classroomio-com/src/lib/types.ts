@@ -20,6 +20,8 @@ export type OssFriend = {
   href: string;
 };
 
+export type FORM_TYPE_KEY = keyof typeof FORM_TYPE;
+
 export enum FORM_TYPE {
   bug = 'bug',
   help = 'help',

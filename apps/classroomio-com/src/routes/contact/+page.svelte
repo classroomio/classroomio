@@ -4,8 +4,9 @@
   import PageHeader from '$lib/PageHeader/PageHeader.svelte';
   import Forms from '$lib/ContactUs/Forms/Index.svelte';
   import { FORM_TYPE } from '$lib/types';
+  import type { FORM_TYPE_KEY } from '$lib/types';
 
-  let currentForm: keyof typeof FORM_TYPE;
+  let currentForm: FORM_TYPE_KEY;
 
   const formList = [
     {
@@ -26,7 +27,7 @@
     }
   ];
 
-  const handleChangeForm = (form: keyof typeof FORM_TYPE) => {
+  const handleChangeForm = (form: FORM_TYPE_KEY) => {
     currentForm = form;
   };
 </script>
@@ -37,7 +38,7 @@
 
 <section>
   <PageHeader className="flex flex-col items-center justify-center bg-[#F5F8FE] text-center">
-    <div class="mb-2 ml-[5%] lg:ml-0 flex w-full items-center justify-start lg:justify-center">
+    <div class="mb-2 ml-[5%] lg:ml-0 flex w-full items-center justify-center">
       <span
         style="color: rgb(75, 85, 99);"
         class="rounded-full border-2 border-[#C2D2FF] px-4 py-1 text-sm font-medium bg-[#DCE5FF] text-blue-700"
@@ -60,15 +61,17 @@
 
   <div class="my-20 mx-auto">
     <!-- Content here -->
-    <div class="mx-auto w-[60%] place-items-center grid grid-cols-2 gap-10">
+    <div
+      class="mx-auto w-[90%] lg:w-[60%] place-items-center grid grid-cols-1 md:grid-cols-2 gap-10"
+    >
       {#each formList as list}
         <button
           on:click={() => handleChangeForm(list.id)}
-          class="text-start border-[1.5px] w-[90%] rounded-md p-3 {currentForm === list.id
+          class="text-start border-[1.5px] w-full rounded-md p-3 {currentForm === list.id
             ? `border-[#0233BD]`
             : `border-gray-200`}"
         >
-          <p class="text-xl text-slate-700 font-normal">{list.title}</p>
+          <p class="text-lg text-slate-700 font-normal">{list.title}</p>
         </button>
       {/each}
     </div>

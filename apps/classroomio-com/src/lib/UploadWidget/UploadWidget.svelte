@@ -2,13 +2,12 @@
   import ImageCopy from 'carbon-icons-svelte/lib/ImageCopy.svelte';
   import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
 
-  //   export let imageURL = '';
+  export let imageURL = '';
   export let label = '';
   export let isRequired = false;
   export let labelClassName = '';
   let isUploading = false;
   let fileInput: HTMLInputElement;
-  let imageURL = '';
 
   const onFileSelected = () => {
     const file = fileInput?.files?.[0];

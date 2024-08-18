@@ -8,7 +8,7 @@
   export let currentForm;
 </script>
 
-<div class="mx-auto w-[60%] px-5">
+<div class="mx-auto w-[90%] lg:w-[60%] px-5">
   {#if currentForm === FORM_TYPE.bug}
     <BugForm />
   {:else if currentForm === FORM_TYPE.help}
