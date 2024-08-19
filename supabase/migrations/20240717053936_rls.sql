@@ -983,20 +983,17 @@ with check ((id = ( SELECT organizationmember.organization_id
  LIMIT 1)));
 
 
-create policy "User must be an admin to UPDATE"
+create policy "User must be admin to UPDATE"
 on "public"."organization"
 as permissive
 for update
 to public
-using ((id = ( SELECT organizationmember.organization_id
+using ((id in ( SELECT organizationmember.organization_id
    FROM organizationmember
-  WHERE ((organizationmember.profile_id = ( SELECT auth.uid() AS uid)) AND (organizationmember.role_id = 1))
- LIMIT 1)))
-with check ((id = ( SELECT organizationmember.organization_id
+  WHERE ((organizationmember.profile_id = ( SELECT auth.uid() AS uid)) AND (organizationmember.role_id = 1)))))
+with check ((id in ( SELECT organizationmember.organization_id
    FROM organizationmember
-  WHERE ((organizationmember.profile_id = ( SELECT auth.uid() AS uid)) AND (organizationmember.role_id = 1))
- LIMIT 1)));
-
+  WHERE ((organizationmember.profile_id = ( SELECT auth.uid() AS uid)) AND (organizationmember.role_id = 1)))));
 
 create policy "User must be an org member to DELETE"
 on "public"."organization_plan"
