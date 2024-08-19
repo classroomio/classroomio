@@ -193,9 +193,7 @@
 >
   {#each $lessonSections as section (section.id)}
     <div
-      class="mb-3 m-auto max-w-xl border-2 {reorder
-        ? 'border-primary-400'
-        : 'border-gray-200'}  dark:border-neutral-600 dark:bg-neutral-800 rounded-md"
+      class="mb-3 m-auto max-w-xl border-2 border-gray-200 dark:border-neutral-600 dark:bg-neutral-800 rounded-md"
     >
       <div
         class="mb-2 px-3 py-1 min-h-[50px] border-b bg-gray-50 dark:bg-neutral-700 rounded-tl-md rounded-tr-md flex justify-between items-center"
@@ -263,9 +261,7 @@
       >
         {#each section.lessons as lesson (lesson.id)}
           <div
-            class="border max-w-xl {reorder
-              ? 'border-primary-400'
-              : 'border-gray-200'} px-3 py-1 min-h-[50px] rounded-md mb-2 flex items-center justify-between"
+            class="border max-w-xl border-gray-200 px-3 py-1 min-h-[50px] rounded-md mb-2 flex items-center justify-between"
             animate:flip={{ duration: flipDurationMs }}
           >
             {#if lessonEditing === lesson.id}
