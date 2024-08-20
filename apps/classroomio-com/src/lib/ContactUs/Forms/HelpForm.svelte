@@ -2,6 +2,7 @@
   import Button from '$lib/Button/Button.svelte';
   import TextArea from '$lib/Input/TextArea.svelte';
   import TextField from '$lib/Input/TextField.svelte';
+  import { isFormValid } from '$lib/utils/isFormValid';
   import triggersendEmail from '$lib/utils/sendMail';
   import Sucess from './Sucess.svelte';
 
@@ -14,15 +15,10 @@
   let errorMessage = '';
   let sent = false;
 
-  const isFormValid = () => {
-    if (!name || !email || !title || !description) {
-      return false;
-    }
-    return true;
-  };
-
   const handleClick = async () => {
-    if (!isFormValid()) {
+    const data = { name, email, title, description };
+
+    if (!isFormValid(data)) {
       errorMessage = 'Please fill out all required fields.';
       return;
     }

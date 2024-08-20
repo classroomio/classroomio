@@ -3,6 +3,7 @@
   import TextArea from '$lib/Input/TextArea.svelte';
   import TextField from '$lib/Input/TextField.svelte';
   import UploadWidget from '$lib/UploadWidget/UploadWidget.svelte';
+  import { isFormValid } from '$lib/utils/isFormValid';
   import { submitForm } from '$lib/utils/submitForm';
   import Sucess from './Sucess.svelte';
 
@@ -18,15 +19,10 @@
   let errorMessage = '';
   let sent = false;
 
-  const isFormValid = () => {
-    if (!name || !email || !title || !description || !embeddedLink || !recordingLink) {
-      return false;
-    }
-    return true;
-  };
-
   const handleClick = async () => {
-    if (!isFormValid()) {
+    const data = { name, email, title, description, imageURL, embeddedLink, recordingLink };
+
+    if (!isFormValid(data)) {
       errorMessage = 'Please fill out all required fields.';
       return;
     }
