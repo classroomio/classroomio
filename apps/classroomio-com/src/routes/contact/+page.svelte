@@ -6,7 +6,7 @@
   import { FORM_TYPE } from '$lib/types';
   import type { FORM_TYPE_KEY } from '$lib/types';
 
-  let currentForm: FORM_TYPE_KEY;
+  let currentForm: FORM_TYPE_KEY = FORM_TYPE.BUG;
 
   const formList = [
     {

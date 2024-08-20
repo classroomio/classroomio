@@ -23,6 +23,12 @@
       };
     }
   };
+  const deleteImage = () => {
+    imageURL = '';
+    if (fileInput) {
+      fileInput.value = '';
+    }
+  };
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -38,7 +44,7 @@
       </span>
 
       {#if imageURL}
-        <span title="clear image" on:click={() => (imageURL = '')}>
+        <span title="clear image" on:click={deleteImage}>
           <TrashCan class="fill-red-500 " />
         </span>
       {/if}
