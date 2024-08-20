@@ -23,8 +23,8 @@ export type OssFriend = {
 export type FORM_TYPE_KEY = keyof typeof FORM_TYPE;
 
 export enum FORM_TYPE {
-  bug = 'bug',
-  help = 'help',
-  feature = 'feature',
-  feedback = 'feedback'
+  BUG = 'BUG',
+  HELP = 'HELP',
+  FEATURE = 'FEATURE',
+  FEEDBACK = 'FEEDBACK'
 }

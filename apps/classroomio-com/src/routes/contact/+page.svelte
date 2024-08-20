@@ -10,19 +10,19 @@
 
   const formList = [
     {
-      id: FORM_TYPE.bug,
+      id: FORM_TYPE.BUG,
       title: '🐜  I want to report a bug'
     },
     {
-      id: FORM_TYPE.help,
+      id: FORM_TYPE.HELP,
       title: '🙋‍♂️  I need help'
     },
     {
-      id: FORM_TYPE.feature,
+      id: FORM_TYPE.FEATURE,
       title: '📮  I want to request a feature'
     },
     {
-      id: FORM_TYPE.feedback,
+      id: FORM_TYPE.FEEDBACK,
       title: '💭  I have feedback'
     }
   ];

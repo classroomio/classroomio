@@ -9,13 +9,13 @@
 </script>
 
 <div class="mx-auto w-[90%] lg:w-[60%] px-5">
-  {#if currentForm === FORM_TYPE.bug}
+  {#if currentForm === FORM_TYPE.BUG}
     <BugForm />
-  {:else if currentForm === FORM_TYPE.help}
+  {:else if currentForm === FORM_TYPE.HELP}
     <HelpForm />
-  {:else if currentForm === FORM_TYPE.feature}
+  {:else if currentForm === FORM_TYPE.FEATURE}
     <FeatureRequestForm />
-  {:else if currentForm === FORM_TYPE.feedback}
+  {:else if currentForm === FORM_TYPE.FEEDBACK}
     <FeedbackForm />
   {/if}
 </div>
