@@ -242,6 +242,214 @@
   $: initNewsFeed(data.pathwayId);
   $: setAuthor($group, $profile.id);
   $: $newsFeed = $newsFeed.sort((a, b) => Number(b.isPinned) - Number(a.isPinned));
+  import NewsFeedLoader from '$lib/components/Course/components/NewsFeed/NewsFeedLoader.svelte';
+
+  import type { Feed } from '$lib/utils/types/feed';
+  import type { CurrentOrg } from '$lib/utils/types/org';
+
+  export let data;
+
+  let createdComment;
+  let edit = false;
+  let isLoading = false;
+  let editFeed: Feed;
+  let author = {
+    id: '',
+    username: '',
+    fullname: '',
+    avatar_url: ''
+  };
+
+  let query = new URLSearchParams($page.url.search);
+  let feedId = query.get('feedId') || '';
+
+  const onEdit = (id: string, content: string) => {
+    handleEditFeed(id, content);
+
+    $newsFeed = $newsFeed.map((feed) => {
+      if (feed.id === id) {
+        return { ...feed, content: content };
+      }
+
+      return feed;
+    });
+  };
+
+  const deleteComment = (id: string) => {
+    deleteNewsFeedComment(id);
+    $newsFeed = $newsFeed.flatMap((feed) => ({
+      ...feed,
+      comment: feed.comment.filter((comment) => comment.id !== id)
+    }));
+
+    return snackbar.success('snackbar.course.success.comment_deleted');
+  };
+
+  const addNewReaction = async (reactionType: string, feedId: string, authorId: string) => {
+    const { data } = await fetchNewsFeedReaction(feedId);
+
+    if (!data) return;
+
+    const reactedFeed = data || $newsFeed.find((feed) => feed.id === feedId);
+
+    let reactedAuthorIds: string[] = reactedFeed.reaction[reactionType];
+
+    if (reactedAuthorIds.includes(authorId)) {
+      reactedAuthorIds = reactedAuthorIds.filter(
+        (reactionAuthorId) => reactionAuthorId !== authorId
+      );
+    } else {
+      reactedAuthorIds = [...reactedAuthorIds, authorId];
+    }
+
+    reactedFeed.reaction = {
+      ...reactedFeed.reaction,
+      [reactionType]: reactedAuthorIds
+    };
+
+    const response = await supabase
+      .from('course_newsfeed')
+      .update({
+        reaction: reactedFeed.reaction
+      })
+      .eq('id', feedId);
+
+    if (response.error) {
+      return snackbar.error('snackbar.course.error.reaction_error');
+    }
+
+    $newsFeed = $newsFeed.map((feed) => {
+      if (feed.id === feedId) {
+        feed.reaction = reactedFeed.reaction;
+      }
+
+      return feed;
+    });
+  };
+
+  const addNewComment = async (comment: string, feedId: string, authorId: string) => {
+    const { response } = await createComment({
+      content: comment,
+      author_id: authorId,
+      course_newsfeed_id: feedId
+    });
+
+    if (response.error) {
+      return snackbar.error('snackbar.course.error.commenting_error');
+    }
+
+    if (!response.data) return;
+
+    createdComment = response?.data[0];
+
+    triggerSendEmail(NOTIFICATION_NAME.NEWSFEED, {
+      authorId: author.id,
+      feedId: feedId,
+      comment
+    });
+
+    $newsFeed = $newsFeed.map((feed) => {
+      if (feed.id === feedId) {
+        const newComment = {
+          id: createdComment.id,
+          author: {
+            profile: { ...author }
+          },
+          created_at: createdComment.created_at,
+          content: comment
+        };
+
+        snackbar.success('snackbar.course.success.comment_added');
+
+        return {
+          ...feed,
+          comment: [...feed.comment, { ...newComment }]
+        };
+      }
+
+      return feed;
+    });
+  };
+
+  const onPin = async (feedId, isPinned) => {
+    const newIsPinned = !isPinned;
+    const { response } = await toggleFeedIsPinned(feedId, newIsPinned);
+
+    if (response.error) {
+      return snackbar.error('snackbar.course.error.toggle_error');
+    }
+
+    $newsFeed = $newsFeed.map((feed) => {
+      if (feed.id === feedId) {
+        snackbar.success(
+          `${
+            newIsPinned ? 'snackbar.course.success.pinned' : 'snackbar.course.success.unpinned'
+          } snackbar.course.success.successfully`
+        );
+
+        feed.isPinned = newIsPinned;
+        return feed;
+      }
+
+      return feed;
+    });
+  };
+
+  const deleteFeed = (id: string) => {
+    deleteNewsFeed(id);
+
+    const deletedFeed = $newsFeed.filter((feed) => feed.id !== id);
+    snackbar.success('snackbar.course.success.feed_delete_success');
+
+    $newsFeed = deletedFeed;
+  };
+
+  const initNewsFeed = async (courseId: string) => {
+    if (!courseId) return;
+    try {
+      isLoading = true;
+      const { data, error } = await fetchNewsFeeds(courseId);
+      if (error) {
+        snackbar.error('snackbar.course.error.news_feed_fail');
+      }
+      if (data) {
+        $newsFeed = data.map((feedItem) => ({
+          ...feedItem,
+          isPinned: feedItem.is_pinned
+        }));
+      }
+    } catch (error) {
+      snackbar.error('snackbar.course.error.feed_fetch_error');
+    } finally {
+      isLoading = false;
+    }
+  };
+
+  function setAuthor(groups, profileId) {
+    const currentGroupMember = groups.people.find((person) => person.profile_id === profileId);
+
+    author = {
+      id: currentGroupMember?.id || '',
+      username: $profile.username || '',
+      fullname: $profile.fullname || '',
+      avatar_url: $profile.avatar_url || ''
+    };
+  }
+
+  function getPageRoles(org: CurrentOrg) {
+    const roles: number[] = [1, 2];
+
+    if (org.customization.course.newsfeed) {
+      roles.push(3);
+    }
+
+    return roles;
+  }
+
+  $: initNewsFeed(data.pathwayId);
+
+  $: setAuthor($group, $profile.id);
+  $: $newsFeed = $newsFeed.sort((a, b) => Number(b.isPinned) - Number(a.isPinned));
 </script>
 
 <PathwayContainer bind:pathwayId={data.pathwayId}>

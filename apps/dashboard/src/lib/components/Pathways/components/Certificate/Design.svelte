@@ -111,6 +111,7 @@
           {#each themes as theme}
             <div class="flex mr-3">
               <RadioButton value={theme} />
+
               <img
                 src={`/images/certificate_theme_${theme}.png`}
                 alt="themes"

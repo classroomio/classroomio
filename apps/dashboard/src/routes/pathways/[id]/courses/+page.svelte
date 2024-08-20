@@ -63,7 +63,7 @@
     <AddCourseModal pathwayId={$pathway.id} />
 
     <!-- header -->
-    <div class="flex justify-between items-center">
+    <div class="flex justify-between items-center max-w-[95%] mx-auto">
       <h1>{$t('pathway.pages.course.title')}</h1>
 
       <div class="flex gap-5 justify-end">
@@ -88,7 +88,7 @@
     </div>
 
     <!-- filter container -->
-    <div class="filter-containter flex items-end justify-end gap-2 mt-3">
+    <div class="filter-containter flex items-end justify-end gap-2 mt-3 max-w-[90%] mx-auto">
       <Search
         placeholder={$t('pathway.pages.course.search')}
         bind:value={searchValue}
@@ -170,7 +170,7 @@
       {:else}
         <!-- empty course state -->
         <div
-          class="flex flex-col justify-center gap-3 items-center border rounded-md mt-5 px-10 text-center h-[60vh]"
+          class="flex flex-col justify-center gap-3 items-center border rounded-md max-w-[90%] mx-auto mt-5 px-10 text-center h-[60vh]"
         >
           <div class="scale-[5]">
             <CourseIcon color="#0233BD" />

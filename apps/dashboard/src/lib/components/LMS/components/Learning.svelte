@@ -3,69 +3,30 @@
   import { goto } from '$app/navigation';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
-  import { courses } from '$lib/components/Courses/store';
   import { t } from '$lib/utils/functions/translations';
   import { ChevronDown } from 'carbon-icons-svelte';
   import CourseListModal from '$lib/components/LMS/components/CourseListModal.svelte';
+  import { lmsCourses } from '$lib/components/LMS/store';
 
-  export let isLearningPath = true;
   let open = false;
-  const mockPathway = {
-    title: 'Become a ux expert',
-    courses: [
-      {
-        id: '1',
-        title: 'Intrduction to UX',
-        description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium, quo.',
-        course_progress: 40,
-        isLocked: false
-      },
-      {
-        id: '2',
-        title: 'Hierarchy patterns',
-        description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium, quo.',
-        course_progress: 100,
-        isLocked: false
-      },
-      {
-        id: '3',
-        title: 'Alignment and colour schemes',
-        description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium, quo.',
-        course_progress: 0,
-        isLocked: true
-      },
-      {
-        id: '4',
-        title: 'Advanced design patterns',
-        description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium, quo.',
-        course_progress: 100,
-        isLocked: false
-      },
-      {
-        id: '5',
-        title: 'Design sytems and patterns',
-        description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium, quo.',
-        course_progress: 40,
-        isLocked: false
-      }
-    ]
+
+  const getCompletedCoursesCount = (pathway) => {
+    return pathway.courses?.filter((course) => course.progress_rate === 100).length || 0;
   };
 
-  const completedCourse = mockPathway.courses.filter(
-    (course) => course.course_progress === 100
-  ).length;
-
-  // returns the first course that has not been completed
-  const currentPathwayCourse = mockPathway.courses.find(
-    (course) => course.isLocked !== true && course.course_progress !== 100
-  );
+  // this return the first course it can find in the array that is been taken but not yet completed.
+  const getCurrentCourse = (pathway) => {
+    return pathway.courses?.find(
+      (course) => course.is_unlocked === true && course.progress_rate !== 100
+    );
+  };
 
   const gotoCourse = (id: string | undefined) => {
     if (!id) return;
     goto(`/courses/${id}/lessons?next=true`);
   };
 
-  $: last3Courses = $courses.length > 0 ? $courses.slice(0, 3) : [];
+  $: last3Courses = $lmsCourses.length > 0 ? $lmsCourses.slice(0, 3) : [];
 </script>
 
 <section class="h-full">
@@ -79,20 +40,21 @@
       <div class=" w-full h-full flex flex-col justify-start overflow-y-auto">
         {#each last3Courses as course}
           <div class="p-3">
-            {#if isLearningPath}
+            {#if course.isPathway}
               <div
                 class="org-selector relative flex justify-between items-center text-primary-900 font-bold text-xs pb-3"
               >
-                <span class="uppercase">{$t('lms_pathway.pathway')}: {mockPathway.title}</span>
+                <span class="uppercase">{$t('lms_pathway.pathway')}: {course.title}</span>
                 <button
                   class="flex gap-2 items-center cursor-pointer lowercase"
                   on:click={(e) => {
                     e.stopPropagation();
                     open = !open;
                   }}
-                  >{completedCourse}
+                >
+                  {getCompletedCoursesCount(course) || 0}
                   {$t('lms_pathway.of')}
-                  {mockPathway.courses.length}
+                  {course.courses.length}
                   {$t('lms_pathway.completed')}
                   <ChevronDown />
                 </button>
@@ -100,34 +62,37 @@
 
               <span class="flex flex-col lg:flex-row gap-3 items-start pb-5">
                 <img
-                  src={course.logo || '/images/classroomio-course-img-template.jpg'}
+                  src={getCurrentCourse(course).logo ||
+                    '/images/classroomio-course-img-template.jpg'}
                   alt="course"
                   class="hidden lg:block lg:w-[60px] lg:h-[60px]"
                 />
                 <div class="w-full">
                   <p class="text-base font-semibold dark:text-white">
-                    {currentPathwayCourse?.title}
+                    {getCurrentCourse(course)?.title}
                   </p>
                   <p class="line-clamp-2 text-xs font-normal text-[#656565] dark:text-white">
-                    {currentPathwayCourse?.description}
+                    {getCurrentCourse(course)?.description}
                   </p>
                 </div>
                 <PrimaryButton
                   label={$t('dashboard.continue')}
                   variant={VARIANTS.OUTLINED}
                   className="rounded-none text-[#0233BD]"
-                  onClick={() => gotoCourse(currentPathwayCourse?.id)}
+                  onClick={() => gotoCourse(getCurrentCourse(course)?.id)}
                 />
               </span>
-              {#if currentPathwayCourse?.course_progress && currentPathwayCourse?.course_progress > 0}
+              {#if getCurrentCourse(course)?.progress_rate && getCurrentCourse(course)?.progress_rate > 0}
                 <div class="relative bg-[#EAEAEA] w-full h-1">
                   <div
-                    style="width: {(currentPathwayCourse?.course_progress ?? 0) || 0}%"
+                    style="width: {getCurrentCourse(course)?.progress_rate || 0}%"
                     class={`absolute top-0 left-0 bg-primary-700 h-full`}
                   />
                 </div>
               {/if}
-              <CourseListModal {mockPathway} bind:open />
+              {#if course.courses}
+                <CourseListModal pathway={course} bind:open />
+              {/if}
             {:else}
               <span class="flex flex-col lg:flex-row gap-3 items-start pb-5">
                 <img

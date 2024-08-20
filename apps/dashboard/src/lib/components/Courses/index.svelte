@@ -1,11 +1,11 @@
 <script lang="ts">
-  import Box from '../Box/index.svelte';
-  import Card from './components/Card/index.svelte';
-  import List from './components/List/index.svelte';
-  import CardLoader from './components/Card/Loader.svelte';
-  import CoursesEmptyIcon from '../Icons/CoursesEmptyIcon.svelte';
-  import { courseMetaDeta } from './store';
-  import type { Course } from '$lib/utils/types';
+  import Box from '$lib/components/Box/index.svelte';
+  import Card from '$lib/components/Courses/components/Card/index.svelte';
+  import List from '$lib/components/Courses/components/List/index.svelte';
+  import CardLoader from '$lib/components/Courses/components/Card/Loader.svelte';
+  import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
+  import { courseMetaDeta } from '$lib/components/Courses/store';
+  import type { Pathway } from '$lib/utils/types';
   import { globalStore } from '$lib/utils/store/app';
   import {
     StructuredList,
@@ -16,20 +16,28 @@
   } from 'carbon-components-svelte';
   import { t } from '$lib/utils/functions/translations';
   import { isMobile } from '$lib/utils/store/useMobile';
+  import type { LmsCourse } from '$lib/components/LMS/store';
 
-  export let courses: Course[] = [];
+  export let courses: LmsCourse[] = [];
   export let emptyTitle = $t('courses.course_card.empty_title');
   export let emptyDescription = $t('courses.course_card.empty_description');
   export let isExplore = false;
   export let searching = false;
 
-  function calcProgressRate(progressRate?: number, totalLessons?: number): number {
-    if (!progressRate || !totalLessons) {
+  function calcProgressRate(progressRate?: number, totalItem?: number): number {
+    if (!progressRate || !totalItem) {
       return 0;
     }
 
-    return Math.round((progressRate / totalLessons) * 100);
+    return Math.round((progressRate / totalItem) * 100);
   }
+
+  const getCompletedCourses = (course: Pathway) => {
+    if (!course.isPathway) return;
+    const completedCourse =
+      course.courses?.filter((course) => course.progress_rate === 100).length || 0;
+    return completedCourse;
+  };
 </script>
 
 <!-- <CopyCourseModal /> -->
@@ -95,15 +103,18 @@
             isPublished={courseData.is_published}
             cost={courseData.cost}
             type={courseData.type}
-            isLearningPath={true}
-            totalCourse={5}
-            completedCourse={2}
+            isLearningPath={courseData.isPathway}
+            totalCourse={courseData.total_course}
+            completedCourse={getCompletedCourses(courseData)}
             currency={courseData.currency}
             totalLessons={courseData.total_lessons}
             totalStudents={courseData.total_students}
             isLMS={$globalStore.isOrgSite}
             {isExplore}
-            progressRate={calcProgressRate(courseData.progress_rate, courseData.total_lessons)}
+            progressRate={calcProgressRate(
+              courseData.progress_rate,
+              courseData.isPathway ? courseData.total_course : courseData.total_lessons
+            )}
           />
         {/key}
       {/each}

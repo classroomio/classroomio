@@ -1,5 +1,10 @@
+import { STATUS } from '$lib/components/Course/components/Lesson/Exercise/constants';
+import type { PostgrestError } from '@supabase/supabase-js';
+import type { ProfilePathwayProgress } from '$lib/utils/types';
 import { supabase } from '$lib/utils/functions/supabase';
 import type { Pathway, PathwayCourse } from '$lib/utils/types';
+import type { PostgrestSingleResponse } from '@supabase/supabase-js';
+import type { Pathway } from '$lib/utils/types';
 import type { PostgrestSingleResponse } from '@supabase/supabase-js';
 
 export function addPathwayGroupMember(member: any) {

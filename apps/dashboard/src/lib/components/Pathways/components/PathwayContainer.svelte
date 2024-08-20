@@ -1,6 +1,8 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { browser } from '$app/environment';
+  import { goto } from '$app/navigation';
+  import { browser } from '$app/environment';
   import { Moon } from 'svelte-loading-spinners';
 
   import {
@@ -22,6 +24,7 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import PathwaySidebar from '$lib/components/Pathways/components/Sidebar.svelte';
 
+  export let pathwayId = '';
   export let pathwayId = '';
   export let path = '';
   export let className: string = '';
@@ -49,6 +52,38 @@
   }
 
   $: onCourseIdChange(pathwayId);
+
+  $: {
+    const user = $group.people.find((person) => person.profile_id === $profile.id);
+    if (user) {
+      $globalStore.isStudent = user.role_id === 3;
+    } else if (!$isOrgAdmin && $profile.id && $group.people.length) {
+      // Current User doesn't have permission to view
+      isPermitted = false;
+    }
+  }
+
+  let prevPathwayId = '';
+  let isPermitted = true;
+
+  async function onPathwayIdChange(pathwayId = '') {
+    if (!pathwayId || prevPathwayId === pathwayId || !browser || $pathway.id === pathwayId) return;
+
+    isFetching = true;
+    pathway.set(defaultPathway);
+    courses.set([]);
+
+    const { data: _data } = await fetchPathway(pathwayId);
+
+    if (_data) {
+      setPathway(_data);
+    }
+
+    isFetching = false;
+    prevPathwayId = pathwayId;
+  }
+
+  $: onPathwayIdChange(pathwayId);
 
   $: {
     const user = $group.people.find((person) => person.profile_id === $profile.id);

@@ -1470,21 +1470,6 @@
     },
     "pages": {
       "settings": {
-        "page_title": "Ajustes",
-        "title_error": "Por favor agregue un título de colección",
-        "description_error": "Por favor agregue una descripción de la colección.",
-        "cover_image": "Imagen de portada",
-        "optional": "Esta imagen opcional aparecerá en su página de bienvenida. Si incluyes uno, debe tener al menos 280 x 200",
-        "replace": "Reemplazar",
-        "delete": "Borrar",
-        "details": "Detalles de la colección",
-        "title": "Título de la colección",
-        "title_placeholder": "Escribe aquí el título del curso.",
-        "description": "Descripción de la colección",
-        "description_placeholder": "Escribe aquí la descripción del curso.",
-        "link": "Enlace de colección",
-        "students": "¿Los estudiantes deben tomar el curso según el orden recomendado?",
-        "yes": "En caso afirmativo, el estudiante debe tomar los cursos según el orden; en caso negativo, el estudiante puede comenzar desde cualquier curso de su elección.",
         "option_one": "Sí",
         "option_two": "No",
         "publish": "Publicar ruta de aprendizaje",
@@ -1499,24 +1484,98 @@
         "delete_text": "Eliminar la ruta de aprendizaje en su totalidad",
         "save": "Guardar cambios",
         "placeholder": "una pequeña descripción sobre el camino",
-        "pathway_description": "Descripción de la ruta"
+        "pathway_description": "Descripción de la ruta",
+        "page_title": "Ajustes",
+        "title_error": "Por favor agregue un título de ruta",
+        "description_error": "Por favor agregue una descripción de la ruta",
+        "cover_image": "Imagen de portada",
+        "optional": "Esta imagen opcional aparecerá en su página de bienvenida. Si incluyes uno, debe tener al menos 280 x 200",
+        "replace": "Reemplazar",
+        "delete": "Borrar",
+        "details": "Detalles del camino",
+        "title": "Título de la ruta",
+        "title_placeholder": "Escribe aquí el título del curso.",
+        "description": "Descripción de la ruta",
+        "description_placeholder": "Escribe aquí la descripción del curso.",
+        "link": "Enlace de ruta",
+        "students": "¿Los estudiantes deben tomar el curso según el orden recomendado?",
+        "yes": "En caso afirmativo, el estudiante debe tomar los cursos según el orden; en caso negativo, el estudiante puede comenzar desde cualquier curso de su elección."
       },
       "course": {
         "title": "Cursos",
         "add_course": "Un curso",
         "add_remove": "Agregar/eliminar curso",
         "order": "Ordenar cursos",
-        "publish": "Publicar colección",
-        "search": "Encuentre una ruta de aprendizaje",
         "option_one": "Publicado",
         "option_two": "Inédito",
         "body_title": "Título",
         "description": "Descripción",
         "students": "Estudiantes",
         "lessons": "Lecciones",
+        "search": "Buscar curso Pathway",
         "empty_state_header": "Aún no hay cursos",
         "empty_state_text": "No has agregado ningún curso a esta ruta de aprendizaje.",
-        "empty_state_label": "Agregar curso a esta ruta de aprendizaje"
+        "empty_state_label": "Agregar curso a esta ruta de aprendizaje",
+        "publish": "Publicar ruta"
+      },
+      "lms_certificate": {
+        "share": "Certificado de acciones",
+        "locked": {
+          "title": "Certificados aún no disponibles",
+          "subtitle": "El certificado está disponible porque no has terminado el camino de aprendizaje o tu instructor no lo ha aprobado. Por favor contacta a tu instructor"
+        },
+        "unlocked": {
+          "title": "¡Felicitaciones! 🎉 tu certificado está listo",
+          "subtitle": "Has completado este camino de aprendizaje y tu dedicación es evidente. Descargue el certificado y compártalo con su red como prueba de su habilidad recién adquirida"
+        }
+      },
+      "landingPage": {
+        "reviews": {
+          "students": "Vea lo que dicen los estudiantes sobre esta colección.",
+          "readMore": "Leer más",
+          "readLess": "Leer menos"
+        },
+        "courseList": {
+          "header": "Lista de cursos seleccionados",
+          "subheader": "Nuestra lista de cursos seleccionados presenta temas esenciales como investigación de usuarios, wireframing, creación de prototipos, pruebas de usabilidad, diseño de interacción y herramientas estándar de la industria. ¡Desbloquea tu potencial de UX hoy!",
+          "courses": "cursos",
+          "lessons": "lecciones",
+          "estimated": "estimado",
+          "hours": "horas",
+          "view": "Ver detalles"
+        },
+        "subHeader": {
+          "button": "Inscríbase ahora-comienza"
+        },
+        "certificate": {
+          "earn": "Gana un certificado",
+          "evidence": "Obtenga una evidencia de prueba de habilidades y compártala con su red profesional"
+        },
+        "main": {
+          "description": "Descripción de la ruta de aprendizaje",
+          "objectives": "Objetivos de la ruta de aprendizaje",
+          "pricing_win": "Complete todas las lecciones con éxito y tenga la oportunidad de ganar un ipad. ¡Lo decimos en serio cuando lo decimos!",
+          "start": "Empezar ahora"
+        },
+        "banner": {
+          "courses": "Cursos",
+          "courses_text": "Cursos cuidadosamente seleccionados para lograr tus objetivos.",
+          "certificate": "Obtener certificado",
+          "share": "Obtenga una certificación y compártala con su red",
+          "rating": "Instructor de curso experimentado y altamente calificado."
+        },
+        "header": {
+          "tag": "RUTA DE APRENDIZAJE",
+          "button": "Inscríbete ahora"
+        },
+        "constants": {
+          "about": "ACERCA DE",
+          "objectives": "OBJETIVOS",
+          "courses": "CURSOS",
+          "review": "REVISAR",
+          "instructor": "INSTRUCTOR(ES)",
+          "faq": "Preguntas frecuentes"
+        }
       }
     }
   },
