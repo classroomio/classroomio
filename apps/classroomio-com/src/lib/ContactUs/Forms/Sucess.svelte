@@ -13,5 +13,5 @@
     We'll get back to you as soon as possible. In the meantime, Explore and enjoy features on our
     website
   </p>
-  <Button label="Go back Home" className="px-10 md:px-20" onClick={() => goto('/')} />
+  <Button label="Go to Home" className="px-10 md:px-20" onClick={() => goto('/')} />
 </div>
