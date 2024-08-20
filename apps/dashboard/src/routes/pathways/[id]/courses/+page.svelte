@@ -17,7 +17,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { isMobile } from '$lib/utils/store/useMobile';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { addCourseModal, pathway } from '$lib/components/Pathways/store';
+  import { addCourseModal, pathway, courses } from '$lib/components/Pathways/store';
 
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
@@ -26,9 +26,13 @@
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import AddCourseModal from '$lib/components/Pathways/components/AddCourseModal.svelte';
   import PathwayContainer from '$lib/components/Pathways/components/PathwayContainer.svelte';
+  import type { PathwayCourse } from '$lib/utils/types/index.js';
+
+  export let data;
 
   let searchValue: string = '';
   let selectedId: string = '1';
+  let filteredCourses: PathwayCourse[] = [];
   let coursePreference: string = 'grid';
 
   const setViewPreference = (preference: 'grid' | 'list') => {
@@ -47,16 +51,16 @@
   }
 
   // Computed property to filter courses based on the search value
-  $: filteredCourses = $pathway.courses.filter(
-    (course) =>
-      course.title.toLowerCase().includes(searchValue.toLowerCase()) &&
-      (selectedId === '0' ? course.is_published : !course.is_published)
+  $: filteredCourses = $courses.filter(
+    (item) =>
+      item.course.title.toLowerCase().includes(searchValue.toLowerCase()) &&
+      (selectedId === '0' ? item.course.is_published : !item.course.is_published)
   );
 </script>
 
-<PathwayContainer>
+<PathwayContainer bind:pathwayId={data.pathwayId}>
   <div class="overflow-y-auto max-h-[90vh]">
-    <AddCourseModal />
+    <AddCourseModal pathwayId={$pathway.id} />
 
     <!-- header -->
     <div class="flex justify-between items-center">
@@ -112,7 +116,7 @@
 
     <!-- body -->
     <div class="mt-5">
-      {#if filteredCourses.length > 0}
+      {#if $courses.length > 0}
         {#if coursePreference === 'list'}
           <div class="max-w overflow-x-auto">
             <StructuredList>
@@ -134,31 +138,31 @@
                   <StructuredListRow>
                     <StructuredListCell noWrap
                       ><p class="font-semibold text-black dark:text-white">
-                        {course.title}
+                        {course.course.title}
                       </p></StructuredListCell
                     >
-                    <StructuredListCell>{course.description}</StructuredListCell>
+                    <StructuredListCell>{course.course.description}</StructuredListCell>
                     <StructuredListCell>
-                      {course.total_students}
+                      {course.course.group?.members.length}
                     </StructuredListCell>
                     <StructuredListCell>
-                      {course.total_lessons}
+                      {course.course.lessons?.length}
                     </StructuredListCell>
                   </StructuredListRow>
                 {/each}
               </StructuredListBody>
             </StructuredList>
           </div>
-        {:else}
+        {:else if coursePreference === 'grid'}
           <section class="flex items-center flex-wrap md:gap-28 gap-10">
             {#each filteredCourses as course}
               <Card
-                bannerImage={course.banner_image}
-                id={course.id}
-                title={course.title}
-                description={course.description}
-                totalLessons={course.total_lessons}
-                totalStudents={course.total_students}
+                bannerImage={course.course.logo || '/images/classroomio-course-img-template.jpg'}
+                id={course.course.id}
+                title={course.course.title}
+                description={course.course.description}
+                totalLessons={course.course.lesson?.length || 0}
+                totalStudents={course.course.group_id?.groupmember.length || 0}
               />
             {/each}
           </section>

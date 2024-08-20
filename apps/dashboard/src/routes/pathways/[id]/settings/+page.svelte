@@ -28,6 +28,8 @@
   import CustomToggle from '$lib/components/Pathways/components/Toggle.svelte';
   import PathwayContainer from '$lib/components/Pathways/components/PathwayContainer.svelte';
 
+  export let data;
+
   let id: string;
   let isSaving = false;
   let slug: boolean = true;
@@ -83,7 +85,7 @@
   $: id = $page.params.id;
 </script>
 
-<PathwayContainer>
+<PathwayContainer bind:pathwayId={data.pathwayId}>
   <PageNav title={$t('pathway.pages.settings.page_title')} />
 
   <div class="border border-[#EAEAEA] max-w-[87%] shadow-sm rounded-md w-full mx-auto my-10">

@@ -11,7 +11,7 @@
   import { isMobile } from '$lib/utils/store/useMobile';
   import { sideBar } from '$lib/components/Org/store';
   import { profile } from '$lib/utils/store/user';
-  import { pathway } from '../store';
+  import { courses, pathway } from '../store';
 
   import { t } from '$lib/utils/functions/translations';
   import { getIsCourseComplete, getPathwayNavItemRoute } from '../functions';
@@ -235,7 +235,7 @@
             icon={navItem.icon}
             handleClick={handleMainGroupClick(navItem.to)}
             isGroupActive={(path || $page.url.pathname) === navItem.to}
-            total={navItem.isCourses ? ($pathway.courses || []).length : 0}
+            total={navItem.isCourses ? ($courses || []).length : 0}
             isLoading={!$pathway.id}
             isLesson={navItem.isCourses}
             isPaidFeature={navItem.isPaidFeature}
@@ -244,7 +244,7 @@
             addIconClick={() => console.log('open add course modal')}
           >
             {#if navItem.isCourses}
-              {#each $pathway.courses as item, index}
+              {#each $courses as item, index}
                 <a
                   class="pl-7 w-[95%] text-[0.80rem] mb-1 text-black dark:text-white {isStudent &&
                   !item.is_unlocked
@@ -265,13 +265,13 @@
                       size="sm"
                       shape="rounded-full"
                     />
-                    <span class="w-[70%] text-ellipsis line-clamp-2">{item.title}</span>
+                    <span class="w-[70%] text-ellipsis line-clamp-2">{item.course.title}</span>
                     <span class="grow" />
                     {#if !item.is_unlocked}
                       <span class="text-md ml-2" title="This lesson is locked.">
                         <LockedIcon class="carbon-icon dark:text-white" />
                       </span>
-                    {:else if getIsCourseComplete(item.is_completed, $profile.id)}
+                    {:else if getIsCourseComplete(item.course.lesson[0], $profile.id)}
                       <span class="ml-2" title="You have completed this lesson">
                         <CheckmarkFilled class="carbon-icon dark:text-white" />
                       </span>

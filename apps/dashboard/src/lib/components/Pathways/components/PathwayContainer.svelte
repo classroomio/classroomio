@@ -10,7 +10,6 @@
     defaultPathway,
     setPathway
   } from '$lib/components/Pathways/store';
-
   import { profile } from '$lib/utils/store/user';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import { globalStore } from '$lib/utils/store/app';

@@ -136,29 +136,6 @@ interface PathwayMetadata {
   allowNewStudent?: boolean;
 }
 
-interface PathwayMetadata {
-  requirements?: string;
-  description?: string;
-  goals?: string;
-  videoUrl?: '';
-  showDiscount?: false;
-  discount?: 0;
-  paymentLink?: string;
-  reward?: {
-    show: boolean;
-    description: string;
-  };
-  instructor?: {
-    name: string;
-    role: string;
-    coursesNo: number;
-    description: string;
-    imgUrl: string;
-  };
-  reviews?: Array<Review>;
-  allowNewStudent: boolean;
-}
-
 export interface LessonCommentInsertPayload {
   id: number;
   created_at: string;
@@ -250,7 +227,7 @@ export enum COURSE_TYPE {
   LIVE_CLASS = 'LIVE_CLASS'
 }
 export interface Course {
-  title?: any; // type unknown;
+  title: any; // type unknown;
   description: string; // type unknown;
   type: COURSE_TYPE;
   overview?: any; // type unknown;
@@ -295,16 +272,13 @@ export interface CourseCompletion {
 
 export interface PathwayCourse {
   id: string;
-  banner_image: string;
-  title: string;
-  description: string;
-  total_lessons: number;
-  total_students: number;
-  is_unlocked: boolean;
-  is_completed: CourseCompletion[];
-  is_published: boolean;
+  course: Course;
+  course_id: any;
+  pathway_id: any;
+  order: number;
   created_at: string;
   updated_at: string;
+  is_unlocked: boolean;
 }
 
 export interface Pathway {
@@ -319,7 +293,7 @@ export interface Pathway {
   organization_id?: string /* foreign key to organization.id */;
   logo?: string;
   slug?: any; // type unknown;
-  metadata: PathwayMetadata;
+  landingpage: PathwayMetadata;
   cost: number;
   currency?: string;
   group?: Group;
@@ -333,8 +307,7 @@ export interface Pathway {
   lms_certificate: boolean;
   courses_certificate: string;
   prerequisite: string;
-  courses?: PathwayCourse[];
-  selectedCourses: PathwayCourse[];
+  pathway_course: PathwayCourse[];
 }
 
 export interface Groupmember {

@@ -1,5 +1,5 @@
 import { supabase } from '$lib/utils/functions/supabase';
-import type { Pathway } from '$lib/utils/types';
+import type { Pathway, PathwayCourse } from '$lib/utils/types';
 import type { PostgrestSingleResponse } from '@supabase/supabase-js';
 
 export function addPathwayGroupMember(member: any) {
@@ -11,16 +11,23 @@ const SLUG_QUERY = `
   id,
   title,
   description,
-  overview,
   logo,
   is_published,
   slug,
   cost,
   currency,
-  metadata,
+  landingpage,
   certificate_theme,
-  courses:course(
-    id, title,
+  pathway_course (
+    id,
+    course_id,
+    pathway_id,
+    course (
+      id,
+      title,
+      description,
+      created_at
+    )
   )
 `;
 
@@ -28,21 +35,35 @@ const ID_QUERY = `
   id,
   title,
   description,
-  created_at,
-  updated_at,
-  group_id,
-  is_template,
   logo,
+  is_published,
   slug,
-  metadata,
-  settings,
   cost,
   currency,
-  banner_image,
-  is_published,
-  status,
+  landingpage,
   certificate_theme,
-  is_certificate_downloadable
+  pathway_course (
+    id,
+    order,
+    course_id,
+    pathway_id,
+    course (
+      id,
+      title,
+      logo,
+      description,
+      banner_image,
+      created_at,
+      lesson (
+        is_complete
+      ),
+      group_id (
+        groupmember (
+          id
+        )
+      )
+    )
+  )
 `;
 
 export async function fetchPathway(pathwayId?: Pathway['id'], slug?: Pathway['slug']) {
@@ -67,7 +88,6 @@ export async function fetchPathway(pathwayId?: Pathway['id'], slug?: Pathway['sl
   if (!data || error) {
     console.log(`data`, data);
     console.log(`fetchPathway => error`, error);
-    // return this.redirect(307, '/courses');
     return { data, error };
   }
 
@@ -75,4 +95,20 @@ export async function fetchPathway(pathwayId?: Pathway['id'], slug?: Pathway['sl
     data,
     error
   };
+}
+
+export function addPathwayCourse(pathwayId: Pathway['id'], courseId: PathwayCourse['course_id']) {
+  return supabase.from('pathway_course').insert([
+    {
+      pathway_id: pathwayId,
+      course_id: courseId,
+    }
+  ]).select();
+}
+
+export function updatePathwayCourses(id: any, pathwayId: Pathway['id'], courseId: PathwayCourse['course_id'], order: PathwayCourse['order']) {
+  return supabase
+    .from('pathway_course')
+    .update({ order: order })
+    .match({ id: id, pathway_id: pathwayId, course_id: courseId });
 }

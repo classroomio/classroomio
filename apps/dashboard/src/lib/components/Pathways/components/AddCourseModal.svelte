@@ -7,23 +7,29 @@
     StructuredListRow,
     Search
   } from 'carbon-components-svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
-  import ArrowLeft from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
+
+  import { courses } from '../store';
+  import { addCourseModal } from '../store';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
-  import { addCourseModal, courses } from '../store';
+  import type { Course, PathwayCourse } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
   import { fetchCourses } from '$lib/utils/services/courses';
+  import { addPathwayCourse } from '$lib/utils/services/pathways';
+
   import Modal from '$lib/components/Modal/index.svelte';
-  import Checkbox from '$lib/components/Form/Checkbox.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import DragAndDropModal from './DragAndDropModal.svelte';
+  import Checkbox from '$lib/components/Form/Checkbox.svelte';
+  import IconButton from '$lib/components/IconButton/index.svelte';
+  import ArrowLeft from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
-  import type { PathwayCourse } from '$lib/utils/types';
+  export let pathwayId;
 
-  let pathwayCourses: PathwayCourse[] = [];
   let searchValue = '';
   let isSearchInputOpened = false;
+  let allCourses: Course[] = [];
+  let pathwayCourses: PathwayCourse[] = [];
 
   function close() {
     $addCourseModal.open = false;
@@ -31,12 +37,39 @@
   }
 
   function handleSave() {
+    courses.update((existingCourses) => {
+      const currentCourseCount = existingCourses.length;
+
+      const newCourses = pathwayCourses
+        .filter((course) => !existingCourses.some((c) => c.course_id === course.id))
+        .map((course, index) => ({
+          id: '',
+          course: course,
+          course_id: course.id,
+          pathway_id: pathwayId || '',
+          order: currentCourseCount + index + 1
+        }));
+
+      newCourses.forEach(async (newCourse) => {
+        try {
+          await addPathwayCourse(newCourse.pathway_id, newCourse.course_id);
+        } catch (error) {
+          console.error('Error updating course in Supabase:', error);
+        }
+      });
+
+      return [...existingCourses, ...newCourses];
+    });
+
     $addCourseModal.step = 1;
   }
 
   function toggleCourseSelection(course: PathwayCourse, checked: boolean) {
     if (checked) {
-      pathwayCourses = [...pathwayCourses, course];
+      // avoid duplicating the course
+      if (!pathwayCourses.some((c) => c.id === course.id)) {
+        pathwayCourses = [...pathwayCourses, course];
+      }
     } else {
       pathwayCourses = pathwayCourses.filter((c) => c.id !== course.id);
     }
@@ -44,16 +77,21 @@
 
   async function fetchCourse(userId?: string, orgId?: string) {
     const data = await fetchCourses(userId, orgId);
-    if (!data) return;
 
-    courses.set(data.allCourses);
+    if (!data) return;
+    allCourses = data.allCourses;
+
+    // filter out courses that already exist in $courses
+    allCourses = data.allCourses.filter(
+      (course) => !$courses.some((c) => c.course?.id === course.id)
+    );
   }
 
   $: fetchCourse($profile.id, $currentOrg.id);
 
-  $: filteredCourses = $courses.filter((course) =>
-    course.title.toLowerCase().includes(searchValue.toLowerCase())
-  );
+  $: filteredCourses = searchValue
+    ? allCourses.filter((course) => course.title.toLowerCase().includes(searchValue.toLowerCase()))
+    : allCourses;
 </script>
 
 <Modal
@@ -66,7 +104,7 @@
 >
   <slot:fragment slot="headerLeftBtn">
     {#if $addCourseModal.step === 1}
-      <IconButton on:click={() => ($addCourseModal.step = 0)}>
+      <IconButton onClick={() => ($addCourseModal.step = 0)}>
         <ArrowLeft class="text-primary-700" />
       </IconButton>
     {/if}
@@ -105,7 +143,7 @@
                         name={course.title}
                         className="cursor-pointer"
                         value={course.id}
-                        checked={pathwayCourses.includes(course)}
+                        checked={pathwayCourses.some((c) => c.id === course.id)}
                         onInputChange={(e) => toggleCourseSelection(course, e.target?.checked)}
                       />
                     </div>
@@ -135,7 +173,10 @@
         </div>
       </div>
     {:else if $addCourseModal.step === 1}
-      <DragAndDropModal bind:pathwayCourses on:update={(e) => (pathwayCourses = e.detail)} />
+      <DragAndDropModal
+        bind:pathwayCourses={$courses}
+        on:update={(e) => (pathwayCourses = e.detail)}
+      />
     {/if}
   </main>
 </Modal>
