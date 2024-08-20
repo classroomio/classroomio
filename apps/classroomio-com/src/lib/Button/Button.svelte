@@ -1,4 +1,5 @@
 <script>
+  import Renew from 'carbon-icons-svelte/lib/Renew.svelte';
   export let label = '';
   export let className = '';
   export let isLoading = false;
@@ -13,7 +14,7 @@
     on:click={onClick}
   >
     {#if isLoading}
-      loading...
+      <Renew size={24} class="animate-spin" />
     {:else}
       {label}
     {/if}

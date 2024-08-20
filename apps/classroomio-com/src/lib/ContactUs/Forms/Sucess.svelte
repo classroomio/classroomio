@@ -1,5 +1,6 @@
 <script>
   import { goto } from '$app/navigation';
+
   import Button from '$lib/Button/Button.svelte';
 </script>
 

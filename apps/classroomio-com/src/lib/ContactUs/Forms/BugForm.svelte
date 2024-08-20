@@ -80,7 +80,7 @@
         <p class="text-left text-sm text-red-500">{errorMessage}</p>
       {/if}
       <Button
-        label="submit"
+        label="Submit"
         className="px-32"
         onClick={handleClick}
         isDisabled={isLoading}
