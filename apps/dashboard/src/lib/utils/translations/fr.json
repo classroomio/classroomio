@@ -770,7 +770,16 @@
         },
         "drag": "faites glisser une carte pour réorganiser",
         "no_lesson": "Pas encore de cours",
-        "share_your_knowledge": "Partagez vos connaissances avec le monde en créant des leçons engageantes. Commencez par cliquer sur le bouton Ajouter."
+        "share_your_knowledge": "Partagez vos connaissances avec le monde en créant des leçons engageantes. Commencez par cliquer sur le bouton Ajouter.",
+        "heading_v2": "Contenu",
+        "section_prompt": {
+          "cta": "Activer les sections",
+          "header": "Activer les sections",
+          "title": "Nous avons lancé des sections de cours",
+          "description": "Vous pouvez désormais regrouper les leçons en sections pour organiser votre contenu et rendre l'apprentissage plus fluide pour vos élèves.",
+          "activate": "Activer",
+          "cancel": "Annuler"
+        }
       },
       "news_feed": {
         "heading": "Fil d'actualité",

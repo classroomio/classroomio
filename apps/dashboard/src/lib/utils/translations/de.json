@@ -770,7 +770,16 @@
         },
         "drag": "Ziehen Sie eine Karte, um sie neu anzuordnen",
         "no_lesson": "Noch kein Unterricht",
-        "share_your_knowledge": "Teilen Sie Ihr Wissen mit der Welt, indem Sie ansprechende Lektionen erstellen. Klicken Sie zunächst auf die Schaltfläche „Hinzufügen“."
+        "share_your_knowledge": "Teilen Sie Ihr Wissen mit der Welt, indem Sie ansprechende Lektionen erstellen. Klicken Sie zunächst auf die Schaltfläche „Hinzufügen“.",
+        "heading_v2": "Inhalt",
+        "section_prompt": {
+          "cta": "Abschnitte aktivieren",
+          "header": "Abschnitte aktivieren",
+          "title": "Wir haben Kursabschnitte eingeführt",
+          "description": "Sie können Lektionen jetzt in Abschnitte gruppieren, um Ihre Inhalte zu organisieren und das Lernen für Ihre Schüler reibungsloser zu gestalten.",
+          "activate": "Aktivieren",
+          "cancel": "Stornieren"
+        }
       },
       "news_feed": {
         "heading": "Neuigkeiten",

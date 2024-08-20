@@ -770,7 +770,16 @@
         },
         "drag": "kéo thẻ để sắp xếp lại",
         "no_lesson": "Chưa có bài học nào",
-        "share_your_knowledge": "Chia sẻ kiến ​​thức của bạn với thế giới bằng cách tạo ra những bài học hấp dẫn. Bắt đầu bằng cách nhấp vào nút Thêm."
+        "share_your_knowledge": "Chia sẻ kiến ​​thức của bạn với thế giới bằng cách tạo ra những bài học hấp dẫn. Bắt đầu bằng cách nhấp vào nút Thêm.",
+        "heading_v2": "Nội dung",
+        "section_prompt": {
+          "cta": "Bật phần",
+          "header": "Bật phần",
+          "title": "Chúng tôi đã ra mắt các phần khóa học",
+          "description": "Giờ đây, bạn có thể nhóm các bài học thành các phần để sắp xếp nội dung và giúp học sinh học tập suôn sẻ hơn.",
+          "activate": "Kích hoạt",
+          "cancel": "Hủy bỏ"
+        }
       },
       "news_feed": {
         "heading": "Nguồn cấp tin tức",

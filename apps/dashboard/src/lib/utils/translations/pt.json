@@ -770,7 +770,16 @@
         },
         "drag": "arraste um cartão para reordenar",
         "no_lesson": "Ainda não há aulas",
-        "share_your_knowledge": "Compartilhe seu conhecimento com o mundo criando aulas envolventes. Comece clicando no botão Adicionar."
+        "share_your_knowledge": "Compartilhe seu conhecimento com o mundo criando aulas envolventes. Comece clicando no botão Adicionar.",
+        "heading_v2": "Contente",
+        "section_prompt": {
+          "cta": "Habilitar seções",
+          "header": "Habilitar seções",
+          "title": "Lançamos seções do curso",
+          "description": "Agora você pode agrupar aulas em seções para organizar seu conteúdo e tornar o aprendizado mais fácil para seus alunos.",
+          "activate": "Ativar",
+          "cancel": "Cancelar"
+        }
       },
       "news_feed": {
         "heading": "Notícias",
