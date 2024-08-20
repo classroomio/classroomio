@@ -130,7 +130,7 @@
   $: setDefault($pathway);
 </script>
 
-<PathwayContainer bind:pathwayId={data.pathwayId}>
+<PathwayContainer>
   <PageNav title={$t('pathway.pages.settings.page_title')} />
 
   <PageBody>

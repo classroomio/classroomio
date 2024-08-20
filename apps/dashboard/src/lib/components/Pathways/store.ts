@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import type { Pathway, PathwayCourse, GroupStore, GroupStore } from '$lib/utils/types';
+import type { Pathway, PathwayCourse, GroupStore } from '$lib/utils/types';
 
 export const RADIO_VALUE = {
   TRUE: 'true',

@@ -295,9 +295,6 @@ export interface PathwayCourse {
   is_unlocked: boolean;
   is_completed: CourseCompletion[];
   is_published: boolean;
-  created_at: string;
-  updated_at: string;
-  order: string;
 }
 
 export interface Pathway {
