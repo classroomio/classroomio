@@ -219,33 +219,6 @@ export async function updateCourse(
   return course.logo;
 }
 
-export async function updatePathway(
-  // courseId: Course['id'],
-  // avatar: string | undefined,
-  // course: Partial<Course>
-) {
-  // if (avatar && courseId) {
-  //   const filename = `course/${courseId + Date.now()}.webp`;
-
-  //   const { data } = await supabase.storage.from('avatars').upload(filename, avatar, {
-  //     cacheControl: '3600',
-  //     upsert: false
-  //   });
-
-  //   if (data) {
-  //     const { data: response } = supabase.storage.from('avatars').getPublicUrl(filename);
-
-  //     if (!response.publicUrl) return;
-
-  //     course.logo = response.publicUrl;
-  //   }
-  // }
-
-  // await supabase.from('course').update(course).match({ id: courseId });
-
-  // return course.logo;
-}
-
 export async function deleteCourse(courseId: Course['id']) {
   return await supabase.from('course').update({ status: 'DELETED' }).match({ id: courseId });
 }

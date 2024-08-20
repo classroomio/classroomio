@@ -198,7 +198,7 @@
 
       <div>
         <h1 class="text-base m-0">
-          {$pathway.courses.length}
+          {$pathway.pathway_course.length}
           {$t('pathway.pages.landingPage.banner.courses')}
         </h1>
         <p class="text-[12px] font-extralight">
@@ -313,7 +313,7 @@
               ''
             )}"
             className="md:w-[30%] w-full py-3 mb-3 font-semibold"
-            isDisabled={!pathwayData.metadata.allowNewStudent}
+            isDisabled={!pathwayData.landingpage.allowNewStudent}
           />
         </div>
 
@@ -330,15 +330,15 @@
 
           <!-- course list -->
           <div class="border p-5 rounded-lg shadow-md mt-10">
-            {#each $pathway.courses as course}
+            {#each $pathway.pathway_course as course}
               <div
                 class="py-3 px-10 flex justify-between items-center course-list-border hover:bg-[#F7F7F7] transition-all duration-300"
               >
                 <div class="text-left">
-                  <h1 class="underline text-base m-0">{course.title}</h1>
+                  <h1 class="underline text-base m-0">{course.course.title}</h1>
                   <div class="flex items-center gap-1 text-xs my-1">
                     <span>
-                      {course.total_lessons}
+                      {course.course.lesson?.length || 0}
                       {$t('pathway.pages.landingPage.courseList.lessons')}
                     </span>
                     -

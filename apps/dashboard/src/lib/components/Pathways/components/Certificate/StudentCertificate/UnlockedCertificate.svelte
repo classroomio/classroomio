@@ -15,7 +15,7 @@
 
   import { pathway } from '$lib/components/Pathways/store';
   import type { ProfilePathwayProgress } from '$lib/utils/types';
-  import { fetchPathwayCourseProgress } from '$lib/utils/services/pathways';
+  import { fetchProfilePathwayProgress } from '$lib/utils/services/pathways';
 
   let isLoading = false;
   let showCourses = false;
