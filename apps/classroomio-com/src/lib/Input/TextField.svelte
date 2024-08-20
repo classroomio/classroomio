@@ -5,47 +5,23 @@
   export let placeholder = '';
   export let value: string | number | null = null;
   export let name = '';
-  export let onKeyDown = (e) => {};
   export let className = '';
   export let inputClassName = '';
   export let labelClassName = '';
   export let bgColor = 'bg-gray-100 focus:bg-primary-50 dark:bg-neutral-700 dark:text-white';
-  export let type = 'text';
-  export let isPassword = false;
   export let autoFocus = false;
   export let isRequired = false;
   export let isDisabled = false;
-  export let min: string | number | null | undefined = undefined;
-  export let max: string | number | null | undefined = undefined;
   export let errorMessage = '';
   export let helperMessage = '';
   export let autoComplete = true;
-  export let onChange = () => {}; // This is to know if element is 'dirty'
-  export let onInputChange = () => {};
 
   let ref: HTMLInputElement | undefined = undefined;
-  let fieldNode: HTMLInputElement | undefined = undefined;
   let focusClass = '';
-
-  function typeAction(node: HTMLInputElement | undefined) {
-    if (!node) return;
-
-    node.type = type || 'text';
-
-    if (isRequired) {
-      node.required = true;
-    }
-
-    fieldNode = node;
-  }
 
   onMount(() => {
     if (autoFocus && ref) {
       ref.focus();
-    }
-
-    if (type === 'password') {
-      isPassword = true;
     }
   });
 </script>
@@ -61,13 +37,10 @@
   {/if}
 
   <input
-    use:typeAction
     class="form-input border-l-0 border-r-0 border-t-0 border-b-2 border-gray-200 dark:border-neutral-600 focus:border-l-0 focus:border-r-0 rounded-t-md focus:border-t-0 focus:border-b-2 {inputClassName} {focusClass} {isDisabled &&
       'hover:cursor-not-allowed opacity-50'} dark:text-black p-3 mt-1 block w-full {bgColor} {errorMessage
       ? 'border-red-600'
       : ''}"
-    on:keydown={onKeyDown}
-    on:change={onInputChange}
     {placeholder}
     bind:value
     bind:this={ref}
@@ -78,12 +51,9 @@
       if (focusClass.includes('border-primary-600')) {
         focusClass = focusClass.replace('border-primary-600', '');
       }
-      onChange(e);
     }}
     on:focus={() => (focusClass += ' border-primary-600')}
     {name}
-    {min}
-    {max}
   />
   {#if errorMessage}
     <p class="text-sm text-red-500">{errorMessage}</p>
@@ -108,9 +78,4 @@
     -webkit-appearance: none;
     margin: 0;
   }
-
-  /* Firefox */
-  /* input[type='number'] {
-      -moz-appearance: textfield;
-    } */
 </style>

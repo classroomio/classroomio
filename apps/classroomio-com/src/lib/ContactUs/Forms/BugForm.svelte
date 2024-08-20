@@ -4,39 +4,52 @@
   import TextField from '$lib/Input/TextField.svelte';
   import UploadWidget from '$lib/UploadWidget/UploadWidget.svelte';
   import { submitForm } from '$lib/utils/submitForm';
+  import Sucess from './Sucess.svelte';
 
-  let data = {
-    name: '',
-    email: '',
-    embeddedLink: '',
-    imageURL: '',
-    recordingLink: ''
-  };
+  let name = '';
+  let email = '';
+  let embeddedLink = '';
+  let imageURL = '';
+  let recordingLink = '';
   let title = '';
   let description = '';
+
   let isLoading = false;
+  let errorMessage = '';
+  let sent = false;
 
-  const fullDescription = `${data.name} is reporting a bug with the following details
-      Screenshot:${data.imageURL}
-      recording: ${data.recordingLink}
-      embeddedLink: ${data.embeddedLink}
-      email: ${data.email}.
-
-      ${description}
-      `;
+  const isFormValid = () => {
+    if (!name || !email || !title || !description || !embeddedLink || !recordingLink) {
+      return false;
+    }
+    return true;
+  };
 
   const handleClick = async () => {
+    if (!isFormValid()) {
+      errorMessage = 'Please fill out all required fields.';
+      return;
+    }
     isLoading = true;
+    const fullDescription = `${JSON.stringify(name)} is reporting a bug with the following details
 
+      recording: ${JSON.stringify(recordingLink)}
+      embeddedLink: ${JSON.stringify(embeddedLink)}
+      email: ${JSON.stringify(email)}.
+
+      ${JSON.stringify(description)}
+      `;
+
+    const mainTitle = `bug: ${title}`;
     const formData = {
-      assignees: ['tunji', 'emmanuel'],
+      assignees: ['rotimi-best'],
       labels: ['bug'],
-      title,
+      title: mainTitle,
       description: fullDescription
     };
-
     try {
       await submitForm(formData);
+      sent = true;
     } catch (error) {
       console.log(error);
     } finally {
@@ -45,29 +58,38 @@
   };
 </script>
 
-<div class="w-full my-10 space-y-5">
-  <div class="flex flex-col md:flex-row gap-10">
-    <TextField label="Your Name" isRequired className="w-full" value={data.name} />
-    <TextField label="Your Email" isRequired className="w-full" value={data.email} />
-  </div>
-  <TextField label="The bug in short" isRequired value={title} />
-  <TextArea label="Describe the bug in detail" isRequired value={description} />
-  <TextField
-    label="Add a Link to the page your widget is embedded on"
-    isRequired
-    value={data.embeddedLink}
-  />
-  <UploadWidget label="Add a screenshot of the bug or incident" bind:imageURL={data.imageURL} />
-  <TextField
-    label="Add a link to a screen recording (will help us investigate faster)"
-    isRequired
-    value={data.recordingLink}
-  />
-  <Button
-    label="submit"
-    className="px-32"
-    onClick={handleClick}
-    isDisabled={isLoading}
-    {isLoading}
-  />
+<div>
+  {#if sent}
+    <Sucess />
+  {:else}
+    <div class="w-full my-10 space-y-5">
+      <div class="flex flex-col md:flex-row gap-10">
+        <TextField label="Your Name" isRequired className="w-full" bind:value={name} />
+        <TextField label="Your Email" isRequired className="w-full" bind:value={email} />
+      </div>
+      <TextField label="The bug in short" isRequired bind:value={title} />
+      <TextArea label="Describe the bug in detail" isRequired bind:value={description} />
+      <TextField
+        label="Add a Link to the page your widget is embedded on"
+        isRequired
+        bind:value={embeddedLink}
+      />
+      <UploadWidget label="Add a screenshot of the bug or incident" bind:imageURL />
+      <TextField
+        label="Add a link to a screen recording (will help us investigate faster)"
+        isRequired
+        bind:value={recordingLink}
+      />
+      {#if !!errorMessage}
+        <p class="text-left text-sm text-red-500">{errorMessage}</p>
+      {/if}
+      <Button
+        label="submit"
+        className="px-32"
+        onClick={handleClick}
+        isDisabled={isLoading}
+        {isLoading}
+      />
+    </div>
+  {/if}
 </div>

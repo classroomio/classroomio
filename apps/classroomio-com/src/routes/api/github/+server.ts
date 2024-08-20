@@ -1,25 +1,23 @@
 // Octokit.js
 import { Octokit } from 'octokit';
+import { PUBLIC_GITHUB_KEY } from '$env/static/public';
 
 // Initialize Octokit with your GitHub token
 const octokit = new Octokit({
-  auth: 'YOUR-TOKEN'
+  auth: PUBLIC_GITHUB_KEY
 });
 
 export async function POST({ request }) {
   try {
-    // Extract the data from the request body
     const { assignees, labels, title, description } = await request.json();
 
-    // Make the API request to create a GitHub issue
     const result = await octokit.request('POST /repos/{owner}/{repo}/issues', {
-      owner: 'Rotimi-best', // Replace with your GitHub username
-      repo: 'classroomio', // Replace with your repository name
-      title,
+      owner: 'rotimi-best',
+      repo: 'classroomio',
+      title: title,
       body: description,
-      assignees: assignees || ['rotimi-best'], // Default assignee
-      milestone: 1, // Optional milestone
-      labels: labels || ['bug'], // Default label
+      assignees: assignees || ['rotimi-best'],
+      labels: labels || ['bug'],
       headers: {
         'X-GitHub-Api-Version': '2022-11-28'
       }
@@ -40,6 +38,7 @@ export async function POST({ request }) {
     );
   } catch (error) {
     // Handle errors and return a response
+    console.log('errors from backend', error);
     return new Response(
       JSON.stringify({
         message: 'Failed to create issue',

@@ -4,7 +4,6 @@
   export let placeholder = '';
   export let value = '';
   export let rows = 3;
-  // export let maxRows = 3;
   export let className = '';
   export let labelClassName = '';
   export let bgColor = 'bg-gray-50 focus:bg-primary-50 dark:bg-neutral-700 dark:text-white';
