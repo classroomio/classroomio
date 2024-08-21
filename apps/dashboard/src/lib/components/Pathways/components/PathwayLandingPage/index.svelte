@@ -97,6 +97,7 @@
     let imgurl = get(instructor, 'imgUrl', $currentOrg.avatar_url);
     console.log({ imgurl, instructor, org: $currentOrg });
   }
+  $: console.log('handleOpenWidget', $handleOpenWidget.open);
 </script>
 
 {#if !editMode}

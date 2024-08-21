@@ -95,6 +95,7 @@
   }
 
   onMount(handleSubmit);
+  $: console.log('sup', $handleOpenWidget.open);
 </script>
 
 <Modal

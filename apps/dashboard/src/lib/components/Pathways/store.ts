@@ -35,6 +35,7 @@ export const group = writable<GroupStore>({
 export const defaultPathway: Pathway = {
   id: '',
   slug: '',
+  logo: '',
   title: '',
   description: '',
   prerequisite: '',

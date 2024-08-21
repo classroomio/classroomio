@@ -269,7 +269,7 @@
 
           <div class="flex flex-wrap">
             {#each lessons as lesson, index}
-            <div class="px-2 py-1 m-2 border rounded">
+              <div class="px-2 py-1 m-2 border rounded">
                 <Chip
                   value={getLectureNo(index + 1, '0')}
                   className="bg-primary-100 text-primary-700 inline "
@@ -278,7 +278,6 @@
                   {lesson.title}
                 </p>
 
-            
                 <!-- <div class="flex items-center">
                   {#if lesson.slide_url}
                     <span class="text-sm font-light flex w-2/4"
@@ -296,7 +295,6 @@
                   {/if}
                 </div> -->
 
-                
                 <!-- <div class="flex items-center">
                   {#if lesson.videos}
                     <span class="text-sm font-light flex w-2/4"
@@ -314,8 +312,8 @@
                     >
                   {/if}
                 </div> -->
-            </div>
-          {/each}
+              </div>
+            {/each}
           </div>
         </section>
 

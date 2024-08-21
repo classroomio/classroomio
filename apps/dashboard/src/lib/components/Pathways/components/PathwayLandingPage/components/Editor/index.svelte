@@ -24,7 +24,7 @@
   import CustomPromptBtn from '$lib/components/AI/AIButton/CustomPromptBtn.svelte';
   import type { Pathway } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
-  import { updatePathway } from '$lib/utils/services/pathways/courses';
+  import { updatePathway } from '$lib/utils/services/pathways';
 
   export let pathway: Pathway;
   export let pathwayId: string;

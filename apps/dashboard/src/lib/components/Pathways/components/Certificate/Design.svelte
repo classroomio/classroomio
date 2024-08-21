@@ -7,7 +7,7 @@
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
-  import { updatePathway } from '$lib/utils/services/pathways/courses';
+  import { updatePathway } from '$lib/utils/services/pathways';
   import { saveCertificateValidation } from '$lib/utils/functions/validator';
 
   import { snackbar } from '$lib/components/Snackbar/store';

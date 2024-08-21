@@ -279,27 +279,18 @@ export interface Course {
   polls: { status: string }[];
 }
 
-export interface CourseCompletion {
-  id?: number;
-  course_id: string;
-  profile_id: string;
-  is_complete: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
 export interface PathwayCourse {
   id: string;
   course: Course;
   course_id: any;
   pathway_id: any;
   order: number;
-  created_at: string;
-  updated_at: string;
-  estimated_hours: number;
+  // created_at: string;
+  // updated_at: string;
+  // estimated_hours: number;
   is_unlocked: boolean;
-  is_completed: CourseCompletion[];
-  is_published: boolean;
+  // course_completion: CourseCompletion[];
+  // is_published: boolean;
 }
 
 export interface Pathway {
