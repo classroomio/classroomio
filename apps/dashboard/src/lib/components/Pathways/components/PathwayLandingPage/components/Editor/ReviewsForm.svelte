@@ -18,7 +18,7 @@
 
   export let pathway = {};
 
-  let reviews = get(pathway, 'metadata.reviews', []);
+  let reviews = get(pathway, 'landingpage.reviews', []);
   let reviewToExpand = null;
   let errors = {};
 
@@ -114,7 +114,7 @@
     reviewToExpand = id;
   }
 
-  $: setter(reviews, 'metadata.reviews');
+  $: setter(reviews, 'landingpage.reviews');
 </script>
 
 <!-- Sections - Reviews -->

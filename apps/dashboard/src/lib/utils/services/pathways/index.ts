@@ -134,3 +134,23 @@ export async function fetchProfilePathwayProgress(
 
   return { data, error };
 }
+
+export async function uploadAvatar(pathwayId: string, avatar: string) {
+  const filename = `pathway/${pathwayId + Date.now()}.webp`;
+  let logo;
+
+  const { data } = await supabase.storage.from('avatars').upload(filename, avatar, {
+    cacheControl: '3600',
+    upsert: false
+  });
+
+  if (data) {
+    const { data } = supabase.storage.from('avatars').getPublicUrl(filename);
+
+    if (!data.publicUrl) return;
+
+    logo = data.publicUrl;
+  }
+
+  return logo;
+}

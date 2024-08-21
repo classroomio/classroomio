@@ -24,6 +24,7 @@
   import CustomPromptBtn from '$lib/components/AI/AIButton/CustomPromptBtn.svelte';
   import type { Pathway } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
+  import { updatePathway } from '$lib/utils/services/pathways/courses';
 
   export let pathway: Pathway;
   export let pathwayId: string;
@@ -49,31 +50,31 @@
     },
     {
       key: 2,
-      path: 'metadata.about',
+      path: 'landingpage.about',
       title: 'About',
       enableAIWriter: true,
       initPrompt: 'Please write a detailed course requirement for this course:'
     },
     {
       key: 3,
-      path: 'metadata.objectives',
+      path: 'landingpage.objectives',
       title: 'Objectives',
       enableAIWriter: true,
       initPrompt: 'Please write educational objectives for this course:'
     },
     {
       key: 4,
-      path: 'metadata.reviews',
+      path: 'landingpage.reviews',
       title: $t('course.navItem.landing_page.editor.title.reviews')
     },
     {
       key: 5,
-      path: 'metadata.instructor',
+      path: 'landingpage.instructor',
       title: $t('course.navItem.landing_page.editor.title.instructor')
     },
     {
       key: 6,
-      path: 'metadata.pricing',
+      path: 'landingpage.pricing',
       title: $t('course.navItem.landing_page.editor.title.pricing')
     }
   ];
@@ -109,17 +110,15 @@
     loading = true;
     pathway.slug = pathway.slug || generateSlug(pathway.title);
 
-    // await updateCourse(pathwayId, undefined, {
-    //   ...pathway,
-    //   attendance: undefined,
-    //   group: undefined,
-    //   lessons: undefined,
-    //   polls: undefined,
-    //   slug: pathway.slug
-    // });
+    await updatePathway(pathwayId, undefined, {
+      ...pathway,
+      group: undefined,
+      pathway_course: undefined,
+      slug: pathway.slug
+    });
 
-    // loading = false;
-    // syncCourseStore(pathway);
+    loading = false;
+    syncPathwayStore(pathway);
   }
 
   async function handlePreview() {
@@ -219,9 +218,9 @@
         {#if selectedSection.key === 1}
           <HeaderForm bind:pathway />
         {:else if selectedSection.key === 2}
-          <AboutForm bind:value={pathway.metadata.about} />
+          <AboutForm bind:value={pathway.landingpage.about} />
         {:else if selectedSection.key === 3}
-          <ObjectivesForm bind:value={pathway.metadata.objectives} />
+          <ObjectivesForm bind:value={pathway.landingpage.objectives} />
         {:else if selectedSection.key === 4}
           <ReviewsForm bind:pathway />
         {:else if selectedSection.key === 5}

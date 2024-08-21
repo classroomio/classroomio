@@ -99,8 +99,10 @@
       [reactionType]: reactedAuthorIds
     };
 
+    console.log('reactedFeed', reactedFeed);
+
     const response = await supabase
-      .from('course_newsfeed')
+      .from('pathway_newsfeed')
       .update({
         reaction: reactedFeed.reaction
       })

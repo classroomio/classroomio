@@ -134,6 +134,10 @@ export interface PathwayMetadata {
   about: string;
   objectives: string;
   reviews?: Array<Review>;
+  goals: string;
+  requirements: string;
+  description: string;
+  videoUrl: string;
   instructor?: {
     name: string;
     role: string;
@@ -147,6 +151,7 @@ export interface PathwayMetadata {
     show: boolean;
     description: string;
   };
+  discount: number;
 }
 
 export interface LessonCommentInsertPayload {

@@ -14,8 +14,8 @@
 
   let pathwayData: Pathway = $pathway;
 
-  function setPathwayData(pathway: Pathway, courses: PathwayCourse[]) {
-    pathwayData = { ...pathway, courses };
+  function setPathwayData(pathway: Pathway, pathway_course: PathwayCourse[]) {
+    pathwayData = { ...pathway, pathway_course };
   }
 
   function syncPathwayStore(_pathwayData: Pathway) {

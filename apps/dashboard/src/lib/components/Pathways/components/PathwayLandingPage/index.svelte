@@ -83,13 +83,13 @@
     observer?.destroy();
   });
 
-  $: video = get(pathwayData, 'metadata.videoUrl');
-  $: allowNewStudent = get(pathwayData, 'metadata.allowNewStudent');
+  $: video = get(pathwayData, 'landingpage.videoUrl');
+  $: allowNewStudent = get(pathwayData, 'landingpage.allowNewStudent');
   $: bannerImage = get(pathwayData, 'logo');
-  $: instructor = get(pathwayData, 'metadata.instructor') || {};
+  $: instructor = get(pathwayData, 'landingpage.instructor') || {};
   $: initPlyr(player, video);
   $: {
-    reviews = get(pathwayData, 'metadata.reviews') || [];
+    reviews = get(pathwayData, 'landingpage.reviews') || [];
     totalRatings = reviews?.reduce((acc = 0, review) => acc + (review?.rating || 0), 0);
     averageRating = totalRatings / reviews?.length;
   }
@@ -265,7 +265,7 @@
               </h3>
 
               <ul class="font-light">
-                <HtmlRender content={get(pathwayData, 'metadata.about', '')} />
+                <HtmlRender content={get(pathwayData, 'landingpage.about', '')} />
               </ul>
             </section>
 
@@ -278,7 +278,7 @@
               <div>
                 <HtmlRender
                   className="dark:text-white w-full font-light"
-                  content={get(pathwayData, 'metadata.objectives', '')}
+                  content={get(pathwayData, 'landingpage.objectives', '')}
                 />
               </div>
             </section>
@@ -360,10 +360,10 @@
         </section>
 
         <!-- Sections - Reviews & Instructor -->
-        <div class="flex justify-between items-center py-10 px-8">
+        <div class="flex flex-wrap justify-center gap-5 items-center py-10 px-8">
           <!-- Sections - Reviews -->
           {#if reviews && reviews.length > 0}
-            <section id="reviews" class="w-[60%]">
+            <section id="reviews" class="md:w-[60%] w-[80%]">
               <h2 class="m-0 mb-2 font-semibold">
                 {$t('course.navItem.landing_page.reviews')}
               </h2>
@@ -374,7 +374,7 @@
                 {#each reviews.slice(0, 4) as review, id}
                   {#if !review.hide}
                     <!-- review -->
-                    <div class="my-2 w-[48%] p-5 rounded-md bg-[#F1F6FF]">
+                    <div class="my-2 min-w-[250px] w-[48%] p-5 rounded-md bg-[#F1F6FF]">
                       <div
                         class="read-more-content {expandDescription[id] ? 'expanded' : ''}"
                         style="max-height: {expandDescription[id] ? '100%' : '40px'}"
@@ -492,7 +492,7 @@
           <!-- Sections - Instructor -->
           <section
             id="instructor"
-            class="mt-16 p-5 border border-[#EAEAEA] shadow-sm rounded-md w-[35%]"
+            class="mt-16 p-5 border border-[#EAEAEA] shadow-sm rounded-md min-w-[300px] w-[90%] md:w-[35%]"
           >
             <h3 class="text-lg font-bold mt-0 border-b py-2">
               {$t('course.navItem.landing_page.instructor')}
