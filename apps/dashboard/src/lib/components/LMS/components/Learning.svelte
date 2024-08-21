@@ -11,12 +11,12 @@
   let open = false;
 
   const getCompletedCoursesCount = (pathway) => {
-    return pathway.courses?.filter((course) => course.progress_rate === 100).length || 0;
+    return pathway.pathway_course?.filter((course) => course.progress_rate === 100).length || 0;
   };
 
   // this return the first course it can find in the array that is been taken but not yet completed.
   const getCurrentCourse = (pathway) => {
-    return pathway.courses?.find(
+    return pathway.pathway_course?.find(
       (course) => course.is_unlocked === true && course.progress_rate !== 100
     );
   };
@@ -54,7 +54,7 @@
                 >
                   {getCompletedCoursesCount(course) || 0}
                   {$t('lms_pathway.of')}
-                  {course.courses.length}
+                  {course?.total_course}
                   {$t('lms_pathway.completed')}
                   <ChevronDown />
                 </button>
@@ -62,7 +62,7 @@
 
               <span class="flex flex-col lg:flex-row gap-3 items-start pb-5">
                 <img
-                  src={getCurrentCourse(course).logo ||
+                  src={getCurrentCourse(course)?.logo ||
                     '/images/classroomio-course-img-template.jpg'}
                   alt="course"
                   class="hidden lg:block lg:w-[60px] lg:h-[60px]"
