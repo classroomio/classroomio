@@ -10,7 +10,6 @@
   let name = '';
   let email = '';
   let embeddedLink = '';
-  let imageURL = '';
   let recordingLink = '';
   let title = '';
   let description = '';
@@ -20,7 +19,7 @@
   let sent = false;
 
   const handleClick = async () => {
-    const data = { name, email, title, description, imageURL, embeddedLink, recordingLink };
+    const data = { name, email, title, description, embeddedLink, recordingLink };
 
     if (!isFormValid(data)) {
       errorMessage = 'Please fill out all required fields.';
@@ -70,7 +69,7 @@
         isRequired
         bind:value={embeddedLink}
       />
-      <UploadWidget label="Add a screenshot of the bug or incident" bind:imageURL />
+      <!-- <UploadWidget label="Add a screenshot of the bug or incident" bind:imageURL /> -->
       <TextField
         label="Add a link to a screen recording (will help us investigate faster)"
         isRequired

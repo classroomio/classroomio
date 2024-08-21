@@ -25,7 +25,7 @@
     isLoading = true;
     try {
       const formData = {
-        to: 'help@classroomio.com',
+        to: 'chifez1@gmail.com',
         subject: title,
         content: description,
         userName: name,

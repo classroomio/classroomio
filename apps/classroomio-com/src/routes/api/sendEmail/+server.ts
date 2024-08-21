@@ -2,13 +2,13 @@ import { PUBLIC_SERVER_URL } from '$env/static/public';
 
 export async function POST({ request }) {
   try {
-    const emailData = await request.json();
+    const emailDataArray = await request.json();
     const response = await fetch(`${PUBLIC_SERVER_URL}/sendEmail`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(emailData)
+      body: JSON.stringify(emailDataArray)
     });
 
     const responseData = await response.json();

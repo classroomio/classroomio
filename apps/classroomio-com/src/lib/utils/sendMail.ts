@@ -16,7 +16,7 @@ const triggersendEmail = async (formData: {
     return json({ success: false, message: 'Missing required fields' }, { status: 400 });
   }
   try {
-    const emailData = [
+    const emailDataArray = [
       {
         from: `[help] <@${userEmail}>`,
         to,
@@ -33,7 +33,7 @@ const triggersendEmail = async (formData: {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(emailData)
+      body: JSON.stringify(emailDataArray)
     });
 
     if (!response.ok) {
