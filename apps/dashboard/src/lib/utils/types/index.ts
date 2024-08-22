@@ -285,12 +285,7 @@ export interface PathwayCourse {
   course_id: any;
   pathway_id: any;
   order: number;
-  // created_at: string;
-  // updated_at: string;
-  // estimated_hours: number;
   is_unlocked: boolean;
-  // course_completion: CourseCompletion[];
-  // is_published: boolean;
 }
 
 export interface Pathway {
