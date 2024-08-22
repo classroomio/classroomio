@@ -3,7 +3,6 @@
   import TextArea from '$lib/Input/TextArea.svelte';
   import TextField from '$lib/Input/TextField.svelte';
   import { isFormValid } from '$lib/utils/isFormValid';
-  import triggersendEmail from '$lib/utils/sendMail';
   import Sucess from './Sucess.svelte';
 
   let name = '';
