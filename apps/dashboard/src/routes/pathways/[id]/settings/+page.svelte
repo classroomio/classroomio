@@ -121,7 +121,7 @@
         logo: pathway.logo || '',
         is_published: !!pathway.is_published,
         prerequisite: pathway.prerequisite,
-        metadata: pathway.metadata,
+        metadata: pathway.landingpage,
         lms_certificate: pathway.lms_certificate,
         courses_certificate: pathway.courses_certificate
       };
