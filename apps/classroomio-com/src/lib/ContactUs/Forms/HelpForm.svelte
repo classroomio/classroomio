@@ -15,7 +15,7 @@
   let errorMessage = '';
   let sent = false;
 
-  const handleClick = async () => {
+  function handleClick() {
     const data = { name, email, title, description };
 
     if (!isFormValid(data)) {
@@ -24,21 +24,22 @@
     }
     isLoading = true;
     try {
-      const formData = {
-        to: 'chifez1@gmail.com',
-        subject: title,
-        content: description,
-        userName: name,
-        userEmail: email
-      };
-      await triggersendEmail(formData);
-      sent = true;
+      const subject = `[help] ${title}`;
+      const body = description;
+
+      // Create the mailto URL with encoded components
+      const mailToUrl = `mailto:help@classroomio.com?subject=${encodeURIComponent(
+        subject
+      )}&body=${encodeURIComponent(body)}`;
+
+      // Redirect to the mailto URL
+      window.location.href = mailToUrl;
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.log(error);
     } finally {
       isLoading = false;
     }
-  };
+  }
 </script>
 
 <div>
