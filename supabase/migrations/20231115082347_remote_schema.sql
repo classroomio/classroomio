@@ -277,10 +277,19 @@ CREATE TABLE IF NOT EXISTS "public"."group" (
     "description" "text",
     "created_at" timestamp with time zone DEFAULT "now"(),
     "updated_at" timestamp with time zone DEFAULT "now"(),
-    "organization_id" "uuid"
+    "organization_id" "uuid",
+    "course_id" "uuid",
+    "is_active" boolean DEFAULT false
 );
 
+/** ALTER TABLE  "public" . "group"
+ADD COLUMN "course_id" uuid,
+ADD COLUMN "is_active" boolean DEFAULT false;
+**/
+
+
 ALTER TABLE "public"."group" OWNER TO "postgres";
+
 
 CREATE TABLE IF NOT EXISTS "public"."group_attendance" (
     "id" bigint NOT NULL,
@@ -841,6 +850,7 @@ ALTER TABLE ONLY "public"."community_question"
 
 ALTER TABLE ONLY "public"."course"
     ADD CONSTRAINT "course_group_id_fkey" FOREIGN KEY ("group_id") REFERENCES "public"."group"("id");
+    
 
 ALTER TABLE ONLY "public"."exercise"
     ADD CONSTRAINT "exercise_lesson_id_fkey" FOREIGN KEY ("lesson_id") REFERENCES "public"."lesson"("id");
@@ -851,8 +861,12 @@ ALTER TABLE ONLY "public"."group_attendance"
 ALTER TABLE ONLY "public"."group_attendance"
     ADD CONSTRAINT "group_attendance_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "public"."groupmember"("id");
 
-ALTER TABLE ONLY "public"."group"
+ ALTER TABLE ONLY "public"."group"
     ADD CONSTRAINT "group_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "public"."organization"("id");
+
+/** ALTER TABLE ONLY  "public"."group" 
+    ADD CONSTRAINT "fk_course" FOREIGN KEY ("course_id") REFERENCES "public"."course"("id");
+**/
 
 ALTER TABLE ONLY "public"."groupmember"
     ADD CONSTRAINT "groupmember_group_id_fkey" FOREIGN KEY ("group_id") REFERENCES "public"."group"("id");
@@ -934,6 +948,7 @@ ALTER TABLE ONLY "public"."submission"
 
 ALTER TABLE ONLY "public"."submission"
     ADD CONSTRAINT "submission_submitted_by_fkey" FOREIGN KEY ("submitted_by") REFERENCES "public"."groupmember"("id");
+
 
 CREATE POLICY "Enable access to all users" ON "public"."course" FOR SELECT USING (true);
 

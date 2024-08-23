@@ -19,12 +19,12 @@ INSERT INTO "auth"."users" ("instance_id", "id", "aud", "role", "email", "encryp
 -- Data for Name: identities; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
 --
 
-INSERT INTO "auth"."identities" ("provider_id", "user_id", "identity_data", "provider", "last_sign_in_at", "created_at", "updated_at") VALUES
+/** INSERT INTO "auth"."identities" ("provider_id", "user_id", "identity_data", "provider", "last_sign_in_at", "created_at", "updated_at") VALUES
 	('01676a50-bb56-4c5e-8a61-fb9e9190fb10', '01676a50-bb56-4c5e-8a61-fb9e9190fb10', '{"sub": "01676a50-bb56-4c5e-8a61-fb9e9190fb10", "email": "test@test.com"}', 'email', '2023-11-22 10:09:32.225444+00', '2023-11-22 10:09:32.225521+00', '2023-11-22 10:09:32.225521+00'),
 	('7ac00503-8519-43c8-a5ea-b79aeca900b1', '7ac00503-8519-43c8-a5ea-b79aeca900b1', '{"sub": "7ac00503-8519-43c8-a5ea-b79aeca900b1", "email": "admin@test.com"}', 'email', '2023-12-16 14:04:38.302264+00', '2023-12-16 14:04:38.302326+00', '2023-12-16 14:04:38.302326+00'),
 	('0c256e75-aa40-4f62-8d30-0217ca1c60d9', '0c256e75-aa40-4f62-8d30-0217ca1c60d9', '{"sub": "0c256e75-aa40-4f62-8d30-0217ca1c60d9", "email": "student@test.com"}', 'email', '2023-12-18 17:08:57.410285+00', '2023-12-18 17:08:57.410344+00', '2023-12-18 17:08:57.410344+00');
 
-
+**/ 
 --
 -- Data for Name: instances; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
 --
@@ -113,10 +113,10 @@ INSERT INTO "public"."organization" ("id", "name", "siteName", "avatar_url", "se
 INSERT INTO "public"."group" ("id", "name", "description", "created_at", "updated_at", "organization_id") VALUES
 	('c0ab7c5b-db2e-46e7-9853-9308c8ccb2cd', 'Building express apps', 'This shows how to build an express app', '2023-11-22 10:16:06.801846+00', '2023-11-22 10:16:06.801846+00', '7a75d8bc-eaef-48fb-8906-850aa458c2a2'),
 	('c6b022fd-fff3-4f09-8960-c9cb06819761', 'Getting started with MVC', 'Embark on a comprehensive journey into the world of Model-View-Controller (MVC) architecture with our course, "Getting Started with MVC." Designed for beginners and aspiring developers, this course provides a solid foundation for understanding the principles and practices behind MVC, a widely adopted design pattern in software development.
-
 Through a carefully crafted curriculum, you''ll learn the core concepts of MVC, exploring how it enhances the organization, scalability, and maintainability of your code', '2023-12-16 14:11:16.648686+00', '2023-12-16 14:11:16.648686+00', '1a1dcddd-1abc-4f72-b644-0bd18191a289'),
 	('04a250f1-bcb9-4e0d-a3d4-a01096e7a105', 'Modern Web Development with React', 'By the end of this course, you''ll be equipped to build interactive and responsive web applications, making you a proficient React developer ready for the demands of today''s web development landscape.', '2023-12-16 14:40:15.353729+00', '2023-12-16 14:40:15.353729+00', '1a1dcddd-1abc-4f72-b644-0bd18191a289'),
 	('0789ced2-b8f3-472c-97ff-bdde1e80dddf', 'Data Science with Python and Pandas', 'Unlock the power of data with our "Data Science with Python and Pandas" course. Dive into Python programming fundamentals and then journey into the world of Pandas for efficient data manipulation and analysis. Learn essential data cleaning and preprocessing techniques before venturing into statistical analysis using Pandas. Cap off your exploration with data visualization using Matplotlib and Seaborn. Gain the skills to derive meaningful insights from data and communicate them effectively, positioning yourself as a proficient data scientist in the dynamic field of data analytics.', '2023-12-16 14:41:15.270465+00', '2023-12-16 14:41:15.270465+00', '1a1dcddd-1abc-4f72-b644-0bd18191a289');
+
 
 
 --
@@ -172,6 +172,7 @@ Through a carefully crafted curriculum, you''ll learn the core concepts of MVC, 
 --
 -- Data for Name: profile; Type: TABLE DATA; Schema: public; Owner: postgres
 --
+
 
 INSERT INTO "public"."profile" ("id", "fullname", "username", "avatar_url", "created_at", "updated_at", "email", "can_add_course", "role", "goal", "source", "metadata", "telegram_chat_id", "is_email_verified") VALUES
 	('01676a50-bb56-4c5e-8a61-fb9e9190fb10', 'Alice', 'alice1700647772421', 'https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/avatar.png', '2023-11-22 10:09:32.429935+00', '2023-11-22 10:09:32.429935+00', 'test@test.com', true, NULL, 'explore', 'friends-family', NULL, NULL, true),
@@ -457,6 +458,7 @@ INSERT INTO "storage"."buckets" ("id", "name", "owner", "created_at", "updated_a
 --
 -- Data for Name: objects; Type: TABLE DATA; Schema: storage; Owner: supabase_storage_admin
 --
+
 
 -- Get the sequence name from supabase database
 SELECT PG_GET_SERIAL_SEQUENCE('organizationmember', 'id');

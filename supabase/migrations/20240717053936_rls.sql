@@ -130,28 +130,23 @@ END;
 $function$
 ;
 
-CREATE OR REPLACE FUNCTION public.is_user_in_group_with_role(group_id integer)
- RETURNS boolean
- LANGUAGE plpgsql
- SECURITY DEFINER
+CREATE OR REPLACE FUNCTION public.is_user_in_group_with_role_by_course(course_id uuid)
+RETURNS boolean
+LANGUAGE plpgsql
+SECURITY DEFINER
 AS $function$
-begin
-  return exists (
+BEGIN
+  RETURN EXISTS (
     SELECT 1
     FROM organizationmember m
-    JOIN organization o ON o.organization_id = m.organization_id
-    WHERE m.role_id IS NOT NULL
-    AND m.profile_id = auth.uid ()
-      AND EXISTS (
-        SELECT 1
-        FROM "group" g
-        WHERE g.group_id = $1
-          AND g.organization_id = o.organization_id
-      )
+    JOIN organization o ON o.id = m.organization_id 
+JOIN "group" g ON g.organization_id = o.id 
+WHERE m.role_id IS NOT NULL
+AND m.profile_id = auth.uid()
+AND g.course_id = course_id
   );
 END;
-$function$
-;
+$function$;
 
 CREATE OR REPLACE FUNCTION public.is_user_in_group_with_role(group_id uuid)
  RETURNS boolean
@@ -386,24 +381,22 @@ on "public"."course"
 as permissive
 for delete
 to public
-using (is_user_in_group_with_role(group_id));
-
+using (is_user_in_group_with_role_by_course(course.id));
 
 create policy "User must be an org member to INSERT"
 on "public"."course"
 as permissive
 for insert
 to public
-with check (is_user_in_group_with_role(group_id));
-
+with check (is_user_in_group_with_role_by_course(course.id));
 
 create policy "User must be an org member to UPDATE"
 on "public"."course"
 as permissive
 for update
 to public
-using (is_user_in_group_with_role(group_id))
-with check (is_user_in_group_with_role(group_id));
+using (is_user_in_group_with_role_by_course(course.id))
+with check (is_user_in_group_with_role_by_course(course.id));
 
 
 create policy "Delete your own comment"
@@ -429,15 +422,15 @@ with check ((auth.uid() = ( SELECT groupmember.profile_id
   WHERE (groupmember.id = course_newsfeed.author_id))));
 
 
-create policy "User must be a course member to INSERT"
+ create policy "User must be a course member to INSERT"
 on "public"."course_newsfeed"
 as permissive
 for insert
 to public
-with check (is_user_in_course_group(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = course_newsfeed.course_id)
- LIMIT 1)));
+with check (is_user_in_course_group((SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = course_newsfeed.course_id)
+ LIMIT 1))); 
 
 
 create policy "User must be a course member to SELECT"
@@ -445,9 +438,9 @@ on "public"."course_newsfeed"
 as permissive
 for select
 to public
-using (is_user_in_course_group(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = course_newsfeed.course_id)
+using (is_user_in_course_group(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = course_newsfeed.course_id)
  LIMIT 1)));
 
 
@@ -479,9 +472,9 @@ on "public"."course_newsfeed_comment"
 as permissive
 for insert
 to public
-with check (is_user_in_course_group(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = ( SELECT course_newsfeed.course_id
+with check (is_user_in_course_group(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = ( SELECT course_newsfeed.course_id
            FROM course_newsfeed
           WHERE (course_newsfeed.id = course_newsfeed_comment.course_newsfeed_id)))
  LIMIT 1)));
@@ -492,9 +485,9 @@ on "public"."course_newsfeed_comment"
 as permissive
 for select
 to public
-using (is_user_in_course_group(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = ( SELECT course_newsfeed.course_id
+using (is_user_in_course_group(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = ( SELECT course_newsfeed.course_id
            FROM course_newsfeed
           WHERE (course_newsfeed.id = course_newsfeed_comment.course_newsfeed_id)))
  LIMIT 1)));
@@ -513,9 +506,9 @@ on "public"."exercise"
 as permissive
 for delete
 to public
-using (is_user_in_group_with_role(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = ( SELECT lesson.course_id
+using (is_user_in_group_with_role(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = ( SELECT lesson.course_id
            FROM lesson
           WHERE (lesson.id = exercise.lesson_id)
          LIMIT 1))
@@ -527,9 +520,9 @@ on "public"."exercise"
 as permissive
 for insert
 to public
-with check (is_user_in_group_with_role(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = ( SELECT lesson.course_id
+with check (is_user_in_group_with_role(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = ( SELECT lesson.course_id
            FROM lesson
           WHERE (lesson.id = exercise.lesson_id)
          LIMIT 1))
@@ -541,16 +534,16 @@ on "public"."exercise"
 as permissive
 for update
 to public
-using (is_user_in_group_with_role(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = ( SELECT lesson.course_id
+using (is_user_in_group_with_role(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = ( SELECT lesson.course_id
            FROM lesson
           WHERE (lesson.id = exercise.lesson_id)
          LIMIT 1))
  LIMIT 1)))
-with check (is_user_in_group_with_role(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = ( SELECT lesson.course_id
+with check (is_user_in_group_with_role(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = ( SELECT lesson.course_id
            FROM lesson
           WHERE (lesson.id = exercise.lesson_id)
          LIMIT 1))
@@ -595,9 +588,9 @@ on "public"."group_attendance"
 as permissive
 for insert
 to public
-with check (is_user_in_course_group(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = group_attendance.course_id)
+with check (is_user_in_course_group(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = group_attendance.course_id)
  LIMIT 1)));
 
 
@@ -606,9 +599,9 @@ on "public"."group_attendance"
 as permissive
 for select
 to public
-using (is_user_in_course_group(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = group_attendance.course_id)
+using (is_user_in_course_group(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = group_attendance.course_id)
  LIMIT 1)));
 
 
@@ -617,13 +610,13 @@ on "public"."group_attendance"
 as permissive
 for update
 to public
-using (is_user_in_course_group(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = group_attendance.course_id)
+using (is_user_in_course_group(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = group_attendance.course_id)
  LIMIT 1)))
-with check (is_user_in_course_group(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = group_attendance.course_id)
+with check (is_user_in_course_group(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = group_attendance.course_id)
  LIMIT 1)));
 
 
@@ -632,9 +625,9 @@ on "public"."group_attendance"
 as permissive
 for delete
 to public
-using (is_user_in_group_with_role(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = group_attendance.course_id)
+using (is_user_in_group_with_role(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = group_attendance.course_id)
  LIMIT 1)));
 
 
@@ -684,9 +677,9 @@ on "public"."lesson"
 as permissive
 for delete
 to public
-using (is_user_in_group_with_role(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = lesson.course_id)
+using (is_user_in_group_with_role(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = lesson.course_id)
  LIMIT 1)));
 
 
@@ -695,9 +688,9 @@ on "public"."lesson"
 as permissive
 for insert
 to public
-with check (is_user_in_group_with_role(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = lesson.course_id)
+with check (is_user_in_group_with_role(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = lesson.course_id)
  LIMIT 1)));
 
 
@@ -706,13 +699,13 @@ on "public"."lesson"
 as permissive
 for update
 to public
-using (is_user_in_group_with_role(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = lesson.course_id)
+using (is_user_in_group_with_role(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = lesson.course_id)
  LIMIT 1)))
-with check (is_user_in_group_with_role(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = lesson.course_id)
+with check (is_user_in_group_with_role(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = lesson.course_id)
  LIMIT 1)));
 
 
@@ -744,9 +737,9 @@ on "public"."lesson_comment"
 as permissive
 for insert
 to public
-with check (is_user_in_course_group(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = ( SELECT lesson.course_id
+with check (is_user_in_course_group(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = ( SELECT lesson.course_id
            FROM lesson
           WHERE (lesson.id = lesson_comment.lesson_id)
          LIMIT 1))
@@ -766,9 +759,9 @@ on "public"."lesson_completion"
 as permissive
 for all
 to public
-with check (is_user_in_course_group(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = ( SELECT lesson.course_id
+with check (is_user_in_course_group(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = ( SELECT lesson.course_id
            FROM lesson
           WHERE (lesson.id = lesson_completion.lesson_id)
          LIMIT 1))
@@ -780,9 +773,9 @@ on "public"."lesson_completion"
 as permissive
 for delete
 to public
-using (is_user_in_group_with_role(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = ( SELECT lesson.course_id
+using (is_user_in_group_with_role(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = ( SELECT lesson.course_id
            FROM lesson
           WHERE (lesson.id = lesson_completion.lesson_id)
          LIMIT 1))
@@ -794,16 +787,16 @@ on "public"."lesson_completion"
 as permissive
 for update
 to public
-using (is_user_in_group_with_role(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = ( SELECT lesson.course_id
+using (is_user_in_group_with_role(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = ( SELECT lesson.course_id
            FROM lesson
           WHERE (lesson.id = lesson_completion.lesson_id)
          LIMIT 1))
  LIMIT 1)))
-with check (is_user_in_group_with_role(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = ( SELECT lesson.course_id
+with check (is_user_in_group_with_role(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = ( SELECT lesson.course_id
            FROM lesson
           WHERE (lesson.id = lesson_completion.lesson_id)
          LIMIT 1))
@@ -823,9 +816,9 @@ on "public"."lesson_language"
 as permissive
 for delete
 to public
-using (is_user_in_group_with_role(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = ( SELECT lesson.course_id
+using (is_user_in_group_with_role(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = ( SELECT lesson.course_id
            FROM lesson
           WHERE (lesson.id = lesson_language.lesson_id)
          LIMIT 1))
@@ -837,9 +830,9 @@ on "public"."lesson_language"
 as permissive
 for insert
 to public
-with check (is_user_in_group_with_role(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = ( SELECT lesson.course_id
+with check (is_user_in_group_with_role(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = ( SELECT lesson.course_id
            FROM lesson
           WHERE (lesson.id = lesson_language.lesson_id)
          LIMIT 1))
@@ -851,16 +844,16 @@ on "public"."lesson_language"
 as permissive
 for update
 to public
-using (is_user_in_group_with_role(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = ( SELECT lesson.course_id
+using (is_user_in_group_with_role(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = ( SELECT lesson.course_id
            FROM lesson
           WHERE (lesson.id = lesson_language.lesson_id)
          LIMIT 1))
  LIMIT 1)))
-with check (is_user_in_group_with_role(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = ( SELECT lesson.course_id
+with check (is_user_in_group_with_role(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = ( SELECT lesson.course_id
            FROM lesson
           WHERE (lesson.id = lesson_language.lesson_id)
          LIMIT 1))
@@ -888,9 +881,9 @@ on "public"."option"
 as permissive
 for delete
 to public
-using (is_user_in_group_with_role(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = ( SELECT lesson.course_id
+using (is_user_in_group_with_role(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = ( SELECT lesson.course_id
            FROM lesson
           WHERE (lesson.id = ( SELECT exercise.lesson_id
                    FROM exercise
@@ -908,9 +901,9 @@ on "public"."option"
 as permissive
 for insert
 to public
-with check (is_user_in_group_with_role(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = ( SELECT lesson.course_id
+with check (is_user_in_group_with_role(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = ( SELECT lesson.course_id
            FROM lesson
           WHERE (lesson.id = ( SELECT exercise.lesson_id
                    FROM exercise
@@ -928,9 +921,9 @@ on "public"."option"
 as permissive
 for update
 to public
-using (is_user_in_group_with_role(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = ( SELECT lesson.course_id
+using (is_user_in_group_with_role(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = ( SELECT lesson.course_id
            FROM lesson
           WHERE (lesson.id = ( SELECT exercise.lesson_id
                    FROM exercise
@@ -941,9 +934,9 @@ using (is_user_in_group_with_role(( SELECT course.group_id
                  LIMIT 1))
          LIMIT 1))
  LIMIT 1)))
-with check (is_user_in_group_with_role(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = ( SELECT lesson.course_id
+with check (is_user_in_group_with_role(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = ( SELECT lesson.course_id
            FROM lesson
           WHERE (lesson.id = ( SELECT exercise.lesson_id
                    FROM exercise
@@ -1036,7 +1029,7 @@ on "public"."organizationmember"
 as permissive
 for select
 to public
-using ((auth.uid() IS NOT NULL));
+using ((auth.uid() = profile_id));
 
 
 create policy "Enable insert for authenticated users only"
@@ -1093,9 +1086,9 @@ on "public"."question"
 as permissive
 for delete
 to public
-using (is_user_in_group_with_role(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = ( SELECT lesson.course_id
+using (is_user_in_group_with_role(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = ( SELECT lesson.course_id
            FROM lesson
           WHERE (lesson.id = ( SELECT exercise.lesson_id
                    FROM exercise
@@ -1109,9 +1102,9 @@ on "public"."question"
 as permissive
 for insert
 to public
-with check (is_user_in_group_with_role(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = ( SELECT lesson.course_id
+with check (is_user_in_group_with_role(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = ( SELECT lesson.course_id
            FROM lesson
           WHERE (lesson.id = ( SELECT exercise.lesson_id
                    FROM exercise
@@ -1125,18 +1118,18 @@ on "public"."question"
 as permissive
 for update
 to public
-using (is_user_in_group_with_role(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = ( SELECT lesson.course_id
+using (is_user_in_group_with_role(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = ( SELECT lesson.course_id
            FROM lesson
           WHERE (lesson.id = ( SELECT exercise.lesson_id
                    FROM exercise
                   WHERE (exercise.id = question.exercise_id)))
          LIMIT 1))
  LIMIT 1)))
-with check (is_user_in_group_with_role(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = ( SELECT lesson.course_id
+with check (is_user_in_group_with_role(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = ( SELECT lesson.course_id
            FROM lesson
           WHERE (lesson.id = ( SELECT exercise.lesson_id
                    FROM exercise
@@ -1153,14 +1146,14 @@ to public
 using ((auth.uid() IS NOT NULL));
 
 
-create policy "User must be an course member to DELETE"
+create policy "User must be an org member to DELETE"
 on "public"."question_answer"
 as permissive
 for delete
 to public
-using (is_user_in_course_group(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = ( SELECT lesson.course_id
+using (is_user_in_group_with_role(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = ( SELECT lesson.course_id
            FROM lesson
           WHERE (lesson.id = ( SELECT exercise.lesson_id
                    FROM exercise
@@ -1173,14 +1166,14 @@ using (is_user_in_course_group(( SELECT course.group_id
  LIMIT 1)));
 
 
-create policy "User must be an course member to INSERT"
+create policy "User must be an org member to INSERT"
 on "public"."question_answer"
 as permissive
 for insert
 to public
-with check (is_user_in_course_group(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = ( SELECT lesson.course_id
+with check (is_user_in_group_with_role(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = ( SELECT lesson.course_id
            FROM lesson
           WHERE (lesson.id = ( SELECT exercise.lesson_id
                    FROM exercise
@@ -1193,14 +1186,14 @@ with check (is_user_in_course_group(( SELECT course.group_id
  LIMIT 1)));
 
 
-create policy "User must be an course member to UPDATE"
+create policy "User must be an org member to UPDATE"
 on "public"."question_answer"
 as permissive
 for update
 to public
-using (is_user_in_course_group(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = ( SELECT lesson.course_id
+using (is_user_in_group_with_role(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = ( SELECT lesson.course_id
            FROM lesson
           WHERE (lesson.id = ( SELECT exercise.lesson_id
                    FROM exercise
@@ -1211,9 +1204,9 @@ using (is_user_in_course_group(( SELECT course.group_id
                  LIMIT 1))
          LIMIT 1))
  LIMIT 1)))
-with check (is_user_in_course_group(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = ( SELECT lesson.course_id
+with check (is_user_in_group_with_role(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = ( SELECT lesson.course_id
            FROM lesson
           WHERE (lesson.id = ( SELECT exercise.lesson_id
                    FROM exercise
@@ -1271,9 +1264,9 @@ on "public"."submission"
 as permissive
 for delete
 to public
-using (is_user_in_course_group(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = submission.course_id)
+using (is_user_in_course_group(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = submission.course_id)
  LIMIT 1)));
 
 
@@ -1282,9 +1275,9 @@ on "public"."submission"
 as permissive
 for insert
 to public
-with check (is_user_in_course_group(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = submission.course_id)
+with check (is_user_in_course_group(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = submission.course_id)
  LIMIT 1)));
 
 
@@ -1293,13 +1286,13 @@ on "public"."submission"
 as permissive
 for update
 to public
-using (is_user_in_course_group(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = submission.course_id)
+using (is_user_in_course_group(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = submission.course_id)
  LIMIT 1)))
-with check (is_user_in_course_group(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = submission.course_id)
+with check (is_user_in_course_group(( SELECT "group".id
+   FROM "group"
+  WHERE ("group".course_id = submission.course_id)
  LIMIT 1)));
 
 
