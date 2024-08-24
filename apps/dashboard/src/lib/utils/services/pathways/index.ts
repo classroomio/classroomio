@@ -52,6 +52,7 @@ const ID_QUERY = `
     order,
     course_id,
     pathway_id,
+    is_unlocked,
     course (
       id,
       title,
