@@ -14,10 +14,10 @@
   import { courses, pathway } from '../store';
 
   import { t } from '$lib/utils/functions/translations';
+  import { getLectureNo } from '$lib/components/Course/function';
   import { getIsCourseComplete, getPathwayNavItemRoute } from '../functions';
 
   import TextChip from '$lib/components/Chip/Text.svelte';
-  import { getLectureNo } from '$lib/components/Course/function';
   import NavExpandable from '$lib/components/Course/components/Navigation/NavExpandable.svelte';
 
   export let path: string;
@@ -250,7 +250,7 @@
                   !item.is_unlocked
                     ? 'cursor-not-allowed'
                     : ''}"
-                  href="/courses/{item.id}"
+                  href="/courses/{item.course_id}"
                   on:click={toggleSidebarOnMobile}
                   aria-disabled={!item.is_unlocked}
                 >
