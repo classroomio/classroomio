@@ -33,7 +33,7 @@
   export let isLMS = false;
   export let isLearningPath = false;
   export let totalCourse = 0;
-  export let completedCourse = 0;
+  export let pathwaycompletedCourses = 0;
   export let isExplore = false;
   export let progressRate = 45;
   export let type: COURSE_TYPE;
@@ -63,6 +63,10 @@
   }
 
   function getCourseUrl() {
+    if (isLMS && isLearningPath) {
+      return `/pathways/${id}`;
+    }
+
     return isOnLandingPage || isExplore
       ? `/course/${slug}`
       : `/courses/${id}${isLMS ? '/lessons?next=true' : ''}`;
@@ -145,7 +149,7 @@
         <svelte:fragment slot="error">{$t('courses.course_card.error_message')}</svelte:fragment>
       </ImageLoader>
 
-      {#if isLearningPath && isLMS}
+      {#if isLMS && isLearningPath}
         <span
           class="absolute top-2 left-2 z-10 text-xs font-bold uppercase bg-white text-primary-600 rounded-sm p-1"
         >
@@ -175,7 +179,7 @@
     <div>
       <p class="text-xs {!isLMS && 'pl-2'} font-normal dark:text-white">
         {#if isLearningPath && isLMS}
-          {completedCourse} / {totalCourse} {$t('lms_pathway.course')}
+          {pathwaycompletedCourses} / {totalCourse} {$t('lms_pathway.course')}
         {:else}
           {totalLessons}
           {$t('courses.course_card.lessons_number')}

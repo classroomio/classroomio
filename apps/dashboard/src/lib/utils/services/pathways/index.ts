@@ -6,7 +6,6 @@ export function addPathwayGroupMember(member: any) {
   return supabase.from('groupmember').insert(member).select();
 }
 
-
 const SLUG_QUERY = `
   id,
   title,
@@ -103,15 +102,23 @@ export async function fetchPathway(pathwayId?: Pathway['id'], slug?: Pathway['sl
 }
 
 export function addPathwayCourse(pathwayId: Pathway['id'], courseId: PathwayCourse['course_id']) {
-  return supabase.from('pathway_course').insert([
-    {
-      pathway_id: pathwayId,
-      course_id: courseId,
-    }
-  ]).select();
+  return supabase
+    .from('pathway_course')
+    .insert([
+      {
+        pathway_id: pathwayId,
+        course_id: courseId
+      }
+    ])
+    .select();
 }
 
-export function updatePathwayCourses(id: any, pathwayId: Pathway['id'], courseId: PathwayCourse['course_id'], order: PathwayCourse['order']) {
+export function updatePathwayCourses(
+  id: any,
+  pathwayId: Pathway['id'],
+  courseId: PathwayCourse['course_id'],
+  order: PathwayCourse['order']
+) {
   return supabase
     .from('pathway_course')
     .update({ order: order })
@@ -133,4 +140,35 @@ export async function fetchProfilePathwayProgress(
     .returns<ProfilePathwayProgress[]>();
 
   return { data, error };
+}
+
+export async function updatePathways(
+  pathwayId: Pathway['id'],
+  avatar: string | undefined,
+  pathway: Partial<Pathway>
+) {
+  if (avatar && pathwayId) {
+    const filename = `course/${pathwayId + Date.now()}.webp`;
+
+    const { data } = await supabase.storage.from('avatars').upload(filename, avatar, {
+      cacheControl: '3600',
+      upsert: false
+    });
+
+    if (data) {
+      const { data: response } = supabase.storage.from('avatars').getPublicUrl(filename);
+
+      if (!response.publicUrl) return;
+
+      pathway.logo = response.publicUrl;
+    }
+  }
+
+  await supabase.from('pathway').update(pathway).match({ id: pathwayId });
+
+  return pathway.logo;
+}
+
+export async function deletePathway(pathwayId: Pathway['id']) {
+  return await supabase.from('pathway').update({ status: 'DELETED' }).match({ id: pathwayId });
 }

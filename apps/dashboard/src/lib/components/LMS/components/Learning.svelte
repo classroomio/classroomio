@@ -7,18 +7,19 @@
   import { ChevronDown } from 'carbon-icons-svelte';
   import CourseListModal from '$lib/components/LMS/components/CourseListModal.svelte';
   import { lmsCourses } from '$lib/components/LMS/store';
+  import { getPathwayCompletedCoursesLength } from '$lib/utils/functions/pathway';
 
   let open = false;
 
-  const getCompletedCoursesCount = (pathway) => {
-    return pathway.pathway_course?.filter((course) => course.progress_rate === 100).length || 0;
-  };
+  // const getCompletedCoursesCount = (pathway) => {
+  //   return (
+  //     pathway.pathway_course?.filter((course) => course.course.progress_rate === 100).length || 0
+  //   );
+  // };
 
   // this return the first course it can find in the array that is been taken but not yet completed.
   const getCurrentCourse = (pathway) => {
-    return pathway.pathway_course?.find(
-      (course) => course.is_unlocked === true && course.progress_rate !== 100
-    );
+    return pathway.pathway_course?.find((course) => course.is_unlocked === true);
   };
 
   const gotoCourse = (id: string | undefined) => {
@@ -52,45 +53,45 @@
                     open = !open;
                   }}
                 >
-                  {getCompletedCoursesCount(course) || 0}
+                  {getPathwayCompletedCoursesLength(course) || 0}
                   {$t('lms_pathway.of')}
                   {course?.total_course}
                   {$t('lms_pathway.completed')}
                   <ChevronDown />
                 </button>
               </div>
-
+              <!-- this is for the current course being taken  -->
               <span class="flex flex-col lg:flex-row gap-3 items-start pb-5">
                 <img
-                  src={getCurrentCourse(course)?.logo ||
+                  src={getCurrentCourse(course)?.course.logo ||
                     '/images/classroomio-course-img-template.jpg'}
                   alt="course"
                   class="hidden lg:block lg:w-[60px] lg:h-[60px]"
                 />
                 <div class="w-full">
                   <p class="text-base font-semibold dark:text-white">
-                    {getCurrentCourse(course)?.title}
+                    {getCurrentCourse(course)?.course.title || 'No title'}
                   </p>
                   <p class="line-clamp-2 text-xs font-normal text-[#656565] dark:text-white">
-                    {getCurrentCourse(course)?.description}
+                    {getCurrentCourse(course)?.course.description || 'No descrption'}
                   </p>
                 </div>
                 <PrimaryButton
                   label={$t('dashboard.continue')}
                   variant={VARIANTS.OUTLINED}
                   className="rounded-none text-[#0233BD]"
-                  onClick={() => gotoCourse(getCurrentCourse(course)?.id)}
+                  onClick={() => gotoCourse(getCurrentCourse(course)?.course.id)}
                 />
               </span>
-              {#if getCurrentCourse(course)?.progress_rate && getCurrentCourse(course)?.progress_rate > 0}
+              {#if getCurrentCourse(course)?.course.progress_rate && getCurrentCourse(course)?.course.progress_rate > 0}
                 <div class="relative bg-[#EAEAEA] w-full h-1">
                   <div
-                    style="width: {getCurrentCourse(course)?.progress_rate || 0}%"
+                    style="width: {getCurrentCourse(course)?.course.progress_rate || 0}%"
                     class={`absolute top-0 left-0 bg-primary-700 h-full`}
                   />
                 </div>
               {/if}
-              {#if course.courses}
+              {#if course.pathway_course?.length > 0}
                 <CourseListModal pathway={course} bind:open />
               {/if}
             {:else}

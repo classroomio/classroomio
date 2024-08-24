@@ -13,6 +13,13 @@
   const gotoPathway = () => {
     return goto(`/pathways/${pathway.id}`);
   };
+
+  const courseProgress = (lessons) => {
+    const totalLesson = lessons.length;
+    const completedLesson = lessons.filter((lesson) => lesson.is_complete).length;
+
+    return (completedLesson / totalLesson) * 100;
+  };
 </script>
 
 <Modal
@@ -25,11 +32,16 @@
   bind:open
 >
   <div class="h-full">
-    {#each pathway.courses as course}
-      <a href={course.is_unlocked ? `/course/${course.id}` : null} class="hover:no-underline">
+    {#each pathway.pathway_course as pathway_course}
+      <a
+        href={pathway_course.is_unlocked && pathway_course.course.is_published
+          ? `/courses/${pathway_course.course.id}`
+          : null}
+        class="hover:no-underline"
+      >
         <div class="p-2 cursor-pointer space-y-2 {NavClasses.item}">
-          <p class="text-sm font-normal w-[60%] truncate">{course.title}</p>
-          {#if !course.is_unlocked}
+          <p class="text-sm font-normal w-[60%] truncate">{pathway_course.course.title}</p>
+          {#if pathway_course.is_unlocked == false || pathway_course.course.is_published == false}
             <p class="text-sm font-normal text-gray-500 bg-gray-300 w-fit px-1 rounded-sm">
               {$t('lms_pathway.locked')}
             </p>
@@ -37,14 +49,14 @@
             <div class="flex items-center gap-2">
               <div class="relative bg-[#EAEAEA] w-[40%] h-2">
                 <div
-                  style="width: {course.progress_rate}%"
+                  style="width: {courseProgress(pathway_course.course.lesson) || 0}%"
                   class="absolute top-0 left-0 bg-primary-900 h-full"
                 />
               </div>
               <p class="text-xs font-medium">
-                {course.progress_rate === 100
+                {courseProgress(pathway_course.course.lesson) === 100
                   ? `${$t('lms_pathway.completed')}`
-                  : `${course.progress_rate}%`}
+                  : `${courseProgress(pathway_course.course.lesson) || 0}%`}
               </p>
             </div>
           {/if}

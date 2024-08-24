@@ -29,3 +29,13 @@ export function replaceHTMLTag(text: string) {
     .map((char) => tagsToReplace[char] || char)
     .join('');
 }
+
+export const getPathwayCompletedCoursesLength = (pathway: Pathway) => {
+  if (!pathway.isPathway) return;
+  const completedCourses = pathway.pathway_course.filter((pathwayCourse) => {
+    const lessons = pathwayCourse.course.lesson;
+    return lessons.length > 0 && lessons.every((lesson) => lesson.is_complete);
+  }).length;
+  console.log('lesson done', completedCourses);
+  return completedCourses;
+};

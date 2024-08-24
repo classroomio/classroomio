@@ -5,7 +5,7 @@
   import CardLoader from '$lib/components/Courses/components/Card/Loader.svelte';
   import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
   import { courseMetaDeta } from '$lib/components/Courses/store';
-  import type { Pathway } from '$lib/utils/types';
+  import type { Course, Pathway } from '$lib/utils/types';
   import { globalStore } from '$lib/utils/store/app';
   import {
     StructuredList,
@@ -16,9 +16,10 @@
   } from 'carbon-components-svelte';
   import { t } from '$lib/utils/functions/translations';
   import { isMobile } from '$lib/utils/store/useMobile';
-  import type { LmsCourse } from '$lib/components/LMS/store';
+  import type { LMSCourse } from '$lib/components/LMS/store';
+  import { getPathwayCompletedCoursesLength } from '$lib/utils/functions/pathway';
 
-  export let courses: LmsCourse[] = [];
+  export let courses: LMSCourse[] = [];
   export let emptyTitle = $t('courses.course_card.empty_title');
   export let emptyDescription = $t('courses.course_card.empty_description');
   export let isExplore = false;
@@ -28,16 +29,29 @@
     if (!progressRate || !totalItem) {
       return 0;
     }
-
     return Math.round((progressRate / totalItem) * 100);
   }
 
-  const getCompletedCourses = (course: Pathway) => {
-    if (!course.isPathway) return;
-    const completedCourse =
-      course.courses?.filter((course) => course.progress_rate === 100).length || 0;
-    return completedCourse;
-  };
+  function calculatePathwayProgress(pathway: Pathway): number {
+    if (!pathway.isPathway) return 0;
+
+    const totalCourses = pathway.total_course;
+    if (totalCourses === 0) return 0;
+
+    // Number of courses completed within the pathway
+    const completedCourses = getPathwayCompletedCoursesLength(pathway);
+
+    return Math.round((completedCourses / totalCourses) * 100);
+  }
+
+  function calculateCourseAndPathwayProgress(course: LMSCourse): number {
+    if (course.isPathway) {
+      return calculatePathwayProgress(course as Pathway);
+    } else {
+      // Individual course progress calculation
+      return calcProgressRate(course.progress_rate, course.total_lessons);
+    }
+  }
 </script>
 
 <!-- <CopyCourseModal /> -->
@@ -105,16 +119,13 @@
             type={courseData.type}
             isLearningPath={courseData.isPathway}
             totalCourse={courseData.total_course}
-            completedCourse={getCompletedCourses(courseData)}
+            pathwaycompletedCourses={getPathwayCompletedCoursesLength(courseData)}
             currency={courseData.currency}
             totalLessons={courseData.total_lessons}
             totalStudents={courseData.total_students}
             isLMS={$globalStore.isOrgSite}
             {isExplore}
-            progressRate={calcProgressRate(
-              courseData.progress_rate,
-              courseData.isPathway ? courseData.total_course : courseData.total_lessons
-            )}
+            progressRate={calculateCourseAndPathwayProgress(courseData)}
           />
         {/key}
       {/each}
