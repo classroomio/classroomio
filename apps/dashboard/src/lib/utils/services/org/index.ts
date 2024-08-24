@@ -228,6 +228,7 @@ export async function getCurrentOrg(siteName: string, justGet = false) {
       siteName,
       avatar_url,
       landingpage,
+      is_restricted,
       customization,
       theme,
       organization_plan(

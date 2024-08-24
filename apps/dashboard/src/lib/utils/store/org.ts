@@ -22,7 +22,8 @@ export const defaultCurrentOrgState: CurrentOrg = {
     dashboard: { exercise: true, community: true, bannerText: '', bannerImage: '' }
   },
   theme: '',
-  organization_plan: []
+  organization_plan: [],
+  is_restricted: false
 };
 
 export const orgs = writable<CurrentOrg[]>([]);

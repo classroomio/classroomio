@@ -16,6 +16,7 @@
   import LMSNavigation from '$lib/components/Navigation/lms.svelte';
   import OrgLandingPage from '$lib/components/Org/LandingPage/index.svelte';
   import Snackbar from '$lib/components/Snackbar/index.svelte';
+  import Restricted from '$lib/components/Page/Restricted.svelte';
   import Backdrop from '$lib/components/Backdrop/index.svelte';
   import Apps from '$lib/components/Apps/index.svelte';
   import PlayQuiz from '$lib/components/Org/Quiz/Play/index.svelte';
@@ -301,7 +302,9 @@
 <UpgradeModal />
 <Snackbar />
 
-{#if data.skipAuth}
+{#if data.org?.is_restricted}
+  <Restricted />
+{:else if data.skipAuth}
   <PlayQuiz />
 {:else if data.isOrgSite && !path}
   <OrgLandingPage orgSiteName={data.orgSiteName} org={data.org || {}} />
