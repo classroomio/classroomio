@@ -14,7 +14,7 @@
   <div class="flex flex-col items-center justify-center dark:text-white gap-3 w-4/5 lg:w-2/5">
     <p class="text-4xl dark:text-white font-semibold mt-5">Restricted Page</p>
     <p class=" text-gray-700 text-lg text-center dark:text-white mb-5">
-      This organization is restricted. In the mean time, you can go back to the homepage.
+      This organization is restricted. In the mean time, you can checkout our features.
     </p>
     <PrimaryButton
       variant={VARIANTS.CONTAINED_DARK}

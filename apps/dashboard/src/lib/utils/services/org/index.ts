@@ -79,6 +79,7 @@ export async function getOrganizations(userId: string, isOrgSite?: boolean, orgS
         avatar_url,
         landingpage,
         customization,
+        is_restricted,
         theme,
         created_at,
         organization_plan(
@@ -115,6 +116,7 @@ export async function getOrganizations(userId: string, isOrgSite?: boolean, orgS
         memberId: orgMember?.id,
         role_id: orgMember?.role_id,
         landingpage: orgMember?.organization?.landingpage,
+        is_restricted: orgMember?.organization?.is_restricted,
         customization: orgMember?.organization?.customization,
         organization_plan: orgMember?.organization?.organization_plan
       });

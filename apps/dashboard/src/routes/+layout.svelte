@@ -302,7 +302,7 @@
 <UpgradeModal />
 <Snackbar />
 
-{#if data.org?.is_restricted}
+{#if data.org?.is_restricted || $currentOrg.is_restricted}
   <Restricted />
 {:else if data.skipAuth}
   <PlayQuiz />
