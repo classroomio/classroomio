@@ -7,19 +7,15 @@
   import { ChevronDown } from 'carbon-icons-svelte';
   import CourseListModal from '$lib/components/LMS/components/CourseListModal.svelte';
   import { lmsCourses } from '$lib/components/LMS/store';
-  import { getPathwayCompletedCoursesLength } from '$lib/utils/functions/pathway';
+  import { courseProgress, getPathwayCompletedCoursesLength } from '$lib/utils/functions/pathway';
 
   let open = false;
 
-  // const getCompletedCoursesCount = (pathway) => {
-  //   return (
-  //     pathway.pathway_course?.filter((course) => course.course.progress_rate === 100).length || 0
-  //   );
-  // };
-
   // this return the first course it can find in the array that is been taken but not yet completed.
   const getCurrentCourse = (pathway) => {
-    return pathway.pathway_course?.find((course) => course.is_unlocked === true);
+    return pathway.pathway_course?.find(
+      (course) => course.is_unlocked === true && courseProgress(course.course.lesson) != 100
+    );
   };
 
   const gotoCourse = (id: string | undefined) => {
@@ -83,15 +79,15 @@
                   onClick={() => gotoCourse(getCurrentCourse(course)?.course.id)}
                 />
               </span>
-              {#if getCurrentCourse(course)?.course.progress_rate && getCurrentCourse(course)?.course.progress_rate > 0}
+              {#if getCurrentCourse(course) && courseProgress(getCurrentCourse(course).course.lesson) > 0}
                 <div class="relative bg-[#EAEAEA] w-full h-1">
                   <div
-                    style="width: {getCurrentCourse(course)?.course.progress_rate || 0}%"
+                    style="width: {courseProgress(getCurrentCourse(course).course.lesson)}%"
                     class={`absolute top-0 left-0 bg-primary-700 h-full`}
                   />
                 </div>
               {/if}
-              {#if course.pathway_course?.length > 0}
+              {#if course.pathway_course}
                 <CourseListModal pathway={course} bind:open />
               {/if}
             {:else}
