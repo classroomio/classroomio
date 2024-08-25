@@ -75,14 +75,14 @@
         courses_certificate
       } = $pathwaySettings;
 
-      await updatePathway($pathway.id, avatar, {
-        title,
-        logo,
-        description,
-        prerequisite,
-        is_published,
-        lms_certificate,
-        courses_certificate,
+      await updatePathways($pathway.id, avatar, {
+        title: title,
+        logo: logo,
+        description: description,
+        prerequisite: prerequisite,
+        is_published: is_published,
+        lms_certificate: lms_certificate,
+        courses_certificate: courses_certificate,
         slug: $pathway.slug
       });
 

@@ -15,7 +15,7 @@
   import type { Course, PathwayCourse } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
   import { fetchCourses } from '$lib/utils/services/courses';
-  import { addPathwayCourse } from '$lib/utils/services/pathways';
+  import { addPathwayCourse, updatePathwayCourses } from '$lib/utils/services/pathways';
 
   import Modal from '$lib/components/Modal/index.svelte';
   import DragAndDropModal from './DragAndDropModal.svelte';
@@ -63,6 +63,19 @@
 
     $addCourseModal.step = 1;
   }
+
+  const handleSaveDnD = () => {
+    $courses.forEach(async (course) => {
+      ``;
+      try {
+        await updatePathwayCourses(course.id, course.pathway_id, course.course_id, course.order);
+      } catch (error) {
+        console.error('Error updating course order in Supabase:', error);
+      }
+    });
+
+    $addCourseModal.open = false;
+  };
 
   function toggleCourseSelection(course: PathwayCourse, checked: boolean) {
     if (checked) {
@@ -159,18 +172,6 @@
             {/each}
           </StructuredListBody>
         </StructuredList>
-
-        <div class="flex justify-end">
-          <PrimaryButton
-            label={`${$t('pathway.components.addCourseModal.add')} ${pathwayCourses.length} ${
-              pathwayCourses.length === 1
-                ? $t('pathway.components.addCourseModal.course')
-                : $t('pathway.components.addCourseModal.courses')
-            } ${$t('pathway.components.addCourseModal.path')}`}
-            onClick={handleSave}
-            isDisabled={pathwayCourses.length < 1}
-          />
-        </div>
       </div>
     {:else if $addCourseModal.step === 1}
       <DragAndDropModal
@@ -179,4 +180,21 @@
       />
     {/if}
   </main>
+  <div slot="buttons" class="flex justify-end">
+    {#if $addCourseModal.step === 0}
+      <PrimaryButton
+        label={`${$t('pathway.components.addCourseModal.add')} ${pathwayCourses.length} ${
+          pathwayCourses.length === 1
+            ? $t('pathway.components.addCourseModal.course')
+            : $t('pathway.components.addCourseModal.courses')
+        } ${$t('pathway.components.addCourseModal.path')}`}
+        onClick={handleSave}
+        isDisabled={pathwayCourses.length < 1}
+      />
+    {:else}
+      <div class="flex justify-end mt-5">
+        <PrimaryButton label={$t('pathway.components.dragAndDrop.label')} onClick={handleSaveDnD} />
+      </div>
+    {/if}
+  </div>
 </Modal>

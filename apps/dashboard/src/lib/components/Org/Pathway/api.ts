@@ -71,12 +71,14 @@ export async function fetchPathways(profileId: string | undefined, orgId: string
       pathway_id,
       order,
       course_id,
+      is_unlocked,
       course (
         id,
         title,
         logo,
         description,
         banner_image,
+        is_published,
         created_at,
         lesson (
           is_complete

@@ -31,18 +31,18 @@
     dispatch('update', pathwayCourses);
   }
 
-  function handleSave() {
-    pathwayCourses.forEach(async (course) => {
-      ``;
-      try {
-        await updatePathwayCourses(course.id, course.pathway_id, course.course_id, course.order);
-      } catch (error) {
-        console.error('Error updating course order in Supabase:', error);
-      }
-    });
+  // function handleSave() {
+  //   pathwayCourses.forEach(async (course) => {
+  //     ``;
+  //     try {
+  //       await updatePathwayCourses(course.id, course.pathway_id, course.course_id, course.order);
+  //     } catch (error) {
+  //       console.error('Error updating course order in Supabase:', error);
+  //     }
+  //   });
 
-    $addCourseModal.open = false;
-  }
+  //   $addCourseModal.open = false;
+  // }
 </script>
 
 <header class="bg-[#F7F7F7] p-3 rounded-md">
@@ -94,6 +94,6 @@
   {/each}
 </section>
 
-<div class="flex justify-end mt-5">
+<!-- <div slot='buttons' class="flex justify-end mt-5">
   <PrimaryButton label={$t('pathway.components.dragAndDrop.label')} onClick={handleSave} />
-</div>
+</div> -->

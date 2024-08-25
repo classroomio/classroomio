@@ -125,19 +125,19 @@
     {#if errors.newPost}
       <p class="text-sm text-red-500">{errors.newPost}</p>
     {/if}
-    <div class="flex items-center justify-end py-2">
-      <div class="flex gap-2">
-        <PrimaryButton
-          label={$t('course.navItem.news_feed.heading_button.cancel')}
-          variant={VARIANTS.OUTLINED}
-          onClick={resetEditor}
-        />
-        <PrimaryButton
-          {isLoading}
-          label={$t('course.navItem.news_feed.heading_button.post')}
-          onClick={onPost}
-        />
-      </div>
-    </div>
   </section>
+  <div slot="buttons" class="flex items-center justify-end py-2">
+    <div class="flex gap-2">
+      <PrimaryButton
+        label={$t('course.navItem.news_feed.heading_button.cancel')}
+        variant={VARIANTS.OUTLINED}
+        onClick={resetEditor}
+      />
+      <PrimaryButton
+        {isLoading}
+        label={$t('course.navItem.news_feed.heading_button.post')}
+        onClick={onPost}
+      />
+    </div>
+  </div>
 </Modal>
