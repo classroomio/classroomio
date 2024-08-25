@@ -220,7 +220,3 @@ export async function updatePathways(
 
   return pathway.logo;
 }
-
-export async function deletePathway(pathwayId: Pathway['id']) {
-  return await supabase.from('pathway').update({ status: 'DELETED' }).match({ id: pathwayId });
-}
