@@ -1,6 +1,6 @@
+import type { MetaTagsProps } from 'svelte-meta-tags';
 import { fetchCourse } from '$lib/utils/services/courses';
 import { supabase, getSupabase } from '$lib/utils/functions/supabase';
-import type { MetaTagsProps } from 'svelte-meta-tags';
 
 if (!supabase) {
   getSupabase();
@@ -17,7 +17,7 @@ export const load = async ({ params = { slug: '' } }) => {
       description: data?.description,
       images: [
         {
-          url: data?.logo,
+          url: data?.logo || '',
           alt: data?.title,
           width: 280,
           height: 200,
@@ -29,7 +29,7 @@ export const load = async ({ params = { slug: '' } }) => {
     twitter: {
       handle: '@classroomio',
       site: '@classroomio',
-      cardType: 'summary_large_image',
+      cardType: 'summary_large_image' as const,
       title: data?.title,
       description: data?.description,
       image: data?.logo,

@@ -53,7 +53,7 @@
     "openai-edge": "^1.2.2",
     "papaparse": "^5.4.1",
     "pluralize": "^8.0.0",
-    "posthog-js": "^1.155.0",
+    "posthog-js": "^1.157.2",
     "shared": "workspace:*",
     "sirv": "^2.0.3",
     "stripe": "^14.22.0",
