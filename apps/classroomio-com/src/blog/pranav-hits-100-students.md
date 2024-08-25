@@ -28,7 +28,7 @@ Here is what he has to say:
 ![pranav-experience-using-classroomio](https://assets.cdn.clsrio.com/blog/review-by-pranav.jpeg)
 _Pranav's experience using ClassroomIO_
 
-> ClassroomIO really helped me bootstrap my program.
+> ClassroomIO really helped me [bootstrap my program](https://dblocked.io/).
 >
 > The dashboard is extremely intuitive. I could navigate most of it without any help / support. Coming from framer, I can honestly say that I am extremely greatful that I found ClassroomIO.
 >
