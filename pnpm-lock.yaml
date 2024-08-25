@@ -107,9 +107,9 @@ importers:
 
   apps/classroomio-com:
     dependencies:
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
+      just-extend:
+        specifier: ^6.2.0
+        version: 6.2.0
       posthog-node:
         specifier: ^3.1.3
         version: 3.1.3
@@ -12209,6 +12209,10 @@ packages:
       object.assign: 4.1.4
       object.values: 1.1.7
     dev: true
+
+  /just-extend@6.2.0:
+    resolution: {integrity: sha512-cYofQu2Xpom82S6qD778jBDpwvvy39s1l/hrYij2u9AMdQcGRpaBu6kY4mVhuno5kJVi1DAz4aiphA2WI1/OAw==}
+    dev: false
 
   /just-throttle@2.3.1:
     resolution: {integrity: sha512-0H4miIAWZYpnpg7oD/Y/PBb77ISSHAETif5xK9EnwIgYCO6oC8ErkJxDumMUTR44shSOwptRIArRuvNuvN/hOw==}

@@ -5,13 +5,13 @@
   import Footer from '$lib/Footer/Footer.svelte';
   import PageTransition from './transition.svelte';
   import NotFound from '$lib/NotFound/NotFound.svelte';
-  import merge from 'lodash/merge';
+  import extend from 'just-extend';
 
   import '../app.css';
 
   export let data;
 
-  $: metaTags = merge(data.baseMetaTags, $page.data.pageMetaTags);
+  $: metaTags = extend(true, {}, data.baseMetaTags, $page.data.pageMetaTags);
 </script>
 
 <MetaTags {...metaTags} />
