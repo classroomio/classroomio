@@ -18,8 +18,8 @@
   import { fetchProfilePathwayProgress } from '$lib/utils/services/pathways';
 
   let isLoading = false;
-  let showCourses = false;
-  let isPathwayComplete = false;
+  let showCourses = true;
+  let isPathwayComplete = true;
   let progress: ProfilePathwayProgress | undefined;
 
   function toggleCourse() {
@@ -84,23 +84,25 @@
   $: subtitle = isPathwayComplete
     ? 'pathway.pages.lms_certificate.unlocked.subtitle'
     : 'pathway.pages.lms_certificate.unlocked.subtitle';
+
+  $: console.log('$pathway.pathway_course', $pathway.pathway_course);
 </script>
 
 <Box className="h-auto">
-  <div class="flex items-center justify-between w-max gap-5 py-10">
+  <div class="flex flex-wrap flex-col gap-y-5 md:flex-row items-center justify-between p-5 md:p-10">
     <img
       src="/images/student-certificate-preview.png"
       alt="Certificate"
-      class="max-w-[218px] p-3 bg-[#F1F6FF]"
+      class="md:w-[30%] p-3 bg-[#F1F6FF]"
     />
-    <div class="w-[55%]">
+    <div class="md:w-[55%] text-center md:text-left">
       <p class="text-xl font-medium">
         {$t(title)}
       </p>
       <p class="text-sm my-2 font-normal max-w-md">
         {$t(subtitle)}
       </p>
-      <div class="flex items-center mt-5 justify-between">
+      <div class="flex flex-wrap gap-y-3 items-center mt-5 justify-center md:justify-between">
         <PrimaryButton
           className="flex items-center gap-2 text-xs"
           onClick={downLoadCertificate}
@@ -123,7 +125,7 @@
       </div>
     </div>
   </div>
-  <div class="py-10 px-14 w-full flex justify-between border-t">
+  <div class="py-10 px-14 w-full flex flex-col md:flex-row gap-y-5 justify-between border-t">
     <div>
       <h1 class="text-base m-0">Courses Completed</h1>
       <p class="text-sm mt-1">includes courses you have completed to achieve this learning path</p>
@@ -161,16 +163,16 @@
     OR you still want to allow the students view the listed courses and we desable the download button for uncompleted courses -->
   <!--   {#if isPathwayComplete && $pathway.courses.length > 0 && showCourses} -->
 
-  {#if $pathway.courses.length > 0 && showCourses}
+  {#if $pathway.pathway_course?.length > 0 && showCourses}
     <div class="px-14 border-t">
-      {#each $pathway.courses as course}
+      {#each $pathway.pathway_course as course}
         <div class="flex justify-between items-center py-4 border-b text-left">
           <div class="w-[30%] text-sm font-medium">
-            {course.title}
+            {course.course.title}
           </div>
 
           <div class="w-[40%] text-xs">
-            {course.description}
+            {course.course.description}
           </div>
 
           <button type="button" class="text-[#0233BD] text-xs font-medium underline"

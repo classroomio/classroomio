@@ -40,6 +40,7 @@ const ID_QUERY = `
   cost,
   currency,
   landingpage,
+  is_certificate_downloadable,
   certificate_theme,
     group(*,
     members:groupmember(*,
