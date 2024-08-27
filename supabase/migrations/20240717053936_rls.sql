@@ -130,7 +130,7 @@ END;
 $function$
 ;
 
-CREATE OR REPLACE FUNCTION public.is_user_in_group_with_role_by_course(course_id uuid)
+CREATE OR REPLACE FUNCTION public.can_user_make_changes_to_course(course_id_arg uuid)
 RETURNS boolean
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -139,14 +139,31 @@ BEGIN
   RETURN EXISTS (
     SELECT 1
     FROM organizationmember m
-    JOIN organization o ON o.id = m.organization_id 
-JOIN "group" g ON g.organization_id = o.id 
-WHERE m.role_id IS NOT NULL
-AND m.profile_id = auth.uid()
-AND g.course_id = course_id
+    JOIN organization o ON o.id = m.organization_id
+    JOIN "group" g ON g.organization_id = o.id
+    JOIN course c ON c.id = g.course_id
+    WHERE m.profile_id = auth.uid()
+    AND c.id = course_id_arg
   );
 END;
 $function$;
+
+
+CREATE OR REPLACE FUNCTION public.is_user_authorized_to_create_course()
+RETURNS boolean
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $function$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1
+    FROM organizationmember m
+    JOIN "group" g ON g.organization_id = m.organization_id
+WHERE m.profile_id = auth.uid()
+  );
+END;
+$function$;
+
 
 CREATE OR REPLACE FUNCTION public.is_user_in_group_with_role(group_id uuid)
  RETURNS boolean
@@ -381,22 +398,22 @@ on "public"."course"
 as permissive
 for delete
 to public
-using (is_user_in_group_with_role_by_course(course.id));
+using (can_user_make_changes_to_course(id));
 
 create policy "User must be an org member to INSERT"
 on "public"."course"
 as permissive
 for insert
 to public
-with check (is_user_in_group_with_role_by_course(course.id));
+with check (is_user_authorized_to_create_course());
 
 create policy "User must be an org member to UPDATE"
 on "public"."course"
 as permissive
 for update
 to public
-using (is_user_in_group_with_role_by_course(course.id))
-with check (is_user_in_group_with_role_by_course(course.id));
+using (can_user_make_changes_to_course(id))
+with check (can_user_make_changes_to_course(id));
 
 
 create policy "Delete your own comment"
