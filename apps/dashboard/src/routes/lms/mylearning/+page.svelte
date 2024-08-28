@@ -12,7 +12,7 @@
   import type { LMSCourse } from '$lib/components/LMS/store';
   import { fetchPathways } from '$lib/components/Org/Pathway/api';
   import { courseMetaDeta } from '$lib/components/Courses/store';
-  import { getPathwayCompletedCoursesLength } from '$lib/utils/functions/pathway';
+  import { getIsPathwayComplete } from '$lib/utils/functions/pathway';
 
   let hasFetched = false;
   let selectedId = '0';
@@ -90,19 +90,14 @@
     if (currentTab === '1') {
       filteredCoursesInProgress = filteredCourses.filter((course) => {
         if (course.isPathway) {
-          const incompleteCourses = course.pathway_course.filter((pathwayCourse) => {
-            const lessons = pathwayCourse.course.lesson;
-            return lessons.length > 0 && !lessons.every((lesson) => lesson.is_complete);
-          });
-          return incompleteCourses.length > 0;
+          return getIsPathwayComplete(course) == false;
         }
         return course.total_lessons !== course.progress_rate;
       });
     } else if (currentTab === '2') {
       filteredCoursesCompleted = filteredCourses.filter((course) => {
         if (course.isPathway) {
-          const completedCourses = getPathwayCompletedCoursesLength(course);
-          return completedCourses === course.pathway_course.length;
+          return getIsPathwayComplete(course);
         }
         return course.total_lessons === course.progress_rate;
       });
@@ -124,7 +119,6 @@
       value: '2'
     }
   ];
-  // $: currentTab = tabs[0].value;
 </script>
 
 <section class="max-w-6xl mx-auto">

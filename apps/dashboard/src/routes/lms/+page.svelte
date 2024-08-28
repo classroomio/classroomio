@@ -47,7 +47,6 @@
 
       const allResults = [...pathwaysWithFlag, ...coursesWithFlag];
 
-      console.log('all result', allResults);
       lmsCourses.set(allResults);
       hasFetched = true;
     } catch (error) {
@@ -56,6 +55,7 @@
     }
   }
 
+  //TODO: we should consider pathway courses too
   function calcTotalProgress(courses: LMSCourse[] | any) {
     totalCompleted = courses.reduce((acc, cur) => acc + (cur.progress_rate || 0), 0);
     totalLessons = courses.reduce((acc, cur) => acc + (cur.total_lessons || 0), 0);
