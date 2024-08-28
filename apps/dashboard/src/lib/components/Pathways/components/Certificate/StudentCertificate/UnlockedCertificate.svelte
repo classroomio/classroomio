@@ -17,9 +17,10 @@
   import type { ProfilePathwayProgress } from '$lib/utils/types';
   import { fetchProfilePathwayProgress } from '$lib/utils/services/pathways';
 
+  export let isPathwayComplete = false;
+
   let isLoading = false;
   let showCourses = true;
-  let isPathwayComplete = true;
   let progress: ProfilePathwayProgress | undefined;
 
   function toggleCourse() {

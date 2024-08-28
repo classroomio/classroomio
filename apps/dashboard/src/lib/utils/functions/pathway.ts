@@ -40,6 +40,11 @@ export const getPathwayCompletedCoursesLength = (pathway: Pathway) => {
   return completedCourses;
 };
 
+export const getIsPathwayComplete = (pathway: Pathway) => {
+  const completedCourses = getPathwayCompletedCoursesLength(pathway);
+  return completedCourses === pathway.pathway_course.length;
+};
+
 export const courseProgress = (lessons) => {
   const totalLesson = lessons.length;
   const completedLesson = lessons.filter((lesson) => lesson.is_complete).length;
