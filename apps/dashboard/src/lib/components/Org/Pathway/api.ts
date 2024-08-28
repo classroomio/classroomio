@@ -61,6 +61,7 @@ export async function fetchPathways(profileId: string | undefined, orgId: string
   }
 
   // Step 2: Fetch courses for each pathway
+  console.log();
   const pathwayIds = allPathways.map((pathway: any) => pathway.id);
 
   const { data: allCourses, error: courseError } = await supabase
@@ -103,6 +104,7 @@ export async function fetchPathways(profileId: string | undefined, orgId: string
   // Step 3: Attach courses to their respective pathways and rename pathway_course to courses
   const pathwaysWithCourses = allPathways.map((pathway: any) => {
     const courses = allCourses.filter((course: any) => course.pathway_id === pathway.id);
+    console.log('pathwaywthcourse', courses);
     return {
       ...pathway,
       pathway_course: courses // Rename pathway_course to courses

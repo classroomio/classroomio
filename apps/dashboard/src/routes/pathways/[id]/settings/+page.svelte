@@ -65,24 +65,17 @@
     isSaving = true;
     // try catch block to save to supabase
     try {
-      const {
-        title,
-        logo,
-        description,
-        prerequisite,
-        is_published,
-        lms_certificate,
-        courses_certificate
-      } = $pathwaySettings;
+      const { title, logo, description, prerequisite, is_published, lms_certificate } =
+        $pathwaySettings;
 
-      await updatePathways($pathway.id, avatar, {
+      await updatePathway($pathway.id, avatar, {
         title: title,
         logo: logo,
         description: description,
         prerequisite: prerequisite,
         is_published: is_published,
         lms_certificate: lms_certificate,
-        courses_certificate: courses_certificate,
+
         slug: $pathway.slug
       });
 
@@ -90,7 +83,6 @@
       $pathway.description = description;
       $pathway.logo = logo;
       $pathway.is_published = is_published;
-      $pathway.courses_certificate = courses_certificate;
       $pathway.prerequisite = prerequisite;
       $pathway.lms_certificate = lms_certificate;
 
@@ -273,7 +265,7 @@
               <span slot="labelB" style="color: gray">{$t('pathway.pages.settings.disabled')}</span>
             </Toggle>
           </Column>
-          <Column class="flex w-full flex-col md:flex-row items-start  md:items-center gap-5">
+          <!-- <Column class="flex w-full flex-col md:flex-row items-start  md:items-center gap-5">
             <p>{$t('pathway.pages.settings.issue_two')}</p>
             <div>
               <RadioButtonGroup hideLegend bind:selected={$pathwaySettings.courses_certificate}>
@@ -287,7 +279,7 @@
                 />
               </RadioButtonGroup>
             </div>
-          </Column>
+          </Column> -->
         </Row>
       </Row>
 
