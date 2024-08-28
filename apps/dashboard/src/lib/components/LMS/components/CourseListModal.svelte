@@ -12,7 +12,7 @@
   export let pathway: Pathway | any;
 
   const gotoPathway = () => {
-    return goto(`/pathways/${pathway.id}`);
+    return goto(`/pathways/${pathway.id}/courses`);
   };
 </script>
 
@@ -30,7 +30,7 @@
       {#each pathway.pathway_course as pathway_course}
         <a
           href={pathway_course.is_unlocked && pathway_course.course.is_published
-            ? `/courses/${pathway_course.course.id}`
+            ? `/courses/${pathway_course.course.id}/lessons`
             : null}
           class="hover:no-underline"
         >

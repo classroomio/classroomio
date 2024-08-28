@@ -5,14 +5,13 @@
   import { goto } from '$app/navigation';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
-  import { fetchCourses } from '$lib/utils/services/courses';
   import { courseMetaDeta } from '$lib/components/Courses/store';
   import { getGreeting } from '$lib/utils/functions/date';
   import { t } from '$lib/utils/functions/translations';
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
   import { lmsCourses } from '$lib/components/LMS/store';
   import type { LMSCourse } from '$lib/components/LMS/store';
-  import { fetchPathways } from '$lib/components/Org/Pathway/api';
+  import { fetchAllPathwaysAndCourses } from '$lib/utils/services/pathways';
 
   let hasFetched = false;
   let progressPercentage = 0;
@@ -28,26 +27,7 @@
     }
 
     try {
-      const [pathwayResult, coursesResult] = await Promise.all([
-        fetchPathways(userId, orgId),
-        fetchCourses(userId, orgId)
-      ]);
-
-      if (!pathwayResult || !coursesResult) return;
-
-      const pathwaysWithFlag = pathwayResult.allPathways.map((pathway) => ({
-        ...pathway,
-        isPathway: true
-      }));
-
-      const coursesWithFlag = coursesResult.allCourses.map((course) => ({
-        ...course,
-        isPathway: false
-      }));
-
-      const allResults = [...pathwaysWithFlag, ...coursesWithFlag];
-
-      lmsCourses.set(allResults);
+      await fetchAllPathwaysAndCourses(userId, orgId);
       hasFetched = true;
     } catch (error) {
       console.error('Error fetching pathways and courses:', error);

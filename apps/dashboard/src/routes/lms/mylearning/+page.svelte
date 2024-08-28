@@ -3,16 +3,15 @@
   import Tabs from '$lib/components/Tabs/index.svelte';
   import TabContent from '$lib/components/TabContent/index.svelte';
   import Courses from '$lib/components/Courses/index.svelte';
-  import { fetchCourses } from '$lib/utils/services/courses';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
   import { browser } from '$app/environment';
   import { t } from '$lib/utils/functions/translations';
   import { lmsCourses } from '$lib/components/LMS/store';
   import type { LMSCourse } from '$lib/components/LMS/store';
-  import { fetchPathways } from '$lib/components/Org/Pathway/api';
   import { courseMetaDeta } from '$lib/components/Courses/store';
   import { getIsPathwayComplete } from '$lib/utils/functions/pathway';
+  import { fetchAllPathwaysAndCourses } from '$lib/utils/services/pathways';
 
   let hasFetched = false;
   let selectedId = '0';
@@ -37,26 +36,7 @@
     }
 
     try {
-      const [pathwayResult, coursesResult] = await Promise.all([
-        fetchPathways(userId, orgId),
-        fetchCourses(userId, orgId)
-      ]);
-
-      if (!pathwayResult || !coursesResult) return;
-
-      const pathwaysWithFlag = pathwayResult.allPathways.map((pathway) => ({
-        ...pathway,
-        isPathway: true
-      }));
-
-      const coursesWithFlag = coursesResult.allCourses.map((course) => ({
-        ...course,
-        isPathway: false
-      }));
-
-      const allResults: LMSCourse[] = [...pathwaysWithFlag, ...coursesWithFlag];
-
-      lmsCourses.set(allResults);
+      await fetchAllPathwaysAndCourses(userId, orgId);
       hasFetched = true;
       $courseMetaDeta.isLoading = false;
     } catch (error) {

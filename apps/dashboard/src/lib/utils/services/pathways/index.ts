@@ -1,6 +1,10 @@
+import { fetchPathways } from '$lib/components/Org/Pathway/api';
 import { supabase } from '$lib/utils/functions/supabase';
 import type { Pathway, PathwayCourse, ProfilePathwayProgress } from '$lib/utils/types';
 import type { PostgrestError, PostgrestSingleResponse } from '@supabase/supabase-js';
+import { fetchCourses } from '../courses';
+import { lmsCourses } from '$lib/components/LMS/store';
+import type { LMSCourse } from '$lib/components/LMS/store';
 
 export function addPathwayGroupMember(member: any) {
   return supabase.from('groupmember').insert(member).select();
@@ -102,6 +106,29 @@ export async function fetchPathway(pathwayId?: Pathway['id'], slug?: Pathway['sl
     error
   };
 }
+
+export const fetchAllPathwaysAndCourses = async (userId, orgId) => {
+  const [pathwayResult, coursesResult] = await Promise.all([
+    fetchPathways(userId, orgId),
+    fetchCourses(userId, orgId)
+  ]);
+
+  if (!pathwayResult || !coursesResult) return;
+
+  const pathwaysWithFlag = pathwayResult.allPathways.map((pathway) => ({
+    ...pathway,
+    isPathway: true
+  }));
+
+  const coursesWithFlag = coursesResult.allCourses.map((course) => ({
+    ...course,
+    isPathway: false
+  }));
+
+  const allResults: LMSCourse[] = [...pathwaysWithFlag, ...coursesWithFlag];
+
+  lmsCourses.set(allResults);
+};
 
 export async function updatePathway(
   pathwayId: Pathway['id'],
