@@ -158,23 +158,6 @@ export function updatePathwayCourses(
     .match({ id: id, pathway_id: pathwayId, course_id: courseId });
 }
 
-export async function fetchProfilePathwayProgress(
-  pathwayId,
-  profileId
-): Promise<{
-  data: ProfilePathwayProgress[] | null;
-  error: PostgrestError | null;
-}> {
-  const { data, error } = await supabase
-    .rpc('get_pathway_progress', {
-      pathway_id_arg: pathwayId,
-      profile_id_arg: profileId
-    })
-    .returns<ProfilePathwayProgress[]>();
-
-  return { data, error };
-}
-
 export async function uploadAvatar(pathwayId: string, avatar: string) {
   const filename = `pathway/${pathwayId + Date.now()}.webp`;
   let logo;

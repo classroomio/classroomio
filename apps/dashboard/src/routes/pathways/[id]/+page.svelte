@@ -177,8 +177,10 @@
       if (feed.id === feedId) {
         snackbar.success(
           `${
-            newIsPinned ? 'snackbar.course.success.pinned' : 'snackbar.course.success.unpinned'
-          } snackbar.course.success.successfully`
+            newIsPinned
+              ? $t('snackbar.course.success.pinned')
+              : $t('snackbar.course.success.unpinned')
+          } ${$t('snackbar.course.success.successfully')}`
         );
 
         feed.isPinned = newIsPinned;

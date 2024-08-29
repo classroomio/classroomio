@@ -1,8 +1,9 @@
 <script>
+  import { getPathwayCompletedCoursesLength } from '$lib/utils/functions/pathway';
+
   import { pathway } from '$lib/components/Pathways/store';
   import UnlockedCertificate from './UnlockedCertificate.svelte';
   import LockedCertificate from './LockedCertificate.svelte';
-  import { getPathwayCompletedCoursesLength } from '$lib/utils/functions/pathway';
 
   const getIsPathwayComplete = () => {
     const completedCourses = getPathwayCompletedCoursesLength($pathway);

@@ -14,20 +14,21 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   import { pathway } from '$lib/components/Pathways/store';
-  import type { ProfilePathwayProgress } from '$lib/utils/types';
-  import { fetchProfilePathwayProgress } from '$lib/utils/services/pathways';
+  import type { ProfileCourseProgress, PathwayCourse } from '$lib/utils/types';
+  import { fetchMultipleCoursesProgress } from '$lib/utils/services/courses';
+  import { onMount } from 'svelte';
 
   export let isPathwayComplete = false;
 
   let isLoading = false;
   let showCourses = true;
-  let progress: ProfilePathwayProgress | undefined;
+  let completedCourses: PathwayCourse[];
 
   function toggleCourse() {
     showCourses = !showCourses;
   }
 
-  const downLoadCertificate = async () => {
+  const downLoadPathwayCertificate = async () => {
     // if (!isPathwayComplete) return;
     // isLoading = true;
     // try {
@@ -63,21 +64,81 @@
     // isLoading = false;
   };
 
-  // const hasUserCompletedCourse = async () => {
-  // isLoading = true;
-  // const { data } = await fetchPathwayCourseProgress($pathway.id, $profile.id);
-  // progress = data?.[0] || undefined;
-  // if (progress) {
-  //   isPathwayComplete =
-  //     progress.lessons_count === progress.lessons_completed &&
-  //     progress.exercises_count === progress.exercises_completed;
-  // }
-  // isLoading = false;
+  // const downLoadCertificate = async () => {
+  //   if (!isPathwayComplete) return;
+  //   isLoading = true;
+  //   try {
+  //     const response = await fetch(PUBLIC_SERVER_URL + '/downloadCertificate', {
+  //       method: 'POST',
+  //       headers: {
+  //         Accept: 'application/json',
+  //         'Content-Type': 'application/json'
+  //       },
+  //       body: JSON.stringify({
+  //         theme: `${$course.certificate_theme}`,
+  //         studentName: `${$profile.fullname}`,
+  //         courseName: `${$course.title}`,
+  //         courseDescription: `${$course.description}`,
+  //         orgLogoUrl: `${$currentOrg.avatar_url}`,
+  //         orgName: `${$currentOrg.name}`
+  //       })
+  //     });
+  //     const data = await response.blob();
+  //     console.log(data);
+  //     const file = new Blob([data], { type: 'application/pdf' });
+  //     const fileURL = URL.createObjectURL(file);
+  //     let a = document.createElement('a');
+  //     document.body.append(a);
+  //     a.download = 'Certificate of Completion - ' + $currentOrg.name;
+  //     a.href = fileURL;
+  //     a.click();
+  //     a.remove();
+  //   } catch (error) {
+  //     console.error('Error downloading', error);
+  //     snackbar.error($t('course.navItem.certificates.unexpected_error'));
+  //   }
+  //   isLoading = false;
   // };
 
-  // onMount(() => {
-  //   hasUserCompletedCourse();
-  // });
+  const getCompletedCourseIds = (
+    completedCourses: ProfileCourseProgress[],
+    courseIds: string[]
+  ) => {
+    return completedCourses
+      .map((course, index) => {
+        const isCompleted =
+          course.lessons_completed === course.lessons_count &&
+          course.exercises_completed === course.exercises_count;
+        return isCompleted ? courseIds[index] : null;
+      })
+      .filter((id) => id !== null);
+  };
+
+  const getCompletedCourseObjects = (completedCourseIds: string[], pathwayCourses: any[]) => {
+    return pathwayCourses.filter((course) => completedCourseIds.includes(course.course_id));
+  };
+
+  const hasUserCompletedCourse = async () => {
+    isLoading = true;
+
+    const courseIds = $pathway.pathway_course.map((course) => course.course_id);
+    const { data } = await fetchMultipleCoursesProgress(courseIds, $profile.id);
+
+    if (data) {
+      const completedCourseIds = getCompletedCourseIds(data, courseIds);
+      completedCourses = getCompletedCourseObjects(completedCourseIds, $pathway.pathway_course);
+    }
+
+    isLoading = false;
+  };
+
+  onMount(() => {
+    hasUserCompletedCourse();
+  });
+
+  onMount(() => {
+    hasUserCompletedCourse();
+  });
 
   $: title = isPathwayComplete
     ? 'pathway.pages.lms_certificate.unlocked.title'
@@ -85,8 +146,6 @@
   $: subtitle = isPathwayComplete
     ? 'pathway.pages.lms_certificate.unlocked.subtitle'
     : 'pathway.pages.lms_certificate.unlocked.subtitle';
-
-  $: console.log('$pathway.pathway_course', $pathway.pathway_course);
 </script>
 
 <Box className="h-auto">
@@ -137,7 +196,7 @@
         className="flex items-center gap-2 text-xs underline font-bold text-blue-700"
         onClick={downLoadCertificate}
         variant={VARIANTS.TEXT}
-        isDisabled={!PUBLIC_SERVER_URL || !isPathwayComplete}
+        disabled={completedCourses?.length <= 0}
         {isLoading}
       >
         <Download size={16} />
@@ -146,9 +205,9 @@
       <button
         type="button"
         on:click={toggleCourse}
-        disabled={!PUBLIC_SERVER_URL || !isPathwayComplete}
-        class="p-1 rounded-full hover:bg-gray-200 {!PUBLIC_SERVER_URL ||
-          (!isPathwayComplete && 'cursor-not-allowed')}"
+        disabled={completedCourses?.length <= 0}
+        class="p-1 rounded-full hover:bg-gray-200 {completedCourses?.length <= 0 &&
+          'cursor-not-allowed'}"
       >
         {#if showCourses}
           <ChevronUp />
@@ -159,14 +218,9 @@
     </div>
   </div>
 
-  <!-- @Best, for this condition, 
-    i'm not sure if you want the whole pathway to be complete before the student has the option to download completed courses
-    OR you still want to allow the students view the listed courses and we desable the download button for uncompleted courses -->
-  <!--   {#if isPathwayComplete && $pathway.courses.length > 0 && showCourses} -->
-
-  {#if $pathway.pathway_course?.length > 0 && showCourses}
+  {#if completedCourses?.length > 0 && showCourses}
     <div class="px-14 border-t">
-      {#each $pathway.pathway_course as course}
+      {#each completedCourses as course}
         <div class="flex justify-between items-center py-4 border-b text-left">
           <div class="w-[30%] text-sm font-medium">
             {course.course.title}

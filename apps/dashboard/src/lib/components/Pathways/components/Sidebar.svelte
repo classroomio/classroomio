@@ -250,8 +250,8 @@
                   !item.is_unlocked
                     ? 'cursor-not-allowed'
                     : ''}"
-                  href="/courses/{item.course_id}"
-                  on:click={toggleSidebarOnMobile}
+                  href={`/courses/${item.course_id}`}
+                  on:click={!item.is_unlocked ? (e) => e.preventDefault() : toggleSidebarOnMobile}
                   aria-disabled={!item.is_unlocked}
                 >
                   <div

@@ -21,15 +21,6 @@ export interface ProfileCourseProgress {
   lessons_count: number;
 }
 
-export interface ProfilePathwayProgress {
-  exercises_completed: number;
-  exercises_count: number;
-  lessons_completed: number;
-  lessons_count: number;
-  courses_completed: number;
-  courses_count: number;
-}
-
 export interface GroupPerson {
   assigned_student_id: number | null;
   created_at: string;

@@ -60,6 +60,33 @@ export async function fetchProfileCourseProgress(
   return { data, error };
 }
 
+export async function fetchMultipleCoursesProgress(
+  courseIds: string[],
+  profileId: string | undefined
+): Promise<{
+  data: ProfileCourseProgress[] | null;
+  errors: PostgrestError[] | null;
+}> {
+  const allProgressData: ProfileCourseProgress[] = [];
+  const errors: PostgrestError[] = [];
+
+  for (const courseId of courseIds) {
+    const { data, error } = await fetchProfileCourseProgress(courseId, profileId);
+    if (data) {
+      allProgressData.push(...data);
+    }
+    if (error) {
+      console.log('error', error);
+    }
+  }
+
+  return {
+    data: allProgressData.length > 0 ? allProgressData : null,
+    errors: errors.length > 0 ? errors : null,
+  };
+}
+
+
 const SLUG_QUERY = `
   id,
   title,
