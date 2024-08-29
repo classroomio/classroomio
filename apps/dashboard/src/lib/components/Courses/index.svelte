@@ -35,7 +35,7 @@
   function calculatePathwayProgress(pathway: Pathway): number {
     if (!pathway.isPathway) return 0;
 
-    const totalCourses = pathway.total_course;
+    const totalCourses = pathway?.total_course;
     if (totalCourses === 0) return 0;
 
     // Number of courses completed within the pathway
@@ -119,6 +119,7 @@
             type={courseData.type}
             isLearningPath={courseData.isPathway}
             totalCourse={courseData.total_course}
+            totalCount={courseData?.total_count}
             pathwaycompletedCourses={getPathwayCompletedCoursesLength(courseData)}
             currency={courseData.currency}
             totalLessons={courseData.total_lessons}

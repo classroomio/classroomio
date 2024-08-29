@@ -172,7 +172,7 @@ export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']
 export async function fetchExploreCourses(profileId, orgId) {
   if (!orgId || !profileId) return;
 
-  const { data: allCourses } = await supabase.rpc('get_explore_courses', {
+  const { data: allCourses } = await supabase.rpc('get_all_explore_courses', {
     org_id_arg: orgId,
     profile_id_arg: profileId
   });
@@ -182,7 +182,6 @@ export async function fetchExploreCourses(profileId, orgId) {
       allCourses: []
     };
   }
-
   return { allCourses };
 }
 

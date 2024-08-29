@@ -20,6 +20,7 @@
   import UserProfileIcon from 'carbon-icons-svelte/lib/UserProfile.svelte';
 
   export let bannerImage: string | undefined;
+  export let totalCount = 0;
   export let id = '';
   export let slug = '';
   export let title = '';
@@ -64,7 +65,7 @@
 
   function getCourseUrl() {
     if (isLMS && isLearningPath) {
-      return `/pathways/${id}`;
+      return isOnLandingPage || isExplore ? `/pathway/${slug}` : `/pathways/${id}`;
     }
 
     return isOnLandingPage || isExplore
@@ -177,12 +178,21 @@
       'items-center'}"
   >
     <div>
-      <p class="text-xs {!isLMS && 'pl-2'} font-normal dark:text-white">
+      <p class="text-xs {isLMS ? '' : 'pl-2'} font-normal dark:text-white">
         {#if isLearningPath && isLMS}
-          {pathwaycompletedCourses} / {totalCourse} {$t('lms_pathway.course')}
-        {:else}
-          {totalLessons}
-          {$t('courses.course_card.lessons_number')}
+          <!-- for pathways -->
+          {#if isExplore}
+            {totalCount} {$t('lms_pathway.course')}
+          {:else}
+            {pathwaycompletedCourses} / {totalCourse} {$t('lms_pathway.course')}
+          {/if}
+        {:else if !isLearningPath}
+          <!-- for courses -->
+          {#if isExplore}
+            {totalCount} {$t('courses.course_card.lessons_number')}
+          {:else}
+            {totalLessons} {$t('courses.course_card.lessons_number')}
+          {/if}
         {/if}
       </p>
       <p class="text-xs py-2">
