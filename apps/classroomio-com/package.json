@@ -26,11 +26,13 @@
   },
   "type": "module",
   "dependencies": {
+    "just-extend": "^6.2.0",
     "posthog-node": "^3.1.3",
     "rehype-slug": "^6.0.0",
     "remark-toc": "^9.0.0",
     "remark-unwrap-images": "^4.0.0",
     "shared": "workspace:*",
-    "shiki": "^0.14.7"
+    "shiki": "^0.14.7",
+    "svelte-meta-tags": "^3.1.2"
   }
 }

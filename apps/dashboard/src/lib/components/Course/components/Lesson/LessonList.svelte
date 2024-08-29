@@ -75,7 +75,7 @@
   use:dndzone={{
     items: $lessons,
     flipDurationMs,
-    dragDisabled: $globalStore.isStudent || !reorder,
+    dragDisabled: !reorder,
     dropTargetStyle: {
       border: '2px #1d4ed8 solid',
       'border-style': 'dashed'
@@ -86,9 +86,7 @@
 >
   {#each $lessons as lesson (lesson.id)}
     <div
-      class={`relative m-auto mb-4 flex max-w-xl items-center rounded-md border-2 ${
-        reorder ? 'border-primary-400' : 'border-gray-200'
-      } border-gray-200 dark:border-neutral-600 p-5 dark:bg-neutral-800`}
+      class={`relative m-auto mb-4 flex max-w-xl items-center rounded-md border-2 border-gray-200 dark:border-neutral-600 p-5 dark:bg-neutral-800`}
     >
       <!-- Number Chip -->
       <div class="mr-5">
@@ -115,7 +113,7 @@
             <a
               href={$globalStore.isStudent && !lesson.is_unlocked
                 ? $page.url.pathname
-                : '/courses/' + $course.id + '/lessons/' + lesson.id}
+                : `/courses/${$course.id}/lessons/${lesson.id}`}
               class="font-medium text-black no-underline hover:underline dark:text-white {$globalStore.isStudent &&
               !lesson.is_unlocked
                 ? 'cursor-not-allowed'
@@ -145,7 +143,6 @@
         <RoleBasedSecurity allowedRoles={[1, 2]}>
           <OverflowMenu size="xl">
             <OverflowMenuItem
-              disabled={$globalStore.isStudent}
               text={lesson.is_unlocked
                 ? $t('course.navItem.lessons.add_lesson.lock')
                 : $t('course.navItem.lessons.add_lesson.unlock')}

@@ -43,7 +43,7 @@
           <a href={`/blog/${post.slug}`} class="group">
             <p class="font-bold text-lg py-2 group-hover:text-slate-500">{post.title}</p>
 
-            <p class="text-slate-500 py-4">{post.description}</p>
+            <p class="text-slate-500 pt-2 pb-4">{post.description}</p>
           </a>
 
           <div class="flex items-center justify-start gap-4 my-2">

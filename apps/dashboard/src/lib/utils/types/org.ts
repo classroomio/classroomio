@@ -33,6 +33,7 @@ export interface CurrentOrg {
     plan_name: string;
     is_active: boolean;
   }[];
+  is_restricted: boolean;
 }
 
 export interface OrgTeamMember {

@@ -125,3 +125,21 @@ with check (is_user_in_group_with_role(( SELECT course.group_id
    FROM course
   WHERE (course.id = lesson_section.course_id)
  LIMIT 1)));
+
+CREATE
+OR REPLACE FUNCTION convert_course_to_v2 (course_id uuid) RETURNS void AS $$
+DECLARE
+    new_section_id bigint;
+BEGIN
+    UPDATE course
+    SET version = 'V2'
+    WHERE id = course_id;
+
+    INSERT INTO lesson_section (title, course_id) VALUES ('First Section [edit me]', course_id) RETURNING id INTO new_section_id;
+    
+    UPDATE lesson
+    SET section_id = new_section_id
+    WHERE course_id = course_id;
+END;
+$$ LANGUAGE plpgsql;
+

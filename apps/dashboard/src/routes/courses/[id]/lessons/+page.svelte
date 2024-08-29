@@ -4,6 +4,7 @@
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import Box from '$lib/components/Box/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
   import {
     lessons,
@@ -18,11 +19,11 @@
   import { t } from '$lib/utils/functions/translations';
   import { goto } from '$app/navigation';
   import { COURSE_VERSION } from '$lib/utils/types';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants.js';
-  import { profile } from '$lib/utils/store/user.js';
+  import { profile } from '$lib/utils/store/user';
   import LessonList from '$lib/components/Course/components/Lesson/LessonList.svelte';
   import LessonSectionList from '$lib/components/Course/components/Lesson/LessonSectionList.svelte';
   import NewLessonModal from '$lib/components/Course/components/Lesson/NewLessonModal.svelte';
+  import ActivateSectionsModal from '$lib/components/Course/components/Lesson/ActivateSectionsModal.svelte';
 
   export let data;
 
@@ -33,6 +34,7 @@
   let openDeleteModal: boolean = false;
   let isFetching: boolean = false;
   let reorder = false;
+  let activateSections = false;
 
   function addLesson() {
     $handleAddLessonWidget.open = true;
@@ -44,8 +46,22 @@
     return completion?.find((c) => c.profile_id === $profile.id);
   }
 
+  const getLessons = () => {
+    if ($course.version === COURSE_VERSION.V1) {
+      return $lessons;
+    } else {
+      const _lessons: Lesson[] = [];
+
+      $lessonSections.forEach((section) => {
+        _lessons.push(...section.lessons);
+      });
+
+      return _lessons;
+    }
+  };
+
   function findFirstIncompleteLesson() {
-    return $lessons.find(
+    return getLessons().find(
       (lesson) => !hasUserCompletedLesson(lesson.lesson_completion) && lesson.is_unlocked === true
     );
   }
@@ -70,30 +86,38 @@
 
 <NewLessonModal />
 
+<ActivateSectionsModal bind:open={activateSections} />
+
 <DeleteLessonConfirmation
   bind:openDeleteModal
   deleteLesson={() => handleDelete(lessonToDelete?.id)}
 />
 
 <CourseContainer bind:isFetching bind:courseId={data.courseId}>
-  <PageNav title={$t('course.navItem.lessons.heading')}>
+  <PageNav title={$t('course.navItem.lessons.heading_v2')}>
     <div slot="widget" class="flex w-full justify-end gap-2">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
+        {#if $course.version === COURSE_VERSION.V1}
+          <PrimaryButton
+            label={$t(`course.navItem.lessons.section_prompt.cta`)}
+            variant={VARIANTS.OUTLINED}
+            onClick={() => (activateSections = !activateSections)}
+            isDisabled={!!lessonEditing}
+          />
+        {/if}
+        <PrimaryButton
+          label={$t(
+            `course.navItem.lessons.add_lesson.${reorder ? 'end_reorder' : 'start_reorder'}`
+          )}
+          variant={VARIANTS.OUTLINED}
+          onClick={() => (reorder = !reorder)}
+          isDisabled={!!lessonEditing}
+        />
         <PrimaryButton
           label={$t('course.navItem.lessons.add_lesson.button_title')}
           onClick={addLesson}
           isDisabled={!!lessonEditing}
         />
-        {#if $course.version === COURSE_VERSION.V1}
-          <PrimaryButton
-            label={$t(
-              `course.navItem.lessons.add_lesson.${reorder ? 'end_reorder' : 'start_reorder'}`
-            )}
-            variant={VARIANTS.OUTLINED}
-            onClick={() => (reorder = !reorder)}
-            isDisabled={!!lessonEditing}
-          />
-        {/if}
       </RoleBasedSecurity>
     </div>
   </PageNav>
@@ -119,7 +143,7 @@
       {#if $course.version === COURSE_VERSION.V1}
         <LessonList {reorder} {lessonEditing} bind:lessonToDelete bind:openDeleteModal />
       {:else if $course.version === COURSE_VERSION.V2}
-        <LessonSectionList {lessonEditing} />
+        <LessonSectionList {reorder} {lessonEditing} />
       {/if}
     {:else}
       <Box className="w-full lg:w-11/12 lg:px-4 m-auto">

@@ -770,7 +770,16 @@
         },
         "drag": "arrastra una tarjeta para reordenar",
         "no_lesson": "Aún no hay lecciones",
-        "share_your_knowledge": "Comparta sus conocimientos con el mundo creando lecciones interesantes. Comience haciendo clic en el botón Agregar."
+        "share_your_knowledge": "Comparta sus conocimientos con el mundo creando lecciones interesantes. Comience haciendo clic en el botón Agregar.",
+        "heading_v2": "Contenido",
+        "section_prompt": {
+          "cta": "Habilitar secciones",
+          "header": "Habilitar secciones",
+          "title": "Lanzamos secciones del curso",
+          "description": "Ahora puede agrupar lecciones en secciones para organizar su contenido y facilitar el aprendizaje de sus alumnos.",
+          "activate": "Activar",
+          "cancel": "Cancelar"
+        }
       },
       "news_feed": {
         "heading": "Noticias",
@@ -801,14 +810,14 @@
     },
     "navItems": {
       "nav_news_feed": "Noticias",
-      "nav_lessons": "Lecciones",
       "nav_attendance": "Asistencia",
       "nav_submissions": "Envíos",
       "nav_marks": "Marcas",
       "nav_people": "Gente",
       "nav_certificates": "Certificados",
       "nav_landing_page": "Página de destino",
-      "nav_settings": "Ajustes"
+      "nav_settings": "Ajustes",
+      "nav_content": "Contenido"
     },
     "not_permitted": {
       "header": "Sin autorización",

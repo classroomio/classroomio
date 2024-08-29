@@ -129,7 +129,7 @@ function getBaseMetaTags(url: URL) {
     twitter: {
       handle: '@classroomio',
       site: '@classroomio',
-      cardType: 'summary_large_image',
+      cardType: 'summary_large_image' as const,
       title: 'ClassroomIO – Launch Your Online Bootcamp In Minutes',
       description:
         'Launch your bootcamp quickly and affordably with ClassroomIO, the customizable online teaching platform.',

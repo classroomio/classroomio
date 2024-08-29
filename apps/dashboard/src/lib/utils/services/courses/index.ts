@@ -287,7 +287,7 @@ export function updateLessonSection(section: any, sectionId: LessonSection['id']
     .match({ id: sectionId });
 }
 
-export function updateLesson(lesson: any, lessonId: Lesson['id']) {
+export async function updateLesson(lesson: any, lessonId: Lesson['id']) {
   return supabase
     .from('lesson')
     .update({ ...lesson, id: undefined })
@@ -306,6 +306,14 @@ export function updateLessonCompletion(completion: LessonCompletion, shouldUpdat
     return supabase.from('lesson_completion').insert(completion);
   }
 }
+
+export const upsertLessons = (data: { id: string; order: number }[]) => {
+  return supabase.from('lesson').upsert(data);
+};
+
+export const upsertLessonSections = (data: { id: string; order: number }[]) => {
+  return supabase.from('lesson_section').upsert(data);
+};
 
 export function deleteLesson(lessonId: Lesson['id']) {
   // Need to implement soft delete

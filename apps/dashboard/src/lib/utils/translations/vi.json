@@ -770,7 +770,16 @@
         },
         "drag": "kéo thẻ để sắp xếp lại",
         "no_lesson": "Chưa có bài học nào",
-        "share_your_knowledge": "Chia sẻ kiến ​​thức của bạn với thế giới bằng cách tạo ra những bài học hấp dẫn. Bắt đầu bằng cách nhấp vào nút Thêm."
+        "share_your_knowledge": "Chia sẻ kiến ​​thức của bạn với thế giới bằng cách tạo ra những bài học hấp dẫn. Bắt đầu bằng cách nhấp vào nút Thêm.",
+        "heading_v2": "Nội dung",
+        "section_prompt": {
+          "cta": "Bật phần",
+          "header": "Bật phần",
+          "title": "Chúng tôi đã ra mắt các phần khóa học",
+          "description": "Giờ đây, bạn có thể nhóm các bài học thành các phần để sắp xếp nội dung và giúp học sinh học tập suôn sẻ hơn.",
+          "activate": "Kích hoạt",
+          "cancel": "Hủy bỏ"
+        }
       },
       "news_feed": {
         "heading": "Nguồn cấp tin tức",
@@ -801,14 +810,14 @@
     },
     "navItems": {
       "nav_news_feed": "Nguồn cấp tin tức",
-      "nav_lessons": "Những bài học",
       "nav_attendance": "Sự tham dự",
       "nav_submissions": "bài nộp",
       "nav_marks": "Điểm",
       "nav_people": "Mọi người",
       "nav_certificates": "Chứng chỉ",
       "nav_landing_page": "Trang đích",
-      "nav_settings": "Cài đặt"
+      "nav_settings": "Cài đặt",
+      "nav_content": "Nội dung"
     },
     "not_permitted": {
       "header": "Không cho phép",
