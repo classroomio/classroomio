@@ -107,7 +107,8 @@ export async function fetchPathways(profileId: string | undefined, orgId: string
     console.log('pathwaywthcourse', courses);
     return {
       ...pathway,
-      pathway_course: courses // Rename pathway_course to courses
+      pathway_course: courses, // Rename pathway_course to courses
+      type: 'Pathway'
     };
   });
 

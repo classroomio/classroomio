@@ -63,7 +63,7 @@
       <CardLoader />
       <CardLoader />
     </section>
-  {:else if $courseMetaDeta.view === 'list'}
+  {:else if $courseMetaDeta.view === 'list' && courses.length}
     <StructuredList selection class="w-full">
       <StructuredListHead>
         <StructuredListRow head>
@@ -77,9 +77,11 @@
             <StructuredListCell head>
               {$t('courses.course_card.list_view.type')}
             </StructuredListCell>
-            <StructuredListCell head>
-              {$t('courses.course_card.list_view.lessons')}
-            </StructuredListCell>
+            {#if !$globalStore.isOrgSite}
+              <StructuredListCell head>
+                {$t('courses.course_card.list_view.lessons')}
+              </StructuredListCell>
+            {/if}
             <StructuredListCell head>
               {$t('courses.course_card.list_view.students')}
             </StructuredListCell>
@@ -95,11 +97,15 @@
           <List
             id={courseData.id}
             title={courseData.title}
-            type={$t(`course.navItem.settings.${courseData.type.toLowerCase()}`)}
+            type={$t(`course.navItem.settings.${courseData?.type?.toLowerCase()}`)}
             description={courseData.description}
             isPublished={courseData.is_published}
             totalLessons={courseData.total_lessons}
             totalStudents={courseData.total_students}
+            isLearningPath={courseData?.isPathway}
+            isLMS={$globalStore.isOrgSite}
+            slug={courseData.slug}
+            {isExplore}
           />
         {/each}
       </StructuredListBody>

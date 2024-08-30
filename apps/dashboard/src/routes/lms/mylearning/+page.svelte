@@ -14,6 +14,12 @@
   import { courseMetaDeta } from '$lib/components/Courses/store';
   import { getIsPathwayComplete } from '$lib/utils/functions/pathway';
 
+  import IconButton from '$lib/components/IconButton/index.svelte';
+  import Grid from 'carbon-icons-svelte/lib/Grid.svelte';
+  import List from 'carbon-icons-svelte/lib/List.svelte';
+
+  import { onMount } from 'svelte';
+
   let hasFetched = false;
   let selectedId = '0';
   let filteredCourses: LMSCourse[] | any[] = [];
@@ -84,6 +90,8 @@
       );
     } else if (_selectedId === '1') {
       filteredCourses = filtered.filter((course) => course.isPathway);
+    } else if (_selectedId === '2') {
+      filteredCourses = filtered.filter((course) => course.isPathway == false);
     }
 
     // Filter the items render based on the current tab change
@@ -103,6 +111,19 @@
       });
     }
   }
+
+  const setViewPreference = (preference: 'grid' | 'list') => {
+    $courseMetaDeta.view = preference;
+    localStorage.setItem('courseView', preference);
+  };
+
+  onMount(() => {
+    const courseView = localStorage.getItem('courseView') as 'grid' | 'list' | null;
+
+    if (courseView) {
+      $courseMetaDeta.view = courseView;
+    }
+  });
 
   $: if (browser && $profile.id && $currentOrg.id) {
     fetchPathwaysAndCourses($profile.id, $currentOrg.id);
@@ -139,9 +160,20 @@
             bind:selectedId
             items={[
               { id: '0', text: $t('org_navigation.all_courses') },
-              { id: '1', text: $t('org_navigation.pathway') }
+              { id: '1', text: $t('org_navigation.pathway') },
+              { id: '2', text: $t('org_navigation.courses') }
             ]}
           />
+
+          {#if $courseMetaDeta.view === 'list'}
+            <IconButton onClick={() => setViewPreference('grid')}>
+              <Grid size={24} />
+            </IconButton>
+          {:else}
+            <IconButton onClick={() => setViewPreference('list')}>
+              <List size={24} />
+            </IconButton>
+          {/if}
         </div>
       </div>
     </div>
