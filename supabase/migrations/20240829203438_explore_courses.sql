@@ -60,7 +60,7 @@ BEGIN
     (SELECT COUNT(*) FROM pathway_course AS pc WHERE pc.pathway_id = pathway.id)::INTEGER AS total_count,
     (SELECT COUNT(*) FROM groupmember AS gm WHERE gm.group_id = pathway.group_id AND gm.role_id = 3)::INTEGER AS total_students,
     NULL::INTEGER AS progress_rate,
-    NULL::TEXT AS type,
+   'Pathway'::TEXT AS type,
     (SELECT groupmember.profile_id
       FROM groupmember
       WHERE groupmember.group_id = "group".id
