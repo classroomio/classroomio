@@ -282,11 +282,6 @@ CREATE TABLE IF NOT EXISTS "public"."group" (
     "is_active" boolean DEFAULT false
 );
 
-/** ALTER TABLE  "public" . "group"
-ADD COLUMN "course_id" uuid,
-ADD COLUMN "is_active" boolean DEFAULT false;
-**/
-
 
 ALTER TABLE "public"."group" OWNER TO "postgres";
 
