@@ -46,7 +46,7 @@
       "course": {
         "title": "Courses",
         "add_course": "Add Course",
-        "add_remove": "Add / remove course",
+        "add_remove": "Remove course",
         "order": "Order Courses",
         "publish": "Publish pathway",
         "search": "Find Pathway Course",
@@ -170,7 +170,8 @@
         "add": "Add",
         "course": "Course",
         "courses": "Courses",
-        "path": "to Learning Path"
+        "path": "to Learning Path",
+        "delete": "Confirm delete"
       },
       "dragAndDrop": {
         "title": "Arrange courses",

@@ -40,6 +40,8 @@
 
     const { data: _data } = await fetchPathway(pathwayId);
 
+    console.log('dataaaa refetch', _data);
+
     if (_data) {
       setPathway(_data);
     }

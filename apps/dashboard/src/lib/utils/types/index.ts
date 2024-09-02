@@ -277,6 +277,8 @@ export interface PathwayCourse {
   pathway_id: any;
   order: number;
   is_unlocked: boolean;
+  created_at: string;
+  updated_at:string;
 }
 
 export interface Pathway {

@@ -252,7 +252,7 @@
   <RoleBasedSecurity
     allowedRoles={getPageRoles($currentOrg)}
     onDenied={() => {
-      goto(`/pathways/${data.pathwayId}/courses`);
+      // goto(`/pathways/${data.pathwayId}/courses`);
     }}
   >
     <PageNav title={$t('course.navItem.news_feed.heading')} disableSticky={true}>

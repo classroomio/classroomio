@@ -1,19 +1,14 @@
 <script>
-  import { updatePathwayCourses } from '$lib/utils/services/pathways';
   import { flip } from 'svelte/animate';
   import { dndzone } from 'svelte-dnd-action';
   import { createEventDispatcher } from 'svelte';
   import Draggable from 'carbon-icons-svelte/lib/Draggable.svelte';
-
-  import { addCourseModal } from './../store';
   import { t } from '$lib/utils/functions/translations';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   export let pathwayCourses = [];
   const flipDurationMs = 300;
   const dispatch = createEventDispatcher();
 
-  // update the order based on the new position
   function updateOrder(items) {
     return items.map((item, index) => ({
       ...item,
@@ -30,19 +25,6 @@
     pathwayCourses = updateOrder(e.detail.items);
     dispatch('update', pathwayCourses);
   }
-
-  // function handleSave() {
-  //   pathwayCourses.forEach(async (course) => {
-  //     ``;
-  //     try {
-  //       await updatePathwayCourses(course.id, course.pathway_id, course.course_id, course.order);
-  //     } catch (error) {
-  //       console.error('Error updating course order in Supabase:', error);
-  //     }
-  //   });
-
-  //   $addCourseModal.open = false;
-  // }
 </script>
 
 <header class="bg-[#F7F7F7] p-3 rounded-md">
@@ -93,7 +75,3 @@
     </div>
   {/each}
 </section>
-
-<!-- <div slot='buttons' class="flex justify-end mt-5">
-  <PrimaryButton label={$t('pathway.components.dragAndDrop.label')} onClick={handleSave} />
-</div> -->

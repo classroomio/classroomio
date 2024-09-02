@@ -50,6 +50,11 @@
     $addCourseModal.step = 0;
   }
 
+  function removeCourses() {
+    $addCourseModal.open = true;
+    $addCourseModal.step = 2;
+  }
+
   // Computed property to filter courses based on the search value
   $: filteredCourses = $courses.filter(
     (item) =>
@@ -77,7 +82,7 @@
           {/if}
         </RoleBasedSecurity>
         <OverflowMenu flipped>
-          <OverflowMenuItem text={$t('pathway.pages.course.add_remove')} on:click={addCourses} />
+          <OverflowMenuItem text={$t('pathway.pages.course.add_remove')} on:click={removeCourses} />
           <OverflowMenuItem text={$t('pathway.pages.course.order')} on:click={orderCourses} />
           <OverflowMenuItem
             text={$t('pathway.pages.course.publish')}
@@ -88,7 +93,7 @@
     </div>
 
     <!-- filter container -->
-    <div class="filter-containter flex items-end justify-end gap-2 mt-3 max-w-[90%] mx-auto">
+    <div class="filter-containter flex justify-end gap-2 py-5 max-w-[90%] mx-auto">
       <Search
         placeholder={$t('pathway.pages.course.search')}
         bind:value={searchValue}
@@ -96,7 +101,6 @@
         class=" bg-gray-100 dark:bg-neutral-800 text-sm"
       />
       <Dropdown
-        class="h-[3rem]"
         bind:selectedId
         items={[
           { id: '0', text: $t('pathway.pages.course.option_one') },
@@ -115,7 +119,7 @@
     </div>
 
     <!-- body -->
-    <div class="mt-5">
+    <div>
       {#if $courses.length > 0}
         {#if coursePreference === 'list'}
           <div class="max-w overflow-x-auto">

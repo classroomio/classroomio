@@ -47,7 +47,6 @@ export const defaultPathway: Pathway = {
   status: 'Published',
   created_at: new Date().toDateString(),
   updated_at: new Date().toDateString(),
-  enrollment_date: '',
   landingpage: {
     header: {
       title: '',
@@ -68,7 +67,11 @@ export const defaultPathway: Pathway = {
     },
     allowNewStudent: true,
     showDiscount: true,
-    discount: 0
+    discount: 0,
+    goals: '',
+    requirements: '',
+    description: '',
+    videoUrl: ''
   },
   is_certificate_downloadable: false,
   certificate_theme: 'professional',

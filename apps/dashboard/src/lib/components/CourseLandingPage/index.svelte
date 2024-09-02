@@ -1,32 +1,30 @@
 <script lang="ts">
   import get from 'lodash/get';
   import { onMount, onDestroy } from 'svelte';
-  import PoweredBy from '$lib/components/Upgrade/PoweredBy.svelte';
   import pluralize from 'pluralize';
   import { page } from '$app/stores';
-  import Notebook from 'carbon-icons-svelte/lib/Notebook.svelte'; //note
-  import PresentationFile from 'carbon-icons-svelte/lib/PresentationFile.svelte'; // exercise
-  import Video from 'carbon-icons-svelte/lib/Video.svelte'; //video
-  import PageNumber from 'carbon-icons-svelte/lib/PageNumber.svelte';
   import PlayFilled from 'carbon-icons-svelte/lib/PlayFilled.svelte';
-  import PricingSection from './components/PricingSection.svelte';
-  import { observeIntersection } from './components/IntersectionObserver';
-  import { getLectureNo } from '../Course/function';
+
   import { NAV_ITEMS } from './constants';
-  import Modal from '../Modal/index.svelte';
-  import { handleOpenWidget, reviewsModalStore } from './store';
-  import Chip from '../Chip/index.svelte';
-  import Avatar from '$lib/components/Avatar/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { getEmbedId } from '$lib/utils/functions/formatYoutubeVideo';
-  import type { Course, Lesson, Review } from '$lib/utils/types';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
-  import { calDateDiff } from '$lib/utils/functions/date';
   import { currentOrg } from '$lib/utils/store/org';
-  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import { course } from '$lib/components/Course/store';
   import { t } from '$lib/utils/functions/translations';
+  import { calDateDiff } from '$lib/utils/functions/date';
+  import { handleOpenWidget, reviewsModalStore } from './store';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { getEmbedId } from '$lib/utils/functions/formatYoutubeVideo';
+
+  import type { Course, Lesson, Review } from '$lib/utils/types';
+
+  import Modal from '../Modal/index.svelte';
+  import LessonCard from './components/LessonCard.svelte';
+  import Avatar from '$lib/components/Avatar/index.svelte';
+  import PricingSection from './components/PricingSection.svelte';
+  import PoweredBy from '$lib/components/Upgrade/PoweredBy.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { observeIntersection } from './components/IntersectionObserver';
+  import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
+  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
 
   export let editMode = false;
   export let courseData: Course;
@@ -269,50 +267,7 @@
 
           <div class="flex flex-wrap">
             {#each lessons as lesson, index}
-              <div class="px-2 py-1 m-2 border rounded">
-                <Chip
-                  value={getLectureNo(index + 1, '0')}
-                  className="bg-primary-100 text-primary-700 inline "
-                />
-                <p class="ml-2 text-xs font-light dark:text-white inline">
-                  {lesson.title}
-                </p>
-
-                <!-- <div class="flex items-center">
-                  {#if lesson.slide_url}
-                    <span class="text-sm font-light flex w-2/4"
-                      ><PresentationFile size={16} class="mr-1" />{$t(
-                        'course.navItem.landing_page.slide'
-                      )}</span
-                    >
-                  {/if}
-                  {#if lesson.note}
-                    <span class="text-sm font-light flex w-2/4"
-                      ><Notebook size={16} class="mr-1" />{$t(
-                        'course.navItem.landing_page.note'
-                      )}</span
-                    >
-                  {/if}
-                </div> -->
-
-                <!-- <div class="flex items-center">
-                  {#if lesson.videos}
-                    <span class="text-sm font-light flex w-2/4"
-                      ><Video size={16} class="mr-1" />{lesson.videos.length}
-                      {$t('course.navItem.landing_page.video')}{lesson.videos.length > 1 ? 's' : ''}
-                    </span>
-                  {/if}
-                  {#if get(lesson, 'totalExercises[0].count')}
-                    <span class="flex w-2/4 text-sm font-light"
-                      ><PageNumber size={16} class="mr-1" />{pluralize(
-                        'exercise',
-                        get(lesson, 'totalExercises[0].count', 0),
-                        true
-                      )}</span
-                    >
-                  {/if}
-                </div> -->
-              </div>
+              <LessonCard {index} title={lesson.title} />
             {/each}
           </div>
         </section>

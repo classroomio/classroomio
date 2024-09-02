@@ -28,6 +28,7 @@
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
+  import LessonCard from '$lib/components/CourseLandingPage/components/LessonCard.svelte';
 
   export let editMode = false;
   export let pathwayData: Pathway;
@@ -256,9 +257,9 @@
         </nav>
 
         <!-- Main -->
-        <div class="flex justify-between items-center px-10">
+        <div class="flex flex-col md:flex-row justify-between items-center px-10">
           <!-- Sections - Description & Objectives -->
-          <div class="max-w-[55%]">
+          <div class="md:max-w-[55%]">
             <!-- Sections - About -->
             <section id="requirement" class="mt-8 border-gray-300">
               <h3 class="mb-3 mt-0 text-2xl font-bold">
@@ -291,9 +292,9 @@
 
         <!-- Sections - Certificate -->
         <section
-          class="border-gray-300 mt-8 flex justify-between max-w-[80%] mx-auto bg-[#F5F8FE] items-center px-8 py-4"
+          class="border-gray-300 mt-8 flex md:flex-row flex-col gap-y-5 justify-center md:justify-between max-w-[80%] mx-auto bg-[#F5F8FE] items-center px-8 py-6 md:py-4"
         >
-          <div class="w-[50%]">
+          <div class="md:w-[50%] text-center md:text-left">
             <h3 class="text-2xl font-bold m-0">
               {$t('pathway.pages.landingPage.certificate.earn')}
             </h3>
@@ -301,11 +302,17 @@
               {$t('pathway.pages.landingPage.certificate.evidence')}
             </p>
           </div>
-          <img src="/images/certificate-template.svg" alt="certificate template" />
+          <img
+            src="/images/certificate-template.svg"
+            alt="certificate template"
+            class="w-full md:w-auto"
+          />
         </section>
 
         <!-- Sections - Pathway Subheader -->
-        <div class="flex justify-between pl-12 pr-16 my-8 sticky top-0 bg-white py-6">
+        <div
+          class="flex flex-col md:flex-row items-center justify-center md:justify-between pl-12 pr-16 my-8 sticky top-8 bg-white py-6"
+        >
           <h1 class="text-lg">{get(pathwayData, 'title', '')}</h1>
           <PrimaryButton
             label="{$t('pathway.pages.landingPage.subHeader.button')} {get(
@@ -330,32 +337,9 @@
           </p>
 
           <!-- course list -->
-          <div class="border p-5 rounded-lg shadow-md mt-10">
-            {#each $pathway.pathway_course as course}
-              <div
-                class="py-3 px-10 flex justify-between items-center course-list-border hover:bg-[#F7F7F7] transition-all duration-300"
-              >
-                <div class="text-left">
-                  <h1 class="underline text-base m-0">{course.course.title}</h1>
-                  <div class="flex items-center gap-1 text-xs my-1">
-                    <span>
-                      {course.course.lesson?.length || 0}
-                      {$t('pathway.pages.landingPage.courseList.lessons')}
-                    </span>
-                    -
-                    <span>
-                      {$t('pathway.pages.landingPage.courseList.estimated')}
-                      {course.estimated_hours}
-                      {$t('pathway.pages.landingPage.courseList.hours')}
-                    </span>
-                  </div>
-                </div>
-
-                <div class="flex items-center gap-2">
-                  <button type="button">{$t('pathway.pages.landingPage.courseList.view')}</button>
-                  <ChevronDown color="blue" />
-                </div>
-              </div>
+          <div class="mt-10 flex flex-wrap items-center justify-center md:gap-x-5">
+            {#each $pathway.pathway_course as course, index}
+              <LessonCard title={course.course.title} {index} />
             {/each}
           </div>
         </section>
@@ -364,7 +348,7 @@
         <div class="flex flex-wrap justify-center gap-5 items-center py-10 px-8">
           <!-- Sections - Reviews -->
           {#if reviews && reviews.length > 0}
-            <section id="reviews" class="md:w-[60%] w-[80%]">
+            <section id="reviews" class="lg:w-[60%] w-[80%]">
               <h2 class="m-0 mb-2 font-semibold">
                 {$t('course.navItem.landing_page.reviews')}
               </h2>

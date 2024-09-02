@@ -1,6 +1,6 @@
 import { supabase } from '$lib/utils/functions/supabase';
-import type { Pathway, PathwayCourse, ProfilePathwayProgress } from '$lib/utils/types';
-import type { PostgrestError, PostgrestSingleResponse } from '@supabase/supabase-js';
+import type { Pathway, PathwayCourse } from '$lib/utils/types';
+import type {  PostgrestSingleResponse } from '@supabase/supabase-js';
 
 export function addPathwayGroupMember(member: any) {
   return supabase.from('groupmember').insert(member).select();
@@ -134,28 +134,31 @@ export async function deletePathway(pathwayId: Pathway['id']) {
   return await supabase.from('pathway').update({ status: 'DELETED' }).match({ id: pathwayId });
 }
 
-export function addPathwayCourse(pathwayId: Pathway['id'], courseId: PathwayCourse['course_id']) {
+export async function deletePathwayCourse(courseId: PathwayCourse['course_id']) {
+  return supabase.from('pathway_course').delete().match({ course_id: courseId });
+}
+
+export function addPathwayCourse(pathwayId: Pathway['id'], courseId: PathwayCourse['course_id'], order:PathwayCourse['order']) {
   return supabase
     .from('pathway_course')
     .insert([
       {
         pathway_id: pathwayId,
-        course_id: courseId
+        course_id: courseId,
+        order: order
       }
     ])
     .select();
 }
 
 export function updatePathwayCourses(
-  id: any,
-  pathwayId: Pathway['id'],
-  courseId: PathwayCourse['course_id'],
+  id: PathwayCourse['id'],
   order: PathwayCourse['order']
 ) {
   return supabase
     .from('pathway_course')
     .update({ order: order })
-    .match({ id: id, pathway_id: pathwayId, course_id: courseId });
+    .match({ id: id });
 }
 
 export async function uploadAvatar(pathwayId: string, avatar: string) {
