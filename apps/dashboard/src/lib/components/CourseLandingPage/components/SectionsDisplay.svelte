@@ -29,7 +29,7 @@
       </IconButton>
       {title}</span
     >
-    <span class="text-xs">{lessonCount} Lessons, {exerciseCount} exercises</span>
+    <span class="text-xs font-normal">{lessonCount} Lessons, {exerciseCount} exercises</span>
   </div>
 
   <!-- lessons -->

@@ -332,8 +332,8 @@
             <!-- header -->
             <div class="flex items-center justify-between">
               <h1>Course content</h1>
-              <span class="text-xs font-medium"
-                >{$lessonSections?.length} Modules, {totalLessons} lessons - estimated 7 hours</span
+              <span class="text-xs font-normal"
+                >{$lessonSections?.length} Modules, {totalLessons} lessons</span
               >
             </div>
 
