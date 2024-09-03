@@ -2,6 +2,8 @@
   import { page } from '$app/stores';
   import HelpIcon from 'carbon-icons-svelte/lib/Help.svelte';
   import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
+  import Application from 'carbon-icons-svelte/lib/Application.svelte';
+
   import { SettingsAdjust } from 'carbon-icons-svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import OrgSelector from '$lib/components/OrgSelector/OrgSelector.svelte';
@@ -180,9 +182,15 @@
     {/if}
 
     <ul class="my-5 px-4 pb-5">
-      <a href={$currentOrgPath} class="text-black no-underline" on:click={toggleSidebar}>
+      <a
+        href="{$currentOrgPath}/builder"
+        class="text-black no-underline {isActive($page.url.pathname, `${$currentOrgPath}/builder`)
+          ? NavClasses.active
+          : 'dark:text-white'}"
+        on:click={toggleSidebar}
+      >
         <li class="mb-2 flex items-center rounded px-2.5 py-1.5">
-          <HelpIcon size={20} class="carbon-icon dark:text-white" />
+          <Application size={20} class="carbon-icon dark:text-white" />
           <p class="ml-2.5 dark:text-white text-sm font-medium">Site Builder</p>
         </li>
       </a>
