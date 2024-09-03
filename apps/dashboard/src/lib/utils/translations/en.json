@@ -830,6 +830,31 @@
         "role": "Role",
         "action": "Action",
         "feedback": "Copied Email to clipboard",
+        "batches": {
+          "create": {
+            "title": "Create Batch",
+            "batch_name": "Batch Name",
+            "start_date": "Start date",
+            "end_date": "End date",
+            "make_batch_active": "Make batch active?",
+            "yes": "Yes",
+            "no": "No",
+            "create": "Create"
+          },
+          "settings": {
+            "title": "Batch Settings",
+            "save_changes": "Save Changes",
+            "delete": "Delete Batch",
+            "status": "Status",
+            "status_active": "Active",
+            "status_inactive": "Inactive"
+          },
+          "batch_name": "Batch Name",
+          "start_date": "Start date",
+          "finishes": "Finishes",
+          "status": "Status",
+          "students": "Students"
+        },
         "invite_modal": {
           "title": "Invite people",
           "invite": "Invite Tutors",

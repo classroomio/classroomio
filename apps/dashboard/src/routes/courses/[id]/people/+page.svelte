@@ -1,129 +1,85 @@
 <script lang="ts">
-  import copy from 'copy-to-clipboard';
   import {
-    CopyButton,
-    Search,
     StructuredList,
     StructuredListBody,
     StructuredListCell,
     StructuredListHead,
     StructuredListRow
   } from 'carbon-components-svelte';
-  import TextChip from '$lib/components/Chip/Text.svelte';
-  import ComingSoon from '$lib/components/ComingSoon/index.svelte';
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
-  import { deleteGroupMember, updatedGroupMember } from '$lib/utils/services/courses';
-  import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
   import PageBody from '$lib/components/PageBody/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import Select from '$lib/components/Form/Select.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import { group } from '$lib/components/Course/store';
   import InvitationModal from '$lib/components/Course/components/People/InvitationModal.svelte';
-  import DeleteConfirmation from '$lib/components/Course/components/People/DeleteConfirmation.svelte';
-  import { deleteMemberModal } from '$lib/components/Course/components/People/store';
-  import type { Person, ProfileRole } from '$lib/components/Course/components/People/types';
-  import { ROLE_LABEL, ROLES } from '$lib/utils/constants/roles';
-  import { profile } from '$lib/utils/store/user';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import Avatar from '$lib/components/Avatar/index.svelte';
-  import type { GroupPerson } from '$lib/utils/types';
+  import CreateBatchModal from '$lib/components/Course/components/People/CreateBatchModal.svelte';
+
   import { t } from '$lib/utils/functions/translations';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
 
+  type StatusType = 'active' | 'inactive';
+
+  type BatchType = {
+    id: number;
+    name: string;
+    start_date: string;
+    end_date: string;
+    status: StatusType;
+    noOfStudents: number;
+  };
+
   export let data;
 
-  let people: Array<Person> = [];
-  let member: { id?: string; email?: string; profile?: { email: string } } = {};
-  let shouldEditMemberId: string | null = null;
-  let filterBy: ProfileRole = ROLES[0];
-  let searchValue = '';
-
-  // function setPeople(people: Array<Person>) {
-  //   if (!Array.isArray(people)) return;
-
-  //   people = (people || []).sort((a, b) => a.role_id - b.role_id);
-  //   console.log(`people changed`, people);
-  // }
-
-  // function for the searchbar
-  function filterPeople(_query, people) {
-    const query = _query.toLowerCase();
-    return people.filter((person) => {
-      const { profile, email } = person;
-      return profile?.fullname?.toLowerCase()?.includes(query) || email?.includes(query);
-    });
-  }
-
-  async function deletePerson() {
-    $group.people = $group.people.filter((person: { id: string }) => person.id !== member.id);
-    $group.tutors = $group.tutors.filter((person: GroupPerson) => person.memberId !== member.id);
-
-    await deleteGroupMember(member.id);
-  }
-
-  async function editMemberId(person: Person) {
-    await updatedGroupMember(
-      { assigned_student_id: person.assigned_student_id },
-      { id: person.id }
-    );
-    shouldEditMemberId = null;
-  }
-
-  function sortAndFilterPeople(_people: Array<Person>, filterBy: ProfileRole) {
-    people = (_people || [])
-      .filter((person) => {
-        if (filterBy.value === 'all') return true;
-
-        return person.role_id === filterBy.value;
-      })
-      .sort((a: Person, b: Person) => new Date(a.created_at) - new Date(b.created_at))
-      .sort((a: Person, b: Person) => a.role_id - b.role_id);
-  }
-
-  function getEmail(person) {
-    const { profile, email } = person;
-
-    return profile ? profile.email : email;
-  }
-
-  function obscureEmail(email) {
-    const [username, domain] = email.split('@');
-    const obscuredUsername =
-      username.charAt(0) + '*'.repeat(username.length - 2) + username.charAt(username.length - 1);
-
-    return `${obscuredUsername}@${domain}`;
-  }
-
-  function handleEditStudentIdMode(personId: string) {
-    shouldEditMemberId = personId;
-  }
-
-  function copyToClipboard(studentAssignedId: string | null) {
-    snackbar.success(`snackbar.people.success.copied`);
-
-    if (studentAssignedId) {
-      copy(studentAssignedId);
+  const dummyBatch: BatchType[] = [
+    {
+      id: 3,
+      name: 'Cohort 3',
+      start_date: '2024-06-12 23:10:38.129023',
+      end_date: '2024-07-12 23:10:38.129023',
+      status: 'active',
+      noOfStudents: 21
+    },
+    {
+      id: 2,
+      name: 'Cohort 2',
+      start_date: '2024-03-12 23:10:38.129023',
+      end_date: '2024-04-12 23:10:38.129023',
+      status: 'inactive',
+      noOfStudents: 50
+    },
+    {
+      id: 1,
+      name: 'Cohort 1',
+      start_date: '2024-01-12 23:10:38.129023',
+      end_date: '2024-02-12 23:10:38.129023',
+      status: 'inactive',
+      noOfStudents: 75
     }
-  }
+  ];
 
-  const handleClick = () => {
+  const formatTimestamp = (timestamp) => {
+    let date: Date | undefined;
+    timestamp.includes('Z') ? (date = new Date(timestamp)) : (date = new Date(timestamp + 'Z'));
+    return new Intl.DateTimeFormat('en-GB').format(date);
+  };
+
+  const addPeopleClick = () => {
     const url = $page.url.href + '?add=true';
     goto(url);
   };
-
-  $: sortAndFilterPeople($group.people, filterBy);
+  const createBatchClick = () => {
+    const url = $page.url.href + '?create-batch=true';
+    goto(url);
+  };
+  const gotoBatch = (id: number | string) => {
+    const url = $page.url.href + `/${id}`;
+    goto(url);
+  };
 </script>
 
 <InvitationModal />
-
-<DeleteConfirmation
-  email={member.email || (member.profile && member.profile.email)}
-  {deletePerson}
-/>
+<CreateBatchModal />
 
 <CourseContainer bind:courseId={data.courseId}>
   <PageNav title={$t('course.navItem.people.title')} disableSticky={true}>
@@ -132,7 +88,7 @@
         <PrimaryButton
           className="mr-2"
           label={$t('course.navItem.people.add')}
-          onClick={handleClick}
+          onClick={addPeopleClick}
         />
       </RoleBasedSecurity>
     </slot:fragment>
@@ -140,27 +96,9 @@
   <PageBody width="w-full max-w-6xl md:w-11/12">
     <section class="my-5 mx-2 md:mx-9">
       <div
-        class="flex flex-col md:flex-row flex-end gap-2 justify-end items-start md:items-center mb-7"
+        class="flex flex-col md:flex-row flex-end gap-2 justify-start items-start md:items-center mb-7"
       >
-        <div class="max-w-[320px]">
-          <Search
-            class="dark:text-slate-950 border-0 bg-zinc-100 w-full"
-            placeholder={$t('course.navItem.people.search')}
-            bind:value={searchValue}
-          />
-        </div>
-        <div class="mb-3">
-          <Select
-            bind:value={filterBy}
-            options={ROLES.map((role) => ({ label: $t(role.label), value: role.value }))}
-            className="dark:text-black mt-3 max-w-[80px]"
-          />
-          <!-- <select bind:value={filterBy} class="mt-3">
-            {#each ROLES as option}
-              <option value={option.value}>{option.label}</option>
-            {/each}
-          </select> -->
-        </div>
+        <PrimaryButton onClick={createBatchClick}>Create Batch</PrimaryButton>
         <RoleBasedSecurity allowedRoles={[1, 2]}>
           <p class="dark:text-white hidden lg:block text-lg w-20" />
         </RoleBasedSecurity>
@@ -172,13 +110,19 @@
         >
           <StructuredListRow head class="mx-7">
             <StructuredListCell head class="text-primary-700 py-3 dark:text-white"
-              >{$t('course.navItem.people.name')}</StructuredListCell
+              >{$t('course.navItem.people.batches.batch_name')}</StructuredListCell
             >
             <StructuredListCell head class="text-primary-700 py-3 dark:text-white"
-              >{$t('course.navItem.people.role')}</StructuredListCell
+              >{$t('course.navItem.people.batches.start_date')}</StructuredListCell
             >
             <StructuredListCell head class="text-primary-700 py-3 dark:text-white"
-              >{$t('course.navItem.people.action')}</StructuredListCell
+              >{$t('course.navItem.people.batches.finishes')}</StructuredListCell
+            >
+            <StructuredListCell head class="text-primary-700 py-3 dark:text-white"
+              >{$t('course.navItem.people.batches.status')}</StructuredListCell
+            >
+            <StructuredListCell head class="text-primary-700 py-3 dark:text-white"
+              >{$t('course.navItem.people.batches.students')}</StructuredListCell
             >
             <RoleBasedSecurity allowedRoles={[1, 2]}>
               <p class="dark:text-white hidden lg:block text-lg w-20" />
@@ -186,96 +130,57 @@
           </StructuredListRow>
         </StructuredListHead>
 
-        {#each filterPeople(searchValue, people) as person}
-          <StructuredListBody>
-            <StructuredListRow class="relative">
+        {#each dummyBatch as batch}
+          <StructuredListBody
+            class={`cursor-pointer hover:before:block hover:before:absolute before:h-[74px] before:w-1 before:bg-[#0F62FE] ${
+              batch.status === 'active'
+                ? 'before:block before:absolute before:h-[74px] before:w-1 before:bg-[#0F62FE]'
+                : ''
+            }`}
+          >
+            <StructuredListRow on:click={() => gotoBatch(batch.id)}>
               <!-- first column -->
-              <StructuredListCell class="w-4/6 md:w-3/6">
-                {#if person.profile}
-                  <div class="flex items-start lg:items-center">
-                    <Avatar
-                      src={person.profile.avatar_url}
-                      name={person.profile.fullname}
-                      width="w-8"
-                      height="h-8"
-                      className="mr-3"
-                    />
-                    <div class="flex flex-col lg:flex-row items-start lg:items-center">
-                      <div class="mr-2">
-                        <p class="dark:text-white text-base font-normal">
-                          {person.profile.fullname}
-                        </p>
-                        <p class="text-xs text-primary-600 line-clamp-1">
-                          {obscureEmail(getEmail(person))}
-                        </p>
-                      </div>
-                      <div class="flex items-center">
-                        <RoleBasedSecurity allowedRoles={[1, 2]}>
-                          <CopyButton
-                            text={getEmail(person)}
-                            feedback="Copied Email to clipboard"
-                          />
-                        </RoleBasedSecurity>
-                        {#if person.profile_id == $profile.id}
-                          <ComingSoon label={$t('course.navItem.people.you')} />
-                        {/if}
-                      </div>
-                    </div>
-                  </div>
-                {:else}
-                  <div class="flex items-start lg:items-center w-2/4">
-                    <TextChip
-                      value={person.email.substring(0, 2).toUpperCase()}
-                      className="bg-primary-200 text-black font-semibold text-xs mr-3"
-                      shape="rounded-full"
-                    />
-                    <a
-                      href="mailto:{person.email}"
-                      class="text-md text-primary-600 mr-2 dark:text-white"
-                    >
-                      {person.email}
-                    </a>
-                    <div class="flex items-center justify-between">
-                      <RoleBasedSecurity allowedRoles={[1, 2]}>
-                        <CopyButton
-                          text={getEmail(person)}
-                          feedback={$t('course.navItem.people.feedback')}
-                        />
-                      </RoleBasedSecurity>
-
-                      <TextChip
-                        value={$t('course.navItem.people.pending')}
-                        className="text-xs bg-yellow-200 text-yellow-700 h-fit"
-                        size="sm"
-                      />
-                    </div>
-                  </div>
-                {/if}
+              <StructuredListCell class="w-2/6">
+                <p class="font-semibold text-[#282828]">{batch.name}</p>
               </StructuredListCell>
 
               <!-- second column -->
-              <StructuredListCell class="w-1/4 px-3">
-                <p class=" dark:text-white font-normal text-center text-base w-1/4">
-                  {$t(ROLE_LABEL[person.role_id])}
-                </p>
-              </StructuredListCell>
+              <StructuredListCell class="w-1/5 px-3"
+                >{formatTimestamp(batch.start_date)}</StructuredListCell
+              >
 
               <!-- third column -->
-              <StructuredListCell class="p-0 w-1/4">
-                <RoleBasedSecurity allowedRoles={[1, 2]}>
-                  <div class="hidden sm:flex sm:justify-between sm:items-center w-20">
-                    {#if person.profile_id !== $profile.id}
-                      <IconButton
-                        onClick={() => {
-                          member = person;
-                          $deleteMemberModal.open = true;
-                        }}
-                      >
-                        <TrashCanIcon size={16} class="carbon-icon dark:text-white" />
-                      </IconButton>
-                    {/if}
-                  </div>
-                </RoleBasedSecurity>
+              <StructuredListCell class="w-1/6"
+                >{formatTimestamp(batch.end_date)}</StructuredListCell
+              >
+
+              <!-- fourth column -->
+              <StructuredListCell class="w-1/6">
+                <div class="flex items-center gap-x-2 relative top-2">
+                  <svg
+                    width="16"
+                    height="24"
+                    viewBox="0 0 16 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M8 4C6.41775 4 4.87103 4.46919 3.55544 5.34824C2.23985 6.22729 1.21447 7.47672 0.608967 8.93853C0.00346625 10.4003 -0.15496 12.0089 0.153721 13.5607C0.462403 15.1126 1.22433 16.538 2.34315 17.6569C3.46197 18.7757 4.88743 19.5376 6.43928 19.8463C7.99113 20.155 9.59966 19.9965 11.0615 19.391C12.5233 18.7855 13.7727 17.7602 14.6518 16.4446C15.5308 15.129 16 13.5822 16 12C16 9.87827 15.1571 7.84344 13.6569 6.34315C12.1566 4.84285 10.1217 4 8 4ZM6.85715 15.1943L4 12.3371L4.90857 11.4286L6.85715 13.3771L11.0914 9.14286L12.0034 10.0491L6.85715 15.1943Z"
+                      fill={batch.status === 'active' ? '#0F62FE' : '#DEDEDE'}
+                    />
+                  </svg>
+                  <span class="inline-block">
+                    {batch.status === 'active' ? 'Active' : 'Inactive'}</span
+                  >
+                </div>
+              </StructuredListCell>
+
+              <!-- fifth column -->
+              <StructuredListCell class="w-2/6">
+                <div class="text-[#0233BD] bg-[#D9E0F5] rounded p-1 text-center font-medium">
+                  {batch.noOfStudents}
+                  {$t('course.navItem.people.batches.students')}
+                </div>
               </StructuredListCell>
             </StructuredListRow>
           </StructuredListBody>
