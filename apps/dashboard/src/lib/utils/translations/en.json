@@ -986,6 +986,10 @@
           "bird": "Early bird offer. Buy ASAP"
         },
 
+        "course_content": "Course content",
+        "modules": "Modules",
+        "lessons": "lessons",
+        "exercises": "exercises",
         "start_course": "Start Course",
         "requirement": "Requirement",
         "description": "Course Description",

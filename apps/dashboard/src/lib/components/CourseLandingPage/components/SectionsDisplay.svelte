@@ -1,6 +1,7 @@
 <script lang="ts">
   import { CheckmarkOutline, ChevronDown, ChevronUp } from 'carbon-icons-svelte';
 
+  import { t } from '$lib/utils/functions/translations';
   import type { Lesson } from '$lib/utils/types';
   import IconButton from '$lib/components/IconButton/index.svelte';
 
@@ -29,7 +30,11 @@
       </IconButton>
       {title}</span
     >
-    <span class="text-xs font-normal">{lessonCount} Lessons, {exerciseCount} exercises</span>
+    <span class="text-xs font-normal"
+      >{lessonCount}
+      {$t('course.navItem.landing_page.lessons')}, {exerciseCount}
+      {$t('course.navItem.landing_page.exercises')}</span
+    >
   </div>
 
   <!-- lessons -->

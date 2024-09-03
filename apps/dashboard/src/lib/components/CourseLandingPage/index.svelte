@@ -331,9 +331,11 @@
           <section>
             <!-- header -->
             <div class="flex items-center justify-between">
-              <h1>Course content</h1>
+              <h1>{$t('course.navItem.landing_page.course_content')}</h1>
               <span class="text-xs font-normal"
-                >{$lessonSections?.length} Modules, {totalLessons} lessons</span
+                >{$lessonSections?.length}
+                {$t('course.navItem.landing_page.modules')}, {totalLessons}
+                {$t('course.navItem.landing_page.lessons')}</span
               >
             </div>
 
