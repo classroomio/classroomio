@@ -183,6 +183,12 @@
       <a href={$currentOrgPath} class="text-black no-underline" on:click={toggleSidebar}>
         <li class="mb-2 flex items-center rounded px-2.5 py-1.5">
           <HelpIcon size={20} class="carbon-icon dark:text-white" />
+          <p class="ml-2.5 dark:text-white text-sm font-medium">Site Builder</p>
+        </li>
+      </a>
+      <a href={$currentOrgPath} class="text-black no-underline" on:click={toggleSidebar}>
+        <li class="mb-2 flex items-center rounded px-2.5 py-1.5">
+          <HelpIcon size={20} class="carbon-icon dark:text-white" />
           <p class="ml-2.5 dark:text-white text-sm font-medium">{$t('org_navigation.help')}</p>
         </li>
       </a>
