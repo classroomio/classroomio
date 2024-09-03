@@ -1,32 +1,35 @@
 <script lang="ts">
   import get from 'lodash/get';
-  import { onMount, onDestroy } from 'svelte';
-  import PoweredBy from '$lib/components/Upgrade/PoweredBy.svelte';
   import pluralize from 'pluralize';
   import { page } from '$app/stores';
+  import { onMount, onDestroy } from 'svelte';
   import Notebook from 'carbon-icons-svelte/lib/Notebook.svelte'; //note
   import PresentationFile from 'carbon-icons-svelte/lib/PresentationFile.svelte'; // exercise
   import Video from 'carbon-icons-svelte/lib/Video.svelte'; //video
-  import PageNumber from 'carbon-icons-svelte/lib/PageNumber.svelte';
   import PlayFilled from 'carbon-icons-svelte/lib/PlayFilled.svelte';
-  import PricingSection from './components/PricingSection.svelte';
-  import { observeIntersection } from './components/IntersectionObserver';
-  import { getLectureNo } from '../Course/function';
+
   import { NAV_ITEMS } from './constants';
-  import Modal from '../Modal/index.svelte';
-  import { handleOpenWidget, reviewsModalStore } from './store';
-  import Chip from '../Chip/index.svelte';
-  import Avatar from '$lib/components/Avatar/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { getEmbedId } from '$lib/utils/functions/formatYoutubeVideo';
-  import type { Course, Lesson, Review } from '$lib/utils/types';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
-  import { calDateDiff } from '$lib/utils/functions/date';
+  import { getLectureNo } from '../Course/function';
   import { currentOrg } from '$lib/utils/store/org';
-  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import { course } from '$lib/components/Course/store';
   import { t } from '$lib/utils/functions/translations';
+  import { calDateDiff } from '$lib/utils/functions/date';
+  import { handleOpenWidget, reviewsModalStore } from './store';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { lessonSections } from '../Course/components/Lesson/store/lessons';
+  import { COURSE_VERSION, type Course, type Lesson, type Review } from '$lib/utils/types';
+
+  import Chip from '../Chip/index.svelte';
+  import Modal from '../Modal/index.svelte';
+  import Avatar from '$lib/components/Avatar/index.svelte';
+  import PricingSection from './components/PricingSection.svelte';
+  import PoweredBy from '$lib/components/Upgrade/PoweredBy.svelte';
+  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
+  import { getEmbedId } from '$lib/utils/functions/formatYoutubeVideo';
+  import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { observeIntersection } from './components/IntersectionObserver';
+  import SectionsDisplay from './components/SectionsDisplay.svelte';
 
   export let editMode = false;
   export let courseData: Course;
@@ -53,6 +56,13 @@
   let activeNav = NAV_ITEMS[0].key;
   let instructor = {};
   let video: string | undefined;
+
+  // get total lessons
+  const totalLessons = Array.isArray($lessonSections)
+    ? $lessonSections.reduce((total, section) => {
+        return total + section.lessons.length;
+      }, 0)
+    : 0;
 
   function playVideo() {
     console.log('open modal with video');
@@ -256,30 +266,30 @@
         </section>
 
         <!-- Sections - Lessons -->
-        <section id="lessons" class="border-b border-gray-300 mt-8 pb-10">
-          <div class="flex items-center justify-between w-full mb-3">
-            <h3 class="text-2xl font-bold mt-0 mb-3">
-              {$t('course.navItem.landing_page.content')}
-            </h3>
-            <p class="dark:text-white text-sm font-light">
-              <!-- {lessons.length} lessons -->
-              {pluralize('lesson', lessons.length, true)}
-            </p>
-          </div>
+        {#if $course.version === COURSE_VERSION.V1}
+          <section id="lessons" class="border-b border-gray-300 mt-8 pb-10">
+            <div class="flex items-center justify-between w-full mb-3">
+              <h3 class="text-2xl font-bold mt-0 mb-3">
+                {$t('course.navItem.landing_page.content')}
+              </h3>
+              <p class="dark:text-white text-sm font-light">
+                <!-- {lessons.length} lessons -->
+                {pluralize('lesson', lessons.length, true)}
+              </p>
+            </div>
 
-          <div class="flex flex-wrap">
-            {#each lessons as lesson, index}
-            <div class="px-2 py-1 m-2 border rounded">
-                <Chip
-                  value={getLectureNo(index + 1, '0')}
-                  className="bg-primary-100 text-primary-700 inline "
-                />
-                <p class="ml-2 text-xs font-light dark:text-white inline">
-                  {lesson.title}
-                </p>
+            <div class="flex flex-wrap">
+              {#each lessons as lesson, index}
+                <div class="px-2 py-1 m-2 border rounded">
+                  <Chip
+                    value={getLectureNo(index + 1, '0')}
+                    className="bg-primary-100 text-primary-700 inline "
+                  />
+                  <p class="ml-2 text-xs font-light dark:text-white inline">
+                    {lesson.title}
+                  </p>
 
-            
-                <!-- <div class="flex items-center">
+                  <!-- <div class="flex items-center">
                   {#if lesson.slide_url}
                     <span class="text-sm font-light flex w-2/4"
                       ><PresentationFile size={16} class="mr-1" />{$t(
@@ -296,8 +306,7 @@
                   {/if}
                 </div> -->
 
-                
-                <!-- <div class="flex items-center">
+                  <!-- <div class="flex items-center">
                   {#if lesson.videos}
                     <span class="text-sm font-light flex w-2/4"
                       ><Video size={16} class="mr-1" />{lesson.videos.length}
@@ -314,10 +323,34 @@
                     >
                   {/if}
                 </div> -->
+                </div>
+              {/each}
             </div>
-          {/each}
-          </div>
-        </section>
+          </section>
+        {:else if $course.version === COURSE_VERSION.V2}
+          <section>
+            <!-- header -->
+            <div class="flex items-center justify-between">
+              <h1>Course content</h1>
+              <span class="text-xs font-medium"
+                >{$lessonSections?.length} Modules, {totalLessons} lessons - estimated 7 hours</span
+              >
+            </div>
+
+            {#each $lessonSections as sections, index}
+              <SectionsDisplay
+                {index}
+                title={sections.title}
+                lessonCount={sections.lessons?.length}
+                exerciseCount={sections.lessons.reduce(
+                  (total, lesson) => total + (lesson.totalExercises?.[0]?.count || 0),
+                  0
+                )}
+                lessons={sections.lessons}
+              />
+            {/each}
+          </section>
+        {/if}
 
         <!-- Sections - Reviews -->
         {#if reviews && reviews.length > 0}
@@ -563,6 +596,11 @@
     color: blue;
     text-decoration: underline;
   }
+
+  .lesson-section:not(:last-child) {
+    border-bottom: 1px solid #f7f7f7;
+  }
+
   @media screen and (max-width: 1023px) {
     .course-content {
       min-width: 80%;
