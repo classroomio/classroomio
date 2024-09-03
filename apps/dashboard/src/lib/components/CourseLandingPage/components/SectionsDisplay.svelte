@@ -9,7 +9,7 @@
   export let lessonCount: number;
   export let exerciseCount: number;
   export let lessons: Lesson;
-  export let showLessons = [];
+  export let showLessons: boolean[] = Array(lessons.length).fill(true);
 
   function toggleShowLessons(index) {
     showLessons[index] = !showLessons[index];
@@ -35,7 +35,7 @@
   <!-- lessons -->
   {#if showLessons[index]}
     {#each lessons as lesson}
-      <div class="py-3 pl-6 text-[13px] text-[#656565] flex items-center gap-3 lesson-section">
+      <div class="py-3 pl-6 text-[13px] text-[#656565] flex items-center gap-5 lesson-section">
         <CheckmarkOutline size={16} class="scale-[0.8]" />
         {lesson.title}
       </div>
