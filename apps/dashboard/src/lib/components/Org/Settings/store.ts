@@ -23,6 +23,10 @@ export interface OrgLandingPageJson {
     title: string;
     content: string;
     imageUrl: string;
+    benefits: {
+      title: string;
+      list: string[];
+    };
     show: boolean;
   };
   courses: {
@@ -66,8 +70,8 @@ export interface OrgLandingPageJson {
 
 export const landingPageSettings: Writable<OrgLandingPageJson> = writable({
   header: {
-    title: 'Web Development Courses for',
-    titleHighlight: 'Everyone',
+    title: 'Web Development Course with Evanai',
+    titleHighlight: 'Delve into the world of web development',
     subtitle:
       'Practical project-based courses that are easy to understand and straight to the point',
     action: {
@@ -89,11 +93,21 @@ export const landingPageSettings: Writable<OrgLandingPageJson> = writable({
       'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Repudiandae, quaerat cum. Ullam similique quae dicta ipsum atque quam fugit iusto eligendi magni voluptatum aut, exercitationem deserunt vitae iste rem sunt!\nLorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores obcaecati veritatis tenetur in, nihil repellat quasi cumque sed molestias id reiciendis harum doloremque minus fugit quia cum dolores quas pariatur.',
     imageUrl:
       'https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/landingpage/riverside.jpeg',
+    benefits: {
+      title: 'What you will gain',
+      list: [
+        'Hands-On Projects: Real-world coding challenges.',
+        'Hands-On Projects: Real-world coding challenges.',
+        'Hands-On Projects: Real-world coding challenges.',
+        'Hands-On Projects: Real-world coding challenges.',
+        'Hands-On Projects: Real-world coding challenges.'
+      ]
+    },
     show: true
   },
   courses: {
-    title: 'Explore our',
-    titleHighlight: 'Courses',
+    title: 'Explore our Courses',
+    titleHighlight: '',
     subtitle: 'Find courses you will love from best teachers all over the world🌎.',
     show: true
   },

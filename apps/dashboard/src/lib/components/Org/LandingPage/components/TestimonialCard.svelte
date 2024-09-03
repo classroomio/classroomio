@@ -1,0 +1,20 @@
+<script>
+  import { ArrowRight } from 'carbon-icons-svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+</script>
+
+<section class="border border-[#D7D7D7] px-4 py-6 space-y-4 bg-[#FDFDFD] rounded h-">
+  <div class="flex items-center gap-2">
+    <img src="/images/classroomio-course-img-template.jpg" alt="" class="w-12 h-12 rounded-full" />
+    <span>
+      <p class="text-sm font-bold">Blessings</p>
+      <p class="text-xs text-[#696969]">Frontend developer</p>
+    </span>
+  </div>
+  <p class="text-[#696969] text-justify line-clamp-5">
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapiente blanditiis et voluptatum ea
+    nesciunt quod odio molestiae eos tempora, voluptatem eius commodi natus porro pariatur
+    temporibus veniam possimus dicta est deleniti suscipit magni cum quam. Ipsum ipsa quos
+    consequuntur ullam.
+  </p>
+</section>
