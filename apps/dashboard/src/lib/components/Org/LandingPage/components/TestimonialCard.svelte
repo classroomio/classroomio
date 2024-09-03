@@ -3,7 +3,9 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 </script>
 
-<section class="border border-[#D7D7D7] px-4 py-6 space-y-4 bg-[#FDFDFD] rounded h-">
+<section
+  class="border border-[#D7D7D7] px-4 py-6 space-y-4 bg-[#FDFDFD] rounded w-full max-w-[350px] md:max-w-[300px]"
+>
   <div class="flex items-center gap-2">
     <img src="/images/classroomio-course-img-template.jpg" alt="" class="w-12 h-12 rounded-full" />
     <span>

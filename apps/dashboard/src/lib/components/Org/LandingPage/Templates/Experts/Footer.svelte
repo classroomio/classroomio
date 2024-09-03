@@ -1,13 +1,15 @@
 <script>
   import { t } from '$lib/utils/functions/translations';
-  import { landingPageSettings } from '../Settings/store';
+  import { landingPageSettings } from '$lib/components/Org/Settings/store';
 
   export let logo;
   export let orgName;
 </script>
 
 {#if $landingPageSettings.footer.show}
-  <nav class="bg-white w-full flex items-center justify-between py-4 px-6">
+  <nav
+    class="bg-white w-full flex flex-col md:flex-row items-start md:items-center gap-4 md:justify-between py-4 px-6"
+  >
     <div class="logo">
       <a href="/" title={`Go to ${orgName} Home`} id="logo" data-hveid="8">
         <img
@@ -18,7 +20,9 @@
         />
       </a>
     </div>
-    <ul class="flex items-center space-x-8 underline text-[#0542CC]">
+    <ul
+      class="flex flex-col md:flex-row items-start md:items-center gap-4 -md:gap-8 underline text-[#0542CC]"
+    >
       {#if $landingPageSettings.footer.twitter}
         <a
           href={$landingPageSettings.footer.twitter}

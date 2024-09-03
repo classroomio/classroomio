@@ -1,7 +1,7 @@
 <script>
-  import CourseCard from './components/CourseCard.svelte';
+  import CourseCard from '../../components/CourseCard.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { landingPageSettings } from '../Settings/store';
+  import { landingPageSettings } from '../../../Settings/store';
   import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
   import Box from '$lib/components/Box/index.svelte';
   import { t } from '$lib/utils/functions/translations';
@@ -22,7 +22,7 @@
         <CardLoader />
       </div>
     {:else if $courses.length > 0}
-      <section class="flex gap-8 p-4">
+      <section class="flex flex-wrap gap-4 p-4">
         {#each $courses.slice(0, viewAll ? $courses.length : 3) as courseData}
           <CourseCard
             className="bg-[#FDFDFD]"

@@ -1,8 +1,8 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { landingPageSettings } from '$lib/components/Org/Settings/store';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { t } from '$lib/utils/functions/translations';
-  import { landingPageSettings } from '../Settings/store';
 
   let player;
 
@@ -25,17 +25,19 @@
 </script>
 
 {#if $landingPageSettings.header.banner.show}
-  <section class="flex items-center justify-center py-2 px-14 border border-red-500 min-h-screen">
+  <section
+    class="flex items-center justify-center py-2 px-10 md:px-14 border border-red-500 min-h-screen"
+  >
     <section class="flex items-center justify-between">
       <div class="text-white space-y-6 w-full">
         <span
-          class="bg-[#DCFCFFED] py-1 px-3 uppercase border rounded-sm text-center font-semibold text-base text-[#0F163F]"
+          class="bg-[#DCFCFFED] py-1 px-3 uppercase border rounded-sm text-center font-semibold text-xs w-full lg:text-base text-[#0F163F]"
           >{$landingPageSettings.header.title}</span
         >
-        <p class="text-4xl font-semibold w-[70%]">
+        <p class="text-4xl font-semibold w-full md:w-[70%]">
           {$landingPageSettings.header.titleHighlight}
         </p>
-        <p class="w-[70%]">
+        <p class="w-full md:w-[70%]">
           {$landingPageSettings.header.subtitle}
         </p>
         <PrimaryButton
@@ -47,7 +49,9 @@
           }}
         />
       </div>
-      <div class="rounded-md h-[280px] max-h-[400px] w-5/6 md:w-1/2 md:max-w-[650px] flex">
+      <div
+        class="hidden rounded-md h-[280px] max-h-[400px] w-5/6 md:w-1/2 md:max-w-[650px] lg:flex"
+      >
         {#if isYouTubeLink($landingPageSettings.header?.banner?.video) && $landingPageSettings.header.banner.type === 'video'}
           <!-- <div class="w-5/6 md:w-1/2 md:max-w-[650px] flex"> -->
           <div bind:this={player} id="player" style="width:100%; height:100%; border-radius:12px">

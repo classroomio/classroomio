@@ -3,9 +3,13 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 </script>
 
-<section class="flex items-center justify-between px-10 py-20 bg-blue-800">
+<section
+  class="flex flex-col md:flex-row items-center justify-between px-6 lg:px-10 py-20 bg-blue-800"
+>
   <div class="flex items-center justify-center w-full">
-    <p class="text-4xl text-white font-bold w-[70%]">I can help make you a code superstar</p>
+    <p class="text-4xl text-white text-center md:text-start font-bold w-full lg:w-[70%]">
+      I can help make you a code superstar
+    </p>
   </div>
   <div class="w-full flex items-center justify-center my-5">
     <PrimaryButton

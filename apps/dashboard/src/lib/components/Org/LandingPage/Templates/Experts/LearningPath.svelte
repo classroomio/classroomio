@@ -1,26 +1,26 @@
 <script>
-  import CourseCard from './components/CourseCard.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { landingPageSettings } from '../Settings/store';
   import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
   import Box from '$lib/components/Box/index.svelte';
   import CardLoader from '$lib/components/Courses/components/Card/Loader.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { courseMetaDeta, courses } from '$lib/components/Courses/store';
+  import CourseCard from '$lib/components/Org/LandingPage/components/CourseCard.svelte';
+  import { landingPageSettings } from '$lib/components/Org/Settings/store';
 </script>
 
 {#if $landingPageSettings.courses.show}
   <section class="relative p-4 h-full">
-    <div class="relative w-[80%] rounded-lg overflow-hidden -top-20 left-[10%]">
+    <div class="relative w-full md:w-[80%] rounded-lg overflow-hidden -top-20 md:left-[10%]">
       <img
         src="/images/classroomio-course-img-template.jpg"
         alt=""
         class="w-full h-60 object-cover"
       />
     </div>
-    <div class="px-10 py-4">
+    <div class="px-4 md:px-10 py-4">
       <h1 class=" text-3xl text-white">Become an expert with my “Learning Path” Programs</h1>
-      <p class="text-white w-[60%] text-sm">
+      <p class="text-white w-full md:w-[60%] text-sm">
         With over 5 years of extensive coding experience, I am very much equipped to help you
         achieve success in your choice of coding career.
       </p>
@@ -32,7 +32,7 @@
         <CardLoader />
       </div>
     {:else if $courses.length > 0}
-      <section class="flex gap-8 p-4">
+      <section class="flex flex-wrap gap-4 p-4">
         {#each $courses as courseData}
           <CourseCard
             isLearningPath={true}

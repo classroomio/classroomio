@@ -2,17 +2,9 @@
   import { courseMetaDeta, courses } from '$lib/components/Courses/store';
   import { t } from '$lib/utils/functions/translations';
   import { getCourseBySiteName, getPathwayBySiteName } from '$lib/utils/services/org';
-  import { landingPageSettings } from '../Settings/store';
-  import Courses from './Courses.svelte';
-  import Faq from './Faq.svelte';
-  import Footer from './Footer.svelte';
-  import FooterNote from './FooterNote.svelte';
-  import Hero from './Hero.svelte';
-  import Learn from './Learn.svelte';
-  import LearningPath from './LearningPath.svelte';
-  import Navigation from './Navigation.svelte';
-  import PageLoader from './PageLoader.svelte';
-  import Testimonial from './Testimonial.svelte';
+  import { landingPageSettings } from '$lib/components/Org/Settings/store';
+  import PageLoader from '$lib/components/Org/LandingPage/PageLoader.svelte';
+  import Experts from '$lib/components/Org/LandingPage/Templates/Experts/Home.svelte';
 
   export let orgSiteName = '';
   export let org = {};
@@ -61,15 +53,5 @@
 {#if !org.landingpage}
   <PageLoader />
 {:else}
-  <main class="bg-[#101720]">
-    <Navigation logo={org.avatar_url} orgName={org.name} disableSignup={true} isOrgSite={true} />
-    <Hero />
-    <Learn />
-    <Courses />
-    <LearningPath />
-    <Testimonial />
-    <Faq />
-    <FooterNote />
-    <Footer logo={org.avatar_url} orgName={org.name} />
-  </main>
+  <Experts {org} />
 {/if}
