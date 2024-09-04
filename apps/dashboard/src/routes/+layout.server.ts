@@ -73,6 +73,8 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
     // Custom domain
     response.org = (await getCurrentOrg(url.host, true, true)) || null;
 
+    console.log('custom domain response.org', response.org);
+
     if (!response.org) {
       throw redirect(307, 'https://app.classroomio.com/404?type=org');
     }
