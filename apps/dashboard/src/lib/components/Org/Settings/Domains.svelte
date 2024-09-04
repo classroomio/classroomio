@@ -14,7 +14,7 @@
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { currentOrg, isFreePlan } from '$lib/utils/store/org';
   import type { CurrentOrg } from '$lib/utils/types/org';
   import { supabase } from '$lib/utils/functions/supabase';
   import { blockedSubdomain } from '$lib/utils/constants/app';
@@ -349,6 +349,7 @@
             helperMessage="https://{customDomain || 'course.yourwebsite.com'}"
             errorMessage={errors.customDomain}
             className="w-4/5"
+            isDisabled={$isFreePlan}
           />
 
           <div class="flex items-center mt-5">
