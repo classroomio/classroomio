@@ -392,7 +392,11 @@
             "instructor": "Instructeur",
             "pricing": "Tarifs"
           }
-        }
+        },
+        "course_content": "Contenu du cours",
+        "modules": "Modules",
+        "lessons": "leçons",
+        "exercises": "exercices"
       },
       "certificates": {
         "title": "Certificats",
