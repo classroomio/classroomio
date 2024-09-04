@@ -102,7 +102,7 @@
   {#if errorMessage}
     <p class="text-sm text-red-500">{errorMessage}</p>
   {:else if helperMessage}
-    <p class="dark:text-white text-sm">
+    <p class="dark:text-white text-sm opacity-70">
       {helperMessage}
     </p>
   {/if}

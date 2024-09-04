@@ -194,7 +194,8 @@
     "team_members": "Teammitglieder",
     "back": "Zurück zu den Einstellungen",
     "download_lessons": "Führen Sie ein Upgrade durch, um Lektionen herunterzuladen",
-    "download_course": "Upgrade zum Download-Kurs"
+    "download_course": "Upgrade zum Download-Kurs",
+    "domain": "Aktualisieren Sie Ihren Plan, um benutzerdefinierte Domänen hinzuzufügen"
   },
   "audience": {
     "title": "Publikum",
@@ -923,12 +924,23 @@
     "settings": {
       "domains": {
         "add": "Hinzufügen",
-        "work_together": "Fügen Sie Ihre Teamkollegen oder Mitarbeiter zu Ihrer Organisation hinzu. Beginnen Sie mit der Zusammenarbeit",
         "url": "URL",
         "update": "Domäne aktualisieren",
         "custom": "Benutzerdefinierten Domain",
         "domain": "Fügen Sie Ihren eigenen Domainnamen hinzu",
-        "title": "Benutzerdefinierten Domain"
+        "title": "Benutzerdefinierten Domain",
+        "save": "Speichern",
+        "your_domain": "Ihre Domain",
+        "custom_domain_error": "Sie können eine Top-Level-Domain nicht als benutzerdefinierte Domain hinzufügen. Verwenden Sie stattdessen eine Subdomain wie „Kurse.[IhreWebsite].com“ oder „www.[IhreWebsite].com“.",
+        "custom_domain_success": "Benutzerdefinierte Domäne erfolgreich hinzugefügt",
+        "dns_description": "Legen Sie bei Ihrem DNS-Anbieter den folgenden Eintrag fest, um fortzufahren:",
+        "dns_type": "Typ",
+        "dns_value": "Wert",
+        "dns_name": "Name",
+        "refresh": "Aktualisieren",
+        "remove": "Entfernen",
+        "custom_favicon": "Benutzerdefiniertes Favicon",
+        "custom_code": "Benutzerdefinierter Code"
       },
       "customize-lms": {
         "title": "LMS anpassen",
@@ -1084,7 +1096,8 @@
       "learn": "Erfahren Sie mehr",
       "month": "Monat",
       "monthly": "Monatlich",
-      "annually": "Jährlich"
+      "annually": "Jährlich",
+      "save": "Sparen Sie 2 Monate"
     },
     "plan_names": {
       "free": "Frei",
@@ -1206,9 +1219,9 @@
         "update_organization": "Organisation aktualisieren",
         "team": {
           "heading": "Team",
-          "sub_heading": "Richten Sie Ihre Website ein",
           "body": "Fügen Sie Ihrer Organisation Teamkollegen hinzu, damit Sie beide an Projekten zusammenarbeiten können.",
-          "button": "Team verwalten"
+          "button": "Team verwalten",
+          "sub_heading": "Stellen Sie Ihr Team zusammen"
         },
         "custom_domain": {
           "heading": "Benutzerdefinierten Domain",
@@ -1239,7 +1252,10 @@
       },
       "profile_picture": {
         "heading": "Profilbild",
-        "upload_image": "Bild hochladen"
+        "upload_image": "Bild hochladen",
+        "file_size": "Maximale Dateigröße:",
+        "accepted": "Akzeptiert:",
+        "validation_error": "Die Dateigröße überschreitet die maximale Grenze:"
       }
     },
     "tabs": {

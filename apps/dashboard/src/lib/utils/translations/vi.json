@@ -194,7 +194,8 @@
     "team_members": "Thành viên của nhóm",
     "back": "Quay lại Cài đặt",
     "download_lessons": "Nâng cấp để tải bài học",
-    "download_course": "Nâng cấp để tải xuống khóa học"
+    "download_course": "Nâng cấp để tải xuống khóa học",
+    "domain": "Nâng cấp gói của bạn để thêm miền tùy chỉnh"
   },
   "audience": {
     "title": "Khán giả",
@@ -923,12 +924,23 @@
     "settings": {
       "domains": {
         "add": "Thêm vào",
-        "work_together": "Thêm đồng đội hoặc cộng tác viên vào tổ chức của bạn. Bắt đầu làm việc cùng nhau",
         "url": "URL",
         "update": "Cập nhật tên miền",
         "custom": "Tên miền tùy chọn",
         "domain": "Thêm tên miền của riêng bạn",
-        "title": "Tên miền tùy chọn"
+        "title": "Tên miền tùy chọn",
+        "save": "Cứu",
+        "your_domain": "Tên miền của bạn",
+        "custom_domain_error": "Bạn không thể thêm miền cấp cao nhất làm miền tùy chỉnh. Thay vào đó, hãy sử dụng tên miền phụ như 'courses.[yourwebsite].com' hoặc 'www.[yourwebsite].com'.",
+        "custom_domain_success": "Đã thêm miền tùy chỉnh thành công",
+        "dns_description": "Đặt bản ghi sau trên nhà cung cấp DNS của bạn để tiếp tục:",
+        "dns_type": "Kiểu",
+        "dns_value": "Giá trị",
+        "dns_name": "Tên",
+        "refresh": "Làm cho khỏe lại",
+        "remove": "Di dời",
+        "custom_favicon": "Biểu tượng yêu thích tùy chỉnh",
+        "custom_code": "Mã tùy chỉnh"
       },
       "customize-lms": {
         "title": "Tùy chỉnh LMS",
@@ -1084,7 +1096,8 @@
       "learn": "Tìm hiểu thêm",
       "month": "tháng",
       "monthly": "hàng tháng",
-      "annually": "Hàng năm"
+      "annually": "Hàng năm",
+      "save": "Tiết kiệm 2 tháng"
     },
     "plan_names": {
       "free": "Miễn phí",
@@ -1206,9 +1219,9 @@
         "update_organization": "Cập nhật tổ chức",
         "team": {
           "heading": "Đội",
-          "sub_heading": "Thiết lập trang web của bạn",
           "body": "Thêm đồng đội vào tổ chức của bạn để cả hai có thể cộng tác trong các dự án.",
-          "button": "Quản lý nhóm"
+          "button": "Quản lý nhóm",
+          "sub_heading": "Thiết lập nhóm của bạn"
         },
         "custom_domain": {
           "heading": "Tên miền tùy chọn",
@@ -1239,7 +1252,10 @@
       },
       "profile_picture": {
         "heading": "Ảnh đại diện",
-        "upload_image": "Tải hình ảnh lên"
+        "upload_image": "Tải hình ảnh lên",
+        "file_size": "Kích thước tệp tối đa:",
+        "accepted": "Đã chấp nhận:",
+        "validation_error": "Kích thước tệp vượt quá giới hạn tối đa:"
       }
     },
     "tabs": {

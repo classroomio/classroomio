@@ -194,7 +194,8 @@
     "team_members": "Membros do time",
     "back": "Voltar para configurações",
     "download_lessons": "Atualize para baixar lições",
-    "download_course": "Atualize para baixar o curso"
+    "download_course": "Atualize para baixar o curso",
+    "domain": "Atualize seu plano para adicionar domínios personalizados"
   },
   "audience": {
     "title": "Público",
@@ -923,12 +924,23 @@
     "settings": {
       "domains": {
         "add": "Adicionar",
-        "work_together": "Adicione seus companheiros de equipe ou colaboradores à sua organização. Comece a trabalhar juntos",
         "url": "URL",
         "update": "Atualizar domínio",
         "custom": "Domínio personalizado",
         "domain": "Adicione seu próprio nome de domínio",
-        "title": "Domínio personalizado"
+        "title": "Domínio personalizado",
+        "save": "Salvar",
+        "your_domain": "Seu domínio",
+        "custom_domain_error": "Você não pode adicionar um domínio de nível superior como domínio personalizado. Em vez disso, use um subdomínio como 'cursos.[seusite].com' ou 'www.[seusite].com'.",
+        "custom_domain_success": "Domínio personalizado adicionado com sucesso",
+        "dns_description": "Defina o seguinte registro em seu provedor DNS para continuar:",
+        "dns_type": "Tipo",
+        "dns_value": "Valor",
+        "dns_name": "Nome",
+        "refresh": "Atualizar",
+        "remove": "Remover",
+        "custom_favicon": "Favicon personalizado",
+        "custom_code": "Código personalizado"
       },
       "customize-lms": {
         "title": "Personalizar LMS",
@@ -1084,7 +1096,8 @@
       "learn": "Saber mais",
       "month": "mês",
       "monthly": "Por mês",
-      "annually": "Anualmente"
+      "annually": "Anualmente",
+      "save": "Economize 2 meses"
     },
     "plan_names": {
       "free": "Livre",
@@ -1206,9 +1219,9 @@
         "update_organization": "Atualizar organização",
         "team": {
           "heading": "Equipe",
-          "sub_heading": "Configure seu site",
           "body": "Adicione colegas de equipe à sua organização para que ambos possam colaborar em projetos.",
-          "button": "Gerenciar equipe"
+          "button": "Gerenciar equipe",
+          "sub_heading": "Monte sua equipe"
         },
         "custom_domain": {
           "heading": "Domínio personalizado",
@@ -1239,7 +1252,10 @@
       },
       "profile_picture": {
         "heading": "Foto do perfil",
-        "upload_image": "Enviar Imagem"
+        "upload_image": "Enviar Imagem",
+        "file_size": "Tamanho máximo do arquivo:",
+        "accepted": "Aceito:",
+        "validation_error": "O tamanho do arquivo excede o limite máximo:"
       }
     },
     "tabs": {
