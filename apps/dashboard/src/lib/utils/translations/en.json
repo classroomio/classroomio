@@ -214,6 +214,18 @@
     "upgrade": "Upgrade Now"
   },
 
+  "template_builder": {
+    "title": "Current Template",
+    "view": "View Website",
+    "prep": "Prep examination courses",
+    "added": "Added",
+    "days": "days ago",
+    "customize": "Customize",
+    "more": "More Templates",
+    "preview": "Preview",
+    "add": "Add"
+  },
+
   "pricing": {
     "plan_names": {
       "free": "Free",

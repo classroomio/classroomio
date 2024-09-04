@@ -1,4 +1,5 @@
 <script>
+  import { t } from '$lib/utils/functions/translations';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
@@ -27,8 +28,8 @@
 
 <section class="py-2 px-10 w-full max-w-5xl md:mx-auto">
   <header class="flex flex-col md:flex-row justify-between md:items-center">
-    <h1 class="text-xl">Current Template</h1>
-    <PrimaryButton variant={VARIANTS.OUTLINED}>View Website</PrimaryButton>
+    <h1 class="text-xl">{$t('template_builder.title')}</h1>
+    <PrimaryButton variant={VARIANTS.OUTLINED}>{$t('template_builder.view')}</PrimaryButton>
   </header>
 
   <section class="mt-8">
@@ -41,17 +42,17 @@
 
       <div class="px-10 py-4 flex gap-y-5 flex-col md:flex-row justify-between md:items-center">
         <div>
-          <p class="text-base font-semibold">Prep examination courses</p>
-          <p class="text-xs mt-1">Added: 5 days ago</p>
+          <p class="text-base font-semibold">{$t('template_builder.prep')}</p>
+          <p class="text-xs mt-1">{$t('template_builder.added')} 5 {$t('template_builder.days')}</p>
         </div>
         <PrimaryButton className="w-full md:w-fit" variant={VARIANTS.CONTAINED_DARK}
-          >Customize</PrimaryButton
+          >{$t('template_builder.customize')}</PrimaryButton
         >
       </div>
     </div>
 
     <div class="my-10">
-      <h1 class="font-bold text-lg">More Templates</h1>
+      <h1 class="font-bold text-lg">{$t('template_builder.more')}</h1>
 
       <div class="flex flex-wrap gap-y-5 justify-between items-center">
         {#each templates as template}
@@ -73,7 +74,7 @@
                   type="button"
                   on:click={() => console.log("template's id", template.id)}
                   class="text-black font-semibold text-sm py-2 px-4 bg-white rounded"
-                  >Preview</button
+                  >{$t('template_builder.preview')}</button
                 >
               </div>
             </div>
@@ -83,7 +84,7 @@
               <button
                 type="button"
                 class="text-xs font-medium px-2.5 py-1 border border-[#282828] rounded-sm"
-                >Add</button
+                >{$t('template_builder.add')}</button
               >
             </div>
           </div>
