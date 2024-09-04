@@ -66,7 +66,10 @@
     "profile": {
       "profile_picture": {
         "heading": "Profile Picture",
-        "upload_image": "Upload Image"
+        "upload_image": "Upload Image",
+        "file_size": "Max file size:",
+        "accepted": "Accepted:",
+        "validation_error": "File size exceeds the maximum limit:"
       },
       "personal_information": {
         "heading": "Personal Information",
@@ -101,7 +104,7 @@
         },
         "team": {
           "heading": "Team",
-          "sub_heading": "Set up your website",
+          "sub_heading": "Set up your team",
           "body": "Add team mates to your organization so you can both collaborate on projects.",
           "button": "Manage Team"
         }
@@ -224,6 +227,7 @@
       "heading": "Upgrade Plan",
       "thanks": "Thank you for your support",
       "plan": "Your plan comes with cool perks and benefits including access to all future features we release.",
+      "save": "Save 2 months",
       "close": "Close",
       "learn": "Learn more",
       "month": "month",
@@ -332,11 +336,22 @@
       "domains": {
         "title": "Custom domain",
         "add": "Add",
-        "work_together": "Add your team mates or collaborators to your organization. Start working together",
         "url": "URL",
         "update": "Update Domain",
         "custom": "Custom domain",
-        "domain": "Add your own domain name"
+        "domain": "Add your own domain name",
+        "save": "Save",
+        "your_domain": "Your Domain",
+        "custom_domain_error": "You can't add a top level domain as custom domain. Instead, use a subdomain like 'courses.[yourwebsite].com' or 'www.[yourwebsite].com'.",
+        "custom_domain_success": "Custom domain added successfully",
+        "dns_description": "Set the following record on your DNS provider to continue:",
+        "dns_type": "Type",
+        "dns_value": "Value",
+        "dns_name": "Name",
+        "refresh": "Refresh",
+        "remove": "Remove",
+        "custom_favicon": "Custom favicon",
+        "custom_code": "Custom code"
       },
       "customize_lms": {
         "title": "Customize LMS",
@@ -1119,6 +1134,7 @@
   "upgrade": {
     "certificate": "Upgrade your plan to generate certificates",
     "team": "Upgrade your plan to add team members",
+    "domain": "Upgrade your plan to add custom domains",
     "team_members": "Team members",
     "back": "Back to Settings",
     "download_lessons": "Upgrade to download lessons",

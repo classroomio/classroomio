@@ -194,7 +194,8 @@
     "team_members": "Membres de l'équipe",
     "back": "Retour aux paramètres",
     "download_lessons": "Mettre à niveau pour télécharger les leçons",
-    "download_course": "Mettre à niveau pour télécharger le cours"
+    "download_course": "Mettre à niveau pour télécharger le cours",
+    "domain": "Mettez à niveau votre forfait pour ajouter des domaines personnalisés"
   },
   "audience": {
     "title": "Public",
@@ -923,12 +924,23 @@
     "settings": {
       "domains": {
         "add": "Ajouter",
-        "work_together": "Ajoutez vos coéquipiers ou collaborateurs à votre organisation. Commencez à travailler ensemble",
         "url": "URL",
         "update": "Mettre à jour le domaine",
         "custom": "Domaine personnalisé",
         "domain": "Ajoutez votre propre nom de domaine",
-        "title": "Domaine personnalisé"
+        "title": "Domaine personnalisé",
+        "save": "Sauvegarder",
+        "your_domain": "Votre domaine",
+        "custom_domain_error": "Vous ne pouvez pas ajouter un domaine de premier niveau en tant que domaine personnalisé. Utilisez plutôt un sous-domaine tel que « courses.[votresite Web].com » ou « www.[votre site Web].com ».",
+        "custom_domain_success": "Domaine personnalisé ajouté avec succès",
+        "dns_description": "Définissez l'enregistrement suivant sur votre fournisseur DNS pour continuer :",
+        "dns_type": "Taper",
+        "dns_value": "Valeur",
+        "dns_name": "Nom",
+        "refresh": "Rafraîchir",
+        "remove": "Retirer",
+        "custom_favicon": "Icône de favori personnalisée",
+        "custom_code": "Code personnalisé"
       },
       "customize-lms": {
         "title": "Personnaliser le LMS",
@@ -1084,7 +1096,8 @@
       "learn": "Apprendre encore plus",
       "month": "mois",
       "monthly": "Mensuel",
-      "annually": "Annuellement"
+      "annually": "Annuellement",
+      "save": "Économisez 2 mois"
     },
     "plan_names": {
       "free": "Gratuit",
@@ -1206,9 +1219,9 @@
         "update_organization": "Mettre à jour l'organisation",
         "team": {
           "heading": "Équipe",
-          "sub_heading": "Configurez votre site Web",
           "body": "Ajoutez des coéquipiers à votre organisation afin que vous puissiez tous les deux collaborer sur des projets.",
-          "button": "Gérer l'équipe"
+          "button": "Gérer l'équipe",
+          "sub_heading": "Configurez votre équipe"
         },
         "custom_domain": {
           "heading": "Domaine personnalisé",
@@ -1239,7 +1252,10 @@
       },
       "profile_picture": {
         "heading": "Image de profil",
-        "upload_image": "Télécharger une image"
+        "upload_image": "Télécharger une image",
+        "file_size": "Taille maximale du fichier :",
+        "accepted": "Accepté:",
+        "validation_error": "La taille du fichier dépasse la limite maximale :"
       }
     },
     "tabs": {

@@ -73,15 +73,7 @@ export async function getOrganizations(userId: string, isOrgSite?: boolean, orgS
       role_id,
       created_at,
       organization!organizationmember_organization_id_fkey (
-        id,
-        name,
-        siteName,
-        avatar_url,
-        landingpage,
-        customization,
-        is_restricted,
-        theme,
-        created_at,
+        *,
         organization_plan(
           plan_name,
           is_active,
@@ -107,18 +99,10 @@ export async function getOrganizations(userId: string, isOrgSite?: boolean, orgS
   if (Array.isArray(data) && data.length) {
     data.forEach((orgMember) => {
       orgsArray.push({
-        id: orgMember?.organization?.id,
-        name: orgMember?.organization?.name,
-        shortName: orgMember?.organization?.name?.substring(0, 2)?.toUpperCase() || '',
-        siteName: orgMember?.organization?.siteName,
-        theme: orgMember?.organization?.theme,
-        avatar_url: orgMember?.organization?.avatar_url,
+        ...(orgMember?.organization || {}),
         memberId: orgMember?.id,
-        role_id: orgMember?.role_id,
-        landingpage: orgMember?.organization?.landingpage,
-        is_restricted: orgMember?.organization?.is_restricted,
-        customization: orgMember?.organization?.customization,
-        organization_plan: orgMember?.organization?.organization_plan
+        role_id: parseInt(orgMember?.role_id),
+        shortName: orgMember?.organization?.name?.substring(0, 2)?.toUpperCase() || ''
       });
     });
 
@@ -220,7 +204,7 @@ export async function getCourseBySiteName(siteName: string) {
   return data;
 }
 
-export async function getCurrentOrg(siteName: string, justGet = false) {
+export async function getCurrentOrg(siteName: string, justGet = false, isCustomDomain = false) {
   const { data, error } = await supabase
     .from('organization')
     .select(
@@ -233,13 +217,18 @@ export async function getCurrentOrg(siteName: string, justGet = false) {
       is_restricted,
       customization,
       theme,
+      favicon,
+      customDomain,
+      isCustomDomainVerified,
+      customCode,
       organization_plan(
         plan_name,
         is_active
       )
     `
     )
-    .eq('siteName', siteName)
+    .eq(isCustomDomain ? 'customDomain' : 'siteName', siteName)
+    .filter('isCustomDomainVerified', 'eq', isCustomDomain ? true : undefined)
     .returns<CurrentOrg[]>();
   console.log('data =', data);
   console.log('error =', error);
