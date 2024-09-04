@@ -204,7 +204,7 @@ export async function getCourseBySiteName(siteName: string) {
   return data;
 }
 
-export async function getCurrentOrg(siteName: string, justGet = false) {
+export async function getCurrentOrg(siteName: string, justGet = false, isCustomDomain = false) {
   const { data, error } = await supabase
     .from('organization')
     .select(
@@ -219,6 +219,7 @@ export async function getCurrentOrg(siteName: string, justGet = false) {
       theme,
       favicon,
       customDomain,
+      isCustomDomainVerified,
       customCode,
       organization_plan(
         plan_name,
@@ -226,7 +227,8 @@ export async function getCurrentOrg(siteName: string, justGet = false) {
       )
     `
     )
-    .eq('siteName', siteName)
+    .eq(isCustomDomain ? 'customDomain' : 'siteName', siteName)
+    .filter('isCustomDomainVerified', 'eq', isCustomDomain ? true : undefined)
     .returns<CurrentOrg[]>();
   console.log('data =', data);
   console.log('error =', error);

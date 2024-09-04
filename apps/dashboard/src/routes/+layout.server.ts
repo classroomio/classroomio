@@ -70,11 +70,17 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
   const isDev = dev || isLocalHost;
 
   if (!url.host.includes('.classroomio.com') && !isLocalHost) {
-    // TODO: We can verify if custom domain here
-    return response;
-  }
+    // Custom domain
+    response.org = (await getCurrentOrg(url.host, true, true)) || null;
 
-  if (!blockedSubdomain.includes(subdomain)) {
+    if (!response.org) {
+      throw redirect(307, 'https://app.classroomio.com/404?type=org');
+    }
+
+    response.isOrgSite = true;
+    response.orgSiteName = response.org?.siteName || '';
+    return response;
+  } else if (!blockedSubdomain.includes(subdomain)) {
     const answer = !!subdomain;
 
     response.isOrgSite = debugMode || answer;
