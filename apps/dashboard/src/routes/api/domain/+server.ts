@@ -11,7 +11,7 @@ const supabase = getSupabase();
 export async function POST({ request }) {
   const { params } = await request.json();
   const accessToken = request.headers.get('Authorization');
-  console.log('/GET api/domain/welcome', params);
+  console.log('/GET api/domain', params);
 
   if (!params?.key || !accessToken) {
     return json({ success: false, message: 'Missing fields' }, { status: 400 });
