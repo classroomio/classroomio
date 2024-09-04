@@ -68,6 +68,7 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
   const subdomain = getSubdomain(url) || '';
 
   const isDev = dev || isLocalHost;
+  console.log('url.host', url.host);
 
   if (!url.host.includes('.classroomio.com') && !isLocalHost) {
     // Custom domain

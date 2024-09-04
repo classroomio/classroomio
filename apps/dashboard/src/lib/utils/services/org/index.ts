@@ -228,7 +228,7 @@ export async function getCurrentOrg(siteName: string, justGet = false, isCustomD
     `
     )
     .eq(isCustomDomain ? 'customDomain' : 'siteName', siteName)
-    .filter('isCustomDomainVerified', 'eq', isCustomDomain ? true : undefined)
+    .filter('isCustomDomainVerified', 'eq', isCustomDomain ? true : false)
     .returns<CurrentOrg[]>();
   console.log('data =', data);
   console.log('error =', error);
