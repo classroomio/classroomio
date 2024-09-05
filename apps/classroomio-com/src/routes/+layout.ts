@@ -25,11 +25,11 @@ function getBaseMetaTags(url: URL) {
       siteName: 'ClassroomIO',
       images: [
         {
-          url: 'https://classroomio.com/classroomio-opengraph-image.png',
+          url: 'https://brand.cdn.clsrio.com/og/classroomio-og.png',
           alt: 'ClassroomIO OG Image',
           width: 1920,
           height: 1080,
-          secureUrl: 'https://classroomio.com/classroomio-opengraph-image.png',
+          secureUrl: 'https://brand.cdn.clsrio.com/og/classroomio-og.png',
           type: 'image/jpeg'
         }
       ]
@@ -41,7 +41,7 @@ function getBaseMetaTags(url: URL) {
       title: 'ClassroomIO – Launch Your Online Bootcamp In Minutes',
       description:
         'Launch your bootcamp quickly and affordably with ClassroomIO, the customizable online teaching platform.',
-      image: 'https://classroomio.com/classroomio-opengraph-image.png',
+      image: 'https://brand.cdn.clsrio.com/og/classroomio-og.png',
       imageAlt: 'ClassroomIO OG Image'
     }
   }) satisfies MetaTagsProps;
