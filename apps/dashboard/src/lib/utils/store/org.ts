@@ -35,16 +35,20 @@ export const isOrgAdmin = derived(currentOrg, ($currentOrg) => $currentOrg.role_
 export const currentOrgPlan = derived(currentOrg, ($currentOrg) =>
   $currentOrg.organization_plan.find((p) => p.is_active)
 );
+
 export const currentOrgPath = derived(currentOrg, ($currentOrg) =>
   $currentOrg.siteName ? `/org/${$currentOrg.siteName}` : ''
 );
+
 export const currentOrgDomain = derived(currentOrg, ($currentOrg) => {
   const browserOrigin = dev && browser && window.location.origin;
   return browserOrigin
     ? browserOrigin
-    : $currentOrg.siteName
-      ? `https://${$currentOrg.siteName}.classroomio.com`
-      : '';
+    : $currentOrg.customDomain && $currentOrg.isCustomDomainVerified
+      ? `https://${$currentOrg.customDomain}`
+      : $currentOrg.siteName
+        ? `https://${$currentOrg.siteName}.classroomio.com`
+        : '';
 });
 
 // Utility org store
