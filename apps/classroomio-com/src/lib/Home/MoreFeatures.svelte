@@ -123,11 +123,11 @@
 
         {#each freeTools as tool}
           <a
-            class="w-full flex flex-col gap-3 max-w-[400px] md:max-w-[300px] mt-5 p-5 border rounded-md bg-[#F7F7F7] shadow-sm hover:scale-95 transition-all ease-in-out cursor-pointer"
+            class="w-full flex flex-col gap-3 max-w-[400px] md:max-w-[300px] mt-5 p-5 border rounded-md bg-white shadow-sm hover:scale-95 transition-all ease-in-out cursor-pointer"
             href="/tools/{tool.slug}"
           >
             <img class="w-[30%] rounded-full border border-[#EAEAEA]" src={tool.src} alt="" />
-            <div class="bg-[#fff] rounded-r-md p-3">
+            <div class="rounded-r-md p-3">
               <h1 class="font-bold text-sm md:text-base">{tool.title}</h1>
               <p class="text-xs text-gray-600 mt-1.5">
                 {tool.subText}

@@ -53,8 +53,6 @@ export const isFormComplete = derived(htmlBody, ($htmlBody) => {
     $htmlBody.name.trim() &&
     $htmlBody.learning.trim() !== placeholderLearning &&
     $htmlBody.progress > 0 &&
-    $htmlBody.avatar.trim() &&
-    $htmlBody.background.trim() &&
     $htmlBody.mood.text.trim() &&
     $htmlBody.mood.iconSrc.trim()
   );
