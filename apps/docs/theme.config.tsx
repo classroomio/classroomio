@@ -35,7 +35,7 @@ const config: DocsThemeConfig = {
         property="og:description"
         content="Launch your bootcamp quickly and affordably with ClassroomIO, the customizable online teaching platform."
       />
-      <meta property="og:image" content="https://classroomio.com/classroomio-opengraph-image.png" />
+      <meta property="og:image" content="https://brand.cdn.clsrio.com/og/classroomio-og.png" />
 
       <meta name="twitter:card" content="summary_large_image" />
       <meta property="twitter:domain" content="classroomio.com" />
@@ -46,10 +46,7 @@ const config: DocsThemeConfig = {
         content="Launch your bootcamp quickly and affordably with ClassroomIO, the customizable online teaching platform."
       />
       <meta name="twitter:creator" content="@classroomio" />
-      <meta
-        name="twitter:image"
-        content="https://classroomio.com/classroomio-opengraph-image.png"
-      />
+      <meta name="twitter:image" content="https://brand.cdn.clsrio.com/og/classroomio-og.png" />
     </>
   ),
   logo: (
