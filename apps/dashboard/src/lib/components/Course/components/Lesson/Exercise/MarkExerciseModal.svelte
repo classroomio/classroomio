@@ -10,14 +10,22 @@
   import { useCompletion } from 'ai/svelte';
   import { QUESTION_TYPE } from '$lib/components/Question/constants';
   import { t } from '$lib/utils/functions/translations';
+  import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
+  import type { SubmissionIdData } from '$lib/utils/types/submission';
 
   export let open = false;
   export let onClose = () => {};
-  export let handleSave = () => {};
+  export let handleSave = (d: SubmissionIdData) => {};
   export let isGradeWithAI = false;
-
-  export let data = {};
-  export let updateStatus = () => {};
+  export let data: SubmissionIdData;
+  export let deleteSubmission = async (id: string, statusId: number) => {};
+  export let updateStatus = (arg: {
+    submissionId: string;
+    prevStatusId: number;
+    nextStatusId: number;
+    total: number;
+  }) => {};
+  export let isSaving = false;
 
   const SELECTABLE_STATUS = [
     {
@@ -40,6 +48,9 @@
   let isLoading = false;
   let total = 0;
   let maxPoints = 0;
+  let openMenu = false;
+  let openDeletePrompt = false;
+  let isDeleting = false;
 
   function getMaxPoints(questions) {
     return (questions || []).reduce((acc, question) => acc + question.points, 0);
@@ -54,12 +65,13 @@
     const newSelectedId = event.detail.selectedId;
 
     setStatus({
-      status_id: newSelectedId
+      ...data,
+      statusId: newSelectedId
     });
 
     updateStatus({
       submissionId: data.id,
-      prevStatusId: data.status_id,
+      prevStatusId: data.statusId,
       nextStatusId: status.id,
       total
     });
@@ -67,8 +79,8 @@
     snackbar.success(`${$t('snackbar.exercise.submission_updated')} '${status.text}'`);
   }
 
-  function setStatus(data) {
-    const statusBySelectedId = SELECTABLE_STATUS.find((status) => status.id === data.status_id);
+  function setStatus(data: SubmissionIdData) {
+    const statusBySelectedId = SELECTABLE_STATUS.find((status) => status.id === data.statusId);
 
     if (!statusBySelectedId) {
       return;
@@ -76,9 +88,15 @@
 
     status = statusBySelectedId;
 
-    if (data.status_id !== selectedId) {
-      selectedId = data.status_id;
+    if (data.statusId !== selectedId) {
+      selectedId = data.statusId;
     }
+  }
+
+  async function handleDeleteSubmission() {
+    isDeleting = true;
+    await deleteSubmission(data.id, status.id);
+    isDeleting = false;
   }
 
   const { input, handleSubmit, completion } = useCompletion({
@@ -87,7 +105,11 @@
       try {
         const responseData = $completion.replace('```json', '').replace('```', '');
 
-        let aiResponses = [];
+        let aiResponses: {
+          id: number;
+          score: number;
+          explanation: string;
+        }[] = [];
         try {
           // Parse the modified response data as JSON
           aiResponses = JSON.parse(responseData);
@@ -100,14 +122,14 @@
 
           if (question_type_id !== QUESTION_TYPE.TEXTAREA) {
             const answer = data.questionAnswers.find((q) => q.question_id === id);
-
+            const answerPoints = answer?.answers?.length ?? 0;
             reasons = {
               ...reasons,
-              [id]: `${$t('course.navItem.submissions.grading_modal.questions_tried')} ${
-                answer.answers.length
-              } `
+              [id]: `${$t(
+                'course.navItem.submissions.grading_modal.questions_tried'
+              )} ${answerPoints} `
             };
-            data.questionAnswerByPoint[id] = points / answer.answers.length;
+            data.questionAnswerByPoint[id] = `${Math.ceil(points / answerPoints)}`;
           } else if (aiResponses.length) {
             const graded = aiResponses.find((res) => res.id === id);
 
@@ -116,7 +138,7 @@
               [id]: `${graded?.explanation}`
             };
 
-            data.questionAnswerByPoint[id] = graded.score;
+            data.questionAnswerByPoint[id] = `${graded?.score}`;
           }
         });
       } catch (error) {
@@ -160,26 +182,51 @@
   headerClass="py-2"
   labelClass="text-base font-semibold"
 >
-  <div class="w-full h-full">
-    <Preview
-      questions={Array.isArray(data.questions)
-        ? data.questions.sort((a, b) => a.order - b.order)
-        : []}
-      questionnaireMetaData={{
-        answers: data.answers || {},
-        isFinished: true
-      }}
-      bind:grades={data.questionAnswerByPoint}
-      bind:reasons
-      bind:isGradeWithAI
-      bind:isLoading
-      disableGrading={false}
-    />
+  <div class="w-full h-full mt-2">
+    {#if openDeletePrompt}
+      <div class="w-96 mx-auto p-3 border border-gray-300 rounded-md">
+        <h1 class="dark:text-white text-lg">
+          {$t('delete_modal.content')}
+        </h1>
+
+        <div class="mt-5 flex items-center justify-between">
+          <PrimaryButton
+            className="px-6 py-3"
+            variant={VARIANTS.OUTLINED}
+            label={$t('delete_modal.no')}
+            onClick={() => (openDeletePrompt = false)}
+            isDisabled={isDeleting}
+          />
+          <PrimaryButton
+            className="px-6 py-3"
+            variant={VARIANTS.OUTLINED}
+            label={$t('delete_modal.yes')}
+            onClick={handleDeleteSubmission}
+            isLoading={isDeleting}
+          />
+        </div>
+      </div>
+    {:else}
+      <Preview
+        questions={Array.isArray(data.questions)
+          ? data.questions.sort((a, b) => a.order - b.order)
+          : []}
+        questionnaireMetaData={{
+          answers: data.answers || {},
+          isFinished: true
+        }}
+        bind:grades={data.questionAnswerByPoint}
+        bind:reasons
+        bind:isGradeWithAI
+        bind:isLoading
+        disableGrading={false}
+      />
+    {/if}
   </div>
-  <div class="ml-4 w-2/5 sticky top-0">
+  <div class="ml-4 mt-2 w-2/5 sticky top-0">
     <div class="border border-gray-300 rounded-md">
       <div
-        class="hover:bg-gray-100 dark:bg-neutral-800 border-b border-t-0 border-l-0 border-r-0 border-gray-300 p-3"
+        class="flex gap-1 justify-between items-center border-b border-t-0 border-l-0 border-r-0 border-gray-300 p-3"
       >
         <p class="dark:text-white font-bold text-base">
           {$t('course.navItem.submissions.grading_modal.details')}
@@ -193,6 +240,17 @@
             </span>
           {/if}
         </p>
+
+        <OverflowMenu open={openMenu} flipped>
+          <OverflowMenuItem
+            text={$t('delete_modal.label')}
+            on:click={() => {
+              openDeletePrompt = true;
+              openMenu = false;
+            }}
+            danger
+          />
+        </OverflowMenu>
       </div>
 
       <div class="flex items-center space-x-4 text-sm px-3 py-2">
@@ -278,8 +336,9 @@
         <PrimaryButton
           onClick={() => {
             handleSave(data);
-            onClose();
+            // onClose();
           }}
+          isLoading={isSaving}
           label={$t('course.navItem.submissions.grading_modal.submit_grades')}
           variant={VARIANTS.CONTAINED}
           className="py-3 px-8 w-full"

@@ -11,7 +11,7 @@
     "FEATURES": [
       "Unlimited Courses",
       "Unlimited Q/A",
-      "50 Students",
+      "20 Students",
       "AI Course Builder (no video upload)",
       "ClassroomIO branding"
     ],
@@ -47,7 +47,8 @@
       "DASHBOARD_LABEL": "Support us 😍",
       "DASHBOARD_LINK": "",
       "IS_DISABLED": false,
-      "PRODUCT_ID": "331121"
+      "PRODUCT_ID": "331121",
+      "PRODUCT_ID_YEARLY": "331122"
     }
   },
   "ENTERPRISE": {

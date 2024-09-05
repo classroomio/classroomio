@@ -22,7 +22,8 @@ export const defaultCurrentOrgState: CurrentOrg = {
     dashboard: { exercise: true, community: true, bannerText: '', bannerImage: '' }
   },
   theme: '',
-  organization_plan: []
+  organization_plan: [],
+  is_restricted: false
 };
 
 export const orgs = writable<CurrentOrg[]>([]);
@@ -34,16 +35,20 @@ export const isOrgAdmin = derived(currentOrg, ($currentOrg) => $currentOrg.role_
 export const currentOrgPlan = derived(currentOrg, ($currentOrg) =>
   $currentOrg.organization_plan.find((p) => p.is_active)
 );
+
 export const currentOrgPath = derived(currentOrg, ($currentOrg) =>
   $currentOrg.siteName ? `/org/${$currentOrg.siteName}` : ''
 );
+
 export const currentOrgDomain = derived(currentOrg, ($currentOrg) => {
   const browserOrigin = dev && browser && window.location.origin;
   return browserOrigin
     ? browserOrigin
-    : $currentOrg.siteName
-      ? `https://${$currentOrg.siteName}.classroomio.com`
-      : '';
+    : $currentOrg.customDomain && $currentOrg.isCustomDomainVerified
+      ? `https://${$currentOrg.customDomain}`
+      : $currentOrg.siteName
+        ? `https://${$currentOrg.siteName}.classroomio.com`
+        : '';
 });
 
 // Utility org store
@@ -53,12 +58,12 @@ export const isFreePlan = derived(
 );
 export const currentOrgMaxAudience = derived(currentOrgPlan, ($plan) =>
   !$plan
-    ? 50
+    ? 20
     : $plan.plan_name === PLAN.EARLY_ADOPTER
       ? 10000
       : $plan.plan_name === PLAN.ENTERPRISE
         ? Number.MAX_SAFE_INTEGER
-        : 50
+        : 20
 );
 
 // Quiz

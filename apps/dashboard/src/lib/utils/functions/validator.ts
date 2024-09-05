@@ -26,7 +26,7 @@ const lessonSchema = z.object({
   title: z.string().nonempty({ message: `${t.get('validations.lesson_schema.empty_title')}` }),
   lesson_at: z.string().optional(),
   call_url: z.string().nullable().optional(),
-  is_unlocked: z.boolean()
+  is_unlocked: z.boolean().optional()
 });
 
 const createQuizValidationSchema = z.object({
@@ -125,14 +125,31 @@ const onboardingValidationSchema = {
   })
 };
 
+const saveCertificateSchema = z.object({
+  description: z.string().max(200, 'course.navItem.certificates.description_error'),
+  is_certificate_downloadable: z.boolean(),
+  certificate_theme: z.string()
+});
+
+export const saveCertificateValidation = (fields = {}) => {
+  const { error } = saveCertificateSchema.safeParse(fields);
+  return processErrors(error);
+};
+
+const updateProfileValidationSchema = z.object({
+  email: z.string().email({ message: 'validations.user_profile.email' }),
+  username: z.string().nonempty({ message: 'validations.user_profile.username' }),
+  fullname: z.string().min(5, { message: 'validations.user_profile.fullname' })
+});
+
 export const getConfirmPasswordError = ({ password, confirmPassword }) => {
   return password > 6 && confirmPassword > 6 && password !== confirmPassword
     ? `${t.get('validations.confirm_password.not_match')}`
     : undefined;
 };
 
-export const processErrors = (error, mapToId) => {
-  const errors = {};
+export const processErrors = (error, mapToId?: boolean) => {
+  const errors: Record<string, string> = {};
 
   if (Array.isArray(error?.issues)) {
     for (const issue of error.issues) {
@@ -145,7 +162,6 @@ export const processErrors = (error, mapToId) => {
       if (mapToId) {
         let value = '';
         path.forEach((p, i) => {
-          const isLast = !path[i + 1];
           const formatP = isNumber(p) ? `[${p}]` : p;
 
           value += !value ? formatP : `.${formatP}`;
@@ -213,6 +229,13 @@ export const onboardingValidation = (fields = {}, step) => {
   return processErrors(error);
 };
 
+export const updateProfileValidation = (fields = {}) => {
+  const schema = updateProfileValidationSchema;
+  const { error } = schema.safeParse(fields);
+
+  return processErrors(error);
+};
+
 // export const createTemplateExerciseValidation = (fields = {}) => {
 //   const schema = z.object({
 //     orgName: z.string().min(5, {
@@ -268,6 +291,14 @@ export const updateOrgSiteNameValidation = (siteName) => {
     siteName: getSiteNameValidation()
   });
   const { error } = schema.safeParse({ siteName });
+
+  return processErrors(error);
+};
+export const updateProfileEmailValidation = (email) => {
+  const schema = z.object({
+    email: z.string().email({ message: `${t.get('validations.user_profile.email')}` })
+  });
+  const { error } = schema.safeParse({ email });
 
   return processErrors(error);
 };

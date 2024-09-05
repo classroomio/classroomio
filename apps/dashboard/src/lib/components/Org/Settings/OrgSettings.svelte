@@ -13,6 +13,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { isFreePlan } from '$lib/utils/store/org';
   import { updateOrgNameValidation } from '$lib/utils/functions/validator';
+  import { setTheme } from '$lib/utils/functions/theme';
 
   let avatar;
 
@@ -42,6 +43,8 @@
         .concat(!!t ? ' ' : '', t);
       $currentOrg.theme = t;
 
+      setTheme(t);
+
       const res = await supabase
         .from('organization')
         .update({ theme: t })
@@ -63,7 +66,7 @@
       loading = true;
 
       const updates = {
-        name: $currentOrg.name,
+        name: $currentOrg.name
       };
 
       if (avatar) {
@@ -231,11 +234,15 @@
         {$t('settings.organization.organization_profile.custom_domain.body')}
       </p>
       <PrimaryButton
-        label={$t('settings.organization.organization_profile.custom_domain.button')}
-        className="my-7 py-5 px-10"
+        className="my-7 py-5 px-10 flex items-center gap-2 justify-center"
         variant={VARIANTS.OUTLINED}
         onClick={() => gotoSetting('/domains')}
-      />
+      >
+        {#if $isFreePlan}
+          <FlashFilled size={16} class="text-blue-700" />
+        {/if}
+        {$t('settings.organization.organization_profile.custom_domain.button')}
+      </PrimaryButton>
     </Column>
   </Row>
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">

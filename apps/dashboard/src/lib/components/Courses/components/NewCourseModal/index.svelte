@@ -17,7 +17,7 @@
   import { goto } from '$app/navigation';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { t } from '$lib/utils/functions/translations';
-  import { COURSE_TYPE } from '$lib/utils/types';
+  import { COURSE_TYPE, COURSE_VERSION } from '$lib/utils/types';
   import ComingSoon from '$lib/components/ComingSoon/index.svelte';
 
   let isLoading = false;
@@ -45,7 +45,7 @@
   ];
   let type = options[0].type;
 
-  function onClose(redirectTo = $page.url.pathname) {
+  function onClose(redirectTo) {
     goto(redirectTo);
 
     createCourseModal.update(() => ({
@@ -85,6 +85,7 @@
         title,
         description,
         type: type,
+        version: COURSE_VERSION.V2,
         group_id
       })
       .select();
@@ -139,7 +140,7 @@
 </svelte:head>
 
 <Modal
-  {onClose}
+  onClose={() => onClose($page.url.pathname)}
   bind:open
   width="w-4/5 md:w-2/5 md:min-w-[600px]"
   modalHeading={$t('courses.new_course_modal.heading')}

@@ -3,6 +3,47 @@
   import { PUBLIC_ENABLE_STATS } from '$env/static/public';
 </script>
 
+<section class="w-full py-32 border-b border-x-0 border-t-0 border-gray-200">
+  <div class="justify-center flex text-center flex-wrap gap-x-12 gap-y-16">
+    <div class="w-full min-w-0" style="max-width: 1000px; flex: 1 1 550px;">
+      <div class="mx-auto flex max-w-lg flex-col items-center gap-2">
+        <div class="flex-none">
+          <div class="">
+            <img
+              src="https://senjaio.b-cdn.net/public/avatar/406f29d4-5811-4f2e-90c1-e586fce3b3a7_me.JPEG?width=78&amp;height=78&amp;format=webp"
+              alt="Pranav Singhal avatar"
+              class="rounded-full"
+              loading="lazy"
+              referrerpolicy="no-referrer"
+              style="width: 52px; height: 52px;"
+            />
+          </div>
+        </div>
+        <div class="text-base leading-snug text-center">
+          <span class="font-bold opacity-50">“</span>
+          <span class="text-gray-800" style="font-size: 17px;"
+            >ClassroomIO really helped me bootstrap my program. The dashboard is extremely
+            intuitive. I could navigate most of it without any help / support. Coming from framer, I
+            can honestly say that I am extremely greatful that I found ClassroomIO.</span
+          > <span class="font-bold opacity-50 inline-block">”</span>
+        </div>
+        <div class="mx-auto flex items-center gap-2 justify-center">
+          <div
+            class="flex max-w-[200px] flex-none flex-col overflow-hidden text-left"
+            style="color: var(--clr-text);"
+          >
+            <div class="text-center text-sm font-medium opacity-90">
+              Pranav Singhal <div class="block text-xs font-medium opacity-70 hover:opacity-50">
+                Founder at <a href="https://www.dblocked.io/" target="_blank">DBlockEd</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <Section
   id="coursemanagement"
   tagline="Simplified"

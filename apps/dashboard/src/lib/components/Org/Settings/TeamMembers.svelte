@@ -27,7 +27,7 @@
   let role = ROLE.TUTOR;
   let isFetching = false;
   let isLoading = false;
-  let isRemoving = false;
+  let isRemoving: number | null = null;
 
   async function onSendInvite() {
     const { hasError, error: _error, emails } = validateEmailInString(emailsStr);
@@ -106,8 +106,8 @@
 
   async function onRemove(id: number) {
     console.log('onRemove called');
-    isRemoving = true;
-    const { data, error } = await supabase.from('organizationmember').delete().match({ id });
+    isRemoving = id;
+    const { error } = await supabase.from('organizationmember').delete().match({ id });
 
     if (error) {
       console.error('onRemove:', error);
@@ -116,7 +116,7 @@
       orgTeam.update((team) => [...team.filter((member) => member.id !== id)]);
     }
 
-    isRemoving = false;
+    isRemoving = null;
   }
 
   const fetchTeam = async (id: string) => {
@@ -160,7 +160,7 @@
           class="mb-5 w-40"
           disabled={$isFreePlan}
         >
-          <!-- <SelectItem value={ROLE.ADMIN} text={ROLE_LABEL[ROLE.ADMIN]} /> -->
+          <SelectItem value={ROLE.ADMIN} text={$t(ROLE_LABEL[ROLE.ADMIN])} />
           <SelectItem value={ROLE.TUTOR} text={$t(ROLE_LABEL[ROLE.TUTOR])} />
         </Select>
 
@@ -204,8 +204,8 @@
                 label={$t('course.navItem.people.teams.remove')}
                 variant={VARIANTS.TEXT_DANGER}
                 onClick={() => onRemove(teamMember.id)}
-                isLoading={isRemoving}
-                isDisabled={isRemoving}
+                isLoading={isRemoving === teamMember.id}
+                isDisabled={isRemoving === teamMember.id}
               />
             {/if}
           </div>

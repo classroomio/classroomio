@@ -13,13 +13,13 @@
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { Dropdown, Loading } from 'carbon-components-svelte';
+  import { Dropdown } from 'carbon-components-svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
   import PageBody from '$lib/components/PageBody/index.svelte';
   import Materials from '$lib/components/Course/components/Lesson/Materials/index.svelte';
   import Exercises from '$lib/components/Course/components/Lesson/Exercises/index.svelte';
-  import LanguageLessonVersionHistory from '$lib/components/Course/components/Lesson/LanguageLessonVersionHistory.svelte';
+  import LessonVersionHistory from '$lib/components/Course/components/Lesson/LessonVersionHistory.svelte';
   import MODES from '$lib/utils/constants/mode';
   import { course } from '$lib/components/Course/store';
   import Download from 'carbon-icons-svelte/lib/Download.svelte';
@@ -31,12 +31,13 @@
   import {
     lesson,
     lessons,
-    lessonByTranslation
+    lessonByTranslation,
+    lessonSections
   } from '$lib/components/Course/components/Lesson/store/lessons';
   import { browser } from '$app/environment';
   import { currentOrg } from '$lib/utils/store/org';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import type { LessonCompletion } from '$lib/utils/types';
+  import { COURSE_VERSION, type LessonCompletion, type Lesson } from '$lib/utils/types';
   import { profile } from '$lib/utils/store/user';
   import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
   import { t } from '$lib/utils/functions/translations';
@@ -198,6 +199,7 @@
     lesson.update((l) => ({
       ...l,
       id: data.lessonId,
+      title: lessonData.title,
       totalExercises,
       totalComments: totalComments,
       materials: {
@@ -248,20 +250,36 @@
     $apps.open = true;
   }
 
-  const isNextOrPrevDisabled = (lessonId: string, isPrev: boolean) => {
-    const index = $lessons.findIndex((lesson) => lesson.id === lessonId);
+  const getLessons = () => {
+    if ($course.version === COURSE_VERSION.V1) {
+      return $lessons;
+    } else {
+      const _lessons: Lesson[] = [];
 
-    return isPrev ? !$lessons[index - 1] : !$lessons[index + 1];
+      $lessonSections.forEach((section) => {
+        _lessons.push(...section.lessons);
+      });
+
+      return _lessons;
+    }
+  };
+
+  const isNextOrPrevDisabled = (lessonId: string, isPrev: boolean) => {
+    const _lessons = getLessons();
+    const index = _lessons.findIndex((lesson) => lesson.id === lessonId);
+
+    return isPrev ? !_lessons[index - 1] : !_lessons[index + 1];
   };
 
   const goToNextOrPrevLesson = (lessonId: string, isPrev: boolean) => {
+    const _lessons = getLessons();
     const isDisabled = isNextOrPrevDisabled(lessonId, isPrev);
 
     // Always use early return
     if (isDisabled) return;
 
-    const index = $lessons.findIndex((lesson) => lesson.id === lessonId);
-    const nextOrPrevLesson = isPrev ? $lessons[index - 1] : $lessons[index + 1];
+    const index = _lessons.findIndex((lesson) => lesson.id === lessonId);
+    const nextOrPrevLesson = isPrev ? _lessons[index - 1] : _lessons[index + 1];
 
     const isLocked = $globalStore.isStudent && !nextOrPrevLesson.is_unlocked;
 
@@ -458,7 +476,7 @@
 
   <!-- Version Control Preview -->
   {#if isVersionDrawerOpen && window.innerWidth >= 1024}
-    <LanguageLessonVersionHistory
+    <LessonVersionHistory
       open={isVersionDrawerOpen}
       on:close={() => (isVersionDrawerOpen = false)}
       on:restore={refetchDataAfterVersionRestore}

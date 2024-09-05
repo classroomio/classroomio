@@ -51,6 +51,7 @@ export async function POST({ request }) {
       isPersonalEmail: true
     }
   ];
+
   await sendEmail(emailData);
 
   return json({

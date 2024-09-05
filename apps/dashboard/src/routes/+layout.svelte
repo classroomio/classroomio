@@ -1,12 +1,14 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
+  import { MetaTags } from 'svelte-meta-tags';
   import { fly } from 'svelte/transition';
   import { derived } from 'svelte/store';
   import { goto } from '$app/navigation';
   import { browser, dev } from '$app/environment';
   import { page, navigating } from '$app/stores';
   import isEmpty from 'lodash/isEmpty';
+  import merge from 'lodash/merge';
   import { Theme, ToastNotification, Loading } from 'carbon-components-svelte';
   import type { CarbonTheme } from 'carbon-components-svelte/types/Theme/Theme.svelte';
   import LandingNavigation from '$lib/components/Navigation/index.svelte';
@@ -14,6 +16,7 @@
   import LMSNavigation from '$lib/components/Navigation/lms.svelte';
   import OrgLandingPage from '$lib/components/Org/LandingPage/index.svelte';
   import Snackbar from '$lib/components/Snackbar/index.svelte';
+  import Restricted from '$lib/components/Page/Restricted.svelte';
   import Backdrop from '$lib/components/Backdrop/index.svelte';
   import Apps from '$lib/components/Apps/index.svelte';
   import PlayQuiz from '$lib/components/Org/Quiz/Play/index.svelte';
@@ -176,7 +179,7 @@
 
       const orgRes = await getOrganizations(profileData.id, data.isOrgSite, data.orgSiteName);
 
-      const isStudentAccount = parseInt(orgRes.currentOrg.role_id) === ROLE.STUDENT;
+      const isStudentAccount = orgRes.currentOrg.role_id == ROLE.STUDENT;
 
       // student redirect
       if (data.isOrgSite) {
@@ -287,16 +290,21 @@
 
   $: path = $page.url?.pathname?.replace('/', '');
   $: carbonTheme = $globalStore.isDark ? 'g100' : 'white';
+  $: metaTags = merge(data.baseMetaTags, $page.data.pageMetaTags);
 </script>
 
 <svelte:window on:resize={handleResize} />
+
+<MetaTags {...metaTags} />
 
 <Theme bind:theme={carbonTheme} />
 
 <UpgradeModal />
 <Snackbar />
 
-{#if data.skipAuth}
+{#if data.org?.is_restricted || $currentOrg.is_restricted}
+  <Restricted />
+{:else if data.skipAuth}
   <PlayQuiz />
 {:else if data.isOrgSite && !path}
   <OrgLandingPage orgSiteName={data.orgSiteName} org={data.org || {}} />

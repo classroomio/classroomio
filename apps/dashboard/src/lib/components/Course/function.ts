@@ -6,7 +6,7 @@ export function getGroupMemberId(people, profileId) {
   return groupMember ? groupMember.id : null;
 }
 
-export function getNavItemRoute(courseId, routeId) {
+export function getNavItemRoute(courseId, routeId?: string) {
   const path = `/${ROUTES.COURSES}/${courseId}`;
 
   if (!routeId) {
@@ -16,7 +16,7 @@ export function getNavItemRoute(courseId, routeId) {
   return `${path}/${routeId}`;
 }
 
-export function getLessonsRoute(courseId, lessonId) {
+export function getLessonsRoute(courseId, lessonId?: string) {
   const path = getNavItemRoute(courseId, ROUTES.LESSONS);
 
   if (!lessonId) {
@@ -35,7 +35,7 @@ export function getLectureNo(index, initNo = '0') {
 }
 
 export function formatAnswers(data) {
-  const answers = {};
+  const answers: Record<string, string> = {};
   const questionByIdAndName = {};
 
   for (const question of data.questions) {
