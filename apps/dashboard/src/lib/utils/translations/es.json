@@ -393,7 +393,11 @@
             "instructor": "Instructor",
             "pricing": "Precios"
           }
-        }
+        },
+        "course_content": "Contenido del curso",
+        "modules": "Módulos",
+        "lessons": "lecciones",
+        "exercises": "ceremonias"
       },
       "certificates": {
         "title": "Certificados",

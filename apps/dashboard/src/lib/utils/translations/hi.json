@@ -393,7 +393,11 @@
             "instructor": "प्रशिक्षक",
             "pricing": "मूल्य निर्धारण"
           }
-        }
+        },
+        "course_content": "पाठ्यक्रम सामग्री",
+        "modules": "मॉड्यूल",
+        "lessons": "पाठ",
+        "exercises": "अभ्यास"
       },
       "certificates": {
         "title": "प्रमाण पत्र",
