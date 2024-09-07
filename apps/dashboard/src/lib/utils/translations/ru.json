@@ -393,7 +393,11 @@
             "instructor": "Инструктор",
             "pricing": "Цены"
           }
-        }
+        },
+        "course_content": "Содержание курса",
+        "modules": "Модули",
+        "lessons": "уроки",
+        "exercises": "упражнения"
       },
       "certificates": {
         "title": "Сертификаты",

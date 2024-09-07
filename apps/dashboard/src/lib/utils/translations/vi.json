@@ -393,7 +393,11 @@
             "instructor": "Người hướng dẫn",
             "pricing": "Định giá"
           }
-        }
+        },
+        "course_content": "Nội dung khóa học",
+        "modules": "Mô-đun",
+        "lessons": "bài học",
+        "exercises": "bài tập"
       },
       "certificates": {
         "title": "Chứng chỉ",
