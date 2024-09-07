@@ -9,7 +9,7 @@
   export let title: string;
   export let lessonCount: number;
   export let exerciseCount: number;
-  export let lessons: Lesson;
+  export let lessons: Lesson[];
   export let showLessons: boolean[] = Array(lessons.length).fill(true);
 
   function toggleShowLessons(index) {
@@ -19,28 +19,29 @@
 
 <div class="w-full rounded-md my-3">
   <!-- lesson header -->
-  <div class="py-1 pl-3 pr-4 bg-[#F7F7F7] text-sm font-medium flex items-center justify-between">
+  <button
+    class="py-3 pl-3 pr-4 bg-[#F7F7F7] dark:bg-neutral-700 text-sm font-medium flex items-center justify-between w-full"
+    on:click={() => toggleShowLessons(index)}
+  >
     <span class="flex items-center gap-2">
-      <IconButton onClick={() => toggleShowLessons(index)}>
-        {#if showLessons[index]}
-          <ChevronDown />
-        {:else}
-          <ChevronUp />
-        {/if}
-      </IconButton>
-      {title}</span
-    >
+      {#if showLessons[index]}
+        <ChevronUp />
+      {:else}
+        <ChevronDown />
+      {/if}
+      {title}
+    </span>
     <span class="text-xs font-normal"
       >{lessonCount}
       {$t('course.navItem.landing_page.lessons')}, {exerciseCount}
       {$t('course.navItem.landing_page.exercises')}</span
     >
-  </div>
+  </button>
 
   <!-- lessons -->
   {#if showLessons[index]}
     {#each lessons as lesson}
-      <div class="py-3 pl-6 text-[13px] text-[#656565] flex items-center gap-5 lesson-section">
+      <div class="py-3 pl-3 text-[13px] text-[#656565] flex items-center gap-2 lesson-section">
         <CheckmarkOutline size={16} class="scale-[0.8]" />
         {lesson.title}
       </div>

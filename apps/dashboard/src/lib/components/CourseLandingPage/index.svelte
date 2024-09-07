@@ -3,9 +3,6 @@
   import pluralize from 'pluralize';
   import { page } from '$app/stores';
   import { onMount, onDestroy } from 'svelte';
-  import Notebook from 'carbon-icons-svelte/lib/Notebook.svelte'; //note
-  import PresentationFile from 'carbon-icons-svelte/lib/PresentationFile.svelte'; // exercise
-  import Video from 'carbon-icons-svelte/lib/Video.svelte'; //video
   import PlayFilled from 'carbon-icons-svelte/lib/PlayFilled.svelte';
 
   import { NAV_ITEMS } from './constants';
@@ -52,22 +49,28 @@
   // initialize the expandDescription array with 'false' values for each review.
   let expandDescription = Array(reviews.length).fill(false);
   // a variable that stores the sections and the lessons in each sections
-  const lesson_sections = createLessonSections(courseData);
+
+  function getLessonSections(data) {
+    const lessonSections = data.lesson_section.map((section) => {
+      return {
+        ...section,
+        lessons: data.lessons.filter((lesson) => lesson.section_id === section.id)
+      };
+    });
+    return lessonSections;
+  }
+  const lessonSections = getLessonSections(courseData);
 
   let activeNav = NAV_ITEMS[0].key;
   let instructor = {};
   let video: string | undefined;
 
   // get total lessons
-  const totalLessons = Array.isArray(lesson_sections)
-    ? lesson_sections.reduce((total, section) => {
+  const totalLessons = Array.isArray(lessonSections)
+    ? lessonSections.reduce((total, section) => {
         return total + section.lessons.length;
       }, 0)
     : 0;
-
-  function playVideo() {
-    console.log('open modal with video');
-  }
 
   function locationHashChanged() {
     activeNav = window.location.hash;
@@ -84,18 +87,6 @@
 
   function toggleDescription(id: number) {
     expandDescription[id] = !expandDescription[id];
-  }
-
-  // this function creates a new lesson_section variable using the lessons section_id and groups them into appropriate sections,
-  // this way it solves the issue of the landing page being a standalone site
-  function createLessonSections(data) {
-    const lessonSections = data.lesson_section.map((section) => {
-      return {
-        ...section,
-        lessons: data.lessons.filter((lesson) => lesson.section_id === section.id)
-      };
-    });
-    return lessonSections;
   }
 
   onMount(() => {
@@ -346,13 +337,13 @@
             <div class="flex items-center justify-between">
               <h1>{$t('course.navItem.landing_page.course_content')}</h1>
               <span class="text-xs font-normal"
-                >{lesson_sections?.length}
+                >{lessonSections?.length}
                 {$t('course.navItem.landing_page.modules')}, {totalLessons}
                 {$t('course.navItem.landing_page.lessons')}</span
               >
             </div>
 
-            {#each lesson_sections as sections, index}
+            {#each lessonSections as sections, index}
               <SectionsDisplay
                 {index}
                 title={sections.title}
