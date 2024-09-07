@@ -6,6 +6,7 @@
   import { getStudentInviteLink } from '$lib/utils/functions/course';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
+  import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import PaymentModal from './PaymentModal.svelte';
   import type { Course } from '$lib/utils/types';
   import { ROLE } from '$lib/utils/constants/roles';
@@ -180,7 +181,7 @@
     <!-- Gift Container -->
     {#if courseData?.metadata?.reward?.show}
       <div class="p-10 flex items-center flex-col border-t border-b border-gray-300">
-        {@html get(courseData, 'metadata.reward.description', '')}
+        <HtmlRender content={get(courseData, 'metadata.reward.description', '')} />
       </div>
     {/if}
   </aside>
