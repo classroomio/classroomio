@@ -16,6 +16,7 @@
   import PricingForm from './PricingForm.svelte';
   import GoalsForm from './GoalsForm.svelte';
   import ReviewsForm from './ReviewsForm.svelte';
+  import CertificateForm from './CertificateForm.svelte';
   import InstructorForm from './InstructorForm.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
@@ -73,15 +74,20 @@
     {
       key: 5,
       path: '',
-      title: $t('course.navItem.landing_page.editor.title.reviews')
+      title: $t('course.navItem.landing_page.editor.title.certificate')
     },
     {
       key: 6,
       path: '',
-      title: $t('course.navItem.landing_page.editor.title.instructor')
+      title: $t('course.navItem.landing_page.editor.title.reviews')
     },
     {
       key: 7,
+      path: '',
+      title: $t('course.navItem.landing_page.editor.title.instructor')
+    },
+    {
+      key: 8,
       path: '',
       title: $t('course.navItem.landing_page.editor.title.pricing')
     }
@@ -123,6 +129,7 @@
       attendance: undefined,
       group: undefined,
       lessons: undefined,
+      lesson_section: undefined,
       polls: undefined,
       slug: course.slug
     });
@@ -228,16 +235,18 @@
         {#if selectedSection.key === 1}
           <HeaderForm bind:course />
         {:else if selectedSection.key === 2}
-          <RequirementForm bind:value={course.metadata.requirements} />
+          <RequirementForm bind:course />
         {:else if selectedSection.key === 3}
-          <DescriptionForm bind:value={course.metadata.description} />
+          <DescriptionForm bind:course />
         {:else if selectedSection.key === 4}
-          <GoalsForm bind:value={course.metadata.goals} />
+          <GoalsForm bind:course />
         {:else if selectedSection.key === 5}
-          <ReviewsForm bind:course />
+          <CertificateForm bind:course />
         {:else if selectedSection.key === 6}
-          <InstructorForm bind:course />
+          <ReviewsForm bind:course />
         {:else if selectedSection.key === 7}
+          <InstructorForm bind:course />
+        {:else if selectedSection.key === 8}
           <PricingForm bind:course />
         {/if}
       </div>

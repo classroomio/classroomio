@@ -1,11 +1,12 @@
 <script lang="ts">
+  import { fade } from 'svelte/transition';
   import get from 'lodash/get';
   import pluralize from 'pluralize';
   import { page } from '$app/stores';
   import { onMount, onDestroy } from 'svelte';
   import PlayFilled from 'carbon-icons-svelte/lib/PlayFilled.svelte';
+  import { ImageLoader, InlineLoading } from 'carbon-components-svelte';
 
-  import { NAV_ITEMS } from './constants';
   import { getLectureNo } from '../Course/function';
   import { currentOrg } from '$lib/utils/store/org';
   import { course } from '$lib/components/Course/store';
@@ -27,6 +28,9 @@
   import { observeIntersection } from './components/IntersectionObserver';
   import SectionsDisplay from './components/SectionsDisplay.svelte';
 
+  import { getExerciseCount, getLessonSections, getTotalLessons, filterNavItems } from './utils';
+  import { NAV_ITEM_KEY, NAV_ITEMS } from './constants';
+
   export let editMode = false;
   export let courseData: Course;
   const ratingsImg = [
@@ -45,32 +49,18 @@
   let startCoursePayment = false;
   let isVisible = false;
   let observer: { destroy: () => void };
+  let certificate: Course['metadata']['certificate'] = {
+    templateUrl: '/images/certificate-template.svg'
+  };
 
-  // initialize the expandDescription array with 'false' values for each review.
   let expandDescription = Array(reviews.length).fill(false);
-  // a variable that stores the sections and the lessons in each sections
-
-  function getLessonSections(data) {
-    const lessonSections = data.lesson_section.map((section) => {
-      return {
-        ...section,
-        lessons: data.lessons.filter((lesson) => lesson.section_id === section.id)
-      };
-    });
-    return lessonSections;
-  }
-  const lessonSections = getLessonSections(courseData);
 
   let activeNav = NAV_ITEMS[0].key;
   let instructor = {};
   let video: string | undefined;
 
-  // get total lessons
-  const totalLessons = Array.isArray(lessonSections)
-    ? lessonSections.reduce((total, section) => {
-        return total + section.lessons.length;
-      }, 0)
-    : 0;
+  const lessonSections = getLessonSections(courseData);
+  const totalLessons = getTotalLessons(lessonSections);
 
   function locationHashChanged() {
     activeNav = window.location.hash;
@@ -101,6 +91,8 @@
     observer?.destroy();
   });
 
+  $: initPlyr(player, video);
+
   $: video = get(courseData, 'metadata.videoUrl');
   $: allowNewStudent = get(courseData, 'metadata.allowNewStudent');
   $: bannerImage = get(courseData, 'logo');
@@ -108,15 +100,15 @@
     .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   $: instructor = get(courseData, 'metadata.instructor') || {};
-  $: initPlyr(player, video);
+  $: certificate = get(courseData, 'metadata.certificate', certificate);
+
+  $: navItems = filterNavItems(courseData, reviews);
+  $: navItemKeys = navItems.map((item) => item.key);
+
   $: {
     reviews = get(courseData, 'metadata.reviews') || [];
     totalRatings = reviews?.reduce((acc = 0, review) => acc + (review?.rating || 0), 0);
     averageRating = totalRatings / reviews?.length;
-  }
-  $: {
-    let imgurl = get(instructor, 'imgUrl', $currentOrg.avatar_url);
-    console.log({ imgurl, instructor, org: $currentOrg });
   }
 </script>
 
@@ -205,6 +197,7 @@
       {/if}
     </div>
   </header>
+
   <!-- Body -->
   <div class="w-full bg-white dark:bg-black">
     <div
@@ -213,12 +206,11 @@
       <!-- Course Details -->
       <div class="course-content w-full p-3 lg:mr-10 lg:w-10/12">
         <!-- Navigation -->
-
         <nav
           class="sticky top-0 flex items-center border-b border-gray-300 py-3 {!editMode &&
             'lg:top-11'} bg-white dark:bg-neutral-800"
         >
-          {#each NAV_ITEMS as navItem}
+          {#each navItems as navItem}
             <a
               href="{$page.url.pathname}{navItem.key}"
               class="{navItem.key === activeNav &&
@@ -230,44 +222,75 @@
         </nav>
 
         <!-- Sections - Requirement -->
-        <section id="requirement" class="mt-8 border-b border-gray-300 pb-10">
-          <h3 class="mb-3 mt-0 text-2xl font-bold">
-            {$t('course.navItem.landing_page.requirement')}
-          </h3>
 
-          <ul class="list font-light">
-            <HtmlRender content={get(courseData, 'metadata.requirements', '')} />
-          </ul>
-        </section>
+        {#if navItemKeys.includes(NAV_ITEM_KEY.REQUIREMENT)}
+          <section
+            id="requirement"
+            transition:fade={{ delay: 250, duration: 300 }}
+            class="mt-8 border-b border-gray-300 pb-10"
+          >
+            <h3 class="mb-3 mt-0 text-2xl font-bold">
+              {$t('course.navItem.landing_page.requirement')}
+            </h3>
+
+            <ul class="list font-light">
+              <HtmlRender content={get(courseData, 'metadata.requirements', '')} />
+            </ul>
+          </section>
+        {/if}
 
         <!-- Sections - Course Description -->
-        <section id="description" class="mt-8 border-b border-gray-300 pb-10">
-          <h3 class="mb-3 mt-0 text-2xl font-bold">
-            {$t('course.navItem.landing_page.description')}
-          </h3>
+        {#if navItemKeys.includes(NAV_ITEM_KEY.DESCRIPTION)}
+          <section
+            id="description"
+            transition:fade={{ delay: 250, duration: 300 }}
+            class="mt-8 border-b border-gray-300 pb-10"
+          >
+            <h3 class="mb-3 mt-0 text-2xl font-bold">
+              {$t('course.navItem.landing_page.description')}
+            </h3>
 
-          <HtmlRender
-            className="dark:text-white text-sm font-light"
-            content={get(courseData, 'metadata.description', '')}
-          />
-        </section>
+            <HtmlRender
+              className="dark:text-white text-sm font-light"
+              content={get(courseData, 'metadata.description', '')}
+            />
+          </section>
+        {/if}
 
         <!-- Sections - Goal -->
-        <section id="goals" class="mt-8 pb-10">
-          <h3 class="text-2xl font-bold mt-0 mb-3">{$t('course.navItem.landing_page.learn')}</h3>
-          <ul class="list font-light">
-            <HtmlRender content={get(courseData, 'metadata.goals', '')} />
-          </ul>
-        </section>
+        {#if navItemKeys.includes(NAV_ITEM_KEY.GOALS)}
+          <section id="goals" transition:fade={{ delay: 250, duration: 300 }} class="mt-8 pb-10">
+            <h3 class="text-2xl font-bold mt-0 mb-3">{$t('course.navItem.landing_page.learn')}</h3>
+            <ul class="list font-light">
+              <HtmlRender content={get(courseData, 'metadata.goals', '')} />
+            </ul>
+          </section>
+        {/if}
 
         <!-- Sections - Certificate -->
-        <section class="border-b border-gray-300 mt-8 pb-10">
-          <h3 class="text-2xl font-bold mt-0">{$t('course.navItem.landing_page.certificate')}</h3>
-          <p class="dark:text-white text-sm font-light mb-3">
-            {$t('course.navItem.landing_page.certificate_text')}
-          </p>
-          <img src="/images/certificate-template.svg" alt="certificate template" />
-        </section>
+        {#if navItemKeys.includes(NAV_ITEM_KEY.CERTIFICATE)}
+          <section
+            id="certificate"
+            transition:fade={{ delay: 250, duration: 300 }}
+            class="border-b border-gray-300 mt-8 pb-10"
+          >
+            <h3 class="text-2xl font-bold mt-0">{$t('course.navItem.landing_page.certificate')}</h3>
+            <p class="dark:text-white text-sm font-light mb-3">
+              {$t('course.navItem.landing_page.certificate_text')}
+            </p>
+
+            <ImageLoader
+              class="certificate-img max-h-[215px]"
+              src={certificate?.templateUrl}
+              alt="certificate template"
+            >
+              <svelte:fragment slot="loading">
+                <InlineLoading />
+              </svelte:fragment>
+              <svelte:fragment slot="error">An error occurred.</svelte:fragment>
+            </ImageLoader>
+          </section>
+        {/if}
 
         <!-- Sections - Lessons -->
         {#if $course.version === COURSE_VERSION.V1}
@@ -277,7 +300,6 @@
                 {$t('course.navItem.landing_page.content')}
               </h3>
               <p class="dark:text-white text-sm font-light">
-                <!-- {lessons.length} lessons -->
                 {pluralize('lesson', lessons.length, true)}
               </p>
             </div>
@@ -292,75 +314,35 @@
                   <p class="ml-2 text-xs font-light dark:text-white inline">
                     {lesson.title}
                   </p>
-
-                  <!-- <div class="flex items-center">
-                  {#if lesson.slide_url}
-                    <span class="text-sm font-light flex w-2/4"
-                      ><PresentationFile size={16} class="mr-1" />{$t(
-                        'course.navItem.landing_page.slide'
-                      )}</span
-                    >
-                  {/if}
-                  {#if lesson.note}
-                    <span class="text-sm font-light flex w-2/4"
-                      ><Notebook size={16} class="mr-1" />{$t(
-                        'course.navItem.landing_page.note'
-                      )}</span
-                    >
-                  {/if}
-                </div> -->
-
-                  <!-- <div class="flex items-center">
-                  {#if lesson.videos}
-                    <span class="text-sm font-light flex w-2/4"
-                      ><Video size={16} class="mr-1" />{lesson.videos.length}
-                      {$t('course.navItem.landing_page.video')}{lesson.videos.length > 1 ? 's' : ''}
-                    </span>
-                  {/if}
-                  {#if get(lesson, 'totalExercises[0].count')}
-                    <span class="flex w-2/4 text-sm font-light"
-                      ><PageNumber size={16} class="mr-1" />{pluralize(
-                        'exercise',
-                        get(lesson, 'totalExercises[0].count', 0),
-                        true
-                      )}</span
-                    >
-                  {/if}
-                </div> -->
                 </div>
               {/each}
             </div>
           </section>
         {:else if $course.version === COURSE_VERSION.V2}
-          <section>
+          <section id="lessons">
             <!-- header -->
             <div class="flex items-center justify-between">
               <h1>{$t('course.navItem.landing_page.course_content')}</h1>
-              <span class="text-xs font-normal"
-                >{lessonSections?.length}
-                {$t('course.navItem.landing_page.modules')}, {totalLessons}
-                {$t('course.navItem.landing_page.lessons')}</span
-              >
+              <span class="text-xs font-normal">
+                {pluralize($t('course.navItem.landing_page.modules'), lessonSections.length, true)},
+                {pluralize($t('course.navItem.landing_page.lessons'), totalLessons, true)}
+              </span>
             </div>
 
-            {#each lessonSections as sections, index}
+            {#each lessonSections as section}
               <SectionsDisplay
-                {index}
-                title={sections.title}
-                lessonCount={sections.lessons?.length}
-                exerciseCount={sections.lessons.reduce(
-                  (total, lesson) => total + (lesson.totalExercises?.[0]?.count || 0),
-                  0
-                )}
-                lessons={sections.lessons}
+                exerciseCount={getExerciseCount(section.lessons)}
+                lessonCount={section.lessons?.length}
+                lessons={section.lessons}
+                title={section.title}
               />
             {/each}
           </section>
         {/if}
 
         <!-- Sections - Reviews -->
-        {#if reviews && reviews.length > 0}
-          <section id="reviews">
+        {#if navItemKeys.includes(NAV_ITEM_KEY.REVIEWS)}
+          <section id="reviews" transition:fade={{ delay: 250, duration: 300 }}>
             <h2 class="my-16 mr-0 mb-6 ml-0 font-semibold">
               {$t('course.navItem.landing_page.reviews')}
             </h2>
@@ -543,6 +525,10 @@
 
   .backdrop {
     background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  :global(.certificate-img) {
+    width: unset !important;
   }
 
   .active {

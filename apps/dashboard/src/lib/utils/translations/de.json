@@ -395,7 +395,7 @@
           }
         },
         "course_content": "Kursinhalte",
-        "modules": "Module",
+        "modules": "module",
         "lessons": "Unterricht",
         "exercises": "Übungen"
       },

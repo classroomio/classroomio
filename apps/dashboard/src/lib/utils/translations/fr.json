@@ -395,7 +395,7 @@
           }
         },
         "course_content": "Contenu du cours",
-        "modules": "Modules",
+        "modules": "modules",
         "lessons": "leçons",
         "exercises": "exercices"
       },

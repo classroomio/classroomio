@@ -51,11 +51,11 @@ export const currentOrgDomain = derived(currentOrg, ($currentOrg) => {
         : '';
 });
 
-// Utility org store
-export const isFreePlan = derived(
-  currentOrgPlan,
-  ($plan) => !$plan || $plan.plan_name === PLAN.BASIC
-);
+export const isFreePlan = derived(currentOrgPlan, ($plan) => {
+  if (!$plan) return false;
+
+  return !$plan || $plan.plan_name === PLAN.BASIC;
+});
 export const currentOrgMaxAudience = derived(currentOrgPlan, ($plan) =>
   !$plan
     ? 20
