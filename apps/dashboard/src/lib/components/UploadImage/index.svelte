@@ -1,5 +1,6 @@
 <script lang="ts">
   import Camera from 'carbon-icons-svelte/lib/Camera.svelte';
+  import { Loading } from 'carbon-components-svelte';
   import { t } from '$lib/utils/functions/translations';
 
   export let avatar: string | undefined;
@@ -10,6 +11,7 @@
   export let isDisabled = false;
   export let maxFileSizeInMb: number = 2; // Default max file size 2MB
   export let flexDirection = 'flex-col';
+  export let isUploading = false;
 
   let fileinput: HTMLInputElement;
 
@@ -31,6 +33,8 @@
       errorMessage = null; // Clear error message on successful load
     };
   };
+
+  $: isDisabled = isUploading;
 </script>
 
 <section class="width-fit p-3 flex {flexDirection} items-center justify-between gap-5">
@@ -63,7 +67,11 @@
       }}
       disabled={isDisabled}
     >
-      <Camera size={20} />
+      {#if isUploading}
+        <Loading withOverlay={false} small />
+      {:else}
+        <Camera size={20} />
+      {/if}
       <span class="ml-2">{$t('settings.profile.profile_picture.upload_image')}</span>
     </button>
     <p class="text-xs text-center text-gray-500">

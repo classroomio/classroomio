@@ -923,12 +923,14 @@
             "goals": "Goals",
             "reviews": "Reviews",
             "instructor": "Instructor",
-            "pricing": "Pricing"
+            "pricing": "Pricing",
+            "certificate": "Certificate"
           },
 
           "save": "Save",
           "page_builder": "Page Builder",
           "section": "section",
+          "display_section": "Display section",
 
           "header_form": {
             "title": "Title",
@@ -960,6 +962,10 @@
                 "min_char": "'Description is too short, min of 5 characters"
               }
             }
+          },
+
+          "certificate_form": {
+            "upload_template": "Certificate template"
           },
 
           "instructor_form": {
@@ -1002,7 +1008,7 @@
         },
 
         "course_content": "Course content",
-        "modules": "Modules",
+        "modules": "modules",
         "lessons": "lessons",
         "exercises": "exercises",
         "start_course": "Start Course",

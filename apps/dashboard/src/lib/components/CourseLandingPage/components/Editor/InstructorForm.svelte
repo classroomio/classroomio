@@ -11,6 +11,7 @@
   import { t } from '$lib/utils/functions/translations';
 
   export let course: Course;
+
   let name: string | undefined;
   let role: string | undefined;
   let imgUrl: string | undefined;
@@ -18,6 +19,7 @@
   let courseNo: string | undefined;
   let avatar: string | undefined;
   let hasBeenSet = false;
+  let isUploading = false;
 
   function setter(value: any, setterKey: string) {
     if (!value) return;
@@ -30,12 +32,13 @@
 
   async function onAvatarChange(_avatar: string | undefined) {
     if (!_avatar || !course.id) return;
-
+    isUploading = true;
     const logo = await uploadAvatar(course.id, _avatar);
 
     if (!logo) return;
 
     imgUrl = logo;
+    isUploading = false;
   }
 
   function setDefaults(course: Course) {
@@ -60,11 +63,13 @@
   $: setDefaults(course);
 </script>
 
-<div class="mt-5">
-  <label for="upload" class="font-bold"
-    >{$t('course.navItem.landing_page.editor.instructor_form.upload')}</label
-  >
-  <UploadImage bind:avatar src={imgUrl} />
+<div class="mt-5 w-full">
+  <label for="upload" class="font-bold">
+    {$t('course.navItem.landing_page.editor.instructor_form.upload')}
+  </label>
+  <div class="w-full flex justify-center">
+    <UploadImage bind:avatar src={imgUrl} bind:isUploading />
+  </div>
 </div>
 
 <TextField
