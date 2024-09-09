@@ -92,10 +92,6 @@
 
     const incorrectSelections = answer.answers.length - correctSelections;
 
-    // for deductions
-    // HOW THIS WORKS: in a question of 3 options, 2 correct options with 1 wrong option and max score of 4.
-    // if 1 correct option is selected and one wrong option is selected, points gets deducted for the wrong answer selected.
-    // so user gets 0 in this case
     const pointsEarned = (correctSelections / correctOptions.length) * points;
     const deduction = (incorrectSelections * points) / correctOptions.length;
     const finalPoints = Math.max(pointsEarned - deduction, 0);
