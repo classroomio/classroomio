@@ -35,6 +35,12 @@ export interface OrgLandingPageJson {
     subtitle: string;
     show: boolean;
   };
+  pathway: {
+    title: string;
+    titleHighlight: string;
+    subtitle: string;
+    show: boolean;
+  };
   faq: {
     title: string;
     questions: Array<{
@@ -56,6 +62,11 @@ export interface OrgLandingPageJson {
   mailinglist: {
     title: string;
     subtitle: string;
+    buttonLabel: string;
+    show: boolean;
+  };
+  footerNote: {
+    title: string;
     buttonLabel: string;
     show: boolean;
   };
@@ -111,6 +122,13 @@ export const landingPageSettings: Writable<OrgLandingPageJson> = writable({
     subtitle: 'Find courses you will love from best teachers all over the world🌎.',
     show: true
   },
+  pathway: {
+    title: 'Become an expert with my “Learning Path” Programs',
+    titleHighlight: '',
+    subtitle:
+      'With over 5 years of extensive coding experience, I am very much equipped to help you achieve success in your choice of coding career.',
+    show: true
+  },
   faq: {
     title: 'Frequently Asked Questions.',
     questions: [
@@ -142,6 +160,11 @@ export const landingPageSettings: Writable<OrgLandingPageJson> = writable({
     address: 'Ashwoodfield House Farm, Kidderminster Rd, Stourbridge, Kingswinford DY6 0AA',
     phone: '+4407339904995',
     email: 'help@digdippa.com',
+    show: true
+  },
+  footerNote: {
+    title: 'i can make you a coding superstar',
+    buttonLabel: 'View more courses',
     show: true
   },
   mailinglist: {

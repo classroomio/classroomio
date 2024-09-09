@@ -5,6 +5,7 @@
   import { landingPageSettings } from '$lib/components/Org/Settings/store';
   import PageLoader from '$lib/components/Org/LandingPage/PageLoader.svelte';
   import Experts from '$lib/components/Org/LandingPage/Templates/Experts/Home.svelte';
+  import NewOrgPage from './Templates/Plain/NewOrgPage.svelte';
 
   export let orgSiteName = '';
   export let org = {};
@@ -53,5 +54,6 @@
 {#if !org.landingpage}
   <PageLoader />
 {:else}
-  <Experts {org} />
+  <!-- <Experts {org} /> -->
+  <NewOrgPage {org} {orgSiteName} />
 {/if}

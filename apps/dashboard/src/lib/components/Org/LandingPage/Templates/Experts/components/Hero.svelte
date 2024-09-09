@@ -25,9 +25,7 @@
 </script>
 
 {#if $landingPageSettings.header.banner.show}
-  <section
-    class="flex items-center justify-center py-2 px-10 md:px-14 border border-red-500 min-h-screen"
-  >
+  <section class="flex items-center justify-center py-2 px-10 md:px-14 min-h-screen">
     <section class="flex items-center justify-between">
       <div class="text-white space-y-6 w-full">
         <span

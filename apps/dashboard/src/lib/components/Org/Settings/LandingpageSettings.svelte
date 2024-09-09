@@ -303,6 +303,39 @@
 
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={4} md={4} lg={4}
+      ><SectionTitle>Pathway</SectionTitle>
+      <Toggle bind:toggled={$landingPageSettings.pathway.show} size="sm">
+        <span slot="labelA" style="color: gray"
+          >{$t('settings.landing_page.courses.hide_section')}</span
+        >
+        <span slot="labelB" style="color: gray"
+          >{$t('settings.landing_page.courses.show_section')}</span
+        >
+      </Toggle>
+    </Column>
+    <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
+      <TextField
+        label="Pathway title"
+        placeholder="write the pathway title"
+        bind:value={$landingPageSettings.pathway.title}
+      />
+      <TextField
+        label="Pathway highlight"
+        placeholder="Write the pathway highlight"
+        bind:value={$landingPageSettings.pathway.titleHighlight}
+      />
+      <TextArea
+        label="Pathway subtitle"
+        labelClassName="font-light"
+        placeholder="Write the pathway subtitle"
+        bind:value={$landingPageSettings.pathway.subtitle}
+        isAIEnabled={true}
+      />
+    </Column>
+  </Row>
+
+  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+    <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('settings.landing_page.faq.heading')}</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.faq.show} size="sm">
         <span slot="labelA" style="color: gray">{$t('settings.landing_page.faq.hide_section')}</span
@@ -464,6 +497,32 @@
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.label')}
         className="mb-5"
         bind:value={$landingPageSettings.mailinglist.buttonLabel}
+      />
+    </Column>
+  </Row>
+
+  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+    <Column sm={4} md={4} lg={4}
+      ><SectionTitle>Footer Note</SectionTitle>
+      <Toggle bind:toggled={$landingPageSettings.pathway.show} size="sm">
+        <span slot="labelA" style="color: gray"
+          >{$t('settings.landing_page.courses.hide_section')}</span
+        >
+        <span slot="labelB" style="color: gray"
+          >{$t('settings.landing_page.courses.show_section')}</span
+        >
+      </Toggle>
+    </Column>
+    <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
+      <TextField
+        label="footer Note"
+        placeholder="write the footer note"
+        bind:value={$landingPageSettings.footerNote.title}
+      />
+      <TextField
+        label="Button Label"
+        placeholder="write the button label"
+        bind:value={$landingPageSettings.footerNote.buttonLabel}
       />
     </Column>
   </Row>

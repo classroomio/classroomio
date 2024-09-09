@@ -7,9 +7,11 @@
   import { courseMetaDeta, courses } from '$lib/components/Courses/store';
   import CourseCard from '$lib/components/Org/LandingPage/components/CourseCard.svelte';
   import { landingPageSettings } from '$lib/components/Org/Settings/store';
+
+  let viewAll = false;
 </script>
 
-{#if $landingPageSettings.courses.show}
+{#if $landingPageSettings.pathway.show}
   <section class="relative p-4 h-full">
     <div class="relative w-full md:w-[80%] rounded-lg overflow-hidden -top-20 md:left-[10%]">
       <img
@@ -19,10 +21,9 @@
       />
     </div>
     <div class="px-4 md:px-10 py-4">
-      <h1 class=" text-3xl text-white">Become an expert with my “Learning Path” Programs</h1>
+      <h1 class=" text-3xl text-white">{$landingPageSettings.pathway.title}</h1>
       <p class="text-white w-full md:w-[60%] text-sm">
-        With over 5 years of extensive coding experience, I am very much equipped to help you
-        achieve success in your choice of coding career.
+        {$landingPageSettings.pathway.subtitle}
       </p>
     </div>
     {#if $courseMetaDeta.isLoading}
@@ -32,7 +33,7 @@
         <CardLoader />
       </div>
     {:else if $courses.length > 0}
-      <section class="flex flex-wrap gap-4 p-4">
+      <section class="flex flex-wrap items-center justify-center md:justify-start gap-4 p-4">
         {#each $courses as courseData}
           <CourseCard
             isLearningPath={true}
@@ -49,7 +50,11 @@
       </section>
       {#if $courses.length > 3}
         <div class="w-full flex items-center justify-center my-5">
-          <PrimaryButton label="VIEW MORE PATH PROGRAMS" className="rounded-none text-lg" />
+          <PrimaryButton
+            label="VIEW MORE PATH PROGRAMS"
+            className="rounded-none text-lg"
+            onClick={() => (viewAll = !viewAll)}
+          />
         </div>
       {/if}
     {:else}
