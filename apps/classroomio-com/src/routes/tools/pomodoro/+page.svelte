@@ -167,7 +167,7 @@
   <meta name="twitter:image" content="" />
 </svelte:head>
 
-<section class="mt-[10%] md:mt-16 px-1 md:px-0 w-full md:w-full">
+<section class="mt-[10%] md:mt-16 px-1 md:px-0 w-full md:w-full bg-white">
   <ToolsHeader>
     <img
       src="/free-tools/pomodoro.svg"

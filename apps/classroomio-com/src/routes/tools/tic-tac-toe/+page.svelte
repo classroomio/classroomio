@@ -103,7 +103,7 @@
   <meta name="twitter:image" content="https://brand.cdn.clsrio.com/og/free-tools.png" />
 </svelte:head>
 
-<section class="mt-[10%] md:mt-16 px-5 md:px-0">
+<section class="mt-[10%] md:mt-16 px-5 md:px-0 bg-white">
   <ToolsHeader className="mb-10">
     <img
       src="/free-tools/tic-tac.svg"
@@ -118,7 +118,7 @@
   </ToolsHeader>
 
   <div
-    class="overflow-hidden relative tic-tac-bg text-white w-full h-[55vh] md:w-[59%] md:h-[82vh] border-8 border-black mx-auto flex justify-center items-center"
+    class="overflow-hidden relative tic-tac-bg text-white w-full h-[55vh] md:w-[59%] md:h-[82vh] border-8 border-black mx-auto flex justify-center items-center bg-white"
   >
     <!-- congratulatory message -->
     {#if message}

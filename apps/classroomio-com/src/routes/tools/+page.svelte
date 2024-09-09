@@ -17,7 +17,7 @@
         fun for students and educator looking for engaging resources.
       </p>
 
-      <div class="flex relative w-[90%] md:w-[50%] my-3 md:mt-10 mx-auto">
+      <div class="flex relative w-[90%] md:w-[50%] my-3 md:mt-10 mx-auto bg-white">
         <!-- <img
           class="w-[18%] rounded-full border hover:scale-110 transition-all hover:z-50 absolute left-0 z-0"
           src="/free-tools/waec.svg"
@@ -57,10 +57,10 @@
     </div>
   </PageHeader>
 
-  <div class="p-10 px-2 md:px-0">
+  <div class="p-10 px-2 md:px-0 bg-white">
     <h1 class="text-center font-bold text-3xl">Featured Tools</h1>
 
-    <div class="flex justify-evenly gap-y-8 flex-wrap w-full md:w-[70%] mt-10 mx-auto">
+    <div class="flex justify-evenly gap-y-8 flex-wrap w-full md:w-[70%] mt-10 mx-auto bg-white">
       {#each freeTools as tool}
         <a
           href="/tools/{tool.slug}"

@@ -142,7 +142,7 @@
   <meta name="twitter:image" content="https://brand.cdn.clsrio.com/og/free-tools.png" />
 </svelte:head>
 
-<section class="mt-[10%] md:mt-16 px-5 md:px-0">
+<section class="mt-[10%] md:mt-16 px-5 md:px-0 bg-white">
   <ToolsHeader>
     <img
       src="/free-tools/name-picker.svg"
@@ -156,10 +156,10 @@
     </p>
   </ToolsHeader>
 
-  <div class="w-full md:w-2/4 my-10 mx-auto border rounded-md overflow-hidden">
+  <div class="w-full md:w-2/4 my-10 mx-auto border rounded-md overflow-hidden bg-white">
     <!-- countdown setter -->
     {#if !isNextStep}
-      <div transition:fly={{ y: -300, delay: 0, easing: sineInOut }} class="px-6 py-8">
+      <div transition:fly={{ y: -300, delay: 0, easing: sineInOut }} class="px-6 py-8 bg-white">
         <form on:submit|preventDefault={startTimer}>
           <div>
             <h1 class="font-bold text-sm">Name of activity</h1>
@@ -171,7 +171,7 @@
             />
           </div>
 
-          <div class="mt-10">
+          <div class="mt-10 bg-white">
             <h1 class="font-bold text-sm">Set an Activity</h1>
             <div class="flex flex-wrap justify-between gap-y-5 w-full mt-3 uppercase font-bold">
               <div class="bg-[#F1F2F4] w-full md:w-[30%] border px-4 py-5">
