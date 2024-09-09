@@ -391,7 +391,12 @@
             "goals": "Bàn thắng",
             "reviews": "Đánh giá",
             "instructor": "Người hướng dẫn",
-            "pricing": "Định giá"
+            "pricing": "Định giá",
+            "certificate": "Giấy chứng nhận"
+          },
+          "display_section": "Phần hiển thị",
+          "certificate_form": {
+            "upload_template": "Mẫu chứng chỉ"
           }
         },
         "course_content": "Nội dung khóa học",
@@ -1213,6 +1218,11 @@
           "video": "Băng hình",
           "image": "Hình ảnh"
         }
+      },
+      "background": {
+        "title": "Hình nền",
+        "show_background": "Hiển thị nền",
+        "hide_background": "Ẩn nền"
       }
     },
     "organization": {

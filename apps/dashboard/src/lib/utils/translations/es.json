@@ -391,7 +391,12 @@
             "goals": "Objetivos",
             "reviews": "Reseñas",
             "instructor": "Instructor",
-            "pricing": "Precios"
+            "pricing": "Precios",
+            "certificate": "Certificado"
+          },
+          "display_section": "Sección de visualización",
+          "certificate_form": {
+            "upload_template": "plantilla de certificado"
           }
         },
         "course_content": "Contenido del curso",
@@ -1213,6 +1218,11 @@
           "video": "Video",
           "image": "Imagen"
         }
+      },
+      "background": {
+        "title": "Imagen de fondo",
+        "show_background": "Mostrar fondo",
+        "hide_background": "Ocultar fondo"
       }
     },
     "organization": {

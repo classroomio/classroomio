@@ -391,7 +391,12 @@
             "goals": "Metas",
             "reviews": "Avaliações",
             "instructor": "Instrutor",
-            "pricing": "Preços"
+            "pricing": "Preços",
+            "certificate": "Certificado"
+          },
+          "display_section": "Seção de exibição",
+          "certificate_form": {
+            "upload_template": "Modelo de certificado"
           }
         },
         "course_content": "Conteúdo do curso",
@@ -1213,6 +1218,11 @@
           "video": "Vídeo",
           "image": "Imagem"
         }
+      },
+      "background": {
+        "title": "Imagem de fundo",
+        "show_background": "Mostrar plano de fundo",
+        "hide_background": "Ocultar plano de fundo"
       }
     },
     "organization": {
