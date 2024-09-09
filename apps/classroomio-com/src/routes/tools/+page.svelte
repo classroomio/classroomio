@@ -7,7 +7,8 @@
 
 <section>
   <PageHeader>
-    <div class="text-left md:text-center md:w-2/4 px-7 md:p-0 mx-auto">
+    <!-- added bg-white to keep the background white on devices that are on darkmode -->
+    <div class="bg-white text-left md:text-center md:w-2/4 px-7 md:p-0 mx-auto">
       <h1 class="text-5xl md:text-6xl font-bold">
         Explore our free <span class="text-blue-700">tools</span>
       </h1>
