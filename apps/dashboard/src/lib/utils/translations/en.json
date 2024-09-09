@@ -128,6 +128,11 @@
           "video": "Video",
           "image": "Image"
         },
+        "background": {
+          "title": "Background Image",
+          "show_background": "Show background",
+          "hide_background": "Hide background"
+        },
         "show_banner": "Show banner",
         "hide_banner": "Hide banner"
       },

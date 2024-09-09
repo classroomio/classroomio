@@ -47,6 +47,7 @@
     message: ''
   };
   let contactError: Record<string, string> = {};
+  let backgroundImage = '';
 
   const supabase = getSupabase();
 
@@ -147,6 +148,10 @@
     }
   }
 
+  $: backgroundImage =
+    $landingPageSettings.header.background.show && $landingPageSettings.header.background.image
+      ? `background-image: url('${$landingPageSettings.header.background.image}')`
+      : '';
   $: initPlyr(player, $landingPageSettings.header?.banner?.video);
   $: setDefault(org?.landingpage);
 </script>
@@ -165,7 +170,15 @@
   <main>
     <!-- Header Section -->
     {#if $landingPageSettings.header.show}
-      <header id="header" class="banner w-full h-[100vh] md:h-[90vh] mb-10 relative">
+      <header
+        id="header"
+        class={`w-full h-[100vh] md:h-[90vh] mb-10 relative ${
+          $landingPageSettings.header.background.show
+            ? 'bg-cover bg-center'
+            : 'border-b border-gray-300'
+        }`}
+        style={backgroundImage}
+      >
         <Navigation
           logo={org.avatar_url}
           orgName={org.name}
@@ -585,13 +598,3 @@
     {/if}
   </main>
 {/if}
-
-<style>
-  .banner {
-    background: url('/images/org-landingpage-banner.jpeg') no-repeat center center fixed;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
-  }
-</style>
