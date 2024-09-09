@@ -81,6 +81,33 @@
     }
   }
 
+  const getMultipleAnswersGrade = (options, answer, points) => {
+    const correctOptions = options
+      .filter((option) => option.is_correct)
+      .map((option) => option.value);
+
+    const correctSelections = answer.answers.filter((answer) =>
+      correctOptions.includes(answer)
+    ).length;
+
+    const incorrectSelections = answer.answers.length - correctSelections;
+
+    // for deductions
+    // HOW THIS WORKS: in a question of 3 options, 2 correct options with 1 wrong option and max score of 4.
+    // if 1 correct option is selected and one wrong option is selected, points gets deducted for the wrong answer selected.
+    // so user gets 0 in this case
+    const pointsEarned = (correctSelections / correctOptions.length) * points;
+    const deduction = (incorrectSelections * points) / correctOptions.length;
+    const finalPoints = Math.max(pointsEarned - deduction, 0);
+
+    return {
+      finalPoints,
+      correctOptions,
+      correctSelections,
+      incorrectSelections
+    };
+  };
+
   const { input, handleSubmit, completion } = useCompletion({
     api: '/api/completion/gradingprompt',
     onFinish: async () => {
@@ -110,27 +137,8 @@
           } else if (question_type_id == QUESTION_TYPE.CHECKBOX) {
             const answer = data.questionAnswers.find((q) => q.question_id === id);
 
-            const correctOptions = options
-              .filter((option) => option.is_correct)
-              .map((option) => option.value);
-
-            const correctSelections = answer.answers.filter((answer) =>
-              correctOptions.includes(answer)
-            ).length;
-
-            const incorrectSelections = answer.answers.filter(
-              (answer) => !correctOptions.includes(answer)
-            ).length;
-
-            const pointsEarned = (correctSelections / correctOptions.length) * points;
-
-            // for deductions
-            // HOW THIS WORKS: in a question of 2 correct options with 1 wrong option and max score of 4.
-            // if 1 correct option is selected and one wrong option is selected, points gets deducted for the wrong answer selected.
-            // so user gets 0 in this case
-            const deductionPerIncorrect = points / correctOptions.length;
-            const totalDeductions = incorrectSelections * deductionPerIncorrect;
-            const finalPoints = Math.max(pointsEarned - totalDeductions, 0);
+            const { finalPoints, correctOptions, correctSelections, incorrectSelections } =
+              getMultipleAnswersGrade(options, answer, points);
 
             reasons = {
               ...reasons,
