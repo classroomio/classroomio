@@ -108,10 +108,12 @@
 
     {#if $user.isLoggedIn}
       {#each menuItems as menu}
-        <li class="py-4 px-6 border-b"><a href={menu.link}>{menu.title}</a></li>
+        <li class="py-4 px-6 border-b">
+          <a href={menu.link} on:click={toggleMenu}>{menu.title}</a>
+        </li>
       {/each}
       {#if isOrgSite}
-        <a href="/#" class="flex items-center gap-1 py-4 px-6 border-b">
+        <a href="/#" class="flex items-center gap-1 py-4 px-6 border-b" on:click={toggleMenu}>
           <p class="font-bold text-[#1F2937] text-base">Learn with me</p>
           <ArrowRight size={16} class="fill-[#1F2937] font-bold" />
         </a>
