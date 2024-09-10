@@ -5,7 +5,10 @@
   import { landingPageSettings } from '$lib/components/Org/Settings/store';
   import PageLoader from '$lib/components/Org/LandingPage/PageLoader.svelte';
   import Experts from '$lib/components/Org/LandingPage/Templates/Experts/Home.svelte';
-  import Home from '$lib/components/Org/LandingPage/Templates/Plain/Home.svelte';
+  import Plain from '$lib/components/Org/LandingPage/Templates/Plain/Home.svelte';
+  import Organization from '$lib/components/Org/LandingPage/Templates/Organization/Home.svelte';
+
+  import Course from './Templates/Plain/Course.svelte';
 
   export let orgSiteName = '';
   export let org = {};
@@ -29,20 +32,21 @@
     }
   }
 
-  function setDefault(landingpage) {
-    if (landingpage && Object.keys(landingpage).length) {
-      if (!landingpage?.header?.banner) {
-        landingpage.header.banner = $landingPageSettings.header.banner;
-      }
+  // function setDefault(landingpage) {
+  //   if (landingpage && Object.keys(landingpage).length) {
+  //     if (!landingpage?.header?.banner) {
+  //       landingpage.header.banner = $landingPageSettings.header.banner;
+  //     }
 
-      $landingPageSettings = {
-        ...landingpage
-      };
-    }
-  }
+  //     $landingPageSettings = {
+  //       ...landingpage
+  //     };
+  //   }
+  // }
 
-  // $: initPlyr(player, $landingPageSettings.header?.banner?.video);
-  $: setDefault(org.landingpage);
+  // // $: initPlyr(player, $landingPageSettings.header?.banner?.video);
+  // $: setDefault(org.landingpage);
+  $: console.log('land', $landingPageSettings);
 </script>
 
 <svelte:head>
@@ -55,5 +59,6 @@
   <PageLoader />
 {:else}
   <!-- <Experts {org} /> -->
-  <Home {org} {orgSiteName} />
+  <Organization {org} />
+  <!-- <Plain {org} {orgSiteName} /> -->
 {/if}

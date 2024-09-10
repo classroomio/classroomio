@@ -3,7 +3,7 @@
 </script>
 
 {#if $landingPageSettings.aboutUs.show}
-  <section class="flex items-start justify-center px-10 lg:px-14 h-full bg-white py-20">
+  <section id="about" class="flex items-start justify-center px-10 lg:px-14 h-full bg-white py-20">
     <section class="flex flex-col lg:flex-row gap-8 items-start justify-between">
       <div class="w-full lg:w-[60%] space-y-4">
         <p class="text-4xl font-bold">{$landingPageSettings.aboutUs.title}</p>

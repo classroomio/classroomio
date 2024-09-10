@@ -8,12 +8,13 @@
   import { courseMetaDeta, courses } from '$lib/components/Courses/store';
   import CardLoader from '$lib/components/Courses/components/Card/Loader.svelte';
   import { get } from 'lodash';
+  import EmptyState from '../../../components/EmptyState.svelte';
 
   let viewAll = false;
 </script>
 
 {#if $landingPageSettings.courses.show}
-  <section class="px-4 pt-4 pb-20 h-full bg-white">
+  <section id="course" class="px-4 pt-4 pb-20 h-full bg-white">
     <h1 class="text-center text-3xl">{$landingPageSettings.courses.title}</h1>
     {#if $courseMetaDeta.isLoading}
       <div class="cards-container my-4 mx-2">
@@ -45,15 +46,9 @@
         </div>
       {/if}
     {:else}
-      <Box>
-        <CoursesEmptyIcon />
-        <h3 class="dark:text-white text-2xl my-5">
-          {$t('course.navItem.landing_page.no_course_published')}
-        </h3>
-        <p class="dark:text-white w-1/3 text-center">
-          {$t('course.navItem.landing_page.coming_your_way')}
-        </p>
-      </Box>
+      <div class="px-10">
+        <EmptyState />
+      </div>
     {/if}
   </section>
 {/if}

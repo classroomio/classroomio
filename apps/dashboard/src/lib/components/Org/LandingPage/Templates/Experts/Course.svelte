@@ -59,7 +59,7 @@
             <PrimaryButton className="rounded-none bg-[#0542CC]" label="VIEW COURSES" />
             <PrimaryButton
               variant={VARIANTS.OUTLINED}
-              className="rounded-none uppercase border border-[#0542CC] text-white font-semibold hover:bg-[#0542CC] transition"
+              className="rounded-none uppercase border !border-[#0542CC] text-white font-semibold hover:!bg-[#0542CC]  transition"
               label="LEARNING PATH"
             />
           </div>

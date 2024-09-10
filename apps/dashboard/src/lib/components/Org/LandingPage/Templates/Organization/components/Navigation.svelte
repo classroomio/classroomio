@@ -19,23 +19,18 @@
 
   const menuItems = [
     {
-      title: 'About me',
+      title: 'What we do',
       link: '#about'
     },
     {
-      title: 'Courses',
+      title: 'Our Programs',
       link: '#course'
-    },
-    {
-      title: 'Learning Path',
-      link: '#path'
     },
     {
       title: 'Testimonial',
       link: '#testimonial'
     }
   ];
-
   const redirect = isCoursePage($page.url.pathname) ? `?redirect=${$page.url.pathname}` : '';
 
   // Function to toggle the mobile menu
@@ -46,7 +41,7 @@
 
 <nav class={`relative w-full flex items-center justify-between py-4 px-6 ${backgroundColor}`}>
   <!-- Logo Section -->
-  <div class="logo">
+  <div class="logo flex items-center justify-even gap-16">
     <a
       href="/"
       title={`${$t('navigation.goto')} ${orgName || 'ClassroomIO'} ${$t('navigation.home')}`}
@@ -58,28 +53,25 @@
         class="rounded w-9 inline-block mx-auto"
       />
     </a>
+    <!-- Desktop Navigation Menu (Hidden on mobile) -->
+    <ul class="hidden lg:flex items-center space-x-8 text-base font-bold text-[#1F2937] list-none">
+      {#if !$user.isLoggedIn}
+        {#each menuItems as menu}
+          <li><a href={menu.link}>{menu.title}</a></li>
+        {/each}
+      {/if}
+    </ul>
   </div>
 
   <!-- Mobile Menu Button (Visible only on mobile and when logged in) -->
-  {#if $user.isLoggedIn}
+  {#if !$user.isLoggedIn}
     <button on:click={toggleMenu} class="lg:hidden">
       <Menu size={24} />
     </button>
   {/if}
 
-  <!-- Desktop Navigation Menu (Hidden on mobile) -->
-  <ul
-    class="hidden lg:flex items-center space-x-8 text-base font-bold text-[#1F2937] list-none hover:no-underline"
-  >
-    {#if $user.isLoggedIn}
-      {#each menuItems as menu}
-        <li><a href={menu.link}>{menu.title}</a></li>
-      {/each}
-    {/if}
-  </ul>
-
   <!-- PrimaryButtons for login/signup (Visible only when not logged in) -->
-  {#if !$user.isLoggedIn}
+  {#if $user.isLoggedIn}
     <div class="flex space-x-4">
       <PrimaryButton
         label={$t('navigation.login')}
@@ -98,7 +90,7 @@
 
   <!-- Mobile Sidebar Menu (Visible only on mobile) -->
   <ul
-    class={`fixed top-0 left-0 h-full bg-white w-full transform hover:no-underline ${
+    class={`fixed top-0 left-0 h-full bg-white w-full transform ${
       open ? 'translate-y-0' : '-translate-y-full'
     } transition-transform duration-300 ease-in-out lg:hidden text-base font-bold text-[#1F2937] list-none cursor-pointer`}
   >
@@ -106,7 +98,7 @@
       <Close size={24} />
     </button>
 
-    {#if $user.isLoggedIn}
+    {#if !$user.isLoggedIn}
       {#each menuItems as menu}
         <li class="py-4 px-6 border-b"><a href={menu.link}>{menu.title}</a></li>
       {/each}
@@ -120,7 +112,7 @@
   </ul>
 
   <!-- Learn with Me Button (Visible on desktop when logged in) -->
-  {#if $user.isLoggedIn && isOrgSite}
+  {#if !$user.isLoggedIn && isOrgSite}
     <a href="/#" class="hidden lg:flex items-center gap-1">
       <p class="font-bold text-[#1F2937] text-base">Learn with me</p>
       <ArrowRight size={16} class="fill-[#1F2937] font-bold" />

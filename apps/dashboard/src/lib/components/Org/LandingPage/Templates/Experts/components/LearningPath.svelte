@@ -7,12 +7,13 @@
   import { courseMetaDeta, courses } from '$lib/components/Courses/store';
   import CourseCard from '$lib/components/Org/LandingPage/components/CourseCard.svelte';
   import { landingPageSettings } from '$lib/components/Org/Settings/store';
+  import EmptyState from '../../../components/EmptyState.svelte';
 
   let viewAll = false;
 </script>
 
-{#if $landingPageSettings.pathway.show}
-  <section class="relative p-4 h-full">
+{#if $landingPageSettings.pathway?.show}
+  <section id="path" class="relative p-4 h-full">
     <div class="relative w-full md:w-[80%] rounded-lg overflow-hidden -top-20 md:left-[10%]">
       <img
         src="/images/classroomio-course-img-template.jpg"
@@ -58,15 +59,14 @@
         </div>
       {/if}
     {:else}
-      <Box>
-        <CoursesEmptyIcon />
-        <h3 class="text-white text-2xl my-5">
-          {$t('course.navItem.landing_page.no_course_published')}
-        </h3>
-        <p class="text-white w-1/3 text-center">
-          {$t('course.navItem.landing_page.coming_your_way')}
-        </p>
-      </Box>
+      <div class="px-10">
+        <EmptyState
+          type="pathways"
+          headerClassName="text-white"
+          subtitleClassName="text-white"
+          className="bg-[#192533] border-[#233A5A]"
+        />
+      </div>
     {/if}
   </section>
 {/if}

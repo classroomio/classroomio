@@ -14,6 +14,7 @@
   import CardLoader from '$lib/components/Courses/components/Card/Loader.svelte';
   import { get } from 'lodash';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import EmptyState from '../../components/EmptyState.svelte';
 
   export let org = {};
 
@@ -59,7 +60,7 @@
             <PrimaryButton className="rounded-none bg-[#0542CC]" label="VIEW COURSES" />
             <PrimaryButton
               variant={VARIANTS.OUTLINED}
-              className="rounded-none uppercase border border-[#0542CC] text-white font-semibold hover:bg-[#0542CC] transition"
+              className="rounded-none uppercase border !border-[#0542CC] text-white font-semibold hover:!bg-[#0542CC]  transition"
               label="LEARNING PATH"
             />
           </div>
@@ -99,7 +100,7 @@
             </div>
           {/if}
         {:else}
-          <Box>
+          <!-- <Box>
             <CoursesEmptyIcon />
             <h3 class="dark:text-white text-2xl my-5">
               {$t('course.navItem.landing_page.no_course_published')}
@@ -107,7 +108,10 @@
             <p class="dark:text-white w-1/3 text-center">
               {$t('course.navItem.landing_page.coming_your_way')}
             </p>
-          </Box>
+          </Box> -->
+          <div class="px-10">
+            <EmptyState />
+          </div>
         {/if}
       </div>
     </div>
@@ -144,15 +148,14 @@
             </div>
           {/if}
         {:else}
-          <Box className="">
-            <CoursesEmptyIcon />
-            <h3 class="text-white text-2xl my-5">
-              {$t('course.navItem.landing_page.no_course_published')}
-            </h3>
-            <p class="text-white w-1/3 text-center">
-              {$t('course.navItem.landing_page.coming_your_way')}
-            </p>
-          </Box>
+          <div class="px-10">
+            <EmptyState
+              type="pathways"
+              headerClassName="text-white"
+              subtitleClassName="text-white"
+              className="bg-[#192533] border-[#233A5A]"
+            />
+          </div>
         {/if}
       </div>
     </div>
