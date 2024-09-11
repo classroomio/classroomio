@@ -8,8 +8,9 @@
   export let onClose = () => {};
   export let scrollToQuestion = false;
   export let points = undefined;
+  export let explanation = undefined;
   export let hasError = false;
-  export let onPointsChange = () => {};
+  export let onChange = () => {};
 
   let ref;
 
@@ -38,26 +39,35 @@
   </div>
 
   {#if typeof points !== 'undefined'}
-    <div
-      class="flex justify-between items-center border-gray border-t-2 border-r-0 border-b-0 border-l-0 p-2"
-    >
-      <div class="flex items-center w-40">
-        <p class="dark:text-white text-sm mr-2">
-          {$t('course.navItem.lessons.exercises.new_exercise_modal.points')}:
-        </p>
-        <TextField
-          placeholder={$t('course.navItem.lessons.exercises.new_exercise_modal.points')}
-          bind:value={points}
-          type="number"
-          onChange={onPointsChange}
-        />
-      </div>
+    <div class="p-2">
+      <div
+        class="flex justify-between items-center border-gray border-t-2 border-r-0 border-b-0 border-l-0 mb-3"
+      >
+        <div class="flex items-center w-40">
+          <p class="dark:text-white text-sm mr-2">
+            {$t('course.navItem.lessons.exercises.new_exercise_modal.points')}:
+          </p>
+          <TextField
+            placeholder={$t('course.navItem.lessons.exercises.new_exercise_modal.points')}
+            bind:value={points}
+            type="number"
+            {onChange}
+          />
+        </div>
 
-      {#if onClose && !isTitle}
-        <IconButton onClick={onClose}>
-          <TrashCanIcon size={24} />
-        </IconButton>
-      {/if}
+        {#if onClose && !isTitle}
+          <IconButton onClick={onClose}>
+            <TrashCanIcon size={24} />
+          </IconButton>
+        {/if}
+      </div>
+      <!-- hint section -->
+      <TextField
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.explanation')}
+        bind:value={explanation}
+        isRequired={false}
+        {onChange}
+      />
     </div>
   {/if}
 </div>

@@ -391,7 +391,12 @@
             "goals": "Objetivos",
             "reviews": "Reseñas",
             "instructor": "Instructor",
-            "pricing": "Precios"
+            "pricing": "Precios",
+            "certificate": "Certificado"
+          },
+          "display_section": "Sección de visualización",
+          "certificate_form": {
+            "upload_template": "Plantilla de certificado"
           }
         },
         "course_content": "Contenido del curso",
@@ -645,7 +650,9 @@
                 "single": "respuesta única",
                 "multiple": "Múltiples respuestas",
                 "paragraph": "Párrafo"
-              }
+              },
+              "hint": "Pista",
+              "explanation": "Explicación"
             },
             "delete_confirmation": {
               "title": "Eliminar pregunta",

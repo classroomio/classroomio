@@ -94,6 +94,7 @@
 
     <RoleBasedSecurity allowedRoles={[1, 2]}>
       <ContentSwitcher bind:selectedIndex class="mb-2">
+        <!-- come back here, the numbering is buggy -->
         <Switch
           text="{$t('course.navItem.lessons.exercises.all_exercises.questions')} ({$questionnaire
             .questions.length})"

@@ -139,8 +139,9 @@
         onClose={onInitDeleteClicked(question.id)}
         scrollToQuestion={shouldScrollToLast(question.id, $questionnaire.questions)}
         bind:points={question.points}
+        bind:explanation={question.explanation}
         hasError={!!errors[question.id]}
-        onPointsChange={() => {
+        onChange={() => {
           question.is_dirty = true;
         }}
       >
@@ -171,6 +172,15 @@
             {/each}
           </Select>
         </div>
+
+        <TextField
+          placeholder={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.hint')}
+          bind:value={question.hint}
+          isRequired={false}
+          onChange={() => {
+            question.is_dirty = true;
+          }}
+        />
 
         {#if typeof question.code === 'string'}
           <div class="flex justify-between items-center my-3 w-3/5">

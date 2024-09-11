@@ -3,40 +3,43 @@
   import { group, course } from '$lib/components/Course/store';
   import { questionnaire } from '../store/exercise';
   import { questionnaireMetaData } from '../store/answers';
-  import Preview from './Preview.svelte';
-  import RadioQuestion from '$lib/components/Question/RadioQuestion/index.svelte';
-  import CheckboxQuestion from '$lib/components/Question/CheckboxQuestion/index.svelte';
-  import TextareaQuestion from '$lib/components/Question/TextareaQuestion/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import Box from '$lib/components/Box/index.svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import Progress from '$lib/components/Progress/index.svelte';
-  import { removeDuplicate } from '$lib/utils/functions/removeDuplicate';
-  import { QUESTION_TYPE } from '$lib/components/Question/constants';
+
   import { STATUS } from './constants';
-  import { getPropsForQuestion, filterOutDeleted, wasCorrectAnswerSelected } from './functions';
-  import { formatAnswers, getGroupMemberId } from '$lib/components/Course/function';
-  import { submitExercise } from '$lib/utils/services/courses';
-  import { fetchSubmission } from '$lib/utils/services/submissions';
+  import { lesson } from '../store/lessons';
+  import { browser } from '$app/environment';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
+  import { t } from '$lib/utils/functions/translations';
   import {
     NOTIFICATION_NAME,
     triggerSendEmail
   } from '$lib/utils/services/notification/notification';
-  import { lesson } from '../store/lessons';
-  import { browser } from '$app/environment';
-  import { COURSE_TYPE } from '$lib/utils/types';
-  import { t } from '$lib/utils/functions/translations';
+  import { COURSE_TYPE, Question } from '$lib/utils/types';
+  import { submitExercise } from '$lib/utils/services/courses';
+  import { fetchSubmission } from '$lib/utils/services/submissions';
+  import { QUESTION_TYPE } from '$lib/components/Question/constants';
+  import { removeDuplicate } from '$lib/utils/functions/removeDuplicate';
+  import { formatAnswers, getGroupMemberId } from '$lib/components/Course/function';
+  import { getPropsForQuestion, filterOutDeleted, wasCorrectAnswerSelected } from './functions';
+
+  import Preview from './Preview.svelte';
+  import Box from '$lib/components/Box/index.svelte';
+  import Progress from '$lib/components/Progress/index.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import RadioQuestion from '$lib/components/Question/RadioQuestion/index.svelte';
+  import CheckboxQuestion from '$lib/components/Question/CheckboxQuestion/index.svelte';
+  import TextareaQuestion from '$lib/components/Question/TextareaQuestion/index.svelte';
 
   export let preview: boolean = false;
   export let exerciseId = '';
   export let isFetchingExercise = false;
 
-  let currentQuestion = {};
+  let currentQuestion: Question;
   let renderProps = {};
   let submission;
   let hasSubmission = false;
+  let showExplanation = false;
   let isLoadingAutoSavedData = false;
   let alreadyCheckedAutoSavedData = false;
   let submissionResponse;
@@ -94,24 +97,17 @@
     };
 
     const isCorrect = wasCorrectAnswerSelected(currentQuestion, $questionnaireMetaData.answers);
-    console.log({ isCorrect });
-
     const isFinished = !questions[$questionnaireMetaData.currentQuestionIndex];
-    console.log(`isFinished`, isFinished);
-    console.log(
-      `$questionnaireMetaData.currentQuestionIndex`,
-      $questionnaireMetaData.currentQuestionIndex
-    );
 
     if (isCorrect) {
-      setTimeout(async () => {
+      if (!showExplanation && currentQuestion.explanation) {
+        // If the answer is correct but explanation has not been shown yet
+        showExplanation = true; // Show explanation
+      } else {
+        // If the explanation was already shown, move to the next question
+        showExplanation = false; // Reset explanation state
         $questionnaireMetaData.currentQuestionIndex += 1;
-        localStorage.setItem(
-          `autosave-exercise-${exerciseId}`,
-          JSON.stringify($questionnaireMetaData)
-        );
 
-        // If last question send to server
         if (isFinished) {
           localStorage.removeItem(`autosave-exercise-${exerciseId}`);
           $questionnaireMetaData.status = 1;
@@ -119,8 +115,8 @@
             $questionnaire.questions
           );
           $questionnaireMetaData.grades = {};
-
           $questionnaireMetaData.comment = '';
+
           let response = await submitExercise(
             $questionnaireMetaData.answers,
             questions,
@@ -133,17 +129,17 @@
           }
 
           notifyEducator();
+        } else {
+          localStorage.setItem(
+            `autosave-exercise-${exerciseId}`,
+            JSON.stringify($questionnaireMetaData)
+          );
         }
-      }, 1000);
+      }
+    } else {
+      // Handle incorrect answer case if necessary
+      console.log('Incorrect answer');
     }
-
-    // if (moveToNextQuestion) {
-    //   $questionnaireMetaData.currentQuestionIndex += 1;
-    //   localStorage.setItem(
-    //     `autosave-exercise-${exerciseId}`,
-    //     JSON.stringify($questionnaireMetaData)
-    //   );
-    // }
   }
 
   function onPrevious() {
@@ -361,14 +357,25 @@
   {#key currentQuestion.id}
     <!-- <div transition:fade id="question"> -->
     <div in:fly={{ x: 500, duration: 1000 }} id="question">
-      {#if QUESTION_TYPE.RADIO === currentQuestion.question_type.id}
+      {#if QUESTION_TYPE.RADIO === currentQuestion.question_type?.id}
         <RadioQuestion {...renderProps} key={currentQuestion.id} hideGrading={true} />
-      {:else if QUESTION_TYPE.CHECKBOX === currentQuestion.question_type.id}
+      {:else if QUESTION_TYPE.CHECKBOX === currentQuestion.question_type?.id}
         <CheckboxQuestion {...renderProps} key={currentQuestion.id} hideGrading={true} />
-      {:else if QUESTION_TYPE.TEXTAREA === currentQuestion.question_type.id}
+      {:else if QUESTION_TYPE.TEXTAREA === currentQuestion.question_type?.id}
         <TextareaQuestion {...renderProps} key={currentQuestion.id} hideGrading={true} />
       {/if}
     </div>
+
+    {#if currentQuestion?.hint}
+      <p class="text-center font-medium text-sm">
+        {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.hint')}: {currentQuestion?.hint}
+      </p>
+    {/if}
+    {#if showExplanation && currentQuestion?.explanation}
+      <p class="text-center font-medium text-sm">
+        {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.explanation')}: {currentQuestion?.explanation}
+      </p>
+    {/if}
   {/key}
 {/if}
 

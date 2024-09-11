@@ -391,7 +391,12 @@
             "goals": "लक्ष्य",
             "reviews": "समीक्षा",
             "instructor": "प्रशिक्षक",
-            "pricing": "मूल्य निर्धारण"
+            "pricing": "मूल्य निर्धारण",
+            "certificate": "प्रमाणपत्र"
+          },
+          "display_section": "प्रदर्शन अनुभाग",
+          "certificate_form": {
+            "upload_template": "प्रमाणपत्र टेम्पलेट"
           }
         },
         "course_content": "पाठ्यक्रम सामग्री",
@@ -645,7 +650,9 @@
                 "single": "एकल उत्तर",
                 "multiple": "एकाधिक उत्तर",
                 "paragraph": "अनुच्छेद"
-              }
+              },
+              "hint": "संकेत देना",
+              "explanation": "स्पष्टीकरण"
             },
             "delete_confirmation": {
               "title": "प्रश्न हटाएँ",
