@@ -81,8 +81,8 @@ export interface OrgLandingPageJson {
 
 export const landingPageSettings: Writable<OrgLandingPageJson> = writable({
   header: {
-    title: 'Web Development Course with Evanai',
-    titleHighlight: 'Delve into the world of web development',
+    title: 'Focused online learning for',
+    titleHighlight: 'ambitious learner',
     subtitle:
       'Practical project-based courses that are easy to understand and straight to the point',
     action: {
@@ -107,11 +107,9 @@ export const landingPageSettings: Writable<OrgLandingPageJson> = writable({
     benefits: {
       title: 'What you will gain',
       list: [
-        'Hands-On Projects: Real-world coding challenges.',
-        'Hands-On Projects: Real-world coding challenges.',
-        'Hands-On Projects: Real-world coding challenges.',
-        'Hands-On Projects: Real-world coding challenges.',
-        'Hands-On Projects: Real-world coding challenges.'
+        'Real-world coding challenges.',
+        'Real-world coding challenges.',
+        'Real-world coding challenges.'
       ]
     },
     show: true
