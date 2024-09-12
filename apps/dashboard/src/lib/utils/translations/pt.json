@@ -391,7 +391,12 @@
             "goals": "Metas",
             "reviews": "Avaliações",
             "instructor": "Instrutor",
-            "pricing": "Preços"
+            "pricing": "Preços",
+            "certificate": "Certificado"
+          },
+          "display_section": "Seção de exibição",
+          "certificate_form": {
+            "upload_template": "Modelo de certificado"
           }
         },
         "course_content": "Conteúdo do curso",

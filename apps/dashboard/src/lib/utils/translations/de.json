@@ -391,7 +391,12 @@
             "goals": "Ziele",
             "reviews": "Rezensionen",
             "instructor": "Lehrer",
-            "pricing": "Preisgestaltung"
+            "pricing": "Preisgestaltung",
+            "certificate": "Zertifikat"
+          },
+          "display_section": "Anzeigebereich",
+          "certificate_form": {
+            "upload_template": "Zertifikatsvorlage"
           }
         },
         "course_content": "Kursinhalte",
