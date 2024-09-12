@@ -20,6 +20,18 @@
   let viewAll = false;
   let type = DISPLAY_COURSE.ALL;
 
+  const filter = [
+    {
+      title: 'Live Sessions'
+    },
+    {
+      title: 'Self Paced'
+    },
+    {
+      title: 'Learning Path'
+    }
+  ];
+
   const navItems = [
     {
       title: 'All',
@@ -90,18 +102,12 @@
         <div class="hidden lg:block w-fit space-y-2">
           <p class="font-medium text-[#3C4043] uppercase">Filter</p>
           <div class="w-fit border border-[#EAEAEA] p-6 space-y-8">
-            <form class="space-x-2 text-[#3C4043]">
-              <input type="checkbox" name="live" />
-              <label for="live">Live Sessions</label>
-            </form>
-            <form class="space-x-2 text-[#3C4043]">
-              <input type="checkbox" name="self" />
-              <label for="self">Self Paced</label>
-            </form>
-            <form class="space-x-2 text-[#3C4043]">
-              <input type="checkbox" name="path" />
-              <label for="path">Learning Path</label>
-            </form>
+            {#each filter as item}
+              <form class="space-x-2 text-[#3C4043]">
+                <input type="checkbox" name={item.title} />
+                <label for={item.title}>{item.title}</label>
+              </form>
+            {/each}
           </div>
         </div>
         <div class="w-full md:w-[80%] mx-auto">
