@@ -20,9 +20,9 @@
   }
 </script>
 
-<div class="h-fit w-full max-w-[350px] md:max-w-[300px] space-y-4 px-6">
-  <div class="border border-[#EAEAEA] rounded-sm space-y-4 px-6 {className}">
-    <p class="text-xl font-semibold py-4 border-b border-[#EAEAEA]">{title}t</p>
+<div class="h-fit w-full min-w-[250px] md:min-w-[300px] max-w-[300px] space-y-4">
+  <div class="border border-[#EAEAEA] rounded-sm space-y-4 px-4 {className}">
+    <p class="text-xl font-semibold py-4 border-b border-[#EAEAEA]">{title}</p>
     <div class="rounded-md overflow-hidden">
       {#if isLearningPath}
         <img

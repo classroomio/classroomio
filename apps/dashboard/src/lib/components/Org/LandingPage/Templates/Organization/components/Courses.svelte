@@ -14,6 +14,7 @@
     COURSE: 'course',
     PATH: 'path'
   };
+
   let viewAll = false;
   let type = DISPLAY_COURSE.ALL;
 
@@ -105,7 +106,11 @@
         {/if}
       {:else}
         <div class="px-10">
-          <EmptyState />
+          <EmptyState
+            template="org"
+            headerClassName="text-[#CE02CE]"
+            type={type == DISPLAY_COURSE.PATH ? 'pathways' : 'course'}
+          />
         </div>
       {/if}
     </div>

@@ -10,6 +10,7 @@
   import Navigation from '$lib/components/Org/LandingPage/Templates/Experts/components/Navigation.svelte';
   import PageLoader from '$lib/components/Org/LandingPage/PageLoader.svelte';
   import Testimonial from '$lib/components/Org/LandingPage/Templates/Experts/components/Testimonial.svelte';
+  import Course from './Course.svelte';
 
   export let org = {};
 </script>
@@ -23,7 +24,8 @@
 {#if !org.landingpage}
   <PageLoader />
 {:else}
-  <main class="bg-[#101720]">
+  <Course {org} />
+  <!-- <main class="bg-[#101720]">
     <Navigation logo={org.avatar_url} orgName={org.name} disableSignup={true} isOrgSite={true} />
     <Hero />
     <Learn />
@@ -33,5 +35,5 @@
     <Faq />
     <FooterNote />
     <Footer logo={org.avatar_url} orgName={org.name} />
-  </main>
+  </main> -->
 {/if}

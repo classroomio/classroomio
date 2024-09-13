@@ -58,7 +58,7 @@
 {#if !org.landingpage}
   <PageLoader />
 {:else}
-  <!-- <Experts {org} /> -->
-  <Organization {org} />
+  <Experts {org} />
+  <!-- <Organization {org} /> -->
   <!-- <Plain {org} {orgSiteName} /> -->
 {/if}

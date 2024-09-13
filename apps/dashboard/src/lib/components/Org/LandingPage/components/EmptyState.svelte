@@ -2,6 +2,7 @@
   import LandingPageEmptyIcon from '$lib/components/Icons/LandingPageEmptyIcon.svelte';
 
   export let type = 'course';
+  export let template = 'generic';
   export let className = '';
   export let headerClassName = '';
   export let subtitleClassName = '';
@@ -11,7 +12,7 @@
   class="{className} w-full h-[300px] border rounded-md py-4 flex items-center justify-center"
 >
   <div class="flex items-center gap-6">
-    <LandingPageEmptyIcon />
+    <LandingPageEmptyIcon {template} />
     <div>
       {#if type == 'course'}
         <h3 class={headerClassName}>"No Course yet"</h3>

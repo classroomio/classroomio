@@ -6,9 +6,6 @@
 
   import CourseCard from '$lib/components/Org/LandingPage/components/CourseCard.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { landingPageSettings } from '$lib/components/Org/Settings/store';
-  import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
-  import Box from '$lib/components/Box/index.svelte';
 
   import { courseMetaDeta, courses } from '$lib/components/Courses/store';
   import CardLoader from '$lib/components/Courses/components/Card/Loader.svelte';
@@ -20,6 +17,27 @@
 
   let viewAllPath = false;
   let viewAllCourses = false;
+
+  const DISPLAY_COURSE = {
+    ALL: 'all',
+    PACED: 'paced',
+    LIVE: 'live'
+  };
+
+  const filter = [
+    {
+      title: 'All Courses',
+      type: DISPLAY_COURSE.ALL
+    },
+    {
+      title: 'Self Paced',
+      type: DISPLAY_COURSE.PACED
+    },
+    {
+      title: 'Live Sessions',
+      type: DISPLAY_COURSE.LIVE
+    }
+  ];
 </script>
 
 <svelte:head>
@@ -77,19 +95,33 @@
             <CardLoader />
           </div>
         {:else if $courses.length > 0}
-          <section class="flex flex-wrap items-center justify-center md:justify-start gap-4 p-4">
-            {#each $courses.slice(0, viewAllCourses ? $courses.length : 3) as courseData}
-              <CourseCard
-                className="bg-[#FDFDFD]"
-                slug={courseData.slug}
-                bannerImage={courseData.logo || '/images/classroomio-course-img-template.jpg'}
-                title={courseData.title}
-                description={courseData.description}
-                cost={courseData.cost}
-                currency={courseData.currency}
-              />
-            {/each}
-          </section>
+          <div class="w-full lg:flex items-center gap-2 lg:ml-[5%]">
+            <div class="hidden lg:block w-fit space-y-2">
+              <p class="font-medium text-[#3C4043] uppercase">Filter</p>
+              <div class="w-fit p-6 space-y-8">
+                {#each filter as item}
+                  <form class="space-x-2 text-[#3C4043] border border-[#EAEAEA] rounded-md p-2">
+                    <input type="checkbox" name={item.title} />
+                    <label for={item.title}>{item.title}</label>
+                  </form>
+                {/each}
+              </div>
+            </div>
+            <section class="flex flex-wrap items-center justify-center md:justify-start gap-4 p-4">
+              {#each $courses.slice(0, viewAllCourses ? $courses.length : 3) as courseData}
+                <CourseCard
+                  className="bg-[#FDFDFD]"
+                  slug={courseData.slug}
+                  bannerImage={courseData.logo || '/images/classroomio-course-img-template.jpg'}
+                  title={courseData.title}
+                  description={courseData.description}
+                  cost={courseData.cost}
+                  currency={courseData.currency}
+                />
+              {/each}
+            </section>
+          </div>
+
           {#if $courses.length > 3}
             <div class="w-full flex items-center justify-center my-5">
               <PrimaryButton
@@ -100,15 +132,6 @@
             </div>
           {/if}
         {:else}
-          <!-- <Box>
-            <CoursesEmptyIcon />
-            <h3 class="dark:text-white text-2xl my-5">
-              {$t('course.navItem.landing_page.no_course_published')}
-            </h3>
-            <p class="dark:text-white w-1/3 text-center">
-              {$t('course.navItem.landing_page.coming_your_way')}
-            </p>
-          </Box> -->
           <div class="px-10">
             <EmptyState />
           </div>
@@ -128,13 +151,14 @@
           <section class="flex flex-wrap items-center justify-center md:justify-start gap-4 p-4">
             {#each $courses.slice(0, viewAllPath ? $courses.length : 3) as courseData}
               <CourseCard
-                className="bg-[#FDFDFD]"
+                className="bg-[#192533] text-white"
                 slug={courseData.slug}
                 bannerImage={courseData.logo || '/images/classroomio-course-img-template.jpg'}
                 title={courseData.title}
                 description={courseData.description}
                 cost={courseData.cost}
                 currency={courseData.currency}
+                isLearningPath={true}
               />
             {/each}
           </section>

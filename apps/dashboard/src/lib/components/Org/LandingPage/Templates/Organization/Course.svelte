@@ -145,7 +145,7 @@
             {/if}
           {:else}
             <div class="px-10">
-              <EmptyState />
+              <EmptyState template="org" headerClassName="text-[#CE02CE]" />
             </div>
           {/if}
         </div>

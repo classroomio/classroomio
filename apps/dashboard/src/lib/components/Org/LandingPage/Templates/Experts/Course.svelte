@@ -14,11 +14,33 @@
   import CardLoader from '$lib/components/Courses/components/Card/Loader.svelte';
   import { get } from 'lodash';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import EmptyState from '../../components/EmptyState.svelte';
 
   export let org = {};
 
   let viewAllPath = false;
   let viewAllCourses = false;
+
+  const DISPLAY_COURSE = {
+    ALL: 'all',
+    PACED: 'paced',
+    LIVE: 'live'
+  };
+
+  const filter = [
+    {
+      title: 'All Courses',
+      type: DISPLAY_COURSE.ALL
+    },
+    {
+      title: 'Self Paced',
+      type: DISPLAY_COURSE.PACED
+    },
+    {
+      title: 'Live Sessions',
+      type: DISPLAY_COURSE.LIVE
+    }
+  ];
 </script>
 
 <svelte:head>
@@ -47,7 +69,7 @@
         class="relative z-10 flex items-center justify-center h-full text-white px-4 py-20 md:px-10"
       >
         <div class="text-white space-y-6 w-full">
-          <p class="text-2xl md:text-4xl font-semibold w-full md:w-[60%] lg:w-[40%]">
+          <p class="text-2xl md:text-4xl font-mono font-semibold w-full md:w-[60%] lg:w-[40%]">
             Explore Available Courses and Learning Path
           </p>
 
@@ -76,19 +98,35 @@
             <CardLoader />
           </div>
         {:else if $courses.length > 0}
-          <section class="flex flex-wrap items-center justify-center md:justify-start gap-4 p-4">
-            {#each $courses.slice(0, viewAllCourses ? $courses.length : 3) as courseData}
-              <CourseCard
-                className="bg-[#FDFDFD]"
-                slug={courseData.slug}
-                bannerImage={courseData.logo || '/images/classroomio-course-img-template.jpg'}
-                title={courseData.title}
-                description={courseData.description}
-                cost={courseData.cost}
-                currency={courseData.currency}
-              />
-            {/each}
-          </section>
+          <div class="w-full lg:flex items-start gap-6 lg:ml-[5%]">
+            <div class="hidden lg:block w-fit">
+              <p class="font-medium mb-2">Filter by</p>
+              <div class="w-fit space-y-2">
+                {#each filter as item}
+                  <form
+                    class="space-x-2 text-[#3C4043] font-medium border border-[#EAEAEA] bg-[#FDFDFD] rounded-md px-4 py-4"
+                  >
+                    <input type="checkbox" name={item.title} />
+                    <label for={item.title}>{item.title}</label>
+                  </form>
+                {/each}
+              </div>
+            </div>
+            <section class="flex flex-wrap items-center justify-center md:justify-start gap-4 p-4">
+              {#each $courses.slice(0, viewAllCourses ? $courses.length : 3) as courseData}
+                <CourseCard
+                  className="bg-[#FDFDFD]"
+                  slug={courseData.slug}
+                  bannerImage={courseData.logo || '/images/classroomio-course-img-template.jpg'}
+                  title={courseData.title}
+                  description={courseData.description}
+                  cost={courseData.cost}
+                  currency={courseData.currency}
+                />
+              {/each}
+            </section>
+          </div>
+
           {#if $courses.length > 3}
             <div class="w-full flex items-center justify-center my-5">
               <PrimaryButton
@@ -99,15 +137,9 @@
             </div>
           {/if}
         {:else}
-          <Box>
-            <CoursesEmptyIcon />
-            <h3 class="dark:text-white text-2xl my-5">
-              {$t('course.navItem.landing_page.no_course_published')}
-            </h3>
-            <p class="dark:text-white w-1/3 text-center">
-              {$t('course.navItem.landing_page.coming_your_way')}
-            </p>
-          </Box>
+          <div class="px-10">
+            <EmptyState />
+          </div>
         {/if}
       </div>
     </div>
@@ -124,13 +156,14 @@
           <section class="flex flex-wrap items-center justify-center md:justify-start gap-4 p-4">
             {#each $courses.slice(0, viewAllPath ? $courses.length : 3) as courseData}
               <CourseCard
-                className="bg-[#FDFDFD]"
+                className="bg-[#192533] text-white"
                 slug={courseData.slug}
                 bannerImage={courseData.logo || '/images/classroomio-course-img-template.jpg'}
                 title={courseData.title}
                 description={courseData.description}
                 cost={courseData.cost}
                 currency={courseData.currency}
+                isLearningPath={true}
               />
             {/each}
           </section>
@@ -144,15 +177,14 @@
             </div>
           {/if}
         {:else}
-          <Box className="">
-            <CoursesEmptyIcon />
-            <h3 class="text-white text-2xl my-5">
-              {$t('course.navItem.landing_page.no_course_published')}
-            </h3>
-            <p class="text-white w-1/3 text-center">
-              {$t('course.navItem.landing_page.coming_your_way')}
-            </p>
-          </Box>
+          <div class="px-10">
+            <EmptyState
+              type="pathways"
+              headerClassName="text-white"
+              subtitleClassName="text-white"
+              className="bg-[#192533] border-[#233A5A]"
+            />
+          </div>
         {/if}
       </div>
     </div>
