@@ -10,7 +10,7 @@
   export let points = undefined;
   export let explanation = undefined;
   export let hasError = false;
-  export let onChange = () => {};
+  export let onPointsChange = () => {};
 
   let ref;
 
@@ -51,7 +51,7 @@
             placeholder={$t('course.navItem.lessons.exercises.new_exercise_modal.points')}
             bind:value={points}
             type="number"
-            {onChange}
+            onChange={onPointsChange}
           />
         </div>
 
@@ -66,7 +66,7 @@
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.explanation')}
         bind:value={explanation}
         isRequired={false}
-        {onChange}
+        onChange={onPointsChange}
       />
     </div>
   {/if}

@@ -141,7 +141,7 @@
         bind:points={question.points}
         bind:explanation={question.explanation}
         hasError={!!errors[question.id]}
-        onChange={() => {
+        onPointsChange={() => {
           question.is_dirty = true;
         }}
       >
