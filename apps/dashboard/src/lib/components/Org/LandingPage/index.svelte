@@ -7,6 +7,7 @@
   import Experts from '$lib/components/Org/LandingPage/Templates/Experts/Home.svelte';
   import Plain from '$lib/components/Org/LandingPage/Templates/Plain/Home.svelte';
   import Organization from '$lib/components/Org/LandingPage/Templates/Organization/Home.svelte';
+  import Bootcamp from '$lib/components/Org/LandingPage/Templates/Bootcamp/Home.svelte';
 
   import Course from './Templates/Plain/Course.svelte';
 
@@ -58,7 +59,8 @@
 {#if !org.landingpage}
   <PageLoader />
 {:else}
-  <Experts {org} />
+  <!-- <Experts {org} /> -->
   <!-- <Organization {org} /> -->
   <!-- <Plain {org} {orgSiteName} /> -->
+  <Bootcamp {org} />
 {/if}
