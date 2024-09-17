@@ -265,10 +265,11 @@
       if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
         $user.fetchingUser = true;
         getProfile();
-      } else if (!['TOKEN_REFRESHED'].includes(event)) {
-        console.log('not logged in, go to login');
-        return goto('/login');
       }
+      // else if (!['TOKEN_REFRESHED'].includes(event)) {
+      //   console.log('not logged in, go to login');
+      //   return goto('/login');
+      // }
     });
 
     if (data.isOrgSite) {
