@@ -109,6 +109,10 @@
         landingpage.header.banner = $landingPageSettings.header.banner;
       }
 
+      if (!landingpage?.header?.background) {
+        landingpage.header.background = $landingPageSettings.header.background;
+      }
+
       $landingPageSettings = {
         ...landingpage
       };
@@ -220,6 +224,7 @@
       {/if}
 
       <!-- background -->
+
       <div class="mt-4">
         <p class="font-bold mb-4">{$t('settings.landing_page.background.title')}</p>
         <PrimaryButton
@@ -229,13 +234,14 @@
           onClick={() => widgetControl('background')}
         />
 
-        {#if $landingPageSettings.header.background.image}
+        {#if $landingPageSettings.header.background?.image}
           <img
             alt="backgroundImage"
             src={$landingPageSettings.header.background.image}
             class="mt-2 rounded-md w-full"
           />
         {/if}
+
         <Toggle bind:toggled={$landingPageSettings.header.background.show} size="sm">
           <span slot="labelA" style="color: gray"
             >{$t('settings.landing_page.background.hide_background')}</span
@@ -244,6 +250,7 @@
             >{$t('settings.landing_page.background.show_background')}</span
           >
         </Toggle>
+
         {#if $handleOpenWidget.open && widgetKey === 'background'}
           <UploadWidget bind:imageURL={$landingPageSettings.header.background.image} />
         {/if}

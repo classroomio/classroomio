@@ -17,7 +17,7 @@ export interface OrgLandingPageJson {
       type: string;
       show: boolean;
     };
-    background: {
+    background?: {
       image: string;
       show: boolean;
     };
@@ -86,8 +86,7 @@ export const landingPageSettings: Writable<OrgLandingPageJson> = writable({
       show: true
     },
     background: {
-      image:
-        'https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/landingpage/riverside.jpeg',
+      image: '',
       show: true
     },
     show: true

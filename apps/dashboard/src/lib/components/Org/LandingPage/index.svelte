@@ -47,7 +47,6 @@
     message: ''
   };
   let contactError: Record<string, string> = {};
-  let backgroundImage = '';
 
   const supabase = getSupabase();
 
@@ -148,10 +147,21 @@
     }
   }
 
-  $: backgroundImage =
-    $landingPageSettings.header.background.show && $landingPageSettings.header.background.image
-      ? `background-image: url('${$landingPageSettings.header.background.image}')`
-      : '';
+  function getBgImage(settings) {
+    const { show, image } = settings.header.background || {
+      show: true,
+      image: '/images/org-landingpage-banner.jpeg'
+    };
+
+    if (!show) {
+      return undefined;
+    }
+
+    if (image) {
+      return `url('${image}')`;
+    }
+  }
+
   $: initPlyr(player, $landingPageSettings.header?.banner?.video);
   $: setDefault(org?.landingpage);
 </script>
@@ -177,7 +187,7 @@
             ? 'bg-cover bg-center'
             : 'border-b border-gray-300'
         }`}
-        style={backgroundImage}
+        style="background-image: {getBgImage($landingPageSettings)}"
       >
         <Navigation
           logo={org.avatar_url}
