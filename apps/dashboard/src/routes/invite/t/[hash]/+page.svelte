@@ -89,19 +89,8 @@
         throw 'Unable to create profile';
       }
 
-      // Update member response
-      const updateMemberRes = await supabase
-        .from('organizationmember')
-        .update({
-          verified: true,
-          profile_id: profile.id
-        })
-        .match({ email: data.invite.email, organization_id: data.invite.currentOrg?.id });
-
-      console.log('Update member response', updateMemberRes);
-
       const res = await supabase.auth.signInWithPassword({
-        email: data.invite.email,
+        email: profile.email,
         password: fields.password
       });
 
@@ -109,9 +98,19 @@
         throw res.error;
       }
 
+      // Update member response
+      const updateMemberRes = await supabase
+        .from('organizationmember')
+        .update({
+          verified: true,
+          profile_id: profile.id
+        })
+        .match({ email: profile.email, organization_id: data.invite.currentOrg?.id });
+
+      console.log('Update member response', updateMemberRes);
+
       formRef?.reset();
 
-      console.log({ path: $currentOrgPath });
       return goto($currentOrgPath);
     } catch (error) {
       if (error instanceof Error) {
