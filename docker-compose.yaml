@@ -9,9 +9,9 @@ version: '3.8'
 services:
   backend:
     image: node:18
-    working_dir: /app
+    working_dir: /app/project
     volumes:
-      - ./apps/backend:/app
+      - ./apps/backend:/app/project
     command: npm start
     ports:
       - '3002:3002'
@@ -34,9 +34,9 @@ services:
 
   dashboard:
     image: node:18
-    working_dir: /app
+    working_dir: /app/project
     volumes:
-      - ./apps/dashboard:/app
+      - ./apps/dashboard:/app/project
     command: sh -c "npm install -g pnpm && pnpm install && pnpm build && pnpm start"
     ports:
       - '5173:5173'
