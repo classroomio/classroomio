@@ -4,7 +4,7 @@
   import Navigation from '$lib/components/Org/LandingPage/Templates/Experts/components/Navigation.svelte';
   import PageLoader from '$lib/components/Org/LandingPage/PageLoader.svelte';
 
-  import CourseCard from '$lib/components/Org/LandingPage/components/CourseCard.svelte';
+  import CourseCard from '$lib/components/Org/LandingPage/Templates/Experts/components/CourseCard.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   import { courseMetaDeta, courses } from '$lib/components/Courses/store';

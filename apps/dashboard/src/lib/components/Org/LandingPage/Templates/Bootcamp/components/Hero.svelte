@@ -29,14 +29,15 @@
   <section class="flex items-center justify-center py-10 px-10 md:px-14 min-h-full">
     <section class="flex flex-col text-center items-center gap-5 justify-center">
       <div class="text-white space-y-6 w-full">
-        <span class="text-4xl font-normal w-[70%] mx-auto">{$landingPageSettings.header.title}</span
-        >
+        <p class="text-3xl md:text-4xl font-normal w-full md:w-[60%] mx-auto">
+          {$landingPageSettings.header.title}
+        </p>
 
         <p class="w-full font-normal md:w-[70%] mx-auto">
           {$landingPageSettings.header.subtitle}
         </p>
       </div>
-      <div class="rounded-md h-[250px] max-h-[300px] w-[800px] max-w-[80vw] lg:max-w-[80%] flex">
+      <div class="rounded-lg h-[250px] max-h-[300px] w-[800px] max-w-[80vw] lg:max-w-[80%] flex">
         {#if !isYouTubeLink($landingPageSettings.header?.banner?.video) && $landingPageSettings.header.banner.type === 'video'}
           <!-- <div class="w-5/6 md:w-1/2 md:max-w-[650px] flex"> -->
           <div bind:this={player} id="player" style="width:100%; height:100%; border-radius:12px">
@@ -56,7 +57,7 @@
             src={$landingPageSettings.header?.banner?.image
               ? $landingPageSettings.header?.banner?.image
               : '/images/classroomio-course-img-template.jpg'}
-            class="h-full max-h-[300px] w-full rounded-md object-cover"
+            class="h-full max-h-[300px] w-full rounded-lg object-cover"
           />
         {/if}
       </div>

@@ -4,37 +4,56 @@
   let benefits = [
     {
       title: 'Experienced tutor',
-      desc: ' Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptate vel rerum consectetur magni blanditiis hic ab natus autem nulla ipsa.'
+      desc: ' Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab obcaecati neque adipisci harum ducimus dolores hic impedit beatae vitae! Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptate vel rerum consectetur magni blanditiis hic ab natus autem nulla ipsa.'
     },
     {
       title: 'Hands-on Projects',
-      desc: ' Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptate vel rerum consectetur magni blanditiis hic ab natus autem nulla ipsa.'
+      desc: ' Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab obcaecati neque adipisci harum ducimus dolores hic impedit beatae vitae! Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptate vel rerum consectetur magni blanditiis hic ab natus autem nulla ipsa.'
     },
     {
       title: 'Live Sessions',
-      desc: ' Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptate vel rerum consectetur magni blanditiis hic ab natus autem nulla ipsa.'
+      desc: '  Voluptate vel rerum consectetur magni blanditiis hic ab natus autem nulla ipsa.'
+    },
+    {
+      title: 'Interactive Lessons',
+      desc: ' Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab obcaecati neque adipisci harum ducimus dolores hic impedit beatae vitae! Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptate vel rerum consectetur magni blanditiis hic ab natus autem nulla ipsa.'
+    },
+    {
+      title: 'Answer Hints',
+      desc: ' Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab obcaecati neque adipisci harum ducimus dolores hic impedit beatae vitae! Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptate vel rerum consectetur magni blanditiis hic ab natus autem nulla ipsa.'
+    },
+    {
+      title: 'Professional certificates',
+      desc: ' Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus ab obcaecati neque adipisci harum ducimus dolores hic impedit beatae vitae! Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptate vel rerum consectetur magni blanditiis hic ab natus autem nulla ipsa.'
     }
   ];
 </script>
 
 {#if $landingPageSettings.aboutUs.show}
-  <section id="aboutus" class="m-h-[400px] my-10 mx-auto max-w-6xl w-full bg-white p-8">
-    <div class="mx-4 flex items-start justify-between flex-col lg:flex-row border border-green-500">
-      <div class="w-[60%] lg:w-4/5 mr-5 mb-5 lg:mb-0 border border-red-500">
-        <p class="font-normal text-2xl md:text-3xl lg:text-4xl w-[90%] mb-8">
+  <section id="aboutus" class="relative w-full bg-white py-10 px-4 lg:px-14">
+    <div class="mx-4 flex items-center md:items-start gap-4 justify-between flex-col md:flex-row">
+      <div class="w-full md:w-[60%] lg:w-[50%] mr-5 mb-5 lg:mb-0">
+        <p class="font-normal text-2xl md:text-3xl lg:text-4xl w-full md:w-[90%] mb-8">
           {$landingPageSettings.aboutUs.title}
         </p>
-
-        <div>
+        <div class="space-y-3">
           {#each benefits as items}
-            <p class="mb-2 text-xl w-[90%]">{items.title}</p>
-            <p class="text-[#878787] w-[90%] mb-4">{items.desc}</p>
+            <div class="p-3 bg-[#FDFDFD] border border-[#EAEAEA] rounded-sm h-[12rem]">
+              <p class="mb-2 text-xl w-[90%]">{items.title}</p>
+              <p class="text-[#878787] w-[90%] mb-4 line-clamp-6 text-sm lg:text-base">
+                {items.desc}
+              </p>
+            </div>
           {/each}
         </div>
       </div>
 
-      <div class="image">
-        <img src={$landingPageSettings.aboutUs.imageUrl} alt="Our Story" class="max-h-[450px]" />
+      <div class="image sticky top-0 hidden md:block">
+        <img
+          src={$landingPageSettings.aboutUs.imageUrl}
+          alt="Our Story"
+          class="h-[450px] w-[450px] object-cover"
+        />
       </div>
     </div>
   </section>

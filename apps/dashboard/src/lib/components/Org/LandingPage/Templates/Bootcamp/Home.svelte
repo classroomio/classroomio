@@ -4,6 +4,11 @@
   import { t } from '$lib/utils/functions/translations';
   import Hero from './components/Hero.svelte';
   import AboutUs from './components/AboutUs.svelte';
+  import Courses from './components/Courses.svelte';
+  import LearningPath from './components/LearningPath.svelte';
+  import Testimonial from './components/Testimonial.svelte';
+  import FooterNote from './components/FooterNote.svelte';
+  import Footer from './components/Footer.svelte';
 
   export let org = {};
 </script>
@@ -22,5 +27,10 @@
     <Navigation logo={org.avatar_url} orgName={org.name} disableSignup={true} isOrgSite={true} />
     <Hero />
     <AboutUs />
+    <Courses />
+    <LearningPath />
+    <Testimonial />
+    <FooterNote />
+    <Footer logo={org.avatar_url} orgName={org.name} />
   </main>
 {/if}

@@ -81,8 +81,8 @@ export interface OrgLandingPageJson {
 
 export const landingPageSettings: Writable<OrgLandingPageJson> = writable({
   header: {
-    title: 'Focused online learning for',
-    titleHighlight: 'ambitious learner',
+    title: 'Focused online learning for ambitious learners',
+    titleHighlight: '',
     subtitle:
       'Practical project-based courses that are easy to understand and straight to the point',
     action: {

@@ -1,31 +1,21 @@
 <script>
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
-  import Box from '$lib/components/Box/index.svelte';
   import CardLoader from '$lib/components/Courses/components/Card/Loader.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { courseMetaDeta, courses } from '$lib/components/Courses/store';
-  import CourseCard from '$lib/components/Org/LandingPage/Templates/Experts/components/CourseCard.svelte';
+  import CourseCard from '$lib/components/Org/LandingPage/Templates/Bootcamp/components/CourseCard.svelte';
   import { landingPageSettings } from '$lib/components/Org/Settings/store';
   import EmptyState from '../../../components/EmptyState.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
 
   let viewAll = false;
 </script>
 
 {#if $landingPageSettings.pathway?.show}
-  <section id="path" class="relative p-4 h-full">
-    <div class="relative w-full md:w-[80%] rounded-lg overflow-hidden -top-20 md:left-[10%]">
-      <img
-        src="/images/classroomio-course-img-template.jpg"
-        alt=""
-        class="w-full h-60 object-cover"
-      />
-    </div>
-    <div class="px-4 md:px-10 py-4">
-      <h1 class=" text-3xl text-white">{$landingPageSettings.pathway.title}</h1>
-      <p class="text-white w-full md:w-[60%] text-sm">
-        {$landingPageSettings.pathway.subtitle}
-      </p>
+  <section id="path" class="p-4 lg:p-20 h-full bg-white">
+    <div class="text-start mb-4 lg:text-center px-4 md:px-10 py-4">
+      <p class="text-2xl md:text-3xl">{$landingPageSettings.pathway.title}</p>
+      <p class=" text-[#878787] text-xs">{$landingPageSettings.pathway.subtitle}</p>
     </div>
     {#if $courseMetaDeta.isLoading}
       <div class="cards-container my-4 mx-2">
@@ -52,7 +42,8 @@
       {#if $courses.length > 3}
         <div class="w-full flex items-center justify-center my-5">
           <PrimaryButton
-            label="VIEW MORE PATH PROGRAMS"
+            variant={VARIANTS.NONE}
+            label="VIEW MORE "
             className="rounded-none text-lg"
             onClick={() => (viewAll = !viewAll)}
           />
@@ -60,12 +51,7 @@
       {/if}
     {:else}
       <div class="px-10">
-        <EmptyState
-          type="pathways"
-          headerClassName="text-white"
-          subtitleClassName="text-white"
-          className="bg-[#192533] border-[#233A5A]"
-        />
+        <EmptyState type="pathways" template="bootcamp" />
       </div>
     {/if}
   </section>

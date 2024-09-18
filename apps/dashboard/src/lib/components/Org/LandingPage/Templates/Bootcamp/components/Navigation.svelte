@@ -58,7 +58,7 @@
   </div>
 
   <!-- Mobile Menu Button (Visible only on mobile and when logged in) -->
-  {#if !$user.isLoggedIn}
+  {#if $user.isLoggedIn}
     <button on:click={toggleMenu} class="lg:hidden px-6 py-4">
       <Menu size={24} />
     </button>
@@ -68,7 +68,7 @@
   <ul
     class="hidden lg:flex items-center space-x-8 text-base font-bold text-[#1F2937] list-none hover:no-underline"
   >
-    {#if !$user.isLoggedIn}
+    {#if $user.isLoggedIn}
       {#each menuItems as menu}
         <li><a href={menu.link}>{menu.title}</a></li>
       {/each}
@@ -76,7 +76,7 @@
   </ul>
 
   <!-- PrimaryButtons for login/signup (Visible only when not logged in) -->
-  {#if $user.isLoggedIn}
+  {#if !$user.isLoggedIn}
     <div class="flex space-x-4">
       <PrimaryButton
         label={$t('navigation.login')}
@@ -103,7 +103,7 @@
       <Close size={24} />
     </button>
 
-    {#if !$user.isLoggedIn}
+    {#if $user.isLoggedIn}
       {#each menuItems as menu}
         <li class="py-4 px-6 border-b">
           <a href={menu.link} on:click={toggleMenu}>{menu.title}</a>
@@ -119,7 +119,7 @@
   </ul>
 
   <!-- Learn with Me Button (Visible on desktop when logged in) -->
-  {#if !$user.isLoggedIn && isOrgSite}
+  {#if $user.isLoggedIn && isOrgSite}
     <a href="/#" class="hidden lg:flex bg-[#00E577] w-fit py-4 px-6 hover:no-underline">
       <div class="hidden lg:flex items-center min-h-full gap-1">
         <p class="font-bold text-[#1F2937] text-base">Learn with me</p>
