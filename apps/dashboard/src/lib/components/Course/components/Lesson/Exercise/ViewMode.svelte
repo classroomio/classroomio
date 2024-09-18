@@ -14,7 +14,7 @@
     NOTIFICATION_NAME,
     triggerSendEmail
   } from '$lib/utils/services/notification/notification';
-  import { COURSE_TYPE, Question } from '$lib/utils/types';
+  import type { COURSE_TYPE, Question } from '$lib/utils/types';
   import { submitExercise } from '$lib/utils/services/courses';
   import { fetchSubmission } from '$lib/utils/services/submissions';
   import { QUESTION_TYPE } from '$lib/components/Question/constants';
