@@ -1,6 +1,8 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import ColorPicker from 'svelte-awesome-color-picker';
   import { Grid, Row, Column } from 'carbon-components-svelte';
+
   import FlashFilled from 'carbon-icons-svelte/lib/FlashFilled.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -13,7 +15,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { isFreePlan } from '$lib/utils/store/org';
   import { updateOrgNameValidation } from '$lib/utils/functions/validator';
-  import { setTheme } from '$lib/utils/functions/theme';
+  import { setTheme, setCustomTheme } from '$lib/utils/functions/theme';
 
   let avatar;
 
@@ -26,6 +28,8 @@
   };
 
   let loading = false;
+  let hex = '';
+
   const themes = {
     rose: 'theme-rose',
     green: 'theme-green',
@@ -52,6 +56,52 @@
 
       console.log('Update theme', res);
     };
+  }
+
+  function injectCustomTheme(hex: string) {
+    const styleId = 'theme-custom';
+    let styleElement = document.getElementById(styleId);
+
+    const styleContent = `
+      .theme-custom .bg-primary-100 {
+        background-color: ${hex} !important; 
+      }
+      .theme-custom .text-primary-100 {
+        color: ${hex} !important; 
+      }
+      .theme-custom .border-primary-100 {
+        border-color: ${hex} !important; 
+      }
+    `;
+
+    if (styleElement) {
+      styleElement.innerHTML = styleContent;
+    } else {
+      styleElement = document.createElement('style');
+      styleElement.id = styleId;
+      styleElement.innerHTML = styleContent;
+
+      document.head.appendChild(styleElement);
+    }
+  }
+
+  async function handleChangeColor() {
+    if (!hex) return;
+
+    setTimeout(async () => {
+      injectCustomTheme(hex);
+      setCustomTheme('theme-custom');
+
+      $currentOrg.theme = hex;
+
+      // Uncomment if you want to update the theme in the database
+      // const res = await supabase
+      //   .from('organization')
+      //   .update({ theme: hex })
+      //   .match({ id: $currentOrg.id });
+
+      // console.log('Update theme', res);
+    }, 5000); // 5-second delay (5000 ms)
   }
 
   async function handleUpdate() {
@@ -145,7 +195,7 @@
       />
     </Column>
   </Row>
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c relative">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('settings.organization.organization_profile.theme.heading')}</SectionTitle
       ></Column
@@ -161,7 +211,7 @@
             'border-[#1d4ee2]'} mr-3 flex items-center justify-center"
           on:click={handleChangeTheme(themes.default)}
         >
-          <div class="w-3 h-3 md:w-6 md:h-6 bg-[#1d4ee2] rounded-full m-1" />
+          <div class="w-6 h-6 md:w-6 md:h-6 bg-[#1d4ee2] rounded-full m-1" />
         </button>
 
         <button
@@ -169,7 +219,7 @@
             'border-[#be1241]'} mr-3 flex items-center justify-center"
           on:click={handleChangeTheme(themes.rose)}
         >
-          <div class="w-3 h-3 md:w-6 md:h-6 bg-[#be1241] rounded-full m-1" />
+          <div class="w-6 h-6 md:w-6 md:h-6 bg-[#be1241] rounded-full m-1" />
         </button>
 
         <button
@@ -177,7 +227,7 @@
             'border-[#0c891b]'} mr-3 flex items-center justify-center"
           on:click={handleChangeTheme(themes.green)}
         >
-          <div class="w-3 h-3 md:w-6 md:h-6 bg-[#0c891b] rounded-full m-1" />
+          <div class="w-6 h-6 md:w-6 md:h-6 bg-[#0c891b] rounded-full m-1" />
         </button>
 
         <button
@@ -185,7 +235,7 @@
             'border-[#cc4902]'} mr-3 flex items-center justify-center"
           on:click={handleChangeTheme(themes.orange)}
         >
-          <div class="w-3 h-3 md:w-6 md:h-6 bg-[#cc4902] rounded-full m-1" />
+          <div class="w-6 h-6 md:w-6 md:h-6 bg-[#cc4902] rounded-full m-1" />
         </button>
 
         <button
@@ -193,8 +243,18 @@
             'border-[#cf00ce]'} mr-3 flex items-center justify-center"
           on:click={handleChangeTheme(themes.violet)}
         >
-          <div class="w-3 h-3 md:w-6 md:h-6 bg-[#cf00ce] rounded-full m-1" />
+          <div class="w-6 h-6 md:w-6 md:h-6 bg-[#cf00ce] rounded-full m-1" />
         </button>
+
+        <div class="picker-container border-2 rounded-full">
+          <ColorPicker
+            position="responsive"
+            label=""
+            bind:hex
+            on:input={handleChangeColor}
+            nullable
+          />
+        </div>
       </div>
     </Column>
   </Row>

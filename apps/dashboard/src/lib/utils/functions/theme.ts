@@ -12,3 +12,22 @@ export function setTheme(theme?: string) {
   localStorage.setItem('theme', theme || '');
   document.body.className = document.body.className.concat(' ', theme || '');
 }
+
+export function setCustomTheme(theme?: string) {
+  // In case the default theme is added but another theme exists
+  if (!theme && document.body.className.includes('theme-')) {
+    const regex = /theme-[\w]+/gi;
+    document.body.className = document.body.className.replace(regex, theme || '');
+    return;
+  }
+
+  // Remove any class starting with "theme-"
+  const regex = /theme-[\w]+/gi;
+  document.body.className = document.body.className.replace(regex, '');
+
+  // Add the new theme if it doesn't already exist
+  if (!document.body.className.includes(theme || '')) {
+    localStorage.setItem('theme', theme || '');
+    document.body.className = document.body.className.concat(' ', theme || '');
+  }
+}

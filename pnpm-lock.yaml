@@ -207,9 +207,6 @@ importers:
       '@types/pluralize':
         specifier: 0.0.30
         version: 0.0.30
-      '@untemps/svelte-palette':
-        specifier: ^4.1.0
-        version: 4.1.0(svelte@4.1.2)
       '@vercel/speed-insights':
         specifier: ^1.0.1
         version: 1.0.1
@@ -288,6 +285,9 @@ importers:
       stripe:
         specifier: ^14.22.0
         version: 14.22.0
+      svelte-awesome-color-picker:
+        specifier: ^3.1.4
+        version: 3.1.4(svelte@4.1.2)
       svelte-email:
         specifier: ^0.0.4
         version: 0.0.4
@@ -6493,50 +6493,6 @@ packages:
   /@ungap/structured-clone@1.2.0:
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
 
-  /@untemps/dom-observer@2.0.0:
-    resolution: {integrity: sha512-oZBj7j9hYSbuveNFvyPLamRfNh15KvGJC5pLGGpWVcO61EzISMESL0wudwP0UZETEu+0WfaJ16rGXtEZHsq+xw==}
-    dev: false
-
-  /@untemps/svelte-palette@4.1.0(svelte@4.1.2):
-    resolution: {integrity: sha512-Hm+e17xhFDETSa/xLecfN5t+nRYBNdO6xRnH+5UaUsZytNFB3uFXd1KrusLakbqPvvps94nqgJE30pc1dnY3aQ==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      svelte: ^4.0.0
-    dependencies:
-      '@untemps/svelte-use-drop-outside': 1.6.0
-      '@untemps/svelte-use-tooltip': 2.8.0
-      '@untemps/utils': 3.0.0
-      svelte: 4.1.2
-    dev: false
-
-  /@untemps/svelte-use-drop-outside@1.6.0:
-    resolution: {integrity: sha512-izzpTG27DwMzx7QIIkt1S+Z5JAbzNAKn568JZWJXR1ZXWx6ZAJigj8oFlSDAVltlFjeasDPXPJSmGoXALgTw/A==}
-    dependencies:
-      '@untemps/dom-observer': 2.0.0
-      '@untemps/utils': 2.6.0
-      svelte: 3.49.0
-    dev: false
-
-  /@untemps/svelte-use-tooltip@2.8.0:
-    resolution: {integrity: sha512-rXzYyU1JzKucyjAr4J+byrDUk0eFhwC8ggiitJE/v945OJDjjA29dA2d+DTjyppqlm2ZQZzGHYKY5hrdRKdrAg==}
-    dependencies:
-      '@untemps/dom-observer': 2.0.0
-      '@untemps/utils': 2.6.0
-      svelte: 3.49.0
-    dev: false
-
-  /@untemps/utils@2.6.0:
-    resolution: {integrity: sha512-3B5bb4iYkh2h86vqtY8+Mo9vdX1s/NT1cltWpS4U3/WHXFgy/4lJ9180vELJv01MbNNhjlZPtJCMtBp7Fpsb1Q==}
-    engines: {node: '>=14.17'}
-    dependencies:
-      '@babel/runtime': 7.23.4
-    dev: false
-
-  /@untemps/utils@3.0.0:
-    resolution: {integrity: sha512-Iv7a1nvbTzk7ho8bry5iN/RYtns4dwNRuTqD49ixq0N3dOpoMIdSlhvVanbxEmRBqtV7MirCBEfScpTjDbo0ag==}
-    engines: {node: '>=14.17'}
-    dev: false
-
   /@vercel/nft@0.23.1:
     resolution: {integrity: sha512-NE0xSmGWVhgHF1OIoir71XAd0W0C1UE3nzFyhpFiMr3rVhetww7NvM1kc41trBsPG37Bh+dE5FYCTMzM/gBu0w==}
     engines: {node: '>=14'}
@@ -7902,6 +7858,10 @@ packages:
   /color-support@1.1.3:
     resolution: {integrity: sha512-qiBjkpbMLO/HL68y+lh4q0/O1MZFj2RX6X/KmMa3+gJD3z+WwI1ZzDHysvqHGS3mP6mznPckpXmw1nI9cJjyRg==}
     hasBin: true
+    dev: false
+
+  /colord@2.9.3:
+    resolution: {integrity: sha512-jeC1axXpnb0/2nn/Y1LPuLdgXBLH7aDcHu4KEKfqw3CUhX7ZpfBSlPKyqXE6btIgEzfWtrX3/tyBCaCvXvMkOw==}
     dev: false
 
   /colorette@2.0.20:
@@ -16076,6 +16036,24 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
 
+  /svelte-awesome-color-picker@3.1.4(svelte@4.1.2):
+    resolution: {integrity: sha512-tiFakxvSpCwodOSFW6CflnLVSldSlDY77rDipHfW7hvB+4gTP3y6uO+Dm9O9e7P5N7K+CNyNjjdjbZOHYkMyNQ==}
+    peerDependencies:
+      svelte: ^3.55.1 || ^4.0.0 || ^5.0.0
+    dependencies:
+      colord: 2.9.3
+      svelte: 4.1.2
+      svelte-awesome-slider: 1.1.2(svelte@4.1.2)
+    dev: false
+
+  /svelte-awesome-slider@1.1.2(svelte@4.1.2):
+    resolution: {integrity: sha512-HFIWwq6rtX6aXyc6ns2R0P6pDLYIr6nRjTPyAddAiTAgZqsohAoEfOEwKKqMmZ6Q+CH48zzcFdyo6lFkBJvyQw==}
+    peerDependencies:
+      svelte: ^3.54.0 || ^4.0.0 || ^5.0.0
+    dependencies:
+      svelte: 4.1.2
+    dev: false
+
   /svelte-calendar@3.1.6:
     resolution: {integrity: sha512-jOHiPlxBAa1LGVFQZoczdAGnCSI2RKcuQQHj32TjLbXO/P2Povx4JphPEcP7XjKj/s/jimBC6xQyFhyjD0vxbg==}
     dependencies:
@@ -16283,11 +16261,6 @@ packages:
       svelte: 4.1.2
       tslib: 2.6.2
     dev: true
-
-  /svelte@3.49.0:
-    resolution: {integrity: sha512-+lmjic1pApJWDfPCpUUTc1m8azDqYCG1JN9YEngrx/hUyIcFJo6VZhj0A1Ai0wqoHcEIuQy+e9tk+4uDgdtsFA==}
-    engines: {node: '>= 8'}
-    dev: false
 
   /svelte@3.59.2:
     resolution: {integrity: sha512-vzSyuGr3eEoAtT/A6bmajosJZIUWySzY2CzB3w2pgPvnkUjGqlDnsNnA0PMO+mMAhuyMul6C2uuZzY6ELSkzyA==}
