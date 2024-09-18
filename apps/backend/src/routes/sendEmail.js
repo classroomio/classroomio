@@ -3,23 +3,16 @@ const zod = require('zod');
 const { nodemailerTransporter, zohoClient } = require('../utils/email');
 const { withEmailTemplate } = require('../utils/withEmailTemplate');
 
-const router = express.Router();
+const emailRouter = express.Router();
 
-let personalTransporter;
-let defaultTransporter;
+let transporter;
 
-// Initialize transporters
-nodemailerTransporter(true).then((t) => {
-  personalTransporter = t;
-});
-nodemailerTransporter(false).then((t) => {
-  defaultTransporter = t;
+nodemailerTransporter().then((t) => {
+  transporter = t;
 });
 
 async function sendWithNodemailer(emailData) {
   const { from, to, subject, content, isPersonalEmail, replyTo } = emailData;
-
-  const transporter = isPersonalEmail ? personalTransporter : defaultTransporter;
 
   if (!transporter) {
     return;
@@ -73,7 +66,7 @@ async function sendWithZoho(emailData) {
   });
 }
 
-router.post('/', async (req, res) => {
+emailRouter.post('/', async (req, res) => {
   try {
     const mySchema = zod.array(
       zod.object({
@@ -95,7 +88,7 @@ router.post('/', async (req, res) => {
         let res;
 
         try {
-          if (emailData.isPersonalEmail) {
+          if (emailData.isPersonalEmail || !ZOHO_TOKEN) {
             res = await sendWithNodemailer(emailData);
           } else {
             res = await sendWithZoho(emailData);
@@ -116,4 +109,4 @@ router.post('/', async (req, res) => {
   }
 });
 
-module.exports = router;
+module.exports = emailRouter;
