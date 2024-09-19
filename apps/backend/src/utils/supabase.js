@@ -9,7 +9,6 @@ const getSupabase = (config) => {
 
   config = {
     supabaseConfig: {
-      bucketPath: 'https://koxqonvbkeakwvmdegcf.supabase.in/storage/v1/object/sign/',
       url: PUBLIC_SUPABASE_URL || '',
       anonKey: PUBLIC_SUPABASE_ANON_KEY || ''
     }

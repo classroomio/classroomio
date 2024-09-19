@@ -265,21 +265,18 @@
       if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
         $user.fetchingUser = true;
         getProfile();
-      } else if (!['TOKEN_REFRESHED'].includes(event)) {
-        console.log('not logged in, go to login');
-        return goto('/login');
       }
+      // else if (!['TOKEN_REFRESHED'].includes(event)) {
+      //   console.log('not logged in, go to login');
+      //   return goto('/login');
+      // }
     });
 
-    if (data.isOrgSite) {
-      if (!data.org) {
-        goto('/404');
-      } else {
-        $globalStore.orgSiteName = data.orgSiteName;
-        $globalStore.isOrgSite = data.isOrgSite;
+    if (data.isOrgSite && data.org) {
+      $globalStore.orgSiteName = data.orgSiteName;
+      $globalStore.isOrgSite = data.isOrgSite;
 
-        currentOrg.set(data.org);
-      }
+      currentOrg.set(data.org);
     }
 
     return () => {
