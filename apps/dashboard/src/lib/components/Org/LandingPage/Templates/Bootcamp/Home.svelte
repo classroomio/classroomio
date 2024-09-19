@@ -9,6 +9,7 @@
   import Testimonial from './components/Testimonial.svelte';
   import FooterNote from './components/FooterNote.svelte';
   import Footer from './components/Footer.svelte';
+  import Course from './Course.svelte';
 
   export let org = {};
 </script>

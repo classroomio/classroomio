@@ -48,7 +48,6 @@
       <section class="flex flex-wrap items-center justify-center md:justify-start gap-4 p-4">
         {#each $courses.slice(0, viewAll ? $courses.length : 3) as courseData}
           <CourseCard
-            className="bg-[#FDFDFD]"
             slug={courseData.slug}
             bannerImage={courseData.logo || '/images/classroomio-course-img-template.jpg'}
             title={courseData.title}

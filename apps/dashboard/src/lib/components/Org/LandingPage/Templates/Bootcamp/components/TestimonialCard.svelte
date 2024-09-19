@@ -9,7 +9,7 @@
 <!-- Use conditional classes to alternate the layout -->
 <div class={`flex items-center gap-4 p-4 ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}>
   <!-- Profile Image -->
-  <div class="hidden md:block w-20 h-20 rounded-full overflow-hidden">
+  <div class="hidden md:block w-32 h-32 rounded-full overflow-hidden">
     <img
       src={profileImage}
       alt="Profile"
@@ -19,7 +19,7 @@
 
   <!-- Card Content -->
   <div
-    class={`flex-1 max-h-[200px] bg-white p-4 rounded-lg border border-gray-300 relative shadow-lg bubble-card ${
+    class={`flex-1 h-[150px] max-h-[200px] bg-white p-4 rounded-lg border border-gray-300 relative shadow-lg bubble-card ${
       index % 2 === 0 ? 'left-pointer md:ml-4' : 'right-pointer md:mr-4'
     }`}
   >

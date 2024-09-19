@@ -14,7 +14,7 @@
 {#if $landingPageSettings.pathway?.show}
   <section id="path" class="p-4 lg:p-20 h-full bg-white">
     <div class="text-start mb-4 lg:text-center px-4 md:px-10 py-4">
-      <p class="text-2xl md:text-3xl">{$landingPageSettings.pathway.title}</p>
+      <p class="text-2xl md:text-3xl mb-4">{$landingPageSettings.pathway.title}</p>
       <p class=" text-[#878787] text-xs">{$landingPageSettings.pathway.subtitle}</p>
     </div>
     {#if $courseMetaDeta.isLoading}
@@ -34,8 +34,6 @@
             description={courseData.description}
             cost={courseData.cost}
             currency={courseData.currency}
-            className="bg-[#192533] text-white border-none"
-            buttonClass="border-[#2E3B4D]"
           />
         {/each}
       </section>
@@ -43,7 +41,7 @@
         <div class="w-full flex items-center justify-center my-5">
           <PrimaryButton
             variant={VARIANTS.NONE}
-            label="VIEW MORE "
+            label="VIEW MORE"
             className="rounded-none text-lg"
             onClick={() => (viewAll = !viewAll)}
           />
