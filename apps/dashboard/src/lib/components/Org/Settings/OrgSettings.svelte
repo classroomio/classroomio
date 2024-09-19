@@ -224,9 +224,15 @@
     </Column>
   </Row>
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c relative">
-    <Column sm={4} md={4} lg={4}><SectionTitle>Custom theme</SectionTitle></Column>
+    <Column sm={4} md={4} lg={4}
+      ><SectionTitle
+        >{$t('settings.organization.organization_profile.theme.custom_theme')}</SectionTitle
+      ></Column
+    >
     <Column sm={8} md={8} lg={8}>
-      <h1 class="font-normal text-sm m-0">Add Theme</h1>
+      <h1 class="font-normal text-sm m-0">
+        {$t('settings.organization.organization_profile.theme.add_theme')}
+      </h1>
       <div class="mt-3 w-fit h-auto border-2 border-primary-500 rounded-full">
         <ColorPicker
           position="responsive"

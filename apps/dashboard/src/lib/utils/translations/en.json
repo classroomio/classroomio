@@ -88,7 +88,9 @@
         "update_organization": "Update Organization",
         "theme": {
           "heading": "Theme",
-          "sub_heading": "Set your brand color"
+          "sub_heading": "Set your brand color",
+          "custom_theme": "Custom Theme",
+          "add_theme": "Add Theme"
         },
         "customize_lms": {
           "heading": "Customize LMS",
