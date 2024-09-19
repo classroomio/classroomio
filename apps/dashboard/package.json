@@ -37,6 +37,7 @@
     "axios": "^1.5.1",
     "body-parser": "^1.20.2",
     "canvas-confetti": "^1.6.0",
+    "color2k": "^2.0.3",
     "cookie-parser": "^1.4.6",
     "copy-to-clipboard": "^3.3.3",
     "d3": "^7.8.5",

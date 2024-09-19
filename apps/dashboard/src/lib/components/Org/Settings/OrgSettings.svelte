@@ -2,20 +2,21 @@
   import { goto } from '$app/navigation';
   import ColorPicker from 'svelte-awesome-color-picker';
   import { Grid, Row, Column } from 'carbon-components-svelte';
-
   import FlashFilled from 'carbon-icons-svelte/lib/FlashFilled.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import UploadImage from '$lib/components/UploadImage/index.svelte';
+
+  import { isFreePlan } from '$lib/utils/store/org';
+  import { t } from '$lib/utils/functions/translations';
   import { supabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
-  import SectionTitle from '../SectionTitle.svelte';
-  import { t } from '$lib/utils/functions/translations';
-  import { isFreePlan } from '$lib/utils/store/org';
   import { updateOrgNameValidation } from '$lib/utils/functions/validator';
-  import { setTheme, setCustomTheme } from '$lib/utils/functions/theme';
+  import { setTheme, setCustomTheme, injectCustomTheme } from '$lib/utils/functions/theme';
+
+  import SectionTitle from '../SectionTitle.svelte';
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import UploadImage from '$lib/components/UploadImage/index.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   let avatar;
 
@@ -58,50 +59,24 @@
     };
   }
 
-  function injectCustomTheme(hex: string) {
-    const styleId = 'theme-custom';
-    let styleElement = document.getElementById(styleId);
-
-    const styleContent = `
-      .theme-custom .bg-primary-100 {
-        background-color: ${hex} !important; 
-      }
-      .theme-custom .text-primary-100 {
-        color: ${hex} !important; 
-      }
-      .theme-custom .border-primary-100 {
-        border-color: ${hex} !important; 
-      }
-    `;
-
-    if (styleElement) {
-      styleElement.innerHTML = styleContent;
-    } else {
-      styleElement = document.createElement('style');
-      styleElement.id = styleId;
-      styleElement.innerHTML = styleContent;
-
-      document.head.appendChild(styleElement);
-    }
-  }
-
-  async function handleChangeColor() {
+  async function handleCustomTheme() {
     if (!hex) return;
 
-    setTimeout(async () => {
-      injectCustomTheme(hex);
-      setCustomTheme('theme-custom');
+    // Create a promise that resolves after the delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      $currentOrg.theme = hex;
+    injectCustomTheme(hex);
+    setCustomTheme('theme-custom');
 
-      // Uncomment if you want to update the theme in the database
-      // const res = await supabase
-      //   .from('organization')
-      //   .update({ theme: hex })
-      //   .match({ id: $currentOrg.id });
+    $currentOrg.theme = hex;
 
-      // console.log('Update theme', res);
-    }, 5000); // 5-second delay (5000 ms)
+    // Now fire the Supabase request after the delay
+    const res = await supabase
+      .from('organization')
+      .update({ theme: hex })
+      .match({ id: $currentOrg.id });
+
+    console.log('Update theme', res);
   }
 
   async function handleUpdate() {
@@ -245,16 +220,21 @@
         >
           <div class="w-6 h-6 md:w-6 md:h-6 bg-[#cf00ce] rounded-full m-1" />
         </button>
-
-        <div class="picker-container border-2 rounded-full">
-          <ColorPicker
-            position="responsive"
-            label=""
-            bind:hex
-            on:input={handleChangeColor}
-            nullable
-          />
-        </div>
+      </div>
+    </Column>
+  </Row>
+  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c relative">
+    <Column sm={4} md={4} lg={4}><SectionTitle>Custom theme</SectionTitle></Column>
+    <Column sm={8} md={8} lg={8}>
+      <h1 class="font-normal text-sm m-0">Add Theme</h1>
+      <div class="mt-3 w-fit h-auto border-2 border-primary-500 rounded-full">
+        <ColorPicker
+          position="responsive"
+          label=""
+          bind:hex
+          on:input={handleCustomTheme}
+          nullable
+        />
       </div>
     </Column>
   </Row>
