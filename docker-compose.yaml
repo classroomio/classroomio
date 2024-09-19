@@ -12,7 +12,7 @@ services:
     working_dir: /app/project
     volumes:
       - ./apps/backend:/app/project
-    command: npm start
+    command: sh -c "rm -rf node_modules && npm i && npm start"
     ports:
       - '3002:3002'
     environment:
@@ -36,8 +36,8 @@ services:
     image: node:18
     working_dir: /app/project
     volumes:
-      - ./apps/dashboard:/app/project
-    command: sh -c "npm install -g pnpm && pnpm install && pnpm build && pnpm start"
+      - ./:/app/project
+    command: sh -c "npm install -g pnpm && rm -rf node_modules && yes | pnpm install --frozen-lockfile && cd apps/dashboard && pnpm build && pnpm start"
     ports:
       - '5173:5173'
     environment:

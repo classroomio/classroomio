@@ -13,6 +13,9 @@
 	},
 	"license": "MIT",
 	"packageManager": "pnpm@8.0.0",
+	"dependencies": {
+		"turbo": "^1.10.16"
+	},
 	"devDependencies": {
 		"concurrently": "^8.2.2",
 		"cypress": "^13.8.0",
@@ -23,7 +26,6 @@
 		"standard-version": "^9.5.0",
 		"supabase": "^1.151.1",
 		"tsconfig": "workspace:*",
-		"turbo": "^1.10.16",
 		"typescript": "^5.1.6"
 	}
 }

@@ -8,6 +8,7 @@ yarn-error.log
 /dist/
 /cert/
 package-lock.json
+.pnpm-store/*
 
 # Local Netlify folder
 .netlify
