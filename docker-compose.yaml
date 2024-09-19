@@ -8,11 +8,12 @@ version: '3.8'
 
 services:
   backend:
-    image: node:18
-    working_dir: /app/project
-    command: sh -c "cd apps/backend && rm -rf node_modules && npm i && npm start"
-    ports:
-      - '3002:3002'
+    build:
+      dockerfile: Dockerfile
+      context: ./apps/backend
+    volumes:
+      - /app/node_modules
+      - ./apps/backend:/app
     environment:
       - NODE_ENV=production
       # Supabase - Database
@@ -31,11 +32,10 @@ services:
       - SMTP_PORT=${SMTP_PORT}
 
   dashboard:
-    image: node:18
-    working_dir: /app/project
-    command: sh -c "npm install -g pnpm && rm -rf node_modules && yes | pnpm install --frozen-lockfile && cd apps/dashboard && pnpm build && pnpm start"
-    ports:
-      - '5173:5173'
+    build:
+      dockerfile: ./apps/dashboard/Dockerfile
+      context: .
+    # command: sh -c "npm install -g pnpm && rm -rf node_modules && yes | pnpm install --frozen-lockfile && cd apps/dashboard && pnpm build && pnpm start"
     environment:
       - NODE_ENV=production
       - IS_SELFHOSTED=true

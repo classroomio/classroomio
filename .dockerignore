@@ -15,4 +15,4 @@ build
 package
 **/.env
 
-.pnpm-store
+.pnpm-store/*

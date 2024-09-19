@@ -3,8 +3,7 @@
 	"version": "0.1.1",
 	"scripts": {
 		"build": "turbo run build",
-		"dev": "turbo run dev",
-		"prepare": "turbo run prepare",
+		"dev": "turbo prepare && turbo run dev",
 		"lint": "turbo run lint",
 		"clean": "turbo clean && rm -rf node_modules",
 		"format": "prettier . --write",
