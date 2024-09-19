@@ -55,7 +55,3 @@ services:
       - PUBLIC_IP_REGISTRY_KEY=${PUBLIC_IP_REGISTRY_KEY}
     depends_on:
       - backend
-
-volumes:
-  backend_data:
-  dashboard_data:
