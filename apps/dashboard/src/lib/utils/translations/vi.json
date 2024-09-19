@@ -1240,7 +1240,9 @@
         },
         "theme": {
           "heading": "chủ đề",
-          "sub_heading": "Đặt màu thương hiệu của bạn"
+          "sub_heading": "Đặt màu thương hiệu của bạn",
+          "custom_theme": "Chủ đề tùy chỉnh",
+          "add_theme": "Thêm chủ đề"
         },
         "customize_lms": {
           "heading": "Tùy chỉnh LMS",
