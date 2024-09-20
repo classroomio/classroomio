@@ -35,11 +35,20 @@ services:
     build:
       dockerfile: ./apps/dashboard/Dockerfile
       context: ./
+      args:
+        - PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}
+        - PUBLIC_SUPABASE_ANON_KEY=${PUBLIC_SUPABASE_ANON_KEY}
+        - PRIVATE_SUPABASE_SERVICE_ROLE=${PRIVATE_SUPABASE_SERVICE_ROLE}
+        - PRIVATE_APP_HOST=${PRIVATE_APP_HOST}
+        - PRIVATE_APP_SUBDOMAINS=${PRIVATE_APP_SUBDOMAINS}
+        - UNSPLASH_API_KEY=${UNSPLASH_API_KEY}
+        - OPENAI_API_KEY=${OPENAI_API_KEY}
+        - AUTH_BEARER_TOKEN=${AUTH_BEARER_TOKEN}
+        - TEAM_ID_VERCEL=${TEAM_ID_VERCEL}
     volumes:
       - .:/app
       - /app/node_modules
       - /app/apps/dashboard/node_modules
-    # command: sh -c "npm install -g pnpm && rm -rf node_modules && yes | pnpm install --frozen-lockfile && cd apps/dashboard && pnpm build && pnpm start"
     environment:
       - IS_SELFHOSTED=true
       # Supabase - Database

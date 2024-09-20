@@ -1,4 +1,4 @@
-import { PRIVATE_SUPABASE_SERVICE_ROLE } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { config } from '$lib/config';
 
@@ -12,7 +12,7 @@ export let supabase: SupabaseClient;
 export const getServerSupabase = () => {
   if (supabase) return supabase;
 
-  supabase = createClient(config.supabaseConfig.url, PRIVATE_SUPABASE_SERVICE_ROLE || '', {
+  supabase = createClient(config.supabaseConfig.url, env.PRIVATE_SUPABASE_SERVICE_ROLE || '', {
     auth: {
       persistSession: false,
       autoRefreshToken: false,
