@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import ColorPicker from 'svelte-awesome-color-picker';
   import { Grid, Row, Column } from 'carbon-components-svelte';
@@ -27,9 +28,9 @@
   let errors: Error = {
     orgName: ''
   };
-
   let loading = false;
   let hex = '';
+  let showAddIcon = false;
 
   const themes = {
     rose: 'theme-rose',
@@ -47,6 +48,8 @@
         .join(' ')
         .concat(!!t ? ' ' : '', t);
       $currentOrg.theme = t;
+
+      hex = $currentOrg.theme;
 
       setTheme(t);
 
@@ -140,6 +143,18 @@
   function gotoSetting(pathname) {
     goto(`${$currentOrgPath}/settings${pathname}`);
   }
+
+  onMount(() => {
+    hex = $currentOrg.theme;
+  });
+
+  $: {
+    if (hex.includes('theme-') || hex.includes('')) {
+      showAddIcon = true;
+    } else {
+      showAddIcon = false;
+    }
+  }
 </script>
 
 <Grid class="border-c rounded border-gray-200 dark:border-neutral-600 w-full mt-5">
@@ -223,17 +238,35 @@
       </div>
     </Column>
   </Row>
+  <!-- custom theme -->
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c relative">
-    <Column sm={4} md={4} lg={4}
-      ><SectionTitle
+    <Column sm={4} md={4} lg={4}>
+      <SectionTitle
         >{$t('settings.organization.organization_profile.theme.custom_theme')}</SectionTitle
-      ></Column
-    >
+      >
+    </Column>
     <Column sm={8} md={8} lg={8}>
       <h1 class="font-normal text-sm m-0">
         {$t('settings.organization.organization_profile.theme.add_theme')}
       </h1>
-      <div class="mt-3 w-fit h-auto border-2 border-primary-500 rounded-full">
+      <div class="mt-3 w-fit h-auto border-2 border-primary-500 rounded-full relative group">
+        {#if hex === '' || hex.includes('theme-')}
+          <!-- plus icon positioned over the color picker -->
+          <div
+            class="absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-200"
+          >
+            <svg
+              class="w-6 h-6 text-black z-10 opacity-100"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
+            </svg>
+          </div>
+        {/if}
         <ColorPicker
           position="responsive"
           label=""
@@ -241,9 +274,28 @@
           on:input={handleCustomTheme}
           nullable
         />
+        <!-- show plus icon on hover when there's a custom color -->
+        {#if hex && !hex.includes('theme-')}
+          <div
+            style="pointer-events: none;"
+            class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+          >
+            <svg
+              class="w-6 h-6 text-white z-10 opacity-100"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
+            </svg>
+          </div>
+        {/if}
       </div>
     </Column>
   </Row>
+
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle
@@ -316,3 +368,9 @@
     </Column>
   </Row>
 </Grid>
+
+<style>
+  .group:hover .opacity-0 {
+    opacity: 1;
+  }
+</style>
