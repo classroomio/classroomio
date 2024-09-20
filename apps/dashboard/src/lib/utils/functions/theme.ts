@@ -1,29 +1,28 @@
-import { lighten } from 'color2k';
+import { darken, lighten } from 'color2k';
 
 export function setTheme(theme: string) {
-  // this condition is to check if it's a hex code coming from the db or it's a specified theme
+  // this condition checks if it's a hex code from the db or a specified theme
   if (theme && !theme.includes('theme-')) {
-    // this adds the "custom-theme" styles to the head tag
+    // add the "custom-theme" styles to the head tag
     injectCustomTheme(theme);
 
-    // this adds the "custom-theme" classname to the head tag 
+    // add the "custom-theme" classname to the head tag
     setCustomTheme('theme-custom');
-  } else {
-
-    // if the string passed has "theme" in it, it goes on with the existing logic
-    if (!theme && document.body.className.includes('theme-')) {
-          const regex = /theme-[\w]+/gi;
-          document.body.className = document.body.className.replace(regex, theme || '');
-          return;
-        }
-      
-        // In case theme already exists in dom, don't add
-        if (document.body.className.includes(theme || '')) return;
-      
-        localStorage.setItem('theme', theme || '');
-        document.body.className = document.body.className.concat(' ', theme || '');
+  } else if (!theme && document.body.className.includes('theme-')) {
+    // if no theme and a theme is already applied, remove it
+    const regex = /theme-[\w]+/gi;
+    document.body.className = document.body.className.replace(regex, theme || '');
+    return;
   }
+
+  // In case theme already exists in dom, don't add
+  if (document.body.className.includes(theme || '')) return;
+
+  // set the new theme
+  localStorage.setItem('theme', theme || '');
+  document.body.className = document.body.className.concat(' ', theme || '');
 }
+
 
 export function setCustomTheme(theme?: string) {
   // In case the default theme is added but another theme exists
@@ -51,16 +50,16 @@ export function injectCustomTheme(hex: string) {
 
   // generate shades using color2k's lighten function
   const shades = {
-    50: lighten(hex, 0.9),
-    100: lighten(hex, 0.8),
-    200: lighten(hex, 0.7),
-    300: lighten(hex, 0.6),
-    400: lighten(hex, 0.5),
-    500: lighten(hex, 0.4),
-    600: lighten(hex, 0.3),
-    700: lighten(hex, 0.2),
-    800: lighten(hex, 0.1),
-    900: hex, // the original color
+    50: lighten(hex, 0.7),
+    100: lighten(hex, 0.6),
+    200: lighten(hex, 0.5),
+    300: lighten(hex, 0.4),
+    400: lighten(hex, 0.3),
+    500: lighten(hex, 0.2),
+    600: lighten(hex, 0.1),
+    700: hex,
+    800: darken(hex, 0.1),
+    900: darken(hex, 0.2),
   };
 
   const styleContent = `

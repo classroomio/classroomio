@@ -73,12 +73,14 @@
     $currentOrg.theme = hex;
 
     // Now fire the Supabase request after the delay
-    const res = await supabase
+    const { error } = await supabase
       .from('organization')
       .update({ theme: hex })
       .match({ id: $currentOrg.id });
 
-    console.log('Update theme', res);
+    if (error) {
+      snackbar.error('Failed to update theme: ' + error.message);
+    }
   }
 
   async function handleUpdate() {
