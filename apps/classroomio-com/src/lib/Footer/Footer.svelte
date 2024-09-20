@@ -15,7 +15,7 @@
         class="mb-5"
       />
       <p class="lg:text-base mb-5 mr-2 text-sm leading-7 tracking-wide text-gray-600 lg:leading-7">
-        Launch Your Online Bootcamp In Minutes
+        The Open Source Learning Management System for Companies
         <br />
         The easiest way to launch and scale your online bootcamp
       </p>
