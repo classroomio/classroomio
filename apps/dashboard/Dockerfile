@@ -1,5 +1,3 @@
-
-
 FROM node:18
 
 WORKDIR "/app"
@@ -15,11 +13,11 @@ COPY . /app/
 
 WORKDIR "/app/apps/dashboard"
 
-RUN pnpm i  --frozen-lockfile
+RUN pnpm i --frozen-lockfile
+RUN pnpm prepare
 RUN pnpm build
 
 EXPOSE 5000
 
-CMD ["ls", "-la"]
 CMD ["pnpm", "start"]
 # CMD [ "sh", "-c", "ls -la && cd apps/dashboard && pnpm build && pnpm start" ]

@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { createCheckout } from '@lemonsqueezy/lemonsqueezy.js';
-import { LEMON_SQUEEZY_STORE_ID } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import { configureLemonSqueezy } from '$lib/utils/services/lemonsqueezy';
 
 export async function POST({ request }) {
@@ -23,7 +23,7 @@ export async function POST({ request }) {
 
   console.log({ checkoutData });
 
-  const { data } = await createCheckout(LEMON_SQUEEZY_STORE_ID, productId, {
+  const { data } = await createCheckout(env.LEMON_SQUEEZY_STORE_ID, productId, {
     checkoutData
   });
 
