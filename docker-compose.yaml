@@ -34,10 +34,13 @@ services:
   dashboard:
     build:
       dockerfile: ./apps/dashboard/Dockerfile
-      context: .
+      context: ./
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/apps/dashboard/node_modules
     # command: sh -c "npm install -g pnpm && rm -rf node_modules && yes | pnpm install --frozen-lockfile && cd apps/dashboard && pnpm build && pnpm start"
     environment:
-      - NODE_ENV=production
       - IS_SELFHOSTED=true
       # Supabase - Database
       - PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}

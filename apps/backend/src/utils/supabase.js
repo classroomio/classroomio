@@ -9,14 +9,18 @@ const getSupabase = (config) => {
 
   config = {
     supabaseConfig: {
-      url: PUBLIC_SUPABASE_URL || '',
-      anonKey: PUBLIC_SUPABASE_ANON_KEY || ''
+      url: PUBLIC_SUPABASE_URL,
+      anonKey: PUBLIC_SUPABASE_ANON_KEY
     }
   };
 
-  supabase = createClient(config.supabaseConfig.url, config.supabaseConfig.anonKey, {
-    auth: { persistSession: false }
-  });
+  try {
+    supabase = createClient(config.supabaseConfig.url, config.supabaseConfig.anonKey, {
+      auth: { persistSession: false }
+    });
+  } catch (error) {
+    console.error('Error starting supabase', error)
+  }
 
   return supabase;
 };
