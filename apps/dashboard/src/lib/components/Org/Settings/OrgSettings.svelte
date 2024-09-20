@@ -30,7 +30,6 @@
   };
   let loading = false;
   let hex = '';
-  let showAddIcon = false;
 
   const themes = {
     rose: 'theme-rose',
@@ -49,7 +48,7 @@
         .concat(!!t ? ' ' : '', t);
       $currentOrg.theme = t;
 
-      hex = $currentOrg.theme;
+      hex = '';
 
       setTheme(t);
 
@@ -147,14 +146,6 @@
   onMount(() => {
     hex = $currentOrg.theme;
   });
-
-  $: {
-    if (hex.includes('theme-') || hex.includes('')) {
-      showAddIcon = true;
-    } else {
-      showAddIcon = false;
-    }
-  }
 </script>
 
 <Grid class="border-c rounded border-gray-200 dark:border-neutral-600 w-full mt-5">
