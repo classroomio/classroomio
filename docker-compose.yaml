@@ -35,6 +35,16 @@ services:
     build:
       dockerfile: ./apps/dashboard/Dockerfile
       context: ./
+      args:
+        - PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}
+        - PUBLIC_SUPABASE_ANON_KEY=${PUBLIC_SUPABASE_ANON_KEY}
+        - PRIVATE_SUPABASE_SERVICE_ROLE=${PRIVATE_SUPABASE_SERVICE_ROLE}
+        - PRIVATE_APP_HOST=${PRIVATE_APP_HOST}
+        - PRIVATE_APP_SUBDOMAINS=${PRIVATE_APP_SUBDOMAINS}
+        - UNSPLASH_API_KEY=${UNSPLASH_API_KEY}
+        - OPENAI_API_KEY=${OPENAI_API_KEY}
+        - PUBLIC_SERVER_URL=${PUBLIC_SERVER_URL}
+        - PUBLIC_IP_REGISTRY_KEY=${PUBLIC_IP_REGISTRY_KEY}
     volumes:
       - .:/app
       - /app/node_modules
