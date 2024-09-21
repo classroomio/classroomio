@@ -8,6 +8,7 @@
   import Plain from '$lib/components/Org/LandingPage/Templates/Plain/Home.svelte';
   import Organization from '$lib/components/Org/LandingPage/Templates/Organization/Home.svelte';
   import Bootcamp from '$lib/components/Org/LandingPage/Templates/Bootcamp/Home.svelte';
+  import Prep from '$lib/components/Org/LandingPage/Templates/Prep/Home.svelte';
 
   import Course from './Templates/Plain/Course.svelte';
 
@@ -62,5 +63,6 @@
   <!-- <Experts {org} /> -->
   <!-- <Organization {org} /> -->
   <!-- <Plain {org} {orgSiteName} /> -->
-  <Bootcamp {org} />
+  <!-- <Bootcamp {org} /> -->
+  <Prep {org} />
 {/if}

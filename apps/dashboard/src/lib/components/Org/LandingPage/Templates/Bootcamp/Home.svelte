@@ -2,14 +2,14 @@
   import Navigation from '$lib/components/Org/LandingPage/Templates/Bootcamp/components/Navigation.svelte';
   import PageLoader from '$lib/components/Org/LandingPage/PageLoader.svelte';
   import { t } from '$lib/utils/functions/translations';
-  import Hero from './components/Hero.svelte';
-  import AboutUs from './components/AboutUs.svelte';
-  import Courses from './components/Courses.svelte';
-  import LearningPath from './components/LearningPath.svelte';
-  import Testimonial from './components/Testimonial.svelte';
-  import FooterNote from './components/FooterNote.svelte';
-  import Footer from './components/Footer.svelte';
-  import Course from './Course.svelte';
+  import Hero from '$lib/components/Org/LandingPage/Templates/Bootcamp/components/Hero.svelte';
+  import AboutUs from '$lib/components/Org/LandingPage/Templates/Bootcamp/components/AboutUs.svelte';
+  import Courses from '$lib/components/Org/LandingPage/Templates/Bootcamp/components/Courses.svelte';
+  import LearningPath from '$lib/components/Org/LandingPage/Templates/Bootcamp/components/LearningPath.svelte';
+  import Testimonial from '$lib/components/Org/LandingPage/Templates/Bootcamp/components/Testimonial.svelte';
+  import FooterNote from '$lib/components/Org/LandingPage/Templates/Bootcamp/components/FooterNote.svelte';
+  import Footer from '$lib/components/Org/LandingPage/Templates/Bootcamp/components/Footer.svelte';
+  import Course from '$lib/components/Org/LandingPage/Templates/Bootcamp/Course.svelte';
 
   export let org = {};
 </script>
