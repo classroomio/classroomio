@@ -2,6 +2,7 @@ const express = require('express');
 const zod = require('zod');
 const { nodemailerTransporter, zohoClient } = require('../utils/email');
 const { withEmailTemplate } = require('../utils/withEmailTemplate');
+const { ZOHO_TOKEN } = process.env;
 
 const emailRouter = express.Router();
 
