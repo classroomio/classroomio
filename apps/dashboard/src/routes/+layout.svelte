@@ -258,7 +258,7 @@
       }
 
       // Skip Authentication
-      if (data.skipAuth) return;
+      if (data.skipAuth || $user.fetchingUser) return;
 
       // Authentication Steps
       if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
