@@ -14,24 +14,26 @@ WORKDIR /app
 #
 # This is a little brittle, since the puppeteer chrome could in theory diverge
 # from the official apt chrome's shared lib deps. But it works..
-RUN apt-get update \
-  && apt-get install curl gnupg -y \
-  && curl --location --silent https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-  && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
-  && apt-get update \
-  && apt-get install google-chrome-stable -y --no-install-recommends \
-  && apt-get remove google-chrome-stable -y \
-  && rm -rf /var/lib/apt/lists/*
+# RUN apt-get update \
+#   && apt-get install curl gnupg -y \
+#   && curl --location --silent https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+#   && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
+#   && apt-get update \
+#   && apt-get install google-chrome-stable -y --no-install-recommends \
+#   && apt-get remove google-chrome-stable -y \
+#   && rm -rf /var/lib/apt/lists/*
 
 # Add emoji fonts.
 # Source: https://gist.github.com/win0err/9d8c7f0feabdfe8a4c9787b02c79ac51
-RUN mkdir ~/.fonts/ && \
-  wget https://github.com/samuelngs/apple-emoji-linux/releases/download/ios-15.4/AppleColorEmoji.ttf -O ~/.fonts/AppleColorEmoji.ttf
+# RUN mkdir ~/.fonts/ && \
+#   wget https://github.com/samuelngs/apple-emoji-linux/releases/download/ios-15.4/AppleColorEmoji.ttf -O ~/.fonts/AppleColorEmoji.ttf
 
-COPY package.json /app/
+COPY ./package.json /app
 RUN npm install --frozen-lockfile
-COPY ./ /app/
+COPY . /app
 
 ENV PORT 3002
+
 EXPOSE 3002
+
 CMD ["node", "server.js"]

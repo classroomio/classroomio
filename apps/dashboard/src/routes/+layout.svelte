@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
   import { MetaTags } from 'svelte-meta-tags';
   import { fly } from 'svelte/transition';
   import { derived } from 'svelte/store';
@@ -60,10 +59,6 @@
 
     // Set up posthog
     initPosthog();
-
-    if (!dev) {
-      injectSpeedInsights();
-    }
   }
 
   function setAnalyticsUser() {

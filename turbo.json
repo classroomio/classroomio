@@ -1,25 +1,26 @@
 {
-	"$schema": "https://turbo.build/schema.json",
-	"pipeline": {
-		"build": {
-			"dependsOn": ["^build"],
-			"outputs": [".next/**", "!.next/cache/**", ".svelte-kit/**", ".vercel/**"]
-		},
-		"lint": {
-			"dependsOn": ["^build"]
-		},
-		"format": { "cache": true },
-		"dev": {
-			"cache": false,
-			"persistent": true
-		},
-		"prepare": {
-			"dependsOn": ["^build"],
-			"persistent": true
-		},
-		"clean": { "cache": false },
-		"db:generate": { "cache": false },
-		"db:push": { "cache": false },
-		"db:format": { "cache": false }
-	}
+  "$schema": "https://turbo.build/schema.json",
+  "globalEnv": ["IS_SELFHOSTED"],
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**", ".svelte-kit/**", ".vercel/**"]
+    },
+    "lint": {
+      "dependsOn": ["^build"]
+    },
+    "format": { "cache": true },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "prepare": {
+      "dependsOn": ["^build"],
+      "persistent": true
+    },
+    "clean": { "cache": false },
+    "db:generate": { "cache": false },
+    "db:push": { "cache": false },
+    "db:format": { "cache": false }
+  }
 }
