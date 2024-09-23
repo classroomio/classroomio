@@ -18,6 +18,7 @@
   import { sideBar } from './store';
   import { t } from '$lib/utils/functions/translations';
   import { goto } from '$app/navigation';
+  import BorderBeam from '../AnimationComponents/BorderBeam.svelte';
 
   interface menuItems {
     label: string;
@@ -116,7 +117,7 @@
     $sideBar.hidden
       ? 'absolute z-40 -translate-x-[100%] md:relative md:translate-x-0'
       : 'absolute z-40 translate-x-0 md:relative'
-  } border-r-1 h-[calc(100vh-48px)] w-[250px] min-w-[250px] overflow-y-auto border border-b-0 border-l-0 border-t-0 border-gray-100 dark:border-neutral-600 bg-gray-100 transition dark:bg-neutral-900`}
+  } border-r-1 h-[calc(100vh-48px)] w-[250px] overflow-x-hidden min-w-[250px] overflow-y-auto border border-b-0 border-l-0 border-t-0 border-gray-100 dark:border-neutral-600 bg-gray-100 transition dark:bg-neutral-900`}
 >
   <div class="flex h-full flex-col">
     <div class="">
@@ -164,8 +165,9 @@
 
     {#if $isFreePlan}
       <div
-        class="border-primary-700 mx-4 flex flex-col items-center justify-center gap-4 rounded-md border px-2 py-6 text-center hover:scale-95 transition-all ease-in-out"
+        class="mx-4 dark:mx-3 relative border border-gray-700/70 flex flex-col items-center justify-center gap-4 rounded-md px-2 py-6 text-center hover:scale-95 transition-all ease-in-out"
       >
+        <BorderBeam size={80} duration={10} />
         <img src="/upgrade.png" alt="upgrade" class="h-16 w-16" />
         <span class="flex flex-col gap-1">
           <p class="text-base font-semibold">{$t('org_navigation.early_adopter')}</p>

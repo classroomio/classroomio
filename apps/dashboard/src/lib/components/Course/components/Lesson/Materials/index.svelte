@@ -2,22 +2,22 @@
   import isEmpty from 'lodash/isEmpty';
   import { fade } from 'svelte/transition';
   import { useCompletion } from 'ai/svelte';
-  import MODES from '$lib/utils/constants/mode';
-  import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
-  import { formatYoutubeVideo } from '$lib/utils/functions/formatYoutubeVideo';
-  import Modal from '$lib/components/Modal/index.svelte';
   import { Popover } from 'carbon-components-svelte';
-  import AlignBoxTopLeftIcon from 'carbon-icons-svelte/lib/AlignBoxTopLeft.svelte';
   import ListIcon from 'carbon-icons-svelte/lib/List.svelte';
-  import IbmWatsonKnowledgeStudioIcon from 'carbon-icons-svelte/lib/IbmWatsonKnowledgeStudio.svelte';
+  import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
   import MagicWandFilled from 'carbon-icons-svelte/lib/MagicWandFilled.svelte';
-  import Tabs from '$lib/components/Tabs/index.svelte';
-  import TabContent from '$lib/components/TabContent/index.svelte';
-  import Box from '$lib/components/Box/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import AlignBoxTopLeftIcon from 'carbon-icons-svelte/lib/AlignBoxTopLeft.svelte';
+  import IbmWatsonKnowledgeStudioIcon from 'carbon-icons-svelte/lib/IbmWatsonKnowledgeStudio.svelte';
+
+  import * as CONSTANTS from './constants';
+  import { orderedTabs } from './constants';
+  import MODES from '$lib/utils/constants/mode';
+  import type { LOCALE } from '$lib/utils/types';
+  import type { LessonPage } from '$lib/utils/types';
+  import { course } from '$lib/components/Course/store';
+  import { supabase } from '$lib/utils/functions/supabase';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import {
     lesson,
     lessons,
@@ -27,22 +27,25 @@
     uploadCourseVideoStore,
     deleteLessonVideo
   } from '$lib/components/Course/components/Lesson/store/lessons';
-  import VideoUploader from '$lib/components/Course/components/Lesson/Materials/Video/Index.svelte';
-  import { course } from '$lib/components/Course/store';
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
-  import * as CONSTANTS from './constants';
-  import { orderedTabs } from './constants';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { t, lessonFallbackNote } from '$lib/utils/functions/translations';
+  import { formatYoutubeVideo } from '$lib/utils/functions/formatYoutubeVideo';
+
+  import Loader from './Loader.svelte';
+  import Box from '$lib/components/Box/index.svelte';
+  import Tabs from '$lib/components/Tabs/index.svelte';
+  import Modal from '$lib/components/Modal/index.svelte';
+  import TextField from '$lib/components/Form/TextField.svelte';
   import ComponentNote from './components/ComponentNote.svelte';
   import ComponentSlide from './components/ComponentSlide.svelte';
   import ComponentVideo from './components/ComponentVideo.svelte';
+  import TextEditor from '$lib/components/TextEditor/index.svelte';
+  import IconButton from '$lib/components/IconButton/index.svelte';
+  import TabContent from '$lib/components/TabContent/index.svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
-  import type { LessonPage } from '$lib/utils/types';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
-  import { t, lessonFallbackNote } from '$lib/utils/functions/translations';
-  import { supabase } from '$lib/utils/functions/supabase';
-  import type { LOCALE } from '$lib/utils/types';
-  import Loader from './Loader.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import BorderBeam from '$lib/components/AnimationComponents/BorderBeam.svelte';
+  import VideoUploader from '$lib/components/Course/components/Lesson/Materials/Video/Index.svelte';
 
   export let mode = MODES.view;
   export let prevMode = '';
@@ -491,7 +494,8 @@
     </div>
   {/key}
 {:else}
-  <Box className="text-center">
+  <Box className="text-center relative">
+    <BorderBeam size={150} duration={10} />
     <img src="/no-video.svg" alt="Video not found" />
     <h3 class="text-xl font-normal dark:text-white py-2">
       {$t('course.navItem.lessons.materials.body_heading')}

@@ -8,20 +8,23 @@
   import { InlineCalendar, Datepicker } from 'svelte-calendar';
   // import { supabase } from '$lib/utils/functions/supabase';
   // import Avatar from '$lib/components/Avatar/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { formatUserUpcomingData, formatDate } from '$lib/utils/functions/routes/dashboard';
+
   import { user } from '$lib/utils/store/user';
-  import { fetchUserUpcomingData } from '$lib/utils/services/dashboard';
-  import { isMobile } from '$lib/utils/store/useMobile';
-  import type { UserLessonDataType, LessonsByMonthIndexType } from '$lib/utils/types';
-  import WelcomeModal from '$lib/components/WelcomeModal/WelcomeModal.svelte';
-  import { isOrgAdmin, currentOrgPath, currentOrg, userUpcomingData } from '$lib/utils/store/org';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
-  import { getGreeting } from '$lib/utils/functions/date';
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
-  // import Meteors from '$lib/components/AnimationComponents/Meteors.svelte';
+  import { isMobile } from '$lib/utils/store/useMobile';
+  import { getGreeting } from '$lib/utils/functions/date';
+  import { fetchUserUpcomingData } from '$lib/utils/services/dashboard';
+  import type { UserLessonDataType, LessonsByMonthIndexType } from '$lib/utils/types';
+  import { formatUserUpcomingData, formatDate } from '$lib/utils/functions/routes/dashboard';
+  import { isOrgAdmin, currentOrgPath, currentOrg, userUpcomingData } from '$lib/utils/store/org';
+
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import Meteors from '$lib/components/AnimationComponents/Meteors.svelte';
+  import WelcomeModal from '$lib/components/WelcomeModal/WelcomeModal.svelte';
+  import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
+  import MagicCard from '$lib/components/AnimationComponents/MagicCard.svelte';
 
   export let data;
 
@@ -210,26 +213,34 @@
     </div>
   </div>
 
-  <div
-    class="w-full h-fit lg:h-[265px] flex md:items-center justify-between flex-col-reverse md:flex-row p-5 lg:p-10 rounded-md bg-primary-900 dark:bg-transparent my-2"
+  <MagicCard
+    class="cursor-pointer group hover:border-[#1D398B] transition-all duration-300"
+    gradientColor="#1D398B"
+    gradientSize={300}
   >
-    <!-- <Meteors number={30} /> -->
-    <span>
-      <p class="w-full md:w-[75%] lg:w-[80%] text-white text-xs lg:text-xl font-normal mb-5">
-        {$t('dashboard.hero_content')}
-      </p>
-      <PrimaryButton
-        label={$t('dashboard.hero_button')}
-        variant={VARIANTS.CONTAINED_WHITE}
-        onClick={() => goto(`${$currentOrgPath}/courses`)}
+    <div
+      class="w-full h-fit lg:h-[265px] flex md:items-center justify-between flex-col-reverse md:flex-row p-5 lg:p-10 rounded-md bg-[#1D398B] dark:bg-transparent my-2 dark:my-0"
+    >
+      <div class="dark:block hidden">
+        <Meteors number={50} />
+      </div>
+      <span>
+        <p class="w-full md:w-[75%] lg:w-[80%] text-white text-xs lg:text-xl font-normal mb-5">
+          {$t('dashboard.hero_content')}
+        </p>
+        <PrimaryButton
+          label={$t('dashboard.hero_button')}
+          variant={VARIANTS.CONTAINED_WHITE}
+          onClick={() => goto(`${$currentOrgPath}/courses`)}
+        />
+      </span>
+      <img
+        src="/images/student-learning.svg"
+        alt="student Learning Pictogram"
+        class="w-28 md:block md:w-1/3 lg:w-[200px] lg:max-h-[205px] mb-3 md:mb-0"
       />
-    </span>
-    <img
-      src="/images/student-learning.svg"
-      alt="student Learning Pictogram"
-      class="w-28 md:block md:w-1/3 lg:w-[200px] lg:max-h-[205px] mb-3 md:mb-0"
-    />
-  </div>
+    </div>
+  </MagicCard>
 
   <!-- <div class="flex items-start flex-wrap">
     {#each boxes as box}
