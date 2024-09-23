@@ -28,10 +28,12 @@ WORKDIR /app
 # RUN mkdir ~/.fonts/ && \
 #   wget https://github.com/samuelngs/apple-emoji-linux/releases/download/ios-15.4/AppleColorEmoji.ttf -O ~/.fonts/AppleColorEmoji.ttf
 
-COPY package.json /app/
+COPY ./package.json /app
 RUN npm install --frozen-lockfile
-COPY ./ /app/
+COPY . /app
 
 ENV PORT 3002
+
 EXPOSE 3002
-CMD ["npm", "start"]
+
+CMD ["node", "server.js"]

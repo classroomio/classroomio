@@ -1,4 +1,4 @@
-FROM node:18-alpine AS builder
+FROM node:18-alpine
 
 WORKDIR /app
 
@@ -29,13 +29,6 @@ WORKDIR /app/apps/dashboard
 RUN pnpm i
 RUN pnpm build
 RUN pnpm prune --production
-
-FROM node:18-alpine
-WORKDIR /app/apps/dashboard
-
-COPY --from=builder /app/apps/dashboard/build build/
-COPY --from=builder /app/apps/dashboard/node_modules node_modules/
-COPY package.json .
 
 EXPOSE 5000
 
