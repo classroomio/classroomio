@@ -12,7 +12,7 @@ nodemailerTransporter().then((t) => {
 });
 
 async function sendWithNodemailer(emailData) {
-  const { from, to, subject, content, isPersonalEmail, replyTo } = emailData;
+  const { from, to, subject, content, replyTo } = emailData;
 
   if (!transporter) {
     return;
@@ -74,7 +74,6 @@ emailRouter.post('/', async (req, res) => {
         to: zod.string(),
         subject: zod.string(),
         content: zod.string(),
-        isPersonalEmail: zod.boolean().optional(),
         replyTo: zod.string().optional()
       })
     );
@@ -88,7 +87,7 @@ emailRouter.post('/', async (req, res) => {
         let res;
 
         try {
-          if (emailData.isPersonalEmail || !ZOHO_TOKEN) {
+          if (!ZOHO_TOKEN) {
             res = await sendWithNodemailer(emailData);
           } else {
             res = await sendWithZoho(emailData);
