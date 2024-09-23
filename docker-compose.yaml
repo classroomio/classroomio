@@ -49,7 +49,6 @@ services:
       - .:/app
       - /app/node_modules
       - /app/apps/dashboard/node_modules
-      - /app/apps/dashboard/build
     # command: sh -c "npm install -g pnpm && rm -rf node_modules && yes | pnpm install --frozen-lockfile && cd apps/dashboard && pnpm build && pnpm start"
     environment:
       - IS_SELFHOSTED=true

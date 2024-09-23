@@ -1,24 +1,3 @@
-import pythonSyntax from './001_python_syntax';
-import pythonComments from './002_python_comments';
-import pythonVariables from './003_python_variables';
-import pythonDataTypes from './004_python_dataTypes';
-import pythonNumbers from './005_python_numbers';
-import pythonCasting from './006_python_casting';
-import pythonStrings from './007_python_strings';
-import pythonBooleans from './008_python_booleans';
-import pythonOperators from './009_python_operators';
-import pythonLists from './010_python_lists';
-import pythonTuples from './011_python_tuples';
-import pythonSets from './012_python_sets';
-import pythonDictionaries from './013_python_dictionaries';
-import pythonConditionals from './014_python_conditionals';
-import pythonWhileLoops from './015_python_whileLoops';
-import pythonForLoops from './016_python_forLoops';
-import pythonFunctions from './017_python_functions';
-import pythonLambda from './018_python_lambda';
-import pythonArrays from './019_python_arrays';
-import pythonClasses from './020_python_classes';
-
 export const PYTHON_IDS: { [key: string]: string } = {
   PYTHON_SYNTAX: 'PYTHON_SYNTAX',
   PYTHON_COMMENTS: 'PYTHON_COMMENTS',
@@ -43,24 +22,24 @@ export const PYTHON_IDS: { [key: string]: string } = {
 };
 
 export const PYTHON_TEMPLATES = {
-  [PYTHON_IDS.PYTHON_SYNTAX]: pythonSyntax,
-  [PYTHON_IDS.PYTHON_COMMENTS]: pythonComments,
-  [PYTHON_IDS.PYTHON_VARIABLES]: pythonVariables,
-  [PYTHON_IDS.PYTHON_DATATYPES]: pythonDataTypes,
-  [PYTHON_IDS.PYTHON_NUMBERS]: pythonNumbers,
-  [PYTHON_IDS.PYTHON_CASTING]: pythonCasting,
-  [PYTHON_IDS.PYTHON_STRINGS]: pythonStrings,
-  [PYTHON_IDS.PYTHON_BOOLEANS]: pythonBooleans,
-  [PYTHON_IDS.PYTHON_OPERATORS]: pythonOperators,
-  [PYTHON_IDS.PYTHON_LISTS]: pythonLists,
-  [PYTHON_IDS.PYTHON_TUPLES]: pythonTuples,
-  [PYTHON_IDS.PYTHON_SETS]: pythonSets,
-  [PYTHON_IDS.PYTHON_DICTIONARIES]: pythonDictionaries,
-  [PYTHON_IDS.PYTHON_CONDITIONALS]: pythonConditionals,
-  [PYTHON_IDS.PYTHON_WHILELOOPS]: pythonWhileLoops,
-  [PYTHON_IDS.PYTHON_FORLOOPS]: pythonForLoops,
-  [PYTHON_IDS.PYTHON_FUNCTIONS]: pythonFunctions,
-  [PYTHON_IDS.PYTHON_LAMBDA]: pythonLambda,
-  [PYTHON_IDS.PYTHON_ARRAYS]: pythonArrays,
-  [PYTHON_IDS.PYTHON_CLASSES]: pythonClasses
+  [PYTHON_IDS.PYTHON_SYNTAX]: async () => (await import('./001_python_syntax')).default,
+  [PYTHON_IDS.PYTHON_COMMENTS]: async () => (await import('./002_python_comments')).default,
+  [PYTHON_IDS.PYTHON_VARIABLES]: async () => (await import('./003_python_variables')).default,
+  [PYTHON_IDS.PYTHON_DATATYPES]: async () => (await import('./004_python_dataTypes')).default,
+  [PYTHON_IDS.PYTHON_NUMBERS]: async () => (await import('./005_python_numbers')).default,
+  [PYTHON_IDS.PYTHON_CASTING]: async () => (await import('./006_python_casting')).default,
+  [PYTHON_IDS.PYTHON_STRINGS]: async () => (await import('./007_python_strings')).default,
+  [PYTHON_IDS.PYTHON_BOOLEANS]: async () => (await import('./008_python_booleans')).default,
+  [PYTHON_IDS.PYTHON_OPERATORS]: async () => (await import('./009_python_operators')).default,
+  [PYTHON_IDS.PYTHON_LISTS]: async () => (await import('./010_python_lists')).default,
+  [PYTHON_IDS.PYTHON_TUPLES]: async () => (await import('./011_python_tuples')).default,
+  [PYTHON_IDS.PYTHON_SETS]: async () => (await import('./012_python_sets')).default,
+  [PYTHON_IDS.PYTHON_DICTIONARIES]: async () => (await import('./013_python_dictionaries')).default,
+  [PYTHON_IDS.PYTHON_CONDITIONALS]: async () => (await import('./014_python_conditionals')).default,
+  [PYTHON_IDS.PYTHON_WHILELOOPS]: async () => (await import('./015_python_whileLoops')).default,
+  [PYTHON_IDS.PYTHON_FORLOOPS]: async () => (await import('./016_python_forLoops')).default,
+  [PYTHON_IDS.PYTHON_FUNCTIONS]: async () => (await import('./017_python_functions')).default,
+  [PYTHON_IDS.PYTHON_LAMBDA]: async () => (await import('./018_python_lambda')).default,
+  [PYTHON_IDS.PYTHON_ARRAYS]: async () => (await import('./019_python_arrays')).default,
+  [PYTHON_IDS.PYTHON_CLASSES]: async () => (await import('./020_python_classes')).default
 };

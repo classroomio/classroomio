@@ -1,24 +1,3 @@
-import htmlElements from './001_html_elements';
-import htmlAttributes from './002_html_attributes';
-import htmlHeadings from './003_html_headings';
-import htmlPharagraphs from './004_html_paragraph';
-import htmlStyles from './005_html_styles';
-import htmlFormatting from './006_html_formatting';
-import htmlQuotations from './007_html_quotations';
-import htmlComments from './008_html_comments';
-import htmlColors from './009_html_colors';
-import htmlCss from './010_html_css';
-import htmlLinks from './011_html_links';
-import htmlImages from './012_html_images';
-import htmlFavicon from './013_html_favicon';
-import htmlPagetitle from './014_html_pageTitle';
-import htmlTables from './015_html_tables';
-import htmlLists from './016_html_lists';
-import htmlBlocks from './017_html_blocks';
-import htmlClasses from './018_html_classes';
-import htmlId from './019_html_id';
-import htmlIframes from './020_html_iframes';
-
 export const HTML_IDS: { [key: string]: string } = {
   HTML_ELEMENTS: 'HTML_ELEMENTS',
   HTML_ATTRIBUTES: 'HTML_ATTRIBUTES',
@@ -43,24 +22,24 @@ export const HTML_IDS: { [key: string]: string } = {
 };
 
 export const HTML_TEMPLATES = {
-  [HTML_IDS.HTML_ELEMENTS]: htmlElements,
-  [HTML_IDS.HTML_ATTRIBUTES]: htmlAttributes,
-  [HTML_IDS.HTML_HEADINGS]: htmlHeadings,
-  [HTML_IDS.HTML_PARAGRAPH]: htmlPharagraphs,
-  [HTML_IDS.HTML_STYLES]: htmlStyles,
-  [HTML_IDS.HTML_FORMATTING]: htmlFormatting,
-  [HTML_IDS.HTML_QUOTATIONS]: htmlQuotations,
-  [HTML_IDS.HTML_COMMENTS]: htmlComments,
-  [HTML_IDS.HTML_COLORS]: htmlColors,
-  [HTML_IDS.HTML_CSS]: htmlCss,
-  [HTML_IDS.HTML_LINKS]: htmlLinks,
-  [HTML_IDS.HTML_IMAGES]: htmlImages,
-  [HTML_IDS.HTML_FAVICON]: htmlFavicon,
-  [HTML_IDS.HTML_PAGETITLE]: htmlPagetitle,
-  [HTML_IDS.HTML_TABLES]: htmlTables,
-  [HTML_IDS.HTML_LISTS]: htmlLists,
-  [HTML_IDS.HTML_BLOCKS]: htmlBlocks,
-  [HTML_IDS.HTML_CLASSES]: htmlClasses,
-  [HTML_IDS.HTML_ID]: htmlId,
-  [HTML_IDS.HTML_IFRAMES]: htmlIframes
+  [HTML_IDS.HTML_ELEMENTS]: async () => (await import('./001_html_elements')).default,
+  [HTML_IDS.HTML_ATTRIBUTES]: async () => (await import('./002_html_attributes')).default,
+  [HTML_IDS.HTML_HEADINGS]: async () => (await import('./003_html_headings')).default,
+  [HTML_IDS.HTML_PARAGRAPH]: async () => (await import('./004_html_paragraph')).default,
+  [HTML_IDS.HTML_STYLES]: async () => (await import('./005_html_styles')).default,
+  [HTML_IDS.HTML_FORMATTING]: async () => (await import('./006_html_formatting')).default,
+  [HTML_IDS.HTML_QUOTATIONS]: async () => (await import('./007_html_quotations')).default,
+  [HTML_IDS.HTML_COMMENTS]: async () => (await import('./008_html_comments')).default,
+  [HTML_IDS.HTML_COLORS]: async () => (await import('./009_html_colors')).default,
+  [HTML_IDS.HTML_CSS]: async () => (await import('./010_html_css')).default,
+  [HTML_IDS.HTML_LINKS]: async () => (await import('./011_html_links')).default,
+  [HTML_IDS.HTML_IMAGES]: async () => (await import('./012_html_images')).default,
+  [HTML_IDS.HTML_FAVICON]: async () => (await import('./013_html_favicon')).default,
+  [HTML_IDS.HTML_PAGETITLE]: async () => (await import('./014_html_pageTitle')).default,
+  [HTML_IDS.HTML_TABLES]: async () => (await import('./015_html_tables')).default,
+  [HTML_IDS.HTML_LISTS]: async () => (await import('./016_html_lists')).default,
+  [HTML_IDS.HTML_BLOCKS]: async () => (await import('./017_html_blocks')).default,
+  [HTML_IDS.HTML_CLASSES]: async () => (await import('./018_html_classes')).default,
+  [HTML_IDS.HTML_ID]: async () => (await import('./019_html_id')).default,
+  [HTML_IDS.HTML_IFRAMES]: async () => (await import('./020_html_iframes')).default
 };

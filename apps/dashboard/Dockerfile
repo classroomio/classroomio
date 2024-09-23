@@ -1,6 +1,6 @@
-FROM node:18
+FROM node:18-alpine AS builder
 
-WORKDIR "/app"
+WORKDIR /app
 
 RUN npm install -g pnpm
 
@@ -18,19 +18,31 @@ ENV UNSPLASH_API_KEY=$UNSPLASH_API_KEY
 ENV OPENAI_API_KEY=$OPENAI_API_KEY
 ENV PUBLIC_SERVER_URL=$PUBLIC_SERVER_URL
 ENV PUBLIC_IP_REGISTRY_KEY=$PUBLIC_IP_REGISTRY_KEY
-ENV NODE_OPTIONS="--max-old-space-size=2048"
+ENV NODE_OPTIONS="--max-old-space-size=8192"
 
-RUN pnpm i --frozen-lockfile
+RUN pnpm i
 
-COPY . /app/
+COPY . .
 
-WORKDIR "/app/apps/dashboard"
+WORKDIR /app/apps/dashboard
 
-RUN pnpm i --frozen-lockfile
-RUN pnpm prepare
+RUN pnpm i
 RUN pnpm build
+RUN pnpm prune --production
+
+FROM node:18-alpine
+WORKDIR /app/apps/dashboard
+
+COPY --from=builder /app/apps/dashboard/build build/
+COPY --from=builder /app/apps/dashboard/node_modules node_modules/
+COPY package.json .
 
 EXPOSE 5000
 
-CMD ["pnpm", "start"]
+ENV NODE_ENV=production
+CMD [ "node", "build" ]
+
+# EXPOSE 5000
+
+# CMD ["pnpm", "start"]
 # CMD [ "sh", "-c", "ls -la && cd apps/dashboard && pnpm build && pnpm start" ]

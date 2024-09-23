@@ -1,24 +1,3 @@
-import jsStatement from './001_js_statements';
-import jsSyntax from './002_js_syntax';
-import jsComment from './003_js_comments';
-import jsVariables from './004_js_variables';
-import jsLet from './005_js_let';
-import jsConst from './006_js_const';
-import jsOperator from './007_js_operators';
-import jsArithmetic from './008_js_arithmetic';
-import jsAssignment from './009_js_assignment';
-import jsDataTypes from './010_js_dataTypes';
-import jsFunctions from './011_js_functions';
-import jsObjects from './012_js_objects';
-import jsEvents from './013_js_events';
-import jsStrings from './014_js_strings';
-import jsStringMethods from './015_js_stringMethods';
-import jsStringSearch from './016_stringSearch';
-import jsStringTemplates from './017_js_stringTemplates';
-import jsNumbers from './018_js_numbers';
-import jsBigInt from './019_js_bigInt';
-import jsNumberMethods from './020_js_numberMethods';
-
 export const JS_IDS: { [key: string]: string } = {
   JS_OUTPUT: 'JS_OUTPUT',
   JS_SYNTAX: 'JS_SYNTAX',
@@ -43,24 +22,24 @@ export const JS_IDS: { [key: string]: string } = {
 };
 
 export const JS_TEMPLATES = {
-  [JS_IDS.JS_OUTPUT]: jsStatement,
-  [JS_IDS.JS_SYNTAX]: jsSyntax,
-  [JS_IDS.JS_COMMENT]: jsComment,
-  [JS_IDS.JS_VARIABLES]: jsVariables,
-  [JS_IDS.JS_LET]: jsLet,
-  [JS_IDS.JS_CONST]: jsConst,
-  [JS_IDS.JS_OPERATOR]: jsOperator,
-  [JS_IDS.JS_ARITHMETIC]: jsArithmetic,
-  [JS_IDS.JS_ASSIGNMENT]: jsAssignment,
-  [JS_IDS.JS_DATATYPES]: jsDataTypes,
-  [JS_IDS.JS_FUNCTIONS]: jsFunctions,
-  [JS_IDS.JS_OBJECTS]: jsObjects,
-  [JS_IDS.JS_EVENTS]: jsEvents,
-  [JS_IDS.JS_STRINGS]: jsStrings,
-  [JS_IDS.JS_STRINGMETHODS]: jsStringMethods,
-  [JS_IDS.JS_STRINGSEARCH]: jsStringSearch,
-  [JS_IDS.JS_STRINGTEMPLATES]: jsStringTemplates,
-  [JS_IDS.JS_NUMBERS]: jsNumbers,
-  [JS_IDS.JS_BIGINT]: jsBigInt,
-  [JS_IDS.JS_NUMBERMETHODS]: jsNumberMethods
+  [JS_IDS.JS_OUTPUT]: async () => (await import('./001_js_statements')).default,
+  [JS_IDS.JS_SYNTAX]: async () => (await import('./002_js_syntax')).default,
+  [JS_IDS.JS_COMMENT]: async () => (await import('./003_js_comments')).default,
+  [JS_IDS.JS_VARIABLES]: async () => (await import('./004_js_variables')).default,
+  [JS_IDS.JS_LET]: async () => (await import('./005_js_let')).default,
+  [JS_IDS.JS_CONST]: async () => (await import('./006_js_const')).default,
+  [JS_IDS.JS_OPERATOR]: async () => (await import('./007_js_operators')).default,
+  [JS_IDS.JS_ARITHMETIC]: async () => (await import('./008_js_arithmetic')).default,
+  [JS_IDS.JS_ASSIGNMENT]: async () => (await import('./009_js_assignment')).default,
+  [JS_IDS.JS_DATATYPES]: async () => (await import('./010_js_dataTypes')).default,
+  [JS_IDS.JS_FUNCTIONS]: async () => (await import('./011_js_functions')).default,
+  [JS_IDS.JS_OBJECTS]: async () => (await import('./012_js_objects')).default,
+  [JS_IDS.JS_EVENTS]: async () => (await import('./013_js_events')).default,
+  [JS_IDS.JS_STRINGS]: async () => (await import('./014_js_strings')).default,
+  [JS_IDS.JS_STRINGMETHODS]: async () => (await import('./015_js_stringMethods')).default,
+  [JS_IDS.JS_STRINGSEARCH]: async () => (await import('./016_stringSearch')).default,
+  [JS_IDS.JS_STRINGTEMPLATES]: async () => (await import('./017_js_stringTemplates')).default,
+  [JS_IDS.JS_NUMBERS]: async () => (await import('./018_js_numbers')).default,
+  [JS_IDS.JS_BIGINT]: async () => (await import('./019_js_bigInt')).default,
+  [JS_IDS.JS_NUMBERMETHODS]: async () => (await import('./020_js_numberMethods')).default
 };
