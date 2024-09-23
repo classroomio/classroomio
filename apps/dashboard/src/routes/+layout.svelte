@@ -104,13 +104,17 @@
 
       const [regexUsernameMatch] = [...(authUser.email?.matchAll(/(.*)@/g) || [])];
 
+      const isGoogleAuth = !!authUser.app_metadata?.providers?.includes('google');
+
       const { data: newProfileData, error } = await supabase
         .from('profile')
         .insert({
           id: authUser.id,
           username: regexUsernameMatch[1] + `${new Date().getTime()}`,
           fullname: regexUsernameMatch[1],
-          email: authUser.email
+          email: authUser.email,
+          is_email_verified: isGoogleAuth,
+          verified_at: isGoogleAuth ? new Date().toDateString() : undefined
         })
         .select();
 
