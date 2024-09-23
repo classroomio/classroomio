@@ -19,7 +19,7 @@ async function sendWithNodemailer(emailData) {
   }
 
   return await transporter.sendMail({
-    from: from || '"Best from ClassroomIO" <best@classroomio.com>',
+    from: from || '"Best from ClassroomIO" <notify@classroomio.com>',
     to,
     subject,
     replyTo,
