@@ -19,7 +19,7 @@
           >
           <ul class="space-y-6 text-base text-[#696969] font-medium">
             {#each $landingPageSettings.aboutUs.benefits.list as items}
-              <li class="border-l border-[#0233BD] pl-3">{items}</li>
+              <li class="border-l border-[#0233BD] pl-3">{items.title}</li>
             {/each}
           </ul>
         </div>

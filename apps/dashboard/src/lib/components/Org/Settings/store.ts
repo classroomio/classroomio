@@ -21,11 +21,15 @@ export interface OrgLandingPageJson {
   };
   aboutUs: {
     title: string;
+    subtitle: string;
     content: string;
     imageUrl: string;
     benefits: {
       title: string;
-      list: string[];
+      list: {
+        title: string;
+        subtitle: string;
+      }[];
     };
     show: boolean;
   };
@@ -67,6 +71,7 @@ export interface OrgLandingPageJson {
   };
   footerNote: {
     title: string;
+    subtitle: string;
     buttonLabel: string;
     show: boolean;
   };
@@ -100,6 +105,8 @@ export const landingPageSettings: Writable<OrgLandingPageJson> = writable({
   },
   aboutUs: {
     title: 'Our Story',
+    subtitle:
+      'We provide continuous support and motivation, ensuring you stay on track throughout your preparation journey, which has led to high student satisfaction and proven success rates.',
     content:
       'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Repudiandae, quaerat cum. Ullam similique quae dicta ipsum atque quam fugit iusto eligendi magni voluptatum aut, exercitationem deserunt vitae iste rem sunt!\nLorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores obcaecati veritatis tenetur in, nihil repellat quasi cumque sed molestias id reiciendis harum doloremque minus fugit quia cum dolores quas pariatur.',
     imageUrl:
@@ -107,9 +114,26 @@ export const landingPageSettings: Writable<OrgLandingPageJson> = writable({
     benefits: {
       title: 'What you will gain',
       list: [
-        'Real-world coding challenges.',
-        'Real-world coding challenges.',
-        'Real-world coding challenges.'
+        {
+          title: 'Real-world coding challenges.',
+          subtitle:
+            'Our adaptive learning platform customizes your study plan based on your strengths and areas for improvement.'
+        },
+        {
+          title: 'Experienced Instructors',
+          subtitle:
+            'Our adaptive learning platform customizes your study plan based on your strengths and areas for improvement.'
+        },
+        {
+          title: 'Comprehensive Materials',
+          subtitle:
+            'Our adaptive learning platform customizes your study plan based on your strengths and areas for improvement.'
+        },
+        {
+          title: '20 YEARS Proven Success',
+          subtitle:
+            'Our adaptive learning platform customizes your study plan based on your strengths and areas for improvement.'
+        }
       ]
     },
     show: true
@@ -162,6 +186,8 @@ export const landingPageSettings: Writable<OrgLandingPageJson> = writable({
   },
   footerNote: {
     title: 'i can make you a coding superstar',
+    subtitle:
+      'Don’t leave your future to chance. Sign up for our prep courses and take the first step towards academic success.',
     buttonLabel: 'View more courses',
     show: true
   },

@@ -1,5 +1,6 @@
 <script>
-  import { fly } from 'svelte/transition';
+  import { quintIn, quintInOut, quintOut } from 'svelte/easing';
+  import { fade, fly, slide } from 'svelte/transition';
 
   // Example testimonial data
   let testimonials = [
@@ -35,37 +36,44 @@
   }
 
   // Auto-slide every 5 seconds
-  setInterval(nextSlide, 5000);
+  // setInterval(nextSlide, 5000);
 </script>
 
-<section class="my-4">
+<section class="py-6 px-4 overflow-x-hidden">
   <div
-    class="relative h-[200px] w-[70%] mx-auto space-y-4 bg-blue-600 p-4 text-white text-center border border-red-500"
+    class="flex items-center relative h-[220px] w-full md:w-[80%] lg:w-[70%] mx-auto bg-[#0233BD] text-white text-center"
   >
     <!-- Pointer at the top -->
     <div
-      class="absolute top-[-25px] left-[5%] transform -translate-x-1/2 w-16 h-10 bg-blue-600"
+      class="absolute top-[-25px] left-[50px] transform -translate-x-1/2 w-16 h-10 bg-[#0233BD]"
       style="clip-path: polygon(50% 0%, 0% 100%, 100% 100%);"
     ></div>
 
     <!-- Testimonial content with fly transition (from right) -->
-    {#each testimonials as testimonial, index}
-      {#if currentIndex === index}
-        <div transition:fly={{ x: 200 }}>
-          <p class="italic text-lg mb-4">
-            "{testimonial.text}"
-          </p>
+    <div class="flex flex-row w-full md:w-[90%] lg:w-[80%] h-full overflow-x-hidden mx-auto p-4">
+      {#each testimonials as testimonial, index}
+        {#if currentIndex === index}
+          <div
+            transition:slide={{ duration: 300, easing: quintOut, axis: 'x' }}
+            class="flex flex-col items-center justify-between flex-1 min-w-full md:h-full border border-red-500"
+          >
+            <p
+              class="border border-red-500 italic font-semibold text-base md:text-lg line-clamp-4 md:line-clamp-3"
+            >
+              "{testimonial.text}"
+            </p>
 
-          <div class="flex items-center justify-center mt-4">
-            <img src={testimonial.image} alt="profile" class="rounded-full w-12 h-12 mr-4" />
-            <div>
-              <strong>{testimonial.name}</strong><br />
-              <span class="text-sm text-gray-300">{testimonial.role}</span>
+            <div class="flex items-center justify-center border border-red-500">
+              <img src={testimonial.image} alt="profile" class="rounded-full w-14 h-14 mr-4" />
+              <div>
+                <strong>{testimonial.name}</strong><br />
+                <span class="text-sm text-gray-300">{testimonial.role}</span>
+              </div>
             </div>
           </div>
-        </div>
-      {/if}
-    {/each}
+        {/if}
+      {/each}
+    </div>
   </div>
 
   <!-- Dots for testimonial navigation -->

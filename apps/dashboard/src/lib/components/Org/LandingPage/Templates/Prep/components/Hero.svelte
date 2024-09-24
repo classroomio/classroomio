@@ -7,14 +7,12 @@
 </script>
 
 {#if $landingPageSettings.header.banner.show}
-  <section class="flex items-start justify-center pb-20 lg:pt-20 pt-4 px-10 md:px-20 h-full">
+  <section class="flex items-start justify-center pb-20 lg:pt-20 pt-4 px-10 lg:px-20 h-full">
     <section
       class="flex flex-col-reverse md:flex-row items-start md:items-center gap-5 md:justify-between"
     >
       <div class="space-y-6 w-full">
-        <p
-          class="text-2xl xl:text-5xl font-semibold font-serif first-line:w-full xl:w-[70%] leading-[10rem]"
-        >
+        <p class="text-2xl xl:text-5xl font-semibold font-serif first-line:w-full xl:w-[70%]">
           {$landingPageSettings.header.title}
         </p>
         <p class="w-full lg:w-[70%] text-[#656565] xl:text-lg">

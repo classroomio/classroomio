@@ -22,7 +22,7 @@
               class:left={index % 2 === 0}
               class:right={index % 2 !== 0}
             >
-              {item}
+              {item.title}
             </div>
           {/each}
         </div>
