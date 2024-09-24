@@ -245,7 +245,7 @@
     //   return goto('/login?redirect=/' + path);
     // }
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       // Log key events
       console.log(`event`, event);
       if (event == 'PASSWORD_RECOVERY') {
@@ -263,7 +263,8 @@
       // Authentication Steps
       if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
         $user.fetchingUser = true;
-        getProfile();
+        await getProfile();
+        $user.fetchingUser = false;
       }
       // else if (!['TOKEN_REFRESHED'].includes(event)) {
       //   console.log('not logged in, go to login');
