@@ -52,6 +52,7 @@ services:
     # command: sh -c "npm install -g pnpm && rm -rf node_modules && yes | pnpm install --frozen-lockfile && cd apps/dashboard && pnpm build && pnpm start"
     environment:
       - IS_SELFHOSTED=true
+      - DEPLOYMENT_PROVIDER=docker
       # Supabase - Database
       - PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}
       - PUBLIC_SUPABASE_ANON_KEY=${PUBLIC_SUPABASE_ANON_KEY}
