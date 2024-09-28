@@ -32,9 +32,11 @@ export const orgAudience = writable<OrgAudience[]>([]);
 export const orgTeam = writable<OrgTeamMember[]>([]);
 export const isOrgAdmin = derived(currentOrg, ($currentOrg) => $currentOrg.role_id === ROLE.ADMIN);
 
-export const currentOrgPlan = derived(currentOrg, ($currentOrg) =>
-  $currentOrg.organization_plan.find((p) => p.is_active)
-);
+const getActivePlan = (org: CurrentOrg) => {
+  return org.organization_plan.find((p) => p.is_active);
+};
+
+export const currentOrgPlan = derived(currentOrg, ($currentOrg) => getActivePlan($currentOrg));
 
 export const currentOrgPath = derived(currentOrg, ($currentOrg) =>
   $currentOrg.siteName ? `/org/${$currentOrg.siteName}` : ''
@@ -51,11 +53,14 @@ export const currentOrgDomain = derived(currentOrg, ($currentOrg) => {
         : '';
 });
 
-// Utility org store
-export const isFreePlan = derived(
-  currentOrgPlan,
-  ($plan) => !$plan || $plan.plan_name === PLAN.BASIC
-);
+export const isFreePlan = derived(currentOrg, ($currentOrg) => {
+  if (!$currentOrg.id) return false;
+
+  const plan = getActivePlan($currentOrg);
+
+  return !plan || plan.plan_name === PLAN.BASIC;
+});
+
 export const currentOrgMaxAudience = derived(currentOrgPlan, ($plan) =>
   !$plan
     ? 20

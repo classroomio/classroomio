@@ -5,17 +5,17 @@ import {
   DomainConfigResponse,
   DomainVerificationResponse
 } from '$lib/utils/types/org';
-import { PROJECT_ID_VERCEL, TEAM_ID_VERCEL, AUTH_BEARER_TOKEN } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 
 export const addDomainToVercel = async (domain: string) => {
   return await fetch(
-    `https://api.vercel.com/v10/projects/${PROJECT_ID_VERCEL}/domains${
-      TEAM_ID_VERCEL ? `?teamId=${TEAM_ID_VERCEL}` : ''
+    `https://api.vercel.com/v10/projects/${env.PROJECT_ID_VERCEL}/domains${
+      env.TEAM_ID_VERCEL ? `?teamId=${env.TEAM_ID_VERCEL}` : ''
     }`,
     {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${AUTH_BEARER_TOKEN}`,
+        Authorization: `Bearer ${env.AUTH_BEARER_TOKEN}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
@@ -31,12 +31,12 @@ export const addDomainToVercel = async (domain: string) => {
 
 export const removeDomainFromVercelProject = async (domain: string) => {
   return await fetch(
-    `https://api.vercel.com/v9/projects/${PROJECT_ID_VERCEL}/domains/${domain}${
-      TEAM_ID_VERCEL ? `?teamId=${TEAM_ID_VERCEL}` : ''
+    `https://api.vercel.com/v9/projects/${env.PROJECT_ID_VERCEL}/domains/${domain}${
+      env.TEAM_ID_VERCEL ? `?teamId=${env.TEAM_ID_VERCEL}` : ''
     }`,
     {
       headers: {
-        Authorization: `Bearer ${AUTH_BEARER_TOKEN}`
+        Authorization: `Bearer ${env.AUTH_BEARER_TOKEN}`
       },
       method: 'DELETE'
     }
@@ -46,11 +46,11 @@ export const removeDomainFromVercelProject = async (domain: string) => {
 export const removeDomainFromVercelTeam = async (domain: string) => {
   return await fetch(
     `https://api.vercel.com/v6/domains/${domain}${
-      TEAM_ID_VERCEL ? `?teamId=${TEAM_ID_VERCEL}` : ''
+      env.TEAM_ID_VERCEL ? `?teamId=${env.TEAM_ID_VERCEL}` : ''
     }`,
     {
       headers: {
-        Authorization: `Bearer ${AUTH_BEARER_TOKEN}`
+        Authorization: `Bearer ${env.AUTH_BEARER_TOKEN}`
       },
       method: 'DELETE'
     }
@@ -61,13 +61,13 @@ export const getDomainResponse = async (
   domain: string
 ): Promise<DomainResponse & { error: { code: string; message: string } }> => {
   return await fetch(
-    `https://api.vercel.com/v9/projects/${PROJECT_ID_VERCEL}/domains/${domain}${
-      TEAM_ID_VERCEL ? `?teamId=${TEAM_ID_VERCEL}` : ''
+    `https://api.vercel.com/v9/projects/${env.PROJECT_ID_VERCEL}/domains/${domain}${
+      env.TEAM_ID_VERCEL ? `?teamId=${env.TEAM_ID_VERCEL}` : ''
     }`,
     {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${AUTH_BEARER_TOKEN}`,
+        Authorization: `Bearer ${env.AUTH_BEARER_TOKEN}`,
         'Content-Type': 'application/json'
       }
     }
@@ -79,12 +79,12 @@ export const getDomainResponse = async (
 export const getConfigResponse = async (domain: string): Promise<DomainConfigResponse> => {
   return await fetch(
     `https://api.vercel.com/v6/domains/${domain}/config${
-      TEAM_ID_VERCEL ? `?teamId=${TEAM_ID_VERCEL}` : ''
+      env.TEAM_ID_VERCEL ? `?teamId=${env.TEAM_ID_VERCEL}` : ''
     }`,
     {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${AUTH_BEARER_TOKEN}`,
+        Authorization: `Bearer ${env.AUTH_BEARER_TOKEN}`,
         'Content-Type': 'application/json'
       }
     }
@@ -93,13 +93,13 @@ export const getConfigResponse = async (domain: string): Promise<DomainConfigRes
 
 export const verifyDomain = async (domain: string): Promise<DomainVerificationResponse> => {
   return await fetch(
-    `https://api.vercel.com/v9/projects/${PROJECT_ID_VERCEL}/domains/${domain}/verify${
-      TEAM_ID_VERCEL ? `?teamId=${TEAM_ID_VERCEL}` : ''
+    `https://api.vercel.com/v9/projects/${env.PROJECT_ID_VERCEL}/domains/${domain}/verify${
+      env.TEAM_ID_VERCEL ? `?teamId=${env.TEAM_ID_VERCEL}` : ''
     }`,
     {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${AUTH_BEARER_TOKEN}`,
+        Authorization: `Bearer ${env.AUTH_BEARER_TOKEN}`,
         'Content-Type': 'application/json'
       }
     }

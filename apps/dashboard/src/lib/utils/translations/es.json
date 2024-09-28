@@ -391,9 +391,18 @@
             "goals": "Objetivos",
             "reviews": "Reseñas",
             "instructor": "Instructor",
-            "pricing": "Precios"
+            "pricing": "Precios",
+            "certificate": "Certificado"
+          },
+          "display_section": "Sección de visualización",
+          "certificate_form": {
+            "upload_template": "Plantilla de certificado"
           }
-        }
+        },
+        "course_content": "Contenido del curso",
+        "modules": "módulos",
+        "lessons": "lecciones",
+        "exercises": "ceremonias"
       },
       "certificates": {
         "title": "Certificados",

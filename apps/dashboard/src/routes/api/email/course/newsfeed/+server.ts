@@ -30,7 +30,6 @@ const sendEmailNotification = async (feedId: string, authorId: string, comment?:
         <a class="button" href="${postLink}">View comment</a>
       </div>
       `,
-        isPersonalEmail: false,
         replyTo: 'noreply@classroomio.com'
       }
     ];

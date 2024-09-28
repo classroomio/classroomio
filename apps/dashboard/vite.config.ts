@@ -7,6 +7,13 @@ export default ({ mode }) => {
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 
   return defineConfig({
+    css: {
+      preprocessorOptions: {
+        scss: {
+          silenceDeprecations: ['legacy-js-api'],
+        },
+      },
+    },
     plugins: [sveltekit(), sentryVitePlugin(getSentryConfig(process.env))],
     server: getServer(process.env),
     build: {

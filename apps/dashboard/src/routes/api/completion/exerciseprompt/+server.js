@@ -1,10 +1,10 @@
 import { Configuration, OpenAIApi } from 'openai-edge';
 import { OpenAIStream, StreamingTextResponse } from 'ai';
-import { OPENAI_API_KEY } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 
 // Create an OpenAI API client (that's edge friendly!)
 const openAIConfig = new Configuration({
-  apiKey: OPENAI_API_KEY
+  apiKey: env.OPENAI_API_KEY
 });
 const openai = new OpenAIApi(openAIConfig);
 

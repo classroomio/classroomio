@@ -391,9 +391,18 @@
             "goals": "Цели",
             "reviews": "Отзывы",
             "instructor": "Инструктор",
-            "pricing": "Цены"
+            "pricing": "Цены",
+            "certificate": "Сертификат"
+          },
+          "display_section": "Раздел дисплея",
+          "certificate_form": {
+            "upload_template": "Шаблон сертификата"
           }
-        }
+        },
+        "course_content": "Содержание курса",
+        "modules": "mодули",
+        "lessons": "уроки",
+        "exercises": "упражнения"
       },
       "certificates": {
         "title": "Сертификаты",

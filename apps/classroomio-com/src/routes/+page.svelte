@@ -6,7 +6,7 @@
   import MoreFeatures from '$lib/Home/MoreFeatures.svelte';
   import Testimonial from '$lib/Home/Testimonial.svelte';
 
-  import { PUBLIC_ENABLE_FAQ } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import { onMount } from 'svelte';
 
   onMount(() => {
@@ -20,6 +20,6 @@
 <Testimonial />
 <MoreFeatures />
 
-{#if PUBLIC_ENABLE_FAQ}
+{#if env.PUBLIC_ENABLE_FAQ}
   <Faq />
 {/if}

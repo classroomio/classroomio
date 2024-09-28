@@ -391,9 +391,18 @@
             "goals": "लक्ष्य",
             "reviews": "समीक्षा",
             "instructor": "प्रशिक्षक",
-            "pricing": "मूल्य निर्धारण"
+            "pricing": "मूल्य निर्धारण",
+            "certificate": "प्रमाणपत्र"
+          },
+          "display_section": "प्रदर्शन अनुभाग",
+          "certificate_form": {
+            "upload_template": "प्रमाणपत्र टेम्पलेट"
           }
-        }
+        },
+        "course_content": "पाठ्यक्रम सामग्री",
+        "modules": "मॉड्यूल",
+        "lessons": "पाठ",
+        "exercises": "अभ्यास"
       },
       "certificates": {
         "title": "प्रमाण पत्र",

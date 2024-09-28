@@ -217,7 +217,9 @@
         orgSiteName: fields.siteName
       });
 
-      return goto(`/org/${fields.siteName}`);
+      const welcomePopup = `${$profile.is_email_verified}`;
+
+      return goto(`/org/${fields.siteName}?welcomePopup=${welcomePopup}`);
     }
 
     // Move to next step

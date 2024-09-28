@@ -1,6 +1,6 @@
 // const { getPdfBuffer } = require('./puppeteer');
 const { marked } = require('marked');
-const puppeteer = require('puppeteer');
+// const puppeteer = require('puppeteer');
 
 function getHtmlTemplate(body) {
   return `
@@ -155,57 +155,58 @@ function getCourseBody({ courseTitle, orgName, orgTheme, lessons }) {
 }
 
 async function generateSinglePdfFromHtml(htmlContent, courseTitle, orgTheme) {
-  const args = [
-    '--disable-web-security',
-    '--no-sandbox',
-    '--disable-setuid-sandbox',
-  ];
-  const browser = await puppeteer.launch({
-    headless: 'new',
-    args,
-  });
-  const page = await browser.newPage();
+  throw 'Download disabled';
+  // const args = [
+  //   '--disable-web-security',
+  //   '--no-sandbox',
+  //   '--disable-setuid-sandbox',
+  // ];
+  // const browser = await puppeteer.launch({
+  //   headless: 'new',
+  //   args,
+  // });
+  // const page = await browser.newPage();
 
-  await page.setContent(htmlContent);
+  // await page.setContent(htmlContent);
 
-  const pdfOptions = {
-    format: 'A4',
-    printBackground: true,
-    displayHeaderFooter: true,
-    headerTemplate:
-      "<div><div class='pageNumber'></div> <div>/</div><div class='totalPages'></div></div>",
-    footerTemplate: `
-        <div class="footer" style="position: relative; display: flex; text-align: right; margin-right: 5%; font-size: 8px; width: 297mm; padding-top: 30px;">
-          <div style="position: absolute; right: 50%; bottom: 3%;"><span class="pageNumber"></span>/<span class="totalPages"></span></div>
-          <div style="position: absolute; right: 0; bottom: 3%;">${courseTitle} | Powered by <a href="https://app.classroomio.com" style="text-decoration: underline;">ClassroomIO</a></div>
-        </div>
-      `,
-    margin: {
-      top: '0.3cm',
-      bottom: '0.5cm',
-    },
-  };
+  // const pdfOptions = {
+  //   format: 'A4',
+  //   printBackground: true,
+  //   displayHeaderFooter: true,
+  //   headerTemplate:
+  //     "<div><div class='pageNumber'></div> <div>/</div><div class='totalPages'></div></div>",
+  //   footerTemplate: `
+  //       <div class="footer" style="position: relative; display: flex; text-align: right; margin-right: 5%; font-size: 8px; width: 297mm; padding-top: 30px;">
+  //         <div style="position: absolute; right: 50%; bottom: 3%;"><span class="pageNumber"></span>/<span class="totalPages"></span></div>
+  //         <div style="position: absolute; right: 0; bottom: 3%;">${courseTitle} | Powered by <a href="https://app.classroomio.com" style="text-decoration: underline;">ClassroomIO</a></div>
+  //       </div>
+  //     `,
+  //   margin: {
+  //     top: '0.3cm',
+  //     bottom: '0.5cm',
+  //   },
+  // };
 
-  const numPages = await page.evaluate(() => {
-    const content = document.body; // Change this to the specific element containing content
-    const style = window.getComputedStyle(content);
-    const contentHeight = parseInt(style.height, 10);
-    const pageHeight = 900; // Set this to an appropriate value based on your PDF format
+  // const numPages = await page.evaluate(() => {
+  //   const content = document.body; // Change this to the specific element containing content
+  //   const style = window.getComputedStyle(content);
+  //   const contentHeight = parseInt(style.height, 10);
+  //   const pageHeight = 900; // Set this to an appropriate value based on your PDF format
 
-    return Math.ceil(contentHeight / pageHeight);
-  });
+  //   return Math.ceil(contentHeight / pageHeight);
+  // });
 
-  const pagesPdfBuffer = [];
+  // const pagesPdfBuffer = [];
 
-  for (let currentPage = 1; currentPage <= numPages; currentPage++) {
-    await page.evaluate(() => {});
+  // for (let currentPage = 1; currentPage <= numPages; currentPage++) {
+  //   await page.evaluate(() => {});
 
-    const pdfBuffer = await page.pdf(pdfOptions);
-    pagesPdfBuffer.push(pdfBuffer);
-  }
+  //   const pdfBuffer = await page.pdf(pdfOptions);
+  //   pagesPdfBuffer.push(pdfBuffer);
+  // }
 
-  await browser.close();
-  return Buffer.concat(pagesPdfBuffer);
+  // await browser.close();
+  // return Buffer.concat(pagesPdfBuffer);
 }
 
 async function generateCoursePdf(params) {
@@ -217,5 +218,5 @@ async function generateCoursePdf(params) {
 }
 
 module.exports = {
-  generateCoursePdf,
+  generateCoursePdf
 };

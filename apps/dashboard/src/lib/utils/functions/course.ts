@@ -29,3 +29,10 @@ export function replaceHTMLTag(text: string) {
     .map((char) => tagsToReplace[char] || char)
     .join('');
 }
+
+export function calcCourseDiscount(percent = 0, cost: number, showDiscount: boolean) {
+  if (!percent || !showDiscount) return cost;
+  const discountAmount = (percent / 100) * cost;
+  const discountedPrice = cost - discountAmount;
+  return Math.round(discountedPrice);
+}

@@ -37,7 +37,7 @@
 
   "welcome_modal": {
     "we_at": "We at",
-    "small_team": "are a small team with a large mission to empower educators with great technology to help them train the future generation. Education is the most powerful gift you can give anyone, and it makes so much sense to give you all the tools you need to give more people this GIFT.",
+    "small_team": "are a small team with a large mission to empower educators with great software to help them make an impact in people's lives. Education is the most powerful gift you can give anyone, and it makes perfect sense to provide you with all the tools you need to give this GIFT to more people.",
     "thank_you": "Thank you for choosing us",
     "deeply_appreciate": "we deeply appreciate it and are at your service."
   },
@@ -934,12 +934,14 @@
             "goals": "Goals",
             "reviews": "Reviews",
             "instructor": "Instructor",
-            "pricing": "Pricing"
+            "pricing": "Pricing",
+            "certificate": "Certificate"
           },
 
           "save": "Save",
           "page_builder": "Page Builder",
           "section": "section",
+          "display_section": "Display section",
 
           "header_form": {
             "title": "Title",
@@ -971,6 +973,10 @@
                 "min_char": "'Description is too short, min of 5 characters"
               }
             }
+          },
+
+          "certificate_form": {
+            "upload_template": "Certificate template"
           },
 
           "instructor_form": {
@@ -1012,6 +1018,10 @@
           "bird": "Early bird offer. Buy ASAP"
         },
 
+        "course_content": "Course content",
+        "modules": "modules",
+        "lessons": "lessons",
+        "exercises": "exercises",
         "start_course": "Start Course",
         "requirement": "Requirement",
         "description": "Course Description",
