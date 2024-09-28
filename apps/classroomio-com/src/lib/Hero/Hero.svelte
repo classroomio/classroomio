@@ -2,7 +2,7 @@
   import { onMount, onDestroy } from 'svelte';
   import { fly } from 'svelte/transition';
   import { sineInOut } from 'svelte/easing';
-  import { PUBLIC_ENABLE_USERS_COMPANIES } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
 
   const names = [
     { label: 'Bootcamp', color: '#3ADFEC' },
@@ -217,7 +217,7 @@
       ></iframe>
     </div>
 
-    {#if PUBLIC_ENABLE_USERS_COMPANIES}
+    {#if env.PUBLIC_ENABLE_USERS_COMPANIES}
       <div class="mb-[10%] px-[15%]">
         <h2 class="text-base font-semibold text-gray-900 lg:text-xl">Used at</h2>
         <div class="flex w-full flex-row flex-wrap items-center justify-between gap-5 py-[5%]">

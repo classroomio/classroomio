@@ -1,6 +1,6 @@
 <script lang="ts">
   import Section from './Section.svelte';
-  import { PUBLIC_ENABLE_STATS } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
 </script>
 
 <section class="w-full py-32 border-b border-x-0 border-t-0 border-gray-200">
@@ -78,7 +78,7 @@
 />
 
 <!-- body section 5 -->
-{#if PUBLIC_ENABLE_STATS}
+{#if env.PUBLIC_ENABLE_STATS}
   <div
     class="flex justify-between flex-row flex-wrap lg:flex-nowrap items-center text-center px-[10%] py-[7%] border-b-[1px] gap-y-20 gap-x-20 mx-0 lg:mx-[12%]"
   >
