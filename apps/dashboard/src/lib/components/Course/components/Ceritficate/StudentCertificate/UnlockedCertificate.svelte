@@ -97,7 +97,7 @@
       className="flex items-center gap-2"
       onClick={downLoadCertificate}
       variant={VARIANTS.CONTAINED_DARK}
-      isDisabled={!PUBLIC_SERVER_URL || !isCourseComplete}
+      isDisabled={!env.PUBLIC_SERVER_URL || !isCourseComplete}
       {isLoading}
     >
       <Download size={16} />
