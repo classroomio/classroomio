@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import Download from 'carbon-icons-svelte/lib/Download.svelte';
 
-  import { PUBLIC_SERVER_URL } from '$env/dynamic/public';
+  import { env } from '$env/dynamic/public';
   import { course } from '$lib/components/Course/store';
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
