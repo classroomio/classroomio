@@ -1,22 +1,24 @@
 <script lang="ts">
+  import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { getSupabase } from '$lib/utils/functions/supabase';
-  import AuthUI from '$lib/components/AuthUI/index.svelte';
-  import { currentOrg } from '$lib/utils/store/org';
-  import { setTheme } from '$lib/utils/functions/theme';
-  import { addGroupMember } from '$lib/utils/services/courses';
-  import type { CurrentOrg } from '$lib/utils/types/org.js';
-  import { ROLE } from '$lib/utils/constants/roles';
+
   import { profile } from '$lib/utils/store/user';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { ROLE } from '$lib/utils/constants/roles';
+  import { setTheme } from '$lib/utils/functions/theme';
   import {
     triggerSendEmail,
     NOTIFICATION_NAME
   } from '$lib/utils/services/notification/notification';
+  import type { CurrentOrg } from '$lib/utils/types/org.js';
+  import { getSupabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store.js';
+  import { addGroupMember } from '$lib/utils/services/courses';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
-  import { page } from '$app/stores';
+
+  import AuthUI from '$lib/components/AuthUI/index.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   export let data;
 
@@ -48,7 +50,7 @@
 
     const member = {
       profile_id: $profile.id,
-      group_id: courseData.group_id,
+      group_id: data.batchId,
       role_id: ROLE.STUDENT
     };
 

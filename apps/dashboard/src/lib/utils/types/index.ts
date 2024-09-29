@@ -417,3 +417,12 @@ interface Tabs {
   id: number;
   name: string;
 }
+
+export interface Batch {
+  id?: any;
+  name?: string;
+  is_active?: boolean;
+  organization_id?: any;
+  description?: string;
+  groupmember?: Groupmember[];
+}

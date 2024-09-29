@@ -2,7 +2,7 @@ import { writable } from 'svelte/store';
 import type { Writable } from 'svelte/store';
 import { lessons, lessonSections } from './components/Lesson/store/lessons';
 import { ROLE } from '$lib/utils/constants/roles';
-import type { Course, GroupPerson, Lesson, LessonSection } from '$lib/utils/types';
+import type { Batch, Course, GroupPerson, Lesson, LessonSection } from '$lib/utils/types';
 import { COURSE_TYPE, COURSE_VERSION } from '$lib/utils/types';
 
 export const defaultCourse: Course = {
@@ -84,6 +84,8 @@ export const group = writable<GroupStore>({
   students: [],
   people: []
 });
+
+export const courseBatch = writable<Batch[]>([]);
 
 export async function setCourse(data: Course, setLesson = true) {
   if (!data || !(Object.values(data) && Object.values(data).length)) return;

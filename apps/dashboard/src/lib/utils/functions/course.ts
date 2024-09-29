@@ -1,14 +1,15 @@
-import type { Course } from '../types';
+import type { Batch, Course } from '../types';
 
 export const isCourseFree = (cost: number) => !(Number(cost) > 0);
 
-export const getStudentInviteLink = (_course: Course, orgSiteName: string, origin: string) => {
+export const getStudentInviteLink = (batch: Batch, _course: Course, orgSiteName: string, origin: string) => {
   const hash = encodeURIComponent(
     btoa(
       JSON.stringify({
         id: _course.id,
         name: _course.title,
         description: _course.description,
+        batchId: batch.id,
         orgSiteName
       })
     )

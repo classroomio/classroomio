@@ -25,6 +25,10 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import { t } from '$lib/utils/functions/translations';
 
+  export let batch;
+
+  $: console.log('current batch', batch);
+
   interface Tutor {
     id: number;
     text: string;
@@ -128,7 +132,7 @@
       return;
     }
 
-    const link = getStudentInviteLink($course, $currentOrg.siteName, $currentOrgDomain);
+    const link = getStudentInviteLink(batch, $course, $currentOrg.siteName, $currentOrgDomain);
     copy(link);
     copied = true;
     setTimeout(() => {
@@ -142,27 +146,27 @@
 
   function handleQRDownload() {
     if (!$qrInviteNodeStore) {
-			console.error('Node is not defined');
-			return;
-		}
+      console.error('Node is not defined');
+      return;
+    }
 
-		isLoadingQRDownload = true;
-		setTimeout(() => {
-			toPng($qrInviteNodeStore)
-				.then((dataUrl) => {
-					const link = document.createElement('a');
-					link.download = `${$course.slug}-qr-code.png`;
-					link.href = dataUrl;
-					link.click();
-				})
-				.catch((error) => {
-					isLoadingQRDownload = false;
-					console.error('Oops, something went wrong!', error);
-				})
-				.finally(() => {
-					isLoadingQRDownload = false;
-				});
-		}, 300);
+    isLoadingQRDownload = true;
+    setTimeout(() => {
+      toPng($qrInviteNodeStore)
+        .then((dataUrl) => {
+          const link = document.createElement('a');
+          link.download = `${$course.slug}-qr-code.png`;
+          link.href = dataUrl;
+          link.click();
+        })
+        .catch((error) => {
+          isLoadingQRDownload = false;
+          console.error('Oops, something went wrong!', error);
+        })
+        .finally(() => {
+          isLoadingQRDownload = false;
+        });
+    }, 300);
   }
 
   async function generateQR(text) {

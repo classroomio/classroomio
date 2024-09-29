@@ -11,9 +11,9 @@ export const load = async ({ params = { hash: '' } }) => {
     const courseHashData = atob(decodeURIComponent(params.hash));
     console.log('courseHashData', courseHashData);
 
-    const { id, name, description, orgSiteName } = JSON.parse(courseHashData);
+    const { id, name, description, orgSiteName, batchId } = JSON.parse(courseHashData);
 
-    if (!id || !name || !description || !orgSiteName) {
+    if (!id || !name || !description || !orgSiteName || !batchId) {
       throw 'Validation failed';
     }
     const currentOrg = await getCurrentOrg(orgSiteName, true);
@@ -22,7 +22,7 @@ export const load = async ({ params = { hash: '' } }) => {
       id,
       name,
       description,
-      currentOrg
+      currentOrg, batchId
     };
   } catch (error) {
     console.error('Error decoding course invite params.hash', error);

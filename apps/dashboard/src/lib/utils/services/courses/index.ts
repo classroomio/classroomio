@@ -10,7 +10,8 @@ import type {
   Exercise,
   LessonCompletion,
   ExerciseTemplate,
-  LessonSection
+  LessonSection,
+  Batch
 } from '$lib/utils/types';
 import { STATUS } from '$lib/utils/constants/course';
 import type { PostgrestSingleResponse, PostgrestError } from '@supabase/supabase-js';
@@ -243,6 +244,109 @@ export function updatedGroupMember(update: any, match: any) {
 export function deleteGroupMember(groupMemberId: Groupmember['id']) {
   return supabase.from('groupmember').delete().match({ id: groupMemberId });
 }
+
+export async function createCourseBatch(batch: Batch) {
+  const { name, is_active, organization_id } = batch;
+
+  try {
+    // if the new batch is_active is true, deactivate all other batches
+    if (is_active) {
+      const { error: deactivateError } = await supabase
+        .from('group')
+        .update({ is_active: false })
+        .filter('is_active', 'eq', true);
+
+      if (deactivateError) {
+        console.error('Error deactivating other batches:', deactivateError);
+        throw deactivateError;
+      }
+    }
+
+    // insert the new batch
+    const { data, error } = await supabase
+      .from('group')
+      .insert([{ name, is_active, organization_id }])
+      .select('*');
+
+    if (error) {
+      console.error('Error creating new batch:', error);
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error creating course batch:', error);
+    throw error;
+  }
+}
+
+
+export function deleteCourseBatch(batchId: Batch['id']) {
+  return supabase
+    .from('group')
+    .delete()
+    .match({ id: batchId })
+}
+
+export async function editCourseBatch(
+  batchId: Batch['id'],
+  updatedFields: Partial<Pick<Batch, 'name' | 'is_active'>>
+) {
+  const { name, is_active } = updatedFields;
+
+  try {
+    if (is_active) {
+      const { error: deactivateError } = await supabase
+        .from('group')
+        .update({ is_active: false })
+        .neq('id', batchId)
+        .filter('is_active', 'eq', true);
+
+      if (deactivateError) {
+        console.error('Error deactivating other batches:', deactivateError);
+        throw deactivateError;
+      }
+    }
+
+    // ppdate the target batch
+    const { data, error } = await supabase
+      .from('group')
+      .update({ name, is_active })
+      .match({ id: batchId })
+      .select('*');
+
+    if (error) {
+      console.error('Error updating target batch:', error);
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error editing course batch:', error);
+    throw error;
+  }
+}
+
+export async function fetchCourseBatches() {
+  const { data, error } = await supabase
+    .from('group')
+    .select(`
+      *,
+      groupmember(
+        *,
+        profile(*)
+      )
+    `);
+
+  if (error) {
+    console.error('Error fetching groups, members, and profiles:', error);
+    return [];
+  }
+
+  return data;
+}
+
+
 
 export function fetchLesson(lessonId: Lesson['id']) {
   return supabase

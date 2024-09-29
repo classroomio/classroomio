@@ -7,6 +7,7 @@
   export let isEditable = false;
   export let disabled = false;
   export let className = '';
+  export let onInputChange = () => {};
   export let onChange = () => {}; // This is to know if element is 'dirty'
 </script>
 
@@ -21,6 +22,7 @@
     {checked}
     {name}
     {value}
+    on:change={onInputChange}
     disabled={disabled || isEditable}
   />
   {#if isEditable}
