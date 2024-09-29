@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { PUBLIC_IP_REGISTRY_KEY } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import { goto } from '$app/navigation';
   import { Dropdown } from 'carbon-components-svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
@@ -103,9 +103,9 @@
   }
 
   async function setMetaData() {
-    if (!PUBLIC_IP_REGISTRY_KEY) return;
+    if (!env.PUBLIC_IP_REGISTRY_KEY) return;
 
-    const response = await fetch(`https://api.ipregistry.co/?key=${PUBLIC_IP_REGISTRY_KEY}`);
+    const response = await fetch(`https://api.ipregistry.co/?key=${env.PUBLIC_IP_REGISTRY_KEY}`);
     const payload = await response.json();
     fields.metadata = payload;
   }

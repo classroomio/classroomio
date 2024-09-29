@@ -10,7 +10,7 @@
     RadioButton
   } from 'carbon-components-svelte';
   import { Restart, ArrowUpRight } from 'carbon-icons-svelte';
-  import { PUBLIC_SERVER_URL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
 
   import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
@@ -68,7 +68,7 @@
         slideUrl: lesson.slide_url || '',
         video: lesson.videos || ''
       }));
-      const response = await fetch(PUBLIC_SERVER_URL + '/downloadCourse', {
+      const response = await fetch(env.PUBLIC_SERVER_URL + '/downloadCourse', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -311,7 +311,7 @@
           variant={VARIANTS.OUTLINED}
           label={$t('course.navItem.settings.download')}
           onClick={downloadCourse}
-          isDisabled={isLoading || !PUBLIC_SERVER_URL}
+          isDisabled={isLoading || !env.PUBLIC_SERVER_URL}
           {isLoading}
         />
       {/if}
