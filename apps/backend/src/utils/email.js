@@ -11,13 +11,6 @@ const nodemailerTransporter = async () => {
     return null;
   }
 
-  console.log({
-    SMTP_HOST,
-    SMTP_PORT,
-    SMTP_USER,
-    SMTP_PASSWORD
-  });
-
   try {
     const transporter = nodemailer.createTransport({
       host: SMTP_HOST,
