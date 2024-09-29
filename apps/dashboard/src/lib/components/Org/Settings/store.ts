@@ -140,7 +140,7 @@ export const landingPageSettings: Writable<OrgLandingPageJson> = writable({
   },
   courses: {
     title: 'Explore our Courses',
-    titleHighlight: '',
+    titleHighlight: 'For You',
     subtitle: 'Find courses you will love from best teachers all over the world🌎.',
     show: true
   },
@@ -186,6 +186,7 @@ export const landingPageSettings: Writable<OrgLandingPageJson> = writable({
   },
   footerNote: {
     title: 'i can make you a coding superstar',
+    titleHighlight: 'start now',
     subtitle:
       'Don’t leave your future to chance. Sign up for our prep courses and take the first step towards academic success.',
     buttonLabel: 'View more courses',

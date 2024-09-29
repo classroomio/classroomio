@@ -74,7 +74,7 @@
             label="Explore prep courses"
           />
           <PrimaryButton
-            className="rounded-none uppercase font-semibold !text-[#0233BD] border !border-[#0233BD] hover:bg-[#0233BD] hover:!text-white w-full"
+            className="!border !border-[#0233BD] rounded-none uppercase font-semibold !text-[#0233BD]  hover:!bg-[#0233BD] hover:!text-white w-full"
             variant={VARIANTS.OUTLINED}
             label="Explore prep packages"
           />
@@ -83,7 +83,7 @@
     </section>
 
     <div class="bg-white py-10 px-2 md:px-10 lg:px-20 border-b">
-      <div class="flex flex-col md:flex-row items-center justify-between mb-4">
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-4">
         <span class="text-start px-4 space-y-2 mb-4 lg:mb-0">
           <p class="text-2xl md:text-3xl mb-4 font-serif">Available Prep Courses</p>
           <p class=" text-[#878787] text-sm font-medium w-full md:w-[80%]">
@@ -91,20 +91,21 @@
             the right course for you.
           </p>
         </span>
+        <div class=" w-full md:w-fit">
+          <div class="flex items-center bg-[#F7F7F7] p-2 w-full gap-1 md:gap-4">
+            <p class="text-sm md:text-base font-medium whitespace-nowrap">Filter by</p>
+            <div class="flex flex-row items-center w-full md:w-fit bg-white p-1">
+              {#each filter as item}
+                <label
+                  for={item.title}
+                  class="text-[#3C4043] flex flex-row whitespace-nowrap items-center text-xs font-medium bg-[#FDFDFD] rounded-md p-2"
+                >
+                  <input type="checkbox" name={item.title} class="text-[#0233BD] mr-2" />
 
-        <div class="flex items-center bg-[#F7F7F7] p-2 w-fit gap-2 md:gap-4">
-          <p class="font-medium whitespace-nowrap">Filter by</p>
-          <div class="flex flex-row items-center w-fit bg-white p-1">
-            {#each filter as item}
-              <label
-                for={item.title}
-                class="text-[#3C4043] flex flex-row whitespace-nowrap items-center text-xs font-medium bg-[#FDFDFD] rounded-md p-2"
-              >
-                <input type="checkbox" name={item.title} class="text-[#0233BD] mr-2" />
-
-                {item.title}
-              </label>
-            {/each}
+                  {item.title}
+                </label>
+              {/each}
+            </div>
           </div>
         </div>
       </div>
@@ -161,7 +162,7 @@
             <section class="flex flex-wrap items-center justify-center md:justify-start gap-4 p-4">
               {#each $courses.slice(0, viewAllPath ? $courses.length : 3) as courseData}
                 <div
-                  class="relative flex flex-col justify-between gap-4 p-4 h-[400px] w-[300px] max-w-[400px] md:max-h-[500px] rounded-lg bg-cover"
+                  class="relative flex flex-col justify-between gap-4 p-4 h-[400px] min-w-[280px] max-w-[400px] md:max-h-[500px] rounded-lg bg-cover"
                   style="background-image: url('/org-banner.png');"
                 >
                   <div class="absolute bg-black/30 w-full h-full top-0 left-0" />

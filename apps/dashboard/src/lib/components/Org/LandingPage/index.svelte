@@ -9,6 +9,7 @@
   import Organization from '$lib/components/Org/LandingPage/Templates/Organization/Home.svelte';
   import Bootcamp from '$lib/components/Org/LandingPage/Templates/Bootcamp/Home.svelte';
   import Prep from '$lib/components/Org/LandingPage/Templates/Prep/Home.svelte';
+  import Posthog from '$lib/components/Org/LandingPage/Templates/Posthog/Home.svelte';
 
   import Course from './Templates/Plain/Course.svelte';
 
@@ -64,5 +65,6 @@
   <!-- <Organization {org} /> -->
   <!-- <Plain {org} {orgSiteName} /> -->
   <!-- <Bootcamp {org} /> -->
-  <Prep {org} />
+  <!-- <Prep {org} /> -->
+  <Posthog {org} />
 {/if}
