@@ -1,6 +1,6 @@
 import { writable, derived } from 'svelte/store';
 import { dev, browser } from '$app/environment';
-import { env } from '$env/dynamic/private';
+import { env } from '$env/dynamic/public';
 import { STEPS } from '../constants/quiz';
 import type { Writable } from 'svelte/store';
 import type { CurrentOrg, OrgTeamMember, OrgAudience } from '../types/org';
