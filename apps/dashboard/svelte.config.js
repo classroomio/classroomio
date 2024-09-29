@@ -8,8 +8,6 @@ import 'dotenv/config';
 const useNodeAdapter =
   process.env.IS_SELFHOSTED === 'true' && process.env.DEPLOYMENT_PROVIDER === 'docker';
 
-console.log('\n\n======config', process.env.IS_SELFHOSTED, process.env.DEPLOYMENT_PROVIDER);
-
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
   // Consult https://kit.svelte.dev/docs/integrations#preprocessors

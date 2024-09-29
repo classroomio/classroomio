@@ -1,5 +1,6 @@
 import { writable, derived } from 'svelte/store';
 import { dev, browser } from '$app/environment';
+import { env } from '$env/dynamic/private';
 import { STEPS } from '../constants/quiz';
 import type { Writable } from 'svelte/store';
 import type { CurrentOrg, OrgTeamMember, OrgAudience } from '../types/org';
@@ -54,7 +55,7 @@ export const currentOrgDomain = derived(currentOrg, ($currentOrg) => {
 });
 
 export const isFreePlan = derived(currentOrg, ($currentOrg) => {
-  if (!$currentOrg.id) return false;
+  if (!$currentOrg.id || env.IS_SELFHOSTED === 'true') return false;
 
   const plan = getActivePlan($currentOrg);
 
