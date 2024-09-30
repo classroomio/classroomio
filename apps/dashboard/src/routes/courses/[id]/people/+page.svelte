@@ -65,13 +65,12 @@
       <div
         class="flex flex-col md:flex-row flex-end gap-2 justify-start items-start md:items-center mb-7"
       >
-        <PrimaryButton
-          onClick={() => ($createBatchModal.open = true)}
-          className="bg-[#0233BD] flex items-center gap-2"
-          ><Copy size={16} /> Create New Batch</PrimaryButton
-        >
         <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <p class="dark:text-white hidden lg:block text-lg w-20" />
+          <PrimaryButton
+            onClick={() => ($createBatchModal.open = true)}
+            className="bg-[#0233BD] flex items-center gap-2"
+            ><Copy size={16} /> {$t('course.navItem.people.batches.create.title')}</PrimaryButton
+          >
         </RoleBasedSecurity>
       </div>
 
@@ -137,7 +136,11 @@
                         fill={batch.is_active ? '#0F62FE' : '#DEDEDE'}
                       />
                     </svg>
-                    <span class="inline-block"> {batch.is_active ? 'Active' : 'Inactive'}</span>
+                    <span class="inline-block">
+                      {batch.is_active
+                        ? $t('course.navItem.people.batches.settings.status_active')
+                        : $t('course.navItem.people.batches.settings.status_inactive')}</span
+                    >
                   </div>
                 </StructuredListCell>
 
@@ -196,7 +199,9 @@
                         fill={'#DEDEDE'}
                       />
                     </svg>
-                    <span class="inline-block"> {'Inactive'}</span>
+                    <span class="inline-block">
+                      {$t('course.navItem.people.batches.settings.status_inactive')}</span
+                    >
                   </div>
                 </StructuredListCell>
 
@@ -204,7 +209,11 @@
                 <StructuredListCell class="w-[40%]">
                   <div class="text-[#0233BD] bg-[#D9E0F5] rounded text-center p-1 font-medium">
                     {batch.groupmember && batch.groupmember.length}
-                    {$t('course.navItem.people.batches.students')}
+                    {#if batch.groupmember && batch.groupmember.length === 1}
+                      {$t('course.navItem.people.batches.student')}
+                    {:else if batch.groupmember && batch.groupmember.length > 1}
+                      {$t('course.navItem.people.batches.students')}
+                    {/if}
                   </div>
                 </StructuredListCell>
               </StructuredListRow>

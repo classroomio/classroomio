@@ -92,7 +92,7 @@
   {#if onDelete}
     <div class="flex flex-col justify-center items-center gap-8">
       <h3 class="font-medium text-center">
-        Are you sure you want to delete this batch? This action will be irreversible
+        {$t('course.navItem.people.batches.settings.delete_prompt')}
       </h3>
       <PrimaryButton
         onClick={() => deleteBatch()}
