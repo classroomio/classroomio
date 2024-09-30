@@ -15,7 +15,7 @@ const katex = require('./src/routes/katex');
 const sendEmail = require('./src/routes/sendEmail');
 
 sentry.init({
-  dsn: process.env.DSN || '',
+  dsn: process.env.SENTRY_DNS || '',
   integrations: [new ProfilingIntegration()],
   tracesSampleRate: 1.0,
   profilesSampleRate: 1.0
@@ -34,6 +34,7 @@ const limiter = rateLimit({
   windowMs: 1000,
   max: 10
 });
+
 app.use(limiter);
 
 // Integrate Sentry middleware
@@ -64,7 +65,7 @@ process.on('uncaughtException', (err) => {
 
 // Error-handling middleware
 app.use((error, req, res, next) => {
-  console.error('Error caught:', error);
+  console.error('Exception error caught:', error);
 
   // Capture and send the error to Sentry
   sentry.captureException(error);
