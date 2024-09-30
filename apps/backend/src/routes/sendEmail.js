@@ -2,31 +2,25 @@ const express = require('express');
 const zod = require('zod');
 const { nodemailerTransporter, zohoClient } = require('../utils/email');
 const { withEmailTemplate } = require('../utils/withEmailTemplate');
+const { ZOHO_TOKEN } = process.env;
 
-const router = express.Router();
+const emailRouter = express.Router();
 
-let personalTransporter;
-let defaultTransporter;
+let transporter;
 
-// Initialize transporters
-nodemailerTransporter(true).then((t) => {
-  personalTransporter = t;
-});
-nodemailerTransporter(false).then((t) => {
-  defaultTransporter = t;
+nodemailerTransporter().then((t) => {
+  transporter = t;
 });
 
 async function sendWithNodemailer(emailData) {
-  const { from, to, subject, content, isPersonalEmail, replyTo } = emailData;
-
-  const transporter = isPersonalEmail ? personalTransporter : defaultTransporter;
+  const { from, to, subject, content, replyTo } = emailData;
 
   if (!transporter) {
     return;
   }
 
   return await transporter.sendMail({
-    from: from || '"Best from ClassroomIO" <best@classroomio.com>',
+    from: from || '"Best from ClassroomIO" <notify@classroomio.com>',
     to,
     subject,
     replyTo,
@@ -73,7 +67,7 @@ async function sendWithZoho(emailData) {
   });
 }
 
-router.post('/', async (req, res) => {
+emailRouter.post('/', async (req, res) => {
   try {
     const mySchema = zod.array(
       zod.object({
@@ -81,7 +75,6 @@ router.post('/', async (req, res) => {
         to: zod.string(),
         subject: zod.string(),
         content: zod.string(),
-        isPersonalEmail: zod.boolean().optional(),
         replyTo: zod.string().optional()
       })
     );
@@ -95,7 +88,7 @@ router.post('/', async (req, res) => {
         let res;
 
         try {
-          if (emailData.isPersonalEmail) {
+          if (!ZOHO_TOKEN) {
             res = await sendWithNodemailer(emailData);
           } else {
             res = await sendWithZoho(emailData);
@@ -116,4 +109,4 @@ router.post('/', async (req, res) => {
   }
 });
 
-module.exports = router;
+module.exports = emailRouter;

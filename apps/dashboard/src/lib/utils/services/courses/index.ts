@@ -79,7 +79,7 @@ const SLUG_QUERY = `
   certificate_theme,
   lesson_section(id, title, order),
   lessons:lesson(
-    id, title, order
+    id, title, order, section_id
   )
 `;
 

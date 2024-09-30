@@ -21,6 +21,7 @@
   import { getGreeting } from '$lib/utils/functions/date';
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
+  // import Meteors from '$lib/components/AnimationComponents/Meteors.svelte';
 
   export let data;
 
@@ -210,8 +211,9 @@
   </div>
 
   <div
-    class="w-full h-fit lg:h-[265px] flex md:items-center justify-between flex-col-reverse md:flex-row p-5 lg:p-10 rounded-md bg-primary-900 my-2"
+    class="w-full h-fit lg:h-[265px] flex md:items-center justify-between flex-col-reverse md:flex-row p-5 lg:p-10 rounded-md bg-primary-900 dark:bg-transparent my-2"
   >
+    <!-- <Meteors number={30} /> -->
     <span>
       <p class="w-full md:w-[75%] lg:w-[80%] text-white text-xs lg:text-xl font-normal mb-5">
         {$t('dashboard.hero_content')}

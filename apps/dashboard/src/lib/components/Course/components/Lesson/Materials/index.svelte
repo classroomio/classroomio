@@ -2,7 +2,7 @@
   import isEmpty from 'lodash/isEmpty';
   import { fade } from 'svelte/transition';
   import { useCompletion } from 'ai/svelte';
-  import MODES from '$lib/utils/constants/mode.js';
+  import MODES from '$lib/utils/constants/mode';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { formatYoutubeVideo } from '$lib/utils/functions/formatYoutubeVideo';

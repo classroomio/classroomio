@@ -6,11 +6,13 @@
   import { getStudentInviteLink } from '$lib/utils/functions/course';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
+  import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import PaymentModal from './PaymentModal.svelte';
   import type { Course } from '$lib/utils/types';
   import { ROLE } from '$lib/utils/constants/roles';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { t } from '$lib/utils/functions/translations';
+  import { calcCourseDiscount } from '$lib/utils/functions/course';
 
   export let className = '';
   export let editMode = false;
@@ -23,13 +25,6 @@
   let discount = 0;
   let formatter: Intl.NumberFormat | undefined;
   let isFree = false;
-
-  function calcDisc(percent: number, cost: number, showDiscount: boolean) {
-    if (!percent || !showDiscount) return cost;
-    const discountAmount = (percent / 100) * cost;
-    const discountedPrice = cost - discountAmount;
-    return Math.round(discountedPrice);
-  }
 
   function handleJoinCourse() {
     if (editMode) return;
@@ -64,7 +59,11 @@
   $: setFormatter(courseData.currency);
 
   $: discount = get(courseData, 'metadata.discount', 0);
-  $: calculatedCost = calcDisc(discount, courseData.cost || 0, !!courseData.metadata.showDiscount);
+  $: calculatedCost = calcCourseDiscount(
+    discount,
+    courseData.cost || 0,
+    !!courseData.metadata.showDiscount
+  );
   $: isFree = isCourseFree(calculatedCost);
   $: startCoursePayment && handleJoinCourse();
 </script>
@@ -101,9 +100,9 @@
             {#if courseData?.metadata?.showDiscount}
               <p class="dark:text-white font-light text-sm text-gray-500">
                 {discount}% {$t('course.navItem.landing_page.pricing_section.discount')}.
-                <span class="line-through"
-                  >{formatter?.format(courseData?.cost || 0) || courseData.cost}</span
-                >
+                <span class="line-through">
+                  {formatter?.format(courseData?.cost || 0) || courseData.cost}
+                </span>
               </p>
             {/if}
           {:else}
@@ -180,7 +179,7 @@
     <!-- Gift Container -->
     {#if courseData?.metadata?.reward?.show}
       <div class="p-10 flex items-center flex-col border-t border-b border-gray-300">
-        {@html get(courseData, 'metadata.reward.description', '')}
+        <HtmlRender content={get(courseData, 'metadata.reward.description', '')} />
       </div>
     {/if}
   </aside>

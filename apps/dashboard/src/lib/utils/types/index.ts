@@ -1,6 +1,14 @@
 export * from './config';
 export * from './dashboard';
 
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+	return twMerge(clsx(inputs));
+}
+
+
 export enum LOCALE {
   EN = 'en',
   HI = 'hi',
@@ -97,11 +105,15 @@ interface CourseMetadata {
     description: string;
     imgUrl: string;
   };
+  certificate?: {
+    templateUrl: string;
+  };
   reviews?: Array<Review>;
   lessonTabsOrder?: Array<Tabs>;
   grading?: boolean;
   lessonDownload?: boolean;
   allowNewStudent: boolean;
+  sectionDisplay?: Record<string, boolean>;
 }
 
 export interface LessonCommentInsertPayload {

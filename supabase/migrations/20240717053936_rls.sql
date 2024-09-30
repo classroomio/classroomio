@@ -1070,6 +1070,17 @@ to public
 using (is_org_admin())
 with check (is_org_admin());
 
+create policy "Only user can update their account via email"
+on "public"."organizationmember"
+as PERMISSIVE
+for UPDATE
+to public
+using (
+  (select auth.jwt()) ->> 'email' = email
+)
+with check (
+  (select auth.jwt()) ->> 'email' = email
+);
 
 create policy "Only auth users can read profile"
 on "public"."profile"

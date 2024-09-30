@@ -1,6 +1,6 @@
 <script lang="ts">
   import axios from 'axios';
-  import { PUBLIC_SERVER_URL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import {
     lesson,
@@ -49,7 +49,7 @@
     try {
       const response = await axios({
         method: 'POST',
-        url: PUBLIC_SERVER_URL + '/uploadVideo?lessonId=' + lessonId,
+        url: env.PUBLIC_SERVER_URL + '/uploadVideo?lessonId=' + lessonId,
         data: formData,
         maxContentLength: Infinity,
         maxBodyLength: Infinity,
@@ -119,7 +119,7 @@
   }
 
   $: isDoneUploading(formRes);
-  $: isDisabled = isLoading || !PUBLIC_SERVER_URL || $isFreePlan;
+  $: isDisabled = isLoading || !env.PUBLIC_SERVER_URL || $isFreePlan;
 </script>
 
 <UpgradeBanner className="mb-3" onClick={() => ($uploadCourseVideoStore.isModalOpen = false)}>

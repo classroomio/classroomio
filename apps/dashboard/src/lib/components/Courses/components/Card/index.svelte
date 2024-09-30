@@ -18,6 +18,7 @@
   import RadioButtonChecked from 'carbon-icons-svelte/lib/RadioButtonChecked.svelte';
   import GrowthIcon from 'carbon-icons-svelte/lib/Growth.svelte';
   import UserProfileIcon from 'carbon-icons-svelte/lib/UserProfile.svelte';
+  import { calcCourseDiscount } from '$lib/utils/functions/course';
 
   export let bannerImage: string | undefined;
   export let id = '';
@@ -25,7 +26,6 @@
   export let title = '';
   export let description = '';
   export let isPublished = false;
-  export let cost = 0;
   export let totalLessons = 0;
   export let totalStudents = 0;
   export let currency = 'USD';
@@ -34,6 +34,14 @@
   export let isExplore = false;
   export let progressRate = 45;
   export let type: COURSE_TYPE;
+  export let pricingData: {
+    cost: number;
+    currency?: string;
+    showDiscount?: boolean;
+    discount?: number;
+  } = {
+    cost: 0
+  };
 
   let target: any;
 
@@ -92,6 +100,12 @@
       icon: GrowthIcon
     }
   };
+
+  $: cost = calcCourseDiscount(
+    pricingData.discount,
+    pricingData.cost ?? 0,
+    !!pricingData.showDiscount
+  );
 </script>
 
 {#if !isLMS && !isOnLandingPage}
@@ -169,11 +183,18 @@
       </p>
       <p class="text-xs py-2">
         {#if isOnLandingPage}
-          <span class="px-2"
-            >{!cost
-              ? $t('course.navItem.landing_page.pricing_section.free')
-              : formatter.format(cost)}</span
-          >
+          <span class="px-2">
+            {#if !cost}
+              {$t('course.navItem.landing_page.pricing_section.free')}
+            {:else if pricingData.showDiscount}
+              {formatter.format(cost)}
+              <span class="line-through">
+                {formatter?.format(pricingData?.cost)}
+              </span>
+            {:else}
+              {formatter.format(cost)}
+            {/if}
+          </span>
         {:else if isLMS}
           {#if !isExplore}
             <div class="flex items-center gap-2">

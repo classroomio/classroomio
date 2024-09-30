@@ -1,21 +1,4 @@
-import tsSimpleTypes from './001_ts_simpleTypes';
-import tsSpecialTypes from './002_ts_specialTypes';
-import tsArrays from './003_ts_arrays';
-import tsTuples from './004_ts_tuples';
-import tsObjectTypes from './005_ts_objectTypes';
-import tsEnums from './006_ts_enums';
-import tsInterfaces from './007_ts_interfaces';
-import tsUnionTypes from './008_ts_unionTypes';
-import tsFunctions from './009_ts_functions';
-import tsCasting from './010_ts_casting';
-import tsClasses from './011_ts_classes';
-import tsBasicGenerics from './012_ts_basicGenerics';
-import tsUtilityTypes from './013_ts_utilityTypes';
-import tsKeyOf from './014_ts_keyOf';
-import tsNull from './015_ts_null';
-import tsDefinitelyTyped from './016_ts_definitelyTyped';
-
-export const TS_IDS: { [key: string]: string } = {
+export const TYPESCRIPT_IDS: { [key: string]: string } = {
   TS_SIMPLETYPES: 'TS_SIMPLETYPES',
   TS_SPECIALTYPES: 'TS_SPECIALTYPES',
   TS_ARRAYS: 'TS_ARRAYS',
@@ -34,21 +17,22 @@ export const TS_IDS: { [key: string]: string } = {
   TS_DEFINITELYTYPED: 'TS_DEFINITELYTYPED'
 };
 
-export const TS_TEMPLATES = {
-  [TS_IDS.TS_SIMPLETYPES]: tsSimpleTypes,
-  [TS_IDS.TS_SPECIALTYPES]: tsSpecialTypes,
-  [TS_IDS.TS_ARRAYS]: tsArrays,
-  [TS_IDS.TS_TUPLES]: tsTuples,
-  [TS_IDS.TS_OBJECTTYPES]: tsObjectTypes,
-  [TS_IDS.TS_ENUMS]: tsEnums,
-  [TS_IDS.TS_INTERFACES]: tsInterfaces,
-  [TS_IDS.TS_UNIONTYPES]: tsUnionTypes,
-  [TS_IDS.TS_FUNCTIONS]: tsFunctions,
-  [TS_IDS.TS_CASTING]: tsCasting,
-  [TS_IDS.TS_CLASSES]: tsClasses,
-  [TS_IDS.TS_BASICGENERICS]: tsBasicGenerics,
-  [TS_IDS.TS_UTILITYTYPES]: tsUtilityTypes,
-  [TS_IDS.TS_KEYOF]: tsKeyOf,
-  [TS_IDS.TS_NULL]: tsNull,
-  [TS_IDS.TS_DEFINITELYTYPED]: tsDefinitelyTyped
+export const TYPESCRIPT_TEMPLATES = {
+  [TYPESCRIPT_IDS.TS_SIMPLETYPES]: async () => (await import('./001_ts_simpleTypes')).default,
+  [TYPESCRIPT_IDS.TS_SPECIALTYPES]: async () => (await import('./002_ts_specialTypes')).default,
+  [TYPESCRIPT_IDS.TS_ARRAYS]: async () => (await import('./003_ts_arrays')).default,
+  [TYPESCRIPT_IDS.TS_TUPLES]: async () => (await import('./004_ts_tuples')).default,
+  [TYPESCRIPT_IDS.TS_OBJECTTYPES]: async () => (await import('./005_ts_objectTypes')).default,
+  [TYPESCRIPT_IDS.TS_ENUMS]: async () => (await import('./006_ts_enums')).default,
+  [TYPESCRIPT_IDS.TS_INTERFACES]: async () => (await import('./007_ts_interfaces')).default,
+  [TYPESCRIPT_IDS.TS_UNIONTYPES]: async () => (await import('./008_ts_unionTypes')).default,
+  [TYPESCRIPT_IDS.TS_FUNCTIONS]: async () => (await import('./009_ts_functions')).default,
+  [TYPESCRIPT_IDS.TS_CASTING]: async () => (await import('./010_ts_casting')).default,
+  [TYPESCRIPT_IDS.TS_CLASSES]: async () => (await import('./011_ts_classes')).default,
+  [TYPESCRIPT_IDS.TS_BASICGENERICS]: async () => (await import('./012_ts_basicGenerics')).default,
+  [TYPESCRIPT_IDS.TS_UTILITYTYPES]: async () => (await import('./013_ts_utilityTypes')).default,
+  [TYPESCRIPT_IDS.TS_KEYOF]: async () => (await import('./014_ts_keyOf')).default,
+  [TYPESCRIPT_IDS.TS_NULL]: async () => (await import('./015_ts_null')).default,
+  [TYPESCRIPT_IDS.TS_DEFINITELYTYPED]: async () =>
+    (await import('./016_ts_definitelyTyped')).default
 };

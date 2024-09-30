@@ -194,7 +194,8 @@
     "team_members": "Miembros del equipo",
     "back": "Volver a configuración",
     "download_lessons": "Actualice para descargar lecciones",
-    "download_course": "Actualizar para descargar el curso"
+    "download_course": "Actualizar para descargar el curso",
+    "domain": "Actualice su plan para agregar dominios personalizados"
   },
   "audience": {
     "title": "Audiencia",
@@ -390,9 +391,18 @@
             "goals": "Objetivos",
             "reviews": "Reseñas",
             "instructor": "Instructor",
-            "pricing": "Precios"
+            "pricing": "Precios",
+            "certificate": "Certificado"
+          },
+          "display_section": "Sección de visualización",
+          "certificate_form": {
+            "upload_template": "Plantilla de certificado"
           }
-        }
+        },
+        "course_content": "Contenido del curso",
+        "modules": "módulos",
+        "lessons": "lecciones",
+        "exercises": "ceremonias"
       },
       "certificates": {
         "title": "Certificados",
@@ -923,12 +933,23 @@
     "settings": {
       "domains": {
         "add": "Agregar",
-        "work_together": "Agregue sus compañeros de equipo o colaboradores a su organización. Empezar a trabajar juntos",
         "url": "URL",
         "update": "Actualizar dominio",
         "custom": "Dominio personalizado",
         "domain": "Añade tu propio nombre de dominio",
-        "title": "Dominio personalizado"
+        "title": "Dominio personalizado",
+        "save": "Ahorrar",
+        "your_domain": "Tu dominio",
+        "custom_domain_error": "No puede agregar un dominio de nivel superior como dominio personalizado. En su lugar, utilice un subdominio como 'cursos.[susitio web].com' o 'www.[susitio web].com'.",
+        "custom_domain_success": "Dominio personalizado agregado exitosamente",
+        "dns_description": "Establezca el siguiente registro en su proveedor de DNS para continuar:",
+        "dns_type": "Tipo",
+        "dns_value": "Valor",
+        "dns_name": "Nombre",
+        "refresh": "Refrescar",
+        "remove": "Eliminar",
+        "custom_favicon": "favicon personalizado",
+        "custom_code": "código personalizado"
       },
       "customize-lms": {
         "title": "Personalizar LMS",
@@ -1084,7 +1105,8 @@
       "learn": "Aprende más",
       "month": "mes",
       "monthly": "Mensual",
-      "annually": "Anualmente"
+      "annually": "Anualmente",
+      "save": "Ahorra 2 meses"
     },
     "plan_names": {
       "free": "Gratis",
@@ -1206,9 +1228,9 @@
         "update_organization": "Actualizar organización",
         "team": {
           "heading": "Equipo",
-          "sub_heading": "Configura tu sitio web",
           "body": "Agregue compañeros de equipo a su organización para que ambos puedan colaborar en proyectos.",
-          "button": "Gestionar equipo"
+          "button": "Gestionar equipo",
+          "sub_heading": "Configura tu equipo"
         },
         "custom_domain": {
           "heading": "Dominio personalizado",
@@ -1239,7 +1261,10 @@
       },
       "profile_picture": {
         "heading": "Foto de perfil",
-        "upload_image": "Cargar imagen"
+        "upload_image": "Cargar imagen",
+        "file_size": "Tamaño máximo de archivo:",
+        "accepted": "Aceptado:",
+        "validation_error": "El tamaño del archivo excede el límite máximo:"
       }
     },
     "tabs": {
@@ -1300,6 +1325,17 @@
   },
   "specialization": {
     "course_tag": "Especialización"
+  },
+  "profileMenu": {
+    "profile": "PERFIL",
+    "current_org": "ORGANIZACIÓN ACTUAL",
+    "free_tools": "HERRAMIENTAS GRATUITAS",
+    "progress": "Informe de progreso",
+    "timer": "Temporizador de actividad",
+    "tic_tac": "dedo del pie tres en raya",
+    "see_more": "Ver más",
+    "whats_new": "Qué hay de nuevo",
+    "launch_week": "Semana de lanzamiento"
   },
   "validations": {
     "invalid_type_error": "No debe estar vacío",
