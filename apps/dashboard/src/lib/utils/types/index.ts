@@ -423,6 +423,7 @@ export interface Batch {
   name?: string;
   is_active?: boolean;
   organization_id?: any;
+  course_id?: any;
   description?: string;
   groupmember?: Groupmember[];
 }

@@ -14,6 +14,7 @@
   import { currentOrg } from '$lib/utils/store/org.js';
   import { t } from '$lib/utils/functions/translations';
   import type { Batch } from '$lib/utils/types/index.js';
+  import { course } from '$lib/components/Course/store.js';
   import { courseBatch } from '$lib/components/Course/store.js';
   import { fetchCourseBatches } from '$lib/utils/services/courses/index.js';
   import { createBatchModal } from '$lib/components/Course/components/People/store.js';
@@ -39,9 +40,10 @@
     goto(url);
   };
 
-  const getCourseBatch = async () => {
+  const getCourseBatch = async (courseId: any) => {
     try {
-      const courseBatches = await fetchCourseBatches();
+      const courseBatches = await fetchCourseBatches(courseId);
+      console.log('courseBatches', courseBatches);
       courseBatch.set(courseBatches as Batch[]);
     } catch (error) {
       console.log(error);
@@ -49,12 +51,12 @@
     }
   };
 
-  onMount(() => {
-    getCourseBatch();
-  });
+  $: if ($course.id) {
+    getCourseBatch($course.id);
+  }
 </script>
 
-<CreateBatchModal {getCourseBatch} orgId={$currentOrg.id} />
+<CreateBatchModal courseId={$course.id} {getCourseBatch} orgId={$currentOrg.id} />
 
 <CourseContainer bind:courseId={data.courseId}>
   <PageNav title={$t('course.navItem.people.title')} disableSticky={true}></PageNav>

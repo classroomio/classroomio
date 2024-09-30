@@ -2,7 +2,6 @@
   import { courseBatch } from '../../store.js';
   import type { Batch } from '$lib/utils/types';
   import { createBatchModal } from './store.js';
-  import { currentOrg } from '$lib/utils/store/org.js';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$lib/components/Snackbar/store.js';
   import { createCourseBatch } from '$lib/utils/services/courses';
@@ -14,19 +13,21 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   export let orgId;
+  export let courseId;
   export let getCourseBatch;
 
   let batch: Batch = {
     name: '',
     is_active: false,
-    organization_id: orgId
+    organization_id: orgId,
+    course_id: courseId
   };
 
   function closeModal() {
     $createBatchModal.open = false;
 
     // calling again to update the batch list
-    getCourseBatch();
+    getCourseBatch(courseId);
   }
 
   function handleRadioClick(value: string) {

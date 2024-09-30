@@ -246,7 +246,7 @@ export function deleteGroupMember(groupMemberId: Groupmember['id']) {
 }
 
 export async function createCourseBatch(batch: Batch) {
-  const { name, is_active, organization_id } = batch;
+  const { name, is_active, organization_id, course_id } = batch;
 
   try {
     // if the new batch is_active is true, deactivate all other batches
@@ -265,7 +265,7 @@ export async function createCourseBatch(batch: Batch) {
     // insert the new batch
     const { data, error } = await supabase
       .from('group')
-      .insert([{ name, is_active, organization_id }])
+      .insert([{ name, is_active, organization_id, course_id }])
       .select('*');
 
     if (error) {
@@ -327,7 +327,7 @@ export async function editCourseBatch(
   }
 }
 
-export async function fetchCourseBatches() {
+export async function fetchCourseBatches(courseId: Course['id']) {
   const { data, error } = await supabase
     .from('group')
     .select(`
@@ -336,7 +336,7 @@ export async function fetchCourseBatches() {
         *,
         profile(*)
       )
-    `);
+    `).eq('course_id', courseId);
 
   if (error) {
     console.error('Error fetching groups, members, and profiles:', error);
