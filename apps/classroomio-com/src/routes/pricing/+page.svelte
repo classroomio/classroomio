@@ -186,9 +186,9 @@
 </section>
 
 <PageSignupCTA
-  header="Launch Your First Training in Minutes"
+  header="Bring your bootcamp vision online"
   subText="Try before you buy. No credit card required."
-  btnLabel="Sign up"
+  btnLabel="Sign up for free"
   link="/signup"
   demo={false}
 />

@@ -1,13 +1,12 @@
 import { vitePreprocess } from '@sveltejs/kit/vite';
-import adapter from '@sveltejs/adapter-auto';
+import adapterAuto from '@sveltejs/adapter-auto';
 import adapterNode from '@sveltejs/adapter-node';
 import path from 'path';
 
 import 'dotenv/config';
 
-console.log('\n\n=======config: ', process.env.IS_SELFHOSTED);
-
-const useNodeAdapter = process.env.IS_SELFHOSTED === 'true';
+const useNodeAdapter =
+  process.env.IS_SELFHOSTED === 'true' && process.env.DEPLOYMENT_PROVIDER === 'docker';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -16,7 +15,7 @@ const config = {
   preprocess: [vitePreprocess({})],
 
   kit: {
-    adapter: useNodeAdapter ? adapterNode() : adapter(),
+    adapter: useNodeAdapter ? adapterNode() : adapterAuto(),
     alias: {
       $lib: path.resolve('./src/lib'),
       $mail: path.resolve('./src/mail')

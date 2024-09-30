@@ -104,13 +104,17 @@
 
       const [regexUsernameMatch] = [...(authUser.email?.matchAll(/(.*)@/g) || [])];
 
+      const isGoogleAuth = !!authUser.app_metadata?.providers?.includes('google');
+
       const { data: newProfileData, error } = await supabase
         .from('profile')
         .insert({
           id: authUser.id,
           username: regexUsernameMatch[1] + `${new Date().getTime()}`,
           fullname: regexUsernameMatch[1],
-          email: authUser.email
+          email: authUser.email,
+          is_email_verified: isGoogleAuth,
+          verified_at: isGoogleAuth ? new Date().toDateString() : undefined
         })
         .select();
 
@@ -244,6 +248,7 @@
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       // Log key events
       console.log(`event`, event);
+      console.log(`session`, session);
       if (event == 'PASSWORD_RECOVERY') {
         console.log('PASSWORD RESET');
       }
@@ -254,12 +259,14 @@
       }
 
       // Skip Authentication
-      if (data.skipAuth) return;
+      if (data.skipAuth || $user.fetchingUser) return;
 
       // Authentication Steps
       if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
         $user.fetchingUser = true;
-        getProfile();
+        getProfile().then(() => {
+          $user.fetchingUser = false;
+        });
       }
       // else if (!['TOKEN_REFRESHED'].includes(event)) {
       //   console.log('not logged in, go to login');

@@ -106,6 +106,14 @@ li {
   background-image: url('/hero-bg.svg');
 }
 
+.tools-hero-bg {
+  background-image: url('/tools-hero-bg.svg');
+}
+@media (min-width: 760px) {
+  .tools-hero-bg {
+    min-height: 350px;
+  }
+}
 .cio-bg-blue {
   background: rgb(2, 51, 189);
   background-size: cover;
