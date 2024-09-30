@@ -221,7 +221,7 @@
     </div>
 
     <PageSignupCTA
-      header="Scale your Teaching Business in Minutes"
+      header="Kick off your Teaching Business in Minutes"
       subText="Don't wait, let's get you started."
       btnLabel="Register"
       link="/teach/register"
