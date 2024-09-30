@@ -32,7 +32,7 @@ export function replaceHTMLTag(text: string) {
 
 export const getPathwayCompletedCoursesLength = (pathway: Pathway) => {
   if (!pathway.isPathway) return;
-  const completedCourses = pathway.pathway_course.filter((pathwayCourse) => {
+  const completedCourses = pathway?.pathway_course?.filter((pathwayCourse) => {
     const lessons = pathwayCourse.course.lesson;
     return lessons.length > 0 && lessons.every((lesson) => lesson.is_complete);
   }).length;
@@ -42,7 +42,7 @@ export const getPathwayCompletedCoursesLength = (pathway: Pathway) => {
 
 export const getIsPathwayComplete = (pathway: Pathway) => {
   const completedCourses = getPathwayCompletedCoursesLength(pathway);
-  return completedCourses === pathway.pathway_course.length;
+  return completedCourses === pathway?.pathway_course?.length;
 };
 
 export const courseProgress = (lessons) => {

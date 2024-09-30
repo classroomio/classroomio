@@ -1234,6 +1234,7 @@
         "course_type_desc": "Update the course type for a more personalized experience",
         "live_class": "Live class",
         "self_paced": "Self paced",
+        "pathway": "Pathway",
         "delete": "Delete Course",
         "delete_text": "Delete this course,this action cannot be undone",
         "save": "Save Changes"
