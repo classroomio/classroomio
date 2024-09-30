@@ -64,11 +64,11 @@
 
   $: setFormatter(pathwayData.currency);
 
-  $: discount = get(pathwayData, 'metadata.discount', 0);
+  $: discount = get(pathwayData, 'landingpage.discount', 0);
   $: calculatedCost = calcDisc(
     discount,
     pathwayData.cost || 0,
-    !!pathwayData.metadata.showDiscount
+    !!pathwayData.landingpage.showDiscount
   );
   $: isFree = isCourseFree(calculatedCost);
   $: startCoursePayment && handleJoinCourse();
@@ -76,7 +76,7 @@
 
 <PaymentModal
   bind:open={openModal}
-  paymentLink={get(pathwayData, 'metadata.paymentLink', '')}
+  paymentLink={get(pathwayData, 'landingpage.paymentLink', '')}
   courseName={pathwayData.title}
   teacherEmail={getTeacherEmail(pathwayData.group)}
 />
@@ -94,7 +94,7 @@
       <div class="flex items-center justify-center gap-3 px-3 py-3">
         <!-- Pricing -->
         <div class=" text-center">
-          {#if pathwayData?.metadata?.allowNewStudent}
+          {#if pathwayData?.landingpage?.allowNewStudent}
             <p class="dark:text-white font-medium text-sm flex items-center gap-1">
               {formatter?.format(calculatedCost) || calculatedCost}
               {#if isFree}
@@ -103,7 +103,7 @@
                 >
               {/if}
             </p>
-            {#if pathwayData?.metadata?.showDiscount}
+            {#if pathwayData?.landingpage?.showDiscount}
               <p class="dark:text-white font-light text-sm text-gray-500">
                 {discount}% {$t('course.navItem.landing_page.pricing_section.discount')}.
                 <span class="line-through"
@@ -126,7 +126,7 @@
               : $t('course.navItem.landing_page.pricing_section.buy')}
             className="w-full sm:w-full h-[40px]"
             onClick={handleJoinCourse}
-            isDisabled={!pathwayData.metadata.allowNewStudent}
+            isDisabled={!pathwayData.landingpage.allowNewStudent}
           />
         </div>
       </div>
@@ -137,7 +137,7 @@
     <div class="py-2 lg:py-10">
       <!-- Pricing -->
       <div class="mb-6 px-2 lg:px-10">
-        {#if pathwayData?.metadata?.allowNewStudent}
+        {#if pathwayData?.landingpage?.allowNewStudent}
           <p class="dark:text-white font-semibold text-xl">
             {formatter?.format(calculatedCost) || calculatedCost}
             {#if isFree}
@@ -145,7 +145,7 @@
               >
             {/if}
           </p>
-          {#if pathwayData?.metadata?.showDiscount}
+          {#if pathwayData?.landingpage?.showDiscount}
             <p class="dark:text-white font-light text-sm text-gray-500">
               {discount}% {$t('course.navItem.landing_page.pricing_section.discount')}.
               <span class="line-through"
@@ -166,7 +166,7 @@
           label={isFree ? $t('course.navItem.landing_page.pricing_section.enroll') : 'Add to Cart'}
           className="w-full sm:w-full py-3 mb-3 rounded-none"
           onClick={handleJoinCourse}
-          isDisabled={!pathwayData.metadata.allowNewStudent}
+          isDisabled={!pathwayData.landingpage.allowNewStudent}
         />
         <PrimaryButton
           label={isFree
@@ -175,9 +175,9 @@
           className="w-full sm:w-full py-3 mb-3 rounded-none border-blue-600 hover:border-gray-600"
           variant={VARIANTS.OUTLINED}
           onClick={handleJoinCourse}
-          isDisabled={!pathwayData.metadata.allowNewStudent}
+          isDisabled={!pathwayData.landingpage.allowNewStudent}
         />
-        {#if pathwayData?.metadata?.showDiscount && pathwayData.metadata.allowNewStudent}
+        {#if pathwayData?.landingpage?.showDiscount && pathwayData.landingpage.allowNewStudent}
           <p class="dark:text-white font-light text-xs text-gray-500">
             {$t('course.navItem.landing_page.pricing_section.bird')}
           </p>
@@ -196,9 +196,9 @@
     </div>
 
     <!-- Gift Container -->
-    {#if pathwayData?.metadata?.reward?.show}
+    {#if pathwayData?.landingpage?.reward?.show}
       <div class="p-10 text-sm flex items-center flex-col border-t border-b border-gray-300">
-        {@html get(pathwayData, 'metadata.reward.description', '')}
+        {@html get(pathwayData, 'landingpage.reward.description', '')}
       </div>
     {/if}
   </aside>

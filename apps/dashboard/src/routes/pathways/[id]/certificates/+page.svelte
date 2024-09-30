@@ -20,7 +20,7 @@
 
 <IssueCertificateModal />
 
-<PathwayContainer>
+<PathwayContainer bind:pathwayId={data.pathwayId}>
   <PageNav title={$t('course.navItem.certificates.title')} disableSticky={true}>
     <slot:fragment slot="widget">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
@@ -38,7 +38,7 @@
     <RoleBasedSecurity allowedRoles={[1, 2]}>
       <Design />
     </RoleBasedSecurity>
-    <RoleBasedSecurity allowedRoles={[3]} onlyStudent>
+    <RoleBasedSecurity onlyStudent>
       <StudentCertificate />
     </RoleBasedSecurity>
 

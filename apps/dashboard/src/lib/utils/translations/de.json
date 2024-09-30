@@ -1457,6 +1457,11 @@
         "courses": "Kurse",
         "path": "zum Lernpfad"
       },
+      "not_permitted": {
+        "header": "Keine Erlaubnis",
+        "body": "Leider haben Sie keinen Zugriff auf diesen Weg.",
+        "button": "Nach Hause gehen"
+      },
       "dragAndDrop": {
         "title": "Kurse organisieren",
         "header": "Ordnen Sie den Kurs in der Reihenfolge an, in der der Student ihn absolvieren muss, und beginnen Sie mit dem ersten ganz oben",

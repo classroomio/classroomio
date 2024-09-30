@@ -21,15 +21,6 @@ export interface ProfileCourseProgress {
   lessons_count: number;
 }
 
-export interface ProfilePathwayProgress {
-  exercises_completed: number;
-  exercises_count: number;
-  lessons_completed: number;
-  lessons_count: number;
-  courses_completed: number;
-  courses_count: number;
-}
-
 export interface GroupPerson {
   assigned_student_id: number | null;
   created_at: string;
@@ -50,7 +41,7 @@ export interface GroupStore {
   people: GroupPerson[];
   members?: GroupPerson[];
   memberId?: string;
-}
+};
 
 export interface CustomQuestionType {
   id: number;
@@ -134,6 +125,10 @@ export interface PathwayMetadata {
   about: string;
   objectives: string;
   reviews?: Array<Review>;
+  goals: string;
+  requirements: string;
+  description: string;
+  videoUrl: string;
   instructor?: {
     name: string;
     role: string;
@@ -147,6 +142,7 @@ export interface PathwayMetadata {
     show: boolean;
     description: string;
   };
+  discount: number;
 }
 
 export interface LessonCommentInsertPayload {
@@ -240,7 +236,7 @@ export enum COURSE_TYPE {
   LIVE_CLASS = 'LIVE_CLASS'
 }
 export interface Course {
-  title?: any; // type unknown;
+  title: any; // type unknown;
   description: string; // type unknown;
   type: COURSE_TYPE;
   overview?: any; // type unknown;
@@ -274,29 +270,15 @@ export interface Course {
   polls: { status: string }[];
 }
 
-export interface CourseCompletion {
-  id?: number;
-  course_id: string;
-  profile_id: string;
-  is_complete: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
 export interface PathwayCourse {
   id: string;
-  banner_image: string;
-  title: string;
-  description: string;
-  total_lessons: number;
-  total_students: number;
-  estimated_hours: number;
+  course: Course;
+  course_id: any;
+  pathway_id: any;
+  order: number;
   is_unlocked: boolean;
-  is_completed: CourseCompletion[];
-  is_published: boolean;
   created_at: string;
-  updated_at: string;
-  order: string;
+  updated_at:string;
 }
 
 export interface Pathway {
@@ -311,7 +293,7 @@ export interface Pathway {
   organization_id?: string /* foreign key to organization.id */;
   logo?: string;
   slug?: any; // type unknown;
-  metadata: PathwayMetadata;
+  landingpage: PathwayMetadata;
   cost: number;
   currency?: string;
   group?: Group;
@@ -326,8 +308,7 @@ export interface Pathway {
   courses_certificate: string;
   progress_rate?: number;
   prerequisite: string;
-  courses?: PathwayCourse[];
-  selectedCourses: PathwayCourse[];
+  pathway_course: PathwayCourse[];
 }
 
 export interface Groupmember {

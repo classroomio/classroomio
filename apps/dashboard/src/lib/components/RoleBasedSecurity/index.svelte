@@ -11,33 +11,33 @@
   export let onlyStudent = false;
 
   let show: boolean = false;
-  let userRole: number = 0;
+  let userRole: number | null = null;
 
-  function isAllowed(userRole: number): boolean {
-    return allowedRoles.includes(userRole);
+  function isAllowed(role: number | null): boolean {
+    return role !== null && allowedRoles.includes(role);
   }
 
   $: {
-    const courseUser: GroupPerson = $courseGroup.people.find(
+    const courseUser: GroupPerson | undefined = $courseGroup.people.find(
       (person) => person.profile_id === $profile.id
-    )!;
-    const pathwaysUser: GroupPerson = $pathwaysGroup.people.find(
+    );
+    const pathwaysUser: GroupPerson | undefined = $pathwaysGroup.people.find(
       (person) => person.profile_id === $profile.id
-    )!;
+    );
 
-    userRole = courseUser ? courseUser.role_id : pathwaysUser ? pathwaysUser.role_id : userRole;
+    userRole = courseUser?.role_id ?? pathwaysUser?.role_id ?? null;
 
-    if (
-      !$isOrgAdmin &&
-      ($courseGroup.people.length || $pathwaysGroup.people.length) &&
-      !isAllowed(userRole)
-    ) {
+    if (!$isOrgAdmin && !isAllowed(userRole)) {
       onDenied();
     }
   }
 
   $: {
-    show = onlyStudent ? isAllowed(ROLE.STUDENT) : isAllowed(userRole) || $isOrgAdmin;
+    if (onlyStudent) {
+      show = userRole === ROLE.STUDENT;
+    } else {
+      show = isAllowed(userRole) || $isOrgAdmin;
+    }
   }
 </script>
 

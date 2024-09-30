@@ -3,12 +3,14 @@
   import set from 'lodash/set';
   import get from 'lodash/get';
   import isEmpty from 'lodash/isEmpty';
+
+  import type { Pathway } from '$lib/utils/types';
+  import { t } from '$lib/utils/functions/translations';
+  import { uploadAvatar } from '$lib/utils/services/pathways';
+
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
-  import { uploadAvatar } from '$lib/utils/services/courses';
-  import type { Pathway } from '$lib/utils/types';
-  import { t } from '$lib/utils/functions/translations';
 
   export let pathway: Pathway;
   let name: string | undefined;
@@ -42,18 +44,18 @@
     if (isEmpty(pathway) || hasBeenSet) return;
 
     hasBeenSet = true;
-    name = get(pathway, 'metadata.instructor.name');
-    role = get(pathway, 'metadata.instructor.role');
-    imgUrl = get(pathway, 'metadata.instructor.imgUrl');
-    description = get(pathway, 'metadata.instructor.description');
-    pathwayNo = get(pathway, 'metadata.instructor.coursesNo');
+    name = get(pathway, 'landingpage.instructor.name');
+    role = get(pathway, 'landingpage.instructor.role');
+    imgUrl = get(pathway, 'landingpage.instructor.imgUrl');
+    description = get(pathway, 'landingpage.instructor.description');
+    pathwayNo = get(pathway, 'landingpage.instructor.coursesNo');
   }
 
-  $: setter(name, 'metadata.instructor.name');
-  $: setter(role, 'metadata.instructor.role');
-  $: setter(imgUrl, 'metadata.instructor.imgUrl');
-  $: setter(description, 'metadata.instructor.description');
-  $: setter(pathwayNo, 'metadata.instructor.coursesNo');
+  $: setter(name, 'landingpage.instructor.name');
+  $: setter(role, 'landingpage.instructor.role');
+  $: setter(imgUrl, 'landingpage.instructor.imgUrl');
+  $: setter(description, 'landingpage.instructor.description');
+  $: setter(pathwayNo, 'landingpage.instructor.coursesNo');
 
   $: onAvatarChange(avatar);
 

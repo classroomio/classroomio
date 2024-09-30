@@ -11,7 +11,7 @@
     handleEditFeed,
     toggleFeedIsPinned,
     fetchNewsFeedReaction
-  } from '$lib/utils/services/newsfeed';
+  } from '$lib/utils/services/pathways/newsfeed';
   import { t } from '$lib/utils/functions/translations';
   import {
     NOTIFICATION_NAME,
@@ -21,18 +21,18 @@
 
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
-  import { group } from '$lib/components/Course/store';
+  import { group } from '$lib/components/Pathways/store';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import { newsFeed } from '$lib/components/Course/components/NewsFeed/store';
+  import { newsFeed } from '$lib/components/Pathways/components/NewsFeed/store.js';
 
   import Box from '$lib/components/Box/index.svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
   import PageBody from '$lib/components/PageBody/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import { isNewFeedModal } from '$lib/components/Course/components/NewsFeed/store';
-  import NewsFeedCard from '$lib/components/Course/components/NewsFeed/NewsFeedCard.svelte';
-  import NewFeedModal from '$lib/components/Course/components/NewsFeed/NewFeedModal.svelte';
+  import { isNewFeedModal } from '$lib/components/Pathways/components/NewsFeed/store';
+  import NewsFeedCard from '$lib/components/Pathways/components/NewsFeed/NewsFeedCard.svelte';
+  import NewFeedModal from '$lib/components/Pathways/components/NewsFeed/NewFeedModal.svelte';
   import PathwayContainer from '$lib/components/Pathways/components/PathwayContainer.svelte';
   import NewsFeedLoader from '$lib/components/Course/components/NewsFeed/NewsFeedLoader.svelte';
 
@@ -99,8 +99,10 @@
       [reactionType]: reactedAuthorIds
     };
 
+    console.log('reactedFeed', reactedFeed);
+
     const response = await supabase
-      .from('course_newsfeed')
+      .from('pathway_newsfeed')
       .update({
         reaction: reactedFeed.reaction
       })
@@ -175,8 +177,10 @@
       if (feed.id === feedId) {
         snackbar.success(
           `${
-            newIsPinned ? 'snackbar.course.success.pinned' : 'snackbar.course.success.unpinned'
-          } snackbar.course.success.successfully`
+            newIsPinned
+              ? $t('snackbar.course.success.pinned')
+              : $t('snackbar.course.success.unpinned')
+          } ${$t('snackbar.course.success.successfully')}`
         );
 
         feed.isPinned = newIsPinned;
@@ -248,7 +252,7 @@
   <RoleBasedSecurity
     allowedRoles={getPageRoles($currentOrg)}
     onDenied={() => {
-      goto(`/pathways/${data.pathwayId}/courses`);
+      // goto(`/pathways/${data.pathwayId}/courses`);
     }}
   >
     <PageNav title={$t('course.navItem.news_feed.heading')} disableSticky={true}>
@@ -266,7 +270,7 @@
     <PageBody width="max-w-4xl px-3">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
         <NewFeedModal
-          courseId={data.pathwayId}
+          pathwayId={data.pathwayId}
           {author}
           bind:edit
           bind:editFeed

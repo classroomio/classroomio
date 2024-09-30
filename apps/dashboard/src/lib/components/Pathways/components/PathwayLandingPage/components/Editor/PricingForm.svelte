@@ -25,10 +25,10 @@
     if (isEmpty(pathway) || hasBeenSet) return;
     hasBeenSet = true;
 
-    paymentLink = get(pathway, 'metadata.paymentLink', '');
-    discount = get(pathway, 'metadata.discount', 0);
-    showDiscount = get(pathway, 'metadata.showDiscount', false);
-    giftToggled = get(pathway, 'metadata.reward.show', false);
+    paymentLink = get(pathway, 'landingpage.paymentLink', '');
+    discount = get(pathway, 'landingpage.discount', 0);
+    showDiscount = get(pathway, 'landingpage.showDiscount', false);
+    giftToggled = get(pathway, 'landingpage.reward.show', false);
   }
 
   function setter(value: string | number | boolean | undefined, setterKey: string) {
@@ -41,14 +41,14 @@
 
   function handleChange(html: string) {
     const _pathway = cloneDeep(pathway);
-    set(_pathway, 'metadata.reward.description', html);
+    set(_pathway, 'landingpage.reward.description', html);
     pathway = _pathway;
   }
 
-  $: setter(showDiscount, 'metadata.showDiscount');
-  $: setter(paymentLink, 'metadata.paymentLink');
-  $: setter(discount, 'metadata.discount');
-  $: setter(giftToggled, 'metadata.reward.show');
+  $: setter(showDiscount, 'landingpage.showDiscount');
+  $: setter(paymentLink, 'landingpage.paymentLink');
+  $: setter(discount, 'landingpage.discount');
+  $: setter(giftToggled, 'landingpage.reward.show');
 
   $: setDefaults(pathway);
 </script>
@@ -116,7 +116,10 @@
     </p>
 
     <div class="h-2/5">
-      <TextEditor value={get(pathway, 'metadata.reward.description', '')} onChange={handleChange} />
+      <TextEditor
+        value={get(pathway, 'landingpage.reward.description', '')}
+        onChange={handleChange}
+      />
     </div>
   {/if}
 {/if}

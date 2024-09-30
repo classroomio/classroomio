@@ -1457,6 +1457,11 @@
         "courses": "Khóa học",
         "path": "đến lộ trình học tập"
       },
+      "not_permitted": {
+        "header": "Không có quyền",
+        "body": "Rất tiếc, bạn không có quyền truy cập vào con đường này.",
+        "button": "Về nhà"
+      },
       "dragAndDrop": {
         "title": "Sắp xếp các khóa học",
         "header": "Sắp xếp khóa học theo trình tự học sinh phải học bắt đầu với phần đầu tiên ở trên cùng",

@@ -11,7 +11,7 @@
   import { t } from '$lib/utils/functions/translations';
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
   import { lmsCourses } from '$lib/components/LMS/store';
-  import type { LmsCourse } from '$lib/components/LMS/store';
+  import type { LMSCourse } from '$lib/components/LMS/store';
   import { fetchPathways } from '$lib/components/Org/Pathway/api';
 
   let hasFetched = false;
@@ -47,7 +47,6 @@
 
       const allResults = [...pathwaysWithFlag, ...coursesWithFlag];
 
-      console.log('all result', allResults);
       lmsCourses.set(allResults);
       hasFetched = true;
     } catch (error) {
@@ -56,7 +55,8 @@
     }
   }
 
-  function calcTotalProgress(courses: LmsCourse[] | any) {
+  //TODO: we should consider pathway courses too
+  function calcTotalProgress(courses: LMSCourse[] | any) {
     totalCompleted = courses.reduce((acc, cur) => acc + (cur.progress_rate || 0), 0);
     totalLessons = courses.reduce((acc, cur) => acc + (cur.total_lessons || 0), 0);
     progressPercentage = Math.round((totalCompleted / totalLessons) * 100) || 0;

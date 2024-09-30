@@ -3,40 +3,27 @@
   import { dndzone } from 'svelte-dnd-action';
   import { createEventDispatcher } from 'svelte';
   import Draggable from 'carbon-icons-svelte/lib/Draggable.svelte';
-
-  import { pathway, addCourseModal } from './../store';
   import { t } from '$lib/utils/functions/translations';
-
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   export let pathwayCourses = [];
   const flipDurationMs = 300;
   const dispatch = createEventDispatcher();
 
-  function handleDndConsider(e) {
-    pathwayCourses = e.detail.items;
+  function updateOrder(items) {
+    return items.map((item, index) => ({
+      ...item,
+      order: index + 1
+    }));
+  }
 
+  function handleDndConsider(e) {
+    pathwayCourses = updateOrder(e.detail.items);
     dispatch('update', pathwayCourses);
   }
 
   function handleDndFinalize(e) {
-    pathwayCourses = e.detail.items;
-
+    pathwayCourses = updateOrder(e.detail.items);
     dispatch('update', pathwayCourses);
-  }
-
-  function handleSave() {
-    pathway.update((p) => {
-      const existingCoursesMap = new Map(p.courses.map((course) => [course.id, course]));
-
-      pathwayCourses.forEach((course) => existingCoursesMap.set(course.id, course));
-
-      p.courses = Array.from(existingCoursesMap.values());
-
-      return p;
-    });
-
-    $addCourseModal.open = false;
   }
 </script>
 
@@ -76,17 +63,15 @@
         <div class="flex items-center gap-3">
           <Draggable size={16} color="blue" />
           <p class="font-medium text-sm text-black dark:text-white">
-            {course.title}
+            {course.course.title}
           </p>
         </div>
       </span>
-      <span class="col-span-4 text-sm">{course.description}</span>
-      <span class="text-center text-sm col-span-2">{course.total_lessons}</span>
-      <span class="text-center text-sm col-span-2">{course.total_students}</span>
+      <span class="col-span-4 text-sm">{course.course.description}</span>
+      <span class="text-center text-sm col-span-2">{course.course.lesson?.length || 0}</span>
+      <span class="text-center text-sm col-span-2"
+        >{course.course.group_id?.groupmember.length || 0}</span
+      >
     </div>
   {/each}
 </section>
-
-<div class="flex justify-end mt-5">
-  <PrimaryButton label={$t('pathway.components.dragAndDrop.label')} onClick={handleSave} />
-</div>

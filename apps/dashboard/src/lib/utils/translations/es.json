@@ -1457,6 +1457,11 @@
         "courses": "Cursos",
         "path": "al camino del aprendizaje"
       },
+      "not_permitted": {
+        "header": "Sin permiso",
+        "body": "Lamentablemente no tienes acceso a esta vía.",
+        "button": "Ir a casa"
+      },
       "dragAndDrop": {
         "title": "Organizar cursos",
         "header": "Organice el curso en la secuencia que el estudiante debe tomar, comience primero en la parte superior",

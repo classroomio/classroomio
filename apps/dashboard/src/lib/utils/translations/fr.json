@@ -1457,6 +1457,11 @@
         "courses": "Cours",
         "path": "au parcours d'apprentissage"
       },
+      "not_permitted": {
+        "header": "Aucune autorisation",
+        "body": "Malheureusement, vous n'avez pas accès à ce parcours.",
+        "button": "Rentre chez toi"
+      },
       "dragAndDrop": {
         "title": "Organiser des cours",
         "header": "Organiser les cours dans l'ordre que l'étudiant doit suivre en commençant par le premier en haut",

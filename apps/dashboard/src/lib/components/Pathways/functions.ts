@@ -1,7 +1,5 @@
-import type { CourseCompletion } from '$lib/utils/types';
-
 export function getIsCourseComplete(
-  completions: CourseCompletion[],
+  completions,
   profileId: string | undefined
 ): boolean {
   if (!Array.isArray(completions)) return false;
@@ -19,8 +17,7 @@ export function getPathwayNavItemRoute(pathwayId = '', routeId?: string) {
 
   return `${path}/${routeId}`;
 }
-
-export function timeAgo(timestamp: number): string {
+export function timeAgo(timestamp: number | string): string {
   const date = new Date(timestamp);
   const now = new Date();
   const timeDifference = Math.abs(now.getTime() - date.getTime());

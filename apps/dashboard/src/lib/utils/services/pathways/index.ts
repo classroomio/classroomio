@@ -1,15 +1,109 @@
-import { STATUS } from '$lib/components/Course/components/Lesson/Exercise/constants';
-import type { PostgrestError } from '@supabase/supabase-js';
-import type { ProfilePathwayProgress } from '$lib/utils/types';
 import { supabase } from '$lib/utils/functions/supabase';
-import type { Pathway } from '$lib/utils/types';
-import type { PostgrestSingleResponse } from '@supabase/supabase-js';
+import type { Pathway, PathwayCourse } from '$lib/utils/types';
+import type {  PostgrestSingleResponse } from '@supabase/supabase-js';
 
 export function addPathwayGroupMember(member: any) {
   return supabase.from('groupmember').insert(member).select();
 }
 
-export async function updatePathways(
+const SLUG_QUERY = `
+  id,
+  title,
+  description,
+  logo,
+  is_published,
+  slug,
+  cost,
+  currency,
+  landingpage,
+  certificate_theme,
+  pathway_course (
+    id,
+    course_id,
+    pathway_id,
+    course (
+      id,
+      title,
+      description,
+      created_at
+    )
+  )
+`;
+
+const ID_QUERY = `
+  id,
+  title,
+  description,
+  logo,
+  is_published,
+  slug,
+  cost,
+  currency,
+  landingpage,
+  is_certificate_downloadable,
+  certificate_theme,
+    group(*,
+    members:groupmember(*,
+      profile(*)
+    )
+  ),
+  pathway_course (
+    id,
+    order,
+    course_id,
+    pathway_id,
+    is_unlocked,
+    course (
+      id,
+      title,
+      logo,
+      description,
+      banner_image,
+      created_at,
+      lesson (
+        lesson_completion(id, profile_id, is_complete)
+      ),
+      group_id (
+        groupmember (
+          id
+        )
+      )
+    )
+  )
+`;
+
+export async function fetchPathway(pathwayId?: Pathway['id'], slug?: Pathway['slug']) {
+  const match: { slug?: string; id?: string } = {};
+
+  if (slug) {
+    match.slug = slug;
+  } else {
+    match.id = pathwayId;
+  }
+
+  const response: PostgrestSingleResponse<Pathway | null> = await supabase
+    .from('pathway')
+    .select(slug ? SLUG_QUERY : ID_QUERY)
+    .match(match)
+    .single();
+
+  const { data, error } = response;
+
+  console.log(`error`, error);
+  console.log(`data`, data);
+  if (!data || error) {
+    console.log(`data`, data);
+    console.log(`fetchPathway => error`, error);
+    return { data, error };
+  }
+
+  return {
+    data,
+    error
+  };
+}
+
+export async function updatePathway(
   pathwayId: Pathway['id'],
   avatar: string | undefined,
   pathway: Partial<Pathway>
@@ -40,100 +134,49 @@ export async function deletePathway(pathwayId: Pathway['id']) {
   return await supabase.from('pathway').update({ status: 'DELETED' }).match({ id: pathwayId });
 }
 
-const SLUG_QUERY = `
-  id,
-  title,
-  type,
-  description,
-  overview,
-  logo,
-  is_published,
-  slug,
-  cost,
-  currency,
-  metadata,
-  is_certificate_downloadable,
-  certificate_theme,
-  courses:course(
-    id, title,
-  )
-`;
-
-const ID_QUERY = `
-  id,
-  title,
-  type,
-  description,
-  overview,
-  logo,
-  is_published,
-  group(*,
-    members:groupmember(*,
-      profile(*)
-    )
-  ),
-  slug,
-  cost,
-  currency,
-  metadata,
-  is_certificate_downloadable,
-  certificate_theme,
-  courses:course(
-    id, title,public, lesson_at, is_unlocked, order, created_at,
-    note, videos, slide_url, call_url, totalExercises:exercise(count), totalComments:lesson_comment(count),
-    profile:teacher_id(id, avatar_url, fullname),
-    lesson_completion(id, profile_id, is_complete)
-  ),
-  attendance:group_attendance(*),
-`;
-
-export async function fetchPathway(courseId?: Pathway['id'], slug?: Pathway['slug']) {
-  const match: { slug?: string; id?: string; status?: string } = {};
-
-  if (slug) {
-    match.slug = slug;
-  } else {
-    match.id = courseId;
-  }
-
-  match.status = STATUS[STATUS.ACTIVE];
-
-  const response: PostgrestSingleResponse<Pathway | null> = await supabase
-    .from('course')
-    .select(slug ? SLUG_QUERY : ID_QUERY)
-    .match(match)
-    .single();
-
-  const { data, error } = response;
-
-  console.log(`error`, error);
-  console.log(`data`, data);
-  if (!data || error) {
-    console.log(`data`, data);
-    console.log(`fetchCourse => error`, error);
-    // return this.redirect(307, '/courses');
-    return { data, error };
-  }
-
-  return {
-    data,
-    error
-  };
+export async function deletePathwayCourse(courseId: PathwayCourse['course_id']) {
+  return supabase.from('pathway_course').delete().match({ course_id: courseId });
 }
 
-export async function fetchPathwayCourseProgress(
-  pathwayId,
-  profileId
-): Promise<{
-  data: ProfilePathwayProgress[] | null;
-  error: PostgrestError | null;
-}> {
-  const { data, error } = await supabase
-    .rpc('get_course_progress', {
-      pathway_id_arg: pathwayId,
-      profile_id_arg: profileId
-    })
-    .returns<ProfilePathwayProgress[]>();
+export function addPathwayCourse(pathwayId: Pathway['id'], courseId: PathwayCourse['course_id'], order:PathwayCourse['order']) {
+  return supabase
+    .from('pathway_course')
+    .insert([
+      {
+        pathway_id: pathwayId,
+        course_id: courseId,
+        order: order
+      }
+    ])
+    .select();
+}
 
-  return { data, error };
+export function updatePathwayCourses(
+  id: PathwayCourse['id'],
+  order: PathwayCourse['order']
+) {
+  return supabase
+    .from('pathway_course')
+    .update({ order: order })
+    .match({ id: id });
+}
+
+export async function uploadAvatar(pathwayId: string, avatar: string) {
+  const filename = `pathway/${pathwayId + Date.now()}.webp`;
+  let logo;
+
+  const { data } = await supabase.storage.from('avatars').upload(filename, avatar, {
+    cacheControl: '3600',
+    upsert: false
+  });
+
+  if (data) {
+    const { data } = supabase.storage.from('avatars').getPublicUrl(filename);
+
+    if (!data.publicUrl) return;
+
+    logo = data.publicUrl;
+  }
+
+  return logo;
 }

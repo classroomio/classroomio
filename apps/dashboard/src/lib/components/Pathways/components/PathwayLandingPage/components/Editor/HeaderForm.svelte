@@ -36,8 +36,9 @@
   placeholder="www.youtube.com/watch?v=uYRq60G5XTk"
   helperMessage={$t('course.navItem.landing_page.editor.header_form.helper')}
   type="text"
-  bind:value={pathway.metadata.videoUrl}
+  bind:value={pathway.landingpage.videoUrl}
 />
+
 <div class="mt-7">
   <p class="font-bold mb-3">{$t('course.navItem.landing_page.editor.header_form.replace_cover')}</p>
   <PrimaryButton

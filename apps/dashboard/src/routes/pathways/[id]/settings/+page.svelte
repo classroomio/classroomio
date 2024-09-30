@@ -12,10 +12,15 @@
     Loading
   } from 'carbon-components-svelte';
   import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
+
+  import type { Pathway } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
-  import { pathway, pathwaySettings, RADIO_VALUE } from '$lib/components/Pathways/store';
-  import { deletePathway, updatePathways } from '$lib/utils/services/pathways';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import generateSlug from '$lib/utils/functions/generateSlug';
+  import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
+  import { deletePathway, updatePathway } from '$lib/utils/services/pathways';
   import { currentOrgDomain, currentOrg, currentOrgPath } from '$lib/utils/store/org';
+  import { pathway, pathwaySettings, RADIO_VALUE } from '$lib/components/Pathways/store';
 
   import PageNav from '$lib/components/PageNav/index.svelte';
   import PageBody from '$lib/components/PageBody/index.svelte';
@@ -25,12 +30,8 @@
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
-  import PathwayContainer from '$lib/components/Pathways/components/PathwayContainer.svelte';
   import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
-  import generateSlug from '$lib/utils/functions/generateSlug';
-  import type { Pathway } from '$lib/utils/types';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import PathwayContainer from '$lib/components/Pathways/components/PathwayContainer.svelte';
 
   let isSaving = false;
   let isDeleting = false;
@@ -64,24 +65,17 @@
     isSaving = true;
     // try catch block to save to supabase
     try {
-      const {
-        title,
-        logo,
-        description,
-        prerequisite,
-        is_published,
-        lms_certificate,
-        courses_certificate
-      } = $pathwaySettings;
+      const { title, logo, description, prerequisite, is_published, lms_certificate } =
+        $pathwaySettings;
 
-      await updatePathways($pathway.id, avatar, {
-        title,
-        logo,
-        description,
-        prerequisite,
-        is_published,
-        lms_certificate,
-        courses_certificate,
+      await updatePathway($pathway.id, avatar, {
+        title: title,
+        logo: logo,
+        description: description,
+        prerequisite: prerequisite,
+        is_published: is_published,
+        lms_certificate: lms_certificate,
+
         slug: $pathway.slug
       });
 
@@ -89,7 +83,6 @@
       $pathway.description = description;
       $pathway.logo = logo;
       $pathway.is_published = is_published;
-      $pathway.courses_certificate = courses_certificate;
       $pathway.prerequisite = prerequisite;
       $pathway.lms_certificate = lms_certificate;
 
@@ -120,7 +113,7 @@
         logo: pathway.logo || '',
         is_published: !!pathway.is_published,
         prerequisite: pathway.prerequisite,
-        metadata: pathway.metadata,
+        metadata: pathway.landingpage,
         lms_certificate: pathway.lms_certificate,
         courses_certificate: pathway.courses_certificate
       };
@@ -272,7 +265,7 @@
               <span slot="labelB" style="color: gray">{$t('pathway.pages.settings.disabled')}</span>
             </Toggle>
           </Column>
-          <Column class="flex w-full flex-col md:flex-row items-start  md:items-center gap-5">
+          <!-- <Column class="flex w-full flex-col md:flex-row items-start  md:items-center gap-5">
             <p>{$t('pathway.pages.settings.issue_two')}</p>
             <div>
               <RadioButtonGroup hideLegend bind:selected={$pathwaySettings.courses_certificate}>
@@ -286,7 +279,7 @@
                 />
               </RadioButtonGroup>
             </div>
-          </Column>
+          </Column> -->
         </Row>
       </Row>
 

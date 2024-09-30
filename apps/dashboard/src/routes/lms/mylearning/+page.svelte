@@ -9,17 +9,28 @@
   import { browser } from '$app/environment';
   import { t } from '$lib/utils/functions/translations';
   import { lmsCourses } from '$lib/components/LMS/store';
-  import type { LmsCourse } from '$lib/components/LMS/store';
+  import type { LMSCourse } from '$lib/components/LMS/store';
   import { fetchPathways } from '$lib/components/Org/Pathway/api';
   import { courseMetaDeta } from '$lib/components/Courses/store';
+  import { getIsPathwayComplete } from '$lib/utils/functions/pathway';
+
+  import IconButton from '$lib/components/IconButton/index.svelte';
+  import Grid from 'carbon-icons-svelte/lib/Grid.svelte';
+  import List from 'carbon-icons-svelte/lib/List.svelte';
+
+  import { onMount } from 'svelte';
 
   let hasFetched = false;
   let selectedId = '0';
-  let filteredCourses: LmsCourse[] | any[] = [];
+  let filteredCourses: LMSCourse[] | any[] = [];
+  let filteredCoursesInProgress: LMSCourse[] = [];
+  let filteredCoursesCompleted: LMSCourse[] = [];
   let searching = false;
   let searchValue = '';
+  let currentTab = '1';
 
   function onChange(tab) {
+    filterCourses(searchValue, selectedId, $lmsCourses);
     return () => (currentTab = tab);
   }
 
@@ -49,7 +60,7 @@
         isPathway: false
       }));
 
-      const allResults: LmsCourse[] = [...pathwaysWithFlag, ...coursesWithFlag];
+      const allResults: LMSCourse[] = [...pathwaysWithFlag, ...coursesWithFlag];
 
       lmsCourses.set(allResults);
       hasFetched = true;
@@ -60,7 +71,7 @@
     }
   }
 
-  function filterCourses(searchValue: string, _selectedId: string, courses: any[]) {
+  function filterCourses(searchValue: string, _selectedId: string, courses: LMSCourse[]) {
     if (browser) {
       if (!selectedId) {
         selectedId = localStorage.getItem('classroomio_filter_lms_mylearning_key') || '0';
@@ -69,54 +80,66 @@
       }
     }
 
-    filteredCourses = courses.filter((course) => {
-      if (!searchValue || course.title.toLowerCase().includes(searchValue.toLowerCase())) {
-        return true;
-      }
-      searching = true;
-      return false;
+    const filtered = courses.filter((course) => {
+      return !searchValue || course.title.toLowerCase().includes(searchValue.toLowerCase());
     });
 
     if (_selectedId === '0') {
-      filteredCourses = filteredCourses.sort(
-        (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      filteredCourses = filtered.sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       );
     } else if (_selectedId === '1') {
-      filteredCourses = filteredCourses.sort(
-        (a, b) => (b.isPathway ? 1 : 0) - (a.isPathway ? 1 : 0)
-      );
+      filteredCourses = filtered.filter((course) => course.isPathway);
+    } else if (_selectedId === '2') {
+      filteredCourses = filtered.filter((course) => course.isPathway == false);
+    }
+
+    // Filter the items render based on the current tab change
+    if (currentTab === '1') {
+      filteredCoursesInProgress = filteredCourses.filter((course) => {
+        if (course.isPathway) {
+          return getIsPathwayComplete(course) == false;
+        }
+        return course.total_lessons !== course.progress_rate;
+      });
+    } else if (currentTab === '2') {
+      filteredCoursesCompleted = filteredCourses.filter((course) => {
+        if (course.isPathway) {
+          return getIsPathwayComplete(course);
+        }
+        return course.total_lessons === course.progress_rate;
+      });
     }
   }
+
+  const setViewPreference = (preference: 'grid' | 'list') => {
+    $courseMetaDeta.view = preference;
+    localStorage.setItem('courseView', preference);
+  };
+
+  onMount(() => {
+    const courseView = localStorage.getItem('courseView') as 'grid' | 'list' | null;
+
+    if (courseView) {
+      $courseMetaDeta.view = courseView;
+    }
+  });
 
   $: if (browser && $profile.id && $currentOrg.id) {
     fetchPathwaysAndCourses($profile.id, $currentOrg.id);
     filterCourses(searchValue, selectedId, $lmsCourses);
   }
 
-  $: coursesInProgress =
-    filteredCourses.length > 0
-      ? filteredCourses.filter((course) => {
-          return course.total_lessons !== course.progress_rate;
-        })
-      : [];
-  $: coursesComplete =
-    filteredCourses.length > 0
-      ? filteredCourses.filter((course) => {
-          return course.total_lessons == course.progress_rate;
-        })
-      : [];
-
   $: tabs = [
     {
-      label: `${$t('my_learning.progress')} (${coursesInProgress.length})`,
+      label: `${$t('my_learning.progress')} (${filteredCoursesInProgress.length})`,
       value: '1'
     },
     {
-      label: `${$t('my_learning.complete')} (${coursesComplete.length})`,
+      label: `${$t('my_learning.complete')} (${filteredCoursesCompleted.length})`,
       value: '2'
     }
   ];
-  $: currentTab = tabs[0].value;
 </script>
 
 <section class="max-w-6xl mx-auto">
@@ -137,9 +160,20 @@
             bind:selectedId
             items={[
               { id: '0', text: $t('org_navigation.all_courses') },
-              { id: '1', text: $t('org_navigation.pathway') }
+              { id: '1', text: $t('org_navigation.pathway') },
+              { id: '2', text: $t('org_navigation.courses') }
             ]}
           />
+
+          {#if $courseMetaDeta.view === 'list'}
+            <IconButton onClick={() => setViewPreference('grid')}>
+              <Grid size={24} />
+            </IconButton>
+          {:else}
+            <IconButton onClick={() => setViewPreference('list')}>
+              <List size={24} />
+            </IconButton>
+          {/if}
         </div>
       </div>
     </div>
@@ -149,7 +183,7 @@
         <TabContent value={tabs[0].value} index={currentTab}>
           <Courses
             {searching}
-            courses={coursesInProgress}
+            courses={filteredCoursesInProgress}
             emptyTitle={$t('my_learning.not_in_progress')}
             emptyDescription={$t('my_learning.any_progress')}
           />
@@ -157,7 +191,7 @@
         <TabContent value={tabs[1].value} index={currentTab}>
           <Courses
             {searching}
-            courses={coursesComplete}
+            courses={filteredCoursesCompleted}
             emptyTitle={$t('my_learning.not_completed')}
             emptyDescription={$t('my_learning.any_course')}
           />

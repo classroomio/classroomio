@@ -19,7 +19,7 @@
   import { group } from '$lib/components/Pathways/store';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { ROLE_LABEL, ROLES } from '$lib/utils/constants/roles';
-  import { deleteMemberModal } from '$lib/components/Course/components/People/store';
+  import { deleteMemberModal } from '$lib/components/Pathways/components/People/store';
   import { deleteGroupMember, updatedGroupMember } from '$lib/utils/services/courses';
 
   import PageNav from '$lib/components/PageNav/index.svelte';
@@ -34,9 +34,9 @@
   import ComingSoon from '$lib/components/ComingSoon/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import PathwayContainer from '$lib/components/Pathways/components/PathwayContainer.svelte';
-  import InvitationModal from '$lib/components/Course/components/People/InvitationModal.svelte';
-  import DeleteConfirmation from '$lib/components/Course/components/People/DeleteConfirmation.svelte';
-  import type { Person, ProfileRole } from '$lib/components/Course/components/People/types';
+  import InvitationModal from '$lib/components/Pathways/components/People/InvitationModal.svelte';
+  import DeleteConfirmation from '$lib/components/Pathways/components/People/DeleteConfirmation.svelte';
+  import type { Person, ProfileRole } from '$lib/components/Pathways/components/People/types';
 
   export let data;
 

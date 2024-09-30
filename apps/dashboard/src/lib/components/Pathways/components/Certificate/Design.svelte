@@ -7,6 +7,7 @@
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
+  import { updatePathway } from '$lib/utils/services/pathways';
   import { saveCertificateValidation } from '$lib/utils/functions/validator';
 
   import { snackbar } from '$lib/components/Snackbar/store';
@@ -38,7 +39,7 @@
   };
   let helperText = '';
 
-  const saveCertificate = () => {
+  const saveCertificate = async () => {
     isSaving = true;
 
     console.log('pathway', $pathway);
@@ -57,10 +58,13 @@
       }
 
       errors.description = '';
-      console.log('pathway', $pathway);
 
       // TODO: save pathway
-
+      await updatePathway($pathway.id, undefined, {
+        description: $pathway.description || '',
+        is_certificate_downloadable: $pathway.is_certificate_downloadable || false,
+        certificate_theme: $pathway.certificate_theme || ''
+      });
       snackbar.success('snackbar.course_settings.success.saved');
     } catch (error) {
       if (error.message) {
