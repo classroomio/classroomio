@@ -10,7 +10,8 @@
   import { setTheme } from '$lib/utils/functions/theme';
   import TextChip from '$lib/components/Chip/Text.svelte';
   import Plan from '$lib/components/Chip/Plan.svelte';
-  import { PLAN_NAMES } from 'shared-constants/src/plans/constants';
+  import { PLAN_NAMES } from 'shared/src/plans/constants';
+  import { t } from '$lib/utils/functions/translations';
 
   export let canAddOrg = true;
 
@@ -27,7 +28,7 @@
 
     setTheme(org.theme);
     goto($currentOrgPath);
-    
+
     open = false;
   }
 </script>
@@ -90,7 +91,12 @@
         />
       {/each}
 
-      <OrgSelectorItem disabled={true} size="" text=" + Add Organization" onClick={handleAddOrg} />
+      <OrgSelectorItem
+        disabled={true}
+        size=""
+        text={$t('navigation.add_organization')}
+        onClick={handleAddOrg}
+      />
     </Popover>
   {/if}
 </div>

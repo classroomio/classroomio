@@ -1,4 +1,4 @@
-import { PUBLIC_SERVER_URL } from '$env/static/public';
+import { env } from '$env/dynamic/public';
 
 var win, output, textarea;
 
@@ -75,13 +75,6 @@ export const addMathPlugin = (tinymce: any) => {
             name: 'submitButton',
             text: 'Ok',
             buttonType: 'primary'
-          },
-          {
-            type: 'custom',
-            name: 'logo',
-            text: '',
-            icon: 'logo',
-            align: 'start'
           }
         ],
         onSubmit: async function (w) {
@@ -96,7 +89,7 @@ export const addMathPlugin = (tinymce: any) => {
 
           if (srcMatch) {
             // 2. Point the formula to our server
-            const customAPI = PUBLIC_SERVER_URL + '/katex';
+            const customAPI = env.PUBLIC_SERVER_URL + '/katex';
             const url = srcMatch[1]?.replaceAll('https://latex.codecogs.com/svg.image', customAPI);
 
             // 3. Fetch the HTML from the server
@@ -104,7 +97,7 @@ export const addMathPlugin = (tinymce: any) => {
             const html = await response.text();
 
             // 4. Set the content to the html
-            content = `<p>${html}</p><p>&nbsp;</p>`;
+            content = html;
           } else {
             console.error('No src attribute found in the img tag.');
           }

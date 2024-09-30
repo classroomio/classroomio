@@ -1,6 +1,7 @@
 export const ROUTE = {
   HOME: '/',
   DASHBOARD: '/dashboard',
+  LMS_HOME: '/home',
   ONBOARDING: '/onboarding',
   COURSES: '/courses',
   PAGES: '/pages',
@@ -32,6 +33,7 @@ export const PUBLIC_ROUTES = [
 export const ROUTES_TO_HIDE_NAV = [
   ROUTE.LOGIN,
   ROUTE.SIGN_UP,
+  ROUTE.LMS_HOME,
   `^${ROUTE.INVITE_TEACHER}/.*`,
   `^${ROUTE.INVITE_STUDENT}/.*`,
   ROUTE.FORGOT,

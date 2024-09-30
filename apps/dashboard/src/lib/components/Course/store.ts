@@ -1,13 +1,15 @@
 import { writable } from 'svelte/store';
 import type { Writable } from 'svelte/store';
-import { lessons } from './components/Lesson/store/lessons';
+import { lessons, lessonSections } from './components/Lesson/store/lessons';
 import { ROLE } from '$lib/utils/constants/roles';
-import type { Course, GroupPerson } from '$lib/utils/types';
+import type { Course, GroupPerson, Lesson, LessonSection } from '$lib/utils/types';
+import { COURSE_TYPE, COURSE_VERSION } from '$lib/utils/types';
 
 export const defaultCourse: Course = {
   id: '',
   title: '',
   description: '',
+  type: COURSE_TYPE.LIVE_CLASS,
   cost: 0,
   currency: '',
   status: 'ACTIVE',
@@ -18,6 +20,7 @@ export const defaultCourse: Course = {
   updated_at: new Date().toDateString(),
   attendance: [],
   polls: [],
+  version: COURSE_VERSION.V2,
   metadata: {
     requirements: '',
     description: '',
@@ -38,9 +41,9 @@ export const defaultCourse: Course = {
       imgUrl: ''
     },
     lessonTabsOrder: [
-      { id: 1, name: 'Note' },
-      { id: 2, name: 'Slide' },
-      { id: 3, name: 'Video' }
+      { id: 1, name: 'course.navItem.lessons.materials.tabs.note.title' },
+      { id: 2, name: 'course.navItem.lessons.materials.tabs.slide.title' },
+      { id: 3, name: 'course.navItem.lessons.materials.tabs.video.title' }
     ],
     grading: false,
     lessonDownload: true,
@@ -66,13 +69,17 @@ export const mockGroupMember = {
   }
 };
 
-export const group = writable<{
-  id: number | null;
+type GroupStore = {
+  id: string;
   tutors: GroupPerson[];
   students: GroupPerson[];
   people: GroupPerson[];
-}>({
-  id: null,
+  members?: GroupPerson[];
+  memberId?: string;
+};
+
+export const group = writable<GroupStore>({
+  id: '',
   tutors: [],
   students: [],
   people: []
@@ -87,52 +94,45 @@ export async function setCourse(data: Course, setLesson = true) {
       tutors: [],
       students: [],
       people: []
-    });
+    }) as GroupStore;
 
-    // @ts-ignore
     if (Array.isArray(groupData.members)) {
-      // @ts-ignore
       for (const member of groupData.members) {
         if (member.role_id === ROLE.STUDENT) {
-          // @ts-ignore
           groupData.students.push(member);
         } else if (member.profile) {
-          // @ts-ignore
           groupData.tutors.push({
             ...member.profile,
             memberId: member.id
           });
-
-          // tutorsById[member.profile.id] = member.profile;
         }
       }
 
-      // @ts-ignore
       groupData.people = groupData.members;
     }
 
-    // @ts-ignore
     delete groupData.members;
-    // @ts-ignore
+
     group.set(groupData);
   }
 
   if (setLesson) {
-    // @ts-ignore
-    const orderedLessons = (data.lessons || [])
-      // @ts-ignore
-      .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
-      // @ts-ignore
-      .sort((a, b) => a.order - b.order);
-    // .map((lesson) => ({
-    //   ...lesson,
-    //   profile: lesson.profile && tutorsById[lesson.profile.id],
-    // }));
+    const orderedLessons = sortLesson(data.lessons);
     lessons.set(orderedLessons);
+
+    if (data.lesson_section) {
+      const sections = data.lesson_section?.map((section) => {
+        const lessons = (data.lessons || []).filter((lesson) => lesson.section_id === section.id);
+        section.lessons = sortLesson(lessons);
+        return section;
+      });
+
+      lessonSections.set(sortLessonSection(sections));
+    }
   }
 
-  //@ts-ignore
   delete data.lessons;
+  delete data?.lesson_section;
 
   if (data.metadata && !Object.values(data.metadata)) {
     data.metadata = {
@@ -161,4 +161,16 @@ export async function setCourse(data: Course, setLesson = true) {
     data.certificate_theme = 'professional';
   }
   course.set(data);
+}
+
+function sortLesson(lessons: Lesson[] = []) {
+  return lessons
+    .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+}
+
+function sortLessonSection(sections: LessonSection[] = []) {
+  return sections
+    .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 }

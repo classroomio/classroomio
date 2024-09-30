@@ -4,6 +4,7 @@
   import TextField from '$lib/components/Form/TextField.svelte';
   import { questionnaire } from '../store/exercise';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
+  import { t } from '$lib/utils/functions/translations';
 
   export let preview: boolean;
 
@@ -19,13 +20,13 @@
   <QuestionContainer isTitle={true}>
     {#if !preview}
       <TextField
-        placeholder="Title"
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.description.title')}
         bind:value={$questionnaire.title}
         className="mb-2"
         onChange={() => ($questionnaire.is_title_dirty = true)}
       />
       <DateTime
-        label="Due by"
+        label={$t('course.navItem.lessons.exercises.all_exercises.view_mode.due')}
         className="w-50"
         value={$questionnaire.due_by}
         onInput={(e) => {
@@ -35,14 +36,16 @@
       />
 
       <div class="mt-3">
-        <p class="mb-1">Description</p>
+        <p class="mb-1">
+          {$t('course.navItem.lessons.exercises.all_exercises.description.heading')}
+        </p>
         <TextEditor
           value={$questionnaire.description}
           onChange={(html) => {
             $questionnaire.is_description_dirty = true;
             $questionnaire.description = html;
           }}
-          placeholder="Describe the exercise to your student"
+          placeholder={$t('course.navItem.lessons.exercises.all_exercises.description.describe')}
           maxHeight={300}
         />
       </div>
@@ -50,25 +53,30 @@
       <h2 class="my-1">{$questionnaire.title}</h2>
       <div class="flex items-center">
         <p class="dark:text-white mx-2">
-          <strong>{$questionnaire.questions.length}</strong> questions
+          <strong>{$questionnaire.questions.length}</strong>
+          {$t('course.navItem.lessons.exercises.all_exercises.view_mode.questions')}
         </p>
         |
         <p class="dark:text-white mx-2">
-          <strong>{getTotalPossibleGrade($questionnaire.questions)}</strong> points.
+          <strong>{getTotalPossibleGrade($questionnaire.questions)}</strong>
+          {$t('course.navItem.lessons.exercises.all_exercises.view_mode.points')}.
         </p>
         |
-        <p class="dark:text-white mx-2">All required</p>
+        <p class="dark:text-white mx-2">
+          {$t('course.navItem.lessons.exercises.all_exercises.view_mode.all')}
+        </p>
         {#if $questionnaire.due_by}
           |
           <p class="dark:text-white mx-2">
-            <strong>Due by:</strong>
+            <strong>{$t('course.navItem.lessons.exercises.all_exercises.view_mode.due')}:</strong>
             {new Date($questionnaire.due_by).toLocaleString()}
           </p>
         {/if}
       </div>
 
       <article class="mt-3 preview prose prose-sm sm:prose p-2">
-        {@html $questionnaire.description || 'No description'}
+        {@html $questionnaire.description ||
+          $t('course.navItem.lessons.exercises.all_exercises.description.no')}
       </article>
     {/if}
   </QuestionContainer>

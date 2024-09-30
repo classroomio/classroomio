@@ -6,13 +6,6 @@
   export let data;
 </script>
 
-<!-- SEO -->
-<svelte:head>
-  <title>{data.meta.title} | ClassroomIO Blog</title>
-  <meta property="og:type" content="article" />
-  <meta property="og:title" content={data.meta.title} />
-</svelte:head>
-
 <div class=" mt-[10%] md:mt-16">
   {#if data}
     <article class="py-16">
@@ -59,5 +52,19 @@
 
   h1 {
     text-transform: capitalize;
+  }
+
+  :global(.prose a) {
+    text-decoration: underline;
+    font-weight: bold;
+  }
+
+  :global(.prose .gallery img) {
+    max-height: 300px;
+    border-radius: 0.375rem;
+  }
+
+  :global(.prose .gallery) {
+    overflow-x: scroll;
   }
 </style>

@@ -10,13 +10,18 @@
 
   export let data;
 
+  let ref = null;
+
   $: if ($currentOrg.id && data.orgName === '*') {
-    goto(`/org/${$currentOrg.siteName}`);
+    const newUrl = $page.url.pathname.replace('*', $currentOrg.siteName);
+    goto(newUrl + $page.url.search);
   }
 </script>
 
 <AddOrgModal />
+
 <VerifyEmailModal />
+
 <div class="org-root w-full flex items-center justify-between">
   {#if !isQuizPage($page.url?.pathname)}
     <OrgSideBar />

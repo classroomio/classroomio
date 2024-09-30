@@ -1,0 +1,123 @@
+import { Callout } from 'nextra/components';
+import Image from 'next/image';
+import SelfhostClassroomIO from './images/selfhost-classroomio.webp';
+
+# Self-hosting ClassroomIO.com
+
+This guide will help you quickly selfhost ClassroomIO
+
+<Image src={SelfhostClassroomIO} alt="Selfhost ClassroomIO" quality="100" />
+
+ClassroomIO is made up of the following applications
+
+- [apps/backend](https://github.com/rotimi-best/classroomio/tree/main/apps/backend) - an Express server
+- [apps/dashboard](https://github.com/rotimi-best/classroomio/tree/main/apps/dashboard) - the admin dashboard + LMS
+- [supabase](https://github.com/rotimi-best/classroomio/tree/main/supabase) - the database + REST API.
+
+The quickest and easiest way to deploy both the backend and dashboard is by using our [Railway Template](https://railway.app/template/dl9RG7?referralCode=8OyIj5). However there are a couple of things that you'd need first before heading over to the template, which are:
+
+1. SMTP values - For sending emails on the backend
+2. Supabase - For the database used on the dashboard
+3. Cloudflare R2 (optional) - Video uploads on the backend
+
+## SMTP Setup
+
+Both for the supabase and backend setup, you'd need a custom SMTP for email sending. Most importantly you need these values:
+
+```bash
+SMTP_HOST=
+SMTP_PORT=
+SMTP_USER=
+SMTP_PASSWORD=
+```
+
+Make sure you have them handy because you'd need them while we go through this selfhosting guide.
+
+<Callout type="info" emoji="ℹ️">
+  Learn more about setting up a custom SMTP server
+  [here](https://supabase.com/docs/guides/auth/auth-smtp)
+</Callout>
+
+## Supabase
+
+There are 2 options to go about setting up Supabase, you could [selfhost supabase](https://supabase.com/docs/guides/self-hosting) on your own servers or you could use their cloud version. We recommend you use the cloud version because it has a very generous free tier and you get to deploy it very quickly.
+
+We have a standalone guide to help you setup your Supabase Cloud and you can find it [here](https://classroomio.com/docs/contributor-guides/supabase-cloud)
+
+After you go through that guide you will need the following environment variables, please also store them somewhere:
+
+```bash
+PUBLIC_SUPABASE_URL=
+PUBLIC_SUPABASE_ANON_KEY=
+PRIVATE_SUPABASE_SERVICE_ROLE=
+```
+
+## Cloudflare R2
+
+We use Cloudflare R2 for video uploading within the course builder. It is not required though and you can do without it in the app if you don't need video upload.
+
+<Callout type="info" emoji="⏳">
+  This section is a work in progress.
+</Callout>
+
+## Deploy on Railway
+
+Now you have everything you need and you are ready to deploy the backend and dashboard.
+
+Go ahead and click this button to get started.
+
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/dl9RG7?referralCode=8OyIj5)
+
+### Environment Variables.
+
+#### cio-backend
+
+```bash
+# Required
+SMTP_HOST=""
+SMTP_PORT=""
+SMTP_USER=""
+SMTP_PASSWORD=""
+PUBLIC_SUPABASE_URL=""
+PUBLIC_SUPABASE_ANON_KEY=""
+
+# Optional
+CLOUDFLARE_BUCKET_ID=""
+CLOUDFLARE_ACCESS_KEY=""
+CLOUDFLARE_ACCOUNT_ID=""
+CLOUDFLARE_BUCKET_DOMAIN=""
+CLOUDFLARE_SECRET_ACCESS_KEY=""
+```
+
+<Callout type="info" emoji="ℹ️">
+  Learn more about the environment variables
+  [here](https://github.com/rotimi-best/classroomio/blob/main/apps/backend/.env.example)
+</Callout>
+
+#### cio-dashboard
+
+```bash
+# Required
+PUBLIC_SUPABASE_URL=""
+PUBLIC_SUPABASE_ANON_KEY=""
+PRIVATE_SUPABASE_SERVICE_ROLE=""
+PUBLIC_SERVER_URL=""
+
+# Optional
+OPENAI_API_KEY=""
+PUBLIC_IP_REGISTRY_KEY=""
+UNSPLASH_API_KEY=""
+PRIVATE_APP_HOST=""
+PRIVATE_APP_SUBDOMAINS=""
+```
+
+<Callout type="info" emoji="ℹ️">
+  Learn more about the environment variables
+  [here](https://github.com/rotimi-best/classroomio/blob/main/apps/dashboard/.env.example)
+</Callout>
+
+## Using Docker
+
+We do have a [docker-compose file](https://github.com/rotimi-best/classroomio/blob/main/docker-compose.yaml) to deploy both the backend and dashboard however it still requires some more debugging and we are still trying to figure out how we can also get supabase to be included in the docker compose file.
+
+If you'd like to help with this, please do open a PR on Github 👍🏽

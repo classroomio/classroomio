@@ -2,15 +2,13 @@
   <img alt="ClassroomIO is a no-code tool that allows you build and scale your online bootcamp with ease." src="https://raw.githubusercontent.com/rotimi-best/classroomio/main/apps/classroomio-com/static/classroomio-opengraph-image.png" />
   <h1 align="center">ClassroomIO.com</h1>
   <p align="center">
-    The Open Source Teaching Platform for Bootcamps
+    Launch Your Online Bootcamp In Minutes
     <br />
     <a href="https://classroomio.com">Website</a>  |  <a href="https://dub.sh/ciodiscord">Join Discord community</a>
   </p>
 </a>
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/629e2bb8994345729513c4d69ccbe3d5)](https://app.codacy.com/gh/rotimi-best/classroomio?utm_source=github.com&utm_medium=referral&utm_content=rotimi-best/classroomio&utm_campaign=Badge_Grade)
-
-[![Made with Supabase](https://supabase.com/badge-made-with-supabase-dark.svg)](https://supabase.com)
 
 ## ✨ About ClassroomIO.com
 
@@ -35,10 +33,9 @@ At ClassroomIO, our mission is to provide students with the best possible learni
 ### Roadmap Features
 
 1. **Forms:** Instead of using Google Forms to collect vital information from your students, you will be able to create forms directly within the dashboard.
-2. **Course Announcement:** You can send public announcements from the course dashboard to all your students.
-3. **Course Templates:** You can clone a full course or share templates with other people.
-4. **Analytics:** You can track data about your students across multiple courses.
-5. **Run Courses on Messengers:** Students can just join a channel on slack/discord/telegram and a bot automatically sends daily lesson content to your students without you doing anything.
+2. **Course Templates:** You can clone a full course or share templates with other people.
+3. **Analytics:** You can track data about your students across multiple courses.
+4. **Run Courses on Messengers:** Students can just join a channel on slack/discord/telegram and a bot automatically sends daily lesson content to your students without you doing anything.
 
 Please reach out to me on [twitter](https://x.com/rotimi_best) if you have any feature request.
 
@@ -128,9 +125,14 @@ This repo is a mono repo that consists of 3 projects:
 
 To get the environmental variables for supabase continue to step(5)
 
-5. Setup Supabase.
+5. Install all dependencies
 
-   - Make sure you've downloaded the [Supabase cli](https://github.com/supabase/cli)
+   ```bash
+   pnpm i
+   ```
+
+6. Setup Supabase.
+
    - Install and Start [docker](https://docs.docker.com/engine/install/)
    - Go to the project directory in your terminal and start Supabase
 
@@ -163,12 +165,6 @@ To get the environmental variables for supabase continue to step(5)
 
    - To view the Supabase studio, open the Studio URL from the result of `pnpm supabase start`
 
-6. Install the required dependencies
-
-   ```bash
-   pnpm i
-   ```
-
 7. Run all projects (in development mode)
 
    ```bash
@@ -195,4 +191,4 @@ To get the environmental variables for supabase continue to step(5)
     - Enter email: `admin@test.com`
     - Enter password: `123456`
      
-    To learn more about how to login with a dummy account, [go here](https://classroomio.com/docs/contributor-guides/demo-accounts)
+    To learn more about how to login with a dummy account, [go here.](https://classroomio.com/docs/contributor-guides/demo-accounts)

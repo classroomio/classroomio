@@ -1,3 +1,4 @@
+import { get } from 'svelte/store';
 import { supabase } from '$lib/utils/functions/supabase';
 import { isUUID } from '$lib/utils/functions/isUUID';
 import { QUESTION_TYPE } from '$lib/components/Question/constants';
@@ -8,13 +9,112 @@ import type {
   Groupmember,
   Exercise,
   LessonCompletion,
-  ExerciseTemplate
+  ExerciseTemplate,
+  LessonSection
 } from '$lib/utils/types';
 import { STATUS } from '$lib/utils/constants/course';
-import type { PostgrestSingleResponse } from '@supabase/supabase-js';
+import type { PostgrestSingleResponse, PostgrestError } from '@supabase/supabase-js';
+import type { ProfileCourseProgress } from '$lib/utils/types';
+import { isOrgAdmin } from '$lib/utils/store/org';
+
+export async function fetchCourses(profileId, orgId) {
+  if (!orgId || !profileId) return;
+
+  const match = {};
+  // Filter by profile_id if role isn't admin within organization
+  if (!get(isOrgAdmin)) {
+    match.member_profile_id = profileId;
+  }
+
+  // Gets courses for a particular organisation where the current logged in user is a groupmember
+  const { data: allCourses } = await supabase
+    .rpc('get_courses', {
+      org_id_arg: orgId,
+      profile_id_arg: profileId
+    })
+    .match(match);
+
+  console.log(`allCourses`, allCourses);
+  if (!Array.isArray(allCourses)) {
+    return {
+      allCourses: []
+    };
+  }
+
+  return { allCourses };
+}
+
+export async function fetchProfileCourseProgress(
+  courseId,
+  profileId
+): Promise<{
+  data: ProfileCourseProgress[] | null;
+  error: PostgrestError | null;
+}> {
+  const { data, error } = await supabase
+    .rpc('get_course_progress', {
+      course_id_arg: courseId,
+      profile_id_arg: profileId
+    })
+    .returns<ProfileCourseProgress[]>();
+
+  return { data, error };
+}
+
+const SLUG_QUERY = `
+  id,
+  title,
+  type,
+  description,
+  overview,
+  logo,
+  is_published,
+  slug,
+  cost,
+  version,
+  currency,
+  metadata,
+  is_certificate_downloadable,
+  certificate_theme,
+  lesson_section(id, title, order),
+  lessons:lesson(
+    id, title, order, section_id
+  )
+`;
+
+const ID_QUERY = `
+  id,
+  title,
+  type,
+  description,
+  overview,
+  logo,
+  is_published,
+  version,
+  group(*,
+    members:groupmember(*,
+      profile(*)
+    )
+  ),
+  slug,
+  cost,
+  currency,
+  metadata,
+  is_certificate_downloadable,
+  certificate_theme,
+  lesson_section(id, title, order, created_at),
+  lessons:lesson(
+    id, title, public, lesson_at, is_unlocked, order, created_at, section_id,
+    note, videos, slide_url, call_url, totalExercises:exercise(count), totalComments:lesson_comment(count),
+    profile:teacher_id(id, avatar_url, fullname),
+    lesson_completion(id, profile_id, is_complete)
+  ),
+  attendance:group_attendance(*),
+  polls:apps_poll(status)
+`;
 
 export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']) {
-  let match: { slug?: string; id?: string; status?: string } = {};
+  const match: { slug?: string; id?: string; status?: string } = {};
 
   if (slug) {
     match.slug = slug;
@@ -26,41 +126,14 @@ export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']
 
   const response: PostgrestSingleResponse<Course | null> = await supabase
     .from('course')
-    .select(
-      `
-      id,
-      title,
-      description,
-      overview,
-      logo,
-      is_published,
-      group(*,
-        members:groupmember(*,
-          profile(*)
-        )
-      ),
-      slug,
-      cost,
-      currency,
-      metadata,
-      is_certificate_downloadable,
-      certificate_theme,
-      lessons:lesson(
-        id, title,public, lesson_at, call_url, is_unlocked, order, created_at,
-        note, videos, slide_url, call_url, totalExercises:exercise(count), totalComments:lesson_comment(count),
-        profile:teacher_id(id, avatar_url, fullname),
-        lesson_completion(id, profile_id, is_complete)
-      ),
-      attendance:group_attendance(*),
-      polls:apps_poll(status)
-    `
-    )
+    .select(slug ? SLUG_QUERY : ID_QUERY)
     .match(match)
     .single();
 
   const { data, error } = response;
 
   console.log(`error`, error);
+  console.log(`data`, data);
   if (!data || error) {
     console.log(`data`, data);
     console.log(`fetchCourse => error`, error);
@@ -72,6 +145,23 @@ export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']
     data,
     error
   };
+}
+
+export async function fetchExploreCourses(profileId, orgId) {
+  if (!orgId || !profileId) return;
+
+  const { data: allCourses } = await supabase.rpc('get_explore_courses', {
+    org_id_arg: orgId,
+    profile_id_arg: profileId
+  });
+
+  if (!Array.isArray(allCourses)) {
+    return {
+      allCourses: []
+    };
+  }
+
+  return { allCourses };
 }
 
 export async function fetchGroup(groupId: Group['id']) {
@@ -158,17 +248,46 @@ export function fetchLesson(lessonId: Lesson['id']) {
   return supabase
     .from('lesson')
     .select(
-      `id, note, videos, slide_url, call_url, totalExercises:exercise(count), totalComments:lesson_comment(count), lesson_completion(id, profile_id, is_complete)`
+      `id,
+      title,
+      note,
+      videos,
+      slide_url,
+      call_url,
+      totalExercises:exercise(count),
+      totalComments:lesson_comment(count),
+      lesson_completion(id, profile_id, is_complete),
+      lesson_language(id, content, locale)
+    `
     )
     .eq('id', lessonId)
     .single();
 }
 
+export function fetchLesssonLanguageHistory(lessonId: string, locale: string, endRange: number) {
+  return supabase
+    .from('lesson_versions')
+    .select('*')
+    .range(0, endRange)
+    .eq('lesson_id', lessonId)
+    .eq('locale', locale)
+    .order('timestamp', { ascending: false });
+}
+
 export function createLesson(lesson: any) {
   return supabase.from('lesson').insert(lesson).select();
 }
+export function createLessonSection(section: any) {
+  return supabase.from('lesson_section').insert(section).select();
+}
+export function updateLessonSection(section: any, sectionId: LessonSection['id']) {
+  return supabase
+    .from('lesson_section')
+    .update({ ...section, id: undefined })
+    .match({ id: sectionId });
+}
 
-export function updateLesson(lesson: any, lessonId: Lesson['id']) {
+export async function updateLesson(lesson: any, lessonId: Lesson['id']) {
   return supabase
     .from('lesson')
     .update({ ...lesson, id: undefined })
@@ -188,9 +307,22 @@ export function updateLessonCompletion(completion: LessonCompletion, shouldUpdat
   }
 }
 
+export const upsertLessons = (data: { id: string; order: number }[]) => {
+  return supabase.from('lesson').upsert(data);
+};
+
+export const upsertLessonSections = (data: { id: string; order: number }[]) => {
+  return supabase.from('lesson_section').upsert(data);
+};
+
 export function deleteLesson(lessonId: Lesson['id']) {
   // Need to implement soft delete
   return supabase.from('lesson').delete().match({ id: lessonId });
+}
+
+export function deleteLessonSection(id: LessonSection['id']) {
+  // Need to implement soft delete
+  return supabase.from('lesson_section').delete().match({ id });
 }
 
 export function createExercise(exercise: any) {
@@ -410,7 +542,11 @@ export async function submitExercise(
   }
 
   const res = await supabase.from('question_answer').insert(questionAnswers).select();
-  console.log(`res`, res);
+  console.log(`res`, res, 'submission', submission);
+  return {
+    submission,
+    res
+  };
 }
 
 export async function deleteExercise(questions: Array<{ id: string }>, exerciseId: Exercise['id']) {

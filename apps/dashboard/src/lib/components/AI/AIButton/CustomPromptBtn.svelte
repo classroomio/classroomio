@@ -6,6 +6,7 @@
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { Loading } from 'carbon-components-svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
+  import { t } from '$lib/utils/functions/translations';
 
   export let className = '';
   export let handleInsert = (v: string) => {};
@@ -39,7 +40,7 @@
   function callAI(prompt: string, rephrase: boolean) {
     isSubmitted = true;
 
-    $input = rephrase ? `Can you please rephrase this: ${plainText}` : prompt;
+    $input = rephrase ? `${$t('ai.can_you')}: ${plainText}` : prompt;
 
     setTimeout(() => {
       handleSubmit({ preventDefault: () => {} });
@@ -91,7 +92,7 @@
                 {#if $isLoading}
                   <Loading withOverlay={false} small />
                 {:else}
-                  Insert
+                  {$t('ai.insert')}
                 {/if}
               </button>
               <button
@@ -101,7 +102,7 @@
                 type="button"
                 disabled={$isLoading}
               >
-                Rephrase
+                {$t('ai.rephrase')}
               </button>
               {#if !$isLoading}
                 <button
@@ -109,25 +110,25 @@
                   on:click|preventDefault={restart}
                   type="button"
                 >
-                  Reset
+                  {$t('ai.reset')}
                 </button>
               {/if}
             </div>
           </div>
         {:else}
           <div class="h-full">
-            <p class="text-sm font-medium mb-2 ml-1">Help me write</p>
+            <p class="text-sm font-medium mb-2 ml-1">{$t('ai.help_me')}</p>
             <textarea
               bind:value={prompt}
               class="w-full border-0 rounded-lg h-[65%] text-sm m-0 dark:text-black"
-              placeholder="Help me write a short description"
+              placeholder={$t('ai.placeholder')}
             />
             <button
               class="flex text-xs px-4 py-2 m-0 border rounded-md font-medium"
               on:click|preventDefault={() => callAI(prompt, false)}
               type="button"
             >
-              Start typing...
+              {$t('ai.text')}
             </button>
           </div>
         {/if}

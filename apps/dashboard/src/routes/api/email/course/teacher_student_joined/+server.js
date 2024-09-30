@@ -5,11 +5,11 @@ import sendEmail from '$mail/sendEmail';
 const supabase = getSupabase();
 
 export async function POST({ request }) {
-  const { to, courseName } = await request.json();
+  const { to, courseName, studentName, studentEmail } = await request.json();
   const accessToken = request.headers.get('Authorization') || '';
   console.log('/POST api/email/course/teacher_student_joined', to, courseName);
 
-  if (!to || !courseName) {
+  if (!to || !courseName || !studentName || !studentEmail) {
     return json({ success: false, message: 'Missing required fields' }, { status: 400 });
   }
 
@@ -27,15 +27,14 @@ export async function POST({ request }) {
 
   const emailData = [
     {
-      from: `"ClassroomIO" <notify@classroomio.com>`,
+      from: `"ClassroomIO" <notify@mail.classroomio.com>`,
       to,
       subject: `[${courseName}] You've got a new student 🎉!`,
       content: `
       <p>Hi amazing tutor,</p>
-      <p>Congratulations 🎉, a new student has joined a course you are teaching: ${courseName}</p>
+      <p>Congratulations 🎉, a new student: <strong>${studentName} (${studentEmail})</strong> has joined a course you are teaching: ${courseName}</p>
       <p>We hope they have a great experience learning from the best (YOU).</p>
-      <p>If you run into any issues, please don’t fail to reach out to us, we’d love to make your teaching
-      experience as easy as possible.</p>
+      <p>If you run into any issues, please don’t fail to reach out to us, we’d love to make your teaching experience as easy as possible.</p>
     `
     }
   ];

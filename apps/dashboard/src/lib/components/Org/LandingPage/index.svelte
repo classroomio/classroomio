@@ -1,7 +1,6 @@
 <script lang="ts">
   import { fade } from 'svelte/transition';
   import get from 'lodash/get';
-  import { onMount } from 'svelte';
   import LogoFacebook from 'carbon-icons-svelte/lib/LogoFacebook.svelte';
   import LogoTwitter from 'carbon-icons-svelte/lib/LogoTwitter.svelte';
   import LogoLinkedin from 'carbon-icons-svelte/lib/LogoLinkedin.svelte';
@@ -27,10 +26,12 @@
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import { goto } from '$app/navigation';
   import { landingPageSettings } from '$lib/components/Org/Settings/store';
+  import { t } from '$lib/utils/functions/translations';
   import PoweredBy from '$lib/components/Upgrade/PoweredBy.svelte';
+  import type { CurrentOrg } from '$lib/utils/types/org';
 
   export let orgSiteName = '';
-  export let org = {};
+  export let org: CurrentOrg | null;
 
   let email: string | undefined;
   let isAdding = false;
@@ -45,12 +46,12 @@
     phone: '',
     message: ''
   };
-  let contactError = {};
+  let contactError: Record<string, string> = {};
 
   const supabase = getSupabase();
 
   async function handleSubmit() {
-    if (!email || !validateEmail(email)) return;
+    if (!email || !validateEmail(email) || !org) return;
     isAdding = true;
 
     const { error } = await supabase.from('organization_emaillist').insert({
@@ -84,7 +85,7 @@
       email: contact.email,
       phone: contact.phone,
       message: contact.message,
-      organization_id: org.id
+      organization_id: org?.id
     });
 
     if (error) {
@@ -108,18 +109,22 @@
     return youtubeRegex.test(link.trim());
   }
 
-  onMount(async () => {
-    if (!orgSiteName) return;
+  $: loadData(orgSiteName);
+
+  async function loadData(siteName) {
+    if (!siteName) return;
+
     try {
-      console.log('sitename', orgSiteName);
+      console.log('sitename', siteName);
       $courseMetaDeta.isLoading = true;
-      const coursesResult = await getCourseBySiteName(orgSiteName);
+      const coursesResult = await getCourseBySiteName(siteName);
       courses.set(coursesResult);
       $courseMetaDeta.isLoading = false;
     } catch (error) {
       console.log('error', error);
     }
-  });
+  }
+
   function initPlyr(_player: any, _video: string | undefined) {
     if (!player) return;
 
@@ -143,25 +148,31 @@
   }
 
   $: initPlyr(player, $landingPageSettings.header?.banner?.video);
-  $: setDefault(org.landingpage);
+  $: setDefault(org?.landingpage);
 </script>
 
 <svelte:head>
   <title>
-    {!org.name ? '' : `${org.name}'s `}Landing Page
+    {!org?.name ? '' : `${org.name}'s `}{$t('course.navItem.landing_page.landing_page')}
   </title>
 </svelte:head>
 
 <PoweredBy />
 
-{#if !org.landingpage}
+{#if !org?.landingpage}
   <PageLoader />
 {:else}
   <main>
     <!-- Header Section -->
     {#if $landingPageSettings.header.show}
       <header id="header" class="banner w-full h-[100vh] md:h-[90vh] mb-10 relative">
-        <Navigation logo={org.avatar_url} orgName={org.name} disableSignup={true} />
+        <Navigation
+          logo={org.avatar_url}
+          orgName={org.name}
+          disableSignup={true}
+          isOrgSite={true}
+        />
+
         <div class="absolute h-[100vh] md:h-[90vh] top-0 w-full opacity-80 z-10 bg-white" />
         {#if $landingPageSettings.header.banner.show}
           <div class="flex items-center justify-center md:h-full py-2">
@@ -198,7 +209,7 @@
                 {#if isYouTubeLink($landingPageSettings.header?.banner?.video) && $landingPageSettings.header.banner.type === 'video'}
                   <div bind:this={player} id="player" style="width:100%; border-radius:12px">
                     <iframe
-                      title="Header video"
+                      title={$t('course.navItem.landing_page.header_video')}
                       src={$landingPageSettings.header?.banner?.video}
                       allowfullscreen
                       allowtransparency
@@ -298,10 +309,15 @@
                 slug={courseData.slug}
                 bannerImage={courseData.logo || '/images/classroomio-course-img-template.jpg'}
                 title={courseData.title}
+                type={courseData.type}
                 description={courseData.description}
-                role_id={courseData.role_id}
                 isPublished={courseData.is_published}
-                cost={courseData.cost}
+                pricingData={{
+                  cost: courseData.cost,
+                  discount: courseData.metadata.discount,
+                  showDiscount: courseData.metadata.showDiscount,
+                  currency: courseData.currency
+                }}
                 currency={courseData.currency}
                 totalLessons={get(courseData, 'lessons[0].count', 0)}
                 isOnLandingPage={true}
@@ -311,9 +327,11 @@
         {:else}
           <Box>
             <CoursesEmptyIcon />
-            <h3 class="dark:text-white text-2xl my-5">No Course Published</h3>
+            <h3 class="dark:text-white text-2xl my-5">
+              {$t('course.navItem.landing_page.no_course_published')}
+            </h3>
             <p class="dark:text-white w-1/3 text-center">
-              We've got great courses coming your way, stay tuned!!!
+              {$t('course.navItem.landing_page.coming_your_way')}
             </p>
           </Box>
         {/if}
@@ -323,7 +341,9 @@
             <PrimaryButton
               variant={VARIANTS.OUTLINED}
               onClick={() => (viewAll = !viewAll)}
-              label={viewAll ? 'View Less' : 'View All'}
+              label={viewAll
+                ? $t('course.navItem.landing_page.view_less')
+                : $t('course.navItem.landing_page.view_all')}
               className="px-10 py-5 w-fit"
             />
           </div>
@@ -393,14 +413,14 @@
             <div class="mt-8 bg-white p-7 rounded-lg">
               {#if successContactSaved}
                 <div class="w-full flex items-center justify-center">
-                  Thank you for dropping a message, we will get back to you shortly
+                  {$t('course.navItem.landing_page.thank_you')}
                 </div>
               {:else}
                 <form on:submit|preventDefault={handleContactSubmit}>
                   <div class="w-full flex justify-between flex-col md:flex-row">
                     <div class="w-full md:w-2/4 mr-5">
                       <TextField
-                        label="Your Name"
+                        label={$t('course.navItem.landing_page.name')}
                         bind:value={contact.name}
                         errorMessage={contactError.name}
                         className="mb-5"
@@ -408,14 +428,14 @@
                         placeholder="Elon Musk"
                       />
                       <TextField
-                        label="Your Email"
+                        label={$t('course.navItem.landing_page.email')}
                         bind:value={contact.email}
                         errorMessage={contactError.email}
                         className="text-xs font-normal mb-5"
                         placeholder="musk@x.com"
                       />
                       <TextField
-                        label="Your Phone"
+                        label={$t('course.navItem.landing_page.phone')}
                         bind:value={contact.phone}
                         errorMessage={contactError.phone}
                         className="text-xs font-normal mb-5"
@@ -424,12 +444,11 @@
                     </div>
                     <div class="w-full md:w-2/4">
                       <TextArea
-                        label="Your Message"
+                        label={$t('course.navItem.landing_page.message')}
                         bind:value={contact.message}
                         errorMessage={contactError.message}
-                        rows="9"
-                        maxRows={15}
-                        placeholder="Your message here"
+                        rows={9}
+                        placeholder={$t('course.navItem.landing_page.your_message')}
                       />
                     </div>
                   </div>
@@ -439,7 +458,7 @@
                     type="submit"
                     isLoading={isContactSubmiting}
                   >
-                    <span class="mr-2 text-md">Submit</span>
+                    <span class="mr-2 text-md">{$t('course.navItem.landing_page.submit')}</span>
                     <Rocket size={24} />
                   </PrimaryButton>
                 </form>
@@ -467,12 +486,12 @@
           <form on:submit|preventDefault={handleSubmit} class="my-4 w-full md:w-fit">
             <div class="flex items-center flex-col sm:flex-row">
               {#if success}
-                <p class="text-white">You have been added successfully. Thanks for subscribing.</p>
+                <p class="text-white">{$t('course.navItem.landing_page.successful_sub')}</p>
               {:else}
                 <TextField
                   bind:value={email}
                   type="email"
-                  placeholder="Enter your email.."
+                  placeholder={$t('course.navItem.landing_page.enter')}
                   className="sm:mr-3 my-0 w-full md:w-fit"
                   isRequired={true}
                   isDisabled={isAdding}
@@ -510,7 +529,7 @@
               <img
                 src={org.avatar_url || '/logo-192.png'}
                 alt={`${org.name} logo`}
-                class="rounded h-10 w-10 inline-block mx-auto"
+                class="rounded max-h-10 w-10 inline-block mx-auto"
                 data-atf="1"
               />
               <h3 class="text-black ml-3 text-xl">{org.name}</h3>
@@ -525,7 +544,7 @@
                 <a
                   href={$landingPageSettings.footer.facebook}
                   target="_blank"
-                  title="Facebook"
+                  title={$t('settings.landing_page.footer.facebook')}
                   id="logo-fb"
                   data-hveid="8"
                 >
@@ -538,7 +557,7 @@
                 <a
                   href={$landingPageSettings.footer.twitter}
                   target="_blank"
-                  title="Twitter"
+                  title={$t('settings.landing_page.footer.twitter')}
                   id="logo-tw"
                   data-hveid="8"
                 >
@@ -552,7 +571,7 @@
                 <a
                   href={$landingPageSettings.footer.linkedin}
                   target="_blank"
-                  title="Linkedin"
+                  title={$t('settings.landing_page.footer.linkedin')}
                   id="logo-ln"
                   data-hveid="8"
                 >

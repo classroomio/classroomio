@@ -2,6 +2,7 @@
   import NewButton from '../PrimaryContainedButton/index.svelte';
   import TextField from '../Form/TextField.svelte';
   import Chip from '../Chip/index.svelte';
+  import { t } from '$lib/utils/functions/translations';
 
   export let title = '';
   export let overidableStyle = '';
@@ -21,7 +22,8 @@
 </script>
 
 <div
-  class="header dark:bg-black dark:border-neutral-600 bg-white {!disableSticky &&
+  class="{hideOnMobile &&
+    'hideOnMobile'} header dark:bg-black dark:border-neutral-600 bg-white {!disableSticky &&
     'sticky'} {dynamicRootClass}"
   style={overidableStyle}
 >
@@ -43,7 +45,7 @@
         {:else}
           <TextField
             bind:value={title}
-            placeholder="Course title"
+            placeholder={$t('course.navItem.settings.course_title')}
             onChange={() => {
               enterEditTitleMode = false;
 
@@ -124,9 +126,13 @@
     padding: 10px;
   }
 
-  @media (max-width: 760px) {
+  @media (max-width: 1024px) {
     .title {
       width: fit-content;
+    }
+
+    .hideOnMobile {
+      display: none;
     }
   }
 </style>

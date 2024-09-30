@@ -11,6 +11,7 @@
   import ReviewFormEditor from './ReviewFormEditor.svelte';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import { processErrors } from '$lib/utils/functions/validator';
+  import { t } from '$lib/utils/functions/translations';
 
   export let course = {};
 
@@ -44,26 +45,46 @@
     const review = reviews.find((r) => r.id === id);
     const reviewSchema = z.object({
       name: z.string().min(5, {
-        message: 'Name is too short, min of 5 character',
-        invalid_type_error: 'Must not be empty'
+        message: `${$t(
+          'course.navItem.landing_page.editor.reviews_form.validations.name.min_char'
+        )}`,
+        invalid_type_error: `${$t(
+          'course.navItem.landing_page.editor.reviews_form.validations.invalid_type_error'
+        )}`
       }),
       avatar_url: z.string().min(6, {
-        message: 'Upload an image',
-        invalid_type_error: 'Must not be empty'
+        message: `${$t(
+          'course.navItem.landing_page.editor.reviews_form.validations.avatar_url.message'
+        )}`,
+        invalid_type_error: `${$t(
+          'course.navItem.landing_page.editor.reviews_form.validations.invalid_type_error'
+        )}`
       }),
       rating: z
         .number()
         .min(1, {
-          message: 'Rating must be from 1-5',
-          invalid_type_error: 'Must not be empty'
+          message: `${$t(
+            'course.navItem.landing_page.editor.reviews_form.validations.rating.message'
+          )}`,
+          invalid_type_error: `${$t(
+            'course.navItem.landing_page.editor.reviews_form.validations.invalid_type_error'
+          )}`
         })
         .max(5, {
-          message: 'Rating must be from 1-5',
-          invalid_type_error: 'Must not be empty'
+          message: `${$t(
+            'course.navItem.landing_page.editor.reviews_form.validations.rating.message'
+          )}`,
+          invalid_type_error: `${$t(
+            'course.navItem.landing_page.editor.reviews_form.validations.invalid_type_error'
+          )}`
         }),
       description: z.string().min(10, {
-        message: 'Description is too short, min of 5 character',
-        invalid_type_error: 'Must not be empty'
+        message: `${$t(
+          'course.navItem.landing_page.editor.reviews_form.validations.description.min_char'
+        )}`,
+        invalid_type_error: `${$t(
+          'course.navItem.landing_page.editor.reviews_form.validations.invalid_type_error'
+        )}`
       })
     });
 
@@ -125,7 +146,7 @@
 
     <!-- create reviews button -->
     <PrimaryButton
-      label="Add Reviews"
+      label={$t('course.navItem.landing_page.editor.reviews_form.add_reviews')}
       variant={VARIANTS.CONTAINED}
       onClick={addReviewForm}
       className="w-5 rounded-md mt-8"

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { goto } from '$app/navigation';
   import { Grid, Row, Column } from 'carbon-components-svelte';
   import FlashFilled from 'carbon-icons-svelte/lib/FlashFilled.svelte';
@@ -10,9 +10,21 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import SectionTitle from '../SectionTitle.svelte';
+  import { t } from '$lib/utils/functions/translations';
   import { isFreePlan } from '$lib/utils/store/org';
+  import { updateOrgNameValidation } from '$lib/utils/functions/validator';
+  import { setTheme } from '$lib/utils/functions/theme';
 
   let avatar;
+
+  type Error = {
+    orgName: string;
+  };
+
+  let errors: Error = {
+    orgName: ''
+  };
+
   let loading = false;
   const themes = {
     rose: 'theme-rose',
@@ -31,6 +43,8 @@
         .concat(!!t ? ' ' : '', t);
       $currentOrg.theme = t;
 
+      setTheme(t);
+
       const res = await supabase
         .from('organization')
         .update({ theme: t })
@@ -41,6 +55,13 @@
   }
 
   async function handleUpdate() {
+    errors = updateOrgNameValidation($currentOrg.name) as Error;
+
+    if (Object.values(errors).length) {
+      loading = false;
+      return;
+    }
+
     try {
       loading = true;
 
@@ -75,16 +96,16 @@
         ...updates
       }));
 
-      snackbar.success('Update successful');
+      snackbar.success('snackbar.course_settings.success.update_successful');
 
       if (error) throw error;
     } catch (error) {
       let message = error.message;
       if (message.includes('profile_username_key')) {
-        message = 'username already exists';
+        message = $t('snackbar.lms.error.username_exists');
       }
 
-      snackbar.error(`Update failed: ${message}`);
+      snackbar.error(`${$t('snackbar.lms.error.update')} ${message}`);
       loading = false;
     } finally {
       loading = false;
@@ -98,12 +119,16 @@
 
 <Grid class="border-c rounded border-gray-200 dark:border-neutral-600 w-full mt-5">
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
-    <Column sm={4} md={4} lg={4}><SectionTitle>Organization Profile</SectionTitle></Column>
+    <Column sm={4} md={4} lg={4}
+      ><SectionTitle>{$t('settings.organization.organization_profile.heading')}</SectionTitle
+      ></Column
+    >
     <Column sm={8} md={8} lg={8} class="mt-2 lg:mt-0 flex flex-col items-center lg:items-start">
       <TextField
-        label="Organization Name"
+        label={$t('settings.organization.organization_profile.organization_name')}
         bind:value={$currentOrg.name}
         className="w-full lg:w-60 mb-5"
+        errorMessage={errors.orgName}
       />
       <UploadImage
         bind:avatar
@@ -112,7 +137,7 @@
         widthHeight="w-24 h-24"
       />
       <PrimaryButton
-        label="Update Organization"
+        label={$t('settings.organization.organization_profile.update_organization')}
         className="px-6 py-3 lg:mr-5 mt-5"
         isLoading={loading}
         isDisabled={loading}
@@ -121,9 +146,14 @@
     </Column>
   </Row>
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
-    <Column sm={4} md={4} lg={4}><SectionTitle>Theme</SectionTitle></Column>
+    <Column sm={4} md={4} lg={4}
+      ><SectionTitle>{$t('settings.organization.organization_profile.theme.heading')}</SectionTitle
+      ></Column
+    >
     <Column sm={8} md={8} lg={8}>
-      <h4 class="dark:text-white lg:mt-0">Set your brand color</h4>
+      <h4 class="dark:text-white lg:mt-0">
+        {$t('settings.organization.organization_profile.theme.sub_heading')}
+      </h4>
 
       <div class="flex gap-2">
         <button
@@ -169,26 +199,63 @@
     </Column>
   </Row>
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
-    <Column sm={4} md={4} lg={4}><SectionTitle>Custom Domain</SectionTitle></Column>
+    <Column sm={4} md={4} lg={4}
+      ><SectionTitle
+        >{$t('settings.organization.organization_profile.customize_lms.heading')}</SectionTitle
+      ></Column
+    >
     <Column sm={8} md={8} lg={8}>
-      <h4 class="dark:text-white lg:mt-0">Customise your Domain</h4>
+      <h4 class="dark:text-white lg:mt-0">
+        {$t('settings.organization.organization_profile.customize_lms.sub_heading')}
+      </h4>
       <p class="text-sm text-gray-500 dark:text-white">
-        Create a custom URL so your audience can get to your organization easily
+        {$t('settings.organization.organization_profile.customize_lms.body')}
       </p>
       <PrimaryButton
-        label="Edit domain"
-        className="my-7 py-5 px-10"
+        className="my-7 py-5 px-10 flex items-center gap-2 justify-center"
         variant={VARIANTS.OUTLINED}
-        onClick={() => gotoSetting('/domains')}
-      />
+        onClick={() => gotoSetting('/customize-lms')}
+      >
+        {$t('settings.organization.organization_profile.customize_lms.button')}
+      </PrimaryButton>
     </Column>
   </Row>
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
-    <Column sm={4} md={4} lg={4}><SectionTitle>Team</SectionTitle></Column>
+    <Column sm={4} md={4} lg={4}
+      ><SectionTitle
+        >{$t('settings.organization.organization_profile.custom_domain.heading')}</SectionTitle
+      ></Column
+    >
     <Column sm={8} md={8} lg={8}>
-      <h4 class="dark:text-white lg:mt-0">Set up your website</h4>
+      <h4 class="dark:text-white lg:mt-0">
+        {$t('settings.organization.organization_profile.custom_domain.sub_heading')}
+      </h4>
       <p class="text-sm text-gray-500 dark:text-white">
-        Add team mates to your organization so you can both collaborate on projects.
+        {$t('settings.organization.organization_profile.custom_domain.body')}
+      </p>
+      <PrimaryButton
+        className="my-7 py-5 px-10 flex items-center gap-2 justify-center"
+        variant={VARIANTS.OUTLINED}
+        onClick={() => gotoSetting('/domains')}
+      >
+        {#if $isFreePlan}
+          <FlashFilled size={16} class="text-blue-700" />
+        {/if}
+        {$t('settings.organization.organization_profile.custom_domain.button')}
+      </PrimaryButton>
+    </Column>
+  </Row>
+  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+    <Column sm={4} md={4} lg={4}
+      ><SectionTitle>{$t('settings.organization.organization_profile.team.heading')}</SectionTitle
+      ></Column
+    >
+    <Column sm={8} md={8} lg={8}>
+      <h4 class="dark:text-white lg:mt-0">
+        {$t('settings.organization.organization_profile.team.sub_heading')}
+      </h4>
+      <p class="text-sm text-gray-500 dark:text-white">
+        {$t('settings.organization.organization_profile.team.body')}
       </p>
       <PrimaryButton
         className="my-7 py-5 px-10 flex items-center gap-2 justify-center"
@@ -198,7 +265,7 @@
         {#if $isFreePlan}
           <FlashFilled size={16} class="text-blue-700" />
         {/if}
-        Manage Team
+        {$t('settings.organization.organization_profile.team.button')}
       </PrimaryButton>
     </Column>
   </Row>

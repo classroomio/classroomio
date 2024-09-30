@@ -38,7 +38,7 @@
     "multer": "^1.4.3",
     "nodemailer": "^6.9.5",
     "nodemon": "^3.0.1",
-    "puppeteer": "^20.9.0",
+    "zeptomail": "^6.0.0",
     "zod": "^3.21.4"
   }
 }

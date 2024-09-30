@@ -16,16 +16,18 @@ export const load = async ({ params = { hash: '' } }) => {
 
     const { orgId, email, orgSiteName } = JSON.parse(hashData);
 
-    const _currentOrg = await getCurrentOrg(orgSiteName, true);
+    const currentOrg = await getCurrentOrg(orgSiteName, true);
 
     const profile = await getProfile(email);
     console.log('profile data', profile);
 
     return {
-      orgId,
-      email,
-      currentOrg: _currentOrg,
-      profile
+      invite: {
+        orgId,
+        email,
+        currentOrg,
+        profile
+      }
     };
   } catch (error) {
     console.error('Error decoding invite params.hash', error);

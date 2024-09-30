@@ -6,7 +6,7 @@
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import { page } from '$app/stores';
   import Checkmark from 'carbon-icons-svelte/lib/Checkmark.svelte';
-  import PLANS from 'shared-constants/src/plans/data.json';
+  import PLANS from 'shared/src/plans/data.json';
   import { profile } from '$lib/utils/store/user';
   import { subscribeToProduct } from '$lib/utils/services/lemonsqueezy/subscribe';
   import { snackbar } from '$lib/components/Snackbar/store';
@@ -18,6 +18,7 @@
   import type { RealtimeChannel, RealtimePostgresChangesPayload } from '@supabase/supabase-js';
   import Confetti from '$lib/components/Confetti/index.svelte';
   import { toggleConfetti } from '$lib/components/Confetti/store';
+  import { t } from '$lib/utils/functions/translations';
 
   const disabledClass = 'bg-gray-300 text-gray-400 hover:cursor-not-allowed';
 
@@ -25,6 +26,7 @@
   let orgPlanChannel: RealtimeChannel;
   let open = false;
   let upgraded = false;
+  let isYearlyPlan = false;
 
   async function handleClick(plan, planName: string) {
     if (plan.CTA.IS_DISABLED || !$profile.id) {
@@ -40,7 +42,7 @@
 
     try {
       const { checkoutURL } = await subscribeToProduct({
-        productId: plan.CTA.PRODUCT_ID,
+        productId: isYearlyPlan ? plan.CTA.PRODUCT_ID_YEARLY : plan.CTA.PRODUCT_ID,
         email: $profile.email,
         name: $profile.fullname,
         triggeredBy: $currentOrg.memberId,
@@ -48,7 +50,7 @@
       });
 
       if (!checkoutURL) {
-        snackbar.error('Failed to generate success');
+        snackbar.error('snackbar.upgrade.generate_fail');
         return;
       }
 
@@ -56,7 +58,7 @@
     } catch (error) {
       console.error('Error subscribing', error);
 
-      snackbar.error('Failed, please try again later');
+      snackbar.error('snackbar.upgrade.failed');
     }
 
     isLoadingPlan = null;
@@ -87,6 +89,9 @@
 
   function onLearnMore() {
     window.open('https://classroomio.com/blog/early-adopter', '_blank');
+  }
+  function toggleIsYearlyPlan() {
+    isYearlyPlan = !isYearlyPlan;
   }
 
   onMount(() => {
@@ -122,28 +127,61 @@
   {open}
   width="w-4/5"
   maxWidth={upgraded ? 'max-w-[600px]' : undefined}
-  modalHeading="Upgrade Plan"
+  modalHeading={$t('pricing.modal.heading')}
+  containerClass="pt-4"
 >
   {#if upgraded}
     <div class="flex flex-col items-center justify-center mb-4 w-full relative">
       <StepDoneIcon />
-      <h4 class="text-2xl">Thank you for your support</h4>
+      <h4 class="text-2xl">{$t('pricing.modal.thanks')}</h4>
       <p class="mb-4 text-center">
-        Your plan comes with cool perks and benefits including access to all future features we
-        release.
+        {$t('pricing.modal.plan')}
       </p>
       <div class="flex items-center gap-4">
-        <PrimaryButton label="Close" variant={VARIANTS.OUTLINED} onClick={onClose} />
-        <PrimaryButton label="Learn more" variant={VARIANTS.CONTAINED_DARK} onClick={onLearnMore} />
+        <PrimaryButton
+          label={$t('pricing.modal.close')}
+          variant={VARIANTS.OUTLINED}
+          onClick={onClose}
+        />
+        <PrimaryButton
+          label={$t('pricing.modal.learn')}
+          variant={VARIANTS.CONTAINED_DARK}
+          onClick={onLearnMore}
+        />
       </div>
     </div>
   {:else}
     <div class="flex flex-col items-center justify-center">
+      <div class="relative mb-2 flex items-center rounded-[30px] border-[2px] p-[2px] lg:scale-100">
+        <button
+          style="background-color: {isYearlyPlan ? 'initial' : '#1D4EE2'}; color: {isYearlyPlan
+            ? '#5e636b'
+            : '#fff'}"
+          class="rounded-[30px] bg-blue-700 px-3 py-1 text-xs text-white lg:px-4 lg:py-2 transition-all duration-500 ease-in-out"
+          on:click={toggleIsYearlyPlan}
+        >
+          {$t('pricing.modal.monthly')}
+        </button>
+        <button
+          style="background-color: {isYearlyPlan ? '#1D4EE2' : ''}; color: {isYearlyPlan
+            ? '#fff'
+            : '#5e636b'}"
+          class="relative rounded-[30px] px-3 py-1 text-xs text-white lg:px-4 lg:py-2 transition-all duration-500 ease-in-out"
+          on:click={toggleIsYearlyPlan}
+        >
+          {$t('pricing.modal.annually')}
+          <div
+            class="absolute right-[-40%] -top-4 scale-[90%] rounded-full bg-[#006600] px-1.5 py-1 text-[0.7rem] text-white"
+          >
+            {$t('pricing.modal.save')}
+          </div>
+        </button>
+      </div>
       <div class="isolate grid grid-cols-1 gap-3 lg:grid-cols-3">
         {#each planNames as planName}
           <div
             class="max-w-xl rounded-xl {planName === 'EARLY_ADOPTER' &&
-              'bg-primary-900'} p-4 ring-1 ring-gray-200 lg:max-w-sm"
+              'cio-bg-blue'} p-4 ring-1 ring-gray-200 lg:max-w-sm"
           >
             <p
               class="mb-2 text-lg font-semibold leading-8 {planName === 'EARLY_ADOPTER'
@@ -159,10 +197,7 @@
                 : 'text-black'} dark:text-gray-300"
             >
               {PLANS[planName].PRICE.CURRENCY}
-              {PLANS[planName].PRICE.MONTHLY}
-              {#if !PLANS[planName].PRICE.IS_PREMIUM}
-                /month
-              {/if}
+              {isYearlyPlan ? PLANS[planName].PRICE.YEARLY : PLANS[planName].PRICE.MONTHLY}
             </p>
             <p
               class=" mt-4 text-sm font-light leading-6 {planName === 'EARLY_ADOPTER'

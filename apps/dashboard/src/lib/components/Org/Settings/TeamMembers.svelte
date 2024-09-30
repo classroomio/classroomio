@@ -20,13 +20,14 @@
   } from '$lib/utils/services/notification/notification';
   import { isFreePlan } from '$lib/utils/store/org';
   import type { OrgTeamMember } from '$lib/utils/types/org';
+  import { t } from '$lib/utils/functions/translations';
 
   let emailsStr = '';
   let errorMessage = '';
   let role = ROLE.TUTOR;
   let isFetching = false;
   let isLoading = false;
-  let isRemoving = false;
+  let isRemoving: number | null = null;
 
   async function onSendInvite() {
     const { hasError, error: _error, emails } = validateEmailInString(emailsStr);
@@ -46,7 +47,7 @@
       );
 
       if (doesEmailExist) {
-        snackbar.error('User Already Exists');
+        snackbar.error('snackbar.team_members.user_exists');
         isLoading = false;
         return;
       }
@@ -65,7 +66,7 @@
         apiError = `${error}`;
 
         console.error('onSendInvite:', error);
-        snackbar.error(`Failed to send invite, please try again`);
+        snackbar.error(`snackbar.team_members.invite_fail`);
         isLoading = false;
         return;
       }
@@ -95,7 +96,7 @@
 
       const isLast = index === emails.length - 1;
       if (isLast) {
-        snackbar.success('Invite Sent!');
+        snackbar.success('snackbar.team_members.invite_sent');
 
         emailsStr = '';
         isLoading = false;
@@ -105,17 +106,17 @@
 
   async function onRemove(id: number) {
     console.log('onRemove called');
-    isRemoving = true;
-    const { data, error } = await supabase.from('organizationmember').delete().match({ id });
+    isRemoving = id;
+    const { error } = await supabase.from('organizationmember').delete().match({ id });
 
     if (error) {
       console.error('onRemove:', error);
-      snackbar.error('Failed to remove user, please try again');
+      snackbar.error('snackbar.team_members.remove_fail');
     } else {
       orgTeam.update((team) => [...team.filter((member) => member.id !== id)]);
     }
 
-    isRemoving = false;
+    isRemoving = null;
   }
 
   const fetchTeam = async (id: string) => {
@@ -135,29 +136,36 @@
 
 <Grid class="border rounded border-gray-200 dark:border-neutral-600 w-full mt-5 relative">
   <Row class="py-7 border-bottom-c">
-    <Column sm={2} md={2} lg={4} class="text-lg"><SectionTitle>Add</SectionTitle></Column>
+    <Column sm={2} md={2} lg={4} class="text-lg"
+      ><SectionTitle>{$t('course.navItem.people.teams.add')}</SectionTitle></Column
+    >
     <Column sm={2} md={6} lg={8}>
       <p class="text-md text-gray-500 dark:text-white mb-5">
-        Add your team mates or collaborators to your organization. Start working together
+        {$t('course.navItem.people.teams.add_team')}
       </p>
 
       <div class="">
         <TextField
-          label="Invite"
-          placeholder="email comma separated"
+          label={$t('course.navItem.people.teams.invite')}
+          placeholder={$t('course.navItem.people.teams.placeholder')}
           bind:value={emailsStr}
           className="mb-3"
           isDisabled={$isFreePlan}
           {errorMessage}
         />
 
-        <Select labelText="Role" bind:selected={role} class="mb-5 w-40" disabled={$isFreePlan}>
-          <!-- <SelectItem value={ROLE.ADMIN} text={ROLE_LABEL[ROLE.ADMIN]} /> -->
-          <SelectItem value={ROLE.TUTOR} text={ROLE_LABEL[ROLE.TUTOR]} />
+        <Select
+          labelText={$t('course.navItem.people.teams.role')}
+          bind:selected={role}
+          class="mb-5 w-40"
+          disabled={$isFreePlan}
+        >
+          <SelectItem value={ROLE.ADMIN} text={$t(ROLE_LABEL[ROLE.ADMIN])} />
+          <SelectItem value={ROLE.TUTOR} text={$t(ROLE_LABEL[ROLE.TUTOR])} />
         </Select>
 
         <PrimaryButton
-          label="Send Invite"
+          label={$t('course.navItem.people.teams.send_invite')}
           onClick={onSendInvite}
           {isLoading}
           isDisabled={isLoading || $isFreePlan}
@@ -167,7 +175,9 @@
   </Row>
 
   <Row class="py-7 border-bottom-c">
-    <Column sm={2} md={2} lg={4} class="text-lg"><SectionTitle>Members</SectionTitle></Column>
+    <Column sm={2} md={2} lg={4} class="text-lg"
+      ><SectionTitle>{$t('course.navItem.people.teams.members')}</SectionTitle></Column
+    >
     <Column sm={2} md={6} lg={8}>
       {#if isFetching}
         <Moon />
@@ -178,24 +188,24 @@
               <p class="text-sm text-gray-500 dark:text-white mr-3">
                 {teamMember.email}
               </p>
-              <TextChip value={teamMember.role} className="text-xs mr-3" size="sm" />
+              <TextChip value={$t(teamMember.role)} className="text-xs mr-3" size="sm" />
               {#if !teamMember.verified}
                 <TextChip
-                  value="Invite Sent"
+                  value={$t('course.navItem.people.teams.invite_sent')}
                   className="text-xs bg-yellow-200 text-yellow-700"
                   size="sm"
                 />
               {:else if teamMember.profileId === $profile.id}
-                <ComingSoon label="You" />
+                <ComingSoon label={$t('course.navItem.people.teams.you')} />
               {/if}
             </div>
             {#if teamMember.profileId !== $profile.id && isTeamMemberAdmin($orgTeam, $profile.id)}
               <PrimaryButton
-                label="Remove"
+                label={$t('course.navItem.people.teams.remove')}
                 variant={VARIANTS.TEXT_DANGER}
                 onClick={() => onRemove(teamMember.id)}
-                isLoading={isRemoving}
-                isDisabled={isRemoving}
+                isLoading={isRemoving === teamMember.id}
+                isDisabled={isRemoving === teamMember.id}
               />
             {/if}
           </div>

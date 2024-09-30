@@ -5,6 +5,7 @@
   import { isCoursePage } from '$lib/utils/functions/app';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { t } from '$lib/utils/functions/translations';
 
   export let disableSignup = false;
   export let logo;
@@ -24,11 +25,16 @@
 >
   <ul class="flex w-full items-center">
     <div class="logo">
-      <a href="/" title={`Go to ${orgName || 'ClassroomIO'} Home`} id="logo" data-hveid="8">
+      <a
+        href="/"
+        title={`${$t('navigation.goto')} ${orgName || 'ClassroomIO'} ${$t('navigation.home')}`}
+        id="logo"
+        data-hveid="8"
+      >
         <img
           src={logo || '/logo-192.png'}
           alt={`${orgName || 'ClassroomIO'} logo`}
-          class="rounded h-9 w-9 inline-block mx-auto"
+          class="rounded w-9 inline-block mx-auto"
           data-atf="1"
         />
       </a>
@@ -36,19 +42,19 @@
 
     {#if $user.isLoggedIn}
       <li class="hidden">
-        <a class="block" href="dashboard"> Dashboard </a>
+        <a class="block" href="dashboard"> {$t('navigation.dashboard')} </a>
       </li>
 
       <li class="hidden">
-        <a class="block" href="courses"> Courses </a>
+        <a class="block" href="courses"> {$t('navigation.courses')} </a>
       </li>
 
       <li class="hidden">
-        <a class="block" href="discussions"> Discussion </a>
+        <a class="block" href="discussions"> {$t('navigation.discussion')} </a>
       </li>
 
       <li class="hidden">
-        <a class="block" href="people">People </a>
+        <a class="block" href="people">{$t('navigation.people')} </a>
       </li>
     {/if}
 
@@ -56,13 +62,13 @@
 
     {#if $user.isLoggedIn}
       {#if isOrgSite}
-        <li><a class="block" href="/lms"> Go to LMS </a></li>
+        <li><a class="block" href="/lms"> {$t('navigation.goto_lms')} </a></li>
       {/if}
     {:else if !$page.url.pathname?.includes('/404')}
       <li>
         <div class="flex">
           <PrimaryButton
-            label="Login"
+            label={$t('navigation.login')}
             variant={VARIANTS.TEXT}
             onClick={() => goto('/login' + redirect)}
           />
@@ -72,7 +78,7 @@
         {#if !disableSignup}
           <div class="flex">
             <PrimaryButton
-              label="Signup"
+              label={$t('navigation.signup')}
               variant={VARIANTS.CONTAINED}
               onClick={() => goto('/signup' + redirect)}
             />

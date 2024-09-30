@@ -1,12 +1,13 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
+  import { MetaTags } from 'svelte-meta-tags';
   import { fly } from 'svelte/transition';
   import { derived } from 'svelte/store';
   import { goto } from '$app/navigation';
   import { browser, dev } from '$app/environment';
   import { page, navigating } from '$app/stores';
   import isEmpty from 'lodash/isEmpty';
+  import merge from 'lodash/merge';
   import { Theme, ToastNotification, Loading } from 'carbon-components-svelte';
   import type { CarbonTheme } from 'carbon-components-svelte/types/Theme/Theme.svelte';
   import LandingNavigation from '$lib/components/Navigation/index.svelte';
@@ -14,6 +15,7 @@
   import LMSNavigation from '$lib/components/Navigation/lms.svelte';
   import OrgLandingPage from '$lib/components/Org/LandingPage/index.svelte';
   import Snackbar from '$lib/components/Snackbar/index.svelte';
+  import Restricted from '$lib/components/Page/Restricted.svelte';
   import Backdrop from '$lib/components/Backdrop/index.svelte';
   import Apps from '$lib/components/Apps/index.svelte';
   import PlayQuiz from '$lib/components/Org/Quiz/Play/index.svelte';
@@ -28,15 +30,17 @@
   import { getOrganizations } from '$lib/utils/services/org';
   import { toggleBodyByMode } from '$lib/utils/functions/app';
   import { globalStore } from '$lib/utils/store/app';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { setTheme } from '$lib/utils/functions/theme';
   import hideNavByRoute from '$lib/utils/functions/routes/hideNavByRoute';
   import shouldRedirectOnAuth from '$lib/utils/functions/routes/shouldRedirectOnAuth';
   import { identifyPosthogUser, initPosthog } from '$lib/utils/services/posthog';
   import { initSentry, setSentryUser } from '$lib/utils/services/sentry';
   import UpgradeModal from '$lib/components/Upgrade/Modal.svelte';
+  import { handleLocaleChange } from '$lib/utils/functions/translations';
 
   import '../app.postcss';
+  import { ROLE } from '$lib/utils/constants/roles';
 
   export let data;
 
@@ -55,10 +59,6 @@
 
     // Set up posthog
     initPosthog();
-
-    if (!dev) {
-      injectSpeedInsights();
-    }
   }
 
   function setAnalyticsUser() {
@@ -104,13 +104,17 @@
 
       const [regexUsernameMatch] = [...(authUser.email?.matchAll(/(.*)@/g) || [])];
 
+      const isGoogleAuth = !!authUser.app_metadata?.providers?.includes('google');
+
       const { data: newProfileData, error } = await supabase
         .from('profile')
         .insert({
           id: authUser.id,
           username: regexUsernameMatch[1] + `${new Date().getTime()}`,
           fullname: regexUsernameMatch[1],
-          email: authUser.email
+          email: authUser.email,
+          is_email_verified: isGoogleAuth,
+          verified_at: isGoogleAuth ? new Date().toDateString() : undefined
         })
         .select();
 
@@ -123,6 +127,9 @@
         profile.set(newProfileData[0]);
 
         setAnalyticsUser();
+
+        // Fetch language
+        handleLocaleChange($profile.locale);
 
         if (data.isOrgSite) {
           const { data, error } = await supabase
@@ -166,7 +173,12 @@
       // Set user in sentry
       setAnalyticsUser();
 
+      // Fetch language
+      handleLocaleChange($profile.locale);
+
       const orgRes = await getOrganizations(profileData.id, data.isOrgSite, data.orgSiteName);
+
+      const isStudentAccount = orgRes.currentOrg.role_id == ROLE.STUDENT;
 
       // student redirect
       if (data.isOrgSite) {
@@ -176,8 +188,16 @@
           goto('/lms');
         }
       } else {
-        // Not on invite page or no org, go to onboarding
-        if (isEmpty(orgRes.orgs) && !path.includes('invite')) {
+        if (isStudentAccount) {
+          // Check if the student logged into the dashboard.
+          console.log('Student logged into dashboard');
+          if (dev) {
+            goto('/lms');
+          } else {
+            window.location.replace(`${$currentOrgDomain}/lms`);
+          }
+        } else if (isEmpty(orgRes.orgs) && !path.includes('invite')) {
+          // Not on invite page or no org, go to onboarding
           goto(ROUTE.ONBOARDING);
         } else if (params.has('redirect')) {
           goto(params.get('redirect') || '');
@@ -211,11 +231,8 @@
       $globalStore.isDark = localStorage.getItem('mode') === 'dark';
       toggleBodyByMode($globalStore.isDark);
 
-      const theme = localStorage.getItem('theme');
       if (data.isOrgSite && data.org?.theme) {
         setTheme(data.org?.theme);
-      } else if (theme) {
-        setTheme(theme);
       }
     }
 
@@ -231,6 +248,7 @@
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       // Log key events
       console.log(`event`, event);
+      console.log(`session`, session);
       if (event == 'PASSWORD_RECOVERY') {
         console.log('PASSWORD RESET');
       }
@@ -241,27 +259,26 @@
       }
 
       // Skip Authentication
-      if (data.skipAuth) return;
+      if (data.skipAuth || $user.fetchingUser) return;
 
       // Authentication Steps
       if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
         $user.fetchingUser = true;
-        getProfile();
-      } else if (!['TOKEN_REFRESHED'].includes(event)) {
-        console.log('not logged in, go to login');
-        return goto('/login');
+        getProfile().then(() => {
+          $user.fetchingUser = false;
+        });
       }
+      // else if (!['TOKEN_REFRESHED'].includes(event)) {
+      //   console.log('not logged in, go to login');
+      //   return goto('/login');
+      // }
     });
 
-    if (data.isOrgSite) {
-      if (!data.org) {
-        goto('/404');
-      } else {
-        $globalStore.orgSiteName = data.orgSiteName;
-        $globalStore.isOrgSite = data.isOrgSite;
+    if (data.isOrgSite && data.org) {
+      $globalStore.orgSiteName = data.orgSiteName;
+      $globalStore.isOrgSite = data.isOrgSite;
 
-        currentOrg.set(data.org);
-      }
+      currentOrg.set(data.org);
     }
 
     return () => {
@@ -272,27 +289,28 @@
 
   $: path = $page.url?.pathname?.replace('/', '');
   $: carbonTheme = $globalStore.isDark ? 'g100' : 'white';
+  $: metaTags = merge(data.baseMetaTags, $page.data.pageMetaTags);
 </script>
 
 <svelte:window on:resize={handleResize} />
 
-<svelte:head>
-  <link href="/css/carbon.css" rel="stylesheet" />
-</svelte:head>
+<MetaTags {...metaTags} />
 
 <Theme bind:theme={carbonTheme} />
 
 <UpgradeModal />
 <Snackbar />
 
-{#if data.skipAuth}
+{#if data.org?.is_restricted || $currentOrg.is_restricted}
+  <Restricted />
+{:else if data.skipAuth}
   <PlayQuiz />
 {:else if data.isOrgSite && !path}
-  <OrgLandingPage orgSiteName={data.orgSiteName} org={data.org || {}} />
+  <OrgLandingPage orgSiteName={data.orgSiteName} org={data.org} />
 {:else}
   <main class="dark:bg-black">
     {#if $navigating && $delayedPreloading}
-      <Backdrop disableCenteredContent={true} className="opacity-90">
+      <Backdrop disableCenteredContent={true} className="">
         <div class="h-full w-full relative" transition:fly={{ x: -200, duration: 500 }}>
           <ToastNotification kind="info-square" class="absolute bottom-5 left-5">
             <span slot="title" class="flex items-center">
@@ -319,7 +337,7 @@
       {/if}
     {/if}
 
-    <div class="flex justify-between">
+    <div class={path.includes('home') ? '' : 'flex justify-between'}>
       <slot />
 
       {#if showAppsSideBar(path)}

@@ -16,6 +16,7 @@
   import PricingForm from './PricingForm.svelte';
   import GoalsForm from './GoalsForm.svelte';
   import ReviewsForm from './ReviewsForm.svelte';
+  import CertificateForm from './CertificateForm.svelte';
   import InstructorForm from './InstructorForm.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
@@ -25,6 +26,7 @@
   import { isMobile } from '$lib/utils/store/useMobile';
   import CustomPromptBtn from '$lib/components/AI/AIButton/CustomPromptBtn.svelte';
   import type { Course } from '$lib/utils/types';
+  import { t } from '$lib/utils/functions/translations';
 
   export let course: Course;
   export let courseId: string;
@@ -46,43 +48,48 @@
     {
       key: 1,
       path: '',
-      title: 'Header'
+      title: $t('course.navItem.landing_page.editor.title.header')
     },
     {
       key: 2,
       path: 'metadata.requirements',
-      title: 'Requirement',
+      title: $t('course.navItem.landing_page.editor.title.requirement'),
       enableAIWriter: true,
-      initPrompt: 'Please write few requirements needed to take this course:'
+      initPrompt: $t('course.navItem.landing_page.editor.title.requirement')
     },
     {
       key: 3,
       path: 'metadata.description',
-      title: 'Description',
+      title: $t('course.navItem.landing_page.editor.title.description'),
       enableAIWriter: true,
       initPrompt: 'Please write a detailed course description for this course:'
     },
     {
       key: 4,
       path: 'metadata.goals',
-      title: 'Goals',
+      title: $t('course.navItem.landing_page.editor.title.goals'),
       enableAIWriter: true,
       initPrompt: 'What should a student expect to learn from this course:'
     },
     {
       key: 5,
       path: '',
-      title: 'Reviews'
+      title: $t('course.navItem.landing_page.editor.title.certificate')
     },
     {
       key: 6,
       path: '',
-      title: 'Instructor'
+      title: $t('course.navItem.landing_page.editor.title.reviews')
     },
     {
       key: 7,
       path: '',
-      title: 'Pricing'
+      title: $t('course.navItem.landing_page.editor.title.instructor')
+    },
+    {
+      key: 8,
+      path: '',
+      title: $t('course.navItem.landing_page.editor.title.pricing')
     }
   ];
   let selectedSection: Section | null = null;
@@ -122,6 +129,7 @@
       attendance: undefined,
       group: undefined,
       lessons: undefined,
+      lesson_section: undefined,
       polls: undefined,
       slug: course.slug
     });
@@ -168,7 +176,7 @@
         <CloseButton onClick={handleClose} />
         <div class="flex items-center">
           <PrimaryButton
-            label="Save"
+            label={$t('course.navItem.landing_page.editor.save')}
             type="button"
             className="mr-1"
             variant={VARIANTS.OUTLINED}
@@ -181,7 +189,7 @@
         </div>
       </div>
       <div class="flex justify-between items-center px-2 w-full mb-2">
-        <h3 class="dark:text-white">Page Builder</h3>
+        <h3 class="dark:text-white">{$t('course.navItem.landing_page.editor.page_builder')}</h3>
       </div>
       {#each sections as section, index}
         <button
@@ -189,7 +197,10 @@
             sections.length && 'border-b-0'} border-gray-300"
           on:click={handleSectionSelect(section.key)}
         >
-          <p class="dark:text-white mr-2">{section.title} section</p>
+          <p class="dark:text-white mr-2">
+            {section.title}
+            {$t('course.navItem.landing_page.editor.section')}
+          </p>
           <ChevronRightIcon size={24} class="carbon-class" />
         </button>
       {/each}
@@ -224,16 +235,18 @@
         {#if selectedSection.key === 1}
           <HeaderForm bind:course />
         {:else if selectedSection.key === 2}
-          <RequirementForm bind:value={course.metadata.requirements} />
+          <RequirementForm bind:course />
         {:else if selectedSection.key === 3}
-          <DescriptionForm bind:value={course.metadata.description} />
+          <DescriptionForm bind:course />
         {:else if selectedSection.key === 4}
-          <GoalsForm bind:value={course.metadata.goals} />
+          <GoalsForm bind:course />
         {:else if selectedSection.key === 5}
-          <ReviewsForm bind:course />
+          <CertificateForm bind:course />
         {:else if selectedSection.key === 6}
-          <InstructorForm bind:course />
+          <ReviewsForm bind:course />
         {:else if selectedSection.key === 7}
+          <InstructorForm bind:course />
+        {:else if selectedSection.key === 8}
           <PricingForm bind:course />
         {/if}
       </div>

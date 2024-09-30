@@ -1,14 +1,34 @@
 export * from './config';
 export * from './dashboard';
 
+export enum LOCALE {
+  EN = 'en',
+  HI = 'hi',
+  FR = 'fr',
+  PT = 'pt',
+  DE = 'de',
+  VI = 'vi',
+  RU = 'ru',
+  ES = 'es'
+}
+
 //===============Custom Type===============
+
+export interface ProfileCourseProgress {
+  exercises_completed: number;
+  exercises_count: number;
+  lessons_completed: number;
+  lessons_count: number;
+}
+
 export interface GroupPerson {
   assigned_student_id: number | null;
   created_at: string;
   email: string | null;
   group_id: string;
   id: string;
-  profile: Profile;
+  memberId: string;
+  profile: Partial<Profile>;
   profile_id: string;
   role_id: Role['id'];
   fullname?: string;
@@ -77,11 +97,15 @@ interface CourseMetadata {
     description: string;
     imgUrl: string;
   };
+  certificate?: {
+    templateUrl: string;
+  };
   reviews?: Array<Review>;
   lessonTabsOrder?: Array<Tabs>;
   grading?: boolean;
   lessonDownload?: boolean;
   allowNewStudent: boolean;
+  sectionDisplay?: Record<string, boolean>;
 }
 
 export interface LessonCommentInsertPayload {
@@ -170,9 +194,19 @@ export interface Waitinglist {
   created_at?: string;
 }
 
+export enum COURSE_TYPE {
+  SELF_PACED = 'SELF_PACED',
+  LIVE_CLASS = 'LIVE_CLASS'
+}
+export enum COURSE_VERSION {
+  V1 = 'V1', // with only lesson
+  V2 = 'V2' // lessons are grouped into sections
+}
 export interface Course {
   title?: any; // type unknown;
   description: string; // type unknown;
+  type: COURSE_TYPE;
+  version: COURSE_VERSION;
   overview?: any; // type unknown;
   id?: string /* primary key */;
   created_at: string;
@@ -200,6 +234,7 @@ export interface Course {
     is_present: boolean;
     id: number;
   }[];
+  lesson_section?: LessonSection[];
   lessons?: Lesson[];
   polls: { status: string }[];
 }
@@ -246,9 +281,12 @@ export enum VideoType {
 
 export interface LessonPage {
   id?: string | null;
+  title: '';
   totalExercises: number;
   totalComments: number;
-  isSaving: Boolean;
+  locale: LOCALE;
+  isSaving: boolean;
+  isFetching: boolean;
   materials: {
     note: string;
     slide_url: string;
@@ -278,8 +316,9 @@ export interface Lesson {
   videos?: []; // type unknown;
   slide_url?: any; // type unknown;
   course_id: string /* foreign key to course.id */;
+  section_id?: string /* foreign key to course.id */;
   id: string /* primary key */;
-  created_at?: string;
+  created_at: string;
   updated_at?: string;
   title: string; // type unknown;
   public?: boolean;
@@ -291,6 +330,16 @@ export interface Lesson {
   course?: Course;
   profile?: Profile;
   lesson_completion: LessonCompletion[];
+  totalExercises?: { count: number }[];
+}
+
+export interface LessonSection {
+  id: string;
+  title: string;
+  order: number;
+  course_id: string /* foreign key to course.id */;
+  lessons: Lesson[];
+  created_at: string;
 }
 
 export interface Exercise {

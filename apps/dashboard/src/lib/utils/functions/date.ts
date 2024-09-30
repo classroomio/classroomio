@@ -10,5 +10,5 @@ export const calDateDiff = (date: string | number | Date): string => {
 export const getGreeting = () => {
   const date = new Date();
   const hours = date.getHours();
-  return hours < 12 ? 'Good Morning' : hours < 18 ? 'Good Afternoon' : 'Good Evening';
+  return hours < 12 ? 'dashboard.morning_heading' : hours < 18 ? 'dashboard.afternoon_heading' : 'dashboard.evening_heading';
 };

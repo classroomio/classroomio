@@ -8,29 +8,30 @@
   import { fetchLMSExercises } from '$lib/utils/services/lms/exercises';
   import type { LMSExercise } from '$lib/utils/services/lms/exercises';
   import { calDateDiff } from '$lib/utils/functions/date';
+  import { t } from '$lib/utils/functions/translations';
 
   const defaultSections = [
     {
       id: 0,
-      title: 'Not Submitted',
+      title: $t('exercises.not_submitted'),
       items: [],
       className: 'text-[#E35353] bg-[#FDDFE4]'
     },
     {
       id: 1,
-      title: 'Submitted',
+      title: $t('exercises.submitted'),
       items: [],
       className: 'text-orange-700 bg-orange-200'
     },
     {
       id: 2,
-      title: 'Grading In Progress',
+      title: $t('exercises.in_progress'),
       items: [],
       className: 'text-yellow-700 bg-yellow-200'
     },
     {
       id: 3,
-      title: 'Graded',
+      title: $t('exercises.graded'),
       value: 0,
       items: [],
       className: 'text-green-700 bg-green-200'
@@ -105,7 +106,7 @@
     console.log('error', error);
 
     if (error) {
-      snackbar.error('Fetching exercises failed, please reload the page');
+      snackbar.error('snackbar.exercise.error_fetching');
       return;
     }
 
@@ -123,7 +124,7 @@
 <section class="w-full max-w-6xl mx-auto">
   <div class="p-5">
     <div class="flex items-center justify-between mb-10">
-      <h1 class="dark:text-white text-3xl font-bold">Exercises</h1>
+      <h1 class="dark:text-white text-3xl font-bold">{$t('exercises.heading')}</h1>
     </div>
 
     <div>
@@ -156,7 +157,7 @@
                     href={item.lessonURL}
                   >
                     <p class="dark:text-white text-grey text-sm">
-                      Lesson: <span class="italic">{item.lessonTitle}</span>
+                      {$t('exercises.lesson')} <span class="italic">{item.lessonTitle}</span>
                     </p>
                   </a>
                   <p class="dark:text-white text-gray-500 text-xs">

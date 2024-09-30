@@ -2,8 +2,14 @@ import { writable, derived } from 'svelte/store';
 import type { Course } from '$lib/utils/types';
 
 export const courses = writable<Course[]>([]);
+
+export const view = writable('grid');
 export const coursesInProgress = derived(courses, ($courses) =>
-  $courses.length > 0 ? $courses.slice(0, 3) : []
+  $courses.length > 0
+    ? $courses.filter((course) => {
+        return course.total_lessons !== course.progress_rate;
+      })
+    : []
 );
 export const coursesComplete = derived(courses, ($courses) =>
   $courses.length > 0
@@ -12,13 +18,17 @@ export const coursesComplete = derived(courses, ($courses) =>
       })
     : []
 );
-export const courseMetaDeta = writable({
-  isLoading: true
+export const courseMetaDeta = writable<{
+  isLoading: boolean;
+  view: 'grid' | 'list';
+}>({
+  isLoading: true,
+  view: 'grid'
 });
 
 export const createCourseModal = writable({
-  open: false,
   title: '',
+  type: '',
   description: '',
   emails: '',
   tutors: '',

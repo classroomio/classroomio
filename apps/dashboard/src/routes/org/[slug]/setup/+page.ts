@@ -95,45 +95,45 @@ export const load = async ({ params = { slug: '' } }) => {
   const data = [
     {
       id: 'profile',
-      title: 'Upload a profile picture and update username',
-      desc: 'Personalize and a human touch making interactions more personal and memorable',
+      title: 'setup.personal_profile.title',
+      desc: 'setup.personal_profile.desc',
       is_completed: false,
-      button_label: 'Update Profile'
+      button_label: 'setup.personal_profile.button_label'
     },
     {
       id: 'organization',
-      title: 'Update organisation profile picture',
-      desc: 'Establish a professional and recognizable identity for your organization',
+      title: 'setup.organization_profile.title',
+      desc: 'setup.organization_profile.desc',
       is_completed: orgHasAvatarUrl,
-      button_label: 'Update Org Profile'
+      button_label: 'setup.organization_profile.button_label'
     },
     {
       id: 'course',
-      title: 'Create Course',
-      desc: 'Create a course that you will share with your students',
+      title: 'setup.course.title',
+      desc: 'setup.course.desc',
       is_completed: isCourseCreated,
-      button_label: 'Create Course'
+      button_label: 'setup.course.button_label'
     },
     {
       id: 'lesson',
-      title: 'Create a lesson',
-      desc: 'Break your course into lesson that your students can easily understand',
+      title: 'setup.lesson.title',
+      desc: 'setup.lesson.desc',
       is_completed: isLessonCreated,
-      button_label: 'Create Lesson'
+      button_label: 'setup.lesson.button_label'
     },
     {
       id: 'exercise',
-      title: 'Create an exercise',
-      desc: 'Test your students allow them to demonstarte their understanding of the subject matter',
+      title: 'setup.exercise.title',
+      desc: 'setup.exercise.desc',
       is_completed: isExerciseCreated,
-      button_label: 'Create Assignment'
+      button_label: 'setup.exercise.button_label'
     },
     {
       id: 'publish',
-      title: 'Publish a course',
-      desc: 'Make your course public and purchaseable ',
+      title: 'setup.publish_course.title',
+      desc: 'setup.publish_course.desc',
       is_completed: isCoursePublished,
-      button_label: 'Publish Course'
+      button_label: 'setup.publish_course.button_label'
     }
   ];
 

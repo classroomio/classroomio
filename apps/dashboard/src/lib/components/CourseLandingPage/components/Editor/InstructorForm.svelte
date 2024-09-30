@@ -8,8 +8,10 @@
   import UploadImage from '$lib/components/UploadImage/index.svelte';
   import { uploadAvatar } from '$lib/utils/services/courses';
   import type { Course } from '$lib/utils/types';
+  import { t } from '$lib/utils/functions/translations';
 
   export let course: Course;
+
   let name: string | undefined;
   let role: string | undefined;
   let imgUrl: string | undefined;
@@ -17,6 +19,7 @@
   let courseNo: string | undefined;
   let avatar: string | undefined;
   let hasBeenSet = false;
+  let isUploading = false;
 
   function setter(value: any, setterKey: string) {
     if (!value) return;
@@ -29,12 +32,13 @@
 
   async function onAvatarChange(_avatar: string | undefined) {
     if (!_avatar || !course.id) return;
-
+    isUploading = true;
     const logo = await uploadAvatar(course.id, _avatar);
 
     if (!logo) return;
 
     imgUrl = logo;
+    isUploading = false;
   }
 
   function setDefaults(course: Course) {
@@ -59,30 +63,34 @@
   $: setDefaults(course);
 </script>
 
-<div class="mt-5">
-  <label for="upload" class="font-bold">Instructor Logo</label>
-  <UploadImage bind:avatar src={imgUrl} />
+<div class="mt-5 w-full">
+  <label for="upload" class="font-bold">
+    {$t('course.navItem.landing_page.editor.instructor_form.upload')}
+  </label>
+  <div class="w-full flex justify-center">
+    <UploadImage bind:avatar src={imgUrl} bind:isUploading />
+  </div>
 </div>
 
 <TextField
   className="mt-5"
   labelClassName="font-bold"
-  label="Instructor name"
-  placeholder="Your company name"
+  label={$t('course.navItem.landing_page.editor.instructor_form.name')}
+  placeholder={$t('course.navItem.landing_page.editor.instructor_form.name_placeholder')}
   bind:value={name}
 />
 
 <TextField
   className="mt-5"
   labelClassName="font-bold"
-  label="Instructor Role"
+  label={$t('course.navItem.landing_page.editor.instructor_form.role')}
   placeholder="e.g Software developer"
   bind:value={role}
 />
 
 <TextArea
-  label="About instructor"
-  placeholder="A short background about the instructor"
+  label={$t('course.navItem.landing_page.editor.instructor_form.about')}
+  placeholder={$t('course.navItem.landing_page.editor.instructor_form.about_placeholder')}
   rows={6}
   className="mt-5"
   labelClassName="font-bold"
@@ -92,7 +100,7 @@
 <TextField
   className="mt-5"
   labelClassName="font-bold"
-  label="Total number of courses"
+  label={$t('course.navItem.landing_page.editor.instructor_form.total')}
   type="number"
   bind:value={courseNo}
 />

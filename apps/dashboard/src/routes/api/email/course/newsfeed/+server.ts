@@ -1,12 +1,17 @@
 import { json } from '@sveltejs/kit';
-import { getSupabase } from '$lib/utils/functions/supabase';
+import { getServerSupabase } from '$lib/utils/functions/supabase.server';
 import { getFeedForNotification } from '$lib/utils/services/newsfeed/index';
 import sendEmail from '$mail/sendEmail';
 
-const supabase = getSupabase();
+const supabase = getServerSupabase();
 
 const sendEmailNotification = async (feedId: string, authorId: string, comment?: string) => {
-  const feed = await getFeedForNotification(feedId, authorId);
+  const feed = await getFeedForNotification({
+    supabase,
+    feedId,
+    authorId
+  });
+  console.log({ feed });
   if (!feed) return;
 
   const postLink = `https://${feed.org.siteName}.classroomio.com/courses/${feed.courseId}?feedId=${feed.id}`;
@@ -14,7 +19,7 @@ const sendEmailNotification = async (feedId: string, authorId: string, comment?:
   if (comment) {
     const emailData = [
       {
-        from: `"${feed.org.name} - ClassroomIO" <notify@classroomio.com>`,
+        from: `"${feed.org.name} - ClassroomIO" <notify@mail.classroomio.com>`,
         to: feed.teacherEmail,
         subject: `[${feed.courseTitle}] - News feed comment`,
         content: `
@@ -25,7 +30,6 @@ const sendEmailNotification = async (feedId: string, authorId: string, comment?:
         <a class="button" href="${postLink}">View comment</a>
       </div>
       `,
-        isPersonalEmail: false,
         replyTo: 'noreply@classroomio.com'
       }
     ];
@@ -42,7 +46,7 @@ const sendEmailNotification = async (feedId: string, authorId: string, comment?:
 
   // else send to everyone except the author of the post
   const emailsData = feed.courseMembers.map((member) => ({
-    from: `"${feed.org.name} - ClassroomIO" <notify@classroomio.com>`,
+    from: `"${feed.org.name} - ClassroomIO" <notify@mail.classroomio.com>`,
     to: member.email,
     replyTo: feed.teacherEmail,
     subject: `[${feed.courseTitle}] - New post in course`,

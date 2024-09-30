@@ -12,7 +12,7 @@ export const snackbarStoreInitialState = {
 export const snackbarStore = writable({ ...snackbarStoreInitialState });
 
 export const snackbar = {
-  success(message = 'Success') {
+  success(message = 'snackbar.success') {
     snackbarStore.update((store) => {
       store.open = true;
       store.message = message;
@@ -21,7 +21,7 @@ export const snackbar = {
       return store;
     });
   },
-  error(message = 'Something went wrong - Please try later') {
+  error(message = 'snackbar.something') {
     snackbarStore.update((store) => {
       store.open = true;
       store.message = message;
@@ -30,7 +30,7 @@ export const snackbar = {
       return store;
     });
   },
-  info(message = 'Update') {
+  info(message = 'snackbar.updates') {
     snackbarStore.update((store) => {
       store.open = true;
       store.message = message;

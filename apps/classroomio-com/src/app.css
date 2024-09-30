@@ -101,3 +101,21 @@ li {
   padding: none;
   text-align: center;
 }
+
+.hero-bg {
+  background-image: url('/hero-bg.svg');
+}
+
+.tools-hero-bg {
+  background-image: url('/tools-hero-bg.svg');
+}
+@media (min-width: 760px) {
+  .tools-hero-bg {
+    min-height: 350px;
+  }
+}
+.cio-bg-blue {
+  background: rgb(2, 51, 189);
+  background-size: cover;
+  background: radial-gradient(circle at 50% 100%, rgba(2, 51, 189, 1) 1%, rgb(4, 2, 56) 100%);
+}

@@ -1,0 +1,1 @@
+alter table "public"."organization" add column "customization" json not null default '{"apps":{"poll":true,"comments":true},"course":{"grading":true,"newsfeed":true},"dashboard":{"exercise":true,"community":true,"bannerText":"","bannerImage":""}}'::json;

@@ -1,5 +1,5 @@
 <a href="https://classroomio.com/">
-  <img alt="ClassroomIO is the easiest place to launch and scale your online bootcamp." src="https://classroomio.com/classroomio-opengraph-image.png" />
+  <img alt="Launch your bootcamp quickly and affordably with ClassroomIO, the customizable online teaching platform." src="https://brand.cdn.clsrio.com/og/classroomio-og.png" />
   <h1 align="center">ClassroomIO</h1>
   <p align="center">
     The Open Source Teaching Platform for Bootcamps
@@ -12,7 +12,7 @@
 
 ## ✨ About ClassroomIO
 
-<img alt="ClassroomIO Courses page" src="https://classroomio.com/classroomio-courses.png" />
+<img alt="ClassroomIO Courses page" src="https://brand.cdn.clsrio.com/classroomio-courses.png" />
 
 Streamline training for everyone with ClassroomIO.com. Our all-in-one platform empowers bootcamps, educators, and businesses to manage training programs easily. With our platform, anyone can run multiple classes and cohorts all from one UI. The application is mobile-first, which means that students can access your lesson materials from any device.
 

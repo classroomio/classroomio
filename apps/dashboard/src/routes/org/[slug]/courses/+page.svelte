@@ -1,34 +1,34 @@
 <script lang="ts">
   import { Search, Dropdown } from 'carbon-components-svelte';
-  import { page } from '$app/stores';
   import { profile } from '$lib/utils/store/user';
-  import { fetchCourses } from '$lib/components/Courses/api';
+  import { fetchCourses } from '$lib/utils/services/courses';
   import Courses from '$lib/components/Courses/index.svelte';
   import NewCourseModal from '$lib/components/Courses/components/NewCourseModal/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { courses, createCourseModal, courseMetaDeta } from '$lib/components/Courses/store';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { courses, courseMetaDeta } from '$lib/components/Courses/store';
+  import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import { Add } from 'carbon-icons-svelte';
   import { isMobile } from '$lib/utils/store/useMobile';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import type { Course } from '$lib/utils/types';
   import { browser } from '$app/environment';
+  import { t } from '$lib/utils/functions/translations';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import IconButton from '$lib/components/IconButton/index.svelte';
+  import Grid from 'carbon-icons-svelte/lib/Grid.svelte';
+  import List from 'carbon-icons-svelte/lib/List.svelte';
+  import { onMount } from 'svelte';
+  import { goto } from '$app/navigation';
 
   export let data;
+
   let { cantFetch } = data;
   let searchValue = '';
   let selectedId: string;
   let filteredCourses: Course[];
   let hasFetched = false;
 
-  const urlParams = new URLSearchParams($page.url.search);
-
-  if (urlParams.get('create') === 'true') {
-    $createCourseModal.open = true;
-  }
-
-  async function getCourses(userId: string | null, orgId: string) {
+  async function getCourses(userId: string | undefined, orgId: string) {
     if (cantFetch && typeof cantFetch === 'boolean' && orgId && !hasFetched) {
       // only show is loading when fetching for the first time
       if (!$courses.length) {
@@ -57,7 +57,7 @@
     }
 
     filteredCourses = courses.filter((course) => {
-      if (!searchValue || course.title.toLowerCase().includes(searchValue)) {
+      if (!searchValue || course.title.toLowerCase().includes(searchValue.toLowerCase())) {
         return true;
       }
 
@@ -75,6 +75,23 @@
     }
   }
 
+  const setViewPreference = (preference: 'grid' | 'list') => {
+    $courseMetaDeta.view = preference;
+    localStorage.setItem('courseView', preference);
+  };
+
+  const openNewCourseModal = () => {
+    goto($currentOrgPath + '/courses?create=true');
+  };
+
+  onMount(() => {
+    const courseView = localStorage.getItem('courseView') as 'grid' | 'list' | null;
+
+    if (courseView) {
+      $courseMetaDeta.view = courseView;
+    }
+  });
+
   $: filterCourses(searchValue, selectedId, $courses);
   $: getCourses($profile.id, $currentOrg.id);
 </script>
@@ -86,48 +103,56 @@
 <section class="w-full md:max-w-6xl md:mx-auto">
   <div class="py-2 md:py-10 px-2 md:px-5">
     <div class="flex items-center justify-between mb-5">
-      <h1 class="dark:text-white text-2xl md:text-3xl font-bold">Courses</h1>
+      <h1 class="dark:text-white text-2xl md:text-3xl font-bold">{$t('courses.heading')}</h1>
       {#if $isMobile}
-        <PrimaryButton isDisabled={!$isOrgAdmin} onClick={() => ($createCourseModal.open = true)}>
+        <PrimaryButton isDisabled={!$isOrgAdmin} onClick={openNewCourseModal}>
           <Add size={24} />
         </PrimaryButton>
       {:else}
         <PrimaryButton
-          label="Create Course"
+          label={$t('courses.heading_button')}
           variant={VARIANTS.CONTAINED_DARK}
           isDisabled={!$isOrgAdmin}
-          onClick={() => ($createCourseModal.open = true)}
+          onClick={openNewCourseModal}
         />
       {/if}
     </div>
     <div class="flex flex-row-reverse mb-5">
-      <div class="flex items-end justify-start">
+      <div class="filter-containter flex items-end justify-start">
         <Search
-          placeholder="Find course"
+          placeholder={$t('courses.search_placeholder')}
           bind:value={searchValue}
           searchClass="mr-2"
           class=" bg-gray-100 dark:bg-neutral-800"
         />
         <Dropdown
-          class="h-full"
+          class="h-full min-w-[150px]"
           bind:selectedId
           items={[
-            { id: '0', text: 'Date Created' },
-            { id: '1', text: 'Published' },
-            { id: '2', text: 'Lessons' }
+            { id: '0', text: $t('courses.course_filter.date_created') },
+            { id: '1', text: $t('courses.course_filter.published') },
+            { id: '2', text: $t('courses.course_filter.lessons') }
           ]}
         />
+        {#if $courseMetaDeta.view === 'list'}
+          <IconButton onClick={() => setViewPreference('grid')}>
+            <Grid size={24} />
+          </IconButton>
+        {:else}
+          <IconButton onClick={() => setViewPreference('list')}>
+            <List size={24} />
+          </IconButton>
+        {/if}
       </div>
     </div>
 
     <NewCourseModal />
-
     <Courses bind:courses={filteredCourses} />
   </div>
 </section>
 
 <style>
-  :global(.bx--dropdown) {
+  .filter-containter :global(.bx--dropdown) {
     max-height: unset;
     height: 100%;
   }

@@ -6,7 +6,7 @@ export const getStudentInviteLink = (_course: Course, orgSiteName: string, origi
   const hash = encodeURIComponent(
     btoa(
       JSON.stringify({
-        groupId: _course.group?.id,
+        id: _course.id,
         name: _course.title,
         description: _course.description,
         orgSiteName
@@ -28,4 +28,11 @@ export function replaceHTMLTag(text: string) {
     .split('')
     .map((char) => tagsToReplace[char] || char)
     .join('');
+}
+
+export function calcCourseDiscount(percent = 0, cost: number, showDiscount: boolean) {
+  if (!percent || !showDiscount) return cost;
+  const discountAmount = (percent / 100) * cost;
+  const discountedPrice = cost - discountAmount;
+  return Math.round(discountedPrice);
 }

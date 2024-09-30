@@ -5,25 +5,38 @@
   import Checkbox from '$lib/components/Form/Checkbox.svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import Grade from '$lib/components/Question/Grade.svelte';
+  import { t } from '$lib/utils/functions/translations';
+  import ReasonBox from '../ReasonBox.svelte';
+  import QuestionTitle from '../QuestionTitle.svelte';
 
   export let title = '';
   export let index = 1;
   export let code;
   export let name = '';
-  export let options = [];
-  export let onSubmit = () => {};
+  export let options: { value: string; label: string }[] = [];
+  export let onSubmit = (a: string, b: string[]) => {};
   export let onPrevious = () => {};
-  export let defaultValue = [];
+  export let defaultValue: string[] = [];
   export let disablePreviousButton = false;
+  export let isLast = false;
   export let disabled = false;
   export let isPreview = false;
-  export let nextButtonProps = {};
+  export let nextButtonProps = {
+    isDisabled: false,
+    isActive: false
+  };
   export let grade: number | undefined;
   export let gradeMax = 0;
   export let disableGrading = false;
+  export let isGradeWithAI = false;
+  export let reason;
+  export let isLoading = false;
+  export let hideGrading = false;
+
+  let gradeWithAI = false;
 
   function getVal(form, name) {
-    let values = [];
+    let values: string[] = [];
     const checkboxEl = form.elements[name];
 
     for (let i = 0, len = checkboxEl.length; i < len; i++) {
@@ -38,7 +51,7 @@
   function handleFormSubmit(event) {
     if (isPreview) return;
     const values = getVal(event.target, name);
-    onSubmit(name, values, nextButtonProps.isActive);
+    onSubmit(name, values);
     event.target.reset();
   }
 
@@ -58,21 +71,28 @@
 
     return '';
   }
+
+  function acceptGrade() {
+    gradeWithAI = false;
+  }
+  function rejectGrade() {
+    gradeWithAI = false;
+    grade = 0;
+  }
+
+  $: gradeWithAI = isGradeWithAI;
 </script>
 
 <form on:submit|preventDefault={handleFormSubmit}>
   <div class="flex items-center justify-between">
-    <HtmlRender className="mt-4">
+    <HtmlRender className="mt-4 {typeof grade === 'number' && 'w-4/5'}" disableMaxWidth>
       <svelte:fragment slot="content">
-        <span class={`${typeof grade === 'number' ? 'w-3/4' : ''} flex gap-1`}>
-          <h3>{index}</h3>
-          <h3>
-            {title}
-          </h3>
-        </span>
+        <QuestionTitle {index} {title} />
       </svelte:fragment>
     </HtmlRender>
-    <Grade {gradeMax} bind:grade {disableGrading} />
+    {#if !hideGrading}
+      <Grade {gradeMax} bind:grade {disableGrading} />
+    {/if}
   </div>
 
   {#if code}
@@ -98,18 +118,25 @@
       </button>
     {/each}
   </div>
+  {#if gradeWithAI}
+    <ReasonBox {reason} {isLoading} {acceptGrade} {rejectGrade} />
+  {/if}
+
   {#if !isPreview}
     <div class="mt-3 flex items-center justify-between w-full">
       <PrimaryButton
         onClick={handlePrevious}
-        label="Previous"
+        label={$t('course.navItem.lessons.exercises.all_exercises.previous')}
         isDisabled={disablePreviousButton}
         variant={VARIANTS.OUTLINED}
       />
       <PrimaryButton
         variant={nextButtonProps.isActive ? VARIANTS.CONTAINED : VARIANTS.OUTLINED}
         type="submit"
-        label={nextButtonProps.label}
+        label={isLast
+          ? $t('course.navItem.lessons.exercises.all_exercises.finish')
+          : $t('course.navItem.lessons.exercises.all_exercises.next')}
+        isDisabled={nextButtonProps.isDisabled}
         {name}
       />
     </div>

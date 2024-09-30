@@ -13,6 +13,12 @@
   import CopyFile from 'carbon-icons-svelte/lib/CopyFile.svelte';
   import Share from 'carbon-icons-svelte/lib/Share.svelte';
   import UserFollow from 'carbon-icons-svelte/lib/UserFollow.svelte';
+  import { t } from '$lib/utils/functions/translations';
+  import { COURSE_TYPE } from '$lib/utils/types';
+  import RadioButtonChecked from 'carbon-icons-svelte/lib/RadioButtonChecked.svelte';
+  import GrowthIcon from 'carbon-icons-svelte/lib/Growth.svelte';
+  import UserProfileIcon from 'carbon-icons-svelte/lib/UserProfile.svelte';
+  import { calcCourseDiscount } from '$lib/utils/functions/course';
 
   export let bannerImage: string | undefined;
   export let id = '';
@@ -20,14 +26,23 @@
   export let title = '';
   export let description = '';
   export let isPublished = false;
-  export let cost = 0;
   export let totalLessons = 0;
   export let totalStudents = 0;
-  export let currency = 'NGN';
+  export let currency = 'USD';
   export let isOnLandingPage = false;
   export let isLMS = false;
+  export let isExplore = false;
   export let progressRate = 45;
-  export let showContextMenu = false;
+  export let type: COURSE_TYPE;
+  export let pricingData: {
+    cost: number;
+    currency?: string;
+    showDiscount?: boolean;
+    discount?: number;
+  } = {
+    cost: 0
+  };
+
   let target: any;
 
   $: formatter = getCurrencyFormatter(currency);
@@ -51,36 +66,104 @@
     // TODO: Delete course functionality
     alert('WIP: Delete course');
   }
+
+  function getCourseUrl() {
+    return isOnLandingPage || isExplore
+      ? `/course/${slug}`
+      : `/courses/${id}${isLMS ? '/lessons?next=true' : ''}`;
+  }
+
+  const COURSE_TAG: Record<
+    string,
+    {
+      style: string;
+      label: string;
+      icon: any;
+      iconStyle?: string;
+    }
+  > = {
+    [COURSE_TYPE.LIVE_CLASS]: {
+      style: '',
+      label: $t('course.navItem.settings.live_class'),
+      icon: RadioButtonChecked,
+      iconStyle: 'text-red-700'
+    },
+    [COURSE_TYPE.SELF_PACED]: {
+      style: '',
+      label: $t('course.navItem.settings.self_paced'),
+      icon: UserProfileIcon,
+      iconStyle: 'text-primary-700'
+    },
+    SPECIALIZATION: {
+      style: '',
+      label: $t('specialization.course_tag'),
+      icon: GrowthIcon
+    }
+  };
+
+  $: cost = calcCourseDiscount(
+    pricingData.discount,
+    pricingData.cost ?? 0,
+    !!pricingData.showDiscount
+  );
 </script>
 
-{#if showContextMenu}
+{#if !isLMS && !isOnLandingPage}
   <ContextMenu {target}>
-    <ContextMenuOption indented labelText="Clone" icon={CopyFile} on:click={handleCloneCourse} />
-    <ContextMenuOption indented labelText="Share" icon={Share} on:click={handleShareCourse} />
-    <ContextMenuOption indented labelText="Invite" icon={UserFollow} on:click={handleInvite} />
+    <ContextMenuOption
+      indented
+      labelText={$t('courses.course_card.context_menu.clone')}
+      icon={CopyFile}
+      on:click={handleCloneCourse}
+    />
+    <ContextMenuOption
+      indented
+      labelText={$t('courses.course_card.context_menu.share')}
+      icon={Share}
+      on:click={handleShareCourse}
+    />
+    <ContextMenuOption
+      indented
+      labelText={$t('courses.course_card.context_menu.invite')}
+      icon={UserFollow}
+      on:click={handleInvite}
+    />
     <ContextMenuDivider />
-    <ContextMenuOption kind="danger" labelText="Delete" on:click={handleDeleteCourse} />
+    <ContextMenuOption
+      kind="danger"
+      labelText={$t('courses.course_card.context_menu.delete')}
+      on:click={handleDeleteCourse}
+    />
   </ContextMenu>
 {/if}
 
 <a
   rel="prefetch"
   bind:this={target}
-  href={isOnLandingPage ? `/course/${slug}` : `/courses/${id}${isLMS ? '/lessons?next=true' : ''}`}
+  href={getCourseUrl()}
   class="text-black border border-gray dark:border-neutral-600 rounded w-full max-w-[320px] relative hover:scale-95 transition-all ease-in-out"
 >
   <div class="p-4">
-    <div class=" mb-5">
+    <div class="relative mb-5">
       <ImageLoader
         src={bannerImage}
         alt="Course Logo"
-        class="h-[200px] w-full rounded dark:border dark:border-neutral-600"
+        class="h-[200px] w-full rounded dark:border dark:border-neutral-600 relative"
       >
         <svelte:fragment slot="loading">
           <SkeletonPlaceholder style="width: 100%; height: 200px;" />
         </svelte:fragment>
-        <svelte:fragment slot="error">An error occurred.</svelte:fragment>
+        <svelte:fragment slot="error">{$t('courses.course_card.error_message')}</svelte:fragment>
       </ImageLoader>
+      {#if type}
+        {@const tag = COURSE_TAG[type]}
+        <span
+          class="absolute bottom-2 left-2 z-10 text-xs capitalize bg-primary-50 rounded-sm p-1 flex items-center gap-1 font-mono"
+        >
+          <svelte:component this={tag.icon} size={16} class={tag.iconStyle} />
+          {tag.label}
+        </span>
+      {/if}
     </div>
 
     <h3 class="text-xl dark:text-white title">{title}</h3>
@@ -90,30 +173,46 @@
   </div>
 
   <div
-    class="px-4 border border-gray dark:border-neutral-600 border-b-0 border-l-0 border-r-0 flex justify-between {isLMS &&
+    class="px-4 py-2 border border-gray dark:border-neutral-600 border-b-0 border-l-0 border-r-0 flex justify-between {isLMS &&
       'items-center'}"
   >
     <div>
-      <p class="text-xs pt-2 {!isLMS && 'pl-2'} dark:text-white">{totalLessons} lessons</p>
+      <p class="text-xs {!isLMS && 'pl-2'} dark:text-white">
+        {totalLessons}
+        {$t('courses.course_card.lessons_number')}
+      </p>
       <p class="text-xs py-2">
         {#if isOnLandingPage}
-          <span class="px-2">{!cost ? 'Free' : formatter.format(cost)}</span>
+          <span class="px-2">
+            {#if !cost}
+              {$t('course.navItem.landing_page.pricing_section.free')}
+            {:else if pricingData.showDiscount}
+              {formatter.format(cost)}
+              <span class="line-through">
+                {formatter?.format(pricingData?.cost)}
+              </span>
+            {:else}
+              {formatter.format(cost)}
+            {/if}
+          </span>
         {:else if isLMS}
-          <div class="flex items-center gap-2">
-            <div class=" relative bg-[#EAEAEA] w-[50px] h-1">
-              <div
-                style="width:{progressRate}%"
-                class={`absolute top-0 left-0 bg-primary-700 h-full`}
-              />
+          {#if !isExplore}
+            <div class="flex items-center gap-2">
+              <div class=" relative bg-[#EAEAEA] w-[50px] h-1">
+                <div
+                  style="width:{progressRate}%"
+                  class={`absolute top-0 left-0 bg-primary-700 h-full`}
+                />
+              </div>
+              <p class="text-xs text-[#656565] dark:text-white">{progressRate}%</p>
             </div>
-            <p class="text-xs text-[#656565] dark:text-white">{progressRate}%</p>
-          </div>
+          {/if}
         {:else}
           <Tag type={isPublished ? 'green' : 'cool-gray'}>
             {#if isPublished}
-              Published
+              {$t('courses.course_card.published')}
             {:else}
-              Unpublished
+              {$t('courses.course_card.unpublished')}
             {/if}
           </Tag>
         {/if}
@@ -122,13 +221,18 @@
 
     {#if isLMS}
       <PrimaryButton
-        label="Continue Course"
+        label={isExplore
+          ? $t('courses.course_card.learn_more')
+          : $t('courses.course_card.continue_course')}
         variant={VARIANTS.OUTLINED}
-        className="rounded-none text-primary-600"
+        className="rounded-none"
       />
     {:else if !isOnLandingPage}
       <div class="flex flex-col justify-between">
-        <p class="text-xs pt-2 pl-2 dark:text-white">{totalStudents} students</p>
+        <p class="text-xs pl-2 dark:text-white">
+          {totalStudents}
+          {$t('courses.course_card.students')}
+        </p>
         <div></div>
       </div>
     {/if}

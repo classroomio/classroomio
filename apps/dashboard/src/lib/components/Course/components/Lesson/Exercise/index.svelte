@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onDestroy } from 'svelte';
   import { goto } from '$app/navigation';
   import AddAltIcon from 'carbon-icons-svelte/lib/AddAlt.svelte';
@@ -30,19 +30,21 @@
   import UpdateDescription from './UpdateDescription.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
   import Analytics from './Submissions/index.svelte';
+  import { t } from '$lib/utils/functions/translations';
+  import { globalStore } from '$lib/utils/store/app';
 
   export let exerciseId = '';
   export let path = '';
   export let goBack = () => {};
-  export let isStudent = true;
+  export let isFetching = false;
 
-  let preview = false;
+  let preview: boolean = false;
   let shouldDeleteExercise = false;
   let isSaving = false;
   let selectedIndex = 0;
 
   async function handleSave() {
-    if (isStudent) return;
+    if ($globalStore.isStudent) return;
 
     const errors = validateQuestionnaire($questionnaire.questions);
     if (Object.values(errors).length > 0) {
@@ -61,7 +63,7 @@
         // @ts-ignore
         questions: updatedQuestions
       }));
-      snackbar.success('Saved Successfully');
+      snackbar.success('snackbar.exercise.success');
 
       // Redirect to exercises page
       goto(path);
@@ -77,13 +79,14 @@
   });
 
   $: $questionnaire?.questions?.length < 1 && handleAddQuestion();
-  console.log('question', $questionnaire.questions);
 </script>
 
-<PageBody bind:isPageNavHidden={isStudent} padding="px-4 overflow-x-hidden">
+<PageBody bind:isPageNavHidden={$globalStore.isStudent} padding="px-4 overflow-x-hidden">
   <div class="bg-gray-100 dark:bg-neutral-800 top-0 z-10 sticky p-2 mb-3">
-    <Breadcrumb noTrailingSlash class="mb-5">
-      <BreadcrumbItem href={path}>All Exercises</BreadcrumbItem>
+    <Breadcrumb noTrailingSlash>
+      <BreadcrumbItem href={path}
+        >{$t('course.navItem.lessons.exercises.all_exercises.heading')}</BreadcrumbItem
+      >
       <BreadcrumbItem href={`${path}${exerciseId}`} isCurrentPage>
         {$questionnaire.title}
       </BreadcrumbItem>
@@ -91,8 +94,15 @@
 
     <RoleBasedSecurity allowedRoles={[1, 2]}>
       <ContentSwitcher bind:selectedIndex class="mb-2">
-        <Switch text="Questions ({$questionnaire.questions.length})" />
-        <Switch text="Submissions ({$questionnaire.totalSubmissions})" />
+        <Switch
+          text="{$t('course.navItem.lessons.exercises.all_exercises.questions')} ({$questionnaire
+            .questions.length})"
+        />
+        <Switch
+          text="{$t(
+            'course.navItem.lessons.exercises.all_exercises.submissions'
+          )} ({$questionnaire.totalSubmissions})"
+        />
       </ContentSwitcher>
 
       {#if selectedIndex === 0}
@@ -101,7 +111,7 @@
             <PrimaryButton
               className="mr-2"
               variant={VARIANTS.CONTAINED}
-              label="Save"
+              label={$t('course.navItem.lessons.exercises.all_exercises.save')}
               onClick={handleSave}
               isLoading={isSaving}
             />
@@ -109,7 +119,7 @@
               onClick={() => (preview = !preview)}
               contained={preview}
               toolTipProps={{
-                title: 'Preview',
+                title: $t('course.navItem.lessons.exercises.all_exercises.preview'),
                 direction: 'bottom',
                 hotkeys: []
               }}
@@ -125,12 +135,12 @@
             </IconButton>
             <OverflowMenu flipped>
               <OverflowMenuItem
-                text="Reorder Questions"
+                text={$t('course.navItem.lessons.exercises.all_exercises.reorder')}
                 on:click={() => ($questionnaireOrder.open = true)}
               />
               <OverflowMenuItem
                 danger
-                text="Delete Exercise"
+                text={$t('course.navItem.lessons.exercises.all_exercises.delete_exercise')}
                 on:click={() => (shouldDeleteExercise = true)}
               />
             </OverflowMenu>
@@ -144,10 +154,10 @@
     <RoleBasedSecurity allowedRoles={[1, 2]}>
       <UpdateDescription {preview} />
     </RoleBasedSecurity>
-    {#if !isStudent && !preview}
+    {#if !$globalStore.isStudent && !preview}
       <EditMode bind:shouldDeleteExercise {exerciseId} {goBack} />
     {:else}
-      <ViewMode {preview} {exerciseId} />
+      <ViewMode {preview} {exerciseId} isFetchingExercise={isFetching} />
     {/if}
   {:else if selectedIndex === 1}
     <Analytics bind:exerciseId />

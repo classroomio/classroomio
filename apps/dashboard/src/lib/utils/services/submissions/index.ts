@@ -1,4 +1,3 @@
-import type { PostgrestSingleResponse } from '@supabase/supabase-js';
 import { supabase } from '$lib/utils/functions/supabase';
 import type { ExerciseSubmissions } from '$lib/utils/types';
 
@@ -24,6 +23,7 @@ export function fetchSubmissions(course_id: string) {
       )
     ),
     status_id,
+    feedback,
     course:course_id(*),
     groupmember:submitted_by(
       profile(*)
@@ -66,6 +66,7 @@ export async function fetchSubmission({
       id,
       answers:question_answer(*),
       status_id,
+      feedback,
       submitted_by:groupmember!inner(
         profile!inner(
           id,
@@ -80,14 +81,21 @@ export async function fetchSubmission({
 }
 
 export async function updateSubmission(
-  { id, status_id, total }: { id?: number; status_id?: number; total?: number },
-  otherArgs?: any
+  {
+    id,
+    status_id,
+    total,
+    feedback
+  }: { id: string; status_id?: number; total?: number; feedback?: string },
+  otherArgs?: Record<string, string>
 ) {
   const toUpdate: {
     status_id?: number;
     total?: number;
+    feedback?: string;
   } = {
-    status_id
+    status_id,
+    feedback
   };
 
   if (typeof total === 'number') {
@@ -97,6 +105,13 @@ export async function updateSubmission(
   return supabase.from('submission').update(toUpdate, otherArgs).match({ id });
 }
 
-export async function updateQuestionAnswer(update: any, match: any) {
+export async function deleteSubmission(id: string) {
+  return supabase.from('submission').delete().match({ id });
+}
+
+export async function updateQuestionAnswer(
+  update: Record<string, string>,
+  match: Record<string, string>
+) {
   return supabase.from('question_answer').update(update).match(match);
 }

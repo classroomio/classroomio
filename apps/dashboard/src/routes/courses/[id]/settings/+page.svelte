@@ -3,12 +3,13 @@
   import PageNav from '$lib/components/PageNav/index.svelte';
   import PageBody from '$lib/components/PageBody/index.svelte';
   import Settings from '$lib/components/Course/components/Settings/index.svelte';
+  import { t } from '../../../../lib/utils/functions/translations';
 
   export let data;
 </script>
 
 <CourseContainer bind:courseId={data.courseId}>
-  <PageNav title="Settings" />
+  <PageNav title={$t('course.navItem.settings.heading')} />
   <PageBody>
     <Settings />
   </PageBody>

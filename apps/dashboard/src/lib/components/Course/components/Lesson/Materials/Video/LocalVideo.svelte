@@ -1,6 +1,6 @@
 <script lang="ts">
   import axios from 'axios';
-  import { PUBLIC_SERVER_URL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import {
     lesson,
@@ -18,6 +18,7 @@
   let status = 'active';
   let fileSize;
   let isDisabled = false;
+  import { t } from '$lib/utils/functions/translations';
 
   export let lessonId = '';
 
@@ -48,7 +49,7 @@
     try {
       const response = await axios({
         method: 'POST',
-        url: PUBLIC_SERVER_URL + '/uploadVideo?lessonId=' + lessonId,
+        url: env.PUBLIC_SERVER_URL + '/uploadVideo?lessonId=' + lessonId,
         data: formData,
         maxContentLength: Infinity,
         maxBodyLength: Infinity,
@@ -118,11 +119,11 @@
   }
 
   $: isDoneUploading(formRes);
-  $: isDisabled = isLoading || !PUBLIC_SERVER_URL || $isFreePlan;
+  $: isDisabled = isLoading || !env.PUBLIC_SERVER_URL || $isFreePlan;
 </script>
 
 <UpgradeBanner className="mb-3" onClick={() => ($uploadCourseVideoStore.isModalOpen = false)}>
-  Upgrade your plan to upload vidoes
+  {$t('course.navItem.lessons.materials.tabs.video.add_video.upgrade')}
 </UpgradeBanner>
 
 {#if !isLoaded}
@@ -138,18 +139,22 @@
     >
       {#if isLoading}
         <div class="flex flex-col gap-5 max-w-[500px] w-[60%] justify-center">
-          <p class="mt-5 text-center">Uploading...</p>
+          <p class="mt-5 text-center">
+            {$t('course.navItem.lessons.materials.tabs.video.add_video.uploading')}
+          </p>
           <ProgressBar class="w-full" {value} {max} {status} />
           <p class="text-sm">{helperText}</p>
         </div>
       {:else}
         <img src="/upload-video.svg" alt="upload" />
         <span class="pt-3">
-          <h3 class="text-center text-xl font-normal dark:text-white">Upload video</h3>
+          <h3 class="text-center text-xl font-normal dark:text-white">
+            {$t('course.navItem.lessons.materials.tabs.video.add_video.upload_video')}
+          </h3>
           <p class=" text-center text-sm font-normal">
-            Select file( Mp4, MOV, AVI) to upload to your lesson.
+            {$t('course.navItem.lessons.materials.tabs.video.add_video.select_file')}
           </p>
-          <p>(Max 500 MB)</p>
+          <p>{$t('course.navItem.lessons.materials.tabs.video.add_video.size')}</p>
         </span>
       {/if}
       <input
@@ -169,27 +174,34 @@
     <img src="/video-upload-error.svg" alt="upload error" />
     <span class="pb-2 pt-3">
       <h3 class="text-center text-base font-normal dark:text-white">
-        Oops 😬, couldn’t upload video
+        {$t('course.navItem.lessons.materials.tabs.video.add_video.oops')}
       </h3>
       <p class="text-center text-xs font-normal text-[#ADADAD]">
-        Sorry we video wasn’t uploaded. The file size is too big,<br /> maximum size is 30 MB. Try again!
+        {$t('course.navItem.lessons.materials.tabs.video.add_video.big_file')}<br />
+        {$t('course.navItem.lessons.materials.tabs.video.add_video.maximum_size')}
       </p>
     </span>
-    <PrimaryButton label="Try another file" onClick={tryAgain} />
+    <PrimaryButton
+      label={$t('course.navItem.lessons.materials.tabs.video.add_video.button')}
+      onClick={tryAgain}
+    />
   </div>
 {:else if !formRes?.success}
   <div class="flex h-full w-full flex-col items-center justify-center rounded-xl">
     <img src="/video-upload-error.svg" alt="upload error" />
     <span class="pb-2 pt-3">
       <h3 class="text-center text-base font-normal dark:text-white">
-        Oops 😬, couldn’t upload video
+        {$t('course.navItem.lessons.materials.tabs.video.add_video.oops')}
       </h3>
       <p class="text-center text-xs font-normal text-[#ADADAD]">
-        Sorry we video wasn’t uploaded, the file format isn’t supported or something went wrong on
-        the server.<br /> Upload MP4, MOV and AVI files.
+        {$t('course.navItem.lessons.materials.tabs.video.add_video.unsupported_format')}<br />
+        {$t('course.navItem.lessons.materials.tabs.video.add_video.format')}
       </p>
     </span>
-    <PrimaryButton label="Please try again" onClick={tryAgain} />
+    <PrimaryButton
+      label={$t('course.navItem.lessons.materials.tabs.video.add_video.try_again')}
+      onClick={tryAgain}
+    />
   </div>
 {:else}
   <div class="flex h-full w-full flex-col items-start justify-between">
@@ -210,7 +222,10 @@
           <img src="/delete-video.svg" alt="deletevideo" class="dark:invert" />
         </button>
       </div>
-      <PrimaryButton label="Done" onClick={() => ($uploadCourseVideoStore.isModalOpen = false)} />
+      <PrimaryButton
+        label={$t('course.navItem.lessons.materials.button_done')}
+        onClick={() => ($uploadCourseVideoStore.isModalOpen = false)}
+      />
     </div>
   </div>
 {/if}

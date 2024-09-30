@@ -4,6 +4,7 @@
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { handleOpenWidget } from '../../store';
+  import { t } from '$lib/utils/functions/translations';
 
   export let course = {};
 
@@ -12,10 +13,15 @@
   }
 </script>
 
-<TextField className="mt-5" labelClassName="font-bold" label="Title" bind:value={course.title} />
+<TextField
+  className="mt-5"
+  labelClassName="font-bold"
+  label={$t('course.navItem.landing_page.editor.header_form.title')}
+  bind:value={course.title}
+/>
 
 <TextArea
-  label="Description"
+  label={$t('course.navItem.landing_page.editor.header_form.description')}
   bind:value={course.description}
   rows="6"
   className="mt-5"
@@ -25,13 +31,17 @@
 <TextField
   className="mt-5"
   labelClassName="font-bold"
-  label="Short Video"
+  label={$t('course.navItem.landing_page.editor.header_form.short_video')}
   placeholder="www.youtube.com/watch?v=uYRq60G5XTk"
-  helperMessage="Enter a link to a youtube video"
+  helperMessage={$t('course.navItem.landing_page.editor.header_form.helper')}
   type="text"
   bind:value={course.metadata.videoUrl}
 />
 <div class="mt-7">
-  <p class="font-bold mb-3">Replace cover image</p>
-  <PrimaryButton label="Replace" variant={VARIANTS.OUTLINED} onClick={widgetControl} />
+  <p class="font-bold mb-3">{$t('course.navItem.landing_page.editor.header_form.replace_cover')}</p>
+  <PrimaryButton
+    label={$t('course.navItem.landing_page.editor.header_form.replace')}
+    variant={VARIANTS.OUTLINED}
+    onClick={widgetControl}
+  />
 </div>

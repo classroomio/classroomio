@@ -17,8 +17,8 @@
   export let autoFocus = false;
   export let isRequired = false;
   export let isDisabled = false;
-  export let min = undefined;
-  export let max = undefined;
+  export let min: string | number | null | undefined = undefined;
+  export let max: string | number | null | undefined = undefined;
   export let errorMessage = '';
   export let helperMessage = '';
   export let autoComplete = true;
@@ -102,7 +102,7 @@
   {#if errorMessage}
     <p class="text-sm text-red-500">{errorMessage}</p>
   {:else if helperMessage}
-    <p class="dark:text-white text-sm">
+    <p class="dark:text-white text-sm opacity-70">
       {helperMessage}
     </p>
   {/if}
@@ -117,4 +117,14 @@
     top: 30px;
     right: 6px;
   }
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  /* input[type='number'] {
+    -moz-appearance: textfield;
+  } */
 </style>

@@ -1,15 +1,15 @@
 <script lang="ts">
   import TextChip from '$lib/components/Chip/Text.svelte';
+  import { t } from '$lib/utils/functions/translations';
 
-  interface Tab {
+  export let tabs: {
     icon?: any;
     label: string;
     value: string;
     badgeValue?: number;
-  }
-  export let tabs: Tab[] = [];
-  export let currentTab: string;
-  export let onChange = (v: string) => () => {};
+  }[] = [];
+  export let currentTab: string | number;
+  export let onChange = (v: string | number) => () => {};
 </script>
 
 <div class="w-full flex flex-col">
@@ -23,7 +23,7 @@
           on:click={onChange(tab.value)}
         >
           <div class="flex items-center justify-center w-full text-center">
-            {tab.label}
+            {$t(tab.label)}
           </div>
           <span
             class="absolute bottom-0 left-0 h-[2px] bg-primary-700 transition-all ease-in-out duration-500 {currentTab ===
@@ -43,13 +43,13 @@
             {#if tab.icon}
               <svelte:component this={tab.icon} />
             {/if}
-            {tab.label}
+            {$t(tab.label)}
             {#if typeof tab.badgeValue === 'number'}
               <TextChip
                 value={`${tab.badgeValue}`}
                 size="sm"
                 shape="rounded-full"
-                className="bg-gray-300 dark:text-black text-xs absolute right-0 px-2"
+                className="bg-gray-300 dark:text-black text-xs absolute -right-2 px-2"
               />
             {/if}
           </div>

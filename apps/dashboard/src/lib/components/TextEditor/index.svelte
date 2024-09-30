@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { PUBLIC_TINYMCE_API_KEY } from '$env/static/public';
-  import Editor from '@tinymce/tinymce-svelte';
+  import Editor from './TinymceSvelte/index.svelte';
   import { globalStore } from '$lib/utils/store/app';
   import { addMathPlugin } from '$lib/utils/functions/tinymce/plugins';
 
@@ -12,16 +11,17 @@
   export let editorWindowRef: Window | undefined = undefined;
   export let maxHeight: number | undefined = undefined;
 
-  const apiKey = PUBLIC_TINYMCE_API_KEY;
-
   let unmount = false;
+  let editorChangeHandlerId;
 
   function getTinymce() {
     const getSink = () => {
       return typeof window !== 'undefined' ? window : global;
     };
     const sink = getSink();
-    return sink && sink.tinymce ? sink.tinymce : null;
+    const res = sink && sink.tinymce ? sink.tinymce : null;
+    console.log({ res });
+    return res;
   }
 
   // editor configuration
@@ -54,16 +54,19 @@
     init_instance_callback: function (editor: any) {
       editorWindowRef = editor.iframeElement?.contentWindow;
 
-      editor.on('Change', function () {
+      editor.on('Paste Change input Undo Redo', function () {
+        clearTimeout(editorChangeHandlerId);
         const html = editor.getContent();
-        if (onChange) {
-          onChange(html);
-        }
 
-        // backup in case the data doesn't get to our backend, we should store the note to avoid data loss
-        if (id) {
-          localStorage.setItem(id, html);
-        }
+        editorChangeHandlerId = setTimeout(function () {
+          if (onChange) {
+            onChange(html);
+          }
+
+          if (id) {
+            localStorage.setItem(id, html);
+          }
+        }, 1000);
       });
     }
   };
@@ -88,8 +91,12 @@
   $: handleModeChange($globalStore.isDark);
 </script>
 
+<svelte:head>
+  <link rel="stylesheet" href="https://unpkg.com/katex@0.12.0/dist/katex.min.css" />
+</svelte:head>
+
 <div>
   {#if !unmount}
-    <Editor bind:value {apiKey} bind:conf />
+    <Editor bind:value bind:conf />
   {/if}
 </div>

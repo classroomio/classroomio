@@ -1,22 +1,73 @@
 const express = require('express');
 const zod = require('zod');
-const { getTransporter } = require('../utils/getTransporter');
+const { nodemailerTransporter, zohoClient } = require('../utils/email');
 const { withEmailTemplate } = require('../utils/withEmailTemplate');
+const { ZOHO_TOKEN } = process.env;
 
-const router = express.Router();
+const emailRouter = express.Router();
 
-let personalTransporter;
-let defaultTransporter;
+let transporter;
 
-// Initialize transporters
-getTransporter(true).then((t) => {
-  personalTransporter = t;
-});
-getTransporter(false).then((t) => {
-  defaultTransporter = t;
+nodemailerTransporter().then((t) => {
+  transporter = t;
 });
 
-router.post('/', async (req, res) => {
+async function sendWithNodemailer(emailData) {
+  const { from, to, subject, content, replyTo } = emailData;
+
+  if (!transporter) {
+    return;
+  }
+
+  return await transporter.sendMail({
+    from: from || '"Best from ClassroomIO" <notify@classroomio.com>',
+    to,
+    subject,
+    replyTo,
+    html: withEmailTemplate(content)
+  });
+}
+
+// format: "ClassroomIO Developers (via ClassroomIO.com)" <notify@mail.classroomio.com>
+function extractNameAndEmail(str) {
+  // Use regular expressions to match the name and email
+  const regex = /"(.*?)"\s+<\s*(.*?)@(.*?)\s*>/;
+  const match = str.match(regex);
+
+  if (match) {
+    // Extract the name and email from the match groups
+    const name = match[1];
+    const email = match[2] + '@' + match[3];
+    return { name, email };
+  } else {
+    // Return undefined if the format doesn't match
+    return { name: from, email: from };
+  }
+}
+
+async function sendWithZoho(emailData) {
+  const { from, to, subject, content } = emailData;
+
+  const fromData = extractNameAndEmail(from);
+
+  return zohoClient.sendMail({
+    from: {
+      address: fromData.email,
+      name: fromData.name
+    },
+    to: [
+      {
+        email_address: {
+          address: to
+        }
+      }
+    ],
+    subject,
+    htmlbody: content
+  });
+}
+
+emailRouter.post('/', async (req, res) => {
   try {
     const mySchema = zod.array(
       zod.object({
@@ -24,7 +75,6 @@ router.post('/', async (req, res) => {
         to: zod.string(),
         subject: zod.string(),
         content: zod.string(),
-        isPersonalEmail: zod.boolean().optional(),
         replyTo: zod.string().optional()
       })
     );
@@ -35,26 +85,18 @@ router.post('/', async (req, res) => {
 
     Promise.all(
       emailDataArray.map(async (emailData) => {
+        let res;
+
         try {
-          const { from, to, subject, content, isPersonalEmail, replyTo } = emailData;
-
-          const transporter = isPersonalEmail ? personalTransporter : defaultTransporter;
-
-          if (!transporter) {
-            return;
+          if (!ZOHO_TOKEN) {
+            res = await sendWithNodemailer(emailData);
+          } else {
+            res = await sendWithZoho(emailData);
           }
-
-          const res = await transporter.sendMail({
-            from: from || '"Best from ClassroomIO" <best@classroomio.com>',
-            to,
-            subject,
-            replyTo,
-            html: withEmailTemplate(content)
-          });
 
           console.log('Email status', res);
         } catch (error) {
-          console.error('Error sending email', error);
+          console.error('Error sending email', error, error?.error?.details?.[0]);
         }
       })
     );
@@ -63,8 +105,8 @@ router.post('/', async (req, res) => {
     return res.json({ success: true });
   } catch (error) {
     console.error('Error sending emails:', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    return res.status(400).json({ error: `Bad request - ${error.message}` });
   }
 });
 
-module.exports = router;
+module.exports = emailRouter;

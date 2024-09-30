@@ -1,8 +1,9 @@
-export const SECTION_KEYS = {
+export const NAV_ITEM_KEY = {
   HEADER: 'header',
   REQUIREMENT: '#requirement',
   DESCRIPTION: '#description',
   GOALS: '#goals',
+  CERTIFICATE: '#certificate',
   LESSONS: '#lessons',
   REVIEWS: '#reviews',
   INSTRUCTOR: '#instructor'
@@ -10,27 +11,31 @@ export const SECTION_KEYS = {
 
 export const NAV_ITEMS = [
   {
-    key: SECTION_KEYS.REQUIREMENT,
-    label: 'Requirement'
+    key: NAV_ITEM_KEY.REQUIREMENT,
+    label: 'course.navItem.landing_page.editor.title.requirement'
   },
   {
-    key: SECTION_KEYS.DESCRIPTION,
-    label: 'Description'
+    key: NAV_ITEM_KEY.DESCRIPTION,
+    label: 'course.navItem.landing_page.editor.title.description'
   },
   {
-    key: SECTION_KEYS.GOALS,
-    label: 'Goals'
+    key: NAV_ITEM_KEY.GOALS,
+    label: 'course.navItem.landing_page.editor.title.goals'
   },
   {
-    key: SECTION_KEYS.LESSONS,
-    label: 'Lessons'
+    key: NAV_ITEM_KEY.CERTIFICATE,
+    label: 'course.navItem.landing_page.editor.title.certificate'
   },
   {
-    key: SECTION_KEYS.REVIEWS,
-    label: 'Reviews'
+    key: NAV_ITEM_KEY.LESSONS,
+    label: 'course.navItems.nav_content'
   },
   {
-    key: SECTION_KEYS.INSTRUCTOR,
-    label: 'Instructor'
+    key: NAV_ITEM_KEY.REVIEWS,
+    label: 'course.navItem.landing_page.editor.title.reviews'
+  },
+  {
+    key: NAV_ITEM_KEY.INSTRUCTOR,
+    label: 'course.navItem.landing_page.editor.title.instructor'
   }
 ];

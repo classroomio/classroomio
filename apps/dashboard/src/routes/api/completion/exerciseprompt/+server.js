@@ -1,10 +1,10 @@
 import { Configuration, OpenAIApi } from 'openai-edge';
 import { OpenAIStream, StreamingTextResponse } from 'ai';
-import { OPENAI_API_KEY } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 
 // Create an OpenAI API client (that's edge friendly!)
 const openAIConfig = new Configuration({
-  apiKey: OPENAI_API_KEY
+  apiKey: env.OPENAI_API_KEY
 });
 const openai = new OpenAIApi(openAIConfig);
 
@@ -61,7 +61,7 @@ I am a teacher and I need your help evaluating my students after I have taught a
 NB: Ask a mixture of ${optionNumber} options and ${questionNumber} DIFFERENT Question Types(RADIO, CHECKBOX AND TEXTAREA), mark the correct answer.`;
 
   const response = await openai.createChatCompletion({
-    model: 'gpt-3.5-turbo',
+    model: 'gpt-4o',
     messages: [
       {
         role: 'system',

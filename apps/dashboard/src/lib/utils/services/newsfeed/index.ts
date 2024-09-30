@@ -109,8 +109,12 @@ export async function deleteNewsFeed(feedId: string) {
   return response;
 }
 
-export async function getFeedForNotification(feedId: string, authorId: string) {
-  const { data, error } = await supabase
+export async function getFeedForNotification(params: {
+  feedId: string;
+  authorId: string;
+  supabase: typeof supabase;
+}) {
+  const { data, error } = await params.supabase
     .from('course_newsfeed')
     .select(
       `
@@ -126,7 +130,7 @@ export async function getFeedForNotification(feedId: string, authorId: string) {
     )
   `
     )
-    .eq('id', feedId)
+    .eq('id', params.feedId)
     .limit(1)
     .returns<
       {
@@ -169,7 +173,7 @@ export async function getFeedForNotification(feedId: string, authorId: string) {
   if (!feed) return;
 
   return {
-    id: feedId,
+    id: params.feedId,
     courseId: feed.course.id,
     courseTitle: feed.course.title,
     teacherName: feed.author?.profile?.fullname,
@@ -177,7 +181,7 @@ export async function getFeedForNotification(feedId: string, authorId: string) {
     content: feed.content,
     org: feed.course.group?.organization,
     courseMembers: feed.course?.group?.members
-      ?.filter((member) => member.id !== authorId)
+      ?.filter((member) => member.id !== params.authorId)
       ?.map((member) => {
         return member.profile;
       })
