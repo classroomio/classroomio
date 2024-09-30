@@ -479,6 +479,33 @@
           "invite_sent": "Lời mời đã gửi",
           "you": "Bạn",
           "remove": "Di dời"
+        },
+        "batches": {
+          "batch_name": "Tên lô",
+          "start_date": "Ngày bắt đầu",
+          "finishes": "Kết thúc",
+          "status": "Trạng thái",
+          "students": "Sinh viên",
+          "student": "Học sinh",
+          "settings": {
+            "title": "Cài đặt hàng loạt",
+            "save_changes": "Lưu thay đổi",
+            "delete": "Xóa hàng loạt",
+            "delete_prompt": "Bạn có chắc chắn muốn xóa lô này không? Hành động này sẽ không thể thay đổi được",
+            "status": "Trạng thái",
+            "status_active": "Tích cực",
+            "status_inactive": "Không hoạt động"
+          },
+          "create": {
+            "title": "Tạo lô mới",
+            "batch_name": "Tên lô",
+            "start_date": "Ngày bắt đầu",
+            "end_date": "Ngày kết thúc",
+            "make_batch_active": "Làm cho hàng loạt hoạt động?",
+            "yes": "Đúng",
+            "no": "KHÔNG",
+            "create": "Tạo nên"
+          }
         }
       },
       "marks": {

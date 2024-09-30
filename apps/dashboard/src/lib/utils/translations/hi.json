@@ -479,6 +479,33 @@
           "invite_sent": "आमंत्रण भेज दिया",
           "you": "आप",
           "remove": "निकालना"
+        },
+        "batches": {
+          "batch_name": "बैच का नाम",
+          "start_date": "आरंभ करने की तिथि",
+          "finishes": "खत्म",
+          "status": "स्थिति",
+          "students": "छात्र",
+          "student": "विद्यार्थी",
+          "settings": {
+            "title": "बैच सेटिंग्स",
+            "save_changes": "परिवर्तनों को सुरक्षित करें",
+            "delete": "बैच हटाएँ",
+            "delete_prompt": "क्या आप वाकई इस बैच को हटाना चाहते हैं? यह कार्रवाई अपरिवर्तनीय होगी",
+            "status": "स्थिति",
+            "status_active": "सक्रिय",
+            "status_inactive": "निष्क्रिय"
+          },
+          "create": {
+            "title": "नया बैच बनाएं",
+            "batch_name": "बैच का नाम",
+            "start_date": "आरंभ करने की तिथि",
+            "end_date": "अंतिम तिथि",
+            "make_batch_active": "बैच सक्रिय करें?",
+            "yes": "हाँ",
+            "no": "नहीं",
+            "create": "बनाएं"
+          }
         }
       },
       "marks": {

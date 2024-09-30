@@ -479,6 +479,33 @@
           "invite_sent": "Invitation envoyée",
           "you": "Toi",
           "remove": "Retirer"
+        },
+        "batches": {
+          "batch_name": "Nom du lot",
+          "start_date": "Date de début",
+          "finishes": "Finitions",
+          "status": "Statut",
+          "students": "Étudiants",
+          "student": "Étudiant",
+          "settings": {
+            "title": "Paramètres de lot",
+            "save_changes": "Enregistrer les modifications",
+            "delete": "Supprimer le lot",
+            "delete_prompt": "Êtes-vous sûr de vouloir supprimer ce lot ? Cette action sera irréversible",
+            "status": "Statut",
+            "status_active": "Actif",
+            "status_inactive": "Inactif"
+          },
+          "create": {
+            "title": "Créer un nouveau lot",
+            "batch_name": "Nom du lot",
+            "start_date": "Date de début",
+            "end_date": "Date de fin",
+            "make_batch_active": "Rendre le lot actif ?",
+            "yes": "Oui",
+            "no": "Non",
+            "create": "Créer"
+          }
         }
       },
       "marks": {

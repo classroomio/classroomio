@@ -479,6 +479,33 @@
           "invite_sent": "Einladung gesendet",
           "you": "Du",
           "remove": "Entfernen"
+        },
+        "batches": {
+          "batch_name": "Chargenname",
+          "start_date": "Startdatum",
+          "finishes": "Ausführungen",
+          "status": "Status",
+          "students": "Studenten",
+          "student": "Student",
+          "settings": {
+            "title": "Batch-Einstellungen",
+            "save_changes": "Änderungen speichern",
+            "delete": "Stapel löschen",
+            "delete_prompt": "Möchten Sie diesen Stapel wirklich löschen? Diese Aktion wird irreversibel sein",
+            "status": "Status",
+            "status_active": "Aktiv",
+            "status_inactive": "Inaktiv"
+          },
+          "create": {
+            "title": "Neuen Stapel erstellen",
+            "batch_name": "Chargenname",
+            "start_date": "Startdatum",
+            "end_date": "Enddatum",
+            "make_batch_active": "Batch aktiv machen?",
+            "yes": "Ja",
+            "no": "NEIN",
+            "create": "Erstellen"
+          }
         }
       },
       "marks": {

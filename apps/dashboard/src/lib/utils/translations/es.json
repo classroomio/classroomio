@@ -479,6 +479,33 @@
           "invite_sent": "Invitar enviado",
           "you": "Tú",
           "remove": "Eliminar"
+        },
+        "batches": {
+          "batch_name": "Nombre del lote",
+          "start_date": "Fecha de inicio",
+          "finishes": "Acabados",
+          "status": "Estado",
+          "students": "Estudiantes",
+          "student": "Alumno",
+          "settings": {
+            "title": "Configuración de lotes",
+            "save_changes": "Guardar cambios",
+            "delete": "Eliminar lote",
+            "delete_prompt": "¿Está seguro de que desea eliminar este lote? Esta acción será irreversible.",
+            "status": "Estado",
+            "status_active": "Activo",
+            "status_inactive": "Inactivo"
+          },
+          "create": {
+            "title": "Crear nuevo lote",
+            "batch_name": "Nombre del lote",
+            "start_date": "Fecha de inicio",
+            "end_date": "Fecha de finalización",
+            "make_batch_active": "¿Activar el lote?",
+            "yes": "Sí",
+            "no": "No",
+            "create": "Crear"
+          }
         }
       },
       "marks": {
