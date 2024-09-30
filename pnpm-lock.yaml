@@ -48,6 +48,12 @@ importers:
       '@aws-sdk/lib-storage':
         specifier: ^3.535.0
         version: 3.658.1(@aws-sdk/client-s3@3.658.1)
+      '@sentry/node':
+        specifier: ^7.110.1
+        version: 7.119.0
+      '@sentry/profiling-node':
+        specifier: ^7.110.1
+        version: 7.119.0
       '@supabase/supabase-js':
         specifier: ^2.32.0
         version: 2.45.4
@@ -3728,6 +3734,27 @@ packages:
       '@sentry/types': 7.119.0
       '@sentry/utils': 7.119.0
       localforage: 1.10.0
+    dev: false
+
+  /@sentry/node@7.119.0:
+    resolution: {integrity: sha512-9PFzN8xS6U0oZCflpVxS2SSIsHkCaj7qYBlsvHj4CTGWfao9ImwrU6+smy4qoG6oxwPfoVb5pOOMb4WpWOvXcQ==}
+    engines: {node: '>=8'}
+    dependencies:
+      '@sentry-internal/tracing': 7.119.0
+      '@sentry/core': 7.119.0
+      '@sentry/integrations': 7.119.0
+      '@sentry/types': 7.119.0
+      '@sentry/utils': 7.119.0
+    dev: false
+
+  /@sentry/profiling-node@7.119.0:
+    resolution: {integrity: sha512-KEJ2kFVWDmg2qi7y24PuSqerlW+iDK4C6pDXpXV6h+GEekUXsnRSAqtKc5H6LJqVGe8ljgFqPy75XIkM1qPBzw==}
+    engines: {node: '>=8.0.0'}
+    hasBin: true
+    requiresBuild: true
+    dependencies:
+      detect-libc: 2.0.3
+      node-abi: 3.68.0
     dev: false
 
   /@sentry/replay@7.119.0:
@@ -11542,6 +11569,13 @@ packages:
       zod: 3.23.8
     transitivePeerDependencies:
       - supports-color
+    dev: false
+
+  /node-abi@3.68.0:
+    resolution: {integrity: sha512-7vbj10trelExNjFSBm5kTvZXXa7pZyKWx9RCKIyqe6I9Ev3IzGpQoqBP3a+cOdxY+pWj6VkP28n/2wWysBHD/A==}
+    engines: {node: '>=10'}
+    dependencies:
+      semver: 7.6.3
     dev: false
 
   /node-domexception@1.0.0:
