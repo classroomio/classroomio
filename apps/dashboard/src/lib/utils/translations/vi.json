@@ -1326,6 +1326,17 @@
   "specialization": {
     "course_tag": "Chuyên môn"
   },
+  "profileMenu": {
+    "profile": "HỒ SƠ",
+    "current_org": "TỔ CHỨC HIỆN TẠI",
+    "free_tools": "CÔNG CỤ MIỄN PHÍ",
+    "progress": "Báo cáo tiến trình",
+    "timer": "Hẹn giờ hoạt động",
+    "tic_tac": "TIC Tac Toe",
+    "see_more": "Xem thêm",
+    "whats_new": "Có gì mới",
+    "launch_week": "Tuần ra mắt"
+  },
   "validations": {
     "invalid_type_error": "Không được để trống",
     "email": {

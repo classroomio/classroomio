@@ -102,6 +102,9 @@ importers:
 
   apps/classroomio-com:
     dependencies:
+      html-to-image:
+        specifier: ^1.11.11
+        version: 1.11.11
       just-extend:
         specifier: ^6.2.0
         version: 6.2.0
@@ -146,7 +149,7 @@ importers:
         specifier: ^8.4.29
         version: 8.4.47
       svelte:
-        specifier: ^4.0.5
+        specifier: ^4.1.2
         version: 4.2.19
       svelte-check:
         specifier: ^3.4.3
