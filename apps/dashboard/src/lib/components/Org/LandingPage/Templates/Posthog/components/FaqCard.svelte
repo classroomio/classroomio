@@ -3,8 +3,8 @@
 
   export let faq;
   export let index;
-  export let background = '';
-  export let iconColor = '';
+  const background = 'bg-[#FDBAF2]';
+  const iconColor = 'bg-[#3B82F6]';
   let card;
 
   const handleMouseMove = (event) => {
@@ -44,19 +44,19 @@
   role="none"
 >
   <div class={`inner-card   ${index % 2 === 0 ? 'rotate-3 ' : '-rotate-3 '} `}>
-    <span class={`z-10 absolute w-2 h-2 rounded-full bg-[${iconColor}] top-4 left-4`} />
-    <span class={`z-10 absolute w-[2px] h-[2px] rounded-full bg-[${iconColor}] top-8 left-8`} />
-    <span class={`z-10 absolute w-2 h-2 rounded-full bg-[${iconColor}] bottom-4 right-4`} />
-    <span class={`z-10 absolute w-[2px] h-[2px] rounded-full bg-[${iconColor}] bottom-8 right-8`} />
+    <span class="z-10 absolute w-2 h-2 rounded-full {iconColor} top-4 left-4" />
+    <span class="z-10 absolute w-[2px] h-[2px] rounded-full {iconColor} top-8 left-8" />
+    <span class="z-10 absolute w-2 h-2 rounded-full {iconColor} bottom-4 right-4" />
+    <span class="z-10 absolute w-[2px] h-[2px] rounded-full {iconColor} bottom-8 right-8" />
     <div
-      class={`front  text-black shadow-md flex flex-col items-center justify-center p-4 bg-[${background}]`}
+      class="front text-black shadow-md flex flex-col items-center justify-center p-4 {background}"
     >
-      <FaqMark color={iconColor} />
+      <FaqMark color="#3B82F6" />
       <h3 class="text-lg font-bold text-center">{faq.title}</h3>
     </div>
 
     <div
-      class={`back text-black text-center text-sm shadow-md flex items-center justify-center p-4 bg-[${background}]`}
+      class="back text-black text-center text-sm shadow-md flex items-center justify-center p-4 {background}"
     >
       <p class="line-clamp-5">{faq.content}</p>
     </div>

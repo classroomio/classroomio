@@ -12,14 +12,14 @@
       class="mx-auto w-fit flex flex-col items-center justify-between px-6 lg:px-10 py-20 space-y-4 bg-[#E5E7E0] dark:bg-[#232429] rounded-md"
     >
       <div class="flex items-center justify-center w-full">
-        <p class="text-4xl text-center md:text-start font-bold w-full lg:w-[80%] capitalize">
+        <p class="text-4xl text-center lg:text-start font-bold w-full lg:w-[80%] capitalize">
           {$landingPageSettings.footerNote.title}
         </p>
       </div>
       <div
-        class="w-full md:w-[80%] flex flex-col md:flex-row items-center md:items-end gap-4 md:gap-0 justify-between"
+        class="w-full lg:w-[80%] flex flex-col lg:flex-row items-center lg:items-end gap-4 lg:gap-0 lg:justify-between"
       >
-        <p class="text-center md:text-start text-sm font-semibold w-full md:w-[50%]">
+        <p class="text-center lg:text-start text-sm font-semibold w-full lg:w-[50%]">
           {$landingPageSettings.footerNote.subtitle}
         </p>
         <a href={getCourseUrl()} class="hover:no-underline">
