@@ -17,7 +17,7 @@
 {#if $landingPageSettings.pathway.show}
   <section id="course" class="px-4 pt-4 pb-20 h-full bg-white md:px-20">
     <h1 class="text-start text-3xl font-serif">{$landingPageSettings.pathway.title}</h1>
-    <p class="text-start text-[#656565] w-[60%] font-medium mb-8">
+    <p class="text-start text-[#656565] w-full md:w-[60%] font-medium mb-8">
       {$landingPageSettings.pathway.subtitle}
     </p>
 
@@ -28,7 +28,7 @@
         <CardLoader />
       </div>
     {:else if $courses.length > 0}
-      <section class="flex flex-wrap items-center justify-start gap-8 py-4">
+      <section class="flex flex-wrap items-center justify-center md:justify-start gap-8 py-4">
         {#each $courses.slice(0, viewAll ? $courses.length : 3) as courseData}
           <div
             class="relative flex flex-col justify-between gap-4 p-4 h-[400px] w-[300px] max-w-[400px] md:max-h-[500px] rounded-lg bg-cover"

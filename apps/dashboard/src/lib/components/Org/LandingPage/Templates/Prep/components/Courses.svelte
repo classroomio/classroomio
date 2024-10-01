@@ -15,7 +15,7 @@
 {#if $landingPageSettings.courses.show}
   <section id="course" class="px-4 pt-4 pb-20 h-full bg-white md:px-20">
     <h1 class="text-center text-3xl font-playfair">{$landingPageSettings.courses.title}</h1>
-    <p class="text-center w-[50%] mx-auto font-inter font-medium mb-8">
+    <p class="text-center w-full md:w-[50%] mx-auto font-inter font-medium mb-8">
       {$landingPageSettings.courses.subtitle}
     </p>
     {#if $courseMetaDeta.isLoading}

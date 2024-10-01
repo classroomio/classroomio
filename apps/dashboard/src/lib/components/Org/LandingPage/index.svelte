@@ -64,7 +64,7 @@
   <!-- <Experts {org} /> -->
   <!-- <Organization {org} /> -->
   <!-- <Plain {org} {orgSiteName} /> -->
-  <!-- <Bootcamp {org} /> -->
+  <Bootcamp {org} />
   <!-- <Prep {org} /> -->
-  <Posthog {org} />
+  <!-- <Posthog {org} /> -->
 {/if}
