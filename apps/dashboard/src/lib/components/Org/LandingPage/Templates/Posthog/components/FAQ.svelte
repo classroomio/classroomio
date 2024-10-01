@@ -28,6 +28,16 @@
         'Svelte compiles components at build time, while React uses virtual DOM diffing at runtime.'
     }
   ];
+
+  const generateColors = () => {
+    const colors = [
+      { background: '#FFD89E', iconColor: '#EF4444' },
+      { background: '#FDBAF2', iconColor: '#3B82F6' }
+    ];
+    return colors[0];
+  };
+
+  const { background, iconColor } = generateColors();
 </script>
 
 <!-- FAQ Cards -->
@@ -37,7 +47,7 @@
 
     <div class="flex flex-wrap gap-6 items-start justify-start cursor-pointer py-4 px-4">
       {#each $landingPageSettings.faq.questions as faq, index}
-        <FaqCard {index} {faq} />
+        <FaqCard {index} {faq} {background} {iconColor} />
       {/each}
     </div>
   </div>

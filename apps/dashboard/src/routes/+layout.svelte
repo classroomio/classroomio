@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
   import { MetaTags } from 'svelte-meta-tags';
+
   import { fly } from 'svelte/transition';
   import { derived } from 'svelte/store';
   import { goto } from '$app/navigation';
@@ -41,6 +42,7 @@
   import { handleLocaleChange } from '$lib/utils/functions/translations';
 
   import '../app.postcss';
+
   import { ROLE } from '$lib/utils/constants/roles';
 
   export let data;

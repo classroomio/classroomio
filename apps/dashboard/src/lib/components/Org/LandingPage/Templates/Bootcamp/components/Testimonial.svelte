@@ -39,7 +39,7 @@
 </script>
 
 <section class="p-4 lg:p-20 h-full bg-[#FCFCFC]">
-  <p class="text-center text-3xl mb-10">See what our learners are saying</p>
+  <p class="text-center font-slab text-3xl mb-10">See what our learners are saying</p>
 
   <div class="lg:w-[80%] space-y-2 md:space-y-4 mx-auto">
     {#each testimonials as testimonial, index}

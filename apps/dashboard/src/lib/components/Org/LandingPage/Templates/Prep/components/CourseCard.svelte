@@ -16,16 +16,14 @@
 >
   <div class="flex flex-col justify-between gap-4 rounded-lg w-full h-full">
     <div class="flex-1 space-y-2">
-      <p class="font-serif text-[#0233BD] text-2xl font-semibold uppercase">{title}</p>
-      <p class="text-[#656565] line-clamp-4">
-        <!-- {description} -->
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nihil aperiam est eligendi, quaerat
-        odio ex sint optio ut alias tempora!
+      <p class="font-playfair text-[#0233BD] text-2xl font-semibold uppercase">{title}</p>
+      <p class="text-[#656565] line-clamp-4 font-inter">
+        {description}
       </p>
     </div>
     <a href={getCourseUrl()} class="hover:no-underline">
       <div
-        class="uppercase font-medium text-white text-start w-full bg-[#0233BD] p-3 cursor-pointer hover:no-underline hover:scale-90 transition-all duration-200 {buttonClass}"
+        class="uppercase font-inter font-medium text-white text-start w-full bg-[#0233BD] p-3 cursor-pointer hover:no-underline hover:scale-90 transition-all duration-200 {buttonClass}"
       >
         Register here
       </div>

@@ -2,12 +2,8 @@
   import CourseCard from '$lib/components/Org/LandingPage/Templates/Posthog/components/CourseCard.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { landingPageSettings } from '$lib/components/Org/Settings/store';
-  import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
-  import Box from '$lib/components/Box/index.svelte';
-  import { t } from '$lib/utils/functions/translations';
   import { courseMetaDeta, courses } from '$lib/components/Courses/store';
   import CardLoader from '$lib/components/Courses/components/Card/Loader.svelte';
-  import { get } from 'lodash';
   import EmptyState from '../../../components/EmptyState.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
 
@@ -18,7 +14,9 @@
   <section id="course" class="px-4 pt-4 pb-20 h-full md:px-20">
     <h1 class="text-center text-5xl mb-8">
       {$landingPageSettings.courses.title}
-      <strong class="text-[#EB9D2A]">{$landingPageSettings.courses.titleHighlight}</strong>
+      <strong class="text-[#F54E00] dark:text-[#EB9D2A]"
+        >{$landingPageSettings.courses.titleHighlight}</strong
+      >
     </h1>
     {#if $courseMetaDeta.isLoading}
       <div class="cards-container my-4 mx-2">
@@ -48,7 +46,7 @@
       {/if}
     {:else}
       <div class="px-10">
-        <EmptyState />
+        <EmptyState template="posthog" className="dark:bg-[#232429] dark:border-[#EAEAEA]" />
       </div>
     {/if}
   </section>

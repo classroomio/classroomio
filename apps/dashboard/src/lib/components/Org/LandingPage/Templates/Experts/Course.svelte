@@ -3,16 +3,11 @@
   import Footer from '$lib/components/Org/LandingPage/Templates/Experts/components/Footer.svelte';
   import Navigation from '$lib/components/Org/LandingPage/Templates/Experts/components/Navigation.svelte';
   import PageLoader from '$lib/components/Org/LandingPage/PageLoader.svelte';
-
   import CourseCard from '$lib/components/Org/LandingPage/Templates/Experts/components/CourseCard.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { landingPageSettings } from '$lib/components/Org/Settings/store';
-  import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
-  import Box from '$lib/components/Box/index.svelte';
 
   import { courseMetaDeta, courses } from '$lib/components/Courses/store';
   import CardLoader from '$lib/components/Courses/components/Card/Loader.svelte';
-  import { get } from 'lodash';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import EmptyState from '../../components/EmptyState.svelte';
 

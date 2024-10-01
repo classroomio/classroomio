@@ -7,7 +7,7 @@
 {#if $landingPageSettings.footerNote.show}
   <section class="flex flex-col items-center justify-between px-6 lg:px-10 py-20 bg-[#00D971]">
     <div class="flex items-center justify-center w-full">
-      <p class="text-4xl text-white text-center font-bold w-full lg:w-[70%]">
+      <p class="text-4xl text-white text-center font-slab font-bold w-full lg:w-[70%] capitalize">
         {$landingPageSettings.footerNote.title}
       </p>
     </div>
@@ -15,7 +15,7 @@
       <PrimaryButton
         label={$landingPageSettings.footerNote.buttonLabel}
         variant={VARIANTS.CONTAINED_WHITE}
-        className="rounded-none font-bold text-lg bg-white uppercase"
+        className="rounded-none font-bold text-lg bg-white uppercase font-roboto"
       />
     </div>
   </section>

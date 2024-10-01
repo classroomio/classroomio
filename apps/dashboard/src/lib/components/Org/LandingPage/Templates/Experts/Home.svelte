@@ -24,8 +24,8 @@
 {#if !org.landingpage}
   <PageLoader />
 {:else}
-  <Course {org} />
-  <!-- <main class="bg-[#101720]">
+  <!-- <Course {org} /> -->
+  <main class="bg-[#101720]">
     <Navigation logo={org.avatar_url} orgName={org.name} disableSignup={true} isOrgSite={true} />
     <Hero />
     <Learn />
@@ -35,5 +35,5 @@
     <Faq />
     <FooterNote />
     <Footer logo={org.avatar_url} orgName={org.name} />
-  </main> -->
+  </main>
 {/if}

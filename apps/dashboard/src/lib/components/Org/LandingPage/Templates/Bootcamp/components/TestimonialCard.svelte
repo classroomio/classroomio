@@ -3,11 +3,14 @@
   export let title;
   export let company;
   export let description;
-  export let index; // Receive the index from parent
+  export let index;
 </script>
 
-<!-- Use conditional classes to alternate the layout -->
-<div class={`flex items-center gap-4 p-4 ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}>
+<div
+  class={`flex items-center overflow-hidden gap-4 p-4 ${
+    index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'
+  }`}
+>
   <!-- Profile Image -->
   <div class="hidden md:block w-32 h-32 rounded-full overflow-hidden">
     <img
@@ -19,7 +22,7 @@
 
   <!-- Card Content -->
   <div
-    class={`flex-1 h-[150px] max-h-[200px] bg-white p-4 rounded-lg border border-gray-300 relative shadow-lg bubble-card ${
+    class={`flex-1 h-[150px] max-h-[200px] bg-white p-4 font-roboto rounded-lg border border-gray-300 relative shadow-lg bubble-card ${
       index % 2 === 0 ? 'left-pointer md:ml-4' : 'right-pointer md:mr-4'
     }`}
   >
@@ -32,7 +35,7 @@
         />
       </div>
       <div class="mb-2">
-        <p class="text-green-600 font-bold text-lg">{title}</p>
+        <p class="text-green-600 font-bold text-lg line-clamp-1">{title}</p>
         <p class="text-gray-500 font-semibold">{company}</p>
       </div>
     </div>

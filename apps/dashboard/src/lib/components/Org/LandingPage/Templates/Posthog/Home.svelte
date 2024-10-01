@@ -3,13 +3,9 @@
   import PageLoader from '$lib/components/Org/LandingPage/PageLoader.svelte';
   import { t } from '$lib/utils/functions/translations';
   import Hero from '$lib/components/Org/LandingPage/Templates/Posthog/components/Hero.svelte';
-
   import Courses from '$lib/components/Org/LandingPage/Templates/Posthog/components/Courses.svelte';
-
   import AboutUs from '$lib/components/Org/LandingPage/Templates/Posthog/components/About.svelte';
-  import LearningPath from '$lib/components/Org/LandingPage/Templates/Prep/components/LearningPath.svelte';
   import FAQ from '$lib/components/Org/LandingPage/Templates/Posthog/components/FAQ.svelte';
-  import Testimonial from '$lib/components/Org/LandingPage/Templates/Prep/components/Testimonial.svelte';
   import FooterNote from '$lib/components/Org/LandingPage/Templates/Posthog/components/FooterNote.svelte';
   import Footer from '$lib/components/Org/LandingPage/Templates/Posthog/components/Footer.svelte';
   import Course from './Course.svelte';
@@ -35,8 +31,5 @@
     <FAQ />
     <FooterNote />
     <Footer logo={org.avatar_url} orgName={org.name} />
-    <!-- <Testimonial />
-      <LearningPath />
-      -->
   </main>
 {/if}

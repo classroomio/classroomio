@@ -2,12 +2,10 @@
   import CourseCard from '$lib/components/Org/LandingPage/Templates/Prep/components/CourseCard.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { landingPageSettings } from '$lib/components/Org/Settings/store';
-  import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
-  import Box from '$lib/components/Box/index.svelte';
-  import { t } from '$lib/utils/functions/translations';
+
   import { courseMetaDeta, courses } from '$lib/components/Courses/store';
   import CardLoader from '$lib/components/Courses/components/Card/Loader.svelte';
-  import { get } from 'lodash';
+
   import EmptyState from '../../../components/EmptyState.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
 
@@ -16,8 +14,8 @@
 
 {#if $landingPageSettings.courses.show}
   <section id="course" class="px-4 pt-4 pb-20 h-full bg-white md:px-20">
-    <h1 class="text-center text-3xl font-serif">{$landingPageSettings.courses.title}</h1>
-    <p class="text-center w-[50%] mx-auto font-medium mb-8">
+    <h1 class="text-center text-3xl font-playfair">{$landingPageSettings.courses.title}</h1>
+    <p class="text-center w-[50%] mx-auto font-inter font-medium mb-8">
       {$landingPageSettings.courses.subtitle}
     </p>
     {#if $courseMetaDeta.isLoading}

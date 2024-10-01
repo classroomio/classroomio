@@ -15,7 +15,7 @@
   export let isOrgSite = false;
   export let backgroundColor = 'bg-white dark:bg-black';
 
-  let open = false; // State for mobile menu
+  let open = false;
 
   const menuItems = [
     {

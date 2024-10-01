@@ -48,8 +48,8 @@
         >
       {/if}
     </ul>
-    <a href="/#" class="flex items-center hover:underline text-[#0233BD] gap-1">
-      <p class="  text-base font-semibold">Built on ClassroomIO</p>
+    <a href="/#" class="flex items-center hover:underline text-[#0233BD] dark:text-white gap-1">
+      <p class="text-base font-semibold">Built on ClassroomIO</p>
     </a>
   </nav>
 {/if}

@@ -53,11 +53,11 @@
     <section class="flex items-center justify-center py-10 min-h-full">
       <section class="flex flex-col text-center items-center gap-5 justify-center">
         <div class="text-white space-y-6 w-full">
-          <p class="text-3xl md:text-4xl font-normal w-full md:w-[60%] mx-auto">
+          <p class="text-3xl md:text-4xl font-slab font-normal w-full md:w-[60%] mx-auto">
             Available & Upcoming Bootcamps
           </p>
 
-          <p class="w-full font-normal md:w-[70%] mx-auto">
+          <p class="w-full font-normal font-roboto md:w-[70%] mx-auto">
             Designed to guide you step-by-step through essential skills. Browse, enroll, and start
             transforming your career today!
           </p>
@@ -76,14 +76,14 @@
     <div class="bg-white py-10 px-2 md:px-8">
       <div class="flex flex-col md:flex-row items-center justify-between mb-4">
         <span class="text-start space-y-2 mb-4 lg:mb-0">
-          <p class=" text-2xl lg:text-3xl">Our Bootcamps</p>
-          <p class=" text-[#878787] text-xs lg:text-sm">
+          <p class=" text-2xl lg:text-3xl font-slab">Our Bootcamps</p>
+          <p class=" text-[#878787] text-xs lg:text-sm font-roboto">
             Explore creative and tech courses that will help you own you skill set
           </p>
         </span>
 
         <div
-          class="flex items-center justify-between border border-[#EAEAEA] p-2 bg-[#FCFCFC] w-fit"
+          class="flex items-center font-roboto justify-between border border-[#EAEAEA] p-2 bg-[#FCFCFC] w-fit"
         >
           <button
             on:click={() => (active = 'course')}
@@ -113,12 +113,12 @@
         {:else if $courses.length > 0}
           <div class="w-full lg:flex items-start gap-6 lg:ml-[5%]">
             <div class="hidden lg:block w-fit">
-              <p class="font-medium mb-2">Filter by</p>
+              <p class="font-medium mb-2 font-slab">Filter by</p>
               <div class="flex flex-col w-fit space-y-2">
                 {#each filter as item}
                   <label
                     for={item.title}
-                    class=" text-[#3C4043] font-medium border border-[#EAEAEA] bg-[#FDFDFD] rounded-md px-4 py-4"
+                    class="font-inter text-[#3C4043] font-medium border border-[#EAEAEA] bg-[#FDFDFD] rounded-md px-4 py-4"
                   >
                     <input type="checkbox" name={item.title} class="text-[#00E577] mr-2" />
 
@@ -134,9 +134,6 @@
                   slug={courseData.slug}
                   bannerImage={courseData.logo || '/images/classroomio-course-img-template.jpg'}
                   title={courseData.title}
-                  description={courseData.description}
-                  cost={courseData.cost}
-                  currency={courseData.currency}
                 />
               {/each}
             </section>
@@ -147,22 +144,27 @@
               <PrimaryButton
                 variant={VARIANTS.NONE}
                 label="VIEW MORE"
-                className="rounded-none text-lg bg-[#00E577]"
+                className="rounded-none text-lg bg-[#00E577] font-roboto"
                 onClick={() => (viewAllCourses = !viewAllCourses)}
               />
             </div>
           {/if}
         {:else}
           <div class="px-4 md:px-10">
-            <EmptyState template="bootcamp" className="bg-[#FCFCFC]" />
+            <EmptyState
+              template="bootcamp"
+              className="bg-[#FCFCFC]"
+              headerClassName="font-slab"
+              subtitleClassName="font-roboto"
+            />
           </div>
         {/if}
       </div>
     </div>
     <div class="bg-white py-10 px-2 md:px-8">
       <div class="text-start mb-4 px-4 py-4">
-        <p class="text-2xl md:text-3xl mb-4">Available career learning Paths</p>
-        <p class=" text-[#878787] text-xs lg:text-sm">
+        <p class="text-2xl md:text-3xl mb-4 font-slab">Available career learning Paths</p>
+        <p class=" text-[#878787] text-xs lg:text-sm font-roboto">
           We are preparing students for success in the following career paths in creative and tech
           industry
         </p>
@@ -180,9 +182,6 @@
                   slug={courseData.slug}
                   bannerImage={courseData.logo || '/images/classroomio-course-img-template.jpg'}
                   title={courseData.title}
-                  description={courseData.description}
-                  cost={courseData.cost}
-                  currency={courseData.currency}
                   isLearningPath={true}
                 />
               {/each}
@@ -199,7 +198,13 @@
             {/if}
           {:else}
             <div class="px-4 md:px-10">
-              <EmptyState template="bootcamp" type="pathways" className="bg-[#FCFCFC]" />
+              <EmptyState
+                template="bootcamp"
+                type="pathways"
+                className="bg-[#FCFCFC]"
+                headerClassName="font-slab"
+                subtitleClassName="font-roboto"
+              />
             </div>
           {/if}
         </div>

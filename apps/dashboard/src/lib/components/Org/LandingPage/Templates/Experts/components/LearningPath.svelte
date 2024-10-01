@@ -1,13 +1,10 @@
 <script>
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
-  import Box from '$lib/components/Box/index.svelte';
   import CardLoader from '$lib/components/Courses/components/Card/Loader.svelte';
-  import { t } from '$lib/utils/functions/translations';
   import { courseMetaDeta, courses } from '$lib/components/Courses/store';
   import CourseCard from '$lib/components/Org/LandingPage/Templates/Experts/components/CourseCard.svelte';
   import { landingPageSettings } from '$lib/components/Org/Settings/store';
-  import EmptyState from '../../../components/EmptyState.svelte';
+  import EmptyState from '$lib/components/Org/LandingPage/components/EmptyState.svelte';
 
   let viewAll = false;
 </script>

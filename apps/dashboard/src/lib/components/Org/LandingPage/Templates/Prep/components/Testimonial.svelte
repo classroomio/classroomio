@@ -8,25 +8,18 @@
       text: "I can't recommend the Mobile App Development bootcamp enough. The course was challenging, but the support from my peers and instructors was incredible. I learned so much about both iOS and Android development, and I'm now developing apps for a tech startup.",
       name: 'Ismail Bolarinwa',
       role: 'STUDENT',
-      image: '/org-banner.png' // Use an actual path for profile image
+      image: '/org-banner.png'
     },
     {
       text: "The course was challenging, but the support from my peers and instructors was incredible. I learned so much about both iOS and Android development, and I'm now developing apps for a tech startup.",
       name: 'Ade Bolanle',
       role: 'TEACHER',
-      image: '/org-banner.png' // Use an actual path for profile image
+      image: '/org-banner.png'
     }
-    // {
-    //   text: "Mobile App Development bootcamp enough. The course was challenging, but the support from my peers and instructors was incredible. I learned so much about both iOS and Android development, and I'm now developing apps for a tech startup.",
-    //   name: 'Ade Babanle',
-    //   role: 'STUDENT',
-    //   image: '/org-banner.png' // Use an actual path for profile image
-    // }
   ];
 
   let currentIndex = 0;
 
-  // Change the current testimonial
   function goToSlide(index) {
     currentIndex = index;
   }
@@ -55,17 +48,17 @@
         {#if currentIndex === index}
           <div
             transition:slide={{ duration: 300, easing: quintOut, axis: 'x' }}
-            class="flex flex-col items-center justify-between flex-1 min-w-full md:h-full border border-red-500"
+            class="flex flex-col items-center justify-between flex-1 min-w-full md:h-full"
           >
             <p
-              class="border border-red-500 italic font-semibold text-base md:text-lg line-clamp-4 md:line-clamp-3"
+              class=" italic font-playfair font-semibold text-base md:text-lg line-clamp-4 md:line-clamp-3"
             >
               "{testimonial.text}"
             </p>
 
-            <div class="flex items-center justify-center border border-red-500">
+            <div class="flex items-center justify-center">
               <img src={testimonial.image} alt="profile" class="rounded-full w-14 h-14 mr-4" />
-              <div>
+              <div class="font-inter text-start">
                 <strong>{testimonial.name}</strong><br />
                 <span class="text-sm text-gray-300">{testimonial.role}</span>
               </div>

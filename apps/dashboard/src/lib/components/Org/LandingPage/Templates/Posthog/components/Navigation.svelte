@@ -3,7 +3,7 @@
   import { t } from '$lib/utils/functions/translations';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { ArrowRight, Close } from 'carbon-icons-svelte';
+  import { Close } from 'carbon-icons-svelte';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { user } from '$lib/utils/store/user';

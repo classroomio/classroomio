@@ -8,11 +8,6 @@
     ContextMenuOption
   } from 'carbon-components-svelte';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import CopyFile from 'carbon-icons-svelte/lib/CopyFile.svelte';
-  import Share from 'carbon-icons-svelte/lib/Share.svelte';
-  import UserFollow from 'carbon-icons-svelte/lib/UserFollow.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { COURSE_TYPE } from '$lib/utils/types';
   import RadioButtonChecked from 'carbon-icons-svelte/lib/RadioButtonChecked.svelte';

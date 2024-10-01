@@ -3,7 +3,6 @@
   import { landingPageSettings } from '$lib/components/Org/Settings/store';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { t } from '$lib/utils/functions/translations';
 </script>
 
 {#if $landingPageSettings.header.banner.show}
@@ -12,14 +11,16 @@
       class="flex flex-col-reverse md:flex-row items-start md:items-center gap-5 md:justify-between"
     >
       <div class="space-y-6 w-full">
-        <p class="text-2xl xl:text-5xl font-semibold font-serif first-line:w-full xl:w-[70%]">
+        <p
+          class="text-2xl xl:text-5xl text-[#3D3D3D] font-semibold font-playfair first-line:w-full xl:w-[60%]"
+        >
           {$landingPageSettings.header.title}
         </p>
-        <p class="w-full lg:w-[70%] text-[#656565] xl:text-lg">
+        <p class="w-full lg:w-[70%] text-[#656565] font-inter xl:text-lg">
           {$landingPageSettings.header.subtitle}
         </p>
         <PrimaryButton
-          className="!bg-[#0233BD] rounded-none uppercase text-white font-semibold font-serif"
+          className="!bg-[#0233BD] rounded-none uppercase text-white font-semibold font-playfair"
           variant={VARIANTS.NONE}
           label={$landingPageSettings.header.action.label}
           onClick={() => {
@@ -40,7 +41,6 @@
             : '/org-banner.png'}
           class="object-cover mt-2 h-full max-h-[550px] w-full max-w-[800px] rounded-md md:mt-0"
         />
-        <!-- {/if} -->
       </div>
     </section>
   </section>

@@ -3,9 +3,7 @@
   import PageLoader from '$lib/components/Org/LandingPage/PageLoader.svelte';
   import { t } from '$lib/utils/functions/translations';
   import Hero from '$lib/components/Org/LandingPage/Templates/Prep/components/Hero.svelte';
-
   import Courses from '$lib/components/Org/LandingPage/Templates/Prep/components/Courses.svelte';
-
   import AboutUs from '$lib/components/Org/LandingPage/Templates/Prep/components/About.svelte';
   import LearningPath from '$lib/components/Org/LandingPage/Templates/Prep/components/LearningPath.svelte';
   import FAQ from '$lib/components/Org/LandingPage/Templates/Prep/components/FAQ.svelte';
@@ -26,8 +24,8 @@
 {#if !org.landingpage}
   <PageLoader />
 {:else}
-  <Course {org} />
-  <!-- <main>
+  <!-- <Course {org} /> -->
+  <main>
     <Navigation logo={org.avatar_url} orgName={org.name} disableSignup={true} isOrgSite={true} />
     <Hero />
     <Testimonial />
@@ -37,5 +35,5 @@
     <FAQ />
     <FooterNote />
     <Footer logo={org.avatar_url} orgName={org.name} />
-  </main> -->
+  </main>
 {/if}

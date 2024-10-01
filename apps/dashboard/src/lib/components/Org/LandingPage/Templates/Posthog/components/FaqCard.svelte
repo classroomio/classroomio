@@ -3,7 +3,8 @@
 
   export let faq;
   export let index;
-
+  export let background = '';
+  export let iconColor = '';
   let card;
 
   const handleMouseMove = (event) => {
@@ -24,15 +25,15 @@
     card.style.transform = '';
   };
 
-  const generateColors = () => {
-    const colors = [
-      { background: '#FFD89E', iconColor: '#EF4444' },
-      { background: '#FDBAF2', iconColor: '#3B82F6' }
-    ];
-    return colors[index % colors.length];
-  };
+  // const generateColors = () => {
+  //   const colors = [
+  //     { background: '#FFD89E', iconColor: '#EF4444' },
+  //     { background: '#FDBAF2', iconColor: '#3B82F6' }
+  //   ];
+  //   return colors[index % colors.length];
+  // };
 
-  const { background, iconColor } = generateColors();
+  // const { background, iconColor } = generateColors();
 </script>
 
 <div

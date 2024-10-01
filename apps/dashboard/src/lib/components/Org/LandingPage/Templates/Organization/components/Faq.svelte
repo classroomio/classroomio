@@ -1,5 +1,4 @@
 <script>
-  // import AccordionItem from 'carbon-components-svelte/types/Accordion/AccordionItem.svelte';
   import { landingPageSettings } from '$lib/components/Org/Settings/store';
   import Accordion from '$lib/components/Org/LandingPage//components/Accordion.svelte';
 </script>

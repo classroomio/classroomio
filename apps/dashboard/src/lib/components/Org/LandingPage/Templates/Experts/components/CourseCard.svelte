@@ -1,7 +1,5 @@
 <script lang="ts">
   import { ArrowRight } from 'carbon-icons-svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { COURSE_TYPE } from '$lib/utils/types';
   export let isLearningPath = false;
   export let className = '';
   export let buttonClass = '';

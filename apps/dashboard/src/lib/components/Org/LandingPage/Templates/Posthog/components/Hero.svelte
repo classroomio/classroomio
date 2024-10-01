@@ -60,7 +60,7 @@
             src={$landingPageSettings.header?.banner?.image
               ? $landingPageSettings.header?.banner?.image
               : '/posthog.svg'}
-            class="h-full max-h-full w-full rounded-lg object-cover"
+            class="h-full max-h-full w-full rounded-lg object-contain md:object-cover"
           />
         {/if}
       </div>

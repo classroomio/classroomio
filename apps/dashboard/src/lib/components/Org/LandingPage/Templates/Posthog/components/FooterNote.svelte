@@ -1,7 +1,5 @@
 <script>
   import { landingPageSettings } from '$lib/components/Org/Settings/store';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   function getCourseUrl() {
     return '#';

@@ -3,7 +3,6 @@
   import { landingPageSettings } from '$lib/components/Org/Settings/store';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { t } from '$lib/utils/functions/translations';
 
   let player;
 

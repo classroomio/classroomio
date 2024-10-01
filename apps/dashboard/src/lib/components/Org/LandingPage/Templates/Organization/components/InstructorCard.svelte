@@ -1,9 +1,5 @@
 <script>
-  import Star from 'carbon-icons-svelte/lib/Star.svelte';
-  import StarFilled from 'carbon-icons-svelte/lib/StarFilled.svelte';
-  import StarHalf from 'carbon-icons-svelte/lib/StarHalf.svelte';
-  import RatingComponent from '../../../components/RatingComponent.svelte';
-  let rating = 4;
+  import RatingComponent from '$lib/components/Org/LandingPage/components/RatingComponent.svelte';
 </script>
 
 <div
@@ -18,7 +14,6 @@
   </div>
   <div class="w-full space-y-1">
     <p class="text-xl font-semibold">Adewale Tunji</p>
-    <!-- <img src={ratingsImg[rating - 1]} class="mr-4 mt-1 w-24" alt="" /> -->
     <RatingComponent rating={4} />
     <p class="text-[#656565] text-sm text-justify line-clamp-6">
       Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ex dicta placeat sint, impedit

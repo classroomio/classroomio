@@ -18,9 +18,7 @@
     <div class="flex-1 space-y-2">
       <p class="text-lg font-bold capitalize">{title}</p>
       <p class="text-sm line-clamp-4">
-        <!-- {description} -->
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nihil aperiam est eligendi, quaerat
-        odio ex sint optio ut alias tempora!
+        {description}
       </p>
     </div>
     <a href={getCourseUrl()} class="hover:no-underline">

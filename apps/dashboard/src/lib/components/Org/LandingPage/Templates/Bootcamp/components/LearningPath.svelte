@@ -14,8 +14,8 @@
 {#if $landingPageSettings.pathway?.show}
   <section id="path" class="p-4 lg:p-20 h-full bg-white">
     <div class="text-start mb-4 lg:text-center px-4 md:px-10 py-4">
-      <p class="text-2xl md:text-3xl mb-4">{$landingPageSettings.pathway.title}</p>
-      <p class=" text-[#878787] text-xs">{$landingPageSettings.pathway.subtitle}</p>
+      <p class="text-2xl md:text-3xl mb-4 font-slab">{$landingPageSettings.pathway.title}</p>
+      <p class=" text-[#878787] text-xs font-roboto">{$landingPageSettings.pathway.subtitle}</p>
     </div>
     {#if $courseMetaDeta.isLoading}
       <div class="cards-container my-4 mx-2">
@@ -31,9 +31,6 @@
             slug={courseData.slug}
             bannerImage={courseData.logo || '/images/classroomio-course-img-template.jpg'}
             title={courseData.title}
-            description={courseData.description}
-            cost={courseData.cost}
-            currency={courseData.currency}
           />
         {/each}
       </section>
@@ -42,14 +39,19 @@
           <PrimaryButton
             variant={VARIANTS.NONE}
             label="VIEW MORE"
-            className="rounded-none text-lg"
+            className="rounded-none text-lg font-roboto"
             onClick={() => (viewAll = !viewAll)}
           />
         </div>
       {/if}
     {:else}
       <div class="px-10">
-        <EmptyState type="pathways" template="bootcamp" />
+        <EmptyState
+          type="pathways"
+          template="bootcamp"
+          headerClassName="font-slab"
+          subtitleClassName="font-roboto"
+        />
       </div>
     {/if}
   </section>

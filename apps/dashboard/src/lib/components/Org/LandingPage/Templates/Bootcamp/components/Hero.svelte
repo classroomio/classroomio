@@ -27,13 +27,13 @@
 
 {#if $landingPageSettings.header.banner.show}
   <section class="flex items-center justify-center py-10 px-10 md:px-14 min-h-full">
-    <section class="flex flex-col text-center items-center gap-5 justify-center">
+    <section class="flex flex-col text-center items-center gap-10">
       <div class="text-white space-y-6 w-full">
-        <p class="text-3xl md:text-4xl font-normal w-full md:w-[60%] mx-auto">
+        <p class="text-3xl md:text-4xl font-slab font-normal w-full md:w-[60%] mx-auto">
           {$landingPageSettings.header.title}
         </p>
 
-        <p class="w-full font-normal md:w-[70%] mx-auto">
+        <p class="w-full md:text-lg font-normal font-roboto md:w-[70%] mx-auto">
           {$landingPageSettings.header.subtitle}
         </p>
       </div>

@@ -1,5 +1,4 @@
 <script>
-  import CourseCard from '$lib/components/Org/LandingPage/Templates/Prep/components/CourseCard.svelte';
   import { landingPageSettings } from '$lib/components/Org/Settings/store';
   import { CheckmarkFilled } from 'carbon-icons-svelte';
 </script>
@@ -18,7 +17,7 @@
             class="flex flex-col justify-between gap-4 p-4 bg-[#E5E7E0] dark:bg-[#232429] border border-[#D0D1C9] max-h-[300px] max-w-[300px] md:max-w-[500px] md:max-h-[150px] rounded-lg"
           >
             <span class="flex items-center gap-2">
-              <CheckmarkFilled size={24} class="fill-[#EB9D2A]" />
+              <CheckmarkFilled size={24} class=" fill-[#F54E00] dark:fill-[#EB9D2A]" />
               <p class="text-lg font-bold capitalize">{item.title}</p>
             </span>
             <p class="text-sm line-clamp-4">{item.subtitle}</p>

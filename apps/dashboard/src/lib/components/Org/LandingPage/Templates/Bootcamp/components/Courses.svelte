@@ -15,11 +15,13 @@
   <section id="course" class="p-4 lg:p-20 h-full bg-white">
     <div class="flex flex-col md:flex-row items-center justify-between mb-4">
       <span class="text-start space-y-2 mb-4 lg:mb-0">
-        <p class=" text-2xl lg:text-3xl">{$landingPageSettings.courses.title}</p>
-        <p class=" text-[#878787] text-xs">{$landingPageSettings.courses.subtitle}</p>
+        <p class=" text-2xl lg:text-3xl font-slab">{$landingPageSettings.courses.title}</p>
+        <p class=" text-[#878787] font-roboto w-[80%]">{$landingPageSettings.courses.subtitle}</p>
       </span>
 
-      <div class="flex items-center justify-between border border-[#EAEAEA] p-2 bg-[#FCFCFC] w-fit">
+      <div
+        class="flex items-center justify-between font-roboto border border-[#EAEAEA] p-2 bg-[#FCFCFC] w-fit"
+      >
         <button
           on:click={() => (active = 'course')}
           class="{active == 'course'
@@ -51,9 +53,6 @@
             slug={courseData.slug}
             bannerImage={courseData.logo || '/images/classroomio-course-img-template.jpg'}
             title={courseData.title}
-            description={courseData.description}
-            cost={courseData.cost}
-            currency={courseData.currency}
           />
         {/each}
       </section>
@@ -62,14 +61,18 @@
           <PrimaryButton
             variant={VARIANTS.NONE}
             label="VIEW MORE"
-            className="rounded-none text-lg bg-[#00E577]"
+            className="rounded-none text-lg bg-[#00E577] font-roboto"
             onClick={() => (viewAll = !viewAll)}
           />
         </div>
       {/if}
     {:else}
       <div class="px-10">
-        <EmptyState template="bootcamp" />
+        <EmptyState
+          template="bootcamp"
+          headerClassName="font-slab"
+          subtitleClassName="font-roboto"
+        />
       </div>
     {/if}
   </section>

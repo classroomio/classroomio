@@ -15,7 +15,6 @@
 
   let viewAllPath = false;
   let viewAllCourses = false;
-  let active = 'course';
 
   const DISPLAY_COURSE = {
     PACED: 'paced',

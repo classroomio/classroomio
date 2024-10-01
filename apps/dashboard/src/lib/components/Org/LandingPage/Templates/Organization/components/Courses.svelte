@@ -37,10 +37,9 @@
     type = course;
     const url = new URL(window.location);
     url.searchParams.set('type', course);
-    window.history.pushState({}, '', url); // Update URL without reloading the page
+    window.history.pushState({}, '', url);
   };
 
-  // On mount, set the active type based on the URL parameter
   onMount(() => {
     const params = new URLSearchParams(window.location.search);
     const urlType = params.get('type');

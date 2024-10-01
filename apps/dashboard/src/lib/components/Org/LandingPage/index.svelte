@@ -65,6 +65,6 @@
   <!-- <Organization {org} /> -->
   <!-- <Plain {org} {orgSiteName} /> -->
   <!-- <Bootcamp {org} /> -->
-  <!-- <Prep {org} /> -->
-  <Posthog {org} />
+  <Prep {org} />
+  <!-- <Posthog {org} /> -->
 {/if}
