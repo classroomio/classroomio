@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { cloneDeep } from 'lodash';
+  import cloneDeep from 'lodash/cloneDeep';
   import Chip from '$lib/components/Chip/index.svelte';
   import { profile } from '$lib/utils/store/user';
   import { browser } from '$app/environment';
