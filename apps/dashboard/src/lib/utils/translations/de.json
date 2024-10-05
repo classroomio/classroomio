@@ -1218,6 +1218,11 @@
           "video": "Video",
           "image": "Bild"
         }
+      },
+      "background": {
+        "title": "Hintergrundbild",
+        "show_background": "Hintergrund anzeigen",
+        "hide_background": "Hintergrund ausblenden"
       }
     },
     "organization": {

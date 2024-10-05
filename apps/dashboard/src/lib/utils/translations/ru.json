@@ -1218,6 +1218,11 @@
           "video": "видео",
           "image": "Изображение"
         }
+      },
+      "background": {
+        "title": "Фоновое изображение",
+        "show_background": "Показать фон",
+        "hide_background": "Скрыть фон"
       }
     },
     "organization": {

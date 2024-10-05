@@ -1218,6 +1218,11 @@
           "video": "वीडियो",
           "image": "छवि"
         }
+      },
+      "background": {
+        "title": "पृष्ठभूमि छवि",
+        "show_background": "पृष्ठभूमि दिखाएँ",
+        "hide_background": "पृष्ठभूमि छिपाएँ"
       }
     },
     "organization": {

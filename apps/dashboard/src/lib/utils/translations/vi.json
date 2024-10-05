@@ -1218,6 +1218,11 @@
           "video": "Băng hình",
           "image": "Hình ảnh"
         }
+      },
+      "background": {
+        "title": "Hình nền",
+        "show_background": "Hiển thị nền",
+        "hide_background": "Ẩn nền"
       }
     },
     "organization": {

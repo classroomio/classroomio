@@ -128,6 +128,11 @@
       "title": "Title",
       "title_highlight": "Title-Highlight",
       "subtitle": "Subtitle",
+      "background": {
+        "title": "Background Image",
+        "show_background": "Show background",
+        "hide_background": "Hide background"
+      },
       "actions": {
         "heading": "Actions",
         "label": "Label",
@@ -139,6 +144,7 @@
           "video": "Video",
           "image": "Image"
         },
+
         "show_banner": "Show banner",
         "hide_banner": "Hide banner"
       },
