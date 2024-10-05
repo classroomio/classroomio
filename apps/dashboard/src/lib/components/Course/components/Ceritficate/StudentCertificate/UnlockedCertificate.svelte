@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import Download from 'carbon-icons-svelte/lib/Download.svelte';
 
-  import { PUBLIC_SERVER_URL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import { course } from '$lib/components/Course/store';
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
@@ -23,7 +23,7 @@
 
     isLoading = true;
     try {
-      const response = await fetch(PUBLIC_SERVER_URL + '/downloadCertificate', {
+      const response = await fetch(env.PUBLIC_SERVER_URL + '/downloadCertificate', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -97,7 +97,7 @@
       className="flex items-center gap-2"
       onClick={downLoadCertificate}
       variant={VARIANTS.CONTAINED_DARK}
-      isDisabled={!PUBLIC_SERVER_URL || !isCourseComplete}
+      isDisabled={!env.PUBLIC_SERVER_URL || !isCourseComplete}
       {isLoading}
     >
       <Download size={16} />

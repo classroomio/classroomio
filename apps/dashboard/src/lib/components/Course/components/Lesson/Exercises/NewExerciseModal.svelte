@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { browser } from '$app/environment';
   import Modal from '$lib/components/Modal/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
@@ -7,7 +8,7 @@
   import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
   import ComingSoon from '$lib/components/ComingSoon/index.svelte';
   import { Tag } from 'carbon-components-svelte';
-  import { TEMPLATES, TAGS } from '$lib/mocks';
+  import { type GeneratedTemplates, getAllTemplates, TAGS } from '$lib/mocks';
   import type { ExerciseTemplate } from '$lib/utils/types';
   import { lesson, lessonByTranslation } from '../store/lessons';
   import { useCompletion } from 'ai/svelte';
@@ -39,6 +40,7 @@
   let isLoading = writable(false);
   let isAIStarted = false;
   let note = '';
+  let allTemplates: GeneratedTemplates;
 
   const options = [
     {
@@ -105,6 +107,10 @@
       handleSubmit({ preventDefault: () => {} });
     }, 500);
   }
+
+  onMount(async () => {
+    allTemplates = await getAllTemplates();
+  });
 
   $: content = lessonFallbackNote(
     $lesson.materials.note,
@@ -208,7 +214,7 @@
       </div>
     {:else if type === Type.TEMPLATE}
       <div>
-        <h2 class="text-2xl font-medium my-5">
+        <h2 class="text-2xl font-medium mb-2 m-0">
           {$t('course.navItem.lessons.exercises.new_exercise_modal.select_template')}
         </h2>
 
@@ -228,32 +234,34 @@
           </div>
 
           <div class="flex flex-wrap items-start gap-2">
-            {#each TEMPLATES[selectedTag] as template}
-              <button
-                class="w-[161px] h-[140px] hover:scale-95 p-5 rounded-md dark:bg-neutral-700 border-2 {template.id ===
-                selectedTemplateId
-                  ? 'border-primary-400'
-                  : `border-gray-200 dark:border-neutral-600 `} flex flex-col transition-all ease-in-out"
-                type="button"
-                on:click={() => (selectedTemplateId = template.id)}
-              >
-                <div class="flex flex-col justify-evenly h-full">
-                  <p class="font-bold text-sm text-start flex items-center">
-                    {template.title}
-                  </p>
-                  <div class="flex flex-col items-start justify-between gap-1">
-                    <p class="text-xs font-normal">
-                      {template.questions}
-                      {$t('course.navItem.lessons.exercises.new_exercise_modal.questions')}
+            {#if allTemplates}
+              {#each allTemplates[selectedTag] as template}
+                <button
+                  class="w-[161px] h-[140px] hover:scale-95 p-5 rounded-md dark:bg-neutral-700 border-2 {template.id ===
+                  selectedTemplateId
+                    ? 'border-primary-400'
+                    : `border-gray-200 dark:border-neutral-600 `} flex flex-col transition-all ease-in-out"
+                  type="button"
+                  on:click={() => (selectedTemplateId = template.id)}
+                >
+                  <div class="flex flex-col justify-evenly h-full">
+                    <p class="font-bold text-sm text-start flex items-center">
+                      {template.title}
                     </p>
-                    <p class="text-xs font-normal text-start">
-                      {template.points}
-                      {$t('course.navItem.lessons.exercises.new_exercise_modal.points')}
-                    </p>
+                    <div class="flex flex-col items-start justify-between gap-1">
+                      <p class="text-xs font-normal">
+                        {template.questions}
+                        {$t('course.navItem.lessons.exercises.new_exercise_modal.questions')}
+                      </p>
+                      <p class="text-xs font-normal text-start">
+                        {template.points}
+                        {$t('course.navItem.lessons.exercises.new_exercise_modal.points')}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </button>
-            {/each}
+                </button>
+              {/each}
+            {/if}
           </div>
 
           <div class="mt-5 flex items-center justify-between">
@@ -264,13 +272,13 @@
               onClick={handleBack}
             />
             <PrimaryButton
-              isDisabled={!selectedTemplateId}
+              isDisabled={!selectedTemplateId || !allTemplates}
               className="px-6 py-3"
               label={$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
               isLoading={isTemplateFinishedLoading}
               onClick={async () => {
                 isTemplateFinishedLoading = true;
-                const template = TEMPLATES[selectedTag].find((t) => t.id === selectedTemplateId);
+                const template = allTemplates[selectedTag].find((t) => t.id === selectedTemplateId);
                 if (!template) return;
 
                 console.log('Selected template', template);

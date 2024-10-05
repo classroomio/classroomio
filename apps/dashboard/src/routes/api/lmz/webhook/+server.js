@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import crypto from 'crypto';
-import { LEMON_SQUEEZY_WEBHOOK_SECRET } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import { createOrgPlan, cancelOrgPlan } from '$lib/utils/services/org';
 import { PLAN } from 'shared/src/plans/constants';
 import { getServerSupabase } from '$lib/utils/functions/supabase.server';
@@ -15,7 +15,7 @@ export async function POST({ request }) {
     const body = await request.json();
 
     // Check signature
-    const secret = LEMON_SQUEEZY_WEBHOOK_SECRET;
+    const secret = env.LEMON_SQUEEZY_WEBHOOK_SECRET;
     const hmac = crypto.createHmac('sha256', secret);
     const digest = Buffer.from(hmac.update(await clonedReq.text()).digest('hex'), 'utf8');
     const signature = Buffer.from(request.headers.get('X-Signature') || '', 'utf8');

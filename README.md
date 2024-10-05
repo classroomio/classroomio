@@ -173,9 +173,9 @@ To get the environmental variables for supabase continue to step(5)
 
 8. All projects should start running
 
-   - `classroomio-com`: [http://localhost:5173](http://localhost:5173)
+   - `classroomio-com`: [http://localhost:5174](http://localhost:5174)
    - `backend`: [http://localhost:3002](http://localhost:3002)
-   - `dashboard`: [http://localhost:5174](http://localhost:5174)
+   - `dashboard`: [http://localhost:5173](http://localhost:5173)
    - `docs`: [http://localhost:3000](http://localhost:3000)
 
 9. Running a specific project
@@ -187,7 +187,7 @@ To get the environmental variables for supabase continue to step(5)
 
 10. Login into `dashboard`
 
-    - Visit [http://localhost:5173/login](http://localhost:5173/login)
+    - Visit [http://localhost:5174/login](http://localhost:5173/login)
     - Enter email: `admin@test.com`
     - Enter password: `123456`
      

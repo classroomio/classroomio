@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
-  import { PUBLIC_SERVER_URL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import { fetchLesson, updateLessonCompletion } from '$lib/utils/services/courses';
   import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
   import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
@@ -145,7 +145,7 @@
       const lessonNumber = getLessonOrder(currentLesson.id);
       const slideUrl = $lesson.materials.slide_url || '';
 
-      const response = await fetch(PUBLIC_SERVER_URL + '/downloadLesson', {
+      const response = await fetch(env.PUBLIC_SERVER_URL + '/downloadLesson', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -369,7 +369,7 @@
                 {/if}
               </IconButton>
 
-              {#if $course.metadata.lessonDownload && !!PUBLIC_SERVER_URL}
+              {#if $course.metadata.lessonDownload && !!env.PUBLIC_SERVER_URL}
                 <PrimaryButton
                   className="mr-"
                   variant={VARIANTS.OUTLINED}

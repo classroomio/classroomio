@@ -2,6 +2,7 @@ const express = require('express');
 const zod = require('zod');
 const { nodemailerTransporter, zohoClient } = require('../utils/email');
 const { withEmailTemplate } = require('../utils/withEmailTemplate');
+const { ZOHO_TOKEN } = process.env;
 
 const emailRouter = express.Router();
 
@@ -12,14 +13,14 @@ nodemailerTransporter().then((t) => {
 });
 
 async function sendWithNodemailer(emailData) {
-  const { from, to, subject, content, isPersonalEmail, replyTo } = emailData;
+  const { from, to, subject, content, replyTo } = emailData;
 
   if (!transporter) {
     return;
   }
 
   return await transporter.sendMail({
-    from: from || '"Best from ClassroomIO" <best@classroomio.com>',
+    from: from || '"Best from ClassroomIO" <notify@classroomio.com>',
     to,
     subject,
     replyTo,
@@ -74,7 +75,6 @@ emailRouter.post('/', async (req, res) => {
         to: zod.string(),
         subject: zod.string(),
         content: zod.string(),
-        isPersonalEmail: zod.boolean().optional(),
         replyTo: zod.string().optional()
       })
     );
@@ -88,7 +88,7 @@ emailRouter.post('/', async (req, res) => {
         let res;
 
         try {
-          if (emailData.isPersonalEmail || !ZOHO_TOKEN) {
+          if (!ZOHO_TOKEN) {
             res = await sendWithNodemailer(emailData);
           } else {
             res = await sendWithZoho(emailData);

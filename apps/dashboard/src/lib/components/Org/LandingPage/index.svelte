@@ -147,6 +147,21 @@
     }
   }
 
+  function getBgImage(settings) {
+    const { show, image } = settings.header.background || {
+      show: true,
+      image: '/images/org-landingpage-banner.jpeg'
+    };
+
+    if (!show) {
+      return undefined;
+    }
+
+    if (image) {
+      return `url('${image}')`;
+    }
+  }
+
   $: initPlyr(player, $landingPageSettings.header?.banner?.video);
   $: setDefault(org?.landingpage);
 </script>
@@ -165,7 +180,15 @@
   <main>
     <!-- Header Section -->
     {#if $landingPageSettings.header.show}
-      <header id="header" class="banner w-full h-[100vh] md:h-[90vh] mb-10 relative">
+      <header
+        id="header"
+        class={`w-full h-[100vh] md:h-[90vh] mb-10 relative ${
+          $landingPageSettings.header.background.show
+            ? 'bg-cover bg-center'
+            : 'border-b border-gray-300'
+        }`}
+        style="background-image: {getBgImage($landingPageSettings)}"
+      >
         <Navigation
           logo={org.avatar_url}
           orgName={org.name}
@@ -585,13 +608,3 @@
     {/if}
   </main>
 {/if}
-
-<style>
-  .banner {
-    background: url('/images/org-landingpage-banner.jpeg') no-repeat center center fixed;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
-  }
-</style>

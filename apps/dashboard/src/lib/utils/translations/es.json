@@ -1218,6 +1218,11 @@
           "video": "Video",
           "image": "Imagen"
         }
+      },
+      "background": {
+        "title": "Imagen de fondo",
+        "show_background": "Mostrar fondo",
+        "hide_background": "Ocultar fondo"
       }
     },
     "organization": {
@@ -1327,6 +1332,17 @@
   },
   "specialization": {
     "course_tag": "Especialización"
+  },
+  "profileMenu": {
+    "profile": "PERFIL",
+    "current_org": "ORGANIZACIÓN ACTUAL",
+    "free_tools": "HERRAMIENTAS GRATUITAS",
+    "progress": "Informe de progreso",
+    "timer": "Temporizador de actividad",
+    "tic_tac": "dedo del pie tres en raya",
+    "see_more": "Ver más",
+    "whats_new": "Qué hay de nuevo",
+    "launch_week": "Semana de lanzamiento"
   },
   "validations": {
     "invalid_type_error": "No debe estar vacío",

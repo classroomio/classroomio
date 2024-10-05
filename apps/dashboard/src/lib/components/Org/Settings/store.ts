@@ -17,6 +17,10 @@ export interface OrgLandingPageJson {
       type: string;
       show: boolean;
     };
+    background?: {
+      image: string;
+      show: boolean;
+    };
     show: boolean;
   };
   aboutUs: {
@@ -79,6 +83,10 @@ export const landingPageSettings: Writable<OrgLandingPageJson> = writable({
       video: 'https://www.youtube.com/watch?v=qqAYW7uxErI',
       image: '',
       type: 'video',
+      show: true
+    },
+    background: {
+      image: '',
       show: true
     },
     show: true

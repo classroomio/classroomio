@@ -8,13 +8,12 @@ version: '3.8'
 
 services:
   backend:
-    image: node:18
-    working_dir: /app/project
+    build:
+      dockerfile: Dockerfile
+      context: ./apps/backend
     volumes:
-      - ./apps/backend:/app/project
-    command: npm start
-    ports:
-      - '3002:3002'
+      - /app/node_modules
+      - ./apps/backend:/app
     environment:
       - NODE_ENV=production
       # Supabase - Database
@@ -33,16 +32,27 @@ services:
       - SMTP_PORT=${SMTP_PORT}
 
   dashboard:
-    image: node:18
-    working_dir: /app/project
+    build:
+      dockerfile: ./apps/dashboard/Dockerfile
+      context: ./
+      args:
+        - PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}
+        - PUBLIC_SUPABASE_ANON_KEY=${PUBLIC_SUPABASE_ANON_KEY}
+        - PRIVATE_SUPABASE_SERVICE_ROLE=${PRIVATE_SUPABASE_SERVICE_ROLE}
+        - PRIVATE_APP_HOST=${PRIVATE_APP_HOST}
+        - PRIVATE_APP_SUBDOMAINS=${PRIVATE_APP_SUBDOMAINS}
+        - UNSPLASH_API_KEY=${UNSPLASH_API_KEY}
+        - OPENAI_API_KEY=${OPENAI_API_KEY}
+        - PUBLIC_SERVER_URL=${PUBLIC_SERVER_URL}
+        - PUBLIC_IP_REGISTRY_KEY=${PUBLIC_IP_REGISTRY_KEY}
     volumes:
-      - ./apps/dashboard:/app/project
-    command: sh -c "npm install -g pnpm && pnpm install && pnpm build && pnpm start"
-    ports:
-      - '5173:5173'
+      - .:/app
+      - /app/node_modules
+      - /app/apps/dashboard/node_modules
+    # command: sh -c "npm install -g pnpm && rm -rf node_modules && yes | pnpm install --frozen-lockfile && cd apps/dashboard && pnpm build && pnpm start"
     environment:
-      - NODE_ENV=production
       - IS_SELFHOSTED=true
+      - DEPLOYMENT_PROVIDER=docker
       # Supabase - Database
       - PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}
       - PUBLIC_SUPABASE_ANON_KEY=${PUBLIC_SUPABASE_ANON_KEY}
@@ -55,7 +65,3 @@ services:
       - PUBLIC_IP_REGISTRY_KEY=${PUBLIC_IP_REGISTRY_KEY}
     depends_on:
       - backend
-
-volumes:
-  backend_data:
-  dashboard_data:

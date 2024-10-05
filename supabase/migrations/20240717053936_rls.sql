@@ -1067,6 +1067,7 @@ for UPDATE
 to public
 using (
   (select auth.jwt()) ->> 'email' = email
+)
 with check (
   (select auth.jwt()) ->> 'email' = email
 );
