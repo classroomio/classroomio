@@ -185,7 +185,7 @@
         {#if isOnLandingPage}
           <span class="px-2">
             {#if !cost}
-              $t('course.navItem.landing_page.pricing_section.free')
+              {$t('course.navItem.landing_page.pricing_section.free')}
             {:else if pricingData.showDiscount}
               {formatter.format(cost)}
               <span class="line-through">

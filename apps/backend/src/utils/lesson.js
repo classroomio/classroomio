@@ -1,6 +1,6 @@
 // const { getPdfBuffer } = require('./puppeteer');
 const { marked } = require('marked');
-const puppeteer = require('puppeteer');
+// const puppeteer = require('puppeteer');
 
 function getHtmlTemplate(body) {
   return `
@@ -75,15 +75,7 @@ function getHtmlTemplate(body) {
   `;
 }
 
-function getLessonBody({
-  title,
-  number,
-  orgName,
-  note,
-  slideUrl,
-  video,
-  courseTitle,
-}) {
+function getLessonBody({ title, number, orgName, note, slideUrl, video, courseTitle }) {
   const noteHtml = marked.parse(note);
   const showExtraResources = slideUrl || (video && video.length > 0);
   return `
@@ -148,54 +140,56 @@ function getLessonBody({
 }
 
 async function generateSinglePdfFromHtml(htmlContent, courseTitle) {
-  const args = [
-    '--disable-web-security',
-    '--no-sandbox',
-    '--disable-setuid-sandbox',
-  ];
-  const browser = await puppeteer.launch({
-    headless: 'new',
-    args,
-  });
-  const page = await browser.newPage();
+  // const args = [
+  //   '--disable-web-security',
+  //   '--no-sandbox',
+  //   '--disable-setuid-sandbox',
+  // ];
+  // const browser = await puppeteer.launch({
+  //   headless: 'new',
+  //   args,
+  // });
+  // const page = await browser.newPage();
 
-  await page.setContent(htmlContent);
+  // await page.setContent(htmlContent);
 
-  const pdfOptions = {
-    format: 'A4',
-    printBackground: true,
-    displayHeaderFooter: true,
-    headerTemplate:
-      "<div><div class='pageNumber'></div> <div>/</div><div class='totalPages'></div></div>",
-    footerTemplate: `<div class="footer" style="text-align: right; margin-right: 5%; font-size: 8px; width: 297mm; padding-top: 30px;">
-      ${courseTitle} | Powered by <a href="https://app.classroomio.com" style="color: blue; text-decoration: underline;">ClassroomIO</a>
-      </div>`,
-    margin: {
-      top: '0.4cm',
-      bottom: '1cm',
-    },
-  };
+  // const pdfOptions = {
+  //   format: 'A4',
+  //   printBackground: true,
+  //   displayHeaderFooter: true,
+  //   headerTemplate:
+  //     "<div><div class='pageNumber'></div> <div>/</div><div class='totalPages'></div></div>",
+  //   footerTemplate: `<div class="footer" style="text-align: right; margin-right: 5%; font-size: 8px; width: 297mm; padding-top: 30px;">
+  //     ${courseTitle} | Powered by <a href="https://app.classroomio.com" style="color: blue; text-decoration: underline;">ClassroomIO</a>
+  //     </div>`,
+  //   margin: {
+  //     top: '0.4cm',
+  //     bottom: '1cm',
+  //   },
+  // };
 
-  const numPages = await page.evaluate(() => {
-    const content = document.body; // Change this to the specific element containing content
-    const style = window.getComputedStyle(content);
-    const contentHeight = parseInt(style.height, 10);
-    const pageHeight = 900; // Set this to an appropriate value based on your PDF format
+  // const numPages = await page.evaluate(() => {
+  //   const content = document.body; // Change this to the specific element containing content
+  //   const style = window.getComputedStyle(content);
+  //   const contentHeight = parseInt(style.height, 10);
+  //   const pageHeight = 900; // Set this to an appropriate value based on your PDF format
 
-    return Math.ceil(contentHeight / pageHeight);
-  });
+  //   return Math.ceil(contentHeight / pageHeight);
+  // });
 
-  const pagesPdfBuffer = [];
+  // const pagesPdfBuffer = [];
 
-  for (let currentPage = 1; currentPage <= numPages; currentPage++) {
-    await page.evaluate(() => {});
+  // for (let currentPage = 1; currentPage <= numPages; currentPage++) {
+  //   await page.evaluate(() => {});
 
-    const pdfBuffer = await page.pdf(pdfOptions);
-    pagesPdfBuffer.push(pdfBuffer);
-  }
+  //   const pdfBuffer = await page.pdf(pdfOptions);
+  //   pagesPdfBuffer.push(pdfBuffer);
+  // }
 
-  await browser.close();
-  return Buffer.concat(pagesPdfBuffer);
+  // await browser.close();
+  // return Buffer.concat(pagesPdfBuffer);
+
+  throw 'Download disabled';
 }
 
 async function generateLessonPdf(params) {
@@ -223,5 +217,5 @@ async function generateLessonPdf(params) {
 }
 
 module.exports = {
-  generateLessonPdf,
+  generateLessonPdf
 };

@@ -1,25 +1,4 @@
-import vueDirectives from './001_vue_directives';
-import vueVBind from './002_vue_vBind';
-import vueVIf from './003_vue_vIf';
-import vueVShow from './004_vue_vShow';
-import vueVFor from './005_vue_vFor';
-import vueEvents from './006_vue-vEvents';
-import vueVOn from './007_vue_vOn';
-import vueMethods from './008_vue_methods';
-import vueEventModifiers from './009_vue_eventModifiers';
-import vueForms from './010_vue_forms';
-import vueVModel from './011_vue_vModel';
-import vueCssBinding from './012_vue_cssBinding';
-import vueComputedProperties from './013_vue_computedProperties';
-import vueWatchers from './014_vue_watchers';
-import vueTemplates from './015_vue_templates';
-import vueComponents from './016_vue_components';
-import vueProps from './017_vue_props';
-import vueVForComp from './018_vue_vForComp';
-import vueEmit from './019_vue_emit';
-import vueFallThroughAttribute from './020_vue_fallThroughAttribute';
-
-export const VUE_IDS: { [key: string]: string } = {
+export const VUEJS_IDS: { [key: string]: string } = {
   VUE_DIRECTIVES: 'VUE_DIRECTIVES',
   VUE_VBIND: 'VUE_VBIND',
   VUE_VIF: 'VUE_VIF',
@@ -42,25 +21,27 @@ export const VUE_IDS: { [key: string]: string } = {
   VUE_FALLTHROUGHATTRIBUTE: 'VUE_FALLTHROUGHATTRIBUTE'
 };
 
-export const VUE_TEMPLATES = {
-  [VUE_IDS.VUE_DIRECTIVES]: vueDirectives,
-  [VUE_IDS.VUE_VBIND]: vueVBind,
-  [VUE_IDS.VUE_VIF]: vueVIf,
-  [VUE_IDS.VUE_VSHOW]: vueVShow,
-  [VUE_IDS.VUE_VFOR]: vueVFor,
-  [VUE_IDS.VUE_VEVENTS]: vueEvents,
-  [VUE_IDS.VUE_VON]: vueVOn,
-  [VUE_IDS.VUE_METHODS]: vueMethods,
-  [VUE_IDS.VUE_EVENTMODIFIERS]: vueEventModifiers,
-  [VUE_IDS.VUE_FORMS]: vueForms,
-  [VUE_IDS.VUE_VMODEL]: vueVModel,
-  [VUE_IDS.VUE_CSSBINDING]: vueCssBinding,
-  [VUE_IDS.VUE_COMPUTEDPROPERTIES]: vueComputedProperties,
-  [VUE_IDS.VUE_WATCHERS]: vueWatchers,
-  [VUE_IDS.VUE_TEMPLATES]: vueTemplates,
-  [VUE_IDS.VUE_COMPONENTS]: vueComponents,
-  [VUE_IDS.VUE_PROPS]: vueProps,
-  [VUE_IDS.VUE_VFORCOMP]: vueVForComp,
-  [VUE_IDS.VUE_EMIT]: vueEmit,
-  [VUE_IDS.VUE_FALLTHROUGHATTRIBUTE]: vueFallThroughAttribute
+export const VUEJS_TEMPLATES = {
+  [VUEJS_IDS.VUE_DIRECTIVES]: async () => (await import('./001_vue_directives')).default,
+  [VUEJS_IDS.VUE_VBIND]: async () => (await import('./002_vue_vBind')).default,
+  [VUEJS_IDS.VUE_VIF]: async () => (await import('./003_vue_vIf')).default,
+  [VUEJS_IDS.VUE_VSHOW]: async () => (await import('./004_vue_vShow')).default,
+  [VUEJS_IDS.VUE_VFOR]: async () => (await import('./005_vue_vFor')).default,
+  [VUEJS_IDS.VUE_VEVENTS]: async () => (await import('./006_vue-vEvents')).default,
+  [VUEJS_IDS.VUE_VON]: async () => (await import('./007_vue_vOn')).default,
+  [VUEJS_IDS.VUE_METHODS]: async () => (await import('./008_vue_methods')).default,
+  [VUEJS_IDS.VUE_EVENTMODIFIERS]: async () => (await import('./009_vue_eventModifiers')).default,
+  [VUEJS_IDS.VUE_FORMS]: async () => (await import('./010_vue_forms')).default,
+  [VUEJS_IDS.VUE_VMODEL]: async () => (await import('./011_vue_vModel')).default,
+  [VUEJS_IDS.VUE_CSSBINDING]: async () => (await import('./012_vue_cssBinding')).default,
+  [VUEJS_IDS.VUE_COMPUTEDPROPERTIES]: async () =>
+    (await import('./013_vue_computedProperties')).default,
+  [VUEJS_IDS.VUE_WATCHERS]: async () => (await import('./014_vue_watchers')).default,
+  [VUEJS_IDS.VUE_TEMPLATES]: async () => (await import('./015_vue_templates')).default,
+  [VUEJS_IDS.VUE_COMPONENTS]: async () => (await import('./016_vue_components')).default,
+  [VUEJS_IDS.VUE_PROPS]: async () => (await import('./017_vue_props')).default,
+  [VUEJS_IDS.VUE_VFORCOMP]: async () => (await import('./018_vue_vForComp')).default,
+  [VUEJS_IDS.VUE_EMIT]: async () => (await import('./019_vue_emit')).default,
+  [VUEJS_IDS.VUE_FALLTHROUGHATTRIBUTE]: async () =>
+    (await import('./020_vue_fallThroughAttribute')).default
 };

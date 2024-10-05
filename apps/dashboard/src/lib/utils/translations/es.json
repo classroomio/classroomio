@@ -396,7 +396,7 @@
           },
           "display_section": "Sección de visualización",
           "certificate_form": {
-            "upload_template": "plantilla de certificado"
+            "upload_template": "Plantilla de certificado"
           }
         },
         "course_content": "Contenido del curso",
@@ -1330,6 +1330,17 @@
   },
   "specialization": {
     "course_tag": "Especialización"
+  },
+  "profileMenu": {
+    "profile": "PERFIL",
+    "current_org": "ORGANIZACIÓN ACTUAL",
+    "free_tools": "HERRAMIENTAS GRATUITAS",
+    "progress": "Informe de progreso",
+    "timer": "Temporizador de actividad",
+    "tic_tac": "dedo del pie tres en raya",
+    "see_more": "Ver más",
+    "whats_new": "Qué hay de nuevo",
+    "launch_week": "Semana de lanzamiento"
   },
   "validations": {
     "invalid_type_error": "No debe estar vacío",

@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
   import { MetaTags } from 'svelte-meta-tags';
   import { fly } from 'svelte/transition';
   import { derived } from 'svelte/store';
@@ -60,10 +59,6 @@
 
     // Set up posthog
     initPosthog();
-
-    if (!dev) {
-      injectSpeedInsights();
-    }
   }
 
   function setAnalyticsUser() {
@@ -109,13 +104,17 @@
 
       const [regexUsernameMatch] = [...(authUser.email?.matchAll(/(.*)@/g) || [])];
 
+      const isGoogleAuth = !!authUser.app_metadata?.providers?.includes('google');
+
       const { data: newProfileData, error } = await supabase
         .from('profile')
         .insert({
           id: authUser.id,
           username: regexUsernameMatch[1] + `${new Date().getTime()}`,
           fullname: regexUsernameMatch[1],
-          email: authUser.email
+          email: authUser.email,
+          is_email_verified: isGoogleAuth,
+          verified_at: isGoogleAuth ? new Date().toDateString() : undefined
         })
         .select();
 
@@ -249,6 +248,7 @@
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       // Log key events
       console.log(`event`, event);
+      console.log(`session`, session);
       if (event == 'PASSWORD_RECOVERY') {
         console.log('PASSWORD RESET');
       }
@@ -259,27 +259,26 @@
       }
 
       // Skip Authentication
-      if (data.skipAuth) return;
+      if (data.skipAuth || $user.fetchingUser) return;
 
       // Authentication Steps
       if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
         $user.fetchingUser = true;
-        getProfile();
-      } else if (!['TOKEN_REFRESHED'].includes(event)) {
-        console.log('not logged in, go to login');
-        return goto('/login');
+        getProfile().then(() => {
+          $user.fetchingUser = false;
+        });
       }
+      // else if (!['TOKEN_REFRESHED'].includes(event)) {
+      //   console.log('not logged in, go to login');
+      //   return goto('/login');
+      // }
     });
 
-    if (data.isOrgSite) {
-      if (!data.org) {
-        goto('/404');
-      } else {
-        $globalStore.orgSiteName = data.orgSiteName;
-        $globalStore.isOrgSite = data.isOrgSite;
+    if (data.isOrgSite && data.org) {
+      $globalStore.orgSiteName = data.orgSiteName;
+      $globalStore.isOrgSite = data.isOrgSite;
 
-        currentOrg.set(data.org);
-      }
+      currentOrg.set(data.org);
     }
 
     return () => {

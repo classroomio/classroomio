@@ -1,5 +1,5 @@
 import { get } from 'svelte/store';
-
+import type { PostgrestError } from '@supabase/supabase-js';
 import { goto } from '$app/navigation';
 import { supabase } from '$lib/utils/functions/supabase';
 import { orgs, currentOrg, orgAudience, orgTeam } from '$lib/utils/store/org';
@@ -204,34 +204,42 @@ export async function getCourseBySiteName(siteName: string) {
   return data;
 }
 
+const CURRENT_ORG_QUERY = `
+  id,
+  name,
+  siteName,
+  avatar_url,
+  landingpage,
+  is_restricted,
+  customization,
+  theme,
+  favicon,
+  customDomain,
+  isCustomDomainVerified,
+  customCode,
+  organization_plan(
+    plan_name,
+    is_active
+  )
+`;
 export async function getCurrentOrg(siteName: string, justGet = false, isCustomDomain = false) {
-  const { data, error } = await supabase
-    .from('organization')
-    .select(
-      `
-      id,
-      name,
-      siteName,
-      avatar_url,
-      landingpage,
-      is_restricted,
-      customization,
-      theme,
-      favicon,
-      customDomain,
-      isCustomDomainVerified,
-      customCode,
-      organization_plan(
-        plan_name,
-        is_active
-      )
-    `
-    )
-    .eq(isCustomDomain ? 'customDomain' : 'siteName', siteName)
-    .filter('isCustomDomainVerified', 'eq', isCustomDomain ? true : false)
-    .returns<CurrentOrg[]>();
-  console.log('data =', data);
-  console.log('error =', error);
+  let response: { data: CurrentOrg[] | null; error: PostgrestError | null } | null = null;
+
+  if (isCustomDomain) {
+    response = await supabase
+      .from('organization')
+      .select(CURRENT_ORG_QUERY)
+      .eq('customDomain', siteName)
+      .filter('isCustomDomainVerified', 'eq', true)
+      .returns<CurrentOrg[]>();
+  } else {
+    response = await supabase
+      .from('organization')
+      .select(CURRENT_ORG_QUERY)
+      .eq('siteName', siteName)
+      .returns<CurrentOrg[]>();
+  }
+  const { data, error } = response;
 
   const isDataEmpty = !data?.[0];
 

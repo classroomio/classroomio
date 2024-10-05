@@ -96,7 +96,7 @@ export const landingPageSettings: Writable<OrgLandingPageJson> = writable({
     content:
       'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Repudiandae, quaerat cum. Ullam similique quae dicta ipsum atque quam fugit iusto eligendi magni voluptatum aut, exercitationem deserunt vitae iste rem sunt!\nLorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores obcaecati veritatis tenetur in, nihil repellat quasi cumque sed molestias id reiciendis harum doloremque minus fugit quia cum dolores quas pariatur.',
     imageUrl:
-      'https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/landingpage/riverside.jpeg',
+      'https://api.classroomio.com/storage/v1/object/public/avatars/landingpage/riverside.jpeg',
     show: true
   },
   courses: {

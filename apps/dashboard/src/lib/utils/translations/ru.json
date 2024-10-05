@@ -1331,6 +1331,17 @@
   "specialization": {
     "course_tag": "Специализация"
   },
+  "profileMenu": {
+    "profile": "ПРОФИЛЬ",
+    "current_org": "ТЕКУЩАЯ ОРГАНИЗАЦИЯ",
+    "free_tools": "БЕСПЛАТНЫЕ ИНСТРУМЕНТЫ",
+    "progress": "Отчет о ходе работы",
+    "timer": "Таймер активности",
+    "tic_tac": "Крестики-нолики",
+    "see_more": "Узнать больше",
+    "whats_new": "Что нового",
+    "launch_week": "Неделя запуска"
+  },
   "validations": {
     "invalid_type_error": "Не должно быть пустым",
     "email": {

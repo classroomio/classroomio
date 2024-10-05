@@ -44,6 +44,7 @@ export async function POST({ request }) {
 
   const emailData = [
     {
+      from: `"Best from ClassroomIO" <notify@mail.classroomio.com>`,
       to: email,
       subject: `Join ${name} on ClassroomIO 😃`,
       content: `
@@ -52,8 +53,7 @@ export async function POST({ request }) {
       <div>
         <a class="button" href="${inviteLink}">Accept Invitation</a>
       </div>
-    `,
-      isPersonalEmail: true
+    `
     }
   ];
   await sendEmail(emailData);

@@ -6,7 +6,7 @@ import { getCurrentOrg } from '$lib/utils/services/org';
 import { getSupabase, supabase } from '$lib/utils/functions/supabase';
 import { loadTranslations } from '$lib/utils/functions/translations';
 import type { CurrentOrg } from '$lib/utils/types/org';
-import { PRIVATE_APP_SUBDOMAINS, IS_SELFHOSTED, PRIVATE_APP_HOST } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 
 if (!supabase) {
   getSupabase();
@@ -30,7 +30,7 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
   };
 
   // Selfhosted usecase would be here
-  if (IS_SELFHOSTED === 'true') {
+  if (env.IS_SELFHOSTED === 'true') {
     const subdomain = getSubdomain(url);
 
     // Student dashboard
@@ -97,7 +97,7 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
     }
   } else if (subdomain === 'play' || debugPlay === 'true') {
     response.skipAuth = true;
-  } else if (!PRIVATE_APP_SUBDOMAINS.split(',').includes(subdomain) && !isDev) {
+  } else if (!env.PRIVATE_APP_SUBDOMAINS.split(',').includes(subdomain) && !isDev) {
     // This case is for anything in our blockedSubdomains
     throw redirect(307, 'https://app.classroomio.com');
   }
@@ -165,7 +165,7 @@ function getSubdomain(url: URL) {
   const host = url.host.replace('www.', '');
   const parts = host.split('.');
 
-  if (host.endsWith(PRIVATE_APP_HOST)) {
+  if (host.endsWith(env.PRIVATE_APP_HOST)) {
     return parts.length >= 3 ? parts[0] : null;
   }
 

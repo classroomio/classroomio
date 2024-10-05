@@ -1331,6 +1331,17 @@
   "specialization": {
     "course_tag": "Spécialisation"
   },
+  "profileMenu": {
+    "profile": "PROFIL",
+    "current_org": "ORGANISATION ACTUELLE",
+    "free_tools": "OUTILS GRATUITS",
+    "progress": "Rapport d'étape",
+    "timer": "Minuterie d'activité",
+    "tic_tac": "Tic-tac",
+    "see_more": "Voir plus",
+    "whats_new": "Quoi de neuf",
+    "launch_week": "Semaine de lancement"
+  },
   "validations": {
     "invalid_type_error": "Ne doit pas être vide",
     "email": {

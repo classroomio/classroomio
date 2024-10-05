@@ -16,7 +16,7 @@
 
 <MetaTags {...metaTags} />
 
-<div class="overflow-hidden">
+<div class="overflow-hidden bg-white">
   <Navigation />
 
   <PageTransition url={data.url}>
