@@ -5,12 +5,13 @@
   import { goto } from '$app/navigation';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
-  import { fetchCourses } from '$lib/utils/services/courses';
-  import { courses, courseMetaDeta } from '$lib/components/Courses/store';
+  import { fetchActivity, fetchCourses } from '$lib/utils/services/courses';
+  import { courses, courseMetaDeta, activities } from '$lib/components/Courses/store';
   import type { Course } from '$lib/utils/types';
   import { getGreeting } from '$lib/utils/functions/date';
   import { t } from '$lib/utils/functions/translations';
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
+  import ActivityGraph from '$lib/components/LMS/components/ActivityGraph.svelte';
 
   let hasFetched = false;
   let progressPercentage = 0;
@@ -27,12 +28,15 @@
     }
 
     const coursesResult = await fetchCourses(userId, orgId);
+    const activity = await fetchActivity(orgId, userId);
     console.log(`coursesResult`, coursesResult);
+    console.log(`coursesActivity`, activity);
 
     $courseMetaDeta.isLoading = false;
     if (!coursesResult) return;
 
     courses.set(coursesResult.allCourses);
+    activities.set(activity?.Activtiy);
     hasFetched = true;
   }
 
@@ -87,6 +91,7 @@
     </div>
     <section class="flex w-full flex-col lg:flex-row md:gap-5">
       <div class="w-full lg:w-[50%] mt-10 xl:mt-2">
+        <ActivityGraph />
         <Learning />
       </div>
       <div class="mt-10 xl:mt-2 w-full lg:w-[50%]">

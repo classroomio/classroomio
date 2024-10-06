@@ -44,6 +44,34 @@ export async function fetchCourses(profileId, orgId) {
   return { allCourses };
 }
 
+export async function fetchActivity(orgId, profileId) {
+  if (!orgId || !profileId) return;
+
+  const match = {};
+  // Filter by profile_id if role isn't admin within organization
+  // if (!get(isOrgAdmin)) {
+  //   match.member_profile_id = profileId;
+  // }
+
+  // Gets courses for a particular organisation where the current logged in user is a groupmember
+  const { data: Activtiy } = await supabase
+    .rpc('get_userlog_activity', {
+      org_id_arg: orgId,
+      profile_id_arg: profileId
+    })
+    .match(match);
+
+  console.log(`allActivity`, Activtiy);
+  console.log(orgId, profileId);
+  // if (!Array.isArray(Activtiy)) {
+  //   return {
+  //     Activtiy: []
+  //   };
+  // }
+
+  return { Activtiy };
+}
+
 export async function fetchProfileCourseProgress(
   courseId,
   profileId
