@@ -1,6 +1,14 @@
+import { tc } from '$lib/utils/functions/trycatch';
 import { darken, lighten } from 'color2k';
 
+function updateThemeClassInBody(newClass: string, customRegex?: string) {
+  const regex = /theme-[\w]+/gi;
+  document.body.className = document.body.className.replace(customRegex ?? regex, newClass);
+}
+
 export function setTheme(theme: string) {
+  const _theme = theme || '';
+
   // this condition checks if it's a hex code from the db or a specified theme
   if (theme && !theme.includes('theme-')) {
     // add the "custom-theme" styles to the head tag
@@ -10,39 +18,40 @@ export function setTheme(theme: string) {
     setCustomTheme('theme-custom');
   } else if (!theme && document.body.className.includes('theme-')) {
     // if no theme and a theme is already applied, remove it
-    const regex = /theme-[\w]+/gi;
-    document.body.className = document.body.className.replace(regex, theme || '');
+    updateThemeClassInBody(_theme);
+
     return;
   }
 
   // In case theme already exists in dom, don't add
-  if (document.body.className.includes(theme || '')) return;
+  if (document.body.className.includes(_theme)) return;
 
   // set the new theme
-  localStorage.setItem('theme', theme || '');
-  document.body.className = document.body.className.concat(' ', theme || '');
+  localStorage.setItem('theme', _theme);
+  document.body.className = document.body.className.concat(' ', _theme);
 }
-
 
 export function setCustomTheme(theme?: string) {
   // In case the default theme is added but another theme exists
   if (!theme && document.body.className.includes('theme-')) {
-    const regex = /theme-[\w]+/gi;
-    document.body.className = document.body.className.replace(regex, theme || '');
+    updateThemeClassInBody(theme || '');
     return;
   }
 
   // Remove any class starting with "theme-"
-  const regex = /theme-[\w]+/gi;
-  document.body.className = document.body.className.replace(regex, '');
+  updateThemeClassInBody('');
 
+  const _theme = theme || '';
   // Add the new theme if it doesn't already exist
-  if (!document.body.className.includes(theme || '')) {
-    localStorage.setItem('theme', theme || '');
-    document.body.className = document.body.className.concat(' ', theme || '');
+  if (!document.body.className.includes(_theme)) {
+    localStorage.setItem('theme', _theme);
+    document.body.className = document.body.className.concat(' ', _theme);
   }
 }
 
+// Handle this functions in a try catch if hex is not valid.
+const _lighten = (hex: string, no: number) => tc(() => lighten(hex, no), hex);
+const _darken = (hex: string, no: number) => tc(() => darken(hex, no), hex);
 
 export function injectCustomTheme(hex: string) {
   const styleId = 'theme-custom';
@@ -50,16 +59,16 @@ export function injectCustomTheme(hex: string) {
 
   // generate shades using color2k's lighten function
   const shades = {
-    50: lighten(hex, 0.7),
-    100: lighten(hex, 0.6),
-    200: lighten(hex, 0.5),
-    300: lighten(hex, 0.4),
-    400: lighten(hex, 0.3),
-    500: lighten(hex, 0.2),
-    600: lighten(hex, 0.1),
+    50: _lighten(hex, 0.7),
+    100: _lighten(hex, 0.6),
+    200: _lighten(hex, 0.5),
+    300: _lighten(hex, 0.4),
+    400: _lighten(hex, 0.3),
+    500: _lighten(hex, 0.2),
+    600: _lighten(hex, 0.1),
     700: hex,
-    800: darken(hex, 0.1),
-    900: darken(hex, 0.2),
+    800: _darken(hex, 0.1),
+    900: _darken(hex, 0.2)
   };
 
   const styleContent = `
