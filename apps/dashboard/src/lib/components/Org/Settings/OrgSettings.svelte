@@ -230,15 +230,18 @@
         </button>
 
         <div
-          class="w-fit h-auto border-2 {isCustomTheme &&
-            'border-primary-700'} rounded-full relative group"
+          class="w-fit h-auto border-2 {isCustomTheme
+            ? 'border-primary-700'
+            : 'dark:border-neutral-700'} rounded-full relative group"
         >
           <!-- plus icon positioned over the color picker -->
           <div
             class="absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-200"
           >
             <svg
-              class="w-6 h-6 text-{isCustomTheme ? 'white' : 'black'} z-10 opacity-100"
+              class="w-6 h-6 text-{isCustomTheme
+                ? 'white'
+                : 'black'} dark:text-white z-10 opacity-100"
               fill="none"
               stroke="currentColor"
               stroke-width="2"
@@ -248,13 +251,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
             </svg>
           </div>
-          <ColorPicker
-            position="responsive"
-            label=""
-            bind:hex
-            on:input={handleCustomTheme}
-            nullable
-          />
+          <ColorPicker position="responsive" label="" bind:hex on:input={handleCustomTheme} />
         </div>
       </div>
     </Column>
@@ -332,3 +329,17 @@
     </Column>
   </Row>
 </Grid>
+
+<style>
+  :global(.dark) {
+    --cp-text-color: #fff;
+    --cp-border-color: white;
+    --cp-text-color: white;
+    --cp-input-color: #555;
+    --cp-button-hover-color: #777;
+  }
+
+  :global(.dark .alpha) {
+    background: #333 !important;
+  }
+</style>
