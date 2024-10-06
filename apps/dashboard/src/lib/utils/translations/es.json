@@ -1245,7 +1245,9 @@
         },
         "theme": {
           "heading": "Tema",
-          "sub_heading": "Establece el color de tu marca"
+          "sub_heading": "Establece el color de tu marca",
+          "custom_theme": "Tema personalizado",
+          "add_theme": "Agregar tema"
         },
         "customize_lms": {
           "heading": "Personalizar LMS",

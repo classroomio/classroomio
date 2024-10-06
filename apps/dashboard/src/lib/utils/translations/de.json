@@ -1245,7 +1245,9 @@
         },
         "theme": {
           "heading": "Thema",
-          "sub_heading": "Legen Sie Ihre Markenfarbe fest"
+          "sub_heading": "Legen Sie Ihre Markenfarbe fest",
+          "custom_theme": "Benutzerdefiniertes Thema",
+          "add_theme": "Thema hinzufügen"
         },
         "customize_lms": {
           "heading": "LMS anpassen",
