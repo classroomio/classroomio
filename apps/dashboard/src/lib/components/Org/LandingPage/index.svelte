@@ -183,7 +183,7 @@
       <header
         id="header"
         class={`w-full h-[100vh] md:h-[90vh] mb-10 relative ${
-          $landingPageSettings.header.background.show
+          $landingPageSettings.header.background?.show
             ? 'bg-cover bg-center'
             : 'border-b border-gray-300'
         }`}
