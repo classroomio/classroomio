@@ -4,5 +4,6 @@
   "gitpod": "Gitpod setup",
   "supabase-cloud": "Supabase Cloud Setup",
   "design": "Designers Guide",
-  "student-dashboard": "Student Dashboard"
+  "student-dashboard": "Student Dashboard",
+  "cloudflare-setup": "Cloudflare Setup"
 }

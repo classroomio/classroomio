@@ -52,7 +52,7 @@
 <div
   class="flex w-full justify-between items-center py-6 border-b-[1px] md:px-12 px-5 fixed top-0 z-[3000] filter backdrop-blur-xl shadow-sm bg-white"
 >
-  <a href="/" class="w-[20%]">
+  <a href="/" class="w-[10%]">
     <div class="flex items-center w-full">
       <img
         loading="lazy"
@@ -66,7 +66,7 @@
     </div>
   </a>
 
-  <nav class="w-[40%] hidden md:hidden lg:block">
+  <nav class="w-[50%] hidden md:hidden lg:block">
     <ul class="flex items-center justify-between w-full gap-2">
       <li class="text-gray-800 font-semibold text-sm cursor-pointer relative">
         <button
@@ -111,20 +111,20 @@
         {/if}
       </li>
       <a
-        href="/pricing"
+        href="/tools"
         class="text-gray-800 font-semibold text-sm cursor-pointer"
-        class:active={activeLink.startsWith('/pricing')}
+        class:active={activeLink.startsWith('/tools')}
       >
-        <li class="hover:bg-gray-100 px-4 py-2 rounded-md">Pricing</li>
+        <li class="hover:bg-gray-100 px-4 py-2 rounded-md">Free Tools</li>
       </a>
-      <a
+      <!-- <a
         href="/docs"
         target="_blank"
         class="text-gray-800 font-semibold text-sm cursor-pointer"
         class:active={activeLink.startsWith('/docs')}
       >
         <li class="hover:bg-gray-100 px-4 py-2 rounded-md">Docs</li>
-      </a>
+      </a> -->
 
       <a
         href="/blog"
@@ -132,6 +132,13 @@
         class:active={activeLink.startsWith('/blog')}
       >
         <li class="hover:bg-gray-100 px-4 py-2 rounded-md">Blog</li>
+      </a>
+      <a
+        href="/pricing"
+        class="text-gray-800 font-semibold text-sm cursor-pointer"
+        class:active={activeLink.startsWith('/pricing')}
+      >
+        <li class="hover:bg-gray-100 px-4 py-2 rounded-md">Pricing</li>
       </a>
     </ul>
   </nav>
@@ -214,17 +221,15 @@
               </div>
             {/if}
           </li>
+          <!-- Free Tools -->
           <a
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full"
-            on:click={() => {
-              handleShowNav();
-            }}
-            href="/pricing"
-            class:active={activeLink.startsWith('/pricing')}
+            on:click={handleShowNav}
+            href="/tools"
           >
-            <li>Pricing</li>
+            <li>Free Tools</li>
           </a>
-          <a
+          <!-- <a
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
             on:click={() => {
               handleShowNav();
@@ -234,7 +239,7 @@
             target="_blank"
           >
             <li>Docs</li>
-          </a>
+          </a> -->
           <a
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
             on:click={() => {
@@ -244,6 +249,17 @@
             href="/blog"
           >
             <li>Blog</li>
+          </a>
+          <!-- Pricing -->
+          <a
+            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full"
+            on:click={() => {
+              handleShowNav();
+            }}
+            href="/pricing"
+            class:active={activeLink.startsWith('/pricing')}
+          >
+            <li>Pricing</li>
           </a>
           <a
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"

@@ -43,14 +43,15 @@ services:
         - PRIVATE_APP_SUBDOMAINS=${PRIVATE_APP_SUBDOMAINS}
         - UNSPLASH_API_KEY=${UNSPLASH_API_KEY}
         - OPENAI_API_KEY=${OPENAI_API_KEY}
-        - AUTH_BEARER_TOKEN=${AUTH_BEARER_TOKEN}
-        - TEAM_ID_VERCEL=${TEAM_ID_VERCEL}
+        - PUBLIC_SERVER_URL=${PUBLIC_SERVER_URL}
+        - PUBLIC_IP_REGISTRY_KEY=${PUBLIC_IP_REGISTRY_KEY}
     volumes:
       - .:/app
       - /app/node_modules
       - /app/apps/dashboard/node_modules
     environment:
       - IS_SELFHOSTED=true
+      - DEPLOYMENT_PROVIDER=docker
       # Supabase - Database
       - PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}
       - PUBLIC_SUPABASE_ANON_KEY=${PUBLIC_SUPABASE_ANON_KEY}

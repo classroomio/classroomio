@@ -53,4 +53,18 @@
   h1 {
     text-transform: capitalize;
   }
+
+  :global(.prose a) {
+    text-decoration: underline;
+    font-weight: bold;
+  }
+
+  :global(.prose .gallery img) {
+    max-height: 300px;
+    border-radius: 0.375rem;
+  }
+
+  :global(.prose .gallery) {
+    overflow-x: scroll;
+  }
 </style>

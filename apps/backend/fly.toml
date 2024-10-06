@@ -6,6 +6,9 @@
 app = "classroomio-server"
 primary_region = "lhr"
 
+[build]
+  dockerfile = "Dockerfile.prod"
+
 [http_service]
   internal_port = 3002
   force_https = true

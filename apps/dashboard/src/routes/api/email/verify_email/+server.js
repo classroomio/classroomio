@@ -37,6 +37,7 @@ export async function POST({ request }) {
 
   const emailData = [
     {
+      from: `"Best from ClassroomIO" <notify@mail.classroomio.com>`,
       to,
       subject: 'Action Required: Confirm your email',
       content: `
@@ -47,8 +48,7 @@ export async function POST({ request }) {
   <div>
   <a class="button" href="${verificationLink}">Verify</a>
   </div>
-  `,
-      isPersonalEmail: true
+  `
     }
   ];
 

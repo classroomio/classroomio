@@ -1218,6 +1218,11 @@
           "video": "Vidéo",
           "image": "Image"
         }
+      },
+      "background": {
+        "title": "Image d'arrière-plan",
+        "show_background": "Afficher l'arrière-plan",
+        "hide_background": "Masquer l'arrière-plan"
       }
     },
     "organization": {
@@ -1240,7 +1245,9 @@
         },
         "theme": {
           "heading": "Thème",
-          "sub_heading": "Définissez la couleur de votre marque"
+          "sub_heading": "Définissez la couleur de votre marque",
+          "custom_theme": "Thème personnalisé",
+          "add_theme": "Ajouter un thème"
         },
         "customize_lms": {
           "heading": "Personnaliser le LMS",
@@ -1325,6 +1332,17 @@
   },
   "specialization": {
     "course_tag": "Spécialisation"
+  },
+  "profileMenu": {
+    "profile": "PROFIL",
+    "current_org": "ORGANISATION ACTUELLE",
+    "free_tools": "OUTILS GRATUITS",
+    "progress": "Rapport d'étape",
+    "timer": "Minuterie d'activité",
+    "tic_tac": "Tic-tac",
+    "see_more": "Voir plus",
+    "whats_new": "Quoi de neuf",
+    "launch_week": "Semaine de lancement"
   },
   "validations": {
     "invalid_type_error": "Ne doit pas être vide",

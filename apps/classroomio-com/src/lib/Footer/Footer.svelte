@@ -17,7 +17,7 @@
       <p class="lg:text-base mb-5 mr-2 text-sm leading-7 tracking-wide text-gray-600 lg:leading-7">
         The Open Source Learning Management System for Companies
         <br />
-        The easiest way to launch and scale your online bootcamp
+        ClassroomIO is the easiest way to grow your teaching business.
       </p>
       <!-- <a
         href="https://www.producthunt.com/posts/classroomio?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-classroomio"

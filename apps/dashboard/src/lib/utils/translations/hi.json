@@ -1218,6 +1218,11 @@
           "video": "वीडियो",
           "image": "छवि"
         }
+      },
+      "background": {
+        "title": "पृष्ठभूमि छवि",
+        "show_background": "पृष्ठभूमि दिखाएँ",
+        "hide_background": "पृष्ठभूमि छिपाएँ"
       }
     },
     "organization": {
@@ -1240,7 +1245,9 @@
         },
         "theme": {
           "heading": "विषय",
-          "sub_heading": "अपना ब्रांड रंग सेट करें"
+          "sub_heading": "अपना ब्रांड रंग सेट करें",
+          "custom_theme": "कस्टम थीम",
+          "add_theme": "थीम जोड़ें"
         },
         "customize_lms": {
           "heading": "एलएमएस को अनुकूलित करें",
@@ -1325,6 +1332,17 @@
   },
   "specialization": {
     "course_tag": "विशेषज्ञता"
+  },
+  "profileMenu": {
+    "profile": "प्रोफ़ाइल",
+    "current_org": "वर्तमान संघ",
+    "free_tools": "मुफ़्त उपकरण",
+    "progress": "प्रगति रिपोर्ट",
+    "timer": "गतिविधि टाइमर",
+    "tic_tac": "टिक टीएसी को पैर की अंगुली",
+    "see_more": "और देखें",
+    "whats_new": "नया क्या है",
+    "launch_week": "लॉन्च सप्ताह"
   },
   "validations": {
     "invalid_type_error": "खाली नहीं होना चाहिए",

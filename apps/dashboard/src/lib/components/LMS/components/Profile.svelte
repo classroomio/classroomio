@@ -7,7 +7,6 @@
   import { supabase } from '$lib/utils/functions/supabase';
   import { profile } from '$lib/utils/store/user';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import LogoutButton from '$lib/components/Buttons/Logout/index.svelte';
   import generateUUID from '$lib/utils/functions/generateUUID';
   import { t } from '$lib/utils/functions/translations';
   import LanguagePicker from '$lib/components/Org/Settings/LanguagePicker.svelte';
@@ -120,6 +119,5 @@
       isDisabled={loading}
       onClick={handleUpdate}
     />
-    <LogoutButton />
   </Row>
 </Grid>

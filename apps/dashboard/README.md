@@ -12,7 +12,7 @@
 
 ## ✨ About ClassroomIO
 
-<img alt="ClassroomIO Courses page" src="https://classroomio.com/classroomio-courses.png" />
+<img alt="ClassroomIO Courses page" src="https://brand.cdn.clsrio.com/classroomio-courses.png" />
 
 Streamline training for everyone with ClassroomIO.com. Our all-in-one platform empowers bootcamps, educators, and businesses to manage training programs easily. With our platform, anyone can run multiple classes and cohorts all from one UI. The application is mobile-first, which means that students can access your lesson materials from any device.
 

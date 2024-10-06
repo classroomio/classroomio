@@ -1218,6 +1218,11 @@
           "video": "Băng hình",
           "image": "Hình ảnh"
         }
+      },
+      "background": {
+        "title": "Hình nền",
+        "show_background": "Hiển thị nền",
+        "hide_background": "Ẩn nền"
       }
     },
     "organization": {
@@ -1240,7 +1245,9 @@
         },
         "theme": {
           "heading": "chủ đề",
-          "sub_heading": "Đặt màu thương hiệu của bạn"
+          "sub_heading": "Đặt màu thương hiệu của bạn",
+          "custom_theme": "Chủ đề tùy chỉnh",
+          "add_theme": "Thêm chủ đề"
         },
         "customize_lms": {
           "heading": "Tùy chỉnh LMS",
@@ -1325,6 +1332,17 @@
   },
   "specialization": {
     "course_tag": "Chuyên môn"
+  },
+  "profileMenu": {
+    "profile": "HỒ SƠ",
+    "current_org": "TỔ CHỨC HIỆN TẠI",
+    "free_tools": "CÔNG CỤ MIỄN PHÍ",
+    "progress": "Báo cáo tiến trình",
+    "timer": "Hẹn giờ hoạt động",
+    "tic_tac": "TIC Tac Toe",
+    "see_more": "Xem thêm",
+    "whats_new": "Có gì mới",
+    "launch_week": "Tuần ra mắt"
   },
   "validations": {
     "invalid_type_error": "Không được để trống",
