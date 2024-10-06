@@ -145,7 +145,7 @@
                 width="w-[1.2rem]"
                 height="h-[1.2rem]"
               />
-              <p class="text-sm font-medium truncate max-w-full">{$profile.fullname}</p>
+              <p class="text-sm dark:text-white font-medium truncate max-w-full">{$profile.fullname}</p>
             </div>
             <div>
               <ChevronRight />
