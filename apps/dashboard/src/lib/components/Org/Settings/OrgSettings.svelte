@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import debounce from 'lodash/debounce';
   import ColorPicker from 'svelte-awesome-color-picker';
   import { Grid, Row, Column } from 'carbon-components-svelte';
   import FlashFilled from 'carbon-icons-svelte/lib/FlashFilled.svelte';
@@ -38,6 +39,19 @@
     default: ''
   };
 
+  const saveTheme = debounce(async (theme) => {
+    const { error, data } = await supabase
+      .from('organization')
+      .update({ theme })
+      .match({ id: $currentOrg.id });
+
+    console.log('Debounced update theme', data);
+
+    if (error) {
+      snackbar.error('Failed to update theme: ' + error.message);
+    }
+  }, 700);
+
   function handleChangeTheme(t = '') {
     return async () => {
       document.body.className = document.body.className
@@ -51,12 +65,7 @@
 
       setTheme(t);
 
-      const res = await supabase
-        .from('organization')
-        .update({ theme: t })
-        .match({ id: $currentOrg.id });
-
-      console.log('Update theme', res);
+      saveTheme(t);
     };
   }
 
@@ -68,14 +77,7 @@
 
     $currentOrg.theme = hex;
 
-    const { error } = await supabase
-      .from('organization')
-      .update({ theme: hex })
-      .match({ id: $currentOrg.id });
-
-    if (error) {
-      snackbar.error('Failed to update theme: ' + error.message);
-    }
+    saveTheme(hex);
   }
 
   async function handleUpdate() {

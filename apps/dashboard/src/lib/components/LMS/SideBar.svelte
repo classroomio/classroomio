@@ -14,7 +14,6 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { ChevronRight } from 'carbon-icons-svelte';
   import ProfileMenu from '$lib/components/Org/ProfileMenu/index.svelte';
-
   interface SideLinks {
     name: string;
     icon: any;
@@ -68,8 +67,6 @@
       link: '/lms/explore'
     }
   ].filter((link) => (link.show ? link.show() : true));
-
-  $: console.log('sideLinks', sideLinks);
 
   const toggleSidebar = () => {
     $sideBar.hidden = !$sideBar.hidden;
