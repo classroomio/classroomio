@@ -1314,7 +1314,9 @@
     "what_brings": "Qu'est-ce qui t'amène à",
     "how": "Comment avez-vous entendu parler de nous?",
     "back": "Dos",
-    "continue": "Continuer"
+    "continue": "Continuer",
+    "employees": "Former mes collaborateurs",
+    "customers": "Créer des cours pour mes clients"
   },
   "verify_email_modal": {
     "heading": "Vérifiez votre e-mail",

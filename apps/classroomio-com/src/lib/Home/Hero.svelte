@@ -8,7 +8,7 @@
     { label: 'Audience', color: '#3ADFEC' },
     { label: 'Employees', color: '#BF0696' },
     { label: 'Customers', color: '#0233BD' },
-    { label: 'Stakeholders', color: '#9747FF' }
+    { label: 'Students', color: '#9747FF' }
   ];
   let animate = false;
   let titleIndex = 0;
@@ -92,10 +92,10 @@
 
     <div class="w-full">
       <div
-        class="font-bold md:leading-[1.5] text-left lg:text-center ml-6 text-slate-900 text-4xl lg:text-6xl"
+        class="font-bold md:leading-[1.5] text-left lg:text-center ml-6 text-slate-900 text-4xl lg:text-7xl"
       >
-        <span>Educate your</span>
-        <div class="flex-wrap flex items-center justify-center lg:gap-3">
+        <span>Educate Your</span>
+        <div class="flex-wrap flex items-center justify-center lg:gap-3 mb-2">
           <span
             class="w-full lg:w-[48%] h-[40px] md:h-[50px] lg:h-[75px] mb-0 mt-1 md:mt-0 lg:-mb-4 relative inline-block overflow-hidden lg:text-center"
           >

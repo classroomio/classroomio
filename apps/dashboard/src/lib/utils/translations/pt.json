@@ -1314,7 +1314,9 @@
     "what_brings": "O que leva você a",
     "how": "Como você ficou sabendo sobre nós?",
     "back": "Voltar",
-    "continue": "Continuar"
+    "continue": "Continuar",
+    "employees": "Treinar meus funcionários",
+    "customers": "Criar cursos para meus clientes"
   },
   "verify_email_modal": {
     "heading": "Verifique seu e-mail",
