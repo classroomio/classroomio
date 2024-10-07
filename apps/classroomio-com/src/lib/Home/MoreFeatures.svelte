@@ -113,7 +113,7 @@
       <div class="flex justify-evenly gap-y-8 flex-wrap w-full mt-10 mx-auto">
         <div class="text-center">
           <h1 class="text-3xl md:text-5xl font-bold">
-            Play With Our <span class="text-[#0233BD]">Free Tools</span>
+            Explore Our <span class="text-[#0233BD]">Free Tools</span>
           </h1>
           <p class="text-sm md:text-base text-[#334155] md:w-[65%] mt-5 md:mt-10 mx-auto">
             Innovative tools to help you aid you example preparation, as well as making learning

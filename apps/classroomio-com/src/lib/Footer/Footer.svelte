@@ -15,7 +15,7 @@
         class="mb-5"
       />
       <p class="lg:text-base mb-5 mr-2 text-sm leading-7 tracking-wide text-gray-600 lg:leading-7">
-        Launch Your Online Bootcamp In Minutes
+        The Open Source Learning Management System for Companies
         <br />
         ClassroomIO is the easiest way to grow your teaching business.
       </p>

@@ -11,17 +11,17 @@ export function load({ url }) {
 
 function getBaseMetaTags(url: URL) {
   const metatags = Object.freeze({
-    title: 'ClassroomIO – Launch Your Online Bootcamp In Minutes',
+    title: 'ClassroomIO | The Open Source Learning Management System for Companies',
     description:
-      'Launch your bootcamp quickly and affordably with ClassroomIO, the customizable online teaching platform.',
+      'A flexible, user-friendly platform for creating, managing, and delivering courses for companies and training organisations',
     canonical: new URL(url.pathname, url.origin).href,
     openGraph: {
       type: 'website',
       url: new URL(url.pathname, url.origin).href,
       locale: 'en_IE',
-      title: 'ClassroomIO – Launch Your Online Bootcamp In Minutes',
+      title: 'ClassroomIO | The Open Source Learning Management System for Companies',
       description:
-        'Launch your bootcamp quickly and affordably with ClassroomIO, the customizable online teaching platform.',
+        'A flexible, user-friendly platform for creating, managing, and delivering courses for companies and training organisations',
       siteName: 'ClassroomIO',
       images: [
         {
@@ -38,9 +38,9 @@ function getBaseMetaTags(url: URL) {
       handle: '@classroomio',
       site: '@classroomio',
       cardType: 'summary_large_image' as const,
-      title: 'ClassroomIO – Launch Your Online Bootcamp In Minutes',
+      title: 'ClassroomIO | The Open Source Learning Management System for Companies',
       description:
-        'Launch your bootcamp quickly and affordably with ClassroomIO, the customizable online teaching platform.',
+        'A flexible, user-friendly platform for creating, managing, and delivering courses for companies and training organisations',
       image: 'https://brand.cdn.clsrio.com/og/classroomio-og.png',
       imageAlt: 'ClassroomIO OG Image'
     }

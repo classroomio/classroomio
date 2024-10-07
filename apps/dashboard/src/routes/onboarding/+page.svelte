@@ -69,12 +69,16 @@
       value: 'teach-online'
     },
     {
-      label: $t('onboarding.expanding'),
-      value: 'expanding-platform'
+      label: $t('onboarding.employees'),
+      value: 'employees'
     },
     {
-      label: $t('onboarding.explore'),
-      value: 'explore'
+      label: $t('onboarding.customers'),
+      value: 'customers'
+    },
+    {
+      label: $t('onboarding.expanding'),
+      value: 'expanding-platform'
     }
   ];
 

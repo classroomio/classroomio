@@ -5,10 +5,10 @@
   import { env } from '$env/dynamic/public';
 
   const names = [
-    { label: 'Bootcamp', color: '#3ADFEC' },
-    { label: 'Course', color: '#BF0696' },
-    { label: 'Training', color: '#0233BD' },
-    { label: 'Academy', color: '#9747FF' }
+    { label: 'Audience', color: '#3ADFEC' },
+    { label: 'Employees', color: '#BF0696' },
+    { label: 'Customers', color: '#0233BD' },
+    { label: 'Students', color: '#9747FF' }
   ];
   let animate = false;
   let titleIndex = 0;
@@ -94,28 +94,30 @@
       <div
         class="font-bold md:leading-[1.5] text-left lg:text-center ml-6 text-slate-900 text-4xl lg:text-7xl"
       >
-        <span>Launch Your Online</span> <br />
-        <div class="flex-wrap flex items-center lg:gap-3">
+        <span>Educate Your</span>
+        <div class="flex-wrap flex items-center justify-center lg:gap-3 mb-2">
           <span
-            class="w-full lg:w-[48%] h-[40px] md:h-[50px] lg:h-[90px] mb-0 mt-1 md:mt-0 lg:-mb-4 relative inline-block overflow-hidden"
+            class="w-full lg:w-[48%] h-[40px] md:h-[50px] lg:h-[75px] mb-0 mt-1 md:mt-0 lg:-mb-4 relative inline-block overflow-hidden lg:text-center"
           >
             {#key titleIndex}
               <span
-                class="absolute left-0 right-[unset] lg:right-0 lg:left-[unset]"
+                class="absolute left-0 right-[unset] lg:right-0 lg:left-[unset] w-full"
                 style="color: {names[titleIndex].color}"
                 transition:fly={{ y: 100, delay: 0, easing: sineInOut }}
               >
-                {names[titleIndex].label}
+                <span class="w-full text-center m-auto">
+                  {names[titleIndex].label}
+                </span>
               </span>
             {/key}
           </span>
-          <span>In Minutes</span>
         </div>
+        <span>from one Platform</span>
       </div>
 
       <p class="text-base mx-auto mt-10 px-4 text-slate-700 md:text-lg lg:mt-6 lg:w-[42%] lg:p-0">
-        ClassroomIO is an open source learning management system for small and medium bootcamps that
-        wants to set up a fully customizable online teaching platform quickly.
+        ClassroomIO is an open source learning management system for companies. We give you a suite
+        of tools to help you achieve your training, onboarding and certification goals.
       </p>
     </div>
 

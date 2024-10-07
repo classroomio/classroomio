@@ -1314,7 +1314,9 @@
     "what_brings": "Điều gì đưa bạn đến",
     "how": "Bạn đã nghe về chúng tôi như thế nào?",
     "back": "Mặt sau",
-    "continue": "Tiếp tục"
+    "continue": "Tiếp tục",
+    "employees": "Đào tạo nhân viên của tôi",
+    "customers": "Tạo khóa học cho khách hàng của tôi"
   },
   "verify_email_modal": {
     "heading": "Xác nhận email của bạn",
