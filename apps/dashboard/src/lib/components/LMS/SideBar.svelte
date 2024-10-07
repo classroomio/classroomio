@@ -69,6 +69,8 @@
     }
   ].filter((link) => (link.show ? link.show() : true));
 
+  $: console.log('sideLinks', sideLinks);
+
   const toggleSidebar = () => {
     $sideBar.hidden = !$sideBar.hidden;
   };
@@ -103,7 +105,7 @@
         </div>
 
         <ul class="my-5">
-          {#each sideLinks as item (item.name)}
+          {#each sideLinks as item}
             <a href={item.link} class="text-black" on:click={toggleSidebar}>
               <li
                 class="flex items-center py-3 px-4 mb-2 {NavClasses.item} {isActive(
@@ -145,7 +147,9 @@
                 width="w-[1.2rem]"
                 height="h-[1.2rem]"
               />
-              <p class="text-sm dark:text-white font-medium truncate max-w-full">{$profile.fullname}</p>
+              <p class="text-sm dark:text-white font-medium truncate max-w-full">
+                {$profile.fullname}
+              </p>
             </div>
             <div>
               <ChevronRight />
