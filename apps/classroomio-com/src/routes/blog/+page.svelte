@@ -41,7 +41,9 @@
             </div>
           </div>
           <a href={`/blog/${post.slug}`} class="group">
-            <p class="font-bold text-lg py-2 group-hover:text-slate-500">{@html post.title}</p>
+            <p class="font-bold text-lg py-2 group-hover:text-slate-500">
+              {@html post.title}
+            </p>
 
             <p class="text-slate-500 pt-2 pb-4">{post.description}</p>
           </a>
