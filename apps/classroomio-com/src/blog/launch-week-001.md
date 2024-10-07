@@ -32,7 +32,7 @@ In this launch week, we will show you some of the steps we've taken to allow com
 
 Below are all the features for each day that we will be sharing. As the day goes by, this list will be updated:
 
-1. Day 1 - 😎
+1. Day 1 - [Brand Customisations](/blog/brand-customisations)
 2. Day 2 - 😁
 3. Day 3 - 🤩
 4. Day 4 - 🤯
