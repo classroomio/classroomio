@@ -17,7 +17,7 @@ We are excited to announce more customisations coming into our learning manageme
 
 ## Demo
 
-<iframe class="mb-5" width="560" height="315" src="https://www.youtube.com/embed/y46mvF_1IWk?si=W39qbrW3KJ3DGO3Q" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<iframe class="embed mb-5" src="https://www.youtube.com/embed/y46mvF_1IWk?si=W39qbrW3KJ3DGO3Q" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ## Your Student Dashboard
 
