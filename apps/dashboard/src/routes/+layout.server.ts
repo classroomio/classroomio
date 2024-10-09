@@ -6,7 +6,7 @@ import { getCurrentOrg } from '$lib/utils/services/org';
 import { getSupabase, supabase } from '$lib/utils/functions/supabase';
 import { loadTranslations } from '$lib/utils/functions/translations';
 import type { CurrentOrg } from '$lib/utils/types/org';
-import { env } from '$env/dynamic/private';
+import { IS_SELFHOSTED } from '$env/static/private';
 
 if (!supabase) {
   getSupabase();
@@ -29,10 +29,10 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
     baseMetaTags: getBaseMetaTags(url)
   };
 
-  console.log('env.IS_SELFHOSTED', env.IS_SELFHOSTED);
+  console.log('IS_SELFHOSTED', IS_SELFHOSTED);
 
   // Selfhosted usecase would be here
-  if (env.IS_SELFHOSTED === 'true') {
+  if (IS_SELFHOSTED === 'true') {
     const subdomain = getSubdomain(url);
     console.log('subdomain', subdomain);
 
