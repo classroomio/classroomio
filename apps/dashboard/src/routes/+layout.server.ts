@@ -29,9 +29,12 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
     baseMetaTags: getBaseMetaTags(url)
   };
 
+  console.log('env.IS_SELFHOSTED', env.IS_SELFHOSTED);
+
   // Selfhosted usecase would be here
   if (env.IS_SELFHOSTED === 'true') {
     const subdomain = getSubdomain(url);
+    console.log('subdomain', subdomain);
 
     // Student dashboard
     if (subdomain) {
