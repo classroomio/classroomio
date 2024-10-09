@@ -7,6 +7,7 @@ import { getSupabase, supabase } from '$lib/utils/functions/supabase';
 import { loadTranslations } from '$lib/utils/functions/translations';
 import type { CurrentOrg } from '$lib/utils/types/org';
 import { IS_SELFHOSTED } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 
 if (!supabase) {
   getSupabase();
