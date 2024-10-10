@@ -64,9 +64,9 @@
   </PageHeader>
 
   <section
-    class="w-full lg:py-24 py-16 lg:px-28 px-8 flex lg:flex-row flex-col lg:items-center lg:justify-between justify-center gap-x-6 gap-y-8 border border-black"
+    class="w-full lg:py-24 py-16 lg:px-28 px-8 flex lg:flex-row flex-col lg:items-center lg:justify-between justify-center gap-x-6 gap-y-8"
   >
-    <div class="w-full lg:w-[50%] gap-y-4 flex flex-col items-start justify-start">
+    <div class="w-full lg:w-[40%] gap-y-4 flex flex-col items-start justify-start">
       <div class="w-fit py-2 px-4 rounded-full border-[#C2D2FF] border-2 text-center">
         <p class=" text-sm md:text-base text-[#4B5563] text-center font-medium">Amazing benefits</p>
       </div>
@@ -81,10 +81,12 @@
         </p>
       </div>
     </div>
-    <div class="w-[63%] flex flex-wrap grow justify-between items-center items-stretch gap-y-6">
+    <div
+      class="lg:w-[50%] min-w-[450px] w-full flex flex-col lg:flex-wrap lg:flex-row justify-start items-center items-stretch gap-6"
+    >
       {#each benefitDetails as benefits}
         <div
-          class="w-full md:w-[40%] min-w-[200px] md:p-6 p-4 border border-[#D9E0F5] rounded-2xl flex flex-col gap-y-6"
+          class="w-full lg:w-[45%] min-w-[200px] md:p-6 p-4 border border-[#D9E0F5] rounded-2xl flex flex-col grow gap-y-6"
         >
           <div>
             <img src="/employee-training/{benefits.img}" alt="light-bulb" />

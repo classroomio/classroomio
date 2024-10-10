@@ -4,22 +4,37 @@
 
   const benefitDetails = [
     {
-      title: 'Increased Engagement',
-      description: 'Interactive courses and collaborative features keep employees motivated.'
+      img: 'ai.svg',
+      title: 'AI-Powered Learning',
+      point_1: 'Create engaging courses with AI-assisted content generation.',
+      point_2: 'Automate grading and feedback processes, saving time and effort.',
+      point_3: 'Personalize learning experiences based on individual student needs.'
     },
     {
-      title: 'Streamlined Learning',
-      description: 'Centralized platform for all training materials and progress tracking.'
+      img: 'community.svg',
+      title: 'Foster a Thriving Community',
+      point_1:
+        'Create a supportive learning environment with built-in forums and interactive tools.',
+      point_2: 'Encourage collaboration and knowledge sharing among students.',
+      point_3: 'Build a strong community of learners and mentors.'
     },
     {
-      title: 'Customizable Experience',
-      description: "Tailor the learning experience to your company's specific needs and branding."
-    },
-    {
-      title: 'Data-Driven Insights',
-      description: 'Gain valuable insights into employee performance and learning patterns.'
+      img: 'operations.svg',
+      title: 'Streamline Operations',
+      point_1: 'Manage your courses and students efficiently with our user-friendly platform.',
+      point_2: 'Issue custom certificates to validate student achievements.',
+      point_3: 'Provide a seamless learning experience for your students.'
     }
   ];
+
+  //   const features = [
+  //     {
+  //         img
+  //         icon:
+  //         title:
+  //         decription:
+  //     }
+  //   ]
 </script>
 
 <svelte:head>
@@ -60,70 +75,61 @@
   </PageHeader>
 
   <section
-    class="w-full lg:py-24 py-16 lg:px-28 px-8 flex lg:flex-row flex-col lg:items-center lg:justify-between justify-center gap-x-6 gap-y-8"
+    class="w-full lg:py-24 py-16 lg:px-28 px-8 flex flex-col lg:items-center lg:justify-between justify-center gap-y-12"
   >
-    <div class="w-full lg:w-[40%] gap-y-4 flex flex-col items-start justify-start">
+    <div
+      class="w-full gap-y-4 flex flex-col lg:items-center items-start lg:justify-center justify-start"
+    >
       <div class="w-fit py-2 px-4 rounded-full border-[#C2D2FF] border-2 text-center">
-        <p class=" text-sm md:text-base text-[#4B5563] text-center font-medium">Amazing benefits</p>
+        <p class=" text-sm md:text-base text-[#4B5563] text-center font-medium">
+          Have you heard the benefits?
+        </p>
       </div>
-
-      <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
-        <h1 class="md:text-5xl text-3xl font-medium text-[#282828]">
-          Unlock Your Team's Potential and Drive Success
-        </h1>
-        <p class="text-[#656565] text-xl font-light">
-          Experience the power of collaborative learning with ClassroomIO. Engage your workforce
-          with personalized training that aligns with your company's goals.
+      <div
+        class="lg:w-full flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
+      >
+        <h1 class="md:text-5xl text-3xl font-medium text-[#282828]">Inspire Student Success</h1>
+        <p class="text-[#656565] text-xl font-light lg:text-center lg:w-[80%]">
+          Elevate your bootcamp with ClassroomIO's comprehensive toolkit. Create engaging content,
+          foster community, and drive student achievement.
         </p>
       </div>
     </div>
-    <div class="w-full flex flex-col lg:w-[50%] lg:grid lg:grid-cols-2 gap-y-4 lg:gap-4">
-      <div
-        class="w-full md:w-[100%] md:p-6 p-4 border border-[#D9E0F5] rounded-2xl flex flex-col gap-y-6"
-      >
-        <div>
-          <img src="/employee-training/light-bulb.svg" alt="light-bulb" />
+
+    <div
+      class="w-full flex lg:flex-row flex-col lg:justify-between justify-start gap-6 lg:items-center items-start lg:items-stretch"
+    >
+      {#each benefitDetails as benefits}
+        <div class="w-full md:p-6 p-4 border border-[#D9E0F5] rounded-2xl flex flex-col gap-y-6">
+          <div>
+            <img src="/bootcamps/{benefits.img}" alt="brain" />
+          </div>
+          <div class="w-full flex flex-col justify-start align-start gap-y-2">
+            <h1 class="w-full text-xl font-medium font-[#282828]">{benefits.title}</h1>
+
+            <div class="flex flex-row justify-start items-start gap-x-3">
+              <img src="/bootcamps/check.svg" alt="check mark" />
+              <p class=" w-full text-base font-[#656565] font-light">
+                {benefits.point_1}
+              </p>
+            </div>
+
+            <div class="flex flex-row justify-start items-start gap-x-3">
+              <img src="/bootcamps/check.svg" alt="check mark" />
+              <p class=" w-full text-base font-[#656565] font-light">
+                {benefits.point_2}
+              </p>
+            </div>
+
+            <div class="flex flex-row justify-start items-start gap-x-3">
+              <img src="/bootcamps/check.svg" alt="check mark" />
+              <p class=" w-full text-base font-[#656565] font-light">
+                {benefits.point_3}
+              </p>
+            </div>
+          </div>
         </div>
-        <div class="w-full flex flex-col justify-start align-start gap-y-2">
-          <h1 class="w-full text-xl font-medium font-[#282828]">Increased Engagement</h1>
-          <p class=" w-full text-base font-[#656565] font-light">
-            Interactive courses and collaborative features keep employees motivated.
-          </p>
-        </div>
-      </div>
-      <div class="w-full md:w-[100%] p-6 border border-[#D9E0F5] rounded-2xl flex flex-col gap-y-6">
-        <div>
-          <img src="/employee-training/learning.svg" alt="light-bulb" />
-        </div>
-        <div class="w-full flex flex-col justify-start align-start gap-y-2">
-          <h1 class="w-full text-xl font-medium font-[#282828]">Streamlined Learning</h1>
-          <p class=" w-full text-base font-[#656565] font-light">
-            Centralized platform for all training materials and progress tracking.
-          </p>
-        </div>
-      </div>
-      <div class="w-full md:w-[100%] p-6 border border-[#D9E0F5] rounded-2xl flex flex-col gap-y-6">
-        <div>
-          <img src="/employee-training/paint-brush.svg" alt="paint-brush" />
-        </div>
-        <div class="w-full flex flex-col justify-start align-start gap-y-2">
-          <h1 class="w-full text-xl font-medium font-[#282828]">Customizable Experience</h1>
-          <p class=" w-full text-base font-[#656565] font-light">
-            Tailor the learning experience to your company's specific needs and branding.
-          </p>
-        </div>
-      </div>
-      <div class="w-full md:w-[100%] p-6 border border-[#D9E0F5] rounded-2xl flex flex-col gap-y-6">
-        <div>
-          <img src="/employee-training/pie-chart.svg" alt="pie-chart" />
-        </div>
-        <div class="w-full flex flex-col justify-start align-start gap-y-2">
-          <h1 class="w-full text-xl font-medium font-[#282828]">Data-Driven Insights</h1>
-          <p class=" w-full text-base font-[#656565] font-light">
-            Gain valuable insights into employee performance and learning patterns.
-          </p>
-        </div>
-      </div>
+      {/each}
     </div>
   </section>
 
@@ -141,12 +147,11 @@
       <div
         class="lg:w-full flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
       >
-        <h1 class="md:text-5xl text-3xl font-medium text-[#282828]">
-          What makes us the right choice
-        </h1>
+        <h1 class="md:text-5xl text-3xl font-medium text-[#282828]">Why We're the Perfect Fit</h1>
         <p class="text-[#656565] text-xl font-light lg:text-center lg:w-[80%]">
-          Discover why we’re the perfect partner for your employee training needs. Experience
-          innovative solutions designed to reduce stress and enhance productivity.
+          Discover why we’re the ideal partner for your bootcamp training needs. Experience
+          innovative solutions designed to elevate student engagement and maximize learning
+          outcomes.
         </p>
       </div>
     </div>
@@ -156,12 +161,12 @@
         class="w-full flex lg:flex-row flex-col lg:justify-between justify-start lg:items-center items-start gap-y-8"
       >
         <div class="w-full lg:w-[40%] gap-y-4 flex flex-col items-start justify-start">
-          <img src="/employee-training/team-mgnt.svg" alt="team icon" />
+          <img src="/bootcamps/certificate-i.svg" alt="team icon" />
           <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
-            <h1 class="md:text-5xl text-3xl font-medium text-[#282828]">Team management</h1>
+            <h1 class="md:text-5xl text-3xl font-medium text-[#282828]">Certificates</h1>
             <p class="text-[#656565] text-xl font-light">
-              Company administrators can invite their team members to collaborate on course creation
-              within classroomio
+              We provide pre built certificate templates anyone can choose from and provide to their
+              students right within our dashboard
             </p>
           </div>
           <button
@@ -171,19 +176,22 @@
         </div>
 
         <div>
-          <img src="/employee-training/team-mgnt2.svg" alt="team management feature ui" />
+          <img src="/bootcamps/certificate.svg" alt="team management feature ui" />
         </div>
       </div>
       <div
         class="w-full flex lg:flex-row-reverse flex-col lg:justify-between justify-start lg:items-center items-start gap-y-8"
       >
         <div class="w-full lg:w-[40%] gap-y-4 flex flex-col items-start justify-start">
-          <img src="/employee-training/colour-pallete.svg" alt="team icon" />
+          <img src="/bootcamps/forum-i.svg" alt="team icon" />
           <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
-            <h1 class="md:text-5xl text-3xl font-medium text-[#282828]">Custom branding</h1>
+            <h1 class="md:text-5xl text-3xl font-medium text-[#282828]">
+              Forum area for question and answer
+            </h1>
             <p class="text-[#656565] text-xl font-light">
-              Admins can set the company logo which appears all through the product and the employee
-              dashboard as well as select a preferred brand color
+              Our community section allows for a robust question and answer experience encouraging
+              collaboration between students. This also encourages knowledge sharing amongst
+              students.
             </p>
           </div>
           <button
@@ -193,18 +201,21 @@
         </div>
 
         <div>
-          <img src="/employee-training/custom2.svg" alt="team management feature ui" />
+          <img src="/bootcamps/forum.svg" alt="team management feature ui" />
         </div>
       </div>
       <div
         class="w-full flex lg:flex-row flex-col lg:justify-between justify-start lg:items-center items-start gap-y-8"
       >
         <div class="w-full lg:w-[40%] gap-y-4 flex flex-col items-start justify-start">
-          <img src="/employee-training/cup.svg" alt="team icon" />
+          <img src="/bootcamps/ai.svg" alt="team icon" />
           <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
-            <h1 class="md:text-5xl text-3xl font-medium text-[#282828]">Track learners progress</h1>
+            <h1 class="md:text-5xl text-3xl font-medium text-[#282828]">
+              AI Powered Content creation
+            </h1>
             <p class="text-[#656565] text-xl font-light">
-              Administrators can track the progress of their employees and assist whoever needs help
+              we give you the ability to create courses with AI, upload videos, embed slides, create
+              quizzes and even grade quizzes with AI
             </p>
           </div>
           <button
@@ -214,35 +225,31 @@
         </div>
 
         <div>
-          <img src="/employee-training/progress.svg" alt="team management feature ui" />
+          <img src="/bootcamps/ai-pic.svg" alt="team management feature ui" />
         </div>
       </div>
-    </div>
-  </section>
-
-  <section
-    class="w-full bg-[#040F2D] flex flex-col items-start justify-start gap-y-16 lg:py-24 py-16 lg:px-28 px-8"
-  >
-    <div
-      class="w-full flex lg:flex-row-reverse flex-col-reverse lg:justify-between justify-start lg:items-center items-start gap-y-8"
-    >
-      <div class="w-full lg:w-[40%] gap-y-4 flex flex-col items-start justify-start">
-        <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
-          <h1 class="md:text-5xl text-3xl font-medium text-white">
-            Did you know you can request for custom features?
-          </h1>
-          <p class="text-[#DEDEDE] text-xl font-light">
-            Companies get the opportunity to request custom features from us.
-          </p>
+      <div
+        class="w-full flex lg:flex-row-reverse flex-col lg:justify-between justify-start lg:items-center items-start gap-y-8"
+      >
+        <div class="w-full lg:w-[40%] gap-y-4 flex flex-col items-start justify-start">
+          <img src="/bootcamps/free-tools-i.svg" alt="team icon" />
+          <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
+            <h1 class="md:text-5xl text-3xl font-medium text-[#282828]">Free tools for students</h1>
+            <p class="text-[#656565] text-xl font-light">
+              We provide a suite of free tools like Pomodoro timer, Random name picker, and a
+              Progress report generator to make the lives of educators and students much easier (use
+              links for images)
+            </p>
+          </div>
+          <button
+            class="py-4 px-8 border border-[#1D4ED8] outline-transparent rounded text-[#1D4ED8] text-sm font-semibold"
+            >Book a Demo</button
+          >
         </div>
-        <button
-          class="py-4 px-8 border border-tranparent outline-transparent bg-white rounded text-[#040F2D] text-sm font-semibold"
-          >Sign me up</button
-        >
-      </div>
 
-      <div>
-        <img src="/employee-training/bro.svg" alt="male and female in an office" />
+        <div>
+          <img src="/bootcamps/free-tools.svg" alt="team management feature ui" />
+        </div>
       </div>
     </div>
   </section>
