@@ -21,6 +21,8 @@
     "sell": "Sell courses online",
     "teach": "Teach my current students online",
     "expanding": "On another platform, expanding here",
+    "employees": "Train my employees",
+    "customers": "Create courses for my customers",
     "explore": "Just here to explore",
     "articles": "Articles",
     "search": "Search engine",
@@ -99,7 +101,9 @@
         "update_organization": "Update Organization",
         "theme": {
           "heading": "Theme",
-          "sub_heading": "Set your brand color"
+          "sub_heading": "Set your brand color",
+          "custom_theme": "Custom Theme",
+          "add_theme": "Add Theme"
         },
         "customize_lms": {
           "heading": "Customize LMS",
@@ -128,6 +132,11 @@
       "title": "Title",
       "title_highlight": "Title-Highlight",
       "subtitle": "Subtitle",
+      "background": {
+        "title": "Background Image",
+        "show_background": "Show background",
+        "hide_background": "Hide background"
+      },
       "actions": {
         "heading": "Actions",
         "label": "Label",
@@ -139,6 +148,7 @@
           "video": "Video",
           "image": "Image"
         },
+
         "show_banner": "Show banner",
         "hide_banner": "Hide banner"
       },

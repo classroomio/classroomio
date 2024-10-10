@@ -14,7 +14,6 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { ChevronRight } from 'carbon-icons-svelte';
   import ProfileMenu from '$lib/components/Org/ProfileMenu/index.svelte';
-
   interface SideLinks {
     name: string;
     icon: any;
@@ -103,7 +102,7 @@
         </div>
 
         <ul class="my-5">
-          {#each sideLinks as item (item.name)}
+          {#each sideLinks as item}
             <a href={item.link} class="text-black" on:click={toggleSidebar}>
               <li
                 class="flex items-center py-3 px-4 mb-2 {NavClasses.item} {isActive(
@@ -145,7 +144,9 @@
                 width="w-[1.2rem]"
                 height="h-[1.2rem]"
               />
-              <p class="text-sm font-medium truncate max-w-full">{$profile.fullname}</p>
+              <p class="text-sm dark:text-white font-medium truncate max-w-full">
+                {$profile.fullname}
+              </p>
             </div>
             <div>
               <ChevronRight />
