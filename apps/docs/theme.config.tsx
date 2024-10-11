@@ -74,53 +74,6 @@ const config: DocsThemeConfig = {
   project: {
     link: 'https://github.com/rotimi-best/classroomio'
   },
-  useNextSeoProps() {
-    return {
-      titleTemplate: 'ClassroomIO Documentation',
-      openGraph: {
-        siteName: 'ClassroomIO Docs',
-        title: 'ClassroomIO Documentation',
-        description:
-          'A flexible, user-friendly platform for creating, managing, and delivering courses for companies and training organisations',
-        images: [
-          {
-            url: `${process.env.imagePath}/img/logo-16.png`,
-            width: 16,
-            height: 16,
-            alt: 'ClassroomIO Docs Og Image Alt',
-            type: 'image/png'
-          },
-          {
-            url: `${process.env.imagePath}/img/logo-32.png`,
-            width: 32,
-            height: 32,
-            alt: 'ClassroomIO Docs Og Image Alt',
-            type: 'image/png'
-          },
-          {
-            url: `${process.env.imagePath}/img/logo-192.png`,
-            width: 192,
-            height: 192,
-            alt: 'ClassroomIO Docs Og Image Alt',
-            type: 'image/png'
-          },
-          {
-            url: `${process.env.imagePath}/img/logo-512.png`,
-            width: 512,
-            height: 512,
-            alt: 'ClassroomIO Docs Og Image Alt',
-            type: 'image/png'
-          },
-          { url: `${process.env.imagePath}/img/og-image.png'` }
-        ],
-        twitter: {
-          handle: '@classroomio',
-          site: '@classroomio.com',
-          cardType: 'summary_large_image'
-        }
-      }
-    };
-  },
   chat: {
     link: 'https://dub.sh/ciodiscord'
   },
