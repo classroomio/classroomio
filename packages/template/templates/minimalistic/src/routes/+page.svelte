@@ -1,2 +1,11 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script>
+  import { globalData } from '$lib/component/store.js';
+  import Home from '$lib/index.svelte';
+  export let data;
+
+  console.log('data in parent:', data);
+</script>
+
+<div class="font-ibm">
+  <Home {data} />
+</div>
