@@ -1,17 +1,3 @@
-// import fs from 'fs';
-// import path from 'path';
-
-// export const load = async ({ params = { slug: '' } }) => {
-//   const dataSlug = params.slug;
-//   const courseFilePath = path.join(process.cwd(), `src/lib/courses/${dataSlug}/metadata.json`);
-
-//   const courseData = JSON.parse(fs.readFileSync(courseFilePath, 'utf-8'));
-
-//   return {
-//     courseData
-//   };
-// };
-
 import fs from 'fs';
 import path from 'path';
 
