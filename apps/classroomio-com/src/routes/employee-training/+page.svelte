@@ -25,6 +25,33 @@
       description: 'Gain valuable insights into employee performance and learning patterns.'
     }
   ];
+
+  const featureDetails = [
+    {
+      img: 'team-mgnt.svg',
+      img2: 'team-mgnt2.svg',
+      title: 'Team management',
+      description:
+        'Company administrators can invite their team members to collaborate on course creation within classroomio',
+      CTA: 'Book a Demo'
+    },
+    {
+      img: 'colour-pallete.svg',
+      img2: 'custom.svg',
+      title: 'Custom branding',
+      description:
+        'Admins can set the company logo which appears all through the product and the employee dashboard as well as select a preferred brand color',
+      CTA: 'Book a Demo'
+    },
+    {
+      img: 'cup.svg',
+      img2: 'progress.svg',
+      title: 'Track learners progress',
+      description:
+        'Administrators can track the progress of their employees and assist whoever needs help',
+      CTA: 'Book a Demo'
+    }
+  ];
 </script>
 
 <svelte:head>
@@ -127,71 +154,31 @@
     </div>
 
     <div class="w-full flex flex-col justify-start items-start lg:gap-y-24 gap-y-16">
-      <div
-        class="w-full flex lg:flex-row flex-col lg:justify-between justify-start lg:items-center items-start gap-y-8"
-      >
-        <div class="w-full lg:w-[40%] gap-y-4 flex flex-col items-start justify-start">
-          <img src="/employee-training/team-mgnt.svg" alt="team icon" />
-          <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
-            <h1 class="md:text-5xl text-3xl font-medium text-[#282828]">Team management</h1>
-            <p class="text-[#656565] text-xl font-light">
-              Company administrators can invite their team members to collaborate on course creation
-              within classroomio
-            </p>
+      {#each featureDetails as feature, i}
+        <div
+          class="w-full flex lg:flex-row {i % 2 !== 0
+            ? 'lg:flex-row-reverse'
+            : ''} flex-col lg:justify-between justify-start lg:items-center items-start gap-y-8"
+        >
+          <div class="w-full lg:w-[40%] gap-y-4 flex flex-col items-start justify-start">
+            <img src="/employee-training/{feature.img}" alt="team icon" />
+            <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
+              <h1 class="md:text-5xl text-3xl font-medium text-[#282828]">{feature.title}</h1>
+              <p class="text-[#656565] text-xl font-light">
+                {feature.description}
+              </p>
+            </div>
+            <button
+              class="py-4 px-8 border border-[#1D4ED8] outline-transparent rounded text-[#1D4ED8] text-sm font-semibold"
+              >{feature.CTA}</button
+            >
           </div>
-          <button
-            class="py-4 px-8 border border-[#1D4ED8] outline-transparent rounded text-[#1D4ED8] text-sm font-semibold"
-            >Book a Demo</button
-          >
-        </div>
 
-        <div>
-          <img src="/employee-training/team-mgnt2.svg" alt="team management feature ui" />
-        </div>
-      </div>
-      <div
-        class="w-full flex lg:flex-row-reverse flex-col lg:justify-between justify-start lg:items-center items-start gap-y-8"
-      >
-        <div class="w-full lg:w-[40%] gap-y-4 flex flex-col items-start justify-start">
-          <img src="/employee-training/colour-pallete.svg" alt="team icon" />
-          <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
-            <h1 class="md:text-5xl text-3xl font-medium text-[#282828]">Custom branding</h1>
-            <p class="text-[#656565] text-xl font-light">
-              Admins can set the company logo which appears all through the product and the employee
-              dashboard as well as select a preferred brand color
-            </p>
+          <div>
+            <img src="/employee-training/{feature.img2}" alt="team management feature ui" />
           </div>
-          <button
-            class="py-4 px-8 border border-[#1D4ED8] outline-transparent rounded text-[#1D4ED8] text-sm font-semibold"
-            >Book a Demo</button
-          >
         </div>
-
-        <div>
-          <img src="/employee-training/custom2.svg" alt="team management feature ui" />
-        </div>
-      </div>
-      <div
-        class="w-full flex lg:flex-row flex-col lg:justify-between justify-start lg:items-center items-start gap-y-8"
-      >
-        <div class="w-full lg:w-[40%] gap-y-4 flex flex-col items-start justify-start">
-          <img src="/employee-training/cup.svg" alt="team icon" />
-          <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
-            <h1 class="md:text-5xl text-3xl font-medium text-[#282828]">Track learners progress</h1>
-            <p class="text-[#656565] text-xl font-light">
-              Administrators can track the progress of their employees and assist whoever needs help
-            </p>
-          </div>
-          <button
-            class="py-4 px-8 border border-[#1D4ED8] outline-transparent rounded text-[#1D4ED8] text-sm font-semibold"
-            >Book a Demo</button
-          >
-        </div>
-
-        <div>
-          <img src="/employee-training/progress.svg" alt="team management feature ui" />
-        </div>
-      </div>
+      {/each}
     </div>
   </section>
 

@@ -27,14 +27,40 @@
     }
   ];
 
-  //   const features = [
-  //     {
-  //         img
-  //         icon:
-  //         title:
-  //         decription:
-  //     }
-  //   ]
+  const featureDetails = [
+    {
+      img: 'certificate-i.svg',
+      img2: 'certificate.svg',
+      title: 'Certificates',
+      description:
+        'We provide pre built certificate templates anyone can choose from and provide to their students right within our dashboard',
+      CTA: 'Book a Demo'
+    },
+    {
+      img: 'forum-i.svg',
+      img2: 'forum.svg',
+      title: 'Forum area for question and answer',
+      description:
+        'Our community section allows for a robust question and answer experience encouraging collaboration between students. This also encourages knowledge sharing amongst students.',
+      CTA: 'Book a Demo'
+    },
+    {
+      img: 'ai.svg',
+      img2: 'ai-pic.svg',
+      title: 'AI Powered Content creation',
+      description:
+        'we give you the ability to create courses with AI, upload videos, embed slides, create quizzes and even grade quizzes with AI',
+      CTA: 'Book a Demo'
+    },
+    {
+      img: 'free-tools-i.svg',
+      img2: 'free-tools.svg',
+      title: 'Free tools for students',
+      description:
+        'We provide a suite of free tools like Pomodoro timer, Random name picker, and a Progress report generator to make the lives of educators and students much easier (use links for images)',
+      CTA: 'Book a Demo'
+    }
+  ];
 </script>
 
 <svelte:head>
@@ -157,100 +183,31 @@
     </div>
 
     <div class="w-full flex flex-col justify-start items-start lg:gap-y-24 gap-y-16">
-      <div
-        class="w-full flex lg:flex-row flex-col lg:justify-between justify-start lg:items-center items-start gap-y-8"
-      >
-        <div class="w-full lg:w-[40%] gap-y-4 flex flex-col items-start justify-start">
-          <img src="/bootcamps/certificate-i.svg" alt="team icon" />
-          <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
-            <h1 class="md:text-5xl text-3xl font-medium text-[#282828]">Certificates</h1>
-            <p class="text-[#656565] text-xl font-light">
-              We provide pre built certificate templates anyone can choose from and provide to their
-              students right within our dashboard
-            </p>
+      {#each featureDetails as feature, i}
+        <div
+          class="w-full flex lg:flex-row {i % 2 !== 0
+            ? 'lg:flex-row-reverse'
+            : ''} flex-col lg:justify-between justify-start lg:items-center items-start gap-y-8"
+        >
+          <div class="w-full lg:w-[40%] gap-y-4 flex flex-col items-start justify-start">
+            <img src="/bootcamps/{feature.img}" alt="team icon" />
+            <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
+              <h1 class="md:text-5xl text-3xl font-medium text-[#282828]">{feature.title}</h1>
+              <p class="text-[#656565] text-xl font-light">
+                {feature.description}
+              </p>
+            </div>
+            <button
+              class="py-4 px-8 border border-[#1D4ED8] outline-transparent rounded text-[#1D4ED8] text-sm font-semibold"
+              >{feature.CTA}</button
+            >
           </div>
-          <button
-            class="py-4 px-8 border border-[#1D4ED8] outline-transparent rounded text-[#1D4ED8] text-sm font-semibold"
-            >Book a Demo</button
-          >
-        </div>
 
-        <div>
-          <img src="/bootcamps/certificate.svg" alt="team management feature ui" />
-        </div>
-      </div>
-      <div
-        class="w-full flex lg:flex-row-reverse flex-col lg:justify-between justify-start lg:items-center items-start gap-y-8"
-      >
-        <div class="w-full lg:w-[40%] gap-y-4 flex flex-col items-start justify-start">
-          <img src="/bootcamps/forum-i.svg" alt="team icon" />
-          <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
-            <h1 class="md:text-5xl text-3xl font-medium text-[#282828]">
-              Forum area for question and answer
-            </h1>
-            <p class="text-[#656565] text-xl font-light">
-              Our community section allows for a robust question and answer experience encouraging
-              collaboration between students. This also encourages knowledge sharing amongst
-              students.
-            </p>
+          <div>
+            <img src="/bootcamps/{feature.img2}" alt="team management feature ui" />
           </div>
-          <button
-            class="py-4 px-8 border border-[#1D4ED8] outline-transparent rounded text-[#1D4ED8] text-sm font-semibold"
-            >Book a Demo</button
-          >
         </div>
-
-        <div>
-          <img src="/bootcamps/forum.svg" alt="team management feature ui" />
-        </div>
-      </div>
-      <div
-        class="w-full flex lg:flex-row flex-col lg:justify-between justify-start lg:items-center items-start gap-y-8"
-      >
-        <div class="w-full lg:w-[40%] gap-y-4 flex flex-col items-start justify-start">
-          <img src="/bootcamps/ai.svg" alt="team icon" />
-          <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
-            <h1 class="md:text-5xl text-3xl font-medium text-[#282828]">
-              AI Powered Content creation
-            </h1>
-            <p class="text-[#656565] text-xl font-light">
-              we give you the ability to create courses with AI, upload videos, embed slides, create
-              quizzes and even grade quizzes with AI
-            </p>
-          </div>
-          <button
-            class="py-4 px-8 border border-[#1D4ED8] outline-transparent rounded text-[#1D4ED8] text-sm font-semibold"
-            >Book a Demo</button
-          >
-        </div>
-
-        <div>
-          <img src="/bootcamps/ai-pic.svg" alt="team management feature ui" />
-        </div>
-      </div>
-      <div
-        class="w-full flex lg:flex-row-reverse flex-col lg:justify-between justify-start lg:items-center items-start gap-y-8"
-      >
-        <div class="w-full lg:w-[40%] gap-y-4 flex flex-col items-start justify-start">
-          <img src="/bootcamps/free-tools-i.svg" alt="team icon" />
-          <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
-            <h1 class="md:text-5xl text-3xl font-medium text-[#282828]">Free tools for students</h1>
-            <p class="text-[#656565] text-xl font-light">
-              We provide a suite of free tools like Pomodoro timer, Random name picker, and a
-              Progress report generator to make the lives of educators and students much easier (use
-              links for images)
-            </p>
-          </div>
-          <button
-            class="py-4 px-8 border border-[#1D4ED8] outline-transparent rounded text-[#1D4ED8] text-sm font-semibold"
-            >Book a Demo</button
-          >
-        </div>
-
-        <div>
-          <img src="/bootcamps/free-tools.svg" alt="team management feature ui" />
-        </div>
-      </div>
+      {/each}
     </div>
   </section>
 
