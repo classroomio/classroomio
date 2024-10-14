@@ -26,10 +26,6 @@
       link: '#course'
     },
     {
-      title: 'Learning Path',
-      link: '#path'
-    },
-    {
       title: 'Testimonial',
       link: '#testimonial'
     }

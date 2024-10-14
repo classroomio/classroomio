@@ -23,6 +23,7 @@
   },
   "type": "module",
   "dependencies": {
+    "@fontsource/roboto": "^5.1.0",
     "bits-ui": "^0.21.16",
     "carbon-components-svelte": "^0.82.8",
     "carbon-icons-svelte": "^12.11.1",

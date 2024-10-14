@@ -1,6 +1,6 @@
 <script>
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
+
   import Close from 'carbon-icons-svelte/lib/Close.svelte';
   import Menu from 'carbon-icons-svelte/lib/Menu.svelte';
   import Light from 'carbon-icons-svelte/lib/Light.svelte';
@@ -10,6 +10,7 @@
   import { toggleBodyByMode } from '$lib/utils/toggleMode';
   import { isDark } from './store';
   import { Button } from '$lib/components/ui/button';
+  import { page } from '$app/stores';
   // import IconButton from '$lib/components/IconButton/index.svelte';
 
   let disableSignup = false;
@@ -18,13 +19,28 @@
   let isOrgSite = true;
   let backgroundColor = 'bg-white dark:bg-black';
   let isActive = false;
+  let activeLink = '';
   let isCoursePage = false;
   let user = {
     isLoggedIn: true
   };
+  let open = false;
 
-  // Check if the current URL matches the menu link
-  let open = false; // State for mobile menu
+  const menuItems = [
+    {
+      title: 'About',
+      link: '/#about'
+    },
+    {
+      title: 'Our Courses',
+      link: '/#course'
+    },
+    {
+      title: 'FAQ',
+      link: '/#faq'
+    }
+  ];
+
   function toggleDarkMode() {
     $isDark = !$isDark;
     toggleBodyByMode($isDark);
@@ -32,33 +48,20 @@
       localStorage.setItem('mode', $isDark ? 'dark' : '');
     }
   }
-  const menuItems = [
-    {
-      title: 'About',
-      link: '#about'
-    },
-    {
-      title: 'Our Courses',
-      link: '#course'
-    },
-    {
-      title: 'FAQ',
-      link: '#faq'
-    }
-  ];
-  const redirect = isCoursePage ? `?redirect=${$page.url.pathname}` : '';
-  // Function to toggle the mobile menu
+
   function toggleMenu() {
     open = !open;
   }
-  const isActiveLink = (menu) => {
-    if (browser) {
-      return (isActive = window.location.hash === menu.link.replace('#', ''));
+
+  const redirect = isCoursePage ? `?redirect=${$page.url.pathname}` : '';
+
+  $: activeHash = $page.url.hash;
+  $: {
+    const activeItem = menuItems.find((item) => item.link === `/${activeHash}`);
+    if (activeItem) {
+      activeLink = activeItem.link;
     }
-    return;
-  };
-  $: isActive =
-    browser && menuItems.some((item) => window.location.hash === item.link.replace('#', ''));
+  }
 </script>
 
 <nav
@@ -89,11 +92,12 @@
     {#if user.isLoggedIn}
       {#each menuItems as menu}
         <li
-          class="dark:text-white font-normal px-4 py-3 hover:bg-slate-300 dark:hover:text-black rounded-lg {isActive
-            ? 'bg-slate-100 rounded-lg'
-            : ''}"
+          class=" font-normal px-4 py-3 hover:bg-slate-300 dark:hover:text-black rounded-lg {activeLink ==
+          menu.link
+            ? 'bg-slate-100 rounded-lg dark:text-black'
+            : 'dark:text-white'}"
           on:click={() => {
-            isActiveLink(menu);
+            // navigateToSection(menu);
           }}
         >
           <a href={menu.link} class="hover:no-underline">{menu.title}</a>
@@ -131,7 +135,10 @@
       {#if isOrgSite}
         <div class="border-b py-4 px-6">
           <Button
-            on:click={toggleMenu}
+            on:click={() => {
+              goto('/courses');
+              toggleMenu;
+            }}
             class="bg-[#F7A50180] hover:bg-[#f7a501ad] dark:bg-[#F7A501] hover:no-underline rounded-lg flex items-center py-2 px-3 border w-fit border-[#4A4C524D] font-bold text-black text-base"
             >Explore Course</Button
           >
@@ -164,7 +171,7 @@
         {/if}
       </button>
       <Button
-        on:click={toggleMenu}
+        on:click={() => goto('/courses')}
         class="bg-[#F7A50180] hover:bg-[#f7a501ad] dark:bg-[#F7A501] hover:no-underline rounded-lg flex items-center py-2 px-3 border w-fit border-[#4A4C524D] font-bold text-black text-base"
         >Explore Course</Button
       >

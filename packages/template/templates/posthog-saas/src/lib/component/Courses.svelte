@@ -22,7 +22,7 @@
         <CardLoader />
       </div>
     {:else if data.courses.length > 0}
-      <section class="flex flex-wrap items-center justify-center md:justify-start gap-4 p-4">
+      <section class="flex flex-wrap items-center justify-center md:justify-start gap-4 px-2 py-4">
         {#each data.courses.slice(0, viewAll ? data.courses.length : 3) as courseData}
           <CourseCard
             slug={courseData.slug}

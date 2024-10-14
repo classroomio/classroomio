@@ -12,7 +12,7 @@
 </script>
 
 <div
-  class="rounded-lg md:h-[250px] w-full md:w-[300px] xl:w-[350px] p-4 bg-[#E5E7E0] dark:bg-[#232429] border border-[#D0D1C9] {className}"
+  class="rounded-lg h-[250px] w-full max-w-full md:max-w-[280px] xl:max-w-[300px] p-4 bg-[#E5E7E0] dark:bg-[#232429] border border-[#D0D1C9] {className}"
 >
   <div class="flex flex-col justify-between gap-4 rounded-lg w-full h-full">
     <div class="flex-1 space-y-2">

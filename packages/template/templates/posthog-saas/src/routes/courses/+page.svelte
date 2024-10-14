@@ -1,10 +1,10 @@
 <script>
-  //   import CardLoader from '$lib/component/CardLoader.svelte';
+  import CardLoader from '$lib/component/CardLoader.svelte';
   import CourseCard from '$lib/component/CourseCard.svelte';
   import EmptyState from '$lib/component/EmptyState.svelte';
   import Footer from '$lib/component/Footer.svelte';
   import Navigation from '$lib/component/Navigation.svelte';
-  //   import PageLoader from '$lib/component/PageLoader.svelte';
+  import PageLoader from '$lib/component/PageLoader.svelte';
   import { courseMetaData, courses, globalData } from '$lib/component/store';
   import { Button } from '$lib/components/ui/button';
   import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
@@ -23,12 +23,19 @@
 
   const filter = [
     {
+      title: 'All Courses',
+      id: 'ALL',
+      checked: true
+    },
+    {
       title: 'Live Sessions',
-      id: 'LIVE'
+      id: 'LIVE',
+      checked: false
     },
     {
       title: 'Self Paced',
-      id: 'SELF'
+      id: 'SELF',
+      checked: false
     }
     // {
     //   title: 'Learning Path'
@@ -49,11 +56,16 @@
     }
   ];
 
-  const displayCourse = (course) => {
-    type = course;
-    const url = new URL(window.location);
-    url.searchParams.set('type', course);
-    window.history.pushState({}, '', url);
+  // const displayCourse = (course) => {
+  //   type = course;
+  //   const url = new URL(window.location);
+  //   url.searchParams.set('type', course);
+  //   window.history.pushState({}, '', url);
+  // };
+
+  const filterCourse = (item) => {
+    item.checked = !item.checked;
+    console.log(`${item.title} item is ${item.checked}`);
   };
   onMount(() => {
     const params = new URLSearchParams(window.location.search);
@@ -71,8 +83,7 @@
 </svelte:head>
 
 {#if !data}
-  <!-- <PageLoader /> -->
-  <p>Loading</p>
+  <PageLoader />
 {:else}
   <main class="bg-[#EEEFE9] dark:bg-black dark:text-white overflow-x-hidden">
     <Navigation />
@@ -121,9 +132,9 @@
         <div class="w-full lg:w-[90%] mx-auto">
           {#if $courseMetaData.isLoading}
             <div class="cards-container my-4 mx-2">
-              <!-- <CardLoader />
               <CardLoader />
-              <CardLoader /> -->
+              <CardLoader />
+              <CardLoader />
             </div>
           {:else if data.courses.length > 0}
             <div class="w-full flex gap-2 mt-10">
@@ -136,8 +147,10 @@
                     >
                       <input
                         type="checkbox"
+                        checked={item.checked}
                         name={item.title}
-                        class="text-[#F54E00] dark:text-[#EB9D2A] focus:ring-0"
+                        on:change={() => filterCourse(item)}
+                        class=" dark:accent-[#EB9D2A] accent-[#F54E00] focus:ring-0"
                       />
 
                       <label for={item.title} class="whitespace-nowrap">{item.title}</label>

@@ -40,7 +40,7 @@
   });
 </script>
 
-<section class="relative">
+<section class="relative font-roboto">
   <!-- Nav -->
   <div class="px-4 w-full h-10 flex items-center gap-3 bg-blue-700 text-white">
     <button on:click={() => (open = !open)} class="md:hidden">
@@ -50,7 +50,7 @@
         <Menu size={20} />
       {/if}
     </button>
-    <p class="text-start line-clamp-1 font-semibold text-lg capitalize">
+    <p class="text-start line-clamp-1 font-semibold text-lg capitalize" title={metadata.title}>
       {metadata.title}
     </p>
   </div>
@@ -91,7 +91,7 @@
         {/each}
       </div>
     </div>
-    <div class="w-full p-3">
+    <div class="w-full p-5 md:p-10 border border-red-500 break-words">
       {#if loading}
         <div class="space-y-8 w-full md:w-[80%]">
           <Skeleton class="h-12 w-[70%]" />

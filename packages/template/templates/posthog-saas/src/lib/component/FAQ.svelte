@@ -42,7 +42,7 @@
 
 <!-- FAQ Cards -->
 {#if data.faq.show}
-  <div>
+  <div id="faq">
     <h1 class="text-center text-5xl mb-8 font-bold">{data.faq.title}</h1>
 
     <div

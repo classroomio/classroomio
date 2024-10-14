@@ -1,5 +1,6 @@
 <script>
-  import { globalData } from '$lib/component/store.js';
+  import { browser } from '$app/environment';
+
   import Home from '$lib/index.svelte';
   export let data;
 
