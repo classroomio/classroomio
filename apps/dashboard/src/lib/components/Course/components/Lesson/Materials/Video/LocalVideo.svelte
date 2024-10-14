@@ -149,6 +149,7 @@
 </UpgradeBanner>
 
 {#if !isLoaded}
+  <!-- TODO: Remove ! from !isDisabled used for local development -->
   <button
     type="button"
     on:click={() => (fileInput && !isLoading ? fileInput.click() : null)}
