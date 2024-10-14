@@ -119,7 +119,7 @@
             <img src="/employee-training/{benefits.img}" alt="light-bulb" />
           </div>
           <div class="w-full flex flex-col justify-start align-start gap-y-2">
-            <h1 class="w-full text-xl font-medium font-[#282828]">{benefits.title}</h1>
+            <h1 class="text-xl font-medium font-[#282828]">{benefits.title}</h1>
             <p class=" w-full text-base font-[#656565] font-light">
               {benefits.description}
             </p>
@@ -136,7 +136,7 @@
       class="w-full gap-y-4 flex flex-col lg:items-center items-start lg:justify-center justify-start"
     >
       <div class="w-fit py-2 px-4 rounded-full border-[#C2D2FF] border-2 text-center">
-        <p class=" text-sm md:text-base text-[#4B5563] text-center font-medium">
+        <p class="text-sm md:text-base text-[#4B5563] text-center font-medium">
           Explore our features
         </p>
       </div>

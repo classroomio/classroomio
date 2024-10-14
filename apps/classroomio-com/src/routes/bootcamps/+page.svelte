@@ -83,7 +83,7 @@
         class="w-full flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
       >
         <h1
-          class="w-full mx-auto m-0 text-4xl lg:text-7xl md:text-6xl font-bold text-slate-900 lg:text-center"
+          class="mx-auto m-0 text-4xl lg:text-7xl md:text-6xl font-bold text-slate-900 lg:text-center"
         >
           Elevate Your <span class="text-blue-700 relative"> Bootcamps</span> with
           <span class="text-blue-700 relative"> Innovative</span> Tools
@@ -130,25 +130,25 @@
           <img class="size-12" src="/bootcamps/{benefits.img}" alt="brain" />
 
           <div class="w-full flex flex-col justify-start align-start gap-y-2">
-            <h1 class="w-full text-xl font-medium font-[#282828]">{benefits.title}</h1>
+            <h1 class="text-xl font-medium font-[#282828]">{benefits.title}</h1>
 
             <div class="flex flex-row justify-start items-start gap-x-3">
               <img src="/bootcamps/check.svg" alt="check mark" />
-              <p class=" w-full text-base font-[#656565] font-light">
+              <p class="font-[#656565] font-light">
                 {benefits.point_1}
               </p>
             </div>
 
             <div class="flex flex-row justify-start items-start gap-x-3">
               <img src="/bootcamps/check.svg" alt="check mark" />
-              <p class=" w-full text-base font-[#656565] font-light">
+              <p class="font-[#656565] font-light">
                 {benefits.point_2}
               </p>
             </div>
 
             <div class="flex flex-row justify-start items-start gap-x-3">
               <img src="/bootcamps/check.svg" alt="check mark" />
-              <p class=" w-full text-base font-[#656565] font-light">
+              <p class="font-[#656565] font-light">
                 {benefits.point_3}
               </p>
             </div>

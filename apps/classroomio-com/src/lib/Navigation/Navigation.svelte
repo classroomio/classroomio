@@ -74,7 +74,7 @@
           on:click={() => (showNav = !showNav)}
           class:active={isSuperpowersActive}
         >
-          Our Superpowers <ChevronDown class="ml-2" />
+          Solutions <ChevronDown class="ml-2" />
         </button>
         {#if showNav}
           <div
