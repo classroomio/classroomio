@@ -4,7 +4,7 @@
   import { page } from '$app/stores';
   import Menu from 'carbon-icons-svelte/lib/Menu.svelte';
 
-  let open = false; // State for mobile menu
+  let open = false;
   let disableSignup = false;
   let logo = '';
   let orgName = 'evanai';
@@ -19,19 +19,20 @@
   const menuItems = [
     {
       title: 'About me',
-      link: '#about'
+      link: '/#about'
     },
     {
       title: 'Courses',
-      link: '#course'
+      link: '/#course'
     },
     {
       title: 'Testimonial',
-      link: '#testimonial'
+      link: '/#testimonial'
     }
   ];
+
   const redirect = isCoursePage ? `?redirect=${$page.url.pathname}` : '';
-  // Function to toggle the mobile menu
+
   function toggleMenu() {
     open = !open;
   }
@@ -79,7 +80,7 @@
 
   <!-- Mobile Sidebar Menu (Visible only on mobile) -->
   <ul
-    class={`fixed top-0 left-0 h-full bg-white w-full transform hover:no-underline ${
+    class={`fixed top-0 left-0 pt-10 h-full bg-white w-full transform hover:no-underline ${
       open ? 'translate-y-0' : '-translate-y-full'
     } transition-transform duration-300 ease-in-out lg:hidden text-base font-bold text-[#1F2937] list-none cursor-pointer`}
   >
@@ -94,7 +95,7 @@
         </li>
       {/each}
       {#if isOrgSite}
-        <a href="/#" class="flex items-center gap-1 py-4 px-6 border-b" on:click={toggleMenu}>
+        <a href="/courses" class="flex items-center gap-1 py-4 px-6 border-b" on:click={toggleMenu}>
           <p class="font-bold text-[#1F2937] text-base">Learn with me</p>
           <ArrowRight size={16} class="fill-[#1F2937] font-bold" />
         </a>
@@ -104,7 +105,7 @@
 
   <!-- Learn with Me Button (Visible on desktop when logged in) -->
   {#if user.isLoggedIn && isOrgSite}
-    <a href="/#" class="hidden lg:flex items-center gap-1">
+    <a href="/courses" class="hidden lg:flex items-center gap-1">
       <p class="font-bold text-[#1F2937] text-base">Learn with me</p>
       <ArrowRight size={16} class="fill-[#1F2937] font-bold" />
     </a>

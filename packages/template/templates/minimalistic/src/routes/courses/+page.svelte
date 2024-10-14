@@ -12,25 +12,35 @@
   export let data;
   let viewAllPath = false;
   let viewAllCourses = false;
+
   const DISPLAY_COURSE = {
     ALL: 'all',
     PACED: 'paced',
     LIVE: 'live'
   };
+
   const filter = [
     {
       title: 'All Courses',
-      type: DISPLAY_COURSE.ALL
+      type: DISPLAY_COURSE.ALL,
+      checked: true
     },
     {
       title: 'Self Paced',
-      type: DISPLAY_COURSE.PACED
+      type: DISPLAY_COURSE.PACED,
+      checked: false
     },
     {
       title: 'Live Sessions',
-      type: DISPLAY_COURSE.LIVE
+      type: DISPLAY_COURSE.LIVE,
+      checked: false
     }
   ];
+
+  const filterCourse = (item) => {
+    item.checked = !item.checked;
+    console.log(`${item.title} item is ${item.checked}`);
+  };
 </script>
 
 <svelte:head>
@@ -97,7 +107,12 @@
                   <form
                     class="space-x-2 text-[#3C4043] font-medium border border-[#EAEAEA] bg-[#FDFDFD] rounded-md px-4 py-4"
                   >
-                    <input type="checkbox" name={item.title} />
+                    <input
+                      type="checkbox"
+                      name={item.title}
+                      checked={item.checked}
+                      on:change={() => filterCourse(item)}
+                    />
                     <label for={item.title}>{item.title}</label>
                   </form>
                 {/each}

@@ -1,4 +1,5 @@
 <script>
+  import { goto } from '$app/navigation';
   import Button from '$lib/components/ui/button/button.svelte';
 
   export let data;
@@ -17,6 +18,7 @@
     </div>
     <div class="w-full flex items-center justify-center my-5">
       <Button
+        on:click={() => goto('/courses')}
         class="rounded-none uppercase py-2 bg-white text-blue-700 hover:scale-95 hover:bg-white font-bold"
         >{data.footerNote.buttonLabel}</Button
       >

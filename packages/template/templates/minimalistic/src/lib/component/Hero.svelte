@@ -4,11 +4,13 @@
 
   export let data;
   let player;
+
   function isYouTubeLink(link: string) {
     const youtubeRegex =
       /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
     return youtubeRegex.test(link.trim());
   }
+
   function initPlyr(_player: any, _video: string | undefined) {
     if (!player) return;
     // @ts-ignore
@@ -23,10 +25,11 @@
   <section class="flex items-center justify-center py-2 px-10 md:px-14 min-h-screen">
     <section class="flex items-center justify-between">
       <div class="text-white space-y-6 w-full">
-        <span
-          class="bg-[#DCFCFFED] py-1 px-3 uppercase border rounded-sm text-center font-bold text-xs w-full lg:text-base text-[#0F163F]"
-          >{data.header.title}</span
-        >
+        <div class="bg-[#DCFCFFED] py-1 px-3 md:border rounded-sm w-fit">
+          <p class="text-center uppercase font-bold text-xs lg:text-base text-[#0F163F]">
+            {data.header.title}
+          </p>
+        </div>
         <p class="text-4xl font-bold w-full md:w-[70%] capitalize">
           {data.header.titleHighlight}
         </p>
@@ -36,7 +39,7 @@
         <Button
           class="rounded-none uppercase bg-blue-900 p-3 hover:bg-blue-900 hover:scale-95 font-bold"
           on:click={() => {
-            data.header.action.redirect && goto(data.header.action.link);
+            goto(data.header.action.link);
           }}>{data.header.action.label}</Button
         >
       </div>

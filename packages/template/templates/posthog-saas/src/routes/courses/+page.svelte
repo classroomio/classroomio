@@ -90,7 +90,7 @@
     {#if data.data.header.banner.show}
       <section class="flex items-center justify-center my-12 py-10 px-4 md:px-14 min-h-full">
         <section
-          class="mx-auto text-center px-4 lg:px-10 py-20 space-y-4 bg-[#E5E7E0] dark:bg-[#232429] rounded-md w-full md:w-[70%]"
+          class="mx-auto text-center px-4 lg:px-10 py-20 space-y-4 bg-[#E5E7E0] dark:bg-[#232429] rounded-md w-full lg:w-[70%]"
         >
           <div class="flex flex-col items-center gap-8 relative rounded-lg">
             <span class="absolute w-2 h-2 rounded-full bg-red-500 -top-14 left-3" />
@@ -112,6 +112,10 @@
 
     {#if data.data.courses.show}
       <section id="course" class=" pt-4 pb-20 h-full">
+        <h1 class="text-center text-5xl mb-8 font-bold">
+          {data.data.courses.title}
+          <span class="text-[#F54E00] dark:text-[#EB9D2A]">{data.data.courses.titleHighlight}</span>
+        </h1>
         <!-- <div
           class="flex items-center justify-center border-b-2 border-[#ADADAD] bg-[#E5E7E0] dark:bg-[#232429] px-2 mx-auto w-full mb-4"
         >
