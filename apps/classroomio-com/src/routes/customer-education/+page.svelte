@@ -62,7 +62,7 @@
 
 <section>
   <PageHeader
-    className="flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-6 lg:px-28 px-8"
+    className="flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-6 lg:px-28 md:px-16 px-8"
   >
     <div class="bg-[#DCE5FF] py-2 px-4 rounded-full border-[#C2D2FF] border-2 text-center">
       <p class=" text-sm md:text-base text-[#4B5563] text-center font-medium">
@@ -81,7 +81,7 @@
           <span class="text-blue-700 relative">Empower</span> Your Customers with Self-Service
           <span class="text-blue-700 relative">Education</span>
         </h1>
-        <p class="w-[100%] lg:w-[60%] lg:text-center font-normal text-lg text-slate-700">
+        <p class="w-full lg:w-[60%] lg:text-center font-normal text-lg text-slate-700">
           Create beautiful, branded landing pages to showcase your courses and get customers up to
           speed quickly
         </p>
@@ -94,13 +94,13 @@
   </PageHeader>
 
   <section
-    class="w-full lg:py-24 py-16 lg:px-28 px-8 flex flex-col lg:items-center lg:justify-between justify-center gap-y-12"
+    class="w-full lg:py-24 py-16 lg:px-28 md:px-16 px-8 flex flex-col lg:items-center lg:justify-between justify-center gap-y-12"
   >
     <div
       class="w-full gap-y-4 flex flex-col lg:items-center items-start lg:justify-center justify-start"
     >
       <div class="w-fit py-2 px-4 rounded-full border-[#C2D2FF] border-2 text-center">
-        <p class=" text-sm md:text-base text-[#4B5563] text-center font-medium">
+        <p class="text-sm md:text-base text-[#4B5563] text-center font-medium">
           Have you heard the benefits?
         </p>
       </div>
@@ -121,14 +121,13 @@
     >
       {#each benefitDetails as benefits}
         <div class="w-full md:p-6 p-4 border border-[#D9E0F5] rounded-2xl flex flex-col gap-y-6">
-          <div>
-            <img src="/customer-education/{benefits.img}" alt="brain" />
-          </div>
+          <img class="size-12" src="/customer-education/{benefits.img}" alt="brain" />
+
           <div class="w-full flex flex-col justify-start align-start gap-y-2">
-            <h1 class="w-full text-xl font-medium font-[#282828]">{benefits.title}</h1>
+            <h1 class="text-xl font-medium font-[#282828]">{benefits.title}</h1>
 
             <div class="flex flex-row justify-start items-start gap-x-3">
-              <p class=" w-full text-base font-[#656565] font-light">
+              <p class="font-[#656565] font-light">
                 {benefits.Description}
               </p>
             </div>
@@ -139,7 +138,7 @@
   </section>
 
   <section
-    class="w-full bg-[#F1F6FF] flex flex-col items-start justify-start gap-y-16 lg:py-24 py-16 lg:px-28 px-8"
+    class="w-full bg-[#F1F6FF] flex flex-col items-start justify-start gap-y-16 lg:py-24 py-16 lg:px-28 md:px-16 px-8"
   >
     <div
       class="w-full gap-y-4 flex flex-col lg:items-center items-start lg:justify-center justify-start"

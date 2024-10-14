@@ -60,7 +60,7 @@
 
 <section>
   <PageHeader
-    className="flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-6 lg:px-28 px-8"
+    className="flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-6 lg:px-28 md:px-16 px-8"
   >
     <div class="bg-[#DCE5FF] py-2 px-4 rounded-full border-[#C2D2FF] border-2 text-center">
       <p class=" text-sm md:text-base text-[#4B5563] text-center font-medium">
@@ -74,11 +74,11 @@
         class="w-full flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
       >
         <h1
-          class="w-[100%] mx-auto m-0 text-4xl lg:text-7xl md:text-6xl font-bold text-slate-900 lg:text-center"
+          class="mx-auto m-0 text-4xl lg:text-7xl md:text-6xl font-bold text-slate-900 lg:text-center"
         >
           Empower your employee with <span class="text-blue-700 relative">Effective Training</span>
         </h1>
-        <p class="w-[100%] lg:w-[60%] lg:text-center font-normal text-lg text-slate-700">
+        <p class="w-full lg:w-[60%] lg:text-center font-normal text-lg text-slate-700">
           Provide personalized learning experiences and train your employees efficiently with a
           customizable online platform
         </p>
@@ -91,7 +91,7 @@
   </PageHeader>
 
   <section
-    class="w-full lg:py-24 py-16 lg:px-28 px-8 flex lg:flex-row flex-col lg:items-center lg:justify-between justify-center gap-x-6 gap-y-8"
+    class="w-full lg:py-24 py-16 lg:px-28 md:px-16 px-8 flex lg:flex-row flex-col lg:items-center lg:justify-between justify-center gap-x-6 gap-y-8"
   >
     <div class="w-full lg:w-[40%] gap-y-4 flex flex-col items-start justify-start">
       <div class="w-fit py-2 px-4 rounded-full border-[#C2D2FF] border-2 text-center">
@@ -130,7 +130,7 @@
   </section>
 
   <section
-    class="w-full bg-[#F1F6FF] flex flex-col items-start justify-start gap-y-16 lg:py-24 py-16 lg:px-28 px-8"
+    class="w-full bg-[#F1F6FF] flex flex-col items-start justify-start gap-y-16 lg:py-24 py-16 lg:px-28 md:px-16 px-8"
   >
     <div
       class="w-full gap-y-4 flex flex-col lg:items-center items-start lg:justify-center justify-start"
@@ -161,7 +161,7 @@
             : ''} flex-col lg:justify-between justify-start lg:items-center items-start gap-y-8"
         >
           <div class="w-full lg:w-[40%] gap-y-4 flex flex-col items-start justify-start">
-            <img src="/employee-training/{feature.img}" alt="team icon" />
+            <img class="size-12" src="/employee-training/{feature.img}" alt="team icon" />
             <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
               <h1 class="md:text-5xl text-3xl font-medium text-[#282828]">{feature.title}</h1>
               <p class="text-[#656565] text-xl font-light">
@@ -183,7 +183,7 @@
   </section>
 
   <section
-    class="w-full bg-[#040F2D] flex flex-col items-start justify-start gap-y-16 lg:py-24 py-16 lg:px-28 px-8"
+    class="w-full bg-[#040F2D] flex flex-col items-start justify-start gap-y-16 lg:py-24 py-16 lg:px-28 md:px-16 px-8"
   >
     <div
       class="w-full flex lg:flex-row-reverse flex-col-reverse lg:justify-between justify-start lg:items-center items-start gap-y-8"
@@ -203,9 +203,7 @@
         >
       </div>
 
-      <div>
-        <img src="/employee-training/bro.svg" alt="male and female in an office" />
-      </div>
+      <img class="size-96" src="/employee-training/bro.svg" alt="male and female in an office" />
     </div>
   </section>
 

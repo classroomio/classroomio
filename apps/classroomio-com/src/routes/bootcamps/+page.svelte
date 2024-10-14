@@ -69,7 +69,7 @@
 
 <section>
   <PageHeader
-    className="flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-6 lg:px-28 px-8"
+    className="flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-6 lg:px-28 md:px-16 px-8"
   >
     <div class="bg-[#DCE5FF] py-2 px-4 rounded-full border-[#C2D2FF] border-2 text-center">
       <p class=" text-sm md:text-base text-[#4B5563] text-center font-medium">
@@ -83,7 +83,7 @@
         class="w-full flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
       >
         <h1
-          class="w-[100%] mx-auto m-0 text-4xl lg:text-7xl md:text-6xl font-bold text-slate-900 lg:text-center"
+          class="w-full mx-auto m-0 text-4xl lg:text-7xl md:text-6xl font-bold text-slate-900 lg:text-center"
         >
           Elevate Your <span class="text-blue-700 relative"> Bootcamps</span> with
           <span class="text-blue-700 relative"> Innovative</span> Tools
@@ -101,13 +101,13 @@
   </PageHeader>
 
   <section
-    class="w-full lg:py-24 py-16 lg:px-28 px-8 flex flex-col lg:items-center lg:justify-between justify-center gap-y-12"
+    class="w-full lg:py-24 py-16 lg:px-28 md:px-16 px-6 flex flex-col lg:items-center lg:justify-between justify-center gap-y-12"
   >
     <div
       class="w-full gap-y-4 flex flex-col lg:items-center items-start lg:justify-center justify-start"
     >
       <div class="w-fit py-2 px-4 rounded-full border-[#C2D2FF] border-2 text-center">
-        <p class=" text-sm md:text-base text-[#4B5563] text-center font-medium">
+        <p class="text-sm md:text-base text-[#4B5563] text-center font-medium">
           Have you heard the benefits?
         </p>
       </div>
@@ -127,9 +127,8 @@
     >
       {#each benefitDetails as benefits}
         <div class="w-full md:p-6 p-4 border border-[#D9E0F5] rounded-2xl flex flex-col gap-y-6">
-          <div>
-            <img src="/bootcamps/{benefits.img}" alt="brain" />
-          </div>
+          <img class="size-12" src="/bootcamps/{benefits.img}" alt="brain" />
+
           <div class="w-full flex flex-col justify-start align-start gap-y-2">
             <h1 class="w-full text-xl font-medium font-[#282828]">{benefits.title}</h1>
 
@@ -160,18 +159,18 @@
   </section>
 
   <section
-    class="w-full bg-[#F1F6FF] flex flex-col items-start justify-start gap-y-16 lg:py-24 py-16 lg:px-28 px-8"
+    class="w-full bg-[#F1F6FF] flex flex-col items-start justify-start gap-y-16 lg:py-24 py-16 lg:px-28 md:px-16 px-8"
   >
     <div
       class="w-full gap-y-4 flex flex-col lg:items-center items-start lg:justify-center justify-start"
     >
       <div class="w-fit py-2 px-4 rounded-full border-[#C2D2FF] border-2 text-center">
-        <p class=" text-sm md:text-base text-[#4B5563] text-center font-medium">
+        <p class="text-sm md:text-base text-[#4B5563] text-center font-medium">
           Explore our features
         </p>
       </div>
       <div
-        class="lg:w-full flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
+        class="w-full flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
       >
         <h1 class="md:text-5xl text-3xl font-medium text-[#282828]">Why We're the Perfect Fit</h1>
         <p class="text-[#656565] text-xl font-light lg:text-center lg:w-[80%]">
@@ -190,7 +189,7 @@
             : ''} flex-col lg:justify-between justify-start lg:items-center items-start gap-y-8"
         >
           <div class="w-full lg:w-[40%] gap-y-4 flex flex-col items-start justify-start">
-            <img src="/bootcamps/{feature.img}" alt="team icon" />
+            <img class="size-12" src="/bootcamps/{feature.img}" alt="team icon" />
             <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
               <h1 class="md:text-5xl text-3xl font-medium text-[#282828]">{feature.title}</h1>
               <p class="text-[#656565] text-xl font-light">
@@ -212,7 +211,7 @@
   </section>
 
   <PageSignupCTA
-    header="Take Charge Of Your Trainings Today"
+    header="Take Charge Of Your Bootcamps Today"
     subText="It's free to sign up and start getting value out of the product."
     btnLabel="Sign me up"
     link="/signup"
