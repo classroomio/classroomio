@@ -27,6 +27,7 @@
   let fileInput;
   let submit;
   let uploadedFileUrl = '';
+  let fileName = '';
   let isLoading = false;
   let prevProgress = 0;
   let uploadChannel;
@@ -35,34 +36,53 @@
     return $lesson.materials?.videos?.find((v) => v.link === link);
   }
 
-  async function onUpload(e) {
+  async function onUpload() {
     isLoading = true;
     if (!fileInput) return;
 
-    const formData = new FormData();
     const videoFile = fileInput.files[0];
-    formData.append('videoFile', videoFile);
-
-    console.log({ size: videoFile?.size });
 
     fileSize = videoFile?.size / (1024 * 1024);
+
     try {
-      const response = await axios({
-        method: 'POST',
-        url: env.PUBLIC_SERVER_URL + '/uploadVideo?lessonId=' + lessonId,
-        data: formData,
+      const presignedResponse = await axios.post(
+        `${env.PUBLIC_SERVER_URL}/presignUrl?lessonId=${lessonId}`,
+        {
+          fileName: videoFile.name,
+          fileType: videoFile.type
+        }
+      );
+
+      const presignedUrl = presignedResponse.data.url;
+
+      const uploadResponse = await axios.put(presignedUrl, videoFile, {
+        headers: {
+          'Content-Type': videoFile.type
+        },
         maxContentLength: Infinity,
         maxBodyLength: Infinity,
-        headers: {
-          'Content-Type': 'multipart/form-data; boundary=MyBoundary'
-        },
         onUploadProgress: (progressEvent) => {
           value = Math.round((progressEvent.loaded * 100) / progressEvent?.total / 2);
+
+          const channel = supabase.channel('upload-progress');
+          channel.subscribe((status) => {
+            if (status === 'SUBSCRIBED') {
+              channel.send({
+                type: 'broadcast',
+                event: lessonId,
+                payload: progressEvent
+              });
+            }
+          });
         }
       });
 
-      formRes = response.data;
-      console.log('Upload res', formRes);
+      formRes = {
+        url: presignedResponse.data.fileUrl,
+        fileName: presignedResponse.data.fileName,
+        status: uploadResponse.status
+      };
+      console.log('Upload res', uploadResponse);
       isLoading = false;
       isLoaded = false;
     } catch (err: any) {
@@ -77,7 +97,8 @@
   }
 
   async function isDoneUploading(response) {
-    uploadedFileUrl = response?.success && response?.url;
+    uploadedFileUrl = response?.status == 200 && response?.url;
+    fileName = response?.fileName;
 
     if (uploadedFileUrl && !isVideoAdded(uploadedFileUrl)) {
       $lesson.materials.videos = [
@@ -95,6 +116,7 @@
     formRes = null;
     isLoaded = false;
     isLoading = false;
+    value = 0;
   }
 
   onMount(async () => {
@@ -130,8 +152,8 @@
   <button
     type="button"
     on:click={() => (fileInput && !isLoading ? fileInput.click() : null)}
-    class="h-full w-full {isDisabled && 'hover:cursor-not-allowed opacity-50'}"
-    disabled={isDisabled}
+    class="h-full w-full {!isDisabled && 'hover:cursor-not-allowed opacity-50'}"
+    disabled={!isDisabled}
   >
     <form
       class="border-primary-300 flex h-full w-full flex-col items-center justify-center rounded-xl border border-dashed"
@@ -186,7 +208,7 @@
       onClick={tryAgain}
     />
   </div>
-{:else if !formRes?.success}
+{:else if formRes?.status !== 200}
   <div class="flex h-full w-full flex-col items-center justify-center rounded-xl">
     <img src="/video-upload-error.svg" alt="upload error" />
     <span class="pb-2 pt-3">
@@ -216,7 +238,7 @@
               <track kind="captions" />
             </video>
           </div>
-          <p>{fileInput?.files?.[0]?.name || uploadedFileUrl}</p>
+          <p>{fileInput?.files?.[0]?.name || fileName}</p>
         </span>
         <button on:click={deleteLessonVideo}>
           <img src="/delete-video.svg" alt="deletevideo" class="dark:invert" />
