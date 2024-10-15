@@ -21,32 +21,27 @@
     showNav = !showNav;
   }
 
-  const superpowers = [
+  const solutions = [
     {
-      key: 'coursemanagement',
-      title: 'Course Management',
-      subtitle: 'Simple course management tools'
+      key: 'employee-training',
+      title: 'Employee Training',
+      subtitle: 'Personalized learning experience'
     },
     {
-      key: 'ai',
-      title: 'AI Support',
-      subtitle: 'Double your productivity with AI'
+      key: 'bootcamps',
+      title: 'Bootcamps',
+      subtitle: 'Drive student achievement.'
     },
     {
-      key: 'customization',
-      title: 'Dashboard Customization',
-      subtitle: 'Customize your classroom to your needs'
-    },
-    {
-      key: 'collaboration',
-      title: 'Community',
-      subtitle: 'Seamlessly collaborate with your students'
+      key: 'customer-education',
+      title: 'Customer Education',
+      subtitle: 'Get customers up to speed quickly'
     }
   ];
 
   $: activeLink = $page.url.pathname;
   $: activeHash = $page.url.hash;
-  $: isSuperpowersActive = superpowers.some((sp) => activeHash.includes(sp.key));
+  $: isSolutionsActive = solutions.some((sl) => activeHash.includes(sl.key));
 </script>
 
 <div
@@ -72,7 +67,7 @@
         <button
           class="flex items-center hover:bg-gray-100 px-4 py-2 rounded-md"
           on:click={() => (showNav = !showNav)}
-          class:active={isSuperpowersActive}
+          class:active={isSolutionsActive}
         >
           Solutions <ChevronDown class="ml-2" />
         </button>
@@ -80,29 +75,27 @@
           <div
             class="absolute w-[24rem] top-10 -left-10 border px-5 py-5 rounded-[30px] shadow-slate-700 z-[3001] bg-white"
           >
-            {#each superpowers as superpower}
+            {#each solutions as solution}
               <a
                 class="flex justify-between items-center w-full rounded-lg hover:bg-gray-100 p-5 mb-4"
-                href="/#{superpower.key}"
+                href="/{solution.key}"
                 on:click={() => {
                   showNav = !showNav;
                 }}
               >
-                {#if superpower.key === 'coursemanagement'}
+                {#if solution.key === 'employee-training'}
                   <CourseIcon />
-                {:else if superpower.key === 'customization'}
+                {:else if solution.key === 'bootcamps'}
                   <MapCenter size={24} />
-                {:else if superpower.key === 'collaboration'}
+                {:else if solution.key === 'customer-education'}
                   <ForumIcon size={24} />
-                {:else if superpower.key === 'ai'}
-                  <MachineLearningModel size={24} />
                 {/if}
                 <div class="w-[86%] text-start">
                   <h3 class="font-semibold text-sm text-gray-700">
-                    {superpower.title}
+                    {solution.title}
                   </h3>
                   <p class="font-normal text-sm text-gray-600">
-                    {superpower.subtitle}
+                    {solution.subtitle}
                   </p>
                 </div>
               </a>
@@ -198,15 +191,15 @@
             <button
               class="w-full flex items-center justify-between hover:bg-gray-100 py-3 px-4 rounded-lg"
               on:click={handleShow}
-              class:active={isSuperpowersActive}
+              class:active={isSolutionsActive}
             >
               Our Superpowers <ChevronDown />
             </button>
             {#if showsubNav}
               <div in:fly={{ y: -20, duration: 700 }} out:fly={{ y: 20, duration: 400 }}>
-                {#each superpowers as superpower}
+                {#each solutions as solution}
                   <a
-                    href="/#{superpower.key}"
+                    href="/#{solution.key}"
                     on:click={() => {
                       handleShowNav();
                     }}
@@ -214,7 +207,7 @@
                     <p
                       class="font-normal text-xs text-gray-700 hover:bg-gray-100 rounded-lg py-2.5 pl-5"
                     >
-                      {superpower.title}
+                      {solution.title}
                     </p>
                   </a>
                 {/each}
