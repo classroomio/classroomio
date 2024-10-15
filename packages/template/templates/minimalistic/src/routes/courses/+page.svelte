@@ -51,7 +51,6 @@
 
 {#if !data}
   <PageLoader />
-  <!-- <p>loading</p> -->
 {:else}
   <main class="bg-[#101720] font-ibm">
     <Navigation />
