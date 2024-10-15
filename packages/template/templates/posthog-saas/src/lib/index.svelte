@@ -9,14 +9,16 @@
   export let data;
 
   console.log('data in parent:', data);
+
+  const { org} = data;
 </script>
 
 <div class="bg-[#EEEFE9] dark:bg-black dark:text-white">
   <Navigation />
-  <Hero data={data.data} />
+  <Hero data={org} />
   <Courses {data} />
-  <About data={data.data} />
-  <Faq data={data.data} />
-  <FooterNote data={data.data} />
-  <Footer data={data.data} />
+  <About data={org} />
+  <Faq data={org} />
+  <FooterNote data={org} />
+  <Footer data={org} />
 </div>

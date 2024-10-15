@@ -10,6 +10,8 @@
   import Testimonial from './component/Testimonial.svelte';
 
   export let data;
+
+  const { org } = data;
 </script>
 
 <svelte:head>
@@ -22,13 +24,13 @@
   <!-- <Course {org} /> -->
   <main class="bg-[#101720]">
     <Navigation />
-    <Hero data={data.data} />
-    <Learn data={data.data} />
+    <Hero data={org} />
+    <Learn data={org} />
     <Courses {data} />
     <!-- <LearningPath /> -->
     <Testimonial />
-    <Faq data={data.data} />
-    <FooterNote data={data.data} />
-    <Footer data={data.data} />
+    <Faq data={org} />
+    <FooterNote data={org} />
+    <Footer data={org} />
   </main>
 {/if}

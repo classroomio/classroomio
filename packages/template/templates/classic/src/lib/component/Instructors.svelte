@@ -3,7 +3,7 @@
   import InstructorCard from './InstructorsCard.svelte';
 </script>
 
-<section id="testimonial" class="px-4 lg:px-14 pt-4 pb-20 h-full bg-white">
+<section class="px-4 lg:px-14 pt-4 pb-20 h-full bg-white">
   <h1 class="text-center lg:text-start text-3xl text-[#3F3F3F] font-bold mb-4">
     Meet some of our Instructors
   </h1>

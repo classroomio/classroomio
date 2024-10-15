@@ -70,7 +70,7 @@
   <div class="p-4">
     <div class="relative mb-5">
       <ImageLoader
-        src={bannerImage}
+        src={bannerImage || '/classroomio-course-img-template.jpg'}
         alt="Course Logo"
         class="h-[170px] w-full rounded dark:border dark:border-neutral-600 relative"
       >

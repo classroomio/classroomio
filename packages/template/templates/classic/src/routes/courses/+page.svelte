@@ -9,9 +9,10 @@
   import { Button } from '$lib/components/ui/button';
   import { onMount } from 'svelte';
 
-  export let org = {};
-
   export let data;
+
+  const { org, courses } = data;
+
   const DISPLAY_COURSE = {
     ALL: 'all',
     COURSE: 'course',
@@ -35,82 +36,35 @@
     }
   ];
 
-  // const navItems = [
-  //   {
-  //     title: 'All',
-  //     type: DISPLAY_COURSE.ALL
-  //   },
-  //   {
-  //     title: 'Course',
-  //     type: DISPLAY_COURSE.COURSE
-  //   },
-  //   {
-  //     title: 'Learning Path',
-  //     type: DISPLAY_COURSE.PATH
-  //   }
-  // ];
-
-  // const displayCourse = (course) => {
-  //   type = course;
-  //   const url = new URL(window.location);
-  //   url.searchParams.set('type', course);
-  //   window.history.pushState({}, '', url); // Update URL without reloading the page
-  // };
-
   const filterCourse = (item) => {
     item.checked = !item.checked;
     console.log(`${item.title} item is ${item.checked}`);
   };
-
-  // On mount, set the active type based on the URL parameter
-  onMount(() => {
-    const params = new URLSearchParams(window.location.search);
-    const urlType = params.get('type');
-    if (urlType && Object.values(DISPLAY_COURSE).includes(urlType)) {
-      type = urlType;
-    }
-  });
 </script>
 
 {#if !data}
   <PageLoader />
-  <!-- <p>loading</p> -->
 {:else}
   <section class="overflow-x-hidden">
     <Navigation />
-    <!-- hero -->
-    <div
-      class="h-full pt-20 pb-36 flex flex-col items-center justify-center text-center w-full bg-gradient-to-r from-[#f0a5f11a] via-white to-[#f6e7f61a]"
-    >
-      <h1 class="font-bold text-5xl mb-4">Our <span class="text-[#CE02CE]">Programs</span></h1>
-      <p class="md:text-xl text-[#878787] w-full md:w-[60%] lg:w-[40%] text-center">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsa dolore assumenda distinctio
-        amet eveniet! Inventore earum quisquam qui suscipit quis?
-      </p>
-    </div>
+    {#if org.header.banner.show}
+      <div
+        class="h-full pt-20 pb-36 flex flex-col items-center justify-center text-center w-full bg-gradient-to-r from-[#f0a5f11a] via-white to-[#f6e7f61a]"
+      >
+        <h1 class="font-bold text-5xl mb-4 text-[#CE02CE]/80 w-full md:w-[50%] text-center">
+          {org.header.title}
+        </h1>
+        <p class="md:text-xl text-[#878787] w-full md:w-[60%] lg:w-[40%] text-center">
+          {org.header.subtitle}
+        </p>
+      </div>
+    {/if}
 
-    <!-- course -->
-    {#if data.data.courses.show}
+    {#if org.courses.show}
       <section id="course" class="px-4 pt-4 pb-20 h-full bg-white">
         <h1 class="text-center text-3xl text-[#3F3F3F] font-bold mb-4">
-          {data.data.courses.title}
+          {org.courses.title}
         </h1>
-
-        <!-- <div class="flex items-center justify-center border-b-2 py-4 px-2 mx-auto w-full mb-4">
-        <nav
-          class="flex justify-between items-center font-semibold uppercase list-none w-full md:w-[80%]"
-        >
-          {#each navItems as item}
-            <li
-              class="hover:bg-[#FFE8FF] hover:text-[#CE02CE] cursor-pointer p-1 {type ==
-                item.type && 'bg-[#FFE8FF] text-[#CE02CE]'} uppercase"
-              on:click={() => displayCourse(item.type)}
-            >
-              {item.title}
-            </li>
-          {/each}
-        </nav>
-      </div> -->
         <div class="w-full md:w-[90%] mx-auto">
           {#if $courseMetaData.isLoading}
             <div class="cards-container my-4 mx-2">
@@ -118,7 +72,7 @@
               <CardLoader />
               <CardLoader />
             </div>
-          {:else if data.courses.length > 0}
+          {:else if courses.length > 0}
             <div class="w-full flex gap-4 md:ml-[5%]">
               <div class="hidden lg:block w-fit space-y-2">
                 <p class="font-medium text-[#3C4043] uppercase">Filter</p>
@@ -137,21 +91,21 @@
                 </div>
               </div>
               <section class="flex flex-wrap items-center justify-center md:justify-start gap-4">
-                {#each data.courses.slice(0, viewAll ? data.courses.length : 3) as courseData}
+                {#each courses.slice(0, viewAll ? data.courses.length : 3) as courseData}
                   <CourseCard
-                    id={courseData.id}
-                    slug={courseData.slug}
-                    bannerImage={courseData.logo || './classroomio-course-img-template.jpg'}
-                    title={courseData.title}
-                    type={courseData.type}
-                    description={courseData.description}
-                    cost={courseData.cost}
-                    currency={courseData.currency}
-                    totalLessons={4}
+                    id={courseData.data.slug}
+                    slug={courseData.data.slug}
+                    bannerImage={courseData.data.banner ?? './classroomio-course-img-template.jpg'}
+                    title={courseData.data.title}
+                    type={courseData.data.type}
+                    description={courseData.data.description}
+                    cost={courseData.data.cost}
+                    currency={courseData.data.currency}
+                    totalLessons={courseData.lessons}
                   />
                 {/each}
               </section>
-              {#if data.courses.length > 3}
+              {#if courses.length > 3}
                 <div class="w-full flex items-center justify-center my-5">
                   <Button
                     class="text-lg font-semibold text-white !bg-[#CE02CE]"
@@ -171,6 +125,6 @@
         </div>
       </section>
     {/if}
-    <Footer data={data.data} />
+    <Footer data={org} />
   </section>
 {/if}

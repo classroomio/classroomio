@@ -8,6 +8,8 @@
 
   export let data;
 
+  const { org, courses } = data;
+
   const DISPLAY_COURSE = {
     ALL: 'all',
     COURSE: 'course',
@@ -44,9 +46,9 @@
   });
 </script>
 
-{#if data.data.courses.show}
+{#if org.courses.show}
   <section id="course" class="px-4 pt-4 pb-20 h-full bg-white">
-    <h1 class="text-center text-3xl text-[#3F3F3F] font-bold mb-4">{data.data.courses.title}</h1>
+    <h1 class="text-center text-3xl text-[#3F3F3F] font-bold mb-4">{org.courses.title}</h1>
 
     <!-- <div class="flex items-center justify-center border-b-2 py-4 px-2 mx-auto w-full mb-4">
       <nav
@@ -71,23 +73,23 @@
           <CardLoader />
           <CardLoader />
         </div>
-      {:else if data.courses.length > 0}
+      {:else if courses.length > 0}
         <section class="flex flex-wrap items-center justify-center md:justify-start gap-4 p-3">
-          {#each data.courses.slice(0, viewAll ? data.courses.length : 3) as courseData}
+          {#each courses.slice(0, viewAll ? courses.length : 3) as courseData}
             <CourseCard
-              id={courseData.id}
-              slug={courseData.slug}
-              bannerImage={courseData.logo || '/classroomio-course-img-template.jpg'}
-              title={courseData.title}
-              type={courseData.type}
-              description={courseData.description}
-              cost={courseData.cost}
-              currency={courseData.currency}
-              totalLessons={4}
+              id={courseData.data.slug}
+              slug={courseData.data.slug}
+              bannerImage={courseData.data.logo || '/classroomio-course-img-template.jpg'}
+              title={courseData.data.title}
+              type={courseData.data.type}
+              description={courseData.data.description}
+              cost={courseData.data.cost}
+              currency={courseData.data.currency}
+              totalLessons={courseData.lessons}
             />
           {/each}
         </section>
-        {#if data.courses.length > 3}
+        {#if courses.length > 3}
           <div class="w-full flex items-center justify-center my-5">
             <Button
               class="text-lg font-semibold text-white !bg-[#CE02CE]"

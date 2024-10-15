@@ -5,13 +5,13 @@
   import Footer from '$lib/component/Footer.svelte';
   import Navigation from '$lib/component/Navigation.svelte';
   import PageLoader from '$lib/component/PageLoader.svelte';
-  import { courseMetaData, courses, globalData } from '$lib/component/store';
+  import { courseMetaData } from '$lib/component/store';
   import { Button } from '$lib/components/ui/button';
   import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
   import { onMount } from 'svelte';
-  export let org = {};
 
   export let data;
+  const { org, courses } = data;
   console.log('courses page', data);
   const DISPLAY_COURSE = {
     ALL: 'all',
@@ -77,9 +77,7 @@
 </script>
 
 <svelte:head>
-  <title>
-    {!org.name ? '' : `${org.name}'s `}
-  </title>
+  <title>Posthog saas</title>
 </svelte:head>
 
 {#if !data}
@@ -87,7 +85,7 @@
 {:else}
   <main class="bg-[#EEEFE9] dark:bg-black dark:text-white overflow-x-hidden">
     <Navigation />
-    {#if data.data.header.banner.show}
+    {#if org.header.banner.show}
       <section class="flex items-center justify-center my-12 py-10 px-4 md:px-14 min-h-full">
         <section
           class="mx-auto text-center px-4 lg:px-10 py-20 space-y-4 bg-[#E5E7E0] dark:bg-[#232429] rounded-md w-full lg:w-[70%]"
@@ -99,22 +97,22 @@
             <span class="absolute w-2 h-2 rounded-full bg-blue-800 top-14 -right-10" />
 
             <p class="text-center text-3xl md:text-5xl font-bold w-full md:w-[90%]">
-              {data.data.header.title}
+              {org.header.title}
             </p>
 
             <p class="text-center w-full text-lg text-[#878787] md:w-[70%]">
-              {data.data.header.subtitle}
+              {org.header.subtitle}
             </p>
           </div>
         </section>
       </section>
     {/if}
 
-    {#if data.data.courses.show}
+    {#if org.courses.show}
       <section id="course" class=" pt-4 pb-20 h-full">
         <h1 class="text-center text-5xl mb-8 font-bold">
-          {data.data.courses.title}
-          <span class="text-[#F54E00] dark:text-[#EB9D2A]">{data.data.courses.titleHighlight}</span>
+          {org.courses.title}
+          <span class="text-[#F54E00] dark:text-[#EB9D2A]">{org.courses.titleHighlight}</span>
         </h1>
         <!-- <div
           class="flex items-center justify-center border-b-2 border-[#ADADAD] bg-[#E5E7E0] dark:bg-[#232429] px-2 mx-auto w-full mb-4"
@@ -140,7 +138,7 @@
               <CardLoader />
               <CardLoader />
             </div>
-          {:else if data.courses.length > 0}
+          {:else if courses.length > 0}
             <div class="w-full flex gap-2 mt-10">
               <div class="hidden lg:block min-w-max">
                 <p class="font-semibold mb-4">Filter by</p>
@@ -165,11 +163,11 @@
               <section
                 class="flex flex-wrap items-center justify-center md:justify-start gap-4 px-4 lg:px-2 py-4 w-full"
               >
-                {#each data.courses.slice(0, viewAll ? data.courses.length : 3) as courseData}
+                {#each courses.slice(0, viewAll ? courses.length : 3) as courseData}
                   <CourseCard
-                    slug={courseData.slug}
-                    title={courseData.title}
-                    description={courseData.description}
+                    slug={courseData.data.slug}
+                    title={courseData.data.title}
+                    description={courseData.data.description}
                   />
                 {/each}
               </section>
@@ -194,6 +192,6 @@
         </div>
       </section>
     {/if}
-    <Footer data={data.data} />
+    <Footer data={org} />
   </main>
 {/if}
