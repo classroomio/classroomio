@@ -13,8 +13,8 @@
   import UserProfileIcon from 'carbon-icons-svelte/lib/UserProfile.svelte';
 
   const COURSE_TYPE = {
-    LIVE_CLASS: 'live class',
-    SELF_PACED: 'self paced'
+    LIVE_CLASS: 'live',
+    SELF_PACED: 'paced'
   };
 
   export let bannerImage: string | undefined;

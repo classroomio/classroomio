@@ -9,6 +9,7 @@
   export let description = '';
   export let cost = 0;
   export let currency = 'USD';
+  export let lessons = 0;
   function getCourseUrl() {
     return isLearningPath ? `/pathway/${slug}` : `/course/${slug}`;
   }
@@ -36,7 +37,7 @@
     </div>
 
     <span class="flex justify-between items-center py-4">
-      <p>8 {isLearningPath ? 'Courses' : 'Lessons'}</p>
+      <p>{lessons} {isLearningPath ? 'Courses' : 'Lessons'}</p>
       <p class="font-bold text-[#0233BD]">{currency == 'USD' ? '$' : 'N'}{cost}</p>
     </span>
   </div>

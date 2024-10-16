@@ -7,10 +7,10 @@
   import PageLoader from '$lib/component/PageLoader.svelte';
   import { courseMetaData } from '$lib/component/store.js';
   import Button from '$lib/components/ui/button/button.svelte';
+  import { onMount } from 'svelte';
 
   export let data;
   const { org, courses } = data;
-  let viewAllPath = false;
   let viewAllCourses = false;
 
   const DISPLAY_COURSE = {
@@ -19,7 +19,7 @@
     LIVE: 'live'
   };
 
-  const filter = [
+  let filter = [
     {
       title: 'All Courses',
       type: DISPLAY_COURSE.ALL,
@@ -37,16 +37,33 @@
     }
   ];
 
-  const filterCourse = (item) => {
-    item.checked = !item.checked;
-    console.log(`${item.title} item is ${item.checked}`);
-  };
+  let filteredCourses = [...courses];
+
+  function applyFilter() {
+    const selectedFilter = filter.find((f) => f.checked).type;
+
+    if (!selectedFilter || selectedFilter === DISPLAY_COURSE.ALL) {
+      filteredCourses = courses;
+    } else {
+      filteredCourses = courses.filter(
+        (course) => course.data.type.toLowerCase() === selectedFilter
+      );
+    }
+  }
+
+  // Handle checkbox changes
+  function filterCourse(selectedItem) {
+    // selectedItem.checked = !selectedItem.checked;
+    filter.forEach((item) => (item.checked = item === selectedItem));
+    applyFilter();
+  }
+
+  // Initialize with all courses filtered
+  applyFilter();
 </script>
 
 <svelte:head>
-  <title>
-    {!org.name ? '' : `${org.name}'s `} Courses
-  </title>
+  <title>{!org.name ? '' : `${org.name}'s `} Courses</title>
 </svelte:head>
 
 {#if !data}
@@ -60,11 +77,9 @@
           class="absolute inset-0 bg-cover bg-center"
           style="background-image: url('/classroomio-course-img-template.jpg');"
         ></div>
-
         <div
           class="absolute inset-0 bg-gradient-to-r from-[#0233BD99] via-[#00000033] to-[#FFFFFF00]"
         ></div>
-
         <div
           class="relative flex items-center justify-center h-full text-white px-4 py-20 md:px-10"
         >
@@ -72,24 +87,19 @@
             <p class="text-2xl md:text-4xl font-mono font-semibold w-full md:w-[60%] lg:w-[40%]">
               {org.header.title}
             </p>
-
-            <p class="w-full md:w-[60%] lg:w-[40%]">
-              {org.header.subtitle}
-            </p>
+            <p class="w-full md:w-[60%] lg:w-[40%]">{org.header.subtitle}</p>
             <div class="flex items-center gap-2 md:gap-4">
               <Button
                 class="uppercase bg-blue-900 px-6 py-3 font-semibold hover:bg-blue-900 hover:scale-95 rounded-none"
-                >VIEW COURSES</Button
               >
-              <!-- <bButton
-              class="uppercase bg-blue-900 p-2 border border-[#0542CC] text-white font-semibold hover:bg-[#0542CC] transition"
-              >LEARNING PATH</Button
-            > -->
+                VIEW COURSES
+              </Button>
             </div>
           </div>
         </div>
       </div>
     {/if}
+
     {#if org.courses.show}
       <div class="bg-white py-10 px-2 md:px-8">
         <p class="dark:text-white text-3xl text-center font-semibold pb-10">{org.courses.title}</p>
@@ -112,7 +122,7 @@
                       <input
                         type="checkbox"
                         name={item.title}
-                        checked={item.checked}
+                        bind:checked={item.checked}
                         on:change={() => filterCourse(item)}
                       />
                       <label for={item.title}>{item.title}</label>
@@ -123,7 +133,7 @@
               <section
                 class="flex flex-wrap items-center justify-center md:justify-start gap-4 p-4"
               >
-                {#each courses.slice(0, viewAllCourses ? courses.length : 3) as courseData}
+                {#each filteredCourses.slice(0, viewAllCourses ? filteredCourses.length : 3) as courseData}
                   <CourseCard
                     className="bg-[#FDFDFD]"
                     slug={courseData.data.slug}
@@ -132,18 +142,27 @@
                     title={courseData.data.title}
                     description={courseData.data.description}
                     cost={courseData.data.cost}
+                    lessons={courseData.lessons}
                     currency={courseData.data.currency}
                   />
                 {/each}
               </section>
+
+              {#if filteredCourses.length == 0}
+                <div class="px-4 w-full mx-auto">
+                  <EmptyState />
+                </div>
+              {/if}
             </div>
 
-            {#if courses.length > 3}
+            {#if filteredCourses.length > 3}
               <div class="w-full flex items-center justify-center my-5">
                 <Button
                   class="uppercase bg-blue-900 p-2"
-                  on:click={() => (viewAllCourses = !viewAllCourses)}>VIEW COURSES</Button
+                  on:click={() => (viewAllCourses = !viewAllCourses)}
                 >
+                  VIEW COURSES
+                </Button>
               </div>
             {/if}
           {:else}
@@ -153,50 +172,6 @@
           {/if}
         </div>
       </div>
-      <!-- <div class=" py-10 px-2 md:px-8">
-      <p class="text-white text-3xl text-center font-semibold pb-10">Available Learning Path</p>
-      <div>
-        {#if courseMetaData.isLoading}
-          <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 p-4">
-            <CardLoader />
-            <CardLoader />
-            <CardLoader />
-          </div>
-        {:else if data.courses.length > 0}
-          <section class="flex flex-wrap items-center justify-center md:justify-start gap-4 p-4">
-            {#each data.courses.slice(0, viewAllPath ? data.courses.length : 3) as courseData}
-              <CourseCard
-                className="bg-[#192533] text-white"
-                slug={courseData.slug}
-                bannerImage={courseData.logo || '/images/classroomio-course-img-template.jpg'}
-                title={courseData.title}
-                description={courseData.description}
-                cost={courseData.cost}
-                currency={courseData.currency}
-                isLearningPath={true}
-              />
-            {/each}
-          </section>
-          {#if data.courses.length > 3}
-            <div class="w-full flex items-center justify-center my-5">
-              <Button
-                class="uppercase bg-blue-900 p-2"
-                on:click={() => (viewAllCourses = !viewAllCourses)}>VIEW COURSES</Button
-              >
-            </div>
-          {/if}
-        {:else}
-          <div class="px-10">
-            <EmptyState
-              type="pathways"
-              headerClassName="text-white"
-              subtitleClassName="text-white"
-              className="bg-[#192533] border-[#233A5A]"
-            />
-          </div>
-        {/if}
-      </div>
-    </div> -->
     {/if}
 
     <Footer data={org} />

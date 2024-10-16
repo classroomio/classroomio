@@ -33,6 +33,7 @@
               title={courseData.data.title}
               description={courseData.data.description}
               cost={courseData.data.cost}
+              lessons={courseData.lessons}
               currency={courseData.data.currency}
             />
           {/each}

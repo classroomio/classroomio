@@ -12,34 +12,70 @@
   export let data;
 
   const { org, courses } = data;
+  let viewAll = false;
 
   const DISPLAY_COURSE = {
     ALL: 'all',
-    COURSE: 'course',
-    PATH: 'path'
+    PACED: 'paced',
+    LIVE: 'live'
   };
 
-  let viewAll = false;
-  let type = DISPLAY_COURSE.ALL;
-  const filter = [
+  let filter = [
     {
-      title: 'All Course',
+      title: 'All Courses',
+      type: DISPLAY_COURSE.ALL,
       checked: true
     },
     {
-      title: 'Live Sessions',
+      title: 'Self Paced',
+      type: DISPLAY_COURSE.PACED,
       checked: false
     },
     {
-      title: 'Self Paced',
+      title: 'Live Sessions',
+      type: DISPLAY_COURSE.LIVE,
       checked: false
     }
   ];
 
-  const filterCourse = (item) => {
-    item.checked = !item.checked;
-    console.log(`${item.title} item is ${item.checked}`);
-  };
+  let filteredCourses = [...courses];
+
+  function applyFilter() {
+    const selectedFilter = filter.find((f) => f.checked).type;
+
+    if (!selectedFilter || selectedFilter === DISPLAY_COURSE.ALL) {
+      filteredCourses = courses;
+    } else {
+      filteredCourses = courses.filter(
+        (course) => course.data.type.toLowerCase() === selectedFilter
+      );
+    }
+  }
+
+  // Handle checkbox changes
+  // function filterCourse(selectedItem) {
+  //   // selectedItem.checked = !selectedItem.checked;
+  //   filter.forEach((item) => (item.checked = item === selectedItem));
+  //   applyFilter();
+  // }
+
+  function filterCourse(selectedItem) {
+    // Uncheck all filters
+    filter.forEach((item) => (item.checked = false));
+
+    // Check the selected filter
+    selectedItem.checked = !selectedItem.checked;
+
+    // If no filter is selected, default to "All Courses"
+    if (!filter.some((item) => item.checked && item.type !== DISPLAY_COURSE.ALL)) {
+      filter[0].checked = true;
+    }
+
+    applyFilter();
+  }
+
+  // Initialize with all courses filtered
+  applyFilter();
 </script>
 
 {#if !data}
@@ -82,7 +118,7 @@
                       <input
                         type="checkbox"
                         name={item.title}
-                        checked={item.checked}
+                        bind:checked={item.checked}
                         on:change={() => filterCourse(item)}
                       />
                       <label for={item.title}>{item.title}</label>
@@ -91,7 +127,7 @@
                 </div>
               </div>
               <section class="flex flex-wrap items-center justify-center md:justify-start gap-4">
-                {#each courses.slice(0, viewAll ? data.courses.length : 3) as courseData}
+                {#each filteredCourses.slice(0, viewAll ? filteredCourses.length : 3) as courseData}
                   <CourseCard
                     id={courseData.data.slug}
                     slug={courseData.data.slug}
@@ -104,8 +140,13 @@
                     totalLessons={courseData.lessons}
                   />
                 {/each}
+                {#if filteredCourses.length == 0}
+                  <div class="px-4 w-full mx-auto">
+                    <EmptyState headerClassName="text-[#CE02CE]" />
+                  </div>
+                {/if}
               </section>
-              {#if courses.length > 3}
+              {#if filteredCourses.length > 3}
                 <div class="w-full flex items-center justify-center my-5">
                   <Button
                     class="text-lg font-semibold text-white !bg-[#CE02CE]"
@@ -116,10 +157,7 @@
             </div>
           {:else}
             <div class="px-4 w-full lg:w-[70%] mx-auto">
-              <EmptyState
-                headerClassName="text-[#CE02CE]"
-                type={type == DISPLAY_COURSE.PATH ? 'pathways' : 'course'}
-              />
+              <EmptyState headerClassName="text-[#CE02CE]" />
             </div>
           {/if}
         </div>

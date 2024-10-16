@@ -13,67 +13,49 @@
   export let data;
   const { org, courses } = data;
   console.log('courses page', data);
+
+  let viewAll = false;
   const DISPLAY_COURSE = {
     ALL: 'all',
-    COURSE: 'course',
-    PATH: 'path'
+    PACED: 'paced',
+    LIVE: 'live'
   };
-  let viewAll = false;
-  let type = DISPLAY_COURSE.ALL;
 
-  const filter = [
+  let filter = [
     {
       title: 'All Courses',
-      id: 'ALL',
+      type: DISPLAY_COURSE.ALL,
       checked: true
     },
     {
-      title: 'Live Sessions',
-      id: 'LIVE',
-      checked: false
-    },
-    {
       title: 'Self Paced',
-      id: 'SELF',
+      type: DISPLAY_COURSE.PACED,
+      checked: false
+    },
+    {
+      title: 'Live Sessions',
+      type: DISPLAY_COURSE.LIVE,
       checked: false
     }
-    // {
-    //   title: 'Learning Path'
-    // }
-  ];
-  const navItems = [
-    {
-      title: 'All',
-      type: DISPLAY_COURSE.ALL
-    },
-    {
-      title: 'Course',
-      type: DISPLAY_COURSE.COURSE
-    },
-    {
-      title: 'Learning Path',
-      type: DISPLAY_COURSE.PATH
-    }
   ];
 
-  // const displayCourse = (course) => {
-  //   type = course;
-  //   const url = new URL(window.location);
-  //   url.searchParams.set('type', course);
-  //   window.history.pushState({}, '', url);
-  // };
+  let filteredCourses = [...courses];
 
-  const filterCourse = (item) => {
-    item.checked = !item.checked;
-    console.log(`${item.title} item is ${item.checked}`);
-  };
-  onMount(() => {
-    const params = new URLSearchParams(window.location.search);
-    const urlType = params.get('type');
-    if (urlType && Object.values(DISPLAY_COURSE).includes(urlType)) {
-      type = urlType;
+  function filterCourse(selectedItem) {
+    selectedItem.checked = !selectedItem.checked;
+
+    filter.forEach((item) => (item.checked = item === selectedItem));
+
+    const selectedFilter = filter.find((f) => f.checked).type;
+
+    if (!selectedFilter || selectedFilter === DISPLAY_COURSE.ALL) {
+      return (filteredCourses = courses);
+    } else {
+      return (filteredCourses = courses.filter(
+        (course) => course.data.type.toLowerCase() === selectedFilter
+      ));
     }
-  });
+  }
 </script>
 
 <svelte:head>
@@ -114,23 +96,7 @@
           {org.courses.title}
           <span class="text-[#F54E00] dark:text-[#EB9D2A]">{org.courses.titleHighlight}</span>
         </h1>
-        <!-- <div
-          class="flex items-center justify-center border-b-2 border-[#ADADAD] bg-[#E5E7E0] dark:bg-[#232429] px-2 mx-auto w-full mb-4"
-        >
-          <nav class="flex justify-between items-center font-semibold list-none w-full md:w-[80%]">
-            {#each navItems as item}
-              <li
-                class="border-b-4 hover:border-[#F54E00] hover:dark:border-[#EB9D2A] cursor-pointer py-3 px-4 {type ==
-                item.type
-                  ? ' border-[#F54E00] dark:border-[#EB9D2A]'
-                  : 'border-transparent dark:border-transparent'} capitalize"
-                on:click={() => displayCourse(item.type)}
-              >
-                {item.title}
-              </li>
-            {/each}
-          </nav>
-        </div> -->
+
         <div class="w-full lg:w-[90%] mx-auto">
           {#if $courseMetaData.isLoading}
             <div class="cards-container my-4 mx-2">
@@ -138,7 +104,7 @@
               <CardLoader />
               <CardLoader />
             </div>
-          {:else if courses.length > 0}
+          {:else if filteredCourses.length > 0}
             <div class="w-full flex gap-2 mt-10">
               <div class="hidden lg:block min-w-max">
                 <p class="font-semibold mb-4">Filter by</p>
@@ -163,7 +129,7 @@
               <section
                 class="flex flex-wrap items-center justify-center md:justify-start gap-4 px-4 lg:px-2 py-4 w-full"
               >
-                {#each courses.slice(0, viewAll ? courses.length : 3) as courseData}
+                {#each filteredCourses.slice(0, viewAll ? filteredCourses.length : 3) as courseData}
                   <CourseCard
                     slug={courseData.data.slug}
                     title={courseData.data.title}
@@ -171,8 +137,14 @@
                   />
                 {/each}
               </section>
+
+              {#if filteredCourses.length == 0}
+                <div class="px-4 w-full mx-auto">
+                  <EmptyState />
+                </div>
+              {/if}
             </div>
-            {#if data.courses.length > 3}
+            {#if filteredCourses.length > 3}
               <div class="w-full flex items-center justify-center my-5">
                 <Button
                   on:click={() => (viewAll = !viewAll)}
@@ -183,10 +155,7 @@
             {/if}
           {:else}
             <div class="px-4 w-full lg:w-[70%] mx-auto">
-              <EmptyState
-                className="dark:bg-[#232429] dark:border-[#EAEAEA]"
-                type={type == DISPLAY_COURSE.PATH ? 'pathways' : 'course'}
-              />
+              <EmptyState className="dark:bg-[#232429] dark:border-[#EAEAEA]" type="course" />
             </div>
           {/if}
         </div>
