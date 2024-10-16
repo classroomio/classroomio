@@ -6,8 +6,8 @@ function updateThemeClassInBody(newClass: string, customRegex?: string) {
   document.body.className = document.body.className.replace(customRegex ?? regex, newClass);
 }
 
-export function setTheme(theme: string) {
-  const _theme = theme || '';
+export function setTheme(_theme?: string) {
+  const theme = _theme || '';
 
   // this condition checks if it's a hex code from the db or a specified theme
   if (theme && !theme.includes('theme-')) {
@@ -18,17 +18,17 @@ export function setTheme(theme: string) {
     setCustomTheme('theme-custom');
   } else if (!theme && document.body.className.includes('theme-')) {
     // if no theme and a theme is already applied, remove it
-    updateThemeClassInBody(_theme);
+    updateThemeClassInBody(theme);
 
     return;
   }
 
   // In case theme already exists in dom, don't add
-  if (document.body.className.includes(_theme)) return;
+  if (document.body.className.includes(theme)) return;
 
   // set the new theme
-  localStorage.setItem('theme', _theme);
-  document.body.className = document.body.className.concat(' ', _theme);
+  localStorage.setItem('theme', theme);
+  document.body.className = document.body.className.concat(' ', theme);
 }
 
 export function setCustomTheme(theme?: string) {
