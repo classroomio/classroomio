@@ -34,7 +34,10 @@
         <a href={data.footer.facebook} target="_blank" title="facebook">facebook</a>
       {/if}
     </ul>
-    <a href="/#" class="flex items-center hover:underline text-[#0233BD] dark:text-white gap-1">
+    <a
+      href="www.classroomio.com"
+      class="flex items-center hover:underline text-[#0233BD] dark:text-white gap-1"
+    >
       <p class="text-base font-semibold">Built on ClassroomIO</p>
     </a>
   </nav>

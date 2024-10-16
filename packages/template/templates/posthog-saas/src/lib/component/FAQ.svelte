@@ -46,7 +46,7 @@
     <h1 class="text-center text-5xl mb-8 font-bold">{data.faq.title}</h1>
 
     <div
-      class="flex flex-wrap gap-6 justify-center items-start md:justify-start cursor-pointer py-4 px-4"
+      class="flex flex-wrap gap-6 justify-center items-start md:justify-start cursor-pointer py-4 px-4 w-fit mx-auto"
     >
       {#each data.faq.questions as faq, index}
         <FaqCard {index} {faq} />

@@ -7,10 +7,9 @@
   let open = false;
   let disableSignup = false;
   let logo = '';
-  let orgName = 'evanai';
+  let orgName = '';
   let isOrgSite = true;
   let backgroundColor = 'bg-white dark:bg-black';
-  let isActive = false;
   let isCoursePage = false;
   let user = {
     isLoggedIn: true

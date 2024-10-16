@@ -16,7 +16,11 @@
 
 <div class="h-fit w-full min-w-[250px] md:min-w-[300px] max-w-[300px] space-y-4">
   <div class="border border-[#EAEAEA] rounded-sm space-y-4 px-4 {className}">
-    <p class="text-xl font-semibold py-4 border-b border-[#EAEAEA]">{title}</p>
+    <div class="py-4 border-b overflow-hidden">
+      <p class="text-xl font-semibold p border-[#EAEAEA] overflow-ellipsis line-clamp-1">
+        {title}
+      </p>
+    </div>
     <div class="rounded-md overflow-hidden">
       {#if isLearningPath}
         <img
@@ -25,7 +29,7 @@
           class="w-full h-44"
         />
       {:else}
-        <p class=" text-[#878787] overflow-ellipsis line-clamp-6 text-justify">
+        <p class=" text-[#878787] overflow-ellipsis line-clamp-3 text-justify">
           {description}
         </p>
       {/if}

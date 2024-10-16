@@ -7,7 +7,7 @@
     id="about"
     class="flex items-start justify-center px-10 lg:px-14 h-full bg-white border-b-2 pb-20 lg:pt-20 pt-4"
   >
-    <section class="flex flex-col lg:flex-row gap-8 items-center lg:items-start justify-between">
+    <section class="flex flex-col lg:flex-row gap-4 items-center lg:items-start justify-center">
       <div class="w-full lg:w-[60%] space-y-4">
         <p class="text-4xl font-bold text-[#3F3F3F]">{data.aboutUs.title}</p>
         <p class="w-full lg:w-[80%] text-base leading-7 text-[#878787]">
