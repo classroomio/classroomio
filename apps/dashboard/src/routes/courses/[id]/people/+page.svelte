@@ -33,6 +33,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
+  import { currentOrgPath } from '$lib/utils/store/org.js';
 
   export let data;
 
@@ -115,6 +116,10 @@
     goto(url);
   };
 
+  function gotoPerson(person) {
+    goto(`${$page.url.href}/${person.profile_id}`);
+  }
+
   $: sortAndFilterPeople($group.people, filterBy);
 </script>
 
@@ -192,7 +197,12 @@
               <!-- first column -->
               <StructuredListCell class="w-4/6 md:w-3/6">
                 {#if person.profile}
-                  <div class="flex items-start lg:items-center">
+                  <!-- svelte-ignore a11y-click-events-have-key-events -->
+                  <!-- svelte-ignore a11y-no-static-element-interactions -->
+                  <div
+                    on:click={() => gotoPerson(person)}
+                    class="cursor-pointer flex items-start lg:items-center"
+                  >
                     <Avatar
                       src={person.profile.avatar_url}
                       name={person.profile.fullname}
