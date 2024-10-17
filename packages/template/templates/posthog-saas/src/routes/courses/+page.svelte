@@ -32,22 +32,18 @@
 
   let filteredCourses = [...courses];
 
-  // Apply the filter based on selected course types
   function applyFilter() {
     const activeFilters = filter.filter((f) => f.checked).map((f) => f.type.toLowerCase());
 
     if (activeFilters.length === 0) {
-      // If no filters are selected, show all courses
       filteredCourses = courses;
     } else {
-      // Filter courses based on selected checkboxes
       filteredCourses = courses.filter((course) =>
         activeFilters.includes(course.data.type.toLowerCase())
       );
     }
   }
 
-  // Handle checkbox change and apply the filter
   function filterCourse(item) {
     item.checked = !item.checked;
     applyFilter();
