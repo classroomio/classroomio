@@ -55,7 +55,7 @@ router.post('/', async (req, res) => {
 
     try {
         const command = new PutObjectCommand({
-            Bucket: 'meleti', //TODO: Change to 'videos'
+            Bucket: 'videos',
             Key: fileKey,
             ContentType: fileType
         });
