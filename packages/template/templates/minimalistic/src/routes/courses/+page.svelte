@@ -7,24 +7,17 @@
   import PageLoader from '$lib/component/PageLoader.svelte';
   import { courseMetaData } from '$lib/component/store.js';
   import Button from '$lib/components/ui/button/button.svelte';
-  import { onMount } from 'svelte';
 
   export let data;
   const { org, courses } = data;
   let viewAllCourses = false;
 
   const DISPLAY_COURSE = {
-    ALL: 'all',
     PACED: 'paced',
     LIVE: 'live'
   };
 
   let filter = [
-    {
-      title: 'All Courses',
-      type: DISPLAY_COURSE.ALL,
-      checked: true
-    },
     {
       title: 'Self Paced',
       type: DISPLAY_COURSE.PACED,
@@ -39,27 +32,26 @@
 
   let filteredCourses = [...courses];
 
+  // Apply the filter based on selected course types
   function applyFilter() {
-    const selectedFilter = filter.find((f) => f.checked).type;
+    const activeFilters = filter.filter((f) => f.checked).map((f) => f.type.toLowerCase());
 
-    if (!selectedFilter || selectedFilter === DISPLAY_COURSE.ALL) {
+    if (activeFilters.length === 0) {
+      // If no filters are selected, show all courses
       filteredCourses = courses;
     } else {
-      filteredCourses = courses.filter(
-        (course) => course.data.type.toLowerCase() === selectedFilter
+      // Filter courses based on selected checkboxes
+      filteredCourses = courses.filter((course) =>
+        activeFilters.includes(course.data.type.toLowerCase())
       );
     }
   }
 
-  // Handle checkbox changes
-  function filterCourse(selectedItem) {
-    // selectedItem.checked = !selectedItem.checked;
-    filter.forEach((item) => (item.checked = item === selectedItem));
+  // Handle checkbox change and apply the filter
+  function filterCourse(item) {
+    item.checked = !item.checked;
     applyFilter();
   }
-
-  // Initialize with all courses filtered
-  applyFilter();
 </script>
 
 <svelte:head>
@@ -121,8 +113,8 @@
                     >
                       <input
                         type="checkbox"
+                        checked={item.checked}
                         name={item.title}
-                        bind:checked={item.checked}
                         on:change={() => filterCourse(item)}
                       />
                       <label for={item.title}>{item.title}</label>

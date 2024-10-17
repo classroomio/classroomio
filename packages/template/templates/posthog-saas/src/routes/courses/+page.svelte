@@ -7,26 +7,17 @@
   import PageLoader from '$lib/component/PageLoader.svelte';
   import { courseMetaData } from '$lib/component/store';
   import { Button } from '$lib/components/ui/button';
-  import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
-  import { onMount } from 'svelte';
 
   export let data;
   const { org, courses } = data;
-  console.log('courses page', data);
 
   let viewAll = false;
   const DISPLAY_COURSE = {
-    ALL: 'all',
     PACED: 'paced',
     LIVE: 'live'
   };
 
   let filter = [
-    {
-      title: 'All Courses',
-      type: DISPLAY_COURSE.ALL,
-      checked: true
-    },
     {
       title: 'Self Paced',
       type: DISPLAY_COURSE.PACED,
@@ -41,20 +32,25 @@
 
   let filteredCourses = [...courses];
 
-  function filterCourse(selectedItem) {
-    selectedItem.checked = !selectedItem.checked;
+  // Apply the filter based on selected course types
+  function applyFilter() {
+    const activeFilters = filter.filter((f) => f.checked).map((f) => f.type.toLowerCase());
 
-    filter.forEach((item) => (item.checked = item === selectedItem));
-
-    const selectedFilter = filter.find((f) => f.checked).type;
-
-    if (!selectedFilter || selectedFilter === DISPLAY_COURSE.ALL) {
-      return (filteredCourses = courses);
+    if (activeFilters.length === 0) {
+      // If no filters are selected, show all courses
+      filteredCourses = courses;
     } else {
-      return (filteredCourses = courses.filter(
-        (course) => course.data.type.toLowerCase() === selectedFilter
-      ));
+      // Filter courses based on selected checkboxes
+      filteredCourses = courses.filter((course) =>
+        activeFilters.includes(course.data.type.toLowerCase())
+      );
     }
+  }
+
+  // Handle checkbox change and apply the filter
+  function filterCourse(item) {
+    item.checked = !item.checked;
+    applyFilter();
   }
 </script>
 
@@ -104,7 +100,7 @@
               <CardLoader />
               <CardLoader />
             </div>
-          {:else if filteredCourses.length > 0}
+          {:else if courses.length > 0}
             <div class="w-full flex gap-2 mt-10">
               <div class="hidden lg:block min-w-max">
                 <p class="font-semibold mb-4">Filter by</p>
