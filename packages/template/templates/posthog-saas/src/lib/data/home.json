@@ -1,10 +1,27 @@
 {
   "header": {
-    "title": "Focused online learning for ambitious learners",
+    "title": "How Product People Master PostHog: Track, Test, and Transform Your Product",
     "titleHighlight": "Learn how to code your way to stardom",
-    "subtitle": "Practical project-based courses that are easy to understand and straight to the point",
+    "subtitle": "our courses will help you make sense of the numbers, drive improvements, and create products that stick.",
     "action": {
-      "label": "Start learning Today",
+      "label": "Explore Courses",
+      "link": "/courses",
+      "redirect": false
+    },
+    "banner": {
+      "video": "https://www.youtube.com/watch?v=qqAYW7uxErI",
+      "image": "",
+      "type": "video",
+      "show": true
+    },
+    "show": true
+  },
+  "courseHeader": {
+    "title": "You are closest to mastering PostHog!:",
+    "titleHighlight": "Explore our Courses",
+    "subtitle": "Unlock your potential with our innovative online teaching brand. Engaging courses, expert instructors, and flexible learning options cater to your unique educational journey. Join us and excel today",
+    "action": {
+      "label": "Explore Courses",
       "link": "/courses",
       "redirect": false
     },
@@ -17,9 +34,9 @@
     "show": true
   },
   "aboutUs": {
-    "title": "Our Story",
-    "subtitle": "We provide continuous support and motivation, ensuring you stay on track throughout your learning journey, leading to high satisfaction and proven success rates.",
-    "content": "At the heart of our mission is a commitment to simplifying the learning process. We've built a platform that focuses on delivering real-world skills through projects and hands-on practice. Every course is designed to empower you with knowledge and practical application, ensuring that you not only learn but thrive. With a global community of students and experienced instructors, we are dedicated to making quality education accessible and achievable for everyone.",
+    "title": "Learn with us but you will hate this courses if.......",
+    "subtitle": " You prefer waiting for data or don’t want full control over your product’s destiny. But if you’re ready to take charge, get instant insights, and leave guesswork behind, this is your playbook. Dive in, learn PostHog, and start  building products users love",
+
     "imageUrl": "https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/landingpage/riverside.jpeg",
     "benefits": {
       "title": "What you will gain",
@@ -45,8 +62,8 @@
     "show": true
   },
   "courses": {
-    "title": "Explore our Courses",
-    "titleHighlight": "For You",
+    "title": "Our Course Lineup:",
+    "titleHighlight": "Build Skills That Drive Results",
     "subtitle": "Find courses you will love from the best teachers all over the world 🌎.",
     "show": true
   },
@@ -87,10 +104,10 @@
     "show": true
   },
   "footerNote": {
-    "title": "We can make you a coding superstar",
-    "titleHighlight": "Start now",
-    "subtitle": "Don’t leave your future to chance. Sign up for our prep courses and take the first step towards academic success.",
-    "buttonLabel": "View more courses",
+    "title": "Start Learning Today – Own Your",
+    "titleHighlight": "Product Data",
+    "subtitle": "Gain the skills to take control of your analytics, optimize features, and deliver a productyour users love. Enroll now to start mastering PostHog and transforming your approach to product development!",
+    "buttonLabel": "Get Started",
     "show": true
   },
   "mailinglist": {

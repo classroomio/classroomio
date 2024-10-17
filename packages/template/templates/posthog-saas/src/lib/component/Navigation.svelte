@@ -60,6 +60,8 @@
     const activeItem = menuItems.find((item) => item.link === `/${activeHash}`);
     if (activeItem) {
       activeLink = activeItem.link;
+
+      console.log('link', activeLink, activeItem.link);
     }
   }
 </script>

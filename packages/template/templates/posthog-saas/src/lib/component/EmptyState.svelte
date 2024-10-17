@@ -14,12 +14,12 @@
     <img src="/hogempty.svg" alt="empty" />
     <div>
       {#if type == 'course'}
-        <h3 class={headerClassName}>"No Course yet"</h3>
+        <h3 class="font-semibold {headerClassName}">"No Course yet"</h3>
         <p class="text-sm md:text-base {subtitleClassName}">
           Looks like courses have not been added yet.<br /> Kindly check back later
         </p>
       {:else}
-        <h3 class={headerClassName}>"No Pathways yet"</h3>
+        <h3 class="font-semibold {headerClassName}">"No Pathways yet"</h3>
         <p class="text-sm md:text-base {subtitleClassName}">
           Looks like pathways have not been added yet.<br /> Kindly check back later
         </p>

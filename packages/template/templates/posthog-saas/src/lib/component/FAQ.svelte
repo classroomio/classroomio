@@ -43,7 +43,7 @@
 <!-- FAQ Cards -->
 {#if data.faq.show}
   <div id="faq">
-    <h1 class="text-center text-5xl mb-8 font-bold">{data.faq.title}</h1>
+    <h1 class="text-center text-3xl mb-8 font-bold">{data.faq.title}</h1>
 
     <div
       class="flex flex-wrap gap-6 justify-center items-start md:justify-start cursor-pointer py-4 px-4 w-fit mx-auto"

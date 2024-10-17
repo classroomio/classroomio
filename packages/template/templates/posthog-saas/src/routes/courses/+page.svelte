@@ -55,7 +55,7 @@
 {:else}
   <main class="bg-[#EEEFE9] dark:bg-black dark:text-white overflow-x-hidden">
     <Navigation />
-    {#if org.header.banner.show}
+    {#if org.courseHeader.banner.show}
       <section class="flex items-center justify-center my-12 py-10 px-4 md:px-14 min-h-full">
         <section
           class="mx-auto text-center px-4 lg:px-10 py-20 space-y-4 bg-[#E5E7E0] dark:bg-[#232429] rounded-md w-full lg:w-[70%]"
@@ -67,11 +67,12 @@
             <span class="absolute w-2 h-2 rounded-full bg-blue-800 top-14 -right-10" />
 
             <p class="text-center text-3xl md:text-5xl font-bold w-full md:w-[90%]">
-              {org.header.title}
+              {org.courseHeader.title}
+              <span class="text-[#F54E00]">{org.courseHeader.titleHighlight}</span>
             </p>
 
             <p class="text-center w-full text-lg text-[#878787] md:w-[70%]">
-              {org.header.subtitle}
+              {org.courseHeader.subtitle}
             </p>
           </div>
         </section>

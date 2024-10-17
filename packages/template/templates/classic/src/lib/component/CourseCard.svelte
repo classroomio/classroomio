@@ -1,12 +1,5 @@
 <script lang="ts">
-  import {
-    Tag,
-    ImageLoader,
-    SkeletonPlaceholder,
-    ContextMenu,
-    ContextMenuDivider,
-    ContextMenuOption
-  } from 'carbon-components-svelte';
+  import { ImageLoader, SkeletonPlaceholder } from 'carbon-components-svelte';
 
   import RadioButtonChecked from 'carbon-icons-svelte/lib/RadioButtonChecked.svelte';
   import GrowthIcon from 'carbon-icons-svelte/lib/Growth.svelte';
@@ -90,7 +83,7 @@
       {/if}
     </div>
 
-    <h3 class="text-xl dark:text-white title">{title}</h3>
+    <h3 class="text-xl dark:text-white font-semibold">{title}</h3>
     <p class="mt-2 text-sm text-gray-500 dark:text-gray-300 description">
       {description}
     </p>

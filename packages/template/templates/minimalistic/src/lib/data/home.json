@@ -16,6 +16,23 @@
     },
     "show": true
   },
+  "courseHeader": {
+    "title": "Explore Available Courses and learning Paths",
+    "titleHighlight": "",
+    "subtitle": "Our courses cater to all learning needs and styles. Join us and embark on a journey of growth and discovery",
+    "action": {
+      "label": "view courses",
+      "link": "/courses",
+      "redirect": false
+    },
+    "banner": {
+      "video": "https://www.youtube.com/watch?v=qqAYW7uxErI",
+      "image": "",
+      "type": "video",
+      "show": true
+    },
+    "show": true
+  },
   "aboutUs": {
     "title": "Our Story",
     "subtitle": "We provide continuous support and motivation, ensuring you stay on track throughout your learning journey, leading to high satisfaction and proven success rates.",
@@ -76,6 +93,26 @@
       }
     ],
     "show": true
+  },
+  "testimonial": {
+    "show": true,
+    "list": [
+      {
+        "name": "Zulaike Elebute",
+        "role": "Design Engineer",
+        "description": "The real-world projects and case studies in these courses are outstanding. They've given me the confidence and skills to handle complex challenges in my current role"
+      },
+      {
+        "name": "Oluwaseun olaniyan",
+        "role": "Frontend Developer",
+        "description": "Enrolling in this online course was one of the best decisions I’ve made for my career. The instructors are incredibly knowledgeable and provide hands-on experience that’s directly applicable to my job."
+      },
+      {
+        "name": "Zulaike Elebute",
+        "role": "No-code Developer",
+        "description": "Enrolling in this online course was one of the best decisions I’ve made for my career. The instructors are incredibly knowledgeable and provide hands-on experience that’s directly applicable to my job."
+      }
+    ]
   },
   "contact": {
     "title": "Have you got any",

@@ -13,7 +13,7 @@
 
 {#if org.courses.show}
   <section id="course" class="px-4 pt-4 pb-20 h-full md:px-10">
-    <h1 class="text-center text-5xl mb-8 font-bold">
+    <h1 class="text-center text-3xl mb-8 font-bold">
       {org.courses.title}
       <span class="text-[#F54E00] dark:text-[#EB9D2A]">{org.courses.titleHighlight}</span>
     </h1>

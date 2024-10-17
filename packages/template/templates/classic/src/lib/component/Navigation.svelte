@@ -10,7 +10,8 @@
   let orgName = 'evanai';
   let isOrgSite = true;
   let backgroundColor = 'bg-white dark:bg-black';
-  let isActive = false;
+
+  let activeLink = '';
   let isCoursePage = false;
   let user = {
     isLoggedIn: true
@@ -35,6 +36,14 @@
   function toggleMenu() {
     open = !open;
   }
+
+  $: activeHash = $page.url.hash;
+  $: {
+    const activeItem = menuItems.find((item) => item.link === `/${activeHash}`);
+    if (activeItem) {
+      activeLink = activeItem.link;
+    }
+  }
 </script>
 
 <nav class={`relative w-full flex items-center justify-between py-4 px-6 ${backgroundColor}`}>
@@ -57,12 +66,14 @@
   {/if}
 
   <!-- Desktop Navigation Menu (Hidden on mobile) -->
-  <ul
-    class="hidden lg:flex items-center space-x-8 text-base font-bold text-[#1F2937] list-none hover:no-underline"
-  >
+  <ul class="hidden lg:flex items-center space-x-8 text-base font-bold text-[#1F2937] list-none">
     {#if user.isLoggedIn}
       {#each menuItems as menu}
-        <li><a href={menu.link}>{menu.title}</a></li>
+        <li
+          class="hover:text-[#CE02CE] {activeLink == menu.link ? 'text-[#CE02CE] underline' : ''}"
+        >
+          <a href={menu.link}>{menu.title}</a>
+        </li>
       {/each}
     {/if}
   </ul>

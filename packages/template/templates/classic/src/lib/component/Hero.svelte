@@ -5,13 +5,16 @@
 </script>
 
 {#if data.header.banner.show}
-  <section class="flex items-start justify-center pb-20 lg:pt-10 pt-4 px-10 md:px-14 h-full">
+  <section class="flex items-start justify-center pb-20 lg:pt-10 pt-4 px-6 md:px-14 h-full">
     <section
       class="flex flex-col-reverse md:flex-row items-start md:items-center gap-10 md:justify-between"
     >
       <div class="space-y-6 w-full">
         <p class="text-4xl xl:text-6xl font-bold w-full xl:w-[70%]">
           {data.header.title}
+          <span class="text-[#CE02CE]">
+            {data.header.titleHighlight}
+          </span>
         </p>
         <p class="w-full lg:w-[70%] text-[#878787] xl:text-lg">
           {data.header.subtitle}

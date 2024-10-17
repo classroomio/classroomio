@@ -55,15 +55,18 @@
 {:else}
   <section class="overflow-x-hidden">
     <Navigation />
-    {#if org.header.banner.show}
+    {#if org.courseHeader.show}
       <div
         class="h-full pt-20 pb-36 flex flex-col items-center justify-center text-center w-full bg-gradient-to-r from-[#f0a5f11a] via-white to-[#f6e7f61a]"
       >
-        <h1 class="font-bold text-5xl mb-4 text-[#CE02CE]/80 w-full md:w-[50%] text-center">
-          {org.header.title}
+        <h1 class="font-bold text-5xl mb-4 w-full md:w-[50%] text-center">
+          {org.courseHeader.title}
+          <span class="text-[#CE02CE]/80 font-bold text-5xl">
+            {org.courseHeader.titleHighlight}</span
+          >
         </h1>
         <p class="md:text-xl text-[#878787] w-full md:w-[60%] lg:w-[40%] text-center">
-          {org.header.subtitle}
+          {org.courseHeader.subtitle}
         </p>
       </div>
     {/if}

@@ -1,4 +1,5 @@
 <script>
+  import { goto } from '$app/navigation';
   import CardLoader from '$lib/component/CardLoader.svelte';
   import CourseCard from '$lib/component/CourseCard.svelte';
   import EmptyState from '$lib/component/EmptyState.svelte';
@@ -55,7 +56,7 @@
 {:else}
   <main class="bg-[#101720] font-ibm">
     <Navigation />
-    {#if org.header.banner.show}
+    {#if org.courseHeader.show}
       <div class="relative h-full md:h-screen">
         <div
           class="absolute inset-0 bg-cover bg-center"
@@ -69,14 +70,15 @@
         >
           <div class="text-white space-y-6 w-full">
             <p class="text-2xl md:text-4xl font-mono font-semibold w-full md:w-[60%] lg:w-[40%]">
-              {org.header.title}
+              {org.courseHeader.title}
             </p>
-            <p class="w-full md:w-[60%] lg:w-[40%]">{org.header.subtitle}</p>
+            <p class="w-full md:w-[60%] lg:w-[40%]">{org.courseHeader.subtitle}</p>
             <div class="flex items-center gap-2 md:gap-4">
               <Button
+                on:click={() => goto(org.courseHeader.action.link)}
                 class="uppercase bg-blue-900 px-6 py-3 font-semibold hover:bg-blue-900 hover:scale-95 rounded-none"
               >
-                VIEW COURSES
+                {org.courseHeader.action.label}
               </Button>
             </div>
           </div>

@@ -38,7 +38,9 @@
 
     <span class="flex justify-between items-center py-4">
       <p>{lessons} {isLearningPath ? 'Courses' : 'Lessons'}</p>
-      <p class="font-bold text-[#0233BD]">{currency == 'USD' ? '$' : 'N'}{cost}</p>
+      <p class="font-bold text-[#0233BD]">
+        {!cost ? 'Free' : currency == 'USD' ? `$ ${cost}` : `N ${cost}`}
+      </p>
     </span>
   </div>
   <a

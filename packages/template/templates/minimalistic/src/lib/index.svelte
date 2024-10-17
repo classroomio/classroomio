@@ -28,7 +28,7 @@
     <Learn data={org} />
     <Courses {data} />
     <!-- <LearningPath /> -->
-    <Testimonial />
+    <Testimonial data={org} />
     <Faq data={org} />
     <FooterNote data={org} />
     <Footer data={org} />

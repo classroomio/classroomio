@@ -30,9 +30,9 @@
     <Hero data={org} />
     <About data={org} />
     <Courses {data} />
-    <Instructors />
+    <Instructors data={org} />
     <Faq data={org} />
-    <Testimonial />
+    <Testimonial data={org} />
     <FooterNote data={org} />
     <Blog />
     <Footer data={org} />

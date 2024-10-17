@@ -3,7 +3,7 @@
 
   export let data;
   function getCourseUrl() {
-    return '/courses';
+    return '#';
   }
 </script>
 
@@ -13,8 +13,10 @@
       class="mx-auto w-fit flex flex-col items-center justify-between px-2 lg:px-10 py-20 space-y-4 bg-[#E5E7E0] dark:bg-[#232429] rounded-md"
     >
       <div class="flex items-center justify-center w-full">
-        <p class="text-4xl text-center lg:text-start font-bold w-full lg:w-[80%] capitalize">
+        <p class="text-4xl text-center xl:text-start font-bold w-full lg:w-[80%] capitalize">
           {data.footerNote.title}
+
+          <span class="text-[#F54E00]">{data.footerNote.titleHighlight}</span>
         </p>
       </div>
       <div

@@ -5,7 +5,7 @@
 {#if data.aboutUs.show}
   <section
     id="about"
-    class="flex items-start justify-center px-10 lg:px-14 h-full bg-white border-b-2 pb-20 lg:pt-20 pt-4"
+    class="flex items-start justify-center px-6 md:px-10 lg:px-14 h-full bg-white border-b-2 pb-20 lg:pt-20 pt-4"
   >
     <section class="flex flex-col lg:flex-row gap-4 items-center lg:items-start justify-center">
       <div class="w-full lg:w-[60%] space-y-4">
@@ -15,10 +15,10 @@
         </p>
       </div>
       {#if data.aboutUs.benefits}
-        <div class="max-w-[400px]">
+        <div class="max-w-[400px] min-h-fit">
           {#each data.aboutUs.benefits.list as item, index}
             <div
-              class="benefit-card max-w-[200px] p-4 font-semibold mb-9 border-b-4 border-[#CE02CE] bg-white rounded-b-lg shadow-lg"
+              class="benefit-card w-full text-center max-w-[200px] p-4 font-semibold mb-9 border-b-4 border-[#CE02CE] bg-white rounded-b-lg shadow-lg"
               class:left={index % 2 === 0}
               class:right={index % 2 !== 0}
             >

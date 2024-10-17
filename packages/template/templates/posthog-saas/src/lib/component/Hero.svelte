@@ -22,7 +22,7 @@
           on:click={() => {
             goto(data.header.action.link);
           }}
-          class="uppercase py-2 px-3 bg-white text-black ring-1 ring-[#B17816] dark:bg-[#EB9D2A] hover:scale-95 hover:bg-[#EB9D2A] shadow-[0px_3px_#B17816] font-bold mb-4"
+          class="capitalize py-2 px-3 bg-white text-black ring-1 ring-[#B17816] dark:bg-[#EB9D2A] hover:scale-95 hover:bg-[#EB9D2A] shadow-[0px_3px_#B17816] font-bold mb-4"
           >{data.header.action.label}</Button
         >
       </div>

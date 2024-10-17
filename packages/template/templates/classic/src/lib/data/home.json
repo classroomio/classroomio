@@ -1,8 +1,25 @@
 {
   "header": {
-    "title": "Focused online learning for ambitious learners",
-    "titleHighlight": "Learn how to code your way to stardom",
-    "subtitle": "Practical project-based courses that are easy to understand and straight to the point",
+    "title": "Focused online learning for ",
+    "titleHighlight": "ambitious learner!",
+    "subtitle": "Unlock your potential with our innovative online teaching brand. Engaging courses, expert instructors, and flexible learning options cater to your unique educational journey. Join us and excel today",
+    "action": {
+      "label": "Start learning Today",
+      "link": "/courses",
+      "redirect": false
+    },
+    "banner": {
+      "video": "https://www.youtube.com/watch?v=qqAYW7uxErI",
+      "image": "",
+      "type": "video",
+      "show": true
+    },
+    "show": true
+  },
+  "courseHeader": {
+    "title": "Our",
+    "titleHighlight": "Programs",
+    "subtitle": "Our courses cater to all learning needs and styles. Join us and embark on a journey of growth and discovery.",
     "action": {
       "label": "Start learning Today",
       "link": "/courses",
@@ -17,28 +34,28 @@
     "show": true
   },
   "aboutUs": {
-    "title": "Our Story",
-    "subtitle": "We provide continuous support and motivation, ensuring you stay on track throughout your learning journey, leading to high satisfaction and proven success rates.",
-    "content": "At the heart of our mission is a commitment to simplifying the learning process. We've built a platform that focuses on delivering real-world skills through projects and hands-on practice. Every course is designed to empower you with knowledge and practical application, ensuring that you not only learn but thrive. With a global community of students and experienced instructors, we are dedicated to making quality education accessible and achievable for everyone.",
+    "title": "What we do",
+    "subtitle": "",
+    "content": "We are dedicated to helping you unlock your potential with our innovative online teaching brand. Engaging courses, expert instructors, and flexible learning options cater to your unique educational journey.",
     "imageUrl": "https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/landingpage/riverside.jpeg",
     "benefits": {
       "title": "What you will gain",
       "list": [
         {
-          "title": "Real-world coding challenges.",
+          "title": "Expert led sessions",
           "subtitle": "Work through projects that mirror real-world tasks, helping you build a portfolio that showcases your skills to potential employers."
         },
         {
-          "title": "Experienced Instructors",
+          "title": "Innovative online courses and paths",
           "subtitle": "Learn from industry experts who bring their hands-on experience to the classroom, guiding you every step of the way."
+        },
+        {
+          "title": "Get Certified",
+          "subtitle": "With over 20 years of combined teaching experience, our methods have been proven to lead to better results and a deep understanding of the subject matter."
         },
         {
           "title": "Comprehensive Materials",
           "subtitle": "Get access to up-to-date resources that cover all key topics and methodologies, ensuring a complete learning experience."
-        },
-        {
-          "title": "Proven Success",
-          "subtitle": "With over 20 years of combined teaching experience, our methods have been proven to lead to better results and a deep understanding of the subject matter."
         }
       ]
     },
@@ -86,17 +103,57 @@
     "email": "help@digdippa.com",
     "show": true
   },
-  "footerNote": {
-    "title": "We can make you a coding superstar",
-    "titleHighlight": "Start now",
-    "subtitle": "Don’t leave your future to chance. Sign up for our prep courses and take the first step towards academic success.",
-    "buttonLabel": "View more courses",
-    "show": true
+  "instructors": {
+    "show": true,
+    "list": [
+      {
+        "rating": 4,
+        "name": "Adewale",
+        "description": "Adewale Adebayo is a seasoned professional with a wealth of experience in software development. He is passionate about coding and teaching, and his classes are designed to be engaging and practical, ensuring that students gain hands-on skills and knowledge."
+      },
+      {
+        "rating": 4,
+        "name": "Folakemi Adeyemi",
+        "description": "Folake Adeyemi has extensive expertise in project management and leadership. She combines theoretical knowledge with practical case studies, ensuring that students are well-prepared for real-world challenges. "
+      },
+      {
+        "rating": 4,
+        "name": "Ifedayo Olabisi",
+        "description": "Ifedayo Olabisi is a distinguished instructor in web development. With a deep understanding of both front-end and back-end technologies, he provides comprehensive training that covers all aspects of web development."
+      },
+      {
+        "rating": 4,
+        "name": "Kemi Adediran",
+        "description": "Kemi Adediran is a skilled digital marketer with a passion for sharing her knowledge. Her courses cover the latest trends and techniques in digital marketing, from SEO to social media strategy."
+      }
+    ]
   },
-  "mailinglist": {
-    "title": "Join our mailing list",
-    "subtitle": "We are constantly releasing new courses and sharing them with our email list. Subscribe to get notified once we release a new course.",
-    "buttonLabel": "Subscribe",
+  "testimonial": {
+    "show": true,
+    "list": [
+      {
+        "name": "Zulaike Elebute",
+        "description": "Enrolling in this online course was one of the best decisions I’ve made for my career. The instructors are incredibly knowledgeable and provide hands-on experience that’s directly applicable to my job."
+      },
+      {
+        "name": "Zulaike Elebute",
+        "description": "The real-world projects and case studies in these courses are outstanding. They've given me the confidence and skills to handle complex challenges in my current role"
+      },
+      {
+        "name": "Oluwaseun olaniyan",
+        "description": "Enrolling in this online course was one of the best decisions I’ve made for my career. The instructors are incredibly knowledgeable and provide hands-on experience that’s directly applicable to my job."
+      },
+      {
+        "name": "Zulaike Elebute",
+        "description": "Enrolling in this online course was one of the best decisions I’ve made for my career. The instructors are incredibly knowledgeable and provide hands-on experience that’s directly applicable to my job."
+      }
+    ]
+  },
+  "footerNote": {
+    "title": "Programs you will love. 100%  guaranted ",
+    "titleHighlight": "",
+    "subtitle": "",
+    "buttonLabel": "Start learning today",
     "show": true
   },
   "footer": {
