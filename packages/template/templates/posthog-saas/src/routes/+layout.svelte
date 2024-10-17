@@ -13,4 +13,8 @@
   }
 </script>
 
+<svelte:head>
+  <title>Posthog saas landing page</title>
+</svelte:head>
+
 <slot />

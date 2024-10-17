@@ -12,9 +12,6 @@
       <div class="space-y-6 w-full">
         <p class="text-4xl xl:text-6xl font-bold w-full xl:w-[70%]">
           {data.header.title}
-          <span class="text-[#CE02CE]">
-            {data.header.titleHighlight}
-          </span>
         </p>
         <p class="w-full lg:w-[70%] text-[#878787] xl:text-lg">
           {data.header.subtitle}

@@ -50,10 +50,6 @@
   }
 </script>
 
-<svelte:head>
-  <title>Minimalistic Courses</title>
-</svelte:head>
-
 {#if !data}
   <PageLoader />
 {:else}

@@ -50,10 +50,6 @@
   }
 </script>
 
-<svelte:head>
-  <title>Posthog saas</title>
-</svelte:head>
-
 {#if !data}
   <PageLoader />
 {:else}
