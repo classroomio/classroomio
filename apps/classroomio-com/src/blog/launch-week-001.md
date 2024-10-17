@@ -35,8 +35,8 @@ Below are all the features for each day that we will be sharing. As the day goes
 1. Day 1 - [Brand Customisations](/blog/brand-customisations)
 2. Day 2 - [Multi-Language Support](/blog/multi-language)
 3. Day 3 - [Self-host ClassroomIO on your Servers](/blog/self-host)
-4. Day 4 - 🤯
-5. Day 5 - 😉
+4. Day 4 - [Free Tools](/blog/free-tools)
+5. Day 5 - [Custom Domains](/blog/custom-domain)
 6. Extras - 😍😍😍😍
 
 ### Let the launch week begin 🚀

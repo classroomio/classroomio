@@ -142,8 +142,8 @@
     goto(`${$currentOrgPath}/settings${pathname}`);
   }
 
-  function setHex(theme: string) {
-    if (hex || theme.includes('theme-')) return;
+  function setHex(theme?: string) {
+    if (!theme || hex || theme.includes('theme-')) return;
     hex = theme;
   }
 
