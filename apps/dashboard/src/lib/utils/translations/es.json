@@ -1218,6 +1218,11 @@
           "video": "Video",
           "image": "Imagen"
         }
+      },
+      "background": {
+        "title": "Imagen de fondo",
+        "show_background": "Mostrar fondo",
+        "hide_background": "Ocultar fondo"
       }
     },
     "organization": {
@@ -1240,7 +1245,9 @@
         },
         "theme": {
           "heading": "Tema",
-          "sub_heading": "Establece el color de tu marca"
+          "sub_heading": "Establece el color de tu marca",
+          "custom_theme": "Tema personalizado",
+          "add_theme": "Agregar tema"
         },
         "customize_lms": {
           "heading": "Personalizar LMS",
@@ -1307,7 +1314,9 @@
     "what_brings": "¿Qué te trae a",
     "how": "¿Cómo se enteró de nosotros?",
     "back": "Atrás",
-    "continue": "Continuar"
+    "continue": "Continuar",
+    "employees": "Capacitar a mis empleados",
+    "customers": "Crear cursos para mis clientes"
   },
   "verify_email_modal": {
     "heading": "Verifica tu correo electrónico",

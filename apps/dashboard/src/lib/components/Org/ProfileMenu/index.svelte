@@ -22,7 +22,6 @@
     align="right-bottom"
     caret={true}
     on:click:outside={({ detail }) => {
-      console.log('on:click:outside');
       $profileMenu.open = !!$profileMenu.ref?.contains(detail.target);
     }}
   >

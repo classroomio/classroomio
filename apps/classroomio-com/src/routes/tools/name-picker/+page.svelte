@@ -229,9 +229,7 @@
               <li class="py-2 border-b">
                 <div class="flex item-center gap-3 md:gap-5 justify-center">
                   <img src={avatarUrls[index]} alt="" class="w-7" />
-                  <p
-                    class="font-medium text-sm md:text-base w-[20%] md:w-[10%] flex justify-center items-center"
-                  >
+                  <p class="font-medium text-sm md:text-base flex justify-center items-center">
                     {name}
                   </p>
                 </div>

@@ -29,7 +29,7 @@
     </p>
     <PrimaryButton
       variant={VARIANTS.CONTAINED_DARK}
-      label="Go to Home"
+      label="Go Home"
       className="text-lg"
       onClick={handleClick}
     />

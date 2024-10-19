@@ -161,7 +161,11 @@
           }}
         >
           <div
-            class="text-black no-underline cursor-pointer flex items-center justify-between gap-2.5 px-2.5 py-2 mb-2 {NavClasses.item}"
+            class="text-black no-underline cursor-pointer flex items-center justify-between gap-2.5 px-2.5 py-2 mb-2 {NavClasses.item} {$page.url.pathname.includes(
+              'settings'
+            )
+              ? NavClasses.active
+              : 'dark:text-white'}"
           >
             <div class="flex text-start items-center justify-start space-x-1 w-full">
               <Avatar
@@ -170,7 +174,9 @@
                 width="w-[1.2rem]"
                 height="h-[1.2rem]"
               />
-              <p class="text-sm font-medium truncate max-w-full">{$profile.fullname}</p>
+              <p class="text-sm dark:text-white font-medium truncate max-w-full">
+                {$profile.fullname}
+              </p>
             </div>
             <div>
               <ChevronRight />
