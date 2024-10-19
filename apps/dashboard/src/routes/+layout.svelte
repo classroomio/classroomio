@@ -248,10 +248,6 @@
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       // Log key events
       console.log(`event`, event);
-      console.log(`session`, session);
-      if (event == 'PASSWORD_RECOVERY') {
-        console.log('PASSWORD RESET');
-      }
 
       if (path.includes('reset')) {
         console.log('Dont change auth when on reset page');

@@ -1,5 +1,5 @@
 <a href="https://classroomio.com/">
-  <img alt="Launch your bootcamp quickly and affordably with ClassroomIO, the customizable online teaching platform." src="https://brand.cdn.clsrio.com/og/classroomio-og.png" />
+  <img alt="A flexible, user-friendly platform for creating, managing, and delivering courses for companies and training organisations" src="https://brand.cdn.clsrio.com/og/classroomio-og.png" />
   <h1 align="center">ClassroomIO</h1>
   <p align="center">
     The Open Source Teaching Platform for Bootcamps

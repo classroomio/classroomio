@@ -28,16 +28,14 @@ export const openModal: Writable<OpenModal> = writable({
   avatar: false,
   background: false,
   fullscreen: false,
-  showFullscreenButton: true,
+  showFullscreenButton: false,
   mood: false
 });
-
-const placeholderLearning = 'Tell us what you are learning';
 
 // report html
 export const htmlBody: Writable<HtmlBody> = writable({
   name: '',
-  learning: placeholderLearning,
+  learning: '',
   progress: 10,
   avatar: '',
   background: '',
@@ -51,7 +49,7 @@ export const htmlBody: Writable<HtmlBody> = writable({
 export const isFormComplete = derived(htmlBody, ($htmlBody) => {
   return !!(
     $htmlBody.name.trim() &&
-    $htmlBody.learning.trim() !== placeholderLearning &&
+    $htmlBody.learning.trim() &&
     $htmlBody.progress > 0 &&
     $htmlBody.mood.text.trim() &&
     $htmlBody.mood.iconSrc.trim()

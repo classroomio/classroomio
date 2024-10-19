@@ -33,8 +33,6 @@
       errorMessage = null; // Clear error message on successful load
     };
   };
-
-  $: isDisabled = isUploading;
 </script>
 
 <section class="width-fit p-3 flex {flexDirection} items-center justify-between gap-5">
@@ -57,15 +55,16 @@
 
   <div class="flex flex-col items-center">
     <button
-      class="width-fit text-primary-700 flex flex-col items-center text-sm {isDisabled
+      class="width-fit text-primary-700 flex flex-col items-center text-sm {isDisabled ||
+      isUploading
         ? 'opacity-50 cursor-not-allowed'
         : 'cursor-pointer'}"
       on:click={() => {
-        if (!isDisabled) {
+        if (!isDisabled || isUploading) {
           fileinput.click();
         }
       }}
-      disabled={isDisabled}
+      disabled={isDisabled || isUploading}
     >
       {#if isUploading}
         <Loading withOverlay={false} small />

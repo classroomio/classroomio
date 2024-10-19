@@ -1218,6 +1218,11 @@
           "video": "Băng hình",
           "image": "Hình ảnh"
         }
+      },
+      "background": {
+        "title": "Hình nền",
+        "show_background": "Hiển thị nền",
+        "hide_background": "Ẩn nền"
       }
     },
     "organization": {
@@ -1240,7 +1245,9 @@
         },
         "theme": {
           "heading": "chủ đề",
-          "sub_heading": "Đặt màu thương hiệu của bạn"
+          "sub_heading": "Đặt màu thương hiệu của bạn",
+          "custom_theme": "Chủ đề tùy chỉnh",
+          "add_theme": "Thêm chủ đề"
         },
         "customize_lms": {
           "heading": "Tùy chỉnh LMS",
@@ -1307,7 +1314,9 @@
     "what_brings": "Điều gì đưa bạn đến",
     "how": "Bạn đã nghe về chúng tôi như thế nào?",
     "back": "Mặt sau",
-    "continue": "Tiếp tục"
+    "continue": "Tiếp tục",
+    "employees": "Đào tạo nhân viên của tôi",
+    "customers": "Tạo khóa học cho khách hàng của tôi"
   },
   "verify_email_modal": {
     "heading": "Xác nhận email của bạn",

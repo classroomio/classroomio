@@ -24,5 +24,7 @@ export const blockedSubdomain = [
   'schools',
   'training',
   'cloud',
-  'launchweek'
+  'launchweek',
+  'course',
+  'launch'
 ];

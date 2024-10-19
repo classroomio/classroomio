@@ -1218,6 +1218,11 @@
           "video": "Video",
           "image": "Bild"
         }
+      },
+      "background": {
+        "title": "Hintergrundbild",
+        "show_background": "Hintergrund anzeigen",
+        "hide_background": "Hintergrund ausblenden"
       }
     },
     "organization": {
@@ -1240,7 +1245,9 @@
         },
         "theme": {
           "heading": "Thema",
-          "sub_heading": "Legen Sie Ihre Markenfarbe fest"
+          "sub_heading": "Legen Sie Ihre Markenfarbe fest",
+          "custom_theme": "Benutzerdefiniertes Thema",
+          "add_theme": "Thema hinzufügen"
         },
         "customize_lms": {
           "heading": "LMS anpassen",
@@ -1307,7 +1314,9 @@
     "what_brings": "Was bringt dich dazu",
     "how": "Wie sind Sie auf uns aufmerksam geworden?",
     "back": "Zurück",
-    "continue": "Weitermachen"
+    "continue": "Weitermachen",
+    "employees": "Bilden Sie meine Mitarbeiter aus",
+    "customers": "Erstellen Sie Kurse für meine Kunden"
   },
   "verify_email_modal": {
     "heading": "Bestätigen Sie Ihre E-Mail",
