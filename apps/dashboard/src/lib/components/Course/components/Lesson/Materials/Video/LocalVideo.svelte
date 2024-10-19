@@ -149,12 +149,11 @@
 </UpgradeBanner>
 
 {#if !isLoaded}
-  <!-- TODO: Remove ! from !isDisabled used for local development -->
   <button
     type="button"
     on:click={() => (fileInput && !isLoading ? fileInput.click() : null)}
-    class="h-full w-full {!isDisabled && 'hover:cursor-not-allowed opacity-50'}"
-    disabled={!isDisabled}
+    class="h-full w-full {isDisabled && 'hover:cursor-not-allowed opacity-50'}"
+    disabled={isDisabled}
   >
     <form
       class="border-primary-300 flex h-full w-full flex-col items-center justify-center rounded-xl border border-dashed"
