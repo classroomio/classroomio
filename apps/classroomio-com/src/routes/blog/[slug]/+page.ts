@@ -40,6 +40,6 @@ export async function load({ params }) {
       pageMetaTags
     };
   } catch (e) {
-    throw error(404, `Could not find ${params.slug}`);
+    error(404, `Could not find ${params.slug}`);
   }
 }

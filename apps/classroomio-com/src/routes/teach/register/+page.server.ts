@@ -7,5 +7,5 @@ export const load = ({ request }) => {
     event: 'cal.com page visited'
   });
 
-  throw redirect(307, 'https://heyform.net/f/1qkguGkN');
+  redirect(307, 'https://heyform.net/f/1qkguGkN');
 };
