@@ -45,13 +45,10 @@
     fileSize = videoFile?.size / (1024 * 1024);
 
     try {
-      const presignedResponse = await axios.post(
-        `${env.PUBLIC_SERVER_URL}/presignUrl?lessonId=${lessonId}`,
-        {
-          fileName: videoFile.name,
-          fileType: videoFile.type
-        }
-      );
+      const presignedResponse = await axios.post(`${env.PUBLIC_SERVER_URL}/generateUploadUrl`, {
+        fileName: videoFile.name,
+        fileType: videoFile.type
+      });
 
       const presignedUrl = presignedResponse.data.url;
 
@@ -79,6 +76,7 @@
 
       formRes = {
         url: presignedResponse.data.fileUrl,
+        fileKey: presignedResponse.data.fileKey,
         fileName: presignedResponse.data.fileName,
         status: uploadResponse.status
       };
@@ -106,6 +104,8 @@
         {
           type: 'muse',
           link: uploadedFileUrl,
+          videoTitle: fileName,
+          videoKey: response?.fileKey,
           metadata: response?.metadata || {}
         }
       ];

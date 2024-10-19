@@ -43,6 +43,7 @@
   import { supabase } from '$lib/utils/functions/supabase';
   import type { LOCALE } from '$lib/utils/types';
   import Loader from './Loader.svelte';
+  import { signedVideoUrls, retrieveVideos } from './store';
 
   export let mode = MODES.view;
   export let prevMode = '';
@@ -68,7 +69,6 @@
   let componentsToRender = getComponentOrder(tabs);
   let aiButtonClass =
     'flex items-center px-5 py-2 border border-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md w-full mb-2';
-
   const onChange = (tab) => {
     return () => {
       currentTab = tab;
@@ -242,7 +242,6 @@
 
     if (!initAutoSave) {
       initAutoSave = true;
-      return;
     }
 
     isSaving = true;
@@ -297,6 +296,12 @@
   $: addBadgeValueToTab($lesson.materials);
 
   $: updateNoteByCompletion($completion);
+
+  $: {
+    if ($lesson.materials.videos.length > 0) {
+      retrieveVideos($lesson.materials.videos);
+    }
+  }
 
   $: initPlyr(player, $lesson.materials.videos);
 
@@ -469,7 +474,10 @@
                       </div>
                     {:else}
                       <video bind:this={player} class="plyr-video-trigger" playsinline controls>
-                        <source src={video.link} type="video/mp4" />
+                        <source
+                          src={$signedVideoUrls[video.videoKey] || video.link}
+                          type="video/mp4"
+                        />
                         <track kind="captions" />
                       </video>
                     {/if}
