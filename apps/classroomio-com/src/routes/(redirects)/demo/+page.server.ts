@@ -7,5 +7,5 @@ export const load = ({ request }) => {
     event: 'cal.com page visited'
   });
 
-  throw redirect(307, 'https://cal.com/classroomio/demo');
+  redirect(307, 'https://cal.com/classroomio/demo');
 };
