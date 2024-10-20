@@ -59,6 +59,10 @@
 
     // Set up posthog
     initPosthog();
+
+		if (dev) {
+      localStorage.setItem('umami.disabled', '1');
+    }
   }
 
   function setAnalyticsUser() {
@@ -225,10 +229,6 @@
       $page.url.host,
       `\nIs student domain: ${data.isOrgSite}`
     );
-
-    if (dev) {
-      localStorage.setItem('umami.disabled', '1');
-    }
 
     if (browser) {
       // Update theme - dark or light mode
