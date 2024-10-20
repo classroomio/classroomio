@@ -3,7 +3,11 @@
   import { formatDate } from '$lib/utils/formatDate';
   import { ChevronLeft } from 'carbon-icons-svelte';
 
-  export let data;
+  interface Props {
+    data: any;
+  }
+
+  let { data }: Props = $props();
 </script>
 
 <div class=" mt-[10%] md:mt-16">
@@ -25,7 +29,7 @@
 
         <!-- Post -->
         <div class="prose pt-2 pb-4 border-b border-gray-200">
-          <svelte:component this={data.content} />
+          <data.content />
           <!-- Tags -->
           <div class="flex gap-2 py-4">
             {#each data.meta.tags as tag}

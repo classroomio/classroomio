@@ -1,14 +1,18 @@
 <script lang="ts">
-  export let items: {
+  interface Props {
+    items?: {
     title: string;
     desc: string;
-  }[] = [];
+  }[];
+  }
+
+  let { items = [] }: Props = $props();
 </script>
 
 <div class="relative w-fit flex justify-center space-x-8 md:space-x-10">
   <div
     class="w-[3px] md:w-[2px] bg-blue-600 mt-10 before:bg-gradient-to-t before:from-white before:to-transparent before:w-[4px] before:h-[9rem] before:absolute before:bottom-0"
-  />
+></div>
   <div class="space-y-8">
     {#each items as card, index}
       <div class="md:w-[35rem] w-full border-2 rounded-lg px-4 py-8 space-y-4 bg-white">
@@ -19,7 +23,7 @@
               'before:bg-gradient-to-t before:from-white before:to-transparent before:w-[4px] before:h-[9rem] before:absolute before:-top-36'
             } flex items-center justify-center w-7 h-7 bg-blue-100 rounded-full`}
           >
-            <div class="w-4 h-4 bg-blue-800 rounded-full z-50" />
+            <div class="w-4 h-4 bg-blue-800 rounded-full z-50"></div>
           </div>
           <h1 class="text-2xl font-bold text-blue-800">{card.title}</h1>
         </div>

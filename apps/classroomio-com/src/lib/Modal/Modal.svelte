@@ -1,6 +1,6 @@
 <script>
-  export let className = '';
-  export let open = false;
+  /** @type {{className?: string, open?: boolean, children?: import('svelte').Snippet}} */
+  let { className = '', open = false, children } = $props();
 </script>
 
 {#if open}
@@ -10,7 +10,7 @@
     <div
       class="fixed z-[3001] {className} w-full md:w-[30%] md:min-w-[500px] bg-white rounded-md mx-auto py-6 px-7"
     >
-      <slot />
+      {@render children?.()}
     </div>
   </div>
 {/if}

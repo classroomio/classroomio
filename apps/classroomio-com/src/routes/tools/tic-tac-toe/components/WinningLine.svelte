@@ -1,6 +1,12 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { fade } from 'svelte/transition';
-  export let winner: Winner | null = null;
+  interface Props {
+    winner?: Winner | null;
+  }
+
+  let { winner = null }: Props = $props();
 
   interface Winner {
     direction: 'horizontal' | 'vertical' | 'diagonal';
@@ -9,13 +15,15 @@
     diagonal?: 'top-left-to-bottom-right' | 'top-right-to-bottom-left';
   }
 
-  $: if (winner) {
-    if (winner.direction === 'vertical' && winner.column !== undefined) {
-      document.documentElement.style.setProperty('--col-index', winner.column.toString());
-    } else if (winner.direction === 'horizontal' && winner.row !== undefined) {
-      document.documentElement.style.setProperty('--row-index', winner.row.toString());
+  run(() => {
+    if (winner) {
+      if (winner.direction === 'vertical' && winner.column !== undefined) {
+        document.documentElement.style.setProperty('--col-index', winner.column.toString());
+      } else if (winner.direction === 'horizontal' && winner.row !== undefined) {
+        document.documentElement.style.setProperty('--row-index', winner.row.toString());
+      }
     }
-  }
+  });
 </script>
 
 {#if winner}

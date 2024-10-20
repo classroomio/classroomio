@@ -4,7 +4,8 @@
   import PageSignupCTA from '$lib/PageSignupCTA/index.svelte';
   import PageHeader from '$lib/PageHeader/PageHeader.svelte';
 
-  export let data;
+  /** @type {{data: any}} */
+  let { data } = $props();
 </script>
 
 <svelte:head>

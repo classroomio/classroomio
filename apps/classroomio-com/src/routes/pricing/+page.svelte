@@ -4,7 +4,7 @@
   import PageSignupCTA from '$lib/PageSignupCTA/index.svelte';
   import PageHeader from '$lib/PageHeader/PageHeader.svelte';
 
-  let isYearlyPlan = false;
+  let isYearlyPlan = $state(false);
 
   function toggleIsYearlyPlan() {
     isYearlyPlan = !isYearlyPlan;
@@ -32,14 +32,14 @@
           ? '#5e636b'
           : '#fff'}"
         class="rounded-[30px] bg-blue-700 px-3 py-1 text-xs text-white lg:px-4 lg:py-2"
-        on:click={toggleIsYearlyPlan}>Monthly</button
+        onclick={toggleIsYearlyPlan}>Monthly</button
       >
       <button
         style="background-color: {isYearlyPlan ? '#1D4EE2' : ''}; color: {isYearlyPlan
           ? '#fff'
           : '#5e636b'}"
         class="rounded-[30px] px-3 py-1 text-xs text-white lg:px-4 lg:py-2"
-        on:click={toggleIsYearlyPlan}>Annually</button
+        onclick={toggleIsYearlyPlan}>Annually</button
       >
       <div
         class="absolute right-[-40%] top-[-85%] scale-[90%] rounded-full bg-[#006600] px-3.5 py-1.5 text-xs text-white lg:right-[-43%] lg:top-[-75%] lg:scale-100"

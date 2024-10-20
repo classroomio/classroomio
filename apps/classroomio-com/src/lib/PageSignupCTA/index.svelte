@@ -1,9 +1,12 @@
 <script>
-  export let header = '';
-  export let subText = '';
-  export let btnLabel = '';
-  export let link = '';
-  export let demo = true;
+  /** @type {{header?: string, subText?: string, btnLabel?: string, link?: string, demo?: boolean}} */
+  let {
+    header = '',
+    subText = '',
+    btnLabel = '',
+    link = '',
+    demo = true
+  } = $props();
 </script>
 
 <div

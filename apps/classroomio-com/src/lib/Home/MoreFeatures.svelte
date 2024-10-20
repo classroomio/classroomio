@@ -4,8 +4,8 @@
   import { folder, globe, team, transcription } from '$lib/emojis';
   import { tools } from '$lib/utils/constants/tools';
 
-  let selected = 0;
-  let interval: NodeJS.Timer;
+  let selected = $state(0);
+  let interval: NodeJS.Timer = $state();
 
   const moreFeatures = [
     {
@@ -68,7 +68,7 @@
           <button
             class="p-4 rounded-md {i === selected &&
               'selected'} mb-3 text-start min-w-[75vw] lg:min-w-[unset]"
-            on:mouseenter={() => {
+            onmouseenter={() => {
               selected = i;
               clearInterval(interval);
             }}

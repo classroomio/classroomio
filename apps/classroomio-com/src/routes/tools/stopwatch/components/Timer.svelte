@@ -2,22 +2,36 @@
   import { sineInOut } from 'svelte/easing';
   import { fly } from 'svelte/transition';
 
-  export let activityName: string;
-  export let formattedTime: string;
-  export let displayTime: string;
-  export let resetTimer: () => void;
-  export let toggleSound: () => void;
-  export let toggleTimer: () => void;
-  export let restartTimer: () => void;
-  export let isPaused: boolean;
-  export let soundOn: boolean;
+  interface Props {
+    activityName: string;
+    formattedTime: string;
+    displayTime: string;
+    resetTimer: () => void;
+    toggleSound: () => void;
+    toggleTimer: () => void;
+    restartTimer: () => void;
+    isPaused: boolean;
+    soundOn: boolean;
+  }
+
+  let {
+    activityName,
+    formattedTime,
+    displayTime,
+    resetTimer,
+    toggleSound,
+    toggleTimer,
+    restartTimer,
+    isPaused,
+    soundOn
+  }: Props = $props();
 </script>
 
 <div transition:fly={{ y: 100, delay: 0, easing: sineInOut }}>
   <div class="px-6 pt-8 text-center">
     <button
       type="button"
-      on:click={resetTimer}
+      onclick={resetTimer}
       class="text-[10px] text-[#656565] font-semibold uppercase underline"
       >set timer for another activity</button
     >
@@ -36,7 +50,7 @@
   <div class="flex">
     <button
       type="button"
-      on:click={toggleSound}
+      onclick={toggleSound}
       class="bg-[#F7F7F7] w-[34%] flex flex-col gap-1 items-center uppercase text-[10px] py-5 md:py-10 rounded-bl-md hover:bg-[#F1F6FF] transition-all duration-500"
     >
       {#if soundOn}
@@ -48,7 +62,7 @@
     >
     <button
       type="button"
-      on:click={toggleTimer}
+      onclick={toggleTimer}
       class="bg-[#0F62FE] text-white w-[34%] flex flex-col gap-1 items-center uppercase text-[10px] py-5 md:py-10"
     >
       {#if isPaused}
@@ -60,7 +74,7 @@
     >
     <button
       type="button"
-      on:click={restartTimer}
+      onclick={restartTimer}
       class="bg-[#F7F7F7] w-[34%] flex flex-col gap-1 items-center uppercase text-[10px] py-5 md:py-10 rounded-br-md hover:bg-[#F1F6FF] transition-all duration-500"
     >
       <img src="/free-tools/stopwatch/reset-icon.svg" alt="" class="w-7 md:w-12" />

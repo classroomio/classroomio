@@ -1,5 +1,6 @@
 <script>
-  export let color = 'currentColor';
+  /** @type {{color?: string}} */
+  let { color = 'currentColor' } = $props();
 </script>
 
 <svg

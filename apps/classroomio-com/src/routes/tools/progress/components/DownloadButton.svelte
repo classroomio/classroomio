@@ -2,9 +2,13 @@
   import { toPng } from 'html-to-image';
   import { nodeStore, htmlBody, openModal } from './store';
 
-  export let isDisabled: boolean;
-  export let isDownloading: boolean;
-  export let text: string = 'Generate Progress Report';
+  interface Props {
+    isDisabled: boolean;
+    isDownloading: boolean;
+    text?: string;
+  }
+
+  let { isDisabled, isDownloading = $bindable(), text = 'Generate Progress Report' }: Props = $props();
 
   function convertToPng() {
     isDownloading = true;
@@ -42,7 +46,7 @@
 <button
   type="button"
   disabled={isDownloading || !isDisabled ? true : false}
-  on:click={convertToPng}
+  onclick={convertToPng}
   class="{isDownloading || !isDisabled
     ? 'bg-gray-200 cursor-not-allowed text-gray-600'
     : 'bg-[#0233BD] text-white'} {text === 'Generate Progress Report'

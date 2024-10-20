@@ -1,12 +1,14 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import ToolsHeader from '$lib/ToolsHeader/ToolsHeader.svelte';
 
-  let namesInput = '';
-  let numNames = 0;
-  let wordCount = 0;
-  let selectedNames: string[] = [];
-  let avatarUrls: string[] = [];
-  let avatarUrlsFetched = false;
+  let namesInput = $state('');
+  let numNames = $state(0);
+  let wordCount = $state(0);
+  let selectedNames: string[] = $state([]);
+  let avatarUrls: string[] = $state([]);
+  let avatarUrlsFetched = $state(false);
 
   // function to shuffle an array
   const shuffleArray = (array: string[]) => {
@@ -98,7 +100,9 @@
     }
   }
 
-  $: wordCount = namesInput?.split(',').filter((name) => name.trim())?.length ?? 0;
+  run(() => {
+    wordCount = namesInput?.split(',').filter((name) => name.trim())?.length ?? 0;
+  });
 </script>
 
 <svelte:head>
@@ -154,14 +158,14 @@
         <div class="flex flex-col gap-y-3 absolute right-2 md:right-7 top-3">
           <button
             type="button"
-            on:click={sortRandom}
+            onclick={sortRandom}
             class="p-1.5 rounded-full bg-[#D9E0F5] flex justify-center items-center"
           >
             <img src="/sort-icon.svg" class="w-2.5" alt="" />
           </button>
           <button
             type="button"
-            on:click={unsortRandom}
+            onclick={unsortRandom}
             class="p-1.5 rounded-full bg-[#D9E0F5] flex justify-center items-center"
           >
             <img src="/unsort-icon.svg" class="w-2.5" alt="" />
@@ -199,7 +203,7 @@
           />
           <button
             type="button"
-            on:click={selectName}
+            onclick={selectName}
             class="bg-[#0F62FE] rounded-md text-sm py-3 md:py-0 text-white w-[70%] md:w-[35%]"
             >Select name(s) at random</button
           >
@@ -240,13 +244,13 @@
           <div class="flex flex-wrap justify-between md:justify-center items-center md:gap-3 mt-3">
             <button
               type="button"
-              on:click={resetEntry}
+              onclick={resetEntry}
               class="py-2 border text-xs md:text-sm rounded-md w-[45%] md:w-[20%]"
               >Reset Entries</button
             >
             <button
               type="button"
-              on:click={selectName}
+              onclick={selectName}
               class="py-2 bg-[#0F62FE] rounded-md text-xs md:text-sm text-white w-[45%] md:w-[27%]"
               >Select other names</button
             >

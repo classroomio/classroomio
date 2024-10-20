@@ -57,7 +57,7 @@
     <h1 class="text-sm font-semibold">Choose your Background</h1>
     <button
       type="button"
-      on:click={() => ($openModal.background = false)}
+      onclick={() => ($openModal.background = false)}
       class="p-2 bg-[#F1F6FF] hover:scale-110 transition-all duration-300 rounded-full w-6"
     >
       <img src="/free-tools/progress-report/close-icon.svg" alt="Close icon" />
@@ -70,7 +70,7 @@
   >
     {#each backgrounds as background}
       <button
-        on:click={() => {
+        onclick={() => {
           selectBackground(background);
         }}
         class="flex w-[30%] items-center shadow-sm hover:scale-110 transition-all duration-300"

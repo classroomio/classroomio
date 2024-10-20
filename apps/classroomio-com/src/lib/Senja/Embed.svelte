@@ -2,7 +2,11 @@
   import { embedSenjaWidget } from 'shared/src/senja';
   import { onMount } from 'svelte';
 
-  export let id = '';
+  interface Props {
+    id?: string;
+  }
+
+  let { id = '' }: Props = $props();
 
   onMount(() => {
     embedSenjaWidget(id);

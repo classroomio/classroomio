@@ -6,8 +6,8 @@
     src: string;
   }
 
-  let isAddIcon = false;
-  let hoveredIndex: number | null = null;
+  let isAddIcon = $state(false);
+  let hoveredIndex: number | null = $state(null);
 
   let avatars: Avatar[] = [
     { src: 'avatar_a' },
@@ -44,7 +44,7 @@
     <h1 class="text-sm font-semibold">Choose your Avatars</h1>
     <button
       type="button"
-      on:click={() => ($openModal.avatar = false)}
+      onclick={() => ($openModal.avatar = false)}
       class="p-2 bg-[#F1F6FF] hover:scale-110 transition-all duration-300 rounded-full w-6"
     >
       <img src="/free-tools/progress-report/close-icon.svg" alt="Close icon" />
@@ -55,14 +55,14 @@
   <div class="flex flex-wrap justify-evenly gap-y-3 mt-3">
     {#each avatars as avatar, index}
       <button
-        on:click={() => {
+        onclick={() => {
           selectAvatar(avatar);
         }}
-        on:mouseenter={() => {
+        onmouseenter={() => {
           hoveredIndex = index;
           isAddIcon = true;
         }}
-        on:mouseleave={() => {
+        onmouseleave={() => {
           hoveredIndex = null;
           isAddIcon = false;
         }}

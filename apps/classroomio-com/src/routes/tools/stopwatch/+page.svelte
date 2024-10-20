@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { preventDefault } from 'svelte/legacy';
+
   import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
   import { sineInOut } from 'svelte/easing';
@@ -7,18 +9,18 @@
 
   let timer: NodeJS.Timeout;
   let buzzSound: HTMLAudioElement;
-  let isNextStep: boolean = false;
-  let isPaused: boolean = false;
-  let soundOn: boolean = true;
+  let isNextStep: boolean = $state(false);
+  let isPaused: boolean = $state(false);
+  let soundOn: boolean = $state(true);
 
-  let hours: number = 0;
-  let minutes: number = 0;
-  let seconds: number = 0;
+  let hours: number = $state(0);
+  let minutes: number = $state(0);
+  let seconds: number = $state(0);
 
-  let activityName: string = '';
-  let displayTime: string = '00:00:00';
+  let activityName: string = $state('');
+  let displayTime: string = $state('00:00:00');
   let totalSeconds: number = 0;
-  let formattedTime: string = '00:00';
+  let formattedTime: string = $state('00:00');
 
   export function toggleTimer() {
     if (isPaused) {
@@ -160,7 +162,7 @@
     <!-- countdown setter -->
     {#if !isNextStep}
       <div transition:fly={{ y: -300, delay: 0, easing: sineInOut }} class="px-6 py-8 bg-white">
-        <form on:submit|preventDefault={startTimer}>
+        <form onsubmit={preventDefault(startTimer)}>
           <div>
             <h1 class="font-bold text-sm">Name of activity</h1>
             <input
