@@ -43,6 +43,7 @@
   import { supabase } from '$lib/utils/functions/supabase';
   import type { LOCALE } from '$lib/utils/types';
   import Loader from './Loader.svelte';
+  import { signedVideoUrls, retrieveVideos } from './store';
 
   export let mode = MODES.view;
   export let prevMode = '';
@@ -298,6 +299,12 @@
 
   $: updateNoteByCompletion($completion);
 
+  $: {
+    if ($lesson.materials.videos.length > 0) {
+      retrieveVideos($lesson.materials.videos);
+    }
+  }
+
   $: initPlyr(player, $lesson.materials.videos);
 
   $: lessonTitle = $lesson.title;
@@ -469,7 +476,10 @@
                       </div>
                     {:else}
                       <video bind:this={player} class="plyr-video-trigger" playsinline controls>
-                        <source src={video.link} type="video/mp4" />
+                        <source
+                          src={$signedVideoUrls[video.videoKey] || video.link}
+                          type="video/mp4"
+                        />
                         <track kind="captions" />
                       </video>
                     {/if}
