@@ -8,6 +8,8 @@ const sentry = require('@sentry/node');
 const { ProfilingIntegration } = require('@sentry/profiling-node');
 
 const uploadVideo = require('./src/routes/uploadVideo');
+const generateUploadUrl = require('./src/routes/generateUploadUrl');
+const getVideoDownloadUrls = require('./src/routes/getVideoDownloadUrls');
 const downloadCertificate = require('./src/routes/downloadCertificate');
 const downloadLesson = require('./src/routes/downloadLesson');
 const downloadCourse = require('./src/routes/downloadCourse');
@@ -45,6 +47,8 @@ app.use(sentry.Handlers.errorHandler());
 app.use('/downloadCertificate', downloadCertificate);
 app.use('/downloadLesson', downloadLesson);
 app.use('/downloadCourse', downloadCourse);
+app.use('/generateUploadUrl', generateUploadUrl);
+app.use('/getVideoDownloadUrls', getVideoDownloadUrls);
 app.use('/uploadVideo', uploadVideo);
 app.use('/katex', katex);
 app.use('/sendEmail', sendEmail);
