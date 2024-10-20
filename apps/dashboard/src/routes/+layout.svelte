@@ -226,6 +226,10 @@
       `\nIs student domain: ${data.isOrgSite}`
     );
 
+    if (dev) {
+      localStorage.setItem('umami.disabled', '1');
+    }
+
     if (browser) {
       // Update theme - dark or light mode
       $globalStore.isDark = localStorage.getItem('mode') === 'dark';
