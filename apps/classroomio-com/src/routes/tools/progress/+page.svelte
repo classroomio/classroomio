@@ -13,11 +13,11 @@
   import { htmlBody, type HtmlBody, openModal, isFormComplete } from './components/store';
 
   const MAX_CHARS = 160;
-  let remainingChars = MAX_CHARS;
-  let showReport: boolean = false;
-  let showSetter: boolean = true;
+  let remainingChars = $state(MAX_CHARS);
+  let showReport: boolean = $state(false);
+  let showSetter: boolean = $state(true);
   let isDownloading: boolean = false;
-  let isDisabled: boolean;
+  let isDisabled: boolean = $state();
 
   // sets the result of the mini validation for the htmlBody store
   const unsubscribe = isFormComplete.subscribe((value) => {
@@ -123,7 +123,7 @@
         <div class="flex md:hidden justify-end mb-5">
           <button
             type="button"
-            on:click={() => {
+            onclick={() => {
               showSetter = false;
               showReport = true;
             }}
@@ -144,7 +144,7 @@
           <input
             type="text"
             bind:value={$htmlBody.name}
-            on:input={(event) => handleInputChange(event, 'name')}
+            oninput={(event) => handleInputChange(event, 'name')}
             placeholder="Enter your name here"
             class="w-full border my-3 py-2 px-3 outline-none rounded-sm bg-[#F1F2F4] text-xs placeholder:text-sm placeholder:text-[#ADADAD]"
           />
@@ -155,7 +155,7 @@
           <p class="text-sm text-[#656565]">Select your mood</p>
           <button
             type="button"
-            on:click={() => ($openModal.mood = true)}
+            onclick={() => ($openModal.mood = true)}
             class="w-full flex justify-between items-center border my-3 py-2 px-3 outline-none rounded-sm bg-[#F1F2F4] text-gray-400 text-sm"
           >
             {#if $htmlBody.mood.text}
@@ -191,7 +191,7 @@
           <textarea
             bind:value={$htmlBody.learning}
             maxlength={MAX_CHARS}
-            on:input={(event) => handleInputChange(event, 'learning')}
+            oninput={(event) => handleInputChange(event, 'learning')}
             placeholder="Tell us what you are learning"
             class="w-full h-[17vh] border my-3 py-2 px-3 outline-none rounded-sm bg-[#F1F2F4] text-sm placeholder:text-sm placeholder:text-[#ADADAD]"
           ></textarea>
@@ -208,7 +208,7 @@
               max="100"
               bind:value={$htmlBody.progress}
               class="range-input"
-              on:input={(event) => handleInputChange(event, 'progress')}
+              oninput={(event) => handleInputChange(event, 'progress')}
               style="background: linear-gradient(to right, #0F62FE {$htmlBody.progress}%, #ccc {$htmlBody.progress}%);"
             />
             <p class="text-sm font-semibold">{$htmlBody.progress}%</p>
@@ -221,7 +221,7 @@
             <p class="text-[12px] md:text-sm text-[#656565]">Choose your avatar</p>
             <button
               type="button"
-              on:click={() => ($openModal.avatar = true)}
+              onclick={() => ($openModal.avatar = true)}
               class="bg-[#F7F7F7] w-full py-1.5 px-5 md:px-0 mt-3 flex md:w-[65%] items-center justify-between md:justify-center gap-2"
             >
               <img
@@ -244,7 +244,7 @@
             <p class="text-[12px] md:text-sm text-[#656565]">Choose your background</p>
             <button
               type="button"
-              on:click={() => ($openModal.background = true)}
+              onclick={() => ($openModal.background = true)}
               class="bg-[#F7F7F7] w-full py-1.5 px-5 md:px-0 mt-3 flex md:w-[65%] items-center justify-between md:justify-center gap-2"
             >
               <img
@@ -288,21 +288,21 @@
             >
               <button
                 type="button"
-                on:click={shareOnFacebook}
+                onclick={shareOnFacebook}
                 class="w-10 hover:scale-[1.2] transition-all duration-300"
               >
                 <LogoFacebook size={32} />
               </button>
               <button
                 type="button"
-                on:click={shareOnLinkedIn}
+                onclick={shareOnLinkedIn}
                 class="w-10 hover:scale-[1.2] transition-all duration-300"
               >
                 <LogoLinkedin size={32} />
               </button>
               <button
                 type="button"
-                on:click={shareOnTwitter}
+                onclick={shareOnTwitter}
                 class="w-5 hover:scale-[1.2] transition-all duration-300"
               >
                 <img src="/twitter_logo.png" alt="X.com" />
@@ -317,7 +317,7 @@
         <div class="flex justify-end mb-5">
           <button
             type="button"
-            on:click={() => {
+            onclick={() => {
               showReport = false;
               showSetter = true;
             }}
@@ -342,21 +342,21 @@
             >
               <button
                 type="button"
-                on:click={shareOnFacebook}
+                onclick={shareOnFacebook}
                 class="w-10 hover:scale-[1.2] transition-all duration-300"
               >
                 <LogoFacebook size={32} />
               </button>
               <button
                 type="button"
-                on:click={shareOnLinkedIn}
+                onclick={shareOnLinkedIn}
                 class="w-10 hover:scale-[1.2] transition-all duration-300"
               >
                 <LogoLinkedin size={32} />
               </button>
               <button
                 type="button"
-                on:click={shareOnTwitter}
+                onclick={shareOnTwitter}
                 class="w-5 hover:scale-[1.2] transition-all duration-300"
               >
                 <img src="/twitter_logo.png" alt="X.com" />

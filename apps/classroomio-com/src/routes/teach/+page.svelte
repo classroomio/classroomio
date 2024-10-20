@@ -44,7 +44,7 @@
     }
   ];
 
-  let faqs = [
+  let faqs = $state([
     {
       question: 'What kind of tutors does ClassroomIO look for?',
       answer:
@@ -68,7 +68,7 @@
         'That depends on how much your course sells for and how many students buy your course. Your income is limitless, you can keep making money while you sleep.',
       showAnswer: false
     }
-  ];
+  ]);
 
   function toggleAnswer(index: number) {
     faqs[index].showAnswer = !faqs[index].showAnswer;
@@ -203,7 +203,7 @@
               <button
                 type="button"
                 class="w-full font-medium text-sm md:text-lg my-2 flex justify-between text-left md:text-center"
-                on:click={() => toggleAnswer(index)}
+                onclick={() => toggleAnswer(index)}
               >
                 {faq.question} <span>{faq.showAnswer ? '-' : '+'}</span>
               </button>

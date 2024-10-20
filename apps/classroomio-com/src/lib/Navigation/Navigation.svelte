@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import ChevronDown from 'carbon-icons-svelte/lib/ChevronDown.svelte';
   import TextAlignJustify from 'carbon-icons-svelte/lib/TextAlignJustify.svelte';
   import CloseLarge from 'carbon-icons-svelte/lib/CloseLarge.svelte';
@@ -9,9 +11,9 @@
   import MapCenter from 'carbon-icons-svelte/lib/MapCenter.svelte';
   import { page } from '$app/stores';
 
-  let showsubNav = false;
-  let showNav = false;
-  let activeLink = '';
+  let showsubNav = $state(false);
+  let showNav = $state(false);
+  let activeLink = $state('');
 
   function handleShow() {
     showsubNav = !showsubNav;
@@ -44,9 +46,11 @@
     }
   ];
 
-  $: activeLink = $page.url.pathname;
-  $: activeHash = $page.url.hash;
-  $: isSuperpowersActive = superpowers.some((sp) => activeHash.includes(sp.key));
+  run(() => {
+    activeLink = $page.url.pathname;
+  });
+  let activeHash = $derived($page.url.hash);
+  let isSuperpowersActive = $derived(superpowers.some((sp) => activeHash.includes(sp.key)));
 </script>
 
 <div
@@ -71,7 +75,7 @@
       <li class="text-gray-800 font-semibold text-sm cursor-pointer relative">
         <button
           class="flex items-center hover:bg-gray-100 px-4 py-2 rounded-md"
-          on:click={() => (showNav = !showNav)}
+          onclick={() => (showNav = !showNav)}
           class:active={isSuperpowersActive}
         >
           Our Superpowers <ChevronDown class="ml-2" />
@@ -84,7 +88,7 @@
               <a
                 class="flex justify-between items-center w-full rounded-lg hover:bg-gray-100 p-5 mb-4"
                 href="/#{superpower.key}"
-                on:click={() => {
+                onclick={() => {
                   showNav = !showNav;
                 }}
               >
@@ -172,7 +176,7 @@
     type="button"
     aria-label="Hamburger Menu"
     class="block md:block lg:hidden"
-    on:click={handleShowNav}><TextAlignJustify size={24} /></button
+    onclick={handleShowNav}><TextAlignJustify size={24} /></button
   >
 
   {#if showNav}
@@ -190,14 +194,14 @@
           alt="classroomio logo"
           class="w-[15%]"
         />
-        <button on:click={handleShowNav}><CloseLarge size={24} class="mr-5" /></button>
+        <button onclick={handleShowNav}><CloseLarge size={24} class="mr-5" /></button>
       </div>
       <nav>
         <ul class="flex items-center flex-col lg:flex-row justify-between w-full">
           <li class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer w-full">
             <button
               class="w-full flex items-center justify-between hover:bg-gray-100 py-3 px-4 rounded-lg"
-              on:click={handleShow}
+              onclick={handleShow}
               class:active={isSuperpowersActive}
             >
               Our Superpowers <ChevronDown />
@@ -207,7 +211,7 @@
                 {#each superpowers as superpower}
                   <a
                     href="/#{superpower.key}"
-                    on:click={() => {
+                    onclick={() => {
                       handleShowNav();
                     }}
                   >
@@ -224,7 +228,7 @@
           <!-- Free Tools -->
           <a
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full"
-            on:click={handleShowNav}
+            onclick={handleShowNav}
             href="/tools"
           >
             <li>Free Tools</li>
@@ -242,7 +246,7 @@
           </a> -->
           <a
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
-            on:click={() => {
+            onclick={() => {
               handleShowNav();
             }}
             class:active={activeLink.startsWith('/blog')}
@@ -253,7 +257,7 @@
           <!-- Pricing -->
           <a
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full"
-            on:click={() => {
+            onclick={() => {
               handleShowNav();
             }}
             href="/pricing"
@@ -263,7 +267,7 @@
           </a>
           <a
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
-            on:click={() => {
+            onclick={() => {
               handleShowNav();
             }}
             class:active={activeHash.includes('morefeatures')}

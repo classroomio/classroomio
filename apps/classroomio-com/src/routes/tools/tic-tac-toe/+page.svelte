@@ -6,10 +6,10 @@
   import { scores, changeToComputer } from './components/store';
   import ToolsHeader from '$lib/ToolsHeader/ToolsHeader.svelte';
 
-  let startGame = false;
-  let message: string | null = null;
-  let winner: Winner | null = null;
-  let game = createGame();
+  let startGame = $state(false);
+  let message: string | null = $state(null);
+  let winner: Winner | null = $state(null);
+  let game = $state(createGame());
 
   interface Winner {
     symbol?: string;
@@ -137,7 +137,7 @@
 
         <button
           type="button"
-          on:click={playAgain}
+          onclick={playAgain}
           class="px-16 pt-1 pb-1.5 md:text-base text-xs border border-white font-bold rounded-md mt-10 bg-[#0F62FE]"
           >Play Again</button
         >
@@ -149,7 +149,7 @@
       <div class="w-full h-full p-5 flex flex-col border justify-between items-center">
         <header class="flex w-full items-center justify-between">
           <button
-            on:click={changePlayer}
+            onclick={changePlayer}
             class="text-[10px] md:text-xs w-[35%] gap-2 md:w-28 flex flex-row items-center leading-3 font-medium"
           >
             <img
@@ -164,7 +164,7 @@
             {/if}
           </button>
           <button
-            on:click={newGame}
+            onclick={newGame}
             class="text-[10px] w-24 flex flex-col gap-1 p-2 shadow-md rounded-md items-center leading-3 font-medium border text-[#0542CC] bg-white"
           >
             <img src="/free-tools/tic-tac/restart-icon.svg" alt="Restart icon" class="w-3 md:w-4" />
@@ -205,7 +205,7 @@
         <div class="flex flex-col gap-3">
           <button
             type="button"
-            on:click={() => {
+            onclick={() => {
               changePlayer();
               startTicTac();
             }}
@@ -215,7 +215,7 @@
           >
           <button
             type="button"
-            on:click={() => {
+            onclick={() => {
               startTicTac();
             }}
             class="px-16 pt-1 pb-1.5 border border-white text-sm font-bold rounded-md bg-[#0F62FE]"
