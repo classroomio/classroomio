@@ -1,17 +1,25 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { formatYoutubeVideo } from '$lib/utils/functions/formatYoutubeVideo';
   import { lesson } from '../../store/lessons';
   import { signedVideoUrls } from '../store';
-  let errors = {};
-  let videoElements: HTMLVideoElement[] = [];
+
+  let errors: Record<string, string> = {};
+  let videoElements: (HTMLVideoElement | null)[] = [];
+
   function initPlyr() {
-    // @ts-ignore
+    if (typeof (window as any).Plyr === 'undefined') {
+      console.warn('Plyr is not defined. Make sure it is properly imported.');
+      return;
+    }
     const players = Array.from(document.querySelectorAll('.plyr-video-trigger')).map(
-      (p) => new Plyr(p)
+      (p) => new (window as any).Plyr(p as HTMLElement)
     );
-    // @ts-ignore
-    window.players = players;
+    if (typeof window !== 'undefined') {
+      (window as any).players = players;
+    }
   }
+
   function updateVideoSources() {
     videoElements.forEach((videoElement, index) => {
       if (videoElement && $lesson.materials.videos[index]) {
@@ -23,19 +31,24 @@
         }
       }
     });
-    // Re-initialize Plyr after updating sources
     initPlyr();
   }
+
   $: if ($signedVideoUrls) {
     updateVideoSources();
   }
+
   $: {
     videoElements = videoElements.slice(0, $lesson.materials.videos.length);
-    while (videoElements.length < $lesson.materials.videos.length) {
-      videoElements.push(null);
-    }
-    initPlyr();
+    videoElements = [
+      ...videoElements,
+      ...Array($lesson.materials.videos.length - videoElements.length).fill(null)
+    ];
   }
+
+  onMount(() => {
+    initPlyr();
+  });
 </script>
 
 {#if $lesson.materials.videos.length}
@@ -44,8 +57,6 @@
       <div class="w-full overflow-hidden mb-5">
         {#key video.link}
           <div class="mb-5">
-            Expand Down Expand Up @@ -58,8 +82,13 @@
-
             {#if video.type === 'youtube'}
               <iframe
                 class="iframe"
@@ -88,7 +99,6 @@
                 <track kind="captions" />
               </video>
             {/if}
-            Expand Down
           </div>
         {/key}
       </div>
