@@ -93,9 +93,11 @@
   });
 </script>
 
-<section class="relative font-roboto overflow-hidden h-screen">
+<section class="relative overflow-hidden h-screen">
   <!-- Nav -->
-  <div class="sticky top-0 px-4 w-full h-14 flex items-center justify-between border-b">
+  <div
+    class="sticky top-0 px-4 w-full h-14 flex items-center justify-between border-b bg-[#F7F7F7] dark:bg-inherit"
+  >
     <div class="lg:pl-4 flex items-center gap-3">
       <button on:click={() => (open = !open)} class="md:hidden">
         {#if open}
@@ -133,7 +135,7 @@
     >
       <a
         href="/courses"
-        class="flex items-center text-[#0A0D14] dark:text-white cursor-pointer h-[26px]"
+        class="text-[13px] flex items-center text-[#0A0D14] dark:text-white cursor-pointer h-[26px]"
       >
         <ChevronLeft />
         <p>Back to course page</p>
