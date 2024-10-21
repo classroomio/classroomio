@@ -9,6 +9,7 @@
   import Moon from 'carbon-icons-svelte/lib/Moon.svelte';
   import SideBarExpandable from '$lib/component/SideBarExpandable.svelte';
   import Button from '$lib/components/ui/button/button.svelte';
+  import { marked } from 'marked';
 
   export let data;
   let open = false;
@@ -50,7 +51,10 @@
   const { metadata, lessons, slug } = data;
 
   let selectedLesson = lessons[0];
-  let lessonContent = '';
+  /**
+   * @type {any}
+   */
+  let lessonContent;
 
   const formatIndex = (number) => {
     if (number > 9) {
@@ -61,15 +65,17 @@
   };
 
   async function getLessonContent(lesson) {
-    const { filename } = lesson;
     loading = true;
+    const { filename } = lesson;
     try {
       const response = await fetch(`/api/lesson/${slug}/${filename}`);
-      const text = await response.text();
-      lessonContent = text;
+      const { content } = await response.json();
+      console.log('content', content);
+      lessonContent = content; // Create a new function to return the compiled component
       selectedLesson = lesson;
+      console.log('lesson content', lessonContent);
     } catch (error) {
-      console.error('Error loading lesson:', error);
+      console.log('Error loading lesson:', error);
     } finally {
       loading = false;
     }
@@ -168,9 +174,9 @@
             <p class="truncate capitalize text-sm font-light">{lesson.title}</p>
           </div>
         {/each}
-      </div> -->
+      </div>-->
     </div>
-    <div class="w-full p-5 md:p-10 break-words h-screen overflow-y-scroll">
+    <div class="w-full p-5 md:p-10 break-words h-screen overflow-y-scroll ">
       {#if loading}
         <div class="space-y-8 w-full md:w-[80%]">
           <Skeleton class="h-12 w-[70%]" />
@@ -182,7 +188,7 @@
         </div>
       {:else}
         <p class="font-semibold text-2xl mb-4 capitalize">{selectedLesson.title}</p>
-        <div>
+        <div class='h-fit pb-14'>
           {@html lessonContent}
         </div>
       {/if}

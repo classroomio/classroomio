@@ -65,8 +65,8 @@
     loading = true;
     try {
       const response = await fetch(`/api/lesson/${slug}/${filename}`);
-      const text = await response.text();
-      lessonContent = text;
+      const {content} = await response.json();
+      lessonContent = content;
       selectedLesson = lesson;
     } catch (error) {
       console.error('Error loading lesson:', error);
@@ -182,7 +182,7 @@
         </div>
       {:else}
         <p class="font-semibold text-2xl mb-4 capitalize">{selectedLesson.title}</p>
-        <div>
+        <div class='h-fit pb-14'>
           {@html lessonContent}
         </div>
       {/if}

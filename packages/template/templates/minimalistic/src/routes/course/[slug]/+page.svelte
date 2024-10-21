@@ -50,7 +50,10 @@
   const { metadata, lessons, slug } = data;
 
   let selectedLesson = lessons[0];
-  let lessonContent = '';
+  /**
+   * @type {any}
+   */
+  let lessonContent;
 
   const formatIndex = (number) => {
     if (number > 9) {
@@ -65,8 +68,9 @@
     loading = true;
     try {
       const response = await fetch(`/api/lesson/${slug}/${filename}`);
-      const text = await response.text();
-      lessonContent = text;
+      const { content } = await response.json();
+      console.log('response', content);
+      lessonContent = content;
       selectedLesson = lesson;
     } catch (error) {
       console.error('Error loading lesson:', error);
@@ -182,7 +186,7 @@
         </div>
       {:else}
         <p class="font-semibold text-2xl mb-4 capitalize">{selectedLesson.title}</p>
-        <div>
+        <div class='h-fit pb-14'>
           {@html lessonContent}
         </div>
       {/if}
