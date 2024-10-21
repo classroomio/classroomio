@@ -12,45 +12,47 @@
   import { marked } from 'marked';
 
   export let data;
+
+  console.log('new data',data)
   let open = false;
   let loading = true;
   let isLessonOpen = false;
-  const mockSidebar = [
-    {
-      title: 'Introduction',
-      published: true,
-      children: ['Introduction to the course', 'Overview', 'What is progress']
-    },
-    {
-      title: 'Fundamental of postgres',
-      published: true,
-      children: ['Introduction to the course', 'Overview', 'What is postgress']
-    },
-    {
-      title: 'Introduction',
-      published: true,
-      children: ['Introduction to the course', 'Overview', 'What is progress']
-    },
-    {
-      title: 'Conclusion',
-      published: false,
-      children: ['Introduction to the course', 'Overview', 'What is progress']
-    },
-    {
-      title: 'Conclusion',
-      published: false,
-      children: ['Introduction to the course', 'Overview', 'What is progress']
-    },
-    {
-      title: 'Conclusion',
-      published: true,
-      children: ['Introduction to the course', 'Overview', 'What is progress']
-    }
-  ];
+  // const mockSidebar = [
+  //   {
+  //     title: 'Introduction',
+  //     published: true,
+  //     children: ['Introduction to the course', 'Overview', 'What is progress']
+  //   },
+  //   {
+  //     title: 'Fundamental of postgres',
+  //     published: true,
+  //     children: ['Introduction to the course', 'Overview', 'What is postgress']
+  //   },
+  //   {
+  //     title: 'Introduction',
+  //     published: true,
+  //     children: ['Introduction to the course', 'Overview', 'What is progress']
+  //   },
+  //   {
+  //     title: 'Conclusion',
+  //     published: false,
+  //     children: ['Introduction to the course', 'Overview', 'What is progress']
+  //   },
+  //   {
+  //     title: 'Conclusion',
+  //     published: false,
+  //     children: ['Introduction to the course', 'Overview', 'What is progress']
+  //   },
+  //   {
+  //     title: 'Conclusion',
+  //     published: true,
+  //     children: ['Introduction to the course', 'Overview', 'What is progress']
+  //   }
+  // ];
 
-  const { metadata, lessons, slug } = data;
+  const { metadata, sections, slug } = data;
 
-  let selectedLesson = lessons[0];
+  // let selectedLesson = lessons[0];
   /**
    * @type {any}
    */
@@ -94,13 +96,14 @@
     console.log('toggle');
   };
 
-  onMount(() => {
-    getLessonContent(selectedLesson);
-  });
+  // onMount(() => {
+  //   getLessonContent(selectedLesson);
+  // });
 </script>
 
-<section class="relative overflow-hidden h-screen">
-  <!-- Nav -->
+
+ <section class="relative overflow-hidden h-screen">
+  
   <div
     class="sticky top-0 px-4 w-full h-14 flex items-center justify-between border-b bg-[#F7F7F7] dark:bg-inherit"
   >
@@ -131,9 +134,9 @@
       >
     </div>
   </div>
-  <!-- body -->
+ 
   <div class="overflow-hidden flex">
-    <!-- sidebar -->
+    
     <div
       class="fixed md:relative transition-all bg-[#F7F7F7] dark:bg-[#03030a] w-[300px] md:w-[380px] h-[calc(100vh-56px)] overflow-y-scroll p-4 pl-6 space-y-4 {open
         ? 'translate-x-0 '
@@ -148,12 +151,12 @@
       </a>
 
       <div class="space-y-6">
-        {#each mockSidebar as sidebar}
+        {#each data.sections as sidebar}
           <SideBarExpandable item={sidebar} />
         {/each}
       </div>
 
-      <!-- <div class="space-y-8">
+       <!-- <div class="space-y-8">
         {#each lessons as lesson, index}
           <div
             on:click={() => {
@@ -174,7 +177,7 @@
             <p class="truncate capitalize text-sm font-light">{lesson.title}</p>
           </div>
         {/each}
-      </div>-->
+      </div> -->
     </div>
     <div class="w-full p-5 md:p-10 break-words h-screen overflow-y-scroll ">
       {#if loading}

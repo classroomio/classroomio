@@ -1,5 +1,5 @@
 ---
-title: 'Introduction'
+title: 'Introduction to programming'
 position: 1
 ---
 
@@ -21,5 +21,3 @@ A bit about EduAI Hub before I jump into my experience at the summit:
 Now to my experience - **it was nothing less than amazing**.
 
 I could see how the eyes of some of the educators lite up when I said we can allow them build a customisable alternative to Google Classroom without writing a single line of code. I spoke about the importance of a customisable no-code elearning platform that anyone could use to deploy their own learning management system that suits their brand. I also gave an analogy using Shopify and Wordpress, how Shopify is allowing businesses create ecommerce stores in minutes or Wordpress allowing writters and businesses create robust websites in minutes - that's exactly what we want to do in the educational space starting with bootcamps.
-
-You can find my slides [here](https://docs.google.com/presentation/d/1yU9EFmYA5OJ9PmM4vQp39100vryRBdz3fCAVLktrUEI/edit?usp=sharing)
