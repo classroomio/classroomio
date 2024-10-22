@@ -1,5 +1,5 @@
 ---
-title: 'Summary and conclusion'
+title: 'creating trends in design'
 position: 3
 ---
 

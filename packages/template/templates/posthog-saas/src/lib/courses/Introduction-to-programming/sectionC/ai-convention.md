@@ -1,5 +1,5 @@
 ---
-title: 'Summary and conclusion'
+title: 'Convention for AI in programming'
 position: 3
 ---
 

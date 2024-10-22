@@ -1,5 +1,5 @@
 ---
-title: 'Summary and conclusion'
+title: 'Algorithms in programming'
 position: 3
 ---
 

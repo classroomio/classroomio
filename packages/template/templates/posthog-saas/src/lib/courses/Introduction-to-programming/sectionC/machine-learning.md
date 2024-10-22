@@ -1,5 +1,5 @@
 ---
-title: 'Introduction to programming'
+title: 'Machine Learning'
 position: 1
 ---
 

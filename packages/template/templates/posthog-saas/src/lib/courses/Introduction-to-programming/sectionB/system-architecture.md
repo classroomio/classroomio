@@ -1,5 +1,5 @@
 ---
-title: 'Summary and conclusion'
+title: 'System Architecture'
 position: 3
 ---
 

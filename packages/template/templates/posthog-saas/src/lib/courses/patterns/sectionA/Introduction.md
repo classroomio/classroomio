@@ -1,5 +1,5 @@
 ---
-title: 'Introduction to programming'
+title: 'Introduction to Design'
 position: 1
 ---
 

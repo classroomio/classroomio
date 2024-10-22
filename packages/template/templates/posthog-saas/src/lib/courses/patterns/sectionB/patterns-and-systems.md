@@ -1,5 +1,5 @@
 ---
-title: 'Summary and conclusion'
+title: 'patterns and systems'
 position: 3
 ---
 

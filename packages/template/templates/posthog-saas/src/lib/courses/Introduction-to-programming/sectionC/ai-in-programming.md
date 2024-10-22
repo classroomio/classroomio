@@ -1,5 +1,5 @@
 ---
-title: 'fundamentals of programming'
+title: 'AI for Programmers'
 position: 2
 ---
 

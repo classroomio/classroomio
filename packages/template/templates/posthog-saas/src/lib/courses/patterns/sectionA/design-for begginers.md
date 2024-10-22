@@ -1,5 +1,5 @@
 ---
-title: 'fundamentals of programming'
+title: 'Design for begginners'
 position: 2
 ---
 

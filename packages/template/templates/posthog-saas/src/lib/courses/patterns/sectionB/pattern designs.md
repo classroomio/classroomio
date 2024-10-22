@@ -1,5 +1,5 @@
 ---
-title: 'fundamentals of programming'
+title: 'patterns in design'
 position: 2
 ---
 

@@ -114,7 +114,7 @@ export const load = async ({ params }) => {
 
     // Add section title and published status from section metadata (if available)
     const sectionMetadataPath = path.join(sectionDirPath, 'metadata.json');
-    let sectionMetadata = { title: section, published: true };
+    let sectionMetadata = { title: section, unlocked: true };
 
     if (fs.existsSync(sectionMetadataPath)) {
       sectionMetadata = JSON.parse(fs.readFileSync(sectionMetadataPath, 'utf-8'));
@@ -123,9 +123,9 @@ export const load = async ({ params }) => {
     // Add the section and its sorted lessons to the result
     lessonsBySection.push({
       title: sectionMetadata.title,
-      published: sectionMetadata.published,
-      children: lessons.map((lesson) => lesson.title),
-      lessonDetails: lessons // Extra details like position and filename
+      section_slug: section,
+      published: sectionMetadata.unlocked,
+      children: lessons // Extra details like position and filename
     });
   }
 

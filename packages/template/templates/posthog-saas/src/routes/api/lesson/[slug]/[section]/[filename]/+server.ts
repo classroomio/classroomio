@@ -22,11 +22,14 @@ import path from 'path';
 import { compile } from 'mdsvex'; // Import mdsvex compiler
 
 export async function GET({ params }) {
-  const { slug, filename } = params;
+  const { slug, section, filename } = params;
 
   try {
     // Construct the lesson file path
-    const lessonFilePath = path.join(process.cwd(), `/src/lib/courses/${slug}/${filename}`);
+    const lessonFilePath = path.join(
+      process.cwd(),
+      `/src/lib/courses/${slug}/${section}/${filename}`
+    );
     const lessonContent = fs.readFileSync(lessonFilePath, 'utf-8');
 
     // Compile the markdown content into a Svelte component using mdsvex
