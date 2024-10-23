@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import TestimonialCard from './TestimonialCard.svelte';
 
   export let data;

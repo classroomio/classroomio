@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { goto } from '$app/navigation';
   import CardLoader from '$lib/component/CardLoader.svelte';
   import CourseCard from '$lib/component/CourseCard.svelte';
@@ -45,7 +45,7 @@
     }
   }
 
-  function filterCourse(item) {
+  function filterCourse(item: { title?: string; type?: string; checked: any }) {
     item.checked = !item.checked;
     applyFilter();
   }
@@ -123,7 +123,7 @@
                   <CourseCard
                     className="bg-[#FDFDFD]"
                     slug={courseData.data.slug}
-                    bannerImage={courseData.data.logo ||
+                    bannerImage={courseData.data.banner ||
                       '/images/classroomio-course-img-template.jpg'}
                     title={courseData.data.title}
                     description={courseData.data.description}

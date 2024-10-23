@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import CardLoader from '$lib/component/CardLoader.svelte';
   import CourseCard from '$lib/component/CourseCard.svelte';
   import EmptyState from '$lib/component/EmptyState.svelte';
@@ -38,13 +38,13 @@
     if (activeFilters.length === 0) {
       filteredCourses = courses;
     } else {
-      filteredCourses = courses.filter((course) =>
+      filteredCourses = courses.filter((course: { data: { type: string } }) =>
         activeFilters.includes(course.data.type.toLowerCase())
       );
     }
   }
 
-  function filterCourse(item) {
+  function filterCourse(item: { title?: string; type?: string; checked: any }) {
     item.checked = !item.checked;
     applyFilter();
   }

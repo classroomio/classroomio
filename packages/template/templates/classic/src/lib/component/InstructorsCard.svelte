@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import RatingComponent from './RatingComponent.svelte';
 
   export let name = '';

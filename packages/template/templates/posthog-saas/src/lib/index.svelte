@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import About from './component/About.svelte';
   import Courses from './component/Courses.svelte';
   import Faq from './component/FAQ.svelte';

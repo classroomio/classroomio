@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import Courses from './component/Courses.svelte';
   import Faq from './component/FAQ.svelte';
   import Footer from './component/Footer.svelte';
@@ -21,7 +21,6 @@
 {#if !data}
   <PageLoader />
 {:else}
-  <!-- <Course {org} /> -->
   <main class="bg-[#101720]">
     <Navigation />
     <Hero data={org} />

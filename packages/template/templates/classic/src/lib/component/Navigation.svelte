@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { ArrowRight, Close } from 'carbon-icons-svelte';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';

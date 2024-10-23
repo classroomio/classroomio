@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import Calendar from 'carbon-icons-svelte/lib/Calendar.svelte';
 </script>
 

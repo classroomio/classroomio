@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { Button } from '$lib/components/ui/button';
   import CourseCard from './CourseCard.svelte';
   import EmptyState from './EmptyState.svelte';

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   export let description = '';
   export let name = '';
   export let banner = '';

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import LogoX from 'carbon-icons-svelte/lib/LogoX.svelte';
   import LogoDiscord from 'carbon-icons-svelte/lib/LogoDiscord.svelte';
   import LogoFacebook from 'carbon-icons-svelte/lib/LogoFacebook.svelte';

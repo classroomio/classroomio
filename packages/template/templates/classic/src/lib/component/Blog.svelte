@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import BlogCard from './BlogCard.svelte';
 </script>
 

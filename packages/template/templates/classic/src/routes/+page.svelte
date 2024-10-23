@@ -3,6 +3,6 @@
   export let data;
 </script>
 
-<div class="font-inter">
+<div>
   <Home {data} />
 </div>

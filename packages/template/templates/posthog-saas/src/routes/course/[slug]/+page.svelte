@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { browser } from '$app/environment';
   import { isDark } from '$lib/component/store.js';
   import Skeleton from '$lib/components/ui/skeleton/skeleton.svelte';
@@ -9,6 +9,7 @@
   import Moon from 'carbon-icons-svelte/lib/Moon.svelte';
   import SideBarExpandable from '$lib/component/SideBarExpandable.svelte';
   import Button from '$lib/components/ui/button/button.svelte';
+  import type { Lesson } from '$lib/utils/types';
 
   export let data;
 
@@ -20,31 +21,18 @@
 
   const { metadata, sections, slug } = data;
 
-  let activeLesson = {};
+  let activeLesson: Lesson | undefined;
 
-  /**
-   * @type {any}
-   */
-  let lessonContent;
+  let lessonContent: string | undefined;
 
-  const formatIndex = (number) => {
-    if (number > 9) {
-      return number;
-    } else {
-      return `0${number}`;
-    }
-  };
-
-  async function getLessonContent(lesson, section) {
+  async function getLessonContent(lesson: Lesson, section: string) {
     loading = true;
     const { filename } = lesson;
     try {
       const response = await fetch(`/api/lesson/${slug}/${section}/${filename}`);
       const { content } = await response.json();
-
       lessonContent = content;
       activeLesson = lesson;
-      console.log('active lesson', activeLesson);
     } catch (error) {
       console.log('Error loading lesson:', error);
     } finally {
@@ -60,11 +48,6 @@
       localStorage.setItem('mode', $isDark ? 'dark' : '');
     }
   }
-
-  const toggleLesson = () => {
-    isLessonOpen = !isLessonOpen;
-    console.log('toggle');
-  };
 
   onMount(() => {
     let selectedSection;
@@ -142,7 +125,7 @@
             <SideBarExpandable
               item={sidebar}
               {getLessonContent}
-              activeLesson={activeLesson.title}
+              activeLesson={activeLesson?.title}
             />
           {/each}
         </div>
@@ -159,7 +142,7 @@
           </div>
         </div>
       {:else}
-        <p class="font-semibold text-2xl mb-4 capitalize">{activeLesson.title}</p>
+        <p class="font-semibold text-2xl mb-4 capitalize">{activeLesson?.title}</p>
         <div class="h-fit pb-14">
           {@html lessonContent}
         </div>

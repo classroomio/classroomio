@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import CardLoader from './CardLoader.svelte';
   import CourseCard from './CourseCard.svelte';
   import EmptyState from './EmptyState.svelte';

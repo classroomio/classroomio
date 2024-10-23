@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   export let type = 'course';
   export let className = '';
   export let headerClassName = '';

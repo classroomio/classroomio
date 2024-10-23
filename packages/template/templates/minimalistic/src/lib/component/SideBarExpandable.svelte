@@ -1,15 +1,15 @@
-<script>
+<script lang="ts">
+  import type { Lesson } from '$lib/utils/types';
   import { ChevronDown, ChevronUp } from 'carbon-icons-svelte';
 
   export let item;
-  export let getLessonContent = () => {};
+  export let getLessonContent: (lesson: Lesson, section: string) => void;
   export let activeLesson = '';
   const { title, section_slug, children, published } = item;
 
   let isLessonOpen = getIsActive(children) ? true : false;
 
-  console.log('active', activeLesson);
-  function getIsActive(children) {
+  function getIsActive(children: Lesson[]) {
     if (published) {
       return children.some((lesson) => lesson.title == activeLesson);
     }

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import FaqCard from './FaqCard.svelte';
 
   export let data;

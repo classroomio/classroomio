@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { goto } from '$app/navigation';
 
   import Close from 'carbon-icons-svelte/lib/Close.svelte';

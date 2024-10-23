@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { Add, Subtract } from 'carbon-icons-svelte'; // Import the icons
   export let title = '';
   export let content = '';

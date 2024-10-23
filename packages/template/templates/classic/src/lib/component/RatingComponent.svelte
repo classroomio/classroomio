@@ -1,10 +1,10 @@
-<script>
+<script lang="ts">
   import Star from 'carbon-icons-svelte/lib/Star.svelte';
   import StarFilled from 'carbon-icons-svelte/lib/StarFilled.svelte';
   import StarHalf from 'carbon-icons-svelte/lib/StarHalf.svelte';
   export let rating = 0;
   const maxRating = 5;
-  const getStars = (rating) => {
+  const getStars = (rating: number) => {
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 !== 0;
     const emptyStars = maxRating - Math.ceil(rating);

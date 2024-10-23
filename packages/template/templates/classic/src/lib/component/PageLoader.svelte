@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import CardLoader from './CardLoader.svelte';
   import Skeleton from '$lib/components/ui/skeleton/skeleton.svelte';
 </script>

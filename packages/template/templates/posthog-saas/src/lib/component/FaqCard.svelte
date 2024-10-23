@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import FaqMark from '$lib/component/Icons/FaqMark.svelte';
 
   export let faq;
@@ -6,9 +6,9 @@
 
   const background = 'bg-[#FDBAF2]';
   const iconColor = 'bg-[#3B82F6]';
-  let card;
+  let card: HTMLDivElement;
 
-  const handleMouseMove = (event) => {
+  const handleMouseMove = (event: { clientX: number; clientY: number }) => {
     const cardRect = card.getBoundingClientRect();
     const cardX = event.clientX - cardRect.left;
     const cardY = event.clientY - cardRect.top;

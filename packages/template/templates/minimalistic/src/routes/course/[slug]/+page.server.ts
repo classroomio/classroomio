@@ -1,3 +1,5 @@
+import type { CourseMetadata } from '$lib/utils/types';
+import type { PathLike } from 'fs';
 import fs from 'fs/promises'; // Use async fs functions
 import path from 'path';
 
@@ -11,14 +13,14 @@ export const load = async ({ params }) => {
   console.time('Loading course data');
 
   // Read metadata.json asynchronously
-  const metadata = JSON.parse(await fs.readFile(courseFilePath, 'utf-8'));
+  const metadata: CourseMetadata = JSON.parse(await fs.readFile(courseFilePath, 'utf-8'));
 
   // Get all sections (directories) within the course directory asynchronously
   const sections = (await fs.readdir(courseDirPath, { withFileTypes: true }))
     .filter((dirent) => dirent.isDirectory())
     .map((dirent) => dirent.name);
 
-  const lessonsBySection = await Promise.all(
+  let lessonsBySection = await Promise.all(
     sections.map(async (section) => {
       const sectionDirPath = path.join(courseDirPath, section);
 
@@ -62,7 +64,7 @@ export const load = async ({ params }) => {
 
       // Add section title and published status from section metadata (if available)
       const sectionMetadataPath = path.join(sectionDirPath, 'metadata.json');
-      let sectionMetadata = { title: section, unlocked: true };
+      let sectionMetadata = { title: section, unlocked: true, position: 1 };
 
       if (await fileExists(sectionMetadataPath)) {
         sectionMetadata = JSON.parse(await fs.readFile(sectionMetadataPath, 'utf-8'));
@@ -71,20 +73,21 @@ export const load = async ({ params }) => {
       // Add the section and its sorted lessons to the result
       return {
         title: sectionMetadata.title,
+        position: sectionMetadata.position,
         section_slug: section,
         published: sectionMetadata.unlocked,
         children: lessons // Extra details like position and filename
       };
     })
   );
-
+  const sortedSections = lessonsBySection.sort((a, b) => a.position - b.position);
   console.timeEnd('Loading course data'); // End timing
 
-  return { metadata, sections: lessonsBySection, slug };
+  return { metadata, sections: sortedSections, slug };
 };
 
 // Utility function to check if a file exists asynchronously
-const fileExists = async (filePath) => {
+const fileExists = async (filePath: PathLike) => {
   try {
     await fs.access(filePath);
     return true;

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import About from './component/About.svelte';
   import Blog from './component/Blog.svelte';
   import Courses from './component/Courses.svelte';
@@ -13,18 +13,12 @@
 
   export let data;
 
-  const { org, courses } = data;
+  const { org } = data;
 </script>
 
-<svelte:head>
-  <title>Classic landing page</title>
-</svelte:head>
-
 {#if !data}
-  <!-- <PageLoader /> -->
-  <p>loading</p>
+  <PageLoader />
 {:else}
-  <!-- <Course {org} /> -->
   <main>
     <Navigation />
     <Hero data={org} />
