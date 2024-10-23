@@ -2,10 +2,18 @@
   import { ChevronDown, ChevronUp } from 'carbon-icons-svelte';
 
   export let item;
-  const { title, children, published } = item;
+  export let getLessonContent = () => {};
+  export let activeLesson = '';
+  const { title, section_slug, children, published } = item;
 
-  let isLessonOpen = false;
+  let isLessonOpen = getIsActive(children) ? true : false;
 
+  console.log('active', activeLesson);
+  function getIsActive(children) {
+    if (published) {
+      return children.some((lesson) => lesson.title == activeLesson);
+    }
+  }
   const toggleLesson = () => {
     if (published) isLessonOpen = !isLessonOpen;
   };
@@ -16,7 +24,7 @@
   class="border-none flex flex-row items-center justify-between w-full"
 >
   <div>
-    <p class="text-[13px]">
+    <p class="text-[13px] capitalize">
       {title}
     </p>
   </div>
@@ -37,11 +45,15 @@
   <div class="transition">
     {#each children as lesson}
       <div
-        class="pl-4 py-3 w-full border-l border-gray-400 dark:border-gray-700 hover:border-black hover:dark:border-white cursor-pointer"
+        class="pl-4 py-3 w-full border-l hover:border-black hover:dark:border-white cursor-pointer {lesson.title ===
+        activeLesson
+          ? ' border-black dark:border-white'
+          : 'border-gray-400 dark:border-gray-700'}"
+        on:click={() => getLessonContent(lesson, section_slug)}
       >
         <div>
-          <p class="text-gray-500 hover:text-black hover:dark:text-white text-[13px]">
-            {lesson}
+          <p class="text-gray-500 hover:text-black hover:dark:text-white text-[13px] capitalize">
+            {lesson.title}
           </p>
         </div>
       </div>

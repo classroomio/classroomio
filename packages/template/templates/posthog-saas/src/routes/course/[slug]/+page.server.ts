@@ -1,57 +1,4 @@
-// import fs from 'fs';
-// import path from 'path';
-
-// export const load = async ({ params }) => {
-//   const slug = params.slug || '';
-//   const courseDirPath = path.join(process.cwd(), `src/lib/courses/${slug}`);
-
-//   // Path to the metadata.json file
-//   const courseFilePath = path.join(courseDirPath, 'metadata.json');
-
-//   // Read metadata.json
-//   const metadata = JSON.parse(fs.readFileSync(courseFilePath, 'utf-8'));
-
-//   // Get all markdown files from the course directory
-//   const lessonFiles = fs.readdirSync(courseDirPath).filter((file) => file.endsWith('.md'));
-
-//   // Extract title and position from the front matter of each lesson
-//   const lessons = lessonFiles.map((lessonFile) => {
-//     const lessonFilePath = path.join(courseDirPath, lessonFile);
-//     const lessonContent = fs.readFileSync(lessonFilePath, 'utf-8');
-
-//     // Correct regex to extract the entire front matter block
-//     const frontMatterMatch = lessonContent.match(/---\s*([\s\S]+?)\s*---/);
-
-//     let position = 1;
-//     let title = lessonFile.replace('.md', ''); // Default title from filename
-
-//     if (frontMatterMatch) {
-//       console.log('front matter', 'true', frontMatterMatch);
-//       const frontMatter = frontMatterMatch[1];
-
-//       // Extract title and position from the front matter block
-//       const titleMatch = frontMatter.match(/title:\s*['"](.+?)['"]/);
-//       const positionMatch = frontMatter.match(/position:\s*(\d+)/);
-
-//       if (titleMatch) {
-//         title = titleMatch[1].trim();
-//       }
-
-//       if (positionMatch) {
-//         position = parseInt(positionMatch[1], 10);
-//       }
-//     }
-
-//     return { title, position, filename: lessonFile };
-//   });
-
-//   // Sort lessons by position
-//   lessons.sort((a, b) => a.position - b.position);
-//   console.log('lesson bakend', lessons);
-//   return { metadata, lessons, slug };
-// };
-
-import fs from 'fs';
+import fs from 'fs/promises'; // Use async fs functions
 import path from 'path';
 
 export const load = async ({ params }) => {
@@ -61,73 +8,87 @@ export const load = async ({ params }) => {
   // Path to the metadata.json file for the course
   const courseFilePath = path.join(courseDirPath, 'metadata.json');
 
-  // Read metadata.json
-  const metadata = JSON.parse(fs.readFileSync(courseFilePath, 'utf-8'));
+  console.time('Loading course data');
 
-  // Get all sections (directories) within the course directory
-  const sections = fs
-    .readdirSync(courseDirPath, { withFileTypes: true })
+  // Read metadata.json asynchronously
+  const metadata = JSON.parse(await fs.readFile(courseFilePath, 'utf-8'));
+
+  // Get all sections (directories) within the course directory asynchronously
+  const sections = (await fs.readdir(courseDirPath, { withFileTypes: true }))
     .filter((dirent) => dirent.isDirectory())
     .map((dirent) => dirent.name);
 
-  const lessonsBySection = [];
+  const lessonsBySection = await Promise.all(
+    sections.map(async (section) => {
+      const sectionDirPath = path.join(courseDirPath, section);
 
-  // Loop through each section to get its lessons
-  for (const section of sections) {
-    const sectionDirPath = path.join(courseDirPath, section);
+      // Get all markdown files in the section directory asynchronously
+      const lessonFiles = (await fs.readdir(sectionDirPath)).filter((file) => file.endsWith('.md'));
 
-    // Get all markdown files in the section directory
-    const lessonFiles = fs.readdirSync(sectionDirPath).filter((file) => file.endsWith('.md'));
+      // Extract title and position from each lesson's front matter
+      const lessons = await Promise.all(
+        lessonFiles.map(async (lessonFile) => {
+          const lessonFilePath = path.join(sectionDirPath, lessonFile);
+          const lessonContent = await fs.readFile(lessonFilePath, 'utf-8');
 
-    // Extract title and position from each lesson's front matter
-    const lessons = lessonFiles.map((lessonFile) => {
-      const lessonFilePath = path.join(sectionDirPath, lessonFile);
-      const lessonContent = fs.readFileSync(lessonFilePath, 'utf-8');
+          // Regex to extract the front matter block (optimize front matter extraction)
+          const frontMatterMatch = lessonContent.match(/---\s*([\s\S]+?)\s*---/);
 
-      // Regex to extract the front matter block
-      const frontMatterMatch = lessonContent.match(/---\s*([\s\S]+?)\s*---/);
+          let position = 1;
+          let title = lessonFile.replace('.md', ''); // Default title from filename
 
-      let position = 1;
-      let title = lessonFile.replace('.md', ''); // Default title from filename
+          if (frontMatterMatch) {
+            const frontMatter = frontMatterMatch[1];
 
-      if (frontMatterMatch) {
-        const frontMatter = frontMatterMatch[1];
+            // Extract title and position from the front matter
+            const titleMatch = frontMatter.match(/title:\s*['"](.+?)['"]/);
+            const positionMatch = frontMatter.match(/position:\s*(\d+)/);
 
-        // Extract title and position from the front matter
-        const titleMatch = frontMatter.match(/title:\s*['"](.+?)['"]/);
-        const positionMatch = frontMatter.match(/position:\s*(\d+)/);
+            if (titleMatch) {
+              title = titleMatch[1].trim();
+            }
 
-        if (titleMatch) {
-          title = titleMatch[1].trim();
-        }
+            if (positionMatch) {
+              position = parseInt(positionMatch[1], 10);
+            }
+          }
 
-        if (positionMatch) {
-          position = parseInt(positionMatch[1], 10);
-        }
+          return { title, position, filename: lessonFile };
+        })
+      );
+
+      // Sort lessons by position within the section
+      lessons.sort((a, b) => a.position - b.position);
+
+      // Add section title and published status from section metadata (if available)
+      const sectionMetadataPath = path.join(sectionDirPath, 'metadata.json');
+      let sectionMetadata = { title: section, unlocked: true };
+
+      if (await fileExists(sectionMetadataPath)) {
+        sectionMetadata = JSON.parse(await fs.readFile(sectionMetadataPath, 'utf-8'));
       }
 
-      return { title, position, filename: lessonFile };
-    });
+      // Add the section and its sorted lessons to the result
+      return {
+        title: sectionMetadata.title,
+        section_slug: section,
+        published: sectionMetadata.unlocked,
+        children: lessons // Extra details like position and filename
+      };
+    })
+  );
 
-    // Sort lessons by position within the section
-    lessons.sort((a, b) => a.position - b.position);
-
-    // Add section title and published status from section metadata (if available)
-    const sectionMetadataPath = path.join(sectionDirPath, 'metadata.json');
-    let sectionMetadata = { title: section, unlocked: true };
-
-    if (fs.existsSync(sectionMetadataPath)) {
-      sectionMetadata = JSON.parse(fs.readFileSync(sectionMetadataPath, 'utf-8'));
-    }
-
-    // Add the section and its sorted lessons to the result
-    lessonsBySection.push({
-      title: sectionMetadata.title,
-      section_slug: section,
-      published: sectionMetadata.unlocked,
-      children: lessons // Extra details like position and filename
-    });
-  }
+  console.timeEnd('Loading course data'); // End timing
 
   return { metadata, sections: lessonsBySection, slug };
+};
+
+// Utility function to check if a file exists asynchronously
+const fileExists = async (filePath) => {
+  try {
+    await fs.access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
 };

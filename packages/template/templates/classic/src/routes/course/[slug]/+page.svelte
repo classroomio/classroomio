@@ -3,54 +3,29 @@
   import { isDark } from '$lib/component/store.js';
   import Skeleton from '$lib/components/ui/skeleton/skeleton.svelte';
   import { toggleBodyByMode } from '$lib/utils/toggleMode.js';
-  import { ChevronLeft, ChevronUp, ChevronDown, Menu, Close } from 'carbon-icons-svelte';
+  import { ChevronLeft, Menu, Close } from 'carbon-icons-svelte';
   import { onMount } from 'svelte';
   import Light from 'carbon-icons-svelte/lib/Light.svelte';
   import Moon from 'carbon-icons-svelte/lib/Moon.svelte';
-  import Button from '$lib/components/ui/button/button.svelte';
   import SideBarExpandable from '$lib/component/SideBarExpandable.svelte';
+  import Button from '$lib/components/ui/button/button.svelte';
 
   export let data;
+
+  console.log('new data', data);
   let open = false;
   let loading = true;
+  let initialLoad = false;
   let isLessonOpen = false;
-  const mockSidebar = [
-    {
-      title: 'Introduction',
-      published: true,
-      children: ['Introduction to the course', 'Overview', 'What is progress']
-    },
-    {
-      title: 'Fundamental of postgres',
-      published: true,
-      children: ['Introduction to the course', 'Overview', 'What is postgress']
-    },
-    {
-      title: 'Introduction',
-      published: true,
-      children: ['Introduction to the course', 'Overview', 'What is progress']
-    },
-    {
-      title: 'Conclusion',
-      published: false,
-      children: ['Introduction to the course', 'Overview', 'What is progress']
-    },
-    {
-      title: 'Conclusion',
-      published: false,
-      children: ['Introduction to the course', 'Overview', 'What is progress']
-    },
-    {
-      title: 'Conclusion',
-      published: true,
-      children: ['Introduction to the course', 'Overview', 'What is progress']
-    }
-  ];
 
-  const { metadata, lessons, slug } = data;
+  const { metadata, sections, slug } = data;
 
-  let selectedLesson = lessons[0];
-  let lessonContent = '';
+  let activeLesson = {};
+
+  /**
+   * @type {any}
+   */
+  let lessonContent;
 
   const formatIndex = (number) => {
     if (number > 9) {
@@ -60,18 +35,21 @@
     }
   };
 
-  async function getLessonContent(lesson) {
-    const { filename } = lesson;
+  async function getLessonContent(lesson, section) {
     loading = true;
+    const { filename } = lesson;
     try {
-      const response = await fetch(`/api/lesson/${slug}/${filename}`);
-      const {content} = await response.json();
+      const response = await fetch(`/api/lesson/${slug}/${section}/${filename}`);
+      const { content } = await response.json();
+
       lessonContent = content;
-      selectedLesson = lesson;
+      activeLesson = lesson;
+      console.log('active lesson', activeLesson);
     } catch (error) {
-      console.error('Error loading lesson:', error);
+      console.log('Error loading lesson:', error);
     } finally {
       loading = false;
+      initialLoad = true;
     }
   }
 
@@ -89,12 +67,23 @@
   };
 
   onMount(() => {
-    getLessonContent(selectedLesson);
+    let selectedSection;
+    for (let section of sections) {
+      if (section.published) {
+        selectedSection = section;
+        break;
+      }
+    }
+
+    if (selectedSection) {
+      activeLesson = selectedSection.children[0];
+      getLessonContent(selectedSection.children[0], selectedSection.section_slug);
+      console.log('active lesson', activeLesson);
+    }
   });
 </script>
 
 <section class="relative overflow-hidden h-screen">
-  <!-- Nav -->
   <div
     class="sticky top-0 px-4 w-full h-14 flex items-center justify-between border-b bg-[#F7F7F7] dark:bg-inherit"
   >
@@ -125,7 +114,7 @@
       >
     </div>
   </div>
-  <!-- body -->
+
   <div class="overflow-hidden flex">
     <!-- sidebar -->
     <div
@@ -140,35 +129,24 @@
         <ChevronLeft />
         <p>Back to course page</p>
       </a>
-
-      <div class="space-y-6">
-        {#each mockSidebar as sidebar}
-          <SideBarExpandable item={sidebar} />
-        {/each}
-      </div>
-
-      <!-- <div class="space-y-8">
-        {#each lessons as lesson, index}
-          <div
-            on:click={() => {
-              getLessonContent(lesson);
-              open = !open;
-            }}
-            class="flex items-center gap-2 mb-4 border-l hover:dark:border-gray-200 hover:border-black px-2 cursor-pointer {selectedLesson.filename ===
-            lesson.filename
-              ? 'border-l border-black dark:border-gray-200'
-              : 'border-transparent'}"
-          >
-            <div
-              class="flex items-center justify-center bg-[#D9E0F5] text-[#0233BD] text-xs font-semibold rounded-full w-6 h-6"
-            >
-              {formatIndex(index + 1)}
-            </div>
-
-            <p class="truncate capitalize text-sm font-light">{lesson.title}</p>
-          </div>
-        {/each}
-      </div> -->
+      {#if !initialLoad}
+        <div class="space-y-10 w-full">
+          <Skeleton class="h-4 w-full" />
+          <Skeleton class="h-4 w-full" />
+          <Skeleton class="h-4 w-full" />
+          <Skeleton class="h-4 w-full" />
+        </div>
+      {:else}
+        <div class="space-y-6">
+          {#each sections as sidebar}
+            <SideBarExpandable
+              item={sidebar}
+              {getLessonContent}
+              activeLesson={activeLesson.title}
+            />
+          {/each}
+        </div>
+      {/if}
     </div>
     <div class="w-full p-5 md:p-10 break-words h-screen overflow-y-scroll">
       {#if loading}
@@ -181,8 +159,8 @@
           </div>
         </div>
       {:else}
-        <p class="font-semibold text-2xl mb-4 capitalize">{selectedLesson.title}</p>
-        <div class='h-fit pb-14'>
+        <p class="font-semibold text-2xl mb-4 capitalize">{activeLesson.title}</p>
+        <div class="h-fit pb-14">
           {@html lessonContent}
         </div>
       {/if}
