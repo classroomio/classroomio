@@ -95,18 +95,18 @@
       icon: Notebook,
       total: pendingCourses?.length + completedCourses?.length,
       completed: completedCourses?.length,
-      title: 'Course completed'
+      title: 'Total Course Completed'
     },
     {
       icon: Report,
       total: metrics.exercise.total,
       completed: metrics.exercise.completed,
-      title: 'Pending Exercises'
+      title: 'Total Pending Exercises'
     },
     {
       icon: RowExpand,
       total: `${Math.round(metrics.exercise.averageGrade)}%`,
-      title: 'Average Grade'
+      title: 'Total Average Grade'
     }
   ];
 </script>
