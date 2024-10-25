@@ -1,5 +1,6 @@
 <script>
   import {
+    Link,
     DataTable,
     Toolbar,
     ToolbarContent,
@@ -7,7 +8,8 @@
     Pagination,
     DataTableSkeleton
   } from 'carbon-components-svelte';
-  import { orgAudience } from '$lib/utils/store/org';
+  import { page as pageStore } from '$app/stores';
+  import { currentOrg, orgAudience } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
 
   export let isLoading = false;
@@ -32,6 +34,15 @@
         <ToolbarSearch persistent value={searchValue} shouldFilterRows bind:filteredRowIds />
       </ToolbarContent>
     </Toolbar>
+    <svelte:fragment slot="cell-header" let:header>
+      {header.value}
+    </svelte:fragment>
+    <svelte:fragment slot="cell" let:row let:cell>
+      <Link
+        class="text-black hover:text-black"
+        href={`${$pageStore.url.href}/${row.id}/${$currentOrg.id}`}>{cell.value}</Link
+      >
+    </svelte:fragment>
   </DataTable>
 {/if}
 

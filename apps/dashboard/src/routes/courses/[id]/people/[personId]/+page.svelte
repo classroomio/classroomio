@@ -1,32 +1,43 @@
 <script lang="ts">
   // @ts-nocheck
 
+  import { onMount } from 'svelte';
   import '@carbon/charts-svelte/styles.css';
   import { BarChartSimple } from '@carbon/charts-svelte';
   import Report from 'carbon-icons-svelte/lib/Report.svelte';
   import Calendar from 'carbon-icons-svelte/lib/Calendar.svelte';
   import Notebook from 'carbon-icons-svelte/lib/Notebook.svelte';
-  import Settings from 'carbon-icons-svelte/lib/Settings.svelte';
   import RowExpand from 'carbon-icons-svelte/lib/RowExpand.svelte';
+  import CheckmarkFilled from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
   import PresentationFile from 'carbon-icons-svelte/lib/PresentationFile.svelte';
 
+  import { fetchCourse, fetchCourses, getMarks } from '$lib/utils/services/courses/index.js';
+  import { currentOrg } from '$lib/utils/store/org.js';
+  import { course } from '$lib/components/Course/store.js';
+  import { supabase } from '$lib/utils/functions/supabase.js';
+  import formatDate from '$lib/utils/functions/formatDate.js';
+  import type { StudentStat } from '$lib/utils/types/index.js';
   import { courseMetaDeta, courses } from '$lib/components/Courses/store';
 
   import Tabs from '$lib/components/Tabs/index.svelte';
   import TabContent from '$lib/components/TabContent/index.svelte';
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
   import ActivateSectionsModal from '$lib/components/Course/components/Lesson/ActivateSectionsModal.svelte';
-  import { currentOrg } from '$lib/utils/store/org.js';
-  import { fetchCourses } from '$lib/utils/services/courses/index.js';
-  import { onMount } from 'svelte';
-  import { supabase } from '$lib/utils/functions/supabase.js';
-  import type { StudentStat } from '$lib/utils/types/index.js';
+  import { Dropdown } from 'carbon-components-svelte';
 
   export let data;
 
-  const { profileId } = data;
+  const {
+    user,
+    completedLessons,
+    pendingLessons,
+    totalExercises,
+    grades,
+    average,
+    progressPercentage
+  } = data?.data;
 
-  export let user: StudentStat = {};
+  $: console.log('request data', data);
 
   let tabs = [
     {
@@ -40,59 +51,10 @@
   ];
 
   let currentTab = tabs[0].value;
-
   let hasFetched = false;
-
   let learningActivities = [];
-
-  const chartData = [
-    {
-      group: 'Monday',
-      value: 5
-    },
-    {
-      group: 'Tuesday',
-      value: 10
-    },
-    {
-      group: 'Wednesday',
-      value: 0
-    },
-    {
-      group: 'Thursday',
-      value: 1
-    },
-    {
-      group: 'Friday',
-      value: 4
-    },
-    {
-      group: 'Saturday',
-      value: 7
-    },
-    {
-      group: 'Sunday',
-      value: 9
-    }
-  ];
-
-  const options = {
-    title: '-',
-    axes: {
-      left: {
-        mapsTo: 'value'
-      },
-      bottom: {
-        mapsTo: 'group',
-        scaleType: 'labels'
-      }
-    },
-    animations: true,
-    height: '400px',
-    accessibility: {
-      svgAriaLabel: 'Simple bar chart'
-    }
-  };
+  let allCourses: any[] = [];
+  let selectedId = '';
 
   const getValue = (label: string) => {
     const tabValue = tabs.find((tab) => tab.label === label)?.value;
@@ -105,83 +67,69 @@
     };
   };
 
-  async function getCourses(userId: string | undefined, orgId: string) {
-    if (hasFetched || !userId || !orgId) {
-      return;
+  function timeAgo(timestamp: string) {
+    const now = new Date();
+    const time = new Date(timestamp);
+
+    const diffInMs = now.getTime() - time.getTime();
+    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60)); // Convert milliseconds to hours
+
+    if (diffInHours < 1) {
+      const diffInMinutes = Math.floor(diffInMs / (1000 * 60)); // Convert milliseconds to minutes
+      return new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(
+        -diffInMinutes,
+        'minute'
+      );
+    } else if (diffInHours < 24) {
+      return new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(-diffInHours, 'hour');
+    } else {
+      const diffInDays = Math.floor(diffInHours / 24);
+      return new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(-diffInDays, 'day');
     }
-    // only show is loading when fetching for the first time
-    if (!$courses.length) {
-      $courseMetaDeta.isLoading = true;
+  }
+
+  function getPercentage(a, b) {
+    if (b === 0) {
+      return 0;
     }
-
-    const coursesResult = await fetchCourses(userId, orgId);
-    console.log(`coursesResult`, coursesResult);
-
-    $courseMetaDeta.isLoading = false;
-    if (!coursesResult) return;
-    const userCourses = coursesResult.allCourses;
-    user.pendingCourses = userCourses.filter((course) => course.progress_rate < 100);
-    user.completedCourses = userCourses.filter((course) => course.progress_rate === 100);
-    hasFetched = true;
+    return Math.round((a / b) * 100);
   }
 
-  function calcTotalProgress(courses: Course[]) {
-    user.totalCompleted = courses.reduce((acc, cur) => acc + (cur.progress_rate || 0), 0);
-    user.totalLessons = courses.reduce((acc, cur) => acc + (cur.total_lessons || 0), 0);
-
-    user.progressPercentage = Math.round((user.totalCompleted / user.totalLessons) * 100) || 0;
-  }
-
-  async function fetchUser(userId: string | undefined) {
-    if (!userId) return;
-    const result = await supabase.from('profile').select(`*`).eq('id', userId).single();
-    console.log('result', result.data);
-    user.username = result.data.fullname;
-  }
-
-  $: getCourses(profileId, $currentOrg.id);
-  $: calcTotalProgress($courses);
-
+  $: inputRange = completedLessons?.length / pendingLessons?.length + completedLessons?.length;
   $: learningActivities = [
     {
       icon: Notebook,
-      totalLesson: user.totalLessons,
-      completedLesson: user.totalCompleted,
+      totalLesson: pendingLessons?.length + completedLessons?.length,
+      completedLesson: completedLessons?.length,
       title: 'Lesson completed'
     },
     {
       icon: Report,
-      totalLesson: 12,
-      completedLesson: 5,
-      title: 'Exercise graded'
+      totalLesson: totalExercises,
+      completedLesson: grades?.length,
+      title: 'Pending Exercises'
     },
     {
       icon: RowExpand,
-      totalLesson: 24,
-      title: 'Total LMS Entry'
+      totalLesson: `${Math.round(average)}%`,
+      title: 'Average Grade'
     }
   ];
-
-  onMount(() => {
-    fetchUser(profileId);
-  });
 </script>
 
 <CourseContainer containerClass="px-7">
   <div class="mt-5 h-[90vh] overflow-y-auto">
-    <Settings size={20} />
-
     <!-- first section -->
-    <div class="flex items-center gap-5 mt-5">
+    <div class="flex items-start md:items-center flex-col md:flex-row gap-5 mt-5">
       <!-- user details -->
       <div
-        class="flex flex-col gap-3 items-center border border-[#DEDEDE] rounded-md py-4 px-5 w-[35%]"
+        class="flex flex-col gap-3 items-start md:items-center border border-[#DEDEDE] rounded-md py-4 px-5 w-full md:w-[35%]"
       >
         <div class="w-full px-3 flex justify-center gap-4 items-center">
-          <img src="/images/user-placeholder.svg" alt="" class="rounded-full w-[30%]" />
+          <img src="/images/user-placeholder.svg" alt="" class="rounded-full w-[20%] md:w-[30%]" />
 
           <div>
-            <h1 class="m-0 text-lg leading-4">{user.username}</h1>
+            <h1 class="m-0 text-lg leading-4">{user?.fullName}</h1>
             <span class="text-xs m-0">Student</span>
           </div>
         </div>
@@ -189,7 +137,7 @@
         <p
           class="text-xs uppercase font-medium mt-1 py-1.5 text-center w-full bg-primary-600 text-white rounded-sm"
         >
-          Last seen: 2hr ago
+          Last seen: {user?.lastSeen && timeAgo(user?.lastSeen)} ago
         </p>
       </div>
 
@@ -204,7 +152,8 @@
 
           <div class="leading-5">
             <p class="text-sm font-semibold">
-              {user.totalCompleted}/{user.totalLessons} lessons completed
+              {completedLessons?.length}/{pendingLessons?.length + completedLessons?.length} lessons
+              completed
             </p>
 
             <input
@@ -212,20 +161,20 @@
               type="range"
               min="0"
               max="100"
-              bind:value={user.progressPercentage}
+              bind:value={inputRange}
               class="range-input"
-              style="background: linear-gradient(to right, #0233BD {user.progressPercentage}%, #ccc {user.progressPercentage}%);"
+              style="background: linear-gradient(to right, #0233BD {completedLessons?.length}%, #ccc {completedLessons?.length}%);"
             />
           </div>
 
-          <h1 class="text-4xl font-bold">{user.progressPercentage}%</h1>
+          <h1 class="text-4xl font-bold">{progressPercentage}%</h1>
         </div>
       </div>
     </div>
 
     <!-- learning activities (second section) -->
     <div class="mt-10">
-      <h3>Learning Activities</h3>
+      <h3>Metrics</h3>
 
       <div class="w-full flex items-center justify-between">
         {#each learningActivities as activity}
@@ -253,32 +202,26 @@
     <div class="flex justify-between my-10">
       <!-- lessons -->
       <div class="w-[48%]">
-        <h3>Lessons</h3>
+        <h3 class="m-0">Lessons</h3>
 
         <Tabs {tabs} bind:currentTab {onChange}>
           <slot:fragment slot="content">
             <TabContent value={getValue('PENDING')} index={currentTab}>
               <div class="flex flex-col gap-3 -mt-5 max-h-[45vh] overflow-y-scroll">
-                {#if user?.pendingCourses?.length > 0}
-                  {#each user?.pendingCourses as pending}
+                {#if pendingLessons?.length > 0}
+                  {#each pendingLessons as pending}
                     <div class="border border-[#DEDEDE] rounded-sm p-4 flex flex-col gap-4">
                       <h3 class="m-0 leading-4 font-semibold">{pending.title}</h3>
 
                       <div class="flex justify-between items-center">
                         <div class="flex items-center gap-1.5 text-xs">
                           <Calendar size={16} />
-                          <!-- {pending.date} -->
-                          Mon, July 01 2024
+                          {formatDate(pending.created_at)}
                         </div>
 
                         <div class="flex items-center gap-1.5 text-xs">
                           <PresentationFile size={16} />
-                          {pending.total_lessons} Exercises
-                        </div>
-
-                        <div class="flex items-center gap-1.5 text-xs">
-                          <Notebook size={16} />
-                          30 minutes of reading
+                          {pending.exerciseNo} Exercise(s)
                         </div>
                       </div>
                     </div>
@@ -291,26 +234,20 @@
 
             <TabContent value={getValue('COMPLETED')} index={currentTab}>
               <div class="flex flex-col gap-3 -mt-5 max-h-[45vh] overflow-y-scroll">
-                {#if user?.completedCourses?.length > 0}
-                  {#each user?.completedCourses as pending}
+                {#if completedLessons?.length > 0}
+                  {#each completedLessons as pending}
                     <div class="border border-[#DEDEDE] rounded-sm p-4 flex flex-col gap-4">
                       <h3 class="m-0 leading-4 font-semibold">{pending.title}</h3>
 
                       <div class="flex justify-between items-center">
                         <div class="flex items-center gap-1.5 text-xs">
                           <Calendar size={16} />
-                          <!-- {pending.date} -->
-                          Mon, July 01 2024
+                          {formatDate(pending.created_at)}
                         </div>
 
                         <div class="flex items-center gap-1.5 text-xs">
                           <PresentationFile size={16} />
-                          {pending.total_lessons} Exercises
-                        </div>
-
-                        <div class="flex items-center gap-1.5 text-xs">
-                          <Notebook size={16} />
-                          30 minutes of reading
+                          {pending.exerciseNo} Exercises
                         </div>
                       </div>
                     </div>
@@ -326,10 +263,34 @@
 
       <!-- activities -->
       <div class="w-[48%]">
-        <h3>Activities</h3>
+        <h3>Grades</h3>
 
-        <div class="max-h-[50vh] overflow-y-scroll">
-          <BarChartSimple data={chartData} {options} />
+        <div
+          class="max-h-[50vh] h-full overflow-y-scroll flex items-center flex-col gap-3 p-3 border rounded-md"
+        >
+          {#if grades?.length > 0}
+            {#each grades as grade}
+              <div class="w-full bg-[#F7F7F7] border-[#EAEAEA] rounded-md p-3">
+                <p class="text-sm font-medium">{grade.title}</p>
+
+                <div class="flex justify-between items-center mt-2 text-sm">
+                  <span class="text-[#656565] flex item-center gap-3"
+                    ><CheckmarkFilled
+                      color={grade.grade >= 70 ? 'green' : grade.grade >= 30 ? 'orange' : 'red'}
+                      size={20}
+                    />
+
+                    Grade:</span
+                  >
+
+                  <span class="font-semibold">{getPercentage(grade.grade, grade.totalPoints)}%</span
+                  >
+                </div>
+              </div>
+            {/each}
+          {:else}
+            <p class="text-sm text-center">No Exercise Completed</p>
+          {/if}
         </div>
       </div>
     </div>
