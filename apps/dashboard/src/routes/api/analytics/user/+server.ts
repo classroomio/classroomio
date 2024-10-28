@@ -2,7 +2,7 @@
 // import { supabase } from '$lib/utils/functions/supabase';
 import { getServerSupabase } from '$lib/utils/functions/supabase.server';
 import { json } from '@sveltejs/kit';
-import { fetchCourses, fetchProfileCourseProgress } from '$lib/utils/services/courses';
+import { fetchCourses, fetchProfileCourseProgress, getMarks } from '$lib/utils/services/courses';
 
 const supabase = getServerSupabase();
 
@@ -102,19 +102,6 @@ export async function POST({ request }: { request: Request }) {
   }
 }
 
-function addCourseProgress(courses) {
-  return courses.map(course => {
-    const { progress_rate, total_lessons } = course;
-    
-    // calculate the completion percentage
-    const courseProgress = total_lessons > 0 
-      ? ((progress_rate / total_lessons) * 100).toFixed(2) 
-      : 0;
-
-      // add percentage to each course object
-    return { ...course, courseProgress: `${courseProgress}` };
-  });
-}
 
 
 async function getAudienceData(userId: string, orgId: string): Promise<UserAnalytics> {
@@ -151,19 +138,17 @@ async function getAudienceData(userId: string, orgId: string): Promise<UserAnaly
   const updatedCourses = addCourseProgress(allCourses);
 
 
-  // STEP 3: functions to fetch additional data for each course
+  // STEP 3: fetch completed courses and exercises for each of the user's courses
   const fetchCourseDataForAllCourses = updatedCourses.map(async (course) => {
     const { id: courseId } = course;
 
-    // Fetch lesson completion, profile course progress, and exercise data
-    const [lessonResponse, exerciseResponse, marksResponse] = await Promise.all([
-      fetchLessonCompletion(courseId, userId),
+    const [ exerciseResponse, marksResponse] = await Promise.all([
       fetchProfileCourseProgress(courseId, userId),
+      fetchLessonsExercisesAndSubmissions(courseId, userId),
     ]);
     
     return {
       course,
-      lessonResponse,
       exerciseResponse,
       marksResponse,
     };
@@ -171,7 +156,7 @@ async function getAudienceData(userId: string, orgId: string): Promise<UserAnaly
 
   const courseDataResults = await Promise.all(fetchCourseDataForAllCourses);
 
-  // Process and filter pending and completed courses
+  // user's pending and completed courses
   audienceAnalytics.pendingCourses = updatedCourses.filter(
     (course) => course.progress_rate < 5
   );
@@ -179,40 +164,30 @@ async function getAudienceData(userId: string, orgId: string): Promise<UserAnaly
     (course) => course.progress_rate >= 5
   );
 
-  // Compute total completed lessons and exercises
-  let totalCompleted = 0;
-  let totalLessons = 0;
+  // total completed lessons and exercises
   let totalExercises = 0;
-  let completedExercises = 0;
   let totalPoints = 0;
   let totalMarksCount = 0;
 
-  courseDataResults.forEach(({ course, lessonResponse, exerciseResponse, marksResponse }) => {
-    if (lessonResponse && exerciseResponse.data && marksResponse) {
-      console.log('lessonResponse, exerciseResponse, marksResponse', lessonResponse, exerciseResponse, marksResponse);
+  courseDataResults.forEach(({  exerciseResponse, marksResponse }) => {
+    if ( exerciseResponse.data && marksResponse) {
       const { exercisesWithSubmissionsAndPoints } = marksResponse;
-
-      totalLessons += lessonResponse.length;
-      totalCompleted += course.progress_rate || 0;
-
+      
+      // total exercises on all the user's course(s)
       totalExercises += exerciseResponse.data[0].exercises_count;
-      completedExercises += exerciseResponse.data[0].exercises_completed;
 
       totalPoints += exercisesWithSubmissionsAndPoints.reduce(
         (sum, exercise) => sum + exercise.grade,
         0
       );
+      
       totalMarksCount += exercisesWithSubmissionsAndPoints.length;
     }
   });
 
-  audienceAnalytics.metrics.progressPercentage =
-    Math.round((totalCompleted / totalLessons) * 100) || 0;
   audienceAnalytics.metrics.exercise.total = totalExercises;
-  audienceAnalytics.metrics.exercise.completed = completedExercises;
+  audienceAnalytics.metrics.exercise.completed = totalMarksCount || 0;
   audienceAnalytics.metrics.exercise.averageGrade = totalPoints / totalMarksCount || 0;
-  audienceAnalytics.metrics.lesson.total = totalLessons;
-  audienceAnalytics.metrics.lesson.completed = completedExercises;
 
   return audienceAnalytics;
 }
@@ -238,7 +213,7 @@ async function getStudentAnalyticsData(
     progressPercentage: 0
   };
 
-  // Fetch user details
+  // fetch user details
   const userResult = await supabase.from('profile').select('*').eq('id', userId).single();
   if (userResult.error) throw new Error('Failed to fetch user profile');
 
@@ -246,12 +221,10 @@ async function getStudentAnalyticsData(
   userCourseAnalytics.user.avatarUrl = userResult.data.avatar_url || '';
   userCourseAnalytics.user.lastSeen = userResult.data.last_seen || new Date().toISOString();
 
-  // Fetch marks, lessons, and exercise progress
+  // fetch marks, lessons, and exercise progress
   const marksResponse = await fetchLessonsExercisesAndSubmissions(courseId, userId);
   const lessonResponse = await fetchLessonCompletion(courseId, userId);
   const exerciseResponse = await fetchProfileCourseProgress(courseId, userId);
-
-  console.log('exerciseResponse', exerciseResponse);
 
   if (!marksResponse || !lessonResponse || !exerciseResponse.data) {
     throw new Error('Failed to fetch course analytics data');
@@ -282,9 +255,24 @@ async function getStudentAnalyticsData(
   return userCourseAnalytics;
 }
 
+
+function addCourseProgress(courses) {
+  return courses.map(course => {
+    const { progress_rate, total_lessons } = course;
+    
+    // calculate the completion percentage
+    const courseProgress = total_lessons > 0 
+      ? ((progress_rate / total_lessons) * 100).toFixed(2) 
+      : 0;
+
+      // add percentage to each course object
+    return { ...course, courseProgress: `${courseProgress}` };
+  });
+}
+
 async function fetchLessonsExercisesAndSubmissions(courseId, userId) {
   try {
-    // Step 1: Fetch the groupmember rows where profile_id = userId
+    // Step 1: fetch the groupmember rows where profile_id = userId
     const { data: groupmemberData, error: groupmemberError } = await supabase
       .from('groupmember')
       .select('id')
@@ -297,7 +285,7 @@ async function fetchLessonsExercisesAndSubmissions(courseId, userId) {
 
     const groupmemberIds = groupmemberData.map(member => member.id); // Array of groupmember IDs
 
-    // Step 2: Fetch all lessons where course_id = courseId
+    // Step 2: fetch all lessons where course_id = courseId
     const { data: lessons, error: lessonError } = await supabase
       .from('lesson')
       .select('id')
@@ -310,7 +298,7 @@ async function fetchLessonsExercisesAndSubmissions(courseId, userId) {
 
     const lessonIds = lessons.map((lesson) => lesson.id);
 
-    // Step 3: Fetch all exercises for each lessonId
+    // Step 3: fetch all exercises for each lessonId
     const { data: exercises, error: exerciseError } = await supabase
       .from('exercise')
       .select('title, id, lesson_id')
@@ -323,7 +311,7 @@ async function fetchLessonsExercisesAndSubmissions(courseId, userId) {
 
     const exerciseList = exercises || [];
 
-    // Step 4: Fetch submissions where submitted_by matches any of the groupmemberIds
+    // Step 4: fetch submissions where submitted_by matches any of the groupmemberIds
     const { data: submissions, error: submissionError } = await supabase
       .from('submission')
       .select('id, exercise_id, total')
@@ -336,7 +324,7 @@ async function fetchLessonsExercisesAndSubmissions(courseId, userId) {
 
     const userSubmissions = submissions || [];
 
-    // Step 5: Fetch all questions and their points
+    // Step 5: fetch all questions and their points
     const { data: questions, error: questionError } = await supabase
       .from('question')
       .select('exercise_id, points'); // Only fetch exercise_id and points
@@ -346,23 +334,23 @@ async function fetchLessonsExercisesAndSubmissions(courseId, userId) {
       return;
     }
 
-    // Step 6: Attach submissions and total points to the corresponding exercises and filter out exercises with no submissions
+    // Step 6: attach submissions and total points to the corresponding exercises and filter out exercises with no submissions
     const exercisesWithSubmissionsAndPoints = exerciseList
       .map((exercise) => {
-        // Filter submissions related to this exercise
+        // filter submissions related to this exercise
         const relatedSubmissions = userSubmissions.filter(
           (submission) => submission.exercise_id === exercise.id
         );
 
-        // If no submissions for this exercise, skip it
+        // if no submissions for this exercise, skip it
         if (relatedSubmissions.length === 0) return null;
 
-        // Filter questions related to this exercise
+        // filter questions related to this exercise
         const relatedQuestions = questions.filter(
           (question) => question.exercise_id === exercise.id
         );
 
-        // Sum all points from related questions
+        // sum all points from related questions
         const totalPoints = relatedQuestions.reduce(
           (sum, question) => sum + (question.points || 0),
           0
@@ -370,13 +358,13 @@ async function fetchLessonsExercisesAndSubmissions(courseId, userId) {
 
         return {
           ...exercise,
-          grade: relatedSubmissions[0].total || 0, // Attach submission grade
-          totalPoints // Attach total points of questions for this exercise
+          grade: relatedSubmissions[0].total || 0, // add submission grade
+          totalPoints // add total points of questions for this exercise
         };
       })
-      .filter((exercise) => exercise !== null); // Filter out exercises with no submissions
+      .filter((exercise) => exercise !== null); // filter out exercises with no submissions
 
-    // Return only the exercises with submissions and total points
+    // only the exercises with submissions and total points
     return {
       exercisesWithSubmissionsAndPoints
     };
@@ -388,7 +376,7 @@ async function fetchLessonsExercisesAndSubmissions(courseId, userId) {
 
 async function fetchLessonCompletion(courseId, userId) {
   try {
-    // Fetch all lessons for the course
+    // fetch all lessons for the course
     const { data: lessons, error: lessonsError } = await supabase
       .from('lesson')
       .select(`id, title, created_at`)
@@ -396,7 +384,7 @@ async function fetchLessonCompletion(courseId, userId) {
 
     if (lessonsError) throw lessonsError;
 
-    // Fetch completed lessons from lesson_completion table for the user
+    // fetch completed lessons from lesson_completion table for the user
     const { data: completedLessons, error: completionError } = await supabase
       .from('lesson_completion')
       .select('lesson_id')
@@ -404,10 +392,10 @@ async function fetchLessonCompletion(courseId, userId) {
 
     if (completionError) throw completionError;
 
-    // Map of completed lesson IDs
+    // map of completed lesson IDs
     const completedLessonIds = completedLessons.map((item) => item.lesson_id);
 
-    // Fetch exercise count for each lesson
+    // fetch exercise count for each lesson
     const lessonsWithExerciseCount = await Promise.all(
       lessons.map(async (lesson) => {
         const { data: exercises, error: exerciseError } = await supabase
@@ -417,13 +405,13 @@ async function fetchLessonCompletion(courseId, userId) {
 
         if (exerciseError) throw exerciseError;
 
-        // Count the number of exercises for the lesson
+        // count the number of exercises for the lesson
         const exerciseCount = exercises.length;
 
         return {
           ...lesson,
-          completed: completedLessonIds.includes(lesson.id), // Attach completed status
-          exerciseNo: exerciseCount // Attach exercise count
+          completed: completedLessonIds.includes(lesson.id), // add completed status
+          exerciseNo: exerciseCount // add exercise count
         };
       })
     );

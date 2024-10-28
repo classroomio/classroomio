@@ -161,9 +161,9 @@
               type="range"
               min="0"
               max="100"
-              bind:value={inputRange}
+              bind:value={data.data.progressPercentage}
               class="range-input"
-              style="background: linear-gradient(to right, #0233BD {completedLessons?.length}%, #ccc {completedLessons?.length}%);"
+              style="background: linear-gradient(to right, #0233BD {progressPercentage}%, #ccc {progressPercentage}%);"
             />
           </div>
 
