@@ -14,6 +14,43 @@ const config: Config = {
       }
     },
     extend: {
+      animation: {
+        'border-beam': 'border-beam calc(var(--duration)*1s) infinite linear',
+        flip: 'flip calc(var(--duration)*1s) calc(var(--delay)*1s) infinite steps(2, end)',
+        kitrotate: 'kitrotate calc(var(--duration)*0.5s) calc(var(--delay)*1s) linear infinite both'
+      },
+
+      keyframes: {
+        'border-beam': {
+          '100%': {
+            'offset-distance': '100%'
+          }
+        },
+
+        flip: {
+          to: {
+            transform: 'rotate(360deg)'
+          }
+        },
+        kitrotate: {
+          to: {
+            transform: 'rotate(90deg)'
+          }
+        },
+
+        'shine-pulse': {
+          '0%': {
+            'background-position': '0% 0%'
+          },
+          '50%': {
+            'background-position': '100% 100%'
+          },
+          to: {
+            'background-position': '0% 0%'
+          }
+        }
+      },
+
       colors: {
         border: 'hsl(var(--border) / <alpha-value>)',
         input: 'hsl(var(--input) / <alpha-value>)',

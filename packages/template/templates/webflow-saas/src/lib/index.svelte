@@ -12,9 +12,9 @@
   const { org } = data;
 </script>
 
-<div class="bg-[#EEEFE9] dark:bg-black dark:text-white py-4 px-2">
-  <div class="flex items-start">
-    <div class="lg:sticky top-2 left-0 lg:w-fit z-50">
+<div class="bg-[#EEEFE9] dark:bg-black dark:text-white">
+  <div class="flex items-start lg:gap-4">
+    <div class="fixed lg:sticky top-2 left-[5%] lg:left-[2%] w-[90%] mx-auto lg:w-fit z-50">
       <Navigation />
     </div>
     <div class="w-full">

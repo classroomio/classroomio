@@ -1,12 +1,11 @@
 <script lang="ts">
-  // import { goto } from '$app/navigation';
-
   import Close from 'carbon-icons-svelte/lib/Close.svelte';
   import Menu from 'carbon-icons-svelte/lib/Menu.svelte';
   import Light from 'carbon-icons-svelte/lib/Light.svelte';
   import Moon from 'carbon-icons-svelte/lib/Moon.svelte';
-  import PentagonOutline from 'carbon-icons-svelte/lib/PentagonOutline.svelte';
+  import Home from 'carbon-icons-svelte/lib/Home.svelte';
   import HelpFilled from 'carbon-icons-svelte/lib/HelpFilled.svelte';
+  import IbmWatsonToneAnalyzer from 'carbon-icons-svelte/lib/IbmWatsonToneAnalyzer.svelte';
   import DirectionStraightRight from 'carbon-icons-svelte/lib/DirectionStraightRight.svelte';
 
   import { browser } from '$app/environment';
@@ -16,15 +15,10 @@
   import { page } from '$app/stores';
   import { Demo } from 'carbon-icons-svelte';
   import { goto } from '$app/navigation';
-  // import IconButton from '$lib/components/IconButton/index.svelte';
 
   let disableSignup = false;
   let logo = '';
   let orgName = 'evanai';
-  let isOrgSite = true;
-  let backgroundColor = 'bg-white dark:bg-black';
-  let isActive = false;
-  let activeLink = '';
   let isCoursePage = false;
   let user = {
     isLoggedIn: true
@@ -46,14 +40,19 @@
   const redirect = isCoursePage ? `?redirect=${$page.url.pathname}` : '';
 </script>
 
-<nav class="absolute lg:relative">
-  <div class="lg:hidden flex items-center 2 border-b p-2">
+<nav class="absolute lg:relative w-full py-2">
+  <div class="lg:hidden flex items-center p-1 float-right">
     {#if user.isLoggedIn}
-      <button on:click={toggleMenu}>
+      <button
+        on:click={toggleMenu}
+        class="transition flex items-center gap-2 w-fit p-2 bg-gray-900 dark:bg-[#181818] text-sm text-white"
+      >
         {#if open}
           <Close size={24} />
+          <p class="font-semibold uppercase">close</p>
         {:else}
           <Menu size={24} />
+          <p class="font-semibold uppercase">Menu</p>
         {/if}
       </button>
     {/if}
@@ -63,7 +62,7 @@
   <div
     class=" transition relative border dark:border-[#363636] rounded py-2 w-52 h-80 bg-gray-900 dark:bg-[#181818] text-sm text-white {open
       ? 'translate-x-0 lg:translate-x-0'
-      : '-translate-x-60 lg:translate-x-0'}"
+      : '-translate-x-72 lg:translate-x-0'}"
   >
     <div class="flex items-center justify-between gap-2 border-b dark:border-[#363636] px-4 py-2">
       <a href="/" title={`${orgName || 'ClassroomIO'} home`} id="logo">
@@ -94,7 +93,7 @@
     {#if user.isLoggedIn}
       <div class="flex flex-col gap-2 border-b dark:border-[#363636] px-4 py-4 space-y-2">
         <a href="/#" on:click={toggleMenu} class="flex gap-2 items-center">
-          <PentagonOutline />
+          <Home />
           <p>Home</p>
         </a>
         <a href="/#course" on:click={toggleMenu} class="flex gap-2 items-center">
@@ -108,21 +107,24 @@
           <p>Faq</p>
         </a>
         <a href="/#testimonial" on:click={toggleMenu} class="flex gap-2 items-center">
-          <HelpFilled />
+          <IbmWatsonToneAnalyzer />
           <p>Testimonial</p>
         </a>
       </div>
 
       <div class="px-2 py-6">
         <Button
-          class="h-fit py-2 px-2 w-full text-xs flex gap-6 text-white items-center bg-[#0233BD] hover:bg-[#0233BD]"
+          class="group h-fit py-2 px-2 w-full text-xs flex gap-6 text-white items-center bg-[#0233BD] hover:bg-[#0233BD]"
           on:click={() => {
             goto('/courses');
             toggleMenu();
           }}
         >
           Learn with us
-          <DirectionStraightRight size={16} />
+          <DirectionStraightRight
+            size={16}
+            class="transition-transform duration-300 group-hover:translate-x-1"
+          />
         </Button>
       </div>
     {/if}

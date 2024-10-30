@@ -3,7 +3,7 @@ const { execSync } = require('child_process');
 const fs = require('fs-extra');
 const path = require('path');
 
-const templates = ['modern', 'classic', 'minimalist'];
+const templates = ['webflow-saas', 'posthog-saas', 'classic', 'minimalist'];
 
 async function createTemplate() {
   const { template, projectName } = await inquirer.prompt([

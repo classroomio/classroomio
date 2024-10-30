@@ -1,14 +1,16 @@
 <script lang="ts">
-  import { Add, Subtract } from 'carbon-icons-svelte'; // Import the icons
+  import { Add, Subtract } from 'carbon-icons-svelte';
   export let title = '';
   export let content = '';
-  let isOpen = false; // State to track if the accordion is open or closed
+  let isOpen = false;
   function toggleAccordion() {
-    isOpen = !isOpen; // Toggle the accordion state
+    isOpen = !isOpen;
   }
 </script>
 
-<div class="space-y-2 shadow-md bg-white dark:bg-inherit border dark:border-[#282828] rounded">
+<div
+  class="hover:dark:bg-[#282828] space-y-2 shadow-md bg-white dark:bg-inherit border dark:border-[#282828] rounded"
+>
   <!-- Accordion Header -->
   <div
     class="flex justify-between items-center cursor-pointer p-4 bg-white dark:bg-inherit rounded"

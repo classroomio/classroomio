@@ -42,10 +42,12 @@
             on:click={() => {
               goto('/courses');
             }}
-            class="bg-[#0737BE] hover:bg-[#0737BE] rounded-none text-white gap-6 w-full"
+            class="group bg-[#0737BE] hover:bg-[#0737BE] rounded-none text-white gap-6 w-full"
           >
             View all courses
-            <DirectionStraightRight />
+            <DirectionStraightRight
+              class="transition-transform duration-300 group-hover:translate-x-1"
+            />
           </Button>
         </div>
       {/if}

@@ -55,15 +55,15 @@
 {#if !data}
   <PageLoader />
 {:else}
-  <main class="bg-[#EEEFE9] dark:bg-black dark:text-white py-4 px-2">
+  <main class="bg-[#EEEFE9] dark:bg-black dark:text-white">
     <div class="flex items-start lg:gap-4">
-      <div class="lg:sticky top-2 left-0 lg:w-fit z-50">
+      <div class="fixed lg:sticky top-2 left-[5%] lg:left-[2%] w-[90%] mx-auto lg:w-fit z-50">
         <Navigation />
       </div>
       <div class="w-full">
         {#if org.courseHeader.banner.show}
           <section
-            class="  flex items-center justify-center py-10 px-2 lg:px-14 min-h-full overflow-hidden"
+            class="flex items-center justify-center py-10 px-2 lg:px-14 min-h-[100vh] lg:min-h-[60vh] overflow-hidden dark:bg-[radial-gradient(ellipse_at_top_right,_rgba(11,92,215,0.6)_1%,_rgba(0,0,0,0.8)_30%,_transparent_40%),radial-gradient(ellipse_at_bottom_left,_rgba(11,92,215,0.3)_10%,_rgba(0,0,0,0.8)_30%,_transparent_50%)]"
           >
             <section
               class="flex flex-col-reverse md:flex-col text-center items-center gap-5 justify-center"
@@ -82,7 +82,7 @@
         {/if}
 
         {#if org.courses.show}
-          <section id="course" class=" px-2 pt-4 pb-20 h-full lg:px-16">
+          <section id="course" class="px-2 pt-4 pb-20 h-full lg:px-16">
             <h1 class="text-start text-3xl mb-2 font-bold pl-2">
               {org.courses.title}
             </h1>
@@ -96,7 +96,7 @@
                   <CardLoader />
                 </div>
               {:else if courses.length > 0}
-                <div class="w-full flex flex-row-reverse items-start justify-start gap-2 mt-10">
+                <div class="w-full flex flex-row-reverse items-start justify-start lg:gap-2 mt-10">
                   <div class="hidden lg:block min-w-max">
                     <p class="font-semibold mb-4">Filter by</p>
                     <div class="w-full space-y-2">

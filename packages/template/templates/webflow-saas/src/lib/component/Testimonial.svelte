@@ -10,8 +10,8 @@
     <section
       class="flex flex-wrap items-center justify-center md:justify-start gap-4 py-4 w-fit mx-auto"
     >
-      {#each data.testimonial.list as item}
-        <TestimonialCard description={item.description} name={item.name} />
+      {#each data.testimonial.list as item, i}
+        <TestimonialCard description={item.description} name={item.name} index={i} />
       {/each}
     </section>
   </section>
