@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import {
     CodeSnippet,
     Grid,
@@ -9,32 +8,36 @@
     RadioButtonGroup,
     RadioButton
   } from 'carbon-components-svelte';
-  import { Restart, ArrowUpRight } from 'carbon-icons-svelte';
+  import { goto } from '$app/navigation';
   import { env } from '$env/dynamic/public';
+  import Tag from 'carbon-icons-svelte/lib/Tag.svelte';
+  import { Restart, ArrowUpRight } from 'carbon-icons-svelte';
 
-  import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import DragAndDrop from './DragAndDrop.svelte';
-
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { settings } from './store';
-  import { course } from '$lib/components/Course/store';
+  import { COURSE_TYPE } from '$lib/utils/types';
   import type { Course } from '$lib/utils/types';
-  import { updateCourse, deleteCourse } from '$lib/utils/services/courses';
-  import { currentOrgPath, isFreePlan } from '$lib/utils/store/org';
-  import { isObject } from '$lib/utils/functions/isObject';
   import { lessons } from '../Lesson/store/lessons';
-  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
+  import { course } from '$lib/components/Course/store';
+  import { t } from '$lib/utils/functions/translations';
+  import { isObject } from '$lib/utils/functions/isObject';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
+  import { addTagModal } from '$lib/components/CourseTags/store';
+  import { currentOrgPath, isFreePlan } from '$lib/utils/store/org';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
+  import { updateCourse, deleteCourse } from '$lib/utils/services/courses';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
+
+  import AddTagModal from '$lib/components/CourseTags/AddTagModal.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
+  import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
   import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
+  import TextField from '$lib/components/Form/TextField.svelte';
   import generateSlug from '$lib/utils/functions/generateSlug';
-  import { t } from '$lib/utils/functions/translations';
-  import { COURSE_TYPE } from '$lib/utils/types';
+  import TextArea from '$lib/components/Form/TextArea.svelte';
+  import DragAndDrop from './DragAndDrop.svelte';
 
   let isSaving = false;
   let isLoading = false;
@@ -184,6 +187,8 @@
   $: courseLink = `${$currentOrgDomain}/course/${$course.slug}`;
 </script>
 
+<AddTagModal />
+
 <Grid class="border-c rounded border-gray-200 dark:border-neutral-600">
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={8} md={8} lg={8}>
@@ -272,6 +277,22 @@
       </Toggle>
     </Column>
   </Row> -->
+
+  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+    <Column sm={8} md={8} lg={8}>
+      <SectionTitle>Tag Course</SectionTitle>
+      <p>Attach or remove a course from tags</p>
+    </Column>
+    <Column sm={8} md={8} lg={8}>
+      <PrimaryButton
+        width="md:w-[40%] mt-2"
+        variant={VARIANTS.OUTLINED}
+        onClick={() => ($addTagModal.open = true)}
+        class="flex items-center justify-between px-3 py-1 bg-gray-700"
+        ><Tag /> <span class="ml-2">Add a tag</span></PrimaryButton
+      >
+    </Column>
+  </Row>
 
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={8} md={8} lg={8}>

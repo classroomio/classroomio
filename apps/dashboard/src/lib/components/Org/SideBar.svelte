@@ -69,6 +69,11 @@
       show: true
     },
     {
+      path: '/tags',
+      label: 'tags',
+      show: true
+    },
+    {
       path: '/setup',
       label: $t('org_navigation.setup'),
       show: $isOrgAdmin

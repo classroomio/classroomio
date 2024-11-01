@@ -79,7 +79,8 @@ const SLUG_QUERY = `
   lesson_section(id, title, order),
   lessons:lesson(
     id, title, order, section_id
-  )
+  ),
+  tags:course_tags(tag_id, tags(name))
 `;
 
 const ID_QUERY = `
@@ -110,7 +111,8 @@ const ID_QUERY = `
     lesson_completion(id, profile_id, is_complete)
   ),
   attendance:group_attendance(*),
-  polls:apps_poll(status)
+  polls:apps_poll(status),
+  tags:course_tags(id, tag_id, tags(name))
 `;
 
 export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']) {
@@ -562,3 +564,59 @@ export async function deleteExercise(questions: Array<{ id: string }>, exerciseI
   await supabase.from('submission').delete().match({ exercise_id: exerciseId });
   await supabase.from('exercise').delete().match({ id: exerciseId });
 }
+
+export async function fetchCourseTags(orgId: string) {
+  // step 1: fetch all tags from the 'tags' table
+  const { data: tags } = await supabase.from('tags').select('*').eq('organization_id', orgId);
+  if (!tags) {
+    return;
+  }
+  
+  // step 2: fetch all the course tags
+  const { data: courseTags, error } = await supabase.from('course_tags').select('*');
+  if (error) {
+    console.error("Error fetching course tags:", error);
+    return;
+  }
+
+  // step 3: create a mapping to store the first course_tag.id and count per tag_id (to store the count of the tags in the course & the ids of each tag on the course_tags table)
+  const tagMap = courseTags.reduce((acc, courseTag) => {
+    if (!acc[courseTag.tag_id]) {
+      acc[courseTag.tag_id] = { id: courseTag.id, count: 1 };
+    } else {
+      acc[courseTag.tag_id].count += 1;
+    }
+    return acc;
+  }, {} as Record<string, { id: string, count: number }>);
+
+  // step 4: add course_tag_id and count to each tag in the tags array
+  const updatedCourseTags = tags.map(tag => ({
+    ...tag,
+    course_tag_id: tagMap[tag.id]?.id || null,
+    courseCount: tagMap[tag.id]?.count || 0 
+  }));
+
+  return updatedCourseTags;
+}
+
+export function createTag(name: string, description: string, orgId: string) {
+  return supabase.from('tags').insert({name, description, organization_id: orgId}).select();
+}
+
+export function updateTag(id: string, name: string, description: string) {
+  return supabase.from('tags').update({name, description}).match({id});
+}
+
+export function deleteTag(id: string) {
+  return supabase.from('tags').delete().match({id}).select();
+}
+
+// tags operation in courses
+export function addCourseTag(courseId: string, tagId: string) {
+  return supabase.from('course_tags').insert({course_id: courseId, tag_id: tagId}).select();
+}
+
+export function removeCourseTag(id: string) {
+  return supabase.from('course_tags').delete().match({id}).select();
+}
+

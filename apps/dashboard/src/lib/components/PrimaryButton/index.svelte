@@ -4,6 +4,7 @@
   import { Loading } from 'carbon-components-svelte';
 
   export let label = '';
+  export let width = 'w-fit sm:w-auto';
   export let className = '';
   export let onClick = (e?: Event) => {};
   export let name = '';
@@ -23,7 +24,7 @@
       }`} flex items-center h-auto {VARIANTS_CLASS[
     isLoading ? VARIANTS.OUTLINED : variant
   ]} {!disablePadding &&
-    'py-[0.5rem] px-6'} rounded-md {className} w-fit min-h-[36px] justify-center sm:w-auto {variant !==
+    'py-[0.5rem] px-6'} rounded-md {className} {width} min-h-[36px] justify-center {variant !==
     VARIANTS.TEXT && 'hover:shadow-xl'} transition-all delay-150 duration-300 ease-in-out"
   on:click={onClick}
   {name}

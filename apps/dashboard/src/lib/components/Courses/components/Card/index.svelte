@@ -15,6 +15,7 @@
   import UserFollow from 'carbon-icons-svelte/lib/UserFollow.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { COURSE_TYPE } from '$lib/utils/types';
+  import type { CourseTag } from '$lib/utils/types';
   import RadioButtonChecked from 'carbon-icons-svelte/lib/RadioButtonChecked.svelte';
   import GrowthIcon from 'carbon-icons-svelte/lib/Growth.svelte';
   import UserProfileIcon from 'carbon-icons-svelte/lib/UserProfile.svelte';
@@ -42,6 +43,7 @@
   } = {
     cost: 0
   };
+  export let tags: CourseTag[] = [];
 
   let target: any;
 
@@ -170,6 +172,18 @@
     <p class="mt-2 text-sm text-gray-500 dark:text-gray-300 description">
       {description}
     </p>
+
+    {#if tags && tags.length > 0 && tags.every((tag) => tag !== null)}
+      <div class="flex gap-3 items-center flex-wrap mt-2">
+        {#each tags as tag}
+          <button
+            type="button"
+            class="rounded-sm px-3 py-1 text-xs bg-gray-50 flex justify-center items-center border"
+            >{tag}</button
+          >
+        {/each}
+      </div>
+    {/if}
   </div>
 
   <div

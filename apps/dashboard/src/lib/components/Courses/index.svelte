@@ -97,6 +97,7 @@
             isLMS={$globalStore.isOrgSite}
             {isExplore}
             progressRate={calcProgressRate(courseData.progress_rate, courseData.total_lessons)}
+            tags={courseData.tags}
           />
         {/key}
       {/each}
