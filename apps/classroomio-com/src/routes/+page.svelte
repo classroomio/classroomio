@@ -7,11 +7,6 @@
   import Testimonial from '$lib/Home/Testimonial.svelte';
 
   import { env } from '$env/dynamic/public';
-  import { onMount } from 'svelte';
-
-  onMount(() => {
-    console.log('Welcome to CIO');
-  });
 </script>
 
 <Hero />
