@@ -13,6 +13,7 @@
 
   import type { CourseTag } from '$lib/utils/types';
   import { currentOrg } from '$lib/utils/store/org';
+  import { t } from '$lib/utils/functions/translations';
   import { fetchCourseTags } from '$lib/utils/services/courses';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { tagModal, tags, selectedTag } from '$lib/components/CourseTags/store';
@@ -56,13 +57,13 @@
 
 <section class="w-full h-full max-w-[95%] mx-auto">
   <div class="flex flex-wrap justify-between items-center mb-7 md:mt-0 mt-5">
-    <h1 class="m-0">Tags</h1>
+    <h1 class="m-0">{$t('tags.tags')}</h1>
 
     <!-- button for mobile screen (better ui) -->
     <PrimaryButton
       width="md:w-[60%] w-fit"
       type="button"
-      label="Create New Tags"
+      label={$t('tags.create_new_tags')}
       className="border-blue-600 border px-10 block md:hidden"
       variant={VARIANTS.CONTAINED}
       onClick={() => ($tagModal.open = true)}
@@ -70,7 +71,7 @@
 
     <div class="flex flex-wrap md:flex-nowrap gap-3 py-3 w-full md:w-fit mt-3 md:mt-0">
       <Search
-        placeholder="Find Tag"
+        placeholder={$t('tags.find_tag')}
         bind:value={searchValue}
         searchClass="mr-2"
         class="bg-gray-100 dark:bg-neutral-800"
@@ -79,7 +80,7 @@
       <PrimaryButton
         width="w-[60%]"
         type="button"
-        label="Create New Tags"
+        label={$t('tags.create_new_tags')}
         className="border-blue-600 border px-10 hidden md:block"
         variant={VARIANTS.CONTAINED}
         onClick={() => ($tagModal.open = true)}
@@ -93,16 +94,16 @@
         <StructuredListHead class="dark:border-2 dark:border-neutral-800">
           <StructuredListRow head>
             <StructuredListCell head class="bg-[#F1F6FF] dark:bg-black py-5 pl-10 dark:text-white"
-              >Tags</StructuredListCell
+              >{$t('tags.tags')}</StructuredListCell
             >
             <StructuredListCell head class="bg-[#F1F6FF] dark:bg-black py-5 dark:text-white"
-              >Description</StructuredListCell
+              >{$t('tags.description')}</StructuredListCell
             >
             <StructuredListCell head class="bg-[#F1F6FF] dark:bg-black py-5 dark:text-white"
-              >Course count</StructuredListCell
+              >{$t('tags.course_count')}</StructuredListCell
             >
             <StructuredListCell head class="bg-[#F1F6FF] dark:bg-black py-5 dark:text-white"
-              >Action</StructuredListCell
+              >{$t('tags.action')}</StructuredListCell
             >
           </StructuredListRow>
         </StructuredListHead>
@@ -122,15 +123,22 @@
                 >
                   <!-- the fallback here for course count is for cases where the a new tag gets created and you know the courseCount can't be calculated yet but it will be 0 still -->
                   {tag.courseCount ? tag.courseCount : 0}
-                  {tag.courseCount && tag.courseCount > 1 ? 'Courses' : 'Course'}
+                  {tag.courseCount && tag.courseCount > 1 ? $t('tags.courses') : $t('tags.course')}
                   <ArrowRight />
                 </div>
               </StructuredListCell>
               <StructuredListCell class="w-1/2">
                 <OverflowMenu>
                   <div slot="menu" class="px-4"><OverflowMenuHorizontal /></div>
-                  <OverflowMenuItem text="Edit Tag" on:click={() => handleEditClick(tag)} />
-                  <OverflowMenuItem danger text="Delete" on:click={() => handleDeleteClick(tag)} />
+                  <OverflowMenuItem
+                    text={$t('tags.edit_tag')}
+                    on:click={() => handleEditClick(tag)}
+                  />
+                  <OverflowMenuItem
+                    danger
+                    text={$t('tags.delete')}
+                    on:click={() => handleDeleteClick(tag)}
+                  />
                 </OverflowMenu>
               </StructuredListCell>
             </StructuredListRow>
@@ -142,13 +150,13 @@
       <div class="h-full flex justify-center items-center">
         <div class="w-[40%] mx-auto h-full flex flex-col items-center justify-center">
           <TagsEmptyIcon />
-          <h1>No tags yet</h1>
+          <h1>{$t('tags.no_tags_yet')}</h1>
           <p class="m-0 text-sm text-center">
-            Add a group of related courses to set students on a path to excellence in your fields
+            {$t('tags.add_a_group')}
           </p>
 
           <PrimaryButton
-            label="Add tags"
+            label={$t('tags.add_tags')}
             type="button"
             className="border-blue-600 border w-full mt-2"
             variant={VARIANTS.OUTLINED}

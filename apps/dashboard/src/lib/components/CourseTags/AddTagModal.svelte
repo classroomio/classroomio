@@ -7,6 +7,7 @@
   import { addTagModal, tags } from './store';
   import { currentOrg } from '$lib/utils/store/org';
   import type { CourseTag } from '$lib/utils/types';
+  import { t } from '$lib/utils/functions/translations';
   import { addCourseTag, removeCourseTag, fetchCourseTags } from '$lib/utils/services/courses';
 
   import Modal from '$lib/components/Modal/index.svelte';
@@ -47,7 +48,7 @@
   }
 
   async function handleRemoveTag(tag: CourseTag) {
-    const response = await removeCourseTag(tag.course_tag_id);
+    const response = await removeCourseTag(tag.id);
 
     if (response.data && response.data.length > 0) {
       $course.tags = $course.tags.filter((ct) => ct.id !== tag.id);
@@ -85,7 +86,7 @@
   onClose={() => resetStore()}
   bind:open={$addTagModal.open}
   width="md:w-2/5 w-[80%]"
-  modalHeading="Tag Course"
+  modalHeading={$t('tags.add_tag_modal.heading')}
 >
   <div class="-mt-5">
     <TextField
@@ -93,12 +94,12 @@
       className="w-full mb-2"
       labelClassName="text-xs mb-2 font-normal"
       inputClassName="text-sm"
-      placeholder="Search for a tag"
+      placeholder={$t('tags.add_tag_modal.placeholder')}
       bind:value={searchValue}
     />
 
     <div class="flex gap-3 items-center flex-wrap mb-2 border-b pb-3">
-      <p class="text-xs">Course Tags:</p>
+      <p class="text-xs">{$t('tags.add_tag_modal.header')}:</p>
       <div class="flex gap-3 items-center flex-wrap max-h-[10vh] overflow-hidden overflow-y-auto">
         {#if courseTag.length > 0}
           {#each courseTag as tag}

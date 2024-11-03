@@ -1,5 +1,6 @@
 <script lang="ts">
   import { currentOrg } from '$lib/utils/store/org';
+  import { t } from '$lib/utils/functions/translations';
   import { tagModal, tags, selectedTag } from './store';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { createTag, deleteTag, updateTag } from '$lib/utils/services/courses';
@@ -80,16 +81,16 @@
   bind:open={$tagModal.open}
   width="md:w-[40%] w-[80%]"
   modalHeading={$tagModal.editMode
-    ? 'Edit Tag'
+    ? $t('tags.tag_modal.edit_tag')
     : $tagModal.deleteMode
-      ? 'Delete Tag'
-      : 'Create Tag'}
+      ? $t('tags.tag_modal.delete_tag')
+      : $t('tags.tag_modal.create_tag')}
 >
   <form on:submit|preventDefault={handleSave}>
     {#if !$tagModal.editMode && !$tagModal.deleteMode}
       <div>
         <TextField
-          label="Tag Name"
+          label={$t('tags.tag_modal.tag_name')}
           className="w-full mb-5"
           labelClassName="text-xs mb-2 font-normal"
           inputClassName="text-sm"
@@ -98,7 +99,7 @@
         />
 
         <TextArea
-          label="Description"
+          label={$t('tags.tag_modal.description')}
           labelClassName="text-xs mb-2 font-normal"
           bind:value={description}
           rows={5}
@@ -110,7 +111,7 @@
     {#if !$tagModal.deleteMode && $tagModal.editMode}
       <div>
         <TextField
-          label="Tag Name"
+          label={$t('tags.tag_modal.tag_name')}
           className="w-full mb-5"
           labelClassName="text-xs mb-2 font-normal"
           inputClassName="text-sm"
@@ -119,7 +120,7 @@
         />
 
         <TextArea
-          label="Description"
+          label={$t('tags.tag_modal.description')}
           labelClassName="text-xs mb-2 font-normal"
           bind:value={$selectedTag.description}
           rows={5}
@@ -130,7 +131,7 @@
 
     {#if $tagModal.deleteMode}
       <div class="flex justify-center items-center">
-        <h1 class="text-sm m-0">Are you sure you want to delete this tag?</h1>
+        <h1 class="text-sm m-0">{$t('tags.tag_modal.delete_modal')}</h1>
       </div>
     {/if}
 
@@ -142,7 +143,7 @@
       <PrimaryButton
         width="w-[30%]"
         className="py-3 rounded-md text-sm font-medium"
-        label={$tagModal.deleteMode ? 'No' : 'Cancel'}
+        label={$tagModal.deleteMode ? $t('tags.tag_modal.no') : $t('tags.tag_modal.cancel')}
         type="button"
         onClick={() => resetStore()}
         variant={VARIANTS.OUTLINED}
@@ -150,7 +151,7 @@
       <PrimaryButton
         width="w-[30%]"
         className="py-3 rounded-md text-sm font-medium"
-        label={$tagModal.deleteMode ? 'Yes' : 'Save'}
+        label={$tagModal.deleteMode ? $t('tags.tag_modal.yes') : $t('tags.tag_modal.save')}
         type="submit"
         variant={$tagModal.deleteMode ? VARIANTS.CONTAINED_DANGER : VARIANTS.CONTAINED}
         {isLoading}

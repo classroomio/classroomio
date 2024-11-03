@@ -1,4 +1,39 @@
 {
+  "tags": {
+    "tags": "Tags",
+    "create_new_tags": "Create new tags",
+    "find_tag": "Find Tag",
+    "description": "Description",
+    "course_count": "Course count",
+    "action": "Action",
+    "courses": "Courses",
+    "course": "Course",
+    "edit_tag": "Edit Tag",
+    "delete": "Delete",
+    "no_tags_yet": "No tags yet",
+    "add_a_group": "Add a group of related courses to set students on a path to excellence in your fields",
+    "add_tags": "Add tags",
+    "tag_modal": {
+      "edit_tag": "Edit Tag",
+      "delete_tag": "Delete Tag",
+      "create_tag": "Create Tag",
+      "tag_name": "Tag Name",
+      "description": "Description",
+      "delete_modal": "Are you sure you want to delete this tag?",
+      "no": "No",
+      "cancel": "Cancel",
+      "yes": "Yes",
+      "save": "Save"
+    },
+    "add_tag_modal": {
+      "heading": "Tag Course",
+      "placeholder": "Search for a tag",
+      "header": "Course Tags"
+    },
+    "attach": "Attach or remove a course from tags",
+    "add_a_tag": "Add a tag"
+  },
+
   "verify_email_modal": {
     "heading": "Verify your Email",
     "sent_verification": "We've sent a verification email to",

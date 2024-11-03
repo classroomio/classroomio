@@ -21,7 +21,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { isObject } from '$lib/utils/functions/isObject';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import { addTagModal } from '$lib/components/CourseTags/store';
+  import { addTagModal, tags } from '$lib/components/CourseTags/store';
   import { currentOrgPath, isFreePlan } from '$lib/utils/store/org';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
@@ -280,16 +280,27 @@
 
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
     <Column sm={8} md={8} lg={8}>
-      <SectionTitle>Tag Course</SectionTitle>
-      <p>Attach or remove a course from tags</p>
+      <SectionTitle>{$t('tags.add_tag_modal.heading')}</SectionTitle>
+      <p>{$t('tags.attach')}</p>
     </Column>
     <Column sm={8} md={8} lg={8}>
+      <div
+        class="flex gap-3 items-center flex-wrap max-h-[10vh] my-2 overflow-hidden overflow-y-auto"
+      >
+        {#if $course.tags && $course.tags.length > 0}
+          {#each $course.tags as tag}
+            <span class="rounded-sm px-3 py-1 text-xs bg-gray-50 flex gap-2 items-center border">
+              {tag.name}
+            </span>
+          {/each}
+        {/if}
+      </div>
       <PrimaryButton
-        width="md:w-[40%] mt-2"
+        width="md:w-[40%] mt-3"
         variant={VARIANTS.OUTLINED}
         onClick={() => ($addTagModal.open = true)}
         class="flex items-center justify-between px-3 py-1 bg-gray-700"
-        ><Tag /> <span class="ml-2">Add a tag</span></PrimaryButton
+        ><Tag /> <span class="ml-2">{$t('tags.add_a_tag')}</span></PrimaryButton
       >
     </Column>
   </Row>
