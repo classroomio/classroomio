@@ -9,7 +9,6 @@
 
   let isLessonOpen = getIsActive(children) ? true : false;
 
-  console.log('active', activeLesson);
   function getIsActive(children: Lesson[]) {
     if (published) {
       return children.some((lesson) => lesson.title == activeLesson);

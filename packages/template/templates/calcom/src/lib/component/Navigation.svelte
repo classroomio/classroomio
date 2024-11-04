@@ -39,7 +39,7 @@
 </script>
 
 <nav
-  class={`relative w-full flex items-center justify-between bg-[#E5E7E0] border-b border-[#D0D1C9] py-4 px-6 ${backgroundColor}`}
+  class="relative w-full flex items-center justify-between bg-[#E5E7E0] border-b border-[#D0D1C9] py-4 px-6 ${backgroundColor}"
 >
   <!-- Logo Section -->
   <div class="flex justify-between w-[40%]">
@@ -84,7 +84,7 @@
   <!-- Mobile Sidebar Menu (Visible only on mobile) -->
   <ul
     class={`fixed top-0 left-0 pt-10 h-full bg-white w-full transform hover:no-underline ${
-      open ? 'translate-y-0' : '-translate-y-full'
+      open ? 'translate-y-0  ' : '-translate-y-full'
     } transition-transform duration-300 ease-in-out lg:hidden text-base font-semibold text-[#1F2937] list-none cursor-pointer`}
   >
     <button on:click={toggleMenu} class="absolute right-4 top-4 lg:hidden z-20">

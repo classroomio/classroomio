@@ -13,7 +13,6 @@
     ? 'bg-[#141414] text-white'
     : 'bg-white text-black'} overflow-hidden rounded-3xl"
 >
-  <!-- Accordion Header -->
   <div
     class="relative flex justify-between items-center cursor-pointer overflow-hidden mx-6 p-6
       bg-inherit
@@ -21,7 +20,7 @@
     on:click={toggleAccordion}
   >
     <p class="font-semibold text-lg">{title}</p>
-    <!-- Icon changes based on the state -->
+
     <div
       class="flex items-center justify-center p-[2px] {isOpen
         ? 'bg-[#282828] text-white'
@@ -50,7 +49,6 @@
     {/if}
   </div>
 
-  <!-- Accordion Content -->
   <div
     class={` rounded-3xl transition-max-height duration-300 ease-in-out overflow-hidden ${
       isOpen ? 'max-h-40' : 'max-h-0'

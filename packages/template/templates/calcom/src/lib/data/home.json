@@ -1,8 +1,8 @@
 {
   "header": {
     "title": "learn with us",
-    "titleHighlight": "Focused  online Learning for ambitous Learning!",
-    "subtitle": "our courses will help you make sense of the numbers, drive improvements, and create products that stick.",
+    "titleHighlight": "Focused  online Learning for ambitous Learners!",
+    "subtitle": "Our courses will help you make sense of the numbers, drive improvements, and create products that stick.",
     "action": {
       "label": "Explore courses",
       "link": "/courses",
@@ -17,8 +17,8 @@
     "show": true
   },
   "courseHeader": {
-    "title": "Courses",
-    "titleHighlight": "",
+    "title": "Learn with us",
+    "titleHighlight": "Our Courses",
     "subtitle": "Designed to guide you step-by-step through essential skills. Browse, enroll, and start transforming your career today!",
     "action": {
       "label": "Explore Courses",
@@ -75,7 +75,7 @@
   },
   "faq": {
     "title": "Frequently Asked Questions.",
-    "subtitle": "our courses will help you make sense of the numbers, drive improvements, and create products that stick.",
+    "subtitle": "Our courses will help you make sense of the numbers, drive improvements, and create products that stick.",
     "questions": [
       {
         "id": 1,
@@ -100,44 +100,54 @@
     "list": [
       {
         "name": "Zulaike Elebute",
+        "role": "Web Developer",
         "description": "I can't recommend the Mobile App Development bootcamp enough. The course was challenging, but the support from my peers and instructors was incredible.  I learned so much about both iOS and Android development, and I'm now  developing apps for a tech startup."
       },
       {
         "name": "Zulaike Elebute",
-        "description": "I can't recommend the Mobile App Development bootcamp enough. The course was challenging, but the support from my peers and instructors was incredible.  I learned so much about both iOS and Android development, and I'm now  developing apps for a tech startup."
+        "role": "Content Writer",
+        "description": "The course was challenging, but the support from my peers and instructors was incredible.  I learned so much about both iOS and Android development, and I'm now  developing apps for a tech startup."
       },
       {
         "name": "Oluwaseun olaniyan",
+        "role": "Frontend Developement",
         "description": "I can't recommend the Mobile App Development bootcamp enough. The course was challenging, but the support from my peers and instructors was incredible.  I learned so much about both iOS and Android development, and I'm now  developing apps for a tech startup."
       },
       {
         "name": "Zulaike Elebute",
-        "description": "I learned techniques to craft compelling, audience-focused content that tells a story. The feedback and real-world projects were invaluable—I’m now confident in delivering high-quality work that connects and engages"
+        "role": "Web Developer",
+        "description": "The feedback and real-world projects were invaluable—I’m now confident in delivering high-quality work that connects and engages"
       },
 
       {
         "name": "Oluwaseun olaniyan",
-        "description": "This frontend development course was exactly what I needed. The lessons were comprehensive, covering everything from HTML to advanced JavaScript. Working on interactive projects transformed my approach, and I’m now ready to create polished, user-friendly interfaces!"
+        "role": "Content Writer",
+        "description": "The lessons were comprehensive, covering everything from HTML to advanced JavaScript. Working on interactive projects transformed my approach, and I’m now ready to create polished, user-friendly interfaces!"
       },
       {
         "name": "Oluwaseun olaniyan",
+        "role": "Web Developer",
         "description": "I can't recommend the Mobile App Development bootcamp enough. The course was challenging, but the support from my peers and instructors was incredible.  I learned so much about both iOS and Android development, and I'm now  developing apps for a tech startup."
       },
       {
         "name": "Oluwaseun olaniyan",
+        "role": "Content Writer",
         "description": " revelation. I learned techniques to craft compelling, audience-focused content that tells a story. The feedback and real-world projects were invaluable—I’m now confident in delivering high-quality work that connects and engages"
       },
       {
         "name": "Oluwaseun olaniyan",
+        "role": "Frontend Developement",
         "description": "I can't recommend the Mobile App Development bootcamp enough. The course was challenging, but the support from my peers and instructors was incredible.  I learned so much about both iOS and Android development, and I'm now  developing apps for a tech startup."
       },
 
       {
         "name": "Oluwaseun olaniyan",
+        "role": "Web Developer",
         "description": "Through hands-on projects, I learned to build responsive, secure websites from scratch. I now feel equipped to tackle complex challenges with confidence"
       },
       {
         "name": "Oluwaseun olaniyan",
+        "role": "Web Developer",
         "description": "I can't recommend the Mobile App Development bootcamp enough. The course was challenging, but the support from my peers and instructors was incredible.  I learned so much about both iOS and Android development, and I'm now  developing apps for a tech startup."
       }
     ]

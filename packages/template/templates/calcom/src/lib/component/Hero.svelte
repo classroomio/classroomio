@@ -7,7 +7,7 @@
 
 {#if data.header.banner.show}
   <section
-    class="flex items-start pt-5 lg:pt-20 justify-center py-2 px-5 lg:px-20 min-h-screen bg-[#F4F4F4]"
+    class="flex items-start md:items-center justify-center py-10 lg:py-20 xl:py-40 px-5 lg:px-20 h-full bg-[#F4F4F4]"
   >
     <section
       class="flex flex-col-reverse lg:flex-row items-center justify-center lg:justify-between"
@@ -29,7 +29,7 @@
           {data.header.subtitle}
         </p>
         <Button
-          class="uppercase rounded-2xl py-6 bg-white border-[1.5px] border-[#141414] text-[#141414] shadow-[0px_3px_#141414]"
+          class="uppercase rounded-2xl py-6 bg-white hover:bg-white hover:text-black border-[1.5px] border-[#141414] text-[#141414] shadow-[0px_3px_#141414]"
           on:click={() => {
             goto(data.header.action.link);
           }}>{data.header.action.label}</Button
@@ -40,7 +40,7 @@
         class="relative w-[250px] h-[250px] lg:w-[500px] lg:h-[350px] flex items-center justify-center"
       >
         <svg
-          class="absolute -left-[15px] lg:-left-[100px] w-[270px] h-[270px] lg:w-[520px] lg:h-[370px]"
+          class="absolute -left-[15px] lg:-left-[60px] xl:-left-[100px] w-[270px] h-[270px] lg:w-[400px] xl:w-[520px] lg:h-[370px]"
           viewBox="0 0 360 360"
         >
           <circle
@@ -56,7 +56,7 @@
         <img
           alt="landing page banner"
           src={data.header?.banner?.image ? data.header?.banner?.image : '/calcom-banner-img.jpeg'}
-          class="object-cover rounded-full z-10 w-[250px] h-[250px] lg:w-[500px] lg:h-[350px]"
+          class="object-cover rounded-full w-[250px] h-[250px] lg:w-[500px] lg:h-[350px]"
         />
       </div>
     </section>

@@ -97,6 +97,7 @@
 
   const { org, courses } = data;
 
+  let coursesList = [1, 2, 3, 4, 5, 6, 7];
   let scrollContainer: HTMLDivElement;
 
   function scrollLeft() {
@@ -109,13 +110,17 @@
 </script>
 
 {#if org.courses.show}
-  <section id="course" class="flex items-center px-8 py-12 h-full bg-[#E5E7E0]">
-    <div class="text-white py-8 bg-black rounded-3xl w-[90%] mx-auto">
-      <div class="flex items-start justify-between px-8">
-        <h1 class="text-white text-start text-5xl mb-2 font-bold w-[60%]">
+  <section id="course" class="flex items-center px-2 md:px-8 py-12 h-full bg-[#E5E7E0]">
+    <div class="text-white py-8 bg-black rounded-3xl w-full lg:w-[90%] mx-auto">
+      <div
+        class="flex flex-col md:flex-row items-center justify-center md:items-start gap-2 md:justify-between px-4 lg:px-8"
+      >
+        <h1
+          class="text-white text-start text-2xl md:text-3xl lg:text-5xl mb-2 font-bold w-full md:w-[80%] lg:w-[60%]"
+        >
           {org.courses.title}
         </h1>
-        {#if courses.length > 3}
+        {#if coursesList.length > 3}
           <div class="flex gap-2 items-center">
             <button
               class="w-fit flex items-center justify-center border border-white rounded-full p-2 bg-transparent hover:bg-white"
@@ -133,7 +138,7 @@
         {/if}
       </div>
 
-      <div class="w-full pl-8 overflow-x-hidden">
+      <div class="w-full pl-4 md:pl-8 overflow-x-hidden">
         {#if $courseMetaData.isLoading}
           <div class="cards-container my-4 mx-2">
             <CardLoader />
@@ -145,12 +150,20 @@
             bind:this={scrollContainer}
             class="flex items-center overflow-x-auto gap-4 py-4 pr-2 w-full scrollbar-hide"
           >
-            {#each courses as courseData}
+            <!-- {#each courses as courseData}
               <CourseCard
                 slug={courseData.data.slug}
                 title={courseData.data.title}
                 bannerImage={courseData.data.banner}
                 description={courseData.data.description}
+              />
+            {/each} -->
+            {#each coursesList as courseData}
+              <CourseCard
+                slug="Patterns"
+                title="Introduction to patterns"
+                bannerImage=""
+                description="This is an introduction to patterns in UIUX designs, it teaches the fundamental concepts about patterns and other intrinsic details"
               />
             {/each}
           </section>
@@ -162,7 +175,7 @@
       </div>
       <div class="flex items-center justify-center w-full pt-4">
         <Button
-          class="uppercase rounded-2xl py-3 bg-transparent border-[1.5px] border-white text-white shadow-[-1px_3px_#FFFFFF]"
+          class="uppercase rounded-2xl py-6 px-10 bg-transparent border-[1.5px] border-white text-white shadow-[-1px_3px_#FFFFFF]"
           on:click={() => {
             goto('/courses');
           }}>Explore courses</Button

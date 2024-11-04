@@ -6,6 +6,7 @@
   import Hero from './component/Hero.svelte';
   import Navigation from './component/Navigation.svelte';
   import Testimonial from './component/Testimonial.svelte';
+  import FooterNote from './component/FooterNote.svelte';
   export let data;
 
   console.log('data in parent:', data);
@@ -14,7 +15,7 @@
 </script>
 
 <div
-  class="bg-[#EEEFE9] dark:bg-black dark:text-white bg-contain bg-center"
+  class="bg-[#EEEFE9] dark:bg-black dark:text-white bg-contain bg-center overflow-hidden"
   style="background-image: url('calcom-background.svg');"
 >
   <Navigation />
@@ -23,5 +24,6 @@
   <About data={org} />
   <Faq data={org} />
   <Testimonial data={org} />
+  <FooterNote data={org} />
   <Footer data={org} />
 </div>

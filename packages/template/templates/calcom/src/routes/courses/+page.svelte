@@ -56,70 +56,72 @@
   <PageLoader />
 {:else}
   <main class="bg-[#EEEFE9] dark:bg-black dark:text-white">
-    <div class="flex items-start lg:gap-4">
-      <div class="fixed lg:sticky top-2 left-[5%] lg:left-[2%] w-[90%] mx-auto lg:w-fit z-50">
-        <Navigation />
-      </div>
-      <div class="w-full">
-        {#if org.courseHeader.banner.show}
-          <section
-            class="flex items-center justify-center py-10 px-2 lg:px-14 min-h-[100vh] lg:min-h-[60vh] overflow-hidden dark:bg-[radial-gradient(ellipse_at_top_right,_rgba(11,92,215,0.6)_1%,_rgba(0,0,0,0.8)_30%,_transparent_40%),radial-gradient(ellipse_at_bottom_left,_rgba(11,92,215,0.3)_10%,_rgba(0,0,0,0.8)_30%,_transparent_50%)]"
-          >
-            <section
-              class="flex flex-col-reverse md:flex-col text-center items-center gap-5 justify-center"
-            >
-              <div class="space-y-6 w-full mb-4">
-                <p class="text-3xl md:text-6xl font-bold w-full md:w-[90%] mx-auto">
+    <!-- Navigation -->
+    <Navigation />
+
+    <!-- Header -->
+    <div class="w-full">
+      {#if org.courseHeader.banner.show}
+        <section
+          style="background-image: url('calcom-background.svg');"
+          class="bg-cover bg-center flex items-center justify-center py-10 px-2 lg:px-14 min-h-[100vh] lg:min-h-[60vh] overflow-hidden dark:bg-[radial-gradient(ellipse_at_top_right,_rgba(11,92,215,0.6)_1%,_rgba(0,0,0,0.8)_30%,_transparent_40%),radial-gradient(ellipse_at_bottom_left,_rgba(11,92,215,0.3)_10%,_rgba(0,0,0,0.8)_30%,_transparent_50%)]"
+        >
+          <section class="flex flex-col text-center items-center gap-5 justify-center">
+            <div class="space-y-6 w-full mb-4">
+              <div class="bg-[#E5E7E0] py-1 px-4 md:border-b border-black rounded-sm w-fit mx-auto">
+                <p class="uppercase font-bold text-xs lg:text-base text-[#0F163F]">
                   {org.courseHeader.title}
                 </p>
-
-                <p class="w-full text-lg md:w-[70%] mx-auto">
-                  {org.courseHeader.subtitle}
-                </p>
               </div>
-            </section>
+              <p class="w-full text-5xl font-bold md:w-[70%] mx-auto">
+                {org.courseHeader.titleHighlight}
+              </p>
+              <p class="w-full font-semibold text-lg md:w-[70%] mx-auto">
+                {org.courseHeader.subtitle}
+              </p>
+            </div>
           </section>
-        {/if}
-
-        {#if org.courses.show}
-          <section id="course" class="px-2 pt-4 pb-20 h-full lg:px-16">
-            <h1 class="text-start text-3xl mb-2 font-bold pl-2">
-              {org.courses.title}
-            </h1>
-            <p class="text-start text-[#878787] mb-2 pl-2">{org.courses.subtitle}</p>
-
-            <div class="w-full mx-auto">
-              {#if $courseMetaData.isLoading}
-                <div class="cards-container my-4 mx-2">
-                  <CardLoader />
-                  <CardLoader />
-                  <CardLoader />
-                </div>
-              {:else if courses.length > 0}
-                <div class="w-full flex flex-row-reverse items-start justify-start lg:gap-2 mt-10">
-                  <div class="hidden lg:block min-w-max">
-                    <p class="font-semibold mb-4">Filter by</p>
-                    <div class="w-full space-y-2">
-                      {#each filter as item}
-                        <form
-                          class="space-x-2 text-[#3C4043] dark:text-white font-medium border border-[#EAEAEA] dark:border-[#232429] bg-[#FDFDFD] dark:bg-[#232429] rounded-md px-4 py-4"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={item.checked}
-                            name={item.title}
-                            on:change={() => filterCourse(item)}
-                            class="focus:ring-0"
-                          />
-
-                          <label for={item.title} class="whitespace-nowrap">{item.title}</label>
-                        </form>
-                      {/each}
-                    </div>
-                  </div>
-                  <section
-                    class="flex flex-wrap items-start justify-center md:justify-start gap-4 px-4 lg:px-2 py-4 w-full"
+        </section>
+      {/if}
+      <!-- course -->
+      {#if org.courses.show}
+        <section id="course" class="px-2 pt-4 pb-20 h-full lg:px-16">
+          <div class="relative w-full flex flex-row items-start justify-start lg:gap-2 mt-10">
+            <!-- filter start -->
+            <div class="hidden lg:block sticky top-0 min-w-max">
+              <p class="font-semibold mb-4">Filter by</p>
+              <div class="w-full space-y-2">
+                {#each filter as item}
+                  <form
+                    class="space-x-2 text-[#3C4043] dark:text-white font-medium border border-[#D0D1C9] dark:border-[#232429] bg-[#F4F4F4] dark:bg-[#232429] rounded-md pl-4 pr-8 py-4"
                   >
+                    <input
+                      type="checkbox"
+                      checked={item.checked}
+                      name={item.title}
+                      on:change={() => filterCourse(item)}
+                      class="focus:ring-0"
+                    />
+
+                    <label for={item.title} class="whitespace-nowrap">{item.title}</label>
+                  </form>
+                {/each}
+              </div>
+            </div>
+            <!-- filter end -->
+            <!-- courses start -->
+            <div
+              class="text-white p-8 bg-black rounded-3xl w-fit h-full overflow-scroll mx-auto scrollbar-hide"
+            >
+              <div class="w-full max-h-screen overflow-scroll scrollbar-hide p-4 md:p-8">
+                {#if $courseMetaData.isLoading}
+                  <div class="grid grid-cols-2 gap-4">
+                    <CardLoader />
+                    <CardLoader />
+                    <CardLoader />
+                  </div>
+                {:else if courses.length > 0}
+                  <section class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
                     {#each filteredCourses.slice(0, viewAll ? filteredCourses.length : 3) as courseData}
                       <CourseCard
                         slug={courseData.data.slug}
@@ -129,32 +131,48 @@
                       />
                     {/each}
                   </section>
-
                   {#if filteredCourses.length == 0}
                     <div class="px-4 w-full mx-auto">
                       <EmptyState className="dark:bg-[#232429] dark:border-[#EAEAEA]" />
                     </div>
                   {/if}
-                </div>
-                {#if filteredCourses.length > 3}
-                  <div class="w-full flex items-center justify-center my-5">
-                    <Button
-                      on:click={() => (viewAll = !viewAll)}
-                      class="bg-[#0737BE] hover:bg-[#0737BE] rounded-none text-white gap-6 w-full"
-                      >{viewAll === true ? 'Show less' : 'View more courses'}</Button
-                    >
+                {:else}
+                  <div class="px-4 w-full mx-auto">
+                    <EmptyState className="dark:bg-[#232429] dark:border-[#EAEAEA]" />
                   </div>
                 {/if}
-              {:else}
-                <div class="px-4 w-full lg:w-[70%] mx-auto">
-                  <EmptyState className="dark:bg-[#232429] dark:border-[#EAEAEA]" />
+              </div>
+
+              <!-- courses end -->
+              {#if filteredCourses.length > 2}
+                <div class="w-full flex items-center justify-center py-8">
+                  <Button
+                    on:click={() => (viewAll = !viewAll)}
+                    class="uppercase rounded-2xl py-6  hover:bg-white hover:text-black border-[1.5px] border-white text-white shadow-[0px_3px_white]"
+                    >{viewAll === true ? 'Show less' : 'View more courses'}</Button
+                  >
                 </div>
               {/if}
             </div>
-          </section>
-        {/if}
-      </div>
+          </div>
+        </section>
+      {/if}
+      <!-- course end -->
     </div>
+
     <Footer data={org} />
   </main>
 {/if}
+
+<style>
+  /* Hide scrollbar for Webkit browsers */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for other browsers */
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+</style>
