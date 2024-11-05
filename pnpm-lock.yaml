@@ -271,8 +271,8 @@ importers:
         specifier: ^8.0.0
         version: 8.0.0
       posthog-js:
-        specifier: ^1.160.0
-        version: 1.160.0
+        specifier: ^1.180.1
+        version: 1.180.1
       shared:
         specifier: workspace:*
         version: link:../../packages/shared
@@ -6861,7 +6861,6 @@ packages:
     resolution: {integrity: sha512-raM0ew0/jJUqkJ0E6e8UDtl+y/7ktFivgWvqw8dNSQeNWoSDLvQ1H/RN3aPXB9tBd4/FhyR4RDPGhsNIMsAn7g==}
     requiresBuild: true
     dev: false
-    optional: true
 
   /core-util-is@1.0.3:
     resolution: {integrity: sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==}
@@ -12454,9 +12453,10 @@ packages:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
-  /posthog-js@1.160.0:
-    resolution: {integrity: sha512-K/RRgmPYIpP69nnveCJfkclb8VU+R+jsgqlrKaLGsM5CtQM9g01WOzAiT3u36WLswi58JiFMXgJtECKQuoqTgQ==}
+  /posthog-js@1.180.1:
+    resolution: {integrity: sha512-LV65maVrpqkAh0wu32YvU7FpCSEjg6o+sZFYCs1+6tnEa9VvXuz8J6ReLiyRpJABI4j1qX/PB2jaVY5tDbLalQ==}
     dependencies:
+      core-js: 3.39.0
       fflate: 0.4.8
       preact: 10.24.3
       web-vitals: 4.2.4
