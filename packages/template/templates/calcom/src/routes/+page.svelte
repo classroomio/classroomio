@@ -3,6 +3,6 @@
   export let data;
 </script>
 
-<div>
+<div class="font-matter">
   <Home {data} />
 </div>

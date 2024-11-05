@@ -14,13 +14,15 @@
     class="flex justify-between items-center cursor-pointer p-4 bg-white rounded"
     on:click={toggleAccordion}
   >
-    <p class="font-semibold text-lg">{title}</p>
+    <p class="font-semibold text-lg max-w-[90%]">{title}</p>
     <!-- Icon changes based on the state -->
-    {#if isOpen}
-      <Subtract class="text-xl transition-transform duration-200 ease-in" />
-    {:else}
-      <Add class="text-xl transition-transform duration-200 ease-in" />
-    {/if}
+    <div>
+      {#if isOpen}
+        <Subtract size={20} class="text-xl transition-transform duration-200 ease-in" />
+      {:else}
+        <Add size={20} class="text-xl transition-transform duration-200 ease-in" />
+      {/if}
+    </div>
   </div>
 
   <!-- Accordion Content -->

@@ -15,7 +15,7 @@
   }
 </script>
 
-<div class="h-fit w-full min-w-[250px] md:min-w-[300px] max-w-[300px] space-y-4">
+<div class="h-fit w-full min-w-[250px] max-w-[300px] space-y-4">
   <div class="border border-[#EAEAEA] rounded-sm space-y-4 px-4 {className}">
     <div class="py-4 border-b overflow-hidden">
       <p class="text-xl font-semibold p border-[#EAEAEA] overflow-ellipsis line-clamp-1">

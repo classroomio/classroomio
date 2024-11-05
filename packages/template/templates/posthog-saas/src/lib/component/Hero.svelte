@@ -6,16 +6,18 @@
 </script>
 
 {#if data.header.banner.show}
-  <section class="flex items-center justify-center py-10 px-10 md:px-14 min-h-full overflow-hidden">
+  <section
+    class="font-matter flex items-center justify-center py-10 px-10 md:px-14 min-h-full overflow-hidden"
+  >
     <section
       class="flex flex-col-reverse md:flex-col text-center items-center gap-5 justify-center"
     >
       <div class="space-y-6 w-full mb-4">
-        <p class="text-3xl md:text-5xl font-bold w-full md:w-[70%] mx-auto">
+        <p class="text-3xl md:text-5xl font-bold w-full md:w-[80%] lg:w-[70%] mx-auto">
           {data.header.title}
         </p>
 
-        <p class="w-full text-lg font-semibold md:w-[70%] mx-auto">
+        <p class="w-full text-lg font-semibold md:w-[80%] lg:w-[70%] mx-auto">
           {data.header.subtitle}
         </p>
         <Button

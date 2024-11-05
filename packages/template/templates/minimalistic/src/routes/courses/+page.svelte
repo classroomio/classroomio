@@ -54,7 +54,7 @@
 {#if !data}
   <PageLoader />
 {:else}
-  <main class="bg-[#101720] font-ibm">
+  <main class="bg-[#101720] font-ibm overflow-hidden">
     <Navigation />
     {#if org.courseHeader.show}
       <div class="relative h-full md:h-screen">
@@ -97,7 +97,7 @@
               <CardLoader />
             </div>
           {:else if courses.length > 0}
-            <div class="w-full lg:flex items-start gap-6 lg:ml-[5%]">
+            <div class="w-full lg:flex items-start gap-4 lg:ml-[5%]">
               <div class="hidden lg:block w-max">
                 <p class="font-medium mb-2">Filter by</p>
                 <div class="w-max space-y-2">
@@ -117,7 +117,7 @@
                 </div>
               </div>
               <section
-                class="flex flex-wrap items-center justify-center md:justify-start gap-4 p-4"
+                class="grid place-items-center grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
               >
                 {#each filteredCourses.slice(0, viewAllCourses ? filteredCourses.length : 3) as courseData}
                   <CourseCard

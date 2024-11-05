@@ -9,7 +9,7 @@
 
 <MagicCard {index}>
   <section
-    class="cursor-pointer flex flex-col justify-between relative border-[#EAEAEA] px-6 pt-6 space-y-4 bg-white dark:bg-inherit border dark:border-[#282828] rounded w-full h-full max-w-full sm:max-w-[320px] lg:h-[280px] xl:max-w-[450px]"
+    class="cursor-pointer flex flex-col justify-between relative border-[#EAEAEA] px-6 pt-6 space-y-4 bg-white dark:bg-inherit border dark:border-[#282828] rounded w-full h-full max-w-full lg:h-[280px]"
   >
     <img src="/quote.svg" alt="" class="w-6 h-6 absolute top-6 left-8" />
     <div>

@@ -26,7 +26,7 @@
         <CardLoader />
       </div>
     {:else if courses.length > 0}
-      <section class="flex flex-wrap items-center gap-4 px-2 py-4 w-full mx-auto">
+      <section class="grid place-items-center gap-4 grid-cols-1 md:grid-cols-3 w-full p-2">
         {#each courses.slice(0, viewAll ? courses.length : 3) as courseData}
           <CourseCard
             slug={courseData.data.slug}

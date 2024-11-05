@@ -58,7 +58,7 @@
   rel="prefetch"
   bind:this={target}
   href={getCourseUrl()}
-  class="text-black border border-gray dark:border-neutral-600 rounded w-full min-w-[250px] max-w-[300px] relative hover:scale-95 transition-all ease-in-out"
+  class="text-black border border-gray dark:border-neutral-600 rounded w-full h-fit md:h-[350px] min-w-[250px] max-w-[300px] relative hover:scale-95 transition-all ease-in-out"
 >
   <div class="p-4">
     <div class="relative mb-5">
@@ -83,7 +83,7 @@
       {/if}
     </div>
 
-    <h3 class="text-xl dark:text-white font-semibold">{title}</h3>
+    <h3 class="text-xl dark:text-white font-semibold line-clamp-1">{title}</h3>
     <p class="mt-2 text-sm text-gray-500 dark:text-gray-300 description">
       {description}
     </p>

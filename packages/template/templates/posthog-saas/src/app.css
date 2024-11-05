@@ -4,6 +4,30 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-display: swap;
+  font-family: 'Matter';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/Matter-TRIAL-Regular.ttf') format('ttf');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Matter';
+  font-style: normal;
+  font-weight: 500;
+  src: url('/fonts/Matter-TRIAL-Medium.ttf') format('ttf');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Matter';
+  font-style: normal;
+  font-weight: 700;
+  src: url('/fonts/Matter-TRIAL-SemiBold.ttf') format('ttf');
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

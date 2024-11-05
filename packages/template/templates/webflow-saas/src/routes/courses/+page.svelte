@@ -82,7 +82,7 @@
         {/if}
 
         {#if org.courses.show}
-          <section id="course" class="px-2 pt-4 pb-20 h-full lg:px-16">
+          <section id="course" class="px-2 pt-4 pb-20 h-full xl:px-16">
             <h1 class="text-start text-3xl mb-2 font-bold pl-2">
               {org.courses.title}
             </h1>
@@ -117,9 +117,7 @@
                       {/each}
                     </div>
                   </div>
-                  <section
-                    class="flex flex-wrap items-start justify-center md:justify-start gap-4 px-4 lg:px-2 py-4 w-full"
-                  >
+                  <section class="grid gap-4 grid-cols-1 md:grid-cols-3 w-full place-items-center">
                     {#each filteredCourses.slice(0, viewAll ? filteredCourses.length : 3) as courseData}
                       <CourseCard
                         slug={courseData.data.slug}

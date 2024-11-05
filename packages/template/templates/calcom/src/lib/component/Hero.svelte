@@ -7,7 +7,7 @@
 
 {#if data.header.banner.show}
   <section
-    class="flex items-start md:items-center justify-center py-10 lg:py-20 xl:py-40 px-5 lg:px-20 h-full bg-[#F4F4F4]"
+    class="font-matter flex items-start md:items-center justify-center py-10 lg:py-20 xl:py-40 px-5 lg:px-20 h-full bg-[#F4F4F4]"
   >
     <section
       class="flex flex-col-reverse lg:flex-row items-center justify-center lg:justify-between"

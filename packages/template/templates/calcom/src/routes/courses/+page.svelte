@@ -55,7 +55,7 @@
 {#if !data}
   <PageLoader />
 {:else}
-  <main class="bg-[#EEEFE9] dark:bg-black dark:text-white">
+  <main class="bg-[#EEEFE9] dark:bg-black dark:text-white font-matter">
     <!-- Navigation -->
     <Navigation />
 

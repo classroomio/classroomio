@@ -23,7 +23,7 @@
         </div>
       {:else if courses.length > 0}
         <section
-          class="flex flex-wrap items-center justify-center md:justify-start gap-4 p-2 w-fit mx-auto"
+          class="grid place-items-center grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4"
         >
           {#each courses.slice(0, viewAll ? courses.length : 3) as courseData}
             <CourseCard

@@ -11,9 +11,7 @@
       <h1 class="  text-center lg:text-start text-3xl text-[#3F3F3F] font-bold mb-4">
         Meet some of our Instructors
       </h1>
-      <section
-        class=" flex flex-wrap items-center justify-center lg:justify-start gap-6 py-4 w-fit mx-auto"
-      >
+      <section class="grid place-items-center grid-cols-1 md:grid-cols-2 gap-2 w-full">
         {#each data.instructors.list as item}
           <InstructorCard name={item.name} description={item.description} rating={item.rating} />
         {/each}

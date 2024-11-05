@@ -25,7 +25,7 @@
 </script>
 
 <div
-  class="z-10 w-72 h-72 perspective group"
+  class="z-10 min-w-60 max-w-72 h-72 perspective group"
   bind:this={card}
   on:mousemove={handleMouseMove}
   on:mouseleave={handleMouseLeave}

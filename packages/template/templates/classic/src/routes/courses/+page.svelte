@@ -84,7 +84,7 @@
               <CardLoader />
             </div>
           {:else if courses.length > 0}
-            <div class="w-full flex gap-4 md:ml-[5%]">
+            <div class="w-full flex gap-4 lg:ml-[5%]">
               <div class="hidden lg:block w-fit space-y-2">
                 <p class="font-medium text-[#3C4043] uppercase">Filter</p>
                 <div class="w-max border border-[#EAEAEA] p-6 space-y-8">
@@ -101,7 +101,9 @@
                   {/each}
                 </div>
               </div>
-              <section class="flex flex-wrap items-center justify-center md:justify-start gap-4">
+              <section
+                class="grid place-items-center grid-cols-1 md:grid-cols-2 xl:grid-cols-3 w-full"
+              >
                 {#each filteredCourses.slice(0, viewAll ? filteredCourses.length : 3) as courseData}
                   <CourseCard
                     id={courseData.data.slug}

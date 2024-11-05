@@ -14,7 +14,7 @@
 </script>
 
 <svelte:head>
-  <title>Posthog saas landing page</title>
+  <title>Calcom saas landing page</title>
 </svelte:head>
 
 <slot />

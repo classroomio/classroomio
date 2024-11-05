@@ -56,7 +56,8 @@ const config = {
       },
       fontFamily: {
         sans: [...fontFamily.sans],
-        roboto: ['Roboto', ...fontFamily.sans]
+        roboto: ['Roboto', ...fontFamily.sans],
+        matter: ['Matter', ...fontFamily.sans]
       }
     }
   }

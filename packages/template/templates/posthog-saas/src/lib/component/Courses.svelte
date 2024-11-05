@@ -13,7 +13,7 @@
 
 {#if org.courses.show}
   <section id="course" class="px-4 pt-4 pb-20 h-full md:px-10">
-    <h1 class="text-center text-3xl mb-8 font-bold">
+    <h1 class="text-center text-3xl mb-8 font-bold w-full md:w-[90%] lg:w-[70%] mx-auto">
       {org.courses.title}
       <span class="text-[#F54E00] dark:text-[#EB9D2A]">{org.courses.titleHighlight}</span>
     </h1>
@@ -24,9 +24,7 @@
         <CardLoader />
       </div>
     {:else if courses.length > 0}
-      <section
-        class="flex flex-wrap items-center justify-center md:justify-start gap-4 px-2 py-4 w-fit mx-auto"
-      >
+      <section class="grid place-items-center grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {#each courses.slice(0, viewAll ? courses.length : 3) as courseData}
           <CourseCard
             slug={courseData.data.slug}

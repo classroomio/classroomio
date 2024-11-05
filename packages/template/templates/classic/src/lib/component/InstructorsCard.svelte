@@ -20,7 +20,7 @@
   <div class="w-full space-y-1">
     <p class="text-xl font-semibold">{name}</p>
     <RatingComponent {rating} />
-    <p class="text-[#656565] text-sm line-clamp-5 lg:line-clamp-4 xl:line-clamp-6">
+    <p class="text-[#656565] text-sm line-clamp-5 md:line-clamp-4 xl:line-clamp-6">
       {description}
     </p>
   </div>
