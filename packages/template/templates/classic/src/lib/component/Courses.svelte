@@ -17,20 +17,6 @@
   };
   let viewAll = false;
   let type = DISPLAY_COURSE.ALL;
-  const navItems = [
-    {
-      title: 'All',
-      type: DISPLAY_COURSE.ALL
-    },
-    {
-      title: 'Course',
-      type: DISPLAY_COURSE.COURSE
-    },
-    {
-      title: 'Learning Path',
-      type: DISPLAY_COURSE.PATH
-    }
-  ];
 </script>
 
 {#if org.courses.show}
@@ -49,7 +35,6 @@
         >
           {#each courses.slice(0, viewAll ? courses.length : 3) as courseData}
             <CourseCard
-              id={courseData.data.slug}
               slug={courseData.data.slug}
               bannerImage={courseData.data.logo || '/classroomio-course-img-template.jpg'}
               title={courseData.data.title}

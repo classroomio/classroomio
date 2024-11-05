@@ -11,7 +11,7 @@
   };
 
   export let bannerImage: string | undefined;
-  export let id = '';
+
   export let slug = '';
   export let title = '';
   export let description = '';

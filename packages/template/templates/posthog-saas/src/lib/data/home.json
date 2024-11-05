@@ -77,19 +77,28 @@
     "title": "Frequently Asked Questions.",
     "questions": [
       {
-        "id": 1,
-        "title": "What sets your platform apart from others?",
-        "content": "Our platform is focused on providing practical, project-based learning. We aim to equip learners with skills that are directly applicable to their career paths. From real-world projects to experienced instructors, we focus on a hands-on approach to help you master each topic efficiently."
+        "title": "What is Svelte?",
+        "content": "Svelte is a front-end framework for building web applications.",
+        "background": "bg-[#FDBAF2]",
+        "iconColor": "bg-[#3B82F6]"
       },
       {
-        "id": 2,
-        "title": "Are the courses beginner-friendly?",
-        "content": "Absolutely! Whether you're a complete beginner or looking to advance your skills, we have courses designed for every level. Our step-by-step approach ensures that even the most complex topics are broken down into easy-to-understand lessons."
+        "title": "How do I install Svelte?",
+        "content": "You can install Svelte via npm using the command: npm create svelte@latest.",
+        "background": "bg-[#FDBAF2]",
+        "iconColor": "bg-[#3B82F6]"
       },
       {
-        "id": 3,
-        "title": "How long does it take to complete a course?",
-        "content": "Course lengths vary depending on the subject. However, most of our courses are designed to be completed at your own pace, allowing you to take the time you need to fully understand the material before moving on."
+        "title": "What is the difference between Svelte and React?",
+        "content": "Svelte compiles components at build time, while React uses virtual DOM diffing at runtime.",
+        "background": "bg-[#FDBAF2]",
+        "iconColor": "bg-[#3B82F6]"
+      },
+      {
+        "title": "What is the difference between Svelte and React?",
+        "content": "Svelte compiles components at build time, while React uses virtual DOM diffing at runtime.",
+        "background": "bg-[#FDBAF2]",
+        "iconColor": "bg-[#3B82F6]"
       }
     ],
     "show": true

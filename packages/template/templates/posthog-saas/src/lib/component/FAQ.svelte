@@ -2,42 +2,6 @@
   import FaqCard from './FaqCard.svelte';
 
   export let data;
-  // FAQ data with questions and answers
-  const faqs = [
-    {
-      title: 'What is Svelte?',
-      content: 'Svelte is a front-end framework for building web applications.',
-      background: 'bg-[#FDBAF2]',
-      iconColor: 'bg-[#3B82F6]'
-    },
-    {
-      title: 'How do I install Svelte?',
-      content: 'You can install Svelte via npm using the command: npm create svelte@latest.',
-      background: 'bg-[#FDBAF2]',
-      iconColor: 'bg-[#3B82F6]'
-    },
-    {
-      title: 'What is the difference between Svelte and React?',
-      content:
-        'Svelte compiles components at build time, while React uses virtual DOM diffing at runtime.',
-      background: 'bg-[#FDBAF2]',
-      iconColor: 'bg-[#3B82F6]'
-    },
-    {
-      title: 'What is the difference between Svelte and React?',
-      content:
-        'Svelte compiles components at build time, while React uses virtual DOM diffing at runtime.',
-      background: 'bg-[#FDBAF2]',
-      iconColor: 'bg-[#3B82F6]'
-    },
-    {
-      title: 'What is the difference between Svelte and React?',
-      content:
-        'Svelte compiles components at build time, while React uses virtual DOM diffing at runtime.',
-      background: 'bg-[#FDBAF2]',
-      iconColor: 'bg-[#3B82F6]'
-    }
-  ];
 </script>
 
 <!-- FAQ Cards -->

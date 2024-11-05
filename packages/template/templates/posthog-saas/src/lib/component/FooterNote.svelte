@@ -3,7 +3,7 @@
 
   export let data;
   function getCourseUrl() {
-    return '#';
+    return '/courses';
   }
 </script>
 
