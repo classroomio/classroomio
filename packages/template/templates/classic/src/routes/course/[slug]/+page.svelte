@@ -2,7 +2,7 @@
   import { browser } from '$app/environment';
   import { isDark } from '$lib/component/store.js';
   import Skeleton from '$lib/components/ui/skeleton/skeleton.svelte';
-  import { toggleBodyByMode } from '$lib/utils/toggleMode.js';
+  import { toggleBodyByMode } from '$lib/utils/toggleMode';
   import { ChevronLeft, Menu, Close } from 'carbon-icons-svelte';
   import { onMount } from 'svelte';
   import Light from 'carbon-icons-svelte/lib/Light.svelte';
@@ -64,6 +64,14 @@
       console.log('active lesson', activeLesson);
     }
   });
+
+  $: {
+    if (browser) {
+      const mode = localStorage.getItem('mode');
+      $isDark = mode == '' ? false : true;
+      toggleBodyByMode($isDark);
+    }
+  }
 </script>
 
 <section class="relative overflow-hidden h-screen">

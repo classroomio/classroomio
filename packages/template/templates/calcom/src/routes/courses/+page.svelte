@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
   import CardLoader from '$lib/component/CardLoader.svelte';
   import CourseCard from '$lib/component/CourseCard.svelte';
@@ -8,6 +9,7 @@
   import PageLoader from '$lib/component/PageLoader.svelte';
   import { courseMetaData } from '$lib/component/store';
   import { Button } from '$lib/components/ui/button';
+  import { toggleBodyByMode } from '$lib/utils/toggleMode';
   import { DirectionStraightRight } from 'carbon-icons-svelte';
 
   export let data;
@@ -49,6 +51,12 @@
   function filterCourse(item: { title?: string; type?: string; checked: any }) {
     item.checked = !item.checked;
     applyFilter();
+  }
+
+  $: {
+    if (browser) {
+      toggleBodyByMode(false);
+    }
   }
 </script>
 
