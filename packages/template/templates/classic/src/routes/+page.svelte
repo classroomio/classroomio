@@ -4,11 +4,7 @@
   import { toggleBodyByMode } from '$lib/utils/toggleMode';
   export let data;
 
-  $: {
-    if (browser) {
-      toggleBodyByMode(false);
-    }
-  }
+  $: browser && toggleBodyByMode(false);
 </script>
 
 <div>

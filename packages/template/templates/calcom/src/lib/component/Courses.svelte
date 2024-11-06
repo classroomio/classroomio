@@ -35,22 +35,21 @@
         >
           {org.courses.title}
         </h1>
-        {#if coursesList.length > 3}
-          <div class="flex gap-2 items-center">
-            <button
-              class="w-fit flex items-center justify-center border border-white rounded-full p-2 bg-transparent hover:bg-white"
-              on:click={scrollLeft}
-            >
-              <ArrowLeft class="text-white hover:text-black" />
-            </button>
-            <button
-              class="w-fit flex items-center justify-center border border-white rounded-full p-2 bg-transparent hover:bg-white"
-              on:click={scrollRight}
-            >
-              <ArrowRight class="text-white hover:text-black" />
-            </button>
-          </div>
-        {/if}
+
+        <div class="flex gap-2 items-center">
+          <button
+            class="w-fit flex items-center justify-center border border-white rounded-full p-2 bg-transparent hover:bg-white"
+            on:click={scrollLeft}
+          >
+            <ArrowLeft class="text-white hover:text-black" />
+          </button>
+          <button
+            class="w-fit flex items-center justify-center border border-white rounded-full p-2 bg-transparent hover:bg-white"
+            on:click={scrollRight}
+          >
+            <ArrowRight class="text-white hover:text-black" />
+          </button>
+        </div>
       </div>
 
       <div class="w-full pl-4 md:pl-8 overflow-x-hidden">
@@ -75,6 +74,7 @@
             {/each}
 
             <!-- uncomment this to see try the course carousel -->
+
             <!-- {#each coursesList as courseData}
               <CourseCard
                 slug="Patterns"

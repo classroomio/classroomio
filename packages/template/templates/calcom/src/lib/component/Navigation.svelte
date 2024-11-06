@@ -10,7 +10,7 @@
   let logo = '';
   let orgName = '';
   let isOrgSite = true;
-  let backgroundColor = 'bg-white dark:bg-black';
+  let backgroundColor = 'bg-white';
   let isCoursePage = false;
   let user = {
     isLoggedIn: true

@@ -2,9 +2,20 @@
   import { Add, Subtract } from 'carbon-icons-svelte';
   export let title = '';
   export let content = '';
+
   let isOpen = false;
+  let contentHeight = '0px'; // Track the height of the content
+  let contentRef: HTMLDivElement; // Reference to the content div
+
   function toggleAccordion() {
     isOpen = !isOpen;
+    if (isOpen) {
+      // Measure and set the height when opening
+      contentHeight = `${contentRef.scrollHeight}px`;
+    } else {
+      // Set to 0 height when closing
+      contentHeight = '0px';
+    }
   }
 </script>
 
@@ -50,9 +61,9 @@
   </div>
 
   <div
-    class={` rounded-3xl transition-max-height duration-300 ease-in-out overflow-hidden ${
-      isOpen ? 'max-h-40' : 'max-h-0'
-    }`}
+    bind:this={contentRef}
+    style="max-height: {contentHeight}; transition: max-height 0.3s ease-in-out; overflow: hidden;"
+    class="rounded-3xl"
   >
     <div class="mx-6 p-4 bg-inherit rounded-b rounded-3xl">
       <p>

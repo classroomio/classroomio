@@ -1,6 +1,5 @@
 <script lang="ts">
   import { browser } from '$app/environment';
-  import { goto } from '$app/navigation';
   import CardLoader from '$lib/component/CardLoader.svelte';
   import CourseCard from '$lib/component/CourseCard.svelte';
   import EmptyState from '$lib/component/EmptyState.svelte';
@@ -10,7 +9,6 @@
   import { courseMetaData } from '$lib/component/store';
   import { Button } from '$lib/components/ui/button';
   import { toggleBodyByMode } from '$lib/utils/toggleMode';
-  import { DirectionStraightRight } from 'carbon-icons-svelte';
 
   export let data;
   const { org, courses } = data;
@@ -52,18 +50,13 @@
     item.checked = !item.checked;
     applyFilter();
   }
-
-  $: {
-    if (browser) {
-      toggleBodyByMode(false);
-    }
-  }
+  $: browser && toggleBodyByMode(false);
 </script>
 
 {#if !data}
   <PageLoader />
 {:else}
-  <main class="bg-[#EEEFE9] dark:bg-black dark:text-white font-matter">
+  <main class="bg-[#EEEFE9] font-matter">
     <!-- Navigation -->
     <Navigation />
 
@@ -72,7 +65,7 @@
       {#if org.courseHeader.banner.show}
         <section
           style="background-image: url('calcom-background.svg');"
-          class="bg-cover bg-center flex items-center justify-center py-10 px-2 lg:px-14 min-h-[100vh] lg:min-h-[60vh] overflow-hidden dark:bg-[radial-gradient(ellipse_at_top_right,_rgba(11,92,215,0.6)_1%,_rgba(0,0,0,0.8)_30%,_transparent_40%),radial-gradient(ellipse_at_bottom_left,_rgba(11,92,215,0.3)_10%,_rgba(0,0,0,0.8)_30%,_transparent_50%)]"
+          class="bg-cover bg-center flex items-center justify-center py-10 px-2 lg:px-14 min-h-[100vh] lg:min-h-[60vh] overflow-hidden"
         >
           <section class="flex flex-col text-center items-center gap-5 justify-center">
             <div class="space-y-6 w-full mb-4">
@@ -101,7 +94,7 @@
               <div class="w-full space-y-2">
                 {#each filter as item}
                   <form
-                    class="space-x-2 text-[#3C4043] dark:text-white font-medium border border-[#D0D1C9] dark:border-[#232429] bg-[#F4F4F4] dark:bg-[#232429] rounded-md pl-4 pr-8 py-4"
+                    class="space-x-2 text-[#3C4043] font-medium border border-[#D0D1C9] bg-[#F4F4F4] rounded-md pl-4 pr-8 py-4"
                   >
                     <input
                       type="checkbox"
@@ -141,12 +134,12 @@
                   </section>
                   {#if filteredCourses.length == 0}
                     <div class="px-4 w-full mx-auto">
-                      <EmptyState className="dark:bg-[#232429] dark:border-[#EAEAEA]" />
+                      <EmptyState />
                     </div>
                   {/if}
                 {:else}
                   <div class="px-4 w-full mx-auto">
-                    <EmptyState className="dark:bg-[#232429] dark:border-[#EAEAEA]" />
+                    <EmptyState />
                   </div>
                 {/if}
               </div>

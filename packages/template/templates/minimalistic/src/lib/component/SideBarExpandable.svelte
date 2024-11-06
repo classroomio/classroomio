@@ -3,6 +3,7 @@
   import { ChevronDown, ChevronUp } from 'carbon-icons-svelte';
 
   export let item;
+  export let toggleSideBar: () => void;
   export let getLessonContent: (lesson: Lesson, section: string) => void;
   export let activeLesson = '';
   const { title, section_slug, children, published } = item;
@@ -24,7 +25,7 @@
   class="border-none flex flex-row items-center justify-between w-full"
 >
   <div>
-    <p class="text-[13px] capitalize">
+    <p class="text-[13px] capitalize text-start">
       {title}
     </p>
   </div>
@@ -49,7 +50,10 @@
         activeLesson
           ? ' border-black dark:border-white'
           : 'border-gray-400 dark:border-gray-700'}"
-        on:click={() => getLessonContent(lesson, section_slug)}
+        on:click={() => {
+          getLessonContent(lesson, section_slug);
+          toggleSideBar();
+        }}
       >
         <div>
           <p class="text-gray-500 hover:text-black hover:dark:text-white text-[13px] capitalize">

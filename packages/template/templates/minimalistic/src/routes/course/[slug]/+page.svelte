@@ -40,6 +40,9 @@
     }
   }
 
+  const toggleSideBar = () => {
+    open = !open;
+  };
   function toggleDarkMode() {
     $isDark = !$isDark;
     toggleBodyByMode($isDark);
@@ -49,6 +52,12 @@
   }
 
   onMount(() => {
+    if (browser) {
+      const mode = localStorage.getItem('mode');
+      $isDark = mode == '' ? false : true;
+      toggleBodyByMode($isDark);
+    }
+
     let selectedSection;
     for (let section of sections) {
       if (section.published) {
@@ -63,14 +72,6 @@
       console.log('active lesson', activeLesson);
     }
   });
-
-  $: {
-    if (browser) {
-      const mode = localStorage.getItem('mode');
-      $isDark = mode == '' ? false : true;
-      toggleBodyByMode($isDark);
-    }
-  }
 </script>
 
 <section class="relative overflow-hidden h-screen">
@@ -78,7 +79,7 @@
     class="sticky top-0 px-4 w-full h-14 flex items-center justify-between border-b bg-[#F7F7F7] dark:bg-inherit"
   >
     <div class="lg:pl-4 flex items-center gap-3">
-      <button on:click={() => (open = !open)} class="md:hidden">
+      <button on:click={toggleSideBar} class="md:hidden">
         {#if open}
           <Close size={20} />
         {:else}
@@ -108,8 +109,8 @@
   <div class="overflow-hidden flex">
     <!-- sidebar -->
     <div
-      class="fixed md:relative transition-all bg-[#F7F7F7] dark:bg-[#03030a] w-[300px] md:w-[380px] h-[calc(100vh-56px)] overflow-y-scroll p-4 pl-6 space-y-4 {open
-        ? 'translate-x-0 '
+      class="fixed md:relative transition-all bg-[#F7F7F7] dark:bg-[#03030a] w-[300px] md:w-[380px] h-[calc(100vh-56px)] overflow-y-scroll scrollbar-hide p-4 pl-6 space-y-4 {open
+        ? 'translate-x-0'
         : '-translate-x-full md:translate-x-0 z-50'}"
     >
       <a
@@ -133,6 +134,7 @@
               item={sidebar}
               {getLessonContent}
               activeLesson={activeLesson?.title}
+              {toggleSideBar}
             />
           {/each}
         </div>
@@ -157,3 +159,16 @@
     </div>
   </div>
 </section>
+
+<style>
+  /* Hide scrollbar for Webkit browsers */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for other browsers */
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+</style>

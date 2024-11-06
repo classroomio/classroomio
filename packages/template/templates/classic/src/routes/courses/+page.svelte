@@ -8,7 +8,7 @@
   import PageLoader from '$lib/component/PageLoader.svelte';
   import { courseMetaData } from '$lib/component/store.js';
   import { Button } from '$lib/components/ui/button';
-  import { toggleBodyByMode } from '$lib/utils/toggleMode.js';
+  import { toggleBodyByMode } from '$lib/utils/toggleMode';
 
   export let data;
 
@@ -50,12 +50,7 @@
     item.checked = !item.checked;
     applyFilter();
   }
-
-  $: {
-    if (browser) {
-      toggleBodyByMode(false);
-    }
-  }
+  $: browser && toggleBodyByMode(false);
 </script>
 
 {#if !data}
