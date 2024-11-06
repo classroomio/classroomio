@@ -20,7 +20,9 @@
   let interval;
   let countDown = WAIT_SEC;
 
-  const resendVerificationCode = async () => {
+  const sendVerificationCode = async () => {
+    if (isSent) return;
+
     loading = true;
 
     try {
@@ -50,6 +52,7 @@
   };
 
   $: open = Boolean(!$profile.is_email_verified && !!$currentOrg.id);
+  $: open && sendVerificationCode();
 </script>
 
 <Modal {open} isCloseable={false} width="w-4/5" maxWidth="w-[500px]" containerClass="p-4">
@@ -66,7 +69,7 @@
       <PrimaryButton
         isDisabled={loading || isSent}
         className="font-normal"
-        onClick={resendVerificationCode}
+        onClick={sendVerificationCode}
       >
         {#if loading}
           {$t('verify_email_modal.loading')}
