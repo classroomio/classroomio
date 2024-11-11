@@ -1,12 +1,16 @@
 <script lang="ts">
   import FaqMark from '$lib/component/Icons/FaqMark.svelte';
 
-  export let faq;
-  export let index;
+  interface Props {
+    faq: any;
+    index: any;
+  }
+
+  let { faq, index }: Props = $props();
 
   const background = 'bg-[#FDBAF2]';
   const iconColor = 'bg-[#3B82F6]';
-  let card: HTMLDivElement;
+  let card: HTMLDivElement = $state();
 
   const handleMouseMove = (event: { clientX: number; clientY: number }) => {
     const cardRect = card.getBoundingClientRect();
@@ -27,15 +31,15 @@
 <div
   class="z-10 min-w-60 max-w-72 h-72 perspective group"
   bind:this={card}
-  on:mousemove={handleMouseMove}
-  on:mouseleave={handleMouseLeave}
+  onmousemove={handleMouseMove}
+  onmouseleave={handleMouseLeave}
   role="none"
 >
   <div class={`inner-card   ${index % 2 === 0 ? 'rotate-3 ' : '-rotate-3 '} `}>
-    <span class="z-10 absolute w-2 h-2 rounded-full {iconColor} top-4 left-4" />
-    <span class="z-10 absolute w-[2px] h-[2px] rounded-full {iconColor} top-8 left-8" />
-    <span class="z-10 absolute w-2 h-2 rounded-full {iconColor} bottom-4 right-4" />
-    <span class="z-10 absolute w-[2px] h-[2px] rounded-full {iconColor} bottom-8 right-8" />
+    <span class="z-10 absolute w-2 h-2 rounded-full {iconColor} top-4 left-4"></span>
+    <span class="z-10 absolute w-[2px] h-[2px] rounded-full {iconColor} top-8 left-8"></span>
+    <span class="z-10 absolute w-2 h-2 rounded-full {iconColor} bottom-4 right-4"></span>
+    <span class="z-10 absolute w-[2px] h-[2px] rounded-full {iconColor} bottom-8 right-8"></span>
     <div
       class="front text-black shadow-md flex flex-col items-center justify-center p-4 {background}"
     >

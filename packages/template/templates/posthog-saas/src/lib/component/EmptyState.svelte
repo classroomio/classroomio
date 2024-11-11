@@ -1,8 +1,17 @@
 <script lang="ts">
-  export let type = 'course';
-  export let className = '';
-  export let headerClassName = '';
-  export let subtitleClassName = '';
+  interface Props {
+    type?: string;
+    className?: string;
+    headerClassName?: string;
+    subtitleClassName?: string;
+  }
+
+  let {
+    type = 'course',
+    className = '',
+    headerClassName = '',
+    subtitleClassName = ''
+  }: Props = $props();
 </script>
 
 <section

@@ -1,7 +1,11 @@
 <script lang="ts">
   import FaqCard from './FaqCard.svelte';
 
-  export let data;
+  interface Props {
+    data: any;
+  }
+
+  let { data }: Props = $props();
 </script>
 
 <!-- FAQ Cards -->

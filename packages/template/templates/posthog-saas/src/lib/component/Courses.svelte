@@ -5,8 +5,12 @@
   import { courseMetaData } from './store';
   import CardLoader from './CardLoader.svelte';
 
-  let viewAll = false;
-  export let data;
+  let viewAll = $state(false);
+  interface Props {
+    data: any;
+  }
+
+  let { data }: Props = $props();
 
   const { org, courses } = data;
 </script>

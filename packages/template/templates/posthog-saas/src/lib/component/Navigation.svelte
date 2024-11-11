@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { goto } from '$app/navigation';
 
   import Close from 'carbon-icons-svelte/lib/Close.svelte';
@@ -19,12 +21,12 @@
   let isOrgSite = true;
   let backgroundColor = 'bg-white dark:bg-black';
   let isActive = false;
-  let activeLink = '';
+  let activeLink = $state('');
   let isCoursePage = false;
   let user = {
     isLoggedIn: true
   };
-  let open = false;
+  let open = $state(false);
 
   const menuItems = [
     {
@@ -55,15 +57,15 @@
 
   const redirect = isCoursePage ? `?redirect=${$page.url.pathname}` : '';
 
-  $: activeHash = $page.url.hash;
-  $: {
+  let activeHash = $derived($page.url.hash);
+  run(() => {
     const activeItem = menuItems.find((item) => item.link === `/${activeHash}`);
     if (activeItem) {
       activeLink = activeItem.link;
 
       console.log('link', activeLink, activeItem.link);
     }
-  }
+  });
 </script>
 
 <nav
@@ -82,7 +84,7 @@
 
   <!-- Mobile Menu Button (Visible only on mobile and when logged in) -->
   {#if user.isLoggedIn}
-    <button on:click={toggleMenu} class="lg:hidden">
+    <button onclick={toggleMenu} class="lg:hidden">
       <Menu size={24} />
     </button>
   {/if}
@@ -98,7 +100,7 @@
           menu.link
             ? 'bg-slate-100 rounded-lg dark:text-black'
             : 'dark:text-white'}"
-          on:click={() => {
+          onclick={() => {
             // navigateToSection(menu);
           }}
         >
@@ -111,9 +113,9 @@
   <!-- PrimaryButtons for login/signup (Visible only when not logged in) -->
   {#if !user.isLoggedIn}
     <div class="flex space-x-4">
-      <button on:click={() => goto('/login' + redirect)}> login </button>
+      <button onclick={() => goto('/login' + redirect)}> login </button>
       {#if !disableSignup}
-        <button on:click={() => goto('/signup' + redirect)}> login </button>
+        <button onclick={() => goto('/signup' + redirect)}> login </button>
       {/if}
     </div>
   {/if}
@@ -125,13 +127,13 @@
         open ? 'translate-y-0' : '-translate-y-full'
       } transition-transform duration-300 ease-in-out lg:hidden text-base font-bold text-[#1F2937] dark:text-white list-none cursor-pointer`}
     >
-      <button on:click={toggleMenu} class="absolute right-4 top-4 lg:hidden z-20">
+      <button onclick={toggleMenu} class="absolute right-4 top-4 lg:hidden z-20">
         <Close size={24} />
       </button>
 
       {#each menuItems as menu}
         <li class="py-4 px-6 border-b dark:border-gray-200">
-          <a href={menu.link} on:click={toggleMenu}>{menu.title}</a>
+          <a href={menu.link} onclick={toggleMenu}>{menu.title}</a>
         </li>
       {/each}
       {#if isOrgSite}
@@ -148,7 +150,7 @@
       {/if}
 
       <div class="w-full mx-auto flex flex-col items-center text-center justify-center p-4">
-        <button on:click={toggleDarkMode}>
+        <button onclick={toggleDarkMode}>
           {#if $isDark}
             <Light size={16} />
           {:else}
@@ -165,7 +167,7 @@
   <!-- Learn with Me Button (Visible on desktop when logged in) -->
   {#if user.isLoggedIn && isOrgSite}
     <div class="hidden lg:flex items-center gap-2">
-      <button on:click={toggleDarkMode}>
+      <button onclick={toggleDarkMode}>
         {#if $isDark}
           <Light size={16} />
         {:else}

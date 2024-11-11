@@ -1,11 +1,21 @@
 <script lang="ts">
   import { Button } from '$lib/components/ui/button';
 
-  export let className = '';
-  export let buttonClass = '';
-  export let slug = '';
-  export let title = '';
-  export let description = '';
+  interface Props {
+    className?: string;
+    buttonClass?: string;
+    slug?: string;
+    title?: string;
+    description?: string;
+  }
+
+  let {
+    className = '',
+    buttonClass = '',
+    slug = '',
+    title = '',
+    description = ''
+  }: Props = $props();
   function getCourseUrl() {
     return `/course/${slug}`;
   }

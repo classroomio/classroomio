@@ -8,10 +8,14 @@
   import { courseMetaData } from '$lib/component/store';
   import { Button } from '$lib/components/ui/button';
 
-  export let data;
+  interface Props {
+    data: any;
+  }
+
+  let { data }: Props = $props();
   const { org, courses } = data;
 
-  let viewAll = false;
+  let viewAll = $state(false);
   const DISPLAY_COURSE = {
     PACED: 'paced',
     LIVE: 'live'
@@ -30,7 +34,7 @@
     }
   ];
 
-  let filteredCourses = [...courses];
+  let filteredCourses = $state([...courses]);
 
   function applyFilter() {
     const activeFilters = filter.filter((f) => f.checked).map((f) => f.type.toLowerCase());
@@ -61,10 +65,10 @@
           class="mx-auto text-center px-4 lg:px-10 py-20 space-y-4 bg-[#E5E7E0] dark:bg-[#232429] rounded-md w-full lg:w-[70%]"
         >
           <div class="flex flex-col items-center gap-8 relative rounded-lg">
-            <span class="absolute w-2 h-2 rounded-full bg-red-500 -top-14 left-3" />
-            <span class="absolute w-2 h-2 rounded-full bg-white top-10 -left-10" />
-            <span class="absolute w-2 h-2 rounded-full bg-yellow-500 -top-10 -right-3" />
-            <span class="absolute w-2 h-2 rounded-full bg-blue-800 top-14 -right-10" />
+            <span class="absolute w-2 h-2 rounded-full bg-red-500 -top-14 left-3"></span>
+            <span class="absolute w-2 h-2 rounded-full bg-white top-10 -left-10"></span>
+            <span class="absolute w-2 h-2 rounded-full bg-yellow-500 -top-10 -right-3"></span>
+            <span class="absolute w-2 h-2 rounded-full bg-blue-800 top-14 -right-10"></span>
 
             <p class="text-center text-3xl md:text-5xl font-bold w-full md:w-[90%]">
               {org.courseHeader.title}
@@ -106,7 +110,7 @@
                         type="checkbox"
                         checked={item.checked}
                         name={item.title}
-                        on:change={() => filterCourse(item)}
+                        onchange={() => filterCourse(item)}
                         class=" dark:accent-[#EB9D2A] accent-[#F54E00] focus:ring-0"
                       />
 

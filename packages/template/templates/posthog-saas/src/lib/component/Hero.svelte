@@ -2,7 +2,11 @@
   import { goto } from '$app/navigation';
   import { Button } from '$lib/components/ui/button';
 
-  export let data;
+  interface Props {
+    data: any;
+  }
+
+  let { data }: Props = $props();
 </script>
 
 {#if data.header.banner.show}
@@ -32,10 +36,10 @@
       <div
         class=" relative rounded-lg h-fit md:h-[300px] md:max-h-[350px] w-full md:w-[800px] md:max-w-[80vw] lg:max-w-[80%] flex"
       >
-        <span class="absolute w-2 h-2 rounded-full bg-red-500 -top-14 left-3" />
-        <span class="absolute w-2 h-2 rounded-full bg-white top-10 -left-10" />
-        <span class="absolute w-2 h-2 rounded-full bg-yellow-500 -top-10 -right-3" />
-        <span class="absolute w-2 h-2 rounded-full bg-blue-800 top-14 -right-10" />
+        <span class="absolute w-2 h-2 rounded-full bg-red-500 -top-14 left-3"></span>
+        <span class="absolute w-2 h-2 rounded-full bg-white top-10 -left-10"></span>
+        <span class="absolute w-2 h-2 rounded-full bg-yellow-500 -top-10 -right-3"></span>
+        <span class="absolute w-2 h-2 rounded-full bg-blue-800 top-14 -right-10"></span>
 
         <div class="flex items-center justify-center">
           <img

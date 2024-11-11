@@ -6,7 +6,11 @@
   import FooterNote from './component/FooterNote.svelte';
   import Hero from './component/Hero.svelte';
   import Navigation from './component/Navigation.svelte';
-  export let data;
+  interface Props {
+    data: any;
+  }
+
+  let { data }: Props = $props();
 
   console.log('data in parent:', data);
 
