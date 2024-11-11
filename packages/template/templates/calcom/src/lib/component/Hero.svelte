@@ -1,8 +1,9 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import Button from '$lib/components/ui/button/button.svelte';
+  import type { LandingPageContent } from '$lib/utils/types';
 
-  export let data;
+  export let data: LandingPageContent;
 </script>
 
 {#if data.header.banner.show}

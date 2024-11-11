@@ -82,7 +82,7 @@
         {/if}
 
         {#if org.courses.show}
-          <section id="course" class="px-2 pt-4 pb-20 h-full xl:px-16">
+          <section id="course" class="px-2 pt-4 pb-20 h-full xl:px-6">
             <h1 class="text-start text-3xl mb-2 font-bold pl-2">
               {org.courses.title}
             </h1>

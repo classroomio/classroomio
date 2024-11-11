@@ -7,9 +7,14 @@
   import Navigation from './component/Navigation.svelte';
   import Testimonial from './component/Testimonial.svelte';
   import FooterNote from './component/FooterNote.svelte';
-  export let data;
+  import type { CourseMetadata, LandingPageContent } from './utils/types';
 
-  console.log('data in parent:', data);
+  interface Data {
+    org: LandingPageContent;
+    courses: { data: CourseMetadata; lessons: number }[];
+  }
+
+  export let data: Data;
 
   const { org } = data;
 </script>
