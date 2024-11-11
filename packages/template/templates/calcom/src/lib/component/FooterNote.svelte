@@ -1,6 +1,6 @@
 <script>
   import { Button } from '$lib/components/ui/button';
-  export let data;
+  let { data } = $props();
 </script>
 
 {#if data.footerNote.show}

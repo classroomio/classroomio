@@ -1,6 +1,6 @@
 <script lang="ts">
   import TestimonialCard from './TestimonialCard.svelte';
-  export let data;
+  let { data } = $props();
 </script>
 
 {#if data.testimonial.show}

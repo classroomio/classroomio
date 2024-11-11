@@ -5,7 +5,7 @@
   import Menu from 'carbon-icons-svelte/lib/Menu.svelte';
   import Button from '$lib/components/ui/button/button.svelte';
 
-  let open = false;
+  let open = $state(false);
   let disableSignup = false;
   let logo = '';
   let orgName = '';
@@ -64,7 +64,7 @@
 
   <!-- Mobile Menu Button (Visible only on mobile and when logged in) -->
   {#if user.isLoggedIn}
-    <button on:click={toggleMenu} class="lg:hidden">
+    <button onclick={toggleMenu} class="lg:hidden">
       <Menu size={24} />
     </button>
   {/if}
@@ -74,9 +74,9 @@
   <!-- PrimaryButtons for login/signup (Visible only when not logged in) -->
   {#if !user.isLoggedIn}
     <div class="flex space-x-4">
-      <button on:click={() => goto('/login' + redirect)}>login</button>
+      <button onclick={() => goto('/login' + redirect)}>login</button>
       {#if !disableSignup}
-        <button on:click={() => goto('/signup' + redirect)}>signup</button>
+        <button onclick={() => goto('/signup' + redirect)}>signup</button>
       {/if}
     </div>
   {/if}
@@ -87,7 +87,7 @@
       open ? 'translate-y-0  ' : '-translate-y-full'
     } transition-transform duration-300 ease-in-out lg:hidden text-base font-semibold text-[#1F2937] list-none cursor-pointer`}
   >
-    <button on:click={toggleMenu} class="absolute right-4 top-4 lg:hidden z-20">
+    <button onclick={toggleMenu} class="absolute right-4 top-4 lg:hidden z-20">
       <Close size={24} />
     </button>
 
@@ -95,7 +95,7 @@
       <div class="divide-y divide-solid border-b">
         {#each menuItems as menu}
           <li class="py-4 px-6">
-            <a href={menu.link} on:click={toggleMenu}>{menu.title}</a>
+            <a href={menu.link} onclick={toggleMenu}>{menu.title}</a>
           </li>
         {/each}
       </div>

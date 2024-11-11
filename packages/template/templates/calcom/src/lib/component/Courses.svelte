@@ -8,12 +8,12 @@
   import ArrowLeft from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
   import { goto } from '$app/navigation';
 
-  export let data;
+  let { data } = $props();
 
   const { org, courses } = data;
 
   let coursesList = [1, 2, 3, 4, 5, 6, 7];
-  let scrollContainer: HTMLDivElement;
+  let scrollContainer: HTMLDivElement = $state();
 
   function scrollLeft() {
     scrollContainer.scrollBy({ left: -300, behavior: 'smooth' });
@@ -39,13 +39,13 @@
         <div class="flex gap-2 items-center">
           <button
             class="w-fit flex items-center justify-center border border-white rounded-full p-2 bg-transparent hover:bg-white"
-            on:click={scrollLeft}
+            onclick={scrollLeft}
           >
             <ArrowLeft class="text-white hover:text-black" />
           </button>
           <button
             class="w-fit flex items-center justify-center border border-white rounded-full p-2 bg-transparent hover:bg-white"
-            on:click={scrollRight}
+            onclick={scrollRight}
           >
             <ArrowRight class="text-white hover:text-black" />
           </button>

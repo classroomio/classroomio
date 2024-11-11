@@ -1,11 +1,15 @@
 <script lang="ts">
   import { Add, Subtract } from 'carbon-icons-svelte';
-  export let title = '';
-  export let content = '';
+  interface Props {
+    title?: string;
+    content?: string;
+  }
 
-  let isOpen = false;
-  let contentHeight = '0px'; // Track the height of the content
-  let contentRef: HTMLDivElement; // Reference to the content div
+  let { title = '', content = '' }: Props = $props();
+
+  let isOpen = $state(false);
+  let contentHeight = $state('0px'); // Track the height of the content
+  let contentRef: HTMLDivElement = $state(); // Reference to the content div
 
   function toggleAccordion() {
     isOpen = !isOpen;
@@ -28,7 +32,7 @@
     class="relative flex justify-between items-center cursor-pointer overflow-hidden mx-6 p-6
       bg-inherit
       "
-    on:click={toggleAccordion}
+    onclick={toggleAccordion}
   >
     <p class="font-semibold text-lg">{title}</p>
 

@@ -14,7 +14,11 @@
     courses: { data: CourseMetadata; lessons: number }[];
   }
 
-  export let data: Data;
+  interface Props {
+    data: Data;
+  }
+
+  let { data }: Props = $props();
 
   const { org } = data;
 </script>

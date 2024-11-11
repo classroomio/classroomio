@@ -1,8 +1,17 @@
 <script lang="ts">
-  export let description = '';
-  export let name = '';
-  export let role = '';
-  export let banner = '';
+  interface Props {
+    description?: string;
+    name?: string;
+    role?: string;
+    banner?: string;
+  }
+
+  let {
+    description = '',
+    name = '',
+    role = '',
+    banner = ''
+  }: Props = $props();
 </script>
 
 <section

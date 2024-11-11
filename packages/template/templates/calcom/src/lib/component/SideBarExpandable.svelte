@@ -2,13 +2,22 @@
   import type { Lesson } from '$lib/utils/types';
   import { ChevronDown, ChevronUp } from 'carbon-icons-svelte';
 
-  export let item;
-  export let toggleSideBar: () => void;
-  export let getLessonContent: (lesson: Lesson, section: string) => void;
-  export let activeLesson = '';
+  interface Props {
+    item: any;
+    toggleSideBar: () => void;
+    getLessonContent: (lesson: Lesson, section: string) => void;
+    activeLesson?: string;
+  }
+
+  let {
+    item,
+    toggleSideBar,
+    getLessonContent,
+    activeLesson = ''
+  }: Props = $props();
   const { title, section_slug, children, published } = item;
 
-  let isLessonOpen = getIsActive(children) ? true : false;
+  let isLessonOpen = $state(getIsActive(children) ? true : false);
 
   function getIsActive(children: Lesson[]) {
     if (published) {
@@ -21,7 +30,7 @@
 </script>
 
 <button
-  on:click={() => toggleLesson()}
+  onclick={() => toggleLesson()}
   class="border-none flex flex-row items-center justify-between w-full"
 >
   <div>
@@ -31,7 +40,7 @@
   </div>
   <div class="flex items-center gap-2">
     {#if published}
-      <div class="w-[6px] h-[6px] rounded-full bg-gray-300" />
+      <div class="w-[6px] h-[6px] rounded-full bg-gray-300"></div>
     {:else}
       <div class="bg-gray-300 text-black text-[9px] p-[2px] uppercase font-medium">coming soon</div>
     {/if}
@@ -50,7 +59,7 @@
         activeLesson
           ? ' border-black dark:border-white'
           : 'border-gray-400 dark:border-gray-700'}"
-        on:click={() => {
+        onclick={() => {
           getLessonContent(lesson, section_slug);
           toggleSideBar();
         }}
