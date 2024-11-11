@@ -11,19 +11,19 @@
   import Button from '$lib/components/ui/button/button.svelte';
   import type { Lesson } from '$lib/utils/types';
 
-  export let data;
+  let { data } = $props();
 
   console.log('new data', data);
-  let open = false;
-  let loading = true;
-  let initialLoad = false;
+  let open = $state(false);
+  let loading = $state(true);
+  let initialLoad = $state(false);
   let isLessonOpen = false;
 
   const { metadata, sections, slug } = data;
 
-  let activeLesson: Lesson | undefined;
+  let activeLesson: Lesson | undefined = $state();
 
-  let lessonContent: string | undefined;
+  let lessonContent: string | undefined = $state();
 
   async function getLessonContent(lesson: Lesson, section: string) {
     loading = true;
@@ -75,7 +75,7 @@
     class="sticky top-0 px-4 w-full h-14 flex items-center justify-between border-b bg-[#F7F7F7] dark:bg-inherit"
   >
     <div class="lg:pl-4 flex items-center gap-3">
-      <button on:click={toggleSideBar} class="md:hidden">
+      <button onclick={toggleSideBar} class="md:hidden">
         {#if open}
           <Close size={20} />
         {:else}
@@ -87,7 +87,7 @@
       </p>
     </div>
     <div class="flex flex-row items-center gap-1">
-      <button on:click={toggleDarkMode}>
+      <button onclick={toggleDarkMode}>
         {#if $isDark}
           <Light size={16} />
         {:else}

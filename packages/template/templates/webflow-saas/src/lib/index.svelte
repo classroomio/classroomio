@@ -5,7 +5,7 @@
   import Hero from './component/Hero.svelte';
   import Navigation from './component/Navigation.svelte';
   import Testimonial from './component/Testimonial.svelte';
-  export let data;
+  let { data } = $props();
 
   console.log('data in parent:', data);
 

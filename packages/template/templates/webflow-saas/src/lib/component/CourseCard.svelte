@@ -4,11 +4,21 @@
 
   import Button from '$lib/components/ui/button/button.svelte';
 
-  export let className = '';
-  export let bannerImage: string | undefined;
-  export let slug = '';
-  export let title = '';
-  export let description = '';
+  interface Props {
+    className?: string;
+    bannerImage: string | undefined;
+    slug?: string;
+    title?: string;
+    description?: string;
+  }
+
+  let {
+    className = '',
+    bannerImage,
+    slug = '',
+    title = '',
+    description = ''
+  }: Props = $props();
 
   function getCourseUrl() {
     return `/course/${slug}`;

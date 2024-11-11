@@ -1,7 +1,7 @@
 <script lang="ts">
   import Accordion from './Accordion.svelte';
 
-  export let data;
+  let { data } = $props();
 </script>
 
 {#if data.faq.show}

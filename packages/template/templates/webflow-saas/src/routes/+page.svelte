@@ -1,6 +1,6 @@
 <script>
   import Home from '$lib/index.svelte';
-  export let data;
+  let { data } = $props();
 </script>
 
 <div>

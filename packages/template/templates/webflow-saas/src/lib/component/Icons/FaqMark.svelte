@@ -1,5 +1,11 @@
 <script>
-  export let color = '#2F4D0F';
+  /**
+   * @typedef {Object} Props
+   * @property {string} [color]
+   */
+
+  /** @type {Props} */
+  let { color = '#2F4D0F' } = $props();
 </script>
 
 <svg width="62" height="75" viewBox="0 0 62 75" fill="none" xmlns="http://www.w3.org/2000/svg">

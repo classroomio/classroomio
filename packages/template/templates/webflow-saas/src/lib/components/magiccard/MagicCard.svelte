@@ -4,12 +4,24 @@
   import { onMount } from 'svelte';
   import { cn } from '$lib/utils';
 
-  export let gradientSize: number = 200;
-  export let gradientColor: string = '#262626';
-  export let gradientOpacity: number = 0.8;
-  export let index = 1;
-  let className: string = '';
-  export { className as class };
+  interface Props {
+    gradientSize?: number;
+    gradientColor?: string;
+    gradientOpacity?: number;
+    index?: number;
+    class?: string;
+    children?: import('svelte').Snippet;
+  }
+
+  let {
+    gradientSize = 200,
+    gradientColor = '#262626',
+    gradientOpacity = 0.8,
+    index = 1,
+    class: className = '',
+    children
+  }: Props = $props();
+  
 
   let gradSize = useMotionValue(gradientSize);
   let gradColor = useMotionValue(gradientColor);
@@ -34,10 +46,10 @@
   let bg = useMotionTemplate`radial-gradient(${gradSize}px circle at ${mouseX}px ${mouseY}px, ${gradColor}, transparent 100%)`;
 </script>
 
-<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
-  on:mousemove={handleMouseMove}
-  on:mouseleave={handleMouseLeave}
+  onmousemove={handleMouseMove}
+  onmouseleave={handleMouseLeave}
   class={cn(
     'group relative flex w-fit  rounded bg-neutral-100 dark:bg-neutral-900   justify-center',
     className
@@ -45,19 +57,21 @@
 >
   <CardAnimatedBorder index={index + 1}>
     <div class="relative z-10">
-      <slot />
+      {@render children?.()}
     </div>
     <Motion
       style={{
         background: bg,
         opacity: gradientOpacity
       }}
-      let:motion
+      
     >
-      <div
-        use:motion
-        class="pointer-events-none absolute inset-px rounded opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-      />
-    </Motion>
+      {#snippet children({ motion })}
+            <div
+          use:motion
+          class="pointer-events-none absolute inset-px rounded opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+  ></div>
+                {/snippet}
+        </Motion>
   </CardAnimatedBorder>
 </div>

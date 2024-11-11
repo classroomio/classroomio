@@ -8,7 +8,7 @@
   import { goto } from '$app/navigation';
 
   let viewAll = false;
-  export let data;
+  let { data } = $props();
 
   const { org, courses } = data;
 </script>

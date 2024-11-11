@@ -10,10 +10,10 @@
   import { Button } from '$lib/components/ui/button';
   import { DirectionStraightRight } from 'carbon-icons-svelte';
 
-  export let data;
+  let { data } = $props();
   const { org, courses } = data;
 
-  let viewAll = false;
+  let viewAll = $state(false);
   const DISPLAY_COURSE = {
     PACED: 'paced',
     LIVE: 'live'
@@ -32,7 +32,7 @@
     }
   ];
 
-  let filteredCourses = [...courses];
+  let filteredCourses = $state([...courses]);
 
   function applyFilter() {
     const activeFilters = filter.filter((f) => f.checked).map((f) => f.type.toLowerCase());
@@ -108,7 +108,7 @@
                             type="checkbox"
                             checked={item.checked}
                             name={item.title}
-                            on:change={() => filterCourse(item)}
+                            onchange={() => filterCourse(item)}
                             class="focus:ring-0"
                           />
 

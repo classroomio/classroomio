@@ -1,7 +1,11 @@
 <script lang="ts">
-  export let data;
-  export let logo = '';
-  export let orgName = '';
+  interface Props {
+    data: any;
+    logo?: string;
+    orgName?: string;
+  }
+
+  let { data, logo = '', orgName = '' }: Props = $props();
 </script>
 
 {#if data.footer.show}

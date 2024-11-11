@@ -1,11 +1,15 @@
 <script lang="ts">
   import { Add, Subtract } from 'carbon-icons-svelte';
-  export let title = '';
-  export let content = '';
+  interface Props {
+    title?: string;
+    content?: string;
+  }
 
-  let isOpen = false;
-  let contentHeight = '0px'; // Track the height of the content
-  let contentRef: HTMLDivElement; // Reference to the content div
+  let { title = '', content = '' }: Props = $props();
+
+  let isOpen = $state(false);
+  let contentHeight = $state('0px'); // Track the height of the content
+  let contentRef: HTMLDivElement = $state(); // Reference to the content div
 
   function toggleAccordion() {
     isOpen = !isOpen;
@@ -25,7 +29,7 @@
   <!-- Accordion Header -->
   <div
     class="flex justify-between items-center cursor-pointer p-4 bg-white dark:bg-inherit rounded"
-    on:click={toggleAccordion}
+    onclick={toggleAccordion}
   >
     <p class="font-semibold text-lg">{title}</p>
     <!-- Icon changes based on the state -->

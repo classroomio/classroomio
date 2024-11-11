@@ -23,7 +23,7 @@
   let user = {
     isLoggedIn: true
   };
-  let open = false;
+  let open = $state(false);
 
   function toggleDarkMode() {
     $isDark = !$isDark;
@@ -44,7 +44,7 @@
   <div class="lg:hidden flex items-center p-1 z-50">
     {#if user.isLoggedIn}
       <button
-        on:click={toggleMenu}
+        onclick={toggleMenu}
         class="transition flex items-center gap-2 w-fit p-2 bg-gray-900 dark:bg-[#181818] text-sm text-white"
       >
         {#if open}
@@ -74,7 +74,7 @@
             class="rounded w-8 inline-block mx-auto"
           />
         </a>
-        <button on:click={toggleDarkMode}>
+        <button onclick={toggleDarkMode}>
           {#if $isDark}
             <Light size={16} />
           {:else}
@@ -85,30 +85,30 @@
 
       {#if !user.isLoggedIn}
         <div class="flex space-x-4">
-          <button on:click={() => goto('/login' + redirect)}>login</button>
+          <button onclick={() => goto('/login' + redirect)}>login</button>
           {#if !disableSignup}
-            <button on:click={() => goto('/signup' + redirect)}>signup</button>
+            <button onclick={() => goto('/signup' + redirect)}>signup</button>
           {/if}
         </div>
       {/if}
 
       {#if user.isLoggedIn}
         <div class="flex flex-col gap-2 border-b dark:border-[#363636] px-4 py-4 space-y-2">
-          <a href="/#" on:click={toggleMenu} class="flex gap-2 items-center">
+          <a href="/#" onclick={toggleMenu} class="flex gap-2 items-center">
             <Home />
             <p>Home</p>
           </a>
-          <a href="/#course" on:click={toggleMenu} class="flex gap-2 items-center">
+          <a href="/#course" onclick={toggleMenu} class="flex gap-2 items-center">
             <Demo />
             <p>Courses</p>
           </a>
         </div>
         <div class="flex flex-col gap-2 px-4 py-4 space-y-2 border-b dark:border-[#363636]">
-          <a href="/#faq" on:click={toggleMenu} class="flex gap-2 items-center">
+          <a href="/#faq" onclick={toggleMenu} class="flex gap-2 items-center">
             <HelpFilled />
             <p>Faq</p>
           </a>
-          <a href="/#testimonial" on:click={toggleMenu} class="flex gap-2 items-center">
+          <a href="/#testimonial" onclick={toggleMenu} class="flex gap-2 items-center">
             <IbmWatsonToneAnalyzer />
             <p>Testimonial</p>
           </a>

@@ -4,9 +4,9 @@
   import DirectionStraightRight from 'carbon-icons-svelte/lib/DirectionStraightRight.svelte';
   import { onMount } from 'svelte';
 
-  export let data;
+  let { data } = $props();
 
-  let scrollPosition = 0;
+  let scrollPosition = $state(0);
   let letters = data.header.title.split('');
   let subtitleLetters = data.header.subtitle.split('');
   const subtitleFadeOffset = letters.length * 3;

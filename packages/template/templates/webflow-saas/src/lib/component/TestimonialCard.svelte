@@ -1,10 +1,19 @@
 <script lang="ts">
   import MagicCard from '$lib/components/magiccard/MagicCard.svelte';
 
-  export let index = 1;
-  export let description = '';
-  export let name = '';
-  export let banner = '';
+  interface Props {
+    index?: number;
+    description?: string;
+    name?: string;
+    banner?: string;
+  }
+
+  let {
+    index = 1,
+    description = '',
+    name = '',
+    banner = ''
+  }: Props = $props();
 </script>
 
 <MagicCard {index}>
