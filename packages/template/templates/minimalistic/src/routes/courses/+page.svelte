@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
   import CardLoader from '$lib/component/CardLoader.svelte';
@@ -11,9 +13,13 @@
   import Button from '$lib/components/ui/button/button.svelte';
   import { toggleBodyByMode } from '$lib/utils/toggleMode';
 
-  export let data;
+  interface Props {
+    data: any;
+  }
+
+  let { data }: Props = $props();
   const { org, courses } = data;
-  let viewAllCourses = false;
+  let viewAllCourses = $state(false);
 
   const DISPLAY_COURSE = {
     PACED: 'paced',
@@ -33,7 +39,7 @@
     }
   ];
 
-  let filteredCourses = [...courses];
+  let filteredCourses = $state([...courses]);
 
   function applyFilter() {
     const activeFilters = filter.filter((f) => f.checked).map((f) => f.type.toLowerCase());
@@ -51,7 +57,9 @@
     item.checked = !item.checked;
     applyFilter();
   }
-  $: browser && toggleBodyByMode(false);
+  run(() => {
+    browser && toggleBodyByMode(false);
+  });
 </script>
 
 {#if !data}
@@ -112,7 +120,7 @@
                         type="checkbox"
                         checked={item.checked}
                         name={item.title}
-                        on:change={() => filterCourse(item)}
+                        onchange={() => filterCourse(item)}
                       />
                       <label for={item.title}>{item.title}</label>
                     </form>

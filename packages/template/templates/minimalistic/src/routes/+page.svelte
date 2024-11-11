@@ -1,11 +1,16 @@
 <script>
+  import { run } from 'svelte/legacy';
+
   import { browser } from '$app/environment';
   import Home from '$lib/index.svelte';
   import { toggleBodyByMode } from '$lib/utils/toggleMode';
 
-  export let data;
+  /** @type {{data: any}} */
+  let { data } = $props();
 
-  $: browser && toggleBodyByMode(false);
+  run(() => {
+    browser && toggleBodyByMode(false);
+  });
 </script>
 
 <div>

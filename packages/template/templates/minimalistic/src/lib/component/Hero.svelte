@@ -1,9 +1,15 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { goto } from '$app/navigation';
   import Button from '$lib/components/ui/button/button.svelte';
 
-  export let data;
-  let player;
+  interface Props {
+    data: any;
+  }
+
+  let { data }: Props = $props();
+  let player = $state();
 
   function isYouTubeLink(link: string) {
     const youtubeRegex =
@@ -18,7 +24,9 @@
     // @ts-ignore
     window.player = plyr;
   }
-  $: initPlyr(player, data.header?.banner?.video);
+  run(() => {
+    initPlyr(player, data.header?.banner?.video);
+  });
 </script>
 
 {#if data.header.banner.show}
@@ -55,7 +63,7 @@
               allowfullscreen
               allowtransparency
               allow="autoplay"
-            />
+></iframe>
           </div>
           <!-- </div> -->
         {:else}

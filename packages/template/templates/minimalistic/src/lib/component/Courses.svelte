@@ -5,10 +5,14 @@
   import { courseMetaData } from './store';
   import { Button } from '$lib/components/ui/button';
 
-  export let data;
+  interface Props {
+    data: any;
+  }
+
+  let { data }: Props = $props();
 
   const { org, courses } = data;
-  let viewAll = false;
+  let viewAll = $state(false);
 </script>
 
 {#if org.courses.show}

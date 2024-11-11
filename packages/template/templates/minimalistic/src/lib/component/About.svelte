@@ -1,7 +1,11 @@
 <script lang="ts">
   import { CheckmarkFilled } from 'carbon-icons-svelte';
 
-  export let data;
+  interface Props {
+    data: any;
+  }
+
+  let { data }: Props = $props();
 </script>
 
 {#if data.aboutUs.show}

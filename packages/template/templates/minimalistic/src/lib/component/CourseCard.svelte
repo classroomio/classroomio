@@ -1,15 +1,30 @@
 <script lang="ts">
   import { ArrowRight } from 'carbon-icons-svelte';
-  export let isLearningPath = false;
-  export let className = '';
-  export let buttonClass = '';
-  export let bannerImage: string | undefined;
-  export let slug = '';
-  export let title = '';
-  export let description = '';
-  export let cost = 0;
-  export let currency = 'USD';
-  export let lessons = 0;
+  interface Props {
+    isLearningPath?: boolean;
+    className?: string;
+    buttonClass?: string;
+    bannerImage: string | undefined;
+    slug?: string;
+    title?: string;
+    description?: string;
+    cost?: number;
+    currency?: string;
+    lessons?: number;
+  }
+
+  let {
+    isLearningPath = false,
+    className = '',
+    buttonClass = '',
+    bannerImage,
+    slug = '',
+    title = '',
+    description = '',
+    cost = 0,
+    currency = 'USD',
+    lessons = 0
+  }: Props = $props();
   function getCourseUrl() {
     return isLearningPath ? `/pathway/${slug}` : `/course/${slug}`;
   }
