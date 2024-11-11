@@ -5,9 +5,13 @@
   import LogoLinkedin from 'carbon-icons-svelte/lib/LogoLinkedin.svelte';
   import LogoInstagram from 'carbon-icons-svelte/lib/LogoInstagram.svelte';
   import { LogoYoutube } from 'carbon-icons-svelte';
-  export let logo = '';
-  export let orgName = '';
-  export let data;
+  interface Props {
+    logo?: string;
+    orgName?: string;
+    data: any;
+  }
+
+  let { logo = '', orgName = '', data }: Props = $props();
 </script>
 
 {#if data.footer.show}

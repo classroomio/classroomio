@@ -1,17 +1,19 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { ArrowRight, Close } from 'carbon-icons-svelte';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import Menu from 'carbon-icons-svelte/lib/Menu.svelte';
 
-  let open = false; // State for mobile menu
+  let open = $state(false); // State for mobile menu
   let disableSignup = false;
   let logo = '';
   let orgName = 'evanai';
   let isOrgSite = true;
   let backgroundColor = 'bg-white dark:bg-black';
 
-  let activeLink = '';
+  let activeLink = $state('');
   let isCoursePage = false;
   let user = {
     isLoggedIn: true
@@ -37,13 +39,13 @@
     open = !open;
   }
 
-  $: activeHash = $page.url.hash;
-  $: {
+  let activeHash = $derived($page.url.hash);
+  run(() => {
     const activeItem = menuItems.find((item) => item.link === `/${activeHash}`);
     if (activeItem) {
       activeLink = activeItem.link;
     }
-  }
+  });
 </script>
 
 <nav class={`relative w-full flex items-center justify-between py-4 px-6 ${backgroundColor}`}>
@@ -60,7 +62,7 @@
 
   <!-- Mobile Menu Button (Visible only on mobile and when logged in) -->
   {#if user.isLoggedIn}
-    <button on:click={toggleMenu} class="lg:hidden">
+    <button onclick={toggleMenu} class="lg:hidden">
       <Menu size={24} />
     </button>
   {/if}
@@ -81,9 +83,9 @@
   <!-- PrimaryButtons for login/signup (Visible only when not logged in) -->
   {#if !user.isLoggedIn}
     <div class="flex space-x-4">
-      <button on:click={() => goto('/login' + redirect)}>login</button>
+      <button onclick={() => goto('/login' + redirect)}>login</button>
       {#if !disableSignup}
-        <button on:click={() => goto('/signup' + redirect)}>signup</button>
+        <button onclick={() => goto('/signup' + redirect)}>signup</button>
       {/if}
     </div>
   {/if}
@@ -94,18 +96,18 @@
       open ? 'translate-y-0' : '-translate-y-full'
     } transition-transform duration-300 ease-in-out lg:hidden text-base font-bold text-[#1F2937] list-none cursor-pointer`}
   >
-    <button on:click={toggleMenu} class="absolute right-4 top-4 lg:hidden z-20">
+    <button onclick={toggleMenu} class="absolute right-4 top-4 lg:hidden z-20">
       <Close size={24} />
     </button>
 
     {#if user.isLoggedIn}
       {#each menuItems as menu}
         <li class="py-4 px-6 border-b">
-          <a href={menu.link} on:click={toggleMenu}>{menu.title}</a>
+          <a href={menu.link} onclick={toggleMenu}>{menu.title}</a>
         </li>
       {/each}
       {#if isOrgSite}
-        <a href="/courses" class="flex items-center gap-1 py-4 px-6 border-b" on:click={toggleMenu}>
+        <a href="/courses" class="flex items-center gap-1 py-4 px-6 border-b" onclick={toggleMenu}>
           <p class="font-bold text-[#1F2937] text-base">Start Learning</p>
           <ArrowRight size={16} class="fill-[#1F2937] font-bold" />
         </a>

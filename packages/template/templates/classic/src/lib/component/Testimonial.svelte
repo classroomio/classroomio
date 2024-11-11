@@ -1,7 +1,11 @@
 <script lang="ts">
   import TestimonialCard from './TestimonialCard.svelte';
 
-  export let data;
+  interface Props {
+    data: any;
+  }
+
+  let { data }: Props = $props();
 </script>
 
 {#if data.testimonial.show}

@@ -2,7 +2,11 @@
   import Button from '$lib/components/ui/button/button.svelte';
   import InstructorCard from './InstructorsCard.svelte';
 
-  export let data;
+  interface Props {
+    data: any;
+  }
+
+  let { data }: Props = $props();
 </script>
 
 {#if data.instructors.show}

@@ -6,7 +6,11 @@
   import EmptyState from './EmptyState.svelte';
   import { Button } from '$lib/components/ui/button';
 
-  export let data;
+  interface Props {
+    data: any;
+  }
+
+  let { data }: Props = $props();
 
   const { org, courses } = data;
 
@@ -15,7 +19,7 @@
     COURSE: 'course',
     PATH: 'path'
   };
-  let viewAll = false;
+  let viewAll = $state(false);
   let type = DISPLAY_COURSE.ALL;
 </script>
 

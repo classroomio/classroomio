@@ -11,7 +11,11 @@
   import PageLoader from './component/PageLoader.svelte';
   import Testimonial from './component/Testimonial.svelte';
 
-  export let data;
+  interface Props {
+    data: any;
+  }
+
+  let { data }: Props = $props();
 
   const { org } = data;
 </script>

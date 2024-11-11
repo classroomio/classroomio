@@ -1,7 +1,11 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
 
-  export let data;
+  interface Props {
+    data: any;
+  }
+
+  let { data }: Props = $props();
 </script>
 
 {#if data.header.banner.show}
@@ -21,7 +25,7 @@
         </p>
         <button
           class="bg-[#CE02CE] rounded text-white font-semibold p-2 hover:scale-95"
-          on:click={() => {
+          onclick={() => {
             goto(data.header.action.link);
           }}>{data.header.action.label}</button
         >

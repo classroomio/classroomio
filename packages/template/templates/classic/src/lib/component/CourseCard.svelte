@@ -10,17 +10,31 @@
     SELF_PACED: 'paced'
   };
 
-  export let bannerImage: string | undefined;
 
-  export let slug = '';
-  export let title = '';
-  export let description = '';
-  export let cost = 0;
-  export let totalLessons = 0;
-  export let currency = 'USD';
-  export let isLMS = false;
-  export let type;
-  let target: any;
+  interface Props {
+    bannerImage: string | undefined;
+    slug?: string;
+    title?: string;
+    description?: string;
+    cost?: number;
+    totalLessons?: number;
+    currency?: string;
+    isLMS?: boolean;
+    type: any;
+  }
+
+  let {
+    bannerImage,
+    slug = '',
+    title = '',
+    description = '',
+    cost = 0,
+    totalLessons = 0,
+    currency = 'USD',
+    isLMS = false,
+    type
+  }: Props = $props();
+  let target: any = $state();
 
   function getCourseUrl() {
     return `/course/${slug}`;
@@ -67,17 +81,21 @@
         alt="Course Logo"
         class="h-[170px] w-full rounded dark:border dark:border-neutral-600 relative"
       >
-        <svelte:fragment slot="loading">
-          <SkeletonPlaceholder style="width: 100%; height: 170px;" />
-        </svelte:fragment>
-        <svelte:fragment slot="error">an error occured</svelte:fragment>
+        {#snippet loading()}
+              
+            <SkeletonPlaceholder style="width: 100%; height: 170px;" />
+          
+              {/snippet}
+        {#snippet error()}
+                an error occured
+              {/snippet}
       </ImageLoader>
       {#if type}
         {@const tag = COURSE_TAG[type]}
         <span
           class="absolute bottom-2 left-2 z-10 text-xs capitalize bg-primary-50 rounded-sm p-1 flex items-center gap-1 font-mono"
         >
-          <svelte:component this={tag.icon} size={16} class={tag.iconStyle} />
+          <tag.icon size={16} class={tag.iconStyle} />
           {tag.label}
         </span>
       {/if}

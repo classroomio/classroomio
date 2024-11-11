@@ -2,7 +2,11 @@
   import { goto } from '$app/navigation';
   import Button from '$lib/components/ui/button/button.svelte';
 
-  export let data;
+  interface Props {
+    data: any;
+  }
+
+  let { data }: Props = $props();
 </script>
 
 {#if data.footerNote.show}

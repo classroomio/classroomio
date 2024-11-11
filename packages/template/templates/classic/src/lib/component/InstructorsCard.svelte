@@ -1,10 +1,19 @@
 <script lang="ts">
   import RatingComponent from './RatingComponent.svelte';
 
-  export let name = '';
-  export let description = '';
-  export let rating = 0;
-  export let banner = '';
+  interface Props {
+    name?: string;
+    description?: string;
+    rating?: number;
+    banner?: string;
+  }
+
+  let {
+    name = '',
+    description = '',
+    rating = 0,
+    banner = ''
+  }: Props = $props();
 </script>
 
 <div

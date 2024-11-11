@@ -1,6 +1,10 @@
 <script lang="ts">
   import Accordion from './Accordion.svelte';
-  export let data;
+  interface Props {
+    data: any;
+  }
+
+  let { data }: Props = $props();
 </script>
 
 {#if data.faq.show}
