@@ -5,8 +5,13 @@
   import StudentDashboard from '$lib/Home/StudentDashboard.svelte';
   import MoreFeatures from '$lib/Home/MoreFeatures.svelte';
   import Testimonial from '$lib/Home/Testimonial.svelte';
+  import { PUBLIC_ENABLE_FAQ } from '$env/static/public';
 
-  import { env } from '$env/dynamic/public';
+  import { onMount } from 'svelte';
+
+  onMount(() => {
+    console.log('Welcome to CIO');
+  });
 </script>
 
 <Hero />
@@ -15,6 +20,6 @@
 <Testimonial />
 <MoreFeatures />
 
-{#if env.PUBLIC_ENABLE_FAQ}
+{#if PUBLIC_ENABLE_FAQ}
   <Faq />
 {/if}

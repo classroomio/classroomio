@@ -59,6 +59,11 @@
 
     // Set up posthog
     initPosthog();
+
+		// Disable umami on localhost
+		if (dev) {
+      localStorage.setItem('umami.disabled', '1');
+    }
   }
 
   function setAnalyticsUser() {
