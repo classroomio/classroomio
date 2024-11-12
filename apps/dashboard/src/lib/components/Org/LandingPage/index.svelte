@@ -1,7 +1,6 @@
 <script lang="ts">
   import { fade } from 'svelte/transition';
   import get from 'lodash/get';
-  import { onMount } from 'svelte';
   import LogoFacebook from 'carbon-icons-svelte/lib/LogoFacebook.svelte';
   import LogoTwitter from 'carbon-icons-svelte/lib/LogoTwitter.svelte';
   import LogoLinkedin from 'carbon-icons-svelte/lib/LogoLinkedin.svelte';
@@ -29,9 +28,10 @@
   import { landingPageSettings } from '$lib/components/Org/Settings/store';
   import { t } from '$lib/utils/functions/translations';
   import PoweredBy from '$lib/components/Upgrade/PoweredBy.svelte';
+  import type { CurrentOrg } from '$lib/utils/types/org';
 
   export let orgSiteName = '';
-  export let org = {};
+  export let org: CurrentOrg | null;
 
   let email: string | undefined;
   let isAdding = false;
@@ -46,12 +46,12 @@
     phone: '',
     message: ''
   };
-  let contactError = {};
+  let contactError: Record<string, string> = {};
 
   const supabase = getSupabase();
 
   async function handleSubmit() {
-    if (!email || !validateEmail(email)) return;
+    if (!email || !validateEmail(email) || !org) return;
     isAdding = true;
 
     const { error } = await supabase.from('organization_emaillist').insert({
@@ -85,7 +85,7 @@
       email: contact.email,
       phone: contact.phone,
       message: contact.message,
-      organization_id: org.id
+      organization_id: org?.id
     });
 
     if (error) {
@@ -147,25 +147,48 @@
     }
   }
 
+  function getBgImage(settings) {
+    const { show, image } = settings.header.background || {
+      show: true,
+      image: '/images/org-landingpage-banner.jpeg'
+    };
+
+    if (!show) {
+      return undefined;
+    }
+
+    if (image) {
+      return `url('${image}')`;
+    }
+  }
+
   $: initPlyr(player, $landingPageSettings.header?.banner?.video);
-  $: setDefault(org.landingpage);
+  $: setDefault(org?.landingpage);
 </script>
 
 <svelte:head>
   <title>
-    {!org.name ? '' : `${org.name}'s `}{$t('course.navItem.landing_page.landing_page')}
+    {!org?.name ? '' : `${org.name}'s `}{$t('course.navItem.landing_page.landing_page')}
   </title>
 </svelte:head>
 
 <PoweredBy />
 
-{#if !org.landingpage}
+{#if !org?.landingpage}
   <PageLoader />
 {:else}
   <main>
     <!-- Header Section -->
     {#if $landingPageSettings.header.show}
-      <header id="header" class="banner w-full h-[100vh] md:h-[90vh] mb-10 relative">
+      <header
+        id="header"
+        class={`w-full h-[100vh] md:h-[90vh] mb-10 relative ${
+          $landingPageSettings.header.background?.show
+            ? 'bg-cover bg-center'
+            : 'border-b border-gray-300'
+        }`}
+        style="background-image: {getBgImage($landingPageSettings)}"
+      >
         <Navigation
           logo={org.avatar_url}
           orgName={org.name}
@@ -312,7 +335,12 @@
                 type={courseData.type}
                 description={courseData.description}
                 isPublished={courseData.is_published}
-                cost={courseData.cost}
+                pricingData={{
+                  cost: courseData.cost,
+                  discount: courseData.metadata.discount,
+                  showDiscount: courseData.metadata.showDiscount,
+                  currency: courseData.currency
+                }}
                 currency={courseData.currency}
                 totalLessons={get(courseData, 'lessons[0].count', 0)}
                 isOnLandingPage={true}
@@ -442,8 +470,7 @@
                         label={$t('course.navItem.landing_page.message')}
                         bind:value={contact.message}
                         errorMessage={contactError.message}
-                        rows="9"
-                        maxRows={15}
+                        rows={9}
                         placeholder={$t('course.navItem.landing_page.your_message')}
                       />
                     </div>
@@ -581,13 +608,3 @@
     {/if}
   </main>
 {/if}
-
-<style>
-  .banner {
-    background: url('/images/org-landingpage-banner.jpeg') no-repeat center center fixed;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
-  }
-</style>

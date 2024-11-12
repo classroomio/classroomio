@@ -36,6 +36,10 @@
       desc: 'This feature gives you the ability to group courses into folder which we are calling - Pathways. Students can complete a series of courses before getting a certificate'
     },
     {
+      title: 'Embedable Course',
+      desc: 'You can embed selected course form ClassroomIO on any website of your choice'
+    },
+    {
       title: 'Landing page builder',
       desc: 'With more templates and pages, we will allow educators create simple web pages using our platform to showcase their programs and offerings.'
     },

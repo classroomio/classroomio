@@ -1,16 +1,30 @@
 <script>
   import { page } from '$app/stores';
+  import { MetaTags } from 'svelte-meta-tags';
   import Navigation from '$lib/Navigation/Navigation.svelte';
   import Footer from '$lib/Footer/Footer.svelte';
   import PageTransition from './transition.svelte';
   import NotFound from '$lib/NotFound/NotFound.svelte';
+  import extend from 'just-extend';
+  import { dev } from '$app/environment';
+  import { onMount } from 'svelte';
 
   import '../app.css';
 
   export let data;
+
+  onMount(() => {
+    if (dev) {
+      localStorage.setItem('umami.disabled', '1');
+    }
+  });
+
+  $: metaTags = extend(true, {}, data.baseMetaTags, $page.data.pageMetaTags);
 </script>
 
-<div class="overflow-hidden">
+<MetaTags {...metaTags} />
+
+<div class="overflow-hidden bg-white">
   <Navigation />
 
   <PageTransition url={data.url}>

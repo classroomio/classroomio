@@ -3,19 +3,22 @@
   "version": "0.1.1",
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev",
-    "prepare": "turbo run prepare",
+    "dev": "turbo prepare && turbo run dev",
     "lint": "turbo run lint",
     "clean": "turbo clean && rm -rf node_modules",
     "format": "prettier . --write",
     "release": "standard-version",
-    "ci": "cypress run"
+    "ci": "cypress run",
+    "dashboard:build": "cd apps/dashboard && pnpm i && IS_SELFHOSTED=true DEPLOYMENT_PROVIDER=docker pnpm build",
+    "dashboard:start": "cd apps/dashboard && node build"
   },
   "license": "MIT",
   "packageManager": "pnpm@8.0.0",
+  "dependencies": {
+    "turbo": "^1.10.16"
+  },
   "devDependencies": {
     "concurrently": "^8.2.2",
-    "cypress": "^13.8.0",
     "eslint": "^8.54.0",
     "prettier": "^3.1.0",
     "prettier-plugin-svelte": "^3.1.2",
@@ -23,7 +26,6 @@
     "standard-version": "^9.5.0",
     "supabase": "^1.151.1",
     "tsconfig": "workspace:*",
-    "turbo": "^1.10.16",
     "typescript": "^5.1.6"
   }
 }

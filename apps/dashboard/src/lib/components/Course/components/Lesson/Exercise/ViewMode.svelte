@@ -376,26 +376,4 @@
   .status-text {
     width: fit-content;
   }
-  :global(.shake) {
-    animation: shake 0.85s;
-  }
-  @keyframes shake {
-    10%,
-    90% {
-      transform: translate3d(-15px, 0, 0);
-    }
-    20%,
-    80% {
-      transform: translate3d(15px, 0, 0);
-    }
-    30%,
-    50%,
-    70% {
-      transform: translate3d(-15px, 0, 0);
-    }
-    40%,
-    60% {
-      transform: translate3d(15px, 0, 0);
-    }
-  }
 </style>

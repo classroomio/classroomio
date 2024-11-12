@@ -983,20 +983,17 @@ with check ((id = ( SELECT organizationmember.organization_id
  LIMIT 1)));
 
 
-create policy "User must be an admin to UPDATE"
+create policy "User must be admin to UPDATE"
 on "public"."organization"
 as permissive
 for update
 to public
-using ((id = ( SELECT organizationmember.organization_id
+using ((id in ( SELECT organizationmember.organization_id
    FROM organizationmember
-  WHERE ((organizationmember.profile_id = ( SELECT auth.uid() AS uid)) AND (organizationmember.role_id = 1))
- LIMIT 1)))
-with check ((id = ( SELECT organizationmember.organization_id
+  WHERE ((organizationmember.profile_id = ( SELECT auth.uid() AS uid)) AND (organizationmember.role_id = 1)))))
+with check ((id in ( SELECT organizationmember.organization_id
    FROM organizationmember
-  WHERE ((organizationmember.profile_id = ( SELECT auth.uid() AS uid)) AND (organizationmember.role_id = 1))
- LIMIT 1)));
-
+  WHERE ((organizationmember.profile_id = ( SELECT auth.uid() AS uid)) AND (organizationmember.role_id = 1)))));
 
 create policy "User must be an org member to DELETE"
 on "public"."organization_plan"
@@ -1063,6 +1060,17 @@ to public
 using (is_org_admin())
 with check (is_org_admin());
 
+create policy "Only user can update their account via email"
+on "public"."organizationmember"
+as PERMISSIVE
+for UPDATE
+to public
+using (
+  (select auth.jwt()) ->> 'email' = email
+)
+with check (
+  (select auth.jwt()) ->> 'email' = email
+);
 
 create policy "Only auth users can read profile"
 on "public"."profile"

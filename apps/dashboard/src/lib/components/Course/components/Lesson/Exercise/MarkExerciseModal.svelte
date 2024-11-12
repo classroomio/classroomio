@@ -25,6 +25,7 @@
     nextStatusId: number;
     total: number;
   }) => {};
+  export let isSaving = false;
 
   const SELECTABLE_STATUS = [
     {
@@ -128,7 +129,7 @@
                 'course.navItem.submissions.grading_modal.questions_tried'
               )} ${answerPoints} `
             };
-            data.questionAnswerByPoint[id] = `${points / answerPoints}`;
+            data.questionAnswerByPoint[id] = `${Math.ceil(points / answerPoints)}`;
           } else if (aiResponses.length) {
             const graded = aiResponses.find((res) => res.id === id);
 
@@ -335,8 +336,9 @@
         <PrimaryButton
           onClick={() => {
             handleSave(data);
-            onClose();
+            // onClose();
           }}
+          isLoading={isSaving}
           label={$t('course.navItem.submissions.grading_modal.submit_grades')}
           variant={VARIANTS.CONTAINED}
           className="py-3 px-8 w-full"

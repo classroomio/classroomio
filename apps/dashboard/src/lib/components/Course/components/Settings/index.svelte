@@ -9,8 +9,8 @@
     RadioButtonGroup,
     RadioButton
   } from 'carbon-components-svelte';
-  import { Restart } from 'carbon-icons-svelte';
-  import { PUBLIC_SERVER_URL } from '$env/static/public';
+  import { Restart, ArrowUpRight } from 'carbon-icons-svelte';
+  import { env } from '$env/dynamic/public';
 
   import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
@@ -68,7 +68,7 @@
         slideUrl: lesson.slide_url || '',
         video: lesson.videos || ''
       }));
-      const response = await fetch(PUBLIC_SERVER_URL + '/downloadCourse', {
+      const response = await fetch(env.PUBLIC_SERVER_URL + '/downloadCourse', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -130,45 +130,28 @@
     }
     isSaving = true;
     try {
-      const {
-        course_title,
-        course_description,
-        type,
-        logo,
-        tabs,
-        grading,
-        allow_new_students,
-        lesson_download,
-        is_published
-      } = $settings;
-      await updateCourse($course.id, avatar, {
-        title: course_title,
-        description: course_description,
-        type: type,
-        logo: logo,
-        is_published,
+      const updatedCourse = {
+        title: $settings.course_title,
+        description: $settings.course_description,
+        type: $settings.type,
+        logo: $settings.logo,
+        is_published: $settings.is_published,
         metadata: {
           ...(isObject($course.metadata) ? $course.metadata : {}),
-          lessonTabsOrder: tabs,
-          grading: grading,
-          lessonDownload: lesson_download,
-          allowNewStudent: allow_new_students
+          lessonTabsOrder: $settings.tabs,
+          grading: $settings.grading,
+          lessonDownload: $settings.lesson_download,
+          allowNewStudent: $settings.allow_new_students
         },
         slug: $course.slug
-      });
-
-      $course.title = course_title;
-      $course.description = course_description;
-      $course.type = type;
-      $course.logo = logo;
-      $course.is_published = is_published;
-      $course.metadata = {
-        ...(isObject($course.metadata) ? $course.metadata : {}),
-        lessonTabsOrder: tabs,
-        grading: grading,
-        lessonDownload: lesson_download,
-        allowNewStudent: allow_new_students
       };
+      await updateCourse($course.id, avatar, updatedCourse);
+
+      $course = {
+        ...$course,
+        ...updatedCourse
+      };
+
       snackbar.success('snackbar.course_settings.success.saved');
     } catch (error) {
       snackbar.error();
@@ -198,6 +181,7 @@
   };
 
   $: setDefault($course);
+  $: courseLink = `${$currentOrgDomain}/course/${$course.slug}`;
 </script>
 
 <Grid class="border-c rounded border-gray-200 dark:border-neutral-600">
@@ -263,9 +247,13 @@
           <IconButton contained={true} size="small" onClick={generateNewCourseLink}>
             <Restart size={16} />
           </IconButton>
+          <span class="grow" />
+          <IconButton contained={true} size="small" onClick={() => goto(courseLink)}>
+            <ArrowUpRight size={16} />
+          </IconButton>
         </p>
         {#if $course.slug}
-          <CodeSnippet wrapText type="multi" code={`${$currentOrgDomain}/course/${$course.slug}`} />
+          <CodeSnippet wrapText type="multi" code={courseLink} />
         {:else}
           <CodeSnippet code="Setup landing page to get course link" />
         {/if}
@@ -323,7 +311,7 @@
           variant={VARIANTS.OUTLINED}
           label={$t('course.navItem.settings.download')}
           onClick={downloadCourse}
-          isDisabled={isLoading || !PUBLIC_SERVER_URL}
+          isDisabled={isLoading || !env.PUBLIC_SERVER_URL}
           {isLoading}
         />
       {/if}

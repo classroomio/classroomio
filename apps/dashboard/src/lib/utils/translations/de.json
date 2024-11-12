@@ -194,7 +194,8 @@
     "team_members": "Teammitglieder",
     "back": "Zurück zu den Einstellungen",
     "download_lessons": "Führen Sie ein Upgrade durch, um Lektionen herunterzuladen",
-    "download_course": "Upgrade zum Download-Kurs"
+    "download_course": "Upgrade zum Download-Kurs",
+    "domain": "Aktualisieren Sie Ihren Plan, um benutzerdefinierte Domänen hinzuzufügen"
   },
   "audience": {
     "title": "Publikum",
@@ -390,9 +391,18 @@
             "goals": "Ziele",
             "reviews": "Rezensionen",
             "instructor": "Lehrer",
-            "pricing": "Preisgestaltung"
+            "pricing": "Preisgestaltung",
+            "certificate": "Zertifikat"
+          },
+          "display_section": "Anzeigebereich",
+          "certificate_form": {
+            "upload_template": "Zertifikatsvorlage"
           }
-        }
+        },
+        "course_content": "Kursinhalte",
+        "modules": "module",
+        "lessons": "Unterricht",
+        "exercises": "Übungen"
       },
       "certificates": {
         "title": "Zertifikate",
@@ -475,7 +485,11 @@
         "title": "Markierungen",
         "student": "Student",
         "total": "Gesamt",
-        "no_student": "Kein Student hinzugefügt"
+        "no_student": "Kein Student hinzugefügt",
+        "export": {
+          "csv": "Als CSV exportieren",
+          "pdf": "Als PDF exportieren"
+        }
       },
       "submissions": {
         "title": "Eingereichte Übungen",
@@ -750,7 +764,10 @@
           "lock": "Sperren",
           "unlock": "Freischalten",
           "start_reorder": "Neu anordnen",
-          "end_reorder": "Nachbestellung beenden"
+          "end_reorder": "Nachbestellung beenden",
+          "modal_heading_section": "Neuen Abschnitt hinzufügen",
+          "lesson_section_title": "Abschnittstitel",
+          "cancel": "Stornieren"
         },
         "disabled": "Funktion ist deaktiviert",
         "next": "Nächste",
@@ -763,7 +780,16 @@
         },
         "drag": "Ziehen Sie eine Karte, um sie neu anzuordnen",
         "no_lesson": "Noch kein Unterricht",
-        "share_your_knowledge": "Teilen Sie Ihr Wissen mit der Welt, indem Sie ansprechende Lektionen erstellen. Klicken Sie zunächst auf die Schaltfläche „Hinzufügen“."
+        "share_your_knowledge": "Teilen Sie Ihr Wissen mit der Welt, indem Sie ansprechende Lektionen erstellen. Klicken Sie zunächst auf die Schaltfläche „Hinzufügen“.",
+        "heading_v2": "Inhalt",
+        "section_prompt": {
+          "cta": "Abschnitte aktivieren",
+          "header": "Abschnitte aktivieren",
+          "title": "Wir haben Kursabschnitte eingeführt",
+          "description": "Sie können Lektionen jetzt in Abschnitte gruppieren, um Ihre Inhalte zu organisieren und das Lernen für Ihre Schüler reibungsloser zu gestalten.",
+          "activate": "Aktivieren",
+          "cancel": "Stornieren"
+        }
       },
       "news_feed": {
         "heading": "Neuigkeiten",
@@ -794,14 +820,14 @@
     },
     "navItems": {
       "nav_news_feed": "Neuigkeiten",
-      "nav_lessons": "Unterricht",
       "nav_attendance": "Teilnahme",
       "nav_submissions": "Einsendungen",
       "nav_marks": "Markierungen",
       "nav_people": "Menschen",
       "nav_certificates": "Zertifikate",
       "nav_landing_page": "Landingpage",
-      "nav_settings": "Einstellungen"
+      "nav_settings": "Einstellungen",
+      "nav_content": "Inhalt"
     },
     "not_permitted": {
       "header": "Keine Erlaubnis",
@@ -907,12 +933,23 @@
     "settings": {
       "domains": {
         "add": "Hinzufügen",
-        "work_together": "Fügen Sie Ihre Teamkollegen oder Mitarbeiter zu Ihrer Organisation hinzu. Beginnen Sie mit der Zusammenarbeit",
         "url": "URL",
         "update": "Domäne aktualisieren",
         "custom": "Benutzerdefinierten Domain",
         "domain": "Fügen Sie Ihren eigenen Domainnamen hinzu",
-        "title": "Benutzerdefinierten Domain"
+        "title": "Benutzerdefinierten Domain",
+        "save": "Speichern",
+        "your_domain": "Ihre Domain",
+        "custom_domain_error": "Sie können eine Top-Level-Domain nicht als benutzerdefinierte Domain hinzufügen. Verwenden Sie stattdessen eine Subdomain wie „Kurse.[IhreWebsite].com“ oder „www.[IhreWebsite].com“.",
+        "custom_domain_success": "Benutzerdefinierte Domäne erfolgreich hinzugefügt",
+        "dns_description": "Legen Sie bei Ihrem DNS-Anbieter den folgenden Eintrag fest, um fortzufahren:",
+        "dns_type": "Typ",
+        "dns_value": "Wert",
+        "dns_name": "Name",
+        "refresh": "Aktualisieren",
+        "remove": "Entfernen",
+        "custom_favicon": "Benutzerdefiniertes Favicon",
+        "custom_code": "Benutzerdefinierter Code"
       },
       "customize-lms": {
         "title": "LMS anpassen",
@@ -1068,7 +1105,8 @@
       "learn": "Erfahren Sie mehr",
       "month": "Monat",
       "monthly": "Monatlich",
-      "annually": "Jährlich"
+      "annually": "Jährlich",
+      "save": "Sparen Sie 2 Monate"
     },
     "plan_names": {
       "free": "Frei",
@@ -1180,6 +1218,11 @@
           "video": "Video",
           "image": "Bild"
         }
+      },
+      "background": {
+        "title": "Hintergrundbild",
+        "show_background": "Hintergrund anzeigen",
+        "hide_background": "Hintergrund ausblenden"
       }
     },
     "organization": {
@@ -1190,9 +1233,9 @@
         "update_organization": "Organisation aktualisieren",
         "team": {
           "heading": "Team",
-          "sub_heading": "Richten Sie Ihre Website ein",
           "body": "Fügen Sie Ihrer Organisation Teamkollegen hinzu, damit Sie beide an Projekten zusammenarbeiten können.",
-          "button": "Team verwalten"
+          "button": "Team verwalten",
+          "sub_heading": "Stellen Sie Ihr Team zusammen"
         },
         "custom_domain": {
           "heading": "Benutzerdefinierten Domain",
@@ -1202,7 +1245,9 @@
         },
         "theme": {
           "heading": "Thema",
-          "sub_heading": "Legen Sie Ihre Markenfarbe fest"
+          "sub_heading": "Legen Sie Ihre Markenfarbe fest",
+          "custom_theme": "Benutzerdefiniertes Thema",
+          "add_theme": "Thema hinzufügen"
         },
         "customize_lms": {
           "heading": "LMS anpassen",
@@ -1223,7 +1268,10 @@
       },
       "profile_picture": {
         "heading": "Profilbild",
-        "upload_image": "Bild hochladen"
+        "upload_image": "Bild hochladen",
+        "file_size": "Maximale Dateigröße:",
+        "accepted": "Akzeptiert:",
+        "validation_error": "Die Dateigröße überschreitet die maximale Grenze:"
       }
     },
     "tabs": {
@@ -1266,7 +1314,9 @@
     "what_brings": "Was bringt dich dazu",
     "how": "Wie sind Sie auf uns aufmerksam geworden?",
     "back": "Zurück",
-    "continue": "Weitermachen"
+    "continue": "Weitermachen",
+    "employees": "Bilden Sie meine Mitarbeiter aus",
+    "customers": "Erstellen Sie Kurse für meine Kunden"
   },
   "verify_email_modal": {
     "heading": "Bestätigen Sie Ihre E-Mail",
@@ -1284,6 +1334,17 @@
   },
   "specialization": {
     "course_tag": "Spezialisierung"
+  },
+  "profileMenu": {
+    "profile": "PROFIL",
+    "current_org": "AKTUELLE ORGANISATION",
+    "free_tools": "KOSTENLOSE WERKZEUGE",
+    "progress": "Fortschrittsbericht",
+    "timer": "Aktivitätstimer",
+    "tic_tac": "Tictac-Zehe",
+    "see_more": "Mehr sehen",
+    "whats_new": "Was ist neu",
+    "launch_week": "Startwoche"
   },
   "validations": {
     "invalid_type_error": "Darf nicht leer sein",

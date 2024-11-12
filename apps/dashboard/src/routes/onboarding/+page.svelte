@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { PUBLIC_IP_REGISTRY_KEY } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import { goto } from '$app/navigation';
   import { Dropdown } from 'carbon-components-svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
@@ -69,12 +69,16 @@
       value: 'teach-online'
     },
     {
-      label: $t('onboarding.expanding'),
-      value: 'expanding-platform'
+      label: $t('onboarding.employees'),
+      value: 'employees'
     },
     {
-      label: $t('onboarding.explore'),
-      value: 'explore'
+      label: $t('onboarding.customers'),
+      value: 'customers'
+    },
+    {
+      label: $t('onboarding.expanding'),
+      value: 'expanding-platform'
     }
   ];
 
@@ -103,9 +107,9 @@
   }
 
   async function setMetaData() {
-    if (!PUBLIC_IP_REGISTRY_KEY) return;
+    if (!env.PUBLIC_IP_REGISTRY_KEY) return;
 
-    const response = await fetch(`https://api.ipregistry.co/?key=${PUBLIC_IP_REGISTRY_KEY}`);
+    const response = await fetch(`https://api.ipregistry.co/?key=${env.PUBLIC_IP_REGISTRY_KEY}`);
     const payload = await response.json();
     fields.metadata = payload;
   }
@@ -217,7 +221,9 @@
         orgSiteName: fields.siteName
       });
 
-      return goto(`/org/${fields.siteName}`);
+      const welcomePopup = `${$profile.is_email_verified}`;
+
+      return goto(`/org/${fields.siteName}?welcomePopup=${welcomePopup}`);
     }
 
     // Move to next step

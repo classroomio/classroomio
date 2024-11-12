@@ -157,21 +157,23 @@
           style="background-color: {isYearlyPlan ? 'initial' : '#1D4EE2'}; color: {isYearlyPlan
             ? '#5e636b'
             : '#fff'}"
-          class="rounded-[30px] bg-blue-700 px-3 py-1 text-xs text-white lg:px-4 lg:py-2"
-          on:click={toggleIsYearlyPlan}>{$t('pricing.modal.monthly')}</button
+          class="rounded-[30px] bg-blue-700 px-3 py-1 text-xs text-white lg:px-4 lg:py-2 transition-all duration-500 ease-in-out"
+          on:click={toggleIsYearlyPlan}
         >
+          {$t('pricing.modal.monthly')}
+        </button>
         <button
           style="background-color: {isYearlyPlan ? '#1D4EE2' : ''}; color: {isYearlyPlan
             ? '#fff'
             : '#5e636b'}"
-          class="relative rounded-[30px] px-3 py-1 text-xs text-white lg:px-4 lg:py-2"
+          class="relative rounded-[30px] px-3 py-1 text-xs text-white lg:px-4 lg:py-2 transition-all duration-500 ease-in-out"
           on:click={toggleIsYearlyPlan}
         >
           {$t('pricing.modal.annually')}
           <div
             class="absolute right-[-40%] -top-4 scale-[90%] rounded-full bg-[#006600] px-1.5 py-1 text-[0.7rem] text-white"
           >
-            Save 2 months
+            {$t('pricing.modal.save')}
           </div>
         </button>
       </div>

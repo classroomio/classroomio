@@ -1,25 +1,4 @@
-import nodeModule from './001_node_module';
-import nodeHttpModule from './002_node_httpModule';
-import nodeFileSystem from './003_node_fileSystem';
-import nodeUrlModule from './004_node_urlModule';
-import nodeNpm from './005_node_npm';
-import nodeEvents from './006_node_events';
-import nodeUploadFiles from './007_node_uploadFiles';
-import nodeEmail from './008_node_email';
-import nodeSqlDatabase from './009_node_sqlDatabase';
-import nodeSqlCreateTable from './010_node_sqlCreateTable';
-import nodeSqlInertInto from './011_node_sqlInsertInto';
-import nodeSqlSelectForm from './012_node_sqlSelectForm';
-import nodeSqlWhere from './013_node_sqlWhere';
-import nodeSqlOrderBy from './014_node_sqlOrderBy';
-import nodeSqlDelete from './015_node_sqlDelete';
-import nodeSqlDropTable from './016_node_sqlDropTable';
-import nodeSqlUpdate from './017_node_sqlUpdate';
-import nodeSqlLimit from './018_node_sqlLimit';
-import nodeSqlJoin from './019_node_sqlJoin';
-import nodeMongoDBDatabase from './020_node_mongodbDatabase';
-
-export const NODE_IDS: { [key: string]: string } = {
+export const NODEJS_IDS: { [key: string]: string } = {
   NODE_MODULE: 'NODE_MODULE',
   NODE_HTTPMODULE: 'NODE_HTTPMODULE',
   NODE_FILESYSTEM: 'NODE_FILESYSTEM',
@@ -42,25 +21,26 @@ export const NODE_IDS: { [key: string]: string } = {
   NODE_MONGODBDATABASE: 'NODE_MONGODBDATABASE'
 };
 
-export const NODE_TEMPLATES = {
-  [NODE_IDS.NODE_MODULE]: nodeModule,
-  [NODE_IDS.NODE_HTTPMODULE]: nodeHttpModule,
-  [NODE_IDS.NODE_FILESYSTEM]: nodeFileSystem,
-  [NODE_IDS.NODE_URLMODULE]: nodeUrlModule,
-  [NODE_IDS.NODE_NPM]: nodeNpm,
-  [NODE_IDS.NODE_EVENTS]: nodeEvents,
-  [NODE_IDS.NODE_UPLOADFILES]: nodeUploadFiles,
-  [NODE_IDS.NODE_EMAIL]: nodeEmail,
-  [NODE_IDS.NODE_SQLDATABASE]: nodeSqlDatabase,
-  [NODE_IDS.NODE_SQLCREATETABLE]: nodeSqlCreateTable,
-  [NODE_IDS.NODE_SQLINSERTINTO]: nodeSqlInertInto,
-  [NODE_IDS.NODE_SQLSELECTFORM]: nodeSqlSelectForm,
-  [NODE_IDS.NODE_SQLWHERE]: nodeSqlWhere,
-  [NODE_IDS.NODE_SQLORDERBY]: nodeSqlOrderBy,
-  [NODE_IDS.NODE_SQLDELETE]: nodeSqlDelete,
-  [NODE_IDS.NODE_SQLDROPTABLE]: nodeSqlDropTable,
-  [NODE_IDS.NODE_SQLUPDATE]: nodeSqlUpdate,
-  [NODE_IDS.NODE_SQLLIMIT]: nodeSqlLimit,
-  [NODE_IDS.NODE_SQLJOIN]: nodeSqlJoin,
-  [NODE_IDS.NODE_MONGODBDATABASE]: nodeMongoDBDatabase
+export const NODEJS_TEMPLATES = {
+  [NODEJS_IDS.NODE_MODULE]: async () => (await import('./001_node_module')).default,
+  [NODEJS_IDS.NODE_HTTPMODULE]: async () => (await import('./002_node_httpModule')).default,
+  [NODEJS_IDS.NODE_FILESYSTEM]: async () => (await import('./003_node_fileSystem')).default,
+  [NODEJS_IDS.NODE_URLMODULE]: async () => (await import('./004_node_urlModule')).default,
+  [NODEJS_IDS.NODE_NPM]: async () => (await import('./005_node_npm')).default,
+  [NODEJS_IDS.NODE_EVENTS]: async () => (await import('./006_node_events')).default,
+  [NODEJS_IDS.NODE_UPLOADFILES]: async () => (await import('./007_node_uploadFiles')).default,
+  [NODEJS_IDS.NODE_EMAIL]: async () => (await import('./008_node_email')).default,
+  [NODEJS_IDS.NODE_SQLDATABASE]: async () => (await import('./009_node_sqlDatabase')).default,
+  [NODEJS_IDS.NODE_SQLCREATETABLE]: async () => (await import('./010_node_sqlCreateTable')).default,
+  [NODEJS_IDS.NODE_SQLINSERTINTO]: async () => (await import('./011_node_sqlInsertInto')).default,
+  [NODEJS_IDS.NODE_SQLSELECTFORM]: async () => (await import('./012_node_sqlSelectForm')).default,
+  [NODEJS_IDS.NODE_SQLWHERE]: async () => (await import('./013_node_sqlWhere')).default,
+  [NODEJS_IDS.NODE_SQLORDERBY]: async () => (await import('./014_node_sqlOrderBy')).default,
+  [NODEJS_IDS.NODE_SQLDELETE]: async () => (await import('./015_node_sqlDelete')).default,
+  [NODEJS_IDS.NODE_SQLDROPTABLE]: async () => (await import('./016_node_sqlDropTable')).default,
+  [NODEJS_IDS.NODE_SQLUPDATE]: async () => (await import('./017_node_sqlUpdate')).default,
+  [NODEJS_IDS.NODE_SQLLIMIT]: async () => (await import('./018_node_sqlLimit')).default,
+  [NODEJS_IDS.NODE_SQLJOIN]: async () => (await import('./019_node_sqlJoin')).default,
+  [NODEJS_IDS.NODE_MONGODBDATABASE]: async () =>
+    (await import('./020_node_mongodbDatabase')).default
 };

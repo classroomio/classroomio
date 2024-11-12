@@ -40,3 +40,8 @@ alter table public.question_answer
 drop constraint question_answer_submission_id_fkey,
 add constraint question_answer_submission_id_fkey foreign key (submission_id) references submission (id)
 on delete cascade;
+
+alter table public.lesson_completion
+drop constraint lesson_completion_lesson_id_fkey,
+add constraint lesson_completion_lesson_id_fkey foreign key (lesson_id) references lesson (id)
+on delete cascade;

@@ -1,6 +1,9 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import AudioConsoleIcon from 'carbon-icons-svelte/lib/AudioConsole.svelte';
+  import Papa from 'papaparse';
+  import { OverflowMenu, OverflowMenuItem, Loading } from 'carbon-components-svelte';
+  import Download from 'carbon-icons-svelte/lib/Download.svelte';
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
   import PageNav from '$lib/components/PageNav/index.svelte';
   import PageBody from '$lib/components/PageBody/index.svelte';
@@ -21,15 +24,17 @@
   import { currentOrg } from '$lib/utils/store/org';
   import type { CurrentOrg } from '$lib/utils/types/org';
   import type { GroupPerson } from '$lib/utils/types';
+  import jsPDF from 'jspdf';
+  import autoTable from 'jspdf-autotable';
 
   export let data;
 
   let borderBottomGrey = 'border-r-0 border-t-0 border-b border-l-0 border-gray-300';
   let borderleftGrey = 'border-r-0 border-t-0 border-b-0 border-l border-gray-300';
   let students: GroupPerson[] = [];
-
   let lessonMapping = {}; // { lessonId: { exerciseId: exerciseTitle, ... }, ... }
   let studentMarksByExerciseId = {}; // { groupMemberId: { exerciseId: `total_gotten/points`, ... }, ... }
+  let isDownloading = false;
 
   function calculateStudentTotal(studentExerciseData) {
     if (!studentExerciseData) return 0;
@@ -95,6 +100,112 @@
     return roles;
   }
 
+  const downloadCSV = () => {
+    isDownloading = true;
+
+    const exportData = students.map((student) => {
+      const rowData = {
+        name: student.profile.fullname,
+        email: student.profile.email,
+        Total: 0
+      };
+
+      const totalPoints = calculateStudentTotal(studentMarksByExerciseId[student.id]);
+
+      $lessons.forEach((lesson, lessonIndex) => {
+        const quizzes = lessonMapping[lesson.id] || {};
+        const quizMark = studentMarksByExerciseId[student.id] || {};
+
+        Object.keys(quizzes).forEach((quizId) => {
+          const quiz = quizzes[quizId];
+          const key = `L${lessonIndex + 1} - ${quiz.title} (${lesson.title})`;
+
+          rowData[key] = quizMark[quizId] || '-';
+        });
+      });
+
+      rowData['Total'] = totalPoints;
+      return rowData;
+    });
+
+    const csv = Papa.unparse(exportData);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${$course?.title}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    isDownloading = false;
+  };
+
+  function downloadPDF() {
+    isDownloading = true;
+
+    try {
+      const doc = new jsPDF({
+        orientation: 'landscape'
+      });
+
+      // Construct Headers
+      const head = [['Student']]; // Starting with 'Student' as the first header
+      $lessons.forEach((lesson, lessonIndex) => {
+        if (lessonMapping[lesson.id]) {
+          Object.values(lessonMapping[lesson.id]).forEach((exercise) => {
+            head[0].push(`${getLectureNo(lessonIndex + 1)} - ${exercise.title} (${lesson.title})`);
+          });
+        }
+      });
+      head[0].push('Total'); // Add 'Total' as the last header
+
+      // Construct Rows
+      const body = students.map((student) => {
+        const row: string[] = [];
+        row.push(student?.profile?.fullname ?? ''); // Student name
+
+        $lessons.forEach((lesson) => {
+          if (lessonMapping[lesson.id]) {
+            Object.keys(lessonMapping[lesson.id]).forEach((exerciseId) => {
+              const mark: string = studentMarksByExerciseId?.[student.id]?.[exerciseId] || '-';
+              row.push(mark);
+            });
+          }
+        });
+
+        // Calculate total
+        const total = '' + calculateStudentTotal(studentMarksByExerciseId[student.id]);
+        row.push(total);
+
+        return row;
+      });
+
+      // Generate the table in PDF
+      autoTable(doc, {
+        head,
+        body,
+        startY: 20,
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [22, 160, 133] },
+        footStyles: { fillColor: [22, 160, 133] },
+        didDrawPage: function (data) {
+          // Header
+          doc.setFontSize(14);
+          doc.setTextColor(40);
+          doc.text(`${$course?.title} - Marks`, data.settings.margin.left, 10);
+        }
+      });
+
+      // Save the PDF
+      doc.save(`${$course?.title}-marks.pdf`);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    } finally {
+      isDownloading = false;
+    }
+  }
+
   $: students = $globalStore.isStudent
     ? $group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
     : $group.people.filter((person) => !!person.profile && person.role_id === ROLE.STUDENT);
@@ -109,10 +220,27 @@
       goto(`/courses/${data.courseId}/lessons?next=true`);
     }}
   >
-    <PageNav title={$t('course.navItem.marks.title')} />
+    <PageNav title={$t('course.navItem.marks.title')}>
+      <slot:fragment slot="widget">
+        <RoleBasedSecurity allowedRoles={[1, 2]}>
+          <OverflowMenu flipped style="border-radius: 50px" class="bg-gray-100 dark:bg-neutral-800">
+            <div slot="menu" style="">
+              {#if isDownloading}
+                <Loading withOverlay={false} small />
+              {:else}
+                <Download />
+              {/if}
+            </div>
+
+            <OverflowMenuItem text={$t('course.navItem.marks.export.csv')} on:click={downloadCSV} />
+            <OverflowMenuItem text={$t('course.navItem.marks.export.pdf')} on:click={downloadPDF} />
+          </OverflowMenu>
+        </RoleBasedSecurity>
+      </slot:fragment>
+    </PageNav>
 
     <PageBody width="w-full max-w-6xl md:w-11/12">
-      <div class="table rounded-md border border-gray-300 w-full">
+      <div id="tableContainer" class="table rounded-md border border-gray-300 w-full">
         <div class="flex items-center {borderBottomGrey}">
           <div class="box flex items-center p-3">
             <p class="dark:text-white w-40">{$t('course.navItem.marks.student')}</p>

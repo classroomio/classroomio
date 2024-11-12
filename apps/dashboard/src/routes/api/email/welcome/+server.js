@@ -27,30 +27,28 @@ export async function POST({ request }) {
 
   const emailData = [
     {
+      from: `"Best from ClassroomIO" <notify@mail.classroomio.com>`,
       to,
-      subject: 'Thank you so so so much for choosing ClassroomIO!',
+      subject: 'Welcome to ClassroomIO!',
       content: `
     <p>Dear ${name},</p>
-      <p>My name is Best the CEO of ClassroomIO and I will personally like to welcome to the vibrant community of ClassroomIO!</p>
+      <p>My name is Best, the founder of ClassroomIO. I saw you signed up, any questions so far?</p>
       <p>
-        We're thrilled to have you join us in shaping the future of education. Your decision to embark on
-        this journey with us is deeply appreciated, and we're genuinely excited about the possibilities
-        that lie ahead.
+       Would you like to get a walkthrough of the tool in a 30 minutes product demo? It's free and we won't try to sell you anything, just want to learn from your use case and show you all the cool features and flows we thought about.
       </p>
       <p>
-        Once again, welcome to the ClassroomIO family. We're here to help, to listen, and to celebrate
-        your successes. Get ready to unlock a world of possibilities in education!
-      </p>
-      <p>
-        If you have any question or face any issues just send me an email best@classroomio.com 😃
+        Interested? just book a 30mn demo slot in our calendar!
       </p>
       <div>
-        <a href="https://app.classroomio.com">Go to Dashboard</a>
+        <a href="https://classroomio.com/demo">Book demo</a>
       </div>
-    `,
-      isPersonalEmail: true
+      <p>
+        PS: I reply personally to every email. We don't have an outsourced support team at the other end of the globe.. ;-)
+      </p>
+    `
     }
   ];
+
   await sendEmail(emailData);
 
   return json({
