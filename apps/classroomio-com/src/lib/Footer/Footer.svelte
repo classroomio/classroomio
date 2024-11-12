@@ -101,6 +101,11 @@
           <li
             class="lg:text-base text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900"
           >
+            <a href="/contact">Contact us</a>
+          </li>
+          <li
+            class="lg:text-base text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900"
+          >
             <a href="/teach">Teach with us</a>
           </li>
           <li
