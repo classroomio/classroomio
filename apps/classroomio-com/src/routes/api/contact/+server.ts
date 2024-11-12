@@ -9,7 +9,8 @@ const sendEmail = async (subject: string, content: string, replyTo?: string) => 
       },
       body: JSON.stringify([
         {
-          to: 'digdippa@gmail.com',
+          from: `"ClassroomIO Support" <notify@mail.classroomio.com>`,
+          to: 'help@classroomio.com',
           subject,
           content,
           replyTo
