@@ -38,7 +38,7 @@
 
   <input
     class="form-input border-l-0 border-r-0 border-t-0 border-b-2 border-gray-200 dark:border-neutral-600 focus:border-l-0 focus:border-r-0 rounded-t-md focus:border-t-0 focus:border-b-2 {inputClassName} {focusClass} {isDisabled &&
-      'hover:cursor-not-allowed opacity-50'} dark:text-black p-3 mt-1 block w-full {bgColor} {errorMessage
+      'hover:cursor-not-allowed opacity-50'} dark:text-black p-2 mt-1 block w-full {bgColor} {errorMessage
       ? 'border-red-600'
       : ''}"
     {placeholder}

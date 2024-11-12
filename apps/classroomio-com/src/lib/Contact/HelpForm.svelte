@@ -3,6 +3,7 @@
   import TextArea from '$lib/Input/TextArea.svelte';
   import TextField from '$lib/Input/TextField.svelte';
   import { isFormValid } from '$lib/utils/isFormValid';
+  import { submitForm } from '$lib/utils/submitForm';
   import Sucess from './Sucess.svelte';
 
   let name = '';
@@ -14,25 +15,27 @@
   let errorMessage = '';
   let sent = false;
 
-  function handleClick() {
+  async function handleClick() {
     const data = { name, email, title, description };
 
     if (!isFormValid(data)) {
       errorMessage = 'Please fill out all required fields.';
       return;
     }
+
     isLoading = true;
+
+    const formData = {
+      title: `[HELP] ${title}`,
+      description: `My name is ${JSON.stringify(name)}, email is ${JSON.stringify(
+        email
+      )}. \n\n${JSON.stringify(description)}.`,
+      replyTo: email
+    };
+
     try {
-      const subject = `[help] ${title}`;
-      const body = description;
-
-      // Create the mailto URL with encoded components
-      const mailToUrl = `mailto:help@classroomio.com?subject=${encodeURIComponent(
-        subject
-      )}&body=${encodeURIComponent(body)}`;
-
-      // Redirect to the mailto URL
-      window.location.href = mailToUrl;
+      await submitForm(formData);
+      sent = true;
     } catch (error) {
       console.log(error);
     } finally {

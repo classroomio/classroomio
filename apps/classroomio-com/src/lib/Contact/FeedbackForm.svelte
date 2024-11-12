@@ -2,15 +2,12 @@
   import Button from '$lib/Button/Button.svelte';
   import TextArea from '$lib/Input/TextArea.svelte';
   import TextField from '$lib/Input/TextField.svelte';
-  import UploadWidget from '$lib/UploadWidget/UploadWidget.svelte';
   import { isFormValid } from '$lib/utils/isFormValid';
   import { submitForm } from '$lib/utils/submitForm';
-  import Sucess from './Sucess.svelte';
+  import Sucess from '$lib/Contact/Sucess.svelte';
 
   let name = '';
   let email = '';
-  let embeddedLink = '';
-  let recordingLink = '';
   let title = '';
   let description = '';
 
@@ -19,29 +16,23 @@
   let sent = false;
 
   const handleClick = async () => {
-    const data = { name, email, title, description, embeddedLink, recordingLink };
+    const data = { name, email, title, description };
 
     if (!isFormValid(data)) {
       errorMessage = 'Please fill out all required fields.';
       return;
     }
+
     isLoading = true;
-    const fullDescription = `${JSON.stringify(name)} is reporting a bug with the following details
 
-      recording: ${JSON.stringify(recordingLink)}
-      embeddedLink: ${JSON.stringify(embeddedLink)}
-      email: ${JSON.stringify(email)}.
-
-      ${JSON.stringify(description)}
-      `;
-
-    const mainTitle = `bug: ${title}`;
     const formData = {
-      assignees: ['rotimi-best'],
-      labels: ['bug'],
-      title: mainTitle,
-      description: fullDescription
+      title: `[FEEDBACK] ${title}`,
+      description: `My name is ${JSON.stringify(name)}, email is ${JSON.stringify(
+        email
+      )}. \n\n${JSON.stringify(description)}.`,
+      replyTo: email
     };
+
     try {
       await submitForm(formData);
       sent = true;
@@ -62,19 +53,8 @@
         <TextField label="Your Name" isRequired className="w-full" bind:value={name} />
         <TextField label="Your Email" isRequired className="w-full" bind:value={email} />
       </div>
-      <TextField label="The bug in short" isRequired bind:value={title} />
-      <TextArea label="Describe the bug in detail" isRequired bind:value={description} />
-      <TextField
-        label="Add a Link to the page your widget is embedded on"
-        isRequired
-        bind:value={embeddedLink}
-      />
-      <!-- <UploadWidget label="Add a screenshot of the bug or incident" bind:imageURL /> -->
-      <TextField
-        label="Add a link to a screen recording (will help us investigate faster)"
-        isRequired
-        bind:value={recordingLink}
-      />
+      <TextField label="Subject" isRequired bind:value={title} />
+      <TextArea label="Message" isRequired bind:value={description} />
       {#if !!errorMessage}
         <p class="text-left text-sm text-red-500">{errorMessage}</p>
       {/if}

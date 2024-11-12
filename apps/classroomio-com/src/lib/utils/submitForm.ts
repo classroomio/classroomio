@@ -1,6 +1,6 @@
 export const submitForm = async (formData: any) => {
   try {
-    const response = await fetch('/api/github', {
+    const response = await fetch('/api/contact', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

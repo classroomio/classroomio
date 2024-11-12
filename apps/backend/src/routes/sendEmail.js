@@ -33,8 +33,6 @@ router.post('/', async (req, res) => {
 
     const emailDataArray = req.body;
 
-    console.log('mails', emailDataArray);
-
     Promise.all(
       emailDataArray.map(async (emailData) => {
         try {

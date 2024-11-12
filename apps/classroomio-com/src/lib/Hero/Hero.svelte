@@ -128,8 +128,9 @@
           <a
             href="/#customization"
             class="px-6 py-2 border-[1.5px] border-[#0233BD] rounded-[4px] bg-white text-[#0233BD] text-lg font-bold"
-            >Customizable LMS</a
           >
+            Customizable LMS
+          </a>
 
           <svg
             class="absolute -right-1 -bottom-2.5"
