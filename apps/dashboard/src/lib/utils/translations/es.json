@@ -949,7 +949,8 @@
         "refresh": "Refrescar",
         "remove": "Eliminar",
         "custom_favicon": "favicon personalizado",
-        "custom_code": "código personalizado"
+        "custom_code": "código personalizado",
+        "custom_domain_not_classroomio": "El dominio no puede contener 'classroomio'"
       },
       "customize-lms": {
         "title": "Personalizar LMS",

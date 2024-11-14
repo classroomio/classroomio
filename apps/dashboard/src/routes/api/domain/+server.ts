@@ -4,7 +4,7 @@ import {
   getConfigResponse,
   addDomainToVercel,
   removeDomainFromVercelProject
-} from '$lib/utils/functions/domains';
+} from '$lib/utils/services/org/domain';
 
 const supabase = getSupabase();
 
