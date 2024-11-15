@@ -25,7 +25,7 @@
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { updateOrgSiteNameValidation } from '$lib/utils/functions/validator';
   import { t } from '$lib/utils/functions/translations';
-  import { sendDomainRequest } from '$lib/utils/services/org/domain';
+  import { sanitizeDomain, sendDomainRequest } from '$lib/utils/functions/domain';
 
   let siteName = '';
   let customDomain = '';
@@ -81,16 +81,23 @@
   async function handleSaveCustomDomain() {
     if (!isDomainValid) return;
 
-    const details = parse(customDomain);
+    const sanitizedDomain = sanitizeDomain(customDomain);
+
+    const details = parse(sanitizedDomain);
     if (!details.subdomain) {
       errors.customDomain = $t('components.settings.domains.custom_domain_error');
       return;
     }
-    isCustomDomainLoading = true;
 
+    if (sanitizedDomain.includes('classroomio')) {
+      errors.customDomain = $t('components.settings.domains.custom_domain_not_classroomio');
+      return;
+    }
+
+    isCustomDomainLoading = true;
     const { error } = await supabase
       .from('organization')
-      .update({ customDomain })
+      .update({ customDomain: sanitizedDomain })
       .match({ id: $currentOrg.id });
 
     if (error) {
@@ -101,7 +108,7 @@
     }
 
     try {
-      const response = await sendDomainRequest('add_domain', customDomain);
+      const response = await sendDomainRequest('add_domain', sanitizedDomain);
       const data = await response.json();
       console.log('added domain to vercel', data);
     } catch (error) {
@@ -111,7 +118,7 @@
       return;
     }
     snackbar.success('components.settings.domains.custom_domain_success');
-    $currentOrg.customDomain = customDomain;
+    $currentOrg.customDomain = sanitizedDomain;
 
     isCustomDomainLoading = false;
   }
@@ -200,7 +207,7 @@
   $: setDefaults($currentOrg);
   $: resetErrors(siteName, customDomain);
 
-  $: isDomainValid = isValidDomain(customDomain, { subdomain: true });
+  $: isDomainValid = isValidDomain(sanitizeDomain(customDomain), { subdomain: true });
 </script>
 
 <Grid class="border rounded border-gray-200 dark:border-neutral-600 w-full mt-5">

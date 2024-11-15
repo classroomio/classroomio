@@ -4,7 +4,7 @@ import {
   getConfigResponse,
   addDomainToVercel,
   removeDomainFromVercelProject
-} from '$lib/utils/functions/domains';
+} from '$lib/utils/services/org/domain';
 
 const supabase = getSupabase();
 
@@ -15,6 +15,10 @@ export async function POST({ request }) {
 
   if (!params?.key || !accessToken) {
     return json({ success: false, message: 'Missing fields' }, { status: 400 });
+  }
+
+  if (params?.domain?.includes('classroomio')) {
+    return json({ success: false, message: 'Domain cannot contain classroomio' }, { status: 400 });
   }
 
   let user;
