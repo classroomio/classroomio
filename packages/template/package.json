@@ -2,12 +2,16 @@
   "name": "@classroomio/template",
   "version": "0.0.1",
   "private": true,
+  "main": "dist/index.js",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build",
+    "build": "vite build && node scripts/postbuild.js",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+  },
+  "bin": {
+    "create-saas-uni": "./dist/create-template.js"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^3.0.0",
@@ -21,7 +25,23 @@
   },
   "type": "module",
   "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "figlet": "^1.8.0",
     "fs-extra": "^11.2.0",
-    "inquirer": "^11.1.0"
-  }
+    "inquirer": "^11.1.0",
+    "ora": "^8.1.1"
+  },
+  "files": [
+    "dist",
+    "templates"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/username/create-saas-uni.git"
+  },
+  "bugs": {
+    "url": "https://github.com/username/create-saas-uni/issues"
+  },
+  "homepage": "https://github.com/username/create-saas-uni#readme"
 }

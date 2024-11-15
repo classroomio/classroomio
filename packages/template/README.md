@@ -1,22 +1,44 @@
-# create-svelte
+# Getting started with our CLI tool
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+Get started using a template of your choice from a list of template to scaffold your own Saas LMS.
 
-## Creating a project
+## Installation
 
-If you're seeing this, you've probably already done this step. Congrats!
+install our cli globally by running the following command
 
 ```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
+npm install -g create-saas-uni
 ```
+
+After doing this our cli tool is now available globally and can be used in your machine
+
+## Usage
+
+To create a template run:
+
+```bash
+create-saas-uni name-of-your-project -t name-of-template --course
+```
+
+### Commands
+
+The CLI accepts the following arguments
+
+- argument 1 : `name-of-project` this argument is the name of your project
+- argument 2 : `--template name-of-template` this argument is the name of the template you wish to use
+- argument 3 : `--courses` an option to use our demo courses
+
+## Available Templates
+
+- webflow-saas
+- posthog-saas
+- calcom
+- classic
+- minimalistic
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Once you've created a project, then `cd into your project` and install dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
 
 ```bash
 npm run dev
@@ -32,7 +54,3 @@ To create a production version of your app:
 ```bash
 npm run build
 ```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
