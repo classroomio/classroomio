@@ -23,7 +23,7 @@
       link.click();
       document.body.removeChild(link);
 
-      URL.revokeObjectURL(csvUrl);
+      URL.revokeObjectURL(csvUrl); // Added this to avoid memory leaks
     } catch (error) {
       alert("An error occurred. Please try again later.");
     } finally {

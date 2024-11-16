@@ -299,7 +299,7 @@ export async function exportOrgAudience(params: { orgId: string }) {
     });
 
     if (!response.ok) {
-      const errorDetails = await response.json(); // Assuming error details come in JSON
+      const errorDetails = await response.json();
       throw new Error(`Failed to export audience: ${errorDetails.message || 'Unknown error'}`);
     }
 
@@ -309,6 +309,6 @@ export async function exportOrgAudience(params: { orgId: string }) {
     return csvUrl;
   } catch (error) {
     console.error("Error in exportOrgAudience:", error);
-    throw error; // Rethrow the error to be handled by the caller
+    throw error; // Rethrow the error to be handled by the client
   }
 }
