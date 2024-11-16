@@ -6,6 +6,7 @@ import { orgs, currentOrg, orgAudience, orgTeam } from '$lib/utils/store/org';
 import { ROLE, ROLE_LABEL } from '$lib/utils/constants/roles';
 import type { CurrentOrg, OrgTeamMember } from '$lib/utils/types/org';
 import type { OrganizationPlan } from '$lib/utils/types';
+import { env } from '$env/dynamic/public';
 
 export async function getOrgTeam(orgId: string) {
   const { data, error } = await supabase
@@ -285,4 +286,29 @@ export async function cancelOrgPlan(params: { orgId: string; planName: string })
       plan_name: params.planName,
       org_id: params.orgId
     });
+}
+
+export async function exportOrgAudience(params: { orgId: string }) {
+  try {
+    const response = await fetch(`${env.PUBLIC_SUPABASE_URL}/functions/v1/export-students?org_id=${params.orgId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${env.PUBLIC_SUPABASE_ANON_KEY}`
+      },
+    });
+
+    if (!response.ok) {
+      const errorDetails = await response.json(); // Assuming error details come in JSON
+      throw new Error(`Failed to export audience: ${errorDetails.message || 'Unknown error'}`);
+    }
+
+    const csvBlob = await response.blob();
+    const csvUrl = URL.createObjectURL(csvBlob);
+
+    return csvUrl;
+  } catch (error) {
+    console.error("Error in exportOrgAudience:", error);
+    throw error; // Rethrow the error to be handled by the caller
+  }
 }

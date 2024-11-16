@@ -2,16 +2,33 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import Audience from '$lib/components/Org/Audience/index.svelte';
   import { t } from '$lib/utils/functions/translations';
-  import { orgAudience, currentOrgPlan, currentOrgMaxAudience } from '$lib/utils/store/org';
+  import { orgAudience, currentOrgPlan, currentOrgMaxAudience, currentOrg } from '$lib/utils/store/org';
+  import { exportOrgAudience } from '$lib/utils/services/org';
   import { PLAN } from 'shared/src/plans/constants';
   import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
 
   let isLoading = false;
 
-  function exportAudience() {
+  async function exportAudience() {
     isLoading = true;
-    alert('This feature is coming soon');
-    isLoading = false;
+
+    try {
+      const csvUrl = await exportOrgAudience({ orgId: $currentOrg.id });
+
+      const link = document.createElement('a');
+      link.href = csvUrl;
+      link.download = 'students.csv';
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      URL.revokeObjectURL(csvUrl);
+    } catch (error) {
+      alert("An error occurred. Please try again later.");
+    } finally {
+      isLoading = false;
+    }
   }
 </script>
 
