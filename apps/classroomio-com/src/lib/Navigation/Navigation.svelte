@@ -82,7 +82,8 @@
           on:click={() => (showSolutions = !showSolutions)}
           class:active={isSolutionsActive}
         >
-          Solutions <ChevronDown size={16} class="ml-2" />
+          <span class="mr-2">Solutions</span>
+          <ChevronDown size={16} />
         </button>
         {#if showSolutions}
           <button
@@ -191,8 +192,8 @@
           alt="classroomio logo"
           class="w-[15%]"
         />
-        <button on:click={handleShowSolutions}>
-          <CloseLarge size={24} class="mr-5" />
+        <button class="mr-5" on:click={handleShowSolutions}>
+          <CloseLarge size={24} />
         </button>
       </div>
       <nav>

@@ -27,31 +27,28 @@
       img: 'landing.svg',
       title: 'Dedicated landing page',
       description:
-        'We give you a customisable landing page that can be shared with your customers who are interested in learning about your products',
-      CTA: 'Book a Demo'
+        'We give you a customisable landing page that can be shared with your customers who are interested in learning about your products'
     },
     {
       icon: 'link.svg',
       img: 'domain.svg',
       title: 'Custom domains',
       description:
-        'companies can use their own urls to link to our landing page instead of using our free subdomain (company.classroomio.com)',
-      CTA: 'Book a Demo'
+        'Use your own domain to link to our landing page instead of using our free subdomain'
     },
     {
       icon: 'globe.svg',
       img: 'language.svg',
       title: 'Multi language support',
       description:
-        'We support 6 languages and you can deploy courses in different languages to support different demographics',
-      CTA: 'Book a Demo'
+        'We support 6 languages and you can deploy courses in different languages to support different demographics'
     },
     {
       icon: 'paths.svg',
       img: 'pathways.svg',
       title: 'Pathways',
-      description: 'Grouping of multiple courses into one comprehensive learning pathway',
-      CTA: 'Book a Demo'
+      description:
+        'With the introduction of pathways, you can group multiple courses into one comprehensive learning pathway'
     }
   ];
 </script>
@@ -78,18 +75,22 @@
         <h1
           class="w-[95%] mx-auto m-0 text-4xl lg:text-7xl md:text-6xl font-bold text-slate-900 lg:text-center"
         >
-          <span class="text-blue-700 relative">Empower</span> Your Customers with Self-Service
-          <span class="text-blue-700 relative">Education</span>
+          Drive retention and revenue with
+          <span class="text-blue-700 relative">Customer Education</span>
         </h1>
         <p class="lg:w-[60%] text-base md:text-lg lg:text-center font-normal text-slate-700">
-          Create beautiful, branded landing pages to showcase your courses and get customers up to
-          speed quickly
+          Yes you are making lots of sales however you keep experiencing churn and customers leaving
+          you. Without a proper customer education strategy you are leaving a lot of money on the
+          table.
         </p>
       </div>
-      <button
+      <a
+        href="/signup"
+        target="_blank"
         class="py-5 px-6 bg-[#1D4ED8] border-transparent outline-transparent rounded-lg text-white text-lg font-semibold"
-        >Get Started for Free 🚀</button
       >
+        Get Started for Free 🚀
+      </a>
     </div>
   </PageHeader>
 
@@ -100,26 +101,25 @@
       class="w-full gap-y-4 flex flex-col lg:items-center items-start lg:justify-center justify-start"
     >
       <div class="w-fit py-2 px-4 rounded-full border-[#C2D2FF] border-2 text-center">
-        <p class="text-sm md:text-base font-medium">Have you heard the benefits?</p>
+        <p class="text-sm md:text-base font-medium">Our benefits</p>
       </div>
       <div
         class="lg:w-full max-w-screen-xl flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
       >
-        <h1 class="text-3xl md:text-5xl font-bold">
-          Elevate Your Customer Education with ClassroomIO
-        </h1>
+        <h1 class="text-3xl md:text-5xl font-bold">The customer education toolkit</h1>
         <p class="text-[#334155] text-sm md:text-base font-light lg:text-center md:w-[80%]">
-          Empower your customers with personalized, scalable, and effective learning experiences.
+          Create beautiful, branded landing pages to showcase your courses and get customers up to
+          speed quickly
         </p>
       </div>
     </div>
 
     <div
-      class="w-full max-w-screen-xl flex lg:flex-row flex-col lg:justify-between justify-start gap-6 lg:items-center items-start lg:items-stretch"
+      class="w-full max-w-screen-xl flex lg:flex-row flex-col lg:justify-between justify-start gap-6 lg:items-center items-start"
     >
       {#each benefitDetails as benefits}
         <div class="w-full md:p-6 p-4 border border-[#D9E0F5] rounded-2xl flex flex-col gap-y-6">
-          <img class="size-12" src="/customer-education/{benefits.icon}" alt="icon" />
+          <img class="w-[48px] h-[48px]" src="/customer-education/{benefits.icon}" alt="icon" />
 
           <div class="w-full flex flex-col justify-start align-start gap-y-2">
             <h1 class="text-xl font-medium">{benefits.title}</h1>
@@ -158,13 +158,13 @@
     </div>
 
     <div
-      class="w-full max-w-screen-xl flex flex-col justify-start items-start lg:gap-y-24 gap-y-16"
+      class="w-full max-w-screen-xl flex flex-col justify-start items-center lg:gap-y-24 gap-y-16"
     >
       {#each featureDetails as feature, i}
         <div
-          class="w-full flex lg:flex-row {i % 2 !== 0
+          class="w-full lg:w-[70%] flex lg:flex-row {i % 2 !== 0
             ? 'lg:flex-row-reverse'
-            : ''} flex-col lg:justify-between justify-start lg:items-center items-start gap-y-8"
+            : ''} flex-col lg:justify-between justify-start lg:items-center items-start gap-10"
         >
           <div
             class="w-full max-w-sm lg:w-[40%] lg:gap-y-6 gap-y-3 flex flex-col items-start justify-start"
@@ -178,13 +178,16 @@
             </div>
             <button
               class="py-4 px-8 border border-[#1D4ED8] outline-transparent rounded text-[#1D4ED8] text-sm font-semibold"
-              >{feature.CTA}</button
+              data-cal-config="'layout':'month_view'"
+              data-cal-link="classroomio/demo"
             >
+              Book a Demo
+            </button>
           </div>
 
           <div>
             <img
-              class="max-w-[380px]"
+              class="w-full lg:max-w-[380px]"
               src="/customer-education/{feature.img}"
               alt="team management feature ui"
             />
@@ -195,10 +198,9 @@
   </section>
 
   <PageSignupCTA
-    header="Take Charge Of Your Trainings Today"
-    subText="It's free to sign up and start getting value out of the product."
-    btnLabel="Sign me up"
-    link="/signup"
-    demo={false}
+    header="Stop losing customers to your competitors"
+    subText="We help you retain customers by helping them understand your products and services."
+    btnLabel="Book a demo"
+    demo={true}
   />
 </section>

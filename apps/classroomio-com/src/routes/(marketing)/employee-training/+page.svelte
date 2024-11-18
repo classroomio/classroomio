@@ -1,7 +1,6 @@
 <script>
   import PageSignupCTA from '$lib/PageSignupCTA/index.svelte';
   import PageHeader from '$lib/PageHeader/PageHeader.svelte';
-  import { img } from '$lib/custom';
 
   const benefitDetails = [
     {
@@ -32,24 +31,20 @@
       img: 'team-mgnt2.svg',
       title: 'Team management',
       description:
-        'Company administrators can invite their team members to collaborate on course creation within classroomio',
-      CTA: 'Book a Demo'
+        'You can invite managers and employees to create and take trainings at scale in your organization.'
     },
     {
       icon: 'colour-pallete.svg',
       img: 'custom.svg',
       title: 'Custom branding',
       description:
-        'Admins can set the company logo which appears all through the product and the employee dashboard as well as select a preferred brand color',
-      CTA: 'Book a Demo'
+        'With our customizable platform, you can set your company logo, brand color and add a custom domain to your employee LMS.'
     },
     {
       icon: 'cup.svg',
       img: 'progress.svg',
-      title: 'Track learners progress',
-      description:
-        'Administrators can track the progress of their employees and assist whoever needs help',
-      CTA: 'Book a Demo'
+      title: 'Track employee progress',
+      description: 'You can track the progress of your employees and assist whoever needs help.'
     }
   ];
 </script>
@@ -64,7 +59,7 @@
   >
     <div class="bg-[#DCE5FF] py-2 px-4 rounded-full border-[#C2D2FF] border-2 text-center">
       <p class=" text-sm md:text-base text-[#4B5563] text-center font-medium">
-        Solution for Employee Training
+        Unlock your team's potential
       </p>
     </div>
     <div
@@ -76,11 +71,12 @@
         <h1
           class="mx-auto m-0 text-4xl lg:text-7xl md:text-6xl font-bold text-slate-900 lg:text-center"
         >
-          Empower your employee with <span class="text-blue-700 relative">Effective Training</span>
+          Employee training software for
+          <span class="text-blue-700 relative">modern teams</span>
         </h1>
         <p class="lg:w-[60%] text-base md:text-lg lg:text-center font-normal text-slate-700">
-          Provide personalized learning experiences and train your employees efficiently with a
-          customizable online platform
+          With ClassroomIO, you can keep your teams in sync with company standards as they change
+          quickly.
         </p>
       </div>
       <button
@@ -99,21 +95,24 @@
       </div>
 
       <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
-        <h1 class="font-bold text-4xl">Unlock Your Team's Potential and Drive Success</h1>
+        <h1 class="font-bold text-4xl">Unlock your team's potential</h1>
         <p class="leading-8 text-lg text-gray-500">
-          Experience the power of collaborative learning with ClassroomIO. Engage your workforce
-          with personalized training that aligns with your company's goals.
+          Modern teams require solutions that are easy to use and allows them move quickly.
         </p>
       </div>
     </div>
     <div
-      class="lg:w-[60%] min-w-[450px] w-full flex flex-col lg:flex-wrap lg:flex-row justify-start items-center items-stretch gap-6"
+      class="lg:w-[60%] lg:min-w-[450px] w-full flex flex-col lg:flex-wrap lg:flex-row justify-start items-center gap-6"
     >
       {#each benefitDetails as benefits}
         <div
           class="w-full lg:w-[47%] min-w-[220px] md:p-6 p-4 border border-[#D9E0F5] rounded-2xl flex flex-col grow gap-y-6"
         >
-          <img class="size-12" src="/employee-training/{benefits.icon}" alt="light-bulb" />
+          <img
+            class="w-[48px] h-[48px]"
+            src="/employee-training/{benefits.icon}"
+            alt="light-bulb"
+          />
 
           <div class="w-full flex flex-col justify-start align-start gap-y-2">
             <h1 class="text-xl font-medium">{benefits.title}</h1>
@@ -149,18 +148,22 @@
     </div>
 
     <div
-      class="w-full max-w-screen-xl flex flex-col justify-start items-start lg:gap-y-24 gap-y-16"
+      class="w-full max-w-screen-xl flex flex-col justify-start items-center lg:gap-y-24 gap-16 p-2"
     >
       {#each featureDetails as feature, i}
         <div
-          class="w-full flex lg:flex-row {i % 2 !== 0
+          class="w-full lg:w-[70%] flex lg:flex-row {i % 2 !== 0
             ? 'lg:flex-row-reverse'
-            : ''} flex-col lg:justify-between justify-start lg:items-center items-start gap-y-8"
+            : ''} flex-col justify-between lg:items-center items-start gap-10"
         >
           <div
-            class="w-full max-w-sm lg:w-[40%] lg:gap-y-6 gap-y-3 flex flex-col items-start justify-start"
+            class="w-fit max-w-sm lg:w-[40%] lg:gap-y-6 gap-y-3 flex flex-col items-start justify-start"
           >
-            <img class="size-12" src="/employee-training/{feature.icon}" alt="team icon" />
+            <img
+              class="w-[48px] h-[48px]"
+              src="/employee-training/{feature.icon}"
+              alt="team icon"
+            />
             <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
               <h1 class="font-bold text-4xl">{feature.title}</h1>
               <p class="leading-8 text-lg text-gray-500">
@@ -169,13 +172,16 @@
             </div>
             <button
               class="py-4 px-8 border border-[#1D4ED8] outline-transparent rounded text-[#1D4ED8] text-sm font-semibold"
-              >{feature.CTA}</button
+              data-cal-config="'layout':'month_view'"
+              data-cal-link="classroomio/demo"
             >
+              Book a Demo
+            </button>
           </div>
 
           <div>
             <img
-              class="max-w-[380px]"
+              class="w-full lg:max-w-[380px]"
               src="/employee-training/{feature.img}"
               alt="team management feature ui"
             />
@@ -200,10 +206,13 @@
             Companies get the opportunity to request custom features from us.
           </p>
         </div>
-        <button
+        <a
+          href="/demo"
+          target="_blank"
           class="py-4 px-8 border border-tranparent outline-transparent bg-white rounded text-[#040F2D] text-sm font-semibold"
-          >Sign me up</button
         >
+          Sign me up
+        </a>
       </div>
 
       <img class="size-96" src="/employee-training/bro.svg" alt="male and female in an office" />
