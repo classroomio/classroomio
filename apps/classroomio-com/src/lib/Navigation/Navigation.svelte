@@ -11,6 +11,16 @@
   let showDrawer = false;
   let showSolutions = false;
   let activeLink = '';
+  let closeTimeout: NodeJS.Timeout;
+
+  function closeSolutions() {
+    closeTimeout = setTimeout(() => {
+      showSolutions = false;
+    }, 100);
+  }
+  function resetCloseTimeout() {
+    clearTimeout(closeTimeout);
+  }
 
   function handleShowDrawer() {
     showDrawer = !showDrawer;
@@ -66,6 +76,7 @@
         <button
           on:focus={() => (showSolutions = true)}
           on:mouseenter={() => (showSolutions = true)}
+          on:mouseleave={closeSolutions}
           class="flex items-center hover:bg-gray-100 {showSolutions &&
             'bg-gray-100'} px-4 py-2 rounded-md"
           on:click={() => (showSolutions = !showSolutions)}
@@ -76,6 +87,7 @@
         {#if showSolutions}
           <button
             class="absolute w-[20rem] top-10 -left-10 border rounded-lg px-2 py-4 shadow-slate-700 z-[3001] bg-white flex flex-col gap-3"
+            on:mouseenter={resetCloseTimeout}
             on:mouseleave={() => (showSolutions = false)}
           >
             {#each solutions as solution}
@@ -179,7 +191,9 @@
           alt="classroomio logo"
           class="w-[15%]"
         />
-        <button on:click={handleShowSolutions}><CloseLarge size={24} class="mr-5" /></button>
+        <button on:click={handleShowSolutions}>
+          <CloseLarge size={24} class="mr-5" />
+        </button>
       </div>
       <nav>
         <ul class="flex items-center flex-col lg:flex-row justify-between w-full">
