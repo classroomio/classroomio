@@ -2,6 +2,7 @@
   import { page } from '$app/stores';
   import HelpIcon from 'carbon-icons-svelte/lib/Help.svelte';
   import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
+  import Analytics from 'carbon-icons-svelte/lib/Analytics.svelte';
   import { ChevronRight, SettingsAdjust } from 'carbon-icons-svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import OrgSelector from '$lib/components/OrgSelector/OrgSelector.svelte';
@@ -69,6 +70,11 @@
       show: true
     },
     {
+      path: '/analytics',
+      label: $t('org_navigation.analytics'),
+      show: true
+    },
+    {
       path: '/setup',
       label: $t('org_navigation.setup'),
       show: $isOrgAdmin
@@ -116,6 +122,8 @@
                     <QuizIcon />
                   {:else if menuItem.path === '/audience'}
                     <AudienceIcon />
+                  {:else if menuItem.path === '/analytics'}
+                    <Analytics />
                   {:else if menuItem.path === '/setup'}
                     <SettingsAdjust />
                   {/if}
