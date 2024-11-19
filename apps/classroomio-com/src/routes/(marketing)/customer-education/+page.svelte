@@ -119,7 +119,11 @@
     >
       {#each benefitDetails as benefits}
         <div class="w-full md:p-6 p-4 border border-[#D9E0F5] rounded-2xl flex flex-col gap-y-6">
-          <img class="w-[48px] h-[48px]" src="/customer-education/{benefits.icon}" alt="icon" />
+          <img
+            class="w-[48px] h-[48px]"
+            src="https://assets.cdn.clsrio.com/www/customer-education/{benefits.icon}"
+            alt="icon"
+          />
 
           <div class="w-full flex flex-col justify-start align-start gap-y-2">
             <h1 class="text-xl font-medium">{benefits.title}</h1>
@@ -169,7 +173,10 @@
           <div
             class="w-full max-w-sm lg:w-[40%] lg:gap-y-6 gap-y-3 flex flex-col items-start justify-start"
           >
-            <img src="/customer-education/{feature.icon}" alt="team icon" />
+            <img
+              src="https://assets.cdn.clsrio.com/www/customer-education/{feature.icon}"
+              alt="team icon"
+            />
             <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
               <h1 class="font-bold text-4xl">{feature.title}</h1>
               <p class="leading-8 text-lg text-gray-500">
@@ -188,7 +195,7 @@
           <div>
             <img
               class="w-full lg:max-w-[380px]"
-              src="/customer-education/{feature.img}"
+              src="https://assets.cdn.clsrio.com/www/customer-education/{feature.img}"
               alt="team management feature ui"
             />
           </div>

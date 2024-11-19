@@ -72,7 +72,7 @@
           class="mx-auto m-0 text-4xl lg:text-7xl md:text-6xl font-bold text-slate-900 lg:text-center"
         >
           Employee training software for
-          <span class="text-blue-700 relative">modern teams</span>
+          <br /><span class="text-blue-700 relative">modern teams</span>
         </h1>
         <p class="lg:w-[60%] text-base md:text-lg lg:text-center font-normal text-slate-700">
           With ClassroomIO, you can keep your teams in sync with company standards as they change
@@ -110,7 +110,7 @@
         >
           <img
             class="w-[48px] h-[48px]"
-            src="/employee-training/{benefits.icon}"
+            src="https://assets.cdn.clsrio.com/www/employee-training/{benefits.icon}"
             alt="light-bulb"
           />
 
@@ -161,7 +161,7 @@
           >
             <img
               class="w-[48px] h-[48px]"
-              src="/employee-training/{feature.icon}"
+              src="https://assets.cdn.clsrio.com/www/employee-training/{feature.icon}"
               alt="team icon"
             />
             <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
@@ -182,7 +182,7 @@
           <div>
             <img
               class="w-full lg:max-w-[380px]"
-              src="/employee-training/{feature.img}"
+              src="https://assets.cdn.clsrio.com/www/employee-training/{feature.img}"
               alt="team management feature ui"
             />
           </div>
@@ -215,7 +215,11 @@
         </a>
       </div>
 
-      <img class="size-96" src="/employee-training/bro.svg" alt="male and female in an office" />
+      <img
+        class="size-96"
+        src="https://assets.cdn.clsrio.com/www/employee-training/bro.svg"
+        alt="male and female in an office"
+      />
     </div>
   </section>
 

@@ -134,14 +134,21 @@
     >
       {#each benefitDetails as benefits}
         <div class="w-full md:p-6 p-4 border border-[#D9E0F5] rounded-2xl flex flex-col gap-y-6">
-          <img class="w-[48px] h-[48px]" src="/bootcamps/{benefits.icon}" alt="brain" />
+          <img
+            class="w-[48px] h-[48px]"
+            src="https://assets.cdn.clsrio.com/www/bootcamps/{benefits.icon}"
+            alt="brain"
+          />
 
           <div class="w-full flex flex-col justify-start align-start gap-y-2">
             <h1 class="text-xl font-medium">{benefits.title}</h1>
 
             {#each benefits.points as point}
               <div class="flex flex-row justify-start items-start gap-x-3">
-                <img src="/bootcamps/{benefits.checkMark}" alt="check mark" />
+                <img
+                  src="https://assets.cdn.clsrio.com/www/bootcamps/{benefits.checkMark}"
+                  alt="check mark"
+                />
                 <p class="leading-8 text-gray-500 font-[#656565] font-light">
                   {point}
                 </p>
@@ -186,7 +193,11 @@
           <div
             class="w-full max-w-sm lg:w-[40%] lg:gap-y-6 gap-y-3 flex flex-col items-start justify-start"
           >
-            <img class="w-[48px] h-[48px]" src="/bootcamps/{feature.icon}" alt="team icon" />
+            <img
+              class="w-[48px] h-[48px]"
+              src="https://assets.cdn.clsrio.com/www/bootcamps/{feature.icon}"
+              alt="team icon"
+            />
             <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
               <h1 class="font-bold text-4xl">{feature.title}</h1>
               <p class="leading-8 text-lg text-gray-500">
@@ -216,7 +227,7 @@
           <div>
             <img
               class="w-full lg:max-w-[380px]"
-              src="/bootcamps/{feature.img}"
+              src="https://assets.cdn.clsrio.com/www/bootcamps/{feature.img}"
               alt="team management feature ui"
             />
           </div>
