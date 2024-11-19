@@ -37,7 +37,7 @@ export async function scaffoldTemplate({
   projectName
 }: ScaffoldTemplateParams): Promise<void> {
   spinner.text = chalk.yellow('Getting project...');
-  const templatePath: string = path.resolve(packageRoot, 'templates', template);
+  const templatePath: string = path.resolve(packageRoot, 'src', template);
 
   if (!fs.existsSync(templatePath)) {
     throw new Error(`Template "${template}" "${templatePath}" "${__dirname}" does not exist.`);

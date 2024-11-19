@@ -34,7 +34,7 @@
   },
   "files": [
     "dist",
-    "templates"
+    "src"
   ],
   "repository": {
     "type": "git",

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { load } from './../../routes/+page.server';
+import { load } from '../../routes/+page.server';
 
 describe('+page.server load function', () => {
   const mockData = {

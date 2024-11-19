@@ -66,9 +66,9 @@ program
       await scaffoldTemplate({ template, courses, projectPath, projectName });
       spinner.succeed(chalk.green('Done! Your project is ready.'));
       console.log(
-        `To get started,  ${chalk.blue(
-          'cd into your project'
-        )} then run ${chalk.blue('npm install')}`
+        `To get started,  ${chalk.blue('cd into your project')} then run ${chalk.blue(
+          'npm install'
+        )}`
       );
       console.log(`Now run ${chalk.blue('npm run dev')}`);
       chalk.blue('Happy hacking ');
@@ -79,39 +79,3 @@ program
   });
 
 program.parse(process.argv);
-
-// async function createTemplate() {
-//   const { template, projectName } = await inquirer.prompt([
-//     {
-//       type: 'list',
-//       name: 'template',
-//       message: 'Which template would you like to use?',
-//       choices: templates
-//     },
-//     {
-//       type: 'input',
-//       name: 'projectName',
-//       message: 'What is the name of your project?',
-//       default: 'my-classroomio-app'
-//     }
-//   ]);
-
-//   const targetDir = path.join(process.cwd(), projectName);
-
-//   console.log('Creating SvelteKit project...');
-//   execSync(`npm create svelte@latest ${projectName}`, { stdio: 'inherit' });
-
-//   console.log('Installing dependencies...');
-//   process.chdir(targetDir);
-//   execSync('npm install', { stdio: 'inherit' });
-//   execSync('npm install -D tailwindcss postcss autoprefixer', { stdio: 'inherit' });
-//   execSync('npx tailwindcss init -p', { stdio: 'inherit' });
-
-//   console.log('Applying template...');
-//   const templateDir = path.join(__dirname, 'templates', template);
-//   await fs.copy(templateDir, targetDir, { overwrite: true });
-
-//   console.log(`Template '${template}' has been applied to ${targetDir}`);
-// }
-
-// createTemplate();

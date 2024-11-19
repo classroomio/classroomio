@@ -15,7 +15,7 @@
     "rootDir": "."
   },
   "include": ["bin/**/*", "lib/**/*", "utils/**/*"],
-  "exclude": ["node_modules", "dist", "templates"]
+  "exclude": ["node_modules", "dist", "src"]
 
   // Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
   // except $lib which is handled by https://kit.svelte.dev/docs/configuration#files

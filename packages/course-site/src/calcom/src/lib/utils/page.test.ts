@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render } from '@testing-library/svelte';
-import Page from './../../routes/+page.svelte';
+import Page from '../../routes/+page.svelte';
 
 // Mock the Home component since we're just testing the page wrapper
 vi.mock('$lib/index.svelte', () => ({
