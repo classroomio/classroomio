@@ -71,7 +71,7 @@
   </a>
 
   <nav class="w-[50%] hidden md:hidden lg:block">
-    <ul class="flex items-center justify-between w-full gap-2">
+    <ul class="flex justify-center items-center w-full gap-5">
       <li class="text-gray-800 font-semibold text-sm cursor-pointer relative">
         <button
           on:focus={() => (showSolutions = true)}
@@ -93,7 +93,7 @@
           >
             {#each solutions as solution}
               <a
-                class="flex justify-between items-center w-full rounded-lg hover:bg-gray-100 p-2"
+                class="flex justify-between items-center w-full rounded-lg hover:bg-gray-100 hover:cursor-pointer p-2"
                 href="/{solution.key}"
                 on:click={() => (showSolutions = false)}
               >

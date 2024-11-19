@@ -211,7 +211,7 @@
           target="_blank"
           class="py-4 px-8 border border-tranparent outline-transparent bg-white rounded text-[#040F2D] text-sm font-semibold"
         >
-          Sign me up
+          Talk to sales
         </a>
       </div>
 
@@ -224,7 +224,7 @@
   </section>
 
   <PageSignupCTA
-    header="Take Charge Of Your Trainings Today"
+    header="Give your team the training they deserve"
     subText="It's free to sign up and start getting value out of the product."
     btnLabel="Sign me up"
     link="/signup"
