@@ -1,4 +1,4 @@
-import { PUBLIC_SERVER_URL } from '$env/static/public';
+import { env } from '$env/dynamic/public';
 
 var win, output, textarea;
 
@@ -89,7 +89,7 @@ export const addMathPlugin = (tinymce: any) => {
 
           if (srcMatch) {
             // 2. Point the formula to our server
-            const customAPI = PUBLIC_SERVER_URL + '/katex';
+            const customAPI = env.PUBLIC_SERVER_URL + '/katex';
             const url = srcMatch[1]?.replaceAll('https://latex.codecogs.com/svg.image', customAPI);
 
             // 3. Fetch the HTML from the server

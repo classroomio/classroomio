@@ -7,8 +7,8 @@ export const load = async ({ request }) => {
     event: 'privacy page visited'
   });
 
-  throw redirect(
-    307,
-    'https://app.enzuzo.com/policies/privacy/958fc978-5477-11ee-a03b-7b111830c594'
-  );
+  redirect(
+        307,
+        'https://app.enzuzo.com/policies/privacy/958fc978-5477-11ee-a03b-7b111830c594'
+      );
 };

@@ -2,7 +2,6 @@
   import UserAvatarIcon from 'carbon-icons-svelte/lib/UserAvatar.svelte';
   import BookIcon from 'carbon-icons-svelte/lib/Book.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import LogoutButton from '$lib/components/Buttons/Logout/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
   import { supabase } from '$lib/utils/functions/supabase';
@@ -193,7 +192,6 @@
           </div>
         </div>
       </div>
-      <LogoutButton />
     </div>
     <!-- {:else if loading}
     <Box>

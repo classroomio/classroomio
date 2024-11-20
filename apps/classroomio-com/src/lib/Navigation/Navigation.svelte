@@ -3,56 +3,60 @@
   import TextAlignJustify from 'carbon-icons-svelte/lib/TextAlignJustify.svelte';
   import CloseLarge from 'carbon-icons-svelte/lib/CloseLarge.svelte';
   import { fly } from 'svelte/transition';
-  import MachineLearningModel from 'carbon-icons-svelte/lib/MachineLearningModel.svelte';
   import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
   import CourseIcon from '$lib/Icons/CourseIcon.svelte';
   import MapCenter from 'carbon-icons-svelte/lib/MapCenter.svelte';
   import { page } from '$app/stores';
 
-  let showsubNav = false;
-  let showNav = false;
+  let showDrawer = false;
+  let showSolutions = false;
   let activeLink = '';
+  let closeTimeout: NodeJS.Timeout;
 
-  function handleShow() {
-    showsubNav = !showsubNav;
+  function closeSolutions() {
+    closeTimeout = setTimeout(() => {
+      showSolutions = false;
+    }, 100);
+  }
+  function resetCloseTimeout() {
+    clearTimeout(closeTimeout);
   }
 
-  function handleShowNav() {
-    showNav = !showNav;
+  function handleShowDrawer() {
+    showDrawer = !showDrawer;
   }
 
-  const superpowers = [
+  function handleShowSolutions() {
+    showSolutions = !showSolutions;
+  }
+
+  const solutions = [
     {
-      key: 'coursemanagement',
-      title: 'Course Management',
-      subtitle: 'Simple course management tools'
+      key: 'employee-training',
+      title: 'Employee Training',
+      subtitle: 'Keep your team in sync.'
     },
     {
-      key: 'ai',
-      title: 'AI Support',
-      subtitle: 'Double your productivity with AI'
+      key: 'bootcamps',
+      title: 'Bootcamps',
+      subtitle: 'Drive student satisfaction.'
     },
     {
-      key: 'customization',
-      title: 'Dashboard Customization',
-      subtitle: 'Customize your classroom to your needs'
-    },
-    {
-      key: 'collaboration',
-      title: 'Community',
-      subtitle: 'Seamlessly collaborate with your students'
+      key: 'customer-education',
+      title: 'Customer Education',
+      subtitle: 'Teach customers your product.'
     }
   ];
 
   $: activeLink = $page.url.pathname;
   $: activeHash = $page.url.hash;
-  $: isSuperpowersActive = superpowers.some((sp) => activeHash.includes(sp.key));
+  $: isSolutionsActive = solutions.some((s) => activeHash.includes(s.key));
 </script>
 
 <div
   class="flex w-full justify-between items-center py-6 border-b-[1px] md:px-12 px-5 fixed top-0 z-[3000] filter backdrop-blur-xl shadow-sm bg-white"
 >
-  <a href="/" class="w-[20%]">
+  <a href="/" class="w-[10%]">
     <div class="flex items-center w-full">
       <img
         loading="lazy"
@@ -66,64 +70,60 @@
     </div>
   </a>
 
-  <nav class="w-[40%] hidden md:hidden lg:block">
-    <ul class="flex items-center justify-between w-full gap-2">
+  <nav class="w-[50%] hidden md:hidden lg:block">
+    <ul class="flex justify-center items-center w-full gap-5">
       <li class="text-gray-800 font-semibold text-sm cursor-pointer relative">
         <button
-          class="flex items-center hover:bg-gray-100 px-4 py-2 rounded-md"
-          on:click={() => (showNav = !showNav)}
-          class:active={isSuperpowersActive}
+          on:focus={() => (showSolutions = true)}
+          on:mouseenter={() => (showSolutions = true)}
+          on:mouseleave={closeSolutions}
+          class="flex items-center hover:bg-gray-100 {showSolutions &&
+            'bg-gray-100'} px-4 py-2 rounded-md"
+          on:click={() => (showSolutions = !showSolutions)}
+          class:active={isSolutionsActive}
         >
-          Our Superpowers <ChevronDown class="ml-2" />
+          <span class="mr-2">Solutions</span>
+          <ChevronDown size={16} />
         </button>
-        {#if showNav}
-          <div
-            class="absolute w-[24rem] top-10 -left-10 border px-5 py-5 rounded-[30px] shadow-slate-700 z-[3001] bg-white"
+        {#if showSolutions}
+          <button
+            class="absolute w-[20rem] top-10 -left-10 border rounded-lg px-2 py-4 shadow-slate-700 z-[3001] bg-white flex flex-col gap-3"
+            on:mouseenter={resetCloseTimeout}
+            on:mouseleave={() => (showSolutions = false)}
           >
-            {#each superpowers as superpower}
+            {#each solutions as solution}
               <a
-                class="flex justify-between items-center w-full rounded-lg hover:bg-gray-100 p-5 mb-4"
-                href="/#{superpower.key}"
-                on:click={() => {
-                  showNav = !showNav;
-                }}
+                class="flex justify-between items-center w-full rounded-lg hover:bg-gray-100 hover:cursor-pointer p-2"
+                href="/{solution.key}"
+                on:click={() => (showSolutions = false)}
               >
-                {#if superpower.key === 'coursemanagement'}
+                {#if solution.key === 'employee-training'}
                   <CourseIcon />
-                {:else if superpower.key === 'customization'}
+                {:else if solution.key === 'bootcamps'}
                   <MapCenter size={24} />
-                {:else if superpower.key === 'collaboration'}
+                {:else if solution.key === 'customer-education'}
                   <ForumIcon size={24} />
-                {:else if superpower.key === 'ai'}
-                  <MachineLearningModel size={24} />
                 {/if}
-                <div class="w-[86%] text-start">
+
+                <div class="w-[84%] text-start">
                   <h3 class="font-semibold text-sm text-gray-700">
-                    {superpower.title}
+                    {solution.title}
                   </h3>
                   <p class="font-normal text-sm text-gray-600">
-                    {superpower.subtitle}
+                    {solution.subtitle}
                   </p>
                 </div>
               </a>
             {/each}
-          </div>
+          </button>
         {/if}
       </li>
       <a
-        href="/pricing"
+        href="/tools"
         class="text-gray-800 font-semibold text-sm cursor-pointer"
-        class:active={activeLink.startsWith('/pricing')}
+        class:active={activeLink.startsWith('/tools')}
       >
-        <li class="hover:bg-gray-100 px-4 py-2 rounded-md">Pricing</li>
-      </a>
-      <a
-        href="/docs"
-        target="_blank"
-        class="text-gray-800 font-semibold text-sm cursor-pointer"
-        class:active={activeLink.startsWith('/docs')}
-      >
-        <li class="hover:bg-gray-100 px-4 py-2 rounded-md">Docs</li>
+        <li class="hover:bg-gray-100 px-4 py-2 rounded-md">Free Tools</li>
       </a>
 
       <a
@@ -132,6 +132,13 @@
         class:active={activeLink.startsWith('/blog')}
       >
         <li class="hover:bg-gray-100 px-4 py-2 rounded-md">Blog</li>
+      </a>
+      <a
+        href="/pricing"
+        class="text-gray-800 font-semibold text-sm cursor-pointer"
+        class:active={activeLink.startsWith('/pricing')}
+      >
+        <li class="hover:bg-gray-100 px-4 py-2 rounded-md">Pricing</li>
       </a>
     </ul>
   </nav>
@@ -165,10 +172,12 @@
     type="button"
     aria-label="Hamburger Menu"
     class="block md:block lg:hidden"
-    on:click={handleShowNav}><TextAlignJustify size={24} /></button
+    on:click={handleShowSolutions}
   >
+    <TextAlignJustify size={24} />
+  </button>
 
-  {#if showNav}
+  {#if showSolutions}
     <div
       in:fly={{ x: 20, duration: 700 }}
       out:fly={{ x: 20, duration: 400 }}
@@ -183,41 +192,73 @@
           alt="classroomio logo"
           class="w-[15%]"
         />
-        <button on:click={handleShowNav}><CloseLarge size={24} class="mr-5" /></button>
+        <button class="mr-5" on:click={handleShowSolutions}>
+          <CloseLarge size={24} />
+        </button>
       </div>
       <nav>
         <ul class="flex items-center flex-col lg:flex-row justify-between w-full">
           <li class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer w-full">
             <button
               class="w-full flex items-center justify-between hover:bg-gray-100 py-3 px-4 rounded-lg"
-              on:click={handleShow}
-              class:active={isSuperpowersActive}
+              on:click={handleShowDrawer}
+              class:active={isSolutionsActive}
             >
               Our Superpowers <ChevronDown />
             </button>
-            {#if showsubNav}
+            {#if showDrawer}
               <div in:fly={{ y: -20, duration: 700 }} out:fly={{ y: 20, duration: 400 }}>
-                {#each superpowers as superpower}
+                {#each solutions as solution}
                   <a
-                    href="/#{superpower.key}"
+                    href="/{solution.key}"
                     on:click={() => {
-                      handleShowNav();
+                      handleShowSolutions();
                     }}
                   >
                     <p
                       class="font-normal text-xs text-gray-700 hover:bg-gray-100 rounded-lg py-2.5 pl-5"
                     >
-                      {superpower.title}
+                      {solution.title}
                     </p>
                   </a>
                 {/each}
               </div>
             {/if}
           </li>
+          <!-- Free Tools -->
+          <a
+            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full"
+            on:click={handleShowSolutions}
+            href="/tools"
+          >
+            <li>Free Tools</li>
+          </a>
+          <!-- <a
+            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
+            on:click={() => {
+              handleShowSolutions();
+            }}
+            class:active={activeLink.startsWith('/docs')}
+            href="/docs"
+            target="_blank"
+          >
+            <li>Docs</li>
+          </a> -->
+          <a
+            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
+            on:click={() => {
+              handleShowSolutions();
+            }}
+            class:active={activeLink.startsWith('/blog')}
+            href="/blog"
+          >
+            <li>Blog</li>
+          </a>
+          <!-- Pricing -->
           <a
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full"
             on:click={() => {
-              handleShowNav();
+              handleShowSolutions();
             }}
             href="/pricing"
             class:active={activeLink.startsWith('/pricing')}
@@ -227,28 +268,7 @@
           <a
             class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
             on:click={() => {
-              handleShowNav();
-            }}
-            class:active={activeLink.startsWith('/docs')}
-            href="/docs"
-            target="_blank"
-          >
-            <li>Docs</li>
-          </a>
-          <a
-            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
-            on:click={() => {
-              handleShowNav();
-            }}
-            class:active={activeLink.startsWith('/blog')}
-            href="/blog"
-          >
-            <li>Blog</li>
-          </a>
-          <a
-            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
-            on:click={() => {
-              handleShowNav();
+              handleShowSolutions();
             }}
             class:active={activeHash.includes('morefeatures')}
             href="/#morefeatures"

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Search, Dropdown } from 'carbon-components-svelte';
   import { profile } from '$lib/utils/store/user';
-  import { fetchCourses } from '$lib/components/Courses/api';
+  import { fetchCourses } from '$lib/utils/services/courses';
   import Courses from '$lib/components/Courses/index.svelte';
   import NewCourseModal from '$lib/components/Courses/components/NewCourseModal/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -57,7 +57,7 @@
     }
 
     filteredCourses = courses.filter((course) => {
-      if (!searchValue || course.title.toLowerCase().includes(searchValue)) {
+      if (!searchValue || course.title.toLowerCase().includes(searchValue.toLowerCase())) {
         return true;
       }
 
@@ -126,7 +126,7 @@
           class=" bg-gray-100 dark:bg-neutral-800"
         />
         <Dropdown
-          class="h-full"
+          class="h-full min-w-[150px]"
           bind:selectedId
           items={[
             { id: '0', text: $t('courses.course_filter.date_created') },

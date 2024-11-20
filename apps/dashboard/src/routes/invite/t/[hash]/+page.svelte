@@ -12,9 +12,10 @@
   import AuthUI from '$lib/components/AuthUI/index.svelte';
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import { setTheme } from '$lib/utils/functions/theme';
-  import type { CurrentOrg } from '$lib/utils/types/org.js';
+  import type { CurrentOrg } from '$lib/utils/types/org';
   import { onMount } from 'svelte';
   import type { Profile } from '$lib/components/Course/components/People/types';
+  import { logout } from '$lib/utils/functions/logout';
 
   export let data;
 
@@ -47,12 +48,12 @@
 
     try {
       loading = true;
-      let profile: Profile | null = data.profile;
+      let profile: Profile | null = data.invite.profile;
 
-      if (!data.profile) {
+      if (!data.invite.profile) {
         // Signup
         const { data: signupData, error } = await supabase.auth.signUp({
-          email: data.email,
+          email: data.invite.email,
           password: fields.password
         });
 
@@ -71,7 +72,7 @@
             id: userId,
             username: fields.name.toLowerCase().replace(' ', '-') + new Date().getTime(),
             fullname: fields.name,
-            email: data.email
+            email: data.invite.email
           })
           .select();
 
@@ -88,19 +89,8 @@
         throw 'Unable to create profile';
       }
 
-      // Update member response
-      const updateMemberRes = await supabase
-        .from('organizationmember')
-        .update({
-          verified: true,
-          profile_id: profile.id
-        })
-        .match({ email: data.email, organization_id: data.currentOrg?.id });
-
-      console.log('Update member response', updateMemberRes);
-
       const res = await supabase.auth.signInWithPassword({
-        email: data.email,
+        email: profile.email,
         password: fields.password
       });
 
@@ -108,7 +98,19 @@
         throw res.error;
       }
 
+      // Update member response
+      const updateMemberRes = await supabase
+        .from('organizationmember')
+        .update({
+          verified: true,
+          profile_id: profile.id
+        })
+        .match({ email: profile.email, organization_id: data.invite.currentOrg?.id });
+
+      console.log('Update member response', updateMemberRes);
+
       formRef?.reset();
+
       return goto($currentOrgPath);
     } catch (error) {
       if (error instanceof Error) {
@@ -123,18 +125,26 @@
 
   function setCurOrg(cOrg: CurrentOrg) {
     if (!cOrg) return;
+
+    console.log(cOrg);
     currentOrg.set(cOrg);
   }
 
-  onMount(() => {
-    setTheme(data.currentOrg?.theme || '');
+  onMount(async () => {
+    await logout(false);
+
+    setTheme(data.invite.currentOrg?.theme || '');
+
+    setCurOrg(data.invite.currentOrg as CurrentOrg);
   });
 
   $: errors.confirmPassword = getConfirmPasswordError(fields);
   $: disableSubmit = getDisableSubmit(fields);
 
-  $: setCurOrg(data.currentOrg as CurrentOrg);
-  $: console.log('data.profile', data.profile);
+  $: console.log('data', data.invite);
+
+  $: console.log('org', $currentOrg);
+  $: console.log('path', $currentOrgPath);
 </script>
 
 <svelte:head>
@@ -144,7 +154,7 @@
 <AuthUI {supabase} isLogin={false} {handleSubmit} isLoading={loading} showLogo={true} bind:formRef>
   <div class="mt-4 w-full">
     <p class="dark:text-white text-lg font-semibold mb-6">
-      {#if data.profile}
+      {#if data.invite.profile}
         Log in to join
       {:else}
         Create a free account to join
@@ -152,14 +162,14 @@
     </p>
     <TextField
       label="Your Email"
-      value={data.email}
+      value={data.invite.email}
       type="email"
       placeholder="you@domain.com"
       className="mb-6"
       inputClassName="w-full"
       isDisabled={true}
     />
-    {#if !data.profile}
+    {#if !data.invite.profile}
       <TextField
         label="Full Name"
         bind:value={fields.name}
@@ -185,7 +195,7 @@
       helperMessage="Password must be more than 6 characters"
       isRequired
     />
-    {#if !data.profile}
+    {#if !data.invite.profile}
       <TextField
         label="Confirm Password"
         bind:value={fields.confirmPassword}

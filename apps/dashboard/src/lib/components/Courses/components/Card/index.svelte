@@ -17,8 +17,8 @@
   import { COURSE_TYPE } from '$lib/utils/types';
   import RadioButtonChecked from 'carbon-icons-svelte/lib/RadioButtonChecked.svelte';
   import GrowthIcon from 'carbon-icons-svelte/lib/Growth.svelte';
-  import CourseIcon from 'carbon-icons-svelte/lib/Course.svelte';
   import UserProfileIcon from 'carbon-icons-svelte/lib/UserProfile.svelte';
+  import { calcCourseDiscount } from '$lib/utils/functions/course';
 
   export let bannerImage: string | undefined;
   export let id = '';
@@ -26,14 +26,22 @@
   export let title = '';
   export let description = '';
   export let isPublished = false;
-  export let cost = 0;
   export let totalLessons = 0;
   export let totalStudents = 0;
-  export let currency = 'NGN';
+  export let currency = 'USD';
   export let isOnLandingPage = false;
   export let isLMS = false;
+  export let isExplore = false;
   export let progressRate = 45;
   export let type: COURSE_TYPE;
+  export let pricingData: {
+    cost: number;
+    currency?: string;
+    showDiscount?: boolean;
+    discount?: number;
+  } = {
+    cost: 0
+  };
 
   let target: any;
 
@@ -60,7 +68,7 @@
   }
 
   function getCourseUrl() {
-    return isOnLandingPage
+    return isOnLandingPage || isExplore
       ? `/course/${slug}`
       : `/courses/${id}${isLMS ? '/lessons?next=true' : ''}`;
   }
@@ -92,6 +100,12 @@
       icon: GrowthIcon
     }
   };
+
+  $: cost = calcCourseDiscount(
+    pricingData.discount,
+    pricingData.cost ?? 0,
+    !!pricingData.showDiscount
+  );
 </script>
 
 {#if !isLMS && !isOnLandingPage}
@@ -159,31 +173,40 @@
   </div>
 
   <div
-    class="px-4 border border-gray dark:border-neutral-600 border-b-0 border-l-0 border-r-0 flex justify-between {isLMS &&
+    class="px-4 py-2 border border-gray dark:border-neutral-600 border-b-0 border-l-0 border-r-0 flex justify-between {isLMS &&
       'items-center'}"
   >
     <div>
-      <p class="text-xs pt-2 {!isLMS && 'pl-2'} dark:text-white">
+      <p class="text-xs {!isLMS && 'pl-2'} dark:text-white">
         {totalLessons}
         {$t('courses.course_card.lessons_number')}
       </p>
       <p class="text-xs py-2">
         {#if isOnLandingPage}
-          <span class="px-2"
-            >{!cost
-              ? $t('course.navItem.landing_page.pricing_section.free')
-              : formatter.format(cost)}</span
-          >
+          <span class="px-2">
+            {#if !cost}
+              {$t('course.navItem.landing_page.pricing_section.free')}
+            {:else if pricingData.showDiscount}
+              {formatter.format(cost)}
+              <span class="line-through">
+                {formatter?.format(pricingData?.cost)}
+              </span>
+            {:else}
+              {formatter.format(cost)}
+            {/if}
+          </span>
         {:else if isLMS}
-          <div class="flex items-center gap-2">
-            <div class=" relative bg-[#EAEAEA] w-[50px] h-1">
-              <div
-                style="width:{progressRate}%"
-                class={`absolute top-0 left-0 bg-primary-700 h-full`}
-              />
+          {#if !isExplore}
+            <div class="flex items-center gap-2">
+              <div class=" relative bg-[#EAEAEA] w-[50px] h-1">
+                <div
+                  style="width:{progressRate}%"
+                  class={`absolute top-0 left-0 bg-primary-700 h-full`}
+                />
+              </div>
+              <p class="text-xs text-[#656565] dark:text-white">{progressRate}%</p>
             </div>
-            <p class="text-xs text-[#656565] dark:text-white">{progressRate}%</p>
-          </div>
+          {/if}
         {:else}
           <Tag type={isPublished ? 'green' : 'cool-gray'}>
             {#if isPublished}
@@ -198,13 +221,15 @@
 
     {#if isLMS}
       <PrimaryButton
-        label={$t('courses.course_card.continue_course')}
+        label={isExplore
+          ? $t('courses.course_card.learn_more')
+          : $t('courses.course_card.continue_course')}
         variant={VARIANTS.OUTLINED}
         className="rounded-none"
       />
     {:else if !isOnLandingPage}
       <div class="flex flex-col justify-between">
-        <p class="text-xs pt-2 pl-2 dark:text-white">
+        <p class="text-xs pl-2 dark:text-white">
           {totalStudents}
           {$t('courses.course_card.students')}
         </p>

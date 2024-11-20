@@ -1,3 +1,4 @@
+import type { MetaTagsProps } from 'svelte-meta-tags';
 import { dev, browser } from '$app/environment';
 import { redirect } from '@sveltejs/kit';
 import { blockedSubdomain } from '$lib/utils/constants/app';
@@ -5,7 +6,8 @@ import { getCurrentOrg } from '$lib/utils/services/org';
 import { getSupabase, supabase } from '$lib/utils/functions/supabase';
 import { loadTranslations } from '$lib/utils/functions/translations';
 import type { CurrentOrg } from '$lib/utils/types/org';
-import { PRIVATE_APP_SUBDOMAINS, IS_SELFHOSTED, PRIVATE_APP_HOST } from '$env/static/private';
+import { IS_SELFHOSTED } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 
 if (!supabase) {
   getSupabase();
@@ -16,6 +18,7 @@ interface LoadOutput {
   isOrgSite: boolean;
   skipAuth: boolean;
   org: CurrentOrg | null;
+  baseMetaTags: MetaTagsProps;
 }
 
 export const load = async ({ url, cookies }): Promise<LoadOutput> => {
@@ -23,12 +26,16 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
     orgSiteName: '',
     isOrgSite: false,
     skipAuth: false,
-    org: null
+    org: null,
+    baseMetaTags: getBaseMetaTags(url)
   };
+
+  console.log('IS_SELFHOSTED', IS_SELFHOSTED);
 
   // Selfhosted usecase would be here
   if (IS_SELFHOSTED === 'true') {
     const subdomain = getSubdomain(url);
+    console.log('subdomain', subdomain);
 
     // Student dashboard
     if (subdomain) {
@@ -67,11 +74,19 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
   const isDev = dev || isLocalHost;
 
   if (!url.host.includes('.classroomio.com') && !isLocalHost) {
-    // TODO: We can verify if custom domain here
-    return response;
-  }
+    // Custom domain
+    response.org = (await getCurrentOrg(url.host, true, true)) || null;
 
-  if (!blockedSubdomain.includes(subdomain)) {
+    console.log('custom domain response.org', response.org);
+
+    if (!response.org) {
+      throw redirect(307, 'https://app.classroomio.com/404?type=org');
+    }
+
+    response.isOrgSite = true;
+    response.orgSiteName = response.org?.siteName || '';
+    return response;
+  } else if (!blockedSubdomain.includes(subdomain)) {
     const answer = !!subdomain;
 
     response.isOrgSite = debugMode || answer;
@@ -85,7 +100,7 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
     }
   } else if (subdomain === 'play' || debugPlay === 'true') {
     response.skipAuth = true;
-  } else if (!PRIVATE_APP_SUBDOMAINS.split(',').includes(subdomain) && !isDev) {
+  } else if (!env.PRIVATE_APP_SUBDOMAINS.split(',').includes(subdomain) && !isDev) {
     // This case is for anything in our blockedSubdomains
     throw redirect(307, 'https://app.classroomio.com');
   }
@@ -97,6 +112,44 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
 
   return response;
 };
+
+function getBaseMetaTags(url: URL) {
+  return Object.freeze({
+    title: 'ClassroomIO | The Open Source Learning Management System for Companies',
+    description:
+      'A flexible, user-friendly platform for creating, managing, and delivering courses for companies and training organisations',
+    canonical: new URL(url.pathname, url.origin).href,
+    openGraph: {
+      type: 'website',
+      url: new URL(url.pathname, url.origin).href,
+      locale: 'en_IE',
+      title: 'ClassroomIO | The Open Source Learning Management System for Companies',
+      description:
+        'A flexible, user-friendly platform for creating, managing, and delivering courses for companies and training organisations',
+      siteName: 'ClassroomIO',
+      images: [
+        {
+          url: 'https://brand.cdn.clsrio.com/og/classroomio-og.png',
+          alt: 'ClassroomIO OG Image',
+          width: 1920,
+          height: 1080,
+          secureUrl: 'https://brand.cdn.clsrio.com/og/classroomio-og.png',
+          type: 'image/jpeg'
+        }
+      ]
+    },
+    twitter: {
+      handle: '@classroomio',
+      site: '@classroomio',
+      cardType: 'summary_large_image' as const,
+      title: 'ClassroomIO | The Open Source Learning Management System for Companies',
+      description:
+        'A flexible, user-friendly platform for creating, managing, and delivering courses for companies and training organisations',
+      image: 'https://brand.cdn.clsrio.com/og/classroomio-og.png',
+      imageAlt: 'ClassroomIO OG Image'
+    }
+  });
+}
 
 // Define getInitialLocale function
 function getInitialLocale(): string {
@@ -115,7 +168,7 @@ function getSubdomain(url: URL) {
   const host = url.host.replace('www.', '');
   const parts = host.split('.');
 
-  if (host.endsWith(PRIVATE_APP_HOST)) {
+  if (host.endsWith(env.PRIVATE_APP_HOST)) {
     return parts.length >= 3 ? parts[0] : null;
   }
 

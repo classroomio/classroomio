@@ -1,20 +1,20 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
-  import { fly } from 'svelte/transition';
-  import { derived } from 'svelte/store';
+  import { MetaTags } from 'svelte-meta-tags';
   import { goto } from '$app/navigation';
   import { browser, dev } from '$app/environment';
-  import { page, navigating } from '$app/stores';
+  import { page } from '$app/stores';
   import isEmpty from 'lodash/isEmpty';
-  import { Theme, ToastNotification, Loading } from 'carbon-components-svelte';
+  import merge from 'lodash/merge';
+  import { Theme } from 'carbon-components-svelte';
   import type { CarbonTheme } from 'carbon-components-svelte/types/Theme/Theme.svelte';
   import LandingNavigation from '$lib/components/Navigation/index.svelte';
+  import ProgressBar from '$lib/components/ProgressBar/index.svelte';
   import OrgNavigation from '$lib/components/Navigation/app.svelte';
   import LMSNavigation from '$lib/components/Navigation/lms.svelte';
   import OrgLandingPage from '$lib/components/Org/LandingPage/index.svelte';
   import Snackbar from '$lib/components/Snackbar/index.svelte';
-  import Backdrop from '$lib/components/Backdrop/index.svelte';
+  import Restricted from '$lib/components/Page/Restricted.svelte';
   import Apps from '$lib/components/Apps/index.svelte';
   import PlayQuiz from '$lib/components/Org/Quiz/Play/index.svelte';
   import { course } from '$lib/components/Course/store';
@@ -47,10 +47,6 @@
   let queryParam = $page.url?.search;
   let carbonTheme: CarbonTheme = 'white';
 
-  const delayedPreloading = derived(navigating, (currentPreloading, set) => {
-    setTimeout(() => set(currentPreloading), 250);
-  });
-
   function setupAnalytics() {
     // Set up sentry
     initSentry();
@@ -58,8 +54,9 @@
     // Set up posthog
     initPosthog();
 
-    if (!dev) {
-      injectSpeedInsights();
+    // Disable umami on localhost
+    if (dev) {
+      localStorage.setItem('umami.disabled', '1');
     }
   }
 
@@ -106,13 +103,17 @@
 
       const [regexUsernameMatch] = [...(authUser.email?.matchAll(/(.*)@/g) || [])];
 
+      const isGoogleAuth = !!authUser.app_metadata?.providers?.includes('google');
+
       const { data: newProfileData, error } = await supabase
         .from('profile')
         .insert({
           id: authUser.id,
           username: regexUsernameMatch[1] + `${new Date().getTime()}`,
           fullname: regexUsernameMatch[1],
-          email: authUser.email
+          email: authUser.email,
+          is_email_verified: isGoogleAuth,
+          verified_at: isGoogleAuth ? new Date().toDateString() : undefined
         })
         .select();
 
@@ -176,7 +177,7 @@
 
       const orgRes = await getOrganizations(profileData.id, data.isOrgSite, data.orgSiteName);
 
-      const isStudentAccount = parseInt(orgRes.currentOrg.role_id) === ROLE.STUDENT;
+      const isStudentAccount = orgRes.currentOrg.role_id == ROLE.STUDENT;
 
       // student redirect
       if (data.isOrgSite) {
@@ -246,9 +247,6 @@
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       // Log key events
       console.log(`event`, event);
-      if (event == 'PASSWORD_RECOVERY') {
-        console.log('PASSWORD RESET');
-      }
 
       if (path.includes('reset')) {
         console.log('Dont change auth when on reset page');
@@ -256,27 +254,26 @@
       }
 
       // Skip Authentication
-      if (data.skipAuth) return;
+      if (data.skipAuth || $user.fetchingUser) return;
 
       // Authentication Steps
       if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
         $user.fetchingUser = true;
-        getProfile();
-      } else if (!['TOKEN_REFRESHED'].includes(event)) {
-        console.log('not logged in, go to login');
-        return goto('/login');
+        getProfile().then(() => {
+          $user.fetchingUser = false;
+        });
       }
+      // else if (!['TOKEN_REFRESHED'].includes(event)) {
+      //   console.log('not logged in, go to login');
+      //   return goto('/login');
+      // }
     });
 
-    if (data.isOrgSite) {
-      if (!data.org) {
-        goto('/404');
-      } else {
-        $globalStore.orgSiteName = data.orgSiteName;
-        $globalStore.isOrgSite = data.isOrgSite;
+    if (data.isOrgSite && data.org) {
+      $globalStore.orgSiteName = data.orgSiteName;
+      $globalStore.isOrgSite = data.isOrgSite;
 
-        currentOrg.set(data.org);
-      }
+      currentOrg.set(data.org);
     }
 
     return () => {
@@ -287,34 +284,26 @@
 
   $: path = $page.url?.pathname?.replace('/', '');
   $: carbonTheme = $globalStore.isDark ? 'g100' : 'white';
+  $: metaTags = merge(data.baseMetaTags, $page.data.pageMetaTags);
 </script>
 
 <svelte:window on:resize={handleResize} />
+
+<MetaTags {...metaTags} />
 
 <Theme bind:theme={carbonTheme} />
 
 <UpgradeModal />
 <Snackbar />
 
-{#if data.skipAuth}
+{#if data.org?.is_restricted || $currentOrg.is_restricted}
+  <Restricted />
+{:else if data.skipAuth}
   <PlayQuiz />
 {:else if data.isOrgSite && !path}
-  <OrgLandingPage orgSiteName={data.orgSiteName} org={data.org || {}} />
+  <OrgLandingPage orgSiteName={data.orgSiteName} org={data.org} />
 {:else}
   <main class="dark:bg-black">
-    {#if $navigating && $delayedPreloading}
-      <Backdrop disableCenteredContent={true} className="">
-        <div class="h-full w-full relative" transition:fly={{ x: -200, duration: 500 }}>
-          <ToastNotification kind="info-square" class="absolute bottom-5 left-5">
-            <span slot="title" class="flex items-center">
-              <span class="mr-2">Redirecting</span>
-              <Loading withOverlay={false} small />
-            </span>
-            <span slot="caption">Taking you to the next page, please wait.</span>
-          </ToastNotification>
-        </div>
-      </Backdrop>
-    {/if}
     {#if !hideNavByRoute($page.url?.pathname)}
       {#if isOrgPage($page.url?.pathname) || $page.url?.pathname.includes('profile') || isCoursesPage(path)}
         <OrgNavigation bind:title={$course.title} isCoursePage={isCoursesPage(path)} />
@@ -328,6 +317,8 @@
           disableSignup={false}
         />
       {/if}
+
+      <ProgressBar textColorClass="text-gray-400" />
     {/if}
 
     <div class={path.includes('home') ? '' : 'flex justify-between'}>

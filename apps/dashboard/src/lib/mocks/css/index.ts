@@ -1,24 +1,3 @@
-import cssSyntax from './001_css_syntax';
-import cssSelectors from './002_css_selectors';
-import cssHowTo from './003_css_howTo';
-import cssComments from './004_css_comments';
-import cssColors from './005_css_colors';
-import cssBackgounds from './006_css_backgrounds';
-import cssBorders from './007_css_borders';
-import cssMargin from './008_css_margin';
-import cssPadding from './009_css_padding';
-import cssDimensions from './010_css_dimentions';
-import cssBoxModel from './011_css_boxModel';
-import cssOutline from './012_css_outline';
-import cssText from './013_css_text';
-import cssFonts from './014_css_fonts';
-import cssIcons from './015_css_icons';
-import cssLinks from './016_css_links';
-import cssLists from './017_css_lists';
-import cssTables from './018_css_tables';
-import cssDisplay from './019_css_display';
-import cssMaxWidth from './020_css_maxWidth';
-
 export const CSS_IDS: { [key: string]: string } = {
   CSS_SYNTAX: 'CSS_SYNTAX',
   CSS_SELECTORS: 'CSS_SELECTORS',
@@ -43,24 +22,24 @@ export const CSS_IDS: { [key: string]: string } = {
 };
 
 export const CSS_TEMPLATES = {
-  [CSS_IDS.CSS_SYNTAX]: cssSyntax,
-  [CSS_IDS.CSS_SELECTORS]: cssSelectors,
-  [CSS_IDS.CSS_HOWTO]: cssHowTo,
-  [CSS_IDS.CSS_COMMENTS]: cssComments,
-  [CSS_IDS.CSS_COLORS]: cssColors,
-  [CSS_IDS.CSS_BACKGROUNDS]: cssBackgounds,
-  [CSS_IDS.CSS_BORDERS]: cssBorders,
-  [CSS_IDS.CSS_MARGIN]: cssMargin,
-  [CSS_IDS.CSS_PADDING]: cssPadding,
-  [CSS_IDS.CSS_DIMENTIONS]: cssDimensions,
-  [CSS_IDS.CSS_BOXMODEL]: cssBoxModel,
-  [CSS_IDS.CSS_OUTLINE]: cssOutline,
-  [CSS_IDS.CSS_TEXT]: cssText,
-  [CSS_IDS.CSS_FONTS]: cssFonts,
-  [CSS_IDS.CSS_ICONS]: cssIcons,
-  [CSS_IDS.CSS_LINKS]: cssLinks,
-  [CSS_IDS.CSS_LISTS]: cssLists,
-  [CSS_IDS.CSS_TABLES]: cssTables,
-  [CSS_IDS.CSS_DISPLAY]: cssDisplay,
-  [CSS_IDS.CSS_MAXWIDTH]: cssMaxWidth
+  [CSS_IDS.CSS_SYNTAX]: async () => (await import('./001_css_syntax')).default,
+  [CSS_IDS.CSS_SELECTORS]: async () => (await import('./002_css_selectors')).default,
+  [CSS_IDS.CSS_HOWTO]: async () => (await import('./003_css_howTo')).default,
+  [CSS_IDS.CSS_COMMENTS]: async () => (await import('./004_css_comments')).default,
+  [CSS_IDS.CSS_COLORS]: async () => (await import('./005_css_colors')).default,
+  [CSS_IDS.CSS_BACKGROUNDS]: async () => (await import('./006_css_backgrounds')).default,
+  [CSS_IDS.CSS_BORDERS]: async () => (await import('./007_css_borders')).default,
+  [CSS_IDS.CSS_MARGIN]: async () => (await import('./008_css_margin')).default,
+  [CSS_IDS.CSS_PADDING]: async () => (await import('./009_css_padding')).default,
+  [CSS_IDS.CSS_DIMENTIONS]: async () => (await import('./010_css_dimentions')).default,
+  [CSS_IDS.CSS_BOXMODEL]: async () => (await import('./011_css_boxModel')).default,
+  [CSS_IDS.CSS_OUTLINE]: async () => (await import('./012_css_outline')).default,
+  [CSS_IDS.CSS_TEXT]: async () => (await import('./013_css_text')).default,
+  [CSS_IDS.CSS_FONTS]: async () => (await import('./014_css_fonts')).default,
+  [CSS_IDS.CSS_ICONS]: async () => (await import('./015_css_icons')).default,
+  [CSS_IDS.CSS_LINKS]: async () => (await import('./016_css_links')).default,
+  [CSS_IDS.CSS_LISTS]: async () => (await import('./017_css_lists')).default,
+  [CSS_IDS.CSS_TABLES]: async () => (await import('./018_css_tables')).default,
+  [CSS_IDS.CSS_DISPLAY]: async () => (await import('./019_css_display')).default,
+  [CSS_IDS.CSS_MAXWIDTH]: async () => (await import('./020_css_maxWidth')).default
 };

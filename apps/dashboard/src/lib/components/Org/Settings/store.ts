@@ -17,6 +17,10 @@ export interface OrgLandingPageJson {
       type: string;
       show: boolean;
     };
+    background?: {
+      image: string;
+      show: boolean;
+    };
     show: boolean;
   };
   aboutUs: {
@@ -64,7 +68,7 @@ export interface OrgLandingPageJson {
   };
 }
 
-export let landingPageSettings: Writable<OrgLandingPageJson> = writable({
+export const landingPageSettings: Writable<OrgLandingPageJson> = writable({
   header: {
     title: 'Web Development Courses for',
     titleHighlight: 'Everyone',
@@ -81,6 +85,10 @@ export let landingPageSettings: Writable<OrgLandingPageJson> = writable({
       type: 'video',
       show: true
     },
+    background: {
+      image: '',
+      show: true
+    },
     show: true
   },
   aboutUs: {
@@ -88,7 +96,7 @@ export let landingPageSettings: Writable<OrgLandingPageJson> = writable({
     content:
       'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Repudiandae, quaerat cum. Ullam similique quae dicta ipsum atque quam fugit iusto eligendi magni voluptatum aut, exercitationem deserunt vitae iste rem sunt!\nLorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores obcaecati veritatis tenetur in, nihil repellat quasi cumque sed molestias id reiciendis harum doloremque minus fugit quia cum dolores quas pariatur.',
     imageUrl:
-      'https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/landingpage/riverside.jpeg',
+      'https://pgrest.classroomio.com/storage/v1/object/public/avatars/landingpage/riverside.jpeg',
     show: true
   },
   courses: {

@@ -2,7 +2,7 @@
   <img alt="ClassroomIO is a no-code tool that allows you build and scale your online bootcamp with ease." src="https://raw.githubusercontent.com/rotimi-best/classroomio/main/apps/classroomio-com/static/classroomio-opengraph-image.png" />
   <h1 align="center">ClassroomIO.com</h1>
   <p align="center">
-    Launch Your Online Bootcamp In Minutes
+    The Open Source Learning Management System for Companies
     <br />
     <a href="https://classroomio.com">Website</a>  |  <a href="https://dub.sh/ciodiscord">Join Discord community</a>
   </p>
@@ -26,9 +26,8 @@ At ClassroomIO, our mission is to provide students with the best possible learni
 2. **👨‍👩‍👦 Multi-Teacher Management:** You can invite other teachers into your organization and assign them individual courses.
 3. **🤖 AI Integration:** We've got OpenAI integration for quick course creation where you can generate course content, lesson outlines, and even generate assignments right from your lesson notes.
 4. **💬 Forum:** Students can ask questions in your dedicated community and get answers from either you or other students.
-5. **🏆 Kahoot-Like Quiz:** You can create live quizzes to create more engagement in your classrooms.
-6. **💻 Dedicated Student Dashboard:** Once you create an account, you get a dedicated dashboard where your students can access all their courses, assignments, and more.
-7. **🔒 Fully open source:** You can self-host the entire stack on your servers.
+5. **💻 Dedicated Student Dashboard:** Once you create an account, you get a dedicated dashboard where your students can access all their courses, assignments, and more.
+6. **🔒 Fully open source:** You can self-host the entire stack on your servers.
 
 ### Roadmap Features
 
@@ -125,9 +124,14 @@ This repo is a mono repo that consists of 3 projects:
 
 To get the environmental variables for supabase continue to step(5)
 
-5. Setup Supabase.
+5. Install all dependencies
 
-   - Make sure you've downloaded the [Supabase cli](https://github.com/supabase/cli)
+   ```bash
+   pnpm i
+   ```
+
+6. Setup Supabase.
+
    - Install and Start [docker](https://docs.docker.com/engine/install/)
    - Go to the project directory in your terminal and start Supabase
 
@@ -160,12 +164,6 @@ To get the environmental variables for supabase continue to step(5)
 
    - To view the Supabase studio, open the Studio URL from the result of `pnpm supabase start`
 
-6. Install the required dependencies
-
-   ```bash
-   pnpm i
-   ```
-
 7. Run all projects (in development mode)
 
    ```bash
@@ -174,9 +172,9 @@ To get the environmental variables for supabase continue to step(5)
 
 8. All projects should start running
 
-   - `classroomio-com`: [http://localhost:5173](http://localhost:5173)
+   - `classroomio-com`: [http://localhost:5174](http://localhost:5174)
    - `backend`: [http://localhost:3002](http://localhost:3002)
-   - `dashboard`: [http://localhost:5174](http://localhost:5174)
+   - `dashboard`: [http://localhost:5173](http://localhost:5173)
    - `docs`: [http://localhost:3000](http://localhost:3000)
 
 9. Running a specific project
@@ -188,7 +186,7 @@ To get the environmental variables for supabase continue to step(5)
 
 10. Login into `dashboard`
 
-    - Visit [http://localhost:5173/login](http://localhost:5173/login)
+    - Visit [http://localhost:5174/login](http://localhost:5173/login)
     - Enter email: `admin@test.com`
     - Enter password: `123456`
      

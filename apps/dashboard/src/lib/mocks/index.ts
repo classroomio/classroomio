@@ -1,16 +1,9 @@
-import { HTML_IDS, HTML_TEMPLATES } from './html';
-import { CSS_IDS, CSS_TEMPLATES } from './css';
 import { calculateTotalPoints, shuffleOptions } from './utils';
 import type { ExerciseTemplate } from '$lib/utils/types';
-import { JS_IDS, JS_TEMPLATES } from './js';
-import { NODE_IDS, NODE_TEMPLATES } from './node';
-import { REACT_IDS, REACT_TEMPLATES } from './react';
-import { TS_IDS, TS_TEMPLATES } from './typescript';
-import { PHP_IDS, PHP_TEMPLATES } from './php';
-import { VUE_IDS, VUE_TEMPLATES } from './vue';
-import { GIT_IDS, GIT_TEMPLATES } from './git';
-import { PYTHON_IDS, PYTHON_TEMPLATES } from './python';
 
+// Rule to add new template
+// The key and value must match
+// The template should have both `{VALUE}_IDS` and `{VALUE}_TEMPLATES`
 export const TAGS = {
   HTML: 'HTML',
   CSS: 'CSS',
@@ -24,41 +17,75 @@ export const TAGS = {
   GIT: 'GIT'
 };
 
-function generateTemplateForTag(
+export interface GeneratedTemplates {
+  [key: string]: LangTemplate[];
+}
+interface LangTemplate {
+  id: string;
+  title: string;
+  questions: number;
+  points: number;
+  data: ExerciseTemplate;
+}
+
+async function generateTemplateForTag(
   keys: { [key: string]: string },
-  templates: {
-    [x: string]: ExerciseTemplate;
+  template: {
+    [x: string]: () => ExerciseTemplate;
   }
 ) {
-  const template = [];
+  const templates: LangTemplate[] = [];
 
   for (const key in keys) {
     const id = keys[key];
-    templates[id].questionnaire.questions = templates[id].questionnaire.questions.map((q) => {
+    const data = await template[id]();
+
+    data.questionnaire.questions = data.questionnaire.questions.map((q) => {
       q.options = shuffleOptions(q.options);
       return q;
     });
-    template.push({
+    templates.push({
       id,
-      title: templates[id].title,
-      questions: templates[id].questionnaire.questions.length,
-      points: calculateTotalPoints(templates[id]),
-      data: templates[id]
+      title: data.title,
+      questions: data.questionnaire.questions.length,
+      points: calculateTotalPoints(data),
+      data: data
     });
   }
 
-  return template;
+  return templates;
 }
 
-export const TEMPLATES = {
-  [TAGS.HTML]: generateTemplateForTag(HTML_IDS, HTML_TEMPLATES),
-  [TAGS.CSS]: generateTemplateForTag(CSS_IDS, CSS_TEMPLATES),
-  [TAGS.JS]: generateTemplateForTag(JS_IDS, JS_TEMPLATES),
-  [TAGS.Typescript]: generateTemplateForTag(TS_IDS, TS_TEMPLATES),
-  [TAGS.ReactJS]: generateTemplateForTag(REACT_IDS, REACT_TEMPLATES),
-  [TAGS.VueJS]: generateTemplateForTag(VUE_IDS, VUE_TEMPLATES),
-  [TAGS.NodeJS]: generateTemplateForTag(NODE_IDS, NODE_TEMPLATES),
-  [TAGS.Python]: generateTemplateForTag(PYTHON_IDS, PYTHON_TEMPLATES),
-  [TAGS.PHP]: generateTemplateForTag(PHP_IDS, PHP_TEMPLATES),
-  [TAGS.GIT]: generateTemplateForTag(GIT_IDS, GIT_TEMPLATES)
+export const getAllTemplates = async (): Promise<GeneratedTemplates> => {
+  const templateModules = {
+    HTML: await import('./html'),
+    CSS: await import('./css'),
+    JS: await import('./js'),
+    Typescript: await import('./typescript'),
+    ReactJS: await import('./react'),
+    VueJS: await import('./vue'),
+    NodeJS: await import('./node'),
+    Python: await import('./python'),
+    PHP: await import('./php'),
+    GIT: await import('./git')
+  };
+
+  const templates: GeneratedTemplates = {};
+
+  for (const tag in templateModules) {
+    try {
+      const module = templateModules[tag];
+      const ids = module[`${tag.toUpperCase()}_IDS`];
+      const templatesData = module[`${tag.toUpperCase()}_TEMPLATES`];
+      if (!templatesData) {
+        throw 'Templates not found';
+      }
+
+      templates[tag] = await generateTemplateForTag(ids, templatesData);
+    } catch (error) {
+      console.error('error finding template', error);
+    }
+  }
+
+  return templates;
 };

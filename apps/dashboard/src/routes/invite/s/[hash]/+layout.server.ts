@@ -11,15 +11,15 @@ export const load = async ({ params = { hash: '' } }) => {
     const courseHashData = atob(decodeURIComponent(params.hash));
     console.log('courseHashData', courseHashData);
 
-    const { groupId, name, description, orgSiteName } = JSON.parse(courseHashData);
+    const { id, name, description, orgSiteName } = JSON.parse(courseHashData);
 
-    if (!groupId || !name || !description || !orgSiteName) {
+    if (!id || !name || !description || !orgSiteName) {
       throw 'Validation failed';
     }
     const currentOrg = await getCurrentOrg(orgSiteName, true);
 
     return {
-      groupId,
+      id,
       name,
       description,
       currentOrg

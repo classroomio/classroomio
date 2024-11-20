@@ -9,8 +9,8 @@
     RadioButtonGroup,
     RadioButton
   } from 'carbon-components-svelte';
-  import { Restart } from 'carbon-icons-svelte';
-  import { PUBLIC_SERVER_URL } from '$env/static/public';
+  import { Restart, ArrowUpRight } from 'carbon-icons-svelte';
+  import { env } from '$env/dynamic/public';
 
   import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
   import UnsavedChangesGuard from '$lib/components/UnsavedChanges/UnsavedChangesGuard.svelte';
@@ -70,7 +70,7 @@
         slideUrl: lesson.slide_url || '',
         video: lesson.videos || ''
       }));
-      const response = await fetch(PUBLIC_SERVER_URL + '/downloadCourse', {
+      const response = await fetch(env.PUBLIC_SERVER_URL + '/downloadCourse', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -135,7 +135,7 @@
     isSaving = true;
 
     try {
-      const newCourse = {
+      const updatedCourse = {
         title: $settings.course_title,
         description: $settings.course_description,
         type: $settings.type,
@@ -150,12 +150,11 @@
         },
         slug: $course.slug
       };
-
-      await updateCourse($course.id, avatar, newCourse);
+      await updateCourse($course.id, avatar, updatedCourse);
 
       $course = {
         ...$course,
-        ...newCourse
+        ...updatedCourse
       };
 
       snackbar.success('snackbar.course_settings.success.saved');
@@ -193,6 +192,7 @@
   function onSettingsChange(_s) {
     hasUnsavedChanges = true;
   }
+  $: courseLink = `${$currentOrgDomain}/course/${$course.slug}`;
 </script>
 
 <UnsavedChangesGuard {hasUnsavedChanges} />
@@ -260,9 +260,13 @@
           <IconButton contained={true} size="small" onClick={generateNewCourseLink}>
             <Restart size={16} />
           </IconButton>
+          <span class="grow" />
+          <IconButton contained={true} size="small" onClick={() => goto(courseLink)}>
+            <ArrowUpRight size={16} />
+          </IconButton>
         </p>
         {#if $course.slug}
-          <CodeSnippet wrapText type="multi" code={`${$currentOrgDomain}/course/${$course.slug}`} />
+          <CodeSnippet wrapText type="multi" code={courseLink} />
         {:else}
           <CodeSnippet code="Setup landing page to get course link" />
         {/if}
@@ -320,7 +324,7 @@
           variant={VARIANTS.OUTLINED}
           label={$t('course.navItem.settings.download')}
           onClick={downloadCourse}
-          isDisabled={isLoading || !PUBLIC_SERVER_URL}
+          isDisabled={isLoading || !env.PUBLIC_SERVER_URL}
           {isLoading}
         />
       {/if}

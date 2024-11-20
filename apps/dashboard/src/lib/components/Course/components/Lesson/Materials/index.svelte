@@ -2,7 +2,7 @@
   import isEmpty from 'lodash/isEmpty';
   import { fade } from 'svelte/transition';
   import { useCompletion } from 'ai/svelte';
-  import MODES from '$lib/utils/constants/mode.js';
+  import MODES from '$lib/utils/constants/mode';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { formatYoutubeVideo } from '$lib/utils/functions/formatYoutubeVideo';
@@ -300,7 +300,7 @@
 
   $: initPlyr(player, $lesson.materials.videos);
 
-  $: lessonTitle = $lessons.find((les) => les.id === $lesson.id)?.title || '';
+  $: lessonTitle = $lesson.title;
 
   $: editorValue = lessonFallbackNote(
     $lesson.materials.note,
@@ -484,7 +484,7 @@
   </Tabs>
 {:else if !isMaterialsEmpty($lesson.materials, $lessonByTranslation[lessonId])}
   {#key lessonId}
-    <div class="w-full" in:fade={{ delay: 500 }} out:fade>
+    <div class="w-full mb-20" in:fade={{ delay: 500 }} out:fade>
       {#each componentsToRender as Component}
         <svelte:component this={Component} {lessonId} />
       {/each}

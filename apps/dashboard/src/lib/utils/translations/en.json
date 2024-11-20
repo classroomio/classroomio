@@ -10,10 +10,19 @@
     "snackbar_error": "error while sending code"
   },
 
+  "delete_modal": {
+    "label": "Delete",
+    "content": "Are you sure?",
+    "no": "No",
+    "yes": "Yes"
+  },
+
   "onboarding": {
     "sell": "Sell courses online",
     "teach": "Teach my current students online",
     "expanding": "On another platform, expanding here",
+    "employees": "Train my employees",
+    "customers": "Create courses for my customers",
     "explore": "Just here to explore",
     "articles": "Articles",
     "search": "Search engine",
@@ -30,7 +39,7 @@
 
   "welcome_modal": {
     "we_at": "We at",
-    "small_team": "are a small team with a large mission to empower educators with great technology to help them train the future generation. Education is the most powerful gift you can give anyone, and it makes so much sense to give you all the tools you need to give more people this GIFT.",
+    "small_team": "are a small team with a large mission to empower educators with great software to help them make an impact in people's lives. Education is the most powerful gift you can give anyone, and it makes perfect sense to provide you with all the tools you need to give this GIFT to more people.",
     "thank_you": "Thank you for choosing us",
     "deeply_appreciate": "we deeply appreciate it and are at your service."
   },
@@ -42,7 +51,18 @@
     "forgot": "Forgot password?",
     "login": "Log In"
   },
+  "profileMenu": {
+    "profile": "PROFILE",
+    "current_org": "CURRENT ORGANIZATION",
+    "free_tools": "FREE TOOLS",
+    "progress": "Progress report",
+    "timer": "Activity timer",
+    "tic_tac": "Tictac toe",
+    "see_more": "See more",
 
+    "whats_new": "What's new",
+    "launch_week": "Launch week"
+  },
   "settings": {
     "heading": "Settings",
     "subheadings": {
@@ -59,7 +79,10 @@
     "profile": {
       "profile_picture": {
         "heading": "Profile Picture",
-        "upload_image": "Upload Image"
+        "upload_image": "Upload Image",
+        "file_size": "Max file size:",
+        "accepted": "Accepted:",
+        "validation_error": "File size exceeds the maximum limit:"
       },
       "personal_information": {
         "heading": "Personal Information",
@@ -78,7 +101,9 @@
         "update_organization": "Update Organization",
         "theme": {
           "heading": "Theme",
-          "sub_heading": "Set your brand color"
+          "sub_heading": "Set your brand color",
+          "custom_theme": "Custom Theme",
+          "add_theme": "Add Theme"
         },
         "customize_lms": {
           "heading": "Customize LMS",
@@ -94,7 +119,7 @@
         },
         "team": {
           "heading": "Team",
-          "sub_heading": "Set up your website",
+          "sub_heading": "Set up your team",
           "body": "Add team mates to your organization so you can both collaborate on projects.",
           "button": "Manage Team"
         }
@@ -107,6 +132,11 @@
       "title": "Title",
       "title_highlight": "Title-Highlight",
       "subtitle": "Subtitle",
+      "background": {
+        "title": "Background Image",
+        "show_background": "Show background",
+        "hide_background": "Hide background"
+      },
       "actions": {
         "heading": "Actions",
         "label": "Label",
@@ -118,6 +148,7 @@
           "video": "Video",
           "image": "Image"
         },
+
         "show_banner": "Show banner",
         "hide_banner": "Hide banner"
       },
@@ -217,9 +248,12 @@
       "heading": "Upgrade Plan",
       "thanks": "Thank you for your support",
       "plan": "Your plan comes with cool perks and benefits including access to all future features we release.",
+      "save": "Save 2 months",
       "close": "Close",
       "learn": "Learn more",
-      "month": "month"
+      "month": "month",
+      "monthly": "Monthly",
+      "annually": "Annually"
     }
   },
 
@@ -323,11 +357,23 @@
       "domains": {
         "title": "Custom domain",
         "add": "Add",
-        "work_together": "Add your team mates or collaborators to your organization. Start working together",
         "url": "URL",
         "update": "Update Domain",
         "custom": "Custom domain",
-        "domain": "Add your own domain name"
+        "domain": "Add your own domain name",
+        "save": "Save",
+        "your_domain": "Your Domain",
+        "custom_domain_error": "You can't add a top level domain as custom domain. Instead, use a subdomain like 'courses.[yourwebsite].com' or 'www.[yourwebsite].com'.",
+        "custom_domain_not_classroomio": "Domain cannot contain 'classroomio'",
+        "custom_domain_success": "Custom domain added successfully",
+        "dns_description": "Set the following record on your DNS provider to continue:",
+        "dns_type": "Type",
+        "dns_value": "Value",
+        "dns_name": "Name",
+        "refresh": "Refresh",
+        "remove": "Remove",
+        "custom_favicon": "Custom favicon",
+        "custom_code": "Custom code"
       },
       "customize_lms": {
         "title": "Customize LMS",
@@ -428,6 +474,7 @@
       "published": "Published",
       "unpublished": "Unpublished",
       "continue_course": "Continue Course",
+      "learn_more": "Learn more",
       "list_view": {
         "title": "Title",
         "description": "Description",
@@ -454,7 +501,7 @@
   "course": {
     "navItems": {
       "nav_news_feed": "News Feed",
-      "nav_lessons": "Lessons",
+      "nav_content": "Content",
       "nav_attendance": "Attendance",
       "nav_submissions": "Submissions",
       "nav_marks": "Marks",
@@ -494,28 +541,34 @@
 
       "lessons": {
         "heading": "Lessons",
+        "heading_v2": "Content",
         "drag": "drag a card to reorder",
         "no_lesson": "No lessons yet",
         "share_your_knowledge": "Share your knowledge with the world by creating engaging lessons. Start by clicking on the Add button.",
+        "section_prompt": {
+          "cta": "Enable Sections",
+          "header": "Enable Sections",
+          "title": "We Launched Course Sections",
+          "description": "You can now group lessons into sections to organize your content and make learning smoother for your students.",
+          "activate": "Activate",
+          "cancel": "Cancel"
+        },
         "add_lesson": {
           "button_title": "Add",
           "start_reorder": "Reorder",
           "end_reorder": "End Reorder",
           "modal_heading": "Add New Lesson",
+          "modal_heading_section": "Add New Section",
           "lesson_title": "Lesson Title",
+          "lesson_section_title": "Section Title",
           "click_to": "Click to",
           "lock": "Lock",
           "unlock": "Unlock",
           "fullname": "fullname",
           "save": "Save",
           "edit": "Edit",
-          "delete": "Delete"
-        },
-        "delete_lesson": {
-          "modal_heading": "Delete",
-          "content": "Are you sure you want to delete:",
-          "no": "No",
-          "yes": "Yes"
+          "delete": "Delete",
+          "cancel": "Cancel"
         },
         "join_lesson": "Join lesson",
         "no_link": "No link",
@@ -786,7 +839,10 @@
           "submit_grades": "Submit Grades",
           "accept_grade": "Accept",
           "reject_grade": "Reject",
-          "questions_tried": "Allocated this score because of total tries:"
+          "questions_tried": "Allocated this score because of total tries:",
+          "delete_prompt": "Delete",
+          "delete_error": "Failed to delete submission",
+          "delete_success": "Successfully deleted submission"
         }
       },
 
@@ -794,6 +850,10 @@
         "title": "Marks",
         "student": "Student",
         "total": "Total",
+        "export": {
+          "csv": "Export as CSV",
+          "pdf": "Export as PDF"
+        },
         "no_student": "No Student Added"
       },
 
@@ -854,7 +914,7 @@
         "theme": "Choose a theme",
         "logo": "Brand Logo",
         "to_update": "To update your brand image, go to",
-        "settings": "Settings &gt; Organisation settings",
+        "settings": "Settings > Organisation settings",
         "and_upload": "and upload your brand logo",
         "goto_settings": "Go to Settings",
         "description": "Course Description",
@@ -863,11 +923,17 @@
         "locked": "Locked",
         "unlocked": "Unlocked",
         "save": "Save Changes",
-        "unlocked_certificate": "Certificate is now available",
+        "unlocked_certificate": "Congrats! 🎉 your certificate is ready",
+        "unlocked_certificate_subtitle": "You have completed this course, and your dedication is evident. Download certificate and share with your network as a prove of your newly acquired skill",
         "locked_certificate": "Certificates not available",
         "instructor_unlock": "Your instructor needs to unlock your certificate.",
         "contact_instructor": "If you need your certificate, please contact your instructor.",
-        "download_certificate": "DownLoad Certificate"
+        "download_certificate": "Download Certificate",
+        "complete_to_download_title": "Course not complete 😔",
+        "complete_to_download_subtitle": "Your certificate will be available once you complete all lesson and exercises in this course",
+        "description_error": "Description cannot exceed 200 characters",
+        "characters": "characters",
+        "unexpected_error": "An unexpected error occurred"
       },
 
       "landing_page": {
@@ -879,12 +945,14 @@
             "goals": "Goals",
             "reviews": "Reviews",
             "instructor": "Instructor",
-            "pricing": "Pricing"
+            "pricing": "Pricing",
+            "certificate": "Certificate"
           },
 
           "save": "Save",
           "page_builder": "Page Builder",
           "section": "section",
+          "display_section": "Display section",
 
           "header_form": {
             "title": "Title",
@@ -916,6 +984,10 @@
                 "min_char": "'Description is too short, min of 5 characters"
               }
             }
+          },
+
+          "certificate_form": {
+            "upload_template": "Certificate template"
           },
 
           "instructor_form": {
@@ -957,6 +1029,10 @@
           "bird": "Early bird offer. Buy ASAP"
         },
 
+        "course_content": "Course content",
+        "modules": "modules",
+        "lessons": "lessons",
+        "exercises": "exercises",
         "start_course": "Start Course",
         "requirement": "Requirement",
         "description": "Course Description",
@@ -1090,6 +1166,7 @@
   "upgrade": {
     "certificate": "Upgrade your plan to generate certificates",
     "team": "Upgrade your plan to add team members",
+    "domain": "Upgrade your plan to add custom domains",
     "team_members": "Team members",
     "back": "Back to Settings",
     "download_lessons": "Upgrade to download lessons",
@@ -1101,6 +1178,7 @@
     "my_learning": "My Learning",
     "exercise": "Exercise",
     "community": "Community",
+    "explore": "Explore",
     "help": "Help",
     "settings": "Settings"
   },
@@ -1123,6 +1201,12 @@
     "in_progress": "Grading In Progress",
     "graded": "Graded",
     "lesson": "Lesson"
+  },
+
+  "explore": {
+    "heading": "Explore our courses",
+    "empty_heading": "No course available",
+    "empty_description": "There are currently no published course available"
   },
 
   "snackbar": {
@@ -1320,6 +1404,11 @@
   },
 
   "validations": {
+    "user_profile": {
+      "email": "Invalid email address",
+      "username": "Username cannot be empty",
+      "fullname": "Name should be minimum of 5 characters"
+    },
     "organization_name": {
       "min_char": "Organization must contain 5 or more characters",
       "hyphen_rule": "Organization name cannot start or end with a hyphen"

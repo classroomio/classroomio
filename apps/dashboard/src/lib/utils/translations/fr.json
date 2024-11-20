@@ -185,7 +185,8 @@
     "exercise": "Exercice",
     "community": "Communauté",
     "help": "Aide",
-    "settings": "Paramètres"
+    "settings": "Paramètres",
+    "explore": "Explorer"
   },
   "upgrade": {
     "certificate": "Mettez à niveau votre plan pour générer des certificats",
@@ -193,7 +194,8 @@
     "team_members": "Membres de l'équipe",
     "back": "Retour aux paramètres",
     "download_lessons": "Mettre à niveau pour télécharger les leçons",
-    "download_course": "Mettre à niveau pour télécharger le cours"
+    "download_course": "Mettre à niveau pour télécharger le cours",
+    "domain": "Mettez à niveau votre forfait pour ajouter des domaines personnalisés"
   },
   "audience": {
     "title": "Public",
@@ -389,9 +391,18 @@
             "goals": "Objectifs",
             "reviews": "Commentaires",
             "instructor": "Instructeur",
-            "pricing": "Tarifs"
+            "pricing": "Tarifs",
+            "certificate": "Certificat"
+          },
+          "display_section": "Section d'affichage",
+          "certificate_form": {
+            "upload_template": "Modèle de certificat"
           }
-        }
+        },
+        "course_content": "Contenu du cours",
+        "modules": "modules",
+        "lessons": "leçons",
+        "exercises": "exercices"
       },
       "certificates": {
         "title": "Certificats",
@@ -408,11 +419,17 @@
         "locked": "Fermé à clé",
         "unlocked": "Débloqué",
         "save": "Sauvegarder les modifications",
-        "unlocked_certificate": "Le certificat est maintenant disponible",
         "locked_certificate": "Certificats non disponibles",
         "instructor_unlock": "Votre instructeur doit débloquer votre certificat.",
         "contact_instructor": "Si vous avez besoin de votre certificat, veuillez contacter votre instructeur.",
-        "download_certificate": "Télécharger le certificat"
+        "download_certificate": "Télécharger le certificat",
+        "unlocked_certificate": "Bravo! 🎉 votre attestation est prête",
+        "unlocked_certificate_subtitle": "Vous avez terminé ce cours et votre dévouement est évident. Téléchargez le certificat et partagez-le avec votre réseau comme preuve de vos compétences nouvellement acquises",
+        "complete_to_download_subtitle": "Votre certificat sera disponible une fois que vous aurez terminé toutes les leçons et exercices de ce cours.",
+        "complete_to_download_title": "Cours non terminé 😔",
+        "description_error": "La description ne peut pas dépasser 200 caractères",
+        "characters": "personnages",
+        "unexpected_error": "une erreur inattendue est apparue"
       },
       "people": {
         "title": "Personnes",
@@ -468,7 +485,11 @@
         "title": "Des marques",
         "student": "Étudiant",
         "total": "Total",
-        "no_student": "Aucun étudiant ajouté"
+        "no_student": "Aucun étudiant ajouté",
+        "export": {
+          "csv": "Exporter au format CSV",
+          "pdf": "Exporter au format PDF"
+        }
       },
       "submissions": {
         "title": "Exercices soumis",
@@ -490,7 +511,10 @@
           "accept_grade": "Accepter",
           "reject_grade": "Rejeter",
           "add_comment_placeholder": "laissez un commentaire",
-          "questions_tried": "Attribué ce score en raison du nombre total d'essais :"
+          "questions_tried": "Attribué ce score en raison du nombre total d'essais :",
+          "delete_prompt": "Supprimer",
+          "delete_error": "Échec de la suppression de la soumission",
+          "delete_success": "Soumission supprimée avec succès"
         }
       },
       "attendance": {
@@ -728,12 +752,6 @@
           "materials": "Matériaux",
           "exercises": "Des exercices"
         },
-        "delete_lesson": {
-          "modal_heading": "Supprimer",
-          "content": "Etes-vous sûr que vous voulez supprimer:",
-          "no": "Non",
-          "yes": "Oui"
-        },
         "add_lesson": {
           "button_title": "Ajouter",
           "modal_heading": "Ajouter une nouvelle leçon",
@@ -746,7 +764,10 @@
           "lock": "Verrouillage",
           "unlock": "Ouvrir",
           "start_reorder": "Réorganiser",
-          "end_reorder": "Terminer la réapprovisionnement"
+          "end_reorder": "Terminer la réapprovisionnement",
+          "modal_heading_section": "Ajouter une nouvelle section",
+          "lesson_section_title": "Titre de la section",
+          "cancel": "Annuler"
         },
         "disabled": "La fonctionnalité est désactivée",
         "next": "Suivant",
@@ -759,7 +780,16 @@
         },
         "drag": "faites glisser une carte pour réorganiser",
         "no_lesson": "Pas encore de cours",
-        "share_your_knowledge": "Partagez vos connaissances avec le monde en créant des leçons engageantes. Commencez par cliquer sur le bouton Ajouter."
+        "share_your_knowledge": "Partagez vos connaissances avec le monde en créant des leçons engageantes. Commencez par cliquer sur le bouton Ajouter.",
+        "heading_v2": "Contenu",
+        "section_prompt": {
+          "cta": "Activer les sections",
+          "header": "Activer les sections",
+          "title": "Nous avons lancé des sections de cours",
+          "description": "Vous pouvez désormais regrouper les leçons en sections pour organiser votre contenu et rendre l'apprentissage plus fluide pour vos élèves.",
+          "activate": "Activer",
+          "cancel": "Annuler"
+        }
       },
       "news_feed": {
         "heading": "Fil d'actualité",
@@ -790,14 +820,14 @@
     },
     "navItems": {
       "nav_news_feed": "Fil d'actualité",
-      "nav_lessons": "Cours",
       "nav_attendance": "Présence",
       "nav_submissions": "Soumissions",
       "nav_marks": "Des marques",
       "nav_people": "Personnes",
       "nav_certificates": "Certificats",
       "nav_landing_page": "Page de destination",
-      "nav_settings": "Paramètres"
+      "nav_settings": "Paramètres",
+      "nav_content": "Contenu"
     },
     "not_permitted": {
       "header": "Aucune autorisation",
@@ -843,7 +873,9 @@
         "share": "Partager",
         "invite": "Inviter",
         "delete": "Supprimer"
-      }
+      },
+      "get_course": "Obtenir un cours",
+      "learn_more": "Apprendre encore plus"
     },
     "course_filter": {
       "date_created": "date créée",
@@ -901,12 +933,24 @@
     "settings": {
       "domains": {
         "add": "Ajouter",
-        "work_together": "Ajoutez vos coéquipiers ou collaborateurs à votre organisation. Commencez à travailler ensemble",
         "url": "URL",
         "update": "Mettre à jour le domaine",
         "custom": "Domaine personnalisé",
         "domain": "Ajoutez votre propre nom de domaine",
-        "title": "Domaine personnalisé"
+        "title": "Domaine personnalisé",
+        "save": "Sauvegarder",
+        "your_domain": "Votre domaine",
+        "custom_domain_error": "Vous ne pouvez pas ajouter un domaine de premier niveau en tant que domaine personnalisé. Utilisez plutôt un sous-domaine tel que « courses.[votresite Web].com » ou « www.[votre site Web].com ».",
+        "custom_domain_success": "Domaine personnalisé ajouté avec succès",
+        "dns_description": "Définissez l'enregistrement suivant sur votre fournisseur DNS pour continuer :",
+        "dns_type": "Taper",
+        "dns_value": "Valeur",
+        "dns_name": "Nom",
+        "refresh": "Rafraîchir",
+        "remove": "Retirer",
+        "custom_favicon": "Icône de favori personnalisée",
+        "custom_code": "Code personnalisé",
+        "custom_domain_not_classroomio": "Le domaine ne peut pas contenir « classroomio »"
       },
       "customize-lms": {
         "title": "Personnaliser le LMS",
@@ -1060,7 +1104,10 @@
       "plan": "Votre forfait s'accompagne d'avantages et d'avantages intéressants, notamment l'accès à toutes les futures fonctionnalités que nous publions.",
       "close": "Fermer",
       "learn": "Apprendre encore plus",
-      "month": "mois"
+      "month": "mois",
+      "monthly": "Mensuel",
+      "annually": "Annuellement",
+      "save": "Économisez 2 mois"
     },
     "plan_names": {
       "free": "Gratuit",
@@ -1172,6 +1219,11 @@
           "video": "Vidéo",
           "image": "Image"
         }
+      },
+      "background": {
+        "title": "Image d'arrière-plan",
+        "show_background": "Afficher l'arrière-plan",
+        "hide_background": "Masquer l'arrière-plan"
       }
     },
     "organization": {
@@ -1182,9 +1234,9 @@
         "update_organization": "Mettre à jour l'organisation",
         "team": {
           "heading": "Équipe",
-          "sub_heading": "Configurez votre site Web",
           "body": "Ajoutez des coéquipiers à votre organisation afin que vous puissiez tous les deux collaborer sur des projets.",
-          "button": "Gérer l'équipe"
+          "button": "Gérer l'équipe",
+          "sub_heading": "Configurez votre équipe"
         },
         "custom_domain": {
           "heading": "Domaine personnalisé",
@@ -1194,7 +1246,9 @@
         },
         "theme": {
           "heading": "Thème",
-          "sub_heading": "Définissez la couleur de votre marque"
+          "sub_heading": "Définissez la couleur de votre marque",
+          "custom_theme": "Thème personnalisé",
+          "add_theme": "Ajouter un thème"
         },
         "customize_lms": {
           "heading": "Personnaliser le LMS",
@@ -1215,7 +1269,10 @@
       },
       "profile_picture": {
         "heading": "Image de profil",
-        "upload_image": "Télécharger une image"
+        "upload_image": "Télécharger une image",
+        "file_size": "Taille maximale du fichier :",
+        "accepted": "Accepté:",
+        "validation_error": "La taille du fichier dépasse la limite maximale :"
       }
     },
     "tabs": {
@@ -1258,7 +1315,9 @@
     "what_brings": "Qu'est-ce qui t'amène à",
     "how": "Comment avez-vous entendu parler de nous?",
     "back": "Dos",
-    "continue": "Continuer"
+    "continue": "Continuer",
+    "employees": "Former mes collaborateurs",
+    "customers": "Créer des cours pour mes clients"
   },
   "verify_email_modal": {
     "heading": "Vérifiez votre e-mail",
@@ -1276,6 +1335,17 @@
   },
   "specialization": {
     "course_tag": "Spécialisation"
+  },
+  "profileMenu": {
+    "profile": "PROFIL",
+    "current_org": "ORGANISATION ACTUELLE",
+    "free_tools": "OUTILS GRATUITS",
+    "progress": "Rapport d'étape",
+    "timer": "Minuterie d'activité",
+    "tic_tac": "Tic-tac",
+    "see_more": "Voir plus",
+    "whats_new": "Quoi de neuf",
+    "launch_week": "Semaine de lancement"
   },
   "validations": {
     "invalid_type_error": "Ne doit pas être vide",
@@ -1368,6 +1438,22 @@
     "organization_name": {
       "min_char": "L'organisation doit contenir 5 caractères ou plus",
       "hyphen_rule": "Le nom de l'organisation ne peut pas commencer ou se terminer par un trait d'union"
+    },
+    "user_profile": {
+      "email": "Adresse e-mail invalide",
+      "username": "Le nom d'utilisateur ne peut pas être vide",
+      "fullname": "Le nom doit comporter au minimum 5 caractères"
     }
+  },
+  "explore": {
+    "empty_heading": "Aucun cours disponible",
+    "empty_description": "Il n'y a actuellement aucun cours publié disponible",
+    "heading": "Découvrez nos cours"
+  },
+  "delete_modal": {
+    "label": "Supprimer",
+    "content": "Es-tu sûr?",
+    "no": "Non",
+    "yes": "Oui"
   }
 }
