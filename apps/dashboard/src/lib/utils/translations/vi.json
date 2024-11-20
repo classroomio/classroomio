@@ -949,7 +949,8 @@
         "refresh": "Làm cho khỏe lại",
         "remove": "Di dời",
         "custom_favicon": "Biểu tượng yêu thích tùy chỉnh",
-        "custom_code": "Mã tùy chỉnh"
+        "custom_code": "Mã tùy chỉnh",
+        "custom_domain_not_classroomio": "Tên miền không thể chứa 'classroomio'"
       },
       "customize-lms": {
         "title": "Tùy chỉnh LMS",
@@ -1314,7 +1315,9 @@
     "what_brings": "Điều gì đưa bạn đến",
     "how": "Bạn đã nghe về chúng tôi như thế nào?",
     "back": "Mặt sau",
-    "continue": "Tiếp tục"
+    "continue": "Tiếp tục",
+    "employees": "Đào tạo nhân viên của tôi",
+    "customers": "Tạo khóa học cho khách hàng của tôi"
   },
   "verify_email_modal": {
     "heading": "Xác nhận email của bạn",

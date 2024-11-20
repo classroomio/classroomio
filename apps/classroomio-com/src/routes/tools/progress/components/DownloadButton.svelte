@@ -30,7 +30,7 @@
           })
           .finally(() => {
             isDownloading = false;
-            $openModal.showFullscreenButton = true;
+            $openModal.showFullscreenButton = false;
           });
       }, 300);
     } else {

@@ -949,7 +949,8 @@
         "refresh": "ताज़ा करना",
         "remove": "निकालना",
         "custom_favicon": "कस्टम फ़ेविकॉन",
-        "custom_code": "कस्टम कोड"
+        "custom_code": "कस्टम कोड",
+        "custom_domain_not_classroomio": "डोमेन में 'classroomio' नहीं हो सकता"
       },
       "customize-lms": {
         "title": "एलएमएस को अनुकूलित करें",
@@ -1314,7 +1315,9 @@
     "what_brings": "आपको क्या लाता है",
     "how": "आपको हमारे बारे में कैसे पता चला?",
     "back": "पीछे",
-    "continue": "जारी रखना"
+    "continue": "जारी रखना",
+    "employees": "मेरे कर्मचारियों को प्रशिक्षित करें",
+    "customers": "मेरे ग्राहकों के लिए पाठ्यक्रम बनाएं"
   },
   "verify_email_modal": {
     "heading": "अपना ईमेल सत्यापित करें",

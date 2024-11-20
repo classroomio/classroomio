@@ -27,7 +27,7 @@
     <ul class="flex flex-col items-start justify-start gap-2 w-[90%] md:w-[50%]">
       {#each data.posts as post}
         <li class="py-10 w-full border-b border-gray-200">
-          <div class="flex md:flex-row flex-col md:items-center gap-2">
+          <div class="mb-5 flex md:flex-row flex-col md:items-center gap-2">
             <!-- Date -->
             <p class="text-sm text-slate-500">{formatDate(post.date)}</p>
 
@@ -40,8 +40,17 @@
               </div>
             </div>
           </div>
+
           <a href={`/blog/${post.slug}`} class="group">
-            <p class="font-bold text-lg py-2 group-hover:text-slate-500">{post.title}</p>
+            <img
+              loading="lazy"
+              src={post.imageUrl}
+              alt={post.title}
+              class="w-70 h-48 object-cover rounded-md"
+            />
+            <p class="font-bold text-lg py-2 group-hover:text-slate-500">
+              {@html post.title}
+            </p>
 
             <p class="text-slate-500 pt-2 pb-4">{post.description}</p>
           </a>
@@ -59,7 +68,7 @@
   </div>
 
   <PageSignupCTA
-    header="Ready To Launch Your First Training?"
+    header="Ready To Scale Your Training Efforts?"
     subText="It's free to sign up and start getting value out of the product."
     btnLabel="Sign me up"
     link="/signup"

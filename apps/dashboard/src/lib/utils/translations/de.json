@@ -949,7 +949,8 @@
         "refresh": "Aktualisieren",
         "remove": "Entfernen",
         "custom_favicon": "Benutzerdefiniertes Favicon",
-        "custom_code": "Benutzerdefinierter Code"
+        "custom_code": "Benutzerdefinierter Code",
+        "custom_domain_not_classroomio": "Domain darf „classroomio“ nicht enthalten"
       },
       "customize-lms": {
         "title": "LMS anpassen",
@@ -1314,7 +1315,9 @@
     "what_brings": "Was bringt dich dazu",
     "how": "Wie sind Sie auf uns aufmerksam geworden?",
     "back": "Zurück",
-    "continue": "Weitermachen"
+    "continue": "Weitermachen",
+    "employees": "Bilden Sie meine Mitarbeiter aus",
+    "customers": "Erstellen Sie Kurse für meine Kunden"
   },
   "verify_email_modal": {
     "heading": "Bestätigen Sie Ihre E-Mail",

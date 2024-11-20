@@ -7,7 +7,7 @@
 </script>
 
 <div
-  class="floating grad relative mx-auto my-[5%] flex h-[61vh] w-[100%] flex-col items-center justify-center px-[6%] py-[12%] text-center shadow-2xl lg:h-[54vh] lg:w-[70%] lg:rounded-3xl"
+  class="floating grad relative mx-auto my-[5%] flex h-[61vh] w-[100%] flex-col items-center justify-center px-[6%] py-[12%] text-center shadow-2xl lg:h-[54vh] lg:w-[70%] lg:rounded-3xl max-w-4xl"
 >
   <div>
     <h1

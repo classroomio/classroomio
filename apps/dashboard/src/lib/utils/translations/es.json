@@ -949,7 +949,8 @@
         "refresh": "Refrescar",
         "remove": "Eliminar",
         "custom_favicon": "favicon personalizado",
-        "custom_code": "código personalizado"
+        "custom_code": "código personalizado",
+        "custom_domain_not_classroomio": "El dominio no puede contener 'classroomio'"
       },
       "customize-lms": {
         "title": "Personalizar LMS",
@@ -1314,7 +1315,9 @@
     "what_brings": "¿Qué te trae a",
     "how": "¿Cómo se enteró de nosotros?",
     "back": "Atrás",
-    "continue": "Continuar"
+    "continue": "Continuar",
+    "employees": "Capacitar a mis empleados",
+    "customers": "Crear cursos para mis clientes"
   },
   "verify_email_modal": {
     "heading": "Verifica tu correo electrónico",

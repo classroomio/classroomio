@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import debounce from 'lodash/debounce';
   import ColorPicker from 'svelte-awesome-color-picker';
   import { Grid, Row, Column } from 'carbon-components-svelte';
   import FlashFilled from 'carbon-icons-svelte/lib/FlashFilled.svelte';
@@ -38,6 +39,19 @@
     default: ''
   };
 
+  const saveTheme = debounce(async (theme) => {
+    const { error, data } = await supabase
+      .from('organization')
+      .update({ theme })
+      .match({ id: $currentOrg.id });
+
+    console.log('Debounced update theme', data);
+
+    if (error) {
+      snackbar.error('Failed to update theme: ' + error.message);
+    }
+  }, 700);
+
   function handleChangeTheme(t = '') {
     return async () => {
       document.body.className = document.body.className
@@ -51,12 +65,7 @@
 
       setTheme(t);
 
-      const res = await supabase
-        .from('organization')
-        .update({ theme: t })
-        .match({ id: $currentOrg.id });
-
-      console.log('Update theme', res);
+      saveTheme(t);
     };
   }
 
@@ -68,14 +77,7 @@
 
     $currentOrg.theme = hex;
 
-    const { error } = await supabase
-      .from('organization')
-      .update({ theme: hex })
-      .match({ id: $currentOrg.id });
-
-    if (error) {
-      snackbar.error('Failed to update theme: ' + error.message);
-    }
+    saveTheme(hex);
   }
 
   async function handleUpdate() {
@@ -140,8 +142,8 @@
     goto(`${$currentOrgPath}/settings${pathname}`);
   }
 
-  function setHex(theme: string) {
-    if (hex || theme.includes('theme-')) return;
+  function setHex(theme?: string) {
+    if (!theme || hex || theme.includes('theme-')) return;
     hex = theme;
   }
 
@@ -230,15 +232,18 @@
         </button>
 
         <div
-          class="w-fit h-auto border-2 {isCustomTheme &&
-            'border-primary-700'} rounded-full relative group"
+          class="w-fit h-auto border-2 {isCustomTheme
+            ? 'border-primary-700'
+            : 'dark:border-neutral-700'} rounded-full relative group"
         >
           <!-- plus icon positioned over the color picker -->
           <div
             class="absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-200"
           >
             <svg
-              class="w-6 h-6 text-{isCustomTheme ? 'white' : 'black'} z-10 opacity-100"
+              class="w-6 h-6 text-{isCustomTheme
+                ? 'white'
+                : 'black'} dark:text-white z-10 opacity-100"
               fill="none"
               stroke="currentColor"
               stroke-width="2"
@@ -248,13 +253,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
             </svg>
           </div>
-          <ColorPicker
-            position="responsive"
-            label=""
-            bind:hex
-            on:input={handleCustomTheme}
-            nullable
-          />
+          <ColorPicker position="responsive" label="" bind:hex on:input={handleCustomTheme} />
         </div>
       </div>
     </Column>
@@ -332,3 +331,17 @@
     </Column>
   </Row>
 </Grid>
+
+<style>
+  :global(.dark) {
+    --cp-text-color: #fff;
+    --cp-border-color: white;
+    --cp-text-color: white;
+    --cp-input-color: #555;
+    --cp-button-hover-color: #777;
+  }
+
+  :global(.dark .alpha) {
+    background: #333 !important;
+  }
+</style>
