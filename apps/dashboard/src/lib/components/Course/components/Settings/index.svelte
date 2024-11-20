@@ -13,6 +13,7 @@
   import { env } from '$env/dynamic/public';
 
   import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
+  import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -44,6 +45,7 @@
     description: string | undefined;
   } = { title: undefined, description: undefined };
   let avatar: string | undefined;
+  let hasUnsavedChanges = false;
 
   function widgetControl() {
     $handleOpenWidget.open = !$handleOpenWidget.open;
@@ -60,6 +62,7 @@
 
   const downloadCourse = async () => {
     isLoading = true;
+
     try {
       const lessonsList = $lessons.map((lesson) => ({
         lessonTitle: lesson.title,
@@ -85,6 +88,7 @@
       if (!response.ok) {
         throw new Error(await response.text());
       }
+
       const data = await response.blob();
       const file = new Blob([data], { type: 'application/pdf' });
       const fileURL = URL.createObjectURL(file);
@@ -100,6 +104,7 @@
     } catch (error) {
       snackbar.error('snackbar.course_settings.error.not_right');
     }
+
     isLoading = false;
   };
 
@@ -124,11 +129,14 @@
       errors.title = $t('snackbar.course_settings.error.title');
       return;
     }
+
     if (!$settings.course_description) {
       errors.description = $t('snackbar.course_settings.error.description');
       return;
     }
+
     isSaving = true;
+
     try {
       const updatedCourse = {
         title: $settings.course_title,
@@ -153,6 +161,8 @@
       };
 
       snackbar.success('snackbar.course_settings.success.saved');
+
+      hasUnsavedChanges = false;
     } catch (error) {
       snackbar.error();
     }
@@ -160,29 +170,41 @@
     isSaving = false;
   };
 
-  function setDefault(course: Course) {
-    if (course && Object.keys(course).length && $settings.course_title !== course.title) {
-      $settings = {
-        course_title: course.title,
-        type: course.type,
-        course_description: course.description,
-        logo: course.logo || '',
-        tabs: course.metadata.lessonTabsOrder || $settings.tabs,
-        grading: !!course.metadata.grading,
-        lesson_download: !!course.metadata.lessonDownload,
-        is_published: !!course.is_published,
-        allow_new_students: course.metadata.allowNewStudent
-      };
-    }
-  }
-
   const generateNewCourseLink = () => {
     $course.slug = generateSlug($course.title);
   };
 
+  let hasInitialized = false;
+
+  async function setDefault(course: Course) {
+    if (!course || !Object.keys(course).length || hasInitialized) return;
+
+    settings.set({
+      course_title: course.title,
+      type: course.type,
+      course_description: course.description,
+      logo: course.logo || '',
+      tabs: course.metadata.lessonTabsOrder || $settings.tabs,
+      grading: !!course.metadata.grading,
+      lesson_download: !!course.metadata.lessonDownload,
+      is_published: !!course.is_published,
+      allow_new_students: course.metadata.allowNewStudent
+    });
+
+    settings.subscribe((s) => {
+      if (!hasInitialized) return;
+
+      hasUnsavedChanges = true;
+    });
+
+    hasInitialized = true;
+  }
   $: setDefault($course);
+
   $: courseLink = `${$currentOrgDomain}/course/${$course.slug}`;
 </script>
+
+<UnsavedChanges {hasUnsavedChanges} />
 
 <Grid class="border-c rounded border-gray-200 dark:border-neutral-600">
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
@@ -231,6 +253,7 @@
         label={$t('course.navItem.settings.course_title')}
         placeholder="Write the course title here"
         className="w-full mb-5"
+        isRequired
         bind:value={$settings.course_title}
         errorMessage={errors.title}
       />
@@ -238,6 +261,7 @@
         label={$t('course.navItem.settings.course_description')}
         placeholder={$t('course.navItem.settings.placeholder')}
         className="w-full mb-5"
+        isRequired
         bind:value={$settings.course_description}
         errorMessage={errors.description}
       />
