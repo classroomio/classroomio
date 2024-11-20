@@ -13,6 +13,7 @@
   import { PUBLIC_SERVER_URL } from '$env/static/public';
 
   import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
+  import UnsavedChangesGuard from '$lib/components/UnsavedChanges/UnsavedChangesGuard.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -44,6 +45,7 @@
     description: string | undefined;
   } = { title: undefined, description: undefined };
   let avatar: string | undefined;
+  let hasUnsavedChanges = false;
 
   function widgetControl() {
     $handleOpenWidget.open = !$handleOpenWidget.open;
@@ -124,51 +126,38 @@
       errors.title = $t('snackbar.course_settings.error.title');
       return;
     }
+
     if (!$settings.course_description) {
       errors.description = $t('snackbar.course_settings.error.description');
       return;
     }
+
     isSaving = true;
+
     try {
-      const {
-        course_title,
-        course_description,
-        type,
-        logo,
-        tabs,
-        grading,
-        allow_new_students,
-        lesson_download,
-        is_published
-      } = $settings;
-      await updateCourse($course.id, avatar, {
-        title: course_title,
-        description: course_description,
-        type: type,
-        logo: logo,
-        is_published,
+      const newCourse = {
+        title: $settings.course_title,
+        description: $settings.course_description,
+        type: $settings.type,
+        logo: $settings.logo,
+        is_published: $settings.is_published,
         metadata: {
           ...(isObject($course.metadata) ? $course.metadata : {}),
-          lessonTabsOrder: tabs,
-          grading: grading,
-          lessonDownload: lesson_download,
-          allowNewStudent: allow_new_students
+          lessonTabsOrder: $settings.tabs,
+          grading: $settings.grading,
+          lessonDownload: $settings.lesson_download,
+          allowNewStudent: $settings.allow_new_students
         },
         slug: $course.slug
-      });
-
-      $course.title = course_title;
-      $course.description = course_description;
-      $course.type = type;
-      $course.logo = logo;
-      $course.is_published = is_published;
-      $course.metadata = {
-        ...(isObject($course.metadata) ? $course.metadata : {}),
-        lessonTabsOrder: tabs,
-        grading: grading,
-        lessonDownload: lesson_download,
-        allowNewStudent: allow_new_students
       };
+
+      await updateCourse($course.id, avatar, newCourse);
+
+      $course = {
+        ...$course,
+        ...newCourse
+      };
+
       snackbar.success('snackbar.course_settings.success.saved');
     } catch (error) {
       snackbar.error();
@@ -198,7 +187,15 @@
   };
 
   $: setDefault($course);
+
+  $: onSettingsChange($settings);
+
+  function onSettingsChange(_s) {
+    hasUnsavedChanges = true;
+  }
 </script>
+
+<UnsavedChangesGuard {hasUnsavedChanges} />
 
 <Grid class="border-c rounded border-gray-200 dark:border-neutral-600">
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
