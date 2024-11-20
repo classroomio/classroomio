@@ -13,7 +13,7 @@
   import { env } from '$env/dynamic/public';
 
   import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
-  import UnsavedChangesGuard from '$lib/components/UnsavedChanges/UnsavedChangesGuard.svelte';
+  import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -204,7 +204,7 @@
   $: courseLink = `${$currentOrgDomain}/course/${$course.slug}`;
 </script>
 
-<UnsavedChangesGuard {hasUnsavedChanges} />
+<UnsavedChanges {hasUnsavedChanges} />
 
 <Grid class="border-c rounded border-gray-200 dark:border-neutral-600">
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
