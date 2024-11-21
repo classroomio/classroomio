@@ -1,7 +1,4 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
-
-  import { browser } from '$app/environment';
   import CardLoader from '$lib/component/CardLoader.svelte';
   import CourseCard from '$lib/component/CourseCard.svelte';
   import EmptyState from '$lib/component/EmptyState.svelte';
@@ -56,9 +53,6 @@
     item.checked = !item.checked;
     applyFilter();
   }
-  run(() => {
-    browser && toggleBodyByMode(false);
-  });
 </script>
 
 {#if !data}

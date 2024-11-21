@@ -2,7 +2,7 @@
   import { Button } from '$lib/components/ui/button';
   import CourseCard from './CourseCard.svelte';
   import EmptyState from './EmptyState.svelte';
-  import { courseMetaData } from './store';
+  import { courseMetaData } from '$lib/utils/stores/global';
   import CardLoader from './CardLoader.svelte';
   import ArrowRight from 'carbon-icons-svelte/lib/ArrowRight.svelte';
   import ArrowLeft from 'carbon-icons-svelte/lib/ArrowLeft.svelte';

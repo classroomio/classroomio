@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
-
   import { goto } from '$app/navigation';
   import Button from '$lib/components/ui/button/button.svelte';
 
@@ -24,7 +22,7 @@
     // @ts-ignore
     window.player = plyr;
   }
-  run(() => {
+  $effect(() => {
     initPlyr(player, data.header?.banner?.video);
   });
 </script>
@@ -63,7 +61,7 @@
               allowfullscreen
               allowtransparency
               allow="autoplay"
-></iframe>
+            ></iframe>
           </div>
           <!-- </div> -->
         {:else}

@@ -1,12 +1,12 @@
 <script lang="ts">
-  import Courses from './component/Courses.svelte';
-  import About from './component/About.svelte';
-  import Faq from './component/FAQ.svelte';
-  import Footer from './component/Footer.svelte';
-  import Hero from './component/Hero.svelte';
-  import Navigation from './component/Navigation.svelte';
-  import Testimonial from './component/Testimonial.svelte';
-  import FooterNote from './component/FooterNote.svelte';
+  import Courses from './components/Courses.svelte';
+  import About from './components/About.svelte';
+  import Faq from './components/FAQ.svelte';
+  import Footer from './components/Footer.svelte';
+  import Hero from './components/Hero.svelte';
+  import Navigation from './components/Navigation.svelte';
+  import Testimonial from './components/Testimonial.svelte';
+  import FooterNote from './components/FooterNote.svelte';
   import type { CourseMetadata, LandingPageContent } from './utils/types';
 
   interface Data {

@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
-
   import { goto } from '$app/navigation';
 
   import Close from 'carbon-icons-svelte/lib/Close.svelte';
@@ -58,7 +56,8 @@
   const redirect = isCoursePage ? `?redirect=${$page.url.pathname}` : '';
 
   let activeHash = $derived($page.url.hash);
-  run(() => {
+
+  $effect(() => {
     const activeItem = menuItems.find((item) => item.link === `/${activeHash}`);
     if (activeItem) {
       activeLink = activeItem.link;

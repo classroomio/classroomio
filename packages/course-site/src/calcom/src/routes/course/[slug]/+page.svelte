@@ -1,23 +1,21 @@
 <script lang="ts">
   import { browser } from '$app/environment';
-  import { isDark } from '$lib/component/store.js';
+  import { isDark } from '$lib/utils/stores/global';
   import Skeleton from '$lib/components/ui/skeleton/skeleton.svelte';
   import { toggleBodyByMode } from '$lib/utils/toggleMode';
   import { ChevronLeft, Menu, Close } from 'carbon-icons-svelte';
   import { onMount } from 'svelte';
   import Light from 'carbon-icons-svelte/lib/Light.svelte';
   import Moon from 'carbon-icons-svelte/lib/Moon.svelte';
-  import SideBarExpandable from '$lib/component/SideBarExpandable.svelte';
+  import SideBarExpandable from '$lib/components/SideBarExpandable.svelte';
   import Button from '$lib/components/ui/button/button.svelte';
   import type { Lesson } from '$lib/utils/types';
 
   let { data } = $props();
 
-  console.log('new data', data);
   let open = $state(false);
   let loading = $state(true);
   let initialLoad = $state(false);
-  let isLessonOpen = false;
 
   const { metadata, sections, slug } = data;
 

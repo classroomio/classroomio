@@ -1,6 +1,6 @@
 <script>
   import '../app.css';
-  
+
   /**
    * @typedef {Object} Props
    * @property {import('svelte').Snippet} [children]
@@ -12,7 +12,7 @@
 </script>
 
 <svelte:head>
-  <title>Calcom saas landing page</title>
+  <title>Cal University</title>
 </svelte:head>
 
 {@render children?.()}

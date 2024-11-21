@@ -1,7 +1,4 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
-
-  import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
   import CardLoader from '$lib/component/CardLoader.svelte';
   import CourseCard from '$lib/component/CourseCard.svelte';
@@ -11,14 +8,15 @@
   import PageLoader from '$lib/component/PageLoader.svelte';
   import { courseMetaData } from '$lib/component/store.js';
   import Button from '$lib/components/ui/button/button.svelte';
-  import { toggleBodyByMode } from '$lib/utils/toggleMode';
 
   interface Props {
     data: any;
   }
 
   let { data }: Props = $props();
+
   const { org, courses } = data;
+
   let viewAllCourses = $state(false);
 
   const DISPLAY_COURSE = {
@@ -57,9 +55,6 @@
     item.checked = !item.checked;
     applyFilter();
   }
-  run(() => {
-    browser && toggleBodyByMode(false);
-  });
 </script>
 
 {#if !data}

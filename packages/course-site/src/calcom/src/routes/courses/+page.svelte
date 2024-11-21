@@ -1,14 +1,12 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
-
   import { browser } from '$app/environment';
-  import CardLoader from '$lib/component/CardLoader.svelte';
-  import CourseCard from '$lib/component/CourseCard.svelte';
-  import EmptyState from '$lib/component/EmptyState.svelte';
-  import Footer from '$lib/component/Footer.svelte';
-  import Navigation from '$lib/component/Navigation.svelte';
-  import PageLoader from '$lib/component/PageLoader.svelte';
-  import { courseMetaData } from '$lib/component/store';
+  import CardLoader from '$lib/components/CardLoader.svelte';
+  import CourseCard from '$lib/components/CourseCard.svelte';
+  import EmptyState from '$lib/components/EmptyState.svelte';
+  import Footer from '$lib/components/Footer.svelte';
+  import Navigation from '$lib/components/Navigation.svelte';
+  import PageLoader from '$lib/components/PageLoader.svelte';
+  import { courseMetaData } from '$lib/utils/stores/global';
   import { Button } from '$lib/components/ui/button';
   import { toggleBodyByMode } from '$lib/utils/toggleMode';
 
@@ -52,7 +50,8 @@
     item.checked = !item.checked;
     applyFilter();
   }
-  run(() => {
+
+  $effect(() => {
     browser && toggleBodyByMode(false);
   });
 </script>

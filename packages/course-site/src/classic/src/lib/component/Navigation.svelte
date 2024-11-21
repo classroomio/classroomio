@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
-
   import { ArrowRight, Close } from 'carbon-icons-svelte';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
@@ -40,7 +38,7 @@
   }
 
   let activeHash = $derived($page.url.hash);
-  run(() => {
+  $effect(() => {
     const activeItem = menuItems.find((item) => item.link === `/${activeHash}`);
     if (activeItem) {
       activeLink = activeItem.link;

@@ -17,7 +17,7 @@ export async function GET({ params }) {
     const compiledContent = await compile(lessonContent);
 
     // Return the compiled content as JSON
-    return new Response(JSON.stringify({ content: compiledContent.code }), {
+    return new Response(JSON.stringify({ content: compiledContent?.code }), {
       headers: { 'Content-Type': 'application/json' },
       status: 200
     });
