@@ -5,7 +5,7 @@
   import { isOrgAdmin } from '$lib/utils/store/org';
   import { ROLE } from '$lib/utils/constants/roles';
 
-  export let allowedRoles: number[] = [];
+  export let allowedRoles: number[] = [1, 2, 3];
   export let onDenied = () => {};
   export let onlyStudent = false;
 
