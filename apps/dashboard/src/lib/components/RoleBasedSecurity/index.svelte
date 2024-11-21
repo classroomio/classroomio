@@ -3,13 +3,14 @@
   import { group } from '../Course/store';
   import type { GroupPerson } from '$lib/utils/types';
   import { isOrgAdmin } from '$lib/utils/store/org';
-  import { ROLE } from '$lib/utils/constants/roles';
 
-  export let allowedRoles: number[] = [1, 2, 3];
+  export let allowedRoles: number[] = [];
   export let onDenied = () => {};
+  // Since orgAdmin can see all, we need a way to show the content only to students
   export let onlyStudent = false;
 
   let userRole: number = 0;
+  let show = false;
 
   function isAllowed(userRole) {
     return allowedRoles.includes(userRole);
@@ -25,7 +26,11 @@
     }
   }
 
-  $: show = onlyStudent ? isAllowed(ROLE.STUDENT) : isAllowed(userRole) || $isOrgAdmin;
+  $: if (onlyStudent) {
+    show = isAllowed(userRole);
+  } else {
+    show = isAllowed(userRole) || $isOrgAdmin;
+  }
 </script>
 
 {#if show}
