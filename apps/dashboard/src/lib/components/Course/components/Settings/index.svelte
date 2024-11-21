@@ -35,6 +35,7 @@
   import IconButton from '$lib/components/IconButton/index.svelte';
   import generateSlug from '$lib/utils/functions/generateSlug';
   import { t } from '$lib/utils/functions/translations';
+  import DeleteModal from '$lib/components/Modal/DeleteModal.svelte';
   import { COURSE_TYPE } from '$lib/utils/types';
 
   let isSaving = false;
@@ -43,9 +44,10 @@
   let errors: {
     title: string | undefined;
     description: string | undefined;
-  } = { title: undefined, description: undefined };
+  };
   let avatar: string | undefined;
   let hasUnsavedChanges = false;
+  let openDeleteModal = false;
 
   function widgetControl() {
     $handleOpenWidget.open = !$handleOpenWidget.open;
@@ -71,6 +73,7 @@
         slideUrl: lesson.slide_url || '',
         video: lesson.videos || ''
       }));
+
       const response = await fetch(env.PUBLIC_SERVER_URL + '/downloadCourse', {
         method: 'POST',
         headers: {
@@ -109,19 +112,21 @@
   };
 
   const deleteBannerImage = () => {
-    $course.logo = '';
+    $settings.logo = '';
+    hasUnsavedChanges = true;
   };
 
   async function handleDeleteCourse() {
     isDeleting = true;
+
     try {
       await deleteCourse($course.id);
-      isDeleting = false;
       goto($currentOrgPath + '/courses');
     } catch (error) {
       snackbar.error('snackbar.course_settings.error.went_wrong');
-      isDeleting = false;
     }
+
+    isDeleting = false;
   }
 
   const handleSave = async () => {
@@ -172,12 +177,11 @@
 
   const generateNewCourseLink = () => {
     $course.slug = generateSlug($course.title);
+    hasUnsavedChanges = true;
   };
 
-  let hasInitialized = false;
-
   async function setDefault(course: Course) {
-    if (!course || !Object.keys(course).length || hasInitialized) return;
+    if (!course || !Object.keys(course).length) return;
 
     settings.set({
       course_title: course.title,
@@ -190,14 +194,6 @@
       is_published: !!course.is_published,
       allow_new_students: course.metadata.allowNewStudent
     });
-
-    settings.subscribe((s) => {
-      if (!hasInitialized) return;
-
-      hasUnsavedChanges = true;
-    });
-
-    hasInitialized = true;
   }
   $: setDefault($course);
 
@@ -205,6 +201,8 @@
 </script>
 
 <UnsavedChanges {hasUnsavedChanges} />
+
+<DeleteModal onDelete={handleDeleteCourse} bind:open={openDeleteModal} />
 
 <Grid class="border-c rounded border-gray-200 dark:border-neutral-600">
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
@@ -215,19 +213,24 @@
       </p>
       <span class="flex items-center justify-start">
         <PrimaryButton
-          variant={VARIANTS.OUTLINED}
+          variant={VARIANTS.CONTAINED_DARK}
           label={$t('course.navItem.settings.replace')}
           className="mr-2"
           onClick={widgetControl}
         />
         <PrimaryButton
-          variant={VARIANTS.CONTAINED_DANGER}
-          label={$t('course.navItem.settings.del')}
+          variant={VARIANTS.OUTLINED}
+          label={$t('ai.reset')}
           onClick={deleteBannerImage}
         />
       </span>
       {#if $handleOpenWidget.open}
-        <UploadWidget bind:imageURL={$settings.logo} />
+        <UploadWidget
+          bind:imageURL={$settings.logo}
+          on:change={() => {
+            hasUnsavedChanges = true;
+          }}
+        />
       {/if}
     </Column>
 
@@ -255,7 +258,10 @@
         className="w-full mb-5"
         isRequired
         bind:value={$settings.course_title}
-        errorMessage={errors.title}
+        errorMessage={errors?.title}
+        onInputChange={() => {
+          hasUnsavedChanges = true;
+        }}
       />
       <TextArea
         label={$t('course.navItem.settings.course_description')}
@@ -263,7 +269,10 @@
         className="w-full mb-5"
         isRequired
         bind:value={$settings.course_description}
-        errorMessage={errors.description}
+        errorMessage={errors?.description}
+        onChange={() => {
+          hasUnsavedChanges = true;
+        }}
       />
       <div class="">
         <p class="text-md flex items-center gap-2 mb-2">
@@ -303,7 +312,11 @@
       <p>{$t('course.navItem.settings.drag')}</p>
     </Column>
     <Column sm={8} md={8} lg={8}>
-      <DragAndDrop />
+      <DragAndDrop
+        on:change={() => {
+          hasUnsavedChanges = true;
+        }}
+      />
     </Column>
   </Row>
   <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
@@ -315,7 +328,13 @@
       {#if $isFreePlan}
         <UpgradeBanner>{$t('upgrade.download_lessons')}</UpgradeBanner>
       {:else}
-        <Toggle size="sm" bind:toggled={$settings.lesson_download}>
+        <Toggle
+          size="sm"
+          bind:toggled={$settings.lesson_download}
+          on:toggle={() => {
+            hasUnsavedChanges = true;
+          }}
+        >
           <span slot="labelA" style="color: gray">{$t('course.navItem.settings.disabled')}</span>
           <span slot="labelB" style="color: gray">{$t('course.navItem.settings.enabled')}</span>
         </Toggle>
@@ -348,7 +367,13 @@
       <p>{$t('course.navItem.settings.course_type_desc')}</p>
     </Column>
     <Column sm={8} md={8} lg={8}>
-      <RadioButtonGroup hideLegend bind:selected={$settings.type}>
+      <RadioButtonGroup
+        hideLegend
+        bind:selected={$settings.type}
+        on:change={() => {
+          hasUnsavedChanges = true;
+        }}
+      >
         <RadioButton
           labelText={$t('course.navItem.settings.live_class')}
           value={COURSE_TYPE.LIVE_CLASS}
@@ -367,7 +392,13 @@
       <p>{$t('course.navItem.settings.access')}</p>
     </Column>
     <Column sm={8} md={8} lg={8}>
-      <Toggle size="sm" bind:toggled={$settings.allow_new_students}>
+      <Toggle
+        size="sm"
+        bind:toggled={$settings.allow_new_students}
+        on:toggle={() => {
+          hasUnsavedChanges = true;
+        }}
+      >
         <span slot="labelA" style="color: gray">{$t('course.navItem.settings.disabled')}</span>
         <span slot="labelB" style="color: gray">{$t('course.navItem.settings.enabled')}</span>
       </Toggle>
@@ -386,7 +417,7 @@
         bind:toggled={$settings.is_published}
         on:toggle={(e) => {
           $settings.allow_new_students = e.detail.toggled;
-
+          hasUnsavedChanges = true;
           if (!$course.slug) {
             generateNewCourseLink();
           }
@@ -407,7 +438,7 @@
       <PrimaryButton
         variant={VARIANTS.CONTAINED_DANGER}
         label={$t('course.navItem.settings.delete')}
-        onClick={handleDeleteCourse}
+        onClick={() => (openDeleteModal = true)}
         isLoading={isDeleting}
         isDisabled={isDeleting}
       />

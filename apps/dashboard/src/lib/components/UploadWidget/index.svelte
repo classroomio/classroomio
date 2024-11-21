@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, createEventDispatcher } from 'svelte';
   import Tabs from '$lib/components/Tabs/index.svelte';
   import { getSupabase } from '$lib/utils/functions/supabase';
   import TabContent from '$lib/components/TabContent/index.svelte';
@@ -13,6 +13,7 @@
   export let imageURL = '';
 
   const supabase = getSupabase();
+  const dispatch = createEventDispatcher();
   const tabs = [
     { label: 'Unsplash', value: 'unsplash' },
     { label: 'Upload', value: 'upload' }
@@ -39,6 +40,7 @@
   const onChange = (tabValue: string) => () => (currentTab = tabValue);
 
   async function handleImageClick(img: string) {
+    dispatch('change');
     imageURL = img;
     $handleOpenWidget.open = false;
   }
@@ -74,6 +76,7 @@
     if (data) {
       const { data: response } = await supabase.storage.from('avatars').getPublicUrl(filename);
       imageURL = response.publicUrl;
+      dispatch('change');
     }
     isUploading = false;
 
