@@ -6,10 +6,6 @@ body {
   overflow-x: hidden;
 }
 
-body::-webkit-scrollbar {
-  display: none;
-}
-
 li {
   font-family: 'Inter', sans-serif;
 }
