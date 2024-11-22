@@ -99,11 +99,11 @@ li {
 }
 
 .hero-bg {
-  background-image: url('/hero-bg.svg');
+  background-image: url('https://assets.cdn.clsrio.com/www/hero-bg.svg');
 }
 
 .tools-hero-bg {
-  background-image: url('/tools-hero-bg.svg');
+  background-image: url('https://assets.cdn.clsrio.com/www/tools-hero-bg.svg');
 }
 @media (min-width: 760px) {
   .tools-hero-bg {
