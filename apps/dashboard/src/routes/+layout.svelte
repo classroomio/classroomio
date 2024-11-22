@@ -9,7 +9,7 @@
   import { Theme } from 'carbon-components-svelte';
   import type { CarbonTheme } from 'carbon-components-svelte/types/Theme/Theme.svelte';
   import LandingNavigation from '$lib/components/Navigation/index.svelte';
-  import ProgressBar from '$lib/components/ProgressBar/index.svelte';
+  import PageLoadProgressBar from '$lib/components/Progress/PageLoadProgressBar.svelte';
   import OrgNavigation from '$lib/components/Navigation/app.svelte';
   import LMSNavigation from '$lib/components/Navigation/lms.svelte';
   import OrgLandingPage from '$lib/components/Org/LandingPage/index.svelte';
@@ -318,7 +318,7 @@
         />
       {/if}
 
-      <ProgressBar textColorClass="text-gray-400" />
+      <PageLoadProgressBar textColorClass="text-neutral-700" />
     {/if}
 
     <div class={path.includes('home') ? '' : 'flex justify-between'}>

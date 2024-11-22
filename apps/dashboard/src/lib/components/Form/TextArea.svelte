@@ -16,7 +16,7 @@
   export let errorMessage = '';
   export let isRequired = false;
   export let onChange = () => {}; // This is to know if element is 'dirty'
-  export let ref = null;
+  export let ref: HTMLTextAreaElement | null = null;
   export let isAIEnabled = false;
   export let initAIPrompt = '';
   export let aiAlignPopover: PopoverProps['align'] = 'left';
