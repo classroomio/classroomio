@@ -23,11 +23,13 @@
 >
   <!-- Logo Section -->
   <a href="/" class="flex items-center flex-col" title={`${seo?.settings?.title}`} id="logo">
-    <img
-      src={seo?.settings?.logo || ''}
-      alt={`${seo?.settings?.title || ''} logo`}
-      class="rounded inline-block mx-auto"
-    />
+    {#if seo?.settings?.logo}
+      <img
+        src={seo?.settings?.logo || ''}
+        alt={`${seo?.settings?.title || ''} logo`}
+        class="rounded inline-block mx-auto"
+      />
+    {/if}
     <h1 class="text-xl font-semibold">University</h1>
   </a>
 

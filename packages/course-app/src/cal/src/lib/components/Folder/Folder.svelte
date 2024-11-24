@@ -48,7 +48,7 @@
       /></svg
     >
   {/if}
-  {name}
+  <span class="w-[90%]">{name}</span>
 </button>
 
 {#if expanded}

@@ -22,14 +22,12 @@
 
   let { data, children }: Props = $props();
 
-  let seo: Section | undefined;
+  const seo: Section | undefined = $derived(getPageSection(data.sharedPage, 'seo'));
 
   $effect.pre(() => {
     homePage.set(data.page);
     sharedPage.set(data.sharedPage);
     courses.set(data.courses);
-
-    seo = getPageSection(data.sharedPage, 'seo');
   });
 </script>
 
@@ -41,12 +39,8 @@
 {#if data.sharedPage}
   <main class="font-matter">
     <Transition>
-      <!-- Navigation -->
       {#if !$page.url.pathname.includes('course/')}
-        <Navigation
-          {seo}
-          content={getPageSection(data.sharedPage, 'navigation')}
-        />
+        <Navigation {seo} content={getPageSection(data.sharedPage, 'navigation')} />
       {/if}
 
       {@render children?.()}

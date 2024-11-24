@@ -27,4 +27,4 @@
   );
 </script>
 
-<Folder name="Sections" files={root} />
+<Folder name="Lessons" files={root} />
