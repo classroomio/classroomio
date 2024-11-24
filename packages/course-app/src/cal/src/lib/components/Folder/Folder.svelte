@@ -13,7 +13,7 @@
 
 <button
   on:click={toggle}
-  class="flex items-center text-start gap-2 text-sm font-medium border-none outline-none bg-transparent capitalize"
+  class="w-full flex items-center text-start gap-2 text-sm font-medium border-none outline-none bg-transparent capitalize"
 >
   {#if expanded}
     <svg
