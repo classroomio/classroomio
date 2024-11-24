@@ -7,23 +7,17 @@
 </script>
 
 {#key $page.url.pathname}
-  <article class="max-w-3xl" in:blur>
+  <article class="max-w-4xl mx-auto p-4 md:p-10 md:border border-[#D0D1C9] rounded-lg min-h-[90vh]" in:blur>
     <p class="font-semibold text-2xl text-center mb-4 capitalize">
       {@html data.meta.title}
     </p>
-    <div class="prose pt-2 pb-4 border-b border-gray-200">
+    <div class="prose mt-2">
       {@html data.html}
     </div>
   </article>
 {/key}
 
 <style>
-  :global(.prose :is(p, li)) {
-    margin-top: 0.7em;
-    margin-bottom: 0em;
-    color: #374151;
-  }
-
   :global(.prose img + em) {
     display: block;
     font-size: 14px;

@@ -20,7 +20,7 @@
 </script>
 
 <div
-  class="bg-white border-2 border-black rounded-xl overflow-hidden cursor-pointer h-fit w-full pb-2 min-w-[250px] md:min-w-[300px] max-w-full sm:max-w-[280px] space-y-4"
+  class="bg-white border-2 border-black rounded-xl overflow-hidden cursor-pointer h-fit w-full pb-2 min-w-[250px] md:min-w-[350px] max-w-full sm:max-w-[280px] space-y-4"
 >
   <div class="relative space-y-2 text-black {className}">
     <div class="border-b-2 border-black border-dashed">
@@ -31,12 +31,12 @@
       />
     </div>
     <div>
-      <div class="px-6 py-4 overflow-hidden">
-        <p class="text-lg font-semibold overflow-ellipsis line-clamp-1">
+      <div class="px-3 py-2 overflow-hidden">
+        <p class="text-lg font-semibold overflow-ellipsis line-clamp-2">
           {title}
         </p>
       </div>
-      <p class="text-sm text-[#656565] px-6 overflow-ellipsis line-clamp-3 text-justify">
+      <p class="text-sm text-[#656565] px-3 overflow-ellipsis line-clamp-3 text-justify">
         {description}
       </p>
     </div>

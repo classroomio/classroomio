@@ -21,12 +21,10 @@ export type Course = {
 
 export type Section = {
   title: string;
-  position: number;
   sectionSlug: string;
   published: boolean;
   children: {
     title: string;
-    position: number;
     filename: string;
   }[];
 };

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { blur } from 'svelte/transition';
-  import { Menu, Close } from 'carbon-icons-svelte';
+  import { Menu, Close, ArrowUpRight } from 'carbon-icons-svelte';
   import SideBarExpandable from '$lib/components/SideBarExpandable.svelte';
   import type { Course } from '$lib/utils/types/course';
   import { getPageSection } from '$lib/utils/helpers/page';
@@ -21,9 +21,9 @@
   let seo = $derived(getPageSection($sharedPage, 'seo'));
 </script>
 
-<section class="relative overflow-hidden h-screen">
+<section class="relative">
   <div
-    class="sticky top-0 px-4 w-full h-14 flex items-center justify-between border-b border-[#D0D1C9]"
+    class="sticky top-0 px-4 w-full h-14 flex items-center justify-between border-b border-[#D0D1C9] bg-white"
   >
     <div class="lg:pl-4 flex items-center gap-3">
       <button onclick={toggleSideBar} class="md:hidden">
@@ -57,36 +57,25 @@
     </div>
     <a
       href={seo?.settings?.appUrl}
-      class="bg-[#141414] px-4 py-2 rounded-full hidden lg:flex items-center gap-1 font-semibold text-white text-base"
+      class="bg-[#141414] px-4 py-2 rounded-full hidden md:flex items-center gap-1 font-semibold text-white text-base"
+      target="_blank"
+      rel="noopener noreferrer"
     >
-      Go to app
+      Go to app <ArrowUpRight size={16} />
     </a>
   </div>
 
   <div class="overflow-hidden flex">
     <!-- sidebar -->
     <div
-      class="fixed md:relative transition-all border-r border-[#D0D1C9] dark:bg-[#03030a] w-[300px] md:w-[380px] h-[calc(100vh-56px)] overflow-y-scroll scrollbar-hide p-4 pl-6 space-y-4 {open
-        ? 'translate-x-0 '
+      class="fixed transition-all border-r border-[#D0D1C9] bg-white w-[300px] h-[calc(100vh-56px)] overflow-y-scroll p-4 pl-6 space-y-4 {open
+        ? 'translate-x-0 z-50'
         : '-translate-x-full md:translate-x-0 z-50'}"
     >
       <SideBarExpandable sections={data.sections} />
     </div>
-    <div class="w-full p-5 md:p-10 break-words h-screen overflow-y-scroll">
+    <div class="w-full md:p-5 mb-20 md:ml-[300px] break-words">
       {@render children?.()}
     </div>
   </div>
 </section>
-
-<style>
-  /* Hide scrollbar for Webkit browsers */
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* Hide scrollbar for other browsers */
-  .scrollbar-hide {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
-  }
-</style>

@@ -96,9 +96,7 @@
       <div class="flex items-center justify-center w-full pt-4">
         <Button
           class="uppercase rounded-2xl py-6 px-10 bg-transparent border-[1.5px] border-white text-white shadow-[-1px_3px_#FFFFFF]"
-          on:click={() => {
-            goto('/courses');
-          }}
+          href="/courses"
         >
           Explore courses
         </Button>

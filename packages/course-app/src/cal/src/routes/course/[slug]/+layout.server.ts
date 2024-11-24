@@ -1,10 +1,12 @@
-import type { Course } from '$lib/utils/types/course';
+import type { Course, Section } from '$lib/utils/types/course';
+import { redirect } from '@sveltejs/kit';
 import type { PathLike } from 'fs';
 import fs from 'fs/promises'; // Use async fs functions
 import path from 'path';
 
 export const load = async ({ params }) => {
   const slug = params.slug || '';
+
   const courseDirPath = path.join(process.cwd(), `src/courses/${slug}`);
 
   // Path to the metadata.json file for the course
@@ -20,7 +22,7 @@ export const load = async ({ params }) => {
     .filter((dirent) => dirent.isDirectory())
     .map((dirent) => dirent.name);
 
-  let lessonsBySection = await Promise.all(
+  const lessonsBySection: Section[] = await Promise.all(
     sections.map(async (section) => {
       const sectionDirPath = path.join(courseDirPath, section);
 
@@ -36,7 +38,6 @@ export const load = async ({ params }) => {
           // Regex to extract the front matter block (optimize front matter extraction)
           const frontMatterMatch = lessonContent.match(/---\s*([\s\S]+?)\s*---/);
 
-          let position = 1;
           let title = lessonFile.replace('.md', ''); // Default title from filename
 
           if (frontMatterMatch) {
@@ -44,27 +45,19 @@ export const load = async ({ params }) => {
 
             // Extract title and position from the front matter
             const titleMatch = frontMatter.match(/title:\s*['"](.+?)['"]/);
-            const positionMatch = frontMatter.match(/position:\s*(\d+)/);
 
             if (titleMatch) {
               title = titleMatch[1].trim();
             }
-
-            if (positionMatch) {
-              position = parseInt(positionMatch[1], 10);
-            }
           }
 
-          return { title, position, filename: lessonFile };
+          return { title, filename: lessonFile };
         })
       );
 
-      // Sort lessons by position within the section
-      lessons.sort((a, b) => a.position - b.position);
-
       // Add section title and published status from section metadata (if available)
       const sectionMetadataPath = path.join(sectionDirPath, 'metadata.json');
-      let sectionMetadata = { title: section, unlocked: true, position: 1 };
+      let sectionMetadata = { title: section, unlocked: true };
 
       if (await fileExists(sectionMetadataPath)) {
         sectionMetadata = JSON.parse(await fs.readFile(sectionMetadataPath, 'utf-8'));
@@ -73,18 +66,31 @@ export const load = async ({ params }) => {
       // Add the section and its sorted lessons to the result
       return {
         title: sectionMetadata.title,
-        position: sectionMetadata.position,
         sectionSlug: section,
         published: sectionMetadata.unlocked,
         children: lessons // Extra details like position and filename
       };
     })
   );
-  const sortedSections = lessonsBySection.sort((a, b) => a.position - b.position);
   console.timeEnd('Loading course data'); // End timing
 
-  return { ...course, sections: sortedSections, slug };
+  if (!params.section) {
+    redirectToFirstLesson(lessonsBySection, slug);
+  }
+
+  return { ...course, sections: lessonsBySection, slug };
 };
+
+function redirectToFirstLesson(sections: Section[], slug: string) {
+  const firstSection = sections[0];
+  const firstLesson = firstSection.children[0];
+
+  if (!firstSection || !firstLesson) {
+    throw new Error('No course content found');
+  }
+
+  redirect(302, `/course/${slug}/${firstSection.sectionSlug}/${firstLesson.filename}`);
+}
 
 const fileExists = async (filePath: PathLike) => {
   try {

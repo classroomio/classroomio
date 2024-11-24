@@ -54,7 +54,7 @@
 {#if expanded}
   <ul
     transition:slide={{ duration: 300 }}
-    class="pl-2 ml-2 mt-0 list-none border-l-2 border-[#555353]"
+    class="pl-2 ml-2 mb-4 mt-0 list-none border-l-2 border-[#555353]"
   >
     {#each files as file}
       <li class="py-[0.2em] px-[1px]">

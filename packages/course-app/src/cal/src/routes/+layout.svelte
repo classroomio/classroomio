@@ -39,12 +39,12 @@
 </svelte:head>
 
 {#if data.sharedPage}
-  <main class="bg-[#EEEFE9] font-matter">
+  <main class="font-matter">
     <Transition>
       <!-- Navigation -->
       {#if !$page.url.pathname.includes('course/')}
         <Navigation
-          seo={getPageSection(data.sharedPage, 'seo')}
+          {seo}
           content={getPageSection(data.sharedPage, 'navigation')}
         />
       {/if}
