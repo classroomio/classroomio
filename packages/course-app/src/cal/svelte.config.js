@@ -4,7 +4,7 @@ import * as shiki from 'shiki';
 import rehypeUnwrapImages from 'rehype-unwrap-images';
 import remarkToc from 'remark-toc';
 import rehypeSlug from 'rehype-slug';
-import adapter from '@sveltejs/adapter-auto';
+import adapter from '@sveltejs/adapter-cloudflare';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('mdsvex').MdsvexOptions} */
