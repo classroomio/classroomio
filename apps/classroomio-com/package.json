@@ -26,6 +26,9 @@
     "vite": "^5.0.0"
   },
   "type": "module",
+  "engines": {
+    "node": "18.17.0"
+  },
   "dependencies": {
     "html-to-image": "^1.11.11",
     "just-extend": "^6.2.0",
