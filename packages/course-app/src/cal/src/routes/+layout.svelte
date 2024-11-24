@@ -1,10 +1,11 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { page } from '$app/stores';
   import { homePage, sharedPage } from '$lib/utils/stores/pages';
   import { courses } from '$lib/utils/stores/course';
   import { getPageSection } from '$lib/utils/helpers/page';
   import Footer from '$lib/components/Footer.svelte';
   import Navigation from '$lib/components/Navigation.svelte';
+  import Transition from '$lib/components/Transition.svelte';
   import type { Page, Section } from '$lib/utils/types/page';
   import type { Course } from '$lib/utils/types/course';
 
@@ -21,17 +22,14 @@
 
   let { data, children }: Props = $props();
 
-  const seo: Section | undefined = $derived(getPageSection(data.sharedPage, 'seo'));
+  let seo: Section | undefined;
 
-  $effect(() => {
-    console.log('setting data in effect', data);
+  $effect.pre(() => {
     homePage.set(data.page);
     sharedPage.set(data.sharedPage);
     courses.set(data.courses);
-  });
 
-  onMount(() => {
-    console.log('data', data);
+    seo = getPageSection(data.sharedPage, 'seo');
   });
 </script>
 
@@ -42,13 +40,20 @@
 
 {#if data.sharedPage}
   <main class="bg-[#EEEFE9] font-matter">
-    <!-- Navigation -->
-    <Navigation
-      seo={getPageSection(data.sharedPage, 'seo')}
-      content={getPageSection(data.sharedPage, 'navigation')}
-    />
-    {@render children?.()}
+    <Transition>
+      <!-- Navigation -->
+      {#if !$page.url.pathname.includes('course/')}
+        <Navigation
+          seo={getPageSection(data.sharedPage, 'seo')}
+          content={getPageSection(data.sharedPage, 'navigation')}
+        />
+      {/if}
 
-    <Footer />
+      {@render children?.()}
+
+      {#if !$page.url.pathname.includes('course/')}
+        <Footer />
+      {/if}
+    </Transition>
   </main>
 {/if}

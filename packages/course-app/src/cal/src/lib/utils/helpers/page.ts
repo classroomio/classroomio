@@ -1,5 +1,5 @@
 import pages from '$lib/data/pages.json';
-import type { Page } from '$lib/utils/types/page';
+import type { Page, Section } from '$lib/utils/types/page';
 
 /**
  * Get a page by its id
@@ -14,7 +14,7 @@ export function getPage(pageId: string) {
  * Get a section by its type
  * @param page - The page
  * @param sectionType - The type of the section
- * @returns type Section
+ * @returns type Section | undefined
  */
 export function getPageSection(page: Page, sectionType: string) {
   return page.sections.find((section) => section.type === sectionType);

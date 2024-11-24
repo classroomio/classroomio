@@ -25,5 +25,8 @@ export default defineConfig(({ mode }) => ({
       $lib: path.resolve('./src/lib'),
       $app: path.resolve('./src/mocks')
     }
+  },
+  optimizeDeps: {
+    entries: ['src/routes/**/+*.{js,ts,svelte}']
   }
 }));

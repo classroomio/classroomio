@@ -1,13 +1,10 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
-  import { isDark } from '$lib/utils/stores/global';
-  import { toggleBodyByMode } from '$lib/utils/toggleMode';
-  import { ChevronLeft, Menu, Close } from 'carbon-icons-svelte';
-  import Light from 'carbon-icons-svelte/lib/Light.svelte';
-  import Moon from 'carbon-icons-svelte/lib/Moon.svelte';
+  import { blur } from 'svelte/transition';
+  import { Menu, Close } from 'carbon-icons-svelte';
   import SideBarExpandable from '$lib/components/SideBarExpandable.svelte';
-  import Button from '$lib/components/ui/button/button.svelte';
-  import type { Course, Lesson } from '$lib/utils/types/course';
+  import type { Course } from '$lib/utils/types/course';
+  import { getPageSection } from '$lib/utils/helpers/page';
+  import { sharedPage } from '$lib/utils/stores/pages';
 
   interface Props {
     children: import('svelte').Snippet;
@@ -17,24 +14,16 @@
 
   let open = $state(false);
 
-  let activeLesson: Lesson | undefined = $state();
-
-  function toggleDarkMode() {
-    $isDark = !$isDark;
-    toggleBodyByMode($isDark);
-    if (browser) {
-      localStorage.setItem('mode', $isDark ? 'dark' : '');
-    }
-  }
-
   const toggleSideBar = () => {
     open = !open;
   };
+
+  let seo = $derived(getPageSection($sharedPage, 'seo'));
 </script>
 
 <section class="relative overflow-hidden h-screen">
   <div
-    class="sticky top-0 px-4 w-full h-14 flex items-center justify-between border-b bg-[#F7F7F7] dark:bg-inherit"
+    class="sticky top-0 px-4 w-full h-14 flex items-center justify-between border-b border-[#D0D1C9]"
   >
     <div class="lg:pl-4 flex items-center gap-3">
       <button onclick={toggleSideBar} class="md:hidden">
@@ -44,51 +33,44 @@
           <Menu size={20} />
         {/if}
       </button>
-      <p class="text-start line-clamp-1 font-semibold text-lg capitalize" title={data.title}>
-        {data.title}
-      </p>
+
+      {#if seo?.settings?.logo}
+        <div class="flex items-center gap-3" in:blur>
+          <a
+            href="/"
+            class="flex items-center flex-col"
+            title={`${seo?.settings?.title}`}
+            id="logo"
+          >
+            <img
+              src={seo?.settings?.logo || ''}
+              alt={`${seo?.settings?.title || ''} logo`}
+              class="rounded inline-block mx-auto w-16"
+            />
+          </a>
+          <span class="h-5 w-1 bg-[#141414] rounded-full"></span>
+          <p class="text-start line-clamp-1 font-semibold text-lg capitalize" title={data.title}>
+            {data.title}
+          </p>
+        </div>
+      {/if}
     </div>
-    <div class="flex flex-row items-center gap-1">
-      <button onclick={toggleDarkMode}>
-        {#if $isDark}
-          <Light size={16} />
-        {:else}
-          <Moon size={16} />
-        {/if}
-      </button>
-      <Button class="capitalize py-2 w-14 h-fit bg-gray-900 text-white hover:bg-black">login</Button
-      >
-      <Button class="capitalize py-2 w-16 h-fit bg-green-500 text-white hover:bg-green-500"
-        >Buy now</Button
-      >
-    </div>
+    <a
+      href={seo?.settings?.appUrl}
+      class="bg-[#141414] px-4 py-2 rounded-full hidden lg:flex items-center gap-1 font-semibold text-white text-base"
+    >
+      Go to app
+    </a>
   </div>
 
   <div class="overflow-hidden flex">
     <!-- sidebar -->
     <div
-      class="fixed md:relative transition-all bg-[#F7F7F7] dark:bg-[#03030a] w-[300px] md:w-[380px] h-[calc(100vh-56px)] overflow-y-scroll scrollbar-hide p-4 pl-6 space-y-4 {open
+      class="fixed md:relative transition-all border-r border-[#D0D1C9] dark:bg-[#03030a] w-[300px] md:w-[380px] h-[calc(100vh-56px)] overflow-y-scroll scrollbar-hide p-4 pl-6 space-y-4 {open
         ? 'translate-x-0 '
         : '-translate-x-full md:translate-x-0 z-50'}"
     >
-      <a
-        href="/courses"
-        class="text-[13px] flex items-center text-[#0A0D14] dark:text-white cursor-pointer h-[26px]"
-      >
-        <ChevronLeft />
-        <p>Back to course page</p>
-      </a>
-
-      <div class="space-y-6">
-        {#each data.sections as section}
-          <SideBarExpandable
-            {section}
-            courseSlug={data.slug}
-            activeLesson={activeLesson?.title}
-            {toggleSideBar}
-          />
-        {/each}
-      </div>
+      <SideBarExpandable sections={data.sections} />
     </div>
     <div class="w-full p-5 md:p-10 break-words h-screen overflow-y-scroll">
       {@render children?.()}

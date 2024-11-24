@@ -11,6 +11,8 @@
         "settings": {
           "title": "Cal.com University",
           "description": "The one place to learn everything about Cal.com",
+          "url": "https://cal.com",
+          "appUrl": "https://app.cal.com",
           "keywords": ["cal.com", "saas university"],
           "logo": "/cal-logo.svg"
         }
@@ -69,30 +71,10 @@
         "show": true,
         "settings": {
           "title": "Scheduling Education",
-          "titleHighlight": "Learn how to schedule with ease",
+          "titleHighlight": "The Cal University - Learn All About Scheduling",
           "subtitle": "Cal.com university is the one stop shop for learning everything about scheduling with Cal.com. Save countless hours and improve your team's productivity.",
           "action": {
             "label": "Explore courses",
-            "link": "/courses",
-            "redirect": false
-          },
-          "banner": {
-            "video": "https://www.youtube.com/watch?v=qqAYW7uxErI",
-            "image": "",
-            "type": "video",
-            "show": true
-          }
-        }
-      },
-      {
-        "type": "course",
-        "show": true,
-        "settings": {
-          "title": "Learn with us",
-          "titleHighlight": "Our Courses",
-          "subtitle": "Designed to guide you step-by-step through essential skills. Browse, enroll, and start transforming your career today!",
-          "action": {
-            "label": "Explore Courses",
             "link": "/courses",
             "redirect": false
           },
@@ -137,9 +119,9 @@
         "type": "courses",
         "show": true,
         "settings": {
-          "title": "Unlock your potential with Engaging and innovative online courses",
+          "title": "Featured Courses",
           "titleHighlight": "",
-          "subtitle": "Explore creative and tech courses that will help you own you skill set"
+          "subtitle": "Explore our most popular courses that will help you master the art of scheduling with Cal.com"
         }
       },
       {

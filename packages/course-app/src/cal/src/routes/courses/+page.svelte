@@ -1,8 +1,6 @@
 <script lang="ts">
-  import CardLoader from '$lib/components/CardLoader.svelte';
   import CourseCard from '$lib/components/CourseCard.svelte';
   import EmptyState from '$lib/components/EmptyState.svelte';
-  import { courseMetaData } from '$lib/utils/stores/global';
   import { Button } from '$lib/components/ui/button';
   import { getPageSection } from '$lib/utils/helpers/page';
   import { COURSE_TYPE } from '$lib/utils/constants/course';
@@ -60,7 +58,7 @@
   {#if section.header?.show}
     <section
       style="background-image: url('calcom-background.svg');"
-      class="bg-cover bg-center flex items-center justify-center py-10 px-2 lg:px-14 min-h-[100vh] lg:min-h-[60vh] overflow-hidden"
+      class="bg-cover bg-center flex items-center justify-center py-10 px-2 lg:px-14 min-h-[30vh] overflow-hidden"
     >
       <section class="flex flex-col text-center items-center gap-5 justify-center">
         <div class="space-y-6 w-full mb-4">
@@ -106,18 +104,10 @@
         </div>
         <!-- filter end -->
         <!-- courses start -->
-        <div
-          class="text-white p-8 bg-black rounded-3xl w-fit h-full overflow-scroll mx-auto scrollbar-hide"
-        >
+        <div class="text-white rounded-3xl w-full h-full overflow-scroll mx-auto scrollbar-hide">
           <div class="w-full max-h-screen overflow-scroll scrollbar-hide p-4 md:p-8">
-            {#if $courseMetaData.isLoading}
-              <div class="grid grid-cols-2 gap-4">
-                <CardLoader />
-                <CardLoader />
-                <CardLoader />
-              </div>
-            {:else if data.courses.length > 0}
-              <section class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+            {#if data.courses.length > 0}
+              <section class="flex items-center justify-center gap-4 w-full">
                 {#each filteredCourses.slice(0, viewAll ? filteredCourses.length : 3) as course}
                   <CourseCard
                     slug={course.slug}
@@ -145,8 +135,9 @@
               <Button
                 on:click={() => (viewAll = !viewAll)}
                 class="uppercase rounded-2xl py-6  hover:bg-white hover:text-black border-[1.5px] border-white text-white shadow-[0px_3px_white]"
-                >{viewAll === true ? 'Show less' : 'View more courses'}</Button
               >
+                {viewAll === true ? 'Show less' : 'View more courses'}
+              </Button>
             </div>
           {/if}
         </div>

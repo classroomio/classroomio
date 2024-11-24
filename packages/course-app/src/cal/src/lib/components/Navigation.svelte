@@ -1,7 +1,7 @@
 <script lang="ts">
   import { ArrowUpRight, Close } from 'carbon-icons-svelte';
   import Menu from 'carbon-icons-svelte/lib/Menu.svelte';
-  import Button from '$lib/components/ui/button/button.svelte';
+  import { Button } from '$lib/components/ui/button';
   import type { Section } from '$lib/utils/types/page';
 
   interface Props {
