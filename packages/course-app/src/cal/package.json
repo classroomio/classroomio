@@ -42,7 +42,6 @@
     "rehype-unwrap-images": "^1.0.0",
     "remark-toc": "^9.0.0",
     "shiki": "^1.23.1",
-    "svelte-meta-tags": "^4.0.4",
-    "svelte-sequential-preprocessor": "^2.0.2"
+    "svelte-meta-tags": "^4.0.4"
   }
 }

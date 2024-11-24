@@ -1,4 +1,3 @@
-import sequence from 'svelte-sequential-preprocessor';
 import { mdsvex, escapeSvelte } from 'mdsvex';
 import * as shiki from 'shiki';
 import rehypeUnwrapImages from 'rehype-unwrap-images';
@@ -26,7 +25,7 @@ const mdsvexOptions = {
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-  preprocess: sequence([vitePreprocess(), mdsvex(mdsvexOptions)]),
+  preprocess: [vitePreprocess(), mdsvex(mdsvexOptions)],
 
   kit: {
     // adapter-auto only supports some environments, see https://svelte.dev/docs/kit/adapter-auto for a list.
