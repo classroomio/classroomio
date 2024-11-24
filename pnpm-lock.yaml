@@ -523,9 +523,6 @@ importers:
       carbon-icons-svelte:
         specifier: ^12.13.0
         version: 12.13.0
-      mdsvex:
-        specifier: ^0.11.2
-        version: 0.11.2(svelte@5.2.7)
       rehype-slug:
         specifier: ^6.0.0
         version: 6.0.0
@@ -575,6 +572,9 @@ importers:
       jsdom:
         specifier: ^25.0.1
         version: 25.0.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      mdsvex:
+        specifier: ^0.11.2
+        version: 0.11.2(svelte@5.2.7)
       svelte:
         specifier: ^5.0.0
         version: 5.2.7
@@ -19649,7 +19649,7 @@ snapshots:
 
   sass@1.64.2:
     dependencies:
-      chokidar: 3.5.3
+      chokidar: 3.6.0
       immutable: 4.3.4
       source-map-js: 1.2.1
 
