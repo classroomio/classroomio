@@ -36,11 +36,11 @@
         {/if}
       </ul>
       <a
-        href="https://classroomio.com"
+        href="https://git.new/cio-template"
         target="_blank noopener noreferrer"
         class="flex w-full md:w-fit items-center justify-center lg:justify-start hover:underline text-white gap-1"
       >
-        <p class="text-base font-bold">❤️ from ClassroomIO</p>
+        <p class="text-base font-bold">Built with ❤️ by ClassroomIO</p>
       </a>
     </div>
   </nav>
