@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import PrimaryButton from '$lib/components/shared/PrimaryButton.svelte';
 
   interface Props {
@@ -20,7 +19,7 @@
 </script>
 
 <div
-  class="bg-white border-2 border-black rounded-xl overflow-hidden cursor-pointer h-fit w-full pb-2 min-w-[250px] md:min-w-[350px] max-w-full sm:max-w-[280px] space-y-4"
+  class="bg-white border-2 border-black rounded-xl overflow-hidden h-fit w-full pb-2 min-w-[250px] md:min-w-[350px] max-w-full sm:max-w-[280px] space-y-4"
 >
   <div class="relative space-y-2 text-black {className}">
     <div class="border-b-2 border-black border-dashed">
@@ -42,10 +41,7 @@
     </div>
 
     <div class=" w-full py-4 px-6">
-      <PrimaryButton
-        href={`/course/${slug}`}
-        label="Go to Course"
-      />
+      <PrimaryButton href={`/course/${slug}`} label="Go to Course" />
     </div>
   </div>
 </div>

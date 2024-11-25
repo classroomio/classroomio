@@ -1,25 +1,26 @@
 import { mdsvex, escapeSvelte } from 'mdsvex';
-import * as shiki from 'shiki';
 import rehypeUnwrapImages from 'rehype-unwrap-images';
 import remarkToc from 'remark-toc';
 import rehypeSlug from 'rehype-slug';
 import adapter from '@sveltejs/adapter-cloudflare';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+import { createHighlighter } from 'shiki';
 
 /** @type {import('mdsvex').MdsvexOptions} */
 const mdsvexOptions = {
   extensions: ['.md'],
-  layout: {
-    // _: './src/mdsvex/Mdsvex.svelte'
-  },
   highlight: {
     highlighter: async (code, lang = 'text') => {
-      const highlighter = await shiki.getHighlighter({ theme: 'poimandres' });
-      const html = escapeSvelte(highlighter.codeToHtml(code, { lang }));
+      const highlighter = await createHighlighter({
+        themes: ['poimandres'],
+        langs: ['javascript', 'typescript']
+      });
+      await highlighter.loadLanguage('javascript', 'typescript');
+      const html = escapeSvelte(highlighter.codeToHtml(code, { lang, theme: 'poimandres' }));
       return `{@html \`${html}\` }`;
     }
   },
-  remarkPlugins: [rehypeUnwrapImages, [remarkToc, { tight: true }]],
+  remarkPlugins: [[remarkToc, { tight: true }]],
   rehypePlugins: [rehypeSlug]
 };
 

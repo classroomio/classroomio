@@ -2,30 +2,6 @@
 title: 'Why Time Management Matters'
 ---
 
-<script>
-  import PrimaryButton from '$lib/components/shared/PrimaryButton.svelte';
-
-  let count = $state(0);
-  const increment = () => count++;
-</script>
-
-
-## Component
-
-<PrimaryButton label={`Count ${count}`} onClick={increment} />
-
-## Code
-
-```ts
-let count = $state(0);
-const increment = () => count++;
-```
-
-## Images
-
-![classroomio-brand-customisations](https://assets.cdn.clsrio.com/blog/brand-customisations.png)
-_ClassroomIO Brand Customisations_
-
 Time is our most valuable and non-renewable resource. In today's fast-paced world, effective time management isn't just a nice-to-have skill—it's essential for success in both professional and personal life.
 
 ### What You'll Learn

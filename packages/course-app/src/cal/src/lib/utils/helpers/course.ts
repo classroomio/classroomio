@@ -1,64 +1,106 @@
-import fs from 'fs';
-import path from 'path';
-import type { Course } from '$lib/utils/types/course';
+import type { Course, Lesson, Section } from '$lib/utils/types/course';
 
+const DYNAMIC_KEYS_START = 3;
 let courses: Course[] = [];
+
+export async function getCourse(slug: string): Promise<Course> {
+  // Get all markdown and metadata files in courses directory
+  const metadataFiles = import.meta.glob(`/src/courses/**/metadata.json`, { eager: true });
+
+  let course: Course | undefined;
+  const sections: Section[] = [];
+
+  for (const [metadataPath, _metadata] of Object.entries(metadataFiles)) {
+    const [courseSlug, sectionSlug] = metadataPath.split('/').slice(DYNAMIC_KEYS_START);
+
+    if (courseSlug !== slug) {
+      continue;
+    }
+
+    if (sectionSlug === 'metadata.json') {
+      const metadata = (_metadata as { default: Course }).default;
+      course = {
+        ...metadata,
+        slug
+      };
+
+      continue;
+    }
+
+    const lessons = await getSectionLessons(courseSlug, sectionSlug);
+
+    const metadata = (_metadata as { default: Section }).default;
+    sections.push({
+      ...metadata,
+      sectionSlug,
+      children: lessons
+    });
+  }
+
+  if (!course) {
+    throw new Error(`Course with slug "${slug}" not found`);
+  }
+
+  course.sections = sections;
+
+  return course;
+}
+
+async function getSectionLessons(cSlug: string, sSlug: string): Promise<Lesson[]> {
+  const lessons: Lesson[] = [];
+
+  const mdFiles = import.meta.glob(`/src/courses/**/*.md`);
+
+  for (const [mdPath, md] of Object.entries(mdFiles)) {
+    const [courseSlug, sectionSlug, lessonSlug] = mdPath.split('/').slice(DYNAMIC_KEYS_START);
+
+    if (courseSlug !== cSlug || sectionSlug !== sSlug) {
+      continue;
+    }
+
+    const lesson = (await md()) as {
+      metadata: Lesson;
+    };
+
+    lessons.push({ ...lesson.metadata, filename: lessonSlug });
+  }
+
+  return lessons;
+}
 
 export async function getCourses(): Promise<Course[]> {
   if (courses.length > 0) {
     return courses;
   }
 
-  const courseDirPath = path.join(process.cwd(), '/src/courses/');
+  console.time('FETCH COURSES STAT');
 
-  console.time('fetch courses');
+  // Get all markdown and metadata files in courses directory
+  const mdFiles = import.meta.glob('/src/courses/**/*.md');
+  const metadataFiles = import.meta.glob('/src/courses/*/metadata.json', { eager: true });
 
-  // Helper function to count .md files recursively (async)
-  const countMdFiles = async (dirPath: string): Promise<number> => {
-    let mdFilesCount = 0;
-
-    // Read all items in the directory
-    const items = await fs.promises.readdir(dirPath, { withFileTypes: true });
-
-    // Loop through each item
-    for (const item of items) {
-      const itemPath = path.join(dirPath, item.name);
-
-      if (item.isDirectory()) {
-        // Recursively count .md files in subdirectories
-        mdFilesCount += await countMdFiles(itemPath);
-      } else if (item.name.endsWith('.md')) {
-        // Increment count if it's an .md file
-        mdFilesCount += 1;
-      }
-    }
-
-    return mdFilesCount;
-  };
-
-  // Read the list of course directories
+  // Process metadata files to build courses array
   courses = await Promise.all(
-    fs.readdirSync(courseDirPath).map(async (courseFolder) => {
-      const courseFolderPath = path.join(courseDirPath, courseFolder);
+    Object.entries(metadataFiles).map(async ([metadataPath, _metadata]) => {
+      // Extract course folder name as slug
+      const pathParts = metadataPath.split('/');
+      const slug = pathParts[pathParts.length - 2];
 
-      // Path to the metadata.json file for this course
-      const metadataFilePath = path.join(courseFolderPath, 'metadata.json');
+      // Count .md files for this course
+      const lessonsCount = Object.keys(mdFiles).filter((path) =>
+        path.startsWith(`/src/courses/${slug}/`)
+      ).length;
 
-      // Read metadata.json
-      const course: Course = JSON.parse(fs.readFileSync(metadataFilePath, 'utf-8'));
-
-      // Count all markdown (.md) files in the course directory, including subdirectories
-      const lessonsCount = await countMdFiles(courseFolderPath);
-
+      const metadata = (_metadata as { default: Course }).default;
       return {
-        ...course,
-        slug: courseFolder,
+        ...metadata,
+        slug,
         lessonsCount
       };
     })
   );
 
-  console.timeEnd('fetch courses');
+  console.timeEnd('FETCH COURSES STAT');
 
   return courses;
 }

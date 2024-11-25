@@ -1,18 +1,20 @@
 <script lang="ts">
   import { blur } from 'svelte/transition';
-  import { onMount } from 'svelte';
   import { page } from '$app/stores';
 
   let { data } = $props();
 </script>
 
 {#key $page.url.pathname}
-  <article class="max-w-4xl mx-auto p-4 md:p-10 md:border border-[#D0D1C9] rounded-lg min-h-[90vh]" in:blur>
+  <article
+    class="max-w-4xl mx-auto p-4 md:p-10 md:border border-[#D0D1C9] rounded-lg min-h-[90vh]"
+    in:blur
+  >
     <p class="font-semibold text-2xl text-center mb-4 capitalize">
       {@html data.meta.title}
     </p>
     <div class="prose mt-2">
-      {@html data.html}
+      <data.content />
     </div>
   </article>
 {/key}

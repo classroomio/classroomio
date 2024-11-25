@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Button } from '$lib/components/ui/button';
 
-  export let onClick: () => void;
+  export let onClick = () => {};
   export let label: string;
   export let href: string;
 </script>

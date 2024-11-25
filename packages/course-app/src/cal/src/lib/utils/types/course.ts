@@ -15,7 +15,7 @@ export type Course = {
   currency: string;
   type: string;
   slug: string;
-  lessonsCount: number;
+  lessonsCount?: number;
   sections: Section[];
 };
 
@@ -23,14 +23,10 @@ export type Section = {
   title: string;
   sectionSlug: string;
   published: boolean;
-  children: {
-    title: string;
-    filename: string;
-  }[];
+  children: Lesson[];
 };
 
 export type Lesson = {
   title: string;
-  position: number;
   filename: string;
 };
