@@ -27,4 +27,6 @@
   );
 </script>
 
-<Folder name="Lessons" files={root} />
+<div class="h-full">
+  <Folder name="Lessons" files={root} />
+</div>
