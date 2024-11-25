@@ -26,7 +26,7 @@
   <div
     class="sticky top-0 px-4 w-full h-14 flex items-center justify-between border-b border-[#D0D1C9] bg-white"
   >
-    <div class="lg:pl-4 flex items-center gap-3">
+    <div class="lg:pl-4 flex items-center gap-2 md:gap-3">
       <button onclick={toggleSideBar} class="md:hidden">
         {#if open}
           <Close size={20} />
@@ -36,7 +36,7 @@
       </button>
 
       {#if seo?.settings?.logo}
-        <div class="flex items-center gap-3" in:blur>
+        <div class="flex items-center gap-2 md:gap-3" in:blur>
           <a
             href="/"
             class="flex items-center flex-col w-1/4 md:w-fit"
