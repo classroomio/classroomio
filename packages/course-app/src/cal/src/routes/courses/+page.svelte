@@ -104,10 +104,10 @@
         </div>
         <!-- filter end -->
         <!-- courses start -->
-        <div class="text-white rounded-3xl w-full h-full overflow-scroll mx-auto scrollbar-hide">
-          <div class="w-full max-h-screen overflow-scroll scrollbar-hide p-4 md:p-8">
+        <div class="text-white rounded-3xl w-full h-full overflow-scroll mx-auto">
+          <div class="w-full max-h-screen p-4 md:p-8">
             {#if data.courses.length > 0}
-              <section class="flex items-center justify-center gap-4 w-full">
+              <section class="flex flex-wrap items-center justify-center gap-4 w-full">
                 {#each filteredCourses.slice(0, viewAll ? filteredCourses.length : 3) as course}
                   <CourseCard
                     slug={course.slug}

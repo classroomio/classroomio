@@ -44,7 +44,7 @@
           {content.settings.title}
         </h1>
 
-        <div class="flex gap-2 items-center">
+        <div class="hidden md:flex gap-2 items-center">
           <button
             class="w-fit flex items-center justify-center border border-white rounded-full p-2 bg-transparent hover:bg-white"
             onclick={scrollLeft}
