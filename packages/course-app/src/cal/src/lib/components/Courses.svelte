@@ -46,16 +46,16 @@
 
         <div class="hidden md:flex gap-2 items-center">
           <button
-            class="w-fit flex items-center justify-center border border-white rounded-full p-2 bg-transparent hover:bg-white"
+            class="w-fit flex items-center justify-center border border-white rounded-full p-2 bg-transparent hover:bg-white hover:text-black"
             onclick={scrollLeft}
           >
-            <ArrowLeft class="text-white hover:text-black" />
+            <ArrowLeft />
           </button>
           <button
-            class="w-fit flex items-center justify-center border border-white rounded-full p-2 bg-transparent hover:bg-white"
+            class="w-fit flex items-center justify-center border border-white rounded-full p-2 bg-transparent hover:bg-white hover:text-black"
             onclick={scrollRight}
           >
-            <ArrowRight class="text-white hover:text-black" />
+            <ArrowRight />
           </button>
         </div>
       </div>

@@ -1,11 +1,17 @@
-<script>
+<script lang="ts">
   import { slide } from 'svelte/transition';
   import File from './File.svelte';
 
-  export let name;
-  export let files;
+  interface Props {
+    name: string;
+    files: any[];
+    onFileClick: () => void;
+  }
+
+  let { name, files, onFileClick }: Props = $props();
 
   let expanded = true;
+
   function toggle() {
     expanded = !expanded;
   }
@@ -59,9 +65,9 @@
     {#each files as file}
       <li class="py-[0.2em] px-[1px]">
         {#if file.type === 'folder'}
-          <svelte:self {...file} />
+          <svelte:self {...file} {onFileClick} />
         {:else}
-          <File {...file} />
+          <File {...file} onClick={onFileClick} />
         {/if}
       </li>
     {/each}

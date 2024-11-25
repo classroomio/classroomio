@@ -2,6 +2,7 @@
   export let name;
   export let href: string;
   export let isActive = false;
+  export let onClick: () => void;
 </script>
 
 {#key isActive}
@@ -9,6 +10,7 @@
     class="w-full flex items-center gap-2 hover:bg-[#EEEFE9] px-2 py-2 rounded-md text-sm text-start leading-4 line-clamp-2 capitalize"
     {href}
     class:bg-[#EEEFE9]={isActive}
+    on:click={onClick}
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"

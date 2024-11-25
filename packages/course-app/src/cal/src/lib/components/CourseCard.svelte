@@ -19,7 +19,7 @@
 </script>
 
 <div
-  class="bg-white border-2 border-black rounded-xl overflow-hidden h-fit w-full pb-2 min-w-[250px] md:min-w-[350px] max-w-full sm:max-w-[280px] space-y-4"
+  class="bg-white border-2 border-black rounded-xl overflow-hidden h-fit w-full pb-2 min-w-[80%] md:max-w-[350px] md:min-w-[300px] max-w-full space-y-4"
 >
   <div class="relative space-y-2 text-black {className}">
     <div class="border-b-2 border-black border-dashed">

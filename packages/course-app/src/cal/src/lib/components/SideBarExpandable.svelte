@@ -5,9 +5,10 @@
 
   interface Props {
     sections: Section[];
+    onFileClick: () => void;
   }
 
-  let { sections }: Props = $props();
+  let { sections, onFileClick }: Props = $props();
 
   let [, courseSlug, sectionSlug, lessonSlug] = $derived($page.url.pathname.split('/').slice(1));
 
@@ -28,5 +29,5 @@
 </script>
 
 <div class="h-full">
-  <Folder name="Lessons" files={root} />
+  <Folder name="Lessons" files={root} {onFileClick} />
 </div>

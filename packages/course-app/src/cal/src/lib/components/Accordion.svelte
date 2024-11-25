@@ -9,11 +9,11 @@
 
   let isOpen = $state(false);
   let contentHeight = $state('0px'); // Track the height of the content
-  let contentRef: HTMLDivElement = $state(); // Reference to the content div
+  let contentRef: HTMLDivElement | undefined = $state(); // Reference to the content div
 
   function toggleAccordion() {
     isOpen = !isOpen;
-    if (isOpen) {
+    if (isOpen && contentRef) {
       // Measure and set the height when opening
       contentHeight = `${contentRef.scrollHeight}px`;
     } else {
@@ -23,24 +23,14 @@
   }
 </script>
 
-<div
-  class=" shadow-[0px_3px_#282828] transition {isOpen
-    ? 'bg-[#141414] text-white'
-    : 'bg-white text-black'} overflow-hidden rounded-3xl"
->
-  <div
-    class="relative flex justify-between items-center cursor-pointer overflow-hidden mx-6 p-6
-      bg-inherit
-      "
+<div class=" shadow-[0px_3px_#282828] transition bg-white text-black overflow-hidden rounded-3xl">
+  <button
+    class="relative flex justify-between items-center cursor-pointer overflow-hidden mx-6 p-6 bg-inherit"
     onclick={toggleAccordion}
   >
     <p class="font-semibold text-lg">{title}</p>
 
-    <div
-      class="flex items-center justify-center p-[2px] {isOpen
-        ? 'bg-[#282828] text-white'
-        : 'bg-white text-black'} "
-    >
+    <div class="flex items-center justify-center p-[2px] bg-white text-black">
       {#if isOpen}
         <Subtract class="text-xl transition-transform duration-200 ease-in" />
       {:else}
@@ -62,7 +52,7 @@
         </svg>
       </div>
     {/if}
-  </div>
+  </button>
 
   <div
     bind:this={contentRef}

@@ -15,6 +15,7 @@
   let open = $state(false);
 
   const toggleSideBar = () => {
+    console.log('toggleSideBar');
     open = !open;
   };
 
@@ -38,7 +39,7 @@
         <div class="flex items-center gap-3" in:blur>
           <a
             href="/"
-            class="flex items-center flex-col"
+            class="flex items-center flex-col w-1/4"
             title={`${seo?.settings?.title}`}
             id="logo"
           >
@@ -72,7 +73,7 @@
         ? 'translate-x-0 z-50'
         : '-translate-x-full md:translate-x-0 z-50'}"
     >
-      <SideBarExpandable sections={data.sections} />
+      <SideBarExpandable sections={data.sections} onFileClick={toggleSideBar} />
     </div>
     <div class="w-full md:p-5 mb-20 md:ml-[300px] break-words">
       {@render children?.()}

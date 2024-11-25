@@ -58,7 +58,7 @@
   {#if section.header?.show}
     <section
       style="background-image: url('calcom-background.svg');"
-      class="bg-cover bg-center flex items-center justify-center py-10 px-2 lg:px-14 min-h-[30vh] overflow-hidden"
+      class="bg-cover bg-center flex items-center justify-center py-10 px-2 lg:px-14 min-h-[30vh]"
     >
       <section class="flex flex-col text-center items-center gap-5 justify-center">
         <div class="space-y-6 w-full mb-4">
@@ -104,7 +104,7 @@
         </div>
         <!-- filter end -->
         <!-- courses start -->
-        <div class="text-white rounded-3xl w-full h-full overflow-scroll mx-auto">
+        <div class="text-white rounded-3xl w-full h-full mx-auto">
           <div class="w-full max-h-screen p-4 md:p-8">
             {#if data.courses.length > 0}
               <section class="flex flex-wrap items-center justify-center gap-4 w-full">
@@ -146,16 +146,3 @@
   {/if}
   <!-- course end -->
 </div>
-
-<style>
-  /* Hide scrollbar for Webkit browsers */
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* Hide scrollbar for other browsers */
-  .scrollbar-hide {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
-  }
-</style>
