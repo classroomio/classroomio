@@ -39,7 +39,7 @@
         <div class="flex items-center gap-3" in:blur>
           <a
             href="/"
-            class="flex items-center flex-col w-1/4"
+            class="flex items-center flex-col w-1/4 md:w-fit"
             title={`${seo?.settings?.title}`}
             id="logo"
           >
