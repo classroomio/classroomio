@@ -2,6 +2,7 @@
   import Chip from '$lib/Chip/Chip.svelte';
   import { formatDate } from '$lib/utils/formatDate';
   import { ChevronLeft } from 'carbon-icons-svelte';
+  import BlogListItem from '../BlogListItem.svelte';
 
   export let data;
 </script>
@@ -33,6 +34,17 @@
             {/each}
           </div>
         </div>
+
+				<section class="">
+					<p class="text-lg font-semibold">Check Out Similar Blogs</p>
+					<ul class="flex flex-col items-start justify-start gap-2">
+						{#each data.otherBlogsSuggestion as post }
+					<li class="py-10 w-full border-b border-gray-200">
+						<BlogListItem {post}/>
+					</li>
+					{/each}
+					</ul>
+				</section>
 
         <a
           href="/blog"
