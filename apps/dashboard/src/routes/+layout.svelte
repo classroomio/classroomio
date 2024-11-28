@@ -32,7 +32,7 @@
   import { setTheme } from '$lib/utils/functions/theme';
   import hideNavByRoute from '$lib/utils/functions/routes/hideNavByRoute';
   import shouldRedirectOnAuth from '$lib/utils/functions/routes/shouldRedirectOnAuth';
-  import { identifyPosthogUser, initPosthog } from '$lib/utils/services/posthog';
+  import { identifyPosthogUser, initPosthog, initOrgAnalytics } from '$lib/utils/services/posthog';
   import { initSentry, setSentryUser } from '$lib/utils/services/sentry';
   import UpgradeModal from '$lib/components/Upgrade/Modal.svelte';
   import { handleLocaleChange } from '$lib/utils/functions/translations';
@@ -234,7 +234,6 @@
         setTheme(data.org?.theme);
       }
     }
-
     setupAnalytics();
 
     handleResize();
@@ -269,11 +268,14 @@
       // }
     });
 
-    if (data.isOrgSite && data.org) {
+    if (data.isOrgSite && data.org && !$currentOrg.siteName) {
       $globalStore.orgSiteName = data.orgSiteName;
       $globalStore.isOrgSite = data.isOrgSite;
 
       currentOrg.set(data.org);
+
+      // Setup internal analytics
+      initOrgAnalytics(data.orgSiteName);
     }
 
     return () => {
