@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { LogoFacebook, LogoLinkedin } from 'carbon-icons-svelte';
+  import { LogoFacebook, LogoLinkedin, LogoTwitter } from 'carbon-icons-svelte';
   import { onDestroy } from 'svelte';
   import { fly } from 'svelte/transition';
   import { sineInOut } from 'svelte/easing';
@@ -73,7 +73,7 @@
   <meta property="og:title" content="Random Name Picker | ClassroomIO" />
   <meta
     property="og:description"
-    content="Use this online name picker to draw a random name from a list of names for your online or physical classroom."
+    content="Use this online name picker to draw a random name from a list of names for your online or physical classroom."
   />
 
   <meta
@@ -85,7 +85,7 @@
   <meta name="twitter:title" content="Random Name Picker | ClassroomIO" />
   <meta
     name="twitter:description"
-    content="Use this online name picker to draw a random name from a list of names for your online or physical classroom."
+    content="Use this online name picker to draw a random name from a list of names for your online or physical classroom."
   />
   <meta name="twitter:image" content="https://brand.cdn.clsrio.com/og/free-tools.png" />
 </svelte:head>
@@ -97,8 +97,8 @@
       class="w-[15%] md:w-[5%] mx-auto border rounded-full"
       alt=""
     />
-    <h1 class="text-4xl md:text-6xl font-bold text-[#040F2D] my-3">Progress Report</h1>
-    <p class="text-md text-[#656565] font-light md:font-normal md:w-[45%] mx-auto">
+    <h1 class="text-4xl md:text-6xl font-bold text-primary my-3">Progress Report</h1>
+    <p class="text-md text-muted-foreground font-light md:font-normal md:w-[45%] mx-auto">
       Generate cool reports of your learning progress. Share reports with your network for
       collaborative learning
     </p>
@@ -127,7 +127,7 @@
               showSetter = false;
               showReport = true;
             }}
-            class="flex justify-between items-center gap-2 px-3 py-1 rounded-full text-white text-xs bg-[#0233BD]"
+            class="flex justify-between items-center gap-2 px-3 py-1 rounded-full text-white text-xs bg-primary"
           >
             <img
               src="/free-tools/progress-report/preview-icon.svg"
@@ -140,27 +140,27 @@
 
         <!-- name input -->
         <div>
-          <p class="text-sm text-[#656565]">Add your name</p>
+          <p class="text-sm text-muted-foreground">Add your name</p>
           <input
             type="text"
             bind:value={$htmlBody.name}
             on:input={(event) => handleInputChange(event, 'name')}
             placeholder="Enter your name here"
-            class="w-full border my-3 py-2 px-3 outline-none rounded-sm bg-[#F1F2F4] text-xs placeholder:text-sm placeholder:text-[#ADADAD]"
+            class="w-full border my-3 py-2 px-3 outline-none rounded-sm bg-secondary text-secondary-foreground text-xs placeholder:text-sm placeholder:text-muted"
           />
         </div>
 
         <!-- mood input -->
         <div class="mt-3">
-          <p class="text-sm text-[#656565]">Select your mood</p>
+          <p class="text-sm text-muted-foreground">Select your mood</p>
           <button
             type="button"
             on:click={() => ($openModal.mood = true)}
-            class="w-full flex justify-between items-center border my-3 py-2 px-3 outline-none rounded-sm bg-[#F1F2F4] text-gray-400 text-sm"
+            class="w-full flex justify-between items-center border my-3 py-2 px-3 outline-none rounded-sm bg-secondary text-secondary-foreground text-sm"
           >
             {#if $htmlBody.mood.text}
               <div
-                class="px-3 py-1 border border-[#EDEDED] text-white bg-blue-500 rounded-2xl font-semibold text-[7px] md:text-xs flex items-center justify-between"
+                class="px-3 py-1 border border-border text-primary-foreground bg-primary rounded-2xl font-semibold text-[7px] md:text-xs flex items-center justify-between"
               >
                 {#if $htmlBody.mood.text}
                   <span class="flex gap-1 items-center">
@@ -187,20 +187,20 @@
 
         <!-- learning input -->
         <div class="mt-5">
-          <p class="text-sm text-[#656565]">What are you learning?</p>
+          <p class="text-sm text-muted-foreground">What are you learning?</p>
           <textarea
             bind:value={$htmlBody.learning}
             maxlength={MAX_CHARS}
             on:input={(event) => handleInputChange(event, 'learning')}
             placeholder="Tell us what you are learning"
-            class="w-full h-[17vh] border my-3 py-2 px-3 outline-none rounded-sm bg-[#F1F2F4] text-sm placeholder:text-sm placeholder:text-[#ADADAD]"
+            class="w-full h-[17vh] border my-3 py-2 px-3 outline-none rounded-sm bg-secondary text-secondary-foreground text-sm placeholder:text-sm placeholder:text-muted"
           ></textarea>
-          <p class="text-xs text-right text-[#656565]">{remainingChars} characters remaining</p>
+          <p class="text-xs text-right text-muted-foreground">{remainingChars} characters remaining</p>
         </div>
 
         <!-- range input -->
         <div class="mt-3">
-          <p class="text-sm text-[#656565] pb-4">Estimate your progress</p>
+          <p class="text-sm text-muted-foreground pb-4">Estimate your progress</p>
           <div class="flex justify-between items-center">
             <input
               type="range"
@@ -209,7 +209,7 @@
               bind:value={$htmlBody.progress}
               class="range-input"
               on:input={(event) => handleInputChange(event, 'progress')}
-              style="background: linear-gradient(to right, #0F62FE {$htmlBody.progress}%, #ccc {$htmlBody.progress}%);"
+              style="background: linear-gradient(to right, var(--primary) {$htmlBody.progress}%, var(--muted) {$htmlBody.progress}%);"
             />
             <p class="text-sm font-semibold">{$htmlBody.progress}%</p>
           </div>
@@ -218,46 +218,46 @@
         <!-- avatar button -->
         <div class="flex flex-wrap justify-between items-center mt-3">
           <div class="w-full md:w-2/4">
-            <p class="text-[12px] md:text-sm text-[#656565]">Choose your avatar</p>
+            <p class="text-[12px] md:text-sm text-muted-foreground">Choose your avatar</p>
             <button
               type="button"
               on:click={() => ($openModal.avatar = true)}
-              class="bg-[#F7F7F7] w-full py-1.5 px-5 md:px-0 mt-3 flex md:w-[65%] items-center justify-between md:justify-center gap-2"
+              class="bg-muted w-full py-1.5 px-5 md:px-0 mt-3 flex md:w-[65%] items-center justify-between md:justify-center gap-2"
             >
               <img
                 src={`https://assets.cdn.clsrio.com/progress-report/avatars/${
                   $htmlBody.avatar || 'avatar_m'
                 }.svg`}
                 alt=""
-                class="w-[15%] md:w-[30%]"
+                class="w-[15%] md:w-[30%] dark:brightness-[0.88]"
               />
               <img
                 src="/free-tools/progress-report/question-mark.svg"
                 alt="A question mark"
-                class="w-[15%] md:w-[30%]"
+                class="w-[15%] md:w-[30%] dark:invert"
               />
             </button>
           </div>
 
           <!-- & background -->
           <div class="w-full md:w-2/4">
-            <p class="text-[12px] md:text-sm text-[#656565]">Choose your background</p>
+            <p class="text-[12px] md:text-sm text-muted-foreground">Choose your background</p>
             <button
               type="button"
               on:click={() => ($openModal.background = true)}
-              class="bg-[#F7F7F7] w-full py-1.5 px-5 md:px-0 mt-3 flex md:w-[65%] items-center justify-between md:justify-center gap-2"
+              class="bg-muted w-full py-1.5 px-5 md:px-0 mt-3 flex md:w-[65%] items-center justify-between md:justify-center gap-2"
             >
               <img
                 src={`https://assets.cdn.clsrio.com/progress-report/backgrounds/${
                   $htmlBody.background || 'blue_tetiary_background'
                 }.webp`}
                 alt="An avatar"
-                class="w-[15%] md:w-[30%]"
+                class="w-[15%] md:w-[30%] dark:brightness-[0.88]"
               />
               <img
                 src="/free-tools/progress-report/question-mark.svg"
                 alt="A question mark"
-                class="w-[15%] md:w-[30%]"
+                class="w-[15%] md:w-[30%] dark:invert"
               />
             </button>
           </div>
@@ -305,7 +305,7 @@
                 on:click={shareOnTwitter}
                 class="w-5 hover:scale-[1.2] transition-all duration-300"
               >
-                <img src="/twitter_logo.png" alt="X.com" />
+                <img src="/twitter_logo.png" alt="X.com" class="dark:invert" />
               </button>
             </div>
           </div>
@@ -321,7 +321,7 @@
               showReport = false;
               showSetter = true;
             }}
-            class="flex justify-between items-center gap-2 px-3 py-1 rounded-full text-white text-xs bg-[#0233BD]"
+            class="flex justify-between items-center gap-2 px-3 py-1 rounded-full text-white text-xs bg-primary"
           >
             <img src="/free-tools/progress-report/hide-icon.svg" alt="preview icon" class="w-4" />
             Close
@@ -359,7 +359,8 @@
                 on:click={shareOnTwitter}
                 class="w-5 hover:scale-[1.2] transition-all duration-300"
               >
-                <img src="/twitter_logo.png" alt="X.com" />
+                <!-- <img src="/twitter_logo.png" alt="X.com" class="dark:invert" /> -->
+                <LogoTwitter size={32} />
               </button>
             </div>
           </div>
@@ -370,6 +371,26 @@
 </section>
 
 <style>
+  :global(body) {
+    --primary: #0233BD;
+    --primary-foreground: #ffffff;
+    --secondary: #F1F2F4;
+    --secondary-foreground: #000000;
+    --muted: #ADADAD;
+    --muted-foreground: #656565;
+    --border: #EDEDED;
+  }
+
+  :global(body.dark) {
+    --primary: #1f78d1;
+    --primary-foreground: #ffffff;
+    --secondary: #2a2a2a;
+    --secondary-foreground: #ffffff;
+    --muted: #666666;
+    --muted-foreground: #a0a0a0;
+    --border: #444444;
+  }
+
   .range-input {
     -webkit-appearance: none;
     appearance: none;
@@ -385,7 +406,7 @@
     appearance: none;
     height: 1.5rem;
     width: 1.5rem;
-    background-color: #0f62fe;
+    background-color: var(--primary);
     border-radius: 50%;
     border: none;
     transition: 0.2s ease-in-out;
@@ -394,33 +415,54 @@
   .range-input::-moz-range-thumb {
     height: 1rem;
     width: 1rem;
-    background-color: yellow;
+    background-color: var(--primary);
     border-radius: 50%;
     transition: 0.2s ease-in-out;
   }
 
-  .range-input:active::-webkit-slider-thumb {
-    border: 3px solid #fff;
-    filter: drop-shadow(0px 1px 1px #000000);
-  }
-
+  .range-input:active::-webkit-slider-thumb,
   .range-input:focus::-webkit-slider-thumb {
-    border: 3px solid #fff;
-    filter: drop-shadow(0px 1px 1px #000000);
+    border: 3px solid var(--secondary);
+    box-shadow: 0 0 0 3px var(--primary);
   }
 
   .range-input::-moz-range-thumb:hover {
-    border: 3px solid #fff;
-    box-shadow: 0 0 0 10px rgba(255, 85, 0, 0.1);
+    border: 3px solid var(--secondary);
+    box-shadow: 0 0 0 3px var(--primary);
   }
 
-  .range-input:active::-moz-range-thumb {
-    border: 3px solid #fff;
-    filter: drop-shadow(0px 1px 1px #000000);
-  }
-
+  .range-input:active::-moz-range-thumb,
   .range-input:focus::-moz-range-thumb {
-    border: 3px solid #fff;
-    filter: drop-shadow(0px 1px 1px #000000);
+    border: 3px solid var(--secondary);
+    box-shadow: 0 0 0 3px var(--primary);
+  }
+
+  :global(body.dark) .range-input {
+    background-color: var(--secondary);
+  }
+
+  :global(body.dark) .range-input::-webkit-slider-thumb {
+    background-color: var(--primary);
+  }
+
+  :global(body.dark) .range-input::-moz-range-thumb {
+    background-color: var(--primary);
+  }
+
+  :global(body.dark) .range-input:active::-webkit-slider-thumb,
+  :global(body.dark) .range-input:focus::-webkit-slider-thumb {
+    border: 3px solid var(--secondary);
+    box-shadow: 0 0 0 3px var(--primary);
+  }
+
+  :global(body.dark) .range-input::-moz-range-thumb:hover {
+    border: 3px solid var(--secondary);
+    box-shadow: 0 0 0 3px var(--primary);
+  }
+
+  :global(body.dark) .range-input:active::-moz-range-thumb,
+  :global(body.dark) .range-input:focus::-moz-range-thumb {
+    border: 3px solid var(--secondary);
+    box-shadow: 0 0 0 3px var(--primary);
   }
 </style>

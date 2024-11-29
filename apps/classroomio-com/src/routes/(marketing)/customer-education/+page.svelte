@@ -61,8 +61,8 @@
   <PageHeader
     className="flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-6 lg:px-28 md:px-16 px-8"
   >
-    <div class="bg-[#DCE5FF] py-2 px-4 rounded-full border-[#C2D2FF] border-2 text-center">
-      <p class=" text-sm md:text-base text-[#4B5563] text-center font-medium">
+    <div class="bg-[#DCE5FF] dark:bg-slate-900 py-2 px-4 rounded-full border-[#C2D2FF] dark:border-slate-600 border-2 text-center">
+      <p class=" text-sm md:text-base text-[#4B5563] dark:text-white text-center font-medium">
         Solution for Customer Education
       </p>
     </div>
@@ -73,12 +73,12 @@
         class="w-full max-w-screen-xl flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
       >
         <h1
-          class="w-[95%] mx-auto m-0 text-4xl lg:text-7xl md:text-6xl font-bold text-slate-900 lg:text-center"
+          class="w-[95%] mx-auto m-0 text-4xl lg:text-7xl md:text-6xl font-bold text-slate-900 dark:text-slate-300 lg:text-center"
         >
           Drive retention and revenue with
-          <span class="text-blue-700 relative">Customer Education</span>
+          <span class="text-blue-700 dark:text-blue-500 relative">Customer Education</span>
         </h1>
-        <p class="lg:w-[60%] text-base md:text-lg lg:text-center font-normal text-slate-700">
+        <p class="lg:w-[60%] text-base md:text-lg lg:text-center font-normal text-slate-700 dark:text-slate-200">
           Yes you are making lots of sales however you keep experiencing churn and customers leaving
           you. Without a proper customer education strategy you are leaving a lot of money on the
           table.
@@ -100,14 +100,14 @@
     <div
       class="w-full gap-y-4 flex flex-col lg:items-center items-start lg:justify-center justify-start"
     >
-      <div class="w-fit py-2 px-4 rounded-full border-[#C2D2FF] border-2 text-center">
+      <div class="w-fit py-2 px-4 rounded-full border-[#C2D2FF] dark:border-slate-700 border-2 text-center">
         <p class="text-sm md:text-base font-medium">Our benefits</p>
       </div>
       <div
         class="lg:w-full max-w-screen-xl flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
       >
         <h1 class="text-3xl md:text-5xl font-bold">The customer education toolkit</h1>
-        <p class="text-[#334155] text-sm md:text-base font-light lg:text-center md:w-[80%]">
+        <p class="text-[#334155] dark:text-slate-200 text-sm md:text-base font-light lg:text-center md:w-[80%]">
           Create beautiful, branded landing pages to showcase your courses and get customers up to
           speed quickly
         </p>
@@ -118,9 +118,9 @@
       class="w-full max-w-screen-xl flex lg:flex-row flex-col lg:justify-between justify-start gap-6 lg:items-center items-start"
     >
       {#each benefitDetails as benefits}
-        <div class="w-full md:p-6 p-4 border border-[#D9E0F5] rounded-2xl flex flex-col gap-y-6">
+        <div class="w-full md:p-6 p-4 border border-[#D9E0F5] dark:border-slate-600 rounded-2xl flex flex-col gap-y-6">
           <img
-            class="w-[48px] h-[48px]"
+            class="w-[48px] h-[48px] "
             src="https://assets.cdn.clsrio.com/www/customer-education/{benefits.icon}"
             alt="icon"
           />
@@ -129,7 +129,7 @@
             <h1 class="text-xl font-medium">{benefits.title}</h1>
 
             <div class="flex flex-row justify-start items-start gap-x-3">
-              <p class="leading-8 text-gray-500 font-[#656565] font-light">
+              <p class="leading-8 text-gray-500 text-[#656565] dark:text-slate-300 font-light">
                 {benefits.description}
               </p>
             </div>
@@ -140,21 +140,21 @@
   </section>
 
   <section
-    class="w-full bg-[#F1F6FF] flex flex-col items-center justify-center gap-y-16 lg:py-24 py-16 lg:px-28 md:px-16 px-8"
+    class="w-full bg-[#F1F6FF] dark:bg-black flex flex-col items-center justify-center gap-y-16 lg:py-24 py-16 lg:px-28 md:px-16 px-8"
   >
     <div
       class="w-full gap-y-4 flex flex-col lg:items-center items-start lg:justify-center justify-start"
     >
-      <div class="w-fit py-2 px-4 rounded-full border-[#C2D2FF] border-2 text-center">
-        <p class=" text-sm md:text-base text-[#4B5563] text-center font-medium">
+      <div class="w-fit py-2 px-4 rounded-full border-[#C2D2FF] dark:border-slate-700 border-2 text-center">
+        <p class=" text-sm md:text-base text-[#4B5563] dark:text-slate-300 text-center font-medium">
           Explore our features
         </p>
       </div>
       <div
         class="lg:w-full max-w-screen-xl flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
       >
-        <h1 class="text-3xl md:text-5xl font-bold">Why Choose Us For Education Needs</h1>
-        <p class="text-[#334155] text-sm md:text-base font-light lg:text-center md:w-[80%]">
+        <h1 class="text-3xl md:text-5xl font-bold dark:text-slate-200">Why Choose Us For Education Needs</h1>
+        <p class="text-[#334155] dark:text-slate-100 text-sm md:text-base font-light lg:text-center md:w-[80%]">
           Discover how our innovative solutions can reduce stress, enhance productivity, and achieve
           your training goals.
         </p>
@@ -176,15 +176,16 @@
             <img
               src="https://assets.cdn.clsrio.com/www/customer-education/{feature.icon}"
               alt="team icon"
+              class="dark:brightness-80 dark:invert dark:hue-rotate-180"
             />
             <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
               <h1 class="font-bold text-4xl">{feature.title}</h1>
-              <p class="leading-8 text-lg text-gray-500">
+              <p class="leading-8 text-lg text-gray-500 dark:text-slate-200">
                 {feature.description}
               </p>
             </div>
             <button
-              class="py-4 px-8 border border-[#1D4ED8] outline-transparent rounded text-[#1D4ED8] text-sm font-semibold"
+              class="py-4 px-8 border border-[#1D4ED8] dark:border-blue-300 outline-transparent rounded text-[#1D4ED8] dark:text-blue-300 text-sm font-semibold"
               data-cal-config="'layout':'month_view'"
               data-cal-link="classroomio/demo"
             >
@@ -194,7 +195,7 @@
 
           <div>
             <img
-              class="w-full lg:max-w-[380px]"
+              class="w-full lg:max-w-[380px] dark:brightness-80 dark:invert dark:hue-rotate-180"
               src="https://assets.cdn.clsrio.com/www/customer-education/{feature.img}"
               alt="team management feature ui"
             />

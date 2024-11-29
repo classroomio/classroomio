@@ -49,7 +49,7 @@
 </script>
 
 <!-- More Features -->
-<section id="morefeatures" class="py-[10%] px-3 lg:px-0 bg-gray-50">
+<section id="morefeatures" class="py-[10%] px-3 lg:px-0 bg-gray-50 dark:bg-gray-950">
   <div class="mx-0 lg:mx-[12%]">
     <div class="w-full lg:w-4/5 mx-4 lg:mx-0 mb-14">
       <h2 class="mt-2 text-3xl font-bold font-display tracking-tight lg:text-4xl">
@@ -100,7 +100,7 @@
             loading="lazy"
             id="image"
             in:fly={{ y: 100, duration: 1000 }}
-            class="w-full flex flex-col items-center"
+            class="w-full flex flex-col items-center dark:filter dark:grayscale"
             src={moreFeatures[selected].image}
             alt={moreFeatures[selected].title}
           />
@@ -117,6 +117,14 @@
       rgb(253, 239, 132),
       rgb(247, 198, 169),
       rgb(21, 186, 196)
+    );
+  }
+  .dark #morefeatures .selected {
+    background-image: linear-gradient(
+      45deg,
+      rgb(75, 85, 99),
+      rgb(55, 65, 81),
+      rgb(31, 41, 55)
     );
   }
 </style>

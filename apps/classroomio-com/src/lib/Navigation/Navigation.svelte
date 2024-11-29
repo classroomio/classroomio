@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ToggleTheme from '$lib/ToggleTheme/ToggleTheme.svelte';
   import ChevronDown from 'carbon-icons-svelte/lib/ChevronDown.svelte';
   import TextAlignJustify from 'carbon-icons-svelte/lib/TextAlignJustify.svelte';
   import CloseLarge from 'carbon-icons-svelte/lib/CloseLarge.svelte';
@@ -54,7 +55,7 @@
 </script>
 
 <div
-  class="flex w-full justify-between items-center py-6 border-b-[1px] md:px-12 px-5 fixed top-0 z-[3000] filter backdrop-blur-xl shadow-sm bg-white"
+  class="flex w-full justify-between items-center py-6 border-b-[1px] md:px-12 px-5 fixed top-0 z-[3000] filter backdrop-blur-xl shadow-sm bg-white dark:bg-gray-900 dark:border-gray-800"
 >
   <a href="/" class="w-[10%]">
     <div class="flex items-center w-full">
@@ -66,19 +67,19 @@
         alt="classroomio logo"
         class="w-6 md:w-10"
       />
-      <h1 class="text-xs md:text-lg font-medium ml-2">ClassroomIO</h1>
+      <h1 class="text-xs md:text-lg font-medium ml-2 text-gray-900 dark:text-white">ClassroomIO</h1>
     </div>
   </a>
 
   <nav class="w-[50%] hidden md:hidden lg:block">
     <ul class="flex justify-center items-center w-full gap-5">
-      <li class="text-gray-800 font-semibold text-sm cursor-pointer relative">
+      <li class="text-gray-800 dark:text-gray-200 font-semibold text-sm cursor-pointer relative">
         <button
           on:focus={() => (showSolutions = true)}
           on:mouseenter={() => (showSolutions = true)}
           on:mouseleave={closeSolutions}
-          class="flex items-center hover:bg-gray-100 {showSolutions &&
-            'bg-gray-100'} px-4 py-2 rounded-md"
+          class="flex items-center hover:bg-gray-100 dark:hover:bg-gray-800 {showSolutions &&
+            'bg-gray-100 dark:bg-gray-800'} px-4 py-2 rounded-md"
           on:click={() => (showSolutions = !showSolutions)}
           class:active={isSolutionsActive}
         >
@@ -87,13 +88,13 @@
         </button>
         {#if showSolutions}
           <button
-            class="absolute w-[20rem] top-10 -left-10 border rounded-lg px-2 py-4 shadow-slate-700 z-[3001] bg-white flex flex-col gap-3"
+            class="absolute w-[20rem] top-10 -left-10 border rounded-lg px-2 py-4 shadow-slate-700 z-[3001] bg-white dark:bg-gray-800 dark:border-gray-700 flex flex-col gap-3"
             on:mouseenter={resetCloseTimeout}
             on:mouseleave={() => (showSolutions = false)}
           >
             {#each solutions as solution}
               <a
-                class="flex justify-between items-center w-full rounded-lg hover:bg-gray-100 hover:cursor-pointer p-2"
+                class="flex justify-between items-center w-full rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 hover:cursor-pointer p-2"
                 href="/{solution.key}"
                 on:click={() => (showSolutions = false)}
               >
@@ -106,10 +107,10 @@
                 {/if}
 
                 <div class="w-[84%] text-start">
-                  <h3 class="font-semibold text-sm text-gray-700">
+                  <h3 class="font-semibold text-sm text-gray-700 dark:text-gray-300">
                     {solution.title}
                   </h3>
-                  <p class="font-normal text-sm text-gray-600">
+                  <p class="font-normal text-sm text-gray-600 dark:text-gray-400">
                     {solution.subtitle}
                   </p>
                 </div>
@@ -120,30 +121,30 @@
       </li>
       <a
         href="/tools"
-        class="text-gray-800 font-semibold text-sm cursor-pointer"
+        class="text-gray-800 dark:text-gray-200 font-semibold text-sm cursor-pointer"
         class:active={activeLink.startsWith('/tools')}
       >
-        <li class="hover:bg-gray-100 px-4 py-2 rounded-md">Free Tools</li>
+        <li class="hover:bg-gray-100 dark:hover:bg-gray-800 px-4 py-2 rounded-md">Free Tools</li>
       </a>
 
       <a
         href="/blog"
-        class="text-gray-800 font-semibold text-sm cursor-pointer"
+        class="text-gray-800 dark:text-gray-200 font-semibold text-sm cursor-pointer"
         class:active={activeLink.startsWith('/blog')}
       >
-        <li class="hover:bg-gray-100 px-4 py-2 rounded-md">Blog</li>
+        <li class="hover:bg-gray-100 dark:hover:bg-gray-800 px-4 py-2 rounded-md">Blog</li>
       </a>
       <a
         href="/pricing"
-        class="text-gray-800 font-semibold text-sm cursor-pointer"
+        class="text-gray-800 dark:text-gray-200 font-semibold text-sm cursor-pointer"
         class:active={activeLink.startsWith('/pricing')}
       >
-        <li class="hover:bg-gray-100 px-4 py-2 rounded-md">Pricing</li>
+        <li class="hover:bg-gray-100 dark:hover:bg-gray-800 px-4 py-2 rounded-md">Pricing</li>
       </a>
     </ul>
   </nav>
 
-  <div class="justify-between items-center flex-row hidden md:hidden lg:flex">
+  <div class="justify-between items-center flex-row hidden md:hidden lg:flex gap-4">
     <a href="/discord" target="_blank">
       <img
         loading="lazy"
@@ -157,11 +158,12 @@
         loading="lazy"
         alt="github logo"
         src="/github-mark.png"
-        class="w-6 h-6 mr-4 cursor-pointer"
+        class="w-6 h-6 mr-4 cursor-pointer dark:invert"
       />
     </a>
+    <ToggleTheme />
     <a
-      class="font-medium text-sm after:content-['→'] after:ml-2"
+      class="font-medium text-sm after:content-['→'] after:ml-2 text-gray-800 dark:text-gray-200"
       href="https://app.classroomio.com"
     >
       Dashboard
@@ -171,7 +173,7 @@
   <button
     type="button"
     aria-label="Hamburger Menu"
-    class="block md:block lg:hidden"
+    class="block md:block lg:hidden text-gray-800 dark:text-gray-200"
     on:click={handleShowSolutions}
   >
     <TextAlignJustify size={24} />
@@ -181,7 +183,7 @@
     <div
       in:fly={{ x: 20, duration: 700 }}
       out:fly={{ x: 20, duration: 400 }}
-      class="w-[60%] md:w-[40%] h-[100vh] border-2 sm:block lg:hidden px-3 pt-3 pb-2 md:p-7 absolute right-0 top-0 bg-white"
+      class="w-[60%] md:w-[40%] h-[100vh] border-2 sm:block lg:hidden px-3 pt-3 pb-2 md:p-7 absolute right-0 top-0 bg-white dark:bg-gray-900 dark:border-gray-700"
     >
       <div class="flex justify-between py-2 mb-5">
         <img
@@ -192,15 +194,15 @@
           alt="classroomio logo"
           class="w-[15%]"
         />
-        <button class="mr-5" on:click={handleShowSolutions}>
+        <button class="mr-5 text-gray-800 dark:text-gray-200" on:click={handleShowSolutions}>
           <CloseLarge size={24} />
         </button>
       </div>
       <nav>
         <ul class="flex items-center flex-col lg:flex-row justify-between w-full">
-          <li class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer w-full">
+          <li class="text-gray-800 dark:text-gray-200 font-semibold text-sm md:text-lg cursor-pointer w-full">
             <button
-              class="w-full flex items-center justify-between hover:bg-gray-100 py-3 px-4 rounded-lg"
+              class="w-full flex items-center justify-between hover:bg-gray-100 dark:hover:bg-gray-800 py-3 px-4 rounded-lg"
               on:click={handleShowDrawer}
               class:active={isSolutionsActive}
             >
@@ -216,7 +218,7 @@
                     }}
                   >
                     <p
-                      class="font-normal text-xs text-gray-700 hover:bg-gray-100 rounded-lg py-2.5 pl-5"
+                      class="font-normal text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg py-2.5 pl-5"
                     >
                       {solution.title}
                     </p>
@@ -227,25 +229,14 @@
           </li>
           <!-- Free Tools -->
           <a
-            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full"
+            class="text-gray-800 dark:text-gray-200 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 py-3 px-4 rounded-xl w-full"
             on:click={handleShowSolutions}
             href="/tools"
           >
             <li>Free Tools</li>
           </a>
-          <!-- <a
-            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
-            on:click={() => {
-              handleShowSolutions();
-            }}
-            class:active={activeLink.startsWith('/docs')}
-            href="/docs"
-            target="_blank"
-          >
-            <li>Docs</li>
-          </a> -->
           <a
-            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
+            class="text-gray-800 dark:text-gray-200 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 py-3 px-4 rounded-md w-full"
             on:click={() => {
               handleShowSolutions();
             }}
@@ -256,7 +247,7 @@
           </a>
           <!-- Pricing -->
           <a
-            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full"
+            class="text-gray-800 dark:text-gray-200 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 py-3 px-4 rounded-xl w-full"
             on:click={() => {
               handleShowSolutions();
             }}
@@ -266,7 +257,7 @@
             <li>Pricing</li>
           </a>
           <a
-            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
+            class="text-gray-800 dark:text-gray-200 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 py-3 px-4 rounded-md w-full"
             on:click={() => {
               handleShowSolutions();
             }}
@@ -275,13 +266,19 @@
           >
             <li>More features</li>
           </a>
+          <li class="w-full px-4 py-2">
+            <div class="flex justify-start">
+              <ToggleTheme />
+            </div>
+          </li>
         </ul>
       </nav>
-      <div class="flex items-start flex-col gap-y-2 mt-5 border-t-[1px] pt-5">
+      <div class="flex items-start flex-col gap-y-2 mt-5 border-t-[1px] border-gray-200 dark:border-gray-700 pt-5">
+
         <a
           href="/discord"
           target="_blank"
-          class="flex items-center rounded-md after:ml-2 w-full text-left py-4 px-4 hover:bg-gray-100 text-sm md:text-lg"
+          class="flex items-center rounded-md after:ml-2 w-full text-left py-4 px-4 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm md:text-lg text-gray-800 dark:text-gray-200"
         >
           <img
             loading="lazy"
@@ -294,18 +291,18 @@
         <a
           href="/github"
           target="_blank"
-          class="flex items-center rounded-md after:ml-2 w-full text-left py-4 px-4 hover:bg-gray-100 text-sm md:text-lg"
+          class="flex items-center rounded-md after:ml-2 w-full text-left py-4 px-4 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm md:text-lg text-gray-800 dark:text-gray-200"
         >
           <img
             loading="lazy"
             alt="github logo"
             src="/github-mark.png"
-            class="w-6 h-6 mr-3 cursor-pointer"
+            class="w-6 h-6 mr-3 cursor-pointer dark:invert"
           />
           <span>Github</span>
         </a>
         <a
-          class="font-semibold after:content-['→'] rounded-md after:ml-2 w-full text-left py-4 px-4 hover:bg-gray-100 text-sm md:text-lg"
+          class="font-semibold after:content-['→'] rounded-md after:ml-2 w-full text-left py-4 px-4 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm md:text-lg text-gray-800 dark:text-gray-200"
           href="https://app.classroomio.com"
         >
           Dashboard
@@ -314,10 +311,3 @@
     </div>
   {/if}
 </div>
-
-<style>
-  .active {
-    background-color: #f3f4f6;
-    border-radius: 6px;
-  }
-</style>

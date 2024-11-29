@@ -41,12 +41,54 @@
 
 <button
   type="button"
-  disabled={isDownloading || !isDisabled ? true : false}
+  disabled={isDownloading || !isDisabled}
   on:click={convertToPng}
-  class="{isDownloading || !isDisabled
-    ? 'bg-gray-200 cursor-not-allowed text-gray-600'
-    : 'bg-[#0233BD] text-white'} {text === 'Generate Progress Report'
-    ? 'block md:hidden'
-    : ''} mt-5 transition-all delay-100 text-white text-xs font-semibold w-full py-3 rounded-md"
-  >{isDownloading ? 'Loading...' : text}</button
+  class="download-button {isDownloading || !isDisabled ? 'disabled' : ''} 
+         {text === 'Generate Progress Report' ? 'mobile-only' : ''}"
 >
+  {isDownloading ? 'Loading...' : text}
+</button>
+
+<style>
+  .download-button {
+    margin-top: 1.25rem;
+    transition: all 100ms;
+    color: var(--button-text);
+    font-size: 0.75rem;
+    font-weight: 600;
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    background-color: var(--button-bg);
+  }
+
+  .download-button.disabled {
+    background-color: var(--button-disabled-bg);
+    color: var(--button-disabled-text);
+    cursor: not-allowed;
+  }
+
+  .mobile-only {
+    display: block;
+  }
+
+  @media (min-width: 768px) {
+    .mobile-only {
+      display: none;
+    }
+  }
+
+  :global(body) {
+    --button-bg: #0233BD;
+    --button-text: #ffffff;
+    --button-disabled-bg: #e5e7eb;
+    --button-disabled-text: #6b7280;
+  }
+
+  :global(body.dark) {
+    --button-bg: #1f78d1;
+    --button-text: #ffffff;
+    --button-disabled-bg: #4b5563;
+    --button-disabled-text: #9ca3af;
+  }
+</style>

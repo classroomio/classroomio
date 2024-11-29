@@ -1,9 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-body {
-  overflow-x: hidden;
+@layer base {
+  body {
+    @apply bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+    overflow-x: hidden;
+  }
 }
 
 li {
@@ -71,6 +74,10 @@ li {
   color: #374151;
 }
 
+.dark .prose :is(p, li) {
+  color: #dedede;
+}
+
 .prose :is(ul, ol) {
   list-style-type: disc;
   padding-left: 3rem;
@@ -89,6 +96,9 @@ li {
   padding-left: 16px;
   margin: 20px 0;
 }
+.dark .prose blockquote {
+  border-left-color: #555;
+}
 .prose figure + em {
   display: block;
   font-size: 14px;
@@ -105,6 +115,15 @@ li {
 .tools-hero-bg {
   background-image: url('https://assets.cdn.clsrio.com/www/tools-hero-bg.svg');
 }
+
+.dark .hero-bg {
+  background-image: url('https://assets.cdn.clsrio.com/www/hero-bg-dark.svg');
+}
+
+.dark .tools-hero-bg {
+  background-image: url('https://assets.cdn.clsrio.com/www/tools-hero-bg-dark.svg');
+}
+
 @media (min-width: 760px) {
   .tools-hero-bg {
     min-height: 350px;
@@ -126,4 +145,21 @@ li {
   .embed {
     width: 560px;
   }
+}
+
+.dark .sj-card {
+  background: #1a202c !important;
+}
+.dark .sj-card mark {
+  background: #333 !important;
+  color: white !important;
+}
+.dark .sj-text-card > .sj-card-content > *,
+.dark .sj-endorser-name,
+.dark .sj-desc {
+  color: #ddd !important;
+}
+
+.dark .bg-secondary {
+  background: #1a202c;
 }

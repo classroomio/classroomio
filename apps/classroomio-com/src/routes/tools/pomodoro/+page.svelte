@@ -167,15 +167,15 @@
   <meta name="twitter:image" content="" />
 </svelte:head>
 
-<section class="mt-[10%] md:mt-16 px-1 md:px-0 w-full md:w-full bg-white">
+<section class="mt-[10%] md:mt-16 px-1 md:px-0 w-full md:w-full bg-white dark:bg-gray-900">
   <ToolsHeader>
     <img
       src="/free-tools/pomodoro.svg"
-      class="w-[15%] md:w-[5%] mx-auto border rounded-full"
+      class="w-[15%] md:w-[5%] mx-auto border rounded-full dark:border-gray-700"
       alt=""
     />
-    <h1 class="text-4xl md:text-6xl font-bold text-[#040F2D] my-3">Pomodoro Timer</h1>
-    <p class="text-sm mt-10 text-[#656565] font-light md:font-normal md:w-[45%] mx-auto">
+    <h1 class="text-4xl md:text-6xl font-bold text-[#040F2D] dark:text-white my-3">Pomodoro Timer</h1>
+    <p class="text-sm mt-10 text-[#656565] dark:text-gray-400 font-light md:font-normal md:w-[45%] mx-auto">
       Make your workday more engaging and effective with the Pomodoro timer, break work into
       25-minute focused intervals called "pomodoros," followed by 5-minute breaks. take a longer
       break.
@@ -187,7 +187,7 @@
   >
     <!-- left side -->
     <div
-      class="w-full md:w-[50%] bg-[#0D4CFF] rounded-lg md:rounded-2xl py-7 px-5 md:p-10 flex flex-col gap-y-16 md:gap-y-0 justify-between"
+      class="w-full md:w-[50%] bg-[#0D4CFF] dark:bg-blue-800 rounded-lg md:rounded-2xl py-7 px-5 md:p-10 flex flex-col gap-y-16 md:gap-y-0 justify-between"
     >
       <!-- types -->
       <div class="flex item-center justify-evenly">
@@ -196,7 +196,7 @@
           on:click={() => setTimerState('pomodoro')}
           class:bg-[#3ADFECED]={timerState === 'pomodoro'}
           class:bg-[#0233BD]={timerState !== 'pomodoro'}
-          class="transition-all duration-500 italic py-1.5 md:py-2 w-[25%] text-xs md:text-sm md:font-medium rounded-md hover:bg-[#3ADFECED]"
+          class="transition-all duration-500 italic py-1.5 md:py-2 w-[25%] text-xs md:text-sm md:font-medium rounded-md hover:bg-[#3ADFECED] dark:hover:bg-blue-600"
           >Pomodoro</button
         >
         <button
@@ -204,7 +204,7 @@
           on:click={() => setTimerState('long-break')}
           class:bg-[#3ADFECED]={timerState === 'long-break'}
           class:bg-[#0233BD]={timerState !== 'long-break'}
-          class="transition-all duration-500 italic py-1.5 md:py-2 w-[25%] text-xs md:text-sm md:font-medium rounded-md hover:bg-[#3ADFECED]"
+          class="transition-all duration-500 italic py-1.5 md:py-2 w-[25%] text-xs md:text-sm md:font-medium rounded-md hover:bg-[#3ADFECED] dark:hover:bg-blue-600"
           >Short Break
         </button>
         <button
@@ -212,7 +212,7 @@
           on:click={() => setTimerState('short-break')}
           class:bg-[#3ADFECED]={timerState === 'short-break'}
           class:bg-[#0233BD]={timerState !== 'short-break'}
-          class="transition-all duration-500 italic py-1.5 md:py-2 w-[25%] text-xs md:text-sm md:font-medium rounded-md hover:bg-[#3ADFECED]"
+          class="transition-all duration-500 italic py-1.5 md:py-2 w-[25%] text-xs md:text-sm md:font-medium rounded-md hover:bg-[#3ADFECED] dark:hover:bg-blue-600"
           >Long Break
         </button>
       </div>
@@ -227,7 +227,7 @@
           <img
             src="/free-tools/pomodoro/restart-icon.svg"
             alt="Restart Icon"
-            class="w-7 hover:scale-110 transition-all duration-300"
+            class="w-7 hover:scale-110 transition-all duration-300 dark:invert"
           />
         </button>
 
@@ -235,7 +235,7 @@
         <button
           type="button"
           on:click={isPaused ? startCountdown : pauseCountdown}
-          class="bg-white text-[#0542CC] border text-base font-bold uppercase py-3 px-14 rounded-md hover:bg-transparent hover:text-white hover:border-white hover:border transition-all duration-300"
+          class="bg-white dark:bg-gray-200 text-[#0542CC] dark:text-blue-800 border text-base font-bold uppercase py-3 px-14 rounded-md hover:bg-transparent hover:text-white hover:border-white hover:border transition-all duration-300"
         >
           {isPaused ? 'Start' : 'Pause'}
         </button>
@@ -245,7 +245,7 @@
           <img
             src="/free-tools/pomodoro/timer-play-icon.svg"
             alt="Play Icon"
-            class="w-7 hover:scale-110 transition-all duration-300"
+            class="w-7 hover:scale-110 transition-all duration-300 dark:invert"
           />
         </button>
       </div>
@@ -254,7 +254,7 @@
     <!-- right side -->
     <div class="w-full md:w-[36%] relative">
       <h1
-        class="bg-[#040F2D] uppercase text-xl font-bold py-4"
+        class="bg-[#040F2D] dark:bg-gray-800 uppercase text-xl font-bold py-4 text-white"
         style="clip-path: polygon(0 0, 100% 1%, 100% 65%, 0% 100%);"
       >
         To do list
@@ -264,26 +264,26 @@
         <!-- todos -->
         <div class="overflow-y-auto mt-3 max-h-[40vh] md:max-h-[50vh]">
           {#each todoList as todo, i}
-            <div class="border text-black p-5">
+            <div class="border dark:border-gray-700 text-black dark:text-white p-5">
               {#if todo.isEditing}
                 <form on:submit|preventDefault={() => setEditing(i, false)}>
-                  <p class="text-xs text-left text-[#656565] font-semibold">Pomodoro name</p>
+                  <p class="text-xs text-left text-[#656565] dark:text-gray-400 font-semibold">Pomodoro name</p>
                   <input
                     type="text"
                     bind:this={addInput}
                     bind:value={todo.content}
-                    class="bg-[#F1F2F4] border-[#EAEAEA] w-full border mt-2 px-3 py-2 text-base outline-none"
+                    class="bg-[#F1F2F4] dark:bg-gray-700 border-[#EAEAEA] dark:border-gray-600 w-full border mt-2 px-3 py-2 text-base outline-none dark:text-white"
                   />
                   <div class="flex justify-end items-center gap-5 mt-5">
                     <button
                       type="button"
                       on:click={() => deleteTodo(i)}
-                      class="rounded-sm py-2 px-5 text-xs font-semibold bg-[#F7F7F7]"
+                      class="rounded-sm py-2 px-5 text-xs font-semibold bg-[#F7F7F7] dark:bg-gray-600 dark:text-gray-200"
                       >Discard</button
                     >
                     <button
                       type="submit"
-                      class="rounded-sm py-2 px-5 text-xs font-semibold bg-[#0D4CFF] text-white"
+                      class="rounded-sm py-2 px-5 text-xs font-semibold bg-[#0D4CFF] dark:bg-blue-600 text-white"
                       >Save</button
                     >
                   </div>
@@ -296,21 +296,21 @@
                     <!-- pen and menu icon -->
                     <div class="relative flex justify-between w-[15%]">
                       <button type="button" on:click={() => setEditing(i, true)}>
-                        <img src="/free-tools/pomodoro/pen-icon.svg" alt="Pen icon" class="w-5" />
+                        <img src="/free-tools/pomodoro/pen-icon.svg" alt="Pen icon" class="w-5 dark:invert" />
                       </button>
 
                       <button type="button" on:click={() => (todo.isVisible = !todo.isVisible)}>
-                        <img src="/free-tools/pomodoro/menu-icon.svg" alt="Menu icon" class="w-5" />
+                        <img src="/free-tools/pomodoro/menu-icon.svg" alt="Menu icon" class="w-5 dark:invert" />
                       </button>
 
                       {#if todo.isVisible}
                         <ul
-                          class="z-40 absolute top-6 -right-3 text-xs w-[8rem] bg-white border shadow-md rounded-[5px]"
+                          class="z-40 absolute top-6 -right-3 text-xs w-[8rem] bg-white dark:bg-gray-800 border dark:border-gray-700 shadow-md rounded-[5px]"
                         >
                           <button
                             type="button"
                             on:click={() => markTodoAsDone(i)}
-                            class="w-full font-medium text-left py-3 px-5"
+                            class="w-full font-medium text-left py-3 px-5 dark:text-white"
                           >
                             Mark as done
                           </button>
@@ -328,7 +328,7 @@
 
                   <div class="flex justify-between items-center mt-10">
                     <p
-                      class="rounded-[3px] text-xs font-medium text-[#656565] bg-[#EAEAEA] py-0.5 px-1.5"
+                      class="rounded-[3px] text-xs font-medium text-[#656565] dark:text-gray-400 bg-[#EAEAEA] dark:bg-gray-700 py-0.5 px-1.5"
                     >
                       {todo.time}
                     </p>
@@ -345,21 +345,21 @@
                         todo.isPaused = !todo.isPaused;
                       }}
                       class="{todo.isDone
-                        ? 'bg-[#00D06C] border-none text-white'
+                        ? 'bg-[#00D06C] dark:bg-green-600 border-none text-white'
                         : todo.isPaused
-                          ? 'bg-white text-[#0D4CFF] border-[#0D4CFF]'
-                          : 'bg-[#0D4CFF] text-white border-none'} 
+                          ? 'bg-white dark:bg-gray-200 text-[#0D4CFF] dark:text-blue-800 border-[#0D4CFF] dark:border-blue-800'
+                          : 'bg-[#0D4CFF] dark:bg-blue-700 text-white border-none'} 
                           
                           flex items-center border-2 justify-center gap-2 py-1.5 px-4 rounded-[4px] text-xs font-bold uppercase"
                     >
                       {#if todo.isDone}
-                        <img src="/free-tools/pomodoro/done-icon.svg" alt="Done icon" />
+                        <img src="/free-tools/pomodoro/done-icon.svg" alt="Done icon" class="dark:invert" />
                         done
                       {:else if todo.isPaused}
-                        <img src="/free-tools/pomodoro/list-play-icon.svg" alt="Play icon" />
+                        <img src="/free-tools/pomodoro/list-play-icon.svg" alt="Play icon" class="dark:invert" />
                         play task
                       {:else}
-                        <img src="/free-tools/pomodoro/pause-icon.svg" alt="Pause icon" />
+                        <img src="/free-tools/pomodoro/pause-icon.svg" alt="Pause icon" class="dark:invert" />
                         pause task
                       {/if}
                     </button>
@@ -374,10 +374,10 @@
         <button
           type="button"
           on:click={addTodo}
-          class="bg-[#1D4ED8] rounded-md text-center font-medium mt-10 py-3 w-full flex justify-center items-center gap-3"
+          class="bg-[#1D4ED8] dark:bg-blue-700 rounded-md text-center font-medium mt-10 py-3 w-full flex justify-center items-center gap-3 text-white"
         >
           Add new item
-          <img src="/free-tools/pomodoro/add-icon.svg" alt="Add icon" class="w-3" />
+          <img src="/free-tools/pomodoro/add-icon.svg" alt="Add icon" class="w-3 dark:invert" />
         </button>
       </div>
     </div>
@@ -387,7 +387,12 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
 
+  :global(.dark) {
+    color-scheme: dark;
+  }
+
   .body {
     font-family: 'Inter', sans-serif;
   }
 </style>
+

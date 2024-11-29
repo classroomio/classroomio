@@ -9,7 +9,7 @@
 {#if !isRecommended}
   <div class="mb-5 flex md:flex-row flex-col md:items-center gap-2">
     <!-- Date -->
-    <p class="text-sm text-slate-500">{formatDate(post.date)}</p>
+    <p class="text-sm text-slate-500 dark:text-slate-300">{formatDate(post.date)}</p>
 
     <!-- Tags  -->
     <div class="flex flex-col">
@@ -29,17 +29,17 @@
     alt={post.title}
     class="w-70 h-48 object-cover rounded-md"
   />
-  <p class="font-bold text-lg py-2 h-[60px] line-clamp-2 group-hover:text-slate-500">
+  <p class="font-bold text-lg py-2 h-[60px] line-clamp-2 group-hover:text-slate-500 dark:text-slate-200 group-hover:dark:text-white">
     {@html post.title}
   </p>
 
-  <p class="text-slate-500 pt-2 mb-4 line-clamp-3">{post.description}</p>
+  <p class="text-slate-500 dark:text-slate-200 pt-2 mb-4 line-clamp-3">{post.description}</p>
 </a>
 
 <div class="flex items-center justify-start gap-4 my-2">
   <img loading="lazy" src={post.avatar} alt="avatar" class="w-10 h-10 rounded-full" />
   <span>
-    <p class="font-semibold">{post.author}</p>
-    <p class="text-slate-500">{post.role}</p>
+    <p class="font-semibold dark:text-slate-300">{post.author}</p>
+    <p class="text-slate-500 dark:text-slate-300">{post.role}</p>
   </span>
 </div>

@@ -72,9 +72,9 @@
     <button
       type="button"
       on:click={() => ($openModal.mood = false)}
-      class="p-2 bg-[#F1F6FF] hover:scale-110 transition-all duration-300 rounded-full w-6"
+      class="p-2 bg-[#F1F6FF] dark:bg-gray-700 hover:scale-110 transition-all duration-300 rounded-full w-6"
     >
-      <img src="/free-tools/progress-report/close-icon.svg" alt="Close icon" />
+      <img src="/free-tools/progress-report/close-icon.svg" alt="Close icon" class="dark:invert" />
     </button>
   </div>
 
@@ -85,7 +85,7 @@
         on:click={() => {
           selectMood(mood);
         }}
-        class="flex gap-3 items-center shadow-sm rounded-full px-4 py-1 bg-[#F1F6FF] hover:bg-[#0233BD] hover:text-white transition-all duration-700"
+        class="flex gap-3 items-center shadow-sm rounded-full px-4 py-1 bg-[#F1F6FF] dark:bg-gray-800 hover:bg-[#0233BD] dark:hover:bg-blue-600 hover:text-white transition-all duration-700"
       >
         <p class="text-xs md:text-sm font-semibold">{mood.text}</p>
         <img
@@ -98,3 +98,4 @@
   </div>
   <!--  -->
 </Modal>
+

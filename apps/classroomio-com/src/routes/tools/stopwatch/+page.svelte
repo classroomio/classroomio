@@ -142,68 +142,68 @@
   <meta name="twitter:image" content="https://brand.cdn.clsrio.com/og/free-tools.png" />
 </svelte:head>
 
-<section class="mt-[10%] md:mt-16 px-5 md:px-0 bg-white">
+<section class="mt-[10%] md:mt-16 px-5 md:px-0 bg-white dark:bg-gray-900">
   <ToolsHeader>
     <img
       src="/free-tools/name-picker.svg"
-      class="w-[15%] md:w-[5%] mx-auto border rounded-full"
+      class="w-[15%] md:w-[5%] mx-auto border rounded-full dark:border-gray-700"
       alt=""
     />
-    <h1 class="text-4xl md:text-6xl font-bold text-[#040F2D] my-3">Activity Stopwatch</h1>
-    <p class="text-md text-[#656565] font-light md:font-normal md:w-[45%] mx-auto">
+    <h1 class="text-4xl md:text-6xl font-bold text-[#040F2D] dark:text-white my-3">Activity Stopwatch</h1>
+    <p class="text-md text-[#656565] dark:text-gray-400 font-light md:font-normal md:w-[45%] mx-auto">
       Stay on track and enhance productivity with our customizable stopwatch for timed tasks,
       quizzes, and study sessions.
     </p>
   </ToolsHeader>
 
-  <div class="w-full md:w-2/4 my-10 mx-auto border rounded-md overflow-hidden bg-white">
+  <div class="w-full md:w-2/4 my-10 mx-auto border dark:border-gray-700 rounded-md overflow-hidden bg-white dark:bg-gray-800">
     <!-- countdown setter -->
     {#if !isNextStep}
-      <div transition:fly={{ y: -300, delay: 0, easing: sineInOut }} class="px-6 py-8 bg-white">
+      <div transition:fly={{ y: -300, delay: 0, easing: sineInOut }} class="px-6 py-8 bg-white dark:bg-gray-800">
         <form on:submit|preventDefault={startTimer}>
           <div>
-            <h1 class="font-bold text-sm">Name of activity</h1>
+            <h1 class="font-bold text-sm dark:text-white">Name of activity</h1>
             <input
               type="text"
               bind:value={activityName}
-              class="w-full rounded-sm border py-2 mt-3 bg-[#F1F2F4] outline-none px-3 focus-within:border-[#0233BD] focus-within:border"
+              class="w-full rounded-sm border dark:border-gray-600 py-2 mt-3 bg-[#F1F2F4] dark:bg-gray-700 outline-none px-3 focus-within:border-[#0233BD] dark:focus-within:border-blue-500 focus-within:border dark:text-white"
               required
             />
           </div>
 
-          <div class="mt-10 bg-white">
-            <h1 class="font-bold text-sm">Set an Activity</h1>
+          <div class="mt-10 bg-white dark:bg-gray-800">
+            <h1 class="font-bold text-sm dark:text-white">Set an Activity</h1>
             <div class="flex flex-wrap justify-between gap-y-5 w-full mt-3 uppercase font-bold">
-              <div class="bg-[#F1F2F4] w-full md:w-[30%] border px-4 py-5">
+              <div class="bg-[#F1F2F4] dark:bg-gray-700 w-full md:w-[30%] border dark:border-gray-600 px-4 py-5">
                 <div class="w-2/4 md:w-full mx-auto flex items-end gap-2">
                   <input
                     type="number"
                     bind:value={hours}
-                    class="w-[80%] md:w-[75%] outline-none text-center py-3 px-1.5 text-3xl placeholder:text-3xl placeholder:text-black"
+                    class="w-[80%] md:w-[75%] outline-none text-center py-3 px-1.5 text-3xl placeholder:text-3xl placeholder:text-black dark:placeholder:text-white bg-transparent dark:text-white"
                   />
-                  <p class="text-[10px]">hrs</p>
+                  <p class="text-[10px] dark:text-gray-300">hrs</p>
                 </div>
               </div>
 
-              <div class="bg-[#F1F2F4] w-full md:w-[30%] border px-4 py-5">
+              <div class="bg-[#F1F2F4] dark:bg-gray-700 w-full md:w-[30%] border dark:border-gray-600 px-4 py-5">
                 <div class="w-2/4 md:w-full mx-auto flex items-end gap-2">
                   <input
                     type="number"
                     bind:value={minutes}
-                    class="w-[80%] md:w-[75%] outline-none text-center py-3 px-1.5 text-3xl placeholder:text-3xl placeholder:text-black"
+                    class="w-[80%] md:w-[75%] outline-none text-center py-3 px-1.5 text-3xl placeholder:text-3xl placeholder:text-black dark:placeholder:text-white bg-transparent dark:text-white"
                   />
-                  <p class="text-[10px]">mins</p>
+                  <p class="text-[10px] dark:text-gray-300">mins</p>
                 </div>
               </div>
 
-              <div class="bg-[#F1F2F4] w-full md:w-[30%] border px-4 py-5">
+              <div class="bg-[#F1F2F4] dark:bg-gray-700 w-full md:w-[30%] border dark:border-gray-600 px-4 py-5">
                 <div class="w-2/4 md:w-full mx-auto flex items-end gap-2">
                   <input
                     type="number"
                     bind:value={seconds}
-                    class="w-[80%] md:w-[75%] outline-none text-center py-3 px-1.5 text-3xl placeholder:text-3xl placeholder:text-black"
+                    class="w-[80%] md:w-[75%] outline-none text-center py-3 px-1.5 text-3xl placeholder:text-3xl placeholder:text-black dark:placeholder:text-white bg-transparent dark:text-white"
                   />
-                  <p class="text-[10px]">sec</p>
+                  <p class="text-[10px] dark:text-gray-300">sec</p>
                 </div>
               </div>
             </div>
@@ -211,9 +211,9 @@
             <div class="flex justify-end mt-10">
               <button
                 type="submit"
-                class="bg-[#0F62FE] text-white text-sm px-5 py-3 rounded-md flex gap-3 items-center"
+                class="bg-[#0F62FE] dark:bg-blue-600 text-white text-sm px-5 py-3 rounded-md flex gap-3 items-center"
               >
-                <img src="/free-tools/stopwatch/loading-timer.svg" alt="" />
+                <img src="/free-tools/stopwatch/loading-timer.svg" alt="" class="dark:invert" />
                 Start Timer</button
               >
             </div>
@@ -238,3 +238,9 @@
     {/if}
   </div>
 </section>
+
+<style>
+  :global(.dark) {
+    color-scheme: dark;
+  }
+</style>

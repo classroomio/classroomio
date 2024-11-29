@@ -57,8 +57,8 @@
   <PageHeader
     className="flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-6 lg:px-28 md:px-16 px-8"
   >
-    <div class="bg-[#DCE5FF] py-2 px-4 rounded-full border-[#C2D2FF] border-2 text-center">
-      <p class=" text-sm md:text-base text-[#4B5563] text-center font-medium">
+    <div class="bg-[#DCE5FF] dark:bg-slate-900 py-2 px-4 rounded-full border-[#C2D2FF] dark:border-slate-600 border-2 text-center">
+      <p class=" text-sm md:text-base text-[#4B5563] dark:text-white text-center font-medium">
         Unlock your team's potential
       </p>
     </div>
@@ -69,12 +69,12 @@
         class="w-full max-w-screen-xl flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
       >
         <h1
-          class="mx-auto m-0 text-4xl lg:text-7xl md:text-6xl font-bold text-slate-900 lg:text-center"
+          class="mx-auto m-0 text-4xl lg:text-7xl md:text-6xl font-bold text-slate-900 dark:text-slate-300 lg:text-center"
         >
           Employee training software for
-          <br /><span class="text-blue-700 relative">modern teams</span>
+          <br /><span class="text-blue-700 dark:text-blue-500 relative">modern teams</span>
         </h1>
-        <p class="lg:w-[60%] text-base md:text-lg lg:text-center font-normal text-slate-700">
+        <p class="lg:w-[60%] text-base md:text-lg lg:text-center font-normal text-slate-700 dark:text-slate-200">
           With ClassroomIO, you can keep your teams in sync with company standards as they change
           quickly.
         </p>
@@ -90,7 +90,7 @@
     class="w-full max-w-screen-xl lg:py-24 py-16 lg:px-28 md:px-16 px-8 flex lg:flex-row flex-col lg:items-center lg:justify-between justify-center gap-x-6 gap-y-8"
   >
     <div class="w-full lg:w-[35%] gap-y-4 flex flex-col items-start justify-start">
-      <div class="w-fit py-2 px-4 rounded-full border-[#C2D2FF] border-2 text-center">
+      <div class="w-fit py-2 px-4 rounded-full border-[#C2D2FF] dark:border-slate-700 border-2 text-center">
         <p class=" text-sm md:text-base font-medium">Amazing benefits</p>
       </div>
 
@@ -106,7 +106,7 @@
     >
       {#each benefitDetails as benefits}
         <div
-          class="w-full lg:w-[47%] min-w-[220px] md:p-6 p-4 border border-[#D9E0F5] rounded-2xl flex flex-col grow gap-y-6"
+          class="w-full lg:w-[47%] min-w-[220px] md:p-6 p-4 border border-[#D9E0F5] dark:border-slate-700 rounded-2xl flex flex-col grow gap-y-6"
         >
           <img
             class="w-[48px] h-[48px]"
@@ -116,7 +116,7 @@
 
           <div class="w-full flex flex-col justify-start align-start gap-y-2">
             <h1 class="text-xl font-medium">{benefits.title}</h1>
-            <p class="leading-8 text-gray-500 font-[#656565] font-light">
+            <p class="leading-8 text-gray-500 font-[#656565] dark:text-slate-300 font-light">
               {benefits.description}
             </p>
           </div>
@@ -126,7 +126,7 @@
   </section>
 
   <section
-    class="w-full bg-[#F1F6FF] flex flex-col items-center justify-start gap-y-16 lg:py-24 py-16 lg:px-28 md:px-16 px-8"
+    class="w-full bg-[#F1F6FF] dark:bg-black flex flex-col items-center justify-start gap-y-16 lg:py-24 py-16 lg:px-28 md:px-16 px-8"
   >
     <div
       class="w-full gap-y-4 flex flex-col lg:items-center items-start lg:justify-center justify-start"
@@ -140,8 +140,8 @@
         class="lg:w-full max-w-screen-xl flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
       >
         <h1 class="text-3xl md:text-5xl font-bold">What makes us the right choice</h1>
-        <p class="text-[#334155] text-sm md:text-base font-light lg:text-center md:w-[80%]">
-          Discover why we’re the perfect partner for your employee training needs. Experience
+        <p class="text-[#334155] text-slate-300 text-sm md:text-base font-light lg:text-center md:w-[80%]">
+          Discover why we&apos;re the perfect partner for your employee training needs. Experience
           innovative solutions designed to reduce stress and enhance productivity.
         </p>
       </div>

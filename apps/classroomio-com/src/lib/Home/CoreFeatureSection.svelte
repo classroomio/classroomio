@@ -10,7 +10,7 @@
   export let taglineIcon = '';
 </script>
 
-<section {id} class="w-full py-32 border-b border-x-0 border-t-0 border-gray-200">
+<section {id} class="w-full py-32 border-b border-x-0 border-t-0 border-gray-200 dark:border-gray-800">
   <div
     class="w-4/5 mx-auto flex flex-col {rightToLeft
       ? 'lg:flex-row-reverse'
@@ -33,13 +33,13 @@
         <p class="font-medium text-base">{tagline}</p>
       </div>
       <h2 class="font-bold text-4xl mb-3 lg:mb-6">{title}</h2>
-      <p class="leading-8 text-lg text-gray-500">
+      <p class="leading-8 text-lg text-gray-500 dark:text-gray-300">
         {description}
       </p>
       {#if $$slots.more}
         <br />
 
-        <p class="leading-8 text-lg text-gray-500">
+        <p class="leading-8 text-lg text-gray-500 dark:text-gray-300">
           <slot name="more" />
         </p>
       {/if}

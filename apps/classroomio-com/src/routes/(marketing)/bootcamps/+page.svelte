@@ -77,8 +77,10 @@
   <PageHeader
     className="flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-6 lg:px-28 md:px-16 px-8"
   >
-    <div class="bg-[#DCE5FF] py-2 px-4 rounded-full border-[#C2D2FF] border-2 text-center">
-      <p class=" text-sm md:text-base text-[#4B5563] text-center font-medium">
+    <div
+      class="bg-[#DCE5FF] dark:bg-slate-900 py-2 px-4 rounded-full border-[#C2D2FF] dark:border-slate-600 border-2 text-center"
+    >
+      <p class=" text-sm md:text-base text-[#4B5563] dark:text-white text-center font-medium">
         Solution for Bootcamps
       </p>
     </div>
@@ -89,12 +91,14 @@
         class="w-full max-w-screen-xl flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
       >
         <h1
-          class="mx-auto m-0 text-4xl lg:text-7xl md:text-6xl font-bold text-slate-900 lg:text-center"
+          class="mx-auto m-0 text-4xl lg:text-7xl md:text-6xl font-bold text-slate-900 dark:text-slate-300 lg:text-center"
         >
           The platform for fast
           <span class="text-blue-700 relative"> growing bootcamps</span>
         </h1>
-        <p class="lg:w-[60%] text-base md:text-lg lg:text-center font-normal text-slate-700">
+        <p
+          class="lg:w-[60%] text-base md:text-lg lg:text-center font-normal text-slate-700 dark:text-slate-200"
+        >
           From AI powered course creation to student collaboration tools, ClassroomIO provides
           everything you need to run a cutting-edge, high-impact bootcamp.
         </p>
@@ -115,14 +119,16 @@
     <div
       class="w-full gap-y-4 flex flex-col lg:items-center items-start lg:justify-center justify-start"
     >
-      <div class="w-fit py-2 px-4 rounded-full border-[#C2D2FF] border-2 text-center">
+      <div
+        class="w-fit py-2 px-4 rounded-full border-[#C2D2FF] dark:border-slate-00 border-2 text-center"
+      >
         <p class=" text-sm md:text-base font-medium">Our benefits</p>
       </div>
       <div
         class="lg:w-full max-w-screen-xl flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
       >
         <h1 class="text-3xl md:text-5xl font-bold">Inspire Student Success</h1>
-        <p class="text-[#334155] text-sm md:text-base font-light lg:text-center md:w-[80%]">
+        <p class="text-[#334155] dark:text-slate-300 text-sm md:text-base font-light lg:text-center md:w-[80%]">
           Scale your bootcamp with ClassroomIO's comprehensive toolkit. Create engaging content,
           foster community, and drive student achievement.
         </p>
@@ -133,7 +139,7 @@
       class="w-full max-w-screen-xl flex lg:flex-row flex-col lg:justify-between justify-start gap-6 lg:items-center items-start"
     >
       {#each benefitDetails as benefits}
-        <div class="w-full md:p-6 p-4 border border-[#D9E0F5] rounded-2xl flex flex-col gap-y-6">
+        <div class="w-full md:p-6 p-4 border border-[#D9E0F5] dark:border-slate-700 rounded-2xl flex flex-col gap-y-6">
           <img
             class="w-[48px] h-[48px]"
             src="https://assets.cdn.clsrio.com/www/bootcamps/{benefits.icon}"
@@ -141,15 +147,16 @@
           />
 
           <div class="w-full flex flex-col justify-start align-start gap-y-2">
-            <h1 class="text-xl font-medium">{benefits.title}</h1>
+            <h1 class="text-xl font-medium dark:text-slate-200">{benefits.title}</h1>
 
             {#each benefits.points as point}
               <div class="flex flex-row justify-start items-start gap-x-3">
                 <img
                   src="https://assets.cdn.clsrio.com/www/bootcamps/{benefits.checkMark}"
                   alt="check mark"
+                  class="dark:invert"
                 />
-                <p class="leading-8 text-gray-500 font-[#656565] font-light">
+                <p class="leading-8 text-gray-500 text-[#656565] dark:text-slate-300 font-light">
                   {point}
                 </p>
               </div>
@@ -161,20 +168,20 @@
   </section>
 
   <section
-    class="w-full bg-[#F1F6FF] flex flex-col items-center justify-center gap-y-16 lg:py-24 py-16 lg:px-28 md:px-16 px-8"
+    class="w-full bg-[#F1F6FF] dark:bg-black flex flex-col items-center justify-center gap-y-16 lg:py-24 py-16 lg:px-28 md:px-16 px-8"
   >
     <div
       class="w-full max-w-screen-xl gap-y-4 flex flex-col lg:items-center items-start lg:justify-center justify-start"
     >
-      <div class="w-fit py-2 px-4 rounded-full border-[#C2D2FF] border-2 text-center">
+      <div class="w-fit py-2 px-4 rounded-full border-[#C2D2FF] dark:border-slate-700 border-2 text-center">
         <p class=" text-sm md:text-base font-medium">Explore our features</p>
       </div>
       <div
         class="w-full flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
       >
         <h1 class="text-3xl md:text-5xl font-bold">Why We're the Perfect Fit</h1>
-        <p class="text-[#334155] text-sm md:text-base font-light lg:text-center md:w-[80%]">
-          Discover why we’re the ideal partner for your bootcamp training needs. Experience
+        <p class="text-[#334155] dark:text-slate-300 text-sm md:text-base font-light lg:text-center md:w-[80%]">
+          Discover why we&apos;re the ideal partner for your bootcamp training needs. Experience
           innovative solutions designed to elevate student engagement and maximize learning
           outcomes.
         </p>
@@ -194,13 +201,13 @@
             class="w-full max-w-sm lg:w-[40%] lg:gap-y-6 gap-y-3 flex flex-col items-start justify-start"
           >
             <img
-              class="w-[48px] h-[48px]"
+              class="w-[48px] h-[48px] dark:brightness-80 dark:invert dark:hue-rotate-180"
               src="https://assets.cdn.clsrio.com/www/bootcamps/{feature.icon}"
               alt="team icon"
             />
             <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
               <h1 class="font-bold text-4xl">{feature.title}</h1>
-              <p class="leading-8 text-lg text-gray-500">
+              <p class="leading-8 text-lg text-gray-500 dark:text-slate-200">
                 {feature.description}
               </p>
             </div>
@@ -215,7 +222,7 @@
               </a>
             {:else}
               <button
-                class="py-4 px-8 border border-[#1D4ED8] outline-transparent rounded text-[#1D4ED8] text-sm font-semibold"
+                class="py-4 px-8 border border-[#1D4ED8] dark:border-blue-300 outline-transparent rounded text-[#1D4ED8] dark:text-blue-300 text-sm font-semibold"
                 data-cal-config="'layout':'month_view'"
                 data-cal-link="classroomio/demo"
               >
@@ -226,7 +233,7 @@
 
           <div>
             <img
-              class="w-full lg:max-w-[380px]"
+              class="w-full lg:max-w-[380px] dark:brightness-80 dark:invert dark:hue-rotate-180"
               src="https://assets.cdn.clsrio.com/www/bootcamps/{feature.img}"
               alt="team management feature ui"
             />

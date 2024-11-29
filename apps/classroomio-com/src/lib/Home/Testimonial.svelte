@@ -10,7 +10,7 @@
   </h1>
 
   <p
-    class="mx-auto text-center my-5 lg:mt-6 px-4 lg:p-0 text-base tracking-wide leading-6 text-gray-400 lg:w-2/4"
+    class="mx-auto text-center my-5 lg:mt-6 px-4 lg:p-0 text-base tracking-wide leading-6 text-gray-400 dark:text-gray-300 lg:w-2/4"
   >
     See what excites them about building and managing bootcamps with ClassroomIO.
   </p>

@@ -13,19 +13,47 @@
 
   export let data;
 
+  let isDarkMode = false;
+
   onMount(() => {
     if (dev) {
       localStorage.setItem('umami.disabled', '1');
     }
+    
+    // Check for user's preference
+    if (typeof window !== 'undefined') {
+      isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      updateTheme();
+    }
   });
+
+  function updateTheme() {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }
+
+  function toggleDarkMode() {
+    isDarkMode = !isDarkMode;
+    updateTheme();
+  }
 
   $: metaTags = extend(true, {}, data.baseMetaTags, $page.data.pageMetaTags);
 </script>
 
 <MetaTags {...metaTags} />
 
-<div class="overflow-hidden bg-white">
+<div class="overflow-hidden bg-primary text-primary transition-colors duration-300">
   <Navigation />
+
+  <button 
+    on:click={toggleDarkMode} 
+    class="fixed top-4 right-4 z-50 p-2 bg-secondary text-primary rounded-full"
+  >
+    {isDarkMode ? '☀️' : '🌙'}
+  </button>
 
   <PageTransition url={data.url}>
     {#if $page.status === 404}
