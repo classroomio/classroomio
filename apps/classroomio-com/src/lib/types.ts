@@ -1,5 +1,10 @@
 export type Categories = 'sveltekit' | 'svelte';
 
+export type RawBlogPost = {
+  metadata: BlogPost;
+  default: any;
+};
+
 export type BlogPost = {
   title: string;
   slug: string;

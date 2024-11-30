@@ -26,7 +26,7 @@
     <ul class="flex flex-col items-start justify-start gap-2 w-[90%] md:w-[50%]">
       {#each data.posts as post}
         <li class="py-10 w-full border-b border-gray-200">
-					<BlogListItem {post}/>
+          <BlogListItem {post} />
         </li>
       {/each}
     </ul>

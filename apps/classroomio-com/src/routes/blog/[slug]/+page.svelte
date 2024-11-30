@@ -25,7 +25,7 @@
         </div>
 
         <!-- Post -->
-        <div class="prose pt-2 pb-4 border-b border-gray-200">
+        <div class="prose pt-2 pb-4 border-b-2 border-gray-200">
           <svelte:component this={data.content} />
           <!-- Tags -->
           <div class="flex gap-2 py-4">
@@ -35,16 +35,16 @@
           </div>
         </div>
 
-				<section class="mt-5">
-					<p class="text-lg font-semibold text-gray-500">Check Out Similar Blogs</p>
-					<ul class="flex items-start justify-start gap-2 flex-wrap">
-						{#each data.otherBlogsSuggestion as post }
-					<li class="py-10 w-80">
-						<BlogListItem {post}/>
-					</li>
-					{/each}
-					</ul>
-				</section>
+        <section class="mt-5">
+          <p class="text-xl font-semibold">Related Posts</p>
+          <ul class="flex items-start justify-start gap-3 overflow-x-scroll">
+            {#each data.relatedPosts as post}
+              <li class="py-10 min-w-[80%] sm:w-80 sm:min-w-0">
+                <BlogListItem {post} isRecommended />
+              </li>
+            {/each}
+          </ul>
+        </section>
 
         <a
           href="/blog"
