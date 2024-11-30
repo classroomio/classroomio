@@ -35,11 +35,11 @@
           </div>
         </div>
 
-				<section class="">
-					<p class="text-lg font-semibold">Check Out Similar Blogs</p>
-					<ul class="flex flex-col items-start justify-start gap-2">
+				<section class="mt-5">
+					<p class="text-lg font-semibold text-gray-500">Check Out Similar Blogs</p>
+					<ul class="flex items-start justify-start gap-2 flex-wrap">
 						{#each data.otherBlogsSuggestion as post }
-					<li class="py-10 w-full border-b border-gray-200">
+					<li class="py-10 w-80">
 						<BlogListItem {post}/>
 					</li>
 					{/each}
