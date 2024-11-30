@@ -35,16 +35,18 @@
           </div>
         </div>
 
-        <section class="mt-5">
-          <p class="text-xl font-semibold">Related Posts</p>
-          <ul class="flex items-start justify-start gap-3 overflow-x-scroll">
-            {#each data.relatedPosts as post}
-              <li class="py-10 min-w-[80%] sm:w-80 sm:min-w-0">
-                <BlogListItem {post} isRecommended />
-              </li>
-            {/each}
-          </ul>
-        </section>
+        {#if data.relatedPosts.length > 0}
+          <section class="mt-5">
+            <p class="text-xl font-semibold">Related Posts</p>
+            <ul class="flex items-start justify-start gap-3 overflow-x-scroll">
+              {#each data.relatedPosts as post}
+                <li class="py-10 min-w-[80%] sm:w-80 sm:min-w-0">
+                  <BlogListItem {post} isRecommended />
+                </li>
+              {/each}
+            </ul>
+          </section>
+        {/if}
 
         <a
           href="/blog"
