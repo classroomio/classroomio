@@ -1,7 +1,7 @@
 <script>
   import PageSignupCTA from '$lib/PageSignupCTA/index.svelte';
   import PageHeader from '$lib/PageHeader/PageHeader.svelte';
-  import BlogListItem from './BlogListItem.svelte';
+  import BlogListItem from '$lib/Blog/BlogListItem.svelte';
 
   export let data;
 </script>

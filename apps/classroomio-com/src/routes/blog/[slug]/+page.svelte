@@ -1,8 +1,8 @@
 <script lang="ts">
+  import { ChevronLeft } from 'carbon-icons-svelte';
   import Chip from '$lib/Chip/Chip.svelte';
   import { formatDate } from '$lib/utils/formatDate';
-  import { ChevronLeft } from 'carbon-icons-svelte';
-  import BlogListItem from '../BlogListItem.svelte';
+  import BlogListItem from '$lib/Blog/BlogListItem.svelte';
 
   export let data;
 </script>

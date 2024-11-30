@@ -1,5 +1,5 @@
-import type { BlogPost, RawBlogPost } from '$lib/types';
 import { error } from '@sveltejs/kit';
+import type { BlogPost, RawBlogPost } from '$lib/types';
 import type { MetaTagsProps } from 'svelte-meta-tags';
 
 /** @type {import('./$types').PageLoad} */
