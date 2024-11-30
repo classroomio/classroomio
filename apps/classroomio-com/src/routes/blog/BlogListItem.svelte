@@ -3,7 +3,6 @@
   import { formatDate } from '$lib/utils/formatDate';
 
   export let post;
-
   export let isRecommended = false;
 </script>
 
@@ -23,7 +22,7 @@
   </div>
 {/if}
 
-<a href={`/blog/${post.slug}`} class="group">
+<a href="/blog/{post.slug}" class="group">
   <img
     loading="lazy"
     src={post.imageUrl}
