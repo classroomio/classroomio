@@ -21,7 +21,6 @@
       frameborder="0"
       scrolling="yes"
       title="Analytics Dashboard"
-      class="dark:text-white"
     ></iframe>
   {/key}
 {:else}
