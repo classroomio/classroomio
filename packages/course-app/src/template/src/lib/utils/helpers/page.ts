@@ -1,5 +1,5 @@
 import pages from '$lib/data/pages.json';
-import type { Page, Section } from '$lib/utils/types/page';
+import type { Page } from '$lib/utils/types/page';
 
 /**
  * Get a page by its id

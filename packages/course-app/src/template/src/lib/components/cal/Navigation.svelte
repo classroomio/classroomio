@@ -1,9 +1,9 @@
 <script lang="ts">
   import { ArrowUpRight, Close } from 'carbon-icons-svelte';
   import Menu from 'carbon-icons-svelte/lib/Menu.svelte';
+  import { sharedPage } from '$lib/utils/stores/pages';
   import { getPageSection } from '$lib/utils/helpers/page';
   import { Button } from '$lib/components/ui/button';
-  import { sharedPage } from '$lib/utils/stores/pages';
   import type { Section } from '$lib/utils/types/page';
 
   let open = $state(false);

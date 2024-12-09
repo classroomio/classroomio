@@ -4,4 +4,4 @@
   let { data } = $props();
 </script>
 
-<components.coursepage {data} />
+<components.coursespage {data} />

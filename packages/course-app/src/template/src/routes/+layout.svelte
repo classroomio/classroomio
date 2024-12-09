@@ -36,19 +36,19 @@
   <meta name="description" content={seo?.settings.description} />
 </svelte:head>
 
+<components.styles />
+
 {#if $homePage.id}
   <main>
     <Transition>
       {#if !$page.url.pathname.includes('course/')}
-        {@const Component = components.navigation}
-        <Component />
+        <components.navigation />
       {/if}
 
       {@render children?.()}
 
       {#if !$page.url.pathname.includes('course/')}
-        {@const Component = components.footer}
-        <Component />
+        <components.footer />
       {/if}
     </Transition>
   </main>

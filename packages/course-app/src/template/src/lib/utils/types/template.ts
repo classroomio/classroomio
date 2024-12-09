@@ -1,9 +1,10 @@
 import type { Component } from 'svelte';
 
 export type TemplateComponents = {
+  styles: Component;
   navigation: Component;
   footer: Component;
   button: Component;
-  coursepage: Component;
+  coursespage: Component;
   homepage: Component;
 };
