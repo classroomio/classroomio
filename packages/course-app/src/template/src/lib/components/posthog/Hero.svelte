@@ -3,6 +3,7 @@
   import { Button } from '$lib/components/ui/button';
   import { getPageSection } from '$lib/utils/helpers/page';
   import { homePage } from '$lib/utils/stores/pages';
+  import banner from './static/posthog.svg';
 </script>
 
 {#if $homePage}
@@ -23,7 +24,7 @@
             {content.settings.subtitle}
           </p>
           <Button
-            on:click={() => {
+            onclick={() => {
               goto(content.settings.action.link);
             }}
             class="capitalize py-2 px-3 bg-white text-black ring-1 ring-[#B17816] dark:bg-[#EB9D2A] hover:scale-95 hover:bg-[#EB9D2A] shadow-[0px_3px_#B17816] font-bold mb-4"
@@ -43,7 +44,7 @@
             <img
               style="min-width:280px; min-height:200px"
               alt="landing page banner"
-              src={content.settings.banner.image ? content.settings.banner.image : '/posthog.svg'}
+              src={content.settings.banner.image ? content.settings.banner.image : banner}
               class="h-[150px] md:h-full max-h-full w-full rounded-lg object-cover"
             />
           </div>

@@ -11,7 +11,7 @@ export type Course = {
   description: string;
   banner: string;
   created_at: string;
-  cost: string;
+  cost: number;
   currency: string;
   type: string;
   slug: string;

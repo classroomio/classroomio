@@ -134,6 +134,34 @@
         }
       },
       {
+        "type": "instructors",
+        "show": true,
+        "settings": {
+          "list": [
+            {
+              "rating": 4,
+              "name": "Adewale",
+              "description": "Adewale Adebayo is a seasoned professional with a wealth of experience in software development. He is passionate about coding and teaching, and his classes are designed to be engaging and practical, ensuring that students gain hands-on skills and knowledge."
+            },
+            {
+              "rating": 4,
+              "name": "Folakemi Adeyemi",
+              "description": "Folake Adeyemi has extensive expertise in project management and leadership. She combines theoretical knowledge with practical case studies, ensuring that students are well-prepared for real-world challenges. "
+            },
+            {
+              "rating": 4,
+              "name": "Ifedayo Olabisi",
+              "description": "Ifedayo Olabisi is a distinguished instructor in web development. With a deep understanding of both front-end and back-end technologies, he provides comprehensive training that covers all aspects of web development."
+            },
+            {
+              "rating": 4,
+              "name": "Kemi Adediran",
+              "description": "Kemi Adediran is a skilled digital marketer with a passion for sharing her knowledge. Her courses cover the latest trends and techniques in digital marketing, from SEO to social media strategy."
+            }
+          ]
+        }
+      },
+      {
         "type": "faq",
         "show": true,
         "settings": {

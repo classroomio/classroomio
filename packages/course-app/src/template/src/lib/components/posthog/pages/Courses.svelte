@@ -2,54 +2,69 @@
   import CourseCard from '../CourseCard.svelte';
   import EmptyState from '../EmptyState.svelte';
   import { Button } from '$lib/components/ui/button';
-  import { courses } from '$lib/utils/stores/course';
-  import { homePage } from '$lib/utils/stores/pages';
   import { getPageSection } from '$lib/utils/helpers/page';
+  import type { CourseFilterItem, Course } from '$lib/utils/types/course';
+  import type { Page } from '$lib/utils/types/page';
+  import { COURSE_TYPE } from '@/utils/constants/course';
 
+  interface Props {
+    data: {
+      page: Page;
+      sharedPage: Page;
+      courses: Course[];
+    };
+  }
+
+  let { data }: Props = $props();
+
+  /**
+   * State
+   */
   let viewAll = $state(false);
 
-  const DISPLAY_COURSE = {
-    PACED: 'paced',
-    LIVE: 'live'
-  };
-
-  let filter = [
+  let filter: CourseFilterItem[] = $state([
     {
       title: 'Self Paced',
-      type: DISPLAY_COURSE.PACED,
+      type: COURSE_TYPE.PACED,
       checked: false
     },
     {
       title: 'Live Sessions',
-      type: DISPLAY_COURSE.LIVE,
+      type: COURSE_TYPE.LIVE,
       checked: false
     }
-  ];
+  ]);
 
-  let filteredCourses = $state([...$courses]);
+  let filteredCourses = $state([...data.courses]);
 
-  const content = $derived(getPageSection($homePage, 'courses'));
+  /**
+   * Constants
+   */
+  const section = $derived({
+    header: getPageSection(data.page, 'header'),
+    courses: getPageSection(data.page, 'courses')
+  });
 
+  /**
+   * Functions
+   */
   function applyFilter() {
-    const activeFilters = filter.filter((f) => f.checked).map((f) => f.type.toLowerCase());
+    const activeFilters = new Set(
+      filter
+        .filter((filterItem) => filterItem.checked)
+        .map((filterItem) => filterItem.type.toLowerCase())
+    );
 
-    if (activeFilters.length === 0) {
-      filteredCourses = $courses;
-    } else {
-      filteredCourses = $courses.filter((course) =>
-        activeFilters.includes(course.type.toLowerCase())
-      );
-    }
-  }
-
-  function filterCourse(item: { title?: string; type?: string; checked: any }) {
-    item.checked = !item.checked;
-    applyFilter();
+    filteredCourses =
+      activeFilters.size === 0
+        ? data.courses
+        : data.courses.filter((course) => activeFilters.has(course.type.toLowerCase()));
+    console.log('filtered', filteredCourses);
   }
 </script>
 
 <main class="bg-[#EEEFE9] dark:bg-black dark:text-white overflow-x-hidden">
-  {#if content?.show}
+  {#if section.header?.show}
     <section class="flex items-center justify-center my-12 py-10 px-4 md:px-14 min-h-full">
       <section
         class="mx-auto text-center px-4 lg:px-10 py-20 space-y-4 bg-[#E5E7E0] dark:bg-[#232429] rounded-md w-full lg:w-[70%]"
@@ -61,12 +76,12 @@
           <span class="absolute w-2 h-2 rounded-full bg-blue-800 top-14 -right-10"></span>
 
           <p class="text-center text-3xl md:text-5xl font-bold w-full md:w-[90%]">
-            {content.settings.title}
-            <span class="text-[#F54E00]">{content.settings.titleHighlight}</span>
+            {section.header.settings.title}
+            <span class="text-[#F54E00]">{section.header.settings.titleHighlight}</span>
           </p>
 
           <p class="text-center w-full text-lg text-[#878787] md:w-[70%]">
-            {content.settings.subtitle}
+            {section.header.settings.subtitle}
           </p>
         </div>
       </section>
@@ -75,12 +90,14 @@
 
   <section id="course" class=" pt-4 pb-20 h-full">
     <h1 class="text-center text-5xl mb-8 font-bold w-full md:w-[90%] lg:w-[70%] mx-auto">
-      {content?.settings.title}
-      <span class="text-[#F54E00] dark:text-[#EB9D2A]">{content?.settings.titleHighlight}</span>
+      {section.header?.settings.title}
+      <span class="text-[#F54E00] dark:text-[#EB9D2A]"
+        >{section.header?.settings.titleHighlight}</span
+      >
     </h1>
 
     <div class="w-full lg:w-[90%] mx-auto">
-      {#if $courses.length > 0}
+      {#if data.courses.length > 0}
         <div class="w-full flex gap-2 mt-10">
           <div class="hidden lg:block min-w-max">
             <p class="font-semibold mb-4">Filter by</p>
@@ -93,7 +110,7 @@
                     type="checkbox"
                     checked={item.checked}
                     name={item.title}
-                    onchange={() => filterCourse(item)}
+                    onchange={applyFilter}
                     class=" dark:accent-[#EB9D2A] accent-[#F54E00] focus:ring-0"
                   />
 

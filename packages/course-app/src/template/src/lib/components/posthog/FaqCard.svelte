@@ -1,4 +1,6 @@
 <script lang="ts">
+  import FaqMark from './static/icons/FaqMark.svelte';
+
   interface Props {
     faq: any;
     index: any;
@@ -8,21 +10,25 @@
 
   const background = 'bg-[#FDBAF2]';
   const iconColor = 'bg-[#3B82F6]';
-  let card: HTMLDivElement = $state();
+  let card: HTMLDivElement | undefined = $state();
 
   const handleMouseMove = (event: { clientX: number; clientY: number }) => {
-    const cardRect = card.getBoundingClientRect();
-    const cardX = event.clientX - cardRect.left;
-    const cardY = event.clientY - cardRect.top;
-    const centerX = cardRect.width / 2;
-    const centerY = cardRect.height / 2;
-    const rotateX = (centerY - cardY) / 10;
-    const rotateY = (cardX - centerX) / 10;
-    card.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+    if (card) {
+      const cardRect = card.getBoundingClientRect();
+      const cardX = event.clientX - cardRect.left;
+      const cardY = event.clientY - cardRect.top;
+      const centerX = cardRect.width / 2;
+      const centerY = cardRect.height / 2;
+      const rotateX = (centerY - cardY) / 10;
+      const rotateY = (cardX - centerX) / 10;
+      card.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+    }
   };
 
   const handleMouseLeave = () => {
-    card.style.transform = '';
+    if (card) {
+      card.style.transform = '';
+    }
   };
 </script>
 
@@ -41,9 +47,7 @@
     <div
       class="front text-black shadow-md flex flex-col items-center justify-center p-4 {background}"
     >
-      <!-- <FaqMark color="#3B82F6" /> -->
-
-      <p>faq-mark-here</p>
+      <FaqMark color="#3B82F6" />
       <h3 class="text-lg font-bold text-center">{faq.title}</h3>
     </div>
 
