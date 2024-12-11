@@ -5,6 +5,8 @@
   import type { Course } from '$lib/utils/types/course';
   import { getPageSection } from '$lib/utils/helpers/page';
   import { sharedPage } from '$lib/utils/stores/pages';
+  import { components } from '$lib/components';
+  import Button from '@/components/ui/button/button.svelte';
 
   interface Props {
     children: import('svelte').Snippet;
@@ -56,14 +58,22 @@
         </div>
       {/if}
     </div>
-    <a
+    <components.button
+      href={seo?.settings?.appUrl}
+      class="mb-0"
+      target="_blank"
+      rel="noopener noreferrer"
+      label={`Go to app`}
+    ></components.button>
+
+    <!-- <a
       href={seo?.settings?.appUrl}
       class="bg-[#141414] px-4 py-2 rounded-full hidden md:flex items-center gap-1 font-semibold text-white text-base"
       target="_blank"
       rel="noopener noreferrer"
     >
       Go to app <ArrowUpRight size={16} />
-    </a>
+    </a> -->
   </div>
 
   <div class="overflow-hidden flex">

@@ -23,9 +23,11 @@
   }
 </script>
 
-<div class=" shadow-[0px_3px_#282828] transition bg-white text-black overflow-hidden rounded-3xl">
+<div
+  class="mx-6 shadow-[0px_3px_#282828] transition bg-white text-black overflow-hidden rounded-3xl"
+>
   <button
-    class="relative flex justify-between items-center cursor-pointer overflow-hidden mx-6 p-6 bg-inherit"
+    class="relative flex justify-between items-center w-full cursor-pointer overflow-hidden p-6 bg-inherit"
     onclick={toggleAccordion}
   >
     <p class="font-semibold text-lg">{title}</p>
@@ -47,7 +49,7 @@
             y2="5"
             stroke="#656565"
             stroke-width="2"
-            stroke-dasharray="6, 5"
+            stroke-dasharray="2, 5"
           />
         </svg>
       </div>
@@ -59,7 +61,7 @@
     style="max-height: {contentHeight}; transition: max-height 0.3s ease-in-out; overflow: hidden;"
     class="rounded-3xl"
   >
-    <div class="mx-6 p-4 bg-inherit rounded-b rounded-3xl">
+    <div class=" p-4 bg-inherit rounded-b rounded-3xl">
       <p>
         {content}
       </p>

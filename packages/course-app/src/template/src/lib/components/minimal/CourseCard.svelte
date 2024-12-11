@@ -1,4 +1,5 @@
 <script lang="ts">
+  import defaultBanner from './assets/classroomio-course-img-template.jpg';
   import { ArrowRight } from 'carbon-icons-svelte';
   interface Props {
     isLearningPath?: boolean;
@@ -39,11 +40,7 @@
     </div>
     <div class="rounded-md overflow-hidden">
       {#if isLearningPath}
-        <img
-          src={bannerImage ? bannerImage : '/classroomio-course-img-template.jpg'}
-          alt=""
-          class="w-full h-44"
-        />
+        <img src={bannerImage ? bannerImage : defaultBanner} alt="" class="w-full h-44" />
       {:else}
         <p class=" text-[#878787] overflow-ellipsis line-clamp-3 text-justify">
           {description}

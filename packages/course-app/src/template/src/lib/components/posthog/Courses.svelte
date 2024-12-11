@@ -21,7 +21,7 @@
       <span class="text-[#F54E00] dark:text-[#EB9D2A]">{content.settings.titleHighlight}</span>
     </h1>
     {#if $courses.length > 0}
-      <section class="grid place-items-center grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <section class="flex flex-wrap items-center justify-center mx-auto gap-4">
         {#each $courses.slice(0, viewAll ? $courses.length : 3) as courseData}
           <CourseCard
             slug={courseData.slug}

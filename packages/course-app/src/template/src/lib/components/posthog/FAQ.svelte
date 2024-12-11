@@ -14,7 +14,7 @@
   <div id="faq">
     <h1 class="text-center text-3xl mb-8 font-bold">{content.settings.title}</h1>
 
-    <div class="grid place-items-center grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+    <div class="flex flex-wrap items-center justify-center mx-auto gap-8 p-4">
       {#each content.settings.questions as faq, index}
         <FaqCard {index} {faq} />
       {/each}

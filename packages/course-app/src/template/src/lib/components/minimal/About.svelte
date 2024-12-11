@@ -1,26 +1,21 @@
 <script lang="ts">
+  import { getPageSection } from '@/utils/helpers/page';
+  import { homePage } from '@/utils/stores/pages';
   import { CheckmarkFilled } from 'carbon-icons-svelte';
 
-  interface Props {
-    data: any;
-  }
-
-  let { data }: Props = $props();
+  const content = $derived(getPageSection($homePage, 'about'));
 </script>
 
-{#if data.aboutUs.show}
-  <section
-    id="course"
-    class="px-4 md:px-8 pt-4 pb-20 h-full lg:px-20 w-fit mx-auto border border-red-500"
-  >
-    <h1 class="text-start text-3xl mb-2">{data.aboutUs.title}</h1>
+{#if content?.show}
+  <section id="course" class="px-4 md:px-8 pt-4 pb-20 h-full lg:px-20 w-fit mx-auto">
+    <h1 class="text-start text-3xl mb-2">{content.settings.title}</h1>
     <p class="text-start text-sm md:w-[70%] mb-8">
-      {data.aboutUs.subtitle}
+      {content.settings.subtitle}
     </p>
     <div>
-      <p class="text-xl font-bold capitalize">{data.aboutUs.benefits.title}</p>
+      <p class="text-xl font-bold capitalize">{content.settings.benefits.title}</p>
       <section class="flex flex-wrap justify-center items-start md:justify-start w-full gap-8 py-4">
-        {#each data.aboutUs.benefits.list as item}
+        {#each content.settings.benefits.list as item}
           <div
             class="flex flex-col gap-2 p-4 bg-[#E5E7E0] dark:bg-[#232429] border border-[#D0D1C9] h-[150px] max-h-[200px] w-full max-w-[300px] lg:max-w-[450px] rounded-lg overflow-hidden"
           >

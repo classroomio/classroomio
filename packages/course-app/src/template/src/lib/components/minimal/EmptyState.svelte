@@ -1,4 +1,5 @@
 <script lang="ts">
+  import emptyBanner from './assets/expert-empty.svg';
   interface Props {
     type?: string;
     className?: string;
@@ -20,7 +21,7 @@
   <div
     class="flex flex-col md:flex-row justify-center items-center text-center md:text-start gap-6 p-2"
   >
-    <img src="/expert-empty.svg" alt="empty" />
+    <img src={emptyBanner} alt="empty" />
     <div>
       {#if type == 'course'}
         <h3 class="font-semibold {headerClassName}">"No Course yet"</h3>

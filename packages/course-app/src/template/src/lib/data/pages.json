@@ -264,9 +264,9 @@
           "title": "programs that you will love.",
           "titleHighlight": "100% guaranteed",
           "subtitle": "Unlock skills you'll use for life with courses designed to inspire, empower, and elevate your expertise.",
-          "buttonLabel": "Learn More",
-          "show": true
-        }
+          "buttonLabel": "Learn More"
+        },
+        "show": true
       },
       {
         "type": "mailinglist",

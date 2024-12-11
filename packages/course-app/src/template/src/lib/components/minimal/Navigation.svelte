@@ -3,6 +3,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import Menu from 'carbon-icons-svelte/lib/Menu.svelte';
+  import defaultLogo from './assets/logo-192.png';
 
   let open = $state(false);
   let disableSignup = false;
@@ -42,7 +43,7 @@
   <div class="logo">
     <a href="/" title={`${orgName || 'ClassroomIO'} home`} id="logo">
       <img
-        src={logo || '/logo-192.png'}
+        src={logo || defaultLogo}
         alt={`${orgName || 'ClassroomIO'} logo`}
         class="rounded w-9 inline-block mx-auto"
       />
