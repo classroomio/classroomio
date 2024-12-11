@@ -25,6 +25,9 @@ const config: Config = {
           DEFAULT: 'hsl(var(--primary) / <alpha-value>)',
           foreground: 'hsl(var(--primary-foreground) / <alpha-value>)'
         },
+        posthog: {
+          DEFAULT: 'hsl(var(--posthog-background) / <alpha-value>)'
+        },
         secondary: {
           DEFAULT: 'hsl(var(--secondary) / <alpha-value>)',
           foreground: 'hsl(var(--secondary-foreground) / <alpha-value>)'
