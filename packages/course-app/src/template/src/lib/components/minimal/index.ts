@@ -4,7 +4,6 @@ import HomePage from './pages/Home.svelte';
 import Navigation from './Navigation.svelte';
 import Footer from './Footer.svelte';
 import Button from './PrimaryButton.svelte';
-import Styles from './Styles.svelte';
 import type { TemplateComponents } from '$lib/utils/types/template';
 
 export const components: TemplateComponents = {
@@ -12,6 +11,5 @@ export const components: TemplateComponents = {
   footer: Footer as unknown as Component,
   button: Button as unknown as Component,
   coursespage: CoursesPage as unknown as Component,
-  homepage: HomePage as unknown as Component,
-  styles: Styles as unknown as Component
+  homepage: HomePage as unknown as Component
 };

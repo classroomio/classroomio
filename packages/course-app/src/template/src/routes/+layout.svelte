@@ -36,8 +36,6 @@
   <meta name="description" content={seo?.settings.description} />
 </svelte:head>
 
-<components.styles />
-
 {#if $homePage.id}
   <main>
     <Transition>

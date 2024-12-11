@@ -15,7 +15,7 @@
 <Button
   {href}
   class={cn(
-    'px-8 transition bg-white capitalize font-bold text-black ring-1 ring-[#B17816] dark:bg-[#EB9D2A] hover:scale-95 hover:bg-[#EB9D2A] shadow-[0px_3px_#B17816] mb-4',
+    'px-8 transition capitalize font-bold text-black ring-1 ring-[#B17816] bg-posthog-background dark:bg-[#EB9D2A] hover:scale-95 hover:bg-[#EB9D2A] shadow-[0px_3px_#B17816] mb-4',
     className
   )}
   onclick={onClick}
