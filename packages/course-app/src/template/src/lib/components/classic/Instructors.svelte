@@ -20,7 +20,7 @@
       </section>
       <div class="w-full flex justify-center md:justify-end px-4 mt-6">
         <PrimaryButton
-          class="text-lg font-semibold text-white bg-[#CE02CE] hover:bg-[#CE02CE] hover:scale-90 py-6 px-6 rounded"
+          class="text-lg font-semibold text-white p-6 rounded"
           label="Start learning & Explore courses"
         />
       </div>

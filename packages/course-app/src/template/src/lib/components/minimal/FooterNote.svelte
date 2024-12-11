@@ -21,7 +21,7 @@
     <div class="w-full flex items-center justify-center my-5">
       <PrimaryButton
         onClick={() => goto('/courses')}
-        class="rounded-none uppercase py-2 bg-white text-blue-700 hover:scale-95 hover:bg-white font-bold"
+        class="py-2 bg-white text-blue-700 hover:bg-white"
         label={content.settings.buttonLabel}
       />
     </div>

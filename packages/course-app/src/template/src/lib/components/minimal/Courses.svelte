@@ -33,7 +33,7 @@
         {#if $courses.length > 3}
           <div class="w-full flex items-center justify-center my-5">
             <PrimaryButton
-              class="rounded-none uppercase bg-blue-900 p-2"
+              class="p-2"
               onClick={() => (viewAll = !viewAll)}
               label="VIEW MORE COURSES"
             />

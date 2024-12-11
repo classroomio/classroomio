@@ -47,7 +47,6 @@
             {content.settings?.subtitle}
           </p>
           <PrimaryButton
-            class="rounded-none uppercase bg-blue-900 p-3 hover:bg-blue-900 hover:scale-95 font-bold"
             onClick={() => {
               goto(content.settings?.action.link);
             }}

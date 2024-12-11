@@ -16,7 +16,7 @@
   {href}
   onclick={onClick}
   class={cn(
-    'rounded-none uppercase bg-blue-900 p-3 hover:bg-blue-900 hover:scale-95 font-bold',
+    'rounded-none uppercase bg-minimal p-3 hover:bg-minimal hover:scale-95 font-bold',
     className
   )}
   {...restProps}

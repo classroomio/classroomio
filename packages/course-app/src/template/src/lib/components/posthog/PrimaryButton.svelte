@@ -14,12 +14,12 @@
 
 <div class="relative inline-block">
   <span
-    class="absolute inset-0 -bottom-1 ring-1 bg-[#B17816] rounded-md transition-transform duration-200 ease-in-out shadow-lg hover:shadow-xl"
+    class="absolute inset-0 -bottom-1 ring-1 ring-posthog bg-posthog-secondary rounded-md transition-transform duration-200 ease-in-out"
   ></span>
   <Button
     {href}
     class={cn(
-      ' bg-yellow-600 hover:bg-yellow-600 text-black font-bold p-2 rounded-md relative z-10 transition-transform duration-200 ease-in-out hover:-translate-y-[2px]',
+      'bg-posthog hover:bg-posthog text-black ring-1 ring-posthog font-bold p-2 rounded-md relative z-10 transition-transform duration-200 ease-in-out hover:-translate-y-[2px]',
       className
     )}
     onclick={onClick}
