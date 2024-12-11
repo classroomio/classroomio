@@ -13,8 +13,8 @@
     <div class="logo">
       <a href="/" title={`Go to ${seo?.settings.title} Home`} id="logo" data-hveid="8">
         <img
-          src={seo?.settings.title || '/logo-192.png'}
-          alt={`${seo?.settings.title || 'ClassroomIO'} logo`}
+          src={seo?.settings.logo}
+          alt={`${seo?.settings.title} logo`}
           class="rounded w-9 inline-block mx-auto"
           data-atf="1"
         />

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ImageLoader, SkeletonPlaceholder } from 'carbon-components-svelte';
+  // import { ImageLoader, SkeletonPlaceholder } from 'carbon-components-svelte';
 
   import RadioButtonChecked from 'carbon-icons-svelte/lib/RadioButtonChecked.svelte';
   import GrowthIcon from 'carbon-icons-svelte/lib/Growth.svelte';
@@ -75,7 +75,12 @@
 >
   <div class="p-4">
     <div class="relative mb-5">
-      <ImageLoader
+      <img
+        src={bannerImage || '/classroomio-course-img-template.jpg'}
+        alt="Course Logo"
+        class="h-[170px] w-full rounded dark:border dark:border-neutral-600 relative"
+      />
+      <!-- <ImageLoader
         src={bannerImage || '/classroomio-course-img-template.jpg'}
         alt="Course Logo"
         class="h-[170px] w-full rounded dark:border dark:border-neutral-600 relative"
@@ -86,7 +91,7 @@
         {#snippet error()}
           an error occured
         {/snippet}
-      </ImageLoader>
+      </ImageLoader> -->
       {#if type}
         {@const tag = COURSE_TAG[type]}
         <span
