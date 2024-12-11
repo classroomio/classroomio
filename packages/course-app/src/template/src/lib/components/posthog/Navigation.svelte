@@ -3,11 +3,11 @@
 
   import Close from 'carbon-icons-svelte/lib/Close.svelte';
   import Menu from 'carbon-icons-svelte/lib/Menu.svelte';
-  import { Button } from '$lib/components/ui/button';
   import { sharedPage } from '$lib/utils/stores/pages';
   import { getPageSection } from '$lib/utils/helpers/page';
   import type { Section } from '@/utils/types/page';
   import PrimaryButton from './PrimaryButton.svelte';
+  import { ArrowUpRight } from 'carbon-icons-svelte';
 
   let backgroundColor = 'bg-white dark:bg-black';
 
@@ -22,7 +22,7 @@
 </script>
 
 <nav
-  class={`relative w-full flex items-center justify-between  border-b border-[#D0D1C9]  py-1 px-6 ${backgroundColor}`}
+  class={`relative w-full flex items-center justify-between  border-b border-[#D0D1C9]  py-3 px-6 ${backgroundColor}`}
 >
   <!-- Logo Section -->
   <a href="/" class="flex items-center flex-col" title={`${seo?.settings?.title}`} id="logo">
@@ -41,15 +41,19 @@
   </button>
 
   <!-- Desktop Navigation Menu (Hidden on mobile) -->
-  <ul
-    class="hidden lg:flex items-center space-x-8 text-base font-bold text-[#1F2937] list-none hover:no-underline"
-  >
-    {#each content?.settings.navItems as menu}
+  <ul class="hidden lg:flex items-center space-x-8 list-none hover:no-underline">
+    {#each content?.settings.navItems as navItem}
       <a
-        href={menu.link}
-        class=" font-normal px-4 py-3 hover:bg-slate-300 dark:text-white dark:hover:text-black rounded-lg"
+        href={navItem.link}
+        target={navItem.redirect ? '_blank' : undefined}
+        class="text-sm text-gray-500 hover:text-black"
       >
-        <li class="hover:no-underline">{menu.title}</li>
+        <li class="hover:no-underline flex items-center gap-1">
+          {navItem.title}
+          {#if navItem.redirect}
+            <ArrowUpRight size={12} />
+          {/if}
+        </li>
       </a>
     {/each}
   </ul>
@@ -67,9 +71,14 @@
       <Close size={24} />
     </button>
 
-    {#each content?.settings.navItems as menu}
+    {#each content?.settings.navItems as navItem}
       <li class="py-4 px-6 border-b dark:border-gray-200">
-        <a href={menu.link} onclick={toggleMenu}>{menu.title}</a>
+        <a href={navItem.link} onclick={toggleMenu} class="flex item-center gap-1"
+          >{navItem.title}
+          {#if navItem.redirect}
+            <ArrowUpRight size={12} />
+          {/if}</a
+        >
       </li>
     {/each}
 
@@ -88,11 +97,7 @@
   <!-- Learn with Me Button (Visible on desktop when logged in) -->
 
   <div class="hidden lg:flex items-center gap-2">
-    <PrimaryButton
-      onClick={() => goto('/courses')}
-      class="mb-0 bg-[#F7A50180] hover:bg-[#f7a501ad] dark:bg-[#F7A501] shadow-none hover:no-underline rounded-lg flex items-center py-2 px-3 border w-fit border-[#4A4C524D] ring-0 font-bold text-black text-base"
-      label="Explore Course"
-    />
+    <PrimaryButton onClick={() => goto('/courses')} label="Explore Course" />
   </div>
 </nav>
 

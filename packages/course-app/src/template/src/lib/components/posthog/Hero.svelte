@@ -3,6 +3,8 @@
   import { Button } from '$lib/components/ui/button';
   import { getPageSection } from '$lib/utils/helpers/page';
   import { homePage } from '$lib/utils/stores/pages';
+
+  import PrimaryButton from './PrimaryButton.svelte';
   import banner from './static/posthog.svg';
 </script>
 
@@ -23,13 +25,12 @@
           <p class="w-full text-lg font-semibold md:w-[80%] lg:w-[70%] mx-auto">
             {content.settings.subtitle}
           </p>
-          <Button
-            onclick={() => {
+          <PrimaryButton
+            onClick={() => {
               goto(content.settings.action.link);
             }}
-            class="capitalize py-2 px-3 bg-white text-black ring-1 ring-[#B17816] dark:bg-[#EB9D2A] hover:scale-95 hover:bg-[#EB9D2A] shadow-[0px_3px_#B17816] font-bold mb-4"
-            >{content.settings.action.label}</Button
-          >
+            label={content.settings.action.label}
+          />
         </div>
 
         <div

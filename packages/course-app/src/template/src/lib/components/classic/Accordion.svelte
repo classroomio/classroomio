@@ -15,7 +15,7 @@
     isOpen = !isOpen;
     if (isOpen) {
       // Measure and set the height when opening
-      contentHeight = `${contentRef.scrollHeight}px`;
+      contentHeight = `${contentRef?.scrollHeight}px`;
     } else {
       // Set to 0 height when closing
       contentHeight = '0px';
@@ -25,6 +25,8 @@
 
 <div class="space-y-2 shadow-md bg-white">
   <!-- Accordion Header -->
+  <!-- svelte-ignore a11y_click_events_have_key_events -->
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div
     class="flex justify-between items-center cursor-pointer p-4 bg-white rounded"
     onclick={toggleAccordion}

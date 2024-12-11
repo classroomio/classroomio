@@ -64,7 +64,9 @@
       target="_blank"
       rel="noopener noreferrer"
       label={`Go to app`}
-    ></components.button>
+    >
+      <ArrowUpRight size={16} />
+    </components.button>
 
     <!-- <a
       href={seo?.settings?.appUrl}

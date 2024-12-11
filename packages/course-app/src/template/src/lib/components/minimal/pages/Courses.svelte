@@ -125,7 +125,6 @@
                 <CourseCard
                   className="bg-[#FDFDFD]"
                   slug={courseData.slug}
-                  bannerImage={courseData.banner}
                   title={courseData.title}
                   description={courseData.description}
                   cost={courseData.cost}

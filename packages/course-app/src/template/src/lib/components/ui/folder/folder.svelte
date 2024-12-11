@@ -1,6 +1,7 @@
 <script lang="ts">
   import { slide } from 'svelte/transition';
   import File from './file.svelte';
+  import Self from './folder.svelte';
 
   interface Props {
     name: string;
@@ -10,7 +11,7 @@
 
   let { name, files, onFileClick }: Props = $props();
 
-  let expanded = true;
+  let expanded = $state(true);
 
   function toggle() {
     expanded = !expanded;
@@ -18,7 +19,7 @@
 </script>
 
 <button
-  on:click={toggle}
+  onclick={toggle}
   class="w-full flex items-center text-start gap-2 text-sm font-medium border-none outline-none bg-transparent capitalize"
 >
   {#if expanded}
@@ -65,7 +66,7 @@
     {#each files as file}
       <li class="py-[0.2em] px-[1px]">
         {#if file.type === 'folder'}
-          <svelte:self {...file} {onFileClick} />
+          <Self {...file} {onFileClick} />
         {:else}
           <File {...file} onClick={onFileClick} />
         {/if}

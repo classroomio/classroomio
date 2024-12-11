@@ -5,7 +5,7 @@
   import LogoLinkedin from 'carbon-icons-svelte/lib/LogoLinkedin.svelte';
   import LogoInstagram from 'carbon-icons-svelte/lib/LogoInstagram.svelte';
   import { LogoYoutube } from 'carbon-icons-svelte';
-  import navLogo from './assets/static/logo-192.png';
+
   import { getPageSection } from '@/utils/helpers/page';
   import { sharedPage } from '@/utils/stores/pages';
 
@@ -20,8 +20,8 @@
     <div class="logo w-full md:w-fit flex items-center justify-between">
       <a href="/" title={`Go to ${seo?.settings.title} Home`} id="logo" data-hveid="8">
         <img
-          src={seo?.settings.logo || navLogo}
-          alt={`${seo?.settings.title || 'ClassroomIO'} logo`}
+          src={seo?.settings.logo}
+          alt={`${seo?.settings.title} logo`}
           class="rounded w-9 inline-block mx-auto"
           data-atf="1"
         />

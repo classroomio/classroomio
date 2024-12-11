@@ -1,11 +1,8 @@
 <script lang="ts">
-  import defaultBanner from './assets/classroomio-course-img-template.jpg';
   import { ArrowRight } from 'carbon-icons-svelte';
   interface Props {
-    isLearningPath?: boolean;
     className?: string;
     buttonClass?: string;
-    bannerImage: string | undefined;
     slug?: string;
     title?: string;
     description?: string;
@@ -15,10 +12,8 @@
   }
 
   let {
-    isLearningPath = false,
     className = '',
     buttonClass = '',
-    bannerImage,
     slug = '',
     title = '',
     description = '',
@@ -26,8 +21,9 @@
     currency = 'USD',
     lessons = 0
   }: Props = $props();
+
   function getCourseUrl() {
-    return isLearningPath ? `/pathway/${slug}` : `/course/${slug}`;
+    return `/course/${slug}`;
   }
 </script>
 
@@ -39,17 +35,12 @@
       </p>
     </div>
     <div class="rounded-md overflow-hidden">
-      {#if isLearningPath}
-        <img src={bannerImage ? bannerImage : defaultBanner} alt="" class="w-full h-44" />
-      {:else}
-        <p class=" text-[#878787] overflow-ellipsis line-clamp-3 text-justify">
-          {description}
-        </p>
-      {/if}
+      <p class=" text-[#878787] overflow-ellipsis line-clamp-3 text-justify">
+        {description}
+      </p>
     </div>
-
     <span class="flex justify-between items-center py-4">
-      <p>{lessons} {isLearningPath ? 'Courses' : 'Lessons'}</p>
+      <p>{lessons} Lessons</p>
       <p class="font-bold text-[#0233BD]">
         {!cost ? 'Free' : currency == 'USD' ? `$ ${cost}` : `N ${cost}`}
       </p>

@@ -1,8 +1,8 @@
 <script lang="ts">
-  import Button from '$lib/components/ui/button/button.svelte';
   import { getPageSection } from '@/utils/helpers/page';
   import InstructorCard from './InstructorsCard.svelte';
   import { homePage } from '@/utils/stores/pages';
+  import PrimaryButton from './PrimaryButton.svelte';
 
   const content = $derived(getPageSection($homePage, 'instructors'));
 </script>
@@ -19,10 +19,10 @@
         {/each}
       </section>
       <div class="w-full flex justify-center md:justify-end px-4 mt-6">
-        <Button
+        <PrimaryButton
           class="text-lg font-semibold text-white bg-[#CE02CE] hover:bg-[#CE02CE] hover:scale-90 py-6 px-6 rounded"
-          >Start learning & Explore courses</Button
-        >
+          label="Start learning & Explore courses"
+        />
       </div>
     </div>
   </section>

@@ -1,52 +1,26 @@
 <script lang="ts">
-  import { ArrowRight, Close } from 'carbon-icons-svelte';
+  import { ArrowRight, ArrowUpRight, Close } from 'carbon-icons-svelte';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
 
   import { getPageSection } from '@/utils/helpers/page';
   import { sharedPage } from '@/utils/stores/pages';
   import Menu from 'carbon-icons-svelte/lib/Menu.svelte';
-  import defaultLogo from './assets/logo-192.png';
 
   let open = $state(false);
-  let disableSignup = false;
-  let logo = '';
-  let orgName = '';
-  let isOrgSite = true;
-  let backgroundColor = 'bg-white dark:bg-black';
-  let isCoursePage = false;
-  let user = {
-    isLoggedIn: true
-  };
-
-  const menuItems = [
-    {
-      title: 'About me',
-      link: '/#about'
-    },
-    {
-      title: 'Courses',
-      link: '/#course'
-    },
-    {
-      title: 'Testimonial',
-      link: '/#testimonial'
-    }
-  ];
-
-  const redirect = isCoursePage ? `?redirect=${$page.url.pathname}` : '';
 
   function toggleMenu() {
     open = !open;
   }
 
   const seo = $derived(getPageSection($sharedPage, 'seo'));
+  const content = $derived(getPageSection($sharedPage, 'navigation'));
 </script>
 
-<nav class={`relative w-full flex items-center justify-between py-4 px-6 ${backgroundColor}`}>
+<nav class={`relative w-full flex items-center justify-between py-4 px-6 bg-white dark:bg-black`}>
   <!-- Logo Section -->
   <div class="logo">
-    <a href="/" title={`${orgName || 'ClassroomIO'} home`} id="logo">
+    <a href="/" title={`${seo?.settings.title} home`} id="logo">
       <img
         src={seo?.settings.logo}
         alt={`${seo?.settings.title} logo`}
@@ -56,32 +30,26 @@
   </div>
 
   <!-- Mobile Menu Button (Visible only on mobile and when logged in) -->
-  {#if user.isLoggedIn}
-    <button onclick={toggleMenu} class="lg:hidden">
-      <Menu size={24} />
-    </button>
-  {/if}
+
+  <button onclick={toggleMenu} class="lg:hidden">
+    <Menu size={24} />
+  </button>
 
   <!-- Desktop Navigation Menu (Hidden on mobile) -->
   <ul
     class="hidden lg:flex items-center space-x-8 text-base font-bold text-[#1F2937] list-none hover:no-underline"
   >
-    {#if user.isLoggedIn}
-      {#each menuItems as menu}
-        <li><a href={menu.link}>{menu.title}</a></li>
-      {/each}
-    {/if}
+    {#each content?.settings.navItems as navItem}
+      <li>
+        <a href={navItem.link} class="flex items-center gap-1">
+          {navItem.title}
+          {#if navItem.redirect}
+            <ArrowUpRight size={12} />
+          {/if}
+        </a>
+      </li>
+    {/each}
   </ul>
-
-  <!-- PrimaryButtons for login/signup (Visible only when not logged in) -->
-  {#if !user.isLoggedIn}
-    <div class="flex space-x-4">
-      <button onclick={() => goto('/login' + redirect)}>login</button>
-      {#if !disableSignup}
-        <button onclick={() => goto('/signup' + redirect)}>signup</button>
-      {/if}
-    </div>
-  {/if}
 
   <!-- Mobile Sidebar Menu (Visible only on mobile) -->
   <ul
@@ -93,28 +61,28 @@
       <Close size={24} />
     </button>
 
-    {#if user.isLoggedIn}
-      {#each menuItems as menu}
-        <li class="py-4 px-6 border-b">
-          <a href={menu.link} onclick={toggleMenu}>{menu.title}</a>
-        </li>
-      {/each}
-      {#if isOrgSite}
-        <a href="/courses" class="flex items-center gap-1 py-4 px-6 border-b" onclick={toggleMenu}>
-          <p class="font-bold text-[#1F2937] text-base">Learn with me</p>
-          <ArrowRight size={16} class="fill-[#1F2937] font-bold" />
+    {#each content?.settings.navItem as navItem}
+      <li class="py-4 px-6 border-b">
+        <a href={navItem.link} onclick={toggleMenu} class="flex item-center gap-1">
+          {navItem.title}
+          {#if navItem.redirect}
+            <ArrowUpRight size={12} />
+          {/if}
         </a>
-      {/if}
-    {/if}
-  </ul>
-
-  <!-- Learn with Me Button (Visible on desktop when logged in) -->
-  {#if user.isLoggedIn && isOrgSite}
-    <a href="/courses" class="hidden lg:flex items-center gap-1">
+      </li>
+    {/each}
+    <a href="/courses" class="flex items-center gap-1 py-4 px-6 border-b" onclick={toggleMenu}>
       <p class="font-bold text-[#1F2937] text-base">Learn with me</p>
       <ArrowRight size={16} class="fill-[#1F2937] font-bold" />
     </a>
-  {/if}
+  </ul>
+
+  <!-- Learn with Me Button (Visible on desktop when logged in) -->
+
+  <a href="/courses" class="hidden lg:flex items-center gap-1">
+    <p class="font-bold text-[#1F2937] text-base">Learn with me</p>
+    <ArrowRight size={16} class="fill-[#1F2937] font-bold" />
+  </a>
 </nav>
 
 <style>

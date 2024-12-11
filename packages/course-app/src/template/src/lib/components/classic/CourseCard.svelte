@@ -1,6 +1,4 @@
 <script lang="ts">
-  // import { ImageLoader, SkeletonPlaceholder } from 'carbon-components-svelte';
-
   import RadioButtonChecked from 'carbon-icons-svelte/lib/RadioButtonChecked.svelte';
   import GrowthIcon from 'carbon-icons-svelte/lib/Growth.svelte';
   import UserProfileIcon from 'carbon-icons-svelte/lib/UserProfile.svelte';
@@ -18,7 +16,6 @@
     cost?: number;
     totalLessons?: number;
     currency?: string;
-    isLMS?: boolean;
     type: any;
   }
 
@@ -30,7 +27,6 @@
     cost = 0,
     totalLessons = 0,
     currency = 'USD',
-    isLMS = false,
     type
   }: Props = $props();
   let target: any = $state();
@@ -80,18 +76,6 @@
         alt="Course Logo"
         class="h-[170px] w-full rounded dark:border dark:border-neutral-600 relative"
       />
-      <!-- <ImageLoader
-        src={bannerImage || '/classroomio-course-img-template.jpg'}
-        alt="Course Logo"
-        class="h-[170px] w-full rounded dark:border dark:border-neutral-600 relative"
-      >
-        {#snippet loading()}
-          <SkeletonPlaceholder style="width: 100%; height: 170px;" />
-        {/snippet}
-        {#snippet error()}
-          an error occured
-        {/snippet}
-      </ImageLoader> -->
       {#if type}
         {@const tag = COURSE_TAG[type]}
         <span
@@ -129,7 +113,7 @@
   a:hover {
     text-decoration: none;
   }
-  .title,
+
   .description {
     height: 42px;
     line-height: 20px;

@@ -9,16 +9,15 @@
 
   let isOpen = $state(false);
   let contentHeight = $state('0px'); // Track the height of the content
-  let contentRef: HTMLDivElement | undefined; // Reference to the content div
+  let contentRef: HTMLDivElement = $state(); // Reference to the content div
 
   function toggleAccordion() {
     isOpen = !isOpen;
 
     if (isOpen) {
       // Measure and set the height when opening
-      if (contentRef) {
-        contentHeight = `${contentRef.scrollHeight}px`;
-      }
+
+      contentHeight = `${contentRef?.scrollHeight}px`;
     } else {
       // Set to 0 height when closing
       contentHeight = '0px';

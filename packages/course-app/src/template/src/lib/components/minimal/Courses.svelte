@@ -22,7 +22,6 @@
             <CourseCard
               className="bg-[#FDFDFD]"
               slug={courseData.slug}
-              bannerImage={courseData.banner || './assets/classroomio-course-img-template.jpg'}
               title={courseData.title}
               description={courseData.description}
               cost={courseData.cost}

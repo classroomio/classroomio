@@ -3,12 +3,13 @@
   import { cn } from '$lib/utils.js';
 
   interface Props {
-    onClick: () => void;
-    label: string;
-    href?: string | undefined;
-    class?: string | undefined;
+    onClick?: () => void;
+    label?: string;
+    href?: string;
+    class?: string;
+    children?: any;
   }
-  const { onClick, label, href, class: className }: Props = $props();
+  const { onClick, children, label, href, class: className, ...restProps }: Props = $props();
 </script>
 
 <Button
@@ -17,5 +18,11 @@
   class={cn(
     'rounded-none uppercase bg-blue-900 p-3 hover:bg-blue-900 hover:scale-95 font-bold',
     className
-  )}>{label}</Button
+  )}
+  {...restProps}
 >
+  {label}
+  {#if children}
+    {@render children?.()}
+  {/if}
+</Button>

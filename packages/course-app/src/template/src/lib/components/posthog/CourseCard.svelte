@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Button } from '$lib/components/ui/button';
+  import PrimaryButton from './PrimaryButton.svelte';
 
   interface Props {
     className?: string;
@@ -31,12 +32,12 @@
         {description}
       </p>
     </div>
-    <a href={getCourseUrl()} class="hover:no-underline">
-      <Button
-        class="px-8 transition bg-white capitalize font-bold text-black ring-1 ring-[#B17816] dark:bg-[#EB9D2A] hover:scale-95 hover:bg-[#EB9D2A] shadow-[0px_3px_#B17816] mb-4 {buttonClass}"
-      >
-        Get started
-      </Button>
-    </a>
+    <div class="w-fit">
+      <PrimaryButton
+        href={getCourseUrl()}
+        class="px-8 transition bg-white hover:bg-white text-black"
+        label="Get started"
+      />
+    </div>
   </div>
 </div>

@@ -1,12 +1,10 @@
 <script lang="ts">
-  import CardLoader from './CardLoader.svelte';
-
   import CourseCard from './CourseCard.svelte';
   import EmptyState from './EmptyState.svelte';
-  import { Button } from '$lib/components/ui/button';
   import { getPageSection } from '@/utils/helpers/page';
   import { homePage } from '@/utils/stores/pages';
   import { courses } from '@/utils/stores/course';
+  import PrimaryButton from './PrimaryButton.svelte';
 
   const content = $derived(getPageSection($homePage, 'courses'));
 
@@ -24,9 +22,7 @@
     <h1 class="text-center text-3xl text-[#3F3F3F] font-bold mb-4">{content.settings.title}</h1>
     <div class="w-full md:w-[90%] mx-auto">
       {#if $courses.length > 0}
-        <section
-          class="grid place-items-center grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full"
-        >
+        <section class="flex flex-wrap items-center mx-auto w-fit gap-4">
           {#each $courses.slice(0, viewAll ? $courses.length : 3) as courseData}
             <CourseCard
               slug={courseData.slug}
@@ -42,19 +38,16 @@
         </section>
         {#if $courses.length > 3}
           <div class="w-full flex items-center justify-center my-5">
-            <Button
-              class="text-lg font-semibold text-white !bg-[#CE02CE]"
-              on:click={() => (viewAll = !viewAll)}
-              >View more programs
-            </Button>
+            <PrimaryButton
+              class="text-lg font-semibold text-white bg-[#CE02CE]"
+              onClick={() => (viewAll = !viewAll)}
+              label="View more programs"
+            />
           </div>
         {/if}
       {:else}
         <div class="px-4 w-full lg:w-[70%] mx-auto">
-          <EmptyState
-            headerClassName="text-[#CE02CE]"
-            type={type == DISPLAY_COURSE.PATH ? 'pathways' : 'course'}
-          />
+          <EmptyState headerClassName="text-[#CE02CE]" />
         </div>
       {/if}
     </div>
