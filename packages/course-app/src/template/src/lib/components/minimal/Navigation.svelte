@@ -2,6 +2,9 @@
   import { ArrowRight, Close } from 'carbon-icons-svelte';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
+
+  import { getPageSection } from '@/utils/helpers/page';
+  import { sharedPage } from '@/utils/stores/pages';
   import Menu from 'carbon-icons-svelte/lib/Menu.svelte';
   import defaultLogo from './assets/logo-192.png';
 
@@ -36,6 +39,8 @@
   function toggleMenu() {
     open = !open;
   }
+
+  const seo = $derived(getPageSection($sharedPage, 'seo'));
 </script>
 
 <nav class={`relative w-full flex items-center justify-between py-4 px-6 ${backgroundColor}`}>
@@ -43,8 +48,8 @@
   <div class="logo">
     <a href="/" title={`${orgName || 'ClassroomIO'} home`} id="logo">
       <img
-        src={logo || defaultLogo}
-        alt={`${orgName || 'ClassroomIO'} logo`}
+        src={seo?.settings.logo}
+        alt={`${seo?.settings.title} logo`}
         class="rounded w-9 inline-block mx-auto"
       />
     </a>

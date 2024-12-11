@@ -1,7 +1,6 @@
 <script lang="ts">
   import { getPageSection } from '@/utils/helpers/page';
   import { sharedPage } from '@/utils/stores/pages';
-  import defaultLogo from './assets/logo-192.png';
 
   const content = $derived(getPageSection($sharedPage, 'footer'));
   const seo = $derived(getPageSection($sharedPage, 'seo'));
@@ -14,8 +13,8 @@
     <div class="logo">
       <a href="/" title={`Go to ${seo?.settings.title} Home`} id="logo" data-hveid="8">
         <img
-          src={seo?.settings.logo || defaultLogo}
-          alt={`${seo?.settings.title || 'ClassroomIO'} logo`}
+          src={seo?.settings.logo}
+          alt={`${seo?.settings.title} logo`}
           class="rounded w-9 inline-block mx-auto"
           data-atf="1"
         />
