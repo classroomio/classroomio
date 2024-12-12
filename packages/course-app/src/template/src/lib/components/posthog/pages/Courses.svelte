@@ -63,9 +63,9 @@
   }
 </script>
 
-<main class="bg-[#EEEFE9] dark:bg-black dark:text-white overflow-x-hidden">
+<main class="bg-posthog-background dark:bg-black dark:text-white overflow-x-hidden">
   {#if section.header?.show}
-    <section class="flex items-center justify-center my-12 py-10 px-4 md:px-14 min-h-full">
+    <section class="flex items-center justify-center py-10 px-4 md:px-14 min-h-full">
       <section
         class="mx-auto text-center px-4 lg:px-10 py-20 space-y-4 bg-[#E5E7E0] dark:bg-[#232429] rounded-md w-full lg:w-[70%]"
       >
@@ -88,17 +88,10 @@
     </section>
   {/if}
 
-  <section id="course" class=" pt-4 pb-20 h-full">
-    <h1 class="text-center text-5xl mb-8 font-bold w-full md:w-[90%] lg:w-[70%] mx-auto">
-      {section.header?.settings.title}
-      <span class="text-[#F54E00] dark:text-[#EB9D2A]"
-        >{section.header?.settings.titleHighlight}</span
-      >
-    </h1>
-
-    <div class="w-full lg:w-[90%] mx-auto">
+  <section id="course" class="px-2 py-20 h-full lg:px-16">
+    <div class="relative w-full flex flex-row items-start justify-start lg:gap-2 mt-2">
       {#if data.courses.length > 0}
-        <div class="w-full flex gap-2 mt-10">
+        <div class="w-full flex gap-2">
           <div class="hidden lg:block min-w-max">
             <p class="font-semibold mb-4">Filter by</p>
             <div class="w-full space-y-2">
@@ -119,31 +112,35 @@
               {/each}
             </div>
           </div>
-          <section class="grid place-items-center grid-cols-1 md:grid-cols-3 gap-4 p-4">
-            {#each filteredCourses.slice(0, viewAll ? filteredCourses.length : 3) as courseData}
-              <CourseCard
-                slug={courseData.slug}
-                title={courseData.title}
-                description={courseData.description}
-              />
-            {/each}
-          </section>
 
-          {#if filteredCourses.length == 0}
-            <div class="px-4 w-full mx-auto">
-              <EmptyState />
+          <div class="w-full max-h-screen p-4 md:p-8">
+            <section class="flex flex-wrap items-center justify-center gap-4 w-full">
+              {#each filteredCourses.slice(0, viewAll ? filteredCourses.length : 3) as courseData}
+                <CourseCard
+                  slug={courseData.slug}
+                  title={courseData.title}
+                  description={courseData.description}
+                />
+              {/each}
+            </section>
+
+            {#if filteredCourses.length == 0}
+              <div class="px-4 w-full mx-auto">
+                <EmptyState />
+              </div>
+            {/if}
+          </div>
+
+          {#if filteredCourses.length > 3}
+            <div class="w-full flex items-center justify-center my-5">
+              <Button
+                on:click={() => (viewAll = !viewAll)}
+                class="dark:text-black bg-transparent uppercase text-black ring-1 ring-[#B17816] dark:bg-[#EB9D2A] hover:scale-95 hover:bg-[#EB9D2A] shadow-[0px_3px_#B17816] font-bold mb-4"
+                >{viewAll === true ? 'Show less' : 'View more courses'}</Button
+              >
             </div>
           {/if}
         </div>
-        {#if filteredCourses.length > 3}
-          <div class="w-full flex items-center justify-center my-5">
-            <Button
-              on:click={() => (viewAll = !viewAll)}
-              class="dark:text-black bg-transparent uppercase text-black ring-1 ring-[#B17816] dark:bg-[#EB9D2A] hover:scale-95 hover:bg-[#EB9D2A] shadow-[0px_3px_#B17816] font-bold mb-4"
-              >{viewAll === true ? 'Show less' : 'View more courses'}</Button
-            >
-          </div>
-        {/if}
       {:else}
         <div class="px-4 w-full lg:w-[70%] mx-auto">
           <EmptyState className="dark:bg-[#232429] dark:border-[#EAEAEA]" type="course" />

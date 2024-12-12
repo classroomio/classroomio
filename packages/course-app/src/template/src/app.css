@@ -35,6 +35,8 @@
 
     --posthog-primary: 35 85% 65%;
     --posthog-secondary: 30 55% 45%;
+    --posthog-background: 70 16% 93%;
+    --posthog-border: 68 8% 80%;
 
     --minimal-primary: 210 75% 35%;
     /* for now we don't explictly have a secondary color for minimal */

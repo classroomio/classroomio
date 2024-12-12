@@ -1,8 +1,8 @@
 ---
-title: 'Mastering Cal.com for Efficient Scheduling'
+title: 'Mastering PostHog for Efficient Analytics'
 ---
 
-### Setting Up Your Cal.com Profile
+### Setting Up Your PostHog Profile
 
 1. **Profile Optimization**
    - Professional photo
