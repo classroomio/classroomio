@@ -8,22 +8,25 @@ import ora from 'ora';
 import path from 'path';
 import { scaffoldTemplate } from '../lib/scaffoldTemplate';
 
-function getTemplateNames(): string[] {
-  const srcPath = path.join(process.cwd(), 'src');
+// function getTemplateNames(): string[] {
+//   const srcPath = path.join(process.cwd(), 'src');
 
-  if (!fs.existsSync(srcPath)) {
-    return [];
-  }
+//   if (!fs.existsSync(srcPath)) {
+//     return [];
+//   }
 
-  const files = fs
-    .readdirSync(srcPath)
-    .filter((file: string) => fs.statSync(path.join(srcPath, file)).isDirectory());
+//   const files = fs
+//     .readdirSync(srcPath)
+//     .filter((file: string) => fs.statSync(path.join(srcPath, file)).isDirectory());
 
-  return files;
-}
+//   return files;
+// }
+
 const spinner = ora();
 
-const templates = getTemplateNames();
+// const templates = getTemplateNames();
+
+const templates = ['cal', 'classic', 'minimal', 'posthog'];
 
 program.version('1.0.0').description('ClassroomIO CLI');
 

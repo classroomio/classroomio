@@ -2,7 +2,7 @@
   "name": "@cio/course-app",
   "version": "0.0.1",
   "private": true,
-  "main": "dist/index.js",
+  "main": "dist/create-template.js",
   "scripts": {
     "dev": "vite dev",
     "build": "vite build && node scripts/postbuild.js",
@@ -11,7 +11,7 @@
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
   },
   "bin": {
-    "@cio/course-app": "./dist/create-template.js"
+    "course-app": "./dist/create-template.js"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^3.0.0",

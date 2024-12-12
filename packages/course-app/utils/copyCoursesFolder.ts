@@ -10,8 +10,8 @@ export async function copyCoursesFolder({
   courses
 }: CopyCourseFolderParams): Promise<void> {
   console.log('include contents', courses);
-  const from = path.join(templatePath, 'src/lib/courses');
-  const to = path.join(projectPath, 'src/lib/courses');
+  const from = path.join(templatePath, 'src/courses');
+  const to = path.join(projectPath, 'src/courses');
 
   // Create the 'courses' folder if it doesn't exist
   fs.mkdirSync(to, { recursive: true });

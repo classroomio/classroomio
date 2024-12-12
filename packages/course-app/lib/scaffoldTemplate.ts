@@ -1,3 +1,83 @@
+// import chalk from 'chalk';
+// import ora from 'ora';
+// import fs from 'fs';
+// import path from 'path';
+// import { fileURLToPath } from 'url';
+// import { copyCoursesFolder } from '../utils/copyCoursesFolder';
+// import { copyFolderSync } from '../utils/copyFolder';
+
+// // Define available templates
+// type TemplateType = 'calcom' | 'default'; // Add other template types as needed
+
+// // Define the TEMPLATES object with proper typing
+// const TEMPLATES: Record<TemplateType, string> = {
+//   calcom: 'calcom',
+//   default: 'default'
+// } as const;
+
+// // Define the interface for function parameters
+// interface ScaffoldTemplateParams {
+//   template: TemplateType;
+//   courses: boolean;
+//   projectPath: string;
+//   projectName: string;
+// }
+
+// // Using require.resolve() instead of import.meta.url for better compatibility
+// // const __filename = require.resolve('./scaffoldTemplate.ts');
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
+// const packageRoot = path.join(__dirname, '..');
+// const spinner = ora();
+
+// export async function scaffoldTemplate({
+//   template,
+//   courses,
+//   projectPath,
+//   projectName
+// }: ScaffoldTemplateParams): Promise<void> {
+//   spinner.text = chalk.yellow('Getting project...');
+//   const templatePath: string = path.resolve(packageRoot, 'src', 'lib', 'components','template', template);
+
+//   if (!fs.existsSync(templatePath)) {
+//     throw new Error(`Template "${template}" "${templatePath}" "${__dirname}" does not exist.`);
+//   }
+
+//   if (projectPath !== process.cwd() && !fs.existsSync(projectPath)) {
+//     fs.mkdirSync(projectPath, { recursive: true });
+//   }
+//   const coursePathToExclude: string = path.join(packageRoot, 'src/template/lib/courses');
+
+//   spinner.text = chalk.yellow('Copying template files...');
+//   await copyFolderSync({
+//     from: templatePath,
+//     to: projectPath,
+//     excludeNames: ['node_modules'],
+//     excludePath: coursePathToExclude
+//   });
+
+//   // Always copy the courses folder structure, conditionally copy contents
+//   spinner.text = chalk.yellow('Setting up courses folder...');
+//   await copyCoursesFolder({ templatePath, projectPath, courses });
+
+//   console.log(
+//     chalk.yellow(
+//       `Project ${projectName} created using template "${template}" ${
+//         courses ? 'with' : 'without'
+//       } demo courses.`
+//     )
+//   );
+//   console.log(
+//     chalk.yellow(
+//       `You can ${
+//         courses
+//           ? 'edit or create new courses in the courses folder'
+//           : 'create new courses in the courses folder'
+//       }`
+//     )
+//   );
+// }
+
 import chalk from 'chalk';
 import ora from 'ora';
 import fs from 'fs';
@@ -6,25 +86,15 @@ import { fileURLToPath } from 'url';
 import { copyCoursesFolder } from '../utils/copyCoursesFolder';
 import { copyFolderSync } from '../utils/copyFolder';
 
-// Define available templates
-type TemplateType = 'calcom' | 'default'; // Add other template types as needed
-
-// Define the TEMPLATES object with proper typing
-const TEMPLATES: Record<TemplateType, string> = {
-  calcom: 'calcom',
-  default: 'default'
-} as const;
-
 // Define the interface for function parameters
 interface ScaffoldTemplateParams {
-  template: TemplateType;
-  courses: boolean;
-  projectPath: string;
-  projectName: string;
+  template: string; // Template name
+  courses: boolean; // Whether to include demo courses
+  projectPath: string; // Path to the project
+  projectName: string; // Name of the project
 }
 
 // Using require.resolve() instead of import.meta.url for better compatibility
-// const __filename = require.resolve('./scaffoldTemplate.ts');
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const packageRoot = path.join(__dirname, '..');
@@ -37,29 +107,51 @@ export async function scaffoldTemplate({
   projectName
 }: ScaffoldTemplateParams): Promise<void> {
   spinner.text = chalk.yellow('Getting project...');
-  const templatePath: string = path.resolve(packageRoot, 'src', template);
 
-  if (!fs.existsSync(templatePath)) {
-    throw new Error(`Template "${template}" "${templatePath}" "${__dirname}" does not exist.`);
+  // Path to the entire template directory
+  const templateDirPath: string = path.resolve(packageRoot, 'src', 'template');
+
+  const coursePathToExclude: string = path.join(templateDirPath, 'src', 'courses');
+  // Check if the template directory exists
+  if (!fs.existsSync(templateDirPath)) {
+    throw new Error(`Template directory does not exist at "${templateDirPath}".`);
   }
 
-  if (projectPath !== process.cwd() && !fs.existsSync(projectPath)) {
-    fs.mkdirSync(projectPath, { recursive: true });
-  }
-  const coursePathToExclude: string = path.join(templatePath, 'src/lib/courses');
+  // Path to the specific template within the components directory
+  const specificTemplatePath: string = path.resolve(
+    templateDirPath,
+    'src',
+    'lib',
+    'components',
+    template
+  );
 
-  spinner.text = chalk.yellow('Copying template files...');
+  // Check if the specific template exists
+  if (!fs.existsSync(specificTemplatePath)) {
+    throw new Error(`Template "${template}" does not exist at "${specificTemplatePath}".`);
+  }
+
+  // Get all templates in the components directory
+  const allTemplates = fs
+    .readdirSync(path.join(templateDirPath, 'src', 'lib', 'components'))
+    .filter((file) =>
+      fs.statSync(path.join(templateDirPath, 'src', 'lib', 'components', file)).isDirectory()
+    );
+
+  // Exclude all templates except the selected one and the ui folder
+  const excludeTemplates = allTemplates.filter((temp) => temp !== template && temp !== 'ui');
+
+  // Copy the selected template files to the project path, excluding others
   await copyFolderSync({
-    from: templatePath,
+    from: templateDirPath,
     to: projectPath,
-    excludeNames: ['node_modules'],
+    excludeNames: ['node_modules', ...excludeTemplates], // Exclude node_modules if present
     excludePath: coursePathToExclude
   });
 
-  // Always copy the courses folder structure, conditionally copy contents
+  // If the user wants demo courses, copy the courses folder
   spinner.text = chalk.yellow('Setting up courses folder...');
-  await copyCoursesFolder({ templatePath, projectPath, courses });
-
+  await copyCoursesFolder({ templatePath: templateDirPath, projectPath, courses });
   console.log(
     chalk.yellow(
       `Project ${projectName} created using template "${template}" ${
