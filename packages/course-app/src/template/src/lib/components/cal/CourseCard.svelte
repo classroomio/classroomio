@@ -19,7 +19,7 @@
 </script>
 
 <div
-  class="bg-white border-2 border-black rounded-xl overflow-hidden h-fit w-full pb-2 min-w-[80%] md:max-w-[350px] md:min-w-[300px] max-w-full space-y-4"
+  class="bg-white border-2 border-black rounded-xl overflow-hidden w-full h-full pb-2 min-w-[80%] md:max-w-[350px] md:min-w-[300px] max-w-full space-y-4"
 >
   <div class="relative space-y-2 text-black {className}">
     <div class="border-b-2 border-black border-dashed">
@@ -31,7 +31,7 @@
     </div>
     <div>
       <div class="px-3 py-2 overflow-hidden">
-        <p class="text-lg font-semibold overflow-ellipsis line-clamp-2">
+        <p class="text-lg font-semibold overflow-ellipsis line-clamp-1">
           {title}
         </p>
       </div>
