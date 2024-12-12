@@ -1,5 +1,5 @@
 ---
-title: 'Core Concepts of Time Management'
+title: 'Core Concepts of Analytics'
 ---
 
 ### The Four Quadrants of Time Management

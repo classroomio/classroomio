@@ -112,8 +112,9 @@
           </div>
         </div>
         <!-- filter end -->
-        <!-- courses start -->
+
         <div class="text-white rounded-3xl w-full h-full mx-auto">
+          <!-- courses start -->
           <div class="w-full max-h-screen p-4 md:p-8">
             {#if data.courses.length > 0}
               <section class="flex flex-wrap items-center justify-center gap-4 w-full">
@@ -137,8 +138,8 @@
               </div>
             {/if}
           </div>
-
           <!-- courses end -->
+
           {#if filteredCourses.length > 2}
             <div class="w-full flex items-center justify-center py-8">
               <Button

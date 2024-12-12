@@ -9,8 +9,6 @@
   import PrimaryButton from './PrimaryButton.svelte';
   import { ArrowUpRight } from 'carbon-icons-svelte';
 
-  let backgroundColor = 'bg-white dark:bg-black';
-
   let open = $state(false);
 
   const content = $derived(getPageSection($sharedPage, 'navigation'));
@@ -22,7 +20,7 @@
 </script>
 
 <nav
-  class={`relative w-full flex items-center justify-between  border-b border-[#D0D1C9]  py-3 px-6 ${backgroundColor}`}
+  class={`relative w-full flex items-center justify-between border-b border-posthog-border  py-3 px-6`}
 >
   <!-- Logo Section -->
   <a href="/" class="flex items-center flex-col" title={`${seo?.settings?.title}`} id="logo">
@@ -30,9 +28,10 @@
       <img
         src={seo?.settings?.logo || ''}
         alt={`${seo?.settings?.title || ''} logo`}
-        class="rounded inline-block mx-auto"
+        class="w-24"
       />
     {/if}
+    <h1 class="text-lg font-semibold">University</h1>
   </a>
 
   <!-- Mobile Menu Button (Visible only on mobile and when logged in) -->
@@ -51,7 +50,7 @@
         <li class="hover:no-underline flex items-center gap-1">
           {navItem.title}
           {#if navItem.redirect}
-            <ArrowUpRight size={12} />
+            <ArrowUpRight size={16} />
           {/if}
         </li>
       </a>
@@ -76,7 +75,7 @@
         <a href={navItem.link} onclick={toggleMenu} class="flex item-center gap-1"
           >{navItem.title}
           {#if navItem.redirect}
-            <ArrowUpRight size={12} />
+            <ArrowUpRight size={16} />
           {/if}</a
         >
       </li>

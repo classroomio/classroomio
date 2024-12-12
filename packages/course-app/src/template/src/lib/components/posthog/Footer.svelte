@@ -12,14 +12,14 @@
 
 {#if content?.show}
   <nav
-    class="w-full flex flex-col md:flex-row items-start md:items-center gap-4 md:justify-between py-4 px-6"
+    class="w-full h-40 bg-posthog-background border-t border-posthog-border flex flex-col md:flex-row items-start md:items-center gap-4 md:justify-between py-4 px-6"
   >
     <div class="logo">
       <a href="/" title={`Go to ${seo?.settings.title} Home`} id="logo" data-hveid="8">
         <img
           src={seo?.settings.logo}
           alt={`${seo?.settings.title} logo`}
-          class="rounded w-9 inline-block mx-auto"
+          class="w-24"
           data-atf="1"
         />
       </a>
@@ -41,7 +41,7 @@
       {/if}
     </ul>
     <a
-      href="www.classroomio.com"
+      href="https://classroomio.com"
       class="flex items-center hover:underline text-[#0233BD] dark:text-white gap-1"
       target="_blank"
       rel="noopener noreferrer"

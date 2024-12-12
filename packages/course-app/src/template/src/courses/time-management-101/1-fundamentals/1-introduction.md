@@ -1,5 +1,5 @@
 ---
-title: 'Why Time Management Matters'
+title: 'Why Analytics Matters'
 ---
 
 <script>

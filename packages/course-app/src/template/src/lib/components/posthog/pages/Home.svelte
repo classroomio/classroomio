@@ -6,7 +6,7 @@
   import Hero from '../Hero.svelte';
 </script>
 
-<div class="bg-[#EEEFE9]">
+<div class="bg-posthog-background">
   <Hero />
   <Courses />
   <About />

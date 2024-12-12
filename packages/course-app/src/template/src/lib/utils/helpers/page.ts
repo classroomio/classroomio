@@ -1,4 +1,5 @@
-import pages from '$lib/data/pages.json';
+// import pages from '$lib/data/pages.json';
+import posthogPages from '$lib/data/posthog-pages.json';
 import type { Page } from '$lib/utils/types/page';
 
 /**
@@ -7,7 +8,7 @@ import type { Page } from '$lib/utils/types/page';
  * @returns type Page
  */
 export function getPage(pageId: string) {
-  return pages.find((page) => page.id === pageId) as Page;
+  return posthogPages.find((page) => page.id === pageId) as Page;
 }
 
 /**

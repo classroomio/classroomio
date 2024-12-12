@@ -7,9 +7,9 @@
 
 {#key isActive}
   <a
-    class="w-full flex items-center gap-2 hover:bg-[#EEEFE9] px-2 py-2 rounded-md text-sm text-start leading-4 line-clamp-2 capitalize"
+    class="w-full flex items-center gap-2 hover:bg-posthog-background px-2 py-2 rounded-md text-sm text-start leading-4 line-clamp-2 capitalize"
     {href}
-    class:bg-[#EEEFE9]={isActive}
+    class:bg-posthog-background={isActive}
     on:click={onClick}
   >
     <svg
