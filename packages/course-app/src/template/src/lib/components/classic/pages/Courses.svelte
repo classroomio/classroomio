@@ -81,7 +81,7 @@
 
   {#if section.courses?.show}
     <section id="course" class="px-4 pt-4 pb-20 h-full bg-white">
-      <h1 class="text-center text-3xl text-[#3F3F3F] font-bold mb-4">
+      <h1 class="text-center text-3xl text-[#3F3F3F] font-bold mb-6 w-full md:w-[60%] mx-auto">
         {section.courses.settings.title}
       </h1>
       <div class="w-full md:w-[90%] mx-auto">

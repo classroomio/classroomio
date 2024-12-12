@@ -9,6 +9,7 @@
   import EmptyState from '../EmptyState.svelte';
   import TestimonialCard from '../TestimonialCard.svelte';
   import Accordion from '../Accordion.svelte';
+  import testimonial from '../assets/testimonial.svg';
 
   const courseSection = $derived(getPageSection($homePage, 'about'));
   const learnSection = $derived(getPageSection($homePage, 'about'));
@@ -19,12 +20,13 @@
   let viewAll = $state(false);
 </script>
 
+<!-- for some reason the custom color doesnt work for this template -->
 <main class="bg-[#101720]">
   <!-- hero -->
   {#if $homePage}
     {@const content = getPageSection($homePage, 'header')}
     {#if content?.show}
-      <section class="flex items-center justify-center py-2 px-10 md:py-14 md:px-14 max-h-full">
+      <section class="flex items-center justify-center py-5 px-5 md:py-14 md:px-14 max-h-full">
         <section class="flex items-center justify-between gap-4">
           <div class="text-white space-y-6 w-full">
             <div class="bg-[#DCFCFFED] py-1 px-3 md:border rounded-sm w-[90%]">
@@ -39,6 +41,7 @@
               {content.settings?.subtitle}
             </p>
             <PrimaryButton
+              class="bg-[#0542CC]"
               onClick={() => {
                 goto(content.settings?.action.link);
               }}
@@ -65,13 +68,13 @@
   {#if learnSection?.show}
     <section
       id="about"
-      class="flex items-start justify-center px-10 lg:px-14 h-full bg-white py-20 mx-auto"
+      class="flex items-start justify-center px-5 md:px-14 h-full bg-white py-20 mx-auto"
     >
       <section class="flex flex-col lg:flex-row gap-8 items-start justify-center">
         <div class="w-full lg:w-[60%] space-y-4">
           <p class="text-4xl font-bold">{learnSection.settings.title}</p>
           <p class="w-full lg:w-[80%] text-base leading-7 text-[#878787]">
-            {learnSection.settings.content}
+            {learnSection.settings.subtitle}
           </p>
         </div>
         {#if learnSection.settings.benefits}
@@ -100,13 +103,13 @@
   <!-- courses -->
 
   {#if courseSection?.show}
-    <section id="course" class="px-4 pt-4 pb-20 h-full bg-white">
-      <h1 class="text-center text-3xl font-bold mb-4">{courseSection.settings.title}</h1>
+    <section id="course" class="px-5 pt-10 space-y-10 py-36 h-full bg-white">
+      <h1 class="text-center text-3xl font-bold mb-4 w-full md:w-[70%] mx-auto">
+        {courseSection.settings.title}
+      </h1>
       <div class="w-full md:w-[90%] mx-auto">
         {#if $courses.length > 0}
-          <section
-            class="grid place-items-center grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4"
-          >
+          <section class="flex flex-wrap items-center w-fit mx-auto gap-4 p-4">
             {#each $courses.slice(0, viewAll ? $courses.length : 3) as courseData}
               <CourseCard
                 className="bg-[#FDFDFD]"
@@ -139,21 +142,26 @@
 
   <!-- testimonial -->
   {#if testimonialSection?.show}
-    <section id="testimonial" class="px-4 pt-4 pb-20 h-full bg-white">
-      <h1 class="text-center text-3xl font-bold mb-4">Student testimonial</h1>
-      <div class="w-full md:w-[90%] mx-auto">
-        <section class="grid place-items-center grid-cols-1 md:grid-cols-3 gap-4">
-          {#each testimonialSection.settings.list as item}
-            <TestimonialCard name={item.name} description={item.description} role={item.role} />
-          {/each}
-        </section>
+    <section id="testimonial" class="relative pt-10 h-full text-white">
+      <div class="absolute -top-20 md:-top-32 left-[5%] w-[90%]">
+        <img src={testimonial} alt="testimonial" class="w-full max-h-[500px] md:max-h-[300px]" />
+      </div>
+      <div class="px-5 py-20 md:py-40 space-y-10">
+        <h1 class="text-center text-3xl font-bold mb-4">Student testimonial</h1>
+        <div class="w-full md:w-[90%] mx-auto">
+          <section class="grid place-items-center grid-cols-1 md:grid-cols-3 w-fit mx-auto gap-4">
+            {#each testimonialSection.settings.list as item}
+              <TestimonialCard name={item.name} description={item.description} role={item.role} />
+            {/each}
+          </section>
+        </div>
       </div>
     </section>
   {/if}
 
   <!-- faq -->
   {#if faqSection?.show}
-    <section class="px-4 pt-4 pb-20 h-full bg-[#F9F9F9]">
+    <section class="px-5 py-20 space-y-10 h-full bg-[#F9F9F9]">
       <h1 class="text-center text-3xl font-bold mb-4">{faqSection.settings.title}</h1>
       <section class="p-4 space-y-10 w-full md:w-[80%] mx-auto">
         {#each faqSection.settings.questions as faq}

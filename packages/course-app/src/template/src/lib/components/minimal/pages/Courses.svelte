@@ -66,7 +66,7 @@
 
 <main class="bg-[#101720] font-ibm overflow-hidden">
   {#if section.header?.show}
-    <div class="relative h-full md:h-screen">
+    <div class="relative h-full p-2 md:p-10">
       <div
         class="absolute inset-0 bg-cover bg-center"
         style="background-image: url('/classroomio-course-img-template.jpg');"
@@ -94,7 +94,7 @@
 
   {#if section.courses?.show}
     <div class="bg-white py-10 px-2 md:px-8">
-      <p class="dark:text-white text-3xl text-center font-semibold pb-10">
+      <p class="dark:text-white text-3xl text-center font-semibold pb-10 w-full md:w-[70%] mx-auto">
         {section.courses.settings.title}
       </p>
       <div>

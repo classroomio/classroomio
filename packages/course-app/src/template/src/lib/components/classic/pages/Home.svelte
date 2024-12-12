@@ -36,7 +36,7 @@
       <section class="flex items-start justify-center pb-20 lg:pt-10 pt-4 px-6 md:px-14 h-full">
         <section class="flex flex-col-reverse md:flex-row items-start gap-10 md:justify-between">
           <div class="space-y-6 w-full">
-            <p class="text-4xl xl:text-6xl font-bold w-full xl:w-[70%]">
+            <p class="text-4xl xl:text-6xl font-bold w-full xl:w-[90%]">
               {content.settings.title}
               <span class="text-[#CE02CE]">
                 {content.settings.titleHighlight}
@@ -59,7 +59,7 @@
               style="min-width:280px; min-height:200px"
               alt="landing page banner"
               src={content.settings.banner.image ? content.settings.banner.image : banner}
-              class="object-cover mt-2 h-full w-full rounded-md md:mt-0 border-green-600"
+              class="object-cover mt-2 h-full w-full rounded-md md:mt-0"
             />
           </div>
         </section>
