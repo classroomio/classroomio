@@ -85,6 +85,7 @@ const config: Config = {
         roboto: ['Roboto', ...fontFamily.sans],
         matter: ['Matter', ...fontFamily.sans]
       },
+
       keyframes: {
         'accordion-down': {
           from: { height: '0' },
@@ -97,12 +98,43 @@ const config: Config = {
         'caret-blink': {
           '0%,70%,100%': { opacity: '1' },
           '20%,50%': { opacity: '0' }
+        },
+        'border-beam': {
+          '100%': {
+            'offset-distance': '100%'
+          }
+        },
+
+        flip: {
+          to: {
+            transform: 'rotate(360deg)'
+          }
+        },
+        kitrotate: {
+          to: {
+            transform: 'rotate(90deg)'
+          }
+        },
+
+        'shine-pulse': {
+          '0%': {
+            'background-position': '0% 0%'
+          },
+          '50%': {
+            'background-position': '100% 100%'
+          },
+          to: {
+            'background-position': '0% 0%'
+          }
         }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
-        'caret-blink': 'caret-blink 1.25s ease-out infinite'
+        'caret-blink': 'caret-blink 1.25s ease-out infinite',
+        'border-beam': 'border-beam calc(var(--duration)*1s) infinite linear',
+        flip: 'flip calc(var(--duration)*1s) calc(var(--delay)*1s) infinite steps(2, end)',
+        kitrotate: 'kitrotate calc(var(--duration)*0.5s) calc(var(--delay)*1s) linear infinite both'
       }
     }
   },

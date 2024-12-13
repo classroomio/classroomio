@@ -8,6 +8,7 @@
   import PrimaryButton from '../PrimaryButton.svelte';
   import { courses } from '@/utils/stores/course';
   import CourseCard from '../CourseCard.svelte';
+  import { SECTION } from '@/utils/constants/page';
 
   interface Props {
     data: {
@@ -43,8 +44,8 @@
    * Constants
    */
   const section = $derived({
-    header: getPageSection(data.page, 'header'),
-    courses: getPageSection(data.page, 'courses')
+    header: getPageSection(data.page, SECTION.HERO),
+    courses: getPageSection(data.page, SECTION.COURSE)
   });
 
   /**

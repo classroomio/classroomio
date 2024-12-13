@@ -11,13 +11,14 @@
   import Accordion from '../Accordion.svelte';
   import TestimonialCard from '../TestimonialCard.svelte';
   import BlogCard from '../BlogCard.svelte';
+  import { SECTION } from '@/utils/constants/page';
 
-  const faqSection = $derived(getPageSection($homePage, 'faq'));
-  const testimonialSection = $derived(getPageSection($homePage, 'testimonial'));
-  const aboutSection = $derived(getPageSection($homePage, 'about'));
-  const courseSection = $derived(getPageSection($homePage, 'courses'));
-  const instructorSection = $derived(getPageSection($homePage, 'instructors'));
-  const footerNoteSection = $derived(getPageSection($homePage, 'cta'));
+  const faqSection = $derived(getPageSection($homePage, SECTION.FAQ));
+  const testimonialSection = $derived(getPageSection($homePage, SECTION.TESTIMONIAL));
+  const aboutSection = $derived(getPageSection($homePage, SECTION.ABOUT));
+  const courseSection = $derived(getPageSection($homePage, SECTION.COURSE));
+  const instructorSection = $derived(getPageSection($homePage, SECTION.INSTRUCTORS));
+  const footerNoteSection = $derived(getPageSection($homePage, SECTION.FOOTERNOTE));
 
   const DISPLAY_COURSE = {
     ALL: 'all',
@@ -31,7 +32,7 @@
 <main>
   <!-- <Hero /> -->
   {#if $homePage}
-    {@const content = getPageSection($homePage, 'header')}
+    {@const content = getPageSection($homePage, SECTION.HERO)}
     {#if content?.show}
       <section class="flex items-start justify-center pb-20 lg:pt-10 pt-4 px-6 md:px-14 h-full">
         <section class="flex flex-col-reverse md:flex-row items-start gap-10 md:justify-between">

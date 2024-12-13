@@ -33,17 +33,17 @@
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
 
-    --posthog-primary: 36, 85%, 50%;
-    --posthog-secondary: 38, 78%, 39%;
+    --posthog-primary: 36 85% 50%;
+    --posthog-secondary: 38 78% 39%;
 
     --posthog-background: 70 16% 93%;
     --posthog-border: 68 8% 80%;
 
-    --minimal-primary: 214, 33%, 9%;
-    --minimal-secondary: 212, 34%, 15%, 1;
+    --minimal-primary: 214 33% 9%;
+    --minimal-secondary: 212 34% 15% 1;
 
-    --classic-primary: 300, 98%, 41%;
-    --classic-secondary: 300, 100%, 95%;
+    --classic-primary: 300 98% 41%;
+    --classic-secondary: 300 100% 95%;
   }
 
   .dark {
