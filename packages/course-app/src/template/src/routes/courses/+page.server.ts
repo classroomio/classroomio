@@ -11,7 +11,6 @@ export const load = async ({ fetch }) => {
   const response = await fetch('/api/courses');
   const courses: Course[] = await response.json();
 
-  console.log('load');
   homePage.set(page);
   sharedPageStore.set(sharedPage);
   coursesStore.set(courses);

@@ -1,12 +1,16 @@
-# cal template
+# course-app
 
-This template gives you the look of [Cal.com](https://cal.com) but is not affiliated with [Cal.com](https://cal.com). This template is supposed to allow SAAS companies build university sites quickly.
+`course-app` allows you create beautiful looking university sites in minutes for your SAAS. Companies like Webflow, Jira, Framer, Hubspot, Google all have university sites that helps them educate their customers and create loyal communities.
 
 ## Features
 
 - Pages can be managed from json files
 - Courses can be managed in markdown
 - Sections and Lessons broken into folders and automatically rendered
+
+## Getting Started
+
+Watch this [video](video.link) to get started
 
 ## Folder Structure
 
