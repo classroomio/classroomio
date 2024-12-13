@@ -1,14 +1,11 @@
 {
-  "name": "@cio/course-app",
+  "name": "@classroomio/course-app",
   "version": "0.0.1",
   "private": true,
   "main": "dist/create-template.js",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build && node scripts/postbuild.js",
-    "preview": "vite preview",
-    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+    "build": "vite build && node scripts/postbuild.js"
   },
   "bin": {
     "course-app": "./dist/create-template.js"
@@ -38,10 +35,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/username/create-saas-uni.git"
+    "url": "git+https://github.com/classroomio/classroomio.git"
   },
   "bugs": {
-    "url": "https://github.com/username/create-saas-uni/issues"
+    "url": "https://github.com/classroomio/classroomio/issues"
   },
-  "homepage": "https://github.com/username/create-saas-uni#readme"
+  "homepage": "https://github.com/classroomio/classroomio/blob/main/packages/course-app#readme"
 }
