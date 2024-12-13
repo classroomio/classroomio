@@ -67,14 +67,14 @@ program
     try {
       await scaffoldTemplate({ template, courses, projectPath, projectName });
 
-      spinner.succeed(chalk.green('Done! Your project is ready.'));
+      spinner.succeed(`\n\n${chalk.green('Done! Your project is ready.')}\n\n`);
       console.log(
-        `To get started:\n${chalk.blue(`cd ${projectName}`)}\n${chalk.blue('pnpm i')}\n${chalk.blue(
-          'pnpm run dev'
-        )}`
+        `To get started:\n\n${chalk.blue(`cd ${projectName}`)}\n${chalk.blue(
+          'pnpm i'
+        )}\n${chalk.blue('pnpm run dev')}`
       );
 
-      chalk.blue('Happy hacking ;)');
+      console.log('\n\n', chalk.blue('Happy hacking ;)'));
     } catch (error) {
       spinner.fail(chalk.red(`Failed to scaffold the project. ${error}`));
       process.exit(1);

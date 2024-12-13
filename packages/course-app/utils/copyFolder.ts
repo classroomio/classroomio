@@ -15,7 +15,6 @@ export async function copyFolderSync({
     const toPath = path.join(to, element);
 
     if (excludeNames.includes(element)) {
-      console.log(chalk.yellow(`skipping ${element}`));
       continue;
     }
 
