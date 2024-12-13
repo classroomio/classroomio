@@ -65,7 +65,7 @@ export async function scaffoldTemplate({
   await copyFolderSync({
     from: templateDirPath,
     to: projectPath,
-    excludeNames: ['node_modules', ...excludeTemplates], // Exclude node_modules if present
+    excludeNames: ['node_modules', '.svelte-kit', ...excludeTemplates], // Exclude node_modules if present
     excludePath: coursePathToExclude
   });
 
