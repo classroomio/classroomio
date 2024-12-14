@@ -12,7 +12,7 @@
   // import { toggleBodyByMode } from '$lib/utils/toggleMode';
   // import { isDark } from './store';
   import { Button } from '$lib/components/ui/button';
-  import { Demo } from 'carbon-icons-svelte';
+  import { ArrowUpRight, Demo } from 'carbon-icons-svelte';
   import { goto } from '$app/navigation';
   import { getPageSection } from '@/utils/helpers/page';
   import { sharedPage } from '@/utils/stores/pages';
@@ -37,12 +37,12 @@
 </script>
 
 <!-- testing this out for now -->
-<section class="fixed top-2 left-[5%] lg:left-[2%] w-[90%] mx-auto lg:w-fit z-50">
+<section class="fixed left-[5%] top-2 z-50 mx-auto w-[90%] lg:left-[2%] lg:w-fit">
   <div class="flex flex-row-reverse items-start justify-between">
-    <div class="lg:hidden flex items-center p-1 z-50">
+    <div class="z-50 flex items-center p-1 lg:hidden">
       <button
         onclick={toggleMenu}
-        class="transition flex items-center gap-2 w-fit p-2 bg-gray-900 dark:bg-[#181818] text-sm text-white"
+        class="flex w-fit items-center gap-2 bg-gray-900 p-2 text-sm text-white transition dark:bg-[#181818]"
       >
         {#if open}
           <Close size={24} />
@@ -54,22 +54,22 @@
       </button>
     </div>
     <nav
-      class="absolute lg:relative transition py-2 w-full {open
+      class="absolute w-full py-2 transition lg:relative {open
         ? 'translate-x-0 lg:translate-x-0 '
         : '-translate-x-full lg:translate-x-0 '}"
     >
       <!-- desktop nav -->
       <div
-        class="transition relative dark:border-[#363636] rounded py-2 w-52 h-80 bg-gray-900 dark:bg-[#181818] text-sm text-white"
+        class="relative h-80 w-52 rounded bg-gray-900 py-2 text-sm text-white transition dark:border-[#363636] dark:bg-[#181818]"
       >
         <div
-          class="flex items-center justify-between gap-2 border-b dark:border-[#363636] px-4 py-2"
+          class="flex items-center justify-between gap-2 border-b px-4 py-2 dark:border-[#363636]"
         >
           <a href="/" title={seo?.settings.title} id="logo">
             <img
               src={seo?.settings.logo}
               alt={`${seo?.settings.title} logo`}
-              class="rounded bg-white size-8 inline-block mx-auto object-contain"
+              class="size-8 mx-auto inline-block rounded bg-white object-contain"
             />
           </a>
           <!-- <button onclick={toggleDarkMode}>
@@ -80,31 +80,43 @@
             {/if}
           </button> -->
         </div>
-
-        <div class="flex flex-col gap-2 border-b dark:border-[#363636] px-4 py-4 space-y-2">
-          <a href="/#" onclick={toggleMenu} class="flex gap-2 items-center">
-            <Home />
-            <p>Home</p>
-          </a>
-          <a href="/#course" onclick={toggleMenu} class="flex gap-2 items-center">
+        <div class="flex flex-col gap-2 space-y-2 border-b px-4 py-4 dark:border-[#363636]">
+          {#each content?.settings.navItems.slice(0, 2) as navItem}
+            <a href={navItem.link} onclick={toggleMenu} class="flex items-center gap-2">
+              {#if navItem.redirect}
+                <ArrowUpRight size={12} />
+              {:else}
+                <Demo />
+              {/if}
+              <p>{navItem.title}</p>
+            </a>
+            <!-- <a href="/#course" onclick={toggleMenu} class="flex gap-2 items-center">
             <Demo />
             <p>Courses</p>
-          </a>
+          </a> -->
+          {/each}
         </div>
-        <div class="flex flex-col gap-2 px-4 py-4 space-y-2 border-b dark:border-[#363636]">
-          <a href="/#faq" onclick={toggleMenu} class="flex gap-2 items-center">
-            <HelpFilled />
-            <p>Faq</p>
-          </a>
-          <a href="/#testimonial" onclick={toggleMenu} class="flex gap-2 items-center">
+
+        <div class="flex flex-col gap-2 space-y-2 border-b px-4 py-4 dark:border-[#363636]">
+          {#each content?.settings.navItems.slice(2, content?.settings.navItems.length) as navItem}
+            <a href={navItem.link} onclick={toggleMenu} class="flex items-center gap-2">
+              {#if navItem.redirect}
+                <ArrowUpRight />
+              {:else}
+                <Demo />
+              {/if}
+              <p>{navItem.title}</p>
+            </a>
+            <!-- <a href="/#testimonial" onclick={toggleMenu} class="flex gap-2 items-center">
             <IbmWatsonToneAnalyzer />
             <p>Testimonial</p>
-          </a>
+          </a> -->
+          {/each}
         </div>
 
         <div class="px-2 py-6">
           <PrimaryButton
-            class="group h-fit py-2 px-2 w-full text-xs flex gap-6 rounded text-white items-center bg-[#0233BD] hover:bg-[#0233BD]"
+            class="group flex h-fit w-full items-center gap-6 rounded bg-[#0233BD] px-2 py-2 text-xs text-white hover:bg-[#0233BD]"
             onClick={() => {
               goto('/courses');
               toggleMenu();

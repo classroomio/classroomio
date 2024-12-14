@@ -46,26 +46,30 @@
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
-  onmousemove={handleMouseMove}
-  onmouseleave={handleMouseLeave}
-  class={cn('group relative flex w-fit rounded bg-neutral-900   justify-center', className)}
+onmousemove={handleMouseMove}
+onmouseleave={handleMouseLeave}
+class={cn('group relative flex w-fit justify-center rounded  bg-neutral-900', className)}
 >
-  <CardAnimatedBorder index={index + 1}>
-    <div class="relative z-10">
+<CardAnimatedBorder index={index + 1}>
+  <div class="relative z-10">
+    
       {@render children?.()}
-    </div>
+  
+  </div>
+
     <Motion
       style={{
         background: bg,
         opacity: gradientOpacity
       }}
+      let:motion
     >
-      <!-- {#snippet children({ motion } as { motion: any })} -->
-      <div
+        <div
+        use:motion
         class="pointer-events-none absolute inset-px rounded opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-      ></div>
-      <!-- {/snippet} -->
+      ></div>    
     </Motion>
   </CardAnimatedBorder>
-</div>
+  </div>

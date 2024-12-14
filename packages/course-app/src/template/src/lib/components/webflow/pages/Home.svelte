@@ -1,6 +1,5 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { Button } from '$lib/components/ui/button';
   import { getPageSection } from '@/utils/helpers/page';
   import { homePage } from '@/utils/stores/pages';
   import DirectionStraightRight from 'carbon-icons-svelte/lib/DirectionStraightRight.svelte';
@@ -46,14 +45,14 @@
     <div class="w-full">
       {#if heroSection?.show}
         <section
-          class="flex items-center justify-center py-16 px-2 lg:px-14 min-h-[100vh] lg:min-h-full overflow-hidden
-                 bg-[radial-gradient(ellipse_at_top_right,_rgba(11,92,215,0.6)_1%,_rgba(0,0,0,0.8)_30%,_transparent_40%),radial-gradient(ellipse_at_bottom_left,_rgba(11,92,215,0.3)_10%,_rgba(0,0,0,0.8)_30%,_transparent_50%)]"
+          class="flex min-h-[100vh] items-center justify-center overflow-hidden bg-[radial-gradient(ellipse_at_top_right,_rgba(11,92,215,0.6)_1%,_rgba(0,0,0,0.8)_30%,_transparent_40%),radial-gradient(ellipse_at_bottom_left,_rgba(11,92,215,0.3)_10%,_rgba(0,0,0,0.8)_30%,_transparent_50%)] px-2 py-16 lg:min-h-full
+                 lg:px-14"
         >
           <section
-            class="w-full lg:ml-auto lg:w-[80%] flex flex-col-reverse md:flex-col text-center items-center gap-5 justify-center"
+            class="flex w-full flex-col-reverse items-center justify-center gap-5 text-center md:flex-col lg:ml-auto lg:w-[80%]"
           >
-            <div class="space-y-6 w-full mb-4">
-              <p class="text-3xl md:text-6xl font-bold w-full md:w-[90%] mx-auto">
+            <div class="mb-4 w-full space-y-6">
+              <p class="mx-auto w-full text-3xl font-bold md:w-[90%] md:text-6xl">
                 {#each letters as letter, index}
                   <span
                     style="opacity: {Math.max(0, 1 - (scrollPosition - index * 10) / 50)}"
@@ -63,7 +62,7 @@
                   </span>
                 {/each}
               </p>
-              <p class="w-full text-lg md:w-[70%] mx-auto">
+              <p class="mx-auto w-full text-lg md:w-[70%]">
                 {#each subtitleLetters as letter, index}
                   <span
                     style="opacity: {Math.max(
@@ -98,14 +97,14 @@
       <!-- courses -->
       <div class="w-full lg:ml-auto lg:w-[80%]">
         {#if courseSection?.show}
-          <section id="course" class="px-2 pt-4 pb-20 h-full md:px-5">
-            <h1 class="text-start text-3xl mb-2 font-bold pl-2">
+          <section id="course" class="h-full px-2 pb-20 pt-4 md:px-5">
+            <h1 class="mb-2 pl-2 text-start text-3xl font-bold">
               {courseSection.settings.title}
             </h1>
-            <p class="text-start text-[#878787] mb-2 pl-2">{courseSection.settings.subtitle}</p>
+            <p class="mb-2 pl-2 text-start text-[#878787]">{courseSection.settings.subtitle}</p>
 
             {#if $courses.length > 0}
-              <section class="grid place-items-center gap-4 grid-cols-1 md:grid-cols-3 w-full p-2">
+              <section class="grid w-full grid-cols-1 place-items-center gap-4 p-2 md:grid-cols-3">
                 {#each $courses.slice(0, viewAll ? $courses.length : 3) as courseData}
                   <CourseCard
                     slug={courseData.slug}
@@ -115,23 +114,23 @@
                   />
                 {/each}
               </section>
-              {#if $courses.length > 1}
-                <div class="w-full flex items-center justify-center my-5 px-2">
-                  <Button
-                    on:click={() => {
+              {#if $courses.length > 3}
+                <div class="my-5 flex w-full items-center justify-center px-2">
+                  <PrimaryButton
+                    onClick={() => {
                       goto('/courses');
                     }}
-                    class="group bg-[#0737BE] hover:bg-[#0737BE] rounded-none text-white gap-6 w-full"
+                    class="group w-full gap-6 rounded-none text-white"
+                    label="View all courses"
                   >
-                    View all courses
                     <DirectionStraightRight
                       class="transition-transform duration-300 group-hover:translate-x-1"
                     />
-                  </Button>
+                  </PrimaryButton>
                 </div>
               {/if}
             {:else}
-              <div class="w-full mx-auto">
+              <div class="mx-auto w-full">
                 <EmptyState className="dark:bg-[#232429] dark:border-[#EAEAEA]" />
               </div>
             {/if}
@@ -140,9 +139,9 @@
 
         <!-- faq -->
         {#if faqSection?.show}
-          <section id="faq" class="px-2 pt-4 pb-20 h-full">
-            <h1 class="text-center text-3xl font-bold mb-4">{faqSection.settings.title}</h1>
-            <section class="py-5 px-2 space-y-2 w-full mx-auto">
+          <section id="faq" class="h-full px-2 pb-20 pt-4">
+            <h1 class="mb-4 text-center text-3xl font-bold">{faqSection.settings.title}</h1>
+            <section class="mx-auto w-full space-y-2 px-2 py-5">
               {#each faqSection.settings.questions as faq}
                 <Accordion title={faq.title} content={faq.content} />
               {/each}
@@ -152,10 +151,10 @@
 
         <!-- testimonial -->
         {#if testimonialSection?.show}
-          <section id="testimonial" class="px-4 lg:px-5 pt-4 pb-20 h-full">
-            <h1 class="text-start text-3xl font-bold mb-4">Testimonial</h1>
+          <section id="testimonial" class="h-full px-4 pb-20 pt-4 lg:px-5">
+            <h1 class="mb-4 text-start text-3xl font-bold">Testimonial</h1>
             <section
-              class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 place-items-center gap-4"
+              class="grid grid-cols-1 place-items-center gap-4 md:grid-cols-2 xl:grid-cols-3"
             >
               {#each testimonialSection.settings.list as item, i}
                 <TestimonialCard description={item.description} name={item.name} index={i} />
