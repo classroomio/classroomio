@@ -1,6 +1,6 @@
 {
   "name": "@classroomio/course-app",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "private": false,
   "main": "dist/create-template.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "build": "vite build && node scripts/postbuild.js"
   },
   "bin": {
-    "@classroomio/course-app": "./dist/create-template.js"
+    "@classroomio/course-app": "./bin/create-template.js"
   },
   "repository": {
     "type": "git",
