@@ -29,7 +29,8 @@ const config: Config = {
           DEFAULT: 'hsl(var(--posthog-primary) / <alpha-value>)',
           secondary: 'hsl(var(--posthog-secondary) / <alpha-value>)',
           background: 'hsl(var(--posthog-background) / <alpha-value>)',
-          border: 'hsl(var(--posthog-border) / <alpha-value>)'
+          border: 'hsl(var(--posthog-border) / <alpha-value>)',
+          ring: 'hsl(var(--posthog-ring) / <alpha-value>)'
         },
         minimal: {
           DEFAULT: 'hsl(var(--minimal-primary) / <alpha-value>)',

@@ -12,14 +12,14 @@
   const { onClick, children, label, href, class: className, ...restProps }: Props = $props();
 </script>
 
-<div class="relative inline-block">
+<div class="relative inline-block group">
   <span
-    class="absolute inset-0 -bottom-1 ring-1 ring-posthog bg-posthog-secondary rounded-md transition-transform duration-200 ease-in-out"
+    class="absolute inset-0 -bottom-1 ring-1 ring-posthog bg-posthog rounded-md transition-transform duration-200 ease-in-out"
   ></span>
   <Button
     {href}
     class={cn(
-      'bg-posthog hover:bg-posthog text-black ring-1 ring-posthog font-bold p-2 rounded-md relative z-10 transition-transform duration-200 ease-in-out hover:-translate-y-[2px]',
+      'bg-white group-hover:bg-white text-black ring-1 ring-posthog font-bold p-2 rounded-md relative z-10 transition-transform duration-200 ease-in-out hover:-translate-y-[2px]',
       className
     )}
     onclick={onClick}

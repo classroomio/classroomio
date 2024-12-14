@@ -2,33 +2,17 @@
 
 import { program } from 'commander';
 import chalk from 'chalk';
-import fs from 'fs';
 import inquirer from 'inquirer';
 import ora from 'ora';
 import path from 'path';
+import TEMPLATES from '../templates.json';
 import { scaffoldTemplate } from '../lib/scaffoldTemplate';
-
-// function getTemplateNames(): string[] {
-//   const srcPath = path.join(process.cwd(), 'src');
-
-//   if (!fs.existsSync(srcPath)) {
-//     return [];
-//   }
-
-//   const files = fs
-//     .readdirSync(srcPath)
-//     .filter((file: string) => fs.statSync(path.join(srcPath, file)).isDirectory());
-
-//   return files;
-// }
 
 const spinner = ora();
 
-// const templates = getTemplateNames();
+const templates = TEMPLATES.map((template) => template.name);
 
-const templates = ['cal', 'classic', 'minimal', 'posthog'];
-
-program.version('1.0.0').description('ClassroomIO CLI');
+program.version('0.0.1').description('Courseapp CLI');
 
 program
   .argument('[projectName]', 'name of the project')
@@ -49,6 +33,7 @@ program
       ]);
       projectName = answer.projectName;
     }
+
     const projectPath =
       projectName === '.' ? process.cwd() : path.resolve(process.cwd(), projectName);
 
@@ -70,7 +55,7 @@ program
         {
           type: 'confirm',
           name: 'course',
-          message: 'Would you like to use our demo courses',
+          message: 'Would you like to use our demo courses?',
           default: true
         }
       ]);
@@ -81,14 +66,15 @@ program
 
     try {
       await scaffoldTemplate({ template, courses, projectPath, projectName });
-      spinner.succeed(chalk.green('Done! Your project is ready.'));
+
+      spinner.succeed(`\n\n${chalk.green('Done! Your project is ready.')}\n\n`);
       console.log(
-        `To get started,  ${chalk.blue('cd into your project')} then run ${chalk.blue(
-          'npm install'
-        )}`
+        `To get started:\n\n${chalk.blue(`cd ${projectName}`)}\n${chalk.blue(
+          'pnpm i'
+        )}\n${chalk.blue('pnpm run dev')}`
       );
-      console.log(`Now run ${chalk.blue('npm run dev')}`);
-      chalk.blue('Happy hacking ');
+
+      console.log('\n\n', chalk.blue('Happy hacking ;)'));
     } catch (error) {
       spinner.fail(chalk.red(`Failed to scaffold the project. ${error}`));
       process.exit(1);

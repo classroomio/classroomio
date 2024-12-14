@@ -1,18 +1,29 @@
 {
-  "name": "@cio/course-app",
+  "name": "@classroomio/course-app",
   "version": "0.0.1",
-  "private": true,
+  "private": false,
   "main": "dist/create-template.js",
   "scripts": {
-    "dev": "vite dev",
-    "build": "vite build && node scripts/postbuild.js",
-    "preview": "vite preview",
-    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+    "create": "node dist/create-template.js",
+    "build": "vite build && node scripts/postbuild.js"
   },
   "bin": {
-    "course-app": "./dist/create-template.js"
+    "@classroomio/course-app": "./dist/create-template.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/classroomio/classroomio.git"
+  },
+  "bugs": {
+    "url": "https://github.com/classroomio/classroomio/issues"
+  },
+  "homepage": "https://github.com/classroomio/classroomio/blob/main/packages/course-app#readme",
+  "author": "ClassroomIO <help@classroomio.com>",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "src"
+  ],
   "devDependencies": {
     "@sveltejs/adapter-auto": "^3.0.0",
     "@sveltejs/kit": "^2.0.0",
@@ -31,17 +42,5 @@
     "fs-extra": "^11.2.0",
     "inquirer": "^11.1.0",
     "ora": "^8.1.1"
-  },
-  "files": [
-    "dist",
-    "src"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/username/create-saas-uni.git"
-  },
-  "bugs": {
-    "url": "https://github.com/username/create-saas-uni/issues"
-  },
-  "homepage": "https://github.com/username/create-saas-uni#readme"
+  }
 }
