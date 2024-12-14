@@ -64,26 +64,26 @@
   }
 </script>
 
-<main class="bg-[#101720] font-ibm overflow-hidden">
+<main class="font-ibm overflow-hidden bg-[#101720]">
   {#if section.header?.show}
     <div class="relative h-full p-2 md:p-10">
       <div
         class="absolute inset-0 bg-cover bg-center"
-        style="background-image: url('/classroomio-course-img-template.jpg');"
+        style="background-image: url('/course-banner.jpg');"
       ></div>
       <div
         class="absolute inset-0 bg-gradient-to-r from-[#0233BD99] via-[#00000033] to-[#FFFFFF00]"
       ></div>
-      <div class="relative flex items-center justify-center h-full text-white px-4 py-20 md:px-10">
-        <div class="text-white space-y-6 w-full">
-          <p class="text-2xl md:text-4xl font-mono font-semibold w-full md:w-[60%] lg:w-[40%]">
+      <div class="relative flex h-full items-center justify-center px-4 py-20 text-white md:px-10">
+        <div class="w-full space-y-6 text-white">
+          <p class="w-full font-mono text-2xl font-semibold md:w-[60%] md:text-4xl lg:w-[40%]">
             {section.header.settings.title}
           </p>
           <p class="w-full md:w-[60%] lg:w-[40%]">{section.header.settings.subtitle}</p>
           <div class="flex items-center gap-2 md:gap-4">
             <PrimaryButton
               onClick={() => goto(section.header?.settings.action.link)}
-              class="uppercase bg-blue-900 px-6 py-3 font-semibold hover:bg-blue-900 hover:scale-95 rounded-none"
+              class="rounded-none bg-blue-900 px-6 py-3 font-semibold uppercase hover:scale-95 hover:bg-blue-900"
               label={section.header.settings.action.label}
             />
           </div>
@@ -93,19 +93,19 @@
   {/if}
 
   {#if section.courses?.show}
-    <div class="bg-white py-10 px-2 md:px-8">
-      <p class="dark:text-white text-3xl text-center font-semibold pb-10 w-full md:w-[70%] mx-auto">
+    <div class="bg-white px-2 py-10 md:px-8">
+      <p class="mx-auto w-full pb-10 text-center text-3xl font-semibold dark:text-white md:w-[70%]">
         {section.courses.settings.title}
       </p>
       <div>
         {#if $courses.length > 0}
-          <div class="w-full lg:flex items-start gap-4 lg:ml-[5%]">
-            <div class="hidden lg:block w-max">
-              <p class="font-medium mb-2">Filter by</p>
+          <div class="w-full items-start gap-4 lg:ml-[5%] lg:flex">
+            <div class="hidden w-max lg:block">
+              <p class="mb-2 font-medium">Filter by</p>
               <div class="w-max space-y-2">
                 {#each filter as item}
                   <form
-                    class="space-x-2 text-[#3C4043] font-medium border border-[#EAEAEA] bg-[#FDFDFD] rounded-md px-4 py-4"
+                    class="space-x-2 rounded-md border border-[#EAEAEA] bg-[#FDFDFD] px-4 py-4 font-medium text-[#3C4043]"
                   >
                     <input
                       type="checkbox"
@@ -119,7 +119,7 @@
               </div>
             </div>
             <section
-              class="grid place-items-center grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+              class="grid grid-cols-1 place-items-center gap-4 md:grid-cols-2 lg:grid-cols-3"
             >
               {#each filteredCourses.slice(0, viewAllCourses ? filteredCourses.length : 3) as courseData}
                 <CourseCard
@@ -135,23 +135,23 @@
             </section>
 
             {#if filteredCourses.length == 0}
-              <div class="px-4 w-full mx-auto">
+              <div class="mx-auto w-full px-4">
                 <EmptyState />
               </div>
             {/if}
           </div>
 
           {#if filteredCourses.length > 3}
-            <div class="w-full flex items-center justify-center my-5">
+            <div class="my-5 flex w-full items-center justify-center">
               <PrimaryButton
-                class="uppercase bg-blue-900 p-2"
+                class="bg-blue-900 p-2 uppercase"
                 onClick={() => (viewAllCourses = !viewAllCourses)}
                 label="VIEW COURSES"
               />
             </div>
           {/if}
         {:else}
-          <div class="px-4 w-full lg:w-[70%] mx-auto">
+          <div class="mx-auto w-full px-4 lg:w-[70%]">
             <EmptyState />
           </div>
         {/if}

@@ -20,11 +20,20 @@ const __dirname = path.dirname(__filename);
 const packageRoot = path.join(__dirname, '..');
 const spinner = ora();
 
+async function rewriteComponentsFile(filePath: string, template: string): Promise<void> {
+  const newContent = `export { components } from './${template}';`;
+
+  try {
+    fs.writeFileSync(filePath, newContent);
+  } catch (error) {
+    console.error(`Error writing to file: ${error}`);
+  }
+}
+
 export async function scaffoldTemplate({
   template,
   courses,
-  projectPath,
-  projectName
+  projectPath
 }: ScaffoldTemplateParams): Promise<void> {
   spinner.text = chalk.yellow('Getting project...');
 
@@ -69,23 +78,19 @@ export async function scaffoldTemplate({
     excludePath: coursePathToExclude
   });
 
+  // Update root import of components to reflect only selected template
+  const componentsIndex = path.join(projectPath, 'src', 'lib', 'components', 'index.ts');
+  await rewriteComponentsFile(componentsIndex, template);
+
   // If the user wants demo courses, copy the courses folder
   spinner.text = chalk.yellow('Setting up courses folder...');
   await copyCoursesFolder({ templatePath: templateDirPath, projectPath, courses });
-  console.log(
-    chalk.yellow(
-      `Project ${projectName} created using template "${template}" ${
-        courses ? 'with' : 'without'
-      } demo courses.`
-    )
-  );
-  console.log(
-    chalk.yellow(
-      `You can ${
-        courses
-          ? 'edit or create new courses in the courses folder'
-          : 'create new courses in the courses folder'
-      }`
-    )
-  );
+
+  // console.log(
+  //   chalk.yellow(
+  //     `Project ${projectName} created using template "${template}" ${
+  //       courses ? 'with' : 'without'
+  //     } demo courses.`
+  //   )
+  // );
 }

@@ -3,31 +3,32 @@
   import PrimaryButton from './PrimaryButton.svelte';
   import { getPageSection } from '$lib/utils/helpers/page';
   import { homePage } from '$lib/utils/stores/pages';
+  import bannerImg from './assets/banner.jpeg';
 </script>
 
 {#if $homePage}
   {@const content = getPageSection($homePage, 'header')}
   {#if content?.show}
     <section
-      class="font-matter flex items-start md:items-center justify-center py-10 lg:py-20 px-5 lg:px-20 h-full bg-[#F4F4F4]"
+      class="font-matter flex h-full items-start justify-center bg-[#F4F4F4] px-5 py-10 md:items-center lg:px-20 lg:py-20"
     >
       <section
-        class="flex flex-col-reverse lg:flex-row items-center justify-center lg:justify-between"
+        class="flex flex-col-reverse items-center justify-center lg:flex-row lg:justify-between"
       >
-        <div class="text-center lg:text-start space-y-6 w-full mt-4 lg:mt-0">
+        <div class="mt-4 w-full space-y-6 text-center lg:mt-0 lg:text-start">
           <div
-            class="bg-[#E5E7E0] py-1 px-4 md:border-b border-black rounded-sm w-fit mx-auto lg:mx-0"
+            class="mx-auto w-fit rounded-sm border-black bg-[#E5E7E0] px-4 py-1 md:border-b lg:mx-0"
           >
-            <p class="uppercase font-bold text-xs lg:text-base text-[#0F163F]">
+            <p class="text-xs font-bold uppercase text-[#0F163F] lg:text-base">
               {content.settings.title}
             </p>
           </div>
           <p
-            class="text-4xl md:text-6xl font-black w-full mx-auto lg:mx-0 md:w-[90%] lg:w-[80%] capitalize"
+            class="mx-auto w-full text-4xl font-black capitalize md:w-[90%] md:text-6xl lg:mx-0 lg:w-[80%]"
           >
             {content.settings.titleHighlight}
           </p>
-          <p class="font-semibold text-xl w-full md:w-[80%] mx-auto lg:mx-0 lg:w-[70%]">
+          <p class="mx-auto w-full text-xl font-semibold md:w-[80%] lg:mx-0 lg:w-[70%]">
             {content.settings.subtitle}
           </p>
 
@@ -40,10 +41,10 @@
         </div>
 
         <div
-          class="relative w-[250px] h-[250px] lg:w-[500px] lg:h-[350px] flex items-center justify-center"
+          class="relative flex h-[250px] w-[250px] items-center justify-center lg:h-[350px] lg:w-[500px]"
         >
           <svg
-            class="absolute -left-[15px] lg:-left-[60px] xl:-left-[100px] w-[270px] h-[270px] lg:w-[400px] xl:w-[520px] lg:h-[370px]"
+            class="absolute -left-[15px] h-[270px] w-[270px] lg:-left-[60px] lg:h-[370px] lg:w-[400px] xl:-left-[100px] xl:w-[520px]"
             viewBox="0 0 360 360"
           >
             <circle
@@ -58,10 +59,8 @@
           </svg>
           <img
             alt="landing page banner"
-            src={content.settings.banner?.image
-              ? content.settings.banner?.image
-              : '/calcom-banner-img.jpeg'}
-            class="object-cover rounded-full w-[250px] h-[250px] lg:w-[500px] lg:h-[350px]"
+            src={content.settings.banner?.image ?? bannerImg}
+            class="h-[250px] w-[250px] rounded-full object-cover lg:h-[350px] lg:w-[500px]"
           />
         </div>
       </section>

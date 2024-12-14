@@ -9,7 +9,6 @@ export async function copyCoursesFolder({
   projectPath,
   courses
 }: CopyCourseFolderParams): Promise<void> {
-  console.log('include contents', courses);
   const from = path.join(templatePath, 'src/courses');
   const to = path.join(projectPath, 'src/courses');
 

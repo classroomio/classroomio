@@ -33,16 +33,16 @@
   {#if $homePage}
     {@const content = getPageSection($homePage, 'header')}
     {#if content?.show}
-      <section class="flex items-start justify-center pb-20 lg:pt-10 pt-4 px-6 md:px-14 h-full">
-        <section class="flex flex-col-reverse md:flex-row items-start gap-10 md:justify-between">
-          <div class="space-y-6 w-full">
-            <p class="text-4xl xl:text-6xl font-bold w-full xl:w-[90%]">
+      <section class="flex h-full items-start justify-center px-6 pb-20 pt-4 md:px-14 lg:pt-10">
+        <section class="flex flex-col-reverse items-start gap-10 md:flex-row md:justify-between">
+          <div class="w-full space-y-6">
+            <p class="w-full text-4xl font-bold xl:w-[90%] xl:text-6xl">
               {content.settings.title}
               <span class="text-[#CE02CE]">
                 {content.settings.titleHighlight}
               </span>
             </p>
-            <p class="w-full lg:w-[70%] text-[#878787] xl:text-lg">
+            <p class="w-full text-[#878787] lg:w-[70%] xl:text-lg">
               {content.settings.subtitle}
             </p>
             <PrimaryButton
@@ -53,13 +53,13 @@
             />
           </div>
           <div
-            class="rounded-md md:h-[300px] xl:h-[500px] max-h-full w-full md:w-1/2 lg:w-4/5 xl:w-[800px] md:max-w-[800px] flex"
+            class="flex max-h-full w-full rounded-md md:h-[300px] md:w-1/2 md:max-w-[800px] lg:w-4/5 xl:h-[500px] xl:w-[800px]"
           >
             <img
               style="min-width:280px; min-height:200px"
               alt="landing page banner"
               src={content.settings.banner.image ? content.settings.banner.image : banner}
-              class="object-cover mt-2 h-full w-full rounded-md md:mt-0"
+              class="mt-2 h-full w-full rounded-md object-cover md:mt-0"
             />
           </div>
         </section>
@@ -72,20 +72,20 @@
   {#if aboutSection?.show}
     <section
       id="about"
-      class="flex items-start justify-center px-6 md:px-10 lg:px-14 h-full bg-white border-b-2 pb-20 lg:pt-20 pt-4"
+      class="flex h-full items-start justify-center border-b-2 bg-white px-6 pb-20 pt-4 md:px-10 lg:px-14 lg:pt-20"
     >
-      <section class="flex flex-col lg:flex-row gap-4 items-center lg:items-start justify-center">
-        <div class="w-full lg:w-[60%] space-y-4">
+      <section class="flex flex-col items-center justify-center gap-4 lg:flex-row lg:items-start">
+        <div class="w-full space-y-4 lg:w-[60%]">
           <p class="text-4xl font-bold text-[#3F3F3F]">{aboutSection.settings.title}</p>
-          <p class="w-full lg:w-[80%] text-base leading-7 text-[#878787]">
+          <p class="w-full text-base leading-7 text-[#878787] lg:w-[80%]">
             {aboutSection.settings.content}
           </p>
         </div>
         {#if aboutSection.settings.benefits}
-          <div class="max-w-[400px] min-h-fit">
+          <div class="min-h-fit max-w-[400px]">
             {#each aboutSection.settings.benefits.list as item, index}
               <div
-                class="benefit-card w-full text-center max-w-[200px] p-4 font-semibold mb-9 border-b-4 border-[#CE02CE] bg-white rounded-b-lg shadow-lg"
+                class="benefit-card mb-9 w-full max-w-[200px] rounded-b-lg border-b-4 border-[#CE02CE] bg-white p-4 text-center font-semibold shadow-lg"
                 class:left={index % 2 === 0}
                 class:right={index % 2 !== 0}
               >
@@ -97,7 +97,7 @@
           <img
             src={aboutSection.settings.imageUrl}
             alt="Our Story"
-            class="rounded-2xl max-h-[450px]"
+            class="max-h-[450px] rounded-2xl"
           />
         {/if}
       </section>
@@ -106,17 +106,17 @@
 
   <!-- courses -->
   {#if courseSection?.show}
-    <section id="course" class="px-4 py-6 pb-20 h-full bg-white">
-      <h1 class="text-center text-3xl text-[#3F3F3F] font-bold mb-4">
+    <section id="course" class="h-full bg-white px-4 py-6 pb-20">
+      <h1 class="mb-4 text-center text-3xl font-bold text-[#3F3F3F]">
         {courseSection.settings.title}
       </h1>
-      <div class="w-full md:w-[90%] mx-auto">
+      <div class="mx-auto w-full md:w-[90%]">
         {#if $courses.length > 0}
-          <section class="flex flex-wrap items-center mx-auto w-fit gap-4">
+          <section class="mx-auto flex w-fit flex-wrap items-center gap-4">
             {#each $courses.slice(0, viewAll ? $courses.length : 3) as courseData}
               <CourseCard
                 slug={courseData.slug}
-                bannerImage={courseData.banner || '/classroomio-course-img-template.jpg'}
+                bannerImage={courseData.banner || '/course-banner.jpg'}
                 title={courseData.title}
                 type={courseData.type}
                 description={courseData.description}
@@ -127,16 +127,16 @@
             {/each}
           </section>
           {#if $courses.length > 3}
-            <div class="w-full flex items-center justify-center my-5">
+            <div class="my-5 flex w-full items-center justify-center">
               <PrimaryButton
-                class="text-lg font-semibold text-white bg-[#CE02CE]"
+                class="bg-[#CE02CE] text-lg font-semibold text-white"
                 onClick={() => (viewAll = !viewAll)}
                 label="View more programs"
               />
             </div>
           {/if}
         {:else}
-          <div class="px-4 w-full lg:w-[70%] mx-auto">
+          <div class="mx-auto w-full px-4 lg:w-[70%]">
             <EmptyState headerClassName="text-[#CE02CE]" />
           </div>
         {/if}
@@ -145,19 +145,19 @@
   {/if}
   <!-- instructors -->
   {#if instructorSection?.show}
-    <section class="px-4 lg:px-14 pt-4 pb-20 h-full bg-white">
-      <div class="w-full xl:w-[90%] mx-auto">
-        <h1 class="  text-center lg:text-start text-3xl text-[#3F3F3F] font-bold mb-4">
+    <section class="h-full bg-white px-4 pb-20 pt-4 lg:px-14">
+      <div class="mx-auto w-full xl:w-[90%]">
+        <h1 class="  mb-4 text-center text-3xl font-bold text-[#3F3F3F] lg:text-start">
           Meet some of our Instructors
         </h1>
-        <section class="grid place-items-center grid-cols-1 md:grid-cols-2 gap-2 w-full">
+        <section class="grid w-full grid-cols-1 place-items-center gap-2 md:grid-cols-2">
           {#each instructorSection.settings.list as item}
             <InstructorCard name={item.name} description={item.description} rating={item.rating} />
           {/each}
         </section>
-        <div class="w-full flex justify-center md:justify-end px-4 mt-6">
+        <div class="mt-6 flex w-full justify-center px-4 md:justify-end">
           <PrimaryButton
-            class="text-lg font-semibold text-white p-6 rounded"
+            class="rounded p-6 text-lg font-semibold text-white"
             label="Start learning & Explore courses"
           />
         </div>
@@ -166,11 +166,11 @@
   {/if}
   <!-- faq -->
   {#if faqSection?.show}
-    <section class="px-4 py-6 pb-20 h-full bg-[#F9F9F9]">
-      <h1 class="text-center text-3xl text-[#3F3F3F] font-bold mb-4">
+    <section class="h-full bg-[#F9F9F9] px-4 py-6 pb-20">
+      <h1 class="mb-4 text-center text-3xl font-bold text-[#3F3F3F]">
         {faqSection.settings.title}
       </h1>
-      <section class="p-2 space-y-10 w-full md:w-[80%] mx-auto">
+      <section class="mx-auto w-full space-y-10 p-2 md:w-[80%]">
         {#each faqSection.settings.questions as faq}
           <Accordion title={faq.title} content={faq.content} />
         {/each}
@@ -179,11 +179,11 @@
   {/if}
   <!-- testimonial -->
   {#if testimonialSection?.show}
-    <section id="testimonial" class="px-4 lg:px-14 pt-4 pb-20 h-full bg-white">
-      <h1 class="text-center text-3xl text-[#3F3F3F] font-bold mb-4">
+    <section id="testimonial" class="h-full bg-white px-4 pb-20 pt-4 lg:px-14">
+      <h1 class="mb-4 text-center text-3xl font-bold text-[#3F3F3F]">
         Words from our past learners
       </h1>
-      <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 w-full">
+      <section class="grid w-full grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         {#each testimonialSection.settings.list as item}
           <TestimonialCard description={item.description} name={item.name} />
         {/each}
@@ -192,16 +192,16 @@
   {/if}
   <!-- footerNote -->
   {#if footerNoteSection?.show}
-    <section class="flex flex-col items-center justify-between px-6 lg:px-10 py-20 bg-classic">
-      <div class="flex items-center justify-center w-full">
-        <p class="text-4xl text-white text-center font-bold w-full">
+    <section class="bg-classic flex flex-col items-center justify-between px-6 py-20 lg:px-10">
+      <div class="flex w-full items-center justify-center">
+        <p class="w-full text-center text-4xl font-bold text-white">
           {footerNoteSection.settings.title}
         </p>
       </div>
-      <div class="w-full flex items-center justify-center my-5">
+      <div class="my-5 flex w-full items-center justify-center">
         <PrimaryButton
           onClick={() => goto('/courses')}
-          class="rounded-sm font-bold text-lg bg-classic-secondary border hover:scale-95 hover:bg-classic-secondary border-gray-100"
+          class="bg-classic-secondary hover:bg-classic-secondary rounded-sm border border-gray-100 text-lg font-bold hover:scale-95"
           label={footerNoteSection.settings.buttonLabel}
         />
       </div>
@@ -209,9 +209,9 @@
   {/if}
 
   <!-- blog -->
-  <section id="course" class="px-4 py-6 pb-20 h-full bg-white">
-    <h1 class="text-center text-3xl text-[#3F3F3F] font-bold mb-4">Latest blog Post</h1>
-    <section class="flex flex-wrap items-center mx-auto gap-2 w-full">
+  <section id="course" class="h-full bg-white px-4 py-6 pb-20">
+    <h1 class="mb-4 text-center text-3xl font-bold text-[#3F3F3F]">Latest blog Post</h1>
+    <section class="mx-auto flex w-full flex-wrap items-center gap-2">
       <BlogCard />
       <BlogCard />
       <BlogCard />

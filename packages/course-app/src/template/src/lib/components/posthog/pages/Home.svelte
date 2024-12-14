@@ -3,7 +3,7 @@
   import { getPageSection } from '@/utils/helpers/page';
   import { homePage } from '@/utils/stores/pages';
   import PrimaryButton from '../PrimaryButton.svelte';
-  import analytics from '../static/analytics.png';
+  import analytics from '../assets/analytics.png';
   import { Button } from '@/components/ui/button';
   import { courses } from '@/utils/stores/course';
   import CourseCard from '../CourseCard.svelte';
@@ -29,17 +29,17 @@
     {@const content = getPageSection($homePage, 'header')}
     {#if content?.show}
       <section
-        class="font-matter flex items-center justify-center py-14 px-10 md:px-14 min-h-full overflow-hidden"
+        class="font-matter flex min-h-full items-center justify-center overflow-hidden px-10 py-14 md:px-14"
       >
         <section
-          class="flex flex-col-reverse md:flex-col text-center items-center gap-5 justify-center"
+          class="flex flex-col-reverse items-center justify-center gap-5 text-center md:flex-col"
         >
-          <div class="space-y-6 w-full mb-4">
-            <p class="text-3xl md:text-5xl font-bold w-full md:w-[80%] lg:w-[70%] mx-auto">
+          <div class="mb-4 w-full space-y-6">
+            <p class="mx-auto w-full text-3xl font-bold md:w-[80%] md:text-5xl lg:w-[70%]">
               {content.settings.title}
             </p>
 
-            <p class="w-full text-lg md:w-[80%] lg:w-[70%] mx-auto">
+            <p class="mx-auto w-full text-lg md:w-[80%] lg:w-[70%]">
               {content.settings.subtitle}
             </p>
             <PrimaryButton
@@ -50,13 +50,13 @@
             />
           </div>
 
-          <div class=" relative rounded-lg w-full md:w-[800px] md:max-w-[80vw] lg:max-w-[80%] flex">
-            <span class="absolute w-2 h-2 rounded-full bg-red-500 -top-14 left-3"></span>
-            <span class="absolute w-2 h-2 rounded-full bg-white top-10 -left-10"></span>
-            <span class="absolute w-2 h-2 rounded-full bg-yellow-500 -top-10 -right-3"></span>
-            <span class="absolute w-2 h-2 rounded-full bg-blue-800 top-14 -right-10"></span>
+          <div class=" relative flex w-full rounded-lg md:w-[800px] md:max-w-[80vw] lg:max-w-[80%]">
+            <span class="absolute -top-14 left-3 h-2 w-2 rounded-full bg-red-500"></span>
+            <span class="absolute -left-10 top-10 h-2 w-2 rounded-full bg-white"></span>
+            <span class="absolute -right-3 -top-10 h-2 w-2 rounded-full bg-yellow-500"></span>
+            <span class="absolute -right-10 top-14 h-2 w-2 rounded-full bg-blue-800"></span>
 
-            <div class="w-full h-full flex items-center justify-center">
+            <div class="flex h-full w-full items-center justify-center">
               <img alt="Hero Banner" src={analytics} class="w-full rounded-lg object-cover" />
             </div>
           </div>
@@ -67,15 +67,15 @@
 
   <!-- courses -->
   {#if coursesSection?.show}
-    <section id="course" class="px-4 pt-4 pb-20 h-full md:px-10">
-      <h1 class="text-center text-3xl mb-8 font-bold w-full md:w-[90%] lg:w-[70%] mx-auto">
+    <section id="course" class="h-full px-4 pb-20 pt-4 md:px-10">
+      <h1 class="mx-auto mb-8 w-full text-center text-3xl font-bold md:w-[90%] lg:w-[70%]">
         {coursesSection.settings.title}
         <span class="text-[#F54E00] dark:text-[#EB9D2A]"
           >{coursesSection.settings.titleHighlight}</span
         >
       </h1>
       {#if $courses.length > 0}
-        <section class="flex flex-wrap items-center justify-center mx-auto gap-4">
+        <section class="mx-auto flex flex-wrap items-center justify-center gap-4">
           {#each $courses.slice(0, viewAll ? $courses.length : 3) as courseData}
             <CourseCard
               slug={courseData.slug}
@@ -85,17 +85,17 @@
           {/each}
         </section>
         {#if $courses.length > 3}
-          <div class="w-full flex items-center justify-center my-5">
+          <div class="my-5 flex w-full items-center justify-center">
             <Button
               on:click={() => (viewAll = !viewAll)}
-              class="dark:text-black bg-white text-black capitalize ring-1 ring-[#B17816] dark:bg-[#EB9D2A] hover:scale-95 hover:bg-[#EB9D2A] shadow-[0px_3px_#B17816] font-bold mb-4"
+              class="mb-4 bg-white font-bold capitalize text-black shadow-[0px_3px_#B17816] ring-1 ring-[#B17816] hover:scale-95 hover:bg-[#EB9D2A] dark:bg-[#EB9D2A] dark:text-black"
             >
               {viewAll === true ? 'Show less' : 'View more courses'}
             </Button>
           </div>
         {/if}
       {:else}
-        <div class="w-full lg:w-[70%] mx-auto">
+        <div class="mx-auto w-full lg:w-[70%]">
           <EmptyState className="dark:bg-[#232429] dark:border-[#EAEAEA]" />
         </div>
       {/if}
@@ -106,24 +106,24 @@
   {#if aboutSection?.show}
     <section
       id="about"
-      class="px-4 md:px-10 pt-4 pb-20 h-full w-full mx-auto md:w-[90%] lg:w-[80%]"
+      class="mx-auto h-full w-full px-4 pb-20 pt-4 md:w-[90%] md:px-10 lg:w-[80%]"
     >
-      <h1 class="text-start text-3xl mb-2 font-bold md:w-[50%]">{aboutSection.settings.title}</h1>
-      <p class="text-start text-[#3D3D3D] dark:text-white text-sm font-semibold md:w-[70%] mb-8">
+      <h1 class="mb-2 text-start text-3xl font-bold md:w-[50%]">{aboutSection.settings.title}</h1>
+      <p class="mb-8 text-start text-sm font-semibold text-[#3D3D3D] dark:text-white md:w-[70%]">
         {aboutSection.settings.subtitle}
       </p>
       <div>
-        <p class="text-xl font-bold capitalize mb-6">{aboutSection.settings.benefits.title}</p>
-        <section class="grid place-items-center grid-cols-1 md:grid-cols-2 gap-4">
+        <p class="mb-6 text-xl font-bold capitalize">{aboutSection.settings.benefits.title}</p>
+        <section class="grid grid-cols-1 place-items-center gap-4 md:grid-cols-2">
           {#each aboutSection.settings.benefits.list as item}
             <div
-              class="flex flex-col gap-2 p-4 bg-[#E5E7E0] dark:bg-[#232429] border border-[#D0D1C9] h-[150px] max-h-[200px] w-full max-w-full md:max-w-[320px] lg:max-w-[450px] rounded-lg overflow-hidden"
+              class="flex h-[150px] max-h-[200px] w-full max-w-full flex-col gap-2 overflow-hidden rounded-lg border border-[#D0D1C9] bg-[#E5E7E0] p-4 dark:bg-[#232429] md:max-w-[320px] lg:max-w-[450px]"
             >
               <span class="flex items-center gap-2">
                 <CheckmarkFilled size={24} class=" fill-[#F54E00] dark:fill-[#EB9D2A]" />
-                <p class="text-lg font-bold capitalize line-clamp-1">{item.title}</p>
+                <p class="line-clamp-1 text-lg font-bold capitalize">{item.title}</p>
               </span>
-              <p class="text-sm line-clamp-4">{item.subtitle}</p>
+              <p class="line-clamp-4 text-sm">{item.subtitle}</p>
             </div>
           {/each}
         </section>
@@ -134,8 +134,8 @@
   <!-- faq -->
   {#if faqSection?.show}
     <div id="faq">
-      <h1 class="text-center text-3xl mb-8 font-bold">{faqSection.settings.title}</h1>
-      <div class="flex flex-wrap items-center justify-center mx-auto gap-8 p-4">
+      <h1 class="mb-8 text-center text-3xl font-bold">{faqSection.settings.title}</h1>
+      <div class="mx-auto flex flex-wrap items-center justify-center gap-8 p-4">
         {#each faqSection.settings.questions as faq, index}
           <FaqCard {index} {faq} />
         {/each}
@@ -145,13 +145,13 @@
 
   <!-- footerNote -->
   {#if footerNoteSection?.show}
-    <section class="w-full h-full p-4 md:p-20">
+    <section class="h-full w-full p-4 md:p-20">
       <section
-        class="mx-auto w-fit md:w-[80%] flex flex-col items-center justify-between px-2 lg:px-5 py-20 space-y-4 bg-[#E5E7E0] dark:bg-[#232429] rounded-md"
+        class="mx-auto flex w-fit flex-col items-center justify-between space-y-4 rounded-md bg-[#E5E7E0] px-2 py-20 dark:bg-[#232429] md:w-[80%] lg:px-5"
       >
-        <div class="flex items-center justify-center w-full">
+        <div class="flex w-full items-center justify-center">
           <p
-            class="text-4xl text-center xl:text-start font-bold w-full mx-auto lg:w-[90%] capitalize"
+            class="mx-auto w-full text-center text-4xl font-bold capitalize lg:w-[90%] xl:text-start"
           >
             {footerNoteSection.settings.title}
 
@@ -159,16 +159,16 @@
           </p>
         </div>
         <div
-          class="w-full lg:w-[90%] flex flex-col lg:flex-row items-center lg:items-end gap-4 lg:gap-0 lg:justify-between"
+          class="flex w-full flex-col items-center gap-4 lg:w-[90%] lg:flex-row lg:items-end lg:justify-between lg:gap-0"
         >
-          <p class="text-center lg:text-start text-sm font-semibold w-full lg:w-[50%]">
+          <p class="w-full text-center text-sm font-semibold lg:w-[50%] lg:text-start">
             {footerNoteSection.settings.subtitle}
           </p>
 
           <div class="w-fit">
             <PrimaryButton
               href={getCourseUrl()}
-              class="px-8 transition bg-white hover:bg-white text-black"
+              class="bg-white px-8 text-black transition hover:bg-white"
               label={footerNoteSection.settings.buttonLabel}
             />
           </div>
