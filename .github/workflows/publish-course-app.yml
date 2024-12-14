@@ -17,14 +17,11 @@ jobs:
 
       - uses: pnpm/action-setup@v4
 
-      - name: Install dependencies
+      - name: Install, Build & Publish
         working-directory: packages/course-app
-        run: pnpm i
-      - name: Build
-        working-directory: packages/course-app
-        run: pnpm build
-      - name: Publish
-        working-directory: packages/course-app
-        run: pnpm publish --no-git-checks
+        run: |
+          pnpm i
+          pnpm build
+          pnpm publish --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
