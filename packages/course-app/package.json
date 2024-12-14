@@ -1,14 +1,13 @@
 {
   "name": "@classroomio/course-app",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "private": false,
   "main": "dist/create-template.js",
   "scripts": {
-    "create": "node dist/create-template.js",
     "build": "vite build && node scripts/postbuild.js"
   },
   "bin": {
-    "@classroomio/course-app": "./bin/create-template.js"
+    "@classroomio/course-app": "./dist/create-template.js"
   },
   "repository": {
     "type": "git",
@@ -21,8 +20,7 @@
   "author": "ClassroomIO <help@classroomio.com>",
   "license": "MIT",
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "publishConfig": {
     "access": "public",

@@ -20,6 +20,7 @@ jobs:
         working-directory: packages/course-app
         run: |
           pnpm i
+          pnpm build
           pnpm publish --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
