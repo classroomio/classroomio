@@ -6,6 +6,7 @@
   import { COURSE_TYPE } from '$lib/utils/constants/course';
   import type { CourseFilterItem, Course } from '$lib/utils/types/course';
   import type { Page } from '$lib/utils/types/page';
+  import { SECTION } from '@/utils/constants/page';
 
   interface Props {
     data: {
@@ -41,8 +42,8 @@
    * Constants
    */
   const section = $derived({
-    header: getPageSection(data.page, 'header'),
-    courses: getPageSection(data.page, 'courses')
+    header: getPageSection(data.page, SECTION.HERO),
+    courses: getPageSection(data.page, SECTION.COURSE)
   });
 
   /**
@@ -66,20 +67,20 @@
 <div class="w-full">
   {#if section.header?.show}
     <section
-      style="background-image: url('$lib/components/cal/assets/calcom-background.svg');"
-      class="flex min-h-[30vh] items-center justify-center bg-cover bg-center px-2 py-10 lg:px-14"
+      style="background-image: url('calcom-background.svg');"
+      class="bg-cover bg-center flex items-center justify-center py-10 px-2 lg:px-14 min-h-[30vh]"
     >
-      <section class="flex flex-col items-center justify-center gap-5 text-center">
-        <div class="mb-4 w-full space-y-6">
-          <div class="mx-auto w-fit rounded-sm border-black bg-[#E5E7E0] px-4 py-1 md:border-b">
-            <p class="text-xs font-bold uppercase text-[#0F163F] lg:text-base">
+      <section class="flex flex-col text-center items-center gap-5 justify-center">
+        <div class="space-y-6 w-full mb-4">
+          <div class="bg-[#E5E7E0] py-1 px-4 md:border-b border-black rounded-sm w-fit mx-auto">
+            <p class="uppercase font-bold text-xs lg:text-base text-[#0F163F]">
               {section.header.settings.title}
             </p>
           </div>
-          <p class="mx-auto w-full text-5xl font-bold md:w-[70%]">
+          <p class="w-full text-5xl font-bold md:w-[70%] mx-auto">
             {section.header.settings.titleHighlight}
           </p>
-          <p class="mx-auto w-full text-lg font-semibold md:w-[70%]">
+          <p class="w-full font-semibold text-lg md:w-[70%] mx-auto">
             {section.header.settings.subtitle}
           </p>
         </div>
@@ -88,15 +89,15 @@
   {/if}
 
   {#if section.courses?.show}
-    <section id="course" class="h-full px-2 pb-20 pt-4 lg:px-16">
-      <div class="relative mt-10 flex w-full flex-row items-start justify-start lg:gap-2">
+    <section id="course" class="px-2 pt-4 pb-20 h-full lg:px-16">
+      <div class="relative w-full flex flex-row items-start justify-start lg:gap-2 mt-10">
         <!-- filter start -->
-        <div class="sticky top-0 hidden min-w-max lg:block">
-          <p class="mb-4 font-semibold">Filter by</p>
+        <div class="hidden lg:block sticky top-0 min-w-max">
+          <p class="font-semibold mb-4">Filter by</p>
           <div class="w-full space-y-2">
             {#each filter as item}
               <form
-                class="space-x-2 rounded-md border border-[#D0D1C9] bg-[#F4F4F4] py-4 pl-4 pr-8 font-medium text-[#3C4043]"
+                class="space-x-2 text-[#3C4043] font-medium border border-[#D0D1C9] bg-[#F4F4F4] rounded-md pl-4 pr-8 py-4"
               >
                 <input
                   type="checkbox"
@@ -113,11 +114,11 @@
         </div>
         <!-- filter end -->
 
-        <div class="mx-auto h-full w-full rounded-3xl text-white">
+        <div class="text-white rounded-3xl w-full h-full mx-auto">
           <!-- courses start -->
-          <div class="max-h-screen w-full p-4 md:p-8">
+          <div class="w-full max-h-screen p-4 md:p-8">
             {#if data.courses.length > 0}
-              <section class="flex w-full flex-wrap items-center justify-center gap-4">
+              <section class="flex flex-wrap items-center justify-center gap-4 w-full">
                 {#each filteredCourses.slice(0, viewAll ? filteredCourses.length : 3) as course}
                   <CourseCard
                     slug={course.slug}
@@ -128,12 +129,12 @@
                 {/each}
               </section>
               {#if filteredCourses.length == 0}
-                <div class="mx-auto w-full px-4">
+                <div class="px-4 w-full mx-auto">
                   <EmptyState />
                 </div>
               {/if}
             {:else}
-              <div class="mx-auto w-full px-4">
+              <div class="px-4 w-full mx-auto">
                 <EmptyState />
               </div>
             {/if}
@@ -141,10 +142,10 @@
           <!-- courses end -->
 
           {#if filteredCourses.length > 2}
-            <div class="flex w-full items-center justify-center py-8">
+            <div class="w-full flex items-center justify-center py-8">
               <Button
                 on:click={() => (viewAll = !viewAll)}
-                class="rounded-2xl border-[1.5px] border-white  py-6 uppercase text-white shadow-[0px_3px_white] hover:bg-white hover:text-black"
+                class="uppercase rounded-2xl py-6  hover:bg-white hover:text-black border-[1.5px] border-white text-white shadow-[0px_3px_white]"
               >
                 {viewAll === true ? 'Show less' : 'View more courses'}
               </Button>

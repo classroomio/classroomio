@@ -3,11 +3,11 @@
 </script>
 
 <div
-  class="w-full max-w-[300px] space-y-4 rounded border border-[#EAEAEA] bg-[#FCFCFC] p-4 hover:scale-95 dark:border-neutral-600"
+  class="hover:scale-95 border border-[#EAEAEA] bg-[#FCFCFC] dark:border-neutral-600 rounded w-full max-w-[300px] space-y-4 p-4"
 >
-  <img src="/course-banner.jpg" alt="tutor" class="h-full w-full object-cover" />
+  <img src="/classroomio-course-img-template.jpg" alt="tutor" class="object-cover w-full h-full" />
   <div class="w-full space-y-2">
-    <p class="line-clamp-2 text-lg font-semibold">
+    <p class="text-lg font-semibold line-clamp-2">
       How to Choose the Right Online Course to Boost Your Career
     </p>
     <span class="inline-flex items-center gap-1 text-[#282828]">

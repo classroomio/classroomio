@@ -1,5 +1,5 @@
 <script lang="ts">
-  import FaqMark from './assets/icons/FaqMark.svelte';
+  import FaqMark from './static/icons/FaqMark.svelte';
 
   interface Props {
     faq: any;
@@ -33,26 +33,26 @@
 </script>
 
 <div
-  class="min-w-60 max-w-72 perspective group z-10 h-72"
+  class="z-10 min-w-60 max-w-72 h-72 perspective group"
   bind:this={card}
   onmousemove={handleMouseMove}
   onmouseleave={handleMouseLeave}
   role="none"
 >
   <div class={`inner-card   ${index % 2 === 0 ? 'rotate-3 ' : '-rotate-3 '} `}>
-    <span class="absolute z-10 h-2 w-2 rounded-full {iconColor} left-4 top-4"></span>
-    <span class="absolute z-10 h-[2px] w-[2px] rounded-full {iconColor} left-8 top-8"></span>
-    <span class="absolute z-10 h-2 w-2 rounded-full {iconColor} bottom-4 right-4"></span>
-    <span class="absolute z-10 h-[2px] w-[2px] rounded-full {iconColor} bottom-8 right-8"></span>
+    <span class="z-10 absolute w-2 h-2 rounded-full {iconColor} top-4 left-4"></span>
+    <span class="z-10 absolute w-[2px] h-[2px] rounded-full {iconColor} top-8 left-8"></span>
+    <span class="z-10 absolute w-2 h-2 rounded-full {iconColor} bottom-4 right-4"></span>
+    <span class="z-10 absolute w-[2px] h-[2px] rounded-full {iconColor} bottom-8 right-8"></span>
     <div
-      class="front flex flex-col items-center justify-center p-4 text-black shadow-md {background}"
+      class="front text-black shadow-md flex flex-col items-center justify-center p-4 {background}"
     >
       <FaqMark color="#3B82F6" />
-      <h3 class="text-center text-lg font-bold">{faq.title}</h3>
+      <h3 class="text-lg font-bold text-center">{faq.title}</h3>
     </div>
 
     <div
-      class="back flex items-center justify-center p-4 text-center text-sm text-black shadow-md {background}"
+      class="back text-black text-center text-sm shadow-md flex items-center justify-center p-4 {background}"
     >
       <p class="line-clamp-5">{faq.content}</p>
     </div>

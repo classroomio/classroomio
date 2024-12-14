@@ -45,6 +45,9 @@
 
     --classic-primary: 300 98% 41%;
     --classic-secondary: 300 100% 95%;
+
+    --webflow-primary: 224 93% 39%;
+    --webflow-secondary: 224 93% 39%;
   }
 
   .dark {
