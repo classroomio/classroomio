@@ -8,10 +8,6 @@
 - Courses can be managed in markdown
 - Sections and Lessons broken into folders and automatically rendered
 
-## Getting Started
-
-Watch this [video](video.link) to get started
-
 ## Folder Structure
 
 ```bash
