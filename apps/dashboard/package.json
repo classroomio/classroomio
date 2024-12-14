@@ -109,7 +109,7 @@
   },
   "type": "module",
   "engines": {
-    "node": "18.x"
+    "node": "^18.17.0"
   },
   "browser": {
     "crypto": false

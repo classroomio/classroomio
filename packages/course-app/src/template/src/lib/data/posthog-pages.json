@@ -1,0 +1,418 @@
+[
+  {
+    "id": "shared-page",
+    "title": "Shared",
+    "slug": "#",
+    "status": "published",
+    "sections": [
+      {
+        "type": "seo",
+        "show": true,
+        "settings": {
+          "title": "Posthog University",
+          "description": "The one place to learn everything about Posthog",
+          "url": "https://posthog.com",
+          "appUrl": "https://app.posthog.com",
+          "keywords": ["posthog", "saas university"],
+          "logo": "/posthog-logo.svg"
+        }
+      },
+      {
+        "type": "navigation",
+        "show": true,
+        "settings": {
+          "navItems": [
+            {
+              "title": "Courses",
+              "link": "/courses"
+            },
+            {
+              "title": "Blog",
+              "link": "https://posthog.com/blog/all",
+              "redirect": true
+            },
+            {
+              "title": "API",
+              "link": "https://posthog.com/docs/api",
+              "redirect": true
+            },
+            {
+              "title": "Docs",
+              "link": "https://posthog.com/docs",
+              "redirect": true
+            }
+          ]
+        }
+      },
+      {
+        "type": "footer",
+        "show": true,
+        "settings": {
+          "links": [
+            { "label": "Privacy Policy", "url": "/privacy" },
+            { "label": "Terms of Service", "url": "/terms" }
+          ],
+          "facebook": "#",
+          "instagram": "#",
+          "twitter": "#",
+          "linkedin": "#"
+        }
+      }
+    ]
+  },
+  {
+    "id": "home-page",
+    "title": "Home Page",
+    "slug": "/",
+    "status": "published",
+    "sections": [
+      {
+        "type": "header",
+        "show": true,
+        "settings": {
+          "title": "How Product People Master PostHog: Track, Test, and Transform Your Product",
+          "titleHighlight": "The Posthog University - Learn All About Analytics",
+          "subtitle": "PostHog university is the one stop shop for learning everything about analytics with PostHog. Save countless hours and improve your team's productivity.",
+          "action": {
+            "label": "Explore courses",
+            "link": "/courses",
+            "redirect": false
+          },
+          "banner": {
+            "video": "https://www.youtube.com/watch?v=qqAYW7uxErI",
+            "image": "",
+            "type": "video",
+            "show": true
+          }
+        }
+      },
+      {
+        "type": "about",
+        "show": true,
+        "settings": {
+          "title": "Learn with us: To unlock your potential and fuel your Expertise",
+          "subtitle": "Our courses will help you make sense of the numbers, drive improvements, and create products that stick.",
+          "benefits": {
+            "title": "What you will gain",
+            "list": [
+              {
+                "title": "Real-world coding challenges.",
+                "subtitle": "Work through projects that mirror real-world tasks, helping you build a portfolio that showcases your skills to potential employers."
+              },
+              {
+                "title": "Experienced Instructors",
+                "subtitle": "Learn from industry experts who bring their hands-on experience to the classroom, guiding you every step of the way."
+              },
+              {
+                "title": "Comprehensive Materials",
+                "subtitle": "Get access to up-to-date resources that cover all key topics and methodologies, ensuring a complete learning experience."
+              },
+              {
+                "title": "Proven Success",
+                "subtitle": "With over 20 years of combined teaching experience, our methods have been proven to lead to better results and a deep understanding of the subject matter."
+              }
+            ]
+          }
+        }
+      },
+      {
+        "type": "courses",
+        "show": true,
+        "settings": {
+          "title": "Our Course Lineup: Build Skills",
+          "titleHighlight": "That Drive Results",
+          "subtitle": "Explore our most popular courses that will help you master the art of scheduling with Cal.com"
+        }
+      },
+      {
+        "type": "pathway",
+        "show": true,
+        "settings": {
+          "title": "Become an expert with our \"Learning Path\" Programs",
+          "titleHighlight": "",
+          "subtitle": "With over 5 years of extensive coding experience, I am equipped to help you achieve success in your choice of coding career."
+        }
+      },
+      {
+        "type": "instructors",
+        "show": true,
+        "settings": {
+          "list": [
+            {
+              "rating": 4,
+              "name": "Adewale",
+              "description": "Adewale Adebayo is a seasoned professional with a wealth of experience in software development. He is passionate about coding and teaching, and his classes are designed to be engaging and practical, ensuring that students gain hands-on skills and knowledge."
+            },
+            {
+              "rating": 4,
+              "name": "Folakemi Adeyemi",
+              "description": "Folake Adeyemi has extensive expertise in project management and leadership. She combines theoretical knowledge with practical case studies, ensuring that students are well-prepared for real-world challenges. "
+            },
+            {
+              "rating": 4,
+              "name": "Ifedayo Olabisi",
+              "description": "Ifedayo Olabisi is a distinguished instructor in web development. With a deep understanding of both front-end and back-end technologies, he provides comprehensive training that covers all aspects of web development."
+            },
+            {
+              "rating": 4,
+              "name": "Kemi Adediran",
+              "description": "Kemi Adediran is a skilled digital marketer with a passion for sharing her knowledge. Her courses cover the latest trends and techniques in digital marketing, from SEO to social media strategy."
+            }
+          ]
+        }
+      },
+      {
+        "type": "faq",
+        "show": true,
+        "settings": {
+          "title": "Frequently Asked Questions.",
+          "subtitle": "Our courses will help you make sense of the numbers, drive improvements, and create products that stick.",
+          "questions": [
+            {
+              "id": 1,
+              "title": "What sets your platform apart from others?",
+              "content": "Our platform is focused on providing practical, project-based learning. We aim to equip learners with skills that are directly applicable to their career paths. From real-world projects to experienced instructors, we focus on a hands-on approach to help you master each topic efficiently."
+            },
+            {
+              "id": 2,
+              "title": "Are the courses beginner-friendly?",
+              "content": "Absolutely! Whether you're a complete beginner or looking to advance your skills, we have courses designed for every level. Our step-by-step approach ensures that even the most complex topics are broken down into easy-to-understand lessons."
+            },
+            {
+              "id": 3,
+              "title": "How long does it take to complete a course?",
+              "content": "Course lengths vary depending on the subject. However, most of our courses are designed to be completed at your own pace, allowing you to take the time you need to fully understand the material before moving on."
+            }
+          ]
+        }
+      },
+      {
+        "type": "testimonial",
+        "show": true,
+        "settings": {
+          "list": [
+            {
+              "name": "Zulaike Elebute",
+              "role": "Web Developer",
+              "description": "I can't recommend the Mobile App Development bootcamp enough. The course was challenging, but the support from my peers and instructors was incredible.  I learned so much about both iOS and Android development, and I'm now  developing apps for a tech startup."
+            },
+            {
+              "name": "Zulaike Elebute",
+              "role": "Content Writer",
+              "description": "The course was challenging, but the support from my peers and instructors was incredible.  I learned so much about both iOS and Android development, and I'm now  developing apps for a tech startup."
+            },
+            {
+              "name": "Oluwaseun olaniyan",
+              "role": "Frontend Developement",
+              "description": "I can't recommend the Mobile App Development bootcamp enough. The course was challenging, but the support from my peers and instructors was incredible.  I learned so much about both iOS and Android development, and I'm now  developing apps for a tech startup."
+            },
+            {
+              "name": "Zulaike Elebute",
+              "role": "Web Developer",
+              "description": "The feedback and real-world projects were invaluable—I’m now confident in delivering high-quality work that connects and engages"
+            },
+
+            {
+              "name": "Oluwaseun olaniyan",
+              "role": "Content Writer",
+              "description": "The lessons were comprehensive, covering everything from HTML to advanced JavaScript. Working on interactive projects transformed my approach, and I’m now ready to create polished, user-friendly interfaces!"
+            }
+          ]
+        }
+      },
+      {
+        "type": "contact",
+        "show": true,
+        "settings": {
+          "title": "Have you got any",
+          "titleHighlight": "Questions?",
+          "subtitle": "Reach out to us with any questions you might have.",
+          "address": "Ashwoodfield House Farm, Kidderminster Rd, Stourbridge, Kingswinford DY6 0AA",
+          "phone": "+4407339904995",
+          "email": "help@digdippa.com"
+        }
+      },
+      {
+        "type": "cta",
+        "settings": {
+          "title": "programs that you will love.",
+          "titleHighlight": "100% guaranteed",
+          "subtitle": "Unlock skills you'll use for life with courses designed to inspire, empower, and elevate your expertise.",
+          "buttonLabel": "Learn More"
+        },
+        "show": true
+      },
+      {
+        "type": "mailinglist",
+        "settings": {
+          "title": "Join our mailing list",
+          "subtitle": "We are constantly releasing new courses and sharing them with our email list. Subscribe to get notified once we release a new course.",
+          "buttonLabel": "Subscribe",
+          "show": true
+        }
+      }
+    ]
+  },
+  {
+    "id": "courses-page",
+    "title": "Courses Page",
+    "slug": "/courses",
+    "status": "published",
+    "sections": [
+      {
+        "type": "header",
+        "show": true,
+        "settings": {
+          "title": "You are closest to mastering PostHog!",
+          "titleHighlight": "Explore our Courses",
+          "subtitle": "Courses are tailored to help you master PostHog’s tools and make impactful data-driven choices.",
+          "action": {
+            "label": "Explore Courses",
+            "link": "/courses",
+            "redirect": false
+          },
+          "banner": {
+            "video": "https://www.youtube.com/watch?v=qqAYW7uxErI",
+            "image": "",
+            "type": "video",
+            "show": true
+          }
+        }
+      },
+      {
+        "type": "courses",
+        "show": true,
+        "settings": {
+          "title": "Unlock your potential with Engaging and innovative online courses",
+          "titleHighlight": "",
+          "subtitle": "Explore creative and tech courses that will help you own you skill set"
+        }
+      },
+      {
+        "type": "pathway",
+        "show": true,
+        "settings": {
+          "title": "Become an expert with our \"Learning Path\" Programs",
+          "titleHighlight": "",
+          "subtitle": "With over 5 years of extensive coding experience, I am equipped to help you achieve success in your choice of coding career."
+        }
+      },
+      {
+        "type": "faq",
+        "show": true,
+        "settings": {
+          "title": "Frequently Asked Questions.",
+          "subtitle": "Our courses will help you make sense of the numbers, drive improvements, and create products that stick.",
+          "questions": [
+            {
+              "id": 1,
+              "title": "What sets your platform apart from others?",
+              "content": "Our platform is focused on providing practical, project-based learning. We aim to equip learners with skills that are directly applicable to their career paths. From real-world projects to experienced instructors, we focus on a hands-on approach to help you master each topic efficiently."
+            },
+            {
+              "id": 2,
+              "title": "Are the courses beginner-friendly?",
+              "content": "Absolutely! Whether you're a complete beginner or looking to advance your skills, we have courses designed for every level. Our step-by-step approach ensures that even the most complex topics are broken down into easy-to-understand lessons."
+            },
+            {
+              "id": 3,
+              "title": "How long does it take to complete a course?",
+              "content": "Course lengths vary depending on the subject. However, most of our courses are designed to be completed at your own pace, allowing you to take the time you need to fully understand the material before moving on."
+            }
+          ]
+        }
+      },
+      {
+        "type": "testimonial",
+        "show": true,
+        "settings": {
+          "list": [
+            {
+              "name": "Zulaike Elebute",
+              "role": "Web Developer",
+              "description": "I can't recommend the Mobile App Development bootcamp enough. The course was challenging, but the support from my peers and instructors was incredible.  I learned so much about both iOS and Android development, and I'm now  developing apps for a tech startup."
+            },
+            {
+              "name": "Zulaike Elebute",
+              "role": "Content Writer",
+              "description": "The course was challenging, but the support from my peers and instructors was incredible.  I learned so much about both iOS and Android development, and I'm now  developing apps for a tech startup."
+            },
+            {
+              "name": "Oluwaseun olaniyan",
+              "role": "Frontend Developement",
+              "description": "I can't recommend the Mobile App Development bootcamp enough. The course was challenging, but the support from my peers and instructors was incredible.  I learned so much about both iOS and Android development, and I'm now  developing apps for a tech startup."
+            },
+            {
+              "name": "Zulaike Elebute",
+              "role": "Web Developer",
+              "description": "The feedback and real-world projects were invaluable—I’m now confident in delivering high-quality work that connects and engages"
+            },
+
+            {
+              "name": "Oluwaseun olaniyan",
+              "role": "Content Writer",
+              "description": "The lessons were comprehensive, covering everything from HTML to advanced JavaScript. Working on interactive projects transformed my approach, and I’m now ready to create polished, user-friendly interfaces!"
+            },
+            {
+              "name": "Oluwaseun olaniyan",
+              "role": "Web Developer",
+              "description": "I can't recommend the Mobile App Development bootcamp enough. The course was challenging, but the support from my peers and instructors was incredible.  I learned so much about both iOS and Android development, and I'm now  developing apps for a tech startup."
+            },
+            {
+              "name": "Oluwaseun olaniyan",
+              "role": "Content Writer",
+              "description": " revelation. I learned techniques to craft compelling, audience-focused content that tells a story. The feedback and real-world projects were invaluable—I’m now confident in delivering high-quality work that connects and engages"
+            },
+            {
+              "name": "Oluwaseun olaniyan",
+              "role": "Frontend Developement",
+              "description": "I can't recommend the Mobile App Development bootcamp enough. The course was challenging, but the support from my peers and instructors was incredible.  I learned so much about both iOS and Android development, and I'm now  developing apps for a tech startup."
+            },
+
+            {
+              "name": "Oluwaseun olaniyan",
+              "role": "Web Developer",
+              "description": "Through hands-on projects, I learned to build responsive, secure websites from scratch. I now feel equipped to tackle complex challenges with confidence"
+            },
+            {
+              "name": "Oluwaseun olaniyan",
+              "role": "Web Developer",
+              "description": "I can't recommend the Mobile App Development bootcamp enough. The course was challenging, but the support from my peers and instructors was incredible.  I learned so much about both iOS and Android development, and I'm now  developing apps for a tech startup."
+            }
+          ]
+        }
+      },
+      {
+        "type": "contact",
+        "show": true,
+        "settings": {
+          "title": "Have you got any",
+          "titleHighlight": "Questions?",
+          "subtitle": "Reach out to us with any questions you might have.",
+          "address": "Ashwoodfield House Farm, Kidderminster Rd, Stourbridge, Kingswinford DY6 0AA",
+          "phone": "+4407339904995",
+          "email": "help@digdippa.com"
+        }
+      },
+      {
+        "type": "cta",
+        "settings": {
+          "title": "programs that you will love.",
+          "titleHighlight": "100% guaranteed",
+          "subtitle": "Unlock skills you'll use for life with courses designed to inspire, empower, and elevate your expertise.",
+          "buttonLabel": "Learn More",
+          "show": true
+        }
+      },
+      {
+        "type": "mailinglist",
+        "settings": {
+          "title": "Join our mailing list",
+          "subtitle": "We are constantly releasing new courses and sharing them with our email list. Subscribe to get notified once we release a new course.",
+          "buttonLabel": "Subscribe",
+          "show": true
+        }
+      }
+    ]
+  }
+]

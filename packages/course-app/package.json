@@ -1,0 +1,46 @@
+{
+  "name": "@classroomio/course-app",
+  "version": "0.0.1",
+  "private": false,
+  "main": "dist/create-template.js",
+  "scripts": {
+    "create": "node dist/create-template.js",
+    "build": "vite build && node scripts/postbuild.js"
+  },
+  "bin": {
+    "@classroomio/course-app": "./dist/create-template.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/classroomio/classroomio.git"
+  },
+  "bugs": {
+    "url": "https://github.com/classroomio/classroomio/issues"
+  },
+  "homepage": "https://github.com/classroomio/classroomio/blob/main/packages/course-app#readme",
+  "author": "ClassroomIO <help@classroomio.com>",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "devDependencies": {
+    "@sveltejs/adapter-auto": "^3.0.0",
+    "@sveltejs/kit": "^2.0.0",
+    "@sveltejs/vite-plugin-svelte": "^3.0.0",
+    "@types/fs-extra": "^11.0.4",
+    "svelte": "^4.2.7",
+    "svelte-check": "^4.0.0",
+    "typescript": "^5.0.0",
+    "vite": "^5.0.3"
+  },
+  "type": "module",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "figlet": "^1.8.0",
+    "fs-extra": "^11.2.0",
+    "inquirer": "^11.1.0",
+    "ora": "^8.1.1"
+  }
+}
