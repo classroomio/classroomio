@@ -1,4 +1,4 @@
-name: Publish to @classroomio/course-app
+name: Publish @classroomio/course-app to NPM
 on: workflow_dispatch
 
 jobs:
