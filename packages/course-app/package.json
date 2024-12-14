@@ -1,6 +1,6 @@
 {
   "name": "@classroomio/course-app",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "private": false,
   "main": "dist/create-template.js",
   "scripts": {
