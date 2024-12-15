@@ -1,8 +1,5 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import ShineBorder from '$lib/components/ui/shinyborder/ShineBorder.svelte';
-  import Button from '$lib/components/ui/button/button.svelte';
-  import defaultBanner from './assets/classroomio-course-img-template.jpg';
   import PrimaryButton from './PrimaryButton.svelte';
 
   interface Props {
@@ -22,29 +19,29 @@
 
 <ShineBorder color={['#0233BD', '#C1D4FF', '#93B4FF']}>
   <div
-    class="cursor-pointer h-fit w-full min-w-[250px] md:min-w-[200px] max-w-[320px] md:max-w-[300px] space-y-4"
+    class="h-fit w-full min-w-[250px] max-w-[320px] cursor-pointer space-y-4 md:min-w-[200px] md:max-w-[300px]"
   >
     <div
-      class="border relative border-[#282828] hover:bg-[#282828] rounded-sm space-y-4 px-2 py-2 {className} shadow"
+      class="relative space-y-4 rounded-sm border border-[#282828] px-2 py-2 hover:bg-[#282828] {className} shadow"
     >
-      <div class="rounded-md overflow-hidden">
+      <div class="overflow-hidden rounded-md">
         <img
-          src={bannerImage ? bannerImage : defaultBanner}
+          src={bannerImage ? bannerImage : '/course-banner.jpg'}
           alt=""
-          class="w-full h-44 object-cover"
+          class="h-44 w-full object-cover"
         />
-        <div class="py-4 overflow-hidden">
-          <p class="text-lg font-semibold overflow-ellipsis line-clamp-1">
+        <div class="overflow-hidden py-4">
+          <p class="line-clamp-1 overflow-ellipsis text-lg font-semibold">
             {title}
           </p>
         </div>
-        <p class=" text-[#ABABAB] overflow-ellipsis line-clamp-3 text-justify">
+        <p class=" line-clamp-3 overflow-ellipsis text-justify text-[#ABABAB]">
           {description}
         </p>
       </div>
       <PrimaryButton
         href={getCourseUrl()}
-        class="bg-transparent hover:text-black hover:bg-white text-white border border-white w-full rounded"
+        class="w-full rounded border border-white bg-transparent text-white hover:bg-white hover:text-black"
         label="Go to Course"
       />
     </div>

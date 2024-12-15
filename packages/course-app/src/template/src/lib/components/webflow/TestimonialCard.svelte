@@ -23,7 +23,7 @@
     </div>
     <div class="flex items-center p-4 gap-4 border-[#EAEAEA]">
       <img
-        src={banner ? banner : '/classroomio-course-img-template.jpg'}
+        src={banner ? banner : '/course-banner.jpg'}
         alt=""
         class="w-6 h-6 rounded-full"
       />

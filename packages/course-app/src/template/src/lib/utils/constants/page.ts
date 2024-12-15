@@ -10,7 +10,7 @@ export const SECTION = {
   ABOUT: 'about',
   FAQ: 'faq',
   TESTIMONIAL: 'testimonial',
-  FOOTERNOTE: 'cta',
+  CTA: 'cta',
   INSTRUCTORS: 'instructors',
   SEO: 'seo',
   NAVIGATION: 'navigation'

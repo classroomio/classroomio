@@ -18,7 +18,7 @@
   const aboutSection = $derived(getPageSection($homePage, SECTION.ABOUT));
   const courseSection = $derived(getPageSection($homePage, SECTION.COURSE));
   const instructorSection = $derived(getPageSection($homePage, SECTION.INSTRUCTORS));
-  const footerNoteSection = $derived(getPageSection($homePage, SECTION.FOOTERNOTE));
+  const ctaSection = $derived(getPageSection($homePage, SECTION.CTA));
 
   const DISPLAY_COURSE = {
     ALL: 'all',
@@ -192,18 +192,18 @@
     </section>
   {/if}
   <!-- footerNote -->
-  {#if footerNoteSection?.show}
+  {#if ctaSection?.show}
     <section class="bg-classic flex flex-col items-center justify-between px-6 py-20 lg:px-10">
       <div class="flex w-full items-center justify-center">
         <p class="w-full text-center text-4xl font-bold text-white">
-          {footerNoteSection.settings.title}
+          {ctaSection.settings.title}
         </p>
       </div>
       <div class="my-5 flex w-full items-center justify-center">
         <PrimaryButton
-          onClick={() => goto('/courses')}
+          onClick={() => goto(ctaSection.settings?.button?.link)}
           class="bg-classic-secondary hover:bg-classic-secondary rounded-sm border border-gray-100 text-lg font-bold hover:scale-95"
-          label={footerNoteSection.settings.buttonLabel}
+          label={ctaSection.settings?.button?.label}
         />
       </div>
     </section>

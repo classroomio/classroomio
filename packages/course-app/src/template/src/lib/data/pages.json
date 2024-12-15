@@ -264,7 +264,11 @@
           "title": "programs that you will love.",
           "titleHighlight": "100% guaranteed",
           "subtitle": "Unlock skills you'll use for life with courses designed to inspire, empower, and elevate your expertise.",
-          "buttonLabel": "Learn More"
+          "button": {
+            "label": "Learn More",
+            "link": "/courses",
+            "redirect": false
+          }
         },
         "show": true
       },
@@ -273,7 +277,11 @@
         "settings": {
           "title": "Join our mailing list",
           "subtitle": "We are constantly releasing new courses and sharing them with our email list. Subscribe to get notified once we release a new course.",
-          "buttonLabel": "Subscribe",
+          "button": {
+            "label": "Subscribe",
+            "link": "/#",
+            "redirect": false
+          },
           "show": true
         }
       }
@@ -315,127 +323,16 @@
         }
       },
       {
-        "type": "pathway",
-        "show": true,
-        "settings": {
-          "title": "Become an expert with our \"Learning Path\" Programs",
-          "titleHighlight": "",
-          "subtitle": "With over 5 years of extensive coding experience, I am equipped to help you achieve success in your choice of coding career."
-        }
-      },
-      {
-        "type": "faq",
-        "show": true,
-        "settings": {
-          "title": "Frequently Asked Questions.",
-          "subtitle": "Our courses will help you make sense of the numbers, drive improvements, and create products that stick.",
-          "questions": [
-            {
-              "id": 1,
-              "title": "What sets your platform apart from others?",
-              "content": "Our platform is focused on providing practical, project-based learning. We aim to equip learners with skills that are directly applicable to their career paths. From real-world projects to experienced instructors, we focus on a hands-on approach to help you master each topic efficiently."
-            },
-            {
-              "id": 2,
-              "title": "Are the courses beginner-friendly?",
-              "content": "Absolutely! Whether you're a complete beginner or looking to advance your skills, we have courses designed for every level. Our step-by-step approach ensures that even the most complex topics are broken down into easy-to-understand lessons."
-            },
-            {
-              "id": 3,
-              "title": "How long does it take to complete a course?",
-              "content": "Course lengths vary depending on the subject. However, most of our courses are designed to be completed at your own pace, allowing you to take the time you need to fully understand the material before moving on."
-            }
-          ]
-        }
-      },
-      {
-        "type": "testimonial",
-        "show": true,
-        "settings": {
-          "list": [
-            {
-              "name": "Zulaike Elebute",
-              "role": "Web Developer",
-              "description": "I can't recommend the Mobile App Development bootcamp enough. The course was challenging, but the support from my peers and instructors was incredible.  I learned so much about both iOS and Android development, and I'm now  developing apps for a tech startup."
-            },
-            {
-              "name": "Zulaike Elebute",
-              "role": "Content Writer",
-              "description": "The course was challenging, but the support from my peers and instructors was incredible.  I learned so much about both iOS and Android development, and I'm now  developing apps for a tech startup."
-            },
-            {
-              "name": "Oluwaseun olaniyan",
-              "role": "Frontend Developement",
-              "description": "I can't recommend the Mobile App Development bootcamp enough. The course was challenging, but the support from my peers and instructors was incredible.  I learned so much about both iOS and Android development, and I'm now  developing apps for a tech startup."
-            },
-            {
-              "name": "Zulaike Elebute",
-              "role": "Web Developer",
-              "description": "The feedback and real-world projects were invaluable—I’m now confident in delivering high-quality work that connects and engages"
-            },
-
-            {
-              "name": "Oluwaseun olaniyan",
-              "role": "Content Writer",
-              "description": "The lessons were comprehensive, covering everything from HTML to advanced JavaScript. Working on interactive projects transformed my approach, and I’m now ready to create polished, user-friendly interfaces!"
-            },
-            {
-              "name": "Oluwaseun olaniyan",
-              "role": "Web Developer",
-              "description": "I can't recommend the Mobile App Development bootcamp enough. The course was challenging, but the support from my peers and instructors was incredible.  I learned so much about both iOS and Android development, and I'm now  developing apps for a tech startup."
-            },
-            {
-              "name": "Oluwaseun olaniyan",
-              "role": "Content Writer",
-              "description": " revelation. I learned techniques to craft compelling, audience-focused content that tells a story. The feedback and real-world projects were invaluable—I’m now confident in delivering high-quality work that connects and engages"
-            },
-            {
-              "name": "Oluwaseun olaniyan",
-              "role": "Frontend Developement",
-              "description": "I can't recommend the Mobile App Development bootcamp enough. The course was challenging, but the support from my peers and instructors was incredible.  I learned so much about both iOS and Android development, and I'm now  developing apps for a tech startup."
-            },
-
-            {
-              "name": "Oluwaseun olaniyan",
-              "role": "Web Developer",
-              "description": "Through hands-on projects, I learned to build responsive, secure websites from scratch. I now feel equipped to tackle complex challenges with confidence"
-            },
-            {
-              "name": "Oluwaseun olaniyan",
-              "role": "Web Developer",
-              "description": "I can't recommend the Mobile App Development bootcamp enough. The course was challenging, but the support from my peers and instructors was incredible.  I learned so much about both iOS and Android development, and I'm now  developing apps for a tech startup."
-            }
-          ]
-        }
-      },
-      {
-        "type": "contact",
-        "show": true,
-        "settings": {
-          "title": "Have you got any",
-          "titleHighlight": "Questions?",
-          "subtitle": "Reach out to us with any questions you might have.",
-          "address": "Ashwoodfield House Farm, Kidderminster Rd, Stourbridge, Kingswinford DY6 0AA",
-          "phone": "+4407339904995",
-          "email": "help@digdippa.com"
-        }
-      },
-      {
         "type": "cta",
         "settings": {
           "title": "programs that you will love.",
           "titleHighlight": "100% guaranteed",
           "subtitle": "Unlock skills you'll use for life with courses designed to inspire, empower, and elevate your expertise.",
-          "buttonLabel": "Learn More",
-          "show": true
-        }
-      },
-      {
-        "type": "mailinglist",
-        "settings": {
-          "title": "Join our mailing list",
-          "subtitle": "We are constantly releasing new courses and sharing them with our email list. Subscribe to get notified once we release a new course.",
-          "buttonLabel": "Subscribe",
+          "button": {
+            "label": "Learn More",
+            "link": "/courses",
+            "redirect": false
+          },
           "show": true
         }
       }

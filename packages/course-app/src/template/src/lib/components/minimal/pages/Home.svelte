@@ -3,7 +3,6 @@
   import { getPageSection } from '@/utils/helpers/page';
   import PrimaryButton from '../PrimaryButton.svelte';
   import { goto } from '$app/navigation';
-  import defaultBanner from '../assets/course-banner.jpg';
   import { courses } from '@/utils/stores/course';
   import CourseCard from '../CourseCard.svelte';
   import EmptyState from '../EmptyState.svelte';
@@ -16,7 +15,7 @@
   const learnSection = $derived(getPageSection($homePage, SECTION.ABOUT));
   const testimonialSection = $derived(getPageSection($homePage, SECTION.TESTIMONIAL));
   const faqSection = $derived(getPageSection($homePage, SECTION.FAQ));
-  const footerNoteSection = $derived(getPageSection($homePage, SECTION.FOOTERNOTE));
+  const ctaSection = $derived(getPageSection($homePage, SECTION.CTA));
 
   let viewAll = $state(false);
 </script>
@@ -55,7 +54,7 @@
               alt="landing page banner"
               src={content.settings?.banner?.image
                 ? content.settings?.banner?.image
-                : defaultBanner}
+                : '/course-banner.jpg'}
               class="mt-2 h-full max-h-[400px] w-full max-w-[500px] rounded-md object-cover md:mt-0"
             />
           </div>
@@ -173,7 +172,7 @@
   {/if}
 
   <!-- footerNote -->
-  {#if footerNoteSection?.show}
+  {#if ctaSection?.show}
     <section
       class="flex flex-col items-center justify-between bg-blue-800 px-6 py-20 md:flex-row lg:px-10"
     >
@@ -181,14 +180,14 @@
         <p
           class="w-full text-center text-4xl font-bold capitalize text-white md:text-start lg:w-[70%]"
         >
-          {footerNoteSection.settings.title}
+          {ctaSection.settings.title}
         </p>
       </div>
       <div class="my-5 flex w-full items-center justify-center">
         <PrimaryButton
-          onClick={() => goto('/courses')}
+          href={ctaSection.settings?.button?.link}
           class="bg-white py-2 text-blue-700 hover:bg-white"
-          label={footerNoteSection.settings.buttonLabel}
+          label={ctaSection.settings?.button?.label}
         />
       </div>
     </section>
