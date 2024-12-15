@@ -19,7 +19,7 @@
     variant="link"
     target="_blank"
     rel="noopener noreferrer"
-    class="border-stroke-primary relative h-80 min-w-60 overflow-hidden rounded-md border border-solid p-0 transition-all duration-500 lg:h-96"
+    class="border-stroke-primary relative h-80 min-w-60 overflow-hidden rounded-md border border-solid  p-0 transition-all duration-500"
   >
     <span
       class="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-all duration-500 hover:opacity-80"
@@ -28,7 +28,7 @@
     </span>
     <img
       src={template.image}
-      class="h-full w-full object-contain hover:opacity-10"
+      class="h-full w-full rounded-lg object-contain hover:opacity-10"
       alt={template.name}
     />
   </Button>

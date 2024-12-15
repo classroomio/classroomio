@@ -1,11 +1,12 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import ArrowUpRight from 'lucide-svelte/icons/arrow-up-right';
 
   const getClass = (active: boolean) => (active ? 'text-foreground' : 'text-foreground/60');
 
   let activeClass = $derived({
     template: getClass($page.url.href.includes('#templates')),
-    setup: getClass($page.url.href.includes('#setup'))
+    features: getClass($page.url.href.includes('#features'))
   });
 </script>
 
@@ -36,10 +37,10 @@
   </p>
   <div class="container flex h-14 max-w-screen-2xl items-center">
     <div class="mr-4 flex">
-      <a href="/" class="mr-6 flex items-center space-x-2">
+      <a href="/" class="mr-6 flex items-center">
         <img src="/logo-512.png" alt="Course App" class="h-8 w-8" />
         {' '}
-        <span class="inline-block font-bold">courseapp</span>
+        <span class="inline-block font-bold">ourseapp</span>
       </a>{' '}
       <nav class="hidden items-center gap-6 text-sm md:flex">
         <a
@@ -48,8 +49,19 @@
         >
           Templates
         </a>{' '}
-        <a href="#setup" class="hover:text-foreground/80 {activeClass.setup} transition-colors">
-          Setup
+        <a
+          href="#features"
+          class="hover:text-foreground/80 {activeClass.features} transition-colors"
+        >
+          Features
+        </a>{' '}
+        <a
+          href="/npm"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="hover:text-foreground/80 text-foreground/60 flex items-center gap-1 transition-colors"
+        >
+          NPM <ArrowUpRight class="h-4 w-4" />
         </a>{' '}
         <!-- <a
 					href="https://github.com/classroomio/classroomio"

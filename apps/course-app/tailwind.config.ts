@@ -55,7 +55,17 @@ const config: Config = {
         sm: 'calc(var(--radius) - 4px)'
       },
       fontFamily: {
-        sans: [...fontFamily.sans]
+        sans: [...fontFamily.sans],
+        drawn: [
+          'Virgil',
+          'ui-sans-serif',
+          'system-ui',
+          'sans-serif',
+          'Apple Color Emoji',
+          'Segoe UI Emoji',
+          'Segoe UI Symbol',
+          'Noto Color Emoji'
+        ]
       },
 
       animation: {
