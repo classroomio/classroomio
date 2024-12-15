@@ -12,6 +12,7 @@
   import { CheckmarkFilled } from 'carbon-icons-svelte';
   import Accordion from '../Accordion.svelte';
   import bannerImg from '../assets/banner.jpeg';
+  import { SECTION } from '@/utils/constants/page';
 
   /**
    * State
@@ -22,11 +23,11 @@
   /**
    * Constants
    */
-  const coursesSection = $derived(getPageSection($homePage, 'courses'));
-  const aboutSection = $derived(getPageSection($homePage, 'about'));
-  const faqSection = $derived(getPageSection($homePage, 'faq'));
-  const testimonialSection = $derived(getPageSection($homePage, 'testimonial'));
-  const footerNoteSection = $derived(getPageSection($homePage, 'cta'));
+  const coursesSection = $derived(getPageSection($homePage, SECTION.COURSE));
+  const aboutSection = $derived(getPageSection($homePage, SECTION.ABOUT));
+  const faqSection = $derived(getPageSection($homePage, SECTION.FAQ));
+  const testimonialSection = $derived(getPageSection($homePage, SECTION.TESTIMONIAL));
+  const footerNoteSection = $derived(getPageSection($homePage, SECTION.FOOTERNOTE));
 
   /**
    * Functions
@@ -42,7 +43,7 @@
 
 <!-- hero -->
 {#if $homePage}
-  {@const content = getPageSection($homePage, 'header')}
+  {@const content = getPageSection($homePage, SECTION.HERO)}
   {#if content?.show}
     <section
       class="font-matter flex h-full items-start justify-center bg-[#F4F4F4] px-5 py-10 md:items-center lg:px-20 lg:py-20"
