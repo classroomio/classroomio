@@ -6,6 +6,7 @@
   import { getPageSection } from '@/utils/helpers/page';
   import type { Course, CourseFilterItem } from '@/utils/types/course';
   import type { Page } from '$lib/utils/types/page';
+  import { SECTION } from '@/utils/constants/page';
 
   interface Props {
     data: {
@@ -41,8 +42,8 @@
    * Constants
    */
   const section = $derived({
-    header: getPageSection(data.page, 'header'),
-    courses: getPageSection(data.page, 'courses')
+    header: getPageSection(data.page, SECTION.HERO),
+    courses: getPageSection(data.page, SECTION.COURSE)
   });
 
   /**

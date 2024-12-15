@@ -10,11 +10,12 @@
   import EmptyState from '../EmptyState.svelte';
   import { CheckmarkFilled } from 'carbon-icons-svelte';
   import FaqCard from '../FaqCard.svelte';
+  import { SECTION } from '@/utils/constants/page';
 
-  const coursesSection = $derived(getPageSection($homePage, 'courses'));
-  const aboutSection = $derived(getPageSection($homePage, 'about'));
-  const faqSection = $derived(getPageSection($homePage, 'faq'));
-  const footerNoteSection = $derived(getPageSection($homePage, 'cta'));
+  const coursesSection = $derived(getPageSection($homePage, SECTION.COURSE));
+  const aboutSection = $derived(getPageSection($homePage, SECTION.ABOUT));
+  const faqSection = $derived(getPageSection($homePage, SECTION.FAQ));
+  const footerNoteSection = $derived(getPageSection($homePage, SECTION.FOOTERNOTE));
 
   function getCourseUrl() {
     return '/courses';
@@ -26,7 +27,7 @@
 <div class="bg-posthog-background">
   <!-- hero -->
   {#if $homePage}
-    {@const content = getPageSection($homePage, 'header')}
+    {@const content = getPageSection($homePage, SECTION.HERO)}
     {#if content?.show}
       <section
         class="font-matter flex min-h-full items-center justify-center overflow-hidden px-10 py-14 md:px-14"

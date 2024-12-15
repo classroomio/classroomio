@@ -10,12 +10,13 @@
   import TestimonialCard from '../TestimonialCard.svelte';
   import Accordion from '../Accordion.svelte';
   import testimonial from '../assets/testimonial.svg';
+  import { SECTION } from '@/utils/constants/page';
 
-  const courseSection = $derived(getPageSection($homePage, 'about'));
-  const learnSection = $derived(getPageSection($homePage, 'about'));
-  const testimonialSection = $derived(getPageSection($homePage, 'testimonial'));
-  const faqSection = $derived(getPageSection($homePage, 'faq'));
-  const footerNoteSection = $derived(getPageSection($homePage, 'cta'));
+  const courseSection = $derived(getPageSection($homePage, SECTION.COURSE));
+  const learnSection = $derived(getPageSection($homePage, SECTION.ABOUT));
+  const testimonialSection = $derived(getPageSection($homePage, SECTION.TESTIMONIAL));
+  const faqSection = $derived(getPageSection($homePage, SECTION.FAQ));
+  const footerNoteSection = $derived(getPageSection($homePage, SECTION.FOOTERNOTE));
 
   let viewAll = $state(false);
 </script>
@@ -24,7 +25,7 @@
 <main class="bg-[#101720]">
   <!-- hero -->
   {#if $homePage}
-    {@const content = getPageSection($homePage, 'header')}
+    {@const content = getPageSection($homePage, SECTION.HERO)}
     {#if content?.show}
       <section class="flex max-h-full items-center justify-center px-5 py-5 md:px-14 md:py-14">
         <section class="flex items-center justify-between gap-4">
