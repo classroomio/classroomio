@@ -1,6 +1,6 @@
-# @classroomio/course-app
+# Courseapp
 
-Create a university site for your SAAS in seconds, ready to go. Just add your content.
+Create a university/academy site for your product in seconds, ready to go - you just add your content.
 
 ## Usage
 
@@ -25,3 +25,10 @@ The CLI accepts the following arguments
 - minimalistic
 - posthog
 - webflow
+
+## Next up
+
+- More templates ;)
+- Create quizzes
+- Authentication
+- Learning paths

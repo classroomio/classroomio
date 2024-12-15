@@ -17,7 +17,7 @@
 >
   <div class="relative space-y-2 text-black {className}">
     <div class="border-b-2 border-dashed border-black">
-      <img src={bannerImage ?? '/classroomio-course-img-template.jpg'} alt="" class="h-44 w-full" />
+      <img src={bannerImage || '/classroomio-course-img-template.jpg'} alt="" class="h-44 w-full" />
     </div>
     <div>
       <div class="overflow-hidden px-3 py-2">
