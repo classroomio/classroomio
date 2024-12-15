@@ -67,19 +67,19 @@
   rel="prefetch"
   bind:this={target}
   href={getCourseUrl()}
-  class="border-gray relative h-fit w-full min-w-[250px] max-w-[300px] rounded border text-black transition-all ease-in-out hover:scale-95 dark:border-neutral-600 md:h-[350px]"
+  class="text-black border border-gray dark:border-neutral-600 rounded w-full h-fit md:h-[350px] min-w-[250px] max-w-[300px] relative hover:scale-95 transition-all ease-in-out"
 >
   <div class="p-4">
     <div class="relative mb-5">
       <img
-        src={bannerImage || '/course-banner.jpg'}
+        src={bannerImage || '/classroomio-course-img-template.jpg'}
         alt="Course Logo"
-        class="relative h-[170px] w-full rounded dark:border dark:border-neutral-600"
+        class="h-[170px] w-full rounded dark:border dark:border-neutral-600 relative"
       />
       {#if type}
         {@const tag = COURSE_TAG[type]}
         <span
-          class="bg-primary-50 absolute bottom-2 left-2 z-10 flex items-center gap-1 rounded-sm p-1 font-mono text-xs capitalize"
+          class="absolute bottom-2 left-2 z-10 text-xs capitalize bg-primary-50 rounded-sm p-1 flex items-center gap-1 font-mono"
         >
           <tag.icon size={16} class={tag.iconStyle} />
           {tag.label}
@@ -87,15 +87,15 @@
       {/if}
     </div>
 
-    <h3 class="line-clamp-1 text-xl font-semibold dark:text-white">{title}</h3>
-    <p class="description mt-2 text-sm text-gray-500 dark:text-gray-300">
+    <h3 class="text-xl dark:text-white font-semibold line-clamp-1">{title}</h3>
+    <p class="mt-2 text-sm text-gray-500 dark:text-gray-300 description">
       {description}
     </p>
   </div>
 
-  <div class="border-gray mx-2 flex justify-between border-t py-4 dark:border-neutral-600">
+  <div class="py-4 mx-2 border-t border-gray dark:border-neutral-600 flex justify-between">
     <div>
-      <p class="pl-2 text-xs dark:text-white">
+      <p class="text-xs pl-2 dark:text-white">
         {totalLessons}
         lessons
       </p>
