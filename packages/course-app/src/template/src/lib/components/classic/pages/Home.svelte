@@ -20,13 +20,7 @@
   const instructorSection = $derived(getPageSection($homePage, SECTION.INSTRUCTORS));
   const ctaSection = $derived(getPageSection($homePage, SECTION.CTA));
 
-  const DISPLAY_COURSE = {
-    ALL: 'all',
-    COURSE: 'course',
-    PATH: 'path'
-  };
   let viewAll = $state(false);
-  let type = DISPLAY_COURSE.ALL;
 </script>
 
 <main>
@@ -34,9 +28,9 @@
   {#if $homePage}
     {@const content = getPageSection($homePage, SECTION.HERO)}
     {#if content?.show}
-      <section class="flex h-full items-start justify-center px-6 pb-20 pt-4 md:px-14 lg:pt-10">
-        <section class="flex flex-col-reverse items-start gap-10 md:flex-row md:justify-between">
-          <div class="w-full space-y-6">
+      <section class="flex h-full items-start justify-center px-6 pb-20 md:px-14">
+        <section class="flex flex-col-reverse items-center gap-10 md:flex-row md:justify-between">
+          <div class="flex h-full w-full flex-col gap-4 pt-4">
             <p class="w-full text-4xl font-bold xl:w-[90%] xl:text-6xl">
               {content.settings.title}
               <span class="text-[#CE02CE]">
@@ -47,20 +41,19 @@
               {content.settings.subtitle}
             </p>
             <PrimaryButton
-              onClick={() => {
-                goto(content.settings.action.link);
-              }}
+              href={content.settings.action.link}
               label={content.settings.action.label}
+              class="w-fit"
             />
           </div>
+
           <div
-            class="flex max-h-full w-full rounded-md md:h-[300px] md:w-1/2 md:max-w-[800px] lg:w-4/5 xl:h-[500px] xl:w-[800px]"
+            class="flex max-h-full w-full md:w-1/2 md:max-w-[800px] lg:w-4/5 xl:h-[500px] xl:w-[800px]"
           >
             <img
-              style="min-width:280px; min-height:200px"
               alt="landing page banner"
-              src={content.settings.banner.image ? content.settings.banner.image : banner}
-              class="mt-2 h-full w-full rounded-md object-cover md:mt-0"
+              src={content.settings.banner.image || banner}
+              class="mt-2 h-full min-h-[200px] w-full min-w-[280px] object-cover md:mt-0"
             />
           </div>
         </section>
@@ -201,8 +194,8 @@
       </div>
       <div class="my-5 flex w-full items-center justify-center">
         <PrimaryButton
-          onClick={() => goto(ctaSection.settings?.button?.link)}
-          class="bg-classic-secondary hover:bg-classic-secondary rounded-sm border border-gray-100 text-lg font-bold hover:scale-95"
+          href={ctaSection.settings?.button?.link}
+          class="bg-classic-secondary hover:bg-classic-secondary text-classic rounded-sm border border-gray-100 text-lg font-bold hover:scale-95"
           label={ctaSection.settings?.button?.label}
         />
       </div>
@@ -210,7 +203,7 @@
   {/if}
 
   <!-- blog -->
-  <section id="course" class="h-full bg-white px-4 py-6 pb-20">
+  <section id="course" class="hidden h-full bg-white px-4 py-6 pb-20">
     <h1 class="mb-4 text-center text-3xl font-bold text-[#3F3F3F]">Latest blog Post</h1>
     <section class="mx-auto flex w-full flex-wrap items-center gap-2">
       <BlogCard />

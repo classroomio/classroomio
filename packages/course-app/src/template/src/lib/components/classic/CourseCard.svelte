@@ -1,13 +1,4 @@
 <script lang="ts">
-  import RadioButtonChecked from 'carbon-icons-svelte/lib/RadioButtonChecked.svelte';
-  import GrowthIcon from 'carbon-icons-svelte/lib/Growth.svelte';
-  import UserProfileIcon from 'carbon-icons-svelte/lib/UserProfile.svelte';
-
-  const COURSE_TYPE = {
-    LIVE_CLASS: 'live',
-    SELF_PACED: 'paced'
-  };
-
   interface Props {
     bannerImage: string | undefined;
     slug?: string;
@@ -26,46 +17,16 @@
     description = '',
     cost = 0,
     totalLessons = 0,
-    currency = 'USD',
-    type
+    currency = 'USD'
   }: Props = $props();
-  let target: any = $state();
 
   function getCourseUrl() {
     return `/course/${slug}`;
   }
-  const COURSE_TAG: Record<
-    string,
-    {
-      style: string;
-      label: string;
-      icon: any;
-      iconStyle?: string;
-    }
-  > = {
-    [COURSE_TYPE.LIVE_CLASS]: {
-      style: '',
-      label: 'live',
-      icon: RadioButtonChecked,
-      iconStyle: 'text-red-700'
-    },
-    [COURSE_TYPE.SELF_PACED]: {
-      style: '',
-      label: 'paced',
-      icon: UserProfileIcon,
-      iconStyle: 'text-primary-700'
-    },
-    SPECIALIZATION: {
-      style: '',
-      label: 'specialized',
-      icon: GrowthIcon
-    }
-  };
 </script>
 
 <a
   rel="prefetch"
-  bind:this={target}
   href={getCourseUrl()}
   class="border-gray relative h-fit w-full min-w-[250px] max-w-[300px] rounded border text-black transition-all ease-in-out hover:scale-95 dark:border-neutral-600 md:h-[350px]"
 >
@@ -76,15 +37,6 @@
         alt="Course Logo"
         class="relative h-[170px] w-full rounded dark:border dark:border-neutral-600"
       />
-      {#if type}
-        {@const tag = COURSE_TAG[type]}
-        <span
-          class="bg-primary-50 absolute bottom-2 left-2 z-10 flex items-center gap-1 rounded-sm p-1 font-mono text-xs capitalize"
-        >
-          <tag.icon size={16} class={tag.iconStyle} />
-          {tag.label}
-        </span>
-      {/if}
     </div>
 
     <h3 class="line-clamp-1 text-xl font-semibold dark:text-white">{title}</h3>
