@@ -1,25 +1,18 @@
 <script>
   import { getPageSection } from '@/utils/helpers/page';
   import { sharedPage } from '@/utils/stores/pages';
+  import Logo from '../ui/_custom/Logo.svelte';
+  import { SECTION } from '@/utils/constants/page';
 
-  const content = $derived(getPageSection($sharedPage, 'footer'));
-  const seo = $derived(getPageSection($sharedPage, 'seo'));
+  const content = $derived(getPageSection($sharedPage, SECTION.FOOTER));
+  const seo = $derived(getPageSection($sharedPage, SECTION.SEO));
 </script>
 
 {#if content?.show}
   <nav
     class="flex w-full flex-col items-start gap-4 bg-white px-6 py-4 md:flex-row md:items-center md:justify-between"
   >
-    <div class="logo">
-      <a href="/" title={`Go to ${seo?.settings.title} Home`} id="logo" data-hveid="8">
-        <img
-          src={seo?.settings.logo}
-          alt={`${seo?.settings.title} logo`}
-          class="mx-auto inline-block w-9 rounded"
-          data-atf="1"
-        />
-      </a>
-    </div>
+    <Logo src={seo?.settings.logo} alt={seo?.settings.title} />
     <ul class="-md:gap-8 flex flex-col items-start gap-4 underline md:flex-row md:items-center">
       {#if content.settings.twitter}
         <a href={content.settings.twitter} target="_blank" title="twitter">Twitter</a>
@@ -34,7 +27,12 @@
         <a href={content.settings.facebook} target="_blank" title="facebook">facebook</a>
       {/if}
     </ul>
-    <a href="/#" class="flex items-center gap-1">
+    <a
+      href="https://classroomio.com"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="flex items-center gap-1"
+    >
       <p class=" text-ielts text-base font-semibold underline">Built on ClassroomIO</p>
     </a>
   </nav>

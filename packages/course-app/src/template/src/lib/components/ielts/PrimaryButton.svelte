@@ -15,7 +15,7 @@
   <Button
     {href}
     class={cn(
-      'bg-ielts rounded text-white font-semibold p-2  hover:bg-ielts',
+      'bg-ielts text-white font-semibold p-2 hover:bg-ielts',
       className
     )}
     onclick={onClick}

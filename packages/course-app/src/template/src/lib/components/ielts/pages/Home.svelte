@@ -2,8 +2,8 @@
   import { getPageSection } from '@/utils/helpers/page';
   import { homePage } from '@/utils/stores/pages';
   import { courses } from '$lib/utils/stores/course';
-  import { quintIn, quintInOut, quintOut } from 'svelte/easing';
-  import { fade, fly, slide } from 'svelte/transition';
+  import { quintOut } from 'svelte/easing';
+  import { slide } from 'svelte/transition';
   import { CheckmarkFilled } from 'carbon-icons-svelte';
   import defaultBanner from '../assets/org-banner.png';
   import defaultAvatar from '../assets/ielts-user.png';
@@ -18,7 +18,7 @@
   const aboutSection = $derived(getPageSection($homePage, 'about'));
   const faqSection = $derived(getPageSection($homePage, 'faq'));
   const testimonialSection = $derived(getPageSection($homePage, 'testimonial'));
-  const footerNoteSection = $derived(getPageSection($homePage, 'cta'));
+  const ctaSection = $derived(getPageSection($homePage, 'cta'));
 
   let currentIndex = $state(0);
   let viewAll = $state(false);
@@ -30,10 +30,6 @@
   function goToSlide(index) {
     currentIndex = index;
   }
-
-  // function nextSlide() {
-  //   currentIndex = (currentIndex + 1) % testimonialSection?.settings.list.length;
-  // }
 </script>
 
 <main>
@@ -41,30 +37,32 @@
   {#if $homePage}
     {@const content = getPageSection($homePage, 'header')}
     {#if content?.show}
-      <section class="flex h-full items-start justify-center px-10 pb-20 pt-4 lg:px-20 lg:pt-20">
+      <section
+        class="flex h-full items-start justify-center bg-slate-100 px-10 pb-20 pt-4 lg:px-20 lg:pt-20"
+      >
         <section
           class="flex flex-col-reverse items-start gap-5 md:flex-row md:items-center md:justify-between"
         >
           <div class="w-full space-y-6">
             <p
-              class="font-playfair text-2xl font-semibold text-[#3D3D3D] first-line:w-full xl:w-[80%] xl:text-5xl"
+              class="text-2xl font-semibold text-gray-700 first-line:w-full xl:w-[80%] xl:text-5xl"
             >
               {content.settings.title}
             </p>
-            <p class="font-inter w-full text-[#656565] lg:w-[70%] xl:text-lg">
+            <p class="font-inter w-full text-gray-500 lg:w-[70%] xl:text-lg">
               {content.settings.subtitle}
             </p>
             <PrimaryButton
-              class="rounded-none font-serif font-semibold uppercase "
+              class="rounded-none px-6 font-serif font-semibold uppercase"
               label={content.settings.action.label}
               onClick={() => {
-                content.settings.action.redirect && goto(content.settings.action.link);
+                goto(content.settings.action.link);
               }}
             />
           </div>
 
           <div
-            class="flex max-h-full w-full rounded-md shadow-[-12px_12px_0px_#0233BD] md:h-[400px] md:w-1/2 md:max-w-[800px]"
+            class="flex max-h-full w-full rounded-md shadow-[-12px_12px_0px_#0233BD] md:h-[400px] md:w-full lg:max-w-[800px] xl:w-1/2"
           >
             <img
               style="min-width:280px; min-height:200px"
@@ -81,7 +79,7 @@
   {/if}
   <!-- testimonial -->
   {#if testimonialSection?.show}
-    <section class="overflow-x-hidden px-4 py-6">
+    <section class="overflow-x-hidden bg-slate-100 px-4 py-6">
       <div
         class="bg-ielts relative mx-auto flex h-[220px] w-full items-center text-center text-white md:w-[80%] lg:w-[70%]"
       >
@@ -101,9 +99,7 @@
                 transition:slide={{ duration: 300, easing: quintOut, axis: 'x' }}
                 class="flex min-w-full flex-1 flex-col items-center justify-between md:h-full"
               >
-                <p
-                  class=" font-playfair line-clamp-4 text-base font-semibold italic md:line-clamp-3 md:text-lg"
-                >
+                <p class=" line-clamp-4 text-base font-semibold italic md:line-clamp-3 md:text-lg">
                   "{testimonial.description}"
                 </p>
 
@@ -180,23 +176,23 @@
   <!-- about -->
   {#if aboutSection?.show}
     <section id="course" class="h-full bg-white px-4 pb-20 pt-4 md:px-10">
-      <h1 class="mx-auto w-full text-center font-serif text-3xl text-[#282828] md:w-[50%]">
+      <h1 class="mx-auto w-full text-center font-serif text-3xl text-gray-800 md:w-[50%]">
         {aboutSection.settings.title}
       </h1>
-      <p class="text-inter mx-auto mb-8 w-[60%] text-center font-medium text-[#656565]">
+      <p class="text-inter mx-auto mb-8 w-[60%] text-center font-medium text-gray-500">
         {aboutSection.settings.subtitle}
       </p>
 
       <section class="flex flex-wrap items-center justify-center gap-8 p-4">
         {#each aboutSection.settings.benefits.list as item}
           <div
-            class="flex h-[150px] max-h-[300px] max-w-[300px] flex-col justify-start gap-4 rounded-lg border-2 border-[#EAEAEA] bg-[#FDFDFD] p-4 md:max-h-[200px] md:max-w-[500px]"
+            class="flex h-fit max-h-[300px] max-w-full flex-col justify-start gap-4 rounded-lg border-2 border-gray-200 bg-white p-4 md:h-[150px] md:max-h-[200px] md:max-w-[500px]"
           >
             <span class="flex items-center gap-2">
-              <CheckmarkFilled size={24} class="fill-[#0F62FE]" />
+              <CheckmarkFilled size={24} class="fill-blue-400" />
               <p class="font-serif text-xl">{item.title}</p>
             </span>
-            <p class="font-inter text-base text-[#878787]">{item.subtitle}</p>
+            <p class="font-inter text-base text-gray-400">{item.subtitle}</p>
           </div>
         {/each}
       </section>
@@ -208,8 +204,8 @@
 
   <!-- faq -->
   {#if faqSection?.show}
-    <section class="h-full space-y-5 bg-[#F9F9F9] px-4 pb-20 pt-8">
-      <h1 class="text-center font-serif text-3xl text-[#3F3F3F]">{faqSection.settings.title}</h1>
+    <section class="h-full space-y-5 bg-slate-100 px-4 pb-20 pt-8">
+      <h1 class="text-center font-serif text-3xl text-gray-700">{faqSection.settings.title}</h1>
       <section class="mx-auto w-full space-y-10 p-4 md:w-[80%]">
         {#each faqSection.settings.questions as faq}
           <Accordion title={faq.title} content={faq.content} />
@@ -219,7 +215,7 @@
   {/if}
 
   <!-- footernote -->
-  {#if footerNoteSection?.show}
+  {#if ctaSection?.show}
     <section
       class="flex flex-col items-center justify-between space-y-4 bg-blue-800 px-6 py-20 lg:px-10"
     >
@@ -227,15 +223,16 @@
         <p
           class="w-full text-center font-serif text-4xl font-bold capitalize text-white lg:w-[70%]"
         >
-          {footerNoteSection.settings.title}
+          {ctaSection.settings.title}
         </p>
       </div>
       <p class="w-full text-center text-white lg:w-[50%]">
-        {footerNoteSection.settings.subtitle}
+        {ctaSection.settings.subtitle}
       </p>
       <div class="my-5 flex w-full items-center justify-center">
         <PrimaryButton
-          label={footerNoteSection.settings.buttonLabel}
+          label={ctaSection.settings.button.label}
+          href={ctaSection.settings.button.redirect && ctaSection.settings.button.link}
           class="rounded-none bg-white text-lg font-bold uppercase text-blue-700 hover:bg-white"
         />
       </div>
