@@ -144,7 +144,7 @@
     </div>
   {/if}
 
-  <!-- footerNote -->
+  <!-- cta -->
   {#if ctaSection?.show}
     <section class="h-full w-full p-4 md:p-20">
       <section

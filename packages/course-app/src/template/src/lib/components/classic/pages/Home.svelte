@@ -184,7 +184,7 @@
       </section>
     </section>
   {/if}
-  <!-- footerNote -->
+  <!-- cta -->
   {#if ctaSection?.show}
     <section class="bg-classic flex flex-col items-center justify-between px-6 py-20 lg:px-10">
       <div class="flex w-full items-center justify-center">

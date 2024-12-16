@@ -65,21 +65,14 @@
   }
 </script>
 
-<main class="font-ibm overflow-hidden bg-[#101720]">
+<main class="font-ibm">
   {#if section.header?.show}
-    <div class="relative h-full p-2 md:p-10">
-      <div
-        class="absolute inset-0 bg-cover bg-center"
-        style="background-image: url('/course-banner.jpg');"
-      ></div>
-      <div
-        class="absolute inset-0 bg-gradient-to-r from-[#0233BD99] via-[#00000033] to-[#FFFFFF00]"
-      ></div>
+    <div id="course-banner" class="h-full bg-cover bg-center md:h-[600px] md:p-10">
       <div class="relative flex h-full items-center justify-center px-4 py-20 text-white md:px-10">
         <div class="w-full space-y-6 text-white">
-          <p class="w-full font-mono text-2xl font-semibold md:w-[60%] md:text-4xl lg:w-[40%]">
+          <h1 class="w-full font-mono text-2xl font-semibold md:w-[60%] md:text-6xl">
             {section.header.settings.title}
-          </p>
+          </h1>
           <p class="w-full md:w-[60%] lg:w-[40%]">{section.header.settings.subtitle}</p>
           <div class="flex items-center gap-2 md:gap-4">
             <PrimaryButton
@@ -94,13 +87,13 @@
   {/if}
 
   {#if section.courses?.show}
-    <div class="bg-white px-2 py-10 md:px-8">
-      <p class="mx-auto w-full pb-10 text-center text-3xl font-semibold dark:text-white md:w-[70%]">
+    <div class="w-full border-b px-2 py-10 md:px-8">
+      <p class="mx-auto w-full pb-10 text-center text-3xl font-semibold dark:text-white md:w-2/4">
         {section.courses.settings.title}
       </p>
-      <div>
+      <div class="py-10">
         {#if $courses.length > 0}
-          <div class="w-full items-start gap-4 lg:ml-[5%] lg:flex">
+          <div class="mx-auto max-w-5xl items-start gap-8 lg:flex">
             <div class="hidden w-max lg:block">
               <p class="mb-2 font-medium">Filter by</p>
               <div class="w-max space-y-2">
@@ -160,3 +153,9 @@
     </div>
   {/if}
 </main>
+
+<style>
+  #course-banner {
+    background-image: url('$lib/components/minimal/assets/courses-pg-bg.png');
+  }
+</style>

@@ -21,40 +21,39 @@
 </script>
 
 <!-- for some reason the custom color doesnt work for this template -->
-<main class="bg-[#101720]">
+<main class="bg-minimal-secondary">
   <!-- hero -->
   {#if $homePage}
     {@const content = getPageSection($homePage, SECTION.HERO)}
     {#if content?.show}
       <section class="flex max-h-full items-center justify-center px-5 py-5 md:px-14 md:py-14">
-        <section class="flex items-center justify-between gap-4">
-          <div class="w-full space-y-6 text-white">
-            <div class="w-[90%] rounded-sm bg-[#DCFCFFED] px-3 py-1 md:border">
-              <p class="text-center text-sm font-bold uppercase text-[#0F163F]">
+        <section class="mx-auto flex max-w-6xl items-center justify-between gap-4">
+          <div class="w-full max-w-[50%] space-y-6 text-white">
+            <div class="w-fit rounded-sm bg-emerald-100 px-3 py-1 md:border">
+              <p class="text-minimal text-center text-sm font-bold uppercase">
                 {content.settings?.title}
               </p>
             </div>
-            <p class="w-full text-4xl font-bold capitalize md:w-[70%]">
+            <h1 class="w-full text-5xl font-bold capitalize">
               {content.settings?.titleHighlight}
-            </p>
-            <p class="w-full md:w-[70%]">
+            </h1>
+            <p class="w-full">
               {content.settings?.subtitle}
             </p>
             <PrimaryButton
-              class="bg-[#0542CC]"
+              class="bg-minimal"
               onClick={() => {
                 goto(content.settings?.action.link);
               }}
               label={content.settings?.action.label}
             />
           </div>
+
           <div class="hidden h-[280px] max-h-[400px] w-5/6 rounded-md md:w-full lg:block">
             <img
               style="min-width:280px; min-height:200px"
               alt="landing page banner"
-              src={content.settings?.banner?.image
-                ? content.settings?.banner?.image
-                : '/course-banner.jpg'}
+              src={content.settings?.banner?.image || '/course-banner.jpg'}
               class="mt-2 h-full max-h-[400px] w-full max-w-[500px] rounded-md object-cover md:mt-0"
             />
           </div>
@@ -63,29 +62,30 @@
     {/if}
   {/if}
 
-  <!-- learn -->
+  <!-- Learn -->
 
   {#if learnSection?.show}
     <section
       id="about"
-      class="mx-auto flex h-full items-start justify-center bg-white px-5 py-20 md:px-14"
+      class="mx-auto flex h-full items-start justify-center border-b bg-white px-5 py-20 md:px-14"
     >
       <section class="flex flex-col items-start justify-center gap-8 lg:flex-row">
-        <div class="w-full space-y-4 lg:w-[60%]">
-          <p class="text-4xl font-bold">{learnSection.settings.title}</p>
-          <p class="w-full text-base leading-7 text-[#878787] lg:w-[80%]">
+        <div class="w-full space-y-4 lg:w-2/4">
+          <p class="max-w-[500px] text-4xl font-bold">{learnSection.settings.title}</p>
+          <p class="w-full text-base leading-7 text-gray-500 lg:w-[80%]">
             {learnSection.settings.subtitle}
           </p>
         </div>
         {#if learnSection.settings.benefits}
           <div class="w-full space-y-8 lg:w-fit">
             <span
-              class="rounded-sm border border-[#0233BD] bg-[#DCFCFF] px-3 py-1 text-center text-base font-bold uppercase text-[#0233BD]"
-              >{learnSection.settings.benefits.title}</span
+              class="border-minimal text-minimal bg-minimal/10 rounded-sm border px-3 py-1 text-center text-base font-bold uppercase"
             >
-            <ul class="space-y-6 text-base font-medium text-[#696969]">
+              {learnSection.settings.benefits.title}
+            </span>
+            <ul class="space-y-6 text-base font-medium text-gray-600">
               {#each learnSection.settings.benefits.list as items}
-                <li class="border-l border-[#0233BD] pl-3">{items.title}</li>
+                <li class="border-minimal border-l pl-3">{items.title}</li>
               {/each}
             </ul>
           </div>
@@ -100,19 +100,19 @@
     </section>
   {/if}
 
-  <!-- courses -->
+  <!-- Courses -->
 
   {#if courseSection?.show}
-    <section id="course" class="h-full space-y-10 bg-white px-5 py-36 pt-10">
-      <h1 class="mx-auto mb-4 w-full text-center text-3xl font-bold md:w-[70%]">
+    <section id="course" class="h-full space-y-10 bg-white px-5 pb-36 pt-10">
+      <h2 class="mx-auto mb-4 w-full text-center text-4xl font-bold md:w-[70%]">
         {courseSection.settings.title}
-      </h1>
+      </h2>
+
       <div class="mx-auto w-full md:w-[90%]">
         {#if $courses.length > 0}
-          <section class="mx-auto flex w-fit flex-wrap items-center gap-4 p-4">
+          <section class="mx-auto flex w-fit flex-wrap items-center justify-center gap-4 p-4">
             {#each $courses.slice(0, viewAll ? $courses.length : 3) as courseData}
               <CourseCard
-                className="bg-[#FDFDFD]"
                 slug={courseData.slug}
                 title={courseData.title}
                 description={courseData.description}
@@ -140,9 +140,10 @@
     </section>
   {/if}
 
-  <!-- testimonial -->
+  <!-- Testimonial -->
+
   {#if testimonialSection?.show}
-    <section id="testimonial" class="relative h-full pt-10 text-white">
+    <section class="relative h-full pt-10 text-white">
       <div class="absolute -top-20 left-[5%] w-[90%] md:-top-32">
         <img src={testimonial} alt="testimonial" class="max-h-[500px] w-full md:max-h-[300px]" />
       </div>
@@ -159,9 +160,9 @@
     </section>
   {/if}
 
-  <!-- faq -->
+  <!-- FAQ -->
   {#if faqSection?.show}
-    <section class="h-full space-y-10 bg-[#F9F9F9] px-5 py-20">
+    <section class="h-full space-y-10 bg-gray-100 px-5 py-20">
       <h1 class="mb-4 text-center text-3xl font-bold">{faqSection.settings.title}</h1>
       <section class="mx-auto w-full space-y-10 p-4 md:w-[80%]">
         {#each faqSection.settings.questions as faq}
@@ -171,7 +172,7 @@
     </section>
   {/if}
 
-  <!-- footerNote -->
+  <!-- cta -->
   {#if ctaSection?.show}
     <section
       class="flex flex-col items-center justify-between bg-blue-800 px-6 py-20 md:flex-row lg:px-10"

@@ -14,5 +14,9 @@
   {
     "name": "posthog",
     "description": "PostHog clone"
+  },
+  {
+    "name": "webflow",
+    "description": "Webflow template"
   }
 ]
