@@ -40,6 +40,10 @@ const config: Config = {
           DEFAULT: 'hsl(var(--classic-primary) / <alpha-value>)',
           secondary: 'hsl(var(--classic-secondary) / <alpha-value>)'
         },
+        ielts: {
+          DEFAULT: 'hsl(var(--ielts-primary) / <alpha-value>)',
+          secondary: 'hsl(var(--ielts-secondary) / <alpha-value>)'
+        },
         webflow: {
           DEFAULT: 'hsl(var(--webflow-primary) / <alpha-value>)',
           secondary: 'hsl(var(--webflow-secondary) / <alpha-value>)'

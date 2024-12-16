@@ -6,6 +6,7 @@
   import { getPageSection } from '@/utils/helpers/page';
   import type { Course, CourseFilterItem } from '@/utils/types/course';
   import type { Page } from '$lib/utils/types/page';
+  import PrimaryButton from '../PrimaryButton.svelte';
   import { SECTION } from '@/utils/constants/page';
 
   interface Props {
@@ -129,10 +130,11 @@
             </section>
             {#if filteredCourses.length > 3}
               <div class="my-5 flex w-full items-center justify-center">
-                <Button
-                  class="!bg-[#CE02CE] text-lg font-semibold text-white"
-                  on:click={() => (viewAll = !viewAll)}>View more programs</Button
-                >
+                <PrimaryButton
+                  class="text-lg font-semibold text-white "
+                  label="View more programs"
+                  onClick={() => (viewAll = !viewAll)}
+                />
               </div>
             {/if}
           </div>

@@ -2,6 +2,7 @@ import { components as CalComponents } from './cal';
 import { components as PosthogComponents } from './posthog';
 import { components as ClassicComponents } from './classic';
 import { components as MinimalComponents } from './minimal';
+import { components as IeltsComponents } from './ielts';
 import { components as WebflowComponents } from './webflow';
 
 function getComponents() {
@@ -12,6 +13,8 @@ function getComponents() {
       return ClassicComponents;
     case 'minimal':
       return MinimalComponents;
+    case 'ielts':
+      return IeltsComponents;
     case 'webflow':
       return WebflowComponents;
     default:

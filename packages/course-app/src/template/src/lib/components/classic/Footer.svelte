@@ -9,9 +9,10 @@
 
   import { getPageSection } from '@/utils/helpers/page';
   import { sharedPage } from '@/utils/stores/pages';
+  import { SECTION } from '@/utils/constants/page';
 
-  const content = $derived(getPageSection($sharedPage, 'footer'));
-  const seo = $derived(getPageSection($sharedPage, 'seo'));
+  const content = $derived(getPageSection($sharedPage, SECTION.FOOTER));
+  const seo = $derived(getPageSection($sharedPage, SECTION.SEO));
 </script>
 
 {#if content?.show}
@@ -21,7 +22,12 @@
     <div class="logo flex w-full items-center justify-between md:w-fit">
       <Logo src={seo?.settings.logo} alt={seo?.settings.title} className="" />
 
-      <a href="/#" class="flex items-center gap-1 md:hidden">
+      <a
+        href="https://classroomio.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="flex items-center gap-1 md:hidden"
+      >
         <p class=" text-base font-semibold text-[#0233BD] underline">Built on ClassroomIO</p>
       </a>
     </div>

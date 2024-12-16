@@ -13,5 +13,6 @@ export const SECTION = {
   CTA: 'cta',
   INSTRUCTORS: 'instructors',
   SEO: 'seo',
+  FOOTER: 'footer',
   NAVIGATION: 'navigation'
 };

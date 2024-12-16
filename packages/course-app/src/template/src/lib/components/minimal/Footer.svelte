@@ -2,9 +2,10 @@
   import { getPageSection } from '@/utils/helpers/page';
   import { sharedPage } from '@/utils/stores/pages';
   import Logo from '$lib/components/ui/_custom/Logo.svelte';
+  import { SECTION } from '@/utils/constants/page';
 
-  const content = $derived(getPageSection($sharedPage, 'footer'));
-  const seo = $derived(getPageSection($sharedPage, 'seo'));
+  const content = $derived(getPageSection($sharedPage, SECTION.FOOTER));
+  const seo = $derived(getPageSection($sharedPage, SECTION.SEO));
 </script>
 
 {#if content?.show}
@@ -28,7 +29,12 @@
         <a href={content.settings.facebook} target="_blank" title="facebook">facebook</a>
       {/if}
     </ul>
-    <a href="/#" class="flex items-center gap-1 text-[#0233BD] hover:underline dark:text-white">
+    <a
+      href="https://classroomio.com"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-minimal flex items-center gap-1 hover:underline dark:text-white"
+    >
       <p class="text-base font-semibold">Built on ClassroomIO</p>
     </a>
   </nav>
