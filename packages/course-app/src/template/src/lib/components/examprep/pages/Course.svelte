@@ -66,7 +66,7 @@
 
 <main class="overflow-x-hidden">
   {#if section.header?.show}
-    <section class="flex h-full items-center justify-center py-20">
+    <section class="flex h-[50vh] items-center justify-center py-20">
       <section class="flex flex-col items-start gap-10 p-4 text-center md:items-center">
         <div class="w-full space-y-6">
           <p
@@ -100,7 +100,7 @@
                   for={item.title}
                   class="flex flex-row items-center whitespace-nowrap rounded-md bg-white p-2 text-xs font-medium text-gray-800"
                 >
-                  <input type="checkbox" name={item.title} class="text-ielts mr-2" />
+                  <input type="checkbox" name={item.title} class="text-examprep mr-2" />
 
                   {item.title}
                 </label>

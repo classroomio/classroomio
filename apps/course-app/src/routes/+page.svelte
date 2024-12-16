@@ -39,12 +39,12 @@
       url: 'https://classic.courseapp.oncws.com',
       github: 'https://github.com/classroomio/classroomio'
     },
-    // {
-    //   name: 'Examprep',
-    //   image: 'https://cdn.courseapp.oncws.com/templates/examprep-template.png',
-    //   url: 'https://examprep.courseapp.oncws.com',
-    //   github: 'https://github.com/classroomio/classroomio'
-    // },
+    {
+      name: 'Examprep',
+      image: 'https://cdn.courseapp.oncws.com/templates/examprep-template.png',
+      url: 'https://examprep.courseapp.oncws.com',
+      github: 'https://github.com/classroomio/classroomio'
+    },
     {
       name: 'Minimal',
       image: 'https://cdn.courseapp.oncws.com/templates/minimal.png',

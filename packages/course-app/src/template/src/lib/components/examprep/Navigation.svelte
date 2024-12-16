@@ -17,9 +17,9 @@
   }
 </script>
 
-<nav class={`relative flex w-full items-center justify-between border-b pl-6 `}>
+<nav class="relative flex h-16 w-full items-center justify-between border-b pl-6">
   <!-- Logo Section -->
-  <Logo src={seo?.settings.logo} alt={seo?.settings.title} />
+  <Logo src={seo?.settings.logo} alt={seo?.settings.title} addAcademy />
 
   <!-- Mobile Menu Button (Visible only on mobile) -->
   <button onclick={toggleMenu} class="px-6 py-4 lg:hidden">
@@ -81,7 +81,7 @@
   <PrimaryButton
     href="/courses"
     label="Learn with us"
-    class="hidden w-fit rounded-none bg-blue-600 px-6 py-6 text-base font-normal text-white hover:no-underline lg:flex"
+    class="hidden h-full w-fit px-6 py-6 text-base font-normal text-white hover:no-underline lg:flex"
   >
     <ArrowRight size={20} class="fill-white" />
   </PrimaryButton>

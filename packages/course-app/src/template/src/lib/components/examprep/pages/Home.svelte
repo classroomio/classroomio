@@ -6,7 +6,7 @@
   import { slide } from 'svelte/transition';
   import { CheckmarkFilled } from 'carbon-icons-svelte';
   import defaultBanner from '../assets/org-banner.png';
-  import defaultAvatar from '../assets/ielts-user.png';
+  import defaultAvatar from '../assets/examprep-user.png';
 
   import PrimaryButton from '../PrimaryButton.svelte';
   import { goto } from '$app/navigation';
@@ -53,7 +53,7 @@
               {content.settings.subtitle}
             </p>
             <PrimaryButton
-              class="rounded-none px-6 font-serif font-semibold uppercase"
+              class="px-6 font-semibold uppercase"
               label={content.settings.action.label}
               onClick={() => {
                 goto(content.settings.action.link);
@@ -77,15 +77,16 @@
       </section>
     {/if}
   {/if}
+
   <!-- testimonial -->
   {#if testimonialSection?.show}
     <section class="overflow-x-hidden bg-slate-100 px-4 py-6">
       <div
-        class="bg-ielts relative mx-auto flex h-[220px] w-full items-center text-center text-white md:w-[80%] lg:w-[70%]"
+        class="bg-examprep relative mx-auto flex h-[220px] w-full items-center text-center text-white md:w-[80%] lg:w-[70%]"
       >
         <!-- Pointer at the top -->
         <div
-          class="bg-ielts absolute left-[50px] top-[-25px] h-10 w-16 -translate-x-1/2 transform"
+          class="bg-examprep absolute left-[50px] top-[-25px] h-10 w-16 -translate-x-1/2 transform"
           style="clip-path: polygon(50% 0%, 0% 100%, 100% 100%);"
         ></div>
 
@@ -123,16 +124,14 @@
       <!-- Dots for testimonial navigation -->
       <div class="mt-4 flex justify-center space-x-2">
         {#each testimonialSection.settings.list as _, index}
-          <!-- svelte-ignore a11y_click_events_have_key_events -->
-          <!-- svelte-ignore a11y_no_static_element_interactions -->
-          <!-- svelte-ignore event_directive_deprecated -->
-          <div
+          <button
             class="h-3 w-3 cursor-pointer rounded-full transition-opacity duration-300 {currentIndex ===
             index
               ? 'bg-blue-900'
               : 'bg-blue-900 opacity-50'}"
-            on:click={() => goToSlide(index)}
-          ></div>
+            onclick={() => goToSlide(index)}
+            aria-label={`Go to slide ${index + 1}`}
+          ></button>
         {/each}
       </div>
     </section>
@@ -214,7 +213,7 @@
     </section>
   {/if}
 
-  <!-- footernote -->
+  <!-- cta -->
   {#if ctaSection?.show}
     <section
       class="flex flex-col items-center justify-between space-y-4 bg-blue-800 px-6 py-20 lg:px-10"
@@ -233,7 +232,7 @@
         <PrimaryButton
           label={ctaSection.settings.button.label}
           href={ctaSection.settings.button.redirect && ctaSection.settings.button.link}
-          class="rounded-none bg-white text-lg font-bold uppercase text-blue-700 hover:bg-white"
+          class=" text-examprep bg-white text-lg font-bold uppercase hover:bg-white"
         />
       </div>
     </section>

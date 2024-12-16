@@ -33,7 +33,7 @@
       rel="noopener noreferrer"
       class="flex items-center gap-1"
     >
-      <p class=" text-ielts text-base font-semibold underline">Built on ClassroomIO</p>
+      <p class=" text-examprep text-base font-semibold underline">Built on ClassroomIO</p>
     </a>
   </nav>
 {/if}
