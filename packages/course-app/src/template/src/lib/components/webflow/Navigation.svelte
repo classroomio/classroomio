@@ -1,6 +1,7 @@
 <script lang="ts">
   import Close from 'carbon-icons-svelte/lib/Close.svelte';
   import Menu from 'carbon-icons-svelte/lib/Menu.svelte';
+  import Logo from '$lib/components/ui/_custom/Logo.svelte';
 
   import DirectionStraightRight from 'carbon-icons-svelte/lib/DirectionStraightRight.svelte';
 
@@ -27,7 +28,7 @@
     <div class="z-50 flex items-center p-1 lg:hidden">
       <button
         onclick={toggleMenu}
-        class="flex w-fit items-center gap-2 bg-gray-900 p-2 text-sm text-white transition dark:bg-[#181818]"
+        class="flex w-fit items-center gap-2 bg-gray-900 p-2 text-sm text-white transition"
       >
         {#if open}
           <Close size={24} />
@@ -43,22 +44,16 @@
         ? 'translate-x-0 lg:translate-x-0 '
         : '-translate-x-full lg:translate-x-0 '}"
     >
-      <!-- desktop nav -->
-      <div
-        class="relative h-80 w-52 rounded bg-gray-900 py-2 text-sm text-white transition dark:border-[#363636] dark:bg-[#181818]"
-      >
-        <div
-          class="flex items-center justify-between gap-2 border-b px-4 py-2 dark:border-[#363636]"
-        >
-          <a href="/" title={seo?.settings.title} id="logo">
-            <img
-              src={seo?.settings.logo}
-              alt={`${seo?.settings.title} logo`}
-              class="size-8 mx-auto inline-block rounded bg-white object-contain"
-            />
-          </a>
+      <!-- Desktop nav -->
+      <div class="relative h-80 w-52 rounded bg-neutral-900 py-2 text-sm text-white transition">
+        <div class="w-fit rounded-md bg-white p-2">
+          <Logo
+            src={seo?.settings.logo}
+            alt={`${seo?.settings.title} logo`}
+            className="flex-col bg-white"
+          />
         </div>
-        <div class="flex flex-col gap-2 space-y-2 border-b px-4 py-4 dark:border-[#363636]">
+        <div class="flex flex-col gap-2 space-y-2 border-b px-4 py-4">
           {#each content?.settings.navItems.slice(0, 2) as navItem}
             <a href={navItem.link} onclick={toggleMenu} class="flex items-center gap-2">
               {#if navItem.redirect}
@@ -71,7 +66,7 @@
           {/each}
         </div>
 
-        <div class="flex flex-col gap-2 space-y-2 border-b px-4 py-4 dark:border-[#363636]">
+        <div class="flex flex-col gap-2 space-y-2 border-b px-4 py-4">
           {#each content?.settings.navItems.slice(2, content?.settings.navItems.length) as navItem}
             <a href={navItem.link} onclick={toggleMenu} class="flex items-center gap-2">
               {#if navItem.redirect}
@@ -86,7 +81,7 @@
 
         <div class="px-2 py-6">
           <PrimaryButton
-            class="group flex h-fit w-full items-center gap-6 rounded bg-[#0233BD] px-2 py-2 text-xs text-white hover:bg-[#0233BD]"
+            class="bg-webflow hover:bg-webflow-secondary group flex h-fit w-full items-center gap-6 rounded px-2 py-2 text-xs text-white"
             onClick={() => {
               goto('/courses');
               toggleMenu();

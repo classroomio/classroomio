@@ -5,6 +5,7 @@
   import DirectionStraightRight from 'carbon-icons-svelte/lib/DirectionStraightRight.svelte';
   import { onMount } from 'svelte';
   import EmptyState from '../EmptyState.svelte';
+  import { DotPattern } from '$lib/components/ui/animation/dotpattern';
 
   import CourseCard from '../CourseCard.svelte';
   import { courses } from '@/utils/stores/course';
@@ -45,19 +46,18 @@
     <div class="w-full">
       {#if heroSection?.show}
         <section
-          class="flex min-h-[100vh] items-center justify-center overflow-hidden bg-[radial-gradient(ellipse_at_top_right,_rgba(11,92,215,0.6)_1%,_rgba(0,0,0,0.8)_30%,_transparent_40%),radial-gradient(ellipse_at_bottom_left,_rgba(11,92,215,0.3)_10%,_rgba(0,0,0,0.8)_30%,_transparent_50%)] px-2 py-16 lg:min-h-full
-                 lg:px-14"
+          class="flex min-h-[50vh] items-center justify-center overflow-hidden px-2 py-20 lg:px-14"
         >
-          <section
-            class="flex w-full flex-col-reverse items-center justify-center gap-5 text-center md:flex-col lg:ml-auto lg:w-[80%]"
+          <div
+            class="relative flex w-full flex-col-reverse items-center justify-center gap-5 text-center md:flex-col lg:ml-auto lg:w-[80%]"
           >
-            <div class="mb-4 w-full space-y-6">
+            <DotPattern
+              class="[mask-image:radial-gradient(30vw_circle_at_center,white,transparent)]"
+            />
+            <div class="z-10 mb-4 w-full space-y-6">
               <p class="mx-auto w-full text-3xl font-bold md:w-[90%] md:text-6xl">
                 {#each letters as letter, index}
-                  <span
-                    style="opacity: {Math.max(0, 1 - (scrollPosition - index * 10) / 50)}"
-                    class="transition-opacity duration-300"
-                  >
+                  <span>
                     {letter}
                   </span>
                 {/each}
@@ -76,9 +76,7 @@
                 {/each}
               </p>
               <PrimaryButton
-                onClick={() => {
-                  goto(heroSection?.settings.action.link);
-                }}
+                href={heroSection?.settings.action.link}
                 label={heroSection?.settings.action.label}
               >
                 <DirectionStraightRight
@@ -86,7 +84,7 @@
                 />
               </PrimaryButton>
             </div>
-          </section>
+          </div>
         </section>
       {/if}
 
