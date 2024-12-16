@@ -1,31 +1,19 @@
 <script lang="ts">
+  import Logo from '$lib/components/ui/_custom/Logo.svelte';
   import { getPageSection } from '$lib/utils/helpers/page';
   import { sharedPage } from '$lib/utils/stores/pages';
 
   const content = $derived(getPageSection($sharedPage, 'footer'));
   const seo = $derived(getPageSection($sharedPage, 'seo'));
-
-  /**
-   * Constants
-   */
 </script>
 
 {#if content?.show}
   <nav
-    class="w-full h-40 bg-posthog-background border-t border-posthog-border flex flex-col md:flex-row items-start md:items-center gap-4 md:justify-between py-4 px-6"
+    class="bg-posthog-background border-posthog-border flex h-40 w-full flex-col items-start gap-4 border-t px-6 py-4 md:flex-row md:items-center md:justify-between"
   >
-    <div class="logo">
-      <a href="/" title={`Go to ${seo?.settings.title} Home`} id="logo" data-hveid="8">
-        <img
-          src={seo?.settings.logo}
-          alt={`${seo?.settings.title} logo`}
-          class="w-24"
-          data-atf="1"
-        />
-      </a>
-    </div>
+    <Logo src={seo?.settings.logo} alt={seo?.settings.title} className="w-24" />
     <ul
-      class="flex flex-col md:flex-row items-start md:items-center gap-4 -md:gap-8 font-semibold capitalize underline"
+      class="-md:gap-8 flex flex-col items-start gap-4 font-semibold capitalize underline md:flex-row md:items-center"
     >
       {#if content.settings.twitter}
         <a href={content.settings.twitter} target="_blank" title="twitter">Twitter</a>
@@ -42,7 +30,7 @@
     </ul>
     <a
       href="https://classroomio.com"
-      class="flex items-center hover:underline text-[#0233BD] dark:text-white gap-1"
+      class="flex items-center gap-1 text-[#0233BD] hover:underline dark:text-white"
       target="_blank"
       rel="noopener noreferrer"
     >

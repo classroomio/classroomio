@@ -21,10 +21,7 @@
   class="relative top-0 z-[3000] flex w-full items-center justify-between border-b border-[#D0D1C9] bg-[#F4F4F4] px-6 py-4 md:sticky"
 >
   <!-- Logo Section -->
-  <div class="flex flex-row items-center gap-1">
-    <Logo src={seo?.settings.logo} alt={seo?.settings.title} className="w-24" />
-    <span class="mt-1 text-lg font-semibold italic">Academy</span>
-  </div>
+  <Logo src={seo?.settings.logo} alt={seo?.settings.title} className="w-24" addAcademy />
 
   <ul
     class="hidden list-none items-center gap-14 text-base font-semibold text-[#1F2937] hover:no-underline lg:flex"

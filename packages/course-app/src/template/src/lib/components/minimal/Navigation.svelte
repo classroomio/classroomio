@@ -18,10 +18,7 @@
 
 <nav class={`relative flex w-full items-center justify-between bg-white px-6 py-4 dark:bg-black`}>
   <!-- Logo Section -->
-  <div class="flex flex-row items-center gap-1">
-    <Logo src={seo?.settings.logo} alt={seo?.settings.title} className="w-24" />
-    <span class="mt-1 text-lg font-semibold italic">Academy</span>
-  </div>
+  <Logo src={seo?.settings.logo} alt={seo?.settings.title} className="w-24" addAcademy />
 
   <!-- Mobile Menu Button (Visible only on mobile and when logged in) -->
 
