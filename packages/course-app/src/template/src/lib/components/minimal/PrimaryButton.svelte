@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Button } from '$lib/components/ui/button';
-  import { cn } from '$lib/utils.js';
+  import { cn } from '$lib/utils';
 
   interface Props {
     onClick?: () => void;
@@ -16,7 +16,7 @@
   {href}
   onclick={onClick}
   class={cn(
-    'rounded-none uppercase bg-minimal hover:bg-minimal p-3 hover:scale-95 font-bold',
+    'rounded-none uppercase bg-minimal hover:bg-minimal p-3 font-bold hover:bg-minimal/90 hover:scale-95 transition-all duration-300',
     className
   )}
   {...restProps}

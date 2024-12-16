@@ -12,6 +12,7 @@
   import { CheckmarkFilled } from 'carbon-icons-svelte';
   import Accordion from '../Accordion.svelte';
   import bannerImg from '../assets/banner.jpeg';
+  import { SECTION } from '@/utils/constants/page';
 
   /**
    * State
@@ -22,11 +23,11 @@
   /**
    * Constants
    */
-  const coursesSection = $derived(getPageSection($homePage, 'courses'));
-  const aboutSection = $derived(getPageSection($homePage, 'about'));
-  const faqSection = $derived(getPageSection($homePage, 'faq'));
-  const testimonialSection = $derived(getPageSection($homePage, 'testimonial'));
-  const footerNoteSection = $derived(getPageSection($homePage, 'cta'));
+  const coursesSection = $derived(getPageSection($homePage, SECTION.COURSE));
+  const aboutSection = $derived(getPageSection($homePage, SECTION.ABOUT));
+  const faqSection = $derived(getPageSection($homePage, SECTION.FAQ));
+  const testimonialSection = $derived(getPageSection($homePage, SECTION.TESTIMONIAL));
+  const ctaSection = $derived(getPageSection($homePage, SECTION.CTA));
 
   /**
    * Functions
@@ -42,7 +43,7 @@
 
 <!-- hero -->
 {#if $homePage}
-  {@const content = getPageSection($homePage, 'header')}
+  {@const content = getPageSection($homePage, SECTION.HERO)}
   {#if content?.show}
     <section
       class="font-matter flex h-full items-start justify-center bg-[#F4F4F4] px-5 py-10 md:items-center lg:px-20 lg:py-20"
@@ -94,7 +95,7 @@
           </svg>
           <img
             alt="landing page banner"
-            src={content.settings.banner?.image ?? bannerImg}
+            src={content.settings.banner?.image || bannerImg}
             class="h-[250px] w-[250px] rounded-full object-cover lg:h-[350px] lg:w-[500px]"
           />
         </div>
@@ -237,7 +238,7 @@
           >
             <div class="flex items-center gap-2">
               <img
-                src={item.banner ?? '/classroomio-course-img-template.jpg'}
+                src={item.banner ?? '/course-banner.jpg'}
                 alt=""
                 class="h-10 w-10 rounded-full"
               />
@@ -258,8 +259,8 @@
   </section>
 {/if}
 
-<!-- footernote -->
-{#if footerNoteSection?.show}
+<!-- CTA -->
+{#if ctaSection?.show}
   <section class="w-full bg-[#F4F4F4] px-4 py-16 lg:px-10">
     <div
       class="min-h-40 relative mx-auto flex w-full flex-col justify-center divide-x divide-transparent rounded-xl border-2 border-[#141414] md:flex-row lg:w-[80%]"
@@ -268,7 +269,7 @@
         class="min-h-40 flex w-full items-center justify-center rounded-t-xl bg-[#E5E7E0] px-4 py-20 text-center text-4xl font-bold capitalize md:w-[65%] md:rounded-l-xl md:text-start lg:px-10"
       >
         <h1 class="leading-normal">
-          {footerNoteSection.settings.title}<br />{footerNoteSection.settings.titleHighlight}
+          {ctaSection.settings.title}<br />{ctaSection.settings.titleHighlight}
         </h1>
       </div>
 
@@ -276,12 +277,13 @@
         class="min-h-40 flex w-full items-center justify-center rounded-b-xl bg-white px-4 py-16 text-lg font-semibold md:w-[35%] md:rounded-r-xl"
       >
         <p>
-          {footerNoteSection.settings.subtitle}
+          {ctaSection.settings.subtitle}
         </p>
         <Button
           class="absolute -bottom-5 rounded-2xl border-[1.5px] border-[#141414] bg-white py-6 uppercase text-[#141414] shadow-[0px_3px_#141414] hover:bg-white hover:text-black"
+          href={ctaSection.settings?.button?.link}
         >
-          {footerNoteSection.settings.buttonLabel}
+          {ctaSection.settings?.button?.label}
         </Button>
       </div>
     </div>

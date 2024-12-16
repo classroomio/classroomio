@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Logo from '$lib/components/ui/_custom/Logo.svelte';
   import { getPageSection } from '$lib/utils/helpers/page';
   import { sharedPage } from '$lib/utils/stores/pages';
 
@@ -7,20 +8,18 @@
 </script>
 
 {#if content?.show}
-  <nav class="w-full py-4 px-4 lg:px-14 bg-[#F4F4F4]">
+  <nav class="w-full bg-[#F4F4F4] px-4 py-4 lg:px-14">
     <div
-      class="bg-[#2E2E2F] rounded-lg p-4 text-white w-full flex flex-col md:flex-row items-start md:items-center gap-4 md:justify-between"
+      class="flex w-full flex-col items-start gap-4 rounded-lg bg-[#2E2E2F] p-4 text-white md:flex-row md:items-center md:justify-between"
     >
-      <a href="/#" class="p-2 bg-white rounded-lg">
-        <img
-          src={seo?.settings.logo}
-          alt={`${seo?.settings.title} logo`}
-          class="rounded bg-white inline-block mx-auto"
-          data-atf="1"
-        />
-      </a>
+      <Logo
+        src={seo?.settings.logo}
+        alt={seo?.settings.title}
+        className="bg-white rounded-lg p-2 w-28"
+      />
+
       <ul
-        class="flex flex-col md:flex-row items-start md:items-center gap-4 -md:gap-8 font-semibold capitalize underline"
+        class="-md:gap-8 flex flex-col items-start gap-4 font-semibold capitalize underline md:flex-row md:items-center"
       >
         {#if content.settings.twitter}
           <a href={content.settings.twitter} target="_blank" title="twitter">Twitter</a>
@@ -38,7 +37,7 @@
       <a
         href="https://git.new/cio-template"
         target="_blank noopener noreferrer"
-        class="flex w-full md:w-fit items-center justify-center lg:justify-start hover:underline text-white gap-1"
+        class="flex w-full items-center justify-center gap-1 text-white hover:underline md:w-fit lg:justify-start"
       >
         <p class="text-base font-bold">Built with ❤️ by ClassroomIO</p>
       </a>

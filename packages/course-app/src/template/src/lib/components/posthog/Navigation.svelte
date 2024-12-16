@@ -8,6 +8,7 @@
   import type { Section } from '@/utils/types/page';
   import PrimaryButton from './PrimaryButton.svelte';
   import { ArrowUpRight } from 'carbon-icons-svelte';
+  import Logo from '$lib/components/ui/_custom/Logo.svelte';
 
   let open = $state(false);
 
@@ -20,19 +21,10 @@
 </script>
 
 <nav
-  class={`relative w-full flex items-center justify-between border-b border-posthog-border  py-3 px-6`}
+  class={`border-posthog-border relative flex w-full items-center justify-between border-b  px-6 py-3`}
 >
   <!-- Logo Section -->
-  <a href="/" class="flex items-center flex-col" title={`${seo?.settings?.title}`} id="logo">
-    {#if seo?.settings?.logo}
-      <img
-        src={seo?.settings?.logo || ''}
-        alt={`${seo?.settings?.title || ''} logo`}
-        class="w-24"
-      />
-    {/if}
-    <h1 class="text-lg font-semibold">University</h1>
-  </a>
+  <Logo src={seo?.settings.logo} alt={seo?.settings.title} className="w-24" addAcademy />
 
   <!-- Mobile Menu Button (Visible only on mobile and when logged in) -->
   <button onclick={toggleMenu} class="lg:hidden">
@@ -40,14 +32,14 @@
   </button>
 
   <!-- Desktop Navigation Menu (Hidden on mobile) -->
-  <ul class="hidden lg:flex items-center space-x-8 list-none hover:no-underline">
+  <ul class="hidden list-none items-center space-x-8 hover:no-underline lg:flex">
     {#each content?.settings.navItems as navItem}
       <a
         href={navItem.link}
         target={navItem.redirect ? '_blank' : undefined}
         class="text-sm text-gray-500 hover:text-black"
       >
-        <li class="hover:no-underline flex items-center gap-1">
+        <li class="flex items-center gap-1 hover:no-underline">
           {navItem.title}
           {#if navItem.redirect}
             <ArrowUpRight size={16} />
@@ -62,17 +54,17 @@
   <!-- Mobile Sidebar Menu (Visible only on mobile) -->
 
   <ul
-    class={`fixed top-0 left-0 pt-10 h-full bg-white dark:bg-black w-full transform hover:no-underline ${
+    class={`fixed left-0 top-0 h-full w-full transform bg-white pt-10 hover:no-underline dark:bg-black ${
       open ? 'translate-y-0' : '-translate-y-full'
-    } transition-transform duration-300 ease-in-out lg:hidden text-base font-bold text-[#1F2937] dark:text-white list-none cursor-pointer`}
+    } cursor-pointer list-none text-base font-bold text-[#1F2937] transition-transform duration-300 ease-in-out dark:text-white lg:hidden`}
   >
-    <button onclick={toggleMenu} class="absolute right-4 top-4 lg:hidden z-20">
+    <button onclick={toggleMenu} class="absolute right-4 top-4 z-20 lg:hidden">
       <Close size={24} />
     </button>
 
     {#each content?.settings.navItems as navItem}
-      <li class="py-4 px-6 border-b dark:border-gray-200">
-        <a href={navItem.link} onclick={toggleMenu} class="flex item-center gap-1"
+      <li class="border-b px-6 py-4 dark:border-gray-200">
+        <a href={navItem.link} onclick={toggleMenu} class="item-center flex gap-1"
           >{navItem.title}
           {#if navItem.redirect}
             <ArrowUpRight size={16} />
@@ -81,13 +73,13 @@
       </li>
     {/each}
 
-    <div class="border-b dark:border-gray-200 py-4 px-6">
+    <div class="border-b px-6 py-4 dark:border-gray-200">
       <PrimaryButton
         onClick={() => {
           goto('/courses');
           toggleMenu;
         }}
-        class="bg-[#F7A50180] hover:bg-[#f7a501ad] dark:bg-[#F7A501] hover:no-underline rounded-lg flex items-center py-2 px-3 border w-fit border-[#4A4C524D] font-bold text-black text-base"
+        class="flex w-fit items-center rounded-lg border border-[#4A4C524D] bg-[#F7A50180] px-3 py-2 text-base font-bold text-black hover:bg-[#f7a501ad] hover:no-underline dark:bg-[#F7A501]"
         label="Explore Course"
       />
     </div>
@@ -95,7 +87,7 @@
 
   <!-- Learn with Me Button (Visible on desktop when logged in) -->
 
-  <div class="hidden lg:flex items-center gap-2">
+  <div class="hidden items-center gap-2 lg:flex">
     <PrimaryButton onClick={() => goto('/courses')} label="Explore Course" />
   </div>
 </nav>

@@ -1,17 +1,19 @@
 <script lang="ts">
   import { cn } from '$lib/utils';
 
+  export let href: string;
+  export let target: string = '';
+  export let rel: string = '';
   export let shimmerColor = '#ffffff';
   export let shimmerSize = '0.05em';
   export let shimmerDuration = '3s';
   export let borderRadius = '100px';
   export let background = 'rgba(0, 0, 0, 1)';
-  export let onClick: () => void;
   let className: any = '';
   export { className as class };
 </script>
 
-<button
+<a
   style:--spread="90deg"
   style:--shimmer-color={shimmerColor}
   style:--radius={borderRadius}
@@ -23,7 +25,9 @@
     'transform-gpu transition-transform duration-300 ease-in-out active:translate-y-[1px]',
     className
   )}
-  on:click={onClick}
+  {href}
+  {target}
+  {rel}
 >
   <div class={cn('-z-30 blur-[2px]', 'absolute inset-0 overflow-visible [container-type:size]')}>
     <div
@@ -59,4 +63,4 @@
       'absolute -z-20 [background:var(--bg)] [border-radius:var(--radius)] [inset:var(--cut)]'
     )}
   ></div>
-</button>
+</a>

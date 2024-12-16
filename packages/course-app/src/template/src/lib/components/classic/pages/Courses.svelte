@@ -7,6 +7,7 @@
   import type { Course, CourseFilterItem } from '@/utils/types/course';
   import type { Page } from '$lib/utils/types/page';
   import PrimaryButton from '../PrimaryButton.svelte';
+  import { SECTION } from '@/utils/constants/page';
 
   interface Props {
     data: {
@@ -42,8 +43,8 @@
    * Constants
    */
   const section = $derived({
-    header: getPageSection(data.page, 'header'),
-    courses: getPageSection(data.page, 'courses')
+    header: getPageSection(data.page, SECTION.HERO),
+    courses: getPageSection(data.page, SECTION.COURSE)
   });
 
   /**
@@ -66,11 +67,11 @@
 <section class="overflow-x-hidden">
   {#if section.header?.show}
     <div
-      class="flex h-full w-full flex-col items-center justify-center bg-gradient-to-r from-[#f0a5f11a] via-white to-[#f6e7f61a] pb-36 pt-20 text-center"
+      class="flex h-full w-full flex-col items-center justify-center bg-gradient-to-r from-[#F785F9] via-white to-[#fff] pb-36 pt-20 text-center"
     >
       <h1 class="mb-4 w-full text-center text-5xl font-bold md:w-[50%]">
         {section.header.settings.title}
-        <span class="text-5xl font-bold text-[#CE02CE]/80">
+        <span class="text-classic/80 text-5xl font-bold">
           {section.header.settings.titleHighlight}</span
         >
       </h1>
@@ -82,7 +83,9 @@
 
   {#if section.courses?.show}
     <section id="course" class="h-full bg-white px-4 pb-20 pt-4">
-      <h1 class="mx-auto mb-6 w-full text-center text-3xl font-bold text-[#3F3F3F] md:w-[60%]">
+      <h1
+        class="mx-auto my-10 mb-20 w-full text-center text-3xl font-bold text-[#3F3F3F] md:w-[60%]"
+      >
         {section.courses.settings.title}
       </h1>
       <div class="mx-auto w-full md:w-[90%]">

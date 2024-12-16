@@ -10,11 +10,12 @@
   import EmptyState from '../EmptyState.svelte';
   import { CheckmarkFilled } from 'carbon-icons-svelte';
   import FaqCard from '../FaqCard.svelte';
+  import { SECTION } from '@/utils/constants/page';
 
-  const coursesSection = $derived(getPageSection($homePage, 'courses'));
-  const aboutSection = $derived(getPageSection($homePage, 'about'));
-  const faqSection = $derived(getPageSection($homePage, 'faq'));
-  const footerNoteSection = $derived(getPageSection($homePage, 'cta'));
+  const coursesSection = $derived(getPageSection($homePage, SECTION.COURSE));
+  const aboutSection = $derived(getPageSection($homePage, SECTION.ABOUT));
+  const faqSection = $derived(getPageSection($homePage, SECTION.FAQ));
+  const ctaSection = $derived(getPageSection($homePage, SECTION.CTA));
 
   function getCourseUrl() {
     return '/courses';
@@ -26,7 +27,7 @@
 <div class="bg-posthog-background">
   <!-- hero -->
   {#if $homePage}
-    {@const content = getPageSection($homePage, 'header')}
+    {@const content = getPageSection($homePage, SECTION.HERO)}
     {#if content?.show}
       <section
         class="font-matter flex min-h-full items-center justify-center overflow-hidden px-10 py-14 md:px-14"
@@ -143,8 +144,8 @@
     </div>
   {/if}
 
-  <!-- footerNote -->
-  {#if footerNoteSection?.show}
+  <!-- cta -->
+  {#if ctaSection?.show}
     <section class="h-full w-full p-4 md:p-20">
       <section
         class="mx-auto flex w-fit flex-col items-center justify-between space-y-4 rounded-md bg-[#E5E7E0] px-2 py-20 dark:bg-[#232429] md:w-[80%] lg:px-5"
@@ -153,23 +154,23 @@
           <p
             class="mx-auto w-full text-center text-4xl font-bold capitalize lg:w-[90%] xl:text-start"
           >
-            {footerNoteSection.settings.title}
+            {ctaSection.settings.title}
 
-            <span class="text-[#F54E00]">{footerNoteSection.settings.titleHighlight}</span>
+            <span class="text-[#F54E00]">{ctaSection.settings.titleHighlight}</span>
           </p>
         </div>
         <div
           class="flex w-full flex-col items-center gap-4 lg:w-[90%] lg:flex-row lg:items-end lg:justify-between lg:gap-0"
         >
           <p class="w-full text-center text-sm font-semibold lg:w-[50%] lg:text-start">
-            {footerNoteSection.settings.subtitle}
+            {ctaSection.settings.subtitle}
           </p>
 
           <div class="w-fit">
             <PrimaryButton
-              href={getCourseUrl()}
+              href={ctaSection.settings?.button?.link}
               class="bg-white px-8 text-black transition hover:bg-white"
-              label={footerNoteSection.settings.buttonLabel}
+              label={ctaSection.settings?.button?.label}
             />
           </div>
         </div>

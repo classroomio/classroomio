@@ -6,6 +6,7 @@
   import { COURSE_TYPE } from '$lib/utils/constants/course';
   import type { CourseFilterItem, Course } from '$lib/utils/types/course';
   import type { Page } from '$lib/utils/types/page';
+  import { SECTION } from '@/utils/constants/page';
 
   interface Props {
     data: {
@@ -41,8 +42,8 @@
    * Constants
    */
   const section = $derived({
-    header: getPageSection(data.page, 'header'),
-    courses: getPageSection(data.page, 'courses')
+    header: getPageSection(data.page, SECTION.HERO),
+    courses: getPageSection(data.page, SECTION.COURSE)
   });
 
   /**
@@ -66,7 +67,7 @@
 <div class="w-full">
   {#if section.header?.show}
     <section
-      style="background-image: url('$lib/components/cal/assets/calcom-background.svg');"
+      id="courses-header"
       class="flex min-h-[30vh] items-center justify-center bg-cover bg-center px-2 py-10 lg:px-14"
     >
       <section class="flex flex-col items-center justify-center gap-5 text-center">
@@ -156,3 +157,9 @@
   {/if}
   <!-- course end -->
 </div>
+
+<style>
+  #courses-header {
+    background-image: url('$lib/components/cal/assets/calcom-background.svg');
+  }
+</style>
