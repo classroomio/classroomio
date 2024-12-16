@@ -4,8 +4,15 @@
   import { courses } from '$lib/utils/stores/course';
   import { quintIn, quintInOut, quintOut } from 'svelte/easing';
   import { fade, fly, slide } from 'svelte/transition';
+  import { CheckmarkFilled } from 'carbon-icons-svelte';
+  import defaultBanner from '../assets/org-banner.png';
+  import defaultAvatar from '../assets/ielts-user.png';
 
   import PrimaryButton from '../PrimaryButton.svelte';
+  import { goto } from '$app/navigation';
+  import CourseCard from '../CourseCard.svelte';
+  import EmptyState from '../EmptyState.svelte';
+  import Accordion from '../Accordion.svelte';
 
   const coursesSection = $derived(getPageSection($homePage, 'courses'));
   const aboutSection = $derived(getPageSection($homePage, 'about'));
@@ -13,31 +20,20 @@
   const testimonialSection = $derived(getPageSection($homePage, 'testimonial'));
   const footerNoteSection = $derived(getPageSection($homePage, 'cta'));
 
-  let testimonials = [
-    {
-      text: "I can't recommend the Mobile App Development bootcamp enough. The course was challenging, but the support from my peers and instructors was incredible. I learned so much about both iOS and Android development, and I'm now developing apps for a tech startup.",
-      name: 'Ismail Bolarinwa',
-      role: 'STUDENT',
-      image: '/org-banner.png'
-    },
-    {
-      text: "The course was challenging, but the support from my peers and instructors was incredible. I learned so much about both iOS and Android development, and I'm now developing apps for a tech startup.",
-      name: 'Ade Bolanle',
-      role: 'TEACHER',
-      image: '/org-banner.png'
-    }
-  ];
-
   let currentIndex = $state(0);
-  let viewAll = false;
+  let viewAll = $state(false);
+
+  /**
+   * @param {number} index
+   */
 
   function goToSlide(index) {
     currentIndex = index;
   }
 
-  function nextSlide() {
-    currentIndex = (currentIndex + 1) % testimonials.length;
-  }
+  // function nextSlide() {
+  //   currentIndex = (currentIndex + 1) % testimonialSection?.settings.list.length;
+  // }
 </script>
 
 <main>
@@ -51,7 +47,7 @@
         >
           <div class="w-full space-y-6">
             <p
-              class="font-playfair text-2xl font-semibold text-[#3D3D3D] first-line:w-full xl:w-[60%] xl:text-5xl"
+              class="font-playfair text-2xl font-semibold text-[#3D3D3D] first-line:w-full xl:w-[80%] xl:text-5xl"
             >
               {content.settings.title}
             </p>
@@ -59,7 +55,7 @@
               {content.settings.subtitle}
             </p>
             <PrimaryButton
-              className="!bg-[#0233BD] rounded-none uppercase text-white font-semibold font-playfair"
+              class="rounded-none font-serif font-semibold uppercase "
               label={content.settings.action.label}
               onClick={() => {
                 content.settings.action.redirect && goto(content.settings.action.link);
@@ -75,7 +71,7 @@
               alt="landing page banner"
               src={content.settings?.banner?.image
                 ? content.settings?.banner?.image
-                : '/org-banner.png'}
+                : defaultBanner}
               class="mt-2 h-full max-h-[550px] w-full max-w-[800px] rounded-md object-cover md:mt-0"
             />
           </div>
@@ -84,70 +80,78 @@
     {/if}
   {/if}
   <!-- testimonial -->
-  <section class="overflow-x-hidden px-4 py-6">
-    <div
-      class="relative mx-auto flex h-[220px] w-full items-center bg-[#0233BD] text-center text-white md:w-[80%] lg:w-[70%]"
-    >
-      <!-- Pointer at the top -->
+  {#if testimonialSection?.show}
+    <section class="overflow-x-hidden px-4 py-6">
       <div
-        class="absolute left-[50px] top-[-25px] h-10 w-16 -translate-x-1/2 transform bg-[#0233BD]"
-        style="clip-path: polygon(50% 0%, 0% 100%, 100% 100%);"
-      ></div>
+        class="bg-ielts relative mx-auto flex h-[220px] w-full items-center text-center text-white md:w-[80%] lg:w-[70%]"
+      >
+        <!-- Pointer at the top -->
+        <div
+          class="bg-ielts absolute left-[50px] top-[-25px] h-10 w-16 -translate-x-1/2 transform"
+          style="clip-path: polygon(50% 0%, 0% 100%, 100% 100%);"
+        ></div>
 
-      <!-- Testimonial content with fly transition (from right) -->
-      <div class="mx-auto flex h-full w-full flex-row overflow-x-hidden p-4 md:w-[90%] lg:w-[80%]">
-        {#each testimonials as testimonial, index}
-          {#if currentIndex === index}
-            <div
-              transition:slide={{ duration: 300, easing: quintOut, axis: 'x' }}
-              class="flex min-w-full flex-1 flex-col items-center justify-between md:h-full"
-            >
-              <p
-                class=" font-playfair line-clamp-4 text-base font-semibold italic md:line-clamp-3 md:text-lg"
+        <!-- Testimonial content with fly transition (from right) -->
+        <div
+          class="mx-auto flex h-full w-full flex-row overflow-x-hidden p-4 md:w-[90%] lg:w-[80%]"
+        >
+          {#each testimonialSection.settings.list as testimonial, index}
+            {#if currentIndex === index}
+              <div
+                transition:slide={{ duration: 300, easing: quintOut, axis: 'x' }}
+                class="flex min-w-full flex-1 flex-col items-center justify-between md:h-full"
               >
-                "{testimonial.text}"
-              </p>
+                <p
+                  class=" font-playfair line-clamp-4 text-base font-semibold italic md:line-clamp-3 md:text-lg"
+                >
+                  "{testimonial.description}"
+                </p>
 
-              <div class="flex items-center justify-center">
-                <img src={testimonial.image} alt="profile" class="mr-4 h-14 w-14 rounded-full" />
-                <div class="font-inter text-start">
-                  <strong>{testimonial.name}</strong><br />
-                  <span class="text-sm text-gray-300">{testimonial.role}</span>
+                <div class="flex items-center justify-center">
+                  <img
+                    src={testimonial.image ? testimonial.image : defaultAvatar}
+                    alt="profile"
+                    class="mr-4 h-14 w-14 rounded-full object-cover"
+                  />
+                  <div class="font-inter text-start">
+                    <strong>{testimonial.name}</strong><br />
+                    <span class="text-sm uppercase text-gray-300">{testimonial.role}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          {/if}
+            {/if}
+          {/each}
+        </div>
+      </div>
+
+      <!-- Dots for testimonial navigation -->
+      <div class="mt-4 flex justify-center space-x-2">
+        {#each testimonialSection.settings.list as _, index}
+          <!-- svelte-ignore a11y_click_events_have_key_events -->
+          <!-- svelte-ignore a11y_no_static_element_interactions -->
+          <!-- svelte-ignore event_directive_deprecated -->
+          <div
+            class="h-3 w-3 cursor-pointer rounded-full transition-opacity duration-300 {currentIndex ===
+            index
+              ? 'bg-blue-900'
+              : 'bg-blue-900 opacity-50'}"
+            on:click={() => goToSlide(index)}
+          ></div>
         {/each}
       </div>
-    </div>
-
-    <!-- Dots for testimonial navigation -->
-    <div class="mt-4 flex justify-center space-x-2">
-      {#each testimonials as _, index}
-        <!-- svelte-ignore a11y_click_events_have_key_events -->
-        <!-- svelte-ignore a11y_no_static_element_interactions -->
-        <!-- svelte-ignore event_directive_deprecated -->
-        <div
-          class="h-3 w-3 cursor-pointer rounded-full transition-opacity duration-300 {currentIndex ===
-          index
-            ? 'bg-blue-900'
-            : 'bg-blue-900 opacity-50'}"
-          on:click={() => goToSlide(index)}
-        ></div>
-      {/each}
-    </div>
-  </section>
+    </section>
+  {/if}
 
   <!-- courses -->
   {#if coursesSection?.show}
     <section id="course" class="h-full bg-white px-4 pb-20 pt-4 md:px-20">
-      <h1 class="font-playfair text-center text-3xl">{coursesSection.settings.title}</h1>
+      <h1 class="text-center font-serif text-3xl">{coursesSection.settings.title}</h1>
       <p class="font-inter mx-auto mb-8 w-full text-center font-medium md:w-[50%]">
         {coursesSection.settings.subtitle}
       </p>
 
       {#if $courses.length > 0}
-        <section class="flex flex-wrap items-center justify-center gap-4 p-4 md:justify-start">
+        <section class="mx-auto flex w-fit flex-wrap items-center justify-center gap-5 p-4">
           {#each $courses.slice(0, viewAll ? $courses.length : 3) as courseData}
             <CourseCard
               slug={courseData.slug}
@@ -160,8 +164,7 @@
           <div class="my-5 flex w-full items-center justify-center">
             <PrimaryButton
               label="VIEW MORE PREPCOURSES"
-              variant={VARIANTS.NONE}
-              className="rounded-none text-lg !bg-[#0233BD] text-white font-semibold"
+              class="rounded-none text-lg font-semibold text-white"
               onClick={() => (viewAll = !viewAll)}
             />
           </div>
@@ -174,11 +177,70 @@
     </section>
   {/if}
 
-  <Courses />
-  <AboutUs />
-  <LearningPath />
-  <FAQ />
-  <FooterNote />
+  <!-- about -->
+  {#if aboutSection?.show}
+    <section id="course" class="h-full bg-white px-4 pb-20 pt-4 md:px-10">
+      <h1 class="mx-auto w-full text-center font-serif text-3xl text-[#282828] md:w-[50%]">
+        {aboutSection.settings.title}
+      </h1>
+      <p class="text-inter mx-auto mb-8 w-[60%] text-center font-medium text-[#656565]">
+        {aboutSection.settings.subtitle}
+      </p>
+
+      <section class="flex flex-wrap items-center justify-center gap-8 p-4">
+        {#each aboutSection.settings.benefits.list as item}
+          <div
+            class="flex h-[150px] max-h-[300px] max-w-[300px] flex-col justify-start gap-4 rounded-lg border-2 border-[#EAEAEA] bg-[#FDFDFD] p-4 md:max-h-[200px] md:max-w-[500px]"
+          >
+            <span class="flex items-center gap-2">
+              <CheckmarkFilled size={24} class="fill-[#0F62FE]" />
+              <p class="font-serif text-xl">{item.title}</p>
+            </span>
+            <p class="font-inter text-base text-[#878787]">{item.subtitle}</p>
+          </div>
+        {/each}
+      </section>
+    </section>
+  {/if}
+
+  <!-- learningpath -->
+  <!-- <LearningPath /> -->
+
+  <!-- faq -->
+  {#if faqSection?.show}
+    <section class="h-full space-y-5 bg-[#F9F9F9] px-4 pb-20 pt-8">
+      <h1 class="text-center font-serif text-3xl text-[#3F3F3F]">{faqSection.settings.title}</h1>
+      <section class="mx-auto w-full space-y-10 p-4 md:w-[80%]">
+        {#each faqSection.settings.questions as faq}
+          <Accordion title={faq.title} content={faq.content} />
+        {/each}
+      </section>
+    </section>
+  {/if}
+
+  <!-- footernote -->
+  {#if footerNoteSection?.show}
+    <section
+      class="flex flex-col items-center justify-between space-y-4 bg-blue-800 px-6 py-20 lg:px-10"
+    >
+      <div class="flex w-full items-center justify-center">
+        <p
+          class="w-full text-center font-serif text-4xl font-bold capitalize text-white lg:w-[70%]"
+        >
+          {footerNoteSection.settings.title}
+        </p>
+      </div>
+      <p class="w-full text-center text-white lg:w-[50%]">
+        {footerNoteSection.settings.subtitle}
+      </p>
+      <div class="my-5 flex w-full items-center justify-center">
+        <PrimaryButton
+          label={footerNoteSection.settings.buttonLabel}
+          class="rounded-none bg-white text-lg font-bold uppercase text-blue-700 hover:bg-white"
+        />
+      </div>
+    </section>
+  {/if}
 </main>
 
 <style>

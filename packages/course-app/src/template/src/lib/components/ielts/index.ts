@@ -1,5 +1,5 @@
 import type { Component } from 'svelte';
-import CoursesPage from './pages/Courses.svelte';
+import CoursesPage from './pages/Course.svelte';
 import HomePage from './pages/Home.svelte';
 import Navigation from './Navigation.svelte';
 import Footer from './Footer.svelte';

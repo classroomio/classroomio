@@ -3,7 +3,7 @@
   import { getPageSection } from '@/utils/helpers/page';
   import PrimaryButton from '../PrimaryButton.svelte';
   import { goto } from '$app/navigation';
-  import defaultBanner from '../assets/course-banner.jpg';
+  import defaultBanner from '../assets/classroomio-course-img-template.jpg';
   import { courses } from '@/utils/stores/course';
   import CourseCard from '../CourseCard.svelte';
   import EmptyState from '../EmptyState.svelte';

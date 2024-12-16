@@ -1,105 +1,112 @@
-<script>
-  import { t } from '$lib/utils/functions/translations';
-  import Footer from '$lib/components/Org/LandingPage/Templates/Prep/components/Footer.svelte';
-  import Navigation from '$lib/components/Org/LandingPage/Templates/Prep/components/Navigation.svelte';
-  import PageLoader from '$lib/components/Org/LandingPage/PageLoader.svelte';
-  import CourseCard from '$lib/components/Org/LandingPage/Templates/Prep/components/CourseCard.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { courseMetaDeta, courses } from '$lib/components/Courses/store';
-  import CardLoader from '$lib/components/Courses/components/Card/Loader.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import EmptyState from '../../components/EmptyState.svelte';
+<script lang="ts">
   import { NextFilled } from 'carbon-icons-svelte';
+  import EmptyState from '../EmptyState.svelte';
+  import PrimaryButton from '../PrimaryButton.svelte';
+  import { courses } from '@/utils/stores/course';
+  import CourseCard from '../CourseCard.svelte';
+  import type { Course, CourseFilterItem } from '@/utils/types/course';
+  import type { Page } from '$lib/utils/types/page';
+  import { COURSE_TYPE } from '@/utils/constants/course';
+  import { getPageSection } from '@/utils/helpers/page';
 
-  export let org = {};
+  interface Props {
+    data: {
+      page: Page;
+      sharedPage: Page;
+      courses: Course[];
+    };
+  }
 
-  let viewAllPath = false;
-  let viewAllCourses = false;
+  let viewAllCourses = $state(false);
 
-  const DISPLAY_COURSE = {
-    PACED: 'paced',
-    LIVE: 'live'
-  };
+  function getCourseUrl(slug: string) {
+    return `/pathway/${slug}`;
+  }
 
-  const filter = [
-    {
-      title: 'Live Sessions',
-      type: DISPLAY_COURSE.LIVE
-    },
+  let { data }: Props = $props();
+
+  /**
+   * State
+   */
+  let viewAll = $state(false);
+
+  let filter: CourseFilterItem[] = $state([
     {
       title: 'Self Paced',
-      type: DISPLAY_COURSE.PACED
+      type: COURSE_TYPE.PACED,
+      checked: false
+    },
+    {
+      title: 'Live Sessions',
+      type: COURSE_TYPE.LIVE,
+      checked: false
     }
-  ];
+  ]);
 
-  function getCourseUrl(slug) {
-    return `/pathway/${slug}`;
+  let filteredCourses = $state([...data.courses]);
+
+  /**
+   * Constants
+   */
+  const section = $derived({
+    header: getPageSection(data.page, 'header'),
+    courses: getPageSection(data.page, 'courses')
+  });
+
+  /**
+   * Functions
+   */
+  function applyFilter() {
+    const activeFilters = new Set(
+      filter
+        .filter((filterItem) => filterItem.checked)
+        .map((filterItem) => filterItem.type.toLowerCase())
+    );
+
+    filteredCourses =
+      activeFilters.size === 0
+        ? data.courses
+        : data.courses.filter((course) => activeFilters.has(course.type.toLowerCase()));
   }
 </script>
 
-<svelte:head>
-  <title>
-    {!org.name ? '' : `${org.name}'s `}{$t('course.navItem.landing_page.landing_page')}
-  </title>
-</svelte:head>
-
-{#if !org.landingpage}
-  <PageLoader />
-{:else}
-  <main class="overflow-x-hidden">
-    <Navigation logo={org.avatar_url} orgName={org.name} disableSignup={true} isOrgSite={true} />
-
-    <section class="flex items-center justify-center py-10 h-screen">
-      <section class="flex flex-col text-center items-start md:items-center gap-10 p-4">
-        <div class="space-y-6 w-full">
+<main class="overflow-x-hidden">
+  {#if section.header?.show}
+    <section class="flex h-screen items-center justify-center py-10">
+      <section class="flex flex-col items-start gap-10 p-4 text-center md:items-center">
+        <div class="w-full space-y-6">
           <p
-            class="text-3xl md:text-4xl font-medium w-full md:w-[60%] text-[#3D3D3D] mx-auto font-serif"
+            class="mx-auto w-full font-serif text-3xl font-medium text-[#3D3D3D] md:w-[60%] md:text-4xl"
           >
-            Ace your Prep Exams on the very first trial
+            {section.header.settings.title}
           </p>
 
-          <p class="w-full font-normal md:w-[70%] mx-auto text-[#656565]">
-            Meticulously designed prep courses to offer you the best resources, expert guidance, and
-            personalized support to excel in your exams.
+          <p class="mx-auto w-full font-normal text-[#656565] md:w-[70%]">
+            {section.header.settings.subtitle}
           </p>
-        </div>
-
-        <div
-          class="flex flex-col md:flex-row items-center w-[90%] mx-auto justify-between md:justify-center gap-4 md:gap-8"
-        >
-          <PrimaryButton
-            className="!bg-[#0233BD] rounded-none uppercase text-white font-semibold w-full"
-            variant={VARIANTS.NONE}
-            label="Explore prep courses"
-          />
-          <PrimaryButton
-            className="!border !border-[#0233BD] rounded-none uppercase font-semibold !text-[#0233BD]  hover:!bg-[#0233BD] hover:!text-white w-full"
-            variant={VARIANTS.OUTLINED}
-            label="Explore prep packages"
-          />
         </div>
       </section>
     </section>
-
-    <div class="bg-white py-10 px-2 md:px-10 lg:px-20 border-b">
-      <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-4">
-        <span class="text-start px-4 space-y-2 mb-4 lg:mb-0">
-          <p class="text-2xl md:text-3xl mb-4 font-serif">Available Prep Courses</p>
-          <p class=" text-[#878787] text-sm font-medium w-full md:w-[80%]">
-            Whether you prefer self-paced online learning or interactive in-person sessions, we have
-            the right course for you.
+  {/if}
+  {#if section.courses?.show}
+    <div class="border-b bg-white px-2 py-10 md:px-10 lg:px-20">
+      <div class="mb-4 flex flex-col items-start justify-between md:flex-row md:items-center">
+        <span class="mb-4 space-y-2 px-4 text-start lg:mb-0">
+          <p class="mb-4 font-serif text-2xl md:text-3xl">{section.courses.settings.title}</p>
+          <p class=" w-full text-sm font-medium text-[#878787] md:w-[80%]">
+            {section.courses.settings.subtitle}
           </p>
         </span>
         <div class=" w-full md:w-fit">
-          <div class="flex items-center bg-[#F7F7F7] p-2 w-full gap-1 md:gap-4">
-            <p class="text-sm md:text-base font-medium whitespace-nowrap">Filter by</p>
-            <div class="flex flex-row items-center w-full md:w-fit bg-white p-1">
+          <div class="flex w-full items-center gap-1 bg-[#F7F7F7] p-2 md:gap-4">
+            <p class="whitespace-nowrap text-sm font-medium md:text-base">Filter by</p>
+            <div class="flex w-full flex-row items-center bg-white p-1 md:w-fit">
               {#each filter as item}
                 <label
                   for={item.title}
-                  class="text-[#3C4043] flex flex-row whitespace-nowrap items-center text-xs font-medium bg-[#FDFDFD] rounded-md p-2"
+                  class="flex flex-row items-center whitespace-nowrap rounded-md bg-[#FDFDFD] p-2 text-xs font-medium text-[#3C4043]"
                 >
-                  <input type="checkbox" name={item.title} class="text-[#0233BD] mr-2" />
+                  <input type="checkbox" name={item.title} class="text-ielts mr-2" />
 
                   {item.title}
                 </label>
@@ -110,14 +117,8 @@
       </div>
 
       <div>
-        {#if $courseMetaDeta.isLoading}
-          <div class="cards-container my-4 mx-2">
-            <CardLoader />
-            <CardLoader />
-            <CardLoader />
-          </div>
-        {:else if $courses.length > 0}
-          <section class="flex flex-wrap items-center justify-center md:justify-start gap-4 p-4">
+        {#if $courses.length > 0}
+          <section class="flex flex-wrap items-center justify-center gap-4 p-4 md:justify-start">
             {#each $courses.slice(0, viewAllCourses ? $courses.length : 3) as courseData}
               <CourseCard
                 slug={courseData.slug}
@@ -127,11 +128,10 @@
             {/each}
           </section>
           {#if $courses.length > 3}
-            <div class="w-full flex items-center justify-center my-5">
+            <div class="my-5 flex w-full items-center justify-center">
               <PrimaryButton
                 label="VIEW MORE PREPCOURSES"
-                variant={VARIANTS.NONE}
-                className="rounded-none text-lg !bg-[#0233BD] text-white font-semibold"
+                class="rounded-none text-lg font-semibold"
                 onClick={() => (viewAllCourses = !viewAllCourses)}
               />
             </div>
@@ -143,7 +143,9 @@
         {/if}
       </div>
     </div>
-    <div class="bg-white py-10 px-2 md:px-10 lg:px-20">
+  {/if}
+  <!-- pathways -->
+  <!-- <div class="bg-white py-10 px-2 md:px-10 lg:px-20">
       <div class="text-start mb-4 px-4 py-4">
         <p class="text-2xl md:text-3xl mb-4 font-serif">Prep Course Packages</p>
         <p class=" text-[#878787] text-sm font-medium w-full md:w-[80%]">
@@ -195,12 +197,11 @@
             {/if}
           {:else}
             <div class="px-10">
-              <EmptyState type="pathway" />
+              <EmptyState  />
             </div>
           {/if}
         </div>
       </div>
-      <Footer logo={org.avatar_url} orgName={org.name} />
-    </div>
-  </main>
-{/if}
+     
+    </div> -->
+</main>

@@ -40,6 +40,10 @@ const config: Config = {
           DEFAULT: 'hsl(var(--classic-primary) / <alpha-value>)',
           secondary: 'hsl(var(--classic-secondary) / <alpha-value>)'
         },
+        ielts: {
+          DEFAULT: 'hsl(var(--ielts-primary) / <alpha-value>)',
+          secondary: 'hsl(var(--ielts-secondary) / <alpha-value>)'
+        },
         secondary: {
           DEFAULT: 'hsl(var(--secondary) / <alpha-value>)',
           foreground: 'hsl(var(--secondary-foreground) / <alpha-value>)'
