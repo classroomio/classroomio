@@ -7,7 +7,6 @@ title: 'Why Analytics Matters'
   const increment = () => count++;
 </script>
 
-
 ## Code
 
 ```ts

@@ -61,8 +61,6 @@ program
       ]);
       courses = answer.course;
     }
-    console.log('\n');
-
     spinner.start('Scaffolding project....');
 
     try {
@@ -77,7 +75,7 @@ program
         )}\n${chalk.green('pnpm run dev')}`
       );
 
-      console.log(`\nDM on X if you face any issues: https://x.com/rotimi_best`);
+      console.log(`\nDM me on X if you face any issues: https://x.com/rotimi_best`);
     } catch (error) {
       spinner.fail(chalk.red(`Failed to scaffold the project. ${error}`));
       process.exit(1);
