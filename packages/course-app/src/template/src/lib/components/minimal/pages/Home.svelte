@@ -3,59 +3,58 @@
   import { getPageSection } from '@/utils/helpers/page';
   import PrimaryButton from '../PrimaryButton.svelte';
   import { goto } from '$app/navigation';
-  import defaultBanner from '../assets/classroomio-course-img-template.jpg';
   import { courses } from '@/utils/stores/course';
   import CourseCard from '../CourseCard.svelte';
   import EmptyState from '../EmptyState.svelte';
   import TestimonialCard from '../TestimonialCard.svelte';
   import Accordion from '../Accordion.svelte';
   import testimonial from '../assets/testimonial.svg';
+  import { SECTION } from '@/utils/constants/page';
 
-  const courseSection = $derived(getPageSection($homePage, 'about'));
-  const learnSection = $derived(getPageSection($homePage, 'about'));
-  const testimonialSection = $derived(getPageSection($homePage, 'testimonial'));
-  const faqSection = $derived(getPageSection($homePage, 'faq'));
-  const footerNoteSection = $derived(getPageSection($homePage, 'cta'));
+  const courseSection = $derived(getPageSection($homePage, SECTION.COURSE));
+  const learnSection = $derived(getPageSection($homePage, SECTION.ABOUT));
+  const testimonialSection = $derived(getPageSection($homePage, SECTION.TESTIMONIAL));
+  const faqSection = $derived(getPageSection($homePage, SECTION.FAQ));
+  const ctaSection = $derived(getPageSection($homePage, SECTION.CTA));
 
   let viewAll = $state(false);
 </script>
 
 <!-- for some reason the custom color doesnt work for this template -->
-<main class="bg-[#101720]">
+<main class="bg-minimal-secondary">
   <!-- hero -->
   {#if $homePage}
-    {@const content = getPageSection($homePage, 'header')}
+    {@const content = getPageSection($homePage, SECTION.HERO)}
     {#if content?.show}
-      <section class="flex items-center justify-center py-5 px-5 md:py-14 md:px-14 max-h-full">
-        <section class="flex items-center justify-between gap-4">
-          <div class="text-white space-y-6 w-full">
-            <div class="bg-[#DCFCFFED] py-1 px-3 md:border rounded-sm w-[90%]">
-              <p class="text-center uppercase font-bold text-sm text-[#0F163F]">
+      <section class="flex max-h-full items-center justify-center px-5 py-5 md:px-14 md:py-14">
+        <section class="mx-auto flex max-w-6xl items-center justify-between gap-4">
+          <div class="w-full max-w-[50%] space-y-6 text-white">
+            <div class="w-fit rounded-sm bg-emerald-100 px-3 py-1 md:border">
+              <p class="text-minimal text-center text-sm font-bold uppercase">
                 {content.settings?.title}
               </p>
             </div>
-            <p class="text-4xl font-bold w-full md:w-[70%] capitalize">
+            <h1 class="w-full text-5xl font-bold capitalize">
               {content.settings?.titleHighlight}
-            </p>
-            <p class="w-full md:w-[70%]">
+            </h1>
+            <p class="w-full">
               {content.settings?.subtitle}
             </p>
             <PrimaryButton
-              class="bg-[#0542CC]"
+              class="bg-minimal"
               onClick={() => {
                 goto(content.settings?.action.link);
               }}
               label={content.settings?.action.label}
             />
           </div>
-          <div class="hidden rounded-md h-[280px] max-h-[400px] w-5/6 md:w-full lg:block">
+
+          <div class="hidden h-[280px] max-h-[400px] w-5/6 rounded-md md:w-full lg:block">
             <img
               style="min-width:280px; min-height:200px"
               alt="landing page banner"
-              src={content.settings?.banner?.image
-                ? content.settings?.banner?.image
-                : defaultBanner}
-              class="mt-2 h-full max-h-[400px] w-full max-w-[500px] rounded-md md:mt-0 object-cover"
+              src={content.settings?.banner?.image || '/course-banner.jpg'}
+              class="mt-2 h-full max-h-[400px] w-full max-w-[500px] rounded-md object-cover md:mt-0"
             />
           </div>
         </section>
@@ -63,29 +62,30 @@
     {/if}
   {/if}
 
-  <!-- learn -->
+  <!-- Learn -->
 
   {#if learnSection?.show}
     <section
       id="about"
-      class="flex items-start justify-center px-5 md:px-14 h-full bg-white py-20 mx-auto"
+      class="mx-auto flex h-full items-start justify-center border-b bg-white px-5 py-20 md:px-14"
     >
-      <section class="flex flex-col lg:flex-row gap-8 items-start justify-center">
-        <div class="w-full lg:w-[60%] space-y-4">
-          <p class="text-4xl font-bold">{learnSection.settings.title}</p>
-          <p class="w-full lg:w-[80%] text-base leading-7 text-[#878787]">
+      <section class="flex flex-col items-start justify-center gap-8 lg:flex-row">
+        <div class="w-full space-y-4 lg:w-2/4">
+          <p class="max-w-[500px] text-4xl font-bold">{learnSection.settings.title}</p>
+          <p class="w-full text-base leading-7 text-gray-500 lg:w-[80%]">
             {learnSection.settings.subtitle}
           </p>
         </div>
         {#if learnSection.settings.benefits}
-          <div class="w-full lg:w-fit space-y-8">
+          <div class="w-full space-y-8 lg:w-fit">
             <span
-              class="bg-[#DCFCFF] py-1 px-3 uppercase border border-[#0233BD] rounded-sm text-center font-bold text-base text-[#0233BD]"
-              >{learnSection.settings.benefits.title}</span
+              class="border-minimal text-minimal bg-minimal/10 rounded-sm border px-3 py-1 text-center text-base font-bold uppercase"
             >
-            <ul class="space-y-6 text-base text-[#696969] font-medium">
+              {learnSection.settings.benefits.title}
+            </span>
+            <ul class="space-y-6 text-base font-medium text-gray-600">
               {#each learnSection.settings.benefits.list as items}
-                <li class="border-l border-[#0233BD] pl-3">{items.title}</li>
+                <li class="border-minimal border-l pl-3">{items.title}</li>
               {/each}
             </ul>
           </div>
@@ -93,26 +93,26 @@
           <img
             src={learnSection.settings.imageUrl}
             alt="Our Story"
-            class="rounded-2xl max-h-[450px]"
+            class="max-h-[450px] rounded-2xl"
           />
         {/if}
       </section>
     </section>
   {/if}
 
-  <!-- courses -->
+  <!-- Courses -->
 
   {#if courseSection?.show}
-    <section id="course" class="px-5 pt-10 space-y-10 py-36 h-full bg-white">
-      <h1 class="text-center text-3xl font-bold mb-4 w-full md:w-[70%] mx-auto">
+    <section id="course" class="h-full space-y-10 bg-white px-5 pb-36 pt-10">
+      <h2 class="mx-auto mb-4 w-full text-center text-4xl font-bold md:w-[70%]">
         {courseSection.settings.title}
-      </h1>
-      <div class="w-full md:w-[90%] mx-auto">
+      </h2>
+
+      <div class="mx-auto w-full md:w-[90%]">
         {#if $courses.length > 0}
-          <section class="flex flex-wrap items-center w-fit mx-auto gap-4 p-4">
+          <section class="mx-auto flex w-fit flex-wrap items-center justify-center gap-4 p-4">
             {#each $courses.slice(0, viewAll ? $courses.length : 3) as courseData}
               <CourseCard
-                className="bg-[#FDFDFD]"
                 slug={courseData.slug}
                 title={courseData.title}
                 description={courseData.description}
@@ -123,7 +123,7 @@
             {/each}
           </section>
           {#if $courses.length > 3}
-            <div class="w-full flex items-center justify-center my-5">
+            <div class="my-5 flex w-full items-center justify-center">
               <PrimaryButton
                 class="p-2"
                 onClick={() => (viewAll = !viewAll)}
@@ -132,7 +132,7 @@
             </div>
           {/if}
         {:else}
-          <div class="px-4 w-full lg:w-[70%] mx-auto">
+          <div class="mx-auto w-full px-4 lg:w-[70%]">
             <EmptyState />
           </div>
         {/if}
@@ -140,16 +140,17 @@
     </section>
   {/if}
 
-  <!-- testimonial -->
+  <!-- Testimonial -->
+
   {#if testimonialSection?.show}
-    <section id="testimonial" class="relative pt-10 h-full text-white">
-      <div class="absolute -top-20 md:-top-32 left-[5%] w-[90%]">
-        <img src={testimonial} alt="testimonial" class="w-full max-h-[500px] md:max-h-[300px]" />
+    <section class="relative h-full pt-10 text-white">
+      <div class="absolute -top-20 left-[5%] w-[90%] md:-top-32">
+        <img src={testimonial} alt="testimonial" class="max-h-[500px] w-full md:max-h-[300px]" />
       </div>
-      <div class="px-5 py-20 md:py-40 space-y-10">
-        <h1 class="text-center text-3xl font-bold mb-4">Student testimonial</h1>
-        <div class="w-full md:w-[90%] mx-auto">
-          <section class="grid place-items-center grid-cols-1 md:grid-cols-3 w-fit mx-auto gap-4">
+      <div class="space-y-10 px-5 py-20 md:py-40">
+        <h1 class="mb-4 text-center text-3xl font-bold">Student testimonial</h1>
+        <div class="mx-auto w-full md:w-[90%]">
+          <section class="mx-auto grid w-fit grid-cols-1 place-items-center gap-4 md:grid-cols-3">
             {#each testimonialSection.settings.list as item}
               <TestimonialCard name={item.name} description={item.description} role={item.role} />
             {/each}
@@ -159,11 +160,11 @@
     </section>
   {/if}
 
-  <!-- faq -->
+  <!-- FAQ -->
   {#if faqSection?.show}
-    <section class="px-5 py-20 space-y-10 h-full bg-[#F9F9F9]">
-      <h1 class="text-center text-3xl font-bold mb-4">{faqSection.settings.title}</h1>
-      <section class="p-4 space-y-10 w-full md:w-[80%] mx-auto">
+    <section class="h-full space-y-10 bg-gray-100 px-5 py-20">
+      <h1 class="mb-4 text-center text-3xl font-bold">{faqSection.settings.title}</h1>
+      <section class="mx-auto w-full space-y-10 p-4 md:w-[80%]">
         {#each faqSection.settings.questions as faq}
           <Accordion title={faq.title} content={faq.content} />
         {/each}
@@ -171,23 +172,23 @@
     </section>
   {/if}
 
-  <!-- footerNote -->
-  {#if footerNoteSection?.show}
+  <!-- cta -->
+  {#if ctaSection?.show}
     <section
-      class="flex flex-col md:flex-row items-center justify-between px-6 lg:px-10 py-20 bg-blue-800"
+      class="flex flex-col items-center justify-between bg-blue-800 px-6 py-20 md:flex-row lg:px-10"
     >
-      <div class="flex items-center justify-center w-full">
+      <div class="flex w-full items-center justify-center">
         <p
-          class="text-4xl text-white text-center md:text-start font-bold w-full lg:w-[70%] capitalize"
+          class="w-full text-center text-4xl font-bold capitalize text-white md:text-start lg:w-[70%]"
         >
-          {footerNoteSection.settings.title}
+          {ctaSection.settings.title}
         </p>
       </div>
-      <div class="w-full flex items-center justify-center my-5">
+      <div class="my-5 flex w-full items-center justify-center">
         <PrimaryButton
-          onClick={() => goto('/courses')}
-          class="py-2 bg-white text-blue-700 hover:bg-white"
-          label={footerNoteSection.settings.buttonLabel}
+          href={ctaSection.settings?.button?.link}
+          class="bg-white py-2 text-blue-700 hover:bg-white"
+          label={ctaSection.settings?.button?.label}
         />
       </div>
     </section>

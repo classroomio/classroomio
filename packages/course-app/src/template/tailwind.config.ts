@@ -40,6 +40,14 @@ const config: Config = {
           DEFAULT: 'hsl(var(--classic-primary) / <alpha-value>)',
           secondary: 'hsl(var(--classic-secondary) / <alpha-value>)'
         },
+        examprep: {
+          DEFAULT: 'hsl(var(--examprep-primary) / <alpha-value>)',
+          secondary: 'hsl(var(--examprep-secondary) / <alpha-value>)'
+        },
+        webflow: {
+          DEFAULT: 'hsl(var(--webflow-primary) / <alpha-value>)',
+          secondary: 'hsl(var(--webflow-secondary) / <alpha-value>)'
+        },
         secondary: {
           DEFAULT: 'hsl(var(--secondary) / <alpha-value>)',
           foreground: 'hsl(var(--secondary-foreground) / <alpha-value>)'

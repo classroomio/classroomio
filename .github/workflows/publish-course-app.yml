@@ -1,8 +1,9 @@
 name: Publish @classroomio/course-app to NPM
+
 on: workflow_dispatch
 
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
     permissions:
       packages: write
@@ -16,10 +17,11 @@ jobs:
 
       - uses: pnpm/action-setup@v4
 
-      - name: Install dependencies & publish
+      - name: Install, Build & Publish
         working-directory: packages/course-app
         run: |
           pnpm i
+          pnpm build
           pnpm publish --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}

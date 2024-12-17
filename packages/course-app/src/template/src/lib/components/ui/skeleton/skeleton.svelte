@@ -1,16 +1,15 @@
 <script lang="ts">
-	import type { HTMLAttributes } from "svelte/elements";
-	import { cn } from "$lib/utils.js";
+  import type { HTMLAttributes } from 'svelte/elements';
+  import { cn } from '$lib/utils';
 
-	type $$Props = HTMLAttributes<HTMLDivElement>;
+  type $$Props = HTMLAttributes<HTMLDivElement>;
 
-	interface Props {
-		class?: $$Props["class"];
-		[key: string]: any
-	}
+  interface Props {
+    class?: $$Props['class'];
+    [key: string]: any;
+  }
 
-	let { class: className = undefined, ...rest }: Props = $props();
-	
+  let { class: className = undefined, ...rest }: Props = $props();
 </script>
 
-<div class={cn("bg-muted animate-pulse rounded-md", className)} {...rest}></div>
+<div class={cn('bg-muted animate-pulse rounded-md', className)} {...rest}></div>

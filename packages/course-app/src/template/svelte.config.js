@@ -2,7 +2,7 @@ import { mdsvex, escapeSvelte } from 'mdsvex';
 import rehypeUnwrapImages from 'rehype-unwrap-images';
 import remarkToc from 'remark-toc';
 import rehypeSlug from 'rehype-slug';
-import adapter from '@sveltejs/adapter-cloudflare';
+import adapter from '@sveltejs/adapter-auto';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { createHighlighter } from 'shiki';
 

@@ -11,6 +11,8 @@
   import { courses } from '$lib/utils/stores/course';
   import { CheckmarkFilled } from 'carbon-icons-svelte';
   import Accordion from '../Accordion.svelte';
+  import bannerImg from '../assets/banner.jpeg';
+  import { SECTION } from '@/utils/constants/page';
 
   /**
    * State
@@ -21,11 +23,11 @@
   /**
    * Constants
    */
-  const coursesSection = $derived(getPageSection($homePage, 'courses'));
-  const aboutSection = $derived(getPageSection($homePage, 'about'));
-  const faqSection = $derived(getPageSection($homePage, 'faq'));
-  const testimonialSection = $derived(getPageSection($homePage, 'testimonial'));
-  const footerNoteSection = $derived(getPageSection($homePage, 'cta'));
+  const coursesSection = $derived(getPageSection($homePage, SECTION.COURSE));
+  const aboutSection = $derived(getPageSection($homePage, SECTION.ABOUT));
+  const faqSection = $derived(getPageSection($homePage, SECTION.FAQ));
+  const testimonialSection = $derived(getPageSection($homePage, SECTION.TESTIMONIAL));
+  const ctaSection = $derived(getPageSection($homePage, SECTION.CTA));
 
   /**
    * Functions
@@ -41,28 +43,28 @@
 
 <!-- hero -->
 {#if $homePage}
-  {@const content = getPageSection($homePage, 'header')}
+  {@const content = getPageSection($homePage, SECTION.HERO)}
   {#if content?.show}
     <section
-      class="font-matter flex items-start md:items-center justify-center py-10 lg:py-20 px-5 lg:px-20 h-full bg-[#F4F4F4]"
+      class="font-matter flex h-full items-start justify-center bg-[#F4F4F4] px-5 py-10 md:items-center lg:px-20 lg:py-20"
     >
       <section
-        class="flex flex-col-reverse lg:flex-row items-center justify-center lg:justify-between"
+        class="flex flex-col-reverse items-center justify-center lg:flex-row lg:justify-between"
       >
-        <div class="text-center lg:text-start space-y-6 w-full mt-4 lg:mt-0">
+        <div class="mt-4 w-full space-y-6 text-center lg:mt-0 lg:text-start">
           <div
-            class="bg-[#E5E7E0] py-1 px-4 md:border-b border-black rounded-sm w-fit mx-auto lg:mx-0"
+            class="mx-auto w-fit rounded-sm border-black bg-[#E5E7E0] px-4 py-1 md:border-b lg:mx-0"
           >
-            <p class="uppercase font-bold text-xs lg:text-base text-[#0F163F]">
+            <p class="text-xs font-bold uppercase text-[#0F163F] lg:text-base">
               {content.settings.title}
             </p>
           </div>
           <p
-            class="text-4xl md:text-6xl font-black w-full mx-auto lg:mx-0 md:w-[90%] lg:w-[80%] capitalize"
+            class="mx-auto w-full text-4xl font-black capitalize md:w-[90%] md:text-6xl lg:mx-0 lg:w-[80%]"
           >
             {content.settings.titleHighlight}
           </p>
-          <p class="font-semibold text-xl w-full md:w-[80%] mx-auto lg:mx-0 lg:w-[70%]">
+          <p class="mx-auto w-full text-xl font-semibold md:w-[80%] lg:mx-0 lg:w-[70%]">
             {content.settings.subtitle}
           </p>
 
@@ -75,10 +77,10 @@
         </div>
 
         <div
-          class="relative w-[250px] h-[250px] lg:w-[500px] lg:h-[350px] flex items-center justify-center"
+          class="relative flex h-[250px] w-[250px] items-center justify-center lg:h-[350px] lg:w-[500px]"
         >
           <svg
-            class="absolute -left-[15px] lg:-left-[60px] xl:-left-[100px] w-[270px] h-[270px] lg:w-[400px] xl:w-[520px] lg:h-[370px]"
+            class="absolute -left-[15px] h-[270px] w-[270px] lg:-left-[60px] lg:h-[370px] lg:w-[400px] xl:-left-[100px] xl:w-[520px]"
             viewBox="0 0 360 360"
           >
             <circle
@@ -93,10 +95,8 @@
           </svg>
           <img
             alt="landing page banner"
-            src={content.settings.banner?.image
-              ? content.settings.banner?.image
-              : '/calcom-banner-img.jpeg'}
-            class="object-cover rounded-full w-[250px] h-[250px] lg:w-[500px] lg:h-[350px]"
+            src={content.settings.banner?.image || bannerImg}
+            class="h-[250px] w-[250px] rounded-full object-cover lg:h-[350px] lg:w-[500px]"
           />
         </div>
       </section>
@@ -106,26 +106,26 @@
 
 <!-- courses -->
 {#if coursesSection?.show}
-  <section id="course" class="flex items-center px-2 md:px-8 py-12 h-full bg-[#E5E7E0]">
-    <div class="text-white py-8 bg-black rounded-3xl w-full lg:w-[90%] mx-auto">
+  <section id="course" class="flex h-full items-center bg-[#E5E7E0] px-2 py-12 md:px-8">
+    <div class="mx-auto w-full rounded-3xl bg-black py-8 text-white lg:w-[90%]">
       <div
-        class="flex flex-col md:flex-row items-center justify-center md:items-start gap-2 md:justify-between px-4 lg:px-8"
+        class="flex flex-col items-center justify-center gap-2 px-4 md:flex-row md:items-start md:justify-between lg:px-8"
       >
         <h1
-          class="text-white text-start text-2xl md:text-3xl lg:text-5xl mb-2 font-bold w-full md:w-[80%] lg:w-[60%]"
+          class="mb-2 w-full text-start text-2xl font-bold text-white md:w-[80%] md:text-3xl lg:w-[60%] lg:text-5xl"
         >
           {coursesSection.settings.title}
         </h1>
 
-        <div class="hidden md:flex gap-2 items-center">
+        <div class="hidden items-center gap-2 md:flex">
           <button
-            class="w-fit flex items-center justify-center border border-white rounded-full p-2 bg-transparent hover:bg-white hover:text-black"
+            class="flex w-fit items-center justify-center rounded-full border border-white bg-transparent p-2 hover:bg-white hover:text-black"
             onclick={scrollLeft}
           >
             <ArrowLeft />
           </button>
           <button
-            class="w-fit flex items-center justify-center border border-white rounded-full p-2 bg-transparent hover:bg-white hover:text-black"
+            class="flex w-fit items-center justify-center rounded-full border border-white bg-transparent p-2 hover:bg-white hover:text-black"
             onclick={scrollRight}
           >
             <ArrowRight />
@@ -133,11 +133,11 @@
         </div>
       </div>
 
-      <div class="w-full pl-4 md:pl-8 overflow-x-hidden">
+      <div class="w-full overflow-x-hidden pl-4 md:pl-8">
         {#if $courses.length > 0}
           <section
             bind:this={scrollContainer}
-            class="flex items-center overflow-x-auto gap-4 py-4 pr-2 w-full scrollbar-hide"
+            class="scrollbar-hide flex w-full items-center gap-4 overflow-x-auto py-4 pr-2"
           >
             {#each $courses as course}
               <CourseCard
@@ -160,15 +160,15 @@
             {/each} -->
           </section>
         {:else}
-          <div class="w-full mx-auto">
+          <div class="mx-auto w-full">
             <EmptyState className="dark:bg-[#232429] dark:border-[#EAEAEA]" />
           </div>
         {/if}
       </div>
 
-      <div class="flex items-center justify-center w-full pt-4">
+      <div class="flex w-full items-center justify-center pt-4">
         <Button
-          class="uppercase rounded-2xl py-6 px-10 bg-transparent border-[1.5px] border-white text-white shadow-[-1px_3px_#FFFFFF]"
+          class="rounded-2xl border-[1.5px] border-white bg-transparent px-10 py-6 uppercase text-white shadow-[-1px_3px_#FFFFFF]"
           href="/courses"
         >
           Explore courses
@@ -180,24 +180,24 @@
 <!-- about -->
 {#if aboutSection?.show}
   <section id="about">
-    <div class="relative px-4 md:px-10 py-10 h-full w-full mx-auto xl:w-[80%]">
-      <h1 class="text-center text-5xl mb-2 font-bold md:w-[60%] mx-auto">
+    <div class="relative mx-auto h-full w-full px-4 py-10 md:px-10 xl:w-[80%]">
+      <h1 class="mx-auto mb-2 text-center text-5xl font-bold md:w-[60%]">
         {aboutSection.settings.title}
       </h1>
-      <p class="text-center dark:text-white text-lg font-semibold md:w-[70%] mb-8 mx-auto">
+      <p class="mx-auto mb-8 text-center text-lg font-semibold dark:text-white md:w-[70%]">
         {aboutSection.settings.subtitle}
       </p>
       <div>
-        <section class="flex flex-wrap items-start justify-center w-full gap-6 py-4">
+        <section class="flex w-full flex-wrap items-start justify-center gap-6 py-4">
           {#each aboutSection.settings.benefits.list as item}
             <div
-              class="flex flex-col gap-2 p-4 bg-white border border-[#282828] h-[130px] max-h-[180px] w-full max-w-full md:max-w-[320px] lg:max-w-[450px] rounded-lg overflow-hidden"
+              class="flex h-[130px] max-h-[180px] w-full max-w-full flex-col gap-2 overflow-hidden rounded-lg border border-[#282828] bg-white p-4 md:max-w-[320px] lg:max-w-[450px]"
             >
               <span class="flex items-center gap-2">
                 <CheckmarkFilled size={24} />
-                <p class="text-lg capitalize line-clamp-1">{item.title}</p>
+                <p class="line-clamp-1 text-lg capitalize">{item.title}</p>
               </span>
-              <p class="text-sm text-[#878787] line-clamp-3">{item.subtitle}</p>
+              <p class="line-clamp-3 text-sm text-[#878787]">{item.subtitle}</p>
             </div>
           {/each}
         </section>
@@ -208,17 +208,17 @@
 
 <!-- faq -->
 {#if faqSection?.show}
-  <section id="faq" class="relative px-2 pt-4 pb-20 h-full">
+  <section id="faq" class="relative h-full px-2 pb-20 pt-4">
     <div class="absolute inset-0 bg-[#E5E7E0] opacity-60"></div>
 
     <div class="relative">
-      <h1 class="text-center text-5xl font-bold mb-4">
+      <h1 class="mb-4 text-center text-5xl font-bold">
         {faqSection.settings.title}
       </h1>
-      <h1 class="text-center text-lg font-semibold mb-4 w-full md:w-[80%] lg:w-[60%] mx-auto">
+      <h1 class="mx-auto mb-4 w-full text-center text-lg font-semibold md:w-[80%] lg:w-[60%]">
         {faqSection.settings.subtitle}
       </h1>
-      <section class="py-4 px-2 space-y-10 w-full md:w-[80%] mx-auto">
+      <section class="mx-auto w-full space-y-10 px-2 py-4 md:w-[80%]">
         {#each faqSection.settings.questions as faq}
           <Accordion title={faq.title} content={faq.content} />
         {/each}
@@ -229,18 +229,18 @@
 
 <!-- testimonial -->
 {#if testimonialSection?.show}
-  <section id="testimonial" class="bg-[#F4F4F4] px-4 lg:p-14 h-fit">
-    <section class="coolumns-1 md:columns-3 space-y-6 overflow-visible">
+  <section id="testimonial" class="h-fit bg-[#F4F4F4] px-4 lg:p-14">
+    <section class="coolumns-1 space-y-6 overflow-visible md:columns-3">
       {#each testimonialSection.settings.list as item}
         <div class="break-inside-avoid overflow-visible">
           <section
-            class="cursor-pointer flex flex-col relative overflow-visible px-6 pt-6 gap-4 p-4 bg-white border border-[#D7D7D7] rounded-3xl w-full h-fit max-w-full sm:max-w-[320px] xl:max-w-[400px]"
+            class="relative flex h-fit w-full max-w-full cursor-pointer flex-col gap-4 overflow-visible rounded-3xl border border-[#D7D7D7] bg-white p-4 px-6 pt-6 sm:max-w-[320px] xl:max-w-[400px]"
           >
             <div class="flex items-center gap-2">
               <img
-                src={item.banner ?? '/classroomio-course-img-template.jpg'}
+                src={item.banner ?? '/course-banner.jpg'}
                 alt=""
-                class="w-10 h-10 rounded-full"
+                class="h-10 w-10 rounded-full"
               />
               <span class="flex flex-col items-start">
                 <p class="text-sm font-bold">{item.name}</p>
@@ -259,30 +259,31 @@
   </section>
 {/if}
 
-<!-- footernote -->
-{#if footerNoteSection?.show}
-  <section class="w-full bg-[#F4F4F4] py-16 px-4 lg:px-10">
+<!-- CTA -->
+{#if ctaSection?.show}
+  <section class="w-full bg-[#F4F4F4] px-4 py-16 lg:px-10">
     <div
-      class="relative flex flex-col md:flex-row min-h-40 justify-center border-2 border-[#141414] rounded-xl divide-x divide-transparent w-full lg:w-[80%] mx-auto"
+      class="min-h-40 relative mx-auto flex w-full flex-col justify-center divide-x divide-transparent rounded-xl border-2 border-[#141414] md:flex-row lg:w-[80%]"
     >
       <div
-        class="bg-[#E5E7E0] text-center md:text-start rounded-t-xl md:rounded-l-xl flex justify-center capitalize items-center py-20 px-4 lg:px-10 w-full md:w-[65%] min-h-40 text-4xl font-bold"
+        class="min-h-40 flex w-full items-center justify-center rounded-t-xl bg-[#E5E7E0] px-4 py-20 text-center text-4xl font-bold capitalize md:w-[65%] md:rounded-l-xl md:text-start lg:px-10"
       >
         <h1 class="leading-normal">
-          {footerNoteSection.settings.title}<br />{footerNoteSection.settings.titleHighlight}
+          {ctaSection.settings.title}<br />{ctaSection.settings.titleHighlight}
         </h1>
       </div>
 
       <div
-        class="rounded-b-xl md:rounded-r-xl flex items-center justify-center py-16 px-4 bg-white w-full md:w-[35%] min-h-40 text-lg font-semibold"
+        class="min-h-40 flex w-full items-center justify-center rounded-b-xl bg-white px-4 py-16 text-lg font-semibold md:w-[35%] md:rounded-r-xl"
       >
         <p>
-          {footerNoteSection.settings.subtitle}
+          {ctaSection.settings.subtitle}
         </p>
         <Button
-          class="absolute -bottom-5 uppercase rounded-2xl py-6 bg-white hover:bg-white hover:text-black border-[1.5px] border-[#141414] text-[#141414] shadow-[0px_3px_#141414]"
+          class="absolute -bottom-5 rounded-2xl border-[1.5px] border-[#141414] bg-white py-6 uppercase text-[#141414] shadow-[0px_3px_#141414] hover:bg-white hover:text-black"
+          href={ctaSection.settings?.button?.link}
         >
-          {footerNoteSection.settings.buttonLabel}
+          {ctaSection.settings?.button?.label}
         </Button>
       </div>
     </div>

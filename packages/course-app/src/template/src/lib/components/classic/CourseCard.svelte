@@ -1,13 +1,4 @@
 <script lang="ts">
-  import RadioButtonChecked from 'carbon-icons-svelte/lib/RadioButtonChecked.svelte';
-  import GrowthIcon from 'carbon-icons-svelte/lib/Growth.svelte';
-  import UserProfileIcon from 'carbon-icons-svelte/lib/UserProfile.svelte';
-
-  const COURSE_TYPE = {
-    LIVE_CLASS: 'live',
-    SELF_PACED: 'paced'
-  };
-
   interface Props {
     bannerImage: string | undefined;
     slug?: string;
@@ -26,76 +17,37 @@
     description = '',
     cost = 0,
     totalLessons = 0,
-    currency = 'USD',
-    type
+    currency = 'USD'
   }: Props = $props();
-  let target: any = $state();
 
   function getCourseUrl() {
     return `/course/${slug}`;
   }
-  const COURSE_TAG: Record<
-    string,
-    {
-      style: string;
-      label: string;
-      icon: any;
-      iconStyle?: string;
-    }
-  > = {
-    [COURSE_TYPE.LIVE_CLASS]: {
-      style: '',
-      label: 'live',
-      icon: RadioButtonChecked,
-      iconStyle: 'text-red-700'
-    },
-    [COURSE_TYPE.SELF_PACED]: {
-      style: '',
-      label: 'paced',
-      icon: UserProfileIcon,
-      iconStyle: 'text-primary-700'
-    },
-    SPECIALIZATION: {
-      style: '',
-      label: 'specialized',
-      icon: GrowthIcon
-    }
-  };
 </script>
 
 <a
   rel="prefetch"
-  bind:this={target}
   href={getCourseUrl()}
-  class="text-black border border-gray dark:border-neutral-600 rounded w-full h-fit md:h-[350px] min-w-[250px] max-w-[300px] relative hover:scale-95 transition-all ease-in-out"
+  class="border-gray relative h-fit w-full min-w-[250px] max-w-[300px] rounded border text-black transition-all ease-in-out hover:scale-95 dark:border-neutral-600 md:h-[350px]"
 >
   <div class="p-4">
     <div class="relative mb-5">
       <img
-        src={bannerImage || '/classroomio-course-img-template.jpg'}
+        src={bannerImage || '/course-banner.jpg'}
         alt="Course Logo"
-        class="h-[170px] w-full rounded dark:border dark:border-neutral-600 relative"
+        class="relative h-[170px] w-full rounded dark:border dark:border-neutral-600"
       />
-      {#if type}
-        {@const tag = COURSE_TAG[type]}
-        <span
-          class="absolute bottom-2 left-2 z-10 text-xs capitalize bg-primary-50 rounded-sm p-1 flex items-center gap-1 font-mono"
-        >
-          <tag.icon size={16} class={tag.iconStyle} />
-          {tag.label}
-        </span>
-      {/if}
     </div>
 
-    <h3 class="text-xl dark:text-white font-semibold line-clamp-1">{title}</h3>
-    <p class="mt-2 text-sm text-gray-500 dark:text-gray-300 description">
+    <h3 class="line-clamp-1 text-xl font-semibold dark:text-white">{title}</h3>
+    <p class="description mt-2 text-sm text-gray-500 dark:text-gray-300">
       {description}
     </p>
   </div>
 
-  <div class="py-4 mx-2 border-t border-gray dark:border-neutral-600 flex justify-between">
+  <div class="border-gray mx-2 flex justify-between border-t py-4 dark:border-neutral-600">
     <div>
-      <p class="text-xs pl-2 dark:text-white">
+      <p class="pl-2 text-xs dark:text-white">
         {totalLessons}
         lessons
       </p>

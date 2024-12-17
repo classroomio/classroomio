@@ -61,20 +61,21 @@ program
       ]);
       courses = answer.course;
     }
-
     spinner.start('Scaffolding project....');
 
     try {
+      console.log('\n');
+
       await scaffoldTemplate({ template, courses, projectPath, projectName });
 
-      spinner.succeed(`\n\n${chalk.green('Done! Your project is ready.')}\n\n`);
+      spinner.succeed(`${chalk.green('Done! Your template is ready.')}`);
       console.log(
-        `To get started:\n\n${chalk.blue(`cd ${projectName}`)}\n${chalk.blue(
+        `\nTo get started:\n\n${chalk.green(`cd ${projectName}`)}\n${chalk.green(
           'pnpm i'
-        )}\n${chalk.blue('pnpm run dev')}`
+        )}\n${chalk.green('pnpm run dev')}`
       );
 
-      console.log('\n\n', chalk.blue('Happy hacking ;)'));
+      console.log(`\nDM me on X if you face any issues: https://x.com/rotimi_best`);
     } catch (error) {
       spinner.fail(chalk.red(`Failed to scaffold the project. ${error}`));
       process.exit(1);

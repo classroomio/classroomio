@@ -9,20 +9,16 @@
 </script>
 
 <section
-  class="flex flex-col justify-between relative border border-[#EAEAEA] px-6 pt-6 space-y-4 bg-[#FDFDFD] rounded w-full h-full lg:h-[280px] max-w-[400px] xl:max-w-[500px]"
+  class="relative flex h-full w-full max-w-[400px] flex-col justify-between space-y-4 rounded border border-[#EAEAEA] bg-[#FDFDFD] px-6 pt-6 lg:h-[280px] xl:max-w-[500px]"
 >
-  <img src="/quote.svg" alt="" class="w-6 h-6 rounded-full absolute top-6 left-8" />
+  <img src="/quote.svg" alt="" class="absolute left-8 top-6 h-6 w-6 rounded-full" />
   <div>
-    <p class="my-6 font-bold line-clamp-5">
+    <p class="my-6 line-clamp-5 font-bold">
       {description}
     </p>
   </div>
-  <div class="flex items-center p-4 gap-4 border-t border-[#EAEAEA]">
-    <img
-      src={banner ? banner : '/classroomio-course-img-template.jpg'}
-      alt=""
-      class="w-6 h-6 rounded-full"
-    />
+  <div class="flex items-center gap-4 border-t border-[#EAEAEA] p-4">
+    <img src={banner ? banner : '/course-banner.jpg'} alt="" class="h-6 w-6 rounded-full" />
     <span>
       <p class="text-sm font-bold">{name}</p>
     </span>

@@ -6,6 +6,8 @@
   import { getPageSection } from '@/utils/helpers/page';
   import type { Course, CourseFilterItem } from '@/utils/types/course';
   import type { Page } from '$lib/utils/types/page';
+  import PrimaryButton from '../PrimaryButton.svelte';
+  import { SECTION } from '@/utils/constants/page';
 
   interface Props {
     data: {
@@ -41,8 +43,8 @@
    * Constants
    */
   const section = $derived({
-    header: getPageSection(data.page, 'header'),
-    courses: getPageSection(data.page, 'courses')
+    header: getPageSection(data.page, SECTION.HERO),
+    courses: getPageSection(data.page, SECTION.COURSE)
   });
 
   /**
@@ -65,31 +67,33 @@
 <section class="overflow-x-hidden">
   {#if section.header?.show}
     <div
-      class="h-full pt-20 pb-36 flex flex-col items-center justify-center text-center w-full bg-gradient-to-r from-[#f0a5f11a] via-white to-[#f6e7f61a]"
+      class="flex h-full w-full flex-col items-center justify-center bg-gradient-to-r from-[#F785F9] via-white to-[#fff] pb-36 pt-20 text-center"
     >
-      <h1 class="font-bold text-5xl mb-4 w-full md:w-[50%] text-center">
+      <h1 class="mb-4 w-full text-center text-5xl font-bold md:w-[50%]">
         {section.header.settings.title}
-        <span class="text-[#CE02CE]/80 font-bold text-5xl">
+        <span class="text-classic/80 text-5xl font-bold">
           {section.header.settings.titleHighlight}</span
         >
       </h1>
-      <p class="md:text-xl text-[#878787] w-full md:w-[60%] lg:w-[40%] text-center">
+      <p class="w-full text-center text-[#878787] md:w-[60%] md:text-xl lg:w-[40%]">
         {section.header.settings.subtitle}
       </p>
     </div>
   {/if}
 
   {#if section.courses?.show}
-    <section id="course" class="px-4 pt-4 pb-20 h-full bg-white">
-      <h1 class="text-center text-3xl text-[#3F3F3F] font-bold mb-6 w-full md:w-[60%] mx-auto">
+    <section id="course" class="h-full bg-white px-4 pb-20 pt-4">
+      <h1
+        class="mx-auto my-10 mb-20 w-full text-center text-3xl font-bold text-[#3F3F3F] md:w-[60%]"
+      >
         {section.courses.settings.title}
       </h1>
-      <div class="w-full md:w-[90%] mx-auto">
+      <div class="mx-auto w-full md:w-[90%]">
         {#if data.courses.length > 0}
-          <div class="w-full flex gap-4 lg:ml-[5%]">
-            <div class="hidden lg:block w-fit space-y-2">
-              <p class="font-medium text-[#3C4043] uppercase">Filter</p>
-              <div class="w-max border border-[#EAEAEA] p-6 space-y-8">
+          <div class="flex w-full gap-4 lg:ml-[5%]">
+            <div class="hidden w-fit space-y-2 lg:block">
+              <p class="font-medium uppercase text-[#3C4043]">Filter</p>
+              <div class="w-max space-y-8 border border-[#EAEAEA] p-6">
                 {#each filter as item}
                   <form class="space-x-2 text-[#3C4043]">
                     <input
@@ -104,7 +108,7 @@
               </div>
             </div>
             <section
-              class="grid place-items-center grid-cols-1 md:grid-cols-2 xl:grid-cols-3 w-full"
+              class="grid w-full grid-cols-1 place-items-center md:grid-cols-2 xl:grid-cols-3"
             >
               {#each filteredCourses.slice(0, viewAll ? filteredCourses.length : 3) as courseData}
                 <CourseCard
@@ -119,22 +123,23 @@
                 />
               {/each}
               {#if filteredCourses.length == 0}
-                <div class="px-4 w-full mx-auto">
+                <div class="mx-auto w-full px-4">
                   <EmptyState headerClassName="text-[#CE02CE]" />
                 </div>
               {/if}
             </section>
             {#if filteredCourses.length > 3}
-              <div class="w-full flex items-center justify-center my-5">
-                <Button
-                  class="text-lg font-semibold text-white !bg-[#CE02CE]"
-                  on:click={() => (viewAll = !viewAll)}>View more programs</Button
-                >
+              <div class="my-5 flex w-full items-center justify-center">
+                <PrimaryButton
+                  class="text-lg font-semibold text-white "
+                  label="View more programs"
+                  onClick={() => (viewAll = !viewAll)}
+                />
               </div>
             {/if}
           </div>
         {:else}
-          <div class="px-4 w-full lg:w-[70%] mx-auto">
+          <div class="mx-auto w-full px-4 lg:w-[70%]">
             <EmptyState headerClassName="text-[#CE02CE]" />
           </div>
         {/if}

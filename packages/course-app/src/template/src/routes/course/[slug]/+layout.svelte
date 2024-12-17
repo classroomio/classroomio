@@ -6,7 +6,7 @@
   import { getPageSection } from '$lib/utils/helpers/page';
   import { sharedPage } from '$lib/utils/stores/pages';
   import { components } from '$lib/components';
-  import Button from '@/components/ui/button/button.svelte';
+  import Logo from '$lib/components/ui/_custom/Logo.svelte';
 
   interface Props {
     children: import('svelte').Snippet;
@@ -39,18 +39,9 @@
 
       {#if seo?.settings?.logo}
         <div class="flex items-center gap-2 md:gap-3" in:blur>
-          <a
-            href="/"
-            class="flex items-center flex-col min-w-[50px]"
-            title={`${seo?.settings?.title}`}
-            id="logo"
-          >
-            <img
-              src={seo?.settings?.logo || ''}
-              alt={`${seo?.settings?.title || ''} logo`}
-              class="rounded inline-block mx-auto w-16"
-            />
-          </a>
+
+          <Logo src={seo?.settings?.logo} alt={seo?.settings?.title} className="w-16 min-w-[50px]" />
+          
           <span class="h-5 w-1 bg-[#141414] rounded-full"></span>
           <p class="text-start line-clamp-1 font-semibold text-lg capitalize" title={data.title}>
             {data.title}

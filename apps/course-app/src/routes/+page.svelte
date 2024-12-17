@@ -10,6 +10,7 @@
   import { Separator } from '$lib/components/ui/separator';
   import { ShinnyText } from '$lib/components/animation/shinny-text';
   import { ShimmerButton } from '$lib/components/animation/shimmerbutton';
+  import { Sparkle } from '$lib/components/animation/sparkle';
   import Copy from 'lucide-svelte/icons/copy';
   import { cn } from '$lib/utils';
 
@@ -27,6 +28,12 @@
       github: 'https://github.com/classroomio/classroomio'
     },
     {
+      name: 'Webflow',
+      image: 'https://cdn.courseapp.oncws.com/templates/webflow-template.png',
+      url: 'https://webflow.courseapp.oncws.com',
+      github: 'https://github.com/classroomio/classroomio'
+    },
+    {
       name: 'Classic',
       image: 'https://cdn.courseapp.oncws.com/templates/classic-template.png',
       url: 'https://classic.courseapp.oncws.com',
@@ -40,16 +47,49 @@
     },
     {
       name: 'Minimal',
-      image: 'https://cdn.courseapp.oncws.com/templates/minimal.png',
+      image: 'https://cdn.courseapp.oncws.com/templates/minimal-template.png',
       url: 'https://minimal.courseapp.oncws.com',
       github: 'https://github.com/classroomio/classroomio'
+    },
+    {
+      name: 'Bootcamps',
+      image: 'https://cdn.courseapp.oncws.com/templates/bootcamp-template.png',
+      url: 'https://bootcamp.courseapp.oncws.com',
+      github: 'https://github.com/classroomio/classroomio'
+    }
+  ];
+
+  const features = [
+    'Beautiful templates you can choose from',
+    'Create as many courses as you want',
+    'Write courses with Markdown',
+    'Embed videos, slides, and other media',
+    'Deploy to Vercel, Netlify or wherever you want.'
+  ];
+
+  const examples = [
+    {
+      name: 'Webflow',
+      url: 'https://university.webflow.com'
+    },
+    {
+      name: 'Hubspot',
+      url: 'https://academy.hubspot.com'
+    },
+    {
+      name: 'Atlassian',
+      url: 'https://university.atlassian.com'
+    },
+    {
+      name: 'Framer',
+      url: 'https://framer.university/'
     }
   ];
 </script>
 
 <!-- Hero -->
-<section class="my-5 w-full md:mb-20 md:mt-0">
-  <div class="">
+<section class="my-5 w-full md:my-0">
+  <div>
     <CardContainer className="md:px-20">
       <CardBody
         className="max-w-4xl min-h-[50vh] flex flex-col justify-center px-30 gap-2 md:gap-5"
@@ -64,27 +104,22 @@
 
         <BlurFade delay={0.25 * 2}>
           <p class="text-md">
-            With our prebuilt templates, you can setup a fully functional customer educational site
-            for your product in minutes.<br />
+            With our prebuilt templates, you can setup a fully functional customer educational
+            website for your product in minutes.<br />
             <span>
               Similar to the likes of
 
-              <Button variant="link" class="h-fit p-0" href="https://university.webflow.com/">
-                Webflow,
-              </Button>
-              <Button variant="link" class="h-fit p-0" href="https://academy.hubspot.com/">
-                Hubspot,
-              </Button>
-              <Button
-                variant="link"
-                class="h-fit p-0"
-                href="https://university.atlassian.com/student/activity/2227111-home#/page/670e8ce7a1887954d13a856a"
-              >
-                Atlassian &
-              </Button>
-              <Button variant="link" class="h-fit p-0" href="https://framer.university/"
-                >Framer</Button
-              >
+              {#each examples as example}
+                <Button
+                  variant="link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="mx-1 h-fit p-0 underline"
+                  href={example.url}
+                >
+                  {example.name}
+                </Button>
+              {/each}
             </span>
           </p>
 
@@ -113,10 +148,10 @@
 <!-- Hero End -->
 
 <!-- Templates -->
-<section id="templates" class="my-5 w-full pt-0 md:my-10 md:pt-24">
+<section id="templates" class="my-5 w-full pt-0 md:my-0 md:pt-24">
   <div class="container">
     <h2 class="mb-5 text-center text-3xl font-semibold md:mb-20 md:text-start md:text-5xl">
-      Browser Templates
+      Browse Templates
     </h2>
 
     <div class="grid max-w-6xl grid-cols-1 place-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -128,13 +163,32 @@
     </div>
   </div>
 </section>
-
 <!-- Templates End -->
 
-<Separator class="my-20" />
+<Separator class="my-5 md:mt-20" />
 
-<!-- Setup -->
-<section id="setup" class="mb-20 w-full">
+<!-- Features -->
+<section id="features" class="my-5 w-full px-4 pt-0 md:mb-10 md:mt-0 md:pt-24">
+  <div class="font-drawn container mx-auto flex max-w-4xl flex-col items-center">
+    <h2 class="mb-2 text-center text-3xl font-semibold md:mb-10 md:text-start md:text-5xl">
+      Features
+    </h2>
+
+    <ul>
+      {#each features as feature}
+        <li class="text-md mb-2 list-decimal md:text-2xl">
+          <Sparkle text={feature} />
+        </li>
+      {/each}
+    </ul>
+  </div>
+</section>
+<!-- Features End -->
+
+<Separator class="my-5 md:my-20" />
+
+<!-- Home CTA -->
+<section class="mb-20 w-full">
   <BlurFade delay={0.25}>
     <div class="container">
       <!-- <h2 class="mb-10 text-center text-5xl font-semibold">
@@ -142,43 +196,39 @@
       </h2> -->
 
       <div
-        class="relative mx-auto h-fit w-full max-w-3xl overflow-hidden rounded-lg border bg-neutral-800 p-20 py-40 text-center shadow-2xl"
+        class="relative mx-auto h-fit w-full overflow-hidden rounded-lg border bg-neutral-800 px-10 py-20 text-center shadow-2xl md:max-w-3xl md:px-20 md:py-40"
       >
         <Meteors number={30} />
+        <div class="z-20">
+          <h1 class="mb-5 text-2xl font-semibold text-white md:text-5xl">
+            Kickstart Your Customer Education Journey
+          </h1>
 
-        <h1 class="mb-5 text-5xl font-semibold text-white">
-          Start Customising Your University Site
-        </h1>
-
-        <div class="z-10 flex items-center justify-center">
-          <ShimmerButton
-            onClick={() => {
-              window.location.href =
-                'https://github.com/classroomio/classroomio/blob/a6af412b2401a8dc3f871773b96a24b2fa764f52/packages/course-app/README.md';
-            }}
-            class="shadow-2xl"
-          >
-            <span
-              class="whitespace-pre-wrap text-center text-sm font-medium leading-none tracking-tight text-white lg:text-lg dark:from-white dark:to-slate-900/10"
-            >
-              Go to Docs
-            </span>
-          </ShimmerButton>
+          <div class=" flex items-center justify-center">
+            <ShimmerButton href="/npm" target="_blank" rel="noopener noreferrer" class="shadow-2xl">
+              <span
+                class="whitespace-pre-wrap text-center text-sm font-medium leading-none tracking-tight text-white lg:text-lg dark:from-white dark:to-slate-900/10"
+              >
+                Learn More
+              </span>
+            </ShimmerButton>
+          </div>
         </div>
       </div>
     </div>
   </BlurFade>
 </section>
+<!-- Home CTA End -->
 
-<!-- Setup End -->
-
-<Separator class="mt-20" />
+<Separator class="mt-5 md:mt-20" />
 
 <!-- Footer -->
 <section class="my-10 w-full">
   <div class="container">
     <p class="text-center text-sm text-neutral-500">
-      Made with ❤️ by <a href="https://git.new/class">classroomio</a>
+      Made with ❤️ by <a href="https://git.new/class" target="_blank" rel="noopener noreferrer">
+        classroomio
+      </a>
     </p>
   </div>
 </section>

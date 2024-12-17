@@ -1,10 +1,10 @@
 {
   "name": "@classroomio/course-app",
-  "version": "0.0.1",
+  "version": "0.0.11",
   "private": false,
   "main": "dist/create-template.js",
   "scripts": {
-    "create": "node dist/create-template.js",
+    "dev:run": "pnpm build && node dist/create-template.js",
     "build": "vite build && node scripts/postbuild.js"
   },
   "bin": {
