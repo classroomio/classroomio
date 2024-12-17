@@ -126,7 +126,9 @@
                 {/each}
               </div>
             </div>
-            <section class="flex flex-wrap items-center justify-center gap-4 p-4 md:justify-start">
+            <section
+              class=":justify-start flex flex-wrap items-center justify-center gap-4 p-4 lg:w-fit"
+            >
               {#each $courses.slice(0, viewAll ? $courses.length : 3) as courseData}
                 <CourseCard
                   className="bg-gray-50"
