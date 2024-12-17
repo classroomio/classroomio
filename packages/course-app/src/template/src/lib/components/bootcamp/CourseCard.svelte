@@ -31,7 +31,7 @@
       <div
         class="font-roboto bg-bootcamp mt-4 w-full cursor-pointer rounded-sm p-3 text-start font-medium uppercase transition-all duration-200 hover:scale-90 hover:no-underline"
       >
-        Register here
+        Start Course
       </div>
     </a>
   </div>
