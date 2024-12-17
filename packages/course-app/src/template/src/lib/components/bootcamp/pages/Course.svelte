@@ -127,7 +127,7 @@
               </div>
             </div>
             <section
-              class=":justify-start flex flex-wrap items-center justify-center gap-4 p-4 lg:w-fit"
+              class="flex flex-wrap items-center justify-center gap-4 p-4 lg:w-fit lg:justify-start"
             >
               {#each $courses.slice(0, viewAll ? $courses.length : 3) as courseData}
                 <CourseCard
