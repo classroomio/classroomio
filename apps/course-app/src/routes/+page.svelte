@@ -47,8 +47,14 @@
     },
     {
       name: 'Minimal',
-      image: 'https://cdn.courseapp.oncws.com/templates/minimal.png',
+      image: 'https://cdn.courseapp.oncws.com/templates/minimal-template.png',
       url: 'https://minimal.courseapp.oncws.com',
+      github: 'https://github.com/classroomio/classroomio'
+    },
+    {
+      name: 'Bootcamps',
+      image: 'https://cdn.courseapp.oncws.com/templates/bootcamp-template.png',
+      url: 'https://bootcamp.courseapp.oncws.com',
       github: 'https://github.com/classroomio/classroomio'
     }
   ];
