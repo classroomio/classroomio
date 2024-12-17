@@ -4,6 +4,7 @@ import { components as ClassicComponents } from './classic';
 import { components as MinimalComponents } from './minimal';
 import { components as ExamprepComponents } from './examprep';
 import { components as WebflowComponents } from './webflow';
+import { components as BootcampComponents } from './bootcamp';
 
 function getComponents() {
   switch (import.meta.env.VITE_TEMPLATE) {
@@ -17,6 +18,8 @@ function getComponents() {
       return ExamprepComponents;
     case 'webflow':
       return WebflowComponents;
+    case 'bootcamp':
+      return BootcampComponents;
     default:
       return CalComponents;
   }

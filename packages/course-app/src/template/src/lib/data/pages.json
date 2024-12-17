@@ -267,7 +267,7 @@
           "button": {
             "label": "Learn More",
             "link": "/courses",
-            "redirect": false
+            "redirect": true
           }
         },
         "show": true
@@ -303,7 +303,7 @@
           "action": {
             "label": "Explore Courses",
             "link": "/courses",
-            "redirect": false
+            "redirect": true
           },
           "banner": {
             "video": "https://www.youtube.com/watch?v=qqAYW7uxErI",
@@ -331,7 +331,7 @@
           "button": {
             "label": "Learn More",
             "link": "/courses",
-            "redirect": false
+            "redirect": true
           },
           "show": true
         }

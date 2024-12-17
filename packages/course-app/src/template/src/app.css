@@ -47,8 +47,11 @@
     --classic-secondary: 300 100% 95%;
 
     --examprep-primary: 224 98% 37%;
+
     --webflow-primary: 224 93% 39%;
     --webflow-secondary: 224 93% 39%;
+
+    --bootcamp-primary: 140 100% 50%;
   }
 
   .dark {

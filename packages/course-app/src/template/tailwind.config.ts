@@ -48,6 +48,10 @@ const config: Config = {
           DEFAULT: 'hsl(var(--webflow-primary) / <alpha-value>)',
           secondary: 'hsl(var(--webflow-secondary) / <alpha-value>)'
         },
+        bootcamp: {
+          DEFAULT: 'hsl(var(--bootcamp-primary) / <alpha-value>)',
+          secondary: 'hsl(var(--bootcamp-secondary) / <alpha-value>)'
+        },
         secondary: {
           DEFAULT: 'hsl(var(--secondary) / <alpha-value>)',
           foreground: 'hsl(var(--secondary-foreground) / <alpha-value>)'

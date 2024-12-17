@@ -1,8 +1,8 @@
 <script>
+  import { SECTION } from '@/utils/constants/page';
   import { getPageSection } from '@/utils/helpers/page';
   import { sharedPage } from '@/utils/stores/pages';
   import Logo from '../ui/_custom/Logo.svelte';
-  import { SECTION } from '@/utils/constants/page';
 
   const content = $derived(getPageSection($sharedPage, SECTION.FOOTER));
   const seo = $derived(getPageSection($sharedPage, SECTION.SEO));
@@ -13,7 +13,9 @@
     class="flex w-full flex-col items-start gap-4 bg-white px-6 py-4 md:flex-row md:items-center md:justify-between"
   >
     <Logo src={seo?.settings.logo} alt={seo?.settings.title} />
-    <ul class="flex flex-col items-start gap-4 underline md:flex-row md:items-center md:gap-8">
+    <ul
+      class="-md:gap-8 flex flex-col items-start gap-4 text-blue-700 underline md:flex-row md:items-center"
+    >
       {#if content.settings.twitter}
         <a href={content.settings.twitter} target="_blank" title="twitter">Twitter</a>
       {/if}
@@ -33,7 +35,7 @@
       rel="noopener noreferrer"
       class="flex items-center gap-1"
     >
-      <p class=" text-examprep text-base font-semibold underline">Built on ClassroomIO</p>
+      <p class=" text-base font-semibold text-blue-800 underline">Built on ClassroomIO</p>
     </a>
   </nav>
 {/if}
