@@ -166,7 +166,23 @@ Each page configuration includes:
    - Contains course-specific header and layout settings
    - Manages how courses are displayed and filtered
 
-Each section can be toggled with the `show` property and customized through its `settings` object.
+Each section can be toggled with the `show` property and customized through its `settings` object. Here is a breakdown of each page
+
+```ts
+type Page = {
+  id: string;
+  title: string;
+  slug: string;
+  status: 'draft' | 'published';
+  sections: Section[];
+};
+
+type Section = {
+  settings: Record<string, any>;
+  show: boolean;
+  type: string;
+};
+```
 
 ## API Routes
 
