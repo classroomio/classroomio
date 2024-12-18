@@ -93,7 +93,7 @@
         className="py-10 max-w-4xl mx-auto flex flex-col items-center justify-center px-30 gap-2 md:gap-5"
       >
         <BlurIn
-          class="pointer-events-none flex max-w-2xl flex-col items-center whitespace-pre-wrap bg-gradient-to-b from-black to-gray-300/80 bg-clip-text text-4xl font-semibold leading-none tracking-tighter text-transparent md:mb-4 md:block md:text-6xl"
+          class="pointer-events-none flex max-w-2xl flex-col items-center whitespace-pre-wrap bg-gradient-to-b from-black to-gray-300/80 bg-clip-text text-2xl font-semibold leading-none tracking-tighter text-transparent md:mb-4 md:block md:text-4xl lg:text-6xl"
         >
           Create a <span class="font-mono italic text-blue-700">UNIVERSITY</span>
           <span>Site for your SAAS in</span>
@@ -158,7 +158,7 @@
 
 <!-- Templates -->
 <section id="templates" class="my-5 w-full pt-0 md:my-0 md:pt-24">
-  <div class="container">
+  <div class="px-4 md:container">
     <h2 class="mb-5 text-center text-3xl font-semibold md:mb-20 md:text-start md:text-5xl">
       Browse Templates
     </h2>
@@ -181,8 +181,8 @@
 <Separator class="my-5 md:mt-20" />
 
 <!-- Features -->
-<section id="features" class="my-5 w-full px-4 pt-0 md:mb-10 md:mt-0 md:pt-24">
-  <div class="font-drawn container mx-auto flex max-w-4xl flex-col items-center">
+<section id="features" class="m-5 w-full px-4 pt-0 md:mb-10 md:mt-0 md:pt-24">
+  <div class="font-drawn mx-auto flex max-w-4xl flex-col items-center">
     <h2 class="mb-2 text-center text-3xl font-semibold md:mb-10 md:text-start md:text-5xl">
       Features
     </h2>
@@ -203,7 +203,7 @@
 <!-- Home CTA -->
 <section class="mb-20 w-full">
   <BlurFade delay={0.25}>
-    <div class="container">
+    <div class="m-5">
       <!-- <h2 class="mb-10 text-center text-5xl font-semibold">
         Up & Running <span class="font-mono italic text-blue-700">MINUTES</span>
       </h2> -->
@@ -237,7 +237,7 @@
 
 <!-- Footer -->
 <section class="my-10 w-full">
-  <div class="container">
+  <div class="">
     <p class="text-center text-sm text-neutral-500">
       Made with ❤️ by <a href="https://git.new/class" target="_blank" rel="noopener noreferrer">
         classroomio

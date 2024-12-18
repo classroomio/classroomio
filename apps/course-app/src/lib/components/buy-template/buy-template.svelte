@@ -35,7 +35,7 @@
       </Dialog.Description>
     </Dialog.Header>
     <div class="grid gap-4 py-4">
-      <p>What you get:</p>
+      <p>What you get for <strong>ONLY $20</strong>:</p>
       <ul>
         {#each whatYouGet as item}
           <li class="mb-2 flex items-center gap-2">
@@ -55,7 +55,7 @@
         <span
           class="whitespace-pre-wrap text-center text-sm font-medium leading-none tracking-tight text-white lg:text-lg dark:from-white dark:to-slate-900/10"
         >
-          Buy
+          Buy ($20)
         </span>
       </ShimmerButton>
     </Dialog.Footer>
