@@ -16,21 +16,15 @@
 
   const templates = [
     {
+      name: 'Bootcamps',
+      image: 'https://cdn.courseapp.oncws.com/templates/bootcamp-template.png',
+      url: 'https://bootcamp.courseapp.oncws.com',
+      github: 'https://github.com/classroomio/classroomio'
+    },
+    {
       name: 'Cal',
       image: 'https://cdn.courseapp.oncws.com/templates/cal-template.png',
       url: 'https://cal.courseapp.oncws.com',
-      github: 'https://github.com/classroomio/classroomio'
-    },
-    {
-      name: 'PostHog',
-      image: 'https://cdn.courseapp.oncws.com/templates/posthog-template.png',
-      url: 'https://posthog.courseapp.oncws.com',
-      github: 'https://github.com/classroomio/classroomio'
-    },
-    {
-      name: 'Webflow',
-      image: 'https://cdn.courseapp.oncws.com/templates/webflow-template.png',
-      url: 'https://webflow.courseapp.oncws.com',
       github: 'https://github.com/classroomio/classroomio'
     },
     {
@@ -52,9 +46,15 @@
       github: 'https://github.com/classroomio/classroomio'
     },
     {
-      name: 'Bootcamps',
-      image: 'https://cdn.courseapp.oncws.com/templates/bootcamp-template.png',
-      url: 'https://bootcamp.courseapp.oncws.com',
+      name: 'PostHog',
+      image: 'https://cdn.courseapp.oncws.com/templates/posthog-template.png',
+      url: 'https://posthog.courseapp.oncws.com',
+      github: 'https://github.com/classroomio/classroomio'
+    },
+    {
+      name: 'Webflow',
+      image: 'https://cdn.courseapp.oncws.com/templates/webflow-template.png',
+      url: 'https://webflow.courseapp.oncws.com',
       github: 'https://github.com/classroomio/classroomio'
     }
   ];
