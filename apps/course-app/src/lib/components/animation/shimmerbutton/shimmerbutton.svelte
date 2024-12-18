@@ -28,6 +28,7 @@
   {href}
   {target}
   {rel}
+  data-rewardful
 >
   <div class={cn('-z-30 blur-[2px]', 'absolute inset-0 overflow-visible [container-type:size]')}>
     <div
