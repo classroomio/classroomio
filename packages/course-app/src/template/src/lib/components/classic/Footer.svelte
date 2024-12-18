@@ -20,7 +20,7 @@
     class="flex w-full flex-col items-start gap-4 bg-white px-6 py-4 md:flex-row md:items-center md:justify-between"
   >
     <div class="logo flex w-full items-center justify-between md:w-fit">
-      <Logo src={seo?.settings.logo} alt={seo?.settings.title} className="" />
+      <Logo src={seo?.settings.logo} alt={seo?.settings.title} />
 
       <a
         href="https://classroomio.com"
@@ -28,7 +28,7 @@
         rel="noopener noreferrer"
         class="flex items-center gap-1 md:hidden"
       >
-        <p class=" text-base font-semibold text-[#0233BD] underline">Built on ClassroomIO</p>
+        <p class="text-base font-semibold text-[#0233BD] underline">Built on ClassroomIO</p>
       </a>
     </div>
     <ul
@@ -69,7 +69,7 @@
       rel="noopener noreferrer"
       class="hidden items-center gap-1 md:flex"
     >
-      <p class=" text-base font-semibold text-[#0233BD] underline">Built on ClassroomIO</p>
+      <p class="text-base font-semibold text-[#0233BD] underline">Built on ClassroomIO</p>
     </a>
   </nav>
 {/if}

@@ -51,7 +51,7 @@
             />
           </div>
 
-          <div class=" relative flex w-full rounded-lg md:w-[800px] md:max-w-[80vw] lg:max-w-[80%]">
+          <div class="relative flex w-full rounded-lg md:w-[800px] md:max-w-[80vw] lg:max-w-[80%]">
             <span class="absolute -top-14 left-3 h-2 w-2 rounded-full bg-red-500"></span>
             <span class="absolute -left-10 top-10 h-2 w-2 rounded-full bg-white"></span>
             <span class="absolute -right-3 -top-10 h-2 w-2 rounded-full bg-yellow-500"></span>
@@ -121,7 +121,7 @@
               class="flex h-[150px] max-h-[200px] w-full max-w-full flex-col gap-2 overflow-hidden rounded-lg border border-[#D0D1C9] bg-[#E5E7E0] p-4 dark:bg-[#232429] md:max-w-[320px] lg:max-w-[450px]"
             >
               <span class="flex items-center gap-2">
-                <CheckmarkFilled size={24} class=" fill-[#F54E00] dark:fill-[#EB9D2A]" />
+                <CheckmarkFilled size={24} class="fill-[#F54E00] dark:fill-[#EB9D2A]" />
                 <p class="line-clamp-1 text-lg font-bold capitalize">{item.title}</p>
               </span>
               <p class="line-clamp-4 text-sm">{item.subtitle}</p>

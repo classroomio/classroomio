@@ -65,9 +65,9 @@
   }
 </script>
 
-<main class="font-ibm">
+<main>
   {#if section.header?.show}
-    <div id="course-banner" class="h-full bg-cover bg-center md:h-[600px] md:p-10">
+    <div id="course-banner" class="h-full bg-cover bg-center md:h-[60vh] md:p-10">
       <div class="relative flex h-full items-center justify-center px-4 py-20 text-white md:px-10">
         <div class="w-full space-y-6 text-white">
           <h1 class="w-full font-mono text-2xl font-semibold md:w-[60%] md:text-6xl">
@@ -76,8 +76,8 @@
           <p class="w-full md:w-[60%] lg:w-[40%]">{section.header.settings.subtitle}</p>
           <div class="flex items-center gap-2 md:gap-4">
             <PrimaryButton
-              onClick={() => goto(section.header?.settings.action.link)}
-              class="rounded-none bg-blue-900 px-6 py-3 font-semibold uppercase hover:scale-95 hover:bg-blue-900"
+              href={section.header?.settings.action.link}
+              class="rounded-none bg-blue-900 px-8 py-3 uppercase hover:scale-95 hover:bg-blue-900"
               label={section.header.settings.action.label}
             />
           </div>
@@ -112,9 +112,7 @@
                 {/each}
               </div>
             </div>
-            <section
-              class="grid grid-cols-1 place-items-center gap-4 md:grid-cols-2 lg:grid-cols-3"
-            >
+            <section class="flex flex-wrap justify-center gap-4">
               {#each filteredCourses.slice(0, viewAllCourses ? filteredCourses.length : 3) as courseData}
                 <CourseCard
                   className="bg-[#FDFDFD]"

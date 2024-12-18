@@ -24,15 +24,15 @@
 </script>
 
 <div
-  class="mx-6 shadow-[0px_3px_#282828] transition bg-white text-black overflow-hidden rounded-3xl"
+  class="mx-6 overflow-hidden rounded-3xl bg-white text-black shadow-[0px_3px_#282828] transition"
 >
   <button
-    class="relative flex justify-between items-center w-full cursor-pointer overflow-hidden p-6 bg-inherit"
+    class="relative flex w-full cursor-pointer items-center justify-between overflow-hidden bg-inherit p-6"
     onclick={toggleAccordion}
   >
-    <p class="font-semibold text-lg">{title}</p>
+    <p class="text-lg font-semibold">{title}</p>
 
-    <div class="flex items-center justify-center p-[2px] bg-white text-black">
+    <div class="flex items-center justify-center bg-white p-[2px] text-black">
       {#if isOpen}
         <Subtract class="text-xl transition-transform duration-200 ease-in" />
       {:else}
@@ -40,8 +40,8 @@
       {/if}
     </div>
     {#if isOpen}
-      <div class="flex items-center justify-center absolute left-[2%] bottom-0 w-[96%] mx-auto">
-        <svg class="w-full h-2" viewBox="0 0 360 10" preserveAspectRatio="none">
+      <div class="absolute bottom-0 left-[2%] mx-auto flex w-[96%] items-center justify-center">
+        <svg class="h-2 w-full" viewBox="0 0 360 10" preserveAspectRatio="none">
           <line
             x1="0"
             y1="5"
@@ -61,7 +61,7 @@
     style="max-height: {contentHeight}; transition: max-height 0.3s ease-in-out; overflow: hidden;"
     class="rounded-3xl"
   >
-    <div class=" p-4 bg-inherit rounded-b rounded-3xl">
+    <div class="rounded-3xl rounded-b bg-inherit p-4">
       <p>
         {content}
       </p>

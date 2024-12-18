@@ -100,7 +100,7 @@
                 transition:slide={{ duration: 300, easing: quintOut, axis: 'x' }}
                 class="flex min-w-full flex-1 flex-col items-center justify-between md:h-full"
               >
-                <p class=" line-clamp-4 text-base font-semibold italic md:line-clamp-3 md:text-lg">
+                <p class="line-clamp-4 text-base font-semibold italic md:line-clamp-3 md:text-lg">
                   "{testimonial.description}"
                 </p>
 
@@ -137,9 +137,9 @@
     </section>
   {/if}
 
-  <!-- courses -->
+  <!-- Courses -->
   {#if coursesSection?.show}
-    <section id="course" class="h-full bg-white px-4 pb-20 pt-4 md:px-20">
+    <section id="course" class="h-full bg-white px-4 py-20 md:px-20">
       <h1 class="text-center font-serif text-3xl">{coursesSection.settings.title}</h1>
       <p class="font-inter mx-auto mb-8 w-full text-center font-medium md:w-[50%]">
         {coursesSection.settings.subtitle}
@@ -172,7 +172,7 @@
     </section>
   {/if}
 
-  <!-- about -->
+  <!-- About -->
   {#if aboutSection?.show}
     <section id="course" class="h-full bg-white px-4 pb-20 pt-4 md:px-10">
       <h1 class="mx-auto w-full text-center font-serif text-3xl text-gray-800 md:w-[50%]">
@@ -188,7 +188,7 @@
             class="flex h-fit max-h-[300px] max-w-full flex-col justify-start gap-4 rounded-lg border-2 border-gray-200 bg-white p-4 md:h-[150px] md:max-h-[200px] md:max-w-[500px]"
           >
             <span class="flex items-center gap-2">
-              <CheckmarkFilled size={24} class="fill-blue-400" />
+              <CheckmarkFilled size={24} class="fill-blue-800" />
               <p class="font-serif text-xl">{item.title}</p>
             </span>
             <p class="font-inter text-base text-gray-400">{item.subtitle}</p>
@@ -232,7 +232,7 @@
         <PrimaryButton
           label={ctaSection.settings.button.label}
           href={ctaSection.settings.button.redirect && ctaSection.settings.button.link}
-          class=" text-examprep bg-white text-lg font-bold uppercase hover:bg-white"
+          class="text-examprep text-md bg-white px-8 uppercase hover:bg-white"
         />
       </div>
     </section>

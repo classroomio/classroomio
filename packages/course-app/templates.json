@@ -18,5 +18,9 @@
   {
     "name": "webflow",
     "description": "Webflow template"
+  },
+  {
+    "name": "bootcamp",
+    "description": "Bootcamp template"
   }
 ]

@@ -27,7 +27,7 @@
   }
 </script>
 
-<div class="h-fit w-full min-w-[250px] max-w-[300px] space-y-4">
+<div class="h-fit w-[325px] space-y-4">
   <div class="space-y-4 rounded-sm border border-[#EAEAEA] px-4 {className}">
     <div class="overflow-hidden border-b py-4">
       <p class="p line-clamp-1 overflow-ellipsis border-[#EAEAEA] text-xl font-semibold">
@@ -35,7 +35,7 @@
       </p>
     </div>
     <div class="overflow-hidden rounded-md">
-      <p class=" line-clamp-3 overflow-ellipsis text-justify text-[#878787]">
+      <p class="line-clamp-3 overflow-ellipsis text-justify text-[#878787]">
         {description}
       </p>
     </div>

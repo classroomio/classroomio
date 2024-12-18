@@ -30,7 +30,7 @@
       </p>
     </div>
 
-    <div class=" w-full px-6 py-4">
+    <div class="w-full px-6 py-4">
       <PrimaryButton href={`/course/${slug}`} label="Go to Course" />
     </div>
   </div>

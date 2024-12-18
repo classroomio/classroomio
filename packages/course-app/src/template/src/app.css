@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto+Slab:wght@100..900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -47,8 +49,11 @@
     --classic-secondary: 300 100% 95%;
 
     --examprep-primary: 224 98% 37%;
+
     --webflow-primary: 224 93% 39%;
     --webflow-secondary: 224 93% 39%;
+
+    --bootcamp-primary: 151 100% 43%;
   }
 
   .dark {

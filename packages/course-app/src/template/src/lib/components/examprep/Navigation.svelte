@@ -4,7 +4,7 @@
   import { getPageSection } from '@/utils/helpers/page';
   import { sharedPage } from '@/utils/stores/pages';
   import PrimaryButton from './PrimaryButton.svelte';
-  import Logo from '../ui/_custom/Logo.svelte';
+  import Logo from '@/components/ui/_custom/Logo.svelte';
 
   let open = $state(false);
 

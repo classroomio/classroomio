@@ -1,8 +1,8 @@
-<script lang="ts">
-  import Logo from '$lib/components/ui/_custom/Logo.svelte';
-  import { getPageSection } from '$lib/utils/helpers/page';
-  import { sharedPage } from '$lib/utils/stores/pages';
+<script>
   import { SECTION } from '@/utils/constants/page';
+  import { getPageSection } from '@/utils/helpers/page';
+  import { sharedPage } from '@/utils/stores/pages';
+  import Logo from '@/components/ui/_custom/Logo.svelte';
 
   const content = $derived(getPageSection($sharedPage, SECTION.FOOTER));
   const seo = $derived(getPageSection($sharedPage, SECTION.SEO));
@@ -10,19 +10,17 @@
 
 {#if content?.show}
   <nav
-    class="bg-posthog-background border-posthog-border flex h-40 w-full flex-col items-start gap-4 border-t px-6 py-4 md:flex-row md:items-center md:justify-between"
+    class="flex w-full flex-col items-start gap-4 bg-white px-6 py-4 md:flex-row md:items-center md:justify-between"
   >
-    <Logo src={seo?.settings.logo} alt={seo?.settings.title} className="w-24" />
-    <ul
-      class="-md:gap-8 flex flex-col items-start gap-4 font-semibold capitalize underline md:flex-row md:items-center"
-    >
+    <Logo src={seo?.settings.logo} alt={seo?.settings.title} />
+
+    <ul class="-md:gap-8 flex flex-col items-start gap-4 underline md:flex-row md:items-center">
       {#if content.settings.twitter}
         <a href={content.settings.twitter} target="_blank" title="twitter">Twitter</a>
       {/if}
       {#if content.settings?.youtube}
         <a href={content.settings?.youtube} target="_blank">Youtube</a>
       {/if}
-
       {#if content.settings.linkedin}
         <a href={content.settings.linkedin} target="_blank" title="linkedin">LinkedIn</a>
       {/if}
@@ -32,11 +30,11 @@
     </ul>
     <a
       href="https://classroomio.com"
-      class="flex items-center gap-1 text-blue-700 hover:underline dark:text-white"
       target="_blank"
       rel="noopener noreferrer"
+      class="flex items-center gap-1"
     >
-      <p class="text-base font-semibold">Built on ClassroomIO</p>
+      <p class="text-base font-semibold text-blue-800 underline">Built on ClassroomIO</p>
     </a>
   </nav>
 {/if}

@@ -87,11 +87,11 @@
       <div class="mb-4 flex flex-col items-start justify-between md:flex-row md:items-center">
         <span class="mb-4 space-y-2 px-4 text-start lg:mb-0">
           <p class="mb-4 font-serif text-2xl md:text-3xl">{section.courses.settings.title}</p>
-          <p class=" w-full text-sm font-medium text-gray-500 md:w-[80%]">
+          <p class="w-full text-sm font-medium text-gray-500 md:w-[80%]">
             {section.courses.settings.subtitle}
           </p>
         </span>
-        <div class=" w-full md:w-fit">
+        <div class="w-full md:w-fit">
           <div class="flex w-full items-center gap-1 bg-slate-100 p-2 md:gap-4">
             <p class="whitespace-nowrap text-sm font-medium md:text-base">Filter by</p>
             <div class="flex w-full flex-row items-center bg-white p-1 md:w-fit">

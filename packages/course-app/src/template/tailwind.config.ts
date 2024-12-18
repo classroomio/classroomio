@@ -32,9 +32,9 @@ const config: Config = {
           border: 'hsl(var(--posthog-border) / <alpha-value>)',
           ring: 'hsl(var(--posthog-ring) / <alpha-value>)'
         },
-        minimal: {
-          DEFAULT: 'hsl(var(--minimal-primary) / <alpha-value>)',
-          secondary: 'hsl(var(--minimal-secondary) / <alpha-value>)'
+        bootcamp: {
+          DEFAULT: 'hsl(var(--bootcamp-primary) / <alpha-value>)',
+          secondary: 'hsl(var(--bootcamp-secondary) / <alpha-value>)'
         },
         classic: {
           DEFAULT: 'hsl(var(--classic-primary) / <alpha-value>)',
@@ -43,6 +43,10 @@ const config: Config = {
         examprep: {
           DEFAULT: 'hsl(var(--examprep-primary) / <alpha-value>)',
           secondary: 'hsl(var(--examprep-secondary) / <alpha-value>)'
+        },
+        minimal: {
+          DEFAULT: 'hsl(var(--minimal-primary) / <alpha-value>)',
+          secondary: 'hsl(var(--minimal-secondary) / <alpha-value>)'
         },
         webflow: {
           DEFAULT: 'hsl(var(--webflow-primary) / <alpha-value>)',
@@ -92,7 +96,8 @@ const config: Config = {
       fontFamily: {
         sans: [...fontFamily.sans],
         roboto: ['Roboto', ...fontFamily.sans],
-        matter: ['Matter', ...fontFamily.sans]
+        matter: ['Matter', ...fontFamily.sans],
+        slab: ['Roboto Slab', ...fontFamily.serif]
       },
       keyframes: {
         'accordion-down': {

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Motion, AnimatePresence, useAnimation } from 'svelte-motion';
+  import { Motion, AnimatePresence } from 'svelte-motion';
   import { inview } from 'svelte-inview';
   import { cn } from '$lib/utils';
 
@@ -37,7 +37,7 @@
     <div
       use:inview={{ rootMargin: inViewMargin, unobserveOnEnter: once }}
       use:motion
-      on:inview_change={({ detail }) => {
+      oninview_change={({ detail }) => {
         isInView = detail.inView ? 'visible' : 'hidden';
       }}
       class={cn(className)}

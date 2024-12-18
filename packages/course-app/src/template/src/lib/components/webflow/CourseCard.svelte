@@ -33,7 +33,7 @@
           {title}
         </p>
       </div>
-      <p class=" line-clamp-3 overflow-ellipsis text-justify text-[#ABABAB]">
+      <p class="line-clamp-3 overflow-ellipsis text-justify text-[#ABABAB]">
         {description}
       </p>
     </div>

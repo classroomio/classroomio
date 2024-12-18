@@ -25,13 +25,14 @@
           <a href={content.settings.twitter} target="_blank" title="twitter">Twitter</a>
         {/if}
         {#if content.settings.youtube}
-          <a href={content.settings.youtube} target="_blank">Youtube</a>{/if}
+          <a href={content.settings.youtube} target="_blank">Youtube</a>
+        {/if}
 
         {#if content.settings.linkedin}
           <a href={content.settings.linkedin} target="_blank" title="linkedin">LinkedIn</a>
         {/if}
         {#if content.settings.facebook}
-          <a href={content.settings.facebook} target="_blank" title="facebook">facebook</a>
+          <a href={content.settings.facebook} target="_blank" title="facebook">Facebook</a>
         {/if}
       </ul>
       <a

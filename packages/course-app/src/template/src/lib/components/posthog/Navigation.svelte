@@ -21,10 +21,10 @@
 </script>
 
 <nav
-  class={`border-posthog-border relative flex w-full items-center justify-between border-b  px-6 py-3`}
+  class="border-posthog-border relative flex w-full items-center justify-between border-b px-6 py-3"
 >
   <!-- Logo Section -->
-  <Logo src={seo?.settings.logo} alt={seo?.settings.title} className="w-24" addAcademy />
+  <Logo src={seo?.settings.logo} alt={seo?.settings.title} addAcademy />
 
   <!-- Mobile Menu Button (Visible only on mobile and when logged in) -->
   <button onclick={toggleMenu} class="lg:hidden">

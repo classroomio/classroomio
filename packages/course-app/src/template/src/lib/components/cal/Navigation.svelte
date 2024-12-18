@@ -21,7 +21,7 @@
   class="relative top-0 z-[3000] flex w-full items-center justify-between border-b border-[#D0D1C9] bg-[#F4F4F4] px-6 py-4 md:sticky"
 >
   <!-- Logo Section -->
-  <Logo src={seo?.settings.logo} alt={seo?.settings.title} className="w-24" addAcademy />
+  <Logo src={seo?.settings.logo} alt={seo?.settings.title} addAcademy />
 
   <ul
     class="hidden list-none items-center gap-14 text-base font-semibold text-[#1F2937] hover:no-underline lg:flex"

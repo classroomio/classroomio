@@ -9,11 +9,11 @@
         "type": "seo",
         "show": true,
         "settings": {
-          "title": "Cal.com University",
-          "description": "The one place to learn everything about Cal.com",
-          "url": "https://cal.com",
-          "appUrl": "https://app.cal.com",
-          "keywords": ["cal.com", "saas university"],
+          "title": "Hype180 Academy",
+          "description": "Learn React.js from industry experts at Hype180",
+          "url": "https://courseapp.oncws.com",
+          "appUrl": "https://courseapp.oncws.com",
+          "keywords": ["react.js", "javascript", "web development", "coding bootcamp"],
           "logo": "/logo.svg"
         }
       },
@@ -28,17 +28,17 @@
             },
             {
               "title": "Blog",
-              "link": "https://cal.com/blog",
+              "link": "https://classroomio.com/blog",
               "redirect": true
             },
             {
               "title": "API",
-              "link": "https://cal.com/docs/api-reference/v2/introduction",
+              "link": "https://classroomio.com/docs",
               "redirect": true
             },
             {
               "title": "Docs",
-              "link": "https://cal.com/docs/developing/introduction",
+              "link": "https://classroomio.com/docs",
               "redirect": true
             }
           ]
@@ -70,16 +70,16 @@
         "type": "header",
         "show": true,
         "settings": {
-          "title": "Scheduling Education",
-          "titleHighlight": "The Cal University - Learn All About Scheduling",
-          "subtitle": "Cal.com university is the one stop shop for learning everything about scheduling with Cal.com. Save countless hours and improve your team's productivity.",
+          "title": "Master React.js Development",
+          "titleHighlight": "Learn from Industry Experts at Hype180",
+          "subtitle": "Join our comprehensive React.js training program and learn how to build modern web applications from experienced developers who work on real-world projects daily.",
           "action": {
-            "label": "Explore courses",
+            "label": "Start Learning",
             "link": "/courses",
             "redirect": false
           },
           "banner": {
-            "video": "https://www.youtube.com/watch?v=qqAYW7uxErI",
+            "video": "https://www.youtube.com/watch?v=example",
             "image": "",
             "type": "video",
             "show": true
@@ -90,26 +90,26 @@
         "type": "about",
         "show": true,
         "settings": {
-          "title": "Learn with us: To unlock your potential and fuel your Expertise",
-          "subtitle": "Our courses will help you make sense of the numbers, drive improvements, and create products that stick.",
+          "title": "Transform Your Career with React.js Expertise",
+          "subtitle": "Our courses are designed by professional developers to help you master React.js and modern web development practices.",
           "benefits": {
-            "title": "What you will gain",
+            "title": "Why Choose Hype180",
             "list": [
               {
-                "title": "Real-world coding challenges.",
-                "subtitle": "Work through projects that mirror real-world tasks, helping you build a portfolio that showcases your skills to potential employers."
+                "title": "Industry-Relevant Projects",
+                "subtitle": "Work on real-world React applications that mirror actual client projects we've delivered at Hype180."
               },
               {
-                "title": "Experienced Instructors",
-                "subtitle": "Learn from industry experts who bring their hands-on experience to the classroom, guiding you every step of the way."
+                "title": "Active Developers as Instructors",
+                "subtitle": "Learn from developers who are actively building and shipping React applications in production environments."
               },
               {
-                "title": "Comprehensive Materials",
-                "subtitle": "Get access to up-to-date resources that cover all key topics and methodologies, ensuring a complete learning experience."
+                "title": "Modern Tech Stack",
+                "subtitle": "Master the latest React features, tools, and best practices used in professional development environments."
               },
               {
-                "title": "Proven Success",
-                "subtitle": "With over 20 years of combined teaching experience, our methods have been proven to lead to better results and a deep understanding of the subject matter."
+                "title": "Career Support",
+                "subtitle": "Get guidance on building your portfolio, preparing for interviews, and landing your first React developer role."
               }
             ]
           }
@@ -119,18 +119,18 @@
         "type": "courses",
         "show": true,
         "settings": {
-          "title": "Featured Courses",
+          "title": "Featured React.js Courses",
           "titleHighlight": "",
-          "subtitle": "Explore our most popular courses that will help you master the art of scheduling with Cal.com"
+          "subtitle": "From fundamentals to advanced concepts, our courses cover everything you need to become a professional React developer"
         }
       },
       {
         "type": "pathway",
         "show": true,
         "settings": {
-          "title": "Become an expert with our \"Learning Path\" Programs",
+          "title": "Your Path to Becoming a React Developer",
           "titleHighlight": "",
-          "subtitle": "With over 5 years of extensive coding experience, I am equipped to help you achieve success in your choice of coding career."
+          "subtitle": "Follow our structured learning path to go from beginner to professional React developer, guided by our team of experienced instructors."
         }
       },
       {
@@ -139,24 +139,24 @@
         "settings": {
           "list": [
             {
-              "rating": 4,
-              "name": "Adewale",
-              "description": "Adewale Adebayo is a seasoned professional with a wealth of experience in software development. He is passionate about coding and teaching, and his classes are designed to be engaging and practical, ensuring that students gain hands-on skills and knowledge."
+              "rating": 5,
+              "name": "Sarah Chen",
+              "description": "Senior React Developer at Hype180 with 8 years of experience building enterprise-level applications. Specializes in React performance optimization and state management."
             },
             {
-              "rating": 4,
-              "name": "Folakemi Adeyemi",
-              "description": "Folake Adeyemi has extensive expertise in project management and leadership. She combines theoretical knowledge with practical case studies, ensuring that students are well-prepared for real-world challenges. "
+              "rating": 5,
+              "name": "Marcus Rodriguez",
+              "description": "Full-stack developer with expertise in React, Node.js, and modern JavaScript. Has led multiple successful client projects and loves teaching best practices."
             },
             {
-              "rating": 4,
-              "name": "Ifedayo Olabisi",
-              "description": "Ifedayo Olabisi is a distinguished instructor in web development. With a deep understanding of both front-end and back-end technologies, he provides comprehensive training that covers all aspects of web development."
+              "rating": 5,
+              "name": "Jessica Park",
+              "description": "Frontend architect specializing in React and TypeScript. Passionate about clean code and component-driven development methodologies."
             },
             {
-              "rating": 4,
-              "name": "Kemi Adediran",
-              "description": "Kemi Adediran is a skilled digital marketer with a passion for sharing her knowledge. Her courses cover the latest trends and techniques in digital marketing, from SEO to social media strategy."
+              "rating": 5,
+              "name": "David Kumar",
+              "description": "React Native expert and web performance specialist. Brings real-world experience from building and scaling React applications at startups and large enterprises."
             }
           ]
         }
@@ -165,23 +165,23 @@
         "type": "faq",
         "show": true,
         "settings": {
-          "title": "Frequently Asked Questions.",
-          "subtitle": "Our courses will help you make sense of the numbers, drive improvements, and create products that stick.",
+          "title": "Common Questions About Our React Courses",
+          "subtitle": "Get answers to frequently asked questions about our React.js training program",
           "questions": [
             {
               "id": 1,
-              "title": "What sets your platform apart from others?",
-              "content": "Our platform is focused on providing practical, project-based learning. We aim to equip learners with skills that are directly applicable to their career paths. From real-world projects to experienced instructors, we focus on a hands-on approach to help you master each topic efficiently."
+              "title": "Do I need prior programming experience?",
+              "content": "While some JavaScript knowledge is helpful, our beginner courses start from the basics. We'll help you build a strong foundation before moving to advanced React concepts."
             },
             {
               "id": 2,
-              "title": "Are the courses beginner-friendly?",
-              "content": "Absolutely! Whether you're a complete beginner or looking to advance your skills, we have courses designed for every level. Our step-by-step approach ensures that even the most complex topics are broken down into easy-to-understand lessons."
+              "title": "How practical are the courses?",
+              "content": "Very practical! You'll build real projects that mirror our agency work, including e-commerce sites, dashboards, and social media applications using React."
             },
             {
               "id": 3,
-              "title": "How long does it take to complete a course?",
-              "content": "Course lengths vary depending on the subject. However, most of our courses are designed to be completed at your own pace, allowing you to take the time you need to fully understand the material before moving on."
+              "title": "What support do you provide?",
+              "content": "You'll have access to our instructor team, weekly live Q&A sessions, a private Discord community, and code reviews for your projects."
             }
           ]
         }
@@ -192,56 +192,19 @@
         "settings": {
           "list": [
             {
-              "name": "Zulaike Elebute",
-              "role": "Web Developer",
-              "description": "I can't recommend the Mobile App Development bootcamp enough. The course was challenging, but the support from my peers and instructors was incredible.  I learned so much about both iOS and Android development, and I'm now  developing apps for a tech startup."
+              "name": "Michael Chang",
+              "role": "Junior React Developer",
+              "description": "The React fundamentals course was exactly what I needed. The instructors broke down complex concepts into manageable pieces, and the hands-on projects helped cement my understanding."
             },
             {
-              "name": "Zulaike Elebute",
-              "role": "Content Writer",
-              "description": "The course was challenging, but the support from my peers and instructors was incredible.  I learned so much about both iOS and Android development, and I'm now  developing apps for a tech startup."
+              "name": "Emma Wilson",
+              "role": "Frontend Developer",
+              "description": "Thanks to Hype180's advanced React course, I was able to level up my skills and land a senior developer position. The real-world projects were especially valuable."
             },
             {
-              "name": "Oluwaseun olaniyan",
-              "role": "Frontend Developement",
-              "description": "I can't recommend the Mobile App Development bootcamp enough. The course was challenging, but the support from my peers and instructors was incredible.  I learned so much about both iOS and Android development, and I'm now  developing apps for a tech startup."
-            },
-            {
-              "name": "Zulaike Elebute",
-              "role": "Web Developer",
-              "description": "The feedback and real-world projects were invaluable—I’m now confident in delivering high-quality work that connects and engages"
-            },
-
-            {
-              "name": "Oluwaseun olaniyan",
-              "role": "Content Writer",
-              "description": "The lessons were comprehensive, covering everything from HTML to advanced JavaScript. Working on interactive projects transformed my approach, and I’m now ready to create polished, user-friendly interfaces!"
-            },
-            {
-              "name": "Oluwaseun olaniyan",
-              "role": "Web Developer",
-              "description": "I can't recommend the Mobile App Development bootcamp enough. The course was challenging, but the support from my peers and instructors was incredible.  I learned so much about both iOS and Android development, and I'm now  developing apps for a tech startup."
-            },
-            {
-              "name": "Oluwaseun olaniyan",
-              "role": "Content Writer",
-              "description": " revelation. I learned techniques to craft compelling, audience-focused content that tells a story. The feedback and real-world projects were invaluable—I’m now confident in delivering high-quality work that connects and engages"
-            },
-            {
-              "name": "Oluwaseun olaniyan",
-              "role": "Frontend Developement",
-              "description": "I can't recommend the Mobile App Development bootcamp enough. The course was challenging, but the support from my peers and instructors was incredible.  I learned so much about both iOS and Android development, and I'm now  developing apps for a tech startup."
-            },
-
-            {
-              "name": "Oluwaseun olaniyan",
-              "role": "Web Developer",
-              "description": "Through hands-on projects, I learned to build responsive, secure websites from scratch. I now feel equipped to tackle complex challenges with confidence"
-            },
-            {
-              "name": "Oluwaseun olaniyan",
-              "role": "Web Developer",
-              "description": "I can't recommend the Mobile App Development bootcamp enough. The course was challenging, but the support from my peers and instructors was incredible.  I learned so much about both iOS and Android development, and I'm now  developing apps for a tech startup."
+              "name": "Alex Thompson",
+              "role": "Software Engineer",
+              "description": "The React ecosystem can be overwhelming, but Hype180's structured approach helped me master not just React, but also the surrounding tools and best practices."
             }
           ]
         }
@@ -250,22 +213,22 @@
         "type": "contact",
         "show": true,
         "settings": {
-          "title": "Have you got any",
-          "titleHighlight": "Questions?",
-          "subtitle": "Reach out to us with any questions you might have.",
-          "address": "Ashwoodfield House Farm, Kidderminster Rd, Stourbridge, Kingswinford DY6 0AA",
-          "phone": "+4407339904995",
-          "email": "help@digdippa.com"
+          "title": "Need help getting started?",
+          "titleHighlight": "Contact Us",
+          "subtitle": "Our team is here to help you choose the right learning path.",
+          "address": "123 Tech Hub Street, San Francisco, CA 94105",
+          "phone": "+1 (555) 123-4567",
+          "email": "learn@hype180.com"
         }
       },
       {
         "type": "cta",
         "settings": {
-          "title": "Programs that you will love.",
-          "titleHighlight": "100% guaranteed",
-          "subtitle": "Unlock skills you'll use for life with courses designed to inspire, empower, and elevate your expertise.",
+          "title": "Start Your React Journey Today",
+          "titleHighlight": "Join Hype180",
+          "subtitle": "Transform your career with our industry-leading React.js courses and expert instruction.",
           "button": {
-            "label": "Learn More",
+            "label": "Browse Courses",
             "link": "/courses",
             "redirect": false
           }
@@ -275,8 +238,8 @@
       {
         "type": "mailinglist",
         "settings": {
-          "title": "Join our mailing list",
-          "subtitle": "We are constantly releasing new courses and sharing them with our email list. Subscribe to get notified once we release a new course.",
+          "title": "Stay Updated",
+          "subtitle": "Subscribe to get notified about new courses, React tips, and exclusive learning resources.",
           "button": {
             "label": "Subscribe",
             "link": "/#",
@@ -297,16 +260,16 @@
         "type": "header",
         "show": true,
         "settings": {
-          "title": "Learn with us",
-          "titleHighlight": "Our Courses",
-          "subtitle": "Designed to guide you step-by-step through essential skills. Browse, enroll, and start transforming your career today!",
+          "title": "React.js Courses",
+          "titleHighlight": "Learn from the Experts",
+          "subtitle": "Comprehensive React.js courses designed to take you from beginner to professional developer.",
           "action": {
-            "label": "Explore Courses",
+            "label": "View Courses",
             "link": "/courses",
             "redirect": false
           },
           "banner": {
-            "video": "https://www.youtube.com/watch?v=qqAYW7uxErI",
+            "video": "https://www.youtube.com/watch?v=example",
             "image": "",
             "type": "video",
             "show": true
@@ -317,19 +280,19 @@
         "type": "courses",
         "show": true,
         "settings": {
-          "title": "Unlock your potential with engaging and innovative online courses",
+          "title": "Master Modern React Development",
           "titleHighlight": "",
-          "subtitle": "Explore creative and tech courses that will help you own you skill set"
+          "subtitle": "From components to deployment, learn everything you need to succeed as a React developer"
         }
       },
       {
         "type": "cta",
         "settings": {
-          "title": "Programs that you will love.",
-          "titleHighlight": "100% guaranteed",
-          "subtitle": "Unlock skills you'll use for life with courses designed to inspire, empower, and elevate your expertise.",
+          "title": "Ready to Master React?",
+          "titleHighlight": "Join Hype180 Today",
+          "subtitle": "Start your journey to becoming a professional React developer with our comprehensive courses.",
           "button": {
-            "label": "Learn More",
+            "label": "Enroll Now",
             "link": "/courses",
             "redirect": false
           },

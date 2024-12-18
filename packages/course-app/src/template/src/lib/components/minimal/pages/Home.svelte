@@ -26,10 +26,12 @@
   {#if $homePage}
     {@const content = getPageSection($homePage, SECTION.HERO)}
     {#if content?.show}
-      <section class="flex max-h-full items-center justify-center px-5 py-5 md:px-14 md:py-14">
+      <section
+        class="flex max-h-full items-center justify-center px-5 py-5 md:h-[60vh] md:px-14 md:py-14"
+      >
         <section class="mx-auto flex max-w-6xl items-center justify-between gap-4">
           <div class="w-full max-w-[50%] space-y-6 text-white">
-            <div class="w-fit rounded-sm bg-emerald-100 px-3 py-1 md:border">
+            <div class="w-fit rounded-sm bg-white px-3 py-1 md:border">
               <p class="text-minimal text-center text-sm font-bold uppercase">
                 {content.settings?.title}
               </p>
@@ -63,7 +65,6 @@
   {/if}
 
   <!-- Learn -->
-
   {#if learnSection?.show}
     <section
       id="about"
@@ -101,7 +102,6 @@
   {/if}
 
   <!-- Courses -->
-
   {#if courseSection?.show}
     <section id="course" class="h-full space-y-10 bg-white px-5 pb-36 pt-10">
       <h2 class="mx-auto mb-4 w-full text-center text-4xl font-bold md:w-[70%]">
@@ -141,7 +141,6 @@
   {/if}
 
   <!-- Testimonial -->
-
   {#if testimonialSection?.show}
     <section class="relative h-full pt-10 text-white">
       <div class="absolute -top-20 left-[5%] w-[90%] md:-top-32">

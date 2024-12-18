@@ -141,7 +141,7 @@
   {#if instructorSection?.show}
     <section class="h-full bg-white px-4 pb-20 pt-4 lg:px-14">
       <div class="mx-auto w-full xl:w-[90%]">
-        <h1 class="  mb-4 text-center text-3xl font-bold text-[#3F3F3F] lg:text-start">
+        <h1 class=" mb-4 text-center text-3xl font-bold text-[#3F3F3F] lg:text-start">
           Meet some of our Instructors
         </h1>
         <section class="grid w-full grid-cols-1 place-items-center gap-2 md:grid-cols-2">

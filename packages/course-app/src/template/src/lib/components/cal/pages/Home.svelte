@@ -248,7 +248,7 @@
               </span>
             </div>
             <div>
-              <p class=" text-[#282828] dark:text-[#ABABAB]">
+              <p class="text-[#282828] dark:text-[#ABABAB]">
                 {item.description}
               </p>
             </div>
