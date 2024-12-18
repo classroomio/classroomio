@@ -16,7 +16,7 @@
   <p class="bg-blue-700 py-1.5 text-center text-sm font-medium text-white">
     brought to you by
     <a
-      href="https://git.new/class"
+      href="https://github.com/classroomio/classroomio/tree/main/packages/course-app#readme"
       target="_blank"
       class="inline-flex items-center font-semibold underline-offset-2 hover:underline"
       >classroomio.com

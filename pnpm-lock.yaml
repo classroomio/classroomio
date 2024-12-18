@@ -192,6 +192,9 @@ importers:
       svelte-motion:
         specifier: ^0.12.2
         version: 0.12.2(svelte@5.10.1)
+      svelte-radix:
+        specifier: ^2.0.1
+        version: 2.0.1(svelte@5.10.1)
     devDependencies:
       '@sveltejs/adapter-auto':
         specifier: ^3.0.0
@@ -5979,7 +5982,7 @@ packages:
     peerDependencies:
       '@sveltejs/kit': ^2.0.0
     dependencies:
-      '@sveltejs/kit': 2.0.0(@sveltejs/vite-plugin-svelte@3.0.0)(svelte@4.2.12)(vite@5.0.3)
+      '@sveltejs/kit': 2.0.0(@sveltejs/vite-plugin-svelte@3.0.0)(svelte@4.1.2)(vite@5.0.0)
       import-meta-resolve: 4.1.0
     dev: true
 
@@ -16595,6 +16598,15 @@ packages:
       svelte: 4.1.2
       typescript: 5.1.6
     dev: true
+
+  /svelte-radix@2.0.1(svelte@5.10.1):
+    resolution: {integrity: sha512-YrX44Dj+Rp6YZuPSjdmyd6P8QTkb2NXwySUCZYzjwkP6Cl3dZaTBPPeaSOutP3v3ycQ2XwyNOpyn4p0QcN+uYQ==}
+    engines: {node: '>=18.0.0', npm: '>=7.0.0'}
+    peerDependencies:
+      svelte: ^5.0.0
+    dependencies:
+      svelte: 5.10.1
+    dev: false
 
   /svelte-sequential-preprocessor@2.0.1:
     resolution: {integrity: sha512-N5JqlBni6BzElxmuFrOPxOJnjsxh1cFDACLEVKs8OHBcx8ZNRO1p5SxuQex1m3qbLzAC8G99EHeWcxGkjyKjLQ==}

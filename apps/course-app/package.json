@@ -41,6 +41,7 @@
 		"@tailwindcss/typography": "^0.5.15",
 		"lucide-svelte": "^0.468.0",
 		"svelte-inview": "^4.0.4",
-		"svelte-motion": "^0.12.2"
+		"svelte-motion": "^0.12.2",
+		"svelte-radix": "^2.0.1"
 	}
 }

@@ -69,6 +69,7 @@ const config: Config = {
       },
 
       animation: {
+        'border-beam': 'border-beam calc(var(--duration)*1s) infinite linear',
         meteor: 'meteor 5s linear infinite',
         shimmer: 'shimmer 8s infinite',
         'spin-around': 'spin-around calc(var(--speed) * 2) infinite linear',
@@ -76,6 +77,12 @@ const config: Config = {
       },
 
       keyframes: {
+        'border-beam': {
+          '100%': {
+            'offset-distance': '100%'
+          }
+        },
+
         meteor: {
           '0%': { transform: 'rotate(215deg) translateX(0)', opacity: '1' },
           '70%': { opacity: '1' },

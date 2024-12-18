@@ -1,18 +1,16 @@
 <script lang="ts">
-  import { toast } from 'svelte-sonner';
-
   import { CardBody, CardContainer } from '$lib/components/animation/card';
   import { BlurFade } from '$lib/components/animation/blurfade';
   import { BlurIn } from '$lib/components/animation/blurin';
   import { Button } from '$lib/components/ui/button';
-  import { TemplateCard } from '$lib/components/template-card';
+  import { TemplateCard, CustomTemplate } from '$lib/components/template-card';
   import { Meteors } from '$lib/components/animation/meteors';
   import { Separator } from '$lib/components/ui/separator';
-  import { ShinnyText } from '$lib/components/animation/shinny-text';
+  import { BorderBeam } from '$lib/components/animation/border-beam';
   import { ShimmerButton } from '$lib/components/animation/shimmerbutton';
+  import { BuyTemplate } from '$lib/components/buy-template';
   import { Sparkle } from '$lib/components/animation/sparkle';
-  import Copy from 'lucide-svelte/icons/copy';
-  import { cn } from '$lib/utils';
+  import { HeroVideoDialog } from '$lib/components/animation/hero-video-dialog';
 
   const templates = [
     {
@@ -92,18 +90,18 @@
   <div>
     <CardContainer className="md:px-20">
       <CardBody
-        className="max-w-4xl min-h-[50vh] flex flex-col justify-center px-30 gap-2 md:gap-5"
+        className="py-10 max-w-4xl mx-auto flex flex-col items-center justify-center px-30 gap-2 md:gap-5"
       >
         <BlurIn
-          class="pointer-events-none flex max-w-2xl flex-col items-start whitespace-pre-wrap bg-gradient-to-b from-black to-gray-300/80 bg-clip-text text-4xl font-semibold leading-none tracking-tighter text-transparent md:mb-4 md:block md:text-6xl"
+          class="pointer-events-none flex max-w-2xl flex-col items-center whitespace-pre-wrap bg-gradient-to-b from-black to-gray-300/80 bg-clip-text text-4xl font-semibold leading-none tracking-tighter text-transparent md:mb-4 md:block md:text-6xl"
         >
           Create a <span class="font-mono italic text-blue-700">UNIVERSITY</span>
           <span>Site for your SAAS in</span>
           <span class="ml-1 font-mono italic text-blue-700">MINUTES</span>
         </BlurIn>
 
-        <BlurFade delay={0.25 * 2}>
-          <p class="text-md">
+        <BlurFade delay={0.25}>
+          <p class="text-md text-center">
             With our prebuilt templates, you can setup a fully functional customer educational
             website for your product in minutes.<br />
             <span>
@@ -123,25 +121,36 @@
             </span>
           </p>
 
-          <button
-            onclick={() => {
-              navigator.clipboard.writeText('pnpx @classroomio/course-app');
-              toast('Copied to clipboard 😉');
-            }}
-            class={cn(
-              'group z-10 mt-5 rounded-full border  border-white/50 bg-neutral-700 transition-all  ease-in hover:cursor-pointer hover:bg-neutral-700 hover:text-white'
-            )}
-          >
-            <ShinnyText
-              class="animate-gradient inline-flex items-center justify-center bg-gradient-to-r from-[#ffaa40]  via-[#9c40ff] to-[#ffaa40] bg-[length:var(--bg-size)_100%]  bg-clip-text px-4 py-1 text-transparent text-white transition ease-out hover:text-neutral-400 hover:duration-300"
+          <div class="mt-4 flex flex-col items-center justify-center gap-4 md:flex-row">
+            <Button
+              class="w-full md:w-auto"
+              variant="secondary"
+              target="_blank"
+              rel="noopener noreferrer"
+              href="/npm"
             >
-              <span>pnpx @classroomio/course-app</span>
+              Install Template
+            </Button>
 
-              <Copy class="ml-2 size-3" />
-            </ShinnyText>
-          </button>
+            <BuyTemplate ctaLabel="Buy A Custom Template" ctaClass="w-full md:w-auto" />
+          </div>
         </BlurFade>
       </CardBody>
+
+      <section
+        class="relative mx-auto my-4 flex max-w-5xl flex-col items-center justify-center px-7"
+      >
+        <div class="relative overflow-hidden rounded-2xl p-1">
+          <BorderBeam />
+          <HeroVideoDialog
+            animationStyle="from-right"
+            videoSrc="https://www.youtube.com/embed/P2I2HoyrjVo"
+            thumbnailSrc="https://cdn.courseapp.oncws.com/courseapp-og.png"
+            thumbnailAlt="Courseapp by ClassroomIO – Create your SAAS Academy in Minutes"
+          />
+        </div>
+      </section>
+      <!-- </BlurFade> -->
     </CardContainer>
   </div>
 </section>
@@ -154,13 +163,17 @@
       Browse Templates
     </h2>
 
-    <div class="grid max-w-6xl grid-cols-1 place-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {#each templates as template, index}
-        <BlurFade delay={0.25 + index * 0.25}>
+    <BlurFade delay={0.25 * 2}>
+      <div
+        class="grid max-w-6xl grid-cols-1 place-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3"
+      >
+        {#each templates as template}
           <TemplateCard {template} />
-        </BlurFade>
-      {/each}
-    </div>
+        {/each}
+
+        <CustomTemplate />
+      </div>
+    </BlurFade>
   </div>
 </section>
 <!-- Templates End -->
