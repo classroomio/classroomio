@@ -7,7 +7,7 @@
 
 <div
   id="custom-template-card"
-  class="group relative mb-5 flex h-full w-4/5 max-w-[340px] flex-col items-center justify-center rounded-md border px-4 py-2 shadow-2xl transition-all duration-500"
+  class="group relative mb-5 flex h-full w-[95%] max-w-[340px] flex-col items-center justify-center rounded-md border px-4 py-2 shadow-2xl transition-all duration-500"
 >
   <BorderBeam />
   <DotPattern />
