@@ -100,12 +100,12 @@
     <div class="absolute inset-0 flex items-center justify-center">
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="flex size-24 items-center justify-center rounded-full border border-neutral-200 backdrop-blur-md transition-transform duration-300 ease-out"
+        class="flex size-24 items-center justify-center rounded-full border border-neutral-400 bg-black backdrop-blur-md transition-transform duration-300 ease-out"
         on:mouseenter={() => isPlayHovered.set(true)}
         on:mouseleave={() => isPlayHovered.set(false)}
       >
         <div
-          class="relative flex size-20 items-center justify-center rounded-full border border-neutral-200 backdrop-blur-2xl transition-all duration-300 ease-out"
+          class="relative flex size-20 items-center justify-center rounded-full border border-neutral-400 bg-black backdrop-blur-2xl transition-all duration-300 ease-out"
           class:isPlayHovered={$isPlayHovered}
         >
           <Play
