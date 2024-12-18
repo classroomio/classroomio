@@ -54,6 +54,9 @@
     --webflow-secondary: 224 93% 39%;
 
     --bootcamp-primary: 151 100% 43%;
+    --linear-primary: 300 98% 41%;
+    --linear-border: 0 0% 28%;
+    --linear-background: 0 0% 3%;
   }
 
   .dark {
@@ -93,6 +96,10 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  .gradient-bg {
+    @apply bg-gradient-to-tr from-[#0a0a0a] via-[#171717] to-[#292929];
   }
 }
 

@@ -182,6 +182,16 @@
               "id": 3,
               "title": "What support do you provide?",
               "content": "You'll have access to our instructor team, weekly live Q&A sessions, a private Discord community, and code reviews for your projects."
+            },
+            {
+              "id": 4,
+              "title": "Do I need prior programming experience?",
+              "content": "While some JavaScript knowledge is helpful, our beginner courses start from the basics. We'll help you build a strong foundation before moving to advanced React concepts."
+            },
+            {
+              "id": 5,
+              "title": "Do I need prior programming experience?",
+              "content": "While some JavaScript knowledge is helpful, our beginner courses start from the basics. We'll help you build a strong foundation before moving to advanced React concepts."
             }
           ]
         }

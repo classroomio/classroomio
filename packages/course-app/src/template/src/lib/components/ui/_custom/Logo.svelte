@@ -10,6 +10,6 @@
   </figure>
 
   {#if addAcademy}
-    <span class="text-lg font-semibold italic">Academy</span>
+    <span class="text-lg font-semibold italic text-white">Academy</span>
   {/if}
 </a>

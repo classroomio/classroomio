@@ -52,6 +52,12 @@ const config: Config = {
           DEFAULT: 'hsl(var(--webflow-primary) / <alpha-value>)',
           secondary: 'hsl(var(--webflow-secondary) / <alpha-value>)'
         },
+        linear: {
+          DEFAULT: 'hsl(var(--linear-primary)/<alpha-value>)',
+          secondary: 'hsl(var(--linear-secondary)/<alpha-value>)',
+          border: 'hsl(var(--linear-border) / <alpha-value>)',
+          background: 'hsl(var(--linear-background) / <alpha-value>)'
+        },
         secondary: {
           DEFAULT: 'hsl(var(--secondary) / <alpha-value>)',
           foreground: 'hsl(var(--secondary-foreground) / <alpha-value>)'

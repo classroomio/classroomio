@@ -22,5 +22,9 @@
   {
     "name": "bootcamp",
     "description": "Bootcamp template"
+  },
+  {
+    "name": "linear",
+    "description": "Linear template"
   }
 ]
