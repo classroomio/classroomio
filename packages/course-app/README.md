@@ -33,7 +33,7 @@ You'll be prompted to:
 
 ## Project Structure
 
-```
+```bash
 your-project/
 ├── src/
 │   ├── courses/                 # Your course content
@@ -46,12 +46,26 @@ your-project/
 │   │   │   └── section-2/
 │   │   └── another-course/
 │   └── lib/
-│       └── components/          # Template-specific components
+│       ├── components/          # Template-specific components
+│       │   ├── cal/            # Cal.com template components
+│       │   ├── classic/        # Classic template components
+│       │   ├── minimal/        # Minimal template components
+│       │   ├── posthog/        # PostHog template components
+│       │   ├── webflow/        # Webflow template components
+│       │   └── ui/             # Shared UI components
+│       ├── data/               # Site configuration
+│       │   └── pages.json      # Page layouts and content
+│       └── utils/
+│           ├── constants/      # App constants
+│           ├── helpers/        # Helper functions
+│           ├── stores/         # Svelte stores
+│           └── types/         # TypeScript definitions
 ```
 
 ## Course Configuration
 
 ### Course Metadata
+
 Each course needs a `metadata.json` file:
 
 ```json
@@ -67,6 +81,7 @@ Each course needs a `metadata.json` file:
 ```
 
 ### Section Metadata
+
 Each section folder requires a `metadata.json`:
 
 ```json
@@ -77,6 +92,7 @@ Each section folder requires a `metadata.json`:
 ```
 
 ### Lesson Content
+
 Lessons are written in Markdown (`.md`) files:
 
 ```markdown
@@ -97,6 +113,7 @@ Your lesson content here...
 ## Customization
 
 ### Templates
+
 Each template has its own component set in `src/lib/components/[template-name]/`. The active template is determined by the `VITE_TEMPLATE` environment variable.
 
 ### Navigation & Site Settings
