@@ -19,7 +19,6 @@
   const heroSection = $derived(getPageSection($homePage, SECTION.HERO));
   const courseSection = $derived(getPageSection($homePage, SECTION.COURSE));
   const ctaSection = $derived(getPageSection($homePage, SECTION.CTA));
-
   const aboutSection = $derived(getPageSection($homePage, SECTION.ABOUT));
   const faqSection = $derived(getPageSection($homePage, SECTION.FAQ));
   const testimonialSection = $derived(getPageSection($homePage, SECTION.TESTIMONIAL));
