@@ -5,7 +5,7 @@
   import { cn } from '$lib/utils';
   import BadgeCheck from 'lucide-svelte/icons/badge-check';
 
-  const PAYMENT_LINK = 'https://buy.stripe.com/8wM6pF5Sdabhbny28c';
+  const PAYMENT_LINK = 'https://buy.stripe.com/3csbJZ4O9bfl2R26ot';
 
   const whatYouGet = [
     'A custom template for your SAAS/Course',
