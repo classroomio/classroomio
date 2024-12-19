@@ -9,7 +9,7 @@
 
   const whatYouGet = [
     'A custom template for your SAAS/Course',
-    'A 101 course on how to use your SAAS/Course',
+    'A 101 course on how to use your SAAS',
     'Deploy to Vercel or Selfhost',
     'Request 1 revision',
     'Get first draft in 48 hours'
