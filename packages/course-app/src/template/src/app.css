@@ -54,6 +54,9 @@
     --webflow-secondary: 224 93% 39%;
 
     --bootcamp-primary: 151 100% 43%;
+
+    --vercel-primary: 224 98% 37%;
+    --vercel-border: 0 0% 16%;
   }
 
   .dark {

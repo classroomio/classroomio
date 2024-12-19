@@ -52,6 +52,11 @@ const config: Config = {
           DEFAULT: 'hsl(var(--webflow-primary) / <alpha-value>)',
           secondary: 'hsl(var(--webflow-secondary) / <alpha-value>)'
         },
+        vercel: {
+          DEFAULT: 'hsl(var(--vercel-primary) / <alpha-value>)',
+          secondary: 'hsl(var(--vercel-secondary) / <alpha-value>)',
+          border: 'hsl(var(--vercel-border)/<alpha-value>)'
+        },
         secondary: {
           DEFAULT: 'hsl(var(--secondary) / <alpha-value>)',
           foreground: 'hsl(var(--secondary-foreground) / <alpha-value>)'
