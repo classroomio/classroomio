@@ -14,14 +14,25 @@
   import TestimonialCard from '../TestimonialCard.svelte';
   import PrimaryButton from '../PrimaryButton.svelte';
   import { SECTION } from '@/utils/constants/page';
-  import SectionContainer from '../SectionContainer.svelte';
+  import HeroContainer from '../HeroContainer.svelte';
   import banner from '../assets/org-banner.png';
-  import { ArrowLeft, ArrowRight } from 'carbon-icons-svelte';
+  import {
+    ArrowLeft,
+    ArrowRight,
+    CheckmarkFilled,
+    Settings,
+    ArrowUp,
+    ArrowDown
+  } from 'carbon-icons-svelte';
+  import AboutContainer from '../AboutContainer.svelte';
+  import FaqContainer from '../FaqContainer.svelte';
 
   const heroSection = $derived(getPageSection($homePage, SECTION.HERO));
+  const aboutSection = $derived(getPageSection($homePage, SECTION.ABOUT));
   const courseSection = $derived(getPageSection($homePage, SECTION.COURSE));
   const faqSection = $derived(getPageSection($homePage, SECTION.FAQ));
   const testimonialSection = $derived(getPageSection($homePage, SECTION.TESTIMONIAL));
+  const ctaSection = $derived(getPageSection($homePage, SECTION.CTA));
 
   let viewAll = false;
 
@@ -29,6 +40,7 @@
 
   let testimoniallist = [1, 2, 3, 4, 5, 6, 7];
   let scrollContainer: HTMLElement | undefined = $state();
+  let faqContainer: HTMLElement | undefined = $state();
 
   /**
    * Functions
@@ -39,6 +51,14 @@
 
   function scrollRight() {
     scrollContainer?.scrollBy({ left: scrollContainer.clientWidth, behavior: 'smooth' });
+  }
+
+  function scrollUp() {
+    faqContainer?.scrollBy({ top: -300, behavior: 'smooth' });
+  }
+
+  function scrollDown() {
+    faqContainer?.scrollBy({ top: 300, behavior: 'smooth' });
   }
 
   let letters = $derived(heroSection?.settings.title.split(''));
@@ -59,12 +79,14 @@
   });
 </script>
 
-<section class="bg-black text-white">
-  <div class="flex items-start px-6 md:px-20 lg:gap-4">
+<section class="bg-black py-10 text-white">
+  <div class="px-6 md:px-20 lg:gap-4">
     <div class="mx-auto max-w-[70vw] divide-y divide-zinc-400/20 border-[0.2px] border-zinc-400/20">
       {#if heroSection?.show}
-        <section class="flex min-h-[50vh] items-center justify-center overflow-hidden pb-10">
+        <section class="relative flex min-h-[50vh] items-center justify-center pb-10">
           <div class="divide-y divide-zinc-400/20">
+            <AddLarge class="absolute -left-4 -top-4 z-20 text-white" size={32} />
+            <AddLarge class="absolute -bottom-4 -right-4 z-20 text-white" size={32} />
             <div
               class="relative max-w-[70vw] flex-col-reverse items-center justify-center gap-5 text-center md:flex-col"
             >
@@ -74,9 +96,8 @@
                 <div class="absolute left-0 top-[50%] -z-0 h-[0.2px] w-full bg-zinc-400/20"></div>
                 <div class="absolute left-0 top-[70%] -z-0 h-[0.2px] w-full bg-zinc-400/20"></div>
               </span>
-              <!-- <AddLarge class="absolute -left-4 -top-4 text-white" size={32} />
-              <AddLarge class="absolute -bottom-4 -right-4 text-white" size={32} /> -->
-              <SectionContainer>
+
+              <HeroContainer>
                 <div class=" mb-4 w-full space-y-6 py-20">
                   <p class="mx-auto w-full text-3xl font-bold md:w-[90%] md:text-4xl">
                     {#each letters as letter, index}
@@ -113,7 +134,7 @@
                     <img
                       src={banner}
                       alt=""
-                      class="size-20 relative left-4 top-0 z-50 rounded-full object-cover"
+                      class="size-20 relative left-8 top-0 z-50 rounded-full object-cover"
                     />
                     <img
                       src={banner}
@@ -123,12 +144,13 @@
                     <img
                       src={banner}
                       alt=""
-                      class="size-20 relative -left-4 z-10 rounded-full object-cover"
+                      class="size-20 relative -left-8 z-10 rounded-full object-cover"
                     />
                   </div>
                 </div>
-              </SectionContainer>
+              </HeroContainer>
             </div>
+
             <!-- testimonial section -->
             {#if testimonialSection?.show}
               <div class="flex w-[70vw] flex-col items-center justify-center p-6">
@@ -237,31 +259,90 @@
           </section>
         {/if}
       </div>
-      <!-- faq -->
-      {#if faqSection?.show}
-        <section id="faq" class="h-full pb-20 pt-4">
-          <h1 class="mb-4 text-center text-3xl font-bold">{faqSection.settings.title}</h1>
-          <section class="mx-auto w-full space-y-2 py-5">
-            {#each faqSection.settings.questions as faq}
-              <Accordion title={faq.title} content={faq.content} />
-            {/each}
-          </section>
+
+      <!-- about -->
+
+      {#if aboutSection?.show}
+        <section>
+          <AboutContainer>
+            <div class="divide-y divide-zinc-400/20">
+              <div class="px-8 py-14 text-center">
+                <p class="mx-auto mb-4 w-[70%] text-xl font-semibold">
+                  {aboutSection.settings.title}
+                </p>
+                <p class="mx-auto w-[70%] text-sm">{aboutSection.settings.subtitle}</p>
+              </div>
+              <div class="grid grid-cols-1 divide-x divide-y divide-zinc-400/20 md:grid-cols-2">
+                {#each aboutSection.settings.benefits.list as benefit}
+                  <div class="px-4 py-6">
+                    <span class=" mb-2 flex items-center gap-2">
+                      <CheckmarkFilled class="fill-vercel" size={20} />
+                      <p class="text-xl font-semibold">{benefit.title}</p>
+                    </span>
+                    <p>{benefit.subtitle}</p>
+                  </div>
+                {/each}
+              </div>
+            </div>
+          </AboutContainer>
         </section>
       {/if}
+      <!-- faq -->
+      {#if faqSection?.show}
+        <section id="faq" class="h-full">
+          <!-- svelte-ignore slot_element_deprecated -->
+          <FaqContainer>
+            <div class="flex items-start divide-x divide-zinc-400/20">
+              <div class="w-full border-b border-zinc-400/20 px-4 py-8">
+                <p class="text-lg font-semibold">{faqSection.settings.title}</p>
+              </div>
 
-      <!-- testimonial -->
-      {#if testimonialSection?.show}
-        <section id="testimonial" class="h-full pb-20 pt-4">
-          <h1 class="mb-4 text-start text-3xl font-bold">Testimonial</h1>
-          <section class="grid grid-cols-1 place-items-center gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {#each testimonialSection.settings.list as item, i}
-              <TestimonialCard description={item.description} name={item.name} index={i} />
-            {/each}
-          </section>
+              <div class="h-[60vh] overflow-y-hidden p-4">
+                <div bind:this={faqContainer} class="scrollbar-hide h-full w-full overflow-y-auto">
+                  {#each faqSection.settings.questions as faq}
+                    <div
+                      class="border-vercel-border mb-2 space-y-4 rounded-lg border bg-zinc-600/20 p-6"
+                    >
+                      <p class="font-semibold">{faq.title}</p>
+
+                      <p>{faq.content}</p>
+                    </div>
+                  {/each}
+                </div>
+              </div>
+            </div>
+            <div slot="buttons">
+              <div class="hidden w-full flex-col items-center justify-end gap-2 md:flex">
+                <button
+                  class="flex w-fit items-center justify-center rounded-full border border-white bg-transparent p-2 hover:bg-gray-500 hover:text-black"
+                  onclick={scrollUp}
+                >
+                  <ArrowUp />
+                </button>
+                <button
+                  class="flex w-fit items-center justify-center rounded-full border border-white bg-transparent p-2 hover:bg-gray-500 hover:text-black"
+                  onclick={scrollDown}
+                >
+                  <ArrowDown />
+                </button>
+              </div>
+            </div>
+          </FaqContainer>
         </section>
       {/if}
     </div>
-    <!-- <Footer data={org} /> -->
+    <!-- footerNote -->
+    <!-- {#if ctaSection?.show}
+      <section
+        class="border-vercel-border flex items-center justify-center rounded-md bg-zinc-500/20"
+      >
+        <div>
+          <p>{ctaSection.settings.title}</p>
+          <p>{ctaSection.settings.subtitle}</p>
+        </div>
+        <PrimaryButton label={ctaSection.settings.label} />
+      </section>
+    {/if} -->
   </div>
 </section>
 
