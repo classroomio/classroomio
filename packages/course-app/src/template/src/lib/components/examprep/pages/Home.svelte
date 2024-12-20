@@ -231,7 +231,7 @@
       <div class="my-5 flex w-full items-center justify-center">
         <PrimaryButton
           label={ctaSection.settings.button.label}
-          href={ctaSection.settings.button.redirect && ctaSection.settings.button.link}
+          href={ctaSection.settings.button.link}
           class="text-examprep text-md bg-white px-8 uppercase hover:bg-white"
         />
       </div>
