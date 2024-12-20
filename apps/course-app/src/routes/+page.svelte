@@ -101,9 +101,8 @@
         </BlurIn>
 
         <BlurFade delay={0.25}>
-          <p class="text-md text-center">
-            With our prebuilt templates, you can setup a fully functional customer educational
-            website for your product & idea`` in minutes.<br />
+          <p class="text-md text-center max-w-[500px]">
+            With our prebuilt templates, you can setup a fully functional customer educational website for your product & idea in minutes.<br />
             <span>
               Similar to the likes of
 
