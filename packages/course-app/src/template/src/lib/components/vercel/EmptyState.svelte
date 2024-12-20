@@ -15,10 +15,10 @@
 </script>
 
 <section
-  class="{className} w-full border rounded-md py-4 flex items-center justify-center p-2 my-2"
+  class="{className} my-2 flex w-full items-center justify-center rounded-md bg-zinc-500/10 p-2 py-4"
 >
   <div
-    class="flex flex-col md:flex-row justify-center items-center text-center md:text-start gap-6 p-2"
+    class="flex flex-col items-center justify-center gap-6 p-2 text-center md:flex-row md:text-start"
   >
     <img src="/expert-empty.svg" alt="empty" />
     <div>

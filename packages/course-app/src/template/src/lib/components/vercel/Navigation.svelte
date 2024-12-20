@@ -25,18 +25,13 @@
     <!-- Logo Section -->
     <Logo src={seo?.settings.logo} alt={seo?.settings.title} addAcademy className="bg-white" />
 
-    <!-- Mobile Menu Button (Visible only on mobile and when logged in) -->
-    <button onclick={toggleMenu} class="lg:hidden">
-      <Menu size={24} />
-    </button>
-
     <!-- Desktop Navigation Menu (Hidden on mobile) -->
     <ul class="hidden list-none items-center space-x-8 hover:no-underline lg:flex">
       {#each content?.settings.navItems as navItem}
         <a
           href={navItem.link}
           target={navItem.redirect ? '_blank' : undefined}
-          class="text-sm text-gray-500 hover:text-black"
+          class="text-sm text-gray-500 hover:text-gray-200"
         >
           <li class="flex items-center gap-1 hover:no-underline">
             {navItem.title}
@@ -49,12 +44,16 @@
     </ul>
   </div>
 
+  <!-- Mobile Menu Button (Visible only on mobile and when logged in) -->
+  <button onclick={toggleMenu} class="lg:hidden">
+    <Menu size={24} class="fill-white" />
+  </button>
   <!-- Mobile Sidebar Menu (Visible only on mobile) -->
 
   <ul
-    class={`fixed left-0 top-0 h-full w-full transform bg-white pt-10 hover:no-underline dark:bg-black ${
+    class={`fixed left-0 top-0 !z-50 h-full w-full transform bg-white pt-10 hover:no-underline dark:bg-black ${
       open ? 'translate-y-0' : '-translate-y-full'
-    } cursor-pointer list-none text-base font-bold text-[#1F2937] transition-transform duration-300 ease-in-out dark:text-white lg:hidden`}
+    } cursor-pointer list-none text-base font-bold text-gray-800 transition-transform duration-300 ease-in-out dark:text-white lg:hidden`}
   >
     <button onclick={toggleMenu} class="absolute right-4 top-4 z-20 lg:hidden">
       <Close size={24} />
@@ -77,7 +76,6 @@
           goto('/courses');
           toggleMenu;
         }}
-        class="flex w-fit items-center rounded-lg border border-[#4A4C524D] bg-[#F7A50180] px-3 py-2 text-base font-bold text-black hover:bg-[#f7a501ad] hover:no-underline dark:bg-[#F7A501]"
         label="Explore Course"
       />
     </div>

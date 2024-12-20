@@ -15,7 +15,7 @@
 <Button
   {href}
   onclick={onClick}
-  class={cn('group bg-[#0737BE] hover:bg-[#0737BE] rounded text-white gap-6', className)}
+  class={cn('group bg-vercel hover:bg-vercel rounded text-white gap-6', className)}
   {...restProps}
 >
   {label}

@@ -30,7 +30,7 @@
 </script>
 
 <div
-  class="relative mx-2 max-h-[500px] min-h-[400px] w-full overflow-hidden rounded-lg bg-no-repeat object-cover md:w-fit md:max-w-[350px]"
+  class="relative mx-2 max-h-[500px] min-h-[400px] max-w-[300px] overflow-hidden rounded-lg bg-no-repeat object-cover"
   style="background-image: url({bannerImage ? bannerImage : '/course-banner.jpg'});"
 >
   <div class="absolute inset-0 z-10 bg-black/40"></div>

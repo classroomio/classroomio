@@ -5,31 +5,22 @@
     index?: number;
     description?: string;
     name?: string;
+    role: string;
     banner?: string;
   }
 
-  let { index = 1, description = '', name = '', banner = '' }: Props = $props();
+  let { index = 1, description = '', name = '', role = '', banner = '' }: Props = $props();
 </script>
 
-<MagicCard {index}>
-  <section
-    class="cursor-pointer flex flex-col justify-between relative px-6 pt-6 space-y-4 hover:bg-[#282828] bg-inherit border border-[#282828] rounded w-full h-full max-w-full lg:h-[280px]"
-  >
-    <img src="/quote.svg" alt="" class="w-6 h-6 absolute top-6 left-8" />
-    <div>
-      <p class="my-6 text-[#ABABAB] line-clamp-5">
-        {description}
-      </p>
-    </div>
-    <div class="flex items-center p-4 gap-4 border-[#EAEAEA]">
-      <img
-        src={banner ? banner : '/course-banner.jpg'}
-        alt=""
-        class="w-6 h-6 rounded-full"
-      />
-      <span>
-        <p class="text-sm font-bold">{name}</p>
-      </span>
-    </div>
-  </section>
-</MagicCard>
+<div
+  class="flex w-full min-w-full snap-center flex-col items-center justify-center gap-4 text-center md:flex-row"
+>
+  <div class="flex w-full flex-col items-center justify-center space-y-2 text-center md:w-[40%]">
+    <img src={banner} alt="" class="size-10 rounded-full" />
+    <p class="text-bold text-lg">{name}</p>
+    <p class="text-sm">{role}</p>
+  </div>
+  <div class="w-full">
+    {description}
+  </div>
+</div>
