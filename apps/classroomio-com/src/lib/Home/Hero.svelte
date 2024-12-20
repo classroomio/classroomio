@@ -12,7 +12,7 @@
   ];
   let animate = false;
   let titleIndex = 0;
-  let timeout: NodeJS.Timer;
+  let timeout: NodeJS.Timeout;
 
   onMount(() => {
     setTimeout(() => {
@@ -33,14 +33,22 @@
 <div class="hero-bg relative border-b-2 text-center bg-[#F5F8FE] h-full mt-[5%] w-full">
   <div class="pt-24 w-full">
     <div class="mb-10 ml-[5%] lg:ml-0 flex w-full items-center justify-start lg:justify-center">
-      <a
+      <!-- <a
         target="_blank"
         rel="noopener noreferrer nofollow"
         href="/github"
         style="color: rgb(75, 85, 99);"
         class="rounded-full border-2 border-[#C2D2FF] px-4 py-1 text-sm font-medium bg-[#DCE5FF] text-[#4B5563] hover:underline"
         >We are <span class="text-blue-700">100%</span> open source</a
+      > -->
+      <a
+        href="https://www.producthunt.com/posts/courseapp?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-courseapp"
+        target="_blank"
+        rel="noopener noreferrer nofollow"
+        class="rounded-full border-2 border-[#ff6154]/60 px-4 py-1 text-sm font-medium bg-[#ff6154] text-white hover:underline"
       >
+        We are live on Product Hunt
+      </a>
     </div>
 
     <div class="justify-between w-[90%] absolute top-[10%] left-[5%] hidden lg:flex">

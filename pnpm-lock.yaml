@@ -137,10 +137,10 @@ importers:
         version: 3.0.0(@sveltejs/kit@2.0.0)
       '@sveltejs/kit':
         specifier: ^2.0.0
-        version: 2.0.0(@sveltejs/vite-plugin-svelte@3.0.0)(svelte@4.1.2)(vite@5.0.0)
+        version: 2.0.0(@sveltejs/vite-plugin-svelte@3.0.0)(svelte@4.1.2)(vite@5.4.11)
       '@sveltejs/vite-plugin-svelte':
         specifier: ^3.0.0
-        version: 3.0.0(svelte@4.1.2)(vite@5.0.0)
+        version: 3.0.0(svelte@4.1.2)(vite@5.4.11)
       autoprefixer:
         specifier: ^10.4.15
         version: 10.4.15(postcss@8.4.31)
@@ -169,8 +169,8 @@ importers:
         specifier: ^5.0.0
         version: 5.1.6
       vite:
-        specifier: ^5.0.0
-        version: 5.0.0
+        specifier: ^5.4.4
+        version: 5.4.11(@types/node@22.10.1)
 
   apps/course-app:
     dependencies:
@@ -6183,7 +6183,7 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
-  /@sveltejs/kit@2.0.0(@sveltejs/vite-plugin-svelte@3.0.0)(svelte@4.1.2)(vite@5.0.0):
+  /@sveltejs/kit@2.0.0(@sveltejs/vite-plugin-svelte@3.0.0)(svelte@4.1.2)(vite@5.4.11):
     resolution: {integrity: sha512-/GFxvit+q7PztRbgGTFXhVB6jvb0fZSeWuz5f4siQ2r/5BVhxYh7++Bw3/ZUjiOuyoZFiNBmOPcRNQbkzEce0g==}
     engines: {node: '>=18.13'}
     hasBin: true
@@ -6193,7 +6193,7 @@ packages:
       svelte: ^4.0.0 || ^5.0.0-next.0
       vite: ^5.0.3
     dependencies:
-      '@sveltejs/vite-plugin-svelte': 3.0.0(svelte@4.1.2)(vite@5.0.0)
+      '@sveltejs/vite-plugin-svelte': 3.0.0(svelte@4.1.2)(vite@5.4.11)
       '@types/cookie': 0.6.0
       cookie: 0.6.0
       devalue: 4.3.2
@@ -6206,7 +6206,7 @@ packages:
       sirv: 2.0.3
       svelte: 4.1.2
       tiny-glob: 0.2.9
-      vite: 5.0.0
+      vite: 5.4.11(@types/node@22.10.1)
     dev: true
 
   /@sveltejs/kit@2.0.0(@sveltejs/vite-plugin-svelte@3.0.0)(svelte@4.2.12)(vite@5.0.3):
@@ -6304,7 +6304,7 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
-  /@sveltejs/vite-plugin-svelte-inspector@2.1.0(@sveltejs/vite-plugin-svelte@3.0.0)(svelte@4.1.2)(vite@5.0.0):
+  /@sveltejs/vite-plugin-svelte-inspector@2.1.0(@sveltejs/vite-plugin-svelte@3.0.0)(svelte@4.1.2)(vite@5.4.11):
     resolution: {integrity: sha512-9QX28IymvBlSCqsCll5t0kQVxipsfhFFL+L2t3nTWfXnddYwxBuAEtTtlaVQpRz9c37BhJjltSeY4AJSC03SSg==}
     engines: {node: ^18.0.0 || >=20}
     peerDependencies:
@@ -6312,10 +6312,10 @@ packages:
       svelte: ^4.0.0 || ^5.0.0-next.0
       vite: ^5.0.0
     dependencies:
-      '@sveltejs/vite-plugin-svelte': 3.0.0(svelte@4.1.2)(vite@5.0.0)
+      '@sveltejs/vite-plugin-svelte': 3.0.0(svelte@4.1.2)(vite@5.4.11)
       debug: 4.3.4(supports-color@5.5.0)
       svelte: 4.1.2
-      vite: 5.0.0
+      vite: 5.4.11(@types/node@22.10.1)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -6387,22 +6387,22 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
-  /@sveltejs/vite-plugin-svelte@3.0.0(svelte@4.1.2)(vite@5.0.0):
+  /@sveltejs/vite-plugin-svelte@3.0.0(svelte@4.1.2)(vite@5.4.11):
     resolution: {integrity: sha512-Th0nupxk8hl5Rcg9jm+1xWylwco4bSUAvutWxM4W4bjOAollpXLmrYqSSnYo9pPbZOO6ZGRm6sSqYa/v1d/Saw==}
     engines: {node: ^18.0.0 || >=20}
     peerDependencies:
       svelte: ^4.0.0 || ^5.0.0-next.0
       vite: ^5.0.0
     dependencies:
-      '@sveltejs/vite-plugin-svelte-inspector': 2.1.0(@sveltejs/vite-plugin-svelte@3.0.0)(svelte@4.1.2)(vite@5.0.0)
+      '@sveltejs/vite-plugin-svelte-inspector': 2.1.0(@sveltejs/vite-plugin-svelte@3.0.0)(svelte@4.1.2)(vite@5.4.11)
       debug: 4.3.4(supports-color@5.5.0)
       deepmerge: 4.3.1
       kleur: 4.1.5
       magic-string: 0.30.8
       svelte: 4.1.2
       svelte-hmr: 0.15.3(svelte@4.1.2)
-      vite: 5.0.0
-      vitefu: 0.2.5(vite@5.0.0)
+      vite: 5.4.11(@types/node@22.10.1)
+      vitefu: 0.2.5(vite@5.4.11)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -18379,41 +18379,6 @@ packages:
     optionalDependencies:
       fsevents: 2.3.3
 
-  /vite@5.0.0:
-    resolution: {integrity: sha512-ESJVM59mdyGpsiNAeHQOR/0fqNoOyWPYesFto8FFZugfmhdHx8Fzd8sF3Q/xkVhZsyOxHfdM7ieiVAorI9RjFw==}
-    engines: {node: ^18.0.0 || >=20.0.0}
-    hasBin: true
-    peerDependencies:
-      '@types/node': ^18.0.0 || >=20.0.0
-      less: '*'
-      lightningcss: ^1.21.0
-      sass: '*'
-      stylus: '*'
-      sugarss: '*'
-      terser: ^5.4.0
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
-      less:
-        optional: true
-      lightningcss:
-        optional: true
-      sass:
-        optional: true
-      stylus:
-        optional: true
-      sugarss:
-        optional: true
-      terser:
-        optional: true
-    dependencies:
-      esbuild: 0.19.12
-      postcss: 8.4.38
-      rollup: 4.27.3
-    optionalDependencies:
-      fsevents: 2.3.3
-    dev: true
-
   /vite@5.0.3:
     resolution: {integrity: sha512-WgEq8WEKpZ8c0DL4M1+E+kBZEJyjBmGVrul6z8Ljfhv+PPbNF4aGq014DwNYxGz2FGq6NKL0N8usdiESWd2l2w==}
     engines: {node: ^18.0.0 || >=20.0.0}
@@ -18545,17 +18510,6 @@ packages:
     dependencies:
       vite: 4.4.8(@types/node@22.10.1)(sass@1.64.2)
 
-  /vitefu@0.2.5(vite@5.0.0):
-    resolution: {integrity: sha512-SgHtMLoqaeeGnd2evZ849ZbACbnwQCIwRH57t18FxcXoZop0uQu0uzlIhJBlF/eWVzuce0sHeqPcDo+evVcg8Q==}
-    peerDependencies:
-      vite: ^3.0.0 || ^4.0.0 || ^5.0.0
-    peerDependenciesMeta:
-      vite:
-        optional: true
-    dependencies:
-      vite: 5.0.0
-    dev: true
-
   /vitefu@0.2.5(vite@5.0.3):
     resolution: {integrity: sha512-SgHtMLoqaeeGnd2evZ849ZbACbnwQCIwRH57t18FxcXoZop0uQu0uzlIhJBlF/eWVzuce0sHeqPcDo+evVcg8Q==}
     peerDependencies:
@@ -18565,6 +18519,17 @@ packages:
         optional: true
     dependencies:
       vite: 5.0.3
+    dev: true
+
+  /vitefu@0.2.5(vite@5.4.11):
+    resolution: {integrity: sha512-SgHtMLoqaeeGnd2evZ849ZbACbnwQCIwRH57t18FxcXoZop0uQu0uzlIhJBlF/eWVzuce0sHeqPcDo+evVcg8Q==}
+    peerDependencies:
+      vite: ^3.0.0 || ^4.0.0 || ^5.0.0
+    peerDependenciesMeta:
+      vite:
+        optional: true
+    dependencies:
+      vite: 5.4.11(@types/node@22.10.1)
     dev: true
 
   /vitefu@1.0.4(vite@5.4.11):
