@@ -92,6 +92,16 @@
       <CardBody
         className="py-10 max-w-4xl mx-auto flex flex-col items-center justify-center px-30 gap-2 md:gap-5"
       >
+        <div class="flex w-full items-center justify-start lg:ml-0 lg:justify-center">
+          <a
+            href="https://www.producthunt.com/posts/courseapp?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-courseapp"
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+            class="rounded-full border-2 border-[#ff6154]/60 bg-[#ff6154] px-4 py-1 text-sm font-medium text-white hover:underline"
+          >
+            We are live on Product Hunt
+          </a>
+        </div>
         <BlurIn
           class="pointer-events-none flex max-w-2xl flex-col items-center whitespace-pre-wrap bg-gradient-to-b from-black to-gray-300/80 bg-clip-text text-center text-2xl font-semibold leading-none tracking-tighter text-transparent md:mb-4 md:block md:text-4xl lg:text-6xl"
         >
@@ -101,9 +111,9 @@
         </BlurIn>
 
         <BlurFade delay={0.25}>
-          <p class="text-md text-center">
+          <p class="text-md max-w-[500px] text-center">
             With our prebuilt templates, you can setup a fully functional customer educational
-            website for your product & idea`` in minutes.<br />
+            website for your product & idea in minutes.<br />
             <span>
               Similar to the likes of
 
@@ -200,6 +210,33 @@
 
 <Separator class="my-5 md:my-20" />
 
+<section class="my-5 w-full">
+  <div class="mx-auto flex max-w-4xl flex-col items-center">
+    <blockquote class="twitter-tweet">
+      <p lang="en" dir="ltr">
+        so cool to see an ecosystem evolving around <a
+          href="https://twitter.com/calcom?ref_src=twsrc%5Etfw">@calcom</a
+        ><br /><br />my dream is one day people will have &quot;<a href="https://t.co/Cc8su8YPuu"
+          >https://t.co/Cc8su8YPuu</a
+        >
+        engineer&quot; as a job description, the same way you find &quot;Wordpress engineer&quot; on
+        indeed<br /><br />&quot;<a href="https://t.co/j2iMUvRyYq">https://t.co/j2iMUvRyYq</a>
+        university&quot; built by
+        <a href="https://twitter.com/rotimi_best?ref_src=twsrc%5Etfw">@rotimi_best</a>
+        starts with… <a href="https://t.co/u7bXZyIn2b">https://t.co/u7bXZyIn2b</a>
+        <a href="https://t.co/xEJshHO3zT">pic.twitter.com/xEJshHO3zT</a>
+      </p>
+      &mdash; Peer Richelsen — oss/acc (@peer_rich)<a
+        href="https://twitter.com/peer_rich/status/1861090126098571690?ref_src=twsrc%5Etfw"
+        >November 25, 2024</a
+      >
+    </blockquote>
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </div>
+</section>
+
+<Separator class="my-5 md:my-20" />
+
 <!-- Home CTA -->
 <section class="mb-20 w-full">
   <BlurFade delay={0.25}>
@@ -212,7 +249,7 @@
         class="relative mx-auto h-fit w-full overflow-hidden rounded-lg border bg-neutral-800 px-10 py-20 text-center shadow-2xl md:max-w-3xl md:px-20 md:py-40"
       >
         <Meteors number={30} />
-        <div class="z-20">
+        <div class="z-30">
           <h1 class="mb-5 text-2xl font-semibold text-white md:text-5xl">
             Kickstart Your Customer Education Journey
           </h1>
