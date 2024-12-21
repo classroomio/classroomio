@@ -1,0 +1,37 @@
+name: Update Branch with Latest from Main
+
+on:
+  push:
+    paths:
+      - 'packages/course-app/**'
+    branches:
+      - main
+
+jobs:
+  update_branch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v2
+        with:
+          ref: main
+
+      - name: Set up Git
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+      - name: Fetch all branches
+        run: git fetch --all
+
+      - name: Checkout target branch
+        run: git checkout deploy/template
+
+      - name: Merge main into target branch
+        run: git merge main
+
+      - name: Push changes
+        run: git push origin deploy/template
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
