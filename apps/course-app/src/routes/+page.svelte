@@ -198,7 +198,7 @@
 </section>
 <!-- Features End -->
 
-<Separator class="my-5 md:my-20" />
+<!-- <Separator class="my-5 md:my-20" />
 
 <section class="my-5 w-full">
   <div class="mx-auto flex max-w-4xl flex-col items-center">
@@ -223,7 +223,7 @@
     </blockquote>
     <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
   </div>
-</section>
+</section> -->
 
 <Separator class="my-5 md:my-20" />
 
