@@ -1,18 +1,16 @@
 <script lang="ts">
-  import { toast } from 'svelte-sonner';
-
   import { CardBody, CardContainer } from '$lib/components/animation/card';
   import { BlurFade } from '$lib/components/animation/blurfade';
   import { BlurIn } from '$lib/components/animation/blurin';
   import { Button } from '$lib/components/ui/button';
-  import { TemplateCard } from '$lib/components/template-card';
+  import { TemplateCard, CustomTemplate } from '$lib/components/template-card';
   import { Meteors } from '$lib/components/animation/meteors';
   import { Separator } from '$lib/components/ui/separator';
-  import { ShinnyText } from '$lib/components/animation/shinny-text';
+  import { BorderBeam } from '$lib/components/animation/border-beam';
   import { ShimmerButton } from '$lib/components/animation/shimmerbutton';
+  import { BuyTemplate } from '$lib/components/buy-template';
   import { Sparkle } from '$lib/components/animation/sparkle';
-  import Copy from 'lucide-svelte/icons/copy';
-  import { cn } from '$lib/utils';
+  import { HeroVideoDialog } from '$lib/components/animation/hero-video-dialog';
 
   const templates = [
     {
@@ -92,20 +90,30 @@
   <div>
     <CardContainer className="md:px-20">
       <CardBody
-        className="max-w-4xl min-h-[50vh] flex flex-col justify-center px-30 gap-2 md:gap-5"
+        className="py-10 max-w-4xl mx-auto flex flex-col items-center justify-center px-30 gap-2 md:gap-5"
       >
+        <div class="flex w-full items-center justify-start lg:ml-0 lg:justify-center">
+          <a
+            href="https://www.producthunt.com/posts/courseapp?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-courseapp"
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+            class="rounded-full border-2 border-[#ff6154]/60 bg-[#ff6154] px-4 py-1 text-sm font-medium text-white hover:underline"
+          >
+            We are live on Product Hunt
+          </a>
+        </div>
         <BlurIn
-          class="pointer-events-none flex max-w-2xl flex-col items-start whitespace-pre-wrap bg-gradient-to-b from-black to-gray-300/80 bg-clip-text text-4xl font-semibold leading-none tracking-tighter text-transparent md:mb-4 md:block md:text-6xl"
+          class="pointer-events-none flex max-w-2xl flex-col items-center whitespace-pre-wrap bg-gradient-to-b from-black to-gray-300/80 bg-clip-text text-center text-2xl font-semibold leading-none tracking-tighter text-transparent md:mb-4 md:block md:text-4xl lg:text-6xl"
         >
-          Create a <span class="font-mono italic text-blue-700">UNIVERSITY</span>
+          Create an <span class="font-mono italic text-blue-700">Academy</span>
           <span>Site for your SAAS in</span>
           <span class="ml-1 font-mono italic text-blue-700">MINUTES</span>
         </BlurIn>
 
-        <BlurFade delay={0.25 * 2}>
-          <p class="text-md">
+        <BlurFade delay={0.25}>
+          <p class="text-md max-w-[500px] text-center">
             With our prebuilt templates, you can setup a fully functional customer educational
-            website for your product in minutes.<br />
+            website for your product & idea in minutes.<br />
             <span>
               Similar to the likes of
 
@@ -123,25 +131,36 @@
             </span>
           </p>
 
-          <button
-            onclick={() => {
-              navigator.clipboard.writeText('pnpx @classroomio/course-app');
-              toast('Copied to clipboard 😉');
-            }}
-            class={cn(
-              'group z-10 mt-5 rounded-full border  border-white/50 bg-neutral-700 transition-all  ease-in hover:cursor-pointer hover:bg-neutral-700 hover:text-white'
-            )}
-          >
-            <ShinnyText
-              class="animate-gradient inline-flex items-center justify-center bg-gradient-to-r from-[#ffaa40]  via-[#9c40ff] to-[#ffaa40] bg-[length:var(--bg-size)_100%]  bg-clip-text px-4 py-1 text-transparent text-white transition ease-out hover:text-neutral-400 hover:duration-300"
+          <div class="mt-4 flex flex-col items-center justify-center gap-4 md:flex-row">
+            <Button
+              class="w-full md:w-auto"
+              variant="secondary"
+              target="_blank"
+              rel="noopener noreferrer"
+              href="/npm"
             >
-              <span>pnpx @classroomio/course-app</span>
+              Install Template
+            </Button>
 
-              <Copy class="ml-2 size-3" />
-            </ShinnyText>
-          </button>
+            <BuyTemplate ctaLabel="Buy A Custom Template" ctaClass="w-full md:w-auto" />
+          </div>
         </BlurFade>
       </CardBody>
+
+      <section
+        class="relative mx-auto my-4 flex max-w-5xl flex-col items-center justify-center px-7"
+      >
+        <div class="relative overflow-hidden rounded-2xl p-1">
+          <BorderBeam />
+          <HeroVideoDialog
+            animationStyle="from-right"
+            videoSrc="https://www.youtube.com/embed/P2I2HoyrjVo"
+            thumbnailSrc="https://cdn.courseapp.oncws.com/courseapp-og.png"
+            thumbnailAlt="Courseapp by ClassroomIO – Create your SAAS Academy in Minutes"
+          />
+        </div>
+      </section>
+      <!-- </BlurFade> -->
     </CardContainer>
   </div>
 </section>
@@ -149,18 +168,22 @@
 
 <!-- Templates -->
 <section id="templates" class="my-5 w-full pt-0 md:my-0 md:pt-24">
-  <div class="container">
+  <div class="px-4 md:container">
     <h2 class="mb-5 text-center text-3xl font-semibold md:mb-20 md:text-start md:text-5xl">
       Browse Templates
     </h2>
 
-    <div class="grid max-w-6xl grid-cols-1 place-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {#each templates as template, index}
-        <BlurFade delay={0.25 + index * 0.25}>
+    <BlurFade delay={0.25 * 2}>
+      <div
+        class="grid max-w-6xl grid-cols-1 place-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3"
+      >
+        {#each templates as template}
           <TemplateCard {template} />
-        </BlurFade>
-      {/each}
-    </div>
+        {/each}
+
+        <CustomTemplate />
+      </div>
+    </BlurFade>
   </div>
 </section>
 <!-- Templates End -->
@@ -168,8 +191,8 @@
 <Separator class="my-5 md:mt-20" />
 
 <!-- Features -->
-<section id="features" class="my-5 w-full px-4 pt-0 md:mb-10 md:mt-0 md:pt-24">
-  <div class="font-drawn container mx-auto flex max-w-4xl flex-col items-center">
+<section id="features" class="m-5 w-full px-4 pt-0 md:mb-10 md:mt-0 md:pt-24">
+  <div class="font-drawn mx-auto flex max-w-4xl flex-col items-center">
     <h2 class="mb-2 text-center text-3xl font-semibold md:mb-10 md:text-start md:text-5xl">
       Features
     </h2>
@@ -187,10 +210,37 @@
 
 <Separator class="my-5 md:my-20" />
 
+<section class="my-5 w-full">
+  <div class="mx-auto flex max-w-4xl flex-col items-center">
+    <blockquote class="twitter-tweet">
+      <p lang="en" dir="ltr">
+        so cool to see an ecosystem evolving around <a
+          href="https://twitter.com/calcom?ref_src=twsrc%5Etfw">@calcom</a
+        ><br /><br />my dream is one day people will have &quot;<a href="https://t.co/Cc8su8YPuu"
+          >https://t.co/Cc8su8YPuu</a
+        >
+        engineer&quot; as a job description, the same way you find &quot;Wordpress engineer&quot; on
+        indeed<br /><br />&quot;<a href="https://t.co/j2iMUvRyYq">https://t.co/j2iMUvRyYq</a>
+        university&quot; built by
+        <a href="https://twitter.com/rotimi_best?ref_src=twsrc%5Etfw">@rotimi_best</a>
+        starts with… <a href="https://t.co/u7bXZyIn2b">https://t.co/u7bXZyIn2b</a>
+        <a href="https://t.co/xEJshHO3zT">pic.twitter.com/xEJshHO3zT</a>
+      </p>
+      &mdash; Peer Richelsen — oss/acc (@peer_rich)<a
+        href="https://twitter.com/peer_rich/status/1861090126098571690?ref_src=twsrc%5Etfw"
+        >November 25, 2024</a
+      >
+    </blockquote>
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </div>
+</section>
+
+<Separator class="my-5 md:my-20" />
+
 <!-- Home CTA -->
 <section class="mb-20 w-full">
   <BlurFade delay={0.25}>
-    <div class="container">
+    <div class="m-5">
       <!-- <h2 class="mb-10 text-center text-5xl font-semibold">
         Up & Running <span class="font-mono italic text-blue-700">MINUTES</span>
       </h2> -->
@@ -199,7 +249,7 @@
         class="relative mx-auto h-fit w-full overflow-hidden rounded-lg border bg-neutral-800 px-10 py-20 text-center shadow-2xl md:max-w-3xl md:px-20 md:py-40"
       >
         <Meteors number={30} />
-        <div class="z-20">
+        <div class="z-30">
           <h1 class="mb-5 text-2xl font-semibold text-white md:text-5xl">
             Kickstart Your Customer Education Journey
           </h1>
@@ -224,7 +274,7 @@
 
 <!-- Footer -->
 <section class="my-10 w-full">
-  <div class="container">
+  <div class="">
     <p class="text-center text-sm text-neutral-500">
       Made with ❤️ by <a href="https://git.new/class" target="_blank" rel="noopener noreferrer">
         classroomio

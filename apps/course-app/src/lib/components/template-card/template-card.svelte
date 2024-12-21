@@ -13,7 +13,7 @@
   let { template }: Props = $props();
 </script>
 
-<div class="mb-5 w-full max-w-[340px]">
+<div class="mb-5 w-[95%] max-w-[340px]">
   <Button
     href={template.url}
     variant="link"

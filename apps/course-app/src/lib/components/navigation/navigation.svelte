@@ -16,7 +16,7 @@
   <p class="bg-blue-700 py-1.5 text-center text-sm font-medium text-white">
     brought to you by
     <a
-      href="https://git.new/class"
+      href="https://classroomio.com"
       target="_blank"
       class="inline-flex items-center font-semibold underline-offset-2 hover:underline"
       >classroomio.com
@@ -75,7 +75,7 @@
     <div class="flex flex-1 items-center justify-end space-x-2">
       <nav class="flex items-center">
         <a
-          href="https://github.com/classroomio/classroomio"
+          href="https://github.com/classroomio/classroomio/tree/main/packages/course-app#readme"
           target="_blank"
           rel="noopener noreferrer"
         >
