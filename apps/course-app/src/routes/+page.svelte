@@ -92,16 +92,6 @@
       <CardBody
         className="py-10 max-w-4xl mx-auto flex flex-col items-center justify-center px-30 gap-2 md:gap-5"
       >
-        <div class="flex w-full items-center justify-start lg:ml-0 lg:justify-center">
-          <a
-            href="https://www.producthunt.com/posts/courseapp?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-courseapp"
-            target="_blank"
-            rel="noopener noreferrer nofollow"
-            class="rounded-full border-2 border-[#ff6154]/60 bg-[#ff6154] px-4 py-1 text-sm font-medium text-white hover:underline"
-          >
-            We are live on Product Hunt
-          </a>
-        </div>
         <BlurIn
           class="pointer-events-none flex max-w-2xl flex-col items-center whitespace-pre-wrap bg-gradient-to-b from-black to-gray-300/80 bg-clip-text text-center text-2xl font-semibold leading-none tracking-tighter text-transparent md:mb-4 md:block md:text-4xl lg:text-6xl"
         >
