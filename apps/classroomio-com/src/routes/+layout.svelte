@@ -6,10 +6,18 @@
   import PageTransition from './transition.svelte';
   import NotFound from '$lib/NotFound/NotFound.svelte';
   import extend from 'just-extend';
+  import { dev } from '$app/environment';
+  import { onMount } from 'svelte';
 
   import '../app.css';
 
   export let data;
+
+  onMount(() => {
+    if (dev) {
+      localStorage.setItem('umami.disabled', '1');
+    }
+  });
 
   $: metaTags = extend(true, {}, data.baseMetaTags, $page.data.pageMetaTags);
 </script>

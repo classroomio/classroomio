@@ -61,6 +61,18 @@ export async function fetchProfileCourseProgress(
   return { data, error };
 }
 
+export async function checkExercisesComplete(
+  lessonId: Lesson['id'],
+  groupMemberId: Groupmember['id']
+) {
+  const { data, error } = await supabase.rpc('check_if_student_completed_exercises', {
+    lesson_id_arg: lessonId,
+    groupmember_id_arg: groupMemberId
+  });
+
+  return { data, error };
+}
+
 const SLUG_QUERY = `
   id,
   title,

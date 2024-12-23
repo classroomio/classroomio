@@ -7,5 +7,5 @@ export const load = async ({ request }) => {
     event: 'github page visited'
   });
 
-  throw redirect(307, 'https://github.com/rotimi-best/classroomio');
+  redirect(307, 'https://github.com/rotimi-best/classroomio');
 };

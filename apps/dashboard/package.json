@@ -52,7 +52,7 @@
     "openai-edge": "^1.2.2",
     "papaparse": "^5.4.1",
     "pluralize": "^8.0.0",
-    "posthog-js": "^1.160.0",
+    "posthog-js": "^1.180.1",
     "shared": "workspace:*",
     "sirv": "^2.0.3",
     "stripe": "^14.22.0",
@@ -109,7 +109,7 @@
   },
   "type": "module",
   "engines": {
-    "node": "18.x"
+    "node": "^18.17.0"
   },
   "browser": {
     "crypto": false

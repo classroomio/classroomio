@@ -4,6 +4,9 @@
   import { dndzone } from 'svelte-dnd-action';
   import Draggable from 'carbon-icons-svelte/lib/Draggable.svelte';
   import { t } from '$lib/utils/functions/translations';
+  import { createEventDispatcher } from 'svelte';
+
+  const dispatch = createEventDispatcher();
 
   const flipDurationMs = 300;
 
@@ -13,6 +16,8 @@
 
   function handleDndFinalize(e) {
     $settings.tabs = e.detail.items;
+
+    dispatch('change');
   }
 </script>
 

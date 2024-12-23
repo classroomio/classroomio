@@ -7,5 +7,5 @@ export const load = ({ request }) => {
     event: 'signup'
   });
 
-  throw redirect(307, 'https://app.classroomio.com/signup');
+  redirect(307, 'https://app.classroomio.com/signup');
 };

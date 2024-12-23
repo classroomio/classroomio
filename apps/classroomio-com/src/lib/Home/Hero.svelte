@@ -2,7 +2,7 @@
   import { onMount, onDestroy } from 'svelte';
   import { fly } from 'svelte/transition';
   import { sineInOut } from 'svelte/easing';
-  import { env } from '$env/dynamic/public';
+  import { PUBLIC_ENABLE_USERS_COMPANIES } from '$env/static/public';
 
   const names = [
     { label: 'Audience', color: '#3ADFEC' },
@@ -12,7 +12,7 @@
   ];
   let animate = false;
   let titleIndex = 0;
-  let timeout: NodeJS.Timer;
+  let timeout: NodeJS.Timeout;
 
   onMount(() => {
     setTimeout(() => {
@@ -130,8 +130,9 @@
           <a
             href="/#customization"
             class="px-6 py-2 border-[1.5px] border-[#0233BD] rounded-[4px] bg-white text-[#0233BD] text-lg font-bold"
-            >Customizable LMS</a
           >
+            Customizable LMS
+          </a>
 
           <svg
             class="absolute -right-1 -bottom-2.5"
@@ -219,7 +220,7 @@
       ></iframe>
     </div>
 
-    {#if env.PUBLIC_ENABLE_USERS_COMPANIES}
+    {#if PUBLIC_ENABLE_USERS_COMPANIES}
       <div class="mb-[10%] px-[15%]">
         <h2 class="text-base font-semibold text-gray-900 lg:text-xl">Used at</h2>
         <div class="flex w-full flex-row flex-wrap items-center justify-between gap-5 py-[5%]">

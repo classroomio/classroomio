@@ -43,7 +43,8 @@
     },
     "lessons": {
       "error": {
-        "try_later": "Algo no está bien. Inténtelo más tarde."
+        "try_later": "Algo no está bien. Inténtelo más tarde.",
+        "exercise_not_complete": "Completa todos los ejercicios para marcarlos como completos."
       },
       "success": {
         "complete_marked": "Marcado como completo",
@@ -949,7 +950,8 @@
         "refresh": "Refrescar",
         "remove": "Eliminar",
         "custom_favicon": "favicon personalizado",
-        "custom_code": "código personalizado"
+        "custom_code": "código personalizado",
+        "custom_domain_not_classroomio": "El dominio no puede contener 'classroomio'"
       },
       "customize-lms": {
         "title": "Personalizar LMS",

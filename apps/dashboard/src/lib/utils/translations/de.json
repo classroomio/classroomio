@@ -43,7 +43,8 @@
     },
     "lessons": {
       "error": {
-        "try_later": "Etwas stimmt nicht. Bitte versuchen Sie es später"
+        "try_later": "Etwas stimmt nicht. Bitte versuchen Sie es später",
+        "exercise_not_complete": "Schließen Sie alle Übungen ab, um sie als abgeschlossen zu markieren"
       },
       "success": {
         "complete_marked": "Als abgeschlossen markiert",
@@ -949,7 +950,8 @@
         "refresh": "Aktualisieren",
         "remove": "Entfernen",
         "custom_favicon": "Benutzerdefiniertes Favicon",
-        "custom_code": "Benutzerdefinierter Code"
+        "custom_code": "Benutzerdefinierter Code",
+        "custom_domain_not_classroomio": "Domain darf „classroomio“ nicht enthalten"
       },
       "customize-lms": {
         "title": "LMS anpassen",

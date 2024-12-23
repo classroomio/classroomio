@@ -38,8 +38,8 @@ export const defaultUserState: UserStore = {
 export const defaultProfileState: ProfileStore = {
   id: undefined,
   fullname: '',
-  avatar_url: 'https://pbs.twimg.com/profile_images/1416443682157473795/dGtFbtht_normal.jpg',
-  username: 'Elon',
+  avatar_url: '',
+  username: '',
   user_id: '',
   email: '',
   role: '',

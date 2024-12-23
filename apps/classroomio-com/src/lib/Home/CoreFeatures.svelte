@@ -1,6 +1,6 @@
 <script lang="ts">
   import Section from './CoreFeatureSection.svelte';
-  import { env } from '$env/dynamic/public';
+  import { PUBLIC_ENABLE_STATS } from '$env/static/public';
 </script>
 
 <section class="w-full py-32 border-b border-x-0 border-t-0 border-gray-200">
@@ -20,12 +20,12 @@
           </div>
         </div>
         <div class="text-base leading-snug text-center">
-          <span class="font-bold opacity-50">“</span>
+          <span class="font-bold opacity-50 text-4xl">“</span>
           <span class="text-gray-800" style="font-size: 17px;"
             >ClassroomIO really helped me bootstrap my program. The dashboard is extremely
             intuitive. I could navigate most of it without any help / support. Coming from framer, I
             can honestly say that I am extremely greatful that I found ClassroomIO.</span
-          > <span class="font-bold opacity-50 inline-block">”</span>
+          > <span class="font-bold opacity-50 inline-block text-4xl">”</span>
         </div>
         <div class="mx-auto flex items-center gap-2 justify-center">
           <div
@@ -78,7 +78,7 @@
 />
 
 <!-- body section 5 -->
-{#if env.PUBLIC_ENABLE_STATS}
+{#if PUBLIC_ENABLE_STATS}
   <div
     class="flex justify-between flex-row flex-wrap lg:flex-nowrap items-center text-center px-[10%] py-[7%] border-b-[1px] gap-y-20 gap-x-20 mx-0 lg:mx-[12%]"
   >

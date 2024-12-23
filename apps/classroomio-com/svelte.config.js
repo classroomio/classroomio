@@ -1,6 +1,6 @@
 import sequence from 'svelte-sequential-preprocessor';
 import adapter from '@sveltejs/adapter-auto';
-import { vitePreprocess } from '@sveltejs/kit/vite';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
 import { mdsvex, escapeSvelte } from 'mdsvex';
