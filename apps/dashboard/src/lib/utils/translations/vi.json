@@ -43,7 +43,8 @@
     },
     "lessons": {
       "error": {
-        "try_later": "Đã xảy ra sự cố - Vui lòng thử lại sau"
+        "try_later": "Đã xảy ra sự cố - Vui lòng thử lại sau",
+        "exercise_not_complete": "Hoàn thành tất cả các bài tập để đánh dấu là hoàn thành"
       },
       "success": {
         "complete_marked": "Được đánh dấu là hoàn thành",

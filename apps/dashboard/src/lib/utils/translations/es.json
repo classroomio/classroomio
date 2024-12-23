@@ -43,7 +43,8 @@
     },
     "lessons": {
       "error": {
-        "try_later": "Algo no está bien. Inténtelo más tarde."
+        "try_later": "Algo no está bien. Inténtelo más tarde.",
+        "exercise_not_complete": "Completa todos los ejercicios para marcarlos como completos."
       },
       "success": {
         "complete_marked": "Marcado como completo",

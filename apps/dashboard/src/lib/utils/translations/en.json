@@ -1337,7 +1337,8 @@
         "version_restored": "Version restored sucessfully"
       },
       "error": {
-        "try_later": "Something's not right - Please try later"
+        "try_later": "Something's not right - Please try later",
+        "exercise_not_complete": "Complete all exercises to mark as complete"
       }
     },
 
