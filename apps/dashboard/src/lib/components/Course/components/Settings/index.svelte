@@ -205,7 +205,7 @@
 <DeleteModal onDelete={handleDeleteCourse} bind:open={openDeleteModal} />
 
 <Grid class="border-c rounded border-gray-200 dark:border-neutral-600">
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={8} md={8} lg={8}>
       <SectionTitle>{$t('course.navItem.settings.cover_image')}</SectionTitle>
       <p>
@@ -235,18 +235,18 @@
     </Column>
 
     <Column sm={8} md={8} lg={6}>
-      <div class="w-fit relative z-[20]">
+      <div class="relative z-[20] w-fit">
         <img
           style="min-width:280px; min-height:200px"
           alt="About us"
           src={$settings.logo ? $settings.logo : '/images/classroomio-course-img-template.jpg'}
-          class="mt-2 md:mt-0 w-[280px] h-[200px] rounded-md relative"
+          class="relative mt-2 h-[200px] w-[280px] rounded-md md:mt-0"
         />
       </div>
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row id="share" class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={8} md={8} lg={8}>
       <SectionTitle>{$t('course.navItem.settings.course_details')}</SectionTitle>
     </Column>
@@ -274,8 +274,8 @@
           hasUnsavedChanges = true;
         }}
       />
-      <div class="">
-        <p class="text-md flex items-center gap-2 mb-2">
+      <div id="share">
+        <p class="text-md mb-2 flex items-center gap-2">
           {$t('course.navItem.settings.link')}
           <IconButton contained={true} size="small" onClick={generateNewCourseLink}>
             <Restart size={16} />
@@ -306,7 +306,7 @@
     </Column>
   </Row> -->
 
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={8} md={8} lg={8}>
       <SectionTitle>{$t('course.navItem.settings.order')}</SectionTitle>
       <p>{$t('course.navItem.settings.drag')}</p>
@@ -319,7 +319,7 @@
       />
     </Column>
   </Row>
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={8} md={8} lg={8}>
       <SectionTitle>{$t('course.navItem.settings.lesson_download')}</SectionTitle>
       <p>{$t('course.navItem.settings.available')}</p>
@@ -341,7 +341,7 @@
       {/if}
     </Column>
   </Row>
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={8} md={8} lg={8}>
       <SectionTitle>{$t('course.navItem.settings.course_download')}</SectionTitle>
       <p>{$t('course.navItem.settings.course_avail')}</p>
@@ -361,7 +361,7 @@
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={8} md={8} lg={8}>
       <SectionTitle>{$t('course.navItem.settings.type')}</SectionTitle>
       <p>{$t('course.navItem.settings.course_type_desc')}</p>
@@ -386,7 +386,7 @@
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={8} md={8} lg={8}>
       <SectionTitle>{$t('course.navItem.settings.allow')}</SectionTitle>
       <p>{$t('course.navItem.settings.access')}</p>
@@ -406,7 +406,7 @@
   </Row>
 
   <!-- Publish Course -->
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={8} md={8} lg={8}>
       <SectionTitle>{$t('course.navItem.settings.publish')}</SectionTitle>
       <p>{$t('course.navItem.settings.determines')}</p>
@@ -429,7 +429,7 @@
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row id="delete" class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={8} md={8} lg={8}>
       <SectionTitle>{$t('course.navItem.settings.delete')}</SectionTitle>
       <p>{$t('course.navItem.settings.delete_text')}</p>
@@ -444,7 +444,7 @@
       />
     </Column>
   </Row>
-  <Row class="p-5 w-full flex items-center justify-end">
+  <Row class="flex w-full items-center justify-end p-5">
     <PrimaryButton
       label={$t('course.navItem.settings.save')}
       isLoading={isSaving}

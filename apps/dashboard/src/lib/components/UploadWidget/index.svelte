@@ -37,7 +37,7 @@
 
   let label = $t('snackbar.landing_page_settings.error.label');
 
-  const onChange = (tabValue: string) => () => (currentTab = tabValue);
+  const onChange = (tabValue: string | number) => () => (currentTab = `${tabValue}`);
 
   async function handleImageClick(img: string) {
     dispatch('change');
@@ -107,7 +107,7 @@
   maxWidth=""
   modalHeading={$t('course.navItem.landing_page.upload_widget.title')}
 >
-  <div class="w-full bg-white dark:bg-inherit p-5">
+  <div class="w-full bg-white p-5 dark:bg-inherit">
     <Tabs {tabs} {currentTab} {onChange}>
       <slot:fragment slot="content">
         <TabContent value={tabs[1].value} index={currentTab}>
@@ -126,7 +126,7 @@
               isLoading={isUploading}
               className="w-full font-semibold m-auto"
             />
-            <p class="text-center text-sm text-gray-500 my-2">
+            <p class="my-2 text-center text-sm text-gray-500">
               {$t('course.navItem.landing_page.upload_widget.width')}
             </p>
             <p class="text-center text-sm text-gray-500">
@@ -137,37 +137,37 @@
         <TabContent value={tabs[0].value} index={currentTab}>
           <!-- Your Images content here -->
           <div class="h-full overflow-y-scroll">
-            <form on:submit|preventDefault={handleSubmit} class="flex gap-2 pb-3 mt-1">
+            <form on:submit|preventDefault={handleSubmit} class="mt-1 flex gap-2 pb-3">
               <input
                 type="text"
                 bind:value={searchQuery}
                 name=""
                 id=""
-                class="rounded-lg w-[85%] ml-2 dark:text-black"
+                class="ml-2 w-[85%] rounded-lg dark:text-black"
               />
               <button
                 type="submit"
-                class="px-3 py-1 bg-white rounded-lg border-[1px] border-gray-500 text-black"
+                class="rounded-lg border-[1px] border-gray-500 bg-white px-3 py-1 text-black"
                 >{$t('course.navItem.landing_page.upload_widget.submit')}</button
               >
             </form>
             {#if unsplashImages && unsplashImages.length > 0}
               <div
-                class="flex flex-row items-center flex-wrap gap-2 px-[10px] max-h-[300px] hide-scrollbar"
+                class="hide-scrollbar flex max-h-[300px] flex-row flex-wrap items-center gap-2 px-[10px]"
               >
                 {#each unsplashImages as unsplashImages (unsplashImages.id)}
                   <div>
-                    <div class="w-[195px] h-[130px] overflow-hidden relative">
+                    <div class="relative h-[130px] w-[195px] overflow-hidden">
                       <button on:click={() => handleImageClick(unsplashImages.urls.regular)}>
                         <img
                           src={unsplashImages.urls.regular}
                           alt={unsplashImages.alt_description}
-                          class="w-full h-full object-cover rounded-md hover:opacity-80 cursor-pointer"
+                          class="h-full w-full cursor-pointer rounded-md object-cover hover:opacity-80"
                         />
                       </button>
                     </div>
                     {#if unsplashImages.user.name}
-                      <p class="text-center text-xs mt-1 text-gray-500 font-light">
+                      <p class="mt-1 text-center text-xs font-light text-gray-500">
                         By <a
                           href={`https://unsplash.com/@${unsplashImages.user.username}`}
                           target="_blank"
@@ -179,7 +179,7 @@
                 {/each}
               </div>
             {:else}
-              <p class="text-center pt-7">
+              <p class="pt-7 text-center">
                 {$t('course.navItem.landing_page.upload_widget.no_images')}
               </p>
             {/if}
