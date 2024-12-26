@@ -4,13 +4,15 @@
   <p align="center">
     Create beautiful course websites to educate your customers.
     <br />
-    <a href="https://courseapp.oncws.com">Website</a>  |  <a href="https://dub.sh/ciodiscord">Join Discord community</a>
+    <a href="https://courseapp.oncws.com">Website</a>  |  <a href="https://www.youtube.com/watch?v=P2I2HoyrjVo">Demo</a>
   </p>
 </a>
 
 # CourseApp
 
 Create a beautiful course website in seconds with our SvelteKit-powered CLI tool. Choose from multiple templates and customize your content through a simple file structure.
+
+**Demo**: https://www.youtube.com/watch?v=P2I2HoyrjVo
 
 ## Quick Start
 
