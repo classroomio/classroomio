@@ -1,21 +1,21 @@
 <script lang="ts">
-  import {
-    Tag,
-    ImageLoader,
-    SkeletonPlaceholder,
-    OverflowMenu,
-    OverflowMenuItem
-  } from 'carbon-components-svelte';
-  import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
+  import { goto } from '$app/navigation';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { calcCourseDiscount } from '$lib/utils/functions/course';
+  import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
   import { t } from '$lib/utils/functions/translations';
   import { COURSE_TYPE } from '$lib/utils/types';
-  import RadioButtonChecked from 'carbon-icons-svelte/lib/RadioButtonChecked.svelte';
+  import {
+    ImageLoader,
+    OverflowMenu,
+    OverflowMenuItem,
+    SkeletonPlaceholder,
+    Tag
+  } from 'carbon-components-svelte';
   import GrowthIcon from 'carbon-icons-svelte/lib/Growth.svelte';
+  import RadioButtonChecked from 'carbon-icons-svelte/lib/RadioButtonChecked.svelte';
   import UserProfileIcon from 'carbon-icons-svelte/lib/UserProfile.svelte';
-  import { calcCourseDiscount } from '$lib/utils/functions/course';
-  import { goto } from '$app/navigation';
 
   export let bannerImage: string | undefined;
   export let id = '';
@@ -116,7 +116,7 @@
     <div class="relative mb-5">
       {#if !isLMS && !isOnLandingPage}
         <OverflowMenu
-          class="absolute right-2 top-2 z-50 hidden rounded-full bg-white group-hover:flex"
+          class="absolute right-2 top-2 z-50 rounded-full bg-gray-200 opacity-0 transition-all delay-150  duration-200 ease-in-out group-hover:opacity-100 dark:bg-neutral-800"
           size="sm"
           on:click={(e) => e.stopPropagation()}
         >
@@ -235,10 +235,6 @@
 </div>
 
 <style>
-  a,
-  a:hover {
-    text-decoration: none;
-  }
   .title,
   .description {
     height: 42px;

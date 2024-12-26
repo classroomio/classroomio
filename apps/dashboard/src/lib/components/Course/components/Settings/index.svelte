@@ -1,42 +1,41 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { env } from '$env/dynamic/public';
   import {
     CodeSnippet,
-    Grid,
-    Row,
     Column,
-    Toggle,
+    Grid,
+    RadioButton,
     RadioButtonGroup,
-    RadioButton
+    Row,
+    Toggle
   } from 'carbon-components-svelte';
-  import { Restart, ArrowUpRight } from 'carbon-icons-svelte';
-  import { env } from '$env/dynamic/public';
+  import { ArrowUpRight, Restart } from 'carbon-icons-svelte';
 
-  import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
-  import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
   import DragAndDrop from './DragAndDrop.svelte';
 
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { settings } from './store';
   import { course } from '$lib/components/Course/store';
-  import type { Course } from '$lib/utils/types';
-  import { updateCourse, deleteCourse } from '$lib/utils/services/courses';
-  import { currentOrgPath, isFreePlan } from '$lib/utils/store/org';
-  import { isObject } from '$lib/utils/functions/isObject';
-  import { lessons } from '../Lesson/store/lessons';
-  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
-  import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
-  import generateSlug from '$lib/utils/functions/generateSlug';
-  import { t } from '$lib/utils/functions/translations';
   import DeleteModal from '$lib/components/Modal/DeleteModal.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
+  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
+  import generateSlug from '$lib/utils/functions/generateSlug';
+  import { isObject } from '$lib/utils/functions/isObject';
+  import { t } from '$lib/utils/functions/translations';
+  import { deleteCourse, updateCourse } from '$lib/utils/services/courses';
+  import { currentOrg, currentOrgDomain, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
+  import type { Course } from '$lib/utils/types';
   import { COURSE_TYPE } from '$lib/utils/types';
+  import { lessons } from '../Lesson/store/lessons';
+  import { settings } from './store';
 
   let isSaving = false;
   let isLoading = false;
@@ -395,7 +394,7 @@
       <Toggle
         size="sm"
         bind:toggled={$settings.allow_new_students}
-        on:toggle={() => {
+        on:click={() => {
           hasUnsavedChanges = true;
         }}
       >
@@ -415,9 +414,11 @@
       <Toggle
         size="sm"
         bind:toggled={$settings.is_published}
+        on:click={() => {
+          hasUnsavedChanges = true;
+        }}
         on:toggle={(e) => {
           $settings.allow_new_students = e.detail.toggled;
-          hasUnsavedChanges = true;
           if (!$course.slug) {
             generateNewCourseLink();
           }
