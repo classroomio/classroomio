@@ -1,6 +1,6 @@
 {
   "name": "@classroomio/course-app",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "private": false,
   "main": "dist/create-template.js",
   "scripts": {
@@ -29,12 +29,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
-    "@sveltejs/adapter-auto": "^3.0.0",
-    "@sveltejs/kit": "^2.0.0",
-    "@sveltejs/vite-plugin-svelte": "^3.0.0",
     "@types/fs-extra": "^11.0.4",
-    "svelte": "^4.2.7",
-    "svelte-check": "^4.0.0",
     "typescript": "^5.0.0",
     "vite": "^5.0.3"
   },
