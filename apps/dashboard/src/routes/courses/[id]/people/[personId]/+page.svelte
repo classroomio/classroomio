@@ -1,43 +1,27 @@
 <script lang="ts">
-  // @ts-nocheck
-
-  import { onMount } from 'svelte';
-  import '@carbon/charts-svelte/styles.css';
-  import { BarChartSimple } from '@carbon/charts-svelte';
-  import Report from 'carbon-icons-svelte/lib/Report.svelte';
-  import Calendar from 'carbon-icons-svelte/lib/Calendar.svelte';
+  import Avatar from '$lib/components/Avatar/index.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import Progress from '$lib/components/Progress/index.svelte';
+  import { calDateDiff } from '$lib/utils/functions/date';
+  import { Grid, Tag } from 'carbon-components-svelte';
+  import Alarm from 'carbon-icons-svelte/lib/Alarm.svelte';
+  import Email from 'carbon-icons-svelte/lib/Email.svelte';
   import Notebook from 'carbon-icons-svelte/lib/Notebook.svelte';
+  import Report from 'carbon-icons-svelte/lib/Report.svelte';
   import RowExpand from 'carbon-icons-svelte/lib/RowExpand.svelte';
-  import CheckmarkFilled from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
-  import PresentationFile from 'carbon-icons-svelte/lib/PresentationFile.svelte';
-
-  import { fetchCourse, fetchCourses, getMarks } from '$lib/utils/services/courses/index.js';
-  import { currentOrg } from '$lib/utils/store/org.js';
-  import { course } from '$lib/components/Course/store.js';
-  import { supabase } from '$lib/utils/functions/supabase.js';
-  import formatDate from '$lib/utils/functions/formatDate.js';
-  import type { StudentStat } from '$lib/utils/types/index.js';
-  import { courseMetaDeta, courses } from '$lib/components/Courses/store';
-
-  import Tabs from '$lib/components/Tabs/index.svelte';
-  import TabContent from '$lib/components/TabContent/index.svelte';
-  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
-  import ActivateSectionsModal from '$lib/components/Course/components/Lesson/ActivateSectionsModal.svelte';
-  import { Dropdown } from 'carbon-components-svelte';
+  
+  import '@carbon/charts-svelte/styles.css';
 
   export let data;
 
   const {
     user,
-    completedLessons,
-    pendingLessons,
     totalExercises,
-    grades,
+    exercisesAndSubmissions,
     average,
     progressPercentage
   } = data?.data;
-
-  $: console.log('request data', data);
 
   let tabs = [
     {
@@ -51,14 +35,9 @@
   ];
 
   let currentTab = tabs[0].value;
-  let hasFetched = false;
-  let learningActivities = [];
-  let allCourses: any[] = [];
-  let selectedId = '';
 
   const getValue = (label: string) => {
-    const tabValue = tabs.find((tab) => tab.label === label)?.value;
-    return tabValue;
+    return tabs.find((tab) => tab.label === label)?.value;
   };
 
   const onChange = (tab) => {
@@ -67,27 +46,6 @@
     };
   };
 
-  function timeAgo(timestamp: string) {
-    const now = new Date();
-    const time = new Date(timestamp);
-
-    const diffInMs = now.getTime() - time.getTime();
-    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60)); // Convert milliseconds to hours
-
-    if (diffInHours < 1) {
-      const diffInMinutes = Math.floor(diffInMs / (1000 * 60)); // Convert milliseconds to minutes
-      return new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(
-        -diffInMinutes,
-        'minute'
-      );
-    } else if (diffInHours < 24) {
-      return new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(-diffInHours, 'hour');
-    } else {
-      const diffInDays = Math.floor(diffInHours / 24);
-      return new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(-diffInDays, 'day');
-    }
-  }
-
   function getPercentage(a, b) {
     if (b === 0) {
       return 0;
@@ -95,220 +53,158 @@
     return Math.round((a / b) * 100);
   }
 
-  $: inputRange = completedLessons?.length / pendingLessons?.length + completedLessons?.length;
+
+  let exerciseFilter: 'all' | 'completed' | 'incomplete' = 'all';
+  function toggleExerciseFilter(filter: 'completed' | 'incomplete') {
+    if (exerciseFilter === filter) {
+      exerciseFilter = 'all';
+    } else {
+      exerciseFilter = filter;
+    }
+  }
+
+  $: console.log('data page', data);
+
   $: learningActivities = [
     {
       icon: Notebook,
-      totalLesson: pendingLessons?.length + completedLessons?.length,
-      completedLesson: completedLessons?.length,
-      title: 'Lesson completed'
+      title: 'Overall Progress',
+      percentage: progressPercentage,
+      description: 'Based on assignments and lesson completion'
     },
     {
       icon: Report,
-      totalLesson: totalExercises,
-      completedLesson: grades?.length,
-      title: 'Pending Exercises'
+      totalLesson: exercisesAndSubmissions.length,
+      title: 'Assignment Completion',
+      description: 'Percentage of completed assignments',
+      percentage: getPercentage(exercisesAndSubmissions.filter(exercise => exercise.isCompleted).length, exercisesAndSubmissions.length)
     },
     {
       icon: RowExpand,
       totalLesson: `${Math.round(average)}%`,
-      title: 'Average Grade'
+      title: 'Average Grade',
+      description: 'Average grade of all completed assignments',
+      percentage: getPercentage(average, 100)
     }
   ];
+
+  $: filteredExercises = exercisesAndSubmissions.filter((exercise) => {
+    if (exerciseFilter === 'all') {
+      return true;
+    }
+    return exercise.isCompleted === (exerciseFilter === 'completed');
+  });
+  $: completedExercises = exercisesAndSubmissions.filter((exercise) => exercise.isCompleted).length
+  $: incompleteExercises = exercisesAndSubmissions.filter((exercise) => !exercise.isCompleted).length
+
 </script>
 
-<CourseContainer containerClass="px-7">
-  <div class="mt-5 h-[90vh] overflow-y-auto">
-    <!-- first section -->
-    <div class="flex items-start md:items-center flex-col md:flex-row gap-5 mt-5">
-      <!-- user details -->
-      <div
-        class="flex flex-col gap-3 items-start md:items-center border border-[#DEDEDE] rounded-md py-4 px-5 w-full md:w-[35%]"
-      >
-        <div class="w-full px-3 flex justify-center gap-4 items-center">
-          <img src="/images/user-placeholder.svg" alt="" class="rounded-full w-[20%] md:w-[30%]" />
-
-          <div>
-            <h1 class="m-0 text-lg leading-4">{user?.fullName}</h1>
-            <span class="text-xs m-0">Student</span>
-          </div>
-        </div>
-
-        <p
-          class="text-xs uppercase font-medium mt-1 py-1.5 text-center w-full bg-primary-600 text-white rounded-sm"
-        >
-          Last seen: {user?.lastSeen && timeAgo(user?.lastSeen)} ago
+<section>
+  <div class="rounded-md border p-5 dark:border-neutral-600">
+    <div class="flex w-full flex-col items-center justify-start gap-4 text-start md:flex-row">
+      <Avatar src={user.avatarUrl} name={user.fullName} width="w-16" height="h-16" />
+      <div class="flex flex-col space-y-2">
+        <p class="text-center text-2xl font-bold dark:text-white md:text-left">
+          {user.fullName}
         </p>
-      </div>
 
-      <!-- course progress -->
-      <div class="w-[65%]">
-        <h3 class="text-sm font-semibold m-0">Course Progress</h3>
+        <div class="flex flex-col items-center gap-1 md:flex-row md:gap-4">
+          <p class="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-300">
+            <Email />
+            {user.email}
+          </p>
 
-        <div
-          class="flex justify-between items-center border border-[#DEDEDE] rounded-md mt-2 py-2 px-3"
-        >
-          <img src="/images/target.svg" alt="" class="rounded-full w-[13%]" />
-
-          <div class="leading-5">
-            <p class="text-sm font-semibold">
-              {completedLessons?.length}/{pendingLessons?.length + completedLessons?.length} lessons
-              completed
-            </p>
-
-            <input
-              disabled
-              type="range"
-              min="0"
-              max="100"
-              bind:value={data.data.progressPercentage}
-              class="range-input"
-              style="background: linear-gradient(to right, #0233BD {progressPercentage}%, #ccc {progressPercentage}%);"
-            />
-          </div>
-
-          <h1 class="text-4xl font-bold">{progressPercentage}%</h1>
-        </div>
-      </div>
-    </div>
-
-    <!-- learning activities (second section) -->
-    <div class="mt-10">
-      <h3>Metrics</h3>
-
-      <div class="w-full flex items-center justify-between">
-        {#each learningActivities as activity}
-          <div
-            class="bg-[#F7F7F7] p-5 border-b-2 rounded-b-sm border-[#0233BD] flex gap-5 justify-center items-center w-[30%]"
-          >
-            <div class="w-fit p-4 rounded-full bg-blue-500/25">
-              <svelte:component this={activity.icon} size={24} color="blue" />
-            </div>
-
-            <div>
-              {#if activity.completedLesson !== undefined}
-                <h3 class="m-0 leading-7">{activity.completedLesson}/{activity.totalLesson}</h3>
-              {:else}
-                <h3 class="m-0 leading-7">{activity.totalLesson}</h3>
-              {/if}
-              <p class="text-sm leading-3">{activity.title}</p>
-            </div>
-          </div>
-        {/each}
-      </div>
-    </div>
-
-    <!-- lessons and activities (third section) -->
-    <div class="flex justify-between my-10">
-      <!-- lessons -->
-      <div class="w-[48%]">
-        <h3 class="m-0">Lessons</h3>
-
-        <Tabs {tabs} bind:currentTab {onChange}>
-          <slot:fragment slot="content">
-            <TabContent value={getValue('PENDING')} index={currentTab}>
-              <div class="flex flex-col gap-3 -mt-5 max-h-[45vh] overflow-y-scroll">
-                {#if pendingLessons?.length > 0}
-                  {#each pendingLessons as pending}
-                    <div class="border border-[#DEDEDE] rounded-sm p-4 flex flex-col gap-4">
-                      <h3 class="m-0 leading-4 font-semibold">{pending.title}</h3>
-
-                      <div class="flex justify-between items-center">
-                        <div class="flex items-center gap-1.5 text-xs">
-                          <Calendar size={16} />
-                          {formatDate(pending.created_at)}
-                        </div>
-
-                        <div class="flex items-center gap-1.5 text-xs">
-                          <PresentationFile size={16} />
-                          {pending.exerciseNo} Exercise(s)
-                        </div>
-                      </div>
-                    </div>
-                  {/each}
-                {:else}
-                  <p class="text-sm text-center">No Pending Course Found</p>
-                {/if}
-              </div>
-            </TabContent>
-
-            <TabContent value={getValue('COMPLETED')} index={currentTab}>
-              <div class="flex flex-col gap-3 -mt-5 max-h-[45vh] overflow-y-scroll">
-                {#if completedLessons?.length > 0}
-                  {#each completedLessons as pending}
-                    <div class="border border-[#DEDEDE] rounded-sm p-4 flex flex-col gap-4">
-                      <h3 class="m-0 leading-4 font-semibold">{pending.title}</h3>
-
-                      <div class="flex justify-between items-center">
-                        <div class="flex items-center gap-1.5 text-xs">
-                          <Calendar size={16} />
-                          {formatDate(pending.created_at)}
-                        </div>
-
-                        <div class="flex items-center gap-1.5 text-xs">
-                          <PresentationFile size={16} />
-                          {pending.exerciseNo} Exercises
-                        </div>
-                      </div>
-                    </div>
-                  {/each}
-                {:else}
-                  <p class="text-sm text-center">No Completed Course</p>
-                {/if}
-              </div>
-            </TabContent>
-          </slot:fragment>
-        </Tabs>
-      </div>
-
-      <!-- activities -->
-      <div class="w-[48%]">
-        <h3>Grades</h3>
-
-        <div
-          class="max-h-[50vh] h-full overflow-y-scroll flex items-center flex-col gap-3 p-3 border rounded-md"
-        >
-          {#if grades?.length > 0}
-            {#each grades as grade}
-              <div class="w-full bg-[#F7F7F7] border-[#EAEAEA] rounded-md p-3">
-                <p class="text-sm font-medium">{grade.title}</p>
-
-                <div class="flex justify-between items-center mt-2 text-sm">
-                  <span class="text-[#656565] flex item-center gap-3"
-                    ><CheckmarkFilled
-                      color={grade.grade >= 70 ? 'green' : grade.grade >= 30 ? 'orange' : 'red'}
-                      size={20}
-                    />
-
-                    Grade:</span
-                  >
-
-                  <span class="font-semibold">{getPercentage(grade.grade, grade.totalPoints)}%</span
-                  >
-                </div>
-              </div>
-            {/each}
-          {:else}
-            <p class="text-sm text-center">No Exercise Completed</p>
-          {/if}
+          <p class="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-300">
+            <Alarm />
+            Last seen: <span class="italic">{calDateDiff(user.lastSeen)}</span>
+          </p>
         </div>
       </div>
     </div>
   </div>
-</CourseContainer>
 
-<style>
-  .range-input {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 100%;
-    outline: none;
-    border-radius: 15px;
-    height: 0.5rem;
-  }
+  <Grid class="mt-5 px-0" fullWidth>
+    <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {#each learningActivities as activity}
+        <div
+          class="flex flex-col items-center justify-center gap-5 rounded-xl border p-3 dark:border-neutral-600 md:flex-row md:p-5"
+        >
+          <div class="w-fit rounded-full bg-primary-200 p-4">
+            <svelte:component this={activity.icon} size={24} />
+          </div>
 
-  .range-input::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-  }
-</style>
+          <div>
+            <p
+              class="text-center text-sm font-medium text-gray-600 dark:text-gray-200 md:text-left"
+            >
+              {activity.title}
+            </p>
+            <p class="text-center text-2xl font-bold md:text-left">{activity.percentage}%</p>
+            <p class="text-center text-xs text-gray-500 dark:text-gray-300 md:text-left md:text-sm">
+              {activity.description}
+            </p>
+          </div>
+        </div>
+      {/each}
+    </div>
+  </Grid>
+
+  <div class="mt-5 rounded-md border p-3 dark:border-neutral-600 md:p-5">
+    <h3 class="text-2xl font-bold">
+      Exercises
+    </h3>
+
+    <div class="flex flex-col gap-2">
+      <div class="flex items-center justify-between">
+        <p class="text-sm font-medium text-gray-600 dark:text-gray-200">Progress</p>
+        <p class="text-sm font-medium text-gray-600 dark:text-gray-200">
+          {completedExercises} of {exercisesAndSubmissions.length} complete
+        </p>
+      </div>
+      <Progress value={getPercentage(completedExercises, exercisesAndSubmissions.length)} />
+      <div class="flex items-center justify-between">
+        <PrimaryButton
+          variant={exerciseFilter === 'incomplete' ? VARIANTS.OUTLINED : VARIANTS.TEXT}
+          className="text-yellow-600 px-1"
+          onClick={() => toggleExerciseFilter('incomplete')}
+        >
+          {incompleteExercises} incomplete
+        </PrimaryButton>
+        <PrimaryButton
+          variant={exerciseFilter === 'completed' ? VARIANTS.OUTLINED : VARIANTS.TEXT}
+          className="text-green-600 px-1"
+          onClick={() => toggleExerciseFilter('completed')}
+        >
+          {completedExercises} complete
+        </PrimaryButton>
+      </div>
+    </div>
+
+    {#each filteredExercises as exercise, index}
+      {#key index}
+        <div class={`mt-5 rounded-md border p-5 flex items-center gap-4 justify-between  ${exercise.isCompleted ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'}`}>
+          <div class="flex items-center gap-4 w-2/3 ">
+            <Notebook size={24} />
+            <div>
+              <p class="text-lg font-semibold text-gray-600 dark:text-gray-200">
+                {exercise.title}
+              </p>
+              <p class="text-sm text-gray-500 dark:text-gray-300">
+                Score: {exercise.score}/{exercise.totalPoints}
+
+                <Tag type={exercise.status === 3 ? "high-contrast" : "outline"} size="sm">
+                  {exercise.status === 3 ? "Graded" : "Not graded"}
+                </Tag>
+                
+              </p>
+            </div>
+          </div>
+
+          <Tag class={`${exercise.isCompleted ? 'bg-green-200 text-green-700' : 'bg-yellow-200 text-yellow-700'}`}>
+            {exercise.isCompleted ? 'Complete' : 'Incomplete'}
+          </Tag>
+        </div>
+      {/key}
+    {/each}
+  </div>
+</section>

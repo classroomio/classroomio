@@ -867,6 +867,8 @@
         "role": "Role",
         "action": "Action",
         "feedback": "Copied Email to clipboard",
+        "view": "View",
+        "delete_profile": "Delete profile",
         "invite_modal": {
           "title": "Invite people",
           "invite": "Invite Tutors",

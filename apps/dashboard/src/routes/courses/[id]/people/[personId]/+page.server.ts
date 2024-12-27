@@ -1,26 +1,25 @@
-import { supabase } from "$lib/utils/functions/supabase";
+import { supabase } from '$lib/utils/functions/supabase';
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export const load = async ({ params, fetch }) => {
   const { id, personId } = params;
 
   const getAccessToken = async () => {
-    const {data} = await supabase.auth.getSession();
+    const { data } = await supabase.auth.getSession();
     return data.session?.access_token || '';
-  }
-  
+  };
+
   try {
     const accessToken = await getAccessToken();
     const response = await fetch('/api/analytics/user', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': accessToken
+        Authorization: accessToken
       },
       body: JSON.stringify({
         userId: personId,
         courseId: id
-      }),
+      })
     });
 
     if (!response.ok) {
@@ -31,14 +30,15 @@ export const load = async ({ params, fetch }) => {
 
     return {
       userId: personId,
-      data,
+      courseId: id,
+      data
     };
   } catch (error: any) {
     console.error('Error loading data:', error);
     return {
       userId: personId,
       data: null,
-      error: error.message,
+      error: error.message
     };
   }
 };

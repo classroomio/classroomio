@@ -2,9 +2,9 @@
   export let value = 0;
 </script>
 
-<div class="w-full h-3 rounded-md bg-gray-300 relative">
+<div class="relative h-2 w-full rounded-md bg-gray-300">
   <span
-    class="progress absolute top-0 left-0 rounded-md bg-primary-700 h-full"
+    class="progress bg-primary-700 absolute left-0 top-0 h-full rounded-l-md"
     style="width: {value}%;"
   />
 </div>

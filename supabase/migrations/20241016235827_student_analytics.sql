@@ -21,6 +21,7 @@ alter table "public"."analytics_login_events" validate constraint "analytics_log
 
 set check_function_bodies = off;
 
+
 CREATE OR REPLACE FUNCTION public.insert_login_event_on_user_login()
  RETURNS trigger
  LANGUAGE plpgsql
@@ -35,6 +36,31 @@ BEGIN
 END;
 $function$
 ;
+
+CREATE TRIGGER insert_login_event_on_user_login_trigger
+AFTER UPDATE OF last_sign_in_at ON auth.users
+FOR EACH ROW
+EXECUTE FUNCTION public.insert_login_event_on_user_login();
+
+CREATE OR REPLACE FUNCTION public.insert_login_event_on_user_session_update()
+ RETURNS trigger
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+AS $function$
+BEGIN
+  IF (NEW.updated_at IS NOT NULL) THEN
+    INSERT INTO public.analytics_login_events (logged_in_at, user_id)
+    VALUES (NEW.updated_at, NEW.user_id);
+  END IF;
+  RETURN NEW;
+END;
+$function$
+;
+
+CREATE TRIGGER insert_login_event_on_user_session_update_trigger
+AFTER UPDATE OF updated_at ON auth.sessions
+FOR EACH ROW
+EXECUTE FUNCTION public.insert_login_event_on_user_session_update();
 
 grant delete on table "public"."analytics_login_events" to "anon";
 
@@ -85,6 +111,12 @@ for insert
 to authenticated
 with check ((auth.uid() = user_id));
 
+CREATE POLICY "Enable delete for users based on user_id"
+ON "public"."analytics_login_events"
+AS PERMISSIVE FOR DELETE
+TO public
+USING (auth.uid() = user_id)
+
 CREATE OR REPLACE VIEW public.login_stats AS
 SELECT
   user_id,
@@ -94,3 +126,12 @@ FROM
   public.analytics_login_events
 GROUP BY
   user_id, DATE_TRUNC('day', logged_in_at);
+
+CREATE VIEW public.user_last_login AS
+SELECT
+  user_id,
+  MAX(logged_in_at) AS last_login_at
+FROM
+  public.analytics_login_events
+GROUP BY
+  user_id;
