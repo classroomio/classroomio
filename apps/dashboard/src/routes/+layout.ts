@@ -9,7 +9,6 @@ export const load = async ({ url, data }) => {
 
   const profileStore = get(profile);
 
-  // Use the server language if it's supported, otherwise use English
   const serverLang = data.serverLang.split('-')[0];
 
   const userLocale = profileStore.id ? profileStore.locale : getInitialLocale(serverLang);

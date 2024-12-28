@@ -77,7 +77,6 @@ export async function getProfile({
 
   // Skip refetching profile, if already in store
   if (profileStore.id) {
-    // Fetch language
     handleLocaleChange(profileStore.locale);
     return;
   }
@@ -183,8 +182,6 @@ export async function getProfile({
     // Set user in sentry
     setAnalyticsUser();
 
-    console.log('setting locale', profileData.locale);
-    // Fetch language
     handleLocaleChange(profileData.locale);
 
     const orgRes = await getOrganizations(profileData.id, isOrgSite, orgSiteName);

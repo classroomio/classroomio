@@ -9,9 +9,6 @@ async function getGenericData(orgSlug: string): Promise<{
   orgHasAvatarUrl: boolean;
   courseData: any;
 }> {
-  // get one course belonging to the org
-  // get one published course belonging to the org
-  // get one
   const { data: publishedCourse } = await supabase
     .from('course')
     .select(
