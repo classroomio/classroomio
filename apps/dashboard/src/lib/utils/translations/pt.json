@@ -1300,7 +1300,22 @@
     "not_registered_yet": "Ainda não está cadastrado?",
     "signup": "Inscrever-se",
     "signup_with_google": "Inscreva-se no Google",
-    "login_with_google": "Faça login com o Google"
+    "login_with_google": "Faça login com o Google",
+    "create_to_join": "Crie uma conta gratuita para participar",
+    "login_to_join": "Faça login para participar",
+    "validation": {
+      "unable_to_create_profile": "Não foi possível criar o perfil",
+      "user_cannot_be_created": "O usuário não pode ser criado"
+    },
+    "fields": {
+      "email": "Seu e-mail",
+      "full_name": "Nome completo",
+      "password": "Sua senha",
+      "confirm_password": "Confirme sua senha",
+      "password_helper_message": "A senha deve ter mais de 6 caracteres",
+      "create_account": "Criar uma conta"
+    },
+    "create_account": "Criar uma conta"
   },
   "welcome_modal": {
     "we_at": "Nós em",

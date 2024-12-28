@@ -1300,7 +1300,22 @@
     "not_registered_yet": "Chưa đăng ký?",
     "signup": "Đăng ký",
     "signup_with_google": "Đăng ký với Google",
-    "login_with_google": "Đăng nhập bằng Google"
+    "login_with_google": "Đăng nhập bằng Google",
+    "create_to_join": "Tạo một tài khoản miễn phí để tham gia",
+    "login_to_join": "Đăng nhập để tham gia",
+    "validation": {
+      "unable_to_create_profile": "Không thể tạo hồ sơ",
+      "user_cannot_be_created": "Không thể tạo người dùng"
+    },
+    "fields": {
+      "email": "Email của bạn",
+      "full_name": "Tên đầy đủ",
+      "password": "Mật khẩu của bạn",
+      "confirm_password": "Xác nhận mật khẩu",
+      "password_helper_message": "Mật khẩu phải nhiều hơn 6 ký tự",
+      "create_account": "Tạo tài khoản"
+    },
+    "create_account": "Tạo tài khoản"
   },
   "welcome_modal": {
     "we_at": "Chúng tôi ở",

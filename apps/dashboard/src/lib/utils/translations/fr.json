@@ -1300,7 +1300,22 @@
     "not_registered_yet": "Pas encore inscrit ?",
     "signup": "S'inscrire",
     "signup_with_google": "Inscrivez-vous avec Google",
-    "login_with_google": "Connectez-vous avec Google"
+    "login_with_google": "Connectez-vous avec Google",
+    "create_to_join": "Créez un compte gratuit pour vous inscrire",
+    "login_to_join": "Connectez-vous pour rejoindre",
+    "validation": {
+      "unable_to_create_profile": "Impossible de créer un profil",
+      "user_cannot_be_created": "L'utilisateur ne peut pas être créé"
+    },
+    "fields": {
+      "email": "Votre e-mail",
+      "full_name": "Nom et prénom",
+      "password": "Votre mot de passe",
+      "confirm_password": "Confirmez le mot de passe",
+      "password_helper_message": "Le mot de passe doit comporter plus de 6 caractères",
+      "create_account": "Créer un compte"
+    },
+    "create_account": "Créer un compte"
   },
   "welcome_modal": {
     "we_at": "Nous à",
