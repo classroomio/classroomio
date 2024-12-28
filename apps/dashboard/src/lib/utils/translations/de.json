@@ -1293,7 +1293,14 @@
     "email": "Deine E-Mail",
     "password": "Ihr Passwort",
     "forgot": "Passwort vergessen?",
-    "login": "Anmeldung"
+    "login": "Anmeldung",
+    "login_with": "oder loggen Sie sich mit ein",
+    "signup_with": "oder melden Sie sich an",
+    "already_have_account": "Sie haben bereits ein Konto?",
+    "not_registered_yet": "Noch nicht registriert?",
+    "signup": "Melden Sie sich an",
+    "signup_with_google": "Melden Sie sich bei Google an",
+    "login_with_google": "Melden Sie sich mit Google an"
   },
   "welcome_modal": {
     "we_at": "Wir bei",

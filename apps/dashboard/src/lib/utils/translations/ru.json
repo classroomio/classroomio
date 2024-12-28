@@ -1293,7 +1293,14 @@
     "email": "Ваш адрес электронной почты",
     "password": "Ваш пароль",
     "forgot": "Забыли пароль?",
-    "login": "Авторизоваться"
+    "login": "Авторизоваться",
+    "login_with": "или войдите с помощью",
+    "signup_with": "или зарегистрируйтесь через",
+    "already_have_account": "У вас уже есть аккаунт?",
+    "not_registered_yet": "Еще не зарегистрированы?",
+    "signup": "Зарегистрироваться",
+    "signup_with_google": "Зарегистрируйтесь через Google",
+    "login_with_google": "Войти через Google"
   },
   "welcome_modal": {
     "we_at": "Мы в",

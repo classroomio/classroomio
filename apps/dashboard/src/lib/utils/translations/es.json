@@ -1293,7 +1293,14 @@
     "email": "Tu correo electrónico",
     "password": "Tu contraseña",
     "forgot": "¿Has olvidado tu contraseña?",
-    "login": "Acceso"
+    "login": "Acceso",
+    "login_with": "o inicia sesión con",
+    "signup_with": "o regístrate con",
+    "already_have_account": "¿Ya tienes una cuenta?",
+    "not_registered_yet": "¿Aún no estás registrado?",
+    "signup": "Inscribirse",
+    "signup_with_google": "Regístrate con Google",
+    "login_with_google": "Iniciar sesión con Google"
   },
   "welcome_modal": {
     "we_at": "nosotros en",

@@ -9,6 +9,26 @@ async function getGenericData(orgSlug: string): Promise<{
   orgHasAvatarUrl: boolean;
   courseData: any;
 }> {
+  // get one course belonging to the org
+  // get one published course belonging to the org
+  // get one
+  const { data: publishedCourse } = await supabase
+    .from('course')
+    .select(
+      `
+    is_published,
+    group:group_id!inner(
+      organization!inner(
+        siteName
+      )
+    )
+  `
+    )
+    .eq('is_published', true)
+    .eq('group.organization.siteName', orgSlug)
+    .limit(1)
+    .returns<{ is_published: boolean }>();
+
   const { data } = await supabase
     .from('course')
     .select(
@@ -23,14 +43,13 @@ async function getGenericData(orgSlug: string): Promise<{
 	    )
 	  `
     )
-    .eq('group.organization.siteName', orgSlug);
+    .eq('group.organization.siteName', orgSlug)
+    .limit(1);
 
   const result = data || [];
 
-  console.log('courseData', result);
-
   return {
-    isCoursePublished: result.some((c) => c.is_published === true),
+    isCoursePublished: publishedCourse?.is_published === true,
     isCourseCreated: result.length > 0,
     orgHasAvatarUrl: !!get(result[0], 'group.organization.avatar_url', ''),
     courseData: result
@@ -54,7 +73,8 @@ async function getIsLessonCreated(
 	    )
 	  `
     )
-    .eq('course.group.organization.siteName', orgSlug);
+    .eq('course.group.organization.siteName', orgSlug)
+    .limit(1);
   console.log('lessonsData', data);
 
   return {
@@ -80,7 +100,8 @@ async function getIsExerciseCreated(orgSlug: string): Promise<boolean> {
 	    )
 	  `
     )
-    .eq('lesson.course.group.organization.siteName', orgSlug);
+    .eq('lesson.course.group.organization.siteName', orgSlug)
+    .limit(1);
 
   return Array.isArray(data) ? data?.length > 0 : false;
 }

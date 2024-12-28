@@ -1293,7 +1293,14 @@
     "email": "Email của bạn",
     "password": "Mật khẩu của bạn",
     "forgot": "Quên mật khẩu?",
-    "login": "Đăng nhập"
+    "login": "Đăng nhập",
+    "login_with": "hoặc đăng nhập với",
+    "signup_with": "hoặc đăng ký với",
+    "already_have_account": "Đã có tài khoản?",
+    "not_registered_yet": "Chưa đăng ký?",
+    "signup": "Đăng ký",
+    "signup_with_google": "Đăng ký với Google",
+    "login_with_google": "Đăng nhập bằng Google"
   },
   "welcome_modal": {
     "we_at": "Chúng tôi ở",

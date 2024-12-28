@@ -1,6 +1,8 @@
 <script lang="ts">
   import { browser } from '$app/environment';
   import { page } from '$app/stores';
+  import debounce from 'lodash/debounce';
+
   import Apps from '$lib/components/Apps/index.svelte';
   import { course } from '$lib/components/Course/store';
   import OrgNavigation from '$lib/components/Navigation/app.svelte';
@@ -22,7 +24,6 @@
   import { globalStore } from '$lib/utils/store/app';
   import { currentOrg } from '$lib/utils/store/org';
   import { isMobile } from '$lib/utils/store/useMobile';
-  import { user } from '$lib/utils/store/user';
   import { Theme } from 'carbon-components-svelte';
   import type { CarbonTheme } from 'carbon-components-svelte/types/Theme/Theme.svelte';
   import merge from 'lodash/merge';
@@ -41,6 +42,8 @@
   function handleResize() {
     isMobile.update(() => window.innerWidth <= 760);
   }
+
+  const getProfileDebounced = debounce(getProfile, 1000);
 
   onMount(() => {
     console.log(
@@ -77,18 +80,15 @@
       }
 
       // Skip Authentication
-      if (data.skipAuth || $user.fetchingUser) return;
+      if (data.skipAuth) return;
 
       // Authentication Steps
       if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
-        $user.fetchingUser = true;
-        getProfile({
+        getProfileDebounced({
           path,
           queryParam,
           isOrgSite: data.isOrgSite,
           orgSiteName: data.orgSiteName
-        }).then(() => {
-          $user.fetchingUser = false;
         });
       }
       // else if (!['TOKEN_REFRESHED'].includes(event)) {
@@ -125,6 +125,7 @@
 <Theme bind:theme={carbonTheme} />
 
 <UpgradeModal />
+
 <Snackbar />
 
 {#if data.org?.is_restricted || $currentOrg.is_restricted}

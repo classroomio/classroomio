@@ -49,7 +49,14 @@
     "email": "Your email",
     "password": "Your password",
     "forgot": "Forgot password?",
-    "login": "Log In"
+    "login": "Log In",
+    "login_with": "or login with",
+    "signup_with": "or sign up with",
+    "already_have_account": "Already have an account?",
+    "not_registered_yet": "Not registered yet?",
+    "signup": "Sign up",
+    "signup_with_google": "Sign up with Google",
+    "login_with_google": "Login with Google"
   },
   "profileMenu": {
     "profile": "PROFILE",

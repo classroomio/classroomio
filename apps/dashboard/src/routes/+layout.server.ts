@@ -1,13 +1,12 @@
-import type { MetaTagsProps } from 'svelte-meta-tags';
-import { dev, browser } from '$app/environment';
-import { redirect } from '@sveltejs/kit';
-import { blockedSubdomain } from '$lib/utils/constants/app';
-import { getCurrentOrg } from '$lib/utils/services/org';
-import { getSupabase, supabase } from '$lib/utils/functions/supabase';
-import { loadTranslations } from '$lib/utils/functions/translations';
-import type { CurrentOrg } from '$lib/utils/types/org';
-import { IS_SELFHOSTED } from '$env/static/private';
+import { dev } from '$app/environment';
 import { env } from '$env/dynamic/private';
+import { IS_SELFHOSTED } from '$env/static/private';
+import { blockedSubdomain } from '$lib/utils/constants/app';
+import { getSupabase, supabase } from '$lib/utils/functions/supabase';
+import { getCurrentOrg } from '$lib/utils/services/org';
+import type { CurrentOrg } from '$lib/utils/types/org';
+import { redirect } from '@sveltejs/kit';
+import type { MetaTagsProps } from 'svelte-meta-tags';
 
 if (!supabase) {
   getSupabase();
@@ -19,18 +18,18 @@ interface LoadOutput {
   skipAuth: boolean;
   org: CurrentOrg | null;
   baseMetaTags: MetaTagsProps;
+  serverLang: string;
 }
 
-export const load = async ({ url, cookies }): Promise<LoadOutput> => {
+export const load = async ({ url, cookies, request }): Promise<LoadOutput> => {
   const response: LoadOutput = {
     orgSiteName: '',
     isOrgSite: false,
     skipAuth: false,
     org: null,
-    baseMetaTags: getBaseMetaTags(url)
+    baseMetaTags: getBaseMetaTags(url),
+    serverLang: request.headers?.get('accept-language') || ''
   };
-
-  console.log('IS_SELFHOSTED', IS_SELFHOSTED);
 
   // Selfhosted usecase would be here
   if (IS_SELFHOSTED === 'true') {
@@ -105,11 +104,6 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
     throw redirect(307, 'https://app.classroomio.com');
   }
 
-  // Load translations
-  const { pathname } = url;
-  const initLocale = getInitialLocale();
-  await loadTranslations(initLocale, pathname);
-
   return response;
 };
 
@@ -151,18 +145,7 @@ function getBaseMetaTags(url: URL) {
   });
 }
 
-// Define getInitialLocale function
-function getInitialLocale(): string {
-  if (browser) {
-    try {
-      return window.navigator.language.split('-')[0];
-    } catch (e) {
-      return 'en';
-    }
-  }
 
-  return 'en';
-}
 
 function getSubdomain(url: URL) {
   const host = url.host.replace('www.', '');

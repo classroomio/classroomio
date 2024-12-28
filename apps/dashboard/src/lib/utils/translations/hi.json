@@ -1293,7 +1293,14 @@
     "email": "आपका ईमेल",
     "password": "आपका पासवर्ड",
     "forgot": "पासवर्ड भूल गए?",
-    "login": "लॉग इन करें"
+    "login": "लॉग इन करें",
+    "login_with": "या के साथ लॉगिन करें",
+    "signup_with": "या इसके साथ साइन अप करें",
+    "already_have_account": "क्या आपके पास पहले से एक खाता मौजूद है?",
+    "not_registered_yet": "अभी तक पंजीकृत नहीं हैं?",
+    "signup": "साइन अप करें",
+    "signup_with_google": "Google के साथ साइन अप करें",
+    "login_with_google": "गूगल से लॉगिन करें"
   },
   "welcome_modal": {
     "we_at": "हम पर",
