@@ -85,10 +85,12 @@ interface UserExercisesStats {
 
 interface UserExerciseStatsQuery {
   lesson: {
+    title: string;
     exercise: {
       id: string;
       title: string;
       lesson_id: string;
+      created_at: string;
       question: { points: number }[];
       submission: {
         groupmember: { id: string; profile_id: string };
@@ -309,7 +311,8 @@ async function fetchUserExercisesStats(
       .select(
         `
         lesson!inner (
-          exercise!inner (id,title,lesson_id,question (points),
+          title,exercise!inner (
+            id,title,lesson_id,created_at,question (points),
             submission!left (
               id,total,status_id,submitted_by,groupmember!inner (id,profile_id)
             )
@@ -335,6 +338,7 @@ async function fetchUserExercisesStats(
         return {
           id: exercise.id,
           lessonId: exercise.lesson_id,
+          lessonTitle: lesson.title,
           title: exercise.title,
           status: userSubmission?.status_id,
           score: userSubmission?.total || 0,

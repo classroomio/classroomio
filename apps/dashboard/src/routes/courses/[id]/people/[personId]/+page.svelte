@@ -10,6 +10,7 @@
   import Notebook from 'carbon-icons-svelte/lib/Notebook.svelte';
   import Report from 'carbon-icons-svelte/lib/Report.svelte';
   import RowExpand from 'carbon-icons-svelte/lib/RowExpand.svelte';
+  import { fade } from 'svelte/transition';
 
   import '@carbon/charts-svelte/styles.css';
 
@@ -67,7 +68,7 @@
   $: incompleteExercises = userExercisesStats.filter((exercise) => !exercise.isCompleted).length;
 </script>
 
-<section>
+<section class="px-1">
   <div class="rounded-md border p-5 dark:border-neutral-600">
     <div class="flex w-full flex-col items-center justify-start gap-4 text-start md:flex-row">
       <Avatar src={user.avatarUrl} name={user.fullName} width="w-16" height="h-16" />
@@ -100,7 +101,7 @@
         <div
           class="flex flex-col items-center justify-center gap-5 rounded-xl border p-3 dark:border-neutral-600 md:flex-row md:p-5"
         >
-          <div class="bg-primary-200 w-fit rounded-full p-4">
+          <div class="bg-primary-200 w-fit rounded-full p-4 text-black">
             <svelte:component this={activity.icon} size={24} />
           </div>
 
@@ -155,19 +156,33 @@
           class={`mt-5 flex items-center justify-between gap-4 rounded-md border p-5  ${
             exercise.isCompleted ? 'border-green-200 bg-green-50' : 'border-yellow-200 bg-yellow-50'
           }`}
+          transition:fade={{ duration: 300 }}
         >
           <div class="flex w-2/3 items-center gap-4">
-            <Notebook size={24} />
+            <Notebook size={24} class="text-black" />
             <div>
-              <p class="text-lg font-semibold text-gray-600 dark:text-gray-200">
-                {exercise.title}
-              </p>
-              <p class="text-sm text-gray-500 dark:text-gray-300">
+              <div class="mb-2">
+                <a
+                  href={`/courses/${data.courseId}/lessons/${exercise.lessonId}/exercises/${exercise.id}?tabIndex=1`}
+                >
+                  <p class="text-lg font-semibold text-gray-600">
+                    {exercise.title}
+                  </p>
+                </a>
+                <a href={`/courses/${data.courseId}/lessons/${exercise.lessonId}`}>
+                  <p class="text-sm font-semibold italic text-gray-500">
+                    {exercise.lessonTitle}
+                  </p>
+                </a>
+              </div>
+              <p class="text-sm text-gray-500">
                 Score: {exercise.score}/{exercise.totalPoints}
 
-                <Tag type={exercise.status === 3 ? 'high-contrast' : 'outline'} size="sm">
-                  {exercise.status === 3 ? 'Graded' : 'Not graded'}
-                </Tag>
+                {#if exercise.isCompleted}
+                  <Tag type={exercise.status === 3 ? 'high-contrast' : 'outline'} size="sm">
+                    {exercise.status === 3 ? 'Graded' : 'Not graded'}
+                  </Tag>
+                {/if}
               </p>
             </div>
           </div>
