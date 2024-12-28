@@ -115,7 +115,7 @@ CREATE POLICY "Enable delete for users based on user_id"
 ON "public"."analytics_login_events"
 AS PERMISSIVE FOR DELETE
 TO public
-USING (auth.uid() = user_id)
+USING (auth.uid() = user_id);
 
 CREATE OR REPLACE VIEW public.login_stats AS
 SELECT

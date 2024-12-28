@@ -10,41 +10,12 @@
   import Notebook from 'carbon-icons-svelte/lib/Notebook.svelte';
   import Report from 'carbon-icons-svelte/lib/Report.svelte';
   import RowExpand from 'carbon-icons-svelte/lib/RowExpand.svelte';
-  
+
   import '@carbon/charts-svelte/styles.css';
 
   export let data;
 
-  const {
-    user,
-    totalExercises,
-    exercisesAndSubmissions,
-    average,
-    progressPercentage
-  } = data?.data;
-
-  let tabs = [
-    {
-      label: 'PENDING',
-      value: 'PENDING'
-    },
-    {
-      label: 'COMPLETED',
-      value: 'COMPLETED'
-    }
-  ];
-
-  let currentTab = tabs[0].value;
-
-  const getValue = (label: string) => {
-    return tabs.find((tab) => tab.label === label)?.value;
-  };
-
-  const onChange = (tab) => {
-    return () => {
-      currentTab = tab;
-    };
-  };
+  const { user, userExercisesStats, averageGrade, progressPercentage } = data?.data;
 
   function getPercentage(a, b) {
     if (b === 0) {
@@ -52,7 +23,6 @@
     }
     return Math.round((a / b) * 100);
   }
-
 
   let exerciseFilter: 'all' | 'completed' | 'incomplete' = 'all';
   function toggleExerciseFilter(filter: 'completed' | 'incomplete') {
@@ -63,40 +33,38 @@
     }
   }
 
-  $: console.log('data page', data);
-
   $: learningActivities = [
     {
+      description: 'Based on lesson completion',
       icon: Notebook,
-      title: 'Overall Progress',
       percentage: progressPercentage,
-      description: 'Based on assignments and lesson completion'
+      title: 'Overall Progress'
     },
     {
-      icon: Report,
-      totalLesson: exercisesAndSubmissions.length,
-      title: 'Assignment Completion',
       description: 'Percentage of completed assignments',
-      percentage: getPercentage(exercisesAndSubmissions.filter(exercise => exercise.isCompleted).length, exercisesAndSubmissions.length)
+      icon: Report,
+      percentage: getPercentage(
+        userExercisesStats.filter((exercise) => exercise.isCompleted).length,
+        userExercisesStats.length
+      ),
+      title: 'Assignment Completion'
     },
     {
-      icon: RowExpand,
-      totalLesson: `${Math.round(average)}%`,
-      title: 'Average Grade',
       description: 'Average grade of all completed assignments',
-      percentage: getPercentage(average, 100)
+      icon: RowExpand,
+      percentage: averageGrade,
+      title: 'Average Grade'
     }
   ];
 
-  $: filteredExercises = exercisesAndSubmissions.filter((exercise) => {
+  $: filteredExercises = userExercisesStats.filter((exercise) => {
     if (exerciseFilter === 'all') {
       return true;
     }
     return exercise.isCompleted === (exerciseFilter === 'completed');
   });
-  $: completedExercises = exercisesAndSubmissions.filter((exercise) => exercise.isCompleted).length
-  $: incompleteExercises = exercisesAndSubmissions.filter((exercise) => !exercise.isCompleted).length
-
+  $: completedExercises = userExercisesStats.filter((exercise) => exercise.isCompleted).length;
+  $: incompleteExercises = userExercisesStats.filter((exercise) => !exercise.isCompleted).length;
 </script>
 
 <section>
@@ -116,7 +84,10 @@
 
           <p class="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-300">
             <Alarm />
-            Last seen: <span class="italic">{calDateDiff(user.lastSeen)}</span>
+            Last seen:
+            <span class="italic">
+              {user.lastSeen ? calDateDiff(user.lastSeen) : 'a while ago'}
+            </span>
           </p>
         </div>
       </div>
@@ -129,7 +100,7 @@
         <div
           class="flex flex-col items-center justify-center gap-5 rounded-xl border p-3 dark:border-neutral-600 md:flex-row md:p-5"
         >
-          <div class="w-fit rounded-full bg-primary-200 p-4">
+          <div class="bg-primary-200 w-fit rounded-full p-4">
             <svelte:component this={activity.icon} size={24} />
           </div>
 
@@ -150,18 +121,16 @@
   </Grid>
 
   <div class="mt-5 rounded-md border p-3 dark:border-neutral-600 md:p-5">
-    <h3 class="text-2xl font-bold">
-      Exercises
-    </h3>
+    <h3 class="text-2xl font-bold">Exercises</h3>
 
     <div class="flex flex-col gap-2">
       <div class="flex items-center justify-between">
         <p class="text-sm font-medium text-gray-600 dark:text-gray-200">Progress</p>
         <p class="text-sm font-medium text-gray-600 dark:text-gray-200">
-          {completedExercises} of {exercisesAndSubmissions.length} complete
+          {completedExercises} of {userExercisesStats.length} complete
         </p>
       </div>
-      <Progress value={getPercentage(completedExercises, exercisesAndSubmissions.length)} />
+      <Progress value={getPercentage(completedExercises, userExercisesStats.length)} />
       <div class="flex items-center justify-between">
         <PrimaryButton
           variant={exerciseFilter === 'incomplete' ? VARIANTS.OUTLINED : VARIANTS.TEXT}
@@ -182,8 +151,12 @@
 
     {#each filteredExercises as exercise, index}
       {#key index}
-        <div class={`mt-5 rounded-md border p-5 flex items-center gap-4 justify-between  ${exercise.isCompleted ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'}`}>
-          <div class="flex items-center gap-4 w-2/3 ">
+        <div
+          class={`mt-5 flex items-center justify-between gap-4 rounded-md border p-5  ${
+            exercise.isCompleted ? 'border-green-200 bg-green-50' : 'border-yellow-200 bg-yellow-50'
+          }`}
+        >
+          <div class="flex w-2/3 items-center gap-4">
             <Notebook size={24} />
             <div>
               <p class="text-lg font-semibold text-gray-600 dark:text-gray-200">
@@ -192,15 +165,18 @@
               <p class="text-sm text-gray-500 dark:text-gray-300">
                 Score: {exercise.score}/{exercise.totalPoints}
 
-                <Tag type={exercise.status === 3 ? "high-contrast" : "outline"} size="sm">
-                  {exercise.status === 3 ? "Graded" : "Not graded"}
+                <Tag type={exercise.status === 3 ? 'high-contrast' : 'outline'} size="sm">
+                  {exercise.status === 3 ? 'Graded' : 'Not graded'}
                 </Tag>
-                
               </p>
             </div>
           </div>
 
-          <Tag class={`${exercise.isCompleted ? 'bg-green-200 text-green-700' : 'bg-yellow-200 text-yellow-700'}`}>
+          <Tag
+            class={`${
+              exercise.isCompleted ? 'bg-green-200 text-green-700' : 'bg-yellow-200 text-yellow-700'
+            }`}
+          >
             {exercise.isCompleted ? 'Complete' : 'Incomplete'}
           </Tag>
         </div>
