@@ -49,7 +49,29 @@
     "email": "Your email",
     "password": "Your password",
     "forgot": "Forgot password?",
-    "login": "Log In"
+    "login": "Log In",
+    "login_with": "or login with",
+    "signup_with": "or sign up with",
+    "already_have_account": "Already have an account?",
+    "not_registered_yet": "Not registered yet?",
+    "signup": "Sign up",
+    "signup_with_google": "Sign up with Google",
+    "login_with_google": "Login with Google",
+    "create_to_join": "Create a free account to join",
+    "create_account": "Create Account",
+    "login_to_join": "Log in to join",
+    "fields": {
+      "email": "Your Email",
+      "full_name": "Full Name",
+      "password": "Your Password",
+      "confirm_password": "Confirm Password",
+      "password_helper_message": "Password must be more than 6 characters",
+      "create_account": "Create Account"
+    },
+    "validation": {
+      "unable_to_create_profile": "Unable to create profile",
+      "user_cannot_be_created": "User cannot be created"
+    }
   },
   "profileMenu": {
     "profile": "PROFILE",

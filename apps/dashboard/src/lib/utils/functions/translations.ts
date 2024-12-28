@@ -1,6 +1,6 @@
+import { LOCALE } from '$lib/utils/types';
 import { writable } from 'svelte/store';
 import i18n, { type Config } from 'sveltekit-i18n';
-import { LOCALE } from '$lib/utils/types';
 
 interface Params {
   dateValue: number;
@@ -10,8 +10,7 @@ interface Params {
   val: Date;
 }
 
-const config: Config<Partial<Params>> = {
-  initLocale: 'en',
+export const config: Config<Partial<Params>> = {
   // parser: parser(),
   loaders: [
     {

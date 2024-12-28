@@ -2,13 +2,13 @@
   import Modal from '$lib/components/Modal/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import { profile } from '$lib/utils/store/user';
+  import { t } from '$lib/utils/functions/translations';
   import {
-    triggerSendEmail,
-    NOTIFICATION_NAME
+    NOTIFICATION_NAME,
+    triggerSendEmail
   } from '$lib/utils/services/notification/notification';
   import { currentOrg } from '$lib/utils/store/org';
-  import { t } from '$lib/utils/functions/translations';
+  import { profile } from '$lib/utils/store/user';
 
   const WAIT_SEC = 120;
   const WAIT_TIME = WAIT_SEC * 1000;
@@ -51,21 +51,21 @@
     }, WAIT_TIME);
   };
 
-  $: open = Boolean(!$profile.is_email_verified && !!$currentOrg.id);
+  $: open = Boolean(!$profile.is_email_verified && !!$profile.id && !!$currentOrg.id);
   $: open && sendVerificationCode();
 </script>
 
 <Modal {open} isCloseable={false} width="w-4/5" maxWidth="w-[500px]" containerClass="p-4">
   <div class="flex flex-col items-center space-y-6 text-center">
     <img src="/verify-email.svg" alt="email verification" />
-    <p class="font-bold text-xl">{$t('verify_email_modal.heading')}</p>
-    <p class="text-sm w-[70%] text-gray-700 dark:text-gray-200">
+    <p class="text-xl font-bold">{$t('verify_email_modal.heading')}</p>
+    <p class="w-[70%] text-sm text-gray-700 dark:text-gray-200">
       {$t('verify_email_modal.sent_verification')}
       {$profile.email}
       {$t('verify_email_modal.to_confirm')}
     </p>
 
-    <div class="flex items-center flex-col">
+    <div class="flex flex-col items-center">
       <PrimaryButton
         isDisabled={loading || isSent}
         className="font-normal"

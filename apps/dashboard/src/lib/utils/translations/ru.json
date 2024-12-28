@@ -1293,7 +1293,29 @@
     "email": "Ваш адрес электронной почты",
     "password": "Ваш пароль",
     "forgot": "Забыли пароль?",
-    "login": "Авторизоваться"
+    "login": "Авторизоваться",
+    "login_with": "или войдите с помощью",
+    "signup_with": "или зарегистрируйтесь через",
+    "already_have_account": "У вас уже есть аккаунт?",
+    "not_registered_yet": "Еще не зарегистрированы?",
+    "signup": "Зарегистрироваться",
+    "signup_with_google": "Зарегистрируйтесь через Google",
+    "login_with_google": "Войти через Google",
+    "create_to_join": "Создайте бесплатную учетную запись, чтобы присоединиться",
+    "login_to_join": "Войдите, чтобы присоединиться",
+    "validation": {
+      "unable_to_create_profile": "Невозможно создать профиль",
+      "user_cannot_be_created": "Пользователь не может быть создан"
+    },
+    "fields": {
+      "email": "Ваш адрес электронной почты",
+      "full_name": "Полное имя",
+      "password": "Ваш пароль",
+      "confirm_password": "Подтвердите пароль",
+      "password_helper_message": "Пароль должен быть более 6 символов",
+      "create_account": "Зарегистрироваться"
+    },
+    "create_account": "Зарегистрироваться"
   },
   "welcome_modal": {
     "we_at": "Мы в",
