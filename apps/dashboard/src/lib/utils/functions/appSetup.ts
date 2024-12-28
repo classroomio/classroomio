@@ -76,7 +76,10 @@ export async function getProfile({
   }
 
   // Skip refetching profile, if already in store
-  if (profileStore.id) return;
+  if (profileStore.id) {
+    handleLocaleChange(profileStore.locale);
+    return;
+  }
 
   // Check if user has profile
   let {
@@ -124,7 +127,7 @@ export async function getProfile({
       setAnalyticsUser();
 
       // Fetch language
-      handleLocaleChange(profileStore.locale);
+      handleLocaleChange(newProfileData[0].locale);
 
       if (isOrgSite) {
         const { data, error } = await supabase
@@ -179,8 +182,7 @@ export async function getProfile({
     // Set user in sentry
     setAnalyticsUser();
 
-    // Fetch language
-    handleLocaleChange(profileStore.locale);
+    handleLocaleChange(profileData.locale);
 
     const orgRes = await getOrganizations(profileData.id, isOrgSite, orgSiteName);
 

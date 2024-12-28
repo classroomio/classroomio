@@ -1,11 +1,11 @@
-import { get } from 'svelte/store';
-import type { PostgrestError } from '@supabase/supabase-js';
 import { goto } from '$app/navigation';
-import { supabase } from '$lib/utils/functions/supabase';
-import { orgs, currentOrg, orgAudience, orgTeam } from '$lib/utils/store/org';
 import { ROLE, ROLE_LABEL } from '$lib/utils/constants/roles';
-import type { CurrentOrg, OrgTeamMember } from '$lib/utils/types/org';
+import { supabase } from '$lib/utils/functions/supabase';
+import { currentOrg, orgAudience, orgs, orgTeam } from '$lib/utils/store/org';
 import type { OrganizationPlan } from '$lib/utils/types';
+import type { CurrentOrg, OrgTeamMember } from '$lib/utils/types/org';
+import type { PostgrestError } from '@supabase/supabase-js';
+import { get } from 'svelte/store';
 
 export async function getOrgTeam(orgId: string) {
   const { data, error } = await supabase
@@ -163,8 +163,6 @@ export async function getOrgAudience(orgId: string) {
     )
     .eq('groupmember.group.organization_id', orgId)
     .eq('groupmember.role_id', ROLE.STUDENT);
-
-  console.log('data', data);
 
   const audience = (data || []).map((profile) => ({
     id: profile.id,
