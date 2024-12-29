@@ -1,5 +1,6 @@
 <script>
   import { page as pageStore } from '$app/stores';
+  import Avatar from '$lib/components/Avatar/index.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg, orgAudience } from '$lib/utils/store/org';
   import {
@@ -40,9 +41,10 @@
     <svelte:fragment slot="cell" let:row let:cell>
       {#if cell.key === 'name'}
         <Link
-          class="text-black hover:text-black"
+          class="flex items-center gap-2 text-black hover:text-black"
           href={`${$pageStore.url.href}/${row.id}/${$currentOrg.id}`}
         >
+          <Avatar src={row.avatar_url} width="w-5" height="h-5" />
           {cell.value}
         </Link>
       {:else}

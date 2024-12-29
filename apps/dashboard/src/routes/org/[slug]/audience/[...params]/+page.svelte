@@ -148,8 +148,8 @@
             <div
               class={`mt-5 w-full rounded-md border border-gray-200 p-5 ${
                 course.lessons_count === course.lessons_completed
-                  ? 'border-green-200 bg-green-50 dark:bg-green-200'
-                  : 'border-yellow-200 bg-yellow-50 dark:bg-yellow-200'
+                  ? 'border-green-200 bg-green-50 dark:bg-green-100'
+                  : 'border-yellow-200 bg-yellow-50 dark:bg-yellow-100'
               }`}
               transition:fade={{ duration: 300 }}
             >

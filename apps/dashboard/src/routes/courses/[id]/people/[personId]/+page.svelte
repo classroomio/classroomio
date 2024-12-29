@@ -144,8 +144,8 @@
           <div
             class={`mt-5 flex items-center justify-between gap-4 rounded-md border p-5  ${
               exercise.isCompleted
-                ? 'border-green-200 bg-green-50 dark:bg-green-200'
-                : 'border-yellow-200 bg-yellow-50 dark:bg-yellow-200'
+                ? 'border-green-200 bg-green-50 dark:bg-green-100'
+                : 'border-yellow-200 bg-yellow-50 dark:bg-yellow-100'
             }`}
             transition:fade={{ duration: 300 }}
           >
