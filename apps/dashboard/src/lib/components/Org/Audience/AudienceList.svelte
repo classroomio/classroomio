@@ -1,16 +1,16 @@
 <script>
+  import { page as pageStore } from '$app/stores';
+  import { t } from '$lib/utils/functions/translations';
+  import { currentOrg, orgAudience } from '$lib/utils/store/org';
   import {
-    Link,
     DataTable,
+    DataTableSkeleton,
+    Link,
+    Pagination,
     Toolbar,
     ToolbarContent,
-    ToolbarSearch,
-    Pagination,
-    DataTableSkeleton
+    ToolbarSearch
   } from 'carbon-components-svelte';
-  import { page as pageStore } from '$app/stores';
-  import { currentOrg, orgAudience } from '$lib/utils/store/org';
-  import { t } from '$lib/utils/functions/translations';
 
   export let isLoading = false;
 
@@ -38,10 +38,16 @@
       {header.value}
     </svelte:fragment>
     <svelte:fragment slot="cell" let:row let:cell>
-      <Link
-        class="text-black hover:text-black"
-        href={`${$pageStore.url.href}/${row.id}/${$currentOrg.id}`}>{cell.value}</Link
-      >
+      {#if cell.key === 'name'}
+        <Link
+          class="text-black hover:text-black"
+          href={`${$pageStore.url.href}/${row.id}/${$currentOrg.id}`}
+        >
+          {cell.value}
+        </Link>
+      {:else}
+        {cell.value}
+      {/if}
     </svelte:fragment>
   </DataTable>
 {/if}

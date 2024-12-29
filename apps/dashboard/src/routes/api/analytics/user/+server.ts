@@ -1,124 +1,58 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// import { supabase } from '$lib/utils/functions/supabase';
 import { getServerSupabase } from '$lib/utils/functions/supabase.server';
 import { fetchCourses, fetchProfileCourseProgress } from '$lib/utils/services/courses';
+import {
+  UserAnalytics,
+  UserCourseAnalytics,
+  UserExerciseStatsQuery,
+  UserExercisesStats
+} from '$lib/utils/types/analytics';
 import { json } from '@sveltejs/kit';
 
 const supabase = getServerSupabase();
 
-// import { Redis } from '@upstash/redis';
-// import { Ratelimit } from '@upstash/ratelimit';
+const CACHE_DURATION = 60; // 1 minute
 
-// const redis = new Redis({
-//   url: import.meta.env.UPSTASH_REDIS_REST_URL,
-//   token: import.meta.env.UPSTASH_REDIS_REST_TOKEN,
-// });
-
-// const ratelimit = new Ratelimit({
-//   redis: redis,
-//   limiter: Ratelimit.slidingWindow(5, '10 s'),
-// });
-
-interface UserData {
-  id: string;
-  fullName: string;
-  avatarUrl: string;
-  email: string;
-  lastSeen: string | undefined;
-}
-
-interface CourseData {
-  title: string;
-  description: string;
-  bannerUrl: string;
-  progress: number; // 0-100
-}
-
-// interface LessonData {
-//   id: string;
-//   title: string;
-//   completed: boolean;
-//   exerciseNo: number;
-//   created_at: any;
-// }
-
-interface Metric {
-  lesson: {
-    total: number;
-    completed: number;
-  };
-  exercise: {
-    total: number;
-    completed: number;
-    averageGrade: number;
-  };
-  progressPercentage: number;
-}
-
-interface UserAnalytics {
-  user: UserData;
-  pendingCourses: CourseData[];
-  completedCourses: CourseData[];
-  metrics: Metric;
-}
-
-interface UserCourseAnalytics {
-  user: UserData;
-  averageGrade: number;
-  userExercisesStats: UserExercisesStats[];
-  totalExercises: number;
-  completedExercises: number;
-  // pendingLessons: LessonData[];
-  // completedLessons: LessonData[];
-  progressPercentage: number;
-}
-
-interface UserExercisesStats {
-  id: string;
-  lessonId: string;
-  title: string;
-  status: string | undefined;
-  score: number;
-  totalPoints: number;
-  isCompleted: boolean;
-}
-
-interface UserExerciseStatsQuery {
-  lesson: {
-    title: string;
-    exercise: {
-      id: string;
-      title: string;
-      lesson_id: string;
-      created_at: string;
-      question: { points: number }[];
-      submission: {
-        groupmember: { id: string; profile_id: string };
-        total: number;
-        id: string;
-        status_id: string;
-      }[];
-    }[];
-  }[];
-}
-
-export async function POST({ request }: { request: Request }) {
-  // const ip = getClientAddress();
-  // const { success } = await ratelimit.limit(ip);
-
-  // if (!success) {
-  //   return json({ error: 'Too many requests' }, { status: 429 });
-  // }
-
+export async function POST({ setHeaders, request }) {
   const { userId, courseId, orgId } = await request.json();
+
+  const accessToken = request.headers.get('Authorization');
+
+  if (!userId || !accessToken) {
+    return json({ success: false, message: 'Request is missing required fields' }, { status: 400 });
+  }
+
+  let user;
+  try {
+    const { data } = await supabase.auth.getUser(accessToken);
+    user = data.user;
+  } catch (error) {
+    console.error(error);
+  }
+
+  if (!user) {
+    return json({ success: false, message: 'Unauthenticated user' }, { status: 401 });
+  }
+
+  setHeaders({
+    'cache-control': `max-age=${CACHE_DURATION}`,
+    'content-type': 'application/json'
+  });
 
   if (courseId) {
     const userCourseAnalytics = await getStudentAnalyticsData(userId, courseId);
     return json(userCourseAnalytics);
-  } else if (orgId) {
+  }
+
+  if (orgId) {
     const userAnalytics = await getAudienceData(userId, orgId);
     return json(userAnalytics);
   }
+
+  return json({ error: 'Invalid request' }, { status: 400 });
+}
+
+function sumArrObject<T>(arr: T[], key: keyof T) {
+  return arr.reduce((sum, item) => sum + (item[key] as number), 0);
 }
 
 async function getAudienceData(userId: string, orgId: string): Promise<UserAnalytics> {
@@ -130,17 +64,17 @@ async function getAudienceData(userId: string, orgId: string): Promise<UserAnaly
       avatarUrl: 'https://example.com/avatar.png',
       lastSeen: new Date().toISOString()
     },
-    pendingCourses: [],
-    completedCourses: [],
-    metrics: {
-      lesson: { total: 0, completed: 0 },
-      exercise: { total: 0, completed: 0, averageGrade: 0 },
-      progressPercentage: 0
-    }
+    courses: [],
+    overallCourseProgress: 0,
+    overallAverageGrade: 0
   };
 
-  // STEP 1: fetch user details
-  const userResult = await supabase.from('profile').select('*').eq('id', userId).single();
+  const userResult = await supabase
+    .from('profile')
+    .select('fullname, email, avatar_url')
+    .eq('id', userId)
+    .single();
+
   if (userResult.error) throw new Error('Failed to fetch user profile');
 
   const lastLoginResult = await supabase
@@ -151,62 +85,52 @@ async function getAudienceData(userId: string, orgId: string): Promise<UserAnaly
   if (lastLoginResult.error)
     throw new Error('Failed to fetch last login' + lastLoginResult.error.message);
 
-  const lastSeen = lastLoginResult.data?.[0]?.last_login_at;
-
-  audienceAnalytics.user.id = userResult.data.id;
   audienceAnalytics.user.fullName = userResult.data.fullname;
   audienceAnalytics.user.email = userResult.data.email;
   audienceAnalytics.user.avatarUrl = userResult.data.avatar_url || '';
-  audienceAnalytics.user.lastSeen = lastSeen;
+  audienceAnalytics.user.lastSeen = lastLoginResult.data?.[0]?.last_login_at;
 
-  // STEP 2: fetch all courses for the user
-  const coursesResult = await fetchCourses(userId, orgId);
-  const allCourses = coursesResult?.allCourses || [];
+  const { allCourses = [] } = (await fetchCourses(userId, orgId)) || {};
 
-  // add individual course percentage to each course object
-  const updatedCourses = addCourseProgress(allCourses);
-
-  // STEP 3: fetch completed courses and exercises for each of the user's courses
-  const fetchCourseDataForAllCourses = updatedCourses.map(async (course) => {
-    const { id: courseId } = course;
-
-    const [exerciseResponse, userExercisesStats] = await Promise.all([
-      fetchProfileCourseProgress(courseId, userId),
-      fetchUserExercisesStats(courseId, userId)
+  for (const course of allCourses) {
+    const [userExercisesStats, userCourseProgress] = await Promise.all([
+      fetchUserExercisesStats(course.id, userId),
+      fetchProfileCourseProgress(course.id, userId)
     ]);
 
-    return {
-      course,
-      exerciseResponse,
-      userExercisesStats
-    };
-  });
+    const courseProgress = userCourseProgress?.data?.[0];
 
-  const courseDataResults = await Promise.all(fetchCourseDataForAllCourses);
+    const exercisesStats = userExercisesStats || [];
+    const totalEarnedPoints = sumArrObject(exercisesStats, 'score');
+    const totalPoints = sumArrObject(exercisesStats, 'totalPoints');
 
-  // user's pending and completed courses
-  audienceAnalytics.pendingCourses = updatedCourses.filter((course) => course.progress_rate < 5);
-  audienceAnalytics.completedCourses = updatedCourses.filter((course) => course.progress_rate >= 5);
+    const averageGrade = Math.round((totalEarnedPoints / totalPoints) * 100);
+    const lessonsCompleted = courseProgress?.lessons_completed || 0;
+    const lessonsCount = courseProgress?.lessons_count || 0;
 
-  // total completed lessons and exercises
-  let totalExercises = 0;
-  let totalPoints = 0;
-  let totalMarksCount = 0;
+    audienceAnalytics.courses.push({
+      ...course,
+      ...courseProgress,
+      progress_percentage: Math.round((lessonsCompleted / lessonsCount) * 100),
+      average_grade: averageGrade
+    });
+  }
 
-  courseDataResults.forEach(({ exerciseResponse, userExercisesStats }) => {
-    if (exerciseResponse.data && userExercisesStats) {
-      // total exercises on all the user's course(s)
-      totalExercises += exerciseResponse.data[0].exercises_count;
+  const totalLessons = audienceAnalytics.courses.reduce(
+    (acc, course) => acc + course.lessons_count,
+    0
+  );
+  const completedLessons = audienceAnalytics.courses.reduce(
+    (acc, course) => acc + course.lessons_completed,
+    0
+  );
+  const overallCourseProgress = Math.round((completedLessons / totalLessons) * 100);
 
-      totalPoints += userExercisesStats.reduce((sum, exercise) => sum + exercise.grade, 0);
+  const allGrades = sumArrObject(audienceAnalytics.courses, 'average_grade');
+  const overallAverageGrade = Math.round(allGrades / audienceAnalytics.courses.length);
 
-      totalMarksCount += userExercisesStats.length;
-    }
-  });
-
-  audienceAnalytics.metrics.exercise.total = totalExercises;
-  audienceAnalytics.metrics.exercise.completed = totalMarksCount || 0;
-  audienceAnalytics.metrics.exercise.averageGrade = totalPoints / totalMarksCount || 0;
+  audienceAnalytics.overallCourseProgress = overallCourseProgress;
+  audienceAnalytics.overallAverageGrade = overallAverageGrade;
 
   return audienceAnalytics;
 }
@@ -227,78 +151,57 @@ async function getStudentAnalyticsData(
     userExercisesStats: [],
     totalExercises: 0,
     completedExercises: 0,
-    // pendingLessons: [],
-    // completedLessons: [],
     progressPercentage: 0
   };
 
   // fetch user details
-  const userResult = await supabase
+  const { data: userResult, error: userError } = await supabase
     .from('profile')
     .select('fullname, email, avatar_url')
     .eq('id', userId)
     .single();
-  if (userResult.error) throw new Error('Failed to fetch user profile');
 
-  const lastLoginResult = await supabase
+  if (userError) throw new Error('Failed to fetch user profile' + userError.message);
+
+  const { data: lastLoginResult, error: lastLoginError } = await supabase
     .from('user_last_login')
     .select('last_login_at')
     .eq('user_id', userId);
-  if (lastLoginResult.error)
-    throw new Error('Failed to fetch last login' + lastLoginResult.error.message);
 
-  const lastSeen = lastLoginResult.data?.[0]?.last_login_at;
+  if (lastLoginError) throw new Error('Failed to fetch last login' + lastLoginError.message);
 
-  userCourseAnalytics.user.fullName = userResult.data.fullname;
-  userCourseAnalytics.user.email = userResult.data.email;
-  userCourseAnalytics.user.avatarUrl = userResult.data.avatar_url || '';
-  userCourseAnalytics.user.lastSeen = lastSeen;
+  userCourseAnalytics.user.fullName = userResult.fullname;
+  userCourseAnalytics.user.email = userResult.email;
+  userCourseAnalytics.user.avatarUrl = userResult.avatar_url || '';
+  userCourseAnalytics.user.lastSeen = lastLoginResult?.[0]?.last_login_at;
 
   // fetch marks, lessons, and exercise progress
-  const [userExercisesStats, lessonResponse, exerciseResponse] = await Promise.all([
+  const [userExercisesStats, lessonCompletions, exerciseResponse] = await Promise.all([
     fetchUserExercisesStats(courseId, userId),
     fetchLessonCompletion(courseId, userId),
     fetchProfileCourseProgress(courseId, userId)
   ]);
 
-  if (!userExercisesStats || !lessonResponse || !exerciseResponse.data) {
+  if (!userExercisesStats || !lessonCompletions || !exerciseResponse.data) {
     throw new Error('Failed to fetch course analytics data');
   }
 
-  // Calculate averages, lessons, and exercises
-  const totalEarnedPoints = userExercisesStats.reduce((sum, exercise) => sum + exercise.score, 0);
-  const totalPoints = userExercisesStats.reduce((sum, exercise) => sum + exercise.totalPoints, 0);
-  userCourseAnalytics.averageGrade = Math.round((totalEarnedPoints / totalPoints) * 100);
+  const totalEarnedPoints = sumArrObject(userExercisesStats, 'score');
+  const totalPoints = sumArrObject(userExercisesStats, 'totalPoints');
 
+  userCourseAnalytics.averageGrade = Math.round((totalEarnedPoints / totalPoints) * 100);
   userCourseAnalytics.userExercisesStats = userExercisesStats;
 
-  const completedLessons = lessonResponse.filter((lesson) => lesson.completed);
-  // userCourseAnalytics.completedLessons = lessonResponse.filter((lesson) => lesson.completed);
-  // userCourseAnalytics.pendingLessons = lessonResponse.filter((lesson) => !lesson.completed);
+  const completedLessons = lessonCompletions.filter((lesson) => lesson.completed);
 
   userCourseAnalytics.totalExercises = exerciseResponse.data[0].exercises_count;
   userCourseAnalytics.completedExercises = exerciseResponse.data[0].exercises_completed;
 
-  // Calculate total progress percentage
-  const totalLessons = lessonResponse.length;
-
   userCourseAnalytics.progressPercentage = Math.round(
-    (completedLessons.length / totalLessons) * 100
+    (completedLessons.length / lessonCompletions.length) * 100
   );
 
   return userCourseAnalytics;
-}
-
-function addCourseProgress(courses) {
-  return courses.map((course) => {
-    const { progress_rate, total_lessons } = course;
-
-    // calculate the completion percentage
-    const courseProgress = ((progress_rate / total_lessons) * 100).toFixed(2);
-
-    // add percentage to each course object
-    return { ...course, courseProgress: `${courseProgress}` };
-  });
 }
 
 async function fetchUserExercisesStats(
@@ -360,13 +263,9 @@ async function fetchLessonCompletion(courseId, userId) {
       .from('lesson')
       .select(
         `
-        id, 
-        title,
-        created_at,
+        id,title,created_at,
         exercise:exercise(id),
-        lesson_completion!left (
-          lesson_id
-        )
+        lesson_completion!left (lesson_id)
       `
       )
       .eq('course_id', courseId)

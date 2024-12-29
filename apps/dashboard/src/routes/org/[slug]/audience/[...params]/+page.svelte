@@ -1,296 +1,195 @@
 <script lang="ts">
-  // @ts-nocheck
-
-  import { onMount } from 'svelte';
-  import '@carbon/charts-svelte/styles.css';
-  import { BarChartSimple } from '@carbon/charts-svelte';
-  import Report from 'carbon-icons-svelte/lib/Report.svelte';
-  import Calendar from 'carbon-icons-svelte/lib/Calendar.svelte';
+  import { ActivityCard, HeroProfileCard, LoadingPage } from '$lib/components/Analytics';
+  import Progress from '$lib/components/Progress/index.svelte';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import { getAccessToken } from '$lib/utils/functions/supabase';
+  import { t } from '$lib/utils/functions/translations';
+  import { currentOrgPath } from '$lib/utils/store/org';
+  import type { UserAnalytics } from '$lib/utils/types/analytics';
+  import { Grid, Tag } from 'carbon-components-svelte';
+  import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
   import Notebook from 'carbon-icons-svelte/lib/Notebook.svelte';
+  import Report from 'carbon-icons-svelte/lib/Report.svelte';
   import RowExpand from 'carbon-icons-svelte/lib/RowExpand.svelte';
-  import CheckmarkFilled from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
-  import PresentationFile from 'carbon-icons-svelte/lib/PresentationFile.svelte';
-
-  import { fetchCourse, fetchCourses, getMarks } from '$lib/utils/services/courses/index.js';
-  import { currentOrg } from '$lib/utils/store/org.js';
-  import { course } from '$lib/components/Course/store.js';
-  import { supabase } from '$lib/utils/functions/supabase.js';
-  import formatDate from '$lib/utils/functions/formatDate.js';
-  import type { StudentStat } from '$lib/utils/types/index.js';
-  import { courseMetaDeta, courses } from '$lib/components/Courses/store';
-
-  import Tabs from '$lib/components/Tabs/index.svelte';
-  import TabContent from '$lib/components/TabContent/index.svelte';
-  import ActivateSectionsModal from '$lib/components/Course/components/Lesson/ActivateSectionsModal.svelte';
-  import { Dropdown } from 'carbon-components-svelte';
+  import { onMount } from 'svelte';
+  import { fade } from 'svelte/transition';
 
   export let data;
 
-  const { user, completedCourses, pendingCourses, metrics } = data?.data;
+  let userAnalytics: UserAnalytics;
 
-  $: console.log('request data', data);
-
-  let tabs = [
-    {
-      label: 'PENDING',
-      value: 'PENDING'
-    },
-    {
-      label: 'COMPLETED',
-      value: 'COMPLETED'
-    }
-  ];
-
-  let currentTab = tabs[0].value;
-  let hasFetched = false;
-  let userMetrics = [];
-  let allCourses: any[] = [];
-  let courseProgressRange = 0;
-
-  const getValue = (label: string) => {
-    const tabValue = tabs.find((tab) => tab.label === label)?.value;
-    return tabValue;
-  };
-
-  const onChange = (tab) => {
-    return () => {
-      currentTab = tab;
-    };
-  };
-
-  function timeAgo(timestamp: string) {
-    const now = new Date();
-    const time = new Date(timestamp);
-
-    const diffInMs = now.getTime() - time.getTime();
-    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60)); // Convert milliseconds to hours
-
-    if (diffInHours < 1) {
-      const diffInMinutes = Math.floor(diffInMs / (1000 * 60)); // Convert milliseconds to minutes
-      return new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(
-        -diffInMinutes,
-        'minute'
-      );
-    } else if (diffInHours < 24) {
-      return new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(-diffInHours, 'hour');
+  let courseFilter = 'all';
+  function toggleCourseFilter(filter: 'completed' | 'incomplete') {
+    if (courseFilter === filter) {
+      courseFilter = 'all';
     } else {
-      const diffInDays = Math.floor(diffInHours / 24);
-      return new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(-diffInDays, 'day');
+      courseFilter = filter;
     }
   }
 
-  function getPercentage(a, b) {
-    if (b === 0) {
-      return 0;
+  async function fetchUserAnalytics() {
+    const accessToken = await getAccessToken();
+    const response = await fetch('/api/analytics/user', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: accessToken
+      },
+      body: JSON.stringify(data)
+    });
+
+    if (!response.ok) {
+      console.error(response);
+      snackbar.error('Failed to fetch analytics data');
     }
-    return Math.round((a / b) * 100);
+
+    userAnalytics = (await response.json()) as UserAnalytics;
   }
 
-  $: courseProgressRange = Math.round(
-    (completedCourses?.length / (completedCourses?.length + pendingCourses?.length)) * 100
-  );
+  onMount(() => {
+    fetchUserAnalytics();
+  });
 
   $: userMetrics = [
     {
       icon: Notebook,
-      total: pendingCourses?.length + completedCourses?.length,
-      completed: completedCourses?.length,
-      title: 'Total Course Completed'
+      title: 'Enrolled Courses',
+      description: 'All enrolled courses',
+      percentage: userAnalytics?.courses?.length,
+      hidePercentage: true
     },
     {
       icon: Report,
-      total: metrics.exercise.total,
-      completed: metrics.exercise.completed,
-      title: 'Total Pending Exercises'
+      title: 'Overral Course Progress',
+      description: 'Percentage of completed lessons',
+      percentage: userAnalytics?.overallCourseProgress
     },
     {
       icon: RowExpand,
-      total: `${Math.round(metrics.exercise.averageGrade)}%`,
-      title: 'Total Average Grade'
+      title: 'Total Average Grade',
+      description: 'Based on exercise grades across all course',
+      percentage: userAnalytics?.overallAverageGrade
     }
   ];
+
+  $: completedCourses = userAnalytics?.courses?.filter(
+    (course) => course.lessons_count === course.lessons_completed
+  )?.length;
+  $: incompleteCourses = userAnalytics?.courses?.filter(
+    (course) => course.lessons_count !== course.lessons_completed
+  )?.length;
+
+  $: filteredCourses = userAnalytics?.courses?.filter((course) => {
+    if (courseFilter === 'all') {
+      return true;
+    }
+    return (course.lessons_count === course.lessons_completed) === (courseFilter === 'completed');
+  });
 </script>
 
-<div class="max-w-[90%] mx-auto mt-5 h-[90vh] overflow-y-auto">
-  <!-- first section -->
-  <div class="flex items-start md:items-center flex-col md:flex-row gap-5 mt-5">
-    <!-- user details -->
-    <div
-      class="flex flex-col gap-3 items-start md:items-center border border-[#DEDEDE] rounded-md py-4 px-5 w-full md:w-[35%]"
-    >
-      <div class="w-full px-3 flex justify-center gap-4 items-center">
-        <img src="/images/user-placeholder.svg" alt="" class="rounded-full w-[20%] md:w-[30%]" />
-
-        <div>
-          <h1 class="m-0 text-lg leading-4">{user?.fullName}</h1>
-          <span class="text-xs m-0">Student</span>
-        </div>
-      </div>
-
-      <p
-        class="text-xs uppercase font-medium mt-1 py-1.5 text-center w-full bg-primary-600 text-white rounded-sm"
+{#if userAnalytics}
+  <section class="w-full md:mx-auto md:max-w-5xl">
+    <div class="p-5">
+      <a
+        class="text-md flex items-center text-gray-500 dark:text-white"
+        href={`${$currentOrgPath}/audience`}
       >
-        Last seen: {user?.lastSeen && timeAgo(user?.lastSeen)} ago
-      </p>
+        <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" />
+        {$t('community.ask.go_back')}
+      </a>
     </div>
 
-    <!-- course progress -->
-    <div class="w-[65%]">
-      <h3 class="text-sm font-semibold m-0">Course Progress</h3>
+    <div class="px-5 py-1">
+      <HeroProfileCard user={userAnalytics.user} />
 
-      <div
-        class="flex justify-between items-center border border-[#DEDEDE] rounded-md mt-2 py-2 px-3"
-      >
-        <img src="/images/target.svg" alt="" class="rounded-full w-[13%]" />
-
-        <div class="leading-5">
-          <p class="text-sm font-semibold">
-            {completedCourses?.length}/{pendingCourses?.length + completedCourses?.length} courses completed
-          </p>
-
-          <input
-            disabled
-            type="range"
-            min="0"
-            max="100"
-            bind:value={courseProgressRange}
-            class="range-input"
-            style="background: linear-gradient(to right, #0233BD {courseProgressRange}%, #ccc {courseProgressRange}%);"
-          />
+      <Grid class="mt-5 px-0" fullWidth>
+        <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {#each userMetrics as activity}
+            <ActivityCard {activity} />
+          {/each}
         </div>
+      </Grid>
 
-        <h1 class="text-4xl font-bold">{courseProgressRange}%</h1>
-      </div>
-    </div>
-  </div>
+      <div class="mt-5 rounded-md border p-3 dark:border-neutral-600 md:p-5">
+        <h3 class="text-2xl font-bold">Courses</h3>
 
-  <!-- lessons and activities (third section) -->
-  <div class="flex justify-between my-10">
-    <!-- lessons -->
-    <div class="w-full">
-      <h3 class="m-0">Courses</h3>
-
-      <Tabs {tabs} bind:currentTab {onChange}>
-        <slot:fragment slot="content">
-          <TabContent value={getValue('PENDING')} index={currentTab}>
-            <div class="flex flex-wrap justify-between -mt-5 max-h-[45vh] overflow-y-scroll">
-              {#if pendingCourses?.length > 0}
-                {#each pendingCourses as pending}
-                  <div class="border border-[#DEDEDE] rounded-sm p-4 flex flex-col gap-4 w-[49%]">
-                    <div class="flex items-center gap-2 overflow-hidden">
-                      <img
-                        src={pending.logo !== ''
-                          ? pending.logo
-                          : '/images/classroomio-course-img-template.jpg'}
-                        alt=""
-                        class="w-14"
-                      />
-                      <div>
-                        <h3 class="m-0 font-semibold">{pending.title}</h3>
-                        <p class="m-0 text-xs truncate w-[60%]">{pending.description}</p>
-                      </div>
-                    </div>
-
-                    <div class="flex justify-between items-center">
-                      <input
-                        disabled
-                        type="range"
-                        min="0"
-                        max="100"
-                        bind:value={pending.courseProgress}
-                        class="range-input"
-                        style="background: linear-gradient(to right, #0233BD {pending.courseProgress}%, #ccc {pending.courseProgress}%);"
-                      />
-                    </div>
-                  </div>
-                {/each}
-              {:else}
-                <p class="text-sm text-center">No Pending Course Found</p>
-              {/if}
-            </div>
-          </TabContent>
-
-          <TabContent value={getValue('COMPLETED')} index={currentTab}>
-            <div class="flex flex-wrap justify-between -mt-5 max-h-[45vh] overflow-y-scroll">
-              {#if completedCourses?.length > 0}
-                {#each completedCourses as completed}
-                  <div class="border border-[#DEDEDE] rounded-sm p-4 flex flex-col gap-4 w-[49%]">
-                    <div class="flex items-center gap-2 overflow-hidden">
-                      <img
-                        src={completed.logo !== ''
-                          ? completed.logo
-                          : '/images/classroomio-course-img-template.jpg'}
-                        alt=""
-                        class="w-10"
-                      />
-                      <div>
-                        <h3 class="m-0 font-semibold">{completed.title}</h3>
-                        <p class="m-0 text-xs truncate">{completed.description}</p>
-                      </div>
-                    </div>
-
-                    <div class="flex justify-between items-center">
-                      <input
-                        disabled
-                        type="range"
-                        min="0"
-                        max="100"
-                        bind:value={completed.courseProgress}
-                        class="range-input"
-                        style="background: linear-gradient(to right, #0233BD {completed.courseProgress}%, #ccc {completed.courseProgress}%);"
-                      />
-                    </div>
-                  </div>
-                {/each}
-              {:else}
-                <p class="text-sm text-center">No Completed Course</p>
-              {/if}
-            </div>
-          </TabContent>
-        </slot:fragment>
-      </Tabs>
-    </div>
-  </div>
-
-  <!-- Metrics (third section) -->
-  <div class="mt-10">
-    <h3>Metrics</h3>
-
-    <div class="w-full flex items-center justify-between">
-      {#each userMetrics as metric}
-        <div
-          class="bg-[#F7F7F7] p-5 border-b-2 rounded-b-sm border-[#0233BD] flex gap-5 justify-center items-center w-[30%]"
-        >
-          <div class="w-fit p-4 rounded-full bg-blue-500/25">
-            <svelte:component this={metric.icon} size={24} color="blue" />
+        <div class="flex flex-col gap-2">
+          <div class="flex items-center justify-between">
+            <p class="text-sm font-medium text-gray-600 dark:text-gray-200">Progress</p>
+            <p class="text-sm font-medium text-gray-600 dark:text-gray-200">
+              {completedCourses} of {userAnalytics.courses.length} complete
+            </p>
           </div>
-
-          <div>
-            {#if metric.completed !== undefined}
-              <h3 class="m-0 leading-7">{metric.completed}/{metric.total}</h3>
-            {:else}
-              <h3 class="m-0 leading-7">{metric.total}</h3>
-            {/if}
-            <p class="text-sm leading-3">{metric.title}</p>
+          <Progress value={userAnalytics.overallCourseProgress} />
+          <div class="flex items-center justify-between">
+            <Tag
+              interactive
+              filter={courseFilter === 'incomplete'}
+              type={courseFilter === 'incomplete' ? 'gray' : 'outline'}
+              class="text-yellow-700 dark:text-yellow-500"
+              on:click={() => toggleCourseFilter('incomplete')}
+            >
+              {incompleteCourses} incomplete
+            </Tag>
+            <Tag
+              interactive
+              filter={courseFilter === 'completed'}
+              type={courseFilter === 'completed' ? 'gray' : 'outline'}
+              class="text-green-700 dark:text-green-500"
+              on:click={() => toggleCourseFilter('completed')}
+            >
+              {completedCourses} complete
+            </Tag>
           </div>
         </div>
-      {/each}
+
+        {#each filteredCourses as course, index}
+          {#key index}
+            <div
+              class={`mt-5 w-full rounded-md border border-gray-200 p-5 ${
+                course.lessons_count === course.lessons_completed
+                  ? 'border-green-200 bg-green-50 dark:bg-green-200'
+                  : 'border-yellow-200 bg-yellow-50 dark:bg-yellow-200'
+              }`}
+              transition:fade={{ duration: 300 }}
+            >
+              <div class="flex items-center justify-between gap-4">
+                <div class="flex w-4/5 items-center gap-4">
+                  <img src={course.logo} alt={course.title} class="h-20 w-24 rounded-md" />
+                  <div class="mb-4 gap-4">
+                    <a href={`/courses/${course.id}`}>
+                      <p class="text-lg font-semibold text-gray-600">
+                        {course.title}
+                      </p>
+                    </a>
+
+                    <p class="line-clamp-2 text-sm text-gray-600">
+                      {course.description}
+                    </p>
+                  </div>
+                </div>
+
+                <Tag
+                  class={`${
+                    course.lessons_count === course.lessons_completed
+                      ? 'bg-green-200 text-green-700'
+                      : 'bg-yellow-200 text-yellow-700'
+                  }`}
+                >
+                  {course.lessons_count === course.lessons_completed ? 'Complete' : 'Incomplete'}
+                </Tag>
+              </div>
+
+              <div class="flex w-full items-center gap-1">
+                <Progress value={course.progress_percentage} />
+                <p>{course.progress_percentage}%</p>
+              </div>
+            </div>
+          {/key}
+        {/each}
+      </div>
     </div>
-  </div>
-</div>
-
-<style>
-  .range-input {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 100%;
-    outline: none;
-    border-radius: 15px;
-    height: 0.5rem;
-  }
-
-  .range-input::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-  }
-</style>
+  </section>
+{:else}
+  <LoadingPage />
+{/if}
