@@ -1,17 +1,10 @@
 import { LOCALE } from '$lib/utils/types';
+import i18n from '@sveltekit-i18n/base';
+import parser from '@sveltekit-i18n/parser-icu';
 import { writable } from 'svelte/store';
-import i18n, { type Config } from 'sveltekit-i18n';
 
-interface Params {
-  dateValue: number;
-  value: number;
-  download: number;
-  award: number;
-  val: Date;
-}
-
-export const config: Config<Partial<Params>> = {
-  // parser: parser(),
+export const config = {
+  parser: parser(),
   loaders: [
     {
       locale: 'en',

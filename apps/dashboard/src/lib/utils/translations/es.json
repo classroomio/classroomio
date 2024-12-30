@@ -480,7 +480,9 @@
           "invite_sent": "Invitar enviado",
           "you": "Tú",
           "remove": "Eliminar"
-        }
+        },
+        "view": "Vista",
+        "delete_profile": "Eliminar perfil"
       },
       "marks": {
         "title": "Marcas",
@@ -1478,5 +1480,29 @@
     "content": "¿Está seguro?",
     "no": "No",
     "yes": "Sí"
+  },
+  "analytics": {
+    "courses": "Cursos",
+    "progress": "Progreso",
+    "progress_description": "{valor, número} de {total, número} completo",
+    "incomplete": "Incompleto",
+    "completed": "Terminado",
+    "complete": "completo",
+    "last_seen": "visto por última vez",
+    "a_while_ago": "hace un tiempo",
+    "exercises": "Ceremonias",
+    "graded": "Calificado",
+    "not_graded": "No calificado",
+    "enrolled_courses": "Cursos inscritos",
+    "enrolled_courses_description": "Todos los cursos inscritos",
+    "overall_course_progress": "Progreso general del curso",
+    "overall_course_progress_description": "Porcentaje de lecciones completadas",
+    "total_average_grade": "Calificación promedio total",
+    "total_average_grade_description": "Basado en calificaciones de ejercicios en todo el curso.",
+    "overall_course_progress_user_description": "Basado en la finalización de la lección",
+    "assignment_completion": "Finalización de la tarea",
+    "assignment_completion_description": "Porcentaje de tareas completadas",
+    "average_grade": "Calificación promedio",
+    "average_grade_description": "Calificación promedio de todas las tareas completadas"
   }
 }

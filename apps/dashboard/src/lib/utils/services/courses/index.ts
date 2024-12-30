@@ -253,6 +253,17 @@ export function deleteGroupMember(groupMemberId: Groupmember['id']) {
   return supabase.from('groupmember').delete().match({ id: groupMemberId });
 }
 
+export async function getMarks(courseId) {
+  if (!courseId) return;
+
+  // Gets courses for a particular organisation where the current logged in user is a groupmember
+  const { data: marks } = await supabase
+    .rpc('get_marks')
+    .eq('course_id', courseId);
+
+  return { marks };
+}
+
 export function fetchLesson(lessonId: Lesson['id']) {
   return supabase
     .from('lesson')

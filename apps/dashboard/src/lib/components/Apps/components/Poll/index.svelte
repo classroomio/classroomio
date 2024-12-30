@@ -1,26 +1,26 @@
 <script lang="ts">
-  import PageNav from '$lib/components/PageNav/index.svelte';
   import CloseButton from '$lib/components/Buttons/Close/index.svelte';
+  import { course, group } from '$lib/components/Course/store';
+  import PageNav from '$lib/components/PageNav/index.svelte';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import { getSupabase } from '$lib/utils/functions/supabase';
+  import { t } from '$lib/utils/functions/translations';
+  import { globalStore } from '$lib/utils/store/app';
+  import { profile } from '$lib/utils/store/user';
+  import type { Groupmember } from '$lib/utils/types';
+  import type {
+    PostgrestSingleResponse,
+    RealtimeChannel,
+    RealtimePostgresChangesPayload
+  } from '@supabase/supabase-js';
+  import { onDestroy, onMount } from 'svelte';
   import CreatePollForm from './components/CreatePollForm.svelte';
   import Poll from './components/Poll.svelte';
   import Tabs from './components/Tabs.svelte';
-  import { polls } from './store';
-  import type { PollType, TabsType, PollOptionsSubmissionType } from './types';
-  import { globalStore } from '$lib/utils/store/app';
-  import { getSupabase } from '$lib/utils/functions/supabase';
-  import { profile } from '$lib/utils/store/user';
-  import { group, course } from '$lib/components/Course/store';
-  import type { Groupmember } from '$lib/utils/types';
   import { fetchPolls, handleVote } from './service';
+  import { polls } from './store';
+  import type { PollOptionsSubmissionType, PollType, TabsType } from './types';
   import { getPollsData } from './utils';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import { onMount, onDestroy } from 'svelte';
-  import type {
-    RealtimeChannel,
-    RealtimePostgresChangesPayload,
-    PostgrestSingleResponse
-  } from '@supabase/supabase-js';
-  import { t } from '$lib/utils/functions/translations';
 
   export let handleClose = () => {};
 
@@ -213,7 +213,10 @@
     supabase.removeChannel(pollSubmissionsChannel);
   });
 
-  $: currentGroupMember = $group.people.find((person) => person.profile_id === $profile.id);
+  $: currentGroupMember = $group.people.find(
+    (person) => person.profile_id === $profile.id
+  ) as Groupmember;
+
   $: author = {
     id: currentGroupMember?.id || '',
     username: $profile.username || '',
@@ -253,7 +256,7 @@
   </div>
 </PageNav>
 
-<div class="p-2 overlow-y-auto md:max-w-[350px] md:min-w-[340px] w-full">
+<div class="overlow-y-auto w-full p-2 md:min-w-[340px] md:max-w-[350px]">
   {#if openCreatePollForm}
     <CreatePollForm
       onSubmit={handlePollCreate}

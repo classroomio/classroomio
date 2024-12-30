@@ -889,6 +889,8 @@
         "role": "Role",
         "action": "Action",
         "feedback": "Copied Email to clipboard",
+        "view": "View",
+        "delete_profile": "Delete profile",
         "invite_modal": {
           "title": "Invite people",
           "invite": "Invite Tutors",
@@ -1183,6 +1185,31 @@
     "email": "Email",
     "date_joined": "Date Joined",
     "upgrade": "Upgrade your plan to invite more students"
+  },
+
+  "analytics": {
+    "courses": "Courses",
+    "progress": "Progress",
+    "progress_description": "{value, number} of {total, number} complete",
+    "incomplete": "Incomplete",
+    "completed": "Completed",
+    "complete": "complete",
+    "last_seen": "Last seen",
+    "a_while_ago": "a while ago",
+    "exercises": "Exercises",
+    "graded": "Graded",
+    "not_graded": "Not Graded",
+    "enrolled_courses": "Enrolled Courses",
+    "enrolled_courses_description": "All enrolled courses",
+    "overall_course_progress": "Overall Course Progress",
+    "overall_course_progress_description": "Percentage of completed lessons",
+    "total_average_grade": "Total Average Grade",
+    "total_average_grade_description": "Based on exercise grades across all course",
+    "overall_course_progress_user_description": "Based on lesson completion",
+    "assignment_completion": "Assignment Completion",
+    "assignment_completion_description": "Percentage of completed assignments",
+    "average_grade": "Average Grade",
+    "average_grade_description": "Average grade of all completed assignments"
   },
 
   "upgrade": {

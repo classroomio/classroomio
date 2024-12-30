@@ -421,3 +421,15 @@ interface Tabs {
   id: number;
   name: string;
 }
+
+export interface StudentStat {
+  username: string;
+  progressPercentage: number;
+  pendingCourses: Course[];
+  completedCourses: Course[];
+  totalLessons: number;
+  totalLessonsCompleted: number;
+  totalExercise: number;
+  totalExercisesCompleted: number;
+  totalLmsEntry: number;
+}

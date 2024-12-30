@@ -9,7 +9,7 @@
   export let contained = false;
   export let value = '';
   export let type: 'button' | 'submit' | 'reset' | null | undefined = 'button';
-  export let size = 'large';
+  export let size: 'small' | 'large' = 'large';
   export let color = '';
   export let toolTipProps: {
     title: string;
