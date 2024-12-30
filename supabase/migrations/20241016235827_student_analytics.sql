@@ -4,7 +4,6 @@ create table "public"."analytics_login_events" (
     "logged_in_at" timestamp with time zone default now()
 );
 
-
 alter table "public"."analytics_login_events" enable row level security;
 
 CREATE UNIQUE INDEX analytics_login_events_pkey ON public.analytics_login_events USING btree (id);
@@ -13,14 +12,17 @@ CREATE INDEX idx_analytics_login_events_logged_in_at ON public.analytics_login_e
 
 CREATE INDEX idx_analytics_login_events_user_id ON public.analytics_login_events USING btree (user_id);
 
+CREATE UNIQUE INDEX analytics_login_events_user_id_unique ON public.analytics_login_events USING btree (user_id);
+
 alter table "public"."analytics_login_events" add constraint "analytics_login_events_pkey" PRIMARY KEY using index "analytics_login_events_pkey";
 
 alter table "public"."analytics_login_events" add constraint "analytics_login_events_user_id_fkey" FOREIGN KEY (user_id) REFERENCES auth.users(id) not valid;
 
 alter table "public"."analytics_login_events" validate constraint "analytics_login_events_user_id_fkey";
 
-set check_function_bodies = off;
+alter table "public"."analytics_login_events" add constraint "analytics_login_events_user_id_unique" UNIQUE using index "analytics_login_events_user_id_unique";
 
+set check_function_bodies = off;
 
 CREATE OR REPLACE FUNCTION public.insert_login_event_on_user_login()
  RETURNS trigger
@@ -30,7 +32,9 @@ AS $function$
 BEGIN
   IF (NEW.last_sign_in_at IS NOT NULL) THEN
     INSERT INTO public.analytics_login_events (logged_in_at, user_id)
-    VALUES (NEW.last_sign_in_at, NEW.id);
+    VALUES (NEW.last_sign_in_at, NEW.id)
+    ON CONFLICT (user_id) DO UPDATE
+    SET logged_in_at = NEW.last_sign_in_at;
   END IF;
   RETURN NEW;
 END;
@@ -116,22 +120,3 @@ ON "public"."analytics_login_events"
 AS PERMISSIVE FOR DELETE
 TO public
 USING (auth.uid() = user_id);
-
-CREATE OR REPLACE VIEW public.login_stats AS
-SELECT
-  user_id,
-  DATE_TRUNC('day', logged_in_at) AS login_date,
-  COUNT(*) AS login_count
-FROM
-  public.analytics_login_events
-GROUP BY
-  user_id, DATE_TRUNC('day', logged_in_at);
-
-CREATE VIEW public.user_last_login AS
-SELECT
-  user_id,
-  MAX(logged_in_at) AS last_login_at
-FROM
-  public.analytics_login_events
-GROUP BY
-  user_id;

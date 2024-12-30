@@ -78,9 +78,10 @@ async function getAudienceData(userId: string, orgId: string): Promise<UserAnaly
   if (userResult.error) throw new Error('Failed to fetch user profile');
 
   const lastLoginResult = await supabase
-    .from('user_last_login')
-    .select('last_login_at')
-    .eq('user_id', userId);
+    .from('analytics_login_events')
+    .select('logged_in_at')
+    .eq('user_id', userId)
+    .single();
 
   if (lastLoginResult.error)
     throw new Error('Failed to fetch last login' + lastLoginResult.error.message);
@@ -88,7 +89,7 @@ async function getAudienceData(userId: string, orgId: string): Promise<UserAnaly
   audienceAnalytics.user.fullName = userResult.data.fullname;
   audienceAnalytics.user.email = userResult.data.email;
   audienceAnalytics.user.avatarUrl = userResult.data.avatar_url || '';
-  audienceAnalytics.user.lastSeen = lastLoginResult.data?.[0]?.last_login_at;
+  audienceAnalytics.user.lastSeen = lastLoginResult.data?.logged_in_at;
 
   const { allCourses = [] } = (await fetchCourses(userId, orgId)) || {};
 
@@ -164,16 +165,17 @@ async function getStudentAnalyticsData(
   if (userError) throw new Error('Failed to fetch user profile' + userError.message);
 
   const { data: lastLoginResult, error: lastLoginError } = await supabase
-    .from('user_last_login')
-    .select('last_login_at')
-    .eq('user_id', userId);
+    .from('analytics_login_events')
+    .select('logged_in_at')
+    .eq('user_id', userId)
+    .single();
 
   if (lastLoginError) throw new Error('Failed to fetch last login' + lastLoginError.message);
 
   userCourseAnalytics.user.fullName = userResult.fullname;
   userCourseAnalytics.user.email = userResult.email;
   userCourseAnalytics.user.avatarUrl = userResult.avatar_url || '';
-  userCourseAnalytics.user.lastSeen = lastLoginResult?.[0]?.last_login_at;
+  userCourseAnalytics.user.lastSeen = lastLoginResult?.logged_in_at;
 
   // fetch marks, lessons, and exercise progress
   const [userExercisesStats, lessonCompletions, exerciseResponse] = await Promise.all([
