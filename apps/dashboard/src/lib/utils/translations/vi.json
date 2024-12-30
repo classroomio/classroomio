@@ -480,7 +480,9 @@
           "invite_sent": "Lời mời đã gửi",
           "you": "Bạn",
           "remove": "Di dời"
-        }
+        },
+        "view": "Xem",
+        "delete_profile": "Xóa hồ sơ"
       },
       "marks": {
         "title": "Điểm",
@@ -1478,5 +1480,29 @@
     "content": "Bạn có chắc không?",
     "no": "KHÔNG",
     "yes": "Đúng"
+  },
+  "analytics": {
+    "courses": "Khóa học",
+    "progress": "Tiến triển",
+    "progress_description": "{value, number} của {total, number} đã hoàn thành",
+    "incomplete": "Chưa hoàn thành",
+    "completed": "Hoàn thành",
+    "complete": "hoàn thành",
+    "last_seen": "Nhìn thấy lần cuối",
+    "a_while_ago": "cách đây một thời gian",
+    "exercises": "Bài tập",
+    "graded": "Đã chấm điểm",
+    "not_graded": "Không được chấm điểm",
+    "enrolled_courses": "Các khóa học đã đăng ký",
+    "enrolled_courses_description": "Tất cả các khóa học đã đăng ký",
+    "overall_course_progress": "Tiến độ chung của khóa học",
+    "overall_course_progress_description": "Tỷ lệ bài học đã hoàn thành",
+    "total_average_grade": "Tổng điểm trung bình",
+    "total_average_grade_description": "Dựa trên điểm bài tập của tất cả các khóa học",
+    "overall_course_progress_user_description": "Căn cứ vào việc hoàn thành bài học",
+    "assignment_completion": "Hoàn thành bài tập",
+    "assignment_completion_description": "Tỷ lệ bài tập đã hoàn thành",
+    "average_grade": "Điểm trung bình",
+    "average_grade_description": "Điểm trung bình của tất cả các bài tập đã hoàn thành"
   }
 }

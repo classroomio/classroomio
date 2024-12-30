@@ -480,7 +480,9 @@
           "invite_sent": "Приглашение отправлено",
           "you": "Ты",
           "remove": "Удалять"
-        }
+        },
+        "view": "Вид",
+        "delete_profile": "Удалить профиль"
       },
       "marks": {
         "title": "Метки",
@@ -1478,5 +1480,29 @@
     "content": "Вы уверены?",
     "no": "Нет",
     "yes": "Да"
+  },
+  "analytics": {
+    "courses": "Курсы",
+    "progress": "Прогресс",
+    "progress_description": "{value, number} из {total, number} завершено",
+    "incomplete": "Неполный",
+    "completed": "Завершенный",
+    "complete": "полный",
+    "last_seen": "Последний раз видели",
+    "a_while_ago": "некоторое время назад",
+    "exercises": "Упражнения",
+    "graded": "Оцененный",
+    "not_graded": "Не оценено",
+    "enrolled_courses": "Зарегистрированные курсы",
+    "enrolled_courses_description": "Все зарегистрированные курсы",
+    "overall_course_progress": "Общий прогресс курса",
+    "overall_course_progress_description": "Процент завершенных уроков",
+    "total_average_grade": "Общая средняя оценка",
+    "total_average_grade_description": "На основе оценок за упражнения по всему курсу",
+    "overall_course_progress_user_description": "По итогам урока",
+    "assignment_completion": "Выполнение задания",
+    "assignment_completion_description": "Процент выполненных заданий",
+    "average_grade": "Средняя оценка",
+    "average_grade_description": "Средняя оценка за все выполненные задания"
   }
 }

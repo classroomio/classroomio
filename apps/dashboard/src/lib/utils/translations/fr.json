@@ -480,7 +480,9 @@
           "invite_sent": "Invitation envoyée",
           "you": "Toi",
           "remove": "Retirer"
-        }
+        },
+        "view": "Voir",
+        "delete_profile": "Supprimer le profil"
       },
       "marks": {
         "title": "Des marques",
@@ -1478,5 +1480,29 @@
     "content": "Es-tu sûr?",
     "no": "Non",
     "yes": "Oui"
+  },
+  "analytics": {
+    "courses": "Cours",
+    "progress": "Progrès",
+    "progress_description": "{value, number} sur {total, number} terminé",
+    "incomplete": "Incomplet",
+    "completed": "Complété",
+    "complete": "complet",
+    "last_seen": "Vu pour la dernière fois",
+    "a_while_ago": "il y a quelque temps",
+    "exercises": "Exercices",
+    "graded": "Noté",
+    "not_graded": "Non noté",
+    "enrolled_courses": "Cours inscrits",
+    "enrolled_courses_description": "Tous les cours inscrits",
+    "overall_course_progress": "Progression globale du cours",
+    "overall_course_progress_description": "Pourcentage de leçons terminées",
+    "total_average_grade": "Note moyenne totale",
+    "total_average_grade_description": "Basé sur les notes des exercices dans tous les cours",
+    "overall_course_progress_user_description": "Basé sur l'achèvement de la leçon",
+    "assignment_completion": "Achèvement de la mission",
+    "assignment_completion_description": "Pourcentage de missions terminées",
+    "average_grade": "Note moyenne",
+    "average_grade_description": "Note moyenne de tous les devoirs terminés"
   }
 }

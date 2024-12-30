@@ -3,6 +3,7 @@
   import Progress from '$lib/components/Progress/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { getAccessToken } from '$lib/utils/functions/supabase';
+  import { t } from '$lib/utils/functions/translations';
   import type { UserCourseAnalytics } from '$lib/utils/types/analytics';
   import { Grid, Tag } from 'carbon-components-svelte';
   import Notebook from 'carbon-icons-svelte/lib/Notebook.svelte';
@@ -56,25 +57,25 @@
 
   $: learningActivities = [
     {
-      description: 'Based on lesson completion',
+      description: $t('analytics.overall_course_progress_user_description'),
       icon: Notebook,
       percentage: userCourseAnalytics?.progressPercentage,
-      title: 'Overall Progress'
+      title: $t('analytics.overall_course_progress')
     },
     {
-      description: 'Percentage of completed assignments',
+      description: $t('analytics.assignment_completion_description'),
       icon: Report,
       percentage: getPercentage(
         userCourseAnalytics?.userExercisesStats?.filter((exercise) => exercise.isCompleted)?.length,
         userCourseAnalytics?.userExercisesStats?.length
       ),
-      title: 'Assignment Completion'
+      title: $t('analytics.assignment_completion')
     },
     {
-      description: 'Average grade of all completed assignments',
+      description: $t('analytics.average_grade_description'),
       icon: RowExpand,
       percentage: userCourseAnalytics?.averageGrade,
-      title: 'Average Grade'
+      title: $t('analytics.average_grade')
     }
   ];
 
@@ -105,13 +106,20 @@
     </Grid>
 
     <div class="mt-5 rounded-md border p-3 dark:border-neutral-600 md:p-5">
-      <h3 class="text-2xl font-bold">Exercises</h3>
+      <h3 class="text-2xl font-bold">
+        {$t('analytics.exercises')}
+      </h3>
 
       <div class="flex flex-col gap-2">
         <div class="flex items-center justify-between">
-          <p class="text-sm font-medium text-gray-600 dark:text-gray-200">Progress</p>
           <p class="text-sm font-medium text-gray-600 dark:text-gray-200">
-            {completedExercises} of {userCourseAnalytics?.userExercisesStats?.length} complete
+            {$t('analytics.exercises')}
+          </p>
+          <p class="text-sm font-medium text-gray-600 dark:text-gray-200">
+            {$t('analytics.progress_description', {
+              value: completedExercises,
+              total: userCourseAnalytics?.userExercisesStats?.length
+            })}
           </p>
         </div>
         <Progress
@@ -125,7 +133,8 @@
             class="text-yellow-700 dark:text-yellow-500"
             on:click={() => toggleExerciseFilter('incomplete')}
           >
-            {incompleteExercises} incomplete
+            {incompleteExercises}
+            {$t('analytics.incomplete')}
           </Tag>
           <Tag
             interactive
@@ -134,7 +143,8 @@
             class="text-green-700 dark:text-green-500"
             on:click={() => toggleExerciseFilter('completed')}
           >
-            {completedExercises} complete
+            {completedExercises}
+            {$t('analytics.complete')}
           </Tag>
         </div>
       </div>
@@ -172,7 +182,7 @@
 
                   {#if exercise.isCompleted}
                     <Tag type={exercise.status === 3 ? 'high-contrast' : 'outline'} size="sm">
-                      {exercise.status === 3 ? 'Graded' : 'Not graded'}
+                      {exercise.status === 3 ? $t('analytics.graded') : $t('analytics.not_graded')}
                     </Tag>
                   {/if}
                 </p>
@@ -186,7 +196,7 @@
                   : 'bg-yellow-200 text-yellow-700'
               }`}
             >
-              {exercise.isCompleted ? 'Complete' : 'Incomplete'}
+              {exercise.isCompleted ? $t('analytics.complete') : $t('analytics.incomplete')}
             </Tag>
           </div>
         {/key}

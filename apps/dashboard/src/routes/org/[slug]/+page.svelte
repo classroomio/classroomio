@@ -6,7 +6,7 @@
   import UnlockedIcon from 'carbon-icons-svelte/lib/Unlocked.svelte';
   import { onMount } from 'svelte';
   import { Datepicker, InlineCalendar } from 'svelte-calendar';
-// import { supabase } from '$lib/utils/functions/supabase';
+  // import { supabase } from '$lib/utils/functions/supabase';
   // import Avatar from '$lib/components/Avatar/index.svelte';
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
@@ -185,9 +185,9 @@
 
 <WelcomeModal />
 
-<div class="py-10 px-5 w-full max-w-5xl md:mx-auto">
-  <div class="flex items-center justify-between mb-10">
-    <h1 class="dark:text-white text-2xl md:text-3xl font-bold mb-3">
+<div class="w-full max-w-5xl px-5 py-10 md:mx-auto">
+  <div class="mb-10 flex items-center justify-between">
+    <h1 class="mb-3 text-2xl font-bold dark:text-white md:text-3xl">
       {$t(getGreeting())}
       {$profile.fullname}!
     </h1>
@@ -210,10 +210,10 @@
   </div>
 
   <div
-    class="w-full h-fit lg:h-[265px] flex md:items-center justify-between flex-col-reverse md:flex-row p-5 lg:p-10 rounded-md bg-primary-900 my-2"
+    class="bg-primary-900 my-2 flex h-fit w-full flex-col-reverse justify-between rounded-md p-5 md:flex-row md:items-center lg:h-[265px] lg:p-10"
   >
     <span>
-      <p class="w-full md:w-[75%] lg:w-[80%] text-white text-xs lg:text-xl font-normal mb-5">
+      <p class="mb-5 w-full text-xs font-normal text-white md:w-[75%] lg:w-[80%] lg:text-xl">
         {$t('dashboard.hero_content')}
       </p>
       <PrimaryButton
@@ -225,7 +225,7 @@
     <img
       src="/images/student-learning.svg"
       alt="student Learning Pictogram"
-      class="w-28 md:block md:w-1/3 lg:w-[200px] lg:max-h-[205px] mb-3 md:mb-0"
+      class="mb-3 w-28 md:mb-0 md:block md:w-1/3 lg:max-h-[205px] lg:w-[200px]"
     />
   </div>
 
@@ -242,20 +242,20 @@
 
   <div class="w-full">
     <!-- Your Schedule -->
-    <div class="w-full xl:w-auto container">
-      <p class="dark:text-white font-bold mt-7 mb-4">{$t('dashboard.your_schedule')}</p>
+    <div class="container w-full xl:w-auto">
+      <p class="mb-4 mt-7 font-bold dark:text-white">{$t('dashboard.your_schedule')}</p>
       <div
-        class="rounded border border-gray-200 dark:border-neutral-600 gap-3 flex flex-col md:flex-row items-start px-2 md:px-5 py-5 w-full"
+        class="flex w-full flex-col items-start gap-3 rounded border border-gray-200 px-2 py-5 dark:border-neutral-600 md:flex-row md:px-5"
       >
         {#if !$isMobile}
-          <div id="calendar" class="flex justify-center mt-5 w-2/5 min-w-[250px]">
+          <div id="calendar" class="mt-5 flex w-2/5 min-w-[250px] justify-center">
             <InlineCalendar bind:store {theme} />
           </div>
         {:else}
-          <div class="header w-full flex items-center">
+          <div class="header flex w-full items-center">
             <Datepicker bind:store let:key let:send let:receive>
               <button
-                class="text-lg font-bold text-primary-700 p-3 hover:bg-gray-300 rounded-md"
+                class="text-primary-700 rounded-md p-3 text-lg font-bold hover:bg-gray-300"
                 in:receive|local={{ key }}
                 out:send|local={{ key }}
                 on:click={() => {
@@ -268,40 +268,40 @@
           </div>
         {/if}
 
-        <div class="max-h-[400px] overflow-y-scroll w-full">
+        <div class="max-h-[400px] w-full overflow-y-scroll">
           {#if !$isMobile}
-            <p class="dark:text-white font-bold m-5">
+            <p class="m-5 font-bold dark:text-white">
               {formatDate($store?.selected)}
             </p>
           {/if}
           {#each selectedDateLessonData as lessonData}
-            <div class="flex items-center justify-between p-5 lesson-data">
+            <div class="lesson-data flex items-center justify-between p-5">
               <div class="w-full">
                 <a
-                  class="text-black-700 text-lg font-bold flex items-center"
+                  class="text-black-700 flex items-center text-lg font-bold"
                   href={`/courses/${lessonData.course_id}/lessons/${
                     lessonData.is_unlocked ? lessonData.lesson_id : ''
                   }`}
                 >
                   {lessonData.lesson_title}
                   {#if lessonData.is_unlocked}
-                    <span class="ml-2 success">
+                    <span class="success ml-2">
                       <LockedIcon class="carbon-icon dark:text-white" />
                     </span>
                   {:else}
                     <UnlockedIcon class="carbon-icon dark:text-white" />
                   {/if}
                 </a>
-                <p class="dark:text-white text-grey text-sm flex items-center">
-                  <a class="underline text-primary-700 my-2" href="/courses/{lessonData.course_id}">
+                <p class="text-grey flex items-center text-sm dark:text-white">
+                  <a class="text-primary-700 my-2 underline" href="/courses/{lessonData.course_id}">
                     {` ${lessonData.course_title}`}
                   </a>
                 </p>
               </div>
               {#if lessonData.is_unlocked}
                 <a
-                  class="join-call rounded-3xl bg-primary-600 text-white py-3 font-bold shadow-lg {!lessonData.call_url &&
-                    'opacity-50 pointer-events-none cursor-not-allowed'}"
+                  class="join-call bg-primary-600 rounded-3xl py-3 font-bold text-white shadow-lg {!lessonData.call_url &&
+                    'pointer-events-none cursor-not-allowed opacity-50'}"
                   href={!!lessonData.call_url ? lessonData.call_url : undefined}
                   target="_blank"
                   title={!!lessonData.call_url

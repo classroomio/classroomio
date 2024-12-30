@@ -480,7 +480,9 @@
           "invite_sent": "आमंत्रण भेज दिया",
           "you": "आप",
           "remove": "निकालना"
-        }
+        },
+        "view": "देखना",
+        "delete_profile": "प्रोफ़ाइल हटाएं"
       },
       "marks": {
         "title": "निशान",
@@ -1478,5 +1480,29 @@
     "content": "क्या आपको यकीन है?",
     "no": "नहीं",
     "yes": "हाँ"
+  },
+  "analytics": {
+    "courses": "पाठ्यक्रम",
+    "progress": "प्रगति",
+    "progress_description": "{value, number} का {total, number} पूर्ण",
+    "incomplete": "अधूरा",
+    "completed": "पुरा होना।",
+    "complete": "पूरा",
+    "last_seen": "अंतिम बार देखा गया",
+    "a_while_ago": "कुछ देर पहले",
+    "exercises": "अभ्यास",
+    "graded": "ग्रेड दिया गया",
+    "not_graded": "वर्गीकृत नहीं किया",
+    "enrolled_courses": "नामांकित पाठ्यक्रम",
+    "enrolled_courses_description": "सभी नामांकित पाठ्यक्रम",
+    "overall_course_progress": "समग्र पाठ्यक्रम प्रगति",
+    "overall_course_progress_description": "पूर्ण किए गए पाठों का प्रतिशत",
+    "total_average_grade": "कुल औसत ग्रेड",
+    "total_average_grade_description": "संपूर्ण पाठ्यक्रम में व्यायाम ग्रेड के आधार पर",
+    "overall_course_progress_user_description": "पाठ पूरा होने पर आधारित",
+    "assignment_completion": "असाइनमेंट पूरा करना",
+    "assignment_completion_description": "पूर्ण किये गये कार्यों का प्रतिशत",
+    "average_grade": "औसत क्षेणी",
+    "average_grade_description": "सभी पूर्ण किए गए असाइनमेंट का औसत ग्रेड"
   }
 }

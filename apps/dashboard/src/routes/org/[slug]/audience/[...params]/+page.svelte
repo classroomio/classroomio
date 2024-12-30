@@ -53,21 +53,21 @@
   $: userMetrics = [
     {
       icon: Notebook,
-      title: 'Enrolled Courses',
-      description: 'All enrolled courses',
+      title: $t('analytics.enrolled_courses'),
+      description: $t('analytics.enrolled_courses_description'),
       percentage: userAnalytics?.courses?.length,
       hidePercentage: true
     },
     {
       icon: Report,
-      title: 'Overral Course Progress',
-      description: 'Percentage of completed lessons',
+      title: $t('analytics.overall_course_progress'),
+      description: $t('analytics.overall_course_progress_description'),
       percentage: userAnalytics?.overallCourseProgress
     },
     {
       icon: RowExpand,
-      title: 'Total Average Grade',
-      description: 'Based on exercise grades across all course',
+      title: $t('analytics.total_average_grade'),
+      description: $t('analytics.total_average_grade_description'),
       percentage: userAnalytics?.overallAverageGrade
     }
   ];
@@ -111,13 +111,20 @@
       </Grid>
 
       <div class="mt-5 rounded-md border p-3 dark:border-neutral-600 md:p-5">
-        <h3 class="text-2xl font-bold">Courses</h3>
+        <h3 class="text-2xl font-bold">
+          {$t('analytics.courses')}
+        </h3>
 
         <div class="flex flex-col gap-2">
           <div class="flex items-center justify-between">
-            <p class="text-sm font-medium text-gray-600 dark:text-gray-200">Progress</p>
             <p class="text-sm font-medium text-gray-600 dark:text-gray-200">
-              {completedCourses} of {userAnalytics.courses.length} complete
+              {$t('analytics.progress')}
+            </p>
+            <p class="text-sm font-medium text-gray-600 dark:text-gray-200">
+              {$t('analytics.progress_description', {
+                value: completedCourses,
+                total: userAnalytics.courses.length
+              })}
             </p>
           </div>
           <Progress value={userAnalytics.overallCourseProgress} />
@@ -129,7 +136,8 @@
               class="text-yellow-700 dark:text-yellow-500"
               on:click={() => toggleCourseFilter('incomplete')}
             >
-              {incompleteCourses} incomplete
+              {incompleteCourses}
+              {$t('analytics.incomplete')}
             </Tag>
             <Tag
               interactive
@@ -138,7 +146,8 @@
               class="text-green-700 dark:text-green-500"
               on:click={() => toggleCourseFilter('completed')}
             >
-              {completedCourses} complete
+              {completedCourses}
+              {$t('analytics.complete')}
             </Tag>
           </div>
         </div>
@@ -176,7 +185,9 @@
                       : 'bg-yellow-200 text-yellow-700'
                   }`}
                 >
-                  {course.lessons_count === course.lessons_completed ? 'Complete' : 'Incomplete'}
+                  {course.lessons_count === course.lessons_completed
+                    ? $t('analytics.complete')
+                    : $t('analytics.incomplete')}
                 </Tag>
               </div>
 

@@ -1,6 +1,7 @@
 <script lang="ts">
   import Avatar from '$lib/components/Avatar/index.svelte';
   import { calDateDiff } from '$lib/utils/functions/date';
+  import { t } from '$lib/utils/functions/translations';
   import type { UserAnalytics } from '$lib/utils/types/analytics';
   import Alarm from 'carbon-icons-svelte/lib/Alarm.svelte';
   import Email from 'carbon-icons-svelte/lib/Email.svelte';
@@ -24,9 +25,9 @@
 
         <p class="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-300">
           <Alarm />
-          Last seen:
+          {$t('analytics.last_seen')}:
           <span class="italic">
-            {user.lastSeen ? calDateDiff(user.lastSeen) : 'a while ago'}
+            {user.lastSeen ? calDateDiff(user.lastSeen) : $t('analytics.a_while_ago')}
           </span>
         </p>
       </div>

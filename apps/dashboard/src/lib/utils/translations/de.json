@@ -480,7 +480,9 @@
           "invite_sent": "Einladung gesendet",
           "you": "Du",
           "remove": "Entfernen"
-        }
+        },
+        "view": "Sicht",
+        "delete_profile": "Profil löschen"
       },
       "marks": {
         "title": "Markierungen",
@@ -1478,5 +1480,29 @@
     "content": "Bist du sicher?",
     "no": "NEIN",
     "yes": "Ja"
+  },
+  "analytics": {
+    "courses": "Kurse",
+    "progress": "Fortschritt",
+    "progress_description": "{value, number} von {total, number} abgeschlossen",
+    "incomplete": "Unvollständig",
+    "completed": "Vollendet",
+    "complete": "vollständig",
+    "last_seen": "Zuletzt gesehen",
+    "a_while_ago": "vor einiger Zeit",
+    "exercises": "Übungen",
+    "graded": "Benotet",
+    "not_graded": "Nicht benotet",
+    "enrolled_courses": "Eingeschriebene Kurse",
+    "enrolled_courses_description": "Alle eingeschriebenen Kurse",
+    "overall_course_progress": "Gesamtkursfortschritt",
+    "overall_course_progress_description": "Prozentsatz der abgeschlossenen Lektionen",
+    "total_average_grade": "Gesamtdurchschnittsnote",
+    "total_average_grade_description": "Basierend auf den Übungsnoten im gesamten Kurs",
+    "overall_course_progress_user_description": "Basierend auf dem Abschluss der Lektion",
+    "assignment_completion": "Abschluss der Aufgabe",
+    "assignment_completion_description": "Prozentsatz der abgeschlossenen Aufgaben",
+    "average_grade": "Durchschnittsnote",
+    "average_grade_description": "Durchschnittsnote aller abgeschlossenen Aufgaben"
   }
 }
