@@ -47,14 +47,16 @@ FOR EACH ROW
 EXECUTE FUNCTION public.insert_login_event_on_user_login();
 
 CREATE OR REPLACE FUNCTION public.insert_login_event_on_user_session_update()
- RETURNS trigger
+  RETURNS trigger
  LANGUAGE plpgsql
  SECURITY DEFINER
 AS $function$
 BEGIN
   IF (NEW.updated_at IS NOT NULL) THEN
     INSERT INTO public.analytics_login_events (logged_in_at, user_id)
-    VALUES (NEW.updated_at, NEW.user_id);
+    VALUES (NEW.updated_at, NEW.user_id)
+    ON CONFLICT (user_id) DO UPDATE
+    SET logged_in_at = NEW.updated_at;
   END IF;
   RETURN NEW;
 END;

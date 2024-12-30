@@ -81,8 +81,6 @@
   }
 
   $: gradeWithAI = isGradeWithAI;
-
-  $: console.log('grade', grade, 'hideGrading', hideGrading);
 </script>
 
 <form on:submit|preventDefault={handleFormSubmit}>

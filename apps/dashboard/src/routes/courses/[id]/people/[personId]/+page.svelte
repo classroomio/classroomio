@@ -130,7 +130,7 @@
             interactive
             filter={exerciseFilter === 'incomplete'}
             type={exerciseFilter === 'incomplete' ? 'gray' : 'outline'}
-            class="text-yellow-700 dark:text-yellow-500"
+            class="lowercase text-yellow-700 dark:text-yellow-500"
             on:click={() => toggleExerciseFilter('incomplete')}
           >
             {incompleteExercises}
@@ -140,7 +140,7 @@
             interactive
             filter={exerciseFilter === 'completed'}
             type={exerciseFilter === 'completed' ? 'gray' : 'outline'}
-            class="text-green-700 dark:text-green-500"
+            class="lowercase text-green-700 dark:text-green-500"
             on:click={() => toggleExerciseFilter('completed')}
           >
             {completedExercises}

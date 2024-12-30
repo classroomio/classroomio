@@ -10,7 +10,7 @@ import { json } from '@sveltejs/kit';
 
 const supabase = getServerSupabase();
 
-const CACHE_DURATION = 60; // 1 minute
+const CACHE_DURATION = 60 * 5; // 5 minutes
 
 export async function POST({ setHeaders, request }) {
   const { userId, courseId, orgId } = await request.json();
