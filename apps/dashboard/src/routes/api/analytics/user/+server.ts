@@ -55,6 +55,22 @@ function sumArrObject<T>(arr: T[], key: keyof T) {
   return arr.reduce((sum, item) => sum + (item[key] as number), 0);
 }
 
+async function getLastLogin(userId: string): Promise<string | undefined> {
+  try {
+    const { data, error } = await supabase
+      .from('analytics_login_events')
+      .select('logged_in_at')
+      .eq('user_id', userId)
+      .single();
+
+    if (error) throw error;
+
+    return data?.logged_in_at;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 async function getAudienceData(userId: string, orgId: string): Promise<UserAnalytics> {
   const audienceAnalytics: UserAnalytics = {
     user: {
@@ -77,19 +93,10 @@ async function getAudienceData(userId: string, orgId: string): Promise<UserAnaly
 
   if (userResult.error) throw new Error('Failed to fetch user profile');
 
-  const lastLoginResult = await supabase
-    .from('analytics_login_events')
-    .select('logged_in_at')
-    .eq('user_id', userId)
-    .single();
-
-  if (lastLoginResult.error)
-    throw new Error('Failed to fetch last login' + lastLoginResult.error.message);
-
   audienceAnalytics.user.fullName = userResult.data.fullname;
   audienceAnalytics.user.email = userResult.data.email;
   audienceAnalytics.user.avatarUrl = userResult.data.avatar_url || '';
-  audienceAnalytics.user.lastSeen = lastLoginResult.data?.logged_in_at;
+  audienceAnalytics.user.lastSeen = await getLastLogin(userId);
 
   const { allCourses = [] } = (await fetchCourses(userId, orgId)) || {};
 
@@ -164,18 +171,10 @@ async function getStudentAnalyticsData(
 
   if (userError) throw new Error('Failed to fetch user profile' + userError.message);
 
-  const { data: lastLoginResult, error: lastLoginError } = await supabase
-    .from('analytics_login_events')
-    .select('logged_in_at')
-    .eq('user_id', userId)
-    .single();
-
-  if (lastLoginError) throw new Error('Failed to fetch last login' + lastLoginError.message);
-
   userCourseAnalytics.user.fullName = userResult.fullname;
   userCourseAnalytics.user.email = userResult.email;
   userCourseAnalytics.user.avatarUrl = userResult.avatar_url || '';
-  userCourseAnalytics.user.lastSeen = lastLoginResult?.logged_in_at;
+  userCourseAnalytics.user.lastSeen = await getLastLogin(userId);
 
   // fetch marks, lessons, and exercise progress
   const [userExercisesStats, lessonCompletions, exerciseResponse] = await Promise.all([
