@@ -72,6 +72,7 @@ SELECT
       AND lc.profile_id = gm.profile_id
     WHERE c.status = 'ACTIVE'  AND g.organization_id = org_id_arg
     GROUP BY c.id, c.title
+    ORDER BY completed_lessons DESC
   ) as course_stats
   LIMIT 5;
 END;

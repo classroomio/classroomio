@@ -150,10 +150,12 @@
           {/each}
         {:else}
           {#each dashAnalytics.topCourses as course}
-            <div class="flex items-center">
-              <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <div class="w-4/6 space-y-1">
                 <Link href={`/courses/${course.id}`}>
-                  <p class="text-sm font-medium leading-none">{course.title}</p>
+                  <p class="line-clamp-2 pb-[0.1rem] text-sm font-medium leading-none">
+                    {course.title}
+                  </p>
                 </Link>
                 <p class="text-muted-foreground text-sm">
                   {course.enrollments}
@@ -216,7 +218,7 @@
                 />
 
                 <div class="min-h-[45px] space-y-1">
-                  <p class="text-sm font-medium leading-none">{enrollment.name}</p>
+                  <p class="text-sm font-medium capitalize leading-none">{enrollment.name}</p>
                   <p class="text-muted-foreground text-sm">
                     <span class="italic">
                       {calDateDiff(enrollment.date)}
