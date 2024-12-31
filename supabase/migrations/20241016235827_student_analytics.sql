@@ -52,11 +52,12 @@ CREATE OR REPLACE FUNCTION public.insert_login_event_on_user_session_update()
  SECURITY DEFINER
 AS $function$
 BEGIN
-  IF (NEW.updated_at IS NOT NULL) THEN
+  IF (NEW.updated_at IS NOT NULL AND NEW.updated_at != OLD.updated_at) THEN
     INSERT INTO public.analytics_login_events (logged_in_at, user_id)
     VALUES (NEW.updated_at, NEW.user_id)
     ON CONFLICT (user_id) DO UPDATE
-    SET logged_in_at = NEW.updated_at;
+    SET logged_in_at = EXCLUDED.logged_in_at
+    WHERE analytics_login_events.logged_in_at < EXCLUDED.logged_in_at;
   END IF;
   RETURN NEW;
 END;
