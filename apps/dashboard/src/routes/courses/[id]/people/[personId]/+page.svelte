@@ -196,7 +196,7 @@
                   : 'bg-yellow-200 text-yellow-700'
               }`}
             >
-              {exercise.isCompleted ? $t('analytics.complete') : $t('analytics.incomplete')}
+              {exercise.isCompleted ? $t('analytics.completed') : $t('analytics.incomplete')}
             </Tag>
           </div>
         {/key}

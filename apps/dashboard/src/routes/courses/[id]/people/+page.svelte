@@ -7,17 +7,16 @@
   import DeleteConfirmation from '$lib/components/Course/components/People/DeleteConfirmation.svelte';
   import InvitationModal from '$lib/components/Course/components/People/InvitationModal.svelte';
   import { deleteMemberModal } from '$lib/components/Course/components/People/store';
-  import type { Person, ProfileRole } from '$lib/components/Course/components/People/types';
+  import type { ProfileRole } from '$lib/components/Course/components/People/types';
   import { group } from '$lib/components/Course/store';
   import Select from '$lib/components/Form/Select.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import { snackbar } from '$lib/components/Snackbar/store';
   import { ROLE_LABEL, ROLES } from '$lib/utils/constants/roles';
   import { t } from '$lib/utils/functions/translations';
-  import { deleteGroupMember, updatedGroupMember } from '$lib/utils/services/courses';
+  import { deleteGroupMember } from '$lib/utils/services/courses';
   import { profile } from '$lib/utils/store/user';
   import type { GroupPerson } from '$lib/utils/types';
   import {
@@ -30,22 +29,12 @@
     StructuredListRow
   } from 'carbon-components-svelte';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
-  import copy from 'copy-to-clipboard';
 
   let people: Array<GroupPerson> = [];
   let member: { id?: string; email?: string; profile?: { email: string } } = {};
-  let shouldEditMemberId: string | null = null;
   let filterBy: ProfileRole = ROLES[0];
   let searchValue = '';
 
-  // function setPeople(people: Array<Person>) {
-  //   if (!Array.isArray(people)) return;
-
-  //   people = (people || []).sort((a, b) => a.role_id - b.role_id);
-  //   console.log(`people changed`, people);
-  // }
-
-  // function for the searchbar
   function filterPeople(_query, people) {
     const query = _query.toLowerCase();
     return people.filter((person) => {
@@ -60,14 +49,6 @@
     $group.tutors = $group.tutors.filter((person: GroupPerson) => person.memberId !== member.id);
 
     await deleteGroupMember(member.id);
-  }
-
-  async function editMemberId(person: Person) {
-    await updatedGroupMember(
-      { assigned_student_id: person.assigned_student_id },
-      { id: person.id }
-    );
-    shouldEditMemberId = null;
   }
 
   function sortAndFilterPeople(_people: Array<GroupPerson>, filterBy: ProfileRole) {
@@ -97,23 +78,6 @@
 
     return `${obscuredUsername}@${domain}`;
   }
-
-  function handleEditStudentIdMode(personId: string) {
-    shouldEditMemberId = personId;
-  }
-
-  function copyToClipboard(studentAssignedId: string | null) {
-    snackbar.success(`snackbar.people.success.copied`);
-
-    if (studentAssignedId) {
-      copy(studentAssignedId);
-    }
-  }
-
-  const handleClick = () => {
-    const url = $page.url.href + '?add=true';
-    goto(url);
-  };
 
   function gotoPerson(person) {
     goto(`${$page.url.href}/${person.profile_id}`);

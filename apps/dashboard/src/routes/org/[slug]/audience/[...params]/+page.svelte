@@ -186,7 +186,7 @@
                   }`}
                 >
                   {course.lessons_count === course.lessons_completed
-                    ? $t('analytics.complete')
+                    ? $t('analytics.completed')
                     : $t('analytics.incomplete')}
                 </Tag>
               </div>
