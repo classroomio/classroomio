@@ -29,7 +29,10 @@
     alt={post.title}
     class="w-70 h-48 object-cover rounded-md"
   />
-  <p class="font-bold text-lg py-2 h-[60px] line-clamp-2 group-hover:text-slate-500">
+  <p
+    class="font-bold text-lg py-2 {isRecommended &&
+      'h-[60px]'} line-clamp-2 group-hover:text-slate-500"
+  >
     {@html post.title}
   </p>
 
