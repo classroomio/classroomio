@@ -928,7 +928,8 @@
     "recent_enrollments": "Aktuelle Anmeldungen",
     "publish_first_course": "Veröffentlichen Sie Ihren ersten Kurs",
     "publish_first_course_description": "Um Anmeldungen zu verfolgen, veröffentlichen Sie einen Kurs und laden Sie Studierende ein",
-    "publish_course": "Kurs veröffentlichen"
+    "publish_course": "Kurs veröffentlichen",
+    "student": "Student"
   },
   "schedule": {
     "title": "Dein Zeitplan",

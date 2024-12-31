@@ -928,7 +928,8 @@
     "recent_enrollments": "Inscriptions récentes",
     "publish_first_course": "Publiez votre premier cours",
     "publish_first_course_description": "Pour suivre les inscriptions, publier un cours et inviter des étudiants",
-    "publish_course": "Publier un cours"
+    "publish_course": "Publier un cours",
+    "student": "étudiant"
   },
   "schedule": {
     "title": "Votre emploi du temps",

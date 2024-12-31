@@ -928,7 +928,8 @@
     "recent_enrollments": "Inscrições recentes",
     "publish_first_course": "Publique seu primeiro curso",
     "publish_first_course_description": "Para rastrear matrículas, publicar um curso e convidar alunos",
-    "publish_course": "Publicar curso"
+    "publish_course": "Publicar curso",
+    "student": "estudante"
   },
   "schedule": {
     "title": "Sua programação",

@@ -458,6 +458,7 @@
     "total_students_description": "Based on student enrollments",
     "top_courses": "Top Courses",
     "students": "students",
+    "student": "student",
     "completion": "completion",
     "create_first_course": "Create Your First Course",
     "create_first_course_description": "Start creating courses to track course progress",

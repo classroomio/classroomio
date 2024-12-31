@@ -928,7 +928,8 @@
     "recent_enrollments": "Inscripciones recientes",
     "publish_first_course": "Publica tu primer curso",
     "publish_first_course_description": "Para realizar un seguimiento de las inscripciones, publicar un curso e invitar a estudiantes",
-    "publish_course": "Publicar curso"
+    "publish_course": "Publicar curso",
+    "student": "alumno"
   },
   "schedule": {
     "title": "Tu agenda",

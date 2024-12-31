@@ -928,7 +928,8 @@
     "recent_enrollments": "Недавние регистрации",
     "publish_first_course": "Опубликуйте свой первый курс",
     "publish_first_course_description": "Чтобы отслеживать зачисления, опубликуйте курс и пригласите студентов.",
-    "publish_course": "Опубликовать курс"
+    "publish_course": "Опубликовать курс",
+    "student": "студент"
   },
   "schedule": {
     "title": "Твое расписание",

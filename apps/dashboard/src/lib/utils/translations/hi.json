@@ -928,7 +928,8 @@
     "recent_enrollments": "हाल के नामांकन",
     "publish_first_course": "अपना पहला पाठ्यक्रम प्रकाशित करें",
     "publish_first_course_description": "नामांकन पर नज़र रखने के लिए, एक पाठ्यक्रम प्रकाशित करें और छात्रों को आमंत्रित करें",
-    "publish_course": "पाठ्यक्रम प्रकाशित करें"
+    "publish_course": "पाठ्यक्रम प्रकाशित करें",
+    "student": "विद्यार्थी"
   },
   "schedule": {
     "title": "आपका समय - सारणी",

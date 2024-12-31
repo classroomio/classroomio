@@ -8,7 +8,7 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { getAccessToken } from '$lib/utils/functions/supabase';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import type { OrganisationAnalytics } from '$lib/utils/types/analytics';
   import Add from 'carbon-icons-svelte/lib/Add.svelte';
@@ -27,17 +27,12 @@
   import { isMobile } from '$lib/utils/store/useMobile';
   import { Grid, Link, SkeletonPlaceholder } from 'carbon-components-svelte';
 
-  export let data;
-
-  const { orgName } = data;
+  // export let data;
 
   let dashAnalytics: OrganisationAnalytics;
 
   function createCourse() {
-    goto(`/org/${orgName}/courses?create=true`);
-  }
-  function publishCourse() {
-    goto(`/org/${orgName}/courses`);
+    goto(`${$currentOrgPath}/courses?create=true`);
   }
 
   async function fetchDashAnalytics(orgId: string) {
@@ -162,7 +157,7 @@
                 </Link>
                 <p class="text-muted-foreground text-sm">
                   {course.enrollments}
-                  {$t('dashboard.students')}
+                  {$t(course.enrollments === 1 ? 'dashboard.student' : 'dashboard.students')}
                 </p>
               </div>
               <div class="ml-auto w-2/6">
@@ -221,7 +216,7 @@
                 />
 
                 <div class="min-h-[45px] space-y-1">
-                  <p class="text-md font-medium leading-none">{enrollment.name}</p>
+                  <p class="text-sm font-medium leading-none">{enrollment.name}</p>
                   <p class="text-muted-foreground text-sm">
                     <span class="italic">
                       {calDateDiff(enrollment.date)}
@@ -230,9 +225,9 @@
                 </div>
               </div>
 
-              <div>
+              <div class="w-2/4">
                 <Link href={`/courses/${enrollment.courseId}`}>
-                  <p class="text-sm font-medium leading-none">
+                  <p class="line-clamp-2 pb-[0.1rem] text-sm font-medium leading-none">
                     {enrollment.course}
                   </p>
                 </Link>
@@ -253,7 +248,7 @@
               </div>
               <PrimaryButton
                 variant={VARIANTS.OUTLINED}
-                onClick={publishCourse}
+                onClick={() => goto(`${$currentOrgPath}/courses`)}
                 label={$t('dashboard.publish_course')}
               />
             </div>

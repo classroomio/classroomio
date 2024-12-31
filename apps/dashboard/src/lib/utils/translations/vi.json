@@ -928,7 +928,8 @@
     "recent_enrollments": "Đăng ký gần đây",
     "publish_first_course": "Xuất bản khóa học đầu tiên của bạn",
     "publish_first_course_description": "Để theo dõi việc đăng ký, xuất bản một khóa học và mời sinh viên",
-    "publish_course": "Xuất bản khóa học"
+    "publish_course": "Xuất bản khóa học",
+    "student": "học sinh"
   },
   "schedule": {
     "title": "Lịch trình của bạn",
