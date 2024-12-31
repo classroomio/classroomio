@@ -2,7 +2,7 @@
   interface Activity {
     icon: any;
     title: string;
-    percentage: number;
+    percentage: number | string;
     description: string;
     hidePercentage?: boolean;
   }
