@@ -1,18 +1,18 @@
 <script lang="ts">
-  import Learning from '$lib/components/LMS/components/Learning.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { goto } from '$app/navigation';
-  import { profile } from '$lib/utils/store/user';
-  import { currentOrg } from '$lib/utils/store/org';
-  import { fetchCourses } from '$lib/utils/services/courses';
+  import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
   import { courseMetaDeta } from '$lib/components/Courses/store';
+  import Learning from '$lib/components/LMS/components/Learning.svelte';
+  import type { LMSCourse } from '$lib/components/LMS/store';
+  import { lmsCourses } from '$lib/components/LMS/store';
+  import { fetchPathways } from '$lib/components/Org/Pathway/api';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { getGreeting } from '$lib/utils/functions/date';
   import { t } from '$lib/utils/functions/translations';
-  import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
-  import { lmsCourses } from '$lib/components/LMS/store';
-  import type { LMSCourse } from '$lib/components/LMS/store';
-  import { fetchPathways } from '$lib/components/Org/Pathway/api';
+  import { fetchCourses } from '$lib/utils/services/courses';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
 
   let hasFetched = false;
   let progressPercentage = 0;
@@ -70,10 +70,10 @@
   <title>Student Dashboard - ClassroomIO</title>
 </svelte:head>
 
-<section class="max-w-6xl gap-5 mx-auto">
+<section class="mx-auto max-w-6xl gap-5">
   <div class="m-5">
-    <div class="flex items-center justify-between mb-10">
-      <h1 class="dark:text-white text-2xl md:text-3xl font-bold">
+    <div class="mb-10 flex items-center justify-between">
+      <h1 class="text-2xl font-bold dark:text-white md:text-3xl">
         {$t(getGreeting())}
         {$profile.fullname}!
       </h1>
@@ -82,10 +82,10 @@
     </div>
 
     <div
-      class="w-full h-fit lg:h-[265px] flex md:items-center justify-between flex-col-reverse md:flex-row p-5 lg:p-10 rounded-md bg-primary-900 my-2"
+      class="bg-primary-900 my-2 flex h-fit w-full flex-col-reverse justify-between rounded-md p-5 md:flex-row md:items-center lg:h-[265px] lg:p-10"
     >
       <div class="w-full md:w-[75%] lg:w-[80%]">
-        <p class=" text-white text-xs lg:text-xl font-normal mb-5">
+        <p class=" mb-5 text-xs font-normal text-white lg:text-xl">
           {$currentOrg.customization.dashboard.bannerText
             ? $currentOrg.customization.dashboard.bannerText
             : $t('dashboard.lms_dashboard_hero')}
@@ -101,28 +101,28 @@
           ? $currentOrg.customization.dashboard.bannerImage
           : '/images/student-learning.svg'}
         alt="student Learning Pictogram"
-        class="w-28 md:block md:w-1/3 lg:w-[275px] lg:h-[205px] mb-3 md:mb-0"
+        class="mb-3 w-28 md:mb-0 md:block md:w-1/3 lg:h-[205px] lg:w-[275px]"
       />
     </div>
-    <section class="flex w-full flex-col lg:flex-row md:gap-5">
-      <div class="w-full lg:w-[50%] mt-10 xl:mt-2">
+    <section class="flex w-full flex-col md:gap-5 lg:flex-row">
+      <div class="mt-10 w-full lg:w-[50%] xl:mt-2">
         <Learning />
       </div>
-      <div class="mt-10 xl:mt-2 w-full lg:w-[50%]">
-        <p class="text-base font-semibold text-[#040F2D] pb-3 dark:text-white">
+      <div class="mt-10 w-full lg:w-[50%] xl:mt-2">
+        <p class="pb-3 text-base font-semibold text-[#040F2D] dark:text-white">
           {$t('dashboard.your_progress')}
         </p>
         <div
-          class="flex items-center justify-center border border-[#EAEAEA] dark:bg-neutral-800 gap-2 rounded h-fit lg:h-[40vh] lg:overflow-y-auto p-3"
+          class="flex h-fit items-center justify-center gap-2 rounded border border-[#EAEAEA] p-3 dark:bg-neutral-800 lg:h-[40vh] lg:overflow-y-auto"
         >
           <div
-            class="w-full h-full flex flex-col sm:flex-row xl:flex-col items-center justify-between lg:items-center xl:items-start gap-5 lg:justify-around"
+            class="flex h-full w-full flex-col items-center justify-between gap-5 sm:flex-row lg:items-center lg:justify-around xl:flex-col xl:items-start"
           >
             <div>
               <img src="/images/target.svg" alt="student Learning score" />
             </div>
             <span class="text-center xl:text-start">
-              <p class="text-base font-semibold py-2 text-[#040F2D] dark:text-white">
+              <p class="py-2 text-base font-semibold text-[#040F2D] dark:text-white">
                 {$t('dashboard.your_progress')}
               </p>
               {#if totalLessons > 0}
@@ -132,12 +132,12 @@
                 </p>
               {:else}
                 <p class="text-xs font-normal text-[#656565] dark:text-white">
-                  {$t('dashboard.No_courses_started')}
+                  {$t('dashboard.no_courses_started')}
                 </p>
               {/if}
             </span>
             <h1
-              class="text-5xl lg:text-6xl font-bold text-[#262626] dark:text-white my-0 whitespace-nowrap"
+              class="my-0 whitespace-nowrap text-5xl font-bold text-[#262626] dark:text-white lg:text-6xl"
             >
               {progressPercentage} %
             </h1>

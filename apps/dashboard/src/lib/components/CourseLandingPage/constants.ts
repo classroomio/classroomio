@@ -1,10 +1,9 @@
-//   import { t } from '$lib/utils/functions/translations';
-
-export const SECTION_KEYS = {
+export const NAV_ITEM_KEY = {
   HEADER: 'header',
   REQUIREMENT: '#requirement',
   DESCRIPTION: '#description',
   GOALS: '#goals',
+  CERTIFICATE: '#certificate',
   LESSONS: '#lessons',
   REVIEWS: '#reviews',
   INSTRUCTOR: '#instructor'
@@ -12,27 +11,31 @@ export const SECTION_KEYS = {
 
 export const NAV_ITEMS = [
   {
-    key: SECTION_KEYS.REQUIREMENT,
+    key: NAV_ITEM_KEY.REQUIREMENT,
     label: 'course.navItem.landing_page.editor.title.requirement'
   },
   {
-    key: SECTION_KEYS.DESCRIPTION,
+    key: NAV_ITEM_KEY.DESCRIPTION,
     label: 'course.navItem.landing_page.editor.title.description'
   },
   {
-    key: SECTION_KEYS.GOALS,
+    key: NAV_ITEM_KEY.GOALS,
     label: 'course.navItem.landing_page.editor.title.goals'
   },
   {
-    key: SECTION_KEYS.LESSONS,
-    label: 'course.navItems.nav_lessons'
+    key: NAV_ITEM_KEY.CERTIFICATE,
+    label: 'course.navItem.landing_page.editor.title.certificate'
   },
   {
-    key: SECTION_KEYS.REVIEWS,
+    key: NAV_ITEM_KEY.LESSONS,
+    label: 'course.navItems.nav_content'
+  },
+  {
+    key: NAV_ITEM_KEY.REVIEWS,
     label: 'course.navItem.landing_page.editor.title.reviews'
   },
   {
-    key: SECTION_KEYS.INSTRUCTOR,
+    key: NAV_ITEM_KEY.INSTRUCTOR,
     label: 'course.navItem.landing_page.editor.title.instructor'
   }
 ];

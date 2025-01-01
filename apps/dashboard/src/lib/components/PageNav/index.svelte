@@ -23,7 +23,7 @@
 
 <div
   class="{hideOnMobile &&
-    'hideOnMobile'} header dark:bg-black dark:border-neutral-600 bg-white {!disableSticky &&
+    'hideOnMobile'} header dark:bg-black dark:border-neutral-600 border-b border-gray-200 bg-white {!disableSticky &&
     'sticky'} {dynamicRootClass}"
   style={overidableStyle}
 >
@@ -100,7 +100,6 @@
 
 <style>
   .header {
-    border-bottom: 1px solid var(--border-color);
     min-height: 61px;
     z-index: 1;
   }

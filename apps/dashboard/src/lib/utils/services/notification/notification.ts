@@ -1,4 +1,4 @@
-import { supabase } from '$lib/utils/functions/supabase';
+import { getAccessToken } from '$lib/utils/functions/supabase';
 
 export const NOTIFICATION_NAME = {
   WELCOME_TO_APP: 'WELCOME TO APP',
@@ -29,11 +29,6 @@ const NAME_TO_PATH = {
   [NOTIFICATION_NAME.SUBMISSION_UPDATE]: '/api/email/course/submission_update',
   [NOTIFICATION_NAME.EXERCISE_SUBMISSION_UPDATE]: '/api/email/course/exercise_submission_update',
   [NOTIFICATION_NAME.NEWSFEED]: '/api/email/course/newsfeed'
-};
-
-const getAccessToken = async () => {
-  const { data } = await supabase.auth.getSession();
-  return data.session?.access_token || '';
 };
 
 export const triggerSendEmail = async (name: string, body: { [k: string]: unknown }) => {

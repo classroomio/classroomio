@@ -14,7 +14,7 @@
   }
 </script>
 
-<div class="min-h-[80vh] flex items-center justify-center flex-col w-screen">
+<div class="root flex items-center justify-center flex-col w-screen">
   <img src="https://brand.cdn.clsrio.com/404.png" alt="classroomio_error_image" />
   <div class="flex flex-col items-center justify-center dark:text-white gap-3 w-4/5 lg:w-2/5">
     <p class="text-4xl dark:text-white font-semibold mb-5">
@@ -29,9 +29,15 @@
     </p>
     <PrimaryButton
       variant={VARIANTS.CONTAINED_DARK}
-      label="Go to Home"
+      label="Go Home"
       className="text-lg"
       onClick={handleClick}
     />
   </div>
 </div>
+
+<style>
+  .root {
+    height: calc(100vh - 45px);
+  }
+</style>

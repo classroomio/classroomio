@@ -43,7 +43,8 @@
     },
     "lessons": {
       "error": {
-        "try_later": "Etwas stimmt nicht. Bitte versuchen Sie es später"
+        "try_later": "Etwas stimmt nicht. Bitte versuchen Sie es später",
+        "exercise_not_complete": "Schließen Sie alle Übungen ab, um sie als abgeschlossen zu markieren"
       },
       "success": {
         "complete_marked": "Als abgeschlossen markiert",
@@ -194,7 +195,8 @@
     "team_members": "Teammitglieder",
     "back": "Zurück zu den Einstellungen",
     "download_lessons": "Führen Sie ein Upgrade durch, um Lektionen herunterzuladen",
-    "download_course": "Upgrade zum Download-Kurs"
+    "download_course": "Upgrade zum Download-Kurs",
+    "domain": "Aktualisieren Sie Ihren Plan, um benutzerdefinierte Domänen hinzuzufügen"
   },
   "audience": {
     "title": "Publikum",
@@ -390,9 +392,18 @@
             "goals": "Ziele",
             "reviews": "Rezensionen",
             "instructor": "Lehrer",
-            "pricing": "Preisgestaltung"
+            "pricing": "Preisgestaltung",
+            "certificate": "Zertifikat"
+          },
+          "display_section": "Anzeigebereich",
+          "certificate_form": {
+            "upload_template": "Zertifikatsvorlage"
           }
-        }
+        },
+        "course_content": "Kursinhalte",
+        "modules": "module",
+        "lessons": "Unterricht",
+        "exercises": "Übungen"
       },
       "certificates": {
         "title": "Zertifikate",
@@ -469,13 +480,19 @@
           "invite_sent": "Einladung gesendet",
           "you": "Du",
           "remove": "Entfernen"
-        }
+        },
+        "view": "Sicht",
+        "delete_profile": "Profil löschen"
       },
       "marks": {
         "title": "Markierungen",
         "student": "Student",
         "total": "Gesamt",
-        "no_student": "Kein Student hinzugefügt"
+        "no_student": "Kein Student hinzugefügt",
+        "export": {
+          "csv": "Als CSV exportieren",
+          "pdf": "Als PDF exportieren"
+        }
       },
       "submissions": {
         "title": "Eingereichte Übungen",
@@ -497,7 +514,10 @@
           "accept_grade": "Akzeptieren",
           "reject_grade": "Ablehnen",
           "add_comment_placeholder": "Hinterlasse einen Kommentar",
-          "questions_tried": "Diese Punktzahl wurde aufgrund der Gesamtzahl der Versuche vergeben:"
+          "questions_tried": "Diese Punktzahl wurde aufgrund der Gesamtzahl der Versuche vergeben:",
+          "delete_prompt": "Löschen",
+          "delete_error": "Die Übermittlung konnte nicht gelöscht werden",
+          "delete_success": "Einreichung erfolgreich gelöscht"
         }
       },
       "attendance": {
@@ -735,12 +755,6 @@
           "materials": "Materialien",
           "exercises": "Übungen"
         },
-        "delete_lesson": {
-          "modal_heading": "Löschen",
-          "content": "Sind Sie sicher, dass Sie löschen möchten:",
-          "no": "NEIN",
-          "yes": "Ja"
-        },
         "add_lesson": {
           "button_title": "Hinzufügen",
           "modal_heading": "Neue Lektion hinzufügen",
@@ -753,7 +767,10 @@
           "lock": "Sperren",
           "unlock": "Freischalten",
           "start_reorder": "Neu anordnen",
-          "end_reorder": "Nachbestellung beenden"
+          "end_reorder": "Nachbestellung beenden",
+          "modal_heading_section": "Neuen Abschnitt hinzufügen",
+          "lesson_section_title": "Abschnittstitel",
+          "cancel": "Stornieren"
         },
         "disabled": "Funktion ist deaktiviert",
         "next": "Nächste",
@@ -766,7 +783,16 @@
         },
         "drag": "Ziehen Sie eine Karte, um sie neu anzuordnen",
         "no_lesson": "Noch kein Unterricht",
-        "share_your_knowledge": "Teilen Sie Ihr Wissen mit der Welt, indem Sie ansprechende Lektionen erstellen. Klicken Sie zunächst auf die Schaltfläche „Hinzufügen“."
+        "share_your_knowledge": "Teilen Sie Ihr Wissen mit der Welt, indem Sie ansprechende Lektionen erstellen. Klicken Sie zunächst auf die Schaltfläche „Hinzufügen“.",
+        "heading_v2": "Inhalt",
+        "section_prompt": {
+          "cta": "Abschnitte aktivieren",
+          "header": "Abschnitte aktivieren",
+          "title": "Wir haben Kursabschnitte eingeführt",
+          "description": "Sie können Lektionen jetzt in Abschnitte gruppieren, um Ihre Inhalte zu organisieren und das Lernen für Ihre Schüler reibungsloser zu gestalten.",
+          "activate": "Aktivieren",
+          "cancel": "Stornieren"
+        }
       },
       "news_feed": {
         "heading": "Neuigkeiten",
@@ -797,14 +823,14 @@
     },
     "navItems": {
       "nav_news_feed": "Neuigkeiten",
-      "nav_lessons": "Unterricht",
       "nav_attendance": "Teilnahme",
       "nav_submissions": "Einsendungen",
       "nav_marks": "Markierungen",
       "nav_people": "Menschen",
       "nav_certificates": "Zertifikate",
       "nav_landing_page": "Landingpage",
-      "nav_settings": "Einstellungen"
+      "nav_settings": "Einstellungen",
+      "nav_content": "Inhalt"
     },
     "not_permitted": {
       "header": "Keine Erlaubnis",
@@ -879,16 +905,6 @@
     "create_course": "Kurs erstellen",
     "view_site": "Website ansehen",
     "visit_site": "Besuche die Website",
-    "hero_content": "Vielen Dank für das, was Sie tun ❤️. Sie verändern das Leben von Klassenzimmer zu Klassenzimmer und dank Ihnen ist die Welt ein besserer Ort. 😊",
-    "hero_button": "Bauen Sie weiter 🚀",
-    "your_schedule": "Dein Zeitplan",
-    "today": "Heute",
-    "yesterday": "Gestern",
-    "tomorrow": "Morgen",
-    "no_schedule": "An diesem Tag gibt es keinen Unterricht",
-    "join_call": "Nehmen Sie am Anruf teil",
-    "click_to_join": "Klicken Sie hier, um am Anruf teilzunehmen",
-    "no_call_link": "Für diese Lektion wurde kein Anruflink hinzugefügt. Fragen Sie Ihren Trainer",
     "current_lesson": "Derzeit lernen",
     "your_progress": "Dein Fortschritt",
     "continue": "Weitermachen",
@@ -897,7 +913,23 @@
     "lms_dashboard_hero": "Heute ist ein weiterer Tag, um Sie Ihren Lernzielen näher zu bringen. Geben Sie nicht auf, je mehr Sie lernen, desto besser werden Sie.",
     "dont": "Gib nicht auf",
     "lessons_completed": "Lektionen abgeschlossen",
-    "No_courses_started": "Es wurden keine Kurse gestartet"
+    "no_courses_started": "Es wurden keine Kurse gestartet",
+    "revenue": "Einnahmen",
+    "revenue_description": "Ungefährer Umsatz aus Kursverkäufen",
+    "no_of_courses": "Anzahl der Kurse",
+    "no_courses_description": "Innerhalb dieser Organisation erstellte Kurse",
+    "total_students": "Gesamtzahl der Studierenden",
+    "total_students_description": "Basierend auf den Einschreibungen der Studierenden",
+    "top_courses": "Top-Kurse",
+    "students": "Studenten",
+    "completion": "Fertigstellung",
+    "create_first_course": "Erstellen Sie Ihren ersten Kurs",
+    "create_first_course_description": "Beginnen Sie mit der Erstellung von Kursen, um den Kursfortschritt zu verfolgen",
+    "recent_enrollments": "Aktuelle Anmeldungen",
+    "publish_first_course": "Veröffentlichen Sie Ihren ersten Kurs",
+    "publish_first_course_description": "Um Anmeldungen zu verfolgen, veröffentlichen Sie einen Kurs und laden Sie Studierende ein",
+    "publish_course": "Kurs veröffentlichen",
+    "student": "Student"
   },
   "schedule": {
     "title": "Dein Zeitplan",
@@ -910,12 +942,24 @@
     "settings": {
       "domains": {
         "add": "Hinzufügen",
-        "work_together": "Fügen Sie Ihre Teamkollegen oder Mitarbeiter zu Ihrer Organisation hinzu. Beginnen Sie mit der Zusammenarbeit",
         "url": "URL",
         "update": "Domäne aktualisieren",
         "custom": "Benutzerdefinierten Domain",
         "domain": "Fügen Sie Ihren eigenen Domainnamen hinzu",
-        "title": "Benutzerdefinierten Domain"
+        "title": "Benutzerdefinierten Domain",
+        "save": "Speichern",
+        "your_domain": "Ihre Domain",
+        "custom_domain_error": "Sie können eine Top-Level-Domain nicht als benutzerdefinierte Domain hinzufügen. Verwenden Sie stattdessen eine Subdomain wie „Kurse.[IhreWebsite].com“ oder „www.[IhreWebsite].com“.",
+        "custom_domain_success": "Benutzerdefinierte Domäne erfolgreich hinzugefügt",
+        "dns_description": "Legen Sie bei Ihrem DNS-Anbieter den folgenden Eintrag fest, um fortzufahren:",
+        "dns_type": "Typ",
+        "dns_value": "Wert",
+        "dns_name": "Name",
+        "refresh": "Aktualisieren",
+        "remove": "Entfernen",
+        "custom_favicon": "Benutzerdefiniertes Favicon",
+        "custom_code": "Benutzerdefinierter Code",
+        "custom_domain_not_classroomio": "Domain darf „classroomio“ nicht enthalten"
       },
       "customize-lms": {
         "title": "LMS anpassen",
@@ -1072,7 +1116,8 @@
       "learn": "Erfahren Sie mehr",
       "month": "Monat",
       "monthly": "Monatlich",
-      "annually": "Jährlich"
+      "annually": "Jährlich",
+      "save": "Sparen Sie 2 Monate"
     },
     "plan_names": {
       "free": "Frei",
@@ -1186,6 +1231,11 @@
           "video": "Video",
           "image": "Bild"
         }
+      },
+      "background": {
+        "title": "Hintergrundbild",
+        "show_background": "Hintergrund anzeigen",
+        "hide_background": "Hintergrund ausblenden"
       }
     },
     "organization": {
@@ -1196,9 +1246,9 @@
         "update_organization": "Organisation aktualisieren",
         "team": {
           "heading": "Team",
-          "sub_heading": "Richten Sie Ihre Website ein",
           "body": "Fügen Sie Ihrer Organisation Teamkollegen hinzu, damit Sie beide an Projekten zusammenarbeiten können.",
-          "button": "Team verwalten"
+          "button": "Team verwalten",
+          "sub_heading": "Stellen Sie Ihr Team zusammen"
         },
         "custom_domain": {
           "heading": "Benutzerdefinierten Domain",
@@ -1208,7 +1258,9 @@
         },
         "theme": {
           "heading": "Thema",
-          "sub_heading": "Legen Sie Ihre Markenfarbe fest"
+          "sub_heading": "Legen Sie Ihre Markenfarbe fest",
+          "custom_theme": "Benutzerdefiniertes Thema",
+          "add_theme": "Thema hinzufügen"
         },
         "customize_lms": {
           "heading": "LMS anpassen",
@@ -1229,7 +1281,10 @@
       },
       "profile_picture": {
         "heading": "Profilbild",
-        "upload_image": "Bild hochladen"
+        "upload_image": "Bild hochladen",
+        "file_size": "Maximale Dateigröße:",
+        "accepted": "Akzeptiert:",
+        "validation_error": "Die Dateigröße überschreitet die maximale Grenze:"
       }
     },
     "tabs": {
@@ -1249,7 +1304,29 @@
     "email": "Deine E-Mail",
     "password": "Ihr Passwort",
     "forgot": "Passwort vergessen?",
-    "login": "Anmeldung"
+    "login": "Anmeldung",
+    "login_with": "oder loggen Sie sich mit ein",
+    "signup_with": "oder melden Sie sich an",
+    "already_have_account": "Sie haben bereits ein Konto?",
+    "not_registered_yet": "Noch nicht registriert?",
+    "signup": "Melden Sie sich an",
+    "signup_with_google": "Melden Sie sich bei Google an",
+    "login_with_google": "Melden Sie sich mit Google an",
+    "create_to_join": "Erstellen Sie ein kostenloses Konto, um Mitglied zu werden",
+    "login_to_join": "Melden Sie sich an, um beizutreten",
+    "validation": {
+      "unable_to_create_profile": "Profil kann nicht erstellt werden",
+      "user_cannot_be_created": "Benutzer kann nicht erstellt werden"
+    },
+    "fields": {
+      "email": "Ihre E-Mail",
+      "full_name": "Vollständiger Name",
+      "password": "Ihr Passwort",
+      "confirm_password": "Passwort bestätigen",
+      "password_helper_message": "Das Passwort muss mehr als 6 Zeichen lang sein",
+      "create_account": "Benutzerkonto erstellen"
+    },
+    "create_account": "Benutzerkonto erstellen"
   },
   "welcome_modal": {
     "we_at": "Wir bei",
@@ -1272,7 +1349,9 @@
     "what_brings": "Was bringt dich dazu",
     "how": "Wie sind Sie auf uns aufmerksam geworden?",
     "back": "Zurück",
-    "continue": "Weitermachen"
+    "continue": "Weitermachen",
+    "employees": "Bilden Sie meine Mitarbeiter aus",
+    "customers": "Erstellen Sie Kurse für meine Kunden"
   },
   "verify_email_modal": {
     "heading": "Bestätigen Sie Ihre E-Mail",
@@ -1290,6 +1369,17 @@
   },
   "specialization": {
     "course_tag": "Spezialisierung"
+  },
+  "profileMenu": {
+    "profile": "PROFIL",
+    "current_org": "AKTUELLE ORGANISATION",
+    "free_tools": "KOSTENLOSE WERKZEUGE",
+    "progress": "Fortschrittsbericht",
+    "timer": "Aktivitätstimer",
+    "tic_tac": "Tictac-Zehe",
+    "see_more": "Mehr sehen",
+    "whats_new": "Was ist neu",
+    "launch_week": "Startwoche"
   },
   "validations": {
     "invalid_type_error": "Darf nicht leer sein",
@@ -1591,5 +1681,35 @@
     "goto_pathway": "Gehen Sie zu Pathway",
     "completed": "Vollendet",
     "of": "von"
+  },
+  "delete_modal": {
+    "label": "Löschen",
+    "content": "Bist du sicher?",
+    "no": "NEIN",
+    "yes": "Ja"
+  },
+  "analytics": {
+    "courses": "Kurse",
+    "progress": "Fortschritt",
+    "progress_description": "{value, number} von {total, number} abgeschlossen",
+    "incomplete": "Unvollständig",
+    "completed": "Vollendet",
+    "complete": "vollständig",
+    "last_seen": "Zuletzt gesehen",
+    "a_while_ago": "vor einiger Zeit",
+    "exercises": "Übungen",
+    "graded": "Benotet",
+    "not_graded": "Nicht benotet",
+    "enrolled_courses": "Eingeschriebene Kurse",
+    "enrolled_courses_description": "Alle eingeschriebenen Kurse",
+    "overall_course_progress": "Gesamtkursfortschritt",
+    "overall_course_progress_description": "Prozentsatz der abgeschlossenen Lektionen",
+    "total_average_grade": "Gesamtdurchschnittsnote",
+    "total_average_grade_description": "Basierend auf den Übungsnoten im gesamten Kurs",
+    "overall_course_progress_user_description": "Basierend auf dem Abschluss der Lektion",
+    "assignment_completion": "Abschluss der Aufgabe",
+    "assignment_completion_description": "Prozentsatz der abgeschlossenen Aufgaben",
+    "average_grade": "Durchschnittsnote",
+    "average_grade_description": "Durchschnittsnote aller abgeschlossenen Aufgaben"
   }
 }

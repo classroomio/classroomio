@@ -174,9 +174,9 @@ Through a carefully crafted curriculum, you''ll learn the core concepts of MVC, 
 --
 
 INSERT INTO "public"."profile" ("id", "fullname", "username", "avatar_url", "created_at", "updated_at", "email", "can_add_course", "role", "goal", "source", "metadata", "telegram_chat_id", "is_email_verified") VALUES
-	('01676a50-bb56-4c5e-8a61-fb9e9190fb10', 'Alice', 'alice1700647772421', 'https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/avatar.png', '2023-11-22 10:09:32.429935+00', '2023-11-22 10:09:32.429935+00', 'test@test.com', true, NULL, 'explore', 'friends-family', NULL, NULL, true),
-	('7ac00503-8519-43c8-a5ea-b79aeca900b1', 'Elon Gates', 'admin1702735478395', 'https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/avatar.png', '2023-12-16 14:04:38.401211+00', '2023-12-16 14:04:38.401211+00', 'admin@test.com', true, NULL, 'sell-online', 'articles', NULL, NULL, true),
-	('0c256e75-aa40-4f62-8d30-0217ca1c60d9', 'John Doe', 'student1702919337513', 'https://tapaozmyjsuykgerrfkt.supabase.co/storage/v1/object/public/avatars/avatar.png', '2023-12-18 17:08:57.517768+00', '2023-12-18 17:08:57.517768+00', 'student@test.com', true, NULL, NULL, NULL, NULL, NULL, true);
+	('01676a50-bb56-4c5e-8a61-fb9e9190fb10', 'Alice', 'alice1700647772421', 'https://pgrest.classroomio.com/storage/v1/object/public/avatars/avatar.png', '2023-11-22 10:09:32.429935+00', '2023-11-22 10:09:32.429935+00', 'test@test.com', true, NULL, 'explore', 'friends-family', NULL, NULL, true),
+	('7ac00503-8519-43c8-a5ea-b79aeca900b1', 'Elon Gates', 'admin1702735478395', 'https://pgrest.classroomio.com/storage/v1/object/public/avatars/avatar.png', '2023-12-16 14:04:38.401211+00', '2023-12-16 14:04:38.401211+00', 'admin@test.com', true, NULL, 'sell-online', 'articles', NULL, NULL, true),
+	('0c256e75-aa40-4f62-8d30-0217ca1c60d9', 'John Doe', 'student1702919337513', 'https://pgrest.classroomio.com/storage/v1/object/public/avatars/avatar.png', '2023-12-18 17:08:57.517768+00', '2023-12-18 17:08:57.517768+00', 'student@test.com', true, NULL, NULL, NULL, NULL, NULL, true);
 
 
 

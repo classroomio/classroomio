@@ -1,24 +1,24 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import ComingSoon from '$lib/components/ComingSoon/index.svelte';
+  import { validateForm } from '$lib/components/Courses/functions';
+  import { courses, createCourseModal } from '$lib/components/Courses/store';
+  import TextArea from '$lib/components/Form/TextArea.svelte';
+  import TextField from '$lib/components/Form/TextField.svelte';
   import Modal from '$lib/components/Modal/index.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { ROLE } from '$lib/utils/constants/roles';
+  import { supabase } from '$lib/utils/functions/supabase';
+  import { t } from '$lib/utils/functions/translations';
+  import { addDefaultNewsFeed, addGroupMember } from '$lib/utils/services/courses';
+  import { capturePosthogEvent } from '$lib/utils/services/posthog';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
+  import { COURSE_TYPE, COURSE_VERSION } from '$lib/utils/types';
   import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
   import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
-  import { courses, createCourseModal } from '$lib/components/Courses/store';
-  import { validateForm } from '$lib/components/Courses/functions';
-  import { ROLE } from '$lib/utils/constants/roles';
-  import { addGroupMember, addDefaultNewsFeed } from '$lib/utils/services/courses';
-  import { supabase } from '$lib/utils/functions/supabase';
-  import { profile } from '$lib/utils/store/user';
-  import { currentOrg } from '$lib/utils/store/org';
-  import { goto } from '$app/navigation';
-  import { capturePosthogEvent } from '$lib/utils/services/posthog';
-  import { t } from '$lib/utils/functions/translations';
-  import { COURSE_TYPE } from '$lib/utils/types';
-  import ComingSoon from '$lib/components/ComingSoon/index.svelte';
 
   let isLoading = false;
   let errors = {
@@ -85,6 +85,7 @@
         title,
         description,
         type: type,
+        version: COURSE_VERSION.V2,
         group_id
       })
       .select();
@@ -142,18 +143,19 @@
   onClose={() => onClose($page.url.pathname)}
   bind:open
   width="w-4/5 md:w-2/5 md:min-w-[600px]"
+  containerClass="max-w-2xl mx-auto"
   modalHeading={$t('courses.new_course_modal.heading')}
 >
   {#if step === 0}
     <div>
-      <h2 class="text-xl font-medium my-5">
+      <h2 class="my-5 text-xl font-medium">
         {$t('courses.new_course_modal.type_selector_title')}
       </h2>
 
-      <div class="flex flex-col md:flex-row gap-2 justify-between items-center my-8">
+      <div class="my-8 flex flex-col items-center justify-evenly gap-4 md:flex-row">
         {#each options as option}
           <button
-            class="w-11/12 md:w-[261px] md:h-[240px] p-5 rounded-md dark:bg-neutral-700 border-2 {option.type ===
+            class="w-11/12 rounded-md border-2 p-5 dark:bg-neutral-700 md:h-[240px] md:w-[261px] {option.type ===
             type
               ? 'border-primary-400'
               : `border-gray-200 dark:border-neutral-600 ${
@@ -163,7 +165,7 @@
             type="button"
             on:click={!option.isDisabled ? () => (type = option.type) : undefined}
           >
-            <div class="w-full flex flex-row-reverse h-[70%]">
+            <div class="flex h-[70%] w-full flex-row-reverse">
               {#if option.type === type}
                 <CheckmarkFilledIcon
                   size={16}
@@ -175,19 +177,19 @@
             </div>
 
             <div>
-              <p class="font-bold text-start flex items-center">
+              <p class="flex items-center text-start font-bold">
                 <span class="mr-2 text-sm">{option.title}</span>
                 {#if option.isDisabled}
                   <ComingSoon />
                 {/if}
               </p>
-              <p class="text-xs font-light text-start">{option.subtitle}</p>
+              <p class="text-start text-xs font-light">{option.subtitle}</p>
             </div>
           </button>
         {/each}
       </div>
 
-      <div class="mt-8 flex items-center flex-row-reverse">
+      <div class="mt-8 flex flex-row-reverse items-center">
         <PrimaryButton
           className="px-6 py-3"
           label={$t('courses.new_course_modal.next')}
@@ -198,7 +200,7 @@
     </div>
   {:else}
     <form on:submit|preventDefault={createCourse}>
-      <div class="flex items-end space-x-2 mb-4">
+      <div class="mb-4 flex items-end space-x-2">
         <TextField
           label={$t('courses.new_course_modal.course_name')}
           bind:value={$createCourseModal.title}

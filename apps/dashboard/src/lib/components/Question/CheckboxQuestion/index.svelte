@@ -1,28 +1,30 @@
 <script lang="ts">
   import CodeSnippet from '$lib/components/CodeSnippet/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import Checkbox from '$lib/components/Form/Checkbox.svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import Grade from '$lib/components/Question/Grade.svelte';
   import { t } from '$lib/utils/functions/translations';
+  import QuestionTitle from '../QuestionTitle.svelte';
   import ReasonBox from '../ReasonBox.svelte';
-  import { course } from '$lib/components/Course/store';
-  import { COURSE_TYPE } from '$lib/utils/types';
 
   export let title = '';
   export let index = 1;
   export let code;
   export let name = '';
-  export let options = [];
-  export let onSubmit = () => {};
+  export let options: { value: string; label: string }[] = [];
+  export let onSubmit = (a: string, b: string[]) => {};
   export let onPrevious = () => {};
-  export let defaultValue = [];
+  export let defaultValue: string[] = [];
   export let disablePreviousButton = false;
   export let isLast = false;
   export let disabled = false;
   export let isPreview = false;
-  export let nextButtonProps = {};
+  export let nextButtonProps = {
+    isDisabled: false,
+    isActive: false
+  };
   export let grade: number | undefined;
   export let gradeMax = 0;
   export let disableGrading = false;
@@ -34,7 +36,7 @@
   let gradeWithAI = false;
 
   function getVal(form, name) {
-    let values = [];
+    let values: string[] = [];
     const checkboxEl = form.elements[name];
 
     for (let i = 0, len = checkboxEl.length; i < len; i++) {
@@ -77,21 +79,15 @@
     gradeWithAI = false;
     grade = 0;
   }
-  $: {
-    gradeWithAI = isGradeWithAI;
-  }
+
+  $: gradeWithAI = isGradeWithAI;
 </script>
 
 <form on:submit|preventDefault={handleFormSubmit}>
   <div class="flex items-center justify-between">
-    <HtmlRender className="mt-4">
+    <HtmlRender className="mt-4 {typeof grade === 'number' && 'w-4/5'}" disableMaxWidth>
       <svelte:fragment slot="content">
-        <span class={`${typeof grade === 'number' ? 'w-3/4' : ''} flex gap-1`}>
-          <h3>{index}</h3>
-          <h3>
-            {title}
-          </h3>
-        </span>
+        <QuestionTitle {index} {title} />
       </svelte:fragment>
     </HtmlRender>
     {#if !hideGrading}
@@ -106,7 +102,7 @@
   <div class="ml-4">
     {#each options as option}
       <button
-        class="cursor-pointer text-left my-2 border-2 border-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-neutral-800 w-full {getValidationClassName(
+        class="my-2 w-full cursor-pointer rounded-md border-2 border-gray-300 text-left hover:bg-gray-200 dark:hover:bg-neutral-800 {getValidationClassName(
           option
         )}"
         type="button"
@@ -127,7 +123,7 @@
   {/if}
 
   {#if !isPreview}
-    <div class="mt-3 flex items-center justify-between w-full">
+    <div class="mt-3 flex w-full items-center justify-between">
       <PrimaryButton
         onClick={handlePrevious}
         label={$t('course.navItem.lessons.exercises.all_exercises.previous')}

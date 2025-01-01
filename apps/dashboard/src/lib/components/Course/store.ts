@@ -1,9 +1,9 @@
-import { writable } from 'svelte/store';
-import type { Writable } from 'svelte/store';
-import { lessons } from './components/Lesson/store/lessons';
 import { ROLE } from '$lib/utils/constants/roles';
-import type { Course, GroupStore } from '$lib/utils/types';
-import { COURSE_TYPE } from '$lib/utils/types';
+import type { Course, GroupPerson, GroupStore, Lesson, LessonSection } from '$lib/utils/types';
+import { COURSE_TYPE, COURSE_VERSION } from '$lib/utils/types';
+import type { Writable } from 'svelte/store';
+import { writable } from 'svelte/store';
+import { lessons, lessonSections } from './components/Lesson/store/lessons';
 
 export const defaultCourse: Course = {
   id: '',
@@ -20,6 +20,7 @@ export const defaultCourse: Course = {
   updated_at: new Date().toDateString(),
   attendance: [],
   polls: [],
+  version: COURSE_VERSION.V2,
   metadata: {
     requirements: '',
     description: '',
@@ -84,7 +85,7 @@ export async function setCourse(data: Course, setLesson = true) {
       tutors: [],
       students: [],
       people: []
-    }) as GroupStore;
+    }) as unknown as GroupStore;
 
     if (Array.isArray(groupData.members)) {
       for (const member of groupData.members) {
@@ -94,7 +95,7 @@ export async function setCourse(data: Course, setLesson = true) {
           groupData.tutors.push({
             ...member.profile,
             memberId: member.id
-          });
+          } as GroupPerson);
         }
       }
 
@@ -107,17 +108,22 @@ export async function setCourse(data: Course, setLesson = true) {
   }
 
   if (setLesson) {
-    const orderedLessons = (data.lessons || [])
-      .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
-      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-    // .map((lesson) => ({
-    //   ...lesson,
-    //   profile: lesson.profile && tutorsById[lesson.profile.id],
-    // }));
+    const orderedLessons = sortLesson(data.lessons);
     lessons.set(orderedLessons);
+
+    if (data.lesson_section) {
+      const sections = data.lesson_section?.map((section) => {
+        const lessons = (data.lessons || []).filter((lesson) => lesson.section_id === section.id);
+        section.lessons = sortLesson(lessons);
+        return section;
+      });
+
+      lessonSections.set(sortLessonSection(sections));
+    }
   }
 
   delete data.lessons;
+  delete data?.lesson_section;
 
   if (data.metadata && !Object.values(data.metadata)) {
     data.metadata = {
@@ -146,4 +152,16 @@ export async function setCourse(data: Course, setLesson = true) {
     data.certificate_theme = 'professional';
   }
   course.set(data);
+}
+
+function sortLesson(lessons: Lesson[] = []) {
+  return lessons
+    .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+}
+
+function sortLessonSection(sections: LessonSection[] = []) {
+  return sections
+    .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 }

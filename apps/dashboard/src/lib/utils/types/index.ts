@@ -41,7 +41,7 @@ export interface GroupStore {
   people: GroupPerson[];
   members?: GroupPerson[];
   memberId?: string;
-};
+}
 
 export interface CustomQuestionType {
   id: number;
@@ -106,6 +106,9 @@ interface CourseMetadata {
     description: string;
     imgUrl: string;
   };
+  certificate?: {
+    templateUrl: string;
+  };
   reviews?: Array<Review>;
   lessonTabsOrder?: Array<Tabs>;
   grading?: boolean;
@@ -137,12 +140,13 @@ export interface PathwayMetadata {
     imgUrl: string;
   };
   showDiscount?: boolean;
-  allowNewStudent?: boolean;
   reward?: {
     show: boolean;
     description: string;
   };
   discount: number;
+  allowNewStudent: boolean;
+  sectionDisplay?: Record<string, boolean>;
 }
 
 export interface LessonCommentInsertPayload {
@@ -235,10 +239,15 @@ export enum COURSE_TYPE {
   SELF_PACED = 'SELF_PACED',
   LIVE_CLASS = 'LIVE_CLASS'
 }
+export enum COURSE_VERSION {
+  V1 = 'V1', // with only lesson
+  V2 = 'V2' // lessons are grouped into sections
+}
 export interface Course {
   title: any; // type unknown;
   description: string; // type unknown;
   type: COURSE_TYPE;
+  version: COURSE_VERSION;
   overview?: any; // type unknown;
   id?: string /* primary key */;
   created_at: string;
@@ -266,6 +275,7 @@ export interface Course {
     is_present: boolean;
     id: number;
   }[];
+  lesson_section?: LessonSection[];
   lessons?: Lesson[];
   polls: { status: string }[];
 }
@@ -278,7 +288,7 @@ export interface PathwayCourse {
   order: number;
   is_unlocked: boolean;
   created_at: string;
-  updated_at:string;
+  updated_at: string;
 }
 
 export interface Pathway {
@@ -353,6 +363,7 @@ export enum VideoType {
 
 export interface LessonPage {
   id?: string | null;
+  title: '';
   totalExercises: number;
   totalComments: number;
   locale: LOCALE;
@@ -387,6 +398,7 @@ export interface Lesson {
   videos?: []; // type unknown;
   slide_url?: any; // type unknown;
   course_id: string /* foreign key to course.id */;
+  section_id?: string /* foreign key to course.id */;
   id: string /* primary key */;
   created_at: string;
   updated_at?: string;
@@ -400,6 +412,16 @@ export interface Lesson {
   course?: Course;
   profile?: Profile;
   lesson_completion: LessonCompletion[];
+  totalExercises?: { count: number }[];
+}
+
+export interface LessonSection {
+  id: string;
+  title: string;
+  order: number;
+  course_id: string /* foreign key to course.id */;
+  lessons: Lesson[];
+  created_at: string;
 }
 
 export interface Exercise {

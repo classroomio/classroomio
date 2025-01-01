@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { slide } from 'svelte/transition';
+  import IconButton from '$lib/components/IconButton/index.svelte';
+  import SideBarIcons from '$lib/components/Org/SidebarIcons.svelte';
+  import { NavClasses } from '$lib/utils/constants/reusableClass';
   import ChevronDownIcon from 'carbon-icons-svelte/lib/ChevronDown.svelte';
   import ChevronUpIcon from 'carbon-icons-svelte/lib/ChevronUp.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
-  import { NavClasses } from '$lib/utils/constants/reusableClass';
-  import SideBarIcons from '$lib/components/Org/SidebarIcons.svelte';
+  import { slide } from 'svelte/transition';
 
   export let label: string = '';
   export let id: string;
@@ -26,7 +26,7 @@
 <div>
   <a
     on:click={handleIsExpanded}
-    class="item relative my-1 flex items-center gap-2.5 px-2.5 py-2 cursor-pointer {NavClasses.item} {isGroupActive &&
+    class="item relative my-1 flex cursor-pointer items-center gap-2.5 px-2.5 py-2 {NavClasses.item} {isGroupActive &&
       NavClasses.active} w-[95%]"
     {href}
   >
@@ -47,7 +47,7 @@
     {/if}
   </a>
   {#if isExpanded}
-    <div in:slide out:slide class="flex flex-col items-center gap-1 w-[95%]">
+    <div in:slide out:slide class="flex w-[95%] flex-col items-center gap-1">
       <slot />
     </div>
   {/if}

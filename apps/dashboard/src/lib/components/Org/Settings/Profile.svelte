@@ -1,19 +1,17 @@
 <script>
-  import { Grid, Row, Column } from 'carbon-components-svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import SectionTitle from '../SectionTitle.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import UploadImage from '$lib/components/UploadImage/index.svelte';
-  import { supabase } from '$lib/utils/functions/supabase';
-  import { profile } from '$lib/utils/store/user';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import LogoutButton from '$lib/components/Buttons/Logout/index.svelte';
+  import UploadImage from '$lib/components/UploadImage/index.svelte';
   import generateUUID from '$lib/utils/functions/generateUUID';
-  import { t } from '$lib/utils/functions/translations';
-  import LanguagePicker from './LanguagePicker.svelte';
-  import { handleLocaleChange } from '$lib/utils/functions/translations';
+  import { supabase } from '$lib/utils/functions/supabase';
+  import { handleLocaleChange, t } from '$lib/utils/functions/translations';
   import { updateProfileValidation } from '$lib/utils/functions/validator';
+  import { profile } from '$lib/utils/store/user';
+  import { Column, Grid, Row } from 'carbon-components-svelte';
+  import SectionTitle from '../SectionTitle.svelte';
+  import LanguagePicker from './LanguagePicker.svelte';
 
   let avatar = '';
   let loading = false;
@@ -39,6 +37,7 @@
         email: $profile.email,
         locale
       };
+      console.log('updates', updates);
 
       if (avatar) {
         const filename = `user/${generateUUID()}.webp`;
@@ -129,6 +128,5 @@
       isDisabled={loading}
       onClick={handleUpdate}
     />
-    <LogoutButton />
   </Row>
 </Grid>

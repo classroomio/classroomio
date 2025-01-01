@@ -1,24 +1,3 @@
-import phpSyntax from './001_php_syntax';
-import phpComments from './002_php_comments';
-import phpVariables from './003_php_variables';
-import phpEcho from './004_php_echo';
-import phpDataTypes from './005_php_dataTypes';
-import phpString from './006_php_string';
-import phpNumbers from './007_php_numbers';
-import phpMath from './008_php_math';
-import phpConstants from './009_php_constants';
-import phpOperators from './010_php_operators';
-import phpConditionals from './011_php_conditionals';
-import phpSwitch from './012_php_switch';
-import phpLoops from './013_php_loops';
-import phpFunctions from './014_php_functions';
-import phpArrays from './015_php_arrays';
-import phpSuperglobal from './016_php_superGlobal';
-import phpRegex from './017_php_regex';
-import phpForms from './018_php_forms';
-import phpFormValidation from './019_php_formValidation';
-import phpFormRequired from './020_php_formRequired';
-
 export const PHP_IDS: { [key: string]: string } = {
   PHP_SYNTAX: 'PHP_SYNTAX',
   PHP_COMMENTS: 'PHP_COMMENTS',
@@ -43,24 +22,24 @@ export const PHP_IDS: { [key: string]: string } = {
 };
 
 export const PHP_TEMPLATES = {
-  [PHP_IDS.PHP_SYNTAX]: phpSyntax,
-  [PHP_IDS.PHP_COMMENTS]: phpComments,
-  [PHP_IDS.PHP_VARIABLES]: phpVariables,
-  [PHP_IDS.PHP_ECHO]: phpEcho,
-  [PHP_IDS.PHP_DATATYPES]: phpDataTypes,
-  [PHP_IDS.PHP_STRING]: phpString,
-  [PHP_IDS.PHP_NUMBERS]: phpNumbers,
-  [PHP_IDS.PHP_MATH]: phpMath,
-  [PHP_IDS.PHP_CONSTANTS]: phpConstants,
-  [PHP_IDS.PHP_OPERATORS]: phpOperators,
-  [PHP_IDS.PHP_CONDITIONALS]: phpConditionals,
-  [PHP_IDS.PHP_SWITCH]: phpSwitch,
-  [PHP_IDS.PHP_LOOPS]: phpLoops,
-  [PHP_IDS.PHP_FUNCTIONS]: phpFunctions,
-  [PHP_IDS.PHP_ARRAYS]: phpArrays,
-  [PHP_IDS.PHP_SUPERGLOBAL]: phpSuperglobal,
-  [PHP_IDS.PHP_REGEX]: phpRegex,
-  [PHP_IDS.PHP_FORMS]: phpForms,
-  [PHP_IDS.PHP_FORMVALIDATION]: phpFormValidation,
-  [PHP_IDS.PHP_FORMREQUIRED]: phpFormRequired
+  [PHP_IDS.PHP_SYNTAX]: async () => (await import('./001_php_syntax')).default,
+  [PHP_IDS.PHP_COMMENTS]: async () => (await import('./002_php_comments')).default,
+  [PHP_IDS.PHP_VARIABLES]: async () => (await import('./003_php_variables')).default,
+  [PHP_IDS.PHP_ECHO]: async () => (await import('./004_php_echo')).default,
+  [PHP_IDS.PHP_DATATYPES]: async () => (await import('./005_php_dataTypes')).default,
+  [PHP_IDS.PHP_STRING]: async () => (await import('./006_php_string')).default,
+  [PHP_IDS.PHP_NUMBERS]: async () => (await import('./007_php_numbers')).default,
+  [PHP_IDS.PHP_MATH]: async () => (await import('./008_php_math')).default,
+  [PHP_IDS.PHP_CONSTANTS]: async () => (await import('./009_php_constants')).default,
+  [PHP_IDS.PHP_OPERATORS]: async () => (await import('./010_php_operators')).default,
+  [PHP_IDS.PHP_CONDITIONALS]: async () => (await import('./011_php_conditionals')).default,
+  [PHP_IDS.PHP_SWITCH]: async () => (await import('./012_php_switch')).default,
+  [PHP_IDS.PHP_LOOPS]: async () => (await import('./013_php_loops')).default,
+  [PHP_IDS.PHP_FUNCTIONS]: async () => (await import('./014_php_functions')).default,
+  [PHP_IDS.PHP_ARRAYS]: async () => (await import('./015_php_arrays')).default,
+  [PHP_IDS.PHP_SUPERGLOBAL]: async () => (await import('./016_php_superGlobal')).default,
+  [PHP_IDS.PHP_REGEX]: async () => (await import('./017_php_regex')).default,
+  [PHP_IDS.PHP_FORMS]: async () => (await import('./018_php_forms')).default,
+  [PHP_IDS.PHP_FORMVALIDATION]: async () => (await import('./019_php_formValidation')).default,
+  [PHP_IDS.PHP_FORMREQUIRED]: async () => (await import('./020_php_formRequired')).default
 };

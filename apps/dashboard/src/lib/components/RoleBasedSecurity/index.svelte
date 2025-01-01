@@ -1,13 +1,13 @@
 <script lang="ts">
-  import { profile } from '$lib/utils/store/user';
-  import { ROLE } from '$lib/utils/constants/roles';
   import { isOrgAdmin } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
   import type { GroupPerson } from '$lib/utils/types';
   import { group as courseGroup } from '../Course/store';
   import { group as pathwaysGroup } from '../Pathways/store';
 
   export let allowedRoles: number[] = [];
   export let onDenied = () => {};
+  // Since orgAdmin can see all, we need a way to show the content only to students
   export let onlyStudent = false;
 
   let show: boolean = false;
@@ -32,12 +32,10 @@
     }
   }
 
-  $: {
-    if (onlyStudent) {
-      show = userRole === ROLE.STUDENT;
-    } else {
-      show = isAllowed(userRole) || $isOrgAdmin;
-    }
+  $: if (onlyStudent) {
+    show = isAllowed(userRole);
+  } else {
+    show = isAllowed(userRole) || $isOrgAdmin;
   }
 </script>
 

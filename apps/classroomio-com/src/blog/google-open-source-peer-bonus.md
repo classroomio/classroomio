@@ -1,6 +1,7 @@
 ---
 title: 'Google Open Source Peer Bonus'
 description: 'I am happy to announce that we were selected for the 2024 Google Peer Open Source Bonus'
+imageUrl: 'https://assets.cdn.clsrio.com/blog/google-os-peer-bonus-classroomio.png'
 date: '2024-05-25'
 author: Rotimi Best
 avatar: /blog/best.jpg

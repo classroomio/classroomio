@@ -1,17 +1,17 @@
-import { PUBLIC_SERVER_URL } from '$env/static/public';
+import { env } from '$env/dynamic/public';
 
 const sendEmail = async (
   emailDataArray: {
     from?: string;
-    to: any;
+    to: string;
     subject: string;
-    content: any;
-    replyTo?: any;
+    content: string;
+    replyTo?: string;
     isPersonalEmail?: boolean;
   }[]
 ) => {
   try {
-    const response = await fetch(`${PUBLIC_SERVER_URL}/sendEmail`, {
+    const response = await fetch(`${env.PUBLIC_SERVER_URL}/sendEmail`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

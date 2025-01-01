@@ -2,24 +2,24 @@
   import TextField from '$lib/components/Form/TextField.svelte';
 
   export let label = '';
-  export let value;
-  export let checked;
-  export let name;
+  export let value = '';
+  export let checked = false;
+  export let name = '';
   export let isEditable = false;
   export let disabled = false;
   export let className = '';
-  export let onChange = (e) => {};
+  export let onChange = () => {};
   export let onInputChange = (e) => {};
 </script>
 
 <label
-  class="{className} inline-flex items-center w-full {disabled
+  class="{className} inline-flex w-full items-center {disabled
     ? 'cursor-not-allowed'
     : 'cursor-pointer'}"
 >
   <input
     type="checkbox"
-    class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
+    class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 focus:ring-offset-0"
     {name}
     {value}
     disabled={disabled || isEditable}
@@ -37,7 +37,7 @@
       />
     </div>
   {:else}
-    <span class="dark:text-white ml-2">{label}</span>
+    <span class="ml-2 dark:text-white">{label}</span>
   {/if}
 
   <slot name="iconbutton" />

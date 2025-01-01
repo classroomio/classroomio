@@ -95,13 +95,17 @@
         courseName: data.name
       });
 
-      // Send notification to teacher(s) that a student has joined the course.
-      triggerSendEmail(NOTIFICATION_NAME.TEACHER_STUDENT_JOINED, {
-        to: teachers[0],
-        courseName: data.name,
-        studentName: $profile.fullname,
-        studentEmail: $profile.email
-      });
+      // Send notification to all teacher(s) that a student has joined the course.
+      Promise.all(
+        teachers.map((email) =>
+          triggerSendEmail(NOTIFICATION_NAME.TEACHER_STUDENT_JOINED, {
+            to: email,
+            courseName: data.name,
+            studentName: $profile.fullname,
+            studentEmail: $profile.email
+          })
+        )
+      );
 
       // go to lms
       return goto('/lms');

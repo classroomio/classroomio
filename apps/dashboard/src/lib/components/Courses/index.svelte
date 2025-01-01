@@ -1,23 +1,23 @@
 <script lang="ts">
   import Box from '$lib/components/Box/index.svelte';
   import Card from '$lib/components/Courses/components/Card/index.svelte';
-  import List from '$lib/components/Courses/components/List/index.svelte';
   import CardLoader from '$lib/components/Courses/components/Card/Loader.svelte';
-  import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
+  import List from '$lib/components/Courses/components/List/index.svelte';
   import { courseMetaDeta } from '$lib/components/Courses/store';
-  import type { Course, Pathway } from '$lib/utils/types';
-  import { globalStore } from '$lib/utils/store/app';
-  import {
-    StructuredList,
-    StructuredListHead,
-    StructuredListRow,
-    StructuredListCell,
-    StructuredListBody
-  } from 'carbon-components-svelte';
-  import { t } from '$lib/utils/functions/translations';
-  import { isMobile } from '$lib/utils/store/useMobile';
+  import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
   import type { LMSCourse } from '$lib/components/LMS/store';
   import { getPathwayCompletedCoursesLength } from '$lib/utils/functions/pathway';
+  import { t } from '$lib/utils/functions/translations';
+  import { globalStore } from '$lib/utils/store/app';
+  import { isMobile } from '$lib/utils/store/useMobile';
+  import type { Pathway } from '$lib/utils/types';
+  import {
+    StructuredList,
+    StructuredListBody,
+    StructuredListCell,
+    StructuredListHead,
+    StructuredListRow
+  } from 'carbon-components-svelte';
 
   export let courses: LMSCourse[] = [];
   export let emptyTitle = $t('courses.course_card.empty_title');
@@ -56,7 +56,7 @@
 
 <!-- <CopyCourseModal /> -->
 
-<div class={`w-full my-4 mx-auto`}>
+<div class="mx-auto my-4 w-full">
   {#if $courseMetaDeta.isLoading}
     <section class={`${$courseMetaDeta.isLoading || courses ? 'cards-container' : ''} `}>
       <CardLoader />
@@ -111,7 +111,7 @@
       </StructuredListBody>
     </StructuredList>
   {:else}
-    <section class={`${$courseMetaDeta.isLoading || courses ? 'cards-container' : ''} `}>
+    <section class={`relative ${$courseMetaDeta.isLoading || courses ? 'cards-container' : ''} `}>
       {#each courses as courseData}
         {#key courseData.id}
           <Card
@@ -121,7 +121,6 @@
             title={courseData.title}
             description={courseData.description}
             isPublished={courseData.is_published}
-            cost={courseData.cost}
             type={courseData.type}
             isLearningPath={courseData.isPathway}
             totalCourse={courseData.total_course}
@@ -143,10 +142,10 @@
   <Box className="w-full">
     <CoursesEmptyIcon />
     {#if searching}
-      <h3 class="dark:text-white text-2xl my-5">{$t('search.no_course')}</h3>
+      <h3 class="my-5 text-2xl dark:text-white">{$t('search.no_course')}</h3>
     {:else}
-      <h3 class="dark:text-white text-2xl my-5">{emptyTitle}</h3>
-      <p class="dark:text-white w-1/3 text-center">
+      <h3 class="my-5 text-2xl dark:text-white">{emptyTitle}</h3>
+      <p class="w-1/3 text-center dark:text-white">
         {emptyDescription}
       </p>
     {/if}

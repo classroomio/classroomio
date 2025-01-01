@@ -40,7 +40,7 @@
       role="presentation"
     >
       <div
-        class="flex flex-wrap gap-3 md:gap-0 items-center justify-end md:justify-between border border-l-0 border-r-0 border-t-0 border-gray-100 dark:border-neutral-600 p-4 px-5 {headerClass}"
+        class="{headerClass} flex items-center justify-between border border-l-0 border-r-0 border-t-0 border-gray-100 p-4 px-5 dark:border-neutral-600"
       >
         <div class="flex items-center gap-3">
           <slot name="headerLeftBtn" />
@@ -65,7 +65,7 @@
         <slot />
       </div>
 
-      <div class="p-4 border-t border-gray-100 dark:border-neutral-600 {buttonClass}">
+      <div class="border-t border-gray-100 p-4 dark:border-neutral-600 {buttonClass}">
         <slot name="buttons" />
       </div>
     </div>
