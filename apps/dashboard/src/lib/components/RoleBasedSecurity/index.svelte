@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { browser } from '$app/environment';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import type { GroupPerson } from '$lib/utils/types';
@@ -27,7 +28,7 @@
 
     userRole = courseUser?.role_id ?? pathwaysUser?.role_id ?? null;
 
-    if (!$isOrgAdmin && !isAllowed(userRole)) {
+    if (!$isOrgAdmin && !isAllowed(userRole) && browser) {
       onDenied();
     }
   }
