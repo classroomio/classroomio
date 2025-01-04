@@ -1,25 +1,22 @@
 <script lang="ts">
-  import {
-    Tag,
-    ImageLoader,
-    SkeletonPlaceholder,
-    ContextMenu,
-    ContextMenuDivider,
-    ContextMenuOption
-  } from 'carbon-components-svelte';
-  import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
+  import { goto } from '$app/navigation';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import CopyFile from 'carbon-icons-svelte/lib/CopyFile.svelte';
-  import Share from 'carbon-icons-svelte/lib/Share.svelte';
-  import UserFollow from 'carbon-icons-svelte/lib/UserFollow.svelte';
-  import { t } from '$lib/utils/functions/translations';
-  import { COURSE_TYPE } from '$lib/utils/types';
-  import type { CourseTag } from '$lib/utils/types';
-  import RadioButtonChecked from 'carbon-icons-svelte/lib/RadioButtonChecked.svelte';
-  import GrowthIcon from 'carbon-icons-svelte/lib/Growth.svelte';
-  import UserProfileIcon from 'carbon-icons-svelte/lib/UserProfile.svelte';
   import { calcCourseDiscount } from '$lib/utils/functions/course';
+  import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
+  import { t } from '$lib/utils/functions/translations';
+  import type { CourseTag } from '$lib/utils/types';
+  import { COURSE_TYPE } from '$lib/utils/types';
+  import {
+    ImageLoader,
+    OverflowMenu,
+    OverflowMenuItem,
+    SkeletonPlaceholder,
+    Tag
+  } from 'carbon-components-svelte';
+  import GrowthIcon from 'carbon-icons-svelte/lib/Growth.svelte';
+  import RadioButtonChecked from 'carbon-icons-svelte/lib/RadioButtonChecked.svelte';
+  import UserProfileIcon from 'carbon-icons-svelte/lib/UserProfile.svelte';
 
   export let bannerImage: string | undefined;
   export let id = '';
@@ -45,8 +42,6 @@
   };
   export let tags: CourseTag[] = [];
 
-  let target: any;
-
   $: formatter = getCurrencyFormatter(currency);
 
   function handleCloneCourse() {
@@ -55,24 +50,15 @@
   }
 
   function handleShareCourse() {
-    // TODO: Share course functionality
-    alert('WIP: Share course');
+    goto(`/courses/${id}/settings#share`);
   }
 
   function handleInvite() {
-    // TODO: Invite functionality
-    alert('WIP: Invite people to course');
+    goto(`/courses/${id}/people?add=true`);
   }
 
   function handleDeleteCourse() {
-    // TODO: Delete course functionality
-    alert('WIP: Delete course');
-  }
-
-  function getCourseUrl() {
-    return isOnLandingPage || isExplore
-      ? `/course/${slug}`
-      : `/courses/${id}${isLMS ? '/lessons?next=true' : ''}`;
+    goto(`/courses/${id}/settings#delete`);
   }
 
   const COURSE_TAG: Record<
@@ -108,49 +94,58 @@
     pricingData.cost ?? 0,
     !!pricingData.showDiscount
   );
+
+  $: courseUrl =
+    isOnLandingPage || isExplore
+      ? `/course/${slug}`
+      : `/courses/${id}${isLMS ? '/lessons?next=true' : ''}`;
 </script>
 
-{#if !isLMS && !isOnLandingPage}
-  <ContextMenu {target}>
-    <ContextMenuOption
-      indented
-      labelText={$t('courses.course_card.context_menu.clone')}
-      icon={CopyFile}
-      on:click={handleCloneCourse}
-    />
-    <ContextMenuOption
-      indented
-      labelText={$t('courses.course_card.context_menu.share')}
-      icon={Share}
-      on:click={handleShareCourse}
-    />
-    <ContextMenuOption
-      indented
-      labelText={$t('courses.course_card.context_menu.invite')}
-      icon={UserFollow}
-      on:click={handleInvite}
-    />
-    <ContextMenuDivider />
-    <ContextMenuOption
-      kind="danger"
-      labelText={$t('courses.course_card.context_menu.delete')}
-      on:click={handleDeleteCourse}
-    />
-  </ContextMenu>
-{/if}
-
-<a
-  rel="prefetch"
-  bind:this={target}
-  href={getCourseUrl()}
-  class="text-black border border-gray dark:border-neutral-600 rounded w-full max-w-[320px] relative hover:scale-95 transition-all ease-in-out"
+<div
+  role="button"
+  tabindex="0"
+  on:click={(e) => {
+    goto(courseUrl);
+  }}
+  on:keydown={(e) => {
+    if (e.key === 'Enter') {
+      goto(courseUrl);
+    }
+  }}
+  class="border-gray group relative w-full max-w-[320px] rounded border text-black dark:border-neutral-600"
 >
   <div class="p-4">
     <div class="relative mb-5">
+      {#if !isLMS && !isOnLandingPage}
+        <OverflowMenu
+          class="absolute right-2 top-2 z-50 rounded-full bg-gray-200 opacity-0 transition-all delay-150  duration-200 ease-in-out group-hover:opacity-100 dark:bg-neutral-800"
+          size="sm"
+          on:click={(e) => e.stopPropagation()}
+        >
+          <OverflowMenuItem
+            text={$t('courses.course_card.context_menu.clone')}
+            on:click={handleCloneCourse}
+          />
+          <OverflowMenuItem
+            text={$t('courses.course_card.context_menu.share')}
+            on:click={handleShareCourse}
+          />
+          <OverflowMenuItem
+            text={$t('courses.course_card.context_menu.invite')}
+            on:click={handleInvite}
+          />
+          <OverflowMenuItem
+            danger
+            text={$t('courses.course_card.context_menu.delete')}
+            on:click={handleDeleteCourse}
+          />
+        </OverflowMenu>
+      {/if}
+
       <ImageLoader
         src={bannerImage}
         alt="Course Logo"
-        class="h-[200px] w-full rounded dark:border dark:border-neutral-600 relative"
+        class="relative h-[200px] w-full rounded dark:border dark:border-neutral-600"
       >
         <svelte:fragment slot="loading">
           <SkeletonPlaceholder style="width: 100%; height: 200px;" />
@@ -160,7 +155,7 @@
       {#if type}
         {@const tag = COURSE_TAG[type]}
         <span
-          class="absolute bottom-2 left-2 z-10 text-xs capitalize bg-primary-50 rounded-sm p-1 flex items-center gap-1 font-mono"
+          class="bg-primary-50 absolute bottom-2 left-2 z-10 flex items-center gap-1 rounded-sm p-1 font-mono text-xs capitalize"
         >
           <svelte:component this={tag.icon} size={16} class={tag.iconStyle} />
           {tag.label}
@@ -168,17 +163,17 @@
       {/if}
     </div>
 
-    <h3 class="text-xl dark:text-white title">{title}</h3>
-    <p class="mt-2 text-sm text-gray-500 dark:text-gray-300 description">
+    <h3 class="title text-xl dark:text-white">{title}</h3>
+    <p class="description mt-2 text-sm text-gray-500 dark:text-gray-300">
       {description}
     </p>
 
     {#if tags && tags.length > 0 && tags.every((tag) => tag !== null)}
-      <div class="flex gap-3 items-center flex-wrap mt-2">
+      <div class="mt-2 flex flex-wrap items-center gap-3">
         {#each tags as tag}
           <button
             type="button"
-            class="rounded-sm px-3 py-1 text-xs bg-gray-50 flex justify-center items-center border"
+            class="flex items-center justify-center rounded-sm border bg-gray-50 px-3 py-1 text-xs"
             >{tag}</button
           >
         {/each}
@@ -187,7 +182,7 @@
   </div>
 
   <div
-    class="px-4 py-2 border border-gray dark:border-neutral-600 border-b-0 border-l-0 border-r-0 flex justify-between {isLMS &&
+    class="border-gray flex justify-between border border-b-0 border-l-0 border-r-0 px-4 py-2 dark:border-neutral-600 {isLMS &&
       'items-center'}"
   >
     <div>
@@ -195,7 +190,7 @@
         {totalLessons}
         {$t('courses.course_card.lessons_number')}
       </p>
-      <p class="text-xs py-2">
+      <p class="py-2 text-xs">
         {#if isOnLandingPage}
           <span class="px-2">
             {#if !cost}
@@ -212,10 +207,10 @@
         {:else if isLMS}
           {#if !isExplore}
             <div class="flex items-center gap-2">
-              <div class=" relative bg-[#EAEAEA] w-[50px] h-1">
+              <div class=" relative h-1 w-[50px] bg-[#EAEAEA]">
                 <div
                   style="width:{progressRate}%"
-                  class={`absolute top-0 left-0 bg-primary-700 h-full`}
+                  class={`bg-primary-700 absolute left-0 top-0 h-full`}
                 />
               </div>
               <p class="text-xs text-[#656565] dark:text-white">{progressRate}%</p>
@@ -243,7 +238,7 @@
       />
     {:else if !isOnLandingPage}
       <div class="flex flex-col justify-between">
-        <p class="text-xs pl-2 dark:text-white">
+        <p class="pl-2 text-xs dark:text-white">
           {totalStudents}
           {$t('courses.course_card.students')}
         </p>
@@ -251,13 +246,9 @@
       </div>
     {/if}
   </div>
-</a>
+</div>
 
 <style>
-  a,
-  a:hover {
-    text-decoration: none;
-  }
   .title,
   .description {
     height: 42px;

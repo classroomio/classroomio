@@ -3,10 +3,10 @@ import { env } from '$env/dynamic/public';
 const sendEmail = async (
   emailDataArray: {
     from?: string;
-    to: any;
+    to: string;
     subject: string;
-    content: any;
-    replyTo?: any;
+    content: string;
+    replyTo?: string;
     isPersonalEmail?: boolean;
   }[]
 ) => {

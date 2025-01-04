@@ -1,14 +1,17 @@
 <script>
+  import { page as pageStore } from '$app/stores';
+  import Avatar from '$lib/components/Avatar/index.svelte';
+  import { t } from '$lib/utils/functions/translations';
+  import { currentOrg, orgAudience } from '$lib/utils/store/org';
   import {
     DataTable,
+    DataTableSkeleton,
+    Link,
+    Pagination,
     Toolbar,
     ToolbarContent,
-    ToolbarSearch,
-    Pagination,
-    DataTableSkeleton
+    ToolbarSearch
   } from 'carbon-components-svelte';
-  import { orgAudience } from '$lib/utils/store/org';
-  import { t } from '$lib/utils/functions/translations';
 
   export let isLoading = false;
 
@@ -32,6 +35,22 @@
         <ToolbarSearch persistent value={searchValue} shouldFilterRows bind:filteredRowIds />
       </ToolbarContent>
     </Toolbar>
+    <svelte:fragment slot="cell-header" let:header>
+      {header.value}
+    </svelte:fragment>
+    <svelte:fragment slot="cell" let:row let:cell>
+      {#if cell.key === 'name'}
+        <Link
+          class="flex items-center gap-2"
+          href={`${$pageStore.url.href}/${row.id}/${$currentOrg.id}`}
+        >
+          <Avatar src={row.avatar_url} width="w-5" height="h-5" />
+          {cell.value}
+        </Link>
+      {:else}
+        {cell.value}
+      {/if}
+    </svelte:fragment>
   </DataTable>
 {/if}
 

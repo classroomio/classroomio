@@ -43,7 +43,8 @@
     },
     "lessons": {
       "error": {
-        "try_later": "Đã xảy ra sự cố - Vui lòng thử lại sau"
+        "try_later": "Đã xảy ra sự cố - Vui lòng thử lại sau",
+        "exercise_not_complete": "Hoàn thành tất cả các bài tập để đánh dấu là hoàn thành"
       },
       "success": {
         "complete_marked": "Được đánh dấu là hoàn thành",
@@ -159,7 +160,8 @@
     "generic": {
       "success_delete": "Đã xoá thành công",
       "try_again": "Lỗi - Vui lòng thử lại sau"
-    }
+    },
+    "success_delete": "Đã xóa thành công"
   },
   "exercises": {
     "heading": "Bài tập",
@@ -479,7 +481,9 @@
           "invite_sent": "Lời mời đã gửi",
           "you": "Bạn",
           "remove": "Di dời"
-        }
+        },
+        "view": "Xem",
+        "delete_profile": "Xóa hồ sơ"
       },
       "marks": {
         "title": "Điểm",
@@ -571,7 +575,11 @@
         "comments": {
           "title": "Bình luận",
           "you": "Bạn",
-          "placeholder": "Nói gì đó đi"
+          "placeholder": "Nói gì đó đi",
+          "text_area_title": "Để lại một bình luận",
+          "comment_btn": "Bình luận",
+          "load_more_btn": "Tải thêm",
+          "cancel_btn": "Hủy bỏ"
         },
         "exercises": {
           "heading": "Tất cả các bài tập",
@@ -902,16 +910,6 @@
     "create_course": "Tạo khóa học",
     "view_site": "Xem trang web",
     "visit_site": "Truy cập trang web",
-    "hero_content": "Cảm ơn vì những gì bạn làm ❤️. Bạn đang thay đổi cuộc sống của từng lớp học và nhờ có bạn, thế giới trở thành một nơi tốt đẹp hơn. 😊",
-    "hero_button": "Tiếp tục xây dựng 🚀",
-    "your_schedule": "Lịch trình của bạn",
-    "today": "Hôm nay",
-    "yesterday": "Hôm qua",
-    "tomorrow": "Ngày mai",
-    "no_schedule": "Không có bài học vào ngày này",
-    "join_call": "Tham gia cuộc gọi",
-    "click_to_join": "Bấm để tham gia cuộc gọi",
-    "no_call_link": "Không có liên kết cuộc gọi nào được thêm vào bài học này. Hỏi huấn luyện viên của bạn",
     "current_lesson": "Hiện đang học",
     "your_progress": "Sự tiến bộ của bạn",
     "continue": "Tiếp tục",
@@ -920,7 +918,23 @@
     "lms_dashboard_hero": "Hôm nay là một ngày khác để đưa bạn đến gần hơn với mục tiêu học tập của mình. Đừng bỏ cuộc, bạn càng học nhiều thì bạn càng tiến bộ hơn.",
     "dont": "Đừng bỏ cuộc",
     "lessons_completed": "Bài học đã hoàn thành",
-    "No_courses_started": "Không có khóa học nào bắt đầu"
+    "no_courses_started": "Không có khóa học nào bắt đầu",
+    "revenue": "Doanh thu",
+    "revenue_description": "Doanh thu ước tính từ việc bán khóa học",
+    "no_of_courses": "Số lượng khóa học",
+    "no_courses_description": "Các khóa học được tạo trong tổ chức này",
+    "total_students": "Tổng số học sinh",
+    "total_students_description": "Căn cứ vào số lượng tuyển sinh",
+    "top_courses": "Các khóa học hàng đầu",
+    "students": "sinh viên",
+    "completion": "hoàn thành",
+    "create_first_course": "Tạo khóa học đầu tiên của bạn",
+    "create_first_course_description": "Bắt đầu tạo các khóa học để theo dõi tiến độ khóa học",
+    "recent_enrollments": "Đăng ký gần đây",
+    "publish_first_course": "Xuất bản khóa học đầu tiên của bạn",
+    "publish_first_course_description": "Để theo dõi việc đăng ký, xuất bản một khóa học và mời sinh viên",
+    "publish_course": "Xuất bản khóa học",
+    "student": "học sinh"
   },
   "schedule": {
     "title": "Lịch trình của bạn",
@@ -949,7 +963,8 @@
         "refresh": "Làm cho khỏe lại",
         "remove": "Di dời",
         "custom_favicon": "Biểu tượng yêu thích tùy chỉnh",
-        "custom_code": "Mã tùy chỉnh"
+        "custom_code": "Mã tùy chỉnh",
+        "custom_domain_not_classroomio": "Tên miền không thể chứa 'classroomio'"
       },
       "customize-lms": {
         "title": "Tùy chỉnh LMS",
@@ -1291,7 +1306,29 @@
     "email": "Email của bạn",
     "password": "Mật khẩu của bạn",
     "forgot": "Quên mật khẩu?",
-    "login": "Đăng nhập"
+    "login": "Đăng nhập",
+    "login_with": "hoặc đăng nhập với",
+    "signup_with": "hoặc đăng ký với",
+    "already_have_account": "Đã có tài khoản?",
+    "not_registered_yet": "Chưa đăng ký?",
+    "signup": "Đăng ký",
+    "signup_with_google": "Đăng ký với Google",
+    "login_with_google": "Đăng nhập bằng Google",
+    "create_to_join": "Tạo một tài khoản miễn phí để tham gia",
+    "login_to_join": "Đăng nhập để tham gia",
+    "validation": {
+      "unable_to_create_profile": "Không thể tạo hồ sơ",
+      "user_cannot_be_created": "Không thể tạo người dùng"
+    },
+    "fields": {
+      "email": "Email của bạn",
+      "full_name": "Tên đầy đủ",
+      "password": "Mật khẩu của bạn",
+      "confirm_password": "Xác nhận mật khẩu",
+      "password_helper_message": "Mật khẩu phải nhiều hơn 6 ký tự",
+      "create_account": "Tạo tài khoản"
+    },
+    "create_account": "Tạo tài khoản"
   },
   "welcome_modal": {
     "we_at": "Chúng tôi ở",
@@ -1454,5 +1491,29 @@
     "content": "Bạn có chắc không?",
     "no": "KHÔNG",
     "yes": "Đúng"
+  },
+  "analytics": {
+    "courses": "Khóa học",
+    "progress": "Tiến triển",
+    "progress_description": "{value, number} của {total, number} đã hoàn thành",
+    "incomplete": "Chưa hoàn thành",
+    "completed": "Hoàn thành",
+    "complete": "hoàn thành",
+    "last_seen": "Nhìn thấy lần cuối",
+    "a_while_ago": "cách đây một thời gian",
+    "exercises": "Bài tập",
+    "graded": "Đã chấm điểm",
+    "not_graded": "Không được chấm điểm",
+    "enrolled_courses": "Các khóa học đã đăng ký",
+    "enrolled_courses_description": "Tất cả các khóa học đã đăng ký",
+    "overall_course_progress": "Tiến độ chung của khóa học",
+    "overall_course_progress_description": "Tỷ lệ bài học đã hoàn thành",
+    "total_average_grade": "Tổng điểm trung bình",
+    "total_average_grade_description": "Dựa trên điểm bài tập của tất cả các khóa học",
+    "overall_course_progress_user_description": "Căn cứ vào việc hoàn thành bài học",
+    "assignment_completion": "Hoàn thành bài tập",
+    "assignment_completion_description": "Tỷ lệ bài tập đã hoàn thành",
+    "average_grade": "Điểm trung bình",
+    "average_grade_description": "Điểm trung bình của tất cả các bài tập đã hoàn thành"
   }
 }

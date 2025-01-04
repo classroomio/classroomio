@@ -43,7 +43,8 @@
     },
     "lessons": {
       "error": {
-        "try_later": "Algo no está bien. Inténtelo más tarde."
+        "try_later": "Algo no está bien. Inténtelo más tarde.",
+        "exercise_not_complete": "Completa todos los ejercicios para marcarlos como completos."
       },
       "success": {
         "complete_marked": "Marcado como completo",
@@ -159,7 +160,8 @@
     "generic": {
       "success_delete": "Borrado exitosamente",
       "try_again": "Error: inténtelo de nuevo más tarde"
-    }
+    },
+    "success_delete": "Eliminado exitosamente"
   },
   "exercises": {
     "heading": "Ejercicios",
@@ -479,7 +481,9 @@
           "invite_sent": "Invitar enviado",
           "you": "Tú",
           "remove": "Eliminar"
-        }
+        },
+        "view": "Vista",
+        "delete_profile": "Eliminar perfil"
       },
       "marks": {
         "title": "Marcas",
@@ -571,7 +575,11 @@
         "comments": {
           "title": "Comentarios",
           "you": "Tú",
-          "placeholder": "Di algo"
+          "placeholder": "Di algo",
+          "text_area_title": "Deja un comentario",
+          "comment_btn": "Comentario",
+          "load_more_btn": "Cargar más",
+          "cancel_btn": "Cancelar"
         },
         "exercises": {
           "heading": "Todos los ejercicios",
@@ -902,16 +910,6 @@
     "create_course": "Crear curso",
     "view_site": "Ver sitio",
     "visit_site": "Visita el sitio web",
-    "hero_content": "Gracias por lo que haces ❤️. Estás cambiando vidas aula a aula y gracias a ti, el mundo es un lugar mejor. 😊",
-    "hero_button": "Sigue construyendo 🚀",
-    "your_schedule": "Tu agenda",
-    "today": "Hoy",
-    "yesterday": "Ayer",
-    "tomorrow": "Mañana",
-    "no_schedule": "No hay lección en este día",
-    "join_call": "Unirse a la llamada",
-    "click_to_join": "Haga clic para unirse a la llamada",
-    "no_call_link": "No se agregó ningún enlace de llamada para esta lección. Pregúntale a tu entrenador",
     "current_lesson": "Actualmente aprendiendo",
     "your_progress": "Su progreso",
     "continue": "Continuar",
@@ -920,7 +918,23 @@
     "lms_dashboard_hero": "Hoy es otro día para acercarte a tus objetivos de aprendizaje. No te rindas, cuanto más aprendas, mejor serás.",
     "dont": "no te rindas",
     "lessons_completed": "Lecciones completadas",
-    "No_courses_started": "No se iniciaron cursos"
+    "no_courses_started": "No se iniciaron cursos",
+    "revenue": "Ganancia",
+    "revenue_description": "Ingresos aproximados obtenidos de las ventas de cursos",
+    "no_of_courses": "Número de cursos",
+    "no_courses_description": "Cursos creados dentro de esta organización.",
+    "total_students": "Estudiantes totales",
+    "total_students_description": "Basado en la matrícula de estudiantes",
+    "top_courses": "Cursos principales",
+    "students": "estudiantes",
+    "completion": "terminación",
+    "create_first_course": "Crea tu primer curso",
+    "create_first_course_description": "Comience a crear cursos para realizar un seguimiento del progreso del curso",
+    "recent_enrollments": "Inscripciones recientes",
+    "publish_first_course": "Publica tu primer curso",
+    "publish_first_course_description": "Para realizar un seguimiento de las inscripciones, publicar un curso e invitar a estudiantes",
+    "publish_course": "Publicar curso",
+    "student": "alumno"
   },
   "schedule": {
     "title": "Tu agenda",
@@ -949,7 +963,8 @@
         "refresh": "Refrescar",
         "remove": "Eliminar",
         "custom_favicon": "favicon personalizado",
-        "custom_code": "código personalizado"
+        "custom_code": "código personalizado",
+        "custom_domain_not_classroomio": "El dominio no puede contener 'classroomio'"
       },
       "customize-lms": {
         "title": "Personalizar LMS",
@@ -1291,7 +1306,29 @@
     "email": "Tu correo electrónico",
     "password": "Tu contraseña",
     "forgot": "¿Has olvidado tu contraseña?",
-    "login": "Acceso"
+    "login": "Acceso",
+    "login_with": "o inicia sesión con",
+    "signup_with": "o regístrate con",
+    "already_have_account": "¿Ya tienes una cuenta?",
+    "not_registered_yet": "¿Aún no estás registrado?",
+    "signup": "Inscribirse",
+    "signup_with_google": "Regístrate con Google",
+    "login_with_google": "Iniciar sesión con Google",
+    "create_to_join": "Crea una cuenta gratuita para unirte",
+    "login_to_join": "Inicia sesión para unirte",
+    "validation": {
+      "unable_to_create_profile": "No se puede crear el perfil",
+      "user_cannot_be_created": "No se puede crear usuario"
+    },
+    "fields": {
+      "email": "Tu correo electrónico",
+      "full_name": "Nombre completo",
+      "password": "Tu contraseña",
+      "confirm_password": "confirmar Contraseña",
+      "password_helper_message": "La contraseña debe tener más de 6 caracteres.",
+      "create_account": "Crear una cuenta"
+    },
+    "create_account": "Crear una cuenta"
   },
   "welcome_modal": {
     "we_at": "nosotros en",
@@ -1454,5 +1491,29 @@
     "content": "¿Está seguro?",
     "no": "No",
     "yes": "Sí"
+  },
+  "analytics": {
+    "courses": "Cursos",
+    "progress": "Progreso",
+    "progress_description": "{valor, número} de {total, número} completo",
+    "incomplete": "Incompleto",
+    "completed": "Terminado",
+    "complete": "completo",
+    "last_seen": "visto por última vez",
+    "a_while_ago": "hace un tiempo",
+    "exercises": "Ceremonias",
+    "graded": "Calificado",
+    "not_graded": "No calificado",
+    "enrolled_courses": "Cursos inscritos",
+    "enrolled_courses_description": "Todos los cursos inscritos",
+    "overall_course_progress": "Progreso general del curso",
+    "overall_course_progress_description": "Porcentaje de lecciones completadas",
+    "total_average_grade": "Calificación promedio total",
+    "total_average_grade_description": "Basado en calificaciones de ejercicios en todo el curso.",
+    "overall_course_progress_user_description": "Basado en la finalización de la lección",
+    "assignment_completion": "Finalización de la tarea",
+    "assignment_completion_description": "Porcentaje de tareas completadas",
+    "average_grade": "Calificación promedio",
+    "average_grade_description": "Calificación promedio de todas las tareas completadas"
   }
 }

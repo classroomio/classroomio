@@ -1,4 +1,5 @@
 <script>
+  import { fade } from 'svelte/transition';
   import Checkmark from 'carbon-icons-svelte/lib/Checkmark.svelte';
   import PLANS from 'shared/src/plans/data.json';
   import PageSignupCTA from '$lib/PageSignupCTA/index.svelte';
@@ -69,13 +70,16 @@
         <p class="text-lg font-semibold leading-8 text-gray-900 lg:text-xl">
           {PLANS.BASIC.NAME}
         </p>
+
         <p class="lg:text-base mt-4 text-sm font-light leading-6 text-gray-500 lg:leading-6">
           {PLANS.BASIC.DESCRIPTION}
         </p>
+
         <p class="mt-6 flex items-baseline gap-x-1 text-4xl font-medium lg:text-4xl">
           ${PLANS.BASIC.PRICE.MONTHLY}
-          <!-- <sub class="text-base">/mo</sub> -->
         </p>
+        <span class="text-base">Free forever</span>
+
         <a
           class="text-base mt-10 block w-full rounded-md bg-slate-900 py-3 text-center font-medium text-white hover:bg-slate-700 lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
           href={PLANS.BASIC.CTA.LINK}
@@ -83,6 +87,7 @@
         >
           {PLANS.BASIC.CTA.LABEL}
         </a>
+
         <ul class="mt-8 space-y-2 text-sm text-gray-600 lg:space-y-5 xl:mt-10">
           {#each PLANS.BASIC.FEATURES as feature}
             <li class="flex items-center">
@@ -102,13 +107,20 @@
         <p class="text-lg font-semibold leading-8 text-white lg:text-xl">
           {PLANS.EARLY_ADOPTER.NAME}
         </p>
+
         <p class="lg:text-base mt-4 text-sm font-light leading-6 text-white lg:leading-6">
           {PLANS.EARLY_ADOPTER.DESCRIPTION}
         </p>
-        <p class="mt-6 flex items-baseline gap-x-1 text-4xl font-medium text-white lg:text-4xl">
-          ${isYearlyPlan ? PLANS.EARLY_ADOPTER.PRICE.YEARLY : PLANS.EARLY_ADOPTER.PRICE.MONTHLY}
-          <!-- <sub class="text-base">/mo</sub> -->
-        </p>
+
+        {#key isYearlyPlan}
+          <p class="mt-6 flex items-baseline gap-x-1 text-4xl font-medium text-white lg:text-4xl" in:fade>
+            ${isYearlyPlan ? PLANS.EARLY_ADOPTER.PRICE.YEARLY : PLANS.EARLY_ADOPTER.PRICE.MONTHLY}
+          </p>
+          <span class="text-base text-white" in:fade>
+            per {isYearlyPlan ? 'year': 'month'}
+          </span>
+        {/key}
+
         <a
           class="text-base mt-10 block w-full rounded-md bg-white py-3 text-center font-medium text-slate-900 hover:bg-indigo-50 lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
           href={PLANS.EARLY_ADOPTER.CTA.LINK}

@@ -128,6 +128,7 @@
             $course.id,
             getGroupMemberId($group.people, $profile.id)
           );
+
           if (response) {
             submissionResponse = response;
           }
@@ -263,8 +264,8 @@
 {:else if !$questionnaire.questions.length}
   <Box>
     <img src="/images/empty-exercise-icon.svg" alt="Exercise svg" class="my-2.5" />
-    <h2 class="text-xl my-1.5">No question added for this exercise</h2>
-    <p class="text-sm text-center px-44">
+    <h2 class="my-1.5 text-xl">No question added for this exercise</h2>
+    <p class="px-44 text-center text-sm">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
         Click the <span class="text-primary-700">Edit</span> button to add.
       </RoleBasedSecurity>
@@ -276,25 +277,25 @@
       <h2 class="my-1">{$questionnaire.title}</h2>
 
       <div class="flex items-center">
-        <p class="dark:text-white mx-2">
+        <p class="mx-2 dark:text-white">
           <strong>{$questionnaire.questions.length}</strong> questions
         </p>
         |
-        <p class="dark:text-white mx-2">
+        <p class="mx-2 dark:text-white">
           <strong>{getTotalPossibleGrade($questionnaire.questions)}</strong> points.
         </p>
         |
-        <p class="dark:text-white mx-2">All required</p>
+        <p class="mx-2 dark:text-white">All required</p>
         {#if $questionnaire.due_by}
           |
-          <p class="dark:text-white mx-2">
+          <p class="mx-2 dark:text-white">
             <strong>Due by:</strong>
             {new Date($questionnaire.due_by).toLocaleString()}
           </p>
         {/if}
       </div>
 
-      <article class="mt-3 preview prose prose-sm sm:prose p-2">
+      <article class="preview prose prose-sm sm:prose mt-3 p-2">
         {@html $questionnaire.description || 'No desription'}
       </article>
 
@@ -309,26 +310,26 @@
 {:else if $questionnaireMetaData.isFinished}
   {#if !isLoadingAutoSavedData}
     <div class="flex items-center justify-between">
-      <div class="flex flex-col lg:flex-row items-start lg:items-center lg:space-x-4 w-full">
+      <div class="flex w-full flex-col items-start lg:flex-row lg:items-center lg:space-x-4">
         <h2 class="text-xl font-normal">{$questionnaire.title}</h2>
 
         {#if STATUS.GRADED === $questionnaireMetaData.status}
           <span
-            class="status-text bg-green-700 text-white py-1 px-2 text-center"
+            class="status-text bg-green-700 px-2 py-1 text-center text-white"
             title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_graded')}
           >
             {$t('course.navItem.lessons.exercises.all_exercises.view_mode.graded')}
           </span>
         {:else if $course.type === COURSE_TYPE.SELF_PACED}
           <span
-            class="status-text bg-green-700 text-white py-1 px-2 text-center"
+            class="status-text bg-green-700 px-2 py-1 text-center text-white"
             title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_submitted')}
           >
             {$t('course.navItem.lessons.exercises.all_exercises.view_mode.submitted')}
           </span>
         {:else}
           <span
-            class="status-text bg-yellow-600 text-white py-1 px-2 text-center"
+            class="status-text bg-yellow-600 px-2 py-1 text-center text-white"
             title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_pending')}
           >
             {$t('course.navItem.lessons.exercises.all_exercises.view_mode.pending')}
@@ -337,7 +338,7 @@
       </div>
       {#if STATUS.GRADED === $questionnaireMetaData.status && $course.type !== COURSE_TYPE.SELF_PACED}
         <span
-          class="p-6 border-2 border-gray-300 bg-[#F5F8FE] rounded-full h-10 w-10 flex items-center justify-center text-[#2751DA] text-sm font-semibold"
+          class="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-300 bg-[#F5F8FE] p-6 text-sm font-semibold text-[#2751DA]"
           title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_graded')}
         >
           {$questionnaireMetaData.finalTotalGrade}/{$questionnaireMetaData.totalPossibleGrade}
@@ -346,7 +347,7 @@
     </div>
 
     {#if $questionnaireMetaData.status === STATUS.GRADED && $questionnaireMetaData.comment && $course.type !== COURSE_TYPE.SELF_PACED}
-      <div class="flex items-center justify-between bg-primary-700 p-4 text-white rounded-sm mt-3">
+      <div class="bg-primary-700 mt-3 flex items-center justify-between rounded-sm p-4 text-white">
         <span> {$questionnaireMetaData.comment}</span>
       </div>
     {/if}

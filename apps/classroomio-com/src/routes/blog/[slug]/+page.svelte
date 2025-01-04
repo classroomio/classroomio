@@ -1,7 +1,8 @@
 <script lang="ts">
+  import { ChevronLeft } from 'carbon-icons-svelte';
   import Chip from '$lib/Chip/Chip.svelte';
   import { formatDate } from '$lib/utils/formatDate';
-  import { ChevronLeft } from 'carbon-icons-svelte';
+  import BlogListItem from '$lib/Blog/BlogListItem.svelte';
 
   export let data;
 </script>
@@ -24,7 +25,7 @@
         </div>
 
         <!-- Post -->
-        <div class="prose pt-2 pb-4 border-b border-gray-200">
+        <div class="prose pt-2 pb-4 border-b-2 border-gray-200">
           <svelte:component this={data.content} />
           <!-- Tags -->
           <div class="flex gap-2 py-4">
@@ -33,6 +34,19 @@
             {/each}
           </div>
         </div>
+
+        {#if data.relatedPosts.length > 0}
+          <section class="mt-5">
+            <p class="text-xl font-semibold">Related Posts</p>
+            <ul class="flex items-start justify-start gap-3 overflow-x-scroll">
+              {#each data.relatedPosts as post}
+                <li class="py-10 min-w-[80%] sm:w-80 sm:min-w-0">
+                  <BlogListItem {post} isRecommended />
+                </li>
+              {/each}
+            </ul>
+          </section>
+        {/if}
 
         <a
           href="/blog"

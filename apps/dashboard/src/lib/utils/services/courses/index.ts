@@ -1,21 +1,21 @@
-import { get } from 'svelte/store';
-import { supabase } from '$lib/utils/functions/supabase';
-import { isUUID } from '$lib/utils/functions/isUUID';
 import { QUESTION_TYPE } from '$lib/components/Question/constants';
+import { STATUS } from '$lib/utils/constants/course';
+import { isUUID } from '$lib/utils/functions/isUUID';
+import { supabase } from '$lib/utils/functions/supabase';
+import { isOrgAdmin } from '$lib/utils/store/org';
 import type {
-  Lesson,
   Course,
+  Exercise,
+  ExerciseTemplate,
   Group,
   Groupmember,
-  Exercise,
+  Lesson,
   LessonCompletion,
-  ExerciseTemplate,
-  LessonSection
+  LessonSection,
+  ProfileCourseProgress
 } from '$lib/utils/types';
-import { STATUS } from '$lib/utils/constants/course';
-import type { PostgrestSingleResponse, PostgrestError } from '@supabase/supabase-js';
-import type { ProfileCourseProgress } from '$lib/utils/types';
-import { isOrgAdmin } from '$lib/utils/store/org';
+import type { PostgrestError, PostgrestSingleResponse } from '@supabase/supabase-js';
+import { get } from 'svelte/store';
 
 export async function fetchCourses(profileId, orgId) {
   if (!orgId || !profileId) return;
@@ -57,6 +57,18 @@ export async function fetchProfileCourseProgress(
       profile_id_arg: profileId
     })
     .returns<ProfileCourseProgress[]>();
+
+  return { data, error };
+}
+
+export async function checkExercisesComplete(
+  lessonId: Lesson['id'],
+  groupMemberId: Groupmember['id']
+) {
+  const { data, error } = await supabase.rpc('check_if_student_completed_exercises', {
+    lesson_id_arg: lessonId,
+    groupmember_id_arg: groupMemberId
+  });
 
   return { data, error };
 }
@@ -134,10 +146,7 @@ export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']
 
   const { data, error } = response;
 
-  console.log(`error`, error);
-  console.log(`data`, data);
   if (!data || error) {
-    console.log(`data`, data);
     console.log(`fetchCourse => error`, error);
     // return this.redirect(307, '/courses');
     return { data, error };
@@ -244,6 +253,17 @@ export function updatedGroupMember(update: any, match: any) {
 
 export function deleteGroupMember(groupMemberId: Groupmember['id']) {
   return supabase.from('groupmember').delete().match({ id: groupMemberId });
+}
+
+export async function getMarks(courseId) {
+  if (!courseId) return;
+
+  // Gets courses for a particular organisation where the current logged in user is a groupmember
+  const { data: marks } = await supabase
+    .rpc('get_marks')
+    .eq('course_id', courseId);
+
+  return { marks };
 }
 
 export function fetchLesson(lessonId: Lesson['id']) {

@@ -117,10 +117,12 @@ export interface LessonCommentInsertPayload {
   comment: string;
 }
 export interface LessonComment {
+  id: number;
   name: string;
   avatar: string;
   comment: string;
   commentAt: string | Date;
+  groupmember_id: string;
 }
 
 // Generated from https://supabase-schema.vercel.app/
@@ -418,7 +420,7 @@ export interface Review {
   description: string;
 }
 
-interface Tabs {
+export interface Tabs {
   id: number;
   name: string;
 }
