@@ -1,6 +1,14 @@
-import { Video, Notebook, PresentationFile } from 'carbon-icons-svelte';
+import type { Tabs } from '$lib/utils/types';
+import { Notebook, PresentationFile, Video } from 'carbon-icons-svelte';
 
-export let tabs = [
+interface MaterialTab {
+  label: string;
+  icon: any;
+  value: number;
+  badgeValue?: number;
+}
+
+export let tabs: MaterialTab[] = [
   {
     label: 'course.navItem.lessons.materials.tabs.note.title',
     icon: Notebook,
@@ -21,9 +29,9 @@ export let tabs = [
   }
 ];
 
-export function orderedTabs(tabs, settingTabs) {
+export function orderedTabs(tabs: MaterialTab[], settingTabs?: Tabs[]) {
   if (!Array.isArray(settingTabs)) return tabs;
-  const reorderedTabs = [];
+  const reorderedTabs: MaterialTab[] = [];
 
   const tabMap = new Map(tabs.map((tab) => [tab.value, tab]));
 

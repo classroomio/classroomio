@@ -160,7 +160,8 @@
     "generic": {
       "success_delete": "सफलतापूर्वक मिटाया गया",
       "try_again": "त्रुटि - कृपया बाद में पुनः प्रयास करें"
-    }
+    },
+    "success_delete": "सफलतापूर्वक मिटाया गया"
   },
   "exercises": {
     "heading": "अभ्यास",
@@ -574,7 +575,11 @@
         "comments": {
           "title": "टिप्पणियाँ",
           "you": "आप",
-          "placeholder": "कुछ कहो"
+          "placeholder": "कुछ कहो",
+          "text_area_title": "एक टिप्पणी छोड़ें",
+          "comment_btn": "टिप्पणी",
+          "load_more_btn": "और लोड करें",
+          "cancel_btn": "रद्द करना"
         },
         "exercises": {
           "heading": "सभी व्यायाम",

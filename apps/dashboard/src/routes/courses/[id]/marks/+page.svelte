@@ -1,31 +1,29 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
-  import AudioConsoleIcon from 'carbon-icons-svelte/lib/AudioConsole.svelte';
-  import Papa from 'papaparse';
-  import { OverflowMenu, OverflowMenuItem, Loading } from 'carbon-components-svelte';
-  import Download from 'carbon-icons-svelte/lib/Download.svelte';
-  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
-  import PageNav from '$lib/components/PageNav/index.svelte';
-  import PageBody from '$lib/components/PageBody/index.svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import Box from '$lib/components/Box/index.svelte';
-  import { ROLE } from '$lib/utils/constants/roles';
-  import { group } from '$lib/components/Course/store';
-  import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { fetchExercisesByMarks } from '$lib/utils/services/courses';
-  import { getLectureNo } from '$lib/components/Course/function.js';
-  import { fetchMarks } from '$lib/utils/services/marks';
-  import { profile } from '$lib/utils/store/user';
   import { browser } from '$app/environment';
-  import { course } from '$lib/components/Course/store';
+  import { goto } from '$app/navigation';
+  import Box from '$lib/components/Box/index.svelte';
+  import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { getLectureNo } from '$lib/components/Course/function.js';
+  import { course, group } from '$lib/components/Course/store';
+  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
+  import { PageBody, PageNav } from '$lib/components/Page';
+  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import { globalStore } from '$lib/utils/store/app';
+  import { ROLE } from '$lib/utils/constants/roles';
   import { t } from '$lib/utils/functions/translations';
+  import { fetchExercisesByMarks } from '$lib/utils/services/courses';
+  import { fetchMarks } from '$lib/utils/services/marks';
+  import { globalStore } from '$lib/utils/store/app';
   import { currentOrg } from '$lib/utils/store/org';
-  import type { CurrentOrg } from '$lib/utils/types/org';
+  import { profile } from '$lib/utils/store/user';
   import type { GroupPerson } from '$lib/utils/types';
+  import type { CurrentOrg } from '$lib/utils/types/org';
+  import { Loading, OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
+  import AudioConsoleIcon from 'carbon-icons-svelte/lib/AudioConsole.svelte';
+  import Download from 'carbon-icons-svelte/lib/Download.svelte';
   import jsPDF from 'jspdf';
   import autoTable from 'jspdf-autotable';
+  import Papa from 'papaparse';
 
   export let data;
 
@@ -240,19 +238,19 @@
     </PageNav>
 
     <PageBody width="w-full max-w-6xl md:w-11/12">
-      <div id="tableContainer" class="table rounded-md border border-gray-300 w-full">
+      <div id="tableContainer" class="table w-full rounded-md border border-gray-300">
         <div class="flex items-center {borderBottomGrey}">
           <div class="box flex items-center p-3">
-            <p class="dark:text-white w-40">{$t('course.navItem.marks.student')}</p>
+            <p class="w-40 dark:text-white">{$t('course.navItem.marks.student')}</p>
           </div>
           {#each $lessons as lesson, index}
             {#if lessonMapping[lesson.id]}
               <div class="box flex flex-col items-center {borderleftGrey}">
-                <p class="dark:text-white col lesson-number" title={lesson.title}>
+                <p class="col lesson-number dark:text-white" title={lesson.title}>
                   {getLectureNo(index + 1)}
                 </p>
                 <div
-                  class="flex h-full items-center border-r-0 border-t border-b-0 border-l-0 border-gray-300"
+                  class="flex h-full items-center border-b-0 border-l-0 border-r-0 border-t border-gray-300"
                 >
                   {#each Object.keys(lessonMapping[lesson.id]) as exerciseId, index}
                     <p
@@ -268,20 +266,20 @@
             {/if}
           {/each}
           <div class="box flex items-center {borderleftGrey}">
-            <p class="dark:text-white w-20 text-center">{$t('course.navItem.marks.total')}</p>
+            <p class="w-20 text-center dark:text-white">{$t('course.navItem.marks.total')}</p>
           </div>
         </div>
 
         {#each students as student}
-          <div class="flex relative items-center p-3 cursor-pointer {borderBottomGrey}">
-            <div class="w-40 flex items-center">
+          <div class="relative flex cursor-pointer items-center p-3 {borderBottomGrey}">
+            <div class="flex w-40 items-center">
               <img
                 alt="Student avatar"
                 src={student.profile.avatar_url}
-                class="w-8 h-8 rounded-full mr-2"
+                class="mr-2 h-8 w-8 rounded-full"
               />
               <div class="text-sm">
-                <p class="dark:text-white font-semibold">
+                <p class="font-semibold dark:text-white">
                   {student.profile.fullname}
                 </p>
                 <p class="dark:text-white">
@@ -293,7 +291,7 @@
               {#if lessonMapping[lesson.id]}
                 <div class="flex items-center">
                   {#each Object.keys(lessonMapping[lesson.id]) as exerciseId}
-                    <p class="dark:text-white col">
+                    <p class="col dark:text-white">
                       {studentMarksByExerciseId[student.id]
                         ? studentMarksByExerciseId[student.id][exerciseId] || '-'
                         : '-'}
@@ -303,9 +301,9 @@
               {/if}
             {/each}
 
-            <div class="w-20 flex items-center">
+            <div class="flex w-20 items-center">
               <div class="text-sm">
-                <p class="dark:text-white col">
+                <p class="col dark:text-white">
                   {calculateStudentTotal(studentMarksByExerciseId[student.id])}
                 </p>
               </div>

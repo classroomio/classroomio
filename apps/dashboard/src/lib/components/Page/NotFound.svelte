@@ -1,7 +1,7 @@
 <script>
   import { goto } from '$app/navigation';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   export let isOrg = false;
 
@@ -14,17 +14,17 @@
   }
 </script>
 
-<div class="root flex items-center justify-center flex-col w-screen">
+<div class="root flex w-screen flex-col items-center justify-center">
   <img src="https://brand.cdn.clsrio.com/404.png" alt="classroomio_error_image" />
-  <div class="flex flex-col items-center justify-center dark:text-white gap-3 w-4/5 lg:w-2/5">
-    <p class="text-4xl dark:text-white font-semibold mb-5">
+  <div class="flex w-4/5 flex-col items-center justify-center gap-3 dark:text-white lg:w-2/5">
+    <p class="mb-5 text-4xl font-semibold dark:text-white">
       {#if isOrg}
         Organization doesn't exist!
       {:else}
         Page not found
       {/if}
     </p>
-    <p class=" text-gray-700 text-lg text-center dark:text-white mb-5">
+    <p class=" mb-5 text-center text-lg text-gray-700 dark:text-white">
       The page you are looking for doesn't exist or has been moved. Please go back to the homepage.
     </p>
     <PrimaryButton

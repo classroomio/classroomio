@@ -1,14 +1,11 @@
 <script>
-  import NewButton from '../PrimaryContainedButton/index.svelte';
-  import TextField from '../Form/TextField.svelte';
-  import Chip from '../Chip/index.svelte';
   import { t } from '$lib/utils/functions/translations';
+  import Chip from '../Chip/index.svelte';
+  import TextField from '../Form/TextField.svelte';
 
   export let title = '';
   export let overidableStyle = '';
   export let navItems = [];
-  export let addButtonHref = '';
-  export let addButtonLabel = '';
   export let disableSticky = false;
   export let isTitleEditable = false;
   export let onEditComplete = () => {};
@@ -23,21 +20,21 @@
 
 <div
   class="{hideOnMobile &&
-    'hideOnMobile'} header dark:bg-black dark:border-neutral-600 border-b border-gray-200 bg-white {!disableSticky &&
+    'hideOnMobile'} header border-b border-gray-200 bg-white dark:border-neutral-600 dark:bg-black {!disableSticky &&
     'sticky'} {dynamicRootClass}"
   style={overidableStyle}
 >
   <div
     class="{hideOnMobile
       ? 'hidden lg:flex'
-      : ''} {paddingClass} max-w-4xl m-auto flex items-center justify-between min-h-[61px]"
+      : ''} {paddingClass} m-auto flex min-h-[61px] max-w-4xl items-center justify-between"
   >
     {#if !!title}
       {#if isTitleEditable}
         {#if !enterEditTitleMode}
           <button class="w-full" on:click={() => (enterEditTitleMode = true)}>
             <h4
-              class="editable-title hover:bg-gray-100 dark:bg-black px-3 rounded-md overflow-ellipsis"
+              class="editable-title overflow-ellipsis rounded-md px-3 hover:bg-gray-100 dark:bg-black"
             >
               {title}
             </h4>
@@ -56,12 +53,12 @@
           />
         {/if}
       {:else}
-        <div class="flex items-center w-full" {title}>
+        <div class="flex w-full items-center" {title}>
           <slot name="image" />
           <h4
             class="{$$slots.image
               ? 'ml-2'
-              : ''} dark:text-white whitespace-nowrap truncate text-lg font-semibold"
+              : ''} truncate whitespace-nowrap text-lg font-semibold dark:text-white"
           >
             {title}
           </h4>
@@ -69,12 +66,12 @@
       {/if}
     {/if}
     {#if Array.isArray(navItems) && navItems.length}
-      <div class="flex justify-evenly items-center">
+      <div class="flex items-center justify-evenly">
         {#each navItems as item}
           <a
-            class="mr-5 pb-2 text-sm font-bold flex items-center relative {item.isActive
+            class="relative mr-5 flex items-center pb-2 text-sm font-bold {item.isActive
               ? 'text-primary-700'
-              : 'dark:text-white text-black'} hover:no-underline"
+              : 'text-black dark:text-white'} hover:no-underline"
             href={item.href}
           >
             {item.label}
@@ -83,15 +80,12 @@
               <Chip value={item.badgeValue} className="ml-1 bg-gray-300 dark:text-black" />
             {/if}
             <span
-              class="absolute bottom-0 left-0 h-1 bg-primary-700 transition-all ease-in-out duration-500 {item.isActive
+              class="bg-primary-700 absolute bottom-0 left-0 h-1 transition-all duration-500 ease-in-out {item.isActive
                 ? 'w-full'
                 : 'w-0'}"
             />
           </a>
         {/each}
-        {#if addButtonHref}
-          <NewButton href={addButtonHref} label={addButtonLabel} />
-        {/if}
       </div>
     {/if}
     <slot name="widget" />

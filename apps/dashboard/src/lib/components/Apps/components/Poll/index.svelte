@@ -1,7 +1,7 @@
 <script lang="ts">
   import CloseButton from '$lib/components/Buttons/Close/index.svelte';
   import { course, group } from '$lib/components/Course/store';
-  import PageNav from '$lib/components/PageNav/index.svelte';
+  import { PageNav } from '$lib/components/Page';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { getSupabase } from '$lib/utils/functions/supabase';
   import { t } from '$lib/utils/functions/translations';

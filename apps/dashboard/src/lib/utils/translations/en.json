@@ -797,7 +797,11 @@
         "comments": {
           "title": "Comments",
           "you": "You",
-          "placeholder": "Say something"
+          "text_area_title": "Leave a comment",
+          "placeholder": "What do you think about this lesson?",
+          "comment_btn": "Comment",
+          "cancel_btn": "Cancel",
+          "load_more_btn": "Load more"
         },
 
         "polls": {
@@ -1267,6 +1271,7 @@
   "snackbar": {
     "success": "Success",
     "success_update": "Updated successfully",
+    "success_delete": "Deleted successfully",
     "something": "Something went wrong - Please try later",
     "update": "Update",
 

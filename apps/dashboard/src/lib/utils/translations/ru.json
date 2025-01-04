@@ -160,7 +160,8 @@
     "generic": {
       "success_delete": "Удален успешно",
       "try_again": "Ошибка. Повторите попытку позже."
-    }
+    },
+    "success_delete": "Удален успешно"
   },
   "exercises": {
     "heading": "Упражнения",
@@ -574,7 +575,11 @@
         "comments": {
           "title": "Комментарии",
           "you": "Ты",
-          "placeholder": "Скажите что-то"
+          "placeholder": "Скажите что-то",
+          "text_area_title": "Оставить комментарий",
+          "comment_btn": "Комментарий",
+          "load_more_btn": "Загрузить больше",
+          "cancel_btn": "Отмена"
         },
         "exercises": {
           "heading": "Все упражнения",
