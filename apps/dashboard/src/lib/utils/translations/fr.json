@@ -160,7 +160,8 @@
     "generic": {
       "success_delete": "Supprimé avec succès",
       "try_again": "Erreur - Veuillez réessayer plus tard"
-    }
+    },
+    "success_delete": "Supprimé avec succès"
   },
   "exercises": {
     "heading": "Des exercices",
@@ -574,7 +575,11 @@
         "comments": {
           "title": "commentaires",
           "you": "Toi",
-          "placeholder": "Dire quelque chose"
+          "placeholder": "Dire quelque chose",
+          "text_area_title": "Laisser un commentaire",
+          "comment_btn": "Commentaire",
+          "load_more_btn": "Charger plus",
+          "cancel_btn": "Annuler"
         },
         "exercises": {
           "heading": "Tous les exercices",

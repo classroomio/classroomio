@@ -1,53 +1,50 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
   import { env } from '$env/dynamic/public';
+  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
   import {
+    checkExercisesComplete,
     fetchLesson,
-    updateLessonCompletion,
-    checkExercisesComplete
+    updateLessonCompletion
   } from '$lib/utils/services/courses';
-  import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
-  import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
-  import ListChecked from 'carbon-icons-svelte/lib/ListChecked.svelte';
   import { globalStore } from '$lib/utils/store/app';
+  import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
+  import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
+  import ListChecked from 'carbon-icons-svelte/lib/ListChecked.svelte';
 
-  import SendAlt from 'carbon-icons-svelte/lib/SendAlt.svelte';
-  import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { Dropdown } from 'carbon-components-svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import PageNav from '$lib/components/PageNav/index.svelte';
-  import PageBody from '$lib/components/PageBody/index.svelte';
-  import Materials from '$lib/components/Course/components/Lesson/Materials/index.svelte';
-  import Exercises from '$lib/components/Course/components/Lesson/Exercises/index.svelte';
-  import LessonVersionHistory from '$lib/components/Course/components/Lesson/LessonVersionHistory.svelte';
-  import MODES from '$lib/utils/constants/mode';
-  import { group, course } from '$lib/components/Course/store';
-  import Download from 'carbon-icons-svelte/lib/Download.svelte';
-  import ResultOld from 'carbon-icons-svelte/lib/ResultOld.svelte';
-  import OverflowMenuVertical from 'carbon-icons-svelte/lib/OverflowMenuVertical.svelte';
+  import { browser } from '$app/environment';
   import { apps } from '$lib/components/Apps/store';
-  import APPS_CONSTANTS from '$lib/components/Apps/constants';
-  import IconButton from '$lib/components/IconButton/index.svelte';
-  import { getGroupMemberId } from '$lib/components/Course/function';
+  import Exercises from '$lib/components/Course/components/Lesson/Exercises/index.svelte';
+  import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
+  import LessonVersionHistory from '$lib/components/Course/components/Lesson/LessonVersionHistory.svelte';
+  import Materials from '$lib/components/Course/components/Lesson/Materials/index.svelte';
   import {
     lesson,
-    lessons,
     lessonByTranslation,
+    lessons,
     lessonSections
   } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { browser } from '$app/environment';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { getGroupMemberId } from '$lib/components/Course/function';
+  import { course, group } from '$lib/components/Course/store';
+  import IconButton from '$lib/components/IconButton/index.svelte';
+  import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
+  import { PageBody, PageNav } from '$lib/components/Page';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import { COURSE_VERSION, type LessonCompletion, type Lesson } from '$lib/utils/types';
-  import { profile } from '$lib/utils/store/user';
-  import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
-  import { t } from '$lib/utils/functions/translations';
+  import MODES from '$lib/utils/constants/mode';
   import { LANGUAGES } from '$lib/utils/constants/translation';
+  import { t } from '$lib/utils/functions/translations';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
+  import { COURSE_VERSION, type Lesson, type LessonCompletion } from '$lib/utils/types';
+  import { Dropdown } from 'carbon-components-svelte';
   import { ChevronLeft, ChevronRight, Edit, Save } from 'carbon-icons-svelte';
+  import Download from 'carbon-icons-svelte/lib/Download.svelte';
+  import OverflowMenuVertical from 'carbon-icons-svelte/lib/OverflowMenuVertical.svelte';
+  import ResultOld from 'carbon-icons-svelte/lib/ResultOld.svelte';
 
   export let data;
 
@@ -73,7 +70,7 @@
   async function fetchReqData(lessonId = '', isMaterialsTabActive: boolean) {
     const timeout = setTimeout(() => {
       $lesson.isFetching = true;
-    }, 1000);
+    }, 500);
     let lessonData;
     if (isMaterialsTabActive) {
       const lesson = await fetchLesson(lessonId);
@@ -84,9 +81,9 @@
 
     console.log({ lessonData });
 
-    const totalExercises = lessonData?.totalExercises?.[0] && lessonData.totalExercises[0].count;
-    const totalComments = lessonData?.totalComments?.[0] && lessonData.totalComments[0].count;
-    setLesson(lessonData, totalExercises || 0, totalComments || 0);
+    const totalExercises = lessonData?.totalExercises?.[0]?.count || 0;
+    const totalComments = lessonData?.totalComments?.[0]?.count || 0;
+    setLesson(lessonData, totalExercises, totalComments);
     $lesson.isFetching = false;
   }
 
@@ -321,7 +318,7 @@
 
   $: path = $page.url?.pathname?.replace(/\/exercises[\/ 0-9 a-z -]*/, '');
 
-  $: if (data.courseId && browser) {
+  $: if (data.courseId && $profile.id && browser) {
     mode = MODES.view;
     fetchReqData(data.lessonId, data.isMaterialsTabActive);
   }
@@ -414,10 +411,6 @@
   {:else if !!data.lessonId}
     <PageBody
       bind:isPageNavHidden={$globalStore.isStudent}
-      onClick={() => {
-        $apps.open = false;
-        $apps.dropdown = false;
-      }}
       width="lg:w-full xl:w-11/12"
       className="overflow-x-hidden"
     >
@@ -465,14 +458,6 @@
           <CourseIcon />
         </button>
       {/if}
-      <button
-        class="my-2 flex items-center border border-b-0 border-l-0 border-t-0 border-gray-300 px-2 pr-4 disabled:cursor-not-allowed disabled:opacity-10"
-        on:click={() => handleAppClick(APPS_CONSTANTS.APPS.COMMENTS)}
-        disabled={$globalStore.isStudent && !$currentOrg.customization.apps.comments}
-      >
-        <SendAlt size={24} class="carbon-icon" />
-        <span class="ml-1">{$lesson.totalComments}</span>
-      </button>
       <button
         class="my-2 flex items-center border border-b-0 border-l-0 border-t-0 border-gray-300 px-2 pr-4"
         on:click={() => markLessonComplete(data.lessonId)}

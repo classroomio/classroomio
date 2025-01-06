@@ -10,7 +10,7 @@
   import LMSNavigation from '$lib/components/Navigation/lms.svelte';
   import OrgLandingPage from '$lib/components/Org/LandingPage/index.svelte';
   import PlayQuiz from '$lib/components/Org/Quiz/Play/index.svelte';
-  import Restricted from '$lib/components/Page/Restricted.svelte';
+  import { PageRestricted } from '$lib/components/Page';
   import PageLoadProgressBar from '$lib/components/Progress/PageLoadProgressBar.svelte';
   import Snackbar from '$lib/components/Snackbar/index.svelte';
   import UpgradeModal from '$lib/components/Upgrade/Modal.svelte';
@@ -143,7 +143,7 @@
 <Snackbar />
 
 {#if data.org?.is_restricted || $currentOrg.is_restricted}
-  <Restricted />
+  <PageRestricted />
 {:else if data.skipAuth}
   <PlayQuiz />
 {:else if data.isOrgSite && !path}

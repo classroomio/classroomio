@@ -1,29 +1,28 @@
 <script lang="ts">
-  import { page } from '$app/stores';
-  import PageNav from '$lib/components/PageNav/index.svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import Box from '$lib/components/Box/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
-  import {
-    lessons,
-    handleDelete,
-    lessonSections
-  } from '$lib/components/Course/components/Lesson/store/lessons';
-  import PageBody from '$lib/components/PageBody/index.svelte';
-  import DeleteLessonConfirmation from '$lib/components/Course/components/Lesson/DeleteLessonConfirmation.svelte';
-  import { handleAddLessonWidget } from '$lib/components/Course/components/Lesson/store';
-  import { course } from '$lib/components/Course/store';
-  import type { Lesson } from '$lib/utils/types';
-  import { t } from '$lib/utils/functions/translations';
   import { goto } from '$app/navigation';
-  import { COURSE_VERSION } from '$lib/utils/types';
-  import { profile } from '$lib/utils/store/user';
+  import { page } from '$app/stores';
+  import Box from '$lib/components/Box/index.svelte';
+  import ActivateSectionsModal from '$lib/components/Course/components/Lesson/ActivateSectionsModal.svelte';
+  import DeleteLessonConfirmation from '$lib/components/Course/components/Lesson/DeleteLessonConfirmation.svelte';
   import LessonList from '$lib/components/Course/components/Lesson/LessonList.svelte';
   import LessonSectionList from '$lib/components/Course/components/Lesson/LessonSectionList.svelte';
   import NewLessonModal from '$lib/components/Course/components/Lesson/NewLessonModal.svelte';
-  import ActivateSectionsModal from '$lib/components/Course/components/Lesson/ActivateSectionsModal.svelte';
+  import { handleAddLessonWidget } from '$lib/components/Course/components/Lesson/store';
+  import {
+    handleDelete,
+    lessons,
+    lessonSections
+  } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { course } from '$lib/components/Course/store';
+  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
+  import { PageBody, PageNav } from '$lib/components/Page';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import { t } from '$lib/utils/functions/translations';
+  import { profile } from '$lib/utils/store/user';
+  import type { Lesson } from '$lib/utils/types';
+  import { COURSE_VERSION } from '$lib/utils/types';
 
   export let data;
 
@@ -135,7 +134,7 @@
       </Box>
     {:else if lessonsLength > 0}
       {#if reorder}
-        <p class="text-gray-400 text-center dark:text-white italic text-xs">
+        <p class="text-center text-xs italic text-gray-400 dark:text-white">
           {$t('course.navItem.lessons.drag')}
         </p>
       {/if}
@@ -147,10 +146,10 @@
       {/if}
     {:else}
       <Box className="w-full lg:w-11/12 lg:px-4 m-auto">
-        <div class="flex justify-between flex-col items-center">
-          <img src="/images/empty-lesson-icon.svg" alt="Lesson" class="my-2.5 mx-auto" />
-          <h2 class="text-xl my-1.5 font-normal">{$t('course.navItem.lessons.body_header')}</h2>
-          <p class="text-sm text-center text-slate-500">
+        <div class="flex flex-col items-center justify-between">
+          <img src="/images/empty-lesson-icon.svg" alt="Lesson" class="mx-auto my-2.5" />
+          <h2 class="my-1.5 text-xl font-normal">{$t('course.navItem.lessons.body_header')}</h2>
+          <p class="text-center text-sm text-slate-500">
             {$t('course.navItem.lessons.body_content')}
           </p>
         </div>

@@ -1,39 +1,37 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import PinFilled from 'carbon-icons-svelte/lib/PinFilled.svelte';
-  import PageNav from '$lib/components/PageNav/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import PageBody from '$lib/components/PageBody/index.svelte';
-  import { group } from '$lib/components/Course/store';
-  import { profile } from '$lib/utils/store/user';
-  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import { isNewFeedModal } from '$lib/components/Course/components/NewsFeed/store';
-  import NewsFeedCard from '$lib/components/Course/components/NewsFeed/NewsFeedCard.svelte';
+  import Box from '$lib/components/Box/index.svelte';
   import NewFeedModal from '$lib/components/Course/components/NewsFeed/NewFeedModal.svelte';
+  import NewsFeedCard from '$lib/components/Course/components/NewsFeed/NewsFeedCard.svelte';
+  import NewsFeedLoader from '$lib/components/Course/components/NewsFeed/NewsFeedLoader.svelte';
+  import { isNewFeedModal, newsFeed } from '$lib/components/Course/components/NewsFeed/store';
+  import { group } from '$lib/components/Course/store';
+  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
+  import { PageBody, PageNav } from '$lib/components/Page';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import { supabase } from '$lib/utils/functions/supabase';
+  import { t } from '$lib/utils/functions/translations';
   import {
     createComment,
-    deleteNewsFeedComment,
     deleteNewsFeed,
+    deleteNewsFeedComment,
+    fetchNewsFeedReaction,
     fetchNewsFeeds,
     handleEditFeed,
-    toggleFeedIsPinned,
-    fetchNewsFeedReaction
+    toggleFeedIsPinned
   } from '$lib/utils/services/newsfeed';
-  import { newsFeed } from '$lib/components/Course/components/NewsFeed/store';
-  import Box from '$lib/components/Box/index.svelte';
-  import { supabase } from '$lib/utils/functions/supabase';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import type { Feed } from '$lib/utils/types/feed';
   import {
     NOTIFICATION_NAME,
     triggerSendEmail
   } from '$lib/utils/services/notification/notification';
-  import NewsFeedLoader from '$lib/components/Course/components/NewsFeed/NewsFeedLoader.svelte';
-  import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
+  import type { Feed } from '$lib/utils/types/feed';
   import type { CurrentOrg } from '$lib/utils/types/org';
-  import { goto } from '$app/navigation';
+  import PinFilled from 'carbon-icons-svelte/lib/PinFilled.svelte';
 
   export let data;
 
@@ -280,10 +278,10 @@
         </div>
       {:else if !$newsFeed.length}
         <Box>
-          <div class="flex justify-between flex-col items-center w-[90%] md:w-96">
-            <img src="/images/empty-lesson-icon.svg" alt="Lesson" class="my-2.5 mx-auto" />
-            <h2 class="text-xl my-1.5 font-normal">{$t('course.navItem.news_feed.body_header')}</h2>
-            <p class="text-sm text-center text-slate-500">
+          <div class="flex w-[90%] flex-col items-center justify-between md:w-96">
+            <img src="/images/empty-lesson-icon.svg" alt="Lesson" class="mx-auto my-2.5" />
+            <h2 class="my-1.5 text-xl font-normal">{$t('course.navItem.news_feed.body_header')}</h2>
+            <p class="text-center text-sm text-slate-500">
               {$t('course.navItem.news_feed.body_content')}
             </p>
           </div>
@@ -291,7 +289,7 @@
       {:else}
         {#each $newsFeed as feed}
           {#if feed.isPinned}
-            <div class="flex items-center gap-2 mb-3">
+            <div class="mb-3 flex items-center gap-2">
               <PinFilled size={16} />
 
               <p class="text-sm">{$t('course.navItem.news_feed.pinned')}</p>

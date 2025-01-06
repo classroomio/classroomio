@@ -1,38 +1,37 @@
 <script lang="ts">
-  import { flip } from 'svelte/animate';
-  import { dndzone } from 'svelte-dnd-action';
+  import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { SkeletonPlaceholder } from 'carbon-components-svelte';
-  import PageNav from '$lib/components/PageNav/index.svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import MarkExerciseModal from '$lib/components/Course/components/Lesson/Exercise/MarkExerciseModal.svelte';
   import Chip from '$lib/components/Chip/index.svelte';
-  import PageBody from '$lib/components/PageBody/index.svelte';
-  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
-  import { course } from '$lib/components/Course/store';
-  import {
-    fetchSubmissions,
-    updateSubmission,
-    updateQuestionAnswer,
-    deleteSubmission
-  } from '$lib/utils/services/submissions';
+  import MarkExerciseModal from '$lib/components/Course/components/Lesson/Exercise/MarkExerciseModal.svelte';
   import { formatAnswers } from '$lib/components/Course/function.js';
+  import { course } from '$lib/components/Course/store';
+  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
+  import { PageBody, PageNav } from '$lib/components/Page';
+  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import isSubmissionEarly from '$lib/utils/functions/isSubmissionEarly';
   import formatDate from '$lib/utils/functions/formatDate';
-  import {
-    triggerSendEmail,
-    NOTIFICATION_NAME
-  } from '$lib/utils/services/notification/notification';
-  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
-  import { browser } from '$app/environment';
+  import isSubmissionEarly from '$lib/utils/functions/isSubmissionEarly';
   import { t } from '$lib/utils/functions/translations';
+  import {
+    NOTIFICATION_NAME,
+    triggerSendEmail
+  } from '$lib/utils/services/notification/notification';
+  import {
+    deleteSubmission,
+    fetchSubmissions,
+    updateQuestionAnswer,
+    updateSubmission
+  } from '$lib/utils/services/submissions';
+  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import type {
     SubmissionIdData,
     SubmissionItem,
     SubmissionSection
   } from '$lib/utils/types/submission';
+  import { SkeletonPlaceholder } from 'carbon-components-svelte';
+  import { dndzone } from 'svelte-dnd-action';
+  import { flip } from 'svelte/animate';
 
   export let data;
   const { courseId } = data;
@@ -373,23 +372,23 @@
     <PageNav title={$t('course.navItem.submissions.title')} />
 
     <PageBody width="w-full max-w-6xl md:w-11/12 overflow-x-auto">
-      <div class="flex items-center w-full">
+      <div class="flex w-full items-center">
         {#each sections as { id, title, items }, idx (id)}
           <div
-            class="section rounded-md bg-gray-100 dark:bg-black border border-gray-50 dark:border-neutral-600 p-3 h-80 mr-3 overflow-hidden"
+            class="section mr-3 h-80 overflow-hidden rounded-md border border-gray-50 bg-gray-100 p-3 dark:border-neutral-600 dark:bg-black"
             animate:flip={{ duration: flipDurationMs }}
           >
-            <div class="flex items-center mb-2">
+            <div class="mb-2 flex items-center">
               <Chip value={items.length} className="bg-set dark:bg-neutral-800" />
-              <p class="dark:text-white ml-2 font-bold">{title}</p>
+              <p class="ml-2 font-bold dark:text-white">{title}</p>
             </div>
             {#if fetching}
-              <SkeletonPlaceholder style="width: 100%; height: 170px;" class="rounded-md my-2" />
-              <SkeletonPlaceholder style="width: 100%; height: 170px;" class="rounded-md my-2" />
-              <SkeletonPlaceholder style="width: 100%; height: 170px;" class="rounded-md my-2" />
+              <SkeletonPlaceholder style="width: 100%; height: 170px;" class="my-2 rounded-md" />
+              <SkeletonPlaceholder style="width: 100%; height: 170px;" class="my-2 rounded-md" />
+              <SkeletonPlaceholder style="width: 100%; height: 170px;" class="my-2 rounded-md" />
             {:else}
               <div
-                class="content pr-2 overflow-y-auto mb-3"
+                class="content mb-3 overflow-y-auto pr-2"
                 use:dndzone={{
                   items,
                   flipDurationMs,
@@ -402,19 +401,19 @@
                   <div
                     class="{item.isEarly
                       ? 'border-none'
-                      : 'border border-red-700'} w-full my-2 mx-0 rounded-md bg-white dark:bg-neutral-800 py-3 px-3"
+                      : 'border border-red-700'} mx-0 my-2 w-full rounded-md bg-white px-3 py-3 dark:bg-neutral-800"
                     animate:flip={{ duration: flipDurationMs }}
                   >
                     <a
-                      class="flex w-full items-center cursor-pointer text-black mb-2"
+                      class="mb-2 flex w-full cursor-pointer items-center text-black"
                       href={`${$page.url.pathname}?submissionId=${item.id}`}
                     >
                       <img
                         alt="Student avatar"
-                        class="block rounded-full h-6 w-6"
+                        class="block h-6 w-6 rounded-full"
                         src={item.student.avatar_url}
                       />
-                      <p class="dark:text-white ml-2 text-sm">
+                      <p class="ml-2 text-sm dark:text-white">
                         {item.student.username}
                       </p>
                     </a>
@@ -425,15 +424,15 @@
                       {item.exercise.title}
                     </a>
                     <a
-                      class="flex items-center no-underline hover:underline text-black my-2"
+                      class="my-2 flex items-center text-black no-underline hover:underline"
                       href="{$page.url?.pathname?.replace('submissions', 'lessons')}/{item.lesson
                         .id}/exercises/{item.exercise.id}"
                     >
-                      <p class="dark:text-white text-grey text-sm">
+                      <p class="text-grey text-sm dark:text-white">
                         #{item.lesson.title}
                       </p>
                     </a>
-                    <p class="dark:text-white text-gray-500 text-xs">
+                    <p class="text-xs text-gray-500 dark:text-white">
                       {item.submittedAt}
                     </p>
                     <!-- <div class="badge rounded-md px-2 bg-green-500 text-white">

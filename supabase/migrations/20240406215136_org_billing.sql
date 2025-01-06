@@ -8,7 +8,7 @@ create table "public"."organization_plan" (
     "is_active" boolean,
     "deactivated_at" timestamp with time zone,
     "updated_at" timestamp with time zone default now(),
-    "lmz_data" jsonb,
+    "payload" jsonb,
     "triggered_by" bigint
 );
 

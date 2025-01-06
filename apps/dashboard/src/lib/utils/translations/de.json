@@ -160,7 +160,8 @@
     "generic": {
       "success_delete": "Erfolgreich gelöscht",
       "try_again": "Fehler – Bitte versuchen Sie es später noch einmal"
-    }
+    },
+    "success_delete": "Erfolgreich gelöscht"
   },
   "exercises": {
     "heading": "Übungen",
@@ -574,7 +575,11 @@
         "comments": {
           "title": "Kommentare",
           "you": "Du",
-          "placeholder": "Sag etwas"
+          "placeholder": "Sag etwas",
+          "text_area_title": "Hinterlassen Sie einen Kommentar",
+          "comment_btn": "Kommentar",
+          "load_more_btn": "Mehr laden",
+          "cancel_btn": "Stornieren"
         },
         "exercises": {
           "heading": "Alle Übungen",

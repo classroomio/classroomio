@@ -1,9 +1,9 @@
+import { env } from '$env/dynamic/private';
+import { getServerSupabase } from '$lib/utils/functions/supabase.server';
+import { cancelOrgPlan, createOrgPlan } from '$lib/utils/services/org';
 import { json } from '@sveltejs/kit';
 import crypto from 'crypto';
-import { env } from '$env/dynamic/private';
-import { createOrgPlan, cancelOrgPlan } from '$lib/utils/services/org';
 import { PLAN } from 'shared/src/plans/constants';
-import { getServerSupabase } from '$lib/utils/functions/supabase.server';
 
 export async function POST({ request }) {
   try {
@@ -30,10 +30,11 @@ export async function POST({ request }) {
     if (eventType === 'subscription_created' || eventType === 'subscription_resumed') {
       const orgId = body.meta.custom_data.org_id;
       const triggeredBy = body.meta.custom_data.triggered_by;
+      const subscriptionId = body.data.id;
       const isSuccessful = body.data.attributes.status === 'active';
 
       console.log({
-        orgId,
+        subscriptionId,
         triggeredBy,
         isSuccessful
       });
@@ -41,6 +42,7 @@ export async function POST({ request }) {
       if (isSuccessful && orgId) {
         const { data, error } = await createOrgPlan({
           supabase,
+          subscriptionId,
           orgId,
           triggeredBy: parseInt(triggeredBy),
           planName: PLAN.EARLY_ADOPTER,
@@ -57,10 +59,10 @@ export async function POST({ request }) {
         `${eventType}`
       )
     ) {
-      const orgId = body.meta.custom_data.org_id;
+      const subscriptionId = body.data.id;
       const { data, error } = await cancelOrgPlan({
-        orgId,
-        planName: PLAN.EARLY_ADOPTER
+        subscriptionId,
+        data: body.data
       });
 
       if (error) console.error('Error canceling org plan', error);

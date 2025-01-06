@@ -160,7 +160,8 @@
     "generic": {
       "success_delete": "Đã xoá thành công",
       "try_again": "Lỗi - Vui lòng thử lại sau"
-    }
+    },
+    "success_delete": "Đã xóa thành công"
   },
   "exercises": {
     "heading": "Bài tập",
@@ -574,7 +575,11 @@
         "comments": {
           "title": "Bình luận",
           "you": "Bạn",
-          "placeholder": "Nói gì đó đi"
+          "placeholder": "Nói gì đó đi",
+          "text_area_title": "Để lại một bình luận",
+          "comment_btn": "Bình luận",
+          "load_more_btn": "Tải thêm",
+          "cancel_btn": "Hủy bỏ"
         },
         "exercises": {
           "heading": "Tất cả các bài tập",

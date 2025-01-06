@@ -1,8 +1,8 @@
 <script lang="ts">
-  import Modal from './index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { t } from '$lib/utils/functions/translations';
+  import Modal from './index.svelte';
 
   export let open = false;
   export let onDelete = () => {};
@@ -22,7 +22,7 @@
   modalHeading={$t('delete_modal.label')}
 >
   <div>
-    <p class="dark:text-white text-xl text-center">
+    <p class="text-center text-xl dark:text-white">
       {$t('delete_modal.content')}
     </p>
 
