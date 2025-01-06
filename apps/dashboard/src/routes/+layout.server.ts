@@ -21,6 +21,8 @@ interface LoadOutput {
   serverLang: string;
 }
 
+const APP_SUBDOMAINS = env.PRIVATE_APP_SUBDOMAINS.split(',');
+
 export const load = async ({ url, cookies, request }): Promise<LoadOutput> => {
   const response: LoadOutput = {
     orgSiteName: '',
@@ -30,6 +32,8 @@ export const load = async ({ url, cookies, request }): Promise<LoadOutput> => {
     baseMetaTags: getBaseMetaTags(url),
     serverLang: request.headers?.get('accept-language') || ''
   };
+
+  console.log('IS_SELFHOSTED', IS_SELFHOSTED);
 
   // Selfhosted usecase would be here
   if (IS_SELFHOSTED === 'true') {
@@ -72,7 +76,7 @@ export const load = async ({ url, cookies, request }): Promise<LoadOutput> => {
 
   const isDev = dev || isLocalHost;
 
-  if (!url.host.includes('.classroomio.com') && !isLocalHost) {
+  if (isURLCustomDomain(url)) {
     // Custom domain
     response.org = (await getCurrentOrg(url.host, true, true)) || null;
 
@@ -86,7 +90,14 @@ export const load = async ({ url, cookies, request }): Promise<LoadOutput> => {
     response.orgSiteName = response.org?.siteName || '';
     return response;
   } else if (!blockedSubdomain.includes(subdomain)) {
+    if (APP_SUBDOMAINS.includes(subdomain)) {
+      // This is an app domain specified in the .env file
+      return response;
+    }
+
     const answer = !!subdomain;
+
+    console.log('subdomain', subdomain);
 
     response.isOrgSite = debugMode || answer;
     response.orgSiteName = debugMode ? _orgSiteName : subdomain;
@@ -99,13 +110,25 @@ export const load = async ({ url, cookies, request }): Promise<LoadOutput> => {
     }
   } else if (subdomain === 'play' || debugPlay === 'true') {
     response.skipAuth = true;
-  } else if (!env.PRIVATE_APP_SUBDOMAINS.split(',').includes(subdomain) && !isDev) {
+  } else if (!APP_SUBDOMAINS.includes(subdomain) && !isDev) {
     // This case is for anything in our blockedSubdomains
     throw redirect(307, 'https://app.classroomio.com');
   }
 
   return response;
 };
+
+function isURLCustomDomain(url: URL) {
+  if (url.host.includes('localhost')) {
+    return false;
+  }
+
+  const notCustomDomainHosts = [env.PRIVATE_APP_HOST || '', 'classroomio.com', 'vercel.app'].filter(
+    Boolean
+  );
+
+  return !notCustomDomainHosts.some((host) => url.host.endsWith(host));
+}
 
 function getBaseMetaTags(url: URL) {
   return Object.freeze({
@@ -144,8 +167,6 @@ function getBaseMetaTags(url: URL) {
     }
   });
 }
-
-
 
 function getSubdomain(url: URL) {
   const host = url.host.replace('www.', '');

@@ -136,10 +136,13 @@ export interface OrganizationPlan {
   activated_at: string;
   deactivated_at: string;
   org_id: string;
+  subscription_id: string;
+  triggered_by: number;
   plan_name: string;
   is_active: boolean;
   updated_at: string;
-  lmz_data: unknown;
+  payload: unknown;
+  provider: string;
 }
 
 export interface Profile {
