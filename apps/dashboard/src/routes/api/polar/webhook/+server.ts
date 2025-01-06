@@ -47,7 +47,9 @@ async function onPayload(payload: PolarWebhookPayload) {
           data: payload.data
         });
 
-        if (error) throw new Error('Error creating org plan');
+        if (error) {
+          console.error('Error creating org plan', error);
+        }
         console.log('Subscription created', data);
       }
       break;
@@ -59,7 +61,9 @@ async function onPayload(payload: PolarWebhookPayload) {
           data: payload.data
         });
 
-        if (error) throw new Error('Error canceling org plan');
+        if (error) {
+          console.error('Error canceling org plan', error);
+        }
         console.log('Subscription canceled', data);
       } else {
         // Handle Update Subscription
@@ -69,7 +73,9 @@ async function onPayload(payload: PolarWebhookPayload) {
           data: payload.data
         });
 
-        if (error) throw new Error('Error updating org plan');
+        if (error) {
+          console.error('Error updating org plan', error);
+        }
         console.log('Subscription updated', data);
       }
       break;
