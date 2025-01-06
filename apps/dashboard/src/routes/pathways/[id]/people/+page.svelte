@@ -1,7 +1,6 @@
 <script lang="ts">
-  import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import copy from 'copy-to-clipboard';
+  import { page } from '$app/stores';
   import {
     CopyButton,
     Search,
@@ -12,31 +11,31 @@
     StructuredListRow
   } from 'carbon-components-svelte';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
+  import copy from 'copy-to-clipboard';
 
-  import { profile } from '$lib/utils/store/user';
-  import type { GroupPerson } from '$lib/utils/types';
-  import { t } from '$lib/utils/functions/translations';
+  import { deleteMemberModal } from '$lib/components/Pathways/components/People/store';
   import { group } from '$lib/components/Pathways/store';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { ROLE_LABEL, ROLES } from '$lib/utils/constants/roles';
-  import { deleteMemberModal } from '$lib/components/Pathways/components/People/store';
+  import { t } from '$lib/utils/functions/translations';
   import { deleteGroupMember, updatedGroupMember } from '$lib/utils/services/courses';
+  import { profile } from '$lib/utils/store/user';
+  import type { GroupPerson } from '$lib/utils/types';
 
-  import PageNav from '$lib/components/PageNav/index.svelte';
-  import PageBody from '$lib/components/PageBody/index.svelte';
+  import { PageBody, PageNav } from '$lib/components/Page';
 
-  import Select from '$lib/components/Form/Select.svelte';
   import Avatar from '$lib/components/Avatar/index.svelte';
+  import Select from '$lib/components/Form/Select.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   import TextChip from '$lib/components/Chip/Text.svelte';
   import ComingSoon from '$lib/components/ComingSoon/index.svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import PathwayContainer from '$lib/components/Pathways/components/PathwayContainer.svelte';
-  import InvitationModal from '$lib/components/Pathways/components/People/InvitationModal.svelte';
   import DeleteConfirmation from '$lib/components/Pathways/components/People/DeleteConfirmation.svelte';
+  import InvitationModal from '$lib/components/Pathways/components/People/InvitationModal.svelte';
   import type { Person, ProfileRole } from '$lib/components/Pathways/components/People/types';
+  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
 
   export let data;
 
@@ -144,13 +143,13 @@
     </slot:fragment>
   </PageNav>
   <PageBody width="w-full max-w-6xl md:w-11/12">
-    <section class="my-5 mx-2 md:mx-9">
+    <section class="mx-2 my-5 md:mx-9">
       <div
-        class="flex flex-col md:flex-row flex-end gap-2 justify-end items-start md:items-center mb-7"
+        class="flex-end mb-7 flex flex-col items-start justify-end gap-2 md:flex-row md:items-center"
       >
         <div class="max-w-[320px]">
           <Search
-            class="dark:text-slate-950 border-0 bg-zinc-100 w-full"
+            class="w-full border-0 bg-zinc-100 dark:text-slate-950"
             placeholder={$t('course.navItem.people.search')}
             bind:value={searchValue}
           />
@@ -168,13 +167,13 @@
           </select> -->
         </div>
         <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <p class="dark:text-white hidden lg:block text-lg w-20" />
+          <p class="hidden w-20 text-lg dark:text-white lg:block" />
         </RoleBasedSecurity>
       </div>
 
       <StructuredList class="m-0">
         <StructuredListHead
-          class="bg-slate-100 dark:bg-neutral-800 dark:border-2 dark:border-neutral-800"
+          class="bg-slate-100 dark:border-2 dark:border-neutral-800 dark:bg-neutral-800"
         >
           <StructuredListRow head class="mx-7">
             <StructuredListCell head class="text-primary-700 py-3 dark:text-white"
@@ -187,7 +186,7 @@
               >{$t('course.navItem.people.action')}</StructuredListCell
             >
             <RoleBasedSecurity allowedRoles={[1, 2]}>
-              <p class="dark:text-white hidden lg:block text-lg w-20" />
+              <p class="hidden w-20 text-lg dark:text-white lg:block" />
             </RoleBasedSecurity>
           </StructuredListRow>
         </StructuredListHead>
@@ -206,12 +205,12 @@
                       height="h-8"
                       className="mr-3"
                     />
-                    <div class="flex flex-col lg:flex-row items-start lg:items-center">
+                    <div class="flex flex-col items-start lg:flex-row lg:items-center">
                       <div class="mr-2">
-                        <p class="dark:text-white text-base font-normal">
+                        <p class="text-base font-normal dark:text-white">
                           {person.profile.fullname}
                         </p>
-                        <p class="text-xs text-primary-600 line-clamp-1">
+                        <p class="text-primary-600 line-clamp-1 text-xs">
                           {obscureEmail(getEmail(person))}
                         </p>
                       </div>
@@ -229,7 +228,7 @@
                     </div>
                   </div>
                 {:else}
-                  <div class="flex items-start lg:items-center w-2/4">
+                  <div class="flex w-2/4 items-start lg:items-center">
                     <TextChip
                       value={person.email.substring(0, 2).toUpperCase()}
                       className="bg-primary-200 text-black font-semibold text-xs mr-3"
@@ -261,15 +260,15 @@
 
               <!-- second column -->
               <StructuredListCell class="w-1/4 px-3">
-                <p class=" dark:text-white font-normal text-center text-base w-1/4">
+                <p class=" w-1/4 text-center text-base font-normal dark:text-white">
                   {$t(ROLE_LABEL[person.role_id])}
                 </p>
               </StructuredListCell>
 
               <!-- third column -->
-              <StructuredListCell class="p-0 w-1/4">
+              <StructuredListCell class="w-1/4 p-0">
                 <RoleBasedSecurity allowedRoles={[1, 2]}>
-                  <div class="hidden sm:flex sm:justify-between sm:items-center w-20">
+                  <div class="hidden w-20 sm:flex sm:items-center sm:justify-between">
                     {#if person.profile_id !== $profile.id}
                       <IconButton
                         onClick={() => {

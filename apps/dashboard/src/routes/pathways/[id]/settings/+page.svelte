@@ -1,37 +1,36 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { Restart } from 'carbon-icons-svelte';
   import {
+    CodeSnippet,
     Column,
     Grid,
-    Row,
-    Toggle,
-    CodeSnippet,
-    RadioButtonGroup,
+    Loading,
     RadioButton,
-    Loading
+    RadioButtonGroup,
+    Row,
+    Toggle
   } from 'carbon-components-svelte';
+  import { Restart } from 'carbon-icons-svelte';
   import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
 
-  import type { Pathway } from '$lib/utils/types';
-  import { t } from '$lib/utils/functions/translations';
+  import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
+  import { pathway, pathwaySettings, RADIO_VALUE } from '$lib/components/Pathways/store';
   import { snackbar } from '$lib/components/Snackbar/store';
   import generateSlug from '$lib/utils/functions/generateSlug';
-  import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
+  import { t } from '$lib/utils/functions/translations';
   import { deletePathway, updatePathway } from '$lib/utils/services/pathways';
-  import { currentOrgDomain, currentOrg, currentOrgPath } from '$lib/utils/store/org';
-  import { pathway, pathwaySettings, RADIO_VALUE } from '$lib/components/Pathways/store';
+  import { currentOrg, currentOrgDomain, currentOrgPath } from '$lib/utils/store/org';
+  import type { Pathway } from '$lib/utils/types';
 
-  import PageNav from '$lib/components/PageNav/index.svelte';
-  import PageBody from '$lib/components/PageBody/index.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
+  import { PageBody, PageNav } from '$lib/components/Page';
   import PathwayContainer from '$lib/components/Pathways/components/PathwayContainer.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
 
   let isSaving = false;
   let isDeleting = false;
@@ -128,7 +127,7 @@
 
   <PageBody>
     <Grid class="border-c rounded border-gray-200 dark:border-neutral-600">
-      <Row class="flex lg:flex-row flex-col my-4 md:py-7 border-bottom-c">
+      <Row class="border-bottom-c my-4 flex flex-col md:py-7 lg:flex-row">
         <Column sm={8} md={8} lg={8} class="flex flex-col justify-between">
           <div>
             <SectionTitle>{$t('pathway.pages.settings.cover_image')}</SectionTitle>
@@ -136,7 +135,7 @@
               {$t('pathway.pages.settings.optional')}
             </p>
           </div>
-          <span class="flex items-center justify-start mt-10 md:mt-0">
+          <span class="mt-10 flex items-center justify-start md:mt-0">
             <PrimaryButton
               variant={VARIANTS.OUTLINED}
               label={$t('pathway.pages.settings.replace')}
@@ -155,17 +154,17 @@
         </Column>
 
         <Column sm={8} md={8} lg={7} class="">
-          <div class="max-w-full overflow-hidden my-5 md:my-0">
+          <div class="my-5 max-w-full overflow-hidden md:my-0">
             <img
               alt="About us"
               src={$pathwaySettings.logo || '/images/classroomio-course-img-template.jpg'}
-              class="w-full h-full object-cover hover:scale-110 transition-all duration-300"
+              class="h-full w-full object-cover transition-all duration-300 hover:scale-110"
             />
           </div>
         </Column>
       </Row>
 
-      <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+      <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
         <Column sm={8} md={8} lg={8}>
           <SectionTitle>{$t('pathway.pages.settings.details')}</SectionTitle>
         </Column>
@@ -208,7 +207,7 @@
         </Column>
       </Row>
 
-      <Row class="flex lg:flex-row flex-col py-7 gap-5 border-bottom-c">
+      <Row class="border-bottom-c flex flex-col gap-5 py-7 lg:flex-row">
         <Column sm={8} md={8} lg={8}>
           <SectionTitle>
             {$t('pathway.pages.settings.students')}
@@ -217,7 +216,7 @@
             {$t('pathway.pages.settings.yes')}
           </p>
         </Column>
-        <Column sm={8} md={8} lg={7} class="flex justify-center items-center">
+        <Column sm={8} md={8} lg={7} class="flex items-center justify-center">
           <RadioButtonGroup hideLegend bind:selected={$pathwaySettings.prerequisite}>
             <RadioButton
               labelText={$t('pathway.pages.settings.option_one')}
@@ -231,12 +230,12 @@
         </Column>
       </Row>
 
-      <Row class="flex lg:flex-row flex-col gap-5 py-7 border-bottom-c overflow-hidden">
+      <Row class="border-bottom-c flex flex-col gap-5 overflow-hidden py-7 lg:flex-row">
         <Column sm={8} md={8} lg={8}>
           <SectionTitle>{$t('pathway.pages.settings.publish')}</SectionTitle>
           <p>{$t('pathway.pages.settings.allow')}</p>
         </Column>
-        <Column sm={8} md={8} lg={7} class="flex justify-start items-center">
+        <Column sm={8} md={8} lg={7} class="flex items-center justify-start">
           <Toggle
             size="sm"
             bind:toggled={$pathwaySettings.is_published}
@@ -248,13 +247,13 @@
         </Column>
       </Row>
 
-      <Row class="flex flex-col w-[99%] mx-auto py-7 border-bottom-c">
+      <Row class="border-bottom-c mx-auto flex w-[99%] flex-col py-7">
         <SectionTitle>
           {$t('pathway.pages.settings.certificate')}
         </SectionTitle>
 
-        <Row class="overflow-hidden justify-between w-full items-center gap-5 flex-col mt-5">
-          <Column class="flex flex-col md:flex-row gap-7 items-start  md:items-center py-2">
+        <Row class="mt-5 w-full flex-col items-center justify-between gap-5 overflow-hidden">
+          <Column class="flex flex-col items-start gap-7 py-2  md:flex-row md:items-center">
             <p class="md:w-[54%]">{$t('pathway.pages.settings.issue')}</p>
             <Toggle
               size="sm"
@@ -283,7 +282,7 @@
         </Row>
       </Row>
 
-      <Row class="flex lg:flex-row flex-col pt-7 pb-10 border-bottom-c overflow-hidden">
+      <Row class="border-bottom-c flex flex-col overflow-hidden pb-10 pt-7 lg:flex-row">
         <Column sm={8} md={8} lg={8}>
           <SectionTitle>
             {$t('pathway.pages.settings.delete_path')}
@@ -293,7 +292,7 @@
         <Column sm={8} md={8} lg={8} class="mt-5">
           <button
             type="button"
-            class="flex items-center md:ml-7 gap-2 hover:scale-125 transition-all duration-300"
+            class="flex items-center gap-2 transition-all duration-300 hover:scale-125 md:ml-7"
             disabled={isSaving}
             on:click={handledeletePathway}
           >
@@ -301,13 +300,13 @@
               <Loading withOverlay={false} small />
             {:else}
               <TrashCan class="text-red-600" size={20} />
-              <p class="text-sm text-red-600 font-medium">{$t('pathway.pages.settings.delete')}</p>
+              <p class="text-sm font-medium text-red-600">{$t('pathway.pages.settings.delete')}</p>
             {/if}
           </button>
         </Column>
       </Row>
 
-      <Row class="p-5 w-full flex items-center justify-end">
+      <Row class="flex w-full items-center justify-end p-5">
         <PrimaryButton
           label={$t('pathway.pages.settings.save')}
           isLoading={isSaving}

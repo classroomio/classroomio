@@ -1,13 +1,12 @@
 <script lang="ts">
   import { t } from '$lib/utils/functions/translations';
 
-  import PageNav from '$lib/components/PageNav/index.svelte';
-  import PageBody from '$lib/components/PageBody/index.svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import Design from '$lib/components/Pathways/components/Certificate/Design.svelte';
-  import PathwayContainer from '$lib/components/Pathways/components/PathwayContainer.svelte';
   import IssueCertificateModal from '$lib/components/Course/components/Ceritficate/IssueCertificateModal.svelte';
+  import { PageBody, PageNav } from '$lib/components/Page';
+  import Design from '$lib/components/Pathways/components/Certificate/Design.svelte';
   import StudentCertificate from '$lib/components/Pathways/components/Certificate/StudentCertificate/Index.svelte';
+  import PathwayContainer from '$lib/components/Pathways/components/PathwayContainer.svelte';
+  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   // import DeleteConfirmation from '$lib/components/Course/components/People/DeleteConfirmation.svelte';
 
   // import Reports from '$lib/components/Course/components/Ceritficate/Reports.svelte';
