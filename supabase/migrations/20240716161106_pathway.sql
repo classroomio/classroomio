@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS "public"."pathway" (
     "currency" character varying DEFAULT 'NGN'::character varying NOT NULL,
     "banner_image" "text",
     "is_published" boolean DEFAULT false,
+    "prerequisite" boolean DEFAULT false,
     "status" "text" DEFAULT 'ACTIVE'::"text" NOT NULL
 );
 ALTER TABLE "public"."pathway" OWNER TO "postgres";
