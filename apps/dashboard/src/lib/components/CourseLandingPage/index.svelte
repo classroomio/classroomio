@@ -1,35 +1,39 @@
 <script lang="ts">
-  import { fade } from 'svelte/transition';
+  import { page } from '$app/stores';
+  import PlayFilled from 'carbon-icons-svelte/lib/PlayFilled.svelte';
   import get from 'lodash/get';
   import pluralize from 'pluralize';
-  import { page } from '$app/stores';
-  import { onMount, onDestroy } from 'svelte';
-  import PlayFilled from 'carbon-icons-svelte/lib/PlayFilled.svelte';
+  import { onDestroy, onMount } from 'svelte';
+  import { fade } from 'svelte/transition';
+
   import { ImageLoader, InlineLoading } from 'carbon-components-svelte';
+  import { NAV_ITEMS } from './constants';
 
-  import { getLectureNo } from '../Course/function';
-  import { currentOrg } from '$lib/utils/store/org';
   import { course } from '$lib/components/Course/store';
-  import { t } from '$lib/utils/functions/translations';
-  import { calDateDiff } from '$lib/utils/functions/date';
-  import { handleOpenWidget, reviewsModalStore } from './store';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { COURSE_VERSION, type Course, type Lesson, type Review } from '$lib/utils/types';
+  import { calDateDiff } from '$lib/utils/functions/date';
+  import { getEmbedId } from '$lib/utils/functions/formatYoutubeVideo';
+  import { t } from '$lib/utils/functions/translations';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { handleOpenWidget, reviewsModalStore } from './store';
 
-  import Chip from '../Chip/index.svelte';
-  import Modal from '../Modal/index.svelte';
+  import type { Course, Lesson, Review } from '$lib/utils/types';
+
   import Avatar from '$lib/components/Avatar/index.svelte';
-  import PricingSection from './components/PricingSection.svelte';
+  import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
+  import Modal from '$lib/components/Modal/index.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import PoweredBy from '$lib/components/Upgrade/PoweredBy.svelte';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
-  import { getEmbedId } from '$lib/utils/functions/formatYoutubeVideo';
-  import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { COURSE_VERSION } from '$lib/utils/types';
   import { observeIntersection } from './components/IntersectionObserver';
+  import LessonCard from './components/LessonCard.svelte';
+  import PricingSection from './components/PricingSection.svelte';
+
   import SectionsDisplay from './components/SectionsDisplay.svelte';
 
-  import { getExerciseCount, getLessonSections, getTotalLessons, filterNavItems } from './utils';
-  import { NAV_ITEM_KEY, NAV_ITEMS } from './constants';
+  import { NAV_ITEM_KEY } from './constants';
+  import { filterNavItems, getExerciseCount, getLessonSections, getTotalLessons } from './utils';
 
   export let editMode = false;
   export let courseData: Course;
@@ -260,7 +264,7 @@
         <!-- Sections - Goal -->
         {#if navItemKeys.includes(NAV_ITEM_KEY.GOALS)}
           <section id="goals" transition:fade={{ delay: 250, duration: 300 }} class="mt-8 pb-10">
-            <h3 class="text-2xl font-bold mt-0 mb-3">{$t('course.navItem.landing_page.learn')}</h3>
+            <h3 class="mb-3 mt-0 text-2xl font-bold">{$t('course.navItem.landing_page.learn')}</h3>
             <ul class="list font-light">
               <HtmlRender content={get(courseData, 'metadata.goals', '')} />
             </ul>
@@ -272,10 +276,10 @@
           <section
             id="certificate"
             transition:fade={{ delay: 250, duration: 300 }}
-            class="border-b border-gray-300 mt-8 pb-10"
+            class="mt-8 border-b border-gray-300 pb-10"
           >
-            <h3 class="text-2xl font-bold mt-0">{$t('course.navItem.landing_page.certificate')}</h3>
-            <p class="dark:text-white text-sm font-light mb-3">
+            <h3 class="mt-0 text-2xl font-bold">{$t('course.navItem.landing_page.certificate')}</h3>
+            <p class="mb-3 text-sm font-light dark:text-white">
               {$t('course.navItem.landing_page.certificate_text')}
             </p>
 
@@ -294,27 +298,19 @@
 
         <!-- Sections - Lessons -->
         {#if courseData.version === COURSE_VERSION.V1}
-          <section id="lessons" class="border-b border-gray-300 mt-8 pb-10">
-            <div class="flex items-center justify-between w-full mb-3">
-              <h3 class="text-2xl font-bold mt-0 mb-3">
+          <section id="lessons" class="mt-8 border-b border-gray-300 pb-10">
+            <div class="mb-3 flex w-full items-center justify-between">
+              <h3 class="mb-3 mt-0 text-2xl font-bold">
                 {$t('course.navItem.landing_page.content')}
               </h3>
-              <p class="dark:text-white text-sm font-light">
+              <p class="text-sm font-light dark:text-white">
                 {pluralize('lesson', lessons.length, true)}
               </p>
             </div>
 
             <div class="flex flex-wrap">
               {#each lessons as lesson, index}
-                <div class="px-2 py-1 m-2 border rounded">
-                  <Chip
-                    value={getLectureNo(index + 1, '0')}
-                    className="bg-primary-100 text-primary-700 inline "
-                  />
-                  <p class="ml-2 text-xs font-light dark:text-white inline">
-                    {lesson.title}
-                  </p>
-                </div>
+                <LessonCard {index} title={lesson.title} />
               {/each}
             </div>
           </section>
@@ -343,7 +339,7 @@
         <!-- Sections - Reviews -->
         {#if navItemKeys.includes(NAV_ITEM_KEY.REVIEWS)}
           <section id="reviews" transition:fade={{ delay: 250, duration: 300 }}>
-            <h2 class="my-16 mr-0 mb-6 ml-0 font-semibold">
+            <h2 class="my-16 mb-6 ml-0 mr-0 font-semibold">
               {$t('course.navItem.landing_page.reviews')}
             </h2>
             <div class="flex flex-wrap">
@@ -413,7 +409,7 @@
                     {averageRating}
                     {$t('course.navItem.landing_page.reviews_modal.rating')}
                   </h2>
-                  <h2 class="text-lg font-semibold mt-2">
+                  <h2 class="mt-2 text-lg font-semibold">
                     {reviews.length}
                     {$t('course.navItem.landing_page.reviews_modal.ratings')}
                   </h2>
@@ -457,10 +453,10 @@
 
         <!-- Sections - Instructor -->
         <section id="instructor" class="mt-8 pb-10">
-          <h3 class="text-2xl font-bold mt-0 mb-3">
+          <h3 class="mb-3 mt-0 text-2xl font-bold">
             {$t('course.navItem.landing_page.instructor')}
           </h3>
-          <div class="flex items-center mb-4">
+          <div class="mb-4 flex items-center">
             <img
               alt="Author Avatar"
               class="mr-3 block h-20 w-20 rounded-full"

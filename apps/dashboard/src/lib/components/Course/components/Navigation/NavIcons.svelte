@@ -1,17 +1,22 @@
 <script>
-  import TableOfContents from 'carbon-icons-svelte/lib/TableOfContents.svelte'; // overview
-  import Result from 'carbon-icons-svelte/lib/Result.svelte';
-  import Workspace from 'carbon-icons-svelte/lib/Workspace.svelte';
-  import ListChecked from 'carbon-icons-svelte/lib/ListChecked.svelte';
-  import Group from 'carbon-icons-svelte/lib/Group.svelte';
+  import { Certificate } from 'carbon-icons-svelte';
   import ApplicationWeb from 'carbon-icons-svelte/lib/ApplicationWeb.svelte';
   import Badge from 'carbon-icons-svelte/lib/Badge.svelte';
-  import IbmWatsonKnowledgeCatalog from 'carbon-icons-svelte/lib/IbmWatsonKnowledgeCatalog.svelte';
-  import Settings from 'carbon-icons-svelte/lib/Settings.svelte';
   import Bullhorn from 'carbon-icons-svelte/lib/Bullhorn.svelte';
+  import Group from 'carbon-icons-svelte/lib/Group.svelte';
+  import IbmWatsonKnowledgeCatalog from 'carbon-icons-svelte/lib/IbmWatsonKnowledgeCatalog.svelte';
+  import ListChecked from 'carbon-icons-svelte/lib/ListChecked.svelte';
+  import Result from 'carbon-icons-svelte/lib/Result.svelte';
+  import Settings from 'carbon-icons-svelte/lib/Settings.svelte';
+  import TableOfContents from 'carbon-icons-svelte/lib/TableOfContents.svelte';
+  import Workspace from 'carbon-icons-svelte/lib/Workspace.svelte';
+
+  import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
   import { NAV_IDS } from './constants';
 
   export let name = '';
+
+  console.log('name', name);
 </script>
 
 {#if name === NAV_IDS.SECTION}
@@ -34,4 +39,10 @@
   <Badge size={20} class="carbon-icon mr-2" />
 {:else if name === NAV_IDS.SETTINGS}
   <Settings size={20} class="carbon-icon mr-2" />
+{:else if name === NAV_IDS.COURSES}
+  <span class="carbon-icon mr-2">
+    <CourseIcon />
+  </span>
+{:else if name === NAV_IDS.SETTINGS}
+  <Certificate size={20} class="carbon-icon mr-2" />
 {/if}

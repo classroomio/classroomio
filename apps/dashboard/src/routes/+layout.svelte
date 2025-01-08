@@ -14,7 +14,13 @@
   import PageLoadProgressBar from '$lib/components/Progress/PageLoadProgressBar.svelte';
   import Snackbar from '$lib/components/Snackbar/index.svelte';
   import UpgradeModal from '$lib/components/Upgrade/Modal.svelte';
-  import { isCoursesPage, isLMSPage, isOrgPage, toggleBodyByMode } from '$lib/utils/functions/app';
+  import {
+    isCoursesPage,
+    isLMSPage,
+    isOrgPage,
+    isPathwayPage,
+    toggleBodyByMode
+  } from '$lib/utils/functions/app';
   import { getProfile, setupAnalytics } from '$lib/utils/functions/appSetup';
   import hideNavByRoute from '$lib/utils/functions/routes/hideNavByRoute';
   import showAppsSideBar from '$lib/utils/functions/showAppsSideBar';
@@ -30,9 +36,12 @@
   import { onMount } from 'svelte';
   import { MetaTags } from 'svelte-meta-tags';
 
+  import { pathway } from '$lib/components/Pathways/store';
   import '../app.postcss';
 
   export let data;
+
+  let headerTitle: string = '';
 
   let supabase = getSupabase();
   let path = $page.url?.pathname?.replace('/', '');
@@ -115,6 +124,11 @@
 
   $: path = $page.url?.pathname?.replace('/', '');
   $: carbonTheme = $globalStore.isDark ? 'g100' : 'white';
+  $: headerTitle = isCoursesPage(path)
+    ? $course.title
+    : isPathwayPage(path)
+      ? $pathway.title
+      : 'ClassroomIO';
   $: metaTags = merge(data.baseMetaTags, $page.data.pageMetaTags);
 </script>
 
@@ -137,8 +151,12 @@
 {:else}
   <main class="font-roboto dark:bg-black">
     {#if !hideNavByRoute($page.url?.pathname)}
-      {#if isOrgPage($page.url?.pathname) || $page.url?.pathname.includes('profile') || isCoursesPage(path)}
-        <OrgNavigation bind:title={$course.title} isCoursePage={isCoursesPage(path)} />
+      {#if isOrgPage($page.url?.pathname) || $page.url?.pathname.includes('profile') || isCoursesPage(path) || isPathwayPage(path)}
+        <OrgNavigation
+          bind:title={headerTitle}
+          isPathwayPage={isPathwayPage(path)}
+          isCoursePage={isCoursesPage(path)}
+        />
       {:else if isLMSPage($page.url?.pathname)}
         <LMSNavigation />
       {:else}

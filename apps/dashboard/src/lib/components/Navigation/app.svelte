@@ -18,6 +18,7 @@
   export let title = '';
   export let navClass = '';
   export let isCoursePage = false;
+  export let isPathwayPage = false;
 
   const toggleSidebar = () => {
     $sideBar.hidden = !$sideBar.hidden;
@@ -35,9 +36,11 @@
 
   $: coursesPath = $globalStore.isOrgSite
     ? '/lms/mylearning'
-    : isCoursePage
-      ? `${$currentOrgPath}/courses`
-      : $currentOrgPath;
+    : isPathwayPage
+      ? `${$currentOrgPath}/pathways`
+      : isCoursePage
+        ? `${$currentOrgPath}/courses`
+        : $currentOrgPath;
 </script>
 
 <nav
@@ -75,15 +78,34 @@
           </IconButton>
         </li>
       {/if}
+
+      {#if isPathwayPage}
+        <li class="hidden md:block">
+          <IconButton
+            onClick={() => {
+              toggleSidebar();
+            }}
+          >
+            <Menu size={16} class=" text-white" />
+          </IconButton>
+        </li>
+        <li class="hidden md:block">
+          <IconButton onClick={() => goto(coursesPath)}>
+            <ArrowLeft size={16} class="text-white" />
+          </IconButton>
+        </li>
+      {/if}
       <a
         href={coursesPath}
         title="{$t('navigation.goto')} {isCoursePage
           ? $t('navigation.courses')
-          : $t('navigation.classroomio_home')}"
+          : isPathwayPage
+            ? $t('navigation.pathways')
+            : $t('navigation.classroomio_home')}"
         id="logo"
         class="text-lg line-clamp-1"
       >
-        {isCoursePage ? title : 'ClassroomIO'}
+        {title}
       </a>
     </div>
 

@@ -61,6 +61,32 @@ export async function fetchProfileCourseProgress(
   return { data, error };
 }
 
+export async function fetchMultipleCoursesProgress(
+  courseIds: string[],
+  profileId: string | undefined
+): Promise<{
+  data: ProfileCourseProgress[] | null;
+  errors: PostgrestError[] | null;
+}> {
+  const allProgressData: ProfileCourseProgress[] = [];
+  const errors: PostgrestError[] = [];
+
+  for (const courseId of courseIds) {
+    const { data, error } = await fetchProfileCourseProgress(courseId, profileId);
+    if (data) {
+      allProgressData.push(...data);
+    }
+    if (error) {
+      console.log('error', error);
+    }
+  }
+
+  return {
+    data: allProgressData.length > 0 ? allProgressData : null,
+    errors: errors.length > 0 ? errors : null
+  };
+}
+
 export async function checkExercisesComplete(
   lessonId: Lesson['id'],
   groupMemberId: Groupmember['id']
@@ -159,7 +185,7 @@ export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']
 export async function fetchExploreCourses(profileId, orgId) {
   if (!orgId || !profileId) return;
 
-  const { data: allCourses } = await supabase.rpc('get_explore_courses', {
+  const { data: allCourses } = await supabase.rpc('get_all_explore_courses', {
     org_id_arg: orgId,
     profile_id_arg: profileId
   });
@@ -169,7 +195,6 @@ export async function fetchExploreCourses(profileId, orgId) {
       allCourses: []
     };
   }
-
   return { allCourses };
 }
 
@@ -257,9 +282,7 @@ export async function getMarks(courseId) {
   if (!courseId) return;
 
   // Gets courses for a particular organisation where the current logged in user is a groupmember
-  const { data: marks } = await supabase
-    .rpc('get_marks')
-    .eq('course_id', courseId);
+  const { data: marks } = await supabase.rpc('get_marks').eq('course_id', courseId);
 
   return { marks };
 }

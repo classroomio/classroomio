@@ -14,7 +14,7 @@
     triggerSendEmail,
     NOTIFICATION_NAME
   } from '$lib/utils/services/notification/notification';
-  import { snackbar } from '$lib/components/Snackbar/store.js';
+  import { snackbar } from '$lib/components/Snackbar/store';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { page } from '$app/stores';
 
