@@ -3,7 +3,7 @@
   import { fly } from 'svelte/transition';
 
   import type { Pathway, PathwayCourse } from '$lib/utils/types';
-  import { pathway, courses } from '$lib/components/Pathways/store.js';
+  import { pathway, pathwayCourses } from '$lib/components/Pathways/store';
 
   import Editor from '$lib/components/Pathways/components/PathwayLandingPage/components/Editor/index.svelte';
   import PathwayLandingpage from '$lib/components/Pathways/components/PathwayLandingPage/index.svelte';
@@ -22,7 +22,7 @@
     $pathway = _pathwayData;
   }
 
-  $: setPathwayData($pathway, $courses);
+  $: setPathwayData($pathway, $pathwayCourses);
   $: dev && console.log('pathwayData changed', pathwayData);
 </script>
 

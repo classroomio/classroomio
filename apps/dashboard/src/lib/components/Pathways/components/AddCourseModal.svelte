@@ -1,41 +1,37 @@
 <script lang="ts">
   import {
+    Search,
     StructuredList,
     StructuredListBody,
     StructuredListCell,
     StructuredListHead,
-    StructuredListRow,
-    Search
+    StructuredListRow
   } from 'carbon-components-svelte';
 
-  import { courses } from '../store';
-  import { addCourseModal } from '../store';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import type { Course, PathwayCourse } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
-  import { fetchCourses } from '$lib/utils/services/courses';
-  import {
-    addPathwayCourse,
-    deletePathwayCourse,
-    updatePathwayCourses
-  } from '$lib/utils/services/pathways';
+  import { addCourseModal, pathwayCourses } from '../store';
+  import { fetchCourses } from '$lib/utils/services/courses';  
+  import type { Course, PathwayCourse } from '$lib/utils/types';
+  import { deleteCourse, saveNewPathwayCourses } from '../functions';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-
+  import { updatePathwayCourses } from '$lib/utils/services/pathways';
+  
   import Modal from '$lib/components/Modal/index.svelte';
   import DragAndDropModal from './DragAndDropModal.svelte';
   import Checkbox from '$lib/components/Form/Checkbox.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import ArrowLeft from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-
+  
   export let pathwayId;
 
   let searchValue = '';
   let isSearchInputOpened = false;
   let allOrgCourses: Course[] = [];
-  let pathwayCourses: PathwayCourse[] = [];
+  let courses: Course[] = [];
+  let deletedCourses: PathwayCourse[] = [];
   let isLoading: boolean = false;
 
   function close() {
@@ -45,63 +41,32 @@
 
   async function handleSave() {
     isLoading = true;
-    // courses in the store
-    const existingCourses = $courses;
-    const currentCourseCount = existingCourses.length;
-
     // filters out courses that are already in the courses store
-    const newCourses = pathwayCourses
-      .filter((course) => !existingCourses.some((c) => c.course_id === course.id))
+    const newPathwayCourses = courses
+      .filter((course) => !$pathwayCourses.some((c) => c.course_id === course.id))
       .map((course, index) => ({
         id: '',
         course: course,
         course_id: course.id,
         pathway_id: pathwayId || '',
-        order: currentCourseCount + index + 1
+        order: $pathwayCourses.length + index + 1
       }));
 
-    // adds each of the courses that are not in the courses store
-    for (const newCourse of newCourses) {
-      try {
-        const { data, error } = await addPathwayCourse(
-          newCourse.pathway_id,
-          newCourse.course_id,
-          newCourse.order
-        );
-
-        if (error) {
-          console.error('Error updating course in Supabase:', error);
-        }
-
-        if (data && data.length > 0) {
-          // takes the first object of the data array (there will always be one object because it's calling the function for each of them)
-          const insertedCourse = data[0];
-
-          // update the courses store with the response of each of the calls from Supabase
-          courses.update((existingCourses) => [
-            ...existingCourses,
-            {
-              ...newCourse,
-              id: insertedCourse.id,
-              created_at: insertedCourse.created_at,
-              updated_at: insertedCourse.updated_at,
-              is_unlocked: insertedCourse.is_unlocked,
-              order: insertedCourse.order
-            }
-          ]);
-        }
-      } catch (error) {
-        console.error('Error updating course in Supabase:', error);
-      }
-    }
+    await saveNewPathwayCourses(newPathwayCourses);
     isLoading = false;
+    courses = [];
 
     // move to the order step
     $addCourseModal.step = 1;
   }
 
+  const handleDelete = async () => {
+    await deleteCourse(deletedCourses);
+    $addCourseModal.open = false;
+  };
+
   const handleSaveDnD = () => {
-    $courses.forEach(async (course) => {
+    $pathwayCourses.forEach(async (course) => {
       try {
         await updatePathwayCourses(course.id, course.order);
       } catch (error) {
@@ -112,54 +77,46 @@
     $addCourseModal.open = false;
   };
 
-  const deleteCourse = async () => {
-    for (const course of pathwayCourses) {
-      try {
-        const { error } = await deletePathwayCourse(course.course_id);
-
-        if (error) {
-          snackbar.error(error.message);
-          return console.error('Error deleting course', error);
-        }
-
-        courses.update((existingCourses) =>
-          existingCourses.filter((c) => c.course_id !== course.course_id)
-        );
-      } catch (error) {
-        console.error('Error deleting course from Supabase:', error);
-      }
-    }
-
-    pathwayCourses = [];
-    $addCourseModal.open = false;
-  };
-
-  function toggleCourseSelection(course: PathwayCourse, checked: boolean) {
+  function toggleAddSelection(course: Course, checked: boolean) {
     if (checked) {
       // Avoid duplicating the course
-      if (!pathwayCourses.some((c) => c.id === course.id)) {
-        pathwayCourses = [...pathwayCourses, course];
+      if (!courses.some((c) => c.id === course.id)) {
+        courses = [...courses, course as Course];
       }
     } else {
-      pathwayCourses = pathwayCourses.filter((c) => c.id !== course.id);
+      courses = courses.filter((c) => c.id !== course.id);
+    }
+  }
+
+  function toggleDeleteSelection(course: PathwayCourse, checked: boolean) {
+    if (checked) {
+      // Avoid duplicating the course
+      if (!deletedCourses.some((c) => c.course_id === course.course_id)) {
+        deletedCourses = [...deletedCourses, course];
+      }
+    } else {
+      deletedCourses = deletedCourses.filter((c) => c.course_id !== course.course_id);
     }
   }
 
   async function fetchCourse(userId?: string, orgId?: string) {
     const data = await fetchCourses(userId, orgId);
-
     if (!data) return;
 
     // shows all the courses that are on the org but not in the pathway
     // this to to be able to display the courses to add to pathway and also for the search filter func
     allOrgCourses = data.allCourses.filter(
-      (course) => !$courses.some((c) => c.course?.id === course.id)
+      (course) => !$pathwayCourses.some((c) => c.course?.id === course.id)
     );
   }
 
-  $: fetchCourse($profile.id, $currentOrg.id);
+  $: {
+    if ($pathwayCourses) {
+      fetchCourse($profile.id, $currentOrg.id);
+    }
+  }
 
-  // displayed all the courses form line 124 with the filtering option for the searchbar
+  // displayed all the courses form line 109 with the filtering option for the searchbar
   $: filteredCourses = searchValue
     ? allOrgCourses.filter((course) =>
         course.title.toLowerCase().includes(searchValue.toLowerCase())
@@ -190,6 +147,7 @@
       on:expand
       on:collapse
       bind:value={searchValue}
+      class="text-white dark:text-black"
     />
   </slot:fragment>
 
@@ -212,16 +170,16 @@
               <StructuredListRow>
                 <StructuredListCell>
                   <div class="flex items-center">
-                    <div class="flex justify-center items-center">
+                    <div class="flex items-center justify-center">
                       <Checkbox
                         name={course.title}
                         className="cursor-pointer"
                         value={course.id}
-                        checked={pathwayCourses.some((c) => c.id === course.id)}
-                        onInputChange={(e) => toggleCourseSelection(course, e.target?.checked)}
+                        checked={courses.some((c) => c.id === course.id)}
+                        onInputChange={(e) => toggleAddSelection(course, e.target?.checked)}
                       />
                     </div>
-                    <p class="font-semibold w-full text-black dark:text-white">
+                    <p class="w-full font-semibold text-black dark:text-white">
                       {course.title}
                     </p>
                   </div>
@@ -236,8 +194,9 @@
       </div>
 
       <!-- order course -->
-    {:else if $addCourseModal.step === 1 && $courses.length > 0}
-      <DragAndDropModal bind:pathwayCourses={$courses} />
+    {:else if $addCourseModal.step === 1 && $pathwayCourses.length > 0}
+      <!-- order course -->
+      <DragAndDropModal bind:courses={$pathwayCourses} />
 
       <!-- delete course -->
     {:else if $addCourseModal.step === 2}
@@ -253,20 +212,20 @@
           </StructuredListHead>
 
           <StructuredListBody>
-            {#each $courses as course}
+            {#each $pathwayCourses as course}
               <StructuredListRow>
                 <StructuredListCell>
                   <div class="flex items-center">
-                    <div class="flex justify-center items-center">
+                    <div class="flex items-center justify-center">
                       <Checkbox
                         name={course.course.title}
                         className="cursor-pointer"
                         value={course.id}
-                        checked={pathwayCourses.some((c) => c.id === course.id)}
-                        onInputChange={(e) => toggleCourseSelection(course, e.target?.checked)}
+                        checked={courses.some((c) => c.id === course.id)}
+                        onInputChange={(e) => toggleDeleteSelection(course, e.target?.checked)}
                       />
                     </div>
-                    <p class="font-semibold w-full text-black dark:text-white">
+                    <p class="w-full font-semibold text-black dark:text-white">
                       {course.course.title}
                     </p>
                   </div>
@@ -287,27 +246,27 @@
     <!-- add course -->
     {#if $addCourseModal.step === 0}
       <PrimaryButton
-        label={`${$t('pathway.components.addCourseModal.add')} ${pathwayCourses.length} ${
-          pathwayCourses.length === 1
+        label={`${$t('pathway.components.addCourseModal.add')} ${courses.length} ${
+          courses.length === 1
             ? $t('pathway.components.addCourseModal.course')
             : $t('pathway.components.addCourseModal.courses')
         } ${$t('pathway.components.addCourseModal.path')}`}
         onClick={handleSave}
         {isLoading}
-        isDisabled={pathwayCourses.length < 1}
+        isDisabled={courses.length < 1}
       />
       <!-- order course -->
     {:else if $addCourseModal.step === 1}
-      <div class="flex justify-end mt-5">
+      <div class="mt-5 flex justify-end">
         <PrimaryButton label={$t('pathway.components.dragAndDrop.label')} onClick={handleSaveDnD} />
       </div>
       <!-- delete course -->
     {:else}
-      <div class="flex justify-end mt-5">
+      <div class="mt-5 flex justify-end">
         <PrimaryButton
           variant={VARIANTS.CONTAINED_DANGER}
           label={$t('pathway.components.addCourseModal.delete')}
-          onClick={deleteCourse}
+          onClick={() => handleDelete()}
         />
       </div>
     {/if}

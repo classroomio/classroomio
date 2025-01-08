@@ -4,7 +4,7 @@
   import { Moon } from 'svelte-loading-spinners';
 
   import {
-    courses,
+    pathwayCourses,
     group,
     pathway,
     defaultPathway,
@@ -36,7 +36,7 @@
 
     isFetching = true;
     pathway.set(defaultPathway);
-    courses.set([]);
+    pathwayCourses.set([]);
 
     const { data: _data } = await fetchPathway(pathwayId);
 
@@ -97,7 +97,7 @@
 
 <div class="root org-root">
   <PathwaySidebar {path} isStudent={$globalStore.isStudent} />
-  <div class="{className} overflow-y-auto md:max-w-[70%] max-w-[95%] mx-auto rounded-md w-full">
+  <div class="{className} overflow-y-auto max-w-[95%] mx-auto rounded-md w-full">
     {#if isLandingPage}
       <Confetti />
     {/if}

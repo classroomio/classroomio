@@ -288,12 +288,12 @@ export interface Course {
 export interface PathwayCourse {
   id: string;
   course: Course;
-  course_id: any;
-  pathway_id: any;
-  order: number;
-  is_unlocked: boolean;
-  created_at: string;
-  updated_at: string;
+  course_id: string;
+  pathway_id: string;
+  order?: number;
+  is_unlocked?: boolean;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface Pathway {

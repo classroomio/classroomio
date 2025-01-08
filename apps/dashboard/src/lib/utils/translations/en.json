@@ -1169,6 +1169,8 @@
         "editor": {
           "title": {
             "header": "Header",
+            "about": "About",
+            "objectives": "OBJECTIVES",
             "requirement": "Requirement",
             "description": "Description",
             "goals": "Goals",
@@ -1237,7 +1239,9 @@
             "no": "No",
             "yes": "Yes",
             "percent": "Discount Percent",
-            "gift": "About Gift"
+            "gift": "About Gift",
+            "gift_placeholder": "Gift on completion",
+            "cart": "Add to Cart"
           }
         },
 

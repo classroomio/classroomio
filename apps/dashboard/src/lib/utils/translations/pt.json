@@ -277,7 +277,8 @@
         "type": "Tipo de curso",
         "course_type_desc": "Atualize o tipo de curso para uma experiência mais personalizada",
         "live_class": "Aula ao vivo",
-        "self_paced": "Individualizado"
+        "self_paced": "Individualizado",
+        "pathway": "Caminho"
       },
       "landing_page": {
         "start_course": "Iniciar curso",
@@ -345,7 +346,9 @@
             "no": "Não",
             "yes": "Sim",
             "percent": "Porcentagem de desconto",
-            "gift": "Sobre presente"
+            "gift": "Sobre presente",
+            "gift_placeholder": "Presente na conclusão",
+            "cart": "adicionar ao carrinho"
           },
           "instructor_form": {
             "upload": "Logotipo do instrutor",
@@ -394,7 +397,9 @@
             "reviews": "Avaliações",
             "instructor": "Instrutor",
             "pricing": "Preços",
-            "certificate": "Certificado"
+            "certificate": "Certificado",
+            "about": "Sobre",
+            "objectives": "OBJETIVOS"
           },
           "display_section": "Seção de exibição",
           "certificate_form": {
@@ -1550,7 +1555,8 @@
         "add": "Adicionar",
         "course": "Curso",
         "courses": "Cursos",
-        "path": "para o caminho de aprendizagem"
+        "path": "para o caminho de aprendizagem",
+        "delete": "Confirmar exclusão"
       },
       "not_permitted": {
         "header": "Sem permissão",

@@ -52,6 +52,13 @@
     $pathway.slug = generateSlug($pathway.title);
   };
 
+  // this function is used to parse the boolean value from the radio button
+  function parseBoolean(value) {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  }
+
   const handleSave = async () => {
     if (!$pathwaySettings.title) {
       errors.title = $t('pathway.pages.settings.title_error');
@@ -71,7 +78,7 @@
         title: title,
         logo: logo,
         description: description,
-        prerequisite: prerequisite,
+        prerequisite: parseBoolean(prerequisite),
         is_published: is_published,
         lms_certificate: lms_certificate,
 
@@ -82,7 +89,7 @@
       $pathway.description = description;
       $pathway.logo = logo;
       $pathway.is_published = is_published;
-      $pathway.prerequisite = prerequisite;
+      $pathway.prerequisite = parseBoolean(prerequisite);
       $pathway.lms_certificate = lms_certificate;
 
       snackbar.success('snackbar.course_settings.success.saved');
@@ -188,12 +195,14 @@
             errorMessage={errors.description}
           />
           <div class="">
-            <p>
-              {$t('pathway.pages.settings.link')}
+            <div class="mb-2 flex items-center justify-between">
+              <p>
+                {$t('pathway.pages.settings.link')}
+              </p>
               <IconButton contained={true} size="small" onClick={generateNewPathwayLink}>
                 <Restart size={16} />
               </IconButton>
-            </p>
+            </div>
             {#if $pathway.slug}
               <CodeSnippet
                 wrapText
@@ -241,8 +250,8 @@
             bind:toggled={$pathwaySettings.is_published}
             on:toggle={(e) => ($pathwaySettings.is_published = e.detail.toggled)}
           >
-            <span slot="labelA" style="color: gray">{$t('pathway.pages.settings.enabled')}</span>
-            <span slot="labelB" style="color: gray">{$t('pathway.pages.settings.disabled')}</span>
+            <span slot="labelA" style="color: gray">{$t('pathway.pages.settings.disabled')}</span>
+            <span slot="labelB" style="color: gray">{$t('pathway.pages.settings.enabled')}</span>
           </Toggle>
         </Column>
       </Row>
@@ -260,8 +269,8 @@
               bind:toggled={$pathwaySettings.lms_certificate}
               on:toggle={(e) => ($pathwaySettings.lms_certificate = e.detail.toggled)}
             >
-              <span slot="labelA" style="color: gray">{$t('pathway.pages.settings.enabled')}</span>
-              <span slot="labelB" style="color: gray">{$t('pathway.pages.settings.disabled')}</span>
+              <span slot="labelA" style="color: gray">{$t('pathway.pages.settings.disabled')}</span>
+              <span slot="labelB" style="color: gray">{$t('pathway.pages.settings.enabled')}</span>
             </Toggle>
           </Column>
           <!-- <Column class="flex w-full flex-col md:flex-row items-start  md:items-center gap-5">

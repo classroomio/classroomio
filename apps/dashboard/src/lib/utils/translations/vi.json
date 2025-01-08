@@ -277,7 +277,8 @@
         "type": "Loại khóa học",
         "course_type_desc": "Cập nhật loại khóa học để có trải nghiệm cá nhân hóa hơn",
         "live_class": "Lớp học trực tiếp",
-        "self_paced": "Tự nhịp độ"
+        "self_paced": "Tự nhịp độ",
+        "pathway": "Con đường"
       },
       "landing_page": {
         "start_course": "Bắt đầu khóa học",
@@ -345,7 +346,9 @@
             "no": "KHÔNG",
             "yes": "Đúng",
             "percent": "Phần trăm chiết khấu",
-            "gift": "Về quà tặng"
+            "gift": "Về quà tặng",
+            "gift_placeholder": "Quà tặng khi hoàn thành",
+            "cart": "Thêm vào giỏ hàng"
           },
           "instructor_form": {
             "upload": "Logo giảng viên",
@@ -394,7 +397,9 @@
             "reviews": "Đánh giá",
             "instructor": "Người hướng dẫn",
             "pricing": "Định giá",
-            "certificate": "Giấy chứng nhận"
+            "certificate": "Giấy chứng nhận",
+            "about": "Về",
+            "objectives": "MỤC TIÊU"
           },
           "display_section": "Phần hiển thị",
           "certificate_form": {
@@ -1550,7 +1555,8 @@
         "add": "Thêm vào",
         "course": "Khóa học",
         "courses": "Khóa học",
-        "path": "đến lộ trình học tập"
+        "path": "đến lộ trình học tập",
+        "delete": "Xác nhận xóa"
       },
       "not_permitted": {
         "header": "Không có quyền",

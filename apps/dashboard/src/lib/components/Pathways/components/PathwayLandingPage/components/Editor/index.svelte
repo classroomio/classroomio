@@ -51,14 +51,14 @@
     {
       key: 2,
       path: 'landingpage.about',
-      title: 'About',
+      title: $t('course.navItem.landing_page.editor.title.about'),
       enableAIWriter: true,
       initPrompt: 'Please write a detailed course requirement for this course:'
     },
     {
       key: 3,
       path: 'landingpage.objectives',
-      title: 'Objectives',
+      title: $t('course.navItem.landing_page.editor.title.objectives'),
       enableAIWriter: true,
       initPrompt: 'Please write educational objectives for this course:'
     },
@@ -182,7 +182,6 @@
         >
           <p class="dark:text-white mr-2">
             {section.title}
-            {$t('course.navItem.landing_page.editor.section')}
           </p>
           <ChevronRightIcon size={24} class="carbon-class" />
         </button>

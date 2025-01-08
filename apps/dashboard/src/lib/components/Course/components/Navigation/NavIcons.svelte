@@ -15,6 +15,8 @@
   import { NAV_IDS } from './constants';
 
   export let name = '';
+
+  console.log('name', name);
 </script>
 
 {#if name === NAV_IDS.SECTION}
@@ -37,10 +39,10 @@
   <Badge size={20} class="carbon-icon mr-2" />
 {:else if name === NAV_IDS.SETTINGS}
   <Settings size={20} class="carbon-icon mr-2" />
-{:else if name === 'Courses'}
+{:else if name === NAV_IDS.COURSES}
   <span class="carbon-icon mr-2">
     <CourseIcon />
   </span>
-{:else if name === 'Settings'}
+{:else if name === NAV_IDS.SETTINGS}
   <Certificate size={20} class="carbon-icon mr-2" />
 {/if}

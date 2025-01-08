@@ -65,6 +65,7 @@
   $: setFormatter(pathwayData.currency);
 
   $: discount = get(pathwayData, 'landingpage.discount', 0);
+  $: showDiscount = get(pathwayData, 'landingpage.showDiscount');
   $: calculatedCost = calcDisc(
     discount,
     pathwayData.cost || 0,
@@ -126,7 +127,7 @@
               : $t('course.navItem.landing_page.pricing_section.buy')}
             className="w-full sm:w-full h-[40px]"
             onClick={handleJoinCourse}
-            isDisabled={!pathwayData.landingpage.allowNewStudent}
+            isDisabled={!pathwayData.is_published}
           />
         </div>
       </div>
@@ -137,7 +138,7 @@
     <div class="py-2 lg:py-10">
       <!-- Pricing -->
       <div class="mb-6 px-2 lg:px-10">
-        {#if pathwayData?.landingpage?.allowNewStudent}
+        {#if pathwayData?.is_published}
           <p class="dark:text-white font-semibold text-xl">
             {formatter?.format(calculatedCost) || calculatedCost}
             {#if isFree}
@@ -163,10 +164,10 @@
       <!-- Call To Action Buttons -->
       <div class="px-2 pb-10 lg:px-10 flex flex-col w-full items-center">
         <PrimaryButton
-          label={isFree ? $t('course.navItem.landing_page.pricing_section.enroll') : 'Add to Cart'}
+          label={isFree ? $t('course.navItem.landing_page.pricing_section.enroll') : $t('course.navItem.landing_page.editor.pricing_form.cart')}
           className="w-full sm:w-full py-3 mb-3 rounded-none"
           onClick={handleJoinCourse}
-          isDisabled={!pathwayData.landingpage.allowNewStudent}
+          isDisabled={!pathwayData.is_published}
         />
         <PrimaryButton
           label={isFree
@@ -175,15 +176,16 @@
           className="w-full sm:w-full py-3 mb-3 rounded-none border-blue-600 hover:border-gray-600"
           variant={VARIANTS.OUTLINED}
           onClick={handleJoinCourse}
-          isDisabled={!pathwayData.landingpage.allowNewStudent}
+          isDisabled={!pathwayData.is_published}
         />
-        {#if pathwayData?.landingpage?.showDiscount && pathwayData.landingpage.allowNewStudent}
+        {#if pathwayData?.landingpage?.showDiscount && pathwayData.is_published}
           <p class="dark:text-white font-light text-xs text-gray-500">
             {$t('course.navItem.landing_page.pricing_section.bird')}
           </p>
         {/if}
       </div>
 
+      {#if showDiscount}
       <div class="border-t px-2 pt-10 lg:px-10 text-center">
         <img src="/pricingCard-icon.svg" alt="Pricing Card" class="w-[85%] mx-auto" />
         <p class="dark:text-white font-light text-xs my-5 text-gray-500">
@@ -193,11 +195,12 @@
           {$t('pathway.pages.landingPage.main.start')}
         </a>
       </div>
+      {/if}
     </div>
 
     <!-- Gift Container -->
     {#if pathwayData?.landingpage?.reward?.show}
-      <div class="p-10 text-sm flex items-center flex-col border-t border-b border-gray-300">
+      <div class="px-10 py-5 text-sm flex items-center flex-col border-t border-gray-300">
         {@html get(pathwayData, 'landingpage.reward.description', '')}
       </div>
     {/if}

@@ -277,7 +277,8 @@
         "type": "Kurstyp",
         "course_type_desc": "Aktualisieren Sie den Kurstyp für ein persönlicheres Erlebnis",
         "live_class": "Live-Klasse",
-        "self_paced": "Eigenständig"
+        "self_paced": "Eigenständig",
+        "pathway": "Weg"
       },
       "landing_page": {
         "start_course": "Kurs starten",
@@ -345,7 +346,9 @@
             "no": "NEIN",
             "yes": "Ja",
             "percent": "Rabattprozentsatz",
-            "gift": "Über Geschenk"
+            "gift": "Über Geschenk",
+            "gift_placeholder": "Geschenk nach Fertigstellung",
+            "cart": "in den Warenkorb legen"
           },
           "instructor_form": {
             "upload": "Lehrerlogo",
@@ -394,7 +397,9 @@
             "reviews": "Rezensionen",
             "instructor": "Lehrer",
             "pricing": "Preisgestaltung",
-            "certificate": "Zertifikat"
+            "certificate": "Zertifikat",
+            "about": "Um",
+            "objectives": "ZIELE"
           },
           "display_section": "Anzeigebereich",
           "certificate_form": {
@@ -1550,7 +1555,8 @@
         "add": "Hinzufügen",
         "course": "Kurs",
         "courses": "Kurse",
-        "path": "zum Lernpfad"
+        "path": "zum Lernpfad",
+        "delete": "Bestätigen Sie das Löschen"
       },
       "not_permitted": {
         "header": "Keine Erlaubnis",

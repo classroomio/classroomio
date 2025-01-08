@@ -1,20 +1,20 @@
 <script lang="ts">
-  import { page } from '$app/stores';
-  import { goto } from '$app/navigation';
   import { browser } from '$app/environment';
-  import { onDestroy, onMount } from 'svelte';
-  import LockedIcon from 'carbon-icons-svelte/lib/Locked.svelte';
+  import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
   import CheckmarkFilled from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
+  import LockedIcon from 'carbon-icons-svelte/lib/Locked.svelte';
+  import { onDestroy, onMount } from 'svelte';
 
+  import { sideBar } from '$lib/components/Org/store';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
   import { isMobile } from '$lib/utils/store/useMobile';
-  import { sideBar } from '$lib/components/Org/store';
   import { profile } from '$lib/utils/store/user';
-  import { courses, pathway } from '../store';
+  import { pathwayCourses, pathway } from '../store';
 
-  import { t } from '$lib/utils/functions/translations';
   import { getLectureNo } from '$lib/components/Course/function';
+  import { t } from '$lib/utils/functions/translations';
   import { getIsCourseComplete, getPathwayNavItemRoute } from '../functions';
 
   import TextChip from '$lib/components/Chip/Text.svelte';
@@ -24,6 +24,7 @@
   export let isStudent: boolean = false;
 
   interface NavItem {
+    id: string;
     label: string;
     to: string;
     icon: string;
@@ -141,6 +142,7 @@
   $: {
     navItems = [
       {
+        id: 'NEWS_FEED',
         label: $t('pathway.components.sideBar.news'),
         to: getPathwayNavItemRoute($pathway.id),
         icon: 'News Feed',
@@ -151,6 +153,7 @@
         }
       },
       {
+        id: 'COURSES',
         label: $t('pathway.components.sideBar.courses'),
         to: getPathwayNavItemRoute($pathway.id, 'courses'),
         icon: 'Courses',
@@ -160,6 +163,7 @@
         isExpanded: isStudent ? true : $page.url.pathname.includes('/courses')
       },
       {
+        id: 'PEOPLE',
         label: $t('pathway.components.sideBar.people'),
         to: getPathwayNavItemRoute($pathway.id, 'people'),
         icon: 'People',
@@ -170,6 +174,7 @@
         }
       },
       {
+        id: 'CERTIFICATES',
         label: $t('pathway.components.sideBar.certificates'),
         to: getPathwayNavItemRoute($pathway.id, 'certificates'),
         icon: 'Certificates',
@@ -184,6 +189,7 @@
         }
       },
       {
+        id: 'LANDING_PAGE',
         label: $t('pathway.components.sideBar.landing'),
         to: getPathwayNavItemRoute($pathway.id, 'landingpage'),
         icon: 'Landing Page',
@@ -194,6 +200,7 @@
         }
       },
       {
+        id: 'SETTINGS',
         label: $t('pathway.components.sideBar.settings'),
         to: getPathwayNavItemRoute($pathway.id, 'settings'),
         icon: 'Settings',
@@ -211,14 +218,14 @@
   class={`
   ${
     $sideBar.hidden
-      ? '-translate-x-[100%] absolute z-[40]'
-      : 'translate-x-0 absolute md:relative z-[40]'
+      ? 'absolute z-[40] -translate-x-[100%]'
+      : 'absolute z-[40] translate-x-0 md:relative'
   }
-    transition w-[90vw] md:w-[300px] lg:w-[350px] bg-gray-100 dark:bg-black h-[calc(100vh-48px)] 
+    h-[calc(100vh-48px)] w-[90vw] bg-gray-100 transition md:w-[300px] lg:w-[350px] dark:bg-black 
   
   ${
     resize ? 'border-r-8 border-r-blue-500' : 'dark:border-r-neutral-600'
-  } overflow-y-auto border border-l-0 border-t-0 border-b-0 border-r-1`}
+  } border-r-1 overflow-y-auto border border-b-0 border-l-0 border-t-0`}
   style={$sideBar.hidden === true ? 'width:0' : 'width:300px'}
   bind:this={sidebarRef}
 >
@@ -232,10 +239,10 @@
         {#if !navItem.show || (typeof navItem.show === 'function' && navItem.show())}
           <NavExpandable
             label={navItem.label}
-            icon={navItem.icon}
+            icon={navItem.id}
             handleClick={handleMainGroupClick(navItem.to)}
             isGroupActive={(path || $page.url.pathname) === navItem.to}
-            total={navItem.isCourses ? ($courses || []).length : 0}
+            total={navItem.isCourses ? ($pathwayCourses || []).length : 0}
             isLoading={!$pathway.id}
             isLesson={navItem.isCourses}
             isPaidFeature={navItem.isPaidFeature}
@@ -244,9 +251,9 @@
             addIconClick={() => console.log('open add course modal')}
           >
             {#if navItem.isCourses}
-              {#each $courses as item, index}
+              {#each $pathwayCourses as item, index}
                 <a
-                  class="pl-7 w-[95%] text-[0.80rem] mb-1 text-black dark:text-white {isStudent &&
+                  class="mb-1 w-[95%] pl-7 text-[0.80rem] text-black dark:text-white {isStudent &&
                   !item.is_unlocked
                     ? 'cursor-not-allowed'
                     : ''}"
@@ -255,7 +262,7 @@
                   aria-disabled={!item.is_unlocked}
                 >
                   <div
-                    class="flex items-center py-3 px-4 {NavClasses.item} {(
+                    class="flex items-center px-4 py-3 {NavClasses.item} {(
                       path || $page.url.pathname
                     ).includes(item.id) && NavClasses.active}"
                   >
@@ -265,7 +272,7 @@
                       size="sm"
                       shape="rounded-full"
                     />
-                    <span class="w-[70%] text-ellipsis line-clamp-2">{item.course.title}</span>
+                    <span class="line-clamp-2 w-[70%] text-ellipsis">{item.course.title}</span>
                     <span class="grow" />
                     {#if !item.is_unlocked}
                       <span class="text-md ml-2" title="This lesson is locked.">

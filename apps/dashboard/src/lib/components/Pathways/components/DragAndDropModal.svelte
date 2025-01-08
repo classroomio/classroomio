@@ -1,11 +1,13 @@
 <script>
-  import { flip } from 'svelte/animate';
-  import { dndzone } from 'svelte-dnd-action';
-  import { createEventDispatcher } from 'svelte';
   import Draggable from 'carbon-icons-svelte/lib/Draggable.svelte';
+  import { createEventDispatcher } from 'svelte';
+  import { dndzone } from 'svelte-dnd-action';
+  import { flip } from 'svelte/animate';
+
   import { t } from '$lib/utils/functions/translations';
 
-  export let pathwayCourses = [];
+  export let courses = [];
+
   const flipDurationMs = 300;
   const dispatch = createEventDispatcher();
 
@@ -17,34 +19,36 @@
   }
 
   function handleDndConsider(e) {
-    pathwayCourses = updateOrder(e.detail.items);
-    dispatch('update', pathwayCourses);
+    courses = updateOrder(e.detail.items);
+    dispatch('update', courses);
   }
 
   function handleDndFinalize(e) {
-    pathwayCourses = updateOrder(e.detail.items);
-    dispatch('update', pathwayCourses);
+    courses = updateOrder(e.detail.items);
+    dispatch('update', courses);
   }
 </script>
 
-<header class="bg-[#F7F7F7] p-3 rounded-md">
+<header class="rounded-md bg-[#F7F7F7] p-3 text-black dark:bg-transparent dark:text-white">
   {$t('pathway.components.dragAndDrop.header')}
 </header>
 
-<div class="w-full mt-5 grid grid-cols-12 items-center py-4 border-b px-10">
+<div
+  class="mt-5 grid w-full grid-cols-12 items-center border-b px-10 py-4 text-black dark:text-white"
+>
   <span class="col-span-4">
-    <p class="font-medium text-sm text-black pl-6 dark:text-white">
+    <p class="pl-6 text-sm font-medium text-black dark:text-white">
       {$t('pathway.pages.course.body_title')}
     </p>
   </span>
   <span class="col-span-4 font-medium">{$t('pathway.pages.course.description')}</span>
-  <span class="text-center font-medium col-span-2">{$t('pathway.pages.course.lessons')}</span>
-  <span class="text-center font-medium col-span-2">{$t('pathway.pages.course.students')}</span>
+  <span class="col-span-2 text-center font-medium">{$t('pathway.pages.course.lessons')}</span>
+  <span class="col-span-2 text-center font-medium">{$t('pathway.pages.course.students')}</span>
 </div>
 
 <section
   use:dndzone={{
-    items: pathwayCourses,
+    items: courses,
     flipDurationMs: 300,
     dropTargetStyle: {
       border: '2px #1d4ed8 solid',
@@ -54,22 +58,22 @@
   on:consider={handleDndConsider}
   on:finalize={handleDndFinalize}
 >
-  {#each pathwayCourses as course (course.id)}
+  {#each courses as course (course.id)}
     <div
       animate:flip={{ duration: flipDurationMs }}
-      class="w-full grid grid-cols-12 items-center py-4 border-b border-[#0233BD] px-10"
+      class="grid w-full grid-cols-12 items-center border-b border-[#0233BD] px-10 py-4 text-black dark:text-white"
     >
       <span class="col-span-4">
         <div class="flex items-center gap-3">
           <Draggable size={16} color="blue" />
-          <p class="font-medium text-sm text-black dark:text-white">
+          <p class="text-sm font-medium">
             {course.course.title}
           </p>
         </div>
       </span>
       <span class="col-span-4 text-sm">{course.course.description}</span>
-      <span class="text-center text-sm col-span-2">{course.course.lesson?.length || 0}</span>
-      <span class="text-center text-sm col-span-2"
+      <span class="col-span-2 text-center text-sm">{course.course.lesson?.length || 0}</span>
+      <span class="col-span-2 text-center text-sm"
         >{course.course.group_id?.groupmember.length || 0}</span
       >
     </div>

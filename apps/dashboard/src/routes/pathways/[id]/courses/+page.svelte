@@ -1,37 +1,39 @@
 <script lang="ts">
+	
   import {
+    Dropdown,
     OverflowMenu,
     OverflowMenuItem,
     Search,
-    Dropdown,
     StructuredList,
-    StructuredListHead,
-    StructuredListRow,
+    StructuredListBody,
     StructuredListCell,
-    StructuredListBody
+    StructuredListHead,
+    StructuredListRow
   } from 'carbon-components-svelte';
   import { Add } from 'carbon-icons-svelte';
   import Grid from 'carbon-icons-svelte/lib/Grid.svelte';
   import List from 'carbon-icons-svelte/lib/List.svelte';
 
+  import { addCourseModal, pathwayCourses, pathway } from '$lib/components/Pathways/store';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { t } from '$lib/utils/functions/translations';
   import { isMobile } from '$lib/utils/store/useMobile';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { addCourseModal, pathway, courses } from '$lib/components/Pathways/store';
 
-  import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import {PageBody} from '$lib/components/Page';
   import Card from '$lib/components/Courses/components/Card/index.svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import IconButton from '$lib/components/IconButton/index.svelte';
+  import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
   import AddCourseModal from '$lib/components/Pathways/components/AddCourseModal.svelte';
   import PathwayContainer from '$lib/components/Pathways/components/PathwayContainer.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import type { PathwayCourse } from '$lib/utils/types/index.js';
 
   export let data;
 
   let searchValue: string = '';
-  let selectedId: string = '1';
+  let selectedId: string = '0';
   let filteredCourses: PathwayCourse[] = [];
   let coursePreference: string = 'grid';
 
@@ -56,7 +58,7 @@
   }
 
   // Computed property to filter courses based on the search value
-  $: filteredCourses = $courses.filter(
+  $: filteredCourses = $pathwayCourses.filter(
     (item) =>
       item.course.title.toLowerCase().includes(searchValue.toLowerCase()) &&
       (selectedId === '0' ? item.course.is_published : !item.course.is_published)
@@ -64,14 +66,15 @@
 </script>
 
 <PathwayContainer bind:pathwayId={data.pathwayId}>
-  <div class="overflow-y-auto max-h-[90vh]">
+    <div class='max-w-6xl mx-auto pt-4'>
+  
     <AddCourseModal pathwayId={$pathway.id} />
 
     <!-- header -->
-    <div class="flex justify-between items-center max-w-[95%] mx-auto">
-      <h1>{$t('pathway.pages.course.title')}</h1>
+    <div class="mx-auto flex max-w-[95%] items-center justify-between">
+      <h1 class='text-3xl'>{$t('pathway.pages.course.title')}</h1>
 
-      <div class="flex gap-5 justify-end">
+      <div class="flex justify-end gap-5">
         <RoleBasedSecurity allowedRoles={[1, 2]}>
           {#if $isMobile}
             <PrimaryButton onClick={addCourses}>
@@ -93,12 +96,12 @@
     </div>
 
     <!-- filter container -->
-    <div class="filter-containter flex justify-end gap-2 py-5 max-w-[90%] mx-auto">
+    <div class="filter-containter mx-auto flex max-w-[90%] justify-end gap-2 py-5">
       <Search
         placeholder={$t('pathway.pages.course.search')}
         bind:value={searchValue}
         searchClass="md:w-[30%]"
-        class=" bg-gray-100 dark:bg-neutral-800 text-sm"
+        class=" bg-gray-100 text-sm dark:bg-neutral-800"
       />
       <Dropdown
         bind:selectedId
@@ -119,10 +122,10 @@
     </div>
 
     <!-- body -->
-    <div>
-      {#if $courses.length > 0}
+    <div class='px-16'>
+      {#if $pathwayCourses.length > 0}
         {#if coursePreference === 'list'}
-          <div class="max-w overflow-x-auto">
+          <div class="border overflow-x-auto">
             <StructuredList>
               <StructuredListHead>
                 <StructuredListRow head>
@@ -158,7 +161,7 @@
             </StructuredList>
           </div>
         {:else if coursePreference === 'grid'}
-          <section class="flex items-center flex-wrap md:gap-28 gap-10">
+          <section class="flex flex-wrap items-center gap-10 md:gap-6">
             {#each filteredCourses as course}
               <Card
                 bannerImage={course.course.logo || '/images/classroomio-course-img-template.jpg'}
@@ -167,6 +170,7 @@
                 description={course.course.description}
                 totalLessons={course.course.lesson?.length || 0}
                 totalStudents={course.course.group_id?.groupmember.length || 0}
+                isPublished={course.course.is_published}
               />
             {/each}
           </section>
@@ -174,12 +178,12 @@
       {:else}
         <!-- empty course state -->
         <div
-          class="flex flex-col justify-center gap-3 items-center border rounded-md max-w-[90%] mx-auto mt-5 px-10 text-center h-[60vh]"
+          class="mx-auto mt-5 flex h-[60vh] max-w-[90%] flex-col items-center justify-center gap-3 rounded-md border px-10 text-center"
         >
           <div class="scale-[5]">
             <CourseIcon color="#0233BD" />
           </div>
-          <span class="mt-10 font-medium text-lg"
+          <span class="mt-10 text-lg font-medium"
             >{$t('pathway.pages.course.empty_state_header')}</span
           >
           <p>{$t('pathway.pages.course.empty_state_text')}</p>
@@ -193,7 +197,7 @@
           </div>
         </div>
       {/if}
-    </div>
+  </div>
   </div>
 </PathwayContainer>
 

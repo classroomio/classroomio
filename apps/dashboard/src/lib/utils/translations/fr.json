@@ -277,7 +277,8 @@
         "type": "Type de cours",
         "course_type_desc": "Mettez à jour le type de cours pour une expérience plus personnalisée",
         "live_class": "Cours en direct",
-        "self_paced": "À votre rythme"
+        "self_paced": "À votre rythme",
+        "pathway": "Chemin"
       },
       "landing_page": {
         "start_course": "Commencer le cours",
@@ -345,7 +346,9 @@
             "no": "Non",
             "yes": "Oui",
             "percent": "Pourcentage de remise",
-            "gift": "À propos du cadeau"
+            "gift": "À propos du cadeau",
+            "gift_placeholder": "Cadeau à la fin",
+            "cart": "Ajouter au panier"
           },
           "instructor_form": {
             "upload": "Logo de l'instructeur",
@@ -394,7 +397,9 @@
             "reviews": "Commentaires",
             "instructor": "Instructeur",
             "pricing": "Tarifs",
-            "certificate": "Certificat"
+            "certificate": "Certificat",
+            "about": "À propos",
+            "objectives": "OBJECTIFS"
           },
           "display_section": "Section d'affichage",
           "certificate_form": {
@@ -1550,7 +1555,8 @@
         "add": "Ajouter",
         "course": "Cours",
         "courses": "Cours",
-        "path": "au parcours d'apprentissage"
+        "path": "au parcours d'apprentissage",
+        "delete": "Confirmer la suppression"
       },
       "not_permitted": {
         "header": "Aucune autorisation",

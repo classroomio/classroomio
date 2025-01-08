@@ -1,6 +1,6 @@
-import { writable } from 'svelte/store';
-import type { Pathway, PathwayCourse, GroupStore } from '$lib/utils/types';
 import { ROLE } from '$lib/utils/constants/roles';
+import type { GroupStore, Pathway, PathwayCourse } from '$lib/utils/types';
+import { writable } from 'svelte/store';
 
 export const RADIO_VALUE = {
   TRUE: 'true',
@@ -12,7 +12,7 @@ export const addCourseModal = writable({
   step: 0
 });
 
-export const courses = writable<PathwayCourse[]>([]);
+export const pathwayCourses = writable<PathwayCourse[]>([]);
 
 export const pathwaySettings = writable({
   title: '',
@@ -112,7 +112,7 @@ export async function setPathway(data: Pathway, setCourse = true) {
   }
 
   if (setCourse) {
-    courses.set(data.pathway_course || []);
+    pathwayCourses.set(data.pathway_course || []);
   }
 
   if (data.landingpage && !Object.values(data.landingpage)) {

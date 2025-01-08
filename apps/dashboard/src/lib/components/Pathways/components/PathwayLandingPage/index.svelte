@@ -55,10 +55,6 @@
   let instructor = {};
   let video: string | undefined;
 
-  function playVideo() {
-    console.log('open modal with video');
-  }
-
   function locationHashChanged() {
     activeNav = window.location.hash;
   }
@@ -85,7 +81,8 @@
   });
 
   $: video = get(pathwayData, 'landingpage.videoUrl');
-  $: allowNewStudent = get(pathwayData, 'landingpage.allowNewStudent');
+  $: pathwayCoursesPreview = get(pathwayData, 'pathway_course') || [];
+  $: allowNewStudent = get(pathwayData, 'is_published');
   $: bannerImage = get(pathwayData, 'logo');
   $: instructor = get(pathwayData, 'landingpage.instructor') || {};
   $: initPlyr(player, video);
@@ -96,9 +93,7 @@
   }
   $: {
     let imgurl = get(instructor, 'imgUrl', $currentOrg.avatar_url);
-    console.log({ imgurl, instructor, org: $currentOrg });
   }
-  $: console.log('handleOpenWidget', $handleOpenWidget.open);
 </script>
 
 {#if !editMode}
@@ -107,20 +102,20 @@
 
 <div class="flex w-full flex-col items-center bg-white dark:bg-black">
   <!-- Header Section -->
-  <header id="header" class="banner p-10 flex w-full items-center justify-center">
+  <header id="header" class="bg-[#f5f8fe] dark:bg-black text-[#040f2d] dark:text-white p-10 flex w-full items-center justify-center">
     <div class="flex w-full flex-col-reverse items-center justify-between md:flex-row">
       <!-- Course Description -->
       <div class="w-11/12 py-10 md:w-2/5">
         <div
-          class="flex gap-2 items-center w-fit px-2 py-1 rounded-md font-medium text-[10px] tracking-widest bg-[#D9E0F5] border-[#0233BD] border"
+          class="flex gap-2 items-center w-fit px-2 py-1 rounded-md font-medium text-[10px] tracking-widest bg-[#D9E0F5] dark:bg-black border-[#0233BD] border"
         >
           <img src="/learningpath-icon.svg" alt="" class="w-3.5" />
           {$t('pathway.pages.landingPage.header.tag')}
         </div>
-        <h1 class="my-4 text-5xl font-bold text-[#040f2d] dark:text-white">
+        <h1 class="my-4 text-5xl font-bold">
           {get(pathwayData, 'title', '')}
         </h1>
-        <p class="text-base mb-6 text-[#040f2d] dark:text-white">
+        <p class="text-base mb-6">
           {get(pathwayData, 'description', '')}
         </p>
         <PrimaryButton
@@ -200,7 +195,7 @@
 
       <div>
         <h1 class="text-base m-0">
-          {$pathway.pathway_course.length}
+          {pathwayCoursesPreview.length}
           {$t('pathway.pages.landingPage.banner.courses')}
         </h1>
         <p class="text-[12px] font-extralight">
@@ -242,12 +237,13 @@
       <div class="w-full">
         <!-- Navigation -->
         <nav
-          class="sticky top-0 flex justify-between items-center border-b border-gray-300 px-10 py-9 {!editMode &&
+          class="sticky top-0 z-[1000] flex justify-between items-center border-b border-gray-300 px-10 py-9 {!editMode &&
             'lg:top-11'} bg-white dark:bg-neutral-800"
         >
           {#each NAV_ITEMS as navItem}
             <a
               href="{$page.url.pathname}{navItem.key}"
+              on:click={() => (activeNav = navItem.key)}
               class="{navItem.key === activeNav &&
                 'active text-primary-700'} z-0 mr-6 rounded-md px-2 py-1 font-bold text-slate-700 hover:bg-gray-200 dark:text-white dark:hover:text-slate-900"
             >
@@ -257,11 +253,11 @@
         </nav>
 
         <!-- Main -->
-        <div class="flex flex-col md:flex-row justify-between items-center px-10">
+        <div class="flex flex-col md:flex-row justify-between items-start px-10 pt-10">
           <!-- Sections - Description & Objectives -->
           <div class="md:max-w-[55%]">
             <!-- Sections - About -->
-            <section id="requirement" class="mt-8 border-gray-300">
+            <section id="requirement" class="border-gray-300">
               <h3 class="mb-3 mt-0 text-2xl font-bold">
                 {$t('pathway.pages.landingPage.main.description')}
               </h3>
@@ -272,7 +268,7 @@
             </section>
 
             <!-- Sections - Course Objectives -->
-            <section id="description" class="mt-20 border-gray-300 landingpage-list">
+            <section id="objectives" class="mt-20 border-gray-300 landingpage-list">
               <h3 class="mb-3 mt-0 text-2xl font-bold">
                 {$t('pathway.pages.landingPage.main.objectives')}
               </h3>
@@ -292,7 +288,7 @@
 
         <!-- Sections - Certificate -->
         <section
-          class="border-gray-300 mt-8 flex md:flex-row flex-col gap-y-5 justify-center md:justify-between max-w-[80%] mx-auto bg-[#F5F8FE] items-center px-8 py-6 md:py-4"
+          class="border-gray-300 mt-8 flex md:flex-row flex-col gap-y-5 justify-center md:justify-between max-w-[80%] mx-auto bg-[#F5F8FE] dark:bg-black dark:border dark:rounded-md items-center px-8 py-6 md:py-4"
         >
           <div class="md:w-[50%] text-center md:text-left">
             <h3 class="text-2xl font-bold m-0">
@@ -311,7 +307,7 @@
 
         <!-- Sections - Pathway Subheader -->
         <div
-          class="flex flex-col md:flex-row items-center justify-center md:justify-between pl-12 pr-16 my-8 sticky top-8 bg-white py-6"
+          class="flex flex-col md:flex-row items-center justify-center md:justify-between pl-12 pr-16 my-8 sticky top-8 bg-white dark:bg-black dark:border py-6"
         >
           <h1 class="text-lg">{get(pathwayData, 'title', '')}</h1>
           <PrimaryButton
@@ -321,14 +317,14 @@
               ''
             )}"
             className="md:w-[30%] w-full py-3 mb-3 font-semibold"
-            isDisabled={!pathwayData.landingpage.allowNewStudent}
+            isDisabled={!pathwayData.is_published}
           />
         </div>
 
         <!-- Sections - Course List -->
-        <section class="text-center max-w-[80%] mx-auto">
+        <section id="courses" class="text-center max-w-[80%] mx-auto">
           <h1 class="mb-1">
-            {$t('pathway.pages.landingPage.courseList.header')} 6 {$t(
+            {$t('pathway.pages.landingPage.courseList.header')} {pathwayCoursesPreview.length} {$t(
               'pathway.pages.landingPage.courseList.courses'
             )}
           </h1>
@@ -338,28 +334,28 @@
 
           <!-- course list -->
           <div class="mt-10 flex flex-wrap items-center justify-center md:gap-x-5">
-            {#each $pathway.pathway_course as course, index}
+            {#each pathwayCoursesPreview as course, index}
               <LessonCard title={course.course.title} {index} />
             {/each}
           </div>
         </section>
 
         <!-- Sections - Reviews & Instructor -->
-        <div class="flex flex-wrap justify-center gap-5 items-center py-10 px-8">
+        <div id="review" class="flex flex-wrap justify-center gap-5 items-center py-10 px-8">
           <!-- Sections - Reviews -->
           {#if reviews && reviews.length > 0}
             <section id="reviews" class="lg:w-[60%] w-[80%]">
               <h2 class="m-0 mb-2 font-semibold">
                 {$t('course.navItem.landing_page.reviews')}
               </h2>
-              <p class="text-sm text-[#656565]">
+              <p class="text-sm text-[#656565] dark:text-black">
                 {$t('pathway.pages.landingPage.reviews.students')}
               </p>
               <div class="flex flex-wrap gap-y-2 justify-between mt-5">
                 {#each reviews.slice(0, 4) as review, id}
                   {#if !review.hide}
                     <!-- review -->
-                    <div class="my-2 min-w-[250px] w-[48%] p-5 rounded-md bg-[#F1F6FF]">
+                    <div class="my-2 min-w-[250px] w-[48%] p-5 rounded-md bg-[#F1F6FF] dark:bg-black">
                       <div
                         class="read-more-content {expandDescription[id] ? 'expanded' : ''}"
                         style="max-height: {expandDescription[id] ? '100%' : '40px'}"
@@ -488,15 +484,15 @@
                 class="mr-3 block h-14 w-14 rounded-full"
                 src={get(instructor, 'imgUrl', $currentOrg.avatar_url || '/logo-512.png')}
               />
-              <div>
-                <p class="text-sm font-light dark:text-white">
+              <div class='dark:text-white'> 
+                <p class="text-sm font-light">
                   {get(instructor, 'name', $currentOrg.name)}
                 </p>
                 <div class="flex gap-2 items-center">
-                  <p class="text-[11px] font-medium dark:text-white">
+                  <p class="text-[11px] font-medium">
                     {get(instructor, 'role', '')}
                   </p>
-                  <div class="flex gap-1 items-center dark:text-white">
+                  <div class="flex gap-1 items-center">
                     <PlayFilled size={16} class="text-primary-700" />
                     <p class="text-xs font-medium mt-0.5">
                       {get(instructor, 'coursesNo', '')}
@@ -529,11 +525,6 @@
 <style lang="scss">
   * {
     font-family: Inter, sans-serif;
-  }
-
-  .banner {
-    background-color: #f5f8fe;
-    min-height: 472px;
   }
 
   .author {

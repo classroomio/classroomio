@@ -277,7 +277,8 @@
         "type": "Тип курса",
         "course_type_desc": "Обновите тип курса для более персонализированного опыта.",
         "live_class": "Живой урок",
-        "self_paced": "Самостоятельный темп"
+        "self_paced": "Самостоятельный темп",
+        "pathway": "Путь"
       },
       "landing_page": {
         "start_course": "Начать курс",
@@ -345,7 +346,9 @@
             "no": "Нет",
             "yes": "Да",
             "percent": "Процент скидки",
-            "gift": "О подарке"
+            "gift": "О подарке",
+            "gift_placeholder": "Подарок по завершению",
+            "cart": "добавить в корзину"
           },
           "instructor_form": {
             "upload": "Логотип инструктора",
@@ -394,7 +397,9 @@
             "reviews": "Отзывы",
             "instructor": "Инструктор",
             "pricing": "Цены",
-            "certificate": "Сертификат"
+            "certificate": "Сертификат",
+            "about": "О",
+            "objectives": "ЦЕЛИ"
           },
           "display_section": "Раздел дисплея",
           "certificate_form": {
@@ -1550,7 +1555,8 @@
         "add": "Добавлять",
         "course": "Курс",
         "courses": "Курсы",
-        "path": "к пути обучения"
+        "path": "к пути обучения",
+        "delete": "Подтвердить удаление"
       },
       "not_permitted": {
         "header": "Нет разрешения",

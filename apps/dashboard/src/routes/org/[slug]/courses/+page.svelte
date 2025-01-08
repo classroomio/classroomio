@@ -1,24 +1,23 @@
 <script lang="ts">
-  import { Search, Dropdown } from 'carbon-components-svelte';
-  import { profile } from '$lib/utils/store/user';
-  import { fetchCourses } from '$lib/utils/services/courses';
-  import Courses from '$lib/components/Courses/index.svelte';
-  import NewCourseModal from '$lib/components/Courses/components/NewCourseModal/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { courses, courseMetaDeta } from '$lib/components/Courses/store';
-  import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
-  import { Add } from 'carbon-icons-svelte';
-  import { isMobile } from '$lib/utils/store/useMobile';
-  import { isOrgAdmin } from '$lib/utils/store/org';
-  import type { Course } from '$lib/utils/types';
   import { browser } from '$app/environment';
-  import { t } from '$lib/utils/functions/translations';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { goto } from '$app/navigation';
+  import NewCourseModal from '$lib/components/Courses/components/NewCourseModal/index.svelte';
+  import Courses from '$lib/components/Courses/index.svelte';
+  import { courseMetaDeta, courses } from '$lib/components/Courses/store';
   import IconButton from '$lib/components/IconButton/index.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { t } from '$lib/utils/functions/translations';
+  import { fetchCourses } from '$lib/utils/services/courses';
+  import { currentOrg, currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
+  import { isMobile } from '$lib/utils/store/useMobile';
+  import { profile } from '$lib/utils/store/user';
+  import type { Course } from '$lib/utils/types';
+  import { Dropdown, Search } from 'carbon-components-svelte';
+  import { Add } from 'carbon-icons-svelte';
   import Grid from 'carbon-icons-svelte/lib/Grid.svelte';
   import List from 'carbon-icons-svelte/lib/List.svelte';
   import { onMount } from 'svelte';
-  import { goto } from '$app/navigation';
 
   export let data;
 
@@ -105,10 +104,10 @@
   <title>Courses - ClassroomIO</title>
 </svelte:head>
 
-<section class="w-full md:max-w-6xl md:mx-auto">
-  <div class="py-2 md:py-10 px-2 md:px-5">
-    <div class="flex items-center justify-between mb-5">
-      <h1 class="dark:text-white text-2xl md:text-3xl font-bold">{$t('courses.heading')}</h1>
+<section class="w-full md:mx-auto md:max-w-6xl">
+  <div class="px-2 py-2 md:px-5 md:py-10">
+    <div class="mb-5 flex items-center justify-between">
+      <h1 class="text-2xl font-bold md:text-3xl dark:text-white">{$t('courses.heading')}</h1>
       {#if $isMobile}
         <PrimaryButton isDisabled={!$isOrgAdmin} onClick={openNewCourseModal}>
           <Add size={24} />
@@ -122,7 +121,7 @@
         />
       {/if}
     </div>
-    <div class="flex flex-row-reverse mb-5">
+    <div class="mb-5 flex flex-row-reverse">
       <div class="filter-containter flex items-end justify-start">
         <Search
           placeholder={$t('courses.search_placeholder')}

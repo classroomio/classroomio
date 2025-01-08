@@ -104,7 +104,7 @@
 
   <div class="mt-5">
     <!-- <label for="text-field" class="m-0 font-bold mb-2">Discount</label> -->
-    <Toggle labelText="Gift on Completion" bind:toggled={giftToggled}>
+    <Toggle labelText={$t('course.navItem.landing_page.editor.pricing_form.gift_placeholder')} bind:toggled={giftToggled}>
       <span slot="labelA">{$t('course.navItem.landing_page.editor.pricing_form.no')}</span>
       <span slot="labelB">{$t('course.navItem.landing_page.editor.pricing_form.yes')}</span>
     </Toggle>
