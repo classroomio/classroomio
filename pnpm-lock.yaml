@@ -266,9 +266,6 @@ importers:
       '@carbon/charts-svelte':
         specifier: ^1.13.6
         version: 1.13.6(d3-cloud@1.2.7)(d3-sankey@0.12.3)(d3@7.8.5)(svelte@4.1.2)
-      '@lemonsqueezy/lemonsqueezy.js':
-        specifier: ^2.2.0
-        version: 2.2.0
       '@polar-sh/sveltekit':
         specifier: ^0.2.1
         version: 0.2.1(@sveltejs/kit@1.29.0(svelte@4.1.2)(vite@4.4.8(@types/node@22.10.1)(sass@1.64.2)))(zod@3.21.4)
@@ -2462,10 +2459,6 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
-
-  '@lemonsqueezy/lemonsqueezy.js@2.2.0':
-    resolution: {integrity: sha512-DsZTeowehSLTESUZ6xxoYPDhoE8BYepWsj3TCqibG7FvB8X1HERPXQlc6E/IeGj22SOfIM997b7GfFkeLWY8pA==}
-    engines: {node: '>=18'}
 
   '@mapbox/node-pre-gyp@1.0.11':
     resolution: {integrity: sha512-Yhlar6v9WQgUp/He7BdgzOz8lqMQ8sU+jkCq7Wx8Myc5YFJLbEe7lgui/V7G1qB1DJykHSGwreceSaD60Y0PUQ==}
@@ -12254,8 +12247,6 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
-
-  '@lemonsqueezy/lemonsqueezy.js@2.2.0': {}
 
   '@mapbox/node-pre-gyp@1.0.11':
     dependencies:

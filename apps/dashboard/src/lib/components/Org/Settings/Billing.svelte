@@ -30,7 +30,7 @@
       {#if $isFreePlan}
         {$t('settings.billing.active')}
       {:else}
-        <p class="mb-3">{$t('settings.billing.lemonsqueezy')}</p>
+        <p class="mb-3">{$t('settings.billing.provider')}</p>
 
         <PrimaryButton
           label={$t('settings.billing.open_billing')}

@@ -1147,8 +1147,8 @@
       "sub_title": "Detalles de facturación",
       "manage": "Gestiona tu facturación",
       "active": "No tienes ninguna facturación activa",
-      "lemonsqueezy": "Usamos Lemonsqueezy para ayudarlo a administrar su facturación",
-      "open_billing": "Facturación abierta"
+      "open_billing": "Facturación abierta",
+      "provider": "Usamos Polar para ayudarte a gestionar tu facturación"
     },
     "integrations": {
       "heading": "Telegrama",
