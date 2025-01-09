@@ -1,15 +1,12 @@
-import { supabase } from '$lib/utils/functions/supabase';
+import { getAccessToken } from '$lib/utils/functions/supabase';
 
 export async function queryUnsplash(searchQuery: string) {
-  const { data } = await supabase.auth.getSession();
-  const accessToken = data.session?.access_token || '';
-
   try {
     const response = await fetch('/api/unsplash', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: accessToken
+        Authorization: await getAccessToken()
       },
       body: JSON.stringify({ searchQuery })
     });

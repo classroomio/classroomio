@@ -1147,8 +1147,8 @@
       "sub_title": "Chi tiết thanh toán",
       "manage": "Quản lý thanh toán của bạn",
       "active": "Bạn không có bất kỳ thanh toán nào đang hoạt động",
-      "lemonsqueezy": "Chúng tôi sử dụng Lemonsqueezy để giúp quản lý hóa đơn của bạn",
-      "open_billing": "Thanh toán mở"
+      "open_billing": "Thanh toán mở",
+      "provider": "Chúng tôi sử dụng Polar để giúp quản lý việc thanh toán của bạn"
     },
     "integrations": {
       "heading": "điện tín",

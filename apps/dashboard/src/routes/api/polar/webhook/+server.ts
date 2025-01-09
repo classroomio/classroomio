@@ -2,7 +2,7 @@ import { env } from '$env/dynamic/private';
 import { getServerSupabase } from '$lib/utils/functions/supabase.server';
 import { cancelOrgPlan, createOrgPlan, updateOrgPlan } from '$lib/utils/services/org';
 import type { PolarWebhookPayload } from '$lib/utils/types/polar';
-import { Webhooks } from 'polar-sveltekit';
+import { Webhooks } from '@polar-sh/sveltekit';
 import { PLAN } from 'shared/src/plans/constants';
 
 export const POST = Webhooks({
