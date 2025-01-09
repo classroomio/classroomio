@@ -1,7 +1,7 @@
-import { json } from '@sveltejs/kit';
 import { getServerSupabase } from '$lib/utils/functions/supabase.server';
 import { getFeedForNotification } from '$lib/utils/services/newsfeed/index';
 import sendEmail from '$mail/sendEmail';
+import { json } from '@sveltejs/kit';
 
 const supabase = getServerSupabase();
 
@@ -67,23 +67,10 @@ const sendEmailNotification = async (feedId: string, authorId: string, comment?:
 
 export async function POST({ request }) {
   const { authorId, feedId, comment } = await request.json();
-  const accessToken = request.headers.get('Authorization') || '';
   console.log('/POST api/email/course/newsfeed');
 
-  if (!authorId || !feedId || !accessToken) {
+  if (!authorId || !feedId) {
     return json({ success: false, message: 'Missing required fields' }, { status: 400 });
-  }
-
-  let user;
-  try {
-    const { data } = await supabase.auth.getUser(accessToken);
-    user = data.user;
-  } catch (error) {
-    console.error(error);
-  }
-
-  if (!user) {
-    return json({ success: false, message: 'Unauthenticated user' }, { status: 401 });
   }
 
   await sendEmailNotification(feedId, authorId, comment);

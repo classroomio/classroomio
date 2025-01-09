@@ -22,6 +22,7 @@
   "dependencies": {
     "@carbon/charts-svelte": "^1.13.6",
     "@lemonsqueezy/lemonsqueezy.js": "^2.2.0",
+    "@polar-sh/sveltekit": "^0.2.1",
     "@sentry/browser": "^7.61.0",
     "@sentry/integrations": "^7.61.0",
     "@sentry/vite-plugin": "^2.6.2",
@@ -55,7 +56,6 @@
     "openai-edge": "^1.2.2",
     "papaparse": "^5.4.1",
     "pluralize": "^8.0.0",
-    "polar-sveltekit": "^0.0.4",
     "posthog-js": "^1.180.1",
     "shared": "workspace:*",
     "sirv": "^2.0.3",

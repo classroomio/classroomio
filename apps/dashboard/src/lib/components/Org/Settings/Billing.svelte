@@ -1,32 +1,27 @@
 <script>
-  import { Grid, Row, Column } from 'carbon-components-svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { currentOrgPlan, isFreePlan } from '$lib/utils/store/org';
-  import SectionTitle from '../SectionTitle.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { t } from '$lib/utils/functions/translations';
-
-  let isRedirecting = false;
+  import { currentOrgPlan, isFreePlan } from '$lib/utils/store/org';
+  import { Column, Grid, Row } from 'carbon-components-svelte';
+  import SectionTitle from '../SectionTitle.svelte';
 
   async function onOpenBilling() {
     console.log({
       plan: $currentOrgPlan
     });
 
-    if ($currentOrgPlan?.subscriptionId) {
-      isRedirecting = true;
-      fetch('/api/lmz/subscriptions?subscriptionId=' + $currentOrgPlan?.subscriptionId)
-        .then((response) => response.json())
-        .then((res) => {
-          isRedirecting = false;
-          window.open(res.customerPortal, '_blank');
-        });
+    if ($currentOrgPlan?.customerId) {
+      const url = new URL('/api/polar/portal', window.location.origin);
+      url.searchParams.set('customerId', $currentOrgPlan?.customerId);
+
+      window.open(url.toString(), '_blank');
     }
   }
 </script>
 
-<Grid class="border-c rounded border-gray-200 dark:border-neutral-600 w-full mt-5">
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+<Grid class="border-c mt-5 w-full rounded border-gray-200 dark:border-neutral-600">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('settings.billing.sub_title')}</SectionTitle></Column
     >
@@ -41,7 +36,7 @@
           label={$t('settings.billing.open_billing')}
           variant={VARIANTS.CONTAINED_DARK}
           onClick={onOpenBilling}
-          isLoading={isRedirecting}
+          isDisabled={!$currentOrgPlan?.customerId}
         />
       {/if}
     </Column>

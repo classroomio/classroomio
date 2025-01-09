@@ -9,22 +9,8 @@ const CACHE_DURATION = 60 * 5; // 5 minutes
 export async function POST({ setHeaders, request }) {
   const { orgId } = await request.json();
 
-  const accessToken = request.headers.get('Authorization');
-
-  if (!orgId || !accessToken) {
+  if (!orgId) {
     return json({ success: false, message: 'Request is missing required fields' }, { status: 400 });
-  }
-
-  let user;
-  try {
-    const { data } = await supabase.auth.getUser(accessToken);
-    user = data.user;
-  } catch (error) {
-    console.error(error);
-  }
-
-  if (!user) {
-    return json({ success: false, message: 'Unauthenticated user' }, { status: 401 });
   }
 
   setHeaders({

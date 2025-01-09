@@ -1,36 +1,20 @@
-import { json } from '@sveltejs/kit';
-import { getSupabase } from '$lib/utils/functions/supabase';
 import {
-  getConfigResponse,
   addDomainToVercel,
+  getConfigResponse,
   removeDomainFromVercelProject
 } from '$lib/utils/services/org/domain';
-
-const supabase = getSupabase();
+import { json } from '@sveltejs/kit';
 
 export async function POST({ request }) {
   const { params } = await request.json();
-  const accessToken = request.headers.get('Authorization');
   console.log('/GET api/domain', params);
 
-  if (!params?.key || !accessToken) {
+  if (!params?.key) {
     return json({ success: false, message: 'Missing fields' }, { status: 400 });
   }
 
   if (params?.domain?.includes('classroomio')) {
     return json({ success: false, message: 'Domain cannot contain classroomio' }, { status: 400 });
-  }
-
-  let user;
-  try {
-    const { data } = await supabase.auth.getUser(accessToken);
-    user = data.user;
-  } catch (error) {
-    console.error(error);
-  }
-
-  if (!user) {
-    return json({ success: false, message: 'Unauthenticated user' }, { status: 401 });
   }
 
   try {

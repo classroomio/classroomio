@@ -1,5 +1,6 @@
+import { dev } from '$app/environment';
 import { env } from '$env/dynamic/private';
-import { Checkout } from 'polar-sveltekit';
+import { Checkout } from '@polar-sh/sveltekit';
 
 export const GET = ({ ...params }) => {
   const metadata = JSON.parse(params.url.searchParams.get('metadata') ?? '{}');
@@ -7,7 +8,8 @@ export const GET = ({ ...params }) => {
 
   const request = Checkout({
     accessToken: env.POLAR_ACCESS_TOKEN,
-    successUrl
+    successUrl,
+    server: dev ? 'sandbox' : 'production'
   });
 
   return request(params);

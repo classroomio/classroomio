@@ -116,7 +116,7 @@
     <div class="relative mb-5">
       {#if !isLMS && !isOnLandingPage}
         <OverflowMenu
-          class="absolute right-2 top-2 z-50 rounded-full bg-gray-200 opacity-0 transition-all delay-150  duration-200 ease-in-out group-hover:opacity-100 dark:bg-neutral-800"
+          class="absolute right-2 top-2 z-40 rounded-full bg-gray-200 opacity-0 transition-all delay-150  duration-200 ease-in-out group-hover:opacity-100 dark:bg-neutral-800"
           size="sm"
           on:click={(e) => e.stopPropagation()}
         >
