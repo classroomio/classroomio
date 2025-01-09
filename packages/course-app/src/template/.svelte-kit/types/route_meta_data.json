@@ -1,0 +1,33 @@
+{
+	"/": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/api/courses": [
+		"src/routes/api/courses/+server.ts"
+	],
+	"/api/course/[slug]": [
+		"src/routes/api/course/[slug]/+server.ts"
+	],
+	"/courses": [
+		"src/routes/courses/+page.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/course/[slug]": [
+		"src/routes/course/[slug]/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts",
+		"src/routes/course/[slug]/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	],
+	"/course/[slug]/[section]/[filename]": [
+		"src/routes/course/[slug]/[section]/[filename]/+page.ts",
+		"src/routes/course/[slug]/+layout.server.ts",
+		"src/routes/+layout.ts",
+		"src/routes/+layout.server.ts"
+	]
+}
