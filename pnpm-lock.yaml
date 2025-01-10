@@ -263,8 +263,8 @@ importers:
         specifier: ^1.13.6
         version: 1.13.6(d3-cloud@1.2.7)(d3-sankey@0.12.3)(d3@7.8.5)(svelte@4.1.2)
       '@lemonsqueezy/lemonsqueezy.js':
-        specifier: ^4.0.0
-        version: 4.0.0
+        specifier: ^2.2.0
+        version: 2.2.0
       '@polar-sh/sveltekit':
         specifier: ^0.2.1
         version: 0.2.1(@sveltejs/kit@1.29.0)(zod@3.21.4)
@@ -4494,9 +4494,9 @@ packages:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
-  /@lemonsqueezy/lemonsqueezy.js@4.0.0:
-    resolution: {integrity: sha512-xcY1/lDrY7CpIF98WKiL1ElsfoVhddP7FT0fw7ssOzrFqQsr44HgolKrQZxd9SywsCPn12OTOUieqDIokI3mFg==}
-    engines: {node: '>=20'}
+  /@lemonsqueezy/lemonsqueezy.js@2.2.0:
+    resolution: {integrity: sha512-DsZTeowehSLTESUZ6xxoYPDhoE8BYepWsj3TCqibG7FvB8X1HERPXQlc6E/IeGj22SOfIM997b7GfFkeLWY8pA==}
+    engines: {node: '>=18'}
     dev: false
 
   /@mapbox/node-pre-gyp@1.0.11:
