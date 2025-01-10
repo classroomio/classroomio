@@ -1148,7 +1148,8 @@
       "manage": "Gerencie seu faturamento",
       "active": "Você não tem nenhum faturamento ativo",
       "open_billing": "Faturamento aberto",
-      "provider": "Usamos a Polar para ajudar a gerenciar seu faturamento"
+      "provider": "Usamos a Polar para ajudar a gerenciar seu faturamento",
+      "error": "Ocorreu um erro ao abrir o faturamento"
     },
     "integrations": {
       "heading": "Telegrama",

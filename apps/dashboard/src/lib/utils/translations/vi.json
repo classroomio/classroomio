@@ -1148,7 +1148,8 @@
       "manage": "Quản lý thanh toán của bạn",
       "active": "Bạn không có bất kỳ thanh toán nào đang hoạt động",
       "open_billing": "Thanh toán mở",
-      "provider": "Chúng tôi sử dụng Polar để giúp quản lý việc thanh toán của bạn"
+      "provider": "Chúng tôi sử dụng Polar để giúp quản lý việc thanh toán của bạn",
+      "error": "Đã xảy ra lỗi khi mở thanh toán"
     },
     "integrations": {
       "heading": "điện tín",

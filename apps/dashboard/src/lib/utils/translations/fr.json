@@ -1148,7 +1148,8 @@
       "manage": "Gérez votre facturation",
       "active": "Vous n'avez aucune facturation active",
       "open_billing": "Facturation ouverte",
-      "provider": "Nous utilisons Polar pour vous aider à gérer votre facturation"
+      "provider": "Nous utilisons Polar pour vous aider à gérer votre facturation",
+      "error": "Une erreur s'est produite lors de l'ouverture de la facturation"
     },
     "integrations": {
       "heading": "Télégramme",

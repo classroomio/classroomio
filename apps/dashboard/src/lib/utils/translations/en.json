@@ -243,7 +243,8 @@
       "manage": "Manage your billing",
       "active": "You don't have any active billing",
       "provider": "We use Polar to help manage your billing",
-      "open_billing": "Open billing"
+      "open_billing": "Open billing",
+      "error": "An error occurred while opening billing"
     }
   },
 

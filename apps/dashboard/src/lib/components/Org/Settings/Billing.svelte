@@ -1,21 +1,44 @@
 <script>
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { snackbar } from '$lib/components/Snackbar/store';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrgPlan, isFreePlan } from '$lib/utils/store/org';
   import { Column, Grid, Row } from 'carbon-components-svelte';
   import SectionTitle from '../SectionTitle.svelte';
+
+  let isRedirecting = false;
 
   async function onOpenBilling() {
     console.log({
       plan: $currentOrgPlan
     });
 
-    if ($currentOrgPlan?.customerId) {
-      const url = new URL('/api/polar/portal', window.location.origin);
-      url.searchParams.set('customerId', $currentOrgPlan?.customerId);
+    try {
+      if ($currentOrgPlan?.provider === 'polar') {
+        const url = new URL('/api/polar/portal', window.location.origin);
+        url.searchParams.set('customerId', $currentOrgPlan?.customerId);
 
-      window.open(url.toString(), '_blank');
+        window.open(url.toString(), '_blank');
+      }
+
+      if ($currentOrgPlan?.provider === 'lmz') {
+        isRedirecting = true;
+        const url = new URL('/api/lmz/subscription', window.location.origin);
+        url.searchParams.set('subscriptionId', $currentOrgPlan?.subscriptionId);
+
+        const response = await fetch(url.toString());
+        const result = await response.json();
+
+        isRedirecting = false;
+
+        window.open(result.customerPortal, '_blank');
+      }
+    } catch (error) {
+      isRedirecting = false;
+
+      console.error(error);
+      snackbar.error($t('settings.billing.error'));
     }
   }
 </script>
@@ -36,7 +59,7 @@
           label={$t('settings.billing.open_billing')}
           variant={VARIANTS.CONTAINED_DARK}
           onClick={onOpenBilling}
-          isDisabled={!$currentOrgPlan?.customerId}
+          isLoading={isRedirecting}
         />
       {/if}
     </Column>

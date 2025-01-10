@@ -5,7 +5,8 @@ const PUBLIC_ROUTES = [
   '/api/completion',
   'student_prove_payment',
   'teacher_student_buycourse',
-  '/api/polar'
+  '/api/polar',
+  '/api/lmz'
 ];
 
 function isPublicRoute(pathname: string) {

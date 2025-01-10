@@ -1148,7 +1148,8 @@
       "manage": "Gestiona tu facturación",
       "active": "No tienes ninguna facturación activa",
       "open_billing": "Facturación abierta",
-      "provider": "Usamos Polar para ayudarte a gestionar tu facturación"
+      "provider": "Usamos Polar para ayudarte a gestionar tu facturación",
+      "error": "Se produjo un error al abrir la facturación."
     },
     "integrations": {
       "heading": "Telegrama",
