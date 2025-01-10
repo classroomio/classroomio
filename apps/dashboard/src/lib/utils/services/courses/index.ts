@@ -259,9 +259,7 @@ export async function getMarks(courseId) {
   if (!courseId) return;
 
   // Gets courses for a particular organisation where the current logged in user is a groupmember
-  const { data: marks } = await supabase
-    .rpc('get_marks')
-    .eq('course_id', courseId);
+  const { data: marks } = await supabase.rpc('get_marks').eq('course_id', courseId);
 
   return { marks };
 }
@@ -586,57 +584,60 @@ export async function deleteExercise(questions: Array<{ id: string }>, exerciseI
 }
 
 export async function fetchCourseTags(orgId: string) {
-  // step 1: fetch all tags from the 'tags' table
-  const { data: tags } = await supabase.from('tags').select('*').eq('organization_id', orgId);
-  if (!tags) {
-    return;
-  }
-  
-  // step 2: fetch all the course tags
-  const { data: courseTags, error } = await supabase.from('course_tags').select('*');
-  if (error) {
-    console.error("Error fetching course tags:", error);
-    return;
+  // Fetch tags and course tags in parallel
+  const [tagsResponse, courseTagsResponse] = await Promise.all([
+    supabase.from('tags').select('*').eq('organization_id', orgId),
+    supabase.from('course_tags').select('*')
+  ]);
+
+  const { data: tags } = tagsResponse;
+  const { data: courseTags, error } = courseTagsResponse;
+
+  if (!tags || error) {
+    console.error('Error fetching tags:', error);
+    return [];
   }
 
-  // step 3: create a mapping to store the first course_tag.id and count per tag_id (to store the count of the tags in the course & the ids of each tag on the course_tags table)
-  const tagMap = courseTags.reduce((acc, courseTag) => {
-    if (!acc[courseTag.tag_id]) {
-      acc[courseTag.tag_id] = { id: courseTag.id, count: 1 };
-    } else {
-      acc[courseTag.tag_id].count += 1;
-    }
-    return acc;
-  }, {} as Record<string, { id: string, count: number }>);
+  // Create mapping of tag usage counts and course_tag IDs
+  const tagMap = courseTags.reduce(
+    (acc, courseTag) => {
+      if (!acc[courseTag.tag_id]) {
+        acc[courseTag.tag_id] = { id: courseTag.id, count: 1 };
+      } else {
+        acc[courseTag.tag_id].count += 1;
+      }
+      return acc;
+    },
+    {} as Record<string, { id: string; count: number }>
+  );
 
-  // step 4: add course_tag_id and count to each tag in the tags array
-  const updatedCourseTags = tags.map(tag => ({
+  // Combine tag data with usage information
+  const updatedCourseTags = tags.map((tag) => ({
     ...tag,
     course_tag_id: tagMap[tag.id]?.id || null,
-    courseCount: tagMap[tag.id]?.count || 0 
+    courseCount: tagMap[tag.id]?.count || 0
   }));
 
   return updatedCourseTags;
 }
 
 export function createTag(name: string, description: string, orgId: string) {
-  return supabase.from('tags').insert({name, description, organization_id: orgId}).select();
+  return supabase.from('tags').insert({ name, description, organization_id: orgId }).select();
 }
 
 export function updateTag(id: string, name: string, description: string) {
-  return supabase.from('tags').update({name, description}).match({id});
+  return supabase.from('tags').update({ name, description }).match({ id });
 }
 
 export function deleteTag(id: string) {
-  return supabase.from('tags').delete().match({id}).select();
+  return supabase.from('tags').delete().match({ id }).select();
 }
 
 // tags operation in courses
 export function addCourseTag(courseId: string, tagId: string) {
-  return supabase.from('course_tags').insert({course_id: courseId, tag_id: tagId}).select();
+  return supabase.from('course_tags').insert({ course_id: courseId, tag_id: tagId }).select();
 }
 
 export function removeCourseTag(id: string) {
-  return supabase.from('course_tags').delete().match({id}).select();
+  return supabase.from('course_tags').delete().match({ id }).select();
 }
-

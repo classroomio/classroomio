@@ -1,17 +1,17 @@
 <script lang="ts">
+  import Add from 'carbon-icons-svelte/lib/Add.svelte';
+  import Close from 'carbon-icons-svelte/lib/Close.svelte';
   import { onMount } from 'svelte';
-  import AddLarge from 'carbon-icons-svelte/lib/AddLarge.svelte';
-  import CloseLarge from 'carbon-icons-svelte/lib/CloseLarge.svelte';
 
-  import { course } from '../Course/store';
-  import { addTagModal, tags } from './store';
+  import { t } from '$lib/utils/functions/translations';
+  import { addCourseTag, fetchCourseTags, removeCourseTag } from '$lib/utils/services/courses';
   import { currentOrg } from '$lib/utils/store/org';
   import type { CourseTag } from '$lib/utils/types';
-  import { t } from '$lib/utils/functions/translations';
-  import { addCourseTag, removeCourseTag, fetchCourseTags } from '$lib/utils/services/courses';
+  import { course } from '../Course/store';
+  import { addTagModal, tags } from './store';
 
-  import Modal from '$lib/components/Modal/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
+  import Modal from '$lib/components/Modal/index.svelte';
 
   // NOTE:
   // tag_id - is the id of the tag (from the tags table)
@@ -68,7 +68,7 @@
     courseTag = $course.tags;
 
     // update the filteredTags array to be the tags that are in $tags BUT NOT in courseTag
-    filteredTags = $tags.filter((t) => !courseTag.some((ct) => ct.id === t.id));
+    filteredTags = $tags?.filter((t) => !courseTag.some((ct) => ct.id === t.id));
   }
 
   onMount(() => {
@@ -98,17 +98,17 @@
       bind:value={searchValue}
     />
 
-    <div class="flex gap-3 items-center flex-wrap mb-2 border-b pb-3">
+    <div class="mb-2 flex flex-wrap items-center gap-3 border-b pb-3">
       <p class="text-xs">{$t('tags.add_tag_modal.header')}:</p>
-      <div class="flex gap-3 items-center flex-wrap max-h-[10vh] overflow-hidden overflow-y-auto">
+      <div class="flex max-h-[10vh] flex-wrap items-center gap-3 overflow-hidden overflow-y-auto">
         {#if courseTag.length > 0}
           {#each courseTag as tag}
             <button
               type="button"
               on:click={() => handleRemoveTag(tag)}
-              class="rounded-sm px-3 py-1 text-xs bg-gray-50 flex gap-2 items-center border"
+              class="flex items-center gap-2 rounded-sm border bg-gray-50 px-3 py-1 text-xs"
             >
-              <CloseLarge />
+              <Close />
               {tag.name}
             </button>
           {/each}
@@ -116,15 +116,15 @@
       </div>
     </div>
 
-    <div class="flex gap-3 flex-wrap">
+    <div class="flex flex-wrap gap-3">
       {#if filteredTags.length > 0}
         {#each filteredTags as tag}
           <button
             type="button"
             on:click={() => handleAddTag(tag)}
-            class="rounded-sm px-3 py-1 text-xs bg-gray-50 flex gap-2 items-center border"
+            class="flex items-center gap-2 rounded-sm border bg-gray-50 px-3 py-1 text-xs"
           >
-            <AddLarge />
+            <Add />
             {tag.name}
           </button>
         {/each}
