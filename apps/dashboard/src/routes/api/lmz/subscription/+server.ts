@@ -1,6 +1,6 @@
-import { json } from '@sveltejs/kit';
-import { getSubscription } from '@lemonsqueezy/lemonsqueezy.js';
 import { configureLemonSqueezy } from '$lib/utils/services/lemonsqueezy';
+import { getSubscription } from '@lemonsqueezy/lemonsqueezy.js';
+import { json } from '@sveltejs/kit';
 
 export async function GET({ url }) {
   const subscriptionId = url.searchParams.get('subscriptionId');

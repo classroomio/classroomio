@@ -77,7 +77,9 @@ export async function getOrganizations(userId: string, isOrgSite?: boolean, orgS
         organization_plan(
           plan_name,
           is_active,
-          subscriptionId:lmz_data->id
+          provider,
+          subscriptionId:payload->id,
+          customerId:payload->customerId
         )
       )
     `
@@ -255,11 +257,27 @@ export async function getCurrentOrg(siteName: string, justGet = false, isCustomD
   }
 }
 
+export async function updateOrgPlan(params: {
+  supabase: typeof supabase;
+  subscriptionId: string;
+  data: OrganizationPlan['payload'];
+}) {
+  return await params.supabase
+    .from('organization_plan')
+    .update({
+      payload: params.data
+    })
+    .match({
+      subscription_id: params.subscriptionId
+    });
+}
+
 export async function createOrgPlan(params: {
-  orgId: string;
-  planName: string;
-  triggeredBy: number;
-  data: OrganizationPlan['lmz_data'];
+  orgId: OrganizationPlan['org_id'];
+  planName: OrganizationPlan['plan_name'];
+  subscriptionId: OrganizationPlan['subscription_id'];
+  triggeredBy: OrganizationPlan['triggered_by'];
+  data: OrganizationPlan['payload'];
   supabase: typeof supabase;
 }) {
   return await params.supabase.from('organization_plan').insert({
@@ -268,19 +286,24 @@ export async function createOrgPlan(params: {
     triggered_by: params.triggeredBy,
     plan_name: params.planName,
     is_active: true,
-    lmz_data: params.data
+    payload: params.data,
+    subscription_id: params.subscriptionId,
+    provider: 'polar'
   });
 }
 
-export async function cancelOrgPlan(params: { orgId: string; planName: string }) {
+export async function cancelOrgPlan(params: {
+  subscriptionId: string;
+  data: OrganizationPlan['payload'];
+}) {
   return await supabase
     .from('organization_plan')
     .update({
       is_active: false,
-      deactivated_at: new Date().toDateString()
+      deactivated_at: new Date().toDateString(),
+      payload: params.data
     })
     .match({
-      plan_name: params.planName,
-      org_id: params.orgId
+      subscription_id: params.subscriptionId
     });
 }

@@ -9,22 +9,8 @@ const CACHE_DURATION = 60 * 5; // 5 minutes
 export async function POST({ setHeaders, request }) {
   const { orgId } = await request.json();
 
-  const accessToken = request.headers.get('Authorization');
-
-  if (!orgId || !accessToken) {
+  if (!orgId) {
     return json({ success: false, message: 'Request is missing required fields' }, { status: 400 });
-  }
-
-  let user;
-  try {
-    const { data } = await supabase.auth.getUser(accessToken);
-    user = data.user;
-  } catch (error) {
-    console.error(error);
-  }
-
-  if (!user) {
-    return json({ success: false, message: 'Unauthenticated user' }, { status: 401 });
   }
 
   setHeaders({
@@ -51,7 +37,7 @@ async function getOrganisationAnalytics(orgId: string): Promise<OrganisationAnal
   };
   // Run all queries in parallel
   const [statsResult, topCoursesResult, enrollmentsResult] = await Promise.all([
-    supabase.from('dash_org_stats').select('*').eq('org_id', orgId).single(),
+    supabase.from('dash_org_stats').select('*').eq('org_id', orgId),
 
     supabase
       .rpc('get_dash_org_top_courses', {
@@ -80,8 +66,8 @@ async function getOrganisationAnalytics(orgId: string): Promise<OrganisationAnal
 
   // Set analytics data
   analytics.revenue = 0; // Hardcode until we implement payment
-  analytics.numberOfCourses = statsResult.data.no_of_courses;
-  analytics.totalStudents = statsResult.data.enrolled_students;
+  analytics.numberOfCourses = statsResult.data?.[0]?.no_of_courses;
+  analytics.totalStudents = statsResult.data?.[0]?.enrolled_students;
 
   analytics.topCourses = topCoursesResult.data.map((course) => ({
     id: course.course_id,

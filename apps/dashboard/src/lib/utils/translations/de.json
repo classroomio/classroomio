@@ -1147,8 +1147,9 @@
       "sub_title": "Rechnungsdetails",
       "manage": "Verwalten Sie Ihre Abrechnung",
       "active": "Sie haben keine aktive Abrechnung",
-      "lemonsqueezy": "Wir verwenden Lemonsqueezy, um Sie bei der Verwaltung Ihrer Abrechnung zu unterstützen",
-      "open_billing": "Abrechnung öffnen"
+      "open_billing": "Abrechnung öffnen",
+      "provider": "Wir verwenden Polar, um Ihre Abrechnung zu verwalten",
+      "error": "Beim Öffnen der Abrechnung ist ein Fehler aufgetreten"
     },
     "integrations": {
       "heading": "Telegramm",

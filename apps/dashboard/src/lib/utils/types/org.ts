@@ -29,7 +29,9 @@ export interface CurrentOrg {
   customization: OrgCustomization;
   theme: string;
   organization_plan: {
+    provider: 'polar' | 'lmz';
     subscriptionId: string;
+    customerId: string;
     plan_name: string;
     is_active: boolean;
   }[];

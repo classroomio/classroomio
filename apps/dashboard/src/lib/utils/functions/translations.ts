@@ -63,17 +63,14 @@ loading.subscribe(async ($loading) => {
   }
 });
 
-export async function handleLocaleChange(newLocale) {
+export function handleLocaleChange(newLocale: string) {
   if (!newLocale) {
     return;
   }
 
   locale.set(newLocale);
 
-  await fetch('/api/i18n', {
-    body: JSON.stringify({ locale: newLocale }),
-    method: 'POST'
-  });
+  selectedLocale.set(newLocale);
 }
 
 export function lessonFallbackNote(
