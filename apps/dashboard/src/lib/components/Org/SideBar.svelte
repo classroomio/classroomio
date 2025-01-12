@@ -9,7 +9,7 @@
   import OrgSelector from '$lib/components/OrgSelector/OrgSelector.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { currentOrgPath, isFreePlan } from '$lib/utils/store/org';
-  import { ChevronRight, SettingsAdjust } from 'carbon-icons-svelte';
+  import { Analytics, ChevronRight, SettingsAdjust } from 'carbon-icons-svelte';
   import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
   import HelpIcon from 'carbon-icons-svelte/lib/Help.svelte';
 
@@ -68,6 +68,12 @@
       show: true
     },
     {
+      path: '/aanalytics',
+      label: $t('org_navigation.audience'),
+      isActive: $page.url.pathname.includes(`${$currentOrgPath}/analytics`),
+      show: true
+    },
+    {
       path: '/audience',
       label: $t('org_navigation.audience'),
       isActive: $page.url.pathname.includes(`${$currentOrgPath}/audience`),
@@ -115,6 +121,8 @@
                     <SiteSettingsIcon />
                   {:else if menuItem.path === '/community'}
                     <ForumIcon size={20} class="carbon-icon fill-[#000] dark:fill-[#fff]" />
+                  {:else if menuItem.path === '/analytics'}
+                    <Analytics />
                   {:else if menuItem.path === '/quiz'}
                     <QuizIcon />
                   {:else if menuItem.path === '/audience'}
