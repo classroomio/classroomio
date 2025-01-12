@@ -1140,7 +1140,8 @@
     "early_adopter": "Torne-se um dos primeiros a adotar",
     "unlock": "Desbloqueie recursos ilimitados e invista em nosso futuro",
     "upgrade": "Atualize agora",
-    "Analytics": "Análise"
+    "Analytics": "Análise",
+    "analytics": "Análise"
   },
   "settings": {
     "heading": "Configurações",
