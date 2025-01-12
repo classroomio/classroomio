@@ -68,8 +68,8 @@
       show: true
     },
     {
-      path: '/aanalytics',
-      label: $t('org_navigation.audience'),
+      path: '/analytics',
+      label: $t('org_navigation.analytics'),
       isActive: $page.url.pathname.includes(`${$currentOrgPath}/analytics`),
       show: true
     },
