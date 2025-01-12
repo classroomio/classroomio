@@ -1,19 +1,18 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import Box from '$lib/components/Box/index.svelte';
+  import { courses } from '$lib/components/Courses/store';
+  import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
+  import Vote from '$lib/components/Vote/index.svelte';
+  import { calDateDiff } from '$lib/utils/functions/date';
+  import { supabase } from '$lib/utils/functions/supabase';
+  import { t } from '$lib/utils/functions/translations';
+  import { fetchCourses } from '$lib/utils/services/courses';
+  import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
+  import { Dropdown, Search } from 'carbon-components-svelte';
   import AddCommentIcon from 'carbon-icons-svelte/lib/AddComment.svelte';
   import CommunityLoader from './Loader.svelte';
-  import Vote from '$lib/components/Vote/index.svelte';
-  import Box from '$lib/components/Box/index.svelte';
-  import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
-  import Space from '$lib/components/Space/index.svelte';
-  import { currentOrgPath, currentOrg } from '$lib/utils/store/org';
-  import { supabase } from '$lib/utils/functions/supabase';
-  import { calDateDiff } from '$lib/utils/functions/date';
-  import { fetchCourses } from '$lib/utils/services/courses';
-  import { profile } from '$lib/utils/store/user';
-  import { Search, Dropdown } from 'carbon-components-svelte';
-  import { t } from '$lib/utils/functions/translations';
-  import { courses } from '$lib/components/Courses/store';
 
   export let isLMS = false;
 
@@ -97,7 +96,7 @@
     class=" bg-gray-100 dark:bg-neutral-800"
   />
   <Dropdown
-    class="w-[25%] h-full"
+    class="h-full w-[25%]"
     size="xl"
     label={$t('community.ask.select_course')}
     items={[
@@ -108,7 +107,7 @@
   />
 </div>
 <div
-  class="flex items-center justify-center lg:justify-start flex-wrap my-4 m-auto border-c rounded bg-gray-100 dark:bg-neutral-800"
+  class="border-c m-auto my-4 flex flex-wrap items-center justify-center rounded bg-gray-100 dark:bg-neutral-800 lg:justify-start"
 >
   {#if isLoading}
     <CommunityLoader />
@@ -117,9 +116,9 @@
     <CommunityLoader />
   {:else}
     {#each filteredDiscussions as discussion}
-      <div class="w-full flex border-bottom-c p-3">
+      <div class="border-bottom-c flex w-full p-3">
         <Vote value={discussion.votes} />
-        <div class="text-sm flex flex-col gap-y-0.5">
+        <div class="flex flex-col gap-y-0.5 text-sm">
           <h4 class="mt-0">
             <a
               class="text-black dark:text-white"
@@ -132,12 +131,12 @@
             {discussion.author} asked {discussion.createdAt}
           </span>
           <a class="m-0" href="/courses/{discussion.courseId}">
-            <span class="text-xs text-primary-200 dark:text-black text-primary-700 p-0">
+            <span class="text-primary-200 text-primary-700 p-0 text-xs dark:text-black">
               #{discussion.courseTitle}
             </span>
           </a>
         </div>
-        <Space />
+        <div class="flex-grow" />
         <div class="flex items-center">
           <AddCommentIcon size={20} />
           <span class="ml-1">{discussion.comments}</span>

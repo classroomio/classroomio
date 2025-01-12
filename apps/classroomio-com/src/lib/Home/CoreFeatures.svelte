@@ -20,12 +20,12 @@
           </div>
         </div>
         <div class="text-base leading-snug text-center">
-          <span class="font-bold opacity-50">“</span>
+          <span class="font-bold opacity-50 text-4xl">“</span>
           <span class="text-gray-800" style="font-size: 17px;"
             >ClassroomIO really helped me bootstrap my program. The dashboard is extremely
             intuitive. I could navigate most of it without any help / support. Coming from framer, I
             can honestly say that I am extremely greatful that I found ClassroomIO.</span
-          > <span class="font-bold opacity-50 inline-block">”</span>
+          > <span class="font-bold opacity-50 inline-block text-4xl">”</span>
         </div>
         <div class="mx-auto flex items-center gap-2 justify-center">
           <div

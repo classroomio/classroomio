@@ -43,7 +43,8 @@
     },
     "lessons": {
       "error": {
-        "try_later": "Algo não está certo - tente mais tarde"
+        "try_later": "Algo não está certo - tente mais tarde",
+        "exercise_not_complete": "Conclua todos os exercícios para marcá-los como concluídos"
       },
       "success": {
         "complete_marked": "Marcado como concluído",
@@ -159,7 +160,8 @@
     "generic": {
       "success_delete": "Apagado com sucesso",
       "try_again": "Erro - Tente novamente mais tarde"
-    }
+    },
+    "success_delete": "Excluído com sucesso"
   },
   "exercises": {
     "heading": "Exercícios",
@@ -479,7 +481,9 @@
           "invite_sent": "Convite enviado",
           "you": "Você",
           "remove": "Remover"
-        }
+        },
+        "view": "Visualizar",
+        "delete_profile": "Excluir perfil"
       },
       "marks": {
         "title": "Marcas",
@@ -571,7 +575,11 @@
         "comments": {
           "title": "Comentários",
           "you": "Você",
-          "placeholder": "Dizer algo"
+          "placeholder": "Dizer algo",
+          "text_area_title": "Deixe um comentário",
+          "comment_btn": "Comentário",
+          "load_more_btn": "Carregar mais",
+          "cancel_btn": "Cancelar"
         },
         "exercises": {
           "heading": "Todos os exercícios",
@@ -902,16 +910,6 @@
     "create_course": "Criar curso",
     "view_site": "Ver site",
     "visit_site": "Visite o site",
-    "hero_content": "Obrigado pelo que você faz ❤️. Você está mudando vidas, uma sala de aula de cada vez e, graças a você, o mundo é um lugar melhor. 😊",
-    "hero_button": "Continue construindo 🚀",
-    "your_schedule": "Sua programação",
-    "today": "Hoje",
-    "yesterday": "Ontem",
-    "tomorrow": "Amanhã",
-    "no_schedule": "Nenhuma lição neste dia",
-    "join_call": "Participar da chamada",
-    "click_to_join": "Clique para participar da chamada",
-    "no_call_link": "Nenhum link de chamada foi adicionado para esta lição. Pergunte ao seu treinador",
     "current_lesson": "Atualmente aprendendo",
     "your_progress": "Seu progresso",
     "continue": "Continuar",
@@ -920,7 +918,23 @@
     "lms_dashboard_hero": "Hoje é mais um dia para aproximar você de seus objetivos de aprendizagem. Não desista, quanto mais você aprende melhor você fica.",
     "dont": "Não desista",
     "lessons_completed": "Lições concluídas",
-    "No_courses_started": "Nenhum curso iniciado"
+    "no_courses_started": "Nenhum curso iniciado",
+    "revenue": "Receita",
+    "revenue_description": "Receita aproximada obtida com vendas de cursos",
+    "no_of_courses": "Número de cursos",
+    "no_courses_description": "Cursos criados nesta organização",
+    "total_students": "Total de alunos",
+    "total_students_description": "Com base nas matrículas dos alunos",
+    "top_courses": "Principais cursos",
+    "students": "estudantes",
+    "completion": "conclusão",
+    "create_first_course": "Crie seu primeiro curso",
+    "create_first_course_description": "Comece a criar cursos para acompanhar o progresso do curso",
+    "recent_enrollments": "Inscrições recentes",
+    "publish_first_course": "Publique seu primeiro curso",
+    "publish_first_course_description": "Para rastrear matrículas, publicar um curso e convidar alunos",
+    "publish_course": "Publicar curso",
+    "student": "estudante"
   },
   "schedule": {
     "title": "Sua programação",
@@ -1133,8 +1147,9 @@
       "sub_title": "Detalhes de cobrança",
       "manage": "Gerencie seu faturamento",
       "active": "Você não tem nenhum faturamento ativo",
-      "lemonsqueezy": "Usamos Lemonsqueezy para ajudar a gerenciar seu faturamento",
-      "open_billing": "Faturamento aberto"
+      "open_billing": "Faturamento aberto",
+      "provider": "Usamos a Polar para ajudar a gerenciar seu faturamento",
+      "error": "Ocorreu um erro ao abrir o faturamento"
     },
     "integrations": {
       "heading": "Telegrama",
@@ -1292,7 +1307,29 @@
     "email": "Seu email",
     "password": "Sua senha",
     "forgot": "Esqueceu sua senha?",
-    "login": "Conecte-se"
+    "login": "Conecte-se",
+    "login_with": "ou faça login com",
+    "signup_with": "ou cadastre-se com",
+    "already_have_account": "Já tem uma conta?",
+    "not_registered_yet": "Ainda não está cadastrado?",
+    "signup": "Inscrever-se",
+    "signup_with_google": "Inscreva-se no Google",
+    "login_with_google": "Faça login com o Google",
+    "create_to_join": "Crie uma conta gratuita para participar",
+    "login_to_join": "Faça login para participar",
+    "validation": {
+      "unable_to_create_profile": "Não foi possível criar o perfil",
+      "user_cannot_be_created": "O usuário não pode ser criado"
+    },
+    "fields": {
+      "email": "Seu e-mail",
+      "full_name": "Nome completo",
+      "password": "Sua senha",
+      "confirm_password": "Confirme sua senha",
+      "password_helper_message": "A senha deve ter mais de 6 caracteres",
+      "create_account": "Criar uma conta"
+    },
+    "create_account": "Criar uma conta"
   },
   "welcome_modal": {
     "we_at": "Nós em",
@@ -1455,5 +1492,29 @@
     "content": "Tem certeza?",
     "no": "Não",
     "yes": "Sim"
+  },
+  "analytics": {
+    "courses": "Cursos",
+    "progress": "Progresso",
+    "progress_description": "{value, number} de {total, number} concluído",
+    "incomplete": "Incompleto",
+    "completed": "Concluído",
+    "complete": "completo",
+    "last_seen": "Visto pela última vez",
+    "a_while_ago": "há um tempo atrás",
+    "exercises": "Exercícios",
+    "graded": "Classificado",
+    "not_graded": "Não classificado",
+    "enrolled_courses": "Cursos Inscritos",
+    "enrolled_courses_description": "Todos os cursos inscritos",
+    "overall_course_progress": "Progresso geral do curso",
+    "overall_course_progress_description": "Porcentagem de aulas concluídas",
+    "total_average_grade": "Nota média total",
+    "total_average_grade_description": "Com base nas notas dos exercícios em todo o curso",
+    "overall_course_progress_user_description": "Com base na conclusão da lição",
+    "assignment_completion": "Conclusão da tarefa",
+    "assignment_completion_description": "Porcentagem de tarefas concluídas",
+    "average_grade": "Nota Média",
+    "average_grade_description": "Nota média de todas as tarefas concluídas"
   }
 }

@@ -34,12 +34,12 @@
     },
     "FEATURES": [
       "Everything in Basic",
-      "Unlimted Teachers",
+      "Unlimited Collaborators",
       "10K Students",
       "Advanced AI Course Builder (Video upload & Certificate)",
       "Custom Branding",
       "Slack Invite",
-      "Includes all Upcoming Features"
+      "Includes all upcoming features"
     ],
     "CTA": {
       "LABEL": "I want in 😍",
@@ -47,8 +47,8 @@
       "DASHBOARD_LABEL": "Support us 😍",
       "DASHBOARD_LINK": "",
       "IS_DISABLED": false,
-      "PRODUCT_ID": "331121",
-      "PRODUCT_ID_YEARLY": "331122"
+      "PRODUCT_ID": "1e11ad75-c422-41c1-a541-0e989281276c",
+      "PRODUCT_ID_YEARLY": "a84d3a82-3259-4300-b2bf-dccb7bd7814c"
     }
   },
   "ENTERPRISE": {

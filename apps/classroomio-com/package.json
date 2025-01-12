@@ -23,9 +23,12 @@
     "svelte-sequential-preprocessor": "^2.0.1",
     "tailwindcss": "^3.3.3",
     "typescript": "^5.0.0",
-    "vite": "^5.0.0"
+    "vite": "^5.4.4"
   },
   "type": "module",
+  "engines": {
+    "node": "^18.17.0"
+  },
   "dependencies": {
     "html-to-image": "^1.11.11",
     "just-extend": "^6.2.0",

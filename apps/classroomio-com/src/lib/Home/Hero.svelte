@@ -12,7 +12,7 @@
   ];
   let animate = false;
   let titleIndex = 0;
-  let timeout: NodeJS.Timer;
+  let timeout: NodeJS.Timeout;
 
   onMount(() => {
     setTimeout(() => {

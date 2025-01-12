@@ -1,15 +1,14 @@
 <script lang="ts">
-  import { page } from '$app/stores';
+  import AuthUI from '$lib/components/AuthUI/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { getSupabase } from '$lib/utils/functions/supabase';
-  import { authValidation } from '$lib/utils/functions/validator';
   import { LOGIN_FIELDS } from '$lib/utils/constants/authentication';
-  import AuthUI from '$lib/components/AuthUI/index.svelte';
-  import { currentOrg } from '$lib/utils/store/org';
-  import { capturePosthogEvent } from '$lib/utils/services/posthog';
+  import { getSupabase } from '$lib/utils/functions/supabase';
   import { t } from '$lib/utils/functions/translations';
+  import { authValidation } from '$lib/utils/functions/validator';
+  import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { globalStore } from '$lib/utils/store/app';
+  import { currentOrg } from '$lib/utils/store/org';
 
   let formRef: HTMLFormElement;
   let supabase = getSupabase();
@@ -17,9 +16,6 @@
   let submitError: string;
   let loading = false;
   let errors = Object.assign({}, LOGIN_FIELDS);
-
-  let query = new URLSearchParams($page.url.search);
-  let redirect = query.get('redirect');
 
   async function handleSubmit() {
     const validationRes = authValidation(fields);
@@ -48,7 +44,7 @@
           email: fields.email
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       submitError = error.error_description || error.message;
       loading = false;
     }
@@ -61,7 +57,7 @@
 
 <AuthUI {supabase} isLogin={true} {handleSubmit} isLoading={loading} bind:formRef>
   <div class="mt-4 w-full">
-    <p class="dark:text-white text-lg font-semibold mb-6">{$t('login.welcome')}</p>
+    <p class="mb-6 text-lg font-semibold dark:text-white">{$t('login.welcome')}</p>
     <TextField
       label={$t('login.email')}
       bind:value={fields.email}
@@ -71,7 +67,7 @@
       className="mb-6"
       inputClassName="w-full"
       isDisabled={loading}
-      errorMessage={errors.email}
+      errorMessage={$t(errors.email)}
     />
     <TextField
       label={$t('login.password')}
@@ -81,7 +77,7 @@
       className="mb-6"
       inputClassName="w-full"
       isDisabled={loading}
-      errorMessage={errors.password}
+      errorMessage={$t(errors.password)}
     />
     {#if submitError}
       <p class="text-sm text-red-500">{submitError}</p>
@@ -91,7 +87,7 @@
     </div>
   </div>
 
-  <div class="my-4 w-full flex justify-end items-center">
+  <div class="my-4 flex w-full items-center justify-end">
     <!-- <a href="/login" class="text-primary-700 text-sm">Create an account</a> -->
     <PrimaryButton
       label={$t('login.login')}

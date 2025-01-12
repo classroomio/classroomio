@@ -1,0 +1,304 @@
+[
+  {
+    "id": "shared-page",
+    "title": "Shared",
+    "slug": "#",
+    "status": "published",
+    "sections": [
+      {
+        "type": "seo",
+        "show": true,
+        "settings": {
+          "title": "Hype180 Academy",
+          "description": "Learn React.js from industry experts at Hype180",
+          "url": "https://courseapp.oncws.com",
+          "appUrl": "https://courseapp.oncws.com",
+          "keywords": ["react.js", "javascript", "web development", "coding bootcamp"],
+          "logo": "/logo.svg"
+        }
+      },
+      {
+        "type": "navigation",
+        "show": true,
+        "settings": {
+          "navItems": [
+            {
+              "title": "Courses",
+              "link": "/courses"
+            },
+            {
+              "title": "Blog",
+              "link": "https://classroomio.com/blog",
+              "redirect": true
+            },
+            {
+              "title": "API",
+              "link": "https://classroomio.com/docs",
+              "redirect": true
+            },
+            {
+              "title": "Docs",
+              "link": "https://classroomio.com/docs",
+              "redirect": true
+            }
+          ]
+        }
+      },
+      {
+        "type": "footer",
+        "show": true,
+        "settings": {
+          "links": [
+            { "label": "Privacy Policy", "url": "/privacy" },
+            { "label": "Terms of Service", "url": "/terms" }
+          ],
+          "facebook": "#",
+          "instagram": "#",
+          "twitter": "#",
+          "linkedin": "#"
+        }
+      }
+    ]
+  },
+  {
+    "id": "home-page",
+    "title": "Home Page",
+    "slug": "/",
+    "status": "published",
+    "sections": [
+      {
+        "type": "header",
+        "show": true,
+        "settings": {
+          "title": "Master React.js Development",
+          "titleHighlight": "Learn from Industry Experts at Hype180",
+          "subtitle": "Join our comprehensive React.js training program and learn how to build modern web applications from experienced developers who work on real-world projects daily.",
+          "action": {
+            "label": "Start Learning",
+            "link": "/courses",
+            "redirect": false
+          },
+          "banner": {
+            "video": "https://www.youtube.com/watch?v=example",
+            "image": "",
+            "type": "video",
+            "show": true
+          }
+        }
+      },
+      {
+        "type": "about",
+        "show": true,
+        "settings": {
+          "title": "Transform Your Career with React.js Expertise",
+          "subtitle": "Our courses are designed by professional developers to help you master React.js and modern web development practices.",
+          "benefits": {
+            "title": "Why Choose Hype180",
+            "list": [
+              {
+                "title": "Industry-Relevant Projects",
+                "subtitle": "Work on real-world React applications that mirror actual client projects we've delivered at Hype180."
+              },
+              {
+                "title": "Active Developers as Instructors",
+                "subtitle": "Learn from developers who are actively building and shipping React applications in production environments."
+              },
+              {
+                "title": "Modern Tech Stack",
+                "subtitle": "Master the latest React features, tools, and best practices used in professional development environments."
+              },
+              {
+                "title": "Career Support",
+                "subtitle": "Get guidance on building your portfolio, preparing for interviews, and landing your first React developer role."
+              }
+            ]
+          }
+        }
+      },
+      {
+        "type": "courses",
+        "show": true,
+        "settings": {
+          "title": "Featured React.js Courses",
+          "titleHighlight": "",
+          "subtitle": "From fundamentals to advanced concepts, our courses cover everything you need to become a professional React developer"
+        }
+      },
+      {
+        "type": "pathway",
+        "show": true,
+        "settings": {
+          "title": "Your Path to Becoming a React Developer",
+          "titleHighlight": "",
+          "subtitle": "Follow our structured learning path to go from beginner to professional React developer, guided by our team of experienced instructors."
+        }
+      },
+      {
+        "type": "instructors",
+        "show": true,
+        "settings": {
+          "list": [
+            {
+              "rating": 5,
+              "name": "Sarah Chen",
+              "description": "Senior React Developer at Hype180 with 8 years of experience building enterprise-level applications. Specializes in React performance optimization and state management."
+            },
+            {
+              "rating": 5,
+              "name": "Marcus Rodriguez",
+              "description": "Full-stack developer with expertise in React, Node.js, and modern JavaScript. Has led multiple successful client projects and loves teaching best practices."
+            },
+            {
+              "rating": 5,
+              "name": "Jessica Park",
+              "description": "Frontend architect specializing in React and TypeScript. Passionate about clean code and component-driven development methodologies."
+            },
+            {
+              "rating": 5,
+              "name": "David Kumar",
+              "description": "React Native expert and web performance specialist. Brings real-world experience from building and scaling React applications at startups and large enterprises."
+            }
+          ]
+        }
+      },
+      {
+        "type": "faq",
+        "show": true,
+        "settings": {
+          "title": "Common Questions About Our React Courses",
+          "subtitle": "Get answers to frequently asked questions about our React.js training program",
+          "questions": [
+            {
+              "id": 1,
+              "title": "Do I need prior programming experience?",
+              "content": "While some JavaScript knowledge is helpful, our beginner courses start from the basics. We'll help you build a strong foundation before moving to advanced React concepts."
+            },
+            {
+              "id": 2,
+              "title": "How practical are the courses?",
+              "content": "Very practical! You'll build real projects that mirror our agency work, including e-commerce sites, dashboards, and social media applications using React."
+            },
+            {
+              "id": 3,
+              "title": "What support do you provide?",
+              "content": "You'll have access to our instructor team, weekly live Q&A sessions, a private Discord community, and code reviews for your projects."
+            }
+          ]
+        }
+      },
+      {
+        "type": "testimonial",
+        "show": true,
+        "settings": {
+          "list": [
+            {
+              "name": "Michael Chang",
+              "role": "Junior React Developer",
+              "description": "The React fundamentals course was exactly what I needed. The instructors broke down complex concepts into manageable pieces, and the hands-on projects helped cement my understanding."
+            },
+            {
+              "name": "Emma Wilson",
+              "role": "Frontend Developer",
+              "description": "Thanks to Hype180's advanced React course, I was able to level up my skills and land a senior developer position. The real-world projects were especially valuable."
+            },
+            {
+              "name": "Alex Thompson",
+              "role": "Software Engineer",
+              "description": "The React ecosystem can be overwhelming, but Hype180's structured approach helped me master not just React, but also the surrounding tools and best practices."
+            }
+          ]
+        }
+      },
+      {
+        "type": "contact",
+        "show": true,
+        "settings": {
+          "title": "Need help getting started?",
+          "titleHighlight": "Contact Us",
+          "subtitle": "Our team is here to help you choose the right learning path.",
+          "address": "123 Tech Hub Street, San Francisco, CA 94105",
+          "phone": "+1 (555) 123-4567",
+          "email": "learn@hype180.com"
+        }
+      },
+      {
+        "type": "cta",
+        "settings": {
+          "title": "Start Your React Journey Today",
+          "titleHighlight": "Join Hype180",
+          "subtitle": "Transform your career with our industry-leading React.js courses and expert instruction.",
+          "button": {
+            "label": "Browse Courses",
+            "link": "/courses",
+            "redirect": false
+          }
+        },
+        "show": true
+      },
+      {
+        "type": "mailinglist",
+        "settings": {
+          "title": "Stay Updated",
+          "subtitle": "Subscribe to get notified about new courses, React tips, and exclusive learning resources.",
+          "button": {
+            "label": "Subscribe",
+            "link": "/#",
+            "redirect": false
+          },
+          "show": true
+        }
+      }
+    ]
+  },
+  {
+    "id": "courses-page",
+    "title": "Courses Page",
+    "slug": "/courses",
+    "status": "published",
+    "sections": [
+      {
+        "type": "header",
+        "show": true,
+        "settings": {
+          "title": "React.js Courses",
+          "titleHighlight": "Learn from the Experts",
+          "subtitle": "Comprehensive React.js courses designed to take you from beginner to professional developer.",
+          "action": {
+            "label": "View Courses",
+            "link": "/courses",
+            "redirect": false
+          },
+          "banner": {
+            "video": "https://www.youtube.com/watch?v=example",
+            "image": "",
+            "type": "video",
+            "show": true
+          }
+        }
+      },
+      {
+        "type": "courses",
+        "show": true,
+        "settings": {
+          "title": "Master Modern React Development",
+          "titleHighlight": "",
+          "subtitle": "From components to deployment, learn everything you need to succeed as a React developer"
+        }
+      },
+      {
+        "type": "cta",
+        "settings": {
+          "title": "Ready to Master React?",
+          "titleHighlight": "Join Hype180 Today",
+          "subtitle": "Start your journey to becoming a professional React developer with our comprehensive courses.",
+          "button": {
+            "label": "Enroll Now",
+            "link": "/courses",
+            "redirect": false
+          },
+          "show": true
+        }
+      }
+    ]
+  }
+]

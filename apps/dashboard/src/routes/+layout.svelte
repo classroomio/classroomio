@@ -1,46 +1,36 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { MetaTags } from 'svelte-meta-tags';
-  import { fly } from 'svelte/transition';
-  import { derived } from 'svelte/store';
-  import { goto } from '$app/navigation';
-  import { browser, dev } from '$app/environment';
-  import { page, navigating } from '$app/stores';
-  import isEmpty from 'lodash/isEmpty';
-  import merge from 'lodash/merge';
-  import { Theme, ToastNotification, Loading } from 'carbon-components-svelte';
-  import type { CarbonTheme } from 'carbon-components-svelte/types/Theme/Theme.svelte';
-  import LandingNavigation from '$lib/components/Navigation/index.svelte';
+  import { browser } from '$app/environment';
+  import { page } from '$app/stores';
+  import debounce from 'lodash/debounce';
+
+  import Apps from '$lib/components/Apps/index.svelte';
+  import { course } from '$lib/components/Course/store';
   import OrgNavigation from '$lib/components/Navigation/app.svelte';
+  import LandingNavigation from '$lib/components/Navigation/index.svelte';
   import LMSNavigation from '$lib/components/Navigation/lms.svelte';
   import OrgLandingPage from '$lib/components/Org/LandingPage/index.svelte';
-  import Snackbar from '$lib/components/Snackbar/index.svelte';
-  import Restricted from '$lib/components/Page/Restricted.svelte';
-  import Backdrop from '$lib/components/Backdrop/index.svelte';
-  import Apps from '$lib/components/Apps/index.svelte';
   import PlayQuiz from '$lib/components/Org/Quiz/Play/index.svelte';
-  import { course } from '$lib/components/Course/store';
-  import { isCoursesPage, isOrgPage, isLMSPage } from '$lib/utils/functions/app';
-  import showAppsSideBar from '$lib/utils/functions/showAppsSideBar';
-  import isPublicRoute from '$lib/utils/functions/routes/isPublicRoute';
-  import { user, profile } from '$lib/utils/store/user';
-  import { getSupabase } from '$lib/utils/functions/supabase';
-  import { isMobile } from '$lib/utils/store/useMobile';
-  import { ROUTE } from '$lib/utils/constants/routes';
-  import { getOrganizations } from '$lib/utils/services/org';
-  import { toggleBodyByMode } from '$lib/utils/functions/app';
-  import { globalStore } from '$lib/utils/store/app';
-  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
-  import { setTheme } from '$lib/utils/functions/theme';
-  import hideNavByRoute from '$lib/utils/functions/routes/hideNavByRoute';
-  import shouldRedirectOnAuth from '$lib/utils/functions/routes/shouldRedirectOnAuth';
-  import { identifyPosthogUser, initPosthog } from '$lib/utils/services/posthog';
-  import { initSentry, setSentryUser } from '$lib/utils/services/sentry';
+  import { PageRestricted } from '$lib/components/Page';
+  import PageLoadProgressBar from '$lib/components/Progress/PageLoadProgressBar.svelte';
+  import Snackbar from '$lib/components/Snackbar/index.svelte';
   import UpgradeModal from '$lib/components/Upgrade/Modal.svelte';
-  import { handleLocaleChange } from '$lib/utils/functions/translations';
+  import { isCoursesPage, isLMSPage, isOrgPage, toggleBodyByMode } from '$lib/utils/functions/app';
+  import { getProfile, setupAnalytics } from '$lib/utils/functions/appSetup';
+  import hideNavByRoute from '$lib/utils/functions/routes/hideNavByRoute';
+  import showAppsSideBar from '$lib/utils/functions/showAppsSideBar';
+  import { getSupabase } from '$lib/utils/functions/supabase';
+  import { setTheme } from '$lib/utils/functions/theme';
+  import { initOrgAnalytics } from '$lib/utils/services/posthog';
+  import { globalStore } from '$lib/utils/store/app';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { isMobile } from '$lib/utils/store/useMobile';
+  import { Theme } from 'carbon-components-svelte';
+  import type { CarbonTheme } from 'carbon-components-svelte/types/Theme/Theme.svelte';
+  import merge from 'lodash/merge';
+  import { onMount } from 'svelte';
+  import { MetaTags } from 'svelte-meta-tags';
 
   import '../app.postcss';
-  import { ROLE } from '$lib/utils/constants/roles';
 
   export let data;
 
@@ -49,180 +39,11 @@
   let queryParam = $page.url?.search;
   let carbonTheme: CarbonTheme = 'white';
 
-  const delayedPreloading = derived(navigating, (currentPreloading, set) => {
-    setTimeout(() => set(currentPreloading), 250);
-  });
-
-  function setupAnalytics() {
-    // Set up sentry
-    initSentry();
-
-    // Set up posthog
-    initPosthog();
-
-		// Disable umami on localhost
-		if (dev) {
-      localStorage.setItem('umami.disabled', '1');
-    }
-  }
-
-  function setAnalyticsUser() {
-    if ($profile.id) {
-      setSentryUser({
-        id: $profile.id,
-        username: $profile.username,
-        email: $profile.email,
-        fullname: $profile.fullname
-      });
-
-      identifyPosthogUser($profile.id, { email: $profile.email, name: $profile.fullname });
-    }
-  }
-
-  async function getProfile() {
-    const params = new URLSearchParams(window.location.search);
-    // Get user profile
-    const {
-      data: { session }
-    } = await supabase.auth.getSession();
-    const { user: authUser } = session || {};
-    console.log('Get user', authUser);
-
-    if (!authUser && !isPublicRoute($page.url?.pathname)) {
-      return goto('/login?redirect=/' + path + queryParam);
-    }
-
-    // Skip refetching profile, if already in store
-    if ($profile.id) return;
-
-    // Check if user has profile
-    let {
-      data: profileData,
-      error,
-      status
-    } = await supabase.from('profile').select(`*`).eq('id', authUser?.id).single();
-    console.log('Get profile', profileData);
-
-    if (error && !profileData && status === 406 && authUser) {
-      // User wasn't found, create profile
-      console.log(`User wasn't found, create profile`);
-
-      const [regexUsernameMatch] = [...(authUser.email?.matchAll(/(.*)@/g) || [])];
-
-      const isGoogleAuth = !!authUser.app_metadata?.providers?.includes('google');
-
-      const { data: newProfileData, error } = await supabase
-        .from('profile')
-        .insert({
-          id: authUser.id,
-          username: regexUsernameMatch[1] + `${new Date().getTime()}`,
-          fullname: regexUsernameMatch[1],
-          email: authUser.email,
-          is_email_verified: isGoogleAuth,
-          verified_at: isGoogleAuth ? new Date().toDateString() : undefined
-        })
-        .select();
-
-      // Profile created, go to onboarding or lms
-      if (!error && newProfileData) {
-        $user.fetchingUser = false;
-        $user.isLoggedIn = true;
-        $user.currentSession = authUser;
-
-        profile.set(newProfileData[0]);
-
-        setAnalyticsUser();
-
-        // Fetch language
-        handleLocaleChange($profile.locale);
-
-        if (data.isOrgSite) {
-          const { data, error } = await supabase
-            .from('organizationmember')
-            .insert({
-              organization_id: $currentOrg.id,
-              profile_id: $profile.id,
-              role_id: 3
-            })
-            .select();
-          if (error) {
-            console.error('Error adding user to organisation', error);
-          } else {
-            console.log('Success adding user to organisation', data);
-            const memberId = data?.[0]?.id || '';
-
-            $currentOrg.memberId = memberId;
-          }
-
-          if (params.get('redirect')) {
-            goto(params.get('redirect') || '');
-          } else {
-            goto('/lms');
-          }
-          return;
-        }
-
-        // On invite page, don't go to onboarding
-        if (!path.includes('invite')) {
-          goto(ROUTE.ONBOARDING);
-        }
-      }
-      $user.fetchingUser = false;
-    } else if (profileData) {
-      // Profile exists, go to profile page
-      $user.fetchingUser = false;
-      $user.isLoggedIn = true;
-      $user.currentSession = authUser;
-      profile.set(profileData);
-
-      // Set user in sentry
-      setAnalyticsUser();
-
-      // Fetch language
-      handleLocaleChange($profile.locale);
-
-      const orgRes = await getOrganizations(profileData.id, data.isOrgSite, data.orgSiteName);
-
-      const isStudentAccount = orgRes.currentOrg.role_id == ROLE.STUDENT;
-
-      // student redirect
-      if (data.isOrgSite) {
-        if (params.has('redirect')) {
-          goto(params.get('redirect') || '');
-        } else if (shouldRedirectOnAuth(path)) {
-          goto('/lms');
-        }
-      } else {
-        if (isStudentAccount) {
-          // Check if the student logged into the dashboard.
-          console.log('Student logged into dashboard');
-          if (dev) {
-            goto('/lms');
-          } else {
-            window.location.replace(`${$currentOrgDomain}/lms`);
-          }
-        } else if (isEmpty(orgRes.orgs) && !path.includes('invite')) {
-          // Not on invite page or no org, go to onboarding
-          goto(ROUTE.ONBOARDING);
-        } else if (params.has('redirect')) {
-          goto(params.get('redirect') || '');
-        } else if (shouldRedirectOnAuth(path)) {
-          // By default redirect to first organization
-          goto(`/org/${orgRes.currentOrg.siteName}`);
-        }
-      }
-
-      setTheme(orgRes?.currentOrg?.theme);
-    }
-
-    if (!profileData && !isPublicRoute($page.url?.pathname)) {
-      goto('/login?redirect=/' + path);
-    }
-  }
-
   function handleResize() {
     isMobile.update(() => window.innerWidth <= 760);
   }
+
+  const getProfileDebounced = debounce(getProfile, 1000);
 
   onMount(() => {
     console.log(
@@ -240,7 +61,6 @@
         setTheme(data.org?.theme);
       }
     }
-
     setupAnalytics();
 
     handleResize();
@@ -260,13 +80,15 @@
       }
 
       // Skip Authentication
-      if (data.skipAuth || $user.fetchingUser) return;
+      if (data.skipAuth) return;
 
       // Authentication Steps
       if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
-        $user.fetchingUser = true;
-        getProfile().then(() => {
-          $user.fetchingUser = false;
+        getProfileDebounced({
+          path,
+          queryParam,
+          isOrgSite: data.isOrgSite,
+          orgSiteName: data.orgSiteName
         });
       }
       // else if (!['TOKEN_REFRESHED'].includes(event)) {
@@ -275,11 +97,14 @@
       // }
     });
 
-    if (data.isOrgSite && data.org) {
+    if (data.isOrgSite && data.org && !$currentOrg.siteName) {
       $globalStore.orgSiteName = data.orgSiteName;
       $globalStore.isOrgSite = data.isOrgSite;
 
       currentOrg.set(data.org);
+
+      // Setup internal analytics
+      initOrgAnalytics(data.orgSiteName);
     }
 
     return () => {
@@ -300,29 +125,17 @@
 <Theme bind:theme={carbonTheme} />
 
 <UpgradeModal />
+
 <Snackbar />
 
 {#if data.org?.is_restricted || $currentOrg.is_restricted}
-  <Restricted />
+  <PageRestricted />
 {:else if data.skipAuth}
   <PlayQuiz />
 {:else if data.isOrgSite && !path}
   <OrgLandingPage orgSiteName={data.orgSiteName} org={data.org} />
 {:else}
-  <main class="dark:bg-black">
-    {#if $navigating && $delayedPreloading}
-      <Backdrop disableCenteredContent={true} className="">
-        <div class="h-full w-full relative" transition:fly={{ x: -200, duration: 500 }}>
-          <ToastNotification kind="info-square" class="absolute bottom-5 left-5">
-            <span slot="title" class="flex items-center">
-              <span class="mr-2">Redirecting</span>
-              <Loading withOverlay={false} small />
-            </span>
-            <span slot="caption">Taking you to the next page, please wait.</span>
-          </ToastNotification>
-        </div>
-      </Backdrop>
-    {/if}
+  <main class="font-roboto dark:bg-black">
     {#if !hideNavByRoute($page.url?.pathname)}
       {#if isOrgPage($page.url?.pathname) || $page.url?.pathname.includes('profile') || isCoursesPage(path)}
         <OrgNavigation bind:title={$course.title} isCoursePage={isCoursesPage(path)} />
@@ -336,6 +149,8 @@
           disableSignup={false}
         />
       {/if}
+
+      <PageLoadProgressBar textColorClass="text-neutral-700" />
     {/if}
 
     <div class={path.includes('home') ? '' : 'flex justify-between'}>

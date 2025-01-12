@@ -8,7 +8,7 @@
 <article
   style:max-width={disableMaxWidth ? 'unset' : undefined}
   {id}
-  class="preview prose prose-sm sm:prose {className} dark:text-white"
+  class="preview prose sm:prose-sm {className} dark:text-white"
 >
   {#if $$slots.content}
     <slot name="content" />

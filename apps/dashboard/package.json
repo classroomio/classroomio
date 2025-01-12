@@ -22,6 +22,7 @@
   "dependencies": {
     "@carbon/charts-svelte": "^1.13.6",
     "@lemonsqueezy/lemonsqueezy.js": "^2.2.0",
+    "@polar-sh/sveltekit": "^0.2.1",
     "@sentry/browser": "^7.61.0",
     "@sentry/integrations": "^7.61.0",
     "@sentry/vite-plugin": "^2.6.2",
@@ -29,12 +30,15 @@
     "@sveltejs/adapter-auto": "^2.1.0",
     "@sveltejs/adapter-node": "^1.3.1",
     "@sveltejs/adapter-vercel": "^3.0.3",
+    "@sveltekit-i18n/base": "^1.3.7",
+    "@sveltekit-i18n/parser-icu": "^1.0.8",
     "@tailwindcss/forms": "^0.5.4",
     "@types/pluralize": "0.0.30",
     "ai": "^2.1.31",
     "axios": "^1.5.1",
     "body-parser": "^1.20.2",
     "canvas-confetti": "^1.6.0",
+    "clsx": "^2.1.1",
     "color2k": "^2.0.3",
     "cookie-parser": "^1.4.6",
     "copy-to-clipboard": "^3.3.3",
@@ -61,6 +65,7 @@
     "svelte-meta-tags": "^3.1.2",
     "svelte-ui": "workspace:*",
     "sveltekit-i18n": "^2.4.2",
+    "tailwind-merge": "^2.6.0",
     "tldts": "^6.1.41",
     "ua-parser-js": "^2.0.0",
     "unsplash-js": "^7.0.18",
@@ -110,7 +115,7 @@
   },
   "type": "module",
   "engines": {
-    "node": "18.x"
+    "node": "^18.17.0"
   },
   "browser": {
     "crypto": false

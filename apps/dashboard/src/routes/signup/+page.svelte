@@ -1,21 +1,22 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
+  import AuthUI from '$lib/components/AuthUI/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import SenjaEmbed from '$lib/components/Senja/Embed.svelte';
+  import { SIGNUP_FIELDS } from '$lib/utils/constants/authentication';
   import { getSupabase } from '$lib/utils/functions/supabase';
+  import { t } from '$lib/utils/functions/translations';
   import {
     authValidation,
     getConfirmPasswordError,
     getDisableSubmit
   } from '$lib/utils/functions/validator';
-  import { SIGNUP_FIELDS } from '$lib/utils/constants/authentication';
-  import AuthUI from '$lib/components/AuthUI/index.svelte';
-  import { profile } from '$lib/utils/store/user';
-  import { currentOrg } from '$lib/utils/store/org';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { globalStore } from '$lib/utils/store/app';
-  import SenjaEmbed from '$lib/components/Senja/Embed.svelte';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
 
   let supabase = getSupabase();
   let fields = Object.assign({}, SIGNUP_FIELDS);
@@ -112,7 +113,7 @@
       formRef?.reset();
       success = true;
       fields = Object.assign({}, SIGNUP_FIELDS);
-    } catch (error) {
+    } catch (error: any) {
       submitError = error?.error_description || error?.message;
       loading = false;
     }
@@ -130,7 +131,7 @@
 
 <AuthUI {supabase} isLogin={false} {handleSubmit} isLoading={loading} bind:formRef>
   <div class="mt-4 w-full">
-    <p class="dark:text-white text-lg font-semibold mb-6">Create a free account</p>
+    <p class="mb-6 text-lg font-semibold dark:text-white">Create a free account</p>
     <!-- <TextField
       label="Full Name"
       bind:value={fields.name}
@@ -144,30 +145,30 @@
       isRequired
     /> -->
     <TextField
-      label="Your Email"
+      label={$t('login.fields.email')}
       bind:value={fields.email}
       type="email"
       placeholder="you@domain.com"
       className="mb-6"
       inputClassName="w-full"
       isDisabled={loading}
-      errorMessage={errors.email}
+      errorMessage={$t(errors.email ?? '')}
       isRequired
     />
     <TextField
-      label="Your Password"
+      label={$t('login.fields.password')}
       bind:value={fields.password}
       type="password"
       placeholder="************"
       className="mb-6"
       inputClassName="w-full"
       isDisabled={loading}
-      errorMessage={errors.password}
-      helperMessage="Password must be more than 6 characters"
+      errorMessage={$t(errors.password ?? '')}
+      helperMessage={$t('login.fields.password_helper_message')}
       isRequired
     />
     <TextField
-      label="Confirm Password"
+      label={$t('login.fields.confirm_password')}
       bind:value={fields.confirmPassword}
       type="password"
       placeholder="************"
@@ -182,9 +183,9 @@
     {/if}
   </div>
 
-  <div class="my-4 w-full flex justify-end items-center">
+  <div class="my-4 flex w-full items-center justify-end">
     <PrimaryButton
-      label="Create Account"
+      label={$t('login.create_account')}
       type="submit"
       className="sm:w-full w-full"
       isDisabled={disableSubmit || loading}

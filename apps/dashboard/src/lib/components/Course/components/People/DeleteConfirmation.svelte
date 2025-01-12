@@ -3,8 +3,8 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { deleteMemberModal } from './store';
   import { t } from '$lib/utils/functions/translations';
+  import { deleteMemberModal } from './store';
 
   export let email;
   export let deletePerson = () => {};
@@ -19,10 +19,12 @@
   onClose={() => ($deleteMemberModal.open = false)}
   bind:open={$deleteMemberModal.open}
   width="w-96"
+  containerClass="pt-3"
+  headerClass="py-2 px-5"
   modalHeading={$t('course.navItem.people.delete_confirmation.title')}
 >
   <div>
-    <h1 class="dark:text-white text-lg">
+    <h1 class="mt-0 text-lg dark:text-white">
       {$t('course.navItem.people.delete_confirmation.sure')} <strong>{email}</strong>?
     </h1>
 

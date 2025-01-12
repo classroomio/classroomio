@@ -6,7 +6,7 @@ date: '2024-10-11'
 author: Rotimi Best
 avatar: /blog/best.jpg
 role: Founder
-tags: ['Launch Week', 'Custom Domains']
+tags: ['Launch Week', 'Custom Domains', 'Company Update']
 published: true
 ---
 

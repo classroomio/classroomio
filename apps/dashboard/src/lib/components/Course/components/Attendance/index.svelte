@@ -1,5 +1,5 @@
 <script>
-  import PageNav from '$lib/components/PageNav/index.svelte';
+  import { PageNav } from '$lib/components/Page';
 </script>
 
 <PageNav title="Attendance" />

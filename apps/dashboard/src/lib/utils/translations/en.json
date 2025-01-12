@@ -49,7 +49,29 @@
     "email": "Your email",
     "password": "Your password",
     "forgot": "Forgot password?",
-    "login": "Log In"
+    "login": "Log In",
+    "login_with": "or login with",
+    "signup_with": "or sign up with",
+    "already_have_account": "Already have an account?",
+    "not_registered_yet": "Not registered yet?",
+    "signup": "Sign up",
+    "signup_with_google": "Sign up with Google",
+    "login_with_google": "Login with Google",
+    "create_to_join": "Create a free account to join",
+    "create_account": "Create Account",
+    "login_to_join": "Log in to join",
+    "fields": {
+      "email": "Your Email",
+      "full_name": "Full Name",
+      "password": "Your Password",
+      "confirm_password": "Confirm Password",
+      "password_helper_message": "Password must be more than 6 characters",
+      "create_account": "Create Account"
+    },
+    "validation": {
+      "unable_to_create_profile": "Unable to create profile",
+      "user_cannot_be_created": "User cannot be created"
+    }
   },
   "profileMenu": {
     "profile": "PROFILE",
@@ -220,8 +242,9 @@
       "sub_title": "Billing details",
       "manage": "Manage your billing",
       "active": "You don't have any active billing",
-      "lemonsqueezy": "We use Lemonsqueezy to help manage your billing",
-      "open_billing": "Open billing"
+      "provider": "We use Polar to help manage your billing",
+      "open_billing": "Open billing",
+      "error": "An error occurred while opening billing"
     }
   },
 
@@ -420,16 +443,6 @@
     "create_course": "Create Course",
     "view_site": "View Site",
     "visit_site": "Visit Website",
-    "hero_content": "Thank you for what you do ❤️. You are changing lives one classroom at a time and thanks to you, the world is a better place. 😊",
-    "hero_button": "Keep Building 🚀",
-    "your_schedule": "Your Schedule",
-    "today": "Today",
-    "yesterday": "Yesterday",
-    "tomorrow": "Tomorrow",
-    "no_schedule": "No lesson on this day",
-    "join_call": "Join call",
-    "click_to_join": "Click to join the call",
-    "no_call_link": "No call link was added for this lesson. Ask your trainer",
     "current_lesson": "Currently Learning",
     "your_progress": "Your Progress",
     "continue": "Continue",
@@ -438,7 +451,23 @@
     "lms_dashboard_hero": "Today is another day to bring you closer to your learning goals. Don’t give up, the more you learn the better you get.",
     "dont": "Don't give up",
     "lessons_completed": "Lessons completed",
-    "No_courses_started": "No courses started"
+    "no_courses_started": "No courses started",
+    "revenue": "Revenue",
+    "revenue_description": "Approximate revenue made from course sales",
+    "no_of_courses": "Number of courses",
+    "no_courses_description": "Courses created within this organization",
+    "total_students": "Total students",
+    "total_students_description": "Based on student enrollments",
+    "top_courses": "Top Courses",
+    "students": "students",
+    "student": "student",
+    "completion": "completion",
+    "create_first_course": "Create Your First Course",
+    "create_first_course_description": "Start creating courses to track course progress",
+    "recent_enrollments": "Recent Enrollments",
+    "publish_first_course": "Publish Your First Course",
+    "publish_first_course_description": "To track enrollments, publish a course and invite students",
+    "publish_course": "Publish Course"
   },
 
   "ai": {
@@ -770,7 +799,11 @@
         "comments": {
           "title": "Comments",
           "you": "You",
-          "placeholder": "Say something"
+          "text_area_title": "Leave a comment",
+          "placeholder": "What do you think about this lesson?",
+          "comment_btn": "Comment",
+          "cancel_btn": "Cancel",
+          "load_more_btn": "Load more"
         },
 
         "polls": {
@@ -868,6 +901,8 @@
         "role": "Role",
         "action": "Action",
         "feedback": "Copied Email to clipboard",
+        "view": "View",
+        "delete_profile": "Delete profile",
         "invite_modal": {
           "title": "Invite people",
           "invite": "Invite Tutors",
@@ -1164,6 +1199,31 @@
     "upgrade": "Upgrade your plan to invite more students"
   },
 
+  "analytics": {
+    "courses": "Courses",
+    "progress": "Progress",
+    "progress_description": "{value, number} of {total, number} complete",
+    "incomplete": "Incomplete",
+    "completed": "Completed",
+    "complete": "complete",
+    "last_seen": "Last seen",
+    "a_while_ago": "a while ago",
+    "exercises": "Exercises",
+    "graded": "Graded",
+    "not_graded": "Not Graded",
+    "enrolled_courses": "Enrolled Courses",
+    "enrolled_courses_description": "All enrolled courses",
+    "overall_course_progress": "Overall Course Progress",
+    "overall_course_progress_description": "Percentage of completed lessons",
+    "total_average_grade": "Total Average Grade",
+    "total_average_grade_description": "Based on exercise grades across all course",
+    "overall_course_progress_user_description": "Based on lesson completion",
+    "assignment_completion": "Assignment Completion",
+    "assignment_completion_description": "Percentage of completed assignments",
+    "average_grade": "Average Grade",
+    "average_grade_description": "Average grade of all completed assignments"
+  },
+
   "upgrade": {
     "certificate": "Upgrade your plan to generate certificates",
     "team": "Upgrade your plan to add team members",
@@ -1213,6 +1273,7 @@
   "snackbar": {
     "success": "Success",
     "success_update": "Updated successfully",
+    "success_delete": "Deleted successfully",
     "something": "Something went wrong - Please try later",
     "update": "Update",
 
@@ -1338,7 +1399,8 @@
         "version_restored": "Version restored sucessfully"
       },
       "error": {
-        "try_later": "Something's not right - Please try later"
+        "try_later": "Something's not right - Please try later",
+        "exercise_not_complete": "Complete all exercises to mark as complete"
       }
     },
 
