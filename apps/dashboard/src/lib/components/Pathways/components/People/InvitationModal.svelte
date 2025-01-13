@@ -1,30 +1,29 @@
 <script lang="ts">
-  import copy from 'copy-to-clipboard';
-  import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import QRCode from 'qrcode';
+  import { page } from '$app/stores';
+  import { Loading, MultiSelect, Popover } from 'carbon-components-svelte';
+  import copy from 'copy-to-clipboard';
   import { toPng } from 'html-to-image';
-  import { Popover } from 'carbon-components-svelte';
-  import { MultiSelect, Loading } from 'carbon-components-svelte';
+  import QRCode from 'qrcode';
 
-  import { qrInviteNodeStore } from './store';
-  import { ROLE } from '$lib/utils/constants/roles';
-  import { pathway, setPathway } from '../../store';
-  import { getOrgTeam } from '$lib/utils/services/org';
-  import {
-    triggerSendEmail,
-    NOTIFICATION_NAME
-  } from '$lib/utils/services/notification/notification';
-  import { t } from '$lib/utils/functions/translations';
-  import type { OrgTeamMember } from '$lib/utils/types/org';
   import { snackbar } from '$lib/components/Snackbar/store';
+  import { ROLE } from '$lib/utils/constants/roles';
   import { getStudentInviteLink } from '$lib/utils/functions/pathway';
-  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
+  import { t } from '$lib/utils/functions/translations';
   import { addGroupMember, fetchGroup } from '$lib/utils/services/courses';
+  import {
+    NOTIFICATION_NAME,
+    triggerSendEmail
+  } from '$lib/utils/services/notification/notification';
+  import { getOrgTeam } from '$lib/utils/services/org';
+  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
+  import type { OrgTeamMember } from '$lib/utils/types/org';
+  import { pathway, setPathway } from '../../store';
+  import { qrInviteNodeStore } from './store';
 
-  import ShareQrImage from './ShareQRImage.svelte';
   import Modal from '$lib/components/Modal/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import ShareQrImage from './ShareQRImage.svelte';
 
   interface Tutor {
     id: number;
@@ -198,7 +197,7 @@
 >
   <form on:submit|preventDefault={onSubmit}>
     <div class="mb-8">
-      <p class="text-base mb-1 font-semibold">{$t('course.navItem.people.invite_modal.invite')}</p>
+      <p class="mb-1 text-base font-semibold">{$t('course.navItem.people.invite_modal.invite')}</p>
       <MultiSelect
         disabled={isLoadingTutors}
         label={$t('course.navItem.people.invite_modal.select')}
@@ -214,7 +213,7 @@
           {$t('course.navItem.people.invite_modal.to_add')}
           <a
             href={`/org/${$currentOrg.siteName}/settings/teams`}
-            class="underline text-primary-600"
+            class="text-primary-600 underline"
           >
             {$t('course.navItem.people.invite_modal.go_to')}
           </a>
@@ -222,9 +221,9 @@
       {/if}
     </div>
 
-    <div class="mb-8 w-full flex justify-between items-center">
+    <div class="mb-8 flex w-full items-center justify-between">
       <div class="w-3/5">
-        <p class="text-base mb-1 font-semibold">
+        <p class="mb-1 text-base font-semibold">
           {$t('course.navItem.people.invite_modal.invite_students')}
         </p>
         <p class=" text-sm">{$t('course.navItem.people.invite_modal.via_link')}</p>
@@ -234,7 +233,7 @@
         <button
           type="button"
           on:click={copyLink}
-          class="underline text-primary-800 font-bold cursor-pointer capitalize"
+          class="text-primary-800 cursor-pointer font-bold capitalize underline"
         >
           {$t('course.navItem.people.invite_modal.copy_link')}
         </button>
@@ -246,10 +245,10 @@
     </div>
 
     <div
-      class="flex gap-5 flex-col-reverse md:flex-row justify-between items-center md:items-stretch p-4 w-full border rounded-md"
+      class="flex w-full flex-col-reverse items-center justify-between gap-5 rounded-md border p-4 md:flex-row md:items-stretch"
     >
-      <div class="flex flex-col gap-3 items-center md:items-start justify-between">
-        <span class="font-medium text-sm">
+      <div class="flex flex-col items-center justify-between gap-3 md:items-start">
+        <span class="text-sm font-medium">
           {$t('course.navItem.people.invite_modal.via_qr')}
         </span>
 
@@ -261,8 +260,8 @@
         />
       </div>
 
-      <div class="w-full md:w-28 border-4 p-1 border-[#f7f7f7]">
-        <img src={qrImage} alt="link qrcode" class="w-full h-full" />
+      <div class="w-full border-4 border-[#f7f7f7] p-1 md:w-28">
+        <img src={qrImage} alt="link qrcode" class="h-full w-full" />
       </div>
     </div>
 
@@ -270,7 +269,7 @@
       <ShareQrImage {qrImage} pathway={$pathway} currentOrg={$currentOrg} />
     </div>
 
-    <div class="mt-5 flex items-center flex-row-reverse">
+    <div class="mt-5 flex flex-row-reverse items-center">
       <PrimaryButton
         className="px-6 py-3"
         label={$t('course.navItem.people.invite_modal.finish')}

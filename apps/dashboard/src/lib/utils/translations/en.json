@@ -1127,6 +1127,8 @@
           "add": "Add",
           "add_team": "Add your team mates or collaborators to your organization. Start working together",
           "invite": "Invite",
+          "join_course": "Join Course",
+          "join_pathway": "Join Pathway",
           "placeholder": "email comma separated",
           "role": "Role",
           "send_invite": "Send Invite",
@@ -1604,7 +1606,7 @@
       "success": {
         "complete_marked": "Marked as complete",
         "complete_download": "Download Complete",
-        "version_restored": "Version restored sucessfully"
+        "version_restored": "Version restored successfully"
       },
       "error": {
         "try_later": "Something's not right - Please try later",

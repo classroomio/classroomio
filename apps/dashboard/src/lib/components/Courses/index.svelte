@@ -10,7 +10,6 @@
   import { t } from '$lib/utils/functions/translations';
   import { globalStore } from '$lib/utils/store/app';
   import { isMobile } from '$lib/utils/store/useMobile';
-  import type { Pathway } from '$lib/utils/types';
   import {
     StructuredList,
     StructuredListBody,
@@ -32,26 +31,26 @@
     return Math.round((progressRate / totalItem) * 100);
   }
 
-  function calculatePathwayProgress(pathway: Pathway): number {
-    if (!pathway.isPathway) return 0;
-
-    const totalCourses = pathway?.total_course;
+  function calculatePathwayProgress(course: LMSCourse): number {
+    const totalCourses = course?.total_course;
     if (totalCourses === 0) return 0;
 
     // Number of courses completed within the pathway
-    const completedCourses = getPathwayCompletedCoursesLength(pathway);
+    const completedCourses = getPathwayCompletedCoursesLength(course);
 
-    return Math.round((completedCourses / totalCourses) * 100);
+    return totalCourses ? Math.round((completedCourses / totalCourses) * 100) : 0;
   }
 
   function calculateCourseAndPathwayProgress(course: LMSCourse): number {
     if (course.isPathway) {
-      return calculatePathwayProgress(course as Pathway);
+      return calculatePathwayProgress(course);
     } else {
       // Individual course progress calculation
       return calcProgressRate(course.progress_rate, course.total_lessons);
     }
   }
+
+  console.log('courses', courses);
 </script>
 
 <!-- <CopyCourseModal /> -->

@@ -1,3 +1,4 @@
+import { LMSCourse } from '$lib/components/LMS/store';
 import type { Pathway } from '../types';
 
 export const isPathwayFree = (cost: number) => !(Number(cost) > 0);
@@ -9,6 +10,7 @@ export const getStudentInviteLink = (_pathway: Pathway, orgSiteName: string, ori
         id: _pathway.id,
         name: _pathway.title,
         description: _pathway.description,
+        isPathway: true,
         orgSiteName
       })
     )
@@ -30,19 +32,17 @@ export function replaceHTMLTag(text: string) {
     .join('');
 }
 
-export const getPathwayCompletedCoursesLength = (pathway: Pathway) => {
-  if (!pathway.isPathway) return;
-  const completedCourses = pathway?.pathway_course?.filter((pathwayCourse) => {
+export const getPathwayCompletedCoursesLength = (course: LMSCourse) => {
+  const completedCourses = course?.pathway_course?.filter((pathwayCourse) => {
     const lessons = pathwayCourse.course.lesson;
     return lessons.length > 0 && lessons.every((lesson) => lesson.is_complete);
   }).length;
-  console.log('lesson done', completedCourses);
   return completedCourses;
 };
 
-export const getIsPathwayComplete = (pathway: Pathway) => {
-  const completedCourses = getPathwayCompletedCoursesLength(pathway);
-  return completedCourses === pathway?.pathway_course?.length;
+export const getIsPathwayComplete = (course: LMSCourse) => {
+  const completedCourses = getPathwayCompletedCoursesLength(course);
+  return completedCourses === course?.pathway_course?.length;
 };
 
 export const courseProgress = (lessons) => {

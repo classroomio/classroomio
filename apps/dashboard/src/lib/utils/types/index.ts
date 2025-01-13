@@ -297,7 +297,7 @@ export interface PathwayCourse {
 }
 
 export interface Pathway {
-  title?: any; // type unknown;
+  title?: string;
   description: string; // type unknown;
   overview?: any; // type unknown;
   id?: string /* primary key */;

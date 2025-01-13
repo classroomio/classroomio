@@ -485,7 +485,9 @@
           "members": "Membres",
           "invite_sent": "Invitation envoyée",
           "you": "Toi",
-          "remove": "Retirer"
+          "remove": "Retirer",
+          "join_course": "Rejoindre le cours",
+          "join_pathway": "Rejoindre le parcours"
         },
         "view": "Voir",
         "delete_profile": "Supprimer le profil"

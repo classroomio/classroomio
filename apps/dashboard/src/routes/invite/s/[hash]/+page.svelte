@@ -1,50 +1,40 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { getSupabase } from '$lib/utils/functions/supabase';
+
   import AuthUI from '$lib/components/AuthUI/index.svelte';
-  import { currentOrg } from '$lib/utils/store/org';
-  import { setTheme } from '$lib/utils/functions/theme';
-  import { addGroupMember } from '$lib/utils/services/courses';
-  import type { CurrentOrg } from '$lib/utils/types/org.js';
-  import { ROLE } from '$lib/utils/constants/roles';
-  import { profile } from '$lib/utils/store/user';
-  import {
-    triggerSendEmail,
-    NOTIFICATION_NAME
-  } from '$lib/utils/services/notification/notification';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
+
+  import { ROLE } from '$lib/utils/constants/roles';
+  import { getSupabase } from '$lib/utils/functions/supabase';
+  import { setTheme } from '$lib/utils/functions/theme';
+  import { t } from '$lib/utils/functions/translations';
+  import {
+    NOTIFICATION_NAME,
+    triggerSendEmail
+  } from '$lib/utils/services/notification/notification';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
-  import { page } from '$app/stores';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
+  import type { CurrentOrg } from '$lib/utils/types/org.js';
+  import {
+    addMemberToGroup,
+    fetchCourseGroupIds,
+    fetchGroupData,
+    fetchTeacherMembers
+  } from './functions.js';
 
   export let data;
 
-  let supabase = getSupabase();
   let loading = false;
-
   let disableSubmit = false;
   let formRef: HTMLFormElement;
+  let supabase = getSupabase();
 
-  async function handleSubmit() {
-    loading = true;
-
-    if (!$profile.id || !$profile.email) {
-      console.log('Profile not found', $profile);
-      return goto(`/signup?redirect=${$page.url?.pathname || ''}`);
-    }
-
-    const { data: courseData, error } = await supabase
-      .from('course')
-      .select('group_id')
-      .eq('id', data.id)
-      .single();
-
-    console.log({ courseData });
-    if (!courseData?.group_id) {
-      console.error('error getting group', error);
-      return;
-    }
+  async function handleCourseSubmit(data) {
+    const courseData = await fetchGroupData('course', data.id);
+    if (!courseData?.group_id) return;
 
     const member = {
       profile_id: $profile.id,
@@ -52,64 +42,94 @@
       role_id: ROLE.STUDENT
     };
 
-    const teacherMembers = await supabase
-      .from('groupmember')
-      .select('id, profile(email)')
-      .eq('group_id', courseData.group_id)
-      .eq('role_id', ROLE.TUTOR)
-      .returns<
-        {
-          id: string;
-          profile: {
-            email: string;
-          };
-        }[]
-      >();
+    const teachers = await fetchTeacherMembers(courseData.group_id);
+    await handleAddMember(member, teachers);
+  }
 
-    const teachers: Array<string> =
-      teacherMembers.data?.map((teacher) => {
-        return teacher.profile?.email || '';
-      }) || [];
+  async function handlePathwaySubmit(data) {
+    const pathwayData = await fetchGroupData('pathway', data.id);
 
-    addGroupMember(member).then((addedMember) => {
-      loading = false;
-      if (addedMember.error) {
-        console.error('Error adding student to group', courseData.group_id, addedMember.error);
-        snackbar.error('snackbar.invite.failed_join');
+    if (!pathwayData?.group_id) return;
 
-        // Full page load to lms if error joining, probably user already joined
-        window.location.href = '/lms';
-        return;
-      }
+    const teachers = await fetchTeacherMembers(pathwayData.group_id);
+    const courseIds = await fetchCourseGroupIds(data.id);
 
-      capturePosthogEvent('student_joined_course', {
-        course_name: data.name,
-        student_id: $profile.id,
-        student_email: $profile.email
-      });
+    const member = {
+      profile_id: $profile.id,
+      email: $profile?.email,
+      role_id: ROLE.STUDENT,
+      group_id: pathwayData.group_id
+    };
 
-      // Send email welcoming student to the course
-      triggerSendEmail(NOTIFICATION_NAME.STUDENT_COURSE_WELCOME, {
-        to: $profile.email,
-        orgName: data.currentOrg?.name,
-        courseName: data.name
-      });
+    // Add member to each course group
+    await Promise.all(
+      courseIds.map(async (courseId) => {
+        const courseMember = {
+          profile_id: $profile.id,
+          email: $profile?.email,
+          group_id: courseId,
+          role_id: ROLE.STUDENT
+        };
+        await addMemberToGroup(courseMember);
+      })
+    );
 
-      // Send notification to all teacher(s) that a student has joined the course.
-      Promise.all(
-        teachers.map((email) =>
-          triggerSendEmail(NOTIFICATION_NAME.TEACHER_STUDENT_JOINED, {
-            to: email,
-            courseName: data.name,
-            studentName: $profile.fullname,
-            studentEmail: $profile.email
-          })
-        )
-      );
+    // Add member to pathway group
+    await handleAddMember(member, teachers);
+  }
 
-      // go to lms
-      return goto('/lms');
+  async function handleAddMember(member, teachers) {
+    const addedMember = await addMemberToGroup(member);
+    loading = false;
+
+    if (addedMember && addedMember.error) {
+      console.error('Error adding student to group', member.group_id, addedMember.error);
+      snackbar.error('snackbar.invite.failed_join');
+
+      // Full page load to lms if error joining, probably user already joined
+      window.location.href = '/lms';
+      return;
+    }
+
+    capturePosthogEvent('student_joined_course', {
+      course_name: data.name,
+      student_id: $profile.id,
+      student_email: $profile.email
     });
+
+    // Send email welcoming student to the course
+    triggerSendEmail(NOTIFICATION_NAME.STUDENT_COURSE_WELCOME, {
+      to: $profile.email,
+      orgName: data.currentOrg?.name,
+      courseName: data.name
+    });
+
+    // Send notification to all teacher(s) that a student has joined the course.
+    Promise.all(
+      teachers.map((email) =>
+        triggerSendEmail(NOTIFICATION_NAME.TEACHER_STUDENT_JOINED, {
+          to: email,
+          courseName: data.name,
+          studentName: $profile.fullname,
+          studentEmail: $profile.email
+        })
+      )
+    );
+
+    // go to lms
+    return goto('/lms');
+  }
+
+  async function handleSubmit(data, type) {
+    loading = true;
+
+    if (type === 'course') {
+      await handleCourseSubmit(data);
+    } else if (type === 'pathway') {
+      await handlePathwaySubmit(data);
+    }
+
+    loading = false;
   }
 
   function setCurOrg(cOrg: CurrentOrg) {
@@ -131,23 +151,34 @@
 <AuthUI
   {supabase}
   isLogin={false}
-  {handleSubmit}
+  handleSubmit={data.isPathway
+    ? () => handleSubmit(data, 'pathway')
+    : () => handleSubmit(data, 'course')}
   isLoading={loading}
   showOnlyContent={true}
   showLogo={true}
   bind:formRef
 >
   <div class="mt-0 w-full">
-    <h3 class="dark:text-white text-lg font-medium mt-0 mb-4 text-center">{data.name}</h3>
-    <p class="dark:text-white text-sm font-light text-center">{data.description}</p>
+    <h3 class="mb-4 mt-0 text-center text-lg font-medium dark:text-white">{data.name}</h3>
+    <p class="text-center text-sm font-light dark:text-white">{data.description}</p>
   </div>
 
-  <div class="my-4 w-full flex justify-center items-center">
-    <PrimaryButton
-      label="Join Course"
-      type="submit"
-      isDisabled={disableSubmit || loading}
-      isLoading={loading}
-    />
+  <div class="my-4 flex w-full items-center justify-center">
+    {#if data.isPathway}
+      <PrimaryButton
+        label={$t('course.navItem.people.teams.join_pathway')}
+        type="submit"
+        isDisabled={disableSubmit || loading}
+        isLoading={loading}
+      />
+    {:else}
+      <PrimaryButton
+        label={$t('course.navItem.people.teams.join_course')}
+        type="submit"
+        isDisabled={disableSubmit || loading}
+        isLoading={loading}
+      />
+    {/if}
   </div>
 </AuthUI>

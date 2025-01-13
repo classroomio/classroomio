@@ -485,7 +485,9 @@
           "members": "Các thành viên",
           "invite_sent": "Lời mời đã gửi",
           "you": "Bạn",
-          "remove": "Di dời"
+          "remove": "Di dời",
+          "join_course": "Tham gia khóa học",
+          "join_pathway": "Tham gia lộ trình"
         },
         "view": "Xem",
         "delete_profile": "Xóa hồ sơ"

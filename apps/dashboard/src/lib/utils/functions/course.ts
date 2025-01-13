@@ -9,6 +9,7 @@ export const getStudentInviteLink = (_course: Course, orgSiteName: string, origi
         id: _course.id,
         name: _course.title,
         description: _course.description,
+        isPathway: false,
         orgSiteName
       })
     )

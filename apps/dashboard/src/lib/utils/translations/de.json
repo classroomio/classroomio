@@ -485,7 +485,9 @@
           "members": "Mitglieder",
           "invite_sent": "Einladung gesendet",
           "you": "Du",
-          "remove": "Entfernen"
+          "remove": "Entfernen",
+          "join_course": "Nehmen Sie am Kurs teil",
+          "join_pathway": "Treten Sie Pathway bei"
         },
         "view": "Sicht",
         "delete_profile": "Profil löschen"
