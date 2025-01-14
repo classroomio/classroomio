@@ -12,7 +12,7 @@
   import { fetchCourses } from '$lib/utils/services/courses';
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
-  import { LMSCourse } from '$lib/utils/types';
+  import type { LMSCourse } from '$lib/utils/types';
 
   let hasFetched = false;
   let progressPercentage = 0;
