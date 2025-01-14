@@ -294,7 +294,6 @@
           <NavExpandable
             id={navItem.id}
             label={navItem.label}
-            icon={navItem.id}
             handleClick={handleMainGroupClick(navItem.to)}
             isGroupActive={(path || $page.url.pathname) === navItem.to}
             total={navItem.isLesson ? ($lessons || []).length : 0}

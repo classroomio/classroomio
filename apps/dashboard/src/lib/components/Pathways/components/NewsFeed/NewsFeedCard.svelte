@@ -14,8 +14,8 @@
   import type { Author, Feed } from '$lib/utils/types/feed';
 
   import Chip from '$lib/components/Chip/index.svelte';
-  import { isNewFeedModal } from '$lib/components/Course/components/NewsFeed/store';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
+  import { isNewFeedModal } from '$lib/components/Pathways/components/NewsFeed/store';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import DeleteFeedConfirmation from './DeleteFeedConfirmation.svelte';
 

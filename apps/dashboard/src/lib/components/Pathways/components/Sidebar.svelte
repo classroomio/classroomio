@@ -11,7 +11,7 @@
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
   import { isMobile } from '$lib/utils/store/useMobile';
   import { profile } from '$lib/utils/store/user';
-  import { pathwayCourses, pathway } from '../store';
+  import { pathway, pathwayCourses } from '../store';
 
   import { getLectureNo } from '$lib/components/Course/function';
   import { t } from '$lib/utils/functions/translations';
@@ -239,7 +239,7 @@
         {#if !navItem.show || (typeof navItem.show === 'function' && navItem.show())}
           <NavExpandable
             label={navItem.label}
-            icon={navItem.id}
+            id={navItem.id}
             handleClick={handleMainGroupClick(navItem.to)}
             isGroupActive={(path || $page.url.pathname) === navItem.to}
             total={navItem.isCourses ? ($pathwayCourses || []).length : 0}

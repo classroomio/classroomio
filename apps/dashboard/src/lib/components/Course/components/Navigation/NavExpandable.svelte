@@ -14,7 +14,6 @@
   export let handleClick = () => {};
   export let id = '';
   export let label = '';
-  export let icon = '';
   export let isGroupActive = false;
   export let isExpanded: boolean | undefined;
   export let total = 0;
@@ -64,7 +63,7 @@
     on:click={onClick}
     disabled={isLoading}
   >
-    <NavIcons name={icon} />
+    <NavIcons {id} />
     {#if isLoading}
       <div class="mx-auto w-11/12">
         <SkeletonText class="rounded-md" style="margin: 0px; height: 30px;" />

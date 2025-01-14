@@ -240,7 +240,6 @@
     return roles;
   }
 
-  $: console.log('edit', $isNewFeedModal.open);
   $: initNewsFeed(data.pathwayId);
 
   $: setAuthor($group, $profile.id);

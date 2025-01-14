@@ -14,35 +14,33 @@
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
   import { NAV_IDS } from './constants';
 
-  export let name = '';
-
-  console.log('name', name);
+  export let id = '';
 </script>
 
-{#if name === NAV_IDS.SECTION}
+{#if id === NAV_IDS.SECTION}
   <TableOfContents size={20} class="carbon-icon mr-2" style="min-width: 20px;" />
-{:else if name === NAV_IDS.NEWS_FEED}
+{:else if id === NAV_IDS.NEWS_FEED}
   <Bullhorn size={20} class="carbon-icon mr-2" />
-{:else if name === NAV_IDS.LESSONS}
+{:else if id === NAV_IDS.LESSONS}
   <IbmWatsonKnowledgeCatalog size={20} class="carbon-icon mr-2" />
-{:else if name === NAV_IDS.ATTENDANCE}
+{:else if id === NAV_IDS.ATTENDANCE}
   <ListChecked size={20} class="carbon-icon mr-2" />
-{:else if name === NAV_IDS.SUBMISSIONS}
+{:else if id === NAV_IDS.SUBMISSIONS}
   <Workspace size={20} class="carbon-icon mr-2" />
-{:else if name === NAV_IDS.MARKS}
+{:else if id === NAV_IDS.MARKS}
   <Result size={20} class="carbon-icon mr-2" />
-{:else if name === NAV_IDS.PEOPLE}
+{:else if id === NAV_IDS.PEOPLE}
   <Group size={20} class="carbon-icon mr-2" />
-{:else if name === NAV_IDS.LANDING_PAGE}
+{:else if id === NAV_IDS.LANDING_PAGE}
   <ApplicationWeb size={20} class="carbon-icon mr-2" />
-{:else if name === NAV_IDS.CERTIFICATES}
+{:else if id === NAV_IDS.CERTIFICATES}
   <Badge size={20} class="carbon-icon mr-2" />
-{:else if name === NAV_IDS.SETTINGS}
+{:else if id === NAV_IDS.SETTINGS}
   <Settings size={20} class="carbon-icon mr-2" />
-{:else if name === NAV_IDS.COURSES}
+{:else if id === NAV_IDS.COURSES}
   <span class="carbon-icon mr-2">
     <CourseIcon />
   </span>
-{:else if name === NAV_IDS.SETTINGS}
+{:else if id === NAV_IDS.SETTINGS}
   <Certificate size={20} class="carbon-icon mr-2" />
 {/if}
