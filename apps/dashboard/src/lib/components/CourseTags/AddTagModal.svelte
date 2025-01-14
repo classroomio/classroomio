@@ -1,6 +1,4 @@
 <script lang="ts">
-  import Add from 'carbon-icons-svelte/lib/Add.svelte';
-  import Close from 'carbon-icons-svelte/lib/Close.svelte';
   import { onMount } from 'svelte';
 
   import { t } from '$lib/utils/functions/translations';
@@ -12,6 +10,7 @@
 
   import TextField from '$lib/components/Form/TextField.svelte';
   import Modal from '$lib/components/Modal/index.svelte';
+  import TagButton from './TagButton.svelte';
 
   // NOTE:
   // tag_id - is the id of the tag (from the tags table)
@@ -48,7 +47,7 @@
   }
 
   async function handleRemoveTag(tag: CourseTag) {
-    const response = await removeCourseTag(tag.id);
+    const response = await removeCourseTag(tag.course_tag_id);
 
     if (response.data && response.data.length > 0) {
       $course.tags = $course.tags.filter((ct) => ct.id !== tag.id);
@@ -103,14 +102,7 @@
       <div class="flex max-h-[10vh] flex-wrap items-center gap-3 overflow-hidden overflow-y-auto">
         {#if courseTag.length > 0}
           {#each courseTag as tag}
-            <button
-              type="button"
-              on:click={() => handleRemoveTag(tag)}
-              class="flex items-center gap-2 rounded-sm border bg-gray-50 px-3 py-1 text-xs"
-            >
-              <Close />
-              {tag.name}
-            </button>
+            <TagButton isRemove={true} {tag} handleTag={handleRemoveTag} />
           {/each}
         {/if}
       </div>
@@ -119,14 +111,7 @@
     <div class="flex flex-wrap gap-3">
       {#if filteredTags.length > 0}
         {#each filteredTags as tag}
-          <button
-            type="button"
-            on:click={() => handleAddTag(tag)}
-            class="flex items-center gap-2 rounded-sm border bg-gray-50 px-3 py-1 text-xs"
-          >
-            <Add />
-            {tag.name}
-          </button>
+          <TagButton isAdd={true} {tag} handleTag={handleAddTag} />
         {/each}
       {/if}
     </div>

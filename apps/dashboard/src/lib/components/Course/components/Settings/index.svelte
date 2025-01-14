@@ -8,10 +8,9 @@
     RadioButton,
     RadioButtonGroup,
     Row,
-    Tag,
     Toggle
   } from 'carbon-components-svelte';
-  import { ArrowUpRight, Restart } from 'carbon-icons-svelte';
+  import { ArrowUpRight, Restart, Tag } from 'carbon-icons-svelte';
 
   import { course } from '$lib/components/Course/store';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
@@ -40,6 +39,7 @@
 
   import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
 
+  import TagButton from '$lib/components/CourseTags/TagButton.svelte';
   import DeleteModal from '$lib/components/Modal/DeleteModal.svelte';
 
   let isLoading = false;
@@ -322,9 +322,7 @@
       >
         {#if $course.tags && $course.tags.length > 0}
           {#each $course.tags as tag}
-            <span class="flex items-center gap-2 rounded-sm border bg-gray-50 px-3 py-1 text-xs">
-              {tag.name}
-            </span>
+            <TagButton {tag} />
           {/each}
         {/if}
       </div>
@@ -332,7 +330,7 @@
         width="md:w-[40%] mt-3"
         variant={VARIANTS.OUTLINED}
         onClick={() => ($addTagModal.open = true)}
-        className="flex items-center justify-between bg-gray-700 px-3 py-1"
+        className="flex items-center justify-between border-primary-600 dark:bg-transparent px-3 py-1"
       >
         <Tag />
         <span class="ml-2">{$t('tags.add_a_tag')}</span>

@@ -584,41 +584,32 @@ export async function deleteExercise(questions: Array<{ id: string }>, exerciseI
 }
 
 export async function fetchCourseTags(orgId: string) {
-  // Fetch tags and course tags in parallel
-  const [tagsResponse, courseTagsResponse] = await Promise.all([
-    supabase.from('tags').select('*').eq('organization_id', orgId),
-    supabase.from('course_tags').select('*')
-  ]);
+  const { data, error } = await supabase
+    .from('tags')
+    .select(
+      `
+      *,
+      course_tags(id, tag_id)
+      `
+    )
+    .eq('organization_id', orgId);
 
-  const { data: tags } = tagsResponse;
-  const { data: courseTags, error } = courseTagsResponse;
-
-  if (!tags || error) {
-    console.error('Error fetching tags:', error);
+  if (error) {
+    console.error('Error fetching course tags:', error);
     return [];
   }
 
-  // Create mapping of tag usage counts and course_tag IDs
-  const tagMap = courseTags.reduce(
-    (acc, courseTag) => {
-      if (!acc[courseTag.tag_id]) {
-        acc[courseTag.tag_id] = { id: courseTag.id, count: 1 };
-      } else {
-        acc[courseTag.tag_id].count += 1;
-      }
-      return acc;
-    },
-    {} as Record<string, { id: string; count: number }>
-  );
+  // aggregate the course counts for each tag
+  const aggregatedTags = data.map((tag) => {
+    const courseCount = tag.course_tags ? tag.course_tags.length : 0;
+    return {
+      ...tag,
+      courseCount,
+      course_tag_id: tag.course_tags?.[0]?.id || null
+    };
+  });
 
-  // Combine tag data with usage information
-  const updatedCourseTags = tags.map((tag) => ({
-    ...tag,
-    course_tag_id: tagMap[tag.id]?.id || null,
-    courseCount: tagMap[tag.id]?.count || 0
-  }));
-
-  return updatedCourseTags;
+  return aggregatedTags;
 }
 
 export function createTag(name: string, description: string, orgId: string) {
