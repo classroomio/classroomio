@@ -1,5 +1,4 @@
-import { LMSCourse } from '$lib/components/LMS/store';
-import type { Pathway } from '../types';
+import type { LMSCourse, Pathway } from '../types';
 
 export const isPathwayFree = (cost: number) => !(Number(cost) > 0);
 

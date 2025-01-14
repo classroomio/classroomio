@@ -37,8 +37,6 @@
   import type { Person, ProfileRole } from '$lib/components/Pathways/components/People/types';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
 
-  export let data;
-
   let people: Array<Person> = [];
   let member: { id?: string; email?: string; profile?: { email: string } } = {};
   let shouldEditMemberId: string | null = null;
@@ -167,7 +165,7 @@
           </select> -->
         </div>
         <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <p class="hidden w-20 text-lg dark:text-white lg:block" />
+          <p class="hidden w-20 text-lg lg:block dark:text-white" />
         </RoleBasedSecurity>
       </div>
 
@@ -186,7 +184,7 @@
               >{$t('course.navItem.people.action')}</StructuredListCell
             >
             <RoleBasedSecurity allowedRoles={[1, 2]}>
-              <p class="hidden w-20 text-lg dark:text-white lg:block" />
+              <p class="hidden w-20 text-lg lg:block dark:text-white" />
             </RoleBasedSecurity>
           </StructuredListRow>
         </StructuredListHead>

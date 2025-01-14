@@ -5,11 +5,11 @@
   import List from '$lib/components/Courses/components/List/index.svelte';
   import { courseMetaDeta } from '$lib/components/Courses/store';
   import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
-  import type { LMSCourse } from '$lib/components/LMS/store';
   import { getPathwayCompletedCoursesLength } from '$lib/utils/functions/pathway';
   import { t } from '$lib/utils/functions/translations';
   import { globalStore } from '$lib/utils/store/app';
   import { isMobile } from '$lib/utils/store/useMobile';
+  import type { LMSCourse } from '$lib/utils/types';
   import {
     StructuredList,
     StructuredListBody,

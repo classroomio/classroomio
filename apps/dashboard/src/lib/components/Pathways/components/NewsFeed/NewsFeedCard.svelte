@@ -1,23 +1,23 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import pluralize from 'pluralize';
+  import { onMount } from 'svelte';
 
+  import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
   import Send from 'carbon-icons-svelte/lib/Send.svelte';
   import UserMultiple from 'carbon-icons-svelte/lib/UserMultiple.svelte';
-  import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
 
-  import { profile } from '$lib/utils/store/user';
-  import { isOrgAdmin } from '$lib/utils/store/org';
   import { calDateDiff } from '$lib/utils/functions/date';
-  import type { Author, Feed } from '$lib/utils/types/feed';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import { addNewsfeedCommentValidation } from '$lib/utils/functions/validator';
+  import { isOrgAdmin } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
+  import type { Author, Feed } from '$lib/utils/types/feed';
 
   import Chip from '$lib/components/Chip/index.svelte';
-  import DeleteFeedConfirmation from './DeleteFeedConfirmation.svelte';
-  import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import { isNewFeedModal } from '$lib/components/Course/components/NewsFeed/store';
+  import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import DeleteFeedConfirmation from './DeleteFeedConfirmation.svelte';
 
   export let feed: Feed;
   export let editFeed: Feed;
@@ -102,18 +102,18 @@
 <div
   id={feed.id}
   class="flex flex-col gap-5 {isActive
-    ? 'border-2 border-primary-700'
-    : 'border border-gray-200 dark:border-neutral-600'} rounded-md mb-7 max-w-3xl"
+    ? 'border-primary-700 border-2'
+    : 'border border-gray-200 dark:border-neutral-600'} mb-7 max-w-3xl rounded-md"
 >
   <section>
     <div class="p-3 pb-0">
-      <div class="flex justify-between mb-2">
+      <div class="mb-2 flex justify-between">
         <span class="flex items-center gap-3">
-          <div class="w-9 h-9">
+          <div class="h-9 w-9">
             <img
               src={feed.author?.profile?.avatar_url}
               alt="users banner"
-              class="w-full h-full rounded-full object-cover"
+              class="h-full w-full rounded-full object-cover"
             />
           </div>
           <span>
@@ -151,7 +151,7 @@
               on:click={() => handleAddNewReaction(reactionType)}
               class={`flex items-center transition ${
                 feed.reaction[reactionType].length >= 1 &&
-                `${getClassIfSelectedByAuthor(reactionType)} dark:text-black border rounded-full`
+                `${getClassIfSelectedByAuthor(reactionType)} rounded-full border dark:text-black`
               }`}
             >
               <div class="text-[15px]">{reactions[reactionType]}</div>
@@ -165,14 +165,14 @@
     </div>
   </section>
 
-  <section class="border-t border-gray-200 dark:border-neutral-600 p-3">
+  <section class="border-t border-gray-200 p-3 dark:border-neutral-600">
     {#if feed.comment.length > 0}
       <button
         on:click={expandComment}
-        class="flex flex-row items-center gap-1 -mx-2 px-2 rounded-md"
+        class="-mx-2 flex flex-row items-center gap-1 rounded-md px-2"
       >
         <UserMultiple size={16} />
-        <p class="text-sm py-2">
+        <p class="py-2 text-sm">
           {pluralize('comment', feed.comment.length, true)}
         </p>
       </button>
@@ -180,13 +180,13 @@
     <div>
       {#each feed.comment as comment, index}
         {#if comment.content && (areCommentsExpanded || index === feed.comment.length - 1)}
-          <div class="group flex justify-between items-center py-2">
+          <div class="group flex items-center justify-between py-2">
             <span class="flex items-center gap-3">
-              <div class="w-9 h-9">
+              <div class="h-9 w-9">
                 <img
                   src={comment.author?.profile?.avatar_url}
                   alt="users banner"
-                  class="w-full h-full rounded-full object-cover"
+                  class="h-full w-full rounded-full object-cover"
                 />
               </div>
               <span>
@@ -212,11 +212,11 @@
       {/each}
     </div>
     <div class="flex items-center justify-between gap-2">
-      <div class="w-7 h-7">
+      <div class="h-7 w-7">
         <img
           src={author.avatar_url}
           alt="users banner"
-          class="w-full h-full rounded-full object-cover"
+          class="h-full w-full rounded-full object-cover"
         />
       </div>
       <div class="flex-1">
@@ -225,7 +225,7 @@
           bind:value={comment}
           on:keydown={handleAddNewComment}
           placeholder="Add class comment"
-          class="w-full bg-transparent border border-gray-200 dark:border-neutral-600 rounded-3xl"
+          class="w-full rounded-3xl border border-gray-200 bg-transparent dark:border-neutral-600"
           required
         />
       </div>

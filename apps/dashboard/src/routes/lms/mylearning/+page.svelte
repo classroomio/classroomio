@@ -1,18 +1,18 @@
 <script lang="ts">
-  import { Dropdown, Search } from 'carbon-components-svelte';
-  import Tabs from '$lib/components/Tabs/index.svelte';
-  import TabContent from '$lib/components/TabContent/index.svelte';
-  import Courses from '$lib/components/Courses/index.svelte';
-  import { fetchCourses } from '$lib/utils/services/courses';
-  import { profile } from '$lib/utils/store/user';
-  import { currentOrg } from '$lib/utils/store/org';
   import { browser } from '$app/environment';
-  import { t } from '$lib/utils/functions/translations';
-  import { lmsCourses } from '$lib/components/LMS/store';
-  import type { LMSCourse } from '$lib/components/LMS/store';
-  import { fetchPathways } from '$lib/components/Org/Pathway/api';
+  import Courses from '$lib/components/Courses/index.svelte';
   import { courseMetaDeta } from '$lib/components/Courses/store';
+  import { lmsCourses } from '$lib/components/LMS/store';
+  import { fetchPathways } from '$lib/components/Org/Pathway/api';
+  import TabContent from '$lib/components/TabContent/index.svelte';
+  import Tabs from '$lib/components/Tabs/index.svelte';
   import { getIsPathwayComplete } from '$lib/utils/functions/pathway';
+  import { t } from '$lib/utils/functions/translations';
+  import { fetchCourses } from '$lib/utils/services/courses';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
+  import type { LMSCourse } from '$lib/utils/types';
+  import { Dropdown, Search } from 'carbon-components-svelte';
 
   import IconButton from '$lib/components/IconButton/index.svelte';
   import Grid from 'carbon-icons-svelte/lib/Grid.svelte';
@@ -142,12 +142,12 @@
   ];
 </script>
 
-<section class="max-w-6xl mx-auto">
+<section class="mx-auto max-w-6xl">
   <div class="m-2 md:m-5">
-    <div class="flex items-center justify-between mb-5">
-      <h1 class="text-3xl font-semibold my-4">{$t('my_learning.heading')}</h1>
+    <div class="mb-5 flex items-center justify-between">
+      <h1 class="my-4 text-3xl font-semibold">{$t('my_learning.heading')}</h1>
 
-      <div class="flex flex-row-reverse mb-5">
+      <div class="mb-5 flex flex-row-reverse">
         <div class="filter-containter flex items-end justify-start">
           <Search
             placeholder={$t('my_learning.search')}

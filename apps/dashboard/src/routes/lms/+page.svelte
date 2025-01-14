@@ -3,7 +3,6 @@
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
   import { courseMetaDeta } from '$lib/components/Courses/store';
   import Learning from '$lib/components/LMS/components/Learning.svelte';
-  import type { LMSCourse } from '$lib/components/LMS/store';
   import { lmsCourses } from '$lib/components/LMS/store';
   import { fetchPathways } from '$lib/components/Org/Pathway/api';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
@@ -13,6 +12,7 @@
   import { fetchCourses } from '$lib/utils/services/courses';
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
+  import { LMSCourse } from '$lib/utils/types';
 
   let hasFetched = false;
   let progressPercentage = 0;
