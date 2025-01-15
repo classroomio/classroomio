@@ -112,7 +112,7 @@
       goto(courseUrl);
     }
   }}
-  class="border-gray group relative w-full max-w-[320px] rounded border text-black dark:border-neutral-600"
+  class="border-gray group relative h-fit w-full max-w-[320px] rounded border text-black dark:border-neutral-600"
 >
   <div class="p-4">
     <div class="relative mb-5">
@@ -169,12 +169,14 @@
     </p>
 
     {#if tags && tags.length > 0 && tags.every((tag) => tag !== null)}
-      <div class="mt-2 flex flex-wrap items-center gap-3">
+      <div
+        class="mt-2 flex w-full max-w-full items-center gap-3 overflow-x-auto py-4"
+        style="overflow-x: auto; white-space: nowrap;"
+      >
         {#each tags as tag}
-          <button
-            type="button"
-            class="flex items-center justify-center rounded-sm border bg-gray-50 px-3 py-1 text-xs"
-            >{tag}</button
+          <span
+            class="flex items-center justify-center rounded-sm border bg-gray-50 px-3 py-1 text-xs dark:bg-transparent dark:text-white"
+            >{tag}</span
           >
         {/each}
       </div>

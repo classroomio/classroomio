@@ -9,7 +9,7 @@
   import OrgSelector from '$lib/components/OrgSelector/OrgSelector.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { currentOrgPath, isFreePlan } from '$lib/utils/store/org';
-  import { ChevronRight, SettingsAdjust } from 'carbon-icons-svelte';
+  import { ChevronRight, SettingsAdjust, Tag } from 'carbon-icons-svelte';
   import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
   import HelpIcon from 'carbon-icons-svelte/lib/Help.svelte';
 
@@ -75,7 +75,8 @@
     },
     {
       path: '/tags',
-      label: 'tags',
+      label: $t('org_navigation.tags'),
+      isActive: $page.url.pathname.includes(`${$currentOrgPath}/audience`),
       show: true
     },
     {
@@ -124,6 +125,8 @@
                     <QuizIcon />
                   {:else if menuItem.path === '/audience'}
                     <AudienceIcon />
+                  {:else if menuItem.path === '/tags'}
+                    <Tag />
                   {:else if menuItem.path === '/setup'}
                     <SettingsAdjust />
                   {/if}

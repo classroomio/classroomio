@@ -1139,7 +1139,8 @@
     "settings": "Einstellungen",
     "early_adopter": "Werden Sie ein Early Adopter",
     "unlock": "Schalten Sie unbegrenzte Funktionen frei und investieren Sie in unsere Zukunft",
-    "upgrade": "Jetzt upgraden"
+    "upgrade": "Jetzt upgraden",
+    "tags": "Schlagworte"
   },
   "settings": {
     "heading": "Einstellungen",
@@ -1516,5 +1517,44 @@
     "assignment_completion_description": "Prozentsatz der abgeschlossenen Aufgaben",
     "average_grade": "Durchschnittsnote",
     "average_grade_description": "Durchschnittsnote aller abgeschlossenen Aufgaben"
+  },
+  "tags": {
+    "tags": "Schlagworte",
+    "create_new_tags": "Erstellen Sie neue Tags",
+    "find_tag": "Tag finden",
+    "description": "Beschreibung",
+    "course_count": "Anzahl der Kurse",
+    "action": "Aktion",
+    "courses": "Kurse",
+    "course": "Kurs",
+    "edit_tag": "Tag bearbeiten",
+    "delete": "Löschen",
+    "no_tags_yet": "Noch keine Tags",
+    "add_a_group": "Fügen Sie eine Gruppe verwandter Kurse hinzu, um Studenten auf den Weg zu Spitzenleistungen in Ihren Fachgebieten zu bringen",
+    "add_tags": "Fügen Sie Tags hinzu",
+    "attach": "Fügen Sie einen Kurs zu Tags hinzu oder entfernen Sie ihn",
+    "add_a_tag": "Fügen Sie ein Tag hinzu",
+    "errors": {
+      "remove_tag": "Tag konnte nicht entfernt werden. Bitte versuchen Sie es erneut.",
+      "add_tag": "Tag konnte nicht hinzugefügt werden. Bitte versuchen Sie es erneut.",
+      "fetch_tags": "Tags konnten nicht abgerufen werden. Bitte versuchen Sie es erneut."
+    },
+    "add_tag_modal": {
+      "heading": "Markieren Sie den Kurs",
+      "placeholder": "Suchen Sie nach einem Tag",
+      "header": "Alle Tags"
+    },
+    "tag_modal": {
+      "edit_tag": "Tag bearbeiten",
+      "delete_tag": "Tag löschen",
+      "create_tag": "Tag erstellen",
+      "tag_name": "Tag-Name",
+      "description": "Beschreibung",
+      "delete_modal": "Sind Sie sicher, dass Sie dieses Tag löschen möchten?",
+      "no": "NEIN",
+      "cancel": "Stornieren",
+      "yes": "Ja",
+      "save": "Speichern"
+    }
   }
 }

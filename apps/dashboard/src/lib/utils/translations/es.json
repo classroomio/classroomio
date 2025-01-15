@@ -1139,7 +1139,8 @@
     "settings": "Ajustes",
     "early_adopter": "Conviértase en uno de los primeros en adoptar",
     "unlock": "Desbloquee funciones ilimitadas e invierta en nuestro futuro",
-    "upgrade": "Actualizar ahora"
+    "upgrade": "Actualizar ahora",
+    "tags": "Etiquetas"
   },
   "settings": {
     "heading": "Ajustes",
@@ -1516,5 +1517,44 @@
     "assignment_completion_description": "Porcentaje de tareas completadas",
     "average_grade": "Calificación promedio",
     "average_grade_description": "Calificación promedio de todas las tareas completadas"
+  },
+  "tags": {
+    "tags": "Etiquetas",
+    "create_new_tags": "Crear nuevas etiquetas",
+    "find_tag": "Buscar etiqueta",
+    "description": "Descripción",
+    "course_count": "Recuento de cursos",
+    "action": "Acción",
+    "courses": "Cursos",
+    "course": "Curso",
+    "edit_tag": "Editar etiqueta",
+    "delete": "Borrar",
+    "no_tags_yet": "Aún no hay etiquetas",
+    "add_a_group": "Agregue un grupo de cursos relacionados para encaminar a los estudiantes hacia la excelencia en sus campos",
+    "add_tags": "Agregar etiquetas",
+    "attach": "Adjuntar o eliminar un curso de las etiquetas",
+    "add_a_tag": "Agregar una etiqueta",
+    "errors": {
+      "remove_tag": "No se pudo eliminar la etiqueta. Por favor inténtalo de nuevo.",
+      "add_tag": "No se pudo agregar la etiqueta. Por favor inténtalo de nuevo.",
+      "fetch_tags": "No se pudieron recuperar las etiquetas. Por favor inténtalo de nuevo."
+    },
+    "add_tag_modal": {
+      "heading": "Curso de etiqueta",
+      "placeholder": "Buscar una etiqueta",
+      "header": "Todas las etiquetas"
+    },
+    "tag_modal": {
+      "edit_tag": "Editar etiqueta",
+      "delete_tag": "Eliminar etiqueta",
+      "create_tag": "Crear etiqueta",
+      "tag_name": "Nombre de etiqueta",
+      "description": "Descripción",
+      "delete_modal": "¿Estás seguro de que deseas eliminar esta etiqueta?",
+      "no": "No",
+      "cancel": "Cancelar",
+      "yes": "Sí",
+      "save": "Ahorrar"
+    }
   }
 }

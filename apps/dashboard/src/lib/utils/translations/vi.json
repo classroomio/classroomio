@@ -1139,7 +1139,8 @@
     "settings": "Cài đặt",
     "early_adopter": "Trở thành người áp dụng sớm",
     "unlock": "Mở khóa các tính năng không giới hạn và đầu tư vào tương lai của chúng tôi",
-    "upgrade": "Nâng cấp ngay bây giờ"
+    "upgrade": "Nâng cấp ngay bây giờ",
+    "tags": "Thẻ"
   },
   "settings": {
     "heading": "Cài đặt",
@@ -1516,5 +1517,44 @@
     "assignment_completion_description": "Tỷ lệ bài tập đã hoàn thành",
     "average_grade": "Điểm trung bình",
     "average_grade_description": "Điểm trung bình của tất cả các bài tập đã hoàn thành"
+  },
+  "tags": {
+    "tags": "Thẻ",
+    "create_new_tags": "Tạo thẻ mới",
+    "find_tag": "Tìm thẻ",
+    "description": "Sự miêu tả",
+    "course_count": "Số khóa học",
+    "action": "Hoạt động",
+    "courses": "Khóa học",
+    "course": "Khóa học",
+    "edit_tag": "Chỉnh sửa thẻ",
+    "delete": "Xóa bỏ",
+    "no_tags_yet": "Chưa có thẻ nào",
+    "add_a_group": "Thêm một nhóm các khóa học liên quan để giúp sinh viên đi đến con đường xuất sắc trong lĩnh vực của bạn",
+    "add_tags": "Thêm thẻ",
+    "attach": "Đính kèm hoặc xóa khóa học khỏi thẻ",
+    "add_a_tag": "Thêm thẻ",
+    "errors": {
+      "remove_tag": "Không xóa được thẻ. Vui lòng thử lại.",
+      "add_tag": "Không thể thêm thẻ. Vui lòng thử lại.",
+      "fetch_tags": "Không tìm nạp được thẻ. Vui lòng thử lại."
+    },
+    "add_tag_modal": {
+      "heading": "Gắn thẻ khóa học",
+      "placeholder": "Tìm kiếm thẻ",
+      "header": "Tất cả các thẻ"
+    },
+    "tag_modal": {
+      "edit_tag": "Chỉnh sửa thẻ",
+      "delete_tag": "Xóa thẻ",
+      "create_tag": "Tạo thẻ",
+      "tag_name": "Tên thẻ",
+      "description": "Sự miêu tả",
+      "delete_modal": "Bạn có chắc chắn muốn xóa thẻ này?",
+      "no": "KHÔNG",
+      "cancel": "Hủy bỏ",
+      "yes": "Đúng",
+      "save": "Cứu"
+    }
   }
 }

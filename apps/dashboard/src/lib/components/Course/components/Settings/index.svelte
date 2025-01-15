@@ -19,9 +19,9 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import { isObject } from '$lib/utils/functions/isObject';
   import { t } from '$lib/utils/functions/translations';
-  import { deleteCourse, updateCourse } from '$lib/utils/services/courses';
+  import { deleteCourse, removeCourseTag, updateCourse } from '$lib/utils/services/courses';
   import { currentOrg, currentOrgDomain, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
-  import type { Course } from '$lib/utils/types';
+  import type { Course, CourseTag } from '$lib/utils/types';
   import { COURSE_TYPE } from '$lib/utils/types';
   import { lessons } from '../Lesson/store/lessons';
   import { settings } from './store';
@@ -119,6 +119,19 @@
     $settings.logo = '';
     hasUnsavedChanges = true;
   };
+
+  async function handleRemoveTag(tag: CourseTag) {
+    try {
+      const response = await removeCourseTag(tag.course_tag_id);
+
+      if (response.data && response.data.length > 0) {
+        $course.tags = $course.tags.filter((ct) => ct.id !== tag.id);
+      }
+    } catch (error) {
+      snackbar.error('tags.errors.remove_tag');
+      console.error('Error removing tag:', error);
+    }
+  }
 
   async function handleDeleteCourse() {
     isDeleting = true;
@@ -322,7 +335,7 @@
       >
         {#if $course.tags && $course.tags.length > 0}
           {#each $course.tags as tag}
-            <TagButton {tag} />
+            <TagButton {tag} isRemove={true} handleTag={handleRemoveTag} />
           {/each}
         {/if}
       </div>

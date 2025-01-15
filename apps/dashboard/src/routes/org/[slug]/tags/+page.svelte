@@ -13,14 +13,14 @@
   import OverflowMenuHorizontal from 'carbon-icons-svelte/lib/OverflowMenuHorizontal.svelte';
 
   import Box from '$lib/components/Box/index.svelte';
-  import { selectedTag, tagModal, tags } from '$lib/components/CourseTags/store';
+  import { createTagModal, selectedTag, tags } from '$lib/components/CourseTags/store';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { t } from '$lib/utils/functions/translations';
   import { fetchCourseTags } from '$lib/utils/services/courses';
   import { currentOrg } from '$lib/utils/store/org';
   import type { CourseTag } from '$lib/utils/types';
 
-  import TagModal from '$lib/components/CourseTags/TagModal.svelte';
+  import CreateTagModal from '$lib/components/CourseTags/CreateTagModal.svelte';
   import TagsEmptyIcon from '$lib/components/Icons/TagsEmptyIcon.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
@@ -29,14 +29,14 @@
 
   function handleEditClick(tag: CourseTag) {
     $selectedTag = tag;
-    $tagModal.editMode = true;
-    $tagModal.open = true;
+    $createTagModal.editMode = true;
+    $createTagModal.open = true;
   }
 
   function handleDeleteClick(tag: CourseTag) {
     $selectedTag = tag;
-    $tagModal.deleteMode = true;
-    $tagModal.open = true;
+    $createTagModal.deleteMode = true;
+    $createTagModal.open = true;
   }
 
   async function fetchTags(orgId: string) {
@@ -51,7 +51,7 @@
   );
 </script>
 
-<TagModal />
+<CreateTagModal />
 
 <svelte:head>
   <title>Tags - ClassroomIO</title>
@@ -59,7 +59,7 @@
 
 <section class="mx-auto w-full max-w-5xl">
   <div class="flex flex-wrap items-center justify-between py-10">
-    <h1 class="m-0">{$t('tags.tags')}</h1>
+    <h1 class="m-0 text-2xl font-bold md:text-3xl dark:text-white">{$t('tags.tags')}</h1>
 
     <!-- button for mobile screen (better ui) -->
     <PrimaryButton
@@ -68,7 +68,7 @@
       label={$t('tags.create_new_tags')}
       className="border-blue-600 border px-10 block md:hidden"
       variant={VARIANTS.CONTAINED}
-      onClick={() => ($tagModal.open = true)}
+      onClick={() => ($createTagModal.open = true)}
     />
 
     <div class="flex w-full flex-wrap items-center justify-between py-3 md:w-fit md:flex-nowrap">
@@ -86,7 +86,7 @@
           label={$t('tags.create_new_tags')}
           className="border-blue-600 border hidden md:block"
           variant={VARIANTS.CONTAINED}
-          onClick={() => ($tagModal.open = true)}
+          onClick={() => ($createTagModal.open = true)}
         />
       </div>
     </div>
@@ -164,7 +164,7 @@
           type="button"
           className="border-blue-600 border w-full mt-2"
           variant={VARIANTS.OUTLINED}
-          onClick={() => ($tagModal.open = true)}
+          onClick={() => ($createTagModal.open = true)}
         />
       </Box>
     {/if}

@@ -1,13 +1,13 @@
 <script lang="ts">
-  import { currentOrg } from '$lib/utils/store/org';
-  import { t } from '$lib/utils/functions/translations';
-  import { tagModal, tags, selectedTag } from './store';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { t } from '$lib/utils/functions/translations';
   import { createTag, deleteTag, updateTag } from '$lib/utils/services/courses';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { createTagModal, selectedTag, tags } from './store';
 
-  import Modal from '$lib/components/Modal/index.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
+  import Modal from '$lib/components/Modal/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   let name = '';
@@ -15,15 +15,19 @@
   let isLoading = false;
 
   function resetStore() {
-    $tagModal.editMode = false;
-    $tagModal.deleteMode = false;
+    $createTagModal.editMode = false;
+    $createTagModal.deleteMode = false;
     $selectedTag = {
+      id: '',
+      course_tag_id: '',
+      tags: [],
+      tag_id: '',
       name: '',
       description: ''
     };
     name = '';
     description = '';
-    $tagModal.open = false;
+    $createTagModal.open = false;
   }
 
   const handleCreateTag = async () => {
@@ -66,9 +70,9 @@
   };
 
   const handleSave = async () => {
-    if ($tagModal.editMode) {
+    if ($createTagModal.editMode) {
       await handleEditTag();
-    } else if ($tagModal.deleteMode) {
+    } else if ($createTagModal.deleteMode) {
       await handleDeleteTag();
     } else {
       await handleCreateTag();
@@ -78,16 +82,16 @@
 
 <Modal
   onClose={() => resetStore()}
-  bind:open={$tagModal.open}
+  bind:open={$createTagModal.open}
   width="md:w-[40%] w-[80%]"
-  modalHeading={$tagModal.editMode
+  modalHeading={$createTagModal.editMode
     ? $t('tags.tag_modal.edit_tag')
-    : $tagModal.deleteMode
+    : $createTagModal.deleteMode
       ? $t('tags.tag_modal.delete_tag')
       : $t('tags.tag_modal.create_tag')}
 >
   <form on:submit|preventDefault={handleSave}>
-    {#if !$tagModal.editMode && !$tagModal.deleteMode}
+    {#if !$createTagModal.editMode && !$createTagModal.deleteMode}
       <div>
         <TextField
           label={$t('tags.tag_modal.tag_name')}
@@ -108,7 +112,7 @@
       </div>
     {/if}
 
-    {#if !$tagModal.deleteMode && $tagModal.editMode}
+    {#if !$createTagModal.deleteMode && $createTagModal.editMode}
       <div>
         <TextField
           label={$t('tags.tag_modal.tag_name')}
@@ -129,21 +133,21 @@
       </div>
     {/if}
 
-    {#if $tagModal.deleteMode}
-      <div class="flex justify-center items-center">
-        <h1 class="text-sm m-0">{$t('tags.tag_modal.delete_modal')}</h1>
+    {#if $createTagModal.deleteMode}
+      <div class="flex items-center justify-center">
+        <h1 class="m-0 text-sm">{$t('tags.tag_modal.delete_modal')}</h1>
       </div>
     {/if}
 
     <div
-      class="flex {$tagModal.deleteMode
+      class="flex {$createTagModal.deleteMode
         ? 'justify-center'
-        : 'justify-end'} items-center gap-10 mt-5"
+        : 'justify-end'} mt-5 items-center gap-10"
     >
       <PrimaryButton
         width="w-[30%]"
         className="py-3 rounded-md text-sm font-medium"
-        label={$tagModal.deleteMode ? $t('tags.tag_modal.no') : $t('tags.tag_modal.cancel')}
+        label={$createTagModal.deleteMode ? $t('tags.tag_modal.no') : $t('tags.tag_modal.cancel')}
         type="button"
         onClick={() => resetStore()}
         variant={VARIANTS.OUTLINED}
@@ -151,9 +155,9 @@
       <PrimaryButton
         width="w-[30%]"
         className="py-3 rounded-md text-sm font-medium"
-        label={$tagModal.deleteMode ? $t('tags.tag_modal.yes') : $t('tags.tag_modal.save')}
+        label={$createTagModal.deleteMode ? $t('tags.tag_modal.yes') : $t('tags.tag_modal.save')}
         type="submit"
-        variant={$tagModal.deleteMode ? VARIANTS.CONTAINED_DANGER : VARIANTS.CONTAINED}
+        variant={$createTagModal.deleteMode ? VARIANTS.CONTAINED_DANGER : VARIANTS.CONTAINED}
         {isLoading}
       />
     </div>

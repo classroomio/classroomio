@@ -28,10 +28,15 @@
     "add_tag_modal": {
       "heading": "Tag Course",
       "placeholder": "Search for a tag",
-      "header": "Course Tags"
+      "header": "All Tags"
     },
     "attach": "Attach or remove a course from tags",
-    "add_a_tag": "Add a tag"
+    "add_a_tag": "Add a tag",
+    "errors": {
+      "remove_tag": "Failed to remove tag. Please try again.",
+      "add_tag": "Failed to add tag. Please try again.",
+      "fetch_tags": "Failed to fetch tags. Please try again."
+    }
   },
 
   "verify_email_modal": {
@@ -289,6 +294,7 @@
     "community": "Community",
     "audience": "Audience",
     "setup": "Setup",
+    "tags": "Tags",
     "help": "Help",
     "settings": "Settings",
     "early_adopter": "Become an Early Adopter",

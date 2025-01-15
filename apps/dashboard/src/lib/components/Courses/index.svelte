@@ -1,20 +1,20 @@
 <script lang="ts">
-  import Box from '../Box/index.svelte';
-  import Card from './components/Card/index.svelte';
-  import List from './components/List/index.svelte';
-  import CardLoader from './components/Card/Loader.svelte';
-  import CoursesEmptyIcon from '../Icons/CoursesEmptyIcon.svelte';
-  import { courseMetaDeta } from './store';
-  import type { Course } from '$lib/utils/types';
+  import { t } from '$lib/utils/functions/translations';
   import { globalStore } from '$lib/utils/store/app';
+  import type { Course } from '$lib/utils/types';
   import {
     StructuredList,
-    StructuredListHead,
-    StructuredListRow,
+    StructuredListBody,
     StructuredListCell,
-    StructuredListBody
+    StructuredListHead,
+    StructuredListRow
   } from 'carbon-components-svelte';
-  import { t } from '$lib/utils/functions/translations';
+  import Box from '../Box/index.svelte';
+  import CoursesEmptyIcon from '../Icons/CoursesEmptyIcon.svelte';
+  import Card from './components/Card/index.svelte';
+  import CardLoader from './components/Card/Loader.svelte';
+  import List from './components/List/index.svelte';
+  import { courseMetaDeta } from './store';
 
   export let courses: Course[] = [];
   export let emptyTitle = $t('courses.course_card.empty_title');

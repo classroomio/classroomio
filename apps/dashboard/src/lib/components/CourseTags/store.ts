@@ -3,7 +3,7 @@ import type { CourseTag } from '$lib/utils/types';
 import { writable } from 'svelte/store';
 
 // this is to control CRUD operations for tags
-export const tagModal = writable({
+export const createTagModal = writable({
   open: false,
   editMode: false,
   deleteMode: false
@@ -11,7 +11,7 @@ export const tagModal = writable({
 
 // this is to control adding tags to courses
 export const addTagModal = writable({
-  open: false,
+  open: false
 });
 
 // to store all the tags in the organization
