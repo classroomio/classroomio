@@ -184,7 +184,7 @@
   </div>
 
   <div
-    class="border-gray flex justify-between border border-b-0 border-l-0 border-r-0 px-4 py-2 dark:border-neutral-600 {isLMS &&
+    class="border-gray flex justify-between border-t px-4 py-2 dark:border-neutral-600 {isLMS &&
       'items-center'}"
   >
     <div>

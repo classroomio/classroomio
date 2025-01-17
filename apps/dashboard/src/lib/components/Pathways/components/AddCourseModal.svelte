@@ -8,23 +8,23 @@
     StructuredListRow
   } from 'carbon-components-svelte';
 
-  import { profile } from '$lib/utils/store/user';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { t } from '$lib/utils/functions/translations';
-  import { addCourseModal, pathwayCourses } from '../store';
-  import { fetchCourses } from '$lib/utils/services/courses';  
+  import { fetchCourses } from '$lib/utils/services/courses';
+  import { updatePathwayCourses } from '$lib/utils/services/pathways';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
   import type { Course, PathwayCourse } from '$lib/utils/types';
   import { deleteCourse, saveNewPathwayCourses } from '../functions';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { updatePathwayCourses } from '$lib/utils/services/pathways';
-  
-  import Modal from '$lib/components/Modal/index.svelte';
-  import DragAndDropModal from './DragAndDropModal.svelte';
+  import { addCourseModal, pathwayCourses } from '../store';
+
   import Checkbox from '$lib/components/Form/Checkbox.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
-  import ArrowLeft from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
+  import Modal from '$lib/components/Modal/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  
+  import ArrowLeft from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
+  import DragAndDropModal from './DragAndDropModal.svelte';
+
   export let pathwayId;
 
   let searchValue = '';
@@ -53,6 +53,7 @@
       }));
 
     await saveNewPathwayCourses(newPathwayCourses);
+
     isLoading = false;
     courses = [];
 
@@ -169,8 +170,8 @@
             {#each filteredCourses as course}
               <StructuredListRow>
                 <StructuredListCell>
-                  <div class="flex items-center">
-                    <div class="flex items-center justify-center">
+                  <div class="flex">
+                    <div>
                       <Checkbox
                         name={course.title}
                         className="cursor-pointer"
@@ -179,12 +180,12 @@
                         onInputChange={(e) => toggleAddSelection(course, e.target?.checked)}
                       />
                     </div>
-                    <p class="w-full font-semibold text-black dark:text-white">
+                    <p class="font-semibold text-black dark:text-white">
                       {course.title}
                     </p>
                   </div>
                 </StructuredListCell>
-                <StructuredListCell>{course.description}</StructuredListCell>
+                <StructuredListCell class="line-clamp-1">{course.description}</StructuredListCell>
                 <StructuredListCell>{course.total_lessons}</StructuredListCell>
                 <StructuredListCell>{course.total_students}</StructuredListCell>
               </StructuredListRow>
@@ -195,7 +196,6 @@
 
       <!-- order course -->
     {:else if $addCourseModal.step === 1 && $pathwayCourses.length > 0}
-      <!-- order course -->
       <DragAndDropModal bind:courses={$pathwayCourses} />
 
       <!-- delete course -->
@@ -215,8 +215,8 @@
             {#each $pathwayCourses as course}
               <StructuredListRow>
                 <StructuredListCell>
-                  <div class="flex items-center">
-                    <div class="flex items-center justify-center">
+                  <div class="flex">
+                    <div>
                       <Checkbox
                         name={course.course.title}
                         className="cursor-pointer"
@@ -230,11 +230,11 @@
                     </p>
                   </div>
                 </StructuredListCell>
-                <StructuredListCell>{course.course.description}</StructuredListCell>
-                <StructuredListCell>{course.course.lessons?.length}</StructuredListCell>
-                <StructuredListCell
-                  >{course.course.group_id?.groupmember?.length}</StructuredListCell
+                <StructuredListCell class="line-clamp-1"
+                  >{course.course.description}</StructuredListCell
                 >
+                <StructuredListCell>{course.course.lesson.length}</StructuredListCell>
+                <StructuredListCell>{course.course.group_id.groupmember.length}</StructuredListCell>
               </StructuredListRow>
             {/each}
           </StructuredListBody>

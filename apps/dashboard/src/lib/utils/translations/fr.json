@@ -294,8 +294,6 @@
         "reviews": "Commentaires",
         "see_all": "Voir tout",
         "header_video": "Vidéo d'en-tête",
-        "no_course_published": "Aucun cours publié",
-        "coming_your_way": "Nous avons d'excellents cours à venir, restez à l'écoute !!!",
         "view_less": "Voir moins",
         "view_all": "Voir tout",
         "thank_you": "Merci d'avoir laissé un message, nous vous répondrons sous peu",
@@ -409,7 +407,11 @@
         "course_content": "Contenu du cours",
         "modules": "modules",
         "lessons": "leçons",
-        "exercises": "exercices"
+        "exercises": "exercices",
+        "title": "Pas encore de cours",
+        "subtitle": "Il semble que les cours n'aient pas encore été ajoutés. Veuillez revenir plus tard",
+        "pathway_title": "Pas encore de cours",
+        "pathway_subtitle": "Il semble que les cours n'aient pas encore été ajoutés. Veuillez revenir plus tard"
       },
       "certificates": {
         "title": "Certificats",
@@ -1532,7 +1534,9 @@
         "share": "Partager",
         "invite": "Inviter",
         "delete": "Supprimer"
-      }
+      },
+      "course": "cours",
+      "student": "étudiant"
     },
     "pathway_filter": {
       "date_created": "date créée",
@@ -1553,12 +1557,12 @@
         "students": "étudiants"
       },
       "addCourseModal": {
-        "modal_heading": "Ajouter un cours au parcours d'apprentissage",
         "add": "Ajouter",
         "course": "Cours",
         "courses": "Cours",
-        "path": "au parcours d'apprentissage",
-        "delete": "Confirmer la suppression"
+        "delete": "Confirmer la suppression",
+        "modal_heading": "Ajouter un cours au parcours",
+        "path": "vers le chemin"
       },
       "not_permitted": {
         "header": "Aucune autorisation",
@@ -1576,16 +1580,11 @@
         "page_title": "Paramètres",
         "option_one": "Oui",
         "option_two": "Non",
-        "publish": "Publier le parcours d'apprentissage",
-        "allow": "Autoriser les nouveaux étudiants à télécharger des cours dans le parcours d'apprentissage",
         "enabled": "Activé",
         "disabled": "Désactivé",
         "certificate": "Certificat",
         "issue": "Émettre un certificat sur LMS",
-        "issue_two": "Délivrer un certificat ou tous les cours du parcours d'apprentissage",
         "option_three": "Non, pour le chemin uniquement",
-        "delete_path": "Supprimer le parcours d'apprentissage",
-        "delete_text": "Supprimer le parcours de formation dans son intégralité",
         "save": "Sauvegarder les modifications",
         "placeholder": "une petite description du parcours",
         "pathway_description": "Description du parcours",
@@ -1602,7 +1601,12 @@
         "description_placeholder": "Écrivez la description du cours ici",
         "link": "Lien vers le parcours",
         "students": "Les étudiants doivent-ils suivre les cours selon l'ordre recommandé ?",
-        "yes": "si oui, l'étudiant doit suivre le cours selon l'ordre, si non, l'étudiant peut commencer par n'importe quel cours de son choix"
+        "yes": "si oui, l'étudiant doit suivre le cours selon l'ordre, si non, l'étudiant peut commencer par n'importe quel cours de son choix",
+        "publish": "Publier le parcours",
+        "allow": "Autoriser les nouveaux étudiants à télécharger des cours dans le parcours",
+        "issue_two": "Délivrer un certificat ou tous les cours du parcours",
+        "delete_path": "Supprimer le parcours",
+        "delete_text": "Supprimer le parcours dans son ensemble"
       },
       "course": {
         "title": "Cours",
@@ -1617,20 +1621,22 @@
         "lessons": "Cours",
         "search": "Trouver un cours Pathway",
         "empty_state_header": "Pas encore de cours",
-        "empty_state_text": "Vous n'avez ajouté aucun cours à ce parcours d'apprentissage",
-        "empty_state_label": "Ajouter un cours à ce parcours d'apprentissage",
-        "publish": "Publier le parcours"
+        "publish": "Publier le parcours",
+        "empty_state_text": "Vous n'avez ajouté aucun cours à ce parcours",
+        "empty_state_label": "Ajouter un cours à ce parcours"
       },
       "lms_certificate": {
         "share": "Certificat d'actions",
         "locked": {
           "title": "Certificats pas encore disponibles",
-          "subtitle": "Le certificat est disponible parce que vous n'avez pas terminé le parcours d'apprentissage ou que votre instructeur ne l'a pas approuvé. Merci de contacter votre instructeur"
+          "subtitle": "Le certificat est disponible parce que vous n'avez pas terminé le parcours ou que votre instructeur ne l'a pas approuvé. Merci de contacter votre instructeur"
         },
         "unlocked": {
           "title": "Bravo! 🎉 votre attestation est prête",
-          "subtitle": "Vous avez complété ce parcours d’apprentissage et votre dévouement est évident. Téléchargez le certificat et partagez-le avec votre réseau comme preuve de vos compétences nouvellement acquises"
-        }
+          "subtitle": "Vous avez parcouru ce chemin et votre dévouement est évident. Téléchargez le certificat et partagez-le avec votre réseau comme preuve de vos compétences nouvellement acquises"
+        },
+        "courses_completed": "Cours terminés",
+        "achieve": "comprend les cours que vous avez suivis pour réaliser ce parcours"
       },
       "landingPage": {
         "reviews": {
@@ -1655,10 +1661,10 @@
           "evidence": "Obtenez un justificatif de compétences et partagez-le avec votre réseau professionnel"
         },
         "main": {
-          "description": "Description du parcours d'apprentissage",
-          "objectives": "Objectifs du parcours d'apprentissage",
           "pricing_win": "Terminez toutes les leçons avec succès et courez la chance de gagner un iPad. Nous le pensons quand nous le disons !",
-          "start": "Commencez maintenant"
+          "start": "Commencez maintenant",
+          "description": "Description du parcours",
+          "objectives": "Objectifs du parcours"
         },
         "banner": {
           "courses": "Cours",
@@ -1668,8 +1674,8 @@
           "rating": "Instructeur de cours expérimenté et hautement coté"
         },
         "header": {
-          "tag": "PARCOURS D'APPRENTISSAGE",
-          "button": "Inscrivez-vous maintenant"
+          "button": "Inscrivez-vous maintenant",
+          "tag": "CHEMIN"
         },
         "constants": {
           "about": "À PROPOS",

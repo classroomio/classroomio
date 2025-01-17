@@ -71,7 +71,7 @@
           </p>
         </div>
       </span>
-      <span class="col-span-4 text-sm">{course.course.description}</span>
+      <span class="col-span-4 line-clamp-2 text-sm">{course.course.description}</span>
       <span class="col-span-2 text-center text-sm">{course.course.lesson?.length || 0}</span>
       <span class="col-span-2 text-center text-sm"
         >{course.course.group_id?.groupmember.length || 0}</span

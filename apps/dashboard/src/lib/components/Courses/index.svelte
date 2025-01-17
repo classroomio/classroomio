@@ -49,8 +49,6 @@
       return calcProgressRate(course.progress_rate, course.total_lessons);
     }
   }
-
-  console.log('courses', courses);
 </script>
 
 <!-- <CopyCourseModal /> -->

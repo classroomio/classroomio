@@ -183,8 +183,8 @@
   </div>
   <div class="flex w-full flex-col justify-between gap-y-5 border-t px-14 py-10 md:flex-row">
     <div>
-      <h1 class="m-0 text-base">Courses Completed</h1>
-      <p class="mt-1 text-sm">includes courses you have completed to achieve this learning path</p>
+      <h1 class="m-0 text-base">{$t('pathway.pages.lms_certificate.courses_completed')}</h1>
+      <p class="mt-1 text-sm">{$t('pathway.pages.lms_certificate.achieve')}</p>
     </div>
 
     <div class="flex items-center gap-1">

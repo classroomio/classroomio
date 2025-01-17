@@ -294,8 +294,6 @@
         "reviews": "Đánh giá",
         "see_all": "Nhìn thấy tất cả",
         "header_video": "Video tiêu đề",
-        "no_course_published": "Không có khóa học nào được xuất bản",
-        "coming_your_way": "Chúng tôi có những khóa học tuyệt vời sắp tới dành cho bạn, hãy chú ý theo dõi nhé!!!",
         "view_less": "Xem ít hơn",
         "view_all": "Xem tất cả",
         "thank_you": "Cảm ơn bạn đã gửi tin nhắn, chúng tôi sẽ liên hệ lại với bạn ngay",
@@ -409,7 +407,11 @@
         "course_content": "Nội dung khóa học",
         "modules": "mô-đun",
         "lessons": "bài học",
-        "exercises": "bài tập"
+        "exercises": "bài tập",
+        "title": "Chưa có khóa học nào",
+        "subtitle": "Có vẻ như các khóa học vẫn chưa được thêm vào. Vui lòng kiểm tra lại sau",
+        "pathway_title": "Chưa có khóa học nào",
+        "pathway_subtitle": "Có vẻ như các khóa học vẫn chưa được thêm vào. Vui lòng kiểm tra lại sau"
       },
       "certificates": {
         "title": "Chứng chỉ",
@@ -1532,7 +1534,9 @@
         "share": "Chia sẻ",
         "invite": "Mời",
         "delete": "Xóa bỏ"
-      }
+      },
+      "course": "khóa học",
+      "student": "học sinh"
     },
     "pathway_filter": {
       "date_created": "Ngày tạo",
@@ -1553,12 +1557,12 @@
         "students": "sinh viên"
       },
       "addCourseModal": {
-        "modal_heading": "Thêm khóa học vào lộ trình học tập",
         "add": "Thêm vào",
         "course": "Khóa học",
         "courses": "Khóa học",
-        "path": "đến lộ trình học tập",
-        "delete": "Xác nhận xóa"
+        "delete": "Xác nhận xóa",
+        "modal_heading": "Thêm khóa học vào lộ trình",
+        "path": "đến Con đường"
       },
       "not_permitted": {
         "header": "Không có quyền",
@@ -1576,16 +1580,11 @@
         "page_title": "Cài đặt",
         "option_one": "Đúng",
         "option_two": "KHÔNG",
-        "publish": "Xuất bản lộ trình học tập",
-        "allow": "Cho phép học viên mới tải các khóa học trong lộ trình học tập",
         "enabled": "Đã bật",
         "disabled": "Tàn tật",
         "certificate": "Giấy chứng nhận",
         "issue": "Cấp chứng chỉ trên LMS",
-        "issue_two": "Cấp chứng chỉ hoặc toàn bộ khóa học trong lộ trình học tập",
         "option_three": "Không, chỉ dành cho đường dẫn",
-        "delete_path": "Xóa lộ trình học tập",
-        "delete_text": "Xóa toàn bộ Hướng dẫn Học tập",
         "save": "Lưu thay đổi",
         "placeholder": "một chút mô tả về con đường",
         "pathway_description": "Mô tả lộ trình",
@@ -1602,7 +1601,12 @@
         "description_placeholder": "Viết mô tả khóa học ở đây",
         "link": "Liên kết con đường",
         "students": "Học viên có phải học theo thứ tự khuyến nghị?",
-        "yes": "nếu có, sinh viên phải học các môn theo thứ tự, nếu không, sinh viên có thể bắt đầu từ bất kỳ khóa học nào mình chọn"
+        "yes": "nếu có, sinh viên phải học các môn theo thứ tự, nếu không, sinh viên có thể bắt đầu từ bất kỳ khóa học nào mình chọn",
+        "publish": "Lộ trình xuất bản",
+        "allow": "Cho phép sinh viên mới tải xuống các khóa học trong lộ trình",
+        "issue_two": "Cấp chứng chỉ hoặc tất cả khóa học trong lộ trình",
+        "delete_path": "Xóa đường đi",
+        "delete_text": "Xóa toàn bộ con đường"
       },
       "course": {
         "title": "Khóa học",
@@ -1617,20 +1621,22 @@
         "students": "Sinh viên",
         "lessons": "Những bài học",
         "empty_state_header": "Chưa có khóa học nào",
-        "empty_state_text": "Bạn chưa thêm bất kỳ khóa học nào vào lộ trình học tập này",
-        "empty_state_label": "Thêm khóa học vào lộ trình học tập này",
-        "search": "Tìm khóa học chuyển tiếp"
+        "search": "Tìm khóa học chuyển tiếp",
+        "empty_state_text": "Bạn chưa thêm bất kỳ khóa học nào vào lộ trình này",
+        "empty_state_label": "Thêm khóa học vào lộ trình này"
       },
       "lms_certificate": {
         "share": "Chia sẻ chứng chỉ",
         "locked": {
           "title": "Chứng chỉ chưa có sẵn",
-          "subtitle": "Chứng chỉ được cấp vì bạn chưa hoàn thành lộ trình học tập hoặc người hướng dẫn của bạn chưa phê duyệt. Vui lòng liên hệ với người hướng dẫn của bạn"
+          "subtitle": "Chứng chỉ được cấp vì bạn chưa hoàn thành lộ trình hoặc người hướng dẫn của bạn chưa phê duyệt. Vui lòng liên hệ với người hướng dẫn của bạn"
         },
         "unlocked": {
           "title": "Xin chúc mừng! 🎉 chứng chỉ của bạn đã sẵn sàng",
-          "subtitle": "Bạn đã hoàn thành lộ trình học tập này và sự cống hiến của bạn được thể hiện rõ ràng. Tải xuống chứng chỉ và chia sẻ với mạng của bạn như một bằng chứng về kỹ năng mới có được của bạn"
-        }
+          "subtitle": "Bạn đã hoàn thành con đường này và sự cống hiến của bạn là điều hiển nhiên. Tải xuống chứng chỉ và chia sẻ với mạng của bạn như một bằng chứng về kỹ năng mới có được của bạn"
+        },
+        "courses_completed": "Khóa học đã hoàn thành",
+        "achieve": "bao gồm các khóa học bạn đã hoàn thành để đạt được lộ trình này"
       },
       "landingPage": {
         "reviews": {
@@ -1655,10 +1661,10 @@
           "evidence": "Nhận bằng chứng chứng minh kỹ năng và chia sẻ với mạng lưới chuyên môn của bạn"
         },
         "main": {
-          "description": "Mô tả lộ trình học tập",
-          "objectives": "Mục tiêu lộ trình học tập",
           "pricing_win": "Hoàn thành tất cả các bài học và có cơ hội giành được một chiếc ipad. Chúng tôi có ý đó khi chúng tôi nói nó!",
-          "start": "Bắt đầu ngay bây giờ"
+          "start": "Bắt đầu ngay bây giờ",
+          "description": "Mô tả lộ trình",
+          "objectives": "Mục tiêu lộ trình"
         },
         "banner": {
           "courses": "Khóa học",
@@ -1668,8 +1674,8 @@
           "rating": "Giảng viên khóa học giàu kinh nghiệm và được đánh giá cao"
         },
         "header": {
-          "tag": "CON ĐƯỜNG HỌC TẬP",
-          "button": "Đăng ký ngay"
+          "button": "Đăng ký ngay",
+          "tag": "LỘ TRÌNH"
         },
         "constants": {
           "about": "VỀ",

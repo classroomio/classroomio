@@ -294,8 +294,6 @@
         "reviews": "Avaliações",
         "see_all": "Ver tudo",
         "header_video": "Vídeo de cabeçalho",
-        "no_course_published": "Nenhum curso publicado",
-        "coming_your_way": "Temos ótimos cursos chegando até você, fique ligado!!!",
         "view_less": "Ver menos",
         "view_all": "Ver tudo",
         "thank_you": "Obrigado por deixar uma mensagem, entraremos em contato em breve",
@@ -409,7 +407,11 @@
         "course_content": "Conteúdo do curso",
         "modules": "módulos",
         "lessons": "lições",
-        "exercises": "exercícios"
+        "exercises": "exercícios",
+        "title": "Ainda não há cursos",
+        "subtitle": "Parece que os cursos ainda não foram adicionados. Por favor, verifique novamente mais tarde",
+        "pathway_title": "Ainda não há cursos",
+        "pathway_subtitle": "Parece que os cursos ainda não foram adicionados. Por favor, verifique novamente mais tarde"
       },
       "certificates": {
         "title": "Certificados",
@@ -1532,7 +1534,9 @@
         "share": "Compartilhar",
         "invite": "Convidar",
         "delete": "Excluir"
-      }
+      },
+      "course": "curso",
+      "student": "estudante"
     },
     "pathway_filter": {
       "date_created": "Data Criada",
@@ -1553,12 +1557,12 @@
         "students": "estudantes"
       },
       "addCourseModal": {
-        "modal_heading": "Adicionar curso ao caminho de aprendizagem",
         "add": "Adicionar",
         "course": "Curso",
         "courses": "Cursos",
-        "path": "para o caminho de aprendizagem",
-        "delete": "Confirmar exclusão"
+        "delete": "Confirmar exclusão",
+        "modal_heading": "Adicionar curso ao Pathway",
+        "path": "para o caminho"
       },
       "not_permitted": {
         "header": "Sem permissão",
@@ -1576,16 +1580,11 @@
         "page_title": "Configurações",
         "option_one": "Sim",
         "option_two": "Não",
-        "publish": "Publicar caminho de aprendizagem",
-        "allow": "Permitir que novos alunos baixem cursos no Caminho de aprendizagem",
         "enabled": "Habilitado",
         "disabled": "Desabilitado",
         "certificate": "Certificado",
         "issue": "Emitir certificado no LMS",
-        "issue_two": "Emitir certificado ou todo o curso do roteiro de aprendizagem",
         "option_three": "Não, apenas para caminho",
-        "delete_path": "Excluir caminho de aprendizagem",
-        "delete_text": "Excluir o caminho de aprendizagem como um todo",
         "save": "Salvar alterações",
         "placeholder": "uma pequena descrição sobre o caminho",
         "pathway_description": "Descrição do caminho",
@@ -1602,7 +1601,12 @@
         "description_placeholder": "Escreva a descrição do curso aqui",
         "link": "Link do caminho",
         "students": "Os alunos devem fazer o curso de acordo com a ordem recomendada?",
-        "yes": "se sim, o aluno deve fazer o curso de acordo com o pedido; se não, o aluno pode iniciar em qualquer curso de sua escolha"
+        "yes": "se sim, o aluno deve fazer o curso de acordo com o pedido; se não, o aluno pode iniciar em qualquer curso de sua escolha",
+        "publish": "Publicar caminho",
+        "allow": "Permitir que novos alunos baixem cursos no Pathway",
+        "issue_two": "Emitir certificado ou todo o curso do Pathway",
+        "delete_path": "Excluir caminho",
+        "delete_text": "Excluir caminho como um todo"
       },
       "course": {
         "title": "Cursos",
@@ -1617,20 +1621,22 @@
         "lessons": "Lições",
         "search": "Encontre o curso Pathway",
         "empty_state_header": "Ainda não há cursos",
-        "empty_state_text": "Você não adicionou nenhum curso a este caminho de aprendizagem",
-        "empty_state_label": "Adicionar curso a este caminho de aprendizagem",
-        "publish": "Publicar caminho"
+        "publish": "Publicar caminho",
+        "empty_state_text": "Você não adicionou nenhum curso a este caminho",
+        "empty_state_label": "Adicionar curso a este caminho"
       },
       "lms_certificate": {
         "share": "Certificado de compartilhamento",
         "locked": {
           "title": "Certificados ainda não disponíveis",
-          "subtitle": "O certificado está disponível porque você não concluiu o caminho de aprendizagem ou seu instrutor não o aprovou. Entre em contato com seu instrutor"
+          "subtitle": "O certificado está disponível porque você não concluiu o Pathway ou seu instrutor não o aprovou. Entre em contato com seu instrutor"
         },
         "unlocked": {
           "title": "Parabéns! 🎉 seu certificado está pronto",
-          "subtitle": "Você concluiu este caminho de aprendizagem e sua dedicação é evidente. Baixe o certificado e compartilhe com sua rede como prova de sua habilidade recém-adquirida"
-        }
+          "subtitle": "Você completou este caminho e sua dedicação é evidente. Baixe o certificado e compartilhe com sua rede como prova de sua habilidade recém-adquirida"
+        },
+        "courses_completed": "Cursos concluídos",
+        "achieve": "inclui cursos que você concluiu para alcançar este caminho"
       },
       "landingPage": {
         "reviews": {
@@ -1655,10 +1661,10 @@
           "evidence": "Obtenha evidências de habilidades e compartilhe com sua rede profissional"
         },
         "main": {
-          "description": "Descrição do caminho de aprendizagem",
-          "objectives": "Objetivos do caminho de aprendizagem",
           "pricing_win": "Conclua todas as lições com sucesso e tenha a chance de ganhar um ipad. Queremos dizer isso quando dizemos isso!",
-          "start": "Comece agora"
+          "start": "Comece agora",
+          "description": "Descrição do caminho",
+          "objectives": "Objetivos do caminho"
         },
         "banner": {
           "courses": "Cursos",
@@ -1668,8 +1674,8 @@
           "rating": "Instrutor de curso experiente e altamente avaliado"
         },
         "header": {
-          "tag": "CAMINHO DE APRENDIZAGEM",
-          "button": "Inscreva-se agora"
+          "button": "Inscreva-se agora",
+          "tag": "CAMINHO"
         },
         "constants": {
           "about": "SOBRE",

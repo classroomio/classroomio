@@ -12,6 +12,7 @@
     "empty_description": "Add a group of related courses to set students on a path to excellence in your fields",
     "pathway_card": {
       "courses": "courses",
+      "course": "course",
       "context_menu": {
         "clone": "Clone",
         "share": "Share",
@@ -20,6 +21,7 @@
       },
       "error_message": "An error occurred.",
       "students": "students",
+      "student": "student",
       "published": "Published",
       "unpublished": "Unpublished",
       "continue_pathway": "Continue pathway",
@@ -57,17 +59,19 @@
         "students": "Students",
         "lessons": "Lessons",
         "empty_state_header": "No courses yet",
-        "empty_state_text": "You have not added any course to this learning path",
-        "empty_state_label": "Add course to this learning Path"
+        "empty_state_text": "You have not added any course to this pathway",
+        "empty_state_label": "Add course to this pathway"
       },
       "lms_certificate": {
+        "courses_completed": "Courses Completed",
+        "achieve": "includes courses you have completed to achieve this pathway",
         "unlocked": {
           "title": "Congrats! 🎉 your certificate is ready",
-          "subtitle": "You have completed this learning path, and your dedication is evident. Download certificate and share with your network as a prove of your newly acquired skill"
+          "subtitle": "You have completed this pathway, and your dedication is evident. Download certificate and share with your network as a prove of your newly acquired skill"
         },
         "locked": {
           "title": "Certificates not available yet",
-          "subtitle": "Certificate is available because you have not finish the learning path or your instructor have not approved it. Please contact your instructor"
+          "subtitle": "Certificate is available because you have not finish the pathway or your instructor have not approved it. Please contact your instructor"
         },
         "share": "Share Certificate"
       },
@@ -86,19 +90,19 @@
         "description_placeholder": "Write the course description here",
         "link": "Pathway Link",
         "students": "Students must take course according to recommended order?",
-        "yes": "if yes, student must take cours according to order, if No, student can start from any course of their choice",
+        "yes": "if yes, student must take course according to order, if No, student can start from any course of their choice",
         "option_one": "Yes",
         "option_two": "No",
-        "publish": "Publish learning Path",
-        "allow": "Allow new student download courses in learning Path",
+        "publish": "Publish pathway",
+        "allow": "Allow new student download courses in pathway",
         "enabled": "Enabled",
         "disabled": "Disabled",
         "certificate": "Certificate",
         "issue": "Issue certificate on LMS",
-        "issue_two": "Issue certificate or all course in learning path",
+        "issue_two": "Issue certificate or all course in pathway",
         "option_three": "No, for path only",
-        "delete_path": "Delete learning Path",
-        "delete_text": "Delete Learning Path as a whole",
+        "delete_path": "Delete pathway",
+        "delete_text": "Delete pathway as a whole",
         "save": "Save Changes",
         "placeholder": "a little description about the pathway",
         "pathway_description": "Pathway Description"
@@ -113,7 +117,7 @@
           "faq": "FAQ"
         },
         "header": {
-          "tag": "LEARNING PATH",
+          "tag": "PATHWAY",
           "button": "Enroll Now"
         },
         "banner": {
@@ -124,8 +128,8 @@
           "rating": "Experienced and highly rated course instructor"
         },
         "main": {
-          "description": "Learning Path Description",
-          "objectives": "Learning Path Objectives",
+          "description": "Pathway Description",
+          "objectives": "Pathway Objectives",
           "pricing_win": "Complete all lessons successful & stand a chance to win an ipad. We mean it when we say it!",
           "start": "Start now"
         },
@@ -166,11 +170,11 @@
         "settings": "Settings"
       },
       "addCourseModal": {
-        "modal_heading": "Add Course to Learning Path",
+        "modal_heading": "Add Course to Pathway",
         "add": "Add",
         "course": "Course",
         "courses": "Courses",
-        "path": "to Learning Path",
+        "path": "to Pathway",
         "delete": "Confirm delete"
       },
       "dragAndDrop": {
@@ -1281,8 +1285,10 @@
         "reviews": "Reviews",
         "see_all": "See All",
         "header_video": "Header video",
-        "no_course_published": "No Course Published",
-        "coming_your_way": "We've got great courses coming your way, stay tuned!!!",
+        "title": "No courses yet",
+        "subtitle": "Looks like courses have not been added yet. Kindly check back latter",
+        "pathway_title": "No courses yet",
+        "pathway_subtitle": "Looks like courses have not been added yet. Kindly check back latter",
         "view_less": "View Less",
         "view_all": "View All",
         "thank_you": "Thank you for dropping a message, we will get back to you shortly",

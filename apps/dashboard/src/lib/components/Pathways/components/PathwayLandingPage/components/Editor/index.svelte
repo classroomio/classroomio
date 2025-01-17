@@ -53,14 +53,14 @@
       path: 'landingpage.about',
       title: $t('course.navItem.landing_page.editor.title.about'),
       enableAIWriter: true,
-      initPrompt: 'Please write a detailed course requirement for this course:'
+      initPrompt: 'Please write a detailed pathway requirement for this pathway:'
     },
     {
       key: 3,
       path: 'landingpage.objectives',
       title: $t('course.navItem.landing_page.editor.title.objectives'),
       enableAIWriter: true,
-      initPrompt: 'Please write educational objectives for this course:'
+      initPrompt: 'Please write educational objectives for this pathway:'
     },
     {
       key: 4,

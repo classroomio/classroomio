@@ -1,9 +1,25 @@
 <script lang="ts">
+  import get from 'lodash/get';
+  import { fade } from 'svelte/transition';
   import { goto } from '$app/navigation';
+
+  import { Accordion, AccordionItem, Column, Grid, Row } from 'carbon-components-svelte';
+  import Email from 'carbon-icons-svelte/lib/Email.svelte';
+  import LocationFilled from 'carbon-icons-svelte/lib/LocationFilled.svelte';
+  import LogoFacebook from 'carbon-icons-svelte/lib/LogoFacebook.svelte';
+  import LogoLinkedin from 'carbon-icons-svelte/lib/LogoLinkedin.svelte';
+  import LogoTwitter from 'carbon-icons-svelte/lib/LogoTwitter.svelte';
+  import Phone from 'carbon-icons-svelte/lib/Phone.svelte';
+  import Rocket from 'carbon-icons-svelte/lib/Rocket.svelte';
+
+  import PageLoader from './PageLoader.svelte';
+  import EmptyState from './EmptyState.svelte';
   import Box from '$lib/components/Box/index.svelte';
+  import PathwayCard from './../Pathway/PathwayCard.svelte';
   import Card from '$lib/components/Courses/components/Card/index.svelte';
   import CardLoader from '$lib/components/Courses/components/Card/Loader.svelte';
   import { courseMetaDeta, courses } from '$lib/components/Courses/store';
+  import { pathway } from '$lib/components/pathways/store';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
@@ -16,19 +32,8 @@
   import { t } from '$lib/utils/functions/translations';
   import { validateEmail } from '$lib/utils/functions/validateEmail';
   import { orgLandingpageValidation } from '$lib/utils/functions/validator';
-  import { getCourseBySiteName } from '$lib/utils/services/org';
+  import { getCourseBySiteName, getPathwayBySiteName } from '$lib/utils/services/org';
   import type { CurrentOrg } from '$lib/utils/types/org';
-  import { Accordion, AccordionItem, Column, Grid, Row } from 'carbon-components-svelte';
-  import Email from 'carbon-icons-svelte/lib/Email.svelte';
-  import LocationFilled from 'carbon-icons-svelte/lib/LocationFilled.svelte';
-  import LogoFacebook from 'carbon-icons-svelte/lib/LogoFacebook.svelte';
-  import LogoLinkedin from 'carbon-icons-svelte/lib/LogoLinkedin.svelte';
-  import LogoTwitter from 'carbon-icons-svelte/lib/LogoTwitter.svelte';
-  import Phone from 'carbon-icons-svelte/lib/Phone.svelte';
-  import Rocket from 'carbon-icons-svelte/lib/Rocket.svelte';
-  import get from 'lodash/get';
-  import { fade } from 'svelte/transition';
-  import PageLoader from './PageLoader.svelte';
 
   export let orgSiteName = '';
   export let org: CurrentOrg | null;
@@ -118,6 +123,9 @@
       $courseMetaDeta.isLoading = true;
       const coursesResult = await getCourseBySiteName(siteName);
       courses.set(coursesResult);
+
+      const pathwayResult = await getPathwayBySiteName(siteName);
+      pathway.set(pathwayResult);
       $courseMetaDeta.isLoading = false;
     } catch (error) {
       console.log('error', error);
@@ -307,7 +315,7 @@
     {#if $landingPageSettings.courses.show}
       <section id="courses" transition:fade class="mx-auto my-10 w-full max-w-6xl">
         <div class="w-full">
-          <div class="mx-auto w-11/12 max-w-[500px] py-10">
+          <div class="mx-auto py-10">
             <h1 class="my-4 text-center text-4xl font-bold md:text-5xl lg:text-6xl">
               {$landingPageSettings.courses.title}
               <span class="text-primary-600">{$landingPageSettings.courses.titleHighlight}</span>
@@ -347,18 +355,70 @@
             {/each}
           </div>
         {:else}
-          <Box>
-            <CoursesEmptyIcon />
-            <h3 class="my-5 text-2xl dark:text-white">
-              {$t('course.navItem.landing_page.no_course_published')}
-            </h3>
-            <p class="w-1/3 text-center dark:text-white">
-              {$t('course.navItem.landing_page.coming_your_way')}
-            </p>
-          </Box>
+          <EmptyState
+            title={$t('course.navItem.landing_page.title')}
+            subtitle={$t('course.navItem.landing_page.subtitle')}
+          />
         {/if}
 
         {#if $courses.length > 3}
+          <div class="mt-3 flex w-full justify-center">
+            <PrimaryButton
+              variant={VARIANTS.OUTLINED}
+              onClick={() => (viewAll = !viewAll)}
+              label={viewAll
+                ? $t('course.navItem.landing_page.view_less')
+                : $t('course.navItem.landing_page.view_all')}
+              className="px-10 py-5 w-fit"
+            />
+          </div>
+        {/if}
+      </section>
+    {/if}
+
+    <!-- Courses Section -->
+    {#if $landingPageSettings.pathways.show}
+      <section id="courses" transition:fade class="mx-auto my-10 w-full max-w-6xl">
+        <div class="w-full">
+          <div class="mx-auto py-10">
+            <h1
+              class="text-primary-600 my-4 text-center text-4xl font-bold md:text-5xl lg:text-6xl"
+            >
+              {$landingPageSettings.pathways.title}
+            </h1>
+            <p class="text-md text-center">
+              {$landingPageSettings.pathways.subtitle}
+            </p>
+          </div>
+        </div>
+        {#if $courseMetaDeta.isLoading}
+          <div class="cards-container mx-2 my-4">
+            <CardLoader />
+            <CardLoader />
+            <CardLoader />
+          </div>
+        {:else if $pathway.length > 0}
+          <div class="cards-container mx-2 my-4">
+            {#each $pathway.slice(0, viewAll ? $pathway.length : 3) as pathwayData}
+              <PathwayCard
+                id={pathwayData.id}
+                title={pathwayData.title}
+                description={pathwayData.description}
+                bannerImage={pathwayData.logo}
+                isPublished={pathwayData.is_published}
+                totalCourse={pathwayData.total_course}
+                totalStudent={pathwayData.total_students}
+              />
+            {/each}
+          </div>
+        {:else}
+          <EmptyState
+            title={$t('course.navItem.landing_page.pathway_title')}
+            subtitle={$t('course.navItem.landing_page.pathway_subtitle')}
+          />
+        {/if}
+
+        {#if $pathway.length > 3}
           <div class="mt-3 flex w-full justify-center">
             <PrimaryButton
               variant={VARIANTS.OUTLINED}

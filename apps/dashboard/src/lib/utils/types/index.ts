@@ -287,7 +287,17 @@ export interface Course {
 
 export interface PathwayCourse {
   id: string;
-  course: Course;
+  course: {
+    id: string;
+    title: string;
+    logo: string;
+    description: string;
+    banner_image: string;
+    is_published: boolean;
+    created_at: string;
+    lesson: { is_complete: string }[];
+    group_id: { groupmember: { id: string }[] };
+  };
   course_id: string;
   pathway_id: string;
   order?: number;

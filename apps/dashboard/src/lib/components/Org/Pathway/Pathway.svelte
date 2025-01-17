@@ -1,12 +1,17 @@
 <script lang="ts">
-  import PathwayEmptyIcon from '$lib/components/Icons/PathwayEmptyIcon.svelte';
-  import Box from '$lib/components/Box/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { currentOrgPath } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import Box from '$lib/components/Box/index.svelte';
   import CardLoader from '$lib/components/Courses/components/Card/Loader.svelte';
+  import PathwayEmptyIcon from '$lib/components/Icons/PathwayEmptyIcon.svelte';
   import PathwayCard from '$lib/components/Org/Pathway/PathwayCard.svelte';
+  import PathwayList from '$lib/components/Org/Pathway/PathwayList.svelte';
+  import { pathwayMetaData } from '$lib/components/Org/Pathway/store';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { t } from '$lib/utils/functions/translations';
+  import { currentOrgPath } from '$lib/utils/store/org';
+  import { isMobile } from '$lib/utils/store/useMobile';
+  import type { Pathway } from '$lib/utils/types';
   import {
     StructuredList,
     StructuredListBody,
@@ -14,11 +19,6 @@
     StructuredListHead,
     StructuredListRow
   } from 'carbon-components-svelte';
-  import { t } from '$lib/utils/functions/translations';
-  import PathwayList from '$lib/components/Org/Pathway/PathwayList.svelte';
-  import { isMobile } from '$lib/utils/store/useMobile';
-  import type { Pathway } from '$lib/utils/types';
-  import { pathwayMetaData } from '$lib/components/Org/Pathway/store';
 
   export let pathways: Pathway[] = [];
   export let searching: boolean = false;
@@ -28,9 +28,9 @@
   };
 </script>
 
-<div class="w-full">
+<div class="h-full w-full">
   {#if $pathwayMetaData.isLoading}
-    <section class="grid md:grid-cols-2 gap-4">
+    <section class="grid gap-4 md:grid-cols-2">
       <CardLoader />
       <CardLoader />
       <CardLoader />
@@ -73,15 +73,16 @@
       </StructuredListBody>
     </StructuredList>
   {:else}
-    <div class="grid md:grid-cols-2 gap-4">
+    <div class="cards-container relative">
       {#each pathways as pathway}
         <PathwayCard
           id={pathway.id}
           title={pathway.title}
           description={pathway.description}
-          banner_url={pathway.logo}
+          bannerImage={pathway.logo}
           isPublished={pathway.is_published}
           totalCourse={pathway.total_course}
+          totalStudent={pathway.total_students}
         />
       {/each}
     </div>
@@ -91,10 +92,10 @@
     <Box className="w-full">
       <PathwayEmptyIcon />
       {#if searching}
-        <h3 class="dark:text-white text-2xl my-5">{$t('search.no_pathway')}</h3>
+        <h3 class="my-5 text-2xl dark:text-white">{$t('search.no_pathway')}</h3>
       {:else}
-        <h3 class="dark:text-white text-2xl my-5">{$t('pathway.empty_title')}</h3>
-        <p class="dark:text-white w-1/3 text-center mb-5">
+        <h3 class="my-5 text-2xl dark:text-white">{$t('pathway.empty_title')}</h3>
+        <p class="mb-5 w-1/3 text-center dark:text-white">
           {$t('pathway.empty_description')}
         </p>
         <PrimaryButton

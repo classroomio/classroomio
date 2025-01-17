@@ -62,14 +62,14 @@
     return firstTutor?.profile?.email || '';
   }
 
-  $: setFormatter(pathwayData.currency);
+  $: setFormatter(pathwayData?.currency);
 
   $: discount = get(pathwayData, 'landingpage.discount', 0);
   $: showDiscount = get(pathwayData, 'landingpage.showDiscount');
   $: calculatedCost = calcDisc(
     discount,
-    pathwayData.cost || 0,
-    !!pathwayData.landingpage.showDiscount
+    pathwayData?.cost || 0,
+    !!pathwayData?.landingpage.showDiscount
   );
   $: isFree = isCourseFree(calculatedCost);
   $: startCoursePayment && handleJoinCourse();
@@ -78,8 +78,8 @@
 <PaymentModal
   bind:open={openModal}
   paymentLink={get(pathwayData, 'landingpage.paymentLink', '')}
-  courseName={pathwayData.title}
-  teacherEmail={getTeacherEmail(pathwayData.group)}
+  courseName={pathwayData?.title}
+  teacherEmail={getTeacherEmail(pathwayData?.group)}
 />
 
 <!-- Pricing Details -->
@@ -127,7 +127,7 @@
               : $t('course.navItem.landing_page.pricing_section.buy')}
             className="w-full sm:w-full h-[40px]"
             onClick={handleJoinCourse}
-            isDisabled={!pathwayData.is_published}
+            isDisabled={!pathwayData?.is_published}
           />
         </div>
       </div>
@@ -167,7 +167,7 @@
           label={isFree ? $t('course.navItem.landing_page.pricing_section.enroll') : $t('course.navItem.landing_page.editor.pricing_form.cart')}
           className="w-full sm:w-full py-3 mb-3 rounded-none"
           onClick={handleJoinCourse}
-          isDisabled={!pathwayData.is_published}
+          isDisabled={!pathwayData?.is_published}
         />
         <PrimaryButton
           label={isFree
@@ -176,9 +176,9 @@
           className="w-full sm:w-full py-3 mb-3 rounded-none border-blue-600 hover:border-gray-600"
           variant={VARIANTS.OUTLINED}
           onClick={handleJoinCourse}
-          isDisabled={!pathwayData.is_published}
+          isDisabled={!pathwayData?.is_published}
         />
-        {#if pathwayData?.landingpage?.showDiscount && pathwayData.is_published}
+        {#if pathwayData?.landingpage?.showDiscount && pathwayData?.is_published}
           <p class="dark:text-white font-light text-xs text-gray-500">
             {$t('course.navItem.landing_page.pricing_section.bird')}
           </p>

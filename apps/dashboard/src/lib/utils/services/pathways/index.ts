@@ -25,7 +25,10 @@ const SLUG_QUERY = `
       id,
       title,
       description,
-      created_at
+      created_at,
+        lesson (
+          lesson_completion(id, profile_id, is_complete)
+      )
     )
   )
 `;

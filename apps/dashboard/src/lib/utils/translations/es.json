@@ -294,8 +294,6 @@
         "reviews": "Reseñas",
         "see_all": "Ver todo",
         "header_video": "Vídeo de encabezado",
-        "no_course_published": "Ningún curso publicado",
-        "coming_your_way": "¡Tenemos excelentes cursos en camino, estad atentos!",
         "view_less": "Ver menos",
         "view_all": "Ver todo",
         "thank_you": "Gracias por dejar un mensaje, nos comunicaremos con usted en breve",
@@ -409,7 +407,11 @@
         "course_content": "Contenido del curso",
         "modules": "módulos",
         "lessons": "lecciones",
-        "exercises": "ceremonias"
+        "exercises": "ceremonias",
+        "title": "Aún no hay cursos",
+        "subtitle": "Parece que los cursos aún no se han agregado. Por favor vuelva a consultar más tarde",
+        "pathway_title": "Aún no hay cursos",
+        "pathway_subtitle": "Parece que los cursos aún no se han agregado. Por favor vuelva a consultar más tarde"
       },
       "certificates": {
         "title": "Certificados",
@@ -1532,7 +1534,9 @@
         "share": "Compartir",
         "invite": "Invitar",
         "delete": "Borrar"
-      }
+      },
+      "course": "curso",
+      "student": "alumno"
     },
     "pathway_filter": {
       "date_created": "fecha de creacion",
@@ -1553,12 +1557,12 @@
         "students": "estudiantes"
       },
       "addCourseModal": {
-        "modal_heading": "Agregar curso a la ruta de aprendizaje",
         "add": "Agregar",
         "course": "Curso",
         "courses": "Cursos",
-        "path": "al camino del aprendizaje",
-        "delete": "Confirmar eliminación"
+        "delete": "Confirmar eliminación",
+        "modal_heading": "Agregar curso a la ruta",
+        "path": "al camino"
       },
       "not_permitted": {
         "header": "Sin permiso",
@@ -1575,16 +1579,11 @@
       "settings": {
         "option_one": "Sí",
         "option_two": "No",
-        "publish": "Publicar ruta de aprendizaje",
-        "allow": "Permitir que los nuevos estudiantes descarguen cursos en la ruta de aprendizaje",
         "enabled": "Activado",
         "disabled": "Desactivado",
         "certificate": "Certificado",
         "issue": "Emitir certificado en LMS",
-        "issue_two": "Emitir certificado o todo el curso en la ruta de aprendizaje.",
         "option_three": "No, solo para ruta",
-        "delete_path": "Eliminar ruta de aprendizaje",
-        "delete_text": "Eliminar la ruta de aprendizaje en su totalidad",
         "save": "Guardar cambios",
         "placeholder": "una pequeña descripción sobre el camino",
         "pathway_description": "Descripción de la ruta",
@@ -1602,7 +1601,12 @@
         "description_placeholder": "Escribe aquí la descripción del curso.",
         "link": "Enlace de ruta",
         "students": "¿Los estudiantes deben tomar el curso según el orden recomendado?",
-        "yes": "En caso afirmativo, el estudiante debe tomar los cursos según el orden; en caso negativo, el estudiante puede comenzar desde cualquier curso de su elección."
+        "yes": "En caso afirmativo, el estudiante debe tomar los cursos según el orden; en caso negativo, el estudiante puede comenzar desde cualquier curso de su elección.",
+        "publish": "Publicar ruta",
+        "allow": "Permitir que los nuevos estudiantes descarguen cursos en el camino",
+        "issue_two": "Emitir certificado o todo el curso en el camino",
+        "delete_path": "Eliminar ruta",
+        "delete_text": "Eliminar la ruta en su totalidad"
       },
       "course": {
         "title": "Cursos",
@@ -1617,20 +1621,22 @@
         "lessons": "Lecciones",
         "search": "Buscar curso Pathway",
         "empty_state_header": "Aún no hay cursos",
-        "empty_state_text": "No has agregado ningún curso a esta ruta de aprendizaje.",
-        "empty_state_label": "Agregar curso a esta ruta de aprendizaje",
-        "publish": "Publicar ruta"
+        "publish": "Publicar ruta",
+        "empty_state_text": "No has añadido ningún curso a este itinerario",
+        "empty_state_label": "Añadir curso a este itinerario"
       },
       "lms_certificate": {
         "share": "Certificado de acciones",
         "locked": {
           "title": "Certificados aún no disponibles",
-          "subtitle": "El certificado está disponible porque no has terminado el camino de aprendizaje o tu instructor no lo ha aprobado. Por favor contacta a tu instructor"
+          "subtitle": "El certificado está disponible porque no has terminado el camino o tu instructor no lo ha aprobado. Por favor contacta a tu instructor"
         },
         "unlocked": {
           "title": "¡Felicitaciones! 🎉 tu certificado está listo",
-          "subtitle": "Has completado este camino de aprendizaje y tu dedicación es evidente. Descargue el certificado y compártalo con su red como prueba de su habilidad recién adquirida"
-        }
+          "subtitle": "Has completado este camino y tu dedicación es evidente. Descargue el certificado y compártalo con su red como prueba de su habilidad recién adquirida"
+        },
+        "courses_completed": "Cursos completados",
+        "achieve": "incluye cursos que ha completado para lograr este camino"
       },
       "landingPage": {
         "reviews": {
@@ -1655,10 +1661,10 @@
           "evidence": "Obtenga una evidencia de prueba de habilidades y compártala con su red profesional"
         },
         "main": {
-          "description": "Descripción de la ruta de aprendizaje",
-          "objectives": "Objetivos de la ruta de aprendizaje",
           "pricing_win": "Complete todas las lecciones con éxito y tenga la oportunidad de ganar un ipad. ¡Lo decimos en serio cuando lo decimos!",
-          "start": "Empezar ahora"
+          "start": "Empezar ahora",
+          "description": "Descripción de la ruta",
+          "objectives": "Objetivos del camino"
         },
         "banner": {
           "courses": "Cursos",
@@ -1668,8 +1674,8 @@
           "rating": "Instructor de curso experimentado y altamente calificado."
         },
         "header": {
-          "tag": "RUTA DE APRENDIZAJE",
-          "button": "Inscríbete ahora"
+          "button": "Inscríbete ahora",
+          "tag": "CAMINO"
         },
         "constants": {
           "about": "ACERCA DE",

@@ -23,11 +23,10 @@
   }
 
   $: setPathwayData($pathway, $pathwayCourses);
-  $: dev && console.log('pathwayData changed', pathwayData);
 </script>
 
 <div
-  class="absolute flex inset-0 z-50 bg-white"
+  class="absolute inset-0 z-50 flex bg-white"
   in:fly={{ y: 500, duration: 500 }}
   out:fly={{ y: 500, duration: 500 }}
 >

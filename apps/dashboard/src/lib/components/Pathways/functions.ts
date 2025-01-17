@@ -1,5 +1,6 @@
 import { addPathwayCourse, deletePathwayCourse } from '$lib/utils/services/pathways';
 import type { PathwayCourse } from '$lib/utils/types';
+import { fetchPathwayCourse } from '../Org/Pathway/api';
 import { snackbar } from '../Snackbar/store';
 
 import { pathwayCourses } from './store';
@@ -43,7 +44,6 @@ export function timeAgo(timestamp: number | string): string {
 export async function saveNewPathwayCourses(newPathwayCourses) {
   for (const newCourse of newPathwayCourses) {
     try {
-      console.log('first newCourse', newCourse);
       // Assert that newCourse is of type PathwayCourse
       const typedNewCourse = newCourse as unknown as PathwayCourse;
 
@@ -60,24 +60,14 @@ export async function saveNewPathwayCourses(newPathwayCourses) {
       if (data && data.length > 0) {
         // takes the first object of the data array (there will always be one object because it's calling the function for each of them)
         const insertedCourse = data[0];
-        console.log('insertedCourse', insertedCourse);
+
+        const pathwayCourse = (await fetchPathwayCourse(
+          insertedCourse.id,
+          'id'
+        )) as unknown as PathwayCourse[];
 
         // update the pathwayCourses store with the response of each of the calls from Supabase
-        pathwayCourses.update((existingCourses) => [
-          ...existingCourses,
-          {
-            id: insertedCourse.id,
-            course_id: insertedCourse.course_id,
-            pathway_id: insertedCourse.pathway_id,
-            created_at: insertedCourse.created_at,
-            updated_at: insertedCourse.updated_at,
-            is_unlocked: insertedCourse.is_unlocked,
-            order: insertedCourse.order,
-            course: {
-              ...typedNewCourse.course
-            }
-          }
-        ]);
+        pathwayCourses.update((existingCourses) => [...existingCourses, pathwayCourse[0]]);
       }
     } catch (error) {
       console.error('Error updating course in Supabase:', error);

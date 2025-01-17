@@ -294,8 +294,6 @@
         "reviews": "Rezensionen",
         "see_all": "Alles sehen",
         "header_video": "Header-Video",
-        "no_course_published": "Kein Kurs veröffentlicht",
-        "coming_your_way": "Wir haben tolle Kurse für Sie parat, bleiben Sie dran!!!",
         "view_less": "Weniger anzeigen",
         "view_all": "Alle ansehen",
         "thank_you": "Vielen Dank für Ihre Nachricht. Wir werden uns in Kürze bei Ihnen melden",
@@ -409,7 +407,11 @@
         "course_content": "Kursinhalte",
         "modules": "module",
         "lessons": "Unterricht",
-        "exercises": "Übungen"
+        "exercises": "Übungen",
+        "title": "Noch keine Kurse",
+        "subtitle": "Anscheinend wurden noch keine Kurse hinzugefügt. Bitte schauen Sie später noch einmal vorbei",
+        "pathway_title": "Noch keine Kurse",
+        "pathway_subtitle": "Anscheinend wurden noch keine Kurse hinzugefügt. Bitte schauen Sie später noch einmal vorbei"
       },
       "certificates": {
         "title": "Zertifikate",
@@ -1532,7 +1534,9 @@
         "share": "Aktie",
         "invite": "Einladen",
         "delete": "Löschen"
-      }
+      },
+      "course": "Kurs",
+      "student": "Student"
     },
     "pathway_filter": {
       "date_created": "Datum erstellt",
@@ -1553,12 +1557,12 @@
         "students": "Studenten"
       },
       "addCourseModal": {
-        "modal_heading": "Kurs zum Lernpfad hinzufügen",
         "add": "Hinzufügen",
         "course": "Kurs",
         "courses": "Kurse",
-        "path": "zum Lernpfad",
-        "delete": "Bestätigen Sie das Löschen"
+        "delete": "Bestätigen Sie das Löschen",
+        "modal_heading": "Kurs zum Pfad hinzufügen",
+        "path": "zum Weg"
       },
       "not_permitted": {
         "header": "Keine Erlaubnis",
@@ -1575,15 +1579,11 @@
       "settings": {
         "option_one": "Ja",
         "option_two": "NEIN",
-        "allow": "Erlauben Sie neuen Studenten, Kurse im Lernpfad herunterzuladen",
         "enabled": "Ermöglicht",
         "disabled": "Deaktiviert",
         "certificate": "Zertifikat",
         "issue": "Zertifikat auf LMS ausstellen",
-        "issue_two": "Zertifikat oder alle Kurse im Lernpfad ausstellen",
         "option_three": "Nein, nur für den Pfad",
-        "delete_path": "Lernpfad löschen",
-        "delete_text": "Lernpfad als Ganzes löschen",
         "save": "Änderungen speichern",
         "placeholder": "eine kleine Beschreibung des Weges",
         "pathway_description": "Beschreibung des Pfades",
@@ -1602,7 +1602,11 @@
         "link": "Pathway-Link",
         "students": "Müssen die Studierenden den Kurs in der empfohlenen Reihenfolge absolvieren?",
         "yes": "Wenn ja, muss der Student die Kurse gemäß der Reihenfolge belegen, wenn nein, kann der Student mit jedem Kurs seiner Wahl beginnen",
-        "publish": "Lernpfad veröffentlichen"
+        "publish": "Pfad veröffentlichen",
+        "allow": "Erlauben Sie neuen Studenten, Kurse im Pathway herunterzuladen",
+        "issue_two": "Zertifikat oder alle Kurse im Studiengang ausstellen",
+        "delete_path": "Pfad löschen",
+        "delete_text": "Pfad als Ganzes löschen"
       },
       "course": {
         "title": "Kurse",
@@ -1618,19 +1622,21 @@
         "lessons": "Unterricht",
         "search": "Finden Sie den Pathway-Kurs",
         "empty_state_header": "Noch keine Kurse",
-        "empty_state_text": "Sie haben diesem Lernpfad keinen Kurs hinzugefügt",
-        "empty_state_label": "Kurs zu diesem Lernpfad hinzufügen"
+        "empty_state_text": "Sie haben diesem Pfad keinen Kurs hinzugefügt",
+        "empty_state_label": "Kurs zu diesem Pfad hinzufügen"
       },
       "lms_certificate": {
         "share": "Aktienzertifikat",
         "locked": {
           "title": "Zertifikate sind noch nicht verfügbar",
-          "subtitle": "Das Zertifikat ist verfügbar, weil Sie den Lernpfad noch nicht abgeschlossen haben oder Ihr Lehrer es nicht genehmigt hat. Bitte wenden Sie sich an Ihren Dozenten"
+          "subtitle": "Das Zertifikat ist verfügbar, weil Sie den Kurs noch nicht abgeschlossen haben oder Ihr Lehrer es nicht genehmigt hat. Bitte wenden Sie sich an Ihren Dozenten"
         },
         "unlocked": {
           "title": "Glückwunsch! 🎉 Dein Zertifikat ist fertig",
-          "subtitle": "Sie haben diesen Lernpfad abgeschlossen und Ihr Engagement ist offensichtlich. Laden Sie das Zertifikat herunter und teilen Sie es mit Ihrem Netzwerk als Beweis für Ihre neu erworbenen Fähigkeiten"
-        }
+          "subtitle": "Sie haben diesen Weg abgeschlossen und Ihr Engagement ist offensichtlich. Laden Sie das Zertifikat herunter und teilen Sie es mit Ihrem Netzwerk als Beweis für Ihre neu erworbenen Fähigkeiten"
+        },
+        "courses_completed": "Abgeschlossene Kurse",
+        "achieve": "umfasst Kurse, die Sie abgeschlossen haben, um diesen Weg zu erreichen"
       },
       "landingPage": {
         "reviews": {
@@ -1655,10 +1661,10 @@
           "evidence": "Holen Sie sich einen Nachweis Ihrer Fähigkeiten und teilen Sie ihn mit Ihrem beruflichen Netzwerk"
         },
         "main": {
-          "description": "Beschreibung des Lernpfads",
-          "objectives": "Ziele des Lernpfads",
           "pricing_win": "Schließe alle Lektionen erfolgreich ab und habe die Chance, ein iPad zu gewinnen. Wir meinen es ernst, wenn wir es sagen!",
-          "start": "Beginnen Sie jetzt"
+          "start": "Beginnen Sie jetzt",
+          "description": "Beschreibung des Pfades",
+          "objectives": "Pathway-Ziele"
         },
         "banner": {
           "courses": "Kurse",
@@ -1668,8 +1674,8 @@
           "rating": "Erfahrener und hoch bewerteter Kursleiter"
         },
         "header": {
-          "tag": "LERNENWEG",
-          "button": "Melden Sie sich jetzt an"
+          "button": "Melden Sie sich jetzt an",
+          "tag": "WEG"
         },
         "constants": {
           "about": "UM",

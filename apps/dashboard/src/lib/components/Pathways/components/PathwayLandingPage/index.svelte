@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { SECTION_KEYS } from './constants.ts';
+  import Accordion from './components/Accordion.svelte';
   import get from 'lodash/get';
   import { page } from '$app/stores';
   import { onDestroy } from 'svelte';
@@ -80,6 +82,35 @@
     observer?.destroy();
   });
 
+  // Reactive array for filtered navigation items.
+  $: filteredNavItems = NAV_ITEMS.filter((item) => {
+    switch (item.key) {
+      case SECTION_KEYS.ABOUT:
+        return (
+          get(pathwayData, 'landingpage.about', '') &&
+          get(pathwayData, 'landingpage.about', '').trim() !== ''
+        );
+      case SECTION_KEYS.OBJECTIVES:
+        return (
+          get(pathwayData, 'landingpage.objectives', '') &&
+          get(pathwayData, 'landingpage.objectives', '').length > 0
+        );
+      case SECTION_KEYS.COURSES:
+        return get(pathwayData, 'pathway_course') && get(pathwayData, 'pathway_course').length > 0;
+      case SECTION_KEYS.REVIEW:
+        return (
+          get(pathwayData, 'landingpage.reviews') &&
+          get(pathwayData, 'landingpage.reviews').length > 0
+        );
+      case SECTION_KEYS.INSTRUCTOR:
+        return pathwayData?.instructor && pathwayData?.instructor.trim() !== '';
+      case SECTION_KEYS.FAQ:
+        return pathwayData?.faq && pathwayData?.faq.length > 0;
+      default:
+        return false;
+    }
+  });
+
   $: video = get(pathwayData, 'landingpage.videoUrl');
   $: pathwayCoursesPreview = get(pathwayData, 'pathway_course') || [];
   $: allowNewStudent = get(pathwayData, 'is_published');
@@ -102,12 +133,15 @@
 
 <div class="flex w-full flex-col items-center bg-white dark:bg-black">
   <!-- Header Section -->
-  <header id="header" class="bg-[#f5f8fe] dark:bg-black text-[#040f2d] dark:text-white p-10 flex w-full items-center justify-center">
+  <header
+    id="header"
+    class="flex w-full items-center justify-center bg-[#f5f8fe] p-10 text-[#040f2d] dark:bg-black dark:text-white"
+  >
     <div class="flex w-full flex-col-reverse items-center justify-between md:flex-row">
       <!-- Course Description -->
       <div class="w-11/12 py-10 md:w-2/5">
         <div
-          class="flex gap-2 items-center w-fit px-2 py-1 rounded-md font-medium text-[10px] tracking-widest bg-[#D9E0F5] dark:bg-black border-[#0233BD] border"
+          class="flex w-fit items-center gap-2 rounded-md border border-[#0233BD] bg-[#D9E0F5] px-2 py-1 text-[10px] font-medium tracking-widest dark:bg-black"
         >
           <img src="/learningpath-icon.svg" alt="" class="w-3.5" />
           {$t('pathway.pages.landingPage.header.tag')}
@@ -115,7 +149,7 @@
         <h1 class="my-4 text-5xl font-bold">
           {get(pathwayData, 'title', '')}
         </h1>
-        <p class="text-base mb-6">
+        <p class="mb-6 text-base">
           {get(pathwayData, 'description', '')}
         </p>
         <PrimaryButton
@@ -186,15 +220,15 @@
 
   <!-- Blue Banner -->
   <div
-    class="bg-[#1D4ED8] text-white py-8 px-10 w-full flex flex-wrap gap-y-5 items-center justify-between"
+    class="flex w-full flex-wrap items-center justify-between gap-y-5 bg-[#1D4ED8] px-10 py-8 text-white"
   >
-    <div class="flex gap-4 items-center w-full min-w-[200px] md:max-w-[30%]">
-      <span class="bg-[#D9E0F5] flex justify-center items-center px-3 py-3 rounded-full">
+    <div class="flex w-full min-w-[200px] items-center gap-4 md:max-w-[30%]">
+      <span class="flex items-center justify-center rounded-full bg-[#D9E0F5] px-3 py-3">
         <CourseIcon color="blue" />
       </span>
 
       <div>
-        <h1 class="text-base m-0">
+        <h1 class="m-0 text-base">
           {pathwayCoursesPreview.length}
           {$t('pathway.pages.landingPage.banner.courses')}
         </h1>
@@ -204,25 +238,25 @@
       </div>
     </div>
 
-    <div class="flex gap-4 items-center w-full min-w-[200px] md:max-w-[30%]">
-      <span class="bg-[#D9E0F5] flex justify-center items-center px-3 py-3 rounded-full">
+    <div class="flex w-full min-w-[200px] items-center gap-4 md:max-w-[30%]">
+      <span class="flex items-center justify-center rounded-full bg-[#D9E0F5] px-3 py-3">
         <Badge size={20} color="blue" />
       </span>
 
       <div>
-        <h1 class="text-base m-0">{$t('pathway.pages.landingPage.banner.certificate')}</h1>
+        <h1 class="m-0 text-base">{$t('pathway.pages.landingPage.banner.certificate')}</h1>
         <p class="text-[12px] font-extralight">{$t('pathway.pages.landingPage.banner.share')}</p>
       </div>
     </div>
 
-    <div class="flex gap-4 items-center w-full min-w-[200px] md:max-w-[30%]">
-      <span class="bg-[#D9E0F5] flex justify-center items-center px-3 py-3 rounded-full">
+    <div class="flex w-full min-w-[200px] items-center gap-4 md:max-w-[30%]">
+      <span class="flex items-center justify-center rounded-full bg-[#D9E0F5] px-3 py-3">
         <ChartEvaluation color="blue" size={16} />
       </span>
 
       <div>
         <div class="flex items-center gap-3">
-          <h1 class="text-base m-0">4.8</h1>
+          <h1 class="m-0 text-base">4.8</h1>
           <img src="/starRating-icon.svg" alt="" class="w-28" />
         </div>
         <p class="text-[12px] font-extralight">{$t('pathway.pages.landingPage.banner.rating')}</p>
@@ -237,10 +271,10 @@
       <div class="w-full">
         <!-- Navigation -->
         <nav
-          class="sticky top-0 z-[1000] flex justify-between items-center border-b border-gray-300 px-10 py-9 {!editMode &&
+          class="sticky top-0 z-[10] flex items-center justify-between border-b border-gray-300 px-10 py-9 {!editMode &&
             'lg:top-11'} bg-white dark:bg-neutral-800"
         >
-          {#each NAV_ITEMS as navItem}
+          {#each filteredNavItems as navItem}
             <a
               href="{$page.url.pathname}{navItem.key}"
               on:click={() => (activeNav = navItem.key)}
@@ -253,7 +287,7 @@
         </nav>
 
         <!-- Main -->
-        <div class="flex flex-col md:flex-row justify-between items-start px-10 pt-10">
+        <div class="flex flex-col items-start justify-between px-10 pt-10 md:flex-row">
           <!-- Sections - Description & Objectives -->
           <div class="md:max-w-[55%]">
             <!-- Sections - About -->
@@ -268,7 +302,7 @@
             </section>
 
             <!-- Sections - Course Objectives -->
-            <section id="objectives" class="mt-20 border-gray-300 landingpage-list">
+            <section id="objectives" class="landingpage-list mt-20 border-gray-300">
               <h3 class="mb-3 mt-0 text-2xl font-bold">
                 {$t('pathway.pages.landingPage.main.objectives')}
               </h3>
@@ -288,13 +322,13 @@
 
         <!-- Sections - Certificate -->
         <section
-          class="border-gray-300 mt-8 flex md:flex-row flex-col gap-y-5 justify-center md:justify-between max-w-[80%] mx-auto bg-[#F5F8FE] dark:bg-black dark:border dark:rounded-md items-center px-8 py-6 md:py-4"
+          class="mx-auto mt-8 flex max-w-[80%] flex-col items-center justify-center gap-y-5 border-gray-300 bg-[#F5F8FE] px-8 py-6 md:flex-row md:justify-between md:py-4 dark:rounded-md dark:border dark:bg-black"
         >
-          <div class="md:w-[50%] text-center md:text-left">
-            <h3 class="text-2xl font-bold m-0">
+          <div class="text-center md:w-[50%] md:text-left">
+            <h3 class="m-0 text-2xl font-bold">
               {$t('pathway.pages.landingPage.certificate.earn')}
             </h3>
-            <p class="dark:text-white text-sm font-light mt-1">
+            <p class="mt-1 text-sm font-light dark:text-white">
               {$t('pathway.pages.landingPage.certificate.evidence')}
             </p>
           </div>
@@ -307,7 +341,7 @@
 
         <!-- Sections - Pathway Subheader -->
         <div
-          class="flex flex-col md:flex-row items-center justify-center md:justify-between pl-12 pr-16 my-8 sticky top-8 bg-white dark:bg-black dark:border py-6"
+          class="sticky top-8 my-8 flex flex-col items-center justify-center bg-white py-6 pl-12 pr-16 md:flex-row md:justify-between dark:border dark:bg-black"
         >
           <h1 class="text-lg">{get(pathwayData, 'title', '')}</h1>
           <PrimaryButton
@@ -317,45 +351,45 @@
               ''
             )}"
             className="md:w-[30%] w-full py-3 mb-3 font-semibold"
-            isDisabled={!pathwayData.is_published}
+            isDisabled={!pathwayData?.is_published}
           />
         </div>
 
         <!-- Sections - Course List -->
-        <section id="courses" class="text-center max-w-[80%] mx-auto">
+        <section id="courses" class="mx-auto max-w-[80%] text-center">
           <h1 class="mb-1">
-            {$t('pathway.pages.landingPage.courseList.header')} {pathwayCoursesPreview.length} {$t(
-              'pathway.pages.landingPage.courseList.courses'
-            )}
+            {$t('pathway.pages.landingPage.courseList.header')}
+            {pathwayCoursesPreview.length}
+            {$t('pathway.pages.landingPage.courseList.courses')}
           </h1>
-          <p class="text-sm text-[#656565] max-w-[83%] mx-auto">
+          <p class="mx-auto max-w-[83%] text-sm text-[#656565]">
             {$t('pathway.pages.landingPage.courseList.subheader')}
           </p>
 
           <!-- course list -->
-          <div class="mt-10 flex flex-wrap items-center justify-center md:gap-x-5">
-            {#each pathwayCoursesPreview as course, index}
-              <LessonCard title={course.course.title} {index} />
-            {/each}
+          <div class="mx-auto mt-10 flex max-w-4xl flex-col items-center justify-center md:gap-x-5">
+            <Accordion sections={pathwayCoursesPreview} />
           </div>
         </section>
 
         <!-- Sections - Reviews & Instructor -->
-        <div id="review" class="flex flex-wrap justify-center gap-5 items-center py-10 px-8">
+        <div id="review" class="flex flex-wrap items-center justify-center gap-5 px-8 py-10">
           <!-- Sections - Reviews -->
           {#if reviews && reviews.length > 0}
-            <section id="reviews" class="lg:w-[60%] w-[80%]">
+            <section id="reviews" class="w-[80%] lg:w-[60%]">
               <h2 class="m-0 mb-2 font-semibold">
                 {$t('course.navItem.landing_page.reviews')}
               </h2>
               <p class="text-sm text-[#656565] dark:text-black">
                 {$t('pathway.pages.landingPage.reviews.students')}
               </p>
-              <div class="flex flex-wrap gap-y-2 justify-between mt-5">
+              <div class="mt-5 flex flex-wrap justify-between gap-y-2">
                 {#each reviews.slice(0, 4) as review, id}
                   {#if !review.hide}
                     <!-- review -->
-                    <div class="my-2 min-w-[250px] w-[48%] p-5 rounded-md bg-[#F1F6FF] dark:bg-black">
+                    <div
+                      class="my-2 w-[48%] min-w-[250px] rounded-md bg-[#F1F6FF] p-5 dark:bg-black"
+                    >
                       <div
                         class="read-more-content {expandDescription[id] ? 'expanded' : ''}"
                         style="max-height: {expandDescription[id] ? '100%' : '40px'}"
@@ -382,7 +416,7 @@
                         >
                       {/if}
 
-                      <div class="mt-2 flex gap-3 items-center">
+                      <div class="mt-2 flex items-center gap-3">
                         <!-- image container -->
                         {#if review.avatar_url}
                           <Avatar src={review.avatar_url} name="Avatar" width="w-9" height="h-9" />
@@ -390,9 +424,9 @@
 
                         <!-- profile content -->
                         <div>
-                          <p class="font-semibold text-xs">{review.name}</p>
+                          <p class="text-xs font-semibold">{review.name}</p>
                           <!-- ratings -->
-                          <div class="flex flex-row gap-4 w-full items-center">
+                          <div class="flex w-full flex-row items-center gap-4">
                             {#if review.rating}
                               <img src={ratingsImg[review.rating - 1]} class="w-20" alt="" />
                             {/if}
@@ -428,7 +462,7 @@
                       {averageRating}
                       {$t('course.navItem.landing_page.reviews_modal.rating')}
                     </h2>
-                    <h2 class="text-lg font-semibold mt-2">
+                    <h2 class="mt-2 text-lg font-semibold">
                       {reviews.length}
                       {$t('course.navItem.landing_page.reviews_modal.ratings')}
                     </h2>
@@ -473,28 +507,28 @@
           <!-- Sections - Instructor -->
           <section
             id="instructor"
-            class="mt-16 p-5 border border-[#EAEAEA] shadow-sm rounded-md min-w-[300px] w-[90%] md:w-[35%]"
+            class="mt-16 w-[90%] min-w-[300px] rounded-md border border-[#EAEAEA] p-5 shadow-sm md:w-[35%]"
           >
-            <h3 class="text-lg font-bold mt-0 border-b py-2">
+            <h3 class="mt-0 border-b py-2 text-lg font-bold">
               {$t('course.navItem.landing_page.instructor')}
             </h3>
-            <div class="flex items-center mb-4">
+            <div class="mb-4 flex items-center">
               <img
                 alt="Author Avatar"
                 class="mr-3 block h-14 w-14 rounded-full"
                 src={get(instructor, 'imgUrl', $currentOrg.avatar_url || '/logo-512.png')}
               />
-              <div class='dark:text-white'> 
+              <div class="dark:text-white">
                 <p class="text-sm font-light">
                   {get(instructor, 'name', $currentOrg.name)}
                 </p>
-                <div class="flex gap-2 items-center">
+                <div class="flex items-center gap-2">
                   <p class="text-[11px] font-medium">
                     {get(instructor, 'role', '')}
                   </p>
-                  <div class="flex gap-1 items-center">
+                  <div class="flex items-center gap-1">
                     <PlayFilled size={16} class="text-primary-700" />
-                    <p class="text-xs font-medium mt-0.5">
+                    <p class="mt-0.5 text-xs font-medium">
                       {get(instructor, 'coursesNo', '')}
                       {$t('course.navItem.landing_page.courses')}
                     </p>

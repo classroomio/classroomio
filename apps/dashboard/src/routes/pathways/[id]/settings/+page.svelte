@@ -256,39 +256,21 @@
         </Column>
       </Row>
 
-      <Row class="border-bottom-c mx-auto flex w-[99%] flex-col py-7">
-        <SectionTitle>
-          {$t('pathway.pages.settings.certificate')}
-        </SectionTitle>
-
-        <Row class="mt-5 w-full flex-col items-center justify-between gap-5 overflow-hidden">
-          <Column class="flex flex-col items-start gap-7 py-2  md:flex-row md:items-center">
-            <p class="md:w-[54%]">{$t('pathway.pages.settings.issue')}</p>
-            <Toggle
-              size="sm"
-              bind:toggled={$pathwaySettings.lms_certificate}
-              on:toggle={(e) => ($pathwaySettings.lms_certificate = e.detail.toggled)}
-            >
-              <span slot="labelA" style="color: gray">{$t('pathway.pages.settings.disabled')}</span>
-              <span slot="labelB" style="color: gray">{$t('pathway.pages.settings.enabled')}</span>
-            </Toggle>
-          </Column>
-          <!-- <Column class="flex w-full flex-col md:flex-row items-start  md:items-center gap-5">
-            <p>{$t('pathway.pages.settings.issue_two')}</p>
-            <div>
-              <RadioButtonGroup hideLegend bind:selected={$pathwaySettings.courses_certificate}>
-                <RadioButton
-                  labelText={$t('pathway.pages.settings.option_one')}
-                  value={RADIO_VALUE.TRUE}
-                />
-                <RadioButton
-                  labelText={$t('pathway.pages.settings.option_three')}
-                  value={RADIO_VALUE.FALSE}
-                />
-              </RadioButtonGroup>
-            </div>
-          </Column> -->
-        </Row>
+      <Row class="border-bottom-c flex flex-col gap-5 overflow-hidden py-7 lg:flex-row">
+        <Column sm={8} md={8} lg={8}>
+          <SectionTitle>{$t('pathway.pages.settings.certificate')}</SectionTitle>
+          <p>{$t('pathway.pages.settings.issue')}</p>
+        </Column>
+        <Column sm={8} md={8} lg={7} class="flex items-center justify-start">
+          <Toggle
+            size="sm"
+            bind:toggled={$pathwaySettings.lms_certificate}
+            on:toggle={(e) => ($pathwaySettings.lms_certificate = e.detail.toggled)}
+          >
+            <span slot="labelA" style="color: gray">{$t('pathway.pages.settings.disabled')}</span>
+            <span slot="labelB" style="color: gray">{$t('pathway.pages.settings.enabled')}</span>
+          </Toggle>
+        </Column>
       </Row>
 
       <Row class="border-bottom-c flex flex-col overflow-hidden pb-10 pt-7 lg:flex-row">
