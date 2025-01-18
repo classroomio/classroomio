@@ -19,6 +19,7 @@
   import UserProfileIcon from 'carbon-icons-svelte/lib/UserProfile.svelte';
 
   export let bannerImage: string | undefined;
+  export let totalCount = 0;
   export let id = '';
   export let slug = '';
   export let title = '';
@@ -29,6 +30,9 @@
   export let currency = 'USD';
   export let isOnLandingPage = false;
   export let isLMS = false;
+  export let isLearningPath = false;
+  export let totalCourse = 0;
+  export let pathwaycompletedCourses = 0;
   export let isExplore = false;
   export let progressRate = 45;
   export let type: COURSE_TYPE;
@@ -59,6 +63,16 @@
 
   function handleDeleteCourse() {
     goto(`/courses/${id}/settings#delete`);
+  }
+
+  function getCourseUrl() {
+    if (isLMS && isLearningPath) {
+      return isOnLandingPage || isExplore ? `/pathway/${slug}` : `/pathways/${id}`;
+    }
+
+    return isOnLandingPage || isExplore
+      ? `/course/${slug}`
+      : `/courses/${id}${isLMS ? '/lessons?next=true' : ''}`;
   }
 
   const COURSE_TAG: Record<
@@ -94,22 +108,17 @@
     pricingData.cost ?? 0,
     !!pricingData.showDiscount
   );
-
-  $: courseUrl =
-    isOnLandingPage || isExplore
-      ? `/course/${slug}`
-      : `/courses/${id}${isLMS ? '/lessons?next=true' : ''}`;
 </script>
 
 <div
   role="button"
   tabindex="0"
   on:click={(e) => {
-    goto(courseUrl);
+    goto(getCourseUrl());
   }}
   on:keydown={(e) => {
     if (e.key === 'Enter') {
-      goto(courseUrl);
+      goto(getCourseUrl());
     }
   }}
   class="border-gray group relative h-fit w-full max-w-[320px] rounded border text-black dark:border-neutral-600"
@@ -152,7 +161,14 @@
         </svelte:fragment>
         <svelte:fragment slot="error">{$t('courses.course_card.error_message')}</svelte:fragment>
       </ImageLoader>
-      {#if type}
+
+      {#if isLMS && isLearningPath}
+        <span
+          class="text-primary-600 absolute left-2 top-2 z-10 rounded-sm bg-white p-1 text-xs font-bold uppercase"
+        >
+          {$t('lms_pathway.pathway')}
+        </span>
+      {:else if type}
         {@const tag = COURSE_TAG[type]}
         <span
           class="bg-primary-50 absolute bottom-2 left-2 z-10 flex items-center gap-1 rounded-sm p-1 font-mono text-xs capitalize"
@@ -184,13 +200,26 @@
   </div>
 
   <div
-    class="border-gray flex justify-between border border-b-0 border-l-0 border-r-0 px-4 py-2 dark:border-neutral-600 {isLMS &&
+    class="border-gray flex justify-between border-t px-4 py-2 dark:border-neutral-600 {isLMS &&
       'items-center'}"
   >
     <div>
-      <p class="text-xs {!isLMS && 'pl-2'} dark:text-white">
-        {totalLessons}
-        {$t('courses.course_card.lessons_number')}
+      <p class="text-xs {isLMS ? '' : 'pl-2'} font-normal dark:text-white">
+        {#if isLearningPath && isLMS}
+          <!-- for pathways -->
+          {#if isExplore}
+            {totalCount} {$t('lms_pathway.course')}
+          {:else}
+            {pathwaycompletedCourses} / {totalCourse} {$t('lms_pathway.course')}
+          {/if}
+        {:else if !isLearningPath}
+          <!-- for courses -->
+          {#if isExplore}
+            {totalCount} {$t('courses.course_card.lessons_number')}
+          {:else}
+            {totalLessons} {$t('courses.course_card.lessons_number')}
+          {/if}
+        {/if}
       </p>
       <p class="py-2 text-xs">
         {#if isOnLandingPage}
@@ -234,7 +263,9 @@
       <PrimaryButton
         label={isExplore
           ? $t('courses.course_card.learn_more')
-          : $t('courses.course_card.continue_course')}
+          : isLearningPath
+            ? $t('lms_pathway.continue')
+            : $t('courses.course_card.continue_course')}
         variant={VARIANTS.OUTLINED}
         className="rounded-none"
       />

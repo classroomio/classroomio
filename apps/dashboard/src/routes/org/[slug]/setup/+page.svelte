@@ -1,14 +1,14 @@
 <script>
   import Chip from '$lib/components/Chip/Text.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import CheckmarkOutline from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
 
-  import { currentOrg } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
-  import { snackbar } from '$lib/components/Snackbar/store.js';
-  import { profile } from '$lib/utils/store/user';
+  import { snackbar } from '$lib/components/Snackbar/store';
   import { t } from '$lib/utils/functions/translations';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
 
   export let data;
   let setupList = data.setup || [];
@@ -81,10 +81,10 @@
   $: completed = setupList.filter((list) => list.is_completed).length;
 </script>
 
-<section class="w-full md:max-w-4xl mx-auto">
-  <div class="py-2 md:py-10 px-2 md:px-5">
+<section class="mx-auto w-full md:max-w-6xl">
+  <div class="px-2 py-2 md:px-5 md:py-10">
     <div class="flex items-center gap-2">
-      <h1 class="dark:text-white text-2xl md:text-3xl font-bold">{$t('setup.get_started')}</h1>
+      <h1 class="text-2xl font-bold md:text-3xl dark:text-white">{$t('setup.get_started')}</h1>
       <Chip
         value={`${completed}/${setupList.length}`}
         className="text-[10px] font-semibold px-3 !py-1"
@@ -95,16 +95,16 @@
     <section class="px-4">
       {#each setupList as list, i}
         <div
-          class="flex flex-col lg:flex-row lg:items-center justify-between gap-2 w-full py-8 border-b border-gray-300"
+          class="flex w-full flex-col justify-between gap-2 border-b border-gray-300 py-8 lg:flex-row lg:items-center"
         >
-          <div class={`space-y-1 flex-1 ${list.is_completed ? 'opacity-50' : ''}  lg:max-w-[50%]`}>
+          <div class={`flex-1 space-y-1 ${list.is_completed ? 'opacity-50' : ''}  lg:max-w-[50%]`}>
             <div class="flex items-center gap-3">
               <Chip
                 value={i + 1}
                 className={`text-[10px] font-semibold !py-1 `}
                 shape="rounded-full"
               />
-              <p class="font-medium text-lg">{$t(list.title)}</p>
+              <p class="text-lg font-medium">{$t(list.title)}</p>
             </div>
             <p class={`text-sm`}>
               {$t(list.desc)}

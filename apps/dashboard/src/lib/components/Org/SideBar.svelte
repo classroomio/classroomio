@@ -1,29 +1,29 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import Avatar from '$lib/components/Avatar/index.svelte';
-  import AudienceIcon from '$lib/components/Icons/AudienceIcon.svelte';
-  import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
-  import HomeIcon from '$lib/components/Icons/HomeIcon.svelte';
-  import QuizIcon from '$lib/components/Icons/QuizIcon.svelte';
-  import SiteSettingsIcon from '$lib/components/Icons/SiteSettingsIcon.svelte';
+  import SidebarExpandeable from '$lib/components/Org/SidebarExpandeable.svelte';
   import OrgSelector from '$lib/components/OrgSelector/OrgSelector.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { currentOrgPath, isFreePlan } from '$lib/utils/store/org';
-  import { ChevronRight, SettingsAdjust, Tag } from 'carbon-icons-svelte';
-  import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
+  import { ChevronRight } from 'carbon-icons-svelte';
   import HelpIcon from 'carbon-icons-svelte/lib/Help.svelte';
 
-  import { goto } from '$app/navigation';
   import ProfileMenu from '$lib/components/Org/ProfileMenu/index.svelte';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
   import { t } from '$lib/utils/functions/translations';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
-  import { profileMenu, sideBar } from './store';
+  import { sideBar } from './store';
+
+  import { profileMenu } from './store';
 
   interface menuItems {
+    id: string;
     label: string;
-    path: string;
+    to: string | string[];
+    isDropdown?: boolean;
+    isExpanded?: boolean;
     show: boolean;
     isActive: boolean;
   }
@@ -33,13 +33,12 @@
   function isActive(pagePath: string, itemPath: string) {
     const pageLinkItems = pagePath.split('/');
     const itemLinkItems = itemPath.split('/');
-
     if (itemLinkItems.length !== pageLinkItems.length) {
       return false;
     }
-
     return pagePath.includes(itemPath);
   }
+
   const toggleSidebar = () => {
     $sideBar.hidden = !$sideBar.hidden;
   };
@@ -50,37 +49,39 @@
 
   $: menuItems = [
     {
-      path: '',
+      id: 'dashboard',
+      to: '',
       label: $t('org_navigation.dashboard'),
       isActive: isActive($page.url.pathname, `${$currentOrgPath}`),
       show: true
     },
     {
-      path: '/courses',
+      id: 'courses',
+      to: ['/courses', '/tags', '/pathways'],
+      isDropdown: true,
+      isExpanded: true,
       label: $t('org_navigation.courses'),
       isActive: $page.url.pathname.includes(`${$currentOrgPath}/courses`),
       show: true
     },
     {
-      path: '/community',
+      id: 'community',
+      to: '/community',
       label: $t('org_navigation.community'),
       isActive: $page.url.pathname.includes(`${$currentOrgPath}/community`),
       show: true
     },
     {
-      path: '/audience',
+      id: 'audience',
+      to: '/audience',
       label: $t('org_navigation.audience'),
       isActive: $page.url.pathname.includes(`${$currentOrgPath}/audience`),
       show: true
     },
     {
-      path: '/tags',
-      label: $t('org_navigation.tags'),
-      isActive: $page.url.pathname.includes(`${$currentOrgPath}/audience`),
-      show: true
-    },
-    {
       path: '/setup',
+      id: 'setup',
+      to: '/setup',
       label: $t('org_navigation.setup'),
       isActive: $page.url.pathname.includes(`${$currentOrgPath}/setup`),
       show: $isOrgAdmin
@@ -103,36 +104,35 @@
         <ul class="my-2 mt-4 px-4">
           {#each menuItems as menuItem}
             {#if menuItem.show}
-              <a
-                href="{$currentOrgPath}{menuItem.path}"
-                class="text-black no-underline"
-                on:click={toggleSidebar}
+              <SidebarExpandeable
+                id={menuItem.id}
+                label={menuItem.label}
+                href={typeof menuItem.to === 'string' ? `${$currentOrgPath}${menuItem.to}` : null}
+                handleClick={toggleSidebar}
+                isGroupActive={typeof menuItem.to === 'string' &&
+                  isActive($page.url.pathname, `${$currentOrgPath}${menuItem.to}`)}
+                isExpanded={menuItem.isExpanded}
+                isDropdown={menuItem.isDropdown}
               >
-                <li
-                  class="mb-1 flex items-center gap-2.5 px-2.5 py-2 {NavClasses.item} {menuItem.isActive
-                    ? NavClasses.active
-                    : 'dark:text-white'}"
-                >
-                  {#if menuItem.path === ''}
-                    <HomeIcon />
-                  {:else if menuItem.path === '/courses'}
-                    <CourseIcon />
-                  {:else if menuItem.path === '/site'}
-                    <SiteSettingsIcon />
-                  {:else if menuItem.path === '/community'}
-                    <ForumIcon size={20} class="carbon-icon fill-[#000] dark:fill-[#fff]" />
-                  {:else if menuItem.path === '/quiz'}
-                    <QuizIcon />
-                  {:else if menuItem.path === '/audience'}
-                    <AudienceIcon />
-                  {:else if menuItem.path === '/tags'}
-                    <Tag />
-                  {:else if menuItem.path === '/setup'}
-                    <SettingsAdjust />
-                  {/if}
-                  <p class="text-sm font-medium">{menuItem.label}</p>
-                </li>
-              </a>
+                {#if Array.isArray(menuItem.to)}
+                  {#each menuItem.to as subPath}
+                    <a
+                      href="{$currentOrgPath}{subPath}"
+                      class="{NavClasses.item}  {$page.url.pathname.includes(subPath) &&
+                        NavClasses.active} w-full py-2 pl-10 pr-2"
+                      on:click={toggleSidebar}
+                    >
+                      {#if subPath === '/courses'}
+                        {$t('org_navigation.all_courses')}
+                      {:else if subPath === '/tags'}
+                        {$t('org_navigation.tags')}
+                      {:else if subPath === '/pathways'}
+                        {$t('org_navigation.pathway')}
+                      {/if}
+                    </a>
+                  {/each}
+                {/if}
+              </SidebarExpandeable>
             {/if}
           {/each}
         </ul>

@@ -1,8 +1,10 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
-  import { courseMetaDeta, courses } from '$lib/components/Courses/store';
+  import { courseMetaDeta } from '$lib/components/Courses/store';
   import Learning from '$lib/components/LMS/components/Learning.svelte';
+  import { lmsCourses } from '$lib/components/LMS/store';
+  import { fetchPathways } from '$lib/components/Org/Pathway/api';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { getGreeting } from '$lib/utils/functions/date';
@@ -10,41 +12,59 @@
   import { fetchCourses } from '$lib/utils/services/courses';
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
-  import type { Course } from '$lib/utils/types';
+  import type { LMSCourse } from '$lib/utils/types';
 
   let hasFetched = false;
   let progressPercentage = 0;
   let totalLessons = 0;
   let totalCompleted = 0;
 
-  async function getCourses(userId: string | undefined, orgId: string) {
+  async function fetchPathwaysAndCourses(userId: string | undefined, orgId: string) {
     if (hasFetched || !userId || !orgId) {
       return;
     }
-    // only show is loading when fetching for the first time
-    if (!$courses.length) {
+
+    if (!$lmsCourses.length) {
       $courseMetaDeta.isLoading = true;
     }
 
-    const coursesResult = await fetchCourses(userId, orgId);
-    console.log(`coursesResult`, coursesResult);
+    try {
+      const [pathwayResult, coursesResult] = await Promise.all([
+        fetchPathways(userId, orgId),
+        fetchCourses(userId, orgId)
+      ]);
 
-    $courseMetaDeta.isLoading = false;
-    if (!coursesResult) return;
+      if (!pathwayResult || !coursesResult) return;
 
-    courses.set(coursesResult.allCourses);
-    hasFetched = true;
+      const pathwaysWithFlag = pathwayResult.allPathways.map((pathway) => ({
+        ...pathway,
+        isPathway: true
+      }));
+
+      const coursesWithFlag = coursesResult.allCourses.map((course) => ({
+        ...course,
+        isPathway: false
+      }));
+
+      const allResults = [...pathwaysWithFlag, ...coursesWithFlag];
+
+      lmsCourses.set(allResults);
+      hasFetched = true;
+    } catch (error) {
+      console.error('Error fetching pathways and courses:', error);
+      $courseMetaDeta.isLoading = false;
+    }
   }
 
-  function calcTotalProgress(courses: Course[]) {
+  //TODO: we should consider pathway courses too
+  function calcTotalProgress(courses: LMSCourse[] | any) {
     totalCompleted = courses.reduce((acc, cur) => acc + (cur.progress_rate || 0), 0);
     totalLessons = courses.reduce((acc, cur) => acc + (cur.total_lessons || 0), 0);
-
     progressPercentage = Math.round((totalCompleted / totalLessons) * 100) || 0;
   }
 
-  $: getCourses($profile.id, $currentOrg.id);
-  $: calcTotalProgress($courses);
+  $: fetchPathwaysAndCourses($profile.id, $currentOrg.id);
+  $: calcTotalProgress($lmsCourses);
 </script>
 
 <svelte:head>
@@ -54,7 +74,7 @@
 <section class="mx-auto max-w-6xl gap-5">
   <div class="m-5">
     <div class="mb-10 flex items-center justify-between">
-      <h1 class="text-2xl font-bold dark:text-white md:text-3xl">
+      <h1 class="text-2xl font-bold md:text-3xl dark:text-white">
         {$t(getGreeting())}
         {$profile.fullname}!
       </h1>
@@ -94,7 +114,7 @@
           {$t('dashboard.your_progress')}
         </p>
         <div
-          class="flex h-fit items-center justify-center gap-2 rounded border border-[#EAEAEA] p-3 dark:bg-neutral-800 lg:h-[40vh] lg:overflow-y-auto"
+          class="flex h-fit items-center justify-center gap-2 rounded border border-[#EAEAEA] p-3 lg:h-[40vh] lg:overflow-y-auto dark:bg-neutral-800"
         >
           <div
             class="flex h-full w-full flex-col items-center justify-between gap-5 sm:flex-row lg:items-center lg:justify-around xl:flex-col xl:items-start"
@@ -118,7 +138,7 @@
               {/if}
             </span>
             <h1
-              class="my-0 whitespace-nowrap text-5xl font-bold text-[#262626] dark:text-white lg:text-6xl"
+              class="my-0 whitespace-nowrap text-5xl font-bold text-[#262626] lg:text-6xl dark:text-white"
             >
               {progressPercentage} %
             </h1>

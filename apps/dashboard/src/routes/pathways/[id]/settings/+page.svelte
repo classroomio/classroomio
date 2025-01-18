@@ -1,0 +1,310 @@
+<script lang="ts">
+  import { goto } from '$app/navigation';
+  import {
+    CodeSnippet,
+    Column,
+    Grid,
+    Loading,
+    RadioButton,
+    RadioButtonGroup,
+    Row,
+    Toggle
+  } from 'carbon-components-svelte';
+  import { Restart } from 'carbon-icons-svelte';
+  import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
+
+  import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
+  import { pathway, pathwaySettings, RADIO_VALUE } from '$lib/components/Pathways/store';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import generateSlug from '$lib/utils/functions/generateSlug';
+  import { t } from '$lib/utils/functions/translations';
+  import { deletePathway, updatePathway } from '$lib/utils/services/pathways';
+  import { currentOrg, currentOrgDomain, currentOrgPath } from '$lib/utils/store/org';
+  import type { Pathway } from '$lib/utils/types';
+
+  import TextArea from '$lib/components/Form/TextArea.svelte';
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import IconButton from '$lib/components/IconButton/index.svelte';
+  import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
+  import { PageBody, PageNav } from '$lib/components/Page';
+  import PathwayContainer from '$lib/components/Pathways/components/PathwayContainer.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
+
+  let isSaving = false;
+  let isDeleting = false;
+  let errors: {
+    title: string | undefined;
+    description: string | undefined;
+  } = { title: undefined, description: undefined };
+  let avatar: string | undefined;
+
+  function widgetControl() {
+    $handleOpenWidget.open = !$handleOpenWidget.open;
+  }
+
+  const deleteBannerImage = () => {
+    $pathwaySettings.logo = '';
+  };
+
+  const generateNewPathwayLink = () => {
+    $pathway.slug = generateSlug($pathway.title);
+  };
+
+  // this function is used to parse the boolean value from the radio button
+  function parseBoolean(value) {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  }
+
+  const handleSave = async () => {
+    if (!$pathwaySettings.title) {
+      errors.title = $t('pathway.pages.settings.title_error');
+      return;
+    }
+    if (!$pathwaySettings.description) {
+      errors.description = $t('pathway.pages.settings.description_error');
+      return;
+    }
+    isSaving = true;
+    // try catch block to save to supabase
+    try {
+      const { title, logo, description, prerequisite, is_published, lms_certificate } =
+        $pathwaySettings;
+
+      await updatePathway($pathway.id, avatar, {
+        title: title,
+        logo: logo,
+        description: description,
+        prerequisite: parseBoolean(prerequisite),
+        is_published: is_published,
+        lms_certificate: lms_certificate,
+
+        slug: $pathway.slug
+      });
+
+      $pathway.title = title;
+      $pathway.description = description;
+      $pathway.logo = logo;
+      $pathway.is_published = is_published;
+      $pathway.prerequisite = parseBoolean(prerequisite);
+      $pathway.lms_certificate = lms_certificate;
+
+      snackbar.success('snackbar.course_settings.success.saved');
+    } catch (error) {
+      console.log(error);
+    } finally {
+      isSaving = false;
+    }
+  };
+
+  const handledeletePathway = async () => {
+    isDeleting = true;
+    try {
+      await deletePathway($pathway.id);
+      goto($currentOrgPath + '/pathways');
+    } catch (error) {
+      snackbar.error('snackbar.course_settings.error.went_wrong');
+    } finally {
+      isDeleting = false;
+    }
+  };
+  function setDefault(pathway: Pathway) {
+    if (pathway && Object.keys(pathway).length && $pathwaySettings.title !== pathway.title) {
+      $pathwaySettings = {
+        title: pathway.title,
+        description: pathway.description,
+        logo: pathway.logo || '',
+        is_published: !!pathway.is_published,
+        prerequisite: pathway.prerequisite,
+        metadata: pathway.landingpage,
+        lms_certificate: pathway.lms_certificate,
+        courses_certificate: pathway.courses_certificate
+      };
+    }
+  }
+
+  $: setDefault($pathway);
+</script>
+
+<PathwayContainer>
+  <PageNav title={$t('pathway.pages.settings.page_title')} />
+
+  <PageBody>
+    <Grid class="border-c rounded border-gray-200 dark:border-neutral-600">
+      <Row class="border-bottom-c my-4 flex flex-col md:py-7 lg:flex-row">
+        <Column sm={8} md={8} lg={8} class="flex flex-col justify-between">
+          <div>
+            <SectionTitle>{$t('pathway.pages.settings.cover_image')}</SectionTitle>
+            <p>
+              {$t('pathway.pages.settings.optional')}
+            </p>
+          </div>
+          <span class="mt-10 flex items-center justify-start md:mt-0">
+            <PrimaryButton
+              variant={VARIANTS.OUTLINED}
+              label={$t('pathway.pages.settings.replace')}
+              className="mr-2"
+              onClick={widgetControl}
+            />
+            <PrimaryButton
+              variant={VARIANTS.CONTAINED_DANGER}
+              label={$t('pathway.pages.settings.delete')}
+              onClick={deleteBannerImage}
+            />
+          </span>
+          {#if $handleOpenWidget.open}
+            <UploadWidget bind:imageURL={$pathwaySettings.logo} />
+          {/if}
+        </Column>
+
+        <Column sm={8} md={8} lg={7} class="">
+          <div class="my-5 max-w-full overflow-hidden md:my-0">
+            <img
+              alt="About us"
+              src={$pathwaySettings.logo || '/images/classroomio-course-img-template.jpg'}
+              class="h-full w-full object-cover transition-all duration-300 hover:scale-110"
+            />
+          </div>
+        </Column>
+      </Row>
+
+      <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
+        <Column sm={8} md={8} lg={8}>
+          <SectionTitle>{$t('pathway.pages.settings.details')}</SectionTitle>
+        </Column>
+
+        <Column sm={8} md={8} lg={7}>
+          <TextField
+            label={$t('pathway.pages.settings.title')}
+            placeholder={$t('pathway.pages.settings.title_placeholder')}
+            className="w-full mb-5"
+            labelClassName="font-medium mb-3"
+            bind:value={$pathwaySettings.title}
+            errorMessage={errors.title}
+          />
+          <TextArea
+            label={$t('pathway.pages.settings.description')}
+            placeholder={$t('pathway.pages.settings.description_placeholder')}
+            className="w-full mb-5"
+            labelClassName="font-medium mb-3 text-sm"
+            bind:value={$pathwaySettings.description}
+            rows={5}
+            errorMessage={errors.description}
+          />
+          <div class="">
+            <div class="mb-2 flex items-center justify-between">
+              <p>
+                {$t('pathway.pages.settings.link')}
+              </p>
+              <IconButton contained={true} size="small" onClick={generateNewPathwayLink}>
+                <Restart size={16} />
+              </IconButton>
+            </div>
+            {#if $pathway.slug}
+              <CodeSnippet
+                wrapText
+                type="multi"
+                code={`${$currentOrgDomain}/${$currentOrg.siteName}/pathways/${$pathway.slug}`}
+              />
+            {:else}
+              <CodeSnippet code="Setup landing page to get pathway link" />
+            {/if}
+          </div>
+        </Column>
+      </Row>
+
+      <Row class="border-bottom-c flex flex-col gap-5 py-7 lg:flex-row">
+        <Column sm={8} md={8} lg={8}>
+          <SectionTitle>
+            {$t('pathway.pages.settings.students')}
+          </SectionTitle>
+          <p>
+            {$t('pathway.pages.settings.yes')}
+          </p>
+        </Column>
+        <Column sm={8} md={8} lg={7} class="flex items-center justify-center">
+          <RadioButtonGroup hideLegend bind:selected={$pathwaySettings.prerequisite}>
+            <RadioButton
+              labelText={$t('pathway.pages.settings.option_one')}
+              value={RADIO_VALUE.TRUE}
+            />
+            <RadioButton
+              labelText={$t('pathway.pages.settings.option_two')}
+              value={RADIO_VALUE.FALSE}
+            />
+          </RadioButtonGroup>
+        </Column>
+      </Row>
+
+      <Row class="border-bottom-c flex flex-col gap-5 overflow-hidden py-7 lg:flex-row">
+        <Column sm={8} md={8} lg={8}>
+          <SectionTitle>{$t('pathway.pages.settings.publish')}</SectionTitle>
+          <p>{$t('pathway.pages.settings.allow')}</p>
+        </Column>
+        <Column sm={8} md={8} lg={7} class="flex items-center justify-start">
+          <Toggle
+            size="sm"
+            bind:toggled={$pathwaySettings.is_published}
+            on:toggle={(e) => ($pathwaySettings.is_published = e.detail.toggled)}
+          >
+            <span slot="labelA" style="color: gray">{$t('pathway.pages.settings.disabled')}</span>
+            <span slot="labelB" style="color: gray">{$t('pathway.pages.settings.enabled')}</span>
+          </Toggle>
+        </Column>
+      </Row>
+
+      <Row class="border-bottom-c flex flex-col gap-5 overflow-hidden py-7 lg:flex-row">
+        <Column sm={8} md={8} lg={8}>
+          <SectionTitle>{$t('pathway.pages.settings.certificate')}</SectionTitle>
+          <p>{$t('pathway.pages.settings.issue')}</p>
+        </Column>
+        <Column sm={8} md={8} lg={7} class="flex items-center justify-start">
+          <Toggle
+            size="sm"
+            bind:toggled={$pathwaySettings.lms_certificate}
+            on:toggle={(e) => ($pathwaySettings.lms_certificate = e.detail.toggled)}
+          >
+            <span slot="labelA" style="color: gray">{$t('pathway.pages.settings.disabled')}</span>
+            <span slot="labelB" style="color: gray">{$t('pathway.pages.settings.enabled')}</span>
+          </Toggle>
+        </Column>
+      </Row>
+
+      <Row class="border-bottom-c flex flex-col overflow-hidden pb-10 pt-7 lg:flex-row">
+        <Column sm={8} md={8} lg={8}>
+          <SectionTitle>
+            {$t('pathway.pages.settings.delete_path')}
+          </SectionTitle>
+          <p>{$t('pathway.pages.settings.delete_text')}</p>
+        </Column>
+        <Column sm={8} md={8} lg={8} class="mt-5">
+          <button
+            type="button"
+            class="flex items-center gap-2 transition-all duration-300 hover:scale-125 md:ml-7"
+            disabled={isSaving}
+            on:click={handledeletePathway}
+          >
+            {#if isDeleting}
+              <Loading withOverlay={false} small />
+            {:else}
+              <TrashCan class="text-red-600" size={20} />
+              <p class="text-sm font-medium text-red-600">{$t('pathway.pages.settings.delete')}</p>
+            {/if}
+          </button>
+        </Column>
+      </Row>
+
+      <Row class="flex w-full items-center justify-end p-5">
+        <PrimaryButton
+          label={$t('pathway.pages.settings.save')}
+          isLoading={isSaving}
+          isDisabled={isSaving}
+          onClick={handleSave}
+        />
+      </Row>
+    </Grid>
+  </PageBody>
+</PathwayContainer>

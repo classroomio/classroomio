@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { sideBar } from '$lib/components/Org/store';
-  import { apps } from '$lib/components/Apps/store';
-  import { globalStore } from '$lib/utils/store/app';
   import APPS_CONSTANTS from '$lib/components/Apps/constants';
+  import { apps } from '$lib/components/Apps/store';
+  import { sideBar } from '$lib/components/Org/store';
+  import { globalStore } from '$lib/utils/store/app';
   import hotkeys from 'hotkeys-js';
+  import { onMount } from 'svelte';
 
   function handleClose() {
     $apps.selectedApp = undefined;

@@ -1,27 +1,34 @@
 <script lang="ts">
-  import { profile } from '$lib/utils/store/user';
-  import { group } from '../Course/store';
-  import type { GroupPerson } from '$lib/utils/types';
+  import { browser } from '$app/environment';
   import { isOrgAdmin } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
+  import type { GroupPerson } from '$lib/utils/types';
+  import { group as courseGroup } from '../Course/store';
+  import { group as pathwaysGroup } from '../Pathways/store';
 
   export let allowedRoles: number[] = [];
   export let onDenied = () => {};
   // Since orgAdmin can see all, we need a way to show the content only to students
   export let onlyStudent = false;
 
-  let userRole: number = 0;
-  let show = false;
+  let show: boolean = false;
+  let userRole: number | null = null;
 
-  function isAllowed(userRole) {
-    return allowedRoles.includes(userRole);
+  function isAllowed(role: number | null): boolean {
+    return role !== null && allowedRoles.includes(role);
   }
 
   $: {
-    const user: GroupPerson = $group.people.find((person) => person.profile_id === $profile.id)!;
+    const courseUser: GroupPerson | undefined = $courseGroup.people.find(
+      (person) => person.profile_id === $profile.id
+    );
+    const pathwaysUser: GroupPerson | undefined = $pathwaysGroup.people.find(
+      (person) => person.profile_id === $profile.id
+    );
 
-    userRole = user ? user.role_id : userRole;
+    userRole = courseUser?.role_id ?? pathwaysUser?.role_id ?? null;
 
-    if (!$isOrgAdmin && $group.people.length && !isAllowed(userRole)) {
+    if (!$isOrgAdmin && !isAllowed(userRole) && browser) {
       onDenied();
     }
   }

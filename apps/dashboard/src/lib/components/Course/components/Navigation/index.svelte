@@ -1,24 +1,24 @@
 <script lang="ts">
-  import { onDestroy, onMount } from 'svelte';
+  import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { browser } from '$app/environment';
   import TextChip from '$lib/components/Chip/Text.svelte';
-  import LockedIcon from 'carbon-icons-svelte/lib/Locked.svelte';
-  import CheckmarkFilled from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
-  import NavExpandable from './NavExpandable.svelte';
-  import { getNavItemRoute, getLessonsRoute, getLectureNo } from '$lib/components/Course/function';
-  import { lessons, lessonSections } from '../Lesson/store/lessons';
+  import { getLectureNo, getLessonsRoute, getNavItemRoute } from '$lib/components/Course/function';
   import { course } from '$lib/components/Course/store';
-  import { NavClasses } from '$lib/utils/constants/reusableClass';
-  import { isMobile } from '$lib/utils/store/useMobile';
   import { sideBar } from '$lib/components/Org/store';
-  import { profile } from '$lib/utils/store/user';
-  import { getIsLessonComplete } from '../Lesson/functions';
-  import { currentOrg, isFreePlan } from '$lib/utils/store/org';
+  import { NavClasses } from '$lib/utils/constants/reusableClass';
   import { t } from '$lib/utils/functions/translations';
+  import { currentOrg, isFreePlan } from '$lib/utils/store/org';
+  import { isMobile } from '$lib/utils/store/useMobile';
+  import { profile } from '$lib/utils/store/user';
   import { COURSE_TYPE, COURSE_VERSION, type Lesson } from '$lib/utils/types';
+  import CheckmarkFilled from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
+  import LockedIcon from 'carbon-icons-svelte/lib/Locked.svelte';
+  import { onDestroy, onMount } from 'svelte';
+  import { getIsLessonComplete } from '../Lesson/functions';
+  import { lessons, lessonSections } from '../Lesson/store/lessons';
   import { NAV_IDS } from './constants';
+  import NavExpandable from './NavExpandable.svelte';
 
   export let path: string;
   export let isStudent: boolean = false;
@@ -34,6 +34,7 @@
     id: string;
     label: string;
     to: string;
+    icon: string;
     hideSortIcon: boolean;
     isLesson?: boolean;
     isPaidFeature: boolean;
@@ -152,6 +153,7 @@
         id: NAV_IDS.NEWS_FEED,
         label: $t('course.navItems.nav_news_feed'),
         to: getNavItemRoute($course.id),
+        icon: 'News Feed',
         hideSortIcon: true,
         isPaidFeature: false,
         show() {
@@ -162,6 +164,7 @@
         id: NAV_IDS.LESSONS,
         label: $t('course.navItems.nav_content'),
         to: getLessonsRoute($course.id),
+        icon: 'Lessons',
         hideSortIcon: false,
         isPaidFeature: false,
         isLesson: true,
@@ -176,6 +179,7 @@
         id: NAV_IDS.ATTENDANCE,
         label: $t('course.navItems.nav_attendance'),
         to: getNavItemRoute($course.id, 'attendance'),
+        icon: 'Attendance',
         isPaidFeature: false,
         hideSortIcon: true,
         show() {
@@ -188,6 +192,7 @@
         id: NAV_IDS.SUBMISSIONS,
         label: $t('course.navItems.nav_submissions'),
         to: getNavItemRoute($course.id, 'submissions'),
+        icon: 'Submissions',
         hideSortIcon: true,
         isPaidFeature: false,
         show() {
@@ -200,6 +205,7 @@
         id: NAV_IDS.MARKS,
         label: $t('course.navItems.nav_marks'),
         to: getNavItemRoute($course.id, 'marks'),
+        icon: 'Marks',
         isPaidFeature: false,
         hideSortIcon: true,
         show() {
@@ -214,6 +220,7 @@
         id: NAV_IDS.CERTIFICATES,
         label: $t('course.navItems.nav_certificates'),
         to: getNavItemRoute($course.id, 'certificates'),
+        icon: 'Certificates',
         hideSortIcon: true,
         isPaidFeature: true,
         show() {
@@ -228,6 +235,7 @@
         id: NAV_IDS.LANDING_PAGE,
         label: $t('course.navItems.nav_landing_page'),
         to: getNavItemRoute($course.id, 'landingpage'),
+        icon: 'Landing Page',
         hideSortIcon: true,
         isPaidFeature: false,
         show() {
@@ -238,6 +246,7 @@
         id: NAV_IDS.PEOPLE,
         label: $t('course.navItems.nav_people'),
         to: getNavItemRoute($course.id, 'people'),
+        icon: 'People',
         isPaidFeature: false,
         hideSortIcon: true,
         show() {
@@ -248,6 +257,7 @@
         id: NAV_IDS.SETTINGS,
         label: $t('course.navItems.nav_settings'),
         to: getNavItemRoute($course.id, 'settings'),
+        icon: 'Settings',
         hideSortIcon: true,
         isPaidFeature: false,
         show() {
@@ -262,14 +272,14 @@
   class={`
   ${
     $sideBar.hidden
-      ? '-translate-x-[100%] absolute z-[40]'
-      : 'translate-x-0 absolute md:relative z-[40]'
+      ? 'absolute z-[40] -translate-x-[100%]'
+      : 'absolute z-[40] translate-x-0 md:relative'
   }
-    transition w-[90vw] md:w-[300px] lg:w-[350px] bg-gray-100 dark:bg-black h-[calc(100vh-48px)] 
+    h-[calc(100vh-48px)] w-[90vw] bg-gray-100 transition md:w-[300px] lg:w-[350px] dark:bg-black 
   
   ${
     resize ? 'border-r-8 border-r-blue-500' : 'dark:border-r-neutral-600'
-  } overflow-y-auto border border-l-0 border-t-0 border-b-0 border-r-1`}
+  } border-r-1 overflow-y-auto border border-b-0 border-l-0 border-t-0`}
   style={$sideBar.hidden === true ? 'width:0' : 'width:300px'}
   bind:this={sidebarRef}
 >
@@ -283,7 +293,6 @@
         {#if !navItem.show || (typeof navItem.show === 'function' && navItem.show())}
           <NavExpandable
             id={navItem.id}
-            name={navItem.id}
             label={navItem.label}
             handleClick={handleMainGroupClick(navItem.to)}
             isGroupActive={(path || $page.url.pathname) === navItem.to}
@@ -297,7 +306,7 @@
             {#if $course.version === COURSE_VERSION.V1}
               {#each $lessons as item, index}
                 <a
-                  class="pl-7 w-[95%] text-[0.80rem] mb-2 text-black dark:text-white {isStudent &&
+                  class="mb-2 w-[95%] pl-7 text-[0.80rem] text-black dark:text-white {isStudent &&
                   !item.is_unlocked
                     ? 'cursor-not-allowed'
                     : ''}"
@@ -309,7 +318,7 @@
                   title={item.title}
                 >
                   <div
-                    class="flex items-center py-2 px-4 {NavClasses.item} {(
+                    class="flex items-center px-4 py-2 {NavClasses.item} {(
                       path || $page.url.pathname
                     ).includes(item.id) && NavClasses.active}"
                   >
@@ -319,7 +328,7 @@
                       size="sm"
                       shape="rounded-full"
                     />
-                    <span class="w-[85%] text-ellipsis line-clamp-2">{item.title}</span>
+                    <span class="line-clamp-2 w-[85%] text-ellipsis">{item.title}</span>
                     <span class="grow" />
                     {#if !item.is_unlocked}
                       <span class="text-md ml-2" title="This lesson is locked.">
@@ -337,7 +346,6 @@
               {#each navItem.sections as section}
                 <NavExpandable
                   id={section.id}
-                  name={NAV_IDS.SECTION}
                   label={section.label}
                   isLoading={!$course.id}
                   isSection={true}
@@ -348,7 +356,7 @@
                 >
                   {#each section.lessons as item}
                     <a
-                      class="pl-7 w-[95%] text-[0.80rem] mb-2 text-black dark:text-white {isStudent &&
+                      class="mb-2 w-[95%] pl-7 text-[0.80rem] text-black dark:text-white {isStudent &&
                       !item.is_unlocked
                         ? 'cursor-not-allowed'
                         : ''}"
@@ -360,11 +368,11 @@
                       title={item.title}
                     >
                       <div
-                        class="flex items-center py-2 px-4 {NavClasses.item} {(
+                        class="flex items-center px-4 py-2 {NavClasses.item} {(
                           path || $page.url.pathname
                         ).includes(item.id) && NavClasses.active}"
                       >
-                        <span class="w-[85%] text-ellipsis line-clamp-2">{item.title}</span>
+                        <span class="line-clamp-2 w-[85%] text-ellipsis">{item.title}</span>
                         <span class="grow" />
                         {#if !item.is_unlocked}
                           <span class="text-md ml-2" title="This lesson is locked.">

@@ -277,7 +277,8 @@
         "type": "Type de cours",
         "course_type_desc": "Mettez à jour le type de cours pour une expérience plus personnalisée",
         "live_class": "Cours en direct",
-        "self_paced": "À votre rythme"
+        "self_paced": "À votre rythme",
+        "pathway": "Chemin"
       },
       "landing_page": {
         "start_course": "Commencer le cours",
@@ -293,8 +294,6 @@
         "reviews": "Commentaires",
         "see_all": "Voir tout",
         "header_video": "Vidéo d'en-tête",
-        "no_course_published": "Aucun cours publié",
-        "coming_your_way": "Nous avons d'excellents cours à venir, restez à l'écoute !!!",
         "view_less": "Voir moins",
         "view_all": "Voir tout",
         "thank_you": "Merci d'avoir laissé un message, nous vous répondrons sous peu",
@@ -345,7 +344,9 @@
             "no": "Non",
             "yes": "Oui",
             "percent": "Pourcentage de remise",
-            "gift": "À propos du cadeau"
+            "gift": "À propos du cadeau",
+            "gift_placeholder": "Cadeau à la fin",
+            "cart": "Ajouter au panier"
           },
           "instructor_form": {
             "upload": "Logo de l'instructeur",
@@ -394,7 +395,9 @@
             "reviews": "Commentaires",
             "instructor": "Instructeur",
             "pricing": "Tarifs",
-            "certificate": "Certificat"
+            "certificate": "Certificat",
+            "about": "À propos",
+            "objectives": "OBJECTIFS"
           },
           "display_section": "Section d'affichage",
           "certificate_form": {
@@ -404,7 +407,11 @@
         "course_content": "Contenu du cours",
         "modules": "modules",
         "lessons": "leçons",
-        "exercises": "exercices"
+        "exercises": "exercices",
+        "title": "Pas encore de cours",
+        "subtitle": "Il semble que les cours n'aient pas encore été ajoutés. Veuillez revenir plus tard",
+        "pathway_title": "Pas encore de cours",
+        "pathway_subtitle": "Il semble que les cours n'aient pas encore été ajoutés. Veuillez revenir plus tard"
       },
       "certificates": {
         "title": "Certificats",
@@ -480,7 +487,9 @@
           "members": "Membres",
           "invite_sent": "Invitation envoyée",
           "you": "Toi",
-          "remove": "Retirer"
+          "remove": "Retirer",
+          "join_course": "Rejoindre le cours",
+          "join_pathway": "Rejoindre le parcours"
         },
         "view": "Voir",
         "delete_profile": "Supprimer le profil"
@@ -1068,7 +1077,8 @@
     "redirecting": "Redirection",
     "loading_state": "Vous passez à la page suivante, veuillez patienter.",
     "org_loading_state": "Vous emmener dans votre organisation...",
-    "add_organization": "+ Ajouter une organisation"
+    "add_organization": "+ Ajouter une organisation",
+    "pathways": "Voies"
   },
   "add_org": {
     "create_org": "Créer une organisation",
@@ -1140,7 +1150,9 @@
     "early_adopter": "Devenez un adopteur précoce",
     "unlock": "Débloquez des fonctionnalités illimitées et investissez dans notre avenir",
     "upgrade": "Mettre à jour maintenant",
-    "tags": "Balises"
+    "tags": "Balises",
+    "all_courses": "Tous les cours",
+    "pathway": "Voies"
   },
   "settings": {
     "heading": "Paramètres",
@@ -1487,6 +1499,209 @@
     "empty_heading": "Aucun cours disponible",
     "empty_description": "Il n'y a actuellement aucun cours publié disponible",
     "heading": "Découvrez nos cours"
+  },
+  "pathway": {
+    "heading": "Voies",
+    "heading_button": "Créer un parcours",
+    "search_placeholder": "Trouver un chemin",
+    "empty_title": "Aucun parcours n'a encore été créé",
+    "empty_description": "Ajoutez un groupe de cours connexes pour mettre les étudiants sur la voie de l'excellence dans vos domaines",
+    "new_pathway_modal": {
+      "heading": "Créer un nouveau parcours",
+      "pathway_name": "Sentier",
+      "pathway_name_placeholder": "Devenez un concepteur UX professionnel",
+      "short_description": "brève description",
+      "short_description_placeholder": "Un cours de spécialisation qui vous permet de démarrer en tant que concepteur ux",
+      "button": "Créer un parcours",
+      "success": "Parcours créé avec succès",
+      "error": "Erreur lors de la création du chemin"
+    },
+    "pathway_card": {
+      "courses": "cours",
+      "error_message": "Une erreur s'est produite.",
+      "students": "étudiants",
+      "published": "Publié",
+      "unpublished": "Inédit",
+      "continue_pathway": "Continuer le parcours",
+      "learn_more": "Apprendre encore plus",
+      "list_view": {
+        "title": "Titre",
+        "description": "Description",
+        "courses": "Cours",
+        "students": "Étudiants",
+        "published": "Publié"
+      },
+      "context_menu": {
+        "clone": "Cloner",
+        "share": "Partager",
+        "invite": "Inviter",
+        "delete": "Supprimer"
+      },
+      "course": "cours",
+      "student": "étudiant"
+    },
+    "pathway_filter": {
+      "date_created": "date créée",
+      "published": "Publié",
+      "courses": "Cours"
+    },
+    "components": {
+      "sideBar": {
+        "news": "Fil d'actualité",
+        "courses": "Cours",
+        "people": "Personnes",
+        "certificates": "Certificats",
+        "landing": "Page de destination",
+        "settings": "Paramètres"
+      },
+      "courseCard": {
+        "lessons": "cours",
+        "students": "étudiants"
+      },
+      "addCourseModal": {
+        "add": "Ajouter",
+        "course": "Cours",
+        "courses": "Cours",
+        "delete": "Confirmer la suppression",
+        "modal_heading": "Ajouter un cours au parcours",
+        "path": "vers le chemin"
+      },
+      "not_permitted": {
+        "header": "Aucune autorisation",
+        "body": "Malheureusement, vous n'avez pas accès à ce parcours.",
+        "button": "Rentre chez toi"
+      },
+      "dragAndDrop": {
+        "title": "Organiser des cours",
+        "header": "Organiser les cours dans l'ordre que l'étudiant doit suivre en commençant par le premier en haut",
+        "label": "Confirmer l'ordre des cours"
+      }
+    },
+    "pages": {
+      "settings": {
+        "page_title": "Paramètres",
+        "option_one": "Oui",
+        "option_two": "Non",
+        "enabled": "Activé",
+        "disabled": "Désactivé",
+        "certificate": "Certificat",
+        "issue": "Émettre un certificat sur LMS",
+        "option_three": "Non, pour le chemin uniquement",
+        "save": "Sauvegarder les modifications",
+        "placeholder": "une petite description du parcours",
+        "pathway_description": "Description du parcours",
+        "title_error": "Veuillez ajouter un titre de parcours",
+        "description_error": "Veuillez ajouter une description du parcours",
+        "cover_image": "Image de couverture",
+        "optional": "Cette image facultative apparaîtra sur votre page d'accueil. Si vous en incluez un, il doit mesurer au moins 280 x 200.",
+        "replace": "Remplacer",
+        "delete": "Supprimer",
+        "details": "Détails du parcours",
+        "title": "Titre du parcours",
+        "title_placeholder": "Écrivez le titre du cours ici",
+        "description": "Description du parcours",
+        "description_placeholder": "Écrivez la description du cours ici",
+        "link": "Lien vers le parcours",
+        "students": "Les étudiants doivent-ils suivre les cours selon l'ordre recommandé ?",
+        "yes": "si oui, l'étudiant doit suivre le cours selon l'ordre, si non, l'étudiant peut commencer par n'importe quel cours de son choix",
+        "publish": "Publier le parcours",
+        "allow": "Autoriser les nouveaux étudiants à télécharger des cours dans le parcours",
+        "issue_two": "Délivrer un certificat ou tous les cours du parcours",
+        "delete_path": "Supprimer le parcours",
+        "delete_text": "Supprimer le parcours dans son ensemble"
+      },
+      "course": {
+        "title": "Cours",
+        "add_course": "Un cours",
+        "add_remove": "Ajouter/supprimer un cours",
+        "order": "Commander des cours",
+        "option_one": "Publié",
+        "option_two": "Inédit",
+        "body_title": "Titre",
+        "description": "Description",
+        "students": "Étudiants",
+        "lessons": "Cours",
+        "search": "Trouver un cours Pathway",
+        "empty_state_header": "Pas encore de cours",
+        "publish": "Publier le parcours",
+        "empty_state_text": "Vous n'avez ajouté aucun cours à ce parcours",
+        "empty_state_label": "Ajouter un cours à ce parcours"
+      },
+      "lms_certificate": {
+        "share": "Certificat d'actions",
+        "locked": {
+          "title": "Certificats pas encore disponibles",
+          "subtitle": "Le certificat est disponible parce que vous n'avez pas terminé le parcours ou que votre instructeur ne l'a pas approuvé. Merci de contacter votre instructeur"
+        },
+        "unlocked": {
+          "title": "Bravo! 🎉 votre attestation est prête",
+          "subtitle": "Vous avez parcouru ce chemin et votre dévouement est évident. Téléchargez le certificat et partagez-le avec votre réseau comme preuve de vos compétences nouvellement acquises"
+        },
+        "courses_completed": "Cours terminés",
+        "achieve": "comprend les cours que vous avez suivis pour réaliser ce parcours"
+      },
+      "landingPage": {
+        "reviews": {
+          "students": "Découvrez ce que les étudiants pensent de cette collection",
+          "readMore": "En savoir plus",
+          "readLess": "Lire moins"
+        },
+        "courseList": {
+          "header": "Liste de cours organisée-",
+          "subheader": "Notre liste de cours organisée présente des sujets essentiels tels que la recherche sur les utilisateurs, le wireframing, le prototypage, les tests d'utilisabilité, la conception d'interactions et les outils standard de l'industrie. Libérez votre potentiel UX dès aujourd’hui !",
+          "courses": "cours",
+          "lessons": "leçons",
+          "estimated": "estimé",
+          "hours": "heures",
+          "view": "Afficher les détails"
+        },
+        "subHeader": {
+          "button": "S'inscrire maintenant-commence"
+        },
+        "certificate": {
+          "earn": "Gagnez un certificat",
+          "evidence": "Obtenez un justificatif de compétences et partagez-le avec votre réseau professionnel"
+        },
+        "main": {
+          "pricing_win": "Terminez toutes les leçons avec succès et courez la chance de gagner un iPad. Nous le pensons quand nous le disons !",
+          "start": "Commencez maintenant",
+          "description": "Description du parcours",
+          "objectives": "Objectifs du parcours"
+        },
+        "banner": {
+          "courses": "Cours",
+          "courses_text": "Des cours soigneusement sélectionnés pour atteindre vos objectifs",
+          "certificate": "Obtenir un certificat",
+          "share": "Obtenez une certification et partagez-la avec votre réseau",
+          "rating": "Instructeur de cours expérimenté et hautement coté"
+        },
+        "header": {
+          "button": "Inscrivez-vous maintenant",
+          "tag": "CHEMIN"
+        },
+        "constants": {
+          "about": "À PROPOS",
+          "objectives": "OBJECTIFS",
+          "courses": "COURS",
+          "review": "REVOIR",
+          "instructor": "INSTRUCTEUR(S)",
+          "faq": "FAQ"
+        }
+      }
+    }
+  },
+  "search": {
+    "no_pathway": "Aucun chemin trouvé",
+    "no_course": "Aucun cours trouvé"
+  },
+  "lms_pathway": {
+    "pathway": "CHEMIN",
+    "continue": "Continuer le chemin",
+    "course": "Cours",
+    "locked": "Fermé",
+    "goto_pathway": "Aller au parcours",
+    "completed": "Complété",
+    "of": "de"
   },
   "delete_modal": {
     "label": "Supprimer",

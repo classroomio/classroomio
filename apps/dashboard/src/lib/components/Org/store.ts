@@ -8,6 +8,11 @@ export const sideBar = writable({
   hidden: true
 });
 
+export const createPathwayModal = writable({
+  title: '',
+  description: ''
+});
+
 export const profileMenu = writable<{
   ref?: HTMLDivElement;
   open: boolean;

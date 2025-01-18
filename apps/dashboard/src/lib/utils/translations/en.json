@@ -39,6 +39,197 @@
     }
   },
 
+  "pathway": {
+    "heading": "Pathways",
+    "heading_button": "Create pathway",
+    "search_placeholder": "Find pathway",
+    "pathway_filter": {
+      "date_created": "Date Created",
+      "published": "Published",
+      "courses": "Courses"
+    },
+    "empty_title": "No Pathway has been created yet",
+    "empty_description": "Add a group of related courses to set students on a path to excellence in your fields",
+    "pathway_card": {
+      "courses": "courses",
+      "course": "course",
+      "context_menu": {
+        "clone": "Clone",
+        "share": "Share",
+        "invite": "Invite",
+        "delete": "Delete"
+      },
+      "error_message": "An error occurred.",
+      "students": "students",
+      "student": "student",
+      "published": "Published",
+      "unpublished": "Unpublished",
+      "continue_pathway": "Continue pathway",
+      "learn_more": "Learn more",
+      "list_view": {
+        "title": "Title",
+        "description": "Description",
+        "courses": "Courses",
+        "students": "Students",
+        "published": "Published"
+      }
+    },
+    "new_pathway_modal": {
+      "heading": "Create new Pathway",
+      "pathway_name": "Pathway",
+      "pathway_name_placeholder": "Become a professional UX designer",
+      "short_description": "Short Description",
+      "short_description_placeholder": "A sepcialization course that gets you started as a ux designer",
+      "success": "Pathway created successfully",
+      "error": "Error creating pathway",
+      "button": "Create Pathway"
+    },
+    "pages": {
+      "course": {
+        "title": "Courses",
+        "add_course": "Add Course",
+        "add_remove": "Remove course",
+        "order": "Order Courses",
+        "publish": "Publish pathway",
+        "search": "Find Pathway Course",
+        "option_one": "Published",
+        "option_two": "Unpublished",
+        "body_title": "Title",
+        "description": "Description",
+        "students": "Students",
+        "lessons": "Lessons",
+        "empty_state_header": "No courses yet",
+        "empty_state_text": "You have not added any course to this pathway",
+        "empty_state_label": "Add course to this pathway"
+      },
+      "lms_certificate": {
+        "courses_completed": "Courses Completed",
+        "achieve": "includes courses you have completed to achieve this pathway",
+        "unlocked": {
+          "title": "Congrats! 🎉 your certificate is ready",
+          "subtitle": "You have completed this pathway, and your dedication is evident. Download certificate and share with your network as a prove of your newly acquired skill"
+        },
+        "locked": {
+          "title": "Certificates not available yet",
+          "subtitle": "Certificate is available because you have not finish the pathway or your instructor have not approved it. Please contact your instructor"
+        },
+        "share": "Share Certificate"
+      },
+      "settings": {
+        "page_title": "Settings",
+        "title_error": "Please add a Pathway title",
+        "description_error": "Please add a Pathway description",
+        "cover_image": "Cover Image",
+        "optional": "This optional image will show up on your welcome page. If you include one, it should be at least 280 x 200",
+        "replace": "Replace",
+        "delete": "Delete",
+        "details": "Pathway Details",
+        "title": "Pathway Title",
+        "title_placeholder": "Write the course title here",
+        "description": "Pathway Description",
+        "description_placeholder": "Write the course description here",
+        "link": "Pathway Link",
+        "students": "Students must take course according to recommended order?",
+        "yes": "if yes, student must take course according to order, if No, student can start from any course of their choice",
+        "option_one": "Yes",
+        "option_two": "No",
+        "publish": "Publish pathway",
+        "allow": "Allow new student download courses in pathway",
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "certificate": "Certificate",
+        "issue": "Issue certificate on LMS",
+        "issue_two": "Issue certificate or all course in pathway",
+        "option_three": "No, for path only",
+        "delete_path": "Delete pathway",
+        "delete_text": "Delete pathway as a whole",
+        "save": "Save Changes",
+        "placeholder": "a little description about the pathway",
+        "pathway_description": "Pathway Description"
+      },
+      "landingPage": {
+        "constants": {
+          "about": "ABOUT",
+          "objectives": "OBJECTIVES",
+          "courses": "COURSES",
+          "review": "REVIEW",
+          "instructor": "INSTRUCTOR(S)",
+          "faq": "FAQ"
+        },
+        "header": {
+          "tag": "PATHWAY",
+          "button": "Enroll Now"
+        },
+        "banner": {
+          "courses": "Courses",
+          "courses_text": "Carefully curated courses to achieve your goals",
+          "certificate": "Get certificate",
+          "share": "Earn a certification and share with your network",
+          "rating": "Experienced and highly rated course instructor"
+        },
+        "main": {
+          "description": "Pathway Description",
+          "objectives": "Pathway Objectives",
+          "pricing_win": "Complete all lessons successful & stand a chance to win an ipad. We mean it when we say it!",
+          "start": "Start now"
+        },
+        "certificate": {
+          "earn": "Earn a certificate",
+          "evidence": "Get an evidence of proof for skills and share with your fessional network"
+        },
+        "subHeader": {
+          "button": "Enroll Now-Starts"
+        },
+        "courseList": {
+          "header": "Curated course list-",
+          "subheader": "Our curated course list features essential topics such as user research, wireframing, prototyping, usability testing, interaction design, and industry-standard tools. Unlock your UX potential today!",
+          "courses": "courses",
+          "lessons": "lessons",
+          "estimated": "estimated",
+          "hours": "hours",
+          "view": "View details"
+        },
+        "reviews": {
+          "students": "See what students are say about this collection",
+          "readMore": "Read more",
+          "readLess": "Read less"
+        }
+      }
+    },
+    "components": {
+      "courseCard": {
+        "lessons": "lessons",
+        "students": "students"
+      },
+      "sideBar": {
+        "news": "News Feed",
+        "courses": "Courses",
+        "people": "People",
+        "certificates": "Certificates",
+        "landing": "Landing Page",
+        "settings": "Settings"
+      },
+      "addCourseModal": {
+        "modal_heading": "Add Course to Pathway",
+        "add": "Add",
+        "course": "Course",
+        "courses": "Courses",
+        "path": "to Pathway",
+        "delete": "Confirm delete"
+      },
+      "dragAndDrop": {
+        "title": "Arrange courses",
+        "header": "Arrange course in the sequence student must should take them start with first at the top",
+        "label": "Confirm course order"
+      },
+      "not_permitted": {
+        "header": "No Permission",
+        "body": "Unfortunately you don't have access to this pathway.",
+        "button": "Go home"
+      }
+    }
+  },
+
   "verify_email_modal": {
     "heading": "Verify your Email",
     "sent_verification": "We've sent a verification email to",
@@ -291,6 +482,8 @@
   "org_navigation": {
     "dashboard": "Dashboard",
     "courses": "Courses",
+    "all_courses": "All courses",
+    "pathway": "Pathways",
     "community": "Community",
     "audience": "Audience",
     "setup": "Setup",
@@ -368,6 +561,7 @@
     "goto": "Go to",
     "courses": "Courses",
     "home": "Home",
+    "pathways": "Pathways",
     "classroomio_home": "ClassroomIO Home",
     "dashboard": "Dashboard",
     "discussion": "Discussion",
@@ -566,6 +760,11 @@
       "back": "Back",
       "next": "Next"
     }
+  },
+
+  "search": {
+    "no_course": "No course found",
+    "no_pathway": "No pathway found"
   },
 
   "course": {
@@ -974,6 +1173,8 @@
           "add": "Add",
           "add_team": "Add your team mates or collaborators to your organization. Start working together",
           "invite": "Invite",
+          "join_course": "Join Course",
+          "join_pathway": "Join Pathway",
           "placeholder": "email comma separated",
           "role": "Role",
           "send_invite": "Send Invite",
@@ -1016,6 +1217,8 @@
         "editor": {
           "title": {
             "header": "Header",
+            "about": "About",
+            "objectives": "Objectives",
             "requirement": "Requirement",
             "description": "Description",
             "goals": "Goals",
@@ -1084,7 +1287,9 @@
             "no": "No",
             "yes": "Yes",
             "percent": "Discount Percent",
-            "gift": "About Gift"
+            "gift": "About Gift",
+            "gift_placeholder": "Gift on completion",
+            "cart": "Add to Cart"
           }
         },
 
@@ -1122,8 +1327,10 @@
         "reviews": "Reviews",
         "see_all": "See All",
         "header_video": "Header video",
-        "no_course_published": "No Course Published",
-        "coming_your_way": "We've got great courses coming your way, stay tuned!!!",
+        "title": "No courses yet",
+        "subtitle": "Looks like courses have not been added yet. Kindly check back latter",
+        "pathway_title": "No courses yet",
+        "pathway_subtitle": "Looks like courses have not been added yet. Kindly check back latter",
         "view_less": "View Less",
         "view_all": "View All",
         "thank_you": "Thank you for dropping a message, we will get back to you shortly",
@@ -1182,6 +1389,7 @@
         "course_type_desc": "Update the course type for a more personalized experience",
         "live_class": "Live class",
         "self_paced": "Self paced",
+        "pathway": "Pathway",
         "delete": "Delete Course",
         "delete_text": "Delete this course,this action cannot be undone",
         "save": "Save Changes"
@@ -1304,6 +1512,16 @@
     "lesson": "Lesson"
   },
 
+  "lms_pathway": {
+    "pathway": "PATHWAY",
+    "continue": "Continue Path",
+    "course": "Courses",
+    "locked": "Locked",
+    "goto_pathway": "Go to Pathway",
+    "completed": "Completed",
+    "of": "of"
+  },
+
   "explore": {
     "heading": "Explore our courses",
     "empty_heading": "No course available",
@@ -1347,7 +1565,7 @@
         "add": "New feed added successfully"
       },
       "error": {
-        "error": "An error occurred while",
+        "error": "An error occurred while ",
         "editing": "editing feed",
         "creating": "creating feed"
       }
@@ -1436,7 +1654,7 @@
       "success": {
         "complete_marked": "Marked as complete",
         "complete_download": "Download Complete",
-        "version_restored": "Version restored sucessfully"
+        "version_restored": "Version restored successfully"
       },
       "error": {
         "try_later": "Something's not right - Please try later",

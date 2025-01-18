@@ -1,19 +1,18 @@
 <script lang="ts">
-  import { slide } from 'svelte/transition';
-  import { ChevronDown, ChevronUp, Add, FlashFilled } from 'carbon-icons-svelte';
-  import { SkeletonText } from 'carbon-components-svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
-  import { NavClasses } from '$lib/utils/constants/reusableClass';
-  import { handleAddLessonWidget } from '../Lesson/store';
-  import NavIcons from './NavIcons.svelte';
-  import { isFreePlan } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
   import { course } from '$lib/components/Course/store';
+  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { NavClasses } from '$lib/utils/constants/reusableClass';
+  import { isFreePlan } from '$lib/utils/store/org';
   import { COURSE_VERSION } from '$lib/utils/types';
+  import { SkeletonText } from 'carbon-components-svelte';
+  import { Add, ChevronDown, ChevronUp, FlashFilled } from 'carbon-icons-svelte';
+  import { slide } from 'svelte/transition';
+  import { handleAddLessonWidget } from '../Lesson/store';
+  import NavIcons from './NavIcons.svelte';
 
   export let handleClick = () => {};
   export let id = '';
-  export let name = '';
   export let label = '';
   export let isGroupActive = false;
   export let isExpanded: boolean | undefined;
@@ -23,6 +22,8 @@
   export let isSection = false;
   export let isStudent = true;
   export let isPaidFeature = false;
+  export let addIconClick: (() => void) | undefined = undefined;
+  // export let subMenuItems = [];
   export let className = '';
   export let btnPadding = 'py-3 px-4';
 
@@ -55,20 +56,20 @@
 
 <div class={className}>
   <button
-    class="item relative flex items-center {btnPadding} ml-2 mb-1 {NavClasses.item} {isGroupActive &&
+    class="item relative flex items-center {btnPadding} mb-1 ml-2 {NavClasses.item} {isGroupActive &&
       !isLoading &&
       NavClasses.active} w-[95%]"
     tabindex="0"
     on:click={onClick}
     disabled={isLoading}
   >
-    <NavIcons {name} />
+    <NavIcons {id} />
     {#if isLoading}
-      <div class="w-11/12 mx-auto">
+      <div class="mx-auto w-11/12">
         <SkeletonText class="rounded-md" style="margin: 0px; height: 30px;" />
       </div>
     {:else}
-      <span class="font-bold text-md text-start leading-4 line-clamp-2">{label}</span>
+      <span class="text-md line-clamp-2 text-start font-bold leading-4">{label}</span>
       {#if total}
         <span class="ml-1">({total})</span>
       {/if}
@@ -78,8 +79,13 @@
     {#if isPaidFeature && $isFreePlan}
       <FlashFilled size={20} class="text-blue-700" />
     {/if}
+
     {#if (isLesson || isSection) && !isLoading && !isStudent}
-      <IconButton stopPropagation={true} onClick={addLesson} size="small">
+      <IconButton
+        stopPropagation={true}
+        onClick={addIconClick ? addIconClick : addLesson}
+        size="small"
+      >
         <Add />
       </IconButton>
       <IconButton size="small" stopPropagation={true} onClick={toggleIsExpanded}>

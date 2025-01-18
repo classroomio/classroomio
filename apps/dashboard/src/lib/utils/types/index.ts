@@ -34,6 +34,15 @@ export interface GroupPerson {
   fullname?: string;
 }
 
+export interface GroupStore {
+  id: string;
+  tutors: GroupPerson[];
+  students: GroupPerson[];
+  people: GroupPerson[];
+  members?: GroupPerson[];
+  memberId?: string;
+}
+
 export interface CustomQuestionType {
   id: number;
   label: any;
@@ -104,6 +113,38 @@ interface CourseMetadata {
   lessonTabsOrder?: Array<Tabs>;
   grading?: boolean;
   lessonDownload?: boolean;
+  allowNewStudent?: boolean;
+}
+
+export interface PathwayMetadata {
+  header: {
+    title: string;
+    description: string;
+    duration: string;
+    cost: number;
+    buttonLabel: string;
+    videoUrl?: '';
+  };
+  about: string;
+  objectives: string;
+  reviews?: Array<Review>;
+  goals: string;
+  requirements: string;
+  description: string;
+  videoUrl: string;
+  instructor?: {
+    name: string;
+    role: string;
+    coursesNo: number;
+    description: string;
+    imgUrl: string;
+  };
+  showDiscount?: boolean;
+  reward?: {
+    show: boolean;
+    description: string;
+  };
+  discount: number;
   allowNewStudent: boolean;
   sectionDisplay?: Record<string, boolean>;
 }
@@ -208,7 +249,7 @@ export enum COURSE_VERSION {
   V2 = 'V2' // lessons are grouped into sections
 }
 export interface Course {
-  title?: any; // type unknown;
+  title: any; // type unknown;
   description: string; // type unknown;
   type: COURSE_TYPE;
   version: COURSE_VERSION;
@@ -244,6 +285,81 @@ export interface Course {
   polls: { status: string }[];
   tags: CourseTag[]
 }
+
+export interface PathwayCourse {
+  id: string;
+  course: {
+    id: string;
+    title: string;
+    logo: string;
+    description: string;
+    banner_image: string;
+    is_published: boolean;
+    created_at: string;
+    lesson: { is_complete: string }[];
+    group_id: { groupmember: { id: string }[] };
+  };
+  course_id: string;
+  pathway_id: string;
+  order?: number;
+  is_unlocked?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface Pathway {
+  title?: string;
+  description: string; // type unknown;
+  overview?: any; // type unknown;
+  id?: string /* primary key */;
+  created_at: string;
+  updated_at: string;
+  group_id?: string /* foreign key to group.id */;
+  is_template?: boolean;
+  organization_id?: string /* foreign key to organization.id */;
+  logo?: string;
+  slug?: any; // type unknown;
+  landingpage: PathwayMetadata;
+  cost: number;
+  currency?: string;
+  group?: Group;
+  organization?: Organization;
+  is_certificate_downloadable?: boolean;
+  certificate_theme?: string;
+  status: string;
+  is_published: boolean;
+  total_course?: number;
+  total_students?: number;
+  lms_certificate: boolean;
+  courses_certificate: string;
+  progress_rate?: number;
+  prerequisite: string;
+  pathway_course: PathwayCourse[];
+}
+
+export type LMSCourse = {
+  id: string;
+  logo: string;
+  title: string;
+  total_course: number;
+  isPathway: boolean;
+  description: string;
+  progress_rate: number;
+  total_lessons: number;
+  currency: string;
+  total_count: number;
+  slug: string;
+  type: COURSE_TYPE;
+  total_students: number;
+  is_published: boolean;
+  pathway_course: {
+    course: {
+      lesson: {
+        is_complete: boolean;
+      }[];
+    };
+  }[];
+};
 
 export interface Groupmember {
   id: string /* primary key */;
@@ -419,7 +535,7 @@ export interface Review {
   name: string;
   avatar_url: string;
   rating: number;
-  created_at: number;
+  created_at: number | string;
   description: string;
 }
 

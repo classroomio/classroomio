@@ -22,6 +22,6 @@
     "source.organizeImports": "explicit"
   },
   "[svelte]": {
-    "editor.defaultFormatter": "svelte.svelte-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
 }
