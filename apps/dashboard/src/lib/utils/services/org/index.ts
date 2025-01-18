@@ -77,7 +77,9 @@ export async function getOrganizations(userId: string, isOrgSite?: boolean, orgS
         organization_plan(
           plan_name,
           is_active,
-          subscriptionId:payload->id
+          provider,
+          subscriptionId:payload->id,
+          customerId:payload->customerId
         )
       )
     `

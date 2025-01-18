@@ -1,20 +1,22 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { Moon } from 'svelte-loading-spinners';
   import { browser } from '$app/environment';
-  import Navigation from '../Course/components/Navigation/index.svelte';
-  import Backdrop from '$lib/components/Backdrop/index.svelte';
-  import { course, group, setCourse, defaultCourse } from '../Course/store';
-  import Confetti from '../Confetti/index.svelte';
-  import { isMobile } from '$lib/utils/store/useMobile';
+  import { Moon } from 'svelte-loading-spinners';
+
   import { profile } from '$lib/utils/store/user';
-  import { fetchCourse } from '$lib/utils/services/courses';
-  import { globalStore } from '$lib/utils/store/app';
-  import { lessons } from '../Course/components/Lesson/store/lessons';
-  import Modal from '$lib/components/Modal/index.svelte';
-  import { t } from '$lib/utils/functions/translations';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { isOrgAdmin } from '$lib/utils/store/org';
+  import { globalStore } from '$lib/utils/store/app';
+  import { isMobile } from '$lib/utils/store/useMobile';
+  import { fetchCourse } from '$lib/utils/services/courses';
+  import { lessons } from '../Course/components/Lesson/store/lessons';
+  import { course, group, setCourse, defaultCourse } from '../Course/store';
+
+  import Confetti from '../Confetti/index.svelte';
+  import { t } from '$lib/utils/functions/translations';
+  import Modal from '$lib/components/Modal/index.svelte';
+  import Backdrop from '$lib/components/Backdrop/index.svelte';
+  import Navigation from '../Course/components/Navigation/index.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   export let courseId = '';
   export let path = '';

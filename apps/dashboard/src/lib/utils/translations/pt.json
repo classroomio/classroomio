@@ -1150,6 +1150,7 @@
     "early_adopter": "Torne-se um dos primeiros a adotar",
     "unlock": "Desbloqueie recursos ilimitados e invista em nosso futuro",
     "upgrade": "Atualize agora",
+    "tags": "Etiquetas",
     "all_courses": "Todos os cursos",
     "pathway": "Caminhos"
   },
@@ -1159,8 +1160,9 @@
       "sub_title": "Detalhes de cobrança",
       "manage": "Gerencie seu faturamento",
       "active": "Você não tem nenhum faturamento ativo",
-      "lemonsqueezy": "Usamos Lemonsqueezy para ajudar a gerenciar seu faturamento",
-      "open_billing": "Faturamento aberto"
+      "open_billing": "Faturamento aberto",
+      "provider": "Usamos a Polar para ajudar a gerenciar seu faturamento",
+      "error": "Ocorreu um erro ao abrir o faturamento"
     },
     "integrations": {
       "heading": "Telegrama",
@@ -1730,5 +1732,44 @@
     "assignment_completion_description": "Porcentagem de tarefas concluídas",
     "average_grade": "Nota Média",
     "average_grade_description": "Nota média de todas as tarefas concluídas"
+  },
+  "tags": {
+    "tags": "Etiquetas",
+    "create_new_tags": "Crie novas tags",
+    "find_tag": "Encontrar etiqueta",
+    "description": "Descrição",
+    "course_count": "Contagem de cursos",
+    "action": "Ação",
+    "courses": "Cursos",
+    "course": "Curso",
+    "edit_tag": "Editar etiqueta",
+    "delete": "Excluir",
+    "no_tags_yet": "Ainda não há tags",
+    "add_a_group": "Adicione um grupo de cursos relacionados para colocar os alunos no caminho da excelência em suas áreas",
+    "add_tags": "Adicionar tags",
+    "attach": "Anexe ou remova um curso das tags",
+    "add_a_tag": "Adicionar uma etiqueta",
+    "errors": {
+      "remove_tag": "Falha ao remover a tag. Por favor, tente novamente.",
+      "add_tag": "Falha ao adicionar tag. Por favor, tente novamente.",
+      "fetch_tags": "Falha ao buscar tags. Por favor, tente novamente."
+    },
+    "add_tag_modal": {
+      "heading": "Curso de tags",
+      "placeholder": "Procure uma etiqueta",
+      "header": "Todas as tags"
+    },
+    "tag_modal": {
+      "edit_tag": "Editar etiqueta",
+      "delete_tag": "Excluir etiqueta",
+      "create_tag": "Criar etiqueta",
+      "tag_name": "Nome da etiqueta",
+      "description": "Descrição",
+      "delete_modal": "Tem certeza de que deseja excluir esta tag?",
+      "no": "Não",
+      "cancel": "Cancelar",
+      "yes": "Sim",
+      "save": "Salvar"
+    }
   }
 }

@@ -5,15 +5,17 @@
   import SidebarExpandeable from '$lib/components/Org/SidebarExpandeable.svelte';
   import OrgSelector from '$lib/components/OrgSelector/OrgSelector.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { NavClasses } from '$lib/utils/constants/reusableClass';
-  import { t } from '$lib/utils/functions/translations';
-  import { currentOrgPath, isFreePlan, isOrgAdmin } from '$lib/utils/store/org';
-  import { profile } from '$lib/utils/store/user';
+  import { currentOrgPath, isFreePlan } from '$lib/utils/store/org';
   import { ChevronRight } from 'carbon-icons-svelte';
   import HelpIcon from 'carbon-icons-svelte/lib/Help.svelte';
-  import { sideBar } from './store';
 
   import ProfileMenu from '$lib/components/Org/ProfileMenu/index.svelte';
+  import { NavClasses } from '$lib/utils/constants/reusableClass';
+  import { t } from '$lib/utils/functions/translations';
+  import { isOrgAdmin } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
+  import { sideBar } from './store';
+
   import { profileMenu } from './store';
 
   interface menuItems {
@@ -55,7 +57,7 @@
     },
     {
       id: 'courses',
-      to: ['/courses', '/pathways'],
+      to: ['/courses', '/tags', '/pathways'],
       isDropdown: true,
       isExpanded: true,
       label: $t('org_navigation.courses'),
@@ -77,6 +79,7 @@
       show: true
     },
     {
+      path: '/setup',
       id: 'setup',
       to: '/setup',
       label: $t('org_navigation.setup'),
@@ -121,6 +124,8 @@
                     >
                       {#if subPath === '/courses'}
                         {$t('org_navigation.all_courses')}
+                      {:else if subPath === '/tags'}
+                        {$t('org_navigation.tags')}
                       {:else if subPath === '/pathways'}
                         {$t('org_navigation.pathway')}
                       {/if}

@@ -10,35 +10,40 @@
     Row,
     Toggle
   } from 'carbon-components-svelte';
-  import { ArrowUpRight, Restart } from 'carbon-icons-svelte';
-
-  import TextArea from '$lib/components/Form/TextArea.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
-  import DragAndDrop from './DragAndDrop.svelte';
+  import { ArrowUpRight, Restart, Tag } from 'carbon-icons-svelte';
 
   import { course } from '$lib/components/Course/store';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
-  import IconButton from '$lib/components/IconButton/index.svelte';
-  import DeleteModal from '$lib/components/Modal/DeleteModal.svelte';
+  import { addTagModal } from '$lib/components/CourseTags/store';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
-  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
-  import generateSlug from '$lib/utils/functions/generateSlug';
   import { isObject } from '$lib/utils/functions/isObject';
   import { t } from '$lib/utils/functions/translations';
-  import { deleteCourse, updateCourse } from '$lib/utils/services/courses';
+  import { deleteCourse, removeCourseTag, updateCourse } from '$lib/utils/services/courses';
   import { currentOrg, currentOrgDomain, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
-  import type { Course } from '$lib/utils/types';
+  import type { Course, CourseTag } from '$lib/utils/types';
   import { COURSE_TYPE } from '$lib/utils/types';
   import { lessons } from '../Lesson/store/lessons';
   import { settings } from './store';
 
-  let isSaving = false;
+  import AddTagModal from '$lib/components/CourseTags/AddTagModal.svelte';
+  import TextArea from '$lib/components/Form/TextArea.svelte';
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import IconButton from '$lib/components/IconButton/index.svelte';
+  import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
+  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
+  import generateSlug from '$lib/utils/functions/generateSlug';
+  import DragAndDrop from './DragAndDrop.svelte';
+
+  import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
+
+  import TagButton from '$lib/components/CourseTags/TagButton.svelte';
+  import DeleteModal from '$lib/components/Modal/DeleteModal.svelte';
+
   let isLoading = false;
+  let isSaving = false;
   let isDeleting = false;
   let errors: {
     title: string | undefined;
@@ -114,6 +119,19 @@
     $settings.logo = '';
     hasUnsavedChanges = true;
   };
+
+  async function handleRemoveTag(tag: CourseTag) {
+    try {
+      const response = await removeCourseTag(tag.course_tag_id);
+
+      if (response.data && response.data.length > 0) {
+        $course.tags = $course.tags.filter((ct) => ct.id !== tag.id);
+      }
+    } catch (error) {
+      snackbar.error('tags.errors.remove_tag');
+      console.error('Error removing tag:', error);
+    }
+  }
 
   async function handleDeleteCourse() {
     isDeleting = true;
@@ -199,6 +217,7 @@
   $: courseLink = `${$currentOrgDomain}/course/${$course.slug}`;
 </script>
 
+<AddTagModal />
 <UnsavedChanges {hasUnsavedChanges} />
 
 <DeleteModal onDelete={handleDeleteCourse} bind:open={openDeleteModal} />
@@ -304,6 +323,33 @@
       </Toggle>
     </Column>
   </Row> -->
+
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
+    <Column sm={8} md={8} lg={8}>
+      <SectionTitle>{$t('tags.add_tag_modal.heading')}</SectionTitle>
+      <p>{$t('tags.attach')}</p>
+    </Column>
+    <Column sm={8} md={8} lg={8}>
+      <div
+        class="my-2 flex max-h-[10vh] flex-wrap items-center gap-3 overflow-hidden overflow-y-auto"
+      >
+        {#if $course.tags && $course.tags.length > 0}
+          {#each $course.tags as tag}
+            <TagButton {tag} isRemove={true} handleTag={handleRemoveTag} />
+          {/each}
+        {/if}
+      </div>
+      <PrimaryButton
+        width="md:w-[40%] mt-3"
+        variant={VARIANTS.OUTLINED}
+        onClick={() => ($addTagModal.open = true)}
+        className="flex items-center justify-between border-primary-600 dark:bg-transparent px-3 py-1"
+      >
+        <Tag />
+        <span class="ml-2">{$t('tags.add_a_tag')}</span>
+      </PrimaryButton>
+    </Column>
+  </Row>
 
   <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={8} md={8} lg={8}>

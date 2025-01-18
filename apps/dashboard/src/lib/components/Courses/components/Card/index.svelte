@@ -5,6 +5,7 @@
   import { calcCourseDiscount } from '$lib/utils/functions/course';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
   import { t } from '$lib/utils/functions/translations';
+  import type { CourseTag } from '$lib/utils/types';
   import { COURSE_TYPE } from '$lib/utils/types';
   import {
     ImageLoader,
@@ -43,6 +44,7 @@
   } = {
     cost: 0
   };
+  export let tags: CourseTag[] = [];
 
   $: formatter = getCurrencyFormatter(currency);
 
@@ -119,13 +121,13 @@
       goto(getCourseUrl());
     }
   }}
-  class="border-gray group relative w-full max-w-[320px] rounded border text-black dark:border-neutral-600"
+  class="border-gray group relative h-fit w-full max-w-[320px] rounded border text-black dark:border-neutral-600"
 >
   <div class="p-4">
     <div class="relative mb-5">
       {#if !isLMS && !isOnLandingPage}
         <OverflowMenu
-          class="absolute right-2 top-2 z-50 rounded-full bg-gray-200 opacity-0 transition-all delay-150  duration-200 ease-in-out group-hover:opacity-100 dark:bg-neutral-800"
+          class="absolute right-2 top-2 z-40 rounded-full bg-gray-200 opacity-0 transition-all delay-150  duration-200 ease-in-out group-hover:opacity-100 dark:bg-neutral-800"
           size="sm"
           on:click={(e) => e.stopPropagation()}
         >
@@ -181,6 +183,20 @@
     <p class="description mt-2 text-sm text-gray-500 dark:text-gray-300">
       {description}
     </p>
+
+    {#if tags && tags.length > 0 && tags.every((tag) => tag !== null)}
+      <div
+        class="mt-2 flex w-full max-w-full items-center gap-3 overflow-x-auto py-4"
+        style="overflow-x: auto; white-space: nowrap;"
+      >
+        {#each tags as tag}
+          <span
+            class="flex items-center justify-center rounded-sm border bg-gray-50 px-3 py-1 text-xs dark:bg-transparent dark:text-white"
+            >{tag}</span
+          >
+        {/each}
+      </div>
+    {/if}
   </div>
 
   <div

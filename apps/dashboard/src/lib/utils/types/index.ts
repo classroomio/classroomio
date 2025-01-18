@@ -254,7 +254,7 @@ export interface Course {
   type: COURSE_TYPE;
   version: COURSE_VERSION;
   overview?: any; // type unknown;
-  id?: string /* primary key */;
+  id: string /* primary key */;
   created_at: string;
   updated_at: string;
   group_id?: string /* foreign key to group.id */;
@@ -283,6 +283,7 @@ export interface Course {
   lesson_section?: LessonSection[];
   lessons?: Lesson[];
   polls: { status: string }[];
+  tags: CourseTag[]
 }
 
 export interface PathwayCourse {
@@ -541,4 +542,15 @@ export interface Review {
 export interface Tabs {
   id: number;
   name: string;
+}
+export interface CourseTag {
+  id: string;
+  name: string;
+  description: string;
+  courseCount?: number;
+  course_tag_id: string;
+
+  // these two types are because of the structure of the fetch query for the courseContainer
+  tags: any;
+  tag_id: any;
 }

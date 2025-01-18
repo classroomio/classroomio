@@ -9,7 +9,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { globalStore } from '$lib/utils/store/app';
   import { isMobile } from '$lib/utils/store/useMobile';
-  import type { LMSCourse } from '$lib/utils/types';
+  import type { Course, LMSCourse } from '$lib/utils/types';
   import {
     StructuredList,
     StructuredListBody,
@@ -18,7 +18,8 @@
     StructuredListRow
   } from 'carbon-components-svelte';
 
-  export let courses: LMSCourse[] = [];
+  type Courses = Course & LMSCourse;
+  export let courses: Courses[] = [];
   export let emptyTitle = $t('courses.course_card.empty_title');
   export let emptyDescription = $t('courses.course_card.empty_description');
   export let isExplore = false;
@@ -128,6 +129,7 @@
             totalStudents={courseData.total_students}
             isLMS={$globalStore.isOrgSite}
             {isExplore}
+            tags={courseData.tags}
             progressRate={calculateCourseAndPathwayProgress(courseData)}
           />
         {/key}

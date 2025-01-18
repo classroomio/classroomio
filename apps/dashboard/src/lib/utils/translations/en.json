@@ -1,4 +1,44 @@
 {
+  "tags": {
+    "tags": "Tags",
+    "create_new_tags": "Create new tags",
+    "find_tag": "Find Tag",
+    "description": "Description",
+    "course_count": "Course count",
+    "action": "Action",
+    "courses": "Courses",
+    "course": "Course",
+    "edit_tag": "Edit Tag",
+    "delete": "Delete",
+    "no_tags_yet": "No tags yet",
+    "add_a_group": "Add a group of related courses to set students on a path to excellence in your fields",
+    "add_tags": "Add tags",
+    "tag_modal": {
+      "edit_tag": "Edit Tag",
+      "delete_tag": "Delete Tag",
+      "create_tag": "Create Tag",
+      "tag_name": "Tag Name",
+      "description": "Description",
+      "delete_modal": "Are you sure you want to delete this tag?",
+      "no": "No",
+      "cancel": "Cancel",
+      "yes": "Yes",
+      "save": "Save"
+    },
+    "add_tag_modal": {
+      "heading": "Tag Course",
+      "placeholder": "Search for a tag",
+      "header": "All Tags"
+    },
+    "attach": "Attach or remove a course from tags",
+    "add_a_tag": "Add a tag",
+    "errors": {
+      "remove_tag": "Failed to remove tag. Please try again.",
+      "add_tag": "Failed to add tag. Please try again.",
+      "fetch_tags": "Failed to fetch tags. Please try again."
+    }
+  },
+
   "pathway": {
     "heading": "Pathways",
     "heading_button": "Create pathway",
@@ -433,8 +473,9 @@
       "sub_title": "Billing details",
       "manage": "Manage your billing",
       "active": "You don't have any active billing",
-      "lemonsqueezy": "We use Lemonsqueezy to help manage your billing",
-      "open_billing": "Open billing"
+      "provider": "We use Polar to help manage your billing",
+      "open_billing": "Open billing",
+      "error": "An error occurred while opening billing"
     }
   },
 
@@ -446,6 +487,7 @@
     "community": "Community",
     "audience": "Audience",
     "setup": "Setup",
+    "tags": "Tags",
     "help": "Help",
     "settings": "Settings",
     "early_adopter": "Become an Early Adopter",

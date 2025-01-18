@@ -1,4 +1,0 @@
-1. Welcome new user into classroomio
-2. Sends teacher welcome to course
-3. Notify teacher someone wants to buy course
-4

@@ -48,7 +48,8 @@ export const defaultCourse: Course = {
     grading: false,
     lessonDownload: true,
     allowNewStudent: false
-  }
+  },
+  tags: []
 };
 
 export const course: Writable<Course> = writable({ ...defaultCourse });
@@ -151,6 +152,16 @@ export async function setCourse(data: Course, setLesson = true) {
   if (!data.certificate_theme) {
     data.certificate_theme = 'professional';
   }
+
+  // restructure the tags data coming in
+  if (data.tags) {
+    data.tags = data.tags.map(tag => ({
+      id: tag.id,
+      course_tag_id: tag.tag_id,
+      name: tag.tags.name,
+    }));
+  }
+
   course.set(data);
 }
 

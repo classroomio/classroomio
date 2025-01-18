@@ -1150,6 +1150,7 @@
     "early_adopter": "Devenez un adopteur précoce",
     "unlock": "Débloquez des fonctionnalités illimitées et investissez dans notre avenir",
     "upgrade": "Mettre à jour maintenant",
+    "tags": "Balises",
     "all_courses": "Tous les cours",
     "pathway": "Voies"
   },
@@ -1159,8 +1160,9 @@
       "sub_title": "Détails de la facturation",
       "manage": "Gérez votre facturation",
       "active": "Vous n'avez aucune facturation active",
-      "lemonsqueezy": "Nous utilisons Lemonsqueezy pour vous aider à gérer votre facturation",
-      "open_billing": "Facturation ouverte"
+      "open_billing": "Facturation ouverte",
+      "provider": "Nous utilisons Polar pour vous aider à gérer votre facturation",
+      "error": "Une erreur s'est produite lors de l'ouverture de la facturation"
     },
     "integrations": {
       "heading": "Télégramme",
@@ -1730,5 +1732,44 @@
     "assignment_completion_description": "Pourcentage de missions terminées",
     "average_grade": "Note moyenne",
     "average_grade_description": "Note moyenne de tous les devoirs terminés"
+  },
+  "tags": {
+    "tags": "Balises",
+    "create_new_tags": "Créer de nouvelles balises",
+    "find_tag": "Rechercher une balise",
+    "description": "Description",
+    "course_count": "Nombre de cours",
+    "action": "Action",
+    "courses": "Cours",
+    "course": "Cours",
+    "edit_tag": "Modifier la balise",
+    "delete": "Supprimer",
+    "no_tags_yet": "Pas encore de balises",
+    "add_a_group": "Ajoutez un groupe de cours connexes pour mettre les étudiants sur la voie de l'excellence dans vos domaines",
+    "add_tags": "Ajouter des balises",
+    "attach": "Attacher ou supprimer un cours des balises",
+    "add_a_tag": "Ajouter une balise",
+    "errors": {
+      "remove_tag": "Échec de la suppression de la balise. Veuillez réessayer.",
+      "add_tag": "Échec de l'ajout de la balise. Veuillez réessayer.",
+      "fetch_tags": "Échec de la récupération des balises. Veuillez réessayer."
+    },
+    "add_tag_modal": {
+      "heading": "Cours de balise",
+      "placeholder": "Rechercher une balise",
+      "header": "Toutes les balises"
+    },
+    "tag_modal": {
+      "edit_tag": "Modifier la balise",
+      "delete_tag": "Supprimer la balise",
+      "create_tag": "Créer une balise",
+      "tag_name": "Nom de la balise",
+      "description": "Description",
+      "delete_modal": "Êtes-vous sûr de vouloir supprimer cette balise ?",
+      "no": "Non",
+      "cancel": "Annuler",
+      "yes": "Oui",
+      "save": "Sauvegarder"
+    }
   }
 }

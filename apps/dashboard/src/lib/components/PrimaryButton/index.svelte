@@ -3,6 +3,7 @@
   import { VARIANTS, VARIANTS_CLASS } from './constants';
 
   export let label = '';
+  export let width = 'w-fit sm:w-auto';
   export let className = '';
   export let onClick = (e?: Event) => {};
   export let name = '';

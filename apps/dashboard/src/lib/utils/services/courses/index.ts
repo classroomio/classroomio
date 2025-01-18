@@ -117,7 +117,8 @@ const SLUG_QUERY = `
   lesson_section(id, title, order),
   lessons:lesson(
     id, title, order, section_id
-  )
+  ),
+  tags:course_tags(tag_id, tags(name))
 `;
 
 const ID_QUERY = `
@@ -148,7 +149,8 @@ const ID_QUERY = `
     lesson_completion(id, profile_id, is_complete)
   ),
   attendance:group_attendance(*),
-  polls:apps_poll(status)
+  polls:apps_poll(status),
+  tags:course_tags(id, tag_id, tags(name))
 `;
 
 export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']) {
@@ -604,4 +606,54 @@ export async function deleteExercise(questions: Array<{ id: string }>, exerciseI
 
   await supabase.from('submission').delete().match({ exercise_id: exerciseId });
   await supabase.from('exercise').delete().match({ id: exerciseId });
+}
+
+export async function fetchCourseTags(orgId: string) {
+  const { data, error } = await supabase
+    .from('tags')
+    .select(
+      `
+      *,
+      course_tags(id, tag_id)
+      `
+    )
+    .eq('organization_id', orgId);
+
+  if (error) {
+    console.error('Error fetching course tags:', error);
+    return [];
+  }
+
+  // aggregate the course counts for each tag
+  const aggregatedTags = data.map((tag) => {
+    const courseCount = tag.course_tags ? tag.course_tags.length : 0;
+    return {
+      ...tag,
+      courseCount,
+      course_tag_id: tag.course_tags?.[0]?.id || null
+    };
+  });
+
+  return aggregatedTags;
+}
+
+export function createTag(name: string, description: string, orgId: string) {
+  return supabase.from('tags').insert({ name, description, organization_id: orgId }).select();
+}
+
+export function updateTag(id: string, name: string, description: string) {
+  return supabase.from('tags').update({ name, description }).match({ id });
+}
+
+export function deleteTag(id: string) {
+  return supabase.from('tags').delete().match({ id }).select();
+}
+
+// tags operation in courses
+export function addCourseTag(courseId: string, tagId: string) {
+  return supabase.from('course_tags').insert({ course_id: courseId, tag_id: tagId }).select();
+}
+
+export function removeCourseTag(id: string) {
+  return supabase.from('course_tags').delete().match({ id }).select();
 }
