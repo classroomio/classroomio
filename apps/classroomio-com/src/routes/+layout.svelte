@@ -20,8 +20,6 @@
   });
 
   $: metaTags = extend(true, {}, data.baseMetaTags, $page.data.pageMetaTags);
-
-	$: console.log({ data })
 </script>
 
 <MetaTags {...metaTags} />
