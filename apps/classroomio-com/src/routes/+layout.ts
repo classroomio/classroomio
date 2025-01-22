@@ -2,10 +2,21 @@ import type { MetaTagsProps } from 'svelte-meta-tags';
 
 export const prerender = true;
 
-export function load({ url }) {
+export async function load({ url }) {
+  let githubStars = 0;
+
+  try {
+    const response = await fetch('http://api.github.com/repos/classroomio/classroomio');
+    const data = await response.json();
+    githubStars = data?.stargazers_count || 0;
+  } catch (error) {
+    console.error('Error fetching GitHub stars:', error);
+  }
+
   return {
     baseMetaTags: getBaseMetaTags(url),
-    url: url.pathname
+    url: url.pathname,
+    githubStars
   };
 }
 
