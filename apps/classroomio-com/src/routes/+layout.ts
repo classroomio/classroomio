@@ -1,7 +1,5 @@
 import type { MetaTagsProps } from 'svelte-meta-tags';
 
-export const prerender = true;
-
 export async function load({ url, fetch }) {
   let githubStars = 0;
 
