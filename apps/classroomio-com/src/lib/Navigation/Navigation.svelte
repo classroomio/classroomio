@@ -1,12 +1,12 @@
 <script lang="ts">
-  import ChevronDown from 'carbon-icons-svelte/lib/ChevronDown.svelte';
-  import TextAlignJustify from 'carbon-icons-svelte/lib/TextAlignJustify.svelte';
-  import CloseLarge from 'carbon-icons-svelte/lib/CloseLarge.svelte';
-  import { fly } from 'svelte/transition';
-  import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
-  import CourseIcon from '$lib/Icons/CourseIcon.svelte';
-  import MapCenter from 'carbon-icons-svelte/lib/MapCenter.svelte';
   import { page } from '$app/stores';
+  import CourseIcon from '$lib/Icons/CourseIcon.svelte';
+  import ChevronDown from 'carbon-icons-svelte/lib/ChevronDown.svelte';
+  import CloseLarge from 'carbon-icons-svelte/lib/CloseLarge.svelte';
+  import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
+  import MapCenter from 'carbon-icons-svelte/lib/MapCenter.svelte';
+  import TextAlignJustify from 'carbon-icons-svelte/lib/TextAlignJustify.svelte';
+  import { fly } from 'svelte/transition';
 
   export let stars = 0;
 
@@ -125,7 +125,9 @@
         class="text-gray-800 font-semibold text-sm cursor-pointer"
         class:active={activeLink.startsWith('/tools')}
       >
-        <li class="hover:bg-gray-100 px-4 py-2 rounded-md transition-all duration-200">Free Tools</li>
+        <li class="hover:bg-gray-100 px-4 py-2 rounded-md transition-all duration-200">
+          Free Tools
+        </li>
       </a>
 
       <a
@@ -145,20 +147,24 @@
     </ul>
   </nav>
 
-  <div class="justify-between items-center flex-row hidden md:hidden lg:flex gap-4">
-    <a href="/discord" target="_blank" class="flex items-center hover:opacity-80 transition-opacity duration-200">
+  <div class="justify-between items-center flex-row hidden md:hidden lg:flex gap-3">
+    <a
+      href="/discord"
+      target="_blank"
+      class="flex items-center hover:opacity-80 transition-opacity duration-200"
+    >
       <img
         loading="lazy"
         alt="discord logo"
         src="/discord-blue.png"
-        class="w-8 h-6 cursor-pointer"
+        class="w-6 h-5 cursor-pointer"
       />
     </a>
     <div class="flex items-center">
-      <a 
-        href="/github" 
-        target="_blank" 
-        class="flex items-center gap-1.5 px-2 py-1 rounded-md transition-all duration-200 ease-in-out hover:bg-gray-100 group"
+      <a
+        href="/github"
+        target="_blank"
+        class="flex items-center gap-1.5 p-2 rounded-md transition-all duration-200 ease-in-out hover:bg-gray-100 group"
       >
         <img
           loading="lazy"
@@ -166,7 +172,11 @@
           src="/github-mark.png"
           class="w-5 h-5 cursor-pointer transition-transform duration-200 group-hover:scale-110"
         />
-        <span class="text-sm text-gray-600 font-medium leading-none transition-colors duration-200 group-hover:text-black">{stars}</span>
+        <span
+          class="text-sm text-gray-600 font-medium leading-none transition-colors duration-200 group-hover:text-black"
+        >
+        {stars}
+        </span>
       </a>
     </div>
     <a
@@ -283,7 +293,7 @@
             loading="lazy"
             alt="discord logo"
             src="/discord-blue.png"
-            class="w-8 h-6 mr-2 cursor-pointer"
+            class="w-6 h-5 mr-2 cursor-pointer"
           />
           <span>Discord</span>
         </a>
@@ -299,7 +309,10 @@
             class="w-5 h-5 cursor-pointer transition-transform duration-200 group-hover:scale-110"
           />
           <span class="ml-3 transition-colors duration-200 group-hover:text-black">Github</span>
-          <span class="text-sm text-gray-600 font-medium ml-1.5 transition-colors duration-200 group-hover:text-black">{stars}</span>
+          <span
+            class="text-sm text-gray-600 font-medium ml-1 transition-colors duration-200 group-hover:text-black"
+            >({stars})</span
+          >
         </a>
         <a
           class="font-semibold after:content-['→'] rounded-md after:ml-2 w-full text-left py-4 px-4 hover:bg-gray-100 text-sm md:text-lg transition-all duration-200"
