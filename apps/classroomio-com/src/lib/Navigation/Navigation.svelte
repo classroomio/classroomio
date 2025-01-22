@@ -1,13 +1,14 @@
 <script lang="ts">
-  import ChevronDown from 'carbon-icons-svelte/lib/ChevronDown.svelte';
-  import TextAlignJustify from 'carbon-icons-svelte/lib/TextAlignJustify.svelte';
-  import CloseLarge from 'carbon-icons-svelte/lib/CloseLarge.svelte';
-  import { fly } from 'svelte/transition';
-  import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
-  import CourseIcon from '$lib/Icons/CourseIcon.svelte';
-  import MapCenter from 'carbon-icons-svelte/lib/MapCenter.svelte';
   import { page } from '$app/stores';
+  import CourseIcon from '$lib/Icons/CourseIcon.svelte';
+  import ChevronDown from 'carbon-icons-svelte/lib/ChevronDown.svelte';
+  import CloseLarge from 'carbon-icons-svelte/lib/CloseLarge.svelte';
+  import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
+  import MapCenter from 'carbon-icons-svelte/lib/MapCenter.svelte';
+  import TextAlignJustify from 'carbon-icons-svelte/lib/TextAlignJustify.svelte';
+  import { fly } from 'svelte/transition';
 
+  export let stars;
   let showDrawer = false;
   let showSolutions = false;
   let activeLink = '';
@@ -30,6 +31,13 @@
     showSolutions = !showSolutions;
   }
 
+  function formatStarCount(count = 0): string {
+    if (!count) return '0';
+    if (count >= 1000) {
+      return `${(count / 1000).toFixed(1)}K`;
+    }
+    return count.toString();
+  }
   const solutions = [
     {
       key: 'employee-training',
@@ -152,13 +160,20 @@
         class="w-8 h-6 mr-4 cursor-pointer"
       />
     </a>
-    <a href="/github" target="_blank">
+    <a
+      href="/github"
+      target="_blank"
+      class="flex items-center px-3 py-2 mr-4 hover:bg-gray-100 rounded-md group transition duration-150"
+    >
       <img
         loading="lazy"
         alt="github logo"
         src="/github-mark.png"
-        class="w-6 h-6 mr-4 cursor-pointer"
+        class="w-6 h-6 mr-2 cursor-pointer transition duration-150 group-hover:scale-110"
       />
+      <span class="font-medium text-sm">
+        {formatStarCount(stars)}
+      </span>
     </a>
     <a
       class="font-medium text-sm after:content-['→'] after:ml-2"
