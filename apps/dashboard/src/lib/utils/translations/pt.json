@@ -1150,7 +1150,6 @@
     "early_adopter": "Torne-se um dos primeiros a adotar",
     "unlock": "Desbloqueie recursos ilimitados e invista em nosso futuro",
     "upgrade": "Atualize agora",
-    "tags": "Etiquetas",
     "all_courses": "Todos os cursos",
     "pathway": "Caminhos"
   },
@@ -1735,7 +1734,6 @@
   },
   "tags": {
     "tags": "Etiquetas",
-    "create_new_tags": "Crie novas tags",
     "find_tag": "Encontrar etiqueta",
     "description": "Descrição",
     "course_count": "Contagem de cursos",

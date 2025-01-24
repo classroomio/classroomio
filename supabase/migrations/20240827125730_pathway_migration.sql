@@ -24,7 +24,7 @@ alter table "public"."pathway" add column "is_certificate_downloadable" boolean 
 
 alter table "public"."pathway" add column "lms_certificate" boolean;
 
-alter table "public"."pathway_course" add column "is_unlocked" boolean not null default false;
+alter table "public"."pathway_course" add column "is_unlocked" boolean not null default true;
 
 CREATE UNIQUE INDEX pathway_newsfeed_comment_pkey ON public.pathway_newsfeed_comment USING btree (id);
 

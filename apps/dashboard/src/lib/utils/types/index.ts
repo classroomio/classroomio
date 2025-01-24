@@ -248,42 +248,42 @@ export enum COURSE_VERSION {
   V1 = 'V1', // with only lesson
   V2 = 'V2' // lessons are grouped into sections
 }
-export interface Course {
-  title: any; // type unknown;
-  description: string; // type unknown;
-  type: COURSE_TYPE;
-  version: COURSE_VERSION;
-  overview?: any; // type unknown;
-  id: string /* primary key */;
-  created_at: string;
-  updated_at: string;
-  group_id?: string /* foreign key to group.id */;
-  is_template?: boolean;
-  organization_id?: string /* foreign key to organization.id */;
-  logo?: string;
-  slug?: any; // type unknown;
-  metadata: CourseMetadata;
-  cost: number;
-  currency?: string;
-  group?: Group;
-  organization?: Organization;
-  is_certificate_downloadable?: boolean;
-  certificate_theme?: string;
-  status: string;
-  is_published?: boolean;
-  progress_rate?: number;
-  total_lessons?: number;
-  total_students?: number;
+export interface Course extends LMSCourse {
   attendance: {
-    student_id: string;
-    lesson_id: string;
-    is_present: boolean;
     id: number;
+    is_present: boolean;
+    lesson_id: string;
+    student_id: string;
   }[];
+  certificate_theme?: string;
+  cost: number;
+  created_at: string;
+  currency?: string;
+  description: string; // type unknown;
+  group?: Group;
+  group_id?: string /* foreign key to group.id */;
+  id: string /* primary key */;
+  is_certificate_downloadable?: boolean;
+  is_published?: boolean;
+  is_template?: boolean;
   lesson_section?: LessonSection[];
   lessons?: Lesson[];
+  logo?: string;
+  metadata: CourseMetadata;
+  organization?: Organization;
+  organization_id?: string /* foreign key to organization.id */;
+  overview?: any; // type unknown;
   polls: { status: string }[];
-  tags: CourseTag[]
+  progress_rate?: number;
+  slug?: string;
+  status: string;
+  tags: CourseTag[];
+  title: any;
+  total_lessons?: number;
+  total_students?: number;
+  type: COURSE_TYPE;
+  updated_at: string;
+  version: COURSE_VERSION;
 }
 
 export interface PathwayCourse {
@@ -339,20 +339,20 @@ export interface Pathway {
 
 export type LMSCourse = {
   id: string;
-  logo: string;
+  logo?: string;
   title: string;
-  total_course: number;
-  isPathway: boolean;
-  description: string;
-  progress_rate: number;
-  total_lessons: number;
-  currency: string;
-  total_count: number;
-  slug: string;
+  total_course?: number;
+  isPathway?: boolean;
+  description?: string;
+  progress_rate?: number;
+  total_lessons?: number;
+  currency?: string;
+  total_count?: number;
+  slug?: string;
   type: COURSE_TYPE;
-  total_students: number;
-  is_published: boolean;
-  pathway_course: {
+  total_students?: number;
+  is_published?: boolean;
+  pathway_course?: {
     course: {
       lesson: {
         is_complete: boolean;

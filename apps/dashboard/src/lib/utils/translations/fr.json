@@ -1150,7 +1150,6 @@
     "early_adopter": "Devenez un adopteur précoce",
     "unlock": "Débloquez des fonctionnalités illimitées et investissez dans notre avenir",
     "upgrade": "Mettre à jour maintenant",
-    "tags": "Balises",
     "all_courses": "Tous les cours",
     "pathway": "Voies"
   },
@@ -1735,7 +1734,6 @@
   },
   "tags": {
     "tags": "Balises",
-    "create_new_tags": "Créer de nouvelles balises",
     "find_tag": "Rechercher une balise",
     "description": "Description",
     "course_count": "Nombre de cours",

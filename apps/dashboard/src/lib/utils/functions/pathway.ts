@@ -36,7 +36,7 @@ export const getPathwayCompletedCoursesLength = (course: LMSCourse) => {
     const lessons = pathwayCourse.course.lesson;
     return lessons.length > 0 && lessons.every((lesson) => lesson.is_complete);
   }).length;
-  return completedCourses;
+  return completedCourses || 0;
 };
 
 export const getIsPathwayComplete = (course: LMSCourse) => {

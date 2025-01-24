@@ -59,13 +59,13 @@
 
 <section class="mx-auto w-full max-w-5xl">
   <div class="flex flex-wrap items-center justify-between py-10">
-    <h1 class="m-0 text-2xl font-bold md:text-3xl dark:text-white">{$t('tags.tags')}</h1>
+    <h1 class="m-0 text-2xl font-bold dark:text-white md:text-3xl">{$t('tags.tags')}</h1>
 
     <!-- button for mobile screen (better ui) -->
     <PrimaryButton
       width="md:w-[60%] w-fit"
       type="button"
-      label={$t('tags.create_new_tags')}
+      label={$t('tags.create_tag')}
       className="border-blue-600 border px-10 block md:hidden"
       variant={VARIANTS.CONTAINED}
       onClick={() => ($createTagModal.open = true)}
@@ -83,7 +83,7 @@
         <PrimaryButton
           width="w-full"
           type="button"
-          label={$t('tags.create_new_tags')}
+          label={$t('tags.create_tag')}
           className="border-blue-600 border hidden md:block"
           variant={VARIANTS.CONTAINED}
           onClick={() => ($createTagModal.open = true)}

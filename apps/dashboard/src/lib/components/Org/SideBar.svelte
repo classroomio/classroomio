@@ -6,8 +6,13 @@
   import OrgSelector from '$lib/components/OrgSelector/OrgSelector.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { currentOrgPath, isFreePlan } from '$lib/utils/store/org';
-  import { ChevronRight } from 'carbon-icons-svelte';
+  import { Tag } from 'carbon-components-svelte';
+  import ChevronRight from 'carbon-icons-svelte/lib/ChevronRight.svelte';
   import HelpIcon from 'carbon-icons-svelte/lib/Help.svelte';
+
+  import CatalogIcon from 'carbon-icons-svelte/lib/Catalog.svelte';
+  import GrowthIcon from 'carbon-icons-svelte/lib/Growth.svelte';
+  import TagIcon from 'carbon-icons-svelte/lib/Tag.svelte';
 
   import ProfileMenu from '$lib/components/Org/ProfileMenu/index.svelte';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
@@ -118,17 +123,27 @@
                   {#each menuItem.to as subPath}
                     <a
                       href="{$currentOrgPath}{subPath}"
-                      class="{NavClasses.item}  {$page.url.pathname.includes(subPath) &&
-                        NavClasses.active} w-full py-2 pl-10 pr-2"
+                      class="w-full pl-4 text-black dark:text-white"
                       on:click={toggleSidebar}
                     >
-                      {#if subPath === '/courses'}
-                        {$t('org_navigation.all_courses')}
-                      {:else if subPath === '/tags'}
-                        {$t('org_navigation.tags')}
-                      {:else if subPath === '/pathways'}
-                        {$t('org_navigation.pathway')}
-                      {/if}
+                      <div
+                        class="flex items-center gap-2 px-2.5 py-1.5 text-sm {NavClasses.item} {$page.url.pathname.includes(
+                          subPath
+                        ) && NavClasses.active}"
+                      >
+                        {#if subPath === '/courses'}
+                          <CatalogIcon size={16} class="carbon-icon fill-[#000] dark:fill-[#fff]" />
+                          {$t('org_navigation.all_courses')}
+                        {:else if subPath === '/tags'}
+                          <TagIcon size={16} class="carbon-icon fill-[#000] dark:fill-[#fff]" />
+                          {$t('org_navigation.tags')}
+                          <Tag type="green" size="sm">New</Tag>
+                        {:else if subPath === '/pathways'}
+                          <GrowthIcon size={16} class="carbon-icon fill-[#000] dark:fill-[#fff]" />
+                          {$t('org_navigation.pathway')}
+                          <Tag type="green" size="sm">New</Tag>
+                        {/if}
+                      </div>
                     </a>
                   {/each}
                 {/if}

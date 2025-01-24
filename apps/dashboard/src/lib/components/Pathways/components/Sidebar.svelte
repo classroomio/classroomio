@@ -18,7 +18,7 @@
   import { getIsCourseComplete, getPathwayNavItemRoute } from '../functions';
 
   import TextChip from '$lib/components/Chip/Text.svelte';
-  import NavExpandable from '$lib/components/Course/components/Navigation/NavExpandable.svelte';
+  import NavExpandable from '$lib/components/Course/components/Sidebar/NavExpandable.svelte';
 
   export let path: string;
   export let isStudent: boolean = false;
@@ -221,7 +221,7 @@
       ? 'absolute z-[40] -translate-x-[100%]'
       : 'absolute z-[40] translate-x-0 md:relative'
   }
-    h-[calc(100vh-48px)] w-[90vw] bg-gray-100 transition md:w-[300px] lg:w-[350px] dark:bg-black 
+    h-[calc(100vh-48px)] w-[90vw] bg-gray-100 transition dark:bg-black md:w-[300px] lg:w-[350px] 
   
   ${
     resize ? 'border-r-8 border-r-blue-500' : 'dark:border-r-neutral-600'

@@ -1,5 +1,4 @@
 <script lang="ts">
-	
   import {
     Dropdown,
     OverflowMenu,
@@ -15,12 +14,11 @@
   import Grid from 'carbon-icons-svelte/lib/Grid.svelte';
   import List from 'carbon-icons-svelte/lib/List.svelte';
 
-  import { addCourseModal, pathwayCourses, pathway } from '$lib/components/Pathways/store';
+  import { addCourseModal, pathway, pathwayCourses } from '$lib/components/Pathways/store';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { t } from '$lib/utils/functions/translations';
   import { isMobile } from '$lib/utils/store/useMobile';
 
-  import {PageBody} from '$lib/components/Page';
   import Card from '$lib/components/Courses/components/Card/index.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
@@ -58,21 +56,18 @@
   }
 
   // Computed property to filter courses based on the search value
-  $: filteredCourses = $pathwayCourses.filter(
-    (item) =>
-      item.course.title.toLowerCase().includes(searchValue.toLowerCase()) &&
-      (selectedId === '0' ? item.course.is_published : !item.course.is_published)
+  $: filteredCourses = $pathwayCourses.filter((item) =>
+    item.course.title.toLowerCase().includes(searchValue.toLowerCase())
   );
 </script>
 
 <PathwayContainer bind:pathwayId={data.pathwayId}>
-    <div class='max-w-6xl mx-auto pt-4'>
-  
+  <div class="mx-auto max-w-6xl pt-4">
     <AddCourseModal pathwayId={$pathway.id} />
 
     <!-- header -->
     <div class="mx-auto flex max-w-[95%] items-center justify-between">
-      <h1 class='text-3xl'>{$t('pathway.pages.course.title')}</h1>
+      <h1 class="text-3xl">{$t('pathway.pages.course.title')}</h1>
 
       <div class="flex justify-end gap-5">
         <RoleBasedSecurity allowedRoles={[1, 2]}>
@@ -122,10 +117,10 @@
     </div>
 
     <!-- body -->
-    <div class='px-16'>
+    <div class="px-16">
       {#if $pathwayCourses.length > 0}
         {#if coursePreference === 'list'}
-          <div class="border overflow-x-auto">
+          <div class="overflow-x-auto border">
             <StructuredList>
               <StructuredListHead>
                 <StructuredListRow head>
@@ -197,7 +192,7 @@
           </div>
         </div>
       {/if}
-  </div>
+    </div>
   </div>
 </PathwayContainer>
 

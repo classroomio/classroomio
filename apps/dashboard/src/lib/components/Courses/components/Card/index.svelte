@@ -184,19 +184,22 @@
       {description}
     </p>
 
-    {#if tags && tags.length > 0 && tags.every((tag) => tag !== null)}
-      <div
-        class="mt-2 flex w-full max-w-full items-center gap-3 overflow-x-auto py-4"
-        style="overflow-x: auto; white-space: nowrap;"
-      >
-        {#each tags as tag}
-          <span
-            class="flex items-center justify-center rounded-sm border bg-gray-50 px-3 py-1 text-xs dark:bg-transparent dark:text-white"
-            >{tag}</span
-          >
-        {/each}
-      </div>
-    {/if}
+    <div class={!isLMS && !isOnLandingPage ? 'mt-1 h-6' : ''}>
+      {#if tags && tags.length > 0 && tags.every((tag) => tag !== null)}
+        <div
+          class="flex w-full max-w-full items-center gap-3 overflow-x-auto"
+          style="overflow-x: auto; white-space: nowrap;"
+        >
+          {#each tags as tag}
+            <span
+              class="flex items-center justify-center rounded-sm border bg-gray-50 px-2 py-1 text-xs dark:bg-transparent dark:text-white"
+            >
+              {tag}
+            </span>
+          {/each}
+        </div>
+      {/if}
+    </div>
   </div>
 
   <div

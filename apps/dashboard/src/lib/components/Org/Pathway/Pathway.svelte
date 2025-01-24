@@ -73,7 +73,7 @@
       </StructuredListBody>
     </StructuredList>
   {:else}
-    <div class="cards-container relative">
+    <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
       {#each pathways as pathway}
         <PathwayCard
           id={pathway.id}
@@ -82,7 +82,6 @@
           bannerImage={pathway.logo}
           isPublished={pathway.is_published}
           totalCourse={pathway.total_course}
-          totalStudent={pathway.total_students}
         />
       {/each}
     </div>

@@ -18,8 +18,7 @@
     StructuredListRow
   } from 'carbon-components-svelte';
 
-  type Courses = Course & LMSCourse;
-  export let courses: Courses[] = [];
+  export let courses: Course[] = [];
   export let emptyTitle = $t('courses.course_card.empty_title');
   export let emptyDescription = $t('courses.course_card.empty_description');
   export let isExplore = false;
@@ -100,7 +99,7 @@
             isPublished={courseData.is_published}
             totalLessons={courseData.total_lessons}
             totalStudents={courseData.total_students}
-            isLearningPath={courseData?.isPathway}
+            isLearningPath={courseData.isPathway}
             isLMS={$globalStore.isOrgSite}
             slug={courseData.slug}
             {isExplore}

@@ -107,7 +107,7 @@
 <section class="w-full md:mx-auto md:max-w-6xl">
   <div class="px-2 py-2 md:px-5 md:py-10">
     <div class="mb-5 flex items-center justify-between">
-      <h1 class="text-2xl font-bold md:text-3xl dark:text-white">{$t('courses.heading')}</h1>
+      <h1 class="text-2xl font-bold dark:text-white md:text-3xl">{$t('courses.heading')}</h1>
       {#if $isMobile}
         <PrimaryButton isDisabled={!$isOrgAdmin} onClick={openNewCourseModal}>
           <Add size={24} />
@@ -151,7 +151,7 @@
     </div>
 
     <NewCourseModal />
-    <Courses bind:courses={filteredCourses} {searching} />
+    <Courses courses={filteredCourses} {searching} />
   </div>
 </section>
 

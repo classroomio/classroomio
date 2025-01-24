@@ -4,8 +4,7 @@
   import HomeIcon from '$lib/components/Icons/HomeIcon.svelte';
   import QuizIcon from '$lib/components/Icons/QuizIcon.svelte';
   import SiteSettingsIcon from '$lib/components/Icons/SiteSettingsIcon.svelte';
-  import { SettingsAdjust } from 'carbon-icons-svelte';
-  import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
+  import { Forum, SettingsAdjust } from 'carbon-icons-svelte';
 
   export let iconId: string;
 
@@ -27,7 +26,7 @@
 {:else if ICON_CLASS.site === iconId}
   <SiteSettingsIcon />
 {:else if ICON_CLASS.community === iconId}
-  <ForumIcon size={20} class="carbon-icon fill-[#000] dark:fill-[#fff]" />
+  <Forum class="carbon-icon fill-[#000] dark:fill-[#fff]" />
 {:else if ICON_CLASS.quiz === iconId}
   <QuizIcon />
 {:else if ICON_CLASS.audience === iconId}

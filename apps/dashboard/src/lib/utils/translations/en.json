@@ -1,7 +1,7 @@
 {
   "tags": {
     "tags": "Tags",
-    "create_new_tags": "Create new tags",
+    "create_tag": "Create Tag",
     "find_tag": "Find Tag",
     "description": "Description",
     "course_count": "Course count",
@@ -482,7 +482,7 @@
   "org_navigation": {
     "dashboard": "Dashboard",
     "courses": "Courses",
-    "all_courses": "All courses",
+    "all_courses": "All",
     "pathway": "Pathways",
     "community": "Community",
     "audience": "Audience",

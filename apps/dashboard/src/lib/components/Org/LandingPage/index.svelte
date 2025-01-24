@@ -1,7 +1,7 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import get from 'lodash/get';
   import { fade } from 'svelte/transition';
-  import { goto } from '$app/navigation';
 
   import { Accordion, AccordionItem, Column, Grid, Row } from 'carbon-components-svelte';
   import Email from 'carbon-icons-svelte/lib/Email.svelte';
@@ -12,19 +12,14 @@
   import Phone from 'carbon-icons-svelte/lib/Phone.svelte';
   import Rocket from 'carbon-icons-svelte/lib/Rocket.svelte';
 
-  import PageLoader from './PageLoader.svelte';
-  import EmptyState from './EmptyState.svelte';
-  import Box from '$lib/components/Box/index.svelte';
-  import PathwayCard from './../Pathway/PathwayCard.svelte';
   import Card from '$lib/components/Courses/components/Card/index.svelte';
   import CardLoader from '$lib/components/Courses/components/Card/Loader.svelte';
   import { courseMetaDeta, courses } from '$lib/components/Courses/store';
-  import { pathway } from '$lib/components/pathways/store';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
   import Navigation from '$lib/components/Navigation/index.svelte';
   import { landingPageSettings } from '$lib/components/Org/Settings/store';
+  import { pathway } from '$lib/components/pathways/store';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import PoweredBy from '$lib/components/Upgrade/PoweredBy.svelte';
@@ -34,6 +29,9 @@
   import { orgLandingpageValidation } from '$lib/utils/functions/validator';
   import { getCourseBySiteName, getPathwayBySiteName } from '$lib/utils/services/org';
   import type { CurrentOrg } from '$lib/utils/types/org';
+  import PathwayCard from './../Pathway/PathwayCard.svelte';
+  import EmptyState from './EmptyState.svelte';
+  import PageLoader from './PageLoader.svelte';
 
   export let orgSiteName = '';
   export let org: CurrentOrg | null;
@@ -407,7 +405,6 @@
                 bannerImage={pathwayData.logo}
                 isPublished={pathwayData.is_published}
                 totalCourse={pathwayData.total_course}
-                totalStudent={pathwayData.total_students}
               />
             {/each}
           </div>

@@ -1150,7 +1150,6 @@
     "early_adopter": "Werden Sie ein Early Adopter",
     "unlock": "Schalten Sie unbegrenzte Funktionen frei und investieren Sie in unsere Zukunft",
     "upgrade": "Jetzt upgraden",
-    "tags": "Schlagworte",
     "all_courses": "Alle Kurse",
     "pathway": "Wege"
   },
@@ -1735,7 +1734,6 @@
   },
   "tags": {
     "tags": "Schlagworte",
-    "create_new_tags": "Erstellen Sie neue Tags",
     "find_tag": "Tag finden",
     "description": "Beschreibung",
     "course_count": "Anzahl der Kurse",

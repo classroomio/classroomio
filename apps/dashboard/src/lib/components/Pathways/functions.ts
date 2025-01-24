@@ -7,6 +7,7 @@ import { pathwayCourses } from './store';
 
 export function getIsCourseComplete(completions, profileId: string | undefined): boolean {
   if (!Array.isArray(completions)) return false;
+
   return completions.some((c) => {
     return c.is_complete && c.profile_id === profileId;
   });
@@ -21,6 +22,7 @@ export function getPathwayNavItemRoute(pathwayId = '', routeId?: string) {
 
   return `${path}/${routeId}`;
 }
+
 export function timeAgo(timestamp: number | string): string {
   const date = new Date(timestamp);
   const now = new Date();

@@ -29,18 +29,22 @@
   let searching: boolean = false;
 
   async function getPathway(userId: string | undefined, orgId: string) {
+    // only show is loading when fetching for the first time
     if (cantFetch && typeof cantFetch === 'boolean' && orgId && !hasFetched) {
-      // only show is loading when fetching for the first time
+      let timeout: NodeJS.Timeout | null = null;
+
       if (!$pathways.length) {
-        $pathwayMetaData.isLoading = true;
+        timeout = setTimeout(() => {
+          $pathwayMetaData.isLoading = true;
+        }, 500);
       }
 
       const pathwayResult = await fetchPathways(userId, orgId);
 
       $pathwayMetaData.isLoading = false;
+      if (timeout) clearTimeout(timeout);
       if (!pathwayResult) return;
 
-      // organizationId = pathwayResult.organizationId;
       pathways.set(pathwayResult.allPathways);
       hasFetched = true;
     }
@@ -56,7 +60,7 @@
     }
 
     filteredPathway = pathways.filter((pathway) => {
-      if (!searchValue || pathway.title.toLowerCase().includes(searchValue.toLowerCase())) {
+      if (!searchValue || pathway?.title?.toLowerCase().includes(searchValue.toLowerCase())) {
         return true;
       }
       searching = true;
@@ -106,7 +110,7 @@
 <section class="w-full md:mx-auto md:max-w-6xl">
   <div class="px-2 py-2 md:px-5 md:py-10">
     <div class="mb-5 flex items-center justify-between">
-      <h1 class="text-2xl font-bold md:text-3xl dark:text-white">{$t('pathway.heading')}</h1>
+      <h1 class="text-2xl font-bold dark:text-white md:text-3xl">{$t('pathway.heading')}</h1>
       {#if $isMobile}
         <PrimaryButton isDisabled={!$isOrgAdmin} onClick={openNewPathwayModal}>
           <Add size={24} />

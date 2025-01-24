@@ -1,22 +1,22 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import { browser } from '$app/environment';
+  import { goto } from '$app/navigation';
   import { Moon } from 'svelte-loading-spinners';
 
-  import { profile } from '$lib/utils/store/user';
-  import { isOrgAdmin } from '$lib/utils/store/org';
-  import { globalStore } from '$lib/utils/store/app';
-  import { isMobile } from '$lib/utils/store/useMobile';
   import { fetchCourse } from '$lib/utils/services/courses';
+  import { globalStore } from '$lib/utils/store/app';
+  import { isOrgAdmin } from '$lib/utils/store/org';
+  import { isMobile } from '$lib/utils/store/useMobile';
+  import { profile } from '$lib/utils/store/user';
   import { lessons } from '../Course/components/Lesson/store/lessons';
-  import { course, group, setCourse, defaultCourse } from '../Course/store';
+  import { course, defaultCourse, group, setCourse } from '../Course/store';
 
-  import Confetti from '../Confetti/index.svelte';
-  import { t } from '$lib/utils/functions/translations';
-  import Modal from '$lib/components/Modal/index.svelte';
   import Backdrop from '$lib/components/Backdrop/index.svelte';
-  import Navigation from '../Course/components/Navigation/index.svelte';
+  import Modal from '$lib/components/Modal/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { t } from '$lib/utils/functions/translations';
+  import Confetti from '../Confetti/index.svelte';
+  import Sidebar from '../Course/components/Sidebar/index.svelte';
 
   export let courseId = '';
   export let path = '';
@@ -78,7 +78,7 @@
 
 <Modal open={!isPermitted} width="w-96" modalHeading={$t('course.not_permitted.header')}>
   <div>
-    <p class="dark:text-white text-md text-center">
+    <p class="text-md text-center dark:text-white">
       {$t('course.not_permitted.body')}
     </p>
 
@@ -95,7 +95,7 @@
 </Modal>
 
 <div class="root">
-  <Navigation {path} isStudent={$globalStore.isStudent} />
+  <Sidebar {path} isStudent={$globalStore.isStudent} />
   <div class="rightBar {containerClass}" class:isMobile={$isMobile}>
     {#if isExercisePage}
       <Confetti />

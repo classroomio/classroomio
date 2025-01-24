@@ -36,7 +36,7 @@ export async function fetchPathwayCourse(pathwayId: string, eq: string) {
   }
 }
 
-export async function fetchPathways(profileId: string | undefined, orgId: string | undefined) {
+export async function fetchPathways(profileId?: string, orgId?: string) {
   if (!orgId || !profileId) return;
 
   const match: {

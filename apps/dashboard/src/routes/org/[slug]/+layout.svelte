@@ -1,13 +1,13 @@
 <script>
-  import { page } from '$app/stores';
   import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
   import { currentOrg } from '$lib/utils/store/org';
 
-  import AddOrgModal from '$lib/components/Org/AddOrgModal/AddOrgModal.svelte';
-  import { isQuizPage } from '$lib/utils/functions/app';
-  import OrgSideBar from '$lib/components/Org/SideBar.svelte';
-  import VerifyEmailModal from '$lib/components/Org/VerifyEmail/VerifyEmailModal.svelte';
   import Box from '$lib/components/Box/index.svelte';
+  import AddOrgModal from '$lib/components/Org/AddOrgModal/AddOrgModal.svelte';
+  import OrgSideBar from '$lib/components/Org/Sidebar.svelte';
+  import VerifyEmailModal from '$lib/components/Org/VerifyEmail/VerifyEmailModal.svelte';
+  import { isQuizPage } from '$lib/utils/functions/app';
 
   export let data;
 
@@ -23,11 +23,11 @@
 
 <VerifyEmailModal />
 
-<div class="org-root w-full flex items-center justify-between">
+<div class="org-root flex w-full items-center justify-between">
   {#if !isQuizPage($page.url?.pathname)}
     <OrgSideBar />
   {/if}
-  <div class="org-slot bg-white dark:bg-black w-full">
+  <div class="org-slot w-full bg-white dark:bg-black">
     {#if data.orgName === '*'}
       <Box>Taking you to your organization...</Box>
     {:else}
