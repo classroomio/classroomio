@@ -5,7 +5,7 @@
 
   import Box from '$lib/components/Box/index.svelte';
   import AddOrgModal from '$lib/components/Org/AddOrgModal/AddOrgModal.svelte';
-  import OrgSideBar from '$lib/components/Org/Sidebar.svelte';
+  import OrgSidebar from '$lib/components/Org/Sidebar.svelte';
   import VerifyEmailModal from '$lib/components/Org/VerifyEmail/VerifyEmailModal.svelte';
   import { isQuizPage } from '$lib/utils/functions/app';
 
@@ -25,7 +25,7 @@
 
 <div class="org-root flex w-full items-center justify-between">
   {#if !isQuizPage($page.url?.pathname)}
-    <OrgSideBar />
+    <OrgSidebar />
   {/if}
   <div class="org-slot w-full bg-white dark:bg-black">
     {#if data.orgName === '*'}

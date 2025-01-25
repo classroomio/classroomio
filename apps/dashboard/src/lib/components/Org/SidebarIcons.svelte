@@ -1,6 +1,6 @@
 <script lang="ts">
   import AudienceIcon from '$lib/components/Icons/AudienceIcon.svelte';
-  import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
+  import BookIcon from '$lib/components/Icons/BookIcon.svelte';
   import HomeIcon from '$lib/components/Icons/HomeIcon.svelte';
   import QuizIcon from '$lib/components/Icons/QuizIcon.svelte';
   import SiteSettingsIcon from '$lib/components/Icons/SiteSettingsIcon.svelte';
@@ -22,7 +22,7 @@
 {#if ICON_CLASS.dashboard === iconId}
   <HomeIcon />
 {:else if ICON_CLASS.courses === iconId}
-  <CourseIcon />
+  <BookIcon />
 {:else if ICON_CLASS.site === iconId}
   <SiteSettingsIcon />
 {:else if ICON_CLASS.community === iconId}

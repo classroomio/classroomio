@@ -209,9 +209,10 @@
       grading: !!course.metadata.grading,
       lesson_download: !!course.metadata.lessonDownload,
       is_published: !!course.is_published,
-      allow_new_students: course.metadata.allowNewStudent
+      allow_new_students: !!course.metadata.allowNewStudent
     });
   }
+
   $: setDefault($course);
 
   $: courseLink = `${$currentOrgDomain}/course/${$course.slug}`;
@@ -340,7 +341,6 @@
         {/if}
       </div>
       <PrimaryButton
-        width="md:w-[40%] mt-3"
         variant={VARIANTS.OUTLINED}
         onClick={() => ($addTagModal.open = true)}
         className="flex items-center justify-between border-primary-600 dark:bg-transparent px-3 py-1"

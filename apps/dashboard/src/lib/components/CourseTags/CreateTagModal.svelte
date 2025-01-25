@@ -149,7 +149,7 @@
         className="py-3 rounded-md text-sm font-medium"
         label={$createTagModal.deleteMode ? $t('tags.tag_modal.no') : $t('tags.tag_modal.cancel')}
         type="button"
-        onClick={() => resetStore()}
+        onClick={resetStore}
         variant={VARIANTS.OUTLINED}
       />
       <PrimaryButton

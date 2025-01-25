@@ -11,8 +11,8 @@
   import HelpIcon from 'carbon-icons-svelte/lib/Help.svelte';
 
   import CatalogIcon from 'carbon-icons-svelte/lib/Catalog.svelte';
-  import GrowthIcon from 'carbon-icons-svelte/lib/Growth.svelte';
-  import TagIcon from 'carbon-icons-svelte/lib/Tag.svelte';
+  import CicsSystemGroupIcon from 'carbon-icons-svelte/lib/CicsSystemGroup.svelte';
+  import TagGroupIcon from 'carbon-icons-svelte/lib/TagGroup.svelte';
 
   import ProfileMenu from '$lib/components/Org/ProfileMenu/index.svelte';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
@@ -52,6 +52,9 @@
     goto(window.location.pathname + '?upgrade=true');
   };
 
+  const COURSES_SUB_PATHS = ['/courses', '/tags', '/pathways'];
+  const isSubPathActive = (path: string) => COURSES_SUB_PATHS.some((l) => path.includes(l));
+
   $: menuItems = [
     {
       id: 'dashboard',
@@ -62,11 +65,11 @@
     },
     {
       id: 'courses',
-      to: ['/courses', '/tags', '/pathways'],
+      to: COURSES_SUB_PATHS,
       isDropdown: true,
-      isExpanded: true,
+      isExpanded: isSubPathActive($page.url.pathname),
       label: $t('org_navigation.courses'),
-      isActive: $page.url.pathname.includes(`${$currentOrgPath}/courses`),
+      isActive: false,
       show: true
     },
     {
@@ -114,8 +117,7 @@
                 label={menuItem.label}
                 href={typeof menuItem.to === 'string' ? `${$currentOrgPath}${menuItem.to}` : null}
                 handleClick={toggleSidebar}
-                isGroupActive={typeof menuItem.to === 'string' &&
-                  isActive($page.url.pathname, `${$currentOrgPath}${menuItem.to}`)}
+                isGroupActive={menuItem.isActive}
                 isExpanded={menuItem.isExpanded}
                 isDropdown={menuItem.isDropdown}
               >
@@ -132,14 +134,20 @@
                         ) && NavClasses.active}"
                       >
                         {#if subPath === '/courses'}
-                          <CatalogIcon size={16} class="carbon-icon fill-[#000] dark:fill-[#fff]" />
+                          <CatalogIcon
+                            class="carbon-icon h-[18px] w-[18px] fill-[#000] dark:fill-[#fff]"
+                          />
                           {$t('org_navigation.all_courses')}
                         {:else if subPath === '/tags'}
-                          <TagIcon size={16} class="carbon-icon fill-[#000] dark:fill-[#fff]" />
+                          <TagGroupIcon
+                            class="carbon-icon h-[18px] w-[18px] fill-[#000] dark:fill-[#fff]"
+                          />
                           {$t('org_navigation.tags')}
                           <Tag type="green" size="sm">New</Tag>
                         {:else if subPath === '/pathways'}
-                          <GrowthIcon size={16} class="carbon-icon fill-[#000] dark:fill-[#fff]" />
+                          <CicsSystemGroupIcon
+                            class="carbon-icon h-[18px] w-[18px] fill-[#000] dark:fill-[#fff]"
+                          />
                           {$t('org_navigation.pathway')}
                           <Tag type="green" size="sm">New</Tag>
                         {/if}
