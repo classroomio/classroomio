@@ -125,11 +125,11 @@
                   {#each menuItem.to as subPath}
                     <a
                       href="{$currentOrgPath}{subPath}"
-                      class="w-full pl-4 text-black dark:text-white"
+                      class="w-full text-black dark:text-white"
                       on:click={toggleSidebar}
                     >
                       <div
-                        class="flex items-center gap-2 px-2.5 py-1.5 text-sm {NavClasses.item} {$page.url.pathname.includes(
+                        class="flex items-center gap-2 px-2.5 py-2 pl-5 text-sm {NavClasses.item} {$page.url.pathname.includes(
                           subPath
                         ) && NavClasses.active}"
                       >

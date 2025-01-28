@@ -26,7 +26,7 @@
 <div>
   <a
     on:click={handleIsExpanded}
-    class="item relative my-1.5 flex cursor-pointer items-center gap-2 px-2.5 py-1.5 {NavClasses.item} {isGroupActive &&
+    class="item relative my-1.5 flex cursor-pointer items-center gap-2 px-2.5 py-2 {NavClasses.item} {isGroupActive &&
       NavClasses.active} w-full"
     {href}
   >

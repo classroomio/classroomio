@@ -79,6 +79,7 @@ export const defaultPathway: Pathway = {
 };
 
 export const pathway = writable<Pathway>({ ...defaultPathway });
+export const pathways = writable<Pathway[]>([]);
 
 export async function setPathway(data: Pathway, setCourse = true) {
   if (!data || !(Object.values(data) && Object.values(data).length)) return;

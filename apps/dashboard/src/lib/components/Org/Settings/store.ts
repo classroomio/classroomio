@@ -37,6 +37,7 @@ export interface OrgLandingPageJson {
   };
   pathways: {
     title: string;
+    titleHighlight: string;
     subtitle: string;
     show: boolean;
   };
@@ -107,13 +108,13 @@ export const landingPageSettings: Writable<OrgLandingPageJson> = writable({
   courses: {
     title: 'Explore our',
     titleHighlight: 'Courses',
-    subtitle: 'Find courses you will love from best teachers all over the world🌎.',
+    subtitle: 'Explore our most latest courses from amazing educators.',
     show: true
   },
   pathways: {
-    title: 'Available Learning Paths',
-    subtitle:
-      'We are preparing students for success in the following career paths in creative and tech industry  ',
+    title: 'Available',
+    titleHighlight: 'Pathways',
+    subtitle: 'Expand your knowledge and skills with our dedicated learning pathways.',
     show: true
   },
   faq: {

@@ -18,8 +18,9 @@
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import Navigation from '$lib/components/Navigation/index.svelte';
+  import PathwayCardLoader from '$lib/components/Org/Pathway/PathwayCardLoader.svelte';
   import { landingPageSettings } from '$lib/components/Org/Settings/store';
-  import { pathway } from '$lib/components/pathways/store';
+  import { pathways } from '$lib/components/Pathways/store';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import PoweredBy from '$lib/components/Upgrade/PoweredBy.svelte';
@@ -105,6 +106,7 @@
       message: ''
     };
   }
+
   function isYouTubeLink(link: string) {
     const youtubeRegex =
       /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
@@ -115,15 +117,18 @@
   $: loadData(orgSiteName);
 
   async function loadData(siteName) {
+    console.log('loadData', siteName);
     if (!siteName) return;
 
     try {
       $courseMetaDeta.isLoading = true;
-      const coursesResult = await getCourseBySiteName(siteName);
-      courses.set(coursesResult);
+      const [coursesResult, pathwayResult] = await Promise.all([
+        getCourseBySiteName(siteName),
+        getPathwayBySiteName(siteName)
+      ]);
 
-      const pathwayResult = await getPathwayBySiteName(siteName);
-      pathway.set(pathwayResult);
+      courses.set(coursesResult);
+      pathways.set(pathwayResult);
       $courseMetaDeta.isLoading = false;
     } catch (error) {
       console.log('error', error);
@@ -212,9 +217,7 @@
                 <p class=" text-primary-600 text-2xl font-semibold capitalize">
                   {org.name}
                 </p>
-                <h1
-                  class="my-4 text-center text-4xl font-bold md:text-start md:text-5xl lg:text-6xl"
-                >
+                <h1 class="my-4 text-center text-4xl font-bold md:text-start md:text-4xl">
                   {$landingPageSettings.header.title} <br /><span class="text-primary-600"
                     >{$landingPageSettings.header.titleHighlight}</span
                   >
@@ -264,7 +267,7 @@
           <div class="relative z-20 flex h-full w-full items-center justify-center md:flex-row">
             <div class="mx-auto flex w-11/12 max-w-[600px] flex-col items-center py-10">
               <p class=" text-primary-600 text-2xl font-semibold capitalize">{org.name}</p>
-              <h1 class="my-4 text-center text-4xl font-bold md:text-5xl lg:text-6xl">
+              <h1 class="my-4 text-center text-4xl font-bold md:text-4xl">
                 {$landingPageSettings.header.title} <br /><span class="text-primary-600"
                   >{$landingPageSettings.header.titleHighlight}</span
                 >
@@ -292,8 +295,8 @@
       <section id="aboutus" class="m-h-[400px] mx-auto my-10 w-full max-w-6xl">
         <div class="mx-4 flex flex-col items-center justify-evenly lg:flex-row">
           <div class="mb-5 mr-5 max-w-[600px] lg:mb-0 lg:w-2/5">
-            <h2 class="text-4xl md:text-5xl lg:text-6xl">{$landingPageSettings.aboutUs.title}</h2>
-            <p class="mb-2">
+            <h2 class="text-4xl md:text-4xl">{$landingPageSettings.aboutUs.title}</h2>
+            <p class="mb-2 text-sm text-gray-500">
               {$landingPageSettings.aboutUs.content}
             </p>
           </div>
@@ -302,19 +305,18 @@
             <img
               src={$landingPageSettings.aboutUs.imageUrl}
               alt="Our Story"
-              class=" max-h-[450px] rounded-2xl"
+              class="max-h-[450px] max-w-[450px] rounded-2xl"
             />
           </div>
         </div>
       </section>
     {/if}
 
-    <!-- Courses Section -->
     {#if $landingPageSettings.courses.show}
       <section id="courses" transition:fade class="mx-auto my-10 w-full max-w-6xl">
         <div class="w-full">
           <div class="mx-auto py-10">
-            <h1 class="my-4 text-center text-4xl font-bold md:text-5xl lg:text-6xl">
+            <h1 class="my-4 text-center text-4xl font-bold md:text-4xl">
               {$landingPageSettings.courses.title}
               <span class="text-primary-600">{$landingPageSettings.courses.titleHighlight}</span>
             </h1>
@@ -374,15 +376,13 @@
       </section>
     {/if}
 
-    <!-- Courses Section -->
     {#if $landingPageSettings.pathways.show}
       <section id="courses" transition:fade class="mx-auto my-10 w-full max-w-6xl">
         <div class="w-full">
           <div class="mx-auto py-10">
-            <h1
-              class="text-primary-600 my-4 text-center text-4xl font-bold md:text-5xl lg:text-6xl"
-            >
+            <h1 class="my-4 text-center text-4xl font-bold md:text-4xl">
               {$landingPageSettings.pathways.title}
+              <span class="text-primary-600">{$landingPageSettings.pathways.titleHighlight}</span>
             </h1>
             <p class="text-md text-center">
               {$landingPageSettings.pathways.subtitle}
@@ -390,21 +390,22 @@
           </div>
         </div>
         {#if $courseMetaDeta.isLoading}
-          <div class="cards-container mx-2 my-4">
-            <CardLoader />
-            <CardLoader />
-            <CardLoader />
+          <div class="mx-2 my-4 flex flex-wrap gap-4">
+            <PathwayCardLoader />
+            <PathwayCardLoader />
           </div>
-        {:else if $pathway.length > 0}
+        {:else if $pathways.length > 0}
           <div class="cards-container mx-2 my-4">
-            {#each $pathway.slice(0, viewAll ? $pathway.length : 3) as pathwayData}
+            {#each $pathways.slice(0, viewAll ? $pathways.length : 3) as pathwayData}
               <PathwayCard
                 id={pathwayData.id}
                 title={pathwayData.title}
+                slug={pathwayData.slug}
                 description={pathwayData.description}
                 bannerImage={pathwayData.logo}
                 isPublished={pathwayData.is_published}
                 totalCourse={pathwayData.total_course}
+                isOnLandingPage={true}
               />
             {/each}
           </div>
@@ -415,7 +416,7 @@
           />
         {/if}
 
-        {#if $pathway.length > 3}
+        {#if $pathways.length > 3}
           <div class="mt-3 flex w-full justify-center">
             <PrimaryButton
               variant={VARIANTS.OUTLINED}
@@ -434,14 +435,14 @@
     {#if $landingPageSettings.faq.show}
       <section id="faq" transition:fade class="mx-auto my-10 w-full max-w-[700px]">
         <div class="py-10">
-          <h1 class="my-4 text-center text-4xl font-bold md:text-5xl lg:text-6xl">
+          <h1 class="my-4 text-center text-4xl font-bold md:text-4xl">
             {$landingPageSettings.faq.title}
           </h1>
         </div>
         <div class="mx-2">
           <Accordion size="xl">
             {#each $landingPageSettings.faq.questions as faq}
-              <AccordionItem title={faq.title} class="text-3xl">
+              <AccordionItem title={faq.title}>
                 <p class="text-lg">
                   {faq.content}
                 </p>
@@ -457,7 +458,7 @@
       <section id="contact" transition:fade class="bg-primary-50 my-10 w-full">
         <div class="mx-auto w-full max-w-6xl">
           <div class="mx-auto w-11/12 max-w-[500px] py-10">
-            <h1 class="my-4 text-center text-4xl font-bold md:text-5xl lg:text-6xl">
+            <h1 class="my-4 text-center text-4xl font-bold md:text-4xl">
               {$landingPageSettings.contact.title}
               <span class="text-primary-600">{$landingPageSettings.contact.titleHighlight}</span>
             </h1>

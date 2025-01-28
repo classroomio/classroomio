@@ -1,36 +1,33 @@
 <script lang="ts">
-  import { SECTION_KEYS } from './constants.ts';
-  import Accordion from './components/Accordion.svelte';
-  import get from 'lodash/get';
   import { page } from '$app/stores';
-  import { onDestroy } from 'svelte';
-  import { ChevronDown } from 'carbon-icons-svelte';
   import Badge from 'carbon-icons-svelte/lib/Badge.svelte';
-  import PlayFilled from 'carbon-icons-svelte/lib/PlayFilled.svelte';
   import ChartEvaluation from 'carbon-icons-svelte/lib/ChartEvaluation.svelte';
+  import PlayFilled from 'carbon-icons-svelte/lib/PlayFilled.svelte';
+  import get from 'lodash/get';
+  import Accordion from './components/Accordion.svelte';
+  import { SECTION_KEYS } from './constants';
 
-  import { pathway } from '../../store';
   import { currentOrg } from '$lib/utils/store/org';
+  import { pathway } from '../../store';
   import { handleOpenWidget, reviewsModalStore } from './store';
 
-  import { timeAgo } from '../../functions';
-  import { t } from '$lib/utils/functions/translations';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { getEmbedId } from '$lib/utils/functions/formatYoutubeVideo';
+  import { t } from '$lib/utils/functions/translations';
+  import { timeAgo } from '../../functions';
 
-  import { NAV_ITEMS } from './constants';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import type { Pathway, PathwayCourse, Review } from '$lib/utils/types';
+  import type { Pathway, Review } from '$lib/utils/types';
+  import { NAV_ITEMS } from './constants';
 
-  import Modal from '$lib/components/Modal/index.svelte';
   import Avatar from '$lib/components/Avatar/index.svelte';
-  import PricingSection from './components/PricingSection.svelte';
-  import PoweredBy from '$lib/components/Upgrade/PoweredBy.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
-  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
-  import LessonCard from '$lib/components/CourseLandingPage/components/LessonCard.svelte';
+  import Modal from '$lib/components/Modal/index.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import PoweredBy from '$lib/components/Upgrade/PoweredBy.svelte';
+  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
+  import PricingSection from './components/PricingSection.svelte';
 
   export let editMode = false;
   export let pathwayData: Pathway;
@@ -48,18 +45,12 @@
   let totalRatings = 0;
   let startCoursePayment = false;
   let isVisible = false;
-  let observer: { destroy: () => void };
 
-  // initialize the expandDescription array with 'false' values for each review.
   let expandDescription = Array(reviews.length).fill(false);
 
   let activeNav = NAV_ITEMS[0].key;
   let instructor = {};
   let video: string | undefined;
-
-  function locationHashChanged() {
-    activeNav = window.location.hash;
-  }
 
   function initPlyr(_player: any, _video: string | undefined) {
     if (!player) return;
@@ -77,11 +68,6 @@
   function needsTruncation(text: string, maxWords: number = 12) {
     return text.split(' ').length > maxWords;
   }
-
-  onDestroy(() => {
-    observer?.destroy();
-  });
-
   // Reactive array for filtered navigation items.
   $: filteredNavItems = NAV_ITEMS.filter((item) => {
     switch (item.key) {
@@ -98,14 +84,11 @@
       case SECTION_KEYS.COURSES:
         return get(pathwayData, 'pathway_course') && get(pathwayData, 'pathway_course').length > 0;
       case SECTION_KEYS.REVIEW:
-        return (
-          get(pathwayData, 'landingpage.reviews') &&
-          get(pathwayData, 'landingpage.reviews').length > 0
-        );
+        return get(pathwayData, 'landingpage.reviews', [])?.length > 0;
       case SECTION_KEYS.INSTRUCTOR:
-        return pathwayData?.instructor && pathwayData?.instructor.trim() !== '';
+        return !!get(pathwayData, 'landingpage.instructor', '');
       case SECTION_KEYS.FAQ:
-        return pathwayData?.faq && pathwayData?.faq.length > 0;
+        return !!get(pathwayData, 'landingpage.faq', '');
       default:
         return false;
     }
@@ -122,9 +105,6 @@
     totalRatings = reviews?.reduce((acc = 0, review) => acc + (review?.rating || 0), 0);
     averageRating = totalRatings / reviews?.length;
   }
-  $: {
-    let imgurl = get(instructor, 'imgUrl', $currentOrg.avatar_url);
-  }
 </script>
 
 {#if !editMode}
@@ -135,18 +115,18 @@
   <!-- Header Section -->
   <header
     id="header"
-    class="flex w-full items-center justify-center bg-[#f5f8fe] p-10 text-[#040f2d] dark:bg-black dark:text-white"
+    class="bg-primary-50 flex w-full items-center justify-center p-10 text-[#040f2d] dark:bg-black dark:text-white"
   >
-    <div class="flex w-full flex-col-reverse items-center justify-between md:flex-row">
+    <div class="flex w-full max-w-7xl flex-col-reverse items-center justify-between md:flex-row">
       <!-- Course Description -->
       <div class="w-11/12 py-10 md:w-2/5">
         <div
-          class="flex w-fit items-center gap-2 rounded-md border border-[#0233BD] bg-[#D9E0F5] px-2 py-1 text-[10px] font-medium tracking-widest dark:bg-black"
+          class="flex w-fit items-center gap-2 rounded-md border border-[#0233BD] bg-gray-200 px-2 py-1 text-[10px] font-medium tracking-widest dark:bg-black"
         >
           <img src="/learningpath-icon.svg" alt="" class="w-3.5" />
           {$t('pathway.pages.landingPage.header.tag')}
         </div>
-        <h1 class="my-4 text-5xl font-bold">
+        <h1 class="my-4 text-xl font-bold md:text-5xl">
           {get(pathwayData, 'title', '')}
         </h1>
         <p class="mb-6 text-base">
@@ -176,15 +156,6 @@
             data-plyr-embed-id={getEmbedId(video)}
           />
         </div>
-        <!-- <div class="container">
-          <div
-            bind:this={player}
-            id="player"
-            class="banner-image w-2/3 h-96 relative"
-            data-plyr-provider="youtube"
-            data-plyr-embed-id="bTqVqk7FSmY"
-          />
-        </div> -->
       {:else}
         <div class="banner-image relative overflow-hidden rounded-md md:w-[60%]">
           <img
@@ -194,72 +165,52 @@
             class="relative mt-2 h-full max-h-[400px] w-full max-w-[500px] rounded-md md:mt-0"
           />
         </div>
-
-        <!-- <div
-          class="banner-image w-2/3 h-96 relative cursor-pointer"
-          on:click={playVideo}
-        >
-          <div
-            aria-hidden="true"
-            class="absolute top-0 left-0 backdrop w-full h-full"
-          />
-          <img
-            src="/images/course-banner-image.png"
-            alt="banner"
-            class="w-full h-full"
-          />
-          <div
-            class="absolute top-0 left-0 w-full h-full z-50 flex items-center justify-center"
-          >
-            <img src="/images/play_video.png" alt="play video" />
-          </div>
-        </div> -->
       {/if}
     </div>
   </header>
 
   <!-- Blue Banner -->
-  <div
-    class="flex w-full flex-wrap items-center justify-between gap-y-5 bg-[#1D4ED8] px-10 py-8 text-white"
-  >
-    <div class="flex w-full min-w-[200px] items-center gap-4 md:max-w-[30%]">
-      <span class="flex items-center justify-center rounded-full bg-[#D9E0F5] px-3 py-3">
-        <CourseIcon color="blue" />
-      </span>
+  <div class="bg-primary-800 w-full px-10 py-8 text-white">
+    <div class="mx-auto flex max-w-7xl flex-col items-center gap-2 sm:flex-row">
+      <div class="flex w-full items-center gap-4">
+        <span class="flex items-center justify-center rounded-full bg-gray-200 px-3 py-3">
+          <CourseIcon color="blue" />
+        </span>
 
-      <div>
-        <h1 class="m-0 text-base">
-          {pathwayCoursesPreview.length}
-          {$t('pathway.pages.landingPage.banner.courses')}
-        </h1>
-        <p class="text-[12px] font-extralight">
-          {$t('pathway.pages.landingPage.banner.courses_text')}
-        </p>
-      </div>
-    </div>
-
-    <div class="flex w-full min-w-[200px] items-center gap-4 md:max-w-[30%]">
-      <span class="flex items-center justify-center rounded-full bg-[#D9E0F5] px-3 py-3">
-        <Badge size={20} color="blue" />
-      </span>
-
-      <div>
-        <h1 class="m-0 text-base">{$t('pathway.pages.landingPage.banner.certificate')}</h1>
-        <p class="text-[12px] font-extralight">{$t('pathway.pages.landingPage.banner.share')}</p>
-      </div>
-    </div>
-
-    <div class="flex w-full min-w-[200px] items-center gap-4 md:max-w-[30%]">
-      <span class="flex items-center justify-center rounded-full bg-[#D9E0F5] px-3 py-3">
-        <ChartEvaluation color="blue" size={16} />
-      </span>
-
-      <div>
-        <div class="flex items-center gap-3">
-          <h1 class="m-0 text-base">4.8</h1>
-          <img src="/starRating-icon.svg" alt="" class="w-28" />
+        <div>
+          <h1 class="m-0 text-base">
+            {pathwayCoursesPreview.length}
+            {$t('pathway.pages.landingPage.banner.courses')}
+          </h1>
+          <p class="text-[12px] font-extralight">
+            {$t('pathway.pages.landingPage.banner.courses_text')}
+          </p>
         </div>
-        <p class="text-[12px] font-extralight">{$t('pathway.pages.landingPage.banner.rating')}</p>
+      </div>
+
+      <div class="flex w-full items-center gap-4 md:max-w-[30%]">
+        <span class="flex items-center justify-center rounded-full bg-gray-200 px-3 py-3">
+          <Badge size={20} color="blue" />
+        </span>
+
+        <div>
+          <h1 class="m-0 text-base">{$t('pathway.pages.landingPage.banner.certificate')}</h1>
+          <p class="text-[12px] font-extralight">{$t('pathway.pages.landingPage.banner.share')}</p>
+        </div>
+      </div>
+
+      <div class="flex w-full items-center gap-4 md:max-w-[30%]">
+        <span class="flex items-center justify-center rounded-full bg-gray-200 px-3 py-3">
+          <ChartEvaluation color="blue" size={16} />
+        </span>
+
+        <div>
+          <div class="flex items-center gap-3">
+            <h1 class="m-0 text-base">4.8</h1>
+            <img src="/starRating-icon.svg" alt="" class="w-28" />
+          </div>
+          <p class="text-[12px] font-extralight">{$t('pathway.pages.landingPage.banner.rating')}</p>
+        </div>
       </div>
     </div>
   </div>
@@ -271,23 +222,27 @@
       <div class="w-full">
         <!-- Navigation -->
         <nav
-          class="sticky top-0 z-[10] flex items-center justify-between border-b border-gray-300 px-10 py-9 {!editMode &&
+          class="sticky top-0 z-[10] border-b border-gray-300 px-10 py-9 {!editMode &&
             'lg:top-11'} bg-white dark:bg-neutral-800"
         >
-          {#each filteredNavItems as navItem}
-            <a
-              href="{$page.url.pathname}{navItem.key}"
-              on:click={() => (activeNav = navItem.key)}
-              class="{navItem.key === activeNav &&
-                'active text-primary-700'} z-0 mr-6 rounded-md px-2 py-1 font-bold text-slate-700 hover:bg-gray-200 dark:text-white dark:hover:text-slate-900"
-            >
-              {$t(navItem.label)}
-            </a>
-          {/each}
+          <div class="mx-auto flex max-w-7xl items-center justify-center gap-2">
+            {#each filteredNavItems as navItem}
+              <a
+                href="{$page.url.pathname}{navItem.key}"
+                on:click={() => (activeNav = navItem.key)}
+                class="{navItem.key === activeNav &&
+                  'active text-primary-700'} z-0 mr-6 rounded-md px-2 py-1 font-bold text-slate-700 hover:bg-gray-200 dark:text-white dark:hover:text-slate-900"
+              >
+                {$t(navItem.label)}
+              </a>
+            {/each}
+          </div>
         </nav>
 
         <!-- Main -->
-        <div class="flex flex-col items-start justify-between px-10 pt-10 md:flex-row">
+        <div
+          class="mx-auto flex max-w-7xl flex-col items-start justify-between px-10 pt-10 md:flex-row"
+        >
           <!-- Sections - Description & Objectives -->
           <div class="md:max-w-[55%]">
             <!-- Sections - About -->
@@ -322,7 +277,7 @@
 
         <!-- Sections - Certificate -->
         <section
-          class="mx-auto mt-8 flex max-w-[80%] flex-col items-center justify-center gap-y-5 border-gray-300 bg-[#F5F8FE] px-8 py-6 md:flex-row md:justify-between md:py-4 dark:rounded-md dark:border dark:bg-black"
+          class="mx-auto mt-8 flex max-w-[80%] flex-col items-center justify-center gap-y-5 border-gray-300 bg-[#F5F8FE] px-8 py-6 dark:rounded-md dark:border dark:bg-black md:flex-row md:justify-between md:py-4"
         >
           <div class="text-center md:w-[50%] md:text-left">
             <h3 class="m-0 text-2xl font-bold">
@@ -341,7 +296,7 @@
 
         <!-- Sections - Pathway Subheader -->
         <div
-          class="sticky top-8 my-8 flex flex-col items-center justify-center bg-white py-6 pl-12 pr-16 md:flex-row md:justify-between dark:border dark:bg-black"
+          class="sticky top-8 my-8 flex flex-col items-center justify-center bg-white py-6 pl-12 pr-16 dark:border dark:bg-black md:flex-row md:justify-between"
         >
           <h1 class="text-lg">{get(pathwayData, 'title', '')}</h1>
           <PrimaryButton

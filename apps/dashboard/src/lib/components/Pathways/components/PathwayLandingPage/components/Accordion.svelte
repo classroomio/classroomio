@@ -1,6 +1,12 @@
 <script lang="ts">
+  import type { PathwayCourse } from '$lib/utils/types';
   import { ChevronDown, ChevronUp } from 'carbon-icons-svelte';
-  export let sections: Array<{ title: string; lessons: string; expanded?: boolean }> = [];
+
+  type Section = PathwayCourse & {
+    expanded?: boolean;
+  };
+
+  export let sections: Section[] = [];
 
   const toggleSection = (index: number) => {
     sections = sections.map((section, i) => ({
@@ -12,9 +18,9 @@
 
 <div class="mt-10 w-full rounded-xl border p-4">
   {#each sections as section, index}
-    <div class="border-b border-gray-300 last:border-b-0">
-      <div
-        class="flex cursor-pointer items-center justify-between rounded-t-md px-5 py-4 hover:bg-gray-50"
+    <div class="mb-2 border-b border-gray-300 last:border-b-0 dark:border-neutral-600">
+      <button
+        class="flex w-full cursor-pointer items-center justify-between rounded-t-md px-5 py-4 dark:bg-neutral-800"
         on:click={() => toggleSection(index)}
       >
         <div class="text-left">
@@ -28,7 +34,7 @@
             <ChevronUp />
           {/if}
         </button>
-      </div>
+      </button>
       {#if section.expanded}
         <div class="p-4">
           <p class="text-left text-sm">{section.course.description}</p>

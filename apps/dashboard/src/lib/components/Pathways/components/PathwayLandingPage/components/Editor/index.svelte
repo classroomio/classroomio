@@ -1,30 +1,30 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import cloneDeep from 'lodash/cloneDeep';
-  import set from 'lodash/set';
-  import ChevronRightIcon from 'carbon-icons-svelte/lib/ChevronRight.svelte';
+  import { currentOrgDomain } from '$lib/utils/store/org';
   import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
   import ArrowUpRightIcon from 'carbon-icons-svelte/lib/ArrowUpRight.svelte';
   import ChevronLeftIcon from 'carbon-icons-svelte/lib/ChevronLeft.svelte';
-  import { currentOrgDomain } from '$lib/utils/store/org';
+  import ChevronRightIcon from 'carbon-icons-svelte/lib/ChevronRight.svelte';
+  import cloneDeep from 'lodash/cloneDeep';
+  import set from 'lodash/set';
 
-  import IconButton from '$lib/components/IconButton/index.svelte';
   import CloseButton from '$lib/components/Buttons/Close/index.svelte';
-  import HeaderForm from './HeaderForm.svelte';
+  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import generateSlug from '$lib/utils/functions/generateSlug';
   import AboutForm from './AboutForm.svelte';
+  import HeaderForm from './HeaderForm.svelte';
+  import InstructorForm from './InstructorForm.svelte';
   import ObjectivesForm from './ObjectivesForm.svelte';
   import PricingForm from './PricingForm.svelte';
   import ReviewsForm from './ReviewsForm.svelte';
-  import InstructorForm from './InstructorForm.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import generateSlug from '$lib/utils/functions/generateSlug';
 
-  import { isMobile } from '$lib/utils/store/useMobile';
   import CustomPromptBtn from '$lib/components/AI/AIButton/CustomPromptBtn.svelte';
-  import type { Pathway } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
   import { updatePathway } from '$lib/utils/services/pathways';
+  import { isMobile } from '$lib/utils/store/useMobile';
+  import type { Pathway } from '$lib/utils/types';
 
   export let pathway: Pathway;
   export let pathwayId: string;
@@ -42,42 +42,7 @@
     initPrompt?: string;
   }
 
-  const sections: Section[] = [
-    {
-      key: 1,
-      path: '',
-      title: $t('course.navItem.landing_page.editor.title.header')
-    },
-    {
-      key: 2,
-      path: 'landingpage.about',
-      title: $t('course.navItem.landing_page.editor.title.about'),
-      enableAIWriter: true,
-      initPrompt: 'Please write a detailed pathway requirement for this pathway:'
-    },
-    {
-      key: 3,
-      path: 'landingpage.objectives',
-      title: $t('course.navItem.landing_page.editor.title.objectives'),
-      enableAIWriter: true,
-      initPrompt: 'Please write educational objectives for this pathway:'
-    },
-    {
-      key: 4,
-      path: 'landingpage.reviews',
-      title: $t('course.navItem.landing_page.editor.title.reviews')
-    },
-    {
-      key: 5,
-      path: 'landingpage.instructor',
-      title: $t('course.navItem.landing_page.editor.title.instructor')
-    },
-    {
-      key: 6,
-      path: 'landingpage.pricing',
-      title: $t('course.navItem.landing_page.editor.title.pricing')
-    }
-  ];
+  let sections: Section[] = [];
   let selectedSection: Section | null = null;
 
   function handleClose() {
@@ -125,14 +90,64 @@
     const link = `${$currentOrgDomain}/pathway/${pathway.slug}`;
     window.open(link, '_blank');
   }
+
+  function getSections(p: Pathway) {
+    const title = p.title;
+    const courseTitles = p.pathway_course.map((pc) => pc.course.title);
+
+    const getTemplate = (field: string) =>
+      `Please write a detailed learning pathway ${field} that is titled: ${title}. This pathway comprises ${
+        courseTitles.length
+      } courses which are ${courseTitles.join(
+        ', '
+      )}. Please format in html without using any header elements. Use only bold for formatting titles`;
+
+    return [
+      {
+        key: 1,
+        path: '',
+        title: $t('course.navItem.landing_page.editor.title.header')
+      },
+      {
+        key: 2,
+        path: 'landingpage.about',
+        title: $t('course.navItem.landing_page.editor.title.about'),
+        enableAIWriter: true,
+        initPrompt: getTemplate('description')
+      },
+      {
+        key: 3,
+        path: 'landingpage.objectives',
+        title: $t('course.navItem.landing_page.editor.title.objectives'),
+        enableAIWriter: true,
+        initPrompt: getTemplate('goals')
+      },
+      {
+        key: 4,
+        path: 'landingpage.reviews',
+        title: $t('course.navItem.landing_page.editor.title.reviews')
+      },
+      {
+        key: 5,
+        path: 'landingpage.instructor',
+        title: $t('course.navItem.landing_page.editor.title.instructor')
+      },
+      {
+        key: 6,
+        path: 'landingpage.pricing',
+        title: $t('course.navItem.landing_page.editor.title.pricing')
+      }
+    ];
+  }
+  $: sections = getSections(pathway);
 </script>
 
 <aside
   class={`${
-    show ? '-translate-x-[100%] fixed md:absolute z-[50]' : 'translate-x-0 fixed md:relative z-[50]'
-  }left-0 z-[50] transition w-[90vw] min-w-[300px] max-w-[350px] bg-gray-100 dark:bg-neutral-800 h-full border border-l-0 border-t-0 border-b-0 border-r-1`}
+    show ? 'fixed z-[50] -translate-x-[100%] md:absolute' : 'fixed z-[50] translate-x-0 md:relative'
+  } border-r-1 left-0 z-[50] h-full w-[90vw] min-w-[300px] max-w-[350px] border border-b-0 border-l-0 border-t-0 bg-gray-100 transition dark:bg-neutral-800`}
 >
-  <div class="toggler rounded-full shadow-lg absolute">
+  <div class="toggler absolute rounded-full shadow-lg">
     <IconButton
       value="toggle"
       onClick={() => (show = !show)}
@@ -153,9 +168,9 @@
       {/if}
     </IconButton>
   </div>
-  <div class="h-full flex flex-col">
+  <div class="flex h-full flex-col">
     {#if !selectedSection}
-      <div class="flex justify-between items-center px-2 w-full">
+      <div class="flex w-full items-center justify-between px-2">
         <CloseButton onClick={handleClose} />
         <div class="flex items-center">
           <PrimaryButton
@@ -171,16 +186,16 @@
           </IconButton>
         </div>
       </div>
-      <div class="flex justify-between items-center px-2 w-full mb-2">
+      <div class="mb-2 flex w-full items-center justify-between px-2">
         <h3 class="dark:text-white">{$t('course.navItem.landing_page.editor.page_builder')}</h3>
       </div>
       {#each sections as section, index}
         <button
-          class="w-full flex items-center justify-between px-2 py-3 border border-l-0 {index + 1 <
+          class="flex w-full items-center justify-between border border-l-0 px-2 py-3 {index + 1 <
             sections.length && 'border-b-0'} border-gray-300"
           on:click={handleSectionSelect(section.key)}
         >
-          <p class="dark:text-white mr-2">
+          <p class="mr-2 dark:text-white">
             {section.title}
           </p>
           <ChevronRightIcon size={24} class="carbon-class" />
@@ -200,7 +215,7 @@
             <CustomPromptBtn
               className="w-fit ml-2"
               alignPopover="bottom-left"
-              defaultPrompt={`${selectedSection.initPrompt} ${pathway.title}. Please format in html`}
+              defaultPrompt={selectedSection.initPrompt}
               isHTML={true}
               handleInsert={(v) => {
                 if (!selectedSection) return;
@@ -213,7 +228,7 @@
         </div>
       </div>
 
-      <div class="title-content p-2 overflow-y-auto">
+      <div class="title-content overflow-y-auto p-2">
         {#if selectedSection.key === 1}
           <HeaderForm bind:pathway />
         {:else if selectedSection.key === 2}

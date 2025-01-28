@@ -3,7 +3,6 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import CheckmarkFilled from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
-  import LockedIcon from 'carbon-icons-svelte/lib/Locked.svelte';
   import { onDestroy, onMount } from 'svelte';
 
   import { sideBar } from '$lib/components/Org/store';
@@ -274,11 +273,7 @@
                     />
                     <span class="line-clamp-2 w-[70%] text-ellipsis">{item.course.title}</span>
                     <span class="grow" />
-                    {#if !item.is_unlocked}
-                      <span class="text-md ml-2" title="This lesson is locked.">
-                        <LockedIcon class="carbon-icon dark:text-white" />
-                      </span>
-                    {:else if getIsCourseComplete(item.course.lesson[0], $profile.id)}
+                    {#if getIsCourseComplete(item.course.lesson[0], $profile.id)}
                       <span class="ml-2" title="You have completed this lesson">
                         <CheckmarkFilled class="carbon-icon dark:text-white" />
                       </span>

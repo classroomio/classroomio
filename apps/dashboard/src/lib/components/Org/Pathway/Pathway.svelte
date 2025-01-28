@@ -1,9 +1,9 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import Box from '$lib/components/Box/index.svelte';
-  import CardLoader from '$lib/components/Courses/components/Card/Loader.svelte';
   import PathwayEmptyIcon from '$lib/components/Icons/PathwayEmptyIcon.svelte';
   import PathwayCard from '$lib/components/Org/Pathway/PathwayCard.svelte';
+  import PathwayCardLoader from '$lib/components/Org/Pathway/PathwayCardLoader.svelte';
   import PathwayList from '$lib/components/Org/Pathway/PathwayList.svelte';
   import { pathwayMetaData } from '$lib/components/Org/Pathway/store';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
@@ -31,9 +31,9 @@
 <div class="h-full w-full">
   {#if $pathwayMetaData.isLoading}
     <section class="grid gap-4 md:grid-cols-2">
-      <CardLoader />
-      <CardLoader />
-      <CardLoader />
+      <PathwayCardLoader />
+      <PathwayCardLoader />
+      <PathwayCardLoader />
     </section>
   {:else if $pathwayMetaData.view === 'list'}
     <StructuredList selection class="w-full">

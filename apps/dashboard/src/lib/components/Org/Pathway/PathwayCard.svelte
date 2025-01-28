@@ -4,22 +4,34 @@
   import { ImageLoader, SkeletonPlaceholder, Tag } from 'carbon-components-svelte';
 
   export let id: string = '';
+  export let slug: string = '';
   export let title: string = '';
   export let description: string = '';
   export let bannerImage: string = '';
   export let isPublished: boolean = false;
   export let totalCourse: number = 0;
+  export let isLMS: boolean = false;
+  export let isOnLandingPage: boolean = false;
+  export let isExplore: boolean = false;
+
+  function getCourseUrl() {
+    if (isLMS && isOnLandingPage) {
+      return isOnLandingPage || isExplore ? `/pathway/${slug}` : `/pathways/${id}`;
+    }
+
+    return isOnLandingPage || isExplore ? `/pathway/${slug}` : `/pathway/${id}`;
+  }
 </script>
 
 <div
   role="button"
   tabindex="0"
   on:click={() => {
-    goto(`/pathways/${id}`);
+    goto(getCourseUrl());
   }}
   on:keydown={(e) => {
     if (e.key === 'Enter') {
-      goto(`/pathways/${id}`);
+      goto(getCourseUrl());
     }
   }}
   class="border-gray hover:border-primary-600 group relative w-[480px] rounded-md border-2 p-3 text-black dark:border-neutral-600 dark:text-white"

@@ -1,17 +1,17 @@
 <script lang="ts">
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import get from 'lodash/get';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
-  import { isCourseFree } from '$lib/utils/functions/course';
-  import { getStudentInviteLink } from '$lib/utils/functions/course';
-  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
-  import PaymentModal from './PaymentModal.svelte';
-  import type { Pathway } from '$lib/utils/types';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { ROLE } from '$lib/utils/constants/roles';
-  import { capturePosthogEvent } from '$lib/utils/services/posthog';
+  import { isCourseFree } from '$lib/utils/functions/course';
+  import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
+  import { getStudentInviteLink } from '$lib/utils/functions/pathway';
   import { t } from '$lib/utils/functions/translations';
+  import { capturePosthogEvent } from '$lib/utils/services/posthog';
+  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
+  import type { Pathway } from '$lib/utils/types';
+  import get from 'lodash/get';
+  import PaymentModal from './PaymentModal.svelte';
 
   export let className = '';
   export let editMode = false;
@@ -85,18 +85,18 @@
 <!-- Pricing Details -->
 {#if mobile}
   <div
-    class="sticky w-full flex items-center justify-center transition duration-300 h-fit bottom-0 lg:hidden bg-gray-50 dark:bg-neutral-800"
+    class="sticky bottom-0 flex h-fit w-full items-center justify-center bg-gray-50 transition duration-300 dark:bg-neutral-800 lg:hidden"
   >
     <aside
       class="price-container sticky lg:hidden {editMode
         ? 'lg:bottom-2'
-        : 'lg:top-10'} lg:shadow-2xl lg:rounded-lg m-h-fit bg-gray-50 dark:bg-neutral-800 z-0 {className}"
+        : 'lg:top-10'} m-h-fit z-0 bg-gray-50 dark:bg-neutral-800 lg:rounded-lg lg:shadow-2xl {className}"
     >
       <div class="flex items-center justify-center gap-3 px-3 py-3">
         <!-- Pricing -->
         <div class=" text-center">
           {#if pathwayData?.landingpage?.allowNewStudent}
-            <p class="dark:text-white font-medium text-sm flex items-center gap-1">
+            <p class="flex items-center gap-1 text-sm font-medium dark:text-white">
               {formatter?.format(calculatedCost) || calculatedCost}
               {#if isFree}
                 <span class="text-xs"
@@ -105,7 +105,7 @@
               {/if}
             </p>
             {#if pathwayData?.landingpage?.showDiscount}
-              <p class="dark:text-white font-light text-sm text-gray-500">
+              <p class="text-sm font-light text-gray-500 dark:text-white">
                 {discount}% {$t('course.navItem.landing_page.pricing_section.discount')}.
                 <span class="line-through"
                   >{formatter?.format(pathwayData?.cost || 0) || pathwayData.cost}</span
@@ -113,14 +113,14 @@
               </p>
             {/if}
           {:else}
-            <p class="dark:text-white text-lg">
+            <p class="text-lg dark:text-white">
               {$t('course.navItem.landing_page.pricing_section.not_accepting')}
             </p>
           {/if}
         </div>
 
         <!-- Call To Action Buttons -->
-        <div class="flex flex-col w-full h-full items-center">
+        <div class="flex h-full w-full flex-col items-center">
           <PrimaryButton
             label={isFree
               ? $t('course.navItem.landing_page.pricing_section.enroll')
@@ -134,12 +134,12 @@
     </aside>
   </div>
 {:else}
-  <aside class="price-container lg:shadow-lg lg:rounded-lg m-h-fit dark:bg-neutral-800 {className}">
+  <aside class="price-container m-h-fit dark:bg-neutral-800 lg:rounded-lg lg:shadow-lg {className}">
     <div class="py-2 lg:py-10">
       <!-- Pricing -->
       <div class="mb-6 px-2 lg:px-10">
         {#if pathwayData?.is_published}
-          <p class="dark:text-white font-semibold text-xl">
+          <p class="text-xl font-semibold dark:text-white">
             {formatter?.format(calculatedCost) || calculatedCost}
             {#if isFree}
               <span class="text-sm">({$t('course.navItem.landing_page.pricing_section.free')})</span
@@ -147,7 +147,7 @@
             {/if}
           </p>
           {#if pathwayData?.landingpage?.showDiscount}
-            <p class="dark:text-white font-light text-sm text-gray-500">
+            <p class="text-sm font-light text-gray-500 dark:text-white">
               {discount}% {$t('course.navItem.landing_page.pricing_section.discount')}.
               <span class="line-through"
                 >{formatter?.format(pathwayData?.cost || 0) || pathwayData.cost}</span
@@ -155,16 +155,18 @@
             </p>
           {/if}
         {:else}
-          <p class="dark:text-white text-lg">
+          <p class="text-lg dark:text-white">
             {$t('course.navItem.landing_page.pricing_section.not_accepting')}
           </p>
         {/if}
       </div>
 
       <!-- Call To Action Buttons -->
-      <div class="px-2 pb-10 lg:px-10 flex flex-col w-full items-center">
+      <div class="flex w-full flex-col items-center px-2 pb-10 lg:px-10">
         <PrimaryButton
-          label={isFree ? $t('course.navItem.landing_page.pricing_section.enroll') : $t('course.navItem.landing_page.editor.pricing_form.cart')}
+          label={isFree
+            ? $t('course.navItem.landing_page.pricing_section.enroll')
+            : $t('course.navItem.landing_page.editor.pricing_form.cart')}
           className="w-full sm:w-full py-3 mb-3 rounded-none"
           onClick={handleJoinCourse}
           isDisabled={!pathwayData?.is_published}
@@ -179,28 +181,28 @@
           isDisabled={!pathwayData?.is_published}
         />
         {#if pathwayData?.landingpage?.showDiscount && pathwayData?.is_published}
-          <p class="dark:text-white font-light text-xs text-gray-500">
+          <p class="text-xs font-light text-gray-500 dark:text-white">
             {$t('course.navItem.landing_page.pricing_section.bird')}
           </p>
         {/if}
       </div>
 
       {#if showDiscount}
-      <div class="border-t px-2 pt-10 lg:px-10 text-center">
-        <img src="/pricingCard-icon.svg" alt="Pricing Card" class="w-[85%] mx-auto" />
-        <p class="dark:text-white font-light text-xs my-5 text-gray-500">
-          {$t('pathway.pages.landingPage.main.pricing_win')}
-        </p>
-        <a href="/#" class="text-xs underline text-blue-600 font-semibold">
-          {$t('pathway.pages.landingPage.main.start')}
-        </a>
-      </div>
+        <div class="border-t px-2 pt-10 text-center lg:px-10">
+          <img src="/pricingCard-icon.svg" alt="Pricing Card" class="mx-auto w-[85%]" />
+          <p class="my-5 text-xs font-light text-gray-500 dark:text-white">
+            {$t('pathway.pages.landingPage.main.pricing_win')}
+          </p>
+          <a href="/#" class="text-xs font-semibold text-blue-600 underline">
+            {$t('pathway.pages.landingPage.main.start')}
+          </a>
+        </div>
       {/if}
     </div>
 
     <!-- Gift Container -->
     {#if pathwayData?.landingpage?.reward?.show}
-      <div class="px-10 py-5 text-sm flex items-center flex-col border-t border-gray-300">
+      <div class="flex flex-col items-center border-t border-gray-300 px-10 py-5 text-sm">
         {@html get(pathwayData, 'landingpage.reward.description', '')}
       </div>
     {/if}

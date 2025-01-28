@@ -1,6 +1,7 @@
 import { getSupabase, supabase } from '$lib/utils/functions/supabase';
 import { getCurrentOrg } from '$lib/utils/services/org';
 import { redirect } from '@sveltejs/kit';
+import isBoolean from 'lodash/isBoolean';
 
 if (!supabase) {
   getSupabase();
@@ -13,7 +14,7 @@ export const load = async ({ params = { hash: '' } }) => {
 
     const { id, name, description, isPathway, orgSiteName } = JSON.parse(courseHashData);
 
-    if (!id || !name || !description || !isPathway || !orgSiteName) {
+    if (!id || !name || !description || !isBoolean(isPathway) || !orgSiteName) {
       throw 'Validation failed';
     }
     const currentOrg = await getCurrentOrg(orgSiteName, true);
