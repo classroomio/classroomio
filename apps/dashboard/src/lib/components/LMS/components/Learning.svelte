@@ -31,7 +31,7 @@
     {$t('dashboard.current_lesson')}
   </p>
   <div
-    class="flex w-full flex-col items-center gap-2 rounded border border-[#EAEAEA] p-3 lg:h-[40vh] dark:bg-neutral-800"
+    class="flex w-full flex-col items-center gap-2 rounded border border-[#EAEAEA] p-3 dark:bg-neutral-800 lg:h-[40vh]"
   >
     {#if last3Courses.length > 0}
       <div class=" flex h-full w-full flex-col justify-start overflow-y-auto">
@@ -61,7 +61,8 @@
               {#if getCurrentCourse(course)}
                 <span class="flex flex-col items-start gap-3 pb-5 lg:flex-row">
                   <img
-                    src={getCurrentCourse(course)?.course.logo}
+                    src={getCurrentCourse(course)?.course.logo ||
+                      '/images/classroomio-course-img-template.jpg'}
                     alt="course"
                     class="hidden lg:block lg:h-[60px] lg:w-[60px]"
                   />

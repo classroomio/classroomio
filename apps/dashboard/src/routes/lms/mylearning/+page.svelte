@@ -129,7 +129,6 @@
     fetchPathwaysAndCourses($profile.id, $currentOrg.id);
     filterCourses(searchValue, selectedId, $lmsCourses);
   }
-
   $: tabs = [
     {
       label: `${$t('my_learning.progress')} (${filteredCoursesInProgress.length})`,

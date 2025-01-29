@@ -73,6 +73,7 @@ export async function fetchPathways(profileId?: string, orgId?: string) {
     };
   }
 
+  // this returns allcourses as an array of arrays
   const allCourses = await Promise.all(
     pathwayIds
       .filter((id) => id !== undefined)
@@ -86,12 +87,15 @@ export async function fetchPathways(profileId?: string, orgId?: string) {
     };
   }
 
-  // Step 3: Attach courses to their respective pathways and rename pathway_course to courses
+  // so we have a to flatten it to be an array of objects before use
+  const flattenedCourses = allCourses.flat();
+
   const pathwaysWithCourses = allPathways.map((pathway: any) => {
-    const courses = allCourses.filter((course: any) => course.pathway_id === pathway.id);
+    const courses = flattenedCourses.filter((course: any) => course.pathway_id == pathway.id);
+
     return {
       ...pathway,
-      pathway_course: courses,
+      pathway_course: courses, // this is the issue
       type: 'Pathway'
     };
   });

@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { NavClasses } from '$lib/utils/constants/reusableClass';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import Modal from '$lib/components/Modal/index.svelte';
-  import { t } from '$lib/utils/functions/translations';
   import { goto } from '$app/navigation';
-  import type { Pathway } from '$lib/utils/types';
+  import Modal from '$lib/components/Modal/index.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { NavClasses } from '$lib/utils/constants/reusableClass';
   import { courseProgress } from '$lib/utils/functions/pathway';
+  import { t } from '$lib/utils/functions/translations';
+  import type { Pathway } from '$lib/utils/types';
 
   export let open = false;
   export let pathway: Pathway | any;
@@ -29,29 +29,29 @@
     <div class="h-full">
       {#each pathway.pathway_course as pathway_course}
         <a
-          href={pathway_course.is_unlocked && pathway_course.course.is_published
-            ? `/courses/${pathway_course.course.id}`
+          href={pathway_course?.is_unlocked && pathway_course?.course?.is_published
+            ? `/courses/${pathway_course?.course?.id}`
             : null}
           class="hover:no-underline"
         >
-          <div class="p-2 cursor-pointer space-y-2 {NavClasses.item}">
-            <p class="text-sm font-normal w-[60%] truncate">{pathway_course.course.title}</p>
-            {#if pathway_course.is_unlocked == false || pathway_course.course.is_published == false}
-              <p class="text-sm font-normal text-gray-500 bg-gray-300 w-fit px-1 rounded-sm">
+          <div class="cursor-pointer space-y-2 p-2 {NavClasses.item}">
+            <p class="w-[60%] truncate text-sm font-normal">{pathway_course?.course?.title}</p>
+            {#if pathway_course?.is_unlocked == false || pathway_course?.course?.is_published == false}
+              <p class="w-fit rounded-sm bg-gray-300 px-1 text-sm font-normal text-gray-500">
                 {$t('lms_pathway.locked')}
               </p>
             {:else}
               <div class="flex items-center gap-2">
-                <div class="relative bg-[#EAEAEA] w-[40%] h-2">
+                <div class="relative h-2 w-[40%] bg-[#EAEAEA]">
                   <div
-                    style="width: {courseProgress(pathway_course.course.lesson) || 0}%"
-                    class="absolute top-0 left-0 bg-primary-900 h-full"
+                    style="width: {courseProgress(pathway_course?.course?.lesson) || 0}%"
+                    class="bg-primary-900 absolute left-0 top-0 h-full"
                   />
                 </div>
                 <p class="text-xs font-medium">
-                  {courseProgress(pathway_course.course.lesson) === 100
+                  {courseProgress(pathway_course?.course?.lesson) === 100
                     ? `${$t('lms_pathway.completed')}`
-                    : `${courseProgress(pathway_course.course.lesson) || 0}%`}
+                    : `${courseProgress(pathway_course?.course?.lesson) || 0}%`}
                 </p>
               </div>
             {/if}
@@ -60,7 +60,7 @@
       {/each}
     </div>
   {:else}
-    <h3 class="dark:text-white text-2xl my-5">{$t('search.no_course')}</h3>
+    <h3 class="my-5 text-2xl dark:text-white">{$t('search.no_course')}</h3>
   {/if}
   <!-- Button -->
   <div slot="buttons">

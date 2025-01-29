@@ -1,0 +1,9 @@
+{
+	"/": [],
+	"/api/create": [
+		"src/routes/api/create/+server.ts"
+	],
+	"/api/submit": [
+		"src/routes/api/submit/+server.ts"
+	]
+}

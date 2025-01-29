@@ -108,6 +108,7 @@
     pricingData.cost ?? 0,
     !!pricingData.showDiscount
   );
+ 
 </script>
 
 <div
@@ -173,8 +174,8 @@
         <span
           class="bg-primary-50 absolute bottom-2 left-2 z-10 flex items-center gap-1 rounded-sm p-1 font-mono text-xs capitalize"
         >
-          <svelte:component this={tag.icon} size={16} class={tag.iconStyle} />
-          {tag.label}
+          <svelte:component this={tag?.icon} size={16} class={tag?.iconStyle} />
+          {tag?.label}
         </span>
       {/if}
     </div>

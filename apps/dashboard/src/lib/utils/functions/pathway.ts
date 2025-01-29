@@ -33,8 +33,8 @@ export function replaceHTMLTag(text: string) {
 
 export const getPathwayCompletedCoursesLength = (course: LMSCourse) => {
   const completedCourses = course?.pathway_course?.filter((pathwayCourse) => {
-    const lessons = pathwayCourse.course.lesson;
-    return lessons.length > 0 && lessons.every((lesson) => lesson.is_complete);
+    const lessons = pathwayCourse.course?.lesson;
+    return lessons?.length > 0 && lessons?.every((lesson) => lesson.is_complete);
   }).length;
   return completedCourses || 0;
 };
