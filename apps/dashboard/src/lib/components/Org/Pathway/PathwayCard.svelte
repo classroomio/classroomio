@@ -10,16 +10,11 @@
   export let bannerImage: string = '';
   export let isPublished: boolean = false;
   export let totalCourse: number = 0;
-  export let isLMS: boolean = false;
   export let isOnLandingPage: boolean = false;
   export let isExplore: boolean = false;
 
   function getCourseUrl() {
-    if (isLMS && isOnLandingPage) {
-      return isOnLandingPage || isExplore ? `/pathway/${slug}` : `/pathways/${id}`;
-    }
-
-    return isOnLandingPage || isExplore ? `/pathway/${slug}` : `/pathway/${id}`;
+    return isOnLandingPage || isExplore ? `/pathway/${slug}` : `/pathways/${id}`;
   }
 </script>
 

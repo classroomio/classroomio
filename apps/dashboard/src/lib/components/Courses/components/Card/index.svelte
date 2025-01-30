@@ -108,7 +108,6 @@
     pricingData.cost ?? 0,
     !!pricingData.showDiscount
   );
- 
 </script>
 
 <div
