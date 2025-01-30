@@ -56,7 +56,7 @@
 
   async function setStars() {
     try {
-      const response = await fetch('http://api.github.com/repos/classroomio/classroomio');
+      const response = await fetch('https://api.github.com/repos/classroomio/classroomio');
       const data = await response.json();
       stars = data?.stargazers_count || 0;
     } catch (error) {
