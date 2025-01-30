@@ -2,11 +2,10 @@ import type { MetaTagsProps } from 'svelte-meta-tags';
 
 export const prerender = true;
 
-export function load({ url, data }) {
+export function load({ url }) {
   return {
     baseMetaTags: getBaseMetaTags(url),
-    url: url.pathname,
-		...data,
+    url: url.pathname
   };
 }
 

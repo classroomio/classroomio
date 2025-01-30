@@ -6,10 +6,10 @@
   import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
   import MapCenter from 'carbon-icons-svelte/lib/MapCenter.svelte';
   import TextAlignJustify from 'carbon-icons-svelte/lib/TextAlignJustify.svelte';
+  import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
 
-  export let stars = 0;
-
+  let stars = 0;
   let showDrawer = false;
   let showSolutions = false;
   let activeLink = '';
@@ -53,6 +53,20 @@
   $: activeLink = $page.url.pathname;
   $: activeHash = $page.url.hash;
   $: isSolutionsActive = solutions.some((s) => activeHash.includes(s.key));
+
+  async function setStars() {
+    try {
+      const response = await fetch('http://api.github.com/repos/classroomio/classroomio');
+      const data = await response.json();
+      stars = data?.stargazers_count || 0;
+    } catch (error) {
+      console.error('Error fetching GitHub stars:', error);
+    }
+  }
+
+  onMount(() => {
+    setStars();
+  });
 </script>
 
 <div
@@ -175,7 +189,7 @@
         <span
           class="text-sm text-gray-600 font-medium leading-none transition-colors duration-200 group-hover:text-black"
         >
-        {stars}
+          {stars}
         </span>
       </a>
     </div>
