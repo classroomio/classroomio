@@ -11,11 +11,12 @@
 
   import { course } from '$lib/components/Course/store';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { handleOpenWidget } from '$lib/components/UploadWidget';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { getEmbedId } from '$lib/utils/functions/formatYoutubeVideo';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
-  import { handleOpenWidget, reviewsModalStore } from './store';
+  import { reviewsModalStore } from './store';
 
   import type { Course, Lesson, Review } from '$lib/utils/types';
 

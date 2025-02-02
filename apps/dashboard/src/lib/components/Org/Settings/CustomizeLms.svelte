@@ -1,18 +1,16 @@
 <script lang="ts">
-  import { Grid, Row, Column } from 'carbon-components-svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import Save from 'carbon-icons-svelte/lib/Save.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import SectionTitle from '../SectionTitle.svelte';
-  import { Toggle } from 'carbon-components-svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import { currentOrg } from '$lib/utils/store/org';
-  import { getSupabase } from '$lib/utils/functions/supabase';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
+  import { handleOpenWidget } from '$lib/components/UploadWidget';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
-  import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
+  import { getSupabase } from '$lib/utils/functions/supabase';
   import { t } from '$lib/utils/functions/translations';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { Column, Grid, Row, Toggle } from 'carbon-components-svelte';
+  import Save from 'carbon-icons-svelte/lib/Save.svelte';
+  import SectionTitle from '../SectionTitle.svelte';
 
   const supabase = getSupabase();
 
@@ -44,8 +42,8 @@
   }
 </script>
 
-<Grid class="border-c rounded border-gray-200 dark:border-neutral-600 w-full mt-5 relative">
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+<Grid class="border-c relative mt-5 w-full rounded border-gray-200 dark:border-neutral-600">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}>
       <SectionTitle>{$t('components.settings.customize_lms.dashboard.title')}</SectionTitle>
     </Column>
@@ -86,7 +84,7 @@
           <img
             alt="Banner"
             src={$currentOrg.customization.dashboard.bannerImage}
-            class="mt-2 rounded-md w-full"
+            class="mt-2 w-full rounded-md"
           />
         {/if}
         {#if $handleOpenWidget.open && widgetKey === 'banner-image'}
@@ -106,7 +104,7 @@
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('components.settings.customize_lms.course.title')}</SectionTitle></Column
     >
@@ -137,7 +135,7 @@
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('components.settings.customize_lms.apps.title')}</SectionTitle></Column
     >
@@ -167,7 +165,7 @@
     </Column>
   </Row>
 
-  <div class="hidden md:block sticky float-right bottom-12 mr-2 z-[120]">
+  <div class="sticky bottom-12 z-[120] float-right mr-2 hidden md:block">
     <PrimaryButton
       label={$t('components.settings.customize_lms.save')}
       onClick={handleSave}
@@ -177,7 +175,7 @@
   </div>
 </Grid>
 
-<div class="absolute block md:hidden right-6 bottom-8 z-[120]">
+<div class="absolute bottom-8 right-6 z-[120] block md:hidden">
   <PrimaryButton onClick={handleSave} isLoading={isSaving} isDisabled={isSaving}>
     <Save size={24} class="" />
   </PrimaryButton>

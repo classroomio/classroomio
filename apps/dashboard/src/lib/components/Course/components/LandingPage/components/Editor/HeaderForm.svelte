@@ -3,7 +3,7 @@
   import TextField from '$lib/components/Form/TextField.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { handleOpenWidget } from '../../store';
+  import { handleOpenWidget } from '$lib/components/UploadWidget';
   import { t } from '$lib/utils/functions/translations';
 
   export let course = {};
@@ -38,7 +38,7 @@
   bind:value={course.metadata.videoUrl}
 />
 <div class="mt-7">
-  <p class="font-bold mb-3">{$t('course.navItem.landing_page.editor.header_form.replace_cover')}</p>
+  <p class="mb-3 font-bold">{$t('course.navItem.landing_page.editor.header_form.replace_cover')}</p>
   <PrimaryButton
     label={$t('course.navItem.landing_page.editor.header_form.replace')}
     variant={VARIANTS.OUTLINED}

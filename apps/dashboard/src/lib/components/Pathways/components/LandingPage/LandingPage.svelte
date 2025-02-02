@@ -1,33 +1,29 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import Badge from 'carbon-icons-svelte/lib/Badge.svelte';
-  import ChartEvaluation from 'carbon-icons-svelte/lib/ChartEvaluation.svelte';
-  import PlayFilled from 'carbon-icons-svelte/lib/PlayFilled.svelte';
-  import get from 'lodash/get';
-  import Accordion from './components/Accordion.svelte';
-  import { SECTION_KEYS } from './constants';
-
-  import { currentOrg } from '$lib/utils/store/org';
-  import { pathway } from '../../store';
-  import { handleOpenWidget, reviewsModalStore } from './store';
-
-  import { calDateDiff } from '$lib/utils/functions/date';
-  import { getEmbedId } from '$lib/utils/functions/formatYoutubeVideo';
-  import { t } from '$lib/utils/functions/translations';
-  import { timeAgo } from '../../functions';
-
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import type { Pathway, Review } from '$lib/utils/types';
-  import { NAV_ITEMS } from './constants';
-
   import Avatar from '$lib/components/Avatar/index.svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
   import Modal from '$lib/components/Modal/index.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import PoweredBy from '$lib/components/Upgrade/PoweredBy.svelte';
+  import { handleOpenWidget } from '$lib/components/UploadWidget';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
+  import { calDateDiff } from '$lib/utils/functions/date';
+  import { getEmbedId } from '$lib/utils/functions/formatYoutubeVideo';
+  import { t } from '$lib/utils/functions/translations';
+  import { currentOrg } from '$lib/utils/store/org';
+  import type { Pathway, Review } from '$lib/utils/types';
+  import Badge from 'carbon-icons-svelte/lib/Badge.svelte';
+  import ChartEvaluation from 'carbon-icons-svelte/lib/ChartEvaluation.svelte';
+  import PlayFilled from 'carbon-icons-svelte/lib/PlayFilled.svelte';
+  import get from 'lodash/get';
+  import { timeAgo } from '../../functions';
+  import { pathway } from '../../store';
+  import Accordion from './components/Accordion.svelte';
   import PricingSection from './components/PricingSection.svelte';
+  import { NAV_ITEMS, SECTION_KEYS } from './constants';
+  import { reviewsModalStore } from './store';
 
   export let editMode = false;
   export let pathwayData: Pathway;

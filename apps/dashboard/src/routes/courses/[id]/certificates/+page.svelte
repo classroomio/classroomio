@@ -1,6 +1,6 @@
 <script lang="ts">
+  import { CourseContainer } from '$lib/components/Course';
   import IssueCertificateModal from '$lib/components/Course/components/Ceritficate/IssueCertificateModal.svelte';
-  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
   import { PageBody, PageNav } from '$lib/components/Page';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   // import DeleteConfirmation from '$lib/components/Course/components/People/DeleteConfirmation.svelte';

@@ -1,5 +1,13 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { pathway, pathwaySettings, RADIO_VALUE } from '$lib/components/Pathways/store';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import { handleOpenWidget } from '$lib/components/UploadWidget';
+  import generateSlug from '$lib/utils/functions/generateSlug';
+  import { t } from '$lib/utils/functions/translations';
+  import { deletePathway, updatePathway } from '$lib/utils/services/pathways';
+  import { currentOrg, currentOrgDomain, currentOrgPath } from '$lib/utils/store/org';
+  import type { Pathway } from '$lib/utils/types';
   import {
     CodeSnippet,
     Column,
@@ -12,15 +20,6 @@
   } from 'carbon-components-svelte';
   import { Restart } from 'carbon-icons-svelte';
   import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
-
-  import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
-  import { pathway, pathwaySettings, RADIO_VALUE } from '$lib/components/Pathways/store';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import generateSlug from '$lib/utils/functions/generateSlug';
-  import { t } from '$lib/utils/functions/translations';
-  import { deletePathway, updatePathway } from '$lib/utils/services/pathways';
-  import { currentOrg, currentOrgDomain, currentOrgPath } from '$lib/utils/store/org';
-  import type { Pathway } from '$lib/utils/types';
 
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
@@ -114,7 +113,7 @@
   function setDefault(pathway: Pathway) {
     if (pathway && Object.keys(pathway).length && $pathwaySettings.title !== pathway.title) {
       $pathwaySettings = {
-        title: pathway.title,
+        title: pathway.title || '',
         description: pathway.description,
         logo: pathway.logo || '',
         is_published: !!pathway.is_published,

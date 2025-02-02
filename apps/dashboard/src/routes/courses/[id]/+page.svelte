@@ -2,12 +2,12 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import Box from '$lib/components/Box/index.svelte';
+  import { CourseContainer } from '$lib/components/Course';
   import NewFeedModal from '$lib/components/Course/components/NewsFeed/NewFeedModal.svelte';
   import NewsFeedCard from '$lib/components/Course/components/NewsFeed/NewsFeedCard.svelte';
   import NewsFeedLoader from '$lib/components/Course/components/NewsFeed/NewsFeedLoader.svelte';
   import { isNewFeedModal, newsFeed } from '$lib/components/Course/components/NewsFeed/store';
   import { group } from '$lib/components/Course/store';
-  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
   import { PageBody, PageNav } from '$lib/components/Page';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';

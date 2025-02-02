@@ -13,10 +13,22 @@
   import { ArrowUpRight, Restart, Tag } from 'carbon-icons-svelte';
 
   import { course } from '$lib/components/Course/store';
-  import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
+  import AddTagModal from '$lib/components/CourseTags/AddTagModal.svelte';
   import { addTagModal } from '$lib/components/CourseTags/store';
+  import TagButton from '$lib/components/CourseTags/TagButton.svelte';
+  import TextArea from '$lib/components/Form/TextArea.svelte';
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import IconButton from '$lib/components/IconButton/index.svelte';
+  import DeleteModal from '$lib/components/Modal/DeleteModal.svelte';
+  import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
+  import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
+  import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
+  import { handleOpenWidget } from '$lib/components/UploadWidget';
+  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
+  import generateSlug from '$lib/utils/functions/generateSlug';
   import { isObject } from '$lib/utils/functions/isObject';
   import { t } from '$lib/utils/functions/translations';
   import { deleteCourse, removeCourseTag, updateCourse } from '$lib/utils/services/courses';
@@ -24,23 +36,8 @@
   import type { Course, CourseTag } from '$lib/utils/types';
   import { COURSE_TYPE } from '$lib/utils/types';
   import { lessons } from '../Lesson/store/lessons';
-  import { settings } from './store';
-
-  import AddTagModal from '$lib/components/CourseTags/AddTagModal.svelte';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
-  import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
-  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
-  import generateSlug from '$lib/utils/functions/generateSlug';
   import DragAndDrop from './DragAndDrop.svelte';
-
-  import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
-
-  import TagButton from '$lib/components/CourseTags/TagButton.svelte';
-  import DeleteModal from '$lib/components/Modal/DeleteModal.svelte';
+  import { settings } from './store';
 
   let isLoading = false;
   let isSaving = false;
@@ -48,6 +45,9 @@
   let errors: {
     title: string | undefined;
     description: string | undefined;
+  } = {
+    title: undefined,
+    description: undefined
   };
   let avatar: string | undefined;
   let hasUnsavedChanges = false;

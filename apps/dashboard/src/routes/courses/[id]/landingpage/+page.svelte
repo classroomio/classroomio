@@ -1,12 +1,10 @@
 <script lang="ts">
   import { dev } from '$app/environment';
-  import { fly } from 'svelte/transition';
+  import { CourseLandingPage, Editor } from '$lib/components/Course/components/LandingPage';
+  import { lessons, lessonSections } from '$lib/components/Course/components/Lesson/store/lessons';
   import { course } from '$lib/components/Course/store';
   import type { Course, Lesson, LessonSection } from '$lib/utils/types';
-  import { lessons, lessonSections } from '$lib/components/Course/components/Lesson/store/lessons';
-
-  import CourseLandingPage from '$lib/components/CourseLandingPage/index.svelte';
-  import Editor from '$lib/components/CourseLandingPage/components/Editor/index.svelte';
+  import { fly } from 'svelte/transition';
 
   export let data;
 
@@ -27,7 +25,7 @@
 </script>
 
 <div
-  class="absolute flex inset-0 z-50 bg-white"
+  class="absolute inset-0 z-50 flex bg-white"
   in:fly={{ y: 500, duration: 500 }}
   out:fly={{ y: 500, duration: 500 }}
 >

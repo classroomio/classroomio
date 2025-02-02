@@ -3,10 +3,10 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import Chip from '$lib/components/Chip/index.svelte';
+  import { CourseContainer } from '$lib/components/Course';
   import MarkExerciseModal from '$lib/components/Course/components/Lesson/Exercise/MarkExerciseModal.svelte';
   import { formatAnswers } from '$lib/components/Course/function.js';
   import { course } from '$lib/components/Course/store';
-  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
   import { PageBody, PageNav } from '$lib/components/Page';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';

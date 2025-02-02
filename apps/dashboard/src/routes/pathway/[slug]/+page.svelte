@@ -1,5 +1,5 @@
 <script lang="ts">
-  import PathwayLandingpage from '$lib/components/Pathways/components/PathwayLandingPage/index.svelte';
+  import { PathwayLandingPage } from '$lib/components/Pathways/components/LandingPage';
   import type { Pathway } from '$lib/utils/types';
 
   interface Data {
@@ -19,4 +19,4 @@
   $: setPathwayData(data.pathway);
 </script>
 
-<PathwayLandingpage {pathwayData} />
+<PathwayLandingPage {pathwayData} />

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import CourseLandingPage from '$lib/components/CourseLandingPage/index.svelte';
+  import { CourseLandingPage } from '$lib/components/Course/components/LandingPage';
   import type { Course } from '$lib/utils/types';
 
   interface Data {

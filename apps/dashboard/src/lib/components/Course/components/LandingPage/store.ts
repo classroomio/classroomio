@@ -59,7 +59,3 @@ export const landingPageStore = writable({
 export const reviewsModalStore = writable({
   open: false
 });
-
-export let handleOpenWidget = writable({
-  open: false
-});

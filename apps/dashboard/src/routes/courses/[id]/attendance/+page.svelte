@@ -1,10 +1,10 @@
 <script lang="ts">
   import { browser } from '$app/environment';
   import Box from '$lib/components/Box/index.svelte';
+  import { CourseContainer } from '$lib/components/Course';
   import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
   import { getLectureNo } from '$lib/components/Course/function.js';
   import { course, group } from '$lib/components/Course/store';
-  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
   import { PageBody, PageNav } from '$lib/components/Page';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { ROLE } from '$lib/utils/constants/roles';

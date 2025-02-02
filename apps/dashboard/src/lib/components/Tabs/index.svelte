@@ -8,7 +8,7 @@
     value: string | number;
     badgeValue?: number;
   }[] = [];
-  export let tabSpacing: string;
+  export let tabSpacing: string = '';
   export let alignCenter: boolean = false;
   export let currentTab: string | number;
   export let onChange = (v: string | number) => () => {};
@@ -16,8 +16,8 @@
 
 <div class="flex w-full flex-col">
   <div
-    class="flex items-center {alignCenter && 'justify-center'} {tabSpacing &&
-      tabSpacing} mb-2 w-full overflow-x-auto border-b"
+    class="flex items-center {alignCenter &&
+      'justify-center'} {tabSpacing} mb-2 w-full overflow-x-auto border-b"
   >
     {#each tabs as tab}
       {#if !tab.icon && !tab.badgeValue}

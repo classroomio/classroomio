@@ -1,12 +1,8 @@
 <script lang="ts">
-  import { dev } from '$app/environment';
-  import { fly } from 'svelte/transition';
-
-  import type { Pathway, PathwayCourse } from '$lib/utils/types';
+  import { Editor, PathwayLandingPage } from '$lib/components/Pathways/components/LandingPage';
   import { pathway, pathwayCourses } from '$lib/components/Pathways/store';
-
-  import Editor from '$lib/components/Pathways/components/PathwayLandingPage/components/Editor/index.svelte';
-  import PathwayLandingpage from '$lib/components/Pathways/components/PathwayLandingPage/index.svelte';
+  import type { Pathway, PathwayCourse } from '$lib/utils/types';
+  import { fly } from 'svelte/transition';
 
   export let data;
 
@@ -32,7 +28,7 @@
 >
   <Editor {pathwayId} bind:pathway={pathwayData} {syncPathwayStore} />
   <div class="rightBar">
-    <PathwayLandingpage bind:pathwayData editMode={true} />
+    <PathwayLandingPage bind:pathwayData editMode={true} />
   </div>
 </div>
 
