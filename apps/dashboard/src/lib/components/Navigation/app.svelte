@@ -73,7 +73,7 @@
           </IconButton>
         </li>
         <li class="hidden md:block">
-          <IconButton onClick={() => history.back()}>
+          <IconButton onClick={() => goto(coursesPath)}>
             <ArrowLeft size={16} class="text-white" />
           </IconButton>
         </li>
