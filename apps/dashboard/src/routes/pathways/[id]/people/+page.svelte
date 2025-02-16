@@ -13,8 +13,8 @@
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
   import copy from 'copy-to-clipboard';
 
-  import { deleteMemberModal } from '$lib/components/Pathways/components/People/store';
-  import { group } from '$lib/components/Pathways/store';
+  import { deleteMemberModal } from '$lib/components/Pathway/components/People/store';
+  import { group } from '$lib/components/Pathway/store';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { ROLE_LABEL, ROLES } from '$lib/utils/constants/roles';
   import { t } from '$lib/utils/functions/translations';
@@ -31,10 +31,10 @@
 
   import TextChip from '$lib/components/Chip/Text.svelte';
   import ComingSoon from '$lib/components/ComingSoon/index.svelte';
-  import PathwayContainer from '$lib/components/Pathways/components/PathwayContainer.svelte';
-  import DeleteConfirmation from '$lib/components/Pathways/components/People/DeleteConfirmation.svelte';
-  import InvitationModal from '$lib/components/Pathways/components/People/InvitationModal.svelte';
-  import type { Person, ProfileRole } from '$lib/components/Pathways/components/People/types';
+  import PathwayContainer from '$lib/components/Pathway/components/PathwayContainer.svelte';
+  import DeleteConfirmation from '$lib/components/Pathway/components/People/DeleteConfirmation.svelte';
+  import InvitationModal from '$lib/components/Pathway/components/People/InvitationModal.svelte';
+  import type { Person, ProfileRole } from '$lib/components/Pathway/components/People/types';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
 
   let people: Array<Person> = [];
@@ -165,7 +165,7 @@
           </select> -->
         </div>
         <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <p class="hidden w-20 text-lg lg:block dark:text-white" />
+          <p class="hidden w-20 text-lg dark:text-white lg:block" />
         </RoleBasedSecurity>
       </div>
 
@@ -184,7 +184,7 @@
               >{$t('course.navItem.people.action')}</StructuredListCell
             >
             <RoleBasedSecurity allowedRoles={[1, 2]}>
-              <p class="hidden w-20 text-lg lg:block dark:text-white" />
+              <p class="hidden w-20 text-lg dark:text-white lg:block" />
             </RoleBasedSecurity>
           </StructuredListRow>
         </StructuredListHead>

@@ -14,7 +14,7 @@
   import Grid from 'carbon-icons-svelte/lib/Grid.svelte';
   import List from 'carbon-icons-svelte/lib/List.svelte';
 
-  import { addCourseModal, pathway, pathwayCourses } from '$lib/components/Pathways/store';
+  import { addCourseModal, pathway, pathwayCourses } from '$lib/components/Pathway/store';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { t } from '$lib/utils/functions/translations';
   import { isMobile } from '$lib/utils/store/useMobile';
@@ -22,8 +22,8 @@
   import Card from '$lib/components/Courses/components/Card/index.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
-  import AddCourseModal from '$lib/components/Pathways/components/AddCourseModal.svelte';
-  import PathwayContainer from '$lib/components/Pathways/components/PathwayContainer.svelte';
+  import AddCourseModal from '$lib/components/Pathway/components/AddCourseModal.svelte';
+  import PathwayContainer from '$lib/components/Pathway/components/PathwayContainer.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import type { PathwayCourse } from '$lib/utils/types/index.js';

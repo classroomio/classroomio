@@ -20,7 +20,7 @@
   import Navigation from '$lib/components/Navigation/index.svelte';
   import PathwayCardLoader from '$lib/components/Org/Pathway/PathwayCardLoader.svelte';
   import { landingPageSettings } from '$lib/components/Org/Settings/store';
-  import { pathways } from '$lib/components/Pathways/store';
+  import { pathways } from '$lib/components/Pathway/store';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import PoweredBy from '$lib/components/Upgrade/PoweredBy.svelte';

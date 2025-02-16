@@ -9,7 +9,7 @@
 
   import Box from '$lib/components/Box/index.svelte';
   import { course } from '$lib/components/Course/store';
-  import { pathway } from '$lib/components/Pathways/store';
+  import { pathway } from '$lib/components/Pathway/store';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';

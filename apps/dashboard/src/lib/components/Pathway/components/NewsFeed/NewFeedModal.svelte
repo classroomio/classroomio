@@ -1,19 +1,19 @@
 <script lang="ts">
   import Modal from '$lib/components/Modal/index.svelte';
-  import { isNewFeedModal } from '$lib/components/Pathways/components/NewsFeed/store';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { isNewFeedModal } from '$lib/components/Pathway/components/NewsFeed/store';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
-  import { createNewFeed } from '$lib/utils/services/pathways/newsfeed/index';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import type { Feed, Author } from '$lib/utils/types/feed';
+  import TextEditor from '$lib/components/TextEditor/index.svelte';
+  import { getTextFromHTML } from '$lib/utils/functions/toHtml';
+  import { t } from '$lib/utils/functions/translations';
+  import { createNewsfeedValidation } from '$lib/utils/functions/validator';
   import {
     NOTIFICATION_NAME,
     triggerSendEmail
   } from '$lib/utils/services/notification/notification';
-  import { t } from '$lib/utils/functions/translations';
-  import { createNewsfeedValidation } from '$lib/utils/functions/validator';
-  import { getTextFromHTML } from '$lib/utils/functions/toHtml';
+  import { createNewFeed } from '$lib/utils/services/pathways/newsfeed/index';
+  import type { Author, Feed } from '$lib/utils/types/feed';
 
   export let author: Author | any = {};
   export let pathwayId = '';
@@ -113,7 +113,7 @@
     ? $t('course.navItem.news_feed.heading_button.edit_post')
     : $t('course.navItem.news_feed.heading_button.make_a_post')}
 >
-  <section class="flex flex-col rounded-xl pb-3 h-full w-2/">
+  <section class="w-2/ flex h-full flex-col rounded-xl pb-3">
     <TextEditor
       value={newPost}
       onChange={(text) => {

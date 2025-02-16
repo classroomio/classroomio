@@ -4,7 +4,7 @@
   import { profile } from '$lib/utils/store/user';
   import type { GroupPerson } from '$lib/utils/types';
   import { group as courseGroup } from '../Course/store';
-  import { group as pathwaysGroup } from '../Pathways/store';
+  import { group as pathwaysGroup } from '../Pathway/store';
 
   export let allowedRoles: number[] = [];
   export let onDenied = () => {};

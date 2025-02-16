@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { Editor, PathwayLandingPage } from '$lib/components/Pathways/components/LandingPage';
-  import { pathway, pathwayCourses } from '$lib/components/Pathways/store';
+  import { Editor, PathwayLandingPage } from '$lib/components/Pathway/components/LandingPage';
+  import { pathway, pathwayCourses } from '$lib/components/Pathway/store';
   import type { Pathway, PathwayCourse } from '$lib/utils/types';
   import { fly } from 'svelte/transition';
 

@@ -18,8 +18,8 @@
     toggleFeedIsPinned
   } from '$lib/utils/services/pathways/newsfeed';
 
-  import { newsFeed } from '$lib/components/Pathways/components/NewsFeed/store.js';
-  import { group } from '$lib/components/Pathways/store';
+  import { newsFeed } from '$lib/components/Pathway/components/NewsFeed/store.js';
+  import { group } from '$lib/components/Pathway/store';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
@@ -27,10 +27,10 @@
   import Box from '$lib/components/Box/index.svelte';
   import NewsFeedLoader from '$lib/components/Course/components/NewsFeed/NewsFeedLoader.svelte';
   import { PageBody, PageNav } from '$lib/components/Page';
-  import NewFeedModal from '$lib/components/Pathways/components/NewsFeed/NewFeedModal.svelte';
-  import NewsFeedCard from '$lib/components/Pathways/components/NewsFeed/NewsFeedCard.svelte';
-  import { isNewFeedModal } from '$lib/components/Pathways/components/NewsFeed/store';
-  import PathwayContainer from '$lib/components/Pathways/components/PathwayContainer.svelte';
+  import NewFeedModal from '$lib/components/Pathway/components/NewsFeed/NewFeedModal.svelte';
+  import NewsFeedCard from '$lib/components/Pathway/components/NewsFeed/NewsFeedCard.svelte';
+  import { isNewFeedModal } from '$lib/components/Pathway/components/NewsFeed/store';
+  import PathwayContainer from '$lib/components/Pathway/components/PathwayContainer.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
 

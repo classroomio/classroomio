@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { PathwayLandingPage } from '$lib/components/Pathways/components/LandingPage';
+  import { PathwayLandingPage } from '$lib/components/Pathway/components/LandingPage';
   import type { Pathway } from '$lib/utils/types';
 
   interface Data {

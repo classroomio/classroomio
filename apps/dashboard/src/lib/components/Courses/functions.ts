@@ -1,5 +1,3 @@
-import { validateEmail } from '$lib/utils/functions/validateEmail';
-
 export function validateForm(fields) {
   let hasError = false;
   const { title, description } = fields;

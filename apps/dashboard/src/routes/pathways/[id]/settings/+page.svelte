@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { pathway, pathwaySettings, RADIO_VALUE } from '$lib/components/Pathways/store';
+  import { pathway, pathwaySettings, RADIO_VALUE } from '$lib/components/Pathway/store';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { handleOpenWidget } from '$lib/components/UploadWidget';
   import generateSlug from '$lib/utils/functions/generateSlug';
@@ -26,7 +26,7 @@
   import IconButton from '$lib/components/IconButton/index.svelte';
   import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
   import { PageBody, PageNav } from '$lib/components/Page';
-  import PathwayContainer from '$lib/components/Pathways/components/PathwayContainer.svelte';
+  import PathwayContainer from '$lib/components/Pathway/components/PathwayContainer.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';

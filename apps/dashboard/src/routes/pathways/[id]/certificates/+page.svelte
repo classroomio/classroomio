@@ -3,9 +3,9 @@
 
   import IssueCertificateModal from '$lib/components/Course/components/Ceritficate/IssueCertificateModal.svelte';
   import { PageBody, PageNav } from '$lib/components/Page';
-  import Design from '$lib/components/Pathways/components/Certificate/Design.svelte';
-  import StudentCertificate from '$lib/components/Pathways/components/Certificate/StudentCertificate/Index.svelte';
-  import PathwayContainer from '$lib/components/Pathways/components/PathwayContainer.svelte';
+  import Design from '$lib/components/Pathway/components/Certificate/Design.svelte';
+  import StudentCertificate from '$lib/components/Pathway/components/Certificate/StudentCertificate/Index.svelte';
+  import PathwayContainer from '$lib/components/Pathway/components/PathwayContainer.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   // import DeleteConfirmation from '$lib/components/Course/components/People/DeleteConfirmation.svelte';
 

@@ -36,7 +36,7 @@
   import { onMount } from 'svelte';
   import { MetaTags } from 'svelte-meta-tags';
 
-  import { pathway } from '$lib/components/Pathways/store';
+  import { pathway } from '$lib/components/Pathway/store';
   import '../app.postcss';
 
   export let data;

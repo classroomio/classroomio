@@ -1,26 +1,26 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import { browser } from '$app/environment';
+  import { goto } from '$app/navigation';
   import { Moon } from 'svelte-loading-spinners';
 
   import {
-    pathwayCourses,
+    defaultPathway,
     group,
     pathway,
-    defaultPathway,
+    pathwayCourses,
     setPathway
-  } from '$lib/components/Pathways/store';
-  import { profile } from '$lib/utils/store/user';
-  import { isOrgAdmin } from '$lib/utils/store/org';
-  import { globalStore } from '$lib/utils/store/app';
+  } from '$lib/components/Pathway/store';
   import { t } from '$lib/utils/functions/translations';
   import { fetchPathway } from '$lib/utils/services/pathways';
+  import { globalStore } from '$lib/utils/store/app';
+  import { isOrgAdmin } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
 
-  import Modal from '$lib/components/Modal/index.svelte';
   import Backdrop from '$lib/components/Backdrop/index.svelte';
   import Confetti from '$lib/components/Confetti/index.svelte';
+  import Modal from '$lib/components/Modal/index.svelte';
+  import PathwaySidebar from '$lib/components/Pathway/components/Sidebar.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import PathwaySidebar from '$lib/components/Pathways/components/Sidebar.svelte';
 
   export let pathwayId = '';
   export let path = '';
@@ -79,7 +79,7 @@
   modalHeading={$t('pathway.components.not_permitted.header')}
 >
   <div>
-    <p class="dark:text-white text-md text-center">
+    <p class="text-md text-center dark:text-white">
       {$t('pathway.components.not_permitted.body')}
     </p>
 
@@ -97,7 +97,7 @@
 
 <div class="root org-root">
   <PathwaySidebar {path} isStudent={$globalStore.isStudent} />
-  <div class="{className} overflow-y-auto max-w-[95%] mx-auto rounded-md w-full">
+  <div class="{className} mx-auto w-full max-w-[95%] overflow-y-auto rounded-md">
     {#if isLandingPage}
       <Confetti />
     {/if}
