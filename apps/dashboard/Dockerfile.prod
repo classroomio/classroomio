@@ -20,10 +20,10 @@
 
 FROM node:18-alpine AS builder
 WORKDIR /app
-RUN npm install -g pnpm
+RUN npm install -g pnpm@8.0.0
 COPY package.json .
 COPY pnpm-lock.yaml .
-RUN pnpm install --force
+RUN pnpm install --frozen-lockfile
 COPY . .
 
 # Set environment variables
