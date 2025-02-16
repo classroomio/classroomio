@@ -1,5 +1,5 @@
-import { validateUser } from '$lib/utils/services/middlewares';
 import type { Handle } from '@sveltejs/kit';
+import { validateUser } from '$lib/utils/services/middlewares';
 
 const PUBLIC_ROUTES = [
   '/api/completion',
@@ -30,7 +30,9 @@ export const handle: Handle = async ({ event, resolve }) => {
 
   const accessToken = event.request.headers.get('Authorization')!;
 
-  await validateUser(accessToken);
+  const user = await validateUser(accessToken);
+
+  response.headers.set('user_id', `${user.id}`);
 
   return response;
 };
