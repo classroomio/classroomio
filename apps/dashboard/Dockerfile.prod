@@ -43,7 +43,6 @@ ENV NODE_OPTIONS="--max-old-space-size=10240"
 WORKDIR /app/apps/dashboard
 RUN pnpm install --frozen-lockfile
 RUN IS_SELFHOSTED=true DEPLOYMENT_PROVIDER=docker pnpm build
-RUN pnpm prune --production
 
 FROM node:18-alpine
 WORKDIR /app
