@@ -1,7 +1,6 @@
 <script lang="ts">
   import Box from '$lib/components/Box/index.svelte';
-  import Card from '$lib/components/Courses/components/Card/index.svelte';
-  import CardLoader from '$lib/components/Courses/components/Card/Loader.svelte';
+  import { CourseCard, CourseCardLoader } from '$lib/components/Courses/components/Card';
   import List from '$lib/components/Courses/components/List/index.svelte';
   import { courseMetaDeta } from '$lib/components/Courses/store';
   import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
@@ -56,9 +55,9 @@
 <div class="mx-auto my-4 w-full">
   {#if $courseMetaDeta.isLoading}
     <section class={`${$courseMetaDeta.isLoading || courses ? 'cards-container' : ''} `}>
-      <CardLoader />
-      <CardLoader />
-      <CardLoader />
+      <CourseCardLoader />
+      <CourseCardLoader />
+      <CourseCardLoader />
     </section>
   {:else if $courseMetaDeta.view === 'list' && courses.length}
     <StructuredList selection class="w-full">
@@ -111,7 +110,7 @@
     <section class={`relative ${$courseMetaDeta.isLoading || courses ? 'cards-container' : ''} `}>
       {#each courses as courseData}
         {#key courseData.id}
-          <Card
+          <CourseCard
             id={courseData.id}
             slug={courseData.slug}
             bannerImage={courseData.logo || '/images/classroomio-course-img-template.jpg'}

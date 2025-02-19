@@ -32,7 +32,7 @@
   import { isNewFeedModal } from '$lib/components/Pathway/components/NewsFeed/store';
   import PathwayContainer from '$lib/components/Pathway/components/PathwayContainer.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import { RoleBasedSecurity } from '$lib/components/RoleBasedSecurity';
 
   import type { Feed } from '$lib/utils/types/feed';
   import type { CurrentOrg } from '$lib/utils/types/org';

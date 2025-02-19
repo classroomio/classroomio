@@ -293,6 +293,7 @@ export interface PathwayCourse {
     title: string;
     logo: string;
     description: string;
+    type: COURSE_TYPE;
     banner_image: string;
     is_published: boolean;
     created_at: string;
@@ -308,7 +309,7 @@ export interface PathwayCourse {
 }
 
 export interface Pathway {
-  title?: string;
+  title: string;
   description: string; // type unknown;
   overview?: any; // type unknown;
   id?: string /* primary key */;

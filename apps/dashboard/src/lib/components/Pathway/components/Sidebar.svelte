@@ -2,22 +2,19 @@
   import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import CheckmarkFilled from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
-  import { onDestroy, onMount } from 'svelte';
-
+  import TextChip from '$lib/components/Chip/Text.svelte';
+  import NavExpandable from '$lib/components/Course/components/Sidebar/NavExpandable.svelte';
+  import { getLectureNo } from '$lib/components/Course/function';
   import { sideBar } from '$lib/components/Org/store';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
+  import { t } from '$lib/utils/functions/translations';
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
   import { isMobile } from '$lib/utils/store/useMobile';
   import { profile } from '$lib/utils/store/user';
-  import { pathway, pathwayCourses } from '../store';
-
-  import { getLectureNo } from '$lib/components/Course/function';
-  import { t } from '$lib/utils/functions/translations';
+  import CheckmarkFilled from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
+  import { onDestroy, onMount } from 'svelte';
   import { getIsCourseComplete, getPathwayNavItemRoute } from '../functions';
-
-  import TextChip from '$lib/components/Chip/Text.svelte';
-  import NavExpandable from '$lib/components/Course/components/Sidebar/NavExpandable.svelte';
+  import { pathway, pathwayCourses } from '../store';
 
   export let path: string;
   export let isStudent: boolean = false;

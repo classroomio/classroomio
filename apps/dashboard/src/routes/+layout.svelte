@@ -1,10 +1,7 @@
 <script lang="ts">
   import { browser } from '$app/environment';
   import { page } from '$app/stores';
-  import debounce from 'lodash/debounce';
-
   import Apps from '$lib/components/Apps/index.svelte';
-  import { course } from '$lib/components/Course/store';
   import OrgNavigation from '$lib/components/Navigation/app.svelte';
   import LandingNavigation from '$lib/components/Navigation/index.svelte';
   import LMSNavigation from '$lib/components/Navigation/lms.svelte';
@@ -14,13 +11,7 @@
   import PageLoadProgressBar from '$lib/components/Progress/PageLoadProgressBar.svelte';
   import Snackbar from '$lib/components/Snackbar/index.svelte';
   import UpgradeModal from '$lib/components/Upgrade/Modal.svelte';
-  import {
-    isCoursesPage,
-    isLMSPage,
-    isOrgPage,
-    isPathwayPage,
-    toggleBodyByMode
-  } from '$lib/utils/functions/app';
+  import { AppUtils, toggleBodyByMode, useOrgNavigation } from '$lib/utils/functions/app';
   import { getProfile, setupAnalytics } from '$lib/utils/functions/appSetup';
   import hideNavByRoute from '$lib/utils/functions/routes/hideNavByRoute';
   import showAppsSideBar from '$lib/utils/functions/showAppsSideBar';
@@ -32,16 +23,16 @@
   import { isMobile } from '$lib/utils/store/useMobile';
   import { Theme } from 'carbon-components-svelte';
   import type { CarbonTheme } from 'carbon-components-svelte/types/Theme/Theme.svelte';
+  import debounce from 'lodash/debounce';
   import merge from 'lodash/merge';
   import { onMount } from 'svelte';
   import { MetaTags } from 'svelte-meta-tags';
 
-  import { pathway } from '$lib/components/Pathway/store';
   import '../app.postcss';
 
   export let data;
 
-  let headerTitle: string = '';
+  const appUtils = new AppUtils();
 
   let supabase = getSupabase();
   let path = $page.url?.pathname?.replace('/', '');
@@ -124,11 +115,6 @@
 
   $: path = $page.url?.pathname?.replace('/', '');
   $: carbonTheme = $globalStore.isDark ? 'g100' : 'white';
-  $: headerTitle = isCoursesPage(path)
-    ? $course.title
-    : isPathwayPage(path)
-      ? $pathway.title
-      : 'ClassroomIO';
   $: metaTags = merge(data.baseMetaTags, $page.data.pageMetaTags);
 </script>
 
@@ -151,13 +137,9 @@
 {:else}
   <main class="font-roboto dark:bg-black">
     {#if !hideNavByRoute($page.url?.pathname)}
-      {#if isOrgPage($page.url?.pathname) || $page.url?.pathname.includes('profile') || isCoursesPage(path) || isPathwayPage(path)}
-        <OrgNavigation
-          bind:title={headerTitle}
-          isPathwayPage={isPathwayPage(path)}
-          isCoursePage={isCoursesPage(path)}
-        />
-      {:else if isLMSPage($page.url?.pathname)}
+      {#if useOrgNavigation(path)}
+        <OrgNavigation />
+      {:else if appUtils.isLMSPage($page.url?.pathname)}
         <LMSNavigation />
       {:else}
         <LandingNavigation

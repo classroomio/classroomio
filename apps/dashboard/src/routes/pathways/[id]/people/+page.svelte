@@ -35,7 +35,7 @@
   import DeleteConfirmation from '$lib/components/Pathway/components/People/DeleteConfirmation.svelte';
   import InvitationModal from '$lib/components/Pathway/components/People/InvitationModal.svelte';
   import type { Person, ProfileRole } from '$lib/components/Pathway/components/People/types';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import { RoleBasedSecurity } from '$lib/components/RoleBasedSecurity';
 
   let people: Array<Person> = [];
   let member: { id?: string; email?: string; profile?: { email: string } } = {};

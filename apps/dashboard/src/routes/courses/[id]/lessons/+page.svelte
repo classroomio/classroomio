@@ -18,7 +18,7 @@
   import { PageBody, PageNav } from '$lib/components/Page';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import { RoleBasedSecurity } from '$lib/components/RoleBasedSecurity';
   import { t } from '$lib/utils/functions/translations';
   import { profile } from '$lib/utils/store/user';
   import type { Lesson } from '$lib/utils/types';

@@ -7,7 +7,7 @@
   import { getLectureNo } from '$lib/components/Course/function.js';
   import { course, group } from '$lib/components/Course/store';
   import { PageBody, PageNav } from '$lib/components/Page';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import { RoleBasedSecurity } from '$lib/components/RoleBasedSecurity';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { ROLE } from '$lib/utils/constants/roles';
   import { t } from '$lib/utils/functions/translations';

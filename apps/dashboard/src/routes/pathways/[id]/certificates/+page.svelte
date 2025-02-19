@@ -6,7 +6,7 @@
   import Design from '$lib/components/Pathway/components/Certificate/Design.svelte';
   import StudentCertificate from '$lib/components/Pathway/components/Certificate/StudentCertificate/Index.svelte';
   import PathwayContainer from '$lib/components/Pathway/components/PathwayContainer.svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import { RoleBasedSecurity } from '$lib/components/RoleBasedSecurity';
   // import DeleteConfirmation from '$lib/components/Course/components/People/DeleteConfirmation.svelte';
 
   // import Reports from '$lib/components/Course/components/Ceritficate/Reports.svelte';

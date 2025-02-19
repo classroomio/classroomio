@@ -1,4 +1,16 @@
 <script lang="ts">
+  import { CourseCard } from '$lib/components/Courses/components/Card';
+  import IconButton from '$lib/components/IconButton/index.svelte';
+  import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
+  import AddCourseModal from '$lib/components/Pathway/components/AddCourseModal.svelte';
+  import PathwayContainer from '$lib/components/Pathway/components/PathwayContainer.svelte';
+  import { addCourseModal, pathway, pathwayCourses } from '$lib/components/Pathway/store';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { RoleBasedSecurity } from '$lib/components/RoleBasedSecurity';
+  import { t } from '$lib/utils/functions/translations';
+  import { isMobile } from '$lib/utils/store/useMobile';
+  import type { PathwayCourse } from '$lib/utils/types';
   import {
     Dropdown,
     OverflowMenu,
@@ -13,20 +25,6 @@
   import { Add } from 'carbon-icons-svelte';
   import Grid from 'carbon-icons-svelte/lib/Grid.svelte';
   import List from 'carbon-icons-svelte/lib/List.svelte';
-
-  import { addCourseModal, pathway, pathwayCourses } from '$lib/components/Pathway/store';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { t } from '$lib/utils/functions/translations';
-  import { isMobile } from '$lib/utils/store/useMobile';
-
-  import Card from '$lib/components/Courses/components/Card/index.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
-  import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
-  import AddCourseModal from '$lib/components/Pathway/components/AddCourseModal.svelte';
-  import PathwayContainer from '$lib/components/Pathway/components/PathwayContainer.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import type { PathwayCourse } from '$lib/utils/types/index.js';
 
   export let data;
 
@@ -124,31 +122,32 @@
             <StructuredList>
               <StructuredListHead>
                 <StructuredListRow head>
-                  <StructuredListCell head
-                    >{$t('pathway.pages.course.body_title')}</StructuredListCell
-                  >
-                  <StructuredListCell head
-                    >{$t('pathway.pages.course.description')}</StructuredListCell
-                  >
-                  <StructuredListCell head>{$t('pathway.pages.course.students')}</StructuredListCell
-                  >
+                  <StructuredListCell head>
+                    {$t('pathway.pages.course.body_title')}
+                  </StructuredListCell>
+                  <StructuredListCell head>
+                    {$t('pathway.pages.course.description')}
+                  </StructuredListCell>
+                  <StructuredListCell head>
+                    {$t('pathway.pages.course.students')}
+                  </StructuredListCell>
                   <StructuredListCell head>{$t('pathway.pages.course.lessons')}</StructuredListCell>
                 </StructuredListRow>
               </StructuredListHead>
               <StructuredListBody>
                 {#each filteredCourses as course}
                   <StructuredListRow>
-                    <StructuredListCell noWrap
-                      ><p class="font-semibold text-black dark:text-white">
+                    <StructuredListCell noWrap>
+                      <p class="font-semibold text-black dark:text-white">
                         {course.course.title}
-                      </p></StructuredListCell
-                    >
+                      </p>
+                    </StructuredListCell>
                     <StructuredListCell>{course.course.description}</StructuredListCell>
                     <StructuredListCell>
-                      {course.course.group?.members.length}
+                      {course.course.group_id?.groupmember?.length}
                     </StructuredListCell>
                     <StructuredListCell>
-                      {course.course.lessons?.length}
+                      {course.course.lesson?.length}
                     </StructuredListCell>
                   </StructuredListRow>
                 {/each}
@@ -158,14 +157,16 @@
         {:else if coursePreference === 'grid'}
           <section class="flex flex-wrap items-center gap-10 md:gap-6">
             {#each filteredCourses as course}
-              <Card
+              <CourseCard
                 bannerImage={course.course.logo || '/images/classroomio-course-img-template.jpg'}
-                id={course.course.id}
-                title={course.course.title}
                 description={course.course.description}
-                totalLessons={course.course.lesson?.length || 0}
-                totalStudents={course.course.group_id?.groupmember.length || 0}
+                id={course.course.id}
                 isPublished={course.course.is_published}
+                title={course.course.title}
+                totalLessons={course.course.lesson?.length || 0}
+                totalStudents={course.course.group_id?.groupmember?.length || 0}
+                type={course.course.type}
+                pathwayId={$pathway.id}
               />
             {/each}
           </section>

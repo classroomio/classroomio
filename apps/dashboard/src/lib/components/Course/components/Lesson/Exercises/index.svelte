@@ -6,7 +6,7 @@
   import { PageBody } from '$lib/components/Page';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { QUESTION_TYPES } from '$lib/components/Question/constants';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import { RoleBasedSecurity } from '$lib/components/RoleBasedSecurity';
   import { formatDate } from '$lib/utils/functions/routes/dashboard';
   import { supabase } from '$lib/utils/functions/supabase';
   import { t } from '$lib/utils/functions/translations';
@@ -176,14 +176,14 @@
       </RoleBasedSecurity>
     </slot:fragment>
 
-    <div class="flex flex-wrap mt-5">
+    <div class="mt-5 flex flex-wrap">
       {#each $lesson.exercises as exercise}
         <a
-          class="w-52 bg-gray-100 dark:bg-neutral-800 px-4 py-7 mr-4 mb-4 rounded-lg"
+          class="mb-4 mr-4 w-52 rounded-lg bg-gray-100 px-4 py-7 dark:bg-neutral-800"
           href="{path}/{exercise.id}"
         >
-          <h3 class="dark:text-white text-xl">{exercise.title}</h3>
-          <p class="dark:text-white mt-4 text-sm">{formatDate(exercise.created_at)}</p>
+          <h3 class="text-xl dark:text-white">{exercise.title}</h3>
+          <p class="mt-4 text-sm dark:text-white">{formatDate(exercise.created_at)}</p>
         </a>
       {:else}
         <Box className="mt-3 text-center">

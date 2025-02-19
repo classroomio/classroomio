@@ -1,21 +1,21 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { dndzone } from 'svelte-dnd-action';
-  import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import TextChip from '$lib/components/Chip/Text.svelte';
-  import { course } from '$lib/components/Course/store';
-  import { globalStore } from '$lib/utils/store/app';
-  import ScreenMap from 'carbon-icons-svelte/lib/ScreenMap.svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import { t } from '$lib/utils/functions/translations';
-  import {
-    lessons,
-    handleSaveLesson
-  } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { updateLesson } from '$lib/utils/services/courses';
-  import type { Course, Lesson } from '$lib/utils/types';
   import Box from '$lib/components/Box/index.svelte';
+  import TextChip from '$lib/components/Chip/Text.svelte';
+  import {
+    handleSaveLesson,
+    lessons
+  } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { course } from '$lib/components/Course/store';
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import { RoleBasedSecurity } from '$lib/components/RoleBasedSecurity';
+  import { t } from '$lib/utils/functions/translations';
+  import { updateLesson } from '$lib/utils/services/courses';
+  import { globalStore } from '$lib/utils/store/app';
+  import type { Course, Lesson } from '$lib/utils/types';
+  import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
+  import ScreenMap from 'carbon-icons-svelte/lib/ScreenMap.svelte';
+  import { dndzone } from 'svelte-dnd-action';
 
   const flipDurationMs = 300;
 
@@ -86,7 +86,7 @@
 >
   {#each $lessons as lesson (lesson.id)}
     <div
-      class={`relative m-auto mb-4 flex max-w-xl items-center rounded-md border-2 border-gray-200 dark:border-neutral-600 p-5 dark:bg-neutral-800`}
+      class={`relative m-auto mb-4 flex max-w-xl items-center rounded-md border-2 border-gray-200 p-5 dark:border-neutral-600 dark:bg-neutral-800`}
     >
       <!-- Number Chip -->
       <div class="mr-5">

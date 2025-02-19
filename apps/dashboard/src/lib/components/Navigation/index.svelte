@@ -1,11 +1,11 @@
 <script>
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { user } from '$lib/utils/store/user';
-  import { isCoursePage } from '$lib/utils/functions/app';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { AppUtils } from '$lib/utils/functions/app';
   import { t } from '$lib/utils/functions/translations';
+  import { user } from '$lib/utils/store/user';
 
   export let disableSignup = false;
   export let logo;
@@ -15,13 +15,17 @@
 
   let navClass = '';
 
-  const redirect = isCoursePage($page.url.pathname) ? `?redirect=${$page.url.pathname}` : '';
+  const appUtils = new AppUtils();
+
+  const redirect = appUtils.isCoursePage($page.url.pathname)
+    ? `?redirect=${$page.url.pathname}`
+    : '';
 
   $: navClass = '';
 </script>
 
 <nav
-  class="{navClass} {backgroundColor} sticky top-0 z-50 flex w-full px-2 py-1 border-t-0 border-r-0 border-b border-l-0 border-gray-300"
+  class="{navClass} {backgroundColor} sticky top-0 z-50 flex w-full border-b border-l-0 border-r-0 border-t-0 border-gray-300 px-2 py-1"
 >
   <ul class="flex w-full items-center">
     <div class="logo">
@@ -34,7 +38,7 @@
         <img
           src={logo || '/logo-192.png'}
           alt={`${orgName || 'ClassroomIO'} logo`}
-          class="rounded w-9 inline-block mx-auto"
+          class="mx-auto inline-block w-9 rounded"
           data-atf="1"
         />
       </a>

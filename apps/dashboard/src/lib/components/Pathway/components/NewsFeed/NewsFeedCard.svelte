@@ -16,7 +16,7 @@
   import Chip from '$lib/components/Chip/index.svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import { isNewFeedModal } from '$lib/components/Pathway/components/NewsFeed/store';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import { RoleBasedSecurity } from '$lib/components/RoleBasedSecurity';
   import DeleteFeedConfirmation from './DeleteFeedConfirmation.svelte';
 
   export let feed: Feed;

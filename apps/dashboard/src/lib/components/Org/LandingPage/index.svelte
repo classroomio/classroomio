@@ -1,19 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import get from 'lodash/get';
-  import { fade } from 'svelte/transition';
-
-  import { Accordion, AccordionItem, Column, Grid, Row } from 'carbon-components-svelte';
-  import Email from 'carbon-icons-svelte/lib/Email.svelte';
-  import LocationFilled from 'carbon-icons-svelte/lib/LocationFilled.svelte';
-  import LogoFacebook from 'carbon-icons-svelte/lib/LogoFacebook.svelte';
-  import LogoLinkedin from 'carbon-icons-svelte/lib/LogoLinkedin.svelte';
-  import LogoTwitter from 'carbon-icons-svelte/lib/LogoTwitter.svelte';
-  import Phone from 'carbon-icons-svelte/lib/Phone.svelte';
-  import Rocket from 'carbon-icons-svelte/lib/Rocket.svelte';
-
-  import Card from '$lib/components/Courses/components/Card/index.svelte';
-  import CardLoader from '$lib/components/Courses/components/Card/Loader.svelte';
+  import { CourseCard, CourseCardLoader } from '$lib/components/Courses/components/Card';
   import { courseMetaDeta, courses } from '$lib/components/Courses/store';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
@@ -30,6 +17,16 @@
   import { orgLandingpageValidation } from '$lib/utils/functions/validator';
   import { getCourseBySiteName, getPathwayBySiteName } from '$lib/utils/services/org';
   import type { CurrentOrg } from '$lib/utils/types/org';
+  import { Accordion, AccordionItem, Column, Grid, Row } from 'carbon-components-svelte';
+  import Email from 'carbon-icons-svelte/lib/Email.svelte';
+  import LocationFilled from 'carbon-icons-svelte/lib/LocationFilled.svelte';
+  import LogoFacebook from 'carbon-icons-svelte/lib/LogoFacebook.svelte';
+  import LogoLinkedin from 'carbon-icons-svelte/lib/LogoLinkedin.svelte';
+  import LogoTwitter from 'carbon-icons-svelte/lib/LogoTwitter.svelte';
+  import Phone from 'carbon-icons-svelte/lib/Phone.svelte';
+  import Rocket from 'carbon-icons-svelte/lib/Rocket.svelte';
+  import get from 'lodash/get';
+  import { fade } from 'svelte/transition';
   import PathwayCard from './../Pathway/PathwayCard.svelte';
   import EmptyState from './EmptyState.svelte';
   import PageLoader from './PageLoader.svelte';
@@ -327,14 +324,14 @@
         </div>
         {#if $courseMetaDeta.isLoading}
           <div class="cards-container mx-2 my-4">
-            <CardLoader />
-            <CardLoader />
-            <CardLoader />
+            <CourseCardLoader />
+            <CourseCardLoader />
+            <CourseCardLoader />
           </div>
         {:else if $courses.length > 0}
           <div class="cards-container mx-2 my-4">
             {#each $courses.slice(0, viewAll ? $courses.length : 3) as courseData}
-              <Card
+              <CourseCard
                 id={courseData.id}
                 slug={courseData.slug}
                 bannerImage={courseData.logo || '/images/classroomio-course-img-template.jpg'}

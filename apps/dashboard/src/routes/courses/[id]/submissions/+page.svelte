@@ -8,7 +8,7 @@
   import { formatAnswers } from '$lib/components/Course/function.js';
   import { course } from '$lib/components/Course/store';
   import { PageBody, PageNav } from '$lib/components/Page';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import { RoleBasedSecurity } from '$lib/components/RoleBasedSecurity';
   import { snackbar } from '$lib/components/Snackbar/store';
   import formatDate from '$lib/utils/functions/formatDate';
   import isSubmissionEarly from '$lib/utils/functions/isSubmissionEarly';

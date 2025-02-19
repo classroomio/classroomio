@@ -34,6 +34,7 @@
   export let totalCourse = 0;
   export let pathwaycompletedCourses = 0;
   export let isExplore = false;
+  export let pathwayId = '';
   export let progressRate = 45;
   export let type: COURSE_TYPE;
   export let pricingData: {
@@ -108,17 +109,25 @@
     pricingData.cost ?? 0,
     !!pricingData.showDiscount
   );
+
+  function handleClick(_pathwayId: string) {
+    goto(getCourseUrl(), {
+      state: {
+        pathwayId: _pathwayId
+      }
+    });
+  }
 </script>
 
 <div
   role="button"
   tabindex="0"
   on:click={(e) => {
-    goto(getCourseUrl());
+    handleClick(pathwayId);
   }}
   on:keydown={(e) => {
     if (e.key === 'Enter') {
-      goto(getCourseUrl());
+      handleClick(pathwayId);
     }
   }}
   class="border-gray group relative h-fit w-full max-w-[320px] rounded border text-black dark:border-neutral-600"
