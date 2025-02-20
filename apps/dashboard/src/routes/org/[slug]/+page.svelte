@@ -1,32 +1,17 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { ActivityCard } from '$lib/components/Analytics';
-  import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
-  import Progress from '$lib/components/Progress/index.svelte';
-  import UserProfile from 'carbon-icons-svelte/lib/UserProfile.svelte';
 
   import { snackbar } from '$lib/components/Snackbar/store';
-  import { calDateDiff } from '$lib/utils/functions/date';
   import { getAccessToken } from '$lib/utils/functions/supabase';
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
-  import { profile } from '$lib/utils/store/user';
   import type { OrganisationAnalytics } from '$lib/utils/types/analytics';
-  import Add from 'carbon-icons-svelte/lib/Add.svelte';
   import Book from 'carbon-icons-svelte/lib/Book.svelte';
   import CurrencyDollar from 'carbon-icons-svelte/lib/CurrencyDollar.svelte';
   import UserMultiple from 'carbon-icons-svelte/lib/UserMultiple.svelte';
 
-  import Avatar from '$lib/components/Avatar/index.svelte';
-  import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import DropZone from '$lib/components/DropZone/index.svelte';
   import WelcomeModal from '$lib/components/WelcomeModal/WelcomeModal.svelte';
-  import { getGreeting } from '$lib/utils/functions/date';
   import { t } from '$lib/utils/functions/translations';
-  import { isOrgAdmin } from '$lib/utils/store/org';
-  import { isMobile } from '$lib/utils/store/useMobile';
-  import { Grid, Link, SkeletonPlaceholder } from 'carbon-components-svelte';
-
   // export let data;
 
   let dashAnalytics: OrganisationAnalytics;
@@ -86,6 +71,17 @@
       hidePercentage: true
     }
   ];
+
+  let uploadedImage = null;
+  let isLoading = false;
+
+  function handleImageChange(event) {
+    uploadedImage = event.detail.image; // 🔹 Get the uploaded image
+  }
+
+  function handleClear() {
+    uploadedImage = null; // 🔹 Clear image when 'X' is clicked
+  }
 </script>
 
 <svelte:head>
@@ -93,8 +89,17 @@
 </svelte:head>
 
 <WelcomeModal />
+<DropZone
+  bind:image={uploadedImage}
+  bind:loading={isLoading}
+  on:change={handleImageChange}
+  on:clear={handleClear}
+/>
 
-<div class="w-full max-w-5xl px-5 py-10 md:mx-auto">
+{#if uploadedImage}
+  <p>Uploaded Image URL: {uploadedImage}</p>
+{/if}
+<!-- <div class="w-full max-w-5xl px-5 py-10 md:mx-auto">
   <div class="mb-5 flex items-center justify-between">
     <h1 class="mb-3 text-2xl font-bold dark:text-white md:text-3xl">
       {$t(getGreeting())}
@@ -259,4 +264,4 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->
