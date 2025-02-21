@@ -4,12 +4,10 @@
 # Author: rotimi-best
 # Date: 2024-09-18
 
-version: '3.8'
-
 services:
   backend:
     build:
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
       context: ./apps/backend
     volumes:
       - /app/node_modules
@@ -33,7 +31,7 @@ services:
 
   dashboard:
     build:
-      dockerfile: ./apps/dashboard/Dockerfile
+      dockerfile: ./apps/dashboard/Dockerfile.prod
       context: ./
       args:
         - PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}
