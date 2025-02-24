@@ -1,16 +1,16 @@
 <script lang="ts">
-  import { onMount, createEventDispatcher } from 'svelte';
+  import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
+  import DropZone from '$lib/components/DropZone/index.svelte';
+  import Modal from '$lib/components/Modal/index.svelte';
+  import TabContent from '$lib/components/TabContent/index.svelte';
   import Tabs from '$lib/components/Tabs/index.svelte';
   import { getSupabase } from '$lib/utils/functions/supabase';
-  import TabContent from '$lib/components/TabContent/index.svelte';
-  import { snackbar } from '../Snackbar/store';
-  import Modal from '$lib/components/Modal/index.svelte';
-  import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
-  import { queryUnsplash } from './utils';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { t } from '$lib/utils/functions/translations';
+  import { createEventDispatcher, onMount } from 'svelte';
+  import { snackbar } from '../Snackbar/store';
+  import { queryUnsplash } from './utils';
 
-  export let imageURL = '';
+  export let imageURL: null | string = '';
 
   const supabase = getSupabase();
   const dispatch = createEventDispatcher();
@@ -33,9 +33,8 @@
     };
     alt_description: string;
   }[] = [];
-  let fileInput: HTMLInputElement;
 
-  let label = $t('snackbar.landing_page_settings.error.label');
+  // let label = $t('snackbar.landing_page_settings.error.label');
 
   const onChange = (tabValue: string | number) => () => (currentTab = `${tabValue}`);
 
@@ -45,29 +44,14 @@
     $handleOpenWidget.open = false;
   }
 
-  const onFileSelected = () => {
-    const file = fileInput?.files?.[0];
-    const sizeInkb = file?.size! / 1024;
-    if (sizeInkb > 500) {
-      snackbar.error('snackbar.landing_page_settings.error.file_size');
-      label = $t('snackbar.landing_page_settings.error.try_again');
-      return;
-    }
-    if (file) {
-      let reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = (e) => {
-        uploadImage(file);
-      };
-    }
-  };
-
-  const uploadImage = async (image: File) => {
+  const uploadImage = async (event) => {
     isUploading = true;
+    const image = event.detail.image;
     if (!image) {
       return;
     }
     const filename = `uploadwidget/${Date.now()}` + image.name;
+    console.log('filename', filename, image);
     const { data } = await supabase.storage.from('avatars').upload(filename, image, {
       cacheControl: '3600',
       upsert: false
@@ -76,6 +60,7 @@
     if (data) {
       const { data: response } = await supabase.storage.from('avatars').getPublicUrl(filename);
       imageURL = response.publicUrl;
+      console.log('url', imageURL);
       dispatch('change');
     }
     isUploading = false;
@@ -83,10 +68,6 @@
     snackbar.success(`snackbar.landing_page_settings.success.complete`);
     $handleOpenWidget.open = false;
   };
-
-  function handleUpload() {
-    fileInput.click();
-  }
 
   async function handleSubmit() {
     try {
@@ -97,6 +78,15 @@
     }
   }
 
+  function handleClear() {
+    imageURL = null;
+  }
+
+  function handleError(event) {
+    const err = event.detail.error;
+    console.log(err);
+    snackbar.error(err || 'snackbar.landing_page_settings.error.label');
+  }
   onMount(handleSubmit);
 </script>
 
@@ -112,26 +102,14 @@
       <slot:fragment slot="content">
         <TabContent value={tabs[1].value} index={currentTab}>
           <!-- Your Upload content here -->
-          <div class="w-full">
-            <input
-              type="file"
-              style="display: none;"
-              bind:this={fileInput}
-              on:change={onFileSelected}
-              disabled={isUploading}
+          <div class="mx-auto w-full">
+            <DropZone
+              bind:loading={isUploading}
+              bind:image={imageURL}
+              on:change={uploadImage}
+              on:clear={handleClear}
+              on:error={handleError}
             />
-            <PrimaryButton
-              {label}
-              onClick={handleUpload}
-              isLoading={isUploading}
-              className="w-full font-semibold m-auto"
-            />
-            <p class="my-2 text-center text-sm text-gray-500">
-              {$t('course.navItem.landing_page.upload_widget.width')}
-            </p>
-            <p class="text-center text-sm text-gray-500">
-              {$t('course.navItem.landing_page.upload_widget.size')}
-            </p>
           </div>
         </TabContent>
         <TabContent value={tabs[0].value} index={currentTab}>

@@ -1,15 +1,16 @@
-<script>
+<script lang="ts">
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { cn } from '$lib/utils/functions/cn';
   import Close from 'carbon-icons-svelte/lib/Close.svelte';
   import CloudUpload from 'carbon-icons-svelte/lib/CloudUpload.svelte';
   import { createEventDispatcher } from 'svelte';
+  import { snackbar } from '../Snackbar/store';
 
-  export let image = null;
+  export let image: any | null = null;
   export let loading = false;
-  export let extraclass = '';
+  export let className = '';
 
-  let fileInput;
+  let fileInput: HTMLInputElement;
   let isDragging = false;
   const dispatch = createEventDispatcher();
 
@@ -35,6 +36,13 @@
 
   function handleFileSelect(event) {
     const file = event.target.files[0];
+    const sizeInkb = file?.size! / 1024;
+    if (sizeInkb > 500) {
+      snackbar.error('snackbar.landing_page_settings.error.file_size');
+      dispatch('error', { error: 'snackbar.landing_page_settings.error.file_size' });
+      return;
+    }
+
     if (file && file.type.startsWith('image/')) {
       loadImage(file);
     }
@@ -57,14 +65,16 @@
       reader.onload = () => {
         const result = reader.result;
         image = result;
+        dispatch('change', { image: file });
         loading = false;
-        dispatch('change', { image: result });
         resolve(result);
+        dispatch('success'); // not sure if this needed, since the upload logic is mainly handled from the parent
       };
 
       reader.onerror = (error) => {
         console.error('File reading error:', error);
         loading = false;
+        dispatch('error', { error: error });
         reject(error);
       };
 
@@ -84,7 +94,7 @@
   class={cn(
     'relative flex h-64 w-96 cursor-pointer items-center justify-center rounded-md border-2 border-dashed border-gray-400 text-gray-500 transition-all',
     isDragging ? 'border-blue-500 bg-blue-50' : 'hover:border-gray-600',
-    extraclass
+    className
   )}
   on:dragenter={handleDragEnter}
   on:dragleave={handleDragLeave}
