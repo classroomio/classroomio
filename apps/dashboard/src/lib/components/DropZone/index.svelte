@@ -1,31 +1,36 @@
 <script>
+  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { cn } from '$lib/utils/functions/cn';
+  import Close from 'carbon-icons-svelte/lib/Close.svelte';
+  import CloudUpload from 'carbon-icons-svelte/lib/CloudUpload.svelte';
   import { createEventDispatcher } from 'svelte';
 
-  export let image = null; // 🔹 Parent can access uploaded image
-  export let loading = false; // 🔹 Parent can track loading state
+  export let image = null;
+  export let loading = false;
+  export let extraclass = '';
 
   let fileInput;
-  let isHovering = false;
   let isDragging = false;
-  const dispatch = createEventDispatcher(); // 🔹 Allows sending events to parent
+  const dispatch = createEventDispatcher();
 
-  function handleDragOver(event) {
+  function handleDragEnter(event) {
     event.preventDefault();
     isDragging = true;
   }
 
-  function handleDragLeave() {
+  function handleDragLeave(event) {
+    event.preventDefault();
     isDragging = false;
   }
 
   function handleDrop(event) {
     event.preventDefault();
+    event.stopPropagation();
+    isDragging = false;
     const file = event.dataTransfer.files[0];
     if (file && file.type.startsWith('image/')) {
       loadImage(file);
     }
-    isDragging = false;
-    isHovering = false;
   }
 
   function handleFileSelect(event) {
@@ -44,38 +49,50 @@
 
   async function loadImage(file) {
     loading = true;
-    dispatch('loading', { loading: true }); // 🔹 Notify parent about loading state
+    dispatch('loading', { loading: true });
 
-    const reader = new FileReader();
-    reader.onload = async () => {
-      image = reader.result;
-      loading = false;
-      dispatch('change', { image }); // 🔹 Notify parent that image changed
-    };
-    reader.readAsDataURL(file);
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        const result = reader.result;
+        image = result;
+        loading = false;
+        dispatch('change', { image: result });
+        resolve(result);
+      };
+
+      reader.onerror = (error) => {
+        console.error('File reading error:', error);
+        loading = false;
+        reject(error);
+      };
+
+      reader.readAsDataURL(file);
+    });
   }
 
   function clearImage(event) {
-    event.stopPropagation();
     image = null;
-    dispatch('clear'); // 🔹 Notify parent that image was cleared
+    dispatch('clear');
   }
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<!-- svelte-ignore a11y-mouse-events-have-key-events -->
 <div
-  class="relative flex h-64 w-96 cursor-pointer items-center justify-center rounded-md border-2 border-dashed border-gray-400 text-gray-500 transition-all hover:border-gray-600"
-  on:dragover|preventDefault={handleDragOver}
+  class={cn(
+    'relative flex h-64 w-96 cursor-pointer items-center justify-center rounded-md border-2 border-dashed border-gray-400 text-gray-500 transition-all',
+    isDragging ? 'border-blue-500 bg-blue-50' : 'hover:border-gray-600',
+    extraclass
+  )}
+  on:dragenter={handleDragEnter}
   on:dragleave={handleDragLeave}
+  on:dragover|preventDefault
   on:drop={handleDrop}
-  on:mouseenter={() => (isHovering = true)}
-  on:mouseleave={() => (isHovering = false)}
   on:click={triggerFileInput}
 >
   {#if loading}
-    <!-- 🔄 Overlay with Spinner -->
     <div class="absolute inset-0 flex items-center justify-center bg-white/70">
       <div
         class="h-8 w-8 animate-spin rounded-full border-4 border-gray-500 border-t-transparent"
@@ -88,29 +105,24 @@
     <img
       src={image}
       alt="Uploaded image"
-      class="absolute left-0 top-0 h-full w-full object-cover transition-opacity duration-300 {isHovering ||
-      isDragging
-        ? 'opacity-20'
-        : 'opacity-100'}"
+      class="absolute left-0 top-0 h-full w-full object-cover transition-opacity duration-300 hover:opacity-20"
     />
-    <button
-      class="absolute right-2 top-2 rounded-full bg-white p-1 text-gray-700 shadow-md hover:bg-gray-200"
-      on:click={clearImage}
+    <IconButton
+      buttonClassName="absolute right-2 top-2 rounded-full bg-white p-1 text-gray-700 shadow-md hover:bg-gray-200"
+      onClick={clearImage}
+      stopPropagation={true}
     >
-      ✕
-    </button>
+      <Close />
+    </IconButton>
   {/if}
 
-  <div
-    class="flex flex-col items-center justify-center transition-opacity duration-300 {image &&
-    !isHovering &&
-    !isDragging
-      ? 'opacity-0'
-      : 'opacity-100'}"
-  >
+  <div class="flex flex-col items-center justify-center transition-opacity duration-300">
+    <CloudUpload />
     <p>Drag & Drop your image here</p>
     <p>Or</p>
-    <span class="border bg-blue-900/60 p-2 text-white"> click to upload </span>
+    <span class="rounded-md border bg-slate-500 p-2 text-white hover:bg-slate-700">
+      Click to upload
+    </span>
   </div>
 
   <input
