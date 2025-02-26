@@ -79,7 +79,7 @@
         "complete": "Completo :)"
       },
       "error": {
-        "file_size": "El tamaño del archivo no debe ser superior a 500 kb.",
+        "file_size": "El tamaño del archivo no debe ser superior a 2MB.",
         "try_again": "Intentar otra vez",
         "label": "Cargar imagen",
         "fetch_error": "Error al recuperar imágenes de Unsplash"
@@ -327,11 +327,14 @@
           "bird": "Oferta por reserva anticipada. Compre lo antes posible"
         },
         "upload_widget": {
-          "title": "Widget de banner",
           "width": "Las imágenes con una anchura superior a 1500 píxeles funcionan mejor.",
           "size": "El tamaño máximo por archivo es de 500kb.",
           "submit": "Entregar",
-          "no_images": "No hay imágenes disponibles."
+          "no_images": "No hay imágenes disponibles.",
+          "drag_n_drop": "Arrastre y suelte su imagen aquí",
+          "or": "O",
+          "click_to_upload": "Haga clic para cargar",
+          "title": "Cargar widget"
         },
         "editor": {
           "save": "Ahorrar",

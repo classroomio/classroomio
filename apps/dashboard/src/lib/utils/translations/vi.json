@@ -79,7 +79,7 @@
         "complete": "Hoàn thành :)"
       },
       "error": {
-        "file_size": "Kích thước tệp không được lớn hơn 500kb",
+        "file_size": "Kích thước tệp không được lớn hơn 2MB",
         "try_again": "Thử lại",
         "label": "Tải hình ảnh lên",
         "fetch_error": "Lỗi tìm nạp hình ảnh từ Unsplash"
@@ -327,11 +327,14 @@
           "bird": "Ưu đãi chim sớm. Mua càng sớm càng tốt"
         },
         "upload_widget": {
-          "title": "Tiện ích biểu ngữ",
           "width": "Hình ảnh rộng hơn 1500 pixel hoạt động tốt nhất.",
           "size": "Kích thước tối đa cho mỗi tập tin là 500kb.",
           "submit": "Nộp",
-          "no_images": "Không có hình ảnh có sẵn."
+          "no_images": "Không có hình ảnh có sẵn.",
+          "drag_n_drop": "Kéo và thả hình ảnh của bạn ở đây",
+          "or": "Hoặc",
+          "click_to_upload": "Bấm để tải lên",
+          "title": "Tải lên tiện ích"
         },
         "editor": {
           "save": "Cứu",

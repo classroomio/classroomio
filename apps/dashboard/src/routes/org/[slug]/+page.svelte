@@ -26,7 +26,7 @@
   import { isOrgAdmin } from '$lib/utils/store/org';
   import { isMobile } from '$lib/utils/store/useMobile';
   import { Grid, Link, SkeletonPlaceholder } from 'carbon-components-svelte';
-
+  // import DropZone from '$lib/components/DropZone/index.svelte'
   // export let data;
 
   let dashAnalytics: OrganisationAnalytics;
@@ -86,6 +86,19 @@
       hidePercentage: true
     }
   ];
+
+  // let uploadedImage = null;
+  // let isLoading = false;
+
+  // function handleImageChange(event) {
+  //   console.log('Image received in parent:', event.detail.image);
+  //   uploadedImage = event.detail.image; // 🔹 Get the uploaded image
+  // }
+
+  // function handleClear() {
+  //   uploadedImage = null; // 🔹 Clear image when 'X' is clicked
+  // }
+  // $: console.log('console here:', uploadedImage);
 </script>
 
 <svelte:head>
@@ -93,7 +106,16 @@
 </svelte:head>
 
 <WelcomeModal />
+<!-- <DropZone
+  bind:loading={isLoading}
+  bind:image={uploadedImage}
+  on:change={handleImageChange}
+  on:clear={handleClear}
+/>
 
+{#if uploadedImage}
+  <p>Uploaded Image URL: {uploadedImage}</p>
+{/if} -->
 <div class="w-full max-w-5xl px-5 py-10 md:mx-auto">
   <div class="mb-5 flex items-center justify-between">
     <h1 class="mb-3 text-2xl font-bold dark:text-white md:text-3xl">
